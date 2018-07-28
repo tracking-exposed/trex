@@ -1,0 +1,48 @@
+{
+  "manifest_version": 2,
+
+  "name": "__MSG_extensionName__",
+  "short_name": "FbTREX",
+  "description": "__MSG_extensionDescription__",
+  "version": "0.0.1",
+  "author": "Claudio Agosti",
+
+  "default_locale": "en",
+
+  "icons": {
+      "16": "yttrex16.png",
+      "48": "yttrex48.png",
+      "128": "yttrex128.png"
+  },
+
+  "browser_action": {
+      "default_icon": "yttrex16.png",
+      "default_popup": "popup.html"
+
+  },
+
+  "permissions": [
+    "storage",
+    "cookies",
+    "http://localhost:8000/",
+    "https://*.youtube.com/",
+    "https://*.tracking.exposed/"
+  ],
+
+  "background": {
+      "scripts": ["./background.js"],
+      "persistent": false
+  },
+
+  "content_scripts": [
+    {
+      "matches": ["https://*.youtube.com/*"],
+      "js": ["./app.js"],
+      "css": ["./styles.css"]
+    }
+  ],
+
+  "web_accessible_resources": [
+      "*.png"
+  ]
+}
