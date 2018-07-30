@@ -1,0 +1,18 @@
+{
+  "watch": [
+    "lib/*.js",
+    "app.js",
+    "sections/*.pug",
+    "sections/*/*.pug",
+    "dist/**"
+  ],
+  "ignore": [
+    "sections/webscripts/*.js"
+  ],
+  "verbose": true,
+  "exitcrash": false,
+  "env": {
+    "DEBUG": "*"
+  },
+  "ext": "js css pug"
+}

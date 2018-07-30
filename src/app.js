@@ -60,6 +60,7 @@ function boot () {
     // You can learn more in the [`./handlers`](./handlers/index.html) directory.
     registerHandlers(hub);
 
+
     // Lookup the current user and decide what to do.
     userLookup(response => {
 
@@ -91,12 +92,29 @@ function boot () {
                 console.log("token retrieve fail:", e.description);
             } finally {
                 console.log("Token received is [", token.get(), "]");
-                currentVideo();
+                acquireYThtml();
+                hrefUpdateMonitor();
                 flush();
             }
         }));
     });
 }
+
+var currentPage = window.location.href;
+
+function hrefUpdateMonitor() {
+
+    // listen for changes
+    setInterval(function() {
+        if (currentPage != window.location.href) {
+            // page has changed, set new page as 'current'
+            console.log("page update detected, from", currentPage, "to", window.location.href);
+            currentPage = window.location.href;
+            acquireYThtml();
+        }
+    }, 1500);
+}
+
 
 // The function `userLookup` communicates with the **action pages**
 // to get information about the current user from the browser storage
@@ -117,18 +135,8 @@ function userLookup (callback) {
 }
 
 // This function will first trigger a `newVideo` event and wait is any new title arise
-function currentVideo() {
-
+function acquireYThtml() {
     document.querySelectorAll(YT_VIDEOTITLE_SELECTOR).forEach(acquireVideo);
-    console.log("alt");
-
-//    document.arrive(YT_VIDEOTITLE_SELECTOR, acquireVideo);
-    document.arrive(YT_VIDEOTITLE_SELECTOR, wrapperAV);
-}
-
-function wrapperAV(elem) {
-    console.log("wrapper called");
-    return acquireVideo(elem);
 }
 
 function flush () {
@@ -139,9 +147,9 @@ function flush () {
 
 function acquireVideo (elem) {
     console.log("acquireVideo, add event newVideo");
-    console.log(window.location.pathname);
+    console.log(window.location.href);
 
-    hub.event('newVideo', { element: elem, pathname: window.location.pathname });
+    hub.event('newVideo', { element: $(elem).html(), href: window.location.href});
 }
 
 // Before booting the app, we need to update the current configuration

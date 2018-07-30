@@ -19,4 +19,5 @@ dist/*
 docs/*
 
 node_modules/*
+backend/node_modules/*
 package-lock.json
