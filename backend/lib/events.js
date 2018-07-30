@@ -3,6 +3,7 @@ var moment = require('moment');
 var Promise = require('bluebird');
 var debug = require('debug')('lib:events');
 var os = require('os');
+var fs = Promise.promisifyAll(require('fs'));
 var nconf = require('nconf');
 
 var signer = require('nacl-signature');
@@ -60,11 +61,14 @@ function saveVideo(body, supporter) {
         tagId: body.tagId
     };
 
-    debug("Saving video %d %s for user %s", video.incremental, video.videoId, video.cookieId);
+    var fdest = 'htmls' + moment().format("YYYY-MM-DD") + "/" + _.random(0, 0xffff);
+    debug("Saving video %d %s for user %s in file %s", video.incremental, video.videoId, video.cookieId, fdest);
 
-    return mongo
-        .writeOne(nconf.get('schema').videos, video)
-        .return(video.incremental);
+    return Promise.all([
+        mongo.writeOne(nconf.get('schema').videos, video),
+        fs.writeFileAsync(
+    ])
+    .return(video.incremental);
 };
 
 function processEvents(req) {
