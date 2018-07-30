@@ -1,11 +1,11 @@
 {
   "name": "yttrex",
-  "version": "0.0.2",
-  "description": "tracking.exposed is a framework to address algorithm personalization",
+  "version": "1.0.0",
+  "description": "yttrex is the extension + backend for youtube algorithm analysis. This is part of the https://tracking.exposed plan",
   "homepage": "https://github.com/tracking-exposed/yttrex/",
   "bugs": "https://github.com/tracking-exposed/yttrex/issues",
   "license": "GPL-3.0",
-  "author": "Claudio Agosti, Alberto Granzotto",
+  "author": "Claudio Agosti",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/tracking-exposed/yttrex.git"

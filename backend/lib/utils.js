@@ -119,9 +119,9 @@ function decodeFromBase58 (s) {
 
 function verifyRequestSignature(req) {
     // Assume that the tuple (userId, publicKey) exists in the DB.
-    var userId = req.headers['x-fbtrex-userId'];
-    var publicKey = req.headers['x-fbtrex-publickey'];
-    var signature = req.headers['x-fbtrex-signature'];
+    var userId = req.headers['x-yttrex-userId'];
+    var publicKey = req.headers['x-yttrex-publickey'];
+    var signature = req.headers['x-yttrex-signature'];
     var message = req.body;
 
     // FIXME: apparently with Express 4 the body is a streamed buffer,
