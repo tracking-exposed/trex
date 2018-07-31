@@ -17,6 +17,7 @@ extension.zip
 build/*
 dist/*
 docs/*
+backend/htmls/*
 
 node_modules/*
 backend/node_modules/*
