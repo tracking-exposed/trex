@@ -19,10 +19,7 @@ var cfgFile = "config/settings.json";
 var redOn = "\033[31m";
 var redOff = "\033[0m";
 
-nconf.argv()
-     .env()
-     .file({ file: cfgFile })
-     .file('users', { file: "config/users.json" });
+nconf.argv().env().file({ file: cfgFile });
 
 console.log(redOn + "ઉ nconf loaded, using " + cfgFile + redOff);
 
@@ -45,7 +42,7 @@ function dispatchPromise(name, req, res) {
     var apiV = _.parseInt(_.get(req.params, 'version'));
 
     /* force version to the only supported version */
-    debug("%s %d name %s (%s)", moment().format("HH:mm:ss"), apiV, name, req.url);
+    debug("%s name %s (%s)", moment().format("HH:mm:ss"), name, req.url);
 
     var func = _.get(APIs.implementations, name, null);
 
@@ -65,18 +62,17 @@ function dispatchPromise(name, req, res) {
               });
 
           if(httpresult.json) {
-              debug("%s API %s success, returning JSON (%d bytes)",
-                  req.randomUnicode, name,
-                  _.size(JSON.stringify(httpresult.json)) );
+              debug("%s API success, returning JSON (%d bytes)",
+                  name, _.size(JSON.stringify(httpresult.json)) );
               res.json(httpresult.json)
           } else if(httpresult.text) {
-              debug("%s API %s success, returning text (size %d)",
-                  req.randomUnicode, name, _.size(httpresult.text));
+              debug("%s API success, returning text (size %d)",
+                  name, _.size(httpresult.text));
               res.send(httpresult.text)
           } else if(httpresult.file) {
               /* this is used for special files, beside the css/js below */
-              debug("%s API %s success, returning file (%s)",
-                  req.randomUnicode, name, httpresult.file);
+              debug("API success, returning file (%s)",
+                  name, httpresult.file);
               res.sendFile(__dirname + "/html/" + httpresult.file);
           } else {
               debug("Undetermined failure in API call, result →  %j", httpresult);
@@ -99,18 +95,6 @@ console.log(" Listening on http://" + nconf.get('interface') + ":" + nconf.get('
 app.use(cors());
 app.use(bodyParser.json({limit: '4mb'}));
 app.use(bodyParser.urlencoded({limit: '4mb', extended: true}));
-
-
-/* Parser API */
-app.post('/api/v:version/snippet/status', function(req, res) {
-    return dispatchPromise('snippetAvailable', req, res);
-});
-app.post('/api/v:version/snippet/content', function(req, res) {
-    return dispatchPromise('snippetContent', req, res);
-});
-app.post('/api/v:version/snippet/result', function(req, res) {
-    return dispatchPromise('snippetResult', req, res);
-});
 
 
 /* This is import and validate the key */

@@ -51,22 +51,36 @@ function processHeaders(received, required) {
 
 function saveVideo(body, supporter) {
 
+    var id = utils.hash({
+        cookieId: supporter.cookieId,
+        page: body.element,
+        random: _.random(0, 0xffff)
+    });
+    var isVideo = body.href.match(/v=/) ? true : false;
+    var fdest = 'htmls/' + moment().format("YYYY-MM-DD") + "/" + id + ".html";
     var video = {
-        videoId: _.replace(body.href, /.*v=/, ''),
-        html: body.element,
+        id: id,
+        href: body.href,
+        isVideo: isVideo,
+        htmlOnDisk: fdest,
         incremental: body.incremental,
-        clientTime: new Date(body.clientTime),
         cookieId: supporter.cookieId,
         publicKey: supporter.publicKey,
-        tagId: body.tagId
+        tagId: body.tagId,
+        clientTime: new Date(body.clientTime),
+        savingTime: new Date(),
     };
 
-    var fdest = 'htmls' + moment().format("YYYY-MM-DD") + "/" + _.random(0, 0xffff);
-    debug("Saving video %d %s for user %s in file %s", video.incremental, video.videoId, video.cookieId, fdest);
+    if(isVideo)
+        video.videoId = _.replace(body.href, /.*v=/, '');
+
+    debug("Saving video %d (id %s) for user %s in file %s (%d bytes)",
+        video.incremental, video.videoId, video.cookieId, fdest, _.size(body.element)
+    );
 
     return Promise.all([
         mongo.writeOne(nconf.get('schema').videos, video),
-        fs.writeFileAsync(
+        fs.writeFileAsync(fdest, body.element)
     ])
     .return(video.incremental);
 };
@@ -89,7 +103,6 @@ function processEvents(req) {
 
     var cookieId = _.get(req.headers, 'x-yttrex-userid');
 
-    debug("begin with mongo");
     return mongo
         .read(nconf.get('schema').supporters, {
             cookieId: cookieId,
@@ -119,14 +132,18 @@ function processEvents(req) {
 
             /* verification went well! */
             if(supporter.version !== headers.version) {
-                debug("Supporter %d version upgrade %s to %s",
+                debug("Supporter %s version upgrade from %s to %s",
                     supporter.userId, supporter.version, headers.version);
             }
             supporter.version = headers.version;
             return supporter;
         })
         .tap(function(supporter) {
-            debug("FYI, videos %d", _.size(req.body));
+            /* directory check */
+            var ddest = 'htmls/' + moment().format("YYYY-MM-DD") + "/";
+
+            return fs
+                .mkdirAsync(ddest).catch(function(e) { });
         })
         .then(function(supporter) {
             return Promise.map(req.body, function(video) {
@@ -149,5 +166,5 @@ function processEvents(req) {
 };
 
 module.exports = {
-  processEvents: processEvents
+    processEvents: processEvents
 };
