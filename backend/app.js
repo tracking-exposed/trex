@@ -117,6 +117,14 @@ app.post('/api/v1/userInfo', function(req, res) {
     return dispatchPromise('userInfo', req, res);
 });
 
+/* useful revision page */
+app.get('/revision/:htmlId', function(req, res) {
+    req.params.page = 'revision';
+    return dispatchPromise('getPage', req, res);
+});
+app.get('/api/v1/html/:htmlId', function(req, res) {
+    return dispatchPromise('unitById', req, res);
+});
 
 /* static files, independent by the API versioning */
 app.get('/favicon.ico', function(req, res) {
@@ -125,7 +133,6 @@ app.get('/favicon.ico', function(req, res) {
 app.get('/robots.txt', function(req, res) {
     res.sendFile(__dirname + '/dist/robots.txt');
 });
-
 
 /* development: the local JS are pick w/out "npm run build" every time, and
  * our locally developed scripts stay in /js/local */

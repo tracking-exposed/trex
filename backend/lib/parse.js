@@ -3,7 +3,7 @@ var Promise = require('bluebird');
 var fs = Promise.promisifyAll(require('fs'));
 var request = Promise.promisifyAll(require('request'));
 var cheerio = require('cheerio');
-var debug = require('debug')('parser:core');
+var debug = require('debug')('lib:parse');
 var moment = require('moment');
 var nconf = require('nconf'); 
 
@@ -47,7 +47,7 @@ function fetchMetadata(config) {
             _.get(defaults, 'requirements'),
             _.set({}, defaults.parserName, {'$exists': false} )))
         .tap(function(results) {
-            debug("selected %d", _.size(results));
+            debug("matched %d objects to be parsed", _.size(results));
         });
 };
 
@@ -63,12 +63,23 @@ function please(config) {
 
     return fetchMetadata(config)
         .map(function(metadata) {
-            debugger;
-            // read file 
-            var newmeta = config.implementation(metadata, null);
-        }, {concurrency: 1 })
+            return fs
+                .readFileAsync(metadata.htmlOnDisk, 'utf-8')
+                .then(function(html) {
+                    return config.implementation(metadata, html);
+                })
+                .catch(function(error) {
+                    debug("Error %s", error.message);
+                    // debug("Error %s", JSON.stringify(metadata, undefined, 2), error.message);
+                    return null;
+                })
+        }, { concurrency: 1 })
+        .then(_.compact)
+        .map(function(processed) {
+            return mongo
+                .updateOne(nconf.get('schema').videos, {_id: processed._id}, processed);
+        }, { concurrency: 1 });
 };
-
 
 module.exports = {
     please: please

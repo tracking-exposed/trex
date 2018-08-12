@@ -18,6 +18,7 @@ var pugCompiler = function(filePrefix) {
 };
 
 var pageMap = {
+  'revision': pugCompiler('revision'),
   '/': pugCompiler('index'),
   '404': pugCompiler('404')
 };

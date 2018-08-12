@@ -1,0 +1,42 @@
+doctype html
+html
+    head
+        link(rel='stylesheet', href='/css/bootstrap.css')
+        link(rel='stylesheet', href='/css/index.css')
+        script(type='text/javascript', src='/js/lodash.min.js')
+        script(type='text/javascript', src='/js/jquery.js')
+        script(type='text/javascript', src='/js/collapse.js')
+        script(type='text/javascript', src='/js/bootstrap.min.js')
+        script(type='text/javascript', src='/js/moment.min.js')
+
+        link(rel='stylesheet', href='/js/local/revision.css')
+        script(type='text/javascript', src='/js/local/revision.js')
+
+        meta(charset="utf-8")
+        meta(http-equiv="X-UA-Compatible" content="IE=edge")
+        meta(name="viewport" content="width=device-width, initial-scale=1")
+        meta(name="keywords" content="facebook tracking exposed")
+
+        meta(property="og:title" content="HTML revision page")
+        title HTML revision page
+
+    body(onload="loadsnippet('#metadest', '#render');")
+        include header
+        include navbar
+
+        .container-fluid
+            .col-md-1
+            .col-md-10.infoblock
+                h3
+                    a(id="bymeta") Metadata extracted
+                div.metadata(id='metadest')
+            .col-md-1
+
+        .container-fluid
+            .col-md-1
+            .col-md-10.infoblock
+                h3
+                    a(id="bysnippet") The user saw this
+                div.snippet(id='render')
+            .col-md-1
+

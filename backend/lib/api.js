@@ -12,6 +12,9 @@ var apiListVersion1 = {
     /* selector fetch experiment */
     userInfo:         require('./selector').userInfo,
 
+    /* for revision */
+    unitById:         require('./htmlunit').unitById
+
 };
 
 module.exports = {
