@@ -20,23 +20,21 @@ html
         meta(property="og:title" content="HTML revision page")
         title HTML revision page
 
-    body(onload="loadsnippet('#metadest', '#render');")
+    body(onload="loadsnippet('#metadest', '#htmldest');")
         include header
         include navbar
 
         .container-fluid
             .col-md-1
             .col-md-10.infoblock
-                h3
-                    a(id="bymeta") Metadata extracted
+                h3 Metadata extracted
                 div.metadata(id='metadest')
             .col-md-1
 
         .container-fluid
             .col-md-1
             .col-md-10.infoblock
-                h3
-                    a(id="bysnippet") The user saw this
-                div.snippet(id='render')
+                h3 Raw html
+                div
+                    pre(id='htmldest')
             .col-md-1
-

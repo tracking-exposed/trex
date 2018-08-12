@@ -27,9 +27,9 @@ function parseVideoPage(metadata, html) {
         var link = cheerio.load($($h3.parent).html())("a").attr('href');
         var l = cheerio.load($($h3.parent).html())("a").attr('aria-label');
 
-        /* worst case scenario, this works too:
-         * cheerio.load($($h3.parent).html())("a")[1].children[0].data
-         */
+        /*
+         * worst case scenario, this works too:
+         * cheerio.load($($h3.parent).html())("a")[1].children[0].data     */
         var source = cheerio.load($($h3.parent).html())('[href^="/user"]').text();
         var sourceKind = null;
         if(_.size(source))
@@ -50,7 +50,7 @@ function parseVideoPage(metadata, html) {
              *   index: 106,
              *   input: 'The Moons of Mars Explained -- Phobos & Deimos MM#… Nutshell 4 years ago 115 seconds 2,480,904 views' ]
              */
-            var viewNumber = _.parseInt(viewStr.split(' ')[0].replace(/,/, ''));
+            var viewNumber = _.parseInt(viewStr.split(' ')[0].replace(/,/g, ''));
             var durationStr = l
                 .substr(0, viewMatch.index)
                 .match(/[0-9,]*\ (seconds|minutes|hours)/)[0].split(' ');
@@ -80,12 +80,6 @@ function parseVideoPage(metadata, html) {
         publisher: authorName,
         related: _.orderBy(_.compact(related), 'views')
     });
-/*
-    debug("%s %s", 
-        JSON.stringify(metadata, undefined, 2),
-        JSON.stringify(retO, undefined, 2)
-    );
- */
     return retO;
 };
 

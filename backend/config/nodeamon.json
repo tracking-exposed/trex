@@ -2,8 +2,7 @@
   "watch": [
     "lib/*.js",
     "app.js",
-    "sections/*.pug",
-    "sections/*/*.pug",
+    "sections/**",
     "dist/**"
   ],
   "ignore": [
