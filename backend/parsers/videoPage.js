@@ -11,18 +11,93 @@ var stats = {
     error: 0
 };
 
+function printGraph($node, shifts) {
+
+    var spaces = _.reduce(_.times(shifts * 2), function(memo, _i) {
+        return memo += " ";
+    }, "");
+
+    if($node.type === 'text')
+        debug("%s[%s]", spaces, $node.data);
+    else
+        debug("%s%s", spaces, $node.name);
+
+    _.each($node.children, function($child) {
+        printGraph($child, shifts + 2);
+    });
+};
+
 function parseVideoPage(metadata, html) {
 
-    var $ = cheerio.load(html);
-    stats.processed++;
+    var cleanHtml = html.replace(/[\n\n]+/g, '').replace(/\>\s{1,12}\</g, '><')
+    var $ = cheerio.load(cleanHtml);
 
+    stats.processed++;
     debug("processing %s: %d bytes", metadata.href, _.size(html));
 
     var videoTitle = $('h1')[0].children[0].children[0].data;
-    var authorName = $('h1')[1].children[0].children[0].data;
+    var authorName = cheerio.load( $('#owner-container').html() )('a').text();
+    var authorChannel = cheerio.load( $('#owner-container').html() )('a').attr('href');
 
-    var order = 0;
-    var related = _.map( $('h3'), function($h3, fakeorder) {
+    printGraph( $('#owner-container')[0], 1 );
+    debugger;
+
+    if(!videoTitle || !authorName || !authorChannel )
+        debug("missing important info: videoTitle [%s] authorName [%s] authorChannel [%s]", 
+            videoTitle, authorName, authorChannel);
+
+    var $related =  $('h3 > span');
+    var related = _.map( $related, function($span, order) {
+        var title = $span.attribs.title;
+        var aria = $span.attribs['aria-label']
+        return {
+            order: order,
+            title: title,
+            aria: aria
+        };
+    });
+    debug("%s", JSON.stringify(related, undefined, 2));
+
+    var $watch = $('a[href^="/watch"]')
+    var watch = _.map( $watch, function($a, order) {
+        var href = $a.attribs.href;
+        if($a.children && $a.children[0] && $a.children[0].name === 'h3') {
+            console.log("skip this ", href);
+            return {
+                text: cheerio.load($a.children[0]).text(),
+                filter: true,
+                href: href
+            };
+        }
+        else {
+
+            try { 
+                var thumbnail = $a.children[0].children[0].attribs.src.replace(/\?.*/,'');
+            } catch(error) {
+                debug("Error in %s", href);
+                debugger;
+                return {
+                    filter: true,
+                    href: href,
+                    order: order,
+                    error: error
+                }
+            }
+
+            return {
+                href: href,
+                thumbnail: thumbnail,
+                order: order
+            }
+        }
+    });
+    debugger;
+    debug("%s", JSON.stringify(watch, undefined, 2));
+
+    debugger;
+        console.log(title);
+        console.log(aria);
+        return;
 
         var link = cheerio.load($($h3.parent).html())("a").attr('href');
         var l = cheerio.load($($h3.parent).html())("a").attr('aria-label');
@@ -41,7 +116,7 @@ function parseVideoPage(metadata, html) {
         }
 
         try {
-            var title = cheerio.load($($h3.parent).html())("a")[0].children[0].data;
+            debugger;
 
             var viewMatch  = l.match(/[0-9,]*\ views/);
             var viewStr = viewMatch[0];
@@ -71,13 +146,15 @@ function parseVideoPage(metadata, html) {
         } catch (error) {
             return null;
         }
-    });
 
-    debug("begin with %d h3, end with %d related", _.size( $('h3')), _.size(_.compact(related)));
+    debug("(%s) [%s] [%s] %d h3, end with %d related",
+        videoTitle, authorName, authorChannel,
+        _.size( $('h3')), _.size(_.compact(related)));
 
     var retO = _.extend(metadata, {
         title: videoTitle,
-        publisher: authorName,
+        author: authorName,
+        channel: authorChannel,
         related: _.orderBy(_.compact(related), 'views')
     });
     return retO;
