@@ -1,5 +1,6 @@
 # Install web-extion in your browser
 
+<<<<<<< 092680feb550e6b61c1fbd1b1b6e32ef2d65a21f
 # Intro
 This is the source code for the **tracking-exposed** extension.
 We use ECMAScript 2015, aka ES6, aka ECMAScript Harmony. The aim is to keep the
@@ -72,3 +73,9 @@ tidy -i -m -w 0 -utf8 file.html
 
 # Thanks
 [@sohkai](https://github.com/sohkai) for the amazing [js-reactor boilerplate](https://github.com/bigchaindb/js-reactor).
+=======
+# Thanks
+[@vrde](https://github.com/vrde) for the perfect basement to hack on
+
+[@sohkai](https://github.com/sohkai) for the amazing [js-reactor
+boilerplate](https://github.com/bigchaindb/js-reactor).
