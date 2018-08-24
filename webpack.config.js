@@ -35,7 +35,6 @@ const PATHS = {
 
 /** EXTERNAL DEFINITIONS INJECTED INTO APP **/
 var DEV_SERVER =  '127.0.0.1'
-var DEV_SERVER = '192.168.132.128'
 var ENV_DEP_SERVER = DEVELOPMENT ? 'http://' + DEV_SERVER + ':9000' : 'https://collector.facebook.tracking.exposed';
 var ENV_DEP_WEB = DEVELOPMENT ? 'http://' + DEV_SERVER + ':9000' : 'https://facebook.tracking.exposed';
 
