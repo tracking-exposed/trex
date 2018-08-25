@@ -8,8 +8,6 @@
   "version": "0.0.2",
   "author": "Claudio Agosti",
 
-  "default_locale": "en",
-
   "icons": {
       "16": "yttrex16.png",
       "48": "yttrex48.png",
