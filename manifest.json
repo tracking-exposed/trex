@@ -1,10 +1,10 @@
 {
   "manifest_version": 2,
 
-  "name": "__MSG_extensionName__",
+  "name": "ytTREX",
 
   "short_name": "ytTREX",
-  "description": "__MSG_extensionDescription__",
+  "description": "This browser extension is a minor experiment we are conducting, it is not yet intended for mainstream usage",
   "version": "0.0.2",
   "author": "Claudio Agosti",
 
@@ -38,8 +38,7 @@
   "content_scripts": [
     {
       "matches": ["https://*.youtube.com/*"],
-      "js": ["./app.js"],
-      "css": ["./styles.css"]
+      "js": ["./app.js"]
     }
   ],
 

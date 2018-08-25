@@ -25,8 +25,7 @@ const BUILD = require('child_process').execSync('git rev-parse HEAD').toString()
 const PATHS = {
     APPS: {
         app: path.resolve(__dirname, 'src/app.js'),
-        background: path.resolve(__dirname, 'src/chrome/background/index.js'),
-        popup: path.resolve(__dirname, 'src/chrome/popup/index.js')
+        background: path.resolve(__dirname, 'src/chrome/background/index.js')
     },
     BUILD: path.resolve(__dirname, 'build'),
     DIST: path.resolve(__dirname, 'dist'),

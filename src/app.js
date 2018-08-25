@@ -20,8 +20,6 @@
 // in the future).
 
 // # Code
-// Import the styles for the app.
-require('../styles/app.scss');
 
 // Import the react toolkit.
 // Seems like importing 'react-dom' is not enough, we need to import 'react' as well.
@@ -39,8 +37,6 @@ import hub from './hub';
 import { getTimeISO8601 } from './utils';
 import { registerHandlers } from './handlers/index';
 import token from './token';
-
-import OnboardingBox from './components/onboardingBox';
 
 // const YT_VIDEOTITLE_SELECTOR = '#container > h1 > yt-formatted-string';
 // const YT_VIDEOTITLE_SELECTOR = 'h1 .title';
