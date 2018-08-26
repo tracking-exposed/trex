@@ -51,6 +51,10 @@ function fetchMetadata(config) {
         });
 };
 
+function report(text, objs) {
+    debug("%s: %d", text, _.size(objs));
+};
+
 function please(config) {
 
     /* set default values if not specified */
@@ -74,7 +78,9 @@ function please(config) {
                     return null;
                 })
         }, { concurrency: 1 })
+        .tap(report("returned elements"))
         .then(_.compact)
+        .tap(report("analyzed elements"))
         .map(function(processed) {
             return mongo
                 .updateOne(nconf.get('schema').videos, {_id: processed._id}, processed);
