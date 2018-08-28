@@ -25,7 +25,8 @@ const BUILD = require('child_process').execSync('git rev-parse HEAD').toString()
 const PATHS = {
     APPS: {
         app: path.resolve(__dirname, 'src/app.js'),
-        background: path.resolve(__dirname, 'src/chrome/background/index.js')
+        popup: path.resolve(__dirname, 'src/chrome/popup/index.js'),
+        background: path.resolve(__dirname, 'src/chrome/background/index.js'),
     },
     BUILD: path.resolve(__dirname, 'build'),
     DIST: path.resolve(__dirname, 'dist'),
@@ -34,8 +35,8 @@ const PATHS = {
 
 /** EXTERNAL DEFINITIONS INJECTED INTO APP **/
 var DEV_SERVER =  '127.0.0.1'
-var ENV_DEP_SERVER = DEVELOPMENT ? 'http://' + DEV_SERVER + ':9000' : 'https://collector.facebook.tracking.exposed';
-var ENV_DEP_WEB = DEVELOPMENT ? 'http://' + DEV_SERVER + ':9000' : 'https://facebook.tracking.exposed';
+var ENV_DEP_SERVER = DEVELOPMENT ? 'http://' + DEV_SERVER + ':9000' : 'https://y.tracking.exposed';
+var ENV_DEP_WEB = DEVELOPMENT ? 'http://' + DEV_SERVER + ':9000' : 'https://y.tracking.exposed';
 
 // var local = 'http://192.168.223.133:8000/';
 const DEFINITIONS = {
