@@ -11,7 +11,6 @@ V=`git tag -l | head -1`
 sed -es'/BUILD_VERSION/'$V'/' build/popup.html  > dist/popup.html
 
 cp icons/* ./dist
-cp -r _locales ./dist
 cd ./dist
 zip extension.zip * 
 
