@@ -38,7 +38,6 @@ var DEV_SERVER =  '127.0.0.1'
 var ENV_DEP_SERVER = DEVELOPMENT ? 'http://' + DEV_SERVER + ':9000' : 'https://y.tracking.exposed';
 var ENV_DEP_WEB = DEVELOPMENT ? 'http://' + DEV_SERVER + ':9000' : 'https://y.tracking.exposed';
 
-// var local = 'http://192.168.223.133:8000/';
 const DEFINITIONS = {
     'process.env': {
         DEVELOPMENT: JSON.stringify(DEVELOPMENT),
