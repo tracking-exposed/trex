@@ -6,6 +6,7 @@ V=dist/js/
 mkdir -p dist/css && 
 mkdir -p dist/js/local 
 mkdir -p dist/images 
+mkdir -p dist/static
 mkdir -p $V 
 
 echo "User-agent: *\nAllow: /\n" >> dist/robots.txt
@@ -22,4 +23,4 @@ cp node_modules/bootstrap/js/collapse.js $V
 cp node_modules/jquery/dist/jquery.js $V 
 cp node_modules/moment/min/moment.min.js $V 
 cp node_modules/lodash/lodash.min.js $V 
-
+cp ../dist/extension.zip dist/static

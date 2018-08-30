@@ -148,7 +148,7 @@ app.use('/js', express.static(__dirname + '/dist/js'));
 app.use('/css', express.static(__dirname + '/dist/css'));
 app.use('/images', express.static(__dirname + '/dist/images'));
 app.use('/fonts', express.static(__dirname + '/dist/fonts'));
-app.use('/autoscroll.user.js', express.static(__dirname + '/I/autoscroll.user.js'));
+app.use('/static', express.static(__dirname + '/dist/static'));
 
 /* last one, page name catch-all */
 app.get('/:page*', function(req, res) {
