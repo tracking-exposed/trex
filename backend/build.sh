@@ -15,7 +15,7 @@ node_modules/.bin/stylus styles/index.styl -o dist/css
 
 cp styles/favicon.ico dist/
 cp -r ../icons/* dist/images
-# cp -r sections/images/* dist/images
+cp sections/images/* dist/images
 cp -r sections/webscripts/* dist/js/local/ 
 cp -r node_modules/bootstrap/dist/* dist/
 

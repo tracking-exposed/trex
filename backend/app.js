@@ -158,4 +158,3 @@ app.get('/:page*', function(req, res) {
 app.get('/', function(req, res) {
     return dispatchPromise('getPage', req, res);
 });
-
