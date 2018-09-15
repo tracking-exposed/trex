@@ -1,20 +1,29 @@
-# Install web-extion in your browser
+# web-extension reviewer, please read this
 
-<<<<<<< 092680feb550e6b61c1fbd1b1b6e32ef2d65a21f
-# Intro
-This is the source code for the **tracking-exposed** extension.
+    npm install
+    npm run build
+
+This build the development version, product it is not minify
+
+    npm run build:dist
+
+This build the release version, it the .zip I upload in Firefox and Chrome store
+
+
+# TL;DR
+
+This is the source code for one of the **tracking-exposed** web-extension. The broad scope of the project is described in the [Manifesto](https://tracking.exposed)
+
+## Code
+
 We use ECMAScript 2015, aka ES6, aka ECMAScript Harmony. The aim is to keep the
 code modular, easy to test, and beautiful.
-
-_what is said above is true, in theory, in practice, we don't have test for YouTube_
-
 
 ## Getting Started
 Setting up the dev environment is super easy.
 
 ### Dependencies
 This project requires Node 5+. Install [nvm](https://github.com/creationix/nvm) for easy version maintaining. Alternatively install Nodejs from a package, but make sure it's the right version and install npm as well for package management.  
-
 
 ### Set up your build system
 The build system uses a simple `package.json` file to describe the tasks, you can check it out to find out the packages that we rely on to make this extension available or for troubleshooting.
