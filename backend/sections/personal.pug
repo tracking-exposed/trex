@@ -1,0 +1,29 @@
+doctype html
+html
+    head
+        link(rel='stylesheet', href='/css/bootstrap.css')
+        link(rel='stylesheet', href='/css/index.css')
+        script(type='text/javascript', src='/js/lodash.min.js')
+        script(type='text/javascript', src='/js/jquery.js')
+        script(type='text/javascript', src='/js/collapse.js')
+        script(type='text/javascript', src='/js/bootstrap.min.js')
+        script(type='text/javascript', src='/js/moment.min.js')
+
+        link(rel='stylesheet', href='/js/local/personal.css')
+        script(type='text/javascript', src='/js/local/personal.js')
+
+        meta(charset="utf-8")
+        meta(http-equiv="X-UA-Compatible" content="IE=edge")
+        meta(name="viewport" content="width=device-width, initial-scale=1")
+        meta(name="keywords" content="facebook tracking exposed")
+
+        meta(property="og:title" content="Personal poage")
+        title yttrex, personal page
+
+    body(onload="loadpersonal('#list');")
+        include header
+        include navbar
+
+        .container-fluid
+            h2 This is a pretty simple page without any expectation of give you anything you don't know yet
+            

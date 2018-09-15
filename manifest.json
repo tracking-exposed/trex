@@ -5,7 +5,7 @@
 
   "short_name": "ytTREX",
   "description": "This browser extension is a minor experiment we are conducting, it is not yet intended for mainstream usage",
-  "version": "0.0.2",
+  "version": "1.0.1",
   "author": "Claudio Agosti",
 
   "icons": {

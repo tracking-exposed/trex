@@ -131,12 +131,20 @@ function processEvents(req) {
             }
 
             /* verification went well! */
-            if(supporter.version !== headers.version) {
-                debug("Supporter %s version upgrade from %s to %s",
+            if(supporter.version !== headers.version)
+                debug("Upgrade! [%s] version from %s to %s",
                     supporter.userId, supporter.version, headers.version);
-            }
+
             supporter.version = headers.version;
+            supporter.lastActivity = new Date();
+
             return supporter;
+        })
+        .tap(function(supporter) {
+            return mongo.updateOne(nconf.get('schema').supporters, {
+                cookieId: supporter.cookieId,
+                publicKey: supporter.publickey
+            }, supporter);
         })
         .tap(function(supporter) {
             /* directory check */

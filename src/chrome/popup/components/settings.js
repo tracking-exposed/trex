@@ -14,9 +14,6 @@ export default class Settings extends React.Component {
     constructor (props) {
         super(props);
 
-        console.log("test", props);
-        console.log("test2", props.userId);
-
         db
             .get('whatever', {tagId: '', isStudyGroup: false, lessInfo: false})
             .then(settings => this.setState({
@@ -53,7 +50,7 @@ export default class Settings extends React.Component {
 
         return (
             <Card>
-                <CardHeader title='Consider the option below only if you should have indication from your test coordinator ' />
+                <CardHeader title='Consider the option below only if you belong to a research group' />
 
                 <CardText>
                     <div>
