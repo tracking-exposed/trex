@@ -1,7 +1,7 @@
 {
-  "name": "youtube-tracking-exposed",
-  "version": "1.0.0",
-  "description": "youtube.tracking.exposed → collaborative tool to investigate personalization algorithms",
+  "name": "youtube-trex-backend",
+  "version": "1.0.1",
+  "description": "youtube.tracking.exposed → backend data collector, to investigate personalization algorithms",
   "main": "app.js",
   "scripts": {
     "build": "./build.sh",
@@ -9,9 +9,9 @@
     "start": "DEBUG=lib:*,-yttrex node app"
   },
   "author": "Claudio Agosti <claudio@tracking.exposed>, https://github.com/tracking-exposed/yttrex/graphs/contributors",
-  "license": "(ISC OR GPL-3.0)",
+  "license": "GPL-3.0",
   "dependencies": {
-    "bluebird": "^3.4.1",
+    "bluebird": "^3.5.2",
     "body-parser": "^1.15.2",
     "bootstrap": "^3.3.7",
     "bs58": "^3.1.0",
@@ -21,12 +21,12 @@
     "express": "^4.14.0",
     "jquery": "^3.0.0",
     "jsdom": "^12.0.0",
-    "lodash": "^4.13.1",
+    "lodash": "^4.17.11",
     "moment": "^2.14.1",
     "mongodb": "^2.1.8",
     "nacl-signature": "^1.0.0",
     "nconf": "^0.8.4",
-    "nodemon": "^1.10.0",
+    "nodemon": "^1.18.4",
     "pug": "^2.0.0-beta11",
     "request": "^2.75.0",
     "stylus": "^0.54.5",
