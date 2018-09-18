@@ -6,6 +6,7 @@ var errorrevi = require('debug')('related:view');
 var errorcore = require('debug')('metadata:core');
 var errorlike = require('debug')('metadatya:likes');
 var errorview = require('debug')('metadata:view');
+var errorrele = require('debug')('metadata:related');
 var parse = require('../lib/parse');
 
 const jsdom = require("jsdom");
@@ -160,7 +161,7 @@ function parseVideoPage(metadata, html) {
             stats.success++;
             retval = _.extend(metadata, extracted, { processed: true, skipped: false });
         } catch(error) {
-            debug("unacceptable error! [%s]: %s", metadata.href, error);
+            debug("unacceptable error! [%s] from %s: %s", metadata.href, metadata.clientTime, error);
             stats.error++;
             retval = _.extend(metadata, { processed: false, skipped: false });
         }
