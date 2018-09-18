@@ -31,7 +31,7 @@ var hash = function(obj, fields) {
         return memo += fname + "∴" + _.get(obj, fname, '…miss!') + ",";
         return memo;
     }, "");
-    // debug("Hashing of %s", plaincnt);
+    debug("Hashing of %s", plaincnt);
     sha1sum = crypto.createHash('sha1');
     sha1sum.update(plaincnt);
     return sha1sum.digest('hex');

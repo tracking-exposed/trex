@@ -52,9 +52,9 @@ function processHeaders(received, required) {
 function saveVideo(body, supporter) {
 
     var id = utils.hash({
-        cookieId: supporter.cookieId,
-        page: body.element,
-        random: _.random(0, 0xffff)
+        pubkey: supporter.publicKey,
+        href: body.href,
+        hour: moment(body.clientTime).format("YYYY-MM-DD HH"),
     });
     var isVideo = body.href.match(/v=/) ? true : false;
     var fdest = 'htmls/' + moment().format("YYYY-MM-DD") + "/" + id + ".html";
@@ -78,11 +78,15 @@ function saveVideo(body, supporter) {
         video.incremental, video.videoId, video.cookieId, fdest, _.size(body.element)
     );
 
-    return Promise.all([
-        mongo.writeOne(nconf.get('schema').videos, video),
-        fs.writeFileAsync(fdest, body.element)
-    ])
-    .return(video.incremental);
+    return mongo
+        .writeOne(nconf.get('schema').videos, video)
+        .tap(function() {
+            return fs.writeFileAsync(fdest, body.element)
+        })
+        .catch(function(error) {
+            debug("Error: %s", error);
+        })
+        .return(video.incremental);
 };
 
 function processEvents(req) {
@@ -105,16 +109,14 @@ function processEvents(req) {
 
     return mongo
         .read(nconf.get('schema').supporters, {
-            cookieId: cookieId,
             publicKey: headers.publickey
         })
         .then(function(supporterL) {
             if(!_.size(supporterL)) {
-                debug("new cookie+publicKey combo");
+                debug("new publicKey received!");
                 var supporter = {
-                    cookieId: cookieId,
                     publicKey: headers.publickey,
-                    keyTime: new Date(),
+                    creationTime: new Date(),
                 };
                 return mongo
                     .writeOne(nconf.get('schema').supporters, supporter)
@@ -125,15 +127,10 @@ function processEvents(req) {
         .then(_.first)
         .then(function(supporter) {
             if (!utils.verifyRequestSignature(req)) {
-                debug("Verification fail: signed %s pubkey %s user %d",
-                    headers.signature, supporter.publicKey, supporter.userId);
+                debug("Verification fail: signed %s pubkey %s",
+                    headers.signature, supporter.publicKey);
                 throw new Error('Signature does not match request body');
             }
-
-            /* verification went well! */
-            if(supporter.version !== headers.version)
-                debug("Upgrade! [%s] version from %s to %s",
-                    supporter.userId, supporter.version, headers.version);
 
             supporter.version = headers.version;
             supporter.lastActivity = new Date();
@@ -142,7 +139,6 @@ function processEvents(req) {
         })
         .tap(function(supporter) {
             return mongo.updateOne(nconf.get('schema').supporters, {
-                cookieId: supporter.cookieId,
                 publicKey: supporter.publickey
             }, supporter);
         })

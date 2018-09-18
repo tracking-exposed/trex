@@ -108,7 +108,7 @@ function hrefUpdateMonitor() {
             currentPage = window.location.href;
             acquireYThtml();
         }
-    }, 1500);
+    }, 5000);
 }
 
 

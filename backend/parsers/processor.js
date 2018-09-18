@@ -165,7 +165,7 @@ function parseVideoPage(metadata, html) {
         }
     }
     retval.videoParser = true;
-    debug("%s [%s], %j", retval.id, retval.title, stats);
+    debug("%s %s [%s], %j", retval.href, retval.id, retval.title, stats);
     return retval;
 };
 

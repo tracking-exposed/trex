@@ -11,7 +11,7 @@
   "verbose": true,
   "exitcrash": false,
   "env": {
-    "DEBUG": "*"
+    "DEBUG": "yttrex,lib:*"
   },
   "ext": "js css pug"
 }
