@@ -42,7 +42,6 @@ function labelParser(l) {
             views: viewNumber,
             durationStr: durationStr,
         };
-
     } catch (error) {
         errorrevi("failure in parsing %s: %s", viewMatch, error);
         return { 
@@ -57,6 +56,7 @@ function parseViews(D) {
     try {
         const viewStr = node.innerHTML
         const viewNumber = _.parseInt(viewStr.split(' ')[0].replace(/,/g, ''));
+        return { viewStr: viewStr, viewNumber: viewNumber };
     } catch(error) {
         errorview("(%s): %s", node.innerHTML, error);
         return {
@@ -71,6 +71,7 @@ function parseLikes(D) {
     try {
         const likes = nodes[0].getAttribute('aria-label');
         const dislikes = nodes[1].getAttribute('aria-label');
+        return { likes: likes, dislikes: dislikes };
     } catch(error) {
         /* expected two elements in nodes */
         errorlike("(%d) %s", _.size(nodes), error);

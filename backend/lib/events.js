@@ -54,7 +54,7 @@ function saveVideo(body, supporter) {
     var id = utils.hash({
         pubkey: supporter.publicKey,
         href: body.href,
-        hour: moment(body.clientTime).format("YYYY-MM-DD HH"),
+        hour: moment(body.clientTime).format("YYYY-MM-DD HH:mm:SS"),
     });
     var isVideo = body.href.match(/v=/) ? true : false;
     var fdest = 'htmls/' + moment().format("YYYY-MM-DD") + "/" + id + ".html";

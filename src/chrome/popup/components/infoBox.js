@@ -16,7 +16,7 @@ const InfoBox = React.createClass({
                     Remind: with this extension running, the youtube videos suggested by youtube algorithm, are recorded for <b>algorithm accountability</b> and <b>social media accountability</b> purposes only.
                     <br/>
                     <br/>
-                    Check <a href={personalLink}>your submitted data</a>.
+                    Check <a target='_blank' href={personalLink}>your submitted data</a>.
                 </CardText> 
             </Card>
         );

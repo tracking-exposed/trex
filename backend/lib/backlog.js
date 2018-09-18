@@ -11,10 +11,11 @@ function getUserBacklog(req) {
     var c =  req.params.publicKey;
     debug("Quertying backlog for user %s", c);
     return mongo
-        .read(nconf.get('schema').videos, { publicKey: c })
+        .readLimit(nconf.get('schema').videos, { publicKey: c }, {}, 200, 0)
         .map(function(video) {
             return _.omit(video, ['_id', 'htmlOnDisk', 'publicKey' ]);
         })
+        .then(_.reverse)
         .then(function(videos) {
             return { json: videos };
         });

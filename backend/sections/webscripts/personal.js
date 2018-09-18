@@ -18,7 +18,7 @@ function generateColorCode(source) {
 
 function representRelated(memo, r) {
 
-    var cleanSource = r.source.replace(/[\ \? \#\!\.\-\_\']/g, '');
+    var cleanSource = r.source.replace(/[\ \? \&\%\/\#\!\.\-\_\']/g, '');
     var related = [
         '<div class="related">',
             '<small class="index">',
@@ -60,10 +60,12 @@ function videoDataHTML(d) {
         '<div class="container-fluid data">',
             '<span class="col-md-3">',
                 '<span class="saved"> saved ',
-                    moment(d.savingTime).format("YYYY-MM-DD HH:mm"),
+                    moment(d.savingTime).format("YYYY-MM-DD HH:mm:ss"),
                     ' (',
                     moment.duration(moment(d.savingTime) - moment()).humanize(),
-                    ' ago)',
+                    ' ago) [',
+                    moment(d.clientTime).format("HH:mm:ss"),
+                    ']',
                 '</span>',            
                 '<h2>',
                     d.title,
