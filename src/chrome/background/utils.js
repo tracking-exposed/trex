@@ -8,9 +8,9 @@ bo.runtime.onMessage.addListener((request, sender, sendResponse) => {
             url: 'https://www.youtube.com/',
             name: 'VISITOR_INFO1_LIVE'
         }, cookie => {
-            const userId = cookie ? cookie.value : "missingCookie";
+            const userId = cookie ? cookie.value : "local";
             db
-                .get(userId + '/settings')
+                .get('/settings')
                 .then(settings => {
                     sendResponse({
                         userId: userId,

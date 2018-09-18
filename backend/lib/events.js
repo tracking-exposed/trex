@@ -93,7 +93,7 @@ function processEvents(req) {
         'content-length': 'length',
         'x-yttrex-build': 'build',
         'x-yttrex-version': 'version',
-        'x-yttrex-userid': 'supporterId',
+        'x-yttrex-nonauthcookieid': 'supporterId',
         'x-yttrex-publickey': 'publickey',
         'x-yttrex-signature': 'signature'
     });
@@ -101,7 +101,7 @@ function processEvents(req) {
     if(hasError(headers))
         reportError('header parsing, missing', headers.error);
 
-    var cookieId = _.get(req.headers, 'x-yttrex-userid');
+    var cookieId = _.get(req.headers, 'x-yttrex-nonauthcookieid');
 
     return mongo
         .read(nconf.get('schema').supporters, {

@@ -22,7 +22,7 @@ bo.runtime.onMessage.addListener((request, sender, sendResponse) => {
 });
 
 function userLookup ({ userId }, sendResponse) {
-    console.log("looking for user:", userId, "forced to be 'local'");
+    console.log("looking for user:", userId, "forcing it to be 'local'");
     userId = 'local';
     db.get(userId).then(val => {
         if (isEmpty(val)) {
@@ -42,6 +42,7 @@ function userLookup ({ userId }, sendResponse) {
 };
 
 function updateSettings ({ infoDiet, dataReuse, userId }, sendResponse) {
+    console.log("I should never appear");
     db.get(userId).then(val => {
         Object.assign(val, { status: 'accepted', optin: { infoDiet: infoDiet, dataReuse: dataReuse }});
         db.update(userId, val)

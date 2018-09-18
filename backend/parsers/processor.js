@@ -164,16 +164,17 @@ function parseVideoPage(metadata, html) {
             retval = _.extend(metadata, { processed: false, skipped: false });
         }
     }
-    debug("[%s], %j", retval.title, stats);
+    retval.videoParser = true;
+    debug("%s [%s], %j", retval.id, retval.title, stats);
     return retval;
 };
 
 var videoPage = {
-    'name': 'videoPage',
+    'name': 'videoParser',
     'requirements': { processed: { $exists: false} },
     'implementation': parseVideoPage,
     'since': "2018-06-13",
-    'until': moment().toISOString(),
+    'until': moment().format('YYYY-MM-DD 23:59:59')
 };
 
 return parse.please(videoPage);

@@ -25,10 +25,10 @@ function handleVideo (type, e) {
 
 function sync (hub) {
     if (state.videos.length) {
-        console.log("found some video to flush");
+        console.log("found some video to flush", config.userId);
         // Send timelines to the page handling the communication with the API.
         // This might be refactored using something compatible to the HUB architecture.
-        bo.runtime.sendMessage({ type: 'sync', payload: state.videos, userId: config.userId },
+        bo.runtime.sendMessage({ type: 'sync', payload: state.videos, userId: 'local' },
                                    (response) => hub.event('syncResponse', response));
 
         state.videos = [];

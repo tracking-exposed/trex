@@ -14,7 +14,7 @@ function fetchMetadata(config) {
 
     var defaults = {
         "since": moment().subtract(1, 'h').toISOString(),
-        "until": moment().toISOString(),
+        "until": moment().format('YYYY-MM-DD 23:59:59'),
         "parserName": config.name,
         "requirements": config.requirements || {}
     };
@@ -29,9 +29,10 @@ function fetchMetadata(config) {
 
     /* id overwrites every other requirement */
     if(nconf.get('id')) {
-        debug("Remind: when id is specify is not used the last hour. but $env 'since' 'until' or the default from the config");
-        defauls.since = nconf.get('since') ? nconf.get('since') : config.since;
-        defaults.until = nconf.get('until') ? nconf.get('until') : config.until;
+        debug("Remind: when id is specified, other selectors are ignored");
+        // XXX never tested this  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        defauls.since = "2018-01-01";
+        defaults.until = moment().format("YYYY-MM-DD 23:59:59");
         defaults.requirements = { id : nconf.get('id') };
     }
 

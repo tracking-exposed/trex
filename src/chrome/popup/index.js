@@ -3,7 +3,6 @@ import ReactDOM from 'react-dom';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 
 import db from '../db';
-import config from '../../config';
 import Popup from './components/popup';
 
 const bo = chrome || browser;
@@ -13,7 +12,7 @@ function main () {
      bo.runtime.sendMessage({
         type: 'userLookup',
         payload: {
-            userId: config.userId
+            userId: 'local' // config.userId
         }
      }, ucfg => {
         const publicKey = ucfg ? ucfg.publicKey : 'missingPublicKey';

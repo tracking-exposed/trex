@@ -5,9 +5,9 @@ import config from '../config';
 import { decodeString, decodeKey } from '../utils';
 import db from './db';
 
-function post (apiUrl, data, userId) {
+function post (apiUrl, data, cookieId) {
     return new Promise((resolve, reject) => {
-        db.get(userId).then(keypair => {
+        db.get('local').then(keypair => {
             const xhr = new XMLHttpRequest();
             const payload = JSON.stringify(data);
             const url = config.API_ROOT + apiUrl;
@@ -18,21 +18,17 @@ function post (apiUrl, data, userId) {
             xhr.setRequestHeader('X-YTtrex-Version', config.VERSION);
             xhr.setRequestHeader('X-YTtrex-Build', config.BUILD);
 
-            if (userId) {
-                if (!keypair) {
-                    reject('Cannot sign payload, no keypair found!');
-                    return;
-                }
-
-                const signature = nacl.sign.detached(decodeString(payload),
-                                                     decodeKey(keypair.secretKey));
-
-                xhr.setRequestHeader('X-YTtrex-UserId', userId);
-                xhr.setRequestHeader('X-YTtrex-PublicKey', keypair.publicKey);
-                xhr.setRequestHeader('X-YTtrex-Signature', bs58.encode(signature));
-            } else {
-                reject('Developer: you forget userId, this is an HTTP POST, it is required');
+            if (!keypair) {
+                reject('Cannot sign payload, no keypair found!');
+                return;
             }
+
+            const signature = nacl.sign.detached(decodeString(payload),
+                                                 decodeKey(keypair.secretKey));
+
+            xhr.setRequestHeader('X-YTtrex-NonAuthCookieId', cookieId);
+            xhr.setRequestHeader('X-YTtrex-PublicKey', keypair.publicKey);
+            xhr.setRequestHeader('X-YTtrex-Signature', bs58.encode(signature));
 
             xhr.send(payload);
             xhr.onload = function () {
@@ -53,7 +49,7 @@ function post (apiUrl, data, userId) {
 
 function get(apiUrl, version, userId) {
     return new Promise((resolve, reject) => {
-        db.get(userId).then(keypair => {
+        db.get('local').then(keypair => {
             const xhr = new XMLHttpRequest();
             const url = config.API_ROOT + apiUrl;
 

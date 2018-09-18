@@ -67,18 +67,18 @@ function boot () {
         // The user compose this unique message and is signed with their PGP key
         // we returns an authentication token, necessary to log-in into the personal page
         // selector is returned, accessToken is saved as side-effect (it could be cleaner)
-        let uniqueMsg = `¼ #${response.publicKey}# key of #${config.userId}#, uniq: ` + Math.random();
+        let uniqueMsg = `publicKey ${response.publicKey}# - userId ${config.userId}`;
         // this can be used to verify presente of privateKey associated to our own publicKey
         bo.runtime.sendMessage({
             type: 'userInfo',
             payload: {
                 message: uniqueMsg,
-                userId: config.userId,
+                userId: 'local',
                 version: config.VERSION,
                 publicKey: response.publicKey,
                 optin: response.optin
             },
-            userId: config.userId
+            userId: 'local',
         }, (response => {
             try {
                 /* this could raise an exception if JSON.parse fails, but
@@ -116,10 +116,8 @@ function hrefUpdateMonitor() {
 // to get information about the current user from the browser storage
 // (the browser storage is unreachable from a **content script**).
 function userLookup (callback) {
-    if(config.userId === 'missingCookie') 
-        console.log("Missing cookie? please investigate");
 
-    console.log("userLookup", config);
+    console.log("userLookup: ", JSON.stringify(config));
 
     bo.runtime.sendMessage({
         type: 'userLookup',
