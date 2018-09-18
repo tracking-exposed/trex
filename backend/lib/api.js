@@ -13,7 +13,10 @@ var apiListVersion1 = {
     userInfo:         require('./selector').userInfo,
 
     /* for revision */
-    unitById:         require('./htmlunit').unitById
+    unitById:         require('./htmlunit').unitById,
+
+    /* return user' last videos info */
+    getUserBacklog:   require('./backlog').getUserBacklog
 
 };
 

@@ -106,6 +106,10 @@ app.post('/api/v:version/events', function(req, res) {
     return dispatchPromise('processEvents', req, res);
 });
 
+/* this is to retrieve their own sumitted videos metadata */
+app.get('/api/v1/personal/:cookieId', function(req, res) {
+    return dispatchPromise('getUserBacklog', req, res);
+});
 
 /* Alarm listing  API */
 app.get('/api/v1/alarms/:auth', function(req, res) {

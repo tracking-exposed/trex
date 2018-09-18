@@ -1,0 +1,49 @@
+
+#download {
+    text-align: right;
+    padding-right: 40px;
+}
+
+.data {
+    padding-left: 3px;
+    padding-right: 3px;
+    margin-top: 10px;
+    border-radius: 10px;
+    border: 2px solid #daedbc;
+}
+
+.data h2 {
+    font-size: 24px;
+    text-align: right;
+}
+
+.data h3 {
+    font-size: 18px;
+    color: burlywood;
+}
+
+.related-list {
+    background-color: #f1f8f8;
+    border-radius: 0px 35px 0px 35px;
+    padding-bottom: 10px;
+}
+
+.related {
+    border-bottom: darkgrey dotted 1px;
+}
+
+.source {
+    float: right;
+    border-radius: 3px;
+    padding-right: 4%;
+}
+
+.saved {
+    font-style: italic;
+}
+
+.index {
+    color: blue;
+    font-weight: 500;
+    padding-right: 3%;
+}
