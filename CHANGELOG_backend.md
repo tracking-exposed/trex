@@ -1,6 +1,12 @@
 The format is based on [Keep a Changelog](http://keepachangelog.com/) and this
 project adheres to [Semantic Versioning](http://semver.org/).
 
+## [1.0.2] - 2018-09-18
+### Fixed
+- made a barely useful personal page
+- stabilized parser
+- changed API to access with publicKey
+
 ## [1.0.1] - 2018-09-15
 ### Added
 - skeleton of personal page

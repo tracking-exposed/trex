@@ -164,7 +164,7 @@ function parseVideoPage(metadata, html) {
             retval = _.extend(metadata, { processed: false, skipped: false });
         }
     }
-    debug("%j", stats);
+    debug("[%s], %j", retval.title, stats);
     return retval;
 };
 

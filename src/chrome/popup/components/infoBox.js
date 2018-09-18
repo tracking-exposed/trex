@@ -5,8 +5,7 @@ import { Card, CardHeader, CardTitle, CardText } from 'material-ui/Card';
 const InfoBox = React.createClass({
 
     render () {
-        const personalLink = config.WEB_ROOT + '/personal/' + this.props.cookieId;
-        console.log(personalLink);
+        const personalLink = config.WEB_ROOT + '/personal/' + this.props.publicKey;
 
         return (
             <Card>

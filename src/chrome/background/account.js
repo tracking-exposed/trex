@@ -22,6 +22,8 @@ bo.runtime.onMessage.addListener((request, sender, sendResponse) => {
 });
 
 function userLookup ({ userId }, sendResponse) {
+    console.log("looking for user:", userId, "forced to be 'local'");
+    userId = 'local';
     db.get(userId).then(val => {
         if (isEmpty(val)) {
             var newKeypair = nacl.sign.keyPair();

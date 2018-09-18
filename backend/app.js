@@ -107,7 +107,7 @@ app.post('/api/v:version/events', function(req, res) {
 });
 
 /* this is to retrieve their own sumitted videos metadata */
-app.get('/api/v1/personal/:cookieId', function(req, res) {
+app.get('/api/v1/personal/:publicKey', function(req, res) {
     return dispatchPromise('getUserBacklog', req, res);
 });
 
