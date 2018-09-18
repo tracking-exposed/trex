@@ -1,14 +1,13 @@
-# web-extension reviewer, please read this
+# web-extension reviewer? please do this:
 
     npm install
     npm run build
 
-This build the development version, product it is not minify
+The command above produce the in **development release**, the results it is *not minify* and is in `build/`. If you run:
 
     npm run build:dist
 
-This build the release version, it the .zip I upload in Firefox and Chrome store
-
+This produces the **distributed** release, in the directory `dist` you should find `extension.zip` which is distributed in Mozilla and Chrome add-ons stores.
 
 # TL;DR
 

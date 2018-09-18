@@ -9,8 +9,8 @@ var errorview = require('debug')('metadata:view');
 var errorrele = require('debug')('metadata:related');
 var parse = require('../lib/parse');
 
-const jsdom = require("jsdom");
-const { JSDOM } = jsdom;
+var jsdom = require("jsdom");
+var { JSDOM } = jsdom;
 
 var stats = {
     skipped: 0,
@@ -53,10 +53,10 @@ function labelParser(l) {
 };
 
 function parseViews(D) {
-    const node = _.first(D.getElementsByClassName('view-count'));
+    var node = _.first(D.getElementsByClassName('view-count'));
     try {
-        const viewStr = node.innerHTML
-        const viewNumber = _.parseInt(viewStr.split(' ')[0].replace(/,/g, ''));
+        var viewStr = node.innerHTML
+        var viewNumber = _.parseInt(viewStr.split(' ')[0].replace(/,/g, ''));
         return { viewStr: viewStr, viewNumber: viewNumber };
     } catch(error) {
         errorview("(%s): %s", node.innerHTML, error);
@@ -68,10 +68,10 @@ function parseViews(D) {
 };
 
 function parseLikes(D) {
-    const nodes = D.querySelectorAll('.ytd-toggle-button-renderer > yt-formatted-string');
+    var nodes = D.querySelectorAll('.ytd-toggle-button-renderer > yt-formatted-string');
     try {
-        const likes = nodes[0].getAttribute('aria-label');
-        const dislikes = nodes[1].getAttribute('aria-label');
+        var likes = nodes[0].getAttribute('aria-label');
+        var dislikes = nodes[1].getAttribute('aria-label');
         return { likes: likes, dislikes: dislikes };
     } catch(error) {
         /* expected two elements in nodes */
@@ -84,13 +84,13 @@ function parseLikes(D) {
 };
 
 function relatedMetadata(e, i) {
-    const element = new JSDOM(e.innerHTML);
+    var element = new JSDOM(e.innerHTML);
 
-    const title = element.window.document.getElementById('video-title').title;
-    const longlabel = element.window.document.getElementById('video-title').getAttributeNode('aria-label').value;
-    const source = element.window.document.getElementById('metadata').querySelectorAll('[title]')[0].title;
-    const link = element.window.document.querySelectorAll('a')[0].getAttributeNode('href').value
-    const videoId = link.replace(/.*v=/, '');
+    var title = element.window.document.getElementById('video-title').title;
+    var longlabel = element.window.document.getElementById('video-title').getAttributeNode('aria-label').value;
+    var source = element.window.document.getElementById('metadata').querySelectorAll('[title]')[0].title;
+    var link = element.window.document.querySelectorAll('a')[0].getAttributeNode('href').value
+    var videoId = link.replace(/.*v=/, '');
 
     var x = _.extend(labelParser(longlabel), {
         index: i + 1,
@@ -102,26 +102,26 @@ function relatedMetadata(e, i) {
 };
 
 function processVideo(html) {
-    // const dom = new JSDOM(html);
-    const dom = new JSDOM(html.replace(/\n\ +/g, ''));
-    const D = dom.window.document;
+    // var dom = new JSDOM(html);
+    var dom = new JSDOM(html.replace(/\n\ +/g, ''));
+    var D = dom.window.document;
 
     /* video metadata */
-    const vTitle = _.get(_.first(D.querySelectorAll('h1 > yt-formatted-string ')), 'innerHTML');
+    var vTitle = _.get(_.first(D.querySelectorAll('h1 > yt-formatted-string ')), 'innerHTML');
     if(!vTitle) debugger; // throw new Error("unable to get title: 'h1 > yt-formatted-string '");
 
-    const authorName = _.get(_.first(D.querySelectorAll('yt-formatted-string > a')), 'innerHTML');
+    var authorName = _.get(_.first(D.querySelectorAll('yt-formatted-string > a')), 'innerHTML');
     if(!authorName) throw new Error("unable to get authorName: 'yt-formatted-string > a'");
 
-    const authorSource = _.first(D.querySelectorAll('yt-formatted-string > a')).getAttributeNode('href').value;
+    var authorSource = _.first(D.querySelectorAll('yt-formatted-string > a')).getAttributeNode('href').value;
 
     /* non mandatory info */
-    const viewInfo = parseViews(D);
-    const likeInfo = parseLikes(D);
+    var viewInfo = parseViews(D);
+    var likeInfo = parseLikes(D);
 
     /* related + sponsored */
-    const related = _.map(D.querySelectorAll('ytd-compact-video-renderer'), relatedMetadata);
-    const p = D.querySelectorAll('ytd-compact-promoted-video-renderer');
+    var related = _.map(D.querySelectorAll('ytd-compact-video-renderer'), relatedMetadata);
+    var p = D.querySelectorAll('ytd-compact-promoted-video-renderer');
     if(_.size(p))
         debugger;
 
@@ -145,7 +145,7 @@ function parseVideoPage(metadata, html) {
         retval = _.extend(metadata, { processed: true, skipped: true });
     } else {
         try {
-            const extracted = processVideo(html);
+            var extracted = processVideo(html);
 
             var re = _.filter(extracted.related, { error: true });
             stats.suberror += _.size(re);
