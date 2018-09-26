@@ -34,7 +34,6 @@ import ReactDOMServer from 'react-dom/server';
 // Import other utils to handle the DOM and scrape data.
 import uuid from 'uuid';
 import $ from 'jquery';
-import _ from 'lodash';
 
 import config from './config';
 import hub from './hub';
@@ -108,12 +107,11 @@ function ytTREX() {
 };
 
 function createLoadiv() {
-
     var div = document.createElement('div');
 
     div.style.position = 'fixed';
-    div.style.width = '30px';
-    div.style.height = '30px';
+    div.style.width = '40px';
+    div.style.height = '40px';
     div.style['font-size'] = '3em';
     div.style['border-radius'] = '5px';
     div.style['text-align'] = 'center';
@@ -127,8 +125,6 @@ function createLoadiv() {
 
     console.log("createLoadiv done!", $("#loadiv").html());
     $("#loadiv").toggle();
-
-
 };
 
 var last = null;
@@ -149,7 +145,6 @@ function hrefUpdateMonitor() {
     const shortInterval = window.setInterval(function() {
         if(changeHappen()) {
             window.clearInterval(shortInterval);
-            console.log(`Page change found, ${loadTimeout}ms before saving the HTML`);
 
             $("#loadiv").toggle();
             const loadInterval = window.setInterval(function() {
@@ -176,16 +171,13 @@ function acquireVideo (elem) {
 // to get information about the current user from the browser storage
 // (the browser storage is unreachable from a **content script**).
 function userLookup (callback) {
-
     console.log("userLookup: ", JSON.stringify(config));
-
     bo.runtime.sendMessage({
         type: 'userLookup',
         payload: {
             userId: config.userId
         }
     }, callback);
-
 }
 
 function flush () {

@@ -1,6 +1,23 @@
 import React from 'react';
 import config from '../../../config';
-import { Card, CardHeader, CardTitle, CardText } from 'material-ui/Card';
+import { Card } from 'material-ui/Card';
+import $ from 'jquery';
+
+const imgstyle = {
+    width: "100%"
+};
+const cardStyle = {
+    'text-align': "center",
+};
+const h1style = {
+    'font-size': "2em",
+    'color': "#65b211",
+    'text-underline-position': "under",
+    'font-weight': "bolder",
+};
+const star = {
+    'color': "#fe5000"
+};
 
 const InfoBox = React.createClass({
 
@@ -8,20 +25,26 @@ const InfoBox = React.createClass({
         const personalLink = config.WEB_ROOT + '/personal/' + this.props.publicKey;
 
         return (
-            <Card>
-                <CardHeader
-                    title='Scientifical experiment in progress!' />
+            <Card style={cardStyle}>
+                <span style={h1style}>Tailored algorithms?</span>
 
-                <CardText>
-                    Remind: with this extension running, the youtube videos suggested by youtube algorithm, are recorded for <b>algorithm accountability</b> and <b>social media accountability</b> purposes only.
-                    <br/>
-                    <br/>
-                    Check <a target='_blank' href={personalLink}>your submitted data</a>.
-                </CardText> 
+                <a target='_blank' href={personalLink}>
+                    <img style={imgstyle} src='/youtube-trex-logo.png' />
+                </a>
+                <a target='_blank' href={personalLink}>
+                    <span style={h1style}>try</span>
+                </a>
+                <span> </span>
+                <a target='_blank' href={personalLink}>
+                    <span style={h1style}>
+                        <span style={star}> ☆ </span>
+                            divergency!
+                        <span style={star}> ☆ </span>
+                    </span>
+                </a>
             </Card>
         );
     }
-
 });
 
 export default InfoBox;
