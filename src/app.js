@@ -7,7 +7,7 @@
 //  - a content script
 //  - event pages.
 //
-// The **content script** is the JavaScript code injected into the Facebook.com
+// The **content script** is the JavaScript code injected into the youtube.com
 // website. It can interact with the elements in the page to scrape the data and
 // prepare the payload to be sent to the API.
 //
@@ -18,6 +18,10 @@
 // All **event pages** are contained in the [`./background`](./background/app.html) folder.
 // (the name is **background** for historical reasons and it might be subject of changes
 // in the future).
+//
+// Naming:
+//   - videoSequence is a list of youtube videos
+//   - comparativePage is the place where users accept to reproduce a videoSequence
 
 // # Code
 
@@ -30,7 +34,7 @@ import ReactDOMServer from 'react-dom/server';
 // Import other utils to handle the DOM and scrape data.
 import uuid from 'uuid';
 import $ from 'jquery';
-import 'arrive';
+import _ from 'lodash';
 
 import config from './config';
 import hub from './hub';
@@ -38,9 +42,7 @@ import { getTimeISO8601 } from './utils';
 import { registerHandlers } from './handlers/index';
 import token from './token';
 
-// const YT_VIDEOTITLE_SELECTOR = '#container > h1 > yt-formatted-string';
-// const YT_VIDEOTITLE_SELECTOR = 'h1 .title';
-const YT_VIDEOTITLE_SELECTOR = '#page-manager';
+const YT_VIDEOTITLE_SELECTOR = 'h1.title';
 
 // bo is the browser object, in chrom is named 'chrome', in firefox is 'browser'
 const bo = chrome || browser;
@@ -48,14 +50,19 @@ const bo = chrome || browser;
 // Boot the user script. This is the first function called.
 // Everything starts from here.
 function boot () {
-    console.log(`yttrex version ${config.VERSION} build ${config.BUILD} loading.`);
-    console.log('Config:', config);
+
+    console.log(`yttrex version ${config.VERSION} build ${config.BUILD} loading; Config object:`);
+    console.log(config);
+
+    if(window.location.origin !== 'https://www.youtube.com')
+        return ytTREX();
+
+    createLoadiv();
 
     // Register all the event handlers.
     // An event handler is a piece of code responsible for a specific task.
     // You can learn more in the [`./handlers`](./handlers/index.html) directory.
     registerHandlers(hub);
-
 
     // Lookup the current user and decide what to do.
     userLookup(response => {
@@ -67,12 +74,12 @@ function boot () {
         // The user compose this unique message and is signed with their PGP key
         // we returns an authentication token, necessary to log-in into the personal page
         // selector is returned, accessToken is saved as side-effect (it could be cleaner)
-        let uniqueMsg = `publicKey ${response.publicKey}# - userId ${config.userId}`;
-        // this can be used to verify presente of privateKey associated to our own publicKey
+        let once = `publicKey ${response.publicKey}# loading ytTREX ${config.VERSION} ${config.BUILD}`;
+        // the token is necessary to access to the personal page, but the most of the interaction happen on the 'concept is used as authentication of privateKey associated to our own publicKey
         bo.runtime.sendMessage({
             type: 'userInfo',
             payload: {
-                message: uniqueMsg,
+                message: once,
                 userId: 'local',
                 version: config.VERSION,
                 publicKey: response.publicKey,
@@ -88,7 +95,6 @@ function boot () {
                 console.log("token retrieve fail:", e.description);
             } finally {
                 console.log("Token received is [", token.get(), "]");
-                acquireYThtml();
                 hrefUpdateMonitor();
                 flush();
             }
@@ -96,19 +102,73 @@ function boot () {
     });
 }
 
-var currentPage = window.location.href;
+function ytTREX() {
+    console.log("siamo su localhost o su .tracking.exposed");
+    console.log(window.location.origin);
+};
+
+function createLoadiv() {
+
+    var div = document.createElement('div');
+
+    div.style.position = 'fixed';
+    div.style.width = '30px';
+    div.style.height = '30px';
+    div.style['font-size'] = '3em';
+    div.style['border-radius'] = '5px';
+    div.style['text-align'] = 'center';
+    div.style['background-color'] = '#c9fbc6';
+    div.style.right = '10px';
+    div.style.bottom= '10px';
+
+    div.setAttribute('id', 'loadiv');
+    div.innerText = '👁 ';
+    document.body.appendChild(div);
+
+    console.log("createLoadiv done!", $("#loadiv").html());
+    $("#loadiv").toggle();
+
+
+};
+
+var last = null;
 
 function hrefUpdateMonitor() {
 
-    // listen for changes
-    setInterval(function() {
-        if (currentPage != window.location.href) {
-            // page has changed, set new page as 'current'
-            console.log("page update detected, from", currentPage, "to", window.location.href);
-            currentPage = window.location.href;
-            acquireYThtml();
+    const shortTimeout = 1500;
+    const loadTimeout = 6000;
+
+    console.log(`Loading the href watchers, ${shortTimeout} and ${loadTimeout}`);
+
+    function changeHappen() {
+        let diff = (window.location.href !== last);
+        last = window.location.href;
+        return diff;
+    }
+
+    const shortInterval = window.setInterval(function() {
+        if(changeHappen()) {
+            window.clearInterval(shortInterval);
+            console.log(`Page change found, ${loadTimeout}ms before saving the HTML`);
+
+            $("#loadiv").toggle();
+            const loadInterval = window.setInterval(function() {
+                $("#loadiv").hide();
+                window.clearInterval(loadInterval);
+                document.querySelectorAll(YT_VIDEOTITLE_SELECTOR).forEach(acquireVideo);
+                hrefUpdateMonitor();
+            }, loadTimeout);
         }
-    }, 6000);
+    }, shortTimeout);
+}
+
+function acquireVideo (elem) {
+    /* there is not yet a client-side URL check, but this event get triggered only when a 
+     * new 'video Title' appear */
+    console.log(`acquireVideo: ${window.location.href}`);
+
+    /* the <ytd-app> represent the whole webapp root element */
+    hub.event('newVideo', { element: $('ytd-app').html(), href: window.location.href});
 }
 
 
@@ -128,22 +188,10 @@ function userLookup (callback) {
 
 }
 
-// This function will first trigger a `newVideo` event and wait is any new title arise
-function acquireYThtml() {
-    document.querySelectorAll(YT_VIDEOTITLE_SELECTOR).forEach(acquireVideo);
-}
-
 function flush () {
     window.addEventListener('beforeunload', (e) => {
         hub.event('windowUnload');
     });
-}
-
-function acquireVideo (elem) {
-    console.log("acquireVideo, add event newVideo");
-    console.log(window.location.href);
-
-    hub.event('newVideo', { element: $(elem).html(), href: window.location.href});
 }
 
 // Before booting the app, we need to update the current configuration

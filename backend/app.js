@@ -130,6 +130,13 @@ app.get('/api/v1/html/:htmlId', function(req, res) {
     return dispatchPromise('unitById', req, res);
 });
 
+/* sequence page */
+app.get('/s/:sequenceId', function(req, res) {
+    console.log(`forcing page "sequence" on ${req.url}`);
+    req.params.page = 'sequence';
+    return dispatchPromise('getPage', req, res);
+});
+
 /* static files, independent by the API versioning */
 app.get('/favicon.ico', function(req, res) {
     res.sendFile(__dirname + '/dist/favicon.ico');
