@@ -16,7 +16,10 @@ var apiListVersion1 = {
     unitById:         require('./htmlunit').unitById,
 
     /* return user' last videos info */
-    getUserBacklog:   require('./backlog').getUserBacklog
+    getUserBacklog:   require('./backlog').getUserBacklog,
+
+    /* retuern sequence of video for divergency check */
+    getSequence:      require('./divergency').getSequence
 
 };
 

@@ -1,0 +1,49 @@
+doctype html
+html
+    head
+        link(rel='stylesheet', href='/css/bootstrap.css')
+        link(rel='stylesheet', href='/css/index.css')
+        script(type='text/javascript', src='/js/lodash.min.js')
+        script(type='text/javascript', src='/js/jquery.js')
+        script(type='text/javascript', src='/js/collapse.js')
+        script(type='text/javascript', src='/js/bootstrap.min.js')
+        script(type='text/javascript', src='/js/moment.min.js')
+
+        link(rel='stylesheet', href='/js/local/divergence.css')
+        script(type='text/javascript', src='/js/local/divergence.js')
+
+        meta(charset="utf-8")
+        meta(http-equiv="X-UA-Compatible" content="IE=edge")
+        meta(name="viewport" content="width=device-width, initial-scale=1")
+        meta(name="keywords" content="youtube tracking exposed")
+
+        meta(property="og:title" content="Divergency page, shared by a friend")
+        title yttrex, divergence
+
+    body(onload="printList();")
+
+        include header
+
+        .container-fluid.extension-missing
+            h1.title.negative
+                |  You see this because someone wants to check with you, how much 
+                i YouTube's algorithm 
+                |  lead your experiences to diverge
+            h1.title You should re-open this link with a browser where you installed the ytTREX extension, it is necessary to collect evidences
+            include downloads
+
+        .container-fluid.extension-missing.faq
+            h1.title.negative How does it work?
+            h1.title Your friend select a list of videos. ytTREX recorded which is the
+                i next autoplay
+                |, and the 20
+                i related 
+                |  videos are the same. Now you can record them and compare them
+
+        .container-fluid.extension-present
+            h1.title.negative comparison list
+            #video--list
+
+        .container-fluid
+            h1.title.negative ytTREX display how algorithms have a role, in making the perception of the public discourse, diverge from people you assume likeminded.
+                

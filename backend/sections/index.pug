@@ -1,16 +1,18 @@
 doctype html
 html
   head
+    meta(charset="utf-8")
+    meta(http-equiv="X-UA-Compatible" content="IE=edge")
+    meta(name="viewport" content="width=device-width, initial-scale=1")
+    meta(name="keywords" content="yt, t-rex")
+
     link(rel='stylesheet', href='/css/bootstrap.css')
     link(rel='stylesheet', href='/css/index.css')
     script(type='text/javascript', src='/js/lodash.min.js')
     script(type='text/javascript', src='/js/jquery.js')
     script(type='text/javascript', src='/js/collapse.js')
     script(type='text/javascript', src='/js/bootstrap.min.js')
-    meta(charset="utf-8")
-    meta(http-equiv="X-UA-Compatible" content="IE=edge")
-    meta(name="viewport" content="width=device-width, initial-scale=1")
-    meta(name="keywords" content="yt, t-rex")
+
     meta(property="og:title" content="yt, t-rex")
     meta(property="og:type" content="website")
     meta(property="og:description" content="yt, t-trex")
@@ -18,19 +20,21 @@ html
     meta(property="og:image" content="https://y.tracking.exposed/images/youtube-trex-logo.png")
     meta(property="og:image:width" content="1000")
     meta(property="og:image:height" content="1000")
-    title facebook tracking exposed
+
+    title ytTREX
 
   body
 
     include header
-    include navbar
     
     .container-fluid
-        h1.center welcome!
-        p There are the browser extension you are look for: 
-            a(href="https://chrome.google.com/webstore/detail/yttrex/kbbgjcgdcibilpahljnlejefcehbljnd") Chrome
-            |, 
-            a(href="https://addons.mozilla.org/en-US/firefox/addon/yttrex/") Firefox
-            |.
+        h2.title.negative YouTubes' issues are the product of more than one variable
+        include carousel
+        h2.title.negative platform politics are scrutinized because they are concrete; humans relate to that
+        h2.title.highlight ytTREX show what is invisible
+        include downloads
+        h2.title.negative ytTREX expose the algorithm
+        include downloads
+
 
 

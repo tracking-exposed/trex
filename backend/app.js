@@ -130,10 +130,14 @@ app.get('/api/v1/html/:htmlId', function(req, res) {
     return dispatchPromise('unitById', req, res);
 });
 
-/* sequence page */
-app.get('/s/:sequenceId', function(req, res) {
-    console.log(`forcing page "sequence" on ${req.url}`);
-    req.params.page = 'sequence';
+/* sequence API */
+app.get('/api/v1/sequences/:testId', function(req, res) {
+    return dispatchPromise('getSequence', req, res);
+});
+/* divergency page */
+app.get('/[dD]/:testId', function(req, res) {
+    console.log(`forcing page "divergency" on ${req.url}`);
+    req.params.page = 'divergency';
     return dispatchPromise('getPage', req, res);
 });
 
