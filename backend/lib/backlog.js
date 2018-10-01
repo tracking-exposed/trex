@@ -7,20 +7,27 @@ var nconf = require('nconf');
 var mongo = require('./mongo');
 var utils = require('./utils');
 
-function getUserBacklog(req) {
-    var c =  req.params.publicKey;
-    debug("Quertying backlog for user %s", c);
+function fetchBacklog(pubKeyString, amount) {
+
     return mongo
-        .readLimit(nconf.get('schema').videos, { publicKey: c }, {}, 200, 0)
+        .readLimit(nconf.get('schema').videos, { publicKey: pubKeyString }, {}, amount, 0)
         .map(function(video) {
             return _.omit(video, ['_id', 'htmlOnDisk', 'publicKey' ]);
         })
-        .then(_.reverse)
+        .then(_.reverse);
+};
+
+function getUserBacklog(req) {
+    var c =  req.params.publicKey;
+    const amount = 200;
+    debug("Querying last %d videos for user key %s", amount, c);
+    return fetchBacklog(c, amount)
         .then(function(videos) {
             return { json: videos };
         });
 };
 
 module.exports = {
+    fetchBacklog: fetchBacklog,
     getUserBacklog: getUserBacklog
 };

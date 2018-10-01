@@ -16,11 +16,14 @@ var apiListVersion1 = {
     unitById:         require('./htmlunit').unitById,
 
     /* return user' last videos info */
+    getPersonalBlob:  require('./personal').getPersonalBlob,
+
+    /* return user' last videos info */
     getUserBacklog:   require('./backlog').getUserBacklog,
 
     /* retuern sequence of video for divergency check */
-    getSequence:      require('./divergency').getSequence
-
+    getSequence:      require('./divergency').getSequence,
+    createSequence:   require('./divergency').createSequence,
 };
 
 module.exports = {

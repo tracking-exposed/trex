@@ -96,13 +96,7 @@ var readLimit = function(cName, selector, sorter, limitN, past) {
         debug("readLimit by %j →  gives %d objects", selector, _.size(rv) );
     })
     .catch(function(errstr) {
-        var alarms = require('./alarms');
-        alarms.reportAlarm({
-            caller: "readLimit",
-            what: errstr,
-            info: { selector: selector, limit: limitN, sorter: sorter }
-        });
-        debug("Error in readLimit!: %s", errstr);
+        debug("Error in readLimit: %s (%s)", errstr, cName);
         return [];
     });
 };
@@ -164,17 +158,7 @@ var countByDay = function(cName, timeVarName, filter, aggext) {
             .aggregate(totalQ)
             .toArray()
             .catch(function(error) {
-                var alarms = require('./alarms');
-                alarms.reportAlarm({
-                    caller: "countByDay",
-                    what: error,
-                    info: { cName: cName,
-                            timeVarName: timeVarName,
-                            filter: filter,
-                            aggext: aggext
-                    }
-                });
-                debug("mongo error: %s (%s)", error, cName);
+                debug("Error in countByDay: %s (%s)", error, cName);
                 return [];
             });
     })
@@ -201,13 +185,7 @@ var countByObject = function(cName, idobj) {
             ])
             .toArray()
             .catch(function(error) {
-                var alarms = require('./alarms');
-                alarms.reportAlarm({
-                    caller: "countByObject",
-                    what: error,
-                    info: { cName: cName, idobj: idobj }
-                });
-                debug("MongoQuery %s error: %s", cName, error);
+                debug("Error in countByObject %s (%s)", error, cName);
                 return [];
             });
     });
@@ -239,13 +217,7 @@ function lookup(cName, query, sequence) {
             .aggregate([ query, sequence ])
             .toArray()
             .catch(function(error) {
-                var alarms = require('./alarms');
-                alarms.reportAlarm({
-                    caller: "lookup",
-                    what: error,
-                    info: { cName: cName, query: query, sequence: sequence }
-                });
-                debug("MongoQuery %s error: %s", cName, error);
+                debug("Error in lookup: %s (%s)", error, cName);
                 return [];
             });
     });

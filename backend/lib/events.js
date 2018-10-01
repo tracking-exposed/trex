@@ -18,19 +18,6 @@ function hasError(retDict) {
     return (!_.isUndefined(_.get(retDict, 'error')));
 };
 
-function reportError(where, err) {
-    debug("%s Error detected and raised %s: %s",
-        req.randomUnicode, where, err);
-    return alarms.reportAlarm({
-        caller: 'events',
-        what: where,
-        info: err
-    })
-    .then(function() {
-        throw new Error(where + '-' + err);
-    });
-};
-
 function processHeaders(received, required) {
     var ret = {};
     var errs = _.map(required, function(destkey, headerName) {
@@ -91,7 +78,7 @@ function saveVideo(body, supporter) {
 
 function processEvents(req) {
 
-    debug("Processing event");
+    debug("Processing submitted elements/events..");
 
     var headers = processHeaders(_.get(req, 'headers'), {
         'content-length': 'length',
@@ -102,8 +89,13 @@ function processEvents(req) {
         'x-yttrex-signature': 'signature'
     });
 
-    if(hasError(headers))
-        reportError('header parsing, missing', headers.error);
+    if(hasError(headers)) {
+        debug("Error detected: %s", headers.error);
+        return { 'json': {
+            'status': 'error',
+            'info': headers.error
+        }};
+    }
 
     var cookieId = _.get(req.headers, 'x-yttrex-nonauthcookieid');
 
@@ -117,6 +109,7 @@ function processEvents(req) {
                 var supporter = {
                     publicKey: headers.publickey,
                     creationTime: new Date(),
+                    p: utils.string2Food(headers.publickey)
                 };
                 return mongo
                     .writeOne(nconf.get('schema').supporters, supporter)

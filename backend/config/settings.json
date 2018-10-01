@@ -2,7 +2,8 @@
   "schema": { 
       "supporters": "supporters",
       "videos": "videos",
-      "alarms": "alarms"
+      "alarms": "alarms",
+      "sequences": "sequences"
   },
   "mongodb": "mongodb://localhost/yttrex",
   "port": 9000,

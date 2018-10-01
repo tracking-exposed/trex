@@ -107,13 +107,13 @@ app.post('/api/v:version/events', function(req, res) {
 });
 
 /* this is to retrieve their own sumitted videos metadata */
-app.get('/api/v1/personal/:publicKey', function(req, res) {
+app.get('/api/v1/backlog/:publicKey', function(req, res) {
     return dispatchPromise('getUserBacklog', req, res);
 });
 
-/* Alarm listing  API */
-app.get('/api/v1/alarms/:auth', function(req, res) {
-    return dispatchPromise('getAlarms', req, res);
+/* this is to retrieve the information block used to populate personal page */
+app.get('/api/v1/personal/:publicKey', function(req, res) {
+    return dispatchPromise('getPersonalBlob', req, res);
 });
 
 /* via POST the user gived publicKey and fbtrex returns selector + access token */
@@ -134,6 +134,11 @@ app.get('/api/v1/html/:htmlId', function(req, res) {
 app.get('/api/v1/sequences/:testId', function(req, res) {
     return dispatchPromise('getSequence', req, res);
 });
+/* create a new sequence */
+app.get('/api/v1/sequence/:publicKey/:idList', function(req, res) {
+    return dispatchPromise('createSequence', req, res);
+});
+
 /* divergency page */
 app.get('/[dD]/:testId', function(req, res) {
     console.log(`forcing page "divergency" on ${req.url}`);

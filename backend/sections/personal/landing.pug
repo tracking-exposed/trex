@@ -20,14 +20,16 @@ html
         meta(property="og:title" content="Personal poage")
         title yttrex, personal page
 
-    body(onload="loadpersonal();")
-        include header
+    body(onload="personalLoader();")
+        include ../header
 
         .container-fluid
-            h2 Most recent videos submitted by your profile
-            div#download download
-                button#csv CSV
-                button#json JSON
-         
-        .container-fluid
-            div#videolist
+            h2.text.negative This link is only yours, share it 
+                i wisely
+                |; It might contain sequence of the videos you watched, and YT's personalized suggestions
+            h2.text.right
+                span#codename.variable [codename]
+                |  is your codename
+
+        include menu
+        include ../footer

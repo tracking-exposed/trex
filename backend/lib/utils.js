@@ -7,6 +7,8 @@ var crypto = require('crypto');
 var bs58 = require('bs58');
 var nacl = require('tweetnacl');
 var nconf = require('nconf');
+var foodWords = require('food-words');
+
 
 var shmFileWrite = function(fprefix, stringblob) {
     var fpath = "/dev/shm/" + fprefix + "-"
@@ -143,6 +145,24 @@ function verifyRequestSignature(req) {
         decodeFromBase58(publicKey));
 };
 
+function number2Food(number) {
+    var size = _.size(foodWords);
+    var first = _.nth(foodWords, (number % size));
+    var second = _.nth(foodWords, ( (number * 2) % size));
+    return [ first, second ];
+};
+
+function string2Food(text) {
+    var number = _.reduce(_.split(text), function(memo, c) {
+        if(c.charCodeAt() < 60)
+            return memo * (c.charCodeAt() + 1);
+
+        return c.charCodeAt() + memo;
+    }, 1);
+    return number2Food(number);
+};
+       
+
 module.exports = {
     hash: hash,
     activeUserCount: activeUserCount,
@@ -153,5 +173,7 @@ module.exports = {
     encodeToBase58: encodeToBase58,
     decodeFromBase58: decodeFromBase58,
     verifyRequestSignature: verifyRequestSignature,
-    DUMP: DUMP
+    DUMP: DUMP,
+    number2Food: number2Food,
+    string2Food: string2Food
 };

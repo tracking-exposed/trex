@@ -1,0 +1,20 @@
+.container-fluid
+    ul.nav.nav-tabs
+        li.active
+            a(data-toggle='tab', href='#share') Select & share a sequence
+        li
+            a(data-toggle='tab', href='#divergencies') Your divergencies
+        li
+            a(data-toggle='tab', href='#backlog') Your videos
+        li
+            a(data-toggle='tab', href='#extra') Extra features
+
+    .tab-content
+        #share.tab-pane.fade.in.active
+            include share 
+        #divergencies.tab-pane.fade
+            include divergencies
+        #backlog.tab-pane.fade
+            include backlog
+        #extra.tab-pane.fade
+            include extra

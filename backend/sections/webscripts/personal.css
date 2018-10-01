@@ -1,9 +1,4 @@
 
-#download {
-    text-align: right;
-    padding-right: 40px;
-}
-
 .data {
     padding-left: 3px;
     padding-right: 3px;
@@ -47,3 +42,40 @@
     font-weight: 500;
     padding-right: 3%;
 }
+
+.selectable {
+    cursor: pointer;
+}
+
+.selected {
+    background-color: lightgreen;
+}
+
+#shoot {
+    text-align: center;
+    position: sticky;
+    top: 0;
+}
+
+#step {
+    font-size: 5em;
+}
+
+.glow {
+    color: lightgreen;
+}
+
+.url {
+    text-align: center;
+    padding: 50px;
+    font-size: 2em;
+    background-color: #f2ffc9;
+    border-radius: 10px;
+
+    p {
+        font-size: 1em;
+        padding: 2em;
+    }
+}
+
+
