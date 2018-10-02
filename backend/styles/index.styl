@@ -51,118 +51,17 @@ p
     border-left #3c5a99 0.01em solid
     padding-left 0.1em
 
-.polite-propaganda
-  padding-right 10% 
-  padding-left 10%
-
-  h2
-    border-left #3c5a99 0.01em solid
-    padding-left 0.1em
-
-.simpletext
-  padding-right 10%
-  padding-left 10%
-  padding-bottom 1%
-
-.smaller
-  font-weight bold
-  font-size 0.75em
-  color darkgrey
-
-.link
-  padding 3px
-  font-size 0.9em
-
-.right-link
-  border-right 8%
-  text-align right
-  background #E8FFC2
-  color #3b59999
-  a
-    color #3b59999
-
-.left-link
-  text-align left
-  border-left 8%
-  background #DCEFE8
-
-.larger-content
-  margin 30px auto
-
-.main-content
-  margin 50px auto
-  max-width 600px
-  p
-    line-height 1.6
-
-.footer
-  margin 50px auto
-  max-width 600px
-  border-top 1px solid #444
-  padding 20px 0
-  p
-    color #444
-    font-size 12px
-
-.long
-  font-size 0.8em
-
-.big
-  padding-top 5%
-  font-size 3em
-
-.white
-  color white
-
-.blue
-  color #3c5a99
-
-.orange
-  color #fd5308
-
-.green
-  color #66b032
-
-.italic
-  font-style italic
-
-.examplelist
-  margin-left 10%
-  margin-right 10%
-  p
-    size: 1.3em
-  a
-    color darkblue
-  a:hover
-    color red
-    font-style normal
-
-.exampleentry
-  background-color paleyellow
-  padding 5%
-  width 100%
-
 
 /* unordered list */
 .fb--icon-list
   list-style-image url("/images/yttrex16.png")
   font-size 1.3em
 
-.inclusive
-  border-top #fd5308 4px solid
-  border-left #3c5a99 4px solid
-  border-right #66b032 4px solid
-  padding-left 20px
-  padding-right 20px
-  text-align justify
-
 @font-face
   font-family 'Work Sans'
   font-style normal
   font-weight 400
   src local('Work Sans'), url(/fonts/WorkSans.ttf) format('truetype');
-
-  /*header*/
 
 .githublogo
     width 20px
@@ -179,42 +78,10 @@ p
     text-align right
 
 
-.topheader {
-    margin: 2% 0;
-}
-.icontext{
-    text-align:center;
-}
-.icon{
-    width:70px;
-    margin:0 50%;
-    -webkit-transform:translate(-50%,0);
-    transform:translate(-50%,0);
-}
-.propaganda {
-    padding-bottom: 2%;
-    border-bottom: solid #3c5a99 1px;
-    margin: 2em 0;
-}
-#vision, #mission {
-    margin: 2em 0;
-}
-
 .fb--icon-list > li {
     margin-left: 7%;
     line-height: 2em;
 }
-
-.grateful {
-   font-size: 2.8em;
-   padding: 0.5em;
-}
-
-.slogan
-  font-size 3em
-
-.left
-  text-align right
 
 .clickable
     border 1px solid
@@ -239,15 +106,22 @@ h1.text
     background black
     color white
     border-radius 0px 35px 0px 35px
+    padding 2em
 
 .highlight
     border-radius 0px 35px 0px 35px
     border black 5px solid
+    padding 2em
 
 .footer
-    border-top grey 0.5px dotted
+    border-top black 1px solid
+    padding 1em
 
 .variable
     font-family monospace
     background-color #f2ffc9
     
+
+/* override bootstrap */
+.navbar-default
+    background-color white

@@ -7,17 +7,23 @@ var nconf = require('nconf');
 var mongo = require('./mongo');
 var utils = require('./utils');
 
-function fetchSequences(filter, amount) {
+function fetchSequences(filter) {
     return mongo
-        .readLimit(nconf.get('schema').sequences, filter, {}, amount, 0);
+        .readLimit(nconf.get('schema').sequences, filter, {}, 400, 0)
+        .tap(function(r) {
+            if(_.size(r) === 400)
+                debug("Limit triggered, should be reported to the user");
+        });
 };
 
 function getSequence(req) {
-    var testId =  req.params.testId;
-    debug("Looking for sequence test: %s", testId);
+    var testId =  _.parseInt(req.params.testId);
+    var name = req.params.name;
 
-    return fetchSequences({ testId: testId}, 1)
-        .then(_.first)
+    var filter = { id: testId, name: name};
+    debug("Looking for sequence %j", filter);
+
+    return fetchSequences(filter)
         .then(function(sequence) {
             return { json: sequence };
         });
@@ -39,8 +45,9 @@ function createSequence(req) {
 
     var ids = req.params.idList.split('-');
     var publicKey = req.params.publicKey;
+    var name = req.params.name;
 
-    debug("requested new sequence! key %s, videos %d", publicKey, _.size(ids));
+    debug("requested new sequence! key %s, videos %d | %s", publicKey, _.size(ids), name);
 
     return mongo
         .read(nconf.get('schema').supporters, { publicKey: publicKey })
@@ -61,28 +68,23 @@ function createSequence(req) {
         })
         .then(function(mixes) {
 
-            var userPseudo = utils.string2Food(mixes.user.publicKey);
-            var id = _.random(0x100000, 0xffffff);
-
+            var id = _.random(0x1000, 0xffff);
             var sequence = _.map(mixes.videos, function(v, i) {
                 return {
                     order: i + 1,
-                    userPseudo: userPseudo,
+                    userPseudo: mixes.user.p,
                     id: id,
                     videoId: v.id,
                     href: v.href,
-                    first: true
+                    first: true,
+                    name: name
                 };
             });
                 
             return mongo
                 .writeMany(nconf.get('schema').sequences, sequence)
-                .then(function(rv) {
-                    debug("%s", JSON.stringify(rv));
-                    debug("%s", JSON.stringify(sequence));
-                    return {
-                        json: { 'url': '/d/' + id }
-                    };
+                .return({
+                    json: { 'url': '/d/' + id + '/' + name }
                 });
         })
         .catch(function(error) {

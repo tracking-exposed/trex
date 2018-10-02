@@ -104,7 +104,14 @@ function videoDataHTML(d) {
  */
 
 function divergenciesHTML(s) {
-    console.log("ignored now", s);
+    var html = [
+        '<div class="container-fluid data">',
+            '<pre>',
+                JSON.stringify(s, undefined, 2),
+            '</pre>',
+        '</div>'
+    ];
+    return html.join('');
 };
 
 function selectableVideo(s, i) {
@@ -136,26 +143,41 @@ function updateStep() {
     /* this function is call by main() below, 
      * it check the amount of selected video, present in 'selected'
      * and change the */
-
     var v = _.size(_.keys(selected));
     if(v) {
         $("#step").html("share (" + v + ")");
-
         if( $("#step").hasClass('glow') == false )
             $("#step").addClass('glow');
-
     } else {
         $("#step").html("select videos</br>←");
         $("#step").removeClass('rotate');
     }
-
 };
 
 function createUploadSnippet() {
 
-    var idString = _.join(_.keys(selected), '-');
-    var url = '/api/v1/sequence/' + publicKey + '/' + idString;
+    $("#shoot").append(
+        "<input type='text' id='named' class='labelentry' placeholder='give a name to the sequence' />"
+    );
 
+    var button = false;
+    $("#named").on('input', function() {
+        if(!button) {
+            $("#shoot").append(
+                "<br/>" +
+                "<button id='go'>submit</button>"
+            );
+            $("#go").on('click', performActualUpload);
+            button = true;
+        }
+    });
+};
+
+function performActualUpload() {
+    var idString = _.join(_.keys(selected), '-');
+    var name = encodeURIComponent($("#named").val());
+    var url = '/api/v1/sequence/' + publicKey + '/' + idString + '/' + name;
+    console.log(url);
     $.getJSON(url, function(results) {
         var produced = window.location.origin + results.url;
         produced += '<p>share the link above</p>';
@@ -170,8 +192,10 @@ function createUploadSnippet() {
  * -- for example, the codename of the user, or the number of the posts available
  */
 
-function singleWordUpdates(profile) {
-    console.log("to be used", profile);
+function singleWordUpdates(profile, videoN) {
+    console.log("Updaring singleWords");
+    $("#codename").text(profile.p);
+    $("#videonumber").text(videoN);
 };
 
 
@@ -187,11 +211,10 @@ function personalLoader() {
     publicKey = _.last(window.document.location.pathname.split('/'))
     $.getJSON("/api/v1/personal/" + publicKey, function(data) {
 
-        singleWordUpdates(data.profile);
+        singleWordUpdates(data.profile, _.size(data.backlog));
 
-        console.log("divergencesHTML loading", data.sequence);
         _.each(data.sequences, function(s) {
-            $("#divergengices--list").append(divergenciesHTML(s));
+            $("#divergencies--list").append(divergenciesHTML(s));
         });
 
         if(!_.size(data.backlog))

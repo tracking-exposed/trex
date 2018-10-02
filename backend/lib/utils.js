@@ -94,12 +94,6 @@ var topPostsFixer = function(mongocoll) {
     return _.reverse(_.takeRight(_.sortBy(clean, 'count'), MAX_ENTRIES));
 };
 
-function DUMP(objz) {
-    /* this is to avoid to write JSON.stringify in my life ever again */
-    console.trace();
-    console.log(" -- " + JSON.stringify(objz, undefined, 2));
-};
-
 function stringToArray (s) {
     // Credits: https://github.com/dchest/tweetnacl-util-js
     var d = unescape(encodeURIComponent(s));
@@ -145,20 +139,25 @@ function verifyRequestSignature(req) {
         decodeFromBase58(publicKey));
 };
 
-function number2Food(number) {
-    var size = _.size(foodWords);
-    var first = _.nth(foodWords, (number % size));
-    var second = _.nth(foodWords, ( (number * 2) % size));
-    return [ first, second ];
-};
 
 function string2Food(text) {
+    var size = _.size(foodWords);
+    var first = null;
     var number = _.reduce(_.split(text), function(memo, c) {
-        if(c.charCodeAt() < 60)
+        if(c.charCodeAt() < 70)
             return memo * (c.charCodeAt() + 1);
+
+        if(!(c.charCodeAt() % 6))
+            first = _.nth(foodWords, memo % size );
 
         return c.charCodeAt() + memo;
     }, 1);
+
+    if(_.isNull(first))
+        var first = _.nth(foodWords, ( number % size));
+
+    var second = _.nth(foodWords, ( (number * 2) % size));
+    var third = _.nth(foodWords, ( _.round((number / 3), 0) % size));
     return number2Food(number);
 };
        
@@ -173,7 +172,5 @@ module.exports = {
     encodeToBase58: encodeToBase58,
     decodeFromBase58: decodeFromBase58,
     verifyRequestSignature: verifyRequestSignature,
-    DUMP: DUMP,
-    number2Food: number2Food,
     string2Food: string2Food
 };

@@ -24,13 +24,20 @@ function getPersonalBlob(req) {
     var c =  req.params.publicKey;
 
     debug("personal access for user %s", c);
-    return Promise.all([
-        fetchBacklog(c, 25),
-        fetchSequences({ publicKey: c}, 5),
-        fetchProfile(c)
-    ])
+    return fetchProfile(c)
+        .then(function(profile) {
+            if(!profile)
+                throw new Error("User not found!");
+
+            return Promise.all([
+                fetchBacklog(profile.publicKey, 40),
+                fetchSequences({ p: profile.p }, 400),
+                profile
+            ]);
+        })
     .tap(function(all) {
-        // debugger;
+        if(_.size(all[1]) == 400)
+            debug("Warning: limit 400 received!");
     })
     .then(function(all) {
         return {

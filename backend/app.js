@@ -131,16 +131,16 @@ app.get('/api/v1/html/:htmlId', function(req, res) {
 });
 
 /* sequence API */
-app.get('/api/v1/sequences/:testId', function(req, res) {
+app.get('/api/v1/sequences/:testId/:name', function(req, res) {
     return dispatchPromise('getSequence', req, res);
 });
 /* create a new sequence */
-app.get('/api/v1/sequence/:publicKey/:idList', function(req, res) {
+app.get('/api/v1/sequence/:publicKey/:idList/:name', function(req, res) {
     return dispatchPromise('createSequence', req, res);
 });
 
 /* divergency page */
-app.get('/[dD]/:testId', function(req, res) {
+app.get('/[dD]/:testId/:name', function(req, res) {
     console.log(`forcing page "divergency" on ${req.url}`);
     req.params.page = 'divergency';
     return dispatchPromise('getPage', req, res);
