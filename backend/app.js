@@ -141,7 +141,6 @@ app.get('/api/v1/sequence/:publicKey/:idList/:name', function(req, res) {
 
 /* divergency page */
 app.get('/[dD]/:testId/:name', function(req, res) {
-    console.log(`forcing page "divergency" on ${req.url}`);
     req.params.page = 'divergency';
     return dispatchPromise('getPage', req, res);
 });

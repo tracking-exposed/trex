@@ -139,7 +139,6 @@ function verifyRequestSignature(req) {
         decodeFromBase58(publicKey));
 };
 
-
 function string2Food(text) {
     var size = _.size(foodWords);
     var first = null;
@@ -158,7 +157,7 @@ function string2Food(text) {
 
     var second = _.nth(foodWords, ( (number * 2) % size));
     var third = _.nth(foodWords, ( _.round((number / 3), 0) % size));
-    return number2Food(number);
+    return [ first, second, third ].join('-');
 };
        
 
