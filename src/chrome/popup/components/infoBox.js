@@ -7,13 +7,13 @@ const imgstyle = {
     width: "100%"
 };
 const cardStyle = {
-    'text-align': "center",
+    'textAlign': "center",
 };
 const h1style = {
-    'font-size': "2em",
+    'fontSize': "2em",
     'color': "#65b211",
-    'text-underline-position': "under",
-    'font-weight': "bolder",
+    'textUnderlinePosition': "under",
+    'fontWeight': "bolder",
 };
 const star = {
     'color': "#fe5000"
