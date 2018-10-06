@@ -22,7 +22,7 @@ bo.runtime.onMessage.addListener((request, sender, sendResponse) => {
 });
 
 function userLookup ({ userId }, sendResponse) {
-    console.log("looking for user:", userId, "forcing it to be 'local'");
+    // console.log("looking for user:", userId, "forcing it to be 'local'");
     userId = 'local';
     db.get(userId).then(val => {
         if (isEmpty(val)) {

@@ -1,0 +1,26 @@
+.inprogress {
+    padding: 5px 11px;
+    font-weight: 700;
+    border: 2px solid #9b9b9b;
+    background-color: #fff;
+}
+
+#playnow {
+    cursor: pointer;
+    display: inline-block;
+    line-height: 1;
+    font-weight: 700;
+    letter-spacing: normal;
+    border: 2px solid #9b9b9b;
+    background-color: #fff;
+    padding: 5px 11px;
+    color: #4c4c4c;
+    text-decoration: none;
+}
+
+#video--list {
+	text-align: center;
+}
+#video--list pre {
+    display: none;
+}

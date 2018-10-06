@@ -6,7 +6,7 @@
   "short_name": "ytTREX",
   "description": "This browser extension is a minor experiment we are conducting, it is not yet intended for mainstream usage",
   "version": "1.1.0",
-  "author": "Claudio Agosti",
+  "author": "challenge algorithms and big data monopolist with https://tracking.exposed",
 
   "icons": {
       "16": "yttrex16.png",
@@ -23,6 +23,7 @@
   "permissions": [
     "storage",
     "cookies",
+    "tabs",
     "http://localhost:9000/",
     "https://*.youtube.com/",
     "https://*.tracking.exposed/"

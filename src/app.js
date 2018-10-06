@@ -34,6 +34,7 @@ import ReactDOMServer from 'react-dom/server';
 // Import other utils to handle the DOM and scrape data.
 import uuid from 'uuid';
 import $ from 'jquery';
+import _ from 'lodash';
 
 import config from './config';
 import hub from './hub';
@@ -43,7 +44,7 @@ import token from './token';
 
 const YT_VIDEOTITLE_SELECTOR = 'h1.title';
 
-// bo is the browser object, in chrom is named 'chrome', in firefox is 'browser'
+// bo is the browser object, in chrome is named 'chrome', in firefox is 'browser'
 const bo = chrome || browser;
 
 // Boot the user script. This is the first function called.
@@ -53,8 +54,11 @@ function boot () {
     console.log(`yttrex version ${config.VERSION} build ${config.BUILD} loading; Config object:`);
     console.log(config);
 
-    if(window.location.origin !== 'https://www.youtube.com')
-        return ytTREX();
+    if(window.location.origin !== 'https://www.youtube.com') {
+        /* we are on .tracking.exposed because this + youtube.com
+         * are the only two permitted domain where the extension run */
+        return testDivergency();
+    }
 
     createLoadiv();
 
@@ -101,12 +105,31 @@ function boot () {
     });
 }
 
-function ytTREX() {
-    console.log("siamo su localhost o su .tracking.exposed");
-    console.log(window.location.origin);
+function testDivergency() {
+    $(".extension-missing").hide();
+
+    var vl = null;
+    try {
+        var vl =  JSON.parse($("#video--list").text() );
+        console.log(`Parsed ${vl.list.length} videos`);
+        // display the button if we are sure we have videos
+        $("#video--list").append("<button id='playnow'>ytTREX re-play!</button>");
+    } catch(error) {
+        $("#video--list").append("<div>Error! video not found, try to reload the page</div>");
+    }
+
+    $("#playnow").on('click', function() {
+        bo.runtime.sendMessage({
+            type: 'opener',
+            payload: _.extend(vl)
+        }, response => {
+            $("#playnow").html(`<div class='inprogress'>Re-Playing videos, wait for ${vl.humanize}...</div>`);
+        });
+    });
 };
 
 function createLoadiv() {
+    // this is bound to #loadiv and appears on the right bottom
     var div = document.createElement('div');
 
     div.style.position = 'fixed';
@@ -123,7 +146,6 @@ function createLoadiv() {
     div.innerText = '👁 ';
     document.body.appendChild(div);
 
-    console.log("createLoadiv done!", $("#loadiv").html());
     $("#loadiv").toggle();
 };
 
@@ -131,30 +153,31 @@ var last = null;
 
 function hrefUpdateMonitor() {
 
-    const shortTimeout = 1500;
-    const loadTimeout = 6000;
-
-    console.log(`Loading the href watchers, ${shortTimeout} and ${loadTimeout}`);
-
     function changeHappen() {
         let diff = (window.location.href !== last);
+        // if the loader is going, is debugged but not reported, or the 
+        // HTML and URL mismatch 
+        if( diff && $("#progress").is(':visible') ) {
+            console.log(`Loading in progress for ${window.location.href} after ${last}, waiting again...`);
+            return false;
+        }
         last = window.location.href;
         return diff;
     }
+    const periodicTimeout = 4000;
+    const iconDuration = 800;
 
-    const shortInterval = window.setInterval(function() {
+    window.setInterval(function() {
         if(changeHappen()) {
-            window.clearInterval(shortInterval);
-
             $("#loadiv").toggle();
-            const loadInterval = window.setInterval(function() {
+            var displayTimer = window.setInterval(function() {
                 $("#loadiv").hide();
-                window.clearInterval(loadInterval);
                 document.querySelectorAll(YT_VIDEOTITLE_SELECTOR).forEach(acquireVideo);
                 hrefUpdateMonitor();
-            }, loadTimeout);
+                window.clearInterval(displayTimer);
+            }, iconDuration);
         }
-    }, shortTimeout);
+    }, periodicTimeout);
 }
 
 function acquireVideo (elem) {

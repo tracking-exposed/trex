@@ -25,25 +25,43 @@ html
         include header
 
         .container-fluid.extension-missing
-            h1.text.negative How much YouTubes' algorithm lead informations to diverge?
-            h1.text.highlight Open this page in a browser with installed the ytTREX extension
+            h2.text.negative How much YouTubes' algorithm lead informations to diverge?
+            h2.text.highlight Open this page in a browser with installed the ytTREX extension
             include downloads
             p.text p.s. this is necessary to collect the evidences; the subject under investigation is YTs' algorithm, 
                 a(href="/privacy-statement") not you
                 |  ;)
 
         .container-fluid.extension-missing.faq
-            h1.text.negative How does it work?
-            h1.text Your friend select a list of videos. ytTREX recorded which is the
-                i next autoplay
+            h2.text.negative How does it work?
+            h2.text Your friend select a list of videos; Them get a personalized selection of video in 
+                i autoplay
                 |, and the 20
                 i related 
-                |  videos YT is picking.
+                |  videos YT is picking. 
 
         .container-fluid.extension-present
-            h1.text.negative comparison list
+            h2.text Welcome back! 
+                span.variable#authorName $name
+                |  shared a list of 
+                span.variable#videoNumber $number
+                |  videos. They already analyzed them, and the cool part is compare how YouTube is going to display you a different set of personalized suggestions.
+            h2.text.negative When you are ready, ytTREX will open automatically a tab, you can mute your computer and wait
+
+        .container-fluid.extension-present
+            #video--pretty
+
+        .container-fluid.extension-present
+            h2.text A video would be open only for 
+                span.variable#tabtime
+                |  seconds, in total, it should take circa 
+                span.variable#humanizedTime
+                |.
+
+        .container-fluid.extension-present
             #video--list
 
         .container-fluid
-            h1.text.negative ytTREX display how algorithms have a role, in making the perception of the public discourse, diverge from people you assume like-minded.
+            h2.text.negative ytTREX display how algorithms have a role, in making the perception of the public discourse, diverge from people you assume like-minded.
                 
+        include footer

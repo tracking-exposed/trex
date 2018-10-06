@@ -19,13 +19,25 @@ function fetchSequences(filter) {
 function getSequence(req) {
     var testId =  _.parseInt(req.params.testId);
     var name = req.params.name;
+    var tabtime = _.parseInt(nconf.get('tabtime'));
 
     var filter = { id: testId, name: name};
-    debug("Looking for sequence %j", filter);
+    debug("Looking for sequence %j, tabtime %ds", filter, tabtime);
 
     return fetchSequences(filter)
         .then(function(sequence) {
-            return { json: sequence };
+
+            var seconds = (_.size(sequence) * tabtime);
+            var humanized = moment.duration({ seconds: seconds }).humanize();
+            return {
+                json: {
+                    list: sequence,
+                    humanize: humanized,
+                    seconds: seconds,
+                    tabtime: tabtime,
+                    producer: sequence[0].userPseudo
+                } 
+            };
         });
 };
 
