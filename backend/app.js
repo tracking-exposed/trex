@@ -106,6 +106,11 @@ app.post('/api/v:version/events', function(req, res) {
     return dispatchPromise('processEvents', req, res);
 });
 
+/* handshake to: 1) get the pseudoNym for the page, and 2) notify to associate videoId to the testId */
+app.post('/api/v:version/handshake', function(req, res) {
+    return dispatchPromise('handshake', req, res);
+});
+
 /* this is to retrieve their own sumitted videos metadata */
 app.get('/api/v1/backlog/:publicKey', function(req, res) {
     return dispatchPromise('getUserBacklog', req, res);
@@ -114,11 +119,6 @@ app.get('/api/v1/backlog/:publicKey', function(req, res) {
 /* this is to retrieve the information block used to populate personal page */
 app.get('/api/v1/personal/:publicKey', function(req, res) {
     return dispatchPromise('getPersonalBlob', req, res);
-});
-
-/* via POST the user gived publicKey and fbtrex returns selector + access token */
-app.post('/api/v1/userInfo', function(req, res) {
-    return dispatchPromise('userInfo', req, res);
 });
 
 /* useful revision page */
@@ -131,17 +131,26 @@ app.get('/api/v1/html/:htmlId', function(req, res) {
 });
 
 /* sequence API */
-app.get('/api/v1/sequences/:testId/:name', function(req, res) {
+app.get('/api/v1/sequence/:testId/:name', function(req, res) {
     return dispatchPromise('getSequence', req, res);
 });
 /* create a new sequence */
 app.get('/api/v1/sequence/:publicKey/:idList/:name', function(req, res) {
     return dispatchPromise('createSequence', req, res);
 });
+/* get the results of a sequence */
+app.get('/api/v1/results/:testId/:name', function(req, res) {
+    return dispatchPromise('getResults', req, res);
+});
 
 /* divergency page */
 app.get('/[dD]/:testId/:name', function(req, res) {
     req.params.page = 'divergency';
+    return dispatchPromise('getPage', req, res);
+});
+/* divergency results page */
+app.get('/[rR]/:testId/:name', function(req, res) {
+    req.params.page = 'results';
     return dispatchPromise('getPage', req, res);
 });
 

@@ -38,9 +38,9 @@ import _ from 'lodash';
 
 import config from './config';
 import hub from './hub';
-import { getTimeISO8601 } from './utils';
+import { getTimeISO8601, getLogoDataURI } from './utils';
 import { registerHandlers } from './handlers/index';
-import token from './token';
+import pseudonym from './pseudonym';
 
 const YT_VIDEOTITLE_SELECTOR = 'h1.title';
 
@@ -51,15 +51,34 @@ const bo = chrome || browser;
 // Everything starts from here.
 function boot () {
 
-    console.log(`yttrex version ${config.VERSION} build ${config.BUILD} loading; Config object:`);
-    console.log(config);
-
     if(window.location.origin !== 'https://www.youtube.com') {
         /* we are on .tracking.exposed because this + youtube.com
          * are the only two permitted domain where the extension run */
-        return testDivergency();
+        if(_.isUndefined($("#extension--parsable").html())) {
+            console.log(`The page ${window.document.location.href} should not be processed by the ytTREX extension`);
+            return null;
+        } else {
+            remoteLookup(response => {
+                // Basically I'm waiting to be sure the API handshare has answered 
+                var badpattern = window.setInterval(function() {
+                    try {
+                        pseudonym.set(JSON.parse(response.response).p);
+                        if(!_.isNull(pseudonym.get())) {
+                            window.clearInterval(badpattern);
+                            return testDivergency();
+                        }
+                    } catch (error) {}
+                }, 200);
+            });
+        }
     }
 
+    // youtube.com
+    console.log(`yttrex version ${config.VERSION} build ${config.BUILD} loading; Config object:`);
+    console.log(config);
+
+    // is an hidden div, created on youtube.com domain,
+    // visibile when the recording is triggered
     createLoadiv();
 
     // Register all the event handlers.
@@ -68,62 +87,42 @@ function boot () {
     registerHandlers(hub);
 
     // Lookup the current user and decide what to do.
-    userLookup(response => {
-
+    localLookup(response => {
         // `response` contains the user's public key and its status,
-        // if the key has just been created, the status is `new`.
-        console.log("userLookup responded:", response, "but we don't care at the moment of the onboarding");
-
-        // The user compose this unique message and is signed with their PGP key
-        // we returns an authentication token, necessary to log-in into the personal page
-        // selector is returned, accessToken is saved as side-effect (it could be cleaner)
-        let once = `publicKey ${response.publicKey}# loading ytTREX ${config.VERSION} ${config.BUILD}`;
-        // the token is necessary to access to the personal page, but the most of the interaction happen on the 'concept is used as authentication of privateKey associated to our own publicKey
-        bo.runtime.sendMessage({
-            type: 'userInfo',
-            payload: {
-                message: once,
-                userId: 'local',
-                version: config.VERSION,
-                publicKey: response.publicKey,
-                optin: response.optin
-            },
-            userId: 'local',
-        }, (response => {
-            try {
-                /* this could raise an exception if JSON.parse fails, but
-                 * there is a default hardcoded in the extension */
-                token.set(JSON.parse(response.response).token);
-            } catch(e) {
-                console.log("token retrieve fail:", e.description);
-            } finally {
-                console.log("Token received is [", token.get(), "]");
-                hrefUpdateMonitor();
-                flush();
-            }
-        }));
+        console.log("localLookup responded:", response);
+        hrefUpdateMonitor();
+        flush();
     });
 }
 
 function testDivergency() {
-    $(".extension-missing").hide();
+
+    $("#userName").text(pseudonym.get());
 
     var vl = null;
     try {
-        var vl =  JSON.parse($("#video--list").text() );
+        vl =  JSON.parse($("#video--list pre").html() );
         console.log(`Parsed ${vl.list.length} videos`);
         // display the button if we are sure we have videos
-        $("#video--list").append("<button id='playnow'>ytTREX re-play!</button>");
+        $("#playnow").toggle();
     } catch(error) {
-        $("#video--list").append("<div>Error! video not found, try to reload the page</div>");
+        console.log(error);
+        $("#error").toggle();
     }
+    $(".extension-present").show();
 
     $("#playnow").on('click', function() {
         bo.runtime.sendMessage({
             type: 'opener',
             payload: _.extend(vl)
         }, response => {
-            $("#playnow").html(`<div class='inprogress'>Re-Playing videos, wait for ${vl.humanize}...</div>`);
+            console.log(config);
+            console.log(vl);
+            $("#playnow").text(`In progress, wait for ${vl.humanize}`);
+            const changeTextT = window.setTimeout(function() {
+                var testHref = `/r/${vl.testId}/${vl.testName}`;
+                $("#playnow").html(`<div class='done'>done! you can close the tabs and <a href=${testHref}>see results</a>.</div>`);
+            }, vl.seconds * 1000);
         });
     });
 };
@@ -133,18 +132,17 @@ function createLoadiv() {
     var div = document.createElement('div');
 
     div.style.position = 'fixed';
-    div.style.width = '40px';
-    div.style.height = '40px';
-    div.style['font-size'] = '3em';
-    div.style['border-radius'] = '5px';
-    div.style['text-align'] = 'center';
-    div.style['background-color'] = '#c9fbc6';
+    div.style.width = '48px';
+    div.style.height = '48px';
     div.style.right = '10px';
     div.style.bottom= '10px';
 
     div.setAttribute('id', 'loadiv');
-    div.innerText = '👁 ';
     document.body.appendChild(div);
+
+    var img = document.createElement('img');
+    img.setAttribute('src', getLogoDataURI());
+    div.appendChild(img);
 
     $("#loadiv").toggle();
 };
@@ -164,18 +162,18 @@ function hrefUpdateMonitor() {
         last = window.location.href;
         return diff;
     }
-    const periodicTimeout = 4000;
-    const iconDuration = 800;
+    const periodicTimeout = 5000;
+    const iconDuration = 1200;
 
     window.setInterval(function() {
         if(changeHappen()) {
             $("#loadiv").toggle();
-            var displayTimer = window.setInterval(function() {
+            document.querySelectorAll(YT_VIDEOTITLE_SELECTOR).forEach(acquireVideo);
+
+            window.setTimeout(function() {
                 $("#loadiv").hide();
-                document.querySelectorAll(YT_VIDEOTITLE_SELECTOR).forEach(acquireVideo);
-                hrefUpdateMonitor();
-                window.clearInterval(displayTimer);
             }, iconDuration);
+
         }
     }, periodicTimeout);
 }
@@ -186,19 +184,33 @@ function acquireVideo (elem) {
     console.log(`acquireVideo: ${window.location.href}`);
 
     /* the <ytd-app> represent the whole webapp root element */
-    hub.event('newVideo', { element: $('ytd-app').html(), href: window.location.href});
+    hub.event('newVideo', { element: $('ytd-app').html(), href: window.location.href });
 }
 
-
-// The function `userLookup` communicates with the **action pages**
+// The function `localLookup` communicates with the **action pages**
 // to get information about the current user from the browser storage
 // (the browser storage is unreachable from a **content script**).
-function userLookup (callback) {
-    console.log("userLookup: ", JSON.stringify(config));
+function localLookup (callback) {
     bo.runtime.sendMessage({
-        type: 'userLookup',
+        type: 'localLookup',
         payload: {
             userId: config.userId
+        }
+    }, callback);
+}
+
+// The function `remoteLookup` communicate the intention
+// to the server of performing a certain test, and retrive 
+// the userPseudonym from the server
+function remoteLookup (callback) {
+    bo.runtime.sendMessage({
+        type: "remoteLookup",
+        payload: {
+            // window.location.pathname.split('/')
+            // Array(4) [ "", "d", "1886119869", "Soccer" ]
+            // window.location.pathname.split('/')[2]
+            // "1886119869"
+            testId: window.location.pathname.split('/')[2]
         }
     }, callback);
 }

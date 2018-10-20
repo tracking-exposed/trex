@@ -12,12 +12,7 @@ var parse = require('../lib/parse');
 var jsdom = require("jsdom");
 var { JSDOM } = jsdom;
 
-var stats = {
-    skipped: 0,
-    error: 0,
-    suberror: 0,
-    success: 0
-};
+var stats = { skipped: 0, error: 0, suberror: 0, success: 0 };
 
 function labelParser(l) {
     try {

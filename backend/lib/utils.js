@@ -156,7 +156,8 @@ function string2Food(text) {
         var first = _.nth(foodWords, ( number % size));
 
     var second = _.nth(foodWords, ( (number * 2) % size));
-    var third = _.nth(foodWords, ( _.round((number / 3), 0) % size));
+    var third = _.nth(foodWords, ( (number * 3) % size));
+
     return [ first, second, third ].join('-');
 };
        

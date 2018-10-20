@@ -51,8 +51,8 @@ function saveVideo(body, supporter) {
         isVideo: isVideo,
         htmlOnDisk: fdest,
         incremental: body.incremental,
-        cookieId: supporter.cookieId,
         publicKey: supporter.publicKey,
+        p: supporter.p,
         tagId: body.tagId,
         clientTime: new Date(body.clientTime),
         savingTime: new Date(),
@@ -62,7 +62,7 @@ function saveVideo(body, supporter) {
         video.videoId = _.replace(body.href, /.*v=/, '');
 
     debug("Saving video %d (id %s) for user %s in file %s (%d bytes)",
-        video.incremental, video.videoId, video.cookieId, fdest, _.size(body.element)
+        video.incremental, video.videoId, supporter.p, fdest, _.size(body.element)
     );
 
     return mongo
@@ -78,16 +78,7 @@ function saveVideo(body, supporter) {
 
 function processEvents(req) {
 
-    debug("Processing submitted elements/events..");
-
-    var headers = processHeaders(_.get(req, 'headers'), {
-        'content-length': 'length',
-        'x-yttrex-build': 'build',
-        'x-yttrex-version': 'version',
-        'x-yttrex-nonauthcookieid': 'supporterId',
-        'x-yttrex-publickey': 'publickey',
-        'x-yttrex-signature': 'signature'
-    });
+    var headers = processHeaders(_.get(req, 'headers'), hdrs);
 
     if(hasError(headers)) {
         debug("Error detected: %s", headers.error);
@@ -97,37 +88,25 @@ function processEvents(req) {
         }};
     }
 
-    var cookieId = _.get(req.headers, 'x-yttrex-nonauthcookieid');
-
     return mongo
         .read(nconf.get('schema').supporters, {
             publicKey: headers.publickey
         })
         .then(function(supporterL) {
-            if(!_.size(supporterL)) {
-                debug("new publicKey received!");
-                var supporter = {
-                    publicKey: headers.publickey,
-                    creationTime: new Date(),
-                    p: utils.string2Food(headers.publickey)
-                };
-                return mongo
-                    .writeOne(nconf.get('schema').supporters, supporter)
-                    .return( [ supporter ] )
-            }
-            return supporterL;
+            if(!_.size(supporterL))
+                return TOFU(headers.publickey);
+            else
+                return supporterL;
         })
         .then(_.first)
         .then(function(supporter) {
             if (!utils.verifyRequestSignature(req)) {
-                debug("Verification fail: signed %s pubkey %s",
-                    headers.signature, supporter.publicKey);
+                debug("Verification fail for use [%s] (signature %s)",
+                    supporter.p, headers.signature);
                 throw new Error('Signature does not match request body');
             }
-
             supporter.version = headers.version;
             supporter.lastActivity = new Date();
-
             return supporter;
         })
         .tap(function(supporter) {
@@ -145,23 +124,51 @@ function processEvents(req) {
         .then(function(supporter) {
             return Promise.map(req.body, function(video) {
                 return saveVideo(video, supporter);
+            })
+            .then(function(results) {
+                /* this is what returns to the web-extension */
+                return { json: {
+                    status: "OK",
+                    supporter: supporter,
+                    results: results
+                }};
             });
         })
-        .then(function(results) {
-            return { "json": {
-                "status": "OK",
-                "info": results
-            }};
-        })
         .catch(function(error) {
-            debug("Event submission ignored: %s", error.message);
-            return { 'json': {
-                'status': 'error',
-                'info': error.message
+            debug("Error in managing submission: %s", error.message);
+            return { json: {
+                status: 'error',
+                info: error.message
             }};
         });
 };
 
+const hdrs =  {
+    'content-length': 'length',
+    'x-yttrex-build': 'build',
+    'x-yttrex-version': 'version',
+    'x-yttrex-nonauthcookieid': 'supporterId',
+    'x-yttrex-publickey': 'publickey',
+    'x-yttrex-signature': 'signature'
+};
+
+function TOFU(pubkey) {
+    var pseudo = utils.string2Food(pubkey);
+    var supporter = {
+        publicKey: pubkey,
+        creationTime: new Date(),
+        p: pseudo
+    };
+    debug("TOFU: new publicKey received, from: %s", pseudo);
+    return mongo
+        .writeOne(nconf.get('schema').supporters, supporter)
+        .return( [ supporter ] )
+};
+
+
 module.exports = {
-    processEvents: processEvents
+    processEvents: processEvents,
+    hdrs: hdrs,
+    processHeaders: processHeaders,
+    TOFU: TOFU
 };

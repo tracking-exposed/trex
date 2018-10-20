@@ -79,7 +79,7 @@ function get(apiUrl, version, userId) {
 const api = {
     postEvents: post.bind(null, 'events'),
     validate: post.bind(null, 'validate'),
-    selector: post.bind(null, 'userInfo')
+    handshake: post.bind(null, 'handshake')
 };
 
 export default api;

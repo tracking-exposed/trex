@@ -23,13 +23,14 @@ html
     body(onload="personalLoader();")
         include ../header
 
-        .container-fluid
-            h2.text.negative This link is only yours, share it 
-                i wisely
-                |; It might contain sequence of the videos you watched, and YT's personalized suggestions
-            h2.text.right
-                span#codename.variable [codename]
-                |  is your codename
+        div#whole
+            .container-fluid
+                h2.text.negative This link is only yours, share it 
+                    i wisely
+                    |; It might contain sequence of the videos you watched, and YT's personalized suggestions
+                h2.text.right
+                    span#codename.variable [codename]
+                    |  is your unique codename
 
-        include menu
+            include menu
         include ../footer

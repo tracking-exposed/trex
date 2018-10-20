@@ -206,13 +206,20 @@ function singleWordUpdates(profile, videoN) {
  *      int main(int argc, char **argv, char **envp)
  *
  */
-
 function personalLoader() {
     publicKey = _.last(window.document.location.pathname.split('/'))
     $.getJSON("/api/v1/personal/" + publicKey, function(data) {
 
+        // $("#whole").toggle();
+        if(data.error === true) {
+            $("#whole")
+                .html('<div class="text"><h1 class="title highlight">Error: ' + data.message + '</h1></div>');
+            return null;
+        }
+
         singleWordUpdates(data.profile, _.size(data.backlog));
 
+        console.log(`personalLoader: received ${_.size(data.sequences)} sequences of video for divergency section`);
         _.each(data.sequences, function(s) {
             $("#divergencies--list").append(divergenciesHTML(s));
         });
@@ -222,6 +229,7 @@ function personalLoader() {
         else 
             console.log("videoDataHTML loading", data.backlog);
 
+        console.log(`personalLoader: received ${_.size(data.backlog)} collected of video for collections & shareable section`);
         _.each(data.backlog, function(d, i) {
             $("#videolist").append(videoDataHTML(d));
             $("#shareable-list").append(selectableVideo(d, i));

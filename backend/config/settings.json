@@ -3,7 +3,8 @@
       "supporters": "supporters",
       "videos": "videos",
       "alarms": "alarms",
-      "sequences": "sequences"
+      "sequences": "sequences",
+      "commitments": "commitments"
   },
   "mongodb": "mongodb://localhost/yttrex",
   "port": 9000,

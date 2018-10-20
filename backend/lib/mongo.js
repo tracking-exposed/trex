@@ -93,7 +93,7 @@ var readLimit = function(cName, selector, sorter, limitN, past) {
             .toArray()
     })
     .tap(function(rv) {
-        debug("readLimit by %j →  gives %d objects", selector, _.size(rv) );
+        debug("readLimit in %s %j →  %d", cName, selector, _.size(rv) );
     })
     .catch(function(errstr) {
         debug("Error in readLimit: %s (%s)", errstr, cName);

@@ -9,9 +9,6 @@ var apiListVersion1 = {
     /* alarms */
     getAlarms:        require('./alarms').getAlarms,
 
-    /* selector fetch experiment */
-    userInfo:         require('./selector').userInfo,
-
     /* for revision */
     unitById:         require('./htmlunit').unitById,
 
@@ -24,6 +21,9 @@ var apiListVersion1 = {
     /* retuern sequence of video for divergency check */
     getSequence:      require('./divergency').getSequence,
     createSequence:   require('./divergency').createSequence,
+    getResults:       require('./divergency').getResults,
+
+    handshake:        require('./handshake').handshake,
 };
 
 module.exports = {

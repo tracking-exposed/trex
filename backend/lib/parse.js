@@ -35,9 +35,7 @@ function fetchMetadata(config) {
         defaults.until = moment().format("YYYY-MM-DD 23:59:59");
         defaults.requirements = { id : nconf.get('id') };
     }
-
-    debug("⭐ %s", JSON.stringify(defaults, undefined, 2));
-
+    debug("⭐ since: %s until %s", defaults.since, defaults.until);
     return mongo
         .read(nconf.get('schema').videos, _.extend({
                 savingTime: {

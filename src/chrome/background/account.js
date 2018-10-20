@@ -8,21 +8,17 @@ import db from '../db';
 const bo = chrome || browser;
 
 bo.runtime.onMessage.addListener((request, sender, sendResponse) => {
-    if (request.type === 'userLookup') {
+    if (request.type === 'localLookup') {
         userLookup(request.payload, sendResponse);
-
-        // Make the call asynchronous.
         return true;
-    } else if (request.type === 'optIn') {
-        updateSettings(request.payload, sendResponse);
-
-        // Make the call asynchronous.
+    } 
+    if (request.type === 'remoteLookup') {
+        serverLookup(request.payload, sendResponse);
         return true;
     }
 });
 
 function userLookup ({ userId }, sendResponse) {
-    // console.log("looking for user:", userId, "forcing it to be 'local'");
     userId = 'local';
     db.get(userId).then(val => {
         if (isEmpty(val)) {
@@ -30,23 +26,36 @@ function userLookup ({ userId }, sendResponse) {
             val = {
                 publicKey: bs58.encode(newKeypair.publicKey),
                 secretKey: bs58.encode(newKeypair.secretKey),
-                status: 'new'
             };
             db.set(userId, val).then(val => {
                 sendResponse({ publicKey: val.publicKey, status: val.status });
             });
-        } else {
-            sendResponse({ publicKey: val.publicKey, status: val.status, optin: val.optin });
         }
     });
 };
 
-function updateSettings ({ infoDiet, dataReuse, userId }, sendResponse) {
-    console.log("I should never appear");
+
+function serverLookup (payload, sendResponse) {
+
+    /* remoteLookup might be call as first function after the extension has been
+     * installed, and the keys not be yet instanciated */
+    const userId = 'local';
     db.get(userId).then(val => {
-        Object.assign(val, { status: 'accepted', optin: { infoDiet: infoDiet, dataReuse: dataReuse }});
-        db.update(userId, val)
-            .then(response => sendResponse('ok', response))
-            .catch(response => sendResponse('error', response));
+        if (isEmpty(val)) {
+            var newKeypair = nacl.sign.keyPair();
+            val = {
+                publicKey: bs58.encode(newKeypair.publicKey),
+                secretKey: bs58.encode(newKeypair.secretKey),
+            };
+            db.set(userId, val);
+        }
+        return val;
+    })
+    .then(function(x) {
+        return api
+            .handshake(payload, 'local')
+            .then(response => sendResponse({type: 'handshakeResponse', response: response}))
+            .catch(error => sendResponse({type: 'handshakeError', response: error}));
     });
 };
+

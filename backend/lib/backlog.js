@@ -11,6 +11,10 @@ function fetchBacklog(pubKeyString, amount) {
 
     return mongo
         .readLimit(nconf.get('schema').videos, { publicKey: pubKeyString }, {}, amount, 0)
+        .tap(function(videos) {
+            if(!_.size(videos))
+                throw new Error("No video submitted by this publicKey can be found");
+        })
         .map(function(video) {
             return _.omit(video, ['_id', 'htmlOnDisk', 'publicKey' ]);
         })

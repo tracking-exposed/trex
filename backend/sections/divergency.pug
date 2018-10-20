@@ -24,44 +24,54 @@ html
 
         include header
 
+        #extension--parsable 
+
         .container-fluid.extension-missing
             h2.text.negative How much YouTubes' algorithm lead informations to diverge?
-            h2.text.highlight Open this page in a browser with installed the ytTREX extension
+            h2.text.highlight You can now check it out!
+            h2.text.negative Re-Open this page in a browser with installed the ytTREX extension
             include downloads
-            p.text p.s. this is necessary to collect the evidences; the subject under investigation is YTs' algorithm, 
-                a(href="/privacy-statement") not you
-                |  ;)
+            h2.text.negative This is necessary to collect the evidences of YouTube personalization algorithm: without doing a copy of what is tailored for you, you can't compare how that's diverge from others people
+            h2.text.highlight Note: we collects and study data about YouTube, not about 
+                b
+                    i You
+                |  ;) check out our
+                a(href="/privacy-statement") privacy statement
+                |.
 
-        .container-fluid.extension-missing.faq
-            h2.text.negative How does it work?
-            h2.text Your friend select a list of videos; Them get a personalized selection of video in 
-                i autoplay
-                |, and the 20
-                i related 
-                |  videos YT is picking. 
-
-        .container-fluid.extension-present
-            h2.text Welcome back! 
+            h2.text.negative ? How does this test works ?
+            h2.text.highlight Someone (maybe your friend, maybe not), we can identify with the psendonym of 
                 span.variable#authorName $name
-                |  shared a list of 
-                span.variable#videoNumber $number
-                |  videos. They already analyzed them, and the cool part is compare how YouTube is going to display you a different set of personalized suggestions.
-            h2.text.negative When you are ready, ytTREX will open automatically a tab, you can mute your computer and wait
+                |  has selected a list of videos among the various they watched.
+            h2.text.negative With the ytTREX extension installed, you might re-play the same list and then observe the
+                a#resultLinks results
+                |. 
 
         .container-fluid.extension-present
+            h2.text Welcome back 
+                span.variable#userName $you
+                |,
+            h2.text
+                span.variable#authorName $name
+                |  composed and shared a list of 
+                span.variable#videoNumber $number
+                |  videos. The goal of this project, is test how youtube algorithm makes your perception diverge.
+
+        .container-fluid
             #video--pretty
 
-        .container-fluid.extension-present
-            h2.text A video would be open only for 
+        .container-fluid
+            h2.text.highlight When you start, ytTREX will open automatically the tabs and suspend them after 
                 span.variable#tabtime
-                |  seconds, in total, it should take circa 
+                |  seconds. In total, it should take circa 
                 span.variable#humanizedTime
                 |.
 
-        .container-fluid.extension-present
             #video--list
 
-        .container-fluid
-            h2.text.negative ytTREX display how algorithms have a role, in making the perception of the public discourse, diverge from people you assume like-minded.
-                
+            h2.text.center
+                button#playnow ytTREX re-play!
+                #error Error! video not found, try to reload the page
+
+
         include footer

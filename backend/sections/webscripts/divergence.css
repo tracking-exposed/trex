@@ -1,10 +1,16 @@
+.extension-present {
+    display: 0;
+}
+.extension-missing {
+    display: 0;
+}
+
 .inprogress {
     padding: 5px 11px;
     font-weight: 700;
     border: 2px solid #9b9b9b;
     background-color: #fff;
 }
-
 #playnow {
     cursor: pointer;
     display: inline-block;
@@ -17,10 +23,43 @@
     color: #4c4c4c;
     text-decoration: none;
 }
-
 #video--list {
 	text-align: center;
 }
 #video--list pre {
     display: none;
+}
+
+/* results page */
+.header {
+    background-color: #e9ffe4;
+    width: '100%';
+}
+.title {
+    font-size: 1.3em;
+}
+.info {
+    border: 2px #e6e6b6 solid;
+    border-radius: 0px 25px 0px 25px;
+    background-color: #ffffed;
+    padding-left: 1em;
+    padding-right: 1em;
+}
+
+/* prev- are used for video previed in `/d/1886119869/Soccer` .. */
+.anticipation {
+    background: #ffffdf;
+    padding: 1px;
+    margin: 2px;
+    border-radius: 0px 35px 0px 35px;
+}
+.prev-order {
+    border: white 2px solid;
+    background: #f9f9d1;
+}
+.prev-title {
+    border: yellow 2px solid;
+    background: #f9f9d1;
+}
+.prev-author {
 }
