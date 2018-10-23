@@ -47,7 +47,6 @@ function printList() {
         $("#tabtime").text(videos.tabtime);
         $("#videoNumber").text(_.size(videos.list));
         $(".authorName").text(_.first(videos.list).p);
-        console.log(_.first(videos.list).p);
     });
 };
 
@@ -62,7 +61,12 @@ function generateTable(evidences) {
         var videocombo = pickThe(i, _.orderBy(evidences, 'p') );
         
         var row = _.map(videocombo, function(v) {
-            return '<td>' + v.title + '<td>';
+            var cleanSource = v.source.replace(/[\ \? \)\(\}\{\]\[\=\^\&\%\/\#\!\.\-\_\']/g, '');
+            return '<td class="highlighter ' + v.videoId + '">' + 
+                '<small class="number">' + (i + 1) + ' </small>' + 
+                v.title + 
+                '<p class="publisher '+ cleanSource +'">' + v.source + '</p>'
+                '<td>';
         });
         
         retval = _.concat(retval, '<tr>', row, '</tr>');
@@ -119,9 +123,11 @@ function printResults() {
         $("#results").html(produceTitles(evidences));
 
         _.each(_.groupBy(evidences, 'videoId'), function(comparisons, vId) {
-            console.log(vId);
-            console.log(generateTable(comparisons));
             $('#' + vId).append(generateTable(comparisons));
+        });
+
+        $(".highlighter").on('click', function(e) {
+            console.log("manage this thing");
         });
     });
 };

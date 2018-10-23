@@ -59,11 +59,18 @@
     font-size: 0.7em
     text: white;
 }
-.color-0 {
-    background-color: lightgreen;
+.number {
+    font-weight: 800;
+    color: #770404;
+    border: black 1px solid;
+    border-radius: 15px;
 }
-.color-1 {
-    background-color: lightyellow;
+.publisher {
+    text-align: right;
+    font-size: 0.7em;
+    font-weight: 800;
+    color: #770404;
+    padding-right: 5px;
 }
 
 /* prev- are used for video previed in `/d/1886119869/Soccer` .. */
