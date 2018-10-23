@@ -3,7 +3,7 @@
 rm -rf ./dist
 NODE_ENV=production node_modules/.bin/webpack -p
 
-echo "Manually removing 'localhost:8000' from the manifest.json"
+echo "Manually removing 'localhost:9000' from the manifest.json"
 # This is savage.
 sed '/localhost:9000/d' manifest.json > ./dist/manifest.json
 
