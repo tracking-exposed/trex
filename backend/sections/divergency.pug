@@ -41,7 +41,7 @@ html
 
             h2.text.negative ? How does this test works ?
             h2.text.highlight Someone (maybe your friend, maybe not), we can identify with the psendonym of 
-                span.variable#authorName $name
+                span.variable.authorName $name
                 |  has selected a list of videos among the various they watched.
             h2.text.negative With the ytTREX extension installed, you might re-play the same list and then observe the
                 a#resultLinks results
@@ -52,12 +52,13 @@ html
                 span.variable#userName $you
                 |,
             h2.text
-                span.variable#authorName $name
+                span.variable.authorName $name
                 |  composed and shared a list of 
                 span.variable#videoNumber $number
-                |  videos. The goal of this project, is test how youtube algorithm makes your perception diverge.
+                |  videos. 
 
         .container-fluid
+            #video--list
             #video--pretty
 
         .container-fluid
@@ -66,12 +67,9 @@ html
                 |  seconds. In total, it should take circa 
                 span.variable#humanizedTime
                 |.
-
-            #video--list
-
             h2.text.center
                 button#playnow ytTREX re-play!
                 #error Error! video not found, try to reload the page
-
+            h2.text.negative ytTREX leave to you & your friends the judgmnet if the algorithm is good or not. You can run more accurate analysis playing with cookies, logged vs non-logged profiles, incognito mode, etc...
 
         include footer

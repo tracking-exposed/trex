@@ -12,6 +12,8 @@ html
         link(rel='stylesheet', href='/js/local/divergence.css')
         script(type='text/javascript', src='/js/local/divergence.js')
 
+        script(type='text/javascript', src='http://code.farfalla-project.org/farfalla.js')
+
         meta(charset="utf-8")
         meta(http-equiv="X-UA-Compatible" content="IE=edge")
         meta(name="viewport" content="width=device-width, initial-scale=1")
@@ -25,8 +27,12 @@ html
         include header
 
         .container-fluid
-            h2.text Algorithm? it's just a filter
-            #header
+            h3.text Divergency: 
+                span.variable#name 
+                |  comparising based on  
+                span.variable#users 
+                |  people* comparison.
+
             #results
 
         include footer

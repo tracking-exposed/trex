@@ -54,7 +54,7 @@ function handshake(req) {
         })
         .then(function(supporter) {
             return mongo
-                .read(nconf.get('schema').sequences, { id: _.parseInt(req.body.testId), first: true })
+                .read(nconf.get('schema').sequences, { testId: _.parseInt(req.body.testId), first: true })
                 .tap(function(rets) {
                     debug("found %d videos from the sequence requested, %s wants to commit", _.size(rets), supporter.p);
                 })
@@ -67,14 +67,21 @@ function handshake(req) {
                     };
                 });
         })
-        .map(function(commitment) {
-
+        .then(function(commitments) {
             return mongo
-                .writeOne(nconf.get('schema').commitments, commitment)
-                .return(commitment.p);
+                .writeMany(nconf.get('schema').commitments, commitments)
+                .return(_.first(commitments).p)
+                .catch(function(error) {
+                    /* message: 'E11000 duplicate key error collection --- this happen when the
+                     * person refresh/reload the page, we don't save this, as long as the thing
+                     * is alive */
+                    if(error.code === 11000)
+                        return _.first(commitments).p;
 
-        }, { concurrency: 5 })
-        .then(_.first)
+                    throw error;
+                });
+
+        })
         .then(function(pseudonym) {
             /* it return the pseudonym to be printed in /d/$testId/$name span#userName */
             return { json: {

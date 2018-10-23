@@ -30,6 +30,8 @@ function userLookup ({ userId }, sendResponse) {
             db.set(userId, val).then(val => {
                 sendResponse({ publicKey: val.publicKey, status: val.status });
             });
+        } else {
+            sendResponse({ publicKey: val.publicKey, status: val.status });
         }
     });
 };

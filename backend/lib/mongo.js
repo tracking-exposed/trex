@@ -26,7 +26,7 @@ var writeOne = function(cName, dataObject) {
     .return(dataObject);
 };
 
-var updateOne = function(cName, selector, updated) {
+function updateOne(cName, selector, updated) {
     return Promise.using(dbConnection(), function(db) {
         return db
             .collection(cName)

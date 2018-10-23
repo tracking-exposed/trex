@@ -58,14 +58,14 @@ function boot () {
             console.log(`The page ${window.document.location.href} should not be processed by the ytTREX extension`);
             return null;
         } else {
-            remoteLookup(response => {
+            return remoteLookup(response => {
                 // Basically I'm waiting to be sure the API handshare has answered 
                 var badpattern = window.setInterval(function() {
                     try {
                         pseudonym.set(JSON.parse(response.response).p);
                         if(!_.isNull(pseudonym.get())) {
                             window.clearInterval(badpattern);
-                            return testDivergency();
+                            testDivergency();
                         }
                     } catch (error) {}
                 }, 200);
@@ -104,10 +104,10 @@ function testDivergency() {
         vl =  JSON.parse($("#video--list pre").html() );
         console.log(`Parsed ${vl.list.length} videos`);
         // display the button if we are sure we have videos
-        $("#playnow").toggle();
+        $("#playnow").show();
     } catch(error) {
         console.log(error);
-        $("#error").toggle();
+        $("#error").show();
     }
     $(".extension-present").show();
 

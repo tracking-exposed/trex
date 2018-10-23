@@ -21,12 +21,12 @@ function getSequence(req) {
     var testId =  _.parseInt(req.params.testId);
     var name = req.params.name;
     var tabtime = _.parseInt(nconf.get('tabtime'));
-    var filter = { id: testId, name: name};
+    var filter = { testId: testId, name: name};
     debug("Looking for sequence %j, (tabtime %d seconds)", filter, tabtime);
     return fetchSequences(filter)
         .then(function(sequence) {
 
-            var seconds = (_.size(sequence) * tabtime);
+            var seconds = ( _.size(sequence) * tabtime);
             var humanized = moment.duration({ seconds: seconds }).humanize();
             return {
                 json: {
@@ -36,7 +36,7 @@ function getSequence(req) {
                     humanize: humanized,
                     seconds: seconds,
                     tabtime: tabtime,
-                    producer: sequence[0].userPseudo
+                    producer: _.first(sequence).userPseudo
                 } 
             };
         });
@@ -44,23 +44,42 @@ function getSequence(req) {
 
 function getResults(req) {
     var testId =  _.parseInt(req.params.testId);
-    var name = req.params.name;
-    var filter = { id: testId };
-    debug("Looking for results %j", filter);
-    // this is wrong at the moment, all the results based on videoId should not be returned 
-    // only the proper videos.id linked in the sequences should
+    var filter = { testId: testId };
+    debug("Looking for results of testId %d", testId);
+
+    var name = null;
+
     return fetchSequences(filter)
         .map(function(sequence) {
-            return mongo.read(nconf.get('schema').sequences, { id: sequence.videoId });
-        }, { concurrency: 20})
-        .then(_.flatten)
-        .then(function(videos) {
-            return { json: videos };
+
+            /* look at the detail video to retrieve the `related` videos */
+            return mongo
+                .read(nconf.get('schema').videos, { id: sequence.id })
+                .then(_.first)
+                .then(function(v) {
+                    var fields = [ 'authorName', 'videoId', 'href', 'clientTime', 'title' ];
+                    var ret = _.pick(v, fields);
+
+                    ret.related = _.map(v.related, function(r) {
+                        return _.pick(r, ['index', 'source', 'title', 'videoId' ]);
+                    });
+                    ret.p = sequence.p;
+                    ret.testId = sequence.testId;
+
+                    if(_.isNull(name) && !_.isUndefined(sequence.first))
+                        name = sequence.name;
+
+                    return ret;
+                });
+        }, { concurrency: 10})
+        .then(function(ret) {
+            debug("Test %s, evidences: %d", name, _.size(ret));
+            return { json: { name: name, evidences: ret  } };
         });
 };
 
 function verifyVideoIds(ids) {
-    var kept = [ 'href', 'savingTime', 'id', 'title', 'authorName', 'authorSource' ];
+    var kept = [ 'href', 'savingTime', 'id', 'videoId', 'title', 'authorName', 'authorSource' ];
     return Promise.map(ids, function(id) {
         return mongo
             .read(nconf.get('schema').videos, { id: id })
@@ -77,8 +96,7 @@ function createSequence(req) {
     var publicKey = req.params.publicKey;
     var name = req.params.name;
 
-    debug("requested new sequence! key %s, videos %d | %s", publicKey, _.size(ids), name);
-
+    debug("Creating new sequence, key %s, videos %d | %s", publicKey, _.size(ids), name);
     return mongo
         .read(nconf.get('schema').supporters, { publicKey: publicKey })
         .then(_.first)
@@ -94,18 +112,19 @@ function createSequence(req) {
         })
         .tap(function(mixes) {
             if(!_.size(mixes.videos))
-                throw new Error("No valid video Id offered");
+                throw new Error("No valid videos/user combo offered");
         })
         .then(function(mixes) {
+            debug("Validated %d videos from supporter %s", _.size(mixes.videos), _.size(mixes.user.p) );
             var id =  _.random(0, 0xffffffff);
             var sequence = _.map(mixes.videos, function(v, i) {
-                var retv = _.omit(v, ['id']);
-                retv.videoId = v.id;
-                retv.first = true;
-                retv.p = mixes.user.p;
-                retv.name = name;
-                retv.order = i + 1;
-                return retv;
+                v.first = true;
+                v.p = mixes.user.p;
+                v.name = name;
+                v.order = i + 1;
+                v.testId = id;
+                /* and v is become a 'sequence' */
+                return v;
             });
             return mongo
                 .writeMany(nconf.get('schema').sequences, sequence)
@@ -120,10 +139,12 @@ function createSequence(req) {
 
 function findLastDivergenciesUpdates(sequences) {
 
-    var seqIds= _.keys(_.countBy(sequences, 'id'));
+    var seqIds= _.map(_.keys(_.countBy(sequences, 'id')), _.parseInt);
+    debug("findLastDivergenciesUpdates on tests: %s", seqIds);
     return mongo
-        .readLimit(nconf.get('schema').sequences, { 'id': { "$in" : seqIds }}, { creationTime: -1 }, 0, 1)
+        .readLimit(nconf.get('schema').sequences, { 'testId': { "$in" : seqIds }}, { savingTime: -1 }, 0, 1)
         .then(function(rets) {
+            console.log(_.size(rets));
             debugger;
             return rets;
         });

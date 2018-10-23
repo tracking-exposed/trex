@@ -1,8 +1,6 @@
 var _ = require('lodash');
 var Promise = require('bluebird');
 var fs = Promise.promisifyAll(require('fs'));
-var request = Promise.promisifyAll(require('request'));
-var cheerio = require('cheerio');
 var debug = require('debug')('lib:parse');
 var moment = require('moment');
 var nconf = require('nconf'); 
@@ -29,13 +27,13 @@ function fetchMetadata(config) {
 
     /* id overwrites every other requirement */
     if(nconf.get('id')) {
-        debug("Remind: when id is specified, other selectors are ignored");
-        // XXX never tested this  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
         defauls.since = "2018-01-01";
         defaults.until = moment().format("YYYY-MM-DD 23:59:59");
         defaults.requirements = { id : nconf.get('id') };
     }
-    debug("⭐ since: %s until %s", defaults.since, defaults.until);
+    debug("⭐ since: %s until %s%s", defaults.since, defaults.until,
+        defaults.requiremenets ? "[+special id requested!]" : "");
+
     return mongo
         .read(nconf.get('schema').videos, _.extend({
                 savingTime: {
@@ -45,9 +43,7 @@ function fetchMetadata(config) {
             },
             _.get(defaults, 'requirements'),
             _.set({}, defaults.parserName, {'$exists': false} )))
-        .tap(function(results) {
-            debug("matched %d objects to be parsed", _.size(results));
-        });
+        .tap(report("videos retrieved matching the time window"));
 };
 
 function report(text, objs) {
@@ -65,6 +61,7 @@ function please(config) {
     }
 
     return fetchMetadata(config)
+        .tap(report("found elements"))
         .map(function(metadata) {
             return fs
                 .readFileAsync(metadata.htmlOnDisk, 'utf-8')
@@ -76,14 +73,16 @@ function please(config) {
                     // debug("Error %s", JSON.stringify(metadata, undefined, 2), error.message);
                     return null;
                 })
+                .then(function(updates) {
+                    if(!updates)
+                        return null;
+                    return mongo
+                        .updateOne(nconf.get('schema').videos, {id: metadata.id}, _.extend(updates, metadata))
+                        .return(true);
+                });
         }, { concurrency: 1 })
-        .tap(report("returned elements"))
         .then(_.compact)
-        .tap(report("analyzed elements"))
-        .map(function(processed) {
-            return mongo
-                .updateOne(nconf.get('schema').videos, {_id: processed._id}, processed);
-        }, { concurrency: 1 });
+        .tap(report("linked"));
 };
 
 module.exports = {

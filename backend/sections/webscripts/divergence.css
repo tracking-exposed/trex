@@ -1,15 +1,11 @@
 .extension-present {
-    display: 0;
+    display: none;
 }
 .extension-missing {
-    display: 0;
+    display: none;
 }
-
-.inprogress {
-    padding: 5px 11px;
-    font-weight: 700;
-    border: 2px solid #9b9b9b;
-    background-color: #fff;
+#error {
+    display: none;
 }
 #playnow {
     cursor: pointer;
@@ -22,6 +18,13 @@
     padding: 5px 11px;
     color: #4c4c4c;
     text-decoration: none;
+    display: none;
+}
+.inprogress {
+    padding: 5px 11px;
+    font-weight: 700;
+    border: 2px solid #9b9b9b;
+    background-color: #fff;
 }
 #video--list {
 	text-align: center;
@@ -34,16 +37,33 @@
 .header {
     background-color: #e9ffe4;
     width: '100%';
+    text-align: left;
+}
+.unit {
+    border-right: white 2px solid;
 }
 .title {
-    font-size: 1.3em;
+    font-size: 1.1em;
 }
 .info {
-    border: 2px #e6e6b6 solid;
-    border-radius: 0px 25px 0px 25px;
-    background-color: #ffffed;
-    padding-left: 1em;
-    padding-right: 1em;
+    font-size: 0.9em;
+}
+.result {
+}
+.entry {
+}
+.user {
+    background-color: white;
+}
+.related p {
+    font-size: 0.7em
+    text: white;
+}
+.color-0 {
+    background-color: lightgreen;
+}
+.color-1 {
+    background-color: lightyellow;
 }
 
 /* prev- are used for video previed in `/d/1886119869/Soccer` .. */

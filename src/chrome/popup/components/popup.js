@@ -4,7 +4,7 @@ import Settings from './settings';
 
 const styles = {
     width: "400px",
-    'text-align': "right"
+    'textAlign': "right"
 };
 
 const Popup = React.createClass({

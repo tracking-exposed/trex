@@ -61,8 +61,8 @@ function saveVideo(body, supporter) {
     if(isVideo)
         video.videoId = _.replace(body.href, /.*v=/, '');
 
-    debug("Saving video %d (id %s) for user %s in file %s (%d bytes)",
-        video.incremental, video.videoId, supporter.p, fdest, _.size(body.element)
+    debug("Saving entry (videos: %s) user %s file %s (%d bytes)",
+        isVideo ? video.videoId : "false", supporter.p, fdest, _.size(body.element)
     );
 
     return mongo

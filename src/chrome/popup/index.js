@@ -10,7 +10,7 @@ const bo = chrome || browser;
 function main () {
 
      bo.runtime.sendMessage({
-        type: 'userLookup',
+        type: 'localLookup',
         payload: {
             userId: 'local' // config.userId
         }

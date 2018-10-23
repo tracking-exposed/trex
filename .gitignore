@@ -19,6 +19,7 @@ dist/*
 docs/*
 backend/htmls/*
 backend/dist/*
+backend/farfalla/*
 
 node_modules/*
 backend/node_modules/*
