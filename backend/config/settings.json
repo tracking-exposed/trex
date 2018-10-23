@@ -8,6 +8,7 @@
   },
   "mongodb": "mongodb://localhost/yttrex",
   "port": 9000,
-  "interface": "127.0.0.1",
-  "tabtime": 20
+  "tabtime": 20,
+  "interface": "0.0.0.0",
+  "htmlMaxAmount": 1000
 }
