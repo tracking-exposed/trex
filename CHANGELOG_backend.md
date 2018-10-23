@@ -1,6 +1,12 @@
 The format is based on [Keep a Changelog](http://keepachangelog.com/) and this
 project adheres to [Semantic Versioning](http://semver.org/).
 
+## [1.1.0] - 2018-10-23
+### Added
+- implemented divergency, results and personal APIs
+- updated DB format with `commitments` and `sequences`
+- implemented tool to link videos to the same testId
+
 ## [1.0.2] - 2018-09-18
 ### Fixed
 - made a barely useful personal page

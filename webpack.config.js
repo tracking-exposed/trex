@@ -35,8 +35,8 @@ const PATHS = {
 
 /** EXTERNAL DEFINITIONS INJECTED INTO APP **/
 var DEV_SERVER =  '127.0.0.1'
-var ENV_DEP_SERVER = DEVELOPMENT ? 'http://' + DEV_SERVER + ':9000' : 'https://y.tracking.exposed';
-var ENV_DEP_WEB = DEVELOPMENT ? 'http://' + DEV_SERVER + ':9000' : 'https://y.tracking.exposed';
+var ENV_DEP_SERVER = DEVELOPMENT ? 'http://' + DEV_SERVER + ':9000' : 'https://youtube.tracking.exposed';
+var ENV_DEP_WEB = DEVELOPMENT ? 'http://' + DEV_SERVER + ':9000' : 'https://youtube.tracking.exposed';
 
 const DEFINITIONS = {
     'process.env': {
