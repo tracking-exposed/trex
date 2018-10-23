@@ -1,4 +1,4 @@
-
+#!/usr/bin/env node
 var Promise = require('bluebird');
 var nconf = require('nconf');
 var debug = require('debug')('init');
@@ -6,7 +6,7 @@ var mongo = require('../lib/mongo');
 
 nconf.argv().env().file({ file: "config/settings.json" });
 
-debug("Initializing three indexes: %s", destCollection);
+debug("Initializing indexes");
 return Promise.all([
     mongo.createIndex( nconf.get('schema').commitments, { videoId: 1, p: 1 }, { unique: true }),
     mongo.createIndex( nconf.get('schema').commitments, { videoId: 1 }),
