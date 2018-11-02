@@ -58,22 +58,21 @@ function boot () {
             console.log(`The page ${window.document.location.href} should not be processed by the ytTREX extension`);
             return null;
         } else {
+            /* this call the API `handshake`, which state a commitment of playing the videos
+             * on the list, in this way, the result can be linked together */
             return remoteLookup(response => {
-                // Basically I'm waiting to be sure the API handshare has answered 
-                var badpattern = window.setInterval(function() {
-                    try {
-                        pseudonym.set(JSON.parse(response.response).p);
-                        if(!_.isNull(pseudonym.get())) {
-                            window.clearInterval(badpattern);
-                            testDivergency();
-                        }
-                    } catch (error) {}
-                }, 200);
+                $("#userName").text(pseudonym.get());
+                $(".extension-present").show();
+
+                vl =  JSON.parse($("#video--list pre").html() );
+                console.log(`Parsed ${vl.list.length} videos`);
+
+                console.log(response);
             });
         }
     }
 
-    // youtube.com
+    // this get executed only on youtube.com
     console.log(`yttrex version ${config.VERSION} build ${config.BUILD} loading; Config object:`);
     console.log(config);
 
@@ -94,38 +93,6 @@ function boot () {
         flush();
     });
 }
-
-function testDivergency() {
-
-    $("#userName").text(pseudonym.get());
-
-    var vl = null;
-    try {
-        vl =  JSON.parse($("#video--list pre").html() );
-        console.log(`Parsed ${vl.list.length} videos`);
-        // display the button if we are sure we have videos
-        $("#playnow").show();
-    } catch(error) {
-        console.log(error);
-        $("#error").show();
-    }
-    $(".extension-present").show();
-
-    $("#playnow").on('click', function() {
-        bo.runtime.sendMessage({
-            type: 'opener',
-            payload: _.extend(vl)
-        }, response => {
-            console.log(config);
-            console.log(vl);
-            $("#playnow").text(`In progress, wait for ${vl.humanize}`);
-            const changeTextT = window.setTimeout(function() {
-                var testHref = `/r/${vl.testId}/${vl.testName}`;
-                $("#playnow").html(`<div class='done'>done! you can close the tabs and <a href=${testHref}>see results</a>.</div>`);
-            }, vl.seconds * 1000);
-        });
-    });
-};
 
 function createLoadiv() {
     // this is bound to #loadiv and appears on the right bottom

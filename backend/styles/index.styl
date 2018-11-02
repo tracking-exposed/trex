@@ -1,72 +1,68 @@
-*
-  margin 0
-  padding 0
-  box-sizing border-box
-  font-family 'Work Sans'
+body
+    font-family 'Work Sans'
+
+.yt-red-f
+    color #d31611
+.yt-red-b
+    background-color #d31611
+    a 
+        color palegoldenrod
+        background-color #fe5000
+        border-radius 50%
+
+.yt-green-f
+    color #64b211
+.yt-green-b
+    background-color #64b211
+    a
+        color palegoldenrod
+
+.yt-orange-b
+    background-color #fe5000
+    a 
+        color palegoldenrod
+.yt-orange-f
+    color #fe5000
+
+.bolder
+    font-weight 800
+
+.spaced
+    margin-top 10px
+    margin-bottom 10px
+
+.white
+    color white
 
 .left
-  text-align left
+    text-align left
 
 .right
-  text-align right
+    text-align right
 
 img
-  max-width 100%
-  max-height 100%
+    max-width 100%
+    max-height 100%
 
-p
-  font-size 1.3em
-
-.center
-  text-align center
-
-p
-  font-size 1.3em
-
-.theinputfield
-  width 70%
-  font-size 1.4em
-
-.buttonfield
-  width 10%
-
-.jumbotronwidth
-  max-width 50%
-
-.jumbotron
-  background-color white
-
-.monospace
-  font-family 'Source Code Pro', monospace
-  margin 0
-
-.mainstyle
-  padding-right 10%
-  padding-left 10%
-  padding-bottom 2%
-
-
-  h2
-    border-left #3c5a99 0.01em solid
-    padding-left 0.1em
-
-
-/* unordered list */
-.fb--icon-list
-  list-style-image url("/images/yttrex16.png")
-  font-size 1.3em
+.terminal
+    text-align left
+    font-family monospace !important
+    color #00fb00
+    background-color black
+    padding-left 5px
+    padding-right 5px
 
 @font-face
-  font-family 'Work Sans'
-  font-style normal
-  font-weight 400
-  src local('Work Sans'), url(/fonts/WorkSans.ttf) format('truetype');
+    font-family 'Work Sans'
+    font-style normal
+    font-weight 400
+    src local('Work Sans'), url(/fonts/WorkSans.ttf) format('truetype');
 
 .githublogo
     width 20px
     height auto
 
-.fbtrexlogo
+.yttrexlogo
     border solid 1px #ccc
     border-radius 10%
     padding 1em
@@ -77,19 +73,15 @@ p
     text-align right
 
 
-.fb--icon-list > li {
+/* unordered list */
+.yt--icon-list
+    list-style-image url("/images/yttrex16.png")
+    font-size 1.3em
+
+.yt--icon-list > li {
     margin-left: 7%;
     line-height: 2em;
 }
-
-.clickable
-    border 1px solid
-    padding 10px
-    box-shadow 0px 5px 5px 1px #fe5000
-    cursor pointer
-
-.space
-    margin-bottom 20px
 
 .text
     margin-left 8%
@@ -103,6 +95,13 @@ h1.text
 
 .centered
     text-align center
+
+.ytslot
+    border-radius 0px 35px 0px 35px
+    align-self center
+
+.ytslot-inverted
+    border-radius 35px 0px 35px 0px
 
 .negative
     background black

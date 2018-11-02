@@ -1,0 +1,129 @@
+doctype html
+html
+  head
+    meta(charset="utf-8")
+    meta(http-equiv="X-UA-Compatible" content="IE=edge")
+    meta(name="viewport" content="width=device-width, initial-scale=1")
+    meta(name="keywords" content="yt, t-rex")
+
+    link(rel='stylesheet', href='/css/bootstrap.css')
+    link(rel='stylesheet', href='/css/index.css')
+    script(type='text/javascript', src='/js/lodash.min.js')
+    script(type='text/javascript', src='/js/jquery.js')
+    script(type='text/javascript', src='/js/collapse.js')
+    script(type='text/javascript', src='/js/bootstrap.min.js')
+
+    meta(property="og:title" content="ytTREX")
+    meta(property="og:type" content="website")
+    meta(property="og:description" content="youtube.TREX, how does it work? data source, processing, correlation and algorithm analysis. ")
+    meta(property="og:url" content="https://youtube.tracking.exposed")
+    meta(property="og:image" content="https://youtube.tracking.exposed/images/youtube-trex-logo.png")
+    meta(property="og:image:width" content="1000")
+    meta(property="og:image:height" content="1000")
+
+    title ytTREX
+
+  body
+
+    include header
+    
+    .container-fluid.ytslot
+        .col-md-6.ytslot.yt-green-b.white.right
+            h2 Once you've installed the extension, you should have the icon appearing in your browser
+                br
+                br
+            h2 click, and you'll see the ytTREX logo
+                br
+                br
+            h1.yt-orange-b.ytslot-inverted
+                span.bolder You have it?
+                br
+                .left You can go on youtube.com
+            h1.yt-red-b.ytslot-inverted
+                span.bolder You don't have it?
+                br
+                .left Your adventure ends here :(
+
+            p Logo crafted by 
+                a(href="" target="_blank") Luca Corsato
+                |  of 
+                a(href="" target="_blank") OSD
+                |, same as the one of 
+                a(href="" target="_blank") facebook.tracking.exposed
+
+        .col-md-6
+            small.right
+                a(target="_blank" href="https://github.com/tracking-exposed/yttrex/issues/2") Only available for Firefox and Chrome. Safari and Edge should be supported ☛
+            .ytslot.centered
+                img(src="/images/extension-installed.png")
+
+    .container-fluid.ytslot.highlight
+        h2.right Only from the browser with the extension installed, when you navigate on youtube.com, ytTREX will take a copy of the page.
+        h2.left When the copy is done, the logo is display on the right bottom corner for a second, like this:
+
+    .container-fluid
+        img.center(src="/images/copy-example.png")
+
+    .container-fluid
+        .col-md-6.ytslot.yt-green-b.right.white
+            h2 Super! when the copy happen, you can click on the popup
+            h2 
+                i Divergency
+                |  is our main product, it permits you to observe how different personas diverge their informative experience because of the Algorithm
+
+        .col-md-6.ytslot
+
+
+
+
+    .container-fluid.ytslot.yt-red-b.spaced.white
+        h2 
+            span.bolder What 
+            |  is saved? 
+            span.bolder How big
+            |  is the dataset? And 
+            span.bolder processing, how
+            |  is built?
+
+    .container-fluid
+        .col-md-6.ytslot.yt-green-b.right.white
+            h2 All great questions! transparency is a form of fairness, and this project is not afraid of.
+                br
+                | We are not based on an exploitative model such as other data collector. Our final, and first, goal is to 
+                i keep algorithms accountable.
+        .col-md-6.ytslot.yt-green-b.left
+            h2 Accountability method and regulations should be the solution, but in the meanwhile authorities and politics think about it, we 
+                span.bolder want to educate the connected citizens
+                |, and be a good example in fairness.
+
+    .container-fluid.spaced
+
+        .col-md-6.ytslot.yt-orange-b.white.right
+            h1 What is saved?
+            h3 free software helps a bit in this ;) below you can see how in a EGA terminal our log looks like, and everyone can 
+                a(target="_blank" href="https://github.com/tracking-exposed/yttrex/blob/master/backend/lib/events.js") vision the code ☛
+
+            .terminal
+                span Saving entry (videos: zHPkgTEat_c) user citrus-gnocchi-oatmeal file htmls/2018-11-02/5ad46b8e94f9b85f2e285802ee82b1cd19dd6e10.html (496854 bytes)
+
+            p The 
+                i citrus-gnocchi-oatmeal 
+                | is an example of our pseudonymization process: we convert every pseudonym in three food words, so you can better memorize them.
+
+        .col-md-6.ytslot.left
+            h2 Beside be clearyl explained here, whe should keep as reference what GDPR tell us is to:
+            ul.yt--icon-list
+                li Be clear and coincise in our privacy statement
+                li Give to the user interface to know the data associated to them, and the right to delete/download them
+                li Give them granular control upon the sharing and reuse of this data
+                li Minimize what we record, only the scope of what is announced should be possible, not additional way to exploit data
+
+
+    .container-fluid.ytslot.centered
+        h2 When a video is received, in the database is saved with these fields:
+        img(src="/images/videos-object-1.png")
+
+
+
+
+

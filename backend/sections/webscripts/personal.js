@@ -82,12 +82,9 @@ function videoDataHTML(d) {
                     d.authorName,
                 '</a>',
                 '</span>',
-            '<span class="col-md-8 related-list">',
+            '<span class="col-md-9 related-list">',
                 '<p>Related videos</p>',
                 _.reduce(d.related, representRelated, ""),
-            '</span>',
-            '<span class="col-md-1">',
-                '<p>Something else we can put here?</p>',
             '</span>',
         '</div>'
     ];

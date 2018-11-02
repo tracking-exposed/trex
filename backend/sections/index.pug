@@ -28,30 +28,64 @@ html
     include header
     
     .container-fluid
-        h1.centered.negative YouTube works great for individuals, but shitty for societies
-        include carousel
+        .col-md-6.ytslot.yt-red-b.white.right
+            h1 YouTube is a private actor, but is getting a public role in governing how information circulate
+                .left know more 
+                    a(href="#carosello") ↓ 
+        .col-md-6.ytslot.yt-green-b.white.left
+            h1 To measure and judge the algorithm, you have to 
+                span.yt-red-f.bolder compare the tailored experiences 
+                | with someone else, different or similar to you
+
+    .container-fluid.ytslot
         h2.centered.negative Platforms tell us to be 
             i neutral
             |, but with their internal techno-politics, they (willingly or not) influence collective phenomena
         h1.centered We want to keep them accountable!
         include downloads
-        h2.centered.silly "But a commercial platform has all the rights to do bu$ine$$..."
-        h1.centered not the point: here, we think to the future! 
-        h1.centered.negative society decides what is a right and what is an abuse, and this, is an educative project to change your mind on techno-politics
-        h1.centered to show 
-            // even to blind people 
-            | why algorithms are political
-        include downloads
-        h2.centered.negative youtube.tracking.exposed collects which video are suggested to you
-        h2.centered.highlight ytTREX expose the algorithm
-        h2.centered.negative ytTREX show what is invisible
-        include downloads
-        h2.centered.negative (at this point you should have clicked on the button and start to play with the extention)
+        
+        .col-md-6.ytslot.yt-red-b.white.right
+            h1 "But a commercial platform has all the rights to do bu$ine$$..."
 
-        span.col-md-6
-            h1.centered.highlight See how it works
-        span.col-md-6
-            h1.centered.highlight About us
+        .col-md-6.ytslot.yt-green-b.white.left
+            h1 Not the point! We think to the future, who decides for you? based on what? how much you can buy it?
+
+        .ytslot.yt-orange-b.right
+            h1 society decides what is a right and what is an abuse
+                br
+                | ytTREX: 
+                span.white.bolder an educative project 
+                |  to show why techno-politics matter!
+
+        .col-md-6.ytslot.yt-green-b.right
+            h1 Algorithms are political
+
+        .col-md-6.ytslot.yt-red-b.white.left
+            h1 Google's promises of 
+                i transparency 
+                | are pointless without having the users knowing what an algorithm is 
+
+
+    .container-fluid.spaced#carosello
+        include carousel
+
+    .container-fluid
+        include downloads
+        h2.centered.negative 
+            i at this point you should have installed the extension
+                br
+                | [ or check the box below ]
+
+    .container-fluid.spaced.bolder
+        a(href="/technicalities") 
+            .col-md-6.ytslot.yt-green-b.right
+                h2.highlight.white How does it work?
+                    br 
+                    | How can be used?
+
+        a(href="/about-us") 
+            .col-md-6.ytslot.yt-green-b.left
+                h1.highlight.white About us
 
 
 

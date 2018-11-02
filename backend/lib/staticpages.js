@@ -23,6 +23,8 @@ var pageMap = {
   'personal': pugCompiler('personal/landing'),
   'divergency': pugCompiler('divergency'),
   'results': pugCompiler('results'),
+  'privacy-statement': pugCompiler('privacy'),
+  'technicalities': pugCompiler('technicalities'),
   '/': pugCompiler('index'),
   '404': pugCompiler('404')
 };
