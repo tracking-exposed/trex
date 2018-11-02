@@ -24,13 +24,16 @@ html
         include ../header
 
         div#whole
+            .container-fluid#removable
+                .col-md-6.ytslot.yt-green-b.white.right
+                    h2 This is your personal page. Think twice before share this link!
+                .col-md-6.ytslot.yt-red-b.white.left
+                    h2 It would contain sequence of the videos recorded, YT's personalized suggestions and it is possible delete the contributions
+
             .container-fluid
-                h2.text.negative This link is only yours, share it 
-                    i wisely
-                    |; It might contain sequence of the videos you watched, and YT's personalized suggestions
                 h2.text.right
                     span#codename.variable [codename]
-                    |  is you!
+                    |  is your pseudonym on ytTREX!
 
             include menu
         include ../footer

@@ -25,6 +25,7 @@ var pageMap = {
   'results': pugCompiler('results'),
   'privacy-statement': pugCompiler('privacy'),
   'technicalities': pugCompiler('technicalities'),
+  'about-us': pugCompiler('about'),
   '/': pugCompiler('index'),
   '404': pugCompiler('404')
 };
