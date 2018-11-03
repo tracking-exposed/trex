@@ -58,15 +58,12 @@ function boot () {
             console.log(`The page ${window.document.location.href} should not be processed by the ytTREX extension`);
             return null;
         } else {
+            $(".extension-missing").hide();
             /* this call the API `handshake`, which state a commitment of playing the videos
              * on the list, in this way, the result can be linked together */
             return remoteLookup(response => {
                 $("#userName").text(pseudonym.get());
                 $(".extension-present").show();
-
-                vl =  JSON.parse($("#video--list pre").html() );
-                console.log(`Parsed ${vl.list.length} videos`);
-
                 console.log(response);
             });
         }

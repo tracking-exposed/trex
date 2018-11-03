@@ -2,8 +2,9 @@
     display: none;
 }
 .extension-missing {
-    display: none;
+    /* display: none; */
 }
+
 #error {
     display: none;
 }
