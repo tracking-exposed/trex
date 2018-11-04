@@ -62,9 +62,12 @@ function boot () {
             /* this call the API `handshake`, which state a commitment of playing the videos
              * on the list, in this way, the result can be linked together */
             return remoteLookup(response => {
+                console.log("remoteLookup answer with:", response);
+                var pseudoName = JSON.parse(response.response).p;
+                pseudonym.set(pseudoName);
                 $("#userName").text(pseudonym.get());
                 $(".extension-present").show();
-                console.log(response);
+                $(".extension-missing").hide();
             });
         }
     }

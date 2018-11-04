@@ -51,20 +51,20 @@ html
                 |, same as the one of 
                 a(href="" target="_blank") facebook.tracking.exposed
 
-        .col-md-6
-            small.right
+        .col-md-6.centered
+            small
                 a(target="_blank" href="https://github.com/tracking-exposed/yttrex/issues/2") Only available for Firefox and Chrome. Safari and Edge should be supported ☛
             .ytslot.centered
-                img(src="/images/extension-installed.png")
+                img.screencut(src="/images/extension-installed.png")
 
     .container-fluid
         h2.right Only from the browser with the extension installed, when you navigate on youtube.com, ytTREX will take a copy of the page.
         h2.left When the copy is done, the logo is display on the right bottom corner for a second, like this:
 
-    .container-fluid
-        img.center(src="/images/copy-example.png")
+    .container-fluid.centered
+        img.screencut(src="/images/copy-example.png")
 
-    .container-fluid
+    .container-fluid.spaced
         .col-md-6.ytslot.yt-green-b.right.white
             h2 Super! when the copy happen, you can click on the popup
             h2 
@@ -136,12 +136,23 @@ html
                 | is an example of our pseudonymization process: we convert every pseudonym in three food words, so you can better memorize them.
 
         .col-md-6.ytslot.left
-            h2 Beside be clearyl explained here, whe should keep as reference what GDPR tell us is to:
+            h3 
+                b Mandate: 
+                |  in this project, we want to be an example on ethical treatment of data
             ul.yt--icon-list
-                li Be clear and coincise in our privacy statement
-                li Give to the user interface to know the data associated to them, and the right to delete/download them
-                li Give them granular control upon the sharing and reuse of this data
-                li Minimize what we record, only the scope of what is announced should be possible, not additional way to exploit data
+                li We are clear and coincise in our 
+                    a(href="/privacy-statement") privacy statement
+                    |.
+                li Provide a clear interface to know the data submitted, and immediate ability to delete, download and use them. Check our 
+                    a(href="/example") example
+                    |.
+                li Show with outstanding transparency and documentation the 
+                    a(href="/analysis") analysis
+                    |  we make over the dataset.
+                li Well, it is simple for us, we don't have a business model (at November '18 is a zero funded GPL3 project), we don't want to do business with data; Best case scenario: finding grant who let us do what we want.
+                li 
+                    b Our adversaries: 
+                    | user profiling, critical mass exploitation, centralization, and algorithm hegemony. 
 
 
     .container-fluid.ytslot.centered

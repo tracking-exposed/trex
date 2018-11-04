@@ -2,7 +2,13 @@ function buildAPIURL(apiName) {
     var elements = window.document.location.pathname.split('/');
     var name = elements.pop();
     var testId = elements.pop();
-    return { name: name, testId: testId, url: `/api/v1/${apiName}/${testId}/${name}` };
+    var pageChar = (apiName == 'sequence') ? 'd' : 'r';
+    return {
+        name: name,
+        testId: testId,
+        url: `/api/v1/${apiName}/${testId}/${name}`,
+        page: `/${pageChar}/${testId}/${name}`
+    };
 };
 
 function appendVideoAnticipation(video, n) {
@@ -11,7 +17,7 @@ function appendVideoAnticipation(video, n) {
             '<span class="col-md-2 ', video.videoId, '"></span>',
             '<span class="col-md-1 prev-order">', video.order, '</span>',
             '<span class="col-md-3 prev-title">', 
-                '<a target=_blank href="', video.href, '">►</a> ',
+                '<a target=_blank class="replay" id="video-order-', n, '"href="', video.href, '">►</a> ',
                 video.title,
             '</span>', 
             '<span class="col-md-3 prev-author">', 
@@ -28,8 +34,8 @@ function printList() {
     $.getJSON(urinfo.url, function(videos) {
 
         if(videos.error) {
-            console.log("Error!?");
-            $(".intro").append(videos.error);
+            console.log("Error!?", videos.error);
+            $("#list").html(videos.error);
             return;
         };
 
@@ -39,15 +45,33 @@ function printList() {
         // this append human readable videos to #video--pretty
         _.each(videos.list, appendVideoAnticipation);
 
-        // this append the <pre> invisibile element to be parse by web-extension
-        $("#video--list").append('<pre>' + JSON.stringify(videos) + '</pre>');
+        // this play with all the "replay" sequence
+        $(".replay").hide();
+        $(".replay").on('click', showNext);
+        $("#video-order-0").show();
 
         // all the yellow-background variables
-        $("#humanizedTime").text(videos.humanize);
-        $("#tabtime").text(videos.tabtime);
-        $("#videoNumber").text(_.size(videos.list));
+        $(".videoNumber").text(_.size(videos.list));
         $(".authorName").text(_.first(videos.list).p);
+        $(".extension-present").hide();
+
+        // the results page 
+        $(".resultLink").attr('href', buildAPIURL('results').page);
     });
+};
+
+function showNext(event) {
+    // the id is 'video-order-0' ...
+    var current = _.parseInt($(this).attr('id').split('-').pop());
+    $(this).parent().parent().hide();
+    var nextId = "#video-order-" + (current + 1);
+
+    if(!($(nextId))) {
+        var resultLink = buildAPIURL('results').page;
+        $("#procedure").html("You did it! Only the first evidence per video would be considered, so you can avoid to replay it again, because it would not be considered for your pseudonym a second time. <br>Wait few seconds, and then check the <a href='"+ resultLink +"'>results</a>.");
+    } else {
+        $(nextId).toggle();
+    }
 };
 
 /*
@@ -56,7 +80,7 @@ function printList() {
 
 function generateTable(evidences) {
 
-    var retval = [ '<table>', '<tbody>' ]
+    var retval = [ '<table>', '<tbody>' ];
     _.times(20, function(i) {
         var videocombo = pickThe(i, _.orderBy(evidences, 'p') );
         
@@ -68,10 +92,8 @@ function generateTable(evidences) {
                 '<p class="publisher '+ cleanSource +'">' + v.source + '</p>'
                 '<td>';
         });
-        
         retval = _.concat(retval, '<tr>', row, '</tr>');
     });
-    console.log(retval);
     return _.concat(retval, [ '</tbody>', '<table>' ]).join('');
 };
 
