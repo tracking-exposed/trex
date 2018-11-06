@@ -8,7 +8,7 @@ echo "Manually removing 'localhost:9000' from the manifest.json"
 grep -v localhost manifest.json | grep -v 127\.0 > ./dist/manifest.json
 
 V=`git tag -l | head -1`
-sed -es'/BUILD_VERSION/'$V'/' build/popup.html  > dist/popup.html
+sed -es'/BUILD_VERSION/'$V'/' src/popup/popup.html  > dist/popup.html
 
 cp icons/* ./dist
 cd ./dist
