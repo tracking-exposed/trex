@@ -35,19 +35,41 @@
 }
 
 /* results page */
-.header {
-    background-color: #e9ffe4;
-    width: '100%';
-    text-align: left;
+.author {
+    font-size: 0.7em;
+    margin: 0;
+    padding: 0 0 0 10px;
+    border: 0;
+    color: darkgreen;
 }
+
+.prev-entry {
+    border-top: 1px dotted darkgreen;
+}
+
+/* results page */
 .unit {
-    border-right: white 2px solid;
 }
 .title {
-    font-size: 1.1em;
+    background-color: #e7ffe7;
+    border-radius: 5px;
 }
 .info {
-    font-size: 0.9em;
+    background-color: #ffeaea;
+    border-radius: 5px;
+}
+.what {
+    font-weight: 700;
+    background-color: black;
+    color: white;
+    border-radius: 5px;
+    margin: 4px;
+    padding: 2px;
+}
+.notpossible {
+    text-align: center;
+    font-size: 1.5em;
+    padding: 1em;
 }
 .result {
 }
@@ -72,6 +94,28 @@
     font-weight: 800;
     color: #770404;
     padding-right: 5px;
+    margin: 0;
+}
+.header {
+    padding-top: 5px;
+    border-top: 1px solid black;
+    border-left: 1px solid black;
+    border-right: 1px solid black;
+    margin-top: 2px;
+}
+.comingout {
+    margin: 5px;
+}
+.selectedA {
+    background-color: #ffedcc;
+    border-radius: 5px;
+}
+.selectedB {
+    background-color: aliceblue;
+    border-radius: 5px;
+}
+.highlighter {
+    cursor: pointer;
 }
 
 /* prev- are used for video previed in `/d/1886119869/Soccer` .. */

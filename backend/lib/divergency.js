@@ -39,6 +39,10 @@ function getSequence(req) {
                     producer: _.first(sequence).userPseudo
                 } 
             };
+        })
+        .catch(function(error) {
+            debug("Error in getSequence: %s", error.message);
+            return { json: { error: true } };
         });
 };
 
@@ -57,11 +61,12 @@ function getResults(req) {
                 .read(nconf.get('schema').videos, { id: sequence.id })
                 .then(_.first)
                 .then(function(v) {
-                    var fields = [ 'authorName', 'videoId', 'href', 'clientTime', 'title' ];
-                    var ret = _.pick(v, fields);
+                    var videoFields = [ 'authorName', 'videoId', 'href', 'savingTime', 'title' ];
+                    var ret = _.pick(v, videoFields);
+                    var relatedFields = ['index', 'source', 'title', 'videoId'];
 
                     ret.related = _.map(v.related, function(r) {
-                        return _.pick(r, ['index', 'source', 'title', 'videoId' ]);
+                        return _.pick(r, relatedFields);
                     });
                     ret.p = sequence.p;
                     ret.testId = sequence.testId;
@@ -73,8 +78,21 @@ function getResults(req) {
                 });
         }, { concurrency: 10})
         .then(function(ret) {
+            var range = _.map(_.map(ret, 'savingTime'), function(t) {
+                return {
+                    date: new Date(t),
+                    h: moment(t).format('DD/MMM'),
+                    farago: moment.duration(moment(t) - moment()).humanize()
+                };
+            });
+            range = _.orderBy(range, 'date');
             debug("Test %s, evidences: %d", name, _.size(ret));
-            return { json: { name: name, evidences: ret  } };
+            return { json: {
+                name: name,
+                evidences: ret,
+                first: _.first(range),
+                last: _.last(range)
+            } };
         });
 };
 

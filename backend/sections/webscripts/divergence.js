@@ -34,8 +34,11 @@ function printList() {
     $.getJSON(urinfo.url, function(videos) {
 
         if(videos.error) {
-            console.log("Error!?", videos.error);
-            $("#list").html(videos.error);
+            console.log("Error", videos);
+            $("#list").html('<h3 class="centered">Error: <i>test</i> not found.</h3>');
+            $(".extension-present").remove();
+            $(".extension-missing").remove();
+            $("#extension-parsable").remove();
             return;
         };
 
@@ -80,10 +83,20 @@ function showNext(event) {
 
 function generateTable(evidences) {
 
-    var retval = [ '<table>', '<tbody>' ];
+    var contributorList = _.map(_.orderBy(evidences, 'p'), 'p');
+    if(_.size(contributorList) == 1)
+        return '<div class="notpossible">Only one contributor watch this video (' + _.first(contributorList) + '), not possible compare.</div>';
+
+    var retval = [ '<table>', 
+        '<thead>',
+            _.map(contributorList, function(c) {
+                return '<th class="centered">' + c + '</th>';
+            }).join(""),
+        '</thead>',
+    '<tbody>' ];
     _.times(20, function(i) {
         var videocombo = pickThe(i, _.orderBy(evidences, 'p') );
-        
+
         var row = _.map(videocombo, function(v) {
             var cleanSource = v.source.replace(/[\ \? \)\(\}\{\]\[\=\^\&\%\/\#\!\.\-\_\']/g, '');
             return '<td class="highlighter ' + v.videoId + '">' + 
@@ -107,18 +120,23 @@ function pickThe(index, list) {
 function produceTitles(evidences) {
     var titles = _.countBy(evidences, 'title');
     var rows = _.map(_.keys(titles), function(title, index) {
-        var filtered = _.filter(evidences, { title: title});
+        var filtered = _.filter(evidences, { title: title });
         return [
             '<div class="col-md-12 header">',
                 '<span class="col-md-1 unit">',
+                    '<span class="what">#</span>',
                     index + 1,
                 '</span>',
+                '<span class="col-md-1"></span>',
                 '<span class="col-md-7 unit title">', 
+                    '<span class="what">video: </span>',
                     title,
                 '</span>',
                 '<span class="col-md-2 unit info">',
+                    '<span class="what">by: </span>',
                     _.first(filtered).authorName,
                 '</span>',
+                '<span class="col-md-1"></span>',
             '</div>',
             '<div class="col-md-12 result " id="'+ _.first(filtered).videoId +'">',
             '</div>',
@@ -127,10 +145,34 @@ function produceTitles(evidences) {
     return _.flatten(rows).join('');
 };
 
-function produceHeader(name, evidences) {
+function produceHeader(name, first, last, pseudonyms) {
+    console.log("produceHeader", name, first, last, pseudonyms);
     $("#name").text(name);
-    var byUsers = _.countBy(evidences, 'p');
-    $("#users").text(_.size(_.keys(byUsers)));
+    $("#users").text(_.size(pseudonyms));
+    $("#first").text(first.h);
+    $("#last").text(last.h);
+    $("#lastAgo").text(last.farago);
+    $("#rawDataLink").attr('href', buildAPIURL('results').url);
+};
+
+function reportSimpleList(evidences) {
+
+    var uniqueV = _.map(_.groupBy(evidences, 'videoId'), function(aggregated, vId) {
+        var fields = ['title', 'href', 'authorName' ];
+        var video = _.first(aggregated);
+        return _.pick(video, fields);
+    });
+
+    return _.map(uniqueV, function(v) {
+        return [
+            '<div class="prev-entry">',
+                v.title,
+                '<p class="author">',
+                    v.authorName,
+                '</p>',
+            '</div>'
+        ].join("");
+    }).join("");
 };
 
 function printResults() {
@@ -139,17 +181,28 @@ function printResults() {
     $.getJSON(urinfo.url, function(content) {
         var evidences = _.get(content, 'evidences');
         console.log(`printResults/results: ${urinfo.url} returns ${_.size(evidences)} evidences, divergency ${content.name}`);
-        produceHeader(content.name);
-        /* every video processed is represented by their entry and below a table to compare the related, this first step
-         * created a line for every video, with an id named as their videoId */
+
+        /* this populate the #header div */
+        produceHeader(content.name, content.first, content.last, _.uniq(_.map(evidences, 'p')) );
+
+        $("#videoList").html(reportSimpleList(evidences));
+        /* every video processed is represented by their entry and below a table to compare the related,
+         * this first step created a line for every video, with an id named as their videoId */
         $("#results").html(produceTitles(evidences));
 
         _.each(_.groupBy(evidences, 'videoId'), function(comparisons, vId) {
             $('#' + vId).append(generateTable(comparisons));
         });
 
-        $(".highlighter").on('click', function(e) {
-            console.log("manage this thing");
+        $(".highlighter").mouseover(function(e) {
+            $(".selectedA").removeClass("selectedA");
+            var vId = $(this).attr('class').replace(/highlighter\ /, '');
+            $("." + vId).addClass('selectedA');
+        });
+        $(".publisher").mouseover(function(e) {
+            $(".selectedB").removeClass("selectedB");
+            var publisherId = $(this).attr('class').replace(/publisher\ /, '');
+            $("." + publisherId).addClass('selectedB');
         });
     });
 };

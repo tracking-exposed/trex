@@ -12,7 +12,7 @@ html
         link(rel='stylesheet', href='/js/local/divergence.css')
         script(type='text/javascript', src='/js/local/divergence.js')
 
-        script(type='text/javascript', src='http://code.farfalla-project.org/farfalla.js')
+        // script(type='text/javascript', src='http://code.farfalla-project.org/farfalla.js')
 
         meta(charset="utf-8")
         meta(http-equiv="X-UA-Compatible" content="IE=edge")
@@ -27,12 +27,43 @@ html
         include header
 
         .container-fluid
-            h3.text Divergency: 
-                span.variable#name 
-                |  comparising based on  
-                span.variable#users 
-                |  people* comparison.
+            .col-md-6.right.ytslot.highlight#header
+                h3 Collection name: 
+                    span.variable#name 
+                    br
+                    | contributed by 
+                    span.variable#users 
+                    |  people
+                    a(href="#people") *
+                    |, observing between the 
+                    span.variable#first
+                    |  and the 
+                    span.variable#last
+                    |  (
+                    span.variable#lastAgo
+                    |  ago)
+                p.centered Get the 
+                    a#rawDataLink raw data
+                    |  (JSON).
 
+            .col-md-6.ytslot.highlight
+                #videoList
+
+        .container-fluid
+            h3.centered Divergency
+                a(href="#diverency") **
+                |  panel details
             #results
+
+        .container-fluid.ytslot.yt-orange-b.white.text.left
+            h3.centered Few honest 'coming out' lines
+            p.comingout#people 
+                b people* 
+                |: every extension installed has a pseudonym associated, and so it can participate in the test as a new observation tool.
+            p.comingout#divergency 
+                b divergency** 
+                |: it is complex scale the visualization in many users; this is an experiment. And please, open 
+                a(href="https://github.com/tracking-exposed/yttrex/issues/") issues
+                |.
 
         include footer
