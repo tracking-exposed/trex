@@ -1,13 +1,16 @@
 # web-extension reviewer? please do this:
 
     npm install
-    npm run build
-
-The command above produce the in **development release**, the results it is *not minify* and is in `build/`. If you run:
-
     npm run build:dist
 
 This produces the **distributed** release, in the directory `dist` you should find `extension.zip` which is distributed in Mozilla and Chrome add-ons stores.
+
+### developer? 
+Instead of `build:dist`, use:
+
+  npm run build
+
+The command above produce the in **development release**, the results it is *not minify* and is in `build/`. The in Firefox/Chrom load the directory 'build' because manifest.json is there.
 
 # TL;DR
 
