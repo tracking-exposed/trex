@@ -96,7 +96,7 @@ const EXTRACT_CSS_PLUGIN = new ExtractTextPlugin(
 PLUGINS.push(EXTRACT_CSS_PLUGIN);
 
 if (PRODUCTION) {
-    PLUGINS.push(...PROD_PLUGINS);
+    /* PLUGINS.push(...PROD_PLUGINS); firefox is giving me too many problem */
 } else if (DEVELOPMENT) {
     console.log('Development, using as environment variables: ' +
         JSON.stringify(DEFINITIONS['process.env']));

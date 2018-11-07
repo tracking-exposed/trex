@@ -1,6 +1,10 @@
 The format is based on [Keep a Changelog](http://keepachangelog.com/) and this
 project adheres to [Semantic Versioning](http://semver.org/).
 
+## [1.1.5] - 2018-11-07
+### Removed
+- uglify and minify, I'm tired of Mozilla rejecting the pkg
+
 ## [1.1.4] - 2018-11-06
 ### Removed
 - Autoplay function
