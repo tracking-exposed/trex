@@ -102,7 +102,7 @@ function generateTable(evidences) {
                 return '<td>❌</td>';
 
             var source = _.isUndefined(v.source) ? "*live" : v.source;
-            var cleanSource = source.replace(/[\ \? \)\(\}\{\]\[\=\^\&\%\/\#\!\.\-\_\']/g, '');
+            var cleanSource = source.replace(/[\ \? \)\(\}\{\]\[\=\^\&\%\/\#\!\.\-\_\'\|]/g, '');
 
             return '<td class="highlighter ' + v.videoId + '">' + 
                 '<small class="number">' + (i + 1) + ' </small>' + 
