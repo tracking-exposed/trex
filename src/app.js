@@ -55,7 +55,7 @@ function boot () {
         /* we are on .tracking.exposed because this + youtube.com
          * are the only two permitted domain where the extension run */
         if(_.isUndefined($("#extension--parsable").html())) {
-            console.log(`The page ${window.document.location.href} should not be processed by the ytTREX extension`);
+            console.log(`"error?" the page ${window.document.location.href} has nothing to be processed by the ytTREX extension`);
             return null;
         } else {
             $(".extension-missing").hide();
@@ -67,7 +67,6 @@ function boot () {
                 pseudonym.set(pseudoName);
                 $("#userName").text(pseudonym.get());
                 $(".extension-present").show();
-                $(".extension-missing").hide();
             });
         }
     }
