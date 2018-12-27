@@ -24,4 +24,4 @@ cp node_modules/bootstrap/js/collapse.js $V
 cp node_modules/jquery/dist/jquery.js $V 
 cp node_modules/moment/min/moment.min.js $V 
 cp node_modules/lodash/lodash.min.js $V 
-cp ../dist/extension.zip dist/static
+# cp ../dist/extension.zip dist/static
