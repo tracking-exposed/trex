@@ -23,7 +23,7 @@ function generateColorCode(source) {
 
 function representRelated(memo, r) {
 
-    var cleanSource = r.source.replace(/[\ \? \)\(\}\{\]\[\=\^\&\%\/\#\!\.\-\_\']/g, '');
+    var cleanSource = r.source.replace(/[\ \? \)\(\}\{\]\[\=\^\&\%\/\#\!\.\-\_\'\|]/g, '');
     var related = [
         '<div class="related">',
             '<small class="index">',

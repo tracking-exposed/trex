@@ -98,8 +98,11 @@ function generateTable(evidences) {
         var videocombo = pickThe(i, _.orderBy(evidences, 'p') );
 
         var row = _.map(videocombo, function(v) {
+            if(!v)
+                return '<td>❌</td>';
+
             var source = _.isUndefined(v.source) ? "*live" : v.source;
-            var cleanSource = source.replace(/[\ \? \)\(\}\{\]\[\=\^\&\%\/\#\!\.\-\_\']/g, '');
+            var cleanSource = source.replace(/[\ \? \)\(\}\{\]\[\=\^\&\%\/\#\!\.\-\_\'\|]/g, '');
 
             return '<td class="highlighter ' + v.videoId + '">' + 
                 '<small class="number">' + (i + 1) + ' </small>' + 
