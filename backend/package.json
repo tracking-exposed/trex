@@ -27,7 +27,7 @@
     "mongodb": "^2.1.8",
     "nacl-signature": "^1.0.0",
     "nconf": "^0.8.4",
-    "nodemon": "^1.18.4",
+    "nodemon": "^1.18.9",
     "pug": "^2.0.0-beta11",
     "request": "^2.75.0",
     "stylus": "^0.54.5",
