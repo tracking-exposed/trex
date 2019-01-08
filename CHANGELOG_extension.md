@@ -1,6 +1,10 @@
 The format is based on [Keep a Changelog](http://keepachangelog.com/) and this
 project adheres to [Semantic Versioning](http://semver.org/).
 
+## [1.1.6] - 2019-01-08
+### Removed
+- removed the build process is not anymore working only in git repos
+
 ## [1.1.5] - 2018-11-07
 ### Removed
 - uglify and minify, I'm tired of Mozilla rejecting the pkg
