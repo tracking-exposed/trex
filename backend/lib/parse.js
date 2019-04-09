@@ -3,8 +3,6 @@ const Promise = require('bluebird');
 const debug = require('debug')('lib:parse');
 const moment = require('moment');
 const nconf = require('nconf'); 
-const xpath = require('xpath');
-const xmldom = require('xmldom');
 const JSDOM = require('jsdom').JSDOM;
 
 const mongo = require('./mongo');
@@ -42,22 +40,9 @@ function checkMetadata(impression, repeat) {
 
 function initialize(impression) {
     /* this function initialize the libraries and the envelop */
-
-    const xmlerr = { warning: 0, error: 0, fatal: 0 };
-    var domOptions = {
-          errorHandler:{
-              warning: function() { xmlerr.warning += 1; },
-              error: function() { xmlerr.error += 1; },
-              fatalError: function() { xmlerr.fatal += 1;  },
-          }
-    };
-    /* this is the envelope with get appended the metadata from the various parsers */
     return {
         impression,
-        xmlerr,
-        xpath,
         jsdom: new JSDOM(impression.html.replace(/\n\ +/g, '')).window.document,
-        dom: new xmldom.DOMParser(domOptions).parseFromString(impression.html),
     };
 }
 
@@ -80,7 +65,7 @@ function finalize(envelopes) {
         return memo;
     }, []);
 
-    const removef = ['dom', 'jsdom', 'xpath', 'xmlerr', 'impression', 'errors'];
+    const removef = ['dom', 'jsdom', 'xmlerr', 'impression', 'errors'];
     const impressionFields =
         ['id', 'timelineId', 'userId', 'impressionOrder', 'impressionTime'];
 
