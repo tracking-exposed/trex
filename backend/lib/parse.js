@@ -1,90 +1,343 @@
-var _ = require('lodash');
-var Promise = require('bluebird');
-var fs = Promise.promisifyAll(require('fs'));
-var debug = require('debug')('lib:parse');
-var moment = require('moment');
-var nconf = require('nconf'); 
+const _ = require('lodash');
+const Promise = require('bluebird');
+const debug = require('debug')('lib:parse');
+const moment = require('moment');
+const nconf = require('nconf'); 
+const xpath = require('xpath');
+const xmldom = require('xmldom');
+const JSDOM = require('jsdom').JSDOM;
 
-var mongo = require('./mongo');
-nconf.argv().env().file({ file: "config/settings.json" });
+const mongo = require('./mongo');
+const echoes = require('./echoes');
+const utils = require('./utils');
+const glue = require('./glue');
 
-function fetchMetadata(config) {
-
-    var defaults = {
-        "since": moment().subtract(1, 'h').toISOString(),
-        "until": moment().format('YYYY-MM-DD 23:59:59'),
-        "parserName": config.name,
-        "requirements": config.requirements || {}
-    };
-
-    /* if since or until are specify, use the command, 
-     * otherwise use keep the default: last hour */
-    if( nconf.get('since') || nconf.get('until') ) {
-        debug("Remind: if you specify only one 'since' or 'until', the default is from the config");
-        defaults.since = nconf.get('since') ? nconf.get('since') : config.since;
-        defaults.until = nconf.get('until') ? nconf.get('until') : config.until;
-    }
-
-    /* id overwrites every other requirement */
-    if(nconf.get('id')) {
-        defauls.since = "2018-01-01";
-        defaults.until = moment().format("YYYY-MM-DD 23:59:59");
-        defaults.requirements = { id : nconf.get('id') };
-    }
-    debug("⭐ since: %s until %s%s", defaults.since, defaults.until,
-        defaults.requiremenets ? "[+special id requested!]" : "");
+function checkMetadata(impression, repeat) {
+    /* this function return an impression if, and only if
+       we HAVE to process it. when the 'repeat' is true, 
+       a present metadata would be remove and the tested
+       impression is returned */
+    if(_.isUndefined(impression.id))
+        throw new Error("impression missing");
 
     return mongo
-        .read(nconf.get('schema').videos, _.extend({
-                savingTime: {
-                    '$gte': new Date(defaults.since),
-                    '$lte': new Date(defaults.until) 
-                }
-            },
-            _.get(defaults, 'requirements'),
-            _.set({}, defaults.parserName, {'$exists': false} )))
-        .tap(report("videos retrieved matching the time window"));
-};
+        .readOne(nconf.get('schema').metadata, { id: impression.id })
+        .then(function(i) {
+            if( _.get(i, 'id') === impression.id && !repeat) {
+                debug("metadata [%s] already exists: skipping", i.id);
+                return null;
+            }
 
-function report(text, objs) {
-    debug("%s: %d", text, _.size(objs));
-};
+            if( _.get(i, 'id') === impression.id && repeat) {
+                debug("metadata [%s] exists, but repeat is requested", i.id);
+                return mongo
+                    .remove(nconf.get('schema').metadata, { id: impression.id })
+                    .return(impression);
+            }
 
-function please(config) {
+            /* else if _.isUndefined(i) is returned the impression */
+            return impression;
+        });
+}
 
-    /* set default values if not specified */
-    config.repeat = nconf.get('repeat') || null;
+function initialize(impression) {
+    /* this function initialize the libraries and the envelop */
 
-    if(!_.isObject(config.requirements)) {
-        throw new Error(
-            "Developer, requirements has to be an object and check `repeat`");
+    const xmlerr = { warning: 0, error: 0, fatal: 0 };
+    var domOptions = {
+          errorHandler:{
+              warning: function() { xmlerr.warning += 1; },
+              error: function() { xmlerr.error += 1; },
+              fatalError: function() { xmlerr.fatal += 1;  },
+          }
+    };
+    /* this is the envelope with get appended the metadata from the various parsers */
+    return {
+        impression,
+        xmlerr,
+        xpath,
+        jsdom: new JSDOM(impression.html.replace(/\n\ +/g, '')).window.document,
+        dom: new xmldom.DOMParser(domOptions).parseFromString(impression.html),
+    };
+}
+
+function finalize(envelopes) {
+    /* here is build the new complex object which travels in the pipeline,
+     * metadata & parsers are the internal content, not meant to be public */
+    if(!_.size(envelopes))
+        return { metadata: [], summary: [], statistics: [], parsers: [], errors: [] };
+
+    const errors = _.reduce(envelopes, function(memo, e) {
+        if(!_.size(e.errors))
+            return memo;
+        var r = {
+            errors: e.errors,
+            when:  new Date(),
+            id: e.impression.id,
+            timelineId: e.impression.timelineId
+        }
+        memo.push(r);
+        return memo;
+    }, []);
+
+    const removef = ['dom', 'jsdom', 'xpath', 'xmlerr', 'impression', 'errors'];
+    const impressionFields =
+        ['id', 'timelineId', 'userId', 'impressionOrder', 'impressionTime'];
+
+    const metadata = _.map(envelopes, function(e) {
+        return _.extend(
+            _.pick(e.impression, impressionFields),
+            _.omit(e, removef),
+            { when: new Date() }
+        );
+    });
+    const parsers = _.map(metadata, parserDebug);
+
+    /* summary is the format used for user-facing API */ 
+    const summary = _.map(metadata, summarize);
+    /* statistics are the public information on how fbtrex is doing */
+    const statistics = _.map(summary, /* aggregated. */ computeStats);
+
+    return {
+        metadata,
+        parsers,
+        summary,
+        statistics,
+        errors
+    };
+}
+
+function logSummary(blobs) {
+    /* echoes to ELK */
+    
+    _.each(blobs.summary, function(e) {
+        echoes.echo(
+            _.extend({'index': 'parserv' },
+            _.pick(e, ['errors', 'type', 'publicationTime', 'postId',
+                       'permaLink', 'author', 'textlength', 'impressionTime',
+                       'impressionOrder', 'pseudo', 'timeline', 'regexp' ])
+            )
+        );
+    });
+
+    /* the `fulldump` is set by executers or by `parsers/precise.js` */
+    if(nconf.get('fulldump'))
+        _.times(_.size(blobs.metadata), function(o, i) {
+            let s = _.nth(blobs.summary, i);
+            console.log(JSON.stringify(s, undefined, 1));
+            console.log("\x1b[36m");
+            let m = _.nth(blobs.metadata, i);
+            console.log(JSON.stringify(m, undefined, 1));
+        });
+
+    /* this is dumped even without fulldump */
+    const E = "\x1b[47m\x1b[31m";
+    _.each(blobs.errors, function(o) {
+        console.log(E, JSON.stringify(o, undefined, 2));
+    });
+}
+
+function mark(blobs) {
+    /* mark the submission entry as processed */
+    return Promise.map(blobs.metadata, function(e) {
+        return mongo
+            .readOne(nconf.get('schema').htmls, { id: e.id })
+            .then(function(existing) {
+                existing.processed = true;
+                return mongo
+                    .updateOne(nconf.get('schema').htmls, { _id: existing._id }, existing);
+            });
+    }, { concurrency: 1});
+}
+
+function save(blobs) {
+    /* record changes on the DB */
+    let chain = [];
+    debug("Received %d metadata and %d errors", _.size(blobs.metadata), _.size(blobs.errors));
+
+    if(_.size(blobs.metadata))
+        chain.push(
+            mongo.writeMany(nconf.get('schema').metadata, blobs.metadata)  );
+
+    if(_.size(blobs.metadata) && !nconf.get('onlymetadata') ) {
+        chain.push(
+            mongo.writeMany(nconf.get('schema').summary, blobs.summary)  );
+        chain.push(
+            /* aggregated. */ updateHourly(blobs.statistics)   );
+        chain.push(
+            mongo.writeMany(nconf.get('schema').parsers, blobs.parsers)   );
     }
 
-    return fetchMetadata(config)
-        .tap(report("found elements"))
-        .map(function(metadata) {
-            return fs
-                .readFileAsync(metadata.htmlOnDisk, 'utf-8')
-                .then(function(html) {
-                    return config.implementation(metadata, html);
-                })
-                .catch(function(error) {
-                    debug("Error %s", error.message);
-                    // debug("Error %s", JSON.stringify(metadata, undefined, 2), error.message);
-                    return null;
-                })
-                .then(function(updates) {
-                    if(!updates)
-                        return null;
-                    return mongo
-                        .updateOne(nconf.get('schema').videos, {id: metadata.id}, _.extend(updates, metadata))
-                        .return(true);
-                });
-        }, { concurrency: 1 })
-        .then(_.compact)
-        .tap(report("linked"));
+    if(_.size(blobs.errors) && !nconf.get('onlymetadata') )
+        chain.push(
+            mongo.writeMany(nconf.get('schema').errors, blobs.errors)  );
+
+    return Promise
+        .all(chain)
+        .return({
+            metadata: _.size(blobs.metadata),
+            errors: _.size(blobs.errors)
+        });
+}
+
+function postIdCount(e) {
+    /* this function creates certain conditional fields in metadata:
+     * - postId is build at the end of `sequence`
+     * - postCount { personal, global } gets created always */
+
+    if(!e.postId)
+        return e;
+
+    e.postCount = { personal: null, global: null };
+
+    return Promise.all([
+        mongo.count(nconf.get('schema').metadata,
+            { linkedtime: { postId: e.postId } }),
+        mongo.count(nconf.get('schema').metadata,
+            { linkedtime: { postId: e.postId }, userId: e.userId })
+    ])
+    .then(function(results) {
+        e.postCount.global = results[0];
+        e.postCount.personal = results[1];
+        return e;
+    }); 
 };
 
+function semanticIdCount(e) {
+    /* this function creates certain conditional fields in metadata:
+     * * if there is no .texts or zero-length texts, it returns
+     * - semanticId gets created always
+     * - semanticCount { personal, global } gets created always
+     * - semantic: true, gets created when the semanticCount.global is zero  */
+
+    if(!e.fullTextSize)
+        return e;
+
+    e.semanticId = utils.hash({ text: e.fullText });
+    e.semanticCount = { personal: null, global: null };
+
+    return Promise.all([
+        mongo.count(nconf.get('schema').metadata, { semanticId: e.semanticId }),
+        mongo.count(nconf.get('schema').metadata, { semanticId: e.semanticId, userId: e.userId })
+    ])
+    .then(function(results) {
+        e.semanticCount.global = results[0];
+        e.semanticCount.personal = results[1];
+
+        /* only the first metadata with a due semanticId is marked with `semantic`,
+         * this will be processed later by lib/semantic.js */
+        if(!e.semanticCount.global)
+            e.semantic = true;
+        return e;
+    });
+};
+
+function mergeHTMLImpression(html) {
+    return mongo
+        .readOne(nconf.get('schema').impressions, { id: html.impressionId })
+        .then(function(impression) {
+            _.unset(impression, 'id');
+            _.unset(impression, 'htmlId');
+            return _.merge(html, impression);
+        });
+}
+
+function parseHTML(htmlfilter, repeat) {
+    /* retrive the HTML from db/file/remote and apply many of the processing functions */
+    return mongo
+        .read(nconf.get('schema').htmls, htmlfilter)
+        .then(function(found) {
+            if(_.size(found) > 0)
+                return found;
+            if(nconf.get('retrive') != true)
+                return [];
+            return glue.retrive(htmlfilter)
+                .then(glue.writers)
+                .tap(function(x) {
+                    if(x && x[2] && htmlfilter.id == x[2][0].id)
+                        debug("Successfully retrived remote content");
+                    else
+                        debug("Failure in retriving remote content!");
+                })
+                .then(function() {
+                    return mongo
+                        .read(nconf.get('schema').htmls, htmlfilter);
+                });
+        })
+        .catch(function(error) {
+            debug("Managed error in retrieving content: %s", error);
+            // console.error(error.stack);
+            return [];
+        })
+        .map(mergeHTMLImpression, { concurrency: 1 })
+        .then(_.compact)
+        .then(function(impressions) {
+            return _.orderBy(impressions, { impressionOrder: -1 });
+        })
+        .tap(function(impressions) {
+            if(_.size(impressions)) {
+                const firstT = moment(_.first(impressions).impressionTime).format("DD/MMM/YY HH:mm");
+                const lastT = moment(_.last(impressions).impressionTime).format("DD/MMM/YY HH:mm");
+                const humanized = moment
+                    .duration( _.last(impressions).impressionTime - _.first(impressions).impressionTime )
+                    .humanize();
+                debug("Processing %d impressionsOrder %s [%s] %s %s [%s] %s",
+                    /*                                    ^^^^^^^^^^^^^ conditionals */
+                    _.size(impressions),
+                    _.first(impressions).impressionOrder, firstT,
+                    _.size(impressions) > 1 ? "-" : "",
+                    _.size(impressions) > 1 ? _.last(impressions).impressionOrder : "",
+                    _.size(impressions) > 1 ? "[" + lastT + "]" : "",
+                    _.size(impressions) > 1 ? "(" + humanized + ")" : ""
+                );
+            }
+        })
+        .map(function(e) {
+            return checkMetadata(e, repeat);
+        }, { concurrency: 1 })
+        .then(_.compact)
+        .map(initialize)
+        .map(sequence, { concurrency: 1 })
+        /* this is the function processing the parsers
+         * it is call of every .id which should be analyzed */
+        .catch(function(error) {
+            debug("[E] Unmanaged error in parser sequence: %s", error.message);
+            console.log(error.stack);
+            return null;
+        })
+        .then(function(metadata) {
+            if(!metadata)
+                return [];
+
+            debug("⁂  completed %d metadata", _.size(metadata));
+            if(!_.isUndefined(nconf.get('verbose')))
+                debug("⁂  %s", JSON.stringify(metadata, undefined, 2));
+
+            return metadata;
+        })
+        .map(postIdCount)
+        .map(semanticIdCount)
+        .then(finalize)
+        .tap(logSummary)
+        .tap(mark)
+        .then(save)
+        .catch(function(error) {
+            debug("[error after parsing] %s", error.message);
+            console.log(error.stack);
+            process.exit(1);
+            // return null;
+        });
+}
+
 module.exports = {
-    please: please
+    checkMetadata: checkMetadata,
+    initialize: initialize,
+    mergeHTMLImpression: mergeHTMLImpression,
+    finalize: finalize,
+    logSummary: logSummary,
+    save: save,
+    postIdCount: postIdCount,
+    semanticIdCount: semanticIdCount,
+    mark: mark,
+    parseHTML: parseHTML,
 };

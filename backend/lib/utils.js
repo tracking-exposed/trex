@@ -160,7 +160,28 @@ function string2Food(text) {
 
     return [ first, second, third ].join('-');
 };
-       
+
+function getInt(req, what, def) {                                                       
+    var rv = _.parseInt(_.get(req.params, what));                                       
+    if(_.isNaN(rv)) {                                                                   
+        if(!_.isUndefined(def))                                                         
+            rv  = def;                                                                  
+        else  {                                                                         
+            debug("getInt: Error with parameter [%s] in %j", what, req.params);         
+            rv = 0;                                                                     
+        }                                                                               
+    }
+    return rv;                                                                          
+}                                                                                       
+
+function getString(req, what) {                                                         
+    var rv = _.get(req.params, what);                                                   
+    if(_.isUndefined(rv)) {                                                             
+        debug("getString: Missing parameter [%s] in %j", what, req.params);             
+        return "";                                                                      
+    }                                                                                   
+    return rv;                                                                          
+}                                                                                       
 
 module.exports = {
     hash: hash,
@@ -172,5 +193,7 @@ module.exports = {
     encodeToBase58: encodeToBase58,
     decodeFromBase58: decodeFromBase58,
     verifyRequestSignature: verifyRequestSignature,
-    string2Food: string2Food
+    string2Food: string2Food,
+    getInt: getInt,                                                                     
+    getString: getString                                                                
 };
