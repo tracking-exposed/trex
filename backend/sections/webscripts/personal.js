@@ -209,7 +209,7 @@ function personalLoader() {
 
         if(data.error === true) {
             $("#whole")
-                .html('<div class="text"><h1 class="title highlight">Error: ' + data.message + '</h1></div>');
+                .html('<div class="text"><h3 class="title highlight">Error: ' + data.message + '</h3></div>');
             return null;
         }
 

@@ -1,7 +1,7 @@
 {
   "watch": [
     "lib/*.js",
-    "app.js",
+    "yt*.js",
     "sections/**",
     "dist/**"
   ],
@@ -11,7 +11,7 @@
   "verbose": true,
   "exitcrash": false,
   "env": {
-    "DEBUG": "yttrex,lib:*"
+    "DEBUG": "yttrex,lib:*,-lib:mongo:*"
   },
   "ext": "js css pug"
 }

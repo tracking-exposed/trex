@@ -4,7 +4,7 @@
   "description": "youtube.tracking.exposed → backend data collector, to investigate personalization algorithms",
   "scripts": {
     "build": "./build.sh",
-    "watch": "nodemon --config config/nodeamon.json yttrex",
+    "watch": "nodemon --config config/nodemon.json yttrex",
     "start": "DEBUG=lib:*,-yttrex node yttrex",
     "parserv": "DEBUG=*,-lib:mongo:* node ytparserv"
   },
@@ -13,7 +13,7 @@
   "dependencies": {
     "bluebird": "^3.5.2",
     "body-parser": "^1.15.2",
-    "bootstrap": "^3.3.7",
+    "bootstrap": ">=4.3.1",
     "bs58": "^3.1.0",
     "cookie": "^0.3.1",
     "cors": "^2.8.1",

@@ -10,7 +10,6 @@ html
     link(rel='stylesheet', href='/css/index.css')
     script(type='text/javascript', src='/js/lodash.min.js')
     script(type='text/javascript', src='/js/jquery.js')
-    script(type='text/javascript', src='/js/collapse.js')
     script(type='text/javascript', src='/js/bootstrap.min.js')
 
     meta(property="og:title" content="ytTREX")
@@ -36,13 +35,7 @@ html
         include downloads
 
         h2 experimental services and APIs
-        p Whatver you ask to us, keep in mind: 
-            b this tool is mean to analyze youtube, not the content producer, not the content consumers
-            |.
-        ul
-            li Last contributions
-            li 
-                a(class="yellow" href="/compare") Compare videos
+        include data
 
     .container-fluid.spaced.padded
         include analysis
@@ -52,7 +45,4 @@ html
         p
             a(class="yellow" href="https://tracking.exposed") Tracking Exposed
             |: we fight for a web which is home of the many and not for the few
-        h2 :D
-
-        
 
