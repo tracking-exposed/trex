@@ -146,17 +146,15 @@ function relatedMetadata(e, i) {
     const mined = labelForcer(longlabel);
     return {
         index: i + 1,
-        metadataN: metadata.length,
         title,
         source,
         vizstr,
         videoId,
-        videometablockN,
+        suggestionOrder: videometablockN,
         displayTime,
         expandedTime,
         longlabel,
         mined,
-        // brutal: _.map(e.querySelectorAll('.ytd-video-meta-block'), 'textContent')
     };
 };
 
@@ -168,7 +166,6 @@ function processVideo(D) {
     }
 
     const vTitle = etit.textContent;
-    debugger;
     if(!vTitle || _.size(vTitle) < 0) {
         throw new Error("unable to get title (2)");
     }
@@ -177,7 +174,7 @@ function processVideo(D) {
     const authorName = D.querySelector('a.ytd-video-owner-renderer').getAttribute('aria-label');
     const authorSource = D.querySelector('a.ytd-video-owner-renderer').getAttribute('href');
     const ptc =D.querySelectorAll('[slot="date"]').length;
-    const publicationTime = D.querySelector('[slot="date"]').textContent;
+    const publicationString = D.querySelector('[slot="date"]').textContent;
 
     /* non mandatory info */
     const viewInfo = parseViews(D);
@@ -196,7 +193,7 @@ function processVideo(D) {
         title: vTitle,
         check,
         ptc,
-        publicationTime,
+        publicationString,
         authorName,
         authorSource,
         related,
@@ -206,40 +203,41 @@ function processVideo(D) {
     };
 };
 
-function process(impression) {
+function process(envelop) {
 
-    const extracted = processVideo(impression.jsdom);
+    const extracted = processVideo(envelop.jsdom);
 
     const re = _.filter(extracted.related, { error: true });
     stats.suberror += _.size(re);
-
     const ve = _.filter(extracted.viewInfo, { error: true });
     stats.suberror += _.size(ve);
-
     const le = _.filter(extracted.likeInfo, { error: true });
     stats.suberror += _.size(le);
 
     if(_.size(re)) errorrele("related error %s", JSON.stringify(re, undefined));
     if(_.size(ve)) errorview("views error %s", JSON.stringify(ve, undefined));
     if(_.size(le)) errorlike("likes error %s", JSON.stringify(re, undefined));
-           
-    _.set(impression, 'video', extracted);
-    return impression;
+          
+    /* remove debugging/research fields we don't want in mongo */
+    _.unset(extracted, 'ptc');
+    _.unset(extracted, 'check');
+    return extracted;
 };
 
-function isVideo(impression) {
+function isVideo(envelop) {
+
     // this might have more metadata, but we just work without 
-    const search = impression.jsdom.querySelectorAll("h3.title-and-badge");
+    const search = envelop.jsdom.querySelectorAll("h3.title-and-badge");
         debug("search? %d", _.size(search));
 
-    debug("Titles? %d", _.size(impression.jsdom.querySelectorAll('h1 > yt-formatted-string')));
-    const etit = impression.jsdom.querySelector('h1 > yt-formatted-string');
+    debug("isVideo? %d (potential) titles", _.size(envelop.jsdom.querySelectorAll('h1 > yt-formatted-string')));
+    const etit = envelop.jsdom.querySelector('h1 > yt-formatted-string');
     if(etit) {
         let vTitle = etit.textContent;
         if(_.size(vTitle) > 0)
-            return impression;
+            return envelop;
 
-        debug("Because the title is empty, it is not a title!");
+        debug("Because the title is empty, it is not a video!");
     }
     return false;
 }

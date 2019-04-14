@@ -4,7 +4,8 @@
       "videos": "videos",
       "alarms": "alarms",
       "sequences": "sequences",
-      "commitments": "commitments"
+      "commitments": "commitments",
+      "metadata": "metadata"
   },
   "mongodb": "mongodb://localhost/yttrex",
   "port": 9000,

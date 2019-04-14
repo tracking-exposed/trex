@@ -48,10 +48,8 @@ function saveVideo(body, supporter) {
     var video = {
         id: id,
         href: body.href,
-        isVideo: isVideo,
+        isVideo,
         htmlOnDisk: fdest,
-        incremental: body.incremental,
-        publicKey: supporter.publicKey,
         p: supporter.p,
         tagId: body.tagId,
         clientTime: new Date(body.clientTime),
@@ -59,7 +57,7 @@ function saveVideo(body, supporter) {
     };
 
     if(isVideo)
-        video.videoId = _.replace(body.href, /.*v=/, '');
+        video.videoId = _.replace(body.href, /.*v=/, '').replace(/\?.*/, '');
 
     debug("Saving entry (videos: %s) user %s file %s (%d bytes)",
         isVideo ? video.videoId : "false", supporter.p, fdest, _.size(body.element)
@@ -107,11 +105,9 @@ function processEvents(req) {
             }
             supporter.version = headers.version;
             supporter.lastActivity = new Date();
-            return supporter;
-        })
-        .tap(function(supporter) {
+
             return mongo.updateOne(nconf.get('schema').supporters, {
-                publicKey: supporter.publickey
+                publicKey: supporter.publicKey
             }, supporter);
         })
         .tap(function(supporter) {

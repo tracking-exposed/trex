@@ -30,17 +30,22 @@ function updateOne(cName, selector, updated) {
     return Promise.using(dbConnection(), function(db) {
         return db
             .collection(cName)
-            .updateOne(selector, updated);
+            .updateOne(selector, { $set: updated });
+    })
+    .tap(function(res) {
+        debug("updateOne: %j", res);
     })
     .return(updated);
 };
 
-/* better safe than sorry */
-var upsertOne = function(cName, selector, updated) {
+function upsertOne(cName, selector, updated) {
     return Promise.using(dbConnection(), function(db) {
         return db
             .collection(cName)
-            .updateOne(selector, updated, {upsert: true});
+            .updateOne(selector, { $set: updated }, { upsert: true });
+    })
+    .tap(function(res) {
+        debug("upsertOne: %j", res);
     })
     .return(updated);
 };
