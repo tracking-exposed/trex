@@ -1,30 +1,12 @@
 var _ = require('lodash');
 var moment = require('moment');
 var Promise = require('bluebird');
-var fs = Promise.promisifyAll(require('fs'));
 var debug = require('debug')('lib:utils');
 var crypto = require('crypto');
 var bs58 = require('bs58');
 var nacl = require('tweetnacl');
 var nconf = require('nconf');
 var foodWords = require('food-words');
-
-
-var shmFileWrite = function(fprefix, stringblob) {
-    var fpath = "/dev/shm/" + fprefix + "-"
-                + moment().format('hhmmss') + ".json";
-    return Promise.resolve(
-        fs.writeFileAsync(fpath, stringblob)
-          .then(function(result) {
-              debug("written debug file %s", fpath);
-              return true;
-          })
-          .catch(function(error) {
-              debug("Error in writting %s: %s", fpath, error);
-              return false;
-          })
-    );
-};
 
 var hash = function(obj, fields) {
     if(_.isUndefined(fields))
@@ -38,7 +20,6 @@ var hash = function(obj, fields) {
     sha1sum.update(plaincnt);
     return sha1sum.digest('hex');
 };
-
 
 var activeUserCount = function(usersByDay) {
     var uC = _.reduce(usersByDay, function(memo, stOb) {
@@ -55,43 +36,6 @@ var activeUserCount = function(usersByDay) {
             'count': _.size(datec)
         }
     });
-};
-
-var stripMongoId = function(collection) {
-    return _.map(collection, function(entry) {
-        return _.omit(entry, ['_id']);
-    });
-};
-
-
-var topPostsFixer = function(mongocoll) {
-    var MAX_ENTRIES = 20;
-    var clean = _.reduce(mongocoll, function(memo, pe) {
-        /* this in theory would be removed when mongoQuery is improved */
-        if( _.eq(_.size(pe.users), 1))
-            return memo;
-        if( _.isNull(pe["_id"].postId))
-            return memo;
-        if( _.size(pe["_id"].postId + "") < 10)
-            return memo;
-
-        var times = _.sortBy(pe.times, moment);
-        var msecduration = _.last(times) - _.first(times);
-        var relative = moment() - _.first(times);
-
-        /* is not kept 'first' because what matter is the creation time */
-        memo.push({
-                'postId': pe["_id"].postId,
-                'lifespan': moment.duration(msecduration).humanize(),
-                'when': moment.duration(relative).humanize(),
-                'last': _.last(times),
-                'users': pe.users,
-                'count': _.size(pe.users)
-            });
-        return memo;
-    }, []);
-
-    return _.reverse(_.takeRight(_.sortBy(clean, 'count'), MAX_ENTRIES));
 };
 
 function stringToArray (s) {
@@ -139,26 +83,21 @@ function verifyRequestSignature(req) {
         decodeFromBase58(publicKey));
 };
 
-function string2Food(text) {
-    var size = _.size(foodWords);
-    var first = null;
-    var number = _.reduce(_.split(text), function(memo, c) {
-        if(c.charCodeAt() < 70)
-            return memo * (c.charCodeAt() + 1);
-
-        if(!(c.charCodeAt() % 6))
-            first = _.nth(foodWords, memo % size );
-
-        return c.charCodeAt() + memo;
-    }, 1);
-
-    if(_.isNull(first))
-        var first = _.nth(foodWords, ( number % size));
-
-    var second = _.nth(foodWords, ( (number * 2) % size));
-    var third = _.nth(foodWords, ( (number * 3) % size));
-
-    return [ first, second, third ].join('-');
+function string2Food(piistr) {
+    /* this is fbtrex's pseudonymize */
+    const numberOf = 3;
+    const inputs = _.times(numberOf, function(i) {
+        return _.reduce(i + piistr, function(memo, acharacter) {
+            var x = memo * acharacter.charCodeAt(0);
+            memo += ( x / 23 );
+            return memo;
+        }, 1);
+    });
+    const size = _.size(foodWords);
+    const ret = _.map(inputs, function(pseudornumber) {
+        return _.nth(foodWords, (_.round(pseudornumber) % size));
+    });
+    return _.join(ret, '-');
 };
 
 function getInt(req, what, def) {                                                       
@@ -186,9 +125,6 @@ function getString(req, what) {
 module.exports = {
     hash: hash,
     activeUserCount: activeUserCount,
-    shmFileWrite: shmFileWrite,
-    stripMongoId: stripMongoId,
-    topPostsFixer: topPostsFixer,
     stringToArray: stringToArray,
     encodeToBase58: encodeToBase58,
     decodeFromBase58: decodeFromBase58,
