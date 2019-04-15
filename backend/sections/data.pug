@@ -1,11 +1,56 @@
-p Whatver you ask to us, keep in mind: 
-    b this tool is mean to analyze youtube, not the content producer, not the content consumers
-    |.
-ul
-    li 
-        a(class="yellow" href="/last") Last evidence received
-    li 
-        a(class="yellow" href="/compare") Compare videos
-    li
-        a(class="yellow" href="/opendata") Open data logics and policies
+doctype html
+html
+  head
+    meta(charset="utf-8")
+    meta(http-equiv="X-UA-Compatible" content="IE=edge")
+    meta(name="viewport" content="width=device-width, initial-scale=1")
+    meta(name="keywords" content="yt, t-rex")
+
+    link(rel='stylesheet', href='/css/bootstrap.css')
+    link(rel='stylesheet', href='/css/index.css')
+    script(type='text/javascript', src='/js/lodash.min.js')
+    script(type='text/javascript', src='/js/jquery.js')
+    script(type='text/javascript', src='/js/bootstrap.min.js')
+
+    meta(property="og:title" content="ytTREX")
+    meta(property="og:type" content="website")
+    meta(property="og:description" content="youtube.TREX API descriptionalgorthim. It")
+    meta(property="og:url" content="https://youtube.tracking.exposed")
+    meta(property="og:image" content="https://youtube.tracking.exposed/images/youtube-trex-logo.png")
+    meta(property="og:image:width" content="1000")
+    meta(property="og:image:height" content="1000")
+
+    title ytTREX
+
+  body
+    include header
+
+    p Whatver you ask to us, keep in mind: 
+        b this tool is mean to analyze youtube, not the content producer, not the content consumers
+        |. Feel free to open an issue in our 
+        a(href="https://github.com/tracking-exposed/yttrex/issues") ticketing system
+        |, if you have an interesting proposal
+    ul
+        li 
+            a(class="yellow" href="/api/v1/last") Last evidence received
+            br
+            code /api/v1/last
+            p It return JSON objects: the last 60 contributins received by the community. It is cached for 2 minutes, the first request after cache expire would define the next 60.
+        li 
+            a(class="yellow" href="/api/v1/videoId/f6jlvXWwhEo") Compare videos
+            br
+            code /api/v1/videoId/
+                b [variable:videoId]
+            p from a youtube URL, take the Id: 
+                i https://www.youtube.com/watch?v=
+                b 4-VLmhQSzr8
+                |  and returns a JSON object all the different 'related' videos observed when the same videoId have been watched by ytTREX contributors. Max 110 evidences are returned.
+        li
+            a(class="yellow" href="/api/v1/related/Z7MC8Lw5e9Q") Related
+            br
+            code /api/v1/related/
+                b [variable:videoId]
+            p This API looks all the time the 
+                i videoId
+                |  was in the related list of other videos, so you can see where videoId was suggested
 
