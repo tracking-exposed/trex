@@ -96,6 +96,20 @@ app.use(cors());
 app.use(bodyParser.json({limit: '4mb'}));
 app.use(bodyParser.urlencoded({limit: '4mb', extended: true}));
 
+/* the only two documented and tested APIs */
+/* the only two documented and tested APIs */
+app.get('/api/v1/last', function(req, res) {
+    return dispatchPromise('getLast', req, res);
+});
+app.get('/api/v1/videoId/:query', function(req, res) {
+    return dispatchPromise('getVideoId', req, res);
+});
+app.get('/api/v1/related/:query', function(req, res) {
+    return dispatchPromise('getRelated', req, res);
+});
+
+/* the only two documented and tested APIs */
+/* --------------------------------------- */
 
 /* This is import and validate the key */
 app.post('/api/v:version/validate', function(req, res) {
@@ -106,7 +120,9 @@ app.post('/api/v:version/events', function(req, res) {
     return dispatchPromise('processEvents', req, res);
 });
 
-/* handshake to: 1) get the pseudoNym for the page, and 2) notify to associate videoId to the testId */
+/* handshake to:
+ *    1) get the pseudoNym for the page, and 
+ *    2) notify to associate videoId to the testId */
 app.post('/api/v:version/handshake', function(req, res) {
     return dispatchPromise('handshake', req, res);
 });

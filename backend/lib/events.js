@@ -11,7 +11,6 @@ var bs58 = require('bs58');
 
 var mongo = require('./mongo');
 var utils = require('./utils');
-var alarms = require('./alarms');
 
 
 function hasError(retDict) {

@@ -116,23 +116,6 @@ var countByMatch = function(cName, selector) {
     });
 };
 
-var aggregate = function(cName, match, group) {
-    return Promise.using(dbConnection(), function(db) {
-        return db
-            .collection(cName)
-            .aggregate([
-                { $match: match },
-                { $group: group }
-            ])
-            .toArray();
-    })
-    .tap(function(ret) {
-        debug("aggregate %s match %s group %s → %d entries",
-            cName, JSON.stringify(match),
-            JSON.stringify(group), _.size(ret));
-    });
-};
-
 var countByDay = function(cName, timeVarName, filter, aggext) {
 
     if(!_.startsWith(timeVarName, '$'))
@@ -214,17 +197,14 @@ function updateMany(cName, elist) {
     });
 };
 
-function lookup(cName, query, sequence) {
+function aggregate(cName, sequence) {
 
+    debug("performing aggregate on %s with %d pipeline operators", cName, _.size(sequence));
     return Promise.using(dbConnection(), function(db) {
         return db
             .collection(cName)
-            .aggregate([ query, sequence ])
+            .aggregate(sequence)
             .toArray()
-            .catch(function(error) {
-                debug("Error in lookup: %s (%s)", error, cName);
-                return [];
-            });
     });
 };
 
@@ -270,7 +250,6 @@ module.exports = {
     remove: remove,
     aggregate: aggregate,
     updateMany: updateMany,
-    lookup: lookup,
     save: save,
     createIndex: createIndex,
     distinct: distinct
