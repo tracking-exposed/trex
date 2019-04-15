@@ -21,7 +21,6 @@ cp -r sections/webscripts/* dist/js/local/
 cp -r node_modules/bootstrap/dist/* dist/
 cp styles/WorkSans.ttf dist/fonts/
 
-cp node_modules/bootstrap/js/collapse.js $V
 cp node_modules/jquery/dist/jquery.js $V 
 cp node_modules/moment/min/moment.min.js $V 
 cp node_modules/lodash/lodash.min.js $V 
