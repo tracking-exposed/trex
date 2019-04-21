@@ -26,7 +26,7 @@ return parse
     .parseHTML(htmlFilter, false)
     .tap(function(r) {
         if(r)
-            console.log(JSON.stringify(r.video, undefined, 1));
+            console.log(JSON.stringify(r, undefined, 1));
     })
     .catch(function(error) {
         console.log(id, "Error", error.message);

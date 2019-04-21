@@ -127,6 +127,8 @@ function parseHTML(htmlfilter, repeat) {
                     envelop.impression.processed = true;
                     envelop.metadata.id = envelop.impression.id;
                     envelop.metadata.videoId = envelop.impression.videoId;
+                    envelop.metadata.savingTime = envelop.impression.savingTime;
+                    envelop.metadata.p = envelop.impression.p;
                     _.unset(envelop, 'jsdom');
                     return envelop;
                 })
