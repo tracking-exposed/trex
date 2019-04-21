@@ -11,7 +11,6 @@ var bs58 = require('bs58');
 
 var mongo = require('./mongo');
 var utils = require('./utils');
-var alarms = require('./alarms');
 
 
 function hasError(retDict) {
@@ -57,7 +56,7 @@ function saveVideo(body, supporter) {
     };
 
     if(isVideo)
-        video.videoId = _.replace(body.href, /.*v=/, '').replace(/\?.*/, '');
+        video.videoId = _.replace(body.href, /.*v=/, '').replace(/\?.*/, '').replace(/\&.*/,'');
 
     debug("Saving entry (videos: %s) user %s file %s (%d bytes)",
         isVideo ? video.videoId : "false", supporter.p, fdest, _.size(body.element)

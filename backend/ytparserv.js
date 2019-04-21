@@ -54,7 +54,7 @@ function infiniteLoop() {
                 savingTime: {
                     $gt: new Date(lastExecution)
                 },
-                processed: { $exists: false }
+                processed: { $exists: !!nconf.get('repeat') }
             };
             /* 
              * isVideo true|false, processed true|false|undefined,

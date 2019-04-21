@@ -6,9 +6,6 @@ var apiListVersion1 = {
     /* not API, serving static pages from sections/*.pug */
     getPage:          require('./staticpages').getPage,
 
-    /* alarms */
-    getAlarms:        require('./alarms').getAlarms,
-
     /* for revision */
     unitById:         require('./htmlunit').unitById,
 
@@ -24,6 +21,11 @@ var apiListVersion1 = {
     getResults:       require('./divergency').getResults,
 
     handshake:        require('./handshake').handshake,
+
+    /* the two currently used/tested */
+    getLast:          require('./documented').getLast,
+    getVideoId:       require('./documented').getVideoId,
+    getRelated:       require('./documented').getRelated
 };
 
 module.exports = {

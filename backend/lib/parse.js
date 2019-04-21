@@ -128,7 +128,8 @@ function parseHTML(htmlfilter, repeat) {
                     envelop.metadata.id = envelop.impression.id;
                     envelop.metadata.videoId = envelop.impression.videoId;
                     envelop.metadata.savingTime = envelop.impression.savingTime;
-                    envelop.metadata.p = envelop.impression.p;
+                    envelop.metadata.watcher = envelop.impression.p;
+                    // TODO: extract URL metadata, such as &t=502s 
                     _.unset(envelop, 'jsdom');
                     return envelop;
                 })
