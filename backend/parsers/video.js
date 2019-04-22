@@ -150,7 +150,6 @@ function relatedMetadata(e, i) {
         source,
         vizstr,
         videoId,
-        suggestionOrder: videometablockN,
         displayTime,
         expandedTime,
         longlabel,
