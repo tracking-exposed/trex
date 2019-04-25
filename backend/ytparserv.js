@@ -27,9 +27,9 @@ console.log(`considering the lastActivities since ${backInTime} minutes ago, [mi
 function getLastActive() {
 
     return mongo
-        .read(nconf.get('schema').supporters, { lastActivity: {
+        .read(nconf.get('schema').supporters, { } /*lastActivity: {
             $gt: new Date(lastExecution) 
-        }})
+        }}*/)
         .map(function(user) {
             return user.p;
         })
