@@ -23,6 +23,7 @@ var pageMap = {
   'personal': pugCompiler('personal/landing'),
   'divergency': pugCompiler('divergency'),
   'results': pugCompiler('results'),
+  'compare': pugCompiler('compare'),
   'privacy-statement': pugCompiler('privacy'),
   'technicalities': pugCompiler('technicalities'),
   'about-us': pugCompiler('about'),

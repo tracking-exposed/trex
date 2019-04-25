@@ -35,7 +35,9 @@ function formatReturn(updated) {
 
 function contentClean(i) {
     return _.map(i, function(video) {
-        let retval = _.pick(video.metadata[0], ['p', 'title', 'viewInfo', 'savingTime', 'videoId', 'relatedN']);
+        let retval = _.pick(video.metadata[0], ['watcher', 'title', 'viewInfo', 'savingTime',
+            'videoId', "authorName", "authorSource", "likeInfo", "publicationString", 'relatedN'
+        ]);
         retval.related = _.map(video.metadata[0].related, function(e) {
             let rv = _.merge(e, e.mined);
             _.unset(rv, 'mined');

@@ -146,6 +146,13 @@ app.get('/api/v1/html/:htmlId', function(req, res) {
     return dispatchPromise('unitById', req, res);
 });
 
+/* the pages of the 'documented' API */
+app.get('/compare/:videoId?', function(req, res) {
+    req.params.page = 'compare';
+    return dispatchPromise('getPage', req, res);
+});
+
+
 /* sequence API */
 app.get('/api/v1/sequence/:testId/:name', function(req, res) {
     return dispatchPromise('getSequence', req, res);

@@ -25,3 +25,8 @@ cp node_modules/jquery/dist/jquery.js $V
 cp node_modules/moment/min/moment.min.js $V 
 cp node_modules/lodash/lodash.min.js $V 
 # cp ../dist/extension.zip dist/static
+
+cd $V
+curl -O -J -L https://unpkg.com/isotope-layout@3/dist/isotope.pkgd.min.js
+cd ../..
+

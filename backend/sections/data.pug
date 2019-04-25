@@ -25,10 +25,64 @@ html
   body
     include header
 
-    .container-fluid
+    .container
         p Whatver you ask to us, keep in mind: 
             b this tool is mean to analyze youtube, not the content producer, not the content consumers
             |. Feel free to open an issue in our 
             a(href="https://github.com/tracking-exposed/yttrex/issues") ticketing system
             |, if you have an interesting proposal
         include api
+
+    .container
+        p play with the related-videos! 
+            a(href="https://github.com/tracking-exposed/experiments-data/raw/master/yttrex/related-vidoes.json.gz") download the .json.gz
+            |  (70Mb uncompressed)
+        p 9573 videos, watched in 6 months by 20 different users, produced 150824 suggested video. Everyone of this object has this format:
+    .container
+        pre.azure.
+             {
+              "videoId": "8jS6ykO27ug",
+              "title": "Das passiert, wenn man Nigeria Spammer reinlegt",
+              "source": "Lennart Erbgut•",
+              "vizstr": "Empfohlenes Video",
+              "suggestionOrder": 9,
+              "watched": "Basics of Antennas and Beamforming - Massive MIMO Networks",
+              "since": "Am 28.11.2018 veröffentlicht",
+              "credited": "Communication Systems, Linköping University, LIU",
+              "channel": "/channel/UCOrjRoYJPqGiR1SZvU3xcYQ",
+              "savingTime": "2019-04-11T18:14:11.382Z",
+              "watcher": "collards-icecream-peach",
+              "watchedId": "xGkyZw98Tug"
+             }
+
+    .container
+
+        p This is the distribution of collected suggestions across the months, every color represent a different partecipant (watcher, in the dataset). Every person behind our browser extension has a pseudonym (which depends from their public key, by reinstalling the extension you'll change it) like 
+            i collards-icecream-peach
+            |.
+        .centered
+            img(src="https://user-images.githubusercontent.com/89555/56743902-c1b2cb00-6777-11e9-91a2-137aad5c9867.png")
+
+        p Here you can see which video in our dataset have been seen by more than one user. We look for this condition, because in this way we can compare if the 
+            i related videos
+            |  are the same or not. How many of them are 
+            i suggested for you
+            |  (implying some kind of content prsonalization), and how many other simply change for geographical reason?
+        .centered
+            img(src="https://user-images.githubusercontent.com/89555/56743916-c5dee880-6777-11e9-9e87-08d020ff8ed1.png")
+
+        p We have some option, I pick a John Oliver as reference. As you can see, from my screenshot I copied some of the suggested videos. The point of compating how algorithms treat us, individually, in a personalized way, pass through comparing how we get personalized suggestions.
+        .centered
+            img(src="https://user-images.githubusercontent.com/89555/56743931-ca0b0600-6777-11e9-8825-f6bfbd80ca48.png")
+
+        p The three profiles accessed in different moment in time. As you can see above, the video was published in June 2018, but the profiles caputre evideences from February and March 2019. This is something to keep in account when running comparison. It is not difficult for you and a friend, share a list of video and watch them in sequence. This would permit to this couple of researchers (or a group, or a single person managing three different profiles with VPNs) to get more compareable results.
+        .centered
+            img(src="https://user-images.githubusercontent.com/89555/56744644-33d7df80-6779-11e9-8dcf-d6eb6d5215cd.png")
+
+        p Anyway, considering all the variables in play (different timing, unknown location, unclear precedent behavior) we can start to compare the suggestions. The three profiles are in column, and on the row, the order of the video suggested by the Youtube Algorithm:
+        .centered
+            img(src="https://user-images.githubusercontent.com/89555/56743946-d1321400-6777-11e9-9c84-5f97de2b0b63.png")
+
+        p Here you can see another video compared. The first four columns comes from the same profile: some suggestion keep being the same, other changes. This means, even the data you might collect about your own person treatment might show you something about how Youtube has profiled you.
+        .centered
+            img(src="https://user-images.githubusercontent.com/89555/56743956-d4c59b00-6777-11e9-815e-f34f67c9bb28.png")
