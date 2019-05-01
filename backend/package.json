@@ -6,7 +6,7 @@
     "build": "./build.sh",
     "watch": "nodemon --config config/nodemon.json yttrex",
     "start": "DEBUG=lib:*,-yttrex node yttrex",
-    "parserv": "DEBUG=*,-lib:mongo:* node ytparserv"
+    "parserv": "DEBUG=*,-lib:mongo* node ytparserv"
   },
   "author": "Claudio Agosti <claudio@tracking.exposed>, https://github.com/tracking-exposed/yttrex/graphs/contributors",
   "license": "AGPL-3.0",

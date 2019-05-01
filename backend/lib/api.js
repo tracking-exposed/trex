@@ -9,23 +9,22 @@ var apiListVersion1 = {
     /* for revision */
     unitById:         require('./htmlunit').unitById,
 
-    /* return user' last videos info */
-    getPersonalBlob:  require('./personal').getPersonalBlob,
 
-    /* return user' last videos info */
-    getUserBacklog:   require('./backlog').getUserBacklog,
-
-    /* retuern sequence of video for divergency check */
+    /* retuern sequence of video for divergency check 
     getSequence:      require('./divergency').getSequence,
     createSequence:   require('./divergency').createSequence,
     getResults:       require('./divergency').getResults,
 
     handshake:        require('./handshake').handshake,
+     * */
 
-    /* the two currently used/tested */
+    /* the three currently used/tested for the public */
     getLast:          require('./documented').getLast,
     getVideoId:       require('./documented').getVideoId,
-    getRelated:       require('./documented').getRelated
+    getRelated:       require('./documented').getRelated,
+
+    /* return user' last videos */
+    getPersonal:       require('./personal').getPersonal
 };
 
 module.exports = {

@@ -9,9 +9,5 @@
     "sections/webscripts/*.js"
   ],
   "verbose": true,
-  "exitcrash": false,
-  "env": {
-    "DEBUG": "yttrex,lib:*,-lib:mongo:*"
-  },
-  "ext": "js css pug"
+  "ext": "js,css,pug"
 }

@@ -1,66 +1,54 @@
-var _ = require('lodash');
-var moment = require('moment');
-var Promise = require('bluebird');
-var debug = require('debug')('lib:personal');
-var nconf = require('nconf');
+const _ = require('lodash');
+const moment = require('moment');
+const Promise = require('bluebird');
+const debug = require('debug')('lib:personal');
+const nconf = require('nconf');
 
-var mongo = require('./mongo');
-var utils = require('./utils');
-var fetchBacklog = require('./backlog').fetchBacklog;
-var fetchSequences = require('./divergency').fetchSequences;
-var findLastDivergenciesUpdates = require('./divergency').findLastDivergenciesUpdates;
-var fetchProfile = require('./profile').fetchProfile;
+const mongo = require('./mongo');
+const utils = require('./utils');
+const params = require('./params');
 
-/* 
- * this is high-level API which return a bit of everything:
- *   - the last updated sequences where an user participate
- *   - the last sequences owned by the user
- *   - few user profile detail
- *   - the most recent videos 
- * 
- * this API is intended for the /personal/:publicKey access 
- */
+function getPersonal(req) {
 
-function getPersonalBlob(req) {
-    var c =  req.params.publicKey;
-    var backlogLIMIT = 50;
-    var sequencesLIMIT = 20;
+    const k =  req.params.publicKey;
+    const { amount, skip } = params.optionParsing(req.params.paging, 40);
+    debug("Personal access, amount %d skip %d", amount, skip);
 
-    debug("personal access for user %s", c);
-    return fetchProfile(c)
+    if(_.size(k) < 30)
+        return { json: { "message": "Invalid publicKey", "error": true }};
+
+    return mongo
+        .read(nconf.get('schema').supporters, { publicKey: k })
+        .then(_.first)
         .then(function(profile) {
             if(!profile)
-                throw new Error("Public key do not match any user");
+                throw new Error("publicKey do not match any user");
 
-            return Promise.all([
-                fetchBacklog(profile.publicKey, 40),
-                fetchSequences({ p: profile.p, first: true }, 400).then(findLastDivergenciesUpdates),
-                profile
-            ]);
+            return mongo
+                .readLimit(nconf.get('schema').metadata, { watcher: profile.p }, { savingTime: -1 }, amount, skip)
+                .map(function(m) {
+                    let r = _.omit(m, ['_id']);
+                    r.related = _.map(r.related, function(entry) { return _.omit(entry, ['mined']); });
+                    r.relative = moment.duration( moment() - moment(m.savingTime)).humanize();
+                    return r;
+                })
+                .then(function(metadata) {
+                    return { json: {
+                        profile: _.omit(profile, ['_id']),
+                        metadata,
+                    } };
+                });
         })
-    .tap(function(all) {
-        if( _.size(all[0]) == 400 || _.size(all[1]) === 400 )
-            debug("Warning: limit 400 received! backlog %d, sequences %d", _.size(all[0]), _.size(all[1]) );
-    })
-    .then(function(all) {
-        return {
-            json: {
-                backlog: all[0],
-                sequences: all[1],
-                profile: all[2]
-            }
-        };
-    })
-    .catch(function(error) {
-        debug("Error: %s", error.message);
-        return { json: {
-                "message": error.message,
-                "error": true
-            }
-        };
-    });
+        .catch(function(error) {
+            debug("error: %s", error.message);
+            return { json: {
+                    "message": error.message,
+                    "error": true
+                }
+            };
+        });
 };
 
 module.exports = {
-    getPersonalBlob: getPersonalBlob
+    getPersonal,
 };

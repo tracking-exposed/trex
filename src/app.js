@@ -51,11 +51,8 @@ const bo = chrome || browser;
 // Everything starts from here.
 function boot () {
 
-    if(window.location.origin !== 'https://www.youtube.com') {
-        /* we are on .tracking.exposed because this + youtube.com
-         * are the only two permitted domain where the extension run */
+    if(_.endsWith(window.location.origin, 'tracking.exposed') {
         if(_.isUndefined($("#extension--parsable").html())) {
-            console.log(`"error?" the page ${window.document.location.href} has nothing to be processed by the ytTREX extension`);
             return null;
         } else {
             $(".extension-missing").hide();
@@ -69,28 +66,27 @@ function boot () {
                 $(".extension-present").show();
             });
         }
+    } else {
+        // this get executed only on youtube.com
+        console.log(`yttrex version ${config.VERSION} build ${config.BUILD} loading; Config object:`);
+        console.log(config);
+
+        // is an hidden div, created on youtube.com domain,
+        // visibile when the recording is triggered
+        createLoadiv();
+
+        // Register all the event handlers.
+        // An event handler is a piece of code responsible for a specific task.
+        // You can learn more in the [`./handlers`](./handlers/index.html) directory.
+        registerHandlers(hub);
+
+        // Lookup the current user and decide what to do.
+        localLookup(response => {
+            // `response` contains the user's public key and its status,
+            hrefUpdateMonitor();
+            flush();
+        });
     }
-
-    // this get executed only on youtube.com
-    console.log(`yttrex version ${config.VERSION} build ${config.BUILD} loading; Config object:`);
-    console.log(config);
-
-    // is an hidden div, created on youtube.com domain,
-    // visibile when the recording is triggered
-    createLoadiv();
-
-    // Register all the event handlers.
-    // An event handler is a piece of code responsible for a specific task.
-    // You can learn more in the [`./handlers`](./handlers/index.html) directory.
-    registerHandlers(hub);
-
-    // Lookup the current user and decide what to do.
-    localLookup(response => {
-        // `response` contains the user's public key and its status,
-        console.log("localLookup responded:", response);
-        hrefUpdateMonitor();
-        flush();
-    });
 }
 
 function createLoadiv() {

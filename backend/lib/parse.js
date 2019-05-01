@@ -135,8 +135,6 @@ function parseHTML(htmlfilter, repeat) {
                 })
                 .catch(function(error) {
                     debug("catch error in %s: %s", metainfo.id, error.message);
-                    console.log("%s", error.stack);
-                    debugger;
                     metainfo.processed = false;
                     return { impression: metainfo };
                 });

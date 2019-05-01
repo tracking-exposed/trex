@@ -76,7 +76,6 @@ function dispatchPromise(name, req, res) {
               res.sendFile(__dirname + "/html/" + httpresult.file);
           } else {
               debug("Undetermined failure in API call, result →  %j", httpresult);
-              console.trace();
               return returnHTTPError(req, res, name, "Undetermined failure");
           }
           return true;
@@ -120,21 +119,9 @@ app.post('/api/v:version/events', function(req, res) {
     return dispatchPromise('processEvents', req, res);
 });
 
-/* handshake to:
- *    1) get the pseudoNym for the page, and 
- *    2) notify to associate videoId to the testId */
-app.post('/api/v:version/handshake', function(req, res) {
-    return dispatchPromise('handshake', req, res);
-});
-
-/* this is to retrieve their own sumitted videos metadata */
-app.get('/api/v1/backlog/:publicKey', function(req, res) {
-    return dispatchPromise('getUserBacklog', req, res);
-});
-
-/* this is to retrieve the information block used to populate personal page */
-app.get('/api/v1/personal/:publicKey', function(req, res) {
-    return dispatchPromise('getPersonalBlob', req, res);
+/* this is to retrieve the personal video submitted */
+app.get('/api/v1/personal/:publicKey/:paging?', function(req, res) {
+    return dispatchPromise('getPersonal', req, res);
 });
 
 /* useful revision page */

@@ -35,7 +35,7 @@ function getLastActive() {
         })
         .tap(function(pseudos) {
             if(_.size(pseudos))
-                debug("%d active users by lastActivity", _.size(pseudos));
+                debug("%j active in lastActivity", pseudos);
         });
 }
 
