@@ -27,9 +27,9 @@ console.log(`considering the lastActivities since ${backInTime} minutes ago, [mi
 function getLastActive() {
 
     return mongo
-        .read(nconf.get('schema').supporters, { } /*lastActivity: {
+        .read(nconf.get('schema').supporters, { lastActivity: {
             $gt: new Date(lastExecution) 
-        }}*/)
+        }})
         .map(function(user) {
             return user.p;
         })
@@ -46,9 +46,6 @@ function infiniteLoop() {
         .delay(FREQUENCY * 1000)
         .then(getLastActive)
         .map(function(p) {
-            if(lastCycleActive)
-                debug("Last successful execution was at %s", lastExecution);
-
             let htmlFilter = {
                 p,
                 savingTime: {
