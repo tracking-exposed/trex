@@ -26,7 +26,7 @@ var pageMap = {
   'compare': pugCompiler('compare'),
   'privacy-statement': pugCompiler('privacy'),
   'technicalities': pugCompiler('technicalities'),
-  'about-us': pugCompiler('about'),
+  'about': pugCompiler('about'),
   'data': pugCompiler('data'),
   '/': pugCompiler('index'),
   '404': pugCompiler('404')

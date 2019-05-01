@@ -7,16 +7,7 @@ const imgstyle = {
     width: "100%"
 };
 const cardStyle = {
-    'textAlign': "center",
-};
-const h1style = {
-    'fontSize': "2em",
-    'color': "#65b211",
-    'textUnderlinePosition': "under",
-    'fontWeight': "bolder",
-};
-const star = {
-    'color': "#fe5000"
+    'textAlign': "center"
 };
 
 const InfoBox = React.createClass({
@@ -26,21 +17,8 @@ const InfoBox = React.createClass({
 
         return (
             <Card style={cardStyle}>
-                <span style={h1style}>Tailored algorithms?</span>
-
                 <a target='_blank' href={personalLink}>
-                    <img style={imgstyle} src='/youtube-trex-logo.png' />
-                </a>
-                <a target='_blank' href={personalLink}>
-                    <span style={h1style}>try</span>
-                </a>
-                <span> </span>
-                <a target='_blank' href={personalLink}>
-                    <span style={h1style}>
-                        <span style={star}> ☆ </span>
-                            divergency!
-                        <span style={star}> ☆ </span>
-                    </span>
+                    <img style={imgstyle} src='/yttrex-logo.png' />
                 </a>
             </Card>
         );
