@@ -29,7 +29,7 @@ function getPersonal(req) {
                 .map(function(m) {
                     let r = _.omit(m, ['_id']);
                     r.related = _.map(r.related, function(entry) { return _.omit(entry, ['mined']); });
-                    r.relative = moment.duration( moment() - moment(m.savingTime)).humanize();
+                    r.relative = moment.duration( moment(m.savingTime) - moment() ).humanize() + " ago";
                     return r;
                 })
                 .then(function(metadata) {

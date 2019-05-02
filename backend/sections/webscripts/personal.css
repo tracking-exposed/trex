@@ -1,0 +1,13 @@
+.videoblock {
+    border-left: 1px black solid;
+    border-top: 1px black solid;
+}
+
+thead {
+    background: aliceblue;
+}
+
+.timeheader {
+    background: cornsilk;
+    padding: 5px;
+}
