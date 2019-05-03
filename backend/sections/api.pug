@@ -1,12 +1,8 @@
 ul
     li 
-        a(class="yellow" href="/api/v1/last") Last received evidence
-        br
-        code /api/v1/last
-        p It returns JSON objects: the last 60 contributions received by the community. It is cached for 2 minutes, the first request after cache expires would define the next 60.
-    li 
         a(class="yellow" href="/compare/f6jlvXWwhEo") Try to compare videos
         br
+        b API 
         code /api/v1/videoId/
             b [variable:videoId]
         p it takes the id from a YouTube url, e.g. 
@@ -15,10 +11,16 @@ ul
             |,  and returns a JSON object containing all the different 'related' videos observed when the same videoId have been watched by ytTREX contributors. Maximum 110 evidences are returned.
     li
         a(class="yellow" href="/related/Z7MC8Lw5e9Q") Search if a video was among the related
-        br
+        br 
+        b API 
         code /api/v1/related/
             b [variable:videoId]
         p This API looks all the time the 
             i videoId
             |  was in the related list of other videos, so you can see where videoId was suggested
-
+    li 
+        a(class="yellow" href="/api/v1/last") Last received evidence
+        br
+        b API 
+        code /api/v1/last
+        p It returns JSON objects: the last 60 contributions received by the community. It is cached for 2 minutes, the first request after cache expires would define the next 60.
