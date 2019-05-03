@@ -44,6 +44,11 @@ function contentClean(i) {
             _.unset(rv, 'longlabel');
             return rv;
         });
+        const d = moment.duration( moment(retval.savingTime) - moment() );
+
+        retval.timeago = d.humanize() + ' ago';
+        retval.secondsago = d.asSeconds();
+
         return retval;
     });
 };
@@ -76,9 +81,8 @@ function getLast(req) {
             return mongo
                 .aggregate(nconf.get('schema').videos, [ ma, li, so, lo ])
                 .then(function(x) {
-                    debugger;
                     let updated = {
-                        content: contentClean(x),
+                        content: _.reverse(_.orderBy(contentClean(x), 'secondsago')),
                         computedAt: moment(),
                         next: moment().add(cache.seconds, 'seconds')
                     };

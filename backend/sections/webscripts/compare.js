@@ -1,14 +1,18 @@
 
-function updateRender(e) {
-    console.log(e);
-    const targetId = e.attr('data-id');
-    console.log(targetId);
+function updateRender(videoId) {
+    const newurl = `/compare/${videoId}`;
+    window.location.replace(newurl);
 };
 
 function fillRecentSlot(item) {
 
     console.log(item);
-    let h = `<div onclick="updateRender()" data-id="${item.videoId}">${item.title}</div>`;
+    let h = `
+        <div class="recent" onclick="updateRender(${item.videoId})">
+            <label>${item.timeago}</label>
+            <label>Related: ${item.relatedN}</label> ${item.title}
+        </div>
+    `;
     $('#recent').append(h);
 }
 
@@ -72,7 +76,6 @@ function initCompare() {
     });
 
     $.getJSON('/api/v1/last', function(recent) {
-        // console.log(recent);
         _.each(recent.content, fillRecentSlot);
     });
 };
