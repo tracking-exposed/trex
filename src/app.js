@@ -51,7 +51,7 @@ const bo = chrome || browser;
 // Everything starts from here.
 function boot () {
 
-    if(_.endsWith(window.location.origin, 'tracking.exposed') {
+    if(_.endsWith(window.location.origin, 'youtube.tracking.exposed')) {
         if(_.isUndefined($("#extension--parsable").html())) {
             return null;
         } else {
@@ -66,7 +66,7 @@ function boot () {
                 $(".extension-present").show();
             });
         }
-    } else {
+    } else if(_.endsWith(window.location.origin, 'youtube.com')) {
         // this get executed only on youtube.com
         console.log(`yttrex version ${config.VERSION} build ${config.BUILD} loading; Config object:`);
         console.log(config);
@@ -106,7 +106,8 @@ function createLoadiv() {
     img.setAttribute('src', getLogoDataURI());
     div.appendChild(img);
 
-    $("#loadiv").toggle();
+    console.log("Created loading div");
+    // $("#loadiv").toggle();
 };
 
 var last = null;

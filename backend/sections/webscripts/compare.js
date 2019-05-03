@@ -1,97 +1,78 @@
 
-function fillRecentSlot(item) {
-    console.log(item);
-
-    $("#recent").append('<span class="entry">'+JSON.stringify(item)+'/span>');
-/*
-      const date = moment(item.publicationTime, moment.ISO_8601),
-        readableDate = date.format('MMMM Do YYYY, hh:mm a'),
-        unixTimestamp = date.format('x'),
-        maxStringLength = 150;
-*/
-          bgColorClass = 'alert-success';
-          entryType = 'picture';
-
-      if(_.size(item.texts) && _.some(item.texts, _.size)) {
-
-        /* are sure the texts[].text is order by the longest */
-        selectedText = _.first(_.orderBy(item.texts, _.size));
-        teaserText = selectedText.length > maxStringLength
-          ? selectedText.substring(0, maxStringLength) + '…'
-          : selectedText 
-        hasText = true;
-      }
-
-      let linkslot ="";
-      if(_.startsWith(item.permaLink, '/')) 
-        linkslot = `<a href="https://facebook.com${item.permaLink}" title="watch" target="_blank" class="small text-link">Go to post</a>`;
-      else if(_.startsWith(item.permaLink, 'https://'))
-        linkslot = `<a href="${item.permaLink}" title="Go to post" target="_blank" class="small text-link">Go to post</a>`;
-
-      const gridItem = `
-        <div class="grid-item ${item.fblinktype || ''}">
-          <article class="content ${bgColorClass} d-flex flex-column">
-            <header>${entryType || ''}</header>
-            <section class="body">
-              <span class="small date" data-date="${unixTimestamp}">${readableDate}</span>
-              <h4 class="author">${item.source}</h4>
-              ${hasText ? `<p class="teaser">${teaserText}</p>` : ''}
-            </section>
-            <footer>
-              <span class="small ${item.postId ? 'post-id' : ''}" data-post-id="${item.postId}">
-                ${item.postId ? 'Post Id: #'+item.postId : '#'}
-              </span>
-              ${linkslot}
-            </footer>
-          </article>
-        </div>
-      `;
-      $('#recent').append(gridItem);
-}
-
-let $grid;
-
-// #recent and #comparison
-function initCompare() {
-
-    $.getJSON('/api/v1/last', function(recent) {
-        console.log(recent);
-        _.each(recent.content, fillRecentSlot);
-    });
-
-    initIsotope();
-    console.log("finish");
+function updateRender(e) {
+    console.log(e);
+    const targetId = e.attr('data-id');
+    console.log(targetId);
 };
 
+function fillRecentSlot(item) {
 
-function initIsotope() {
-  $grid = $('.grid').isotope({
-    // set itemSelector so .grid-sizer is not used in layout
-    itemSelector: '.grid-item',
-    percentPosition: true,
-    masonry: {
-      // use element for option
-      columnWidth: '.grid-sizer'
-    },
-    getSortData: {
-      postId: '[data-post-id parseInt]',
-      date: '[data-date parseInt]',
-      author: '.author',
-    }
-  });
+    console.log(item);
+    let h = `<div onclick="updateRender()" data-id="${item.videoId}">${item.title}</div>`;
+    $('#recent').append(h);
 }
 
-function filterBy(filter = '*') {
-  $grid.isotope({ filter });
-}
+// #recent and #comparison
+// with 'last' we populate some snippet
+// with 'getVideoId' we get the videos, it is display the different comparison
+function initCompare() {
 
-function sortBy(value = 'original-order') {
-  $grid.isotope({ sortBy: value });
-}
+    const compare = window.location.href.split('/').pop();
+    console.log(compare);
+    $.getJSON('/api/v1/videoId/' + compare, function(results) {
 
-function downloadCSV() {
-  const token = getToken();
-  const url = "/api/v1/csv/" + token;
-  console.log("downloadCSV from: ", url);
-  window.open(url);
-}
+        const allrelated = _.flatten(_.map(results, 'related'));
+        const hdr = `
+            <div class="comparehdr">We are scrutinzing the video:
+                <div class="protagonist">${results[0].title}
+                    <a target=_blank href="https://www.youtube.com/watch?v=${results[0].videoId}">🞂</a>
+                </div>
+                Observed by ytTREX adopters: ${_.size(results)} times, and in total we have: ${_.size(allrelated)} related videos.
+            </div>
+        `;
+        $('#comparison').append(hdr);
+
+        const x = _.reverse(_.orderBy(_.groupBy(allrelated, 'videoId'), _.size));
+
+        let lastH = null;
+        _.each(x, function(relatedList) {
+            if(_.size(relatedList) != lastH) {
+                lastH = _.size(relatedList);
+                let printed = lastH > 1 ? lastH + " times" : "once";
+                let sightenings = `
+                    <div class="seen">
+                        Videos present in the related list ${printed} 
+                    </div>
+                `;
+                $('#comparison').append(sightenings);
+            }
+
+            const positions = _.join(_.map(relatedList, 'index'), ', ');
+            const relatedVideo = _.first(relatedList);
+            let videoEntry = `
+                <div id="${relatedVideo.videoId}" class="step">
+                    <span class="author">
+                        <label>Channel:</label>${relatedVideo.source}
+                    </span>
+                    <span class="position">
+                        <label>Position in the list:</label>${positions}
+                    </span>
+                    <br>
+                    <span class="video">
+                        <label>Video:</label>${relatedVideo.title}
+                    </span>
+                </div>
+            `;
+            let videoDetails = `
+                
+            `;
+            $('#comparison').append(videoEntry);
+
+        });
+    });
+
+    $.getJSON('/api/v1/last', function(recent) {
+        // console.log(recent);
+        _.each(recent.content, fillRecentSlot);
+    });
+};

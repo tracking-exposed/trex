@@ -28,7 +28,7 @@ function sync (hub) {
         bo.runtime.sendMessage({ type: 'sync', payload: state.videos, userId: 'local' },
                                    (response) => hub.event('syncResponse', response));
         state.videos = [];
-    } else console.log("queue is empty");
+    }
 }
 
 export function register (hub) {

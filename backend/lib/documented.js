@@ -76,6 +76,7 @@ function getLast(req) {
             return mongo
                 .aggregate(nconf.get('schema').videos, [ ma, li, so, lo ])
                 .then(function(x) {
+                    debugger;
                     let updated = {
                         content: contentClean(x),
                         computedAt: moment(),

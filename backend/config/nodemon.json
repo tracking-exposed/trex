@@ -6,8 +6,9 @@
     "dist/**"
   ],
   "ignore": [
-    "sections/webscripts/*.js"
+    "sections/webscripts/*.js",
+    "node_modules/**",
+    "htmls/**"
   ],
-  "verbose": true,
   "ext": "js,css,pug"
 }
