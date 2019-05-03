@@ -7,12 +7,12 @@ h3 Reason
 p In this section, we don't address "why it is right and necessary" (the 
     a(class="yellow" href="/outrage") political issue on social network power
     |  is a legitimate good reason, but addressed in a separated page), rather, the technical reasons of our approach based on a browser extension and scraping, as the most effective method to realize algorithm analysis and third party accountability of platforms which deploy personalized algorithms.
-ol
+ul
     li We do not rely on APIs because they can be blocked or limited by the platform, but instead rely on crowdsourced, voluntarily disclosed data.
     li We don't (and shouldn't) rely on an individual point of observation to run tests. This is the approach used by 
         a(class="yellow" href="https://algotransparency.org") algotransparency.org
         |, and we should acknowledge two of their important achievements:
-        ol
+        ul
             li The simplicity of their communication. Despite the fact that the issue of algorithms is personalisation, it is already an achievement to display the existance and impact of algorithms, especially for storytelling around on polarizing topics  or with heated debate, such as health, science, politics.
             li Their research on visualisation is something we should learn from and, where possible, reuse to provide continuity in the analysis.
     li We enable individuals to understand how personalisation affects them, with the aim of mainstreaming the debate around algorithms. We want people to actively engage in the research process.
@@ -27,7 +27,7 @@ ol
     li People using our tools and analytics. To this end, a simple dashboard would be developed on top of a documented API, in order to enable other free software developers to extend the AGPL technology.
     li Other individual third parties to which the owner of the data could share anonymously some of their related videos, in order to compare with them how personalisation leads to different resulting experiences.
     li Additional third parties, such as research groups, if users opt-in for this.
-    li Software-defined analytics which could be run on all datasets, as long as the results help identify specific phenomena, and where data is not linkable to any individual. Aggregation, pseudonimisation and another forms of protection should be incorporated where possible (e.g. videos with fewer than n views could be removed [only videos with >1000 views] to prevent personal information from emerging in the dataset).
+    li Software-defined analytics which could be run on all datasets, as long as the results help identify specific phenomena, and where data is not linkable to any individual. Aggregation, pseudonimisation and other forms of protection should be incorporated wherever it is possible (e.g. videos with few views could be removed [e.g. only videos with >1000 views] to prevent personal information from emerging in the dataset).
 
 
 h3 Approach
@@ -35,11 +35,11 @@ h3 Approach
 p This method includes asking the individual to install a web-extension, and we should be as clear as possible on how their data would be processed. Despite not including personal data, the sequence of videos seen by an individual might permit us to attribute behavioural information; therefore, we should manage the dataset with the level of protection required by GDPR. 
 p This implies:
 ol
-    li A clear opt-in, which is revocable and accessible
-    li A clear data retention policy 
-    li Full transparency on the data processed and stored (except except leakage of personal data, or anything not anonymized enough who can lead to any attribution/inference)
-    li Data protection impact assessment
-    li A method to update individuals in case of a data breach
+    li A clear opt-in, which is revocable and accessible.
+    li A clear data retention policy.
+    li Full transparency on the data processed and stored (except leakage of personal data, or anything not anonymized enough that can lead to any attribution/inference).
+    li Data protection impact assessment.
+    li A method to update individuals in case of a data breach.
 
 h3 Data Pipelines, Collection and Transformation
 
@@ -47,14 +47,14 @@ p The technology consists of a pipeline for data collection. Individual contribu
 The pipeline has different stages, which serve these functions:
 
 ol
-    li Pre-requisite: an individual must install the browser extension, its current name on firefox and chrome store, is yttrex, and you can install the alpha version from https://youtube.tracking.exposed.
-    li Collector: the submission is validated as specific to the individual. This process uses a cryptographically secure property which ensures a collection associated with an individual can't be mixed with submissions made by another individual. 
-    li Parser: a process to read the submission and extract metadata, which will depend on the page. These data are served into the database and represent the raw input for our analysis. The parser creates an entry in the database collection named 'videos'
+    li Pre-requisite: an individual must install the browser extension, its current name on Firefox and Chrome Store, is yttrex, and you can install the alpha version from https://youtube.tracking.exposed.
+    li Collector: the submission is validated as specific to the individual. This process uses a cryptographically secure vector which ensures a collection associated with an individual can't be mixed with submissions made by another individual. 
+    li Parser: a process that reads the submission and extracts metadata from the given page. These data are served into the database and represent the raw input for our analysis. The parser creates an entry in the database collection named 'videos'
 
-p The pipeline parses the collected videos, and attrribute metadata. They have some differences based on the kind of page acquired (different URL schema normally imply a different kind of page):
+p The pipeline parses the collected videos, and attributes metadata. They have some differences based on the kind of page acquired (different URL schema normally imply a different kind of page):
 ul
     li Home: shows the region from which the individual is accessing youtube, and contains a list of suggested videos.
-    li Watch: is an individual video page, which contains the metadata of the video at a specific moment, along with related videos selected for the individual. The metadata extracted includes the number of likes/dislikes, the number of views, comments, description, title, and author. 
+    li Watch: it's an individual video page, which contains the metadata of the video at a specific moment, along with related videos selected for the individual. The metadata extracted includes the number of likes/dislikes, the number of views, comments, description, title, and author. 
     li Search: displays results from a search query.
     li Channel: records what is displayed when a channel page is opened.
 
@@ -74,7 +74,7 @@ ol
     li Improve and stabilise the parsing technology
     li Release a simple API without any interface, to let researchers and developers experiment with the tool
     li Develop an interface which permits an individual to enforce their GDPR rights and see their collection
-    li Develop functionalities to let adopters play and compare with their personalisation. The idea, is that by letting two people who know each other (or even random Internet users which don't know each other, but they believe to have something in common, like participating in the same community), the realisation of algorithm personalisation would be stronger.
+    li Develop functionalities to let adopters play and compare their results. The idea, is that by letting two people who know each other (or even random Internet users which don't know each other, but they believe to have something in common, like participating in the same community), the realisation of algorithm personalisation would be stronger.
 
 h3 Research
 
@@ -90,13 +90,13 @@ h3 Outreach
 
 p This is a communication/marketing strategy that might be sensible, but only if functionalities (as in roadmap stage 5) are live. There are few possible methods:
 ol
-    li European electoral analysis (integrate this research method as part of the https://eu19.tracking.exposed)
-    li YouTubers are facing pressure from algorithmic logic, but they have no way to understand its effects. We can offer a tool which YouTubers may have an interest in promoting among their audiences
-    li We can work on animated gifs and videos to explain how algorithms cause divergences in people's experiences based on what they are shown
-    li The website would be mostly dedicate to technology (API, pages collected, statistics). It would mostly target researchers and analysts. Exception made for the homepage, which will present more mainstream communication. Mock-up are not yet defined.
+    li European electoral analysis (integrate this research method as part of the https://eu19.tracking.exposed).
+    li YouTubers are facing pressure from algorithmic logic, but they have no way to understand its effects. We can offer a tool which YouTubers may have an interest in promoting among their audiences.
+    li We can work on animated gifs and videos to explain how algorithms cause divergences in people's experiences based on what they are shown.
+    li The website would be mostly dedicate to technology (API, pages collected, statistics). It would mostly target researchers and analysts. Exception made for the homepage, which will present more mainstream communication. Mock-ups are not yet defined.
 
 h3 Partners
 
 p tracking.exposed is a free software development group, the goal of which is to manage technology and maintain a database enabling research in the public interest.
 p As of 2019, ALEX has a small grant allocated, to "test the possibility to extend the approach of fbtrex to other platforms", we already know this is possible, and for strategic reasons this tool might be used to attract attention and visibility to our European Election analysis.
-p The general approach of tracking.exposed and algorithms.exposed projects is to find partners which can lead in promoting and disseminating the technology, while we implement thefunctionalities they need. The only constraints are our ethical mandate.
+p The general approach of tracking.exposed and algorithms.exposed projects is to find partners which can lead in promoting and disseminating the technology, while we implement the functionalities they need. The only constraints are our ethical mandate.
