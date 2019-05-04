@@ -20,9 +20,21 @@ function fillRecentSlot(item) {
 // with 'last' we populate some snippet
 // with 'getVideoId' we get the videos, it is display the different comparison
 function initCompare() {
-    const compare = window.location.href.split('/').pop();
-    if(compare == 'compare') return;
-    $.getJSON('/api/v1/videoId/' + compare, function(results) {
+    const cId = window.location.href.split('/').pop();
+    if(cId == 'compare') return;
+    $.getJSON('/api/v1/videoId/' + cId, function(results) {
+
+        console.log(results);
+        if(_.size(results) == 0) {
+            const nope= `
+                <p>Nope, a video with such id has been never found among the evidence collected</p>
+                <p>Check if is a valid video, here is the composed link: 
+                    <a href="https://youtube.com/watch?v=${cId}">https://youtube.com/watch?v=${cId}</a>
+                </p>
+            `;
+            $("#comparison").append(nope);
+            return;
+        }
 
         const allrelated = _.flatten(_.map(results, 'related'));
         const hdr = `
