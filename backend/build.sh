@@ -17,6 +17,7 @@ node_modules/.bin/stylus styles/index.styl -o dist/css
 cp styles/favicon.ico dist/
 cp -r ../icons/* dist/images
 cp sections/images/* dist/images
+cp ../icons/yttrex-logo.png dist/images/youtube-trex-logo.png
 cp -r sections/webscripts/* dist/js/local/ 
 cp -r node_modules/bootstrap/dist/* dist/
 cp styles/WorkSans.ttf dist/fonts/

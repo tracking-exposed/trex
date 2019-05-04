@@ -19,27 +19,29 @@ html
 
     meta(property="og:title" content="ytTREX")
     meta(property="og:type" content="website")
-    meta(property="og:description" content="Compare how youtube display personalized related videos")
+    meta(property="og:description" content="Related videosCompare how youtube display personalized related videos")
     meta(property="og:url" content="https://youtube.tracking.exposed")
     meta(property="og:image" content="https://youtube.tracking.exposed/images/youtube-trex-logo.png")
     meta(property="og:image:width" content="1000")
     meta(property="og:image:height" content="1000")
 
-    title compare, ytTREX
+    title related search, ytTREX
 
-  body(onload="initCompare()")
+  body(onload="initRelated()")
 
     include header
     
     .container.spaced.padded
         h2 https://www.youtube.com/watch?v=
             span.videoId VIDEOID
-            |  →  https://youtube.tracking.exposed/compare/
+            |  →  https://youtube.tracking.exposed/related/
             span.videoId VIDEOID
-           
-        #comparison
 
-    .container.spaced.padded
-        h2 Try in our recent collections
-        #recent
+    .container.centered
+        input(type="text" class="entry" id="search" placeholder="youtube.com/watch?v=...") 
+        input(type="button" value="view" onclick="submit()")
+        #notes
+
+    .container
+        #related
 

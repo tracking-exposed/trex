@@ -36,4 +36,6 @@ label {
     cursor: pointer;
 }
 
+.entry {
+    width: 50%;
 }
