@@ -33,37 +33,23 @@ function formatReturn(updated) {
     };
 };
 
-function contentClean(i) {
-    return _.map(i, function(video) {
-        let retval = _.pick(video.metadata[0], ['watcher', 'title', 'viewInfo', 'savingTime',
-            'videoId', "authorName", "authorSource", "likeInfo", "publicationString", 'relatedN'
-        ]);
-        retval.related = _.map(video.metadata[0].related, function(e) {
-            let rv = _.merge(e, e.mined);
-            _.unset(rv, 'mined');
-            _.unset(rv, 'longlabel');
-            return rv;
-        });
-        const d = moment.duration( moment(retval.savingTime) - moment() );
-
-        retval.timeago = d.humanize() + ' ago';
-        retval.secondsago = d.asSeconds();
-
-        return retval;
+function contentClean(meta) {
+    let retval = _.pick(meta, ['watcher', 'title', 'viewInfo', 'savingTime',
+        'videoId', "authorName", "authorSource", "likeInfo", "publicationString", 'relatedN'
+    ]);
+    retval.related = _.map(meta.related, function(e) {
+        let rv = _.merge(e, e.mined);
+        _.unset(rv, 'mined');
+        _.unset(rv, 'longlabel');
+        return rv;
     });
+    const d = moment.duration( moment(retval.savingTime) - moment() );
+    retval.timeago = d.humanize() + ' ago';
+    retval.secondsago = d.asSeconds();
+    return retval;
 };
 
 function getLast(req) {
-
-    let ma = { $match: { processed: true } };
-    let so = { $sort: { savingTime: 1 } };
-    let li = { $limit: 60 };
-    let lo = { $lookup: {
-        from: 'metadata',
-        localField: 'id',
-        foreignField: 'id',
-        as: 'metadata'
-    } };
 
     return Promise
         .resolve()
@@ -79,10 +65,11 @@ function getLast(req) {
         .then(function(tbd) {
             if(tbd) return tbd;
             return mongo
-                .aggregate(nconf.get('schema').videos, [ ma, so, li, lo ])
+                .readLimit(nconf.get('schema').metadata, {}, {savingTime: -1}, 20, 0)
+                .map(contentClean)
                 .then(function(x) {
                     let updated = {
-                        content: _.reverse(_.orderBy(contentClean(x), 'secondsago')),
+                        content: _.reverse(_.orderBy(x, 'secondsago')),
                         computedAt: moment(),
                         next: moment().add(cache.seconds, 'seconds')
                     };
