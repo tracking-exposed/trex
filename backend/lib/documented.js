@@ -56,8 +56,8 @@ function contentClean(i) {
 function getLast(req) {
 
     let ma = { $match: { processed: true } };
-    let li = { $limit: 60 };
     let so = { $sort: { savingTime: 1 } };
+    let li = { $limit: 60 };
     let lo = { $lookup: {
         from: 'metadata',
         localField: 'id',
@@ -79,7 +79,7 @@ function getLast(req) {
         .then(function(tbd) {
             if(tbd) return tbd;
             return mongo
-                .aggregate(nconf.get('schema').videos, [ ma, li, so, lo ])
+                .aggregate(nconf.get('schema').videos, [ ma, so, li, lo ])
                 .then(function(x) {
                     let updated = {
                         content: _.reverse(_.orderBy(contentClean(x), 'secondsago')),
