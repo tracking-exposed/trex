@@ -57,7 +57,7 @@ function getLast(req) {
 
     let ma = { $match: { processed: true } };
     let li = { $limit: 60 };
-    let so = { $sort: { savingTime: -1 } };
+    let so = { $sort: { savingTime: 1 } };
     let lo = { $lookup: {
         from: 'metadata',
         localField: 'id',
