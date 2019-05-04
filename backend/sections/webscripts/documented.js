@@ -158,5 +158,19 @@ function submit() {
     const videoId = submitted.replace(/.*v=/, '');
     if(_.size(videoId) < 9 || _.size(videoId) > 12) return;
     window.location.replace('/related/' + videoId);
-
 }
+
+function initLast() {
+    $.getJSON('/api/v1/last', function(recent) {
+        _.each(recent.content, fuction(item) {
+            let h = `
+                <div class="recent">
+                    <label>${item.timeago}</label>
+                    <label>Related: ${item.relatedN}</label> ${item.title}
+                </div>
+            `;
+            $('#recent').append(h);
+        });
+    });
+};
+

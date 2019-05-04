@@ -24,6 +24,7 @@ var pageMap = {
   'divergency': pugCompiler('divergency'),
   'results': pugCompiler('results'),
   'compare': pugCompiler('compare'),
+  'last': pugCompiler('last'),
   'related': pugCompiler('related'),
   'privacy-statement': pugCompiler('privacy'),
   'technicalities': pugCompiler('technicalities'),
