@@ -5,10 +5,8 @@ function updateRender(videoId) {
 };
 
 function fillRecentSlot(item) {
-
-    console.log(item);
     let h = `
-        <div class="recent" onclick="updateRender(${item.videoId})">
+        <div class="recent" onclick="updateRender('${item.videoId}')">
             <label>${item.timeago}</label>
             <label>Related: ${item.relatedN}</label> ${item.title}
         </div>
@@ -24,7 +22,6 @@ function initCompare() {
     if(cId == 'compare') return;
     $.getJSON('/api/v1/videoId/' + cId, function(results) {
 
-        console.log(results);
         if(_.size(results) == 0) {
             const nope= `
                 <p>Nope, a video with such id has been never found among the evidence collected</p>
@@ -56,7 +53,7 @@ function initCompare() {
                 let printed = lastH > 1 ? lastH + " times" : "once";
                 let sightenings = `
                     <div class="seen">
-                        Videos present in the related list ${printed} 
+                        Videos present among the "related list" ${printed}:
                     </div>
                 `;
                 $('#comparison').append(sightenings);
@@ -75,6 +72,7 @@ function initCompare() {
                     <br>
                     <span class="video">
                         <label>Video:</label>${relatedVideo.title}
+                        <a target=_blank href="https://www.youtube.com/watch?v=${relatedVideo.videoId}">🞂</a>
                     </span>
                 </div>
             `;
@@ -128,7 +126,6 @@ function initRelated() {
 
         _.each(results, function(watched) {
             const index = _.find(watched.related, { videoId: rId }).index;
-            console.log(watched);
             let videoEntry = `
                 <div id="${watched.videoId}" class="step">
                     <span class="video">
@@ -160,13 +157,26 @@ function submit() {
     window.location.replace('/related/' + videoId);
 }
 
+function unfoldRelated(memo, e) {
+    let add = `<span class="related">
+            ${e.index} < ${e.title}
+            <a target=_blank href="https://www.youtube.com/watch?v=${e.videoId}">🞂</a>
+        </span>
+    `;
+    memo += add;
+    return memo;
+};
 function initLast() {
     $.getJSON('/api/v1/last', function(recent) {
-        _.each(recent.content, fuction(item) {
+        _.each(recent.content, function(item) {
+            let relates = _.reduce(item.related, unfoldRelated, "");
             let h = `
-                <div class="recent">
+                <div class="last">
                     <label>${item.timeago}</label>
-                    <label>Related: ${item.relatedN}</label> ${item.title}
+                    <label># ${item.relatedN}</label>
+                    ${item.title}
+                    <a target=_blank href="https://www.youtube.com/watch?v=${item.videoId}">🞂</a>
+                    <div>${relates}</div>
                 </div>
             `;
             $('#recent').append(h);

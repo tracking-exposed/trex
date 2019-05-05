@@ -83,7 +83,7 @@ function getLast(req) {
 };
 
 function getVideoId(req) {
-
+    debug("getVideoId %s", req.params.query);
     return mongo
         .readLimit(nconf.get('schema').metadata, { videoId: req.params.query }, {}, 110, 0)
         .map(function(meta) {
@@ -104,6 +104,7 @@ function getVideoId(req) {
 };
 
 function getRelated(req) {
+    debug("getRelated %s", req.params.query);
     return mongo
         .readLimit(nconf.get('schema').metadata, { "related.videoId": req.params.query }, {}, 110, 0)
         .map(function(meta) {

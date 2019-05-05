@@ -39,3 +39,10 @@ label {
 .entry {
     width: 50%;
 }
+
+.related {
+    font-size: 0.6em;
+    border-bottom: 1px solid #3ba5a0;
+    border-left: 1px solid lightblue;
+    margin: 2px;
+}
