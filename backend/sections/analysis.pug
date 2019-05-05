@@ -1,50 +1,59 @@
 
 h3 Project analysis and roadmap
-p youtube.tracking.exposed takes its inspiration, methods, experience, and code from facebook.tracking.exposed. This project is motivated by and refers to the tracking.exposed manifesto; the goal is to create free (libre) software, support a community of analysts and developers, and enable critical analysis of monopolist platforms.
+p youtube.tracking.exposed takes its inspiration, methods, experience, and code from 
+    a(href="https://facebook.tracking.exposed" class="yellow") facebook.tracking.exposed
+    |. This project is motivated by and refers to the 
+    a(href="https://tracking.exposed") tracking.exposed
+    |  manifesto; the goal is to create free (libre) software, support a community of analysts and developers, and enable critical analysis of monopolist platforms.
 
-
-h3 Reason
-p In this section, we don't address "why it is right and necessary" (the 
-    a(class="yellow" href="/outrage") political issue on social network power
-    |  is a legitimate good reason, but addressed in a separated page), rather, the technical reasons of our approach based on a browser extension and scraping, as the most effective method to realize algorithm analysis and third party accountability of platforms which deploy personalized algorithms.
-ul
+h3 How this technology works
+p 
     li We do not rely on APIs because they can be blocked or limited by the platform, but instead rely on crowdsourced, voluntarily disclosed data.
+    li We enable individuals to understand how personalisation affects them, with the aim of mainstreaming the debate around algorithms. We want people to actively engage in the research process.
     li We don't (and shouldn't) rely on an individual point of observation to run tests. This is the approach used by 
         a(class="yellow" href="https://algotransparency.org") algotransparency.org
-        |, and we should acknowledge two of their important achievements:
+        |, but we should acknowledge two of their important achievements:
         ul
-            li The simplicity of their communication. Despite the fact that the issue of algorithms is personalisation, it is already an achievement to display the existance and impact of algorithms, especially for storytelling around on polarizing topics  or with heated debate, such as health, science, politics.
-            li Their research on visualisation is something we should learn from and, where possible, reuse to provide continuity in the analysis.
-    li We enable individuals to understand how personalisation affects them, with the aim of mainstreaming the debate around algorithms. We want people to actively engage in the research process.
+            li The simplicity of their communication. Despite the fact that the issue of algorithms is personalisation, it is already an achievement to display the existance and impact of algorithms, especially to show how delicate topics, such as health, science, and politics, might suffer from these hidden logic because they can be exploited by disinformant.
+            li Their visualisation is something we should learn from.
 
-h3 Frame and ways to use the data
+h3 How data are being used here
 
 p This is a method to 
     b collect evidence about personalisation algorithms.
-p This evidence can be used by:
+    | It is necessary to remind this, because our investigation subject is not on the yotubers, but on YouTube. With this evidence it is possible, for example:
 ol
     li Individuals themselves, to understand how their experience is curated by the platform.
+        br
+        i By clicking on the browser extension, the adopter would reach their personal collection of videos
     li People using our tools and analytics. To this end, a simple dashboard would be developed on top of a documented API, in order to enable other free software developers to extend the AGPL technology.
-    li Other individual third parties to which the owner of the data could share anonymously some of their related videos, in order to compare with them how personalisation leads to different resulting experiences.
-    li Additional third parties, such as research groups, if the adopter opt-in for this.
-    li Software-defined analytics which could be run on all datasets, as long as the results help identify specific phenomena, and where data is not linkable to any individual. Aggregation, pseudonimisation and other forms of protection should be incorporated wherever it is possible (e.g. videos with few views could be removed [e.g. only videos with >1000 views] to prevent personal information from emerging in the dataset).
+        br
+        i Check the 'play with data' section, it points at three basic functionalities
+    li Let communities play with this
+        br
+        i a consumer of youtube video might want to mark their contribution as belonging to a certain channel or community. This would help communities to better understand themselves and how algorithms impacts them.
+    li Researchers (everyone is a researcher for us, just, they have raw data) might wants to explore in details the data. This project is inspired by the concept of 
+        a(href="https://diem25.org/wp-content/uploads/2019/03/Technological-Sovereignty-Green-Paper-No-3.pdf") "European Data Commons"
+        |  (section 2.2.2), as long as we can ensure they are analyzing phenomenon and not individual behaviors.
+        br
+        i we can achived this with anonymization and aggregation, but get in touch at -support at tracking dot exposed-
 
 
 h3 Approach
 
 p This method includes asking the individual to install a web-extension, and we should be as clear as possible on how their data would be processed. Despite not including personal data, the sequence of videos seen by an individual might permit us to attribute behavioural information; therefore, we should manage the dataset with the level of protection required by GDPR. 
-p This implies:
+p This implies (and we look forward to deliver where is not yet complete):
 ol
-    li call our adopters 
+    li think to our adopters as 
         i people
-        |  and not 
+        |  and not as 
         i users 
         | =) 
     li A clear opt-in, which is revocable and accessible.
     li A customizable data retention policy.
-    li Full transparency on the data processed and stored (except leakage of personal data, or anything not anonymized enough that can lead to any attribution/inference).
-    li Data protection impact assessment.
-    li A method to update individuals in case of a data breach.
+    li Full transparency on the data processed and stored (it is free software, but we should describe it before a person join thep project).
+    li Data protection impact assessment?
+    li A way to notify individuals in case of a data breach (which is weird because contributors are anonymous to us, but we might send a message using the browser extension).
 
 h3 Data Pipelines, Collection and Transformation
 
@@ -75,11 +84,17 @@ p These data represent the unique picture of what YouTube suggested to the indiv
 h3 Roadmap
 
 ol
-    li Have a browser extension capable of copying the YouTube pages. This is still operational and provides a good dataset to work on point two
-    li Improve and stabilise the parsing technology
-    li Release a simple API without any interface, to let researchers and developers experiment with the tool
-    li Develop an interface which permits an individual to enforce their GDPR rights and see their collection
-    li Develop functionalities to let adopters play and compare their results. The idea, is that by letting two people who know each other (or even random Internet users which don't know each other, but they believe to have something in common, like participating in the same community), the realisation of algorithm personalisation would be stronger.
+    li ☑  Have a browser extension capable of copying the YouTube pages: it is implemented. We need help in providing better screenshots for 
+        a(class="yellow" href="https://chrome.google.com/webstore/detail/yttrex/kbbgjcgdcibilpahljnlejefcehbljnd") Chrome store,
+        | and 
+        a(class="yellow" href="https://addons.mozilla.org/en-US/firefox/addon/yttrex/") Firefox store
+        |. If you are a web-extension developer. 
+        a(class="yellow" href="https://github.com/tracking-exposed/yttrex") check the README on github
+        |.
+    li ☐  Implement a decent statistics collection system 
+    li ☑  Release a simple API without any interface, to let researchers and developers experiment with the tool
+    li ☐  Develop an interface which permits an individual to delete their submission and control data retention policy
+    li ☑  Develop functionalities to let adopters play and compare their results.
 
 h3 Research
 
@@ -87,25 +102,19 @@ p The release of stage 3 of the roadmap above would be enough to start research.
 ul
     li If the same video is seen at the same time from two Google accounts, how many of the suggested videos are the same?
     li If the same video is seen at the same time from two browsers without any cookies, from a clean browser, and from the same IP address, how many of the suggested videos are the same?
+    li and keep playing with these variables! the qualitative analysis (the video content and the judgment on it, if any) is left to the researcher, but with ytTREX they can record and compare how the algorithm is interacting.
 
 p In this comparative analysis, the researcher can start to figure out how the algorithm displays different suggestions.
 
-
 h3 Outreach
 
-p This is a communication/marketing strategy that might be sensible, but only if functionalities (as in roadmap stage 5) are live. There are few possible methods:
 ol
-    li
-        a(class="yellow" href="https://eu19.tracking.exposed") European electoral analysis
-        |  (we integrate this research method as part of our growing package).
-    li YouTubers are facing pressure from algorithmic logic, but they have no way to understand its effects. We can offer a tool which YouTubers may have an interest in promoting among their audiences.
-    li We can work on animated gifs and videos to explain how algorithms cause divergences in people's experiences based on what they are shown.
-    li The website would be mostly dedicate to technology (API, pages collected, statistics). It would mostly target researchers and analysts. Exception made for the homepage, which will present more mainstream communication. Mock-ups are not yet defined.
+    li Talk to the content producers (
+        i "When I'm grow-up I want to be a youtuber!
+        |): they are one of the first large category in the world which is vocal, it is sensible about algorithm discrimination (demonetization, unlisting, automated+human take down)
+    // li Integrate this analysis method with our 
+        a(class="yellow" href="https://eu19.tracking.exposed") European 2019 electoral analysis
+        |. It is a package of tools and methods, it is growing, and share the same core value.
+    li YouTubers are trying to deduct the effect of algorithm, We can offer a tool which YouTubers may have an interest in promoting among their audiences. There is a list of functionalities meant for communities, and others meant for researchers.
+    li The website is a technical reference, is meant to describe technology. If the interest arise, other website might use our data and do their own analysis and communication.
 
-h3 Partners
-
-p tracking.exposed is a free software development group, the goal of which is to manage technology and maintain a database enabling research in the public interest.
-p As of 2019, 
-    a(href="https://algorithms.exposed" class="yellow") ALEX
-    |  has a small grant allocated, to "test the possibility to extend the approach of fbtrex to other platforms", we already know this is possible, and for strategic reasons this tool might be used to attract attention and visibility to our European Election analysis.
-p The general approach of tracking.exposed and algorithms.exposed projects is to find partners which can lead in promoting and disseminating the technology, while we implement the functionalities they need. The only constraints are our ethical mandate.
