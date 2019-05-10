@@ -17,9 +17,9 @@ label {
 .step {
     border-bottom: 2px red solid;
     border-left: 2px red solid;
-    margin-left: 3em;
-    margin-right: 3em;
-    font-size: 0.8em;
+    margin-left: 1em;
+    margin-right: 1em;
+    font-size: 0.7em;
 }
 
 .comparehdr {
@@ -29,6 +29,12 @@ label {
 
 .protagonist {
     font-size: 1.4em;
+    border: 4px red solid;
+}
+
+.fullred {
+    color: white;
+    background-color: red;
 }
 
 .recent {
@@ -45,4 +51,15 @@ label {
     border-bottom: 1px solid #3ba5a0;
     border-left: 1px solid lightblue;
     margin: 2px;
+}
+
+.notclassiclink {
+    text-decoration: none;
+    color: white;
+}
+
+.lighton {
+    font-weight: 800;
+    background-color: #f5f5ec;
+    cursor: pointer;
 }

@@ -112,6 +112,7 @@ function getRelated(req) {
                 return _.pick(e, ['title', 'source', 'index', 'videoId']);
             });
             meta.related = clean;
+            meta.timeago = moment.duration( meta.savingTime - moment() ).humanize();
             _.unset(meta, '_id');
             return meta;
         })

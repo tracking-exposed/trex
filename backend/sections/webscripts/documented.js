@@ -1,14 +1,10 @@
 
-function updateRender(videoId) {
-    const newurl = `/compare/${videoId}`;
-    window.location.replace(newurl);
-};
-
 function fillRecentSlot(item) {
     let h = `
-        <div class="recent" onclick="updateRender('${item.videoId}')">
+        <div class="recent">
             <label>${item.timeago}</label>
-            <label>Related: ${item.relatedN}</label> ${item.title}
+            <label>Related: ${item.relatedN}</label>
+            <a class="linked" href="/compare/${item.videoId}">${item.title}</a>
         </div>
     `;
     $('#recent').append(h);
@@ -24,7 +20,7 @@ function initCompare() {
 
         if(_.size(results) == 0) {
             const nope= `
-                <p>Nope, a video with such id has been never found among the evidence collected</p>
+                <h3 class="fullred">Nope, this video has never been watched by someone with ytTREX extension</h3>
                 <p>Check if is a valid video, here is the composed link: 
                     <a href="https://youtube.com/watch?v=${cId}">https://youtube.com/watch?v=${cId}</a>
                 </p>
@@ -35,11 +31,10 @@ function initCompare() {
 
         const allrelated = _.flatten(_.map(results, 'related'));
         const hdr = `
-            <div class="comparehdr">We are scrutinzing the video:
-                <div class="protagonist">${results[0].title}
+            <div class="comparehdr"><div class="fullred">${_.size(results)} times has been seen this video, and YT gave ${_.size(allrelated)} related videos</div>
+                <div class="protagonist"><a href="/related/${results[0].videoId}">${results[0].title}</a>
                     <a target=_blank href="https://www.youtube.com/watch?v=${results[0].videoId}">🞂</a>
                 </div>
-                Observed by ytTREX adopters: ${_.size(results)} times, and in total we have: ${_.size(allrelated)} related videos.
             </div>
         `;
         $('#comparison').append(hdr);
@@ -48,6 +43,7 @@ function initCompare() {
 
         let lastH = null;
         _.each(x, function(relatedList) {
+
             if(_.size(relatedList) != lastH) {
                 lastH = _.size(relatedList);
                 let printed = lastH > 1 ? lastH + " times" : "once";
@@ -67,23 +63,36 @@ function initCompare() {
                         <label>Channel:</label>${relatedVideo.source}
                     </span>
                     <span class="position">
-                        <label>Position in the list:</label>${positions}
+                        <label>Positions:</label>${positions}
                     </span>
-                    <br>
                     <span class="video">
-                        <label>Video:</label>${relatedVideo.title}
+                        <label>Video:</label><a class="linked" href="/related/${relatedVideo.videoId}">${relatedVideo.title}</a>
                         <a target=_blank href="https://www.youtube.com/watch?v=${relatedVideo.videoId}">🞂</a>
                     </span>
                 </div>
             `;
             $('#comparison').append(videoEntry);
-
+        });
+        /* this repetition of the mouseover/mouseout should really be clean */
+        $(".linked").mouseover(function() {
+            $(this).addClass('lighton');
+        });
+        $(".linked").mouseout(function() {
+            $(this).removeClass('lighton');
         });
     });
 
     $.getJSON('/api/v1/last', function(recent) {
         _.each(recent.content, fillRecentSlot);
+        $(".linked").mouseover(function() {
+            $(this).addClass('lighton');
+        });
+        $(".linked").mouseout(function() {
+            $(this).removeClass('lighton');
+        });
     });
+
+
 };
 
 function initRelated() {
@@ -102,25 +111,18 @@ function initRelated() {
             return;
         }
 
-        const apologies = `
-            <div class="comparehdr">
-                <small>
-                    This interface is still a work in progress, sorry!
-                    <br>
-                    Anyhow, is a <a href="https://github.com/tracking-exposed/yttrex/blob/master/backend/sections/webscripts/documented.js">dumb jquery web-app</a> on a AGPL service, feel free to put some effort if you want to play with the data
-                </small>
-            </div>
-        `;
-        $("#notes").append(apologies);
-
         const target = _.find(results[0].related, { videoId: rId });
         const hdr = `
-            <div class="centered">Which videos has, among the related, this:
-                <div class="protagonist">${target.title}
+            <div class="centered protagonist">
+                <div class="fullred">${_.size(results)} videos linked to this
+                    <a class="notclassiclink" href="/compare/${rId}">→  compare</a>
+                </div>
+                <div>${target.title}
                     <a target=_blank href="https://www.youtube.com/watch?v=${results[0].videoId}">🞂</a>
                 </div>
-                from ${target.source}, has been found between the related ${_.size(results)} times.
+                ${target.source}
             </div>
+            <div class="centered fullred">Check the list below</div>
         `;
         $('#related').append(hdr);
 
@@ -129,24 +131,29 @@ function initRelated() {
             let videoEntry = `
                 <div id="${watched.videoId}" class="step">
                     <span class="video">
-                        <label>Watched video:</label>${watched.title}
+                        <label>Primary video:</label><a class="primary" href="/compare/${watched.videoId}">${watched.title}</a>
                         <a target=_blank href="https://www.youtube.com/watch?v=${watched.videoId}">🞂</a>
                     </span>
-                    <br>
                     <span class="author">
-                        <label>Channel:</label>${watched.authorName}
+                        <label>Primary channel:</label>${watched.authorName}
                     </span>
                     <span class="position">
-                        <label>Position in the list:</label>${index}
+                        <label>Position:</label>${index}
                     </span>
                     <span>
-                        <label>Saved on:</label>${new Date(watched.savingTime)}
+                        <label>Saved on:</label>${watched.timeago} ago
                     </span>
                 </div>
             `;
             $('#related').append(videoEntry);
         });
 
+        $(".primary").mouseover(function() {
+            $(this).addClass('lighton');
+        });
+        $(".primary").mouseout(function() {
+            $(this).removeClass('lighton');
+        });
     });
 };
 
@@ -159,13 +166,14 @@ function submit() {
 
 function unfoldRelated(memo, e) {
     let add = `<span class="related">
-            ${e.index} < ${e.title}
+            ${e.index} < <a href="/related/${e.videoId}">${e.title}</a>
             <a target=_blank href="https://www.youtube.com/watch?v=${e.videoId}">🞂</a>
         </span>
     `;
     memo += add;
     return memo;
 };
+
 function initLast() {
     $.getJSON('/api/v1/last', function(recent) {
         _.each(recent.content, function(item) {
@@ -173,14 +181,21 @@ function initLast() {
             let h = `
                 <div class="last">
                     <label>${item.timeago}</label>
-                    <label># ${item.relatedN}</label>
-                    ${item.title}
+                    <a class="title" href="/compare/${item.videoId}">${item.title}</a> 
                     <a target=_blank href="https://www.youtube.com/watch?v=${item.videoId}">🞂</a>
                     <div>${relates}</div>
                 </div>
             `;
             $('#recent').append(h);
         });
+
+        $(".related").mouseover(function() {
+            $(this).addClass('lighton');
+        });
+        $(".related").mouseout(function() {
+            $(this).removeClass('lighton');
+        });
+
     });
 };
 
