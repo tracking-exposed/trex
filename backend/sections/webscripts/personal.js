@@ -69,10 +69,11 @@ function personal() {
     });
 }
 
-function byVideoId(e) {
-    console.log(this.id);
+function downloadCSV() {
+  const pk = getPubKey();
+  const url = `/api/v1/personal/${pk}/csv`;
+  console.log("downloadCSV from: ", url);
+  window.open(url);
 }
 
-function byAuthor(e) {
-    console.log(this.id);
-}
+

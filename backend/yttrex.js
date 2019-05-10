@@ -119,6 +119,10 @@ app.post('/api/v:version/events', function(req, res) {
     return dispatchPromise('processEvents', req, res);
 });
 
+/* download your full CSV */
+app.get('/api/v1/personal/:publicKey/csv', function(req, res) {
+    return dispatchPromise('getPersonalCSV', req, res);
+});
 /* this is to retrieve the personal video submitted */
 app.get('/api/v1/personal/:publicKey/:paging?', function(req, res) {
     return dispatchPromise('getPersonal', req, res);
