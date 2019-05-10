@@ -23,8 +23,19 @@ function buildTable(video) {
         <table class="table videoblock">
             <thead>
                 <tr>
-                    <td>${video.title}</td>
-                    <td>${video.authorName}</td>
+                    <td>
+                        ${video.title}
+                        <a class="compareLink" href="/compare/${video.videoId}">
+                            compare
+                        </a>
+                    </td>
+                    <td>
+                        ${video.authorName}
+                        <br>
+                        <a class="compareLink" href="/author/${video.videoId}">
+                            Search by author
+                        </a>
+                    </td>
                     <td>${video.viewInfo.viewStr}</td>
                     <td>Related: #${video.relatedN}</td>
             </thead>
@@ -56,4 +67,12 @@ function personal() {
             buildTable(video);
         });
     });
+}
+
+function byVideoId(e) {
+    console.log(this.id);
+}
+
+function byAuthor(e) {
+    console.log(this.id);
 }

@@ -139,30 +139,36 @@ app.get('/compare/:videoId?', function(req, res) {
     return dispatchPromise('getPage', req, res);
 });
 
+/* work in progress */
+app.get('/author/:videoId?', function(req, res) {
+    req.params.page = 'author';
+    return dispatchPromise('getPage', req, res);
+});
+
 
 /* sequence API */
-app.get('/api/v1/sequence/:testId/:name', function(req, res) {
-    return dispatchPromise('getSequence', req, res);
-});
+// app.get('/api/v1/sequence/:testId/:name', function(req, res) {
+//     return dispatchPromise('getSequence', req, res);
+// });
 /* create a new sequence */
-app.get('/api/v1/sequence/:publicKey/:idList/:name', function(req, res) {
-    return dispatchPromise('createSequence', req, res);
-});
+// app.get('/api/v1/sequence/:publicKey/:idList/:name', function(req, res) {
+//     return dispatchPromise('createSequence', req, res);
+// });
 /* get the results of a sequence */
-app.get('/api/v1/results/:testId/:name', function(req, res) {
-    return dispatchPromise('getResults', req, res);
-});
+// app.get('/api/v1/results/:testId/:name', function(req, res) {
+//     return dispatchPromise('getResults', req, res);
+// });
 
 /* divergency page */
-app.get('/[dD]/:testId/:name', function(req, res) {
-    req.params.page = 'divergency';
-    return dispatchPromise('getPage', req, res);
-});
+// app.get('/[dD]/:testId/:name', function(req, res) {
+//     req.params.page = 'divergency';
+//     return dispatchPromise('getPage', req, res);
+// });
 /* divergency results page */
-app.get('/[rR]/:testId/:name', function(req, res) {
-    req.params.page = 'results';
-    return dispatchPromise('getPage', req, res);
-});
+// app.get('/[rR]/:testId/:name', function(req, res) {
+//     req.params.page = 'results';
+//     return dispatchPromise('getPage', req, res);
+// });
 
 /* static files, independent by the API versioning */
 app.get('/favicon.ico', function(req, res) {

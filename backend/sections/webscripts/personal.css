@@ -11,3 +11,12 @@ thead {
     background: cornsilk;
     padding: 5px;
 }
+
+.compareLink {
+    background: white;
+    border-radius: 6px;
+    border: 1px solid blue;
+    padding: 2px;
+    cursor: pointer;
+    font-size: 0.75em;
+}
