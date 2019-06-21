@@ -9,7 +9,7 @@ var nconf = require('nconf');
 var signer = require('nacl-signature');
 var bs58 = require('bs58');
 
-var mongo = require('./mongo');
+var mongo = require('./mongo3');
 var utils = require('./utils');
 
 
