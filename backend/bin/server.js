@@ -9,7 +9,7 @@ var debug = require('debug')('yttrex');
 var nconf = require('nconf');
 var cors = require('cors');
 
-var utils = require('../lib/utils');
+var dbutils = require('../lib/dbutils');
 var APIs = require('../lib/api');
 var mongo3 = require('../lib/mongo3');
 
@@ -63,6 +63,10 @@ function dispatchPromise(name, req, res) {
               debug("%s API success, returning JSON (%d bytes)",
                   name, _.size(JSON.stringify(httpresult.json)) );
               res.json(httpresult.json)
+          } else if(httpresult.text) {
+              debug("API %s success, returning text (size %d)",
+                  name, _.size(httpresult.text));
+              res.send(httpresult.text)
           } else {
               debug("Undetermined failure in API call, result →  %j", httpresult);
               return returnHTTPError(req, res, name, "Undetermined failure");

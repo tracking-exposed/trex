@@ -3,7 +3,7 @@
   "version": "1.0.3",
   "description": "youtube.tracking.exposed → backend data collector, to investigate personalization algorithms",
   "scripts": {
-    "watch": "nodemon --config config/nodemon.json bin/server",
+    "watch": "DEBUG=* nodemon --config config/nodemon.json bin/server",
     "start": "DEBUG=lib:*,-yttrex node bin/server",
     "parserv": "DEBUG=*,-lib:mongo* node bin/ytparserv"
   },

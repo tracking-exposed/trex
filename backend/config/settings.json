@@ -7,9 +7,13 @@
       "commitments": "commitments",
       "metadata": "metadata"
   },
-  "mongodb": "mongodb://localhost/yttrex",
+  "mongoHost": "localhost",
+  "mongoPort": 27017,
+  "mongoDb": "yttrex",
   "port": 9000,
+
   "tabtime": 20,
+
   "interface": "0.0.0.0",
   "htmlMaxAmount": 1000
 }

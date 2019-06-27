@@ -1,33 +1,28 @@
 
 var apiListVersion1 = {
-    /* POST from the userscript */
+    /* POST from the web-extension */
     processEvents:    require('./events').processEvents,
-
-    /* not API, serving static pages from sections/*.pug */
-    getPage:          require('./staticpages').getPage,
 
     /* for revision */
     unitById:         require('./htmlunit').unitById,
 
-
-    /* retuern sequence of video for divergency check 
+    /* TODO: decide if can be resumed 
     getSequence:      require('./divergency').getSequence,
     createSequence:   require('./divergency').createSequence,
     getResults:       require('./divergency').getResults,
-
     handshake:        require('./handshake').handshake,
-     * */
+     */
 
     /* the three currently used/tested for the public */
-    getLast:          require('./documented').getLast,
-    getVideoId:       require('./documented').getVideoId,
-    getRelated:       require('./documented').getRelated,
+    getLast:          require('../routes/public').getLast,
+    getVideoId:       require('../routes/public').getVideoId,
+    getRelated:       require('../routes/public').getRelated,
 
     // TODO, getAuthor
-    getPersonalCSV:   require('./personal').getPersonalCSV,
+    getPersonalCSV:   require('../routes/personal').getPersonalCSV,
 
     /* return user' last videos */
-    getPersonal:       require('./personal').getPersonal
+    getPersonal:       require('../routes/personal').getPersonal
 };
 
 module.exports = {
