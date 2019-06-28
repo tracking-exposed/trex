@@ -126,6 +126,17 @@ app.get('/api/v1/html/:htmlId', function(req, res) {
 });
 
 
+/* rsync your data back */
+app.get('/api/v1/rsync/:daysago?', function(req, res) {
+    return dispatchPromise('rsync', req, res);
+});
+
+/* research subscription and I/O */
+app.get('/api/v1/research/:publicKey', function(req, res) {
+    return dispatchPromise('rsync', req, res);
+});
+
+
 /* sequence API */
 // app.get('/api/v1/sequence/:testId/:name', function(req, res) {
 //     return dispatchPromise('getSequence', req, res);

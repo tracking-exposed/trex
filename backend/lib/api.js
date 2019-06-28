@@ -22,7 +22,13 @@ var apiListVersion1 = {
     getPersonalCSV:   require('../routes/personal').getPersonalCSV,
 
     /* return user' last videos */
-    getPersonal:       require('../routes/personal').getPersonal
+    getPersonal:       require('../routes/personal').getPersonal,
+
+    /* rsync for developer */
+    rsync:             require('../routes/rsync').rsync,
+
+    /* researcher functionalities */
+    researcher:        require('../routes/researcher').researcher,
 };
 
 module.exports = {

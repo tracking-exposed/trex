@@ -5,7 +5,7 @@
   "scripts": {
     "watch": "DEBUG=* nodemon --config config/nodemon.json bin/server",
     "start": "DEBUG=lib:*,-yttrex node bin/server",
-    "parserv": "DEBUG=*,-lib:mongo* node bin/ytparserv"
+    "parserv": "DEBUG=*,-lib:mongo* node bin/parserv"
   },
   "author": "Claudio Agosti <claudio@tracking.exposed>, https://github.com/tracking-exposed/yttrex/graphs/contributors",
   "license": "AGPL-3.0",

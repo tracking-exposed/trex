@@ -55,6 +55,18 @@ async function getRelatedByWatcher(watcher) {
     return related;
 }
 
+async function getFirstVideos(when, options) {
+    // expected when to be a moment(), TODO assert when.isValid()
+    const mongoc = await mongo3.clientConnect({concurrency: 1});
+    const selected = await mongo3
+        .readLimit(mongoc,
+            nconf.get('schema').videos,
+            { savingTime: { $gte: new Date(when.toISOString()) }}, { savingTime: 1 },
+            options.amount, options.skip);
+    await mongoc.close();
+    return selected;
+};
+
 
 module.exports = {
    
@@ -64,4 +76,7 @@ module.exports = {
 
     /* used by routes/public */
     getMetadataByFilter,
+
+    /* used by routes/rsync */
+    getFirstVideos,
 };
