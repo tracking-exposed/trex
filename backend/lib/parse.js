@@ -1,7 +1,6 @@
 const _ = require('lodash');
 const Promise = require('bluebird');
 const debug = require('debug')('lib:parse');
-const moment = require('moment');
 const nconf = require('nconf'); 
 const JSDOM = require('jsdom').JSDOM;
 const fs = Promise.promisifyAll(require('fs'));
@@ -9,8 +8,8 @@ const fs = Promise.promisifyAll(require('fs'));
 const videoparser = require('../parsers/video');
 const mongo = require('./mongo');
 const echoes = require('./echoes');
-const utils = require('./utils');
-const glue = require('./glue');
+
+nconf.argv().env().file({ file: 'config/settings.json' });
 
 function checkMetadata(impression, repeat) {
     /* this function return an impression if, and only if

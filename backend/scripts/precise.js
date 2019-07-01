@@ -8,7 +8,7 @@ const debug = require('debug')('scripts:precise');
 const parse = require('../lib/parse');
 const video = require('../parsers/video');
 
-nconf.argv().env().file({ file: 'config/settings.json' });
+nconf.argv().env().file({ file: 'config/content.json' });
 
 const id = nconf.get('id');
 if(!id) {

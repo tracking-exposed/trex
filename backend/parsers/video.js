@@ -143,12 +143,14 @@ function relatedMetadata(e, i) {
     const longlabel = e.querySelector('#video-title').getAttribute('aria-label');
     // Beastie Boys - Sabotage by BeastieBoys 9 years ago 3 minutes, 2 seconds 62,992,821 views
 
+    const foryou = vizstr.match(/\d+/) ? false : true;
     const mined = labelForcer(longlabel);
     return {
         index: i + 1,
         title,
         source,
         vizstr,
+        foryou,
         videoId,
         displayTime,
         expandedTime,
@@ -216,7 +218,7 @@ function process(envelop) {
     if(_.size(re)) errorrele("related error %s", JSON.stringify(re, undefined));
     if(_.size(ve)) errorview("views error %s", JSON.stringify(ve, undefined));
     if(_.size(le)) errorlike("likes error %s", JSON.stringify(re, undefined));
-          
+
     /* remove debugging/research fields we don't want in mongo */
     _.unset(extracted, 'ptc');
     _.unset(extracted, 'check');

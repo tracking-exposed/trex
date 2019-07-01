@@ -15,7 +15,7 @@ var utils = require('./lib/utils');
 var APIs = require('./lib/api');
 var mongo = require('./lib/mongo');
 
-var cfgFile = "config/settings.json";
+var cfgFile = "config/content.json";
 var redOn = "\033[31m";
 var redOff = "\033[0m";
 
