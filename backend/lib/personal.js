@@ -103,6 +103,7 @@ function getRelated(supporter) {
                 title: r.related.title,
                 source: _.replace(r.related.source, /\n/g, ' ⁞ '),
                 vizstr: r.related.vizstr,
+                foryou: r.related.foryou,
                 suggestionOrder: r.related.index,
                 displayLength: r.related.displayTime,
                 watched: r.title,
@@ -174,7 +175,6 @@ function produceCSVv1(entries) {
     }, { init: false, csv: "" });
     return produced.csv;
 };
-
 
 
 module.exports = {

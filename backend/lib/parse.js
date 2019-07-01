@@ -1,6 +1,8 @@
 const _ = require('lodash');
 const Promise = require('bluebird');
 const debug = require('debug')('lib:parse');
+const debugUnsupported = require('debug')('lib:parse:UNSUPPORTED');
+const debugError = require('debug')('lib:parse:ERROR');
 const nconf = require('nconf'); 
 const JSDOM = require('jsdom').JSDOM;
 const fs = Promise.promisifyAll(require('fs'));
@@ -9,7 +11,7 @@ const videoparser = require('../parsers/video');
 const mongo = require('./mongo');
 const echoes = require('./echoes');
 
-nconf.argv().env().file({ file: 'config/settings.json' });
+nconf.argv().env().file({ file: 'config/content.json' });
 
 function checkMetadata(impression, repeat) {
     /* this function return an impression if, and only if
@@ -76,7 +78,6 @@ function save(envelop) {
      * - metadata, they are the new entry
      * - update the video entry */
 
-
     let commits = [
         mongo.updateOne(nconf.get('schema').videos, { id: envelop.impression.id }, envelop.impression)
     ]
@@ -106,7 +107,7 @@ function parseHTML(htmlfilter, repeat) {
         .map(function(metainfo) {
 
             if(!metainfo.isVideo) {
-                debug("url [%s] not supported right now", metainfo.href);
+                debugUnsupported("%s", metainfo.href);
                 metainfo.processed = false;
                 return { impression: metainfo };
             }
@@ -133,24 +134,25 @@ function parseHTML(htmlfilter, repeat) {
                     return envelop;
                 })
                 .catch(function(error) {
-                    debug("catch error in %s: %s", metainfo.id, error.message);
+                    debugError("catch in %s: %s", metainfo.id, error.message);
                     metainfo.processed = false;
                     return { impression: metainfo };
-                });
+                })
+                .then(save);
         }, { concurrency: 1 })
 
         /* this is the function processing the parsers
          * it is call of every .id which should be analyzed */
 
         .catch(function(error) {
-            debug("[E] Unmanaged error in parser sequence: %s", error.message);
+            debugError("Unmanaged error in parser sequence: %s", error.message);
             console.log(error.stack);
             return null;
         })
-        .tap(logSummary)
-        .map(save, { concurrency: 1 })
+        // .tap(logSummary)
+        // .map(save, { concurrency: 1 })
         .catch(function(error) {
-            debug("[error after parsing] %s", error.message);
+            debugError("[error after parsing] %s", error.message);
             console.log(error.stack);
             process.exit(1);
         });
