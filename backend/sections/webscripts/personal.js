@@ -31,17 +31,19 @@ function buildTable(video) {
                     </td>
                     <td>
                         ${video.authorName}
-                        <br>
-                        <a class="compareLink" href="/author/${video.videoId}">
-                            Search by author
-                        </a>
+                        <br> 
                     </td>
                     <td>${video.viewInfo.viewStr}</td>
                     <td>Related: #${video.relatedN}</td>
             </thead>
             ${tbody}
         </table>
-    `;
+    `; 
+	/*
+                        <a class="compareLink" href="/author/${video.videoId}">
+                            Search by author
+                        </a>  
+ 	 */
     $("#report").append(h);
 };
 
