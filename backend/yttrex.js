@@ -106,6 +106,9 @@ app.get('/api/v1/videoId/:query', function(req, res) {
 app.get('/api/v1/related/:query', function(req, res) {
     return dispatchPromise('getRelated', req, res);
 });
+app.get('/api/v1/videoCSV/:query', function(req, res) {
+    return dispatchPromise('getVideoCSV', req, res);
+});
 
 /* the only two documented and tested APIs */
 /* --------------------------------------- */

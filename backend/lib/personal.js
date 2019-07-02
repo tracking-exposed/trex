@@ -90,6 +90,7 @@ function getRelated(supporter) {
     }
      */
 
+    // TODO: this is the same field list for documented.getVideoCSV: _generalieze_
     return mongo
         .aggregate(nconf.get('schema').metadata, [
             { $match: { 'watcher': supporter.p }},
@@ -101,7 +102,8 @@ function getRelated(supporter) {
                 id: r.id,
                 videoId: r.related.videoId,
                 title: r.related.title,
-                source: _.replace(r.related.source, /\n/g, ' ⁞ '),
+                verified: r.related.verified,
+                source: r.related.source,
                 vizstr: r.related.vizstr,
                 foryou: r.related.foryou,
                 suggestionOrder: r.related.index,
@@ -180,4 +182,5 @@ function produceCSVv1(entries) {
 module.exports = {
     getPersonal,
     getPersonalCSV,
+    produceCSVv1,
 };

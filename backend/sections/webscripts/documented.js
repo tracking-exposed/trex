@@ -32,8 +32,10 @@ function initCompare() {
         const allrelated = _.flatten(_.map(results, 'related'));
         const hdr = `
             <div class="comparehdr"><div class="fullred">${_.size(results)} times has been seen this video, and YT gave ${_.size(allrelated)} related videos</div>
-                <div class="protagonist"><a href="/related/${results[0].videoId}">${results[0].title}</a>
-                    <a target=_blank href="https://www.youtube.com/watch?v=${results[0].videoId}">🞂</a>
+                <div class="protagonist">
+                    <a href="/related/${results[0].videoId}">${results[0].title}</a>,
+                    <br/>
+                    <a href="/api/v1/videoCSV/${results[0].videoId}">[download CSV]<a>, <a target=_blank href="https://www.youtube.com/watch?v=${results[0].videoId}">[re-play 🞂]</a>
                 </div>
             </div>
         `;

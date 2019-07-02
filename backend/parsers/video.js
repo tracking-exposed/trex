@@ -118,7 +118,7 @@ function labelForcer(l) {
 
 function relatedMetadata(e, i) {
 
-    let source, vizstr;
+    let source, verified, vizstr;
     const title = e.querySelector('#video-title').textContent;
     const metadata = e.querySelector('#metadata');
 
@@ -142,12 +142,28 @@ function relatedMetadata(e, i) {
     }
     const longlabel = e.querySelector('#video-title').getAttribute('aria-label');
     // Beastie Boys - Sabotage by BeastieBoys 9 years ago 3 minutes, 2 seconds 62,992,821 views
+    const mined = labelForcer(longlabel);
+    // mined is not really used yet, but it might be handy 
 
     const foryou = vizstr.match(/\d+/) ? false : true;
-    const mined = labelForcer(longlabel);
+
+    // if is verified, the keyword vary language by language, but you've always 
+    // TED\nVerified\n•
+    let lines = source.split("\n"); 
+    if(_.size(lines) > 1) {
+        verified = true;
+        source = _.first(lines);
+        source = source.replace("•", '');
+    } else {
+        verified = false;
+        source = _.first(lines);
+        source = source.replace("•", '');
+    }
+
     return {
         index: i + 1,
         title,
+        verified,
         source,
         vizstr,
         foryou,

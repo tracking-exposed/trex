@@ -4,11 +4,12 @@ const Promise = require('bluebird');
 const debug = require('debug')('lib:documented');
 const nconf = require('nconf');
 
+const personal = require('./personal');
+
 /* it is retarded call this file 'documented' because are the only two
  * documented APIs in https://youtube.tracking.exposed/data, but, that is */
 
 const mongo = require('./mongo');
-const utils = require('./utils');
 
 const cache = {
     seconds: 120,
@@ -122,8 +123,54 @@ function getRelated(req) {
         });
 };
 
+function getVideoCSV(req) {
+    debug("getVideoCSV %s", req.params.query);
+    return mongo
+        .aggregate(nconf.get('schema').metadata, [
+            { $match: { videoId: req.params.query } },
+            { $lookup: { from: 'videos', localField: 'id', foreignField: 'id', as: 'videos' }},
+            { $unwind: '$related' }
+        ]).map(function(r) {
+            return {
+                id: r.id,
+                videoId: r.related.videoId,
+                title: r.related.title,
+                verified: r.related.verified,
+                source: r.related.source,
+                vizstr: r.related.vizstr,
+                foryou: r.related.foryou,
+                suggestionOrder: r.related.index,
+                displayLength: r.related.displayTime,
+                watched: r.title,
+                since: r.publicationString,
+                credited: r.authorName,
+                channel: r.authorSource,
+                savingTime: r.savingTime,
+                watcher: r.watcher,
+                watchedId: r.videoId,
+            };
+        })
+        .then(personal.produceCSVv1)
+        .then(function(csv) {
+            debug("VideoCSV: produced %d bytes", _.size(csv));
+
+            if(!_.size(csv))
+                return { text: "Error, Zorry: 🤷" };
+
+            return {
+                headers: {
+                    "Content-Type": "csv/text",
+                    "content-disposition": "attachment; filename=video-"+ req.params.query+".csv"
+                },
+                text: csv,
+            };
+        });
+};
+
+
 module.exports = {
     getLast,
     getVideoId,
-    getRelated
+    getRelated,
+    getVideoCSV,
 };

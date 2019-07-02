@@ -10,7 +10,7 @@ const parse = require('./lib/parse');
 
 /* configuration for elasticsearch */
 const echoes = require('./lib/echoes');
-nconf.argv().env().file({ file: 'config/settings.json' });
+nconf.argv().env().file({ file: 'config/content.json' });
 
 echoes.addEcho("elasticsearch");
 echoes.setDefaultEcho("elasticsearch");

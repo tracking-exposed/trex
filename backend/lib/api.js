@@ -22,6 +22,7 @@ var apiListVersion1 = {
     getLast:          require('./documented').getLast,
     getVideoId:       require('./documented').getVideoId,
     getRelated:       require('./documented').getRelated,
+    getVideoCSV:      require('./documented').getVideoCSV,
 
     // TODO, getAuthor
     getPersonalCSV:   require('./personal').getPersonalCSV,
