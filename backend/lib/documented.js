@@ -124,10 +124,14 @@ function getRelated(req) {
 };
 
 function getVideoCSV(req) {
-    debug("getVideoCSV %s", req.params.query);
+    const MAXENTRY = 400;
+    const amount = _.parseInt(req.params.amount) ? _.parseInt(req.params.amount) : MAXENTRY;
+    debug("getVideoCSV %s, amount %d", req.params.query, amount);
     return mongo
         .aggregate(nconf.get('schema').metadata, [
             { $match: { videoId: req.params.query } },
+            { $sort: { savingTime: -1 }},
+            { $limit : amount },
             { $lookup: { from: 'videos', localField: 'id', foreignField: 'id', as: 'videos' }},
             { $unwind: '$related' }
         ]).map(function(r) {
@@ -150,6 +154,7 @@ function getVideoCSV(req) {
                 watchedId: r.videoId,
             };
         })
+        .map(special)
         .then(personal.produceCSVv1)
         .then(function(csv) {
             debug("VideoCSV: produced %d bytes", _.size(csv));
@@ -167,6 +172,27 @@ function getVideoCSV(req) {
         });
 };
 
+function special(entry) {
+    const people = {
+        'corn-blueberry-souffle': "french",
+        'lime-okra-prune': "korean",
+        'custard-succotash-souffle':  "french",
+        'cinnamon-shawarma-muffin': "french",
+        'orzo-tangelo-sage':"korean",
+        'garbanzo-macaroon-blueberry': "korean",
+        'muffin-eggs-kebab': "french",
+        'milk-eggs-berry':  "french",
+        'papaya-rhubarb-cake': "korean",
+        'cinnamon-sandwich-feta': "jeroen",
+        'cranberry-asparagus-shawarma': "korean",
+        'leek-endive-okra': "french",
+    };
+    let exists = _.get(people, entry.watcher);
+    if(exists)
+        entry.team = exists;
+
+    return entry;
+};
 
 module.exports = {
     getLast,
