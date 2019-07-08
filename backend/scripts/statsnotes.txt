@@ -1,0 +1,105 @@
+
+
+/* eseguito ogni ora */
+amount = mongo.count(cName)
+when = moment().format("HH:mm:SS")
+hourId = utils.hourHash(when); // serve solo per gli updateOne ?
+what = cName;
+
+if mongo.readOne(hourId)
+	mongo.updateOne
+else
+	mongo.writeOne
+
+/* visualizzazione, API */
+
+req.params.year
+req.params.month
+req.params.day
+
+// api/v2/stats/:year/:month/:day/
+//
+//
+
+let since = { year: moment().format('yyyy'),
+		month: moment().format('MM'),
+		day: moment().format('DD'),
+		hour: 0,
+		minute: 0,
+		seconds: 0 };
+let until = _.clone(since);
+	until.hour = 23;
+	until.minute = 59;
+	until.seconds = 59;
+
+{ since, until } = utils.parseRangeInt(req.params.year, 'year', { since, until });
+{ since, until } = utils.parseRangeInt(req.params.month, 'month', { since, until });
+{ since, until } = utils.parseRangeInt(req.params.day, 'day', { since, until });
+
+
+let coverage = moment.duration( moment(until) - moment(since) );
+debug("Query covers %s, %d hours, %d seconds", coverage.humanize(), coverage.asHours(), coverage.asSeconds());
+let expected = /* calcola da coverage il numero di statistiche che ti aspetti */
+
+return mongo.readLimit('stats', { what: 'rss', when: { $lte: new Date(moment(until)), $gte: new Date(moment(since)) } }, { when: -1 }, 0, expected + 1);
+
+return {
+	since,
+	until,
+	expected,
+	received
+}
+
+function parseRangeInt(input, target, value) {
+
+	if(!input)
+		return value;
+
+	let setted = { since: null, until: null };
+
+	if( input.indexOf('-') !== -1 ) {
+		let chunks = input.split('-');
+		setted = { since: _.parseInt(chunks[0]), until: _.parseInt(chunks[1]) };
+	} else {
+		setted = { since: _.parseInt(input), until: _.parseInt(input) };
+	}
+
+	if( !setted.since || !setted.until )
+		return value;
+
+	debug("setting by user request: %s (%d - %d)",
+		target, setted.since, setted.until);
+	_.set(value.since, target, setted.since);
+	_.set(value.until, target, setted.until);
+
+	return value;
+};
+
+
+
+config, vanno divise in 2 file
+ uno usato dal tool chiamato in modo periodico
+   { name:
+     collection:
+     function:
+   }
+ l'altro usato per la visualizzazione
+  { graph: ""
+    function: ""
+    data: [ name1, name2, name3 ]
+  }
+
+viene caricato dall'api e i risultati vengono tenuti in memoria
+
+{ 
+   "contributions": [
+      {
+          "name": "new timelines received",
+          "code": 
+      }
+  ]
+}
+
+nella visualizzazione passo i dati orari e poi si usa il tick culling.
+
+

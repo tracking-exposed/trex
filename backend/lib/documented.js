@@ -154,7 +154,6 @@ function getVideoCSV(req) {
                 watchedId: r.videoId,
             };
         })
-        .map(special)
         .then(personal.produceCSVv1)
         .then(function(csv) {
             debug("VideoCSV: produced %d bytes", _.size(csv));
@@ -170,28 +169,6 @@ function getVideoCSV(req) {
                 text: csv,
             };
         });
-};
-
-function special(entry) {
-    const people = {
-        'corn-blueberry-souffle': "french",
-        'lime-okra-prune': "korean",
-        'custard-succotash-souffle':  "french",
-        'cinnamon-shawarma-muffin': "french",
-        'orzo-tangelo-sage':"korean",
-        'garbanzo-macaroon-blueberry': "korean",
-        'muffin-eggs-kebab': "french",
-        'milk-eggs-berry':  "french",
-        'papaya-rhubarb-cake': "korean",
-        'cinnamon-sandwich-feta': "jeroen",
-        'cranberry-asparagus-shawarma': "korean",
-        'leek-endive-okra': "french",
-    };
-    let exists = _.get(people, entry.watcher);
-    if(exists)
-        entry.team = exists;
-
-    return entry;
 };
 
 module.exports = {
