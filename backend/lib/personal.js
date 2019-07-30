@@ -4,8 +4,7 @@ const Promise = require('bluebird');
 const debug = require('debug')('lib:personal');
 const nconf = require('nconf');
 
-const mongo = require('./mongo');
-const utils = require('./utils');
+const mongo = require('./mongo2');
 const params = require('./params');
 
 function getPersonal(req) {

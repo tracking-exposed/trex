@@ -1,12 +1,6 @@
 var _ = require('lodash');
-var moment = require('moment');
-var Promise = require('bluebird');
 var debug = require('debug')('lib:staticpages');
 var pug = require('pug');
-var nconf = require('nconf');
-
-var mongo = require('./mongo');
-var utils = require('./utils');
 
 var pugCompiler = function(filePrefix) {
     return pug.compileFile(

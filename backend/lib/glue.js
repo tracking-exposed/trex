@@ -5,7 +5,7 @@ const nconf = require('nconf');
 const Promise = require('bluebird');
 const request = Promise.promisifyAll(require('request'));
  
-const mongo = require('./mongo');
+const mongo = require('./mongo2');
 
 /* these functions are used in: 
  *  bin/importfreshsample 

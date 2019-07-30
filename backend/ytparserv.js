@@ -5,7 +5,7 @@ const moment = require('moment');
 const debug = require('debug')('ytparserv');
 const nconf = require('nconf');
 
-const mongo = require('./lib/mongo');
+const mongo = require('./lib/mongo2');
 const parse = require('./lib/parse');
 
 /* configuration for elasticsearch */
@@ -20,7 +20,6 @@ const FREQUENCY = 1; // seconds
 const backInTime = _.parseInt(nconf.get('minutesago')) ? _.parseInt(nconf.get('minutesago')) : 10;
 
 var lastExecution = moment().subtract(backInTime, 'minutes').toISOString();
-var lastCycleActive = false;
 
 console.log(`considering the lastActivities since ${backInTime} minutes ago, [minutesago] overrides (${lastExecution})`);
 
