@@ -1,3 +1,4 @@
+#!/usr/bin/env node
 var express = require('express');
 var app = express();
 var server = require('http').Server(app);
@@ -9,9 +10,10 @@ var debug = require('debug')('yttrex');
 var nconf = require('nconf');
 var cors = require('cors');
 
-var APIs = require('./lib/api');
+var APIs = require('../lib/api');
+var security = require('../lib/security');
 
-var cfgFile = "config/content.json";
+var cfgFile = "config/settings.json";
 var redOn = "\033[31m";
 var redOff = "\033[0m";
 
@@ -127,26 +129,16 @@ app.get('/api/v1/personal/:publicKey/:paging?', function(req, res) {
     return dispatchPromise('getPersonal', req, res);
 });
 
-/* useful revision page */
-app.get('/revision/:htmlId', function(req, res) {
-    req.params.page = 'revision';
-    return dispatchPromise('getPage', req, res);
-});
 app.get('/api/v1/html/:htmlId', function(req, res) {
     return dispatchPromise('unitById', req, res);
 });
 
-/* the pages of the 'documented' API */
-app.get('/compare/:videoId?', function(req, res) {
-    req.params.page = 'compare';
-    return dispatchPromise('getPage', req, res);
+/* admin */
+app.get('/api/v1/mirror/:key', function(req, res) {
+    return dispatchPromise('getMirror', req, res);
 });
 
-/* work in progress */
-app.get('/author/:videoId?', function(req, res) {
-    req.params.page = 'author';
-    return dispatchPromise('getPage', req, res);
-});
+security.checkKeyIsSet();
 
 
 /* sequence API */
@@ -173,35 +165,3 @@ app.get('/author/:videoId?', function(req, res) {
 //     return dispatchPromise('getPage', req, res);
 // });
 
-/* static files, independent by the API versioning */
-app.get('/favicon.ico', function(req, res) {
-    res.sendFile(__dirname + '/dist/favicon.ico');
-});
-app.get('/robots.txt', function(req, res) {
-    res.sendFile(__dirname + '/dist/robots.txt');
-});
-
-/* development: the local JS are pick w/out "npm run build" every time, and
- * our locally developed scripts stay in /js/local */
-if(nconf.get('development') === 'true') {
-    console.log(redOn + "ઉ DEVELOPMENT = serving JS from src" + redOff);
-    app.use('/js/local', express.static(__dirname + '/sections/webscripts'));
-} else {
-    app.use('/js/local', express.static(__dirname + '/dist/js/local'));
-}
-
-/* catch the other 'vendor' script in /js */
-app.use('/js', express.static(__dirname + '/dist/js'));
-app.use('/css', express.static(__dirname + '/dist/css'));
-app.use('/images', express.static(__dirname + '/dist/images'));
-app.use('/fonts', express.static(__dirname + '/dist/fonts'));
-app.use('/static', express.static(__dirname + '/dist/static'));
-
-/* last one, page name catch-all */
-app.get('/:page*', function(req, res) {
-    return dispatchPromise('getPage', req, res);
-});
-/* true last */
-app.get('/', function(req, res) {
-    return dispatchPromise('getPage', req, res);
-});

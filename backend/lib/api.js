@@ -2,13 +2,10 @@
 var apiListVersion1 = {
     /* POST from the userscript */
     processEvents:    require('./events').processEvents,
-
-    /* not API, serving static pages from sections/*.pug */
-    getPage:          require('./staticpages').getPage,
+    getMirror:        require('./events').getMirror,
 
     /* for revision */
     unitById:         require('./htmlunit').unitById,
-
 
     /* retuern sequence of video for divergency check 
     getSequence:      require('./divergency').getSequence,

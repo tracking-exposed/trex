@@ -8,7 +8,7 @@ const JSDOM = require('jsdom').JSDOM;
 const fs = Promise.promisifyAll(require('fs'));
 
 const videoparser = require('../parsers/video');
-const mongo = require('./mongo2');
+const mongo = require('./mongo');
 const echoes = require('./echoes');
 
 nconf.argv().env().file({ file: 'config/content.json' });

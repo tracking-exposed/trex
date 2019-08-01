@@ -11,6 +11,7 @@ var bs58 = require('bs58');
 
 var mongo = require('./mongo');
 var utils = require('./utils');
+var security = require('./security');
 
 
 function hasError(retDict) {
@@ -73,6 +74,34 @@ function saveVideo(body, supporter) {
         .return(video.incremental);
 };
 
+
+var last = null;
+function getMirror(req) {
+
+    if(!security.checkPassword(req))
+        return security.authError;
+
+    if(last) {
+        let retval = Object(last);
+        last = null;
+        debug("getMirror: authentication successfull, %d elements in volatile memory",
+            _.size(retval) );
+        return { json: { content: retval, elements: _.size(retval) }};
+    } else
+        debug("getMirror: auth OK, but nothing to be returned");
+
+    return { json: { content: null } };
+}
+function appendLast(req) {
+    const MAX_STORED_CONTENT = 10;
+    if(!last) last = [];
+    if(_.size(last) > MAX_STORED_CONTENT) 
+        last = _.tail(last);
+
+    last.push(_.pick(req, ['headers', 'body']));
+};
+
+
 function processEvents(req) {
 
     var headers = processHeaders(_.get(req, 'headers'), hdrs);
@@ -117,6 +146,9 @@ function processEvents(req) {
                 .mkdirAsync(ddest).catch(function(e) { });
         })
         .then(function(supporter) {
+            // this is necessary for the mirror functionality
+            appendLast(req);
+
             return Promise.map(req.body, function(video) {
                 return saveVideo(video, supporter);
             })
@@ -163,6 +195,7 @@ function TOFU(pubkey) {
 
 module.exports = {
     processEvents: processEvents,
+    getMirror,
     hdrs: hdrs,
     processHeaders: processHeaders,
     TOFU: TOFU

@@ -4,7 +4,7 @@ var debug = require('debug')('lib:htmlunit');
 var nconf = require('nconf');
 var fs = Promise.promisifyAll(require('fs'));
 
-var mongo = require('./mongo2');
+var mongo = require('./mongo');
 
 function unitById(req) {
     var htmlId = req.params.htmlId;
