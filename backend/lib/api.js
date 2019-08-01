@@ -1,9 +1,10 @@
 
 var apiListVersion1 = {
     /* POST from the web-extension */
-    processEvents:    require('./events').processEvents,
+    processEvents:    require('../routes/events').processEvents,
+    getMirror:        require('../routes/events').getMirror,
 
-    /* for revision */
+    /* for revision --- to be determined if kept or not */
     unitById:         require('./htmlunit').unitById,
 
     /* TODO: decide if can be resumed 
@@ -17,6 +18,7 @@ var apiListVersion1 = {
     getLast:          require('../routes/public').getLast,
     getVideoId:       require('../routes/public').getVideoId,
     getRelated:       require('../routes/public').getRelated,
+    getVideoCSV:      require('../routes/public').getVideoCSV,
 
     // TODO, getAuthor
     getPersonalCSV:   require('../routes/personal').getPersonalCSV,

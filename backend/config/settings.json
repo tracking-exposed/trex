@@ -15,5 +15,5 @@
   "tabtime": 20,
 
   "interface": "0.0.0.0",
-  "htmlMaxAmount": 1000
+  "key": "invalid_default"
 }

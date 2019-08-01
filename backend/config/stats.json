@@ -1,0 +1,65 @@
+{
+    "mongoHost": "localhost",
+    "mongoPort": "27017",
+    "mongoDb": "yttrex",
+
+    "stats": [
+    {
+        "name": "supporters",
+        "column": "supporters",
+        "timevar": "creationTime",
+        "variables": [
+            {
+                "name": "newcomers",
+                "selector": {}
+            }
+        ]
+    },
+    {
+        "name": "related",
+        "column": "metadata",
+        "timevar": "savingTime",
+        "variables": [
+            {
+                "name": "total",
+                "selector": { }
+            },
+            {
+                "name": "related-20",
+                "selector": { "related": { "$size": 20 }}
+            },
+            {
+                "name": "related-19",
+                "selector": { "related": { "$size": 19 }}
+            },
+            {
+                "name": "related-1",
+                "selector": { "related": { "$size": 1 }}
+            }
+        ]
+    },
+    {
+        "name": "processing",
+        "column": "videos",
+        "timevar": "savingTime",
+        "variables": [
+            {
+                "name": "successful",
+                "selector": { "processed": true }
+            },
+            {
+                "name": "failure",
+                "selector": { "processed": false }
+            },
+            {
+                "name": "unprocessed",
+                "selector": { "processed": { "$exists": false } }
+            },
+            {
+                "name": "total",
+                "selector": { }
+            }
+        ]
+    }
+    ]
+}

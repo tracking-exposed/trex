@@ -73,39 +73,6 @@ async function getLast(req) {
 
 };
 
-/*
-    return Promise
-        .resolve()
-        .then(function() {
-            if(cache.next && moment().isAfter(cache.next))
-                return null;
-
-            if(!cache.content)
-                return null;
-
-            return formatReturn();
-        })
-        .then(function(tbd) {
-            if(tbd) return tbd;
-            return mongo
-                .readLimit(nconf.get('schema').metadata, {}, {savingTime: -1}, 20, 0)
-                .map(contentClean)
-                .then(function(x) {
-                    let updated = {
-                        content: _.reverse(_.orderBy(x, 'secondsago')),
-                        computedAt: moment(),
-                        next: moment().add(cache.seconds, 'seconds')
-                    };
-                    return formatReturn(updated);
-                })
-                .catch(function(error) {
-                    debug("Error in getSequence: %s", error.message);
-                    return { json: { error: true } };
-                });
-        })
-};
-*/
-
 async function getVideoId(req) {
     debug("getVideoId %s", req.params.query);
     const entries = await automo.getMetadataByFilter({ videoId: req.params.query}, { amount: PUBLIC_AMOUNT_ELEMS, skip: 0 });
@@ -138,9 +105,57 @@ async function getRelated(req) {
     return { json: evidences };
 };
 
+function getVideoCSV(req) {
+    const MAXENTRY = 400;
+    const amount = _.parseInt(req.params.amount) ? _.parseInt(req.params.amount) : MAXENTRY;
+    debug("getVideoCSV %s, amount %d", req.params.query, amount);
+    return mongo
+        .aggregate(nconf.get('schema').metadata, [
+            { $match: { videoId: req.params.query } },
+            { $sort: { savingTime: -1 }},
+            { $limit : amount },
+            { $lookup: { from: 'videos', localField: 'id', foreignField: 'id', as: 'videos' }},
+            { $unwind: '$related' }
+        ]).map(function(r) {
+            return {
+                id: r.id,
+                videoId: r.related.videoId,
+                title: r.related.title,
+                verified: r.related.verified,
+                source: r.related.source,
+                vizstr: r.related.vizstr,
+                foryou: r.related.foryou,
+                suggestionOrder: r.related.index,
+                displayLength: r.related.displayTime,
+                watched: r.title,
+                since: r.publicationString,
+                credited: r.authorName,
+                channel: r.authorSource,
+                savingTime: r.savingTime,
+                watcher: r.watcher,
+                watchedId: r.videoId,
+            };
+        })
+        .then(personal.produceCSVv1)
+        .then(function(csv) {
+            debug("VideoCSV: produced %d bytes", _.size(csv));
+
+            if(!_.size(csv))
+                return { text: "Error, Zorry: 🤷" };
+
+            return {
+                headers: {
+                    "Content-Type": "csv/text",
+                    "content-disposition": "attachment; filename=video-"+ req.params.query+".csv"
+                },
+                text: csv,
+            };
+        });
+};
 
 module.exports = {
     getLast,
     getVideoId,
-    getRelated
+    getRelated,
+    getVideoCSV,
 };

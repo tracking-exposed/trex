@@ -1,3 +1,4 @@
+#!/usr/bin/env node
 var express = require('express');
 var app = express();
 var server = require('http').Server(app);
@@ -12,6 +13,7 @@ var cors = require('cors');
 var dbutils = require('../lib/dbutils');
 var APIs = require('../lib/api');
 var mongo3 = require('../lib/mongo3');
+var security = require('../lib/security');
 
 var cfgFile = "config/settings.json";
 var redOn = "\033[31m";
@@ -85,11 +87,9 @@ server.listen(nconf.get('port'), nconf.get('interface'));
 console.log(" Listening on http://" + nconf.get('interface') + ":" + nconf.get('port'));
 /* configuration of express4 */
 app.use(cors());
-app.use(bodyParser.json({limit: '4mb'}));
-app.use(bodyParser.urlencoded({limit: '4mb', extended: true}));
+app.use(bodyParser.json({limit: '6mb'}));
+app.use(bodyParser.urlencoded({limit: '6mb', extended: true}));
 
-/* the only two documented and tested APIs */
-/* the only two documented and tested APIs */
 app.get('/api/v1/last', function(req, res) {
     return dispatchPromise('getLast', req, res);
 });
@@ -99,9 +99,9 @@ app.get('/api/v1/videoId/:query', function(req, res) {
 app.get('/api/v1/related/:query', function(req, res) {
     return dispatchPromise('getRelated', req, res);
 });
-
-/* the only two documented and tested APIs */
-/* --------------------------------------- */
+app.get('/api/v1/videoCSV/:query/:amount?', function(req, res) {
+    return dispatchPromise('getVideoCSV', req, res);
+});
 
 /* This is import and validate the key */
 app.post('/api/v:version/validate', function(req, res) {
@@ -125,7 +125,6 @@ app.get('/api/v1/html/:htmlId', function(req, res) {
     return dispatchPromise('unitById', req, res);
 });
 
-
 /* rsync your data back */
 app.get('/api/v1/rsync/:daysago?', function(req, res) {
     return dispatchPromise('rsync', req, res);
@@ -134,6 +133,22 @@ app.get('/api/v1/rsync/:daysago?', function(req, res) {
 /* research subscription and I/O */
 app.get('/api/v1/research/:publicKey', function(req, res) {
     return dispatchPromise('rsync', req, res);
+});
+
+/* admin */
+app.get('/api/v1/mirror/:key', function(req, res) {
+    return dispatchPromise('getMirror', req, res);
+});
+
+security.checkKeyIsSet();
+
+Promise.resolve().then(function() {
+    if(dbutils.checkMongoWorks()) {
+        debug("mongodb connection works");
+    } else {
+        console.log("mongodb is not running - check", cfgFile,"- quitting");
+        process.exit(1);
+    }
 });
 
 
@@ -161,19 +176,3 @@ app.get('/api/v1/research/:publicKey', function(req, res) {
 //     return dispatchPromise('getPage', req, res);
 // });
 
-/* static files, independent by the API versioning */
-app.get('/favicon.ico', function(req, res) {
-    res.sendFile(__dirname + '/dist/favicon.ico');
-});
-app.get('/robots.txt', function(req, res) {
-    res.sendFile(__dirname + '/dist/robots.txt');
-});
-
-Promise.resolve().then(function() {
-    if(dbutils.checkMongoWorks()) {
-        debug("mongodb connection works");
-    } else {
-        console.log("mongodb is not running - check", cfgFile,"- quitting");
-        process.exit(1);
-    }
-});

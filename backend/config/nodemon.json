@@ -2,6 +2,8 @@
   "watch": [
     "lib/*.js",
     "routes/*.js",
-    "bin/*.js"
-  ]
+    "bin/*.js",
+    "node_modules/**"
+  ],
+  "ext": "js"
 }

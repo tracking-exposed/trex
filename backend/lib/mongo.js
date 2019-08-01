@@ -41,7 +41,7 @@ function updateOne(cName, selector, updated) {
             .updateOne(selector, { $set: updated });
     })
     .tap(function(res) {
-        debug("updateOne: %j", res);
+        debug("updateOne (%s): %j", cName, res);
     })
     .return(updated);
 };
@@ -50,10 +50,10 @@ function upsertOne(cName, selector, updated) {
     return Promise.using(dbConnection(), function(db) {
         return db
             .collection(cName)
-            .updateOne(selector, { $set: updated }, { upsert: true });
+            .replaceOne(selector, { $set: updated }, { upsert: true });
     })
     .tap(function(res) {
-        debug("upsertOne: %j", res);
+        debug("upsert|replaceOne (%s): %j", cName, res);
     })
     .return(updated);
 };

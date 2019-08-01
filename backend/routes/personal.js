@@ -1,7 +1,7 @@
 const _ = require('lodash');
 const moment = require('moment');
 const Promise = require('bluebird');
-const debug = require('debug')('lib:personal');
+const debug = require('debug')('routes:personal');
 const nconf = require('nconf');
 
 const automo = require('../lib/automo');
