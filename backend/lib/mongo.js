@@ -42,10 +42,10 @@ function upsertOne(cName, selector, updated) {
     return Promise.using(dbConnection(), function(db) {
         return db
             .collection(cName)
-            .updateOne(selector, { $set: updated }, { upsert: true });
+            .replaceOne(selector, { $set: updated }, { upsert: true });
     })
     .tap(function(res) {
-        debug("upsertOne (%s): %j", cName, res);
+        debug("upsert|replaceOne (%s): %j", cName, res);
     })
     .return(updated);
 };

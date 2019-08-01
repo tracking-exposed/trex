@@ -3,9 +3,9 @@
   "version": "1.0.2",
   "description": "youtube.tracking.exposed → backend data collector, to investigate personalization algorithms",
   "scripts": {
-    "watch": "key=fuffa elastic=disabled nodemon --config config/nodemon.json bin/server",
-    "start": "elastic=disabled DEBUG=lib:*,-yttrex node bin/server",
-    "parserv": "elastic=disabled DEBUG=*,-lib:mongo* node bin/parser"
+    "watch": "key=fuffa elastic=disabled nodemon DEBUG=lib:*,yttrex --config config/nodemon.json bin/server",
+    "start": "elastic=disabled DEBUG=*,-lib:mongo node bin/server",
+    "parserv": "elastic=disabled DEBUG=* node bin/parser"
   },
   "author": "Claudio Agosti <claudio@tracking.exposed>, https://github.com/tracking-exposed/yttrex/graphs/contributors",
   "license": "AGPL-3.0",

@@ -1,50 +1,46 @@
 {
     "mongoHost": "localhost",
     "mongoPort": "27017",
-    "mongoDb": "facebook",
+    "mongoDb": "yttrex",
 
     "stats": [
     {
-        "name": "timelines",
-        "column": "timelines2",
-        "timevar": "startTime",
+        "name": "supporters",
+        "column": "supporters",
+        "timevar": "creationTime",
         "variables": [
             {
-                "name": "skipped",
-                "selector": { "nonfeed": true}
-            },
-            {
-                "name": "newsfeed",
-                "selector": { "nonfeed": { "$exists": false }}
-            },
-            {
-                "name": "total",
+                "name": "newcomers",
                 "selector": {}
             }
         ]
     },
     {
-        "name": "impressions",
-        "column": "impressions2",
-        "timevar": "impressionTime",
+        "name": "related",
+        "column": "metadata",
+        "timevar": "savingTime",
         "variables": [
-            {
-                "name": "private",
-                "selector": { "visibility": "private" }
-            },
-            {
-                "name": "public",
-                "selector": { "htmlId": { "$exists": true} }
-            },
             {
                 "name": "total",
                 "selector": { }
+            },
+            {
+                "name": "related-20",
+                "selector": { "related": { "$size": 20 }}
+            },
+            {
+                "name": "related-19",
+                "selector": { "related": { "$size": 19 }}
+            },
+            {
+                "name": "related-1",
+                "selector": { "related": { "$size": 1 }}
             }
         ]
     },
     {
         "name": "processing",
-        "column": "htmls2",
+        "column": "videos",
         "timevar": "savingTime",
         "variables": [
             {

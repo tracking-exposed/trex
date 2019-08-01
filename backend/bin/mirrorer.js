@@ -33,10 +33,12 @@ return request
         return request
             .postAsync(destUrl, { json: copiedReq.body, headers: copiedReq.headers })
             .then(function(result) {
-                if(result.body && result.body.status == 'OK')
-                    debug("OK %s: %s", copiedReq.headers['x-yttrex-version'], result.body.info);
+                if(result.body && result.body.supporter)
+                    debug("OK %s: %s",
+                        copiedReq.headers['x-yttrex-version'], result.body.supporter.p);
                 else
-                    debug("?? %s - %s", copiedReq.headers['x-yttrex-version'], result.body);
+                    debug("?? %s - %j",
+                        copiedReq.headers['x-yttrex-version'], result.body);
             })
     }, { concurrency: 1})
     .catch(function(error) {

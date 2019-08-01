@@ -15,8 +15,7 @@ nconf.argv().env().file({ file: 'config/settings.json' });
 echoes.addEcho("elasticsearch");
 echoes.setDefaultEcho("elasticsearch");
 
-const FREQUENCY = 1; // seconds
-
+const FREQUENCY = _.parseInt(nconf.get('frequency')) ? _.parseInt(nconf.get('frequency')) : 1;
 const backInTime = _.parseInt(nconf.get('minutesago')) ? _.parseInt(nconf.get('minutesago')) : 10;
 
 var lastExecution = moment().subtract(backInTime, 'minutes').toISOString();

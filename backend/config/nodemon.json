@@ -1,14 +1,8 @@
 {
   "watch": [
     "lib/*.js",
-    "yt*.js",
-    "sections/**",
-    "dist/**"
+    "bin/*.js",
+    "node_modules/**"
   ],
-  "ignore": [
-    "sections/webscripts/*.js",
-    "node_modules/**",
-    "htmls/**"
-  ],
-  "ext": "js,css,pug"
+  "ext": "js"
 }

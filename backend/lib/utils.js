@@ -100,6 +100,11 @@ function string2Food(piistr) {
     return _.join(ret, '-');
 };
 
+function parseIntNconf(name, def) {
+    let value = nconf.get(name) ? nconf.get(name) : def;
+    return _.parseInt(value);
+}
+
 function getInt(req, what, def) {                                                       
     var rv = _.parseInt(_.get(req.params, what));                                       
     if(_.isNaN(rv)) {                                                                   
@@ -131,5 +136,6 @@ module.exports = {
     verifyRequestSignature: verifyRequestSignature,
     string2Food: string2Food,
     getInt: getInt,                                                                     
-    getString: getString                                                                
+    getString: getString,
+    parseIntNconf
 };

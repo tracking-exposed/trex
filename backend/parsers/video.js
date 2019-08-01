@@ -205,6 +205,7 @@ function processVideo(D) {
         debug("Error in related: %s", error.message);
     }
     const relatedN = D.querySelectorAll('ytd-compact-video-renderer').length;
+    debug("Video %s mined %d related", vTitle, _.size(related));
 
     return {
         title: vTitle,
