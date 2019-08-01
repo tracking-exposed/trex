@@ -11,13 +11,13 @@ const Popup = React.createClass({
     render () {
         return (
             <div style={styles}>
-                <p>An experiment offered by 
+                <p>You are partecipating in 
                     <span> </span>
                     <a href='https://youtube.tracking.exposed'>ytTREX</a>,
                     <span> </span>
                     <a href='https://tracking.exposed'>manifesto</a>,
                     <span> </span>
-                    <a href='https://github.com/tracking-exposed/ytTREX'>code</a>, control your data:
+                    access to your collected data:
                 </p>
                 <InfoBox {...this.props} />
             </div>

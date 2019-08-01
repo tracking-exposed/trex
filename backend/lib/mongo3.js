@@ -25,9 +25,10 @@ function mongoUri(forced) {
         throw new Error("configuration missing");
 
     savedMongoUri = `mongodb://${mongoHost}:${mongoPort}/${mongoDb}`;
-    debug("Initializing mongoUri as %s", savedMongoUri);
+    debug("Initializing mongoUri with %s", savedMongoUri);
     return savedMongoUri;
 }
+
 
 async function clientConnect(config) {
     /* concurrency: <Int>, uri: <mongo address> */

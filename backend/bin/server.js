@@ -10,7 +10,9 @@ var debug = require('debug')('yttrex');
 var nconf = require('nconf');
 var cors = require('cors');
 
+var dbutils = require('../lib/dbutils');
 var APIs = require('../lib/api');
+var mongo3 = require('../lib/mongo3');
 var security = require('../lib/security');
 
 var cfgFile = "config/settings.json";
@@ -64,14 +66,9 @@ function dispatchPromise(name, req, res) {
                   name, _.size(JSON.stringify(httpresult.json)) );
               res.json(httpresult.json)
           } else if(httpresult.text) {
-              debug("%s API success, returning text (size %d)",
+              debug("API %s success, returning text (size %d)",
                   name, _.size(httpresult.text));
               res.send(httpresult.text)
-          } else if(httpresult.file) {
-              /* this is used for special files, beside the css/js below */
-              debug("API success, returning file (%s)",
-                  name, httpresult.file);
-              res.sendFile(__dirname + "/html/" + httpresult.file);
           } else {
               debug("Undetermined failure in API call, result →  %j", httpresult);
               return returnHTTPError(req, res, name, "Undetermined failure");
@@ -93,8 +90,6 @@ app.use(cors());
 app.use(bodyParser.json({limit: '6mb'}));
 app.use(bodyParser.urlencoded({limit: '6mb', extended: true}));
 
-/* the only two documented and tested APIs */
-/* the only two documented and tested APIs */
 app.get('/api/v1/last', function(req, res) {
     return dispatchPromise('getLast', req, res);
 });
@@ -107,9 +102,6 @@ app.get('/api/v1/related/:query', function(req, res) {
 app.get('/api/v1/videoCSV/:query/:amount?', function(req, res) {
     return dispatchPromise('getVideoCSV', req, res);
 });
-
-/* the only two documented and tested APIs */
-/* --------------------------------------- */
 
 /* This is import and validate the key */
 app.post('/api/v:version/validate', function(req, res) {
@@ -133,12 +125,31 @@ app.get('/api/v1/html/:htmlId', function(req, res) {
     return dispatchPromise('unitById', req, res);
 });
 
+/* rsync your data back */
+app.get('/api/v1/rsync/:daysago?', function(req, res) {
+    return dispatchPromise('rsync', req, res);
+});
+
+/* research subscription and I/O */
+app.get('/api/v1/research/:publicKey', function(req, res) {
+    return dispatchPromise('rsync', req, res);
+});
+
 /* admin */
 app.get('/api/v1/mirror/:key', function(req, res) {
     return dispatchPromise('getMirror', req, res);
 });
 
 security.checkKeyIsSet();
+
+Promise.resolve().then(function() {
+    if(dbutils.checkMongoWorks()) {
+        debug("mongodb connection works");
+    } else {
+        console.log("mongodb is not running - check", cfgFile,"- quitting");
+        process.exit(1);
+    }
+});
 
 
 /* sequence API */

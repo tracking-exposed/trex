@@ -9,9 +9,9 @@ var nconf = require('nconf');
 var signer = require('nacl-signature');
 var bs58 = require('bs58');
 
-var mongo = require('./mongo');
-var utils = require('./utils');
-var security = require('./security');
+var mongo = require('../lib/mongo');
+var utils = require('../lib/utils');
+var security = require('../lib/security');
 
 
 function hasError(retDict) {

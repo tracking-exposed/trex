@@ -8,10 +8,18 @@ var debugcount = require('debug')('lib:mongo:count');
 var nconf = require('nconf');
 
 var dbConnection = function() {
-    var url = nconf.get('mongodb');
+    const mongoHost = nconf.get('mongoHost');
+    const mongoPort = nconf.get('mongoPort');
+    const mongoDb = nconf.get('mongoDb');
+
+    if(!mongoHost || !mongoPort || !mongoDb)
+        throw new Error("configuration missing");
+
+    const producedMongoUrl = `mongodb://${mongoHost}:${mongoPort}/${mongoDb}`;
+
     return mongodb
         .MongoClient
-        .connectAsync(url)
+        .connectAsync(producedMongoUrl)
         .disposer(function(db) {
             return db.close();
         });
