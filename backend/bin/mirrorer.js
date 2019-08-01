@@ -8,11 +8,11 @@ var nconf = require('nconf');
 nconf.argv().env();
 
 if(!nconf.get('key'))
-    return console.log("--password required");
+    return console.log("--key required");
 
-const source = nconf.get('source') || 'https://collector.facebook.tracking.exposed';
+const source = nconf.get('source') || 'https://youtube.tracking.exposed';
 const sourceUrl = `${source}/api/v1/mirror/${nconf.get('key')}/`;
-const dest = nconf.get('dest') || 'http://localhost:8100';
+const dest = nconf.get('dest') || 'http://localhost:9000';
 const destUrl = `${dest}/api/v1/events`;
 
 debug("Fetching latest samples via %s", sourceUrl);
@@ -34,9 +34,9 @@ return request
             .postAsync(destUrl, { json: copiedReq.body, headers: copiedReq.headers })
             .then(function(result) {
                 if(result.body && result.body.status == 'OK')
-                    debug("OK %s: %s", copiedReq.headers['x-fbtrex-version'], result.body.info);
+                    debug("OK %s: %s", copiedReq.headers['x-yttrex-version'], result.body.info);
                 else
-                    debug("?? %s - %s", copiedReq.headers['x-fbtrex-version'], result.body);
+                    debug("?? %s - %s", copiedReq.headers['x-yttrex-version'], result.body);
             })
     }, { concurrency: 1})
     .catch(function(error) {

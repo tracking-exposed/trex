@@ -5,12 +5,12 @@ const moment = require('moment');
 const debug = require('debug')('ytparserv');
 const nconf = require('nconf');
 
-const mongo = require('./lib/mongo2');
-const parse = require('./lib/parse');
+const mongo = require('../lib/mongo');
+const parse = require('../lib/parse');
 
 /* configuration for elasticsearch */
-const echoes = require('./lib/echoes');
-nconf.argv().env().file({ file: 'config/content.json' });
+const echoes = require('../lib/echoes');
+nconf.argv().env().file({ file: 'config/settings.json' });
 
 echoes.addEcho("elasticsearch");
 echoes.setDefaultEcho("elasticsearch");

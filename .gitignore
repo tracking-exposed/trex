@@ -23,4 +23,3 @@ backend/farfalla/*
 
 node_modules/*
 backend/node_modules/*
-package-lock.json
