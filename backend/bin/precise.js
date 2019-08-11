@@ -8,7 +8,7 @@ const debug = require('debug')('scripts:precise');
 const parse = require('../lib/parse');
 const video = require('../parsers/video');
 
-nconf.argv().env().file({ file: 'config/content.json' });
+nconf.argv().env().file({ file: 'config/settings.json' });
 
 const id = nconf.get('id');
 if(!id) {
@@ -24,9 +24,9 @@ nconf.stores.env.readOnly = true;
 let htmlFilter = { id };
 return parse
     .parseHTML(htmlFilter, false)
-    .tap(function(r) {
+    .tap(function(r) { /*
         if(r)
-            console.log(JSON.stringify(r, undefined, 1));
+            console.log(JSON.stringify(r, undefined, 1)); */
     })
     .catch(function(error) {
         console.log(id, "Error", error.message);

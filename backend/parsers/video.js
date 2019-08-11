@@ -16,34 +16,17 @@ const stats = { skipped: 0, error: 0, suberror: 0, success: 0 };
 
 function parseViews(D) {
     const node = _.first(D.getElementsByClassName('view-count'));
-    try {
-        const viewStr = node.innerHTML
-        let tmp = _.first(viewStr.split(' '))
-        const viewNumber = _.parseInt(tmp.replace(/[.,]/g, ''));
-        return { viewStr: viewStr, viewNumber: viewNumber };
-    } catch(error) {
-        errorview("(%s): %s", node.innerHTML, error);
-        return {
-            error: true,
-            source: node.innerHTML
-        };
-    }
+    const viewStr = node.innerHTML
+    let tmp = _.first(viewStr.split(' '))
+    const viewNumber = _.parseInt(tmp.replace(/[.,]/g, ''));
+    return { viewStr: viewStr, viewNumber: viewNumber };
 };
 
 function parseLikes(D) {
     const nodes = D.querySelectorAll('.ytd-toggle-button-renderer > yt-formatted-string');
-    try {
-        const likes = nodes[0].getAttribute('aria-label');
-        const dislikes = nodes[1].getAttribute('aria-label');
-        return { likes: likes, dislikes: dislikes };
-    } catch(error) {
-        /* expected two elements in nodes */
-        errorlike("(%d) %s", _.size(nodes), error);
-        return {
-            error: true,
-            source: [ nodes[0].outerHTML, nodes[1].outerHTML ]
-        }
-    }
+    const likes = nodes[0].getAttribute('aria-label');
+    const dislikes = nodes[1].getAttribute('aria-label');
+    return { likes: likes, dislikes: dislikes };
 };
 
 function labelForcer(l) {
@@ -118,14 +101,18 @@ function labelForcer(l) {
 
 function relatedMetadata(e, i) {
 
-    let source, verified, vizstr;
+    let source, verified, vizstr, foryou;
     const title = e.querySelector('#video-title').textContent;
     const metadata = e.querySelector('#metadata');
 
     if(metadata.children.length > 0)
         source = metadata.children[0].textContent;
+
     if(metadata.children.length > 1)
         vizstr = metadata.children[1].textContent;
+
+    if(vizstr && _.size(vizstr))
+        foryou = vizstr.match(/\d+/) ? false : true;
 
     const link = e.querySelectorAll('a')[0].getAttributeNode('href').value
     const videoId = link.replace(/.*v=/, '');
@@ -142,10 +129,10 @@ function relatedMetadata(e, i) {
     }
     const longlabel = e.querySelector('#video-title').getAttribute('aria-label');
     // Beastie Boys - Sabotage by BeastieBoys 9 years ago 3 minutes, 2 seconds 62,992,821 views
-    const mined = labelForcer(longlabel);
-    // mined is not really used yet, but it might be handy 
 
-    const foryou = vizstr.match(/\d+/) ? false : true;
+    const mined = longlabel ? labelForcer(longlabel) : null;
+    // mined is not used yet; it might be handy. please note sometime is empty
+    // e1895eed23ffcb8a0b5d1221c28a712b379886fe
 
     // if is verified, the keyword vary language by language, but you've always 
     // TED\nVerified\n•
@@ -175,40 +162,116 @@ function relatedMetadata(e, i) {
     };
 };
 
+function parseSingleTry(D, memo, spec) {
+    const elems = D.querySelectorAll(spec.selector);
+
+    if(!_.size(elems)) {
+        debug("%s fail", spec.name);
+        return memo;
+    }
+
+    if(!spec.selected && _.size(elems) > 1)
+        debug("%s return %d elements. only the first is considered", spec.selector, _.size(elems));
+
+    const source = spec.selected ?  _.nth(elems, spec.selected) : _.first(elems);
+
+    try {
+        const candidate = source[spec.func];
+        if(_.size(candidate)) {
+            if(memo)
+                debug("Replacing [%s] with [%s] by %s", memo, candidate, spec.name);
+            return candidate;
+        }
+    } catch(error) {
+        return memo;
+    }
+};
+
+function manyTries(D, opportunities) {
+    const r = _.reduce(opportunities, _.partial(parseSingleTry, D), null);
+    debug("manyTries: %j: %s", _.map(opportunities, 'name'), r);
+    return r;
+};
+
 function processVideo(D) {
 
-    const etit = D.querySelector('h1 > yt-formatted-string ');
-    if(!etit) {
-        throw new Error("unable to get title (1)");
-    }
-
-    const vTitle = etit.textContent;
-    if(!vTitle || _.size(vTitle) < 0) {
-        throw new Error("unable to get title (2)");
-    }
+    const title = manyTries(D, [{
+        name: 'title h1',
+        selector: 'h1 > yt-formatted-string',
+        expected: null,
+        selected: null,
+        func: 'textContent'
+    }, {
+        name: 'title ytp-title',
+        selector: '.ytp-title',
+        expected: null,
+        selected: null,
+        func: 'textContent'
+    } ]);
+    if(!title)
+        throw new Error("unable to get title");
 
     const check = D.querySelectorAll('a.ytd-video-owner-renderer').length; // should be 1
     const authorName = D.querySelector('a.ytd-video-owner-renderer').getAttribute('aria-label');
     const authorSource = D.querySelector('a.ytd-video-owner-renderer').getAttribute('href');
-    const ptc =D.querySelectorAll('[slot="date"]').length;
+    const ptc = D.querySelectorAll('[slot="date"]').length;
     const publicationString = D.querySelector('[slot="date"]').textContent;
-
-    /* non mandatory info */
-    const viewInfo = parseViews(D);
-    const likeInfo = parseLikes(D);
 
     /* related + sponsored */
     let related = [];
     try {
+        debug("related videos to be looked at: %d", _.size(D.querySelectorAll('ytd-compact-video-renderer')));
         related = _.map(D.querySelectorAll('ytd-compact-video-renderer'), relatedMetadata);
     } catch(error) {
-        debug("Error in related: %s", error.message);
+        throw new Error(`Unable to mine related: ${error.message}, ${error.stack.substr(0, 220)}...`);
     }
-    const relatedN = D.querySelectorAll('ytd-compact-video-renderer').length;
-    debug("Video %s mined %d related", vTitle, _.size(related));
+
+    let relatedN = D.querySelectorAll('ytd-compact-video-renderer').length;
+
+    if(relatedN < 20) {
+        debug("Because the related video are less than 20 (%d) trying the method2 of related extraction", relatedN);
+        const f = D.querySelectorAll('[aria-label]')
+        const selected = _.compact(_.map(f, function(e, i) {
+            if(e.parentNode.parentNode.tagName != 'DIV' || e.parentNode.tagName != 'H3')
+                return null;
+
+            var t = e.parentNode.parentNode.parentNode.parentNode.querySelector("#thumbnail");
+
+            if(t) {
+                e.parentNode.parentNode.loaded = true;
+                return e.parentNode.parentNode;
+            }
+            else {
+                e.parentNode.parentNode.loaded = false;
+                return null; 
+                // può essere interessante tenere i video non ancora caricati, ma 
+                // 'relatedMetadata' fallisce perchè i metadata sono ancora a zero.
+                // 
+                // questo altrimenti era funzionato:
+                //
+                // > _.countBy(selected, {loaded: true })
+                // { true: 24, false: 25 }
+                //  --- the videos not yet loaded but potentially suggested */
+            }
+
+        }));
+        related = _.map(selected, relatedMetadata);
+        debug("...and now the related are %d", _.size(related));
+    }
+
+    debug("Video %s mined %d related", title, _.size(related));
+
+    /* non mandatory info */
+    try {
+        var viewInfo = parseViews(D);
+        var likeInfo = parseLikes(D);
+    } catch(error) {
+        debug("viewInfo and linkInfo not available");
+        var viewInfo = likeInfo = null;
+    }
 
     return {
-        title: vTitle,
+        title,
         check,
         ptc,
         publicationString,
