@@ -31,6 +31,9 @@ var apiListVersion1 = {
 
     /* researcher functionalities */
     researcher:        require('../routes/researcher').researcher,
+
+    /* impact */
+    getStatistics:     require('../routes/statistics').statistics
 };
 
 module.exports = {

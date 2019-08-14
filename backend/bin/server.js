@@ -12,7 +12,6 @@ var cors = require('cors');
 
 var dbutils = require('../lib/dbutils');
 var APIs = require('../lib/api');
-var mongo3 = require('../lib/mongo3');
 var security = require('../lib/security');
 
 var cfgFile = "config/settings.json";
@@ -138,6 +137,11 @@ app.get('/api/v1/research/:publicKey', function(req, res) {
 /* admin */
 app.get('/api/v1/mirror/:key', function(req, res) {
     return dispatchPromise('getMirror', req, res);
+});
+
+/* impact --- the only one in version 2 already */
+app.get('/api/v2/statistics/:name/:unit/:amount', function(req, res) {
+    return dispatchPromise('getStatistics', req, res);
 });
 
 security.checkKeyIsSet();

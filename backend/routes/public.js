@@ -1,10 +1,8 @@
 const _ = require('lodash');
 const moment = require('moment');
-const Promise = require('bluebird');
 const debug = require('debug')('routes:public');
 const nconf = require('nconf');
 
-const utils = require('../lib/utils');
 const automo = require('../lib/automo');
 
 // in regards of last metadata and by videoId
