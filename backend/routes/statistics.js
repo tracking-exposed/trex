@@ -6,7 +6,7 @@ const nconf = require('nconf');
 
 const mongo = require('../lib/mongo');
 
-/* -- this cache is shared with yttrex, might be generalized or figured out 
+/* -- this cache is shared with yttrex, might be generalized or figured out
  * if something native from mongo exists ? */
 
 /*
@@ -20,11 +20,11 @@ function parsers(req)
  */
 
 function statistics(req) {
-    // the content in 'stats' is saved by count-o-clock and the selector here required is 
+    // the content in 'stats' is saved by count-o-clock and the selector here required is
     // specifiy in config/stats.json
     const expectedFormat = "/api/v2/statistics/:name/:unit/:amount";
 
-    const allowedNames = ['newcomers', 'related', 'processing'];
+    const allowedNames = ['supporters', 'related', 'processing'];
     const name = req.params.name;
     if(allowedNames.indexOf(name) == -1)
         return { json: { error: true, expectedFormat, allowedNames, note: `the statistic name you look for was ${name}` }}
@@ -42,7 +42,7 @@ function statistics(req) {
 
     const filter = { name };
     const refDate = new Date( moment().subtract(amount, _.nth(unit, 0)));
-    
+
     if(_.startsWith(unit, 'day'))
         _.set(filter, 'day', { '$gt': refDate });
     else
