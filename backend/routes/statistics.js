@@ -41,10 +41,13 @@ async function statistics(req) {
     else
         _.set(filter, 'hour', { '$gt': refDate });
 
-        
     const mongoc = await mongo3.clientConnect({concurrency: 1});
     const fullc = await mongo3.read(mongoc, nconf.get('schema').stats, filter);
     const content = _.map(fullc, function(e) {
+        _.each(_.keys(e), function(k) {
+            if(e[k] === 0)
+                _.unset(e, k);
+        })
         return _.omit(e, ['_id']);
     });
     debug("Requested [%s] since %d %s ago = %d measures", name, amount, unit, _.size(content));
