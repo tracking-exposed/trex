@@ -1,16 +1,20 @@
 This is the backend implementation of [youtube.tracking.exposed](https://youtube.tracking.exposed)
 
-## API implemented provide:
+### Current API list
 
-* collection of events as received by browser extension
-* export of individual data accessed by personal token
-* export of anonymized data for visualization and analysis
-* administrative debug interface (mirror and rsync)
-* export of public stats
+# Personal
+https://youtube.tracking.exposed/api/v1/personal/$token/csv
+https://youtube.tracking.exposed/api/v1/personal/$token/$paging
+https://youtube.tracking.exposed/api/v1/research/$token
 
+## VideoId related
+https://youtube.tracking.exposed/api/v1/videoId/$videoId
+https://youtube.tracking.exposed/api/v1/related/$videoId
+https://youtube.tracking.exposed/api/v1/videoCSV/$videoId/$paging
 
-### reminder farfalla
+## Node related
+https://youtube.tracking.exposed/api/v2/statistics/
+https://youtube.tracking.exposed/api/v1/last
 
-git clone https://github.com/farfalla-project/farfalla
-
-The idea is to integrate an accessibility package
+## special
+https://youtube.tracking.exposed/api/v1/htmlId/$id
