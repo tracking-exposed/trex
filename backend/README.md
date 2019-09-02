@@ -2,19 +2,23 @@ This is the backend implementation of [youtube.tracking.exposed](https://youtube
 
 ### Current API list
 
+_paging_ is always optional.
+
 # Personal
-https://youtube.tracking.exposed/api/v1/personal/$token/csv
-https://youtube.tracking.exposed/api/v1/personal/$token/$paging
-https://youtube.tracking.exposed/api/v1/research/$token
+* https://youtube.tracking.exposed/api/v1/personal/$token/csv
+* https://youtube.tracking.exposed/api/v1/personal/$token/$paging
+* https://youtube.tracking.exposed/api/v1/research/$token
+* **new** https://youtube.tracking.exposed/api/v1/personal/$token/related/$paging: return a list of all the related videos
 
 ## VideoId related
-https://youtube.tracking.exposed/api/v1/videoId/$videoId
-https://youtube.tracking.exposed/api/v1/related/$videoId
-https://youtube.tracking.exposed/api/v1/videoCSV/$videoId/$paging
+* https://youtube.tracking.exposed/api/v1/videoId/$videoId/$paging
+* https://youtube.tracking.exposed/api/v1/related/$videoId/$paging
+* https://youtube.tracking.exposed/api/v1/videoCSV/$videoId/$paging
 
 ## Node related
-https://youtube.tracking.exposed/api/v2/statistics/
-https://youtube.tracking.exposed/api/v1/last
+* https://youtube.tracking.exposed/api/v2/statistics/
+* https://youtube.tracking.exposed/api/v1/last
+* **new** https://youtube.tracking.exposed/api/v1/author/John%20Malecki: return a list of video watched by selecting the author channel
 
 ## special
-https://youtube.tracking.exposed/api/v1/htmlId/$id
+* https://youtube.tracking.exposed/api/v1/htmlId/$id
