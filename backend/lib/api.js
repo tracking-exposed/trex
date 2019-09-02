@@ -7,7 +7,7 @@ var apiListVersion1 = {
     /* for revision --- to be determined if kept or not */
     unitById:         require('./htmlunit').unitById,
 
-    /* TODO: decide if can be resumed 
+    /* TODO: decide if can be resumed
     getSequence:      require('./divergency').getSequence,
     createSequence:   require('./divergency').createSequence,
     getResults:       require('./divergency').getResults,
@@ -20,11 +20,12 @@ var apiListVersion1 = {
     getRelated:       require('../routes/public').getRelated,
     getVideoCSV:      require('../routes/public').getVideoCSV,
 
-    // TODO, getAuthor
+    getByAuthor:      require('../routes/public').getByAuthor,
     getPersonalCSV:   require('../routes/personal').getPersonalCSV,
 
     /* return user' last videos */
-    getPersonal:       require('../routes/personal').getPersonal,
+    getPersonal:        require('../routes/personal').getPersonal,
+    getPersonalRelated: require('../routes/personal').getPersonalRelated,
 
     /* rsync for developer */
     rsync:             require('../routes/rsync').rsync,

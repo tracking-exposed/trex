@@ -101,6 +101,9 @@ app.get('/api/v1/related/:query', function(req, res) {
 app.get('/api/v1/videoCSV/:query/:amount?', function(req, res) {
     return dispatchPromise('getVideoCSV', req, res);
 });
+app.get('/api/v1/author/:query/:amount?', function(req, res) {
+    return dispatchPromise('getByAuthor', req, res);
+});
 
 /* This is import and validate the key */
 app.post('/api/v:version/validate', function(req, res) {
@@ -115,10 +118,15 @@ app.post('/api/v:version/events', function(req, res) {
 app.get('/api/v1/personal/:publicKey/csv', function(req, res) {
     return dispatchPromise('getPersonalCSV', req, res);
 });
+/* special thing: get your related as large list */
+app.get('/api/v1/personal/:publicKey/related/:paging?', function(req, res) {
+    return dispatchPromise('getPersonalRelated', req, res);
+});
 /* this is to retrieve the personal video submitted */
 app.get('/api/v1/personal/:publicKey/:paging?', function(req, res) {
     return dispatchPromise('getPersonal', req, res);
 });
+
 
 app.get('/api/v1/html/:htmlId', function(req, res) {
     return dispatchPromise('unitById', req, res);
@@ -179,4 +187,3 @@ Promise.resolve().then(function() {
 //     req.params.page = 'results';
 //     return dispatchPromise('getPage', req, res);
 // });
-

@@ -8,12 +8,13 @@ const CSV = require('../lib/CSV');
 
 async function getPersonal(req) {
 
+    const DEFMAX = 40;
     const k =  req.params.publicKey;
     if(_.size(k) < 30)
         return { json: { "message": "Invalid publicKey", "error": true }};
 
-    const { amount, skip } = params.optionParsing(req.params.paging, 40);
-    debug("Personal access, amount %d skip %d", amount, skip);
+    const { amount, skip } = params.optionParsing(req.params.paging, DEFMAX);
+    debug("getPersonal: amount %d skip %d, default max %d", amount, skip, DEFMAX);
 
     const data = await automo.getMetadataByPublicKey(k, { amount, skip });
 
@@ -40,7 +41,7 @@ async function getPersonalCSV(req) {
     const data = await automo.getMetadataByPublicKey(k, { amount: CSV_MAX_SIZE, skip: 0 });
     const csv = CSV.produceCSVv1(related);
 
-    debug("personalCSV produced %d bytes from %d entries (max %d)",
+    debug("getPersonalCSV produced %d bytes from %d entries (max %d)",
         _.size(csv), _.size(data), CSV_MAX_SIZE);
 
     if(!_.size(csv))
@@ -55,50 +56,19 @@ async function getPersonalCSV(req) {
     };
 };
 
+async function getPersonalRelated(req) {
 
-async function getRelated(mongoc, supporter) {
-    /* available structure 
-     {
-    "_id" : ObjectId("5cce22a8f64c0c7ef837fb52"),
-    "id" : "eebdf0ba80f7bc050eb1463b6b20f51fc2cce4fe",
-    "title" : "You Are Stealing Our Future: Greta Thunberg, 15, Condemns the World’s Inaction on Climate Change",
-    "publicationString" : "Published on Dec 13, 2018",
-    "authorName" : "Democracy Now!",
-    "authorSource" : "/user/democracynow",
-    "related" : {
-        "index" : 1,
-        "title" : "The disarming case to act right now on climate change | Greta Thunberg",
-        "source" : "TED\nVerified\n•",
-        "vizstr" : "510K views",
-        "videoId" : "H2QxFM9y0tY",
-        "displayTime" : "11:13",
-        "expandedTime" : "11 minutes",
-        "longlabel" : "The disarming case to act right now on climate change | Greta Thunberg by TED 2 months ago 11 minutes 510,780 views",
-        "mined" : {
-            "viz" : "510,780 views",
-            "duration" : "11 minutes",
-            "timeago" : "2 months ago",
-            "title" : "The disarming case to act right now on climate change | Greta Thunberg by TED"
-        }
-    },
-    "relatedN" : 20,
-    "viewInfo" : {
-        "viewStr" : "1,075,971 views",
-        "viewNumber" : 1075971
-    },
-    "likeInfo" : {
-        "likes" : null,
-        "dislikes" : "29,634 likes"
-    },
-    "videoId" : "HzeekxtyFOY",
-    "savingTime" : ISODate("2019-05-02T07:04:41.478Z"),
-    "watcher" : "doughnut-berry-celery"
-    }
-     */
+    const DEFMAX = 40;
+    const k =  req.params.publicKey;
+    if(_.size(k) < 30)
+        return { json: { "message": "Invalid publicKey", "error": true }};
 
-    let related = await getRelatedByWatcher(supporter.p);
-    return _.map(related, function(r) {
-        /* this is the same format in youtube.tracking.exposed/data */
+    const { amount, skip } = params.optionParsing(req.params.paging, DEFMAX);
+    debug("getPersonalRelated request by %s using %d starting videos, skip %d (defmax %d)", k, amount, skip, DEFMAX);
+    let related = await automo.getRelatedByWatcher(k, { amount, skip });
+    const formatted = _.map(related, function(r) {
+        /* this is the same format in youtube.tracking.exposed/data,u
+         * and should be in lib + documented */
         return {
             id: r.id,
             videoId: r.related.videoId,
@@ -117,11 +87,15 @@ async function getRelated(mongoc, supporter) {
         };
     });
 
-    return related;
+    debug("getPersonalRelated produced %d results", _.size(formatted));
+    return {
+        json: formatted
+    };
 };
 
 
 module.exports = {
     getPersonal,
     getPersonalCSV,
+    getPersonalRelated,
 };

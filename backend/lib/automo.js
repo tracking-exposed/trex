@@ -1,8 +1,8 @@
-/* automo.js means "automongo". 
+/* automo.js means "automongo".
  * This library should be included most of the time, because implement high level functions about mongodb access.
  * all the functions implemented in routes, libraries, and whatsoever, should be implemented here.
  *
- * The module mongo3.js MUST be used only in special cases where concurrency wants to be controlled 
+ * The module mongo3.js MUST be used only in special cases where concurrency wants to be controlled
  */
 const _ = require('lodash');
 const nconf = require('nconf');
@@ -18,7 +18,7 @@ async function getMetadataByPublicKey(publicKey, options) {
     if(!supporter)
         throw new Error("publicKey do not match any user");
 
-    const metadata = mongo3.readLimit(mongoc,
+    const metadata = await mongo3.readLimit(mongoc,
         nconf.get('schema').metadata, { watcher: supporter.p }, { savingTime: -1 },
         options.amount, options.skip);
 
@@ -26,16 +26,9 @@ async function getMetadataByPublicKey(publicKey, options) {
     return { supporter, metadata };
 };
 
-/*
-async function get(options) {
-    const mongoc = await mongo3.clientConnect({concurrency: 1});
-    await mongoc.close();
-};
-*/
-
 async function getMetadataByFilter(filter, options) {
     const mongoc = await mongo3.clientConnect({concurrency: 1});
-    const metadata = mongo3.readLimit(mongoc,
+    const metadata = await mongo3.readLimit(mongoc,
         nconf.get('schema').metadata, filter, { savingTime: -1 },
         options.amount, options.skip);
 
@@ -43,11 +36,19 @@ async function getMetadataByFilter(filter, options) {
     return metadata;
 };
 
-async function getRelatedByWatcher(watcher) {
+async function getRelatedByWatcher(publicKey, options) {
     const mongoc = await mongo3.clientConnect({concurrency: 1});
+
+    const supporter = await mongo3.readOne(mongoc, nconf.get('schema').supporters, { publicKey });
+    if(!supporter)
+        throw new Error("publicKey do not match any user");
+
     const related = await mongo3
         .aggregate(mongoc, nconf.get('schema').metadata, [
             { $match: { 'watcher': supporter.p }},
+            { $sort: { savingTime: -1 }},
+            { $skip: options.skip },
+            { $limit : options.amount },
             { $lookup: { from: 'videos', localField: 'id', foreignField: 'id', as: 'videos' }},
             { $unwind: '$related' }
         ]);
@@ -67,9 +68,41 @@ async function getFirstVideos(when, options) {
     return selected;
 };
 
+async function getRelatedByVideoId(videoId, amount) {
+    const mongoc = await mongo3.clientConnect({concurrency: 1});
+    const related = await mongo3
+        .aggregate(nconf.get('schema').metadata, [
+            { $match: { videoId: videoId } },
+            { $sort: { savingTime: -1 }},
+            { $limit : amount },
+            { $lookup: { from: 'videos', localField: 'id', foreignField: 'id', as: 'videos' }},
+            { $unwind: '$related' }
+        ]);
+    await mongoc.close();
+    return _.map(related, function(r) {
+        return {
+            id: r.id,
+            videoId: r.related.videoId,
+            title: r.related.title,
+            verified: r.related.verified,
+            source: r.related.source,
+            vizstr: r.related.vizstr,
+            foryou: r.related.foryou,
+            suggestionOrder: r.related.index,
+            displayLength: r.related.displayTime,
+            watched: r.title,
+            since: r.publicationString,
+            credited: r.authorName,
+            channel: r.authorSource,
+            savingTime: r.savingTime,
+            watcher: r.watcher,
+            watchedId: r.videoId,
+        };
+    });
+}
+
 
 module.exports = {
-   
     /* used by routes/personal */
     getMetadataByPublicKey,
     getRelatedByWatcher,
@@ -79,4 +112,7 @@ module.exports = {
 
     /* used by routes/rsync */
     getFirstVideos,
+
+    /* used by public/videoCSV */
+    getRelatedByVideoId,
 };
