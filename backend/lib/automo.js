@@ -82,7 +82,7 @@ async function getRelatedByVideoId(videoId, options) {
     await mongoc.close();
     return _.map(related, function(r) {
         return {
-            id: r.id,
+            id: r.id.substr(0, 20),
             videoId: r.related.videoId,
             title: r.related.title,
             verified: r.related.verified,

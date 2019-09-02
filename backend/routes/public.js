@@ -139,6 +139,7 @@ async function getByAuthor(req) {
         'authorSource', 'publicationString' ];
 
     const clean = _.map(byauthor, function(e) {
+        e.id = e['id'].substr(0, 20);
         return _.pick(e, publicFields)
     });
     return { json: clean };
