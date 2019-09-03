@@ -39,7 +39,7 @@ async function getPersonalCSV(req) {
         return { json: { "message": "Invalid publicKey", "error": true }};
 
     const data = await automo.getMetadataByPublicKey(k, { amount: CSV_MAX_SIZE, skip: 0 });
-    const csv = CSV.produceCSVv1(related);
+    const csv = CSV.produceCSVv1(data);
 
     debug("getPersonalCSV produced %d bytes from %d entries (max %d)",
         _.size(csv), _.size(data), CSV_MAX_SIZE);

@@ -71,7 +71,7 @@ async function getFirstVideos(when, options) {
 async function getRelatedByVideoId(videoId, options) {
     const mongoc = await mongo3.clientConnect({concurrency: 1});
     const related = await mongo3
-        .aggregate(nconf.get('schema').metadata, [
+        .aggregate(mongoc, nconf.get('schema').metadata, [
             { $match: { videoId: videoId } },
             { $sort: { savingTime: -1 }},
             { $skip: options.skip },
