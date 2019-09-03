@@ -5,6 +5,7 @@ const nconf = require('nconf');
 
 const params = require('../lib/params');
 const automo = require('../lib/automo');
+const CSV = require('../lib/CSV');
 
 // in regards of last metadata and by videoId
 const PUBLIC_AMOUNT_ELEMS = 110;
@@ -114,7 +115,7 @@ async function getVideoCSV(req) {
     const { amount, skip } = params.optionParsing(req.params.paging, MAXENTRY);
     debug("getVideoCSV %s, amount %d skip %d (default %d)", req.params.query, amount, skip, MAXENTRY);
     const byrelated = await automo.getRelatedByVideoId(req.params.query, { amount, skip} );
-    const csv = personal.produceCSVv1(byrelated);
+    const csv = CSV.produceCSVv1(byrelated);
     debug("VideoCSV: produced %d bytes", _.size(csv));
     if(!_.size(csv))
         return { text: "Error, Zorry: 🤷" };
