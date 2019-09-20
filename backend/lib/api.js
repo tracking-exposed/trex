@@ -1,3 +1,15 @@
+/*
+const nextApiList = [
+  {
+    implementation: require('../routes/events').processEvents,
+    method: 'POST',
+    path: '/events/:some?',
+    validation: {
+      'some': validate.
+    },
+    name: 'processEvents'
+}, {
+} ]; */
 
 var apiListVersion1 = {
     /* POST from the web-extension */
@@ -34,7 +46,12 @@ var apiListVersion1 = {
     researcher:        require('../routes/researcher').researcher,
 
     /* impact */
-    getStatistics:     require('../routes/statistics').statistics
+    getStatistics:     require('../routes/statistics').statistics,
+
+    /* self taggging restful approach */
+    addTag:            require('../routes/tags').add,
+    getTag:            require('../routes/tags').get,
+    removeTag:         require('../routes/tags').remove,
 };
 
 module.exports = {

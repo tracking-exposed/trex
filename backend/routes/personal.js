@@ -93,7 +93,6 @@ async function getPersonalRelated(req) {
     };
 };
 
-
 module.exports = {
     getPersonal,
     getPersonalCSV,
