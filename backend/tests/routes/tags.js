@@ -16,43 +16,65 @@ describe("Testing the tags related routes", function() {
 
   it("delete if exists", async function() {
       const result = await supporters.remove(token);
-      debug("-- %j", result);
-      expect(result.result.ok).to.be(1);
-      done();
+      expect(result.result.ok).to.be.equal(1);
   });
 
   it("preparation - this create a new dummy profile", async function() {
       const profile = await TOFU(token);
       expect(profile).to.be.an('array');
-      expect(_.first(profile)).to.include({ "publickey": token});
+      expect(_.first(profile)).to.include({ "publicKey": token});
       const pseudon = "wheatberry-currant-milk";
-      expect(profile[0].p).to.be(pseudon);
-      done();
+      expect(profile[0].p).to.be.equal(pseudon);
   });
 
   it("retrieve 0 tags", async function() {
       const answer = await tags.get({params: { publicKey: token}})
-      debug("retrieved %j", answer);
       const profile = answer.json;
       expect(profile.tags).to.be.undefined;
-      done();
   });
 
-  it("add a tag", async function() {
+  it("add two tags", async function() {
+
       const first = 'first';
-      const answer1 = await tags.add({
+      const check1 = await tags.add({
         params: { publicKey: token },
         body: { tag: first }
       });
-      debug("+ %j", answer1);
+      expect(check1.json.tags).to.be.an('array');
+      expect(_.first(check1.json.tags)).to.be.equal(first);
 
       const second = 'second';
-      const answer2 = await tags.add({
+      const check2 = await tags.add({
         params: { publicKey: token },
         body: { tag: second }
       });
-      debug("+ %j", answer2);
-      done();
+      expect(check2.json.tags).to.be.an('array');
+      expect(_.first(check2.json.tags)).to.be.equal(first);
+      expect(_.last(check2.json.tags)).to.be.equal(second);
+  });
+
+  it("remove a tag", async function() {
+
+      const removesecond = 'second';
+      const check = await tags.remove({
+        params: { publicKey: token },
+        body: { tag: removesecond }
+      });
+
+      expect(check.json.tags).to.be.an('array');
+      expect(_.size(check.json.tags)).to.be.equal(1);
+  });
+
+  it("refuses duplicate tags", async function() {
+
+      const first = 'first';
+      const check = await tags.add({
+        params: { publicKey: token },
+        body: { tag: first }
+      });
+
+      expect(check.json.tags).to.be.an('array');
+      expect(_.size(check.json.tags)).to.be.equal(1);
   });
 
 });

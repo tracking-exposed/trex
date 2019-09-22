@@ -14,14 +14,16 @@ async function add(req) {
         return { json: { "message": "Invalid publicKey", "error": true }};
 
     const tag = req.body.tag;
-    debug("add - Offered tag %s", tag)
 
     const current = await supporters.get(k);
     if(_.isUndefined(current.tags))
       current.tags = [];
 
+    debug("Adding tag [%s] to '%s' currently belonging to %j", tag, current.p, current.tags);
     /* append the new tag only if actually 'new' */
-    current.tags = _.uniq(current.tags.push(tag));
+    current.tags.push(tag);
+    current.tags = _.uniq(current.tags);
+
     const updated = await supporters.update(k, current);
     return { json: updated };
 };
@@ -41,14 +43,10 @@ async function remove(req) {
         return { json: { "message": "Invalid publicKey", "error": true }};
 
     const tag = req.body.tag;
-    debug("delete tag %s", tag);
-    let current = await supporters.get(k);
-    debug("before %j", current.tags)
-    const tags = _.filter(current.tags, tag);
-    debug("after %j", tags);
-    current.tags = tags;
+    const current = await supporters.get(k);
+    _.pull(current.tags, tag);
 
-    const updated = await supporters.update(k, current)
+    const updated = await supporters.update(k, current);
 
     return { json: updated };
 };
