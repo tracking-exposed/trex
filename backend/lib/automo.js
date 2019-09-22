@@ -56,6 +56,19 @@ async function getRelatedByWatcher(publicKey, options) {
     return related;
 }
 
+async function getVideoIdByPublicKey(publicKey, videoId) {
+    const mongoc = await mongo3.clientConnect({concurrency: 1});
+
+    const supporter = await mongo3.readOne(mongoc, nconf.get('schema').supporters, { publicKey });
+    if(!supporter)
+        throw new Error("publicKey do not match any user");
+
+    const matches = await mongo3.read(mongoc, nconf.get('schema').videos, { p: supporter.p, videoId: videoId }, { savingTime: -1 });
+    await mongoc.close();
+
+    return matches;
+};
+
 async function getFirstVideos(when, options) {
     // expected when to be a moment(), TODO assert when.isValid()
     const mongoc = await mongo3.clientConnect({concurrency: 1});
@@ -66,6 +79,19 @@ async function getFirstVideos(when, options) {
             options.amount, options.skip);
     await mongoc.close();
     return selected;
+};
+
+async function deleteEntry(publicKey, id) {
+
+    const mongoc = await mongo3.clientConnect({concurrency: 1});
+    const supporter = await mongo3.readOne(mongoc, nconf.get('schema').supporters, { publicKey });
+    if(!supporter)
+        throw new Error("publicKey do not match any user");
+
+    const result = await mongo3.deleteMany(mongoc, nconf.get('schema').videos, { id: id, p: supporter.p });
+    await mongoc.close();
+
+    return result;
 };
 
 async function getRelatedByVideoId(videoId, options) {
@@ -107,6 +133,8 @@ module.exports = {
     /* used by routes/personal */
     getMetadataByPublicKey,
     getRelatedByWatcher,
+    getVideoIdByPublicKey,
+    deleteEntry,
 
     /* used by routes/public */
     getMetadataByFilter,

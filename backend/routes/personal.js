@@ -93,8 +93,38 @@ async function getPersonalRelated(req) {
     };
 };
 
+async function evidenceGet(req) {
+    /* this function should accept more than one selector. At the moment, takes only videoId,
+     * this function is meant to query the DB using a supporter-publickey, and check if the supporter
+     * has an evidence */
+
+    const k =  req.params.publicKey;
+    if(_.size(k) < 30)
+        return { json: { "message": "Invalid publicKey", "error": true }};
+
+    const targetId = req.params.videoId;
+
+    const matches = await automo.getVideoIdByPublicKey(k, targetId);
+
+    debug("evidenceGet found %d matching %s", _.size(matches), targetId);
+    return { json: matches };
+};
+
+async function evidenceRemove(req) {
+    const k =  req.params.publicKey;
+    if(_.size(k) < 30)
+        return { json: { "message": "Invalid publicKey", "error": true }};
+
+    const id = req.params.id;
+    const result = await automo.deleteEntry(k, id);
+    return { json: { success: true }};
+};
+
+
 module.exports = {
     getPersonal,
     getPersonalCSV,
     getPersonalRelated,
+    evidenceGet,
+    evidenceRemove,
 };
