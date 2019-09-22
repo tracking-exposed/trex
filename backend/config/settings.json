@@ -13,8 +13,7 @@
   "mongoDb": "yttrex",
   "port": 9000,
 
-  "tabtime": 20,
-
+  "storage": "htmls",
   "interface": "0.0.0.0",
   "key": "invalid_default"
 }

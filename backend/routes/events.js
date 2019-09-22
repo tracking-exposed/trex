@@ -4,6 +4,7 @@ var Promise = require('bluebird');
 var debug = require('debug')('lib:events');
 var os = require('os');
 var fs = Promise.promisifyAll(require('fs'));
+var path = require('path');
 var nconf = require('nconf');
 
 var signer = require('nacl-signature');
@@ -44,34 +45,43 @@ function saveVideo(body, supporter) {
         hour: moment(body.clientTime).format("YYYY-MM-DD HH:mm:SS"),
     });
     var isVideo = body.href.match(/v=/) ? true : false;
-    var fdest = 'htmls/' + moment().format("YYYY-MM-DD") + "/" + id + ".html";
+    var fdest = path.join(
+        nconf.get('storage'), moment().format("YYYY-MM-DD"), `${id}.html`
+        //    htmls /           2019-01-01         / $hash.html
+    );
     var video = {
         id: id,
         href: body.href,
         isVideo,
         htmlOnDisk: fdest,
         p: supporter.p,
-        tagId: body.tagId,
         clientTime: new Date(body.clientTime),
         savingTime: new Date(),
     };
 
+    if(supporter.tags)
+        video.tags = supporter.tags;
+
     if(isVideo)
         video.videoId = _.replace(body.href, /.*v=/, '').replace(/\?.*/, '').replace(/\&.*/,'');
 
-    debug("Saving entry (videos: %s) user %s file %s (%d bytes)",
-        isVideo ? video.videoId : "false", supporter.p, fdest, _.size(body.element)
+    debug("Saving entry (video: %s) user %s%s file %s (%d bytes)",
+        isVideo ? video.videoId : "false", supporter.p,
+        video.tags ? JSON.stringify(video.tags) : "",
+        fdest, _.size(body.element)
     );
 
     return mongo
         .writeOne(nconf.get('schema').videos, video)
-        .tap(function() {
-            return fs.writeFileAsync(fdest, body.element)
+        .then(function() {
+            return fs
+                .writeFileAsync(fdest, body.element)
+                .return(true);
         })
         .catch(function(error) {
             debug("Error: %s", error);
-        })
-        .return(video.incremental);
+            return false;
+        });
 };
 
 
@@ -140,8 +150,7 @@ function processEvents(req) {
         })
         .tap(function(supporter) {
             /* directory check */
-            var ddest = 'htmls/' + moment().format("YYYY-MM-DD") + "/";
-
+            var ddest = path.join( nconf.get('storage'), moment().format("YYYY-MM-DD"));
             return fs
                 .mkdirAsync(ddest).catch(function(e) { });
         })
@@ -195,6 +204,7 @@ function TOFU(pubkey) {
 
 module.exports = {
     processEvents: processEvents,
+    saveVideo,
     getMirror,
     hdrs: hdrs,
     processHeaders: processHeaders,
