@@ -12,23 +12,23 @@ nconf.argv().env().file({ file: "config/settings.json" });
 
 /* This first check the capacity of load data and verify they are avail */
 describe("Testing the tags related routes", function() {
-  const token = "123456789012345678901234567890";
+  const dummyKey = "123456789012345678901234567890";
 
   it("delete if exists", async function() {
-      const result = await supporters.remove(token);
+      const result = await supporters.remove(dummyKey);
       expect(result.result.ok).to.be.equal(1);
   });
 
   it("preparation - this create a new dummy profile", async function() {
-      const profile = await TOFU(token);
+      const profile = await TOFU(dummyKey);
       expect(profile).to.be.an('array');
-      expect(_.first(profile)).to.include({ "publicKey": token});
+      expect(_.first(profile)).to.include({ "publicKey": dummyKey});
       const pseudon = "wheatberry-currant-milk";
       expect(profile[0].p).to.be.equal(pseudon);
   });
 
   it("retrieve 0 tags", async function() {
-      const answer = await tags.get({params: { publicKey: token}})
+      const answer = await tags.get({params: { publicKey: dummyKey}})
       const profile = answer.json;
       expect(profile.tags).to.be.undefined;
   });
@@ -37,7 +37,7 @@ describe("Testing the tags related routes", function() {
 
       const first = 'first';
       const check1 = await tags.add({
-        params: { publicKey: token },
+        params: { publicKey: dummyKey },
         body: { tag: first }
       });
       expect(check1.json.tags).to.be.an('array');
@@ -45,7 +45,7 @@ describe("Testing the tags related routes", function() {
 
       const second = 'second';
       const check2 = await tags.add({
-        params: { publicKey: token },
+        params: { publicKey: dummyKey },
         body: { tag: second }
       });
       expect(check2.json.tags).to.be.an('array');
@@ -57,7 +57,7 @@ describe("Testing the tags related routes", function() {
 
       const removesecond = 'second';
       const check = await tags.remove({
-        params: { publicKey: token },
+        params: { publicKey: dummyKey },
         body: { tag: removesecond }
       });
 
@@ -69,7 +69,7 @@ describe("Testing the tags related routes", function() {
 
       const first = 'first';
       const check = await tags.add({
-        params: { publicKey: token },
+        params: { publicKey: dummyKey },
         body: { tag: first }
       });
 
