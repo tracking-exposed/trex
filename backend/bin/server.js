@@ -59,10 +59,11 @@ function dispatchPromise(name, req, res) {
                   debug("Setting header %s: %s", key, value);
                   res.setHeader(key, value);
               });
-
           if(httpresult.json) {
               debug("%s API success, returning JSON (%d bytes)",
                   name, _.size(JSON.stringify(httpresult.json)) );
+                  
+              res.setHeader('Access-Control-Allow-Origin', '*');
               res.json(httpresult.json)
           } else if(httpresult.text) {
               debug("API %s success, returning text (size %d)",
