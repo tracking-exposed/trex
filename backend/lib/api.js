@@ -39,6 +39,10 @@ var apiListVersion1 = {
     getPersonal:        require('../routes/personal').getPersonal,
     getPersonalRelated: require('../routes/personal').getPersonalRelated,
 
+    /* personal right of removing your data, and full details on one */
+    removeEvidence:    require('../routes/personal').removeEvidence,
+    getEvidence:       require('../routes/personal').getEvidence,
+
     /* rsync for developer */
     rsync:             require('../routes/rsync').rsync,
 
@@ -49,9 +53,12 @@ var apiListVersion1 = {
     getStatistics:     require('../routes/statistics').statistics,
 
     /* self taggging restful approach */
-    addTag:            require('../routes/tags').add,
-    getTag:            require('../routes/tags').get,
-    removeTag:         require('../routes/tags').remove,
+    updateProfile:     require('../routes/profile').updateProfile,
+    profileStatus:     require('../routes/profile').profileStatus,
+    removeTag:         require('../routes/profile').removeTag,
+
+    /* creation of a new tagGroup */
+    createTag:         require('../routes/profile').createTag,
 };
 
 module.exports = {

@@ -7,9 +7,33 @@
 const _ = require('lodash');
 const nconf = require('nconf');
 const debug = require('debug')('lib:automo');
+const moment = require('moment');
 
 const mongo3 = require('./mongo3');
-const params = require('./params');
+
+async function getSummaryByPublicKey(publicKey, options) {
+    /* this function return the basic information necessary to compile the 
+       landing personal page */
+    const mongoc = await mongo3.clientConnect({concurrency: 1});
+
+    const supporter = await mongo3.readOne(mongoc,
+        nconf.get('schema').supporters, { publicKey });
+    const metadata = await mongo3.readLimit(mongoc,
+        nconf.get('schema').metadata, { watcher: supporter.p }, { savingTime: -1 },
+        options.amount, options.skip);
+    const total = await mongo3.count(mongoc,
+        nconf.get('schema').metadata, { watcher: supporter.p });
+    await mongoc.close();
+
+    debug("%j", metadata[0])
+    const fields = ['id','videoId', 'savingTime', 'title', 'author', 'relative' ];
+    const reduced = _.map(metadata, function(e) { 
+        e.relative = moment.duration( moment(e.savingTime) - moment() ).humanize() + " ago";
+        return _.pick(e, fields);
+    })
+    debug("%j", reduced[0])
+    return { supporter, reduced, total };
+}
 
 async function getMetadataByPublicKey(publicKey, options) {
     const mongoc = await mongo3.clientConnect({concurrency: 1});
@@ -131,6 +155,7 @@ async function getRelatedByVideoId(videoId, options) {
 
 module.exports = {
     /* used by routes/personal */
+    getSummaryByPublicKey,
     getMetadataByPublicKey,
     getRelatedByWatcher,
     getVideoIdByPublicKey,

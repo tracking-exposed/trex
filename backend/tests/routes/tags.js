@@ -1,7 +1,6 @@
 const _ = require('lodash');
 const expect    = require("chai").expect;
 const nconf = require("nconf");
-const moment = require("moment");
 const debug = require("debug")("test:testRoutesTags");
 
 const tags = require('../../routes/tags');

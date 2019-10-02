@@ -119,16 +119,25 @@ app.post('/api/v:version/events', function(req, res) {
 app.get('/api/v1/personal/:publicKey/csv', function(req, res) {
     return dispatchPromise('getPersonalCSV', req, res);
 });
-/* special thing: get your related as large list */
+/* API for researcher: get your related as single list */
 app.get('/api/v1/personal/:publicKey/related/:paging?', function(req, res) {
     return dispatchPromise('getPersonalRelated', req, res);
 });
-/* this is to retrieve the personal video submitted */
+
+/* this return a summary (profile, total amount of videos, last videos */
 app.get('/api/v1/personal/:publicKey/:paging?', function(req, res) {
     return dispatchPromise('getPersonal', req, res);
 });
 
+/* action on specific evidence */
+app.delete('/api/v2/personal/:pubicKey/evidence/:id', (req, res) => {
+    return dispatchPromise('removeEvidence', req, res);
+});
+app.get('/api/v2/personal/:pubicKey/evidence/:id', (req, res) => {
+    return dispatchPromise('getEvidence', req, res);
+});
 
+/* to be check if still relevant */
 app.get('/api/v1/html/:htmlId', function(req, res) {
     return dispatchPromise('unitById', req, res);
 });
@@ -153,6 +162,26 @@ app.get('/api/v2/statistics/:name/:unit/:amount', function(req, res) {
     return dispatchPromise('getStatistics', req, res);
 });
 
+/* profile customization */
+app.delete('/api/v2/profile/:pubicKey/tag/:tagId', (req, res) => {
+    return dispatchPromise('removeTag', req, res);
+});
+
+app.post('/api/v2/profile/:pubicKey/tag', (req, res) => {
+    return dispatchPromise("createTag", req, res);
+});
+
+app.get('/api/v2/profile/:pubicKey/tag', (req, res) => {
+    return dispatchPromise('get', req, res);
+});
+
+app.post('/api/v2/profile/:pubicKey', (req, res) => {
+    return dispatchPromise("updateProfile", req, res);
+});
+
+
+
+/* the remaining code */
 security.checkKeyIsSet();
 
 Promise.resolve().then(function() {

@@ -6,7 +6,8 @@
       "sequences": "sequences",
       "commitments": "commitments",
       "metadata": "metadata",
-      "stats": "trexstats"
+      "stats": "trexstats",
+      "groups": "groups"
   },
   "mongoHost": "localhost",
   "mongoPort": 27017,

@@ -1,6 +1,4 @@
 var _ = require('lodash');
-var moment = require('moment');
-var Promise = require('bluebird');
 var debug = require('debug')('lib:utils');
 var crypto = require('crypto');
 var bs58 = require('bs58');
@@ -13,9 +11,8 @@ var hash = function(obj, fields) {
         fields = _.keys(obj);
     var plaincnt = fields.reduce(function(memo, fname) {
         return memo += fname + "∴" + _.get(obj, fname, '…miss!') + ",";
-        return memo;
     }, "");
-    // debug("Hashing of %s", plaincnt);
+    debug("Hashing of %s", plaincnt);
     sha1sum = crypto.createHash('sha1');
     sha1sum.update(plaincnt);
     return sha1sum.digest('hex');

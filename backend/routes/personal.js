@@ -16,19 +16,15 @@ async function getPersonal(req) {
     const { amount, skip } = params.optionParsing(req.params.paging, DEFMAX);
     debug("getPersonal: amount %d skip %d, default max %d", amount, skip, DEFMAX);
 
-    const data = await automo.getMetadataByPublicKey(k, { amount, skip });
+    const data = await automo.getSummaryByPublicKey(k, { amount, skip });
 
-    let recent = _.map(data.metadata, function(m) {
-        let r = _.omit(m, ['_id']);
-        r.related = _.map(r.related, function(entry) { return _.omit(entry, ['mined']); });
-        r.relative = moment.duration( moment(m.savingTime) - moment() ).humanize() + " ago";
-        return r;
-    });
-
-    return { json: {
-        profile: _.omit(data.supporter, ['_id']),
-        recent,
-    } };
+    data.request = {
+        amount,
+        skip,
+        when: moment().toISOString()
+    }
+    debug("yep!! %s", JSON.stringify(data, undefined, 2));
+    return { json: data };
 };
 
 async function getPersonalCSV(req) {
@@ -39,7 +35,7 @@ async function getPersonalCSV(req) {
         return { json: { "message": "Invalid publicKey", "error": true }};
 
     const data = await automo.getMetadataByPublicKey(k, { amount: CSV_MAX_SIZE, skip: 0 });
-    const csv = CSV.produceCSVv1(data);
+    const csv = CSV.produceCSVv1(data.metadata);
 
     debug("getPersonalCSV produced %d bytes from %d entries (max %d)",
         _.size(csv), _.size(data), CSV_MAX_SIZE);
@@ -93,7 +89,7 @@ async function getPersonalRelated(req) {
     };
 };
 
-async function evidenceGet(req) {
+async function getEvidence(req) {
     /* this function should accept more than one selector. At the moment, takes only videoId,
      * this function is meant to query the DB using a supporter-publickey, and check if the supporter
      * has an evidence */
@@ -104,18 +100,20 @@ async function evidenceGet(req) {
 
     const targetId = req.params.videoId;
 
+    debug("evidenceGet looking for %d matching %s", _.size(matches), targetId);
     const matches = await automo.getVideoIdByPublicKey(k, targetId);
 
     debug("evidenceGet found %d matching %s", _.size(matches), targetId);
     return { json: matches };
 };
 
-async function evidenceRemove(req) {
+async function removeEvidence(req) {
     const k =  req.params.publicKey;
     if(_.size(k) < 30)
         return { json: { "message": "Invalid publicKey", "error": true }};
 
     const id = req.params.id;
+    debug("removeEv %s %s", k, id);
     const result = await automo.deleteEntry(k, id);
     return { json: { success: true }};
 };
@@ -125,6 +123,6 @@ module.exports = {
     getPersonal,
     getPersonalCSV,
     getPersonalRelated,
-    evidenceGet,
-    evidenceRemove,
+    getEvidence,
+    removeEvidence,
 };
