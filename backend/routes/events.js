@@ -59,15 +59,15 @@ function saveVideo(body, supporter) {
         savingTime: new Date(),
     };
 
-    if(supporter.tags)
-        video.tags = supporter.tags;
+    if(supporter.tag)
+        video.tagId = supporter.tag.id;
 
     if(isVideo)
         video.videoId = _.replace(body.href, /.*v=/, '').replace(/\?.*/, '').replace(/\&.*/,'');
 
-    debug("Saving entry (video: %s) user %s%s file %s (%d bytes)",
+    debug("Saving entry (video: %s) user %s tag: %s file %s (%d bytes)",
         isVideo ? video.videoId : "false", supporter.p,
-        video.tags ? JSON.stringify(video.tags) : "",
+        supporter.tag ? supporter.tag.name : "<none>",
         fdest, _.size(body.element)
     );
 

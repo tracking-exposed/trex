@@ -1,6 +1,6 @@
 const _ = require('lodash');
 const moment = require('moment');
-const debug = require('debug')('routes:tags');
+const debug = require('debug')('routes:profile');
 const nconf = require('nconf');
 
 const mongo3 = require('../lib/mongo3');
@@ -12,24 +12,46 @@ const supporters = require('../lib/supporters');
    routes is always /api/v2/profile/$publicKey/tag in regards of new group tagging 
    routes /api/v2/profile/$publicKey POST is relative on upgrading your user profile */
 
+const tagKind = "this-is-hashed-with-pass+name-to-allow-only-ppls-with-password-to-query-the-id";
+
+async function updateTagInProfile(group, k) {
+    /* utility function used in createTag and updateProfile */
+    const profile = await supporters.get(k);
+
+    if(profile.tag && profile.tag.name)
+        debug("Profile %s currently tag %s but is replaced by %s", profile.p, profile.tag.name, group.name);
+    else
+        debug("Profile %s is marking to belong %s tag", profile.p, group.name);
+
+    profile.tag = group;
+    return await supporters.update(k, profile);
+}
+
+/* THE API implementation starts here */
+
 async function updateProfile(req) {
-  debug("POST-updateProfile")
     const k =  req.params.publicKey;
     if(_.size(k) < 30)
         return { json: { "message": "Invalid publicKey", "error": true }};
 
     const tag = req.body.tag;
+    const password = req.body.password;
 
-    const current = await supporters.get(k);
-    if(_.isUndefined(current.tags))
-      current.tags = [];
+    const id = utils.hash({
+        kind: tagKind,
+        name: tag,
+        password
+    });
 
-    debug("Adding tag [%s] to '%s' currently belonging to %j", tag, current.p, current.tags);
-    /* append the new tag only if actually 'new' */
-    current.tags.push(tag);
-    current.tags = _.uniq(current.tags);
+    const mongoc = await mongo3.clientConnect({concurrency: 1});
+    const exists = await mongo3.readOne(mongoc, nconf.get('schema').groups, { id });
 
-    const updated = await supporters.update(k, current);
+    if(!exists || exists.name !== tag)
+        return { json: { error: true, message: `Group ${tag} not found or not accessible with the password provided` }};
+
+    const updated = await updateTagInProfile(exists, k);
+
+    await mongoc.close();
     return { json: updated };
 };
 
@@ -38,8 +60,11 @@ async function createTag(req) {
     const PASSWORD_MIN = 7;
     const tag = req.body.tag 
     const password = req.body.password
-    debug("%j", req.body);
     const accessibility = req.body.public ? "public" : "private"
+
+    const k =  req.params.publicKey;
+    if(_.size(k) < 30)
+        return { json: { "message": "Invalid publicKey", "error": true }};
 
     if(_.size(tag) < 1)
         return { json: { error: true, message: `Group name (tag parameter) shoulbe be a string with more than 1 char` }};
@@ -47,66 +72,65 @@ async function createTag(req) {
     if(_.size(password) < PASSWORD_MIN && accessibility == 'private')
         return { json: { error: true, message: `Password should be more than ${PASSWORD_MIN} bytes` }};
 
-    const id = utils.hash({
-        kind: "this-is-hashed-with-pass+name-to-allow-only-ppls-with-password-to-query-the-id",
-        name: tag,
-        passowrd: password,
-        accessibility
-    });
     const mongoc = await mongo3.clientConnect({concurrency: 1});
-
-    const exists = await mongo3.readOne(mongoc, nconf.get('schema').groups, { 
-        tag
-    });
+    const exists = await mongo3.readOne(mongoc, nconf.get('schema').groups, { name: tag });
 
     if(_.get(exists, 'id'))
-        return { json: { error: true, message: `Group ${tag} exists. Creation not allow` }};
+        return { json: { error: true, message: `Group '${tag}' exists. Creation not allow` }};
 
+    /* creation of the group. the ID can't be addressed directly, the API must receive groupName+password to find it */
+    const id = utils.hash({
+        kind: tagKind,
+        name: tag,
+        password
+    });
     const createdTag = {
         id,
-        tag,
+        name: tag,
         accessibility,
         lastAccess: new Date(),
     };
-    const refresh = await mongo3.upsertOne(mongoc, nconf.get('schema').groups, { 
-        id, tag, accessibility
-    }, createdTag);
+
+    await mongo3.writeOne(mongoc, nconf.get('schema').groups, createdTag);
+
+    /* this API call also mark the calling profile as part of the new group */
+    const updated = await updateTagInProfile(createdTag, k);
 
     await mongoc.close();
-    return { json: { group: createdTag, created: true }};
+    return { json: {
+        group: createdTag,
+        created: true,
+        profile: updated
+    }};
 }
 
 async function profileStatus(req) {
-    debug("GET");
     const k =  req.params.publicKey;
     if(_.size(k) < 30)
         return { json: { "message": "Invalid publicKey", "error": true }};
 
-    const current = await supporters.get(k);
-    return { json: current };
+    const profile = await supporters.get(k);
+    return { json: profile };
 };
 
 async function removeTag(req) {
     const tagId =  req.params.tagId;
     const k =  req.params.publicKey;
-  debug("DELETE %s %s", tagId, k);
 
     if(_.size(k) < 30)
         return { json: { "message": "Invalid publicKey", "error": true }};
 
-    debuggr;
     const tag = req.body.tag;
-    debug("remove tag %s via BODY", tag);
-    const current = await supporters.get(k);
-    _.pull(current.tags, tag);
+    const profile = await supporters.get(k);
+    _.pull(profile.tags, tag);
 
-    const updated = await supporters.update(k, current);
+    const updated = await supporters.update(k, profile);
     return { json: updated };
 };
 
 module.exports = {
-  updateProfile,
-  profileStatus,
-  removeTag,
-  createTag,
+    updateProfile,
+    profileStatus,
+    removeTag,
+    createTag,
 };

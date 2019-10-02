@@ -9,6 +9,7 @@ ret = db.videos.createIndex({ savingTime : 1 }); checkret('videos savingTime', r
 ret = db.supporters.createIndex({ publicKey: 1 }, { unique: true }); checkret('supporters publicKey:', ret);
 
 ret = db.groups.createIndex({ id: 1 }, { unique: true }); checkret('groups id', ret);
+ret = db.groups.createIndex({ name: 1 }, { unique: true }); checkret('groups name', ret);
 
 function checkret(info, retval) {
     retval.info = info;
