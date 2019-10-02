@@ -130,11 +130,11 @@ app.get('/api/v1/personal/:publicKey/:paging?', function(req, res) {
 });
 
 /* action on specific evidence */
-app.delete('/api/v2/personal/:pubicKey/evidence/:id', (req, res) => {
+app.delete('/api/v2/personal/:publicKey/selector/id/:id', (req, res) => {
     return dispatchPromise('removeEvidence', req, res);
 });
-app.get('/api/v2/personal/:pubicKey/evidence/:id', (req, res) => {
-    return dispatchPromise('getEvidence', req, res);
+app.get('/api/v2/personal/:publicKey/selector/:key/:value', (req, res) => {
+    return dispatchPromise('getEvidences', req, res);
 });
 
 /* to be check if still relevant */

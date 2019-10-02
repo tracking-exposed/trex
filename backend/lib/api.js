@@ -41,7 +41,7 @@ var apiListVersion1 = {
 
     /* personal right of removing your data, and full details on one */
     removeEvidence:    require('../routes/personal').removeEvidence,
-    getEvidence:       require('../routes/personal').getEvidence,
+    getEvidences:      require('../routes/personal').getEvidences,
 
     /* rsync for developer */
     rsync:             require('../routes/rsync').rsync,

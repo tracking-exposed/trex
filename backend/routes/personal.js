@@ -7,7 +7,6 @@ const params = require('../lib/params');
 const CSV = require('../lib/CSV');
 
 async function getPersonal(req) {
-
     const DEFMAX = 40;
     const k =  req.params.publicKey;
     if(_.size(k) < 30)
@@ -23,12 +22,10 @@ async function getPersonal(req) {
         skip,
         when: moment().toISOString()
     }
-    debug("yep!! %s", JSON.stringify(data, undefined, 2));
     return { json: data };
 };
 
 async function getPersonalCSV(req) {
-
     const CSV_MAX_SIZE = 1000;
     const k =  req.params.publicKey;
     if(_.size(k) < 30)
@@ -53,7 +50,6 @@ async function getPersonalCSV(req) {
 };
 
 async function getPersonalRelated(req) {
-
     const DEFMAX = 40;
     const k =  req.params.publicKey;
     if(_.size(k) < 30)
@@ -89,21 +85,23 @@ async function getPersonalRelated(req) {
     };
 };
 
-async function getEvidence(req) {
-    /* this function should accept more than one selector. At the moment, takes only videoId,
-     * this function is meant to query the DB using a supporter-publickey, and check if the supporter
-     * has an evidence */
-
+async function getEvidences(req) {
+    /* this function is quite generic and flexible. allow an user to query their 
+     * own evidences and allow specification of which is the field to be queried.
+     * It is used in our interface with 'id' */
     const k =  req.params.publicKey;
     if(_.size(k) < 30)
         return { json: { "message": "Invalid publicKey", "error": true }};
 
-    const targetId = req.params.videoId;
+    const allowFields = ['tagId', 'id', 'videoId'];
+    const targetKey = req.params.key;
+    const targetValue = req.params.value;
 
-    debug("evidenceGet looking for %d matching %s", _.size(matches), targetId);
-    const matches = await automo.getVideoIdByPublicKey(k, targetId);
+    if(allowFields.indexOf(targetKey) == -1)
+        return { json: { "message": `Key ${targetKey} not allowed (${allowFields})`, error: true }};
 
-    debug("evidenceGet found %d matching %s", _.size(matches), targetId);
+    const matches = await automo.getVideosByPublicKey(k, _.set({}, targetKey, targetValue));
+    debug("getEvidences with flexible filter found %d matches", _.size(matches));
     return { json: matches };
 };
 
@@ -113,9 +111,8 @@ async function removeEvidence(req) {
         return { json: { "message": "Invalid publicKey", "error": true }};
 
     const id = req.params.id;
-    debug("removeEv %s %s", k, id);
     const result = await automo.deleteEntry(k, id);
-    return { json: { success: true }};
+    return { json: { success: true, result }};
 };
 
 
@@ -123,6 +120,6 @@ module.exports = {
     getPersonal,
     getPersonalCSV,
     getPersonalRelated,
-    getEvidence,
+    getEvidences,
     removeEvidence,
 };
