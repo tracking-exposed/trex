@@ -162,20 +162,19 @@ app.get('/api/v2/statistics/:name/:unit/:amount', function(req, res) {
     return dispatchPromise('getStatistics', req, res);
 });
 
-/* profile customization */
+/* delete a group from your profile, create a new tagId */
 app.delete('/api/v2/profile/:pubicKey/tag/:tagId', (req, res) => {
     return dispatchPromise('removeTag', req, res);
 });
-
 app.post('/api/v2/profile/:pubicKey/tag', (req, res) => {
     return dispatchPromise("createTag", req, res);
 });
 
-app.get('/api/v2/profile/:pubicKey/tag', (req, res) => {
-    return dispatchPromise('get', req, res);
+/* update and current profile */
+app.get('/api/v2/profile/:publicKey/tag', (req, res) => {
+    return dispatchPromise('profileStatus', req, res);
 });
-
-app.post('/api/v2/profile/:pubicKey', (req, res) => {
+app.post('/api/v2/profile/:publicKey', (req, res) => {
     return dispatchPromise("updateProfile", req, res);
 });
 
