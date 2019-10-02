@@ -163,10 +163,10 @@ app.get('/api/v2/statistics/:name/:unit/:amount', function(req, res) {
 });
 
 /* delete a group from your profile, create a new tagId */
-app.delete('/api/v2/profile/:pubicKey/tag/:tagId', (req, res) => {
+app.delete('/api/v2/profile/:publicKey/tag/:tagId', (req, res) => {
     return dispatchPromise('removeTag', req, res);
 });
-app.post('/api/v2/profile/:pubicKey/tag', (req, res) => {
+app.post('/api/v2/profile/:publicKey/tag', (req, res) => {
     return dispatchPromise("createTag", req, res);
 });
 
