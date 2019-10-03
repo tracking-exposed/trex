@@ -25,14 +25,12 @@ async function getSummaryByPublicKey(publicKey, options) {
         nconf.get('schema').metadata, { watcher: supporter.p });
     await mongoc.close();
 
-    debug("%j", metadata[0])
     const fields = ['id','videoId', 'savingTime', 'title', 'author', 'relative' ];
-    const reduced = _.map(metadata, function(e) { 
+    const recent = _.map(metadata, function(e) { 
         e.relative = moment.duration( moment(e.savingTime) - moment() ).humanize() + " ago";
         return _.pick(e, fields);
     })
-    debug("%j", reduced[0])
-    return { supporter, reduced, total };
+    return { supporter, recent, total };
 }
 
 async function getMetadataByPublicKey(publicKey, options) {
