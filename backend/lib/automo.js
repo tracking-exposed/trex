@@ -12,7 +12,7 @@ const moment = require('moment');
 const mongo3 = require('./mongo3');
 
 async function getSummaryByPublicKey(publicKey, options) {
-    /* this function return the basic information necessary to compile the 
+    /* this function return the basic information necessary to compile the
        landing personal page */
     const mongoc = await mongo3.clientConnect({concurrency: 1});
 
@@ -25,8 +25,8 @@ async function getSummaryByPublicKey(publicKey, options) {
         nconf.get('schema').metadata, { watcher: supporter.p });
     await mongoc.close();
 
-    const fields = ['id','videoId', 'savingTime', 'title', 'author', 'relative' ];
-    const recent = _.map(metadata, function(e) { 
+    const fields = ['id','videoId', 'savingTime', 'title', 'authorName', 'relative', 'relatedN' ];
+    const recent = _.map(metadata, function(e) {
         e.relative = moment.duration( moment(e.savingTime) - moment() ).humanize() + " ago";
         return _.pick(e, fields);
     })
