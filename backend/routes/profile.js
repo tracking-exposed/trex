@@ -9,7 +9,7 @@ const supporters = require('../lib/supporters');
 
 /*
  * This function implement the RESTful interface:
-   routes is always /api/v2/profile/$publicKey/tag in regards of new group tagging 
+   routes is always /api/v2/profile/$publicKey/tag in regards of new group tagging
    routes /api/v2/profile/$publicKey POST is relative on upgrading your user profile */
 
 const tagKind = "this-is-hashed-with-pass+name-to-allow-only-ppls-with-password-to-query-the-id";
@@ -58,7 +58,7 @@ async function updateProfile(req) {
 async function createTag(req) {
     /* receive a new group, a password, and a flag private|public */
     const PASSWORD_MIN = 7;
-    const tag = req.body.tag 
+    const tag = req.body.tag
     const password = req.body.password
     const accessibility = req.body.public ? "public" : "private"
 

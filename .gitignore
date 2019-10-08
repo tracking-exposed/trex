@@ -6,23 +6,16 @@
 *.pid
 *.gz
 .idea
-*.sublime-project
-*.sublime-workspace
-*.sublime-workspace
 
 *.swp
 
-extension.zip
-
 .env
 
-build/*
-dist/*
-docs/*
+extension/build/*
+extension/dist/*
+extension/node_modules/*
+
 backend/htmls/*
 backend/dist/*
 backend/farfalla/*
-backend/_test_htmls/*
-
-node_modules/*
 backend/node_modules/*
