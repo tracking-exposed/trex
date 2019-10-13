@@ -112,9 +112,10 @@ async function deleteEntry(publicKey, id) {
     if(!supporter)
         throw new Error("publicKey do not match any user");
 
-    const result = await mongo3.deleteMany(mongoc, nconf.get('schema').videos, { id: id, p: supporter.p });
+    const video = await mongo3.deleteMany(mongoc, nconf.get('schema').videos, { id: id, p: supporter.p });
+    const metadata = await mongo3.deleteMany(mongoc, nconf.get('schema').metadata, { id: id });
     await mongoc.close();
-    return result;
+    return { video, metadata };
 };
 
 async function getRelatedByVideoId(videoId, options) {

@@ -1,13 +1,13 @@
 {
   "name": "youtube-trex-backend",
-  "version": "1.0.3",
-  "description": "youtube.tracking.exposed → backend data collector, to investigate personalization algorithms",
+  "version": "1.2.0",
+  "description": "youtube.tracking.exposed - backend data collector",
   "scripts": {
     "watch": "key=fuffa elastic=disabled nodemon DEBUG=lib:*,yttrex --config config/nodemon.json bin/server",
     "start": "elastic=disabled DEBUG=*,-lib:mongo node bin/server",
     "parserv": "elastic=disabled DEBUG=* node bin/parserv"
   },
-  "author": "Claudio Agosti <claudio@tracking.exposed>, https://github.com/tracking-exposed/yttrex/graphs/contributors",
+  "author": "Claudio Agosti <claudio@tracking.exposed> and https://github.com/tracking-exposed/yttrex/graphs/contributors",
   "license": "AGPL-3.0",
   "dependencies": {
     "bluebird": "^3.5.2",

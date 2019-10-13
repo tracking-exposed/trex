@@ -1,6 +1,14 @@
 The format is based on [Keep a Changelog](http://keepachangelog.com/) and this
 project adheres to [Semantic Versioning](http://semver.org/).
 
+## [1.2] - 2019-10-08
+### Added
+- Released new personal page
+- Released first result in page /results
+- Migrated to HUGO and new branding
+### Fixed
+- Removed any kind of comparison
+
 ## [1.1.5] - 2018-11-07
 ### Fixed
 - text
