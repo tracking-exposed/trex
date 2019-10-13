@@ -60,7 +60,7 @@ async function createTag(req) {
     const PASSWORD_MIN = 7;
     const tag = req.body.tag
     const password = req.body.password
-    const accessibility = req.body.public ? "public" : "private"
+    const accessibility = (req.body.accessibility == "public") ? "public" : "private";
 
     const k =  req.params.publicKey;
     if(_.size(k) < 30)
