@@ -9,7 +9,6 @@ const CSV = require('../lib/CSV');
 
 // in regards of last metadata and by videoId
 const PUBLIC_AMOUNT_ELEMS = 110;
-const LAST_AMOUNT = 20;
 const CACHE_SECONDS = 120;
 
 const cache = {
@@ -130,21 +129,102 @@ async function getVideoCSV(req) {
 };
 
 async function getByAuthor(req) {
+    /* this API do not return the standard format with videos and related inside,
+     * but a data ready for the visualization provided */
+
     const { amount, skip } = params.optionParsing(req.params.paging, PUBLIC_AMOUNT_ELEMS);
     debug("getByAuthor %s amount %d skip %d", req.params.query, amount, skip);
-    const byauthor = await automo.getMetadataByFilter({ authorName: req.params.query }, { amount, skip});
-    debug("getByAuthor returns %d", _.size(byauthor));
+    const authorStruct = await automo.getMetadataFromAuthor({ videoId: req.params.query }, { amount, skip});
+    debug("getByAuthor returns %d", _.size(authorStruct.content));
+
+    const authorName = authorStruct.authorName;
+    const authorSource = authorStruct.authorSource;
 
     const publicFields = ['id', 'title', 'savingTime', 'videoId',
         'linkinfo', 'viewInfo', 'related', 'authorName',
         'authorSource', 'publicationString' ];
 
-    const clean = _.map(byauthor, function(e) {
+    const clean = _.map(authorStruct.content, function(e) {
+        // id is anonymized in this way, and is still an useful unique id
         e.id = e['id'].substr(0, 20);
         return _.pick(e, publicFields)
     });
-    return { json: clean };
+
+    /* first step is separate the three categories and merge infos */
+    const sameAuthor = _.map(clean, function(video) {
+        return _.map(_.filter(video.related, { source: authorName }), function(r) {
+            return {
+                watchedTitle: video.title,
+                id: video.id + r.videoId,
+                savingTime: video.savingTime,
+                watchedVideoId: video.videoId,
+                relatedVideoId: r.videoId,
+                relatedTitle: r.title,
+            }
+        });
+    });
+
+    const foryou = _.map(clean, function(video) {
+        return _.map(_.filter(video.related, { foryou: true }), function(r) {
+            return {
+                watchedTitle: video.title,
+                id: video.id + r.videoId,
+                savingTime: video.savingTime,
+                watchedVideoId: video.videoId,
+                relatedVideoId: r.videoId,
+                relatedTitle: r.title,
+                relatedAuthorName: authorName,
+            }
+        });
+    })
+
+    const treasure = _.map(clean, function(video) {
+        debug("SA %d FY %d T %d (total %d)", 
+            _.size(_.filter(video.related, { source: authorName })),
+            _.size(_.filter(video.related, { foryou: true })),
+            _.size( _.reject( _.reject(video.related, { source: authorName }), { foryou: true })),
+            _.size(clean)
+        );
+        return _.map( _.reject( _.reject(video.related, { source: authorName }), { foryou: true }), function(r) { 
+            return {
+                id: video.id + r.videoId,
+                watchedTitle: video.title,
+                watchedVideoId: video.videoId,
+                savingTime: video.savingTime,
+                relatedVideoId: r.videoId,
+                relatedTitle: r.title,
+                relatedAuthorName: authorName,
+            }
+        });
+    })
+
+    /* second step to filter them by time (if needed) */
+    /* and filter the fields */
+
+    /* this step is group and count */
+    const csa = _.groupBy(_.flatten(sameAuthor), 'relatedVideoId');
+    const cfy = _.groupBy(_.flatten(foryou), 'relatedVideoId');
+    const ct = _.groupBy(_.flatten(treasure), 'relatedVideoId');
+
+    const reduced = {
+        sameAuthor: csa,
+        foryou: cfy,
+        treasure: ct,
+    };
+    debug("--> %j", reduced);
+    debug("Returining %d bytes instead of %d", 
+        _.size(JSON.stringify(reduced)),
+        _.size(JSON.stringify(authorStruct.content))
+    );
+
+    return { json: {
+        authorName,
+        authorSource,
+        content: reduced,
+        total: authorStruct.total,
+    }};
 };
+
 
 module.exports = {
     getLast,

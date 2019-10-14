@@ -25,7 +25,7 @@ async function getSummaryByPublicKey(publicKey, options) {
         nconf.get('schema').metadata, { watcher: supporter.p });
     await mongoc.close();
 
-    const fields = ['id','videoId', 'savingTime', 'title', 'authorName', 'relative', 'relatedN' ];
+    const fields = ['id','videoId', 'savingTime', 'title', 'authorName', 'authorSource', 'relative', 'relatedN' ];
     const recent = _.map(metadata, function(e) {
         e.relative = moment.duration( moment(e.savingTime) - moment() ).humanize() + " ago";
         return _.pick(e, fields);
@@ -57,6 +57,35 @@ async function getMetadataByFilter(filter, options) {
     await mongoc.close();
     return metadata;
 };
+
+async function getMetadataFromAuthor(filter, options) {
+    const mongoc = await mongo3.clientConnect({concurrency: 1});
+
+    debug("%j", filter);
+    const sourceVideo = await mongo3.readOne(mongoc,
+        nconf.get('schema').metadata, filter);
+
+    if(!sourceVideo.id)
+        throw new Error("Invalid videoId");
+
+    debug("%j", sourceVideo);
+
+    const videos = await mongo3.readLimit(mongoc,
+        nconf.get('schema').metadata, { authorSource: sourceVideo.authorSource}, 
+        { savingTime: -1 }, options.amount, options.skip);
+
+    const total = await mongo3.count(mongoc,
+        nconf.get('schema').metadata, { authorSource: sourceVideo.authorSource});
+
+    await mongoc.close();
+    return { 
+        content: videos,
+        total,
+        authorName: sourceVideo.authorName,
+        autherSource: sourceVideo.authorSource,
+    }
+};
+
 
 async function getRelatedByWatcher(publicKey, options) {
     const mongoc = await mongo3.clientConnect({concurrency: 1});
@@ -163,6 +192,7 @@ module.exports = {
 
     /* used by routes/public */
     getMetadataByFilter,
+    getMetadataFromAuthor,
 
     /* used by routes/rsync */
     getFirstVideos,
