@@ -138,7 +138,6 @@ async function getByAuthor(req) {
     debug("getByAuthor returns %d", _.size(authorStruct.content));
 
     const authorName = authorStruct.authorName;
-    const authorSource = authorStruct.authorSource;
 
     const publicFields = ['id', 'title', 'savingTime', 'videoId',
         'linkinfo', 'viewInfo', 'related', 'authorName',
@@ -176,10 +175,10 @@ async function getByAuthor(req) {
                 relatedAuthorName: authorName,
             }
         });
-    })
+    });
 
     const treasure = _.map(clean, function(video) {
-        debug("SA %d FY %d T %d (total %d)", 
+        debug("byAuthor quick check ø SA %d FY %d T %d (total %d)", 
             _.size(_.filter(video.related, { source: authorName })),
             _.size(_.filter(video.related, { foryou: true })),
             _.size( _.reject( _.reject(video.related, { source: authorName }), { foryou: true })),
@@ -211,16 +210,19 @@ async function getByAuthor(req) {
         foryou: cfy,
         treasure: ct,
     };
-    debug("--> %j", reduced);
-    debug("Returining %d bytes instead of %d", 
+
+    debug("byAuthor [%s], %d evidences, returning %d bytes instead of %d", 
+        authorName,
+        _.size(authorStruct.content),
         _.size(JSON.stringify(reduced)),
         _.size(JSON.stringify(authorStruct.content))
     );
 
     return { json: {
         authorName,
-        authorSource,
         content: reduced,
+        authorSource: authorStruct.authorSource,
+        paging: authorStruct.paging,
         total: authorStruct.total,
     }};
 };

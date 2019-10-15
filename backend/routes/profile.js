@@ -7,9 +7,8 @@ const mongo3 = require('../lib/mongo3');
 const utils = require('../lib/utils');
 const supporters = require('../lib/supporters');
 
-/*
- * This function implement the RESTful interface:
-   routes is always /api/v2/profile/$publicKey/tag in regards of new group tagging
+/* This function implement the RESTful interface:
+   routes is always /api/v2/profile/$publicKey/tag in regards of new group tagging 
    routes /api/v2/profile/$publicKey POST is relative on upgrading your user profile */
 
 const tagKind = "this-is-hashed-with-pass+name-to-allow-only-ppls-with-password-to-query-the-id";
@@ -28,7 +27,6 @@ async function updateTagInProfile(group, k) {
 }
 
 /* THE API implementation starts here */
-
 async function updateProfile(req) {
     const k =  req.params.publicKey;
     if(_.size(k) < 30)

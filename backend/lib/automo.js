@@ -61,14 +61,11 @@ async function getMetadataByFilter(filter, options) {
 async function getMetadataFromAuthor(filter, options) {
     const mongoc = await mongo3.clientConnect({concurrency: 1});
 
-    debug("%j", filter);
     const sourceVideo = await mongo3.readOne(mongoc,
         nconf.get('schema').metadata, filter);
 
     if(!sourceVideo.id)
         throw new Error("Invalid videoId");
-
-    debug("%j", sourceVideo);
 
     const videos = await mongo3.readLimit(mongoc,
         nconf.get('schema').metadata, { authorSource: sourceVideo.authorSource}, 
@@ -81,11 +78,11 @@ async function getMetadataFromAuthor(filter, options) {
     return { 
         content: videos,
         total,
+        pagination: options,
         authorName: sourceVideo.authorName,
-        autherSource: sourceVideo.authorSource,
+        authorSource: sourceVideo.authorSource,
     }
 };
-
 
 async function getRelatedByWatcher(publicKey, options) {
     const mongoc = await mongo3.clientConnect({concurrency: 1});
