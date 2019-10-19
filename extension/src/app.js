@@ -57,8 +57,7 @@ function boot () {
         }
     } else if(_.endsWith(window.location.origin, 'youtube.com')) {
         // this get executed only on youtube.com
-        console.log(`yttrex version ${config.VERSION} build ${config.BUILD} loading; Config object:`);
-        console.log(config);
+        console.log(`yttrex version ${config.VERSION} ${config}`);
 
         // status update messages appearing on the right bottom
         // visibile when the recording is triggered.
@@ -78,6 +77,7 @@ function boot () {
         });
     } else if(_.startsWith(window.location.origin, 'localhost')) {
         console.log("localhost: ignored condition");
+        return null;
     }
 }
 
@@ -127,7 +127,7 @@ function videoSeen(path) {
     $("#video-seen").css('background-color', 'green');
     $("#video-seen").css('cursor', 'cell');
     $("#video-seen").click(function() {
-        if( testElement($('ytd-app'), 'ytd-app') ) {
+        if( testElement($('ytd-app').html(), 'ytd-app') ) {
             phase('video.send');
         }
     })
@@ -207,14 +207,15 @@ function hrefUpdateMonitor() {
         // also, here is cleaned the cache declared below
         if(diff) {
             console.log("Location shift spotted!", lastVideoURL, window.location.href);
+            phase('video.seen');
             cache = [];
             refreshUUID();
         }
 
-        // if the loader is going, is debugged but not reported, or the 
-        // HTML and URL mismatch 
+        // if the loader is going, is debugged but not reported,
+        // or the HTML and URL mismatch 
         if( diff && $("#progress").is(':visible') ) {
-            console.log(`Loading in progress for ${window.location.href} after ${lastVideoURL}, waiting again...`);
+            console.log(`Waiting loading complete for ${window.location.href}...`);
             return false;
         }
         lastVideoURL = window.location.href;
@@ -223,12 +224,11 @@ function hrefUpdateMonitor() {
 
     window.setInterval(function() {
         if(changeHappen()) {
-            phase('video.seen');
             document
                 .querySelectorAll(YT_VIDEOTITLE_SELECTOR)
                 .forEach(function() {
                     console.log("Video Selector match in ", window.location.href,", sending", _.size($('ytd-app').html()));
-                    if( testElement($('ytd-app'), 'ytd-app') )
+                    if( testElement($('ytd-app').html(), 'ytd-app') )
                         phase('video.send');
                 });
         }
@@ -236,8 +236,8 @@ function hrefUpdateMonitor() {
 }
 
 let cache = [];
-function testElement(elem, selector) {
-    const s = _.size(elem.outerHTML);
+function testElement(nodeHTML, selector) {
+    const s = _.size(nodeHTML);
     const exists = _.reduce(cache, function(memo, e, i) {
         const evalu = _.eq(e, s);
         /* console.log(memo, s, e, evalu, i); */
@@ -256,8 +256,13 @@ function testElement(elem, selector) {
 
     cache.push(s);
 
+    if(!randomUUID) {
+        refreshUUID();
+        console.log("forced first randomUUID", randomUUID);
+    }
+
     hub.event('newVideo', {
-        element: elem.outerHTML,
+        element: nodeHTML,
         href: window.location.href,
         when: Date(),
         selector,
@@ -293,7 +298,7 @@ function adMonitor() {
         document
             .querySelectorAll(titleTop)
             .forEach(function(element) {
-                if(testElement(element, titleTop))
+                if(testElement(element.outerHTML, titleTop))
                     phase('adv.seen');
             });
 
@@ -301,7 +306,7 @@ function adMonitor() {
         document
             .querySelectorAll(adbelow)
             .forEach(function(element) {
-                if(testElement(element, adbelow))
+                if(testElement(element.outerHTML, adbelow))
                     phase('adv.seen');
             });
 
@@ -309,7 +314,7 @@ function adMonitor() {
         document
             .querySelectorAll(middleBanner)
             .forEach(function(element) {
-                if(testElement(element, middleBanner))
+                if(testElement(element.outerHTML, middleBanner))
                     phase('adv.seen');
             });
 
@@ -334,6 +339,10 @@ function refreshUUID() {
             console.log("-> It is less then", REFERENCE, timed.asSeconds());
         }
     };
+    if(!lastCheck && !randomUUID) {
+        randomUUID = Math.random().toString(36).substring(2, 15) +
+            Math.random().toString(36).substring(2, 15);
+    }
     lastCheck = moment();
 }
 

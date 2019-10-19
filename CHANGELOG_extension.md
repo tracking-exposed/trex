@@ -3,7 +3,9 @@ project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [1.2.1] - 2019-10-19
 ### Added
-- random identifier to recognize same video even when duplicated
+- Random identifier to recognize same video even when duplicated
+### Fixed
+- testElement awaits HTML as parameter
 
 ## [1.2.0] - 2019-10-19
 ### Fixed 
@@ -13,11 +15,11 @@ project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [1.1.6] - 2019-01-08
 ### Removed
-- removed the build process is not anymore working only in git repos
+- Removed the build process is not anymore working only in git repos
 
 ## [1.1.5] - 2018-11-07
 ### Removed
-- uglify and minify, I'm tired of Mozilla rejecting the pkg
+- Uglify and minify, I'm tired of Mozilla rejecting the pkg
 
 ## [1.1.4] - 2018-11-06
 ### Removed

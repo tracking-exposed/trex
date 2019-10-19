@@ -14,7 +14,7 @@ const WebpackNotifierPlugin = require('webpack-notifier');
 
 require('dotenv').load({ silent: true });
 
-const LAST_VERSION = 1;
+const LAST_VERSION = 2;
 const packageJSON = require('./package.json');
 const NODE_ENV = process.env.NODE_ENV || 'development';
 const PRODUCTION = NODE_ENV === 'production';
@@ -45,7 +45,7 @@ const DEFINITIONS = {
         API_ROOT: JSON.stringify(ENV_DEP_SERVER + '/api/v' + LAST_VERSION + '/'),
         WEB_ROOT: JSON.stringify(ENV_DEP_WEB),
         VERSION: JSON.stringify(packageJSON.version + (DEVELOPMENT ? '-dev' : '')),
-        BUILD: JSON.stringify({}), // BUILD),
+        BUILD: "",
         FLUSH_INTERVAL: JSON.stringify(DEVELOPMENT ? 10000 : 20000)
     }
 };
