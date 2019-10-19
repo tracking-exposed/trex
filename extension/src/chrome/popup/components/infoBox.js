@@ -13,16 +13,12 @@ const cardStyle = {
 const InfoBox = React.createClass({
 
     render () {
-        const personalLink = config.WEB_ROOT + '/personal/' + this.props.publicKey;
-        const researchLink = config.WEB_ROOT + '/research/' + this.props.publicKey;
+        const personalLink = config.WEB_ROOT + '/personal/#' + this.props.publicKey;
 
         return (
             <Card style={cardStyle}>
                 <a target='_blank' href={personalLink}>
                     <img style={imgstyle} src='/yttrex-logo.png' />
-                </a>
-                <a target='_blank' href={researchLink}>
-                    <span>or, join a research group</span>
                 </a>
             </Card>
         );

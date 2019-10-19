@@ -1,24 +1,24 @@
 {
-    'presets': ['react', 'es2015'],
-    'plugins': [
-        'transform-object-assign',
-        'transform-object-rest-spread',
-        'transform-react-display-name',
-        [ 'transform-runtime', {
-            'polyfill': false,
-            'regenerator': false
+    "presets": ["react", "es2015"],
+    "plugins": [
+        "transform-object-assign",
+        "transform-object-rest-spread",
+        "transform-react-display-name",
+        [ "transform-runtime", {
+            "polyfill": false,
+            "regenerator": false
         } ]
     ],
-    'sourceMaps': true
+    "sourceMaps": true
 
     /*,
-    'env': {
-        'demo': {
-            'plugins': [
-                [ 'react-transform', {
-                    'transforms': [{
-                        'imports': ['react'],
-                        'locals': ['module']
+    "env": {
+        "demo": {
+            "plugins": [
+                [ "react-transform", {
+                    "transforms": [{
+                        "imports": ["react"],
+                        "locals": ["module"]
                     }]
                 } ]
             ]

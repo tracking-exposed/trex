@@ -25,14 +25,7 @@
 
 // # Code
 
-// Import the react toolkit.
-// Seems like importing 'react-dom' is not enough, we need to import 'react' as well.
-import React from 'react';
-import ReactDOM from 'react-dom';
-import ReactDOMServer from 'react-dom/server';
-
 // Import other utils to handle the DOM and scrape data.
-import uuid from 'uuid';
 import $ from 'jquery';
 import _ from 'lodash';
 
@@ -83,9 +76,14 @@ function boot () {
         // Lookup the current user and decide what to do.
         localLookup(response => {
             // `response` contains the user's public key and its status,
+            // hrefUpdateMonitor();
+            keepChecking();
+            console.log("hrefUpdate");
             hrefUpdateMonitor();
             flush();
         });
+    } else if(_.startsWith(window.location.origin, 'localhost')) {
+        console.log("localhost: ignored condition");
     }
 }
 
@@ -102,27 +100,118 @@ function createLoadiv() {
     div.setAttribute('id', 'loadiv');
     document.body.appendChild(div);
 
-    var img = document.createElement('img');
-    img.setAttribute('src', getLogoDataURI());
-    div.appendChild(img);
+//    div.appendChild(getLogoDataURI());
 
-    console.log("Created loading div");
-    // $("#loadiv").toggle();
+    console.log("Created logo div");
+    $("#loadiv").show();
 };
 
-var last = null;
+const phases = {
+    'adv': {'seen': advSeen },
+    'video': {'seen': videoSeen, 'wait': videoWait, 'send': videoSend},
+    'counters' : {
+        'adv': { seen: 0 },
+        'video': { seen: 0, wait: 0, send: 0}
+    }
+}
 
+function videoWait(path) {
+    buildSpan({
+        path,
+        position: 1,
+        text: 'video wait',
+        duration: 400,
+    });
+}
+function videoSeen(path) {
+    buildSpan({
+        path,
+        position: 2,
+        text: 'video seen',
+        duration: 7500,
+    });
+    $("#video-seen").css('background-color', 'green');
+    $("#video-seen").css('cursor', 'cell');
+    $("#video-seen").click(function() {
+        if( testElement($('ytd-app'), 'ytd-app') ) {
+            phase('video.send');
+        }
+    })
+}
+function videoSend(path) {
+    buildSpan({
+        path,
+        position: 3,
+        text: 'video send',
+        duration: 400,
+    });
+    $("#video-seen").css('background-color', 'red');
+    $("#video-seen").css('color', 'white');
+}
+function advSeen(path) {
+    buildSpan({
+        path,
+        position: 4,
+        text: 'seen adv',
+        duration: 400,
+    });
+};
+
+function buildSpan(c) {
+    var cnt = _.get(phases.counters, c.path);
+    cnt +=1;
+    var id = _.replace(c.path, /\./, '-');
+    _.set(phases.counters, c.path, cnt);
+
+    var infospan = null;
+    var fullt = `${cnt} ▣ ${c.text}`;
+    if(cnt == 1) {
+        console.log("+ building span for the first time", c, cnt);
+        infospan = document.createElement('span');
+        infospan.setAttribute('id', id);
+        infospan.style.position = 'fixed';
+        infospan.style.width = '80px';
+        infospan.style.height = '10px';
+        infospan.style.right = '5px';
+        infospan.style.color = 'lightgoldenrodyellow';
+        infospan.style.bottom = (c.position * 16) + 'px';
+        infospan.style.size = '0.7em';
+        infospan.style.padding = '2px';
+        infospan.style['border-radius'] = '10px';
+        infospan.style.background = '#707ddad1';
+        infospan.textContent = fullt;
+        document.body.appendChild(infospan);
+        /* change infospan in jquery so no proble in apply .fadeOut */
+        infospan = $("#" + id);
+    } else {
+        infospan = $("#" + id);
+        infospan.text(fullt);
+    }
+
+    $("#loadiv").show();
+    infospan.css('display', 'flex');
+    infospan.fadeOut({ duration: c.duration});
+}
+
+function phase(path) {
+    const f = _.get(phases, path);
+    f(path);
+}
+
+var lastVideo = null;
 function hrefUpdateMonitor() {
 
     function changeHappen() {
-        let diff = (window.location.href !== last);
+
+        // phase('video.wait');
+        let diff = (window.location.href != lastVideo);
         // if the loader is going, is debugged but not reported, or the 
         // HTML and URL mismatch 
         if( diff && $("#progress").is(':visible') ) {
-            console.log(`Loading in progress for ${window.location.href} after ${last}, waiting again...`);
+            console.log(`Loading in progress for ${window.location.href} after ${lastVideo}, waiting again...`);
             return false;
         }
-        last = window.location.href;
+        lastVideo = window.location.href;
         return diff;
     }
     const periodicTimeout = 5000;
@@ -130,24 +219,98 @@ function hrefUpdateMonitor() {
 
     window.setInterval(function() {
         if(changeHappen()) {
-            $("#loadiv").toggle();
-            document.querySelectorAll(YT_VIDEOTITLE_SELECTOR).forEach(acquireVideo);
+
+            phase('video.seen');
+            document
+                .querySelectorAll(YT_VIDEOTITLE_SELECTOR)
+                .forEach(function() {
+                    console.log("Video Selector match in ", window.location.href,", sending", _.size($('ytd-app').html()));
+                    if( testElement($('ytd-app'), 'ytd-app') )
+                        phase('video.send');
+                });
 
             window.setTimeout(function() {
-                $("#loadiv").hide();
+                phase('video.send')
             }, iconDuration);
-
         }
     }, periodicTimeout);
 }
 
-function acquireVideo (elem) {
-    /* there is not yet a client-side URL check, but this event get triggered only when a 
-     * new 'video Title' appear */
-    console.log(`acquireVideo: ${window.location.href}`);
+let cache = [];
+let last = null;
+function testElement(elem, selector) {
 
-    /* the <ytd-app> represent the whole webapp root element */
-    hub.event('newVideo', { element: $('ytd-app').html(), href: window.location.href });
+    const s = _.size(elem.outerHTML);
+
+    const exists = _.reduce(cache, function(memo, e, i) {
+        const evalu = _.eq(e, s);
+        /* console.log(memo, s, e, evalu, i); */
+        if(!memo)
+            if(evalu)
+                memo = true;
+
+        return memo;
+    }, false);
+
+    if(exists)
+        return false;
+
+    cache.push(s);
+
+    hub.event('newVideo', {
+        element: elem.outerHTML,
+        href: window.location.href,
+        when: Date(),
+        selector,
+        size: s,
+    });
+    console.log("->",
+        _.size(cache),
+        "new element sent as newVideo",
+        Date(),
+        s,
+        cache,
+    );
+
+    let diff = (window.location.href != last);
+    if(diff) {
+        console.log(`new location found, ${last} ${window.location.href} cache cleaning ${_.size(cache)}`
+        );
+        last = window.location.href;
+        cache = [];
+    }
+    return true;
+}
+
+function keepChecking() {
+
+    window.setInterval(function() {
+
+        let titleTop = ".ytp-title-channel";
+        document
+            .querySelectorAll(titleTop)
+            .forEach(function(element) {
+                if(testElement(element, titleTop))
+                    phase('adv.seen');
+            });
+
+        let adbelow = ".ytp-ad-player-overlay-instream-info";
+        document
+            .querySelectorAll(adbelow)
+            .forEach(function(element) {
+                if(testElement(element, adbelow))
+                    phase('adv.seen');
+            });
+
+        let middleBanner = ".video-ads.ytp-ad-module";
+        document
+            .querySelectorAll(middleBanner)
+            .forEach(function(element) {
+                if(testElement(element, middleBanner))
+                    phase('adv.seen');
+            });
+
+    }, 10000);
 }
 
 // The function `localLookup` communicates with the **action pages**

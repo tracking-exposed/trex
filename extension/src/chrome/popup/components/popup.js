@@ -13,11 +13,11 @@ const Popup = React.createClass({
             <div style={styles}>
                 <p>You are partecipating in 
                     <span> </span>
-                    <a href='https://youtube.tracking.exposed'>ytTREX</a>,
+                    <a href='https://tracking.exposed'>Tracking Exposed</a> 
                     <span> </span>
-                    <a href='https://tracking.exposed'>manifesto</a>,
+                    — 
                     <span> </span>
-                    access to your collected data:
+                    access to your data:
                 </p>
                 <InfoBox {...this.props} />
             </div>

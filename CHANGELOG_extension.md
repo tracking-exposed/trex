@@ -1,6 +1,12 @@
 The format is based on [Keep a Changelog](http://keepachangelog.com/) and this
 project adheres to [Semantic Versioning](http://semver.org/).
 
+## [1.2.0] - 2019-10-19
+### Fixed 
+- Url in popup, restored 
+- Visual feedback on acquiring content
+- Acquired advertising elements
+
 ## [1.1.6] - 2019-01-08
 ### Removed
 - removed the build process is not anymore working only in git repos

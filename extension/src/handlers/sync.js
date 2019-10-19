@@ -12,10 +12,11 @@ var state = {
 function handleVideo (type, e) {
     state.videos.push({
         element: e.element,
-        tagId: config.settings.tagId,
         href: e.href,
         incremental: state.incremental,
-        clientTime: getTimeISO8601()
+        clientTime: getTimeISO8601(),
+        selector: e.selector,
+        size: e.size,
     });
     state.incremental++;
 }
