@@ -17,6 +17,7 @@ function handleVideo (type, e) {
         clientTime: getTimeISO8601(),
         selector: e.selector,
         size: e.size,
+        randomUUID: e.randomUUID,
     });
     state.incremental++;
 }

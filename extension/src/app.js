@@ -28,6 +28,7 @@
 // Import other utils to handle the DOM and scrape data.
 import $ from 'jquery';
 import _ from 'lodash';
+import moment from 'moment';
 
 import config from './config';
 import hub from './hub';
@@ -40,6 +41,9 @@ const YT_VIDEOTITLE_SELECTOR = 'h1.title';
 // bo is the browser object, in chrome is named 'chrome', in firefox is 'browser'
 const bo = chrome || browser;
 
+// variable used to spot differences due to refresh and url change
+let randomUUID = null;
+
 // Boot the user script. This is the first function called.
 // Everything starts from here.
 function boot () {
@@ -48,24 +52,16 @@ function boot () {
         if(_.isUndefined($("#extension--parsable").html())) {
             return null;
         } else {
-            $(".extension-missing").hide();
-            /* this call the API `handshake`, which state a commitment of playing the videos
-             * on the list, in this way, the result can be linked together */
-            return remoteLookup(response => {
-                console.log("remoteLookup answer with:", response);
-                var pseudoName = JSON.parse(response.response).p;
-                pseudonym.set(pseudoName);
-                $("#userName").text(pseudonym.get());
-                $(".extension-present").show();
-            });
+            // $(".extension-missing").hide();
+            return null;
         }
     } else if(_.endsWith(window.location.origin, 'youtube.com')) {
         // this get executed only on youtube.com
         console.log(`yttrex version ${config.VERSION} build ${config.BUILD} loading; Config object:`);
         console.log(config);
 
-        // is an hidden div, created on youtube.com domain,
-        // visibile when the recording is triggered
+        // status update messages appearing on the right bottom
+        // visibile when the recording is triggered.
         createLoadiv();
 
         // Register all the event handlers.
@@ -76,9 +72,7 @@ function boot () {
         // Lookup the current user and decide what to do.
         localLookup(response => {
             // `response` contains the user's public key and its status,
-            // hrefUpdateMonitor();
-            keepChecking();
-            console.log("hrefUpdate");
+            adMonitor();
             hrefUpdateMonitor();
             flush();
         });
@@ -198,28 +192,37 @@ function phase(path) {
     f(path);
 }
 
-var lastVideo = null;
+const periodicTimeout = 1000;
+var lastVideoURL = null;
 function hrefUpdateMonitor() {
 
     function changeHappen() {
 
         // phase('video.wait');
-        let diff = (window.location.href != lastVideo);
+        let diff = (window.location.href != lastVideoURL);
+
+        // client might duplicate the sending of the same 
+        // video. using a random identifier, we spot the 
+        // clones and drop them server side.
+        // also, here is cleaned the cache declared below
+        if(diff) {
+            console.log("Location shift spotted!", lastVideoURL, window.location.href);
+            cache = [];
+            refreshUUID();
+        }
+
         // if the loader is going, is debugged but not reported, or the 
         // HTML and URL mismatch 
         if( diff && $("#progress").is(':visible') ) {
-            console.log(`Loading in progress for ${window.location.href} after ${lastVideo}, waiting again...`);
+            console.log(`Loading in progress for ${window.location.href} after ${lastVideoURL}, waiting again...`);
             return false;
         }
-        lastVideo = window.location.href;
+        lastVideoURL = window.location.href;
         return diff;
     }
-    const periodicTimeout = 5000;
-    const iconDuration = 1200;
 
     window.setInterval(function() {
         if(changeHappen()) {
-
             phase('video.seen');
             document
                 .querySelectorAll(YT_VIDEOTITLE_SELECTOR)
@@ -228,20 +231,13 @@ function hrefUpdateMonitor() {
                     if( testElement($('ytd-app'), 'ytd-app') )
                         phase('video.send');
                 });
-
-            window.setTimeout(function() {
-                phase('video.send')
-            }, iconDuration);
         }
     }, periodicTimeout);
 }
 
 let cache = [];
-let last = null;
 function testElement(elem, selector) {
-
     const s = _.size(elem.outerHTML);
-
     const exists = _.reduce(cache, function(memo, e, i) {
         const evalu = _.eq(e, s);
         /* console.log(memo, s, e, evalu, i); */
@@ -255,6 +251,9 @@ function testElement(elem, selector) {
     if(exists)
         return false;
 
+    if(!s)
+        return false;
+
     cache.push(s);
 
     hub.event('newVideo', {
@@ -263,27 +262,31 @@ function testElement(elem, selector) {
         when: Date(),
         selector,
         size: s,
+        randomUUID,
     });
     console.log("->",
         _.size(cache),
-        "new element sent as newVideo",
-        Date(),
-        s,
+        "new element sent, selector", selector,
+        Date(), "size", s,
         cache,
     );
-
-    let diff = (window.location.href != last);
-    if(diff) {
-        console.log(`new location found, ${last} ${window.location.href} cache cleaning ${_.size(cache)}`
-        );
-        last = window.location.href;
-        cache = [];
-    }
     return true;
 }
 
-function keepChecking() {
-
+function adMonitor() {
+    /* 
+     * Dear code reader, if you turn out to be a Google employee, 
+     * you can beat us like a piece of cake just changing the
+     * css selector below. or, put bogus content into the title
+     * channel, for example. 
+     * 
+     * even worst, you can add a css rule for #ads-seen with 
+     * !important and ruin the experience to every chrome 
+     * supporter.
+     * 
+     * I mean. really? don't be evil. this is a way to empower
+     * people in understanding algorithm society. COME ON!
+     */
     window.setInterval(function() {
 
         let titleTop = ".ytp-title-channel";
@@ -310,7 +313,28 @@ function keepChecking() {
                     phase('adv.seen');
             });
 
-    }, 10000);
+    }, periodicTimeout);
+}
+
+var lastCheck = null;
+function refreshUUID() {
+    const REFERENCE = 3;
+    if(lastCheck && lastCheck.isValid && lastCheck.isValid()) {
+        var timed = moment.duration( moment() - lastCheck);
+        if(timed.asSeconds() > REFERENCE) {
+            console.log("-> It is more then", REFERENCE, timed.asSeconds());
+
+            // here is an example of a non secure random generation 
+            // but doesn't matter because the query on the server is 
+            // made by userId, same videoId, and last 60 minutes. 
+            randomUUID = Math.random().toString(36).substring(2, 15) +
+                Math.random().toString(36).substring(2, 15);
+            console.log("Refreshed randomUUID", randomUUID);
+        } else  {
+            console.log("-> It is less then", REFERENCE, timed.asSeconds());
+        }
+    };
+    lastCheck = moment();
 }
 
 // The function `localLookup` communicates with the **action pages**

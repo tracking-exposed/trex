@@ -1,9 +1,13 @@
 The format is based on [Keep a Changelog](http://keepachangelog.com/) and this
 project adheres to [Semantic Versioning](http://semver.org/).
 
+## [1.2.1] - 2019-10-19
+### Added
+- random identifier to recognize same video even when duplicated
+
 ## [1.2.0] - 2019-10-19
 ### Fixed 
-- Url in popup, restored 
+- Restored the personal URL, in the popup
 - Visual feedback on acquiring content
 - Acquired advertising elements
 
