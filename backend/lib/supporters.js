@@ -7,7 +7,8 @@ const mongo3 = require('./mongo3');
 const params = require('./params');
 
 async function update(publicKey, updated) {
-  // this function is used by routes/tags.js and might be used every time we should update the
+  // this function is used by routes/tags.js and might be 
+  // used every time we should update the supporter profile
     const mongoc = await mongo3.clientConnect({concurrency: 1});
 
     const exists = await mongo3.readOne(mongoc, nconf.get('schema').supporters, { publicKey });
@@ -17,6 +18,7 @@ async function update(publicKey, updated) {
     if(updated.publicKey != publicKey)
         throw new Error("publicKey can't be updated");
 
+    updated.lastActivity = new Date();
     const r = await mongo3.updateOne(mongoc, nconf.get('schema').supporters, { publicKey }, updated);
 
     if(!(r.result && r.result.ok)) {

@@ -1,6 +1,6 @@
 {
   "name": "youtube-trex-backend",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "description": "youtube.tracking.exposed - backend data collector",
   "scripts": {
     "watch": "key=fuffa elastic=disabled nodemon DEBUG=lib:*,yttrex --config config/nodemon.json bin/server",

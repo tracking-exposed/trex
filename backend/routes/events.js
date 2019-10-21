@@ -3,6 +3,7 @@ var moment = require('moment');
 var Promise = require('bluebird');
 var debug = require('debug')('lib:events');
 var os = require('os');
+
 var fs = Promise.promisifyAll(require('fs'));
 var path = require('path');
 var nconf = require('nconf');
@@ -10,14 +11,10 @@ var nconf = require('nconf');
 var signer = require('nacl-signature');
 var bs58 = require('bs58');
 
+const automo = require('../lib/automo');
 var mongo = require('../lib/mongo');
 var utils = require('../lib/utils');
 var security = require('../lib/security');
-
-
-function hasError(retDict) {
-    return (!_.isUndefined(_.get(retDict, 'error')));
-};
 
 function processHeaders(received, required) {
     var ret = {};
@@ -103,6 +100,9 @@ function getMirror(req) {
     return { json: { content: null } };
 }
 function appendLast(req) {
+    /* this is used by getMirror, to mirror what the server is getting
+     * used by developers with password,
+     ---- TODO should be personalized and logged */
     const MAX_STORED_CONTENT = 10;
     if(!last) last = [];
     if(_.size(last) > MAX_STORED_CONTENT) 
@@ -111,18 +111,96 @@ function appendLast(req) {
     last.push(_.pick(req, ['headers', 'body']));
 };
 
+function headerError(headers) {
+    debug("Error detected: %s", headers.error);
+    return { 'json': {
+        'status': 'error',
+        'info': headers.error
+    }};
+}
+
+async function processEvents2(req) {
+
+    const headers = processHeaders(_.get(req, 'headers'), hdrs);
+
+    if(headers.error)
+        return headerError(headers);
+
+    if (!utils.verifyRequestSignature(req)) {
+        debug("Verification fail (signature %s)", headers.signature);
+        return { json: {
+            status: 'error',
+            info: 'Signature does not match request body' }};
+    }
+
+    const supporter = await automo.tofu(headers.publickey, headers.version);
+
+    // this is necessary for the mirror functionality
+    appendLast(req);
+
+    const htmls = _.map(req.body, function(body, i) {
+        const id = utils.hash({
+            publicKey: headers.publickey,
+            size: _.size(body.element),
+            randomUUID: body.randomUUID,
+            i,
+        });
+        const isVideo = body.href.match(/v=/) ? true : false;
+
+        if(isVideo) {
+            let videoId = _
+                .replace(body.href, /.*v=/, '')
+                .replace(/\?.*/, '')
+                .replace(/\&.*/,'');
+
+            // debug("videoId not used! %s", videoId);
+            if(body.href.match(/\?/)) {
+                debugger;
+            }
+        }
+
+        const html = {
+            id,
+            href: body.href,
+            publicKey: headers.publickey,
+            randomUUID: body.randomUUID,
+            clientTime: new Date(body.clientTime),
+            savingTime: new Date(),
+            html: body.element,
+            size: _.size(body.element),
+            isVideo,
+            selector: body.selector,
+            incremental: body.incremental,
+            package: i,
+        }
+        return html;
+    });
+
+    const check = await automo.write(nconf.get('schema').htmls, htmls);
+    if(check.error) {
+        debug("Error in saving %d htmls? %j", _.size(htmls), check);
+        return { json: {status: "error", info: check.info }};
+    }
+
+    const info = _.map(htmls, function(e) {
+        return [ e.package, e.size, e.selector];
+    })
+    debug("%s: %s", supporter.p, JSON.stringify(info));
+
+    /* this is what returns to the web-extension */
+    return { json: {
+        status: "OK",
+        supporter: supporter,
+        results: check
+    }};
+};
 
 function processEvents(req) {
 
     var headers = processHeaders(_.get(req, 'headers'), hdrs);
 
-    if(hasError(headers)) {
-        debug("Error detected: %s", headers.error);
-        return { 'json': {
-            'status': 'error',
-            'info': headers.error
-        }};
-    }
+    if(headers.error)
+        return headerError(headers);
 
     return mongo
         .read(nconf.get('schema').supporters, {
@@ -204,6 +282,7 @@ function TOFU(pubkey) {
 
 module.exports = {
     processEvents: processEvents,
+    processEvents2,
     saveVideo,
     getMirror,
     hdrs: hdrs,

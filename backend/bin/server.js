@@ -111,8 +111,11 @@ app.post('/api/v:version/validate', function(req, res) {
     return dispatchPromise('validateKey', req, res);
 });
 /* This to actually post the event collection */
-app.post('/api/v:version/events', function(req, res) {
+app.post('/api/v1/events', function(req, res) {
     return dispatchPromise('processEvents', req, res);
+});
+app.post('/api/v2/events', function(req, res) {
+    return dispatchPromise('processEvents2', req, res);
 });
 
 /* download your full CSV */

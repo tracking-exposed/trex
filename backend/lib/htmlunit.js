@@ -9,7 +9,7 @@ var mongo = require('./mongo');
 function unitById(req) {
     var htmlId = req.params.htmlId;
 
-    debug("unitById %s", htmlId);
+    debug("soon to be discontinued or support v2 htmls - unitById %s", htmlId);
 
     return mongo
         .read(nconf.get('schema').videos, {id: htmlId})

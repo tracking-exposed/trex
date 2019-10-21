@@ -23,7 +23,6 @@ var lastExecution = moment().subtract(backInTime, 'minutes').toISOString();
 console.log(`considering ${backInTime} minutes ago. Override the 10 minutes standard check. Starts since ${lastExecution}`);
 
 function getLastActive() {
-
     return mongo
         .read(nconf.get('schema').supporters, { lastActivity: {
             $gt: new Date(lastExecution) 

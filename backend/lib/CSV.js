@@ -7,8 +7,17 @@ function produceCSVv1(entries) {
 
     let produced = _.reduce(entries, function(memo, entry, cnt) {
         if(!memo.init) {
+            memo.expect = _.size(keys);
             memo.csv = _.trim(JSON.stringify(keys), '][') + "\n";
             memo.init = true;
+        }
+
+        if(_.size(_.keys) != memo.expect) {
+            debug("Invalid JSON input: expected %d keys, got %d",
+                memo.expect, _.size(keys));
+            console.log(memo.csv);
+            console.log(JSON.stringify(entry, undefined, 2));
+            throw new Error("Format error");
         }
 
         _.each(keys, function(k, i) {
@@ -17,6 +26,11 @@ function produceCSVv1(entries) {
                 memo.csv += moment(swap).toISOString();
             else if(_.isInteger(swap))
                 memo.csv += swap;
+            else if(k == 'related') {
+                debugger;
+                console.log(JSON.stringify(swap, undefined, 2))
+                console.log("related content!");
+            }
             else {
                 swap = _.replace(swap, /"/g, '〃');
                 swap = _.replace(swap, /'/g, '’');
@@ -28,7 +42,7 @@ function produceCSVv1(entries) {
         memo.csv += "\n";
         return memo;
 
-    }, { init: false, csv: "" });
+    }, { init: false, csv: "", expect: 0 });
     return produced.csv;
 };
 

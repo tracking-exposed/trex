@@ -9,6 +9,7 @@ const nconf = require('nconf');
 const debug = require('debug')('lib:automo');
 const moment = require('moment');
 
+const utils = require('../lib/utils');
 const mongo3 = require('./mongo3');
 
 async function getSummaryByPublicKey(publicKey, options) {
@@ -178,6 +179,58 @@ async function getRelatedByVideoId(videoId, options) {
     });
 }
 
+async function write(where, what) {
+    const mongoc = await mongo3.clientConnect({concurrency: 1});
+    await mongo3.insertMany(mongoc, where, what);
+    await mongoc.close();
+    return { ok: _.size(what) };
+}
+
+async function tofu(publicKey, version) {
+    const mongoc = await mongo3.clientConnect({concurrency: 1});
+
+    const supporter = await mongo3.readOne(mongoc,
+        nconf.get('schema').supporters, { publicKey });
+
+    if(_.get(supporter, '_id')) {
+        supporter.lastActivity = new Date();
+        supporter.version = version;
+        await mongo3.updateOne(mongoc,
+            nconf.get('schema').supporters, { publicKey }, supporter);
+    } else {
+        supporter.publicKey = publicKey;
+        supporter.version = version;
+        supporter.creationTime = new Date();
+        supporter.lastActivity = new Date();
+        supporter.p = utils.string2Food(publicKey);
+        debug("TOFU: new publicKey received, from: %s", supporter.p);
+        await mongo3.writeOne(mongoc,
+            nconf.get('schema').supporters, supporter);
+    }
+
+    await mongoc.close();
+    return supporter;
+}
+
+async function getLastHTMLs(filter) {
+
+    const HARDCODED_LIMIT=200;
+    const mongoc = await mongo3.clientConnect({concurrency: 1});
+
+    debug("%s", JSON.stringify(filter))
+    const htmls = await mongo3.readLimit(mongoc,
+        nconf.get('schema').htmls, filter,
+        { savingTime: 1}, HARDCODED_LIMIT, 0);
+
+    if(_.size(htmls) == HARDCODED_LIMIT) {
+        debug("Too many samples in one query! hope the stats spot it");
+        // and note, because of this in parserv2 lastExecution goes
+        // two minutes back more 
+    }
+
+    mongoc.close();
+    return htmls;
+}
 
 module.exports = {
     /* used by routes/personal */
@@ -196,4 +249,11 @@ module.exports = {
 
     /* used by public/videoCSV */
     getRelatedByVideoId,
+
+    /* used in events.js processInput */
+    tofu,
+    write,
+
+    /* used in parserv */
+    getLastHTMLs,
 };

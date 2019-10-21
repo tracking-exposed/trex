@@ -14,6 +14,8 @@ const nextApiList = [
 var apiListVersion1 = {
     /* POST from the web-extension */
     processEvents:    require('../routes/events').processEvents,
+    /* processInput is the second version of events */
+    processEvents2:   require('../routes/events').processEvents2,
     getMirror:        require('../routes/events').getMirror,
 
     /* for revision --- to be determined if kept or not */
@@ -43,7 +45,7 @@ var apiListVersion1 = {
     removeEvidence:    require('../routes/personal').removeEvidence,
     getEvidences:      require('../routes/personal').getEvidences,
 
-    /* rsync for developer */
+    /* rsync for developer, overthrown by 'mirror' */
     rsync:             require('../routes/rsync').rsync,
 
     /* researcher functionalities */
