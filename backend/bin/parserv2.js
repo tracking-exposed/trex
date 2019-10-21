@@ -21,7 +21,7 @@ echoes.addEcho("elasticsearch");
 echoes.setDefaultEcho("elasticsearch");
 */
 
-const FREQUENCY = _.parseInt(nconf.get('frequency')) ? _.parseInt(nconf.get('frequency')) : 1;
+const FREQUENCY = _.parseInt(nconf.get('frequency')) ? _.parseInt(nconf.get('frequency')) : 10;
 const backInTime = _.parseInt(nconf.get('minutesago')) ? _.parseInt(nconf.get('minutesago')) : 10;
 
 var lastExecution = moment().subtract(backInTime, 'minutes').toISOString();
@@ -46,14 +46,15 @@ async function newLoop() {
 
     lastExecution = moment().subtract(2, 'm').toISOString();
     debug("filter %j last exec %s", htmlFilter, lastExecution)
-    const oldsupp = await automo.getLastHTMLs(htmlFilter);
+    const htmls = await automo.getLastHTMLs(htmlFilter);
 
-    debug("old versions %d", _.size(oldsupp));
+    debug("Matching objects %d", _.size(htmls));
 
-    _.map(oldsupp, function(e) { 
-        console.log(_.keys(e));
-        debug("%s href %s with %s html bytes, %s",
-            e.id, e.href, e.size, e.selector);
+    const selectorMap = {
+    }
+
+    _.map(htmls, function(e) { 
+
 
         const envelop = {
             impression: _.omit(e, ['html','publicKey', '_id']),
@@ -65,17 +66,34 @@ async function newLoop() {
             .replace(/\?.*/, '')
             .replace(/\&.*/,'');
 
-        const metadata = videoparser.process(envelop);
-        throw new Error(metadata);
+        try {
+            debug("%s href %s with %s html bytes, %s", e.id, e.href, e.size, e.selector);
+
+            if(e.selector == ".ytp-title-channel") {
+                const metadata = videoparser.adTitleChannel(envelop);
+                debug("-> ok %j", metadata);
+            }
+            else if(e.selector == ".video-ads.ytp-ad-module") {
+                const metadata = videoparser.videoAd(envelop);
+            }
+            else if(e.selector == "ytd-app") {
+                const metadata = videoparser.process(envelop);
+            }
+            else if(e.selector == ".ytp-ad-player-overlay-instream-info") {
+                const metadata = videoparser.overlay(envelop);
+            }
+            else {
+                console.log("Selector not supported!", e.selector);
+                process.exit(1);
+            }
+
+
+        } catch(error) {
+            debug("Error in video processing: %j", error);
+            return 0;
+        }
         
         /*
-        let envelop = {
-            impression: metainfo,
-            jsdom: new JSDOM(content.replace(/\n\ +/g, ''))
-                        .window.document,
-        };
-        let metadata = videoparser.process(envelop);
-
         envelop.metadata = metadata;
         envelop.impression.processed = true;
         envelop.metadata.id = envelop.impression.id;
@@ -87,7 +105,8 @@ async function newLoop() {
         return envelop;
         */
     });
-    // loop su parse.parseHTML(htmlFilter, false);
+
+    debug("--- sleep 1000");
     await sleep(FREQUENCY * 1000)
     /* infinite recursive loop */
     await newLoop();

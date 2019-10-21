@@ -189,15 +189,16 @@ async function write(where, what) {
 async function tofu(publicKey, version) {
     const mongoc = await mongo3.clientConnect({concurrency: 1});
 
-    const supporter = await mongo3.readOne(mongoc,
+    let supporter = await mongo3.readOne(mongoc,
         nconf.get('schema').supporters, { publicKey });
 
-    if(_.get(supporter, '_id')) {
+    if( !! _.get(supporter, '_id') ) {
         supporter.lastActivity = new Date();
         supporter.version = version;
         await mongo3.updateOne(mongoc,
             nconf.get('schema').supporters, { publicKey }, supporter);
     } else {
+        supporter = {};
         supporter.publicKey = publicKey;
         supporter.version = version;
         supporter.creationTime = new Date();

@@ -146,19 +146,6 @@ async function processEvents2(req) {
             i,
         });
         const isVideo = body.href.match(/v=/) ? true : false;
-
-        if(isVideo) {
-            let videoId = _
-                .replace(body.href, /.*v=/, '')
-                .replace(/\?.*/, '')
-                .replace(/\&.*/,'');
-
-            // debug("videoId not used! %s", videoId);
-            if(body.href.match(/\?/)) {
-                debugger;
-            }
-        }
-
         const html = {
             id,
             href: body.href,
@@ -171,7 +158,7 @@ async function processEvents2(req) {
             isVideo,
             selector: body.selector,
             incremental: body.incremental,
-            package: i,
+            packet: i,
         }
         return html;
     });
@@ -183,7 +170,7 @@ async function processEvents2(req) {
     }
 
     const info = _.map(htmls, function(e) {
-        return [ e.package, e.size, e.selector];
+        return [ e.packet, e.size, e.selector ];
     })
     debug("%s: %s", supporter.p, JSON.stringify(info));
 

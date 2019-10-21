@@ -166,12 +166,15 @@ function parseSingleTry(D, memo, spec) {
     const elems = D.querySelectorAll(spec.selector);
 
     if(!_.size(elems)) {
-        debug("%s fail", spec.name);
+        debug("zero element selected: %s fail", spec.name);
         return memo;
     }
 
     if(!spec.selected && _.size(elems) > 1)
-        debug("%s return %d elements. only the first is considered", spec.selector, _.size(elems));
+        debug("%s with %s gives %d elements. only the 1st kept", spec.name, spec.selector, _.size(elems));
+
+    if(spec.selected)
+        debug("this look like a too overcomplex framework to define scraper... %d", spec.selected);
 
     const source = spec.selected ?  _.nth(elems, spec.selected) : _.first(elems);
 
@@ -193,6 +196,33 @@ function manyTries(D, opportunities) {
     return r;
 };
 
+
+function mineAuthorInfo(D) {
+
+    const as = D.querySelector('a.ytd-video-owner-renderer').parentNode.querySelectorAll('a');
+    if(_.size(as) == 1) {
+        debugger;
+
+    } else if(_.size(as) == 2) {
+        const authorName = D.querySelector('a.ytd-video-owner-renderer').parentNode.querySelectorAll('a')[1].textContent;
+        const authorSource = D.querySelector('a.ytd-video-owner-renderer').parentNode.querySelectorAll('a')[0].getAttribute('href');
+
+        debug("%s and %s should lead to the same youtube-content-page", 
+            D.querySelector('a.ytd-video-owner-renderer').parentNode.querySelectorAll('a')[1].getAttribute('href'),
+            authorSource );
+
+        return { authorName, authorSource };
+    
+    } else {
+        debug("odd the size is not 1 not 2!");
+        debugger;
+        // this creat an odd: '{"0":{},"1":{}}'
+        // and someone might spot it :)
+        return { authorName: JSON.stringify(D.querySelector('a.ytd-video-owner-renderer').parentNode.querySelectorAll('a')),
+                 authorSource: "" };
+    }
+}
+
 function processVideo(D) {
 
     const title = manyTries(D, [{
@@ -212,8 +242,7 @@ function processVideo(D) {
         throw new Error("unable to get title");
 
     const check = D.querySelectorAll('a.ytd-video-owner-renderer').length; // should be 1
-    const authorName = D.querySelector('a.ytd-video-owner-renderer').getAttribute('aria-label');
-    const authorSource = D.querySelector('a.ytd-video-owner-renderer').getAttribute('href');
+    const { authorName, authorSource } = mineAuthorInfo(D);
     const ptc = D.querySelectorAll('[slot="date"]').length;
     const publicationString = D.querySelector('[slot="date"]').textContent;
 
@@ -286,6 +315,11 @@ function processVideo(D) {
 
 function process(envelop) {
 
+    if(!envelop.impression.href.match(/watch=/)) {
+        debug("TODO other pages filtering and mark them as 'non-watch'");
+        return null;
+    }
+
     const extracted = processVideo(envelop.jsdom);
 
     const re = _.filter(extracted.related, { error: true });
@@ -323,7 +357,43 @@ function isVideo(envelop) {
     return false;
 }
 
+function videoAd(envelop) { 
+    if ( envelop.impression.size == 58 ) {
+        debug("videoAd butta via %s", envelop.jsdom.querySelector('body').outerHTML);
+        return {};
+    }
+    return { ad: envelop.jsdom.querySelector('.ytp-ad-text').textContent };
+}
+function overlay(envelop) { 
+    if(
+        (envelop.jsdom.querySelector('body').outerHTML).length == 71 &&
+         envelop.impression.size == 58 ) {
+        console.log(envelop.impression)
+        debug("overlay??");
+        return {};
+    }
+
+    const adbuyer = envelop.jsdom.querySelector('.ytp-ad-visit-advertiser-button').textContent;
+    return {
+        'advertiser': adbuyer
+    }
+}
+function adTitleChannel(envelop) {
+    const D = envelop.jsdom;
+    const a = D.querySelectorAll('a');
+    if(_.size(a) != 2)
+        debug("Unexpected amount of element 'a' %d", _.size(a));
+
+    return {
+        channel: a[0].getAttribute('href'),
+        label: a[0].getAttribute('aria-label'),
+    };
+}
+
 module.exports = {
-    isVideo: isVideo,
-    process: process
+    isVideo,
+    process,
+    videoAd,
+    overlay,
+    adTitleChannel,
 };
