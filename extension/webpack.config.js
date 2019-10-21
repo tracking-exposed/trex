@@ -45,7 +45,7 @@ const DEFINITIONS = {
         API_ROOT: JSON.stringify(ENV_DEP_SERVER + '/api/v' + LAST_VERSION + '/'),
         WEB_ROOT: JSON.stringify(ENV_DEP_WEB),
         VERSION: JSON.stringify(packageJSON.version + (DEVELOPMENT ? '-dev' : '')),
-        BUILD: "",
+        BUILD: new Date(),
         FLUSH_INTERVAL: JSON.stringify(DEVELOPMENT ? 10000 : 20000)
     }
 };
