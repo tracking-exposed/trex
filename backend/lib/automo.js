@@ -215,7 +215,7 @@ async function tofu(publicKey, version) {
 
 async function getLastHTMLs(filter) {
 
-    const HARDCODED_LIMIT=200;
+    const HARDCODED_LIMIT = 10;
     const mongoc = await mongo3.clientConnect({concurrency: 1});
 
     debug("%s", JSON.stringify(filter))
@@ -231,6 +231,60 @@ async function getLastHTMLs(filter) {
 
     mongoc.close();
     return htmls;
+}
+
+async function updateMetadata(html, newsection) {
+    // we should look at the same metadataId in the 
+    // metadata collection, and update new information
+    // if missing 
+    const mongoc = await mongo3.clientConnect({concurrency: 1});
+
+    let exists = await mongo3.readOne(mongoc, nconf.get('schema').metadata, { id: html.metadataId });
+    if(!exists) {
+        debug("New creation in the metadata collection");
+        exists = {};
+        exists.id = html.metadataId;
+        exists.publicKey = html.publicKey;
+        exists.savingTime = html.savingTime;
+        exists.clientTime = html.clientTime;
+        exists.version = 2;
+        exists = _.extend(exists, newsection);    
+        const r = await mongo3.writeOne(mongoc, nconf.get('schema').metadata, exists);
+        debug("Created: %j", r);
+    }
+    else {
+        /* this is ment to add only fields with values, and to notify duplicated
+         * or conflictual metadata mined */
+        exists = _.reduce(newsection, function(memo, value, key) {
+
+            if(!value)
+                return memo;
+
+            let current = _.get(memo, key);
+            if(typeof current == 'string') {
+                if(value != current) {
+                    _.set(memo, key, [ value, current ]);
+                }
+            }
+            else if(typeof current == 'object') {
+                if(current.indexOf(value) == -1) {
+                    _.set(memo, key, _.concat(current, value) );
+                }
+            } else {
+                _.set(memo, key, value);
+            }
+
+            return memo;
+        }, exists);    
+
+        const r = await mongo3.updateOne(mongoc, nconf.get('schema').metadata, { id: html.metadataId }, exists );
+        debug("Updated: %j", r);
+    }
+    debugger;
+
+    const retval = await mongo3.updateOne(mongoc, nconf.get('schema').htmls, { id: html.id }, { processed: true });
+    await mongoc.close();
+    return [exists, retval];
 }
 
 module.exports = {
@@ -255,6 +309,7 @@ module.exports = {
     tofu,
     write,
 
-    /* used in parserv */
+    /* used in parserv2 */
     getLastHTMLs,
+    updateMetadata,
 };

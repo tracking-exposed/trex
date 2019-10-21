@@ -11,6 +11,10 @@ ret = db.supporters.createIndex({ publicKey: 1 }, { unique: true }); checkret('s
 ret = db.groups.createIndex({ id: 1 }, { unique: true }); checkret('groups id', ret);
 ret = db.groups.createIndex({ name: 1 }, { unique: true }); checkret('groups name', ret);
 
+/* version 2 */
+ret = db.metadata.createIndex({ version: 1 } ); checkret('metadata version', ret);
+
+
 function checkret(info, retval) {
     retval.info = info;
     printjson(retval);

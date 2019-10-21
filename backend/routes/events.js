@@ -145,12 +145,16 @@ async function processEvents2(req) {
             randomUUID: body.randomUUID,
             i,
         });
+        const metadataId = utils.hash({
+            publicKey: headers.publickey,
+            randomUUID: body.randomUUID,
+        });
         const isVideo = body.href.match(/v=/) ? true : false;
         const html = {
             id,
+            metadataId,
             href: body.href,
             publicKey: headers.publickey,
-            randomUUID: body.randomUUID,
             clientTime: new Date(body.clientTime),
             savingTime: new Date(),
             html: body.element,

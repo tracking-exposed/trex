@@ -202,6 +202,7 @@ function mineAuthorInfo(D) {
     const as = D.querySelector('a.ytd-video-owner-renderer').parentNode.querySelectorAll('a');
     if(_.size(as) == 1) {
         debugger;
+        return null;
 
     } else if(_.size(as) == 2) {
         const authorName = D.querySelector('a.ytd-video-owner-renderer').parentNode.querySelectorAll('a')[1].textContent;
@@ -315,9 +316,11 @@ function processVideo(D) {
 
 function process(envelop) {
 
-    if(!envelop.impression.href.match(/watch=/)) {
+    if(!envelop.impression.href.match(/watch\?v=/)) {
         debug("TODO other pages filtering and mark them as 'non-watch'");
         return null;
+    } else {
+        debug("GOOOD %s", envelop.impression.href);
     }
 
     const extracted = processVideo(envelop.jsdom);
@@ -360,7 +363,7 @@ function isVideo(envelop) {
 function videoAd(envelop) { 
     if ( envelop.impression.size == 58 ) {
         debug("videoAd butta via %s", envelop.jsdom.querySelector('body').outerHTML);
-        return {};
+        return null;
     }
     return { ad: envelop.jsdom.querySelector('.ytp-ad-text').textContent };
 }
@@ -370,7 +373,7 @@ function overlay(envelop) {
          envelop.impression.size == 58 ) {
         console.log(envelop.impression)
         debug("overlay??");
-        return {};
+        return null;
     }
 
     const adbuyer = envelop.jsdom.querySelector('.ytp-ad-visit-advertiser-button').textContent;
@@ -385,8 +388,8 @@ function adTitleChannel(envelop) {
         debug("Unexpected amount of element 'a' %d", _.size(a));
 
     return {
-        channel: a[0].getAttribute('href'),
-        label: a[0].getAttribute('aria-label'),
+        adChannel: a[0].getAttribute('href'),
+        adLabel: a[0].getAttribute('aria-label'),
     };
 }
 

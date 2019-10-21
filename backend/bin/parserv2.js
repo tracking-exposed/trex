@@ -50,11 +50,7 @@ async function newLoop() {
 
     debug("Matching objects %d", _.size(htmls));
 
-    const selectorMap = {
-    }
-
-    _.map(htmls, function(e) { 
-
+    const analysis = await _.map(htmls, async function(e) { 
 
         const envelop = {
             impression: _.omit(e, ['html','publicKey', '_id']),
@@ -66,33 +62,37 @@ async function newLoop() {
             .replace(/\?.*/, '')
             .replace(/\&.*/,'');
 
+        let metadata = null;
         try {
             debug("%s href %s with %s html bytes, %s", e.id, e.href, e.size, e.selector);
 
             if(e.selector == ".ytp-title-channel") {
-                const metadata = videoparser.adTitleChannel(envelop);
-                debug("-> ok %j", metadata);
+                metadata = videoparser.adTitleChannel(envelop);
             }
             else if(e.selector == ".video-ads.ytp-ad-module") {
-                const metadata = videoparser.videoAd(envelop);
+                metadata = videoparser.videoAd(envelop);
             }
             else if(e.selector == "ytd-app") {
-                const metadata = videoparser.process(envelop);
+                metadata = videoparser.process(envelop);
             }
             else if(e.selector == ".ytp-ad-player-overlay-instream-info") {
-                const metadata = videoparser.overlay(envelop);
+                metadata = videoparser.overlay(envelop);
             }
             else {
                 console.log("Selector not supported!", e.selector);
                 process.exit(1);
             }
 
+            if(_.isNull(metadata))
+                return null;
 
         } catch(error) {
             debug("Error in video processing: %j", error);
-            return 0;
+            return null;
         }
-        
+
+        return await automo.updateMetadata(e, metadata);
+
         /*
         envelop.metadata = metadata;
         envelop.impression.processed = true;
@@ -106,7 +106,11 @@ async function newLoop() {
         */
     });
 
-    debug("--- sleep 1000");
+    debug("Results %d/%d: %s",
+        _.size(_.compact(analysis)),
+        _.size(analysis),
+        JSON.stringify(_.compact(analysis), undefined, 2));
+
     await sleep(FREQUENCY * 1000)
     /* infinite recursive loop */
     await newLoop();
