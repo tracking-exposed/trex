@@ -286,7 +286,6 @@ function processVideo(D) {
 
         }));
         related = _.map(selected, relatedMetadata);
-        debug("...and now the related are %d", _.size(related));
     }
 
     debug("Video %s mined %d related", title, _.size(related));
@@ -319,8 +318,6 @@ function process(envelop) {
     if(!envelop.impression.href.match(/watch\?v=/)) {
         debug("TODO other pages filtering and mark them as 'non-watch'");
         return null;
-    } else {
-        debug("GOOOD %s", envelop.impression.href);
     }
 
     const extracted = processVideo(envelop.jsdom);
@@ -362,7 +359,6 @@ function isVideo(envelop) {
 
 function videoAd(envelop) { 
     if ( envelop.impression.size == 58 ) {
-        debug("videoAd butta via %s", envelop.jsdom.querySelector('body').outerHTML);
         return null;
     }
     return { ad: envelop.jsdom.querySelector('.ytp-ad-text').textContent };
@@ -372,7 +368,6 @@ function overlay(envelop) {
         (envelop.jsdom.querySelector('body').outerHTML).length == 71 &&
          envelop.impression.size == 58 ) {
         console.log(envelop.impression)
-        debug("overlay??");
         return null;
     }
 

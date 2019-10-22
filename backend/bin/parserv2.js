@@ -1,5 +1,4 @@
 #!/usr/bin/env node
-const Promise = require('bluebird');
 const _ = require('lodash');
 const moment = require('moment');
 const debug = require('debug')('bin:parse2');
@@ -35,23 +34,31 @@ function sleep(ms) {
 }
 
 async function newLoop() {
-    const old_version = '1.1.8';
-    const new_version = '1.2.1';
+    let repeat = !!nconf.get('repeat');
+    debug("Last exec at %s %s", lastExecution, typeof lastExecution);
     let htmlFilter = {
         savingTime: {
             $gt: new Date(lastExecution)
         },
-        processed: { $exists: !!nconf.get('repeat') }
     };
 
-    lastExecution = moment().subtract(2, 'm').toISOString();
-    debug("filter %j last exec %s", htmlFilter, lastExecution)
+    htmlFilter.processed = { $exists: repeat };
+
     const htmls = await automo.getLastHTMLs(htmlFilter);
+    debug("Matching objects %d, overflow %s", _.size(htmls.content), htmls.overflow);
 
-    debug("Matching objects %d", _.size(htmls));
+    if(!htmls.overflow) {
+        lastExecution = moment().subtract(2, 'm').toISOString();
+        debug("NOVERFLOW filter %j, last %s", htmlFilter, lastExecution);
+    }
+    else {
+        lastExecution = moment(_.last(htmls.content).savingTime);
+        debug("OVERFLOW: first %s last %s", _.first(htmls.content).savingTime,
+            _.last(htmls.content).savingTime);
+        debug("Last exec at %s %s", lastExecution, typeof lastExecution);
+    }
 
-    const analysis = await _.map(htmls, async function(e) { 
-
+    const analysis = _.map(htmls.content, function(e) { 
         const envelop = {
             impression: _.omit(e, ['html','publicKey', '_id']),
             jsdom: new JSDOM(e.html.replace(/\n\ +/g, ''))
@@ -64,7 +71,8 @@ async function newLoop() {
 
         let metadata = null;
         try {
-            debug("%s href %s with %s html bytes, %s", e.id, e.href, e.size, e.selector);
+            debug("%s %d.%d href %s with %s html bytes, %s",
+                e.id, e.packet, e.incremental, e.href, e.size, e.selector);
 
             if(e.selector == ".ytp-title-channel") {
                 metadata = videoparser.adTitleChannel(envelop);
@@ -91,25 +99,16 @@ async function newLoop() {
             return null;
         }
 
-        return await automo.updateMetadata(e, metadata);
-
-        /*
-        envelop.metadata = metadata;
-        envelop.impression.processed = true;
-        envelop.metadata.id = envelop.impression.id;
-        envelop.metadata.videoId = envelop.impression.videoId;
-        envelop.metadata.savingTime = envelop.impression.savingTime;
-        envelop.metadata.watcher = envelop.impression.p;
-        // TODO: extract URL metadata, such as &t=502s 
-        _.unset(envelop, 'jsdom');
-        return envelop;
-        */
+        return [ e, _.omit(metadata, ['html']) ];
     });
 
-    debug("Results %d/%d: %s",
-        _.size(_.compact(analysis)),
-        _.size(analysis),
-        JSON.stringify(_.compact(analysis), undefined, 2));
+    debug("Usable HTMLs %d/%d", _.size(_.compact(analysis)), _.size(htmls.content));
+
+    const queries = _.compact(analysis).reduce( (previousPromise, blob) => {
+        return previousPromise.then(() => {
+            return automo.updateMetadata(blob[0], blob[1]);
+        });
+    }, Promise.resolve());
 
     await sleep(FREQUENCY * 1000)
     /* infinite recursive loop */
@@ -119,7 +118,5 @@ async function newLoop() {
 try {
     newLoop();
 } catch(e) {
-    debug(e);
+    console.log("Error in newLoop", e.message);
 }
-
-

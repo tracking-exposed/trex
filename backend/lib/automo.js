@@ -181,9 +181,18 @@ async function getRelatedByVideoId(videoId, options) {
 
 async function write(where, what) {
     const mongoc = await mongo3.clientConnect({concurrency: 1});
-    await mongo3.insertMany(mongoc, where, what);
-    await mongoc.close();
-    return { ok: _.size(what) };
+    let retv;
+    try {
+        await mongo3.insertMany(mongoc, where, what);
+        retv = { ok: _.size(what) };
+    } catch(error) {
+        debug("%j", error);
+        console.log(JSON.stringify(error, undefined, 2));
+        retv = { error: true, info: error.message };
+    } finally() {
+        await mongoc.close();
+        return retv;
+    }
 }
 
 async function tofu(publicKey, version) {
@@ -215,33 +224,46 @@ async function tofu(publicKey, version) {
 
 async function getLastHTMLs(filter) {
 
-    const HARDCODED_LIMIT = 10;
+    const HARDCODED_LIMIT = 20;
     const mongoc = await mongo3.clientConnect({concurrency: 1});
 
-    debug("%s", JSON.stringify(filter))
+    debug("getLastHTMLs: %j", filter);
     const htmls = await mongo3.readLimit(mongoc,
         nconf.get('schema').htmls, filter,
         { savingTime: 1}, HARDCODED_LIMIT, 0);
 
-    if(_.size(htmls) == HARDCODED_LIMIT) {
-        debug("Too many samples in one query! hope the stats spot it");
-        // and note, because of this in parserv2 lastExecution goes
-        // two minutes back more 
-    }
-
     mongoc.close();
-    return htmls;
+    return {
+        overflow: _.size(htmls) == HARDCODED_LIMIT,
+        content: htmls
+    }
 }
 
+
 async function updateMetadata(html, newsection) {
+
+    /* closing function, this is apply to every html */
+    async function markHTMLandClose(mongoc, html, retval) {
+        debugger;
+        const x = await mongo3.updateOne(mongoc, nconf.get('schema').htmls, { id: html.id }, { processed: true });
+        console.log(JSON.stringify(x));
+        await mongoc.close();
+        return retval;
+    }
+
     // we should look at the same metadataId in the 
     // metadata collection, and update new information
     // if missing 
     const mongoc = await mongo3.clientConnect({concurrency: 1});
+    let updates = 0;
+
+    if(!html.metadataId) {
+        debug("metadataId is not an ID!");
+        return await markHTMLandClose(mongoc, html, null);
+    }
 
     let exists = await mongo3.readOne(mongoc, nconf.get('schema').metadata, { id: html.metadataId });
     if(!exists) {
-        debug("New creation in the metadata collection");
         exists = {};
         exists.id = html.metadataId;
         exists.publicKey = html.publicKey;
@@ -249,42 +271,45 @@ async function updateMetadata(html, newsection) {
         exists.clientTime = html.clientTime;
         exists.version = 2;
         exists = _.extend(exists, newsection);    
-        const r = await mongo3.writeOne(mongoc, nconf.get('schema').metadata, exists);
-        debug("Created: %j", r);
+        debug("Creating metadata %s collection, starts with %s", html.metadataId, html.selector);
+        await mongo3.writeOne(mongoc, nconf.get('schema').metadata, exists);
     }
     else {
         /* this is ment to add only fields with values, and to notify duplicated
          * or conflictual metadata mined */
-        exists = _.reduce(newsection, function(memo, value, key) {
+        const up = _.reduce(newsection, function(memo, value, key) {
 
             if(!value)
                 return memo;
 
             let current = _.get(memo, key);
-            if(typeof current == 'string') {
+            if(typeof current == typeof 'astring' && html.selector != 'ytd-app') {
                 if(value != current) {
                     _.set(memo, key, [ value, current ]);
+                    debug("extended string: %s -> %j", key, memo);
                 }
             }
-            else if(typeof current == 'object') {
+            else if(typeof current == typeof [] && html.selector != 'ytd-app') {
                 if(current.indexOf(value) == -1) {
                     _.set(memo, key, _.concat(current, value) );
+                    debug("extended object %s", key);
                 }
             } else {
                 _.set(memo, key, value);
+                updates++;
             }
 
             return memo;
         }, exists);    
 
-        const r = await mongo3.updateOne(mongoc, nconf.get('schema').metadata, { id: html.metadataId }, exists );
-        debug("Updated: %j", r);
+        if(_.isEqual(up, exists)) {
+            return await markHTMLandClose(mongoc, html, null);
+        } 
+        debug("Updating metadata %s with %s", html.metadataId, html.selector);
+        await mongo3.updateOne(mongoc, nconf.get('schema').metadata, { id: html.metadataId }, up );
     }
-    debugger;
 
-    const retval = await mongo3.updateOne(mongoc, nconf.get('schema').htmls, { id: html.id }, { processed: true });
-    await mongoc.close();
-    return [exists, retval];
+    return await markHTMLandClose(mongoc, html, exists);
 }
 
 module.exports = {

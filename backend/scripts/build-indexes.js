@@ -12,7 +12,7 @@ ret = db.groups.createIndex({ id: 1 }, { unique: true }); checkret('groups id', 
 ret = db.groups.createIndex({ name: 1 }, { unique: true }); checkret('groups name', ret);
 
 /* version 2 */
-ret = db.metadata.createIndex({ version: 1 } ); checkret('metadata version', ret);
+ret = db.htmls.createIndex({ id: 1 }, { unique: true} ); checkret('htmls id', ret);
 
 
 function checkret(info, retval) {
