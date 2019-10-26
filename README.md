@@ -1,5 +1,6 @@
-# web-extension reviewer? please do this:
+# web-extension reviewer? please do this after cloning the repository:
 
+    cd extension
     npm install
     npm run build:dist
 
