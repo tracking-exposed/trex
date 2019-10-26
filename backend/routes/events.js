@@ -168,7 +168,7 @@ async function processEvents2(req) {
     });
 
     const check = await automo.write(nconf.get('schema').htmls, htmls);
-    if(check.error) {
+    if(check && check.error) {
         debug("Error in saving %d htmls %j", _.size(htmls), check);
         return { json: {status: "error", info: check.info }};
     }

@@ -184,12 +184,11 @@ async function write(where, what) {
     let retv;
     try {
         await mongo3.insertMany(mongoc, where, what);
-        retv = { ok: _.size(what) };
+        retv = { error:false, ok: _.size(what) };
     } catch(error) {
-        debug("%j", error);
-        console.log(JSON.stringify(error, undefined, 2));
+        debug("%s %j", error.message, _.keys(errors));
         retv = { error: true, info: error.message };
-    } finally() {
+    } finally {
         await mongoc.close();
         return retv;
     }
@@ -227,7 +226,7 @@ async function getLastHTMLs(filter) {
     const HARDCODED_LIMIT = 20;
     const mongoc = await mongo3.clientConnect({concurrency: 1});
 
-    debug("getLastHTMLs: %j", filter);
+    // debug("getLastHTMLs: %j", filter);
     const htmls = await mongo3.readLimit(mongoc,
         nconf.get('schema').htmls, filter,
         { savingTime: 1}, HARDCODED_LIMIT, 0);
@@ -244,9 +243,7 @@ async function updateMetadata(html, newsection) {
 
     /* closing function, this is apply to every html */
     async function markHTMLandClose(mongoc, html, retval) {
-        debugger;
-        const x = await mongo3.updateOne(mongoc, nconf.get('schema').htmls, { id: html.id }, { processed: true });
-        console.log(JSON.stringify(x));
+        await mongo3.updateOne(mongoc, nconf.get('schema').htmls, { id: html.id }, { processed: true });
         await mongoc.close();
         return retval;
     }
@@ -255,7 +252,6 @@ async function updateMetadata(html, newsection) {
     // metadata collection, and update new information
     // if missing 
     const mongoc = await mongo3.clientConnect({concurrency: 1});
-    let updates = 0;
 
     if(!html.metadataId) {
         debug("metadataId is not an ID!");
@@ -275,6 +271,8 @@ async function updateMetadata(html, newsection) {
         await mongo3.writeOne(mongoc, nconf.get('schema').metadata, exists);
     }
     else {
+        let updates = 0;
+
         /* this is ment to add only fields with values, and to notify duplicated
          * or conflictual metadata mined */
         const up = _.reduce(newsection, function(memo, value, key) {
@@ -283,13 +281,13 @@ async function updateMetadata(html, newsection) {
                 return memo;
 
             let current = _.get(memo, key);
-            if(typeof current == typeof 'astring' && html.selector != 'ytd-app') {
+            if(typeof current == typeof 'thastrng' && html.selector != 'ytd-app') {
                 if(value != current) {
                     _.set(memo, key, [ value, current ]);
                     debug("extended string: %s -> %j", key, memo);
                 }
             }
-            else if(typeof current == typeof [] && html.selector != 'ytd-app') {
+            else if(typeof current == typeof [] && _.size() && html.selector != 'ytd-app') {
                 if(current.indexOf(value) == -1) {
                     _.set(memo, key, _.concat(current, value) );
                     debug("extended object %s", key);
@@ -305,7 +303,8 @@ async function updateMetadata(html, newsection) {
         if(_.isEqual(up, exists)) {
             return await markHTMLandClose(mongoc, html, null);
         } 
-        debug("Updating metadata %s with %s", html.metadataId, html.selector);
+        debug("Updating metadata %s with %s (total of %d updates)",
+            html.metadataId, html.selector, updates);
         await mongo3.updateOne(mongoc, nconf.get('schema').metadata, { id: html.metadataId }, up );
     }
 

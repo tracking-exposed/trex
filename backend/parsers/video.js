@@ -1,16 +1,9 @@
 #!/usr/bin/env node
 const _ = require('lodash');
-const moment = require('moment');
 const debug = require('debug')('parser:video');
-const errorrevi = require('debug')('related:view');
-const errorcore = require('debug')('metadata:core');
 const errorlike = require('debug')('metadata:likes');
 const errorview = require('debug')('metadata:view');
 const errorrele = require('debug')('metadata:related');
-const parse = require('../lib/parse');
-
-const jsdom = require("jsdom");
-const { JSDOM } = jsdom;
 
 const stats = { skipped: 0, error: 0, suberror: 0, success: 0 };
 
@@ -361,6 +354,11 @@ function videoAd(envelop) {
     if ( envelop.impression.size == 58 ) {
         return null;
     }
+
+    if(!envelop.jsdom.querySelector('.ytp-ad-text'))
+        return null;
+
+    console.log(envelop.jsdom.querySelector('body').textContent);
     return { ad: envelop.jsdom.querySelector('.ytp-ad-text').textContent };
 }
 function overlay(envelop) { 

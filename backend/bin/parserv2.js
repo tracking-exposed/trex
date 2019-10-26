@@ -3,13 +3,9 @@ const _ = require('lodash');
 const moment = require('moment');
 const debug = require('debug')('bin:parse2');
 const nconf = require('nconf');
-const debugUnsupported = require('debug')('bin:parse2:UNSUPPORTED');
-const debugError = require('debug')('bin:parse2:ERROR');
 const JSDOM = require('jsdom').JSDOM;
 
 const videoparser = require('../parsers/video')
-const mongo3 = require('../lib/mongo3');
-const parse = require('../lib/parse');
 const automo = require('../lib/automo')
 
 nconf.argv().env().file({ file: 'config/settings.json' });
@@ -23,19 +19,15 @@ echoes.setDefaultEcho("elasticsearch");
 const FREQUENCY = _.parseInt(nconf.get('frequency')) ? _.parseInt(nconf.get('frequency')) : 10;
 const backInTime = _.parseInt(nconf.get('minutesago')) ? _.parseInt(nconf.get('minutesago')) : 10;
 
-var lastExecution = moment().subtract(backInTime, 'minutes').toISOString();
+let lastExecution = moment().subtract(backInTime, 'minutes').toISOString();
 
-console.log(`considering ${backInTime} minutes ago. Override the 10 minutes standard check. Starts since ${lastExecution}`);
+if(backInTime != 10)
+    console.log(`considering ${backInTime} minutes, as override the standard 10 minutes ${lastExecution}`);
 
-function sleep(ms) {
-    return new Promise(resolve=>{
-        setTimeout(resolve,ms)
-    })
-}
+let nodatacounter = 0;
 
 async function newLoop() {
     let repeat = !!nconf.get('repeat');
-    debug("Last exec at %s %s", lastExecution, typeof lastExecution);
     let htmlFilter = {
         savingTime: {
             $gt: new Date(lastExecution)
@@ -43,19 +35,29 @@ async function newLoop() {
     };
 
     htmlFilter.processed = { $exists: repeat };
-
     const htmls = await automo.getLastHTMLs(htmlFilter);
+    if(!_.size(htmls.content)) {
+        nodatacounter++;
+        if( (nodatacounter % 10) == 0) {
+            debug("%d\tno data at the last query: %j",
+                nodatacounter, htmlFilter);
+        }
+        lastExecution = moment().subtract(2, 'm').toISOString();
+
+        await sleep(FREQUENCY * 1000)
+        /* infinite recursive loop */
+        await newLoop();
+    }
+
     debug("Matching objects %d, overflow %s", _.size(htmls.content), htmls.overflow);
 
-    if(!htmls.overflow) {
+    if(!htmls.overflow)
         lastExecution = moment().subtract(2, 'm').toISOString();
-        debug("NOVERFLOW filter %j, last %s", htmlFilter, lastExecution);
-    }
     else {
         lastExecution = moment(_.last(htmls.content).savingTime);
-        debug("OVERFLOW: first %s last %s", _.first(htmls.content).savingTime,
-            _.last(htmls.content).savingTime);
-        debug("Last exec at %s %s", lastExecution, typeof lastExecution);
+        debug("OVERFLOW: first %s last %s - lastExecution %s", 
+            _.first(htmls.content).savingTime, _.last(htmls.content).savingTime,
+            lastExecution);
     }
 
     const analysis = _.map(htmls.content, function(e) { 
@@ -88,14 +90,14 @@ async function newLoop() {
             }
             else {
                 console.log("Selector not supported!", e.selector);
-                process.exit(1);
+                return null;
             }
 
             if(_.isNull(metadata))
                 return null;
 
         } catch(error) {
-            debug("Error in video processing: %j", error);
+            debug("Error in video processing: %s (%s)", error, e.selector);
             return null;
         }
 
@@ -104,15 +106,41 @@ async function newLoop() {
 
     debug("Usable HTMLs %d/%d", _.size(_.compact(analysis)), _.size(htmls.content));
 
-    const queries = _.compact(analysis).reduce( (previousPromise, blob) => {
+    /* this is meant to execute one db-access per time,
+     * and avoid any collision behavior. */
+    _.compact(analysis).reduce( (previousPromise, blob) => {
         return previousPromise.then(() => {
             return automo.updateMetadata(blob[0], blob[1]);
+        });
+    }, Promise.resolve());
+
+    /* also the HTML cutted off the pipeline, the many
+     * skipped by _.compact all the null in the lists,
+     * should be marked as processed */
+    const remaining = _.reduce(_.compact(analysis), function(memo, blob) {
+        debug("%s and after %s", 
+        _.size(memo),
+        _.size(_.reject(memo, { id: blob[0].id })));
+
+        return _.reject(memo, { id: blob[0].id });
+    }, htmls.content);
+
+    debug("Stripped HTMLs %d", _.size(remaining));
+    _.reduce(remaining, (previousPromise, html) => {
+        return previousPromise.then(() => {
+            return automo.updateMetadata(html, null);
         });
     }, Promise.resolve());
 
     await sleep(FREQUENCY * 1000)
     /* infinite recursive loop */
     await newLoop();
+}
+
+function sleep(ms) {
+    return new Promise(resolve => {
+        setTimeout(resolve, ms)
+    })
 }
 
 try {

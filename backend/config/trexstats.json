@@ -12,6 +12,18 @@
             {
                 "name": "newcomers",
                 "selector": {}
+            },
+            {
+                "name": "118",
+                "selector": { "version": "1.1.8" }
+            },
+            {
+                "name": "121",
+                "selector": { "version": "1.2.1" }
+            },
+            {
+                "name": "other",
+                "selector": { "version": { "$ne": "1.1.8", "$ne": "1.2.1" }}
             }
         ]
     },
@@ -54,6 +66,56 @@
             {
                 "name": "unprocessed",
                 "selector": { "processed": { "$exists": false } }
+            },
+            {
+                "name": "total",
+                "selector": { }
+            }
+        ]
+    },
+    {
+        "name": "processing2",
+        "column": "htmls",
+        "timevar": "savingTime",
+        "variables": [
+            {
+                "name": "successful",
+                "selector": { "processed": true }
+            },
+            {
+                "name": "failure",
+                "selector": { "processed": false }
+            },
+            {
+                "name": "unprocessed",
+                "selector": { "processed": { "$exists": false } }
+            },
+            {
+                "name": "total",
+                "selector": { }
+            }
+        ]
+    },
+    {
+        "name": "metadata",
+        "column": "metadata",
+        "timevar": "savingTime",
+        "variables": [
+            {
+                "name": "hasTitle",
+                "selector": { "title": { "$exists": true }}
+            },
+            {
+                "name": "hasAuthor",
+                "selector": { "author": { "$exists": true }}
+            },
+            {
+                "name": "hasRelated",
+                "selector": { "related.[0]": { "$exists": true }}
+            },
+            {
+                "name": "hasAd",
+                "selector": { "adChannel": { "$exists": true }}
             },
             {
                 "name": "total",

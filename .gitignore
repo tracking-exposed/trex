@@ -6,10 +6,9 @@
 *.pid
 *.gz
 .idea
-
 *.swp
-
 .env
+.vscode/*
 
 extension/build/*
 extension/dist/*

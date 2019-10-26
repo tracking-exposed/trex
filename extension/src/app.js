@@ -32,7 +32,7 @@ import moment from 'moment';
 
 import config from './config';
 import hub from './hub';
-import { getTimeISO8601, getLogoDataURI } from './utils';
+import { getTimeISO8601 } from './utils';
 import { registerHandlers } from './handlers/index';
 import pseudonym from './pseudonym';
 
@@ -85,6 +85,7 @@ function createLoadiv() {
     // this is bound to #loadiv and appears on the right bottom
     var div = document.createElement('div');
 
+    // from this coordinates the span below would be appeneded
     div.style.position = 'fixed';
     div.style.width = '48px';
     div.style.height = '48px';
@@ -94,12 +95,13 @@ function createLoadiv() {
     div.setAttribute('id', 'loadiv');
     document.body.appendChild(div);
 
-//    div.appendChild(getLogoDataURI());
-
-    console.log("Created logo div");
     $("#loadiv").show();
 };
 
+/*
+ * phases are all the div which can appears on the right bottom.
+ * the function below is called in the code, when the condition is 
+ * met, and make append the proper span */
 const phases = {
     'adv': {'seen': advSeen },
     'video': {'seen': videoSeen, 'wait': videoWait, 'send': videoSend},
@@ -108,7 +110,12 @@ const phases = {
         'video': { seen: 0, wait: 0, send: 0}
     }
 }
+function phase(path) {
+    const f = _.get(phases, path);
+    f(path);
+}
 
+/* below the 'span creation' function mapped in the dict phases above */
 function videoWait(path) {
     buildSpan({
         path,
@@ -151,6 +158,8 @@ function advSeen(path) {
     });
 };
 
+/* this function build the default span, some css sytes are
+ * overriden in the calling function */
 function buildSpan(c) {
     var cnt = _.get(phases.counters, c.path);
     cnt +=1;
@@ -160,7 +169,7 @@ function buildSpan(c) {
     var infospan = null;
     var fullt = `${cnt} ▣ ${c.text}`;
     if(cnt == 1) {
-        console.log("+ building span for the first time", c, cnt);
+        // console.log("+ building span for the first time", c, cnt);
         infospan = document.createElement('span');
         infospan.setAttribute('id', id);
         infospan.style.position = 'fixed';
@@ -185,11 +194,6 @@ function buildSpan(c) {
     $("#loadiv").show();
     infospan.css('display', 'flex');
     infospan.fadeOut({ duration: c.duration});
-}
-
-function phase(path) {
-    const f = _.get(phases, path);
-    f(path);
 }
 
 const periodicTimeout = 1000;
@@ -227,7 +231,14 @@ function hrefUpdateMonitor() {
             document
                 .querySelectorAll(YT_VIDEOTITLE_SELECTOR)
                 .forEach(function() {
-                    console.log("Video Selector match in ", window.location.href,", sending", _.size($('ytd-app').html()));
+                    console.log("Video Selector match in ", 
+                        window.location.href,
+                        ", sending",
+                        _.size($('ytd-app').html()),
+                        " <- ",
+                        $(YT_VIDEOTITLE_SELECTOR).length,
+                        $(YT_VIDEOTITLE_SELECTOR).text()
+                    );
                     if( testElement($('ytd-app').html(), 'ytd-app') )
                         phase('video.send');
                 });
@@ -237,6 +248,10 @@ function hrefUpdateMonitor() {
 
 let cache = [];
 function testElement(nodeHTML, selector) {
+    // this function look at the LENGTH of the proposed element.
+    // if an element with the same size has been already sent with
+    // this URL, this duplication is ignored.
+
     const s = _.size(nodeHTML);
     const exists = _.reduce(cache, function(memo, e, i) {
         const evalu = _.eq(e, s);
@@ -327,14 +342,15 @@ function refreshUUID() {
     if(lastCheck && lastCheck.isValid && lastCheck.isValid()) {
         var timed = moment.duration( moment() - lastCheck);
         if(timed.asSeconds() > REFERENCE) {
-            console.log("-> It is more then", REFERENCE, timed.asSeconds());
-
             // here is an example of a non secure random generation 
-            // but doesn't matter because the query on the server is 
-            // made by userId, same videoId, and last 60 minutes. 
+            // but doesn't matter because the query on the server we
+            // has this with the user publicKey, so if someone wants to 
+            // corrupt their data: they can ¯\_(ツ)_/¯
             randomUUID = Math.random().toString(36).substring(2, 15) +
                 Math.random().toString(36).substring(2, 15);
-            console.log("Refreshed randomUUID", randomUUID);
+            console.log(
+                "-> It is more than", REFERENCE, timed.asSeconds(), 
+                "Refreshed randomUUID", randomUUID);
         } else  {
             console.log("-> It is less then", REFERENCE, timed.asSeconds());
         }
@@ -360,7 +376,7 @@ function localLookup (callback) {
 
 // The function `remoteLookup` communicate the intention
 // to the server of performing a certain test, and retrive 
-// the userPseudonym from the server
+// the userPseudonym from the server - this is not used in ytTREX
 function remoteLookup (callback) {
     bo.runtime.sendMessage({
         type: "remoteLookup",
