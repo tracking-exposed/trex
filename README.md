@@ -91,3 +91,8 @@ tidy -i -m -w 0 -utf8 file.html
 
 [@sohkai](https://github.com/sohkai) for the amazing [js-reactor
 boilerplate](https://github.com/bigchaindb/js-reactor).
+
+
+# License
+
+Affero-GPL 3, as file attached in this repository display.
