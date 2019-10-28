@@ -7,6 +7,7 @@
 const _ = require('lodash');
 const nconf = require('nconf');
 const debug = require('debug')('lib:automo');
+const debugLite = require('debug')('lib:automo:L');
 const moment = require('moment');
 
 const utils = require('../lib/utils');
@@ -252,10 +253,9 @@ async function getLastHTMLs(filter, skip) {
         HARDCODED_LIMIT, 
         skip ? skip : 0);
 
-    debug("getLastHTMLs: %j -> %d (overflow %s)%s",
-        filter, _.size(htmls),
-        (_.size(htmls) == HARDCODED_LIMIT),
-        skip ? "skip " + skip : "");
+    if(_.size(htmls)) 
+        debug("getLastHTMLs: %j -> %d (overflow %s)%s", filter, _.size(htmls),
+            (_.size(htmls) == HARDCODED_LIMIT), skip ? "skip " + skip : "");
 
     mongoc.close();
     return {
@@ -264,10 +264,8 @@ async function getLastHTMLs(filter, skip) {
     }
 }
 
-
 async function updateMetadata(html, newsection) {
 
-    /* closing function, this is apply to every html */
     async function markHTMLandClose(mongoc, html, retval) {
         await mongo3.updateOne(mongoc, nconf.get('schema').htmls, { id: html.id }, { processed: true });
         await mongoc.close();
@@ -278,64 +276,84 @@ async function updateMetadata(html, newsection) {
     // metadata collection, and update new information
     // if missing 
     const mongoc = await mongo3.clientConnect({concurrency: 1});
+    let exists = null;
 
     if(!html.metadataId) {
         debug("metadataId is not an ID!");
         return await markHTMLandClose(mongoc, html, null);
     }
 
-    let exists = await mongo3.readOne(mongoc, nconf.get('schema').metadata, { id: html.metadataId });
-    if(!exists) {
-        exists = {};
-        exists.id = html.metadataId;
-        exists.publicKey = html.publicKey;
-        exists.savingTime = html.savingTime;
-        exists.clientTime = html.clientTime;
-        exists.version = 2;
-        exists = _.extend(exists, newsection);    
-        debug("Creating metadata %s collection, starts with %s", html.metadataId, html.selector);
-        await mongo3.writeOne(mongoc, nconf.get('schema').metadata, exists);
+    try {
+        exists = await createMetadataEntry(mongoc, html, newsection);
+        debug("Created metadata %s from %s with %s", html.metadataId, html.href, html.selector);
+    } catch(e) {
+        /* the read+write in a single thread seems is not enough to guarantee */
+        if(e.code == 11000) {
+            exists = await updateMetadataEntry(mongoc, html, newsection);
+        } else {
+            debug("Unexpected error: %s (%d)", e.message, e.code);
+        }
     }
-    else {
-        let updates = 0;
-
-        /* this is ment to add only fields with values, and to notify duplicated
-         * or conflictual metadata mined */
-        const up = _.reduce(newsection, function(memo, value, key) {
-
-            if(!value)
-                return memo;
-
-            let current = _.get(memo, key);
-            if(typeof current == typeof 'thastrng' && html.selector != 'ytd-app') {
-                if(value != current) {
-                    _.set(memo, key, [ value, current ]);
-                    debug("extended string: %s -> %j", key, memo);
-                }
-            }
-            else if(typeof current == typeof [] && _.size() && html.selector != 'ytd-app') {
-                if(current.indexOf(value) == -1) {
-                    _.set(memo, key, _.concat(current, value) );
-                    debug("extended object %s", key);
-                }
-            } else {
-                _.set(memo, key, value);
-                updates++;
-            }
-
-            return memo;
-        }, exists);    
-
-        if(_.isEqual(up, exists)) {
-            return await markHTMLandClose(mongoc, html, null);
-        } 
-        debug("Updating metadata %s with %s (total of %d updates)",
-            html.metadataId, html.selector, updates);
-        await mongo3.updateOne(mongoc, nconf.get('schema').metadata, { id: html.metadataId }, up );
-    }
-
     return await markHTMLandClose(mongoc, html, exists);
 }
+
+async function createMetadataEntry(mongoc, html, newsection) {
+    /* this is not exported, it is used only by updateMetadata */
+    exists = {};
+    exists.id = html.metadataId;
+    exists.publicKey = html.publicKey;
+    exists.savingTime = html.savingTime;
+    exists.clientTime = html.clientTime;
+    exists.version = 2;
+    exists = _.extend(exists, newsection);    
+    await mongo3.writeOne(mongoc, nconf.get('schema').metadata, exists);
+    return exists;
+}
+
+async function updateMetadataEntry(mongoc, html, newsection) {
+    /* this is not exported, it is used only by updateMetadata */
+    let updates = 0;
+    let exists = await mongo3.readOne(mongoc, nconf.get('schema').metadata, { id: html.metadataId });
+
+    /* this is ment to add only fields with values, and to notify duplicated
+     * or conflictual metadata mined */
+    const up = _.reduce(newsection, function(memo, value, key) {
+
+        if(!value)
+            return memo;
+
+        let current = _.get(memo, key);
+        if(typeof current == typeof 'thastrng' && html.selector != 'ytd-app') {
+            if(value != current) {
+                _.set(memo, key, [ value, current ]);
+                debugLite("[s] extended string: %s -> %j", key, memo);
+            }
+        }
+        else if(typeof current == typeof [] && _.size() && html.selector != 'ytd-app') {
+            if(current.indexOf(value) == -1) {
+                _.set(memo, key, _.concat(current, value) );
+                debugLite("[o] extended object %s", key);
+            }
+        } else {
+            _.set(memo, key, value);
+            updates++;
+        }
+
+        return memo;
+    }, exists);    
+
+    if(_.isEqual(up, exists)) {
+        debug("...Nothing to be updated in [%s] - %d with a new <%s>",
+            exists.title, _.size(_.keys(exists)), html.selector);
+        return null;
+    }
+
+    debug("Updating metadata %s with %s (total of %d updates)",
+        html.metadataId, html.selector, updates);
+    let r = await mongo3.updateOne(mongoc, nconf.get('schema').metadata, { id: html.metadataId }, up );
+    return r;
+}
+
 
 module.exports = {
     /* used by routes/personal */

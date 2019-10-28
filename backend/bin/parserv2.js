@@ -10,26 +10,23 @@ const automo = require('../lib/automo')
 
 nconf.argv().env().file({ file: 'config/settings.json' });
 
-/*
-const echoes = require('../lib/echoes');
+/* const echoes = require('../lib/echoes');
 echoes.addEcho("elasticsearch");
-echoes.setDefaultEcho("elasticsearch");
-*/
+echoes.setDefaultEcho("elasticsearch"); */
 
 const FREQUENCY = _.parseInt(nconf.get('frequency')) ? _.parseInt(nconf.get('frequency')) : 10;
 const backInTime = _.parseInt(nconf.get('minutesago')) ? _.parseInt(nconf.get('minutesago')) : 10;
-const singleUse = !!nconf.get('single');
-
+const id = nconf.get('id');
+let singleUse = !!nconf.get('single');
+let nodatacounter = 0;
 let lastExecution = moment().subtract(backInTime, 'minutes').toISOString();
 
 if(backInTime != 10) {
     const humanized = moment.duration(
         moment().subtract(backInTime, 'minutes') - moment()
     ).humanize();
-    console.log(`considering ${backInTime} minutes (${humanized}), as override the standard 10 minutes ${lastExecution}`);
+    console.log(`Considering ${backInTime} minutes (${humanized}), as override the standard 10 minutes ${lastExecution}`);
 }
-
-let nodatacounter = 0;
 
 async function newLoop() {
     let repeat = !!nconf.get('repeat');
@@ -38,8 +35,16 @@ async function newLoop() {
             $gt: new Date(lastExecution)
         },
     };
-
     htmlFilter.processed = { $exists: repeat };
+
+    if(id) {
+        debug("Targeting a specific metadataId imply --single");
+        htmlFilter = {
+            metadataId: id
+        }
+        singleUse = true;
+    }
+
     const htmls = await automo.getLastHTMLs(htmlFilter);
     if(!_.size(htmls.content)) {
         nodatacounter++;
@@ -48,7 +53,6 @@ async function newLoop() {
                 nodatacounter, htmlFilter);
         }
         lastExecution = moment().subtract(2, 'm').toISOString();
-
         await sleep(FREQUENCY * 1000)
         /* infinite recursive loop */
         await newLoop();
@@ -121,6 +125,10 @@ async function newLoop() {
             return automo.updateMetadata(blob[0], blob[1]);
         });
     }, Promise.resolve());
+
+    /* reset no-data-counter if data has been sucessfully processed */
+    if(_.size(_.compact(analysis)))
+        nodatacounter = 0;
 
     /* also the HTML cutted off the pipeline, the many
      * skipped by _.compact all the null in the lists,

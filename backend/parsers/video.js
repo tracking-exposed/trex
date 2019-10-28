@@ -322,7 +322,7 @@ function processVideo(D) {
 function process(envelop) {
 
     if(!envelop.impression.href.match(/watch\?v=/)) {
-        debug("TODO other pages filtering and mark them as 'non-watch'");
+        debug("TODO process 'non-watch' pages such as %s", envelop.impression.href);
         return null;
     }
 
