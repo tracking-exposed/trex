@@ -197,12 +197,13 @@ function buildSpan(c) {
     infospan.fadeOut({ duration: c.duration});
 }
 
-const periodicTimeout = 1000;
+const adPeriodicTimeout = 1000;
+const videoPeriodicTimeout = 8000;
 var lastVideoURL = null;
+var lastVideoCNT = 0;
 function hrefUpdateMonitor() {
 
-    function changeHappen() {
-
+    window.setInterval(function() {
         // phase('video.wait');
         let diff = (window.location.href != lastVideoURL);
 
@@ -216,32 +217,31 @@ function hrefUpdateMonitor() {
             refreshUUID();
         }
 
-        if( diff && $("#progress").is(':visible') ) {
-            console.log(`Waiting loading complete for ${window.location.href}...`);
-            return false;
+        if(!diff) {
+            lastVideoCNT++;
+            if(lastVideoCNT > 5) {
+                console.log(lastVideoCNT, "too many repetition: stop");
+                return;
+            }
         }
-        lastVideoURL = window.location.href;
-        return diff;
-    }
 
-    window.setInterval(function() {
-        if(changeHappen()) {
-            document
-                .querySelectorAll(YT_VIDEOTITLE_SELECTOR)
-                .forEach(function() { /*
-                    console.log("Video Selector match in ", 
-                        window.location.href,
-                        ", sending",
-                        _.size($('ytd-app').html()),
-                        " <- ",
-                        $(YT_VIDEOTITLE_SELECTOR).length,
-                        $(YT_VIDEOTITLE_SELECTOR).text()
-                    ); */
-                    if( testElement($('ytd-app').html(), 'ytd-app') )
-                        phase('video.send');
-                });
-        }
-    }, periodicTimeout);
+        lastVideoURL = window.location.href;
+        document
+            .querySelectorAll(YT_VIDEOTITLE_SELECTOR)
+            .forEach(function() { 
+                console.log("Video Selector match in ", 
+                    window.location.href,
+                    ", sending",
+                    _.size($('ytd-app').html()),
+                    " <- ",
+                    $(YT_VIDEOTITLE_SELECTOR).length,
+                    $(YT_VIDEOTITLE_SELECTOR).text()
+                ); 
+                if( testElement($('ytd-app').html(), 'ytd-app') )
+                    phase('video.send');
+            });
+
+    }, videoPeriodicTimeout);
 }
 
 let cache = [];
@@ -326,7 +326,7 @@ function adMonitor() {
                     phase('adv.seen');
             });
 
-    }, periodicTimeout);
+    }, adPeriodicTimeout);
 }
 
 var lastCheck = null;

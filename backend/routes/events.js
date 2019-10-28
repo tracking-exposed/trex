@@ -76,7 +76,7 @@ function saveVideo(body, supporter) {
                 .return(true);
         })
         .catch(function(error) {
-            debug("Error: %s", error);
+            debug("Error in saveVideo: %s", error.message);
             return false;
         });
 };

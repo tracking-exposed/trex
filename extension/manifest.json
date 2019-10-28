@@ -4,7 +4,7 @@
   "name": "ytTREX",
 
   "short_name": "ytTREX",
-  "description": "A tool for academic researchers to analyze the algorithm of the most popular video portal.",
+  "description": "A tool for academic researchers. Part of the tracking.exposed project, is meant to analyze the algorithm of a popular video portal.",
   "version": "1.2.2",
   "author": "The team of https://tracking.exposed",
 
