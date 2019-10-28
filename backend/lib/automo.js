@@ -42,12 +42,11 @@ async function getSummaryByPublicKey(publicKey, options) {
         _.size(metadata1), _.size(metadata2),
         total1, total2);
 
-    const metadata = _.concat(metadata1, metadata2);
+    const metadata = _.sortBy(_.concat(metadata1, metadata2), { savingTime: 1});
     const total = total1 + total2;
 
     const fields = ['id','videoId', 'savingTime', 'title', 'authorName', 'authorSource', 'relative', 'relatedN' ];
     const recent = _.map(metadata, function(e) {
-        console.log(JSON.stringify(e));
         e.relative = moment.duration( moment(e.savingTime) - moment() ).humanize() + " ago";
         return _.pick(e, fields);
     })
@@ -174,7 +173,8 @@ async function getRelatedByVideoId(videoId, options) {
             { $skip: options.skip },
             { $limit : options.amount },
             { $lookup: { from: 'videos', localField: 'id', foreignField: 'id', as: 'videos' }},
-            { $unwind: '$related' }
+            { $unwind: '$related' },
+            { $sort: { savingTime: -1 }}
         ]);
     await mongoc.close();
     return _.map(related, function(r) {

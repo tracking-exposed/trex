@@ -1,4 +1,5 @@
 const _ = require('lodash');
+const debug = require('debug')('lib:CSV');
 const moment = require('moment');
 
 function produceCSVv1(entries) {
@@ -12,7 +13,7 @@ function produceCSVv1(entries) {
             memo.init = true;
         }
 
-        if(_.size(_.keys) != memo.expect) {
+        if(_.size(keys) != memo.expect) {
             debug("Invalid JSON input: expected %d keys, got %d",
                 memo.expect, _.size(keys));
             console.log(memo.csv);
