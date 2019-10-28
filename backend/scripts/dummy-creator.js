@@ -49,7 +49,7 @@ async function updatePublicProfile() {
         e.watcher = "dummy";
         e.publicKey = dummyPublicKey;
         e.id = moment()
-            .format("YYYYMMDDHHmmSS") + "000000000000000000" + e.id.substr(0, 6);
+            .format("YYYYMMDDHHmmSS") + "0000000000000iii" + e.id.substr(0, 8);
         e.clientTime = e.savingTime = new Date();
         return e;
     });
@@ -67,8 +67,15 @@ async function updatePublicProfile() {
             current, _.size(anonymized), maxVideos);
     }
 
-    await mongo3.insertMany(mongoc, nconf.get('schema').metadata, anonymized)
-    debug("Written %d anonymized entries", _.size(anonymized))
+    try {
+        await mongo3.insertMany(mongoc, nconf.get('schema').metadata, anonymized);
+        debug("Written %d anonymized entries", _.size(anonymized))
+    } catch(e) {
+        const check = await mongo3.count(mongoc, nconf.get('schema').metadata, {
+            publicKey: dummyPublicKey
+        });
+        debug("Error <objects available %d>\n%s", check, e.message);
+    }
     await mongoc.close();
 }
 

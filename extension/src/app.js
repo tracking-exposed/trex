@@ -168,7 +168,7 @@ function buildSpan(c) {
     _.set(phases.counters, c.path, cnt);
 
     var infospan = null;
-    var fullt = `${cnt} ▣ ${c.text}`;
+    var fullt = c.text; /* `${cnt} ▣ ${c.text}`; */
     if(cnt == 1) {
         // console.log("+ building span for the first time", c, cnt);
         infospan = document.createElement('span');

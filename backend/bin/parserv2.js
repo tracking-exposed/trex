@@ -18,11 +18,16 @@ echoes.setDefaultEcho("elasticsearch");
 
 const FREQUENCY = _.parseInt(nconf.get('frequency')) ? _.parseInt(nconf.get('frequency')) : 10;
 const backInTime = _.parseInt(nconf.get('minutesago')) ? _.parseInt(nconf.get('minutesago')) : 10;
+const singleUse = !!nconf.get('single');
 
 let lastExecution = moment().subtract(backInTime, 'minutes').toISOString();
 
-if(backInTime != 10)
-    console.log(`considering ${backInTime} minutes, as override the standard 10 minutes ${lastExecution}`);
+if(backInTime != 10) {
+    const humanized = moment.duration(
+        moment().subtract(backInTime, 'minutes') - moment()
+    ).humanize();
+    console.log(`considering ${backInTime} minutes (${humanized}), as override the standard 10 minutes ${lastExecution}`);
+}
 
 let nodatacounter = 0;
 
@@ -49,10 +54,11 @@ async function newLoop() {
         await newLoop();
     }
 
-    debug("Matching objects %d, overflow %s", _.size(htmls.content), htmls.overflow);
-
-    if(!htmls.overflow)
+    if(!htmls.overflow) {
         lastExecution = moment().subtract(2, 'm').toISOString();
+        debug("Matching objects %d, overflow %s",
+            _.size(htmls.content), htmls.overflow);
+    }
     else {
         lastExecution = moment(_.last(htmls.content).savingTime);
         debug("OVERFLOW: first %s last %s - lastExecution %s", 
@@ -73,8 +79,12 @@ async function newLoop() {
 
         let metadata = null;
         try {
-            debug("%s %d.%d href %s with %s html bytes, %s",
-                e.id, e.packet, e.incremental, e.href, e.size, e.selector);
+            debug("%s [%s] %s %d.%d %s %s %s",
+                e.id.substr(0, 4),
+                moment(e.savingTime).format("HH:mm"),
+                e.metadataId.substr(0, 6),
+                e.packet, e.incremental,
+                e.href.replace(/https:\/\//, ''), e.size, e.selector);
 
             if(e.selector == ".ytp-title-channel") {
                 metadata = videoparser.adTitleChannel(envelop);
@@ -104,8 +114,6 @@ async function newLoop() {
         return [ e, _.omit(metadata, ['html']) ];
     });
 
-    debug("Usable HTMLs %d/%d", _.size(_.compact(analysis)), _.size(htmls.content));
-
     /* this is meant to execute one db-access per time,
      * and avoid any collision behavior. */
     _.compact(analysis).reduce( (previousPromise, blob) => {
@@ -118,23 +126,25 @@ async function newLoop() {
      * skipped by _.compact all the null in the lists,
      * should be marked as processed */
     const remaining = _.reduce(_.compact(analysis), function(memo, blob) {
-        debug("%s and after %s", 
-        _.size(memo),
-        _.size(_.reject(memo, { id: blob[0].id })));
-
         return _.reject(memo, { id: blob[0].id });
     }, htmls.content);
 
-    debug("Stripped HTMLs %d", _.size(remaining));
+    debug("Usable HTMLs %d/%d - marking as processed the useless %d HTMLs", 
+        _.size(_.compact(analysis)), _.size(htmls.content), _.size(remaining));
+
     _.reduce(remaining, (previousPromise, html) => {
         return previousPromise.then(() => {
             return automo.updateMetadata(html, null);
         });
     }, Promise.resolve());
 
-    await sleep(FREQUENCY * 1000)
-    /* infinite recursive loop */
-    await newLoop();
+    if(!singleUse || htmls.overflow) {
+        await sleep(FREQUENCY * 1000)
+        await newLoop();
+    } else {
+        console.log("Single execution done!")
+        process.exit(0);
+    }
 }
 
 function sleep(ms) {

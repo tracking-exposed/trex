@@ -163,19 +163,25 @@ function parseSingleTry(D, memo, spec) {
         return memo;
     }
 
-    if(!spec.selected && _.size(elems) > 1)
-        debug("%s with %s gives %d elements. only the 1st kept", spec.name, spec.selector, _.size(elems));
+    if(!spec.selected && _.size(elems) > 1) {
+        debug("%s with %s gives %d elements. only the 1st kept",
+            spec.name, spec.selector, _.size(elems));
+    }
 
-    if(spec.selected)
-        debug("this look like a too overcomplex framework to define scraper... %d", spec.selected);
+    if(spec.selected) {
+        debug("this look like a too overcomplex framework to define scraper... %d",
+            spec.selected);
+    }
 
     const source = spec.selected ?  _.nth(elems, spec.selected) : _.first(elems);
 
     try {
         const candidate = source[spec.func];
         if(_.size(candidate)) {
-            if(memo)
-                debug("Replacing [%s] with [%s] by %s", memo, candidate, spec.name);
+            if(memo) {
+                // debug("Not replacing [%s] with [%s] by %s", memo, candidate, spec.name);
+                return memo;
+            }
             return candidate;
         }
     } catch(error) {
@@ -201,9 +207,16 @@ function mineAuthorInfo(D) {
         const authorName = D.querySelector('a.ytd-video-owner-renderer').parentNode.querySelectorAll('a')[1].textContent;
         const authorSource = D.querySelector('a.ytd-video-owner-renderer').parentNode.querySelectorAll('a')[0].getAttribute('href');
 
-        debug("%s and %s should lead to the same youtube-content-page", 
-            D.querySelector('a.ytd-video-owner-renderer').parentNode.querySelectorAll('a')[1].getAttribute('href'),
-            authorSource );
+        if( D.querySelector('a.ytd-video-owner-renderer')
+                .parentNode
+                .querySelectorAll('a')[1]
+                .getAttribute('href') != authorSource ) {
+            debug("%s and %s should lead to the same youtube-content-page", 
+                D.querySelector('a.ytd-video-owner-renderer')
+                    .parentNode
+                    .querySelectorAll('a')[1]
+                    .getAttribute('href'), authorSource );
+        }
 
         return { authorName, authorSource };
     
@@ -243,7 +256,7 @@ function processVideo(D) {
     /* related + sponsored */
     let related = [];
     try {
-        debug("related videos to be looked at: %d", _.size(D.querySelectorAll('ytd-compact-video-renderer')));
+        // debug("related videos to be looked at: %d", _.size(D.querySelectorAll('ytd-compact-video-renderer')));
         related = _.map(D.querySelectorAll('ytd-compact-video-renderer'), relatedMetadata);
     } catch(error) {
         throw new Error(`Unable to mine related: ${error.message}, ${error.stack.substr(0, 220)}...`);
@@ -252,7 +265,7 @@ function processVideo(D) {
     let relatedN = D.querySelectorAll('ytd-compact-video-renderer').length;
 
     if(relatedN < 20) {
-        debug("Because the related video are less than 20 (%d) trying the method2 of related extraction", relatedN);
+        // debug("Because the related video are less than 20 (%d) trying the method2 of related extraction", relatedN);
         const f = D.querySelectorAll('[aria-label]')
         const selected = _.compact(_.map(f, function(e, i) {
             if(e.parentNode.parentNode.tagName != 'DIV' || e.parentNode.tagName != 'H3')
@@ -358,8 +371,18 @@ function videoAd(envelop) {
     if(!envelop.jsdom.querySelector('.ytp-ad-text'))
         return null;
 
-    console.log(envelop.jsdom.querySelector('body').textContent);
-    return { ad: envelop.jsdom.querySelector('.ytp-ad-text').textContent };
+    let candidate1 = envelop.jsdom.querySelector('.ytp-ad-button-text').textContent;
+    let candidate2 = envelop.jsdom.querySelector('.ytp-ad-text').textContent;
+
+    if(_.size(candidate1))
+        return { ad: candidate1 };
+    else if (_.size(candidate2))
+        return { ad: candidate2 };
+    else {
+        debug("videoAd: Nothing extracted from %s", envelop.impression.id);
+        return null;
+    }
+
 }
 function overlay(envelop) { 
     if(
