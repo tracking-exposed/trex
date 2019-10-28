@@ -1,14 +1,14 @@
 const _ = require('lodash');
 const moment = require('moment');
 const debug = require('debug')('routes:public');
-const nconf = require('nconf');
 
 const params = require('../lib/params');
 const automo = require('../lib/automo');
 const CSV = require('../lib/CSV');
 
-// in regards of last metadata and by videoId
+// This variables is used as cap in every readLimit below
 const PUBLIC_AMOUNT_ELEMS = 110;
+// This is in regards of the 'last' API cache, (which might be discontinued?)
 const CACHE_SECONDS = 120;
 
 const cache = {
@@ -110,19 +110,22 @@ async function getRelated(req) {
 };
 
 async function getVideoCSV(req) {
-    const MAXENTRY = 800;
+    // /api/v1/videoCSV/:query/:amount
+    const MAXENTRY = 2800;
     const { amount, skip } = params.optionParsing(req.params.paging, MAXENTRY);
     debug("getVideoCSV %s, amount %d skip %d (default %d)", req.params.query, amount, skip, MAXENTRY);
     const byrelated = await automo.getRelatedByVideoId(req.params.query, { amount, skip} );
     const csv = CSV.produceCSVv1(byrelated);
-    debug("VideoCSV: produced %d bytes", _.size(csv));
+    const filename = 'video-' + req.params.query + "-" + moment().format("YY-MM-DD") + ".csv"
+    debug("VideoCSV: produced %d bytes, returning %s", _.size(csv), filename);
+
     if(!_.size(csv))
         return { text: "Error, Zorry: 🤷" };
 
     return {
         headers: {
             "Content-Type": "csv/text",
-            "content-disposition": "attachment; filename=video-"+ req.params.query+".csv"
+            "Content-Disposition": "attachment; filename=" + filename
         },
         text: csv,
     };
@@ -134,10 +137,25 @@ async function getByAuthor(req) {
 
     const { amount, skip } = params.optionParsing(req.params.paging, PUBLIC_AMOUNT_ELEMS);
     debug("getByAuthor %s amount %d skip %d", req.params.query, amount, skip);
-    const authorStruct = await automo.getMetadataFromAuthor({ videoId: req.params.query }, { amount, skip});
-    debug("getByAuthor returns %d", _.size(authorStruct.content));
+
+    let authorStruct;
+    try {
+        authorStruct = await automo.getMetadataFromAuthor({
+            videoId: req.params.query
+        }, { amount, skip});
+    } catch(e) {
+        debug("getByAuthor error: %s", e.message);
+        return {
+            json: {
+                error: true,
+                message: e.message
+            }
+        }
+    }
 
     const authorName = authorStruct.authorName;
+    debug("getByAuthor returns %d elements from %s",
+        _.size(authorStruct.content), authorSource);
 
     const publicFields = ['id', 'title', 'savingTime', 'videoId',
         'linkinfo', 'viewInfo', 'related', 'authorName',

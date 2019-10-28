@@ -42,7 +42,8 @@ const YT_VIDEOTITLE_SELECTOR = 'h1.title';
 const bo = chrome || browser;
 
 // variable used to spot differences due to refresh and url change
-let randomUUID = null;
+let randomUUID = "INIT" + Math.random().toString(36).substring(2, 13) +
+                Math.random().toString(36).substring(2, 13);
 
 // Boot the user script. This is the first function called.
 // Everything starts from here.
@@ -129,7 +130,7 @@ function videoSeen(path) {
         path,
         position: 2,
         text: 'video seen',
-        duration: 7500,
+        duration: 11500,
     });
     $("#video-seen").css('background-color', 'green');
     $("#video-seen").css('cursor', 'cell');
@@ -210,14 +211,11 @@ function hrefUpdateMonitor() {
         // clones and drop them server side.
         // also, here is cleaned the cache declared below
         if(diff) {
-            console.log("Location shift spotted!", lastVideoURL, window.location.href);
             phase('video.seen');
             cache = [];
             refreshUUID();
         }
 
-        // if the loader is going, is debugged but not reported,
-        // or the HTML and URL mismatch 
         if( diff && $("#progress").is(':visible') ) {
             console.log(`Waiting loading complete for ${window.location.href}...`);
             return false;
@@ -230,7 +228,7 @@ function hrefUpdateMonitor() {
         if(changeHappen()) {
             document
                 .querySelectorAll(YT_VIDEOTITLE_SELECTOR)
-                .forEach(function() {
+                .forEach(function() { /*
                     console.log("Video Selector match in ", 
                         window.location.href,
                         ", sending",
@@ -238,7 +236,7 @@ function hrefUpdateMonitor() {
                         " <- ",
                         $(YT_VIDEOTITLE_SELECTOR).length,
                         $(YT_VIDEOTITLE_SELECTOR).text()
-                    );
+                    ); */
                     if( testElement($('ytd-app').html(), 'ytd-app') )
                         phase('video.send');
                 });
@@ -271,11 +269,6 @@ function testElement(nodeHTML, selector) {
 
     cache.push(s);
 
-    if(!randomUUID) {
-        refreshUUID();
-        console.log("forced first randomUUID", randomUUID);
-    }
-
     hub.event('newVideo', {
         element: nodeHTML,
         href: window.location.href,
@@ -283,13 +276,13 @@ function testElement(nodeHTML, selector) {
         selector,
         size: s,
         randomUUID,
-    });
+    }); /*
     console.log("->",
         _.size(cache),
         "new element sent, selector", selector,
         Date(), "size", s,
         cache,
-    );
+    ); */
     return true;
 }
 
@@ -347,18 +340,14 @@ function refreshUUID() {
             // has this with the user publicKey, so if someone wants to 
             // corrupt their data: they can ¯\_(ツ)_/¯
             randomUUID = Math.random().toString(36).substring(2, 15) +
-                Math.random().toString(36).substring(2, 15);
+                Math.random().toString(36).substring(2, 15); /*
             console.log(
                 "-> It is more than", REFERENCE, timed.asSeconds(), 
-                "Refreshed randomUUID", randomUUID);
-        } else  {
-            console.log("-> It is less then", REFERENCE, timed.asSeconds());
+                "Refreshed randomUUID", randomUUID); */
+        } else { /*
+            console.log("-> It is less then", REFERENCE, timed.asSeconds()); */
         }
     };
-    if(!lastCheck && !randomUUID) {
-        randomUUID = Math.random().toString(36).substring(2, 15) +
-            Math.random().toString(36).substring(2, 15);
-    }
     lastCheck = moment();
 }
 

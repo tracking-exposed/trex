@@ -9,7 +9,7 @@ const CSV = require('../lib/CSV');
 async function getPersonal(req) {
     const DEFMAX = 40;
     const k =  req.params.publicKey;
-    if(_.size(k) < 30)
+    if(_.size(k) < 26)
         return { json: { "message": "Invalid publicKey", "error": true }};
 
     const { amount, skip } = params.optionParsing(req.params.paging, DEFMAX);
@@ -28,7 +28,7 @@ async function getPersonal(req) {
 async function getPersonalCSV(req) {
     const CSV_MAX_SIZE = 1000;
     const k =  req.params.publicKey;
-    if(_.size(k) < 30)
+    if(_.size(k) < 26)
         return { json: { "message": "Invalid publicKey", "error": true }};
 
     const data = await automo.getMetadataByPublicKey(k, { amount: CSV_MAX_SIZE, skip: 0 });
@@ -40,10 +40,11 @@ async function getPersonalCSV(req) {
     if(!_.size(csv))
         return { text: "Error, Zorry: 🤷" };
 
+    const filename = 'personal-yttrex-copy-' + moment().format("YY-MM-DD") + ".csv"
     return {
         headers: {
             "Content-Type": "csv/text",
-            "content-disposition": "attachment; filename=personal-yttrex.csv"
+            "Content-Disposition": "attachment; filename=" + filename
         },
         text: csv,
     };
@@ -52,7 +53,7 @@ async function getPersonalCSV(req) {
 async function getPersonalRelated(req) {
     const DEFMAX = 40;
     const k =  req.params.publicKey;
-    if(_.size(k) < 30)
+    if(_.size(k) < 26)
         return { json: { "message": "Invalid publicKey", "error": true }};
 
     const { amount, skip } = params.optionParsing(req.params.paging, DEFMAX);
@@ -90,7 +91,7 @@ async function getEvidences(req) {
      * own evidences and allow specification of which is the field to be queried.
      * It is used in our interface with 'id' */
     const k =  req.params.publicKey;
-    if(_.size(k) < 30)
+    if(_.size(k) < 26)
         return { json: { "message": "Invalid publicKey", "error": true }};
 
     const allowFields = ['tagId', 'id', 'videoId'];
@@ -107,7 +108,7 @@ async function getEvidences(req) {
 
 async function removeEvidence(req) {
     const k =  req.params.publicKey;
-    if(_.size(k) < 30)
+    if(_.size(k) < 26)
         return { json: { "message": "Invalid publicKey", "error": true }};
 
     const id = req.params.id;

@@ -11,15 +11,20 @@ const Popup = React.createClass({
     render () {
         return (
             <div style={styles}>
-                <p>You are partecipating in 
-                    <span> </span>
-                    <a href='https://tracking.exposed'>Tracking Exposed</a> 
+                <p>
+                    <a target="_blank" href='https://tracking.exposed'>Tracking Exposed</a> 
                     <span> </span>
                     — 
                     <span> </span>
                     access to your data:
                 </p>
                 <InfoBox {...this.props} />
+                <smaller>Running on 
+                    <span> </span>
+                    <a target="_blank" href="https://github.com/tracking-exposed/yttrex/">
+                        free software
+                    </a>, we welcome contributions.
+                </smaller>
             </div>
         );
     }

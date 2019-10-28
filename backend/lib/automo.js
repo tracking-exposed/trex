@@ -19,15 +19,35 @@ async function getSummaryByPublicKey(publicKey, options) {
 
     const supporter = await mongo3.readOne(mongoc,
         nconf.get('schema').supporters, { publicKey });
-    const metadata = await mongo3.readLimit(mongoc,
+
+    if(!supporter || !supporter.publicKey)
+        throw new Error("Authentication failure");
+
+    const metadata1 = await mongo3.readLimit(mongoc,
         nconf.get('schema').metadata, { watcher: supporter.p }, { savingTime: -1 },
         options.amount, options.skip);
-    const total = await mongo3.count(mongoc,
+    const metadata2 = await mongo3.readLimit(mongoc,
+        nconf.get('schema').metadata, { publicKey: supporter.publicKey }, { savingTime: -1 },
+        options.amount, options.skip);
+
+    const total1 = await mongo3.count(mongoc,
         nconf.get('schema').metadata, { watcher: supporter.p });
+    const total2 = await mongo3.count(mongoc,
+        nconf.get('schema').metadata, { publicKey: supporter.publicKey })
+
     await mongoc.close();
+
+    // This is an horrible way to manage the two versions, but ATM :shrug emoji:
+    debug("Temporarly workaround: data [v1 %d v2 %d], totals [%d %d]",
+        _.size(metadata1), _.size(metadata2),
+        total1, total2);
+
+    const metadata = _.concat(metadata1, metadata2);
+    const total = total1 + total2;
 
     const fields = ['id','videoId', 'savingTime', 'title', 'authorName', 'authorSource', 'relative', 'relatedN' ];
     const recent = _.map(metadata, function(e) {
+        console.log(JSON.stringify(e));
         e.relative = moment.duration( moment(e.savingTime) - moment() ).humanize() + " ago";
         return _.pick(e, fields);
     })
@@ -65,8 +85,8 @@ async function getMetadataFromAuthor(filter, options) {
     const sourceVideo = await mongo3.readOne(mongoc,
         nconf.get('schema').metadata, filter);
 
-    if(!sourceVideo.id)
-        throw new Error("Invalid videoId");
+    if(!sourceVideo || !sourceVideo.id)
+        throw new Error("Video not found, invalid videoId");
 
     const videos = await mongo3.readLimit(mongoc,
         nconf.get('schema').metadata, { authorSource: sourceVideo.authorSource}, 
@@ -184,7 +204,7 @@ async function write(where, what) {
     let retv;
     try {
         await mongo3.insertMany(mongoc, where, what);
-        retv = { error:false, ok: _.size(what) };
+        retv = { error: false, ok: _.size(what) };
     } catch(error) {
         debug("%s %j", error.message, _.keys(errors));
         retv = { error: true, info: error.message };
@@ -221,15 +241,21 @@ async function tofu(publicKey, version) {
     return supporter;
 }
 
-async function getLastHTMLs(filter) {
+async function getLastHTMLs(filter, skip) {
 
     const HARDCODED_LIMIT = 20;
     const mongoc = await mongo3.clientConnect({concurrency: 1});
 
-    // debug("getLastHTMLs: %j", filter);
     const htmls = await mongo3.readLimit(mongoc,
         nconf.get('schema').htmls, filter,
-        { savingTime: 1}, HARDCODED_LIMIT, 0);
+        { savingTime: 1}, 
+        HARDCODED_LIMIT, 
+        skip ? skip : 0);
+
+    debug("getLastHTMLs: %j -> %d (overflow %s)%s",
+        filter, _.size(htmls),
+        (_.size(htmls) == HARDCODED_LIMIT),
+        skip ? "skip " + skip : "");
 
     mongoc.close();
     return {
