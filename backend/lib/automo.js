@@ -34,10 +34,13 @@ async function getSummaryByPublicKey(publicKey, options) {
     const total1 = await mongo3.count(mongoc,
         nconf.get('schema').metadata, { watcher: supporter.p });
     const total2 = await mongo3.count(mongoc,
-        nconf.get('schema').metadata, { publicKey: supporter.publicKey })
+        nconf.get('schema').metadata, { publicKey: supporter.publicKey, title: {
+            $exists: true
+        } });
 
     await mongoc.close();
 
+    // TODO remove any ref to v1
     // This is an horrible way to manage the two versions, but ATM :shrug emoji:
     debug("Temporarly workaround: data [v1 %d v2 %d], totals [%d %d]",
         _.size(metadata1), _.size(metadata2),
@@ -315,8 +318,8 @@ async function updateMetadataEntry(mongoc, html, newsection) {
     let updates = 0;
     let exists = await mongo3.readOne(mongoc, nconf.get('schema').metadata, { id: html.metadataId });
 
-    /* this is ment to add only fields with values, and to notify duplicated
-     * or conflictual metadata mined */
+    /* this is meant to add only fields with values, and to notify duplicated
+     * conflictual metadata mined, or extend labels as list */
     const up = _.reduce(newsection, function(memo, value, key) {
 
         if(!value)
@@ -341,12 +344,6 @@ async function updateMetadataEntry(mongoc, html, newsection) {
 
         return memo;
     }, exists);    
-
-    if(_.isEqual(up, exists)) {
-        debug("...Nothing to be updated in [%s] - %d with a new <%s>",
-            exists.title, _.size(_.keys(exists)), html.selector);
-        return null;
-    }
 
     debug("Updating metadata %s with %s (total of %d updates)",
         html.metadataId, html.selector, updates);

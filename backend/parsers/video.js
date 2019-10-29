@@ -326,7 +326,14 @@ function process(envelop) {
         return null;
     }
 
-    const extracted = processVideo(envelop.jsdom);
+    let extracted = null;
+    try {
+        extracted = processVideo(envelop.jsdom);
+    } catch(e) {
+        debug("Error in processing %s (%d): %s",
+            envelop.impression.href, envelop.impression.size, e.message);
+        return null;
+    }
 
     const re = _.filter(extracted.related, { error: true });
     stats.suberror += _.size(re);

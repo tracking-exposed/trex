@@ -49,7 +49,7 @@ async function newLoop() {
     if(!_.size(htmls.content)) {
         nodatacounter++;
         if( (nodatacounter % 10) == 0) {
-            debug("%d\tno data at the last query: %j",
+            debug("%d no data at the last query: %j",
                 nodatacounter, htmlFilter);
         }
         lastExecution = moment().subtract(2, 'm').toISOString();
@@ -115,24 +115,25 @@ async function newLoop() {
             return null;
         }
 
+        metadata.href = _
+            .replace(e.href, /\?.*/, '')
+            .replace(/\&.*/,'');
+
         return [ e, _.omit(metadata, ['html']) ];
     });
 
-    /* this is meant to execute one db-access per time,
-     * and avoid any collision behavior. */
-    _.compact(analysis).reduce( (previousPromise, blob) => {
-        return previousPromise.then(() => {
-            return automo.updateMetadata(blob[0], blob[1]);
-        });
-    }, Promise.resolve());
+    const meaningful = _.compact(analysis);
+
+    for (const entry of meaningful) {
+        await automo.updateMetadata(entry[0], entry[1]);
+    }
 
     /* reset no-data-counter if data has been sucessfully processed */
     if(_.size(_.compact(analysis)))
         nodatacounter = 0;
 
-    /* also the HTML cutted off the pipeline, the many
-     * skipped by _.compact all the null in the lists,
-     * should be marked as processed */
+    /* also the HTML cutted off the pipeline, the many skipped 
+     * by _.compact all the null in the lists, should be marked as processed */
     const remaining = _.reduce(_.compact(analysis), function(memo, blob) {
         return _.reject(memo, { id: blob[0].id });
     }, htmls.content);
@@ -140,11 +141,9 @@ async function newLoop() {
     debug("Usable HTMLs %d/%d - marking as processed the useless %d HTMLs", 
         _.size(_.compact(analysis)), _.size(htmls.content), _.size(remaining));
 
-    _.reduce(remaining, (previousPromise, html) => {
-        return previousPromise.then(() => {
-            return automo.updateMetadata(html, null);
-        });
-    }, Promise.resolve());
+    for (const html in remaining) {
+        await automo.updateMetadata(html, null);
+    }
 
     if(!singleUse || htmls.overflow) {
         await sleep(FREQUENCY * 1000)
