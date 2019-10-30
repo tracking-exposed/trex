@@ -216,11 +216,10 @@ function hrefUpdateMonitor() {
             cache = [];
             refreshUUID();
         }
-
         if(!diff) {
             lastVideoCNT++;
             if(lastVideoCNT > 5) {
-                console.log(lastVideoCNT, "too many repetition: stop");
+                // console.log(lastVideoCNT, "too many repetition: stop");
                 return;
             }
         }
@@ -228,7 +227,7 @@ function hrefUpdateMonitor() {
         lastVideoURL = window.location.href;
         document
             .querySelectorAll(YT_VIDEOTITLE_SELECTOR)
-            .forEach(function() { 
+            .forEach(function() { /*
                 console.log("Video Selector match in ", 
                     window.location.href,
                     ", sending",
@@ -236,11 +235,10 @@ function hrefUpdateMonitor() {
                     " <- ",
                     $(YT_VIDEOTITLE_SELECTOR).length,
                     $(YT_VIDEOTITLE_SELECTOR).text()
-                ); 
+                ); */
                 if( testElement($('ytd-app').html(), 'ytd-app') )
                     phase('video.send');
             });
-
     }, videoPeriodicTimeout);
 }
 
@@ -263,7 +261,6 @@ function testElement(nodeHTML, selector) {
 
     if(exists)
         return false;
-
     if(!s)
         return false;
 
