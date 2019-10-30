@@ -335,6 +335,11 @@ function process(envelop) {
         return null;
     }
 
+    extracted.videoId = _
+        .replace(envelop.impression.href, /.*v=/, '')
+        .replace(/\?.*/, '')
+        .replace(/\&.*/,'');
+
     const re = _.filter(extracted.related, { error: true });
     stats.suberror += _.size(re);
     const ve = _.filter(extracted.viewInfo, { error: true });
@@ -378,13 +383,13 @@ function videoAd(envelop) {
     if(!envelop.jsdom.querySelector('.ytp-ad-text'))
         return null;
 
-    let candidate1 = envelop.jsdom.querySelector('.ytp-ad-button-text').textContent;
-    let candidate2 = envelop.jsdom.querySelector('.ytp-ad-text').textContent;
+    let candidate1 = envelop.jsdom.querySelector('.ytp-ad-button-text');
+    let candidate2 = envelop.jsdom.querySelector('.ytp-ad-text');
 
-    if(_.size(candidate1))
-        return { ad: candidate1 };
-    else if (_.size(candidate2))
-        return { ad: candidate2 };
+    if(candidate1 && _.size(candidate1.textContent))
+        return { ad: candidate1.textContent };
+    else if (candidate2 && _.size(candidate2.textContent))
+        return { ad: candidate2.textContent };
     else {
         debug("videoAd: Nothing extracted from %s", envelop.impression.id);
         return null;

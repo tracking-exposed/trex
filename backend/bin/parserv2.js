@@ -76,11 +76,7 @@ async function newLoop() {
             jsdom: new JSDOM(e.html.replace(/\n\ +/g, ''))
                     .window.document,
         }
-        envelop.impression.videoId = _
-            .replace(e.href, /.*v=/, '')
-            .replace(/\?.*/, '')
-            .replace(/\&.*/,'');
-
+      
         let metadata = null;
         try {
             debug("%s [%s] %s %d.%d %s %s %s",
@@ -115,11 +111,7 @@ async function newLoop() {
             return null;
         }
 
-        metadata.href = _
-            .replace(e.href, /\?.*/, '')
-            .replace(/\&.*/,'');
-
-        return [ e, _.omit(metadata, ['html']) ];
+        return [ envelop.impression, _.omit(metadata, ['html']) ];
     });
 
     const meaningful = _.compact(analysis);
