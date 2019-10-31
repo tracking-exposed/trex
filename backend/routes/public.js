@@ -9,7 +9,7 @@ const CSV = require('../lib/CSV');
 // This variables is used as cap in every readLimit below
 const PUBLIC_AMOUNT_ELEMS = 110;
 // This is in regards of the 'last' API cache, (which might be discontinued?)
-const CACHE_SECONDS = 3600;
+const CACHE_SECONDS = 600;
 
 const cache = {
     seconds: CACHE_SECONDS,
@@ -40,8 +40,8 @@ async function getLast(req) {
                     'videoId', 'authorName', 'authorSource', 'likeInfo',
                     'publicationString', 'relatedN' ];
 
-    const amount = 4;
-    const skip = _.random(10, 20);
+    const amount = 7;
+    const skip = _.random(10, 30);
 
     if(_.isNull(cache.content) || (cache.next && moment().isAfter(cache.next)) ) {
         // if not initialized ^^^^ or if the cache time is expired: do the query
@@ -135,7 +135,8 @@ async function getVideoCSV(req) {
 
 async function getByAuthor(req) {
     /* this API do not return the standard format with videos and related inside,
-     * but a data ready for the visualization provided */
+     * but a data format ready for the visualization provided - this has been 
+     * temporarly suspended: https://github.com/tracking-exposed/youtube.tracking.exposed/issues/18 */
 
     const { amount, skip } = params.optionParsing(req.params.paging, PUBLIC_AMOUNT_ELEMS);
     debug("getByAuthor %s amount %d skip %d", req.params.query, amount, skip);
@@ -159,9 +160,8 @@ async function getByAuthor(req) {
     debug("getByAuthor returns %d elements from %s",
         _.size(authorStruct.content), authorName);
 
-    const publicFields = ['id', 'title', 'savingTime', 'videoId',
-        'linkinfo', 'viewInfo', 'related', 'authorName',
-        'authorSource', 'publicationString' ];
+    const publicFields = ['id', 'title', 'savingTime', 'videoId', 'linkinfo',
+        'viewInfo', 'related', 'authorName', 'authorSource', 'publicationString' ];
 
     const clean = _.map(authorStruct.content, function(e) {
         // id is anonymized in this way, and is still an useful unique id
