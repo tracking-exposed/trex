@@ -176,11 +176,13 @@ async function getRelatedByVideoId(videoId, options) {
             { $sort: { savingTime: -1 }},
             { $skip: options.skip },
             { $limit : options.amount },
-            { $lookup: { from: 'videos', localField: 'id', foreignField: 'id', as: 'videos' }},
+            // { $lookup: { from: 'videos', localField: 'id', foreignField: 'id', as: 'videos' }},
+            // TODO verify how this work between v1 and v2 transition
             { $unwind: '$related' },
             { $sort: { savingTime: -1 }}
         ]);
     await mongoc.close();
+    debug("Aggregate of getRelated: %d entries", _.size(related));
     return _.map(related, function(r) {
         return {
             id: r.id.substr(0, 20),

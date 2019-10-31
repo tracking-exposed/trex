@@ -9,7 +9,7 @@ const CSV = require('../lib/CSV');
 // This variables is used as cap in every readLimit below
 const PUBLIC_AMOUNT_ELEMS = 110;
 // This is in regards of the 'last' API cache, (which might be discontinued?)
-const CACHE_SECONDS = 120;
+const CACHE_SECONDS = 3600;
 
 const cache = {
     seconds: CACHE_SECONDS,
@@ -40,11 +40,12 @@ async function getLast(req) {
                     'videoId', 'authorName', 'authorSource', 'likeInfo',
                     'publicationString', 'relatedN' ];
 
-    const { amount, skip } = params.optionParsing(req.params.paging, PUBLIC_AMOUNT_ELEMS);
+    const amount = 4;
+    const skip = _.random(10, 20);
 
     if(_.isNull(cache.content) || (cache.next && moment().isAfter(cache.next)) ) {
         // if not initialized ^^^^ or if the cache time is expired: do the query
-        const last = await automo.getMetadataByFilter({}, { amount, skip });
+        const last = await automo.getMetadataByFilter({ title: { $exists: true }}, { amount, skip });
 
         let freshContent = _.map(last, function(meta) {
             const retval = _.pick(meta, fields);
@@ -64,13 +65,14 @@ async function getLast(req) {
             computedAt: moment(),
             next: moment().add(cache.seconds, 'seconds')
         };
+        debug("Returning %d new random videos %j, which become part of a %d minutes long cache",
+            amount, _.map(freshContent, 'title'), CACHE_SECONDS / 60);
         return formatReturn(cacheFormat);
     }
     else {
-        // cached
+        debug("Returning %d cached random videos", amount)
         return formatReturn();
     }
-
 };
 
 async function getVideoId(req) {
@@ -95,17 +97,17 @@ async function getVideoId(req) {
 
 async function getRelated(req) {
     const { amount, skip } = params.optionParsing(req.params.paging, PUBLIC_AMOUNT_ELEMS);
-    debug("getRelated %s looks into all the video, amount %d skip %d", req.params.query, amount, skip);
+    debug("getRelated %s query directly 'related.videoId'. amount %d skip %d", req.params.query, amount, skip);
     const entries = await automo.getMetadataByFilter({ "related.videoId": req.params.query }, { amount, skip});
     const evidences = _.map(entries, function(meta) {
         meta.related = _.map(meta.related, function(e) {
-            return _.pick(e, ['title', 'source', 'index', 'videoId']);
+            return _.pick(e, ['title', 'source', 'index', 'foryou', 'videoId']);
         });
         meta.timeago = moment.duration( meta.savingTime - moment() ).humanize();
         _.unset(meta, '_id');
         return meta;
     });
-    debug("getRelated: found %d matches about %s", _.size(evidences), req.params.query);
+    debug("getRelated: returning %d matches about %s", _.size(evidences), req.params.query);
     return { json: evidences };
 };
 
@@ -155,7 +157,7 @@ async function getByAuthor(req) {
 
     const authorName = authorStruct.authorName;
     debug("getByAuthor returns %d elements from %s",
-        _.size(authorStruct.content), authorSource);
+        _.size(authorStruct.content), authorName);
 
     const publicFields = ['id', 'title', 'savingTime', 'videoId',
         'linkinfo', 'viewInfo', 'related', 'authorName',
