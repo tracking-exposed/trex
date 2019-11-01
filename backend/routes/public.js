@@ -45,7 +45,11 @@ async function getLast(req) {
 
     if(_.isNull(cache.content) || (cache.next && moment().isAfter(cache.next)) ) {
         // if not initialized ^^^^ or if the cache time is expired: do the query
-        const last = await automo.getMetadataByFilter({ title: { $exists: true }}, { amount, skip });
+        const last = await automo.getMetadataByFilter({
+            title: { $exists: true },
+            relatedN: { $gt: 10 },
+            videoId: { $exists: true }
+        }, { amount, skip });
 
         let freshContent = _.map(last, function(meta) {
             const retval = _.pick(meta, fields);
