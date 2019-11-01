@@ -92,6 +92,7 @@ async function getVideoId(req) {
             _.unset(rv, 'longlabel');
             return rv;
         });
+        meta.related = _.reverse(meta.related);
         _.unset(meta, '_id');
         return meta;
     });

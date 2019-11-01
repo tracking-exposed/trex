@@ -48,7 +48,7 @@ async function newLoop() {
     const htmls = await automo.getLastHTMLs(htmlFilter);
     if(!_.size(htmls.content)) {
         nodatacounter++;
-        if( (nodatacounter % 10) == 0) {
+        if( (nodatacounter % 10) == 1) {
             debug("%d no data at the last query: %j",
                 nodatacounter, htmlFilter);
         }
