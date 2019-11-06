@@ -60,7 +60,8 @@ async function newLoop() {
 
     if(!htmls.overflow) {
         lastExecution = moment().subtract(2, 'm').toISOString();
-        debug("Matching objects %d, overflow %s",
+        debug("[%s] Matching objects %d, overflow %s",
+            moment.duration(htmls.content[0].savingTime).humanize(),
             _.size(htmls.content), htmls.overflow);
     }
     else {
@@ -139,7 +140,6 @@ async function newLoop() {
 
     if(!singleUse || htmls.overflow) {
         await sleep(FREQUENCY * 1000)
-        await newLoop();
     } else {
         console.log("Single execution done!")
         process.exit(0);
@@ -152,8 +152,13 @@ function sleep(ms) {
     })
 }
 
+async function wrapperLoop() {
+    while(true)
+        await newLoop();
+}
+
 try {
-    newLoop();
+    wrapperLoop();
 } catch(e) {
     console.log("Error in newLoop", e.message);
 }
