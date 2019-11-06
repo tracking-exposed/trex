@@ -20,6 +20,7 @@ const id = nconf.get('id');
 let singleUse = !!nconf.get('single');
 let nodatacounter = 0;
 let lastExecution = moment().subtract(backInTime, 'minutes').toISOString();
+let computedFrequency = FREQUENCY;
 
 if(backInTime != 10) {
     const humanized = moment.duration(
@@ -53,9 +54,10 @@ async function newLoop() {
                 nodatacounter, htmlFilter);
         }
         lastExecution = moment().subtract(2, 'm').toISOString();
-        await sleep(FREQUENCY * 1000)
-        /* infinite recursive loop */
-        await newLoop();
+        computedFrequency = FREQUENCY;
+        return;
+    } else {
+        computedFrequency = 0;
     }
 
     if(!htmls.overflow) {
@@ -139,7 +141,7 @@ async function newLoop() {
     }
 
     if(!singleUse || htmls.overflow) {
-        await sleep(FREQUENCY * 1000)
+        await sleep(computedFrequency * 1000)
     } else {
         console.log("Single execution done!")
         process.exit(0);
