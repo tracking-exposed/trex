@@ -75,7 +75,7 @@ async function newLoop() {
 
     const analysis = _.map(htmls.content, function(e) { 
         const envelop = {
-            impression: _.omit(e, ['html','publicKey', '_id']),
+            impression: _.omit(e, ['html', '_id']),
             jsdom: new JSDOM(e.html.replace(/\n\ +/g, ''))
                     .window.document,
         }
