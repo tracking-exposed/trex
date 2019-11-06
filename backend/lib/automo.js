@@ -304,13 +304,14 @@ async function updateMetadata(html, newsection) {
 
 async function createMetadataEntry(mongoc, html, newsection) {
     /* this is not exported, it is used only by updateMetadata */
-    exists = {};
+    exists = Object(newsection);
     exists.id = html.metadataId;
     exists.publicKey = html.publicKey;
     exists.savingTime = html.savingTime;
     exists.clientTime = html.clientTime;
     exists.version = 2;
-    exists = _.extend(exists, newsection);    
+
+    debug("Create new metadata [%j]", _.keys(exists));
     await mongo3.writeOne(mongoc, nconf.get('schema').metadata, exists);
     return exists;
 }
@@ -347,8 +348,8 @@ async function updateMetadataEntry(mongoc, html, newsection) {
         return memo;
     }, exists);    
 
-    debug("Updating metadata %s with %s (total of %d updates)",
-        html.metadataId, html.selector, updates);
+    debug("Updating metadata %s with %s (total of %d updates)", html.metadataId, html.selector, updates);
+    _.unset(up, '_id');
     let r = await mongo3.updateOne(mongoc, nconf.get('schema').metadata, { id: html.metadataId }, up );
     return r;
 }
