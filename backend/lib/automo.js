@@ -270,36 +270,48 @@ async function getLastHTMLs(filter, skip) {
 }
 
 async function updateMetadata(html, newsection) {
+    /* this is the exported function: it always update the 'htmls' entry in mongodb
+     * by adding the 'processed' field, and update or create a new entry in 'metadata' */
 
     async function markHTMLandClose(mongoc, html, retval) {
-        await mongo3.updateOne(mongoc, nconf.get('schema').htmls, { id: html.id }, { processed: true });
+        const evalutation = !!retval;
+        await mongo3.updateOne(mongoc, nconf.get('schema').htmls, { id: html.id }, { processed: evalutation });
         await mongoc.close();
         return retval;
     }
 
-    // we should look at the same metadataId in the 
-    // metadata collection, and update new information
-    // if missing 
+    /* we look at the same metadataId in the metadata collection, and update 
+     * new information if missing */
     const mongoc = await mongo3.clientConnect({concurrency: 1});
-    let exists = null;
+    let metadata = null;
 
     if(!html.metadataId) {
-        debug("metadataId is not an ID!");
+        debug("metadataId do not exists and shouldn't happen!");
         return await markHTMLandClose(mongoc, html, null);
     }
 
     try {
-        exists = await createMetadataEntry(mongoc, html, newsection);
-        debug("Created metadata %s from %s with %s", html.metadataId, html.href, html.selector);
+        metadata = await createMetadataEntry(mongoc, html, newsection);
+        debug("Create new metadata +%s %s - (%s) %j",
+            html.metadataId, html.href, html.selector, _.map(metadata, function(value, key) {
+            let isempty = (_.isString(value) && _.size(value) == 0 ) || !value;
+            return '+' + key + (isempty ? "*" : "");
+        }));
+
     } catch(e) {
-        /* the read+write in a single thread seems is not enough to guarantee */
         if(e.code == 11000) {
-            exists = await updateMetadataEntry(mongoc, html, newsection);
+            /* duplicated key? TODO check it this happen again, or, after the (for of), it doesn't */
+            metadata = await updateMetadataEntry(mongoc, html, newsection);
+            debug("Updating metadata %s - %s <%s> %j",
+                html.metadataId, html.href, html.selector, _.map(metadata, function(value, key) {
+                let isempty = (_.isString(value) && _.size(value) == 0 ) || !value;
+                return key + (isempty ? "*" : "");
+            }));
         } else {
             debug("Unexpected error: %s (%d)", e.message, e.code);
         }
     }
-    return await markHTMLandClose(mongoc, html, exists);
+    return await markHTMLandClose(mongoc, html, metadata);
 }
 
 async function createMetadataEntry(mongoc, html, newsection) {
@@ -311,14 +323,12 @@ async function createMetadataEntry(mongoc, html, newsection) {
     exists.clientTime = html.clientTime;
     exists.version = 2;
 
-    debug("Create new metadata [%j]", _.keys(exists));
     await mongo3.writeOne(mongoc, nconf.get('schema').metadata, exists);
     return exists;
 }
 
 async function updateMetadataEntry(mongoc, html, newsection) {
     /* this is not exported, it is used only by updateMetadata */
-    let updates = 0;
     let exists = await mongo3.readOne(mongoc, nconf.get('schema').metadata, { id: html.metadataId });
 
     /* this is meant to add only fields with values, and to notify duplicated
@@ -332,7 +342,7 @@ async function updateMetadataEntry(mongoc, html, newsection) {
         if(typeof current == typeof 'thastrng' && html.selector != 'ytd-app') {
             if(value != current) {
                 _.set(memo, key, [ value, current ]);
-                debugLite("[s] extended string: %s -> %j", key, memo);
+                debugLite("[s] extended string: %s", key);
             }
         }
         else if(typeof current == typeof [] && _.size() && html.selector != 'ytd-app') {
@@ -342,16 +352,14 @@ async function updateMetadataEntry(mongoc, html, newsection) {
             }
         } else {
             _.set(memo, key, value);
-            updates++;
         }
 
         return memo;
     }, exists);    
 
-    debug("Updating metadata %s with %s (total of %d updates)", html.metadataId, html.selector, updates);
     _.unset(up, '_id');
     let r = await mongo3.updateOne(mongoc, nconf.get('schema').metadata, { id: html.metadataId }, up );
-    return r;
+    return up;
 }
 
 

@@ -57,7 +57,7 @@ async function newLoop() {
         computedFrequency = FREQUENCY;
         return;
     } else {
-        computedFrequency = 0;
+        computedFrequency = 0.5;
     }
 
     if(!htmls.overflow) {
@@ -106,7 +106,7 @@ async function newLoop() {
                 return null;
             }
 
-            if(_.isNull(metadata))
+            if(!metadata)
                 return null;
 
         } catch(error) {
@@ -114,12 +114,11 @@ async function newLoop() {
             return null;
         }
 
-        return [ envelop.impression, _.omit(metadata, ['html']) ];
+        return [ envelop.impression, metadata ];
     });
 
-    const meaningful = _.compact(analysis);
 
-    for (const entry of meaningful) {
+    for (const entry of _.compact(analysis)) {
         await automo.updateMetadata(entry[0], entry[1]);
     }
 
@@ -139,13 +138,6 @@ async function newLoop() {
     for (const html in remaining) {
         await automo.updateMetadata(html, null);
     }
-
-    if(!singleUse || htmls.overflow) {
-        await sleep(computedFrequency * 1000)
-    } else {
-        console.log("Single execution done!")
-        process.exit(0);
-    }
 }
 
 function sleep(ms) {
@@ -155,8 +147,14 @@ function sleep(ms) {
 }
 
 async function wrapperLoop() {
-    while(true)
+    while(true) {
         await newLoop();
+        if(singleUse) {
+            console.log("Single execution done!")
+            process.exit(0);
+        }
+        await sleep(computedFrequency * 1000)
+    }
 }
 
 try {

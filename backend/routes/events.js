@@ -175,8 +175,8 @@ async function processEvents2(req) {
 
     const info = _.map(htmls, function(e) {
         return [ e.packet, e.size, e.selector ];
-    })
-    debug("%s: %s", supporter.p, JSON.stringify(info));
+    });
+    debug("%s <- %s", supporter.p, JSON.stringify(info));
 
     /* this is what returns to the web-extension */
     return { json: {
