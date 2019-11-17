@@ -46,7 +46,7 @@ async function getSummaryByPublicKey(publicKey, options) {
         _.size(metadata1), _.size(metadata2),
         total1, total2);
 
-    const metadata = _.sortBy(_.concat(metadata1, metadata2), { savingTime: 1});
+    const metadata = _.sortBy(_.concat(metadata1, metadata2), { savingTime: -1});
     const total = total1 + total2;
 
     const fields = ['id','videoId', 'savingTime', 'title', 'authorName', 'authorSource', 'relative', 'relatedN' ];
