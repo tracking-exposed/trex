@@ -25,14 +25,18 @@ async function getSummaryByPublicKey(publicKey, options) {
         throw new Error("Authentication failure");
 
     const metadata1 = await mongo3.readLimit(mongoc,
-        nconf.get('schema').metadata, { watcher: supporter.p }, { savingTime: -1 },
-        options.amount, options.skip);
+        nconf.get('schema').metadata, { watcher: supporter.p, title: {
+            $exists: true } }, { savingTime: -1 }, options.amount, options.skip);
+
     const metadata2 = await mongo3.readLimit(mongoc,
-        nconf.get('schema').metadata, { publicKey: supporter.publicKey }, { savingTime: -1 },
-        options.amount, options.skip);
+        nconf.get('schema').metadata, { publicKey: supporter.publicKey, title: {
+            $exists: true }}, { savingTime: -1 }, options.amount, options.skip);
 
     const total1 = await mongo3.count(mongoc,
-        nconf.get('schema').metadata, { watcher: supporter.p });
+        nconf.get('schema').metadata, { watcher: supporter.p, title: {
+            $exists: true
+        } });
+
     const total2 = await mongo3.count(mongoc,
         nconf.get('schema').metadata, { publicKey: supporter.publicKey, title: {
             $exists: true
@@ -40,20 +44,18 @@ async function getSummaryByPublicKey(publicKey, options) {
 
     await mongoc.close();
 
-    // TODO remove any ref to v1
-    // This is an horrible way to manage the two versions, but ATM :shrug emoji:
     debug("Temporarly workaround: data [v1 %d v2 %d], totals [%d %d]",
-        _.size(metadata1), _.size(metadata2),
-        total1, total2);
-
-    const metadata = _.sortBy(_.concat(metadata1, metadata2), { savingTime: -1});
-    const total = total1 + total2;
+        _.size(metadata1), _.size(metadata2), total1, total2);
 
     const fields = ['id','videoId', 'savingTime', 'title', 'authorName', 'authorSource', 'relative', 'relatedN' ];
-    const recent = _.map(metadata, function(e) {
+    const metadata = _.map(_.concat(metadata1, metadata2), function(e) {
+        e.savingTime = new Date(e.savingTime);
         e.relative = moment.duration( moment(e.savingTime) - moment() ).humanize() + " ago";
         return _.pick(e, fields);
-    })
+    });
+
+    const total = total1 + total2;
+    const recent = _.reverse(_.sortBy(metadata, 'savingTime'));
     return { supporter, recent, total };
 }
 
@@ -92,14 +94,14 @@ async function getMetadataFromAuthor(filter, options) {
         throw new Error("Video not found, invalid videoId");
 
     const videos = await mongo3.readLimit(mongoc,
-        nconf.get('schema').metadata, { authorSource: sourceVideo.authorSource}, 
+        nconf.get('schema').metadata, { authorSource: sourceVideo.authorSource},
         { savingTime: -1 }, options.amount, options.skip);
 
     const total = await mongo3.count(mongoc,
         nconf.get('schema').metadata, { authorSource: sourceVideo.authorSource});
 
     await mongoc.close();
-    return { 
+    return {
         content: videos,
         total,
         pagination: options,
@@ -254,11 +256,11 @@ async function getLastHTMLs(filter, skip) {
 
     const htmls = await mongo3.readLimit(mongoc,
         nconf.get('schema').htmls, filter,
-        { savingTime: 1}, 
-        HARDCODED_LIMIT, 
+        { savingTime: 1},
+        HARDCODED_LIMIT,
         skip ? skip : 0);
 
-    if(_.size(htmls)) 
+    if(_.size(htmls))
         debug("getLastHTMLs: %j -> %d (overflow %s)%s", filter, _.size(htmls),
             (_.size(htmls) == HARDCODED_LIMIT), skip ? "skip " + skip : "");
 
@@ -280,7 +282,7 @@ async function updateMetadata(html, newsection) {
         return retval;
     }
 
-    /* we look at the same metadataId in the metadata collection, and update 
+    /* we look at the same metadataId in the metadata collection, and update
      * new information if missing */
     const mongoc = await mongo3.clientConnect({concurrency: 1});
     let metadata = null;
@@ -355,7 +357,7 @@ async function updateMetadataEntry(mongoc, html, newsection) {
         }
 
         return memo;
-    }, exists);    
+    }, exists);
 
     _.unset(up, '_id');
     let r = await mongo3.updateOne(mongoc, nconf.get('schema').metadata, { id: html.metadataId }, up );
