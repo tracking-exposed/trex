@@ -360,7 +360,7 @@ async function updateMetadataEntry(mongoc, html, newsection) {
     }, exists);
 
     _.unset(up, '_id');
-    let r = await mongo3.updateOne(mongoc, nconf.get('schema').metadata, { id: html.metadataId }, up );
+    await mongo3.updateOne(mongoc, nconf.get('schema').metadata, { id: html.metadataId }, up );
     return up;
 }
 

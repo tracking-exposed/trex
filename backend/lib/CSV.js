@@ -25,12 +25,8 @@ function produceCSVv1(entries) {
             let swap = _.get(entry, k, "");
             if(k == 'savingTime')
                 memo.csv += moment(swap).toISOString();
-            else if(_.isInteger(swap))
+            else if(_.isInteger(swap)) {
                 memo.csv += swap;
-            else if(k == 'related') {
-                debugger;
-                console.log(JSON.stringify(swap, undefined, 2))
-                console.log("related content!");
             }
             else {
                 swap = _.replace(swap, /"/g, '〃');

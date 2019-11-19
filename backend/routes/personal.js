@@ -28,14 +28,34 @@ async function getPersonal(req) {
 async function getPersonalCSV(req) {
     const CSV_MAX_SIZE = 1000;
     const k =  req.params.publicKey;
-    if(_.size(k) < 26)
-        return { json: { "message": "Invalid publicKey", "error": true }};
 
     const data = await automo.getMetadataByPublicKey(k, { amount: CSV_MAX_SIZE, skip: 0 });
-    const csv = CSV.produceCSVv1(data.metadata);
+    const unwinded = _.reduce(data.metadata, function(memo, evidence) {
+        let exprelated = _.map(evidence.related, function(recommended, i) {
+            if(i >= 20)
+                return null;
+
+            return {
+                recommendedVideoId: recommended.videoId,
+                displayTime: recommended.displayTime,
+                producer: recommended.source,
+                recommendedForYou: recommended.foryou,
+                recommendedTitle: recommended.title,
+                watchedTitle: evidence.title,
+                recommendationOrder: i + 1,
+                savingTime: evidence.savingTime,
+                watchId: evidence.id,
+                id: i + 'x' + evidence.id 
+            };
+        })
+        memo = _.concat(memo, _.compact(exprelated));
+        return memo;
+    }, []);
+    debug("data %d -> unwinded %d", _.size(data.metadata), _.size(unwinded));
+    const csv = CSV.produceCSVv1(unwinded);
 
     debug("getPersonalCSV produced %d bytes from %d entries (max %d)",
-        _.size(csv), _.size(data), CSV_MAX_SIZE);
+        _.size(csv), _.size(data.metadata), CSV_MAX_SIZE);
 
     if(!_.size(csv))
         return { text: "Error, Zorry: 🤷" };
