@@ -45,7 +45,8 @@ async function getPersonalCSV(req) {
                 recommendationOrder: i + 1,
                 savingTime: evidence.savingTime,
                 watchId: evidence.id,
-                id: i + 'x' + evidence.id 
+                id: i + 'x' + evidence.id,
+                watchedAuthor: evidence.authorName
             };
         })
         memo = _.concat(memo, _.compact(exprelated));
