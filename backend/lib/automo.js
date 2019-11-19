@@ -66,12 +66,24 @@ async function getMetadataByPublicKey(publicKey, options) {
     if(!supporter)
         throw new Error("publicKey do not match any user");
 
-    const metadata = await mongo3.readLimit(mongoc,
-        nconf.get('schema').metadata, { watcher: supporter.p }, { savingTime: -1 },
-        options.amount, options.skip);
+    const metadata1 = await mongo3.readLimit(mongoc,
+        nconf.get('schema').metadata, { watcher: supporter.p, title: {
+            $exists: true } }, { savingTime: -1 }, options.amount, options.skip);
+
+    const metadata2 = await mongo3.readLimit(mongoc,
+        nconf.get('schema').metadata, { publicKey: supporter.publicKey, title: {
+            $exists: true }}, { savingTime: -1 }, options.amount, options.skip);
 
     await mongoc.close();
-    return { supporter, metadata };
+
+    debug("Temporarly workaround: data [v1 %d v2 %d]",
+        _.size(metadata1), _.size(metadata2) );
+
+    const latest = _.reverse(_.sortBy(_.concat(metadata1, metadata2), 'savingTime'));
+    return {
+        supporter,
+        metadata: latest
+    };
 };
 
 async function getMetadataByFilter(filter, options) {
