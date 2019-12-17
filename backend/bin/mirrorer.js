@@ -13,7 +13,7 @@ if(!nconf.get('key'))
 const source = nconf.get('source') || 'https://youtube.tracking.exposed';
 const sourceUrl = `${source}/api/v1/mirror/${nconf.get('key')}/`;
 const dest = nconf.get('dest') || 'http://localhost:9000';
-const destUrl = `${dest}/api/v1/events`;
+const destUrl = `${dest}/api/v2/events`;
 
 debug("Fetching latest samples via %s", sourceUrl);
 return request

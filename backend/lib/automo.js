@@ -376,6 +376,41 @@ async function updateMetadataEntry(mongoc, html, newsection) {
     return up;
 }
 
+async function getMixedDataSince(schema, since, maxAmount) {
+   
+    const mongoc = await mongo3.clientConnect({concurrency: 1});
+    const retContent = [];
+
+    for (let cinfo of schema) {
+        let columnName = _.first(cinfo);
+        let fields = _.nth(cinfo, 1);
+        let timevar = _.last(cinfo);
+        let filter = _.set({}, timevar, { $gt: since});
+
+        const r = await mongo3.readLimit(mongoc,
+            nconf.get('schema')[columnName], filter, _.set({}, timevar, -1),
+            maxAmount, 0);
+
+        if(_.size(r) == maxAmount)
+            retContent.push({
+                template: 'info',
+                message: 'Whoa, too many! capped limit at ' + maxAmount,
+                subject: columnName,
+                id: _.rand(0, 0xffff),
+            });
+
+        _.each(r, function(o) {
+            let good = _.pick(o, fields)
+            good.template = columnName;
+            good.relative = moment.duration( moment(o[timevar]) - moment() ).humanize();
+            retContent.push(good);
+        });
+    }
+
+    mongoc.close();
+    return retContent;
+}
+
 
 module.exports = {
     /* used by routes/personal */
@@ -402,4 +437,7 @@ module.exports = {
     /* used in parserv2 */
     getLastHTMLs,
     updateMetadata,
+
+    /* used in getMonitor */
+    getMixedDataSince,
 };

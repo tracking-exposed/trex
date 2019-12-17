@@ -150,6 +150,11 @@ app.get('/api/v1/rsync/:daysago?', function(req, res) {
     return dispatchPromise('rsync', req, res);
 });
 
+/* monitor for admin */
+app.get('/api/v2/monitor/:isodate?', function(req, res) {
+    return dispatchPromise('getMonitor', req, res);
+});
+
 /* research subscription and I/O */
 app.get('/api/v1/research/:publicKey', function(req, res) {
     return dispatchPromise('rsync', req, res);

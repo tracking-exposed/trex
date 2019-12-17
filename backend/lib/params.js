@@ -1,5 +1,5 @@
-var _ = require('lodash');
-var debug = require('debug')('lib:params');
+const _ = require('lodash');
+const debug = require('debug')('lib:params');
 
 function getInt(req, what, def) {
     var rv = _.parseInt(_.get(req.params, what));
@@ -28,21 +28,28 @@ function optionParsing(amountString, max) {
     try {
         const amount = _.parseInt(_.first(amountString.split('-')));
         const skip = _.parseInt(_.last(amountString.split('-')));
-        if(_.isNaN(amount) || _.isNaN(skip))
-            throw new Error;
-        return {
-            amount,
-            skip
-        };
-    } catch(error) { }
+        if(!(_.isNaN(amount) && _.isNaN(skip))) {
+            return {
+                amount,
+                skip
+            };
+        }
+    } catch(error) {}
     return {
         amount: MAXOBJS,
         skip: 0
     };
 };
 
+function getDate(req, what, def) {
+    debug("Received %s, imported %s", _.get(req.params, what),  _.get(req.params, what, new Date(def)));
+    const d = _.get(req.params, what, new Date(def));
+    return _.isString(d) ? new Date(d) : d;
+}
+
 module.exports = {
     getInt: getInt,
     getString: getString,
-    optionParsing: optionParsing
+    optionParsing: optionParsing,
+    getDate,
 };
