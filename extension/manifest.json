@@ -25,7 +25,7 @@
     "tabs",
     "http://localhost:9000/",
     "https://*.youtube.com/",
-    "https://*.tracking.exposed/"
+    "https://youtube.tracking.exposed/"
   ],
 
   "background": {
@@ -38,7 +38,7 @@
       "matches": [
           "http://localhost/*",
           "http://127.0.0.1/*",
-          "https://*.tracking.exposed/*",
+          "https://youtube.tracking.exposed/*",
           "https://*.youtube.com/*"
       ],
       "js": ["./app.js"]
