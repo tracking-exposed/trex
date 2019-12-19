@@ -1,17 +1,18 @@
 const _ = require('lodash');
 const moment = require('moment');
-const debug = require('debug')('routes:personal');
+const debug = require('debug')('routes:monitor');
 
 const automo = require('../lib/automo');
 const params = require('../lib/params');
 
 async function getMonitor(req) {
 
-    const timeBehind = params.getDate(req, 'isodate', moment().subtract(5, 'minutes').toISOString());
-    // 5 minutes is the default, used at the first access
-
-    const amount = 200;
-    debug("getMonitor request asking for contents since %s (max %d)", timeBehind, amount);
+    const MINUTES = 5;
+    const minutesAgo = params.getInt(req, 'minutes', MINUTES);
+    const timeBehind = moment().subtract(minutesAgo, 'minutes').toISOString();
+    const amount = 30;
+    debug("getMonitor request: contents since %d minutes ago: %s (max %d)",
+        minutesAgo, timeBehind, amount);
 
     const lastExecution = new Date();
     const content = await automo.getMixedDataSince([
@@ -22,16 +23,22 @@ async function getMonitor(req) {
             [ 'id', 'metadataId', 'savingTime', 'processed', 'selector', 'href', 'size', 'publicKey'],
             'savingTime' ],
         [ 'metadata',
-            [ 'id', 'title', 'videoId', 'watcher', 'authorName', 'authorSource', 'viewInfo'],
+            [ 'id', 'title', 'videoId', 'watcher', 'authorName', 'authorSource', 'viewInfo', 'savingTime'],
             'savingTime' ]
-    ], timeBehind, amount );
+    ], new Date(timeBehind), amount );
 
     debug("getMixedDataSince from DB: %j", _.countBy(content, 'template'));
     // the key template='info' is added if any special condition is triggered
     // the key 'template' and 'relative' are always added
 
+    const ordered = _.orderBy(content, [ 'timevar' ], [ 'desc' ]);
     return {
-        json: { content, lastExecution }
+        json: {
+            content: ordered,
+            start: moment(lastExecution).format('HH:mm:ss'),
+            end: moment(new Date()).format('HH:mm:ss'),
+            duration: moment.duration(moment() - moment(lastExecution)).asSeconds(),
+        }
     };
 };
 
