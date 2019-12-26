@@ -295,8 +295,6 @@ async function updateMetadata(html, newsection) {
 
     if(!html.metadataId) {
         debug("metadataId is not an ID!");
-        debug(_.keys(html));
-        debug(_.keys(newsection));
         return await markHTMLandClose(mongoc, html, { what: 'not an ID'});
     }
 
@@ -351,9 +349,9 @@ async function updateMetadata(html, newsection) {
         html.metadataId, html.selector, updates, forceu);
 
     if(forceu || updates ) {
-        debug("Update from incremental %d to %d", exists.incremental, up.incremental);
+        // debug("Update from incremental %d to %d", exists.incremental, up.incremental);
+        // not in youtube!
         let r = await mongo3.updateOne(mongoc, nconf.get('schema').metadata, { id: html.metadataId }, up );
-        debug(r.success);
         return await markHTMLandClose(mongoc, html, { what: 'updated'});
     }
     return await markHTMLandClose(mongoc, html, { what: 'duplicated'});
