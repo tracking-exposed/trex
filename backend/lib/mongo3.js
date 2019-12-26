@@ -88,6 +88,13 @@ async function updateOne(mongoc, cName, selector, updated) {
         .updateOne(selector, { $set: updated });
 };
 
+async function updateMany(mongoc, cName, selector, updated) {
+    return mongoc
+        .db()
+        .collection(cName)
+        .updateMany(selector, { $set: updated });
+}
+
 async function upsertOne(mongoc, cName, selector, updated) {
     return mongoc
         .db()
@@ -170,6 +177,7 @@ module.exports = {
     writeOne,
     insertMany,
     updateOne,
+    updateMany,
     upsertOne,
     readOne,
     read,

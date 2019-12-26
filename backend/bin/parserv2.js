@@ -17,7 +17,8 @@ echoes.setDefaultEcho("elasticsearch"); */
 const FREQUENCY = _.parseInt(nconf.get('frequency')) ? _.parseInt(nconf.get('frequency')) : 10;
 const backInTime = _.parseInt(nconf.get('minutesago')) ? _.parseInt(nconf.get('minutesago')) : 10;
 const id = nconf.get('id');
-let singleUse = !!nconf.get('single');
+const singleUse = !!nconf.get('single');
+
 let nodatacounter = 0;
 let lastExecution = moment().subtract(backInTime, 'minutes').toISOString();
 let computedFrequency = FREQUENCY;
@@ -117,10 +118,14 @@ async function newLoop() {
         return [ envelop.impression, metadata ];
     });
 
-
+    const updates = [];
     for (const entry of _.compact(analysis)) {
-        await automo.updateMetadata(entry[0], entry[1]);
+        let r = await automo.updateMetadata(entry[0], entry[1]);
+        updates.push(r);
     }
+    debug("%d html.content, %d analysis, compacted %d, effects: %j", 
+        _.size(htmls.content), _.size(analysis),
+        _.size(_.compact(analysis)), _.countBy(updates, 'what'));
 
     /* reset no-data-counter if data has been sucessfully processed */
     if(_.size(_.compact(analysis)))
@@ -135,9 +140,7 @@ async function newLoop() {
     debug("Usable HTMLs %d/%d - marking as processed the useless %d HTMLs", 
         _.size(_.compact(analysis)), _.size(htmls.content), _.size(remaining));
 
-    for (const html in remaining) {
-        await automo.updateMetadata(html, null);
-    }
+    await automo.markHTMLsUnprocessable(remaining);
 }
 
 function sleep(ms) {

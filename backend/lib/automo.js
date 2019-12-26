@@ -24,39 +24,28 @@ async function getSummaryByPublicKey(publicKey, options) {
     if(!supporter || !supporter.publicKey)
         throw new Error("Authentication failure");
 
-    const metadata1 = await mongo3.readLimit(mongoc,
-        nconf.get('schema').metadata, { watcher: supporter.p, title: {
-            $exists: true } }, { savingTime: -1 }, options.amount, options.skip);
-
-    const metadata2 = await mongo3.readLimit(mongoc,
+    const metadata = await mongo3.readLimit(mongoc,
         nconf.get('schema').metadata, { publicKey: supporter.publicKey, title: {
             $exists: true }}, { savingTime: -1 }, options.amount, options.skip);
 
-    const total1 = await mongo3.count(mongoc,
-        nconf.get('schema').metadata, { watcher: supporter.p, title: {
-            $exists: true
-        } });
-
-    const total2 = await mongo3.count(mongoc,
+    const total = await mongo3.count(mongoc,
         nconf.get('schema').metadata, { publicKey: supporter.publicKey, title: {
             $exists: true
         } });
 
     await mongoc.close();
 
-    debug("Temporarly workaround: data [v1 %d v2 %d], totals [%d %d]",
-        _.size(metadata1), _.size(metadata2), total1, total2);
+    debug("Retrieved in getSummaryByPublicKey: data %d, total %d (amount %d skip %d)",
+        _.size(metadata), total, options.amount, options.skip);
 
     const fields = ['id','videoId', 'savingTime', 'title', 'authorName', 'authorSource', 'relative', 'relatedN' ];
-    const metadata = _.map(_.concat(metadata1, metadata2), function(e) {
+    const cleandata = _.map(metadata, function(e) {
         e.savingTime = new Date(e.savingTime);
         e.relative = moment.duration( moment(e.savingTime) - moment() ).humanize() + " ago";
         return _.pick(e, fields);
     });
 
-    const total = total1 + total2;
-    const recent = _.reverse(_.sortBy(metadata, 'savingTime'));
-    return { supporter, recent, total };
+    return { supporter, recent: cleandata, total };
 }
 
 async function getMetadataByPublicKey(publicKey, options) {
@@ -66,23 +55,18 @@ async function getMetadataByPublicKey(publicKey, options) {
     if(!supporter)
         throw new Error("publicKey do not match any user");
 
-    const metadata1 = await mongo3.readLimit(mongoc,
-        nconf.get('schema').metadata, { watcher: supporter.p, title: {
-            $exists: true } }, { savingTime: -1 }, options.amount, options.skip);
-
-    const metadata2 = await mongo3.readLimit(mongoc,
+    const metadata = await mongo3.readLimit(mongoc,
         nconf.get('schema').metadata, { publicKey: supporter.publicKey, title: {
             $exists: true }}, { savingTime: -1 }, options.amount, options.skip);
 
     await mongoc.close();
 
-    debug("Temporarly workaround: data [v1 %d v2 %d]",
-        _.size(metadata1), _.size(metadata2) );
+    debug("Retrieved in getMetadataByPublicKey: %d metadata with amount %d skip %d",
+        _.size(metadata), options.amount, options.skip);
 
-    const latest = _.reverse(_.sortBy(_.concat(metadata1, metadata2), 'savingTime'));
     return {
         supporter,
-        metadata: latest
+        metadata,
     };
 };
 
@@ -283,97 +267,107 @@ async function getLastHTMLs(filter, skip) {
     }
 }
 
+async function markHTMLsUnprocessable(htmls) {
+    const mongoc = await mongo3.clientConnect({concurrency: 1});
+    const ids = _.map(htmls, 'id');
+    const r = await mongo3.updateMany(mongoc, nconf.get('schema').htmls,
+        { id: { $in: ids }}, { processed: false });
+
+    if( r.result.n != _.size(ids) ||
+        r.result.nModified != _.size(ids) ||
+        r.result.ok != 1) {
+        debug("Odd condition in multiple update! %j", r.result);
+    }
+    await mongoc.close();
+}
+
 async function updateMetadata(html, newsection) {
-    /* this is the exported function: it always update the 'htmls' entry in mongodb
-     * by adding the 'processed' field, and update or create a new entry in 'metadata' */
 
     async function markHTMLandClose(mongoc, html, retval) {
-        const evalutation = !!retval;
-        await mongo3.updateOne(mongoc, nconf.get('schema').htmls, { id: html.id }, { processed: evalutation });
+        await mongo3.updateOne(mongoc, nconf.get('schema').htmls, { id: html.id }, { processed: true });
         await mongoc.close();
         return retval;
     }
 
-    /* we look at the same metadataId in the metadata collection, and update
-     * new information if missing */
+    /* we should look at the same metadataId in the metadata collection,
+       and update new information if missing */
     const mongoc = await mongo3.clientConnect({concurrency: 1});
-    let metadata = null;
 
     if(!html.metadataId) {
-        debug("metadataId do not exists and shouldn't happen!");
-        return await markHTMLandClose(mongoc, html, null);
+        debug("metadataId is not an ID!");
+        debug(_.keys(html));
+        debug(_.keys(newsection));
+        return await markHTMLandClose(mongoc, html, { what: 'not an ID'});
     }
 
-    try {
-        metadata = await createMetadataEntry(mongoc, html, newsection);
-        debug("Create new metadata +%s %s - (%s) %j",
-            html.metadataId, html.href, html.selector, _.map(metadata, function(value, key) {
-            let isempty = (_.isString(value) && _.size(value) == 0 ) || !value;
-            return '+' + key + (isempty ? "*" : "");
-        }));
+    const exists = await mongo3.readOne(mongoc, nconf.get('schema').metadata, { id: html.metadataId });
 
-    } catch(e) {
-        if(e.code == 11000) {
-            /* duplicated key? TODO check it this happen again, or, after the (for of), it doesn't */
-            metadata = await updateMetadataEntry(mongoc, html, newsection);
-            debug("Updating metadata %s - %s <%s> %j",
-                html.metadataId, html.href, html.selector, _.map(metadata, function(value, key) {
-                let isempty = (_.isString(value) && _.size(value) == 0 ) || !value;
-                return key + (isempty ? "*" : "");
-            }));
-        } else {
-            debug("Unexpected error: %s (%d)", e.message, e.code);
-        }
+    if(!exists) {
+        await createMetadataEntry(mongoc, html, newsection);
+        debug("Created metadata %s from %s with %s", html.metadataId, html.href, html.selector);
+        return await markHTMLandClose(mongoc, html, { what: 'created'});
     }
-    return await markHTMLandClose(mongoc, html, metadata);
-}
 
-async function createMetadataEntry(mongoc, html, newsection) {
-    /* this is not exported, it is used only by updateMetadata */
-    exists = Object(newsection);
-    exists.id = html.metadataId;
-    exists.publicKey = html.publicKey;
-    exists.savingTime = html.savingTime;
-    exists.clientTime = html.clientTime;
-    exists.version = 2;
-
-    await mongo3.writeOne(mongoc, nconf.get('schema').metadata, exists);
-    return exists;
-}
-
-async function updateMetadataEntry(mongoc, html, newsection) {
-    /* this is not exported, it is used only by updateMetadata */
-    let exists = await mongo3.readOne(mongoc, nconf.get('schema').metadata, { id: html.metadataId });
-
+    let updates = 0;
+    let forceu = false;
+    /* we don't care of these updates */
+    const careless = [ 'clientTime', 'savingTime', 'size' ];
     /* this is meant to add only fields with values, and to notify duplicated
      * conflictual metadata mined, or extend labels as list */
     const up = _.reduce(newsection, function(memo, value, key) {
 
-        if(!value)
+        if(!value || !_.size(value))
             return memo;
 
         let current = _.get(memo, key);
-        if(typeof current == typeof 'thastrng' && html.selector != 'ytd-app') {
-            if(value != current) {
-                _.set(memo, key, [ value, current ]);
-                debugLite("[s] extended string: %s", key);
-            }
-        }
-        else if(typeof current == typeof [] && _.size() && html.selector != 'ytd-app') {
-            if(current.indexOf(value) == -1) {
-                _.set(memo, key, _.concat(current, value) );
-                debugLite("[o] extended object %s", key);
-            }
-        } else {
+        if(!current) {
             _.set(memo, key, value);
-        }
+            updates++; 
+        } else if(_.indexOf(careless, key) == -1) {
+            /* we don't care of these updates */
+        } else if(!_.isEqual(JSON.stringify(current), JSON.stringify(value))) {
+            const record = {
+                clientTime: html.clientTime,
+                // selector: html.selector,
+                value,
+                key,
+            };
 
+            debug("record update in %s c[%s --- %s]v", key, current, value)
+
+            if(_.isUndefined(memo.variation))
+                memo.variation = [ record ];
+            else
+                memo.variation.push(record);
+
+            forceu = true;
+        } else {
+            /* no update */
+        }
         return memo;
     }, exists);
 
-    _.unset(up, '_id');
-    await mongo3.updateOne(mongoc, nconf.get('schema').metadata, { id: html.metadataId }, up );
-    return up;
+    debug("Evalutatig if update metadata %s (%s) %d updates, force %s",
+        html.metadataId, html.selector, updates, forceu);
+
+    if(forceu || updates ) {
+        debug("Update from incremental %d to %d", exists.incremental, up.incremental);
+        let r = await mongo3.updateOne(mongoc, nconf.get('schema').metadata, { id: html.metadataId }, up );
+        debug(r.success);
+        return await markHTMLandClose(mongoc, html, { what: 'updated'});
+    }
+    return await markHTMLandClose(mongoc, html, { what: 'duplicated'});
+}
+
+async function createMetadataEntry(mongoc, html, newsection) {
+    exists = {};
+    exists.publicKey = html.publicKey;
+    exists.savingTime = html.savingTime;
+    exists.version = 3;
+    exists = _.extend(exists, newsection);
+    exists.id = html.metadataId;
+    await mongo3.writeOne(mongoc, nconf.get('schema').metadata, exists);
+    return exists;
 }
 
 async function getMixedDataSince(schema, since, maxAmount) {
@@ -459,6 +453,7 @@ module.exports = {
     /* used in parserv2 */
     getLastHTMLs,
     updateMetadata,
+    markHTMLsUnprocessable,
 
     /* used in getMonitor */
     getMixedDataSince,
