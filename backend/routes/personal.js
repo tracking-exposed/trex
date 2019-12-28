@@ -7,15 +7,18 @@ const params = require('../lib/params');
 const CSV = require('../lib/CSV');
 
 async function getPersonal(req) {
-    const DEFMAX = 40;
+    const DEFMAX = 10;
     const k =  req.params.publicKey;
-    if(_.size(k) < 26)
+    if(_.size(k) < 16)
         return { json: { "message": "Invalid publicKey", "error": true }};
 
     const { amount, skip } = params.optionParsing(req.params.paging, DEFMAX);
     debug("getPersonal: amount %d skip %d, default max %d", amount, skip, DEFMAX);
 
     const data = await automo.getSummaryByPublicKey(k, { amount, skip });
+
+    if(data.error)
+        return { json: { "message": data.message, "error": true }};
 
     data.request = {
         amount,
@@ -27,20 +30,30 @@ async function getPersonal(req) {
 
 async function getPersonalCSV(req) {
     const CSV_MAX_SIZE = 1000;
+    let evidenceCounter = 0;
+    let lastSeenEvidence = null;
     const k =  req.params.publicKey;
 
     const data = await automo.getMetadataByPublicKey(k, { amount: CSV_MAX_SIZE, skip: 0 });
     const unwinded = _.reduce(data.metadata, function(memo, evidence) {
+
+        if(evidence.id != lastSeenEvidence) {
+            lastSeenEvidence = evidence.id;
+            evidenceCounter++;
+        }
+
         let exprelated = _.map(evidence.related, function(recommended, i) {
             if(i >= 20)
                 return null;
 
             return {
+                evidence: evidenceCounter,
                 recommendedVideoId: recommended.videoId,
                 displayTime: recommended.displayTime,
                 producer: recommended.source,
                 recommendedForYou: recommended.foryou,
                 recommendedTitle: recommended.title,
+                recommendedAuthor: recommended.source,
                 watchedTitle: evidence.title,
                 recommendationOrder: i + 1,
                 savingTime: evidence.savingTime,
@@ -59,7 +72,7 @@ async function getPersonalCSV(req) {
         _.size(csv), _.size(data.metadata), CSV_MAX_SIZE);
 
     if(!_.size(csv))
-        return { text: "Error, Zorry: 🤷" };
+        return { text: "Error 🤷 No content produced in this CSV!" };
 
     const filename = 'personal-yttrex-copy-' + moment().format("YY-MM-DD") + ".csv"
     return {
