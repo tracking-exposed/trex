@@ -12,18 +12,17 @@
             {
                 "name": "newcomers",
                 "selector": {}
-            },
+            }
+        ]
+    },
+    {
+        "name": "active",
+        "column": "supporters",
+        "timevar": "lastActivity",
+        "variables": [
             {
-                "name": "118",
-                "selector": { "version": "1.1.8" }
-            },
-            {
-                "name": "121",
-                "selector": { "version": "1.2.1" }
-            },
-            {
-                "name": "other",
-                "selector": { "version": { "$ne": "1.1.8", "$ne": "1.2.1" }}
+                "name": "active",
+                "selector": {}
             }
         ]
     },
@@ -41,40 +40,17 @@
                 "selector": { "related": { "$size": 20 }}
             },
             {
-                "name": "related-19",
-                "selector": { "related": { "$size": 19 }}
+                "name": "others",
+                "selector": { "related.19": { "$exists": false }}
             },
             {
-                "name": "related-1",
-                "selector": { "related": { "$size": 1 }}
+                "name": "more-than-20",
+                "selector": { "related.20": { "$exists": true }}
             }
         ]
     },
     {
         "name": "processing",
-        "column": "videos",
-        "timevar": "savingTime",
-        "variables": [
-            {
-                "name": "successful",
-                "selector": { "processed": true }
-            },
-            {
-                "name": "failure",
-                "selector": { "processed": false }
-            },
-            {
-                "name": "unprocessed",
-                "selector": { "processed": { "$exists": false } }
-            },
-            {
-                "name": "total",
-                "selector": { }
-            }
-        ]
-    },
-    {
-        "name": "processing2",
         "column": "htmls",
         "timevar": "savingTime",
         "variables": [
@@ -89,6 +65,10 @@
             {
                 "name": "unprocessed",
                 "selector": { "processed": { "$exists": false } }
+            },
+            {
+                "name": "hasMetadata",
+                "selector": { "metadataId": { "$exists": true } }
             },
             {
                 "name": "total",
@@ -107,11 +87,11 @@
             },
             {
                 "name": "hasAuthor",
-                "selector": { "author": { "$exists": true }}
+                "selector": { "authorName": { "$exists": true }}
             },
             {
                 "name": "hasRelated",
-                "selector": { "related.[0]": { "$exists": true }}
+                "selector": { "related.0": { "$exists": true }}
             },
             {
                 "name": "hasAd",
@@ -120,6 +100,10 @@
             {
                 "name": "total",
                 "selector": { }
+            },
+            {
+                "name": "videos",
+                "selector": { "videoId": { "$exists": true } }
             }
         ]
     }

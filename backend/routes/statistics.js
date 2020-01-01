@@ -24,21 +24,25 @@ function statistics(req) {
     // specifiy in config/stats.json
     const expectedFormat = "/api/v2/statistics/:name/:unit/:amount";
 
-    const allowedNames = ['supporters', 'related', 'processing'];
+    const allowedNames = ['supporters', 'active', 'related', 'processing', 'metadata'];
     const name = req.params.name;
-    if(allowedNames.indexOf(name) == -1)
+    if(allowedNames.indexOf(name) == -1) {
+        debug("Error! this might not appear in visualization: investigate on why an invalid stat-name is called by c3! (%s)", name);
         return { json: { error: true, expectedFormat, allowedNames, note: `the statistic name you look for was ${name}` }}
+    }
 
     const unit = req.params.unit;
     const allowedRanges = ['hours', 'hour', 'day', 'days'];
-    if(allowedRanges.indexOf(unit) == -1 )
+    if(allowedRanges.indexOf(unit) == -1 ) {
+        debug("Error! this might not appear in visualization, but the API call has a malformed time-unit!");
         return { json: { error: true, expectedFormat, allowedRanges, note: `the statistic unit you look for was ${unit}` }}
+    }
 
     const amount = _.parseInt(req.params.amount);
-    if(_.isNaN(amount))
+    if(_.isNaN(amount)) {
+        debug("Error! this might not appear in visualization, but the API call has an invalid number!");
         return { json: { error: true, expectedFormat, invalidNumber: req.params.amount }};
-
-    debug("Requested statistics %s (since %d %s)", name, amount, unit);
+    }
 
     const filter = { name };
     const refDate = new Date( moment().subtract(amount, _.nth(unit, 0)));
@@ -54,6 +58,9 @@ function statistics(req) {
             return _.omit(e, ['_id'])
         })
         .then(function(content) {
+            debug("Requested [%s] since %d %s ago = %d samples",
+                name, amount, unit, _.size(content));
+
             return { json: content,
                      headers: { amount, unit, name }
             };
