@@ -15,8 +15,16 @@ async function getPersonal(req) {
     const { amount, skip } = params.optionParsing(req.params.paging, DEFMAX);
     debug("getPersonal: amount %d skip %d, default max %d", amount, skip, DEFMAX);
 
-    const data = await automo.getSummaryByPublicKey(k, { amount, skip });
+    let data = null;
+    try {
+        data = await automo.getSummaryByPublicKey(k, { amount, skip });
+    } catch(e) {
+        console.log(e);
+        debug("Catch exception in getSummaryByPublicKey: %s", e.message);
+        return { json: { "message": e.message, "error": true }};
+    }
 
+    /* data should contain '.graphs', '.total', '.supporter', '.recent' */
     if(data.error)
         return { json: { "message": data.message, "error": true }};
 

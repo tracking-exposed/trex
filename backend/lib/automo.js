@@ -45,7 +45,37 @@ async function getSummaryByPublicKey(publicKey, options) {
         return _.pick(e, fields);
     });
 
-    return { supporter, recent: cleandata, total };
+    /* the two pie chars are generated from this reduction and rendered with c3js.org */
+    const graphs = _.reduce(metadata, function(memo, e) {
+        let t = _.get(memo.view, e.authorName);
+        if(!t)
+            memo.view[e.authorName] = 1;
+        else
+            memo.view[e.authorName]++;
+
+        _.each(e.related, function(suggested) {
+            let r = _.get(memo.related, suggested.source)
+            if(!r)
+                memo.related[suggested.source] = 1;
+            else
+                memo.related[suggested.source]++;
+
+            if(suggested.foryou)
+                memo.reason.foryou++;
+            else
+                memo.reason.organic++;
+
+        });
+        return memo;
+    }, { view: {}, related: {}, reason: { foryou: 0, organic: 0 } })
+    /* this should go away if we brind the filtering client-side */
+
+    graphs.related = _.map(graphs.related, function(amount, name) {
+        return { name, 'recommended videos': amount };
+    });
+    graphs.related = _.reverse(_.orderBy(graphs.related, 'recommended videos'));
+
+    return { supporter, recent: cleandata, graphs, total };
 }
 
 async function getMetadataByPublicKey(publicKey, options) {
