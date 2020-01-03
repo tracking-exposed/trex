@@ -58,7 +58,6 @@ async function getPersonalCSV(req) {
                 evidence: evidenceCounter,
                 recommendedVideoId: recommended.videoId,
                 displayTime: recommended.displayTime,
-                producer: recommended.source,
                 recommendedForYou: recommended.foryou,
                 recommendedTitle: recommended.title,
                 recommendedAuthor: recommended.source,
@@ -129,7 +128,7 @@ async function getPersonalRelated(req) {
 };
 
 async function getEvidences(req) {
-    /* this function is quite generic and flexible. allow an user to query their 
+    /* this function is quite generic and flexible. allow an user to query their
      * own evidences and allow specification of which is the field to be queried.
      * It is used in our interface with 'id' */
     const k =  req.params.publicKey;
