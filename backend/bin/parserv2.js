@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 const _ = require('lodash');
 const moment = require('moment');
-const debug = require('debug')('bin:parse2');
+const debug = require('debug')('yttrex:parserv');
 const nconf = require('nconf');
 const JSDOM = require('jsdom').JSDOM;
 
@@ -69,18 +69,18 @@ async function newLoop() {
     }
     else {
         lastExecution = moment(_.last(htmls.content).savingTime);
-        debug("OVERFLOW: first %s last %s - lastExecution %s", 
+        debug("OVERFLOW: first %s last %s - lastExecution %s",
             _.first(htmls.content).savingTime, _.last(htmls.content).savingTime,
             lastExecution);
     }
 
-    const analysis = _.map(htmls.content, function(e) { 
+    const analysis = _.map(htmls.content, function(e) {
         const envelop = {
             impression: _.omit(e, ['html', '_id']),
             jsdom: new JSDOM(e.html.replace(/\n\ +/g, ''))
                     .window.document,
         }
-      
+
         let metadata = null;
         try {
             debug("%s [%s] %s %d.%d %s %s %s",
@@ -123,7 +123,7 @@ async function newLoop() {
         let r = await automo.updateMetadata(entry[0], entry[1]);
         updates.push(r);
     }
-    debug("%d html.content, %d analysis, compacted %d, effects: %j", 
+    debug("%d html.content, %d analysis, compacted %d, effects: %j",
         _.size(htmls.content), _.size(analysis),
         _.size(_.compact(analysis)), _.countBy(updates, 'what'));
 
@@ -131,13 +131,13 @@ async function newLoop() {
     if(_.size(_.compact(analysis)))
         nodatacounter = 0;
 
-    /* also the HTML cutted off the pipeline, the many skipped 
+    /* also the HTML cutted off the pipeline, the many skipped
      * by _.compact all the null in the lists, should be marked as processed */
     const remaining = _.reduce(_.compact(analysis), function(memo, blob) {
         return _.reject(memo, { id: blob[0].id });
     }, htmls.content);
 
-    debug("Usable HTMLs %d/%d - marking as processed the useless %d HTMLs", 
+    debug("Usable HTMLs %d/%d - marking as processed the useless %d HTMLs",
         _.size(_.compact(analysis)), _.size(htmls.content), _.size(remaining));
 
     await automo.markHTMLsUnprocessable(remaining);

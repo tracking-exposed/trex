@@ -55,6 +55,7 @@ async function getPersonalCSV(req) {
                 return null;
 
             return {
+                watcher: data.supporter.p,
                 evidence: evidenceCounter,
                 recommendedVideoId: recommended.videoId,
                 displayTime: recommended.displayTime,
