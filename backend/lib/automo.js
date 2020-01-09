@@ -41,6 +41,7 @@ async function getSummaryByPublicKey(publicKey, options) {
     const fields = ['id','videoId', 'savingTime', 'title', 'authorName', 'authorSource', 'relative', 'relatedN' ];
     const cleandata = _.map(metadata, function(e) {
         e.savingTime = new Date(e.savingTime);
+        e.relatedN = _.size(e.related);
         e.relative = moment.duration( moment(e.savingTime) - moment() ).humanize() + " ago";
         return _.pick(e, fields);
     });
