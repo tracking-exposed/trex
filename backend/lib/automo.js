@@ -228,7 +228,7 @@ async function getRelatedByVideoId(videoId, options) {
             credited: r.authorName,
             channel: r.authorSource,
             savingTime: r.savingTime,
-            watcher: r.watcher,
+            watcher: utils.string2Food(r.publicKey),
             watchedId: r.videoId,
         };
     });
