@@ -18,3 +18,5 @@ backend/htmls/*
 backend/dist/*
 backend/farfalla/*
 backend/node_modules/*
+
+methodology/*.dump/*
