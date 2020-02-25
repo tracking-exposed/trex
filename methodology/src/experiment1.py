@@ -91,28 +91,18 @@ def openVideo(url, driver, urlNumber):
         time.sleep(5)
 
 
-"""
-from selenium import webdriver
-import time
-
-options = webdriver.ChromeOptions()
-options.add_argument('--ignore-certificate-errors')
-options.add_argument("--test-type")
-options.binary_location = "/usr/bin/chromium"
-driver = webdriver.Chrome(chrome_options=options)
-driver.get('https://python.org')
-
-"""
-
 if not os.path.exists(sys.path[-1]):
     print("Not found mandatory configuration file")
     sys.exit(1)
 
 profilefolder = verifyProfilePath(sys.path[-1])
-profile = FirefoxProfile(profilefolder)
-profile.add_extension( os.path.abspath(
-    os.path.join("..", "extension", "dist" ) ) )
-driver = Firefox(firefox_profile=profile)
+print("Using as profile", profilefolder);
+profile = FirefoxProfile(profile_directory= os.path.abspath(profilefolder) )
+profile.set_preference("extensions.firebug.onByDefault", True)
+
+driver = Firefox(firefox_profile=profile, log_path=os.path.join(profilefolder, 'driver.log'))
+driver.install_addon( os.path.abspath(
+    os.path.join("..", "extension", "dist", "extension.zip" ) ), temporary=True )
 driver.set_page_load_timeout(40)
 
 with open(sys.argv[-1]) as cfg:
@@ -123,4 +113,6 @@ with open(sys.argv[-1]) as cfg:
         print("Opening", url);
         openVideo(url, driver, urlNumber);
         urlNumber += 1;
-        
+
+    print("Test completed: closing");
+    driver.close();
