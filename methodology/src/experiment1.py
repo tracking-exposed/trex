@@ -2,6 +2,7 @@
 
 
 from selenium.webdriver import Firefox, FirefoxProfile
+from selenium.webdriver.firefox.options import Options
 import os, sys, time, re, errno
 from os.path import basename
 from os import makedirs
@@ -27,15 +28,21 @@ def buildScreenName(prefix):
     print("Returning", filename);
     return filename;
 
-def verifyProfilePath(cfgname):
-    profileName = os.path.join("profiles", getPName(sys.argv[-1]))
-    try:
-        os.makedirs(profileName)
-        print("Successfully created directory", profileName);
-    except OSError as e:
-        if e.errno != errno.EEXIST:
-            raise
-    return profileName;    
+def createFirefoxProfile(cfgname):
+    profilePath = os.path.abspath(os.path.join("profiles", getPName(sys.argv[-1])))
+    profileName = getPName(sys.argv[-1])
+    if not os.path.exists(profilePath):
+        import subprocess
+        os.makedirs(profilePath);
+        subprocess.run(["firefox", "-CreateProfile", profileName + " " + profilePath ])
+        print("Successfully created directory and Firefox profile", profileName)
+    else:
+        print("Profile directory found!", profileName)
+    profInfo = {};
+    profInfo['name'] = profileName
+    profInfo['path'] = profilePath
+    return profInfo
+
 
 def checkStatus(driver, urlNumber, framenumber):
     player_status = driver.execute_script("return document.getElementById('movie_player').getPlayerState()")
@@ -88,6 +95,8 @@ def openVideo(url, driver, urlNumber):
                 return
         except:
             print("Error in checkStatus")
+            return 
+
         time.sleep(5)
 
 
@@ -95,24 +104,29 @@ if not os.path.exists(sys.path[-1]):
     print("Not found mandatory configuration file")
     sys.exit(1)
 
-profilefolder = verifyProfilePath(sys.path[-1])
-print("Using as profile", profilefolder);
-profile = FirefoxProfile(profile_directory= os.path.abspath(profilefolder) )
+profInfo = createFirefoxProfile(sys.path[-1])
+profile = FirefoxProfile(profile_directory=profInfo['path'])
 profile.set_preference("extensions.firebug.onByDefault", True)
 
-driver = Firefox(firefox_profile=profile, log_path=os.path.join(profilefolder, 'driver.log'))
+
+o = Options()
+o.add_argument('--profile')
+o.add_argument(profInfo['path'])
+
+driver = Firefox(firefox_profile=profile, 
+        # log_path=os.path.join(profInfo['path'], 'driver.log'),
+        # options=o)
+        )
 driver.install_addon( os.path.abspath(
     os.path.join("..", "extension", "dist", "extension.zip" ) ), temporary=True )
 driver.set_page_load_timeout(40)
 
 with open(sys.argv[-1]) as cfg:
     urls = cfg.readlines();
-
     urlNumber = 1;
     for url in urls:
         print("Opening", url);
         openVideo(url, driver, urlNumber);
         urlNumber += 1;
-
     print("Test completed: closing");
     driver.close();
