@@ -1,8 +1,8 @@
 #!/usr/bin/env python
 
 
-from selenium.webdriver import Firefox, FirefoxProfile
-from selenium.webdriver.firefox.options import Options
+from selenium.webdriver import Chrome
+from selenium.webdriver.chrome.options import Options
 import os, sys, time, re, errno
 from os.path import basename
 from os import makedirs
@@ -28,14 +28,12 @@ def buildScreenName(prefix):
     print("Returning", filename);
     return filename;
 
-def createFirefoxProfile(cfgname):
+def createProfile(cfgname):
     profilePath = os.path.abspath(os.path.join("profiles", getPName(sys.argv[-1])))
     profileName = getPName(sys.argv[-1])
     if not os.path.exists(profilePath):
-        import subprocess
-        os.makedirs(profilePath);
-        subprocess.run(["firefox", "-CreateProfile", profileName + " " + profilePath ])
-        print("Successfully created directory and Firefox profile", profileName)
+        print("You should copy the master directory in", profilePath)
+        sys.exit(-1);
     else:
         print("Profile directory found!", profileName)
     profInfo = {};
@@ -85,6 +83,7 @@ def openVideo(url, driver, urlNumber):
     cookie = driver.get_cookie('CONSENT')
     cookies = driver.get_cookies()
 
+
     print(cookie, cookies)
     framenumber = 0
 
@@ -93,9 +92,10 @@ def openVideo(url, driver, urlNumber):
             framenumber = checkStatus(driver, urlNumber, framenumber)
             if(framenumber == -1):
                 return
-        except:
-            print("Error in checkStatus")
-            return 
+        except Exception as e:
+            if not e.msg.startswith('no such element'):
+                print("Error in checkStatus", e)
+                return 
 
         time.sleep(5)
 
@@ -104,21 +104,17 @@ if not os.path.exists(sys.path[-1]):
     print("Not found mandatory configuration file")
     sys.exit(1)
 
-profInfo = createFirefoxProfile(sys.path[-1])
-profile = FirefoxProfile(profile_directory=profInfo['path'])
-profile.set_preference("extensions.firebug.onByDefault", True)
-
+profInfo = createProfile(sys.path[-1])
 
 o = Options()
-o.add_argument('--profile')
-o.add_argument(profInfo['path'])
+o.add_argument('--user-data-dir=' + profInfo['path'])
 
-driver = Firefox(firefox_profile=profile, 
+driver = Chrome(
+        #firefox_profile=profile, 
         # log_path=os.path.join(profInfo['path'], 'driver.log'),
-        # options=o)
-        )
-driver.install_addon( os.path.abspath(
-    os.path.join("..", "extension", "dist", "extension.zip" ) ), temporary=True )
+        options=o)
+#driver.install_addon( os.path.abspath(
+#    os.path.join("..", "extension", "dist", "extension.zip" ) ), temporary=True )
 driver.set_page_load_timeout(40)
 
 with open(sys.argv[-1]) as cfg:
