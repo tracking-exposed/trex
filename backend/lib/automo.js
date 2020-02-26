@@ -333,7 +333,8 @@ async function updateMetadata(html, newsection, repeat) {
 
     if(!exists) {
         await createMetadataEntry(mongoc, html, newsection);
-        debug("Created metadata %s from %s with %s", html.metadataId, html.href, html.selector);
+        t = newsection.title ? newsection.title : "+" + newsection.type + "+"; 
+        debug("Created metadata %s [%s] from %s with %s", html.metadataId, t, html.href, html.selector);
         return await markHTMLandClose(mongoc, html, { what: 'created'});
     }
 
