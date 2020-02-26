@@ -17,7 +17,7 @@ echoes.setDefaultEcho("elasticsearch"); */
 const FREQUENCY = _.parseInt(nconf.get('frequency')) ? _.parseInt(nconf.get('frequency')) : 10;
 const backInTime = _.parseInt(nconf.get('minutesago')) ? _.parseInt(nconf.get('minutesago')) : 10;
 const id = nconf.get('id');
-const singleUse = !!nconf.get('single');
+const singleUse = !!id;
 
 let nodatacounter = 0;
 let lastExecution = moment().subtract(backInTime, 'minutes').toISOString();
@@ -44,7 +44,6 @@ async function newLoop() {
         htmlFilter = {
             metadataId: id
         }
-        singleUse = true;
     }
 
     const htmls = await automo.getLastHTMLs(htmlFilter);
@@ -120,7 +119,7 @@ async function newLoop() {
 
     const updates = [];
     for (const entry of _.compact(analysis)) {
-        let r = await automo.updateMetadata(entry[0], entry[1]);
+        let r = await automo.updateMetadata(entry[0], entry[1], repeat);
         updates.push(r);
     }
     debug("%d html.content, %d analysis, compacted %d, effects: %j",
