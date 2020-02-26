@@ -43,6 +43,7 @@ def createProfile(cfgname):
 
 
 def checkStatus(driver, urlNumber, framenumber):
+    pname = getPName(sys.argv[-1])
     player_status = driver.execute_script("return document.getElementById('movie_player').getPlayerState()")
     condition = {
         -1: "unstarted",
@@ -57,7 +58,7 @@ def checkStatus(driver, urlNumber, framenumber):
         print("Video still hanging: sending click!");
         import selenium.webdriver.common.action_chains as ac
         playerElement = driver.find_element_by_css_selector("#player-container")
-        previewfname = buildScreenName('video-{}-preview'.format(urlNumber))
+        previewfname = buildScreenName('{}-{}-preview'.format(pname, urlNumber))
         playerElement.screenshot(previewfname)
         actions = ac.ActionChains(driver)
         actions.move_to_element(playerElement)
@@ -69,7 +70,7 @@ def checkStatus(driver, urlNumber, framenumber):
         return -1
     elif(player_status == 1):
         framenumber += 1
-        framecopy = buildScreenName("video-{}-snap-{}".format(urlNumber, framenumber) )
+        framecopy = buildScreenName("{}-{}-snap-{}".format(pname, urlNumber, framenumber) )
         playerElement = driver.find_element_by_css_selector("#player-container")
         playerElement.screenshot(framecopy)
     else:
@@ -83,8 +84,7 @@ def openVideo(url, driver, urlNumber):
     cookie = driver.get_cookie('CONSENT')
     cookies = driver.get_cookies()
 
-
-    print(cookie, cookies)
+    # print(cookie, cookies)
     framenumber = 0
 
     while True:
