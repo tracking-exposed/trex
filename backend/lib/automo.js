@@ -212,24 +212,27 @@ async function getRelatedByVideoId(videoId, options) {
         ]);
     await mongoc.close();
     debug("Aggregate of getRelated: %d entries", _.size(related));
-    return _.map(related, function(r) {
+    return _.map(related, function(r, i) {
         return {
-            id: r.id.substr(0, 20),
-            videoId: r.related.videoId,
-            title: r.related.title,
-            verified: r.related.verified,
-            source: r.related.source,
-            vizstr: r.related.vizstr,
-            foryou: r.related.foryou,
-            suggestionOrder: r.related.index,
-            displayLength: r.related.displayTime,
-            watched: r.title,
-            since: r.publicationString,
-            credited: r.authorName,
-            channel: r.authorSource,
             savingTime: r.savingTime,
+            id: r.id.substr(0, 20),
             watcher: utils.string2Food(r.publicKey),
+
+            recommendedVideoId: r.related.videoId,
+            recommendedViews: (r.related.mined) ? r.related.mined.viz : null,
+            recommendedDuration: (r.related.mined) ? r.related.mined.duration : null,
+            recommendedPubtime: (r.related.mined) ?r.related.mined.timeago : null,
+            recommendedForYou: r.related.foryou,
+            recommendedTitle: r.related.title,
+            recommendedAuthor: r.related.source,
+            recommendedVerified: r.related.verified,
+            recommendationOrder: r.related.index,
             watchedId: r.videoId,
+            watchedAuthor: r.authorName,
+            watchedPubtime: r.related.vizstr,
+            watchedTitle: r.title,
+            watchedViews: r.viewInfo.viewStr ? r.viewInfo.viewStr : null,
+            watchedChannel: r.authorSource,
         };
     });
 }
