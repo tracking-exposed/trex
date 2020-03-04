@@ -8,7 +8,7 @@ const mongo3 = require('../lib/mongo3');
 
 nconf.argv().env().file({ file: 'config/settings.json' });
 
-const source = nconf.get('source') || 'https://amazon.tracking.exposed';
+const source = nconf.get('source') || 'https://youtube.tracking.exposed';
 
 async function fetchRemote(sourceUrl) {
     return request

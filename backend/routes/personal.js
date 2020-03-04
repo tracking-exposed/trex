@@ -4,6 +4,7 @@ const debug = require('debug')('routes:personal');
 
 const automo = require('../lib/automo');
 const params = require('../lib/params');
+const utils = require('../lib/utils');
 const CSV = require('../lib/CSV');
 
 async function getPersonal(req) {
@@ -92,6 +93,28 @@ async function getPersonalCSV(req) {
     };
 };
 
+async function getPersonalTimeline(req) {
+    const DEFMAX = 1000;
+    const k =  req.params.publicKey;
+    if(_.size(k) < 26)
+        return { json: { "message": "Invalid publicKey", "error": true }};
+
+    const { amount, skip } = params.optionParsing(req.params.paging, DEFMAX);
+    debug("getPersonalTimelines request by %s using %d starting videos, skip %d (defmax %d)", k, amount, skip, DEFMAX);
+    let c = await automo.getMetadataByPublicKey(k, { takefull:true, amount, skip });
+    const list = _.map(c.metadata, function(e) {
+        e.value = utils.hash(e, _.keys(_.pick(e, ['ad', 'title', 'authorName'])));
+        console.log( e.value, _.keys(_.pick(e, ['ad', 'title', 'authorName'])),
+            _.pick(e, ['ad', 'title', 'authorName']) );
+        e.numb = _.parseInt(_.replace(e.value, '/\(c+)/', ''));
+        return e;
+    });
+
+    debug("getPersonalTimelines return %d last %s ", _.size(list), 
+        ( _.first(list) ? _.first(list).title : "[nothing]" )  );
+    return { json: list };
+}
+
 async function getPersonalRelated(req) {
     const DEFMAX = 40;
     const k =  req.params.publicKey;
@@ -162,6 +185,7 @@ async function removeEvidence(req) {
 module.exports = {
     getPersonal,
     getPersonalCSV,
+    getPersonalTimeline,
     getPersonalRelated,
     getEvidences,
     removeEvidence,

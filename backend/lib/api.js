@@ -39,6 +39,7 @@ var apiListVersion1 = {
 
     /* return user' last videos */
     getPersonal:        require('../routes/personal').getPersonal,
+    getPersonalTimeline: require('../routes/personal').getPersonalTimeline,
     getPersonalRelated: require('../routes/personal').getPersonalRelated,
 
     /* personal right of removing your data, and full details on one */
