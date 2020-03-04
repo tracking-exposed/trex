@@ -318,7 +318,7 @@ async function markHTMLsUnprocessable(htmls) {
     await mongoc.close();
 }
 
-async function updateMetadata(html, newsection) {
+async function updateMetadata(html, newsection, repeat) {
 
     async function markHTMLandClose(mongoc, html, retval) {
         await mongo3.updateOne(mongoc, nconf.get('schema').htmls, { id: html.id }, { processed: true });
@@ -344,7 +344,7 @@ async function updateMetadata(html, newsection) {
     }
 
     let updates = 0;
-    let forceu = false;
+    let forceu = repeat;
     /* we don't care of these updates */
     const careless = [ 'clientTime', 'savingTime', 'size' ];
     /* this is meant to add only fields with values, and to notify duplicated

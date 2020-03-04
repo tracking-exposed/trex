@@ -22,9 +22,10 @@ function parseLikes(D) {
     return { likes: likes, dislikes: dislikes };
 };
 
-function labelForcer(l) {
+function labelForcer(l, isLive) {
     // La Super Pattuglia -  HALLOWEEN Special - Car City 🚗 Cartone animato per i bambini di Tom il Carro Attrezzi a Car City 5 mesi fa 22 minuti 63.190 visualizzazioni
     // The Moons of Mars Explained -- Phobos & Deimos MM#… Nutshell 4 years ago 115 seconds 2,480,904 views
+    // Formazione a distanza: soluzioni immediate e idee di attività by CampuStore 4 hours ago 731 views
 
     let first = _.reverse(l.split(' '));
     let viz = [];
@@ -47,22 +48,28 @@ function labelForcer(l) {
     }, []);
 
     let duration = [];
-    let third = _.reduce(second, function(memo, e) {
-        if(typeof duration == 'string') {
-            memo.push(e);
-            return memo;
-        }
-        let test = _.parseInt(e.replace(/[.,]/, ''));
-        if(!_.isNaN(test)) {
-            duration.push(e);
-            _.reverse(duration);
-            duration = _.join(duration, ' ');
-        }
-        else {
-            duration.push(e);
-        }
-        return memo; 
-    }, []);
+    let third = [];
+    if(isLive) {
+        duration = "live";
+        third = second;
+    } else {
+        third = _.reduce(second, function(memo, e) {
+            if(typeof duration == 'string') {
+                memo.push(e);
+                return memo;
+            }
+            let test = _.parseInt(e.replace(/[.,]/, ''));
+            if(!_.isNaN(test)) {
+                duration.push(e);
+                _.reverse(duration);
+                duration = _.join(duration, ' ');
+            }
+            else {
+                duration.push(e);
+            }
+            return memo; 
+        }, []);
+    }
 
     let timeago = [];
     let fourth = _.reduce(third, function(memo, e) {
@@ -110,6 +117,7 @@ function relatedMetadata(e, i) {
     const link = e.querySelectorAll('a')[0].getAttributeNode('href').value
     const videoId = link.replace(/.*v=/, '');
     const videometablockN = e.querySelectorAll('.ytd-video-meta-block').length
+    const liveBadge = e.querySelector(".badge-style-type-live-now");
 
     let displayTime, expandedTime;
     if(e.querySelector('.ytd-thumbnail-overlay-time-status-renderer')) {
@@ -123,7 +131,7 @@ function relatedMetadata(e, i) {
     const longlabel = e.querySelector('#video-title').getAttribute('aria-label');
     // Beastie Boys - Sabotage by BeastieBoys 9 years ago 3 minutes, 2 seconds 62,992,821 views
 
-    const mined = longlabel ? labelForcer(longlabel) : null;
+    const mined = longlabel ? labelForcer(longlabel, !!liveBadge) : null;
     // mined is not used yet; it might be handy. please note sometime is empty
     // e1895eed23ffcb8a0b5d1221c28a712b379886fe
 
@@ -152,6 +160,7 @@ function relatedMetadata(e, i) {
         expandedTime,
         longlabel,
         mined,
+        isLive: !!liveBadge
     };
 };
 
