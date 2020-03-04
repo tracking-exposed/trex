@@ -18,3 +18,8 @@ backend/htmls/*
 backend/dist/*
 backend/farfalla/*
 backend/node_modules/*
+
+methodology/snaps/*
+methodology/geckodriver.log
+methodology/config/*
+methodology/profiles/*

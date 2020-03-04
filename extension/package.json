@@ -12,7 +12,7 @@
   },
   "scripts": {
     "lint": "eslint ./",
-    "build": "rm -rf ./build && md build && cross-env webpack && cp -r src/popup/* manifest.json icons/* ./build/",
+    "build": "rm -rf ./build && mkdir build && cross-env webpack && cp -r src/popup/* manifest.json icons/* ./build/",
     "start": "npm run build:watch:files",
     "build:watch": "cross-env node dev-server.js",
     "build:watch:files": "rimraf ./build && mkdir build && cp -r manifest.json icons/* src/popup/* ./build/ && cross-env webpack -w",
