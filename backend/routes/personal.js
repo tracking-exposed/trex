@@ -102,16 +102,27 @@ async function getPersonalTimeline(req) {
     const { amount, skip } = params.optionParsing(req.params.paging, DEFMAX);
     debug("getPersonalTimelines request by %s using %d starting videos, skip %d (defmax %d)", k, amount, skip, DEFMAX);
     let c = await automo.getMetadataByPublicKey(k, { takefull:true, amount, skip });
+
     const list = _.map(c.metadata, function(e) {
         e.value = utils.hash(e, _.keys(_.pick(e, ['ad', 'title', 'authorName'])));
+        e.dayString = moment(e.savingTime).format("YYYY-MM-DD");
         console.log( e.value, _.keys(_.pick(e, ['ad', 'title', 'authorName'])),
             _.pick(e, ['ad', 'title', 'authorName']) );
         e.numb = _.parseInt(_.replace(e.value, '/\(c+)/', ''));
         return e;
     });
-
-    debug("getPersonalTimelines return %d last %s ", _.size(list), 
+    debug("getPersonalTimelines transforming %d last %s ", _.size(list), 
         ( _.first(list) ? _.first(list).title : "[nothing]" )  );
+
+    const grouped = _.groupBy(list, 'dayString');
+    debugger;
+    const aggregated = _.map(grouped, function(perDayEvs, dayStr) {
+        debugger;
+        return {
+            dayStr,
+
+        }
+    })
     return { json: list };
 }
 

@@ -5,14 +5,40 @@ const debug = require('debug')('parser:home');
 const labelForcer = require('./video').labelForcer;
 
 function dissectSelectedVideo(e) {
+    const infos = {};
+
+    try {
+        infos.textTitle = e.querySelector('#video-title-link').textContent;
+    } catch(error) {
+        debug("Failure in textTitle: %s\n\t%s", error.message, e.querySelector("#video-title-link").innerHTML);
+        infos.textTitle = '';
+        infos.error = true;
+    }
+    try {
+        infos.href = e.querySelector('a').getAttribute('href');
+    } catch(error) {
+        debug("Failure in href: %s\n\t%s", error.message, e.querySelector("a").innerHTML);
+        infos.href = '';
+        infos.error = true;
+    }
+    try {
+        infos.authorName = e.querySelector('#text-container.ytd-channel-name').querySelector('a').textContent;
+    } catch(error) {
+        debug("Failure in authorName: %s\n\t%s", error.message, e.querySelector('#text-container.ytd-channel-name').innerHTML);
+        infos.authorName = '';
+        infos.error = true;
+    }
+    try {
+        infos.authorHref = e.querySelector('#text-container.ytd-channel-name').querySelector('a').getAttribute('href');
+    } catch(error) {
+        debug("Failure in authorHref: %s\n\t%s", error.message, e.querySelector('#text-container.ytd-channel-name').innerHTML);
+        infos.authorHref = '';
+        infos.error = true;
+    }
+
     const aria = e.querySelector('#video-title-link').getAttribute('aria-label');
-    const infos = labelForcer(aria);
-    infos.textTitle = e.querySelector('#video-title-link').textContent;
-    infos.href = e.querySelector('a').getAttribute('href');
-    infos.aria = aria;
-    infos.authorName = e.querySelector('#text-container.ytd-channel-name').querySelector('a').textContent;
-    infos.authorHref = e.querySelector('#text-container.ytd-channel-name').querySelector('a').getAttribute('href');
-    return infos;
+    const mined = labelForcer(aria);
+    return _.merge(mined, infos, { aria });
 }
 
 function actualHomeProcess(D) {
@@ -32,10 +58,6 @@ function actualHomeProcess(D) {
                 error: true,
                 reason: error.message,
                 aria: s,
-                textTitle: e.querySelector('a#video-title-link').textContent,
-                href: e.querySelector('a#video-title-link').getAttribute('href'),
-                authorName: e.querySelector('#text-container.ytd-channel-name').querySelector('a').textContent,
-                authorHref: e.querySelector('#text-container.ytd-channel-name').querySelector('a').getAttribute('href'),
             }
         }
     });

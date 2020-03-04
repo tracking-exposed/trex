@@ -84,10 +84,11 @@ async function newLoop() {
 
         let metadata = null;
         try {
-            debug("%s [%s] %s %d.%d %s %s %s",
+            debug("%s [%s %s] %s %d.%d %s %s %s",
                 e.id.substr(0, 4),
                 moment(e.savingTime).format("HH:mm"),
-                e.metadataId.substr(0, 6),
+                moment.duration( moment() - moment(e.savingTime)).humanize(),
+                e.metadataId,
                 e.packet, e.incremental,
                 e.href.replace(/https:\/\//, ''), e.size, e.selector);
 
