@@ -47,7 +47,7 @@ async function getLast(req) {
         // if not initialized ^^^^ or if the cache time is expired: do the query
         const last = await automo.getMetadataByFilter({
             title: { $exists: true },
-            relatedN: { $gt: 10 },
+            'related.19': { $exists: true },
             videoId: { $exists: true }
         }, { amount, skip });
 
