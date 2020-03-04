@@ -335,6 +335,7 @@ function process(envelop) {
         return null;
     }
 
+    extracted.type = 'video';
     extracted.videoId = _
         .replace(envelop.impression.href, /.*v=/, '')
         .replace(/\?.*/, '')
@@ -427,4 +428,5 @@ module.exports = {
     videoAd,
     overlay,
     adTitleChannel,
+    labelForcer,
 };

@@ -7,7 +7,6 @@
 const _ = require('lodash');
 const nconf = require('nconf');
 const debug = require('debug')('lib:automo');
-const debugLite = require('debug')('lib:automo:L');
 const moment = require('moment');
 
 const utils = require('../lib/utils');
@@ -86,9 +85,16 @@ async function getMetadataByPublicKey(publicKey, options) {
     if(!supporter)
         throw new Error("publicKey do not match any user");
 
+    let filter = {
+        publicKey: supporter.publicKey,
+        title: { $exists: true }
+    };
+    if(options.takefull)
+        _.unset(filter, 'title');
+
     const metadata = await mongo3.readLimit(mongoc,
-        nconf.get('schema').metadata, { publicKey: supporter.publicKey, title: {
-            $exists: true }}, { savingTime: -1 }, options.amount, options.skip);
+        nconf.get('schema').metadata, filter,
+            { savingTime: -1 }, options.amount, options.skip);
 
     await mongoc.close();
 

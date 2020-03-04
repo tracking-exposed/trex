@@ -6,6 +6,7 @@ const nconf = require('nconf');
 const JSDOM = require('jsdom').JSDOM;
 
 const videoparser = require('../parsers/video')
+const homeparser = require('../parsers/home')
 const automo = require('../lib/automo')
 
 nconf.argv().env().file({ file: 'config/settings.json' });
@@ -17,7 +18,7 @@ echoes.setDefaultEcho("elasticsearch"); */
 const FREQUENCY = _.parseInt(nconf.get('frequency')) ? _.parseInt(nconf.get('frequency')) : 10;
 const backInTime = _.parseInt(nconf.get('minutesago')) ? _.parseInt(nconf.get('minutesago')) : 10;
 const id = nconf.get('id');
-const singleUse = !!nconf.get('single');
+let singleUse = !!nconf.get('single');
 
 let nodatacounter = 0;
 let lastExecution = moment().subtract(backInTime, 'minutes').toISOString();
@@ -90,7 +91,13 @@ async function newLoop() {
                 e.packet, e.incremental,
                 e.href.replace(/https:\/\//, ''), e.size, e.selector);
 
-            if(e.selector == ".ytp-title-channel") {
+            const curi = e.href.replace(/.*youtube\.com\//, '').replace(/\?.*/, '')
+
+            if(!_.size(curi) && e.selector == "ytd-app") {
+                metadata = homeparser.process(envelop);
+                debugger;
+            }
+            else if(e.selector == ".ytp-title-channel") {
                 metadata = videoparser.adTitleChannel(envelop);
             }
             else if(e.selector == ".video-ads.ytp-ad-module") {
