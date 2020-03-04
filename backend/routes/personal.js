@@ -51,24 +51,31 @@ async function getPersonalCSV(req) {
             evidenceCounter++;
         }
 
-        let exprelated = _.map(evidence.related, function(recommended, i) {
+        let exprelated = _.map(evidence.related, function(related, i) {
             if(i >= 20)
                 return null;
 
             return {
-                watcher: data.supporter.p,
-                evidence: evidenceCounter,
-                recommendedVideoId: recommended.videoId,
-                displayTime: recommended.displayTime,
-                recommendedForYou: recommended.foryou,
-                recommendedTitle: recommended.title,
-                recommendedAuthor: recommended.source,
-                watchedTitle: evidence.title,
-                recommendationOrder: i + 1,
                 savingTime: evidence.savingTime,
-                watchId: evidence.id,
+                watcher: data.supporter.p,
                 id: i + 'x' + evidence.id,
-                watchedAuthor: evidence.authorName
+                evidence: evidenceCounter,
+
+                recommendedVideoId: related.videoId,
+                recommendedViews: (related.mined) ? related.mined.viz : null,
+                recommendedDuration: (related.mined) ? related.mined.duration : null,
+                recommendedPubtime: (related.mined) ? related.mined.timeago : null,
+                recommendedForYou: related.foryou,
+                recommendedTitle: related.title,
+                recommendedAuthor: related.source,
+                recommendedVerified: related.verified,
+                recommendationOrder: related.index,
+                watchedId: evidence.id,
+                watchedAuthor: evidence.authorName,
+                watchedPubtime: evidence.related.vizstr,
+                watchedTitle: evidence.title,
+                watchedViews: evidence.viewInfo.viewStr ? evidence.viewInfo.viewStr : null,
+                watchedChannel: evidence.authorSource,
             };
         })
         memo = _.concat(memo, _.compact(exprelated));
