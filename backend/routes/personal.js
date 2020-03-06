@@ -111,10 +111,10 @@ async function getPersonalTimeline(req) {
     let c = await automo.getMetadataByPublicKey(k, { takefull:true, amount, skip });
 
     const list = _.map(c.metadata, function(e) {
+        /* console.log( e.value, _.keys(_.pick(e, ['ad', 'title', 'authorName'])),
+            _.pick(e, ['ad', 'title', 'authorName']) ); */
         e.value = utils.hash(e, _.keys(_.pick(e, ['ad', 'title', 'authorName'])));
         e.dayString = moment(e.savingTime).format("YYYY-MM-DD");
-        console.log( e.value, _.keys(_.pick(e, ['ad', 'title', 'authorName'])),
-            _.pick(e, ['ad', 'title', 'authorName']) );
         e.numb = _.parseInt(_.replace(e.value, '/\(c+)/', ''));
         return e;
     });
@@ -122,15 +122,34 @@ async function getPersonalTimeline(req) {
         ( _.first(list) ? _.first(list).title : "[nothing]" )  );
 
     const grouped = _.groupBy(list, 'dayString');
-    debugger;
     const aggregated = _.map(grouped, function(perDayEvs, dayStr) {
-        debugger;
+        let videos = _.size(_.filter(perDayEvs, { 'type': 'video' }));
+        let homepages = _.size(_.filter(perDayEvs, { 'type': 'home' }));
+        let types = _.sum(_.map(_.omit(_.countBy(perDayEvs, 'type'), ['undefined']), function(amount, name) { return amount; }));
+        let authors = _.sum(_.map(_.omit(_.countBy(perDayEvs, 'authorName'), ['undefined']), function(amount, name) { return amount; }));
+        let adverts = _.sum(_.map(_.omit(_.countBy(perDayEvs, 'advertiser'), ['undefined']), function(amount, name) { return amount; }));
+        debug("V%d H%d | %j %d - %j %d - %j %d",
+            videos, homepages,
+            _.countBy(perDayEvs, 'type'), types,
+            _.countBy(perDayEvs, 'authorName'), authors,
+            _.countBy(perDayEvs, 'advertiser'), adverts
+        );
         return {
+            videos,
+            homepages,
+            types,
+            authors,
+            adverts,
+            type: _.omit(_.countBy(perDayEvs, 'type'), ['undefined']),
+            authorName: _.omit(_.countBy(perDayEvs, 'authorName'), ['undefined']),
+            advertiser: _.omit(_.countBy(perDayEvs, 'advertiser'), ['undefined']),
             dayStr,
-
         }
-    })
-    return { json: list };
+    });
+    const oneWeekAgoDateString = moment().subtract(1, 'week').format("YYYY-MM-DD");
+    return {
+        json: { aggregated, oneWeekAgoDateString }
+    };
 }
 
 async function getPersonalRelated(req) {
