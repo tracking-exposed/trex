@@ -62,6 +62,7 @@ async function getLast(req) {
             const d = moment.duration( moment(retval.savingTime) - moment() );
             retval.timeago = d.humanize() + ' ago';
             retval.secondsago = d.asSeconds();
+            retval.videoId = retval.videoId.replace(/\&.*/, '');
             return retval;
         });
         let cacheFormat = {
@@ -70,7 +71,7 @@ async function getLast(req) {
             next: moment().add(cache.seconds, 'seconds')
         };
         debug("Returning %d new random videos %j, which become part of a %d minutes long cache",
-            amount, _.map(freshContent, 'title'), CACHE_SECONDS / 60);
+            _.size(freshContent), _.map(freshContent, 'title'), CACHE_SECONDS / 60);
         return formatReturn(cacheFormat);
     }
     else {
@@ -90,10 +91,12 @@ async function getVideoId(req) {
             let rv = _.merge(e, e.mined);
             _.unset(rv, 'mined');
             _.unset(rv, 'longlabel');
+            rv.videoId = rv.videoId.replace(/\&.*/, '');
             return rv;
         });
         meta.related = _.reverse(meta.related);
         _.unset(meta, '_id');
+        _.unset(meta, 'publicKey');
         return meta;
     });
     debug("getVideoId: found %d matches about %s", _.size(evidences), req.params.query);
@@ -110,6 +113,7 @@ async function getRelated(req) {
         });
         meta.timeago = moment.duration( meta.savingTime - moment() ).humanize();
         _.unset(meta, '_id');
+        _.unset(meta, 'publicKey');
         return meta;
     });
     debug("getRelated: returning %d matches about %s", _.size(evidences), req.params.query);
