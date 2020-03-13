@@ -22,6 +22,22 @@ function parseLikes(D) {
     return { likes: likes, dislikes: dislikes };
 };
 
+function logged(D) {
+    const avatarN = D.querySelectorAll('button#avatar-btn');
+    const loginN = D.querySelectorAll('[href^="https://accounts.google.com/ServiceLogin"]');
+    const avalen = avatarN ? avatarN.length : 0;
+    const logilen = loginN ? loginN.length : 0;
+
+    // login button | avatar button len
+    if(logilen && !avalen)
+        return false;
+    if(avalen && !logilen)
+        return true; 
+
+    debug("Inconsistent condition avatar %d login %d", avalen, logilen);
+    return -1;
+}
+
 function labelForcer(l, isLive) {
     // La Super Pattuglia -  HALLOWEEN Special - Car City 🚗 Cartone animato per i bambini di Tom il Carro Attrezzi a Car City 5 mesi fa 22 minuti 63.190 visualizzazioni
     // The Moons of Mars Explained -- Phobos & Deimos MM#… Nutshell 4 years ago 115 seconds 2,480,904 views
@@ -200,7 +216,7 @@ function parseSingleTry(D, memo, spec) {
 
 function manyTries(D, opportunities) {
     const r = _.reduce(opportunities, _.partial(parseSingleTry, D), null);
-    debug("manyTries: %j: %s", _.map(opportunities, 'name'), r);
+    // debug("manyTries: %j: %s", _.map(opportunities, 'name'), r);
     return r;
 };
 
@@ -209,10 +225,9 @@ function mineAuthorInfo(D) {
 
     const as = D.querySelector('a.ytd-video-owner-renderer').parentNode.querySelectorAll('a');
     if(_.size(as) == 1) {
-        debugger;
         return null;
 
-    } else if(_.size(as) == 2) {
+    } else if(_.size(as) >= 2) {
         const authorName = D.querySelector('a.ytd-video-owner-renderer').parentNode.querySelectorAll('a')[1].textContent;
         const authorSource = D.querySelector('a.ytd-video-owner-renderer').parentNode.querySelectorAll('a')[0].getAttribute('href');
 
@@ -226,17 +241,8 @@ function mineAuthorInfo(D) {
                     .querySelectorAll('a')[1]
                     .getAttribute('href'), authorSource );
         }
-
         return { authorName, authorSource };
-    
-    } else {
-        debug("odd the size is not 1 not 2!");
-        debugger;
-        // this creat an odd: '{"0":{},"1":{}}'
-        // and someone might spot it :)
-        return { authorName: JSON.stringify(D.querySelector('a.ytd-video-owner-renderer').parentNode.querySelectorAll('a')),
-                 authorSource: "" };
-    }
+    } 
 }
 
 function processVideo(D) {
@@ -261,6 +267,7 @@ function processVideo(D) {
     const { authorName, authorSource } = mineAuthorInfo(D);
     const ptc = D.querySelectorAll('[slot="date"]').length;
     const publicationString = D.querySelector('[slot="date"]').textContent;
+    let login = -1;
 
     /* related + sponsored */
     let related = [];
@@ -314,8 +321,16 @@ function processVideo(D) {
         var viewInfo = likeInfo = null;
     }
 
+    try {
+        login = logged(D);
+        /* if login is -1, it means failed check */
+    } catch(error) {
+        debug("Exception in logged(): %s", error.message);
+    }
+
     return {
         title,
+        login,
         check,
         ptc,
         publicationString,
@@ -331,7 +346,7 @@ function processVideo(D) {
 function process(envelop) {
 
     if(!envelop.impression.href.match(/watch\?v=/)) {
-        debug("TODO process 'non-watch' pages such as %s", envelop.impression.href);
+        debug("SKIP 'non-video' page [%s]", envelop.impression.href);
         return null;
     }
 
@@ -433,6 +448,7 @@ function adTitleChannel(envelop) {
 
 module.exports = {
     isVideo,
+    logged,
     process,
     videoAd,
     overlay,

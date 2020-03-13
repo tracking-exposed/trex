@@ -3,6 +3,7 @@ const _ = require('lodash');
 const debug = require('debug')('parser:home');
 
 const labelForcer = require('./video').labelForcer;
+const logged = require('./video').logged;
 
 function dissectSelectedVideo(e) {
     const infos = {};
@@ -52,7 +53,6 @@ function actualHomeProcess(D) {
         } catch(error) {
             const f = e.querySelector('#video-title-link');
             const s = f ? f.getAttribute('aria-label') : null;
-            debugger;
             return {
                 order: i + 1,
                 error: true,
@@ -77,6 +77,14 @@ function process(envelop) {
     }
 
     extracted.type = 'home';
+
+    try {
+        extracted.login = logged(D);
+        /* if login is -1, it means failed check */
+    } catch(error) {
+        debug("Exception in logged(): %s", error.message);
+        extracted.login = -1;
+    }
 
     /* remove debugging/research fields we don't want in mongo */
     _.unset(extracted, 'ptc');

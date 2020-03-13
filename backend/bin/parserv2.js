@@ -58,7 +58,7 @@ async function newLoop() {
         computedFrequency = FREQUENCY;
         return;
     } else {
-        computedFrequency = 0.5;
+        computedFrequency = 0.1;
     }
 
     if(!htmls.overflow) {
@@ -95,7 +95,6 @@ async function newLoop() {
 
             if(!_.size(curi) && e.selector == "ytd-app") {
                 metadata = homeparser.process(envelop);
-                debugger;
             }
             else if(e.selector == ".ytp-title-channel") {
                 metadata = videoparser.adTitleChannel(envelop);
@@ -144,8 +143,8 @@ async function newLoop() {
         return _.reject(memo, { id: blob[0].id });
     }, htmls.content);
 
-    debug("Usable HTMLs %d/%d - marking as processed the useless %d HTMLs",
-        _.size(_.compact(analysis)), _.size(htmls.content), _.size(remaining));
+    debug("Usable HTMLs %d/%d - marking as processed the useless %d HTMLs\t\t(sleep %d)",
+        _.size(_.compact(analysis)), _.size(htmls.content), _.size(remaining), computedFrequency);
 
     await automo.markHTMLsUnprocessable(remaining);
 }
@@ -158,7 +157,11 @@ function sleep(ms) {
 
 async function wrapperLoop() {
     while(true) {
-        await newLoop();
+        try {
+            await newLoop();
+        } catch(e) {
+            console.log("Error in newLoop", e.message);
+        }
         if(singleUse) {
             console.log("Single execution done!")
             process.exit(0);
@@ -170,5 +173,5 @@ async function wrapperLoop() {
 try {
     wrapperLoop();
 } catch(e) {
-    console.log("Error in newLoop", e.message);
+    console.log("Error in wrapperLoop", e.message);
 }

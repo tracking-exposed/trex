@@ -342,37 +342,39 @@ async function updateMetadata(html, newsection, repeat) {
 
     if(!exists) {
         await createMetadataEntry(mongoc, html, newsection);
-        t = newsection.title ? newsection.title : "+" + newsection.type + "+"; 
-        debug("Created metadata %s [%s] from %s with %s", html.metadataId, t, html.href, html.selector);
+        debug("Created metadata %s [%s] from %s with %s",
+            html.metadataId, 
+            (newsection.title ? newsection.title : "+" + newsection.type + "+"),
+            html.href, html.selector);
         return await markHTMLandClose(mongoc, html, { what: 'created'});
     }
 
     let updates = 0;
     let forceu = repeat;
-    /* we don't care of these updates */
+    const newfields = [];
+    /* we don't care if these fields change value, they'll not be 'update' */
     const careless = [ 'clientTime', 'savingTime', 'size' ];
-    /* this is meant to add only fields with values, and to notify duplicated
-     * conflictual metadata mined, or extend labels as list */
     const up = _.reduce(newsection, function(memo, value, key) {
 
-        if(!value || !_.size(value))
+        if(_.isUndefined(value)) {
+            debug("updateChecker: %s is undefined!", key);
             return memo;
+        }
 
         let current = _.get(memo, key);
         if(!current) {
             _.set(memo, key, value);
-            updates++; 
+            newfields.push(key);
+            updates++;
         } else if(_.indexOf(careless, key) == -1) {
             /* we don't care of these updates */
         } else if(!_.isEqual(JSON.stringify(current), JSON.stringify(value))) {
             const record = {
                 clientTime: html.clientTime,
-                // selector: html.selector,
                 value,
                 key,
             };
-
-            debug("record update in %s c[%s --- %s]v", key, current, value)
+            debug("special suppressed content update in %s [%s -> %s]", key, current, value);
 
             if(_.isUndefined(memo.variation))
                 memo.variation = [ record ];
@@ -386,8 +388,12 @@ async function updateMetadata(html, newsection, repeat) {
         return memo;
     }, exists);
 
-    debug("Evalutatig if update metadata %s (%s) %d updates, force %s",
-        html.metadataId, html.selector, updates, forceu);
+    if(updates) {
+        debug("Metadata UPDATE: %s (%s) %d updates %s%s",
+            html.metadataId, html.selector, updates, 
+            up.variation ? JSON.stringify(_.map(up.variation, 'key')) : "",
+            _.size(newfields) ? JSON.stringify(newfields) : "" );
+    }
 
     if(forceu || updates ) {
         // debug("Update from incremental %d to %d", exists.incremental, up.incremental);
