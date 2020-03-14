@@ -32,9 +32,7 @@ import moment from 'moment';
 
 import config from './config';
 import hub from './hub';
-import { getTimeISO8601 } from './utils';
 import { registerHandlers } from './handlers/index';
-import pseudonym from './pseudonym';
 
 const YT_VIDEOTITLE_SELECTOR = 'h1.title';
 
@@ -72,12 +70,13 @@ function boot () {
         // Lookup the current user and decide what to do.
         localLookup(response => {
             // `response` contains the user's public key and its status,
+            console.log(response);
             adMonitor();
             hrefUpdateMonitor();
             flush();
         });
     } else if(_.startsWith(window.location.origin, 'localhost')) {
-        console.log("localhost: ignored condition");
+        console.log("yttrex in localhost: ignored condition");
         return null;
     }
 }
@@ -198,7 +197,7 @@ function buildSpan(c) {
 }
 
 const adPeriodicTimeout = 1000;
-const videoPeriodicTimeout = 8000;
+const videoPeriodicTimeout = 9000;
 var lastVideoURL = null;
 var lastVideoCNT = 0;
 function hrefUpdateMonitor() {
@@ -218,7 +217,7 @@ function hrefUpdateMonitor() {
         }
         if(!diff) {
             lastVideoCNT++;
-            if(lastVideoCNT > 5) {
+            if(lastVideoCNT > 3) {
                 // console.log(lastVideoCNT, "too many repetition: stop");
                 return;
             }
