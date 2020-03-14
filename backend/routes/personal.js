@@ -19,6 +19,10 @@ async function getPersonal(req) {
     let data = null;
     try {
         data = await automo.getSummaryByPublicKey(k, { amount, skip });
+        const d = moment.duration( moment(data.supporter.lastActivity) - moment(data.supporter.creationTime) )
+        data.supporter.hereSince = d.humanize();
+        debug("Returning %d videos of %d from a profile hereSince %s",
+            _.size(data.recent), data.total, data.supporter.hereSince);
     } catch(e) {
         console.log(e);
         debug("Catch exception in getSummaryByPublicKey: %s", e.message);

@@ -106,6 +106,32 @@
                 "selector": { "videoId": { "$exists": true } }
             }
         ]
-    }
-    ]
+    },
+    {
+        "name": "usage",
+        "column": "metadata",
+        "timevar": "savingTime",
+        "variables": [
+            {
+                "name": "logged",
+                "selector": { "login": true }
+            },
+            {
+                "name": "unlogged",
+                "selector": { "login": false }
+            },
+            {
+                "name": "total",
+                "selector": { }
+            },
+            {
+                "name": "homepages",
+                "selector": { "type": "home" }
+            },
+            {
+                "name": "videos",
+                "selector": { "type": "video" }
+            }
+        ]
+    }]
 }
