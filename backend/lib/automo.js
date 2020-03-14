@@ -37,7 +37,8 @@ async function getSummaryByPublicKey(publicKey, options) {
     debug("Retrieved in getSummaryByPublicKey: data %d, total %d (amount %d skip %d)",
         _.size(metadata), total, options.amount, options.skip);
 
-    const fields = ['id','videoId', 'savingTime', 'title', 'authorName', 'authorSource', 'relative', 'relatedN' ];
+    const fields = [ 'id', 'login', 'videoId', 'savingTime', 'title',
+                     'authorName', 'authorSource', 'relative', 'relatedN' ];
     const cleandata = _.map(metadata, function(e) {
         e.savingTime = new Date(e.savingTime);
         e.relatedN = _.size(e.related);
