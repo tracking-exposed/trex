@@ -1,8 +1,6 @@
 {
   "schema": {
       "supporters": "supporters",
-      "videos": "videos",
-      "alarms": "alarms",
       "htmls": "htmls",
       "metadata": "metadata",
       "stats": "trexstats",

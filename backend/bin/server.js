@@ -1,22 +1,22 @@
 #!/usr/bin/env node
-var express = require('express');
-var app = express();
-var server = require('http').Server(app);
-var _ = require('lodash');
-var moment = require('moment');
-var bodyParser = require('body-parser');
-var Promise = require('bluebird');
-var debug = require('debug')('yttrex');
-var nconf = require('nconf');
-var cors = require('cors');
+const express = require('express');
+const app = express();
+const server = require('http').Server(app);
+const _ = require('lodash');
+const moment = require('moment');
+const bodyParser = require('body-parser');
+const Promise = require('bluebird');
+const debug = require('debug')('yttrex');
+const nconf = require('nconf');
+const cors = require('cors');
 
-var dbutils = require('../lib/dbutils');
-var APIs = require('../lib/api');
-var security = require('../lib/security');
+const dbutils = require('../lib/dbutils');
+const APIs = require('../lib/api');
+const security = require('../lib/security');
 
-var cfgFile = "config/settings.json";
-var redOn = "\033[31m";
-var redOff = "\033[0m";
+const cfgFile = "config/settings.json";
+const redOn = "\033[31m";
+const redOff = "\033[0m";
 
 nconf.argv().env().file({ file: cfgFile });
 
@@ -59,6 +59,7 @@ function dispatchPromise(name, req, res) {
                   debug("Setting header %s: %s", key, value);
                   res.setHeader(key, value);
               });
+
           if(httpresult.json) {
               debug("%s API success, returning JSON (%d bytes)",
                   name, _.size(JSON.stringify(httpresult.json)) );
@@ -110,9 +111,8 @@ app.get('/api/v1/author/:query/:amount?', function(req, res) {
 app.post('/api/v:version/validate', function(req, res) {
     return dispatchPromise('validateKey', req, res);
 });
-/* This to actually post the event collection */
 app.post('/api/v1/events', function(req, res) {
-    return dispatchPromise('processEvents', req, res);
+    return dispatchPromise('discontinued', req, res);
 });
 app.post('/api/v2/events', function(req, res) {
     return dispatchPromise('processEvents2', req, res);
@@ -191,8 +191,7 @@ app.post('/api/v2/profile/:publicKey', (req, res) => {
 });
 
 
-
-/* the remaining code */
+/* security checks = is the password set and is not the default? (more checks might come) */
 security.checkKeyIsSet();
 
 Promise.resolve().then(function() {
@@ -203,28 +202,3 @@ Promise.resolve().then(function() {
         process.exit(1);
     }
 });
-
-
-/* sequence API */
-// app.get('/api/v1/sequence/:testId/:name', function(req, res) {
-//     return dispatchPromise('getSequence', req, res);
-// });
-/* create a new sequence */
-// app.get('/api/v1/sequence/:publicKey/:idList/:name', function(req, res) {
-//     return dispatchPromise('createSequence', req, res);
-// });
-/* get the results of a sequence */
-// app.get('/api/v1/results/:testId/:name', function(req, res) {
-//     return dispatchPromise('getResults', req, res);
-// });
-
-/* divergency page */
-// app.get('/[dD]/:testId/:name', function(req, res) {
-//     req.params.page = 'divergency';
-//     return dispatchPromise('getPage', req, res);
-// });
-/* divergency results page */
-// app.get('/[rR]/:testId/:name', function(req, res) {
-//     req.params.page = 'results';
-//     return dispatchPromise('getPage', req, res);
-// });

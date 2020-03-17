@@ -1,32 +1,12 @@
-/*
-const nextApiList = [
-  {
-    implementation: require('../routes/events').processEvents,
-    method: 'POST',
-    path: '/events/:some?',
-    validation: {
-      'some': validate.
-    },
-    name: 'processEvents'
-}, {
-} ]; */
 
-var apiListVersion1 = {
-    /* POST from the web-extension */
-    processEvents:    require('../routes/events').processEvents,
-    /* processInput is the second version of events */
+
+const apiList = {
+    discontinued:     require('../routes/public').discontinued,
     processEvents2:   require('../routes/events').processEvents2,
     getMirror:        require('../routes/events').getMirror,
 
     /* for revision --- to be determined if kept or not */
     unitById:         require('./htmlunit').unitById,
-
-    /* TODO: decide if can be resumed
-    getSequence:      require('./divergency').getSequence,
-    createSequence:   require('./divergency').createSequence,
-    getResults:       require('./divergency').getResults,
-    handshake:        require('./handshake').handshake,
-     */
 
     /* the three currently used/tested for the public */
     getLast:          require('../routes/public').getLast,
@@ -68,5 +48,5 @@ var apiListVersion1 = {
 };
 
 module.exports = {
-    implementations: apiListVersion1
+    implementations: apiList
 };

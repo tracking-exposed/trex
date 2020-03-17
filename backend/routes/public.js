@@ -1,6 +1,7 @@
 const _ = require('lodash');
 const moment = require('moment');
 const debug = require('debug')('routes:public');
+const discodebug = require('debug')('DISCONTINUED');
 
 const params = require('../lib/params');
 const automo = require('../lib/automo');
@@ -256,6 +257,10 @@ async function getByAuthor(req) {
     }};
 };
 
+async function discontinued(req) {
+    discodebug("%j", req);
+    return { text: "discontinued"; };
+}
 
 module.exports = {
     getLast,
@@ -263,4 +268,8 @@ module.exports = {
     getRelated,
     getVideoCSV,
     getByAuthor,
+
+    /* this special handler is used for all the API who aren't supported anymore.
+     * It might be elsewhere, not in routes/public.js, but ... */
+    discontinued,
 };
