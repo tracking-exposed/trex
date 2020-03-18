@@ -406,10 +406,12 @@ async function updateMetadata(html, newsection, repeat) {
 }
 
 async function createMetadataEntry(mongoc, html, newsection) {
-    exists = {};
-    exists.publicKey = html.publicKey;
-    exists.savingTime = html.savingTime;
-    exists.version = 3;
+    let exists = _.pick(html, ['publicKey', 'savingTime', 'clientTime', 'href' ]) ;
+    // exists.version = 3;
+    if(exists.href.match(/\?/)) {
+        exists.href = html.href.replace(/\?.*/, '');
+        exists.parameters = html.href.replace(/.*\?/, '');
+    }
     exists = _.extend(exists, newsection);
     exists.id = html.metadataId;
     await mongo3.writeOne(mongoc, nconf.get('schema').metadata, exists);

@@ -35,7 +35,7 @@ function logged(D) {
         return true; 
 
     debug("Inconsistent condition avatar %d login %d", avalen, logilen);
-    return -1;
+    return null;
 }
 
 function labelForcer(l, isLive) {
@@ -323,9 +323,10 @@ function processVideo(D) {
 
     try {
         login = logged(D);
-        /* if login is -1, it means failed check */
+        /* if login is null, it means failed check */
     } catch(error) {
         debug("Exception in logged(): %s", error.message);
+        login = null;
     }
 
     return {
@@ -439,6 +440,12 @@ function adTitleChannel(envelop) {
     const a = D.querySelectorAll('a');
     if(_.size(a) != 2)
         debug("Unexpected amount of element 'a' %d", _.size(a));
+
+    if(!a[0].getAttribute('href'))
+        debugger;
+
+    if(!a[0].getAttribute('href'))
+        console.log(_.map(D.querySelector('*'), console.log));
 
     return {
         adChannel: a[0].getAttribute('href'),

@@ -259,7 +259,7 @@ async function getByAuthor(req) {
 
 async function discontinued(req) {
     discodebug("%j", req);
-    return { text: "discontinued"; };
+    return { text: "discontinued" };
 }
 
 module.exports = {

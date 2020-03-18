@@ -79,11 +79,11 @@ function process(envelop) {
     extracted.type = 'home';
 
     try {
-        extracted.login = logged(D);
-        /* if login is -1, it means failed check */
+        extracted.login = logged(envelop.jsdom);
+        /* if login is null, it means failed check */
     } catch(error) {
         debug("Exception in logged(): %s", error.message);
-        extracted.login = -1;
+        extracted.login = null;
     }
 
     /* remove debugging/research fields we don't want in mongo */

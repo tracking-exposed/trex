@@ -6,14 +6,13 @@ ret = db.metadata.createIndex({"selected.videoId": 1}); checkret('metadata selec
 ret = db.metadata.createIndex({authorName: 1}); checkret('metadata authorName', ret);
 ret = db.metadata.createIndex({savingTime: -1}); checkret('metadata savingTime', ret);
 
-ret = db.videos.createIndex({ id : 1 }, { unique: true }); checkret('videos id', ret);
-ret = db.videos.createIndex({ savingTime : 1 }); checkret('videos savingTime', ret);
-
 ret = db.supporters.createIndex({ publicKey: 1 }, { unique: true }); checkret('supporters publicKey:', ret);
+ret = db.supporters.createIndex({ lastActivity: 1 }); checkret('supporters lastActivity:', ret);
 
 ret = db.groups.createIndex({ id: 1 }, { unique: true }); checkret('groups id', ret);
 ret = db.groups.createIndex({ name: 1 }, { unique: true }); checkret('groups name', ret);
 
+/* metadataId is not used to address content, if not when 'precise' parser is invoked */
 ret = db.htmls.createIndex({ id: 1 }, { unique: true} ); checkret('htmls id', ret);
 ret = db.htmls.createIndex({ savingTime: -1 }); checkret('htmls savingTime', ret);
 ret = db.htmls.createIndex({ processed: 1 }); checkret('htmls processed', ret);

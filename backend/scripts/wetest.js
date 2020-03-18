@@ -157,13 +157,14 @@ function mineSequence(s, urlSeq) {
     return _.flatten(_.flatten(ready.final));
 }
 
-const TEST_NUMBER = 1;
+const TEST_NUMBER = 0;
 const potcfg = {
     sequence: [
-        'https://www.youtube.com/watch?v=eXcNrRANYRk',
-        'https://www.youtube.com/watch?v=TyX2nGbAWgs',
-        'https://www.youtube.com/watch?v=ybji16u608U',
-        'https://www.youtube.com/watch?v=NPPhT6VGAlA',
+        'https://www.youtube.com/',
+        'https://www.youtube.com/watch?v=AX3ZYAaGQl',
+        'https://www.youtube.com/watch?v=7_e0CA_nhaE',
+        'https://www.youtube.com/watch?v=nYOo59f_ie0', // a video in not-our-default-charset
+        'https://www.youtube.com/'
     ],
     timefilter: {
         'savingTime': {
