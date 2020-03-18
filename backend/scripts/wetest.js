@@ -61,7 +61,7 @@ async function extractContributions(keys, urlSeq, filter) {
         function(n) {
             if(!_.startsWith(n.thumbnail, 'http'))
                 _.unset(n, 'thumbnail');
-            return _.omit(n, ['id', 'isVideo', 'version', 'thumbnails' ]);
+            return _.omit(n, ['id', 'thumbnails' ]);
         });
 
     const jsonfeatures = _.uniq(_.flatten(_.map(retval, function(evid) {

@@ -383,24 +383,6 @@ function process(envelop) {
     return extracted;
 };
 
-function isVideo(envelop) {
-
-    // this might have more metadata, but we just work without 
-    const search = envelop.jsdom.querySelectorAll("h3.title-and-badge");
-        debug("search? %d", _.size(search));
-
-    debug("isVideo? %d (potential) titles", _.size(envelop.jsdom.querySelectorAll('h1 > yt-formatted-string')));
-    const etit = envelop.jsdom.querySelector('h1 > yt-formatted-string');
-    if(etit) {
-        let vTitle = etit.textContent;
-        if(_.size(vTitle) > 0)
-            return envelop;
-
-        debug("Because the title is empty, it is not a video!");
-    }
-    return false;
-}
-
 function videoAd(envelop) { 
     if ( envelop.impression.size == 58 ) {
         return null;
@@ -440,13 +422,8 @@ function adTitleChannel(envelop) {
     const a = D.querySelectorAll('a');
     if(_.size(a) != 2)
         debug("Unexpected amount of element 'a' %d", _.size(a));
-
     if(!a[0].getAttribute('href'))
-        debugger;
-
-    if(!a[0].getAttribute('href'))
-        console.log(_.map(D.querySelector('*'), console.log));
-
+        return null;
     return {
         adChannel: a[0].getAttribute('href'),
         adLabel: a[0].getAttribute('aria-label'),
@@ -454,7 +431,6 @@ function adTitleChannel(envelop) {
 }
 
 module.exports = {
-    isVideo,
     logged,
     process,
     videoAd,

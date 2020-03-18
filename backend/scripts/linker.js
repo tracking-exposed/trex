@@ -42,7 +42,7 @@ function checkLinking(metadata, html) {
 
 var linkable = {
     name: 'linker',
-    requirements: { isVideo: true },
+    requirements: { type: 'video' },
     implementation: checkLinking,
     since: "2018-10-13",
     until: moment().format('YYYY-MM-DD 23:59:59')

@@ -100,68 +100,9 @@ function mergeHTMLImpression(html) {
         });
 }
 
-function parseHTML(htmlfilter, repeat) {
-    /* retrive the HTML from db/file/remote and apply many of the processing functions */
-    return mongo
-        .read(nconf.get('schema').videos, htmlfilter)
-        .map(function(metainfo) {
-
-            if(!metainfo.isVideo) {
-                debugUnsupported("%s", metainfo.href);
-                metainfo.processed = false;
-                return { impression: metainfo };
-            }
-
-            return fs
-                .readFileAsync(metainfo.htmlOnDisk, { encoding: 'utf8'})
-                .then(function(content) {
-                    debug("%s href %s with %s html bytes",
-                        metainfo.id, metainfo.href, _.size(content));
-                    let envelop = {
-                        impression: metainfo,
-                        jsdom: new JSDOM(content.replace(/\n\ +/g, '')).window.document,
-                    };
-                    let metadata = videoparser.process(envelop);
-
-                    envelop.metadata = metadata;
-                    envelop.impression.processed = true;
-                    envelop.metadata.id = envelop.impression.id;
-                    envelop.metadata.videoId = envelop.impression.videoId;
-                    envelop.metadata.savingTime = envelop.impression.savingTime;
-                    envelop.metadata.watcher = envelop.impression.p;
-                    // TODO: extract URL metadata, such as &t=502s 
-                    _.unset(envelop, 'jsdom');
-                    return envelop;
-                })
-                .catch(function(error) {
-                    debugError("catch in %s: %s", metainfo.id, error.message);
-                    metainfo.processed = false;
-                    return { impression: metainfo };
-                })
-                .then(save);
-        }, { concurrency: 1 })
-
-        /* this is the function processing the parsers
-         * it is call of every .id which should be analyzed */
-
-        .catch(function(error) {
-            debugError("Unmanaged error in parser sequence: %s", error.message);
-            console.log(error.stack);
-            return null;
-        })
-        // .tap(logSummary)
-        // .map(save, { concurrency: 1 })
-        .catch(function(error) {
-            debugError("[error after parsing] %s", error.message);
-            console.log(error.stack);
-            process.exit(1);
-        });
-}
-
 module.exports = {
     checkMetadata: checkMetadata,
     mergeHTMLImpression: mergeHTMLImpression,
     logSummary: logSummary,
     save: save,
-    parseHTML: parseHTML,
 };
