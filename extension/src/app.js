@@ -316,6 +316,13 @@ function adMonitor () {
                 if (testElement(element.outerHTML, middleBanner)) { phase('adv.seen'); }
             });
 
+        let advTitle = '.ytp-chrome-top';
+        document
+            .querySelectorAll(advTitle)
+            .forEach(function (element) {
+                if (testElement(element.outerHTML, advTitle)) { phase('adv.seen'); }
+            });
+
     }, adPeriodicTimeout);
 }
 
