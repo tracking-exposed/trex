@@ -40,21 +40,21 @@ const YT_VIDEOTITLE_SELECTOR = 'h1.title';
 const bo = chrome || browser;
 
 // variable used to spot differences due to refresh and url change
-let randomUUID = "INIT" + Math.random().toString(36).substring(2, 13) +
+let randomUUID = 'INIT' + Math.random().toString(36).substring(2, 13) +
                 Math.random().toString(36).substring(2, 13);
 
 // Boot the user script. This is the first function called.
 // Everything starts from here.
 function boot () {
 
-    if(_.endsWith(window.location.origin, 'youtube.tracking.exposed')) {
-        if(_.isUndefined($("#extension--parsable").html())) {
+    if (_.endsWith(window.location.origin, 'youtube.tracking.exposed')) {
+        if (_.isUndefined($('#extension--parsable').html())) {
             return null;
         } else {
             // $(".extension-missing").hide();
             return null;
         }
-    } else if(_.endsWith(window.location.origin, 'youtube.com')) {
+    } else if (_.endsWith(window.location.origin, 'youtube.com')) {
         // this get executed only on youtube.com
         console.log(`yttrex version ${config.VERSION} ${config}`);
 
@@ -75,13 +75,13 @@ function boot () {
             hrefUpdateMonitor();
             flush();
         });
-    } else if(_.startsWith(window.location.origin, 'localhost')) {
-        console.log("yttrex in localhost: ignored condition");
+    } else if (_.startsWith(window.location.origin, 'localhost')) {
+        console.log('yttrex in localhost: ignored condition');
         return null;
     }
 }
 
-function createLoadiv() {
+function createLoadiv () {
     // this is bound to #loadiv and appears on the right bottom
     var div = document.createElement('div');
 
@@ -90,85 +90,85 @@ function createLoadiv() {
     div.style.width = '48px';
     div.style.height = '48px';
     div.style.right = '10px';
-    div.style.bottom= '10px';
+    div.style.bottom = '10px';
 
     div.setAttribute('id', 'loadiv');
     document.body.appendChild(div);
 
-    $("#loadiv").show();
+    $('#loadiv').show();
 };
 
 /*
  * phases are all the div which can appears on the right bottom.
- * the function below is called in the code, when the condition is 
+ * the function below is called in the code, when the condition is
  * met, and make append the proper span */
 const phases = {
     'adv': {'seen': advSeen },
     'video': {'seen': videoSeen, 'wait': videoWait, 'send': videoSend},
-    'counters' : {
+    'counters': {
         'adv': { seen: 0 },
         'video': { seen: 0, wait: 0, send: 0}
     }
-}
-function phase(path) {
+};
+function phase (path) {
     const f = _.get(phases, path);
     f(path);
 }
 
 /* below the 'span creation' function mapped in the dict phases above */
-function videoWait(path) {
+function videoWait (path) {
     buildSpan({
         path,
         position: 1,
         text: 'video wait',
-        duration: 400,
+        duration: 400
     });
 }
-function videoSeen(path) {
+function videoSeen (path) {
     buildSpan({
         path,
         position: 2,
         text: 'video seen',
-        duration: 11500,
+        duration: 11500
     });
-    $("#video-seen").css('background-color', 'green');
-    $("#video-seen").css('cursor', 'cell');
-    $("#video-seen").click(function() {
-        if( testElement($('ytd-app').html(), 'ytd-app') ) {
+    $('#video-seen').css('background-color', 'green');
+    $('#video-seen').css('cursor', 'cell');
+    $('#video-seen').click(function () {
+        if (testElement($('ytd-app').html(), 'ytd-app')) {
             phase('video.send');
         }
-    })
+    });
 }
-function videoSend(path) {
+function videoSend (path) {
     buildSpan({
         path,
         position: 3,
         text: 'video send',
-        duration: 400,
+        duration: 400
     });
-    $("#video-seen").css('background-color', 'red');
-    $("#video-seen").css('color', 'white');
+    $('#video-seen').css('background-color', 'red');
+    $('#video-seen').css('color', 'white');
 }
-function advSeen(path) {
+function advSeen (path) {
     buildSpan({
         path,
         position: 4,
         text: 'seen adv',
-        duration: 400,
+        duration: 400
     });
 };
 
 /* this function build the default span, some css sytes are
  * overriden in the calling function */
-function buildSpan(c) {
+function buildSpan (c) {
     var cnt = _.get(phases.counters, c.path);
-    cnt +=1;
+    cnt += 1;
     var id = _.replace(c.path, /\./, '-');
     _.set(phases.counters, c.path, cnt);
 
     var infospan = null;
     var fullt = c.text; /* `${cnt} ▣ ${c.text}`; */
-    if(cnt == 1) {
+    if (cnt == 1) {
         // console.log("+ building span for the first time", c, cnt);
         infospan = document.createElement('span');
         infospan.setAttribute('id', id);
@@ -185,13 +185,13 @@ function buildSpan(c) {
         infospan.textContent = fullt;
         document.body.appendChild(infospan);
         /* change infospan in jquery so no proble in apply .fadeOut */
-        infospan = $("#" + id);
+        infospan = $('#' + id);
     } else {
-        infospan = $("#" + id);
+        infospan = $('#' + id);
         infospan.text(fullt);
     }
 
-    $("#loadiv").show();
+    $('#loadiv').show();
     infospan.css('display', 'flex');
     infospan.fadeOut({ duration: c.duration});
 }
@@ -200,24 +200,24 @@ const adPeriodicTimeout = 1000;
 const videoPeriodicTimeout = 9000;
 var lastVideoURL = null;
 var lastVideoCNT = 0;
-function hrefUpdateMonitor() {
+function hrefUpdateMonitor () {
 
-    window.setInterval(function() {
+    window.setInterval(function () {
         // phase('video.wait');
         let diff = (window.location.href != lastVideoURL);
 
-        // client might duplicate the sending of the same 
-        // video. using a random identifier, we spot the 
+        // client might duplicate the sending of the same
+        // video. using a random identifier, we spot the
         // clones and drop them server side.
         // also, here is cleaned the cache declared below
-        if(diff) {
+        if (diff) {
             phase('video.seen');
             cache = [];
             refreshUUID();
         }
-        if(!diff) {
+        if (!diff) {
             lastVideoCNT++;
-            if(lastVideoCNT > 3) {
+            if (lastVideoCNT > 3) {
                 // console.log(lastVideoCNT, "too many repetition: stop");
                 return;
             }
@@ -226,8 +226,8 @@ function hrefUpdateMonitor() {
         lastVideoURL = window.location.href;
         document
             .querySelectorAll(YT_VIDEOTITLE_SELECTOR)
-            .forEach(function() { /*
-                console.log("Video Selector match in ", 
+            .forEach(function () { /*
+                console.log("Video Selector match in ",
                     window.location.href,
                     ", sending",
                     _.size($('ytd-app').html()),
@@ -235,33 +235,30 @@ function hrefUpdateMonitor() {
                     $(YT_VIDEOTITLE_SELECTOR).length,
                     $(YT_VIDEOTITLE_SELECTOR).text()
                 ); */
-                if( testElement($('ytd-app').html(), 'ytd-app') )
-                    phase('video.send');
+                if (testElement($('ytd-app').html(), 'ytd-app')) { phase('video.send'); }
             });
     }, videoPeriodicTimeout);
 }
 
 let cache = [];
-function testElement(nodeHTML, selector) {
+function testElement (nodeHTML, selector) {
     // this function look at the LENGTH of the proposed element.
     // if an element with the same size has been already sent with
     // this URL, this duplication is ignored.
 
     const s = _.size(nodeHTML);
-    const exists = _.reduce(cache, function(memo, e, i) {
+    const exists = _.reduce(cache, function (memo, e, i) {
         const evalu = _.eq(e, s);
         /* console.log(memo, s, e, evalu, i); */
-        if(!memo)
-            if(evalu)
-                memo = true;
+        if (!memo) {
+            if (evalu) { memo = true; }
+        }
 
         return memo;
     }, false);
 
-    if(exists)
-        return false;
-    if(!s)
-        return false;
+    if (exists) { return false; }
+    if (!s) { return false; }
 
     cache.push(s);
 
@@ -271,7 +268,7 @@ function testElement(nodeHTML, selector) {
         when: Date(),
         selector,
         size: s,
-        randomUUID,
+        randomUUID
     }); /*
     console.log("->",
         _.size(cache),
@@ -282,63 +279,60 @@ function testElement(nodeHTML, selector) {
     return true;
 }
 
-function adMonitor() {
-    /* 
-     * Dear code reader, if you turn out to be a Google employee, 
+function adMonitor () {
+    /*
+     * Dear code reader, if you turn out to be a Google employee,
      * you can beat us like a piece of cake just changing the
      * css selector below. or, put bogus content into the title
-     * channel, for example. 
-     * 
-     * even worst, you can add a css rule for #ads-seen with 
-     * !important and ruin the experience to every chrome 
+     * channel, for example.
+     *
+     * even worst, you can add a css rule for #ads-seen with
+     * !important and ruin the experience to every chrome
      * supporter.
-     * 
+     *
      * I mean. really? don't be evil. this is a way to empower
      * people in understanding algorithm society. COME ON!
      */
-    window.setInterval(function() {
+    window.setInterval(function () {
 
-        let titleTop = ".ytp-title-channel";
+        let titleTop = '.ytp-title-channel';
         document
             .querySelectorAll(titleTop)
-            .forEach(function(element) {
-                if(testElement(element.outerHTML, titleTop))
-                    phase('adv.seen');
+            .forEach(function (element) {
+                if (testElement(element.outerHTML, titleTop)) { phase('adv.seen'); }
             });
 
-        let adbelow = ".ytp-ad-player-overlay-instream-info";
+        let adbelow = '.ytp-ad-player-overlay-instream-info';
         document
             .querySelectorAll(adbelow)
-            .forEach(function(element) {
-                if(testElement(element.outerHTML, adbelow))
-                    phase('adv.seen');
+            .forEach(function (element) {
+                if (testElement(element.outerHTML, adbelow)) { phase('adv.seen'); }
             });
 
-        let middleBanner = ".video-ads.ytp-ad-module";
+        let middleBanner = '.video-ads.ytp-ad-module';
         document
             .querySelectorAll(middleBanner)
-            .forEach(function(element) {
-                if(testElement(element.outerHTML, middleBanner))
-                    phase('adv.seen');
+            .forEach(function (element) {
+                if (testElement(element.outerHTML, middleBanner)) { phase('adv.seen'); }
             });
 
     }, adPeriodicTimeout);
 }
 
 var lastCheck = null;
-function refreshUUID() {
+function refreshUUID () {
     const REFERENCE = 3;
-    if(lastCheck && lastCheck.isValid && lastCheck.isValid()) {
-        var timed = moment.duration( moment() - lastCheck);
-        if(timed.asSeconds() > REFERENCE) {
-            // here is an example of a non secure random generation 
+    if (lastCheck && lastCheck.isValid && lastCheck.isValid()) {
+        var timed = moment.duration(moment() - lastCheck);
+        if (timed.asSeconds() > REFERENCE) {
+            // here is an example of a non secure random generation
             // but doesn't matter because the query on the server we
-            // has this with the user publicKey, so if someone wants to 
+            // has this with the user publicKey, so if someone wants to
             // corrupt their data: they can ¯\_(ツ)_/¯
             randomUUID = Math.random().toString(36).substring(2, 15) +
                 Math.random().toString(36).substring(2, 15); /*
             console.log(
-                "-> It is more than", REFERENCE, timed.asSeconds(), 
+                "-> It is more than", REFERENCE, timed.asSeconds(),
                 "Refreshed randomUUID", randomUUID); */
         } else { /*
             console.log("-> It is less then", REFERENCE, timed.asSeconds()); */
@@ -360,11 +354,11 @@ function localLookup (callback) {
 }
 
 // The function `remoteLookup` communicate the intention
-// to the server of performing a certain test, and retrive 
+// to the server of performing a certain test, and retrive
 // the userPseudonym from the server - this is not used in ytTREX
 function remoteLookup (callback) {
     bo.runtime.sendMessage({
-        type: "remoteLookup",
+        type: 'remoteLookup',
         payload: {
             // window.location.pathname.split('/')
             // Array(4) [ "", "d", "1886119869", "Soccer" ]

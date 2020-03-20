@@ -4,17 +4,16 @@ import Settings from './settings';
 import config from '../../../config';
 
 const styles = {
-    width: "400px",
-    'textAlign': "center"
+    width: '400px',
+    'textAlign': 'center'
 };
 
-const devColors = "linear-gradient(to left, #f1b9b9, #a2cff7, #c8e485, #f7c4f3)";
+const devColors = 'linear-gradient(to left, #f1b9b9, #a2cff7, #c8e485, #f7c4f3)';
 
 const Popup = React.createClass({
     render () {
 
-        if(config.NODE_ENV == 'development')
-            styles['background-image'] = devColors;
+        if (config.NODE_ENV == 'development') { styles['background-image'] = devColors; }
 
         return (
             <div style={styles}>
@@ -24,7 +23,7 @@ const Popup = React.createClass({
                     <span> </span>
                     <a target="_blank" href="https://github.com/tracking-exposed/yttrex/">
                         free software
-                    </a>, the 
+                    </a>, the
                     <span> </span>
                     <a target="_blank" href='https://tracking.exposed/manifesto'>Manifesto</a>, or
                     <span> </span>
