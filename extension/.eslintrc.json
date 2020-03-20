@@ -19,7 +19,9 @@
     "chrome": true,
     "document": false,
     "navigator": false,
-    "window": false
+    "window": false,
+    "browser": true,
+    "_": true
   },
 
   "rules": {
