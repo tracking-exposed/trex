@@ -11,7 +11,7 @@
     "url": "git+https://github.com/tracking-exposed/yttrex.git"
   },
   "scripts": {
-    "lint": "eslint ./",
+    "lint": "eslint ./ --quiet",
     "build": "rm -rf ./build && mkdir build && cross-env webpack && cp -r src/popup/* manifest.json icons/* ./build/",
     "start": "npm run build:watch:files",
     "build:watch": "cross-env node dev-server.js",
