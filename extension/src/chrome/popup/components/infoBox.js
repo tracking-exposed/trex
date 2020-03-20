@@ -4,10 +4,10 @@ import { Card } from 'material-ui/Card';
 import $ from 'jquery';
 
 const imgstyle = {
-    width: "100%"
+    width: '100%'
 };
 const cardStyle = {
-    'textAlign': "center"
+    'textAlign': 'center'
 };
 
 const InfoBox = React.createClass({

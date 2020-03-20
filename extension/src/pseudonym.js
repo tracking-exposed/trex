@@ -2,16 +2,16 @@
 
 var recorded = null;
 
-function get() {
+function get () {
     return recorded;
 }
 
-function set(input) {
-    console.log("pseudonym.set:", input);
+function set (input) {
+    console.log('pseudonym.set:', input);
     recorded = input;
 }
 
 module.exports = {
     get: get,
-    set: set,
-}
+    set: set
+};

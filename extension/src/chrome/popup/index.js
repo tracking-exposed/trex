@@ -21,7 +21,7 @@ function main () {
                 <Popup publicKey={publicKey} />
             </MuiThemeProvider>,
             document.getElementById('main')
-        )
+        );
     });
 }
 

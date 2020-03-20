@@ -11,7 +11,6 @@ const combineLoaders = require('webpack-combine-loaders');
 const ExtractTextPlugin = require('extract-text-webpack-plugin');
 const WebpackNotifierPlugin = require('webpack-notifier');
 
-
 require('dotenv').load({ silent: true });
 
 const LAST_VERSION = 2;
@@ -26,7 +25,7 @@ const PATHS = {
     APPS: {
         app: path.resolve(__dirname, 'src/app.js'),
         popup: path.resolve(__dirname, 'src/chrome/popup/index.js'),
-        background: path.resolve(__dirname, 'src/chrome/background/index.js'),
+        background: path.resolve(__dirname, 'src/chrome/background/index.js')
     },
     BUILD: path.resolve(__dirname, 'build'),
     DIST: path.resolve(__dirname, 'dist'),
@@ -34,7 +33,7 @@ const PATHS = {
 };
 
 /** EXTERNAL DEFINITIONS INJECTED INTO APP **/
-var DEV_SERVER =  'localhost'
+var DEV_SERVER = 'localhost';
 var ENV_DEP_SERVER = DEVELOPMENT ? 'http://' + DEV_SERVER + ':9000' : 'https://youtube.tracking.exposed';
 var ENV_DEP_WEB = DEVELOPMENT ? 'http://' + DEV_SERVER + ':1313' : 'https://youtube.tracking.exposed';
 

@@ -47,7 +47,7 @@ function post (apiUrl, data, cookieId) {
     });
 }
 
-function get(apiUrl, version, userId) {
+function get (apiUrl, version, userId) {
     return new Promise((resolve, reject) => {
         db.get('local').then(keypair => {
             const xhr = new XMLHttpRequest();
@@ -62,13 +62,13 @@ function get(apiUrl, version, userId) {
                     console.log(this.response);
                     resolve(this.response);
                 } else {
-                    console.log("Load error", this.statusText);
+                    console.log('Load error', this.statusText);
                     reject(this.statusText);
                 }
             };
 
             xhr.onerror = function () {
-                console.log("onerror", this.statusText);
+                console.log('onerror', this.statusText);
                 reject(this.statusText);
             };
         })

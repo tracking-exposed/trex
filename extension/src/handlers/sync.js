@@ -17,7 +17,7 @@ function handleVideo (type, e) {
         clientTime: getTimeISO8601(),
         selector: e.selector,
         size: e.size,
-        randomUUID: e.randomUUID,
+        randomUUID: e.randomUUID
     });
     state.incremental++;
 }
@@ -39,8 +39,4 @@ export function register (hub) {
     hub.register('windowUnload', sync.bind(null, hub));
     window.setInterval(sync.bind(null, hub), INTERVAL);
 }
-
-
-
-
 

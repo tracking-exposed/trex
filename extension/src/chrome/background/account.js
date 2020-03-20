@@ -11,7 +11,7 @@ bo.runtime.onMessage.addListener((request, sender, sendResponse) => {
     if (request.type === 'localLookup') {
         userLookup(request.payload, sendResponse);
         return true;
-    } 
+    }
     if (request.type === 'remoteLookup') {
         serverLookup(request.payload, sendResponse);
         return true;
@@ -25,7 +25,7 @@ function userLookup ({ userId }, sendResponse) {
             var newKeypair = nacl.sign.keyPair();
             val = {
                 publicKey: bs58.encode(newKeypair.publicKey),
-                secretKey: bs58.encode(newKeypair.secretKey),
+                secretKey: bs58.encode(newKeypair.secretKey)
             };
             db.set(userId, val).then(val => {
                 sendResponse({ publicKey: val.publicKey, status: val.status });
@@ -35,7 +35,6 @@ function userLookup ({ userId }, sendResponse) {
         }
     });
 };
-
 
 function serverLookup (payload, sendResponse) {
 
@@ -47,13 +46,13 @@ function serverLookup (payload, sendResponse) {
             var newKeypair = nacl.sign.keyPair();
             val = {
                 publicKey: bs58.encode(newKeypair.publicKey),
-                secretKey: bs58.encode(newKeypair.secretKey),
+                secretKey: bs58.encode(newKeypair.secretKey)
             };
             db.set(userId, val);
         }
         return val;
     })
-    .then(function(x) {
+    .then(function (x) {
         return api
             .handshake(payload, 'local')
             .then(response => sendResponse({type: 'handshakeResponse', response: response}))
