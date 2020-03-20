@@ -387,7 +387,6 @@ function videoAd(envelop) {
     if ( envelop.impression.size == 58 ) {
         return null;
     }
-
     if(!envelop.jsdom.querySelector('.ytp-ad-text'))
         return null;
 
@@ -398,11 +397,8 @@ function videoAd(envelop) {
         return { ad: candidate1.textContent };
     else if (candidate2 && _.size(candidate2.textContent))
         return { ad: candidate2.textContent };
-    else {
-        debug("videoAd: Nothing extracted from %s", envelop.impression.id);
+    else
         return null;
-    }
-
 }
 function overlay(envelop) { 
     if(
@@ -413,9 +409,10 @@ function overlay(envelop) {
     }
 
     const adbuyer = envelop.jsdom.querySelector('.ytp-ad-visit-advertiser-button').textContent;
-    return {
-        'advertiser': adbuyer
-    }
+    if(!adbuyer)
+        return null;
+
+    return { 'advertiser': adbuyer };
 }
 function adTitleChannel(envelop) {
     const D = envelop.jsdom;
