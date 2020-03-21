@@ -313,12 +313,10 @@ async function markHTMLsUnprocessable(htmls) {
     const ids = _.map(htmls, 'id');
     const r = await mongo3.updateMany(mongoc, nconf.get('schema').htmls,
         { id: { $in: ids }}, { processed: false });
-
-    if( r.result.n != _.size(ids) ||
-        r.result.nModified != _.size(ids) ||
-        r.result.ok != 1) {
-        debug("Odd condition in multiple update! %j", r.result);
-    }
+    /*
+    if( r.result.n != _.size(ids) || r.result.nModified != _.size(ids) || r.result.ok != 1) {
+        debug("partial update happened! (it should be ok) %j", r.result);
+    } */
     await mongoc.close();
 }
 

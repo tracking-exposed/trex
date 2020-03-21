@@ -81,6 +81,9 @@ async function processEvents2(req) {
     // this is necessary for the mirror functionality
     appendLast(req);
 
+    const blang = headers.language.replace(/;.*/, '').replace(/,.*/, '');
+    debug("CHECK: %s <%s>", blang, headers.language );
+
     const htmls = _.map(req.body, function(body, i) {
         const id = utils.hash({
             publicKey: headers.publickey,
@@ -95,6 +98,7 @@ async function processEvents2(req) {
         const html = {
             id,
             metadataId,
+            blang,
             href: body.href,
             publicKey: headers.publickey,
             clientTime: new Date(body.clientTime),
@@ -133,7 +137,8 @@ const hdrs =  {
     'x-yttrex-version': 'version',
     'x-yttrex-nonauthcookieid': 'supporterId',
     'x-yttrex-publickey': 'publickey',
-    'x-yttrex-signature': 'signature'
+    'x-yttrex-signature': 'signature',
+    'accept-language': 'language',
 };
 
 function TOFU(pubkey) {

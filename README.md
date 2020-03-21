@@ -1,12 +1,12 @@
-# web-extension reviewer? please do this after cloning the repository:
+## Browser extension reviewer? please do this after cloning the repository:
 
-    cd extension
+    cd yttrex/extension
     npm install
     npm run build:dist
 
-This produces the **distributed** release, in the directory `dist` you should find `extension.zip` which is distributed in Mozilla and Chrome add-ons stores.
+This produces the **distributed** release, in the directory `dist` you should find `extension.zip` which is thw same file uploaded to Mozilla and Chrome add-ons stores.
 
-### developer? 
+### Developer? 
 Instead of `build:dist`, use:
 
   npm run build
@@ -55,21 +55,8 @@ To install the extension go to **settings**, select **extensions**, and enable
 ### Set up your browser (for Firefox)
 As standard practice, firefox doesn't allow unpacked extension to be loaded. However, it does allow developers to test unpacked extensions **temporarily**. To accomplish this just visit [about:debugging], click **Load Temporary Add-on** and select `extension/build` directory contained in this repo.
 
-#### Note on autoreloading the extension
-By running `npm start`, the extension will work in `DEVELOPMENT` mode. This
-means that every time you reload `facebook.com`, the extension will automatically
-reload itself using the `chrome.runtime.reload()` method.
-
-Note that before we were using [Extension
-Reloader](https://chrome.google.com/webstore/detail/extensions-reloader/fimgfedafeadlieiabdeeaodndnlbhid)
-to autoreload your extension every time a build succeeds.
-This dependency is no longer needed.
-
-
 ### Ready to go!
-Visit [YouTube](https://www.youtube.com/) and open the dev tools. You should
-see some logging messages.
-
+Visit [YouTube](https://www.youtube.com/) and open the dev tools. You should see some logging messages.
 
 ### Extend fixtures
 

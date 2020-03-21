@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 const _ = require('lodash');
+const moment = require('moment');
 const debug = require('debug')('parser:video');
 const errorlike = require('debug')('metadata:likes');
 const errorview = require('debug')('metadata:view');
@@ -245,7 +246,7 @@ function mineAuthorInfo(D) {
     } 
 }
 
-function processVideo(D) {
+function processVideo(D, blang) {
 
     const title = manyTries(D, [{
         name: 'title h1',
@@ -260,14 +261,34 @@ function processVideo(D) {
         selected: null,
         func: 'textContent'
     } ]);
-    if(!title)
-        throw new Error("unable to get title");
+    if(!title) {
+        debugger;
+        throw new Error("unable to get video title");
+    }
 
     const check = D.querySelectorAll('a.ytd-video-owner-renderer').length; // should be 1
-    const { authorName, authorSource } = mineAuthorInfo(D);
-    const ptc = D.querySelectorAll('[slot="date"]').length;
-    const publicationString = D.querySelector('[slot="date"]').textContent;
-    let login = -1;
+    const mined = mineAuthorInfo(D);
+    let authorName, authorSource = null;
+    if(mined) {
+        authorName = mined.authorName;
+        authorSource = mined.authorSource;
+    }
+
+    let uxLanguage = null;
+    let publicationString = null;
+    let publicationTime = null;
+
+    if(_.size(D.querySelector('#date > yt-formatted-string').textContent) > 2 ) {
+        publicationString = D.querySelector('#date > yt-formatted-string').textContent;
+        const guess = fuzzyLocaleGuess(D, publicationString);
+        if(guess) {
+            publicationTime = guess.publicationTime;
+            uxLanguage = guess.uxLanguage;
+        }
+    }
+    debug("€\t\t%s\t%s\t%s",
+        uxLanguage, publicationString,
+        publicationTime ? publicationTime.toISOString() : 'INVALID-DATE');
 
     /* related + sponsored */
     let related = [];
@@ -310,17 +331,18 @@ function processVideo(D) {
         related = _.map(selected, relatedMetadata);
     }
 
-    debug("Video %s mined %d related", title, _.size(related));
+    debug("Video <%s> mined %d related", title, _.size(related));
 
     /* non mandatory info */
+    let viewInfo, likeInfo = null;
     try {
-        var viewInfo = parseViews(D);
-        var likeInfo = parseLikes(D);
+        viewInfo = parseViews(D);
+        likeInfo = parseLikes(D);
     } catch(error) {
         debug("viewInfo and linkInfo not available");
-        var viewInfo = likeInfo = null;
     }
 
+    let login = -1;
     try {
         login = logged(D);
         /* if login is null, it means failed check */
@@ -333,8 +355,9 @@ function processVideo(D) {
         title,
         login,
         check,
-        ptc,
         publicationString,
+        publicationTime,
+        uxLanguage,
         authorName,
         authorSource,
         related,
@@ -344,7 +367,7 @@ function processVideo(D) {
     };
 };
 
-function process(envelop) {
+function process(envelop, blang) {
 
     if(!envelop.impression.href.match(/watch\?v=/)) {
         debug("SKIP 'non-video' page [%s]", envelop.impression.href);
@@ -353,10 +376,10 @@ function process(envelop) {
 
     let extracted = null;
     try {
-        extracted = processVideo(envelop.jsdom);
+        extracted = processVideo(envelop.jsdom, blang);
     } catch(e) {
-        debug("Error in processing %s (%d): %s",
-            envelop.impression.href, envelop.impression.size, e.message);
+        debug("Error in video.process %s (%d): %s\n%s",
+            envelop.impression.href, envelop.impression.size, e.message, e.stack);
         return null;
     }
 
@@ -378,7 +401,6 @@ function process(envelop) {
     if(_.size(le)) errorlike("likes error %s", JSON.stringify(re, undefined));
 
     /* remove debugging/research fields we don't want in mongo */
-    _.unset(extracted, 'ptc');
     _.unset(extracted, 'check');
     return extracted;
 };
@@ -390,21 +412,21 @@ function videoAd(envelop) {
     if(!envelop.jsdom.querySelector('.ytp-ad-text'))
         return null;
 
-    let candidate1 = envelop.jsdom.querySelector('.ytp-ad-button-text');
-    let candidate2 = envelop.jsdom.querySelector('.ytp-ad-text');
+    let candidate1 = envelop.jsdom.querySelector('.ytp-ad-text');
+    let candidate2 = envelop.jsdom.querySelector('.ytp-ad-button-text'); // it might be 'Play for free' or sth
 
     if(candidate1 && _.size(candidate1.textContent))
-        return { ad: candidate1.textContent };
+        return { adLabel: candidate1.textContent };
     else if (candidate2 && _.size(candidate2.textContent))
-        return { ad: candidate2.textContent };
+        return { adLabel: candidate2.textContent };
     else
         return null;
 }
-function overlay(envelop) { 
+function overlay(envelop) {
     if(
         (envelop.jsdom.querySelector('body').outerHTML).length == 71 &&
          envelop.impression.size == 58 ) {
-        console.log(envelop.impression)
+        debug("Fairly strict (undocumented) condition to ignore overlay matches");
         return null;
     }
 
@@ -412,7 +434,7 @@ function overlay(envelop) {
     if(!adbuyer)
         return null;
 
-    return { 'advertiser': adbuyer };
+    return { 'adLink': adbuyer };
 }
 function adTitleChannel(envelop) {
     const D = envelop.jsdom;
@@ -426,6 +448,62 @@ function adTitleChannel(envelop) {
         adLabel: a[0].getAttribute('aria-label'),
     };
 }
+function videoTitleTop(envelop, selector) {
+    const D = envelop.jsdom;
+    const as = D.querySelectorAll('a');
+    let adLabel, adChannel = null;
+
+    if(_.size(as) > 3) {
+        if( !_.size(as[1].textContent) && 
+             _.size(as[1].getAttribute('href')) > _.size("https://www.youtube.com/") )
+            adChannel = as[1].getAttribute('href');
+
+        if( _.size(as[2].textContent) > 3 /* 'ads' */ && !as[2].getAttribute('href')) 
+            adLabel = as[2].textContent;
+    }
+
+    if(adLabel && adChannel) {
+        return { adLabel, adChannel };
+    }
+    return null;
+}
+
+
+function fuzzyLocaleGuess(D, publicationString) {
+    /* 
+      IT ***  Oct 13, 2013 null
+      IT ***  Dec 28, 2013 null
+      DE ***  4 Apr 2019 2019-01-04T00:00:00.000Z
+      NL ***  4 ott 2016 2016-01-04T00:00:00.000Z 
+      IT ***  Mar 18, 2020 2020-03-18T00:00:00.000Z
+      IT ***  Apr 28, 2015 2015-04-28T00:00:00.000Z
+    */ 
+   debugger;
+
+    const ccode = D.querySelector('#country-code');
+    if(ccode && ccode.textContent) {
+        debug("IT IS DECLARED WOWOW!!!!! %s", ccode.textContent);
+        uxLanguage = ccode.textContent;
+    }
+    else {
+        const tabnames = _.join(_.map(D.querySelectorAll('[role="tablist"'), function(n) {
+            return _.trim(n.textContent);
+        }), ', ');
+        debug("%d -<>- %j", _.size(tabnames), lguess);
+        debugger;
+        uxLanguage = _.first(_.first(lguess));
+
+        moment.locale(uxLanguage);
+        const fmt = [ "MMM DD YYYY", "DD MMM YYYY" ];
+        /* todo investigate what happen with non latin things */
+        if(publicationString.match(/^(\d+)/) )
+            publicationTime = moment.utc(publicationString, fmt[1]);
+        else
+            publicationTime = moment.utc(publicationString, fmt[0]);
+        console.log("\t\t\t", uxLanguage, "***\t", publicationString, publicationTime.toISOString());
+    }
+
+}
 
 module.exports = {
     logged,
@@ -433,5 +511,6 @@ module.exports = {
     videoAd,
     overlay,
     adTitleChannel,
+    videoTitleTop,
     labelForcer,
 };

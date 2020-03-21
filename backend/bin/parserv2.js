@@ -31,6 +31,14 @@ if(backInTime != 10) {
     console.log(`Considering ${backInTime} minutes (${humanized}), as override the standard 10 minutes ${lastExecution}`);
 }
 
+const advSelectors = {
+    ".ytp-title-channel": videoparser.adTitleChannel,
+    ".video-ads.ytp-ad-module": videoparser.videoAd,
+    ".ytp-ad-player-overlay-instream-info": videoparser.overlay,
+    ".ytp-chrome-top": videoparser.videoTitleTop,
+    ".ytp-title-text": videoparser.videoTitleTop,
+};
+
 async function newLoop() {
     let repeat = !!nconf.get('repeat');
     let htmlFilter = {
@@ -94,21 +102,18 @@ async function newLoop() {
             const curi = e.href.replace(/.*youtube\.com\//, '').replace(/\?.*/, '')
 
             if(!_.size(curi) && e.selector == "ytd-app") {
+                /* without clean URI, it is an youtube home */
                 metadata = homeparser.process(envelop);
             }
-            else if(e.selector == ".ytp-title-channel") {
-                metadata = videoparser.adTitleChannel(envelop);
-            }
-            else if(e.selector == ".video-ads.ytp-ad-module") {
-                metadata = videoparser.videoAd(envelop);
-            }
             else if(e.selector == "ytd-app") {
+                /* else, if is ytd-app, it is a full video content */
                 metadata = videoparser.process(envelop);
             }
-            else if(e.selector == ".ytp-ad-player-overlay-instream-info") {
-                metadata = videoparser.overlay(envelop);
-            }
-            else {
+            else if(_.indexOf(_.keys(advSelectors), e.selector) != -1)  {
+                /* if the selector is one of the adveritising related dissector, find it out */
+                metadata = advSelectors[e.selector](envelop, e.selector);
+                /* possible fields: 'adLink', 'adLabel', 'adChannel' */
+            } else {
                 console.log("Selector not supported!", e.selector);
                 return null;
             }
@@ -117,7 +122,7 @@ async function newLoop() {
                 return null;
 
         } catch(error) {
-            debug("Error in video processing: %s (%s)", error, e.selector);
+            debug("Error in selector (%s) processing: %s", e.selector, error.message);
             return null;
         }
 

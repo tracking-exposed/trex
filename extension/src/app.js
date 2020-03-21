@@ -196,7 +196,7 @@ function buildSpan (c) {
     infospan.fadeOut({ duration: c.duration});
 }
 
-const adPeriodicTimeout = 1000;
+const adPeriodicTimeout = 3000;
 const videoPeriodicTimeout = 9000;
 var lastVideoURL = null;
 var lastVideoCNT = 0;
@@ -295,33 +295,25 @@ function adMonitor () {
      */
     window.setInterval(function () {
 
-        let titleTop = '.ytp-title-channel';
-        document
-            .querySelectorAll(titleTop)
-            .forEach(function (element) {
-                if (testElement(element.outerHTML, titleTop)) { phase('adv.seen'); }
-            });
+        const advPossibleLocation = [
+            '.video-ads.ytp-ad-module', // middle banner
+            '.ytp-ad-player-overlay-instream-info', // ad below
+            '.ytp-title-channel', // title top
+            '.ytp-title-text', // title 
+            '.ytp-chrome-top' // other title top
+        ];
 
-        let adbelow = '.ytp-ad-player-overlay-instream-info';
-        document
-            .querySelectorAll(adbelow)
-            .forEach(function (element) {
-                if (testElement(element.outerHTML, adbelow)) { phase('adv.seen'); }
-            });
-
-        let middleBanner = '.video-ads.ytp-ad-module';
-        document
-            .querySelectorAll(middleBanner)
-            .forEach(function (element) {
-                if (testElement(element.outerHTML, middleBanner)) { phase('adv.seen'); }
-            });
-
-        let advTitle = '.ytp-chrome-top';
-        document
-            .querySelectorAll(advTitle)
-            .forEach(function (element) {
-                if (testElement(element.outerHTML, advTitle)) { phase('adv.seen'); }
-            });
+        _.each(advPossibleLocation, function(s) {
+            document
+                .querySelectorAll(s)
+                .forEach(function (element) {
+                    if (_.size(element.textContent)) {
+                        console.log(s, "===}>", element.textContent)
+                        if (testElement(element.outerHTML, s))
+                            phase('adv.seen'); 
+                    }
+                });
+        });
 
     }, adPeriodicTimeout);
 }
