@@ -30,6 +30,8 @@ import $ from 'jquery';
 import _ from 'lodash';
 import moment from 'moment';
 
+import {createPanel} from './panel';
+
 import config from './config';
 import hub from './hub';
 import { registerHandlers } from './handlers/index';
@@ -287,13 +289,13 @@ bo.runtime.sendMessage({type: 'chromeConfig'}, (response) => {
 });
 
 /*
-.########..#######...#######..##.......########.####.########.
-....##....##.....##.##.....##.##..........##.....##..##.....##
-....##....##.....##.##.....##.##..........##.....##..##.....##
-....##....##.....##.##.....##.##..........##.....##..########.
-....##....##.....##.##.....##.##..........##.....##..##.......
-....##....##.....##.##.....##.##..........##.....##..##.......
-....##.....#######...#######..########....##....####.##.......
+.########..##.......####.##....##.##....##..######.
+.##.....##.##........##..###...##.##...##..##....##
+.##.....##.##........##..####..##.##..##...##......
+.########..##........##..##.##.##.#####.....######.
+.##.....##.##........##..##..####.##..##.........##
+.##.....##.##........##..##...###.##...##..##....##
+.########..########.####.##....##.##....##..######.
 */
 
 /*
@@ -309,127 +311,59 @@ var phases = {
     }
   };
 
-const duration = 4000;
 const VIDEO_WAIT = 'video wait';
 const VIDEO_SEEN = 'video seen';
 const VIDEO_SEND = 'video send';
 const SEEN_ADV = 'seen adv';
 
-const colors = {
-    [VIDEO_WAIT]: 'rgb(204, 0, 204)',
-    [VIDEO_SEEN]: 'rgb(0, 204, 0)',
-    [VIDEO_SEND]: 'rgb(204, 0, 0)',
-    [SEEN_ADV]: 'rgb(204, 0, 204)'
+const logo = (width = '10px', height = '10px', color = '#000') => {
+    return `<svg style="vertical-align: middle; padding: 5px;" width="${width}" height="${height}" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 310 310">
+        <path style="fill:${color}" d="M304.05 151.924a150.38 150.38 0 00-139.82-150v21.16c66.36 5.39 118.71 61.11 118.71 128.84s-52.35 123.45-118.71 128.84v21.16a150.38 150.38 0 00139.82-150zM24.41 151.924c0-67.73 52.35-123.45 118.71-128.84V1.924a150.37 150.37 0 000 300v-21.16c-66.36-5.39-118.71-61.11-118.71-128.84z"/>
+        <path style="fill:${color}" d="M102.23 62.824a102.9 102.9 0 00-42.47 131.1l18.42-10.64a81.76 81.76 0 01140.43-81.08l18.43-10.63a102.9 102.9 0 00-134.81-28.75zM194.57 222.754a81.91 81.91 0 01-105.84-21.15l-18.43 10.63a102.9 102.9 0 00177.29-102.31l-18.42 10.6a81.9 81.9 0 01-34.6 102.23z"/>
+        <path style="fill:${color}" d="M181.37 103.924a55.41 55.41 0 00-69.52 11.65l18.84 10.88a34.29 34.29 0 0156.52 32.63l18.84 10.87a55.41 55.41 0 00-24.68-66.03zM136.53 181.624a34.35 34.35 0 01-16.39-36.88l-18.84-10.82a55.4 55.4 0 0094.2 54.38l-18.85-10.88a34.33 34.33 0 01-40.12 4.2z"/>
+    </svg>
+`;
 };
+
+const blinks = createPanel({
+    [VIDEO_WAIT]: {color: '#00aefe'},
+    [VIDEO_SEEN]: {color: '#269072'},
+    [VIDEO_SEND]: {color: '#c03030'},
+    [SEEN_ADV]: {color: '#ffb545'}
+}, `
+<div>
+    <h1>Title Lorem ipsum</h1>
+    <p style="font-size: 1.2rem">Tracking exposed is a project <span>blabla<span> see more info <a href="www.test.com">here</a>.</p>
+    <p style="font-size: 1.2rem">You can see the nearby icons <span>${logo('10px', '10px', '#bbb')}</span> and when they are blinking means that Youtube website sends some information about what you're doing.</p>
+    <br /><br />
+    <p style="font-size: 1.2rem">The colors of the blinks means:</p>
+    <br /><br />
+    <ul style="list-style-type: none;">
+        <li style="font-size: 1.2rem">${logo('15px', '15px', '#00aefe')} Video is waiting to be seen ad a big gorilla is blowing</li>
+        <li style="font-size: 1.2rem">${logo('15px', '15px', '#269072')} Video is already seen and blue banana in the sky</li>
+        <li style="font-size: 1.2rem">${logo('15px', '15px', '#c03030')} Video is sent to a server, big brother is watching you</li>
+        <li style="font-size: 1.2rem">${logo('15px', '15px', '#ffb545')} You see an advertising, OMG this is awesome!</li>
+    </ul>
+</div>
+`);
 
 /* below the 'span creation' function mapped in the dict phases above */
 function videoWait (path) {
-    buildSpan({
-        path,
-        text: VIDEO_WAIT,
-        duration
-    });
+    blinks[VIDEO_WAIT]();
 }
 function videoSeen (path) {
-    buildSpan({
-        path,
-        text: VIDEO_SEEN,
-        duration
-    });
-    $('#video-seen').css('cursor', 'cell');
-    $('#video-seen').click(function () {
-        if (testElement($('ytd-app').html(), 'ytd-app')) {
-            phase('video.send');
-        }
-    });
+    blinks[VIDEO_SEEN]();
+
+    // NOTE: is broken now... 🙏
+    // $('#video-seen').click(function () {
+    //     if (testElement($('ytd-app').html(), 'ytd-app')) {
+    //         phase('video.send');
+    //     }
+    // });
 }
 function videoSend (path) {
-    buildSpan({
-        path,
-        text: VIDEO_SEND,
-        duration
-    });
+    blinks[VIDEO_SEND]();
 }
 function advSeen (path) {
-    buildSpan({
-        path,
-        text: SEEN_ADV,
-        duration
-    });
+    blinks[SEEN_ADV]();
 };
-
-const infoBoxContainer = document.createElement('div');
-infoBoxContainer.setAttribute('id', 'yttrex-panel');
-document.body.appendChild(infoBoxContainer);
-infoBoxContainer.style.position = 'fixed';
-infoBoxContainer.style.bottom = '2rem';
-infoBoxContainer.style.right = '2rem';
-infoBoxContainer.style.display = 'flex';
-infoBoxContainer.style.flexDirection = 'column';
-infoBoxContainer.style.zIndex = 9999;
-
-/* this function build the default span, some css styles are
-* overridden in the calling function */
-function buildSpan (c) {
-    let cnt = _.get(phases.counters, c.path);
-    cnt += 1;
-    let id = _.replace(c.path, /\./, '-');
-    _.set(phases.counters, c.path, cnt);
-
-    let infoBox = null;
-    let fullt = (c.text).toUpperCase(); /* `${cnt} ▣ ${c.text}`; */
-    if (cnt === 1) {
-        // console.log("+ building span for the first time", c, cnt);
-        infoBox = document.createElement('div');
-        infoBox.setAttribute('id', id);
-        infoBox.style.color = 'lightgoldenrodyellow';
-
-        infoBox.style.marginTop = '1rem';
-        infoBox.style.padding = '0.2rem';
-        infoBox.style.width = '8rem';
-        infoBox.style.boxShadow = '2px 2px 8px 0 rgba(0, 0, 0, 0.2)';
-        infoBox.style.borderRadius = '2px';
-        infoBox.style.borderStyle = 'solid';
-        infoBox.style.borderWidth = '1px';
-        infoBox.style.display = 'flex';
-        infoBox.style.alignItems = 'flex-start';
-        infoBox.style.backgroundColor = 'white';
-        infoBox.style.backgroundColor = colors[c.text] || 'black';
-        infoBox.style.borderColor = colors[c.text] || 'black';
-        infoBox.style.color = 'white';
-        // infoBox.textContent = fullt;
-
-        const iconContainer = document.createElement('a');
-        iconContainer.href = 'https://youtube.tracking.exposed/';
-        iconContainer.target = '__blank';
-        iconContainer.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 310 310">
-            <path fill="#1b1b1b" d="M304.05 151.924a150.38 150.38 0 00-139.82-150v21.16c66.36 5.39 118.71 61.11 118.71 128.84s-52.35 123.45-118.71 128.84v21.16a150.38 150.38 0 00139.82-150zM24.41 151.924c0-67.73 52.35-123.45 118.71-128.84V1.924a150.37 150.37 0 000 300v-21.16c-66.36-5.39-118.71-61.11-118.71-128.84z"/>
-            <path fill="#1b1b1b" d="M102.23 62.824a102.9 102.9 0 00-42.47 131.1l18.42-10.64a81.76 81.76 0 01140.43-81.08l18.43-10.63a102.9 102.9 0 00-134.81-28.75zM194.57 222.754a81.91 81.91 0 01-105.84-21.15l-18.43 10.63a102.9 102.9 0 00177.29-102.31l-18.42 10.6a81.9 81.9 0 01-34.6 102.23z"/>
-            <path fill="#1b1b1b" d="M181.37 103.924a55.41 55.41 0 00-69.52 11.65l18.84 10.88a34.29 34.29 0 0156.52 32.63l18.84 10.87a55.41 55.41 0 00-24.68-66.03zM136.53 181.624a34.35 34.35 0 01-16.39-36.88l-18.84-10.82a55.4 55.4 0 0094.2 54.38l-18.85-10.88a34.33 34.33 0 01-40.12 4.2z"/>
-        </svg>`;
-        iconContainer.style.width = '10px';
-        iconContainer.style.height = '10px';
-        iconContainer.style.marginTop = '0.1rem';
-        iconContainer.style.marginLeft = '0.2rem';
-        iconContainer.style.fontWeight = 400;
-        infoBox.appendChild(iconContainer);
-
-        const infoText = document.createElement('p');
-        infoText.style.marginLeft = '1rem';
-        infoText.style.marginTop = '0.2rem';
-        infoText.style.fontSize = '0.75rem';
-        infoText.innerHTML = fullt;
-        infoBox.appendChild(infoText);
-
-        infoBoxContainer.appendChild(infoBox);
-        /* change infoBox in jquery so no proble in apply .fadeOut */
-        infoBox = $(`#${id}`);
-    } else {
-        infoBox = $(`#${id}`);
-        const infoText = infoBox.querySelector('p');
-        infoText.innerHTML = fullt;
-    }
-
-    $('#loadiv').show();
-    infoBox.fadeOut({ duration: c.duration});
-}
