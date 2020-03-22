@@ -1,6 +1,8 @@
 #!/usr/bin/env node
 const _ = require('lodash');
 const moment = require('moment');
+const url = require('url');
+const querystring = require('querystring');
 const debug = require('debug')('parser:video');
 const errorlike = require('debug')('metadata:likes');
 const errorview = require('debug')('metadata:view');
@@ -274,23 +276,24 @@ function processVideo(D, blang) {
         authorSource = mined.authorSource;
     }
 
-    let uxLanguage = null;
     let publicationString = null;
     let publicationTime = null;
 
     if(_.size(D.querySelector('#date > yt-formatted-string').textContent) > 2 ) {
+        const fmt = [ "MMM DD YYYY", "DD MMM YYYY" ];
         publicationString = D.querySelector('#date > yt-formatted-string').textContent;
-        const guess = fuzzyLocaleGuess(D, publicationString);
-        if(guess) {
-            publicationTime = guess.publicationTime;
-            uxLanguage = guess.uxLanguage;
-        }
+        moment.locale(blang);
+        /* todo investigate what happen with non latin things */
+        if(publicationString.match(/^(\d+)/) )
+            publicationTime = moment.utc(publicationString, fmt[1]);
+        else
+            publicationTime = moment.utc(publicationString, fmt[0]);
+        moment.locale('en');
     }
     debug("€\t\t%s\t%s\t%s",
-        uxLanguage, publicationString,
+        blang, publicationString,
         publicationTime ? publicationTime.toISOString() : 'INVALID-DATE');
 
-    /* related + sponsored */
     let related = [];
     try {
         // debug("related videos to be looked at: %d", _.size(D.querySelectorAll('ytd-compact-video-renderer')));
@@ -317,17 +320,14 @@ function processVideo(D, blang) {
             else {
                 e.parentNode.parentNode.loaded = false;
                 return null; 
-                // può essere interessante tenere i video non ancora caricati, ma 
-                // 'relatedMetadata' fallisce perchè i metadata sono ancora a zero.
-                // 
-                // questo altrimenti era funzionato:
-                //
                 // > _.countBy(selected, {loaded: true })
                 // { true: 24, false: 25 }
                 //  --- the videos not yet loaded but potentially suggested */
             }
 
         }));
+        debug("Overwritting a mined %d related with %d others - %j",
+            _.size(related), _.size(selected), _.countBy(selected, { loaded: true}));
         related = _.map(selected, relatedMetadata);
     }
 
@@ -357,7 +357,7 @@ function processVideo(D, blang) {
         check,
         publicationString,
         publicationTime,
-        uxLanguage,
+        blang,
         authorName,
         authorSource,
         related,
@@ -367,16 +367,18 @@ function processVideo(D, blang) {
     };
 };
 
-function process(envelop, blang) {
+function process(envelop) {
 
-    if(!envelop.impression.href.match(/watch\?v=/)) {
+    const urlinfo = url.parse(envelop.impression.href);
+    if(urlinfo.pathname != '/watch') {
         debug("SKIP 'non-video' page [%s]", envelop.impression.href);
         return null;
     }
+    const params = querystring.parse(urlinfo.query);
 
     let extracted = null;
     try {
-        extracted = processVideo(envelop.jsdom, blang);
+        extracted = processVideo(envelop.jsdom, envelop.impression.blang);
     } catch(e) {
         debug("Error in video.process %s (%d): %s\n%s",
             envelop.impression.href, envelop.impression.size, e.message, e.stack);
@@ -384,10 +386,7 @@ function process(envelop, blang) {
     }
 
     extracted.type = 'video';
-    extracted.videoId = _
-        .replace(envelop.impression.href, /.*v=/, '')
-        .replace(/\?.*/, '')
-        .replace(/\&.*/,'');
+    extracted.videoId = params.v;
 
     const re = _.filter(extracted.related, { error: true });
     stats.suberror += _.size(re);
@@ -468,42 +467,6 @@ function videoTitleTop(envelop, selector) {
     return null;
 }
 
-
-function fuzzyLocaleGuess(D, publicationString) {
-    /* 
-      IT ***  Oct 13, 2013 null
-      IT ***  Dec 28, 2013 null
-      DE ***  4 Apr 2019 2019-01-04T00:00:00.000Z
-      NL ***  4 ott 2016 2016-01-04T00:00:00.000Z 
-      IT ***  Mar 18, 2020 2020-03-18T00:00:00.000Z
-      IT ***  Apr 28, 2015 2015-04-28T00:00:00.000Z
-    */ 
-   debugger;
-
-    const ccode = D.querySelector('#country-code');
-    if(ccode && ccode.textContent) {
-        debug("IT IS DECLARED WOWOW!!!!! %s", ccode.textContent);
-        uxLanguage = ccode.textContent;
-    }
-    else {
-        const tabnames = _.join(_.map(D.querySelectorAll('[role="tablist"'), function(n) {
-            return _.trim(n.textContent);
-        }), ', ');
-        debug("%d -<>- %j", _.size(tabnames), lguess);
-        debugger;
-        uxLanguage = _.first(_.first(lguess));
-
-        moment.locale(uxLanguage);
-        const fmt = [ "MMM DD YYYY", "DD MMM YYYY" ];
-        /* todo investigate what happen with non latin things */
-        if(publicationString.match(/^(\d+)/) )
-            publicationTime = moment.utc(publicationString, fmt[1]);
-        else
-            publicationTime = moment.utc(publicationString, fmt[0]);
-        console.log("\t\t\t", uxLanguage, "***\t", publicationString, publicationTime.toISOString());
-    }
-
-}
 
 module.exports = {
     logged,
