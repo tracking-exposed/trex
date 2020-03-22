@@ -329,9 +329,10 @@ function initializeBlinks() {
         <!-- if you read this code, please consider a small git commit as contribution :)
              we're short in resources and the project is ambitious! -->
     </ul>
-    <h2>
+    <br />
+    <h3>
         The 25th of March 2020, join the first <a href="https://youtube.tracking.exposed/wetest/1" target=_blank>Collective Algorithm Observation</a>.
-    </h2>
+    </h3>
 </div>
 `
     );
