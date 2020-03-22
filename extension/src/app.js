@@ -57,11 +57,8 @@ function boot () {
         }
     } else if (_.endsWith(window.location.origin, 'youtube.com')) {
         // this get executed only on youtube.com
-        console.log(`yttrex version ${config.VERSION} ${config}`);
-
-        // status update messages appearing on the right bottom
-        // visibile when the recording is triggered.
-        createLoadiv();
+        console.log(`yttrex version ${config.VERSION}`);
+        console.log(config);
 
         // Register all the event handlers.
         // An event handler is a piece of code responsible for a specific task.
@@ -70,8 +67,9 @@ function boot () {
 
         // Lookup the current user and decide what to do.
         localLookup(response => {
-            // `response` contains the user's public key and its status,
-            console.log(response);
+            // `response` contains the user's public key, we save it global for the blinks
+            config.publicKey = response.publicKey;
+            initializeBlinks();
             adMonitor();
             hrefUpdateMonitor();
             flush();
@@ -81,23 +79,6 @@ function boot () {
         return null;
     }
 }
-
-function createLoadiv () {
-    // this is bound to #loadiv and appears on the right bottom
-    var div = document.createElement('div');
-
-    // from this coordinates the span below would be appeneded
-    div.style.position = 'fixed';
-    div.style.width = '48px';
-    div.style.height = '48px';
-    div.style.right = '10px';
-    div.style.bottom = '10px';
-
-    div.setAttribute('id', 'loadiv');
-    document.body.appendChild(div);
-
-    $('#loadiv').show();
-};
 
 function phase (path) {
     const f = _.get(phases, path);
@@ -326,45 +307,43 @@ const logo = (width = '10px', height = '10px', color = '#000') => {
 `;
 };
 
-const blinks = createPanel({
-    [VIDEO_WAIT]: {color: '#00aefe'},
-    [VIDEO_SEEN]: {color: '#269072'},
-    [VIDEO_SEND]: {color: '#c03030'},
-    [SEEN_ADV]: {color: '#ffb545'}
-}, `
+function initializeBlinks() {
+    config.blinks = createPanel({
+        [VIDEO_WAIT]: {color: '#00aefe'},
+        [VIDEO_SEEN]: {color: '#269072'},
+        [VIDEO_SEND]: {color: '#c03030'},
+        [SEEN_ADV]: {color: '#ffb545'}
+    }, `
 <div>
-    <h1>Title Lorem ipsum</h1>
-    <p style="font-size: 1.2rem">Tracking exposed is a project <span>blabla<span> see more info <a href="www.test.com">here</a>.</p>
-    <p style="font-size: 1.2rem">You can see the nearby icons <span>${logo('10px', '10px', '#bbb')}</span> and when they are blinking means that Youtube website sends some information about what you're doing.</p>
-    <br /><br />
-    <p style="font-size: 1.2rem">The colors of the blinks means:</p>
+    <h3>
+        <a href="https://youtube.tracking.exposed" target=_blank>youtube</a>.<a href="https://tracking.exposed" target=_blank>tracking.exposed</a>
+    </h3>
+    <p style="font-size: 1.2rem">youtube.tracking.exposed allow you and an open data project in research on personalization algorithim.</p>
+    <p style="font-size: 1.2rem">You can see the nearby icons <span>${logo('10px', '10px', '#bbb')}</span> and they blink. Each position/color is a different stage in the finite state machine.</p>
     <br /><br />
     <ul style="list-style-type: none;">
-        <li style="font-size: 1.2rem">${logo('15px', '15px', '#00aefe')} Video is waiting to be seen ad a big gorilla is blowing</li>
-        <li style="font-size: 1.2rem">${logo('15px', '15px', '#269072')} Video is already seen and blue banana in the sky</li>
-        <li style="font-size: 1.2rem">${logo('15px', '15px', '#c03030')} Video is sent to a server, big brother is watching you</li>
-        <li style="font-size: 1.2rem">${logo('15px', '15px', '#ffb545')} You see an advertising, OMG this is awesome!</li>
+        <li style="font-size: 1.2rem">${logo('15px', '15px', '#00aefe')} Video seen, waiting loading complete</li>
+        <li style="font-size: 1.2rem">${logo('15px', '15px', '#269072')} New video seen</li>
+        <li style="font-size: 1.2rem">${logo('15px', '15px', '#c03030')} Video is sent to a server. <a href="${config.WEB_ROOT}/personal/#${config.publicKey}" target=_blank><b>A</b>ccess your data</a>.</li>
+        <li style="font-size: 1.2rem">${logo('15px', '15px', '#ffb545')} Advertising spotted and sent</li>
+        <!-- if you read this code, please consider a small git commit as contribution :)
+             we're short in resources and the project is ambitious! -->
     </ul>
 </div>
-`);
+`
+    );
+}
 
 /* below the 'span creation' function mapped in the dict phases above */
 function videoWait (path) {
-    blinks[VIDEO_WAIT]();
+    config.blinks[VIDEO_WAIT]();
 }
 function videoSeen (path) {
-    blinks[VIDEO_SEEN]();
-
-    // NOTE: is broken now... 🙏
-    // $('#video-seen').click(function () {
-    //     if (testElement($('ytd-app').html(), 'ytd-app')) {
-    //         phase('video.send');
-    //     }
-    // });
+    config.blinks[VIDEO_SEEN]();
 }
 function videoSend (path) {
-    blinks[VIDEO_SEND]();
+    config.blinks[VIDEO_SEND]();
 }
 function advSeen (path) {
-    blinks[SEEN_ADV]();
+    config.blinks[SEEN_ADV]();
 };
