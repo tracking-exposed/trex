@@ -315,11 +315,11 @@ function initializeBlinks() {
         [SEEN_ADV]: {color: '#ffb545'}
     }, `
 <div>
-    <h3>
+    <h2>
         <a href="https://youtube.tracking.exposed" target=_blank>youtube</a>.<a href="https://tracking.exposed" target=_blank>tracking.exposed</a>
-    </h3>
-    <p style="font-size: 1.2rem">youtube.tracking.exposed allow you and an open data project in research on personalization algorithim.</p>
-    <p style="font-size: 1.2rem">You can see the nearby icons <span>${logo('10px', '10px', '#bbb')}</span> and they blink. Each position/color is a different stage in the finite state machine.</p>
+    </h2>
+    <p style="font-size: 1.2rem">This is a free software browser extention. Data is processed for academic and digital activism purposes. <b>We scrutinize the algorithms and their effects</b>.</p>
+    <p style="font-size: 1.2rem">You can see the nearby icons <span>${logo('10px', '10px', '#bbb')}</span> and they blink. Each position/color is a different stage in the evidence collection.</p>
     <br /><br />
     <ul style="list-style-type: none;">
         <li style="font-size: 1.2rem">${logo('15px', '15px', '#00aefe')} Video seen, waiting loading complete</li>
@@ -329,6 +329,9 @@ function initializeBlinks() {
         <!-- if you read this code, please consider a small git commit as contribution :)
              we're short in resources and the project is ambitious! -->
     </ul>
+    <h2>
+        The 25th of March 2020, join the first <a href="https://youtube.tracking.exposed/wetest/1" target=_blank>Collective Algorithm Observation</a>.
+    </h2>
 </div>
 `
     );
