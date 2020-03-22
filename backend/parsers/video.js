@@ -283,11 +283,11 @@ function processVideo(D, blang) {
         const fmt = [ "MMM DD YYYY", "DD MMM YYYY" ];
         publicationString = D.querySelector('#date > yt-formatted-string').textContent;
         moment.locale(blang);
+
         /* todo investigate what happen with non latin things */
-        if(publicationString.match(/^(\d+)/) )
-            publicationTime = moment.utc(publicationString, fmt[1]);
-        else
-            publicationTime = moment.utc(publicationString, fmt[0]);
+        const mobj = publicationString.match(/^(\d+)/) ?
+            moment.utc(publicationString, fmt[1]) : moment.utc(publicationString, fmt[0]);
+        publicationTime = new Date(mobj.format("YYYY-MM-DD"));
         moment.locale('en');
     }
     debug("€\t\t%s\t%s\t%s",
@@ -374,7 +374,6 @@ function process(envelop) {
         debug("SKIP 'non-video' page [%s]", envelop.impression.href);
         return null;
     }
-    const params = querystring.parse(urlinfo.query);
 
     let extracted = null;
     try {
@@ -386,7 +385,8 @@ function process(envelop) {
     }
 
     extracted.type = 'video';
-    extracted.videoId = params.v;
+    extracted.params = querystring.parse(urlinfo.query);
+    extracted.videoId = extracted.params.v;
 
     const re = _.filter(extracted.related, { error: true });
     stats.suberror += _.size(re);
