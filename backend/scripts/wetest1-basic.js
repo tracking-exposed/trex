@@ -44,7 +44,7 @@ function unwindSections(memo, e) {
         let evidence = _.pick(e, ['savingTime', 'clientTime', 'login'] );
         evidence.pseudonyn = (_.parseInt(e.publicKey.replace(/[a-zA-Z]/g, '')) % 9999)
         _.extend(evidence,
-            _.pick(v, ['viz', 'duration', 'timeago', 'textTitle', 'order', 'authorName', 'href', 'authorHref']))
+            _.pick(v, ['viz', 'duration', 'textTitle', 'order', 'authorName', 'href', 'authorHref'])) // TODO timeago|isLive
         memo.push(evidence)
     });
     return memo;
