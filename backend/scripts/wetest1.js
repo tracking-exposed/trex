@@ -161,9 +161,11 @@ const TEST_NUMBER = 0;
 const potcfg = {
     sequence: [
         'https://www.youtube.com/',
-        'https://www.youtube.com/watch?v=AX3ZYAaGQl',
-        'https://www.youtube.com/watch?v=7_e0CA_nhaE',
-        'https://www.youtube.com/watch?v=nYOo59f_ie0', // a video in not-our-default-charset
+        'https://www.youtube.com/watch?v=Lo_m_rKReyg',
+        'https://www.youtube.com/watch?v=Zh_SVHJGVHw',
+        'https://www.youtube.com/watch?v=A2kiXc5XEdU',
+        'https://www.youtube.com/watch?v=WEMpIQ30srI',
+        'https://www.youtube.com/watch?v=BNdW_6TgxH0',
         'https://www.youtube.com/'
     ],
     timefilter: {

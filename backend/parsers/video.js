@@ -288,11 +288,33 @@ function processVideo(D, blang) {
         const mobj = publicationString.match(/^(\d+)/) ?
             moment.utc(publicationString, fmt[1]) : moment.utc(publicationString, fmt[0]);
         publicationTime = new Date(mobj.format("YYYY-MM-DD"));
+        if(!mobj.isValid())
+            console.log(_.map(D.querySelectorAll('button'), 'textContent'));
         moment.locale('en');
     }
-    debug("€\t\t%s\t%s\t%s",
-        blang, publicationString,
-        publicationTime ? publicationTime.toISOString() : 'INVALID-DATE');
+
+    const m = _.uniq(_.compact(_.map(D.querySelectorAll('button'), function(e) {
+        let l = _.trim(e.textContent)
+        if(_.size(l)) return l;
+    })));
+
+    const xx = [
+        'Cerca',
+        '1/25',
+        'Guarda più tardi',
+        'Copia link',
+        'InformazioniShopping',
+        'Condividi',
+        "Riattiva l'audio",
+        'Annulla',
+        'Conferma',
+        'Dal vivo',
+        'Scorri per i dettagli' ];
+
+
+    debug("€\t\t%s\t%s\t%s\t%s",
+        blang, publicationString, m,
+        publicationTime ? publicationTime : 'INVALID-DATE');
 
     let related = [];
     try {
