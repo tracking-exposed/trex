@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 const _ = require('lodash');
 const moment = require('moment');
-const debug = require('debug')('wetest-1-basic');
+const debug = require('debug')('wetest-1-basic —');
 const nconf = require('nconf');
 const fs = require('fs');
 
@@ -12,12 +12,27 @@ const mongo3 = require('../lib/mongo3');
 nconf.argv().env().file({ file: 'config/settings.json' });
 
 /* static settings of weTEST#1 */
-const videoURLS = [
-        'https://www.youtube.com/watch?v=Lo_m_rKReyg',
-        'https://www.youtube.com/watch?v=Zh_SVHJGVHw',
-        'https://www.youtube.com/watch?v=A2kiXc5XEdU',
-        'https://www.youtube.com/watch?v=WEMpIQ30srI',
-        'https://www.youtube.com/watch?v=BNdW_6TgxH0',
+const testVideos = [{
+    "href": "https://www.youtube.com/watch?v=Lo_m_rKReyg",
+    "videoId": "Lo_m_rKReyg",
+    "language": "Chinese"
+  }, {
+    "href": "https://www.youtube.com/watch?v=Zh_SVHJGVHw",
+    "videoId": "Zh_SVHJGVHw",
+    "language": "Spanish"
+  }, {
+    "href": "https://www.youtube.com/watch?v=A2kiXc5XEdU",
+    "videoId": "A2kiXc5XEdU",
+    "language": "English"
+  }, {
+    "href": "https://www.youtube.com/watch?v=WEMpIQ30srI",
+    "videoId": "WEMpIQ30srI",
+    "language": "Porutuguese"
+  }, {
+    "href": "https://www.youtube.com/watch?v=BNdW_6TgxH0",
+    "videoId": "BNdW_6TgxH0",
+    "language": "Arabic"
+  },
 ];
 const timefilter = {
     'savingTime': {
@@ -27,7 +42,7 @@ const timefilter = {
 };
 const allowed = {
     'home': produceHomeCSV,
-    'videos': produceVideosCSV,
+    'video': produceVideosCSV,
 };
 
 /* --- utilities --- */
@@ -39,10 +54,46 @@ async function pickFromDB(filter, sorting) {
     return rv;
 }
 
+const ITERATION = 2;
+function fileName(prefix, suffix) {
+    return `${prefix}-ωτ1-v${ITERATION}.${suffix}`;
+}
+
+function unrollRecommended(memo, evidence) {
+    _.each(evidence.related, function(related, evidenceCounter) {
+        let entry = {
+            savingTime: evidence.savingTime,
+            clientTime: evidence.clientTime,
+            pseudonyn: utils.string2Food(evidence.publicKey + "weTest#1"),
+            evidence: evidenceCounter,
+            login: evidence.login,
+            id: evidenceCounter + "-" + evidence.id.replace(/[0-9]/g, ''),
+
+            recommendedVideoId: related.videoId,
+            recommendedViews: (related.mined) ? related.mined.viz : null,
+            recommendedDuration: (related.mined) ? related.mined.duration : null,
+            recommendedPubtime: (related.mined) ? related.mined.timeago : null,
+            recommendedForYou: related.foryou,
+            recommendedTitle: related.title,
+            recommendedAuthor: related.source,
+            recommendedVerified: related.verified,
+            recommendationOrder: related.index,
+            watchedId: evidence.id.replace(/[0-9]/g, ''),
+            watchedAuthor: evidence.authorName,
+            watchedPubtime: evidence.related.vizstr,
+            watchedTitle: evidence.title,
+            watchedViews: evidence.viewInfo.viewStr ? evidence.viewInfo.viewStr : null,
+            watchedChannel: evidence.authorSource,
+        }
+        memo.push(entry);
+    })
+    return memo;
+}
 function unwindSections(memo, e) {
     _.each(e.selected, function(v) {
         let evidence = _.pick(e, ['savingTime', 'clientTime', 'login'] );
-        evidence.pseudonyn = (_.parseInt(e.publicKey.replace(/[a-zA-Z]/g, '')) % 9999)
+        evidence.pseudonyn = utils.string2Food(e.publicKey + "weTest#1");
+        evidence.id = e.id.replace(/[0-9]/g, '');
         _.extend(evidence,
             _.pick(v, ['viz', 'duration', 'textTitle', 'order', 'authorName', 'href', 'authorHref'])) // TODO timeago|isLive
         memo.push(evidence)
@@ -53,23 +104,42 @@ function unwindSections(memo, e) {
 /* -------------------------------------- the two functions --------------------------------------- */
 async function produceHomeCSV(tf) {
     const home = await pickFromDB(_.extend(tf, {type: 'home'}), { clientTime: -1 });
-
     const unwind = _.reduce(home, unwindSections, []);
     debug("Unnested the 'sections' return %d evidences. Saving JSON file", _.size(unwind));
-    fs.writeFileSync('home-day1' + '.json', JSON.stringify(unwind, undefined, 2));
+    fs.writeFileSync(fileName('home', 'json'), JSON.stringify(unwind, undefined, 2));
     const csvtext = csv.produceCSVv1(unwind);
     debug("Produced %d bytes for text/csv, saving file", _.size(csvtext));
-    fs.writeFileSync('home-day1' + '.csv', csvtext);
+    fs.writeFileSync(fileName('home', 'csv'), csvtext);
 }
 
 async function produceVideosCSV(tf) {
+    const watches = await pickFromDB(_.extend(tf, {
+        type: 'video',
+        videoId: { "$in": _.map(testVideos, 'videoId')}
+    }), { clientTime: -1 });
+    const unroll = _.reduce(watches, unrollRecommended, []);
+    debug("Unnested the 'sections' return %d evidences. Saving JSON file", _.size(unroll));
+    fs.writeFileSync(fileName('videos', 'json'), JSON.stringify(unroll, undefined, 2));
+    const csvtext = csv.produceCSVv1(unroll);
+    debug("Produced %d bytes for text/csv, saving file", _.size(csvtext));
+    fs.writeFileSync(fileName('videos', 'csv'), csvtext);
+}
+
+async function produceInternalData(tf) {
+    const watches = await pickFromDB(_.extend(tf, {
+        type: 'video',
+        videoId: { "$in": _.map(testVideos, 'videoId')}
+    }), { clientTime: -1 });
+    const publicKeys = _.map(watches, 'publicKey');
+    const bd = _.groupBy(publicKeys)
+    debugger;
 }
 
 /* -------------------------------------- execution handler --------------------------------------- */
 try {
     const what = nconf.get('type');
     if(!what || _.indexOf(_.keys(allowed), what) == -1 ) {
-        console.log("This script need --type"+ _.keys(allowed).join('|') +"and produces URL-centered CSVs");
+        console.log("This script need --type"+ _.keys(allowed).join('|') +" and produces URL-centered CSVs");
         process.exit(1);
     }
     debug("[%s] is the target: starting wetest basic extractor…", what);
