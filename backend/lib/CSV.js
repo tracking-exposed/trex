@@ -23,7 +23,7 @@ function produceCSVv1(entries) {
 
         _.each(keys, function(k, i) {
             let swap = _.get(entry, k, "");
-            if(k == 'savingTime')
+            if(k == 'savingTime' || k == 'clientTime')
                 memo.csv += moment(swap).toISOString();
             else if(_.isInteger(swap)) {
                 memo.csv += swap;

@@ -62,12 +62,18 @@ function fileName(prefix, suffix) {
 function unrollRecommended(memo, evidence) {
     _.each(evidence.related, function(related, evidenceCounter) {
         let entry = {
-            savingTime: evidence.savingTime,
-            clientTime: evidence.clientTime,
             pseudonyn: utils.string2Food(evidence.publicKey + "weTest#1"),
             evidence: evidenceCounter,
             login: evidence.login,
-            id: evidenceCounter + "-" + evidence.id.replace(/[0-9]/g, ''),
+            id: evidenceCounter + '-' + evidence.id.replace(/[0-9]/g, ''),
+            savingTime: evidence.savingTime,
+            clientTime: evidence.clientTime,
+
+            uxlang: evidence.uxlang,
+            dataset: 'yttrex',
+            experiment: 'wetest1',
+            type: 'video',
+            step: _.find(testVideos, { videoId: evidence.videoId }).language,
 
             recommendedVideoId: related.videoId,
             recommendedViews: (related.mined) ? related.mined.viz : null,
@@ -78,25 +84,44 @@ function unrollRecommended(memo, evidence) {
             recommendedAuthor: related.source,
             recommendedVerified: related.verified,
             recommendationOrder: related.index,
-            watchedId: evidence.id.replace(/[0-9]/g, ''),
+
+            watchedVideoId: evidence.videoId,
             watchedAuthor: evidence.authorName,
             watchedPubtime: evidence.related.vizstr,
             watchedTitle: evidence.title,
             watchedViews: evidence.viewInfo.viewStr ? evidence.viewInfo.viewStr : null,
             watchedChannel: evidence.authorSource,
-        }
+        };
         memo.push(entry);
     })
     return memo;
 }
-function unwindSections(memo, e) {
-    _.each(e.selected, function(v) {
-        let evidence = _.pick(e, ['savingTime', 'clientTime', 'login'] );
-        evidence.pseudonyn = utils.string2Food(e.publicKey + "weTest#1");
-        evidence.id = e.id.replace(/[0-9]/g, '');
-        _.extend(evidence,
-            _.pick(v, ['viz', 'duration', 'textTitle', 'order', 'authorName', 'href', 'authorHref'])) // TODO timeago|isLive
-        memo.push(evidence)
+
+function unwindSections(memo, evidence) {
+    _.each(evidence.selected, function(selected, evidenceCounter) {
+        let entry = {
+            pseudonyn: utils.string2Food(evidence.publicKey + "weTest#1"),
+            evidence: evidenceCounter,
+            login: evidence.login,
+            id: evidenceCounter + '-' + evidence.id.replace(/[0-9]/g, ''),
+            savingTime: evidence.savingTime,
+            clientTime: evidence.clientTime,
+
+            uxlang: evidence.uxlang,
+            dataset: 'yttrex',
+            experiment: 'wetest1',
+            step: 'homepage',
+
+            /* TODO section Name  + isLive */
+            selectedVideoId: selected.videoId,
+            selectedViews: (selected.mined) ? selected.mined.viz : null,
+            selectedDuration: (selected.mined) ? selected.mined.duration : null,
+            selectedPubtime: (selected.mined) ? selected.mined.timeago : null,
+            selectedTitle: selected.title,
+            selectedAuthor: selected.source,
+            recommendationOrder: selected.index
+        };
+        memo.push(entry);
     });
     return memo;
 };

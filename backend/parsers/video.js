@@ -4,9 +4,7 @@ const moment = require('moment');
 const url = require('url');
 const querystring = require('querystring');
 const debug = require('debug')('parser:video');
-const errorlike = require('debug')('metadata:likes');
-const errorview = require('debug')('metadata:view');
-const errorrele = require('debug')('metadata:related');
+const nlpdebug = require('debug')('nlp:timeparsing');
 
 const stats = { skipped: 0, error: 0, suberror: 0, success: 0 };
 
@@ -279,6 +277,18 @@ function processVideo(D, blang) {
     let publicationString = null;
     let publicationTime = null;
 
+    // from the language in the buttons we infer the language
+    const m = _.uniq(_.compact(_.map(D.querySelectorAll('button'), function(e) {
+        let l = _.trim(e.textContent)
+        if(_.size(l)) return l;
+    })));
+
+    const LD = require('languagedetect');
+    const detector = new LD();
+    detector.setLanguageType('iso2');
+    const guess = detector.detect(m.join(' '), 2);
+    blang = _.first(_.first(guess));
+
     if(_.size(D.querySelector('#date > yt-formatted-string').textContent) > 2 ) {
         const fmt = [ "MMM DD YYYY", "DD MMM YYYY" ];
         publicationString = D.querySelector('#date > yt-formatted-string').textContent;
@@ -289,31 +299,13 @@ function processVideo(D, blang) {
             moment.utc(publicationString, fmt[1]) : moment.utc(publicationString, fmt[0]);
         publicationTime = new Date(mobj.format("YYYY-MM-DD"));
         if(!mobj.isValid())
-            console.log(_.map(D.querySelectorAll('button'), 'textContent'));
+            debug("not falid conv %s", publicationString)
         moment.locale('en');
     }
 
-    const m = _.uniq(_.compact(_.map(D.querySelectorAll('button'), function(e) {
-        let l = _.trim(e.textContent)
-        if(_.size(l)) return l;
-    })));
 
-    const xx = [
-        'Cerca',
-        '1/25',
-        'Guarda più tardi',
-        'Copia link',
-        'InformazioniShopping',
-        'Condividi',
-        "Riattiva l'audio",
-        'Annulla',
-        'Conferma',
-        'Dal vivo',
-        'Scorri per i dettagli' ];
-
-
-    debug("€\t\t%s\t%s\t%s\t%s",
-        blang, publicationString, m,
+    nlpdebug("\tBL[%s]\t%s\t%s",
+        blang, publicationString,
         publicationTime ? publicationTime : 'INVALID-DATE');
 
     let related = [];
@@ -417,9 +409,9 @@ function process(envelop) {
     const le = _.filter(extracted.likeInfo, { error: true });
     stats.suberror += _.size(le);
 
-    if(_.size(re)) errorrele("related error %s", JSON.stringify(re, undefined));
-    if(_.size(ve)) errorview("views error %s", JSON.stringify(ve, undefined));
-    if(_.size(le)) errorlike("likes error %s", JSON.stringify(re, undefined));
+    if(_.size(re)) debug("related error %s", JSON.stringify(re, undefined));
+    if(_.size(ve)) debug("views error %s", JSON.stringify(ve, undefined));
+    if(_.size(le)) debug("likes error %s", JSON.stringify(re, undefined));
 
     /* remove debugging/research fields we don't want in mongo */
     _.unset(extracted, 'check');
