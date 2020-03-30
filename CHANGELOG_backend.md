@@ -1,6 +1,12 @@
 The format is based on [Keep a Changelog](http://keepachangelog.com/) and this
 project adheres to [Semantic Versioning](http://semver.org/).
 
+## [1.3.0] - 2020-03-01
+### Added
+- home parsing and extraction
+- wetest#1 general testing
+- parsing of localized datetime 
+
 ## [1.2.1] - 2019-10-20
 ### Added
 - events version 2, using await/async and moving saving to html

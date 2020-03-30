@@ -1,6 +1,14 @@
 The format is based on [Keep a Changelog](http://keepachangelog.com/) and this
 project adheres to [Semantic Versioning](http://semver.org/).
 
+## [1.3.0] - 2020-03-30
+### Added
+- New UX (traffic light)
+### Defined 
+- [browser-extention issue list](https://github.com/tracking-exposed/yttrex/labels/browser-extention)
+### Fixed
+- Frequency and internal timing
+
 ## [1.2.1] - 2019-10-19
 ### Added
 - Random identifier to recognize same video even when duplicated
