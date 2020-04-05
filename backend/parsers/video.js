@@ -1,10 +1,10 @@
 #!/usr/bin/env node
 const _ = require('lodash');
-const moment = require('moment');
 const url = require('url');
 const querystring = require('querystring');
 const debug = require('debug')('parser:video');
-const nlpdebug = require('debug')('nlp:timeparsing');
+
+const uxlang = require('./uxlang');
 
 const stats = { skipped: 0, error: 0, suberror: 0, success: 0 };
 
@@ -246,7 +246,7 @@ function mineAuthorInfo(D) {
     } 
 }
 
-function processVideo(D, blang) {
+function processVideo(D, blang, clientTime) {
 
     const title = manyTries(D, [{
         name: 'title h1',
@@ -272,41 +272,11 @@ function processVideo(D, blang) {
     if(mined) {
         authorName = mined.authorName;
         authorSource = mined.authorSource;
+    } else {
+        debug("Warning: not mined authorInfo and authorSource %s", envelop.impression.id);
     }
 
-    let publicationString = null;
-    let publicationTime = null;
-
-    // from the language in the buttons we infer the language
-    const m = _.uniq(_.compact(_.map(D.querySelectorAll('button'), function(e) {
-        let l = _.trim(e.textContent)
-        if(_.size(l)) return l;
-    })));
-
-    const LD = require('languagedetect');
-    const detector = new LD();
-    detector.setLanguageType('iso2');
-    const guess = detector.detect(m.join(' '), 2);
-    blang = _.first(_.first(guess));
-
-    if(_.size(D.querySelector('#date > yt-formatted-string').textContent) > 2 ) {
-        const fmt = [ "MMM DD YYYY", "DD MMM YYYY" ];
-        publicationString = D.querySelector('#date > yt-formatted-string').textContent;
-        moment.locale(blang);
-
-        /* todo investigate what happen with non latin things */
-        const mobj = publicationString.match(/^(\d+)/) ?
-            moment.utc(publicationString, fmt[1]) : moment.utc(publicationString, fmt[0]);
-        publicationTime = new Date(mobj.format("YYYY-MM-DD"));
-        if(!mobj.isValid())
-            debug("not falid conv %s", publicationString)
-        moment.locale('en');
-    }
-
-
-    nlpdebug("\tBL[%s]\t%s\t%s",
-        blang, publicationString,
-        publicationTime ? publicationTime : 'INVALID-DATE');
+    const { publicationTime, publicationString, ifLang } = uxlang.sequenceForPublicationTime(D, blang, clientTime);
 
     let related = [];
     try {
@@ -371,7 +341,7 @@ function processVideo(D, blang) {
         check,
         publicationString,
         publicationTime,
-        blang,
+        blang: blang ? blang : ifLang,
         authorName,
         authorSource,
         related,
@@ -391,7 +361,11 @@ function process(envelop) {
 
     let extracted = null;
     try {
-        extracted = processVideo(envelop.jsdom, envelop.impression.blang);
+        extracted = processVideo(
+            envelop.jsdom,
+            envelop.impression.blang,
+            envelop.impression.clientTime
+        );
     } catch(e) {
         debug("Error in video.process %s (%d): %s\n%s",
             envelop.impression.href, envelop.impression.size, e.message, e.stack);

@@ -113,12 +113,13 @@ function unwindSections(memo, evidence) {
             step: 'homepage',
 
             /* TODO section Name  + isLive */
-            selectedVideoId: selected.videoId,
-            selectedViews: (selected.mined) ? selected.mined.viz : null,
-            selectedDuration: (selected.mined) ? selected.mined.duration : null,
-            selectedPubtime: (selected.mined) ? selected.mined.timeago : null,
+            selectedVideoId: selected.href.replace(/\/watch\?v=/, ''),
+            selectedViews: selected.viz,
+            selectedDuration: selected.duration,
+            selectedPubtime: selected.mined.timeago + " not precise ",
             selectedTitle: selected.title,
-            selectedAuthor: selected.source,
+            selectedAuthor: selected.authorName,
+            selectedChannel: selected.authorHref,
             recommendationOrder: selected.index
         };
         memo.push(entry);
@@ -164,7 +165,7 @@ async function produceInternalData(tf) {
 try {
     const what = nconf.get('type');
     if(!what || _.indexOf(_.keys(allowed), what) == -1 ) {
-        console.log("This script need --type"+ _.keys(allowed).join('|') +" and produces URL-centered CSVs");
+        console.log(`This script need --type ${_.keys(allowed).join('|')} and produces URL-centered CSVs`);
         process.exit(1);
     }
     debug("[%s] is the target: starting wetest basic extractor…", what);
