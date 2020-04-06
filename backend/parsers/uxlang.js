@@ -7,13 +7,16 @@ const moment = require('moment');
 /* GUESS TIMEDATE FORMAT & CLEAN INFO */
 fmtpmap = {
     "MMM DD YYYY": /(\D{3}) (\d{1,2}) (\d{4})/,
+    "DD.MM.YYYY": /(\d{2})\.(\d{2})\.(\d{4})/,
     "MMM DD, YYYY": /(\D{3}) (\d{1,2}), (\d{4})/,
-    "DD MMM YYYY": /(\d{1,2})\s(\D{3,4})\.? ([20\d\d])/, // "19 февр. 2019 г.".
+    "DD MMM YYYY": /(\d{1,2})\.?\s(\D{3,4})\.? ([20\d\d])/, 
+    // "19 февр. 2019 г."     +     "21. mar. 2020"
 };
 
 const trimmable = [
     'Streamed live on ',
-    'Started streaming '
+    'Started streaming ',
+    'Ha empezado a emitir en directo hace ',
 ];
 
 function getFormatCleanString(publicationString) {
@@ -28,35 +31,67 @@ function getFormatCleanString(publicationString) {
         return _.isNull(memo) ? publicationString : memo;
     }, null);
 
-    if(_.size(cleanString) === _.size(publicationString))
-        debug("String cleaning didn't result in any change: %s", cleanString);
-
     const fitting = _.reduce(fmtpmap, function(memo, re, fmt) {
         // cleanString + re torna ft ?
         const chk = re.exec(cleanString);
         if(chk && chk[1] && chk[2] && chk[3]) {
-            debug("getGormatClean string works with %s", fmt)
+            debug("getFormatCleanString results => %s", fmt)
             memo = fmt;
         }
         return memo;
     }, null)
 
+    if(!fitting && _.size(cleanString) === _.size(publicationString))
+        debug("getFormatCleanString fail: no replace and not match: %s", cleanString);
+
     return { cleanString, fmt: fitting };
 }
 
 /* ------------- RELATIVE PUBLICATION STRING --------------- */
-function englishStreaming(stri) {
-    const matches = stri.match(/(\d+)\ (\w+)\ ago/);
+const localized = {
+    'horas': 'hours',
+    'hours': 'hours',
+    'ore': 'hours',
+
+    'minutos': 'minutes',
+    'minutes': 'minutes',
+    'minuti': 'minutes'
+};
+
+function standardLatinWay(stri) {
+    const matches = stri.match(/(\d+) (\D+)/);
+    if(!matches || !matches[1] || !matches[2]) {
+        debug("Unfitting regexp to match: %s", stri);
+        process.exit(1);
+    }
+    // todo improve the regexp, this is to removed the ' ago' of '2 hours ago'
+    const localizedUnit = _.first(matches[2].split(' '));
+    if(_.isUndefined(localized[localizedUnit])) {
+        debug("WARNING: if |%s| do not means 'minutes' you're screwing up", localizedUnit);
+        process.exit(1);
+    }
     return {
         amount: _.parseInt(matches[1]),
-        unit: matches[2]
+        unit: localized[localizedUnit]
     }
 }
+
 const lamepx = [{
     type: 'video-pubstring',
-    iso2: 'en',
     first: 'Started',
-    unitamount: englishStreaming
+    unitamount: standardLatinWay 
+}, {
+    type: 'video-pubstring',
+    first: 'Premiere',
+    unitamount: standardLatinWay 
+}, {
+    type: 'video-pubstring',
+    first: 'Streamed',
+    unitamount: standardLatinWay 
+}, {
+    type: 'video-pubstring',
+    first: 'Comenzó',
+    unitamount: standardLatinWay 
 }];
 
 function findRelative(type, stri, clientTime) {
@@ -65,10 +100,10 @@ function findRelative(type, stri, clientTime) {
     const found = _.find(lamepx, { type, first });
     try {
         const { amount, unit } = found.unitamount(stri);
-        nlpdebug("relative match consider %s minus %d %s", clientTime, amount, unit);
+        nlpdebug("Relative match consider %s minus %d %s", clientTime, amount, unit);
         return moment(clientTime).subtract(amount, unit);
     } catch(e) {
-        nlpdebug("relative ERROR: (might happen for many reasons): %s: from |%s|", e.message, stri);
+        nlpdebug("Relative ERROR: (might happen for many reasons): %s: from |%s|", e.message, stri);
         debugger;
         return moment('invalid date');
     }
@@ -99,6 +134,14 @@ const lame = [{
     iso2: 'pt'
 }, {
     type: 'video',
+    first: 'Szukaj',
+    iso2: 'pt'
+}, {
+    type: 'video',
+    first: 'Søk', // VERIFY THIS ( ["Søk","Se senere","Del","Kopiér linken","InformasjonShopping", )
+    iso2: 'no'
+}, {
+    type: 'video',
     first: 'Buscar',
     iso2: 'es'
 }, {
@@ -112,7 +155,7 @@ function findLanguage(type, chunks) {
     if(!found) {
         debug("findLanguage failured please add manually: %s |%s|\n%s",
             type, _.first(chunks), JSON.stringify(chunks));
-        debugger;
+        process.exit(1);
         return null;
     }
     return found.iso2;
@@ -155,7 +198,7 @@ function sequenceForPublicationTime(D, blang, clientTime) {
         }
 
         if(!mobj.isValid()) {
-            console.log("Terrible failure we can't accept blah")
+            debug("Fatal error in deducing format and extrating prublicationTime from %s", publicationString)
             process.exit(2);
         }
         nlpdebug("publicationString parsing complete %s\t=>\t%s", publicationString, mobj.format());

@@ -17,10 +17,13 @@ echoes.setDefaultEcho("elasticsearch"); */
 
 const FREQUENCY = _.parseInt(nconf.get('frequency')) ? _.parseInt(nconf.get('frequency')) : 10;
 const backInTime = _.parseInt(nconf.get('minutesago')) ? _.parseInt(nconf.get('minutesago')) : 10;
+const skipCount = _.parseInt(nconf.get('skip')) ? _.parseInt(nconf.get('skip')) : 0;
+const htmlAmount = _.parseInt(nconf.get('amount')) ? _.parseInt(nconf.get('amount')) : 20;
 const id = nconf.get('id');
 const singleUse = !!id;
 
 let nodatacounter = 0;
+let processedCounter = skipCount;
 let lastExecution = moment().subtract(backInTime, 'minutes').toISOString();
 let computedFrequency = FREQUENCY;
 
@@ -55,7 +58,7 @@ async function newLoop() {
         }
     }
 
-    const htmls = await automo.getLastHTMLs(htmlFilter);
+    const htmls = await automo.getLastHTMLs(htmlFilter, skipCount, htmlAmount);
     if(!_.size(htmls.content)) {
         nodatacounter++;
         if( (nodatacounter % 10) == 1) {
@@ -71,13 +74,11 @@ async function newLoop() {
 
     if(!htmls.overflow) {
         lastExecution = moment().subtract(2, 'm').toISOString();
-        debug("[%s] Matching objects %d, overflow %s",
-            moment.duration(htmls.content[0].savingTime).humanize(),
-            _.size(htmls.content), htmls.overflow);
+        debug("Got %d objects, parsing realtime...", _.size(htmls.content));
     }
     else {
         lastExecution = moment(_.last(htmls.content).savingTime);
-        debug("OVERFLOW: first %s last %s - lastExecution %s",
+        debug("OVERFLOW: first %s last %s - lastExecution set to last %s",
             _.first(htmls.content).savingTime, _.last(htmls.content).savingTime,
             lastExecution);
     }
@@ -91,10 +92,10 @@ async function newLoop() {
 
         let metadata = null;
         try {
-            debug("%s [%s %s] %s %d.%d %s %s %s",
-                e.id.substr(0, 4),
-                moment(e.savingTime).format("HH:mm"),
-                moment.duration( moment() - moment(e.savingTime)).humanize(),
+            processedCounter++;
+            debug("#%d\ton (%d minutes ago) %s %d.%d %s %s %s",
+                processedCounter,
+                _.round(moment.duration( moment() - moment(e.savingTime)).asMinutes(), 0),
                 e.metadataId,
                 e.packet, e.incremental,
                 e.href.replace(/https:\/\//, ''), e.size, e.selector);
@@ -122,7 +123,7 @@ async function newLoop() {
                 return null;
 
         } catch(error) {
-            debug("Error in selector (%s) processing: %s", e.selector, error.message);
+            debug("[!E] #%d\t selector (%s) error: %s", processedCounter, e.selector, error.message);
             return null;
         }
 

@@ -273,7 +273,7 @@ function processVideo(D, blang, clientTime) {
         authorName = mined.authorName;
         authorSource = mined.authorSource;
     } else {
-        debug("Warning: not mined authorInfo and authorSource %s", envelop.impression.id);
+        debug("Warning: not mined authorInfo and authorSource");
     }
 
     const { publicationTime, publicationString, ifLang } = uxlang.sequenceForPublicationTime(D, blang, clientTime);
@@ -291,7 +291,7 @@ function processVideo(D, blang, clientTime) {
     if(relatedN < 20) {
         // debug("Because the related video are less than 20 (%d) trying the method2 of related extraction", relatedN);
         const f = D.querySelectorAll('[aria-label]')
-        const selected = _.compact(_.map(f, function(e, i) {
+        const alternativeR = _.compact(_.map(f, function(e, i) {
             if(e.parentNode.parentNode.tagName != 'DIV' || e.parentNode.tagName != 'H3')
                 return null;
 
@@ -310,9 +310,12 @@ function processVideo(D, blang, clientTime) {
             }
 
         }));
-        debug("Overwritting a mined %d related with %d others - %j",
-            _.size(related), _.size(selected), _.countBy(selected, { loaded: true}));
-        related = _.map(selected, relatedMetadata);
+
+        if(_.size(alternativeR) > _.size(related)) {
+            debug("Extending/Overwritting %d related with %d findings, partially loaded (%j)",
+                _.size(related), _.size(alternativeR), _.countBy(alternativeR, { loaded: true}));
+            related = _.map(alternativeR, relatedMetadata);
+        }
     }
 
     debug("Video <%s> mined %d related", title, _.size(related));

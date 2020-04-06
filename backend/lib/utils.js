@@ -102,27 +102,33 @@ function parseIntNconf(name, def) {
     return _.parseInt(value);
 }
 
-function getInt(req, what, def) {                                                       
-    var rv = _.parseInt(_.get(req.params, what));                                       
-    if(_.isNaN(rv)) {                                                                   
-        if(!_.isUndefined(def))                                                         
-            rv  = def;                                                                  
-        else  {                                                                         
-            debug("getInt: Error with parameter [%s] in %j", what, req.params);         
-            rv = 0;                                                                     
-        }                                                                               
+function getInt(req, what, def) {
+    var rv = _.parseInt(_.get(req.params, what));
+    if(_.isNaN(rv)) {
+        if(!_.isUndefined(def))
+            rv  = def;
+        else  {
+            debug("getInt: Error with parameter [%s] in %j", what, req.params);
+            rv = 0;
+        }
     }
-    return rv;                                                                          
-}                                                                                       
+    return rv;
+}
 
-function getString(req, what) {                                                         
-    var rv = _.get(req.params, what);                                                   
-    if(_.isUndefined(rv)) {                                                             
-        debug("getString: Missing parameter [%s] in %j", what, req.params);             
-        return "";                                                                      
-    }                                                                                   
-    return rv;                                                                          
-}                                                                                       
+function getString(req, what) {
+    var rv = _.get(req.params, what);
+    if(_.isUndefined(rv)) {
+        debug("getString: Missing parameter [%s] in %j", what, req.params);
+        return "";
+    }
+    return rv;
+}
+
+function prettify(content, maxSize) {
+    /* content might be an object or might not be */
+    let unrolled = typeof(content) === typeof({}) ? JSON.stringify(content) : content;
+    return _.size(unrolled.toString()) > maxSize ? unrolled.toString().substr(0, maxSize) + '…' : unrolled;
+}
 
 module.exports = {
     hash: hash,
@@ -134,5 +140,6 @@ module.exports = {
     string2Food: string2Food,
     getInt: getInt,                                                                     
     getString: getString,
-    parseIntNconf
+    parseIntNconf,
+    prettify,
 };

@@ -286,24 +286,26 @@ async function tofu(publicKey, version) {
     return supporter;
 }
 
-async function getLastHTMLs(filter, skip) {
+async function getLastHTMLs(filter, skip, amount) {
 
-    const HARDCODED_LIMIT = 20;
     const mongoc = await mongo3.clientConnect({concurrency: 1});
 
     const htmls = await mongo3.readLimit(mongoc,
         nconf.get('schema').htmls, filter,
-        { savingTime: 1},
-        HARDCODED_LIMIT,
+        { savingTime: 1}, // never change this!
+        amount,
         skip ? skip : 0);
 
     if(_.size(htmls))
-        debug("getLastHTMLs: %j -> %d (overflow %s)%s", filter, _.size(htmls),
-            (_.size(htmls) == HARDCODED_LIMIT), skip ? "skip " + skip : "");
+        debug("getLastHTMLs: %j -> %d (overflow %s) %s", filter, _.size(htmls),
+            (_.size(htmls) == amount), skip ? "skip " + skip : "");
+    else
+        debug("No data! %j amount %d skip %d", filter, amount,
+             skip ? "skip " + skip : "");
 
     mongoc.close();
     return {
-        overflow: _.size(htmls) == HARDCODED_LIMIT,
+        overflow: _.size(htmls) == amount,
         content: htmls
     }
 }
@@ -350,49 +352,44 @@ async function updateMetadata(html, newsection, repeat) {
 
     let updates = 0;
     let forceu = repeat;
-    const newfields = [];
+    const newkeys = [];
+    const updatedkeys = [];
     /* we don't care if these fields change value, they'll not be 'update' */
-    const careless = [ 'clientTime', 'savingTime', 'size' ];
+    const careless = [ 'clientTime', 'savingTime' ];
     const up = _.reduce(newsection, function(memo, value, key) {
+
+        if(key === 'publicationTime')
+            debugger;
 
         if(_.isUndefined(value)) {
             debug("updateChecker: %s is undefined!", key);
             return memo;
         }
 
+        if(_.indexOf(careless, key) !== -1)
+            return memo;
+
         let current = _.get(memo, key);
         if(!current) {
             _.set(memo, key, value);
-            newfields.push(key);
+            newkeys.push(key);
             updates++;
-        } else if(_.indexOf(careless, key) == -1) {
-            /* we don't care of these updates */
         } else if(!_.isEqual(JSON.stringify(current), JSON.stringify(value))) {
-            const record = {
-                clientTime: html.clientTime,
-                value,
-                key,
-            };
-            debug("special suppressed content update in %s [%s -> %s]", key, current, value);
-
-            if(_.isUndefined(memo.variation))
-                memo.variation = [ record ];
-            else
-                memo.variation.push(record);
-
+            debug("(acritic) content overwrite in %s [%s -> %s]",
+                key, utils.prettify(current, 34), utils.prettify(value, 34) );
+            _.set(memo, key, value);
+            updatedkeys.push(key);
             forceu = true;
+            updates++;
         } else {
-            /* no update */
+            /* they exists and they are equal = no update */
         }
         return memo;
     }, exists);
 
-    if(updates) {
-        debug("Metadata UPDATE: %s (%s) %d updates %s%s",
-            html.metadataId, html.selector, updates, 
-            up.variation ? JSON.stringify(_.map(up.variation, 'key')) : "",
-            _.size(newfields) ? JSON.stringify(newfields) : "" );
-    }
+    if(updates)
+        debug("Metadata UPDATE: %s (%s) %d -> new %j, overwritten: %j",
+            html.metadataId, html.selector, updates, newkeys, updatedkeys);
 
     if(forceu || updates ) {
         // debug("Update from incremental %d to %d", exists.incremental, up.incremental);
