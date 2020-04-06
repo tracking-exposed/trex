@@ -55,7 +55,9 @@ const localized = {
 
     'minutos': 'minutes',
     'minutes': 'minutes',
-    'minuti': 'minutes'
+    'minuti': 'minutes',
+
+    'segundos': 'seconds'
 };
 
 function standardLatinWay(stri) {
@@ -67,7 +69,7 @@ function standardLatinWay(stri) {
     // todo improve the regexp, this is to removed the ' ago' of '2 hours ago'
     const localizedUnit = _.first(matches[2].split(' '));
     if(_.isUndefined(localized[localizedUnit])) {
-        debug("WARNING: if |%s| do not means 'minutes' you're screwing up", localizedUnit);
+        debug("WARNING: |%s| not found!", localizedUnit);
         process.exit(1);
     }
     return {
@@ -83,6 +85,10 @@ const lamepx = [{
 }, {
     type: 'video-pubstring',
     first: 'Premiere',
+    unitamount: standardLatinWay 
+}, {
+    type: 'video-pubstring',
+    first: 'Se', // why chunks and not string match? doh. Se transmitió.
     unitamount: standardLatinWay 
 }, {
     type: 'video-pubstring',
@@ -208,8 +214,7 @@ function sequenceForPublicationTime(D, blang, clientTime) {
         /* restore locale */
         moment.locale('en');
     } else {
-        console.log("Terrible lacking of the HTML element we really want");
-        process.exit(2);
+        throw new Error("lack of HTML snippet!")
     }
 
     if(blang != serverSideBlang) {

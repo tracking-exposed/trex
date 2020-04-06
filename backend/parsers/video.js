@@ -273,7 +273,8 @@ function processVideo(D, blang, clientTime) {
         authorName = mined.authorName;
         authorSource = mined.authorSource;
     } else {
-        debug("Warning: not mined authorInfo and authorSource");
+        debugger;
+        throw new Error("lack of mandatory HTML snippet!");
     }
 
     const { publicationTime, publicationString, ifLang } = uxlang.sequenceForPublicationTime(D, blang, clientTime);

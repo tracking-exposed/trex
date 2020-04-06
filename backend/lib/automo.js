@@ -358,14 +358,10 @@ async function updateMetadata(html, newsection, repeat) {
     const careless = [ 'clientTime', 'savingTime' ];
     const up = _.reduce(newsection, function(memo, value, key) {
 
-        if(key === 'publicationTime')
-            debugger;
-
         if(_.isUndefined(value)) {
             debug("updateChecker: %s is undefined!", key);
             return memo;
         }
-
         if(_.indexOf(careless, key) !== -1)
             return memo;
 
@@ -374,15 +370,11 @@ async function updateMetadata(html, newsection, repeat) {
             _.set(memo, key, value);
             newkeys.push(key);
             updates++;
-        } else if(!_.isEqual(JSON.stringify(current), JSON.stringify(value))) {
-            debug("(acritic) content overwrite in %s [%s -> %s]",
-                key, utils.prettify(current, 34), utils.prettify(value, 34) );
+        } else if(utils.judgeIncrement(key, current, value)) {
             _.set(memo, key, value);
             updatedkeys.push(key);
             forceu = true;
             updates++;
-        } else {
-            /* they exists and they are equal = no update */
         }
         return memo;
     }, exists);

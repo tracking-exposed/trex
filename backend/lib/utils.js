@@ -130,6 +130,18 @@ function prettify(content, maxSize) {
     return _.size(unrolled.toString()) > maxSize ? unrolled.toString().substr(0, maxSize) + '…' : unrolled;
 }
 
+function judgeIncrement(key, current, value) {
+    // this function evaluate if a new object is "superior" in 
+    // meanings. special keys might got different treatment 
+    // it is used by automo.js in db metadata updates
+    if( typeof value == typeof(1) )
+        return true;
+    if( typeof value == typeof('str') )
+        return _.size(value) > _.size(current);
+    if( typeof value == typeof([]) )
+        return _.size(JSON.stringify(value)) > _.size(JSON.stringify(current));
+}
+
 module.exports = {
     hash: hash,
     activeUserCount: activeUserCount,
@@ -142,4 +154,5 @@ module.exports = {
     getString: getString,
     parseIntNconf,
     prettify,
+    judgeIncrement,
 };
