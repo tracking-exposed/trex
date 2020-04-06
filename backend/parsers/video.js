@@ -287,7 +287,9 @@ function processVideo(D, blang, clientTime) {
         throw new Error(`Unable to mine related: ${error.message}, ${error.stack.substr(0, 220)}...`);
     }
 
-    let relatedN = D.querySelectorAll('ytd-compact-video-renderer').length;
+    const relatedN = D.querySelectorAll('ytd-compact-video-renderer').length;
+    if (relatedN != _.size(related))
+        throw new Error("Inconsinstency deserve investigation");
 
     if(relatedN < 20) {
         // debug("Because the related video are less than 20 (%d) trying the method2 of related extraction", relatedN);
@@ -349,7 +351,6 @@ function processVideo(D, blang, clientTime) {
         authorName,
         authorSource,
         related,
-        relatedN,
         viewInfo,
         likeInfo
     };

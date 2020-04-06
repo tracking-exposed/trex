@@ -37,16 +37,17 @@ async function getSummaryByPublicKey(publicKey, options) {
     debug("Retrieved in getSummaryByPublicKey: data %d, total %d (amount %d skip %d)",
         _.size(metadata), total, options.amount, options.skip);
 
-    const fields = [ 'id', 'login', 'videoId', 'savingTime', 'title',
-                     'authorName', 'authorSource', 'relative', 'relatedN' ];
+    const fields = [ 'id', 'login', 'videoId', 'savingTime', 'title', 'relative',
+                     'authorName', 'authorSource', 'publicationTime', 'relatedN' ];
     const cleandata = _.map(metadata, function(e) {
         e.savingTime = new Date(e.savingTime);
+        e.publicationTime = new Date(e.publicationTime);
         e.relatedN = _.size(e.related);
         e.relative = moment.duration( moment(e.savingTime) - moment() ).humanize() + " ago";
         return _.pick(e, fields);
     });
 
-    /* the two pie chars are generated from this reduction and rendered with c3js.org */
+    /* the pie chars are generated from this reduction and rendered with c3js.org */
     const graphs = _.reduce(metadata, function(memo, e) {
         let t = _.get(memo.view, e.authorName);
         if(!t)
