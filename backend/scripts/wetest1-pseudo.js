@@ -50,20 +50,24 @@ async function pickFromDB(filter, sorting) {
 }
 
 async function getpseudos(key, tf) {
-    const pseudonyn = utils.string2Food(key + "weTest#1");
+    const we1pseudonyn = utils.string2Food(key + "weTest#1");
+    const norpseudonyn = utils.string2Food(key);
+    debug("Pseudonym for %s\nCommon:\t%s\nweTest#1\t%s", key, norpseudonyn, we1pseudonyn);
+
     const contribs = await pickFromDB(_.extend(tf, { publicKey: key }), { clientTime: -1 });
     const simpled = _.map(contribs, function(e) {
-        e.dayString = moment(e.clientTime).format("YYYY-MM-DD");
+        e.day = moment(e.clientTime).format("YYYY-MM-DD");
+        e.hour = moment(e.clientTime).format("ddd-HH:mm");
         e.wetest = _.find(testVideos, { href: e.href }) ? true : false;
-        debugger;
-        return _.pick(e, [ 'dayString', 'clientTime', 'href' ]);
+        return _.pick(e, [ 'wetest', 'title', 'login', 'type', 'day', 'hour', 'clientTime', 'href' ]);
     });
-    debugger;
-    const dyz = _.groupBy(simpled, 'dayString');
-    debug("Pseudonym: %s = %s", key, pseudonyn);
+    const dyz = _.groupBy(simpled, 'day');
     console.log("From htmls:");
-    _.each(dyz, function(d, ds) {
-        debug("%s\t%j", ds, _.map(d, 'href'));
+    _.each(dyz, function(dataday, daystr) {
+        debug("%s", daystr);
+        _.each(_.orderBy(dataday, 'clientTime'), function(sam) {
+            debug("\t(we) %s\tLogin %s\t[%s]\t%s\t%s", sam.wetest, sam.login, sam.type, sam.hour, sam.title);
+        })
     });
 }
 
