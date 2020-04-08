@@ -5,44 +5,62 @@ const nlpdebug = require('debug')('pubtimeAPI');
 const moment = require('moment');
 
 /* GUESS TIMEDATE FORMAT & CLEAN INFO */
-fmtpmap = {
+const formatMatches = {
     "MMM DD YYYY": /(\D{3}) (\d{1,2}) (\d{4})/,
     "DD.MM.YYYY": /(\d{2})\.(\d{2})\.(\d{4})/,
     "MMM DD, YYYY": /(\D{3}) (\d{1,2}), (\d{4})/,
-    "DD MMM YYYY": /(\d{1,2})\.?\s(\D{3,4})\.? ([20\d\d])/, 
-    // "19 февр. 2019 г."     +     "21. mar. 2020"
+    "DD MMM YYYY": /(\d{1,2})\.?\s(\D{3,4})\.? ([20\d{2}])/, // "19 февр. 2019 г."     +     "21. mar. 2020"
 };
 
-const trimmable = [
+const absoluteDateIntroSentence = [
     'Streamed live on ',
     'Started streaming ',
+    'Started streaming on ',
     'Ha empezado a emitir en directo hace ',
+    'Premiered ',
+    'Trasmesso in anteprima ',
+    'Transmitido ao vivo ',
+    'Trasmissione in live streaming ',
 ];
+const conditionalExtra = [{
+    name: "Strange PT condition spotted first in [Transmitido ao vivo em 23 de mar. de 2020]",
+    match: /\sde\s/,
+    trimWith: function(i) { return i.replace (/\sde\s/g, ' ') }
+}];
 
 function getFormatCleanString(publicationString) {
     // here bullshit like:
     // Streamed live on Oct 6, 2018
     // should return { cleanString: 'Oct 6, 2018', fmt: "MMM DD, YYYY" }
 
-    const cleanString = _.reduce(trimmable, function(memo, prefix) {
+    const trimmedString = _.reduce(absoluteDateIntroSentence, function(memo, prefix) {
         if(_.startsWith(publicationString, prefix) ) {
             memo = publicationString.substring(_.size(prefix));
         }
         return _.isNull(memo) ? publicationString : memo;
     }, null);
 
-    const fitting = _.reduce(fmtpmap, function(memo, re, fmt) {
+    const cleanString = _.reduce(conditionalExtra, function(memo, o) {
+        let chk = new RegExp(o.match).exec(memo);
+        if(chk)
+            debug("<!> %s match with: |%s|", memo, o.name);
+        return chk ? o.trimWith(memo) : memo;
+    }, trimmedString);
+
+    const fitting = _.reduce(formatMatches, function(memo, re, fmt) {
         // cleanString + re torna ft ?
         const chk = re.exec(cleanString);
         if(chk && chk[1] && chk[2] && chk[3]) {
-            debug("getFormatCleanString results => %s", fmt)
+            debug("getFormatCleanString |%s| result => %s", cleanString, fmt)
             memo = fmt;
         }
         return memo;
-    }, null)
+    }, null);
 
     if(!fitting && _.size(cleanString) === _.size(publicationString))
-        debug("getFormatCleanString fail: no replace and not match: %s", cleanString);
+        debug("getFormatCleanString no trim and not match for %s", publicationString);
+    else if(!fitting)
+        debug("getFormatCleanString fail: no match: %s", cleanString);
 
     return { cleanString, fmt: fitting };
 }
@@ -52,10 +70,13 @@ const localized = {
     'horas': 'hours',
     'hours': 'hours',
     'ore': 'hours',
+    'λεπτά': 'hours',
 
     'minutos': 'minutes',
     'minutes': 'minutes',
     'minuti': 'minutes',
+    'Minuten.': 'minutes',
+    'Minuten': 'minutes',
 
     'segundos': 'seconds'
 };
@@ -78,47 +99,50 @@ function standardLatinWay(stri) {
     }
 }
 
-const lamepx = [{
-    type: 'video-pubstring',
-    first: 'Started',
-    unitamount: standardLatinWay 
-}, {
-    type: 'video-pubstring',
-    first: 'Premiere',
-    unitamount: standardLatinWay 
-}, {
-    type: 'video-pubstring',
-    first: 'Se', // why chunks and not string match? doh. Se transmitió.
-    unitamount: standardLatinWay 
-}, {
-    type: 'video-pubstring',
-    first: 'Streamed',
-    unitamount: standardLatinWay 
-}, {
-    type: 'video-pubstring',
-    first: 'Comenzó',
-    unitamount: standardLatinWay 
-}];
+const relativeOpeningString = [
+    'Started',
+    'Premiere',
+    'Se',           // why chunks and not string match? doh. Se transmitió.
+    'Ha',           // 'Ha empezado a emitir en directo hace 2 horas',
+    'Trasmesso',
+    'Premiered',
+    'Streamed',
+    'Comenzó',
+    'Trasmissione', //  Trasmissione in live streaming 7 ore
+    'Streaming',    // Streaming avviato 115 minuti fa
+    'Ξεκίνησε',     // Ξεκίνησε ροή πριν από
+    'Stream',       // 'Stream iniciado há ',
+    'Aktiver',      // Aktiver Livestream seit 22 Minuten
+];
 
-function findRelative(type, stri, clientTime) {
+function findRelative(stri, clientTime) {
     const chunks = _.split(stri, ' ');
     const first = _.first(chunks);
-    const found = _.find(lamepx, { type, first });
+    const found = (_.indexOf(relativeOpeningString, first) !== -1);
+    if(!found) {
+        nlpdebug("Relative time string missing? |%s|", stri);
+        return moment('invalid date');
+    }
+
     try {
-        const { amount, unit } = found.unitamount(stri);
+        const { amount, unit } = standardLatinWay(stri);
         nlpdebug("Relative match consider %s minus %d %s", clientTime, amount, unit);
         return moment(clientTime).subtract(amount, unit);
     } catch(e) {
         nlpdebug("Relative ERROR: (might happen for many reasons): %s: from |%s|", e.message, stri);
-        debugger;
         return moment('invalid date');
     }
 }
 
 
+function googleHappinessCheck(cleanDate) {
+    return cleanDate.replace(/Μαΐ/, 'Μαϊ');
+}
 /* --------------------------------------------------------------------------------------------
-   https://www.loc.gov/standards/iso639-2/php/code_list.php                                   */
-const lame = [{
+   https://www.loc.gov/standards/iso639-2/php/code_list.php                                   
+   the collection below is meant to link a WORD (like the word 'search') to a
+   two letters code locale. This is necessary to interpret localized date. */
+const localizedFirstButton = [{
     type: 'video',
     first: 'Search',
     iso2: 'en'
@@ -140,12 +164,20 @@ const lame = [{
     iso2: 'pt'
 }, {
     type: 'video',
-    first: 'Szukaj',
-    iso2: 'pt'
+    first: 'Szukaj', // "Szukaj","Do obejrzenia","Udostępnij","Kopiuj link"
+    iso2: 'pl'
 }, {
     type: 'video',
-    first: 'Søk', // VERIFY THIS ( ["Søk","Se senere","Del","Kopiér linken","InformasjonShopping", )
-    iso2: 'no'
+    first: 'Søk', // "Søk","Se senere","Del","Kopiér linken","InformasjonShopping"
+    iso2: 'nn'    // Norway, but works with 'nn' and not with 'no'. investigate.
+}, {
+    type: 'video',
+    first: 'Rechercher',
+    iso2: 'fr'
+}, {
+    type: 'video',
+    first: 'Zoeken',
+    iso2: 'nl'
 }, {
     type: 'video',
     first: 'Buscar',
@@ -157,7 +189,7 @@ const lame = [{
 }];
 
 function findLanguage(type, chunks) {
-    const found = _.find(lame, { type, first: _.first(chunks) });
+    const found = _.find(localizedFirstButton, { type, first: _.first(chunks) });
     if(!found) {
         debug("findLanguage failured please add manually: %s |%s|\n%s",
             type, _.first(chunks), JSON.stringify(chunks));
@@ -167,7 +199,7 @@ function findLanguage(type, chunks) {
     return found.iso2;
 }
 
-// extenral API
+// The only external API is this!
 function sequenceForPublicationTime(D, blang, clientTime) {
     
     // from the language in the buttons we infer the language
@@ -181,10 +213,10 @@ function sequenceForPublicationTime(D, blang, clientTime) {
     blang = serverSideBlang ? serverSideBlang : blang;
 
     if(!serverSideBlang && !blang)
-        debugger;
+        nlpdebug("OOO wtf! lack of ssblang and csblang (%j)", m);
 
     if(serverSideBlang != blang)
-        nlpdebug("Difference in ssblang %s and csblang %s", serverSideBlang, blang);
+        nlpdebug("!*! Difference in ssblang (winner) %s and csblang %s", serverSideBlang, blang);
 
     if(_.size(D.querySelector('#date > yt-formatted-string').textContent) > 2 ) {
        
@@ -197,20 +229,24 @@ function sequenceForPublicationTime(D, blang, clientTime) {
         if(!fmt) {
             nlpdebug("Special management, 'relative timing!' (%s) %s with clientTime %s",
                 blang, publicationString, clientTime);
-            mobj = findRelative('video-pubstring', publicationString, clientTime);
+            mobj = findRelative(publicationString, clientTime);
         }
         else  {
-            mobj = moment.utc(cleanString, fmt);
+            const fixed = googleHappinessCheck(cleanString);
+            if(fixed !== cleanString)
+                debug("iz Google still happy? %s => %s", cleanString, fixed)
+            mobj = moment.utc(fixed, fmt);
         }
 
         if(!mobj.isValid()) {
-            debug("Fatal error in deducing format and extrating prublicationTime from %s", publicationString)
+            debug("Fatal error in deducing format and extrating publicationTime from |%s| with %s\n%j do some googleHappinessCheck ;)",
+                publicationString, blang, moment.monthsShort());
             process.exit(2);
         }
         nlpdebug("publicationString parsing complete %s\t=>\t%s", publicationString, mobj.format());
 
         /* once acquired, conver in Date() */
-        publicationTime = new Date(mobj.format("YYYY-MM-DD"));
+        publicationTime = new Date(mobj.toISOString());
         /* restore locale */
         moment.locale('en');
     } else {

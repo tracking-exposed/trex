@@ -287,10 +287,8 @@ function processVideo(D, blang, clientTime) {
         throw new Error(`Unable to mine related: ${error.message}, ${error.stack.substr(0, 220)}...`);
     }
 
-    const relatedN = D.querySelectorAll('ytd-compact-video-renderer').length;
-    if (relatedN != _.size(related))
-        throw new Error("Inconsinstency deserve investigation");
-
+/*
+    -- to be determined if deserve to be kept or not 
     if(relatedN < 20) {
         // debug("Because the related video are less than 20 (%d) trying the method2 of related extraction", relatedN);
         const f = D.querySelectorAll('[aria-label]')
@@ -309,7 +307,7 @@ function processVideo(D, blang, clientTime) {
                 return null; 
                 // > _.countBy(selected, {loaded: true })
                 // { true: 24, false: 25 }
-                //  --- the videos not yet loaded but potentially suggested */
+                //  --- the videos not yet loaded but potentially suggested
             }
 
         }));
@@ -320,6 +318,7 @@ function processVideo(D, blang, clientTime) {
             related = _.map(alternativeR, relatedMetadata);
         }
     }
+*/
 
     debug("Video <%s> mined %d related", title, _.size(related));
 

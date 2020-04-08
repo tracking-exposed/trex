@@ -134,24 +134,42 @@ function judgeIncrement(key, current, value) {
     // this function evaluate if a new object is "superior" in 
     // meanings. special keys might got different treatment 
     // it is used by automo.js in db metadata updates
+    if(key == 'related' || key == 'selected') {
+        let c = _.map(current, 'videoId');
+        let n = _.map(value, 'videoId');
+        let x = _.difference( _.sortBy(c), _.sortBy(n) );
+        let y = _.difference( _.sortBy(n), _.sortBy(c) );
+        // this should be unit tested, and this is a debug function that shouldn't go to production
+        if(_.size(x) != _.size(y)) 
+            debug("Difference seen in %s: current %d new %d diff <%d|%d>", key,
+                _.size(c), _.size(n), _.size(x), _.size(y) );
+    }
+
+    if(key == 'title' && _.size(value) && _.size(current) && current != value)
+        debug("title conflict in the same metadata.id 🤯 good fucking luck:\ncurrent <%s> new <%s>", current, value);
+
+    // definitive code is below, above only debug lines.
     if( typeof value == typeof(1) )
         return true;
     if( typeof value == typeof('str') )
         return _.size(value) > _.size(current);
+    if( typeof value == typeof(true) )
+        return current != value;
     if( typeof value == typeof([]) )
         return _.size(JSON.stringify(value)) > _.size(JSON.stringify(current));
+    debug("Unexpected kind? %s %j %j", key, current, value)
 }
 
 module.exports = {
-    hash: hash,
-    activeUserCount: activeUserCount,
-    stringToArray: stringToArray,
-    encodeToBase58: encodeToBase58,
-    decodeFromBase58: decodeFromBase58,
-    verifyRequestSignature: verifyRequestSignature,
-    string2Food: string2Food,
-    getInt: getInt,                                                                     
-    getString: getString,
+    hash,
+    activeUserCount,
+    stringToArray,
+    encodeToBase58,
+    decodeFromBase58,
+    verifyRequestSignature,
+    string2Food,
+    getInt,                                                                     
+    getString,
     parseIntNconf,
     prettify,
     judgeIncrement,
