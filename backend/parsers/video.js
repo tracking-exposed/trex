@@ -153,18 +153,12 @@ function relatedMetadata(e, i) {
     // e1895eed23ffcb8a0b5d1221c28a712b379886fe
 
     // if is verified, the keyword vary language by language, but you've always 
-    // TED\nVerified\n•
+    // TED\nVerified\n•, and this allow us a more technical check:
     let lines = source.split("\n"); 
-    if(_.size(lines) > 1) {
-        verified = true;
-        source = _.first(lines);
-        source = source.replace("•", '');
-    } else {
-        verified = false;
-        source = _.first(lines);
-        source = source.replace("•", '');
-    }
+    verified = ( _.size(lines) > 1 );
+    source = _.first(lines).replace("•", '');
 
+    // thumbnail is @ https://i.ytimg.com/vi/${videoId}/hqdefault.jpg
     return {
         index: i + 1,
         title,

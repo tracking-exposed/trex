@@ -21,6 +21,7 @@ const absoluteDateIntroSentence = [
     'Trasmesso in anteprima ',
     'Transmitido ao vivo ',
     'Trasmissione in live streaming ',
+    'Scheduled for ',   // How should we manage future evidence?
 ];
 const conditionalExtra = [{
     name: "Strange PT condition spotted first in [Transmitido ao vivo em 23 de mar. de 2020]",
@@ -71,6 +72,8 @@ const localized = {
     'hours': 'hours',
     'ore': 'hours',
     'λεπτά': 'hours',
+    'heures': 'hours',
+    'godzin': 'hours',      // Transmisja rozpoczęta 5 godzin temu
 
     'minutos': 'minutes',
     'minutes': 'minutes',
@@ -78,23 +81,37 @@ const localized = {
     'Minuten.': 'minutes',
     'Minuten': 'minutes',
 
+    'minute': 'minutes',    // also 'less than 1 minute ago' might happen
+    'Minute': 'minutes',    //  Aktiver Livestream seit 2 Minuten
     'segundos': 'seconds'
 };
 
+const regchain = [
+    /(\d+)\s(\D+)/,
+    /(\d+)\s(\D+)\s\D+/,
+];
+
+function tryNLregexpChain(stri) {
+    const fit = _.reduce(regchain, function(memo, regpick) {
+        const match = stri.match(regpick);
+        const amount = (match && match[1] ) ? _.parseInt(match[1]) : 0;
+        const longunit = (match && match[2]) ? match[2]: null;
+        const unit = _.first(_.split(longunit, ' '));
+        return (amount && unit ) ? { amount, unit } : memo;
+    }, null);
+    return fit ? fit : { amount: 0, unit: null };
+}
+
 function standardLatinWay(stri) {
-    const matches = stri.match(/(\d+) (\D+)/);
-    if(!matches || !matches[1] || !matches[2]) {
-        debug("Unfitting regexp to match: %s", stri);
-        process.exit(1);
-    }
-    // todo improve the regexp, this is to removed the ' ago' of '2 hours ago'
-    const localizedUnit = _.first(matches[2].split(' '));
+    // this function process "blah blah since 321321 minutes (ago)?"
+    // and you want these:                    ^^^^^^ ^^^^^^^
+    const { integerAmount, localizedUnit } = tryNLregexpChain(stri);
     if(_.isUndefined(localized[localizedUnit])) {
         debug("WARNING: |%s| not found!", localizedUnit);
-        process.exit(1);
+        throw new Error("|standardLatinWay|" + localizedUnit + "|");
     }
     return {
-        amount: _.parseInt(matches[1]),
+        amount: integerAmount,
         unit: localized[localizedUnit]
     }
 }
@@ -113,6 +130,10 @@ const relativeOpeningString = [
     'Ξεκίνησε',     // Ξεκίνησε ροή πριν από
     'Stream',       // 'Stream iniciado há ',
     'Aktiver',      // Aktiver Livestream seit 22 Minuten
+    'Diffusion',    // Diffusion lancée il y a 37 minutes
+    'Diffusé',      // Diffusé en direct il y a 4 heures
+    'Première',     // Première in corso. Trasmissione iniziata 13 minuti fa,
+    'Transmisja',   // Transmisja rozpoczęta 5 godzin temu
 ];
 
 function findRelative(stri, clientTime) {
@@ -169,7 +190,7 @@ const localizedFirstButton = [{
 }, {
     type: 'video',
     first: 'Søk', // "Søk","Se senere","Del","Kopiér linken","InformasjonShopping"
-    iso2: 'nn'    // Norway, but works with 'nn' and not with 'no'. investigate.
+    iso2: 'nn'    // Norway, it is 'nn' and not 'no'. 
 }, {
     type: 'video',
     first: 'Rechercher',
@@ -178,6 +199,10 @@ const localizedFirstButton = [{
     type: 'video',
     first: 'Zoeken',
     iso2: 'nl'
+}, {
+    type: 'video',
+    first: 'Søg',
+    iso2: 'de'
 }, {
     type: 'video',
     first: 'Buscar',
@@ -271,4 +296,6 @@ module.exports = {
     getFormatCleanString,       // internal f's
     findRelative,               // internal f's
     findLanguage,               // internal f's
+    tryNLregexpChain,           // internal f' but unit-tested
+    localized,                  // localized time unit
 };
