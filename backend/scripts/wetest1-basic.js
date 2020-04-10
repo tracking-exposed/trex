@@ -54,7 +54,7 @@ async function pickFromDB(filter, sorting) {
     return rv;
 }
 
-const ITERATION = 2;
+const ITERATION = 3;
 function fileName(prefix, suffix) {
     return `${prefix}-ωτ1-v${ITERATION}.${suffix}`;
 }
@@ -69,7 +69,7 @@ function unrollRecommended(memo, evidence) {
             savingTime: evidence.savingTime,
             clientTime: evidence.clientTime,
 
-            uxlang: evidence.uxlang,
+            uxlang: evidence.blang,
             dataset: 'yttrex',
             experiment: 'wetest1',
             type: 'video',
@@ -87,7 +87,7 @@ function unrollRecommended(memo, evidence) {
 
             watchedVideoId: evidence.videoId,
             watchedAuthor: evidence.authorName,
-            watchedPubtime: evidence.related.vizstr,
+            watchedPubtime: evidence.publicationTime,
             watchedTitle: evidence.title,
             watchedViews: evidence.viewInfo.viewStr ? evidence.viewInfo.viewStr : null,
             watchedChannel: evidence.authorSource,
