@@ -149,12 +149,15 @@ function judgeIncrement(key, current, value) {
         debug("title conflict in the same metadata.id 🤯 good fucking luck:\ncurrent <%s> new <%s>", current, value);
 
     // definitive code is below, above only debug lines.
+    if(key == 'publicationTime') debugger;
     if( typeof value == typeof(1) )
         return true;
     if( typeof value == typeof('str') )
         return _.size(value) > _.size(current);
     if( typeof value == typeof(true) )
         return current != value;
+    if( _.get(value, 'getDate') && value.getDate() )
+        return true;
     if( typeof value == typeof([]) )
         return _.size(JSON.stringify(value)) > _.size(JSON.stringify(current));
     debug("Unexpected kind? %s %j %j", key, current, value)

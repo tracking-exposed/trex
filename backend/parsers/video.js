@@ -5,6 +5,7 @@ const querystring = require('querystring');
 const debug = require('debug')('parser:video');
 
 const uxlang = require('./uxlang');
+const longlabel = require('./longlabel');
 
 const stats = { skipped: 0, error: 0, suberror: 0, success: 0 };
 
@@ -39,83 +40,6 @@ function logged(D) {
     return null;
 }
 
-function labelForcer(l, isLive) {
-    // La Super Pattuglia -  HALLOWEEN Special - Car City 🚗 Cartone animato per i bambini di Tom il Carro Attrezzi a Car City 5 mesi fa 22 minuti 63.190 visualizzazioni
-    // The Moons of Mars Explained -- Phobos & Deimos MM#… Nutshell 4 years ago 115 seconds 2,480,904 views
-    // Formazione a distanza: soluzioni immediate e idee di attività by CampuStore 4 hours ago 731 views
-
-    let first = _.reverse(l.split(' '));
-    let viz = [];
-
-    let second = _.reduce(first, function(memo, e) {
-        if(typeof viz == 'string') {
-            memo.push(e);
-            return memo;
-        }
-        let test = _.parseInt(e.replace(/[.,]/, ''));
-        if(!_.isNaN(test)) {
-            viz.push(e);
-            _.reverse(viz);
-            viz = _.join(viz, ' ');
-        }
-        else {
-            viz.push(e);
-        }
-        return memo; 
-    }, []);
-
-    let duration = [];
-    let third = [];
-    if(isLive) {
-        duration = "live";
-        third = second;
-    } else {
-        third = _.reduce(second, function(memo, e) {
-            if(typeof duration == 'string') {
-                memo.push(e);
-                return memo;
-            }
-            let test = _.parseInt(e.replace(/[.,]/, ''));
-            if(!_.isNaN(test)) {
-                duration.push(e);
-                _.reverse(duration);
-                duration = _.join(duration, ' ');
-            }
-            else {
-                duration.push(e);
-            }
-            return memo; 
-        }, []);
-    }
-
-    let timeago = [];
-    let fourth = _.reduce(third, function(memo, e) {
-        if(typeof timeago == 'string') {
-            memo.push(e);
-            return memo;
-        }
-        let test = _.parseInt(e.replace(/[.,]/, ''));
-        if(!_.isNaN(test)) {
-            timeago.push(e);
-            _.reverse(timeago);
-            timeago = _.join(timeago, ' ');
-        }
-        else {
-            timeago.push(e);
-        }
-        return memo; 
-    }, []);
-
-    let title = _.join(_.reverse(fourth), ' ');
-
-    return {
-        viz,
-        duration,
-        timeago,
-        title
-    };
-}
-
 function relatedMetadata(e, i) {
 
     let source, verified, vizstr, foryou;
@@ -145,12 +69,15 @@ function relatedMetadata(e, i) {
             .querySelector('.ytd-thumbnail-overlay-time-status-renderer')
             .getAttribute('aria-label'); //'3 minutes, 2 seconds'
     }
-    const longlabel = e.querySelector('#video-title').getAttribute('aria-label');
+    const arialabel = e.querySelector('#video-title').getAttribute('aria-label');
     // Beastie Boys - Sabotage by BeastieBoys 9 years ago 3 minutes, 2 seconds 62,992,821 views
 
-    const mined = longlabel ? labelForcer(longlabel, !!liveBadge) : null;
+    const mined = arialabel ? longlabel.parser(arialabel, title, !!liveBadge) : null;
     // mined is not used yet; it might be handy. please note sometime is empty
     // e1895eed23ffcb8a0b5d1221c28a712b379886fe
+
+    const { recommendedLength, recommendedLengthSe, recommendedViews, recommendedTitle, recommendedPubTime } = longlabel
+        .settle(mined, source, title, displayTime, expandedTime, !!liveBadge);
 
     // if is verified, the keyword vary language by language, but you've always 
     // TED\nVerified\n•, and this allow us a more technical check:
@@ -161,16 +88,15 @@ function relatedMetadata(e, i) {
     // thumbnail is @ https://i.ytimg.com/vi/${videoId}/hqdefault.jpg
     return {
         index: i + 1,
-        title,
+        recommendedTitle,
         verified,
         source,
-        vizstr,
+        recommendedViews,
         foryou,
         videoId,
-        displayTime,
-        expandedTime,
-        longlabel,
-        mined,
+        recommendedLength,
+        recommendedLengthSe,
+        recommendedPubTime,
         isLive: !!liveBadge
     };
 };
@@ -461,5 +387,4 @@ module.exports = {
     overlay,
     adTitleChannel,
     videoTitleTop,
-    labelForcer,
 };

@@ -149,6 +149,16 @@ async function produceVideosCSV(tf) {
     const csvtext = csv.produceCSVv1(unroll);
     debug("Produced %d bytes for text/csv, saving file", _.size(csvtext));
     fs.writeFileSync(fileName('videos', 'csv'), csvtext);
+    /*
+    // this product to feed tests:longlabel
+    const xxx = _.uniq(_.flatten(_.map(watches, function(e) {
+        return _.map(e.related, 'longlabel');
+    })));
+    const fina = _.times(50, function(t) {
+        return _.sample(xxx);
+    });
+    fs.writeFileSync(fileName('special', 'json'), JSON.stringify(fina, undefined, 2), 'utf-8');
+    */
 }
 
 async function produceInternalData(tf) {

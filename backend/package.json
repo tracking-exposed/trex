@@ -5,7 +5,8 @@
   "scripts": {
     "watch": "key=fuffa nodemon DEBUG=lib:*,yttrex --config config/nodemon.json bin/server --elastic=disabled",
     "start": "DEBUG=*,-body-parser:*,-express:*,-lib:mongo node bin/server --elastic=disabled",
-    "parserv": "DEBUG=* node bin/parserv2 --elastic=disabled"
+    "parserv": "DEBUG=* node bin/parserv2 --elastic=disabled",
+    "t:lib": "mocha tests/lib/*"
   },
   "author": "Claudio Agosti <claudio@tracking.exposed> and https://github.com/tracking-exposed/yttrex/graphs/contributors",
   "license": "AGPL-3.0",

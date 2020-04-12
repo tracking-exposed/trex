@@ -103,7 +103,7 @@ function localizedRegexpChain(stri) {
         const unit = (match && match[2]) ? match[2]: null;
         if(memo)
             return memo;
-        return localized[unit] ? { amount, unit } : null;
+        return localized[unit] ? { amount, unit: localized[unit] } : null;
     }, null);
     if(!fit) {
         debug("WARNING: |%s| not match", stri);
