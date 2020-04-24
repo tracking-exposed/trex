@@ -68,6 +68,7 @@ function boot () {
         // Lookup the current user and decide what to do.
         localLookup(response => {
             // `response` contains the user's public key, we save it global for the blinks
+            console.log("e qui arriva", response);
             config.publicKey = response.publicKey;
             initializeBlinks();
             adMonitor();
