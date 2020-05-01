@@ -28,7 +28,7 @@ export function createElement (tag, cssProp = {}, parent = document.body, id = n
 }
 
 const containerCSS = {
-  position: 'fixed',
+  position: 'absolute',
   top: '0rem',
   left: '0rem',
   display: 'flex',
@@ -130,16 +130,26 @@ export function createPanel (events, helpBody = '') {
     const isFullScreen = getIsFullScreen();
     container.style.visibility = isFullScreen ? 'hidden' : 'visible';
 
-    const videoElements = [...document.querySelectorAll('video')];
-    // NOTE: is there a YouTube state where there more then one video in the page?
-    if (videoElements.length === 1) {
-      const video = videoElements[0];
-
-      const videoWidth = Number(video.style.width.slice(0, -2));
-      const isTheatreMode = videoWidth === window.innerWidth;
-      container.style.top = isTheatreMode ? Number(video.style.height.slice(0, -2) + 50) : 0;
-    }
+    checkTheatreMode();
   }, 2000);
 
+  window.addEventListener('resize', checkTheatreMode);
+
   return Object.fromEntries(nameBlink);
+}
+
+function checkTheatreMode () {
+  const container = document.getElementById('panel')
+  const videoElements = [...document.querySelectorAll('video')];
+
+  // NOTE: is there a YouTube state where there more then one video in the page?
+  if (videoElements.length === 1) {
+    const video = videoElements[0];
+
+    const videoWidth = Number(video.style.width.slice(0, -2));
+    const isTheatreMode = videoWidth === window.innerWidth;
+    container.style.paddingTop = isTheatreMode
+      ? (Number(video.style.height.slice(0, -2)) + 73) + 'px'
+      : 0;
+  }
 }
