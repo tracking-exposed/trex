@@ -56,11 +56,30 @@ const helpCSS = {
   visibility: 'hidden'
 };
 
+let visibilityTimerId = null;
+
+/**
+ * Check if the page is in full screen
+ */
+function getIsFullScreen () {
+  return window.innerHeight === screen.height;
+}
+
 /**
  * Create the panel
  * @param {object} Object like: {[EVENT_NAME]: {color: string}}
  */
 export function createPanel (events, helpBody = '') {
+  const alreadyInitializedPanel = [...document.querySelectorAll('#panel')]
+  if (alreadyInitializedPanel.length > 0) {
+    console.warn('YTTREX > panel ===}> panel is already initialized, maybe extension reloaded twice?');
+    alreadyInitializedPanel.forEach(p => document.body.removeChild(p));
+  }
+
+  if (visibilityTimerId) {
+    clearInterval(visibilityTimerId);
+  }
+
   const gray = '#bbb';
 
   const container = createElement('div', containerCSS, document.body, 'panel');
@@ -106,6 +125,21 @@ export function createPanel (events, helpBody = '') {
     };
     return [eventName, blink];
   });
+
+  visibilityTimerId = setInterval(() => {
+    const isFullScreen = getIsFullScreen();
+    container.style.visibility = isFullScreen ? 'hidden' : 'visible';
+
+    const videoElements = [...document.querySelectorAll('video')];
+    // NOTE: is there a YouTube state where there more then one video in the page?
+    if (videoElements.length === 1) {
+      const video = videoElements[0];
+
+      const videoWidth = Number(video.style.width.slice(0, -2));
+      const isTheatreMode = videoWidth === window.innerWidth;
+      container.style.top = isTheatreMode ? Number(video.style.height.slice(0, -2) + 50) : 0;
+    }
+  }, 2000);
 
   return Object.fromEntries(nameBlink);
 }
