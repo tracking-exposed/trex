@@ -72,12 +72,13 @@ function relatedMetadata(e, i) {
     const arialabel = e.querySelector('#video-title').getAttribute('aria-label');
     // Beastie Boys - Sabotage by BeastieBoys 9 years ago 3 minutes, 2 seconds 62,992,821 views
 
-    const mined = arialabel ? longlabel.parser(arialabel, title, !!liveBadge) : null;
+    const mined = arialabel ? longlabel.parser(arialabel, source, !!liveBadge): null;
     // mined is not used yet; it might be handy. please note sometime is empty
     // e1895eed23ffcb8a0b5d1221c28a712b379886fe
 
-    const { recommendedLength, recommendedLengthSe, recommendedViews, recommendedTitle, recommendedPubTime } = longlabel
-        .settle(mined, source, title, displayTime, expandedTime, !!liveBadge);
+    console.log(mined);
+    // work in progress TODO 
+
 
     // if is verified, the keyword vary language by language, but you've always 
     // TED\nVerified\n•, and this allow us a more technical check:
