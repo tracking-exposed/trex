@@ -189,7 +189,7 @@ function adMonitor () {
             '.video-ads.ytp-ad-module', // middle banner
             '.ytp-ad-player-overlay-instream-info', // ad below
             '.ytp-title-channel', // title top
-            '.ytp-title-text', // title 
+            '.ytp-title-text', // title
             '.ytp-chrome-top' // other title top
         ];
 
@@ -198,9 +198,9 @@ function adMonitor () {
                 .querySelectorAll(s)
                 .forEach(function (element) {
                     if (_.size(element.textContent)) {
-                        console.log(s, "===}>", element.textContent)
+                        console.log(s, '===}>', element.textContent);
                         if (testElement(element.outerHTML, s))
-                            phase('adv.seen'); 
+                            phase('adv.seen');
                     }
                 });
         });
