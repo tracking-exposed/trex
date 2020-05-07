@@ -165,7 +165,7 @@ async function getRelatedByWatcher(publicKey, options) {
     return related;
 }
 
-async function getVideosByPublicKey(publicKey, filter) {
+async function getVideosByPublicKey(publicKey, filter, htmlToo) {
     const mongoc = await mongo3.clientConnect({concurrency: 1});
 
     const supporter = await mongo3.readOne(mongoc, nconf.get('schema').supporters, { publicKey });
@@ -174,10 +174,17 @@ async function getVideosByPublicKey(publicKey, filter) {
 
     const selector = _.set(filter, 'p', supporter.p);
     debug("getVideosByPublicKey with flexible selector (%j)", filter);
-    const matches = await mongo3.read(mongoc, nconf.get('schema').videos, selector, { savingTime: -1 });
-    await mongoc.close();
+    const metadata = await mongo3.read(mongoc, nconf.get('schema').metadata, selector, { savingTime: -1 });
+    const ret = { metadata };
 
-    return matches;
+    if(htmlToo) {
+        const htmlfilter = { metadataId: { "$in": _.map(metadata, 'id') } };
+        let htmls = await mongo3.read(mongoc, nconf.get('schema').htmls, htmlfilter, { savingTime: -1 });
+        ret.html = htmls;
+    }
+
+    await mongoc.close();
+    return ret;
 };
 
 async function getFirstVideos(when, options) {

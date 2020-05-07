@@ -201,16 +201,19 @@ async function getEvidences(req) {
     if(_.size(k) < 26)
         return { json: { "message": "Invalid publicKey", "error": true }};
 
-    const allowFields = ['tagId', 'id', 'videoId'];
+    const allowFields = ['id', 'metadataId', 'savingTime'];
     const targetKey = req.params.key;
     const targetValue = req.params.value;
 
+    // TODO savingTime is not really supported|tested
     if(allowFields.indexOf(targetKey) == -1)
         return { json: { "message": `Key ${targetKey} not allowed (${allowFields})`, error: true }};
 
-    const matches = await automo.getVideosByPublicKey(k, _.set({}, targetKey, targetValue));
-    debug("getEvidences with flexible filter found %d matches", _.size(matches));
-    return { json: matches };
+    const matches = await automo.getVideosByPublicKey(k, _.set({}, targetKey, targetValue), false);
+                                                            /* if 'true' would return also htmls */
+
+    debug("getEvidences with flexible filter found %d matches", _.size(matches.metadata));
+    return { json: matches.metadata };
 };
 
 async function removeEvidence(req) {
