@@ -3,7 +3,6 @@ const debug = require('debug')('lib:events');
 const nconf = require('nconf');
 
 const automo = require('../lib/automo');
-const mongo = require('../lib/mongo');
 const utils = require('../lib/utils');
 const security = require('../lib/security');
 
@@ -141,24 +140,9 @@ const hdrs =  {
     'accept-language': 'language',
 };
 
-function TOFU(pubkey) {
-    var pseudo = utils.string2Food(pubkey);
-    var supporter = {
-        publicKey: pubkey,
-        creationTime: new Date(),
-        p: pseudo
-    };
-    debug("TOFU: new publicKey received, from: %s", pseudo);
-    return mongo
-        .writeOne(nconf.get('schema').supporters, supporter)
-        .return( [ supporter ] )
-};
-
-
 module.exports = {
     processEvents2,
     getMirror,
     hdrs: hdrs,
     processHeaders: processHeaders,
-    TOFU: TOFU
 };
