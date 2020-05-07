@@ -1,10 +1,9 @@
 const _ = require('lodash');
 const moment = require('moment');
-const Promise = require('bluebird');
 const debug = require('debug')('routes:statistics');
 const nconf = require('nconf');
 
-const mongo = require('../lib/mongo');
+const mongo3 = require('../lib/mongo3');
 
 /* -- this cache is shared with yttrex, might be generalized or figured out
  * if something native from mongo exists ? */
@@ -19,7 +18,7 @@ function counter(req)
 function parsers(req)
  */
 
-function statistics(req) {
+async function statistics(req) {
     // the content in 'stats' is saved by count-o-clock and the selector here required is
     // specifiy in config/stats.json
     const expectedFormat = "/api/v2/statistics/:name/:unit/:amount";
@@ -52,19 +51,17 @@ function statistics(req) {
     else
         _.set(filter, 'hour', { '$gt': refDate });
 
-    return mongo
-        .read(nconf.get('schema').stats, filter)
-        .map(function(e) {
-            return _.omit(e, ['_id'])
-        })
-        .then(function(content) {
-            debug("Requested [%s] since %d %s ago = %d samples",
-                name, amount, unit, _.size(content));
-
-            return { json: content,
-                     headers: { amount, unit, name }
-            };
-        });
+        
+    const mongoc = await mongo3.clientConnect({concurrency: 1});
+    const fullc = await mongo3.read(mongoc, nconf.get('schema').stats, filter);
+    const content = _.map(fullc, function(e) {
+        return _.omit(e, ['_id']);
+    });
+    debug("Requested [%s] since %d %s ago = %d samples", name, amount, unit, _.size(content));
+    mongoc.close();
+    return { json: content,
+        headers: { amount, unit, name }
+    };
 }
 
 module.exports = {
