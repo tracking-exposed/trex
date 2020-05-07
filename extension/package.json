@@ -65,7 +65,7 @@
     "classnames": "^2.2.6",
     "core-js": "^2.5.7",
     "immutability-helper": "^2.8.1",
-    "jquery": "^3.4.1",
+    "jquery": "^3.5.0",
     "lodash": "^4.17.15",
     "marked": "^0.8.1",
     "material-ui": "^0.16.7",
