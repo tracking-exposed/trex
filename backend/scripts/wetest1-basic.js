@@ -143,22 +143,24 @@ async function produceVideosCSV(tf) {
         type: 'video',
         videoId: { "$in": _.map(testVideos, 'videoId')}
     }), { clientTime: -1 });
+    /*
     const unroll = _.reduce(watches, unrollRecommended, []);
     debug("Unnested the 'sections' return %d evidences. Saving JSON file", _.size(unroll));
     fs.writeFileSync(fileName('videos', 'json'), JSON.stringify(unroll, undefined, 2));
     const csvtext = csv.produceCSVv1(unroll);
     debug("Produced %d bytes for text/csv, saving file", _.size(csvtext));
     fs.writeFileSync(fileName('videos', 'csv'), csvtext);
-    /*
+    */
     // this product to feed tests:longlabel
     const xxx = _.uniq(_.flatten(_.map(watches, function(e) {
-        return _.map(e.related, 'longlabel');
+        return _.map(e.related, function(r) {
+            return { label: r.longlabel,
+                     source: r.source 
+            };
+        });
     })));
-    const fina = _.times(50, function(t) {
-        return _.sample(xxx);
-    });
-    fs.writeFileSync(fileName('special', 'json'), JSON.stringify(fina, undefined, 2), 'utf-8');
-    */
+    /* const fina = _.times(50, function(t) { return _.sample(xxx); }); */
+    fs.writeFileSync(fileName('special', 'jxxx'), "module.exports = " + JSON.stringify(xxx, undefined, 2), 'utf-8');
 }
 
 async function produceInternalData(tf) {

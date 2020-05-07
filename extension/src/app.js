@@ -68,7 +68,7 @@ function boot () {
         // Lookup the current user and decide what to do.
         localLookup(response => {
             // `response` contains the user's public key, we save it global for the blinks
-            console.log("e qui arriva", response);
+            console.log("app.js gets", response, "from localLookup");
             config.publicKey = response.publicKey;
             initializeBlinks();
             adMonitor();
@@ -86,8 +86,10 @@ function phase (path) {
     f(path);
 }
 
-const adPeriodicTimeout = 3000;
-const videoPeriodicTimeout = 9000;
+const hrefPERIODICmsCHECK = 9000;
+const nodePERIODICmsCHECK = 4000;
+let nodePeriodicCheck = nodePERIODICmsCHECK; // this check is dynamics, it grows if nothing change
+let hrefPeriodicCheck = hrefPERIODICmsCHECK;
 var lastVideoURL = null;
 var lastVideoCNT = 0;
 
@@ -102,7 +104,7 @@ function hrefUpdateMonitor () {
         // also, here is cleaned the cache declared below
         if (diff) {
             phase('video.seen');
-            cache = [];
+            cleanCache();
             refreshUUID();
         }
         if (!diff) {
@@ -125,33 +127,27 @@ function hrefUpdateMonitor () {
                     $(YT_VIDEOTITLE_SELECTOR).length,
                     $(YT_VIDEOTITLE_SELECTOR).text()
                 ); */
-                if (testElement($('ytd-app').html(), 'ytd-app')) { phase('video.send'); }
+                if (sizeCheck($('ytd-app').html(), 'ytd-app')) { phase('video.send'); }
             });
-    }, videoPeriodicTimeout);
+    }, hrefPeriodicCheck);
 }
 
-let cache = [];
-function testElement (nodeHTML, selector) {
+let sizecache = [];
+function sizeCheck(nodeHTML, selector) {
     // this function look at the LENGTH of the proposed element.
+    // this is used in video because the full html body page would be too big
+    // this is also a case of premature optimization. known mother of all evil.
+
     // if an element with the same size has been already sent with
     // this URL, this duplication is ignored.
 
     const s = _.size(nodeHTML);
-    const exists = _.reduce(cache, function (memo, e, i) {
-        const evalu = _.eq(e, s);
-        /* console.log(memo, s, e, evalu, i); */
-        if (!memo) {
-            if (evalu) { memo = true; }
-        }
+    if(!s)
+        return false;
+    if(sizecache.indexOf(s) != -1)
+        return false;
 
-        return memo;
-    }, false);
-
-    if (exists) { return false; }
-    if (!s) { return false; }
-
-    cache.push(s);
-
+    sizecache.push(s);
     hub.event('newVideo', {
         element: nodeHTML,
         href: window.location.href,
@@ -159,17 +155,68 @@ function testElement (nodeHTML, selector) {
         selector,
         size: s,
         randomUUID
-    }); /*
+    });
     console.log("->",
-        _.size(cache),
-        "new element sent, selector", selector,
+        _.size(sizecache),
+        "new href+content sent, selector", selector,
         Date(), "size", s,
-        cache,
-    ); */
+        sizecache,
+    );
     return true;
 }
 
+const watchedPaths = {
+    'banner': '.video-ads.ytp-ad-module', // middle banner
+    'ad': '.ytp-ad-player-overlay-instream-info', // ad below
+    'channel': '.ytp-title-channel', // title top
+    'title': '.ytp-title-text', // title
+    'over': '.ytp-chrome-top', // other title top
+    'label': '[aria-label]',
+};
+
+
+let contentcache = {};
 function adMonitor () {
+   
+    function lookForExistingNodes(selector, name) {
+        const matches = document.querySelectorAll(selector);
+        if(!matches.length)
+            return false;
+
+        // console.log(name, _.size(matches));
+        const acquired = _.map(matches, function(e, i) {
+            return {
+                html: e.outerHTML,
+                order: i,
+            };
+        });
+        const ready = {
+            href: window.location.href,
+            name,
+            acquired,
+        };
+        const formatted = JSON.stringify(ready);
+        const hash = formatted.split('').reduce((a,b)=>{a=((a<<5)-a)+b.charCodeAt(0);return a&a},0);
+
+        const c = _.get(contentcache, hash);
+        // console.log("newVideo/label", _.size(contentcache), matches, acquired, ready,formatted, hash, !!c);
+
+        if(!!c)
+            return false;
+        _.set(contentcache, hash, { selector, name });
+
+        hub.event('newVideo', {
+            ready,
+            href: window.location.href,
+            hash,
+            when: Date(),
+            selector,
+            name,
+            randomUUID
+        });
+        phase('adv.seen');
+        return name;
+    };
     /*
      * Dear code reader, if you turn out to be a Google employee,
      * you can beat us like a piece of cake just changing the
@@ -184,28 +231,17 @@ function adMonitor () {
      * people in understanding algorithm society. COME ON!
      */
     window.setInterval(function () {
+        const results = _.map(watchedPaths, lookForExistingNodes);
+        const printabled = _.compact(results);
+        if(_.size(printabled))
+            console.log("changeMonitor", printabled);
+        // might change nodePeriodicCheck 
+    }, nodePeriodicCheck);
+}
 
-        const advPossibleLocation = [
-            '.video-ads.ytp-ad-module', // middle banner
-            '.ytp-ad-player-overlay-instream-info', // ad below
-            '.ytp-title-channel', // title top
-            '.ytp-title-text', // title
-            '.ytp-chrome-top' // other title top
-        ];
-
-        _.each(advPossibleLocation, function(s) {
-            document
-                .querySelectorAll(s)
-                .forEach(function (element) {
-                    if (_.size(element.textContent)) {
-                        console.log(s, '===}>', element.textContent);
-                        if (testElement(element.outerHTML, s))
-                            phase('adv.seen');
-                    }
-                });
-        });
-
-    }, adPeriodicTimeout);
+function cleanCache() {
+    contentcache = {};
+    sizecache = [];
 }
 
 var lastCheck = null;
