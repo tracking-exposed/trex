@@ -3,7 +3,7 @@
   "version": "1.3.2",
   "description": "youtube.tracking.exposed - backend data collector",
   "scripts": {
-    "watch": "node ./node_modules/nodemon/bin/nodemon --config config/nodemon.json bin/server --elastic=disabled --key=fuffa --DEBUG=lib:*,yttrex",
+    "watch": "elastic=disabled key=fuffa DEBUG=lib:*,yttrex ./node_modules/nodemon/bin/nodemon.js --config config/nodemon.json bin/server",
     "start": "DEBUG=*,-body-parser:*,-express:*,-lib:mongo node bin/server --elastic=disabled",
     "parserv": "DEBUG=* node bin/parserv2 --elastic=disabled",
     "t:lib": "mocha tests/lib/*"

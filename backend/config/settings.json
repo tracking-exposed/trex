@@ -2,6 +2,7 @@
   "schema": {
       "supporters": "supporters",
       "htmls": "htmls",
+      "labels": "labels",
       "metadata": "metadata",
       "stats": "trexstats",
       "groups": "groups"

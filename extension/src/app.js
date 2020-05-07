@@ -209,7 +209,7 @@ function adMonitor () {
         _.set(contentcache, hash, { selector, name });
 
         hub.event('newInfo', {
-            ready,
+            element: ready,
             href: window.location.href,
             contenthash: hash,
             when: Date(),

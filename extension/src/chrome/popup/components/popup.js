@@ -25,9 +25,11 @@ const Popup = React.createClass({
                         free software
                     </a>, the
                     <span> </span>
-                    <a target="_blank" href='https://tracking.exposed/manifesto'>Manifesto</a>, or
+                    <a target="_blank" href='https://youtube.tracking.exposed/privacy'>Privacy</a>, 
                     <span> </span>
-                    <a target="_blank" href="https://youtube.tracking.exposed/wetest/next">Play with us!</a>
+                    <a target="_blank" href='https://tracking.exposed/manifesto'>Manifesto</a>, and
+                    <span> </span>
+                    <a target="_blank" href="https://youtube.tracking.exposed/wetest/next">Experiments!</a>
                 </smaller>
             </div>
         );

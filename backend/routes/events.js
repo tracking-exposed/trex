@@ -81,12 +81,13 @@ async function processEvents2(req) {
     appendLast(req);
 
     const blang = headers.language.replace(/;.*/, '').replace(/,.*/, '');
-    debug("CHECK: %s <%s>", blang, headers.language );
+    // debug("CHECK: %s <%s>", blang, headers.language );
 
     const htmls = _.map(req.body, function(body, i) {
         const id = utils.hash({
             publicKey: headers.publickey,
             size: _.size(body.element),
+            contenthash: body.contenthash,
             randomUUID: body.randomUUID,
             i,
         });
@@ -106,19 +107,36 @@ async function processEvents2(req) {
             size: _.size(body.element),
             selector: body.selector,
             incremental: body.incremental,
+            type: body.type,
             packet: i,
         }
         return html;
     });
 
-    const check = await automo.write(nconf.get('schema').htmls, htmls);
+    const check = await automo.write(nconf.get('schema').htmls, _.reject(htmls, { type: 'info'}));
     if(check && check.error) {
         debug("Error in saving %d htmls %j", _.size(htmls), check);
         return { json: {status: "error", info: check.info }};
     }
 
-    const info = _.map(htmls, function(e) {
-        return [ e.packet, e.size, e.selector ];
+    const labels = _.map(_.filter(htmls, { type: 'info'}), function(e) {
+        e.acquired = e.html.acquired;
+        e.selectorName = e.html.name;
+        e.contenthash = e.contenthash;
+        if(e.href != e.html.href) {
+            debug("!! oddio !! %s %s", e.href != e.html.href);
+            process.exit(1);
+        }
+        return e;
+    });
+    const labelret = await automo.write(nconf.get('schema').labels, labels);
+    if(labelret && labelret.error) {
+        debug("Error in saving %d labels %j", _.size(labels), labelret);
+        return { json: {status: "error", info: labelret.info }};
+    }
+
+    const info = _.map(_.concat(_.reject(htmls, { type: 'info' }), labels), function(e) {
+        return [ e.incremental, e.size, e.selector, e.type, e.name ? e.name : "body" ];
     });
     debug("%s <- %s", supporter.p, JSON.stringify(info));
 
