@@ -4,6 +4,7 @@
 
 const path = require('path');
 const exec = require('child_process').exec;
+const moment = require('moment');
 
 const webpack = require('webpack');
 const autoPrefixer = require('autoprefixer');
@@ -44,7 +45,7 @@ const DEFINITIONS = {
         API_ROOT: JSON.stringify(ENV_DEP_SERVER + '/api/v' + LAST_VERSION + '/'),
         WEB_ROOT: JSON.stringify(ENV_DEP_WEB),
         VERSION: JSON.stringify(packageJSON.version + (DEVELOPMENT ? '-dev' : '')),
-        BUILD: new Date(),
+        BUILD: new Date().toISOString() + moment().format("DD-MMM HH:mm"),
         FLUSH_INTERVAL: JSON.stringify(DEVELOPMENT ? 10000 : 20000)
     }
 };
