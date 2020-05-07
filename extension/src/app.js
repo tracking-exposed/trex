@@ -174,7 +174,6 @@ const watchedPaths = {
     'label': '[aria-label]',
 };
 
-
 let contentcache = {};
 function adMonitor () {
    
@@ -185,11 +184,15 @@ function adMonitor () {
 
         // console.log(name, _.size(matches));
         const acquired = _.map(matches, function(e, i) {
-            return {
+            let content = {
                 html: e.outerHTML,
                 order: i,
             };
+            if(name == 'label')
+                content.label = e.getAttribute('aria-label');
+            return content;
         });
+        // console.log(JSON.stringify(_.map(acquired, 'label')));
         const ready = {
             href: window.location.href,
             name,
@@ -205,10 +208,10 @@ function adMonitor () {
             return false;
         _.set(contentcache, hash, { selector, name });
 
-        hub.event('newVideo', {
+        hub.event('newInfo', {
             ready,
             href: window.location.href,
-            hash,
+            contenthash: hash,
             when: Date(),
             selector,
             name,

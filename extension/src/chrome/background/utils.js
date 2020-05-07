@@ -6,7 +6,6 @@ bo.runtime.onMessage.addListener((request, sender, sendResponse) => {
         db
             .get('/settings')
             .then(settings => {
-                console.log("aaaa", settings);
                 sendResponse({
                     
                     // Expose only what we need
