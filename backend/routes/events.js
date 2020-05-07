@@ -104,7 +104,7 @@ async function processEvents2(req) {
             clientTime: new Date(body.clientTime),
             savingTime: new Date(),
             html: body.element,
-            size: _.size(body.element),
+            size: _.size(JSON.stringify(body.element)),
             selector: body.selector,
             incremental: body.incremental,
             type: body.type,
@@ -123,10 +123,7 @@ async function processEvents2(req) {
         e.acquired = e.html.acquired;
         e.selectorName = e.html.name;
         e.contenthash = e.contenthash;
-        if(e.href != e.html.href) {
-            debug("!! oddio !! %s %s", e.href != e.html.href);
-            process.exit(1);
-        }
+        _.unset(e, 'html');
         return e;
     });
     const labelret = await automo.write(nconf.get('schema').labels, labels);
@@ -136,7 +133,7 @@ async function processEvents2(req) {
     }
 
     const info = _.map(_.concat(_.reject(htmls, { type: 'info' }), labels), function(e) {
-        return [ e.incremental, e.size, e.selector, e.type, e.name ? e.name : "body" ];
+        return [ e.incremental, e.size, e.selectorName ? e.selectorName : e.selector ];
     });
     debug("%s <- %s", supporter.p, JSON.stringify(info));
 
