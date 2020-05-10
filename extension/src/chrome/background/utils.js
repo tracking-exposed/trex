@@ -7,7 +7,6 @@ bo.runtime.onMessage.addListener((request, sender, sendResponse) => {
             .get('/settings')
             .then(settings => {
                 sendResponse({
-                    
                     // Expose only what we need
                     settings: settings ? {
                         lessInfo: settings.lessInfo,

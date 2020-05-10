@@ -24,7 +24,7 @@ function handleVideo (type, e) {
 }
 
 function handleInfo(type, e) {
-    state.content.push(_.extend(e, {
+    state.content.push(_.merge(e, {
         incremental: state.incremental,
         clientTime: getTimeISO8601(),
         type: 'info',

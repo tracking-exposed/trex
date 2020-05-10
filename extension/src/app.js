@@ -31,10 +31,10 @@ import _ from 'lodash';
 import moment from 'moment';
 
 import {createPanel} from './panel';
-
 import config from './config';
 import hub from './hub';
 import { registerHandlers } from './handlers/index';
+import extractor from './extractor';
 
 const YT_VIDEOTITLE_SELECTOR = 'h1.title';
 
@@ -188,8 +188,6 @@ function adMonitor () {
                 html: e.outerHTML,
                 order: i,
             };
-            if(name == 'label')
-                content.label = e.getAttribute('aria-label');
             return content;
         });
         // console.log(JSON.stringify(_.map(acquired, 'label')));
@@ -203,19 +201,28 @@ function adMonitor () {
 
         const c = _.get(contentcache, hash);
         // console.log("newVideo/label", _.size(contentcache), matches, acquired, ready,formatted, hash, !!c);
-
         if(!!c)
             return false;
+
         _.set(contentcache, hash, { selector, name });
 
+        const extra = extractor.mineExtraMetadata(name, matches);
+
+        /* element contains the HTML pieces usable to do backend parsing
+           extra contans metadata took from the interface which might be saved
+           client side (localstorage)
+           --
+           the parsing function above depends on a statis dataset which must
+           be sync via backend before any usage */
         hub.event('newInfo', {
             element: ready,
             href: window.location.href,
-            contenthash: hash,
+            hash,
             when: Date(),
             selector,
             name,
-            randomUUID
+            randomUUID,
+            extra,
         });
         phase('adv.seen');
         return name;
@@ -237,7 +244,7 @@ function adMonitor () {
         const results = _.map(watchedPaths, lookForExistingNodes);
         const printabled = _.compact(results);
         if(_.size(printabled))
-            console.log("changeMonitor", printabled);
+            console.log("changeMonitor", JSON.stringify(printabled));
         // might change nodePeriodicCheck 
     }, nodePeriodicCheck);
 }

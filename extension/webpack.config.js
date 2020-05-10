@@ -35,8 +35,8 @@ const PATHS = {
 
 /** EXTERNAL DEFINITIONS INJECTED INTO APP **/
 var DEV_SERVER = 'localhost';
-var ENV_DEP_SERVER = DEVELOPMENT ? 'http://' + DEV_SERVER + ':9000' : 'https://youtube.tracking.exposed';
-var ENV_DEP_WEB = DEVELOPMENT ? 'http://' + DEV_SERVER + ':1313' : 'https://youtube.tracking.exposed';
+var ENV_DEP_SERVER = DEVELOPMENT ? ('http://' + DEV_SERVER + ':9000') : 'https://youtube.tracking.exposed';
+var ENV_DEP_WEB = DEVELOPMENT ? ('http://' + DEV_SERVER + ':1313') : 'https://youtube.tracking.exposed';
 
 const DEFINITIONS = {
     'process.env': {
@@ -45,7 +45,7 @@ const DEFINITIONS = {
         API_ROOT: JSON.stringify(ENV_DEP_SERVER + '/api/v' + LAST_VERSION + '/'),
         WEB_ROOT: JSON.stringify(ENV_DEP_WEB),
         VERSION: JSON.stringify(packageJSON.version + (DEVELOPMENT ? '-dev' : '')),
-        BUILD: new Date().toISOString() + moment().format("DD-MMM HH:mm"),
+        BUILD: JSON.stringify(`On ${moment().format("DD of MMM at HH:mm")}.`),
         FLUSH_INTERVAL: JSON.stringify(DEVELOPMENT ? 10000 : 20000)
     }
 };
