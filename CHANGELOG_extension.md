@@ -1,6 +1,12 @@
 The format is based on [Keep a Changelog](http://keepachangelog.com/) and this
 project adheres to [Semantic Versioning](http://semver.org/).
 
+## [1.4.0] - 2020-05-08
+### Added
+- New HTML element watchers, integrated real-time event API
+### Fixed
+- Popup content and links, info box bugfixing.
+
 ## [1.3.0] - 2020-03-30
 ### Added
 - New UX (traffic light)
