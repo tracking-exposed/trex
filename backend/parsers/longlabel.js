@@ -1,14 +1,11 @@
-#!/usr/bin/env node
 const _ = require('lodash');
 const debug = require('debug')('parser:longlabel');
-const debugcheck = require('debug')('check:longlabel');
+const error = require('debug')('parser:longlabel:[E])');
 const moment = require('moment');
 
-const uxlang = require('./uxlang');
-
 const langopts = [
-    { sostantivo: 'views', separator: 'by', locale: 'en', viewcount: comma },
-    { sostantivo: 'vistas', separator: 'de', locale: 'es', viewcount: comma },
+    { sostantivo: "views", separator: 'by', locale: 'en', viewcount: comma },
+    { sostantivo: "vistas", separator: 'de', locale: 'es', viewcount: comma },
     { sostantivo: "visualitzacions", separator: 'de:', locale: 'ct', viewcount: dots }, // spanish catalan
     { sostantivo: "visualizzazioni", separator: 'di', locale: 'it', viewcount: dots },
     { sostantivo: "visualizações", separator: '', locale: 'pt', viewcount: dots },
@@ -16,9 +13,17 @@ const langopts = [
     { sostantivo: "visninger", separator: 'af', locale: 'nn', viewcount: dots }, // norvegian
     { sostantivo: "vues" , separator: 'de', locale: 'fr', viewcount: empty },
     { sostantivo: "ganger", separator: 'av', locale: 'nn', viewcount: empty }, // it is "times" not visualization in norwegian
-    { sostantivo: "weergaven", separator: 'door', locale: 'nl', viewcount: dots}, // Dutch
-    { sostantivo: "Aufrufe", separator: 'von', locale: 'de', viewcount: dots},
+    { sostantivo: "weergaven", separator: 'door', locale: 'nl', viewcount: dots }, // Dutch
+    { sostantivo: "Aufrufe", separator: 'von', locale: 'de', viewcount: dots },
+    { sostantivo: "просмотров", separator: 'Автор:', locale: 'ru', viewcount: empty },
+    { sostantivo: "просмотра", separator: 'Автор:', locale: 'ru', viewcount: empty },
+    { sostantivo: "просмотр", separator: 'Автор:', locale: 'ru', viewcount: empty },
 ];
+
+function sanityCheck(l) {
+    if(_.size(l) < 20)
+        throw new Error(2);
+}
 
 function parser(l, source, isLive) {
     /* logic:
@@ -29,17 +34,19 @@ function parser(l, source, isLive) {
     */
 
     if(isLive)
-        { console.log("Live?"); process.exit(1);}
+        { console.log("UNSUPPORTED? (isLive)"); throw new Error("Not supported ATM"); }
+    if(!_.size(source))
+        { throw new Error("No source"); }
 
+    sanityCheck(l);
     const viewssost = _.last(l.split(' '));
-    /* debug(_.last(l.split(' ')));
-    debug(l.split(' ')); */
+
     let langi = _.find(langopts, { sostantivo: viewssost });
     if(!langi) {
         const specialfinal = viewssost.substr(_.size(viewssost) - 4, 4);
         langi = _.find(langopts, { sostantivo: specialfinal });
     }
-    
+
     debug("<sostantivo> %s, <langi> %j", viewssost, langi);
     if(!langi)
         throw new Error("1> locale not found!" + viewssost);
@@ -51,14 +58,15 @@ function parser(l, source, isLive) {
     /* logic:
         3) by $authorName it is guarantee come at last, after every user controller input and 
            before the timing info. We retrive the time info and parse the duration and relative */
-    const halfsep = `${langi.separator} ${source}`;
+    const halfsep = `${_.size(langi.separator) ? " ": ""}${langi.separator} ${source}`;
     const separatorCheck = _.size(reducedLabel.split(halfsep));
     const timeinfo = _.last(reducedLabel.split(halfsep));
+    const title = _.first(reducedLabel.split(halfsep));
     // moment.locale(langi.locale);
     // parsing do not depends on this 
     // debug(reducedLabel.split(halfsep));
     if(separatorCheck < 2) {
-        debugcheck("Separator Error locale (%s)", langi.locale);
+        error("checking '%s' <separator fails as %s>", halfsep, langi.locale);
         throw new Error("Separator Error locale: " + langi.locale);
     }
 
@@ -68,9 +76,10 @@ function parser(l, source, isLive) {
     const timeago = getPublicationTime(timeinfo);
 
     /*  5) to simplify this, duration of the video is take somewhere else */
-    debug("Completed with %d %s %s", views, timeago.humanize(), langi.locale);
+    debug("Completed %s with %d %s %s", title, views, timeago.humanize(), langi.locale);
     return {
         views,
+        title,
         timeago,            // it is a moment.duration() object
         isLive,
         locale: langi.locale,
@@ -94,6 +103,7 @@ const relativeConMapping = {
     'minuti': [1, 'minutes'],
     'minutos': [1, 'minutes'],
     'minutes': [1, 'minutes'],
+    'минут': [1, 'minutes'],
 
     'horas': [1, 'hour'],
     'heure': [1, 'hour'],
@@ -127,6 +137,7 @@ const relativeConMapping = {
     'uge': [1, 'day'],
     'Tagen': [1, 'day'],
     'Tag': [1, 'day'],
+    'дня': [1, 'day'],
 
     'settimana': [7, 'day'],
     'settimane': [7, 'day'],
@@ -178,6 +189,7 @@ const relativeConMapping = {
     'anys': [1, 'year'],
     'an': [1, 'year'],
     'år': [1, 'year'],
+    'года': [1, 'year'],
 }
 const timeRegExpList = [
     /\s?(\d+)\s(\D+)\s?/,
@@ -203,7 +215,7 @@ function getPublicationTime(timeinfo) {
 
         const total = (convertedNumber * momentinfo[0]);
         const mabbe = moment.duration(total, momentinfo[1]);
-        debug("getPT: FOUND |%s| to be [%j]  parsed %d total %d",
+        debug("(OK getPublicationTime) |%s| to be [%j]  parsed %d total %d",
             word, momentinfo, convertedNumber, total);
         return mabbe;
     }, null);
@@ -214,7 +226,7 @@ function getPublicationTime(timeinfo) {
     if(!duration.isValid())
         throw new Error(`Invalid duration! from ${timeago} to ${timeinfo}`);
 
-    debug("getPublicationTime: %s from |%s|", duration.humanize(), timeinfo);
+    // debug("getPublicationTime: %s from |%s|", duration.humanize(), timeinfo);
     return duration;
 }
 

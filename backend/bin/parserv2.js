@@ -2,6 +2,7 @@
 const _ = require('lodash');
 const moment = require('moment');
 const debug = require('debug')('yttrex:parserv');
+const overflowReport = require('debug')('yttrex:OVERFLOW');
 const nconf = require('nconf');
 const JSDOM = require('jsdom').JSDOM;
 
@@ -74,16 +75,25 @@ async function newLoop() {
 
     if(!htmls.overflow) {
         lastExecution = moment().subtract(2, 'm').toISOString();
-        debug("Got %d objects, parsing realtime...", _.size(htmls.content));
+        overflowReport("<NOT>\t\t%d documents", _.size(htmls.content));
     }
     else {
         lastExecution = moment(_.last(htmls.content).savingTime);
-        debug("OVERFLOW: first %s last %s - lastExecution set to last %s",
-            _.first(htmls.content).savingTime, _.last(htmls.content).savingTime,
+        overflowReport("first %s (on %d) <last +minutes %d> next filter set to %s",
+            _.first(htmls.content).savingTime, _.size(htmls.content),
+            _.round(moment.duration(
+                moment(_.last(htmls.content).savingTime ) - moment(_.first(htmls.content).savingTime )
+            ).asMinutes(), 1),
             lastExecution);
     }
 
     const analysis = _.map(htmls.content, function(e) {
+
+        if(!e || !e.html || _.size(e.html) < 2) {
+            debug("Unexpected entry %s html empty", e.id);
+            return null;
+        }
+
         const envelop = {
             impression: _.omit(e, ['html', '_id']),
             jsdom: new JSDOM(e.html.replace(/\n\ +/g, ''))
@@ -166,7 +176,7 @@ async function wrapperLoop() {
         try {
             await newLoop();
         } catch(e) {
-            console.log("Error in newLoop", e.message);
+            console.log("Error in newLoop", e.message, e.stack);
         }
         if(singleUse) {
             console.log("Single execution done!")

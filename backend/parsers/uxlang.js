@@ -1,4 +1,3 @@
-#!/usr/bin/env node
 const _ = require('lodash');
 const debug = require('debug')('parser:uxlang');
 const nlpdebug = require('debug')('pubtimeAPI');
@@ -10,6 +9,7 @@ const formatMatches = {
     "DD.MM.YYYY": /(\d{2})\.(\d{2})\.(\d{4})/,
     "MMM DD, YYYY": /(\D{3}) (\d{1,2}), (\d{4})/,
     "DD MMM YYYY": /(\d{1,2})\.?\s(\D{3,4})\.? ([20\d{2}])/, // "19 февр. 2019 г."     +     "21. mar. 2020"
+    "mm mmm": /(\d{1,2})\s(\D)\s?\D?/, // 46 minutes ago
 };
 
 const absoluteDateIntroSentence = [

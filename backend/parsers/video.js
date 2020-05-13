@@ -1,8 +1,9 @@
-#!/usr/bin/env node
 const _ = require('lodash');
 const url = require('url');
+const moment = require('moment');
 const querystring = require('querystring');
 const debug = require('debug')('parser:video');
+const error = require('debug')('parser:video:[E]');
 
 const uxlang = require('./uxlang');
 const longlabel = require('./longlabel');
@@ -41,23 +42,27 @@ function logged(D) {
 }
 
 function relatedMetadata(e, i) {
-
-    let source, verified, vizstr, foryou;
+    // here we find metadata inside the preview snippet on the right column
+    let source, verified, vizstr, foryou, mined;
     const title = e.querySelector('#video-title').textContent;
     const metadata = e.querySelector('#metadata');
 
-    if(metadata.children.length > 0)
-        source = metadata.children[0].textContent;
+    if(metadata.children.length > 0) {
+        // if is verified, the keyword vary language by language, but you've always
+        // TED\nVerified\n•, and this allow us a more technical check:
+        source = _.first(metadata.children[0].textContent.split('\n'));
+        verified = !!(_.size(metadata.children[0].textContent.split('\n')) > 1 );
+    }
 
     if(metadata.children.length > 1)
-        vizstr = metadata.children[1].textContent;
+        vizstr = _.size(metadata.children[1].textContent) ? metadata.children[1].textContent : null;
 
     if(vizstr && _.size(vizstr))
         foryou = vizstr.match(/\d+/) ? false : true;
 
     const link = e.querySelectorAll('a')[0].getAttributeNode('href').value
     const videoId = link.replace(/.*v=/, '');
-    const videometablockN = e.querySelectorAll('.ytd-video-meta-block').length
+    const parameter = videoId.match(/&.*/) ? videoId.replace(/.*&/, '&') : null;
     const liveBadge = e.querySelector(".badge-style-type-live-now");
 
     let displayTime, expandedTime;
@@ -72,41 +77,48 @@ function relatedMetadata(e, i) {
     const arialabel = e.querySelector('#video-title').getAttribute('aria-label');
     // Beastie Boys - Sabotage by BeastieBoys 9 years ago 3 minutes, 2 seconds 62,992,821 views
 
-    const mined = arialabel ? longlabel.parser(arialabel, source, !!liveBadge): null;
-    // mined is not used yet; it might be handy. please note sometime is empty
-    // e1895eed23ffcb8a0b5d1221c28a712b379886fe
-
-    console.log(mined);
-    // work in progress TODO 
-
-
-    // if is verified, the keyword vary language by language, but you've always 
-    // TED\nVerified\n•, and this allow us a more technical check:
-    let lines = source.split("\n"); 
-    verified = ( _.size(lines) > 1 );
-    source = _.first(lines).replace("•", '');
+    try {
+        mined = arialabel ? longlabel.parser(arialabel, source, !!liveBadge): null;
+        if(mined.title != title) {
+            debug("Interesting anomaly: %s != %s", mined.title, title);
+        }
+    } catch(e) {
+        error("longlabel parser error: %s", e.message);
+    }
 
     // thumbnail is @ https://i.ytimg.com/vi/${videoId}/hqdefault.jpg
-    return {
+    const r = {
         index: i + 1,
-        recommendedTitle,
         verified,
         source,
-        recommendedViews,
         foryou,
         videoId,
-        recommendedLength,
-        recommendedLengthSe,
-        recommendedPubTime,
+        parameter: parameter ? parameter : null,
+        recommendedTitle: mined ? mined.title : null,
+        recommendedLength: displayTime ? displayTime : null,
+        recommendedLengthSe: expandedTime ? expandedTime : null,
+        recommendedPubTime: mined ? mined.timeago : null,
+        recommendedRelativeSeconds: mined ? mined.timeago.asSeconds() : null,
+        recommendedViews: mined ? mined.views : null,
         isLive: !!liveBadge
     };
+    /* this is a friendly debug line to help summarize */
+    const l = _.reduce(r, function(memo, v, k) {
+        if(_.isNull(v)) {
+            memo.str += "!" + k;
+            memo.cnt++;
+        }
+        return memo;
+    }, { str: "", cnt: 0 });
+    debug(l.cnt, l.str);
+    return r;
 };
 
 function parseSingleTry(D, memo, spec) {
     const elems = D.querySelectorAll(spec.selector);
 
     if(!_.size(elems)) {
-        debug("zero element selected: %s fail", spec.name);
+        error("zero element selected: %s fail", spec.name);
         return memo;
     }
 
@@ -148,7 +160,6 @@ function mineAuthorInfo(D) {
     const as = D.querySelector('a.ytd-video-owner-renderer').parentNode.querySelectorAll('a');
     if(_.size(as) == 1) {
         return null;
-
     } else if(_.size(as) >= 2) {
         const authorName = D.querySelector('a.ytd-video-owner-renderer').parentNode.querySelectorAll('a')[1].textContent;
         const authorSource = D.querySelector('a.ytd-video-owner-renderer').parentNode.querySelectorAll('a')[0].getAttribute('href');
@@ -183,7 +194,6 @@ function processVideo(D, blang, clientTime) {
         func: 'textContent'
     } ]);
     if(!title) {
-        debugger;
         throw new Error("unable to get video title");
     }
 
@@ -194,7 +204,6 @@ function processVideo(D, blang, clientTime) {
         authorName = mined.authorName;
         authorSource = mined.authorSource;
     } else {
-        debugger;
         throw new Error("lack of mandatory HTML snippet!");
     }
 
@@ -204,6 +213,11 @@ function processVideo(D, blang, clientTime) {
     try {
         // debug("related videos to be looked at: %d", _.size(D.querySelectorAll('ytd-compact-video-renderer')));
         related = _.map(D.querySelectorAll('ytd-compact-video-renderer'), relatedMetadata);
+        related = _.map(related, function(r) {
+            /* overwrite the moment.duration object with a relative duration using clientTime as pivot */
+            r.recommendedPubTime = moment(clientTime).subtract(r.recommendedPubTime).toISOString();
+            return r;
+        });
     } catch(error) {
         throw new Error(`Unable to mine related: ${error.message}, ${error.stack.substr(0, 220)}...`);
     }
@@ -249,7 +263,7 @@ function processVideo(D, blang, clientTime) {
         viewInfo = parseViews(D);
         likeInfo = parseLikes(D);
     } catch(error) {
-        debug("viewInfo and linkInfo not available");
+        error("viewInfo and linkInfo not available");
     }
 
     let login = -1;
@@ -257,7 +271,7 @@ function processVideo(D, blang, clientTime) {
         login = logged(D);
         /* if login is null, it means failed check */
     } catch(error) {
-        debug("Exception in logged(): %s", error.message);
+        error("Failure in logged(): %s", error.message);
         login = null;
     }
 
@@ -292,7 +306,7 @@ function process(envelop) {
             envelop.impression.clientTime
         );
     } catch(e) {
-        debug("Error in video.process %s (%d): %s\n%s",
+        error("Error in video.process %s (%d): %s\n%s",
             envelop.impression.href, envelop.impression.size, e.message, e.stack);
         return null;
     }
@@ -352,7 +366,7 @@ function adTitleChannel(envelop) {
     const D = envelop.jsdom;
     const a = D.querySelectorAll('a');
     if(_.size(a) != 2)
-        debug("Unexpected amount of element 'a' %d", _.size(a));
+        error("Unexpected amount of element 'a' %d", _.size(a));
     if(!a[0].getAttribute('href'))
         return null;
     return {
