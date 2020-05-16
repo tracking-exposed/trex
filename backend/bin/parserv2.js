@@ -5,6 +5,7 @@ const debug = require('debug')('yttrex:parserv');
 const overflowReport = require('debug')('yttrex:OVERFLOW');
 const nconf = require('nconf');
 const JSDOM = require('jsdom').JSDOM;
+const fs = require('fs');
 
 const videoparser = require('../parsers/video')
 const homeparser = require('../parsers/home')
@@ -18,10 +19,12 @@ echoes.setDefaultEcho("elasticsearch"); */
 
 const FREQUENCY = _.parseInt(nconf.get('frequency')) ? _.parseInt(nconf.get('frequency')) : 10;
 const backInTime = _.parseInt(nconf.get('minutesago')) ? _.parseInt(nconf.get('minutesago')) : 10;
-const skipCount = _.parseInt(nconf.get('skip')) ? _.parseInt(nconf.get('skip')) : 0;
-const htmlAmount = _.parseInt(nconf.get('amount')) ? _.parseInt(nconf.get('amount')) : 20;
 const id = nconf.get('id');
+const filter = nconf.get('filter') ? JSON.parse(fs.readFileSync('internal-ωτ1-v3.json')) : null;
 const singleUse = !!id;
+
+let skipCount = _.parseInt(nconf.get('skip')) ? _.parseInt(nconf.get('skip')) : 0;
+let htmlAmount = _.parseInt(nconf.get('amount')) ? _.parseInt(nconf.get('amount')) : 20;
 
 let nodatacounter = 0;
 let processedCounter = skipCount;
@@ -52,7 +55,10 @@ async function newLoop() {
     };
     htmlFilter.processed = { $exists: repeat };
 
-    if(id) {
+    if(filter) {
+        console.log("Using filter, %d", _.size(filter));
+        htmlFilter.id = { '$in': filter };
+    } else if(id) {
         debug("Targeting a specific metadataId imply --single");
         htmlFilter = {
             metadataId: id
