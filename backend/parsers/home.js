@@ -1,7 +1,7 @@
 const _ = require('lodash');
 const debug = require('debug')('parser:home');
 
-const labelForcer = require('./video').labelForcer;
+const longlabel = require('./longlabel');
 const logged = require('./video').logged;
 
 // TODO find sections 
@@ -38,21 +38,38 @@ function dissectSelectedVideo(e) {
     }
 
     const aria = e.querySelector('#video-title-link').getAttribute('aria-label');
-    const mined = labelForcer(aria);
+    const mined = longlabel.parser(aria, infos.authorName, false);
     return _.merge(mined, infos, { aria });
+}
+
+function recursiveSize(e, memo) {
+    const elementSize = _.size(e.outerHTML);
+    const tagName = e.tagName;
+    if(!tagName)
+        return memo;
+    const combo = elementSize + '-' + tagName.substring(0, 5);
+    if(!memo)
+        return recursiveSize(e.parentNode, [ combo ]);
+    memo.push(combo);
+    return recursiveSize(e.parentNode, memo);
 }
 
 function actualHomeProcess(D) {
     const ve = D.querySelectorAll('ytd-rich-item-renderer');
     debug("There are %d videos apparently", _.size(ve));
+    const sizes = [];
+    // sizes is a debug accumulator filled as side effect below 
     const selected = _.map(ve, function(e, i) {
+        sizes.push(recursiveSize(e));
         try {
             let videoInfo = dissectSelectedVideo(e);
             videoInfo.order = i + 1;
+            _.last(sizes).push(videoInfo);
             return videoInfo;
         } catch(error) {
             const f = e.querySelector('#video-title-link');
             const s = f ? f.getAttribute('aria-label') : null;
+            _.last(sizes).push({error: true, order: i + 1, label: s});
             return {
                 order: i + 1,
                 error: true,
@@ -62,7 +79,14 @@ function actualHomeProcess(D) {
         }
     });
     debug("Parsing completed. [erros|not videos]: %j over %d",
-        _.countBy(selected, { error: true }), _.size(selected));
+        _.countBy(selected, { error: true }), _.size(selected)); 
+    _.each(sizes, function(s, i) {
+        const info = s.pop();
+        if(info.error)
+            console.log(i, JSON.stringify(s), "\t<error: ", info.label, ">");
+        else
+            console.log(i, JSON.stringify(s), "\t", info.title);
+    }) 
     return { selected: _.reject(selected, { error: true }) };
 }
 

@@ -47,7 +47,7 @@ function parser(l, source, isLive) {
         langi = _.find(langopts, { sostantivo: specialfinal });
     }
 
-    debug("<sostantivo> %s, <langi> %j", viewssost, langi);
+    // debug("<sostantivo> %s, <langi> %j", viewssost, langi);
     if(!langi)
         throw new Error("1> locale not found!" + viewssost);
 
@@ -76,7 +76,7 @@ function parser(l, source, isLive) {
     const timeago = getPublicationTime(timeinfo);
 
     /*  5) to simplify this, duration of the video is take somewhere else */
-    debug("Completed %s with %d %s %s", title, views, timeago.humanize(), langi.locale);
+    // debug("Completed %s with %d %s %s", title, views, timeago.humanize(), langi.locale);
     return {
         views,
         title,
@@ -214,9 +214,9 @@ function getPublicationTime(timeinfo) {
             return memo;
 
         const total = (convertedNumber * momentinfo[0]);
-        const mabbe = moment.duration(total, momentinfo[1]);
+        const mabbe = moment.duration(total, momentinfo[1]); /*
         debug("(OK getPublicationTime) |%s| to be [%j]  parsed %d total %d",
-            word, momentinfo, convertedNumber, total);
+            word, momentinfo, convertedNumber, total); */
         return mabbe;
     }, null);
 
