@@ -4,6 +4,7 @@ const moment = require('moment');
 const querystring = require('querystring');
 const debug = require('debug')('parser:video');
 const error = require('debug')('parser:video:[E]');
+const missing = require('debug')('parser:video: M|');
 
 const uxlang = require('./uxlang');
 const longlabel = require('./longlabel');
@@ -41,6 +42,41 @@ function logged(D) {
     return null;
 }
 
+function closestForTime(e, sele) {
+    /* this function is a kind of .closest but apply to textContent and aria-label
+       to find the right element */
+
+    if(_.size(e.outerHTML) > 10000) {
+        debug("[display/extended Time] breaking recursion match fail on %d", _.size(e.outerHTML));
+        return { displayTime: null, expandedTime: null };
+    }
+    /*
+    debug("(e) %j\n<- %j",
+        _.map ( e.querySelectorAll('[href]'), function(x) { return x.getAttribute('href') }),
+        _.map ( e.querySelectorAll('*'), 'textContent')
+    ); */
+
+    const combo = _.compact(_.map(e.querySelectorAll('[aria-label]'), function(x) {
+        const label =  x.getAttribute('aria-label');
+        const text =  x.textContent;
+        /* label[0] == text[0] can't work because of "40 секунд" fails with "0:40"  */
+        return ( !!label.match(/^(\d+).*/) && !!text.match(/^(\d+):(\d+).*/) ) ? { label, text } : null;
+    }));
+
+    if(_.first(combo)) {
+        // debug("preoduct for the c.c.o.a.c %j", combo);
+        const expandedTime = _.first(combo).label;  // '3:02'
+        const displayTime = _.first(combo).text;    // '3 minutes, 2 seconds'
+        return { displayTime, expandedTime };
+    }
+
+    debug("[display/extended Time] recursion (%d next %d)", 
+        _.size(e.outerHTML), _.size(e.parentNode.outerHTML) );
+    debugger;
+
+    return closestForTime(e.parentNode, null);
+}
+
 function relatedMetadata(e, i) {
     // here we find metadata inside the preview snippet on the right column
     let source, verified, vizstr, foryou, mined;
@@ -65,15 +101,8 @@ function relatedMetadata(e, i) {
     const parameter = videoId.match(/&.*/) ? videoId.replace(/.*&/, '&') : null;
     const liveBadge = e.querySelector(".badge-style-type-live-now");
 
-    let displayTime, expandedTime;
-    if(e.querySelector('.ytd-thumbnail-overlay-time-status-renderer')) {
-        displayTime = e
-            .querySelector('.ytd-thumbnail-overlay-time-status-renderer')
-            .textContent; // '3:02'
-        expandedTime = e
-            .querySelector('.ytd-thumbnail-overlay-time-status-renderer')
-            .getAttribute('aria-label'); //'3 minutes, 2 seconds'
-    }
+    const { displayTime, expandedTime } = closestForTime(e, '.ytd-thumbnail-overlay-time-status-renderer');
+    // 2:03  -  2 minutes and 3 seconds, they might be null.
     const arialabel = e.querySelector('#video-title').getAttribute('aria-label');
     // Beastie Boys - Sabotage by BeastieBoys 9 years ago 3 minutes, 2 seconds 62,992,821 views
 
@@ -104,13 +133,22 @@ function relatedMetadata(e, i) {
     };
     /* this is a friendly debug line to help summarize */
     const l = _.reduce(r, function(memo, v, k) {
-        if(_.isNull(v)) {
+        if(k == 'parameter') { // special twist for 'parameters', it is so rare we mark it specially.
+            if(!_.isNull(v)) {
+                memo.str += "<param>[" + v + "]";
+                memo.cnt++;
+            }
+        } else if(_.isNull(v)) {
             memo.str += "!" + k;
             memo.cnt++;
         }
+        if(_.isNull(v))
+            _.unset(r, k);
+
         return memo;
     }, { str: "", cnt: 0 });
-    debug(l.cnt, l.str);
+    if(l.cnt)
+        debug(l.cnt, l.str);
     return r;
 };
 

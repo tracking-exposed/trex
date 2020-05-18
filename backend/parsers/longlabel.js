@@ -99,103 +99,92 @@ function settle(mined, source, title, displayTime, expandedTime, isLive) {
 }
 
 /* ****************************** * functions included above * ******************************** */
-const relativeConMapping = {
-    'minuti': [1, 'minutes'],
-    'minutos': [1, 'minutes'],
-    'minutes': [1, 'minutes'],
-    'минут': [1, 'minutes'],
+const relativeConMapping = [
+  {
+    "amount": 1,
+    "unit": "seconds",
+    "words": [
+      "секунд", "секунда", "секунды"
+    ]
+  },
+  {
+    "amount": 1,
+    "unit": "minutes",
+    "words": [
+      "minuti", "minutos", "minutes", "минут",
+      "месяцев", "минуты",
+    ]
+  },
+  {
+    "amount": 1,
+    "unit": "hour",
+    "words": [
+      "horas", "heure", "hores", "hora", "ora",
+      "ore", "uur", "hours", "hour", "timer",
+      "Stunde", "Stunden", "heures", "час", "часа",
+    ]
+  },
+  {
+    "amount": 1,
+    "unit": "day",
+    "words": [
+      "dias", "dia", "dies", "días", "día",
+      "dag", "dager", "dagen", "dage", "giorni",
+      "giorno", "days", "day", "jours", "jour",
+      "uge", "Tagen", "Tag", "дня", "день", "дней",
+      "døgn"
+    ]
+  },
+  {
+    "amount": 7,
+    "unit": "day",
+    "words": [
+      "settimana", "settimane", "setmana",
+      "setmanes", "week", "weeks", "uger", "weken",
+      "semana", "semanas", "semaines", "semaine",
+      "Woche", "Wochen", "uke", "uker", "недели",
+      "неделю",
+    ]
+  },
+  {
+    "amount": 1,
+    "unit": "month",
+    "words": [
+      "md.", "mes", "mesos", "mês", "mese",
+      "mesi", "mois", "maand", "maanden", "meses",
+      "month", "months", "måned", "måneder",
+      "Monaten", "Monat", "месяц", "месяца",
+    ]
+  },
+  {
+    "amount": 1,
+    "unit": "year",
+    "words": [
+      "year", "years", "jaar", "año", "Jahren",
+      "Jahr", "anni", "anno", "años", "anos",
+      "ano", "ans", "any", "anys", "an", "år",
+      "года", "лет", "год",
+    ]
+  }
+];
 
-    'horas': [1, 'hour'],
-    'heure': [1, 'hour'],
-    'hores': [1, 'hour'],
-    'hora': [1, 'hour'],
-    'ora': [1, 'hour'],
-    'ore': [1, 'hour'],
-    'uur': [1, 'hour'],
-    'hours': [1, 'hour'],
-    'hour': [1, 'hour'],
-    'timer': [1, 'hour'],
-    'Stunde': [1, 'hour'],
-    'Stunden': [1, 'hour'],
-    'heures': [1, 'hour'],
-
-    'dias': [1, 'day'],
-    'dia': [1, 'day'],
-    'dies': [1, 'day'],
-    'días': [1, 'day'],
-    'día': [1, 'day'],
-    'dag': [1, 'day'], // Norvegian
-    'dager': [1, 'day'], // Norvegian
-    'dagen': [1, 'day'],
-    'dage': [1, 'day'],
-    'giorni': [1, 'day'],
-    'giorno': [1, 'day'],
-    'days': [1, 'day'],
-    'day': [1, 'day'],
-    'jours': [1, 'day'],
-    'jour': [1, 'day'],
-    'uge': [1, 'day'],
-    'Tagen': [1, 'day'],
-    'Tag': [1, 'day'],
-    'дня': [1, 'day'],
-
-    'settimana': [7, 'day'],
-    'settimane': [7, 'day'],
-    'setmana': [7, 'day'],
-    'setmanes': [7, 'day'],
-    'week': [7, 'day'],
-    'weeks': [7, 'day'],
-    'uger': [7, 'day'],
-    'weken': [7, 'day'],
-    'semana': [7, 'day'],
-    'semanas': [7, 'day'],
-    'semaines': [7, 'day'],
-    'semaine': [7, 'day'],
-    'Woche': [7, 'day'],
-    'Wochen': [7, 'day'],
-    'uke': [7, 'day'],
-    'uker': [7, 'day'],
-
-    'md.': [1, 'month'],
-    'mes': [1, 'month'],
-    'mesos': [1, 'month'],
-    'mês': [1, 'month'],
-    'mese': [1, 'month'],
-    'mesi': [1, 'month'],
-    'mois': [1, 'month'],
-    'maand': [1, 'month'],
-    'maanden': [1, 'month'],
-    'meses': [1, 'month'],
-    'month': [1, 'month'],
-    'months': [1, 'month'],
-    'måned': [1, 'month'],
-    'måneder': [1, 'month'],
-    'Monaten': [1, 'month'],
-    'Monat': [1, 'month'],
-
-    'year': [1, 'year'],
-    'years': [1, 'year'],
-    'jaar': [1, 'year'],
-    'año': [1, 'year'],
-    'Jahren': [1, 'year'],
-    'Jahr': [1, 'year'],
-    'anni': [1, 'year'],
-    'anno': [1, 'year'],
-    'años': [1, 'year'],
-    'anos': [1, 'year'],
-    'ano': [1, 'year'],
-    'ans': [1, 'year'],
-    'any': [1, 'year'],
-    'anys': [1, 'year'],
-    'an': [1, 'year'],
-    'år': [1, 'year'],
-    'года': [1, 'year'],
-}
 const timeRegExpList = [
     /\s?(\d+)\s(\D+)\s?/,
     /\s?(\d+)\s(\D+)\s\D+?/, 
     /\s?\D+\s(\d+)\s(\D+)\s?/, 
 ];
+
+function relativeTimeMap(word) {
+    return _.reduce(relativeConMapping, function(memo, e) {
+        if(memo)
+            return memo;
+
+        if(e.words.indexOf(word) !== -1 )
+            memo = [ e.amount, e.unit ];
+
+        return memo; 
+    }, null);
+}
 function getPublicationTime(timeinfo) {
 
     const timeago = _.reduce(timeRegExpList, function(memo, rge) {
@@ -209,8 +198,8 @@ function getPublicationTime(timeinfo) {
 
     const convertedNumber = _.parseInt(timeago[0]);
     const duration = _.reduce(timeago[0].split(' '), function(memo, word) {
-        let momentinfo = _.get(relativeConMapping, word);
-        if(_.isUndefined(momentinfo))
+        let momentinfo = relativeTimeMap(word);
+        if(_.isNull(momentinfo))
             return memo;
 
         const total = (convertedNumber * momentinfo[0]);
@@ -220,8 +209,23 @@ function getPublicationTime(timeinfo) {
         return mabbe;
     }, null);
 
-    if(_.isNull(duration))
+    if(_.isNull(duration)) {
+        /* necessary to report what's didn't get processed */
+        const fullwordlist = _.flatten(_.map(relativeConMapping, 'words'));
+        const missing = _.filter(timeago[0].split(' '), function(labelword) {
+            if(!_.isNaN(_.parseInt(labelword)))
+                return true;
+            return fullwordlist.indexOf(labelword) == -1;
+        });
+        const fs = require('fs');
+        const already = JSON.parse(fs.readFileSync('missingWords.json'));
+        const updated = _.uniq(_.concat(already, missing));
+        if(_.size(updated) != _.size(already)) {
+            debug("adding in 'missingWords.json' %j, going to %d elements", missing, _.size(updated));
+            fs.writeFileSync('missingWords.json', JSON.stringify(updated, undefined, 2), 'utf-8');
+        }
         throw new Error(`Lack of time mapping relativeConMapping ${timeago} |${timeinfo}|`);
+    }
 
     if(!duration.isValid())
         throw new Error(`Invalid duration! from ${timeago} to ${timeinfo}`);

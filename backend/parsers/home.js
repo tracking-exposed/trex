@@ -83,9 +83,9 @@ function actualHomeProcess(D) {
     _.each(sizes, function(s, i) {
         const info = s.pop();
         if(info.error)
-            console.log(i, JSON.stringify(s), "\t<error: ", info.label, ">");
+            console.log(i, info.order, JSON.stringify(s), "\t<error: ", info.label, ">");
         else
-            console.log(i, JSON.stringify(s), "\t", info.title);
+            console.log(i, info.order, JSON.stringify(s), "\t", info.title);
     }) 
     return { selected: _.reject(selected, { error: true }) };
 }
