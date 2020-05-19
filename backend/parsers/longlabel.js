@@ -1,6 +1,6 @@
 const _ = require('lodash');
 const debug = require('debug')('parser:longlabel');
-const error = require('debug')('parser:longlabel:[E])');
+const debuge = require('debug')('parser:longlabel:[E])');
 const moment = require('moment');
 
 const langopts = [
@@ -66,7 +66,7 @@ function parser(l, source, isLive) {
     // parsing do not depends on this 
     // debug(reducedLabel.split(halfsep));
     if(separatorCheck < 2) {
-        error("checking '%s' <separator fails as %s>", halfsep, langi.locale);
+        debuge("checking '%s' <separator fails as %s>", halfsep, langi.locale);
         throw new Error("Separator Error locale: " + langi.locale);
     }
 
@@ -112,7 +112,7 @@ const relativeConMapping = [
     "unit": "minutes",
     "words": [
       "minuti", "minutos", "minutes", "минут",
-      "месяцев", "минуты",
+      "месяцев", "минуты", "минут",
     ]
   },
   {
@@ -122,6 +122,7 @@ const relativeConMapping = [
       "horas", "heure", "hores", "hora", "ora",
       "ore", "uur", "hours", "hour", "timer",
       "Stunde", "Stunden", "heures", "час", "часа",
+      "часов",
     ]
   },
   {
@@ -318,4 +319,5 @@ function dots(label, sosta, isLive) {
 module.exports = {
     parser,
     settle,
+    relativeConMapping,
 };

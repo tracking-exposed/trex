@@ -4,6 +4,8 @@ const moment = require('moment');
 const querystring = require('querystring');
 const debug = require('debug')('parser:video');
 const error = require('debug')('parser:video:[E]');
+const debugCheckup = require('debug')('parser:C');
+const debugTimef = require('debug')('parser:timeF');
 const missing = require('debug')('parser:video: M|');
 
 const uxlang = require('./uxlang');
@@ -47,7 +49,7 @@ function closestForTime(e, sele) {
        to find the right element */
 
     if(_.size(e.outerHTML) > 10000) {
-        debug("[display/extended Time] breaking recursion match fail on %d", _.size(e.outerHTML));
+        debugTimef("[display/extended Time] breaking recursion match fail on %d", _.size(e.outerHTML));
         return { displayTime: null, expandedTime: null };
     }
     /*
@@ -70,7 +72,7 @@ function closestForTime(e, sele) {
         return { displayTime, expandedTime };
     }
 
-    debug("[display/extended Time] recursion (%d next %d)", 
+    debugTimef("[display/extended Time] recursion (%d next %d)", 
         _.size(e.outerHTML), _.size(e.parentNode.outerHTML) );
     debugger;
 
@@ -119,10 +121,10 @@ function relatedMetadata(e, i) {
     const r = {
         index: i + 1,
         verified,
-        source,
         foryou,
         videoId,
         parameter: parameter ? parameter : null,
+        recommendedSource: source,
         recommendedTitle: mined ? mined.title : null,
         recommendedLength: displayTime ? displayTime : null,
         recommendedLengthSe: expandedTime ? expandedTime : null,
@@ -131,6 +133,11 @@ function relatedMetadata(e, i) {
         recommendedViews: mined ? mined.views : null,
         isLive: !!liveBadge
     };
+    checkUpDebug(r);
+    return r;
+};
+
+function checkUpDebug(r) {
     /* this is a friendly debug line to help summarize */
     const l = _.reduce(r, function(memo, v, k) {
         if(k == 'parameter') { // special twist for 'parameters', it is so rare we mark it specially.
@@ -148,9 +155,22 @@ function relatedMetadata(e, i) {
         return memo;
     }, { str: "", cnt: 0 });
     if(l.cnt)
-        debug(l.cnt, l.str);
-    return r;
+        debugCheckup(l.cnt, l.str);
 };
+
+function makeAbsolutePublicationTime(list, clientTime) {
+    /* this function is call before video.js and home.js return their 
+       metadata. clientTime isn't visibile in parsing function so the relative
+       transformation of '1 month ago', is now a moment.duration() object 
+       and now is saved the estimated ISODate format. */
+    return _.map(list, function(r) {
+        const when = moment(clientTime).subtract(r.recommendedPubTime);
+        r.publicationTime = new Date(when.toISOString());
+        r.timePrecision = 'estimated';
+        _.unset(r, 'recommendedPubTime');
+        return r;
+    })
+}
 
 function parseSingleTry(D, memo, spec) {
     const elems = D.querySelectorAll(spec.selector);
@@ -313,6 +333,7 @@ function processVideo(D, blang, clientTime) {
         login = null;
     }
 
+    related = makeAbsolutePublicationTime(related, envelop.impression.clientTime);
     return {
         title,
         login,
@@ -440,4 +461,7 @@ module.exports = {
     overlay,
     adTitleChannel,
     videoTitleTop,
+    closestForTime,
+    checkUpDebug,
+    makeAbsolutePublicationTime,
 };
