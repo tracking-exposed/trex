@@ -94,7 +94,7 @@ async function newLoop() {
             lastExecution);
     }
 
-    console.log(skipCount, "start a new cicle. we took:",
+    console.log(processedCounter, "start a new cicle. we took:",
         stats.currentamount, moment.duration(moment() - stats.current).humanize(),
         "and now process", _.size(htmls.content), "htmls");
     stats.last = stats.current;
@@ -178,7 +178,7 @@ async function newLoop() {
         _.size(_.compact(analysis)), _.size(htmls.content), _.size(remaining), computedFrequency);
 
     await automo.markHTMLsUnprocessable(remaining);
-    console.log(skipCount, "completed, took"
+    console.log(processedCounter, "completed, took"
     , moment.duration(moment() - stats.current).asSeconds(), "secs"
     , moment.duration(moment() - stats.current).asSeconds() / 60, "mins");
 }

@@ -5,16 +5,20 @@ const moment = require('moment');
 
 const langopts = [
     { sostantivo: "views", separator: 'by', locale: 'en', viewcount: comma },
+    { sostantivo: "view", separator: 'by', locale: 'en', viewcount: comma },
     { sostantivo: "vistas", separator: 'de', locale: 'es', viewcount: comma },
     { sostantivo: "visualitzacions", separator: 'de:', locale: 'ct', viewcount: dots }, // spanish catalan
     { sostantivo: "visualizzazioni", separator: 'di', locale: 'it', viewcount: dots },
+    { sostantivo: "visualizzazione", separator: 'di', locale: 'it', viewcount: dots },
     { sostantivo: "visualizações", separator: '', locale: 'pt', viewcount: dots },
     { sostantivo: "visualizaciones", separator: 'de', locale: 'es', viewcount: dots }, // spanish (otro?)
     { sostantivo: "visninger", separator: 'af', locale: 'nn', viewcount: dots }, // norvegian
+    { sostantivo: "avspillinger", separator: 'af', locale: 'nn', viewcount: dots }, // norvegian
     { sostantivo: "vues" , separator: 'de', locale: 'fr', viewcount: empty },
     { sostantivo: "ganger", separator: 'av', locale: 'nn', viewcount: empty }, // it is "times" not visualization in norwegian
     { sostantivo: "weergaven", separator: 'door', locale: 'nl', viewcount: dots }, // Dutch
     { sostantivo: "Aufrufe", separator: 'von', locale: 'de', viewcount: dots },
+    { sostantivo: "Aufruf", separator: 'von', locale: 'de', viewcount: dots },
     { sostantivo: "просмотров", separator: 'Автор:', locale: 'ru', viewcount: empty },
     { sostantivo: "просмотра", separator: 'Автор:', locale: 'ru', viewcount: empty },
     { sostantivo: "просмотр", separator: 'Автор:', locale: 'ru', viewcount: empty },
@@ -28,9 +32,12 @@ function sanityCheck(l) {
 function NoViewsReplacer(l, sosta) {
     /* [Write Time at 9 is BACK! by The Goulet Pen Company 9 minutes ago No views,
         should return 0 views */
-    const mat = `No ${sosta}`;
-    const parseable = `0 ${sosta}`;
-    return l.replace(mat, parseable);
+    const x = [ 'No', 'Nessuna', 'Ingen', 'Keine' ];
+    return _.reduce(x, function(memo, wordThatMeansNothing) {
+        let parseable = ` 0 ${sosta}`;
+        let r = new RegExp(`\\s${wordThatMeansNothing}\\s${sosta}\\.?$`);
+        return _.replace(memo, r, parseable);
+    }, l);
 }
 
 function parser(l, source, isLive) {
