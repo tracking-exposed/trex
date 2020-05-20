@@ -131,8 +131,9 @@ function prettify(content, maxSize) {
 }
 
 function judgeIncrement(key, current, value) {
-    // this function evaluate if a new object is "superior" in 
-    // meanings. special keys might got different treatment 
+    // this function evaluate if a new object is "fresher" in 
+    // than an older content. it consider sizes. 
+    // special keys might got different treatment 
     // it is used by automo.js in db metadata updates
     if(key == 'related' || key == 'selected') {
         let c = _.map(current, 'videoId');
@@ -149,17 +150,18 @@ function judgeIncrement(key, current, value) {
         debug("title conflict in the same metadata.id 🤯 good fucking luck:\ncurrent <%s> new <%s>", current, value);
 
     // definitive code is below, above only debug lines.
-    if(key == 'publicationTime') debugger;
     if( typeof value == typeof(1) )
-        return true;
+        return (value !== current); // if return true overrides
     if( typeof value == typeof('str') )
-        return _.size(value) > _.size(current);
+        return _.size(value) > _.size(current); // if bigger overrides
     if( typeof value == typeof(true) )
-        return current != value;
+        return current !== value;  // if different overrides
     if( _.get(value, 'getDate') && value.getDate() )
-        return true;
+        return false;
     if( typeof value == typeof([]) )
         return _.size(JSON.stringify(value)) > _.size(JSON.stringify(current));
+    if( _.isNull(value) || _.isUndefined(value) )
+        return true;
     debug("Unexpected kind? %s %j %j", key, current, value)
 }
 

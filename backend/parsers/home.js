@@ -1,7 +1,7 @@
 const _ = require('lodash');
 const debug = require('debug')('parser:home');
-const error = require('debug')('parser:home:[E]');
-const debugResults = require('debug')('home<R>');
+const debuge = require('debug')('parser:home:error');
+const debugResults = require('debug')('parser:home:results');
 
 const longlabel = require('./longlabel');
 const videoparser = require('./video');
@@ -12,25 +12,25 @@ function dissectSelectedVideo(e, i, sections, offset) {
     try {
         infos.textTitle = e.querySelector('#video-title-link').textContent;
     } catch(error) {
-        error("Failure in textTitle: %s\n\t%s", error.message, e.querySelector("#video-title-link").innerHTML);
+        debuge("Failure in textTitle: %s\n\t%s", error.message, e.querySelector("#video-title-link").innerHTML);
         infos.error = true;
     }
     try {
         infos.href = e.querySelector('a').getAttribute('href');
     } catch(error) {
-        error("Failure in href: %s\n\t%s", error.message, e.querySelector("a").innerHTML);
+        debuge("Failure in href: %s\n\t%s", error.message, e.querySelector("a").innerHTML);
         infos.error = true;
     }
     try {
         infos.authorName = e.querySelector('#text-container.ytd-channel-name').querySelector('a').textContent;
     } catch(error) {
-        error("Failure in authorName: %s\n\t%s", error.message, e.querySelector('#text-container.ytd-channel-name').innerHTML);
+        debuge("Failure in authorName: %s\n\t%s", error.message, e.querySelector('#text-container.ytd-channel-name').innerHTML);
         infos.error = true;
     }
     try {
         infos.authorHref = e.querySelector('#text-container.ytd-channel-name').querySelector('a').getAttribute('href');
     } catch(error) {
-        error("Failure in authorHref: %s\n\t%s", error.message, e.querySelector('#text-container.ytd-channel-name').innerHTML);
+        debuge("Failure in authorHref: %s\n\t%s", error.message, e.querySelector('#text-container.ytd-channel-name').innerHTML);
         infos.error = true;
     }
     try {
@@ -44,7 +44,7 @@ function dissectSelectedVideo(e, i, sections, offset) {
                 debug("To be investigated anomaly (n.1) %s != %s", infos.source, infos.authorName);
         }
     } catch(error) {
-        error("Failure in source/verified: %s\n\t%s", error.message, e.querySelector('#metadata').innerHTML);
+        debuge("Failure in source/verified: %s\n\t%s", error.message, e.querySelector('#metadata').innerHTML);
         infos.error = true;
     }
     try {
@@ -52,7 +52,7 @@ function dissectSelectedVideo(e, i, sections, offset) {
         infos.displayTime = displayTime;
         infos.expandedTime = expandedTime;
     } catch(error) {
-        error("Failure in displayTime|expandedTime: %s\n\t%s", error.message, e.querySelector('.ytd-thumbnail-overlay-time-status-renderer').innerHTML);
+        debuge("Failure in displayTime|expandedTime: %s\n\t%s", error.message, e.querySelector('.ytd-thumbnail-overlay-time-status-renderer').innerHTML);
         infos.error = true;
     }
     try {
@@ -61,7 +61,7 @@ function dissectSelectedVideo(e, i, sections, offset) {
         infos.parameter = infos.videoId.match(/&.*/) ? videoId.replace(/.*&/, '&') : null;
         infos.liveBadge = e.querySelector(".badge-style-type-live-now");
     } catch(e) {
-        error("simple metadata parser error: %s", e.message);
+        debuge("simple metadata parser error: %s", e.message);
     }
     try {
         infos.aria = e.querySelector('#video-title-link').getAttribute('aria-label');
@@ -69,7 +69,7 @@ function dissectSelectedVideo(e, i, sections, offset) {
         if(infos.mined.title != infos.textTitle)
             debug("To be investigated anomaly (n.2) %s != %s", infos.mined.title, infos.textTitle);
     } catch(e) {
-        error("longlabel parser error: [%s] %s",
+        debuge("longlabel parser error: [%s] %s",
             infos.aria ? infos.aria : "aria-label-not-avail", e.message);
     }
 
@@ -79,14 +79,13 @@ function dissectSelectedVideo(e, i, sections, offset) {
         }));
         infos.section = _.get(sections, infos.sectionNumber, { title: null }).title;
     } catch(e) {
-        error("section calculation fail: %j %d", sections, offset);
+        debuge("section calculation fail: %j %d", sections, offset);
     }
    
     const r = {
         index: i + 1,
         verified: infos.verified,
         source: infos.authorName,
-        foryou: "n/a",
         videoId: infos.videoId,
         parameter: infos.parameter ? infos.parameter : null,
         sectionName: infos.section ? infos.section : null,

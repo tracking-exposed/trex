@@ -1,6 +1,6 @@
 const _ = require('lodash');
 const debug = require('debug')('parser:longlabel');
-const debuge = require('debug')('parser:longlabel:[E])');
+const debuge = require('debug')('parser:longlabel:error');
 const moment = require('moment');
 
 const langopts = [
@@ -25,6 +25,14 @@ function sanityCheck(l) {
         throw new Error(2);
 }
 
+function NoViewsReplacer(l, sosta) {
+    /* [Write Time at 9 is BACK! by The Goulet Pen Company 9 minutes ago No views,
+        should return 0 views */
+    const mat = `No ${sosta}`;
+    const parseable = `0 ${sosta}`;
+    return l.replace(mat, parseable);
+}
+
 function parser(l, source, isLive) {
     /* logic:
         1) find which language is the locale, by pattern matching 'sostantivo' and 'separator'
@@ -33,10 +41,8 @@ function parser(l, source, isLive) {
         2) get the view, and the label updated string. 'viewcount' return an integer. if is a livestream, it's different
     */
 
-    if(isLive)
-        { console.log("UNSUPPORTED? (isLive)"); throw new Error("Not supported ATM"); }
     if(!_.size(source))
-        { throw new Error("No source"); }
+        throw new Error("No source");
 
     sanityCheck(l);
     const viewssost = _.last(l.split(' '));
@@ -48,12 +54,20 @@ function parser(l, source, isLive) {
     }
 
     // debug("<sostantivo> %s, <langi> %j", viewssost, langi);
-    if(!langi)
-        throw new Error("1> locale not found!" + viewssost);
+    if(isLive) debugger;
+    if(!langi) debugger;
 
+    if(!langi) {
+        debuge("Not seen any known 'sostantivo' in %s", l);
+        throw new Error("1> locale not found!" + viewssost);
+    }
+    
+    l = NoViewsReplacer(l, langi.sostantivo);
     const { views, liveStatus, reducedLabel } = langi.viewcount(l, langi.sostantivo, isLive);
-    if(_.isNaN(views))
+    if(_.isNaN(views)) {
+        debuge("Failure in extracting with %s from %s", viewssost, l)
         throw new Error("2> " + viewssost);
+    }
     
     /* logic:
         3) by $authorName it is guarantee come at last, after every user controller input and 
@@ -86,25 +100,14 @@ function parser(l, source, isLive) {
     };
 }
 
-function settle(mined, source, title, displayTime, expandedTime, isLive) {
-    // settle wants to settle differencies we (might) got from parsing strings
-    // settle it is a kind of double-check as part of the parsing chain
-    return {
-        recommendedLength: 0,
-        recommendedLengthSe: 0,
-        recommendedViews: 0,
-        recommendedTitle: 0,
-        recommendedPubTime: 0
-    }
-}
-
 /* ****************************** * functions included above * ******************************** */
 const relativeConMapping = [
   {
     "amount": 1,
     "unit": "seconds",
     "words": [
-      "секунд", "секунда", "секунды"
+      "секунд", "секунда", "секунды", "seconds",
+      "secondi"
     ]
   },
   {
@@ -194,8 +197,10 @@ function getPublicationTime(timeinfo) {
         // this priority on existing 'memo' matter, because the 3rd regexp (longer)
         // might otherwise overwrite the first success and include dirty data.
     }, null);
-    if(!timeago)
+    if(!timeago) {
+        debuge("Can't regexp timeago %s (might be due to lang separaion)", timeinfo);
         throw new Error(`can't regexp timeago |${timeinfo}| might be language separator`);
+    }
 
     const convertedNumber = _.parseInt(timeago[0]);
     const duration = _.reduce(timeago[0].split(' '), function(memo, word) {
@@ -318,6 +323,5 @@ function dots(label, sosta, isLive) {
 
 module.exports = {
     parser,
-    settle,
     relativeConMapping,
 };

@@ -3,7 +3,7 @@ const url = require('url');
 const moment = require('moment');
 const querystring = require('querystring');
 const debug = require('debug')('parser:video');
-const error = require('debug')('parser:video:[E]');
+const debuge = require('debug')('parser:video:error');
 const debugCheckup = require('debug')('parser:C');
 const debugTimef = require('debug')('parser:timeF');
 const missing = require('debug')('parser:video: M|');
@@ -50,10 +50,11 @@ function closestForTime(e, sele) {
 
     if(_.size(e.outerHTML) > 10000) {
         debugTimef("[display/extended Time] breaking recursion match fail on %d", _.size(e.outerHTML));
+        debugger;
         return { displayTime: null, expandedTime: null };
     }
-    /*
-    debug("(e) %j\n<- %j",
+
+    /* debug("(e) %j\n<- %j",
         _.map ( e.querySelectorAll('[href]'), function(x) { return x.getAttribute('href') }),
         _.map ( e.querySelectorAll('*'), 'textContent')
     ); */
@@ -66,16 +67,12 @@ function closestForTime(e, sele) {
     }));
 
     if(_.first(combo)) {
-        // debug("preoduct for the c.c.o.a.c %j", combo);
         const expandedTime = _.first(combo).label;  // '3:02'
         const displayTime = _.first(combo).text;    // '3 minutes, 2 seconds'
         return { displayTime, expandedTime };
     }
 
-    debugTimef("[display/extended Time] recursion (%d next %d)", 
-        _.size(e.outerHTML), _.size(e.parentNode.outerHTML) );
-    debugger;
-
+    // debugTimef("[display/extended Time] recursion (%d next %d)", _.size(e.outerHTML), _.size(e.parentNode.outerHTML) );
     return closestForTime(e.parentNode, null);
 }
 
@@ -114,7 +111,7 @@ function relatedMetadata(e, i) {
             debug("Interesting anomaly: %s != %s", mined.title, title);
         }
     } catch(e) {
-        error("longlabel parser error: %s", e.message);
+        debuge("longlabel parser error: %s", e.message);
     }
 
     // thumbnail is @ https://i.ytimg.com/vi/${videoId}/hqdefault.jpg
@@ -167,8 +164,7 @@ function makeAbsolutePublicationTime(list, clientTime) {
         const when = moment(clientTime).subtract(r.recommendedPubTime);
         r.publicationTime = new Date(when.toISOString());
         r.timePrecision = 'estimated';
-        _.unset(r, 'recommendedPubTime');
-        return r;
+        return _.omit(r, [ 'recommendedPubTime', 'label' ]);
     })
 }
 
@@ -176,7 +172,7 @@ function parseSingleTry(D, memo, spec) {
     const elems = D.querySelectorAll(spec.selector);
 
     if(!_.size(elems)) {
-        error("zero element selected: %s fail", spec.name);
+        debuge("zero element selected: %s fail", spec.name);
         return memo;
     }
 
@@ -214,30 +210,29 @@ function manyTries(D, opportunities) {
 
 
 function mineAuthorInfo(D) {
-
     const as = D.querySelector('a.ytd-video-owner-renderer').parentNode.querySelectorAll('a');
-    if(_.size(as) == 1) {
+    if(_.size(as) == 1 || _.size(as) == 0)
         return null;
-    } else if(_.size(as) >= 2) {
-        const authorName = D.querySelector('a.ytd-video-owner-renderer').parentNode.querySelectorAll('a')[1].textContent;
-        const authorSource = D.querySelector('a.ytd-video-owner-renderer').parentNode.querySelectorAll('a')[0].getAttribute('href');
 
-        if( D.querySelector('a.ytd-video-owner-renderer')
+    const authorName = D.querySelector('a.ytd-video-owner-renderer').parentNode.querySelectorAll('a')[1].textContent;
+    const authorSource = D.querySelector('a.ytd-video-owner-renderer').parentNode.querySelectorAll('a')[0].getAttribute('href');
+
+    if( D.querySelector('a.ytd-video-owner-renderer')
+            .parentNode
+            .querySelectorAll('a')[1]
+            .getAttribute('href') != authorSource ) {
+        debug("%s and %s should lead to the same youtube-content-page", 
+            D.querySelector('a.ytd-video-owner-renderer')
                 .parentNode
                 .querySelectorAll('a')[1]
-                .getAttribute('href') != authorSource ) {
-            debug("%s and %s should lead to the same youtube-content-page", 
-                D.querySelector('a.ytd-video-owner-renderer')
-                    .parentNode
-                    .querySelectorAll('a')[1]
-                    .getAttribute('href'), authorSource );
-        }
-        return { authorName, authorSource };
-    } 
+                .getAttribute('href'), authorSource );
+    }
+    return { authorName, authorSource };
 }
 
 function processVideo(D, blang, clientTime) {
 
+    /* this is the title of the view video, the related are mined in 'relatedMetadata' */
     const title = manyTries(D, [{
         name: 'title h1',
         selector: 'h1 > yt-formatted-string',
@@ -252,15 +247,18 @@ function processVideo(D, blang, clientTime) {
         func: 'textContent'
     } ]);
     if(!title) {
+        debugger;
         throw new Error("unable to get video title");
     }
 
     const check = D.querySelectorAll('a.ytd-video-owner-renderer').length; // should be 1
-    const mined = mineAuthorInfo(D);
+    if(check != 1) debuge("unexpected thing");
+
     let authorName, authorSource = null;
-    if(mined) {
-        authorName = mined.authorName;
-        authorSource = mined.authorSource;
+    const authorinfo = mineAuthorInfo(D);
+    if(authorinfo) {
+        authorName = authorinfo.authorName;
+        authorSource = authorinfo.authorSource;
     } else {
         throw new Error("lack of mandatory HTML snippet!");
     }
@@ -271,11 +269,6 @@ function processVideo(D, blang, clientTime) {
     try {
         // debug("related videos to be looked at: %d", _.size(D.querySelectorAll('ytd-compact-video-renderer')));
         related = _.map(D.querySelectorAll('ytd-compact-video-renderer'), relatedMetadata);
-        related = _.map(related, function(r) {
-            /* overwrite the moment.duration object with a relative duration using clientTime as pivot */
-            r.recommendedPubTime = moment(clientTime).subtract(r.recommendedPubTime).toISOString();
-            return r;
-        });
     } catch(error) {
         throw new Error(`Unable to mine related: ${error.message}, ${error.stack.substr(0, 220)}...`);
     }
@@ -321,7 +314,7 @@ function processVideo(D, blang, clientTime) {
         viewInfo = parseViews(D);
         likeInfo = parseLikes(D);
     } catch(error) {
-        error("viewInfo and linkInfo not available");
+        debuge("viewInfo and linkInfo not available");
     }
 
     let login = -1;
@@ -329,11 +322,11 @@ function processVideo(D, blang, clientTime) {
         login = logged(D);
         /* if login is null, it means failed check */
     } catch(error) {
-        error("Failure in logged(): %s", error.message);
+        debuge("Failure in logged(): %s", error.message);
         login = null;
     }
 
-    related = makeAbsolutePublicationTime(related, envelop.impression.clientTime);
+    related = makeAbsolutePublicationTime(related, clientTime);
     return {
         title,
         login,
@@ -365,7 +358,7 @@ function process(envelop) {
             envelop.impression.clientTime
         );
     } catch(e) {
-        error("Error in video.process %s (%d): %s\n%s",
+        debuge("Error in video.process %s (%d): %s\n%s",
             envelop.impression.href, envelop.impression.size, e.message, e.stack);
         return null;
     }
@@ -425,7 +418,7 @@ function adTitleChannel(envelop) {
     const D = envelop.jsdom;
     const a = D.querySelectorAll('a');
     if(_.size(a) != 2)
-        error("Unexpected amount of element 'a' %d", _.size(a));
+        debuge("Unexpected amount of element 'a' %d", _.size(a));
     if(!a[0].getAttribute('href'))
         return null;
     return {

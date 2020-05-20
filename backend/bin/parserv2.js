@@ -2,6 +2,7 @@
 const _ = require('lodash');
 const moment = require('moment');
 const debug = require('debug')('yttrex:parserv');
+const debuge = require('debug')('yttrex:parserv:error');
 const overflowReport = require('debug')('yttrex:OVERFLOW');
 const nconf = require('nconf');
 const JSDOM = require('jsdom').JSDOM;
@@ -30,6 +31,7 @@ let nodatacounter = 0;
 let processedCounter = skipCount;
 let lastExecution = moment().subtract(backInTime, 'minutes').toISOString();
 let computedFrequency = FREQUENCY;
+const stats = { lastamount: null, currentamount: null, last: null, current: null };
 
 if(backInTime != 10) {
     const humanized = moment.duration(
@@ -56,7 +58,6 @@ async function newLoop() {
     htmlFilter.processed = { $exists: repeat };
 
     if(filter) {
-        console.log("Using filter, %d", _.size(filter));
         htmlFilter.id = { '$in': filter };
     } else if(id) {
         debug("Targeting a specific metadataId imply --single");
@@ -92,6 +93,14 @@ async function newLoop() {
             ).asMinutes(), 1),
             lastExecution);
     }
+
+    console.log(skipCount, "start a new cicle. we took:",
+        stats.currentamount, moment.duration(moment() - stats.current).humanize(),
+        "and now process", _.size(htmls.content), "htmls");
+    stats.last = stats.current;
+    stats.current = moment();
+    stats.lastamount = stats.currentamount;
+    stats.currentamount = _.size(htmls.content);
 
     const analysis = _.map(htmls.content, function(e) {
 
@@ -139,7 +148,7 @@ async function newLoop() {
                 return null;
 
         } catch(error) {
-            debug("[!E] #%d\t selector (%s) error: %s", processedCounter, e.selector, error.message);
+            debuge("#%d\t selector (%s) error: %s", processedCounter, e.selector, error.message);
             return null;
         }
 
@@ -169,6 +178,9 @@ async function newLoop() {
         _.size(_.compact(analysis)), _.size(htmls.content), _.size(remaining), computedFrequency);
 
     await automo.markHTMLsUnprocessable(remaining);
+    console.log(skipCount, "completed, took"
+    , moment.duration(moment() - stats.current).asSeconds(), "secs"
+    , moment.duration(moment() - stats.current).asSeconds() / 60, "mins");
 }
 
 function sleep(ms) {
