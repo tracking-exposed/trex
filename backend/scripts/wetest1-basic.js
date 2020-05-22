@@ -80,7 +80,7 @@ function fileName(prefix, suffix) {
     return `${prefix}-ωτ1-v${ITERATION}.${suffix}`;
 }
 
-function unrollRecommended(memo, evidence) {
+function unrollRecommended(memo, evidence) { // metadata.type = video with 'related' 
     _.each(evidence.related, function(related, evidenceCounter) {
         let entry = {
             pseudonyn: utils.string2Food(evidence.publicKey + "weTest#1"),
@@ -93,16 +93,17 @@ function unrollRecommended(memo, evidence) {
             uxlang: evidence.blang,
             dataset: 'yttrex',
             experiment: 'wetest1',
-            type: 'video',
             step: _.find(testVideos, { videoId: evidence.videoId }).language,
 
             recommendedVideoId: related.videoId,
-            recommendedViews: (related.mined) ? related.mined.viz : null,
-            recommendedDuration: (related.mined) ? related.mined.duration : null,
-            recommendedPubtime: (related.mined) ? related.mined.timeago : null,
+            recommendedViews: related.recommendedViews,
+            recommendedDuration: recommendedLength, // in seconds 
+            recommendedRelativeSeconds: related.recommendedRelativeSeconds, // distance between clientTime and publicationTime
+            recommendedAuthor: related.recommendedSource,
+            recommendedTitle: related.recommendedTitle, 
+            recommendedPubtime: related.publicationTime,
+            ptPrecision: related.timePrecision,
             recommendedForYou: related.foryou,
-            recommendedTitle: related.title,
-            recommendedAuthor: related.source,
             recommendedVerified: related.verified,
             recommendationOrder: related.index,
 
@@ -118,7 +119,7 @@ function unrollRecommended(memo, evidence) {
     return memo;
 }
 
-function unwindSections(memo, evidence) {
+function unwindSections(memo, evidence) { // metadata.type = 'home' with 'selected'
     _.each(evidence.selected, function(selected, evidenceCounter) {
         let entry = {
             pseudonyn: utils.string2Food(evidence.publicKey + "weTest#1"),

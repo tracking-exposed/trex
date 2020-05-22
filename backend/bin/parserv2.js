@@ -8,29 +8,31 @@ const nconf = require('nconf');
 const JSDOM = require('jsdom').JSDOM;
 const fs = require('fs');
 
+/* require('look').start(); */
+
 const videoparser = require('../parsers/video')
 const homeparser = require('../parsers/home')
 const automo = require('../lib/automo')
 
 nconf.argv().env().file({ file: 'config/settings.json' });
 
-/* const echoes = require('../lib/echoes');
-echoes.addEcho("elasticsearch");
-echoes.setDefaultEcho("elasticsearch"); */
+/* const echoes = require('../lib/echoes'); echoes.addEcho("elasticsearch"); echoes.setDefaultEcho("elasticsearch"); */
 
-const FREQUENCY = _.parseInt(nconf.get('frequency')) ? _.parseInt(nconf.get('frequency')) : 10;
+const FREQUENCY = 10;
+const AMOUNT_DEFAULT = 20;
+const stop = _.parseInt(nconf.get('stop')) ? _.parseInt(nconf.get('stop')) : 0;
 const backInTime = _.parseInt(nconf.get('minutesago')) ? _.parseInt(nconf.get('minutesago')) : 10;
 const id = nconf.get('id');
 const filter = nconf.get('filter') ? JSON.parse(fs.readFileSync('internal-ωτ1-v3.json')) : null;
 const singleUse = !!id;
 
 let skipCount = _.parseInt(nconf.get('skip')) ? _.parseInt(nconf.get('skip')) : 0;
-let htmlAmount = _.parseInt(nconf.get('amount')) ? _.parseInt(nconf.get('amount')) : 20;
+let htmlAmount = _.parseInt(nconf.get('amount')) ? _.parseInt(nconf.get('amount')) : AMOUNT_DEFAULT;
 
 let nodatacounter = 0;
 let processedCounter = skipCount;
 let lastExecution = moment().subtract(backInTime, 'minutes').toISOString();
-let computedFrequency = FREQUENCY;
+let computedFrequency = 10;
 const stats = { lastamount: null, currentamount: null, last: null, current: null };
 
 if(backInTime != 10) {
@@ -57,12 +59,16 @@ async function newLoop() {
     };
     htmlFilter.processed = { $exists: repeat };
 
-    if(filter) {
+    if(filter)
         htmlFilter.id = { '$in': filter };
-    } else if(id) {
-        debug("Targeting a specific metadataId imply --single");
+    if(id) {
+        debug("Targeting a specific metadataId");
         htmlFilter = {
             metadataId: id
+        }
+        if( skipCount || (htmlAmount != AMOUNT_DEFAULT) ) {
+            debug("Ignoring --skip and --amount because of --id");
+            skipCount = 0; htmlAmount = AMOUNT_DEFAULT;
         }
     }
 
@@ -102,58 +108,8 @@ async function newLoop() {
     stats.lastamount = stats.currentamount;
     stats.currentamount = _.size(htmls.content);
 
-    const analysis = _.map(htmls.content, function(e) {
-
-        if(!e || !e.html || _.size(e.html) < 2) {
-            debug("Unexpected entry %s html empty", e.id);
-            return null;
-        }
-
-        const envelop = {
-            impression: _.omit(e, ['html', '_id']),
-            jsdom: new JSDOM(e.html.replace(/\n\ +/g, ''))
-                    .window.document,
-        }
-
-        let metadata = null;
-        try {
-            processedCounter++;
-            debug("#%d\ton (%d minutes ago) %s %d.%d %s %s %s",
-                processedCounter,
-                _.round(moment.duration( moment() - moment(e.savingTime)).asMinutes(), 0),
-                e.metadataId,
-                e.packet, e.incremental,
-                e.href.replace(/https:\/\//, ''), e.size, e.selector);
-
-            const curi = e.href.replace(/.*youtube\.com\//, '').replace(/\?.*/, '')
-
-            if(!_.size(curi) && e.selector == "ytd-app") {
-                /* without clean URI, it is an youtube home */
-                metadata = homeparser.process(envelop);
-            }
-            else if(e.selector == "ytd-app") {
-                /* else, if is ytd-app, it is a full video content */
-                metadata = videoparser.process(envelop);
-            }
-            else if(_.indexOf(_.keys(advSelectors), e.selector) != -1)  {
-                /* if the selector is one of the adveritising related dissector, find it out */
-                metadata = advSelectors[e.selector](envelop, e.selector);
-                /* possible fields: 'adLink', 'adLabel', 'adChannel' */
-            } else {
-                console.log("Selector not supported!", e.selector);
-                return null;
-            }
-
-            if(!metadata)
-                return null;
-
-        } catch(error) {
-            debuge("#%d\t selector (%s) error: %s", processedCounter, e.selector, error.message);
-            return null;
-        }
-
-        return [ envelop.impression, metadata ];
-    });
+    const analysis = _.map(htmls.content, processEachHTML);
+    /* analysis is a list with [ impression, metadata ] */
 
     const updates = [];
     for (const entry of _.compact(analysis)) {
@@ -178,9 +134,67 @@ async function newLoop() {
         _.size(_.compact(analysis)), _.size(htmls.content), _.size(remaining), computedFrequency);
 
     await automo.markHTMLsUnprocessable(remaining);
-    console.log(processedCounter, "completed, took"
-    , moment.duration(moment() - stats.current).asSeconds(), "secs"
-    , moment.duration(moment() - stats.current).asSeconds() / 60, "mins");
+
+    console.log( processedCounter, "completed, took",
+        moment.duration(moment() - stats.current).asSeconds(), "Sec.",
+        moment.duration(moment() - stats.current).asMinutes(), "Min.");
+    if(stop === processedCounter) {
+        console.log("Planned exit happening now, cheeeeers!");
+        process.exit(processedCounter);
+    }
+}
+
+function processEachHTML(e) {
+    /* main function invoked by the main loop */
+    if(!e || !e.html || _.size(e.html) < 2) {
+        debug("Unexpected entry %s html empty", e.id);
+        return null;
+    }
+
+    const envelop = {
+        impression: _.omit(e, ['html', '_id']),
+        jsdom: new JSDOM(e.html.replace(/\n\ +/g, ''))
+                .window.document,
+    }
+
+    let metadata = null;
+    try {
+        processedCounter++;
+        debug("#%d\ton (%d minutes ago) %s %d.%d %s %s %s",
+            processedCounter,
+            _.round(moment.duration( moment() - moment(e.savingTime)).asMinutes(), 0),
+            e.metadataId,
+            e.packet, e.incremental,
+            e.href.replace(/https:\/\//, ''), e.size, e.selector);
+
+        const curi = e.href.replace(/.*youtube\.com\//, '').replace(/\?.*/, '')
+
+        if(!_.size(curi) && e.selector == "ytd-app") {
+            /* without clean URI, it is an youtube home */
+            metadata = homeparser.process(envelop);
+        }
+        else if(e.selector == "ytd-app") {
+            /* else, if is ytd-app, it is a full video content */
+            metadata = videoparser.process(envelop);
+        }
+        else if(_.indexOf(_.keys(advSelectors), e.selector) != -1)  {
+            /* if the selector is one of the adveritising related dissector, find it out */
+            metadata = advSelectors[e.selector](envelop, e.selector);
+            /* possible fields: 'adLink', 'adLabel', 'adChannel' */
+        } else {
+            console.log("Selector not supported!", e.selector);
+            return null;
+        }
+
+        if(!metadata)
+            return null;
+
+    } catch(error) {
+        debuge("#%d\t selector (%s) error: %s", processedCounter, e.selector, error.message);
+        return null;
+    }
+
+    return [ envelop.impression, metadata ];
 }
 
 function sleep(ms) {
@@ -205,6 +219,9 @@ async function wrapperLoop() {
 }
 
 try {
+    if(filter && id)
+        throw new Error("Invalid combo, you can't use --filter and --id");
+
     wrapperLoop();
 } catch(e) {
     console.log("Error in wrapperLoop", e.message);

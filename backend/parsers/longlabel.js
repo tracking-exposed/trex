@@ -15,6 +15,7 @@ const langopts = [
     { sostantivo: "visninger", separator: 'af', locale: 'nn', viewcount: dots }, // norvegian
     { sostantivo: "avspillinger", separator: 'af', locale: 'nn', viewcount: dots }, // norvegian
     { sostantivo: "vues" , separator: 'de', locale: 'fr', viewcount: empty },
+    { sostantivo: "vue" , separator: 'de', locale: 'fr', viewcount: empty },
     { sostantivo: "ganger", separator: 'av', locale: 'nn', viewcount: empty }, // it is "times" not visualization in norwegian
     { sostantivo: "weergaven", separator: 'door', locale: 'nl', viewcount: dots }, // Dutch
     { sostantivo: "Aufrufe", separator: 'von', locale: 'de', viewcount: dots },
@@ -32,7 +33,7 @@ function sanityCheck(l) {
 function NoViewsReplacer(l, sosta) {
     /* [Write Time at 9 is BACK! by The Goulet Pen Company 9 minutes ago No views,
         should return 0 views */
-    const x = [ 'No', 'Nessuna', 'Ingen', 'Keine' ];
+    const x = [ 'No', 'Nessuna', 'Ingen', 'Keine', 'Nenhuma', 'Aucune' ];
     return _.reduce(x, function(memo, wordThatMeansNothing) {
         let parseable = ` 0 ${sosta}`;
         let r = new RegExp(`\\s${wordThatMeansNothing}\\s${sosta}\\.?$`);
@@ -61,7 +62,6 @@ function parser(l, source, isLive) {
     }
 
     // debug("<sostantivo> %s, <langi> %j", viewssost, langi);
-    if(isLive) debugger;
     if(!langi) debugger;
 
     if(!langi) {
@@ -122,7 +122,8 @@ const relativeConMapping = [
     "unit": "minutes",
     "words": [
       "minuti", "minutos", "minutes", "минут",
-      "месяцев", "минуты", "минут",
+      "месяцев", "минуты", "минут", "Minuten",
+      "minutter"
     ]
   },
   {

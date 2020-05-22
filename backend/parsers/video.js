@@ -6,7 +6,6 @@ const debug = require('debug')('parser:video');
 const debuge = require('debug')('parser:video:error');
 const debugCheckup = require('debug')('parser:C');
 const debugTimef = require('debug')('parser:timeF');
-const missing = require('debug')('parser:video: M|');
 
 const uxlang = require('./uxlang');
 const longlabel = require('./longlabel');
@@ -48,17 +47,10 @@ function closestForTime(e, sele) {
     /* this function is a kind of .closest but apply to textContent and aria-label
        to find the right element */
 
-    if(_.size(e.outerHTML) > 10000) {
-        debugTimef("[display/extended Time] breaking recursion match fail on %d", _.size(e.outerHTML));
-        debugger;
-        return { displayTime: null, expandedTime: null };
-    }
-
     /* debug("(e) %j\n<- %j",
         _.map ( e.querySelectorAll('[href]'), function(x) { return x.getAttribute('href') }),
         _.map ( e.querySelectorAll('*'), 'textContent')
     ); */
-
     const combo = _.compact(_.map(e.querySelectorAll('[aria-label]'), function(x) {
         const label =  x.getAttribute('aria-label');
         const text =  x.textContent;
@@ -70,6 +62,11 @@ function closestForTime(e, sele) {
         const expandedTime = _.first(combo).label;  // '3:02'
         const displayTime = _.first(combo).text;    // '3 minutes, 2 seconds'
         return { displayTime, expandedTime };
+    }
+
+    if(_.size(e.parentNode.outerHTML) > 9000) {
+        debugTimef("[display/extended Time] breaking recursion, next would be %d bytes", _.size(e.parentNode.outerHTML));
+        return { displayTime: null, expandedTime: null };
     }
 
     // debugTimef("[display/extended Time] recursion (%d next %d)", _.size(e.outerHTML), _.size(e.parentNode.outerHTML) );
@@ -95,18 +92,19 @@ function relatedMetadata(e, i) {
     if(vizstr && _.size(vizstr))
         foryou = vizstr.match(/\d+/) ? false : true;
 
-    const link = e.querySelectorAll('a')[0].getAttributeNode('href').value
-    const videoId = link.replace(/.*v=/, '');
-    const parameter = videoId.match(/&.*/) ? videoId.replace(/.*&/, '&') : null;
-    const liveBadge = e.querySelector(".badge-style-type-live-now");
+    const link = e.querySelector('a') ? e.querySelector('a').getAttribute('href') : null;
+    const videoId = link ? link.replace(/.*v=/, '') : null;
+    const parameter = (videoId && videoId.match(/&.*/)) ? videoId.replace(/.*&/, '&') : null;
+    const liveBadge = !!e.querySelector(".badge-style-type-live-now");
 
     const { displayTime, expandedTime } = closestForTime(e, '.ytd-thumbnail-overlay-time-status-renderer');
     // 2:03  -  2 minutes and 3 seconds, they might be null.
+    const recommendedLength = displayTime ? moment.duration(displayTime).asSeconds() : null;
     const arialabel = e.querySelector('#video-title').getAttribute('aria-label');
     // Beastie Boys - Sabotage by BeastieBoys 9 years ago 3 minutes, 2 seconds 62,992,821 views
 
     try {
-        mined = arialabel ? longlabel.parser(arialabel, source, !!liveBadge): null;
+        mined = arialabel ? longlabel.parser(arialabel, source, liveBadge): null;
         if(mined.title != title) {
             debug("Interesting anomaly: %s != %s", mined.title, title);
         }
@@ -114,7 +112,6 @@ function relatedMetadata(e, i) {
         debuge("longlabel parser error: %s", e.message);
     }
 
-    // thumbnail is @ https://i.ytimg.com/vi/${videoId}/hqdefault.jpg
     const r = {
         index: i + 1,
         verified,
@@ -122,13 +119,16 @@ function relatedMetadata(e, i) {
         videoId,
         parameter: parameter ? parameter : null,
         recommendedSource: source,
-        recommendedTitle: mined ? mined.title : null,
-        recommendedLength: displayTime ? displayTime : null,
-        recommendedLengthSe: expandedTime ? expandedTime : null,
+        recommendedTitle: mined ? mined.title : (title ? title : null),
+        recommendedLength,
+        recommendedLengthText: expandedTime ? expandedTime : null,
         recommendedPubTime: mined ? mined.timeago : null,
+        /* ^^^^  is deleted in makeAbsolutePublicationTime, when clientTime is available,
+         * this field produces -> recommendedPubtime and ptPrecison */
         recommendedRelativeSeconds: mined ? mined.timeago.asSeconds() : null,
         recommendedViews: mined ? mined.views : null,
-        isLive: !!liveBadge
+        isLive: liveBadge,
+        label: arialabel,
     };
     checkUpDebug(r);
     return r;
@@ -161,10 +161,16 @@ function makeAbsolutePublicationTime(list, clientTime) {
        transformation of '1 month ago', is now a moment.duration() object 
        and now is saved the estimated ISODate format. */
     return _.map(list, function(r) {
-        const when = moment(clientTime).subtract(r.recommendedPubTime);
-        r.publicationTime = new Date(when.toISOString());
-        r.timePrecision = 'estimated';
-        return _.omit(r, [ 'recommendedPubTime', 'label' ]);
+        if(!clientTime || !r.recommendedPubTime) {
+            r.publicationTime = null;
+            r.timePrecision = 'error';
+        } else {
+            const when = moment(clientTime).subtract(r.recommendedPubTime);
+            r.publicationTime = new Date(when.toISOString());
+            r.timePrecision = 'estimated';
+        }
+        /* we are keeping 'label' so it can be fetch in mongodb but filtered in JSON/CSV */
+        return _.omit(r, [ 'recommendedPubTime' ]);
     })
 }
 
@@ -377,9 +383,6 @@ function process(envelop) {
     if(_.size(re)) debug("related error %s", JSON.stringify(re, undefined));
     if(_.size(ve)) debug("views error %s", JSON.stringify(ve, undefined));
     if(_.size(le)) debug("likes error %s", JSON.stringify(re, undefined));
-
-    /* remove debugging/research fields we don't want in mongo */
-    _.unset(extracted, 'check');
     return extracted;
 };
 
