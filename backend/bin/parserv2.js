@@ -20,14 +20,16 @@ nconf.argv().env().file({ file: 'config/settings.json' });
 
 const FREQUENCY = 10;
 const AMOUNT_DEFAULT = 20;
-const stop = _.parseInt(nconf.get('stop')) ? _.parseInt(nconf.get('stop')) : 0;
+
+let skipCount = _.parseInt(nconf.get('skip')) ? _.parseInt(nconf.get('skip')) : 0;
+let htmlAmount = _.parseInt(nconf.get('amount')) ? _.parseInt(nconf.get('amount')) : AMOUNT_DEFAULT;
+
+const stop = _.parseInt(nconf.get('stop')) ? (_.parseInt(nconf.get('stop')) + skipCount): 0;
 const backInTime = _.parseInt(nconf.get('minutesago')) ? _.parseInt(nconf.get('minutesago')) : 10;
 const id = nconf.get('id');
 const filter = nconf.get('filter') ? JSON.parse(fs.readFileSync('internal-ωτ1-v3.json')) : null;
 const singleUse = !!id;
-
-let skipCount = _.parseInt(nconf.get('skip')) ? _.parseInt(nconf.get('skip')) : 0;
-let htmlAmount = _.parseInt(nconf.get('amount')) ? _.parseInt(nconf.get('amount')) : AMOUNT_DEFAULT;
+const repeat = !!nconf.get('repeat');
 
 let nodatacounter = 0;
 let processedCounter = skipCount;
@@ -39,7 +41,7 @@ if(backInTime != 10) {
     const humanized = moment.duration(
         moment().subtract(backInTime, 'minutes') - moment()
     ).humanize();
-    console.log(`Considering ${backInTime} minutes (${humanized}), as override the standard 10 minutes ${lastExecution}`);
+    debug(`Considering ${backInTime} minutes (${humanized}), as override the standard 10 minutes ${lastExecution}`);
 }
 
 const advSelectors = {
@@ -50,29 +52,9 @@ const advSelectors = {
     ".ytp-title-text": videoparser.videoTitleTop,
 };
 
-async function newLoop() {
-    let repeat = !!nconf.get('repeat');
-    let htmlFilter = {
-        savingTime: {
-            $gt: new Date(lastExecution)
-        },
-    };
-    htmlFilter.processed = { $exists: repeat };
+async function newLoop(htmlFilter) {
 
-    if(filter)
-        htmlFilter.id = { '$in': filter };
-    if(id) {
-        debug("Targeting a specific metadataId");
-        htmlFilter = {
-            metadataId: id
-        }
-        if( skipCount || (htmlAmount != AMOUNT_DEFAULT) ) {
-            debug("Ignoring --skip and --amount because of --id");
-            skipCount = 0; htmlAmount = AMOUNT_DEFAULT;
-        }
-    }
-
-    const htmls = await automo.getLastHTMLs(htmlFilter, skipCount, htmlAmount);
+    const htmls = await automo.getLastHTMLs(htmlFilter, processedCounter, htmlAmount);
     if(!_.size(htmls.content)) {
         nodatacounter++;
         if( (nodatacounter % 10) == 1) {
@@ -100,9 +82,10 @@ async function newLoop() {
             lastExecution);
     }
 
-    console.log(processedCounter, "start a new cicle. we took:",
+    debug("[+] %d start a new cicle, %d we took: %s and now process %d htmls",
+        processedCounter,
         stats.currentamount, moment.duration(moment() - stats.current).humanize(),
-        "and now process", _.size(htmls.content), "htmls");
+        _.size(htmls.content));
     stats.last = stats.current;
     stats.current = moment();
     stats.lastamount = stats.currentamount;
@@ -133,15 +116,11 @@ async function newLoop() {
     debug("Usable HTMLs %d/%d - marking as processed the useless %d HTMLs\t\t(sleep %d)",
         _.size(_.compact(analysis)), _.size(htmls.content), _.size(remaining), computedFrequency);
 
-    await automo.markHTMLsUnprocessable(remaining);
-
-    console.log( processedCounter, "completed, took",
-        moment.duration(moment() - stats.current).asSeconds(), "Sec.",
-        moment.duration(moment() - stats.current).asMinutes(), "Min.");
-    if(stop === processedCounter) {
-        console.log("Planned exit happening now, cheeeeers!");
-        process.exit(processedCounter);
-    }
+    const rv = await automo.markHTMLsUnprocessable(remaining);
+    debug("%d completed, took %d secs, %d mins",
+        processedCounter, moment.duration(moment() - stats.current).asSeconds(),
+        _.round(moment.duration(moment() - stats.current).asMinutes(), 2));
+    return rv;
 }
 
 function processEachHTML(e) {
@@ -159,13 +138,13 @@ function processEachHTML(e) {
 
     let metadata = null;
     try {
-        processedCounter++;
         debug("#%d\ton (%d minutes ago) %s %d.%d %s %s %s",
             processedCounter,
             _.round(moment.duration( moment() - moment(e.savingTime)).asMinutes(), 0),
             e.metadataId,
             e.packet, e.incremental,
             e.href.replace(/https:\/\//, ''), e.size, e.selector);
+        processedCounter++;
 
         const curi = e.href.replace(/.*youtube\.com\//, '').replace(/\?.*/, '')
 
@@ -182,7 +161,7 @@ function processEachHTML(e) {
             metadata = advSelectors[e.selector](envelop, e.selector);
             /* possible fields: 'adLink', 'adLabel', 'adChannel' */
         } else {
-            console.log("Selector not supported!", e.selector);
+            debuge("Selector not supported %s", e.selector);
             return null;
         }
 
@@ -206,12 +185,41 @@ function sleep(ms) {
 async function wrapperLoop() {
     while(true) {
         try {
-            await newLoop();
+            let htmlFilter = {
+                savingTime: {
+                    $gt: new Date(lastExecution)
+                },
+            };
+            htmlFilter.processed = { $exists: repeat };
+
+            if(filter)
+                htmlFilter.id = { '$in': filter };
+            if(id) {
+                debug("Targeting a specific metadataId");
+                htmlFilter = {
+                    metadataId: id
+                }
+                if( skipCount || (htmlAmount != AMOUNT_DEFAULT) ) {
+                    debug("Ignoring --skip and --amount because of --id");
+                    skipCount = 0;
+                    htmlAmount = AMOUNT_DEFAULT;
+                }
+            }
+            if(stop) {
+                htmlAmount = (stop - skipCount);
+                debug("--stop %d imply --amount %d", stop, htmlAmount);
+            }
+
+            if(stop && stop <= processedCounter) {
+                console.log(processedCounter);
+                process.exit(processedCounter);
+            }
+            await newLoop(htmlFilter);
         } catch(e) {
             console.log("Error in newLoop", e.message, e.stack);
         }
         if(singleUse) {
-            console.log("Single execution done!")
+            debug("Single execution done!")
             process.exit(0);
         }
         await sleep(computedFrequency * 1000)

@@ -328,6 +328,7 @@ async function markHTMLsUnprocessable(htmls) {
         debug("partial update happened! (it should be ok) %j", r.result);
     } */
     await mongoc.close();
+    return r;
 }
 
 async function updateMetadata(html, newsection, repeat) {
