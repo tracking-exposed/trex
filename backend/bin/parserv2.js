@@ -27,7 +27,7 @@ let htmlAmount = _.parseInt(nconf.get('amount')) ? _.parseInt(nconf.get('amount'
 const stop = _.parseInt(nconf.get('stop')) ? (_.parseInt(nconf.get('stop')) + skipCount): 0;
 const backInTime = _.parseInt(nconf.get('minutesago')) ? _.parseInt(nconf.get('minutesago')) : 10;
 const id = nconf.get('id');
-const filter = nconf.get('filter') ? JSON.parse(fs.readFileSync('internal-ωτ1-v3.json')) : null;
+const filter = nconf.get('filter') ? JSON.parse(fs.readFileSync(nconf.get('filter'))) : null;
 const singleUse = !!id;
 const repeat = !!nconf.get('repeat');
 
