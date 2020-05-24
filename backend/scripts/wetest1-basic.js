@@ -75,11 +75,50 @@ async function pickFromDB(filter, sorting, special) {
     }
 }
 
-const ITERATION = 3;
 function fileName(prefix, suffix) {
+    const ITERATION = 4;
     return `${prefix}-ωτ1-v${ITERATION}.${suffix}`;
 }
 
+const accuracyCounters = {};
+function upsert(key, subkey, update) {
+    let value = _.get(accuracyCounters, key + '.' + subkey, 0);
+    _.set(accuracyCounters, key + '.' + subkey, value + update);
+}
+function updateStats(entry) {
+    _.each(entry, function(value, key) {
+        if(typeof value == typeof undefined)
+            upsert(key, 'undefined', 1);
+        else if(_.isNull(value))
+            upsert(key, 'null', 1);
+        else if(typeof value == typeof 1)
+            upsert(key, 'int', 1);
+        else if(typeof value == typeof "")
+            upsert(key, 'string', 1);
+        else if(_.isInteger(value.length))
+            upsert(key, 'list', 1);
+        else if(typeof value == typeof {})
+            upsert(key, 'object', 1);
+        else if(typeof value == typeof true && value)
+            upsert(key, 'true', 1);
+        else if(typeof value == typeof true && !value)
+            upsert(key, 'false', 1);
+        else
+            debug("unknonw value type %s", typeof value);
+    });
+}
+function accuracyDump(fullamount) {
+    _.each(accuracyCounters, function(value, entryName) {
+        debug("%s%s%s", entryName, _.times(30 - _.size(entryName), " ").join(), _.map(value, function(amount, variableType) {
+            let p = (amount / fullamount) * 100;
+            return variableType + ": " + _.round(p, 1) + '%' ;
+        }).join(" | "));
+    });
+}
+
+/* --- end of utilities --- */
+
+/* two main function belows */
 function unrollRecommended(memo, evidence) { // metadata.type = video with 'related' 
     _.each(evidence.related, function(related, evidenceCounter) {
         let entry = {
@@ -95,17 +134,21 @@ function unrollRecommended(memo, evidence) { // metadata.type = video with 'rela
             experiment: 'wetest1',
             step: _.find(testVideos, { videoId: evidence.videoId }).language,
 
+            parameter: related.parameter,
             recommendedVideoId: related.videoId,
-            recommendedViews: related.recommendedViews,
-            recommendedDuration: recommendedLength, // in seconds 
-            recommendedRelativeSeconds: related.recommendedRelativeSeconds, // distance between clientTime and publicationTime
             recommendedAuthor: related.recommendedSource,
             recommendedTitle: related.recommendedTitle, 
-            recommendedPubtime: related.publicationTime,
+            recommendedLength: related.recommendedLength,
+            recommendedDisplayL: related.recommendedDisplayL,
+            recommendedLengthText: related.recommendedLengthText,
+            recommendedPubTime: related.publicationTime,
             ptPrecision: related.timePrecision,
+            recommendedRelativeS: related.recommendedRelativeSeconds, // distance between clientTime and publicationTime
+            recommendedViews: related.recommendedViews,
             recommendedForYou: related.foryou,
             recommendedVerified: related.verified,
             recommendationOrder: related.index,
+            recommendedKind: evidence.isLive ? "live": "video", // this should support also 'playlist' 
 
             watchedVideoId: evidence.videoId,
             watchedAuthor: evidence.authorName,
@@ -115,6 +158,7 @@ function unrollRecommended(memo, evidence) { // metadata.type = video with 'rela
             watchedChannel: evidence.authorSource,
         };
         memo.push(entry);
+        updateStats(entry);
     })
     return memo;
 }
@@ -128,23 +172,30 @@ function unwindSections(memo, evidence) { // metadata.type = 'home' with 'select
             id: evidenceCounter + '-' + evidence.id.replace(/[0-9]/g, ''),
             savingTime: evidence.savingTime,
             clientTime: evidence.clientTime,
+            order: selected.index,
 
             uxlang: evidence.uxlang,
             dataset: 'yttrex',
             experiment: 'wetest1',
             step: 'homepage',
 
-            /* TODO section Name  + isLive */
-            selectedVideoId: selected.href.replace(/\/watch\?v=/, ''),
-            selectedViews: selected.viz,
-            selectedDuration: selected.duration,
-            selectedPubtime: selected.mined.timeago + " not precise ",
-            selectedTitle: selected.title,
-            selectedAuthor: selected.authorName,
-            selectedChannel: selected.authorHref,
-            recommendationOrder: selected.index
+            parameter: selected.parameter,
+            sectionName: selected.sectionName,
+            selectedVideoId: selected.videoId,
+            selectedAuthor: selected.recommendedSource,
+            selectedChannel: selected.recommendedHref,
+            selectedTitle: selected.recommendedTitle,
+            selectedLength: selected.recommendedLength,
+            selectedDisplayL: selected.selectedDisplayL,
+            selectedLengthText: selected.recommendedLengthText,
+            selectedPubTime: selected.publicationTime,
+            ptPrecision: selected.timePrecision,
+            selectedRelativeS: selected.recommendedRelativeSeconds,
+            selectedViews: selected.recommendedViews,
+            selectedKind: selected.isLive ? "live": "video", // this should support also 'playlist' 
         };
         memo.push(entry);
+        updateStats(entry);
     });
     return memo;
 };
@@ -158,6 +209,7 @@ async function produceHomeCSV(tf) {
     const csvtext = csv.produceCSVv1(unwind);
     debug("Produced %d bytes for text/csv, saving file", _.size(csvtext));
     fs.writeFileSync(fileName('home', 'csv'), csvtext);
+    accuracyDump(_.size(unwind));
 }
 
 async function produceVideosCSV(tf) {
@@ -171,6 +223,7 @@ async function produceVideosCSV(tf) {
     const csvtext = csv.produceCSVv1(unroll);
     debug("Produced %d bytes for text/csv, saving file", _.size(csvtext));
     fs.writeFileSync(fileName('videos', 'csv'), csvtext);
+    accuracyDump(_.size(unroll));
     /*
     // this product to feed tests:longlabel
     const xxx = _.uniq(_.flatten(_.map(watches, function(e) {

@@ -53,6 +53,19 @@ const advSelectors = {
 };
 
 async function newLoop(htmlFilter) {
+    /* this is the begin of the parsing core pipeline.
+     * gets htmls from the db, if --repeat 1 then previously-analyzed-HTMLS would be
+     * re-analyzed. otherwise, the default, is to skip those and wait for new 
+     * htmls. To receive htmls you should have a producer consistend with the 
+     * browser extension format, and bin/server listening 
+     * 
+     * This script pipeline might optionally start from the past, and 
+     * re-analyze HTMLs based on --minutesago <number> option.
+     * 
+     * At the end update metadata only if meaningful update is present,
+     * you might notice the library calls in automo, they should be refactored
+     * and optimized.
+     * */
 
     const htmls = await automo.getLastHTMLs(htmlFilter, processedCounter, htmlAmount);
     if(!_.size(htmls.content)) {
@@ -70,6 +83,7 @@ async function newLoop(htmlFilter) {
 
     if(!htmls.overflow) {
         lastExecution = moment().subtract(2, 'm').toISOString();
+        /* 1 minute is the average stop, so it comeback to check 2 minutes before */
         overflowReport("<NOT>\t\t%d documents", _.size(htmls.content));
     }
     else {
@@ -82,10 +96,11 @@ async function newLoop(htmlFilter) {
             lastExecution);
     }
 
-    debug("[+] %d start a new cicle, %d we took: %s and now process %d htmls",
-        processedCounter,
-        stats.currentamount, moment.duration(moment() - stats.current).humanize(),
-        _.size(htmls.content));
+    if(stats.currentamount || stats.lastamount)
+        debug("[+] %d start a new cicle, %d took: %s and now process %d htmls",
+            processedCounter,
+            stats.currentamount, moment.duration(moment() - stats.current).humanize(),
+            _.size(htmls.content));
     stats.last = stats.current;
     stats.current = moment();
     stats.lastamount = stats.currentamount;
@@ -117,7 +132,7 @@ async function newLoop(htmlFilter) {
         _.size(_.compact(analysis)), _.size(htmls.content), _.size(remaining), computedFrequency);
 
     const rv = await automo.markHTMLsUnprocessable(remaining);
-    debug("%d completed, took %d secs, %d mins",
+    debug("%d completed, took %d secs = %d mins",
         processedCounter, moment.duration(moment() - stats.current).asSeconds(),
         _.round(moment.duration(moment() - stats.current).asMinutes(), 2));
     return rv;
@@ -183,6 +198,18 @@ function sleep(ms) {
 }
 
 async function wrapperLoop() {
+
+    if( id && (skipCount || (htmlAmount != AMOUNT_DEFAULT) ) ) {
+        debug("Ignoring --skip and --amount because of --id");
+        skipCount = 0;
+        htmlAmount = AMOUNT_DEFAULT;
+    }
+
+    if(stop && htmlAmount > (stop - skipCount) ) {
+        htmlAmount = (stop - skipCount);
+        debug("--stop %d imply --amount %d", stop, htmlAmount);
+    }
+
     while(true) {
         try {
             let htmlFilter = {
@@ -199,15 +226,6 @@ async function wrapperLoop() {
                 htmlFilter = {
                     metadataId: id
                 }
-                if( skipCount || (htmlAmount != AMOUNT_DEFAULT) ) {
-                    debug("Ignoring --skip and --amount because of --id");
-                    skipCount = 0;
-                    htmlAmount = AMOUNT_DEFAULT;
-                }
-            }
-            if(stop) {
-                htmlAmount = (stop - skipCount);
-                debug("--stop %d imply --amount %d", stop, htmlAmount);
             }
 
             if(stop && stop <= processedCounter) {

@@ -121,6 +121,7 @@ function relatedMetadata(e, i) {
         recommendedSource: source,
         recommendedTitle: mined ? mined.title : (title ? title : null),
         recommendedLength,
+        recommendedDisplayL: displayTime ? displayTime : null,
         recommendedLengthText: expandedTime ? expandedTime : null,
         recommendedPubTime: mined ? mined.timeago : null,
         /* ^^^^  is deleted in makeAbsolutePublicationTime, when clientTime is available,

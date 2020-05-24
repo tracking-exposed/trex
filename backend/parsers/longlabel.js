@@ -133,7 +133,7 @@ const relativeConMapping = [
       "horas", "heure", "hores", "hora", "ora",
       "ore", "uur", "hours", "hour", "timer",
       "Stunde", "Stunden", "heures", "час", "часа",
-      "часов",
+      "часов", "time"
     ]
   },
   {
