@@ -1,8 +1,8 @@
 #!/bin/sh
-for x in `seq 0 520`; 
+for x in `seq 0 120`; 
 	do
-	i=$(($x*20));
-	echo "script looping on $x/520 $i";
-	( sh -c "DEBUG=*:*:error node bin/parserv2.js --minutesago 87000 --repeat 1 --filter missingWords.json --skip $i --stop 20" );
+	i=$(($x*10));
+	echo "script looping on $x/120 $i";
+	DEBUG=yttrex:parserv,*:*:error node bin/parserv2.js --minutesago 87000 --repeat 1 --filter internal.json --skip $i --stop 10;
 done
 
