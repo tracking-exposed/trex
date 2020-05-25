@@ -256,7 +256,7 @@ async function produceInternalData(tf) {
 try {
     const what = nconf.get('type');
     if(!what || _.indexOf(_.keys(allowed), what) == -1 ) {
-        console.log(`This script need --type ${_.keys(allowed).join('|')} and produces URL-centered CSVs`);
+        console.log(`This script need --type ${_.keys(allowed).join('|')} and produces wetest1-related JSON/CSVs`);
         process.exit(1);
     }
 

@@ -170,12 +170,13 @@ function actualHomeProcess(D) {
 
     debug("From this homepage we'll process %d video entry", _.size(ve));
     const selectorOffsetMap = [];
+    /* this collection is only useful to study the page, and it is saved in the DB */
     const selected = _.map(ve, function(e, i) {
         sizeTreeResearch(e, i)
         try {
             const ubication = D.querySelector('body').outerHTML.indexOf(e.outerHTML);
             selectorOffsetMap.push({ i, offset: ubication });
-            let videoInfo = dissectSelectedVideo(e, i, titles, offset);
+            let videoInfo = dissectSelectedVideo(e, i, titles, ubication);
             return videoInfo;
         } catch(error) {
             const f = e.querySelector('#video-title-link');
@@ -191,14 +192,16 @@ function actualHomeProcess(D) {
 
     debugResults("Parsing completed, errors: %j over %d", _.countBy(selected, { error: true }), _.size(selected)); 
     debugSizes(selected);
-    return _.reject(selected, { error: true });
+    return { selected: _.reject(selected, { error: true }), sections: selectorOffsetMap };
 }
 
 function process(envelop) {
 
     let retval = {};
     try {
-        retval.selected = actualHomeProcess(envelop.jsdom);
+        let { selected, sections } = actualHomeProcess(envelop.jsdom);
+        retval.selected = selected;
+        retval.sections = sections;
     } catch(e) {
         debug("Error in processing %s (%d): %s",
             envelop.impression.href, envelop.impression.size, e.message);

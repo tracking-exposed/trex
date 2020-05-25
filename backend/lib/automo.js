@@ -371,7 +371,7 @@ async function updateMetadata(html, newsection, repeat) {
     const up = _.reduce(newsection, function(memo, value, key) {
 
         if(_.isUndefined(value)) {
-            debug("updateChecker: %s is undefined!", key);
+            debug("updateChecker: <%s> has undefined value!", key);
             return memo;
         }
         if(_.indexOf(careless, key) !== -1)
