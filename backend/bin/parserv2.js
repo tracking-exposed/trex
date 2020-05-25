@@ -20,12 +20,13 @@ nconf.argv().env().file({ file: 'config/settings.json' });
 
 const FREQUENCY = 10;
 const AMOUNT_DEFAULT = 20;
+const BACKINTIMEDEFAULT = 3;
 
 let skipCount = _.parseInt(nconf.get('skip')) ? _.parseInt(nconf.get('skip')) : 0;
 let htmlAmount = _.parseInt(nconf.get('amount')) ? _.parseInt(nconf.get('amount')) : AMOUNT_DEFAULT;
 
 const stop = _.parseInt(nconf.get('stop')) ? (_.parseInt(nconf.get('stop')) + skipCount): 0;
-const backInTime = _.parseInt(nconf.get('minutesago')) ? _.parseInt(nconf.get('minutesago')) : 10;
+const backInTime = _.parseInt(nconf.get('minutesago')) ? _.parseInt(nconf.get('minutesago')) : BACKINTIMEDEFAULT;
 const id = nconf.get('id');
 const filter = nconf.get('filter') ? JSON.parse(fs.readFileSync(nconf.get('filter'))) : null;
 const singleUse = !!id;
@@ -37,11 +38,11 @@ let lastExecution = moment().subtract(backInTime, 'minutes').toISOString();
 let computedFrequency = 10;
 const stats = { lastamount: null, currentamount: null, last: null, current: null };
 
-if(backInTime != 10) {
+if(backInTime != BACKINTIMEDEFAULT) {
     const humanized = moment.duration(
         moment().subtract(backInTime, 'minutes') - moment()
     ).humanize();
-    debug(`Considering ${backInTime} minutes (${humanized}), as override the standard 10 minutes ${lastExecution}`);
+    debug(`Considering ${backInTime} minutes (${humanized}), as override the standard ${BACKINTIMEDEFAULT} minutes ${lastExecution}`);
 }
 
 const advSelectors = {
@@ -82,8 +83,8 @@ async function newLoop(htmlFilter) {
     }
 
     if(!htmls.overflow) {
-        lastExecution = moment().subtract(2, 'm').toISOString();
-        /* 1 minute is the average stop, so it comeback to check 2 minutes before */
+        lastExecution = moment().subtract(BACKINTIMEDEFAULT, 'm').toISOString();
+        /* 1 minute is the average stop, so it comeback to check 3 minutes before */
         overflowReport("<NOT>\t\t%d documents", _.size(htmls.content));
     }
     else {
@@ -210,6 +211,10 @@ async function wrapperLoop() {
         debug("--stop %d imply --amount %d", stop, htmlAmount);
     }
 
+    let actualRepeat = (repeat || !!id || !!filter || (backInTime != BACKINTIMEDEFAULT) );
+    if(actualRepeat != repeat)
+        debug("--repeat it is implicit!");
+
     while(true) {
         try {
             let htmlFilter = {
@@ -217,7 +222,7 @@ async function wrapperLoop() {
                     $gt: new Date(lastExecution)
                 },
             };
-            htmlFilter.processed = { $exists: repeat };
+            htmlFilter.processed = { $exists: actualRepeat };
 
             if(filter)
                 htmlFilter.metadataId = { '$in': filter };
