@@ -71,8 +71,8 @@ async function newLoop(htmlFilter) {
     if(!_.size(htmls.content)) {
         nodatacounter++;
         if( (nodatacounter % 10) == 1) {
-            debug("%d no data at the last query: %j",
-                nodatacounter, htmlFilter);
+            debug("%d no data at the last query: %j %j",
+                nodatacounter, _.keys(htmlFilter), htmlFilter.savingTime);
         }
         lastExecution = moment().subtract(2, 'm').toISOString();
         computedFrequency = FREQUENCY;
@@ -220,7 +220,7 @@ async function wrapperLoop() {
             htmlFilter.processed = { $exists: repeat };
 
             if(filter)
-                htmlFilter.id = { '$in': filter };
+                htmlFilter.metadataId = { '$in': filter };
             if(id) {
                 debug("Targeting a specific metadataId");
                 htmlFilter = {

@@ -242,10 +242,10 @@ async function produceInternalData(tf) {
     const watches = await pickFromDB(_.extend(tf, {
         href: { "$in": _.map(testVideos, 'href')}
     }), null, nconf.get('schema').htmls);
-    debug("Read %d", _.size(watches));
+    debug("Considering %d htmls to pick unique metadataId(s)", _.size(watches));
     const evidences = _.groupBy(watches, 'metadataId');
     const elements = _.map(evidences, function(htmls, metadataId) {
-        return _.last(_.sortBy(htmls, 'size')).id;
+        return metadataId; // _.last(_.sortBy(htmls, 'size')).id;
     });
     debug("filtered %d", _.size(elements));
     fs.writeFileSync(fileName('internal', 'json'), JSON.stringify(elements, undefined, 2), 'utf-8');

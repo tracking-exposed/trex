@@ -304,11 +304,14 @@ async function getLastHTMLs(filter, skip, amount) {
         amount,
         skip ? skip : 0);
 
+    /* printable filter because when it is too long .. */
+    const pfilter = _.size(JSON.stringify(filter)) > 200 ? _.keys(filter) : filter;
+
     if(_.size(htmls))
-        debug("getLastHTMLs: %j -> %d (overflow %s) %s", filter, _.size(htmls),
+        debug("getLastHTMLs: %j -> %d (overflow %s) %s", pfilter, _.size(htmls),
             (_.size(htmls) == amount), skip ? "skip " + skip : "");
     else
-        debug("No data! %j amount %d skip %d", filter, amount,
+        debug("No data! %j amount %d skip %d", pfilter, amount,
              skip ? "skip " + skip : "");
 
     mongoc.close();
