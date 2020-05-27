@@ -3,6 +3,7 @@ const debug = require('debug')('parser:longlabel');
 const debuge = require('debug')('parser:longlabel:error');
 const moment = require('moment');
 
+const unrecognizedWordList = [];
 const langopts = [
     { sostantivo: "views", separator: 'by', locale: 'en', viewcount: comma },
     { sostantivo: "view", separator: 'by', locale: 'en', viewcount: comma },
@@ -46,9 +47,7 @@ function parser(l, source, isLive) {
         1) find which language is the locale, by pattern matching 'sostantivo' and 'separator'
             - found? proceeed
             - not found? throw an exception, as part of the exception the last word
-        2) get the view, and the label updated string. 'viewcount' return an integer. if is a livestream, it's different
-    */
-
+        2) get the view, and the label updated string. 'viewcount' return an integer. if is a livestream, it's different */
     if(!_.size(source))
         throw new Error("No source");
 
@@ -228,15 +227,17 @@ function getPublicationTime(timeinfo) {
         const fullwordlist = _.flatten(_.map(relativeConMapping, 'words'));
         const missing = _.filter(timeago[0].split(' '), function(labelword) {
             if(!_.isNaN(_.parseInt(labelword)))
-                return true;
+                return false;
             return fullwordlist.indexOf(labelword) == -1;
         });
-        const fs = require('fs');
-        const already = JSON.parse(fs.readFileSync('missingWords.json'));
-        const updated = _.uniq(_.concat(already, missing));
-        if(_.size(updated) != _.size(already)) {
-            debug("adding in 'missingWords.json' %j, going to %d elements", missing, _.size(updated));
-            fs.writeFileSync('missingWords.json', JSON.stringify(updated, undefined, 2), 'utf-8');
+        const updated = _.uniq(_.concat(unrecognizedWordList, missing));
+        if(_.size(updated) > _.size(unrecognizedWordList)) {
+            _.each(missing, function(mw) {
+                if(unrecognizedWordList.indexOf(mw) === -1)
+                    unrecognizedWordList.push(mw);
+            })
+            debug("Found %d unrecognized words, now extended the list of %j",
+                _.size(missing), unrecognizedWordList);
         }
         throw new Error(`Lack of time mapping relativeConMapping ${timeago} |${timeinfo}|`);
     }
@@ -332,4 +333,5 @@ function dots(label, sosta, isLive) {
 module.exports = {
     parser,
     relativeConMapping,
+    unrecognized: unrecognizedWordList,
 };

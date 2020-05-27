@@ -8,11 +8,10 @@ const nconf = require('nconf');
 const JSDOM = require('jsdom').JSDOM;
 const fs = require('fs');
 
-/* require('look').start(); */
-
-const videoparser = require('../parsers/video')
-const homeparser = require('../parsers/home')
-const automo = require('../lib/automo')
+const videoparser = require('../parsers/video');
+const longlabel = require('../parsers/longlabel');
+const homeparser = require('../parsers/home');
+const automo = require('../lib/automo');
 
 nconf.argv().env().file({ file: 'config/settings.json' });
 
@@ -231,6 +230,10 @@ async function wrapperLoop() {
                 htmlFilter = {
                     metadataId: id
                 }
+            }
+
+            if(_.size(longlabel.unrecognized)) {
+                debuge("[this was originally saved on a dedicated file]: %j", longlabel.unrecognized);
             }
 
             if(stop && stop <= processedCounter) {
