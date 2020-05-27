@@ -50,6 +50,7 @@ const allowed = {
     'home': produceHomeCSV,
     'video': produceVideosCSV,
     'internal': produceInternalData,
+    'checkup': produceInternalCheckup,
 };
 
 /* --- utilities --- */
@@ -249,7 +250,40 @@ async function produceInternalData(tf) {
     });
     debug("filtered %d", _.size(elements));
     fs.writeFileSync(fileName('internal', 'json'), JSON.stringify(elements, undefined, 2), 'utf-8');
-    /* done, no return value */
+}
+
+async function produceInternalCheckup(tf) {
+    /* the check is: do every metadataId have a metadata entry, or we somehow forget sth ? */
+    const missing = [];
+    const filter = _.extend(tf, { href: { "$in": _.map(testVideos, 'href')} });
+
+    try {
+        const mongoc = await mongo3.clientConnect({concurrency: 1});
+        const l = await mongo3.aggregate(mongoc, nconf.get('schema').htmls, [{
+             "$match": filter
+        }, { "$project":
+            { id: 1, metadataId: 1, size: 1, href: 1, savingTime: 1 }
+        }, { "$lookup":
+            { from: 'metadata', localField: "metadataId", foreignField: 'id', as: 'm' }
+        }, { "$project":
+            { id: 1, metadataId: 1, metas: { "$size": "$m" }}
+        }]);
+
+        debug("Internal stats: total %d, missing meta %d, having meta %d (%d\%)",
+            _.size( l ),
+            _.size( _.filter(l, {metas: 0}) ),
+            _.size( _.filter(l, {metas: 1}) ),
+            _.round( ( _.size( _.filter(l, {metas: 1}) ) / _.size(l) ), 2) * 100
+        );
+        const missingmetaids = _.uniq(_.map(_.filter(l, { metas: 0}), 'metadataId'));
+        debug("Saving metadataId not yet processed (%d)", _.size(missingmetaids));
+        fs.writeFileSync(fileName('missing', 'json'), JSON.stringify(missingmetaids, undefined, 2), 'utf-8');
+        await mongoc.close();
+
+    } catch(e) {
+        debug("Error in produceInternalCheckup: %s", e.message);
+        throw e;
+    } 
 }
 
 /* -------------------------------------- execution handler --------------------------------------- */
