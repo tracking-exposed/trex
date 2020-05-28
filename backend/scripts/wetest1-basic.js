@@ -253,33 +253,48 @@ async function produceInternalData(tf) {
 }
 
 async function produceInternalCheckup(tf) {
-    /* the check is: do every metadataId have a metadata entry, or we somehow forget sth ? */
-    const missing = [];
+    /* Produce a file containing the not-yet-processed metadataId, usable with --filter by parserver,
+     * 100% means when every matching HTML has an existing metadata corrisponding in the metadata collection */
     const filter = _.extend(tf, { href: { "$in": _.map(testVideos, 'href')} });
-
     try {
         const mongoc = await mongo3.clientConnect({concurrency: 1});
         const l = await mongo3.aggregate(mongoc, nconf.get('schema').htmls, [{
              "$match": filter
         }, { "$project":
-            { id: 1, metadataId: 1, size: 1, href: 1, savingTime: 1 }
+            { id: true, metadataId: true, size: true, href: true, savingTime: true, processed: true }
         }, { "$lookup":
             { from: 'metadata', localField: "metadataId", foreignField: 'id', as: 'm' }
         }, { "$project":
-            { id: 1, metadataId: 1, metas: { "$size": "$m" }}
+            { id: true, metadataId: true, processed: true,
+                output: { "$size": "$m" },
+                selected: { $cond: { if: { $isArray: "$m.selected" }, then: { $size: "$m.selected" }, else: -1 } },
+                related: { $cond: { if: { $isArray: "$m.related" }, then: { $size: "$m.related" }, else: -1 } }
+            }
         }]);
 
-        debug("Internal stats: total %d, missing meta %d, having meta %d (%d\%)",
+        debug("Internal stats: total %d, missing meta %d, with meta %d (circa the %d\%)",
             _.size( l ),
             _.size( _.filter(l, {metas: 0}) ),
             _.size( _.filter(l, {metas: 1}) ),
             _.round( ( _.size( _.filter(l, {metas: 1}) ) / _.size(l) ), 2) * 100
         );
-        const missingmetaids = _.uniq(_.map(_.filter(l, { metas: 0}), 'metadataId'));
-        debug("Saving metadataId not yet processed (%d)", _.size(missingmetaids));
+        debug("processed flag: %d true, %d false, %d missing", 
+            _.size( _.filter(l, {processed: true}) ),
+            _.size( _.filter(l, {processed: false}) ),
+            _.size( _.filter(l, {processed: undefined }) )
+        );
+        const missingmetaids = _.uniq(_.map(_.filter(l, { 'output': 0}), 'metadataId'));
+        debug("Saving metadataId not yet processed (%d) in missing*.json ", _.size(missingmetaids));
         fs.writeFileSync(fileName('missing', 'json'), JSON.stringify(missingmetaids, undefined, 2), 'utf-8');
+        /* produce some non visually compelling output to decode visualization in console */
+        const homes = _.map(_.groupBy(l, 'selected'), function(objs, selectedAmount) {
+            return { selectedAmount, objects: _.size(objs) };
+        });
+        const videos = _.map(_.groupBy(l, 'related'), function(objs, relatedAmount) {
+            return { relatedAmount, objects: _.size(objs) };
+        });
+        debug("<home> %s\n<videos> %s", JSON.stringify(homes, undefined, 2), JSON.stringify(videos, undefined, 2));
         await mongoc.close();
-
     } catch(e) {
         debug("Error in produceInternalCheckup: %s", e.message);
         throw e;
