@@ -43,39 +43,50 @@ export default class Settings extends React.Component {
             return null;
         }
 
-        console.log('settings', this.state.settings);
+        /* dirty state is to spot a change and offer save button */
         const state = this.state;
-
         const dirty = !_.isEqual(state.settings, state.oldSettings);
-
+        console.log(dirty, state.oldSettings, state);
         return (
             <Card>
                 <CardHeader title='Consider the option below only if you belong to a research group' />
+                <CardTitle label="youtube tracking exposed settings" />
 
                 <CardText>
-                    <div>
                         <Checkbox
-                            label='TAG your contributions'
+                            label='ytTREX activation'
                             labelPosition="left"
-                            checked={state.settings.isStudyGroup}
-                            onCheck={(_, val) => this.setState(update(state, {settings: {isStudyGroup: {$set: val}}}))} />
+                            checked={state.settings.active}
+                            onCheck={(_, val) => this.setState(update(state, {settings: {active: {$set: val}}}))} />
 
-                        {state.settings.isStudyGroup &&
+                        <Checkbox
+                            label='YouTube interface modification'
+                            labelPosition="left"
+                            checked={state.settings.ux}
+                            onCheck={(_, val) => this.setState(update(state, {settings: {ux: {$set: val}}}))} />
+
                         <TextField
                             hintText='settingsTagId'
                             value={state.settings.tagId}
                             onChange={(_, val) => this.setState(update(state, {settings: {tagId: {$set: val }}}))}
                         />
-                        }
-                    </div>
 
-                    {dirty &&
                         <CardActions>
+
                             <RaisedButton
                                 label='Save!'
                                 primary={true}
                                 onClick={this.saveSettings.bind(this)}
                             />
+
+                            <p>boh?</p>
+
+                            <RaisedButton
+                                label='pooo'
+                                variant="contained"
+                                color="secondary"
+                            />
+
                         </CardActions>
                     }
 

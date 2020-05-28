@@ -19,6 +19,7 @@ const packageJSON = require('./package.json');
 const NODE_ENV = process.env.NODE_ENV || 'development';
 const PRODUCTION = NODE_ENV === 'production';
 const DEVELOPMENT = NODE_ENV === 'development';
+const BUILDISODATE = new Date().toISOString();
 console.log('NODE_ENV [' + process.env.NODE_ENV + '] Prod:', PRODUCTION, 'Devel: ', DEVELOPMENT);
 // const BUILD = require('child_process').execSync('git rev-parse HEAD').toString().trim();
 
@@ -45,7 +46,8 @@ const DEFINITIONS = {
         API_ROOT: JSON.stringify(ENV_DEP_SERVER + '/api/v' + LAST_VERSION + '/'),
         WEB_ROOT: JSON.stringify(ENV_DEP_WEB),
         VERSION: JSON.stringify(packageJSON.version + (DEVELOPMENT ? '-dev' : '')),
-        BUILD: JSON.stringify(`On ${moment().format("DD of MMM at HH:mm")}.`),
+        BUILD: JSON.stringify(`On the ${moment().format("DD of MMMM at HH:mm")}.`),
+        BUILDISODATE: JSON.stringify(BUILDISODATE),
         FLUSH_INTERVAL: JSON.stringify(DEVELOPMENT ? 10000 : 20000)
     }
 };
