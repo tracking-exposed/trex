@@ -297,22 +297,19 @@ async function tofu(publicKey, version) {
 async function getLastHTMLs(filter, skip, amount) {
 
     const mongoc = await mongo3.clientConnect({concurrency: 1});
-
+    const defskip = skip ? skip : 0;
     const htmls = await mongo3.readLimit(mongoc,
         nconf.get('schema').htmls, filter,
         { savingTime: 1}, // never change this!
-        amount,
-        skip ? skip : 0);
+        amount, defskip);
 
     /* printable filter because when it is too long .. */
     const pfilter = _.size(JSON.stringify(filter)) > 200 ? _.keys(filter) : filter;
-
     if(_.size(htmls))
-        debug("getLastHTMLs: %j -> %d (overflow %s) %s", pfilter, _.size(htmls),
-            (_.size(htmls) == amount), skip ? "skip " + skip : "");
+        debug("getLastHTMLs: %j -> %d (overflow %s) skip: %d", pfilter, _.size(htmls),
+            (_.size(htmls) == amount), defskip);
     else
-        debug("No data! %j amount %d skip %d", pfilter, amount,
-             skip ? "skip " + skip : "");
+        debug("No data! %j amount %d skip %d", pfilter, amount, defskip);
 
     mongoc.close();
     return {
