@@ -12,6 +12,7 @@ const langopts = [
     { sostantivo: "visualizzazioni", separator: 'di', locale: 'it', viewcount: dots },
     { sostantivo: "visualizzazione", separator: 'di', locale: 'it', viewcount: dots },
     { sostantivo: "visualizações", separator: '', locale: 'pt', viewcount: dots },
+    { sostantivo: "visualização", separator: '', locale: 'pt', viewcount: dots },
     { sostantivo: "visualizaciones", separator: 'de', locale: 'es', viewcount: dots }, // spanish (otro?)
     { sostantivo: "visninger", separator: 'af', locale: 'nn', viewcount: dots }, // norvegian
     { sostantivo: "avspillinger", separator: 'af', locale: 'nn', viewcount: dots }, // norvegian
@@ -113,7 +114,7 @@ const relativeConMapping = [
     "unit": "seconds",
     "words": [
       "секунд", "секунда", "секунды", "seconds",
-      "secondi"
+      "secondi", "second", "secondo",
     ]
   },
   {
@@ -122,7 +123,7 @@ const relativeConMapping = [
     "words": [
       "minuti", "minutos", "minutes", "минут",
       "месяцев", "минуты", "минут", "Minuten",
-      "minutter"
+      "minutter", "minute", "minuto",
     ]
   },
   {
@@ -132,7 +133,7 @@ const relativeConMapping = [
       "horas", "heure", "hores", "hora", "ora",
       "ore", "uur", "hours", "hour", "timer",
       "Stunde", "Stunden", "heures", "час", "часа",
-      "часов", "time"
+      "часов", "time",
     ]
   },
   {
@@ -143,7 +144,7 @@ const relativeConMapping = [
       "dag", "dager", "dagen", "dage", "giorni",
       "giorno", "days", "day", "jours", "jour",
       "uge", "Tagen", "Tag", "дня", "день", "дней",
-      "døgn"
+      "døgn",
     ]
   },
   {

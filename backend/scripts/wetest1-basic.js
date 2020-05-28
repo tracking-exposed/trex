@@ -272,13 +272,13 @@ async function produceInternalCheckup(tf) {
             }
         }]);
 
-        debug("Internal stats: total %d, missing meta %d, with meta %d (circa the %d\%)",
+        debug("<Internal stats>\ttotal %d, missing meta %d, with meta %d (circa the %d\%)",
             _.size( l ),
             _.size( _.filter(l, {metas: 0}) ),
             _.size( _.filter(l, {metas: 1}) ),
             _.round( ( _.size( _.filter(l, {metas: 1}) ) / _.size(l) ), 2) * 100
         );
-        debug("processed flag: %d true, %d false, %d missing", 
+        debug("<Processed flag>\t%d true, %d false, %d missing", 
             _.size( _.filter(l, {processed: true}) ),
             _.size( _.filter(l, {processed: false}) ),
             _.size( _.filter(l, {processed: undefined }) )

@@ -254,7 +254,6 @@ function processVideo(D, blang, clientTime) {
         func: 'textContent'
     } ]);
     if(!title) {
-        debugger;
         throw new Error("unable to get video title");
     }
 
@@ -365,8 +364,8 @@ function process(envelop) {
             envelop.impression.clientTime
         );
     } catch(e) {
-        debuge("Error in video.process %s (%d): %s\n%s",
-            envelop.impression.href, envelop.impression.size, e.message, e.stack);
+        debuge("Error in video.process %s (%d): %s\n\t-> %s",
+            envelop.impression.href, envelop.impression.size, e.message, e.stack.split('\n'[0]));
         return null;
     }
 
