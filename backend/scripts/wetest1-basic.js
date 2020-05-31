@@ -201,7 +201,7 @@ function unwindSections(memo, evidence) { // metadata.type = 'home' with 'select
     return memo;
 };
 
-/* -------------------------------------- the two functions --------------------------------------- */
+/* -------------------------------------- the five functions --------------------------------------- */
 async function produceHomeCSV(tf) {
     const home = await pickFromDB(_.extend(tf, {type: 'home'}), { clientTime: -1 });
     const unwind = _.reduce(home, unwindSections, []);
@@ -226,7 +226,7 @@ async function produceVideosCSV(tf) {
     fs.writeFileSync(fileName('videos', 'csv'), csvtext);
     accuracyDump(_.size(unroll));
     /*
-    // this product to feed tests:longlabel
+    // this product to feed tests:longlabel --- this should become the sixth function
     const xxx = _.uniq(_.flatten(_.map(watches, function(e) {
         return _.map(e.related, function(r) {
             return { label: r.longlabel,
@@ -265,8 +265,8 @@ async function produceInternalCheckup(tf) {
         }, { "$lookup":
             { from: 'metadata', localField: "metadataId", foreignField: 'id', as: 'm' }
         }, { "$project":
-            { id: true, metadataId: true, processed: true,
-                output: { "$size": "$m" },
+            { id: true, metadataId: true, processed: true, href: true,
+                output: { $size: "$m" },
                 selected: { $cond: { if: { $isArray: "$m.selected" }, then: { $size: "$m.selected" }, else: -1 } },
                 related: { $cond: { if: { $isArray: "$m.related" }, then: { $size: "$m.related" }, else: -1 } }
             }
@@ -274,9 +274,9 @@ async function produceInternalCheckup(tf) {
 
         debug("<Internal stats>\ttotal %d, missing meta %d, with meta %d (circa the %d\%)",
             _.size( l ),
-            _.size( _.filter(l, {metas: 0}) ),
-            _.size( _.filter(l, {metas: 1}) ),
-            _.round( ( _.size( _.filter(l, {metas: 1}) ) / _.size(l) ), 2) * 100
+            _.size( _.filter(l, {output: 0}) ),
+            _.size( _.reject(l, {output: 0}) ),
+            _.round( ( _.size( _.reject(l, {output: 0}) ) / _.size(l) ), 2) * 100
         );
         debug("<Processed flag>\t%d true, %d false, %d missing", 
             _.size( _.filter(l, {processed: true}) ),
@@ -293,7 +293,12 @@ async function produceInternalCheckup(tf) {
         const videos = _.map(_.groupBy(l, 'related'), function(objs, relatedAmount) {
             return { relatedAmount, objects: _.size(objs) };
         });
-        debug("<home> %s\n<videos> %s", JSON.stringify(homes, undefined, 2), JSON.stringify(videos, undefined, 2));
+        const outputs = _.map(_.groupBy(l, 'href'), function(objs, href) {
+            return { href, objects: _.size(objs) };
+        });
+        debug("<home> %s\n<videos> %s\n<output> %s",
+            JSON.stringify(homes, undefined, 2), JSON.stringify(videos, undefined, 2), JSON.stringify(outputs, undefined, 2)
+        );
         await mongoc.close();
     } catch(e) {
         debug("Error in produceInternalCheckup: %s", e.message);

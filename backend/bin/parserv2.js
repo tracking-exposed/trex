@@ -69,6 +69,12 @@ async function newLoop(htmlFilter) {
 
     const htmls = await automo.getLastHTMLs(htmlFilter, processedCounter, htmlAmount);
     if(!_.size(htmls.content)) {
+
+        if(!_.isNull(filter)) {
+            debug("%d no data with a specified filter: quitting!", nodatacounter);
+            process.exit(1);
+        }
+
         nodatacounter++;
         if( (nodatacounter % 10) == 1) {
             debug("%d no data at the last query: %j %j",

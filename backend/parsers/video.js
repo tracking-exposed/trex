@@ -365,7 +365,7 @@ function process(envelop) {
         );
     } catch(e) {
         debuge("Error in video.process %s (%d): %s\n\t-> %s",
-            envelop.impression.href, envelop.impression.size, e.message, e.stack.split('\n'[0]));
+            envelop.impression.href, envelop.impression.size, e.message, e.stack.split('\n')[1]);
         return null;
     }
 
