@@ -84,16 +84,17 @@ async function processEvents2(req) {
     // debug("CHECK: %s <%s>", blang, headers.language );
 
     const htmls = _.map(req.body, function(body, i) {
-        const id = utils.hash({
-            publicKey: headers.publickey,
-            size: _.size(body.element),
-            contenthash: body.contenthash,
-            randomUUID: body.randomUUID,
-            i,
-        });
         const metadataId = utils.hash({
             publicKey: headers.publickey,
             randomUUID: body.randomUUID,
+            href: body.href,
+        });
+        const id = utils.hash({
+            metadataId,
+            size: _.size(body.element),
+            contenthash: body.contenthash,
+            href: body.href,
+            i,
         });
         const html = {
             id,
