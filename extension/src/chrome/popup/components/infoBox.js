@@ -1,42 +1,63 @@
 import React from 'react';
 import config from '../../../config';
-import { Card } from 'material-ui/Card';
-import $ from 'jquery';
+import createReactClass from 'create-react-class';
+
+import { Card } from '@material-ui/core';
+import CardActions from '@material-ui/core/CardActions';
+import Button from '@material-ui/core/Button';
 
 const imgstyle = {
     width: '100%'
 };
-const cardStyle = {
-    'textAlign': 'center'
+const lessStandardHref = {
+    'color': 'black',
+    'textDecoration': 'none'
+};
+const bannerStyle = {
+    'textAlign': 'center',
+    'borderColor': 'black',
+    'backgroundColor': '#f7f7f7',
+    'borderWidth': '3px',
+    'borderRadius': '3px',
+    'borderStyle': 'solid',
+    'padding': '2px',
 };
 
-const InfoBox = React.createClass({
+const InfoBox = createReactClass({
 
     render () {
+        // we might use this.props.WEB_ROOT because it is available, but, this endpoint 
+        // integrity is important for security, and I'm not sure if 'props' might
+        // be corrupted by some of the web-colabrodo-technology. thus, we use config: dah!
         const personalLink = config.WEB_ROOT + '/personal/#' + this.props.publicKey;
 
+        const links = {
+            'Privacy policy': 'privacy',
+            'Manifesto': 'https://tracking.exposed/manifesto',
+            'Join the Experiments!': 'wetest/next',
+            'Software': 'https://github.com/tracking-exposed/yttrex/'
+        };
+
         return (
-            <Card style={cardStyle}>
-                <a target='_blank' href={personalLink}>
-                    <p> — Access your data — </p>
+            <Card>
+                <a target='_blank' href={personalLink} style={lessStandardHref}>
+                    <small>Access data visualizations and advanced features</small>
+                  <img style={imgstyle} src='/yttrex-logo.png' />
                 </a>
 
-                <a target='_blank' href={personalLink}>
-                    <img style={imgstyle} src='/yttrex-logo.png' />
-                </a>
+     <CardActions>
+        <Button size="small" variant="contained" color="secondary" a="http://localhost:1313/about" href="ciao" >
+          Software aa
+        </Button>
+        <Button size="small" color="primary" a="http://localhost:1313/privacy">
+          Software repository
+        </Button>
+        <Button size="small" color="secondary">
+          Manifesto
+        </Button>
+      </CardActions>
 
-               <smaller>This is
-                    <span> </span>
-                    <a target="_blank" href="https://github.com/tracking-exposed/yttrex/">
-                        free software
-                    </a>. 
-                    <span> </span>
-                    <a target="_blank" href='https://youtube.tracking.exposed/privacy'>Privacy</a> policy, 
-                    <span> </span>, our <span> </span>
-                    <a target="_blank" href='https://tracking.exposed/manifesto'>Manifesto</a>.
-                    <span> </span> and the <span> </span>
-                    <a target="_blank" href="https://youtube.tracking.exposed/wetest/next">Experiments!</a>
-                </smaller>
+
 
             </Card>
         );

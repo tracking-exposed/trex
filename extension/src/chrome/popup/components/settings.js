@@ -1,97 +1,74 @@
 import React from 'react';
 import _ from 'lodash';
+import createReactClass from 'create-react-class';
 import update from 'immutability-helper';
 
-import {Card, CardActions, CardHeader, CardTitle, CardText} from 'material-ui/Card';
-import Checkbox from 'material-ui/Checkbox';
-import TextField from 'material-ui/TextField';
-import RaisedButton from 'material-ui/RaisedButton';
+import { Card, CardHeader, CardActions, CardContent } from '@material-ui/core';
+import Button from '@material-ui/core/Button';
+import Switch from '@material-ui/core/Switch';
 
-import db from '../../db';
+import FormLabel from '@material-ui/core/FormLabel';
+import FormControl from '@material-ui/core/FormControl';
+import FormGroup from '@material-ui/core/FormGroup';
+import FormControlLabel from '@material-ui/core/FormControlLabel';
+import FormHelperText from '@material-ui/core/FormHelperText';
+import Checkbox from '@material-ui/core/Checkbox';
 
-export default class Settings extends React.Component {
+// bo is the browser object, in chrome is named 'chrome', in firefox is 'browser'
+const bo = chrome || browser;
 
-    constructor (props) {
-        super(props);
+// defaults of the settings stored in 'config' and controlled by popup
+const DEFAULT_SETTINGS = { active: false, ux: false };
 
-        db
-            .get('whatever', {tagId: '', isStudyGroup: false, lessInfo: false})
-            .then(settings => this.setState({
-                oldSettings: _.cloneDeep(settings),
-                settings: settings
-            }));
-    }
+function toggleActivation(syntheticEvent, value) {
+    console.log('toggleActivation, now switching to:', value);
+    return value;
+}
 
-    saveSettings () {
-        const settings = _.cloneDeepWith(this.state.settings, value => _.isString(value) ? _.trim(value) : value);
-
-        db
-            .set('whatever', settings)
-            .then(() => this.setState(update(this.state, {oldSettings: {$set: _.cloneDeep(settings)},
-                                                          settings: {$set: settings},
-                                                          reloadBrowser: {$set: true}})));
-
-        bo.tabs.reload();
-    }
-
-    resetSettings () {
-        this.setState(update(this.state, {settings: {$set: _.cloneDeep(this.state.oldSettings)}}));
-    }
+const Settings = createReactClass({
 
     render () {
-        if (!this.state) {
-            return null;
+        console.log(this.state, this);
+        if(!this.props) {
+            console.log("Invalid condition of !this.state before render <Settings>");
+            return;
         }
 
-        /* dirty state is to spot a change and offer save button */
-        const state = this.state;
-        const dirty = !_.isEqual(state.settings, state.oldSettings);
-        console.log(dirty, state.oldSettings, state);
+        let isActive = _.get(this, 'props.active');
+        let specialUX = _.get(this, 'props.ux');
+        let state = {
+            active: isActive,
+            ux: specialUX
+        };
+
+        if( _.isUndefined(isActive) || _.isUndefined(specialUX)) {
+            console.log("Lack of saved parameters, imposing defaults");
+            isActive = DEFAULT_SETTINGS.active;
+            specialUX = DEFAULT_SETTINGS.ux;
+        }
+
         return (
             <Card>
-                <CardHeader title='Consider the option below only if you belong to a research group' />
-                <CardTitle label="youtube tracking exposed settings" />
-
-                <CardText>
-                        <Checkbox
-                            label='ytTREX activation'
-                            labelPosition="left"
-                            checked={state.settings.active}
-                            onCheck={(_, val) => this.setState(update(state, {settings: {active: {$set: val}}}))} />
-
-                        <Checkbox
-                            label='YouTube interface modification'
-                            labelPosition="left"
-                            checked={state.settings.ux}
-                            onCheck={(_, val) => this.setState(update(state, {settings: {ux: {$set: val}}}))} />
-
-                        <TextField
-                            hintText='settingsTagId'
-                            value={state.settings.tagId}
-                            onChange={(_, val) => this.setState(update(state, {settings: {tagId: {$set: val }}}))}
+                <FormControl component="fieldset" >
+                    <FormLabel component="legend">form label component legend </FormLabel>
+                    <FormGroup>
+                        <FormControlLabel
+                            control={
+                                <Switch
+                                    size="medium"
+                                    checked={state.active}
+                                    onChange={toggleActivation}
+                                />
+                            }
+                            label="Tracking Exposed activated (youtube)"
                         />
-
-                        <CardActions>
-
-                            <RaisedButton
-                                label='Save!'
-                                primary={true}
-                                onClick={this.saveSettings.bind(this)}
-                            />
-
-                            <p>boh?</p>
-
-                            <RaisedButton
-                                label='pooo'
-                                variant="contained"
-                                color="secondary"
-                            />
-
-                        </CardActions>
-                    }
-
-                </CardText>
+                    </FormGroup>
+                    <FormHelperText>Be careful</FormHelperText>
+                </FormControl>
+                <FormHelperText>You can display an error</FormHelperText>
             </Card>
         );
     }
-};
+});
+
+export default Settings;

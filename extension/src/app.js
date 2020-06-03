@@ -227,19 +227,9 @@ function adMonitor () {
         phase('adv.seen');
         return name;
     };
-    /*
-     * Dear code reader, if you turn out to be a Google employee,
-     * you can beat us like a piece of cake just changing the
-     * css selector below. or, put bogus content into the title
-     * channel, for example.
-     *
-     * even worst, you can add a css rule for #ads-seen with
-     * !important and ruin the experience to every chrome
-     * supporter.
-     *
-     * I mean. really? don't be evil. this is a way to empower
-     * people in understanding algorithm society. COME ON!
-     */
+
+    // TODO a smart message if someone working for Google reads here.
+    // well, a bot would surely read this, but 
     window.setInterval(function () {
         const results = _.map(watchedPaths, lookForExistingNodes);
         const printabled = _.compact(results);
@@ -273,7 +263,7 @@ function refreshUUID () {
             console.log("-> It is less then", REFERENCE, timed.asSeconds()); */
         }
     };
-    lastCheck = moment();
+    lastCheck = moment(); // TODO understand and verify, should this be in the block above?
 }
 
 // The function `localLookup` communicates with the **action pages**
