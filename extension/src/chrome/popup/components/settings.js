@@ -3,16 +3,14 @@ import _ from 'lodash';
 import createReactClass from 'create-react-class';
 import update from 'immutability-helper';
 
-import { Card, CardHeader, CardActions, CardContent } from '@material-ui/core';
-import Button from '@material-ui/core/Button';
 import Switch from '@material-ui/core/Switch';
+import ListItemIcon from '@material-ui/core/ListItemIcon';
+import TimelineIcon from '@material-ui/icons/Timeline';
+import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
+import ListItemText from '@material-ui/core/ListItemText';
+import ListItem from '@material-ui/core/ListItem';
+import List from '@material-ui/core/List';
 
-import FormLabel from '@material-ui/core/FormLabel';
-import FormControl from '@material-ui/core/FormControl';
-import FormGroup from '@material-ui/core/FormGroup';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
-import FormHelperText from '@material-ui/core/FormHelperText';
-import Checkbox from '@material-ui/core/Checkbox';
 
 // bo is the browser object, in chrome is named 'chrome', in firefox is 'browser'
 const bo = chrome || browser;
@@ -48,26 +46,22 @@ const Settings = createReactClass({
         }
 
         return (
-            <Card>
-                <FormControl component="fieldset" >
-                    <FormLabel component="legend">form label component legend </FormLabel>
-                    <FormGroup>
-                        <FormControlLabel
-                            control={
-                                <Switch
-                                    size="medium"
-                                    checked={state.active}
-                                    onChange={toggleActivation}
-                                />
-                            }
-                            label="Tracking Exposed activated (youtube)"
-                        />
-                    </FormGroup>
-                    <FormHelperText>Be careful</FormHelperText>
-                </FormControl>
-                <FormHelperText>You can display an error</FormHelperText>
-            </Card>
-        );
+          <List component="nav" aria-label="controls links files">
+            <ListItem>
+              <ListItemIcon>
+                <TimelineIcon />
+              </ListItemIcon>
+              <ListItemText primary="youtube.tracking.exposed active" />
+              <ListItemSecondaryAction>
+                <Switch
+                  edge="end"
+                  onChange={toggleActivation}
+                  checked={state.active}
+                  inputProps={{ 'aria-labelledby': 'switch-list-label-wifi' }}
+                />
+              </ListItemSecondaryAction>
+            </ListItem>
+          </List>);
     }
 });
 

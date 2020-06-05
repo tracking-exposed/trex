@@ -3,10 +3,12 @@ import React from 'react';
 import createReactClass from 'create-react-class';
 
 import { Card } from '@material-ui/core';
+import FormHelperText from '@material-ui/core/FormHelperText';
 
 import InfoBox from './infoBox';
 import Settings from './settings';
 import GetCSV from './getCSV';
+
 import config from '../../../config';
 
 const bo = chrome || browser;
@@ -27,9 +29,12 @@ const Popup = createReactClass({
         return (
             <div style={styles}>
               <Card>
-                <InfoBox {...this.props}{...config} />
-                <Settings {...this.props}{...config} />
-                <GetCSV {...this.props} />
+                  <FormHelperText>Primary settings</FormHelperText>
+                  <Settings {...this.props}{...config} />
+                  <FormHelperText>Access to your data</FormHelperText>
+                  <GetCSV {...this.props} />
+                  <FormHelperText>About</FormHelperText>
+                  <InfoBox {...this.props}{...config} />
               </Card>
               <small>version {version}, released {timeago}</small>
             </div>

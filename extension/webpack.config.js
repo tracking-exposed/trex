@@ -43,7 +43,7 @@ const DEFINITIONS = {
     'process.env': {
         DEVELOPMENT: JSON.stringify(DEVELOPMENT),
         NODE_ENV: JSON.stringify(NODE_ENV),
-        API_ROOT: JSON.stringify(ENV_DEP_SERVER + '/api/v' + LAST_VERSION + '/'),
+        API_ROOT: JSON.stringify(ENV_DEP_SERVER + '/api/v' + LAST_VERSION),
         WEB_ROOT: JSON.stringify(ENV_DEP_WEB),
         VERSION: JSON.stringify(packageJSON.version + (DEVELOPMENT ? '-dev' : '')),
         BUILD: JSON.stringify(`On the ${moment().format("DD of MMMM at HH:mm")}.`),

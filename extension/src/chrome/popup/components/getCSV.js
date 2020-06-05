@@ -2,41 +2,50 @@ import React from 'react';
 import config from '../../../config';
 import createReactClass from 'create-react-class';
 
-import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
-import ListItemText from '@material-ui/core/ListItemText';
-import InboxIcon from '@material-ui/icons/Inbox';
-import DraftsIcon from '@material-ui/icons/Drafts';
-
+import StayCurrentLandscapeIcon from '@material-ui/icons/StayCurrentLandscape';
+import OndemandVideoIcon from '@material-ui/icons/OndemandVideo';
+import AccountBoxIcon from '@material-ui/icons/AccountBox';
+import List from '@material-ui/core/List';
 
 function ListItemLink(props) {
-  return <ListItem button component="a" {...props} />;
+    return <ListItem component="a" {...props} />;
 }
 
 const InfoBox = createReactClass({
 
     render () {
-        const homecsv = config.API_ROOT + '/api/v1/personal/' + this.props.publicKey + 'home' + '/csv'
-        const videocsv = config.API_ROOT + '/api/v1/personal/' + this.props.publicKey + 'video' + '/csv'
+        const homecsv = config.API_ROOT + '/personal/' + this.props.publicKey + '/home' + '/csv';
+        const videocsv = config.API_ROOT + '/personal/' + this.props.publicKey + '/video' + '/csv';
+        const personalLink = config.WEB_ROOT + '/personal/#' + this.props.publicKey;
 
         return (
-            <List component="nav" aria-label="main mailbox folders">
-              <ListItem button>
-                <ListItemIcon>
-                  <InboxIcon />
-                </ListItemIcon>
-                <ListItemText primary="Download related Videos (CSV)" />
-              </ListItem>
-              <ListItem button>
-                <ListItemIcon>
-                  <DraftsIcon />
-                </ListItemIcon>
-                <ListItemText primary="Download homepage Videos (CSV)" />
-              </ListItem>
-            </List>
-        );
+          <List component="nav" aria-label="controls links files">
 
+            <ListItem button>
+              <ListItemIcon>
+                <StayCurrentLandscapeIcon />
+              </ListItemIcon>
+              <ListItemLink href={homecsv} target="_blank">Homepage Video CSV</ListItemLink>
+            </ListItem>
+
+            <ListItem button>
+              <ListItemIcon>
+                <OndemandVideoIcon />
+              </ListItemIcon>
+              <ListItemLink href={videocsv} target="_blank">Related Video CSV</ListItemLink>
+            </ListItem>
+
+            <ListItem button>
+              <ListItemIcon>
+                <AccountBoxIcon />
+              </ListItemIcon>
+              <ListItemLink href={personalLink} target="_blank">Personal page</ListItemLink>
+            </ListItem>
+
+          </List>
+        );
     }
 });
 

@@ -65,7 +65,7 @@ async function getPersonalCSV(req) {
         unrolled = _.reduce(data.metadata, CSV.unrollRecommended, []);
 
     const ready = _.map(unrolled, function(e) {
-        _.unset(e, 'publickey');ù
+        _.unset(e, 'publickey');
         return e;
     });
 

@@ -123,7 +123,7 @@ app.get('/api/v1/personal/:publicKey/timeline/:paging?', (req, res) => {
     return dispatchPromise('getPersonalTimeline', req, res);
 });
 /* download your CSV (home or video) */
-app.get('/api/v1/personal/:publicKey/:type/csv', function(req, res) {
+app.get('/api/v2/personal/:publicKey/:type/csv', function(req, res) {
     return dispatchPromise('getPersonalCSV', req, res);
 });
 /* API for researcher: get your related as single list */
