@@ -117,100 +117,27 @@ function accuracyDump(fullamount) {
     });
 }
 
-/* --- end of utilities --- */
-
-/* two main function belows */
-function unrollRecommended(memo, evidence) { // metadata.type = video with 'related' 
-    _.each(evidence.related, function(related, evidenceCounter) {
-        let entry = {
-            pseudonyn: utils.string2Food(evidence.publicKey + "weTest#1"),
-            evidence: evidenceCounter,
-            login: evidence.login,
-            id: evidenceCounter + '-' + evidence.id.replace(/[0-9]/g, ''),
-            savingTime: evidence.savingTime,
-            clientTime: evidence.clientTime,
-
-            uxlang: evidence.blang,
-            dataset: 'yttrex',
-            experiment: 'wetest1',
-            step: _.find(testVideos, { videoId: evidence.videoId }).language,
-
-            parameter: related.parameter,
-            recommendedVideoId: related.videoId,
-            recommendedAuthor: related.recommendedSource,
-            recommendedTitle: related.recommendedTitle, 
-            recommendedLength: related.recommendedLength,
-            recommendedDisplayL: related.recommendedDisplayL,
-            recommendedLengthText: related.recommendedLengthText,
-            recommendedPubTime: related.publicationTime,
-            ptPrecision: related.timePrecision,
-            recommendedRelativeS: related.recommendedRelativeSeconds, // distance between clientTime and publicationTime
-            recommendedViews: related.recommendedViews,
-            recommendedForYou: related.foryou,
-            recommendedVerified: related.verified,
-            recommendationOrder: related.index,
-            recommendedKind: evidence.isLive ? "live": "video", // this should support also 'playlist' 
-
-            watchedVideoId: evidence.videoId,
-            watchedAuthor: evidence.authorName,
-            watchedPubtime: evidence.publicationTime,
-            watchedTitle: evidence.title,
-            watchedViews: evidence.viewInfo.viewStr ? evidence.viewInfo.viewStr : null,
-            watchedChannel: evidence.authorSource,
-        };
-        memo.push(entry);
-        updateStats(entry);
-    })
-    return memo;
+function applyWetest1(e, step) {
+    _.set(e, 'step', step);
+    _.set(e, 'experiment', 'wetest1');
+    _.set(e, 'dataset', 'yttrex');
+    _.set(e, 'pseudonyn', utils.string2Food(e.publicKey + "weTest#1") );
+    updateStats(e);
+    return e;
 }
-
-function unwindSections(memo, evidence) { // metadata.type = 'home' with 'selected'
-    _.each(evidence.selected, function(selected, evidenceCounter) {
-        let entry = {
-            pseudonyn: utils.string2Food(evidence.publicKey + "weTest#1"),
-            evidence: evidenceCounter,
-            login: evidence.login,
-            id: evidenceCounter + '-' + evidence.id.replace(/[0-9]/g, ''),
-            savingTime: evidence.savingTime,
-            clientTime: evidence.clientTime,
-            order: selected.index,
-
-            uxlang: evidence.uxlang,
-            dataset: 'yttrex',
-            experiment: 'wetest1',
-            step: 'homepage',
-
-            parameter: selected.parameter,
-            sectionName: selected.sectionName,
-            selectedVideoId: selected.videoId,
-            selectedAuthor: selected.recommendedSource,
-            selectedChannel: selected.recommendedHref,
-            selectedTitle: selected.recommendedTitle,
-            selectedLength: selected.recommendedLength,
-            selectedDisplayL: selected.selectedDisplayL,
-            selectedLengthText: selected.recommendedLengthText,
-            selectedPubTime: selected.publicationTime,
-            ptPrecision: selected.timePrecision,
-            selectedRelativeS: selected.recommendedRelativeSeconds,
-            selectedViews: selected.recommendedViews,
-            selectedKind: selected.isLive ? "live": "video", // this should support also 'playlist' 
-        };
-        memo.push(entry);
-        updateStats(entry);
-    });
-    return memo;
-};
+/* --- end of utilities --- */
 
 /* -------------------------------------- the five functions --------------------------------------- */
 async function produceHomeCSV(tf) {
     const home = await pickFromDB(_.extend(tf, {type: 'home'}), { clientTime: -1 });
-    const unwind = _.reduce(home, unwindSections, []);
+    const unwind = _.reduce(home, csv.unwindSections, []);
     debug("Unnested the 'sections' return %d evidences. Saving JSON file", _.size(unwind));
-    fs.writeFileSync(fileName('home', 'json'), JSON.stringify(unwind, undefined, 2));
-    const csvtext = csv.produceCSVv1(unwind);
+    const ready = _.map(unwind, _.partial(applyWetest1, 'homepage'));
+    fs.writeFileSync(fileName('home', 'json'), JSON.stringify(ready, undefined, 2));
+    const csvtext = csv.produceCSVv1(ready);
     debug("Produced %d bytes for text/csv, saving file", _.size(csvtext));
     fs.writeFileSync(fileName('home', 'csv'), csvtext);
-    accuracyDump(_.size(unwind));
+    accuracyDump(_.size(ready));
 }
 
 async function produceVideosCSV(tf) {
@@ -218,13 +145,17 @@ async function produceVideosCSV(tf) {
         type: 'video',
         videoId: { "$in": _.map(testVideos, 'videoId')}
     }), { clientTime: -1 });
-    const unroll = _.reduce(watches, unrollRecommended, []);
-    debug("Unnested the 'sections' return %d evidences. Saving JSON file", _.size(unroll));
-    fs.writeFileSync(fileName('videos', 'json'), JSON.stringify(unroll, undefined, 2));
-    const csvtext = csv.produceCSVv1(unroll);
+    const unroll = _.reduce(watches, csv.unrollRecommended, []);
+    const ready = _.map(_.map(unroll, applyWetest1), function(e) {
+        _.set(e, 'step', _.find(testVideos, { videoId: e.watchedVideoId }).language );
+        return e;
+    });
+    debug("Unnested the 'sections' return %d evidences. Saving JSON file", _.size(ready));
+    fs.writeFileSync(fileName('videos', 'json'), JSON.stringify(ready, undefined, 2));
+    const csvtext = csv.produceCSVv1(ready);
     debug("Produced %d bytes for text/csv, saving file", _.size(csvtext));
     fs.writeFileSync(fileName('videos', 'csv'), csvtext);
-    accuracyDump(_.size(unroll));
+    accuracyDump(_.size(ready));
     /*
     // this product to feed tests:longlabel --- this should become the sixth function
     const xxx = _.uniq(_.flatten(_.map(watches, function(e) {

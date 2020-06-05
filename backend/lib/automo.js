@@ -93,6 +93,8 @@ async function getMetadataByPublicKey(publicKey, options) {
     };
     if(options.takefull)
         _.unset(filter, 'title');
+    if(options.typefilter)
+        _.set(filter, 'type', options.typefilter)
 
     const metadata = await mongo3.readLimit(mongoc,
         nconf.get('schema').metadata, filter,

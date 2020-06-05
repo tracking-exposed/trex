@@ -43,6 +43,86 @@ function produceCSVv1(entries) {
     return produced.csv;
 };
 
+
+function unrollRecommended(memo, evidence) { // metadata.type = video with 'related' 
+    _.each(evidence.related, function(related, evidenceCounter) {
+        let entry = {
+            /* this is removed or anonymized by the called */
+            publickey: evidence.publickey,
+
+            evidence: evidenceCounter,
+            login: evidence.login,
+            id: evidenceCounter + '-' + evidence.id.replace(/[0-9]/g, ''),
+            savingTime: evidence.savingTime,
+            clientTime: evidence.clientTime,
+
+            uxlang: evidence.blang,
+
+            parameter: related.parameter,
+            recommendedVideoId: related.videoId,
+            recommendedAuthor: related.recommendedSource,
+            recommendedTitle: related.recommendedTitle, 
+            recommendedLength: related.recommendedLength,
+            recommendedDisplayL: related.recommendedDisplayL,
+            recommendedLengthText: related.recommendedLengthText,
+            recommendedPubTime: related.publicationTime,
+            ptPrecision: related.timePrecision,
+            recommendedRelativeS: related.recommendedRelativeSeconds, // distance between clientTime and publicationTime
+            recommendedViews: related.recommendedViews,
+            recommendedForYou: related.foryou,
+            recommendedVerified: related.verified,
+            recommendationOrder: related.index,
+            recommendedKind: evidence.isLive ? "live": "video", // this should support also 'playlist' 
+
+            watchedVideoId: evidence.videoId,
+            watchedAuthor: evidence.authorName,
+            watchedPubtime: evidence.publicationTime,
+            watchedTitle: evidence.title,
+            watchedViews: evidence.viewInfo.viewStr ? evidence.viewInfo.viewStr : null,
+            watchedChannel: evidence.authorSource,
+        };
+        memo.push(entry);
+    })
+    return memo;
+}
+
+function unwindSections(memo, evidence) { // metadata.type = 'home' with 'selected'
+    _.each(evidence.selected, function(selected, evidenceCounter) {
+        let entry = {
+            /* this is removed or anonymized by the called */
+            publickey: evidence.publickey,
+
+            evidence: evidenceCounter,
+            login: evidence.login,
+            id: evidenceCounter + '-' + evidence.id.replace(/[0-9]/g, ''),
+            savingTime: evidence.savingTime,
+            clientTime: evidence.clientTime,
+            order: selected.index,
+
+            uxlang: evidence.uxlang,
+           
+            parameter: selected.parameter,
+            sectionName: selected.sectionName,
+            selectedVideoId: selected.videoId,
+            selectedAuthor: selected.recommendedSource,
+            selectedChannel: selected.recommendedHref,
+            selectedTitle: selected.recommendedTitle,
+            selectedLength: selected.recommendedLength,
+            selectedDisplayL: selected.selectedDisplayL,
+            selectedLengthText: selected.recommendedLengthText,
+            selectedPubTime: selected.publicationTime,
+            ptPrecision: selected.timePrecision,
+            selectedRelativeS: selected.recommendedRelativeSeconds,
+            selectedViews: selected.recommendedViews,
+            selectedKind: selected.isLive ? "live": "video", // this should support also 'playlist' 
+        };
+        memo.push(entry);
+    });
+    return memo;
+};
+
 module.exports = {
-    produceCSVv1
+    produceCSVv1,
+    unrollRecommended,
+    unwindSections,
 };
