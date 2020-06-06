@@ -10,8 +10,8 @@ const imgstyle = {
     width: '100%'
 };
 const lessStandardHref = {
-    'color': 'black',
-    'textDecoration': 'none'
+    color: 'black',
+    textDecoration: 'none'
 };
 
 const InfoBox = createReactClass({

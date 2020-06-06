@@ -69,7 +69,17 @@ function boot () {
         localLookup(response => {
             // `response` contains the user's public key, we save it global for the blinks
             console.log("app.js gets", response, "from localLookup");
+
+            /* these parameters are loaded from localstorage */
             config.publicKey = response.publicKey;
+            config.active = response.active;
+            config.ux = response.ux;
+
+            if(config.active == false) {
+                console.log("ytTREX disabled!"); // TODO some UX change
+                return null;
+            }
+
             initializeBlinks();
             adMonitor();
             hrefUpdateMonitor();
@@ -273,7 +283,7 @@ function localLookup (callback) {
     bo.runtime.sendMessage({
         type: 'localLookup',
         payload: {
-            userId: config.userId
+            userId: config.userId // at the moment is fixed to 'local'
         }
     }, callback);
 }
