@@ -34,6 +34,13 @@ const theme = createMuiTheme({
     },
 });
 
+
+/*
+const devColors = 'linear-gradient(to left, #f1b9b9, #a2cff7, #c8e485, #f7c4f3)';
+
+      if (config.NODE_ENV == 'development') { styles['backgroundImage'] = devColors; }
+*/
+
 function main () {
     bo.runtime.sendMessage({
         type: 'localLookup',

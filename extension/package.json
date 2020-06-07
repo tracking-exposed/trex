@@ -62,6 +62,7 @@
   "dependencies": {
     "@material-ui/core": "^4.10.0",
     "@material-ui/icons": "^4.9.1",
+    "@material-ui/lab": "^4.0.0-alpha.55",
     "bs58": "^3.0.0",
     "cheerio": "^0.22.0",
     "classnames": "^2.2.6",

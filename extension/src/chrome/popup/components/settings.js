@@ -10,51 +10,47 @@ import ListItemText from '@material-ui/core/ListItemText';
 import ListItem from '@material-ui/core/ListItem';
 import List from '@material-ui/core/List';
 
-import config from '../../../config';
-
 // bo is the browser object, in chrome is named 'chrome', in firefox is 'browser'
 const bo = chrome || browser;
-
-// defaults of the settings stored in 'config' and controlled by popup
-const DEFAULT_SETTINGS = { active: false, ux: false };
-
 
 class Settings extends React.Component{
 
     constructor (props) {
+        console.log("Props in Settings constructor", props);
         super(props);
-        bo.runtime.sendMessage({ type: 'localLookup' }, (userSettings) => {
-            this.setState(userSettings);
-        });
+        this.state = { active: props.active };
     }
         
-    toggleActivation(x, syntheticEvent, value) {
-        console.log('toggleActivation, switching to', value);
-        x.setState({active : value });
-        bo.runtime.sendMessage({
-            type: 'configUpdate',
-            payload: { active: value }
-        }, (status) => {
-            console.log("status received", status);
-            x.setState(status);
-        });
-    }
-
     render () {
 
+        function toggleActivation (_t, event) {
+            _t.setState({ active: event.target.checked });
+            bo.runtime.sendMessage({
+                type: 'configUpdate',
+                payload: { active: event.target.checked }
+            }, (status) => {
+                console.log("status confirmed", status);
+            });
+        }
+
+        if(!this.state)
+            return (<p>Loading...</p>);
+
+        console.log("settings props state", this.props, this.state);
+
         return (
-          <List component="nav" aria-label="controls links files">
+          <List component="nav" aria-label="main settings">
             <ListItem>
               <ListItemIcon>
                 <TimelineIcon />
               </ListItemIcon>
-              <ListItemText primary="youtube.tracking.exposed active" />
+              <ListItemText primary={ (!!this.state && !!this.state.active) ? "turn OFF evidence collection" : "turn ON evidence collection"} />
               <ListItemSecondaryAction>
                 <Switch
                   edge="end"
-                  onChange={_.partial(this.toggleActivation, this)}
-                  checked={this.state ? this.state.active : DEFAULT_SETTINGS.active }
-                  inputProps={{ 'aria-labelledby': 'switch-list-label-wifi' }}
+                  onChange={_.partial(toggleActivation, this)}
+                  checked={this.state ? !!this.state.active : false }
+                  inputProps={{ 'aria-labelledby': 'yttrex-main-switch' }}
                 />
               </ListItemSecondaryAction>
             </ListItem>

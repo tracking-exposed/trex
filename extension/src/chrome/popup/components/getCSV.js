@@ -1,6 +1,5 @@
 import React from 'react';
 import config from '../../../config';
-import createReactClass from 'create-react-class';
 
 import ListItem from '@material-ui/core/ListItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
@@ -13,12 +12,13 @@ function ListItemLink(props) {
     return <ListItem component="a" {...props} />;
 }
 
-const InfoBox = createReactClass({
+class InfoBox extends React.Component{
 
     render () {
-        const homecsv = config.API_ROOT + '/personal/' + this.props.publicKey + '/home' + '/csv';
-        const videocsv = config.API_ROOT + '/personal/' + this.props.publicKey + '/video' + '/csv';
-        const personalLink = config.WEB_ROOT + '/personal/#' + this.props.publicKey;
+        console.log(this.props);
+        const homecsv = config.API_ROOT + 'personal/' + this.props.publicKey + '/home' + '/csv';
+        const videocsv = config.API_ROOT + 'personal/' + this.props.publicKey + '/video' + '/csv';
+        const personalLink = config.WEB_ROOT + 'personal/#' + this.props.publicKey;
 
         return (
           <List component="nav" aria-label="controls links files">
@@ -47,6 +47,6 @@ const InfoBox = createReactClass({
           </List>
         );
     }
-});
+};
 
 export default InfoBox;

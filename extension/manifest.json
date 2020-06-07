@@ -22,6 +22,7 @@
   "permissions": [
     "storage",
     "tabs",
+    "alarms",
     "http://localhost:9000/",
     "https://*.youtube.com/",
     "https://youtube.tracking.exposed/"

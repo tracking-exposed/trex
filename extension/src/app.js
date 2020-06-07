@@ -75,7 +75,7 @@ function boot () {
             config.active = response.active;
             config.ux = response.ux;
 
-            if(config.active == false) {
+            if(config.active !== true) {
                 console.log("ytTREX disabled!"); // TODO some UX change
                 return null;
             }
@@ -283,7 +283,7 @@ function localLookup (callback) {
     bo.runtime.sendMessage({
         type: 'localLookup',
         payload: {
-            userId: config.userId // at the moment is fixed to 'local'
+            userId: 'local' // at the moment is fixed to 'local'
         }
     }, callback);
 }

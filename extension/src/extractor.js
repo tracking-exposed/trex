@@ -3,7 +3,7 @@ import _ from 'lodash';
 import longlabel from '../../backend/parsers/longlabel';
 
 function labelsOpportunisticParsing(memo, n, i) {
-    console.log(i);
+    // console.log(i);
     let isNext = n.closest("a.ytp-next-button");
     let isVideo = n.closest("#video-title");
     let videoBlock = n.closest("a.ytd-compact-video-renderer");
