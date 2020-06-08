@@ -1,6 +1,6 @@
 import _ from 'lodash';
 
-import longlabel from '../../backend/parsers/longlabel';
+import longlabel from './longlabel';
 
 function labelsOpportunisticParsing(memo, n, i) {
     // console.log(i);
