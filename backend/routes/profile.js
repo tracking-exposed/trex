@@ -52,6 +52,51 @@ async function updateProfile(req) {
     return { json: updated };
 };
 
+async function createAndOrJoinTag(req) {
+    /* this function is a mash-up of the previous design and is become the sole
+     * exported API */
+    const tag = req.body.tag;
+    const k =  req.params.publicKey;
+
+    if(_.size(k) < 26) // This is not a precise number. why I'm even using this check?
+        return { json: { "message": "Invalid publicKey", "error": true }};
+
+    if(_.size(tag) < 1)
+        return { json: { error: true, message: `Group name (tag parameter) shoulbe be a string with more than 1 char` }};
+
+    const mongoc = await mongo3.clientConnect({concurrency: 1});
+
+    /* creation of the group. the ID can't be addressed directly, the API must receive groupName+password to find it */
+    const id = utils.hash({
+        fixedSalt: "https://github.com/tracking-exposed/",
+        name: tag,
+        password: ''
+    });
+
+    let ret = {json: {}};
+    const exists = await mongo3.readOne(mongoc, nconf.get('schema').groups, { id: id });
+    if(_.get(exists, 'id')) {
+        ret.json.group = Object(exists);
+        ret.created = false;
+    } else {
+        const createdTag = {
+            id,
+            name: tag,
+            accessibility: 'public',
+            lastAccess: new Date(),
+            description: '',
+        };
+        ret.json.group = Object(createdTag);
+        ret.created = true;
+        debug("createTag: %s, %s, %s", tag, id, createdTag.accessibility);
+        await mongo3.writeOne(mongoc, nconf.get('schema').groups, createdTag);
+    }
+    /* this API call also mark the calling profile as part of the new group */
+    ret.json.profile = await updateTagInProfile(ret.json.group, k);
+    await mongoc.close();
+    return ret;
+};
+
 async function createTag(req) {
     /* receive a new group, a password, and a flag private|public */
     const PASSWORD_MIN = 8;
@@ -117,27 +162,35 @@ async function profileStatus(req) {
 };
 
 async function removeTag(req) {
-    const tagId =  req.params.tagId;
+    const tagName =  req.params.tagName;
     const k =  req.params.publicKey;
 
     if(_.size(k) < 26) // (shrug emoji)
         return { json: { "message": "Invalid publicKey", "error": true }};
 
+    const tagId = utils.hash({
+        fixedSalt: "https://github.com/tracking-exposed/",
+        name: tagName,
+        password: ''
+    });
+
     const profile = await supporters.get(k);
     if(profile.tag.id == tagId) {
         _.unset(profile, 'tag');
         const updated = await supporters.update(k, profile);
-        return { json: updated };
+        debug("removeTag, updated profile now: %j", updated);
+        return { json: { profile: updated }};
     } else {
         debug("Remove fail: Invalid tagId requested? %s",
             JSON.stringify(profile, null, 2));
-        return { json: updated };
+        return { json: { message: "Tag not present now", error: true}};
     }
 };
 
 module.exports = {
     updateProfile,
     profileStatus,
+    createAndOrJoinTag,
     removeTag,
     createTag,
 };

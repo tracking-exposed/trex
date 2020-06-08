@@ -19,11 +19,12 @@ async function update(publicKey, updated) {
         throw new Error("publicKey can't be updated");
 
     updated.lastActivity = new Date();
-    const r = await mongo3.updateOne(mongoc, nconf.get('schema').supporters, { publicKey }, updated);
+    const d = await mongo3.deleteMany(mongoc, nconf.get('schema').supporters, { publicKey });
+    const r = await mongo3.writeOne(mongoc, nconf.get('schema').supporters, updated);
 
-    if(!(r.result && r.result.ok)) {
-        console.log(JSON.stringify(r, undefined, 1));
-        throw new Error("Failure in supporter update");
+    if(!(r.result && r.result.ok) || !(d.result && r.result.ok)) {
+        debug("Bad mongodb error in delete+write as update: %j %j %j", d, r, updated);
+        throw new Error("Failure in supporter update", JSON.stringify(updated));
     }
 
     const retval = await mongo3.readOne(mongoc, nconf.get('schema').supporters, { publicKey });

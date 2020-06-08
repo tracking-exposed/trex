@@ -41,7 +41,7 @@ const apiList = {
     removeTag:         require('../routes/profile').removeTag,
 
     /* creation of a new tagGroup */
-    createTag:         require('../routes/profile').createTag,
+    createAndOrJoinTag:require('../routes/profile').createAndOrJoinTag,
 
     /* realtime monitor */
     getMonitor:        require('../routes/monitor').getMonitor,
