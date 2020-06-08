@@ -15,10 +15,9 @@ function ListItemLink(props) {
 class InfoBox extends React.Component{
 
     render () {
-        console.log(this.props);
         const homecsv = config.API_ROOT + 'personal/' + this.props.publicKey + '/home' + '/csv';
         const videocsv = config.API_ROOT + 'personal/' + this.props.publicKey + '/video' + '/csv';
-        const personalLink = config.WEB_ROOT + 'personal/#' + this.props.publicKey;
+        const personalLink = config.WEB_ROOT + '/personal/#' + this.props.publicKey;
 
         return (
           <List component="nav" aria-label="controls links files">
