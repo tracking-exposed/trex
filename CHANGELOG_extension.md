@@ -1,11 +1,12 @@
 The format is based on [Keep a Changelog](http://keepachangelog.com/) and this
 project adheres to [Semantic Versioning](http://semver.org/).
 
-## [1.4.0] - 2020-05-08
+## [1.4.0] - 2020-06-08
 ### Added
 - New HTML element watchers, integrated real-time event API
+- New Popup design and functionality
 ### Fixed
-- Popup content and links, info box bugfixing.
+- Popup content and links, material-ui updated to 4.x
 
 ## [1.3.0] - 2020-03-30
 ### Added

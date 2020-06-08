@@ -363,9 +363,9 @@ function initializeBlinks() {
     }, `
 <div>
     <h2>
-        <a href="https://youtube.tracking.exposed" target=_blank>youtube</a>.<a href="https://tracking.exposed" target=_blank>tracking.exposed</a>
-    </h2>
-    <p style="font-size: 1.2rem">This is a free software browser extention. Data is processed for academic and digital activism purposes. <b>We scrutinize the algorithms and their effects</b>.</p>
+        <a href="https://youtube.tracking.exposed" target=_blank>youtube</a>.<a href="https://tracking.exposed" target=_blank>tracking.exposed</a> is currently enabled!
+    </h2><hr />
+    <p style="font-size: 1.2rem">This is a browser extention you installed. Data is processed for academic and digital activism purposes, we can use your evidence by clicking on the extension icon.</p>
     <p style="font-size: 1.2rem">You can see the nearby icons <span>${logo('10px', '10px', '#bbb')}</span> and they blink. Each position/color is a different stage in the evidence collection.</p>
     <br /><br />
     <ul style="list-style-type: none;">
@@ -373,12 +373,20 @@ function initializeBlinks() {
         <li style="font-size: 1.2rem">${logo('15px', '15px', '#269072')} New video seen</li>
         <li style="font-size: 1.2rem">${logo('15px', '15px', '#c03030')} Video is sent to a server. <a href="${config.WEB_ROOT}/personal/#${config.publicKey}" target=_blank><b>A</b>ccess your data</a>.</li>
         <li style="font-size: 1.2rem">${logo('15px', '15px', '#ffb545')} Advertising spotted and sent</li>
-        <!-- if you read this code, please consider a small git commit as contribution :)
+        <!-- if you read this code, please consider a small git-commit as contribution :)
              we're short in resources and the project is ambitious! -->
     </ul>
     <br />
-    <h3>
-        The 25th of March 2020, join the first <a href="https://youtube.tracking.exposed/wetest/1" target=_blank>Collective Algorithm Observation</a>.
+    <h3>Know more about the project:
+        <button size="small" color="secondary" onclick=window.open("https://tracking.exposed/manifesto")>
+        Manifesto
+        </button>
+        <button size="small" color="primary" onclick="window.open("https://github.com/tracking-exposed/yttrex/")> 
+        Software Repository
+        </button>
+        <button size="small" color="secondary" onclick="window.open("https://github.com/tracking-exposed/yttrex/")> 
+        Facebook support page
+        </button>
     </h3>
 </div>
 `

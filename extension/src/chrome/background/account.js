@@ -84,7 +84,7 @@ function configUpdate (payload, sendResponse) {
 
     const userId = FIXED_USER_NAME;
     db.get(userId).then(val => {
-        let update = _.merge(payload, val);
+        let update = _.merge(val, payload);
         return db.set(userId, update);
     }).then(val => {
         console.log("ConfigUpdate completed and return", val)

@@ -24,6 +24,7 @@ class Settings extends React.Component{
     render () {
 
         function toggleActivation (_t, event) {
+            console.log("currently value", event.target.checked);
             _t.setState({ active: event.target.checked });
             bo.runtime.sendMessage({
                 type: 'configUpdate',
