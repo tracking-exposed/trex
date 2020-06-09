@@ -65,7 +65,7 @@ function closestForTime(e, sele) {
     }
 
     if(_.size(e.parentNode.outerHTML) > 9000) {
-        debugTimef("[display/extended Time] breaking recursion, next would be %d bytes", _.size(e.parentNode.outerHTML));
+        // debugTimef("[display/extended Time] breaking recursion, next would be %d bytes", _.size(e.parentNode.outerHTML));
         return { displayTime: null, expandedTime: null };
     }
 
@@ -102,6 +102,9 @@ function relatedMetadata(e, i) {
     const recommendedLength = displayTime ? moment.duration(displayTime).asSeconds() : null;
     const arialabel = e.querySelector('#video-title').getAttribute('aria-label');
     // Beastie Boys - Sabotage by BeastieBoys 9 years ago 3 minutes, 2 seconds 62,992,821 views
+
+    if(!arialabel)
+        return null;
 
     try {
         mined = arialabel ? longlabel.parser(arialabel, source, liveBadge): null;
@@ -153,7 +156,7 @@ function checkUpDebug(r) {
         return memo;
     }, { str: "", cnt: 0 });
     if(l.cnt)
-        debugCheckup(l.cnt, l.str);
+        debugCheckup("!%d -> %s\n\t%d\t%s", l.cnt, l.str, r.index, r.label);
 };
 
 function makeAbsolutePublicationTime(list, clientTime) {
@@ -312,7 +315,8 @@ function processVideo(D, blang, clientTime) {
     }
 */
 
-    debug("Video <%s> mined %d related", title, _.size(related));
+    debug("Video <%s> attempted to parse %d related, found actually %d",
+        title, _.size(related), _.size(_.compact(related)));
 
     /* non mandatory info */
     let viewInfo, likeInfo = null;
@@ -342,7 +346,7 @@ function processVideo(D, blang, clientTime) {
         blang: blang ? blang : ifLang,
         authorName,
         authorSource,
-        related,
+        related: _.compact(related),
         viewInfo,
         likeInfo
     };

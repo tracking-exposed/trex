@@ -1,5 +1,5 @@
 const _ = require('lodash');
-const debug = require('debug')('lib:events');
+const debug = require('debug')('routes:events');
 const nconf = require('nconf');
 
 const automo = require('../lib/automo');
@@ -114,6 +114,9 @@ async function processEvents2(req) {
         return html;
     });
 
+    if(_.size(_.filter(htmls, { type: 'info'})))
+        debug("[i] Received info package (currently ignored)");
+
     const check = await automo.write(nconf.get('schema').htmls, _.reject(htmls, { type: 'info'}));
     if(check && check.error) {
         debug("Error in saving %d htmls %j", _.size(htmls), check);
@@ -134,9 +137,9 @@ async function processEvents2(req) {
     }
 
     const info = _.map(_.concat(_.reject(htmls, { type: 'info' }), labels), function(e) {
-        return [ e.incremental, e.size, e.selectorName ? e.selectorName : e.selector ];
+        return [ "i" + e.incremental, e.size, e.selectorName ? e.selectorName : e.selector ];
     });
-    debug("%s <- %s", supporter.p, JSON.stringify(info));
+    debug("%s %s <- %s", supporter.p, _.uniq(_.map(htmls, 'href')), JSON.stringify(info));
 
     /* this is what returns to the web-extension */
     return { json: {

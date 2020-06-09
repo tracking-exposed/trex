@@ -67,7 +67,7 @@ async function newLoop(htmlFilter) {
      * and optimized.
      * */
 
-    const htmls = await automo.getLastHTMLs(htmlFilter, processedCounter, htmlAmount);
+    const htmls = await automo.getLastHTMLs(htmlFilter, skipCount, htmlAmount);
     if(!_.size(htmls.content)) {
 
         if(!_.isNull(filter)) {
@@ -227,7 +227,9 @@ async function wrapperLoop() {
                     $gt: new Date(lastExecution)
                 },
             };
-            htmlFilter.processed = { $exists: actualRepeat };
+            if(!actualRepeat)
+                htmlFilter.processed = { $exists: false };
+            // else, we consider every html
 
             if(filter)
                 htmlFilter.metadataId = { '$in': filter };

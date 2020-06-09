@@ -89,7 +89,10 @@ function dissectSelectedVideo(e, i, sections, offset) {
     if(_.size(_.compact(errorLog)))
         debuge("Video order %d got %d errors [elemSize %d]: %j",
             i, _.size(_.compact(errorLog)), _.size(e.outerHTML), _.compact(errorLog ));
-   
+
+    if(!infos.aria)
+        return null;
+
     const s = {
         index: i + 1,
         verified: infos.verified,
@@ -189,10 +192,10 @@ function actualHomeProcess(D) {
             }
         }
     });
-
-    debugResults("Parsing completed, errors: %j over %d", _.countBy(selected, { error: true }), _.size(selected)); 
-    debugSizes(selected);
-    return { selected: _.reject(selected, { error: true }), sections: selectorOffsetMap };
+    const effective = _.compact(selected);
+    debugResults("Parsing completed. Analyzed %d, effective %d", _.size(selected), _.size(effective));
+    debugSizes(effective);
+    return { selected: _.reject(effective, { error: true }), sections: selectorOffsetMap };
 }
 
 function process(envelop) {
