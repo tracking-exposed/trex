@@ -9,22 +9,22 @@ const uxlang = require('../../parsers/uxlang');
 describe("Testing the localized strings", function() {
 
   const Polish = "Transmisja rozpoczęta 5 godzin temu";
-  it(Polish, async function() {
-    const { amount, unit } = uxlang.tryNLregexpChain(Polish)
+  it(Polish, function() {
+    const { amount, unit } = uxlang.localizedRegexpChain(Polish);
     expect(amount).to.be.greaterThan(0);
     expect(_.keys(uxlang.localized)).to.be.an('array').that.does.includes(unit);
   });
 
   const Less1min = "Streaming started less than 1 minute ago";
-  it(Less1min, async function() {
-    const { amount, unit } = uxlang.tryNLregexpChain(Less1min)
+  it(Less1min, function() {
+    const { amount, unit } = uxlang.localizedRegexpChain(Less1min);
     expect(amount).to.be.greaterThan(0);
     expect(_.keys(uxlang.localized)).to.be.an('array').that.does.includes(unit);
   });
 
   const Tedesco = "Aktiver Livestream seit 2 Minuten";
   it(Tedesco, function() {
-    const { amount, unit } = uxlang.tryNLregexpChain(Tedesco)
+    const { amount, unit } = uxlang.localizedRegexpChain(Tedesco);
     expect(amount).to.be.greaterThan(0);
     expect(_.keys(uxlang.localized)).to.be.an('array').that.does.includes(unit);
   });

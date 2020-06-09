@@ -31,10 +31,10 @@ import _ from 'lodash';
 import moment from 'moment';
 
 import {createPanel} from './panel';
-
 import config from './config';
 import hub from './hub';
 import { registerHandlers } from './handlers/index';
+import extractor from './extractor';
 
 const YT_VIDEOTITLE_SELECTOR = 'h1.title';
 
@@ -68,7 +68,18 @@ function boot () {
         // Lookup the current user and decide what to do.
         localLookup(response => {
             // `response` contains the user's public key, we save it global for the blinks
+            console.log("app.js gets", response, "from localLookup");
+
+            /* these parameters are loaded from localstorage */
             config.publicKey = response.publicKey;
+            config.active = response.active;
+            config.ux = response.ux;
+
+            if(config.active !== true) {
+                console.log("ytTREX disabled!"); // TODO some UX change
+                return null;
+            }
+
             initializeBlinks();
             adMonitor();
             hrefUpdateMonitor();
@@ -85,8 +96,10 @@ function phase (path) {
     f(path);
 }
 
-const adPeriodicTimeout = 3000;
-const videoPeriodicTimeout = 9000;
+const hrefPERIODICmsCHECK = 9000;
+const nodePERIODICmsCHECK = 4000;
+let nodePeriodicCheck = nodePERIODICmsCHECK; // this check is dynamics, it grows if nothing change
+let hrefPeriodicCheck = hrefPERIODICmsCHECK;
 var lastVideoURL = null;
 var lastVideoCNT = 0;
 
@@ -101,7 +114,7 @@ function hrefUpdateMonitor () {
         // also, here is cleaned the cache declared below
         if (diff) {
             phase('video.seen');
-            cache = [];
+            cleanCache();
             refreshUUID();
         }
         if (!diff) {
@@ -124,33 +137,27 @@ function hrefUpdateMonitor () {
                     $(YT_VIDEOTITLE_SELECTOR).length,
                     $(YT_VIDEOTITLE_SELECTOR).text()
                 ); */
-                if (testElement($('ytd-app').html(), 'ytd-app')) { phase('video.send'); }
+                if (sizeCheck($('ytd-app').html(), 'ytd-app')) { phase('video.send'); }
             });
-    }, videoPeriodicTimeout);
+    }, hrefPeriodicCheck);
 }
 
-let cache = [];
-function testElement (nodeHTML, selector) {
+let sizecache = [];
+function sizeCheck(nodeHTML, selector) {
     // this function look at the LENGTH of the proposed element.
+    // this is used in video because the full html body page would be too big
+    // this is also a case of premature optimization. known mother of all evil.
+
     // if an element with the same size has been already sent with
     // this URL, this duplication is ignored.
 
     const s = _.size(nodeHTML);
-    const exists = _.reduce(cache, function (memo, e, i) {
-        const evalu = _.eq(e, s);
-        /* console.log(memo, s, e, evalu, i); */
-        if (!memo) {
-            if (evalu) { memo = true; }
-        }
+    if(!s)
+        return false;
+    if(sizecache.indexOf(s) != -1)
+        return false;
 
-        return memo;
-    }, false);
-
-    if (exists) { return false; }
-    if (!s) { return false; }
-
-    cache.push(s);
-
+    sizecache.push(s);
     hub.event('newVideo', {
         element: nodeHTML,
         href: window.location.href,
@@ -158,53 +165,93 @@ function testElement (nodeHTML, selector) {
         selector,
         size: s,
         randomUUID
-    }); /*
+    });
     console.log("->",
-        _.size(cache),
-        "new element sent, selector", selector,
+        _.size(sizecache),
+        "new href+content sent, selector", selector,
         Date(), "size", s,
-        cache,
-    ); */
+        sizecache,
+    );
     return true;
 }
 
+const watchedPaths = {
+    'banner': '.video-ads.ytp-ad-module', // middle banner
+    'ad': '.ytp-ad-player-overlay-instream-info', // ad below
+    'channel': '.ytp-title-channel', // title top
+    'title': '.ytp-title-text', // title
+    'over': '.ytp-chrome-top', // other title top
+    'label': '[aria-label]',
+};
+
+let contentcache = {};
 function adMonitor () {
-    /*
-     * Dear code reader, if you turn out to be a Google employee,
-     * you can beat us like a piece of cake just changing the
-     * css selector below. or, put bogus content into the title
-     * channel, for example.
-     *
-     * even worst, you can add a css rule for #ads-seen with
-     * !important and ruin the experience to every chrome
-     * supporter.
-     *
-     * I mean. really? don't be evil. this is a way to empower
-     * people in understanding algorithm society. COME ON!
-     */
-    window.setInterval(function () {
+   
+    function lookForExistingNodes(selector, name) {
+        const matches = document.querySelectorAll(selector);
+        if(!matches.length)
+            return false;
 
-        const advPossibleLocation = [
-            '.video-ads.ytp-ad-module', // middle banner
-            '.ytp-ad-player-overlay-instream-info', // ad below
-            '.ytp-title-channel', // title top
-            '.ytp-title-text', // title 
-            '.ytp-chrome-top' // other title top
-        ];
-
-        _.each(advPossibleLocation, function(s) {
-            document
-                .querySelectorAll(s)
-                .forEach(function (element) {
-                    if (_.size(element.textContent)) {
-                        console.log(s, "===}>", element.textContent)
-                        if (testElement(element.outerHTML, s))
-                            phase('adv.seen'); 
-                    }
-                });
+        // console.log(name, _.size(matches));
+        const acquired = _.map(matches, function(e, i) {
+            let content = {
+                html: e.outerHTML,
+                order: i,
+            };
+            return content;
         });
+        // console.log(JSON.stringify(_.map(acquired, 'label')));
+        const ready = {
+            href: window.location.href,
+            name,
+            acquired,
+        };
+        const formatted = JSON.stringify(ready);
+        const hash = formatted.split('').reduce((a,b)=>{a=((a<<5)-a)+b.charCodeAt(0);return a&a},0);
 
-    }, adPeriodicTimeout);
+        const c = _.get(contentcache, hash);
+        // console.log("newVideo/label", _.size(contentcache), matches, acquired, ready,formatted, hash, !!c);
+        if(!!c)
+            return false;
+
+        _.set(contentcache, hash, { selector, name });
+
+        const extra = extractor.mineExtraMetadata(name, matches);
+
+        /* element contains the HTML pieces usable to do backend parsing
+           extra contans metadata took from the interface which might be saved
+           client side (localstorage)
+           --
+           the parsing function above depends on a statis dataset which must
+           be sync via backend before any usage */
+        hub.event('newInfo', {
+            element: ready,
+            href: window.location.href,
+            hash,
+            when: Date(),
+            selector,
+            name,
+            randomUUID,
+            extra,
+        });
+        phase('adv.seen');
+        return name;
+    };
+
+    // TODO a smart message if someone working for Google reads here.
+    // well, a bot would surely read this, but 
+    window.setInterval(function () {
+        const results = _.map(watchedPaths, lookForExistingNodes);
+        const printabled = _.compact(results);
+        if(_.size(printabled))
+            console.log("changeMonitor", JSON.stringify(printabled));
+        // might change nodePeriodicCheck 
+    }, nodePeriodicCheck);
+}
+
+function cleanCache() {
+    contentcache = {};
+    sizecache = [];
 }
 
 var lastCheck = null;
@@ -226,7 +273,7 @@ function refreshUUID () {
             console.log("-> It is less then", REFERENCE, timed.asSeconds()); */
         }
     };
-    lastCheck = moment();
+    lastCheck = moment(); // TODO understand and verify, should this be in the block above?
 }
 
 // The function `localLookup` communicates with the **action pages**
@@ -236,7 +283,7 @@ function localLookup (callback) {
     bo.runtime.sendMessage({
         type: 'localLookup',
         payload: {
-            userId: config.userId
+            userId: 'local' // at the moment is fixed to 'local'
         }
     }, callback);
 }
@@ -316,9 +363,9 @@ function initializeBlinks() {
     }, `
 <div>
     <h2>
-        <a href="https://youtube.tracking.exposed" target=_blank>youtube</a>.<a href="https://tracking.exposed" target=_blank>tracking.exposed</a>
-    </h2>
-    <p style="font-size: 1.2rem">This is a free software browser extention. Data is processed for academic and digital activism purposes. <b>We scrutinize the algorithms and their effects</b>.</p>
+        <a href="https://youtube.tracking.exposed" target=_blank>youtube</a>.<a href="https://tracking.exposed" target=_blank>tracking.exposed</a> is currently enabled!
+    </h2><hr />
+    <p style="font-size: 1.2rem">This is a browser extention you installed. Data is processed for academic and digital activism purposes, we can use your evidence by clicking on the extension icon.</p>
     <p style="font-size: 1.2rem">You can see the nearby icons <span>${logo('10px', '10px', '#bbb')}</span> and they blink. Each position/color is a different stage in the evidence collection.</p>
     <br /><br />
     <ul style="list-style-type: none;">
@@ -326,12 +373,20 @@ function initializeBlinks() {
         <li style="font-size: 1.2rem">${logo('15px', '15px', '#269072')} New video seen</li>
         <li style="font-size: 1.2rem">${logo('15px', '15px', '#c03030')} Video is sent to a server. <a href="${config.WEB_ROOT}/personal/#${config.publicKey}" target=_blank><b>A</b>ccess your data</a>.</li>
         <li style="font-size: 1.2rem">${logo('15px', '15px', '#ffb545')} Advertising spotted and sent</li>
-        <!-- if you read this code, please consider a small git commit as contribution :)
+        <!-- if you read this code, please consider a small git-commit as contribution :)
              we're short in resources and the project is ambitious! -->
     </ul>
     <br />
-    <h3>
-        The 25th of March 2020, join the first <a href="https://youtube.tracking.exposed/wetest/1" target=_blank>Collective Algorithm Observation</a>.
+    <h3>Know more about the project:
+        <button size="small" color="secondary" onclick=window.open("https://tracking.exposed/manifesto")>
+        Manifesto
+        </button>
+        <button size="small" color="primary" onclick="window.open("https://github.com/tracking-exposed/yttrex/")> 
+        Software Repository
+        </button>
+        <button size="small" color="secondary" onclick="window.open("https://github.com/tracking-exposed/yttrex/")> 
+        Facebook support page
+        </button>
     </h3>
 </div>
 `

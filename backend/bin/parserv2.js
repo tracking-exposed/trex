@@ -2,36 +2,46 @@
 const _ = require('lodash');
 const moment = require('moment');
 const debug = require('debug')('yttrex:parserv');
+const debuge = require('debug')('yttrex:parserv:error');
+const overflowReport = require('debug')('yttrex:OVERFLOW');
 const nconf = require('nconf');
 const JSDOM = require('jsdom').JSDOM;
+const fs = require('fs');
 
-const videoparser = require('../parsers/video')
-const homeparser = require('../parsers/home')
-const automo = require('../lib/automo')
+const videoparser = require('../parsers/video');
+const longlabel = require('../parsers/longlabel');
+const homeparser = require('../parsers/home');
+const automo = require('../lib/automo');
 
 nconf.argv().env().file({ file: 'config/settings.json' });
 
-/* const echoes = require('../lib/echoes');
-echoes.addEcho("elasticsearch");
-echoes.setDefaultEcho("elasticsearch"); */
+/* const echoes = require('../lib/echoes'); echoes.addEcho("elasticsearch"); echoes.setDefaultEcho("elasticsearch"); */
 
-const FREQUENCY = _.parseInt(nconf.get('frequency')) ? _.parseInt(nconf.get('frequency')) : 10;
-const backInTime = _.parseInt(nconf.get('minutesago')) ? _.parseInt(nconf.get('minutesago')) : 10;
-const skipCount = _.parseInt(nconf.get('skip')) ? _.parseInt(nconf.get('skip')) : 0;
-const htmlAmount = _.parseInt(nconf.get('amount')) ? _.parseInt(nconf.get('amount')) : 20;
+const FREQUENCY = 10;
+const AMOUNT_DEFAULT = 20;
+const BACKINTIMEDEFAULT = 3;
+
+let skipCount = _.parseInt(nconf.get('skip')) ? _.parseInt(nconf.get('skip')) : 0;
+let htmlAmount = _.parseInt(nconf.get('amount')) ? _.parseInt(nconf.get('amount')) : AMOUNT_DEFAULT;
+
+const stop = _.parseInt(nconf.get('stop')) ? (_.parseInt(nconf.get('stop')) + skipCount): 0;
+const backInTime = _.parseInt(nconf.get('minutesago')) ? _.parseInt(nconf.get('minutesago')) : BACKINTIMEDEFAULT;
 const id = nconf.get('id');
+const filter = nconf.get('filter') ? JSON.parse(fs.readFileSync(nconf.get('filter'))) : null;
 const singleUse = !!id;
+const repeat = !!nconf.get('repeat');
 
 let nodatacounter = 0;
 let processedCounter = skipCount;
 let lastExecution = moment().subtract(backInTime, 'minutes').toISOString();
-let computedFrequency = FREQUENCY;
+let computedFrequency = 10;
+const stats = { lastamount: null, currentamount: null, last: null, current: null };
 
-if(backInTime != 10) {
+if(backInTime != BACKINTIMEDEFAULT) {
     const humanized = moment.duration(
         moment().subtract(backInTime, 'minutes') - moment()
     ).humanize();
-    console.log(`Considering ${backInTime} minutes (${humanized}), as override the standard 10 minutes ${lastExecution}`);
+    debug(`Considering ${backInTime} minutes (${humanized}), as override the standard ${BACKINTIMEDEFAULT} minutes ${lastExecution}`);
 }
 
 const advSelectors = {
@@ -42,28 +52,33 @@ const advSelectors = {
     ".ytp-title-text": videoparser.videoTitleTop,
 };
 
-async function newLoop() {
-    let repeat = !!nconf.get('repeat');
-    let htmlFilter = {
-        savingTime: {
-            $gt: new Date(lastExecution)
-        },
-    };
-    htmlFilter.processed = { $exists: repeat };
+async function newLoop(htmlFilter) {
+    /* this is the begin of the parsing core pipeline.
+     * gets htmls from the db, if --repeat 1 then previously-analyzed-HTMLS would be
+     * re-analyzed. otherwise, the default, is to skip those and wait for new 
+     * htmls. To receive htmls you should have a producer consistend with the 
+     * browser extension format, and bin/server listening 
+     * 
+     * This script pipeline might optionally start from the past, and 
+     * re-analyze HTMLs based on --minutesago <number> option.
+     * 
+     * At the end update metadata only if meaningful update is present,
+     * you might notice the library calls in automo, they should be refactored
+     * and optimized.
+     * */
 
-    if(id) {
-        debug("Targeting a specific metadataId imply --single");
-        htmlFilter = {
-            metadataId: id
-        }
-    }
-
-    const htmls = await automo.getLastHTMLs(htmlFilter, skipCount, htmlAmount);
+    const htmls = await automo.getLastHTMLs(htmlFilter, processedCounter, htmlAmount);
     if(!_.size(htmls.content)) {
+
+        if(!_.isNull(filter)) {
+            debug("%d no data with a specified filter: quitting!", nodatacounter);
+            process.exit(1);
+        }
+
         nodatacounter++;
         if( (nodatacounter % 10) == 1) {
-            debug("%d no data at the last query: %j",
-                nodatacounter, htmlFilter);
+            debug("%d no data at the last query: %j %j",
+                nodatacounter, _.keys(htmlFilter), htmlFilter.savingTime);
         }
         lastExecution = moment().subtract(2, 'm').toISOString();
         computedFrequency = FREQUENCY;
@@ -73,62 +88,32 @@ async function newLoop() {
     }
 
     if(!htmls.overflow) {
-        lastExecution = moment().subtract(2, 'm').toISOString();
-        debug("Got %d objects, parsing realtime...", _.size(htmls.content));
+        lastExecution = moment().subtract(BACKINTIMEDEFAULT, 'm').toISOString();
+        /* 1 minute is the average stop, so it comeback to check 3 minutes before */
+        overflowReport("<NOT>\t\t%d documents", _.size(htmls.content));
     }
     else {
         lastExecution = moment(_.last(htmls.content).savingTime);
-        debug("OVERFLOW: first %s last %s - lastExecution set to last %s",
-            _.first(htmls.content).savingTime, _.last(htmls.content).savingTime,
+        overflowReport("first %s (on %d) <last +minutes %d> next filter set to %s",
+            _.first(htmls.content).savingTime, _.size(htmls.content),
+            _.round(moment.duration(
+                moment(_.last(htmls.content).savingTime ) - moment(_.first(htmls.content).savingTime )
+            ).asMinutes(), 1),
             lastExecution);
     }
 
-    const analysis = _.map(htmls.content, function(e) {
-        const envelop = {
-            impression: _.omit(e, ['html', '_id']),
-            jsdom: new JSDOM(e.html.replace(/\n\ +/g, ''))
-                    .window.document,
-        }
+    if(stats.currentamount || stats.lastamount)
+        debug("[+] %d start a new cicle, %d took: %s and now process %d htmls",
+            processedCounter,
+            stats.currentamount, moment.duration(moment() - stats.current).humanize(),
+            _.size(htmls.content));
+    stats.last = stats.current;
+    stats.current = moment();
+    stats.lastamount = stats.currentamount;
+    stats.currentamount = _.size(htmls.content);
 
-        let metadata = null;
-        try {
-            processedCounter++;
-            debug("#%d\ton (%d minutes ago) %s %d.%d %s %s %s",
-                processedCounter,
-                _.round(moment.duration( moment() - moment(e.savingTime)).asMinutes(), 0),
-                e.metadataId,
-                e.packet, e.incremental,
-                e.href.replace(/https:\/\//, ''), e.size, e.selector);
-
-            const curi = e.href.replace(/.*youtube\.com\//, '').replace(/\?.*/, '')
-
-            if(!_.size(curi) && e.selector == "ytd-app") {
-                /* without clean URI, it is an youtube home */
-                metadata = homeparser.process(envelop);
-            }
-            else if(e.selector == "ytd-app") {
-                /* else, if is ytd-app, it is a full video content */
-                metadata = videoparser.process(envelop);
-            }
-            else if(_.indexOf(_.keys(advSelectors), e.selector) != -1)  {
-                /* if the selector is one of the adveritising related dissector, find it out */
-                metadata = advSelectors[e.selector](envelop, e.selector);
-                /* possible fields: 'adLink', 'adLabel', 'adChannel' */
-            } else {
-                console.log("Selector not supported!", e.selector);
-                return null;
-            }
-
-            if(!metadata)
-                return null;
-
-        } catch(error) {
-            debug("[!E] #%d\t selector (%s) error: %s", processedCounter, e.selector, error.message);
-            return null;
-        }
-
-        return [ envelop.impression, metadata ];
-    });
+    const analysis = _.map(htmls.content, processEachHTML);
+    /* analysis is a list with [ impression, metadata ] */
 
     const updates = [];
     for (const entry of _.compact(analysis)) {
@@ -152,7 +137,64 @@ async function newLoop() {
     debug("Usable HTMLs %d/%d - marking as processed the useless %d HTMLs\t\t(sleep %d)",
         _.size(_.compact(analysis)), _.size(htmls.content), _.size(remaining), computedFrequency);
 
-    await automo.markHTMLsUnprocessable(remaining);
+    const rv = await automo.markHTMLsUnprocessable(remaining);
+    debug("%d completed, took %d secs = %d mins",
+        processedCounter, moment.duration(moment() - stats.current).asSeconds(),
+        _.round(moment.duration(moment() - stats.current).asMinutes(), 2));
+    return rv;
+}
+
+function processEachHTML(e) {
+    /* main function invoked by the main loop */
+    if(!e || !e.html || _.size(e.html) < 2) {
+        debug("Unexpected entry %s html empty", e.id);
+        return null;
+    }
+
+    const envelop = {
+        impression: _.omit(e, ['html', '_id']),
+        jsdom: new JSDOM(e.html.replace(/\n\ +/g, ''))
+                .window.document,
+    }
+
+    let metadata = null;
+    try {
+        debug("#%d\ton (%d minutes ago) %s %d.%d %s %s %s",
+            processedCounter,
+            _.round(moment.duration( moment() - moment(e.savingTime)).asMinutes(), 0),
+            e.metadataId,
+            e.packet, e.incremental,
+            e.href.replace(/https:\/\//, ''), e.size, e.selector);
+        processedCounter++;
+
+        const curi = e.href.replace(/.*youtube\.com\//, '').replace(/\?.*/, '')
+
+        if(!_.size(curi) && e.selector == "ytd-app") {
+            /* without clean URI, it is an youtube home */
+            metadata = homeparser.process(envelop);
+        }
+        else if(e.selector == "ytd-app") {
+            /* else, if is ytd-app, it is a full video content */
+            metadata = videoparser.process(envelop);
+        }
+        else if(_.indexOf(_.keys(advSelectors), e.selector) != -1)  {
+            /* if the selector is one of the adveritising related dissector, find it out */
+            metadata = advSelectors[e.selector](envelop, e.selector);
+            /* possible fields: 'adLink', 'adLabel', 'adChannel' */
+        } else {
+            debuge("Selector not supported %s", e.selector);
+            return null;
+        }
+
+        if(!metadata)
+            return null;
+
+    } catch(error) {
+        debuge("#%d\t selector (%s) error: %s", processedCounter, e.selector, error.message);
+        return null;
+    }
+
+    return [ envelop.impression, metadata ];
 }
 
 function sleep(ms) {
@@ -162,14 +204,54 @@ function sleep(ms) {
 }
 
 async function wrapperLoop() {
+
+    if( id && (skipCount || (htmlAmount != AMOUNT_DEFAULT) ) ) {
+        debug("Ignoring --skip and --amount because of --id");
+        skipCount = 0;
+        htmlAmount = AMOUNT_DEFAULT;
+    }
+
+    if(stop && htmlAmount > (stop - skipCount) ) {
+        htmlAmount = (stop - skipCount);
+        debug("--stop %d imply --amount %d", stop, htmlAmount);
+    }
+
+    let actualRepeat = (repeat || !!id || !!filter || (backInTime != BACKINTIMEDEFAULT) );
+    if(actualRepeat != repeat)
+        debug("--repeat it is implicit!");
+
     while(true) {
         try {
-            await newLoop();
+            let htmlFilter = {
+                savingTime: {
+                    $gt: new Date(lastExecution)
+                },
+            };
+            htmlFilter.processed = { $exists: actualRepeat };
+
+            if(filter)
+                htmlFilter.metadataId = { '$in': filter };
+            if(id) {
+                debug("Targeting a specific metadataId");
+                htmlFilter = {
+                    metadataId: id
+                }
+            }
+
+            if(_.size(longlabel.unrecognized)) {
+                debuge("[this was originally saved on a dedicated file]: %j", longlabel.unrecognized);
+            }
+
+            if(stop && stop <= processedCounter) {
+                console.log(processedCounter);
+                process.exit(processedCounter);
+            }
+            await newLoop(htmlFilter);
         } catch(e) {
-            console.log("Error in newLoop", e.message);
+            console.log("Error in newLoop", e.message, e.stack);
         }
         if(singleUse) {
-            console.log("Single execution done!")
+            debug("Single execution done!")
             process.exit(0);
         }
         await sleep(computedFrequency * 1000)
@@ -177,6 +259,9 @@ async function wrapperLoop() {
 }
 
 try {
+    if(filter && id)
+        throw new Error("Invalid combo, you can't use --filter and --id");
+
     wrapperLoop();
 } catch(e) {
     console.log("Error in wrapperLoop", e.message);

@@ -1,4 +1,3 @@
-#!/usr/bin/env node
 const _ = require('lodash');
 const debug = require('debug')('parser:uxlang');
 const nlpdebug = require('debug')('pubtimeAPI');
@@ -10,6 +9,7 @@ const formatMatches = {
     "DD.MM.YYYY": /(\d{2})\.(\d{2})\.(\d{4})/,
     "MMM DD, YYYY": /(\D{3}) (\d{1,2}), (\d{4})/,
     "DD MMM YYYY": /(\d{1,2})\.?\s(\D{3,4})\.? ([20\d{2}])/, // "19 февр. 2019 г."     +     "21. mar. 2020"
+    "mm mmm": /(\d{1,2})\s(\D)\s?\D?/, // 46 minutes ago
 };
 
 const absoluteDateIntroSentence = [
@@ -82,38 +82,34 @@ const localized = {
     'Minuten': 'minutes',
 
     'minute': 'minutes',    // also 'less than 1 minute ago' might happen
-    'Minute': 'minutes',    //  Aktiver Livestream seit 2 Minuten
-    'segundos': 'seconds'
+    'Minute': 'minutes',    // Aktiver Livestream seit 2 Minuten
+
+    'segundos': 'seconds',
+    'seconds': 'seconds'
 };
 
 const regchain = [
     /(\d+)\s(\D+)/,
     /(\d+)\s(\D+)\s\D+/,
+    /(\d+)\s(\D+)\s\D+\s\D+/,
 ];
 
-function tryNLregexpChain(stri) {
+function localizedRegexpChain(stri) {
+    // this function process "blah blah since 321321 minutes (ago)?"
+    // and you want these:                    ^^^^^^ ^^^^^^^
     const fit = _.reduce(regchain, function(memo, regpick) {
         const match = stri.match(regpick);
         const amount = (match && match[1] ) ? _.parseInt(match[1]) : 0;
-        const longunit = (match && match[2]) ? match[2]: null;
-        const unit = _.first(_.split(longunit, ' '));
-        return (amount && unit ) ? { amount, unit } : memo;
+        const unit = (match && match[2]) ? match[2]: null;
+        if(memo)
+            return memo;
+        return localized[unit] ? { amount, unit: localized[unit] } : null;
     }, null);
+    if(!fit) {
+        debug("WARNING: |%s| not match", stri);
+        throw new Error("|regexpChain and localized need an update|" + stri+ "|");
+    }
     return fit ? fit : { amount: 0, unit: null };
-}
-
-function standardLatinWay(stri) {
-    // this function process "blah blah since 321321 minutes (ago)?"
-    // and you want these:                    ^^^^^^ ^^^^^^^
-    const { integerAmount, localizedUnit } = tryNLregexpChain(stri);
-    if(_.isUndefined(localized[localizedUnit])) {
-        debug("WARNING: |%s| not found!", localizedUnit);
-        throw new Error("|standardLatinWay|" + localizedUnit + "|");
-    }
-    return {
-        amount: integerAmount,
-        unit: localized[localizedUnit]
-    }
 }
 
 const relativeOpeningString = [
@@ -144,9 +140,8 @@ function findRelative(stri, clientTime) {
         nlpdebug("Relative time string missing? |%s|", stri);
         return moment('invalid date');
     }
-
     try {
-        const { amount, unit } = standardLatinWay(stri);
+        const { amount, unit } = localizedRegexpChain(stri);
         nlpdebug("Relative match consider %s minus %d %s", clientTime, amount, unit);
         return moment(clientTime).subtract(amount, unit);
     } catch(e) {
@@ -296,6 +291,6 @@ module.exports = {
     getFormatCleanString,       // internal f's
     findRelative,               // internal f's
     findLanguage,               // internal f's
-    tryNLregexpChain,           // internal f' but unit-tested
+    localizedRegexpChain,       // internal f' but unit-tested
     localized,                  // localized time unit
 };

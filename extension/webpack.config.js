@@ -4,6 +4,7 @@
 
 const path = require('path');
 const exec = require('child_process').exec;
+const moment = require('moment');
 
 const webpack = require('webpack');
 const autoPrefixer = require('autoprefixer');
@@ -18,6 +19,7 @@ const packageJSON = require('./package.json');
 const NODE_ENV = process.env.NODE_ENV || 'development';
 const PRODUCTION = NODE_ENV === 'production';
 const DEVELOPMENT = NODE_ENV === 'development';
+const BUILDISODATE = new Date().toISOString();
 console.log('NODE_ENV [' + process.env.NODE_ENV + '] Prod:', PRODUCTION, 'Devel: ', DEVELOPMENT);
 // const BUILD = require('child_process').execSync('git rev-parse HEAD').toString().trim();
 
@@ -34,17 +36,18 @@ const PATHS = {
 
 /** EXTERNAL DEFINITIONS INJECTED INTO APP **/
 var DEV_SERVER = 'localhost';
-var ENV_DEP_SERVER = DEVELOPMENT ? 'http://' + DEV_SERVER + ':9000' : 'https://youtube.tracking.exposed';
-var ENV_DEP_WEB = DEVELOPMENT ? 'http://' + DEV_SERVER + ':1313' : 'https://youtube.tracking.exposed';
+var ENV_DEP_SERVER = DEVELOPMENT ? ('http://' + DEV_SERVER + ':9000') : 'https://youtube.tracking.exposed';
+var ENV_DEP_WEB = DEVELOPMENT ? ('http://' + DEV_SERVER + ':1313') : 'https://youtube.tracking.exposed';
 
 const DEFINITIONS = {
     'process.env': {
         DEVELOPMENT: JSON.stringify(DEVELOPMENT),
         NODE_ENV: JSON.stringify(NODE_ENV),
-        API_ROOT: JSON.stringify(ENV_DEP_SERVER + '/api/v' + LAST_VERSION + '/'),
+        API_ROOT: JSON.stringify(ENV_DEP_SERVER + '/api/v' + LAST_VERSION),
         WEB_ROOT: JSON.stringify(ENV_DEP_WEB),
         VERSION: JSON.stringify(packageJSON.version + (DEVELOPMENT ? '-dev' : '')),
-        BUILD: new Date(),
+        BUILD: JSON.stringify(`On the ${moment().format("DD of MMMM at HH:mm")}.`),
+        BUILDISODATE: JSON.stringify(BUILDISODATE),
         FLUSH_INTERVAL: JSON.stringify(DEVELOPMENT ? 10000 : 20000)
     }
 };

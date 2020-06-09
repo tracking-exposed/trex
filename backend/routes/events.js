@@ -3,7 +3,6 @@ const debug = require('debug')('lib:events');
 const nconf = require('nconf');
 
 const automo = require('../lib/automo');
-const mongo = require('../lib/mongo');
 const utils = require('../lib/utils');
 const security = require('../lib/security');
 
@@ -82,18 +81,20 @@ async function processEvents2(req) {
     appendLast(req);
 
     const blang = headers.language.replace(/;.*/, '').replace(/,.*/, '');
-    debug("CHECK: %s <%s>", blang, headers.language );
+    // debug("CHECK: %s <%s>", blang, headers.language );
 
     const htmls = _.map(req.body, function(body, i) {
-        const id = utils.hash({
-            publicKey: headers.publickey,
-            size: _.size(body.element),
-            randomUUID: body.randomUUID,
-            i,
-        });
         const metadataId = utils.hash({
             publicKey: headers.publickey,
             randomUUID: body.randomUUID,
+            href: body.href,
+        });
+        const id = utils.hash({
+            metadataId,
+            size: _.size(body.element),
+            contenthash: body.contenthash,
+            href: body.href,
+            i,
         });
         const html = {
             id,
@@ -104,22 +105,36 @@ async function processEvents2(req) {
             clientTime: new Date(body.clientTime),
             savingTime: new Date(),
             html: body.element,
-            size: _.size(body.element),
+            size: _.size(JSON.stringify(body.element)),
             selector: body.selector,
             incremental: body.incremental,
+            type: body.type,
             packet: i,
         }
         return html;
     });
 
-    const check = await automo.write(nconf.get('schema').htmls, htmls);
+    const check = await automo.write(nconf.get('schema').htmls, _.reject(htmls, { type: 'info'}));
     if(check && check.error) {
         debug("Error in saving %d htmls %j", _.size(htmls), check);
         return { json: {status: "error", info: check.info }};
     }
 
-    const info = _.map(htmls, function(e) {
-        return [ e.packet, e.size, e.selector ];
+    const labels = _.map(_.filter(htmls, { type: 'info'}), function(e) {
+        e.acquired = e.html.acquired;
+        e.selectorName = e.html.name;
+        e.contenthash = e.contenthash;
+        _.unset(e, 'html');
+        return e;
+    });
+    const labelret = await automo.write(nconf.get('schema').labels, labels);
+    if(labelret && labelret.error) {
+        debug("Error in saving %d labels %j", _.size(labels), labelret);
+        return { json: {status: "error", info: labelret.info }};
+    }
+
+    const info = _.map(_.concat(_.reject(htmls, { type: 'info' }), labels), function(e) {
+        return [ e.incremental, e.size, e.selectorName ? e.selectorName : e.selector ];
     });
     debug("%s <- %s", supporter.p, JSON.stringify(info));
 
@@ -141,24 +156,9 @@ const hdrs =  {
     'accept-language': 'language',
 };
 
-function TOFU(pubkey) {
-    var pseudo = utils.string2Food(pubkey);
-    var supporter = {
-        publicKey: pubkey,
-        creationTime: new Date(),
-        p: pseudo
-    };
-    debug("TOFU: new publicKey received, from: %s", pseudo);
-    return mongo
-        .writeOne(nconf.get('schema').supporters, supporter)
-        .return( [ supporter ] )
-};
-
-
 module.exports = {
     processEvents2,
     getMirror,
     hdrs: hdrs,
     processHeaders: processHeaders,
-    TOFU: TOFU
 };

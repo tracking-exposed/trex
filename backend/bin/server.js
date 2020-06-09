@@ -122,8 +122,8 @@ app.post('/api/v2/events', function(req, res) {
 app.get('/api/v1/personal/:publicKey/timeline/:paging?', (req, res) => {
     return dispatchPromise('getPersonalTimeline', req, res);
 });
-/* download your full CSV */
-app.get('/api/v1/personal/:publicKey/csv', function(req, res) {
+/* download your CSV (home or video) */
+app.get('/api/v2/personal/:publicKey/:type/csv', function(req, res) {
     return dispatchPromise('getPersonalCSV', req, res);
 });
 /* API for researcher: get your related as single list */
@@ -159,7 +159,7 @@ app.get('/api/v2/monitor/:minutes?', function(req, res) {
     return dispatchPromise('getMonitor', req, res);
 });
 
-/* research subscription and I/O */
+/* research subscription and I/O --- note the promise is still rsync? wtf. */
 app.get('/api/v1/research/:publicKey', function(req, res) {
     return dispatchPromise('rsync', req, res);
 });
@@ -175,11 +175,11 @@ app.get('/api/v2/statistics/:name/:unit/:amount', function(req, res) {
 });
 
 /* delete a group from your profile, create a new tagId */
-app.delete('/api/v2/profile/:publicKey/tag/:tagId', (req, res) => {
+app.delete('/api/v2/profile/:publicKey/tag/:tagName', (req, res) => {
     return dispatchPromise('removeTag', req, res);
 });
 app.post('/api/v2/profile/:publicKey/tag', (req, res) => {
-    return dispatchPromise("createTag", req, res);
+    return dispatchPromise('createAndOrJoinTag', req, res);
 });
 
 /* update and current profile */

@@ -12,8 +12,10 @@ function get (key, setIfMissing) {
                 reject(bo.runtime.lastError);
             } else if (isEmpty(val) && !isEmpty(setIfMissing)) {
                 var newVal = isFunction(setIfMissing) ? setIfMissing(key) : setIfMissing;
+                console.log("get is empty ", newVal);
                 backend.set(newVal, () => resolve(newVal));
             } else {
+                console.log("get returns",  val, key, val[key]);
                 resolve(isEmpty(val[key]) ? null : val[key]);
             }
         });
@@ -21,6 +23,7 @@ function get (key, setIfMissing) {
 }
 
 function set (key, value) {
+    console.log(key, value);
     return new Promise((resolve, reject) => {
         var newVal = {};
         newVal[key] = isFunction(value) ? value(key) : value;

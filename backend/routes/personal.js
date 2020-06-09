@@ -42,60 +42,41 @@ async function getPersonal(req) {
 };
 
 async function getPersonalCSV(req) {
+    /* this function might return a CSV containing all the video in the homepages, 
+     * or all the related video. depends on the parameter */
+
     const CSV_MAX_SIZE = 1000;
-    let evidenceCounter = 0;
-    let lastSeenEvidence = null;
+    let sourceCounter = 0;
     const k =  req.params.publicKey;
+    const type = req.params.type;
 
-    const data = await automo.getMetadataByPublicKey(k, { amount: CSV_MAX_SIZE, skip: 0 });
-    const unwinded = _.reduce(data.metadata, function(memo, evidence) {
+    if(['home', 'video'].indexOf(type) == -1 ) 
+        return { text: "Error 🤷 Invalid request, only 'video' or 'home' are supported" };
 
-        if(evidence.id != lastSeenEvidence) {
-            lastSeenEvidence = evidence.id;
-            evidenceCounter++;
-        }
+    const data = await automo.getMetadataByPublicKey(k, { amount: CSV_MAX_SIZE, skip: 0, typefilter: type });
+    /* this return of videos or homepage, they generated slightly different CSV formats */
 
-        let exprelated = _.map(evidence.related, function(related, i) {
-            if(i >= 20)
-                return null;
+    sourceCounter = _.size(data.metadata);
+    let unrolled;
 
-            return {
-                savingTime: evidence.savingTime,
-                watcher: data.supporter.p,
-                id: i + 'x' + evidence.id,
-                evidence: evidenceCounter,
-                login: evidence.login,
+    if(type == 'home')
+        unrolled = _.reduce(data.metadata, CSV.unwindSections, []);
+    else
+        unrolled = _.reduce(data.metadata, CSV.unrollRecommended, []);
 
-                recommendedVideoId: related.videoId,
-                recommendedViews: (related.mined) ? related.mined.viz : null,
-                recommendedDuration: (related.mined) ? related.mined.duration : null,
-                recommendedPubtime: (related.mined) ? related.mined.timeago : null,
-                recommendedForYou: related.foryou,
-                recommendedTitle: related.title,
-                recommendedAuthor: related.source,
-                recommendedVerified: related.verified,
-                recommendationOrder: related.index,
-                watchedId: evidence.id,
-                watchedAuthor: evidence.authorName,
-                watchedPubtime: evidence.related.vizstr,
-                watchedTitle: evidence.title,
-                watchedViews: evidence.viewInfo.viewStr ? evidence.viewInfo.viewStr : null,
-                watchedChannel: evidence.authorSource,
-            };
-        })
-        memo = _.concat(memo, _.compact(exprelated));
-        return memo;
-    }, []);
-    debug("data %d -> unwinded %d", _.size(data.metadata), _.size(unwinded));
-    const csv = CSV.produceCSVv1(unwinded);
+    const ready = _.map(unrolled, function(e) {
+        _.unset(e, 'publickey');
+        return e;
+    });
 
-    debug("getPersonalCSV produced %d bytes from %d entries (max %d)",
-        _.size(csv), _.size(data.metadata), CSV_MAX_SIZE);
+    debug("data were %d now unrolling each evidence %d", sourceCounter, _.size(ready));
+    const csv = CSV.produceCSVv1(ready);
+    debug("getPersonalCSV produced %d bytes, with CSV_MAX_SIZE %d", _.size(csv), CSV_MAX_SIZE);
 
     if(!_.size(csv))
         return { text: "Error 🤷 No content produced in this CSV!" };
 
-    const filename = 'personal-yttrex-copy-' + moment().format("YY-MM-DD") + ".csv"
+    const filename = 'personal-' + type + '-yttrex-' + moment().format("YY-MM-DD") + '-' + sourceCounter + ".csv";
     return {
         headers: {
             "Content-Type": "csv/text",
@@ -201,16 +182,19 @@ async function getEvidences(req) {
     if(_.size(k) < 26)
         return { json: { "message": "Invalid publicKey", "error": true }};
 
-    const allowFields = ['tagId', 'id', 'videoId'];
+    const allowFields = ['id', 'metadataId', 'savingTime'];
     const targetKey = req.params.key;
     const targetValue = req.params.value;
 
+    // TODO savingTime is not really supported|tested
     if(allowFields.indexOf(targetKey) == -1)
         return { json: { "message": `Key ${targetKey} not allowed (${allowFields})`, error: true }};
 
-    const matches = await automo.getVideosByPublicKey(k, _.set({}, targetKey, targetValue));
-    debug("getEvidences with flexible filter found %d matches", _.size(matches));
-    return { json: matches };
+    const matches = await automo.getVideosByPublicKey(k, _.set({}, targetKey, targetValue), false);
+                                                            /* if 'true' would return also htmls */
+
+    debug("getEvidences with flexible filter found %d matches", _.size(matches.metadata));
+    return { json: matches.metadata };
 };
 
 async function removeEvidence(req) {

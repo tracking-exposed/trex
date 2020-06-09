@@ -1,86 +1,63 @@
 import React from 'react';
 import _ from 'lodash';
-import update from 'immutability-helper';
+import createReactClass from 'create-react-class';
 
-import {Card, CardActions, CardHeader, CardTitle, CardText} from 'material-ui/Card';
-import Checkbox from 'material-ui/Checkbox';
-import TextField from 'material-ui/TextField';
-import RaisedButton from 'material-ui/RaisedButton';
+import Switch from '@material-ui/core/Switch';
+import ListItemIcon from '@material-ui/core/ListItemIcon';
+import TimelineIcon from '@material-ui/icons/Timeline';
+import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
+import ListItemText from '@material-ui/core/ListItemText';
+import ListItem from '@material-ui/core/ListItem';
+import List from '@material-ui/core/List';
 
-import db from '../../db';
+// bo is the browser object, in chrome is named 'chrome', in firefox is 'browser'
+const bo = chrome || browser;
 
-export default class Settings extends React.Component {
+class Settings extends React.Component{
 
     constructor (props) {
+        console.log("Props in Settings constructor", props);
         super(props);
-
-        db
-            .get('whatever', {tagId: '', isStudyGroup: false, lessInfo: false})
-            .then(settings => this.setState({
-                oldSettings: _.cloneDeep(settings),
-                settings: settings
-            }));
+        this.state = { active: props.active };
     }
-
-    saveSettings () {
-        const settings = _.cloneDeepWith(this.state.settings, value => _.isString(value) ? _.trim(value) : value);
-
-        db
-            .set('whatever', settings)
-            .then(() => this.setState(update(this.state, {oldSettings: {$set: _.cloneDeep(settings)},
-                                                          settings: {$set: settings},
-                                                          reloadBrowser: {$set: true}})));
-
-        bo.tabs.reload();
-    }
-
-    resetSettings () {
-        this.setState(update(this.state, {settings: {$set: _.cloneDeep(this.state.oldSettings)}}));
-    }
-
+        
     render () {
-        if (!this.state) {
-            return null;
+
+        function toggleActivation (_t, event) {
+            console.log("currently value", event.target.checked);
+            _t.setState({ active: event.target.checked });
+            bo.runtime.sendMessage({
+                type: 'configUpdate',
+                payload: { active: event.target.checked }
+            }, (status) => {
+                console.log("status confirmed", status);
+            });
         }
 
-        console.log('settings', this.state.settings);
-        const state = this.state;
+        if(!this.state)
+            return (<p>Loading...</p>);
 
-        const dirty = !_.isEqual(state.settings, state.oldSettings);
+        console.log("settings props state", this.props, this.state);
 
         return (
-            <Card>
-                <CardHeader title='Consider the option below only if you belong to a research group' />
-
-                <CardText>
-                    <div>
-                        <Checkbox
-                            label='TAG your contributions'
-                            labelPosition="left"
-                            checked={state.settings.isStudyGroup}
-                            onCheck={(_, val) => this.setState(update(state, {settings: {isStudyGroup: {$set: val}}}))} />
-
-                        {state.settings.isStudyGroup &&
-                        <TextField
-                            hintText='settingsTagId'
-                            value={state.settings.tagId}
-                            onChange={(_, val) => this.setState(update(state, {settings: {tagId: {$set: val }}}))}
-                        />
-                        }
-                    </div>
-
-                    {dirty &&
-                        <CardActions>
-                            <RaisedButton
-                                label='Save!'
-                                primary={true}
-                                onClick={this.saveSettings.bind(this)}
-                            />
-                        </CardActions>
-                    }
-
-                </CardText>
-            </Card>
-        );
+          <List component="nav" aria-label="main settings">
+            <ListItem>
+              <ListItemIcon>
+                <TimelineIcon />
+              </ListItemIcon>
+              <ListItemText primary={ (!!this.state && !!this.state.active) ? "turn OFF evidence collection" : "turn ON evidence collection"} />
+              <ListItemSecondaryAction>
+                <Switch
+                  edge="end"
+                  onChange={_.partial(toggleActivation, this)}
+                  checked={this.state ? !!this.state.active : false }
+                  inputProps={{ 'aria-labelledby': 'yttrex-main-switch' }}
+                />
+              </ListItemSecondaryAction>
+            </ListItem>
+          </List>);
     }
+
 };
+
+export default Settings;

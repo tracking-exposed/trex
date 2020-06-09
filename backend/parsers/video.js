@@ -1,10 +1,14 @@
-#!/usr/bin/env node
 const _ = require('lodash');
 const url = require('url');
+const moment = require('moment');
 const querystring = require('querystring');
 const debug = require('debug')('parser:video');
+const debuge = require('debug')('parser:video:error');
+const debugCheckup = require('debug')('parser:C');
+const debugTimef = require('debug')('parser:timeF');
 
 const uxlang = require('./uxlang');
+const longlabel = require('./longlabel');
 
 const stats = { skipped: 0, error: 0, suberror: 0, success: 0 };
 
@@ -39,147 +43,143 @@ function logged(D) {
     return null;
 }
 
-function labelForcer(l, isLive) {
-    // La Super Pattuglia -  HALLOWEEN Special - Car City 🚗 Cartone animato per i bambini di Tom il Carro Attrezzi a Car City 5 mesi fa 22 minuti 63.190 visualizzazioni
-    // The Moons of Mars Explained -- Phobos & Deimos MM#… Nutshell 4 years ago 115 seconds 2,480,904 views
-    // Formazione a distanza: soluzioni immediate e idee di attività by CampuStore 4 hours ago 731 views
+function closestForTime(e, sele) {
+    /* this function is a kind of .closest but apply to textContent and aria-label
+       to find the right element */
 
-    let first = _.reverse(l.split(' '));
-    let viz = [];
+    /* debug("(e) %j\n<- %j",
+        _.map ( e.querySelectorAll('[href]'), function(x) { return x.getAttribute('href') }),
+        _.map ( e.querySelectorAll('*'), 'textContent')
+    ); */
+    const combo = _.compact(_.map(e.querySelectorAll('[aria-label]'), function(x) {
+        const label =  x.getAttribute('aria-label');
+        const text =  x.textContent;
+        /* label[0] == text[0] can't work because of "40 секунд" fails with "0:40"  */
+        return ( !!label.match(/^(\d+).*/) && !!text.match(/^(\d+):(\d+).*/) ) ? { label, text } : null;
+    }));
 
-    let second = _.reduce(first, function(memo, e) {
-        if(typeof viz == 'string') {
-            memo.push(e);
-            return memo;
-        }
-        let test = _.parseInt(e.replace(/[.,]/, ''));
-        if(!_.isNaN(test)) {
-            viz.push(e);
-            _.reverse(viz);
-            viz = _.join(viz, ' ');
-        }
-        else {
-            viz.push(e);
-        }
-        return memo; 
-    }, []);
-
-    let duration = [];
-    let third = [];
-    if(isLive) {
-        duration = "live";
-        third = second;
-    } else {
-        third = _.reduce(second, function(memo, e) {
-            if(typeof duration == 'string') {
-                memo.push(e);
-                return memo;
-            }
-            let test = _.parseInt(e.replace(/[.,]/, ''));
-            if(!_.isNaN(test)) {
-                duration.push(e);
-                _.reverse(duration);
-                duration = _.join(duration, ' ');
-            }
-            else {
-                duration.push(e);
-            }
-            return memo; 
-        }, []);
+    if(_.first(combo)) {
+        const expandedTime = _.first(combo).label;  // '3:02'
+        const displayTime = _.first(combo).text;    // '3 minutes, 2 seconds'
+        return { displayTime, expandedTime };
     }
 
-    let timeago = [];
-    let fourth = _.reduce(third, function(memo, e) {
-        if(typeof timeago == 'string') {
-            memo.push(e);
-            return memo;
-        }
-        let test = _.parseInt(e.replace(/[.,]/, ''));
-        if(!_.isNaN(test)) {
-            timeago.push(e);
-            _.reverse(timeago);
-            timeago = _.join(timeago, ' ');
-        }
-        else {
-            timeago.push(e);
-        }
-        return memo; 
-    }, []);
+    if(_.size(e.parentNode.outerHTML) > 9000) {
+        debugTimef("[display/extended Time] breaking recursion, next would be %d bytes", _.size(e.parentNode.outerHTML));
+        return { displayTime: null, expandedTime: null };
+    }
 
-    let title = _.join(_.reverse(fourth), ' ');
-
-    return {
-        viz,
-        duration,
-        timeago,
-        title
-    };
+    // debugTimef("[display/extended Time] recursion (%d next %d)", _.size(e.outerHTML), _.size(e.parentNode.outerHTML) );
+    return closestForTime(e.parentNode, null);
 }
 
 function relatedMetadata(e, i) {
-
-    let source, verified, vizstr, foryou;
+    // here we find metadata inside the preview snippet on the right column
+    let source, verified, vizstr, foryou, mined;
     const title = e.querySelector('#video-title').textContent;
     const metadata = e.querySelector('#metadata');
 
-    if(metadata.children.length > 0)
-        source = metadata.children[0].textContent;
+    if(metadata.children.length > 0) {
+        // if is verified, the keyword vary language by language, but you've always
+        // TED\nVerified\n•, and this allow us a more technical check:
+        source = _.first(metadata.children[0].textContent.split('\n'));
+        verified = !!(_.size(metadata.children[0].textContent.split('\n')) > 1 );
+    }
 
     if(metadata.children.length > 1)
-        vizstr = metadata.children[1].textContent;
+        vizstr = _.size(metadata.children[1].textContent) ? metadata.children[1].textContent : null;
 
     if(vizstr && _.size(vizstr))
         foryou = vizstr.match(/\d+/) ? false : true;
 
-    const link = e.querySelectorAll('a')[0].getAttributeNode('href').value
-    const videoId = link.replace(/.*v=/, '');
-    const videometablockN = e.querySelectorAll('.ytd-video-meta-block').length
-    const liveBadge = e.querySelector(".badge-style-type-live-now");
+    const link = e.querySelector('a') ? e.querySelector('a').getAttribute('href') : null;
+    const videoId = link ? link.replace(/.*v=/, '') : null;
+    const parameter = (videoId && videoId.match(/&.*/)) ? videoId.replace(/.*&/, '&') : null;
+    const liveBadge = !!e.querySelector(".badge-style-type-live-now");
 
-    let displayTime, expandedTime;
-    if(e.querySelector('.ytd-thumbnail-overlay-time-status-renderer')) {
-        displayTime = e
-            .querySelector('.ytd-thumbnail-overlay-time-status-renderer')
-            .textContent; // '3:02'
-        expandedTime = e
-            .querySelector('.ytd-thumbnail-overlay-time-status-renderer')
-            .getAttribute('aria-label'); //'3 minutes, 2 seconds'
-    }
-    const longlabel = e.querySelector('#video-title').getAttribute('aria-label');
+    const { displayTime, expandedTime } = closestForTime(e, '.ytd-thumbnail-overlay-time-status-renderer');
+    // 2:03  -  2 minutes and 3 seconds, they might be null.
+    const recommendedLength = displayTime ? moment.duration(displayTime).asSeconds() : null;
+    const arialabel = e.querySelector('#video-title').getAttribute('aria-label');
     // Beastie Boys - Sabotage by BeastieBoys 9 years ago 3 minutes, 2 seconds 62,992,821 views
 
-    const mined = longlabel ? labelForcer(longlabel, !!liveBadge) : null;
-    // mined is not used yet; it might be handy. please note sometime is empty
-    // e1895eed23ffcb8a0b5d1221c28a712b379886fe
+    try {
+        mined = arialabel ? longlabel.parser(arialabel, source, liveBadge): null;
+        if(mined.title != title) {
+            debug("Interesting anomaly: %s != %s", mined.title, title);
+        }
+    } catch(e) {
+        debuge("longlabel parser error: %s", e.message);
+    }
 
-    // if is verified, the keyword vary language by language, but you've always 
-    // TED\nVerified\n•, and this allow us a more technical check:
-    let lines = source.split("\n"); 
-    verified = ( _.size(lines) > 1 );
-    source = _.first(lines).replace("•", '');
-
-    // thumbnail is @ https://i.ytimg.com/vi/${videoId}/hqdefault.jpg
-    return {
+    const r = {
         index: i + 1,
-        title,
         verified,
-        source,
-        vizstr,
         foryou,
         videoId,
-        displayTime,
-        expandedTime,
-        longlabel,
-        mined,
-        isLive: !!liveBadge
+        parameter: parameter ? parameter : null,
+        recommendedSource: source,
+        recommendedTitle: mined ? mined.title : (title ? title : null),
+        recommendedLength,
+        recommendedDisplayL: displayTime ? displayTime : null,
+        recommendedLengthText: expandedTime ? expandedTime : null,
+        recommendedPubTime: mined ? mined.timeago : null,
+        /* ^^^^  is deleted in makeAbsolutePublicationTime, when clientTime is available,
+         * this field produces -> recommendedPubtime and ptPrecison */
+        recommendedRelativeSeconds: mined ? mined.timeago.asSeconds() : null,
+        recommendedViews: mined ? mined.views : null,
+        isLive: liveBadge,
+        label: arialabel,
     };
+    checkUpDebug(r);
+    return r;
 };
+
+function checkUpDebug(r) {
+    /* this is a friendly debug line to help summarize */
+    const l = _.reduce(r, function(memo, v, k) {
+        if(k == 'parameter') { // special twist for 'parameters', it is so rare we mark it specially.
+            if(!_.isNull(v)) {
+                memo.str += "<param>[" + v + "]";
+                memo.cnt++;
+            }
+        } else if(_.isNull(v)) {
+            memo.str += "!" + k;
+            memo.cnt++;
+        }
+        if(_.isNull(v))
+            _.unset(r, k);
+
+        return memo;
+    }, { str: "", cnt: 0 });
+    if(l.cnt)
+        debugCheckup(l.cnt, l.str);
+};
+
+function makeAbsolutePublicationTime(list, clientTime) {
+    /* this function is call before video.js and home.js return their 
+       metadata. clientTime isn't visibile in parsing function so the relative
+       transformation of '1 month ago', is now a moment.duration() object 
+       and now is saved the estimated ISODate format. */
+    return _.map(list, function(r) {
+        if(!clientTime || !r.recommendedPubTime) {
+            r.publicationTime = null;
+            r.timePrecision = 'error';
+        } else {
+            const when = moment(clientTime).subtract(r.recommendedPubTime);
+            r.publicationTime = new Date(when.toISOString());
+            r.timePrecision = 'estimated';
+        }
+        /* we are keeping 'label' so it can be fetch in mongodb but filtered in JSON/CSV */
+        return _.omit(r, [ 'recommendedPubTime' ]);
+    })
+}
 
 function parseSingleTry(D, memo, spec) {
     const elems = D.querySelectorAll(spec.selector);
 
     if(!_.size(elems)) {
-        debug("zero element selected: %s fail", spec.name);
+        debuge("zero element selected: %s fail", spec.name);
         return memo;
     }
 
@@ -217,31 +217,29 @@ function manyTries(D, opportunities) {
 
 
 function mineAuthorInfo(D) {
-
     const as = D.querySelector('a.ytd-video-owner-renderer').parentNode.querySelectorAll('a');
-    if(_.size(as) == 1) {
+    if(_.size(as) == 1 || _.size(as) == 0)
         return null;
 
-    } else if(_.size(as) >= 2) {
-        const authorName = D.querySelector('a.ytd-video-owner-renderer').parentNode.querySelectorAll('a')[1].textContent;
-        const authorSource = D.querySelector('a.ytd-video-owner-renderer').parentNode.querySelectorAll('a')[0].getAttribute('href');
+    const authorName = D.querySelector('a.ytd-video-owner-renderer').parentNode.querySelectorAll('a')[1].textContent;
+    const authorSource = D.querySelector('a.ytd-video-owner-renderer').parentNode.querySelectorAll('a')[0].getAttribute('href');
 
-        if( D.querySelector('a.ytd-video-owner-renderer')
+    if( D.querySelector('a.ytd-video-owner-renderer')
+            .parentNode
+            .querySelectorAll('a')[1]
+            .getAttribute('href') != authorSource ) {
+        debug("%s and %s should lead to the same youtube-content-page", 
+            D.querySelector('a.ytd-video-owner-renderer')
                 .parentNode
                 .querySelectorAll('a')[1]
-                .getAttribute('href') != authorSource ) {
-            debug("%s and %s should lead to the same youtube-content-page", 
-                D.querySelector('a.ytd-video-owner-renderer')
-                    .parentNode
-                    .querySelectorAll('a')[1]
-                    .getAttribute('href'), authorSource );
-        }
-        return { authorName, authorSource };
-    } 
+                .getAttribute('href'), authorSource );
+    }
+    return { authorName, authorSource };
 }
 
 function processVideo(D, blang, clientTime) {
 
+    /* this is the title of the view video, the related are mined in 'relatedMetadata' */
     const title = manyTries(D, [{
         name: 'title h1',
         selector: 'h1 > yt-formatted-string',
@@ -256,18 +254,18 @@ function processVideo(D, blang, clientTime) {
         func: 'textContent'
     } ]);
     if(!title) {
-        debugger;
         throw new Error("unable to get video title");
     }
 
     const check = D.querySelectorAll('a.ytd-video-owner-renderer').length; // should be 1
-    const mined = mineAuthorInfo(D);
+    if(check != 1) debuge("unexpected thing");
+
     let authorName, authorSource = null;
-    if(mined) {
-        authorName = mined.authorName;
-        authorSource = mined.authorSource;
+    const authorinfo = mineAuthorInfo(D);
+    if(authorinfo) {
+        authorName = authorinfo.authorName;
+        authorSource = authorinfo.authorSource;
     } else {
-        debugger;
         throw new Error("lack of mandatory HTML snippet!");
     }
 
@@ -322,7 +320,7 @@ function processVideo(D, blang, clientTime) {
         viewInfo = parseViews(D);
         likeInfo = parseLikes(D);
     } catch(error) {
-        debug("viewInfo and linkInfo not available");
+        debuge("viewInfo and linkInfo not available");
     }
 
     let login = -1;
@@ -330,10 +328,11 @@ function processVideo(D, blang, clientTime) {
         login = logged(D);
         /* if login is null, it means failed check */
     } catch(error) {
-        debug("Exception in logged(): %s", error.message);
+        debuge("Failure in logged(): %s", error.message);
         login = null;
     }
 
+    related = makeAbsolutePublicationTime(related, clientTime);
     return {
         title,
         login,
@@ -365,8 +364,8 @@ function process(envelop) {
             envelop.impression.clientTime
         );
     } catch(e) {
-        debug("Error in video.process %s (%d): %s\n%s",
-            envelop.impression.href, envelop.impression.size, e.message, e.stack);
+        debuge("Error in video.process %s (%d): %s\n\t-> %s",
+            envelop.impression.href, envelop.impression.size, e.message, e.stack.split('\n')[1]);
         return null;
     }
 
@@ -384,9 +383,6 @@ function process(envelop) {
     if(_.size(re)) debug("related error %s", JSON.stringify(re, undefined));
     if(_.size(ve)) debug("views error %s", JSON.stringify(ve, undefined));
     if(_.size(le)) debug("likes error %s", JSON.stringify(re, undefined));
-
-    /* remove debugging/research fields we don't want in mongo */
-    _.unset(extracted, 'check');
     return extracted;
 };
 
@@ -425,7 +421,7 @@ function adTitleChannel(envelop) {
     const D = envelop.jsdom;
     const a = D.querySelectorAll('a');
     if(_.size(a) != 2)
-        debug("Unexpected amount of element 'a' %d", _.size(a));
+        debuge("Unexpected amount of element 'a' %d", _.size(a));
     if(!a[0].getAttribute('href'))
         return null;
     return {
@@ -461,5 +457,7 @@ module.exports = {
     overlay,
     adTitleChannel,
     videoTitleTop,
-    labelForcer,
+    closestForTime,
+    checkUpDebug,
+    makeAbsolutePublicationTime,
 };

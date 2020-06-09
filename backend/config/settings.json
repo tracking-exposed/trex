@@ -2,9 +2,11 @@
   "schema": {
       "supporters": "supporters",
       "htmls": "htmls",
+      "labels": "labels",
       "metadata": "metadata",
       "stats": "trexstats",
-      "groups": "groups"
+      "groups": "groups",
+      "ytnl": "ytnl"
   },
   "mongoHost": "localhost",
   "mongoPort": 27017,

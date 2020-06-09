@@ -1,6 +1,17 @@
 The format is based on [Keep a Changelog](http://keepachangelog.com/) and this
 project adheres to [Semantic Versioning](http://semver.org/).
 
+## [1.4.1] - 2020-06-08
+### Fixed
+- Privacy improvement by removing 'tabs' as unnecessary privilege
+
+## [1.4.0] - 2020-06-07
+### Added
+- New HTML element watchers, integrated real-time event API
+- New Popup design and functionality
+### Fixed
+- Popup content and links, material-ui updated to 4.x
+
 ## [1.3.0] - 2020-03-30
 ### Added
 - New UX (traffic light)

@@ -93,6 +93,8 @@ async function getMetadataByPublicKey(publicKey, options) {
     };
     if(options.takefull)
         _.unset(filter, 'title');
+    if(options.typefilter)
+        _.set(filter, 'type', options.typefilter)
 
     const metadata = await mongo3.readLimit(mongoc,
         nconf.get('schema').metadata, filter,
@@ -165,7 +167,7 @@ async function getRelatedByWatcher(publicKey, options) {
     return related;
 }
 
-async function getVideosByPublicKey(publicKey, filter) {
+async function getVideosByPublicKey(publicKey, filter, htmlToo) {
     const mongoc = await mongo3.clientConnect({concurrency: 1});
 
     const supporter = await mongo3.readOne(mongoc, nconf.get('schema').supporters, { publicKey });
@@ -174,10 +176,17 @@ async function getVideosByPublicKey(publicKey, filter) {
 
     const selector = _.set(filter, 'p', supporter.p);
     debug("getVideosByPublicKey with flexible selector (%j)", filter);
-    const matches = await mongo3.read(mongoc, nconf.get('schema').videos, selector, { savingTime: -1 });
-    await mongoc.close();
+    const metadata = await mongo3.read(mongoc, nconf.get('schema').metadata, selector, { savingTime: -1 });
+    const ret = { metadata };
 
-    return matches;
+    if(htmlToo) {
+        const htmlfilter = { metadataId: { "$in": _.map(metadata, 'id') } };
+        let htmls = await mongo3.read(mongoc, nconf.get('schema').htmls, htmlfilter, { savingTime: -1 });
+        ret.html = htmls;
+    }
+
+    await mongoc.close();
+    return ret;
 };
 
 async function getFirstVideos(when, options) {
@@ -290,19 +299,19 @@ async function tofu(publicKey, version) {
 async function getLastHTMLs(filter, skip, amount) {
 
     const mongoc = await mongo3.clientConnect({concurrency: 1});
-
+    const defskip = skip ? skip : 0;
     const htmls = await mongo3.readLimit(mongoc,
         nconf.get('schema').htmls, filter,
         { savingTime: 1}, // never change this!
-        amount,
-        skip ? skip : 0);
+        amount, defskip);
 
+    /* printable filter because when it is too long .. */
+    const pfilter = _.size(JSON.stringify(filter)) > 200 ? _.keys(filter) : filter;
     if(_.size(htmls))
-        debug("getLastHTMLs: %j -> %d (overflow %s) %s", filter, _.size(htmls),
-            (_.size(htmls) == amount), skip ? "skip " + skip : "");
+        debug("getLastHTMLs: %j -> %d (overflow %s) skip: %d", pfilter, _.size(htmls),
+            (_.size(htmls) == amount), defskip);
     else
-        debug("No data! %j amount %d skip %d", filter, amount,
-             skip ? "skip " + skip : "");
+        debug("No data! %j amount %d skip %d", pfilter, amount, defskip);
 
     mongoc.close();
     return {
@@ -321,6 +330,7 @@ async function markHTMLsUnprocessable(htmls) {
         debug("partial update happened! (it should be ok) %j", r.result);
     } */
     await mongoc.close();
+    return r;
 }
 
 async function updateMetadata(html, newsection, repeat) {
@@ -360,7 +370,7 @@ async function updateMetadata(html, newsection, repeat) {
     const up = _.reduce(newsection, function(memo, value, key) {
 
         if(_.isUndefined(value)) {
-            debug("updateChecker: %s is undefined!", key);
+            debug("updateChecker: <%s> has undefined value!", key);
             return memo;
         }
         if(_.indexOf(careless, key) !== -1)
