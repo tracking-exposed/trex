@@ -10,7 +10,7 @@ function post (apiUrl, data, cookieId) {
         db.get('local').then(keypair => {
             const xhr = new XMLHttpRequest();
             const payload = JSON.stringify(data);
-            const url = config.API_ROOT + apiUrl;
+            const url = config.API_ROOT + "/" + apiUrl;
 
             xhr.open('POST', url, true);
 
@@ -51,7 +51,7 @@ function get (apiUrl, version, userId) {
     return new Promise((resolve, reject) => {
         db.get('local').then(keypair => {
             const xhr = new XMLHttpRequest();
-            const url = config.API_ROOT + apiUrl;
+            const url = config.API_ROOT + "/" + apiUrl;
 
             xhr.open('GET', url, true);
 
