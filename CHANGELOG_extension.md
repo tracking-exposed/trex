@@ -4,6 +4,7 @@ project adheres to [Semantic Versioning](http://semver.org/).
 ## [1.4.1] - 2020-06-08
 ### Fixed
 - Privacy improvement by removing 'tabs' as unnecessary privilege
+- Fixed link generation
 
 ## [1.4.0] - 2020-06-07
 ### Added
