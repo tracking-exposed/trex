@@ -24,23 +24,23 @@ class InfoBox extends React.Component{
 
             <ListItem button>
               <ListItemIcon>
+                <AccountBoxIcon />
+              </ListItemIcon>
+              <ListItemLink href={personalLink} target="_blank">Personal page</ListItemLink>
+            </ListItem>
+
+            <ListItem button>
+              <ListItemIcon>
                 <StayCurrentLandscapeIcon />
               </ListItemIcon>
-              <ListItemLink href={homecsv} target="_blank">Homepage Video CSV</ListItemLink>
+              <ListItemLink href={homecsv} target="_blank">Download Homepage Video CSV</ListItemLink>
             </ListItem>
 
             <ListItem button>
               <ListItemIcon>
                 <OndemandVideoIcon />
               </ListItemIcon>
-              <ListItemLink href={videocsv} target="_blank">Related Video CSV</ListItemLink>
-            </ListItem>
-
-            <ListItem button>
-              <ListItemIcon>
-                <AccountBoxIcon />
-              </ListItemIcon>
-              <ListItemLink href={personalLink} target="_blank">Personal page</ListItemLink>
+              <ListItemLink href={videocsv} target="_blank">Download Related Video CSV</ListItemLink>
             </ListItem>
 
           </List>
