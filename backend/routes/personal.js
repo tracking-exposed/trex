@@ -44,9 +44,7 @@ async function getPersonal(req) {
 async function getPersonalCSV(req) {
     /* this function might return a CSV containing all the video in the homepages, 
      * or all the related video. depends on the parameter */
-
     const CSV_MAX_SIZE = 1000;
-    let sourceCounter = 0;
     const k =  req.params.publicKey;
     const type = req.params.type;
 
@@ -56,13 +54,10 @@ async function getPersonalCSV(req) {
     const data = await automo.getMetadataByPublicKey(k, { amount: CSV_MAX_SIZE, skip: 0, typefilter: type });
     /* this return of videos or homepage, they generated slightly different CSV formats */
 
-    sourceCounter = _.size(data.metadata);
-    let unrolled;
-
-    if(type == 'home')
-        unrolled = _.reduce(data.metadata, CSV.unwindSections, []);
-    else
-        unrolled = _.reduce(data.metadata, CSV.unrollRecommended, []);
+    const sourceCounter = _.size(data.metadata);
+    const unrolled = (type == 'home')
+        ? _.reduce(data.metadata, CSV.unwindSections, [])
+        : _.reduce(data.metadata, CSV.unrollRecommended, []);
 
     const ready = _.map(unrolled, function(e) {
         _.unset(e, 'publickey');
