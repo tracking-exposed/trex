@@ -115,6 +115,9 @@ function relatedMetadata(e, i) {
         debuge("longlabel parser error: %s", e.message);
     }
 
+    /* estimate live also by missing metadata but presence of certain few */
+    const estimatedLive = (!displayTime && !expandedTime && !recommendedLength && mined.timeago && mined.views) ? true : false;
+
     const r = {
         index: i + 1,
         verified,
@@ -131,7 +134,7 @@ function relatedMetadata(e, i) {
          * this field produces -> recommendedPubtime and ptPrecison */
         recommendedRelativeSeconds: mined ? mined.timeago.asSeconds() : null,
         recommendedViews: mined ? mined.views : null,
-        isLive: liveBadge,
+        isLive: estimatedLive || liveBadge,
         label: arialabel,
     };
     checkUpDebug(r);
@@ -139,24 +142,39 @@ function relatedMetadata(e, i) {
 };
 
 function checkUpDebug(r) {
+    const liveSpecialFields = [ 'displayTime', 'expandedTime', 'recommendedLength' ];
     /* this is a friendly debug line to help summarize */
-    const l = _.reduce(r, function(memo, v, k) {
-        if(k == 'parameter') { // special twist for 'parameters', it is so rare we mark it specially.
-            if(!_.isNull(v)) {
-                memo.str += "<param>[" + v + "]";
-                memo.cnt++;
-            }
-        } else if(_.isNull(v)) {
-            memo.str += "!" + k;
+    const first = _.reduce(r, function(memo, v, k) {
+        if(_.isNull(v)) {
+            memo.acc.push(k);
+            if(liveSpecialFields.indexOf(k) !== -1)
+                memo.livecombo++;
             memo.cnt++;
         }
         if(_.isNull(v))
             _.unset(r, k);
 
         return memo;
-    }, { str: "", cnt: 0 });
-    if(l.cnt)
-        debugCheckup("!%d -> %s\n\t%d\t%s", l.cnt, l.str, r.index, r.label);
+    }, { acc: [], cnt: 0, livecombo: 0 });
+
+    let second = []
+    if(_.size(first.acc) >= 3 && first.livecombo == 3) {
+        second = _.reject(first.acc, liveSpecialFields);
+    } else
+        second = first.acc;
+
+    /* manage parameter special opposite condition */
+    let debstr = ""
+    if(r.parameter && _.size(r.parameter)) {
+        debstr = _.times(second, function(k) { return "!"+k; }).join('') + "";
+        debstr += "<param>[" + r.parameter + "]";
+    } else {
+        second = _.reject(second, ['parameter']);
+        debstr = _.times(second, function(k) { return "!"+k; }).join('') + "";
+    }
+
+    if(_.size(debstr))
+        debugCheckup("%s\n\t%d\t%s", debstr, r.index, r.label);
 };
 
 function makeAbsolutePublicationTime(list, clientTime) {
@@ -315,8 +333,8 @@ function processVideo(D, blang, clientTime) {
     }
 */
 
-    debug("Video <%s> attempted to parse %d related, found actually %d",
-        title, _.size(related), _.size(_.compact(related)));
+    debug("Video <%s> attempted to parse %d related, found actually %d < isLive %j >",
+        title, _.size(related), _.size(_.compact(related)), _.countBy(related, 'isLive'));
 
     /* non mandatory info */
     let viewInfo, likeInfo = null;
