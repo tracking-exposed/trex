@@ -15,6 +15,7 @@ const formatMatches = {
 const absoluteDateIntroSentence = [
     'Streamed live on ',
     'Started streaming ',
+    'Streaming avviato ',
     'Started streaming on ',
     'Ha empezado a emitir en directo hace ',
     'Premiered ',
@@ -85,7 +86,9 @@ const localized = {
     'Minute': 'minutes',    // Aktiver Livestream seit 2 Minuten
 
     'segundos': 'seconds',
-    'seconds': 'seconds'
+    'seconds': 'seconds',
+    'secondo': 'seconds',
+    'secondi': 'seconds',
 };
 
 const regchain = [
