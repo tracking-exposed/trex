@@ -77,8 +77,8 @@ async function pickFromDB(filter, sorting, special) {
 }
 
 function fileName(prefix, suffix) {
-    const ITERATION = 4;
-    return `${prefix}-ωτ1-v${ITERATION}.${suffix}`;
+    const VERSION = 5;
+    return `${prefix}-ωτ1-v${VERSION}.${suffix}`;
 }
 
 const accuracyCounters = {};
@@ -120,8 +120,8 @@ function accuracyDump(fullamount) {
 function applyWetest1(e, step) {
     _.set(e, 'step', step);
     _.set(e, 'experiment', 'wetest1');
-    _.set(e, 'dataset', 'yttrex');
     _.set(e, 'pseudonyn', utils.string2Food(e.publicKey + "weTest#1") );
+    _.unset(e, 'publicKey');
     updateStats(e);
     return e;
 }

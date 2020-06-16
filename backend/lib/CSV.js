@@ -2,6 +2,8 @@ const _ = require('lodash');
 const debug = require('debug')('lib:CSV');
 const moment = require('moment');
 
+const utils = require('./utils');
+
 function produceCSVv1(entries) {
 
     const keys = _.keys(entries[0]);
@@ -23,7 +25,7 @@ function produceCSVv1(entries) {
 
         _.each(keys, function(k, i) {
             let swap = _.get(entry, k, "");
-            if(k == 'savingTime' || k == 'clientTime')
+            if(_.endsWith(k,'Time'))
                 memo.csv += moment(swap).toISOString();
             else if(_.isInteger(swap)) {
                 memo.csv += swap;
@@ -48,17 +50,18 @@ function unrollRecommended(memo, evidence) { // metadata.type = video with 'rela
     _.each(evidence.related, function(related, evidenceCounter) {
         let entry = {
             /* this is removed or anonymized by the called */
-            publickey: evidence.publickey,
+            publicKey: evidence.publicKey,
 
             evidence: evidenceCounter,
             login: evidence.login,
-            id: evidenceCounter + '-' + evidence.id.replace(/[0-9]/g, ''),
+            id: evidence.id.replace(/[0-7]/g, ''),
             savingTime: evidence.savingTime,
             clientTime: evidence.clientTime,
 
-            uxlang: evidence.blang,
+            uxLang: evidence.blang,
 
             parameter: related.parameter,
+            recommendedId: utils.hash({ motherId: evidence.id, p: evidence.publicKey, evidenceCounter}),
             recommendedVideoId: related.videoId,
             recommendedAuthor: related.recommendedSource,
             recommendedTitle: related.recommendedTitle, 
@@ -72,11 +75,11 @@ function unrollRecommended(memo, evidence) { // metadata.type = video with 'rela
             recommendedForYou: related.foryou,
             recommendedVerified: related.verified,
             recommendationOrder: related.index,
-            recommendedKind: evidence.isLive ? "live": "video", // this should support also 'playlist' 
+            recommendedKind: evidence.isLive ? "live" : "video", // this should support also 'playlist' 
 
             watchedVideoId: evidence.videoId,
             watchedAuthor: evidence.authorName,
-            watchedPubtime: evidence.publicationTime,
+            watchedPubTime: evidence.publicationTime,
             watchedTitle: evidence.title,
             watchedViews: evidence.viewInfo.viewStr ? evidence.viewInfo.viewStr : null,
             watchedChannel: evidence.authorSource,
@@ -90,19 +93,20 @@ function unwindSections(memo, evidence) { // metadata.type = 'home' with 'select
     _.each(evidence.selected, function(selected, evidenceCounter) {
         let entry = {
             /* this is removed or anonymized by the called */
-            publickey: evidence.publickey,
+            publicKey: evidence.publicKey,
 
             evidence: evidenceCounter,
             login: evidence.login,
-            id: evidenceCounter + '-' + evidence.id.replace(/[0-9]/g, ''),
+            id: evidence.id.replace(/[0-7]/g, ''),
             savingTime: evidence.savingTime,
             clientTime: evidence.clientTime,
             order: selected.index,
 
-            uxlang: evidence.uxlang,
+            uxLang: evidence.uxlang,
            
             parameter: selected.parameter,
             sectionName: selected.sectionName,
+            selectedId: utils.hash({ motherId: evidence.id, p: evidence.publicKey, evidenceCounter}),
             selectedVideoId: selected.videoId,
             selectedAuthor: selected.recommendedSource,
             selectedChannel: selected.recommendedHref,

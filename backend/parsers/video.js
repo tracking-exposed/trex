@@ -134,7 +134,7 @@ function relatedMetadata(e, i) {
          * this field produces -> recommendedPubtime and ptPrecison */
         recommendedRelativeSeconds: mined ? mined.timeago.asSeconds() : null,
         recommendedViews: mined ? mined.views : null,
-        isLive: estimatedLive || liveBadge,
+        isLive: (estimatedLive || liveBadge),
         label: arialabel,
     };
     checkUpDebug(r);
