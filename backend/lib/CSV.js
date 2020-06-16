@@ -47,6 +47,7 @@ function produceCSVv1(entries) {
 
 
 function unrollRecommended(memo, evidence) { // metadata.type = video with 'related' 
+    const numerizedLikes = utils.parseLikes(evidence.likeInfo); // converts '1233 me gusta'
     _.each(evidence.related, function(related, evidenceCounter) {
         let entry = {
             /* this is removed or anonymized by the called */
@@ -78,11 +79,13 @@ function unrollRecommended(memo, evidence) { // metadata.type = video with 'rela
             recommendedKind: evidence.isLive ? "live" : "video", // this should support also 'playlist' 
 
             watchedVideoId: evidence.videoId,
-            watchedAuthor: evidence.authorName,
-            watchedPubTime: evidence.publicationTime,
             watchedTitle: evidence.title,
-            watchedViews: evidence.viewInfo.viewStr ? evidence.viewInfo.viewStr : null,
+            watchedAuthor: evidence.authorName,
             watchedChannel: evidence.authorSource,
+            watchedPubTime: evidence.publicationTime,
+            watchedViews: evidence.viewInfo.viewStr ? evidence.viewInfo.viewNumber : null,
+            watchedLike: numerizedLikes.watchedLikes,
+            watchedDislike: numerizedLikes.watchedDislikes,
         };
         memo.push(entry);
     })

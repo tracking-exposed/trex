@@ -18,6 +18,23 @@ var hash = function(obj, fields) {
     return sha1sum.digest('hex');
 };
 
+function forceInteger(stri) {
+    let digits = _.compact(_.map(stri, function(c) {
+        return _.parseInt(c)
+    })).join('');
+    return _.parseInt(digits);
+}
+
+function parseLikes(likeInfo) {
+    if(!likeInfo)
+        return { watchedLikes: null, watchedDislikes: null };
+
+    watchedLikes = forceInteger(likeInfo.likes);
+    watchedDislikes = forceInteger(likeInfo.dislikes);
+
+    return {watchedLikes, watchedDislikes };
+}
+
 var activeUserCount = function(usersByDay) {
     var uC = _.reduce(usersByDay, function(memo, stOb) {
         var date = stOb["_id"].year + '-' + stOb["_id"].month +
@@ -168,6 +185,7 @@ function judgeIncrement(key, current, value) {
 module.exports = {
     hash,
     activeUserCount,
+    parseLikes,
     stringToArray,
     encodeToBase58,
     decodeFromBase58,
