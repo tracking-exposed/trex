@@ -16,8 +16,9 @@ for x in `seq 0 $NUMBEROF`; do
 	we1=$((`date --date="2020-03-24 23:59:00" +%s` / 60));
 	nao=$((`date +%s` / 60));
 	minutesago=$(($nao - $we1));
+	logfile="./we1.parserLog.txt";
 
-	echo "script looping on $x/$NUMBEROF, --minutesago $minutesago";
-	DEBUG=yttrex:parserv,*:*:error node bin/parserv2.js --minutesago $minutesago --filter "$1" --skip $i --stop 10;
+	echo "script looping on $x/$NUMBEROF, --minutesago $minutesago, logging on $logfile";
+	DEBUG=yttrex:parserv,*:*:error node bin/parserv2.js --minutesago $minutesago --filter "$1" --skip $i --stop 10 2>&1 | tee $logfile
 done
 echo "completed configured loop"
