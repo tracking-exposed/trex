@@ -7,6 +7,7 @@ const debuge = require('debug')('parser:video:error');
 const debugCheckup = require('debug')('parser:C');
 const debugTimef = require('debug')('parser:timeF');
 
+const utils = require('../lib/utils'); // this because parseLikes is an utils to be used also with version of the DB without the converted like. but should be a parsing related-only library once the issue with DB version is solved
 const uxlang = require('./uxlang');
 const longlabel = require('./longlabel');
 
@@ -94,8 +95,17 @@ function relatedMetadata(e, i) {
 
     const link = e.querySelector('a') ? e.querySelector('a').getAttribute('href') : null;
     const videoId = link ? link.replace(/.*v=/, '') : null;
-    const parameter = (videoId && videoId.match(/&.*/)) ? videoId.replace(/.*&/, '&') : null;
     const liveBadge = !!e.querySelector(".badge-style-type-live-now");
+
+    let thumbnailHref = null;
+    try {
+        const refe = e.querySelector('.ytd-thumbnail-overlay-time-status-renderer');
+        const thumbnailSrc = refe.closest('a').querySelector('img').getAttribute('src');
+        const c = url.parse(thumbnailSrc);
+        thumbnailHref = 'https://' + c.host + c.pathname;
+    } catch(e) {
+        debuge("thumbnail parsing error: %s", e.message);
+    }
 
     const { displayTime, expandedTime } = closestForTime(e, '.ytd-thumbnail-overlay-time-status-renderer');
     // 2:03  -  2 minutes and 3 seconds, they might be null.
@@ -123,7 +133,6 @@ function relatedMetadata(e, i) {
         verified,
         foryou,
         videoId,
-        parameter: parameter ? parameter : null,
         recommendedSource: source,
         recommendedTitle: mined ? mined.title : (title ? title : null),
         recommendedLength,
@@ -134,6 +143,7 @@ function relatedMetadata(e, i) {
          * this field produces -> recommendedPubtime and ptPrecison */
         recommendedRelativeSeconds: mined ? mined.timeago.asSeconds() : null,
         recommendedViews: mined ? mined.views : null,
+        recommendedThumbnail: thumbnailHref,
         isLive: (estimatedLive || liveBadge),
         label: arialabel,
     };
@@ -163,15 +173,7 @@ function checkUpDebug(r) {
     } else
         second = first.acc;
 
-    /* manage parameter special opposite condition */
-    let debstr = ""
-    if(r.parameter && _.size(r.parameter)) {
-        debstr = _.times(second, function(k) { return "!"+k; }).join('') + "";
-        debstr += "<param>[" + r.parameter + "]";
-    } else {
-        second = _.reject(second, ['parameter']);
-        debstr = _.times(second, function(k) { return "!"+k; }).join('') + "";
-    }
+    let debstr = _.times(second, function(k) { return "!"+k; }).join('') + "";
 
     if(_.size(debstr))
         debugCheckup("%s\n\t%d\t%s", debstr, r.index, r.label);
@@ -258,7 +260,7 @@ function mineAuthorInfo(D) {
     return { authorName, authorSource };
 }
 
-function processVideo(D, blang, clientTime) {
+function processVideo(D, blang, clientTime, urlinfo) {
 
     /* this is the title of the view video, the related are mined in 'relatedMetadata' */
     const title = manyTries(D, [{
@@ -300,47 +302,18 @@ function processVideo(D, blang, clientTime) {
         throw new Error(`Unable to mine related: ${error.message}, ${error.stack.substr(0, 220)}...`);
     }
 
-/*
-    -- to be determined if deserve to be kept or not 
-    if(relatedN < 20) {
-        // debug("Because the related video are less than 20 (%d) trying the method2 of related extraction", relatedN);
-        const f = D.querySelectorAll('[aria-label]')
-        const alternativeR = _.compact(_.map(f, function(e, i) {
-            if(e.parentNode.parentNode.tagName != 'DIV' || e.parentNode.tagName != 'H3')
-                return null;
-
-            var t = e.parentNode.parentNode.parentNode.parentNode.querySelector("#thumbnail");
-
-            if(t) {
-                e.parentNode.parentNode.loaded = true;
-                return e.parentNode.parentNode;
-            }
-            else {
-                e.parentNode.parentNode.loaded = false;
-                return null; 
-                // > _.countBy(selected, {loaded: true })
-                // { true: 24, false: 25 }
-                //  --- the videos not yet loaded but potentially suggested
-            }
-
-        }));
-
-        if(_.size(alternativeR) > _.size(related)) {
-            debug("Extending/Overwritting %d related with %d findings, partially loaded (%j)",
-                _.size(related), _.size(alternativeR), _.countBy(alternativeR, { loaded: true}));
-            related = _.map(alternativeR, relatedMetadata);
-        }
-    }
-*/
-
     debug("Video <%s> attempted to parse %d related, found actually %d < isLive %j >",
         title, _.size(related), _.size(_.compact(related)), _.countBy(related, 'isLive'));
+    related = makeAbsolutePublicationTime(_.compact(related), clientTime);
 
     /* non mandatory info */
     let viewInfo, likeInfo = null;
     try {
         viewInfo = parseViews(D);
         likeInfo = parseLikes(D);
+        const numeredInteractions = utils.parseLikes(likeInfo);
+        likeInfo.watchedLikes = numeredInteractions.watchedLikes;
+        likeInfo.watchedDislikes = numeredInteractions.watchedDislikes;
     } catch(error) {
         debuge("viewInfo and linkInfo not available");
     }
@@ -354,17 +327,21 @@ function processVideo(D, blang, clientTime) {
         login = null;
     }
 
-    related = makeAbsolutePublicationTime(related, clientTime);
+    const params = querystring.parse(urlinfo.query);
+    const videoId = params.v;
+
     return {
         title,
+        type: 'video',
+        params,
+        videoId,
         login,
-        check,
         publicationString,
         publicationTime,
         blang: blang ? blang : ifLang,
         authorName,
         authorSource,
-        related: _.compact(related),
+        related,
         viewInfo,
         likeInfo
     };
@@ -383,17 +360,14 @@ function process(envelop) {
         extracted = processVideo(
             envelop.jsdom,
             envelop.impression.blang,
-            envelop.impression.clientTime
+            envelop.impression.clientTime,
+            urlinfo,
         );
     } catch(e) {
         debuge("Error in video.process %s (%d): %s\n\t-> %s",
             envelop.impression.href, envelop.impression.size, e.message, e.stack.split('\n')[1]);
         return null;
     }
-
-    extracted.type = 'video';
-    extracted.params = querystring.parse(urlinfo.query);
-    extracted.videoId = extracted.params.v;
 
     const re = _.filter(extracted.related, { error: true });
     stats.suberror += _.size(re);
