@@ -19,9 +19,10 @@ var hash = function(obj, fields) {
 };
 
 function forceInteger(stri) {
-    let digits = _.compact(_.map(stri, function(c) {
-        return _.parseInt(c)
-    })).join('');
+    // sometime you've "323,333 mi piace" or "gustaria a 222 333 personas" this filter+trim+parse only integer seqences 
+    const digits = _.filter(stri, function(c) {
+        return _.isInteger(_.parseInt(c))
+    }).join("");
     return _.parseInt(digits);
 }
 

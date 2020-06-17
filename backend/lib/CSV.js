@@ -76,7 +76,7 @@ function unrollRecommended(memo, evidence) { // metadata.type = video with 'rela
             recommendedForYou: related.foryou,
             recommendedVerified: related.verified,
             recommendationOrder: related.index,
-            recommendedKind: evidence.isLive ? "live" : "video", // this should support also 'playlist' 
+            recommendedKind: related.isLive ? "live" : "video", // this should support also 'playlist' 
 
             watchedVideoId: evidence.videoId,
             watchedTitle: evidence.title,

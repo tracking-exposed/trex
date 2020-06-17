@@ -9,6 +9,8 @@ const csv = require('../lib/CSV');
 const utils = require('../lib/utils');
 const mongo3 = require('../lib/mongo3');
 
+const VERSION = 6; // every time a bug is fixed or a new feature get add, this increment for internal tracking 
+
 nconf.argv().env().file({ file: 'config/settings.json' });
 
 /* static settings of weTEST#1 */
@@ -77,7 +79,6 @@ async function pickFromDB(filter, sorting, special) {
 }
 
 function fileName(prefix, suffix) {
-    const VERSION = 5;
     return `${prefix}-ωτ1-v${VERSION}.${suffix}`;
 }
 
