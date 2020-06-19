@@ -1,6 +1,11 @@
 The format is based on [Keep a Changelog](http://keepachangelog.com/) and this
 project adheres to [Semantic Versioning](http://semver.org/).
 
+## [1.4.2] - 2020-06-20
+### Fixed
+- Links in infoBox.js weren't correct
+- Lack of lodash include was preventing a certain condition to work
+
 ## [1.4.1] - 2020-06-08
 ### Fixed
 - Privacy improvement by removing 'tabs' as unnecessary privilege
