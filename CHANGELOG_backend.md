@@ -1,11 +1,16 @@
 The format is based on [Keep a Changelog](http://keepachangelog.com/) and this
 project adheres to [Semantic Versioning](http://semver.org/).
 
-## [1.4.1] - 2020-07-17
+## [1.4.2] - 2020-06-20
+### Fixed
+- home parsing has language and thumbnail detection
+- completed version 7 of wetest1
+
+## [1.4.1] - 2020-06-17
 ### Added
 - in metadata DB, numeric likes and thumbnails.
 ### Fixed
-- produced version 6 (final version) of wetest1 dataset extractor
+- produced version 6 of wetest1 dataset extractor
 
 ## [1.4.0] - 2020-05-08
 ### Added

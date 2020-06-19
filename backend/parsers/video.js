@@ -10,6 +10,7 @@ const debugTimef = require('debug')('parser:timeF');
 const utils = require('../lib/utils'); // this because parseLikes is an utils to be used also with version of the DB without the converted like. but should be a parsing related-only library once the issue with DB version is solved
 const uxlang = require('./uxlang');
 const longlabel = require('./longlabel');
+const shared = require('./shared');
 
 const stats = { skipped: 0, error: 0, suberror: 0, success: 0 };
 
@@ -27,22 +28,6 @@ function parseLikes(D) {
     const dislikes = nodes[1].getAttribute('aria-label');
     return { likes: likes, dislikes: dislikes };
 };
-
-function logged(D) {
-    const avatarN = D.querySelectorAll('button#avatar-btn');
-    const loginN = D.querySelectorAll('[href^="https://accounts.google.com/ServiceLogin"]');
-    const avalen = avatarN ? avatarN.length : 0;
-    const logilen = loginN ? loginN.length : 0;
-
-    // login button | avatar button len
-    if(logilen && !avalen)
-        return false;
-    if(avalen && !logilen)
-        return true; 
-
-    debug("Inconsistent condition avatar %d login %d", avalen, logilen);
-    return null;
-}
 
 function closestForTime(e, sele) {
     /* this function is a kind of .closest but apply to textContent and aria-label
@@ -96,16 +81,7 @@ function relatedMetadata(e, i) {
     const link = e.querySelector('a') ? e.querySelector('a').getAttribute('href') : null;
     const videoId = link ? link.replace(/.*v=/, '') : null;
     const liveBadge = !!e.querySelector(".badge-style-type-live-now");
-
-    let thumbnailHref = null;
-    try {
-        const refe = e.querySelector('.ytd-thumbnail-overlay-time-status-renderer');
-        const thumbnailSrc = refe.closest('a').querySelector('img').getAttribute('src');
-        const c = url.parse(thumbnailSrc);
-        thumbnailHref = 'https://' + c.host + c.pathname;
-    } catch(e) {
-        debuge("thumbnail parsing error: %s", e.message);
-    }
+    const thumbnailHref = shared.getThumbNailHref(e);
 
     const { displayTime, expandedTime } = closestForTime(e, '.ytd-thumbnail-overlay-time-status-renderer');
     // 2:03  -  2 minutes and 3 seconds, they might be null.
@@ -320,7 +296,7 @@ function processVideo(D, blang, clientTime, urlinfo) {
 
     let login = -1;
     try {
-        login = logged(D);
+        login = shared.logged(D);
         /* if login is null, it means failed check */
     } catch(error) {
         debuge("Failure in logged(): %s", error.message);
@@ -447,7 +423,6 @@ function videoTitleTop(envelop, selector) {
 
 
 module.exports = {
-    logged,
     process,
     videoAd,
     overlay,

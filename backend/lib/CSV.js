@@ -48,6 +48,7 @@ function produceCSVv1(entries) {
 
 function unrollRecommended(memo, evidence) { // metadata.type = video with 'related' 
     const numerizedLikes = utils.parseLikes(evidence.likeInfo); // converts '1233 me gusta'
+    // TODO ^^^^^^^^^^^^^^ should be removed in the future because it will be part of 'evidence.related' 
     _.each(evidence.related, function(related, evidenceCounter) {
         let entry = {
             /* this is removed or anonymized by the called */
@@ -70,7 +71,7 @@ function unrollRecommended(memo, evidence) { // metadata.type = video with 'rela
             recommendedDisplayL: related.recommendedDisplayL,
             recommendedLengthText: related.recommendedLengthText,
             recommendedPubTime: related.publicationTime,
-            ptPrecision: related.timePrecision,
+            // ptPrecision: related.timePrecision, // doens't really matter ATM
             recommendedRelativeS: related.recommendedRelativeSeconds, // distance between clientTime and publicationTime
             recommendedViews: related.recommendedViews,
             recommendedForYou: related.foryou,
@@ -105,7 +106,7 @@ function unwindSections(memo, evidence) { // metadata.type = 'home' with 'select
             clientTime: evidence.clientTime,
             order: selected.index,
 
-            uxLang: evidence.uxlang,
+            uxLang: evidence.blang,
            
             parameter: selected.parameter,
             sectionName: selected.sectionName,
@@ -118,7 +119,7 @@ function unwindSections(memo, evidence) { // metadata.type = 'home' with 'select
             selectedDisplayL: selected.selectedDisplayL,
             selectedLengthText: selected.recommendedLengthText,
             selectedPubTime: selected.publicationTime,
-            ptPrecision: selected.timePrecision,
+            // ptPrecision: selected.timePrecision, doesn't really matter ATM because they are all 'estimated'
             selectedRelativeS: selected.recommendedRelativeSeconds,
             selectedViews: selected.recommendedViews,
             selectedKind: selected.isLive ? "live": "video", // this should support also 'playlist' 
