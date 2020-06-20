@@ -40,38 +40,26 @@ async function getSummaryByPublicKey(publicKey, options) {
     const fields = [ 'id', 'login', 'videoId', 'savingTime', 'title', 'relative',
                      'authorName', 'authorSource', 'publicationTime', 'relatedN' ];
     const cleandata = _.map(metadata, function(e) {
-        e.savingTime = new Date(e.savingTime);
         e.publicationTime = new Date(e.publicationTime);
         e.relatedN = _.size(e.related);
         e.relative = moment.duration( moment(e.savingTime) - moment() ).humanize() + " ago";
         return _.pick(e, fields);
     });
 
-    /* the pie chars are generated from this reduction and rendered with c3js.org */
-    const graphs = _.reduce(metadata, function(memo, e) {
-        let t = _.get(memo.view, e.authorName);
-        if(!t)
-            memo.view[e.authorName] = 1;
-        else
-            memo.view[e.authorName]++;
+    const graphs = {};
+    const listOfRelated = _.flatten(_.map(metadata, 'related'));
 
-        _.each(e.related, function(suggested) {
-            let r = _.get(memo.related, suggested.source)
-            if(!r)
-                memo.related[suggested.source] = 1;
-            else
-                memo.related[suggested.source]++;
+    /* the pie chars are generated from these reduction and rendered with c3js.org */
+    graphs.views = _.countBy(metadata, 'authorName');
 
-            if(suggested.foryou)
-                memo.reason.foryou++;
-            else
-                memo.reason.organic++;
-
-        });
+    /* a pie chart by counting how many video is recommended for you */
+    graphs.reason = _.countBy(listOfRelated, 'foryou');
+    graphs.reason = _.reduce(graphs.reason, function(memo, value, key) {
+        _.set(memo, (key === 'true') ? 'for you' : 'organic', value);
         return memo;
-    }, { view: {}, related: {}, reason: { foryou: 0, organic: 0 } })
-    /* this should go away if we brind the filtering client-side */
+    }, {});
 
+    graphs.related = _.countBy(listOfRelated, 'recommendedSource')
     graphs.related = _.map(graphs.related, function(amount, name) {
         return { name, 'recommended videos': amount };
     });

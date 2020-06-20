@@ -1,10 +1,10 @@
 import nacl from 'tweetnacl';
 import bs58 from 'bs58';
+import _ from 'lodash';
 
 import api from '../api';
 import { isEmpty } from '../../utils';
 import db from '../db';
-import config from '../../config';
 
 const bo = chrome || browser;
 const FIXED_USER_NAME = 'local';

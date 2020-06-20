@@ -1,6 +1,6 @@
 {
   "name": "yttrex-backend",
-  "version": "1.3.2",
+  "version": "1.4.1",
   "description": "youtube.tracking.exposed - backend data collector",
   "scripts": {
     "watch": "elastic=disabled key=fuffa DEBUG=lib:*,yttrex ./node_modules/nodemon/bin/nodemon.js --config config/nodemon.json bin/server",
@@ -29,9 +29,9 @@
     "tweetnacl": "^0.14.3"
   },
   "devDependencies": {
-    "jsdom": "^13.0.0",
-    "nodemon": "^2.0.2",
     "chai": "^4.2.0",
-    "mocha": "^5.2.0"
+    "jsdom": "^13.0.0",
+    "mocha": "^5.2.0",
+    "nodemon": "^2.0.4"
   }
 }

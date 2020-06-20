@@ -64,7 +64,7 @@ class Popup extends React.Component{
       return (
         <div style={styles}>
           <Card>
-              <FormHelperText>Primary settings</FormHelperText>
+              <FormHelperText>ytTREX main switch</FormHelperText>
               <Settings active={this.state.data.active} />
               <FormHelperText>Access to your data</FormHelperText>
               <GetCSV publicKey={this.state.data.publicKey } />

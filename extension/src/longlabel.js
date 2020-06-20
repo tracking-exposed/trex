@@ -1,6 +1,4 @@
 const _ = require('lodash');
-const debug = require('debug')('parser:longlabel');
-const debuge = require('debug')('parser:longlabel:error');
 const moment = require('moment');
 
 const unrecognizedWordList = [];
@@ -61,18 +59,13 @@ function parser(l, source, isLive) {
         langi = _.find(langopts, { sostantivo: specialfinal });
     }
 
-    // debug("<sostantivo> %s, <langi> %j", viewssost, langi);
-    if(!langi) debugger;
-
     if(!langi) {
-        debuge("Not seen any known 'sostantivo' in %s", l);
         throw new Error("1> locale not found!" + viewssost);
     }
     
     l = NoViewsReplacer(l, langi.sostantivo);
     const { views, liveStatus, reducedLabel } = langi.viewcount(l, langi.sostantivo, isLive);
     if(_.isNaN(views)) {
-        debuge("Failure in extracting with %s from %s", viewssost, l)
         throw new Error("2> " + viewssost);
     }
     
@@ -83,11 +76,7 @@ function parser(l, source, isLive) {
     const separatorCheck = _.size(reducedLabel.split(halfsep));
     const timeinfo = _.last(reducedLabel.split(halfsep));
     const title = _.first(reducedLabel.split(halfsep));
-    // moment.locale(langi.locale);
-    // parsing do not depends on this 
-    // debug(reducedLabel.split(halfsep));
     if(separatorCheck < 2) {
-        debuge("checking '%s' <separator fails as %s>", halfsep, langi.locale);
         throw new Error("Separator Error locale: " + langi.locale);
     }
 
@@ -97,7 +86,6 @@ function parser(l, source, isLive) {
     const timeago = getPublicationTime(timeinfo);
 
     /*  5) to simplify this, duration of the video is take somewhere else */
-    // debug("Completed %s with %d %s %s", title, views, timeago.humanize(), langi.locale);
     return {
         views,
         title,
@@ -206,7 +194,6 @@ function getPublicationTime(timeinfo) {
         // might otherwise overwrite the first success and include dirty data.
     }, null);
     if(!timeago) {
-        debuge("Can't regexp timeago %s (might be due to lang separaion)", timeinfo);
         throw new Error(`can't regexp timeago |${timeinfo}| might be language separator`);
     }
 
@@ -217,9 +204,7 @@ function getPublicationTime(timeinfo) {
             return memo;
 
         const total = (convertedNumber * momentinfo[0]);
-        const mabbe = moment.duration(total, momentinfo[1]); /*
-        debug("(OK getPublicationTime) |%s| to be [%j]  parsed %d total %d",
-            word, momentinfo, convertedNumber, total); */
+        const mabbe = moment.duration(total, momentinfo[1]);
         return mabbe;
     }, null);
 
@@ -237,8 +222,6 @@ function getPublicationTime(timeinfo) {
                 if(unrecognizedWordList.indexOf(mw) === -1)
                     unrecognizedWordList.push(mw);
             })
-            debug("Found %d unrecognized words, now extended the list of %j",
-                _.size(missing), unrecognizedWordList);
         }
         throw new Error(`Lack of time mapping relativeConMapping ${timeago} |${timeinfo}|`);
     }
@@ -246,7 +229,6 @@ function getPublicationTime(timeinfo) {
     if(!duration.isValid())
         throw new Error(`Invalid duration! from ${timeago} to ${timeinfo}`);
 
-    // debug("getPublicationTime: %s from |%s|", duration.humanize(), timeinfo);
     return duration;
 }
 
@@ -265,7 +247,6 @@ function comma(label, sosta, isLive) {
         const match = rge.exec(label);
         if(match) {
             memo = _.parseInt(match[0].replace(sosta, '').replace(',', '').trim())
-            // debug("comma,match %s memo %s reduced %s", match, memo, label.substr(0, match.index));
             reducedLabel = label.substr(0, match.index);
         }
         return memo;
@@ -282,14 +263,12 @@ function empty(label, sosta, isLive) {
         /* the +10 above is due to labels apparently returning smaller than source, it is
          * fully dependent from the number of unicode chars. .charAt($toolong) return '' */
         let val = label.charCodeAt(number);
-        // debug("%d (%s)", val, label.charAt(number));
         if(val == 8239 || val == 160) 
             memo += " ";
         else 
             memo += label.charAt(number);
         return memo;
     }, "").trim();
-    // debug("fixedlabel: %s (%d|%d)", fixedlabel, _.size(fixedlabel), _.size(label));
     const regmap = {
         hundred: new RegExp(` \\d{1,3} ${sosta}\$`),
         thousand: new RegExp(` \\d{1,3} \\d{3} ${sosta}\$`),
@@ -300,7 +279,6 @@ function empty(label, sosta, isLive) {
     const views = _.reduce(regmap, function(memo, rge, name) {
         const match = rge.exec(fixedlabel);
         if(match) {
-            // debug("empty,match value in %s (%s)", name, rge);
             memo = _.parseInt(match[0].replace(sosta, '').replace(' ', '').trim())
             reducedLabel = fixedlabel.substr(0, match.index);
         }

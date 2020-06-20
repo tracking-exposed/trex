@@ -44,9 +44,7 @@ async function getPersonal(req) {
 async function getPersonalCSV(req) {
     /* this function might return a CSV containing all the video in the homepages, 
      * or all the related video. depends on the parameter */
-
     const CSV_MAX_SIZE = 1000;
-    let sourceCounter = 0;
     const k =  req.params.publicKey;
     const type = req.params.type;
 
@@ -56,13 +54,10 @@ async function getPersonalCSV(req) {
     const data = await automo.getMetadataByPublicKey(k, { amount: CSV_MAX_SIZE, skip: 0, typefilter: type });
     /* this return of videos or homepage, they generated slightly different CSV formats */
 
-    sourceCounter = _.size(data.metadata);
-    let unrolled;
-
-    if(type == 'home')
-        unrolled = _.reduce(data.metadata, CSV.unwindSections, []);
-    else
-        unrolled = _.reduce(data.metadata, CSV.unrollRecommended, []);
+    const sourceCounter = _.size(data.metadata);
+    const unrolled = (type == 'home')
+        ? _.reduce(data.metadata, CSV.unwindSections, [])
+        : _.reduce(data.metadata, CSV.unrollRecommended, []);
 
     const ready = _.map(unrolled, function(e) {
         _.unset(e, 'publickey');
@@ -109,26 +104,29 @@ async function getPersonalTimeline(req) {
 
     const grouped = _.groupBy(list, 'dayString');
     const aggregated = _.map(grouped, function(perDayEvs, dayStr) {
-        let videos = _.size(_.filter(perDayEvs, { 'type': 'video' }));
-        let homepages = _.size(_.filter(perDayEvs, { 'type': 'home' }));
+
+        let videos = _.filter(perDayEvs, { 'type': 'video' }); 
+        let homepages = _.filter(perDayEvs, { 'type': 'home' });
+
+        let totalsuggested = _.sum(_.map(homepages, function(h) { return _.size(h.selected); }))
+        let typeUndef = _.sum(_.map(_.countBy(perDayEvs, 'type'), function(amount, name) { return amount; }));
         let types = _.sum(_.map(_.omit(_.countBy(perDayEvs, 'type'), ['undefined']), function(amount, name) { return amount; }));
-        let authors = _.sum(_.map(_.omit(_.countBy(perDayEvs, 'authorName'), ['undefined']), function(amount, name) { return amount; }));
-        let adverts = _.sum(_.map(_.omit(_.countBy(perDayEvs, 'advertiser'), ['undefined']), function(amount, name) { return amount; }));
-        debug("V%d H%d | %j %d - %j %d - %j %d",
-            videos, homepages,
+        let authors = _.sum(_.map(_.countBy(videos, 'authorName'), function(amount, name) { return amount; }));
+        // let adverts = _.sum(_.map(_.omit(_.countBy(perDayEvs, 'advertiser'), ['undefined']), function(amount, name) { return amount; }));
+        debug("%s <Vid %d Home %d> -> %j %d - %j %d", dayStr,
+            _.size(videos), _.size(homepages),
             _.countBy(perDayEvs, 'type'), types,
-            _.countBy(perDayEvs, 'authorName'), authors,
-            _.countBy(perDayEvs, 'advertiser'), adverts
+            _.countBy(videos, 'authorName'), authors,
         );
         return {
-            videos,
+            titles: _.map(videos, 'title'),
             homepages,
             types,
+            typeUndef,
+            totalsuggested,
             authors,
-            adverts,
-            type: _.omit(_.countBy(perDayEvs, 'type'), ['undefined']),
-            authorName: _.omit(_.countBy(perDayEvs, 'authorName'), ['undefined']),
-            advertiser: _.omit(_.countBy(perDayEvs, 'advertiser'), ['undefined']),
+            type: _.countBy(perDayEvs, 'type'),
+            authorName: _.countBy(videos, 'authorName'),
             dayStr,
         }
     });

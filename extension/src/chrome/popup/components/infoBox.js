@@ -27,10 +27,10 @@ const InfoBox = createReactClass({
                 <img style={imgstyle} src='/yttrex-logo.png' />
               </a>
               <CardActions>
-                <Button size="small" color="secondary" href="{about}" target="_blank">
+                <Button size="small" color="secondary" href={about} target="_blank">
                   Project
                 </Button>
-                <Button size="small" color="primary" href="{privacy}" targer="_blank">
+                <Button size="small" color="primary" href={privacy} targer="_blank">
                   Privacy 
                 </Button>
                 <Button size="small" color="secondary" href="https://tracking.exposed/manifesto" target="_blank">
@@ -39,7 +39,7 @@ const InfoBox = createReactClass({
                 <Button size="small" color="primary"  href="https://github.com/tracking-exposed/yttrex/" target="_blank"> 
                   Software
                 </Button>
-                <Button size="small" color="secondary" href="{experiments}" target="_blank">
+                <Button size="small" color="secondary" href={experiments} target="_blank">
                   Experiments
                 </Button>
               </CardActions>

@@ -4,7 +4,9 @@ const debug = require('debug')('parser:home');
 const debuge = require('debug')('parser:home:error');
 const debugResults = require('debug')('parser:home:results');
 
+const shared = require('./shared');
 const longlabel = require('./longlabel');
+const uxlang = require('./uxlang');
 const videoparser = require('./video');
 
 function dissectSelectedVideo(e, i, sections, offset) {
@@ -175,11 +177,14 @@ function actualHomeProcess(D) {
     const selectorOffsetMap = [];
     /* this collection is only useful to study the page, and it is saved in the DB */
     const selected = _.map(ve, function(e, i) {
+        /* this research is interesting but not yet used */
         sizeTreeResearch(e, i)
+        const thumbnailHref = shared.getThumbNailHref(e);
         try {
             const ubication = D.querySelector('body').outerHTML.indexOf(e.outerHTML);
             selectorOffsetMap.push({ i, offset: ubication });
             let videoInfo = dissectSelectedVideo(e, i, titles, ubication);
+            videoInfo.thumbnailHref = thumbnailHref;
             return videoInfo;
         } catch(error) {
             const f = e.querySelector('#video-title-link');
@@ -189,13 +194,22 @@ function actualHomeProcess(D) {
                 error: true,
                 reason: error.message,
                 label: s,
+                thumbnailHref
             }
         }
     });
-    const effective = _.compact(selected);
+    const effective = _.reject(selected, { error: true });
     debugResults("Parsing completed. Analyzed %d, effective %d", _.size(selected), _.size(effective));
     debugSizes(effective);
-    return { selected: _.reject(effective, { error: true }), sections: selectorOffsetMap };
+    return { selected: effective, sections: selectorOffsetMap };
+    /* sections would be removed before being saved in mongodb */
+}
+
+function guessUXlanguage(D) {
+    const buttons = D.querySelectorAll('button');
+    const localizedStrings = _.compact(_.map(buttons, function(e) { return e.textContent.trim(); } ));
+    /* note, home and video seems to share the same pattern */
+    return uxlang.findLanguage('video', localizedStrings);
 }
 
 function process(envelop) {
@@ -206,25 +220,26 @@ function process(envelop) {
         retval.selected = selected;
         retval.sections = sections;
     } catch(e) {
-        debug("Error in processing %s (%d): %s",
+        debuge("Error in processing %s (%d): %s",
             envelop.impression.href, envelop.impression.size, e.message);
         return null;
     }
 
     retval.type = 'home';
+    retval.blang = guessUXlanguage(envelop.jsdom);
 
     try {
-        retval.login = videoparser.logged(envelop.jsdom);
+        retval.login = shared.logged(envelop.jsdom);
         /* if login is null, it means failed check */
     } catch(error) {
-        debug("Exception in logged(): %s", error.message);
+        debuge("Exception in logged(): %s", error.message);
         retval.login = null;
     }
 
     try {
         retval.selected = videoparser.makeAbsolutePublicationTime(retval.selected, envelop.impression.clientTime);
     } catch(error) {
-        debug("this function is executed outside because clientTime don't travel in parsing function. errro: %s %s",
+        debuge("this function is executed outside because clientTime don't travel in parsing function. errro: %s %s",
             error.message, error.stack);
     }
     return retval;

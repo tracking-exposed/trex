@@ -172,6 +172,7 @@ function processEachHTML(e) {
         if(!_.size(curi) && e.selector == "ytd-app") {
             /* without clean URI, it is an youtube home */
             metadata = homeparser.process(envelop);
+            _.unset(metadata, 'sections');
         }
         else if(e.selector == "ytd-app") {
             /* else, if is ytd-app, it is a full video content */

@@ -110,12 +110,10 @@ async function getRelated(req) {
     const entries = await automo.getMetadataByFilter({ "related.videoId": req.params.query }, { amount, skip});
     const evidences = _.map(entries, function(meta) {
         meta.related = _.map(meta.related, function(e) {
-            return _.pick(e, ['title', 'source', 'index', 'foryou', 'videoId']);
+            return _.pick(e, ['recommendedTitle', 'recommendedSource', 'index', 'foryou', 'videoId']);
         });
         meta.timeago = moment.duration( meta.savingTime - moment() ).humanize();
-        _.unset(meta, '_id');
-        _.unset(meta, 'publicKey');
-        return meta;
+        return _.omit(meta, ['_id', 'publicKey'])
     });
     debug("getRelated: returning %d matches about %s", _.size(evidences), req.params.query);
     return { json: evidences };

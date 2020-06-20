@@ -9,6 +9,8 @@ const csv = require('../lib/CSV');
 const utils = require('../lib/utils');
 const mongo3 = require('../lib/mongo3');
 
+const VERSION = 6; // every time a bug is fixed or a new feature get add, this increment for internal tracking 
+
 nconf.argv().env().file({ file: 'config/settings.json' });
 
 /* static settings of weTEST#1 */
@@ -77,16 +79,17 @@ async function pickFromDB(filter, sorting, special) {
 }
 
 function fileName(prefix, suffix) {
-    const ITERATION = 4;
-    return `${prefix}-ωτ1-v${ITERATION}.${suffix}`;
+    return `${prefix}-ωτ1-v${VERSION}.${suffix}`;
 }
 
+/* ------------- START of accuracy debug section ------------------ */
 const accuracyCounters = {};
 function upsert(key, subkey, update) {
     let value = _.get(accuracyCounters, key + '.' + subkey, 0);
     _.set(accuracyCounters, key + '.' + subkey, value + update);
 }
 function updateStats(entry) {
+    /* THIS function is call when the raw data is cleaned/updated for release */
     _.each(entry, function(value, key) {
         if(typeof value == typeof undefined)
             upsert(key, 'undefined', 1);
@@ -109,6 +112,7 @@ function updateStats(entry) {
     });
 }
 function accuracyDump(fullamount) {
+    /* this dump the stats collected by accuracyCounter */
     _.each(accuracyCounters, function(value, entryName) {
         debug("%s%s%s", entryName, _.times(30 - _.size(entryName), " ").join(), _.map(value, function(amount, variableType) {
             let p = (amount / fullamount) * 100;
@@ -116,12 +120,12 @@ function accuracyDump(fullamount) {
         }).join(" | "));
     });
 }
+/* ------------- END of accuracy debug section ------------------ */
 
-function applyWetest1(e, step) {
-    _.set(e, 'step', step);
+function applyWetest1(e) {
     _.set(e, 'experiment', 'wetest1');
-    _.set(e, 'dataset', 'yttrex');
     _.set(e, 'pseudonyn', utils.string2Food(e.publicKey + "weTest#1") );
+    _.unset(e, 'publicKey');
     updateStats(e);
     return e;
 }
@@ -131,8 +135,11 @@ function applyWetest1(e, step) {
 async function produceHomeCSV(tf) {
     const home = await pickFromDB(_.extend(tf, {type: 'home'}), { clientTime: -1 });
     const unwind = _.reduce(home, csv.unwindSections, []);
-    debug("Unnested the 'sections' return %d evidences. Saving JSON file", _.size(unwind));
-    const ready = _.map(unwind, _.partial(applyWetest1, 'homepage'));
+    const ready = _.map(_.map(unwind, applyWetest1), function(e) {
+        _.set(e, 'step', 'homepage');
+        return e;
+    });
+    debug("Unwinded the 'selected sections' return %d evidences. Saving JSON file", _.size(ready));
     fs.writeFileSync(fileName('home', 'json'), JSON.stringify(ready, undefined, 2));
     const csvtext = csv.produceCSVv1(ready);
     debug("Produced %d bytes for text/csv, saving file", _.size(csvtext));
@@ -150,7 +157,7 @@ async function produceVideosCSV(tf) {
         _.set(e, 'step', _.find(testVideos, { videoId: e.watchedVideoId }).language );
         return e;
     });
-    debug("Unnested the 'sections' return %d evidences. Saving JSON file", _.size(ready));
+    debug("Unrolled the 'recommencted sections' return %d evidences. Saving JSON file", _.size(ready));
     fs.writeFileSync(fileName('videos', 'json'), JSON.stringify(ready, undefined, 2));
     const csvtext = csv.produceCSVv1(ready);
     debug("Produced %d bytes for text/csv, saving file", _.size(csvtext));

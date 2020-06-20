@@ -1,5 +1,6 @@
 const _ = require('lodash');
 const debug = require('debug')('parser:uxlang');
+const debuge = require('debug')('parser:uxlang:error');
 const nlpdebug = require('debug')('pubtimeAPI');
 const moment = require('moment');
 
@@ -15,6 +16,7 @@ const formatMatches = {
 const absoluteDateIntroSentence = [
     'Streamed live on ',
     'Started streaming ',
+    'Streaming avviato ',
     'Started streaming on ',
     'Ha empezado a emitir en directo hace ',
     'Premiered ',
@@ -85,7 +87,9 @@ const localized = {
     'Minute': 'minutes',    // Aktiver Livestream seit 2 Minuten
 
     'segundos': 'seconds',
-    'seconds': 'seconds'
+    'seconds': 'seconds',
+    'secondo': 'seconds',
+    'secondi': 'seconds',
 };
 
 const regchain = [
@@ -209,11 +213,11 @@ const localizedFirstButton = [{
 }];
 
 function findLanguage(type, chunks) {
+    // note, it seems for 'home' and 'video' works the same
     const found = _.find(localizedFirstButton, { type, first: _.first(chunks) });
     if(!found) {
-        debug("findLanguage failured please add manually: %s |%s|\n%s",
+        debuge("findLanguage failure please add manually: %s |%s|\n%s",
             type, _.first(chunks), JSON.stringify(chunks));
-        process.exit(1);
         return null;
     }
     return found.iso2;
