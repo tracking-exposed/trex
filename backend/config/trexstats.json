@@ -133,5 +133,25 @@
                 "selector": { "type": "video" }
             }
         ]
-    }]
+    }, {
+        "name": "searches",
+        "column": "searches",
+        "timevar": "savingTime",
+        "variables": [
+            {   "name": "searches",  "selector": { }                                      },
+            {   "name": "24hours",   "selector": { "relativeSeconds": { "$lt": 86400  } } },
+            {   "name": "7days",     "selector": { "relativeSeconds": { "$lt": 604800 } } }
+        ]
+    }, {
+        "name": "active",
+        "column": "supporters",
+        "timevar": "lastActivity",
+        "variables": [
+            {
+                "name": "active",
+                "selector": {}
+            }
+        ]
+    }
+    ]
 }

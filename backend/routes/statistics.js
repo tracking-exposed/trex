@@ -23,7 +23,7 @@ async function statistics(req) {
     // specifiy in config/stats.json
     const expectedFormat = "/api/v2/statistics/:name/:unit/:amount";
 
-    const allowedNames = ['supporters', 'active', 'related', 'processing', 'metadata', 'usage'];
+    const allowedNames = ['supporters', 'active', 'related', 'processing', 'metadata', 'usage', 'searches'];
     const name = req.params.name;
     if(allowedNames.indexOf(name) == -1) {
         debug("Error! this might not appear in visualization: investigate on why an invalid stat-name is called by c3! (%s)", name);
