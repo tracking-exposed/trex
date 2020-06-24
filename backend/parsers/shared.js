@@ -1,7 +1,6 @@
 const _ = require('lodash');
 const debug = require('debug')('parser:shared');
 const debuge = require('debug')('parser:shared:error');
-
 const url = require('url');
 
 /* shared functions used from video and home */

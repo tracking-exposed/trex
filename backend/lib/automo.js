@@ -3,6 +3,15 @@
  * all the functions implemented in routes, libraries, and whatsoever, should be implemented here.
  *
  * The module mongo3.js MUST be used only in special cases where concurrency wants to be controlled
+ * 
+ * This file grows too much and expecially it fail its pourpose. Because if we need to have here an high-level
+ * mongo library, now it is nonsensical so much application logic from routes and API falled here. This might 
+ * demand a rewriting, especially because this library is copied in amazon.tracking.exposed and pornhub.tracking.exposed
+ * and so all the trex derived works beside facebook.tracking.exposed (which as first prototype had a slightly different
+ * approach).
+ * 
+ * In the long term the refactor would lead also to unite the parser in one package and manage domain (.com's) and 
+ * project (config/settings.json) as variables.
  */
 const _ = require('lodash');
 const nconf = require('nconf');
@@ -284,6 +293,33 @@ async function tofu(publicKey, version) {
     return supporter;
 }
 
+async function getLastLabels(filter, skip, amount) {
+
+    const mongoc = await mongo3.clientConnect({concurrency: 1});
+    const defskip = skip ? skip : 0;
+
+    _.set(filter, {selectorName: 'label'});
+
+    const labels = await mongo3.readLimit(mongoc, nconf.get('schema').labels,
+        filter, { savingTime: 1}, amount, defskip);
+
+    await mongoc.close();
+    return {
+        overflow: _.size(labels) == amount,
+        content: labels
+    };
+}
+
+async function upsertSearchResults(listof) {
+    const mongoc = await mongo3.clientConnect({concurrency: 1});
+    for (entry of listof) {
+        a = await mongo3.upsertOne(mongoc, nconf.get('schema').searches, {id: entry.id}, entry);
+        if(!a.result.ok)
+            debug("!OK with searches.id %s: %j", entry.id, a);
+    }
+    await mongoc.close();
+}
+
 async function getLastHTMLs(filter, skip, amount) {
 
     const mongoc = await mongo3.clientConnect({concurrency: 1});
@@ -293,15 +329,7 @@ async function getLastHTMLs(filter, skip, amount) {
         { savingTime: 1}, // never change this!
         amount, defskip);
 
-    /* printable filter because when it is too long .. */
-    const pfilter = _.size(JSON.stringify(filter)) > 200 ? _.keys(filter) : filter;
-    if(_.size(htmls))
-        debug("getLastHTMLs: %j -> %d (overflow %s) skip: %d", pfilter, _.size(htmls),
-            (_.size(htmls) == amount), defskip);
-    else
-        debug("No data! %j amount %d skip %d", pfilter, amount, defskip);
-
-    mongoc.close();
+    await mongoc.close();
     return {
         overflow: _.size(htmls) == amount,
         content: htmls
@@ -452,7 +480,7 @@ async function getMixedDataSince(schema, since, maxAmount) {
         });
     }
 
-    mongoc.close();
+    await mongoc.close();
     return retContent;
 }
 
@@ -483,6 +511,10 @@ module.exports = {
     getLastHTMLs,
     updateMetadata,
     markHTMLsUnprocessable,
+
+    /* used in searches */
+    getLastLabels,
+    upsertSearchResults,
 
     /* used in getMonitor */
     getMixedDataSince,

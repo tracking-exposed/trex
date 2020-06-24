@@ -33,14 +33,36 @@ function sanityCheck(l) {
 }
 
 function NoViewsReplacer(l, sosta) {
-    /* [Write Time at 9 is BACK! by The Goulet Pen Company 9 minutes ago No views,
-        should return 0 views */
+    /* i.e.:| Write Time at 9 is BACK! by The Goulet Pen Company 9 minutes ago No views |
+       should return 0 views */
     const x = [ 'No', 'Nessuna', 'Ingen', 'Keine', 'Nenhuma', 'Aucune' ];
     return _.reduce(x, function(memo, wordThatMeansNothing) {
         let parseable = ` 0 ${sosta}`;
         let r = new RegExp(`\\s${wordThatMeansNothing}\\s${sosta}\\.?$`);
         return _.replace(memo, r, parseable);
     }, l);
+}
+
+function guessLanguageByViews(candidates) {
+    /* 'views', 'vues' or what else? here is guessed a language */
+    const likelyness = _.map(candidates, function(word) {
+        let match = _.find(langopts, { sostantivo: word });
+        return match ? match.locale : null;
+    });
+    const probable = _.map(_.countBy(_.compact(likelyness)), function(amount, locale) {
+        return { amount, locale };
+    });
+    const ordered = _.sortBy(probable, 'amount');
+    const isReliable = ( _.size(candidates) / 10 ) < _.first(ordered).amount;
+    if(!isReliable)
+        debuge("With this list of candidates %j, we pick %j probable match and is less than 10%",
+            _.countBy(candidates), _.first(ordered));
+
+    const foundLocale = _.first(probable).locale;
+    return {
+        separator: _.find(langopts, { locale: foundLocale }).separator,
+        locale: foundLocale
+    };
 }
 
 function parser(l, source, isLive) {
@@ -87,6 +109,7 @@ function parser(l, source, isLive) {
     // parsing do not depends on this 
     // debug(reducedLabel.split(halfsep));
     if(separatorCheck < 2) {
+        debugger;
         debuge("checking '%s' <separator fails as %s>", halfsep, langi.locale);
         throw new Error("Separator Error locale: " + langi.locale);
     }
@@ -333,6 +356,7 @@ function dots(label, sosta, isLive) {
 
 module.exports = {
     parser,
+    guessLanguageByViews,
     relativeConMapping,
     unrecognized: unrecognizedWordList,
 };

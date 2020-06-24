@@ -120,20 +120,21 @@ const relativeOpeningString = [
     'Started',
     'Premiere',
     'Se',           // why chunks and not string match? doh. Se transmitió.
-    'Ha',           // 'Ha empezado a emitir en directo hace 2 horas',
+    'Ha',           // Ha empezado a emitir en directo hace 2 horas
     'Trasmesso',
     'Premiered',
     'Streamed',
     'Comenzó',
-    'Trasmissione', //  Trasmissione in live streaming 7 ore
+    'Trasmissione', // Trasmissione in live streaming 7 ore
     'Streaming',    // Streaming avviato 115 minuti fa
     'Ξεκίνησε',     // Ξεκίνησε ροή πριν από
-    'Stream',       // 'Stream iniciado há ',
+    'Stream',       // Stream iniciado há 
     'Aktiver',      // Aktiver Livestream seit 22 Minuten
     'Diffusion',    // Diffusion lancée il y a 37 minutes
     'Diffusé',      // Diffusé en direct il y a 4 heures
-    'Première',     // Première in corso. Trasmissione iniziata 13 minuti fa,
+    'Première',     // Première in corso. Trasmissione iniziata 13 minuti fa
     'Transmisja',   // Transmisja rozpoczęta 5 godzin temu
+    'Aktiver',      // Aktiver Livestream seit 3 Stunden
 ];
 
 function findRelative(stri, clientTime) {
@@ -166,6 +167,10 @@ const localizedFirstButton = [{
     type: 'video',
     first: 'Search',
     iso2: 'en'
+}, {
+    type: 'video',
+    first: '搜索', // each (changi?) means 'search', they are two
+    iso2: 'zh-CH'
 }, {
     type: 'video',
     first: 'Введите запрос',

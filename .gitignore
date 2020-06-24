@@ -14,9 +14,6 @@ extension/build/*
 extension/dist/*
 extension/node_modules/*
 
-backend/htmls/*
-backend/dist/*
-backend/farfalla/*
 backend/node_modules/*
 
 methodology/snaps/*

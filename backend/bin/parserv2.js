@@ -70,11 +70,6 @@ async function newLoop(htmlFilter) {
     const htmls = await automo.getLastHTMLs(htmlFilter, skipCount, htmlAmount);
     if(!_.size(htmls.content)) {
 
-        if(!_.isNull(filter)) {
-            debug("%d no data with a specified filter: quitting!", nodatacounter);
-            process.exit(1);
-        }
-
         nodatacounter++;
         if( (nodatacounter % 10) == 1) {
             debug("%d no data at the last query: %j %j",
@@ -198,7 +193,7 @@ function processEachHTML(e) {
     return [ envelop.impression, metadata ];
 }
 
-function sleep(ms) {
+async function sleep(ms) {
     return new Promise(resolve => {
         setTimeout(resolve, ms)
     })
@@ -246,7 +241,7 @@ async function wrapperLoop() {
             }
 
             if(stop && stop <= processedCounter) {
-                console.log(processedCounter);
+                console.log("Reached configured limit of ", stop, "( processed:", processedCounter, ")");
                 process.exit(processedCounter);
             }
             await newLoop(htmlFilter);

@@ -6,6 +6,7 @@
       "metadata": "metadata",
       "stats": "trexstats",
       "groups": "groups",
+      "searches": "searches",
       "ytnl": "ytnl"
   },
   "mongoHost": "localhost",
