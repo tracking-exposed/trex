@@ -38,49 +38,35 @@ var returnHTTPError = function(req, res, funcName, where) {
  * I/O with DB, inside this Bluebird */
 function dispatchPromise(name, req, res) {
 
-    var apiV = _.parseInt(_.get(req.params, 'version'));
-
-    /* force version to the only supported version */
-    debug("%s name %s (%s)", moment().format("HH:mm:ss"), name, req.url);
-
-    var func = _.get(APIs.implementations, name, null);
-
+    const func = _.get(APIs.implementations, name, null);
     if(_.isNull(func)) {
-        debug("Invalid function request");
+        debug("Invalid function request %s", name);
         return returnHTTPError(req, res, name, "function not found?");
     }
+    return new Promise.resolve(func(req)).then(function(httpresult) {
 
-    /* in theory here we can keep track of time */
-    return new Promise.resolve(func(req))
-      .then(function(httpresult) {
+        if(_.isObject(httpresult.headers))
+            _.each(httpresult.headers, function(value, key) {
+                res.setHeader(key, value);
+            });
 
-          if(_.isObject(httpresult.headers))
-              _.each(httpresult.headers, function(value, key) {
-                  debug("Setting header %s: %s", key, value);
-                  res.setHeader(key, value);
-              });
-
-          if(httpresult.json) {
-              debug("%s API success, returning JSON (%d bytes)",
-                  name, _.size(JSON.stringify(httpresult.json)) );
-                  
-              res.setHeader('Access-Control-Allow-Origin', '*');
-              res.json(httpresult.json)
-          } else if(httpresult.text) {
-              debug("API %s success, returning text (size %d)",
-                  name, _.size(httpresult.text));
-              res.send(httpresult.text)
-          } else {
-              debug("Undetermined failure in API call, result →  %j", httpresult);
-              return returnHTTPError(req, res, name, "Undetermined failure");
-          }
-          return true;
-      })
-      .catch(function(error) {
-          debug("%s Trigger an Exception %s: %s",
-              req.randomUnicode, name, error);
-          return returnHTTPError(req, res, name, "Exception");
-      });
+        if(httpresult.json) {
+            debug("%s API success, returning JSON (%d bytes)", name, _.size(JSON.stringify(httpresult.json)) );
+            res.setHeader('Access-Control-Allow-Origin', '*');
+            res.json(httpresult.json);
+        } else if(httpresult.text) {
+            debug("API %s success, returning text (size %d)", name, _.size(httpresult.text));
+            res.send(httpresult.text);
+        } else {
+            debug("Undetermined failure in API call, result →  %j", httpresult);
+            return returnHTTPError(req, res, name, "Undetermined failure");
+        }
+        return true;
+    })
+    .catch(function(error) {
+        debug("%s Trigger an Exception %s: %s", req.randomUnicode, name, error);
+        return returnHTTPError(req, res, name, "Exception");
+    });
 };
 
 /* everything begin here, welcome */
@@ -190,6 +176,14 @@ app.post('/api/v2/profile/:publicKey', (req, res) => {
     return dispatchPromise("updateProfile", req, res);
 });
 
+/* to get results of search queries! */
+app.get('/api/v2/searches/:query/:paging?', (req, res) => {
+    return dispatchPromise('getSearches', req, res);
+});
+
+app.get('/api/v2/search/keywords/:paging?', (req, res) => {
+    return dispatchPromise('getSearchKeywords', req, res);
+});
 
 /* security checks = is the password set and is not the default? (more checks might come) */
 security.checkKeyIsSet();

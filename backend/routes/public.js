@@ -1,10 +1,12 @@
 const _ = require('lodash');
 const moment = require('moment');
+const nconf = require('nconf');
 const debug = require('debug')('routes:public');
 const discodebug = require('debug')('DISCONTINUED');
 
 const params = require('../lib/params');
 const automo = require('../lib/automo');
+const dbutils = require('../lib/dbutils');
 const CSV = require('../lib/CSV');
 
 // This variables is used as cap in every readLimit below
@@ -40,9 +42,8 @@ async function getLast(req) {
     const fields = ['watcher', 'title', 'viewInfo', 'savingTime',
                     'videoId', 'authorName', 'authorSource', 'likeInfo',
                     'publicationString', 'relatedN' ];
-
-    const amount = 7;
-    const skip = _.random(10, 30);
+    const amount = 10;
+    const skip = 0;
 
     if(_.isNull(cache.content) || (cache.next && moment().isAfter(cache.next)) ) {
         // if not initialized ^^^^ or if the cache time is expired: do the query
@@ -118,6 +119,35 @@ async function getRelated(req) {
     debug("getRelated: returning %d matches about %s", _.size(evidences), req.params.query);
     return { json: evidences };
 };
+
+async function getSearches(req) {
+    const { amount, skip } = params.optionParsing(req.params.paging, 100);
+    const qs = req.params.query;
+    debug("getSearchs %s query amount %d skip %d", qs, amount, skip);
+    const entries = await dbutils.getLimitedCollection(nconf.get('schema').searches, {}, amount, true);
+    const rv = _.map(entries, function(e) {
+        e.pseudo = e.publicKey.replace(/[0-9a-e]/g, '');
+        return _.omit(e, ['_id', 'publicKey'])
+    });
+    debug("getRelated: returning %d matches about %s", _.size(rv), req.params.query);
+    return { json: rv };
+};
+
+async function getSearchKeywords(req) {
+    const hardcodedAmount = 12;
+    const hardcodedUnit = 'hours';
+    const { amount, skip } = params.optionParsing(req.params.paging, 100);
+    const entries = await dbutils.getLimitedDistinct(nconf.get('schema').searches, 'searchTerms', amount, {
+        "savingTime": { "$gt": new Date(moment().subtract(hardcodedAmount, hardcodedUnit).toISOString())}
+    })
+    debug("getSearchKeywords with paging amount %d (skip %d IGNORED) returns %s with hardcoded-recent-filter %j",
+        amount, skip, _.size(entries), { hardcodedAmount, hardcodedUnit });
+    return { json: {
+        "keywords": entries,
+        hardcodedAmount,
+        hardcodedUnit
+    }};
+}
 
 async function getVideoCSV(req) {
     // /api/v1/videoCSV/:query/:amount
@@ -266,8 +296,10 @@ module.exports = {
     getRelated,
     getVideoCSV,
     getByAuthor,
+    getSearches,
+    getSearchKeywords,
 
     /* this special handler is used for all the API who aren't supported anymore.
-     * It might be elsewhere, not in routes/public.js, but ... */
+     * It might be elsewhere, not just in routes/public.js, but ... */
     discontinued,
 };
