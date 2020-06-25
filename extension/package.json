@@ -15,7 +15,7 @@
     "build": "rm -rf ./build && mkdir build && cross-env webpack && cp -r src/popup/* manifest.json icons/* ./build/",
     "start": "npm run build:watch:files",
     "build:watch": "rimraf ./build && mkdir build && cp -r manifest.json icons/* src/popup/* ./build/ && cross-env webpack -w",
-    "build:dist": "./pack-extension.sh || true",
+    "build:dist": "sh pack-extension.sh",
     "clean": "rm -rf ./build ./dist",
     "test": "mocha --compilers js:babel-register --reporter spec",
     "test:watch": "mocha -w --compilers js:babel-register --reporter spec"
