@@ -126,7 +126,7 @@ async function getSearches(req) {
     debug("getSearchs %s query amount %d skip %d", qs, amount, skip);
     const entries = await dbutils.getLimitedCollection(nconf.get('schema').searches, {}, amount, true);
     const rv = _.map(entries, function(e) {
-        e.pseudo = e.publicKey.replace(/[0-9a-e]/g, '');
+        e.pseudo = e.publicKey.replace(/[0-9a-n]/g, '');
         return _.omit(e, ['_id', 'publicKey'])
     });
     debug("getRelated: returning %d matches about %s", _.size(rv), req.params.query);
@@ -134,8 +134,8 @@ async function getSearches(req) {
 };
 
 async function getSearchKeywords(req) {
-    const hardcodedAmount = 12;
-    const hardcodedUnit = 'hours';
+    const hardcodedAmount = 2;
+    const hardcodedUnit = 'days';
     const { amount, skip } = params.optionParsing(req.params.paging, 100);
     const entries = await dbutils.getLimitedDistinct(nconf.get('schema').searches, 'searchTerms', amount, {
         "savingTime": { "$gt": new Date(moment().subtract(hardcodedAmount, hardcodedUnit).toISOString())}
