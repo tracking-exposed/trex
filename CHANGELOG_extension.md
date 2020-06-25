@@ -1,6 +1,10 @@
 The format is based on [Keep a Changelog](http://keepachangelog.com/) and this
 project adheres to [Semantic Versioning](http://semver.org/).
 
+## [1.4.3] - 2020-06-25
+### Fixed
+- Building scripts
+
 ## [1.4.2] - 2020-06-20
 ### Fixed
 - Links in infoBox.js weren't correct

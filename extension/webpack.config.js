@@ -28,7 +28,7 @@ const PATHS = {
         app: path.resolve(__dirname, 'src/app.js'),
         popup: path.resolve(__dirname, 'src/chrome/popup/index.js'),
         background: path.resolve(__dirname, 'src/chrome/background/index.js'),
-	tooltip: path.resolve(__dirname, 'src/chrome/tooltip/index.js'),
+	// tooltip: path.resolve(__dirname, 'src/chrome/tooltip/index.js'),
     },
     BUILD: path.resolve(__dirname, 'build'),
     DIST: path.resolve(__dirname, 'dist'),
