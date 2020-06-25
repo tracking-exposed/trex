@@ -3,7 +3,9 @@ project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [1.4.3] - 2020-06-25
 ### Fixed
-- Building scripts
+- Building scripts, got inputs from extension reviewers. 
+### Bug
+- manifest.json and package.json still will report 1.4.2
 
 ## [1.4.2] - 2020-06-20
 ### Fixed
