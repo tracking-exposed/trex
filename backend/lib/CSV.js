@@ -88,6 +88,8 @@ function unrollRecommended(memo, evidence) { // metadata.type = video with 'rela
             watchedLike: numerizedLikes.watchedLikes,
             watchedDislike: numerizedLikes.watchedDislikes,
         };
+        if(evidence.sessionId)
+            entry.sessionId = evidence.sessionId;
         memo.push(entry);
     })
     return memo;
