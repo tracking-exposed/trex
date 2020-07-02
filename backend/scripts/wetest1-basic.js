@@ -8,6 +8,7 @@ const path = require('path');
 const csv = require('../lib/CSV');
 const utils = require('../lib/utils');
 const mongo3 = require('../lib/mongo3');
+const moment = require('moment');
 
 const VERSION = 7; // every time a bug is fixed or a new feature get add, this increment for internal tracking 
 
@@ -43,6 +44,7 @@ const testVideos = [{
     "href": "https://www.youtube.com/",
   },
 ];
+const START_TIME = '2020-03-25 00:00:00';
 const timefilter = {
     'savingTime': {
         "$gte": new Date('2020-03-25 00:00:00'),
@@ -140,6 +142,9 @@ function accuracyDump(fullamount) {
 /* ------------- END of accuracy debug section ------------------ */
 
 function applyWetest1(e) {
+    /* this is apply to video and homepage */
+    let hoursOffset = moment.duration( moment(e.savingTime) - moment(START_TIME) ).asHours();
+    _.set(e, 'hoursOffset', _.round(hoursOffset));
     _.set(e, 'experiment', 'wetest1');
     _.set(e, 'pseudonym', utils.string2Food(e.publicKey + "weTest#1") );
     _.unset(e, 'publicKey');
@@ -174,7 +179,7 @@ async function produceVideosCSV(tf) {
     debug("In total we've %d videos 'related' from API", _.size(apivideos) );
     const ready = _.map(_.map(unroll, applyWetest1), function(e) {
         let isAPItoo = apivideos.indexOf(e.recommendedVideoId) !== -1;
-        _.unset(e, 'recommendedId');
+        _.set(e, 'top20', (e.recommendationOrder <= 20) );
         _.set(e, 'isAPItoo', isAPItoo);
         _.set(e, 'step', _.find(testVideos, { videoId: e.watchedVideoId }).language );
         _.set(e, 'thumbnail', "https://i.ytimg.com/vi/" + e.recommendedVideoId + "/mqdefault.jpg");
@@ -240,6 +245,7 @@ async function produceSessionData(tf) {
     debug("In total we've %d videos 'related' from API", _.size(apivideos) );
     const ready = _.map(_.map(unroll, applyWetest1), function(e) {
         let isAPItoo = (apivideos.indexOf(e.recommendedVideoId) !== -1);
+        _.set(e, 'top20', (e.recommendationOrder <= 20) );
         _.set(e, 'isAPItoo', isAPItoo);
         _.set(e, 'step', _.find(testVideos, { videoId: e.watchedVideoId }).language );
         _.set(e, 'thumbnail', "https://i.ytimg.com/vi/" + e.recommendedVideoId + "/mqdefault.jpg");
