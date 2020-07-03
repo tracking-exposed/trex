@@ -117,6 +117,11 @@ app.get('/api/v1/personal/:publicKey/related/:paging?', function(req, res) {
     return dispatchPromise('getPersonalRelated', req, res);
 });
 
+/* researcher */
+app.get('/api/v1/wetest/:key/:filter', function(req, res) {
+    return dispatchPromise('researcher', req, res);
+});
+
 /* this return a summary (profile, total amount of videos, last videos */
 app.get('/api/v1/personal/:publicKey/:paging?', function(req, res) {
     return dispatchPromise('getPersonal', req, res);
