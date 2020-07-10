@@ -64,7 +64,7 @@ function unrollRecommended(memo, evidence) { // metadata.type = video with 'rela
 
             parameter: related.parameter,
             recommendedId: utils.hash({ motherId: evidence.id, p: evidence.publicKey, evidenceCounter}),
-            recommendedVideoId: related.videoId,
+            recommendedVideoId: related.videoId.replace(/\&.*/, ''),
             recommendedAuthor: related.recommendedSource,
             recommendedTitle: related.recommendedTitle, 
             recommendedLength: related.recommendedLength,
@@ -88,6 +88,13 @@ function unrollRecommended(memo, evidence) { // metadata.type = video with 'rela
             watchedLike: numerizedLikes.watchedLikes,
             watchedDislike: numerizedLikes.watchedDislikes,
         };
+        /* optional fields -- todo manage these as a list */
+        if(evidence.sessionId)
+            entry.sessionId = evidence.sessionId;
+        if(_.isInteger(evidence.hoursOffset))
+            entry.hoursOffset = evidence.hoursOffset;
+        if(!_.isUndefined(evidence.top20))
+            entry.top20 = evidence.top20;
         memo.push(entry);
     })
     return memo;
@@ -111,7 +118,7 @@ function unwindSections(memo, evidence) { // metadata.type = 'home' with 'select
             parameter: selected.parameter,
             sectionName: selected.sectionName,
             selectedId: utils.hash({ motherId: evidence.id, p: evidence.publicKey, evidenceCounter}),
-            selectedVideoId: selected.videoId,
+            selectedVideoId: selected.videoId.replace(/\&.*/, ''),
             selectedAuthor: selected.recommendedSource,
             selectedChannel: selected.recommendedHref,
             selectedTitle: selected.recommendedTitle,
@@ -124,6 +131,9 @@ function unwindSections(memo, evidence) { // metadata.type = 'home' with 'select
             selectedViews: selected.recommendedViews,
             selectedKind: selected.isLive ? "live": "video", // this should support also 'playlist' 
         };
+        /* optional fields */
+        if(_.isInteger(evidence.hoursOffset))
+            entry.hoursOffset = evidence.hoursOffset;
         memo.push(entry);
     });
     return memo;
