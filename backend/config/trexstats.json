@@ -152,6 +152,14 @@
                 "selector": {}
             }
         ]
+    }, {
+        "name": "labels",
+        "column": "labels",
+        "timevar": "savingTime",
+        "variables": [
+            {   "name": "total",   "selector": { }                                   },
+            {   "name": "labels",  "selector": { "selectorName":"label"}             }
+        ]
     }
     ]
 }
