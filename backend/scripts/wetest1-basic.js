@@ -1,15 +1,17 @@
 #!/usr/bin/env node
 const _ = require('lodash');
-const moment = require('moment');
 const debug = require('debug')('wetest-1-basic —');
 const nconf = require('nconf');
 const fs = require('fs');
+const path = require('path');
 
 const csv = require('../lib/CSV');
 const utils = require('../lib/utils');
+const wetest = require('../lib/wetest');
 const mongo3 = require('../lib/mongo3');
+const moment = require('moment');
 
-const VERSION = 6; // every time a bug is fixed or a new feature get add, this increment for internal tracking 
+const VERSION = 7; // every time a bug is fixed or a new feature get add, this increment for internal tracking 
 
 nconf.argv().env().file({ file: 'config/settings.json' });
 
@@ -17,23 +19,28 @@ nconf.argv().env().file({ file: 'config/settings.json' });
 const testVideos = [{
     "href": "https://www.youtube.com/watch?v=Lo_m_rKReyg",
     "videoId": "Lo_m_rKReyg",
-    "language": "Chinese"
+    "language": "Chinese",
+    "apifile": "video1.json"
   }, {
     "href": "https://www.youtube.com/watch?v=Zh_SVHJGVHw",
     "videoId": "Zh_SVHJGVHw",
-    "language": "Spanish"
+    "language": "Spanish",
+    "apifile": "video2.json"
   }, {
     "href": "https://www.youtube.com/watch?v=A2kiXc5XEdU",
     "videoId": "A2kiXc5XEdU",
-    "language": "English"
+    "language": "English",
+    "apifile": "video3.json"
   }, {
     "href": "https://www.youtube.com/watch?v=WEMpIQ30srI",
     "videoId": "WEMpIQ30srI",
-    "language": "Porutuguese"
+    "language": "Porutuguese",
+    "apifile": "video4.json"
   }, {
     "href": "https://www.youtube.com/watch?v=BNdW_6TgxH0",
     "videoId": "BNdW_6TgxH0",
-    "language": "Arabic"
+    "language": "Arabic",
+    "apifile": "video5.json"
   }, {
     "href": "https://www.youtube.com/",
   },
@@ -53,89 +60,28 @@ const allowed = {
     'video': produceVideosCSV,
     'internal': produceInternalData,
     'checkup': produceInternalCheckup,
+    'session': produceSessionData,
 };
-
-/* --- utilities --- */
-async function pickFromDB(filter, sorting, special) {
-    try {
-        const mongoc = await mongo3.clientConnect({concurrency: 1});
-        let rv = [];
-
-        if(special) {
-            rv = await mongo3.aggregate(mongoc, nconf.get('schema').htmls, [{ 
-                "$match": filter
-            },
-            { "$project": { "id": 1, "metadataId": 1, "size": 1, 'href': 1, 'savingTime': 1 }}]);
-        } else {
-            rv = await mongo3.read(mongoc, nconf.get('schema').metadata, filter, sorting);
-        }
-        debug("Completed DB access to fetch: %j: %d objects retrived", filter, _.size(rv));
-        await mongoc.close();
-        return rv;
-    } catch(e) {
-        debug("Error in pickFromDB: %s", e.message);
-        return null;
-    }
-}
 
 function fileName(prefix, suffix) {
     return `${prefix}-ωτ1-v${VERSION}.${suffix}`;
 }
 
-/* ------------- START of accuracy debug section ------------------ */
-const accuracyCounters = {};
-function upsert(key, subkey, update) {
-    let value = _.get(accuracyCounters, key + '.' + subkey, 0);
-    _.set(accuracyCounters, key + '.' + subkey, value + update);
-}
-function updateStats(entry) {
-    /* THIS function is call when the raw data is cleaned/updated for release */
-    _.each(entry, function(value, key) {
-        if(typeof value == typeof undefined)
-            upsert(key, 'undefined', 1);
-        else if(_.isNull(value))
-            upsert(key, 'null', 1);
-        else if(typeof value == typeof 1)
-            upsert(key, 'int', 1);
-        else if(typeof value == typeof "")
-            upsert(key, 'string', 1);
-        else if(_.isInteger(value.length))
-            upsert(key, 'list', 1);
-        else if(typeof value == typeof {})
-            upsert(key, 'object', 1);
-        else if(typeof value == typeof true && value)
-            upsert(key, 'true', 1);
-        else if(typeof value == typeof true && !value)
-            upsert(key, 'false', 1);
-        else
-            debug("unknonw value type %s", typeof value);
+function loadYTAPI(fname) {
+    const fullpath = path.join(__dirname, '..', '..', '..', 'experiments-data', 'wetest1', 'ytAPI', fname);
+    const jstr = fs.readFileSync(fullpath, {encoding:'utf-8'} );
+    const data = JSON.parse(jstr);
+    return _.map(data.items, function(e) {
+        return e.id ? e.id.videoId : null;
     });
 }
-function accuracyDump(fullamount) {
-    /* this dump the stats collected by accuracyCounter */
-    _.each(accuracyCounters, function(value, entryName) {
-        debug("%s%s%s", entryName, _.times(30 - _.size(entryName), " ").join(), _.map(value, function(amount, variableType) {
-            let p = (amount / fullamount) * 100;
-            return variableType + ": " + _.round(p, 1) + '%' ;
-        }).join(" | "));
-    });
-}
-/* ------------- END of accuracy debug section ------------------ */
 
-function applyWetest1(e) {
-    _.set(e, 'experiment', 'wetest1');
-    _.set(e, 'pseudonyn', utils.string2Food(e.publicKey + "weTest#1") );
-    _.unset(e, 'publicKey');
-    updateStats(e);
-    return e;
-}
-/* --- end of utilities --- */
 
 /* -------------------------------------- the five functions --------------------------------------- */
 async function produceHomeCSV(tf) {
-    const home = await pickFromDB(_.extend(tf, {type: 'home'}), { clientTime: -1 });
+    const home = await wetest.pickFromDB(_.extend(tf, {type: 'home'}), { clientTime: -1 });
     const unwind = _.reduce(home, csv.unwindSections, []);
-    const ready = _.map(_.map(unwind, applyWetest1), function(e) {
+    const ready = _.map(_.map(unwind, wetest.applyWetest1), function(e) {
         _.set(e, 'step', 'homepage');
         return e;
     });
@@ -144,17 +90,23 @@ async function produceHomeCSV(tf) {
     const csvtext = csv.produceCSVv1(ready);
     debug("Produced %d bytes for text/csv, saving file", _.size(csvtext));
     fs.writeFileSync(fileName('home', 'csv'), csvtext);
-    accuracyDump(_.size(ready));
+    wetest.accuracyDump(_.size(ready));
 }
 
 async function produceVideosCSV(tf) {
-    const watches = await pickFromDB(_.extend(tf, {
+    const watches = await wetest.pickFromDB(_.extend(tf, {
         type: 'video',
-        videoId: { "$in": _.map(testVideos, 'videoId')}
+        videoId: { "$in": _.compact(_.map(testVideos, 'videoId')) }
     }), { clientTime: -1 });
     const unroll = _.reduce(watches, csv.unrollRecommended, []);
-    const ready = _.map(_.map(unroll, applyWetest1), function(e) {
+    const apivideos = _.uniq(_.flatten(_.map(_.compact(_.map(testVideos, 'apifile')), loadYTAPI)));
+    debug("In total we've %d videos 'related' from API", _.size(apivideos) );
+    const ready = _.map(_.map(unroll, wetest.applyWetest1), function(e) {
+        let isAPItoo = apivideos.indexOf(e.recommendedVideoId) !== -1;
+        _.set(e, 'top20', (e.recommendationOrder <= 20) );
+        _.set(e, 'isAPItoo', isAPItoo);
         _.set(e, 'step', _.find(testVideos, { videoId: e.watchedVideoId }).language );
+        _.set(e, 'thumbnail', "https://i.ytimg.com/vi/" + e.recommendedVideoId + "/mqdefault.jpg");
         return e;
     });
     debug("Unrolled the 'recommencted sections' return %d evidences. Saving JSON file", _.size(ready));
@@ -162,7 +114,8 @@ async function produceVideosCSV(tf) {
     const csvtext = csv.produceCSVv1(ready);
     debug("Produced %d bytes for text/csv, saving file", _.size(csvtext));
     fs.writeFileSync(fileName('videos', 'csv'), csvtext);
-    accuracyDump(_.size(ready));
+    wetest.accuracyDump(_.size(ready));
+}
     /*
     // this product to feed tests:longlabel --- this should become the sixth function
     const xxx = _.uniq(_.flatten(_.map(watches, function(e) {
@@ -175,11 +128,64 @@ async function produceVideosCSV(tf) {
     // const fina = _.times(50, function(t) { return _.sample(xxx); });
     fs.writeFileSync(fileName('special', 'jxxx'), "module.exports = " + JSON.stringify(xxx, undefined, 2), 'utf-8');
     */
+
+async function produceSessionData(tf) {
+    const watches = await wetest.pickFromDB(_.extend(tf, {
+        type: 'video',
+        videoId: { "$in": _.compact(_.map(testVideos, 'videoId')) }
+    }), { clientTime: -1 });
+
+    const persons = _.uniq(_.map(watches, 'publicKey'));
+    debug("%d evidences; found %d ppl", _.size(watches), _.size(persons));
+
+    const sessionFiltered = _.map(persons, function(p) {
+        const videobel = _.reverse(_.filter(watches, {publicKey: p}));
+
+        const ordered = videobel;
+        if(_.size(videobel) < 5) {
+            debug("Ignoring contribution of %s, because only %d videos avail", p, _.size(ordered));
+            return null;
+        }
+        let retval = [];
+        let sessionId = utils.hash({sessionOf: p});
+        _.each(ordered, function(v) {
+            let position = _.size(retval);
+            if(testVideos[position].videoId === v.params.v) {
+                _.set(v, 'sessionId', sessionId);
+                retval.push(v);
+            }
+        })
+        if(_.size(retval) === 5)
+            return retval;
+        debug("Killing contribution of %s, seen sequence of %d on available %d entries", p, _.size(retval), _.size(ordered) )
+        return null;
+    });
+
+    debug("keeping only sessions, compact x = %d", _.size(_.compact(sessionFiltered)));
+    const sessionOnly = _.flatten(_.compact(sessionFiltered));
+
+    const unroll = _.reduce(sessionOnly, csv.unrollRecommended, []);
+    const apivideos = _.uniq(_.flatten(_.map(_.compact(_.map(testVideos, 'apifile')), loadYTAPI)));
+    debug("In total we've %d videos 'related' from API", _.size(apivideos) );
+    const ready = _.map(_.map(unroll, wetest.applyWetest1), function(e) {
+        let isAPItoo = (apivideos.indexOf(e.recommendedVideoId) !== -1);
+        _.set(e, 'top20', (e.recommendationOrder <= 20) );
+        _.set(e, 'isAPItoo', isAPItoo);
+        _.set(e, 'step', _.find(testVideos, { videoId: e.watchedVideoId }).language );
+        _.set(e, 'thumbnail', "https://i.ytimg.com/vi/" + e.recommendedVideoId + "/mqdefault.jpg");
+        return e;
+    });
+    debug("Unrolled the 'recommencted sections' of complete session only. return %d evidences.", _.size(ready));
+    fs.writeFileSync(fileName('sessions', 'json'), JSON.stringify(ready, undefined, 2));
+    const csvtext = csv.produceCSVv1(ready);
+    debug("Produced %d bytes for text/csv, saving file", _.size(csvtext));
+    fs.writeFileSync(fileName('sessions', 'csv'), csvtext);
+    accuracyDump(_.size(ready));
 }
 
 async function produceInternalData(tf) {
-    const watches = await pickFromDB(_.extend(tf, {
-        href: { "$in": _.map(testVideos, 'href')}
+    const watches = await wetest.pickFromDB(_.extend(tf, {
+        href: { "$in": _.compact(_.map(testVideos, 'href')) }
     }), null, nconf.get('schema').htmls);
     debug("Considering %d htmls to pick unique metadataId(s)", _.size(watches));
     const evidences = _.groupBy(watches, 'metadataId');
@@ -251,10 +257,9 @@ try {
         console.log(`This script need --type ${_.keys(allowed).join('|')} and produces wetest1-related JSON/CSVs`);
         process.exit(1);
     }
-
+    wetest.startTime('2020-03-25 00:00:00');
     debug("[%s] is the target: starting wetest basic extractor…", what);
     allowed[what](timefilter);
-
 } catch(e) {
     console.log("Error in the main function!", e.message);
 }
