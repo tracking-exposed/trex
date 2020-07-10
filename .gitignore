@@ -12,11 +12,12 @@
 
 extension/build/*
 extension/dist/*
-extension/node_modules/*
-
-backend/node_modules/*
 
 methodology/snaps/*
 methodology/geckodriver.log
 methodology/config/*
 methodology/profiles/*
+
+extension/node_modules/*
+backend/node_modules/*
+react-pieces/node_modules/*

@@ -1,36 +1,39 @@
 The format is based on [Keep a Changelog](http://keepachangelog.com/) and this
 project adheres to [Semantic Versioning](http://semver.org/).
 
-## [1.4.2] - 2020-06-20
+## [1.7.1] - 2020-06-26
 ### Fixed
-- home parsing has language and thumbnail detection
-- completed version 7 of wetest1
+- backend and extension versions differ and this is OK to reflect code updates
+- trimming defaults, fixing fresh searches-related APIs
 
-## [1.4.1] - 2020-06-17
+## [1.7.0] - 2020-06-17
 ### Added
 - in metadata DB, numeric likes and thumbnails.
+- home parsing has language and thumbnail detection
+- completed version 7 of wetest1 dataset
+- aria-label parsing is used to mine searches
+- stats for label and searches
 ### Fixed
 - produced version 6 of wetest1 dataset extractor
 
-## [1.4.0] - 2020-05-08
+## [1.6.0] - 2020-05-08
 ### Added
 - Improved longlabel parsing
 - Extended events api to get labels in real-time
-
 ## Removed
 - Dead code and mongo2
 
-## [1.3.0] - 2020-03-01
+## [1.5.0] - 2020-03-01
 ### Added
 - Home parsing and extraction
 - Wetest#1 general testing
 - Parsing of localized datetime 
 
-## [1.2.1] - 2019-10-20
+## [1.4.0] - 2019-10-20
 ### Added
 - Events version 2, using await/async and moving saving to html
 
-## [1.2] - 2019-10-08
+## [1.3.0] - 2019-10-08
 ### Added
 - Released new personal page
 - Released first result in page /results
@@ -38,24 +41,24 @@ project adheres to [Semantic Versioning](http://semver.org/).
 ### Fixed
 - Removed any comparison-related code (sequences etc)
 
-## [1.1.5] - 2018-11-07
+## [1.2.1] - 2018-11-07
 ### Fixed
 - Text
 - Bug when reporting about a live video
 
-## [1.1.0] - 2018-10-23
+## [1.2.0] - 2018-10-23
 ### Added
 - Implemented divergency, results and personal APIs
 - Updated DB format with `commitments` and `sequences`
 - Implemented tool to link videos to the same testId
 
-## [1.0.2] - 2018-09-18
+## [1.1.1] - 2018-09-18
 ### Fixed
 - Made a barely useful personal page
 - Stabilized parser
 - Changed API to access with publicKey
 
-## [1.0.1] - 2018-09-15
+## [1.1.0] - 2018-09-15
 ### Added
 - Skeleton of personal page
 ### Fixed

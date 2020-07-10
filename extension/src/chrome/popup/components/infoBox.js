@@ -30,7 +30,7 @@ const InfoBox = createReactClass({
                 <Button size="small" color="secondary" href={about} target="_blank">
                   Project
                 </Button>
-                <Button size="small" color="primary" href={privacy} targer="_blank">
+                <Button size="small" color="primary" href={privacy} target="_blank">
                   Privacy 
                 </Button>
                 <Button size="small" color="secondary" href="https://tracking.exposed/manifesto" target="_blank">
