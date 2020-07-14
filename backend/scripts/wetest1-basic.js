@@ -61,6 +61,7 @@ const allowed = {
     'internal': produceInternalData,
     'checkup': produceInternalCheckup,
     'session': produceSessionData,
+    'factcheck': produceFactCheckCSV,
 };
 
 function fileName(prefix, suffix) {
@@ -116,6 +117,42 @@ async function produceVideosCSV(tf) {
     fs.writeFileSync(fileName('videos', 'csv'), csvtext);
     wetest.accuracyDump(_.size(ready));
 }
+
+
+async function produceFactCheckCSV(tf) {
+    debug("Experimental fact check production would generated five CSV");
+
+    const watches = await wetest.pickFromDB(_.extend(tf, {
+        type: 'video',
+        videoId: { "$in": _.compact(_.map(testVideos, 'videoId')) }
+    }), { clientTime: -1 });
+    const unroll = _.reduce(watches, csv.unrollRecommended, []);
+    const apivideos = _.uniq(_.flatten(_.map(_.compact(_.map(testVideos, 'apifile')), loadYTAPI)));
+    debug("In total we've %d videos 'related' from API", _.size(apivideos) );
+    const minimized = _.map(_.map(unroll, wetest.applyWetest1), function(e) {
+        let isAPItoo = apivideos.indexOf(e.recommendedVideoId) !== -1;
+        _.set(e, 'top20', (e.recommendationOrder <= 20) );
+        _.set(e, 'isAPItoo', isAPItoo);
+        _.set(e, 'step', _.find(testVideos, { videoId: e.watchedVideoId }).language );
+        _.set(e, 'thumbnail', "https://i.ytimg.com/vi/" + e.recommendedVideoId + "/mqdefault.jpg");
+        _.set(e, 'recommendedVideoURL', "https://youtube.com/watch?v=" + e.recommendedVideoId);
+        return _.pick(e, ['recommendedVideoURL', 'top20', 'recommendedAuthor', 'recommendedTitle', 'thumbnail', 'step']);
+    });
+
+    _.each(_.compact(_.map(testVideos, 'language')), function(step) {
+        const bystep = _.filter(minimized, { step } );
+        const grouped = _.groupBy(bystep, 'recommendedVideoURL');
+        const finalized = _.map(grouped, function(listof, URL) {
+            const retval = _.first(listof);
+            retval.amount = _.size(listof);
+            return retval;
+        })
+        const csvtext = csv.produceCSVv1(finalized);
+        debug("Produced %d bytes for text/csv, saving file", _.size(csvtext));
+        fs.writeFileSync(fileName('factcheck-' + step, 'csv'), csvtext);
+    })
+}
+
     /*
     // this product to feed tests:longlabel --- this should become the sixth function
     const xxx = _.uniq(_.flatten(_.map(watches, function(e) {
