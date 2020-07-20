@@ -95,6 +95,8 @@ function unrollRecommended(memo, evidence) { // metadata.type = video with 'rela
             entry.hoursOffset = evidence.hoursOffset;
         if(!_.isUndefined(evidence.top20))
             entry.top20 = evidence.top20;
+        if(evidence.qualitative)
+            entry.qualitative = evidence.qualitative;
         memo.push(entry);
     })
     return memo;

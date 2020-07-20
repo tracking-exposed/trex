@@ -62,6 +62,7 @@ const allowed = {
     'checkup': produceInternalCheckup,
     'session': produceSessionData,
     'factcheck': produceFactCheckCSV,
+    'qualitative': produceQualitative,
 };
 
 function fileName(prefix, suffix) {
@@ -118,10 +119,60 @@ async function produceVideosCSV(tf) {
     wetest.accuracyDump(_.size(ready));
 }
 
+async function produceQualitative(tf) {
+    const HFname = 'Imported-Evaluated-Quality.csv'
+    debug("Produce Qualitative Experiment with hardcoded filename %s", HFname);
+    const acquired = fs.readFileSync(HFname, 'utf-8');
+    /* what's going to happen here is unstable, still it is a successful experiment :shrug_emoji: */
+    const lines = _.tail(acquired.split('\n'));
+    /* _.tail strange thing about cutting only the first line */
+    const qualitative = _.map(lines, function(line, ln) {
+        let videoId = line.split(',')[0].substr(28);
+        let attribution = null;
+        debugger;
+        if( _.endsWith(line.trim(), ',,,x') )
+            attribution = 'off-topic';
+        else if ( _.endsWith(line.trim(), ',,x,') )
+            attribution = 'linked';
+        else if ( _.endsWith(line.trim(), ',x,,') )
+            attribution = 'relevant';
+        else
+            debug("Missing in line %d %s", ln, line.trim());
+        return {
+            videoId,
+            attribution
+        }
+    });
+    const watches = await wetest.pickFromDB(_.extend(tf, {
+        type: 'video',
+        videoId: { "$in": _.compact(_.map(testVideos, 'videoId')) }
+    }), { clientTime: -1 });
+    const unroll = _.reduce(watches, csv.unrollRecommended, []);
+    const apivideos = _.uniq(_.flatten(_.map(_.compact(_.map(testVideos, 'apifile')), loadYTAPI)));
+    debug("In total we've %d videos 'related' from API", _.size(apivideos) );
+    const ready = _.compact(_.map(_.map(unroll, wetest.applyWetest1), function(e) {
+        const stepName = _.find(testVideos, { videoId: e.watchedVideoId }).language;
+        if(stepName !== 'English')
+            return null;
+        _.set(e, 'step', 'English');
+        let isAPItoo = apivideos.indexOf(e.recommendedVideoId) !== -1;
+        _.set(e, 'top20', (e.recommendationOrder <= 20) );
+        _.set(e, 'isAPItoo', isAPItoo);
+        _.set(e, 'thumbnail', "https://i.ytimg.com/vi/" + e.recommendedVideoId + "/mqdefault.jpg");
+        let judgment = _.find( qualitative, { videoId: e.recommendedVideoId });
+        _.set(e, 'qualitative', judgment.attribution);
+        return e;
+    }));
+    debug("Filtered only English step and added qualitative imported values: return %d evidences. Saving JSON file", _.size(ready));
+    fs.writeFileSync(fileName('qualitative', 'json'), JSON.stringify(ready, undefined, 2));
+    const csvtext = csv.produceCSVv1(ready);
+    debug("Produced %d bytes for text/csv, saving file", _.size(csvtext));
+    fs.writeFileSync(fileName('qualitative', 'csv'), csvtext);
+    wetest.accuracyDump(_.size(ready));
+}
 
 async function produceFactCheckCSV(tf) {
     debug("Experimental fact check production would generated five CSV");
-
     const watches = await wetest.pickFromDB(_.extend(tf, {
         type: 'video',
         videoId: { "$in": _.compact(_.map(testVideos, 'videoId')) }
