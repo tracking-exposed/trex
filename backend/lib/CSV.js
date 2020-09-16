@@ -49,12 +49,12 @@ function produceCSVv1(entries) {
 function unrollRecommended(memo, evidence) { // metadata.type = video with 'related' 
     const numerizedLikes = utils.parseLikes(evidence.likeInfo); // converts '1233 me gusta'
     // TODO ^^^^^^^^^^^^^^ should be removed in the future because it will be part of 'evidence.related' 
+    let recommendedCounterCheck = _.size(evidence.related);
     _.each(evidence.related, function(related, evidenceCounter) {
         let entry = {
             /* this is removed or anonymized by the called */
             publicKey: evidence.publicKey,
 
-            evidence: evidenceCounter,
             login: evidence.login,
             id: evidence.id.replace(/[0-7]/g, ''),
             savingTime: evidence.savingTime,
@@ -68,7 +68,7 @@ function unrollRecommended(memo, evidence) { // metadata.type = video with 'rela
             recommendedAuthor: related.recommendedSource,
             recommendedTitle: related.recommendedTitle, 
             recommendedLength: related.recommendedLength,
-            recommendedDisplayL: related.recommendedDisplayL,
+            // recommendedDisplayL: related.recommendedDisplayL,
             recommendedLengthText: related.recommendedLengthText,
             recommendedPubTime: related.publicationTime,
             // ptPrecision: related.timePrecision, // doens't really matter ATM
@@ -88,7 +88,7 @@ function unrollRecommended(memo, evidence) { // metadata.type = video with 'rela
             watchedLike: numerizedLikes.watchedLikes,
             watchedDislike: numerizedLikes.watchedDislikes,
         };
-        /* optional fields -- todo manage these as a list */
+        /* optional fields, only existing in wetest1 -- todo manage these as a list */
         if(evidence.sessionId)
             entry.sessionId = evidence.sessionId;
         if(_.isInteger(evidence.hoursOffset))
@@ -98,17 +98,20 @@ function unrollRecommended(memo, evidence) { // metadata.type = video with 'rela
         if(evidence.qualitative)
             entry.qualitative = evidence.qualitative;
         memo.push(entry);
-    })
+    });
+    if(recommendedCounterCheck && (recommendedCounterCheck != _.last(memo).recommendationOrder))
+        debug("Missing element? %d != %d evidence.id %s",
+            _.last(memo).recommendationOrder, recommendedCounterCheck, evidence.id);
     return memo;
 }
 
 function unwindSections(memo, evidence) { // metadata.type = 'home' with 'selected'
+    let selectionCounterCheck = _.size(evidence.related);
     _.each(evidence.selected, function(selected, evidenceCounter) {
         let entry = {
             /* this is removed or anonymized by the called */
             publicKey: evidence.publicKey,
 
-            evidence: evidenceCounter,
             login: evidence.login,
             id: evidence.id.replace(/[0-7]/g, ''),
             savingTime: evidence.savingTime,
@@ -125,7 +128,7 @@ function unwindSections(memo, evidence) { // metadata.type = 'home' with 'select
             selectedChannel: selected.recommendedHref,
             selectedTitle: selected.recommendedTitle,
             selectedLength: selected.recommendedLength,
-            selectedDisplayL: selected.selectedDisplayL,
+            // selectedDisplayL: selected.selectedDisplayL,
             selectedLengthText: selected.recommendedLengthText,
             selectedPubTime: selected.publicationTime,
             // ptPrecision: selected.timePrecision, doesn't really matter ATM because they are all 'estimated'
@@ -138,6 +141,9 @@ function unwindSections(memo, evidence) { // metadata.type = 'home' with 'select
             entry.hoursOffset = evidence.hoursOffset;
         memo.push(entry);
     });
+    if(selectionCounterCheck && (selectionCounterCheck != _.last(memo).order))
+        debug("Missing element? %d != %d evidence.id %s",
+            _.last(memo).order, selectionCounterCheck, evidence.id);
     return memo;
 };
 

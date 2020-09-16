@@ -2,15 +2,15 @@
 const _ = require('lodash');
 const debug = require('debug')('lib:wetest');
 const nconf = require('nconf');
-const fs = require('fs');
-const path = require('path');
 
-const csv = require('../lib/CSV');
 const utils = require('../lib/utils');
 const mongo3 = require('../lib/mongo3');
 const moment = require('moment');
 
 nconf.argv().env().file({ file: 'config/settings.json' });
+
+/* these function are explitic for wetest experiments and are kept separated from 
+ * the invoker script and from the libraries */
 
 async function pickFromDB(filter, sorting, special) {
     try {

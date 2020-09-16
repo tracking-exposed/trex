@@ -268,7 +268,7 @@ async function produceSessionData(tf) {
     const csvtext = csv.produceCSVv1(ready);
     debug("Produced %d bytes for text/csv, saving file", _.size(csvtext));
     fs.writeFileSync(fileName('sessions', 'csv'), csvtext);
-    accuracyDump(_.size(ready));
+    wetest.accuracyDump(_.size(ready));
 }
 
 async function produceInternalData(tf) {
