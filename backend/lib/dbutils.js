@@ -5,7 +5,7 @@ const mongo3 = require('./mongo3');
 async function checkMongoWorks() {
     try {
         const mongoc = await mongo3.clientConnect({concurrency: 1});
-        let results = await mongo3.listCollections(mongoc);
+        const results = await mongo3.listCollections(mongoc);
         await mongoc.close();
         return results;
     } catch(error) {
@@ -20,6 +20,40 @@ async function getLimitedDistinct(cName, field, maxAmount, filter) {
         const results = await mongo3.distinct(mongoc, cName, field, filter);
         await mongoc.close();
         return results;
+    } catch(error) {
+        debug("Failure in fetching %s by %j: %s: %s", cName, filter, error.message);
+        return [];
+    }
+}
+
+async function reduceRecentSearches(cName, maxAmount, filter) {
+    try {
+        const mongoc = await mongo3.clientConnect({concurrency: 1});
+        const results = await mongo3.aggregate(mongoc, cName, [
+            { $match: filter },
+            { $sort: { "savingTime": -1 } },
+            { $project: { searchTerms: 1, metadataId: 1, savingTime: 1, _id: false } },
+            { $group: { _id: "$metadataId", 't': { '$push': '$searchTerms' }, 'amount': { "$sum": 1 } } }
+        ]);
+        await mongoc.close();
+        return _.reduce(results, function(memo, e) {
+            const t = _.upperFirst(_.first(e.t).replace(/\+/g, ' '));
+            const exists = _.find(memo, { t });
+            if(exists) {
+                exists.id.push(e._id);
+                exists.amount += e.amount;
+                exists.searches += 1;
+            }
+            else {
+                memo.push({
+                    t,
+                    amount: e.amount,
+                    id: [ e._id ],
+                    searches: 1
+                });
+            }
+            return memo;
+        }, []);
     } catch(error) {
         debug("Failure in fetching %s by %j: %s: %s", cName, filter, error.message);
         return [];
@@ -44,5 +78,6 @@ async function getLimitedCollection(cName, filter, maxAmount, reportOverflow) {
 module.exports = {
     checkMongoWorks,
     getLimitedDistinct,
+    reduceRecentSearches,
     getLimitedCollection,
 };

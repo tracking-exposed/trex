@@ -13,8 +13,10 @@ const apiList = {
     getVideoId:       require('../routes/public').getVideoId,
     getRelated:       require('../routes/public').getRelated,
     getVideoCSV:      require('../routes/public').getVideoCSV,
-    getSearches:      require('../routes/public').getSearches,
-    getSearchKeywords:require('../routes/public').getSearchKeywords,
+
+    /* searches routes */
+    getSearches:      require('../routes/searches').getSearches,
+    getSearchKeywords:require('../routes/searches').getSearchKeywords,
 
     getByAuthor:      require('../routes/public').getByAuthor,
     getPersonalCSV:   require('../routes/personal').getPersonalCSV,

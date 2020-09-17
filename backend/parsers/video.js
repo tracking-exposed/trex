@@ -79,7 +79,9 @@ function relatedMetadata(e, i) {
         foryou = vizstr.match(/\d+/) ? false : true;
 
     const link = e.querySelector('a') ? e.querySelector('a').getAttribute('href') : null;
-    const videoId = link ? link.replace(/.*v=/, '') : null;
+    const urlinfo = url.parse(link);
+    const p = querystring.parse(urlinfo.query);
+    const videoId = p.v;
     const liveBadge = !!e.querySelector(".badge-style-type-live-now");
     const thumbnailHref = shared.getThumbNailHref(e);
 
@@ -109,6 +111,7 @@ function relatedMetadata(e, i) {
         verified,
         foryou,
         videoId,
+        params: p,
         recommendedSource: source,
         recommendedTitle: mined ? mined.title : (title ? title : null),
         recommendedLength,

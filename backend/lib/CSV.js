@@ -49,12 +49,12 @@ function produceCSVv1(entries) {
 function unrollRecommended(memo, evidence) { // metadata.type = video with 'related' 
     const numerizedLikes = utils.parseLikes(evidence.likeInfo); // converts '1233 me gusta'
     // TODO ^^^^^^^^^^^^^^ should be removed in the future because it will be part of 'evidence.related' 
+    let recommendedCounterCheck = _.size(evidence.related);
     _.each(evidence.related, function(related, evidenceCounter) {
         let entry = {
             /* this is removed or anonymized by the called */
             publicKey: evidence.publicKey,
 
-            evidence: evidenceCounter,
             login: evidence.login,
             id: evidence.id.replace(/[0-7]/g, ''),
             savingTime: evidence.savingTime,
@@ -64,11 +64,11 @@ function unrollRecommended(memo, evidence) { // metadata.type = video with 'rela
 
             parameter: related.parameter,
             recommendedId: utils.hash({ motherId: evidence.id, p: evidence.publicKey, evidenceCounter}),
-            recommendedVideoId: related.videoId,
+            recommendedVideoId: related.videoId.replace(/\&.*/, ''),
             recommendedAuthor: related.recommendedSource,
             recommendedTitle: related.recommendedTitle, 
             recommendedLength: related.recommendedLength,
-            recommendedDisplayL: related.recommendedDisplayL,
+            // recommendedDisplayL: related.recommendedDisplayL,
             recommendedLengthText: related.recommendedLengthText,
             recommendedPubTime: related.publicationTime,
             // ptPrecision: related.timePrecision, // doens't really matter ATM
@@ -88,18 +88,30 @@ function unrollRecommended(memo, evidence) { // metadata.type = video with 'rela
             watchedLike: numerizedLikes.watchedLikes,
             watchedDislike: numerizedLikes.watchedDislikes,
         };
+        /* optional fields, only existing in wetest1 -- todo manage these as a list */
+        if(evidence.sessionId)
+            entry.sessionId = evidence.sessionId;
+        if(_.isInteger(evidence.hoursOffset))
+            entry.hoursOffset = evidence.hoursOffset;
+        if(!_.isUndefined(evidence.top20))
+            entry.top20 = evidence.top20;
+        if(evidence.qualitative)
+            entry.qualitative = evidence.qualitative;
         memo.push(entry);
-    })
+    });
+    if(recommendedCounterCheck && (recommendedCounterCheck != _.last(memo).recommendationOrder))
+        debug("Missing element? %d != %d evidence.id %s",
+            _.last(memo).recommendationOrder, recommendedCounterCheck, evidence.id);
     return memo;
 }
 
 function unwindSections(memo, evidence) { // metadata.type = 'home' with 'selected'
+    let selectionCounterCheck = _.size(evidence.related);
     _.each(evidence.selected, function(selected, evidenceCounter) {
         let entry = {
             /* this is removed or anonymized by the called */
             publicKey: evidence.publicKey,
 
-            evidence: evidenceCounter,
             login: evidence.login,
             id: evidence.id.replace(/[0-7]/g, ''),
             savingTime: evidence.savingTime,
@@ -111,12 +123,12 @@ function unwindSections(memo, evidence) { // metadata.type = 'home' with 'select
             parameter: selected.parameter,
             sectionName: selected.sectionName,
             selectedId: utils.hash({ motherId: evidence.id, p: evidence.publicKey, evidenceCounter}),
-            selectedVideoId: selected.videoId,
+            selectedVideoId: selected.videoId.replace(/\&.*/, ''),
             selectedAuthor: selected.recommendedSource,
             selectedChannel: selected.recommendedHref,
             selectedTitle: selected.recommendedTitle,
             selectedLength: selected.recommendedLength,
-            selectedDisplayL: selected.selectedDisplayL,
+            // selectedDisplayL: selected.selectedDisplayL,
             selectedLengthText: selected.recommendedLengthText,
             selectedPubTime: selected.publicationTime,
             // ptPrecision: selected.timePrecision, doesn't really matter ATM because they are all 'estimated'
@@ -124,8 +136,14 @@ function unwindSections(memo, evidence) { // metadata.type = 'home' with 'select
             selectedViews: selected.recommendedViews,
             selectedKind: selected.isLive ? "live": "video", // this should support also 'playlist' 
         };
+        /* optional fields */
+        if(_.isInteger(evidence.hoursOffset))
+            entry.hoursOffset = evidence.hoursOffset;
         memo.push(entry);
     });
+    if(selectionCounterCheck && (selectionCounterCheck != _.last(memo).order))
+        debug("Missing element? %d != %d evidence.id %s",
+            _.last(memo).order, selectionCounterCheck, evidence.id);
     return memo;
 };
 
