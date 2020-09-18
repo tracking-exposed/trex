@@ -1,6 +1,6 @@
 {
   "name": "yttrex-backend",
-  "version": "1.4.1",
+  "version": "1.5.0",
   "description": "youtube.tracking.exposed - backend data collector",
   "scripts": {
     "watch": "elastic=disabled key=fuffa DEBUG=lib:*,yttrex ./node_modules/nodemon/bin/nodemon.js --config config/nodemon.json bin/server",

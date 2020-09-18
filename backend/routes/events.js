@@ -84,6 +84,7 @@ async function processEvents2(req) {
     // debug("CHECK: %s <%s>", blang, headers.language );
 
     const htmls = _.map(req.body, function(body, i) {
+        const isSearch = !!body.href.match(/\.youtube\.com\/results\?/);
         const metadataId = utils.hash({
             publicKey: headers.publickey,
             randomUUID: body.randomUUID,
@@ -110,6 +111,7 @@ async function processEvents2(req) {
             incremental: body.incremental,
             type: body.type,
             packet: i,
+            isSearch,
         }
         return html;
     });

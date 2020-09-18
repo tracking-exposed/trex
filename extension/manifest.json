@@ -9,14 +9,14 @@
   "author": "The team of Tracking Exposed",
 
   "icons": {
-      "16": "yttrex16.png",
-      "48": "yttrex48.png",
-      "128": "yttrex128.png"
+    "16": "yttrex16.png",
+    "48": "yttrex48.png",
+    "128": "yttrex128.png"
   },
 
   "browser_action": {
-      "default_icon": "yttrex16.png",
-      "default_popup": "popup.html"
+    "default_icon": "yttrex16.png",
+    "default_popup": "popup.html"
   },
 
   "permissions": [
@@ -28,17 +28,17 @@
   ],
 
   "background": {
-      "scripts": ["./background.js"],
-      "persistent": false
+    "scripts": ["./background.js"],
+    "persistent": false
   },
 
   "content_scripts": [
     {
       "matches": [
-          "http://localhost/*",
-          "http://127.0.0.1/*",
-          "https://youtube.tracking.exposed/*",
-          "https://*.youtube.com/*"
+        "http://localhost/*",
+        "http://127.0.0.1/*",
+        "https://youtube.tracking.exposed/*",
+        "https://*.youtube.com/*"
       ],
       "js": ["./app.js"]
     }

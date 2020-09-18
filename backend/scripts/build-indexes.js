@@ -17,6 +17,7 @@ ret = db.htmls.createIndex({ id: 1 }, { unique: true} ); checkret('htmls id', re
 ret = db.htmls.createIndex({ savingTime: -1 }); checkret('htmls savingTime', ret);
 ret = db.htmls.createIndex({ processed: 1 }); checkret('htmls processed', ret);
 ret = db.htmls.createIndex({ metadataId: 1 }); checkret('htmls metadataId', ret);
+ret = db.htmls.createIndex({ isSearch: 1 }); checkret('htmls isSearch', ret);
 
 ret = db.labels.createIndex({ metadataId: 1 }); checkret('labels processed', ret);
 ret = db.labels.createIndex({ savingTime: -1}, { expireAfterSeconds: 7 * 24 * 3600 } ); checkret('labels savingTime expiring', ret);

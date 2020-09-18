@@ -7,8 +7,8 @@ const moment = require('moment');
 const nconf = require('nconf');
 const JSDOM = require('jsdom').JSDOM;
 
-const debug = require('debug')('yttrex:label');
-const debuge = require('debug')('yttrex:label:error');
+const debug = require('debug')('yttrex:searches');
+const debuge = require('debug')('yttrex:searches:error');
 const overflowReport = require('debug')('yttrex:label:OVERFLOW');
 
 const longlabel = require('../parsers/longlabel');
@@ -51,7 +51,7 @@ let processedCounter = skipCount;
 let lastExecution = moment().subtract(backInTime, 'minutes').toISOString();
 let computedFrequency = 10;
 const stats = { lastamount: null, currentamount: null, last: null, current: null };
-
+let lastErrorAmount = 0;
 
 if(backInTime != BACKINTIMEDEFAULT) {
     const humanized = moment.duration(
@@ -307,6 +307,7 @@ async function wrapperLoop() {
     while(true) {
         try {
             let labelFilter = {
+                isSearch: true,
                 savingTime: {
                     $gt: new Date(lastExecution)
                 },
@@ -319,8 +320,10 @@ async function wrapperLoop() {
                     metadataId: id
                 }
             }
-            if(_.size(longlabel.unrecognized))
+            if(_.size(longlabel.unrecognized) && _.size(longlabel.unrecognized) > lastErrorAmount) {
                 debuge("[this was originally saved on a dedicated file]: %j", longlabel.unrecognized);
+                lastErrorAmount = _.size(longlabel.unrecognized);
+            }
 
             if(stop && stop <= processedCounter) {
                 console.log("Reached configured limit of ", stop, "( processed:", processedCounter, ")");
