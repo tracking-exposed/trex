@@ -10,6 +10,7 @@ const apiList = {
 
     /* the three currently used/tested for the public */
     getLast:          require('../routes/public').getLast,
+    getLastHome:      require('../routes/public').getLastHome,
     getVideoId:       require('../routes/public').getVideoId,
     getRelated:       require('../routes/public').getRelated,
     getVideoCSV:      require('../routes/public').getVideoCSV,

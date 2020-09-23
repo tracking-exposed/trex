@@ -5,6 +5,7 @@ const discodebug = require('debug')('DISCONTINUED');
 
 const params = require('../lib/params');
 const automo = require('../lib/automo');
+const utils = require('../lib/utils');
 const CSV = require('../lib/CSV');
 
 // This variables is used as cap in every readLimit below
@@ -79,6 +80,38 @@ async function getLast(req) {
         return formatReturn();
     }
 };
+
+async function getLastHome() {
+    const DEFMAX = 100;
+
+    let homelist = await automo.getMetadataByFilter({
+        type: 'home',
+        savingTime: { $gte: new Date(moment().startOf('day').toISOString()) }
+    }, {
+        amount: DEFMAX,
+        skip: 0,
+    });
+
+    const rv = _.reduce(homelist, function(memo, e) {
+        const accessId = utils.hash({who: e.publicKey, when: e.savingTime });
+        _.each(e.selected, function(vinfo) {
+            let selected = {
+                accessId: accessId.substr(0, 10),
+                order: vinfo.index,
+                source: vinfo.recommendedSource,
+                title: vinfo.recommendedTitle,
+                videodId: vinfo.videoId,
+                thumbnailHref: vinfo.thumbnailHref,
+                publicationTime: vinfo.publicationTime,
+            }
+            memo.push(selected);
+        })
+        return memo;
+    }, []);
+
+    debug("Returning as getLastHome, %d selected videos from %d evidences", _.size(rv), _.size(homelist));
+    return { json: rv };
+}
 
 async function getVideoId(req) {
     const { amount, skip } = params.optionParsing(req.params.paging, PUBLIC_AMOUNT_ELEMS);
@@ -261,6 +294,7 @@ async function discontinued(req) {
 
 module.exports = {
     getLast,
+    getLastHome,
     getVideoId,
     getRelated,
     getVideoCSV,

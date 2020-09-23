@@ -3,7 +3,6 @@ const express = require('express');
 const app = express();
 const server = require('http').Server(app);
 const _ = require('lodash');
-const moment = require('moment');
 const bodyParser = require('body-parser');
 const Promise = require('bluebird');
 const debug = require('debug')('yttrex');
@@ -79,6 +78,9 @@ app.use(bodyParser.urlencoded({limit: '6mb', extended: true}));
 
 app.get('/api/v1/last', function(req, res) {
     return dispatchPromise('getLast', req, res);
+});
+app.get('/api/v1/home', function(req, res) {
+    return dispatchPromise('getLastHome', req, res);
 });
 app.get('/api/v1/videoId/:query', function(req, res) {
     return dispatchPromise('getVideoId', req, res);

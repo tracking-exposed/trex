@@ -94,7 +94,7 @@ async function getMetadataByPublicKey(publicKey, options) {
         _.set(filter, 'type', options.typefilter)
     if(options.timefilter) {
         debug(options.timefilter);
-        _.set(filter, 'savingTime.$gt', new Date(options.timefilter));
+        _.set(filter, 'savingTime.$gte', new Date(options.timefilter));
     }
 
     const metadata = await mongo3.readLimit(mongoc,
