@@ -39,7 +39,19 @@ function logged(D) {
     return null;
 }
 
+function fixHumanizedTime(inputstr) {
+    // this function fix the time 0:10, 10:10, 1:00:00
+    if(inputstr.length == 4)
+        return '0:0' + inputstr;
+    if(inputstr.length == 5)
+        return '0:' + inputstr;
+    if(inputstr.length > 8)
+        debug("Warning this is weird in fixHumanizedTime: %s", inputstr);
+    return inputstr;
+}
+
 module.exports = {
     getThumbNailHref,
     logged,
+    fixHumanizedTime,
 };

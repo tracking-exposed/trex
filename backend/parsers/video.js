@@ -87,7 +87,7 @@ function relatedMetadata(e, i) {
 
     const { displayTime, expandedTime } = closestForTime(e, '.ytd-thumbnail-overlay-time-status-renderer');
     // 2:03  -  2 minutes and 3 seconds, they might be null.
-    const recommendedLength = displayTime ? moment.duration(displayTime).asSeconds() : null;
+    const recommendedLength = displayTime ? moment.duration(shared.fixHumanizedTime(displayTime)).asSeconds() : null;
     const arialabel = e.querySelector('#video-title').getAttribute('aria-label');
     // Beastie Boys - Sabotage by BeastieBoys 9 years ago 3 minutes, 2 seconds 62,992,821 views
 

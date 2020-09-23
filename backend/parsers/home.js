@@ -55,7 +55,7 @@ function dissectSelectedVideo(e, i, sections, offset) {
         const { displayTime, expandedTime } = videoparser.closestForTime(e, '.ytd-thumbnail-overlay-time-status-renderer');
         infos.displayTime = displayTime;
         infos.expandedTime = expandedTime;
-        infos.recommendedLength = displayTime ? moment.duration(displayTime).asSeconds() : -1;
+        infos.recommendedLength = displayTime ? moment.duration(shared.fixHumanizedTime(displayTime)).asSeconds() : -1;
     } catch(error) {
         errorLog.push("Failure in displayTime|expandedTime: " + error.message);
         infos.error = true;
