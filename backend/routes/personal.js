@@ -82,14 +82,18 @@ async function getPersonalCSV(req) {
 };
 
 async function getPersonalTimeline(req) {
-    const DEFMAX = 1000;
+    const DEFMAX = 300;
     const k =  req.params.publicKey;
     if(_.size(k) < 26)
         return { json: { "message": "Invalid publicKey", "error": true }};
 
     const { amount, skip } = params.optionParsing(req.params.paging, DEFMAX);
     debug("getPersonalTimelines request by %s using %d starting videos, skip %d (defmax %d)", k, amount, skip, DEFMAX);
-    let c = await automo.getMetadataByPublicKey(k, { takefull:true, amount, skip });
+    let c = await automo.getMetadataByPublicKey(k, {
+        takefull: true,
+        amount, skip,
+        timefilter: moment().subtract(2, 'months').format("YYYY-MM-DD")
+    });
 
     const list = _.map(c.metadata, function(e) {
         /* console.log( e.value, _.keys(_.pick(e, ['ad', 'title', 'authorName'])),

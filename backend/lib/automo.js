@@ -92,6 +92,10 @@ async function getMetadataByPublicKey(publicKey, options) {
         _.unset(filter, 'title');
     if(options.typefilter)
         _.set(filter, 'type', options.typefilter)
+    if(options.timefilter) {
+        debug(options.timefilter);
+        _.set(filter, 'savingTime.$gt', new Date(options.timefilter));
+    }
 
     const metadata = await mongo3.readLimit(mongoc,
         nconf.get('schema').metadata, filter,
@@ -99,8 +103,7 @@ async function getMetadataByPublicKey(publicKey, options) {
 
     await mongoc.close();
 
-    debug("Retrieved in getMetadataByPublicKey: %d metadata with amount %d skip %d",
-        _.size(metadata), options.amount, options.skip);
+    debug("Retrieved in getMetadataByPublicKey: %d metadata (filter options %j)", _.size(metadata), options);
 
     return {
         supporter,
