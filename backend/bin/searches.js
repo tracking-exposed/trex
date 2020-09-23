@@ -25,12 +25,13 @@ nconf.argv().env().file({ file: 'config/settings.json' });
 2) it pick from 'labels' only with { selectorName: 'label' }                          *
 3) it use metadataId to find and update the entries in 'searches'                     *
 4) there are not nested fields, the 'searches' entry has:                    {
-    resultId: unique identified of this video result of a search query,
-    metadataId: <String>,
+    metadataId: unique identifier of the search query evidence,
+    id: unique id for each entry <String>,
     publicKey: <String>,
     searchQuery: <String>,
     videoId: <String>,
     [and the mined fields from aria-label],
+    <incomplete>: undefined or true, wheres error are present in extraction
 }                                                                                     */
 
 const FREQUENCY = 5; // seconds
@@ -202,7 +203,7 @@ function processSearches(e) {
         node: HTMLAnchorElement {},
         ariala: 'Go to channel'
     }                                                                                     */
-    const searchOutput = _.compact(_.map(foundVideos, function(video, priorityOrder) {
+    const searchOutput = _.map(foundVideos, function(video, priorityOrder) {
         let expectedDurationOrder = (video.order - 1);
         let expectedChannelOrder = (video.order + 3);
         let duration = fuzzyFind(nodes, 'duration', expectedDurationOrder);
@@ -228,20 +229,25 @@ function processSearches(e) {
             const { authorName, mined } = dissectAndParseLabel(video.ariala, video.title, duration.ariala, uxInfo);
             retval.selectedAuthor = authorName;
             retval.displayLength = duration.displayLength;
-            retval.relativeSeconds = mined.timeago.asSeconds();
-            retval.currentViews = mined.views;
+            retval.relativeSeconds = mined ? mined.timeago.asSeconds() : null;
+            retval.currentViews = mined ? mined.views : null;
         }
-        else
-            debuge("failure in building video at position %d duration is missing!?", priorityOrder);
+
+        /* duration or dissectAndParseLabel might fail, this is the double check */
+        const doubleCheck = ['selectedAuthor', 'displayLength', 'relativeSeconds', 'currentViews'];
+        _.each(doubleCheck, function(k) {
+            if(!_.get(retval, k))
+                retval.incomplete = true;
+        })
 
         if(channel)
             retval.selectedChannel = channel.href;
 
         return retval;
-    }));
+    });
 
-    debug("Acquired %d, foundVideos %d, searchOutput %d",
-        _.size(e.acquired), _.size(foundVideos), _.size(searchOutput));
+    debug("Acquired %d, foundVideos %d, incomplete %j",
+        _.size(e.acquired), _.size(foundVideos), _.countBy(searchOutput, 'incomplete'));
 
     return searchOutput;
 }

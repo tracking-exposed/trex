@@ -36,6 +36,7 @@ let processedCounter = skipCount;
 let lastExecution = moment().subtract(backInTime, 'minutes').toISOString();
 let computedFrequency = 10;
 const stats = { lastamount: null, currentamount: null, last: null, current: null };
+let lastErrorAmount = 0;
 
 if(backInTime != BACKINTIMEDEFAULT) {
     const humanized = moment.duration(
@@ -236,8 +237,9 @@ async function wrapperLoop() {
                 }
             }
 
-            if(_.size(longlabel.unrecognized)) {
+            if(_.size(longlabel.unrecognized) && _.size(longlabel.unrecognized) > lastErrorAmount )  {
                 debuge("[this was originally saved on a dedicated file]: %j", longlabel.unrecognized);
+                lastErrorAmount = _.size(longlabel.unrecognized);
             }
 
             if(stop && stop <= processedCounter) {

@@ -235,6 +235,8 @@ function getPublicationTime(timeinfo) {
 
     const convertedNumber = _.parseInt(timeago[0]);
     const duration = _.reduce(timeago[0].split(' '), function(memo, word) {
+        if(_.endsWith(word, ','))
+            word = word.slice(0, -1);
         let momentinfo = relativeTimeMap(word);
         if(_.isNull(momentinfo))
             return memo;
