@@ -7,7 +7,7 @@
       "stats": "trexstats",
       "groups": "groups",
       "searches": "searches",
-      "ytnl": "ytnl"
+      "errors": "errors"
   },
   "mongoHost": "localhost",
   "mongoPort": 27017,

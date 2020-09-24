@@ -129,6 +129,7 @@ function dissectAndParseLabel(arilabel, title, durationlabel, uxInfo) {
     } catch(e) {
         debuge("Error in longlabel.parser (%s, %s): %s",
             arilabel, authorName, e.message);
+        longlabel.unrecognized.push(arilabel);
         return { authorName, mined: null };
     }
 }
@@ -309,13 +310,33 @@ async function fetchAndAnalyze(labelFilter) {
     }
 }
 
+// this function is duplicated with bin/parserv2.js -- might be generalized
+async function appendLabelError(currentList, lastSentAmount) {
+    // pick the last appended errors 
+    const newerrors = currentList.slice( currentList.length - lastSentAmount );
+    return _.map(newerrors, async function(le) {
+        try {
+            await automo.write(nconf.get('schema').errors, {
+                type: 'longlabel',
+                from: 'parserv',
+                when: new Date(),
+                label: le,
+                id: utils.hash({labelerror: le})
+            });
+            return true;
+        } catch(error) {
+            debuge("appendLabelError: Unable to write on collection 'errors': %s", e.message);
+            return false;
+        }
+    });
+}
+
 async function wrapperLoop() {
     while(true) {
         try {
             let labelFilter = {
-                isSearch: true,
                 savingTime: {
-                    $gt: new Date(lastExecution)
+                    $gte: new Date(lastExecution)
                 },
             };
             if(filter)
@@ -326,17 +347,19 @@ async function wrapperLoop() {
                     metadataId: id
                 }
             }
-            if(_.size(longlabel.unrecognized) && _.size(longlabel.unrecognized) > lastErrorAmount) {
-                debuge("[this was originally saved on a dedicated file]: %j", longlabel.unrecognized);
-                lastErrorAmount = _.size(longlabel.unrecognized);
-            }
-
             if(stop && stop <= processedCounter) {
                 console.log("Reached configured limit of ", stop, "( processed:", processedCounter, ")");
                 process.exit(processedCounter);
             }
 
             await fetchAndAnalyze(labelFilter);
+
+            if(_.size(longlabel.unrecognized) && _.size(longlabel.unrecognized) > lastErrorAmount )  {
+                let tmpr = await appendLabelError(longlabel.unrecognized, lastErrorAmount);
+                debuge("Appended last errors in longlabel: %s (%j)",
+                    _.last(longlabel.unrecognized), tmpr);
+                lastErrorAmount = _.size(longlabel.unrecognized);
+            }
         }
         catch(e) {
             console.log("Error in fetchAndAnalyze", e.message, e.stack);

@@ -12,6 +12,7 @@ const videoparser = require('../parsers/video');
 const longlabel = require('../parsers/longlabel');
 const homeparser = require('../parsers/home');
 const automo = require('../lib/automo');
+const utils = require('../lib/utils');
 
 nconf.argv().env().file({ file: 'config/settings.json' });
 
@@ -194,6 +195,26 @@ function processEachHTML(e) {
     return [ envelop.impression, metadata ];
 }
 
+async function appendLabelError(currentList, lastSentAmount) {
+    // pick the last appended errors 
+    const newerrors = currentList.slice( currentList.length - lastSentAmount );
+    return _.map(newerrors, async function(le) {
+        try {
+            await automo.write(nconf.get('schema').errors, {
+                type: 'longlabel',
+                from: 'parserv',
+                when: new Date(),
+                label: le,
+                id: utils.hash({labelerror: le})
+            });
+            return true;
+        } catch(error) {
+            debug("Unable to write on collection 'errors': %s", e.message);
+            return false;
+        }
+    });
+}
+
 async function sleep(ms) {
     return new Promise(resolve => {
         setTimeout(resolve, ms)
@@ -221,8 +242,9 @@ async function wrapperLoop() {
         try {
             let htmlFilter = {
                 savingTime: {
-                    $gt: new Date(lastExecution)
+                    $gt: new Date(lastExecution),
                 },
+                type: 'video',
             };
             if(!actualRepeat)
                 htmlFilter.processed = { $exists: false };
@@ -237,16 +259,18 @@ async function wrapperLoop() {
                 }
             }
 
-            if(_.size(longlabel.unrecognized) && _.size(longlabel.unrecognized) > lastErrorAmount )  {
-                debuge("[this was originally saved on a dedicated file]: %j", longlabel.unrecognized);
-                lastErrorAmount = _.size(longlabel.unrecognized);
-            }
-
             if(stop && stop <= processedCounter) {
                 console.log("Reached configured limit of ", stop, "( processed:", processedCounter, ")");
                 process.exit(processedCounter);
             }
             await newLoop(htmlFilter);
+
+            if(_.size(longlabel.unrecognized) && _.size(longlabel.unrecognized) > lastErrorAmount )  {
+                let tmpr = await appendLabelError(longlabel.unrecognized, lastErrorAmount);
+                debug("Appended last errors in longlabel: %s (%j)", _.last(longlabel.unrecognized), tmpr);
+                lastErrorAmount = _.size(longlabel.unrecognized);
+            }
+
         } catch(e) {
             console.log("Error in newLoop", e.message, e.stack);
         }
