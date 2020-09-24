@@ -17,6 +17,7 @@ const apiList = {
 
     /* searches routes */
     getSearches:      require('../routes/searches').getSearches,
+    getSearchesCSV:   require('../routes/searches').getSearchesCSV,
     getSearchKeywords:require('../routes/searches').getSearchKeywords,
 
     getByAuthor:      require('../routes/public').getByAuthor,

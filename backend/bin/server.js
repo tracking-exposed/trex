@@ -184,10 +184,12 @@ app.post('/api/v2/profile/:publicKey', (req, res) => {
 });
 
 /* to get results of search queries! */
+app.get('/api/v2/searches/:query/CSV', (req, res) => {
+    return dispatchPromise('getSearchesCSV', req, res);
+});
 app.get('/api/v2/searches/:query/:paging?', (req, res) => {
     return dispatchPromise('getSearches', req, res);
 });
-
 app.get('/api/v2/search/keywords/:paging?', (req, res) => {
     return dispatchPromise('getSearchKeywords', req, res);
 });
