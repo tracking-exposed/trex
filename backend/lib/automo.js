@@ -238,7 +238,7 @@ async function getRelatedByVideoId(videoId, options) {
             recommendedVideoId: r.related.videoId,
             recommendedViews: (r.related.mined) ? r.related.mined.viz : null,
             recommendedDuration: (r.related.mined) ? r.related.mined.duration : null,
-            recommendedPubtime: (r.related.mined) ?r.related.mined.timeago : null,
+            recommendedPubtime: (r.related.mined) ? r.related.mined.timeago : null,
             recommendedForYou: r.related.foryou,
             recommendedTitle: r.related.title,
             recommendedAuthor: r.related.source,

@@ -84,6 +84,7 @@ async function processEvents2(req) {
     // debug("CHECK: %s <%s>", blang, headers.language );
 
     const htmls = _.map(req.body, function(body, i) {
+        // TODO replace this trash with URL() and double check 'video' | 'home' | wtv..
         const isSearch = !!body.href.match(/\.youtube\.com\/results\?/);
         const metadataId = utils.hash({
             publicKey: headers.publickey,
@@ -111,7 +112,6 @@ async function processEvents2(req) {
             incremental: body.incremental,
             type: body.type,
             packet: i,
-            isSearch,
         }
         return html;
     });
@@ -139,7 +139,7 @@ async function processEvents2(req) {
     }
 
     const info = _.map(_.concat(_.reject(htmls, { type: 'info' }), labels), function(e) {
-        return [ "i" + e.incremental, e.size, e.selectorName ? e.selectorName : e.selector ];
+        return [ "i" + e.incremental, e.size, e.selectorName ? e.selectorName : e.selector, e.type ];
     });
     debug("%s %s <- %s", supporter.p, _.uniq(_.map(htmls, 'href')), JSON.stringify(info));
 
