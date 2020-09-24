@@ -54,6 +54,7 @@ async function getPersonalCSV(req) {
     const data = await automo.getMetadataByPublicKey(k, { amount: CSV_MAX_SIZE, skip: 0, typefilter: type });
     /* this return of videos or homepage, they generated slightly different CSV formats */
 
+    debug("returned %d data in getPersonalCSV", _.size(data));
     const sourceCounter = _.size(data.metadata);
     const unrolled = (type == 'home')
         ? _.reduce(data.metadata, CSV.unwindSections, [])

@@ -90,12 +90,14 @@ async function getMetadataByPublicKey(publicKey, options) {
     };
     if(options.takefull)
         _.unset(filter, 'title');
-    if(options.typefilter)
+    if(options.typefilter) {
         _.set(filter, 'type', options.typefilter)
-    if(options.timefilter) {
-        debug(options.timefilter);
-        _.set(filter, 'savingTime.$gte', new Date(options.timefilter));
+        // this automo library is just retarded at this point!
+        if(options.typefilter == 'home')
+            _.unset(filter, 'title');
     }
+    if(options.timefilter)
+        _.set(filter, 'savingTime.$gte', new Date(options.timefilter));
 
     const metadata = await mongo3.readLimit(mongoc,
         nconf.get('schema').metadata, filter,
@@ -103,8 +105,7 @@ async function getMetadataByPublicKey(publicKey, options) {
 
     await mongoc.close();
 
-    debug("Retrieved in getMetadataByPublicKey: %d metadata (filter options %j)", _.size(metadata), options);
-
+    debug("Retrieved in getMetadataByPublicKey: %d metadata (filter %j)", _.size(metadata), filter);
     return {
         supporter,
         metadata,
