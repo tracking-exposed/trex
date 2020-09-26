@@ -60,7 +60,7 @@ async function getSearchesCSV(req) {
 async function getSearchKeywords(req) {
     // '/api/v2/search/keywords/:paging?'
     const MAXRVS = 200;
-    const hardcodedAmount = 36;
+    const hardcodedAmount = 3;
     const hardcodedUnit = 'days';
     const { amount, skip } = params.optionParsing(req.params.paging, MAXRVS);
     const entries = await dbutils.reduceRecentSearches(

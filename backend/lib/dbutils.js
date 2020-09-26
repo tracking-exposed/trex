@@ -34,14 +34,14 @@ async function reduceRecentSearches(cName, maxAmount, filter) {
         const results = await mongo3.aggregate(mongoc, cName, [
             { $match: filter },
             { $sort: { "savingTime": -1 } },
+            { $limit: maxAmount },
             { $project: { searchTerms: 1, metadataId: 1, savingTime: 1, _id: false } },
             { $group: { _id: "$metadataId", 't': { '$push': '$searchTerms' }, 'amount': { "$sum": 1 } } }
         ]);
         await mongoc.close();
-        if(_.size(results))
-            debug("Kind reminder you're corrupting input, for example: %s", _.first(results).t);
+        // debug("Kind reminder you're corrupting input, for example: %s", _.first(results).t);
         return _.reduce(results, function(memo, e) {
-            const t = _.upperFirst(_.first(e.t).replace(/\+/g, ' '));
+            const t = _.first(e.t).replace(/\+/g, ' ');
             const exists = _.find(memo, { t });
             if(exists) {
                 exists.searchIds.push(e._id);
