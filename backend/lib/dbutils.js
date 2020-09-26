@@ -1,6 +1,8 @@
 const _ = require('lodash');
 const debug = require('debug')('lib:dbutils');
+
 const mongo3 = require('./mongo3');
+const utils = require('./utils');
 
 async function checkMongoWorks() {
     try {
@@ -36,19 +38,22 @@ async function reduceRecentSearches(cName, maxAmount, filter) {
             { $group: { _id: "$metadataId", 't': { '$push': '$searchTerms' }, 'amount': { "$sum": 1 } } }
         ]);
         await mongoc.close();
+        if(_.size(results))
+            debug("Kind reminder you're corrupting input, for example: %s", _.first(results).t);
         return _.reduce(results, function(memo, e) {
             const t = _.upperFirst(_.first(e.t).replace(/\+/g, ' '));
             const exists = _.find(memo, { t });
             if(exists) {
-                exists.id.push(e._id);
+                exists.searchIds.push(e._id);
                 exists.amount += e.amount;
                 exists.searches += 1;
             }
             else {
                 memo.push({
                     t,
+                    id: utils.hash({searchKeyword: t}).substr(0, 8),
                     amount: e.amount,
-                    id: [ e._id ],
+                    searchIds: [ e._id ],
                     searches: 1
                 });
             }

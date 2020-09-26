@@ -12,14 +12,14 @@ const dbutils = require('../lib/dbutils');
 async function getSearches(req) {
     // '/api/v2/searches/:query/:paging?'
     const { amount, skip } = params.optionParsing(req.params.paging, 100);
-    const qs = req.params.query;
-    debug("getSearchs %s query amount %d skip %d", qs, amount, skip);
-    const entries = await dbutils.getLimitedCollection(nconf.get('schema').searches, {searchTerm: qs}, amount, true);
+    const qs = qustr.unescape(req.params.query);
+    debug("getSearches %s query amount %d skip %d", qs, amount, skip);
+    const entries = await dbutils.getLimitedCollection(nconf.get('schema').searches, {searchTerms: qs}, amount, true);
     const rv = _.map(entries, function(e) {
         e.pseudo = e.publicKey.replace(/[0-9a-n]/g, '');
         return _.omit(e, ['_id', 'publicKey'])
     });
-    debug("getRelated: returning %d matches about %s", _.size(rv), req.params.query);
+    debug("getSearches: returning %d matches about %s", _.size(rv), req.params.query);
     return { json: rv };
 };
 
@@ -59,9 +59,10 @@ async function getSearchesCSV(req) {
 
 async function getSearchKeywords(req) {
     // '/api/v2/search/keywords/:paging?'
-    const hardcodedAmount = 17;
+    const MAXRVS = 200;
+    const hardcodedAmount = 36;
     const hardcodedUnit = 'days';
-    const { amount, skip } = params.optionParsing(req.params.paging, 200);
+    const { amount, skip } = params.optionParsing(req.params.paging, MAXRVS);
     const entries = await dbutils.reduceRecentSearches(
         nconf.get('schema').searches,
         amount, {
@@ -76,8 +77,10 @@ async function getSearchKeywords(req) {
         "parameters": {
             hardcodedAmount,
             hardcodedUnit,
-            amount,
-            skip
+            amount: _.size(entries),
+            overflow: (_.size(entries) == MAXRVS),
+            skip,
+            max: MAXRVS
         }
     }};
 };
