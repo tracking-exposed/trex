@@ -12,7 +12,7 @@
   "author": "Claudio Agosti <claudio@tracking.exposed> and https://github.com/tracking-exposed/yttrex/graphs/contributors",
   "license": "AGPL-3.0",
   "dependencies": {
-    "bluebird": "^3.5.2",
+    "bluebird": "^3.7.2",
     "body-parser": "^1.15.2",
     "bs58": "^3.1.0",
     "cookie": "^0.3.1",
@@ -21,12 +21,12 @@
     "elasticsearch": "^15.4.1",
     "express": "^4.14.0",
     "food-words": "^1.1.0",
-    "moment": "^2.14.1",
+    "moment": "^2.29.0",
     "mongodb3": "npm:mongodb@3.2.3",
     "nacl-signature": "^1.0.0",
     "nconf": "^0.8.4",
     "numeral": "^2.0.6",
-    "request": "^2.75.0",
+    "request": "^2.88.2",
     "tweetnacl": "^0.14.3"
   },
   "devDependencies": {
