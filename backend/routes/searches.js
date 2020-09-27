@@ -7,6 +7,7 @@ const qustr = require('querystring');
 const CSV = require('../lib/CSV');
 const params = require('../lib/params');
 const dbutils = require('../lib/dbutils');
+const utils = require('../lib/utils');
 
 
 async function getSearches(req) {
@@ -16,7 +17,7 @@ async function getSearches(req) {
     debug("getSearches %s query amount %d skip %d", qs, amount, skip);
     const entries = await dbutils.getLimitedCollection(nconf.get('schema').searches, {searchTerms: qs}, amount, true);
     const rv = _.map(entries, function(e) {
-        e.pseudo = e.publicKey.replace(/[0-9a-n]/g, '');
+        e.pseudo = utils.string2Food(e.publicKey);
         return _.omit(e, ['_id', 'publicKey'])
     });
     debug("getSearches: returning %d matches about %s", _.size(rv), req.params.query);
@@ -32,7 +33,7 @@ async function getSearchesCSV(req) {
 
     const entries = await dbutils.getLimitedCollection(nconf.get('schema').searches, {searchTerms: qs}, amount, true);
     const fixed = _.map(entries, function(e) {
-        e.pseudo = e.publicKey.replace(/[0-9a-n]/g, '').substr(0, 7);
+        e.pseudo = utils.string2Food(e.publicKey);
         return _.omit(e, ['_id', 'publicKey']);
     });
 
