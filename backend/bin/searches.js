@@ -268,7 +268,7 @@ async function fetchAndAnalyze(labelFilter) {
         computedFrequency = FREQUENCY;
         return;
     } else {
-        computedFrequency = 0.1;
+        computedFrequency = 0.9;
     }
 
     if(!labels.overflow) {
