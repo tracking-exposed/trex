@@ -33,7 +33,7 @@ async function reduceRecentSearches(cName, maxAmount, filter) {
         const mongoc = await mongo3.clientConnect({concurrency: 1});
         const results = await mongo3.aggregate(mongoc, cName, [
             { $match: filter },
-            { $sort: { "savingTime": -1 } },
+            { $sort: { "savingTime": 1 } },
             { $limit: maxAmount },
             { $project: { searchTerms: 1, metadataId: 1, savingTime: 1, _id: false } },
             { $group: { _id: "$metadataId", 't': { '$push': '$searchTerms' }, 'amount': { "$sum": 1 } } }
