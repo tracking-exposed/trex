@@ -118,11 +118,11 @@ async function getPersonalTimeline(req) {
         let types = _.sum(_.map(_.omit(_.countBy(perDayEvs, 'type'), ['undefined']), function(amount, name) { return amount; }));
         let authors = _.sum(_.map(_.countBy(videos, 'authorName'), function(amount, name) { return amount; }));
         // let adverts = _.sum(_.map(_.omit(_.countBy(perDayEvs, 'advertiser'), ['undefined']), function(amount, name) { return amount; }));
-        debug("%s <Vid %d Home %d> -> %j %d - %j %d", dayStr,
+        /* debug("%s <Vid %d Home %d> -> %j %d - %j %d", dayStr,
             _.size(videos), _.size(homepages),
             _.countBy(perDayEvs, 'type'), types,
             _.countBy(videos, 'authorName'), authors,
-        );
+        ); */
         return {
             titles: _.map(videos, 'title'),
             homepages,

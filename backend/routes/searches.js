@@ -60,7 +60,7 @@ async function getSearchesCSV(req) {
 
 async function getSearchKeywords(req) {
     // '/api/v2/search/keywords/:paging?'
-    const MAXRVS = 200;
+    const MAXRVS = 3000;
     const hardcodedAmount = 3;
     const hardcodedUnit = 'days';
     const { amount, skip } = params.optionParsing(req.params.paging, MAXRVS);
