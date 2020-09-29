@@ -41,10 +41,14 @@ async function getSummaryByPublicKey(publicKey, options) {
             $exists: true
         } });
 
+    const searches = await mongo3.readLimit(mongoc,
+        nconf.get('schema').searches, { publicKey: supporter.publicKey }, { savingTime: -1}, // TODO .queries
+            options.amount, options.skip);
+
     await mongoc.close();
 
-    debug("Retrieved in getSummaryByPublicKey: data %d, total %d (amount %d skip %d)",
-        _.size(metadata), total, options.amount, options.skip);
+    debug("Retrieved in getSummaryByPublicKey: data %d, total %d (amount %d skip %d) and searches %d",
+        _.size(metadata), total, options.amount, options.skip, _.size(searches));
 
     const fields = [ 'id', 'login', 'videoId', 'savingTime', 'title', 'relative',
                      'authorName', 'authorSource', 'publicationTime', 'relatedN' ];
@@ -229,27 +233,27 @@ async function getRelatedByVideoId(videoId, options) {
             { $sort: { savingTime: -1 }}
         ]);
     await mongoc.close();
-    debug("Aggregate of getRelated: %d entries", _.size(related));
+    debug("Aggregate of getRelatedByVideoId: %d entries", _.size(related));
     return _.map(related, function(r, i) {
         return {
             savingTime: r.savingTime,
             id: r.id.substr(0, 20),
             watcher: utils.string2Food(r.publicKey),
+            blang: r.blang,
 
             recommendedVideoId: r.related.videoId,
-            recommendedViews: (r.related.mined) ? r.related.mined.viz : null,
-            recommendedDuration: (r.related.mined) ? r.related.mined.duration : null,
-            recommendedPubtime: (r.related.mined) ? r.related.mined.timeago : null,
+            recommendedPubtime: r.related.publicationTime.toISOString(),
             recommendedForYou: r.related.foryou,
-            recommendedTitle: r.related.title,
-            recommendedAuthor: r.related.source,
+            recommendedTitle: r.related.recommendedTitle,
+            recommendedAuthor: r.related.recommendedSource,
             recommendedVerified: r.related.verified,
             recommendationOrder: r.related.index,
+            recommendedViews: r.related.recommendedViews,
             watchedId: r.videoId,
             watchedAuthor: r.authorName,
-            watchedPubtime: r.related.vizstr,
+            watchedPubtime: r.publicationTime.toISOString(),
             watchedTitle: r.title,
-            watchedViews: r.viewInfo.viewStr ? r.viewInfo.viewStr : null,
+            watchedViews: r.viewInfo.viewStr ? r.viewInfo.viewNumber : null,
             watchedChannel: r.authorSource,
         };
     });

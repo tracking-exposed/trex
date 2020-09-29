@@ -124,7 +124,7 @@ app.get('/api/v1/wetest/:key/:filter', function(req, res) {
     return dispatchPromise('researcher', req, res);
 });
 
-/* this return a summary (profile, total amount of videos, last videos */
+/* this return a summary (profile, total amount of videos, last videos, last searches */
 app.get('/api/v1/personal/:publicKey/:paging?', function(req, res) {
     return dispatchPromise('getPersonal', req, res);
 });
