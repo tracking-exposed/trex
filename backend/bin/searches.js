@@ -35,7 +35,7 @@ nconf.argv().env().file({ file: 'config/settings.json' });
 }                                                                                     */
 
 const FREQUENCY = 5; // seconds
-const AMOUNT_DEFAULT = 80;
+const AMOUNT_DEFAULT = 20;
 const BACKINTIMEDEFAULT = 1; // minutes 
 
 let skipCount = _.parseInt(nconf.get('skip')) ? _.parseInt(nconf.get('skip')) : 0;
@@ -143,7 +143,7 @@ function fuzzyFind(nodes, natureKind, expectedPlace) {
     }, null);
 }
 
-function processSearches(e) {
+function processSearches(e, i) {
     /* main function invoked by the core loop, it is argument of _.map,
      * return either null or a list of video belonging to a search result */
     processedCounter++;
@@ -157,7 +157,7 @@ function processSearches(e) {
     if(uq.pathname !== '/results')
         return null;
 
-    const searchTerms = qustr.unescape(uq.query).replace(/search_query=/, '');
+    const searchTerms = _.trim(qustr.parse(uq.query).search_query);
 
     /* extend db object with DOM and compute side effects stats */
     const nodes = _.compact(_.map(e.acquired, prepareObjectList));
@@ -247,7 +247,7 @@ function processSearches(e) {
         return retval;
     });
 
-    debug("Acquired %d, foundVideos %d, incomplete %j",
+    debug("%d) Acquired %d, foundVideos %d, incomplete %j", i,
         _.size(e.acquired), _.size(foundVideos), _.countBy(searchOutput, 'incomplete'));
 
     return searchOutput;
@@ -268,11 +268,11 @@ async function fetchAndAnalyze(labelFilter) {
         computedFrequency = FREQUENCY;
         return;
     } else {
-        computedFrequency = 0.9;
+        computedFrequency = 0.01;
     }
 
     if(!labels.overflow) {
-        lastExecution = moment().subtract(BACKINTIMEDEFAULT, 'm').toISOString();
+        lastExecution = moment().toISOString();
         /* 1 minute is the average stop, so it comeback to check 3 minutes before */
         overflowReport("<NOT>\t\t%d documents", _.size(labels.content));
     }
@@ -303,10 +303,23 @@ async function fetchAndAnalyze(labelFilter) {
         _.size(labels.content), _.size(_.compact(products)), _.size(effective))
 
     if(_.size(effective)) {
-        const unCheckedRetVal = await automo.upsertSearchResults(effective);
-        debug("%d completed, took %d secs = %d mins",
+        const queries = _.map(_.groupBy(effective, 'metadataId'), function(pelist, metadataId) {
+            return {
+                id: metadataId,
+                searchTerms: _.first(pelist).searchTerms,
+                savingTime: _.first(pelist).savingTime,
+                clang: _.first(pelist).clang,
+                publicKey: _.first(pelist).publicKey,
+                results: _.size(pelist),
+            }
+        });
+        const queriesWritten = await automo.upsertSearchResults(queries, nconf.get('schema').queries);
+        const unCheckedRetVal = await automo.upsertSearchResults(effective, nconf.get('schema').searches);
+        debug("%d completed, took %d secs = %d mins [ %d Qs - %d RESs ]",
             processedCounter, moment.duration(moment() - stats.current).asSeconds(),
-            _.round(moment.duration(moment() - stats.current).asMinutes(), 2));
+            _.round(moment.duration(moment() - stats.current).asMinutes(), 2),
+            queriesWritten, unCheckedRetVal
+        );
     }
 }
 

@@ -27,6 +27,11 @@ ret = db.searches.createIndex({ metadataId: 1 }); checkret('searches metadataId'
 ret = db.searches.createIndex({ savingTime: -1 }); checkret('searches savingTime', ret);
 ret = db.searches.createIndex({ id: 1 }, { unique: true }); checkret('searches id', ret);
 
+ret = db.queries.createIndex({ id: 1 }, { unique: true }); checkret('queries id', ret);
+ret = db.queries.createIndex({ publicKey: 1 }); checkret('queries publicKey', ret);
+ret = db.queries.createIndex({ savingTime: -1 }); checkret('queries savingTime', ret);
+ret = db.queries.createIndex({ searchTerms: -1 }); checkret('queries searchTerms', ret);
+
 ret = db.errors.createIndex({ id: 1 }, { unique: true }); checkret('errors id', ret);
 ret = db.errors.createIndex({ when: -1 }); checkret('errors when', ret);
 

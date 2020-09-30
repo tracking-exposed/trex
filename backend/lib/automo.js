@@ -318,14 +318,18 @@ async function getLastLabels(filter, skip, amount) {
     };
 }
 
-async function upsertSearchResults(listof) {
+async function upsertSearchResults(listof, cName) {
     const mongoc = await mongo3.clientConnect({concurrency: 1});
+    let written = 0;
     for (entry of listof) {
-        a = await mongo3.upsertOne(mongoc, nconf.get('schema').searches, {id: entry.id}, entry);
+        a = await mongo3.upsertOne(mongoc, cName, {id: entry.id}, entry);
         if(!a.result.ok)
-            debug("!OK with searches.id %s: %j", entry.id, a);
+            debug("!OK with %s.id %s: %j", cName, entry.id, a);
+        else
+            written++;
     }
     await mongoc.close();
+    return written;
 }
 
 async function getLastHTMLs(filter, skip, amount) {
