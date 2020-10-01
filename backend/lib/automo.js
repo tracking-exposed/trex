@@ -42,7 +42,7 @@ async function getSummaryByPublicKey(publicKey, options) {
         } });
 
     const searches = await mongo3.readLimit(mongoc,
-        nconf.get('schema').searches, { publicKey: supporter.publicKey }, { savingTime: -1}, // TODO .queries
+        nconf.get('schema').queries, { publicKey: supporter.publicKey }, { savingTime: -1},
             options.amount, options.skip);
 
     await mongoc.close();
@@ -78,7 +78,7 @@ async function getSummaryByPublicKey(publicKey, options) {
     });
     graphs.related = _.reverse(_.orderBy(graphs.related, 'recommended videos'));
 
-    return { supporter, recent: cleandata, graphs, total };
+    return { supporter, recent: cleandata, graphs, total, searches };
 }
 
 async function getMetadataByPublicKey(publicKey, options) {

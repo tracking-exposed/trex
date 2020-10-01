@@ -28,10 +28,10 @@ async function getSearchesCSV(req) {
     // '/api/v2/searches/:query/CSV'
     const MAXRVS = 3000;
     const { amount, skip } = params.optionParsing(req.params.paging, MAXRVS);
-    const qs = qustr.unescape(req.params.query);
-    debug("getSearchsCSV [%s] query string, max amount %d", qs, amount);
+    const searchTerms = _.first(_.keys(qustr.parse(req.params.query)));
+    debug("getSearchsCSV query string [%s] max amount %d", searchTerms, amount);
 
-    const entries = await dbutils.getLimitedCollection(nconf.get('schema').searches, {searchTerms: qs}, amount, true);
+    const entries = await dbutils.getLimitedCollection(nconf.get('schema').searches, {searchTerms}, amount, true);
     const fixed = _.map(entries, function(e) {
         e.pseudo = utils.string2Food(e.publicKey);
         return _.omit(e, ['_id', 'publicKey']);
@@ -39,9 +39,10 @@ async function getSearchesCSV(req) {
 
     const overflow = (_.size(entries) == MAXRVS);
     const counters = _.countBy(entries, 'metadataId');
-    debug("search query %s returned %d with max amount of %d (%j)", qs, _.size(entries), MAXRVS, counters);
-    const csv = CSV.produceCSVv1(fixed);
+    debug("search query %s returned %d with max amount of %d (%j)",
+        searchTerms, _.size(entries), MAXRVS, counters);
 
+    const csv = CSV.produceCSVv1(fixed);
     if(!_.size(csv))
         return { text: "Error 🤷 No content produced in this CSV!" };
 
