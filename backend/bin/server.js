@@ -187,11 +187,19 @@ app.post('/api/v2/profile/:publicKey', (req, res) => {
 app.get('/api/v2/searches/:query/CSV', (req, res) => {
     return dispatchPromise('getSearchesCSV', req, res);
 });
+app.get('/api/v2/queries/:campaignName', (req, res) => {
+    return dispatchPromise('getQueries', req, res);
+});
 app.get('/api/v2/searches/:query/:paging?', (req, res) => {
     return dispatchPromise('getSearches', req, res);
 });
 app.get('/api/v2/search/keywords/:paging?', (req, res) => {
     return dispatchPromise('getSearchKeywords', req, res);
+});
+
+/* to configure search comparison */
+app.post('/api/v2/campaigns/:key', (req, res) => {
+    return dispatchPromise('updateCampaigns', req, res);
 });
 
 /* security checks = is the password set and is not the default? (more checks might come) */

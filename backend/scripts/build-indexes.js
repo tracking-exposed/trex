@@ -35,6 +35,8 @@ ret = db.queries.createIndex({ searchTerms: -1 }); checkret('queries searchTerms
 ret = db.errors.createIndex({ id: 1 }, { unique: true }); checkret('errors id', ret);
 ret = db.errors.createIndex({ when: -1 }); checkret('errors when', ret);
 
+ret = db.campaigns.createIndex({ name: 1 }, { unique: true }); checkret('campaigns name', ret);
+
 function checkret(info, retval) {
     retval.info = info;
     printjson(retval);

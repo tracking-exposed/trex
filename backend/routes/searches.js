@@ -7,6 +7,7 @@ const qustr = require('querystring');
 const CSV = require('../lib/CSV');
 const params = require('../lib/params');
 const dbutils = require('../lib/dbutils');
+const security = require('../lib/security');
 const utils = require('../lib/utils');
 
 
@@ -23,6 +24,18 @@ async function getSearches(req) {
     debug("getSearches: returning %d matches about %s", _.size(rv), req.params.query);
     return { json: rv };
 };
+
+async function getQueries(req) {
+    const campaignName = req.params.campaignName;
+    debug("getQueries of %s", campaignName);
+    const entries = await dbutils.getCampaignQuery(
+        nconf.get('schema').campaigns,
+        nconf.get('schema').queries,
+        campaignName
+    );
+    debug("getQueries of %s returns %d elements", campaignName, _.size(entries));
+    return { json: entries };
+}
 
 async function getSearchesCSV(req) {
     // '/api/v2/searches/:query/CSV'
@@ -87,8 +100,18 @@ async function getSearchKeywords(req) {
     }};
 };
 
+async function updateCampaigns(req) {
+    if(!security.checkPassword(req))
+        return {json: { error: true, message: "Invalid key" }};
+
+    const result = await dbutils.upsertMany(nconf.get('schema').campaigns, req.body, 'name');
+    return { json: { error: !result } }
+}
+
 module.exports = {
     getSearches,
+    getQueries,
     getSearchesCSV,
     getSearchKeywords,
+    updateCampaigns,
 };

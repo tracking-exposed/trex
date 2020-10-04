@@ -1,0 +1,25 @@
+[{
+    "name": "example",
+    "description": "this is just a dummy text to display wheres is going to appear",
+    "discussion": "https://",
+    "startDate": "2020-10-01",
+    "endDate": "2021-01-01",
+    "queries": [
+        "monkey",
+        "sloth",
+        "cappuccino monkey",
+        "mountain goats"
+    ]
+}, {
+    "name": "us1",
+    "description": "Example about US election search comparison",
+    "discussion": "https://",
+    "startDate": "2020-10-01",
+    "endDate": "2020-11-20",
+    "queries": [
+        "election results",
+        "exit poll",
+        "vote ballot",
+        "swing states"
+    ]
+}]
