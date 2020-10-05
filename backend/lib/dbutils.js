@@ -32,9 +32,8 @@ async function getCampaignQuery(campaignColumn, queriesColumn, campaignName) {
     const MAXAMOUNT = 2000;
     try {
         const mongoc = await mongo3.clientConnect({concurrency: 1});
-        let filter = await mongo3.read(mongoc, campaignColumn, {campaignName });
-        debug("filter retrieved %j", filter);
-        filter = [ 'link4universe spaceX', 'trump biden face to face' ];
+        let filter = await mongo3.read(mongoc, campaignColumn, { name: campaignName });
+        debug("getCampaignQuery - filter retrieved %j", filter);
         const results = await mongo3.readLimit(mongoc, queriesColumn, { searchTerms: { "$in": filter }}, {}, MAXAMOUNT, 0);
         const refined = _.map(_.groupBy(results, 'searchTerms'), function(qlist, searchTerms) {
             // this is ready for table visualization 
@@ -56,24 +55,31 @@ async function getCampaignQuery(campaignColumn, queriesColumn, campaignName) {
                 overflow: (_.size(results) == MAXAMOUNT)
         }};
     } catch(error) {
-        debug("Failure in db access (getCampaignQuery %s): %s", campaignName, error.message);
+        debug("getCampaignQuery - failure in db access (getCampaignQuery %s): %s", campaignName, error.message);
         return false;
     }
 }
 
 
-async function upsertMany(cName, listof, kname) {
+async function writeCampaigns(cName, listof, kname) {
     try {
         const mongoc = await mongo3.clientConnect({concurrency: 1});
         for (o of listof) {
             let filter = _.pick(o, [kname]);
-            debug("filter %j", filter);
-            let r = await mongo3.upsertOne(mongoc, cName, o, filter );
-            console.log(r);
+            let r = await mongo3.updateOne(mongoc, cName, filter, o);
+            let debugline = 'campaign ' + filter[kname];
+            if(r.upsertedCount)
+                debugline += " upserted";
+            if (r.matchedCount)
+                debugline += " matched";
+            if (r.modifiedCount)
+                debugline += " modified";
+            debug("writeCampaigns: %s", debugline);
         }
         await mongoc.close();
+        return true;
     } catch(error) {
-        debug("%j", error);
+        debug("writeCampagins error: %s", error.message);
         return false;
     }
 }
@@ -135,7 +141,7 @@ module.exports = {
     checkMongoWorks,
     getLimitedDistinct,
     getCampaignQuery,
-    upsertMany,
+    writeCampaigns,
     reduceRecentSearches,
     getLimitedCollection,
 };

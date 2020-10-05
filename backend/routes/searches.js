@@ -104,7 +104,13 @@ async function updateCampaigns(req) {
     if(!security.checkPassword(req))
         return {json: { error: true, message: "Invalid key" }};
 
-    const result = await dbutils.upsertMany(nconf.get('schema').campaigns, req.body, 'name');
+    const fixed = _.map(req.body, function(c) {
+        c.endDate = new Date(c.endDate);
+        c.startDate = new Date(c.startDate);
+        c.lastUpdate = new Date();
+        return c;
+    });
+    const result = await dbutils.writeCampaigns(nconf.get('schema').campaigns, fixed, 'name', 'lastUpdate');
     return { json: { error: !result } }
 }
 
