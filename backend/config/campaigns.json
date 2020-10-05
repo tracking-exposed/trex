@@ -1,7 +1,7 @@
 [{
     "name": "example",
     "description": "this is just a dummy text to display wheres is going to appear",
-    "discussion": "https://",
+    "discussion": "https://github.com/tracking-exposed/yttrex/issues/45",
     "startDate": "2020-10-01",
     "endDate": "2021-01-01",
     "queries": [
