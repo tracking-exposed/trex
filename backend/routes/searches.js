@@ -12,7 +12,8 @@ const utils = require('../lib/utils');
 
 
 async function getSearches(req) {
-    // '/api/v2/searches/:query/:paging?'
+    // '/api/v2/searches/:query/:paging?' 
+    throw new Error("discontinued");
     const { amount, skip } = params.optionParsing(req.params.paging, 100);
     const qs = qustr.unescape(req.params.query);
     debug("getSearches %s query amount %d skip %d", qs, amount, skip);
@@ -26,6 +27,7 @@ async function getSearches(req) {
 };
 
 async function getQueries(req) {
+    // this is the API used in campaigns like: http://localhost:1313/chiaro/excample/
     const campaignName = req.params.campaignName;
     debug("getQueries of %s", campaignName);
     const entries = await dbutils.getCampaignQuery(
@@ -33,6 +35,15 @@ async function getQueries(req) {
         nconf.get('schema').queries,
         campaignName
     );
+
+    if(!entries)
+        return { json: {
+                error: true,
+                message: "Campaign not found in our DB",
+                request: campaignName,
+            }
+        }
+
     debug("getQueries of %s returns %d elements", campaignName, _.size(entries));
     return { json: entries };
 }
@@ -110,7 +121,7 @@ async function updateCampaigns(req) {
         c.lastUpdate = new Date();
         return c;
     });
-    const result = await dbutils.writeCampaigns(nconf.get('schema').campaigns, fixed, 'name', 'lastUpdate');
+    const result = await dbutils.writeCampaigns(nconf.get('schema').campaigns, fixed, 'name');
     return { json: { error: !result } }
 }
 

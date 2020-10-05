@@ -32,9 +32,16 @@ async function getCampaignQuery(campaignColumn, queriesColumn, campaignName) {
     const MAXAMOUNT = 2000;
     try {
         const mongoc = await mongo3.clientConnect({concurrency: 1});
-        let filter = await mongo3.read(mongoc, campaignColumn, { name: campaignName });
-        debug("getCampaignQuery - filter retrieved %j", filter);
-        const results = await mongo3.readLimit(mongoc, queriesColumn, { searchTerms: { "$in": filter }}, {}, MAXAMOUNT, 0);
+        const r = await mongo3.read(mongoc, campaignColumn, { name: campaignName });
+        if(!r || !_.size(r) || !r[0]._id )
+            return false;
+
+        const campaign = _.first(r)
+        debug("getCampaignQuery - campaign retrieved %s, with %d queries", campaign.name, _.size(campaign.queries));
+        const results = await mongo3.readLimit(mongoc, queriesColumn, {
+            searchTerms: { "$in": campaign.queries },
+            savingTime: { "$gte": campaign.startDate, "$lte": campaign.endDate }
+        }, {}, MAXAMOUNT, 0);
         const refined = _.map(_.groupBy(results, 'searchTerms'), function(qlist, searchTerms) {
             // this is ready for table visualization 
             const rv = {
@@ -47,8 +54,10 @@ async function getCampaignQuery(campaignColumn, queriesColumn, campaignName) {
         });
         const contributors = _.size(_.keys(_.countBy(results, 'publicKey')));
         await mongoc.close();
-        return { selist: refined,
+        return {
+            selist: refined,
             contributors,
+            campaign,
             parameters: {
                 maxAmount: MAXAMOUNT,
                 retrieved: _.size(results),
@@ -59,7 +68,6 @@ async function getCampaignQuery(campaignColumn, queriesColumn, campaignName) {
         return false;
     }
 }
-
 
 async function writeCampaigns(cName, listof, kname) {
     try {
