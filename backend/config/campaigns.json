@@ -13,7 +13,7 @@
 }, {
     "name": "us1",
     "description": "Example about US election search comparison",
-    "discussion": "https://",
+    "discussion": "https://github.com/tracking-exposed/yttrex/issues/44",
     "startDate": "2020-10-01",
     "endDate": "2020-11-20",
     "queries": [

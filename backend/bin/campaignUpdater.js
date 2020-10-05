@@ -17,10 +17,12 @@ async function main() {
     const destUrl = `${dest}/api/v2/campaigns/${nconf.get('key')}/`;
 
     const content = JSON.parse(fs.readFileSync(sourcefile));
-    debug("%j", content);
-
+    debug("Read file %s found %d campaigns (%j)", sourcefile, 
+        _.size(content), _.map(content, 'name'));
     const answer = await request.post(destUrl, { json: content });
-    debug("%s", answer.body);
+    console.log("Updating", destUrl);
+
+    return answer;
 }
 
 main();
