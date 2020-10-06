@@ -1,3 +1,4 @@
+#!/usr/bin/env node
 const _ = require('lodash');
 const debug = require('debug')('bin:picker');
 const Promise = require('bluebird');
