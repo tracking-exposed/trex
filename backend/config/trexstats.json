@@ -94,8 +94,8 @@
                 "selector": { "related.0": { "$exists": true }}
             },
             {
-                "name": "hasAd",
-                "selector": { "adChannel": { "$exists": true }}
+                "name": "viewWorks",
+                "selector": { "viewInfo.viewNumber": { "$gt": 0 }}
             },
             {
                 "name": "total",
@@ -140,7 +140,8 @@
         "variables": [
             {   "name": "searches",  "selector": { }                                      },
             {   "name": "24hours",   "selector": { "relativeSeconds": { "$lt": 86400  } } },
-            {   "name": "7days",     "selector": { "relativeSeconds": { "$lt": 604800 } } }
+            {   "name": "7days",     "selector": { "relativeSeconds": { "$lt": 604800 } } },
+            {   "name": "1month",    "selector": { "relativeSeconds": { "$lt": 2592000} } }
         ]
     }, {
         "name": "active",
