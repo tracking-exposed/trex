@@ -70,28 +70,30 @@ async function getCampaignQuery(campaignColumn, queriesColumn, campaignName) {
 }
 
 async function writeCampaigns(cName, listof, kname) {
-    try {
-        retval = [];
-        const mongoc = await mongo3.clientConnect({concurrency: 1});
-        for (o of listof) {
-            let filter = _.pick(o, [kname]);
-            let r = await mongo3.updateOne(mongoc, cName, filter, o);
-            let debugline = 'campaign [' + filter[kname] + ']';
-            if(r.upsertedCount)
-                debugline += " upserted";
-            if (r.matchedCount)
-                debugline += " matched";
-            if (r.modifiedCount)
-                debugline += " modified";
-            debug("writeCampaigns: %s", debugline);
-            retval.push(debugline);
+    const mongoc = await mongo3.clientConnect({concurrency: 1});
+    let retval = [];
+    for (o of listof) {
+        let r, filter = _.pick(o, [kname]);
+        /* debugline is sent back to client as JSON */
+        let debugline = 'campaign [' + filter[kname] + ']';
+        try {
+            r = await mongo3.upsertOne(mongoc, cName, filter, o);
+        } catch(error) {
+            debugline += " error", error.message;
         }
-        await mongoc.close();
-        return retval;
-    } catch(error) {
-        debug("writeCampagins error: %s", error.message);
-        return [error.message, error.code ];
+        if (r.insertedCount)
+            debugline += " inserted";
+        if (r.upsertedCount)
+            debugline += " upserted";
+        if (r.matchedCount)
+            debugline += " matched";
+        if (r.modifiedCount)
+            debugline += " modified";
+        debug("writeCampaigns: %s", debugline);
+        retval.push(debugline);
     }
+    await mongoc.close();
+    return retval;
 }
 
 async function reduceRecentSearches(cName, maxAmount, filter) {
