@@ -43,9 +43,13 @@ async function computeCount(mongoc, statinfo, filter) {
             /* there is 'innercount' the deep counter
              * v.innercount = [ 'related', { 'related.foryou': true } ]
                                  unwind,       matchToCount, 
+               projectComposed = { 'related': 1 }
              */
+            const projectComposed = {};
+            projectComposed[v.innercount[0]] = 1;
             const amount = await mongo.aggregate(mongoc, statinfo.column, [
                 { $match: filter },
+                { $project: projectComposed },
                 { $unwind: "$" + v.innercount[0] },
                 { $match: v.innercount[1] },
                 { $count: "amount" }

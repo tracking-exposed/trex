@@ -138,7 +138,7 @@
         "column": "searches",
         "timevar": "savingTime",
         "variables": [
-            {   "name": "searches",  "selector": { }                                      },
+            {   "name": "total",     "selector": { }                                      },
             {   "name": "24hours",   "selector": { "relativeSeconds": { "$lt": 86400  } } },
             {   "name": "7days",     "selector": { "relativeSeconds": { "$lt": 604800 } } },
             {   "name": "1month",    "selector": { "relativeSeconds": { "$lt": 2592000} } }
@@ -166,9 +166,10 @@
         "column": "metadata",
         "timevar": "savingTime",
         "variables": [
-            {   "name": "foryou",  "innercount": [ "related", {"related.foryou": true} ]  },
+            {   "name": "foryou",  "innercount": [ "related", {"related.foryou": true} ]      },
             {   "name": "verified",  "innercount": [ "related", {"related.verified": true} ]  },
-            {   "name": "isLive",  "innercount": [ "related", {"related.isLive": true} ]  }
+            {   "name": "total",  "innercount": [ "related", {} ]                             },
+            {   "name": "isLive",  "innercount": [ "related", {"related.isLive": true} ]      }
         ]
     }
     ]
