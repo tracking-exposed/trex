@@ -71,11 +71,12 @@ async function getCampaignQuery(campaignColumn, queriesColumn, campaignName) {
 
 async function writeCampaigns(cName, listof, kname) {
     try {
+        retval = [];
         const mongoc = await mongo3.clientConnect({concurrency: 1});
         for (o of listof) {
             let filter = _.pick(o, [kname]);
             let r = await mongo3.updateOne(mongoc, cName, filter, o);
-            let debugline = 'campaign ' + filter[kname];
+            let debugline = 'campaign [' + filter[kname] + ']';
             if(r.upsertedCount)
                 debugline += " upserted";
             if (r.matchedCount)
@@ -83,12 +84,13 @@ async function writeCampaigns(cName, listof, kname) {
             if (r.modifiedCount)
                 debugline += " modified";
             debug("writeCampaigns: %s", debugline);
+            retval.push(debugline);
         }
         await mongoc.close();
-        return true;
+        return retval;
     } catch(error) {
         debug("writeCampagins error: %s", error.message);
-        return false;
+        return [error.message, error.code ];
     }
 }
 

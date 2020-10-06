@@ -121,8 +121,9 @@ async function updateCampaigns(req) {
         c.lastUpdate = new Date();
         return c;
     });
+    debug("Fixed %d campaigns to update", _.size(fixed))
     const result = await dbutils.writeCampaigns(nconf.get('schema').campaigns, fixed, 'name');
-    return { json: { error: !result } }
+    return { json: result }
 }
 
 module.exports = {

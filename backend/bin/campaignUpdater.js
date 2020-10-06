@@ -13,6 +13,7 @@ if(!nconf.get('key'))
 
 async function main() {
 
+    console.log("Remember: security downgrade in campaignUpdater.js");
     process.env['NODE_TLS_REJECT_UNAUTHORIZED'] = 0;
 
     const sourcefile = nconf.get('source') || 'config/campaigns.json';
@@ -20,12 +21,13 @@ async function main() {
     const destUrl = `${dest}/api/v2/campaigns/${nconf.get('key')}/`;
 
     const content = JSON.parse(fs.readFileSync(sourcefile));
-    debug("Read file %s found %d campaigns (%j)", sourcefile, 
-        _.size(content), _.map(content, 'name'));
-    const answer = await request.post(destUrl, { json: content });
-    console.log("Updating", destUrl);
-
-    return answer;
+    debug("Read file %s found %d campaigns (%j) connecting to %s",
+        sourcefile, _.size(content), _.map(content, 'name'), destUrl);
+    await request.post(destUrl, { json: content }, function(request, response) {
+        const answer = response.toJSON();
+        debug("Update completed, server said: %s", JSON.stringify(answer.body, undefined, 2));
+        console.log(`Test by connecting to ${dest}/api/v2/queries/<campaignName>`);
+    });
 }
 
 main();
