@@ -161,6 +161,15 @@
             {   "name": "total",   "selector": { }                                   },
             {   "name": "labels",  "selector": { "selectorName":"label"}             }
         ]
+    }, {
+        "name": "deeper",
+        "column": "metadata",
+        "timevar": "savingTime",
+        "variables": [
+            {   "name": "foryou",  "innercount": [ "related", {"related.foryou": true} ]  },
+            {   "name": "verified",  "innercount": [ "related", {"related.verified": true} ]  },
+            {   "name": "isLive",  "innercount": [ "related", {"related.isLive": true} ]  }
+        ]
     }
     ]
 }
