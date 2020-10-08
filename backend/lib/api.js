@@ -20,6 +20,7 @@ const apiList = {
     getSearches:      require('../routes/searches').getSearches,
     getSearchesCSV:   require('../routes/searches').getSearchesCSV,
     getSearchKeywords:require('../routes/searches').getSearchKeywords,
+    getSearchDetails: require('../routes/searches').getSearchDetails,
     updateCampaigns:  require('../routes/searches').updateCampaigns,
 
 

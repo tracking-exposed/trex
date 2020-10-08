@@ -1,5 +1,6 @@
 const _ = require('lodash');
 const debug = require('debug')('lib:dbutils');
+const moment = require('moment');
 
 const mongo3 = require('./mongo3');
 const utils = require('./utils');
@@ -148,6 +149,36 @@ async function getLimitedCollection(cName, filter, maxAmount, reportOverflow) {
     }
 }
 
+async function compareSearches(cName, idlist) {
+    let mongoc, structured = {}, info = {};
+    const maxAmount = 200;
+    try {
+        mongoc = await mongo3.clientConnect({concurrency: 1});
+        for (mid of idlist) {
+            const r = await mongo3.readLimit(mongoc, cName, { metadataId: mid }, {}, maxAmount, 0);
+            structured[mid] = _.map(r, function(searchResult) {
+                const no = _.pick(searchResult, 
+                    ['priorityOrder', 'videoId', 'title', 'relativeSeconds', 'currentViews',
+                     'selectedAuthor', 'displayLength', 'publicationTime' ]);
+                if(no.publicationTime)
+                    no.ttl = moment.duration(
+                        moment(searchResult.savingTime) - moment(no.publicationTime)
+                    ).humanize();
+                return no;
+            });
+            info[mid] = {
+                savingTime: moment(_.first(r).savingTime).format('YYYY-MM-DD'),
+                clang: _.first(r).clang,
+                profile: _.first(r).publicKey.substr(5, 5).toLowerCase(),
+                searchTerms: _.first(r).searchTerms
+            };
+        }
+    } catch(error) {
+        debug("compareSearches: error in database calls: %s", error.message);
+    }
+    await mongoc.close();
+    return { structured, info };
+}
 
 module.exports = {
     checkMongoWorks,
@@ -156,4 +187,5 @@ module.exports = {
     writeCampaigns,
     reduceRecentSearches,
     getLimitedCollection,
+    compareSearches,
 };

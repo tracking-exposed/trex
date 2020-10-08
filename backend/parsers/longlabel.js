@@ -44,6 +44,7 @@ function NoViewsReplacer(l, sosta) {
 }
 
 function guessLanguageByViews(candidates) {
+    if(!_.size(candidates)) debug("guessLanguageByViews has not candidates!");
     /* 'views', 'vues' or what else? here is guessed a language */
     const likelyness = _.map(candidates, function(word) {
         let match = _.find(langopts, { sostantivo: word });
@@ -53,6 +54,7 @@ function guessLanguageByViews(candidates) {
         return { amount, locale };
     });
     const ordered = _.sortBy(probable, 'amount');
+    if(!_.size(probable)) debug("guessLanguageByViews has no probable choices (%j)", candidates);
     const isReliable = ( _.size(candidates) / 10 ) < _.first(ordered).amount;
     if(!isReliable)
         debuge("With this list of candidates %j, we pick %j probable match and is less than 10%",
@@ -97,7 +99,7 @@ function parser(l, source, isLive) {
         debuge("Failure in extracting with %s from %s", viewssost, l)
         throw new Error("2> " + viewssost);
     }
-    
+
     /* logic:
         3) by $authorName it is guarantee come at last, after every user controller input and 
            before the timing info. We retrive the time info and parse the duration and relative */
@@ -109,8 +111,8 @@ function parser(l, source, isLive) {
     // parsing do not depends on this 
     // debug(reducedLabel.split(halfsep));
     if(separatorCheck < 2) {
-        debugger;
-        debuge("checking '%s' <separator fails as %s>", halfsep, langi.locale);
+        console.log(JSON.stringify({timeinfo, title}, undefined, 2));
+        debuge("checking [%s] <separator fails as %s>", halfsep, langi.locale);
         throw new Error("Separator Error locale: " + langi.locale);
     }
 

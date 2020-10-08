@@ -193,6 +193,9 @@ app.get('/api/v2/queries/:campaignName', (req, res) => {
 app.get('/api/v2/searches/:query/:paging?', (req, res) => {
     return dispatchPromise('getSearches', req, res);
 });
+app.get('/api/v2/searchid/:listof', (req, res) => {
+    return dispatchPromise('getSearchDetails', req, res);
+});
 app.get('/api/v2/search/keywords/:paging?', (req, res) => {
     return dispatchPromise('getSearchKeywords', req, res);
 });

@@ -126,10 +126,27 @@ async function updateCampaigns(req) {
     return { json: result }
 }
 
+async function getSearchDetails(req) {
+    /* this API is used to ask for individual metadataId, and by a visualization that want to 
+     * visualize small snippet in a look-and-feel close to the one of youtube */
+    const ids = req.params.listof.split(',');
+    debug("getSearchDetails got a request for %d searches.metadataId", ids.length);
+    const { structured, info } = await dbutils.compareSearches(nconf.get('schema').searches, ids);
+    debug("Returning %d search results with: %j videos (forced limit of 200 per metadataId)",
+        _.size(_.keys(structured)), _.values(structured).map(_.size), 
+    );
+    return { json: {
+        structured,
+        info,
+    }};
+}
+
+
 module.exports = {
     getSearches,
     getQueries,
     getSearchesCSV,
     getSearchKeywords,
+    getSearchDetails,
     updateCampaigns,
 };

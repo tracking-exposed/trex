@@ -123,6 +123,10 @@ function dissectAndParseLabel(arilabel, title, durationlabel, uxInfo) {
     const authorName = second.replace(/\s\d{1,2}\s\w+\s?.*/, '');
     // Blackview
 
+    // Because author like 'Cannel 4 News' break with this regexp, this was a test:
+    // const authorName = second.replace(/\s\d{1,2}\s\w+\s?\w+?$/, '');
+    // but this causes other failure in longlabel.parser
+
     try {
         const mined = longlabel.parser(arilabel, authorName, null);
         return { authorName, mined };
@@ -234,8 +238,13 @@ function processSearches(e, i) {
             retval.currentViews = mined ? mined.views : null;
         }
 
+        if(retval.relativeSeconds) {
+            const whenCirca = moment(e.clientTime).subtract(retval.relativeSeconds);
+            retval.publicationTime = new Date(whenCirca.toISOString());
+        }
+
         /* duration or dissectAndParseLabel might fail, this is the double check */
-        const doubleCheck = ['selectedAuthor', 'displayLength', 'relativeSeconds', 'currentViews'];
+        const doubleCheck = ['selectedAuthor', 'displayLength', 'relativeSeconds', 'currentViews', 'publicationTime'];
         _.each(doubleCheck, function(k) {
             if(!_.get(retval, k))
                 retval.incomplete = true;
