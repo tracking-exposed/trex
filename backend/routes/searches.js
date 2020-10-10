@@ -13,14 +13,15 @@ const utils = require('../lib/utils');
 
 async function getSearches(req) {
     // '/api/v2/searches/:query/:paging?' 
-    throw new Error("discontinued");
     const { amount, skip } = params.optionParsing(req.params.paging, 100);
     const qs = qustr.unescape(req.params.query);
     debug("getSearches %s query amount %d skip %d", qs, amount, skip);
     const entries = await dbutils.getLimitedCollection(nconf.get('schema').searches, {searchTerms: qs}, amount, true);
     const rv = _.map(entries, function(e) {
         e.pseudo = utils.string2Food(e.publicKey);
-        return _.omit(e, ['_id', 'publicKey'])
+        if(e.relativeSeconds)
+        e.ttl = moment.duration(e.relativeSeconds).humanize();
+        return _.omit(e, ['_id', 'publicKey', 'selectedChannel', 'relativeSeconds']);
     });
     debug("getSearches: returning %d matches about %s", _.size(rv), req.params.query);
     return { json: rv };
