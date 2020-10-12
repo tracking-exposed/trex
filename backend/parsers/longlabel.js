@@ -291,8 +291,8 @@ function comma(label, sosta, isLive) {
     const views = _.reduce(regmap, function(memo, rge, name) {
         const match = rge.exec(label);
         if(match) {
-            memo = _.parseInt(match[0].replace(sosta, '').replace(',', '').trim())
-            // debug("comma,match %s memo %s reduced %s", match, memo, label.substr(0, match.index));
+            memo = _.parseInt(match[0].replace(sosta, '').replace(/,/g, '').trim())
+            // debug("comma,match <%s> %s memo %s reduced %s", name, match, memo, label.substr(0, match.index));
             reducedLabel = label.substr(0, match.index);
         }
         return memo;
@@ -328,7 +328,7 @@ function empty(label, sosta, isLive) {
         const match = rge.exec(fixedlabel);
         if(match) {
             // debug("empty,match value in %s (%s)", name, rge);
-            memo = _.parseInt(match[0].replace(sosta, '').replace(' ', '').trim())
+            memo = _.parseInt(match[0].replace(sosta, '').replace(/\s/g, '').trim())
             reducedLabel = fixedlabel.substr(0, match.index);
         }
         return memo;
@@ -348,7 +348,7 @@ function dots(label, sosta, isLive) {
     const views = _.reduce(regmap, function(memo, rge, name) {
         const match = rge.exec(label);
         if(match) {
-            memo = _.parseInt(match[0].replace(sosta, '').replace('.', '').trim())
+            memo = _.parseInt(match[0].replace(sosta, '').replace(/\./g, '').trim())
             reducedLabel = label.substr(0, match.index);
         }
         return memo;
