@@ -13,6 +13,7 @@ const utils = require('../lib/utils');
 
 async function getSearches(req) {
     // '/api/v2/searches/:query/:paging?' 
+    // this is used in v.md
     const { amount, skip } = params.optionParsing(req.params.paging, 100);
     const qs = qustr.unescape(req.params.query);
     debug("getSearches %s query amount %d skip %d", qs, amount, skip);
@@ -20,7 +21,7 @@ async function getSearches(req) {
     const rv = _.map(entries, function(e) {
         e.pseudo = utils.string2Food(e.publicKey);
         if(e.relativeSeconds)
-        e.ttl = moment.duration(e.relativeSeconds).humanize();
+            e.ttl = moment.duration(e.relativeSeconds * 1000).humanize();
         return _.omit(e, ['_id', 'publicKey', 'selectedChannel', 'relativeSeconds']);
     });
     debug("getSearches: returning %d matches about %s", _.size(rv), req.params.query);
@@ -51,6 +52,7 @@ async function getQueries(req) {
 
 async function getSearchesCSV(req) {
     // '/api/v2/searches/:query/CSV'
+    // this is used by v.md and to download from the CHIARO's page
     const MAXRVS = 3000;
     const { amount, skip } = params.optionParsing(req.params.paging, MAXRVS);
     const searchTerms = _.first(_.keys(qustr.parse(req.params.query)));
@@ -72,8 +74,8 @@ async function getSearchesCSV(req) {
         return { text: "Error 🤷 No content produced in this CSV!" };
 
     const filename = overflow ? 
-        'overflow' + qs + '-' + _.size(entries) + "-" + moment().format("YY-MM-DD") + ".csv" : 
-        qs + '-' + _.size(entries) + "-" + moment().format("YY-MM-DD") + ".csv" ;
+        'overflow' + searchTerms + '-' + _.size(entries) + "-" + moment().format("YY-MM-DD") + ".csv" : 
+        searchTerms + '-' + _.size(entries) + "-" + moment().format("YY-MM-DD") + ".csv" ;
 
     return {
         headers: {
@@ -86,6 +88,8 @@ async function getSearchesCSV(req) {
 
 async function getSearchKeywords(req) {
     // '/api/v2/search/keywords/:paging?'
+    // this returns an unchecked list of USG therefore should be discontinued
+    throw new Error("Discontinued");
     const MAXRVS = 3000;
     const hardcodedAmount = 3;
     const hardcodedUnit = 'days';

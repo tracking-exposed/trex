@@ -159,11 +159,9 @@ async function compareSearches(cName, idlist) {
             structured[mid] = _.map(r, function(searchResult) {
                 const no = _.pick(searchResult, 
                     ['priorityOrder', 'videoId', 'title', 'relativeSeconds', 'currentViews',
-                     'selectedAuthor', 'displayLength', 'publicationTime' ]);
-                if(no.publicationTime)
-                    no.ttl = moment.duration(
-                        moment(searchResult.savingTime) - moment(no.publicationTime)
-                    ).humanize();
+                     'selectedAuthor', 'displayLength' ]);
+                if(no.relativeSeconds)
+                    no.ttl = moment.duration(no.relativeSeconds * 1000).humanize();
                 return no;
             });
             info[mid] = {
