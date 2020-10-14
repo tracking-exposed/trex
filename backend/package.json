@@ -8,7 +8,8 @@
     "parserv": "DEBUG=* node bin/parserv2.js",
     "searches": "DEBUG=* node bin/searches.js",
     "t:lib": "mocha tests/lib/*",
-    "test": "mocha tests/basic/*"
+    "test": "mocha tests/basic/*",
+    "campaigns": "node bin/campaignUpdater.js --dest https://youtube.tracking.exposed"
   },
   "author": "Claudio Agosti <claudio@tracking.exposed> and https://github.com/tracking-exposed/yttrex/graphs/contributors",
   "license": "AGPL-3.0",
