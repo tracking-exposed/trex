@@ -44,7 +44,8 @@ function NoViewsReplacer(l, sosta) {
 }
 
 function guessLanguageByViews(candidates) {
-    if(!_.size(candidates)) debug("guessLanguageByViews has not candidates!");
+    if(!_.size(candidates))
+        throw new Error("guessLanguageByViews E1 has not candidates!");
     /* 'views', 'vues' or what else? here is guessed a language */
     const likelyness = _.map(candidates, function(word) {
         let match = _.find(langopts, { sostantivo: word });
@@ -54,7 +55,10 @@ function guessLanguageByViews(candidates) {
         return { amount, locale };
     });
     const ordered = _.sortBy(probable, 'amount');
-    if(!_.size(probable)) debug("guessLanguageByViews has no probable choices (%j)", candidates);
+    if(!_.size(probable))
+        throw new Error("guessLanguageByViews E2 has no probable choices");
+    if(!_.size(ordered))
+        throw new Error("guessLanguageByViews E3 has no ordered");
     const isReliable = ( _.size(candidates) / 10 ) < _.first(ordered).amount;
     if(!isReliable)
         debuge("With this list of candidates %j, we pick %j probable match and is less than 10%",
@@ -92,7 +96,7 @@ function parser(l, source, isLive) {
         debuge("Not seen any known 'sostantivo' in %s", l);
         throw new Error("1> locale not found!" + viewssost);
     }
-    
+ 
     l = NoViewsReplacer(l, langi.sostantivo);
     const { views, liveStatus, reducedLabel } = langi.viewcount(l, langi.sostantivo, isLive);
     if(_.isNaN(views)) {

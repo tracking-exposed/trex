@@ -165,24 +165,36 @@ function processSearches(e, i) {
 
     /* extend db object with DOM and compute side effects stats */
     const nodes = _.compact(_.map(e.acquired, prepareObjectList));
-    if(!_.size(nodes))
+    if(!_.size(nodes)) {
+        debug("%d) No nodes found in\t\t\t\t%s, quitting processing", i, e.metadataId);
         return null;
+    }
 
-    const lastWordInLabel = _.reduce(nodes, function(memo, n) {
-        let lastWord = _.last(n.ariala.split(' '));
-        _.set(memo, lastWord,
-                _.get(memo, lastWord, 0) ? 
-                _.get(memo, lastWord) + 1 :
-                1
-        );
+    const possibleWordForViews = _.reduce(nodes, function(memo, n) {
+        // long aria-label are the one we are interested on
+        // > "1 hour, 12 minutes, 12 seconds, 1 day".length  =  37
+        // 50 as tolerance in case non english labels have longer names
+        if(n.ariala.length < 50) return memo;
+        let w = _.last(n.ariala.split(' '));
+        _.set(memo, w, _.get(memo, w, 0) ? _.get(memo, w) + 1 : 1);
         return memo;
     }, {});
 
-    /*  lastWordInLabel if printed contains:
-        yttrex:label {"views":26,"channel":26,"link":1,"(SHIFT+n)":1}           */
+    /* possibleWordForViews if printed contains:
+        yttrex:label {"views":26,"channel":26,"link":1,"(SHIFT+n)":1}
+       but it might be empty too because 'views' can't be there, but only 'minutes' 'seconds' ... */
 
-    const uxInfo = longlabel.guessLanguageByViews(_.keys(lastWordInLabel));
-    /* contains uxInfo.locale and uxInfo.separator */
+    let uxInfo = null;
+    try {
+        uxInfo = longlabel.guessLanguageByViews(_.keys(possibleWordForViews));
+    } catch(error) {
+        // the same metadataId, can match that information 
+        // debug("Error catch in guessLanguageByViews: %s", error.message);
+        // debug("Labels in %s: %s", e.metadataId, JSON.stringify(_.map(nodes, 'ariala'), undefined, 2));
+        debug("%d) No usable labels in\t\t\t%s: %s", i, e.metadataId, error.message);
+        return null;
+    }
+    /* uxInfo now contains uxInfo.locale and uxInfo.separator */
 
     const foundVideos = _.filter(nodes, { nature: 'video'});
     /* the function below is instead of a _.reduce with a FSM inside. we need to take three objects with this 
@@ -256,8 +268,9 @@ function processSearches(e, i) {
         return retval;
     });
 
-    debug("%d) Acquired %d, foundVideos %d, incomplete %j", i,
-        _.size(e.acquired), _.size(foundVideos), _.countBy(searchOutput, 'incomplete'));
+    debug("%d) Successfully processed %d nodes from\t%s, foundVideos %d, incomplete %j",
+        i, _.size(e.acquired), e.metadataId, _.size(foundVideos),
+        _.countBy(searchOutput, 'incomplete'));
 
     return searchOutput;
 }
@@ -287,8 +300,9 @@ async function fetchAndAnalyze(labelFilter) {
     }
     else {
         lastExecution = moment(_.last(labels.content).savingTime);
-        overflowReport("first %s (on %d) <last is +minutes %d after> next filter set to %s",
-            _.first(labels.content).savingTime, _.size(labels.content),
+        const mago = _.round(moment.duration( moment() - moment(_.last(labels.content).savingTime)).asMinutes(), 1);
+        overflowReport("first %s [mago %d] (on %d) <window of %d minutes> next filter set to %s",
+            _.first(labels.content).savingTime, mago, _.size(labels.content),
             _.round(moment.duration(
                 moment(_.last(labels.content).savingTime ) - moment(_.first(labels.content).savingTime )
             ).asMinutes(), 1),
