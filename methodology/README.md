@@ -4,7 +4,7 @@ Please give a look at [methodology page](https://youtube.tracking.exposed/method
 
 ## Important links
 
-[master profile](https://tracking.exposed/x/master.tar.gz), should be decompressed in `profiles`.
+[master profile](https://github.com/tracking-exposed/experiments-data/blob/master/yttrex/master.zip), should be decompressed in `profiles`.
 
 Every new collection you want to run should:
 
