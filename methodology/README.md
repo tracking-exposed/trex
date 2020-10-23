@@ -1,6 +1,5 @@
 
-Please give a look at [methodology page](https://youtube.tracking.exposed/automation/).
-
+Please give a look at [automation page](https://youtube.tracking.exposed/automation).
 
 ## Important links
 
