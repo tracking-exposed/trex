@@ -12,7 +12,7 @@ ret = db.supporters.createIndex({ lastActivity: 1 }); checkret('supporters lastA
 ret = db.groups.createIndex({ id: 1 }, { unique: true }); checkret('groups id', ret);
 ret = db.groups.createIndex({ name: 1 }, { unique: true }); checkret('groups name', ret);
 
-/* metadataId is not used to address content, if not when 'precise' parser is invoked */
+/* metadataId is not used to address content, if not when --id option is specify in parserv */
 ret = db.htmls.createIndex({ id: 1 }, { unique: true }); checkret('htmls id', ret);
 ret = db.htmls.createIndex({ savingTime: -1 }); checkret('htmls savingTime', ret);
 ret = db.htmls.createIndex({ processed: 1 }); checkret('htmls processed', ret);

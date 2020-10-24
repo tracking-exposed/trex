@@ -157,7 +157,7 @@ function mineSequence(s, urlSeq) {
     return _.flatten(_.flatten(ready.final));
 }
 
-const TEST_NUMBER = 0;
+const WETEST_VERSION = 8;
 const potcfg = {
     sequence: [
         'https://www.youtube.com/',
@@ -170,17 +170,17 @@ const potcfg = {
     ],
     timefilter: {
         'savingTime': {
-            "$gte": new Date('2020-03-01 00:00:00'),
-            "$lte": new Date('2020-03-25 00:00:00')
+            "$gte": new Date('2020-03-25 00:00:00'),
+            "$lte": new Date('2020-03-27 00:00:00')
         }
     },
-    home: 'wetest-home-' + TEST_NUMBER,
-    video: 'wetest-video-' + TEST_NUMBER,
+    home: 'wetest-home-' + WETEST_VERSION,
+    video: 'wetest-video-' + WETEST_VERSION,
 };
 
 async function main() {
     debug("Extracting content for wetest #%d: %s",
-        TEST_NUMBER, JSON.stringify(potcfg, undefined, 2));
+        WETEST_VERSION, JSON.stringify(potcfg, undefined, 2));
     const keys = await findPlausibleContributor(
         _.uniq(potcfg.sequence), potcfg.timefilter);
     debug("Found %d plausible contributors", _.size(keys));
@@ -199,7 +199,7 @@ async function main() {
 }
 
 try {
-    console.log("Starting wetest…");
+    console.log("Starting extraction of id from wetest1…");
     main();
 } catch(e) {
     console.log("Error in main()", e.message);

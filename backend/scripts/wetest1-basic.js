@@ -11,7 +11,7 @@ const wetest = require('../lib/wetest');
 const mongo3 = require('../lib/mongo3');
 const moment = require('moment');
 
-const VERSION = 7; // every time a bug is fixed or a new feature get add, this increment for internal tracking 
+const VERSION = 8; // every time a bug is fixed or a new feature get add, this increment for internal tracking 
 
 nconf.argv().env().file({ file: 'config/settings.json' });
 
