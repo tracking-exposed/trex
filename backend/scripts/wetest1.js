@@ -18,12 +18,18 @@ async function findPlausibleContributor(urlList, filter) {
     const mongoc = await mongo3.clientConnect({concurrency: 1});
 
     let partialf = _.partial(_.intersection);
+    let metadataIds = [];
     for (url of urlList) {
         filter.href = url;
         let k = await mongo3.distinct(mongoc, nconf.get('schema').htmls, 'publicKey', filter);
         debug("by checking htmls per href %s: %d potential contributors", url, _.size(k));
         partialf = _.partial(partialf, k);
+
+        let m = await mongo3.distinct(mongoc, nconf.get('schema').htmls, 'metadataId', filter);
+	metadataIds.push(m);
     }
+
+    console.log(JSON.stringify(_.flatten(metadataIds), undefined, 2));
 
     await mongoc.close();
     _.unset(filter, 'href');
@@ -78,14 +84,13 @@ async function extractContributions(keys, urlSeq, filter) {
     }, {});
     /* this is because the CSV generate a number of keys in the first 
      * row, as much as there are in the first object. so we extend the 
-     * retval[0] with all the keys, to be sure a default "" whould be there é*/
+     * retval[0] with all the keys, to be sure a default "" whould be there */
     _.set(retval, 0, first);
     return retval;
 }
 
 function transformSequence(partial, sessionNumber) {
 
-    debugger;
     return _.map(partial, function(selectedNode, step) {
         selectedNode.step = step;
         selectedNode.session = sessionNumber;
