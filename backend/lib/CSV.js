@@ -123,7 +123,7 @@ function unwindSections(memo, evidence) { // metadata.type = 'home' with 'select
             parameter: selected.parameter,
             sectionName: selected.sectionName,
             selectedId: utils.hash({ motherId: evidence.id, p: evidence.publicKey, evidenceCounter}),
-            selectedVideoId: selected.videoId.replace(/\&.*/, ''),
+            selectedVideoId: selected.videoId ? selected.videoId.replace(/\&.*/, '') : null,
             selectedAuthor: selected.recommendedSource,
             selectedChannel: selected.recommendedHref,
             selectedTitle: selected.recommendedTitle,
