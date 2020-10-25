@@ -22,5 +22,5 @@ extension/node_modules/*
 backend/node_modules/*
 react-pieces/node_modules/*
 
-backend/*v7.csv
-backend/*v7.json
+backend/*-ωτ1*.csv
+backend/*-ωτ1*.json
