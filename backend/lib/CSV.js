@@ -107,6 +107,10 @@ function unrollRecommended(memo, evidence) { // metadata.type = video with 'rela
 
 function unwindSections(memo, evidence) { // metadata.type = 'home' with 'selected'
     let selectionCounterCheck = _.size(evidence.related);
+    if(evidence.selected[0] && !(evidence.selected[0].videoId) ) {
+        debug("Excluding id %s because seems the videoId have a problm", evidence.selected[0].id);
+	return memo;
+    }
     _.each(evidence.selected, function(selected, evidenceCounter) {
         let entry = {
             /* this is removed or anonymized by the called */
