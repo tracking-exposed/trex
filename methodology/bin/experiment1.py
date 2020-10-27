@@ -1,13 +1,9 @@
 #!/usr/bin/env python
-
-
 from selenium.webdriver import Chrome
 from selenium.webdriver.chrome.options import Options
 import os, sys, time, re, errno
 from os.path import basename
 from os import makedirs
-
-# from trexmethod import *
 
 def getPName(srcstr):
     profileName = re.sub(r'\..*', '', basename(srcstr) )
@@ -109,12 +105,20 @@ profInfo = createProfile(sys.path[-1])
 o = Options()
 o.add_argument('--user-data-dir=' + profInfo['path'])
 
-driver = Chrome(
-        #firefox_profile=profile, 
-        # log_path=os.path.join(profInfo['path'], 'driver.log'),
-        options=o)
-#driver.install_addon( os.path.abspath(
-#    os.path.join("..", "extension", "dist", "extension.zip" ) ), temporary=True )
+if(o.environ['CHROME']):
+    print("Expliciting chrome binary from env", o.environ['CHROME'])
+    o.setBinary(o.environ['CHROME'])
+
+# There is the possibility to use firefox instead of chrome, or to pass the extension via driver,
+# but actually wasn't working yet, so we opt for sharing a pre-configured --user-data-dir
+
+# firefox_profile=profile,
+# log_path=os.path.join(profInfo['path'], 'driver.log'),
+# driver.install_addon(
+#   os.path.abspath(os.path.join("..", "extension", "dist", "extension.zip"))
+# , temporary=True )
+
+driver = Chrome(options=o)
 driver.set_page_load_timeout(40)
 
 with open(sys.argv[-1]) as cfg:
