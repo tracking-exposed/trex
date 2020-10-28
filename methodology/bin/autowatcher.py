@@ -105,9 +105,12 @@ profInfo = createProfile(sys.path[-1])
 o = Options()
 o.add_argument('--user-data-dir=' + profInfo['path'])
 
-if(os.environ['CHROME']):
-    print("Expliciting chrome binary from env", os.environ['CHROME'])
-    o.binary_location = os.environ['CHROME']
+try:
+    if(os.environ['CHROME']):
+        print("Expliciting chrome binary from env", os.environ['CHROME'])
+        o.binary_location = os.environ['CHROME']
+except Exception as e:
+    pass
 
 # There is the possibility to use firefox instead of chrome, or to pass the extension via driver,
 # but actually wasn't working yet, so we opt for sharing a pre-configured --user-data-dir
