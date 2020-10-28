@@ -43,10 +43,6 @@ profInfo = createProfile(sys.path[-1])
 o = Options()
 o.add_argument('--user-data-dir=' + profInfo['path'])
 
-if(os.environ['CHROME']):
-    print("Expliciting chrome binary from env", os.environ['CHROME'])
-    o.binary_location = os.environ['CHROME']
-
 try:
     if(os.environ['CHROME']):
         print("Expliciting chrome binary from env", os.environ['CHROME'])
