@@ -97,8 +97,8 @@ async function writeCampaigns(cName, listof, kname) {
     return retval;
 }
 
-async function reduceRecentSearches(cName, maxAmount, filter) {
-    throw new Error("This should be removed because overriden with new .queries collection");
+async function getAggregatedByTerm(cName, campaign, term) {
+    debugger;
     try {
         const mongoc = await mongo3.clientConnect({concurrency: 1});
         const results = await mongo3.aggregate(mongoc, cName, [
@@ -183,7 +183,7 @@ module.exports = {
     getLimitedDistinct,
     getCampaignQuery,
     writeCampaigns,
-    reduceRecentSearches,
+    getAggregatedByTerm,
     getLimitedCollection,
     compareSearches,
 };
