@@ -26,12 +26,12 @@ def createProfile(cfgname):
     return profInfo
 
 
-def openVideo(url, driver, urlNumber):
+def openURL(url, driver):
     driver.get(url)
     cookie = driver.get_cookie('CONSENT')
     cookies = driver.get_cookies()
     print("this would be closed in 40 seconds", cookie, cookies)
-    time.sleep(40)
+    time.sleep(20)
 
 
 if not os.path.exists(sys.path[-1]):
@@ -61,15 +61,13 @@ except Exception as e:
 #   os.path.abspath(os.path.join("..", "extension", "dist", "extension.zip"))
 # , temporary=True )
 
-driver = Chrome(options=o)
-driver.set_page_load_timeout(40)
+driver = Chrome(chrome_options=o)
+driver.set_page_load_timeout(30)
 
 with open(sys.argv[-1]) as cfg:
     urls = cfg.readlines();
-    urlNumber = 1;
     for url in urls:
-        print("Opening", url);
-        openVideo(url, driver, urlNumber);
-        urlNumber += 1;
-    print("Test completed: closing");
+        print("Opening page:", url);
+        openURL(url, driver);
+    print("Access completed!");
     driver.close();
