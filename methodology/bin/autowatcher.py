@@ -106,6 +106,7 @@ o = Options()
 o.add_argument('--user-data-dir=' + profInfo['path'])
 o.add_argument("--dns-prefetch-disable")
 o.add_argument("--start-maximized")
+o.add_experimental_option("excludeSwitches", ['enable-automation']);
 
 try:
     if(os.environ['CHROME']):
