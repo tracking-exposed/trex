@@ -104,6 +104,7 @@ profInfo = createProfile(sys.path[-1])
 
 o = Options()
 o.add_argument('--user-data-dir=' + profInfo['path'])
+o.add_argument("--dns-prefetch-disable")
 
 try:
     if(os.environ['CHROME']):
