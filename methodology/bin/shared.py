@@ -36,7 +36,7 @@ def initialize(configName):
     o.add_argument('--user-data-dir=' + profInfo['path'])
     o.add_argument("--dns-prefetch-disable")
     o.add_argument("--start-maximized")
-    o.addArguments("disable-infobars")
+    o.add_argument("--disable-infobars")
     o.add_experimental_option("excludeSwitches", ['enable-automation'])
 
     try:

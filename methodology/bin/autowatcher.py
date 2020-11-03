@@ -5,7 +5,7 @@ import os, sys, time, re, errno
 from os.path import basename
 from os import makedirs
 
-from './shared' import getPName, createProfile, initialize
+from shared import getPName, createProfile, initialize
 
 def buildScreenName(prefix):
     profileName = os.path.join('snaps', getPName(sys.argv[-1]))
