@@ -1,6 +1,6 @@
 #!/usr/bin/env python
-import sys
 from shared import getPName, createProfile, initialize
+import sys, time
 
 def openURL(url, driver):
     driver.get(url)

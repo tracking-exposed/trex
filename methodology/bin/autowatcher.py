@@ -1,10 +1,7 @@
 #!/usr/bin/env python
 from selenium.webdriver import Chrome
 from selenium.webdriver.chrome.options import Options
-import os, sys, time, re, errno
-from os.path import basename
-from os import makedirs
-
+import os, sys, time, errno
 from shared import getPName, createProfile, initialize
 
 def buildScreenName(prefix):

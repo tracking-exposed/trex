@@ -1,11 +1,9 @@
 from selenium.webdriver import Chrome
 from selenium.webdriver.chrome.options import Options
 import os, sys, time, re, errno
-from os.path import basename
-from os import makedirs
 
 def getPName(srcstr):
-    profileName = re.sub(r'\..*', '', basename(srcstr) )
+    profileName = re.sub(r'\..*', '', os.path.basename(srcstr) )
     if not len(profileName):
         print("Error in picking profile name from", sys.argv, "[", srcstr, "] using '_NONAME' ")
         profileName = '_NONAME'
