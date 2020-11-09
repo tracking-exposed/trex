@@ -12,6 +12,7 @@
 
 extension/build/*
 extension/dist/*
+extension/node_modules/*
 
 methodology/snaps/*
 methodology/geckodriver.log
