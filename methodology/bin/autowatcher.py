@@ -53,7 +53,12 @@ def checkStatus(driver, urlNumber, framenumber):
     return framenumber
 
 def openVideo(url, driver, urlNumber):
-    driver.get(url)
+    try:
+        driver.get(url)
+    except Exception as e:
+        print("Error in driver.get:", e.message, "fail in", url);
+        return 
+
     cookie = driver.get_cookie('CONSENT')
     cookies = driver.get_cookies()
     # print(cookie, cookies)

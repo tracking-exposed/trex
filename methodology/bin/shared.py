@@ -45,6 +45,6 @@ def initialize(configName):
         pass
 
     driver = Chrome(chrome_options=o)
-    driver.set_page_load_timeout(30)
+    driver.set_page_load_timeout(20)
 
     return driver
