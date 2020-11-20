@@ -30,7 +30,7 @@ async function getLimitedDistinct(cName, field, maxAmount, filter) {
 }
 
 async function getCampaignQuery(campaignColumn, queriesColumn, campaignName) {
-    const MAXAMOUNT = 2000;
+    const MAXAMOUNT = 6000;
     try {
         const mongoc = await mongo3.clientConnect({concurrency: 1});
         const r = await mongo3.read(mongoc, campaignColumn, { name: campaignName });
