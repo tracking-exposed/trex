@@ -197,6 +197,8 @@ async function getVideosByPublicKey(publicKey, filter, htmlToo) {
 async function getFirstVideos(when, options) {
     // expected when to be a moment(), TODO assert when.isValid()
     // function used from routes/rsync
+    throw new Error("Discontinued!");
+
     const mongoc = await mongo3.clientConnect({concurrency: 1});
     const selected = await mongo3
         .readLimit(mongoc,
@@ -213,10 +215,9 @@ async function deleteEntry(publicKey, id) {
     if(!supporter)
         throw new Error("publicKey do not match any user");
 
-    const video = await mongo3.deleteMany(mongoc, nconf.get('schema').videos, { id: id, p: supporter.p });
     const metadata = await mongo3.deleteMany(mongoc, nconf.get('schema').metadata, { id: id });
     await mongoc.close();
-    return { video, metadata };
+    return { metadata };
 };
 
 async function getRelatedByVideoId(videoId, options) {
