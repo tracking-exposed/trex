@@ -22,7 +22,7 @@ const absoluteDateIntroSentence = [
     'Premiered ',
     'Trasmesso in anteprima ',
     'Transmitido ao vivo ',
-    'Livestream vor',
+    'Livestream vor ',
     'Trasmissione in live streaming ',
     'Scheduled for ',   // How should we manage future evidence?
 ];
