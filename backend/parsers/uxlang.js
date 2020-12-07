@@ -22,7 +22,6 @@ const absoluteDateIntroSentence = [
     'Premiered ',
     'Trasmesso in anteprima ',
     'Transmitido ao vivo ',
-    'Livestream vor ',
     'Trasmissione in live streaming ',
     'Scheduled for ',   // How should we manage future evidence?
 ];
@@ -138,6 +137,7 @@ const relativeOpeningString = [
     'Première',     // Première in corso. Trasmissione iniziata 13 minuti fa
     'Transmisja',   // Transmisja rozpoczęta 5 godzin temu
     'Aktiver',      // Aktiver Livestream seit 3 Stunden
+    'Livestream',   // Livestream vor 6 Stunden
 ];
 
 function findRelative(stri, clientTime) {
