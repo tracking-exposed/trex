@@ -21,6 +21,7 @@ const absoluteDateIntroSentence = [
     'Ha empezado a emitir en directo hace ',
     'Premiered ',
     'Trasmesso in anteprima ',
+    'Трансляция началась',
     'Transmitido ao vivo ',
     'Trasmissione in live streaming ',
     'Scheduled for ',   // How should we manage future evidence?
