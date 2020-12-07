@@ -21,7 +21,6 @@ const absoluteDateIntroSentence = [
     'Ha empezado a emitir en directo hace ',
     'Premiered ',
     'Trasmesso in anteprima ',
-    'Трансляция началась',
     'Transmitido ao vivo ',
     'Trasmissione in live streaming ',
     'Scheduled for ',   // How should we manage future evidence?
@@ -83,9 +82,9 @@ const localized = {
     'minuti': 'minutes',
     'Minuten.': 'minutes',
     'Minuten': 'minutes',
-
     'minute': 'minutes',    // also 'less than 1 minute ago' might happen
     'Minute': 'minutes',    // Aktiver Livestream seit 2 Minuten
+    'минуты': 'minutes',
 
     'segundos': 'seconds',
     'seconds': 'seconds',
@@ -126,6 +125,7 @@ const relativeOpeningString = [
     'Premiered',
     'Streamed',
     'Comenzó',
+    'Трансляция',   // Трансляция началась 93 минуты назад
     'Trasmissione', // Trasmissione in live streaming 7 ore
     'Streaming',    // Streaming avviato 115 minuti fa
     'Ξεκίνησε',     // Ξεκίνησε ροή πριν από
