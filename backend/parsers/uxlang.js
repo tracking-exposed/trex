@@ -22,6 +22,7 @@ const absoluteDateIntroSentence = [
     'Premiered ',
     'Trasmesso in anteprima ',
     'Transmitido ao vivo ',
+    'Livestream vor',
     'Trasmissione in live streaming ',
     'Scheduled for ',   // How should we manage future evidence?
 ];
@@ -76,6 +77,7 @@ const localized = {
     'λεπτά': 'hours',
     'heures': 'hours',
     'godzin': 'hours',      // Transmisja rozpoczęta 5 godzin temu
+    'Stunden': 'hours',
 
     'minutos': 'minutes',
     'minutes': 'minutes',

@@ -14,6 +14,7 @@ const langopts = [
     { sostantivo: "visualizações", separator: '', locale: 'pt', viewcount: dots },
     { sostantivo: "visualização", separator: '', locale: 'pt', viewcount: dots },
     { sostantivo: "visualizaciones", separator: 'de', locale: 'es', viewcount: dots }, // spanish (otro?)
+    { sostantivo: "visualización", separator: 'de', locale: 'es', viewcount: dots }, // spanish | mexican
     { sostantivo: "visninger", separator: 'af', locale: 'nn', viewcount: dots }, // norvegian
     { sostantivo: "avspillinger", separator: 'af', locale: 'nn', viewcount: dots }, // norvegian
     { sostantivo: "vues" , separator: 'de', locale: 'fr', viewcount: empty },
@@ -25,6 +26,10 @@ const langopts = [
     { sostantivo: "просмотров", separator: 'Автор:', locale: 'ru', viewcount: empty },
     { sostantivo: "просмотра", separator: 'Автор:', locale: 'ru', viewcount: empty },
     { sostantivo: "просмотр", separator: 'Автор:', locale: 'ru', viewcount: empty },
+    { sostantivo: "wyświetleń", separator: 'Autor:', locale: 'pl', viewcount: empty }, // Polish
+    { sostantivo: "wyświetlenia", separator: 'Autor:', locale: 'pl', viewcount: empty }, // Polish
+    { sostantivo: "megtekintés", separator: 'készítette:', locale: 'hu', viewcount: empty }, // Hungarian
+    { sostantivo: "zhliadnutí", separator: 'z kanála', locale: 'sk', viewcount: empty }, // Slovak
 ];
 
 function sanityCheck(l) {
@@ -153,7 +158,8 @@ const relativeConMapping = [
     "unit": "seconds",
     "words": [
       "секунд", "секунда", "секунды", "seconds",
-      "secondi", "second", "secondo",
+      "secondi", "second", "secondo", "segundos",
+      "másodperc", "sekund"
     ]
   },
   {
@@ -162,7 +168,8 @@ const relativeConMapping = [
     "words": [
       "minuti", "minutos", "minutes", "минут",
       "месяцев", "минуты", "минут", "Minuten",
-      "minutter", "minute", "minuto",
+      "minutter", "minute", "minuto", "perc",
+      "minut", "minuta"
     ]
   },
   {
@@ -172,7 +179,7 @@ const relativeConMapping = [
       "horas", "heure", "hores", "hora", "ora",
       "ore", "uur", "hours", "hour", "timer",
       "Stunde", "Stunden", "heures", "час", "часа",
-      "часов", "time",
+      "часов", "time", "órája", "godzina", "godzin",
     ]
   },
   {
@@ -183,7 +190,7 @@ const relativeConMapping = [
       "dag", "dager", "dagen", "dage", "giorni",
       "giorno", "days", "day", "jours", "jour",
       "uge", "Tagen", "Tag", "дня", "день", "дней",
-      "døgn",
+      "døgn", "dni", "dzień"
     ]
   },
   {
@@ -194,7 +201,7 @@ const relativeConMapping = [
       "setmanes", "week", "weeks", "uger", "weken",
       "semana", "semanas", "semaines", "semaine",
       "Woche", "Wochen", "uke", "uker", "недели",
-      "неделю",
+      "неделю", "hét", "tydzień"
     ]
   },
   {
@@ -205,6 +212,7 @@ const relativeConMapping = [
       "mesi", "mois", "maand", "maanden", "meses",
       "month", "months", "måned", "måneder",
       "Monaten", "Monat", "месяц", "месяца",
+      "hónap",
     ]
   },
   {

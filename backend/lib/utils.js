@@ -1,10 +1,10 @@
-var _ = require('lodash');
-var debug = require('debug')('lib:utils');
-var crypto = require('crypto');
-var bs58 = require('bs58');
-var nacl = require('tweetnacl');
-var nconf = require('nconf');
-var foodWords = require('food-words');
+const _ = require('lodash');
+const debug = require('debug')('lib:utils');
+const crypto = require('crypto');
+const bs58 = require('bs58');
+const nacl = require('tweetnacl');
+const nconf = require('nconf');
+const foodWords = require('food-words');
 
 var hash = function(obj, fields) {
     if(_.isUndefined(fields))
@@ -153,16 +153,16 @@ function judgeIncrement(key, current, value) {
     // than an older content. it consider sizes. 
     // special keys might got different treatment 
     // it is used by automo.js in db metadata updates
-    if(key == 'related' || key == 'selected') {
+
+    /* if(key == 'related' || key == 'selected') {
         let c = _.map(current, 'videoId');
         let n = _.map(value, 'videoId');
         let x = _.difference( _.sortBy(c), _.sortBy(n) );
         let y = _.difference( _.sortBy(n), _.sortBy(c) );
-        // this should be unit tested, and this is a debug function that shouldn't go to production
         if(_.size(x) != _.size(y)) 
             debug("Difference seen in %s: current %d new %d diff <%d|%d>", key,
                 _.size(c), _.size(n), _.size(x), _.size(y) );
-    }
+    } */
 
     if(key == 'title' && _.size(value) && _.size(current) && current != value)
         debug("title conflict in the same metadata.id 🤯 good fucking luck:\ncurrent <%s> new <%s>", current, value);
