@@ -42,12 +42,12 @@ function logged(D) {
 }
 
 function fixHumanizedTime(inputstr) {
-    // this function fix the time 0:10, 10:10, 1:00:00
+    // this function fix the time 0:10, 10:10,  in HH:MM:SS
     if(inputstr.length == 4)
         return '0:0' + inputstr;
     if(inputstr.length == 5)
         return '0:' + inputstr;
-    if(inputstr.length > 8)
+    if(inputstr.length >= 9)
         debug("Warning this is weird in fixHumanizedTime: %s", inputstr);
     return inputstr;
 }

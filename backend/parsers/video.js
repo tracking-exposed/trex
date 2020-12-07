@@ -105,7 +105,7 @@ function relatedMetadata(e, i) {
 
     /* estimate live also by missing metadata but presence of certain few */
     const estimatedLive = function() {
-        if(mined.isLive) return true;
+        if(mined && mined.isLive) return true;
         return (!displayTime && !expandedTime && !recommendedLength) ? true : false;
     }();
 
@@ -189,8 +189,8 @@ function parseSingleTry(D, memo, spec) {
     }
 
     if(!spec.selected && _.size(elems) > 1) {
-        debug("%s with %s gives %d elements. only the 1st kept",
-            spec.name, spec.selector, _.size(elems));
+        debug("%s with %s gives %d elements. only the 1st kept (%j)",
+            spec.name, spec.selector, _.size(elems), _.map(elems, 'textContent') );
     }
 
     if(spec.selected) {
