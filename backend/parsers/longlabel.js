@@ -120,10 +120,20 @@ function parser(l, source, isLive) {
         throw new Error("Separator Error locale: " + langi.locale);
     }
 
+    let timeago = null;
+    let liveVideo = isLive;
+
+    if(!timeinfo || !timeinfo.length) {
+        debuge("Failure in picking timeinfo from splitting [%s]", reducedLabel);
+        if(!isLive)
+            debug("Assuming [%s] is a live video", l);
+        liveVideo = true;
+    } else {
     /*  4) because time ago (e.g. 1 week ago) is always expressed with one unit, one amount, 
            and optionally a stop-word like 'ago', then we pick before this and the leftover 
            it is the remaining text to parse */
-    const timeago = getPublicationTime(timeinfo);
+        timeago = getPublicationTime(timeinfo);
+    }
 
     /*  5) to simplify this, duration of the video is take somewhere else */
     // debug("Completed %s with %d %s %s", title, views, timeago.humanize(), langi.locale);
@@ -235,8 +245,8 @@ function getPublicationTime(timeinfo) {
         // might otherwise overwrite the first success and include dirty data.
     }, null);
     if(!timeago) {
-        debuge("Can't regexp timeago %s (might be due to lang separaion)", timeinfo);
-        throw new Error(`can't regexp timeago |${timeinfo}| might be language separator`);
+        debuge("Can't regexp timeago [%s] --might be due to lang separator?", timeinfo);
+        throw new Error(`can't regexp timeago [${timeinfo}] (check language separator)`);
     }
 
     const convertedNumber = _.parseInt(timeago[0]);

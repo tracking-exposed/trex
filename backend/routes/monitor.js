@@ -11,8 +11,8 @@ async function getMonitor(req) {
     const minutesAgo = params.getInt(req, 'minutes', MINUTES);
     const timeBehind = moment().subtract(minutesAgo, 'minutes').toISOString();
     const amount = 30;
-    debug("getMonitor request: contents since %d minutes ago: %s (max %d)",
-        minutesAgo, timeBehind, amount);
+    /* debug("getMonitor request: contents since %d minutes ago: %s (max %d)",
+        minutesAgo, timeBehind, amount); */
 
     const lastExecution = new Date();
     const content = await automo.getMixedDataSince([
@@ -27,7 +27,8 @@ async function getMonitor(req) {
             'savingTime' ]
     ], new Date(timeBehind), amount );
 
-    debug("getMixedDataSince from DB: %j", _.countBy(content, 'template'));
+    if(content.length)
+        debug("getMonitor returns: %j", _.countBy(content, 'template'));
     // the key template='info' is added if any special condition is triggered
     // the key 'template' and 'relative' are always added
 

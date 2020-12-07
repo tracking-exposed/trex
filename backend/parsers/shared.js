@@ -10,8 +10,10 @@ function getThumbNailHref(e) {
     let thumbnailHref = null;
     try {
         const refe = e.querySelector('.ytd-thumbnail-overlay-time-status-renderer');
-        const thumbnailSrc = refe.closest('a').querySelector('img').getAttribute('src');
+        if(!refe)
+            return null;
 
+        const thumbnailSrc = refe.closest('a').querySelector('img').getAttribute('src');
         if(!thumbnailSrc)
             return null;
 

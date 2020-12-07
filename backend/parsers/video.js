@@ -104,7 +104,10 @@ function relatedMetadata(e, i) {
     }
 
     /* estimate live also by missing metadata but presence of certain few */
-    const estimatedLive = (!displayTime && !expandedTime && !recommendedLength && mined.timeago && mined.views) ? true : false;
+    const estimatedLive = function() {
+        if(mined.isLive) return true;
+        return (!displayTime && !expandedTime && !recommendedLength) ? true : false;
+    }();
 
     const r = {
         index: i + 1,
@@ -117,10 +120,10 @@ function relatedMetadata(e, i) {
         recommendedLength,
         recommendedDisplayL: displayTime ? displayTime : null,
         recommendedLengthText: expandedTime ? expandedTime : null,
-        recommendedPubTime: mined ? mined.timeago : null,
+        recommendedPubTime: estimatedLive ? null : (mined ? mined.timeago : null),
         /* ^^^^  is deleted in makeAbsolutePublicationTime, when clientTime is available,
          * this field produces -> recommendedPubtime and ptPrecison */
-        recommendedRelativeSeconds: mined ? mined.timeago.asSeconds() : null,
+        recommendedRelativeSeconds: estimatedLive ? null : ( mined ? mined.timeago.asSeconds() : null),
         recommendedViews: mined ? mined.views : null,
         recommendedThumbnail: thumbnailHref,
         isLive: (estimatedLive || liveBadge),

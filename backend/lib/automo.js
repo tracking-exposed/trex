@@ -173,6 +173,7 @@ async function getRelatedByWatcher(publicKey, options) {
 }
 
 async function getVideosByPublicKey(publicKey, filter, htmlToo) {
+    // refactor: this was a double purpose API but actually has only one pourpose. htmlToo should never be true here
     const mongoc = await mongo3.clientConnect({concurrency: 1});
 
     const supporter = await mongo3.readOne(mongoc, nconf.get('schema').supporters, { publicKey });
@@ -193,6 +194,13 @@ async function getVideosByPublicKey(publicKey, filter, htmlToo) {
     await mongoc.close();
     return ret;
 };
+
+async function getHTMLVideosByMetadataId(metadataId) {
+    const mongoc = await mongo3.clientConnect({concurrency: 1});
+    const htmls = await mongo3.read(mongoc, nconf.get('schema').htmls, {metadataId}, { savingTime: -1 });
+    await mongoc.close();
+    return htmls;
+}
 
 async function getFirstVideos(when, options) {
     // expected when to be a moment(), TODO assert when.isValid()
@@ -512,6 +520,9 @@ module.exports = {
 
     /* used by routes/rsync */
     getFirstVideos,
+
+    /* used by routes/htmlunit */
+    getHTMLVideosByMetadataId,
 
     /* used by public/videoCSV */
     getRelatedByVideoId,

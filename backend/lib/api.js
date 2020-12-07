@@ -5,8 +5,8 @@ const apiList = {
     processEvents2:   require('../routes/events').processEvents2,
     getMirror:        require('../routes/events').getMirror,
 
-    /* for revision --- to be determined if kept or not */
-    unitById:         require('./htmlunit').unitById,
+    /* for developer support and revision of parsing success|failures */
+    unitById:         require('../routes/htmlunit').unitById,
 
     /* the three currently used/tested for the public */
     getLast:          require('../routes/public').getLast,

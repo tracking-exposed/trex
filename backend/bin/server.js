@@ -137,8 +137,8 @@ app.get('/api/v2/personal/:publicKey/selector/:key/:value', (req, res) => {
     return dispatchPromise('getEvidences', req, res);
 });
 
-/* to be check if still relevant */
-app.get('/api/v1/html/:htmlId', function(req, res) {
+/* Update in progress, toward parserv3 */
+app.get('/api/v1/html/:metadataId', function(req, res) {
     return dispatchPromise('unitById', req, res);
 });
 
