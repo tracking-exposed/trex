@@ -86,6 +86,7 @@ const localized = {
     'minute': 'minutes',    // also 'less than 1 minute ago' might happen
     'Minute': 'minutes',    // Aktiver Livestream seit 2 Minuten
     'минуты': 'minutes',
+    'minuten': 'minutes',
 
     'segundos': 'seconds',
     'seconds': 'seconds',
@@ -97,6 +98,7 @@ const regchain = [
     /(\d+)\s(\D+)/,
     /(\d+)\s(\D+)\s\D+/,
     /(\d+)\s(\D+)\s\D+\s\D+/,
+    /(\d+)\s(\S+)\s\D+/,
 ];
 
 function localizedRegexpChain(stri) {
@@ -138,13 +140,16 @@ const relativeOpeningString = [
     'Transmisja',   // Transmisja rozpoczęta 5 godzin temu
     'Aktiver',      // Aktiver Livestream seit 3 Stunden
     'Livestream',   // Livestream vor 6 Stunden
+    'streamen',     // 37 minuten geleden begonnen met streamen
 ];
 
 function findRelative(stri, clientTime) {
     const chunks = _.split(stri, ' ');
     const first = _.first(chunks);
-    const found = (_.indexOf(relativeOpeningString, first) !== -1);
-    if(!found) {
+    const last = _.last(chunks);
+    const foundF = (_.indexOf(relativeOpeningString, first) !== -1);
+    const foundL = (_.indexOf(relativeOpeningString, last) !== -1);
+    if(!foundF && !foundL) {
         nlpdebug("Relative time string missing? |%s|", stri);
         return moment('invalid date');
     }
