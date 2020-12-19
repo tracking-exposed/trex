@@ -8,7 +8,7 @@ const utils = require('../lib/utils');
 const CSV = require('../lib/CSV');
 
 async function getPersonal(req) {
-    const DEFMAX = 10;
+    const DEFMAX = 100;
     const k =  req.params.publicKey;
     if(_.size(k) < 16)
         return { json: { "message": "Invalid publicKey", "error": true }};
@@ -193,8 +193,9 @@ async function getEvidences(req) {
     if(allowFields.indexOf(targetKey) == -1)
         return { json: { "message": `Key ${targetKey} not allowed (${allowFields})`, error: true }};
 
-    const matches = await automo.getVideosByPublicKey(k, _.set({}, targetKey, targetValue), false);
-                                                            /* if 'true' would return also htmls */
+    const matches = await automo
+        .getVideosByPublicKey(k, _.set({}, targetKey, targetValue), false);
+                        /* if last param is 'true' would return html too */
 
     debug("getEvidences with flexible filter found %d matches", _.size(matches.metadata));
     return { json: matches.metadata };

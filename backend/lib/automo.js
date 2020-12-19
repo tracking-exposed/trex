@@ -180,7 +180,7 @@ async function getVideosByPublicKey(publicKey, filter, htmlToo) {
     if(!supporter)
         throw new Error("publicKey do not match any user");
 
-    const selector = _.set(filter, 'p', supporter.p);
+    const selector = _.set(filter, 'publicKey', supporter.publicKey);
     debug("getVideosByPublicKey with flexible selector (%j)", filter);
     const metadata = await mongo3.read(mongoc, nconf.get('schema').metadata, selector, { savingTime: -1 });
     const ret = { metadata };
