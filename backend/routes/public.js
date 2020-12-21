@@ -121,7 +121,9 @@ function ensureRelated(rv) {
      * page get returned. return 'null' if content is not complete */
     let sele = _.pick(rv, ['recommendedSource', 'recommendedTitle',
         'videoId', 'recommendedDisplayL', 'verified', 'index']);
-    return (_.some(_.map(rv, _.isUndefined))) ? null : sele;
+    return (_.some(_.map(sele, function(v, k) {
+        return _.isUndefined(v);
+    }))) ? null : sele;
 }
 
 async function getVideoId(req) {
@@ -134,10 +136,9 @@ async function getVideoId(req) {
      * old content parsed with different format */
 
     const evidences = _.compact(_.map(entries, function(meta) {
-        meta.related = _.compact(_.map(meta.related, ensureRelated));
+        meta.related = _.reverse(_.compact(_.map(meta.related, ensureRelated)));
         if(!_.size(meta.related))
             return null;
-        meta.related = _.reverse(meta.related);
         _.unset(meta, '_id');
         _.unset(meta, 'publicKey');
         return meta;
