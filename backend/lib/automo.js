@@ -505,6 +505,13 @@ async function getMixedDataSince(schema, since, maxAmount) {
     return retContent;
 }
 
+async function getTransformedMetadata(chain) {
+    const mongoc = await mongo3.clientConnect({concurrency: 1});
+    const result = await mongo3
+        .aggregate(mongoc, nconf.get('schema').metadata, chain);
+    await mongoc.close();
+    return result;
+}
 
 module.exports = {
     /* used by routes/personal */
@@ -542,4 +549,7 @@ module.exports = {
 
     /* used in getMonitor */
     getMixedDataSince,
+
+    /* generalized aggregation call */
+    getTransformedMetadata,
 };

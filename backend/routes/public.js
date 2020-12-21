@@ -22,9 +22,13 @@ const cache = {
 
 function formatReturn(updated) {
     if(updated) {
+        debug("Returning %d recent, at least duplicated, evidences part of a %d minutes long cache",
+            _.size(updated.content), CACHE_SECONDS / 60);
         cache.content = updated.content;
         cache.computedAt = updated.computedAt;
         cache.next = updated.next
+    } else {
+        debug("returning cached copy of last duplicated evidences");
     }
     return {
         json: {
@@ -42,41 +46,40 @@ async function getLast(req) {
                     'videoId', 'authorName', 'authorSource', 'likeInfo',
                     'publicationString', 'relatedN' ];
     const amount = 10;
-    const skip = 0;
 
     if(_.isNull(cache.content) || (cache.next && moment().isAfter(cache.next)) ) {
         // if not initialized ^^^^ or if the cache time is expired: do the query
-        const last = await automo.getMetadataByFilter({
-            title: { $exists: true },
-            'related.19': { $exists: true },
-            videoId: { $exists: true }
-        }, { amount, skip });
+        const last = await automo.getTransformedMetadata([
+            { $match: { title: { $exists: true }, "related.19": { $exists: true } }},
+            { $sort: { savingTime: -1 }},
+            { $limit: 400 },
+            { $group: { _id: "$videoId", amount: { $sum: 1 }}},
+            { $match: { amount: { $gte: 2 }}},
+            { $lookup: { from: 'metadata', localField: '_id', foreignField: 'videoId', as: 'info' }},
+            { $limit: 20 }
+        ])
 
-        let freshContent = _.map(last, function(meta) {
-            const retval = _.pick(meta, fields);
-            retval.related = _.map(meta.related, function(e) {
-                let rv = _.merge(e, e.mined);
-                _.unset(rv, 'mined');
-                _.unset(rv, 'longlabel');
-                return rv;
-            });
-            const d = moment.duration( moment(retval.savingTime) - moment() );
-            retval.timeago = d.humanize() + ' ago';
-            retval.secondsago = d.asSeconds();
-            retval.videoId = retval.videoId.replace(/\&.*/, '');
-            return retval;
+        /* the complex entry has nested metadata */
+        const reduction = _.map(last, function(ce) {
+            let lst = _.last(_.orderBy(ce.info, 'savingTime')).savingTime;
+            let d = moment.duration( moment(lst) - moment() );
+            let timeago = d.humanize();
+            return {
+                title: ce.info[0].title,
+                authorName: ce.info[0].authorName,
+                occurrencies: ce.amount,
+                videoId: ce._id,
+                timeago
+            }
         });
         let cacheFormat = {
-            content: _.reverse(_.orderBy(freshContent, 'secondsago')),
+            content: _.reverse(_.orderBy(reduction, 'secondsago')),
             computedAt: moment(),
             next: moment().add(cache.seconds, 'seconds')
         };
-        debug("Returning %d new random videos %j, which become part of a %d minutes long cache",
-            _.size(freshContent), _.map(freshContent, 'title'), CACHE_SECONDS / 60);
         return formatReturn(cacheFormat);
     }
     else {
-        debug("Returning %d cached random videos", amount)
         return formatReturn();
     }
 };
@@ -113,25 +116,32 @@ async function getLastHome() {
     return { json: rv };
 }
 
+function ensureRelated(rv) {
+    /* for each related it is called and only the basic info used in 'compare'
+     * page get returned. return 'null' if content is not complete */
+    let sele = _.pick(rv, ['recommendedSource', 'recommendedTitle',
+        'videoId', 'recommendedDisplayL', 'verified', 'index']);
+    return (_.some(_.map(rv, _.isUndefined))) ? null : sele;
+}
+
 async function getVideoId(req) {
     const { amount, skip } = params.optionParsing(req.params.paging, PUBLIC_AMOUNT_ELEMS);
     debug("getVideoId %s amount %d skip %d default %d",
         req.params.query, amount, skip, PUBLIC_AMOUNT_ELEMS);
 
     const entries = await automo.getMetadataByFilter({ videoId: req.params.query}, { amount, skip });
-    const evidences = _.map(entries, function(meta) {
-        meta.related = _.map(meta.related, function(e) {
-            let rv = _.merge(e, e.mined);
-            _.unset(rv, 'mined');
-            _.unset(rv, 'longlabel');
-            rv.videoId = rv.videoId.replace(/\&.*/, '');
-            return rv;
-        });
+    /* this map function ensure there are the approrpiate data (and thus filter out)
+     * old content parsed with different format */
+
+    const evidences = _.compact(_.map(entries, function(meta) {
+        meta.related = _.compact(_.map(meta.related, ensureRelated));
+        if(!_.size(meta.related))
+            return null;
         meta.related = _.reverse(meta.related);
         _.unset(meta, '_id');
         _.unset(meta, 'publicKey');
         return meta;
-    });
+    }));
     debug("getVideoId: found %d matches about %s", _.size(evidences), req.params.query);
     return { json: evidences };
 };
