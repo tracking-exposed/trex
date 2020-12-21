@@ -69,7 +69,8 @@ async function getLast(req) {
                 authorName: ce.info[0].authorName,
                 occurrencies: ce.amount,
                 videoId: ce._id,
-                timeago
+                timeago,
+                secondsago: d.asSeconds()
             }
         });
         let cacheFormat = {
