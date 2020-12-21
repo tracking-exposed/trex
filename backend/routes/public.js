@@ -119,10 +119,11 @@ async function getLastHome() {
 function ensureRelated(rv) {
     /* for each related it is called and only the basic info used in 'compare'
      * page get returned. return 'null' if content is not complete */
-    let sele = _.pick(rv, ['recommendedSource', 'recommendedTitle',
-        'videoId', 'recommendedDisplayL', 'verified', 'index']);
-    return (_.some(_.map(sele, function(v, k) {
-        return _.isUndefined(v);
+    const demanded = ['recommendedSource', 'recommendedTitle',
+        'videoId', 'recommendedDisplayL', 'verified', 'index'];
+    let sele = _.pick(rv, demanded);
+    return (_.some(_.map(demanded, function(k) {
+        return _.isUndefined(sele[k]);
     }))) ? null : sele;
 }
 
