@@ -260,7 +260,7 @@ async function getRelatedByVideoId(videoId, options) {
             recommendedViews: r.related.recommendedViews,
             watchedId: r.videoId,
             watchedAuthor: r.authorName,
-            watchedPubtime: r.publicationTime.toISOString(),
+            watchedPubtime: r.publicationTime ? r.publicationTime.toISOString() : "Invalid Date",
             watchedTitle: r.title,
             watchedViews: r.viewInfo.viewStr ? r.viewInfo.viewNumber : null,
             watchedChannel: r.authorSource,
