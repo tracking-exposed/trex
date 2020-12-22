@@ -251,7 +251,7 @@ async function getRelatedByVideoId(videoId, options) {
             blang: r.blang,
 
             recommendedVideoId: r.related.videoId,
-            recommendedPubtime: r.related.publicationTime.toISOString(),
+            recommendedPubtime: r.related.publicationTime ? r.related.publicationTime.toISOString() : "Invalid Date",
             recommendedForYou: r.related.foryou,
             recommendedTitle: r.related.recommendedTitle,
             recommendedAuthor: r.related.recommendedSource,
