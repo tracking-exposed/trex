@@ -10,7 +10,17 @@
         "cappuccino monkey",
         "mountain goats"
     ]
-}, {
+},{
+    "name": "ws2021",
+    "description": "Winter School data media initiative",
+    "discussion": "#",
+    "startDate": "2021-01-04",
+    "endDate": "2021-01-06",
+    "queries": [
+        "american elections",
+        "coronavirus"
+    ]
+},{
     "name": "us1",
     "description": "Example about US election search comparison",
     "discussion": "https://github.com/tracking-exposed/yttrex/issues/44",
