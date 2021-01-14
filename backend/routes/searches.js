@@ -10,6 +10,7 @@ const dbutils = require('../lib/dbutils');
 const security = require('../lib/security');
 const utils = require('../lib/utils');
 
+const MAXRVS = 5000;
 
 async function getSearches(req) {
     // '/api/v2/searches/:query/:paging?' 
@@ -53,7 +54,6 @@ async function getQueries(req) {
 async function getSearchesCSV(req) {
     // '/api/v2/searches/:query/CSV'
     // this is used by v.md and to download from the CHIARO's page
-    const MAXRVS = 3000;
     const { amount, skip } = params.optionParsing(req.params.paging, MAXRVS);
     const searchTerms = _.first(_.keys(qustr.parse(req.params.query)));
     debug("getSearchsCSV query string [%s] max amount %d", searchTerms, amount);
@@ -90,7 +90,6 @@ async function getSearchKeywords(req) {
     // '/api/v2/search/keywords/:paging?'
     // this returns an unchecked list of USG therefore should be discontinued
     throw new Error("Discontinued");
-    const MAXRVS = 3000;
     const hardcodedAmount = 3;
     const hardcodedUnit = 'days';
     const { amount, skip } = params.optionParsing(req.params.paging, MAXRVS);
