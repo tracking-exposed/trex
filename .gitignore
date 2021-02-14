@@ -14,15 +14,10 @@ extension/build/*
 extension/dist/*
 extension/node_modules/*
 
-methodology/snaps/*
-methodology/geckodriver.log
 methodology/config/*
 methodology/profiles/*
-methodology/bin/*.pyc
+methodology/node_modules/*
 
 extension/node_modules/*
 backend/node_modules/*
 react-pieces/node_modules/*
-
-backend/*-ωτ1*.csv
-backend/*-ωτ1*.json
