@@ -1,0 +1,33 @@
+{
+  "name": "potrex-methodology",
+  "version": "1.0.0",
+  "description": "a series of tools for https://pornhub.tracking.exposed for reseachers",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/tracking-exposed/potrex.git"
+  },
+  "keywords": [
+    "pornhub",
+    "algorithm",
+    "analysis"
+  ],
+  "author": "Claudio Agosti and the TRex team",
+  "license": "AGPL-3.0-or-later",
+  "bugs": {
+    "url": "https://github.com/tracking-exposed/potrex/issues"
+  },
+  "homepage": "https://github.com/tracking-exposed/potrex#readme",
+  "dependencies": {
+    "debug": "^4.3.1",
+    "lodash": "^4.17.20",
+    "nconf": "^0.11.2",
+    "node-fetch": "^2.6.1",
+    "puppeteer": "^2.0.0",
+    "puppeteer-extra": "^2.1.3",
+    "puppeteer-extra-plugin-stealth": "^2.2.2"
+  }
+}
