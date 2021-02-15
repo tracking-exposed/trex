@@ -1,5 +1,13 @@
 
-Please give a look at [automation page](https://youtube.tracking.exposed/automation).
+# New tool
+
+    DEBUG=*,-puppeteer:protocol node src/guardoni.js --source https://gist.githubusercontent.com/vecna/c8d1236881f42319a815cd3a4a37c6bc/raw/1ecaa3c213e2eaa4ee75fa482a58b612d1c3c7fe/guardoni-directive-yt-1.json --profile profiles/foca/  --exclude login
+
+---
+
+# OUTDATED
+
+## Please give a look at [automation page](https://youtube.tracking.exposed/automation).
 
 1. to properly dispatch the profile, you should copy an un-initialized user-data-dir (please refer to the option --user-data-dir from chromium. On Firefox looks way too hard to use it).
 2. we build an user-data-dir which is partially initialized: has settings that reduce the interaction with Google, have the browser extension installed but is not initialized yet (it generated the cryptographic material the first time it access to youtube.com)
