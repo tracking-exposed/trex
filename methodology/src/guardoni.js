@@ -142,22 +142,22 @@ async function operateBroweser(page, directives, domainSpecific) {
       await page.goto(directive.url, { 
         waitUntil: "networkidle0",
       });
-      debug("+loaded %j", directive);
+      debug("+Loading %j", directive);
       try {
         await domainSpecific.beforeWait(page, directive);
       } catch(error) {
         console.log("error in beforeWait", error.message);
       }
-      console.log("Directive to URL " + directive.url+
-        "now'll wait for " + directive.delay || 4000);
-      await page.waitFor(directive.delay || 4000);
-      console.log("Done waiting...");
+      const LOADING_DELAY = directive.delay || 4000;
+      console.log("Directive to URL " + directive.url + "Loading delay:" + LOADING_DELAY);
+      await page.waitFor(LOADING_DELAY);
+      console.log("Done loading wait. calling domainSpecific");
       try {
         await domainSpecific.afterWait(page, directive);
       } catch(error) {
         console.log("error in afterWait", error.message);
       }
-      debug("-completed %j", directive);
+      debug("-Completed %j", directive);
     }
   }
   console.log("Loop done, processed directives:", directives.length);
