@@ -11,9 +11,9 @@
         "mountain goats"
     ]
 },{
-    "name": "ws2021",
+    "name": "ws21",
     "description": "Winter School data media initiative",
-    "discussion": "#",
+    "discussion": "https://youtube.tracking.exposed/filtertube/",
     "startDate": "2021-01-04",
     "endDate": "2021-01-06",
     "queries": [
@@ -44,4 +44,20 @@
         "mail ballot vote 2020",
         "the president on climate change"
     ]
+},{
+    "name":"draghi1",
+    "description":"Esperimento sulle diverse percezioni del governo Draghi",
+    "discussion":"#",
+    "startDate":"2021-02-18",
+    "endDate":"2021-03-01",
+    "queries": [
+	"Draghi recovery fund",
+        "governo draghi",
+	"DPCM draghi",
+	"italia lockdown",
+	"Draghi e Lega Salvini Premier",
+	"Draghi e PD",
+	"Draghi e Cinque Stelle",
+	"Draghi e vaccinazioni"
+     ]
 }]

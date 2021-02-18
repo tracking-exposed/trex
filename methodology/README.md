@@ -1,31 +1,26 @@
+Tools and commands for automated youtube testing
 
-# New tool
+# [Install nodejs in your system](https://nodejs.org/en/download://nodejs.org/en/download/)
 
-    DEBUG=*,-puppeteer:protocol node src/guardoni.js --source https://gist.githubusercontent.com/vecna/c8d1236881f42319a815cd3a4a37c6bc/raw/1ecaa3c213e2eaa4ee75fa482a58b612d1c3c7fe/guardoni-directive-yt-1.json --profile profiles/foca/  --exclude login
+# Copy the git repository locally
 
----
+* download: https://github.com/tracking-exposed/yttrex/archive/master.zip
+* unpack
+* enter in `methodology` directory
 
-# OUTDATED
+# Things to know about the script `src/guardoni.js`
 
-## Please give a look at [automation page](https://youtube.tracking.exposed/automation).
+1. it have to follow a list of URL retrieved from a JSON list reachable on the web. You can decide which URL, we offer two of them as default: [conservative](https://youtube.tracking.exposed/bin/conservative-filtertube.json), [progressive](https://youtube.tracking.exposed/bin/progressive-filtertube.json).
+2. you have to create a directory where the chrome-profile would live. we suggest to create a directory in `methodology/profiles/` 
+3. you have to download a .zip (the browser extension of [youtube.tracking.exposed](/)) and unpack it `methodology/extension/`
 
-1. to properly dispatch the profile, you should copy an un-initialized user-data-dir (please refer to the option --user-data-dir from chromium. On Firefox looks way too hard to use it).
-2. we build an user-data-dir which is partially initialized: has settings that reduce the interaction with Google, have the browser extension installed but is not initialized yet (it generated the cryptographic material the first time it access to youtube.com)
-3. The [uninitialized-user-data-dir](https://github.com/tracking-exposed/experiments-data/blob/master/yttrex/uninitialized-udd.tar.gz), or [direct 16.9 download](https://raw.githubusercontent.com/tracking-exposed/experiments-data/master/yttrex/uninitialized-udd.tar.gz), is there linked, and should be decompressed in `profiles`, then renamed with your **campaing name**.
+What you're ready, guardoni.js is a script that uses puppeteer and automate chrome.
+for our video we configured the method to watch them till the end. In other pages and other cases you might want to train your profile
 
-### Quick requirement list
+# Examples
 
-    pip3 install -U selenium
+`node scr/guardoni.js --source https://youtube.tracking.exposed/bin/conservative-filtertube.json --profile profiles/conservative1`
 
-platform dependent:
+or, if you enable debug:
 
-    apt search chromedriver
-    apt install firefox-geckodriver chromium-chromedriver
-
-### Quick reminder on working flow
-
-If you want to run a collection campaign, the exact order of command is:
-
-1. have a copy from `profiles/unitinizalized-udd` to `profiles/thetestname`
-2. have a file full or youtube URLs in: `config/thetestname.txt`, look for example at `config/example.txt`
-3. execute `python3 bin/experiment1.py config/thetestname.txt`, this NEEDS to find a directory in `profiles/thetestname`, otherwise will display and error.
+`DEBUG=*,-puppeteer:* node src/guardoni.js --source https://youtube.tracking.exposed/bin/progressive-filtertube.json --profile profiles/progressiv1`
