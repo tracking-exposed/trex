@@ -27,7 +27,6 @@ async function afterWait(page, directive) {
     const DEFAULT_WATCH_TIME = 9000;
 
     if(directive.url.match(/\/watch\?v=/)) {
-        debug("Guessed video watchin, Inspecting movie_player, considering 'specialwatch'");
         const condition = {
             "-1": "unstarted",
             "0": "ended",
@@ -45,17 +44,16 @@ async function afterWait(page, directive) {
         // const scr = await yt.screenshot({ path: "screendump.png"});
         // return bitmap
         debug("Loaded video, state is %s = %s", st, condition[st.toString()]);
-        const specialwatch = _.isUndefined(directive.specialwatch) ? 
-            DEFAULT_WATCH_TIME : directive.specialwatch;
+        const specialwatch = _.isUndefined(directive.watchFor) ? 
+            DEFAULT_WATCH_TIME : directive.watchFor;
 
-        // gestire se directive.specialwatch == "end"
         if(condition[st] == "unstarted") {
             const res = await yt.press("Space");
             await page.waitFor(500);
             const andafter = await ele.evaluate(function(e) { return e.getPlayerState() })
             debug("Pressed space: from -1, now the state is %d, special watch %s", andafter, specialwatch);
         } else {
-            console.log("Not pressing space as the video is already going: special-video-wait now, default 10s.");
+            console.log("Not pressing space as the video is already going");
         }
 
         const isError = await page.$('yt-player-error-message-renderer');
@@ -64,6 +62,7 @@ async function afterWait(page, directive) {
             return;
         }
 
+        // here is managed the special condition directive.watchFor == "end"
         if(specialwatch === "end") {
             debug("specialwatch till the end");
             /* watch until the movie_player is 'end' */
@@ -77,6 +76,10 @@ async function afterWait(page, directive) {
                     console.log("Video play ended!");
                     return;
                 }
+		if(condition[st] == "unstarted") {
+		    debug("Forcing to start? hoping there wasn't any mess with ad");
+		    await yt.press("Space");
+		}
             }
             console.log("Video play for too long, the maximumg playtime is reached", DEFAULT_MAX_TIME);
         } else if(_.isInteger(specialwatch)) {
