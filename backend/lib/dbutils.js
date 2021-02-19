@@ -30,7 +30,7 @@ async function getLimitedDistinct(cName, field, maxAmount, filter) {
 }
 
 async function getCampaignQuery(campaignColumn, queriesColumn, campaignName) {
-    const MAXAMOUNT = 100; // maximum amount of search queries looked (hardcoded limit)
+    const MAXAMOUNT = 20000; // maximum amount of search queries looked (hardcoded limit)
     try {
         const mongoc = await mongo3.clientConnect({concurrency: 1});
         const r = await mongo3.read(mongoc, campaignColumn, { name: campaignName });
@@ -55,8 +55,8 @@ async function getCampaignQuery(campaignColumn, queriesColumn, campaignName) {
             rv.total = _.sum(rv.searches);
             return rv;
         });
-        debug("getCampaingQuery %j collected %d term queries, totals %j",
-            r, _.size(refined), _.map(refined, 'total') );
+        debug("getCampaingQuery collected %d term queries, from non-unique source of %d totals %j",
+            _.size(refined), _.size(results), _.map(refined, 'total') );
         const contributors = _.size(_.keys(_.countBy(results, 'publicKey')));
         await mongoc.close();
         return {
