@@ -30,12 +30,14 @@ async function getLimitedDistinct(cName, field, maxAmount, filter) {
 }
 
 async function getCampaignQuery(campaignColumn, queriesColumn, campaignName) {
-    const MAXAMOUNT = 6000;
+    const MAXAMOUNT = 100; // maximum amount of search queries looked (hardcoded limit)
     try {
         const mongoc = await mongo3.clientConnect({concurrency: 1});
         const r = await mongo3.read(mongoc, campaignColumn, { name: campaignName });
-        if(!r || !_.size(r) || !r[0]._id )
+        if(!r || !_.size(r) || !r[0]._id ) {
+            await mongoc.close();
             return false;
+        }
 
         const campaign = _.first(r)
         debug("getCampaignQuery - campaign retrieved %s, with %d queries", campaign.name, _.size(campaign.queries));
@@ -53,6 +55,8 @@ async function getCampaignQuery(campaignColumn, queriesColumn, campaignName) {
             rv.total = _.sum(rv.searches);
             return rv;
         });
+        debug("getCampaingQuery using %j collected %d term queries, total %d",
+            _.omit(r, ['searchTerms']), _.size(refined), rv.total);
         const contributors = _.size(_.keys(_.countBy(results, 'publicKey')));
         await mongoc.close();
         return {
@@ -65,7 +69,8 @@ async function getCampaignQuery(campaignColumn, queriesColumn, campaignName) {
                 overflow: (_.size(results) == MAXAMOUNT)
         }};
     } catch(error) {
-        debug("getCampaignQuery - failure in db access (getCampaignQuery %s): %s", campaignName, error.message);
+        debug("getCampaignQuery: failure in db access (getCampaignQuery %s): %s", campaignName, error.message);
+        // remember, mongoc isn't close in this case, I wonder if many of this condition might trigger any exhaustion
         return false;
     }
 }
@@ -98,7 +103,7 @@ async function writeCampaigns(cName, listof, kname) {
 }
 
 async function getAggregatedByTerm(cName, campaign, term) {
-    debugger;
+    // not currently used
     try {
         const mongoc = await mongo3.clientConnect({concurrency: 1});
         const results = await mongo3.aggregate(mongoc, cName, [
