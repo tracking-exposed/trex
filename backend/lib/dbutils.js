@@ -55,8 +55,8 @@ async function getCampaignQuery(campaignColumn, queriesColumn, campaignName) {
             rv.total = _.sum(rv.searches);
             return rv;
         });
-        debug("getCampaingQuery using %j collected %d term queries, total %d",
-            _.omit(r, ['searchTerms']), _.size(refined), rv.total);
+        debug("getCampaingQuery %j collected %d term queries, totals %j",
+            r, _.size(refined), _.map(refined, 'total') );
         const contributors = _.size(_.keys(_.countBy(results, 'publicKey')));
         await mongoc.close();
         return {
