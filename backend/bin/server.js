@@ -184,6 +184,9 @@ app.post('/api/v2/profile/:publicKey', (req, res) => {
 });
 
 /* to get results of search queries! */
+app.get('/api/v2/searches/:idList/dot', (req, res) => {
+    return dispatchPromise('getSearchesDot', req, res);
+});
 app.get('/api/v2/searches/:query/CSV', (req, res) => {
     return dispatchPromise('getSearchesCSV', req, res);
 });

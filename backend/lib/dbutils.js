@@ -29,7 +29,7 @@ async function getLimitedDistinct(cName, field, maxAmount, filter) {
     }
 }
 
-async function getCampaignQuery(campaignColumn, queriesColumn, campaignName) {
+async function getCampaignQuery(campaignColumn, queriesColumn, campaignName, optionalFilter) {
     const MAXAMOUNT = 20000; // maximum amount of search queries looked (hardcoded limit)
     try {
         const mongoc = await mongo3.clientConnect({concurrency: 1});
@@ -41,10 +41,16 @@ async function getCampaignQuery(campaignColumn, queriesColumn, campaignName) {
 
         const campaign = _.first(r)
         debug("getCampaignQuery - campaign retrieved %s, with %d queries", campaign.name, _.size(campaign.queries));
-        const results = await mongo3.readLimit(mongoc, queriesColumn, {
+        const filter = {
             searchTerms: { "$in": campaign.queries },
             savingTime: { "$gte": campaign.startDate, "$lte": campaign.endDate }
-        }, {}, MAXAMOUNT, 0);
+        };
+
+        if(optionalFilter)
+            debug("experimentla feature for Dot format: %j", _.extend(filter, optionalFilter) );
+
+        const results = await mongo3.readLimit(mongoc, queriesColumn, optionalFilter ?
+            _.extend(filter, optionalFilter) : filter, {}, MAXAMOUNT, 0);
         const refined = _.map(_.groupBy(results, 'searchTerms'), function(qlist, searchTerms) {
             // this is ready for table visualization 
             const rv = {
