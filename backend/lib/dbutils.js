@@ -147,12 +147,17 @@ async function getAggregatedByTerm(cName, campaign, term) {
 }
 
 async function getLimitedCollection(cName, filter, maxAmount, reportOverflow) {
+    // note: sorting only tested for cName === search
     try {
         const mongoc = await mongo3.clientConnect({concurrency: 1});
-        const results = await mongo3.readLimit(mongoc, cName, filter, {}, maxAmount, 0);
+        const results = await mongo3.readLimit(mongoc, cName, filter, {savingTime: -1}, maxAmount, 0);
+        if(reportOverflow && _.size(results) === maxAmount) {
+            // a db access only for debug sake!
+            const full = await mongo3.count(mongoc, cName, filter);
+            debug("the maxAmount for this filter is set to %d. full available %d, sorting by most recent",
+                maxAmount, full);
+        }
         await mongoc.close();
-        if(reportOverflow && _.size(results) === maxAmount)
-            debug("data fetch by %j reach limit of data, sorting isn't configured", filter);
         return results;
     } catch(error) {
         debug("Failure in fetching %s by %j: %s: %s", cName, filter, error.message);

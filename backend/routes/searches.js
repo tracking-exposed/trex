@@ -10,13 +10,15 @@ const dbutils = require('../lib/dbutils');
 const security = require('../lib/security');
 const utils = require('../lib/utils');
 const { platform } = require('os');
+const { indexOf } = require('food-words');
 
 const MAXRVS = 5000;
 
 async function getSearches(req) {
     // '/api/v2/searches/:query/:paging?' 
     // this is used in v.md
-    const { amount, skip } = params.optionParsing(req.params.paging, 10);
+    const AMOUNT = 400; // THIS differs from MAXRVS because want to load differently CSV than page;
+    const { amount, skip } = params.optionParsing(req.params.paging, AMOUNT);
     const qs = qustr.unescape(req.params.query);
     debug("getSearches %s query amount %d skip %d", qs, amount, skip);
     const entries = await dbutils.getLimitedCollection(nconf.get('schema').searches, {searchTerms: qs}, amount, true);
@@ -27,11 +29,15 @@ async function getSearches(req) {
         return _.omit(e, ['_id', 'publicKey', 'selectedChannel', 'relativeSeconds']);
     });
     debug("getSearches: returning %d matches about %s", _.size(rv), req.params.query);
-    return { json: rv };
+    return { json: {
+        data: rv,
+        maxAmount: AMOUNT,
+        overflow: (_.size(rv) === AMOUNT) }
+    };
 };
 
 async function getQueries(req) {
-    // this is the API used in campaigns like: http://localhost:1313/chiaro/excample/
+    // this is the API used in campaigns like: http://localhost:1313/chiaro/example/
     const campaignName = req.params.campaignName;
     debug("getQueries of %s", campaignName);
     const entries = await dbutils.getCampaignQuery(
@@ -94,7 +100,10 @@ async function getSearchesDot(req) {
     debug("getSearchesDot take as source id list: %j", idList);
     const entries = await dbutils.getLimitedCollection(nconf.get('schema').searches, {
         metadataId: { "$in": idList }
-    }, 10000, true); // hardcoded amount of nodes
+    }, MAXRVS, true);
+
+    if(_.size(entries) == MAXRVS)
+        debug("paging not managed in getSearchesDot, please review!!");
 
     const data = _.map(entries, function(e) {
         e.pseudo = utils.string2Food(e.publicKey);
