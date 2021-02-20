@@ -39,7 +39,7 @@ async function getCampaignQuery(campaignColumn, queriesColumn, campaignName, opt
             return false;
         }
 
-        const campaign = _.first(r)
+        const campaign = _.first(r);
         debug("getCampaignQuery - campaign retrieved %s, with %d queries", campaign.name, _.size(campaign.queries));
         const filter = {
             searchTerms: { "$in": campaign.queries },
@@ -47,7 +47,7 @@ async function getCampaignQuery(campaignColumn, queriesColumn, campaignName, opt
         };
 
         if(optionalFilter)
-            debug("experimentla feature for Dot format: %j", _.extend(filter, optionalFilter) );
+            debug("experimental feature for Dot format: %j", _.extend(filter, optionalFilter) );
 
         const results = await mongo3.readLimit(mongoc, queriesColumn, optionalFilter ?
             _.extend(filter, optionalFilter) : filter, {}, MAXAMOUNT, 0);

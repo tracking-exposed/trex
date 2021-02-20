@@ -9,6 +9,7 @@ const params = require('../lib/params');
 const dbutils = require('../lib/dbutils');
 const security = require('../lib/security');
 const utils = require('../lib/utils');
+const { platform } = require('os');
 
 const MAXRVS = 5000;
 
@@ -47,7 +48,7 @@ async function getQueries(req) {
             }
         }
 
-    debug("getQueries of %s returns %d elements", campaignName, _.size(entries));
+    debug("getQueries success: %s returns %d elements", campaignName, _.size(entries));
     return { json: entries };
 }
 
@@ -114,6 +115,8 @@ async function getSearchesDot(req) {
     const pseudoObject = _.map(pList, function(v) { return { id: v, group: 2 }});
     dot.nodes = _.concat(videoObject, pseudoObject);
 
+    debug("getSearchesDot: params %d metadataId(s) = %d videos = %d nodes and %d links",
+        idList.length, data.length, dot.nodes.length, dot.links.length);
     return { json: dot };
 }
 
