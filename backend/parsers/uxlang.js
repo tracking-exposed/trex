@@ -23,6 +23,7 @@ const absoluteDateIntroSentence = [
     'Trasmesso in anteprima ',
     'Transmitido ao vivo ',
     'Trasmissione in live streaming ',
+    'El estreno empezó hace ',
     'Scheduled for ',   // How should we manage future evidence?
 ];
 const conditionalExtra = [{
@@ -141,6 +142,7 @@ const relativeOpeningString = [
     'Aktiver',      // Aktiver Livestream seit 3 Stunden
     'Livestream',   // Livestream vor 6 Stunden
     'streamen',     // 37 minuten geleden begonnen met streamen
+    'El',           // El estreno empezó hace 3 minutos
 ];
 
 function findRelative(stri, clientTime) {
