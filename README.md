@@ -6,7 +6,21 @@
 
 This produces the **distributed** release, in the directory `dist` you should find `extension.zip` which is thw same file uploaded to Mozilla and Chrome add-ons stores.
 
+## Anybody else (except developers)?
+
+Please refer to [youtube.tracking.exposed](https://youtube.tracking.exposed).
+
 ### Developer? 
+
+Directories:
+
+* backend: please look in bin/ and you'll see microservices, batch processes and utility scripts used by the yttrex toolkit.
+* methodology: please read the README.md, the tool is meant to automate access to youtube.
+* reach-pieces: and experimental approach on how to build component of the UX with react.
+* extension: please keep reading this README, it talks about how is build [this extension](https://addons.mozilla.org/en-US/firefox/addon/yttrex/).
+
+#### Now, if you're a developer interested in the browser extension:
+
 Instead of `build:dist`, use:
 
   npm run build
