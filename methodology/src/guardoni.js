@@ -1,13 +1,14 @@
+#!/usr/bin/env node
 const _ = require('lodash');
-const debug = require('debug')('methodology:test-1');
+const debug = require('debug')('methodology:guardoni');
 const puppeteer = require("puppeteer-extra")
-const { TimeoutError } = require("puppeteer/lib/api");
 const pluginStealth = require("puppeteer-extra-plugin-stealth");
 const nconf = require('nconf');
 const fetch = require('node-fetch');
 const path = require('path');
 const fs = require('fs');
 
+const DEFAULT_WATCHING_MILLISECONDS = 6789;
 nconf.argv().env();
 
 defaultAfter = async function(page, directive) {
@@ -21,9 +22,9 @@ async function main() {
 
   const sourceUrl = nconf.get('source');
   if(!sourceUrl) {
-    console.log("Mandatory --source URL/that/serve.a.json");
-    console.log(`must be a list of [{
-      "delay": <number in millisec>,
+    console.log("Mandatory configuration! for example --source https://youtube.tracking.exposed/json/automation-example.json");
+    console.log(`must be a list of JSON objects like: [{
+      "watchFor": <number in millisec>,
       "url": "https://tobeopenedand/waited/for/delay",
       "name": "optional, in case you want to label and see a debug line"
     }, {
@@ -148,9 +149,9 @@ async function operateBroweser(page, directives, domainSpecific) {
       } catch(error) {
         console.log("error in beforeWait", error.message);
       }
-      const LOADING_DELAY = directive.delay || 4000;
-      console.log("Directive to URL " + directive.url + "Loading delay:" + LOADING_DELAY);
-      await page.waitFor(LOADING_DELAY);
+      const WATCH_FOR = directive.watchFor || DEFAULT_WATCHING_MILLISECONDS;
+      console.log("Directive to URL " + directive.url + "Loading delay:" + WATCH_FOR);
+      await page.waitFor(WATCH_FOR);
       console.log("Done loading wait. calling domainSpecific");
       try {
         await domainSpecific.afterWait(page, directive);
