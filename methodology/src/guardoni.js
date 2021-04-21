@@ -3,12 +3,16 @@ const _ = require('lodash');
 const debug = require('debug')('methodology:guardoni');
 const puppeteer = require("puppeteer-extra")
 const pluginStealth = require("puppeteer-extra-plugin-stealth");
+const fs = require('fs');
+const path = require('path');
 const nconf = require('nconf');
 const fetch = require('node-fetch');
-const path = require('path');
-const fs = require('fs');
+const execSync = require('child_process').execSync;
 
 const DEFAULT_WATCHING_MILLISECONDS = 6789;
+const COMMANDJSONEXAMPLE = "https://youtube.tracking.exposed/json/automation-example.json";
+const EXTENSION_WITH_OPT_IN_ALREADY_CHECKED='https://github.com/tracking-exposed/yttrex/releases/download/1.4.99/extension.zip';
+
 nconf.argv().env();
 
 defaultAfter = async function(page, directive) {
@@ -18,15 +22,33 @@ defaultBefore = async function(page, directive) {
   debug("This function might be implemented");
 }
 
+async function keypress() {
+  process.stdin.setRawMode(true)
+  return new Promise(resolve => process.stdin.once('data', () => {
+    process.stdin.setRawMode(false)
+    resolve()
+  }))
+}
+
+async function allowResearcherSomeTimeToSetupTheBrowser() {
+  console.log("Now you can configure your chrome browser, define default settings and when you're done, press enter");
+  await keypress();
+}
+
+function downloadExtension(zipFileP) {
+  execSync('curl -L ' + EXTENSION_WITH_OPT_IN_ALREADY_CHECKED + " -o " + zipFileP);
+  execSync('unzip ' + zipFileP + " -d extension");
+}
+
 async function main() {
 
   const sourceUrl = nconf.get('source');
   if(!sourceUrl) {
-    console.log("Mandatory configuration! for example --source https://youtube.tracking.exposed/json/automation-example.json");
+    console.log("Mandatory configuration! for example --source " + COMMANDJSONEXAMPLE);
     console.log(`must be a list of JSON objects like: [{
       "watchFor": <number in millisec>,
-      "url": "https://tobeopenedand/waited/for/delay",
-      "name": "optional, in case you want to label and see a debug line"
+      "url": "https://youtube.come/v?...",
+      "name": "optional, in case you want to see this label, specifiy DEBUG=* as environment var"
     }, {
   } ]`);
     process.exit(1);
@@ -43,10 +65,8 @@ async function main() {
     fs.readdir(platformdir, (err, files) => {
       const effectivedir = path.join(platformdir, files[0]);
       if(files[0] == 'chrome-win') {
-        debug("NOTE DON'T YET TESTED IN APPLE/LINUX");
         localbrowser = path.join(effectivedir, 'chrome.exe');
       } else {
-        console.log("NOTE DON'T YET TESTED IN APPLE/LINUX");
         localbrowser = path.join(effectivedir, 'chrome');
       }
     });
@@ -63,38 +83,40 @@ async function main() {
     debug("directives: %s", JSON.stringify(directives, undefined, 2));
     if(!directives.length) {
       console.log("Url do not include any directive in [list] format");
-      console.log("try --source https://gist.githubusercontent.com/vecna/c8d1236881f42319a815cd3a4a37c6bc/raw/c2f440fcae3990fa348f64e953a737a749a23522/guardoni-directive-yt-1.json")
+      console.log("try for example --source ", COMMANDJSONEXAMPLE);
       process.exit(1);
     }
   } catch (error) {
-    debug("Error: %s", error.message);
-    console.log(error.response.body);
+    console.log("Error in retriving directive URL: " + error.message);
+    // console.log(error.response.body);
     process.exit(1);
   }
 
   const dist = path.resolve(path.join(cwd, 'extension'));
-  if(!fs.existsSync(dist)) {
-    console.log('Directory '+ dist +' not found, please download & unpack:');
-    console.log('https://github.com/tracking-exposed/yttrex/releases/download/1.4.99/extension.zip');
-    console.log("be sure to unpacked files in: " + dist);
-    process.exit(1)
+  const manifest = path.resolve(path.join(cwd, 'extension', 'manifest.json'));
+  if(!fs.existsSync(manifest)) {
+    console.log('Manifest in ' + dist + ' not found, the script now would download & unpack');
+    const tmpzipf = path.resolve(path.join(cwd, 'extension', 'tmpzipf.zip'));
+    console.log("Using " + tmpzipf + " as temporary file");
+    downloadExtension(tmpzipf);
   }
 
   const profile = nconf.get('profile');
   if(!profile) {
-    console.log("--profile it is necessary and be absolute or relative path; You might want to execute:");
-    console.log(localbrowser, "--user-data-dir=profiles/<YOUR PROFILE NAME> to init browser");
+    console.log("--profile it is necessary and if you don't have one: pick up a name and this tool would assist during the creation");
+    // console.log(localbrowser, "--user-data-dir=profiles/<YOUR PROFILE NAME> to init browser");
     process.exit(1)
   }
 
-  const udd = path.resolve(profile);
+  let setupDelay = false;
+  const udd = path.resolve(path.join('profiles', profile));
   if(!fs.existsSync(udd)) {
-    console.log("--profile directory do not exist" + udd);
-    console.log(localbrowser," --user-data-dir=profiles/path to initialize a new profile");
-    process.exit(1)
+    console.log("--profile name hasn't an associated directory: " + udd + "\nLet's create it!");
+    // console.log(localbrowser," --user-data-dir=profiles/path to initialize a new profile");
+    // process.exit(1)
+    fs.mkdirSync('udd');
+    setupDelay = true;
   }
-  console.log("you might want to execute:");
-  console.log(localbrowser, "--user-data-dir=profiles/<YOUR PROFILE NAME> to init browser");
 
   let browser = null;
   try {
@@ -108,7 +130,10 @@ async function main() {
           "--disable-extensions-except=" + dist
         ],
     });
-    
+  
+    if(setupDelay)
+      await allowResearcherSomeTimeToSetupTheBrowser();
+
     const DS = './domainSpecific';
     let domainSpecific = null;
     try {
