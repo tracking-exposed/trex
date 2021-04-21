@@ -114,7 +114,7 @@ async function main() {
     console.log("--profile name hasn't an associated directory: " + udd + "\nLet's create it!");
     // console.log(localbrowser," --user-data-dir=profiles/path to initialize a new profile");
     // process.exit(1)
-    fs.mkdirSync('udd');
+    fs.mkdirSync(udd);
     setupDelay = true;
   }
 
