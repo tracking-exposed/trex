@@ -1,12 +1,13 @@
 #!/usr/bin/env node
 const _ = require('lodash');
-const debug = require('debug')('methodology:guardoni');
+const debug = require('debug')('guardoni:cli');
 const puppeteer = require("puppeteer-extra")
 const pluginStealth = require("puppeteer-extra-plugin-stealth");
 const fs = require('fs');
 const path = require('path');
 const nconf = require('nconf');
 const fetch = require('node-fetch');
+const moment = require('moment');
 const execSync = require('child_process').execSync;
 
 const DEFAULT_WATCHING_MILLISECONDS = 6789;
@@ -45,18 +46,18 @@ async function main() {
   const sourceUrl = nconf.get('source');
   if(!sourceUrl) {
     console.log("Mandatory configuration! for example --source " + COMMANDJSONEXAMPLE);
-    console.log(`must be a list of JSON objects like: [{
+    console.log("Via --source you can specify and URL OR a local file")
+    console.log(`\nIt should be a valid JSON with objects like: [ {
       "watchFor": <number in millisec>,
-      "url": "https://youtube.come/v?...",
+      "url": "https://youtube.come/v?videoNumber1",
       "name": "optional, in case you want to see this label, specifiy DEBUG=* as environment var"
-    }, {
-  } ]`);
+    }, {...}
+]\n\tDocumentation: https://youtube.tracking.exposed/automation`);
     process.exit(1);
   }
 
-  /* finding chrome local executable */
+  /* finding chrome local executable (not useful anymore) */
   const cwd = process.cwd();
-
   const localchromium = path.join(cwd, 'node_modules', 'puppeteer', '.local-chromium');
   let localbrowser = null;
   fs.readdir(localchromium, (err, files) => {
@@ -74,16 +75,21 @@ async function main() {
 
   let directives;
   try {
-    const response = await fetch(sourceUrl);
-    if(response.status !== 200) {
-      console.log("response", response.status);
-      process.exit(1);
+    if(_.startsWith(sourceUrl, 'http')) {
+      const response = await fetch(sourceUrl);
+      if(response.status !== 200) {
+        console.log("Error in fetching directives from URL", response.status);
+        process.exit(1);
+      }
+      directives = await response.json();
+      debug("directives loaded from URL: %j", _.map(directives, 'name'));
+    } else {
+      directives = JSON.parse(fs.readFileSync(sourceUrl, 'utf-8'));
+      debug("directives loaded from file: %j", _.map(directives, 'name'));
     }
-    directives = await response.json();
-    debug("directives: %s", JSON.stringify(directives, undefined, 2));
     if(!directives.length) {
-      console.log("Url do not include any directive in [list] format");
-      console.log("try for example --source ", COMMANDJSONEXAMPLE);
+      console.log("URL/file do not include any directive in expected format");
+      console.log("Check the example with --source ", COMMANDJSONEXAMPLE);
       process.exit(1);
     }
   } catch (error) {
@@ -118,6 +124,18 @@ async function main() {
     setupDelay = true;
   }
 
+  /* enrich directives with profile and experiment name */
+  const experiment = nconf.get('experiment');
+  directives = _.map(directives, function(d) {
+    d.profile = profile;
+    if(experiment)
+      d.experiment = experiment;
+    d.humanized = _.isInteger(d.waitFor) ?
+      moment.duration(d.waitFor).humanized() :
+      "n/a";
+    return d;
+  });
+
   let browser = null;
   try {
     puppeteer.use(pluginStealth());
@@ -139,7 +157,7 @@ async function main() {
     try {
       domainSpecific = require(DS);
     } catch(error) {
-      console.log("Not found!?", DS, error);
+      console.log("Not found domainSpecific!?", DS, error);
       domainSpecific = {
         beforeWait: defaultBefore,
         afterWait: defaultAfter,
@@ -168,25 +186,26 @@ async function operateBroweser(page, directives, domainSpecific) {
       await page.goto(directive.url, { 
         waitUntil: "networkidle0",
       });
-      debug("+Loading %j", directive);
+      debug("— Loading %s (for %s)", directive.name, directive.humanized);
       try {
         await domainSpecific.beforeWait(page, directive);
       } catch(error) {
-        console.log("error in beforeWait", error.message);
+        console.log("error in beforeWait", error.message, error.stack);
       }
-      const WATCH_FOR = directive.watchFor || DEFAULT_WATCHING_MILLISECONDS;
-      console.log("Directive to URL " + directive.url + "Loading delay:" + WATCH_FOR);
-      await page.waitFor(WATCH_FOR);
-      console.log("Done loading wait. calling domainSpecific");
+      const openPageDuration = directive.watchFor || DEFAULT_WATCHING_MILLISECONDS;
+      debug("Directive to URL %s, Loading delay %d", directive.url, openPageDuration);
+      await page.waitFor(openPageDuration);
+      console.log("Done loading wait. Calling domainSpecific");
       try {
         await domainSpecific.afterWait(page, directive);
       } catch(error) {
-        console.log("error in afterWait", error.message);
+        console.log("Error in afterWait",
+          error.message, error.stack);
       }
-      debug("-Completed %j", directive);
+      debug("— Completed %s", directive.name);
     }
   }
-  console.log("Loop done, processed directives:", directives.length);
+  debug("Session complete! executed %d directives", directives.length);
 }
 
 main ();
