@@ -69,6 +69,7 @@ async function interactWithYT(page, directive, wantedState) {
 
     const DEFAULT_MAX_TIME = 1000 * 60 * 10; // 10 minutes
     const DEFAULT_WATCH_TIME = 9000;
+    const PERIODIC_CHECK_ms = 5000;
 
     // consenso all'inizio
     // non voglio loggarmi (24 ore)
@@ -106,16 +107,15 @@ async function interactWithYT(page, directive, wantedState) {
     if(specialwatch === "end") {
         debug("specialwatch till the end");
         /* watch until the movie_player is 'end' */
-        for(checktime of _.times(DEFAULT_MAX_TIME / 5000)) {
-            await page.waitFor(5000);
+        for(checktime of _.times(DEFAULT_MAX_TIME / PERIODIC_CHECK_ms)) {
+            await page.waitFor(PERIODIC_CHECK_ms);
             const newst = await getYTstatus(page);
-            debug("Check number %d, player state: %s = %s", checktime, st, condition[st]);
             if(newst.name == "ended") {
-                console.log("Video play ended!");
+                console.log("Video play ended at check n# %d", checktime);
                 return;
             }
             if(newst.name == "unstarted") {
-                debug("Forcing to start? hoping there wasn't any mess with ad");
+                debug("check n# %d — Forcing to start? hoping there wasn't any mess with ad", checktime);
                 await newst.player.press("Space");
             }
         }

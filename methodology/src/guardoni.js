@@ -37,6 +37,7 @@ async function allowResearcherSomeTimeToSetupTheBrowser() {
 }
 
 function downloadExtension(zipFileP) {
+  debug("Executing curl and unzip (if these binary aren't present in your system please mail support at tracking dot exposed because you might have worst problems)");
   execSync('curl -L ' + EXTENSION_WITH_OPT_IN_ALREADY_CHECKED + " -o " + zipFileP);
   execSync('unzip ' + zipFileP + " -d extension");
 }
@@ -127,9 +128,9 @@ async function main() {
   /* enrich directives with profile and experiment name */
   const experiment = nconf.get('experiment');
   directives = _.map(directives, function(d) {
-    d.profile = profile;
     if(experiment)
       d.experiment = experiment;
+    d.profile = profile;
     d.humanized = _.isInteger(d.waitFor) ?
       moment.duration(d.waitFor).humanized() :
       "n/a";
