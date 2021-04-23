@@ -8,7 +8,7 @@ async function beforeWait(page, directive) {
 
     page
         .on('console', function(message) {
-            bcons(`${message.text()}`);
+            // bcons(`${message.text()}`);
             if(message.text().match(/publicKey/)) {
                 console.log("publicKey spotted:", message.text());
             }
@@ -19,20 +19,18 @@ async function beforeWait(page, directive) {
         .on('requestfailed', request =>
             debug(`requestfail: ${request.failure().errorText} ${request.url()}`)); */
 
-    if(directive.url.match(/\/watch\?v=/)) {
-        const state = await getYTstatus(page);
-        debug("beforeWait status found to be:", state.name);
-        await interactWithYT(page, directive, "playing");
-    } else {
-        debug("We don't know what you're doing on %s but you're free to do it!", directive.url);
-    }
 }
 
 async function afterWait(page, directive) {
     // const innerWidth = await page.evaluate(_ => { return window.innerWidth });
     // const innerHeight = await page.evaluate(_ => { return window.innerHeight });
-    const state = await getYTstatus(page);
-    debug("afterWait status found to be:", state.name);
+    if(directive.url.match(/\/watch\?v=/)) {
+        const state = await getYTstatus(page);
+        debug("afterWait status found to be: %s", state.name);
+        await interactWithYT(page, directive, "playing");
+    } else {
+        debug("We don't know what you're doing on %s but you're free to do it!", directive.url);
+    }
     /*
     if(directive.nodump !== true) {
         const screendumpf = moment().format("YYYYMMDD-HHmm") + '-' + directive.name + '-' + directive.profile + '.png';
@@ -58,9 +56,8 @@ async function getYTstatus(page) {
     const st = await ele.evaluate(function(e) {
         return e.getPlayerState();
     });
-    debug("Current video state is: %s", condition[st]);
-
-    return { name: condition[st],
+    const name = condition[st] ? condition[st] : "unmanaged-" + st;
+    return { name,
              player: yt
     };
 }
@@ -69,13 +66,13 @@ async function interactWithYT(page, directive, wantedState) {
 
     const DEFAULT_MAX_TIME = 1000 * 60 * 10; // 10 minutes
     const DEFAULT_WATCH_TIME = 9000;
-    const PERIODIC_CHECK_ms = 5000;
+    const PERIODIC_CHECK_ms = 3000;
 
     // consenso all'inizio
     // non voglio loggarmi (24 ore)
     // non voglio la prova gratuita (random)
 
-    const state = await getYTstatus(page);
+    let state = await getYTstatus(page);
     if(state.name != wantedState) {
         debug("State switching necessary (now %s, wanted %s)", state.name, wantedState)
         // not really possible guarantee a full mapping of condition. this
@@ -84,15 +81,9 @@ async function interactWithYT(page, directive, wantedState) {
     if(state.name == "unstarted") {
         const res = await state.player.press("Space");
         await page.waitFor(600);
-        const nowst = await getYTstatus(page);
-        debug("Pressed space: from -1, now the state is %d [%s]",
-            nowst.name,
-            directive.watchFor === "end"
-            ? "special watch till the end" :
-            "duration " + directive.watchFor);
-    } else {
-        console.log("Not pressing space as the video is already going");
-    }
+        state = await getYTstatus(page);
+    } else
+        debug("Not pressing space as the video is in state %s", state.name);
 
     const isError = await page.$('yt-player-error-message-renderer');
     if(!_.isNull(isError)) {
@@ -100,32 +91,31 @@ async function interactWithYT(page, directive, wantedState) {
         return;
     }
 
-    debug("Loaded video (state %s)", state.name);
+    debug("Entering watching loop (state %s)", state.name);
     const specialwatch = _.isUndefined(directive.watchFor) ? 
         DEFAULT_WATCH_TIME : directive.watchFor;
     // here is managed the special condition directive.watchFor == "end"
-    if(specialwatch === "end") {
-        debug("specialwatch till the end");
-        /* watch until the movie_player is 'end' */
+    if(specialwatch == "end") {
+        debug("This video would be watched till the end");
         for(checktime of _.times(DEFAULT_MAX_TIME / PERIODIC_CHECK_ms)) {
             await page.waitFor(PERIODIC_CHECK_ms);
-            const newst = await getYTstatus(page);
-            if(newst.name == "ended") {
-                console.log("Video play ended at check n# %d", checktime);
-                return;
-            }
+            let newst = await getYTstatus(page);
+
             if(newst.name == "unstarted") {
-                debug("check n# %d — Forcing to start? hoping there wasn't any mess with ad", checktime);
+                debug("Check n# %d — Forcing to start? (should not be necessary!)", checktime);
                 await newst.player.press("Space");
-            }
+            } else if(newst.name == "ended" || newst.name == "paused") {
+                console.log("Video status [%s] at check n#%d — closing loop", newst.name, checktime);
+                break;
+            } else if(newst.name != "playing")
+                debug("While video gets reprooduced (#%d check) the state is [%s]", newst.name);
         }
-        console.log("Video play for too long, the maximumg playtime is reached", DEFAULT_MAX_TIME);
     } else if(_.isInteger(specialwatch)) {
         console.log("watching video for the specified time of:", specialwatch, "milliseconds")
         await page.waitFor(specialwatch);
         console.log("finished special watchining time of:", specialwatch, "milliseconds");
     } else {
-        console.log(specialwatch, "Error: not 'end' and not a number");
+        console.log("Error: waitFor is not 'end' and it is not a number", specialwatch);
         process.exit(1);
     }
 }

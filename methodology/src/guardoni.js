@@ -10,7 +10,7 @@ const fetch = require('node-fetch');
 const moment = require('moment');
 const execSync = require('child_process').execSync;
 
-const DEFAULT_WATCHING_MILLISECONDS = 6789;
+const DEFAULT_LOADms = 2345; // two seconds and 345 ms.
 const COMMANDJSONEXAMPLE = "https://youtube.tracking.exposed/json/automation-example.json";
 const EXTENSION_WITH_OPT_IN_ALREADY_CHECKED='https://github.com/tracking-exposed/yttrex/releases/download/1.4.99/extension.zip';
 
@@ -131,11 +131,12 @@ async function main() {
     if(experiment)
       d.experiment = experiment;
     d.profile = profile;
-    d.humanized = _.isInteger(d.waitFor) ?
-      moment.duration(d.waitFor).humanized() :
-      "n/a";
+    d.humanized = _.isInteger(d.watchFor) ?
+      moment.duration(d.watchFor).humanize() :
+      d.watchFor += "";
     return d;
   });
+  console.log(JSON.stringify(directives, undefined, 2));
 
   let browser = null;
   try {
@@ -166,6 +167,7 @@ async function main() {
     }
     const page = (await browser.pages())[0];
     _.tail(await browser.pages()).forEach(async function(opage) {
+      debug("Closing a tab that shouldn't be there!");
       await opage.close();
     })
     // the BS above should close existing open tabs except 1st
@@ -193,7 +195,7 @@ async function operateBroweser(page, directives, domainSpecific) {
       } catch(error) {
         console.log("error in beforeWait", error.message, error.stack);
       }
-      const openPageDuration = directive.watchFor || DEFAULT_WATCHING_MILLISECONDS;
+      const openPageDuration = directive.loadFor || DEFAULT_LOADms;
       debug("Directive to URL %s, Loading delay %d", directive.url, openPageDuration);
       await page.waitFor(openPageDuration);
       console.log("Done loading wait. Calling domainSpecific");
