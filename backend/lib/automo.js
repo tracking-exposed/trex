@@ -523,9 +523,10 @@ async function saveExperiment(expobj) {
 
 async function fetchExperimentData(name) {
     const mongoc = await mongo3.clientConnect({concurrency: 1});
-    const result = await mongo3
+    const results = await mongo3
         .readLimit(mongoc, nconf.get('schema').experiments, {name}, {}, 100, 0);
     const problem = (_.size(result) === 100);
+    if(problem) debug("Warning! 5k limit reach");
     const retval = [];
     for (expevent of results) {
         debug(expevent);
