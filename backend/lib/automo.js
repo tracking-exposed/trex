@@ -550,7 +550,7 @@ async function fetchExperimentData(name) {
                     experiment: expevent.name,
         
                     recommendedVideoId: r.videoId,
-                    recommendedPubtime: r.publicationTime ? r.related.publicationTime.toISOString() : "Invalid Date",
+                    recommendedPubtime: r.publicationTime ? r.publicationTime.toISOString() : "Invalid Date",
                     recommendedForYou: r.foryou,
                     recommendedTitle: r.recommendedTitle,
                     recommendedAuthor: r.recommendedSource,
@@ -559,7 +559,7 @@ async function fetchExperimentData(name) {
                     recommendedViews: r.recommendedViews,
                     watchedId: l.videoId,
                     watchedAuthor: l.authorName,
-                    watchedPubtime: l.publicationTime ? r.publicationTime.toISOString() : "Invalid Date",
+                    watchedPubtime: l.publicationTime ? l.publicationTime.toISOString() : "Invalid Date",
                     watchedTitle: l.title,
                     watchedChannel: r.authorSource,
                 };
