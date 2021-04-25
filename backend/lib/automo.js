@@ -513,6 +513,58 @@ async function getTransformedMetadata(chain) {
     return result;
 }
 
+async function saveExperiment(expobj) {
+    const mongoc = await mongo3.clientConnect({concurrency: 1});
+    const result = await mongo3
+        .writeOne(mongoc, nconf.get('schema').experiments, expobj);
+    await mongoc.close();
+    return result;
+}
+
+async function fetchExperiment(name) {
+    const mongoc = await mongo3.clientConnect({concurrency: 1});
+    const result = await mongo3
+        .readLimit(mongoc, nconf.get('schema').experiments, {name}, {}, 100, 0);
+    const problem = (_.size(result) === 100);
+    const retval = [];
+    for (expevent of results) {
+        debug(expevent);
+        const l = await mongo3
+            .readLimit(mongoc, nconf.get('schema').metadata, { publicKey: expevent.publicKey }, {}, 5000, 0);
+        if(_.size(l) == 5000)
+            debug("Warning 5k elements retrieved that's might not be ok");
+        const ret = _.map(l, function(r) {
+            return {
+                savingTime: r.savingTime,
+                id: r.id.substr(0, 20),
+                watcher: utils.string2Food(r.publicKey),
+                blang: r.blang,
+                profile: expevent.profile,
+                experiment: expevent.name,
+    
+                recommendedVideoId: r.related.videoId,
+                recommendedPubtime: r.related.publicationTime ? r.related.publicationTime.toISOString() : "Invalid Date",
+                recommendedForYou: r.related.foryou,
+                recommendedTitle: r.related.recommendedTitle,
+                recommendedAuthor: r.related.recommendedSource,
+                recommendedVerified: r.related.verified,
+                recommendationOrder: r.related.index,
+                recommendedViews: r.related.recommendedViews,
+                watchedId: r.videoId,
+                watchedAuthor: r.authorName,
+                watchedPubtime: r.publicationTime ? r.publicationTime.toISOString() : "Invalid Date",
+                watchedTitle: r.title,
+                watchedViews: r.viewInfo.viewStr ? r.viewInfo.viewNumber : null,
+                watchedChannel: r.authorSource,
+            };
+        });
+        retval.push(ret);
+    }
+    debug(problem);
+    await mongoc.close();
+    return retval;
+}
+
 module.exports = {
     /* used by routes/personal */
     getSummaryByPublicKey,
@@ -552,4 +604,8 @@ module.exports = {
 
     /* generalized aggregation call */
     getTransformedMetadata,
+
+    /* experiment related operations */
+    saveExperiment,
+    fetchExperiment,
 };
