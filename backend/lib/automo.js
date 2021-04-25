@@ -522,24 +522,28 @@ async function saveExperiment(expobj) {
 }
 
 async function fetchExperimentData(name) {
+    const EXPLIM = 20;
+    const EVIDLIM = 200;
     const mongoc = await mongo3.clientConnect({concurrency: 1});
     const results = await mongo3
-        .readLimit(mongoc, nconf.get('schema').experiments, {name}, {}, 100, 0);
-    const problem = (_.size(result) === 100);
-    if(problem) debug("Warning! 5k limit reach");
+        .readLimit(mongoc, nconf.get('schema').experiments, {name}, {}, EXPLIM, 0);
+    const problem = (_.size(results) === EXPLIM);
+    if(problem) debug("Warning! experiment limit %d reach", EXPLIM);
     const retval = [];
     for (expevent of results) {
         debug(expevent);
         const l = await mongo3
-            .readLimit(mongoc, nconf.get('schema').metadata, { publicKey: expevent.publicKey }, {}, 5000, 0);
-        if(_.size(l) == 5000)
-            debug("Warning 5k elements retrieved that's might not be ok");
+            .readLimit(mongoc, nconf.get('schema').metadata, {
+                publicKey: expevent.publicKey, videoId: { "$in": expevent.videos }
+            }, { savingTime: -1 }, EVIDLIM, 0);
+        if(_.size(l) == EVIDLIM)
+            debug("Warning %d elements retrieved that's might not be ok", EVIDLIM);
         const ret = _.map(l, function(r) {
             return {
                 savingTime: r.savingTime,
-                id: r.id.substr(0, 20),
-                watcher: utils.string2Food(r.publicKey),
+                id: r.id,
                 blang: r.blang,
+                watcher: utils.string2Food(r.publicKey),
                 profile: expevent.profile,
                 experiment: expevent.name,
     
@@ -562,7 +566,7 @@ async function fetchExperimentData(name) {
         retval.push(ret);
     }
     await mongoc.close();
-    return retval;
+    return _.flatten(retval);
 }
 
 module.exports = {

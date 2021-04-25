@@ -35,8 +35,8 @@ async function csv(req) {
     // collection 'metadata' and 'experiments'
     const textcsv = CSV.produceCSVv1(related);
     debug("Requested experiment %s, fetch %d related, and converted in a %d CSV",
-        expname, _.size(retval), _.size(textcsv));
-    const filename = expname + '-' + _.size(retval) + '.csv';
+        expname, _.size(related), _.size(textcsv));
+    const filename = expname + '-' + _.size(related) + '.csv';
     return {
         text: textcsv,
         headers: {
