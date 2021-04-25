@@ -521,7 +521,7 @@ async function saveExperiment(expobj) {
     return result;
 }
 
-async function fetchExperiment(name) {
+async function fetchExperimentData(name) {
     const mongoc = await mongo3.clientConnect({concurrency: 1});
     const result = await mongo3
         .readLimit(mongoc, nconf.get('schema').experiments, {name}, {}, 100, 0);
@@ -560,7 +560,6 @@ async function fetchExperiment(name) {
         });
         retval.push(ret);
     }
-    debug(problem);
     await mongoc.close();
     return retval;
 }
@@ -607,5 +606,5 @@ module.exports = {
 
     /* experiment related operations */
     saveExperiment,
-    fetchExperiment,
+    fetchExperimentData,
 };

@@ -214,7 +214,7 @@ async function markingExperiment(expname, directives) {
   });
   const result = await commit.json();
   debug("Server answer: %s", JSON.stringify(result, undefined, 2));
-  console.log("Fetch material from https://youtube.tracking.exposed/api/v2/experiments/" + expname);
+  console.log("Fetch material from https://youtube.tracking.exposed/api/v2/experiment/" + expname);
 }
 
 async function operateBroweser(page, directives, domainSpecific) {
