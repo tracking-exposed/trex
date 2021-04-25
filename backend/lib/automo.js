@@ -532,41 +532,43 @@ async function fetchExperimentData(name) {
     const retval = [];
     for (expevent of results) {
         debug(expevent);
-        const l = await mongo3
+        const meta = await mongo3
             .readLimit(mongoc, nconf.get('schema').metadata, {
                 publicKey: expevent.publicKey, videoId: { "$in": expevent.videos }
             }, { savingTime: -1 }, EVIDLIM, 0);
-        if(_.size(l) == EVIDLIM)
+        if(_.size(meta) == EVIDLIM)
             debug("Warning %d elements retrieved that's might not be ok", EVIDLIM);
-        const ret = _.map(l, function(r) {
-            return {
-                savingTime: r.savingTime,
-                id: r.id,
-                blang: r.blang,
-                watcher: utils.string2Food(r.publicKey),
-                profile: expevent.profile,
-                experiment: expevent.name,
-    
-                recommendedVideoId: r.related.videoId,
-                recommendedPubtime: r.related.publicationTime ? r.related.publicationTime.toISOString() : "Invalid Date",
-                recommendedForYou: r.related.foryou,
-                recommendedTitle: r.related.recommendedTitle,
-                recommendedAuthor: r.related.recommendedSource,
-                recommendedVerified: r.related.verified,
-                recommendationOrder: r.related.index,
-                recommendedViews: r.related.recommendedViews,
-                watchedId: r.videoId,
-                watchedAuthor: r.authorName,
-                watchedPubtime: r.publicationTime ? r.publicationTime.toISOString() : "Invalid Date",
-                watchedTitle: r.title,
-                watchedViews: r.viewInfo.viewStr ? r.viewInfo.viewNumber : null,
-                watchedChannel: r.authorSource,
-            };
+        // rimpiazza con una buona .aggregate
+        const ret = _.map(meta, function(l) {
+            return _.map(l.related, function(r) {
+                return {
+                    savingTime: l.savingTime,
+                    id: l.id,
+                    blang: l.blang,
+                    watcher: utils.string2Food(l.publicKey),
+                    profile: expevent.profile,
+                    experiment: expevent.name,
+        
+                    recommendedVideoId: r.videoId,
+                    recommendedPubtime: r.publicationTime ? r.related.publicationTime.toISOString() : "Invalid Date",
+                    recommendedForYou: r.foryou,
+                    recommendedTitle: r.recommendedTitle,
+                    recommendedAuthor: r.recommendedSource,
+                    recommendedVerified: r.verified,
+                    recommendationOrder: r.index,
+                    recommendedViews: r.recommendedViews,
+                    watchedId: l.videoId,
+                    watchedAuthor: l.authorName,
+                    watchedPubtime: l.publicationTime ? r.publicationTime.toISOString() : "Invalid Date",
+                    watchedTitle: l.title,
+                    watchedChannel: r.authorSource,
+                };
+            });
         });
         retval.push(ret);
     }
     await mongoc.close();
-    return _.flatten(retval);
+    return _.flatten(_.flatten(retval));
 }
 
 module.exports = {
