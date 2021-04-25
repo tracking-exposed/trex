@@ -136,7 +136,6 @@ async function main() {
       d.watchFor += "";
     return d;
   });
-  console.log(JSON.stringify(directives, undefined, 2));
 
   let browser = null;
   try {
@@ -174,10 +173,47 @@ async function main() {
     await operateBroweser(page, directives, domainSpecific);
     await browser.close();
   } catch(error) {
-    console.log("Bad! Bad—Error:", error);
+    console.log("Error in operateBrowser (collection fail):", error);
     await browser.close();
     process.exit(1);
   }
+  if(experiment) {
+    debug("Automation with %d directives completed, marking experiment [%s] on the server",
+      directives.length, experiment);
+    await markingExperiment(experiment, directives);
+  } else {
+    debug("Automation completed! executed %d directives", directives.length);
+  }
+  process.exit(0);
+}
+
+async function markingExperiment(expname, directives) {
+  let server = nconf.get('backend') ? nconf.get('backend') : 'https://youtube.tracking.exposed';
+  if(_.endsWith(server, '/')) server = server.replace(/\/$/, '');
+  const uri = `${server}/api/v2/experiment`;
+  const explogfile = path.join("logs", directive.experiment + ".json");
+  const explog = JSON.parse(
+    fs.readFileSync(explogfile, 'utf-8')
+  )
+  const payload = _.reduce(directives, function(memo, d) {
+    memo.videos.push(_.pick(d, ['url', 'name']));
+    return memo;
+  }, {
+    experiment: expname,
+    profile: directives[0].profile,
+    videos: [],
+    publicKey: explog.publicKey,
+    when: explog.when
+  });
+  const commit = await fetch(uri, {
+    method: 'POST',
+    body: JSON.stringify(payload),
+    headers: {
+      "Content-Type": "application/json; charset=UTF-8"
+    }
+  });
+  const result = await commit.json();
+  debug("Server answer: %s", JSON.stringify(result, undefined, 2));
 }
 
 async function operateBroweser(page, directives, domainSpecific) {
@@ -202,13 +238,11 @@ async function operateBroweser(page, directives, domainSpecific) {
       try {
         await domainSpecific.afterWait(page, directive);
       } catch(error) {
-        console.log("Error in afterWait",
-          error.message, error.stack);
+        console.log("Error in afterWait", error.message, error.stack);
       }
       debug("— Completed %s", directive.name);
     }
   }
-  debug("Session complete! executed %d directives", directives.length);
 }
 
 main ();

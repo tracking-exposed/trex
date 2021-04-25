@@ -3,22 +3,47 @@ const moment = require('moment');
 const debug = require('debug')('guardoni:youtube');
 const bcons = require('debug')('guardoni:console');
 const path = require('path');
+const fs = require('fs');
 
 async function beforeWait(page, directive) {
-
-    page
-        .on('console', function(message) {
-            // bcons(`${message.text()}`);
-            if(message.text().match(/publicKey/)) {
-                console.log("publicKey spotted:", message.text());
+page
+    .on('console', function(message) {
+        if(message.text().match(/publicKey/)) {
+            if(directive.experiment) {
+                const appendl = path.join("logs", "incremental-" + directive.experiment + ".json");
+                const explog = path.join("logs", directive.experiment + ".json");
+                let msg = null;
+                try {
+                    msg = JSON.parse(message.text().replace(/\n/g, '').replace(/.*{/, '{').replace(/}.*/, '}') );
+                } catch(error) {
+                    // if this error happens it is because the regexp is failing in cleaning the input 
+                    // from browser extension and therefore JSON parsing fails. the Text expected is:
+                    // message.text()
+                    // "app.js gets {\n  \"active\": true,\n  \"publicKey\": \"6gVBjX7CrA7jTCxowexugCKQtt7\",\n  \"secretKey\": \"3KZhpyV6qECzaeTDJKdJCzmT21GSFFBThsvh3V6ZLAs\",\n  \"ux\": false\n} from localLookup"
+                    console.log("ERROR!", error);
+                    console.log(message.text());
+                    process.exit(1);
+                }
+                const payload = {
+                    publicKey: msg.publicKey,
+                    day: moment().format("DD MMMM YYYY"),
+                    when: moment().toISOString(),
+                }
+                fs.writeFileSync(appendl, JSON.stringify(payload) + "\n", {
+                    encoding: "utf-8", flag: "a+" });
+                fs.writeFileSync(explog, JSON.stringify(payload), {
+                    encoding: "utf-8", flag: "w+" });
+                console.log("Append [", appendl, "] Saved [" + explog + "]");
+            } else {
+                console.log("publicKey spotted and experiment not configured:", message.text());
             }
-        })
-        .on('pageerror', ({ message }) => debug('error' + message)) /*
-        .on('response', response =>
-            debug(`response: ${response.status()} ${response.url()}`))
-        .on('requestfailed', request =>
-            debug(`requestfail: ${request.failure().errorText} ${request.url()}`)); */
-
+        }
+    })
+    .on('pageerror', ({ message }) => debug('error' + message)) /*
+    .on('response', response =>
+        debug(`response: ${response.status()} ${response.url()}`))
+    .on('requestfailed', request =>
+        debug(`requestfail: ${request.failure().errorText} ${request.url()}`)); */
 }
 
 async function afterWait(page, directive) {

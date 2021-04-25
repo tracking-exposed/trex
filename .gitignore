@@ -16,9 +16,10 @@ extension/node_modules/*
 
 methodology/config/*
 methodology/profiles/*
+methodology/logs/*
 methodology/node_modules/*
 methodology/extension/*
 
-extension/node_modules/*
 backend/node_modules/*
+
 react-pieces/node_modules/*

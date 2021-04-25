@@ -14,12 +14,16 @@ function getInt(req, what, def) {
     return rv;
 }
 
-function getString(req, what) {
+function getString(req, what, mandatory) {
     var rv = _.get(req.params, what);
     if(_.isUndefined(rv)) {
         debug("getString: Missing parameter [%s] in %j", what, req.params);
-        return "";
+        rv = "";
     }
+
+    if(!rv.length && mandatory)
+	throw new Error("Lack of mandatory parameter " + what);
+
     return rv;
 }
 
