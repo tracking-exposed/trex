@@ -531,7 +531,6 @@ async function fetchExperimentData(name) {
     if(problem) debug("Warning! experiment limit %d reach", EXPLIM);
     const retval = [];
     for (expevent of results) {
-        debug(expevent);
         const meta = await mongo3
             .readLimit(mongoc, nconf.get('schema').metadata, {
                 publicKey: expevent.publicKey, videoId: { "$in": expevent.videos }
