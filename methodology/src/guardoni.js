@@ -57,23 +57,6 @@ async function main() {
     process.exit(1);
   }
 
-  /* finding chrome local executable (not useful anymore) */
-  const cwd = process.cwd();
-  const localchromium = path.join(cwd, 'node_modules', 'puppeteer', '.local-chromium');
-  let localbrowser = null;
-  fs.readdir(localchromium, (err, files) => {
-    // node_modules/puppeteer/.local-chromium/win64-722234/chrome-win/chrome.exe*
-    const platformdir = path.join(localchromium, files[0]);
-    fs.readdir(platformdir, (err, files) => {
-      const effectivedir = path.join(platformdir, files[0]);
-      if(files[0] == 'chrome-win') {
-        localbrowser = path.join(effectivedir, 'chrome.exe');
-      } else {
-        localbrowser = path.join(effectivedir, 'chrome');
-      }
-    });
-  });
-
   let directives;
   try {
     if(_.startsWith(sourceUrl, 'http')) {
