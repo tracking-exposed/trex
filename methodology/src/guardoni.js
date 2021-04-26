@@ -82,6 +82,7 @@ async function main() {
     process.exit(1);
   }
 
+  const cwd = process.cwd();
   const dist = path.resolve(path.join(cwd, 'extension'));
   const manifest = path.resolve(path.join(cwd, 'extension', 'manifest.json'));
   if(!fs.existsSync(manifest)) {
