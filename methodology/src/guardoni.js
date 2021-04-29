@@ -171,6 +171,31 @@ async function main() {
   process.exit(0);
 }
 
+async function operateTab(page, directive, domainSpecific, timeout) {
+
+  // TODO the 'timeout' would allow to repeat this operation with
+  // different parameters. https://stackoverflow.com/questions/60051954/puppeteer-timeouterror-navigation-timeout-of-30000-ms-exceeded
+  await page.goto(directive.url, { 
+    waitUntil: "networkidle0",
+  });
+  debug("— Loading %s (for %s)", directive.name, directive.humanized);
+  try {
+    await domainSpecific.beforeWait(page, directive);
+  } catch(error) {
+    console.log("error in beforeWait", error.message, error.stack);
+  }
+  const openPageDuration = directive.loadFor || DEFAULT_LOADms;
+  debug("Directive to URL %s, Loading delay %d", directive.url, openPageDuration);
+  await page.waitFor(openPageDuration);
+  console.log("Done loading wait. Calling domainSpecific");
+  try {
+    await domainSpecific.afterWait(page, directive);
+  } catch(error) {
+    console.log("Error in afterWait", error.message, error.stack);
+  }
+  debug("— Completed %s", directive.name);
+}
+
 async function markingExperiment(expname, directives) {
   let server = nconf.get('backend') ? nconf.get('backend') : 'https://youtube.tracking.exposed';
   if(_.endsWith(server, '/')) server = server.replace(/\/$/, '');
@@ -197,7 +222,7 @@ async function markingExperiment(expname, directives) {
     }
   });
   const result = await commit.json();
-  debug("Server answer: %s", JSON.stringify(result, undefined, 2));
+  // debug("Server answer: %s", JSON.stringify(result, undefined, 2));
   console.log("Fetch material from https://youtube.tracking.exposed/api/v2/experiment/" + expname);
 }
 
@@ -207,25 +232,11 @@ async function operateBroweser(page, directives, domainSpecific) {
     if(nconf.get('exclude') && directive.name == nconf.get('exclude')) {
       console.log("excluded!", directive.name);
     } else {
-      await page.goto(directive.url, { 
-        waitUntil: "networkidle0",
-      });
-      debug("— Loading %s (for %s)", directive.name, directive.humanized);
       try {
-        await domainSpecific.beforeWait(page, directive);
+        await operateTab(page, directive, domainSpecific);
       } catch(error) {
-        console.log("error in beforeWait", error.message, error.stack);
+        debug("operateTab in %s — error: %s", directive.name, error.message);
       }
-      const openPageDuration = directive.loadFor || DEFAULT_LOADms;
-      debug("Directive to URL %s, Loading delay %d", directive.url, openPageDuration);
-      await page.waitFor(openPageDuration);
-      console.log("Done loading wait. Calling domainSpecific");
-      try {
-        await domainSpecific.afterWait(page, directive);
-      } catch(error) {
-        console.log("Error in afterWait", error.message, error.stack);
-      }
-      debug("— Completed %s", directive.name);
     }
   }
 }

@@ -46,7 +46,17 @@ async function csv(req) {
     }
 };
 
+async function list(req) {
+
+}
+
+async function guardoni(req) {
+
+}
+
 module.exports = {
     submission,
-    csv
+    csv,
+    list,
+    guardoni,
 };
