@@ -1,5 +1,5 @@
 const _ = require('lodash');
-const debug = require('debug')('methodology:test-1');
+const debug = require('debug')('methodology:guardoni');
 const puppeteer = require("puppeteer-extra")
 const { TimeoutError } = require("puppeteer/lib/api");
 const pluginStealth = require("puppeteer-extra-plugin-stealth");
