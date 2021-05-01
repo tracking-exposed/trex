@@ -3,6 +3,7 @@ const moment = require('moment');
 const debug = require('debug')('routes:experiments');
 const url = require('url');
 const querystring = require('querystring');
+const fs = require('fs');
 
 const automo = require('../lib/automo');
 const params = require('../lib/params');
@@ -47,11 +48,102 @@ async function csv(req) {
 };
 
 async function list(req) {
-
+    return { json: [
+        "SpaceScience,CyberPunk2077,IndianFood (DashCam first and last)",
+        "https://github.com/tracking-exposed/yttrex/blob/master/backend/config/expercont.json" ]
+    };
 }
 
 async function guardoni(req) {
 
+    const cat = req.params.category;
+
+    const fcontent = fs.readFileSync("config/expercont.json", "utf8");
+    const vlist = JSON.parse(fcontent);
+    /*  GUARDONI format:
+     *    "name": "Tracking Exposed intro video",
+     *    "url": "https://www.youtube.com/watch?v=SmYuYEhT81c",
+     *    "watchFor": "end",
+     *    "loadFor": 2000
+     */
+    const keys = _.uniq(_.map(vlist, function(ventry) {
+        return ventry[0]
+    }));
+
+    if(keys.indexOf(cat) === -1)
+        return { json: [ "Invalid requested category name. allowed:", keys]};
+
+    const guardonified = _.reduce(vlist, function(memo, ventry) {
+        const thisc = ventry[0];
+        const url = ventry[1];
+        memo.seen[thisc] = memo.seen[thisc] ? memo.seen[thisc] + 1 : 1;
+
+        if(thisc == "DashCam") {
+            if(!memo.first.length)
+                memo.first.push({
+                    name: 'DashCam-1',
+                    url,
+                    watchFor: 5000,
+                    loadFor: 8000
+                });
+            else if(!memo.last.length)
+                memo.last.push({
+                    name: 'DashCam-final',
+                    url,
+                    watchFor: 5000,
+                    loadFor: 8000
+                });
+        }
+        else if(thisc == cat) {
+            if(!memo.second.length)
+                memo.second.push({
+                    name: cat+'-first', url,
+                    watchFor: 'end', loadFor: 4000
+                })
+            else
+                memo.selected.push({
+                    name: cat+'-'+memo.seen[cat], url,
+                    watchFor: 'end', loadFor: 4000
+                })
+        }
+        else {
+            memo.others.push({
+                name: thisc+'-'+memo.seen[thisc], url,
+                watchFor: 1500, loadFor: 3000
+            });
+        }
+        return memo;
+    }, {
+        first: [],
+        last: [],
+        second: [],
+        selected: [],
+        others: [],
+        seen: {},
+    });
+
+    const shuffled = _.reduce(_.concat(guardonified.others, guardonified.selected), function(memo, guarv) {
+        /* poor randomizer but .. */
+        const x = _.random(0, memo.length || 1) % 3;
+        if(x == 0)
+            return _.concat(guarv, memo);
+        else if(x==1) {
+            memo.push(guarv);
+            return memo;
+        } else {
+            const half = _.round(memo.length / 2);
+            const chunks = _.chunk(memo, half)
+            return _.concat(_.reverse(chunks[1]), guarv, _.reverse(chunks[0]));
+        }
+    }, []);
+
+    const retval = [
+        ...guardonified.first,
+        ...guardonified.second,
+        ...shuffled,
+        ...guardonified.last,
+    ];
+    return { json: retval };
 }
 
 module.exports = {

@@ -215,6 +215,12 @@ app.post('/api/v2/experiment', (req, res) => {
 app.get('/api/v2/experiment/:expname', (req, res) => {
     return dispatchPromise('experimentCSV', req, res);
 });
+app.get('/api/v2/guardoni/list', (req, res) => {
+    return dispatchPromise('guardoniList', req, res);
+});
+app.get('/api/v2/guardoni/:category', (req, res) => {
+    return dispatchPromise('guardoniGenerate', req, res);
+});
 
 /* security checks = is the password set and is not the default? (more checks might come) */
 security.checkKeyIsSet();
@@ -223,7 +229,7 @@ Promise.resolve().then(function() {
     if(dbutils.checkMongoWorks()) {
         debug("mongodb connection works");
     } else {
-        console.log("mongodb is not running - check", cfgFile,"- quitting");
+        console.log("mongodb is not running - check", cfgFile," - quitting");
         process.exit(1);
     }
 });

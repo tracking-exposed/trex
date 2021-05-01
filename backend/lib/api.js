@@ -59,7 +59,10 @@ const apiList = {
 
     /* guardoni support */
     experimentSubmission:require('../routes/experiments').submission,
-    experimentCSV:       require('../routes/experiments').csv
+    experimentCSV:       require('../routes/experiments').csv,
+
+    guardoniList:        require('../routes/experiments').list,
+    guardoniGenerate:    require('../routes/experiments').guardoni,
 };
 
 module.exports = {
