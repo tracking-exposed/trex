@@ -1,12 +1,18 @@
+#!/usr/bin/env node
 const _ = require('lodash');
-const debug = require('debug')('methodology:guardoni');
+const debug = require('debug')('guardoni:cli');
 const puppeteer = require("puppeteer-extra")
-const { TimeoutError } = require("puppeteer/lib/api");
 const pluginStealth = require("puppeteer-extra-plugin-stealth");
+const fs = require('fs');
+const path = require('path');
 const nconf = require('nconf');
 const fetch = require('node-fetch');
-const path = require('path');
-const fs = require('fs');
+const moment = require('moment');
+const execSync = require('child_process').execSync;
+
+const DEFAULT_LOADms = 2345; // two seconds and 345 ms.
+const COMMANDJSONEXAMPLE = "https://youtube.tracking.exposed/json/automation-example.json";
+const EXTENSION_WITH_OPT_IN_ALREADY_CHECKED='https://github.com/tracking-exposed/yttrex/releases/download/1.4.99/extension.zip';
 
 nconf.argv().env();
 
@@ -17,83 +23,103 @@ defaultBefore = async function(page, directive) {
   debug("This function might be implemented");
 }
 
+async function keypress() {
+  process.stdin.setRawMode(true)
+  return new Promise(resolve => process.stdin.once('data', () => {
+    process.stdin.setRawMode(false)
+    resolve()
+  }))
+}
+
+async function allowResearcherSomeTimeToSetupTheBrowser() {
+  console.log("Now you can configure your chrome browser, define default settings and when you're done, press enter");
+  await keypress();
+}
+
+function downloadExtension(zipFileP) {
+  debug("Executing curl and unzip (if these binary aren't present in your system please mail support at tracking dot exposed because you might have worst problems)");
+  execSync('curl -L ' + EXTENSION_WITH_OPT_IN_ALREADY_CHECKED + " -o " + zipFileP);
+  execSync('unzip ' + zipFileP + " -d extension");
+}
+
 async function main() {
 
   const sourceUrl = nconf.get('source');
   if(!sourceUrl) {
-    console.log("Mandatory --source URL/that/serve.a.json");
-    console.log(`must be a list of [{
-      "delay": <number in millisec>,
-      "url": "https://tobeopenedand/waited/for/delay",
-      "name": "optional, in case you want to label and see a debug line"
-    }, {
-  } ]`);
+    console.log("Mandatory configuration! for example --source " + COMMANDJSONEXAMPLE);
+    console.log("Via --source you can specify and URL OR a local file")
+    console.log(`\nIt should be a valid JSON with objects like: [ {
+      "watchFor": <number in millisec>,
+      "url": "https://youtube.come/v?videoNumber1",
+      "name": "optional, in case you want to see this label, specifiy DEBUG=* as environment var"
+    }, {...}
+]\n\tDocumentation: https://youtube.tracking.exposed/automation`);
     process.exit(1);
   }
-
-  /* finding chrome local executable */
-  const cwd = process.cwd();
-
-  const localchromium = path.join(cwd, 'node_modules', 'puppeteer', '.local-chromium');
-  let localbrowser = null;
-  fs.readdir(localchromium, (err, files) => {
-    // node_modules/puppeteer/.local-chromium/win64-722234/chrome-win/chrome.exe*
-    const platformdir = path.join(localchromium, files[0]);
-    fs.readdir(platformdir, (err, files) => {
-      const effectivedir = path.join(platformdir, files[0]);
-      if(files[0] == 'chrome-win') {
-        debug("NOTE DON'T YET TESTED IN APPLE/LINUX");
-        localbrowser = path.join(effectivedir, 'chrome.exe');
-      } else {
-        console.log("NOTE DON'T YET TESTED IN APPLE/LINUX");
-        localbrowser = path.join(effectivedir, 'chrome');
-      }
-    });
-  });
 
   let directives;
   try {
-    const response = await fetch(sourceUrl);
-    if(response.status !== 200) {
-      console.log("response", response.status);
-      process.exit(1);
+    if(_.startsWith(sourceUrl, 'http')) {
+      const response = await fetch(sourceUrl);
+      if(response.status !== 200) {
+        console.log("Error in fetching directives from URL", response.status);
+        process.exit(1);
+      }
+      directives = await response.json();
+      debug("directives loaded from URL: %j", _.map(directives, 'name'));
+    } else {
+      directives = JSON.parse(fs.readFileSync(sourceUrl, 'utf-8'));
+      debug("directives loaded from file: %j", _.map(directives, 'name'));
     }
-    directives = await response.json();
-    debug("directives: %s", JSON.stringify(directives, undefined, 2));
     if(!directives.length) {
-      console.log("Url do not include any directive in [list] format");
-      console.log("try --source https://gist.githubusercontent.com/vecna/c8d1236881f42319a815cd3a4a37c6bc/raw/c2f440fcae3990fa348f64e953a737a749a23522/guardoni-directive-yt-1.json")
+      console.log("URL/file do not include any directive in expected format");
+      console.log("Check the example with --source ", COMMANDJSONEXAMPLE);
       process.exit(1);
     }
   } catch (error) {
-    debug("Error: %s", error.message);
-    console.log(error.response.body);
+    console.log("Error in retriving directive URL: " + error.message);
+    // console.log(error.response.body);
     process.exit(1);
   }
 
+  const cwd = process.cwd();
   const dist = path.resolve(path.join(cwd, 'extension'));
-  if(!fs.existsSync(dist)) {
-    console.log('Directory '+ dist +' not found, please download & unpack:');
-    console.log('https://github.com/tracking-exposed/yttrex/releases/download/1.4.99/extension.zip');
-    console.log("be sure to unpacked files in: " + dist);
-    process.exit(1)
+  const manifest = path.resolve(path.join(cwd, 'extension', 'manifest.json'));
+  if(!fs.existsSync(manifest)) {
+    console.log('Manifest in ' + dist + ' not found, the script now would download & unpack');
+    const tmpzipf = path.resolve(path.join(cwd, 'extension', 'tmpzipf.zip'));
+    console.log("Using " + tmpzipf + " as temporary file");
+    downloadExtension(tmpzipf);
   }
 
   const profile = nconf.get('profile');
   if(!profile) {
-    console.log("--profile it is necessary and be absolute or relative path; You might want to execute:");
-    console.log(localbrowser, "--user-data-dir=profiles/<YOUR PROFILE NAME> to init browser");
+    console.log("--profile it is necessary and if you don't have one: pick up a name and this tool would assist during the creation");
+    // console.log(localbrowser, "--user-data-dir=profiles/<YOUR PROFILE NAME> to init browser");
     process.exit(1)
   }
 
-  const udd = path.resolve(profile);
+  let setupDelay = false;
+  const udd = path.resolve(path.join('profiles', profile));
   if(!fs.existsSync(udd)) {
-    console.log("--profile directory do not exist" + udd);
-    console.log(localbrowser," --user-data-dir=profiles/path to initialize a new profile");
-    process.exit(1)
+    console.log("--profile name hasn't an associated directory: " + udd + "\nLet's create it!");
+    // console.log(localbrowser," --user-data-dir=profiles/path to initialize a new profile");
+    // process.exit(1)
+    fs.mkdirSync(udd);
+    setupDelay = true;
   }
-  console.log("you might want to execute:");
-  console.log(localbrowser, "--user-data-dir=profiles/<YOUR PROFILE NAME> to init browser");
+
+  /* enrich directives with profile and experiment name */
+  const experiment = nconf.get('experiment');
+  directives = _.map(directives, function(d) {
+    if(experiment)
+      d.experiment = experiment;
+    d.profile = profile;
+    d.humanized = _.isInteger(d.watchFor) ?
+      moment.duration(d.watchFor).humanize() :
+      d.watchFor += "";
+    return d;
+  });
 
   let browser = null;
   try {
@@ -107,13 +133,16 @@ async function main() {
           "--disable-extensions-except=" + dist
         ],
     });
-    
+  
+    if(setupDelay)
+      await allowResearcherSomeTimeToSetupTheBrowser();
+
     const DS = './domainSpecific';
     let domainSpecific = null;
     try {
       domainSpecific = require(DS);
     } catch(error) {
-      console.log("Not found!?", DS, error);
+      console.log("Not found domainSpecific!?", DS, error);
       domainSpecific = {
         beforeWait: defaultBefore,
         afterWait: defaultAfter,
@@ -121,16 +150,80 @@ async function main() {
     }
     const page = (await browser.pages())[0];
     _.tail(await browser.pages()).forEach(async function(opage) {
+      debug("Closing a tab that shouldn't be there!");
       await opage.close();
     })
     // the BS above should close existing open tabs except 1st
     await operateBroweser(page, directives, domainSpecific);
     await browser.close();
   } catch(error) {
-    console.log("Bad! Bad—Error:", error);
+    console.log("Error in operateBrowser (collection fail):", error);
     await browser.close();
     process.exit(1);
   }
+  if(experiment) {
+    debug("Automation with %d directives completed, marking experiment [%s] on the server",
+      directives.length, experiment);
+    await markingExperiment(experiment, directives);
+  } else {
+    debug("Automation completed! executed %d directives", directives.length);
+  }
+  process.exit(0);
+}
+
+async function operateTab(page, directive, domainSpecific, timeout) {
+
+  // TODO the 'timeout' would allow to repeat this operation with
+  // different parameters. https://stackoverflow.com/questions/60051954/puppeteer-timeouterror-navigation-timeout-of-30000-ms-exceeded
+  await page.goto(directive.url, { 
+    waitUntil: "networkidle0",
+  });
+  debug("— Loading %s (for %s)", directive.name, directive.humanized);
+  try {
+    await domainSpecific.beforeWait(page, directive);
+  } catch(error) {
+    console.log("error in beforeWait", error.message, error.stack);
+  }
+  const openPageDuration = directive.loadFor || DEFAULT_LOADms;
+  debug("Directive to URL %s, Loading delay %d", directive.url, openPageDuration);
+  await page.waitFor(openPageDuration);
+  console.log("Done loading wait. Calling domainSpecific");
+  try {
+    await domainSpecific.afterWait(page, directive);
+  } catch(error) {
+    console.log("Error in afterWait", error.message, error.stack);
+  }
+  debug("— Completed %s", directive.name);
+}
+
+async function markingExperiment(expname, directives) {
+  let server = nconf.get('backend') ? nconf.get('backend') : 'https://youtube.tracking.exposed';
+  if(_.endsWith(server, '/')) server = server.replace(/\/$/, '');
+  const uri = `${server}/api/v2/experiment`;
+  const explogfile = path.join("logs", directive.experiment + ".json");
+  const explog = JSON.parse(
+    fs.readFileSync(explogfile, 'utf-8')
+  )
+  const payload = _.reduce(directives, function(memo, d) {
+    memo.videos.push(_.pick(d, ['url', 'name']));
+    return memo;
+  }, {
+    experiment: expname,
+    profile: directives[0].profile,
+    videos: [],
+    publicKey: explog.publicKey,
+    when: explog.when
+  });
+  const commit = await fetch(uri, {
+    method: 'POST',
+    body: JSON.stringify(payload),
+    headers: {
+      "Content-Type": "application/json; charset=UTF-8"
+    }
+  });
+  const result = await commit.json();
+  // debug("Server answer: %s", JSON.stringify(result, undefined, 2));
+  console.log("Fetch material from https://youtube.tracking.exposed/api/v2/experiment/" + expname);
 }
 
 async function operateBroweser(page, directives, domainSpecific) {
@@ -139,28 +232,13 @@ async function operateBroweser(page, directives, domainSpecific) {
     if(nconf.get('exclude') && directive.name == nconf.get('exclude')) {
       console.log("excluded!", directive.name);
     } else {
-      await page.goto(directive.url, { 
-        waitUntil: "networkidle0",
-      });
-      debug("+Loading %j", directive);
       try {
-        await domainSpecific.beforeWait(page, directive);
+        await operateTab(page, directive, domainSpecific);
       } catch(error) {
-        console.log("error in beforeWait", error.message);
+        debug("operateTab in %s — error: %s", directive.name, error.message);
       }
-      const LOADING_DELAY = directive.delay || 4000;
-      console.log("Directive to URL " + directive.url + "Loading delay:" + LOADING_DELAY);
-      await page.waitFor(LOADING_DELAY);
-      console.log("Done loading wait. calling domainSpecific");
-      try {
-        await domainSpecific.afterWait(page, directive);
-      } catch(error) {
-        console.log("error in afterWait", error.message);
-      }
-      debug("-Completed %j", directive);
     }
   }
-  console.log("Loop done, processed directives:", directives.length);
 }
 
 main ();

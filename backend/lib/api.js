@@ -56,6 +56,10 @@ const apiList = {
 
     /* realtime monitor */
     getMonitor:        require('../routes/monitor').getMonitor,
+
+    /* guardoni support */
+    experimentSubmission:require('../routes/experiments').submission,
+    experimentCSV:       require('../routes/experiments').csv
 };
 
 module.exports = {

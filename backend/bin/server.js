@@ -208,6 +208,14 @@ app.post('/api/v2/campaigns/:key', (req, res) => {
     return dispatchPromise('updateCampaigns', req, res);
 });
 
+/* guardoni support APIs */
+app.post('/api/v2/experiment', (req, res) => {
+    return dispatchPromise('experimentSubmission', req, res);
+});
+app.get('/api/v2/experiment/:expname', (req, res) => {
+    return dispatchPromise('experimentCSV', req, res);
+});
+
 /* security checks = is the password set and is not the default? (more checks might come) */
 security.checkKeyIsSet();
 
