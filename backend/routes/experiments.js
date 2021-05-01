@@ -83,14 +83,14 @@ async function guardoni(req) {
                 memo.first.push({
                     name: 'DashCam-1',
                     url,
-                    watchFor: 5000,
+                    watchFor: 24000,
                     loadFor: 8000
                 });
             else if(!memo.last.length)
                 memo.last.push({
                     name: 'DashCam-final',
                     url,
-                    watchFor: 5000,
+                    watchFor: 24000,
                     loadFor: 8000
                 });
         }
@@ -98,18 +98,18 @@ async function guardoni(req) {
             if(!memo.second.length)
                 memo.second.push({
                     name: cat+'-first', url,
-                    watchFor: 'end', loadFor: 4000
+                    watchFor: 'end', loadFor: 8000
                 })
             else
                 memo.selected.push({
                     name: cat+'-'+memo.seen[cat], url,
-                    watchFor: 'end', loadFor: 4000
+                    watchFor: 'end', loadFor: 8000
                 })
         }
         else {
             memo.others.push({
                 name: thisc+'-'+memo.seen[thisc], url,
-                watchFor: 1500, loadFor: 3000
+                watchFor: 18000, loadFor: 8000
             });
         }
         return memo;
