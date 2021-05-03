@@ -44,7 +44,9 @@ async function dot(req) {
         source: video.recommendedVideoId, value: 1} });
     const vList = _.uniq(_.map(data, function(video) { return video.recommendedVideoId }));
     const videoObject = _.map(vList, function(v) { return { id: v, group: 1 }});
-    const pList = _.uniq(_.map(data, function(video) { return video.profile }));
+    const pList = _.uniq(_.map(data, function(video) {
+        return video.profile + '-' + moment(video.savingTime).format("dddd-HH-mm")
+    }));
     const pseudoObject = _.map(pList, function(v) { return { id: v, group: 2 }});
     dot.nodes = _.concat(videoObject, pseudoObject);
 
