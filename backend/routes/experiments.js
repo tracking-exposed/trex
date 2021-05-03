@@ -35,13 +35,11 @@ async function dot(req) {
 
     // TEMPORANEO: solo il video della prima dash cam è considerato.
     const dashcam1 = "0SXAkpxF6_k";
-
     const data = _.filter(related, {watchedId: dashcam1});
-    debug("Dashcam %d", _.size(data));
+    debug("Dashcam %d & relateds %d", _.size(data), _.size(related));
 
     const dot = Object({links: [], nodes: []})
-    dot.links = _.map(data, function(video) { return { target: video.who, source: video.videoId, value: 1} });
-
+    dot.links = _.map(data, function(video) { return { target: video.profile, source: video.watchedId, value: 1} });
     const vList = _.uniq(_.map(data, function(video) { return video.recommendedVideoId }));
     const videoObject = _.map(vList, function(v) { return { id: v, group: 1 }});
     const pList = _.uniq(_.map(data, function(video) { return video.profile }));
