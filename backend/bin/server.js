@@ -212,8 +212,11 @@ app.post('/api/v2/campaigns/:key', (req, res) => {
 app.post('/api/v2/experiment', (req, res) => {
     return dispatchPromise('experimentSubmission', req, res);
 });
-app.get('/api/v2/experiment/:expname', (req, res) => {
+app.get('/api/v2/experiment/:expname/csv', (req, res) => {
     return dispatchPromise('experimentCSV', req, res);
+});
+app.get('/api/v2/experiment/:expname/dot', (req, res) => {
+    return dispatchPromise('experimentDOT', req, res);
 });
 app.get('/api/v2/guardoni/list', (req, res) => {
     return dispatchPromise('guardoniList', req, res);
