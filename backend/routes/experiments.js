@@ -36,29 +36,21 @@ async function dot(req) {
     // TEMPORANEO: solo il video della prima dash cam è considerato.
     const dashcam1 = "0SXAkpxF6_k";
 
-    const filtered = _.filter(related, {watchedId: dashcam1});
-    debug("Dahcam %d", _.size(filtered));
-    console.log(filtered[0]);
-    return { json : filtered }
-}
+    const data = _.filter(related, {watchedId: dashcam1});
+    debug("Dashcam %d", _.size(data));
 
-/*
-function produceDot(allcatdata, filename) {
-
-    // we only keep this category for this test
-    const data = _.filter(allcatdata, { sectionName: 'Recommended For You'});
     const dot = Object({links: [], nodes: []})
     dot.links = _.map(data, function(video) { return { target: video.who, source: video.videoId, value: 1} });
 
-    const vList = _.uniq(_.map(data, function(video) { return video.videoId }));
+    const vList = _.uniq(_.map(data, function(video) { return video.recommendedVideoId }));
     const videoObject = _.map(vList, function(v) { return { id: v, group: 1 }});
-    const pList = _.uniq(_.map(data, function(video) { return video.who }));
+    const pList = _.uniq(_.map(data, function(video) { return video.profile }));
     const pseudoObject = _.map(pList, function(v) { return { id: v, group: 2 }});
     dot.nodes = _.concat(videoObject, pseudoObject);
 
-    fs.writeFileSync(filename + '.dot', JSON.stringify(dot));
+    return { json: dot };
 }
-*/
+
 async function csv(req) {
     const expname = params.getString(req, 'expname', true);
     const related = await automo.fetchExperimentData(expname);
