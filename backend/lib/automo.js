@@ -535,7 +535,8 @@ async function fetchExperimentData(name) {
             .readLimit(mongoc, nconf.get('schema').metadata, {
                 publicKey: expevent.publicKey, videoId: { "$in": expevent.videos }
             }, { savingTime: -1 }, EVIDLIM, 0);
-        debug("Experiment %s found %d matching metadata", expevent.name, _.size(meta));
+        debug("Profile %s pseudo %s Experiment %s found %d matching metadata",
+            expevent.profile, utils.string2Food(meta[0].publicKey), expevent.name, _.size(meta));
         if(_.size(meta) == EVIDLIM)
             debug("Warning %d elements retrieved that's might not be ok", EVIDLIM);
         // rimpiazza con una buona .aggregate

@@ -39,7 +39,9 @@ async function dot(req) {
     debug("Dashcam %d & relateds %d", _.size(data), _.size(related));
 
     const dot = Object({links: [], nodes: []})
-    dot.links = _.map(data, function(video) { return { target: video.profile, source: video.watchedId, value: 1} });
+    dot.links = _.map(data, function(video) { return { target:
+        video.profile + '-' + moment(video.savingTime).format("DDD-HH-mm"),
+        source: video.watchedId, value: 1} });
     const vList = _.uniq(_.map(data, function(video) { return video.recommendedVideoId }));
     const videoObject = _.map(vList, function(v) { return { id: v, group: 1 }});
     const pList = _.uniq(_.map(data, function(video) { return video.profile }));
