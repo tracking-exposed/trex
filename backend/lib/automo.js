@@ -530,11 +530,16 @@ async function fetchExperimentData(name) {
     const problem = (_.size(results) === EXPLIM);
     if(problem) debug("Warning! experiment limit %d reach", EXPLIM);
     const retval = [];
+    const experimentStats = {};
     for (expevent of results) {
         const meta = await mongo3
             .readLimit(mongoc, nconf.get('schema').metadata, {
                 publicKey: expevent.publicKey, videoId: { "$in": expevent.videos }
             }, { savingTime: -1 }, EVIDLIM, 0);
+        if(!_.size(meta)) {
+            debug("Profile %s seems haven't any metadata matching", expevent.profile);
+            continue;
+        }
         debug("Profile %s pseudo %s Experiment %s found %d matching metadata",
             expevent.profile, utils.string2Food(meta[0].publicKey), expevent.name, _.size(meta));
         if(_.size(meta) == EVIDLIM)
@@ -542,6 +547,8 @@ async function fetchExperimentData(name) {
         // rimpiazza con una buona .aggregate
         const ret = _.map(meta, function(l) {
             return _.map(l.related, function(r) {
+                const refindex = expevent.videos.indexOf(l.videoId);
+                const vidname = (refindex === -1) ? "Error?" : expevent.descriptions[refindex];
                 return {
                     savingTime: l.savingTime,
                     id: l.id,
@@ -549,6 +556,7 @@ async function fetchExperimentData(name) {
                     watcher: utils.string2Food(l.publicKey),
                     profile: expevent.profile,
                     experiment: expevent.name,
+                    videoName: vidname,
         
                     recommendedVideoId: r.videoId,
                     recommendedPubtime: r.publicationTime ? r.publicationTime.toISOString() : "Invalid Date",

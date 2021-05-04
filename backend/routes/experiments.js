@@ -29,28 +29,45 @@ async function submission(req) {
     return { json: retval };
 };
 
-async function dot(req) {
-    const expname = params.getString(req, 'expname', true);
-    const related = await automo.fetchExperimentData(expname);
-
-    // TEMPORANEO: solo il video della prima dash cam è considerato.
-    const dashcam1 = "0SXAkpxF6_k";
-    const data = _.filter(related, {watchedId: dashcam1});
-    debug("Dashcam %d & relateds %d", _.size(data), _.size(related));
-
+function dotify(data) {
     const dot = Object({links: [], nodes: []})
-    dot.links = _.map(data, function(video) { return { target:
-        video.profile + '-' + moment(video.savingTime).format("dddd-HH-mm"),
-        source: video.recommendedVideoId, value: 1} });
+    dot.links = _.map(data, function(video) {
+        return {
+            target:
+                video.profile + '--' +
+                video.id.substr(3) + '--' +
+                moment(video.savingTime).format("dddd"),
+            source: video.recommendedVideoId,
+            value: 1
+        } });
     const vList = _.uniq(_.map(data, function(video) { return video.recommendedVideoId }));
     const videoObject = _.map(vList, function(v) { return { id: v, group: 1 }});
     const pList = _.uniq(_.map(data, function(video) {
-        return video.profile + '-' + moment(video.savingTime).format("dddd-HH-mm")
+        return video.profile + '--' +
+               video.id.substr(3) + '--' +
+               moment(video.savingTime).format("dddd")
     }));
     const pseudoObject = _.map(pList, function(v) { return { id: v, group: 2 }});
     dot.nodes = _.concat(videoObject, pseudoObject);
+    return dot;
+}
 
-    return { json: dot };
+async function dot(req) {
+    const expname = params.getString(req, 'expname', true);
+    const related = await automo.fetchExperimentData(expname);
+    if(!_.size(related))
+        return { json: {error: true, message: "No data found with such parameters"}}
+
+    const grouped = _.groupBy(related, 'videoName');
+    const dotchain = [];
+    for (byvid of grouped) {
+        const dotted = dotify(_.values(byvid))
+        dotchain.push({
+            videoName: _.keys(byvid)[0],
+            dotted
+        });
+    }
+    return { json: dotchain };
 }
 
 async function csv(req) {
