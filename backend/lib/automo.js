@@ -531,11 +531,13 @@ async function fetchExperimentData(name) {
     if(problem) debug("Warning! experiment limit %d reach", EXPLIM);
     const retval = [];
     const experimentStats = {};
+    let expnumber = 0;
     for (expevent of results) {
         const meta = await mongo3
             .readLimit(mongoc, nconf.get('schema').metadata, {
                 publicKey: expevent.publicKey, videoId: { "$in": expevent.videos }
             }, { savingTime: -1 }, EVIDLIM, 0);
+        expnumber += 1;
         if(!_.size(meta)) {
             debug("Profile %s seems haven't any metadata matching", expevent.profile);
             continue;
@@ -557,6 +559,7 @@ async function fetchExperimentData(name) {
                     profile: expevent.profile,
                     experiment: expevent.name,
                     videoName: vidname,
+                    expnumber,
         
                     recommendedVideoId: r.videoId,
                     recommendedPubtime: r.publicationTime ? r.publicationTime.toISOString() : "Invalid Date",

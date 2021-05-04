@@ -59,14 +59,12 @@ async function dot(req) {
         return { json: {error: true, message: "No data found with such parameters"}}
 
     const grouped = _.groupBy(related, 'videoName');
-    const dotchain = [];
-    for (byvid of grouped) {
-        const dotted = dotify(_.values(byvid))
-        dotchain.push({
-            videoName: _.keys(byvid)[0],
-            dotted
-        });
-    }
+    const dotchain = _.map(grouped, function(vidlist, videoName) {
+        return {
+            videoName,
+            dotted: dotify(vidlist)
+        };
+    })
     return { json: dotchain };
 }
 
