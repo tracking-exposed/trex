@@ -73,6 +73,7 @@ server.listen(nconf.get('port'), nconf.get('interface'));
 console.log(" Listening on http://" + nconf.get('interface') + ":" + nconf.get('port'));
 /* configuration of express4 */
 app.use(cors());
+app.options('/api/', cors())
 app.use(bodyParser.json({limit: '6mb'}));
 app.use(bodyParser.urlencoded({limit: '6mb', extended: true}));
 
@@ -215,7 +216,7 @@ app.post('/api/v2/experiment', (req, res) => {
 app.get('/api/v2/experiment/:expname/csv', (req, res) => {
     return dispatchPromise('experimentCSV', req, res);
 });
-app.get('/api/v2/experiment/:expname/dot', (req, res) => {
+app.get('/api/v2/experiment/:expname/dot', cors(), (req, res) => {
     return dispatchPromise('experimentDOT', req, res);
 });
 app.get('/api/v2/guardoni/list', (req, res) => {

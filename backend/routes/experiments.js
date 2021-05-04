@@ -10,7 +10,7 @@ const params = require('../lib/params');
 const CSV = require('../lib/CSV');
 
 function getVideoId(videol) {
-    const urlinfo = url.parse(videol.url);
+    const urlinfo = url(videol.url);
     const p = querystring.parse(urlinfo.query);
     return p.v;
 }
@@ -35,7 +35,7 @@ function dotify(data) {
         return {
             target:
                 video.profile + '--' +
-                video.id.substr(3) + '--' +
+                video.expnumber + '--' +
                 moment(video.savingTime).format("dddd"),
             source: video.recommendedVideoId,
             value: 1
@@ -44,7 +44,7 @@ function dotify(data) {
     const videoObject = _.map(vList, function(v) { return { id: v, group: 1 }});
     const pList = _.uniq(_.map(data, function(video) {
         return video.profile + '--' +
-               video.id.substr(3) + '--' +
+               video.expnumber + '--' +
                moment(video.savingTime).format("dddd")
     }));
     const pseudoObject = _.map(pList, function(v) { return { id: v, group: 2 }});
