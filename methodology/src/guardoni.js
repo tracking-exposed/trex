@@ -201,29 +201,33 @@ async function markingExperiment(expname, directives) {
   if(_.endsWith(server, '/')) server = server.replace(/\/$/, '');
   const uri = `${server}/api/v2/experiment`;
   const explogfile = path.join("logs", directive.experiment + ".json");
-  const explog = JSON.parse(
-    fs.readFileSync(explogfile, 'utf-8')
-  )
-  const payload = _.reduce(directives, function(memo, d) {
-    memo.videos.push(_.pick(d, ['url', 'name']));
-    return memo;
-  }, {
-    experiment: expname,
-    profile: directives[0].profile,
-    videos: [],
-    publicKey: explog.publicKey,
-    when: explog.when
-  });
-  const commit = await fetch(uri, {
-    method: 'POST',
-    body: JSON.stringify(payload),
-    headers: {
-      "Content-Type": "application/json; charset=UTF-8"
-    }
-  });
-  const result = await commit.json();
-  // debug("Server answer: %s", JSON.stringify(result, undefined, 2));
-  console.log("Fetch material from https://youtube.tracking.exposed/api/v2/experiment/" + expname);
+  try {
+      const explog = JSON.parse(
+        fs.readFileSync(explogfile, 'utf-8')
+      )
+      const payload = _.reduce(directives, function(memo, d) {
+        memo.videos.push(_.pick(d, ['url', 'name']));
+        return memo;
+      }, {
+        experiment: expname,
+        profile: directives[0].profile,
+        videos: [],
+        publicKey: explog.publicKey,
+        when: explog.when
+      });
+      const commit = await fetch(uri, {
+        method: 'POST',
+        body: JSON.stringify(payload),
+        headers: {
+          "Content-Type": "application/json; charset=UTF-8"
+        }
+      });
+      const result = await commit.json();
+      debug("Server answer: %s", JSON.stringify(result, undefined, 2));
+      console.log("Fetch CSV via https://youtube.tracking.exposed/api/v2/experiment/" + expname + '/csv');
+  } catch(error) {
+      console.log("NO SERVER SENDING! short video?");
+  }
 }
 
 async function operateBroweser(page, directives, domainSpecific) {
