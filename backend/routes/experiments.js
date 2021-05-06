@@ -10,7 +10,7 @@ const params = require('../lib/params');
 const CSV = require('../lib/CSV');
 
 function getVideoId(videol) {
-    const urlinfo = url(videol.url);
+    const urlinfo = url.parse(videol.url);
     const p = querystring.parse(urlinfo.query);
     return p.v;
 }
@@ -66,6 +66,16 @@ async function dot(req) {
         };
     })
     return { json: dotchain };
+}
+
+async function json(req) {
+    const expname = params.getString(req, 'expname', true);
+    const related = await automo.fetchExperimentData(expname);
+    // this return data that are already the mixture between
+    // collection 'metadata' and 'experiments'
+    debug("Requested experiment %s, fetch %d related",
+        expname, _.size(related));
+    return { json: related }
 }
 
 async function csv(req) {
@@ -189,6 +199,7 @@ module.exports = {
     submission,
     csv,
     dot,
+    json,
     list,
     guardoni,
 };

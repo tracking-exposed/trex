@@ -556,6 +556,7 @@ async function fetchExperimentData(name) {
                     id: l.id,
                     blang: l.blang,
                     watcher: utils.string2Food(l.publicKey),
+                    publicKey: l.publicKey,
                     profile: expevent.profile,
                     experiment: expevent.name,
                     videoName: vidname,

@@ -219,6 +219,9 @@ app.get('/api/v2/experiment/:expname/csv', (req, res) => {
 app.get('/api/v2/experiment/:expname/dot', cors(), (req, res) => {
     return dispatchPromise('experimentDOT', req, res);
 });
+app.get('/api/v2/experiment/:expname/json', cors(), (req, res) => {
+    return dispatchPromise('experimentJSON', req, res);
+});
 app.get('/api/v2/guardoni/list', (req, res) => {
     return dispatchPromise('guardoniList', req, res);
 });
