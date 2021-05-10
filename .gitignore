@@ -19,6 +19,7 @@ methodology/profiles/*
 methodology/logs/*
 methodology/node_modules/*
 methodology/extension/*
+methodology/snapshots/*
 
 backend/node_modules/*
 
