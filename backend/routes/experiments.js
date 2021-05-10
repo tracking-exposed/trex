@@ -105,7 +105,8 @@ async function list(req) {
 
 async function guardoni(req) {
 
-    const cat = req.params.category;
+    //const cat = req.params.category;
+    const wtime = req.params.time;
 
     const fcontent = fs.readFileSync("config/expercont.json", "utf8");
     const vlist = JSON.parse(fcontent);
@@ -115,35 +116,44 @@ async function guardoni(req) {
      *    "watchFor": "end",
      *    "loadFor": 2000
      */
+    /*
     const keys = _.uniq(_.map(vlist, function(ventry) {
         return ventry[0]
     }));
-
     if(keys.indexOf(cat) === -1)
         return { json: [ "Invalid requested category name. allowed:", keys]};
+    */
 
     const guardonified = _.reduce(vlist, function(memo, ventry) {
         const thisc = ventry[0];
         const url = ventry[1];
-        memo.seen[thisc] = memo.seen[thisc] ? memo.seen[thisc] + 1 : 1;
+        // memo.seen[thisc] = memo.seen[thisc] ? memo.seen[thisc] + 1 : 1;
 
-        if(thisc == "DashCam") {
-            if(!memo.first.length)
-                memo.first.push({
-                    name: 'DashCam-1',
-                    url,
-                    watchFor: 24000,
-                    loadFor: 8000
-                });
-            else if(!memo.last.length)
-                memo.last.push({
-                    name: 'DashCam-final',
-                    url,
-                    watchFor: 24000,
-                    loadFor: 8000
-                });
+        if(thisc == "first")
+            memo.first.push({
+                name: 'first',
+                url,
+                watchFor: 15000,
+                loadFor: 8000
+            });
+        else if(thisc == "last")
+            memo.last.push({
+                name: 'last',
+                url,
+                watchFor: 15000,
+                loadFor: 8000
+            });
+        else {
+            memo.selected.push({
+                name: thisc,
+                watchFor: wtime == "end" ? "end" : _.parseInt(wtime),
+                loadFor: 8000,
+                url
+            })
         }
-        else if(thisc == cat) {
+
+        /*
+        if(thisc == cat) {
             if(!memo.second.length)
                 memo.second.push({
                     name: cat+'-first', url,
@@ -160,7 +170,8 @@ async function guardoni(req) {
                 name: thisc+'-'+memo.seen[thisc], url,
                 watchFor: 18000, loadFor: 8000
             });
-        }
+        } */
+
         return memo;
     }, {
         first: [],
@@ -171,8 +182,9 @@ async function guardoni(req) {
         seen: {},
     });
 
+    /*
     const shuffled = _.reduce(_.concat(guardonified.others, guardonified.selected), function(memo, guarv) {
-        /* poor randomizer but .. */
+        // poor randomizer but ..
         const x = _.random(0, memo.length || 1) % 3;
         if(x == 0)
             return _.concat(guarv, memo);
@@ -185,11 +197,11 @@ async function guardoni(req) {
             return _.concat(_.reverse(chunks[1]), guarv, _.reverse(chunks[0]));
         }
     }, []);
+    */
 
     const retval = [
         ...guardonified.first,
-        ...guardonified.second,
-        ...shuffled,
+        ...guardonified.selected,
         ...guardonified.last,
     ];
     return { json: retval };

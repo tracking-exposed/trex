@@ -225,7 +225,7 @@ app.get('/api/v2/experiment/:expname/json', cors(), (req, res) => {
 app.get('/api/v2/guardoni/list', (req, res) => {
     return dispatchPromise('guardoniList', req, res);
 });
-app.get('/api/v2/guardoni/:category', (req, res) => {
+app.get('/api/v2/guardoni/:time', (req, res) => {
     return dispatchPromise('guardoniGenerate', req, res);
 });
 
