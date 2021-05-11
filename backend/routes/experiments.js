@@ -17,14 +17,17 @@ function getVideoId(videol) {
 
 async function submission(req) {
     const experiment = {
-        name: req.body.experiment,
+        name: req.body.experimentName,
         profile: req.body.profile,
         videos: _.map(req.body.videos, getVideoId),
-        descriptions: _.map(req.body.videos, 'name'),
+        info: req.body.videos,
+        sessionCounter: req.body.sessionCounter,
         publicKey: req.body.publicKey,
         testTime: new Date(req.body.when)
     };
-    debug("experiment submission received!", experiment);
+    debug("Test in progress (session %d, videos %d) %s on %s",
+        experiment.sessionCounter, experiment.videos.length,
+        experiment.profile, experiment.name);
     const retval = await automo.saveExperiment(experiment);
     return { json: retval };
 };
@@ -34,8 +37,8 @@ function dotify(data) {
     dot.links = _.map(data, function(video) {
         return {
             target:
-                video.profile + '--' +
-                video.expnumber + '--' +
+                video.profile + '—' +
+                video.expnumber + '—' +
                 moment(video.savingTime).format("dddd"),
             source: video.recommendedVideoId,
             value: 1
@@ -43,8 +46,8 @@ function dotify(data) {
     const vList = _.uniq(_.map(data, function(video) { return video.recommendedVideoId }));
     const videoObject = _.map(vList, function(v) { return { id: v, group: 1 }});
     const pList = _.uniq(_.map(data, function(video) {
-        return video.profile + '--' +
-               video.expnumber + '--' +
+        return video.profile + '—' +
+               video.expnumber + '—' +
                moment(video.savingTime).format("dddd")
     }));
     const pseudoObject = _.map(pList, function(v) { return { id: v, group: 2 }});

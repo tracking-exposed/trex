@@ -10,7 +10,7 @@
       "campaigns": "campaigns",
       "searches": "searches",
       "errors": "errors",
-      "experiments": "experiments"
+      "experiments": "experiments2"
   },
   "mongoHost": "localhost",
   "mongoPort": 27017,

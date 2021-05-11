@@ -6,7 +6,6 @@ const pluginStealth = require("puppeteer-extra-plugin-stealth");
 const fs = require('fs');
 const path = require('path');
 const nconf = require('nconf');
-const fetch = require('node-fetch');
 const moment = require('moment');
 const execSync = require('child_process').execSync;
 
@@ -17,10 +16,13 @@ const EXTENSION_WITH_OPT_IN_ALREADY_CHECKED='https://github.com/tracking-exposed
 nconf.argv().env();
 
 defaultAfter = async function(page, directive) {
-  debug("This function might be implemented");
+  debug("afterWait function is not implemented");
 }
 defaultBefore = async function(page, directive) {
-  debug("This function might be implemented");
+  debug("beforeWait function is not implemented");
+}
+defaultInit = async function(page, directive) {
+  debug("beforeDirective function is not implemented");
 }
 
 async function keypress() {
@@ -146,6 +148,7 @@ async function main() {
       domainSpecific = {
         beforeWait: defaultBefore,
         afterWait: defaultAfter,
+        beforeDirectives: defaultInit,
       };
     }
     const page = (await browser.pages())[0];
@@ -153,6 +156,7 @@ async function main() {
       debug("Closing a tab that shouldn't be there!");
       await opage.close();
     })
+    await domainSpecific.beforeDirectives(page, experiment, profile, directives);
     // the BS above should close existing open tabs except 1st
     await operateBroweser(page, directives, domainSpecific);
     await browser.close();
@@ -160,13 +164,6 @@ async function main() {
     console.log("Error in operateBrowser (collection fail):", error);
     await browser.close();
     process.exit(1);
-  }
-  if(experiment) {
-    debug("Automation with %d directives completed, marking experiment [%s] on the server",
-      directives.length, experiment);
-    await markingExperiment(experiment, directives);
-  } else {
-    debug("Automation completed! executed %d directives", directives.length);
   }
   process.exit(0);
 }
@@ -194,40 +191,6 @@ async function operateTab(page, directive, domainSpecific, timeout) {
     console.log("Error in afterWait", error.message, error.stack);
   }
   debug("— Completed %s", directive.name);
-}
-
-async function markingExperiment(expname, directives) {
-  let server = nconf.get('backend') ? nconf.get('backend') : 'https://youtube.tracking.exposed';
-  if(_.endsWith(server, '/')) server = server.replace(/\/$/, '');
-  const uri = `${server}/api/v2/experiment`;
-  const explogfile = path.join("logs", directive.experiment + ".json");
-  try {
-      const explog = JSON.parse(
-        fs.readFileSync(explogfile, 'utf-8')
-      )
-      const payload = _.reduce(directives, function(memo, d) {
-        memo.videos.push(_.pick(d, ['url', 'name']));
-        return memo;
-      }, {
-        experiment: expname,
-        profile: directives[0].profile,
-        videos: [],
-        publicKey: explog.publicKey,
-        when: explog.when
-      });
-      const commit = await fetch(uri, {
-        method: 'POST',
-        body: JSON.stringify(payload),
-        headers: {
-          "Content-Type": "application/json; charset=UTF-8"
-        }
-      });
-      const result = await commit.json();
-      debug("Server answer: %s", JSON.stringify(result, undefined, 2));
-      console.log("Fetch CSV via https://youtube.tracking.exposed/api/v2/experiment/" + expname + '/csv');
-  } catch(error) {
-      console.log("NO SERVER SENDING! short video?");
-  }
 }
 
 async function operateBroweser(page, directives, domainSpecific) {

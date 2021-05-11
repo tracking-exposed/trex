@@ -4,46 +4,127 @@ const debug = require('debug')('guardoni:youtube');
 const bcons = require('debug')('guardoni:console');
 const path = require('path');
 const fs = require('fs');
+const nconf = require('nconf');
+const fetch = require('node-fetch');
 
-async function beforeWait(page, directive) {
+
+async function markingExperiment(experimentName, profile, directives) {
+    /* in sequence:
+    - build the URL to record the experiment 
+    - create a profile log and an experiment log 
+    - update profile log if exists 
+    - send a mixture of the information to the server */
+  let server = nconf.get('backend') ? nconf.get('backend') : 'https://youtube.tracking.exposed';
+  if(_.endsWith(server, '/')) server = server.replace(/\/$/, '');
+  const uri = `${server}/api/v2/experiment`;
+  const profilefile = path.join("executions", profile + ".json");
+  let sessionCounter = 0;
+  try {
+    const profinfo = JSON.parse(fs.readFileSync(profilefile, 'utf-8'));
+    sessionCounter = profinfo.counter +=1;
+    profinfo.usages.push(new Date());
+    debug("Found profile log %s, this is sessionCounter %d", profilefile, sessionCounter)
+    fs.writeFileSync(profilefile, JSON.stringify(profinfo), {
+      flag: 'w+', encoding: 'utf-8'
+    });
+  } catch(error) {
+    debug("Catch error %s, creation of new profile log (%s)",
+      error.message, profilefile);
+    const profinfo = {
+      usages: [ new Date() ],
+      counter: 1
+    }
+    fs.writeFileSync(profilefile, JSON.stringify(profinfo), {
+      flag: 'w+', encoding: 'utf-8'
+    });
+    sessionCounter = 1;
+  }
+  try {
+    const keylog = path.join("experiments", [experimentName, profile].join('-') + ".json");
+    const explog = JSON.parse(fs.readFileSync(keylog, 'utf-8'))
+    const payload = _.reduce(directives, function(memo, d) {
+      memo.videos.push(_.pick(d, ['url', 'name', 'watchFor']));
+      return memo;
+    }, {
+      sessionCounter,
+      experimentName,
+      profile,
+      videos: [],
+      publicKey: explog.publicKey,
+      when: explog.when
+    });
+    debug("ready to push %s %s", uri, payload);
+    const commit = await fetch(uri, {
+      method: 'POST',
+      body: JSON.stringify(payload),
+      headers: {
+        "Content-Type": "application/json; charset=UTF-8"
+      }
+    });
+    const result = await commit.json();
+    if(!result.ok) 
+      debug("Server error? %s", JSON.stringify(result, undefined, 2));
+    console.log("Check results https://youtube.tracking.exposed/experiment2/#" + experimentName);
+  } catch(error) {
+      console.log("Errro", error.message);
+  }
+}
+
+async function savekey(message, experimentName, directives, profile) {
+    const keylog = path.join("experiments", [ experimentName, profile ].join("-") + ".json");
+    let parsedcnsl = null;
+    try {
+        parsedcnsl = JSON.parse(message.text().replace(/\n/g, '').replace(/.*{/, '{').replace(/}.*/, '}') );
+        debug("savelog %s %s", parsedcnsl, experimentName);
+    } catch(error) {
+        // if this error happens it is because the regexp is failing in cleaning the input 
+        // from browser extension and therefore JSON parsing fails. the Text expected is:
+        // message.text()
+        // "app.js gets {\n  \"active\": true,\n  \"publicKey\": \"6gVBjX7CrA7jTCxowexugCKQtt7\",\n  \"secretKey\": \"3KZhpyV6qECzaeTDJKdJCzmT21GSFFBThsvh3V6ZLAs\",\n  \"ux\": false\n} from localLookup"
+        console.log("ERROR!", error);
+        console.log(message.text());
+        process.exit(1);
+    }
+    const payload = {
+        directives,
+        profile,
+        publicKey: parsedcnsl.publicKey,
+        day: moment().format("DD MMMM YYYY"),
+        when: moment().toISOString(),
+    }
+    fs.writeFileSync(keylog, JSON.stringify(payload), {
+        encoding: "utf-8", flag: "w+" });
+    console.log("written keylog", keylog);
+}
+
+let sentOnce = false;
+async function lookForPubkey(experimentName, profile, directives, message) {
+    /* only the first time the key is seen, the full experiment plan is sent */
+    if(sentOnce)
+        return;
+    if(message.text().match(/publicKey/)) {
+        await savekey(message, experimentName, directives, profile);
+        await markingExperiment(experimentName, profile, directives);
+        sentOnce = true;
+    }
+};
+
+async function beforeDirectives(page, experiment, profile, directives) {
+debug("Listening in console...");
+if(experiment)
+    page.on('console', await _.partial(lookForPubkey, experiment, profile, directives));
+else
+    page.on('console', function(message) { debug("%s", message.text())});
 page
-    .on('console', function(message) {
-        if(message.text().match(/publicKey/)) {
-            if(directive.experiment) {
-                const appendl = path.join("logs", "incremental-" + directive.experiment + ".json");
-                const explog = path.join("logs", directive.experiment + ".json");
-                let msg = null;
-                try {
-                    msg = JSON.parse(message.text().replace(/\n/g, '').replace(/.*{/, '{').replace(/}.*/, '}') );
-                } catch(error) {
-                    // if this error happens it is because the regexp is failing in cleaning the input 
-                    // from browser extension and therefore JSON parsing fails. the Text expected is:
-                    // message.text()
-                    // "app.js gets {\n  \"active\": true,\n  \"publicKey\": \"6gVBjX7CrA7jTCxowexugCKQtt7\",\n  \"secretKey\": \"3KZhpyV6qECzaeTDJKdJCzmT21GSFFBThsvh3V6ZLAs\",\n  \"ux\": false\n} from localLookup"
-                    console.log("ERROR!", error);
-                    console.log(message.text());
-                    process.exit(1);
-                }
-                const payload = {
-                    publicKey: msg.publicKey,
-                    day: moment().format("DD MMMM YYYY"),
-                    when: moment().toISOString(),
-                }
-                fs.writeFileSync(appendl, JSON.stringify(payload) + "\n", {
-                    encoding: "utf-8", flag: "a+" });
-                fs.writeFileSync(explog, JSON.stringify(payload), {
-                    encoding: "utf-8", flag: "w+" });
-                console.log("Append [", appendl, "] Saved [" + explog + "]");
-            } else {
-                console.log("publicKey spotted and experiment not configured:", message.text());
-            }
-        }
-    })
     .on('pageerror', ({ message }) => debug('error' + message)) /*
     .on('response', response =>
         debug(`response: ${response.status()} ${response.url()}`))
     .on('requestfailed', request =>
         debug(`requestfail: ${request.failure().errorText} ${request.url()}`)); */
+}
+
+async function beforeWait(page, directive) {
+    debug("Nothing in beforeWait but might be screencapture or ad checking");
 }
 
 async function afterWait(page, directive) {
@@ -148,6 +229,7 @@ async function interactWithYT(page, directive, wantedState) {
 module.exports= {
     beforeWait,
     afterWait,
+    beforeDirectives,
     interactWithYT,
     getYTstatus,
 }

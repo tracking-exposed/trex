@@ -16,7 +16,8 @@ extension/node_modules/*
 
 methodology/config/*
 methodology/profiles/*
-methodology/logs/*
+methodology/experiments/*
+methodology/executions/*
 methodology/node_modules/*
 methodology/extension/*
 methodology/snapshots/*
