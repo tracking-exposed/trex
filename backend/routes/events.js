@@ -82,10 +82,8 @@ async function processEvents2(req) {
 
     const blang = headers.language.replace(/;.*/, '').replace(/,.*/, '');
     // debug("CHECK: %s <%s>", blang, headers.language );
-
     const htmls = _.map(req.body, function(body, i) {
-        // TODO replace this trash with URL() and double check 'video' | 'home' | wtv..
-        const isSearch = !!body.href.match(/\.youtube\.com\/results\?/);
+        const nature = utils.getNatureFromURL(body.href);
         const metadataId = utils.hash({
             publicKey: headers.publickey,
             randomUUID: body.randomUUID,
@@ -112,14 +110,18 @@ async function processEvents2(req) {
             incremental: body.incremental,
             type: body.type,
             packet: i,
+            nature,
         }
         return html;
     });
 
+    const enhanced = await automo.enhanceHTMLifExperiment(htmls);
+    /*
     if(_.size(_.filter(htmls, { type: 'info'})))
         debug("[i] Received info package (currently ignored)");
-
     const check = await automo.write(nconf.get('schema').htmls, _.reject(htmls, { type: 'info'}));
+    */
+    const check = await automo.write(nconf.get('schema').htmls, enhanced);
     if(check && check.error) {
         debug("Error in saving %d htmls %j", _.size(htmls), check);
         return { json: {status: "error", info: check.info }};

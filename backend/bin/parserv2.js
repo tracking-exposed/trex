@@ -187,6 +187,10 @@ function processEachHTML(e) {
         if(!metadata)
             return null;
 
+        /* experiment support */
+        if(envelop.impression.experiment)
+            metadata.experiment = envelop.impression.experiment;
+
     } catch(error) {
         debuge("#%d\t selector (%s) error: %s", processedCounter, e.selector, error.message);
         return null;

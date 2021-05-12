@@ -243,7 +243,7 @@ async function getRelatedByVideoId(videoId, options) {
         ]);
     await mongoc.close();
     debug("Aggregate of getRelatedByVideoId: %d entries", _.size(related));
-    return _.map(related, function(r, i) {
+    return _.map(related, function(r) {
         return {
             savingTime: r.savingTime,
             id: r.id.substr(0, 20),
@@ -521,66 +521,87 @@ async function saveExperiment(expobj) {
     return result;
 }
 
-async function fetchExperimentData(name) {
-    const EXPLIM = 20;
-    const EVIDLIM = 200;
-    const mongoc = await mongo3.clientConnect({concurrency: 1});
-    const results = await mongo3
-        .readLimit(mongoc, nconf.get('schema').experiments, {name}, {}, EXPLIM, 0);
-    const problem = (_.size(results) === EXPLIM);
-    if(problem) debug("Warning! experiment limit %d reach", EXPLIM);
-    const retval = [];
-    const experimentStats = {};
-    let expnumber = 0;
-    for (expevent of results) {
-        const meta = await mongo3
-            .readLimit(mongoc, nconf.get('schema').metadata, {
-                publicKey: expevent.publicKey, videoId: { "$in": expevent.videos }
-            }, { savingTime: -1 }, EVIDLIM, 0);
-        expnumber += 1;
-        if(!_.size(meta)) {
-            debug("Profile %s seems haven't any metadata matching", expevent.profile);
+async function enhanceHTMLifExperiment(htmls) {
+    /* this function remove the html.type = info
+     * and look if an experiment fits in the html */
+    const ret = [];
+    let enhanced = 0; // counter for debugging
+    const mongoc = await mongo3.clientConnect({concurrency: 8});
+    for (html of htmls) {
+        if(html.nature.type != 'video') {
+            ret.push(html);
             continue;
         }
-        debug("Profile %s pseudo %s Experiment %s found %d matching metadata",
-            expevent.profile, utils.string2Food(meta[0].publicKey), expevent.name, _.size(meta));
-        if(_.size(meta) == EVIDLIM)
-            debug("Warning %d elements retrieved that's might not be ok", EVIDLIM);
-        // rimpiazza con una buona .aggregate
-        const ret = _.map(meta, function(l) {
-            return _.map(l.related, function(r) {
-                const refindex = expevent.videos.indexOf(l.videoId);
-                const vidname = (refindex === -1) ? "Error?" : expevent.descriptions[refindex];
-                return {
-                    savingTime: l.savingTime,
-                    id: l.id,
-                    blang: l.blang,
-                    watcher: utils.string2Food(l.publicKey),
-                    publicKey: l.publicKey,
-                    profile: expevent.profile,
-                    experiment: expevent.name,
-                    videoName: vidname,
-                    expnumber,
-        
-                    recommendedVideoId: r.videoId,
-                    recommendedPubtime: r.publicationTime ? r.publicationTime.toISOString() : "Invalid Date",
-                    recommendedTitle: r.recommendedTitle,
-                    recommendedAuthor: r.recommendedSource,
-                    recommendedVerified: r.verified,
-                    recommendationOrder: r.index,
-                    recommendedViews: r.recommendedViews,
-                    watchedId: l.videoId,
-                    watchedAuthor: l.authorName,
-                    watchedPubtime: l.publicationTime ? l.publicationTime.toISOString() : "Invalid Date",
-                    watchedTitle: l.title,
-                    watchedChannel: r.authorSource,
-                };
-            });
-        });
-        retval.push(ret);
+        const exp = await mongo3.readOne(mongoc, nconf.get('schema').experiments, {
+            videos: html.nature.videoId,
+            publicKey: html.publicKey,
+        }, { testTime: -1 });
+        if(!exp) {
+            ret.push(html);
+            continue;
+        }
+        const order = exp.videos.indexOf(html.nature.videoId);
+        html.experiment = {
+            profile: exp.profile,
+            experiment: exp.name,
+            session: exp.sessionCounter,
+            videoName: exp.info[order].name,
+            watchingTime: exp.info[order].watchFor,
+        }
+        enhanced++;
+        ret.push(html);
     }
+    if(enhanced)
+        debug("enhanceHTMLS enhanced %d", enhanced);
     await mongoc.close();
-    return _.flatten(_.flatten(retval));
+    return ret;
+}
+
+async function fetchExperimentData(name) {
+    const EXPLIM = 200;
+    const mongoc = await mongo3.clientConnect({concurrency: 1});
+    const results = await mongo3
+        .aggregate(mongoc, nconf.get('schema').metadata, [
+            { $match: { "experiment.name": name } },
+            { $limit: EXPLIM},
+            { $unwind: '$related' }
+        ]);
+    await mongoc.close();
+    console.log("Sarca? ", _.keys(_.countBy(results, 'metadataId')).length, EVIDLIM);
+    const problem = _.keys(_.countBy(results, 'metadataId')).length === EVIDLIM;
+    if(problem)
+        debug("Warning! experiment %s has more than %d video evidence limit",
+            name, EXPLIM);
+
+    return _.map(results, function(r) {
+        // r is a metadata with only one related, duplicated as many related avail.
+        return {
+            savingTime: r.savingTime,
+            metadataId: r.metadataId,
+            blang: r.blang,
+            watcher: utils.string2Food(l.publicKey),
+            // publicKey: l.publicKey,
+            profile: r.experiment.profile,
+            experiment: r.experiment.name,
+            videoName: r.experiment.videoName,
+            session: r.experiment.session,
+            watchingTime: r.experiment.watchFor,
+
+            recommendedVideoId: r.related.videoId,
+            recommendedPubtime: r.related.publicationTime ? r.publicationTime.toISOString() : "Invalid Date",
+            recommendedTitle: r.related.recommendedTitle,
+            recommendedAuthor: r.related.recommendedSource,
+            // recommendedVerified: r.verified,
+            recommendationOrder: r.related.index,
+            recommendedViews: r.related.recommendedViews,
+
+            watchedId: l.videoId,
+            watchedAuthor: l.authorName,
+            watchedPubtime: l.publicationTime ? l.publicationTime.toISOString() : "Invalid Date",
+            watchedTitle: l.title,
+            watchedChannel: r.authorSource,
+        };
+    });
 }
 
 module.exports = {
@@ -625,5 +646,6 @@ module.exports = {
 
     /* experiment related operations */
     saveExperiment,
+    enhanceHTMLifExperiment,
     fetchExperimentData,
 };

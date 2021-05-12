@@ -5,6 +5,8 @@ const bs58 = require('bs58');
 const nacl = require('tweetnacl');
 const nconf = require('nconf');
 const foodWords = require('food-words');
+const url = require('url');
+const qustr = require('querystring');
 
 var hash = function(obj, fields) {
     if(_.isUndefined(fields))
@@ -183,6 +185,34 @@ function judgeIncrement(key, current, value) {
     debug("Unexpected kind? %s %j %j", key, current, value)
 }
 
+function getNatureFromURL(href) {
+    const uq = url.parse(href);
+    if(uq.pathname == '/results') {
+        const searchTerms = _.trim(qustr.parse(uq.query).search_query);
+        return {
+            type: 'search',
+            query: searchTerms,
+        }
+    }
+    else if(uq.pathname == '/watch') {
+        const videoId = _.trim(qustr.parse(uq.query).v);
+        return {
+            type: 'video',
+            videoId,
+        }
+    }
+    else if(uq.pathname == '/') {
+        return {
+            type: 'home'
+        }
+    }
+    else {
+        return {
+            type: 'unknown'
+        }
+    }
+}
+
 module.exports = {
     hash,
     activeUserCount,
@@ -197,4 +227,5 @@ module.exports = {
     parseIntNconf,
     prettify,
     judgeIncrement,
+    getNatureFromURL,
 };
