@@ -17,6 +17,7 @@ const _ = require('lodash');
 const nconf = require('nconf');
 const debug = require('debug')('lib:automo');
 const moment = require('moment');
+const chardet = require('chardet')
 
 const utils = require('../lib/utils');
 const mongo3 = require('./mongo3');
@@ -532,21 +533,22 @@ async function enhanceHTMLifExperiment(htmls) {
             ret.push(html);
             continue;
         }
-        const exp = await mongo3.readOne(mongoc, nconf.get('schema').experiments, {
+        const exp = await mongo3.readLimit(mongoc,
+            nconf.get('schema').experiments, {
             videos: html.nature.videoId,
             publicKey: html.publicKey,
-        }, { testTime: -1 });
-        if(!exp) {
+        }, { testTime: -1 }, 1, 0);
+        if(!exp.length) {
             ret.push(html);
             continue;
         }
-        const order = exp.videos.indexOf(html.nature.videoId);
+        const order = exp[0].videos.indexOf(html.nature.videoId);
         html.experiment = {
-            profile: exp.profile,
-            experiment: exp.name,
-            session: exp.sessionCounter,
-            videoName: exp.info[order].name,
-            watchingTime: exp.info[order].watchFor,
+            profile: exp[0].profile,
+            experiment: exp[0].name,
+            session: exp[0].sessionCounter,
+            videoName: exp[0].info[order].name,
+            watchingTime: exp[0].info[order].watchFor,
         }
         enhanced++;
         ret.push(html);
@@ -558,47 +560,51 @@ async function enhanceHTMLifExperiment(htmls) {
 }
 
 async function fetchExperimentData(name) {
-    const EXPLIM = 200;
+    const EVIDLIM = 200;
     const mongoc = await mongo3.clientConnect({concurrency: 1});
     const results = await mongo3
         .aggregate(mongoc, nconf.get('schema').metadata, [
-            { $match: { "experiment.name": name } },
-            { $limit: EXPLIM},
+            { $match: { "experiment.experiment": name } },
+            { $limit: EVIDLIM},
             { $unwind: '$related' }
         ]);
     await mongoc.close();
-    console.log("Sarca? ", _.keys(_.countBy(results, 'metadataId')).length, EVIDLIM);
+    console.log(_.countBy(results, 'metadataId'), EVIDLIM);
     const problem = _.keys(_.countBy(results, 'metadataId')).length === EVIDLIM;
     if(problem)
         debug("Warning! experiment %s has more than %d video evidence limit",
-            name, EXPLIM);
+            name, EVIDLIM);
 
     return _.map(results, function(r) {
         // r is a metadata with only one related, duplicated as many related avail.
+        const chardetoutp = chardet.analyse(Buffer.from(r.related.recommendedTitle));
         return {
             savingTime: r.savingTime,
-            metadataId: r.metadataId,
+            metadataId: r.id,
             blang: r.blang,
-            watcher: utils.string2Food(l.publicKey),
+            watcher: utils.string2Food(r.publicKey),
             // publicKey: l.publicKey,
             profile: r.experiment.profile,
             experiment: r.experiment.name,
             videoName: r.experiment.videoName,
             session: r.experiment.session,
-            watchingTime: r.experiment.watchFor,
+            watchingTime: r.experiment.watchingTime,
 
             recommendedVideoId: r.related.videoId,
             recommendedPubtime: r.related.publicationTime ? r.publicationTime.toISOString() : "Invalid Date",
             recommendedTitle: r.related.recommendedTitle,
+            recommendedTitleCharset: chardetoutp[0].name,
+            recommendedTitleLang: chardetoutp[0].lang || "unknown",
             recommendedAuthor: r.related.recommendedSource,
             // recommendedVerified: r.verified,
             recommendationOrder: r.related.index,
             recommendedViews: r.related.recommendedViews,
+            isTop20: !!(r.related.index <= 20),
 
-            watchedId: l.videoId,
-            watchedAuthor: l.authorName,
-            watchedPubtime: l.publicationTime ? l.publicationTime.toISOString() : "Invalid Date",
-            watchedTitle: l.title,
+            watchedId: r.videoId,
+            watchedAuthor: r.authorName,
+            watchedPubtime: r.publicationTime ? r.publicationTime.toISOString() : "Invalid Date",
+            watchedTitle: r.title,
             watchedChannel: r.authorSource,
         };
     });

@@ -121,12 +121,13 @@ async function processEvents2(req) {
         debug("[i] Received info package (currently ignored)");
     const check = await automo.write(nconf.get('schema').htmls, _.reject(htmls, { type: 'info'}));
     */
+  // debug("Final check : %j", _.countBy(_.filter(enhanced, 'experiment'), 'experiment'));
     const check = await automo.write(nconf.get('schema').htmls, enhanced);
     if(check && check.error) {
         debug("Error in saving %d htmls %j", _.size(htmls), check);
         return { json: {status: "error", info: check.info }};
     }
-
+    /*
     const labels = _.map(_.filter(htmls, { type: 'info'}), function(e) {
         e.acquired = e.html.acquired;
         e.selectorName = e.html.name;
@@ -140,10 +141,14 @@ async function processEvents2(req) {
         return { json: {status: "error", info: labelret.info }};
     }
 
-    const info = _.map(_.concat(_.reject(htmls, { type: 'info' }), labels), function(e) {
+    _.map(_.concat(_.reject(htmls, { type: 'info' }), labels), function(e) {
         return [ "i" + e.incremental, e.size, e.selectorName ? e.selectorName : e.selector, e.type ];
     });
     debug("%s %s <- %s", supporter.p, _.uniq(_.map(htmls, 'href')), JSON.stringify(info));
+    */
+    debug("%s %s ",
+        supporter.p, _.uniq(_.map(htmls, 'href')),
+        _.size(_.compact(_.map(htmls, 'experiment'))));
 
     /* this is what returns to the web-extension */
     return { json: {
