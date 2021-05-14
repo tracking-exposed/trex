@@ -522,7 +522,7 @@ async function saveExperiment(expobj) {
 }
 
 async function fetchExperimentData(name) {
-    const EXPLIM = 20;
+    const EXPLIM = 200;
     const EVIDLIM = 200;
     const mongoc = await mongo3.clientConnect({concurrency: 1});
     const results = await mongo3
