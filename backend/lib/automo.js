@@ -601,6 +601,7 @@ async function fetchExperimentData(name) {
             recommendedViews: r.related.recommendedViews,
             isTop20: !!(r.related.index <= 20),
 
+            thumbnail: "https://i.ytimg.com/vi/" + r.related.videoId + "/mqdefault.jpg",
             watchedId: r.videoId,
             watchedAuthor: r.authorName,
             watchedPubtime: r.publicationTime ? r.publicationTime.toISOString() : "Invalid Date",
