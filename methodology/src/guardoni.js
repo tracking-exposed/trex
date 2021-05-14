@@ -9,7 +9,6 @@ const nconf = require('nconf');
 const moment = require('moment');
 const execSync = require('child_process').execSync;
 
-const DEFAULT_LOADms = 2345; // two seconds and 345 ms.
 const COMMANDJSONEXAMPLE = "https://youtube.tracking.exposed/json/automation-example.json";
 const EXTENSION_WITH_OPT_IN_ALREADY_CHECKED='https://github.com/tracking-exposed/yttrex/releases/download/1.4.99/extension.zip';
 
@@ -117,9 +116,11 @@ async function main() {
     if(experiment)
       d.experiment = experiment;
     d.profile = profile;
-    d.humanized = _.isInteger(d.watchFor) ?
-      moment.duration(d.watchFor).humanize() :
-      d.watchFor += "";
+    const watchForSwp = d.watchFor;
+    const loadForSwp = d.loadFor;
+    d.loadFor = timeconv(loadForSwp, 3000);
+    d.watchFor = timeconv(watchForSwp, 20000);
+    debug("%s = %d — %s = %d", loadForSwp, d.loadFor, watchForSwp, d.watchFor);
     return d;
   });
 
@@ -168,6 +169,22 @@ async function main() {
   process.exit(0);
 }
 
+function timeconv(maybestr, defaultMs) {
+  if(_.isInteger(maybestr) && maybestr > 100) {
+    /* it is already ms */
+    return maybestr;
+  } else if(_.isInteger(maybestr) && maybestr < 100) {
+    /* throw an error as it is unclear if you forgot the unit */
+    throw new Error("Did you forget unit? " + maybestr + " milliseconds is too little!");
+  } else if(_.isString(maybestr) && _.endsWith(maybestr, 's')) {
+    return _.parseInt(maybestr) * 1000;
+  } else if(_.isString(maybestr) && _.endsWith(maybestr, 'm')) {
+    return _.parseInt(maybestr) * 1000 * 60;
+  } else {
+    throw new Error("unexpected content in time " + maybestr);
+  }
+}
+
 async function operateTab(page, directive, domainSpecific, timeout) {
 
   // TODO the 'timeout' would allow to repeat this operation with
@@ -181,9 +198,8 @@ async function operateTab(page, directive, domainSpecific, timeout) {
   } catch(error) {
     console.log("error in beforeWait", error.message, error.stack);
   }
-  const openPageDuration = directive.loadFor || DEFAULT_LOADms;
-  debug("Directive to URL %s, Loading delay %d", directive.url, openPageDuration);
-  await page.waitFor(openPageDuration);
+  debug("Directive to URL %s, Loading delay %d", directive.url, directive.loadFor);
+  await page.waitFor(directive.loadFor);
   console.log("Done loading wait. Calling domainSpecific");
   try {
     await domainSpecific.afterWait(page, directive);
