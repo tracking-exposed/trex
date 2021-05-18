@@ -127,7 +127,7 @@ async function processEvents2(req) {
         debug("Error in saving %d htmls %j", _.size(htmls), check);
         return { json: {status: "error", info: check.info }};
     }
-    /*
+ 
     const labels = _.map(_.filter(htmls, { type: 'info'}), function(e) {
         e.acquired = e.html.acquired;
         e.selectorName = e.html.name;
@@ -141,20 +141,18 @@ async function processEvents2(req) {
         return { json: {status: "error", info: labelret.info }};
     }
 
-    _.map(_.concat(_.reject(htmls, { type: 'info' }), labels), function(e) {
+    /* const info = _.map(_.concat(_.reject(htmls, { type: 'info' }), labels), function(e) {
         return [ "i" + e.incremental, e.size, e.selectorName ? e.selectorName : e.selector, e.type ];
     });
-    debug("%s %s <- %s", supporter.p, _.uniq(_.map(htmls, 'href')), JSON.stringify(info));
-    */
-    debug("%s %s ",
-        supporter.p, _.uniq(_.map(htmls, 'href')),
-        _.size(_.compact(_.map(htmls, 'experiment'))));
+    debug("%s %s <- %s", supporter.p, _.uniq(_.map(htmls, 'href')), JSON.stringify(info)); */
+    debug("%s %s 'experiment ? %s'", supporter.p, _.uniq(_.map(htmls, 'href')), _.size(_.compact(_.map(htmls, 'experiment'))) ? "YES" : "NO" );
 
     /* this is what returns to the web-extension */
     return { json: {
         status: "OK",
         supporter: supporter,
-        results: check
+	labels: _.size(labels),
+        results: check,
     }};
 };
 

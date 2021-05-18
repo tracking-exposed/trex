@@ -7,6 +7,7 @@ const fs = require('fs');
 const path = require('path');
 const nconf = require('nconf');
 const moment = require('moment');
+const fetch = require('node-fetch');
 const execSync = require('child_process').execSync;
 
 const COMMANDJSONEXAMPLE = "https://youtube.tracking.exposed/json/automation-example.json";
