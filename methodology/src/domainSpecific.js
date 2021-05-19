@@ -199,7 +199,7 @@ async function interactWithYT(page, directive, wantedState) {
 
     debug("Entering watching loop (state %s)", state.name);
     const specialwatch = _.isUndefined(directive.watchFor) ? 
-        DEFAULT_WATCH_TIME : directive.watchFor;
+        "end": directive.watchFor;
     // here is managed the special condition directive.watchFor == "end"
     if(specialwatch == "end") {
         debug("This video would be watched till the end");

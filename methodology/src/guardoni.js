@@ -114,14 +114,17 @@ async function main() {
   /* enrich directives with profile and experiment name */
   const experiment = nconf.get('experiment');
   directives = _.map(directives, function(d) {
-    if(experiment)
-      d.experiment = experiment;
-    d.profile = profile;
     const watchForSwp = d.watchFor;
     const loadForSwp = d.loadFor;
+
     d.loadFor = timeconv(loadForSwp, 3000);
     d.watchFor = timeconv(watchForSwp, 20000);
-    debug("%s = %d — %s = %d", loadForSwp, d.loadFor, watchForSwp, d.watchFor);
+    debug("Time converstion results: loadFor %s watchFor %s",
+      d.loadFor, d.watchFor);
+
+    d.profile = profile;
+    if(experiment)
+      d.experiment = experiment;
     return d;
   });
 
@@ -181,6 +184,8 @@ function timeconv(maybestr, defaultMs) {
     return _.parseInt(maybestr) * 1000;
   } else if(_.isString(maybestr) && _.endsWith(maybestr, 'm')) {
     return _.parseInt(maybestr) * 1000 * 60;
+  } else if(_.isString(maybestr) && maybestr == 'end') {
+    return 'end';
   } else {
     throw new Error("unexpected content in time " + maybestr);
   }
