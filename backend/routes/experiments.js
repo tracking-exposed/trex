@@ -149,7 +149,7 @@ async function guardoni(req) {
         else {
             memo.selected.push({
                 name: thisc,
-                watchFor: wtime == "end" ? "end" : _.parseInt(wtime),
+                watchFor: wtime == "end" ? "end" : wtime,
                 loadFor: 8000,
                 url
             })
