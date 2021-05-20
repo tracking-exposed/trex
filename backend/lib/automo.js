@@ -569,7 +569,6 @@ async function fetchExperimentData(name) {
             { $unwind: '$related' }
         ]);
     await mongoc.close();
-    console.log(_.countBy(results, 'id'), EVIDLIM);
     const problem = _.keys(_.countBy(results, 'id')).length === EVIDLIM;
     if(problem)
         debug("Warning! experiment %s has more than %d video evidence limit",
@@ -585,7 +584,7 @@ async function fetchExperimentData(name) {
             watcher: utils.string2Food(r.publicKey),
             // publicKey: l.publicKey,
             profile: r.experiment.profile,
-            experiment: r.experiment.name,
+            experiment: name,
             videoName: r.experiment.videoName,
             session: r.experiment.session,
             watchFor: r.experiment.watchingTime,
