@@ -23,10 +23,10 @@ async function getPersonal(req) {
         data.supporter.hereSince = d.humanize();
         debug("Returning %d videos of %d from a profile hereSince %s, search %d",
             _.size(data.recent), data.total, data.supporter.hereSince, _.size(data.searches));
-    } catch(e) {
-        console.log(e);
-        debug("Catch exception in getSummaryByPublicKey: %s", e.message);
-        return { json: { "message": e.message, "error": true }};
+    } catch(error) {
+        console.log(error);
+        debug("Catch exception in getSummaryByPublicKey: %s", error.message);
+        return { json: { "message": error.message, "error": true }};
     }
 
     /* data should contain '.graphs', '.total', '.supporter', '.recent' */

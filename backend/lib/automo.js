@@ -569,8 +569,8 @@ async function fetchExperimentData(name) {
             { $unwind: '$related' }
         ]);
     await mongoc.close();
-    console.log(_.countBy(results, 'metadataId'), EVIDLIM);
-    const problem = _.keys(_.countBy(results, 'metadataId')).length === EVIDLIM;
+    console.log(_.countBy(results, 'id'), EVIDLIM);
+    const problem = _.keys(_.countBy(results, 'id')).length === EVIDLIM;
     if(problem)
         debug("Warning! experiment %s has more than %d video evidence limit",
             name, EVIDLIM);
@@ -588,10 +588,11 @@ async function fetchExperimentData(name) {
             experiment: r.experiment.name,
             videoName: r.experiment.videoName,
             session: r.experiment.session,
-            watchingTime: r.experiment.watchingTime,
+            watchFor: r.experiment.watchingTime,
 
             recommendedVideoId: r.related.videoId,
             recommendedPubtime: r.related.publicationTime ? r.publicationTime.toISOString() : "Invalid Date",
+            recommendedReltiveS: r.related.recommendedRelativeSeconds,
             recommendedTitle: r.related.recommendedTitle,
             recommendedTitleCharset: chardetoutp[0].name,
             recommendedTitleLang: chardetoutp[0].lang || "unknown",
@@ -604,9 +605,9 @@ async function fetchExperimentData(name) {
             thumbnail: "https://i.ytimg.com/vi/" + r.related.videoId + "/mqdefault.jpg",
             watchedId: r.videoId,
             watchedAuthor: r.authorName,
-            watchedPubtime: r.publicationTime ? r.publicationTime.toISOString() : "Invalid Date",
+            // watchedPubtime: r.publicationTime ? r.publicationTime.toISOString() : "Invalid Date",
             watchedTitle: r.title,
-            watchedChannel: r.authorSource,
+            // watchedChannel: r.authorSource,
         };
     });
 }
