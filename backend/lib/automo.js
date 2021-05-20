@@ -587,7 +587,7 @@ async function fetchExperimentData(name) {
             experiment: name,
             videoName: r.experiment.videoName,
             session: r.experiment.session,
-            watchFor: r.experiment.watchingTime,
+            watchFor: "" + r.experiment.watchingTime,
 
             recommendedVideoId: r.related.videoId,
             recommendedPubtime: r.related.publicationTime ? r.publicationTime.toISOString() : "Invalid Date",
