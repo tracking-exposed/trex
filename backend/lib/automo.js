@@ -611,20 +611,12 @@ async function fetchExperimentData(name) {
     });
 }
 
-async function getAllExperiments() {
-    const MAX = 200;
+async function getAllExperiments(max) {
     const mongoc = await mongo3.clientConnect({concurrency: 1});
     const result = await mongo3
-        .readLimit(mongoc, nconf.get('schema').experiments, {}, {}, MAX, 0);
+        .readLimit(mongoc, nconf.get('schema').experiments, {}, {}, max, 0);
     await mongoc.close();
     return result;
-    /*
-    return _.reduce(result, function(memo, e) {
-        console.log(e);
-        if(memo)
-        return memo;
-    }, { overflow: _.size(result) == MAX, experiments: {}})
-    return result */
 }
 
 module.exports = {

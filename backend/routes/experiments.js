@@ -100,8 +100,24 @@ async function csv(req) {
 };
 
 async function list(req) {
-    const experiments = await automo.getAllExperiments();
-    return { json: experiments };
+    const MAX = 400;
+    const experiments = await automo.getAllExperiments(MAX);
+    /*  "name": "provaprova",
+        "profile": "testolomeo",
+        "sessionCounter": 3,
+        "testTime": "2021-05-20T08:13:23.823Z",
+        "videos": [ "t_19Wu3Y2AY",... ] */
+    const ret = _.reduce(experiments, function(memo, e) {
+        if(memo.experiments[e.name])
+            memo.experiments[e.name] += 1;
+        else
+            memo.experiments[e.name] = 1;
+        return memo;
+    }, {
+        overflow: experiments.length === MAX,
+        experiments: {}
+    });
+    return { json: ret };
 }
 
 async function guardoni(req) {
