@@ -50,7 +50,8 @@ function dispatchPromise(name, req, res) {
             });
 
         if(httpresult.json) {
-            debug("%s API success, returning JSON (%d bytes)", name, _.size(JSON.stringify(httpresult.json)) );
+            debug("%s API success, returning JSON (%d bytes)",
+                name, _.size(JSON.stringify(httpresult.json)) );
             res.setHeader('Access-Control-Allow-Origin', '*');
             res.json(httpresult.json);
         } else if(httpresult.text) {
@@ -223,7 +224,7 @@ app.get('/api/v2/experiment/:expname/json', cors(), (req, res) => {
     return dispatchPromise('experimentJSON', req, res);
 });
 app.get('/api/v2/guardoni/list', (req, res) => {
-    return dispatchPromise('guardoniList', req, res);
+    return dispatchPromise('getAllExperiments', req, res);
 });
 app.get('/api/v2/guardoni/:time', (req, res) => {
     return dispatchPromise('guardoniGenerate', req, res);

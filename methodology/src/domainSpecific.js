@@ -64,7 +64,6 @@ async function markingExperiment(experimentName, profile, directives) {
     const result = await commit.json();
     if(!result.ok) 
       debug("Server error? %s", JSON.stringify(result, undefined, 2));
-    console.log("Check results https://youtube.tracking.exposed/experiment2/#" + experimentName);
   } catch(error) {
       console.log("Errro", error.message);
   }

@@ -13,8 +13,11 @@ function checkPassword(req) {
 };
 
 function checkKeyIsSet() {
-    if(nconf.get('key') === 'invalid_default')
-        throw new Error("key is set to be the default, this is not allowed");
+    if(nconf.get('key') === 'invalid_default') {
+        console.log("key is not set, and this is not allowed");
+        console.log("Please use something like --key 'arandomstring' ");
+        process.exit(1);
+    }
     debug("password is set and it is not the default");
 };
 

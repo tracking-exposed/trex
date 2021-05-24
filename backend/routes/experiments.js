@@ -100,10 +100,8 @@ async function csv(req) {
 };
 
 async function list(req) {
-    return { json: [
-        "SpaceScience,CyberPunk2077,IndianFood (DashCam first and last)",
-        "https://github.com/tracking-exposed/yttrex/blob/master/backend/config/expercont.json" ]
-    };
+    const experiments = await automo.getAllExperiments();
+    return { json: experiments };
 }
 
 async function guardoni(req) {

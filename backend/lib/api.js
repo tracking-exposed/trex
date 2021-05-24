@@ -63,7 +63,7 @@ const apiList = {
     experimentDOT:       require('../routes/experiments').dot,
     experimentJSON:      require('../routes/experiments').json,
 
-    guardoniList:        require('../routes/experiments').list,
+    getAllExperiments:    require('../routes/experiments').list,
     guardoniGenerate:    require('../routes/experiments').guardoni,
 };
 

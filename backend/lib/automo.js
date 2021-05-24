@@ -611,6 +611,22 @@ async function fetchExperimentData(name) {
     });
 }
 
+async function getAllExperiments() {
+    const MAX = 200;
+    const mongoc = await mongo3.clientConnect({concurrency: 1});
+    const result = await mongo3
+        .readLimit(mongoc, nconf.get('schema').experiments, {}, {}, MAX, 0);
+    await mongoc.close();
+    return result;
+    /*
+    return _.reduce(result, function(memo, e) {
+        console.log(e);
+        if(memo)
+        return memo;
+    }, { overflow: _.size(result) == MAX, experiments: {}})
+    return result */
+}
+
 module.exports = {
     /* used by routes/personal */
     getSummaryByPublicKey,
@@ -655,4 +671,5 @@ module.exports = {
     saveExperiment,
     enhanceHTMLifExperiment,
     fetchExperimentData,
+    getAllExperiments,
 };
