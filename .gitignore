@@ -20,7 +20,7 @@ methodology/experiments/*
 methodology/executions/*
 methodology/node_modules/*
 methodology/extension/*
-methodology/snapshots/*
+methodology/snaps/*
 
 backend/node_modules/*
 

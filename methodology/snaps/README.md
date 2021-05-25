@@ -1,1 +1,1 @@
-This directory would collect the snapshot (a.k.a. screen capture) of videos opened with autowatcher.py
+This directory would collect the snapshots (a.k.a. screen capture) of videos opened with `src/guardoni.js`

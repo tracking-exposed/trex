@@ -164,7 +164,7 @@ async function main() {
     await domainSpecific.beforeDirectives(page, experiment, profile, directives);
     // the BS above should close existing open tabs except 1st
     await operateBroweser(page, directives, domainSpecific);
-    console.log("Operations completed: check results at https://youtube.tracking.exposed/experiment2/#" + experimentName);
+    console.log("Operations completed: check results at https://youtube.tracking.exposed/experiment/#" + experimentName);
     await browser.close();
   } catch(error) {
     console.log("Error in operateBrowser (collection fail):", error);
