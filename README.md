@@ -8,7 +8,7 @@ This produces the **distributed** release, in the directory `dist` you should fi
 
 ## Anybody else (except developers)?
 
-Please refer to [youtube.tracking.exposed](https://youtube.tracking.exposed).
+Please refer to [youtube.tracking.exposed](https://youtube.tracking.exposed), with this tools we did a bunch of publications and analysis, you can repeat them or imagine your own!
 
 ### Developer? 
 
@@ -29,7 +29,7 @@ The command above produce the in **development release**, the results it is *not
 
 # TL;DR
 
-This is the source code for one of the **tracking-exposed** web-extension. The broad scope of the project is described in the [Manifesto](https://tracking.exposed)
+This is the source code for one of the **tracking-exposed** web-extension and backend HTML parser, plus the API to export analyzed data. The broad scope of the project is described in the [Manifesto](https://tracking.exposed)
 
 ## Code
 
@@ -84,15 +84,12 @@ Visit [YouTube](https://www.youtube.com/) and open the dev tools. You should see
 tidy -i -m -w 0 -utf8 file.html
 ```
 
-# Thanks
-[@sohkai](https://github.com/sohkai) for the amazing [js-reactor boilerplate](https://github.com/bigchaindb/js-reactor).
-=======
-# Thanks
-[@vrde](https://github.com/vrde) for the perfect basement to hack on
 
-[@sohkai](https://github.com/sohkai) for the amazing [js-reactor
+# Thanks
+
+* [@vrde](https://github.com/vrde) for the perfect basement to hack on
+* [@sohkai](https://github.com/sohkai) for the amazing [js-reactor
 boilerplate](https://github.com/bigchaindb/js-reactor).
-
 
 # License
 
