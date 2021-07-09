@@ -16,6 +16,7 @@ function getVideoId(videol) {
 }
 
 async function submission(req) {
+    /* this function is invoked by guardoni at the end */
     const experiment = {
         name: req.body.experimentName,
         profile: req.body.profile,
@@ -120,7 +121,44 @@ async function list(req) {
     return { json: ret };
 }
 
-async function guardoni(req) {
+async function guardoniGenerate(req) {
+    const experiment = req.params.experiment;
+    const botname = req.params.botname;
+    const guardobj = await automo.getGuardoni({
+        experiment,
+        botname
+    });
+    const guardonified = _.map(guardobj[0].urls, function(url, index, total) {
+        return {
+            name: `${experiment}__${botname} video ${index+1} of ${total.length}`,
+            watchFor: 40000, // 'end',
+            loadFor: 3000,
+            url,
+            experiment,
+        }
+    }) 
+    debug("guardoniGenerate for %s (%s) produced %d", experiment, botname, _.size(guardonified));
+    return { json: guardonified };
+}
+
+async function guardoniConfigure(req) {
+    // parameters: experiment + botname
+    const experiment = req.params.experiment;
+    const botname = req.params.botname;
+    const urls = req.body;
+    // remind self, urls.experiment and urls.botname aren't checked
+    const guardobj = {
+        urls : _.filter(urls.urls, 'length'),
+        experiment,
+        botname,
+        when: new Date(),
+    }
+    debug("Guardoni saving in progress %j", guardobj);
+    const retval = await automo.saveGuardoni(guardobj);
+    return { json: retval };
+}
+
+async function legacyGuardoni(req) {
 
     //const cat = req.params.category;
     const wtime = req.params.time;
@@ -230,5 +268,7 @@ module.exports = {
     dot,
     json,
     list,
-    guardoni,
+    legacyGuardoni,
+    guardoniConfigure,
+    guardoniGenerate,
 };

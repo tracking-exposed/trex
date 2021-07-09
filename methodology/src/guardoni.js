@@ -49,7 +49,7 @@ async function main() {
   const sourceUrl = nconf.get('source');
   if(!sourceUrl) {
     console.log("Mandatory configuration! for example --source " + COMMANDJSONEXAMPLE);
-    console.log("Via --source you can specify and URL OR a local file")
+    console.log("Via --source you can specify an URL <or> a filepath")
     console.log(`\nIt should be a valid JSON with objects like: [ {
       "watchFor": <number in millisec>,
       "url": "https://youtube.come/v?videoNumber1",
@@ -164,7 +164,7 @@ async function main() {
     await domainSpecific.beforeDirectives(page, experiment, profile, directives);
     // the BS above should close existing open tabs except 1st
     await operateBroweser(page, directives, domainSpecific);
-    console.log("Operations completed: check results at https://youtube.tracking.exposed/experiment/#" + experimentName);
+    console.log("Operations completed: check results at https://youtube.tracking.exposed/experiment/#" + experiment);
     await browser.close();
   } catch(error) {
     console.log("Error in operateBrowser (collection fail):", error);

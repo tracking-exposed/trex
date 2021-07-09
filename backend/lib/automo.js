@@ -514,6 +514,23 @@ async function getTransformedMetadata(chain) {
     return result;
 }
 
+async function saveGuardoni(guardobj) {
+    const mongoc = await mongo3.clientConnect({concurrency: 1});
+    const result = await mongo3
+        .writeOne(mongoc, nconf.get('schema').guardoni, guardobj);
+    await mongoc.close();
+    return result;
+}
+
+async function getGuardoni(guardobj) {
+    const mongoc = await mongo3.clientConnect({concurrency: 1});
+    const result = await mongo3
+        .readLimit(mongoc, nconf.get('schema').guardoni, guardobj,
+        { when: -1 }, 1, 0);
+    await mongoc.close();
+    return result;
+}
+
 async function saveExperiment(expobj) {
     const mongoc = await mongo3.clientConnect({concurrency: 1});
     const result = await mongo3
@@ -658,6 +675,10 @@ module.exports = {
 
     /* generalized aggregation call */
     getTransformedMetadata,
+
+    /* guardoni experiment saving from list URL + expname & botname */
+    saveGuardoni,
+    getGuardoni,
 
     /* experiment related operations */
     saveExperiment,

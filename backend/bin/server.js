@@ -226,7 +226,11 @@ app.get('/api/v2/experiment/:expname/json', cors(), (req, res) => {
 app.get('/api/v2/guardoni/list', (req, res) => {
     return dispatchPromise('getAllExperiments', req, res);
 });
-app.get('/api/v2/guardoni/:time', (req, res) => {
+// dynamically configured and retrived guardoni settings 
+app.post('/api/v2/guardoni/:experiment/:botname', (req, res) => {
+    return dispatchPromise('guardoniConfigure', req, res);
+});
+app.get('/api/v2/guardoni/:experiment/:botname', (req, res) => {
     return dispatchPromise('guardoniGenerate', req, res);
 });
 
