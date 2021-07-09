@@ -131,7 +131,7 @@ async function guardoniGenerate(req) {
     const guardonified = _.map(guardobj[0].urls, function(url, index, total) {
         return {
             name: `${experiment}__${botname} video ${index+1} of ${total.length}`,
-            watchFor: 40000, // 'end',
+            watchFor: '5m',
             loadFor: 3000,
             url,
             experiment,
