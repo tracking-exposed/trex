@@ -25,3 +25,5 @@ methodology/snaps/*
 backend/node_modules/*
 
 react-pieces/node_modules/*
+
+qa/*.pyc
