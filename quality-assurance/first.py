@@ -3,21 +3,17 @@ from ours import fetchContentFromApi
 
 class TestStringMethods(unittest.TestCase):
 
-    def test_upper(self):
-        fetchContentFromApi('last')
-        self.assertEqual('foo'.upper(), 'FOO')
+    def test_getLast(self):
+        check = fetchContentFromApi('getLast')
+        self.assertEqual(check.id, 'SOME')
 
     def test_isupper(self):
-        # fetchContentFromApi('topVideos')
-        self.assertTrue('FOO'.isupper())
-        self.assertFalse('Foo'.isupper())
+        check = fetchContentFromApi('getLastHome')
+        self.assertEqual(check.id, 'SOME')
 
     def test_split(self):
-        s = 'hello world'
-        self.assertEqual(s.split(), ['hello', 'world'])
-        # check that s.split fails when the separator is not a string
-        with self.assertRaises(TypeError):
-            s.split(2)
+        check = fetchContentFromApi('getVideoId')
+        self.assertEqual(check.id, 'SOME')
 
 if __name__ == '__main__':
     unittest.main()

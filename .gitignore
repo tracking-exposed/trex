@@ -26,4 +26,4 @@ backend/node_modules/*
 
 react-pieces/node_modules/*
 
-qa/*.pyc
+quality-assurance/*.pyc
