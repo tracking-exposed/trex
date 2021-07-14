@@ -16,6 +16,6 @@ def fetchContentFromApi(apiname):
     # TODO manage remote/production/testing/local server address
     route = 'https://youtube.tracking.exposed' + apiSupported[apiname]
     response = requests.get(route)
-    print(json.loads(response.content))
-    return json.loads(response.content)
+    content = json.loads(response.content)
+    return content
     # import pdb; pdb.set_trace()
