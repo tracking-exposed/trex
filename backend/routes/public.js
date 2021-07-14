@@ -104,7 +104,7 @@ async function getLastHome() {
                 order: vinfo.index,
                 source: vinfo.recommendedSource,
                 title: vinfo.recommendedTitle,
-                videodId: vinfo.videoId,
+                videoId: vinfo.videoId,
                 thumbnailHref: vinfo.thumbnailHref,
                 publicationTime: vinfo.publicationTime,
             }
