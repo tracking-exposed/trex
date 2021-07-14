@@ -15,5 +15,6 @@ class TestStringMethods(unittest.TestCase):
         check = fetchContentFromApi('getVideoId')
         self.assertEqual(check.id, 'SOME')
 
+
 if __name__ == '__main__':
     unittest.main()
