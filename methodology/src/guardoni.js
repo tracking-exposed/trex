@@ -134,6 +134,7 @@ async function main() {
     browser = await puppeteer.launch({
         headless: false,
         userDataDir: udd,
+        executablePath: nconf.get("chrome"),
         args: ["--no-sandbox",
           "--disabled-setuid-sandbox",
           "--load-extension=" + dist,
