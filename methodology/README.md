@@ -24,6 +24,18 @@ It means that `puppeteer` cannot find the chromium executable. First try to run 
 src/guardoni.js --source https://youtube.tracking.exposed/json/automation-example.json --profile profileTest --chrome /Applications/Chromium.app/Contents/MacOS/Chromium
 ```
 
+By default guardoni downloads an extension version `.99` already built and places it in `yttrex/methodology/extension` which has default opt-in (meant for robots). 
+By default this extension sends the results to the server.
+To get an extension which sends the resuts to the local mongo database you have to build it yourself as explained in the project readMe, and then move the local built to methodology/extension:
+```
+cd yttrex/extension
+npm install
+npm run build # will build in the build directory
+cd build
+cp * ../../methodology/extension # move the extension to directory used by guardoni
+```
+The extension should be enabled with the popup the first time. (otherwise checkout to `extension-default-opt-in` branch before building)
+
 
 options to describe:
 --exclude
