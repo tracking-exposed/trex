@@ -1,3 +1,5 @@
+## Run Guardoni and send results to server
+
 To run `guardoni`make sure you are in the methodology directory before executing:
 ``` 
 cd yttrex/methodology
@@ -26,6 +28,7 @@ src/guardoni.js --source https://youtube.tracking.exposed/json/automation-exampl
 
 ## Run guardoni locally
 
+**Build the extension**
 By default guardoni downloads an extension version `.99` already built and places it in `yttrex/methodology/extension` which has default opt-in (meant for robots). 
 By default this extension sends the results to the server.
 To get an extension which sends the resuts to the local mongo database you have to build it yourself as explained in the project readMe, and then move the local built to methodology/extension:
@@ -36,16 +39,45 @@ npm run build # will build in the build directory
 cd build
 cp * ../../methodology/extension # move the extension to directory used by guardoni
 ```
-The extension should be enabled with the popup the first time. (otherwise checkout to `extension-default-opt-in` branch before building)
 
-Then, launch the local server:
+**Load the extension in browser**
+The extension should be enabled with the popup the first time. (otherwise checkout to `extension-default-opt-in` branch before building)
+Before you can use it, you need to load it by hand: 
+- Open chromium (or whichever browser you are using for the experiment)
+- Go to chrome://extensions
+- Enable 'developer mode' with the toggle button on the top right
+- A new bar bar menu appears, from which you can pick 'load packaged extension'
+- Click, and then select the whole folder `yttrex/methodology/extension` where the new build has just been added
+- Click OK - the extension should load. To see it, click the puzzle piece and pin it to the extension bar.
+- Open the extension and turn on the evidence collection.
+
+Before this can work, you need to start the backend server, the mongo database and the parser process.
+
+
+**Launch the backend server locally:**
 ```
 cd yttrex/backend
 npm install
 npm run watch
 ```
-Now the extension is running locally.
 
+**Launch mongo locally:**
+```
+mongod
+```
+By default now, data collected will be sent to the default mongo at localhost:127.0.0.1
+
+**Launch parserv**
+To parse the HTMLs that are collected and stored in mongo, another process is launch to extract the metadata. Launch it with:
+```
+cd yttrex/backend
+npm run parserv
+```
+
+Now you should be set! Get back to the browser and start navigating on YouTube. The backend server, mongo database and the parserv should be receiving new inputs and printing logs.
+
+
+--------------------
 
 options to describe:
 --exclude
