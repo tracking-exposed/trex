@@ -29,6 +29,7 @@ src/guardoni.js --source https://youtube.tracking.exposed/json/automation-exampl
 ## Run guardoni locally
 
 **Build the extension**
+
 By default guardoni downloads an extension version `.99` already built and places it in `yttrex/methodology/extension` which has default opt-in (meant for robots). 
 By default this extension sends the results to the server.
 To get an extension which sends the resuts to the local mongo database you have to build it yourself as explained in the project readMe, and then move the local built to methodology/extension:
@@ -41,6 +42,7 @@ cp * ../../methodology/extension # move the extension to directory used by guard
 ```
 
 **Load the extension in browser**
+
 The extension should be enabled with the popup the first time. (otherwise checkout to `extension-default-opt-in` branch before building)
 Before you can use it, you need to load it by hand: 
 - Open chromium (or whichever browser you are using for the experiment)
@@ -55,6 +57,7 @@ Before this can work, you need to start the backend server, the mongo database a
 
 
 **Launch the backend server locally:**
+
 ```
 cd yttrex/backend
 npm install
@@ -62,12 +65,14 @@ npm run watch
 ```
 
 **Launch mongo locally:**
+
 ```
 mongod
 ```
-By default now, data collected will be sent to the default mongo at localhost:127.0.0.1
+By default now, data collected will be sent to the default mongo at `localhost:127.0.0.1`
 
 **Launch parserv**
+
 To parse the HTMLs that are collected and stored in mongo, another process is launch to extract the metadata. Launch it with:
 ```
 cd yttrex/backend
