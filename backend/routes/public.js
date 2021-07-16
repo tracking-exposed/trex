@@ -101,6 +101,7 @@ async function getLastHome() {
         _.each(e.selected, function(vinfo) {
             let selected = {
                 accessId: accessId.substr(0, 10),
+                metadataId: e.id,
                 order: vinfo.index,
                 source: vinfo.recommendedSource,
                 title: vinfo.recommendedTitle,
