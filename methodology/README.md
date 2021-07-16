@@ -81,6 +81,18 @@ npm run parserv
 
 Now you should be set! Get back to the browser and start navigating on YouTube. The backend server, mongo database and the parserv should be receiving new inputs and printing logs.
 
+**To Run a guardoni experiment locally**
+
+You need to specify to `guardoni.js` that the experiment registration should be done with the local backend server.
+Use the option `--backend localhost:9000`
+
+**Launch Hugo server**
+
+If you want to see your extension homepage generated from your local data, you need to launch the hugo server of [youtube.tracking.exposed](url)
+Clone this repo (and its theme, as described in its readMe) then start Hugo with
+`hugo -D server`
+Make sure you dont have another hugo server running so that this one runs on the default port at `//localhost:1313/`
+With this, the personnal page from the extnesion should be able to render
 
 --------------------
 
