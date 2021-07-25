@@ -121,6 +121,14 @@ app.get('/api/v1/personal/:publicKey/related/:paging?', function(req, res) {
     return dispatchPromise('getPersonalRelated', req, res);
 });
 
+/* record answers from surveys */
+app.post('/api/v1/recordAnswers', function(req, res) {
+    return dispatchPromise("recordAnswers", req, res);
+});
+app.get('/api/v1/retrieveAnswers', function(req, res) {
+    return dispatchPromise("retrieveAnswers", req, res);
+});
+
 /* researcher */
 app.get('/api/v1/wetest/:key/:filter', function(req, res) {
     return dispatchPromise('researcher', req, res);
