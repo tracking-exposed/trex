@@ -11,7 +11,8 @@
       "searches": "searches",
       "errors": "errors",
       "experiments": "experiments2",
-      "guardoni": "guardoni"
+      "guardoni": "guardoni",
+      "answers": "answers"
   },
   "mongoHost": "localhost",
   "mongoPort": 27017,
