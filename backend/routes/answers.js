@@ -1,5 +1,4 @@
 const _ = require('lodash');
-const moment = require('moment');
 const debug = require('debug')('routes:answers');
 const nconf = require('nconf');
 
@@ -10,15 +9,35 @@ const security = require('../lib/security');
 
 async function recordAnswers(req) {
 
-    debug(req.body);
+    const sessionId = utils.hash({ randomSeed: req.body.sessionId })
+    const mongoc = await mongo3.clientConnect({concurrency: 1});
+    const answer = await mongo3.readOne(mongoc, nconf.get('schema').answers, { sessionId }, { when: 1});
 
-    const payload = {
-        when: new Date(),
-        ...body,
-    };
-    console.log(payload);
-    throw new Error("Not implemented");
-    return { json: payload };
+    debug(answer);
+
+    let accumulating = answer ? answer : { sessionId };
+    accumulating.lastUpdate = new Date();
+
+    /* keep only the most recent update that is not invalidating existing answers */
+    accumulating = _.reduce(req.body.textColl, function(memo, textEntry) {
+        if(textEntry.value.length < 2)
+            return memo;
+        const questionId = textEntry.id;
+        memo[questionId] = textEntry.value;
+        return memo;
+    }, accumulating);
+
+    accumulating = _.reduce(req.body.slidersColl, function(memo, sliderEntry) {
+        if(sliderEntry.value === 50)
+            return memo;
+        const questionId = sliderEntry.id;
+        memo[questionId] = sliderEntry.value;
+        return memo;
+    }, accumulating)
+
+    console.log(accumulating);
+    const result = await mongo3.updateOne(mongoc, nconf.get('schema').answers, { sessionId }, accumulating)
+    return { json: accumulating };
 };
 
 async function retrieveAnswers(req, res) {
@@ -33,14 +52,18 @@ async function retrieveAnswers(req, res) {
     const revisited = _.map(answers, function(a) {
     })
     return {json: answers}
-}
+};
 
 async function retrieveAnswersCSV(req, res) {
     return { text: csv };
-}
+};
+
+async function deleteAnswer(req, res) {
+};
 
 module.exports = {
     recordAnswers,
     retrieveAnswers,
     retrieveAnswersCSV,
+    deleteAnswer,
 };
