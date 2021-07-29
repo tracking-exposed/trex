@@ -13,31 +13,31 @@ async function recordAnswers(req) {
     const mongoc = await mongo3.clientConnect({concurrency: 1});
     const answer = await mongo3.readOne(mongoc, nconf.get('schema').answers, { sessionId }, { when: 1});
 
-    debug(answer);
+    debug("Existing %j", answer);
 
-    let accumulating = answer ? answer : { sessionId };
-    accumulating.lastUpdate = new Date();
+    let cumulated = answer ? answer : { sessionId };
+    cumulated.lastUpdate = new Date();
 
     /* keep only the most recent update that is not invalidating existing answers */
-    accumulating = _.reduce(req.body.textColl, function(memo, textEntry) {
+    cumulated = _.reduce(req.body.textColl, function(memo, textEntry) {
         if(textEntry.value.length < 2)
             return memo;
         const questionId = textEntry.id;
         memo[questionId] = textEntry.value;
         return memo;
-    }, accumulating);
+    }, cumulated);
 
-    accumulating = _.reduce(req.body.slidersColl, function(memo, sliderEntry) {
+    cumulated = _.reduce(req.body.slidersColl, function(memo, sliderEntry) {
         if(sliderEntry.value === 50)
             return memo;
         const questionId = sliderEntry.id;
         memo[questionId] = sliderEntry.value;
         return memo;
-    }, accumulating)
+    }, cumulated)
 
-    console.log(accumulating);
-    const result = await mongo3.updateOne(mongoc, nconf.get('schema').answers, { sessionId }, accumulating)
-    return { json: accumulating };
+    await mongo3.deleteMany(mongoc, nconf.get('schema').answers, { sessionId })
+    const result = await mongo3.writeOne(mongoc, nconf.get('schema').answers, cumulated);
+    return { json: { accumulating: cumulated, res: result.result } };
 };
 
 async function retrieveAnswers(req, res) {
