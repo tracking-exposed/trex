@@ -69,6 +69,7 @@ const apiList = {
 
     recordAnswers:      require('../routes/answers').recordAnswers,
     retrieveAnswers:    require('../routes/answers').retrieveAnswers,
+    retrieveAnswersCSV: require('../routes/answers').retrieveAnswersCSV,
 };
 
 module.exports = {

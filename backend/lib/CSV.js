@@ -25,7 +25,7 @@ function produceCSVv1(entries) {
 
         _.each(keys, function(k, i) {
             let swap = _.get(entry, k, "");
-            if(_.endsWith(k,'Time'))
+            if(_.endsWith(k,'Time') || k == 'lastUpdate')
                 memo.csv += moment(swap).toISOString();
             else if(_.isInteger(swap)) {
                 memo.csv += swap;

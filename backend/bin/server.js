@@ -125,8 +125,11 @@ app.get('/api/v1/personal/:publicKey/related/:paging?', function(req, res) {
 app.post('/api/v1/recordAnswers', function(req, res) {
     return dispatchPromise("recordAnswers", req, res);
 });
-app.get('/api/v1/retrieveAnswers', function(req, res) {
+app.get('/api/v1/retrieveAnswers/:key', function(req, res) {
     return dispatchPromise("retrieveAnswers", req, res);
+});
+app.get('/api/v1/retrieveAnswersCSV/:key', function(req, res) {
+    return dispatchPromise("retrieveAnswersCSV", req, res);
 });
 
 /* researcher */
