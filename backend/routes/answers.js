@@ -14,6 +14,7 @@ async function recordAnswers(req) {
     const answer = await mongo3.readOne(mongoc, nconf.get('schema').answers, { sessionId });
     let cumulated = answer ? answer : { sessionId };
     cumulated.reference = _.get(req.body, 'reference.from');
+    cumulated.optIn = _.get(req.body, 'optIn') || false;
     cumulated.lastUpdate = new Date();
     /* keep only the most recent update that is not invalidating existing answers */
     cumulated = _.reduce(req.body.textColl, function(memo, textEntry) {
@@ -36,7 +37,7 @@ async function recordAnswers(req) {
     return { json: { accumulating: cumulated, res: result.result } };
 };
 
-async function retrieveAnswers(req, res) {
+async function retrieveAnswers(req) {
 
     if(!security.checkPassword(req))
         return {json: { error: true, message: "Invalid key" }};
@@ -44,7 +45,8 @@ async function retrieveAnswers(req, res) {
     const mongoc = await mongo3.clientConnect({concurrency: 1});
     const answers = await mongo3.read(mongoc, nconf.get('schema').answers, {}, { lastUpdate: 1});
     await mongoc.close();
-    const revisited = _.map(cleanAnswerFromDB(answers), function(ans) {
+
+    const revisited = _.map(answers, function(ans) {
         // add a calculation on how have been populated by contributors
         ans.fifth = []
         _.each(answerMap, function(answerExpected, stepNumber) {
@@ -52,7 +54,7 @@ async function retrieveAnswers(req, res) {
             if(_.intersection(answerExpected, _.keys(ans)).length)
                 ans.fifth.push(stepNumber +1);
         });
-        return ans;
+        return cleanAnswerFromDB(ans);
     })
     return {json: revisited}
 };
