@@ -1,0 +1,50 @@
+{
+  "manifest_version": 2,
+
+  "name": "YC.AI",
+
+  "short_name": "YC.AI",
+  "description": "Content creator should control their videos' recommendation — thanks for joining our TED talk",
+  "version": "0.0.2",
+  "author": "The team of Tracking Exposed",
+
+  "icons": {
+    "16": "ycai16.png",
+    "48": "ycai48.png",
+    "128": "ycai128.png"
+  },
+
+  "browser_action": {
+    "default_icon": "ycai16.png",
+    "default_popup": "popup.html"
+  },
+
+  "permissions": [
+    "storage",
+    "alarms",
+    "http://localhost:14000/",
+    "https://*.youtube.com/",
+    "https://youchoose.tracking.exposed/"
+  ],
+
+  "background": {
+    "scripts": ["./background.js"],
+    "persistent": false
+  },
+
+  "content_scripts": [
+    {
+      "matches": [
+        "http://localhost/*",
+        "http://127.0.0.1/*",
+        "https://youchoose.tracking.exposed/*",
+        "https://*.youtube.com/*"
+      ],
+      "js": ["./app.js"]
+    }
+  ],
+
+  "web_accessible_resources": [
+      "*.png"
+  ]
+}
