@@ -1,14 +1,14 @@
 {
   "name": "yttrex",
-  "version": "0.0.1",
-  "description": "yttrex is the extension + backend for youtube algorithm analysis. This is part of the https://tracking.exposed umbrella project",
-  "homepage": "https://youtube.tracking.exposed",
-  "bugs": "https://github.com/tracking-exposed/yttrex/issues",
+  "version": "0.1.0",
+  "description": "YouChoose AI",
+  "homepage": "https://youchoose.ai",
+  "bugs": "https://github.com/tracking-exposed/YCAI/issues",
   "license": "AGPL-3.0",
   "author": "Claudio Agosti, Alberto Granzotto, and the tracking exposed team",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/tracking-exposed/yttrex.git"
+    "url": "git+https://github.com/tracking-exposed/YCAI.git"
   },
   "scripts": {
     "lint": "eslint ./ --quiet",

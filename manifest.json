@@ -1,11 +1,11 @@
 {
   "manifest_version": 2,
 
-  "name": "YC.AI",
+  "name": "YouChoose.AI",
 
-  "short_name": "YC.AI",
+  "short_name": "YCAI",
   "description": "Content creator should control their videos' recommendation — thanks for joining our TED talk",
-  "version": "0.0.2",
+  "version": "0.1.0",
   "author": "The team of Tracking Exposed",
 
   "icons": {
