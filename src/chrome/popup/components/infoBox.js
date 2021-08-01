@@ -6,41 +6,20 @@ import { Card } from '@material-ui/core';
 import CardActions from '@material-ui/core/CardActions';
 import Button from '@material-ui/core/Button';
 
-const imgstyle = {
-    width: '100%'
-};
-const lessStandardHref = {
-    color: 'black',
-    textDecoration: 'none'
-};
 
 const InfoBox = createReactClass({
 
     render () {
-        const about = config.WEB_ROOT + '/about';
+        const about = config.WEB_ROOT + '/dashboard';
         const privacy = config.WEB_ROOT + '/privacy';
         const experiments = config.WEB_ROOT + '/wetest/next';
 
+        // ENTRAMBI i textAlign: center non vanno bene per far mettere il bottone in centro, FIXME
         return (
             <Card style={{'textAlign':'center'}}>
-              <a target='_blank' href={config.WEB_ROOT} style={lessStandardHref}>
-                <img style={imgstyle} src='/ycai-logo.png' />
-              </a>
-              <CardActions>
-                <Button size="small" color="secondary" href={about} target="_blank">
-                  Button 1
-                </Button>
-                <Button size="small" color="primary" href={privacy} target="_blank">
-                  Privacy 
-                </Button>
-                <Button size="small" color="secondary" href="https://tracking.exposed/manifesto" target="_blank">
-                  Something
-                </Button>
-                <Button size="small" color="primary"  href="https://github.com/tracking-exposed/yttrex/" target="_blank"> 
-                  More!?
-                </Button>
-                <Button size="small" color="secondary" href={experiments} target="_blank">
-                  Even better
+              <CardActions style={{'textAlign':'center'}}>
+                <Button size="medium" color="secondary" href={about} target="_blank">
+                  Dashboard
                 </Button>
               </CardActions>
             </Card>

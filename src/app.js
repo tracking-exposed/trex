@@ -56,8 +56,7 @@ function boot () {
         }
     } else if (_.endsWith(window.location.origin, 'youtube.com')) {
         // this get executed only on youtube.com
-        console.log(`YC.AI version ${config.VERSION}`);
-        console.log(config);
+        console.log(`YCAI version ${config.VERSION}, ${JSON.stringify(config)}`);
 
         // Register all the event handlers.
         // An event handler is a piece of code responsible for a specific task.
@@ -77,34 +76,48 @@ function boot () {
 
             // nota il significato di questi flag non è consistente
             if(config.svg !== true) {
-                console.log("YC.AI disabled! + do UX changes?"); 
+                console.log("YCAI disabled! + do UX changes?"); 
                 // bo.browserAction.setIcon({path: '../icons/icon-disabled.png'});
                 // browserAction is undefined
                 return null;
             }
-
-            if(matchUXhackURL(window.location.path)) {
-                initializeHackedSVG();
-            }
+            // this makes 
             // hrefUpdateMonitor();
             // flush();
         });
     } else if (_.startsWith(window.location.origin, 'localhost')) {
-        console.log('YC.AI in localhost: ignored condition');
+        console.log('YCAI in localhost: ignored condition');
         return null;
+    }
+
+    if(matchUXhackURL(window.location)) {
+        initializeHackedYTUX();
+            // remoteLookup fetch remotely if we've information about videoId or channelId,
+            // depending on what we're watching
+        remoteLookup(response => {
+            console.log(response);
+            const mymockup = [
+                {
+                    "name": "Recommendation 1",
+                    "thumbnail": "https://via.placeholder.com/150",
+                    "description": "blah blah lorm imsun inverando est",
+                    "type": ""
+                }
+            ]
+        });
     }
 }
 
 /* UX modifier */
 
-function matchUXhackURL(pathname) {
-    console.log("regexp", pathname);
+function matchUXhackURL(locat) {
+    return locat.pathname.match(/\/watch/)
 }
 
 let initializedWatchers = false;
-function initializeHackedSVG() {
+function initializeHackedYTUX() {
     if(!initializedWatchers) {
-        console.log("This should be the first time you see this");
+        console.log("This should be the first time you see this, and the last");
         initializedWatchers = true;
     } else {
         return;
@@ -114,6 +127,7 @@ function initializeHackedSVG() {
     const needResize = checkRecommendationStatus();
     if(needResize)
         console.log("we'll redraw");
+
 }
 
 let lastObservedSize = null;
@@ -256,10 +270,10 @@ function localLookup (callback) {
 
 // The function `remoteLookup` communicate the intention
 // to the server of performing a certain test, and retrive
-// the userPseudonym from the server - this is not used in YC.AI 
+// the userPseudonym from the server - this is not used in YCAI 
 function remoteLookup (callback) {
     bo.runtime.sendMessage({
-        type: 'remoteLookup',
+        type: 'recommendationsFetch',
         payload: {
             // window.location.pathname.split('/')
             // Array(4) [ "", "d", "1886119869", "Soccer" ]

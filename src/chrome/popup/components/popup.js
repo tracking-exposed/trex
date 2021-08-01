@@ -18,6 +18,14 @@ const styles = {
     width: '400px',
 };
 
+const imgstyle = {
+  width: '100%'
+}
+const lessStandardHref = {
+  color: 'black',
+  textDecoration: 'none'
+}
+
 class Popup extends React.Component{
 
   constructor (props) {
@@ -64,9 +72,10 @@ class Popup extends React.Component{
       return (
         <div style={styles}>
           <Card>
-            <FormHelperText>YouChoose experiment in progress</FormHelperText>
+            <a target='_blank' href={config.WEB_ROOT} style={lessStandardHref}>
+              <img style={imgstyle} src='/ycai-logo.png' />
+            </a>
             <Settings lastSettings={this.state.data}/>
-            <FormHelperText>About</FormHelperText>
             <InfoBox />
           </Card>
           <small>version {version}, released {timeago}</small>
