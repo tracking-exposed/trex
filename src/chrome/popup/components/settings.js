@@ -25,15 +25,14 @@ class Settings extends React.Component{
         
   render () {
 
-    function toggleActivation (event) {
+    function toggleActivation (_t, event) {
       const switchname = event.target
         .parentElement.parentElement.getAttribute('aria-labelledby').split('-')[1];
-      console.log(`Checked now? ${event.target.checked} switchname ${switchname}`);
+      console.log(`it is checked: ${event.target.checked} | switchname ${switchname}`);
       const payload = {};
-      console.log(this.state);
       payload[switchname] = event.target.checked;
-      console.log("future STATE", JSON.stringify(payload));
-      this.setState(payload);
+      console.log(`update is ${JSON.stringify(payload)} current ${_t.state}`);
+      _t.setState(payload);
       bo.runtime.sendMessage({
         type: 'configUpdate',
         payload
@@ -52,19 +51,33 @@ class Settings extends React.Component{
       <FormControl component="fieldset">
         <FormGroup aria-label="position" row>
           <FormControlLabel
-            control={<Switch aria-labelledby="switch-ux" color="primary" checked={this.state.ux} onChange={toggleActivation}/>}
+            control={<Switch
+              aria-labelledby="switch-ux"
+              color="primary"
+              checked={this.state.ux}
+              onChange={_.partial(toggleActivation, this)}
+            />}
             label="Show reccomendations from Content Creators"
             labelPlacement="end"
           />
           <Divider helperText="YouChoose" />
           <FormControlLabel
-            control={<Switch aria-labelledby="switch-community" color="primary" checked={this.state.community} onChange={toggleActivation} />}
+            control={<Switch
+              aria-labelledby="switch-community"
+              color="primary"
+              checked={this.state.community}
+              onChange={_.partial(toggleActivation, this)}
+            />}
             label="Show Community recommendations"
             labelPlacement="end"
           />
           <Divider helperText="Tournesol"/>
           <FormControlLabel
-            control={<Switch aria-labelledby="alphabeth" color="primary" checked={this.state.alphabeth} onChange={toggleActivation} />}
+            control={<Switch
+              aria-labelledby="switch-alphabeth"
+              color="primary"
+              checked={this.state.alphabeth}
+              onChange={_.partial(toggleActivation, this)} />}
             label="Show YT algorithmic recommendations"
             labelPlacement="end"
           />
