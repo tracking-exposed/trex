@@ -25,7 +25,7 @@ if(!nconf.get('interface') || !nconf.get('port') )
     throw new Error("check your config/settings.json, config of 'interface' and 'post' missing");
 
 var returnHTTPError = function(req, res, funcName, where) {
-    debug("%s HTTP error 500 %s [%s]", req.randomUnicode, funcName, where);
+    debug("HTTP error 500 %s [%s]", funcName, where);
     res.status(500);
     res.send();
     return false;
@@ -40,7 +40,9 @@ function dispatchPromise(name, req, res) {
     const func = _.get(APIs.implementations, name, null);
     if(_.isNull(func)) {
         debug("Invalid function request %s", name);
-        return returnHTTPError(req, res, name, "function not found?");
+        res.status(404);
+        res.send("function not found");
+        return false;
     }
     return new Promise.resolve(func(req)).then(function(httpresult) {
 
@@ -59,13 +61,17 @@ function dispatchPromise(name, req, res) {
             res.send(httpresult.text);
         } else {
             debug("Undetermined failure in API call, result →  %j", httpresult);
-            return returnHTTPError(req, res, name, "Undetermined failure");
+            res.status(502);
+            res.send("Error?");
+            return false;
         }
         return true;
     })
     .catch(function(error) {
-        debug("%s Trigger an Exception %s: %s", req.randomUnicode, name, error);
-        return returnHTTPError(req, res, name, "Exception");
+        debug("%s Trigger an Exception: %s", name, error);
+        res.status(501);
+        res.send(error.message);
+        return false;
     });
 };
 
@@ -175,7 +181,12 @@ app.get('/api/v1/mirror/:key', function(req, res) {
     return dispatchPromise('getMirror', req, res);
 });
 
-/* impact --- the only one in version 2 already */
+/* handshake should be renamed for youchoose functionality */
+app.post('/api/v3/handshake', function(req, res) {
+    return dispatchPromise('youChooseByVideoId', req, res);
+});
+
+/* impact */
 app.get('/api/v2/statistics/:name/:unit/:amount', function(req, res) {
     return dispatchPromise('getStatistics', req, res);
 });

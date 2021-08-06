@@ -70,6 +70,9 @@ const apiList = {
     recordAnswers:      require('../routes/answers').recordAnswers,
     retrieveAnswers:    require('../routes/answers').retrieveAnswers,
     retrieveAnswersCSV: require('../routes/answers').retrieveAnswersCSV,
+
+    /* v3 youchoose */
+    youChooseByVideoId: require('../routes/youchoose').byVideoId,
 };
 
 module.exports = {
