@@ -18,11 +18,12 @@ const DEFAULT_SETTINGS = {
 };
 
 bo.runtime.onMessage.addListener((request, sender, sendResponse) => {
+    console.log("focacci", request)
     if (request.type === 'localLookup') {
         userLookup( request.payload ? request.payload : { userId: FIXED_USER_NAME }, sendResponse);
         return true;
     }
-    if (request.type === 'remoteLookup') {
+    if (request.type === 'recommendationsFetch') {
         serverLookup(request.payload, sendResponse);
         return true;
     }
@@ -64,7 +65,6 @@ function userLookup ({ userId }, sendResponse) {
 };
 
 function serverLookup (payload, sendResponse) {
-
     /* remoteLookup might be call as first function after the extension has been
      * installed, and the keys not be yet instanciated */
     const userId = FIXED_USER_NAME;
@@ -79,7 +79,7 @@ function serverLookup (payload, sendResponse) {
     })
     .then(function (x) {
         return api
-            .handshake(payload, 'local')
+            .handshake(payload, FIXED_USER_NAME)
             .then(response => sendResponse({type: 'handshakeResponse', response: response}))
             .catch(error => sendResponse({type: 'handshakeError', response: error}));
     });

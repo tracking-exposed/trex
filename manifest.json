@@ -6,7 +6,7 @@
   "short_name": "YCAI",
   "description": "Content creator should control their videos' recommendation — thanks for joining our TED talk",
   "version": "0.1.0",
-  "author": "The team of Tracking Exposed",
+  "author": "Tracking Exposed team, check it our on https://youchoose.ai",
 
   "icons": {
     "16": "ycai16.png",
@@ -22,7 +22,7 @@
   "permissions": [
     "storage",
     "alarms",
-    "http://localhost:14000/",
+    "http://localhost:9000/",
     "https://*.youtube.com/",
     "https://youchoose.tracking.exposed/"
   ],
@@ -40,11 +40,13 @@
         "https://youchoose.tracking.exposed/*",
         "https://*.youtube.com/*"
       ],
-      "js": ["./app.js"]
+      "js": ["./app.js"],
+      "css": ["./youchoose-ux.css"]
     }
   ],
 
   "web_accessible_resources": [
-      "*.png"
+      "*.png",
+      "youchoose-ux.css"
   ]
 }

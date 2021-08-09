@@ -30,12 +30,14 @@ import $ from 'jquery';
 import _ from 'lodash';
 import moment from 'moment';
 
-import {paintReplacement} from './replacement';
+import {updateUX} from './replacement';
 import config from './config';
 import hub from './hub';
 import { registerHandlers } from './handlers/index';
+import { getVideoId } from './youtube';
 
 const YT_VIDEOTITLE_SELECTOR = 'h1.title';
+const YOUCHOOSE_HREF_FREQUENCY_CHECK = 1000;
 
 // bo is the browser object, in chrome is named 'chrome', in firefox is 'browser'
 const bo = chrome || browser;
@@ -65,22 +67,12 @@ function boot () {
 
         // Lookup the current user and decide what to do.
         localLookup(response => {
-            // `response` contains the user's public key, we save it global for the blinks
-            console.log("app.js gets", response, "from localLookup");
-
-            /* these parameters are loaded from localstorage */
+            // `response` contains the user's public key, we save it global to access them as config
             config.publicKey = response.publicKey;
-            config.active = response.active;
-            config.svg = response.svg;
-            config.videorep = response.videorep;
-
-            // nota il significato di questi flag non è consistente
-            if(config.svg !== true) {
-                console.log("YCAI disabled! + do UX changes?"); 
-                // bo.browserAction.setIcon({path: '../icons/icon-disabled.png'});
-                // browserAction is undefined
-                return null;
-            }
+            config.ux= response.active;
+            config.community= response.svg;
+            config.alphabeth= response.videorep;
+            console.log(`YouChoose is operative: ${config}`);
             // this makes 
             // hrefUpdateMonitor();
             // flush();
@@ -90,22 +82,26 @@ function boot () {
         return null;
     }
 
-    if(matchUXhackURL(window.location)) {
-        initializeHackedYTUX();
+    // this is the YouChoose specific main loop 
+    window.setInterval(function() {
+        if(matchUXhackURL(window.location)) {
+            const needrefresh = initializeHackedYTUX();
             // remoteLookup fetch remotely if we've information about videoId or channelId,
             // depending on what we're watching
-        remoteLookup(response => {
-            console.log(response);
-            const mymockup = [
-                {
-                    "name": "Recommendation 1",
-                    "thumbnail": "https://via.placeholder.com/150",
-                    "description": "blah blah lorm imsun inverando est",
-                    "type": ""
-                }
-            ]
-        });
-    }
+            if(needrefresh) {
+                remoteLookup(response => {
+                    try {
+                        const freshj = JSON.parse(response.response);
+                        const uxstatus = updateUX(freshj);
+                        console.log("UXStatus:", uxstatus);
+                    } catch(erro) {
+                        console.warn("unable to fetch recommendation and to trim UX", erro);
+                    }
+                });
+            }
+        }
+    }, YOUCHOOSE_HREF_FREQUENCY_CHECK);
+    // and the execution loop in the iteration above
 }
 
 /* UX modifier */
@@ -126,13 +122,16 @@ function initializeHackedYTUX() {
     /* actual code for monitoring */
     const needResize = checkRecommendationStatus();
     if(needResize)
-        console.log("we'll redraw");
+        console.log("we might wants to redraw?", lastObservedSize);
 
+    let diff = (window.location.href !== lastVideoURL);
+    return diff;
 }
 
 let lastObservedSize = null;
 function checkRecommendationStatus() {
     const rw = $(".ytd-watch-next-secondary-results-renderer").clientWidth;
+    console.log("please note this size is", rw, "previous", lastObservedSize);
     if(lastObservedSize === rw)
         return false;
 
@@ -148,12 +147,13 @@ function phase (path) {
     f(path);
 }
 
+/* move watchers somewhere else in a more clean way */
 const hrefPERIODICmsCHECK = 9000;
 const nodePERIODICmsCHECK = 4000;
 let nodePeriodicCheck = nodePERIODICmsCHECK; // this check is dynamics, it grows if nothing change
 let hrefPeriodicCheck = hrefPERIODICmsCHECK;
-var lastVideoURL = null;
-var lastVideoCNT = 0;
+let lastVideoURL = null;
+let lastVideoCNT = 0;
 
 function hrefUpdateMonitor () {
     window.setInterval(function () {
@@ -270,16 +270,14 @@ function localLookup (callback) {
 
 // The function `remoteLookup` communicate the intention
 // to the server of performing a certain test, and retrive
-// the userPseudonym from the server - this is not used in YCAI 
+// the userPseudonym from the server, it is used here also to 
+// retrieve recommendations for a certain videoID
 function remoteLookup (callback) {
     bo.runtime.sendMessage({
         type: 'recommendationsFetch',
         payload: {
-            // window.location.pathname.split('/')
-            // Array(4) [ "", "d", "1886119869", "Soccer" ]
-            // window.location.pathname.split('/')[2]
-            // "1886119869"
-            testId: window.location.pathname.split('/')[2]
+            ...config,
+            videoId: getVideoId(window.location.href),
         }
     }, callback);
 }

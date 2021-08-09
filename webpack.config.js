@@ -14,7 +14,7 @@ const WebpackNotifierPlugin = require('webpack-notifier');
 
 require('dotenv').load({ silent: true });
 
-const LAST_VERSION = 2;
+const LAST_VERSION = 3;
 const packageJSON = require('./package.json');
 const NODE_ENV = process.env.NODE_ENV || 'development';
 const PRODUCTION = NODE_ENV === 'production';
@@ -37,7 +37,7 @@ const PATHS = {
 
 /** EXTERNAL DEFINITIONS INJECTED INTO APP **/
 var DEV_SERVER = 'localhost';
-var ENV_DEP_SERVER = DEVELOPMENT ? ('http://' + DEV_SERVER + ':14000') : 'https://youchoose.tracking.exposed';
+var ENV_DEP_SERVER = DEVELOPMENT ? ('http://' + DEV_SERVER + ':9000') : 'https://youchoose.tracking.exposed';
 var ENV_DEP_WEB = DEVELOPMENT ? ('http://' + DEV_SERVER + ':1313') : 'https://youchoose.tracking.exposed';
 
 const DEFINITIONS = {
