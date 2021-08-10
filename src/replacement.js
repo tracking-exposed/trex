@@ -1,3 +1,4 @@
+import config from "./config";
 
 function make_video_box(video, i) {
   console.log(video, i);
@@ -106,18 +107,6 @@ export function updateUX(response) {
     recache.alphabeth.style.display = 'none';
   }
 
-  if(!recache.ycaibar) {
-    const bar = document.createElement('div');
-    bar.id = 'ycaibar';
-    bar.innerHTML = `
-      <button>Default</button>
-      <button>Youchoose</button>
-      <button>Tournesol</button>
-    `;
-    /* append to the dom */
-    recache.alphabeth.parentNode.append(bar);
-    recache.ycaibar = bar;
-  }
 
   const targetElement = recache.alphabeth.parentNode;
 
@@ -152,11 +141,12 @@ export function updateUX(response) {
   ycai_title.append('Recommendation by Youchoose');
   inline_div.append(ycai_title); */
 
-  // Add title
   const ycai_link = document.createElement('a');
   ycai_link.id = 'trim_link';
-  ycai_link.href = 'https://youchoose.tracking.exposed/trim';
-  ycai_link.append('learn more');
+  ycai_link.href = (config.NODE_ENV == 'development') ?
+    `${config.WEB_ROOT}/trim` :
+    `https://youchoose.tracking.exposed/trim`;
+  ycai_link.append('[YouChoose.ai possible links]');
   inline_div.append(ycai_link);
 
   ycai_container.append(inline_div);
@@ -167,6 +157,21 @@ export function updateUX(response) {
   console.log(video_box_height, video_box_width);
 
   response.forEach((video, i) => ycai_container.append(make_video_box(video, i)));
-  targetElement.insertBefore(ycai_container, targetElement.querySelector("#ycaibar"));
+  recache.alphabeth.parentNode.append(ycai_container);
+//  targetElement.insertBefore(ycai_container, targetElement.querySelector("#ycaibar"));
+
+  if(!recache.ycaibar) {
+    const bar = document.createElement('div');
+    bar.id = 'ycaibar';
+    bar.innerHTML = `
+      <button>Default</button>
+      <button>Youchoose</button>
+      <button>Tournesol</button>
+    `;
+    /* append to the dom */
+    recache.alphabeth.parentNode.append(bar);
+    recache.ycaibar = bar;
+  }
+
   return { status: 'updated' };
 }

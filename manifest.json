@@ -4,8 +4,8 @@
   "name": "YouChoose.AI",
 
   "short_name": "YCAI",
-  "description": "Content creator should control their videos' recommendation — thanks for joining our TED talk",
-  "version": "0.1.0",
+  "description": "Content creator should control their videos' recommendation",
+  "version": "0.1.1",
   "author": "Tracking Exposed team, check it our on https://youchoose.ai",
 
   "icons": {

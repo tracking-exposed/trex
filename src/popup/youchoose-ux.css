@@ -4,11 +4,25 @@
   text-align: center;
 }
 
+#ycaibar button {
+  border-radius: 4px;
+  border-color: darkmagenta;
+  border: 1px;
+}
+
+#trim_link {
+  font-size: 1.1em;
+  padding: 4px;
+  font-family: 'Courier New', Courier, monospace;
+  color: darkslategray;
+}
+
+/*
 #ycai_container {
   margin-left: 0;
   margin-right: 0;
   margin-top: 45px;
-  margin-bottom: 16px; /* 40px for tournesol container - 24px for margin-top of youtube recommendations */
+  margin-bottom: 16px; 
   display: flex;
   flex-direction: row;
   position: relative;
@@ -136,3 +150,4 @@
   position: relative;
   margin-bottom: 6px;
 }
+*/
