@@ -3,11 +3,7 @@ import ReactDOM from 'react-dom';
 
 import { createMuiTheme, ThemeProvider } from '@material-ui/core/styles';
 
-import db from '../db';
-import Tooltip from './components/tooltip';
-
-/* this lives in the content script */
-const bo = chrome || browser;
+import Dashboard from './Dashboard';
 
 const Zimplon = {
     fontFamily: 'Trex-Regular',
@@ -39,8 +35,8 @@ const theme = createMuiTheme({
 function main () {
     ReactDOM.render(
         <ThemeProvider theme={theme}>
-            <Tooltip config={config} />
-        </ThemeProvider>, document.getElementById('yttrex--tooltip')
+            <Dashboard />
+        </ThemeProvider>, document.getElementById('ycai--dashboard')
     );
 }
 

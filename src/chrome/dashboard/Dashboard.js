@@ -9,11 +9,11 @@ const styles = {
     width: '400px',
 };
 
-class Tooltip extends React.Component{
+class Dashboard extends React.Component{
 
   constructor (props) {
       super(props);
-      console.log(proprs);
+      console.log(props);
       this.state = { status: 'whatever', data: ''};
   }
 
@@ -29,4 +29,4 @@ class Tooltip extends React.Component{
     }
 }
 
-export default Tooltip;
+export default Dashboard;

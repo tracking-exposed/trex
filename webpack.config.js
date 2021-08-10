@@ -21,14 +21,13 @@ const PRODUCTION = NODE_ENV === 'production';
 const DEVELOPMENT = NODE_ENV === 'development';
 const BUILDISODATE = new Date().toISOString();
 console.log('NODE_ENV [' + process.env.NODE_ENV + '] Prod:', PRODUCTION, 'Devel: ', DEVELOPMENT);
-// const BUILD = require('child_process').execSync('git rev-parse HEAD').toString().trim();
 
 const PATHS = {
     APPS: {
         app: path.resolve(__dirname, 'src/app.js'),
         popup: path.resolve(__dirname, 'src/chrome/popup/index.js'),
         background: path.resolve(__dirname, 'src/chrome/background/index.js'),
-	// tooltip: path.resolve(__dirname, 'src/chrome/tooltip/index.js'),
+	    dashboard: path.resolve(__dirname, 'src/chrome/dashboard/index.js'),
     },
     BUILD: path.resolve(__dirname, 'build'),
     DIST: path.resolve(__dirname, 'dist'),

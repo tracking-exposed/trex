@@ -67,6 +67,7 @@
     "cheerio": "^0.22.0",
     "classnames": "^2.3.1",
     "create-react-class": "^15.7.0",
+    "fetch-opengraph": "^1.0.25",
     "immutability-helper": "^2.9.1",
     "jquery": "^3.6.0",
     "lodash": "^4.17.21",

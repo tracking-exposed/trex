@@ -6,11 +6,10 @@ import { Card } from '@material-ui/core';
 import CardActions from '@material-ui/core/CardActions';
 import Button from '@material-ui/core/Button';
 
-
 const InfoBox = createReactClass({
 
     render () {
-        const about = config.WEB_ROOT + '/dashboard';
+        const about = '/dashboard.html';
         const privacy = config.WEB_ROOT + '/privacy';
         const experiments = config.WEB_ROOT + '/wetest/next';
 
