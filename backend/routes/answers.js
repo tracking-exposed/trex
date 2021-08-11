@@ -51,7 +51,7 @@ async function retrieveAnswers(req) {
     const answers = await mongo3.read(mongoc, nconf.get('schema').answers, {}, { lastUpdate: 1});
     await mongoc.close();
 
-    const revisited = _.map(answers, function(ans) {
+    const revisited = _.map(_.reverse(answers), function(ans) {
         // add a calculation on how have been populated by contributors
         ans.fifth = []
         _.each(answerMap, function(answerExpected, stepNumber) {
