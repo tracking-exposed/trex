@@ -73,6 +73,11 @@ const answerMap = [
 
 function cleanAnswerFromDB(ans) {
     _.unset(ans, '_id');
+    // optIn has now a different consistency than boolean
+    if(ans.optIn)
+        ans.optIn = "YES";
+    else
+        _.unset(ans, 'optIn');
     return ans;
 }
 
