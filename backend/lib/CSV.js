@@ -4,9 +4,9 @@ const moment = require('moment');
 
 const utils = require('./utils');
 
-function produceCSVv1(entries) {
+function produceCSVv1(entries, requestedKeys) {
 
-    const keys = _.keys(entries[0]);
+    const keys = requestedKeys ? requestedKeys : _.keys(entries[0]);
 
     let produced = _.reduce(entries, function(memo, entry, cnt) {
         if(!memo.init) {

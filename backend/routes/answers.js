@@ -68,7 +68,7 @@ const answerMap = [
     ["11", "12", "13", "14", "15", "16", "15", "18", "19"],
     ["21", "22", "23", "24", "25", "26", "27"],
     ["31", "32", "33", "34", "35", "36" ],
-    ["41", "42", "43"]
+    ["41", "42" , "optIn" ]
 ]
 
 function cleanAnswerFromDB(ans) {
@@ -82,7 +82,10 @@ async function retrieveAnswersCSV(req, res) {
     const mongoc = await mongo3.clientConnect({concurrency: 1});
     const answers = await mongo3.read(mongoc, nconf.get('schema').answers, {}, { lastUpdate: 1});
     await mongoc.close();
-    const csvcontent = csv.produceCSVv1(_.map(answers, cleanAnswerFromDB));
+    const csvcontent = csv.produceCSVv1(_.map(answers, cleanAnswerFromDB), _.concat(
+        [ "sessionId", "lastUpdate", "reference" ],
+        _.flatten(answerMap),
+    ));
     const filename = `answers-size-${answers.length}.csv`;
     return {
         headers: {
