@@ -185,6 +185,9 @@ app.get('/api/v1/mirror/:key', function(req, res) {
 app.post('/api/v3/handshake', function(req, res) {
     return dispatchPromise('youChooseByVideoId', req, res);
 });
+app.get('/api/v3/recommendations/:videoId', function(req, res) {
+    return dispatchPromise('youChooseByVideoId', req, res);
+});
 
 /* impact */
 app.get('/api/v2/statistics/:name/:unit/:amount', function(req, res) {

@@ -3,7 +3,7 @@
   "version": "1.5.0",
   "description": "youtube.tracking.exposed - backend data collector",
   "scripts": {
-    "watch": "key=fuffa DEBUG=*,-body-parser*,-express* ./node_modules/nodemon/bin/nodemon.js --config config/nodemon.json bin/server",
+    "watch": "key=fuffa DEBUG=*,-body-parser*,-express*,-follow-redirects ./node_modules/nodemon/bin/nodemon.js --config config/nodemon.json bin/server",
     "start": "DEBUG=*,-body-parser:*,-express:*,-lib:mongo node bin/server",
     "parserv": "DEBUG=* node bin/parserv2.js",
     "searches": "echo 'remind this was crashing mongodb homeserv';DEBUG=* node bin/searches.js",
@@ -23,6 +23,7 @@
     "debug": "^2.2.0",
     "elasticsearch": "^15.4.1",
     "express": "^4.14.0",
+    "fetch-opengraph": "^1.0.25",
     "food-words": "^1.1.0",
     "jsdom": "^13.0.0",
     "moment": "^2.29.1",
