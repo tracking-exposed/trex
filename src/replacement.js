@@ -1,7 +1,45 @@
 import config from "./config";
 
+
+
+function recommandation_dispatcher(recc, i) {
+  // this {recc} might belong to different 'type':
+  // 'youtube', 'wikipedia', 'article', 'tiktok', 'url'
+  console.log(recc, i);
+
+  if(recc.type == 'youtube') {
+    return make_video_box(recc, i);
+  } else if(recc.type == 'article') {
+    return make_article_box(recc, i);
+  } else {
+    debugger;
+  }
+}
+
+function make_article_box(article, i) {
+
+  const article_box = document.createElement('div');
+  article_box.className = 'video_box';
+
+  const thumb_div = document.createElement('div');
+  thumb_div.setAttribute('class', 'thumb_div');
+
+  const video_thumb = document.createElement('img');
+  video_thumb.className = 'video_thumb';
+  video_thumb.src = article.image;
+  thumb_div.append(video_thumb);
+  article_box.append(thumb_div);
+
+  article_box.innerHTML=  `
+    <a href="${article.url}">${article.title}</a>
+    <br>
+    <small>${article.description}</small>
+  `;
+  return article_box
+}
+
+
 function make_video_box(video, i) {
-  console.log(video, i);
   // Div whith everything about a video
   const video_box = document.createElement('div');
   video_box.className = 'video_box';
@@ -12,7 +50,7 @@ function make_video_box(video, i) {
 
   const video_thumb = document.createElement('img');
   video_thumb.className = 'video_thumb';
-  video_thumb.src = `https://img.youtube.com/vi/${video.video_id}/mqdefault.jpg`;
+  video_thumb.src = video.image;
   thumb_div.append(video_thumb);
 
   /*
@@ -35,14 +73,15 @@ function make_video_box(video, i) {
   const details_div = document.createElement('div');
   details_div.setAttribute('class', 'details_div');
 
-  const video_title = document.createElement('h2');
+  const video_title = document.createElement('a');
   video_title.className = 'video_title';
-  video_title.append(video.name);
+  video_title.href = video.url;
+  video_title.append(video.title);
   details_div.append(video_title);
 
   const video_uploader = document.createElement('p');
   video_uploader.className = 'video_text';
-  video_uploader.append(video.uploader);
+  video_uploader.append(video.description);
   details_div.append(video_uploader);
 
   /*
@@ -51,13 +90,7 @@ function make_video_box(video, i) {
   video_score.append("Any given Text");
   details_div.append(video_score); */
 
-  const video_link = document.createElement('a');
-  video_link.className = 'video_link';
-  video_link.href = '/watch?v=' + video.video_id;
-  video_box.append(video_link);
-
   video_box.append(details_div);
-
   return video_box;
 }
 
@@ -124,7 +157,7 @@ export function updateUX(response) {
 
   // Add inline-block div
   const inline_div = document.createElement('div');
-  inline_div.setAttribute('class', 'inline_div');
+  inline_div.setAttribute('class', 'development_link');
 
   /* add any icon
   const ycai_icon = document.createElement('img');
@@ -143,11 +176,11 @@ export function updateUX(response) {
   inline_div.append(ycai_title); */
 
   const ycai_link = document.createElement('a');
-  ycai_link.id = 'trim_link';
   ycai_link.href = (config.NODE_ENV == 'development') ?
     `${config.WEB_ROOT}/trim` :
+  ycai_link.className = "development_link";
     `https://youchoose.tracking.exposed/trim`;
-  ycai_link.append('[YouChoose.ai possible links]');
+  ycai_link.append('[TODO: favicons, link type, general UX testing]');
   inline_div.append(ycai_link);
 
   ycai_container.append(inline_div);
@@ -157,8 +190,11 @@ export function updateUX(response) {
   const video_box_width = targetElement.children[0].clientWidth;
   console.log(video_box_height, video_box_width);
 
-  response.forEach((video, i) => ycai_container.append(make_video_box(video, i)));
+  response.forEach((recommendation, i) => ycai_container.append(
+    recommandation_dispatcher(recommendation, i))
+  );
   recache.alphabeth.parentNode.append(ycai_container);
+
 //  targetElement.insertBefore(ycai_container, targetElement.querySelector("#ycaibar"));
 
   if(!recache.ycaibar) {
