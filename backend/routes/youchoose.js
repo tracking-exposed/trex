@@ -8,6 +8,16 @@ const params = require('../lib/params');
 const utils = require('../lib/utils');
 const CSV = require('../lib/CSV');
 
+const URLexamples = [
+  {
+    "type": 'wikipedia',
+    "url": "https://en.wikipedia.org/wiki/Heidi_Grant_Murphy",
+  },
+  {
+    "type": "url",
+    "url": "https://www.youtube.com/watch?v=5zshYe6Agzk",
+  }
+]
 async function byVideoId(req) {
     /* this function can be invoked in two ways: POST or GET */
 

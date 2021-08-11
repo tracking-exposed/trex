@@ -14,8 +14,8 @@ async function recordAnswers(req) {
     const answer = await mongo3.readOne(mongoc, nconf.get('schema').answers, { sessionId });
     let cumulated = answer ? answer : { sessionId };
     cumulated.reference = _.get(req.body, 'reference.from');
-    cumulated.optIn = _.get(req.body, 'optIn') || false;
     cumulated.lastUpdate = new Date();
+
     /* keep only the most recent update that is not invalidating existing answers */
     cumulated = _.reduce(req.body.textColl, function(memo, textEntry) {
         if(textEntry.value.length < 2)
@@ -31,6 +31,11 @@ async function recordAnswers(req) {
         memo[questionId] = sliderEntry.value;
         return memo;
     }, cumulated)
+    cumulated = _.reduce(req.body.radio, function(memo, radioEntry) {
+        const questionId = radioEntry.id;
+        memo[questionId] = radioEntry.value;
+        return memo;
+    }, cumulated);
 
     await mongo3.deleteMany(mongoc, nconf.get('schema').answers, { sessionId })
     const result = await mongo3.writeOne(mongoc, nconf.get('schema').answers, cumulated);
