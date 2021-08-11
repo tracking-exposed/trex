@@ -39,17 +39,17 @@ class Dashboard extends React.Component{
     return (
       <div style={styles}>
         <h1>
-          <code>Submit URL, experimental UX</code> 
+          <code>Submit URL, get fetch-opengraph:</code> 
         </h1>
-        <br /> <hr /> <br />
+        <br /> <br />
         <FormControl fullWidth noValidate autoComplete="off">
           <InputLabel>paste any URL, it would fetch the opengraph and send it to the server.</InputLabel>
           <Input value={this.state.value} onKeyDown={this.keyPress} onChange={this.handleChange} fullWidth={true} />
         </FormControl>
         
-        <br /> <hr /> <br />
+        <br /> <br />
         <h1>
-          <code>Material currently used as Recommendations</code> 
+          <code>Simulation on how a content creation would control their recommendations:</code> 
         </h1>
         <Recommendations />
       </div>

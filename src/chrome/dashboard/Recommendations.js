@@ -7,10 +7,11 @@ import { Alert, AlertTitle } from '@material-ui/lab';
 import FormHelperText from '@material-ui/core/FormHelperText';
 
 import config from '../../config';
-import URL from './URL';
+import UrlCard from './UrlCard';
 
 const styles = {
   width: '400px',
+  textAlign: 'left',
 };
 
 function getRecommendations(paging) {
@@ -39,7 +40,7 @@ class Recommendations extends React.Component{
     if(!this.state || this.state.status == 'fetching')
       return (<div>Loading the most recently performed searches...</div>)
 
-    console.log('X: props status', this.props, this.state);
+    console.log('checking state:', this.state);
 
     if(this.state.status !== 'done') {
       console.log("Incomplete info before render");
@@ -55,27 +56,31 @@ class Recommendations extends React.Component{
       );
     }
 
-    const selist = _.get(this.state.data, 'selist');
+    const selist = this.state.data;
 
-    if(!(this.state.data && selist && selist.length > 1 )) {
+    if(!(this.state.data && selist && selist.length )) {
       return (
         <div style={styles}>
           <Card>
-            <h1>Altought connection with server worked, no search terms seems available, <a href="https://www.youtube.com/watch?v=bs2u4NLaxbI">wtf</a>.</h1>
+            <h1>Altought connection with server worked, no content was available: <a href="https://www.youtube.com/watch?v=bs2u4NLaxbI">ODD?</a>.</h1>
           </Card>
         </div>
       );
     }
     
     return (
-      <div style={styles}>
-        <Card>
-          <FormHelperText>
-            Recent Searches returned
-          </FormHelperText>
-          <p>Staceppa</p>
-        </Card>
-      </div>
+      <span>
+        <div style={styles}>
+          <Card>
+            <FormHelperText>
+              This please is helpful to test ways to visualize recommendation in React, and then later import this into YoutubeUX.
+            </FormHelperText>
+          </Card>
+        </div>
+        <div>
+          {selist.map((item,i) => <UrlCard key={i} data={item} />)}
+        </div>
+      </span>
     );
   }
 }
