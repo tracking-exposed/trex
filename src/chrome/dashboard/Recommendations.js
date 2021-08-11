@@ -1,0 +1,84 @@
+import moment from 'moment';
+import React from 'react';
+import _ from 'lodash';
+
+import { Card } from '@material-ui/core';
+import { Alert, AlertTitle } from '@material-ui/lab';
+import FormHelperText from '@material-ui/core/FormHelperText';
+
+import config from '../../config';
+import URL from './URL';
+
+const styles = {
+  width: '400px',
+};
+
+function getRecommendations(paging) {
+  if (paging) console.log("remember the paging is disabled");
+  if (config.NODE_ENV === 'development' )
+    return `${config.API_ROOT}/recommendations/0xdeadbeef`;
+  return `/videoId/0xdeadbeef`;
+}
+
+class Recommendations extends React.Component{
+
+  constructor (props) {
+    super(props);
+    this.state = { status: 'fetching' };
+  }
+
+  componentDidMount () {
+    const url = getRecommendations();
+    fetch(url, { mode: 'cors' })
+      .then(resp => resp.json())
+      .then(data => this.setState({status: 'done', data }));
+  }
+
+  render () {
+
+    if(!this.state || this.state.status == 'fetching')
+      return (<div>Loading the most recently performed searches...</div>)
+
+    console.log('X: props status', this.props, this.state);
+
+    if(this.state.status !== 'done') {
+      console.log("Incomplete info before render");
+      return (
+        <div style={styles}>
+          <Card>
+            <Alert severity="error">
+              <AlertTitle>Error</AlertTitle>
+              Server didn't return data, this might means the backend is down — <strong>Make sense also because this is just an experiment in prototype phase.</strong>
+            </Alert>
+          </Card>
+        </div>
+      );
+    }
+
+    const selist = _.get(this.state.data, 'selist');
+
+    if(!(this.state.data && selist && selist.length > 1 )) {
+      return (
+        <div style={styles}>
+          <Card>
+            <h1>Altought connection with server worked, no search terms seems available, <a href="https://www.youtube.com/watch?v=bs2u4NLaxbI">wtf</a>.</h1>
+          </Card>
+        </div>
+      );
+    }
+    
+    return (
+      <div style={styles}>
+        <Card>
+          <FormHelperText>
+            Recent Searches returned
+          </FormHelperText>
+          <p>Staceppa</p>
+        </Card>
+      </div>
+    );
+  }
+}
+
+export default Recommendations;
+

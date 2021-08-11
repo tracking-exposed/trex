@@ -72,7 +72,7 @@ function boot () {
             config.ux= response.active;
             config.community= response.svg;
             config.alphabeth= response.videorep;
-            console.log(`YouChoose is operative: ${config}`);
+            console.log(`YouChoose operative: ${JSON.stringify(config)}`);
             // this makes 
             // hrefUpdateMonitor();
             // flush();
@@ -105,7 +105,6 @@ function boot () {
 }
 
 /* UX modifier */
-
 function matchUXhackURL(locat) {
     return locat.pathname.match(/\/watch/)
 }

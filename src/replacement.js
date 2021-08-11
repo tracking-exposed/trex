@@ -15,6 +15,7 @@ function make_video_box(video, i) {
   video_thumb.src = `https://img.youtube.com/vi/${video.video_id}/mqdefault.jpg`;
   thumb_div.append(video_thumb);
 
+  /*
   const video_duration = document.createElement('p');
   video_duration.setAttribute('class', 'time_span');
 
@@ -27,7 +28,7 @@ function make_video_box(video, i) {
     );
 
   video_duration.append(document.createTextNode(formatted_video_duration));
-  thumb_div.append(video_duration);
+  thumb_div.append(video_duration); */
   video_box.append(thumb_div);
 
   // Div with uploader name, video title and tournesol score
