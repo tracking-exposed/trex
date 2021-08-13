@@ -12,7 +12,7 @@ async function recordAnswers(req) {
     const allowqnames = ['watchers', 'youtubers'];
     const sessionId = utils.hash({ randomSeed: req.body.sessionId })
     const qName = req.body.qName;
-    const version = 1;
+    const version = 2;
 
     if(allowqnames.indexOf(qName) === -1)
         throw new Error("Invalid Questionnaire requested")
@@ -28,21 +28,24 @@ async function recordAnswers(req) {
     cumulated.lastUpdate = new Date();
 
     /* keep only the most recent update that is not invalidating existing answers */
-    cumulated = _.reduce(req.body.textColl, function(memo, textEntry) {
+    cumulated = _.reduce(req.body.texts, function(memo, textEntry) {
         if(textEntry.value.length < 2)
             return memo;
         const questionId = textEntry.id;
         memo[questionId] = textEntry.value;
         return memo;
     }, cumulated);
-    cumulated = _.reduce(req.body.slidersColl, function(memo, sliderEntry) {
-        if(sliderEntry.value === 50)
-            return memo;
+    cumulated = _.reduce(req.body.sliders, function(memo, sliderEntry) {
         const questionId = sliderEntry.id;
         memo[questionId] = sliderEntry.value;
         return memo;
     }, cumulated)
     cumulated = _.reduce(req.body.radio, function(memo, radioEntry) {
+        const questionId = radioEntry.id;
+        memo[questionId] = radioEntry.value;
+        return memo;
+    }, cumulated);
+    cumulated = _.reduce(req.body.checkboxes, function(memo, radioEntry) {
         const questionId = radioEntry.id;
         memo[questionId] = radioEntry.value;
         return memo;
