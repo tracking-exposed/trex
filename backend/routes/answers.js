@@ -1,6 +1,7 @@
 const _ = require('lodash');
-const debug = require('debug')('routes:answers');
 const nconf = require('nconf');
+const moment = require('moment');
+const debug = require('debug')('routes:answers');
 
 const csv = require('../lib/CSV');
 const utils = require('../lib/utils');
@@ -8,10 +9,20 @@ const mongo3 = require('../lib/mongo3');
 const security = require('../lib/security');
 
 async function recordAnswers(req) {
+    const allowqnames = ['watchers', 'youtubers'];
     const sessionId = utils.hash({ randomSeed: req.body.sessionId })
-    const mongoc = await mongo3.clientConnect({concurrency: 1});
+    const qName = req.body.qName;
+    const version = 1;
 
-    const answer = await mongo3.readOne(mongoc, nconf.get('schema').answers, { sessionId });
+    if(allowqnames.indexOf(qName) === -1)
+        throw new Error("Invalid Questionnaire requested")
+
+    const mongoc = await mongo3.clientConnect({concurrency: 1});
+    const answer = await mongo3.readOne(mongoc, nconf.get('schema').answers, {
+        sessionId,
+        qName,
+        version
+    });
     let cumulated = answer ? answer : { sessionId };
     cumulated.reference = _.get(req.body, 'reference.from');
     cumulated.lastUpdate = new Date();
@@ -73,6 +84,7 @@ const answerMap = [
 
 function cleanAnswerFromDB(ans) {
     _.unset(ans, '_id');
+    ans.timeago = moment.duration(moment(ans.lastUpdate) - moment()).humanize(true);
     return ans;
 }
 
@@ -82,9 +94,9 @@ async function retrieveAnswersCSV(req, res) {
     const mongoc = await mongo3.clientConnect({concurrency: 1});
     const answers = await mongo3.read(mongoc, nconf.get('schema').answers, {}, { lastUpdate: 1});
     await mongoc.close();
-    const csvcontent = csv.produceCSVv1(_.map(answers, cleanAnswerFromDB), _.concat(
-        [ "sessionId", "lastUpdate", "reference" ],
-        _.flatten(answerMap),
+    const csvcontent = csv.produceCSVv1(answers, _.concat(
+        [ "sessionId", "lastUpdate", "reference", "version" ],
+        _.flatten(answerMap)
     ));
     const filename = `answers-size-${answers.length}.csv`;
     return {
