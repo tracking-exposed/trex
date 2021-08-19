@@ -73,6 +73,7 @@ const apiList = {
 
     /* v3 youchoose */
     youChooseByVideoId: require('../routes/youchoose').byVideoId,
+    ogpProxy:		require('../routes/youchoose').ogpProxy,
 };
 
 module.exports = {

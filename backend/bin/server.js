@@ -134,7 +134,7 @@ app.post('/api/v1/recordAnswers', function(req, res) {
 app.get('/api/v1/retrieveAnswers/:key', function(req, res) {
     return dispatchPromise("retrieveAnswers", req, res);
 });
-app.get('/api/v1/retrieveAnswersCSV/:key', function(req, res) {
+app.get('/api/v1/retrieveAnswersCSV/:qName/:key', function(req, res) {
     return dispatchPromise("retrieveAnswersCSV", req, res);
 });
 
@@ -187,6 +187,9 @@ app.post('/api/v3/handshake', function(req, res) {
 });
 app.get('/api/v3/recommendations/:videoId', function(req, res) {
     return dispatchPromise('youChooseByVideoId', req, res);
+});
+app.get('/api/v3/ogp/:url', cors(), function(req, res) {
+    return dispatchPromise('ogpProxy', req, res);
 });
 
 /* impact */
