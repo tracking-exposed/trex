@@ -16,10 +16,9 @@ const styles = {
 function getRecommendations(paging) {
   if (paging)
     console.log("remember the paging is disabled");
-  const videoId = getVideoId(window.location.href)
-  if (config.NODE_ENV === 'development' )
-    return `${config.API_ROOT}/recommendations/${videoId}`;
-  return `/videoId/${videoId}`;
+  // const videoId = getVideoId(window.location.href)
+  const publicKey = "not-implemented-yet";
+  return `${config.API_ROOT}/profile/recommendations/${publicKey}`;
 }
 
 class Recommendations extends React.Component{

@@ -1,7 +1,5 @@
 import config from "./config";
 
-
-
 function recommandation_dispatcher(recc, i) {
   // this {recc} might belong to different 'type':
   // 'youtube', 'wikipedia', 'article', 'tiktok', 'url'
@@ -12,12 +10,35 @@ function recommandation_dispatcher(recc, i) {
   } else if(recc.type == 'article') {
     return make_article_box(recc, i);
   } else {
-    debugger;
+    // all the type should be embedded
+    return max_url_box(recc, i);
   }
 }
 
-function make_article_box(article, i) {
+function max_url_box(ogblob, i) {
+  const url_box = document.createElement('div');
+  url_box.className = 'video_box';
 
+  const thumb_div = document.createElement('div');
+  thumb_div.setAttribute('class', 'thumb_div');
+
+  if(ogblob.image) {
+    const video_thumb = document.createElement('img');
+    video_thumb.className = 'video_thumb';
+    video_thumb.src = ogblob.image;
+    thumb_div.append(video_thumb);
+  }
+
+  url_box.innerHTML=  `
+    <a href="${ogblob.url}">${ogblob.title}</a>
+    <br>
+    <small>${ogblob.description}</small>
+  `;
+  url_box.append(thumb_div);
+  return url_box
+}
+
+function make_article_box(article, i) {
   const article_box = document.createElement('div');
   article_box.className = 'video_box';
 
@@ -28,13 +49,13 @@ function make_article_box(article, i) {
   video_thumb.className = 'video_thumb';
   video_thumb.src = article.image;
   thumb_div.append(video_thumb);
-  article_box.append(thumb_div);
 
   article_box.innerHTML=  `
     <a href="${article.url}">${article.title}</a>
     <br>
     <small>${article.description}</small>
   `;
+  article_box.append(thumb_div);
   return article_box
 }
 

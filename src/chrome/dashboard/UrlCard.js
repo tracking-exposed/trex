@@ -21,43 +21,56 @@ class UrlCard extends React.Component{
       const ycurl = config.API_ROOT + '/ogp/' + p;
       fetch(ycurl)
         .then(resp => resp.json())
-        .then(data => this.setState({
-          data, success: true
-        }))
-        .catch(error => this.setState({
-          error, success: false
-        }));
+        .then(function(data) {
+          this.state.success = true;
+          this.state.data = data;
+        })
+        .catch(function(error) {
+          this.state.success = false;
+          this.state.error = error;
+        });
+    }
+    else {
+      console.log("Not as expected");
     }
   }
 
   render () {
-    console.log(this.props, this.state);
+    console.log("Props:", this.props, "State:", this.state);
 
-    if(this.props.fetch && !this.state)
-      return (<i>fetching...</i>);
+    if(this.props.fetch)
+      return (<i>Fetching data...</i>);
 
-    if(!this.state.data || !this.state.data.title)
-      return (<i>Error!</i>);
+    const data = this.props.data;
 
     return (
-      <Card style={{
+      <Card
+        style={{
           textAlign:"left",
-          width:"300px",
+          width:"200px",
           margin:"6px"
-      }}>
+        }}>
         <CardActionArea>
-          <CardMedia
-            component="img"
-            style={{ height: "250px", paddingTop: "2%" }}
-            src={this.state.data.image}
-            title={this.state.data.title}
-          />
+          { data.image ?
+            <CardMedia
+              component="img"
+              style={{ height: "120px", paddingTop: "2%" }}
+              src={data.image}
+              title={data.title}
+            /> : <small>🗲<code>𝕟𝕠 𝕡𝕚𝕔𝕥𝕦𝕣𝕖</code></small>
+          }
           <CardContent>
-            <Typography gutterBottom variant="h5" component="h2">
-              {this.state.data.title}
+            <Typography
+              gutterBottom
+              variant="h5"
+              component="h4">
+              {data.title}
             </Typography>
-            <Typography variant="body2" color="textSecondary" component="p">
-              {this.state.data.description}
+            <Typography
+              variant="body2"
+              color="textSecondary"
+              component="small">
+              {data.description}
             </Typography>
           </CardContent>
         </CardActionArea>
