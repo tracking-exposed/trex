@@ -1,13 +1,12 @@
-import moment from 'moment';
 import React from 'react';
 import _ from 'lodash';
-
 import { Card } from '@material-ui/core';
 import { Alert, AlertTitle } from '@material-ui/lab';
 import FormHelperText from '@material-ui/core/FormHelperText';
 
 import config from '../../config';
 import UrlCard from './UrlCard';
+import { getVideoId } from '../../youtube';
 
 const styles = {
   width: '400px',
@@ -15,10 +14,12 @@ const styles = {
 };
 
 function getRecommendations(paging) {
-  if (paging) console.log("remember the paging is disabled");
+  if (paging)
+    console.log("remember the paging is disabled");
+  const videoId = getVideoId(window.location.href)
   if (config.NODE_ENV === 'development' )
-    return `${config.API_ROOT}/recommendations/0xdeadbeef`;
-  return `/videoId/0xdeadbeef`;
+    return `${config.API_ROOT}/recommendations/${videoId}`;
+  return `/videoId/${videoId}`;
 }
 
 class Recommendations extends React.Component{
@@ -77,7 +78,7 @@ class Recommendations extends React.Component{
             </FormHelperText>
           </Card>
         </div>
-        <div>
+        <div className="card-group">
           {selist.map((item,i) => <UrlCard key={i} data={item} />)}
         </div>
       </span>
@@ -86,4 +87,3 @@ class Recommendations extends React.Component{
 }
 
 export default Recommendations;
-

@@ -8,6 +8,5 @@ const querystring = require('querystring');
 export function getVideoId (locationhref) {
     const urlinfo = url.parse(locationhref);
     const p = querystring.parse(urlinfo.query);
-    const videoId = p.v;
-    return videoId;
+    return p.v;
 }
