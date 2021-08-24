@@ -186,7 +186,11 @@ app.post('/api/v3/handshake', function(req, res) {
     return dispatchPromise('youChooseByVideoId', req, res);
 });
 app.get('/api/v3/recommendations/:videoId', function(req, res) {
+    console.log("this shouldn't exist anymore");
     return dispatchPromise('youChooseByVideoId', req, res);
+});
+app.get('/api/v3/profile/recommendations/:publicKey', function(req, res) {
+    return dispatchPromise('youChooseByProfile', req, res);
 });
 app.get('/api/v3/ogp/:url', cors(), function(req, res) {
     return dispatchPromise('ogpProxy', req, res);
