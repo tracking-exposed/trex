@@ -2,7 +2,7 @@ const _ = require('lodash');
 const moment = require('moment');
 const debug = require('debug')('parser:home');
 const debuge = require('debug')('parser:home:error');
-const debugResults = require('debug')('parser:home:results');
+const debugw = require('debug')('parser:home:warning');
 
 const shared = require('./shared');
 const longlabel = require('./longlabel');
@@ -45,7 +45,7 @@ function dissectSelectedVideo(e, i, sections, offset) {
             infos.source = _.first(metadata.children[0].textContent.split('\n'));
             infos.verified = !!(_.size(metadata.children[0].textContent.split('\n')) > 1 );
             if(infos.source && infos.authorName && infos.source != infos.authorName)
-                debug("To be investigated anomaly n.1 [%s]!=[%s]", infos.source, infos.authorName);
+                debugw("To be investigated anomaly n.1 [%s]!=[%s]", infos.source, infos.authorName);
         }
     } catch(error) {
         errorLog.push("Failure in source/verified: " + error.message);
@@ -72,7 +72,7 @@ function dissectSelectedVideo(e, i, sections, offset) {
         infos.aria = e.querySelector('#video-title-link').getAttribute('aria-label');
         infos.mined = infos.aria ? longlabel.parser(infos.aria, infos.authorName, infos.liveBadge): null;
         if(infos.mined.title && infos.textTitle && infos.mined.title != infos.textTitle)
-            debug("To be investigated anomaly n.2 [%s]!=[%s]", infos.mined.title, infos.textTitle);
+            debugw("To be investigated anomaly n.2 [%s]!=[%s]", infos.mined.title, infos.textTitle);
     } catch(e) {
         errorLog.push("longlabel parser error: " +
             infos.aria ? infos.aria : "[aria-label-not-avail]" + " " +
@@ -88,9 +88,10 @@ function dissectSelectedVideo(e, i, sections, offset) {
         errorLog.push("Section calculation fail: " + JSON.stringify(sections) + "offset" + offset);
     }
 
-    if(_.size(_.compact(errorLog)))
+    /* if(_.size(_.compact(errorLog)))
         debuge("Video order %d got %d errors [elemSize %d]: %j",
             i, _.size(_.compact(errorLog)), _.size(e.outerHTML), _.compact(errorLog ));
+     */
 
     if(!infos.aria)
         return null;
@@ -124,7 +125,7 @@ function dissectSelectedVideo(e, i, sections, offset) {
  * enabled only by explicitly patching the variable below */
 const RECURSIZE_SIZE_ENABLED = false;
 function recursiveSize(e, memo) {
-    if(!RECURSIZE_SIZE_ENABLED) { console.log("disabled shouldn't be invoked"); return null; }
+    if(!RECURSIZE_SIZE_ENABLED) { console.log("function shouldn't be invoked"); return null; }
     const elementSize = _.size(e.outerHTML);
     const tagName = e.tagName;
     if(!tagName)
@@ -147,9 +148,9 @@ function debugSizes(selected) {
     _.each(sizes, function(s, i) {
         const info = _.get(selected, i);
         if(info.error)
-            debugResults("%d %s\t[e] %s <%s>", info.index, JSON.stringify(s), info.reason, info.label);
+            debugw("%d %s\t[e] %s <%s>", info.index, JSON.stringify(s), info.reason, info.label);
         else
-            debugResults("%d %s\t%s", info.index, JSON.stringify(s), info.recommendedTitle);
+            debugw("%d %s\t%s", info.index, JSON.stringify(s), info.recommendedTitle);
     });
 }
 /* ********* end of 'size' related code ********* */
@@ -168,7 +169,7 @@ function actualHomeProcess(D) {
             title: _.first(e.textContent.split("\n")),
         };
     }));
-    debugResults("sections %j", titles)
+    debugw("sections %j", titles)
 
     const videoElemSelector = 'ytd-rich-item-renderer';
     const ve = D.querySelectorAll(videoElemSelector);
@@ -199,7 +200,7 @@ function actualHomeProcess(D) {
         }
     });
     const effective = _.reject(selected, { error: true });
-    debugResults("Parsing completed. Analyzed %d, effective %d", _.size(selected), _.size(effective));
+    debugw("Parsing completed. Analyzed %d, effective %d", _.size(selected), _.size(effective));
     debugSizes(effective);
     return { selected: effective, sections: selectorOffsetMap };
     /* sections would be removed before being saved in mongodb */
@@ -239,7 +240,7 @@ function process(envelop) {
     try {
         retval.selected = videoparser.makeAbsolutePublicationTime(retval.selected, envelop.impression.clientTime);
     } catch(error) {
-        debuge("this function is executed outside because clientTime don't travel in parsing function. errro: %s %s",
+        debuge("this function is executed outside because clientTime don't travel in parsing function. error: %s %s",
             error.message, error.stack);
     }
     return retval;

@@ -276,8 +276,12 @@ function processVideo(D, blang, clientTime, urlinfo) {
         throw new Error(`Unable to mine related: ${error.message}, ${error.stack.substr(0, 220)}...`);
     }
 
-    debug("Video <%s> attempted to parse %d related, found actually %d < isLive %j >",
-        title, _.size(related), _.size(_.compact(related)), _.countBy(related, 'isLive'));
+    debug("Video <%s> has %d recommended (found %d, live %j)",
+        title,
+        _.size(related),
+        _.size(_.compact(related)),
+        _.countBy(related, 'isLive')
+    );
     related = makeAbsolutePublicationTime(_.compact(related), clientTime);
 
     /* non mandatory info */
