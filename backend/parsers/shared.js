@@ -47,7 +47,7 @@ function fixHumanizedTime(inputstr) {
         return '0:0' + inputstr;
     if(inputstr.length == 5)
         return '0:' + inputstr;
-    if(inputstr.length >= 9)
+    if(inputstr.length > 9)
         debug("Warning this is weird in fixHumanizedTime: [%s]", inputstr);
     return inputstr;
 }

@@ -240,7 +240,7 @@ function findLanguage(type, chunks) {
 
 // The only external API is this!
 function sequenceForPublicationTime(D, blang, clientTime) {
-    
+
     // from the language in the buttons we infer the language
     const m = _.uniq(_.compact(_.map(D.querySelectorAll('button'), function(e) {
         let l = _.trim(e.textContent)
@@ -257,9 +257,9 @@ function sequenceForPublicationTime(D, blang, clientTime) {
     if(serverSideBlang != blang)
         nlpdebug("!*! Difference in ssblang (winner) %s and csblang %s", serverSideBlang, blang);
 
-    if(_.size(D.querySelector('#date > yt-formatted-string').textContent) > 2 ) {
-       
-        publicationString = D.querySelector('#date > yt-formatted-string').textContent;
+    publicationString = D.querySelector("#dot + .ytd-video-primary-info-renderer").textContent;
+    if(publicationString.length > 2) {
+
         moment.locale(blang);
         const { fmt, cleanString } = getFormatCleanString(publicationString);
 
@@ -289,7 +289,7 @@ function sequenceForPublicationTime(D, blang, clientTime) {
         /* restore locale */
         moment.locale('en');
     } else {
-        throw new Error("lack of HTML snippet!")
+        throw new Error("Failure in spotting publication date")
     }
 
     if(blang != serverSideBlang) {

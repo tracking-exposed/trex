@@ -143,8 +143,9 @@ async function newLoop(htmlFilter) {
 
 function processEachHTML(e) {
     /* main function invoked by the main loop */
-    if(!e || !e.html || _.size(e.html) < 2) {
-        debug("Unexpected entry %s html empty", e.id);
+    if(!e || !e.html || typeof e.html !== "string") {
+        debug("Not usable evidence id %s (incremental %d pkt %d)",
+            e.id, e.incremental, e.packet);
         return null;
     }
 
