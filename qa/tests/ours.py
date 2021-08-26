@@ -9,6 +9,11 @@ def getVideoId():
 def getPublicKey():
     return "6t43jZSicgEKo6AEbtNW7c66ZoALAxorrG3SKHsf2JnR"
 
+
+def getMetadataId():
+    return "TODO"
+
+
 apiSupported = {
     'getLast': '/api/v1/last/',
     'getLastHome': '/api/v1/home/',
@@ -16,6 +21,8 @@ apiSupported = {
     'getRelatedId': '/api/v1/related/' + getVideoId(),
     'getPersonalCSV_home': '/api/v2/personal/'+getPublicKey()+'/home/csv',
     'getPersonalCSV_video': '/api/v2/personal/'+getPublicKey()+'/video/csv',
+    'listGuardoniExperiements': '/api/v2/guardoni/list',
+    'unitById': 'api/v1/html/' + getMetadataId()  # TODO for test, get metadataId from getLastHome
 }
 
 def fetchContentFromApi(apiname):

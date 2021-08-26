@@ -1,5 +1,7 @@
 import unittest
-from qa.ours import fetchContentFromApi
+from tests.ours import fetchContentFromApi
+import os
+import subprocess
 
 class API_tester(unittest.TestCase):
 
@@ -39,7 +41,9 @@ class API_tester(unittest.TestCase):
         self.assertGreater(len(recos), 3)
         self.assertGreater(len(recos[0]['recommendedTitle']), 1) # first recommendation has a non empty title
 
+    # TODO check if a public key is returned (to avoid leak)
 
+    """
     def testGetPersonalCSV_home(self):
         fetched = fetchContentFromApi('getPersonalCSV_home')
         self.assertGreater(len(fetched), 10)
@@ -47,6 +51,12 @@ class API_tester(unittest.TestCase):
         recos = firstRecord['related']
         self.assertGreater(len(recos), 3)
         self.assertGreater(len(recos[0]['recommendedTitle']), 1) # first recommendation has a non empty title
+    """
+
+    # def testListGuardoniExperiements(self):
+    #    fetched = fetchContentFromApi('listGuardoniExperiements')
+    #    self.assertIn('guardoniDaily', fetched['experiments'].keys())
+
 
 
 if __name__ == '__main__':

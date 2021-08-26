@@ -1,0 +1,17 @@
+[{
+    "name": "See homepage",
+    "url": "https://www.youtube.com/",
+    "watchFor": 7000,
+    "loadFor": 2000
+}, {
+    "name": "Youtube Tracking Exposed presentation in 2020",
+    "url": "https://www.youtube.com/watch?v=WheHKW_r_WM",
+    "watchFor": 16500,
+    "loadFor": 2000
+}, {
+    "name": "Climate Change search",
+    "url": "https://www.youtube.com/results?search_query=climate+change",
+    "watchFor": 10000,
+    "loadFor": 2000
+}]
+
