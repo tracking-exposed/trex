@@ -11,8 +11,10 @@ class UrlCard extends React.Component{
 
   constructor (props) {
     super(props);
-    if(this.props.data) 
+    if(this.props.data) {
+      console.log("Setting state", this.props.data);
       this.setState({data: this.props.data});
+    }
   }
 
   componentDidMount() {
@@ -26,8 +28,11 @@ class UrlCard extends React.Component{
           this.state.data = data;
         })
         .catch(function(error) {
-          this.state.success = false;
-          this.state.error = error;
+          console.log("error", error);
+          this.setState({
+            success: false,
+            error
+          });
         });
     }
     else {

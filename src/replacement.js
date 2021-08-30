@@ -3,7 +3,8 @@ import config from "./config";
 function recommandation_dispatcher(recc, i) {
   // this {recc} might belong to different 'type':
   // 'youtube', 'wikipedia', 'article', 'tiktok', 'url'
-  console.log(recc, i);
+
+  // console.log(recc, i);
 
   if(recc.type == 'youtube') {
     return make_video_box(recc, i);
@@ -74,8 +75,7 @@ function make_video_box(video, i) {
   video_thumb.src = video.image;
   thumb_div.append(video_thumb);
 
-  /*
-  const video_duration = document.createElement('p');
+  /* const video_duration = document.createElement('p');
   video_duration.setAttribute('class', 'time_span');
 
   // Remove useless '00:' as hour value (we keep it if it is as minute value)
@@ -115,38 +115,8 @@ function make_video_box(video, i) {
   return video_box;
 }
 
-function hideAll() {
-  if(recache.alphabeth) recache.alphabeth.style.display = 'none';
-  if(recache.ycai ) recache.ycai.style.display = 'none';
-  if(recache.tournesol ) recache.tournesol.style.display = 'none';
-}
 /* recommendation cache, pointers to the HTML elements */
 const recache = { alphabeth: null, ycaibar: null };
-
-/* apparently not invoked but because writtein in a ``, use text search! */
-function selectDefault() {
-  hideAll();
-  recache.alphabeth.style.display = 'block';
-}
-function selectYCAI() {
-  hideAll();
-  recache.ycaireccs.style.display = 'block';
-}
-function selectTournesol() {
-  hideAll();
-
-  if(recache.tournesol) {
-    recache.tournesol.style.display = 'block';
-    return;
-  }
-  /* else we build the node with info */
-  const info_about_t = document.createElement('div');
-  info_about_t.innerHTML= `
-    <p>We need to integrate this with Turnesol external API</p>
-  `;
-  targetElement.insertBefore(info_about_t, targetElement.querySelector("#ycaibar"));
-  recache.tournesol = info_about_t;
-}
 
 /* primary invoked function */
 export function updateUX(response) {
@@ -161,7 +131,6 @@ export function updateUX(response) {
     recache.alphabeth = seen[0];
     recache.alphabeth.style.display = 'none';
   }
-
 
   const targetElement = recache.alphabeth.parentNode;
 
@@ -196,15 +165,13 @@ export function updateUX(response) {
   ycai_title.append('Recommendation by Youchoose');
   inline_div.append(ycai_title); */
 
+  /*
   const ycai_link = document.createElement('a');
-  ycai_link.href = (config.NODE_ENV == 'development') ?
-    `${config.WEB_ROOT}/trim` :
+  ycai_link.href = `${config.WEB_ROOT}/trim`;
   ycai_link.className = "development_link";
-    `https://youchoose.tracking.exposed/trim`;
   ycai_link.append('[TODO: favicons, link type, general UX testing]');
   inline_div.append(ycai_link);
-
-  ycai_container.append(inline_div);
+  */
 
   // Push videos into new container
   const video_box_height = targetElement.children[0].clientHeight;
@@ -216,18 +183,63 @@ export function updateUX(response) {
   );
   recache.alphabeth.parentNode.append(ycai_container);
 
-//  targetElement.insertBefore(ycai_container, targetElement.querySelector("#ycaibar"));
+  /* third party coming soon confuguration infos */
+  const ycai_third_p = document.createElement('div');
+  ycai_third_p.innerHTML= `
+    <p>something something something else,</p>
+    <p>Thiz iz a new line, with a <a
+      href="https://yahoo.it"
+      target=_blank
+      >
+        test link
+      </a>, and something else, overall.
+    </p>
+  `;
+  ycai_third_p.id ="ycai_third_party";
+  ycai_third_p.style = { display: 'none' };
+  ycai_container.parentNode.append(ycai_third_p);
+  recache.tournesol = ycai_third_p;
 
   if(!recache.ycaibar) {
     const bar = document.createElement('div');
     bar.id = 'ycaibar';
     bar.innerHTML = `
-      <button>Default</button>
-      <button>Youchoose</button>
-      <button>Tournesol</button>
+      <button
+        id="default-selector-button"
+        class="ycai--button"
+        onClick="
+          (document.getElementsByTagName('ytd-watch-next-secondary-results-renderer')[0].style).display = 'block';
+          (document.getElementById('ycai_third_party').style).display = 'none';
+          (document.getElementById('ycai_container').style).display = 'none';
+          (document.getElementById('default-selector-button').style)['text-decoration'] = 'underline';
+        ">
+        Default
+      </button>
+      <button 
+        id="ycai-selector-button"
+        class="ycai--button"
+        onClick="
+          (document.getElementsByTagName('ytd-watch-next-secondary-results-renderer')[0].style).display = 'none';
+          (document.getElementById('ycai_third_party').style).display = 'none';
+          (document.getElementById('ycai_container').style).display = 'block';
+          (document.getElementById('ycai-selector-button').style)['text-decoration'] = 'underline';
+        ">
+        Youchoose
+      </button>
+      <button
+        id="thirdparty-selector-button"
+        class="ycai--button"
+        onClick="
+          (document.getElementsByTagName('ytd-watch-next-secondary-results-renderer')[0].style).display = 'none';
+          (document.getElementById('ycai_container').style).display = 'none';
+          (document.getElementById('ycai_third_party').style).display = 'block';
+          (document.getElementById('thirdparty-selector-button').style)['text-decoration'] = 'underline';
+        ">
+        3rdparty Recommendations
+      </button>
     `;
-    /* append to the dom */
-    recache.alphabeth.parentNode.append(bar);
+    /* append to the dom on top of the current viz */
+    recache.alphabeth.parentNode.before(bar);
     recache.ycaibar = bar;
   }
 
