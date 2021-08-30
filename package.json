@@ -1,11 +1,11 @@
 {
-  "name": "yttrex",
-  "version": "0.1.0",
+  "name": "YCAI",
+  "version": "0.1.1",
   "description": "YouChoose AI",
   "homepage": "https://youchoose.ai",
   "bugs": "https://github.com/tracking-exposed/YCAI/issues",
   "license": "AGPL-3.0",
-  "author": "Claudio Agosti, Alberto Granzotto, and the tracking exposed team",
+  "author": "Claudio Agosti and the tracking exposed team",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/tracking-exposed/YCAI.git"
