@@ -7,7 +7,7 @@ import reportWebVitals from './reportWebVitals';
 ReactDOM.render(
   <React.StrictMode>
     <div>
-      <img src="/ycai-logo.png" />
+      <img alt="YCAI Logo" src="/ycai-logo.png" />
       <Dashboard />
     </div>
   </React.StrictMode>,

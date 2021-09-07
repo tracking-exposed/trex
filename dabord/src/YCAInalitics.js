@@ -1,18 +1,8 @@
-import React from 'react';
-import InputLabel from '@material-ui/core/InputLabel';
-import TextField from '@material-ui/core/TextField';
-import UrlCard from './UrlCard';
-import { makeStyles } from '@material-ui/core/styles';
 import Chip from '@material-ui/core/Chip';
-import Button from '@material-ui/core/Button';
 import Grid from '@material-ui/core/Grid';
-import Divider from '@material-ui/core/Divider';
+import { makeStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
-
-const styles = {
-    width: '100%',
-    textAlign: 'center',
-};
+import React from 'react';
 
 const useStyles = makeStyles((theme) => ({
   root: {

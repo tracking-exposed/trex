@@ -37,13 +37,10 @@ class Fetcher extends React.PureComponent {
           placeholder="Placeholder"
           multiline
         />
-        <Chip color="secondary"
-          onClick={this.completed}
-         label="Add" />
+        <Chip color="secondary" onClick={this.completed} label="Add" />
       </div>
     );
   }
 }
 
-          // { this.state.newurl1 ?  <UrlCard data={this.state.lastFetch} /> : "" }
 export default Fetcher;

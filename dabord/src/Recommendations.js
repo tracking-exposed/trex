@@ -21,12 +21,16 @@ class Recommendations extends React.PureComponent {
         </div>
         <div className="card-group">
           <WithQueries
-            queries={{ recommendations: queries.recommendations }}
+            queries={{
+              recommendations: queries.recommendations,
+            }}
             params={{ recommendations: { paging: true } }}
             render={QR.fold(
               LazyFullSizeLoader,
               ErrorBox,
               ({ recommendations }) => {
+                console.log(recommendations.length);
+                console.log(recommendations);
                 if (recommendations.length === 0) {
                   return (
                     <div style={styles}>
