@@ -35,16 +35,19 @@ async function byVideoId(req) {
 };
 
 async function byProfile(req) {
-  debug("byProfile (%s)", req.params.publicKey);
   const avail = await automo.fetchRecommendationsByProfile();
-  return { json: avail };
+  debug("byProfile (%s) returning without filter %d recommendations",
+    req.params.publicKey, avail.length);
+  return { json: _.reverse(avail) };
 }
 
 async function ogpProxy(req) {
   // please remind, this logic at the moment do not allow OG-refresh
   const descaped = decodeURIComponent(req.params.url);
+  debug("ogpProxy: %s", descaped);
   const exists = await automo.getRecommendationByURL(descaped);
   if(exists) {
+    debug("Requested OGP to an already acquired URL %s", descaped);
     return {
       json: exists
     }
@@ -52,7 +55,7 @@ async function ogpProxy(req) {
   const result = await fetchOpengraph.fetch(descaped);
   const review = await automo.saveRecommendationOGP(result);
   if(!review.title) {
-    debug("We got an error! %s", review);
+    debug("We got an error in OGP (%s) %j", descaped, review);
     return {
       json: {
         error: true,
@@ -60,6 +63,7 @@ async function ogpProxy(req) {
       }
     }
   }
+  debug("Fetched correctly %s", descaped);
   return { json: review };
 }
 

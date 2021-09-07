@@ -675,9 +675,9 @@ async function saveRecommendationOGP(ogblob) {
     const keep = _.pick(ogblob, fields);
     // TODO here we should associate a 'type' by the kind of domain name
 
-    // ensure the presence of every required field except image
+    // ensure the presence of the required field (except image+desc)
     const error = [];
-    _.each(['title', 'description', 'url'], function(fname) {
+    _.each(['title', 'url'], function(fname) {
         if(!keep[fname] || !keep[fname].length) {
             error.push(fname);
         }
