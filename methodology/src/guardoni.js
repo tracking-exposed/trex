@@ -44,6 +44,26 @@ function downloadExtension(zipFileP) {
   execSync('unzip ' + zipFileP + " -d extension");
 }
 
+function getChromePath() {
+  // this function check for standard chrome executabled path and 
+  // return it. If not found, raise an error
+  const knownPaths = [
+    "/usr/bin/google-chrome",
+    "/Program Files (x86)/Google/Chrome/Application/chrome.exe",
+    "C:\\Program Files (x86)\\Google\\Chrome\\Application\\chrome.exe",
+    "/Applications/Chromium.app/Contents/MacOS/Chromium",
+  ];
+
+  const chromePath = _.find(knownPaths, function(p) {
+    return fs.existsSync(p);
+  })
+  if(!chromePath) {
+    console.log("Tried to guess your Chrome executable and wasn't found");
+    console.log("Solutions: Install Google Chrome in your system or contact the developers");
+    process.exit(1);
+  }
+}
+
 async function main() {
 
   const sourceUrl = nconf.get('source');
@@ -133,13 +153,15 @@ async function main() {
     return d;
   });
 
+  const chromePath = getChromePath();
+
   let browser = null;
   try {
     puppeteer.use(pluginStealth());
     browser = await puppeteer.launch({
         headless: false,
         userDataDir: udd,
-        executablePath: nconf.get("chrome"),
+        executablePath: chromePath,
         args: ["--no-sandbox",
           "--disabled-setuid-sandbox",
           "--load-extension=" + dist,
