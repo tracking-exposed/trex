@@ -34,7 +34,8 @@
   },
   "pkg": {
     "scripts": [
-      "./src/**/*.js"
+      "./src/**/*.js",
+      "./node_modules/**/*.js"
     ],
     "assets": [
       "./json/**/**"

@@ -1,0 +1,15 @@
+{
+    "videoByCreatorMock1": {
+        "videoId":"Zh_SVHJGVHw",
+        "title":"¿Qué le hace el coronavirus al cuerpo? | BBC Mundo",
+        "recomemndations": 0
+    },
+    "videoByCreatorMock2": {
+        "videoId":"Zh_SVHJGVHw",
+        "title":"¿Qué le hace el coronavirus al cuerpo? | BBC Mundo",
+        "recomemndations": [
+            "a",
+            "b"
+        ]
+    }
+}

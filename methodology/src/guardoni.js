@@ -62,6 +62,7 @@ function getChromePath() {
     console.log("Solutions: Install Google Chrome in your system or contact the developers");
     process.exit(1);
   }
+  return chromePath;
 }
 
 async function main() {

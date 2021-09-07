@@ -67,8 +67,24 @@ async function ogpProxy(req) {
   return { json: review };
 }
 
+async function videoByCreator(req) {
+  // this function should validate req.params.authMaterial
+  const mock = require('./MockUpVideoByCreators.json');
+  debug("requested Video List by content creator, returning mockup")
+  return { json: [
+    mock.videoByCreatorMock1,
+    mock.videoByCreatorMock2,
+  ]}
+}
+
+async function getRecommendationById(req) {
+  // this is a public function, anyone can query a recommandation detail
+  
+}
+
 module.exports = {
   byVideoId,
   byProfile,
   ogpProxy,
+  videoByCreator,
 };
