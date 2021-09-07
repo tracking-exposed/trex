@@ -1,4 +1,4 @@
-import config from "./config";
+// import config from "./config";
 
 function recommandation_dispatcher(recc, i) {
   // this {recc} might belong to different 'type':
@@ -59,7 +59,6 @@ function make_article_box(article, i) {
   article_box.append(thumb_div);
   return article_box
 }
-
 
 function make_video_box(video, i) {
   // Div whith everything about a video
@@ -204,6 +203,7 @@ export function updateUX(response) {
     const bar = document.createElement('div');
     bar.id = 'ycaibar';
     bar.innerHTML = `
+      <p>Recommendations logic:</p>
       <button
         id="default-selector-button"
         class="ycai--button"
@@ -213,6 +213,7 @@ export function updateUX(response) {
           (document.getElementById('ycai_container').style).display = 'none';
           (document.getElementById('default-selector-button').style)['text-decoration'] = 'underline';
         ">
+        Propertary algo
         Default
       </button>
       <button 
@@ -235,7 +236,7 @@ export function updateUX(response) {
           (document.getElementById('ycai_third_party').style).display = 'block';
           (document.getElementById('thirdparty-selector-button').style)['text-decoration'] = 'underline';
         ">
-        3rdparty Recommendations
+        Community
       </button>
     `;
     /* append to the dom on top of the current viz */

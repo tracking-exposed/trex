@@ -1,6 +1,6 @@
 {
-  "name": "YCAI",
-  "version": "0.1.1",
+  "name": "youchoose.ai",
+  "version": "0.1.2",
   "description": "YouChoose AI",
   "homepage": "https://youchoose.ai",
   "bugs": "https://github.com/tracking-exposed/YCAI/issues",
@@ -42,7 +42,7 @@
     "dotenv": "^2.0.0",
     "eslint": "^5.16.0",
     "eslint-config-ascribe-react": "^1.4.0",
-    "eslint-plugin-import": "^2.23.4",
+    "eslint-plugin-import": "^2.24.2",
     "eslint-plugin-jsx-a11y": "^2.1.0",
     "eslint-plugin-promise": "^2.0.1",
     "eslint-plugin-react": "^6.10.3",
@@ -57,25 +57,30 @@
     "webpack-combine-loaders": "^2.0.4",
     "webpack-dev-server": "^3.11.2",
     "webpack-notifier": "^1.13.0",
-    "write-file-webpack-plugin": "^3.3.0"
+    "write-file-webpack-plugin": "^3.3.0",
+    "@testing-library/jest-dom": "^5.14.1",
+    "@testing-library/react": "^11.2.7",
+    "@testing-library/user-event": "^12.8.3"
   },
   "dependencies": {
-    "@material-ui/core": "^4.11.4",
+    "@material-ui/core": "^4.12.3",
     "@material-ui/icons": "^4.11.2",
-    "@material-ui/lab": "^4.0.0-alpha.58",
+    "@material-ui/lab": "^4.0.0-alpha.60",
     "bs58": "^3.0.0",
     "cheerio": "^0.22.0",
     "classnames": "^2.3.1",
     "create-react-class": "^15.7.0",
-    "fetch-opengraph": "^1.0.25",
+    "fetch-opengraph": "^1.0.30",
     "immutability-helper": "^2.9.1",
     "jquery": "^3.6.0",
     "lodash": "^4.17.21",
     "marked": "^0.8.2",
     "react": "^16.14.0",
     "react-dom": "^16.14.0",
+    "react-scripts": "^4.0.3",
     "tweetnacl": "^0.14.3",
     "tweetnacl-util": "^0.13.3",
-    "uuid": "^2.0.3"
+    "uuid": "^2.0.3",
+    "web-vitals": "^2.1.0"
   }
 }

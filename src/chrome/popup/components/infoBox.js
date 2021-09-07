@@ -13,7 +13,6 @@ const InfoBox = createReactClass({
         const privacy = config.WEB_ROOT + '/privacy';
         const experiments = config.WEB_ROOT + '/wetest/next';
 
-        // ENTRAMBI i textAlign: center non vanno bene per far mettere il bottone in centro, FIXME
         return (
             <Card style={{'textAlign':'center'}}>
               <CardActions style={{'textAlign':'center'}}>
