@@ -9,38 +9,38 @@ const styles = {
     textAlign: 'left',
 };
 
+const config = {
+  API_ROOT: "http://localhost:9000/api/v3"
+}
+
 class Fetcher extends React.Component{
 
   constructor(props) {
     super(props);
     this.state = {url: 'https://'};
-    this.handleChange = this.handleChange.bind(this);
     this.completed = this.completed.bind(this);
   } 
 
-  handleChange(e) {
-    this.setState({ url: e.target.value });
-  }
-
   completed(e) {
-    // this handle the pressing of "Enter" key
-    if(e.keyCode === 13) {
-      let current = this.state.urlnumber ? this.state.urlnumber : 0;
-      this.setState({ newurl: true, urlnumber: current + 1 });
-    }
+    const url = document.querySelector('[placeholder="Placeholder"]').value;
+    console.log("fetching ...", url);
+    const p = encodeURIComponent(url);
+    const ycurl = config.API_ROOT + '/ogp/' + p;
+    fetch(ycurl)
+      .then(resp => resp.json());
   }
 
   render () {
     return (
       <div style={styles}>
         <TextField
-          onChange={this.handleChange}
-          onKeyDown={this.completed}
           label="Recommendation URL"
           placeholder="Placeholder"
           multiline
         />
-        <Chip color="secondary" label="Add +" />
+        <Chip color="secondary"
+          onClick={this.completed}
+         label="Add" />
       </div>
     );
   }

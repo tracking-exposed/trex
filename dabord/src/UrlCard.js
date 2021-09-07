@@ -6,9 +6,7 @@ import CardMedia from '@material-ui/core/CardMedia';
 import Typography from '@material-ui/core/Typography';
 
 // import config from '../../config';
-const config = {
-  API_ROOT: "http://localhost:9000/api/v3"
-}
+
 
 class UrlCard extends React.Component{
 
@@ -17,28 +15,6 @@ class UrlCard extends React.Component{
     if(this.props.data) {
       console.log("Setting state", this.props.data);
       this.setState({data: this.props.data});
-    }
-  }
-
-  componentDidMount() {
-    if(this.props.fetch && this.props.url && this.props.url.length > 8) {
-      const p = encodeURIComponent(this.props.url);
-      const ycurl = config.API_ROOT + '/ogp/' + p;
-      fetch(ycurl)
-        .then(resp => resp.json())
-        .then(function(data) {
-          this.setState({ success: true, data });
-        })
-        .catch(function(error) {
-          console.log("error", error);
-          this.setState({
-            success: false,
-            error
-          });
-        });
-    }
-    else {
-      console.log("Not as expected");
     }
   }
 
