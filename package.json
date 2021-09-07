@@ -13,7 +13,7 @@
   "scripts": {
     "lint": "eslint ./ --quiet",
     "build": "rm -rf ./build && mkdir build && cross-env webpack && cp -r src/popup/* manifest.json icons/* ./build/",
-    "start": "npm run build:watch:files",
+    "start": "npm run build:watch",
     "build:watch": "rimraf ./build && mkdir build && cp -r manifest.json icons/* src/popup/* ./build/ && cross-env webpack -w",
     "build:dist": "sh pack-extension.sh",
     "clean": "rm -rf ./build ./dist",

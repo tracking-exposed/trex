@@ -1,36 +1,35 @@
+<<<<<<< HEAD
 import React from 'react';
-import InputLabel from '@material-ui/core/InputLabel';
 import TextField from '@material-ui/core/TextField';
 import Chip from '@material-ui/core/Chip';
+import {addRecommendation} from './API/commands'
 
+=======
+import React from "react";
+import TextField from "@material-ui/core/TextField";
+import Chip from "@material-ui/core/Chip";
+import { addRecommendation } from "./API/commands";
+>>>>>>> use avenger to handle api communication
 
 const styles = {
-    width: '100%',
-    textAlign: 'left',
+  width: "100%",
+  textAlign: "left",
 };
 
-const config = {
-  API_ROOT: "http://localhost:9000/api/v3"
-}
-
-class Fetcher extends React.Component{
-
+class Fetcher extends React.PureComponent {
   constructor(props) {
     super(props);
-    this.state = {url: 'https://'};
+    this.state = { url: "https://" };
     this.completed = this.completed.bind(this);
-  } 
+  }
 
   completed(e) {
     const url = document.querySelector('[placeholder="Placeholder"]').value;
     console.log("fetching ...", url);
-    const p = encodeURIComponent(url);
-    const ycurl = config.API_ROOT + '/ogp/' + p;
-    fetch(ycurl)
-      .then(resp => resp.json());
+    addRecommendation(encodeURIComponent(url), { paging: true })();
   }
 
-  render () {
+  render() {
     return (
       <div style={styles}>
         <TextField

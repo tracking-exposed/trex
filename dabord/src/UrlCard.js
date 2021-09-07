@@ -13,13 +13,13 @@ class UrlCard extends React.Component{
   constructor (props) {
     super(props);
     if(this.props.data) {
-      console.log("Setting state", this.props.data);
+      // console.log("Setting state", this.props.data);
       this.setState({data: this.props.data});
     }
   }
 
   render () {
-    console.log("Props:", this.props, "State:", this.state);
+    // console.log("Props:", this.props, "State:", this.state);
 
     if(this.props.fetch)
       return (<i>Fetching data...</i>);
