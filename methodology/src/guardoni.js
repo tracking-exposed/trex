@@ -52,10 +52,15 @@ async function main() {
     console.log("Via --source you can specify an URL <or> a filepath")
     console.log(`\nIt should be a valid JSON with objects like: [ {
       "watchFor": <number in millisec>,
-      "url": "https://youtube.come/v?videoNumber1",
+      "url": "https://youtube.come/watch=v?videoNumber1",
       "name": "optional, in case you want to see this label, specifiy DEBUG=* as environment var"
     }, {...}
 ]\n\tDocumentation: https://youtube.tracking.exposed/automation`);
+    process.exit(1);
+  }
+
+  if(!nconf.get('experiment')) {
+    console.log("--experiment it is now mandatory, you can specify in config file too.");
     process.exit(1);
   }
 

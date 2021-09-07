@@ -2,6 +2,7 @@ const _ = require('lodash');
 const moment = require('moment');
 const debug = require('debug')('guardoni:youtube');
 const bcons = require('debug')('guardoni:console');
+const bconsError = require('debug')('guardoni:error');
 const path = require('path');
 const fs = require('fs');
 const nconf = require('nconf');
@@ -109,17 +110,18 @@ async function lookForPubkey(experimentName, profile, directives, message) {
 };
 
 async function beforeDirectives(page, experiment, profile, directives) {
-debug("Listening in console...");
-if(experiment)
-    page.on('console', await _.partial(lookForPubkey, experiment, profile, directives));
-else
-    page.on('console', function(message) { debug("%s", message.text())});
-page
-    .on('pageerror', ({ message }) => debug('error' + message)) /*
-    .on('response', response =>
-        debug(`response: ${response.status()} ${response.url()}`))
-    .on('requestfailed', request =>
-        debug(`requestfail: ${request.failure().errorText} ${request.url()}`)); */
+    if(experiment)
+        page.on('console', await _.partial(lookForPubkey, experiment, profile, directives));
+    else
+        page.on('console', function(message) { bcons("%s", message.text())});
+
+    page
+        .on('pageerror', ({ message }) =>
+            bconsError('Error %s', message) )
+        .on('response', response =>
+            bcons(`Response: ${response.status()} ${response.url()}`))
+        .on('requestfailed', request =>
+            bconsError(`Requestfail: ${request.failure().errorText} ${request.url()}`));
 }
 
 async function beforeWait(page, directive) {
