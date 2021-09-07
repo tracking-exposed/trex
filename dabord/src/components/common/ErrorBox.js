@@ -10,9 +10,11 @@ export const ErrorBox = (e) => {
           <AlertTitle>Error {e.name}</AlertTitle>
           {e.message}
 
-          <div>
-            <code>{JSON.stringify(e, null, 2)}</code>
-          </div>
+          {e ? (
+            <div>
+              <code>{JSON.stringify(e, null, 2)}</code>
+            </div>
+          ) : null}
         </Alert>
       </Card>
     </Grid>

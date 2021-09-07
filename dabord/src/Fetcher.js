@@ -1,15 +1,7 @@
-<<<<<<< HEAD
-import React from 'react';
-import TextField from '@material-ui/core/TextField';
-import Chip from '@material-ui/core/Chip';
-import {addRecommendation} from './API/commands'
-
-=======
 import React from "react";
 import TextField from "@material-ui/core/TextField";
 import Chip from "@material-ui/core/Chip";
 import { addRecommendation } from "./API/commands";
->>>>>>> use avenger to handle api communication
 
 const styles = {
   width: "100%",
