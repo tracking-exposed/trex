@@ -79,7 +79,10 @@ async function videoByCreator(req) {
 
 async function getRecommendationById(req) {
   // this is a public function, anyone can query a recommandation detail
-  
+  const urlId = req.params.id;
+  debug("requested recommendation by Id %s", urlId);
+  const mock = require("./" + urlId + '.json');
+  return { json: mock };
 }
 
 module.exports = {
@@ -87,4 +90,5 @@ module.exports = {
   byProfile,
   ogpProxy,
   videoByCreator,
+  getRecommendationById,
 };
