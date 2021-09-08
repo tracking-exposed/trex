@@ -1,22 +1,22 @@
-import React from "react";
-import InputLabel from "@material-ui/core/InputLabel";
-import TextField from "@material-ui/core/TextField";
-import UrlCard from "./UrlCard";
-import { setCreatorChannel } from "./API/commands";
-import { WithQueries } from "avenger/lib/react";
-import * as QR from "avenger/lib/QueryResult";
-import { LazyFullSizeLoader } from "./components/common/FullSizeLoader";
-import { ErrorBox } from "./components/common/ErrorBox";
-import * as queries from "./API/queries";
+import React from 'react';
+import InputLabel from '@material-ui/core/InputLabel';
+import TextField from '@material-ui/core/TextField';
+import UrlCard from './UrlCard';
+import { setCreatorChannel } from './API/commands';
+import { WithQueries } from 'avenger/lib/react';
+import * as QR from 'avenger/lib/QueryResult';
+import { LazyFullSizeLoader } from './components/common/FullSizeLoader';
+import { ErrorBox } from './components/common/ErrorBox';
+import * as queries from './API/queries';
 
 const styles = {
-  width: "100%",
-  textAlign: "center",
+  width: '100%',
+  textAlign: 'center'
 };
 
 const prestyle = {
-  backgroundColor: "#f4f7da",
-  textAlign: "left",
+  backgroundColor: '#f4f7da',
+  textAlign: 'left'
 };
 
 class LinkAccount extends React.Component {
@@ -33,11 +33,11 @@ class LinkAccount extends React.Component {
     }
   };
 
-  render() {
+  render () {
     return (
       <WithQueries
         queries={{
-          creatorChannel: queries.creatorChannel,
+          creatorChannel: queries.creatorChannel
         }}
         params={{}}
         render={QR.fold(LazyFullSizeLoader, ErrorBox, ({ creatorChannel }) => {
@@ -48,7 +48,7 @@ class LinkAccount extends React.Component {
               </InputLabel>
               <TextField
                 fullWidth={true}
-                value={this.state.url ?? creatorChannel.publicKey ?? ""}
+                value={this.state.url ?? creatorChannel.publicKey ?? ''}
                 onChange={this.handleChange}
                 onKeyDown={this.completed}
               />
@@ -59,7 +59,7 @@ class LinkAccount extends React.Component {
                 key={this.state.urlnumber}
                 fetch={true}
                 url={this.state.url}
-                data={{ id: "", videoId: "" }}
+                data={{ id: '', videoId: '' }}
               />
             </div>
           );

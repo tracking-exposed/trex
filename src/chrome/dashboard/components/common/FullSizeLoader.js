@@ -1,5 +1,5 @@
-import CircularProgress from "@material-ui/core/CircularProgress";
-import * as React from "react";
+import * as React from 'react';
+import { CircularProgress } from '@material-ui/core';
 
 export const FullSizeLoader = () => {
   return (
@@ -7,11 +7,11 @@ export const FullSizeLoader = () => {
       style={{
         height: '100%',
         width: '100%',
-        textAlign: "center",
+        textAlign: 'center',
         minHeight: 600,
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
       }}
     >
       <CircularProgress />

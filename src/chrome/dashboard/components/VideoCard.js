@@ -1,28 +1,28 @@
-import React from "react";
-import Card from "@material-ui/core/Card";
-import CardActionArea from "@material-ui/core/CardActionArea";
-import CardContent from "@material-ui/core/CardContent";
-import CardMedia from "@material-ui/core/CardMedia";
-import Typography from "@material-ui/core/Typography";
+import React from 'react';
+import Card from '@material-ui/core/Card';
+import CardActionArea from '@material-ui/core/CardActionArea';
+import CardContent from '@material-ui/core/CardContent';
+import CardMedia from '@material-ui/core/CardMedia';
+import Typography from '@material-ui/core/Typography';
 
 const getYTThumbnailById = (id) => `https://i.ytimg.com/vi/${id}/hq720.jpg`;
 
 export class VideoCard extends React.Component {
-  render() {
+  render () {
     const { title, id } = this.props;
     return (
       <Card
         style={{
-          textAlign: "left",
+          textAlign: 'left',
           /* width:"200px", */
-          margin: "6px",
+          margin: '6px'
         }}
         onClick={() => this.props.onClick(id)}
       >
         <CardActionArea>
           <CardMedia
             component="img"
-            style={{ height: "120px", paddingTop: "2%" }}
+            style={{ height: '120px', paddingTop: '2%' }}
             src={getYTThumbnailById(id)}
             title={title}
           />

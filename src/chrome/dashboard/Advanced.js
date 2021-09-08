@@ -1,10 +1,7 @@
-import React from "react";
+import React from 'react';
 
 class Advanced extends React.Component {
-
-  componentDidMount() {}
-
-  render() {
+  render () {
     return (
       <div>
         <h4>Use YouChoose.AI API</h4>

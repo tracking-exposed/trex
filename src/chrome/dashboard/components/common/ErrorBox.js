@@ -1,6 +1,6 @@
-import { Card, Grid } from "@material-ui/core";
-import { Alert, AlertTitle } from "@material-ui/lab";
-import * as React from "react";
+import { Card, Grid } from '@material-ui/core';
+import { Alert, AlertTitle } from '@material-ui/lab';
+import * as React from 'react';
 
 export const ErrorBox = (e) => {
   return (

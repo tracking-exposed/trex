@@ -1,15 +1,15 @@
-import { Box, Chip, Grid, Typography } from "@material-ui/core";
-import * as QR from "avenger/lib/QueryResult";
-import { WithQueries } from "avenger/lib/react";
-import React from "react";
-import { videoRecommendations } from "../API/queries";
-import { ErrorBox } from "./common/ErrorBox";
-import { LazyFullSizeLoader } from "./common/FullSizeLoader";
-import DeleteIcon from "@material-ui/icons/Delete";
-import { updateRecommendationForVideo } from "../API/commands";
+import { Box, Chip, Grid, Typography } from '@material-ui/core';
+import * as QR from 'avenger/lib/QueryResult';
+import { WithQueries } from 'avenger/lib/react';
+import React from 'react';
+import { videoRecommendations } from '../API/queries';
+import { ErrorBox } from './common/ErrorBox';
+import { LazyFullSizeLoader } from './common/FullSizeLoader';
+import DeleteIcon from '@material-ui/icons/Delete';
+import { updateRecommendationForVideo } from '../API/commands';
 
 export class VideoRecommendations extends React.PureComponent {
-  render() {
+  render () {
     const { videoId } = this.props;
     return (
       <Box>
@@ -22,7 +22,7 @@ export class VideoRecommendations extends React.PureComponent {
             ErrorBox,
             ({ recommendations }) => {
               if (!recommendations) {
-                return "No video selected";
+                return 'No video selected';
               }
               return recommendations.map((r, i) => (
                 <Grid
@@ -40,10 +40,8 @@ export class VideoRecommendations extends React.PureComponent {
                         updateRecommendationForVideo({
                           videoId,
                           recommendations: recommendations
-                          .map(r => r.urlId)
-                          .filter(
-                            (rr) => rr !== r.urlId
-                          ),
+                            .map((r) => r.urlId)
+                            .filter((rr) => rr !== r.urlId)
                         })()
                       }
                     />

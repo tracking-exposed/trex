@@ -1,8 +1,8 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
-import Dashboard from './Dashboard';
-import reportWebVitals from './reportWebVitals';
+import Dashboard from './chrome/dashboard/Dashboard';
+import reportWebVitals from './chrome/dashboard/reportWebVitals';
 
 ReactDOM.render(
   <React.StrictMode>
@@ -11,7 +11,7 @@ ReactDOM.render(
       <Dashboard />
     </div>
   </React.StrictMode>,
-  document.getElementById('root')
+  document.getElementById('ycai--dashboard')
 );
 
 // If you want to start measuring performance in your app, pass a function

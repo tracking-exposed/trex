@@ -5,16 +5,16 @@ import {
   compose,
   product,
   param,
-} from "avenger";
-import { pipe } from "fp-ts/lib/function";
-import { getItem } from "../storage/Store";
-import { fetch } from "./HTTPAPI";
-import * as TE from "fp-ts/lib/TaskEither";
+} from 'avenger';
+import { pipe } from 'fp-ts/lib/function';
+import { getItem } from '../storage/Store';
+import { fetch } from './HTTPAPI';
+import * as TE from 'fp-ts/lib/TaskEither';
 
 export const creatorChannel = queryStrict(
   () =>
     pipe(
-      getItem("creator-channel"),
+      getItem('creator-channel'),
       TE.map((channel) => ({ publicKey: channel }))
     ),
   available
@@ -23,7 +23,10 @@ export const creatorChannel = queryStrict(
 export const recommendations = compose(
   product({ creatorChannel, params: param() }),
   queryStrict(({ creatorChannel, params }) => {
-    return fetch(`/creator/recommendations/${creatorChannel.publicKey}`, params);
+    return fetch(
+      `/creator/recommendations/${creatorChannel.publicKey}`,
+      params
+    );
   }, available)
 );
 
@@ -55,7 +58,7 @@ export const recommendedChannels = compose(
 
 export const currentVideoOnEdit = queryStrict(() => {
   return pipe(
-    getItem("current-video-on-edit"),
+    getItem('current-video-on-edit'),
     TE.map((item) => JSON.parse(item))
   );
 }, available);
@@ -63,6 +66,9 @@ export const currentVideoOnEdit = queryStrict(() => {
 export const videoRecommendations = compose(
   product({ currentVideoOnEdit, params: param() }),
   queryStrict(({ currentVideoOnEdit }) => {
-    return fetch(`/video/${currentVideoOnEdit.videoId}/recommendations`);
+    if (currentVideoOnEdit) {
+      return fetch(`/video/${currentVideoOnEdit.videoId}/recommendations`);
+    }
+    return TE.right([]);
   }, available)
 );
