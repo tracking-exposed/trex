@@ -1,7 +1,13 @@
 version: "3"
 
+
+# to restore a dump from folder
+# docker-compose exec -T mongo mongorestore /dump
 services:
   mongo:
     image: mongo:latest
+    restart: always
     ports:
       - "27017:27017"
+    volumes:
+      - ./dump:/dump/
