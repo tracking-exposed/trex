@@ -70,10 +70,11 @@ async function ogpProxy(req) {
 async function videoByCreator(req) {
   // this function should validate req.params.authMaterial
   let creator = {};
-  if(!req.params.authMaterial || !req.params.authMaterial.length)
+  if(!req.params.publicKey || !req.params.publicKey.length)
     creator.id = 'dummy';
   else
-    creator.id = req.params.authMaterial;
+    creator.id = req.params.publicKey;
+
   debug("Querying youtube-based-list via profile %s", creator.id);
   const MAXVIDOEL = 100;
   const videos = await automo
