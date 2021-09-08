@@ -57,7 +57,6 @@ function boot () {
         }
     } else if (_.endsWith(window.location.origin, 'youtube.com')) {
         // this get executed only on youtube.com
-        console.log(`YCAI version ${config.VERSION}, ${JSON.stringify(config)}`);
 
         // Register all the event handlers.
         // An event handler is a piece of code responsible for a specific task.
@@ -68,9 +67,9 @@ function boot () {
         localLookup(response => {
             // `response` contains the user's public key, we save it global to access them as config
             config.publicKey = response.publicKey;
-            config.ux= response.active;
-            config.community= response.svg;
-            config.alphabeth= response.videorep;
+            config.ux = response.active;
+            config.community = response.svg;
+            config.alphabeth = response.videorep;
             console.log(`YouChoose operative: ${JSON.stringify(config)}`);
             // this makes
             // hrefUpdateMonitor();

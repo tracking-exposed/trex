@@ -5,7 +5,7 @@ import CardContent from '@material-ui/core/CardContent';
 import CardMedia from '@material-ui/core/CardMedia';
 import Typography from '@material-ui/core/Typography';
 
-const getYTThumbnailById = (id) => `https://i.ytimg.com/vi/${id}/hq720.jpg`;
+const getYTThumbnailById = (id) => `https://i.ytimg.com/vi/${id}/hqdefault.jpg`;
 
 export class VideoCard extends React.Component {
   render () {

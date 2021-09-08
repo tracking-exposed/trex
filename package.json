@@ -1,11 +1,11 @@
 {
   "name": "youchoose.ai",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "description": "YouChoose AI",
   "homepage": "https://youchoose.ai",
   "bugs": "https://github.com/tracking-exposed/YCAI/issues",
   "license": "AGPL-3.0",
-  "author": "Claudio Agosti and the tracking exposed team",
+  "author": "Claudio Agosti, Andrea Ascari, and the https://tracking.exposed team",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/tracking-exposed/YCAI.git"
@@ -69,7 +69,6 @@
     "@material-ui/icons": "^4.11.2",
     "@material-ui/lab": "^4.0.0-alpha.60",
     "bs58": "^3.0.0",
-    "cheerio": "^0.22.0",
     "classnames": "^2.3.1",
     "create-react-class": "^15.7.0",
     "fetch-opengraph": "^1.0.30",
