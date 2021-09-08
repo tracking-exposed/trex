@@ -21,6 +21,7 @@ const chardet = require('chardet')
 
 const utils = require('../lib/utils');
 const mongo3 = require('./mongo3');
+const { update } = require('./supporters');
 
 async function getSummaryByPublicKey(publicKey, options) {
     /* this function return the basic information necessary to compile the
@@ -639,17 +640,32 @@ async function getAllExperiments(max) {
 async function fetchRecommendations(videoId, kind) {
     // kind might be 'demo', 'producer', 'community'
     let filter = {};
-    if(kind !== 'demo') {
+    if(kind === 'producer') {
         filter.videoId = videoId;
+    } else if(kind === 'community') {
+        debug("Not yet supported community recommendations");
+        return [];
     }
-    // in demo, every links is ok to be returned
-    const RECOMMENDATION_MAX = 10;
+
+    const RECOMMENDATION_MAX = 20;
     const mongoc = await mongo3.clientConnect({concurrency: 1});
-    const result = await mongo3
-        .readLimit(mongoc, nconf.get('schema').recommendations,
-            filter, {}, RECOMMENDATION_MAX, 0);
-    if(RECOMMENDATION_MAX == result.length) {
-        debug("More recommendations than what is possible!")
+    const videoInfo = await mongo3
+        .readOne(mongoc, nconf.get('schema').ytvids, filter);
+
+    let result = [];
+    if(videoInfo.recommendations && videoInfo.recommendations.length) {
+        result = await mongo3
+            .readLimit(mongoc, nconf.get('schema').recommendations, {
+                urlId: { "$in": videoInfo.recommendations }
+            }, {}, RECOMMENDATION_MAX, 0)
+
+        if(RECOMMENDATION_MAX == result.length)
+            debug("More recommendations than what is possible!")
+
+        result = _.map(result, function(e) {
+            _.unset(e, '_id');
+            return e;
+        })
     }
     await mongoc.close();
     return result;
@@ -708,6 +724,42 @@ async function getRecommendationByURL(url) {
     return res;
 }
 
+async function getVideoFromYTprofiles(creator, limit) {
+    const mongoc = await mongo3.clientConnect({concurrency: 1});
+    const res = await mongo3
+        .readLimit(mongoc, nconf.get('schema').ytvids, {
+            creatorId: creator.id
+        }, {}, limit, 0);
+    await mongoc.close();
+    return res;
+}
+
+async function recommendationById(ids) {
+    const mongoc = await mongo3.clientConnect({concurrency: 1});
+    const res = await mongo3
+        .readLimit(mongoc, nconf.get('schema').recommendations, {
+            "urlId": { "$in": ids }
+        }, {}, limit, 0);
+    await mongoc.close();
+    return res;
+}
+
+async function updateRecommendations(videoId, recommendations) {
+    const mongoc = await mongo3.clientConnect({concurrency: 1});
+    const one = await mongo3
+        .readOne(mongoc, nconf.get('schema').ytvids, {
+            videoId });
+    one.recommendations = recommendations;
+    one.when = new Date();
+    const check = await mongo3
+        .updateOne(mongoc, nconf.get('schema').ytvids, {
+            videoId
+        }, one);
+    await mongoc.close();
+    _.unset(one, '_id');
+    return one;
+}
+
 module.exports = {
     /* used by routes/personal */
     getSummaryByPublicKey,
@@ -763,4 +815,7 @@ module.exports = {
     fetchRecommendationsByProfile,
     saveRecommendationOGP,
     getRecommendationByURL,
+    getVideoFromYTprofiles,
+    recommendationById,
+    updateRecommendations,
 };

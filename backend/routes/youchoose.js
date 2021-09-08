@@ -30,7 +30,7 @@ async function byVideoId(req) {
     videoId,
     source1 ? "GET/params" : "POST/body");
   debug("Looking recommendations for videoId %s", videoId);
-  const avail = await automo.fetchRecommendations(videoId, 'demo');
+  const avail = await automo.fetchRecommendations(videoId, 'producer');
   return { json: avail };
 };
 
@@ -67,8 +67,74 @@ async function ogpProxy(req) {
   return { json: review };
 }
 
+async function videoByCreator(req) {
+  // this function should validate req.params.authMaterial
+  let creator = {};
+  if(!req.params.publicKey || !req.params.publicKey.length)
+    creator.id = 'dummy';
+  else
+    creator.id = req.params.publicKey;
+
+  debug("Querying youtube-based-list via profile %s", creator.id);
+  const MAXVIDOEL = 100;
+  const videos = await automo
+    .getVideoFromYTprofiles(creator, MAXVIDOEL);
+
+  // format: recommendation might be empty or unset
+  // creatorId, when, videoId, title, recommendations: []
+  const ready = _.map(videos, function(v) {
+    _.unset(v, '_id');
+    if(!v.recommendations)
+      v.recommendations = [];
+    return v;
+  })
+
+  debug("requested Video List by content creator, returning mockup")
+  return { json: ready };
+}
+
+async function getRecommendationById(req) {
+  // this is a public function, anyone can query a recommandation detail
+  // this function support a single Id or a list of IDs
+  const ids = req.params.id.split(',');
+  const recomms = await automo.recommendationById(ids);
+  debug("From %d recommendation Id we god %d recommendations found",
+    ids.length, recomms.length);
+  return { json: recomms };
+}
+
+async function updateVideoRec(req) {
+  const update = req.body;
+
+  if(!update.creatorId)
+    return { json: { error: true, message: "missing creatorId — should be replaced with proper auth"}};
+
+  if(!update.videoId)
+    return { json: { error: true, message: "missing videoId" }};
+
+  if(!update.recommendations || !update.recommendations.length)
+    update.recommendations = [];
+
+  if(_.filter(update.recommendations, function(e) {
+    return !(_.isString(e) && e.length === 40)
+  }))
+    return { json: { error: true, message: "validation fail in recommendation list"}};
+
+  debug("Updating videoId %s with %d recommendations",
+    update.videoId, update.recommendations.length);
+
+  const updated = await automo.updateRecommendations(
+    update.videoId, update.recommendations);
+
+  return { json: updated };
+};
+
+
 module.exports = {
   byVideoId,
   byProfile,
   ogpProxy,
+  videoByCreator,
+  getRecommendationById,
+  updateVideoRec,
 };
