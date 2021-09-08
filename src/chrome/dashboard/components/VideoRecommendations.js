@@ -51,7 +51,6 @@ export class VideoRecommendations extends React.PureComponent {
                     md={10}
                     alignItems="flex-start"
                     alignContent="flex-start"
-                    justifyContent="flex-start"
                   >
                     <p>{r.title}</p>
                   </Grid>
