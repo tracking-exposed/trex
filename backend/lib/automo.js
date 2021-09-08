@@ -650,7 +650,7 @@ async function fetchRecommendations(videoId, kind) {
     const RECOMMENDATION_MAX = 20;
     const mongoc = await mongo3.clientConnect({concurrency: 1});
     const result = await mongo3
-        .readLimit(mongoc, nconf.get('schema').recommendations,
+        .readLimit(mongoc, nconf.get('schema').ytvids,
             filter, {}, RECOMMENDATION_MAX, 0);
     if(RECOMMENDATION_MAX == result.length) {
         debug("More recommendations than what is possible!")
@@ -738,6 +738,7 @@ async function updateRecommendations(videoId, recommendations) {
         .readOne(mongoc, nconf.get('schema').ytvids, {
             videoId });
     one.recommendations = recommendations;
+    one.when = new Date();
     const check = await mongo3
         .updateOne(mongoc, nconf.get('schema').ytvids, {
             videoId
