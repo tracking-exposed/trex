@@ -649,11 +649,23 @@ async function fetchRecommendations(videoId, kind) {
 
     const RECOMMENDATION_MAX = 20;
     const mongoc = await mongo3.clientConnect({concurrency: 1});
-    const result = await mongo3
-        .readLimit(mongoc, nconf.get('schema').ytvids,
-            filter, {}, RECOMMENDATION_MAX, 0);
-    if(RECOMMENDATION_MAX == result.length) {
-        debug("More recommendations than what is possible!")
+    const videoInfo = await mongo3
+        .readOne(mongoc, nconf.get('schema').ytvids, filter);
+
+    let result = [];
+    if(videoInfo.recommendations && videoInfo.recommendations.length) {
+        result = await mongo3
+            .readLimit(mongoc, nconf.get('schema').recommendations, {
+                urlId: { "$in": videoInfo.recommendations }
+            }, {}, RECOMMENDATION_MAX, 0)
+
+        if(RECOMMENDATION_MAX == result.length)
+            debug("More recommendations than what is possible!")
+
+        result = _.map(result, function(e) {
+            _.unset(e, '_id');
+            return e;
+        })
     }
     await mongoc.close();
     return result;

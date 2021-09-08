@@ -108,7 +108,6 @@ async function updateVideoRec(req) {
   if(!update.creatorId)
     return { json: { error: true, message: "missing creatorId — should be replaced with proper auth"}};
 
-  update.videoId = _.get(req.params, 'videoId');
   if(!update.videoId)
     return { json: { error: true, message: "missing videoId" }};
 

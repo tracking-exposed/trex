@@ -177,23 +177,24 @@ app.get('/api/v1/mirror/:key', function(req, res) {
 app.post('/api/v3/handshake', function(req, res) {
     return dispatchPromise('youChooseByVideoId', req, res);
 });
-app.get('/api/v3/recommendations/:videoId', function(req, res) {
+app.get('/api/v3/video/:videoId/recommendations', function(req, res) {
     return dispatchPromise('youChooseByVideoId', req, res);
 });
-app.get('/api/v3/profile/recommendations/:publicKey', function(req, res) {
-    return dispatchPromise('youChooseByProfile', req, res);
-});
-app.get('/api/v3/ogp/:url', cors(), function(req, res) {
-    return dispatchPromise('ogpProxy', req, res);
-});
-app.get('/api/v3/creator/videos/:authMaterial', function(req, res) {
-    return dispatchPromise('getVideoByCreators', req, res);
-});
-app.get('/api/v3/recommendation/:ids', function(req, res) {
+app.get('/api/v3/recommendations/:ids', function(req, res) {
     return dispatchPromise('recommendationById', req, res);
 });
-app.post('/api/v3/recommendation/update/:videoId', function(req, res) {
+
+app.post('/api/v3/creator/updateVideo', function(req, res) {
     return dispatchPromise('updateVideoRec', req, res);
+});
+app.get('/api/v3/creator/ogp/:url', cors(), function(req, res) {
+    return dispatchPromise('ogpProxy', req, res);
+});
+app.get('/api/v3/creator/videos/:publicKey', function(req, res) {
+    return dispatchPromise('getVideoByCreators', req, res);
+});
+app.get('/api/v3/creator/recommendations/:publicKey', function(req, res) {
+    return dispatchPromise('youChooseByProfile', req, res);
 });
 
 /* impact */
