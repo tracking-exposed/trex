@@ -69,12 +69,19 @@ async function ogpProxy(req) {
 
 async function videoByCreator(req) {
   // this function should validate req.params.authMaterial
-  const mock = require('./MockUpVideoByCreators.json');
+  let creator = {};
+  if(!req.params.authMaterial || !req.params.authMaterial.length)
+    creator.id = 'dummy';
+  else
+    creator.id = req.params.authMaterial;
+  debug("Querying youtube-based-list via profile %s", creator.id);
+  const MAXVIDOEL = 100;
+  const videos = await automo
+    .getVideoFromYTprofiles(creator, MAXVIDOEL);
+  // format: recommendation might be empty or unset
+  // profile, when, videoId, title, recommendations: []
   debug("requested Video List by content creator, returning mockup")
-  return { json: [
-    mock.videoByCreatorMock1,
-    mock.videoByCreatorMock2,
-  ]}
+  return { json: videos };
 }
 
 async function getRecommendationById(req) {

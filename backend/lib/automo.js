@@ -708,6 +708,16 @@ async function getRecommendationByURL(url) {
     return res;
 }
 
+async function getVideoFromYTprofiles(creator, limit) {
+    const mongoc = await mongo3.clientConnect({concurrency: 1});
+    const res = await mongo3
+        .readLimit(mongoc, nconf.get('schema').ytvids, {
+            creatorId: creator.id
+        }, {}, limit, 0);
+    await mongoc.close();
+    return res;
+}
+
 module.exports = {
     /* used by routes/personal */
     getSummaryByPublicKey,
@@ -763,4 +773,5 @@ module.exports = {
     fetchRecommendationsByProfile,
     saveRecommendationOGP,
     getRecommendationByURL,
+    getVideoFromYTprofiles,
 };
