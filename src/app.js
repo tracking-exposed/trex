@@ -29,7 +29,6 @@
 import $ from 'jquery';
 import _ from 'lodash';
 import moment from 'moment';
-
 import {updateUX} from './replacement';
 import config from './config';
 import hub from './hub';
@@ -73,7 +72,7 @@ function boot () {
             config.community= response.svg;
             config.alphabeth= response.videorep;
             console.log(`YouChoose operative: ${JSON.stringify(config)}`);
-            // this makes 
+            // this makes
             // hrefUpdateMonitor();
             // flush();
         });
