@@ -75,7 +75,8 @@ const apiList = {
     youChooseByProfile:  require('../routes/youchoose').byProfile,
     ogpProxy:		     require('../routes/youchoose').ogpProxy,
     getVideoByCreators:  require('../routes/youchoose').videoByCreator,
-    recommendationById: require('../routes/youchoose').getRecommendationById,
+    recommendationById:  require('../routes/youchoose').getRecommendationById,
+    updateVideoRec:      require('../routes/youchoose').updateVideoRec,
 };
 
 module.exports = {

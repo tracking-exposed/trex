@@ -188,10 +188,13 @@ app.get('/api/v3/ogp/:url', cors(), function(req, res) {
 });
 app.get('/api/v3/creator/videos/:authMaterial', function(req, res) {
     return dispatchPromise('getVideoByCreators', req, res);
-})
-app.get('/api/v3/recommendation/:id', function(req, res) {
+});
+app.get('/api/v3/recommendation/:ids', function(req, res) {
     return dispatchPromise('recommendationById', req, res);
-})
+});
+app.post('/api/v3/recommendation/update/:videoId', function(req, res) {
+    return dispatchPromise('updateVideoRec', req, res);
+});
 
 /* impact */
 app.get('/api/v2/statistics/:name/:unit/:amount', function(req, res) {

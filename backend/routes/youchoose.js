@@ -30,7 +30,7 @@ async function byVideoId(req) {
     videoId,
     source1 ? "GET/params" : "POST/body");
   debug("Looking recommendations for videoId %s", videoId);
-  const avail = await automo.fetchRecommendations(videoId, 'demo');
+  const avail = await automo.fetchRecommendations(videoId, 'producer');
   return { json: avail };
 };
 
@@ -78,19 +78,52 @@ async function videoByCreator(req) {
   const MAXVIDOEL = 100;
   const videos = await automo
     .getVideoFromYTprofiles(creator, MAXVIDOEL);
+
   // format: recommendation might be empty or unset
-  // profile, when, videoId, title, recommendations: []
+  // creatorId, when, videoId, title, recommendations: []
+  const ready = _.map(videos, function(v) {
+    _.unset(v, '_id');
+    if(!v.recommendations)
+      v.recommendations = [];
+    return v;
+  })
+
   debug("requested Video List by content creator, returning mockup")
-  return { json: videos };
+  return { json: ready };
 }
 
 async function getRecommendationById(req) {
   // this is a public function, anyone can query a recommandation detail
-  const urlId = req.params.id;
-  debug("requested recommendation by Id %s", urlId);
-  const mock = require("./" + urlId + '.json');
-  return { json: mock };
+  // this function support a single Id or a list of IDs
+  const ids = req.params.id.split(',');
+  const recomms = await automo.recommendationById(ids);
+  debug("From %d recommendation Id we god %d recommendations found",
+    ids.length, recomms.length);
+  return { json: recomms };
 }
+
+async function updateVideoRec(req) {
+  const update = req.body;
+
+  if(!update.creatorId)
+    return { json: { error: true, message: "missing creatorId — should be replaced with proper auth"}};
+
+  update.videoId = _.get(req.params, 'videoId');
+  if(!update.videoId)
+    return { json: { error: true, message: "missing videoId" }};
+
+  if(!update.recommendations || !update.recommendations.length)
+    update.recommendations = [];
+
+  debug("Updating videoId %s with %d recommendations",
+    update.videoId, update.recommendations.length);
+
+  const updated = await automo.updateRecommendations(
+    update.videoId, update.recommendations);
+
+  return { json: updated };
+};
+
 
 module.exports = {
   byVideoId,
@@ -98,4 +131,5 @@ module.exports = {
   ogpProxy,
   videoByCreator,
   getRecommendationById,
+  updateVideoRec,
 };

@@ -21,6 +21,7 @@ const chardet = require('chardet')
 
 const utils = require('../lib/utils');
 const mongo3 = require('./mongo3');
+const { update } = require('./supporters');
 
 async function getSummaryByPublicKey(publicKey, options) {
     /* this function return the basic information necessary to compile the
@@ -639,11 +640,14 @@ async function getAllExperiments(max) {
 async function fetchRecommendations(videoId, kind) {
     // kind might be 'demo', 'producer', 'community'
     let filter = {};
-    if(kind !== 'demo') {
+    if(kind === 'producer') {
         filter.videoId = videoId;
+    } else if(kind === 'community') {
+        debug("Not yet supported community recommendations");
+        return [];
     }
-    // in demo, every links is ok to be returned
-    const RECOMMENDATION_MAX = 10;
+
+    const RECOMMENDATION_MAX = 20;
     const mongoc = await mongo3.clientConnect({concurrency: 1});
     const result = await mongo3
         .readLimit(mongoc, nconf.get('schema').recommendations,
@@ -718,6 +722,31 @@ async function getVideoFromYTprofiles(creator, limit) {
     return res;
 }
 
+async function recommendationById(ids) {
+    const mongoc = await mongo3.clientConnect({concurrency: 1});
+    const res = await mongo3
+        .readLimit(mongoc, nconf.get('schema').recommendations, {
+            "urlId": { "$in": ids }
+        }, {}, limit, 0);
+    await mongoc.close();
+    return res;
+}
+
+async function updateRecommendations(videoId, recommendations) {
+    const mongoc = await mongo3.clientConnect({concurrency: 1});
+    const one = await mongo3
+        .readOne(mongoc, nconf.get('schema').ytvids, {
+            videoId });
+    one.recommendations = recommendations;
+    const check = await mongo3
+        .updateOne(mongoc, nconf.get('schema').ytvids, {
+            videoId
+        }, one);
+    debug(check);
+    await mongoc.close();
+    return one;
+}
+
 module.exports = {
     /* used by routes/personal */
     getSummaryByPublicKey,
@@ -774,4 +803,6 @@ module.exports = {
     saveRecommendationOGP,
     getRecommendationByURL,
     getVideoFromYTprofiles,
+    recommendationById,
+    updateRecommendations,
 };
