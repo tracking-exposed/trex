@@ -115,6 +115,11 @@ async function updateVideoRec(req) {
   if(!update.recommendations || !update.recommendations.length)
     update.recommendations = [];
 
+  if(_.filter(update.recommendations, function(e) {
+    return !(_.isString(e) && e.length === 40)
+  }))
+    return { json: { error: true, message: "validation fail in recommendation list"}};
+
   debug("Updating videoId %s with %d recommendations",
     update.videoId, update.recommendations.length);
 

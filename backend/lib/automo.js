@@ -743,8 +743,8 @@ async function updateRecommendations(videoId, recommendations) {
         .updateOne(mongoc, nconf.get('schema').ytvids, {
             videoId
         }, one);
-    debug(check);
     await mongoc.close();
+    _.unset(one, '_id');
     return one;
 }
 
