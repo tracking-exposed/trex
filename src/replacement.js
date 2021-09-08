@@ -185,14 +185,26 @@ export function updateUX(response) {
   /* third party coming soon confuguration infos */
   const ycai_third_p = document.createElement('div');
   ycai_third_p.innerHTML= `
-    <p>something something something else,</p>
-    <p>Thiz iz a new line, with a <a
-      href="https://yahoo.it"
-      target=_blank
-      >
-        test link
-      </a>, and something else, overall.
+    <div style=
+    <h4>
+      Community recommendation protocol.
+    </h4>
+    <br>
+    <p>
+      Currently, a standard protocol does not exist to manage community recommendations. Therefore, we are in an open discussion with the first organization that could potentially interoperate with us: Turnesol, a Switzerland-based academic and free software project that wants to allow community recommendation on youtube videos.
     </p>
+    <br>
+    <p>
+      Their mechanism is described in this paper. Our mechanism is meant to let content creators control the recommendation that appears close to their video, but both of us would benefit from a means to share such a recommendations list.
+    </p>
+    <br>
+    <p>
+      We are discussing a protocol specification, so far our proposal is aligned with the API we implemented to fetch recommendations per Youtube Video Id and works in this way:
+    </p>
+    <br>
+    <br>
+    <br>
+    <i>TODO: URL and format</i>
   `;
   ycai_third_p.id ="ycai_third_party";
   ycai_third_p.style = { display: 'none' };
