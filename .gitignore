@@ -24,5 +24,6 @@ methodology/extension/*
 methodology/snaps/*
 
 backend/node_modules/*
+backend/config/secrets.json
 
 react-pieces/node_modules/*
