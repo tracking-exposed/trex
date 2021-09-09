@@ -37,7 +37,14 @@ export const deleteCreatorChannel = command(
   }
 );
 
-export const addRecommendation = command((r) => fetch(`/creator/ogp/${r}`), {
+export const addRecommendation = command((r) => 
+fetch(`/creator/ogp`, { // TODO this api need also to be signed/authenticated
+  method: 'POST',
+  headers: {
+    'Content-Type': 'application/json',
+  },
+  body: JSON.stringify({ url: r })
+}), {
   recommendations,
 });
 

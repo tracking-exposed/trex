@@ -14,7 +14,8 @@ class Fetcher extends React.PureComponent {
 
   completed = (e) => {
     const url = document.querySelector('[placeholder="Placeholder"]').value;
-    addRecommendation(encodeURIComponent(url), { paging: true })();
+    console.log('fetching opengraph of:', url);
+    addRecommendation(url, { paging: true })();
   }
 
   render () {
