@@ -42,7 +42,6 @@ export const VideoRecommendations = () => {
                           .filter((rr) => rr !== r.urlId),
                       },
                       {
-                        currentVideoRecommendations: undefined,
                         currentVideoOnEdit: undefined,
                       }
                     )()

@@ -26,6 +26,7 @@ export const setCurrentVideo = command(
   (video) => setItem('current-video-on-edit', JSON.stringify(video)),
   {
     currentVideoOnEdit,
+    currentVideoRecommendations
   }
 );
 
@@ -48,7 +49,6 @@ export const updateRecommendationForVideo = command(
     );
   },
   {
-    currentVideoOnEdit,
-    currentVideoRecommendations
+    currentVideoOnEdit
   }
 );

@@ -1,15 +1,8 @@
-import {
-  available,
-  queryStrict,
-  refetch,
-  compose,
-  product,
-  param,
-} from 'avenger';
+import { available, compose, param, product, queryStrict } from 'avenger';
 import { pipe } from 'fp-ts/lib/function';
+import * as TE from 'fp-ts/lib/TaskEither';
 import { getItem } from '../storage/Store';
 import { fetch } from './HTTPAPI';
-import * as TE from 'fp-ts/lib/TaskEither';
 
 export const creatorChannel = queryStrict(
   () =>
@@ -59,16 +52,9 @@ export const recommendedChannels = compose(
 export const currentVideoOnEdit = queryStrict(() => {
   return pipe(
     getItem('current-video-on-edit'),
-    TE.map((item) => {
-      console.log({ item });
-      return item ? JSON.parse(item) : item;
-    })
+    TE.map((item) => (item ? JSON.parse(item) : item))
   );
 }, available);
-
-// export const videoRecommendations = queryStrict(({ videoId }) => {
-//   return fetch(`/video/${videoId}/recommendations`);
-// }, available);
 
 export const currentVideoRecommendations = compose(
   currentVideoOnEdit,
