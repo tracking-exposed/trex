@@ -1,15 +1,11 @@
-import moment from 'moment';
-import React from 'react';
-
 import { Card } from '@material-ui/core';
 import { Alert, AlertTitle } from '@material-ui/lab';
-import FormHelperText from '@material-ui/core/FormHelperText';
-
+import moment from 'moment';
+import React from 'react';
+import config from '../../../config';
 import InfoBox from './infoBox';
 import Settings from './settings';
-import GetCSV from './getCSV';
 
-import config from '../../../config';
 
 // bo is the browser object, in chrome is named 'chrome', in firefox is 'browser'
 const bo = chrome || browser;
@@ -34,13 +30,10 @@ class Popup extends React.Component{
       try {
         bo.runtime.sendMessage({ type: 'localLookup' }, (userSettings) => {
           console.log("here got", userSettings);
-          if(userSettings && userSettings.publicKey)
-            this.setState({ status: 'done', data: userSettings });
-          else
-            this.setState({ status: 'error', data: userSettings });
+          if(userSettings && userSettings.publicKey) {this.setState({ status: 'done', data: userSettings });} else {this.setState({ status: 'error', data: userSettings });}
         });
       } catch(e) {
-        console.log("catch error", e.message, runtime.lastError);
+        console.log("catch error", e.message, bo.runtime.lastError);
         this.state = { status: 'error', data: ''};
       }
     }
@@ -49,8 +42,7 @@ class Popup extends React.Component{
       const version = config.VERSION;
       const timeago = moment.duration(moment() - moment(config.BUILDISODATE)).humanize() + ' ago';
 
-      if(!this.state)
-        return (<div>Loading...</div>)
+      if(!this.state) {return (<div>Loading...</div>)}
 
       console.log('popup props status', this.props, this.state);
 

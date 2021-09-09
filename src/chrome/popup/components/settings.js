@@ -22,7 +22,7 @@ class Settings extends React.Component{
       alphabeth: props.lastSettings.alphabeth || false,
     };
   }
-        
+
   render () {
 
     function toggleActivation (_t, event) {
@@ -41,8 +41,7 @@ class Settings extends React.Component{
       });
     }
 
-    if(!this.state)
-      return (<p>Loading...</p>);
+    if(!this.state) {return (<p>Loading...</p>);}
 
     console.log("settings props", this.props, "& state", this.state);
     /* <ListItemText primary={ (!!this.state && !!this.state.active) ? "LEAVE evidence collection pool" : "JOIN evidence collection pool"} /> */

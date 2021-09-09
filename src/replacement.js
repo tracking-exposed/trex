@@ -1,3 +1,5 @@
+/* eslint-disable camelcase */
+
 // import config from "./config";
 
 function recommandation_dispatcher(recc, i) {
@@ -6,9 +8,9 @@ function recommandation_dispatcher(recc, i) {
 
   // console.log(recc, i);
 
-  if(recc.type == 'youtube') {
+  if(recc.type === 'youtube') {
     return make_video_box(recc, i);
-  } else if(recc.type == 'article') {
+  } else if(recc.type === 'article') {
     return make_article_box(recc, i);
   } else {
     // all the type should be embedded
@@ -30,7 +32,7 @@ function max_url_box(ogblob, i) {
     thumb_div.append(video_thumb);
   }
 
-  url_box.innerHTML=  `
+  url_box.innerHTML= `
     <a href="${ogblob.url}">${ogblob.title}</a>
     <br>
     <small>${ogblob.description}</small>
@@ -51,7 +53,7 @@ function make_article_box(article, i) {
   video_thumb.src = article.image;
   thumb_div.append(video_thumb);
 
-  article_box.innerHTML=  `
+  article_box.innerHTML= `
     <a href="${article.url}">${article.title}</a>
     <br>
     <small>${article.description}</small>
@@ -122,7 +124,7 @@ export function updateUX(response) {
 
   if(!recache.alphabeth) {
     const seen = document.getElementsByTagName('ytd-watch-next-secondary-results-renderer');
-    if(seen.length == 0) {
+    if(seen.length === 0) {
       return { status: 'waitForPage' }
     } else if(seen.length > 1) {
       console.log("This is weird!");

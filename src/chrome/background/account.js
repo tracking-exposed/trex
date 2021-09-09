@@ -1,7 +1,6 @@
 import nacl from 'tweetnacl';
 import bs58 from 'bs58';
 import _ from 'lodash';
-
 import api from '../api';
 import { isEmpty } from '../../utils';
 import db from '../db';
@@ -51,8 +50,7 @@ function userLookup ({ userId }, sendResponse) {
 
     db.get(userId).then(val => {
         if (isEmpty(val)) {
-            var val = initializeKey();
-            val = setDefaults(val);
+            val = setDefaults(initializeKey());
             db.set(userId, val).then(val => {
                 console.log("First access attempted, created config", val);
                 sendResponse(val);
@@ -70,8 +68,7 @@ function serverLookup (payload, sendResponse) {
     const userId = FIXED_USER_NAME;
     db.get(userId).then(val => {
         if (isEmpty(val)) {
-            var val = initializeKey();
-            val = setDefaults(val);
+            val = setDefaults(initializeKey());
             console.log("serverLookup isn't used since a while and have been trimmed: double check!");
             return db.set(userId, val).then(function() { return val; });
         }

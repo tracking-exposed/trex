@@ -15,7 +15,7 @@ function get (key, setIfMissing) {
                 console.log("get is empty ", newVal);
                 backend.set(newVal, () => resolve(newVal));
             } else {
-                console.log("get returns",  val, key, val[key]);
+                console.log("get returns", val, key, val[key]);
                 resolve(isEmpty(val[key]) ? null : val[key]);
             }
         });
