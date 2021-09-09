@@ -185,26 +185,39 @@ export function updateUX(response) {
   /* third party coming soon confuguration infos */
   const ycai_third_p = document.createElement('div');
   ycai_third_p.innerHTML= `
-    <div style=
-    <h4>
+    <h4 class="thirdpd">
       Community recommendation protocol.
     </h4>
-    <br>
-    <p>
+    <p class="thirdpd">
       Currently, a standard protocol does not exist to manage community recommendations. Therefore, we are in an open discussion with the first organization that could potentially interoperate with us: Turnesol, a Switzerland-based academic and free software project that wants to allow community recommendation on youtube videos.
     </p>
-    <br>
-    <p>
-      Their mechanism is described in this paper. Our mechanism is meant to let content creators control the recommendation that appears close to their video, but both of us would benefit from a means to share such a recommendations list.
+    <p class="thirdpd">
+      Their protocol is described in this <a href="https://github.com/tournesol-app/tournesol/blob/master/backend/schema.json">schema</a>. Our mechanism it is more generalized, as it do not wants to include only youtube videos; Both of us would benefit from a means to share such a recommendations list.
     </p>
-    <br>
-    <p>
-      We are discussing a protocol specification, so far our proposal is aligned with the API we implemented to fetch recommendations per Youtube Video Id and works in this way:
+    <p class="thirdpd">
+      We are discussing a protocol specification, so far our reasoning reflect this experimental API we implemented to fetch recommendations by Youtube VideoId (<a href="https://youtube.tracking.exposed/api/v3/TODO">example</a>, on <a href="https://www.youtube.com/watch?v=SmYuYEhT81c">this video</a>) and has these features:
     </p>
-    <br>
-    <br>
-    <br>
-    <i>TODO: URL and format</i>
+    <h4 class="thirdpd">
+      Protocol format — each object represent a recommendation:
+    </h4>
+    <p>
+      <code><ol class="shift-left">
+        <li>type: {youtube|wikipedia|article*|url}</li>
+        <li>url: String</li>
+        <li>description: (optional, String) usually retrieve by openGraph but up to 140 chars</li>
+        <li>title: usually retireved by openGraph but up to 40 chars</li>
+        <li>association: a pointer to the resource where the recommendation is meant for</li>
+        <li>thumbnail: (optional) an url of a picture remotely loaded as preview </li>
+        <li>date: ISO format date when the recommendation have been registered.
+        <li>signature: a cryptographical signature computed with Date+Association+Url 
+      </ol></code>
+      Also additional information might be transferred, they are two kinds:
+      <code><ol>
+        <li>extension: (optional) a JSON object that enhance, depends on 'type'. For example, type='youtube' might be set to express video lenghts, as {duration:"15:02"}</li>
+        <li>reason: (optional) a JSON object containing rankings, evaluations, or the reason why the recommendation is there</li>
+      </ol></code>
+      The client might render recommendations different, for example, based on type.
+    </p>
   `;
   ycai_third_p.id ="ycai_third_party";
   ycai_third_p.style = { display: 'none' };

@@ -1,7 +1,9 @@
 #ycaibar {
   background-color: #f50057;
   padding: 4px;
-  text-align: center;
+  color: white;
+  font-weight: bolder;
+  text-align: left;
 }
 
 #ycaibar button {
@@ -29,6 +31,15 @@
 .video_thumb {
   width: calc(30% / 1 - var(--ytd-rich-grid-item-margin) - 0.01px);
   background: green;
+}
+
+.thirdpd {
+  margin-bottom: 25px;
+  font-size: 1.2em;
+}
+
+.shift-left {
+  margin-left: 10px;
 }
 
 #ycai_third_party {
