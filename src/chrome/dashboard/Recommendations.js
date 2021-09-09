@@ -30,7 +30,6 @@ const RecommendationCards = declareQueries({
           LazyFullSizeLoader,
           ErrorBox,
           ({ recommendations, currentVideoOnEdit: video }) => {
-            console.log({ video });
             if (recommendations.length === 0) {
               return (
                 <div style={styles}>
@@ -49,12 +48,34 @@ const RecommendationCards = declareQueries({
             }
             return (
               <div className="card-group">
-                {recommendations.map((item, i) => (
+                {recommendations.map((item, i) => {
+                  const videoReccomendations = video ? video.recommendations : [];
+                  const alreadyPresent = videoReccomendations.includes(item.urlId);
+
+                  console.log({ videoReccomendations, alreadyPresent});
+                  return(
                   <UrlCard
                     key={i}
                     data={item}
-                    onAddClick={() => {
-                      if (video) {
+                    alreadyPresent={alreadyPresent}
+                    onDeleteClick={video ? () => {
+                      const newVideoRecommendations = videoReccomendations
+                          .filter((v) => v !== item.urlId);
+
+                        updateRecommendationForVideo(
+                          {
+                            videoId: video.videoId,
+                            creatorId: video.creatorId,
+                            recommendations: newVideoRecommendations,
+                          },
+                          {
+                            currentVideoOnEdit: undefined,
+                            recommendations: {}
+                          }
+                        )();
+                    }: undefined}
+                    onAddClick={video ? () => {
+
                         const newVideoRecommendations = video.recommendations
                           .filter((v) => v !== item.urlId)
                           .concat(item.urlId);
@@ -67,12 +88,14 @@ const RecommendationCards = declareQueries({
                           },
                           {
                             currentVideoOnEdit: undefined,
+                            recommendations: {}
                           }
                         )();
-                      }
-                    }}
+
+                    } : undefined}
                   />
-                ))}
+                )
+              })}
               </div>
             );
           }
