@@ -48,7 +48,7 @@ class LinkAccount extends React.Component {
               </InputLabel>
               <TextField
                 fullWidth={true}
-                value={this.state.url ?? creatorChannel.publicKey ?? ''}
+                value={this.state.url ?? creatorChannel.publicKey ?? 'uno'}
                 onChange={this.handleChange}
                 onKeyDown={this.completed}
               />

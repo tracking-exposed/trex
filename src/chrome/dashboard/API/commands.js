@@ -6,12 +6,12 @@ import {
   creatorVideos,
 } from './queries';
 import { fetch } from './HTTPAPI';
-import { setItem } from '../storage/Store';
+import { setItem, setPersistentItem } from '../storage/Store';
 import { pipe } from 'fp-ts/lib/function';
 import * as TE from 'fp-ts/lib/TaskEither';
 
 export const setCreatorChannel = command(
-  (channel) => setItem('creator-channel', channel),
+  (channel) => setPersistentItem('creator-channel', channel),
   {
     recommendations,
     currentVideoOnEdit,

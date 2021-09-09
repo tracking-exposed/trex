@@ -7,15 +7,12 @@ import { Grid } from '@material-ui/core';
 import { setCurrentVideo as setCurrentVideoCmd } from './API/commands';
 
 const RecommendationsPanel = () => {
-  const [currentVideo, setCurrentVideo] = React.useState(undefined);
-
   return (
     <Grid container spacing={3}>
       <Grid item md={4}>
         <h4>Your videos:</h4>
         <CreatorVideos
           onVideoClick={(v) => {
-            setCurrentVideo(v);
             setCurrentVideoCmd(v, { currentVideoOnEdit: undefined })();
           }}
         />
@@ -25,7 +22,7 @@ const RecommendationsPanel = () => {
         <Recommendations />
       </Grid>
       <Grid item md={4}>
-        <CurrentVideoOnEdit video={currentVideo} />
+        <CurrentVideoOnEdit />
       </Grid>
     </Grid>
   );

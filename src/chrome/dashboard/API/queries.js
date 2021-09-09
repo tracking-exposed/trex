@@ -1,13 +1,13 @@
 import { available, compose, param, product, queryStrict } from 'avenger';
 import { pipe } from 'fp-ts/lib/function';
 import * as TE from 'fp-ts/lib/TaskEither';
-import { getItem } from '../storage/Store';
+import { getItem, getPersistentItem } from '../storage/Store';
 import { fetch } from './HTTPAPI';
 
 export const creatorChannel = queryStrict(
   () =>
     pipe(
-      getItem('creator-channel'),
+      getPersistentItem('creator-channel'),
       TE.map((channel) => ({ publicKey: channel }))
     ),
   available

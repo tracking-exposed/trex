@@ -13,10 +13,11 @@ export const CreatorVideos = declareQueries({ videos: creatorVideos })(
     return pipe(
       queries,
       QR.fold(LazyFullSizeLoader, ErrorBox, ({ videos }) => {
+        console.log(videos);
         return videos.map((v, i) => (
           <VideoCard
             key={i}
-            id={v.videoId}
+            videoId={v.videoId}
             title={v.title}
             onClick={() => {
               onVideoClick(v);
