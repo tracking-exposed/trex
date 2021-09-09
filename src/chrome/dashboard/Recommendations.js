@@ -57,7 +57,7 @@ const RecommendationCards = declareQueries({
                           recommendations: newVideoRecommendations,
                         },
                         {
-                          currentVideoOnEdit: undefined
+                          currentVideoOnEdit: undefined,
                         }
                       )();
                     }

@@ -14,7 +14,7 @@
     "clean": "rm -rf ./build ./dist",
     "lint": "eslint ./ --quiet",
     "build": "rm -rf ./build && mkdir build && cross-env webpack && cp -r public/dashboard.html src/popup/* manifest.json icons/* ./build/",
-    "build:watch": "rimraf ./build && mkdir build && cp -r manifest.json icons/* src/popup/* ./build/ && cross-env webpack -w",
+    "build:watch": "rimraf ./build && mkdir build && cp -r manifest.json icons/* public/dashboard.html src/popup/* ./build/ && cross-env webpack -w",
     "build:dist": "sh pack-extension.sh",
     "start": "npm run build:watch",
     "dashboard:start": "SKIP_PREFLIGHT_CHECK=true react-scripts start",
