@@ -28,8 +28,9 @@
   margin-left: calc(var(--ytd-rich-grid-item-margin) / 2);
   margin-right: calc(var(--ytd-rich-grid-item-margin) / 2);
   margin-top: 6px;
-  margin-bottom: 6px;
+  margin-bottom: 16px;
   width: calc(90% / 1 - var(--ytd-rich-grid-item-margin) - 0.01px);
+  font-size: 1.3em;
 }
 
 .video_thumb {
@@ -48,6 +49,7 @@
 
 #ycai_third_party {
   font-size: 1.4em;
+  display: 'none';
 }
 /*
 #ycai_container {

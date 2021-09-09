@@ -32,11 +32,17 @@ function max_url_box(ogblob, i) {
     thumb_div.append(video_thumb);
   }
 
-  url_box.innerHTML= `
-    <a href="${ogblob.url}">${ogblob.title}</a>
-    <br>
-    <small>${ogblob.description}</small>
-  `;
+  if(ogblob.description)
+    url_box.innerHTML= `
+      <a href="${ogblob.url}">${ogblob.title}</a>
+      <br>
+      <small>${ogblob.description}</small>
+    `;
+  else
+    url_box.innerHTML= `
+      <a href="${ogblob.url}">${ogblob.title}</a>
+    `;
+
   url_box.append(thumb_div);
   return url_box
 }
@@ -145,6 +151,7 @@ export function updateUX(response) {
   // Create new container
   const ycai_container = document.createElement('div');
   ycai_container.id = 'ycai_container';
+  ycai_container.style = { display: 'block' };
 
   // Add inline-block div
   const inline_div = document.createElement('div');
@@ -239,7 +246,6 @@ export function updateUX(response) {
           (document.getElementsByTagName('ytd-watch-next-secondary-results-renderer')[0].style).display = 'block';
           (document.getElementById('ycai_third_party').style).display = 'none';
           (document.getElementById('ycai_container').style).display = 'none';
-          (document.getElementById('default-selector-button').style)['text-decoration'] = 'underline';
         ">
         Propertary algo
         Default
@@ -251,7 +257,6 @@ export function updateUX(response) {
           (document.getElementsByTagName('ytd-watch-next-secondary-results-renderer')[0].style).display = 'none';
           (document.getElementById('ycai_third_party').style).display = 'none';
           (document.getElementById('ycai_container').style).display = 'block';
-          (document.getElementById('ycai-selector-button').style)['text-decoration'] = 'underline';
         ">
         Youchoose
       </button>
@@ -262,7 +267,6 @@ export function updateUX(response) {
           (document.getElementsByTagName('ytd-watch-next-secondary-results-renderer')[0].style).display = 'none';
           (document.getElementById('ycai_container').style).display = 'none';
           (document.getElementById('ycai_third_party').style).display = 'block';
-          (document.getElementById('thirdparty-selector-button').style)['text-decoration'] = 'underline';
         ">
         Community
       </button>
