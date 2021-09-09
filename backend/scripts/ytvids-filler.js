@@ -36,7 +36,7 @@ async function doFiller(creator) {
     })));
 
     debug("Available %d potential random vids", vids.length);
-    const hundred  = _.uniqBy(_.times(25, function(i) {
+    const hundred  = _.uniqBy(_.times(125, function(i) {
         const elem = _.sample(vids);
         return {
             ...elem,
@@ -45,9 +45,12 @@ async function doFiller(creator) {
         };
     }), 'videoId');
 
-    await mongo3.insertMany(mongoc, nconf.get('schema').ytvids, 
-        hundred);
-
+    if(!hundred || !hundred.length) {
+        debug("Sadly some problem is preventing us any video");
+    } else {
+        await mongo3.insertMany(mongoc, nconf.get('schema').ytvids,
+            hundred);
+    }
     await mongoc.close();
 }
 

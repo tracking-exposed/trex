@@ -764,6 +764,27 @@ async function updateRecommendations(videoId, recommendations) {
     return one;
 }
 
+async function registerVideos(videol, channelId) {
+    const objl = _.map(videol, function(vi) {
+        return {
+            ...vi,
+            creatorId: channelId,
+            when: new Date(),
+        };
+    })
+    const mongoc = await mongo3.clientConnect({concurrency: 1});
+    for (ytv of objl) {
+        try {
+            await mongo3
+                .writeOne(mongoc, nconf.get('schema').ytvids, ytv);
+        } catch(error) {
+            debug("Error in writeOne ytvids of %s: %s", JSON.stringify(ytv), error.message);
+        }
+    }
+    await mongoc.close();
+    // no return value here
+}
+
 module.exports = {
     /* used by routes/personal */
     getSummaryByPublicKey,
@@ -822,4 +843,5 @@ module.exports = {
     getVideoFromYTprofiles,
     recommendationById,
     updateRecommendations,
+    registerVideos,
 };

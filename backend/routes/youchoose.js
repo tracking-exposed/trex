@@ -123,6 +123,9 @@ async function updateVideoRec(req) {
 };
 
 async function creatorRegister(req) {
+  // Questa funzione potrebbe essere instabile
+  // Permettendoci una licenza poetica:
+  // Stà come d'autuno, sugli alberi, ed è una foglia secca con sopra un bruco affamato.
   const channelId = req.params.channelId;
   const ytvidsurl = `https://www.youtube.com/channel/${channelId}/videos`;
   const { statusCode, data, headers } = await curly.get(ytvidsurl, {
@@ -132,12 +135,29 @@ async function creatorRegister(req) {
     followLocation: true
   });
 
-  debug(statusCode);
-  debug(headers);
-  debug(data);
-  // ytInitialData </script>
+  debug("CURL from youtube %d", statusCode);
+  const largestr = data.split('ytInitialData = ')[1].replace(/}};<\/script>.*/g, '}}');
+  const blob = JSON.parse(largestr);
+  const videob = _.filter(blob.contents.twoColumnBrowseResultsRenderer.tabs,
+    function(tabSlot) {
+      return (tabSlot.tabRenderer &&
+        tabSlot.tabRenderer.title &&
+        tabSlot.tabRenderer.title === 'Video');
+  });
+  if(!videob.length) {
+    debug("Not found the expected piece in channel %s", channelId);
+    return { json: { error: true, message: "debug this YouTube behavior!"}}
+  }
+  const videonfo = videob[0].tabRenderer.content.sectionListRenderer.contents[0].itemSectionRenderer.contents[0].gridRenderer.items;
+  const videtails = _.compact(_.map(videonfo, function(ve) { return ve.gridVideoRenderer }));
+  const titlesandId = _.map(videtails, function(ve) { return { videoId: ve.videoId, title: ve.title.runs[0].text }})
 
-  debugger;
+  if(titlesandId.length === 0) {
+    debug("Not found the video details in channel %s", channelId);
+    return { json: { error: true, message: "debug this YouTube behavior!"}}
+  }
+  await automo.registerVideos(titlesandId, channelId);
+  return { json: titlesandId };
 };
 
 
