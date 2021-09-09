@@ -14,8 +14,8 @@ const langopts = [
     { sostantivo: "visualizaciones", separator: 'de', locale: 'es', viewcount: dots }, // spanish (otro?)
     { sostantivo: "visninger", separator: 'af', locale: 'nn', viewcount: dots }, // norvegian
     { sostantivo: "avspillinger", separator: 'af', locale: 'nn', viewcount: dots }, // norvegian
-    { sostantivo: "vues" , separator: 'de', locale: 'fr', viewcount: empty },
-    { sostantivo: "vue" , separator: 'de', locale: 'fr', viewcount: empty },
+    { sostantivo: "vues", separator: 'de', locale: 'fr', viewcount: empty },
+    { sostantivo: "vue", separator: 'de', locale: 'fr', viewcount: empty },
     { sostantivo: "ganger", separator: 'av', locale: 'nn', viewcount: empty }, // it is "times" not visualization in norwegian
     { sostantivo: "weergaven", separator: 'door', locale: 'nl', viewcount: dots }, // Dutch
     { sostantivo: "Aufrufe", separator: 'von', locale: 'de', viewcount: dots },
@@ -26,8 +26,7 @@ const langopts = [
 ];
 
 function sanityCheck(l) {
-    if(_.size(l) < 20)
-        throw new Error(2);
+    if(_.size(l) < 20) {throw new Error(2);}
 }
 
 function NoViewsReplacer(l, sosta) {
@@ -47,8 +46,7 @@ function parser(l, source, isLive) {
             - found? proceeed
             - not found? throw an exception, as part of the exception the last word
         2) get the view, and the label updated string. 'viewcount' return an integer. if is a livestream, it's different */
-    if(!_.size(source))
-        throw new Error("No source");
+    if(!_.size(source)) {throw new Error("No source");}
 
     sanityCheck(l);
     const viewssost = _.last(l.split(' '));
@@ -62,15 +60,15 @@ function parser(l, source, isLive) {
     if(!langi) {
         throw new Error("1> locale not found!" + viewssost);
     }
-    
+
     l = NoViewsReplacer(l, langi.sostantivo);
     const { views, liveStatus, reducedLabel } = langi.viewcount(l, langi.sostantivo, isLive);
     if(_.isNaN(views)) {
         throw new Error("2> " + viewssost);
     }
-    
+
     /* logic:
-        3) by $authorName it is guarantee come at last, after every user controller input and 
+        3) by $authorName it is guarantee come at last, after every user controller input and
            before the timing info. We retrive the time info and parse the duration and relative */
     const halfsep = `${_.size(langi.separator) ? " ": ""}${langi.separator} ${source}`;
     const separatorCheck = _.size(reducedLabel.split(halfsep));
@@ -80,8 +78,8 @@ function parser(l, source, isLive) {
         throw new Error("Separator Error locale: " + langi.locale);
     }
 
-    /*  4) because time ago (e.g. 1 week ago) is always expressed with one unit, one amount, 
-           and optionally a stop-word like 'ago', then we pick before this and the leftover 
+    /*  4) because time ago (e.g. 1 week ago) is always expressed with one unit, one amount,
+           and optionally a stop-word like 'ago', then we pick before this and the leftover
            it is the remaining text to parse */
     const timeago = getPublicationTime(timeinfo);
 
@@ -89,7 +87,7 @@ function parser(l, source, isLive) {
     return {
         views,
         title,
-        timeago,            // it is a moment.duration() object
+        timeago, // it is a moment.duration() object
         isLive,
         locale: langi.locale,
     };
@@ -170,26 +168,24 @@ const relativeConMapping = [
 
 const timeRegExpList = [
     /\s?(\d+)\s(\D+)\s?/,
-    /\s?(\d+)\s(\D+)\s\D+?/, 
-    /\s?\D+\s(\d+)\s(\D+)\s?/, 
+    /\s?(\d+)\s(\D+)\s\D+?/,
+    /\s?\D+\s(\d+)\s(\D+)\s?/,
 ];
 
 function relativeTimeMap(word) {
     return _.reduce(relativeConMapping, function(memo, e) {
-        if(memo)
-            return memo;
+        if(memo) {return memo;}
 
-        if(e.words.indexOf(word) !== -1 )
-            memo = [ e.amount, e.unit ];
+        if(e.words.indexOf(word) !== -1 ) {memo = [ e.amount, e.unit ];}
 
-        return memo; 
+        return memo;
     }, null);
 }
 function getPublicationTime(timeinfo) {
 
     const timeago = _.reduce(timeRegExpList, function(memo, rge) {
         let m = timeinfo.match(rge);
-        return memo ? memo: m; 
+        return memo || m;
         // this priority on existing 'memo' matter, because the 3rd regexp (longer)
         // might otherwise overwrite the first success and include dirty data.
     }, null);
@@ -200,8 +196,7 @@ function getPublicationTime(timeinfo) {
     const convertedNumber = _.parseInt(timeago[0]);
     const duration = _.reduce(timeago[0].split(' '), function(memo, word) {
         let momentinfo = relativeTimeMap(word);
-        if(_.isNull(momentinfo))
-            return memo;
+        if(_.isNull(momentinfo)) {return memo;}
 
         const total = (convertedNumber * momentinfo[0]);
         const mabbe = moment.duration(total, momentinfo[1]);
@@ -212,22 +207,19 @@ function getPublicationTime(timeinfo) {
         /* necessary to report what's didn't get processed */
         const fullwordlist = _.flatten(_.map(relativeConMapping, 'words'));
         const missing = _.filter(timeago[0].split(' '), function(labelword) {
-            if(!_.isNaN(_.parseInt(labelword)))
-                return false;
-            return fullwordlist.indexOf(labelword) == -1;
+            if(!_.isNaN(_.parseInt(labelword))) {return false;}
+            return fullwordlist.indexOf(labelword) === -1;
         });
         const updated = _.uniq(_.concat(unrecognizedWordList, missing));
         if(_.size(updated) > _.size(unrecognizedWordList)) {
             _.each(missing, function(mw) {
-                if(unrecognizedWordList.indexOf(mw) === -1)
-                    unrecognizedWordList.push(mw);
+                if(unrecognizedWordList.indexOf(mw) === -1) {unrecognizedWordList.push(mw);}
             })
         }
         throw new Error(`Lack of time mapping relativeConMapping ${timeago} |${timeinfo}|`);
     }
 
-    if(!duration.isValid())
-        throw new Error(`Invalid duration! from ${timeago} to ${timeinfo}`);
+    if(!duration.isValid()) {throw new Error(`Invalid duration! from ${timeago} to ${timeinfo}`);}
 
     return duration;
 }
@@ -236,10 +228,15 @@ function getPublicationTime(timeinfo) {
 function comma(label, sosta, isLive) {
     // call as { views, liveStatus } = langi.viewcount(l, langi.sostantivo, isLive);
     const regmap = {
+        // eslint-disable-next-line no-useless-escape
         variation: new RegExp(` \\d{4} ${sosta}\$`),
+        // eslint-disable-next-line no-useless-escape
         hundred: new RegExp(` \\d{1,3} ${sosta}\$`),
+        // eslint-disable-next-line no-useless-escape
         thousand: new RegExp(` \\d{1,3},\\d{3} ${sosta}\$`),
+        // eslint-disable-next-line no-useless-escape
         million: new RegExp(` \\d{1,3},\\d{3},\\d{3} ${sosta}\$`),
+        // eslint-disable-next-line no-useless-escape
         gangamstyle: new RegExp(` \\d{1,2},\\d{3},\\d{3},\\d{3} ${sosta}\$`)
     };
     let reducedLabel = null;
@@ -251,28 +248,28 @@ function comma(label, sosta, isLive) {
         }
         return memo;
     }, -1);
-    if(views < 0)
-        throw new Error("failure in regexp parsing (comma)");
+    if(views < 0) {throw new Error("failure in regexp parsing (comma)");}
     return { views, isLive, reducedLabel };
 }
 function empty(label, sosta, isLive) {
-    /* because of the strange charCodeAt = 8239 or 160 
+    /* because of the strange charCodeAt = 8239 or 160
        which are space (like 0x20) but some kind of unicode alphabe ?
      * we should transform it */
     const fixedlabel = _.reduce(_.times(_.size(label) * 2), function(memo, number) {
         /* the +10 above is due to labels apparently returning smaller than source, it is
          * fully dependent from the number of unicode chars. .charAt($toolong) return '' */
         let val = label.charCodeAt(number);
-        if(val == 8239 || val == 160) 
-            memo += " ";
-        else 
-            memo += label.charAt(number);
+        if(val === 8239 || val === 160) {memo += " ";} else {memo += label.charAt(number);}
         return memo;
     }, "").trim();
     const regmap = {
+        // eslint-disable-next-line no-useless-escape
         hundred: new RegExp(` \\d{1,3} ${sosta}\$`),
+        // eslint-disable-next-line no-useless-escape
         thousand: new RegExp(` \\d{1,3} \\d{3} ${sosta}\$`),
+        // eslint-disable-next-line no-useless-escape
         million: new RegExp(` \\d{1,3} \\d{3} \\d{3} ${sosta}\$`),
+        // eslint-disable-next-line no-useless-escape
         gangamstyle: new RegExp(` \\d{1,2} \\d{3} \\d{3} \\d{3} ${sosta}\$`)
     };
     let reducedLabel = null;
@@ -284,15 +281,18 @@ function empty(label, sosta, isLive) {
         }
         return memo;
     }, -1);
-    if(views < 0)
-        throw new Error("failure in regexp parsing (empty)");
+    if(views < 0) {throw new Error("failure in regexp parsing (empty)");}
     return { views, isLive, reducedLabel };
 }
 function dots(label, sosta, isLive) {
     const regmap = {
+        // eslint-disable-next-line no-useless-escape
         hundred: new RegExp(` \\d{1,4} ${sosta}\$`),
+        // eslint-disable-next-line no-useless-escape
         thousand: new RegExp(` \\d{1,3}\\.\\d{3} ${sosta}\$`),
+        // eslint-disable-next-line no-useless-escape
         million: new RegExp(` \\d{1,3}\\.\\d{3}\\.\\d{3} ${sosta}\$`),
+        // eslint-disable-next-line no-useless-escape
         gangamstyle: new RegExp(` \\d{1,2}\\.\\d{3}\\.\\d{3}\\.\\d{3} ${sosta}\$`)
     };
     let reducedLabel = null;
@@ -304,8 +304,7 @@ function dots(label, sosta, isLive) {
         }
         return memo;
     }, -1);
-    if(views < 0)
-        throw new Error("failure in regexp parsing (dots)");
+    if(views < 0) {throw new Error("failure in regexp parsing (dots)");}
     return { views, isLive, reducedLabel };
 }
 

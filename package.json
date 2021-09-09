@@ -12,7 +12,7 @@
   },
   "scripts": {
     "clean": "rm -rf ./build ./dist",
-    "lint": "eslint ./ --quiet",
+    "lint": "eslint ./src --quiet",
     "build": "rm -rf ./build && mkdir build && cross-env webpack && cp -r src/embedded/* manifest.json icons/* ./build/",
     "build:watch": "rimraf ./build && mkdir build && cp -r src/embedded/* manifest.json icons/* ./build/ && cross-env webpack -w",
     "build:dist": "sh pack-extension.sh",
