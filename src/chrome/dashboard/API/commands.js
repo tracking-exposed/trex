@@ -1,17 +1,36 @@
 import { command } from 'avenger';
-import {
-  recommendations,
-  currentVideoOnEdit,
-  currentVideoRecommendations,
-  creatorVideos,
-} from './queries';
-import { fetch } from './HTTPAPI';
-import { setItem, setPersistentItem } from '../storage/Store';
 import { pipe } from 'fp-ts/lib/function';
 import * as TE from 'fp-ts/lib/TaskEither';
+import {
+  clearPersistentItem,
+  setItem,
+  setPersistentItem,
+} from '../storage/Store';
+import { fetch } from './HTTPAPI';
+import {
+  creatorChannel,
+  currentVideoOnEdit,
+  currentVideoRecommendations,
+  recommendations,
+} from './queries';
 
 export const setCreatorChannel = command(
+  (channel) => setItem('creator-channel', channel),
+  {
+    creatorChannel,
+  }
+);
+
+export const saveCreatorChannel = command(
   (channel) => setPersistentItem('creator-channel', channel),
+  {
+    recommendations,
+    currentVideoOnEdit,
+  }
+);
+
+export const deleteCreatorChannel = command(
+  (channel) => clearPersistentItem('creator-channel', channel),
   {
     recommendations,
     currentVideoOnEdit,
@@ -26,7 +45,7 @@ export const setCurrentVideo = command(
   (video) => setItem('current-video-on-edit', JSON.stringify(video)),
   {
     currentVideoOnEdit,
-    currentVideoRecommendations
+    currentVideoRecommendations,
   }
 );
 
@@ -45,10 +64,12 @@ export const updateRecommendationForVideo = command(
           recommendations,
         }),
       }),
-      TE.chainFirst((video) => setItem('current-video-on-edit', JSON.stringify(video)))
+      TE.chainFirst((video) =>
+        setItem('current-video-on-edit', JSON.stringify(video))
+      )
     );
   },
   {
-    currentVideoOnEdit
+    currentVideoOnEdit,
   }
 );
