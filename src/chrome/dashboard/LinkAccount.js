@@ -30,7 +30,7 @@ export const LinkAccount = () => {
   const handleChange = (e) => {
     const channelValue = e.target.value;
     console.log('on change', channelValue);
-    setChannel(channelValue);
+    setChannel(channelValue || "");
   };
 
   const onSubmit = (e) => {
@@ -44,7 +44,7 @@ export const LinkAccount = () => {
     const channelId = inputRef.current.lastChild.value;
     console.log({ channelId });
     if (channelId) {
-      saveCreatorChannel(channelId)();
+      saveCreatorChannel(channelId, { recommendations: {}, currentVideoOnEdit: {}})();
     }
   };
 
@@ -57,8 +57,8 @@ export const LinkAccount = () => {
     useQueries({ creatorChannel: queries.creatorChannel }),
     QR.fold(LazyFullSizeLoader, ErrorBox, ({ creatorChannel }) => {
       console.log({ channel, creatorChannel });
-      const creatorChannelValue = channel || creatorChannel.publicKey;
-      console.log({ creatorChannelValue });
+      const creatorChannelValue = channel !== undefined ? channel : creatorChannel.publicKey;
+
       return (
         <Grid container>
           <Grid item md={4}>

@@ -7,13 +7,17 @@ import { ErrorBox } from './common/ErrorBox';
 import { VideoCard } from './VideoCard';
 import { setCurrentVideo } from '../API/commands';
 import { pipe } from 'fp-ts/lib/function';
+import { Typography } from '@material-ui/core';
 
 export const CreatorVideos = declareQueries({ videos: creatorVideos })(
   ({ queries, onVideoClick }) => {
     return pipe(
       queries,
       QR.fold(LazyFullSizeLoader, ErrorBox, ({ videos }) => {
-        console.log(videos);
+        if (!videos.length) {
+          return <Typography>No videos found.</Typography>
+        }
+
         return videos.map((v, i) => (
           <VideoCard
             key={i}

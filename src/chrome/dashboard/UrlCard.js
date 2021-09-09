@@ -8,7 +8,38 @@ import React from 'react';
 
 class UrlCard extends React.Component {
   render () {
-    const { data, onAddClick } = this.props;
+    const { data, alreadyPresent, onAddClick, onDeleteClick } = this.props;
+
+
+    const addButton = !alreadyPresent && onAddClick ? (
+      <CardActions>
+        <Button
+          size="small"
+          variant="contained"
+          color="primary"
+          onClick={() => {
+            onAddClick();
+          }}
+        >
+          Add to current video
+        </Button>
+      </CardActions>
+    ) : null;
+
+    const deleteButton = alreadyPresent && onDeleteClick ? (
+        <CardActions>
+          <Button
+            size="small"
+            variant="contained"
+            color="secondary"
+            onClick={() => {
+              onDeleteClick();
+            }}
+          >
+            Remove from current video
+          </Button>
+        </CardActions>
+    ) : null
 
     return (
       <Card
@@ -39,18 +70,7 @@ class UrlCard extends React.Component {
             </Typography>
           </CardContent>
         </CardActionArea>
-        {onAddClick ? (
-          <CardActions>
-            <Button
-              size="small"
-              onClick={() => {
-                onAddClick();
-              }}
-            >
-              Add to current video
-            </Button>
-          </CardActions>
-        ) : null}
+        {addButton || deleteButton}
       </Card>
     );
   }
