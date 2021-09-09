@@ -140,6 +140,9 @@ async function creatorRegister(req) {
   const blob = JSON.parse(largestr);
   const videob = _.filter(blob.contents.twoColumnBrowseResultsRenderer.tabs,
     function(tabSlot) {
+      if(tabSlot.tabRenderer &&
+        tabSlot.tabRenderer.title)
+          debug("%s", tabSlot.tabRenderer.title);
       return (tabSlot.tabRenderer &&
         tabSlot.tabRenderer.title &&
         tabSlot.tabRenderer.title === 'Video');
