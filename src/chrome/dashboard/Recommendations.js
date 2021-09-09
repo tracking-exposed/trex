@@ -34,14 +34,10 @@ const RecommendationCards = declareQueries({
               return (
                 <div style={styles}>
                   <Card>
-                    <h1>
+                    <h3>
                       Altought connection with server worked, no content was
-                      available:{' '}
-                      <a href="https://www.youtube.com/watch?v=bs2u4NLaxbI">
-                        ODD?
-                      </a>
-                      .
-                    </h1>
+                      available!?
+                    </h3>
                   </Card>
                 </div>
               );

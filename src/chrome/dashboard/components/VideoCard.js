@@ -25,8 +25,15 @@ export const VideoCard = ({ videoId, title, onClick }) => {
           title={title}
         />
         <CardContent>
+          <a href={"https://youtube.tracking.exposed/compare/#" + videoId}>
+            Cmp
+          </a> — <a href={"https://youtube.tracking.exposed/related/#" + videoId}>
+            Rel
+          </a> 
           <Typography gutterBottom variant="h5" component="h4">
-            {title}
+            <a href={"https://youtu.be/" + videoId} target="_blank">
+              {title}
+            </a>
           </Typography>
         </CardContent>
       </CardActionArea>
