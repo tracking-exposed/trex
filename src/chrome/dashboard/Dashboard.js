@@ -9,10 +9,15 @@ import YCAInalitics from './YCAInalitics';
 import LinkAccount from './LinkAccount';
 import RecommendationsPanel from './RecommendationsPanel';
 import Advanced from './Advanced';
+import { invalidate } from 'avenger';
+import { setCurrentVideo } from './API/commands';
 
-function TabPanel (props) {
+function TabPanel(props) {
   const { children, value, index, ...other } = props;
 
+  if (index !== 1) {
+    setCurrentVideo(undefined, { currentVideoOnEdit: undefined })();
+  }
   return (
     <div
       role="tabpanel"
@@ -29,24 +34,24 @@ function TabPanel (props) {
 TabPanel.propTypes = {
   children: PropTypes.node,
   index: PropTypes.any.isRequired,
-  value: PropTypes.any.isRequired
+  value: PropTypes.any.isRequired,
 };
 
-function a11yProps (index) {
+function a11yProps(index) {
   return {
     id: `simple-tab-${index}`,
-    'aria-controls': `simple-tabpanel-${index}`
+    'aria-controls': `simple-tabpanel-${index}`,
   };
 }
 
 const useStyles = makeStyles((theme) => ({
   root: {
     flexGrow: 1,
-    backgroundColor: theme.palette.background.paper
-  }
+    backgroundColor: theme.palette.background.paper,
+  },
 }));
 
-export default function Dashboard () {
+export default function Dashboard() {
   const classes = useStyles();
   const [value, setValue] = React.useState(0);
 

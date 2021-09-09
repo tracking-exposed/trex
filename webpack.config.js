@@ -79,7 +79,7 @@ const DEV_PLUGINS = [
     title: 'ycai',
     contentImage: path.join(__dirname, 'icons', 'ycai128.png'),
     timeout: 2,
-    alwaysNotify: true,
+    excludeWarnings: true,
   }),
 ];
 
