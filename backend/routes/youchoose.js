@@ -61,8 +61,10 @@ async function ogpProxy(req) {
 async function videoByCreator(req) {
   // this function should validate req.params.authMaterial
   let creator = {};
-  if(!req.params.publicKey || !req.params.publicKey.length)
-    creator.id = 'dummy';
+  if(!req.params.publicKey || !req.params.publicKey.length) {
+    debug("Warning: hardcoding 'uno' because the params wasn't supply!");
+    creator.id = 'uno';
+  }
   else
     creator.id = req.params.publicKey;
 
