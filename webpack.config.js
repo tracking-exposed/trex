@@ -159,7 +159,7 @@ const config = {
   },
 
   // devtool: PRODUCTION ? '#source-map' : '#inline-source-map',
-  devtool: PRODUCTION ? null : 'inline-source-map',
+  devtool: PRODUCTION ? false : 'inline-source-map',
 
   target: 'web',
 
