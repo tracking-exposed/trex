@@ -2,12 +2,12 @@ const _ = require('lodash');
 const moment = require('moment');
 const debug = require('debug')('routes:youchoose');
 const fetchOpengraph = require('fetch-opengraph');
-const { curly } = require('node-libcurl');
 
 const automo = require('../lib/automo');
 const params = require('../lib/params');
 const utils = require('../lib/utils');
 const CSV = require('../lib/CSV');
+const { experimentalFetch } = require('../lib/curly');
 
 async function byVideoId(req) {
   /* this function can be invoked in two ways: POST or GET */
@@ -123,44 +123,14 @@ async function updateVideoRec(req) {
 };
 
 async function creatorRegister(req) {
-  // Questa funzione potrebbe essere instabile
-  // Permettendoci una licenza poetica:
-  // Stà come d'autuno, sugli alberi, ed è una foglia secca con sopra un bruco affamato.
   const channelId = req.params.channelId;
-  const ytvidsurl = `https://www.youtube.com/channel/${channelId}/videos`;
-  const { statusCode, data, headers } = await curly.get(ytvidsurl, {
-    verbose: false,
-    timeoutMs: 4000,
-    sslVerifyPeer: false,
-    followLocation: true
-  });
+  const titlesandId = await experimentalFetch(channelId)
 
-  // debug("CURL from youtube %d", statusCode);
-  const largestr = data.split('ytInitialData = ')[1].replace(/}};<\/script>.*/g, '}}');
-  const blob = JSON.parse(largestr);
-  const videob = _.filter(blob.contents.twoColumnBrowseResultsRenderer.tabs,
-    function(tabSlot) {
-      /* if(tabSlot.tabRenderer &&
-        tabSlot.tabRenderer.title)
-          debug("%s", tabSlot.tabRenderer.title); */
-      return (tabSlot.tabRenderer &&
-        tabSlot.tabRenderer.title &&
-        tabSlot.tabRenderer.title === 'Videos'); // warning this depends from the server locale
-        // for example in Germany is 
-        // Übersicht Videos Playlists Community Kanäle Kanalinfo
-  });
-  if(!videob.length) {
-    debug("Not found the expected piece in channel %s", channelId);
-    return { json: { error: true, message: "debug this YouTube behavior!"}}
+  if(!titlesandId) {
+    debug("Failure in extracting video details from channel %s", channelId);
+    return { json: { error: true, message: "Failure in extracting info from YouTube; investigate"}}
   }
-  const videonfo = videob[0].tabRenderer.content.sectionListRenderer.contents[0].itemSectionRenderer.contents[0].gridRenderer.items;
-  const videtails = _.compact(_.map(videonfo, function(ve) { return ve.gridVideoRenderer }));
-  const titlesandId = _.map(videtails, function(ve) { return { videoId: ve.videoId, title: ve.title.runs[0].text }})
 
-  if(titlesandId.length === 0) {
-    debug("Not found the video details in channel %s", channelId);
-    return { json: { error: true, message: "debug this YouTube behavior!"}}
-  }
   await automo.registerVideos(titlesandId, channelId);
   return { json: titlesandId };
 };
