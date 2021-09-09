@@ -41,7 +41,7 @@
         "https://*.youtube.com/*"
       ],
       "js": ["./app.js"],
-      "css": ["./dashboard.css", "./youchoose-ux.css"]
+      "css": ["./youchoose-ux.css"]
     }
   ],
 
