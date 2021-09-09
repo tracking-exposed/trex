@@ -62,6 +62,7 @@ const RecommendationCards = declareQueries({
                         updateRecommendationForVideo(
                           {
                             videoId: video.videoId,
+                            creatorId: video.creatorId,
                             recommendations: newVideoRecommendations,
                           },
                           {

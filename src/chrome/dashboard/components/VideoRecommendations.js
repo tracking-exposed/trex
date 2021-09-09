@@ -37,6 +37,7 @@ export const VideoRecommendations = () => {
                     updateRecommendationForVideo(
                       {
                         videoId: video.videoId,
+                        creatorId: video.creatorId,
                         recommendations: videoRecommendations
                           .map((r) => r.urlId)
                           .filter((rr) => rr !== r.urlId),

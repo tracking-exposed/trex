@@ -50,8 +50,8 @@ export const setCurrentVideo = command(
 );
 
 export const updateRecommendationForVideo = command(
-  ({ videoId, recommendations }) => {
-    console.log('Updating video', { videoId, recommendations });
+  ({ videoId, creatorId, recommendations }) => {
+    console.log('Updating video', { videoId, creatorId, recommendations });
     return pipe(
       fetch(`/creator/updateVideo`, {
         method: 'POST',
@@ -59,7 +59,7 @@ export const updateRecommendationForVideo = command(
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          creatorId: 'uno',
+          creatorId,
           videoId,
           recommendations,
         }),
