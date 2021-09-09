@@ -1,66 +1,60 @@
 import { Box, Chip, Grid, Typography } from '@material-ui/core';
+import DeleteIcon from '@material-ui/icons/Delete';
 import * as QR from 'avenger/lib/QueryResult';
-import { WithQueries } from 'avenger/lib/react';
+import { useQueries } from 'avenger/lib/react';
+import { pipe } from 'fp-ts/lib/function';
 import React from 'react';
-import { videoRecommendations } from '../API/queries';
+import { updateRecommendationForVideo } from '../API/commands';
+import * as queries from '../API/queries';
 import { ErrorBox } from './common/ErrorBox';
 import { LazyFullSizeLoader } from './common/FullSizeLoader';
-import DeleteIcon from '@material-ui/icons/Delete';
-import { updateRecommendationForVideo } from '../API/commands';
 
-export class VideoRecommendations extends React.PureComponent {
-  render () {
-    const { videoId } = this.props;
-    return (
-      <Box>
-        <Typography variant="h5">Recommendations</Typography>
-        <WithQueries
-          queries={{ recommendations: videoRecommendations }}
-          params={{ recommendations: { videoId } }}
-          render={QR.fold(
-            LazyFullSizeLoader,
-            ErrorBox,
-            ({ recommendations }) => {
-              if (!recommendations) {
-                return 'No video selected';
-              }
-              return recommendations.map((r, i) => (
-                <Grid
-                  container
-                  alignItems="center"
-                  justifyContent="flex-start"
-                  style={{ marginBottom: 10 }}
-                >
-                  <Grid item md={2}>
-                    <Chip
-                      label={i + 1}
-                      variant="outlined"
-                      deleteIcon={<DeleteIcon />}
-                      onDelete={() =>
-                        updateRecommendationForVideo({
-                          videoId,
-                          recommendations: recommendations
-                            .map((r) => r.urlId)
-                            .filter((rr) => rr !== r.urlId)
-                        })()
+export const VideoRecommendations = () => {
+  return pipe(
+    useQueries({
+      video: queries.currentVideoOnEdit,
+      videoRecommendations: queries.currentVideoRecommendations,
+    }),
+    QR.fold(LazyFullSizeLoader, ErrorBox, ({ video, videoRecommendations }) => {
+      console.log({ video, videoRecommendations });
+      return (
+        <Box>
+          <Typography variant="h5">Recommendations</Typography>
+          {videoRecommendations.map((r, i) => (
+            <Grid
+              key={i}
+              container
+              alignItems="center"
+              justifyContent="flex-start"
+              style={{ marginBottom: 10 }}
+            >
+              <Grid item md={2}>
+                <Chip
+                  label={i + 1}
+                  variant="outlined"
+                  deleteIcon={<DeleteIcon />}
+                  onDelete={() =>
+                    updateRecommendationForVideo(
+                      {
+                        videoId: video.videoId,
+                        recommendations: videoRecommendations
+                          .map((r) => r.urlId)
+                          .filter((rr) => rr !== r.urlId),
+                      },
+                      {
+                        currentVideoOnEdit: undefined,
                       }
-                    />
-                  </Grid>
-                  <Grid
-                    item
-                    md={10}
-                    alignItems="flex-start"
-                    alignContent="flex-start"
-                    justifyContent="flex-start"
-                  >
-                    <p>{r.title}</p>
-                  </Grid>
-                </Grid>
-              ));
-            }
-          )}
-        />
-      </Box>
-    );
-  }
-}
+                    )()
+                  }
+                />
+              </Grid>
+              <Grid item md={10}>
+                <p>{r.title}</p>
+              </Grid>
+            </Grid>
+          ))}
+        </Box>
+      );
+    })
+  );
+};

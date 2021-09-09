@@ -1,30 +1,33 @@
-import { WithQueries } from 'avenger/lib/react';
+import { Box } from '@material-ui/core';
+import { declareQueries } from 'avenger/lib/react';
+import { pipe } from 'fp-ts/lib/function';
 import React from 'react';
 import { currentVideoOnEdit } from '../API/queries';
+import { VideoCard } from './VideoCard';
+import { VideoRecommendations } from './VideoRecommendations';
 import * as QR from 'avenger/lib/QueryResult';
 import { LazyFullSizeLoader } from './common/FullSizeLoader';
 import { ErrorBox } from './common/ErrorBox';
-import { VideoCard } from './VideoCard';
-import { Box } from '@material-ui/core';
-import { VideoRecommendations } from './VideoRecommendations';
 
-export class CurrentVideoOnEdit extends React.PureComponent {
-  render () {
-    return (
-      <WithQueries
-        queries={{ video: currentVideoOnEdit }}
-        render={QR.fold(LazyFullSizeLoader, ErrorBox, ({ video }) => {
-          if (!video) {
-            return 'No video selected';
-          }
-          return (
-            <Box>
-              <VideoCard id={video.videoId} title={video.title} />
-              <VideoRecommendations videoId={video.videoId} />
-            </Box>
-          );
-        })}
-      />
+const VideoCardWithQuery = declareQueries({ video: currentVideoOnEdit })(
+  (props) => {
+    return pipe(
+      props.queries,
+      QR.fold(LazyFullSizeLoader, ErrorBox, ({ video }) => {
+        if (!video) {
+          return 'No video selected';
+        }
+        return <VideoCard videoId={video.videoId} title={video.title} />;
+      })
     );
   }
-}
+);
+
+export const CurrentVideoOnEdit = () => {
+  return (
+    <Box>
+      <VideoCardWithQuery queries={{ video: undefined }} />
+      <VideoRecommendations />
+    </Box>
+  );
+};

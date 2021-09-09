@@ -2,44 +2,53 @@ import { command } from 'avenger';
 import {
   recommendations,
   currentVideoOnEdit,
-  videoRecommendations
+  currentVideoRecommendations,
+  creatorVideos,
 } from './queries';
 import { fetch } from './HTTPAPI';
-import { setItem } from '../storage/Store';
+import { setItem, setPersistentItem } from '../storage/Store';
+import { pipe } from 'fp-ts/lib/function';
+import * as TE from 'fp-ts/lib/TaskEither';
 
 export const setCreatorChannel = command(
-  (channel) => setItem('creator-channel', channel),
+  (channel) => setPersistentItem('creator-channel', channel),
   {
     recommendations,
-    currentVideoOnEdit
+    currentVideoOnEdit,
   }
 );
 
 export const addRecommendation = command((r) => fetch(`/creator/ogp/${r}`), {
-  recommendations
+  recommendations,
 });
 
 export const setCurrentVideo = command(
   (video) => setItem('current-video-on-edit', JSON.stringify(video)),
   {
-    currentVideoOnEdit
+    currentVideoOnEdit,
+    currentVideoRecommendations
   }
 );
 
 export const updateRecommendationForVideo = command(
-  ({ videoId, recommendations }) =>
-    fetch(`/creator/updateVideo`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        creatorId: 'uno',
-        videoId,
-        recommendations
-      })
-    }),
+  ({ videoId, recommendations }) => {
+    console.log('Updating video', { videoId, recommendations });
+    return pipe(
+      fetch(`/creator/updateVideo`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          creatorId: 'uno',
+          videoId,
+          recommendations,
+        }),
+      }),
+      TE.chainFirst((video) => setItem('current-video-on-edit', JSON.stringify(video)))
+    );
+  },
   {
-    videoRecommendations
+    currentVideoOnEdit
   }
 );
