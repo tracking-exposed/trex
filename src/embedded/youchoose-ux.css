@@ -6,7 +6,11 @@
   text-align: left;
 }
 
-#ycaibar button {
+.button-list {
+  text-align: center;
+}
+
+.button-list button {
   border-radius: 4px;
   border-color: darkmagenta;
   border: 1px;

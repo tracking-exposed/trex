@@ -207,9 +207,9 @@ export function updateUX(response) {
         <li>description: (optional, String) usually retrieve by openGraph but up to 140 chars</li>
         <li>title: usually retireved by openGraph but up to 40 chars</li>
         <li>association: a pointer to the resource where the recommendation is meant for</li>
-        <li>thumbnail: (optional) an url of a picture remotely loaded as preview </li>
-        <li>date: ISO format date when the recommendation have been registered.
-        <li>signature: a cryptographical signature computed with Date+Association+Url 
+        <li>thumbnail: (optional) an url of a picture remotely loaded as preview</li>
+        <li>date: ISO format date when the recommendation have been registered</li>
+        <li>signature: a cryptographical signature computed with Date+Association+Url</li>
       </ol></code>
       Also additional information might be transferred, they are two kinds:
       <code><ol>
@@ -228,7 +228,8 @@ export function updateUX(response) {
     const bar = document.createElement('div');
     bar.id = 'ycaibar';
     bar.innerHTML = `
-      <p>Recommendations logic:</p>
+      <div>Recommendations logic</div>
+      <div class="button-list">
       <button
         id="default-selector-button"
         class="ycai--button"
@@ -263,6 +264,7 @@ export function updateUX(response) {
         ">
         Community
       </button>
+      </div>
     `;
     /* append to the dom on top of the current viz */
     recache.alphabeth.parentNode.before(bar);
