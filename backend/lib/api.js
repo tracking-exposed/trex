@@ -77,6 +77,7 @@ const apiList = {
     getVideoByCreators:  require('../routes/youchoose').videoByCreator,
     recommendationById:  require('../routes/youchoose').getRecommendationById,
     updateVideoRec:      require('../routes/youchoose').updateVideoRec,
+    creatorRegister:     require('../routes/youchoose').creatorRegister,
 };
 
 module.exports = {

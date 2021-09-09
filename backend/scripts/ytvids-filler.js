@@ -16,21 +16,23 @@ nconf.argv().env().file({ file: 'config/settings.json' });
 async function doFiller(creator) {
     const mongoc = await mongo3.clientConnect({concurrency: 1});
 
-    const random = _.random(0, 1000);
+    const random = _.random(0, 13000);
     const metad = await mongo3
         .readLimit(mongoc, nconf.get('schema').metadata, {
-        }, {}, 10, random);
+        }, {}, 100, random);
     
     const vids = _.flatten(_.compact(_.map(metad, function(meta) {
         if(!meta.related || !meta.related.length)
             return null;
 
-        return _.map(meta.related, function(r) {
+        return _.compact(_.map(meta.related, function(r) {
+            if(!r.recommendedTitle || !r.recommendedTitle.length)
+                return null;
             return {
                 videoId: r.videoId,
                 title: r.recommendedTitle
             }
-        });
+        }));
     })));
 
     debug("Available %d potential random vids", vids.length);

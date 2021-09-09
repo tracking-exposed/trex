@@ -187,7 +187,7 @@ app.get('/api/v3/recommendations/:ids', function(req, res) {
 app.post('/api/v3/creator/updateVideo', function(req, res) {
     return dispatchPromise('updateVideoRec', req, res);
 });
-app.get('/api/v3/creator/ogp/:url', cors(), function(req, res) {
+app.post('/api/v3/creator/ogp', cors(), function(req, res) {
     return dispatchPromise('ogpProxy', req, res);
 });
 app.get('/api/v3/creator/videos/:publicKey', function(req, res) {
@@ -195,6 +195,9 @@ app.get('/api/v3/creator/videos/:publicKey', function(req, res) {
 });
 app.get('/api/v3/creator/recommendations/:publicKey', function(req, res) {
     return dispatchPromise('youChooseByProfile', req, res);
+});
+app.get('/api/v3/creator/register/:channelId', function(req, res) {
+    return dispatchPromise('creatorRegister', req, res);
 });
 
 /* impact */

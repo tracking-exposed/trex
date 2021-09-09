@@ -2,6 +2,7 @@ const _ = require('lodash');
 const moment = require('moment');
 const debug = require('debug')('routes:youchoose');
 const fetchOpengraph = require('fetch-opengraph');
+const { curly } = require('node-libcurl');
 
 const automo = require('../lib/automo');
 const params = require('../lib/params');
@@ -33,20 +34,19 @@ async function byProfile(req) {
 }
 
 async function ogpProxy(req) {
-  // please remind, this logic at the moment do not allow OG-refresh
-  const descaped = decodeURIComponent(req.params.url);
-  debug("ogpProxy: %s", descaped);
-  const exists = await automo.getRecommendationByURL(descaped);
+  const url = req.body.url;
+  debug("ogpProxy: %s", url);
+  const exists = await automo.getRecommendationByURL(url);
   if(exists) {
-    debug("Requested OGP to an already acquired URL %s", descaped);
+    debug("Requested OGP to an already acquired URL %s", url);
     return {
       json: exists
     }
   }
-  const result = await fetchOpengraph.fetch(descaped);
+  const result = await fetchOpengraph.fetch(url);
   const review = await automo.saveRecommendationOGP(result);
   if(!review.title) {
-    debug("We got an error in OGP (%s) %j", descaped, review);
+    debug("We got an error in OGP (%s) %j", url, review);
     return {
       json: {
         error: true,
@@ -54,7 +54,7 @@ async function ogpProxy(req) {
       }
     }
   }
-  debug("Fetched correctly %s", descaped);
+  debug("Fetched correctly %s", url);
   return { json: review };
 }
 
@@ -120,6 +120,24 @@ async function updateVideoRec(req) {
   return { json: updated };
 };
 
+async function creatorRegister(req) {
+  const channelId = req.params.channelId;
+  const ytvidsurl = `https://www.youtube.com/channel/${channelId}/videos`;
+  const { statusCode, data, headers } = await curly.get(ytvidsurl, {
+    verbose: true,
+    timeoutMs: 4000,
+    sslVerifyPeer: false,
+    followLocation: true
+  });
+
+  debug(statusCode);
+  debug(headers);
+  debug(data);
+  // ytInitialData </script>
+
+  debugger;
+};
+
 
 module.exports = {
   byVideoId,
@@ -128,4 +146,5 @@ module.exports = {
   videoByCreator,
   getRecommendationById,
   updateVideoRec,
+  creatorRegister,
 };
