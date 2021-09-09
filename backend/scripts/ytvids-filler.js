@@ -16,9 +16,10 @@ nconf.argv().env().file({ file: 'config/settings.json' });
 async function doFiller(creator) {
     const mongoc = await mongo3.clientConnect({concurrency: 1});
 
+    const random = _.random(0, 1000);
     const metad = await mongo3
         .readLimit(mongoc, nconf.get('schema').metadata, {
-        }, {}, 200, 0);
+        }, {}, 10, random);
     
     const vids = _.flatten(_.compact(_.map(metad, function(meta) {
         if(!meta.related || !meta.related.length)
@@ -33,14 +34,14 @@ async function doFiller(creator) {
     })));
 
     debug("Available %d potential random vids", vids.length);
-    const hundred  = _.times(100, function(i) {
+    const hundred  = _.uniqBy(_.times(25, function(i) {
         const elem = _.sample(vids);
         return {
             ...elem,
             creatorId: creator,
             when: new Date()
         };
-    })
+    }), 'videoId');
 
     await mongo3.insertMany(mongoc, nconf.get('schema').ytvids, 
         hundred);
