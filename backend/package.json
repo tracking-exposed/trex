@@ -30,6 +30,7 @@
     "nacl-signature": "^1.0.0",
     "nconf": "^0.8.4",
     "node-fetch": "^2.6.1",
+    "node-libcurl": "^2.3.3",
     "nodemon": "^2.0.12",
     "numeral": "^2.0.6",
     "request": "^2.88.2",

@@ -653,7 +653,10 @@ async function fetchRecommendations(videoId, kind) {
         .readOne(mongoc, nconf.get('schema').ytvids, filter);
 
     let result = [];
-    if(videoInfo.recommendations && videoInfo.recommendations.length) {
+    if(videoInfo &&
+        videoInfo.recommendations &&
+        videoInfo.recommendations.length) {
+
         result = await mongo3
             .readLimit(mongoc, nconf.get('schema').recommendations, {
                 urlId: { "$in": videoInfo.recommendations }
@@ -757,6 +760,7 @@ async function updateRecommendations(videoId, recommendations) {
         }, one);
     await mongoc.close();
     _.unset(one, '_id');
+    debug("returning the updated videoId with new reccs %j", one);
     return one;
 }
 

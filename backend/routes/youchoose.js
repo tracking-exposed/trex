@@ -8,19 +8,6 @@ const params = require('../lib/params');
 const utils = require('../lib/utils');
 const CSV = require('../lib/CSV');
 
-/*  type: 'video', 'wikipedia', 'article', 'tiktok', 'url',
-    format: {
-        type:
-        url:
-        fallbackTitle: (title is provided by opengraph or by)
-        descriptions: [{
-            lang: <lang code>
-            onelinemarkdown: ""
-        }] <40 chars>,
-        type: video/tiktok lead to:
-        duration: 'xx',
-    } */
-
 async function byVideoId(req) {
   /* this function can be invoked in two ways: POST or GET */
   const source1 = req.params ? _.get(req.params, 'videoId') : null;
@@ -29,6 +16,10 @@ async function byVideoId(req) {
   debug("videoId %s kind %s",
     videoId,
     source1 ? "GET/params" : "POST/body");
+  if(!videoId) {
+    debug("Missing mandatory parameter: videoId (%s)", JSON.stringify(req));
+    return { json: { error: true, message: "missing videoId"}}
+  }
   debug("Looking recommendations for videoId %s", videoId);
   const avail = await automo.fetchRecommendations(videoId, 'producer');
   return { json: avail };
@@ -98,7 +89,7 @@ async function getRecommendationById(req) {
   // this function support a single Id or a list of IDs
   const ids = req.params.id.split(',');
   const recomms = await automo.recommendationById(ids);
-  debug("From %d recommendation Id we god %d recommendations found",
+  debug("getRecommendationById (%d ids) found %d",
     ids.length, recomms.length);
   return { json: recomms };
 }
@@ -115,7 +106,7 @@ async function updateVideoRec(req) {
   if(!update.recommendations || !update.recommendations.length)
     update.recommendations = [];
 
-  if(_.filter(update.recommendations, function(e) {
+  if(_.find(update.recommendations, function(e) {
     return !(_.isString(e) && e.length === 40)
   }))
     return { json: { error: true, message: "validation fail in recommendation list"}};
