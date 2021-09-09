@@ -4,7 +4,7 @@ import * as IOE from 'fp-ts/lib/IOEither';
 export const setItem = (key, value) =>
   TE.fromIOEither(
     IOE.tryCatch(() => {
-      // console.log(`Saving ${key} with`, value);
+      console.log(`Setting key ${key}`, value);
       return window.localStorage.setItem(key, value);
     })
   );

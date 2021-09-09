@@ -46,28 +46,35 @@ export const recommendedVideos = compose(
   creatorChannel,
   queryStrict(({ publicKey, params }) => {
     return fetch(`/creator/recommendations/${publicKey}`, params);
-  }, refetch)
+  }, available)
 );
 
 export const recommendedChannels = compose(
   creatorChannel,
   queryStrict(({ publicKey, params }) => {
     return fetch(`/profile/recommendations/${publicKey}`, params);
-  }, refetch)
+  }, available)
 );
 
 export const currentVideoOnEdit = queryStrict(() => {
   return pipe(
     getItem('current-video-on-edit'),
-    TE.map((item) => JSON.parse(item))
+    TE.map((item) => {
+      console.log({ item });
+      return item ? JSON.parse(item) : item;
+    })
   );
 }, available);
 
-export const videoRecommendations = compose(
-  product({ currentVideoOnEdit, params: param() }),
-  queryStrict(({ currentVideoOnEdit }) => {
-    if (currentVideoOnEdit) {
-      return fetch(`/video/${currentVideoOnEdit.videoId}/recommendations`);
+// export const videoRecommendations = queryStrict(({ videoId }) => {
+//   return fetch(`/video/${videoId}/recommendations`);
+// }, available);
+
+export const currentVideoRecommendations = compose(
+  currentVideoOnEdit,
+  queryStrict((video) => {
+    if (video) {
+      return fetch(`/video/${video.videoId}/recommendations`);
     }
     return TE.right([]);
   }, available)
