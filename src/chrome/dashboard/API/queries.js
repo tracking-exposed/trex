@@ -7,7 +7,13 @@ import { fetch } from './HTTPAPI';
 export const creatorChannel = queryStrict(
   () =>
     pipe(
-      getPersistentItem('creator-channel'),
+      getItem('creator-channel'),
+      TE.chain((channel) => {
+        if (!channel) {
+          return getPersistentItem('creator-channel');
+        }
+        return TE.right(channel);
+      }),
       TE.map((channel) => ({ publicKey: channel }))
     ),
   available
@@ -16,10 +22,14 @@ export const creatorChannel = queryStrict(
 export const recommendations = compose(
   product({ creatorChannel, params: param() }),
   queryStrict(({ creatorChannel, params }) => {
-    return fetch(
-      `/creator/recommendations/${creatorChannel.publicKey}`,
-      params
-    );
+    console.log({ creatorChannel });
+    if (creatorChannel.publicKey) {
+      return fetch(
+        `/creator/recommendations/${creatorChannel.publicKey}`,
+        params
+      );
+    }
+    return TE.right([]);
   }, available)
 );
 
@@ -31,7 +41,10 @@ export const creatorVideos = compose(
     // title
     // publication date
     // recommendations: number
-    return fetch(`/creator/videos/${publicKey}`);
+    if (publicKey) {
+      return fetch(`/creator/videos/${publicKey}`);
+    }
+    return TE.right([]);
   }, available)
 );
 

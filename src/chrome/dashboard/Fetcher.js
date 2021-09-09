@@ -1,11 +1,12 @@
 import React from 'react';
-import TextField from '@material-ui/core/TextField';
-import Chip from '@material-ui/core/Chip';
+import {TextField, Chip, Box, Button } from '@material-ui/core';
 import { addRecommendation } from './API/commands';
 
 const styles = {
   width: '100%',
-  textAlign: 'left'
+  textAlign: 'left',
+  display: 'flex',
+  alignItems: 'center'
 };
 
 class Fetcher extends React.PureComponent {
@@ -13,20 +14,19 @@ class Fetcher extends React.PureComponent {
 
   completed = (e) => {
     const url = document.querySelector('[placeholder="Placeholder"]').value;
-    console.log('fetching ...', url);
     addRecommendation(encodeURIComponent(url), { paging: true })();
   }
 
   render () {
     return (
-      <div style={styles}>
+      <Box style={styles}>
         <TextField
           label="Recommendation URL"
           placeholder="Placeholder"
           multiline
         />
-        <Chip color="secondary" onClick={this.completed} label="Add" />
-      </div>
+        <Button variant="contained" color="primary" onClick={this.completed}>Add</Button>
+      </Box>
     );
   }
 }

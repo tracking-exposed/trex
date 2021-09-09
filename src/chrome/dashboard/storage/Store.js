@@ -12,7 +12,16 @@ export const setPersistentItem = (key, value) =>
 export const getPersistentItem = (key) =>
   TE.fromIOEither(
     IOE.tryCatch(() => {
+      console.log(`Getting item at key ${key}`);
       return window.localStorage.getItem(key);
+    })
+  );
+
+export const clearPersistentItem = (key) =>
+  TE.fromIOEither(
+    IOE.tryCatch(() => {
+      console.log(`Clearing item at key ${key}`);
+      return window.localStorage.clear(key);
     })
   );
 

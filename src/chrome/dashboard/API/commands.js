@@ -1,17 +1,36 @@
 import { command } from 'avenger';
-import {
-  recommendations,
-  currentVideoOnEdit,
-  currentVideoRecommendations,
-  creatorVideos,
-} from './queries';
-import { fetch } from './HTTPAPI';
-import { setItem, setPersistentItem } from '../storage/Store';
 import { pipe } from 'fp-ts/lib/function';
 import * as TE from 'fp-ts/lib/TaskEither';
+import {
+  clearPersistentItem,
+  setItem,
+  setPersistentItem,
+} from '../storage/Store';
+import { fetch } from './HTTPAPI';
+import {
+  creatorChannel,
+  currentVideoOnEdit,
+  currentVideoRecommendations,
+  recommendations,
+} from './queries';
 
 export const setCreatorChannel = command(
+  (channel) => setItem('creator-channel', channel),
+  {
+    creatorChannel,
+  }
+);
+
+export const saveCreatorChannel = command(
   (channel) => setPersistentItem('creator-channel', channel),
+  {
+    recommendations,
+    currentVideoOnEdit,
+  }
+);
+
+export const deleteCreatorChannel = command(
+  (channel) => clearPersistentItem('creator-channel', channel),
   {
     recommendations,
     currentVideoOnEdit,
@@ -26,13 +45,13 @@ export const setCurrentVideo = command(
   (video) => setItem('current-video-on-edit', JSON.stringify(video)),
   {
     currentVideoOnEdit,
-    currentVideoRecommendations
+    currentVideoRecommendations,
   }
 );
 
 export const updateRecommendationForVideo = command(
-  ({ videoId, recommendations }) => {
-    console.log('Updating video', { videoId, recommendations });
+  ({ videoId, creatorId, recommendations }) => {
+    console.log('Updating video', { videoId, creatorId, recommendations });
     return pipe(
       fetch(`/creator/updateVideo`, {
         method: 'POST',
@@ -40,15 +59,17 @@ export const updateRecommendationForVideo = command(
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          creatorId: 'uno',
+          creatorId,
           videoId,
           recommendations,
         }),
       }),
-      TE.chainFirst((video) => setItem('current-video-on-edit', JSON.stringify(video)))
+      TE.chainFirst((video) =>
+        setItem('current-video-on-edit', JSON.stringify(video))
+      )
     );
   },
   {
-    currentVideoOnEdit
+    currentVideoOnEdit,
   }
 );

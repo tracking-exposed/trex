@@ -1,16 +1,15 @@
-import React from 'react';
-import PropTypes from 'prop-types';
-import { makeStyles } from '@material-ui/core/styles';
 import AppBar from '@material-ui/core/AppBar';
-import Tabs from '@material-ui/core/Tabs';
-import Tab from '@material-ui/core/Tab';
 import Box from '@material-ui/core/Box';
-import YCAInalitics from './YCAInalitics';
-import LinkAccount from './LinkAccount';
-import RecommendationsPanel from './RecommendationsPanel';
+import { makeStyles } from '@material-ui/core/styles';
+import Tab from '@material-ui/core/Tab';
+import Tabs from '@material-ui/core/Tabs';
+import PropTypes from 'prop-types';
+import React from 'react';
 import Advanced from './Advanced';
-import { invalidate } from 'avenger';
 import { setCurrentVideo } from './API/commands';
+import { LinkAccount } from './LinkAccount';
+import RecommendationsPanel from './RecommendationsPanel';
+import YCAInalitics from './YCAInalitics';
 
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
