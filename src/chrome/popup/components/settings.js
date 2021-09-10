@@ -11,10 +11,9 @@ import Divider from './Divider';
 // bo is the browser object, in chrome is named 'chrome', in firefox is 'browser'
 const bo = chrome || browser;
 
-class Settings extends React.Component{
-
-  constructor (props) {
-    console.log("Props in Settings constructor", props);
+class Settings extends React.Component {
+  constructor(props) {
+    console.log('Props in Settings constructor', props);
     super(props);
     this.state = {
       ux: props.lastSettings.ux || false,
@@ -23,68 +22,82 @@ class Settings extends React.Component{
     };
   }
 
-  render () {
-
-    function toggleActivation (_t, event) {
-      const switchname = event.target
-        .parentElement.parentElement.getAttribute('aria-labelledby').split('-')[1];
-      console.log(`it is checked: ${event.target.checked} | switchname ${switchname}`);
+  render() {
+    function toggleActivation(_t, event) {
+      const switchname = event.target.parentElement.parentElement
+        .getAttribute('aria-labelledby')
+        .split('-')[1];
+      console.log(
+        `it is checked: ${event.target.checked} | switchname ${switchname}`
+      );
       const payload = {};
       payload[switchname] = event.target.checked;
       console.log(`update is ${JSON.stringify(payload)} current ${_t.state}`);
       _t.setState(payload);
-      bo.runtime.sendMessage({
-        type: 'configUpdate',
-        payload
-      }, (status) => {
-        console.log("status confirmed", JSON.stringify(status));
-      });
+      bo.runtime.sendMessage(
+        {
+          type: 'configUpdate',
+          payload,
+        },
+        (status) => {
+          console.log('status confirmed', JSON.stringify(status));
+        }
+      );
     }
 
-    if(!this.state) {return (<p>Loading...</p>);}
+    if (!this.state) {
+      return <p>Loading...</p>;
+    }
 
-    console.log("settings props", this.props, "& state", this.state);
+    console.log('settings props', this.props, '& state', this.state);
     /* <ListItemText primary={ (!!this.state && !!this.state.active) ? "LEAVE evidence collection pool" : "JOIN evidence collection pool"} /> */
 
     return (
       <FormControl component="fieldset">
         <FormGroup aria-label="position" row>
           <FormControlLabel
-            control={<Switch
-              aria-labelledby="switch-ux"
-              color="primary"
-              checked={this.state.ux}
-              onChange={_.partial(toggleActivation, this)}
-            />}
+            control={
+              <Switch
+                aria-labelledby="switch-ux"
+                color="primary"
+                checked={this.state.ux}
+                onChange={_.partial(toggleActivation, this)}
+              />
+            }
             label="Show reccomendations from Content Creators"
             labelPlacement="end"
           />
           <Divider helperText="YouChoose" />
           <FormControlLabel
-            control={<Switch
-              aria-labelledby="switch-community"
-              color="primary"
-              checked={this.state.community}
-              onChange={_.partial(toggleActivation, this)}
-            />}
+            control={
+              <Switch
+                aria-labelledby="switch-community"
+                color="primary"
+                checked={this.state.community}
+                onChange={_.partial(toggleActivation, this)}
+              />
+            }
             label="Show Community recommendations"
             labelPlacement="end"
           />
-          <Divider helperText="Tournesol"/>
+          <Divider helperText="Tournesol" />
           <FormControlLabel
-            control={<Switch
-              aria-labelledby="switch-alphabeth"
-              color="primary"
-              checked={this.state.alphabeth}
-              onChange={_.partial(toggleActivation, this)} />}
+            control={
+              <Switch
+                aria-labelledby="switch-alphabeth"
+                color="primary"
+                checked={this.state.alphabeth}
+                onChange={_.partial(toggleActivation, this)}
+              />
+            }
             label="Show YT algorithmic recommendations"
             labelPlacement="end"
           />
-          <Divider helperText="Youtube defaults"/>
+          <Divider helperText="Youtube defaults" />
         </FormGroup>
       </FormControl>
     );
   }
-};
+}
 
 export default Settings;

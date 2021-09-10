@@ -37,16 +37,20 @@ export const deleteCreatorChannel = command(
   }
 );
 
-export const addRecommendation = command((r) =>
-fetch(`/creator/ogp`, { // TODO this api need also to be signed/authenticated
-  method: 'POST',
-  headers: {
-    'Content-Type': 'application/json',
-  },
-  body: JSON.stringify({ url: r })
-}), {
-  recommendations,
-});
+export const addRecommendation = command(
+  (r) =>
+    fetch(`/creator/ogp`, {
+      // TODO this api need also to be signed/authenticated
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ url: r }),
+    }),
+  {
+    recommendations,
+  }
+);
 
 export const setCurrentVideo = command(
   (video) => setItem('current-video-on-edit', JSON.stringify(video)),

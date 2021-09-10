@@ -7,26 +7,27 @@ import Typography from '@material-ui/core/Typography';
 import React from 'react';
 
 class UrlCard extends React.Component {
-  render () {
+  render() {
     const { data, alreadyPresent, onAddClick, onDeleteClick } = this.props;
 
+    const addButton =
+      !alreadyPresent && onAddClick ? (
+        <CardActions>
+          <Button
+            size="small"
+            variant="contained"
+            color="primary"
+            onClick={() => {
+              onAddClick();
+            }}
+          >
+            Add to current video
+          </Button>
+        </CardActions>
+      ) : null;
 
-    const addButton = !alreadyPresent && onAddClick ? (
-      <CardActions>
-        <Button
-          size="small"
-          variant="contained"
-          color="primary"
-          onClick={() => {
-            onAddClick();
-          }}
-        >
-          Add to current video
-        </Button>
-      </CardActions>
-    ) : null;
-
-    const deleteButton = alreadyPresent && onDeleteClick ? (
+    const deleteButton =
+      alreadyPresent && onDeleteClick ? (
         <CardActions>
           <Button
             size="small"
@@ -39,13 +40,13 @@ class UrlCard extends React.Component {
             Remove from current video
           </Button>
         </CardActions>
-    ) : null
+      ) : null;
 
     return (
       <Card
         style={{
           textAlign: 'left',
-          margin: '6px'
+          margin: '6px',
         }}
       >
         <CardActionArea>

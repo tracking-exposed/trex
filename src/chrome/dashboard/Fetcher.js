@@ -1,20 +1,19 @@
 import React from 'react';
-import {TextField, Chip, Box, Button } from '@material-ui/core';
+import { TextField, Chip, Box, Button } from '@material-ui/core';
 import { addRecommendation } from './API/commands';
 
 const styles = {
   width: '100%',
   textAlign: 'left',
   display: 'flex',
-  alignItems: 'center'
+  alignItems: 'center',
 };
 
 const Fetcher = () => {
-
   const completed = React.useCallback((e) => {
     const url = document.querySelector('[placeholder="Placeholder"]').value;
     addRecommendation(url, { paging: true })();
-  }, [])
+  }, []);
 
   return (
     <Box style={styles}>
@@ -23,9 +22,11 @@ const Fetcher = () => {
         placeholder="Placeholder"
         multiline
       />
-      <Button variant="contained" color="primary" onClick={completed}>Add</Button>
+      <Button variant="contained" color="primary" onClick={completed}>
+        Add
+      </Button>
     </Box>
   );
-}
+};
 
 export default Fetcher;

@@ -1,48 +1,60 @@
 import React from 'react';
 
 class Advanced extends React.Component {
-  render () {
+  render() {
     return (
       <div>
         <h3>TODO: <a href="https://swagger.io">swagger</a> for all these APIs</h3>
         <hr />
         <h2>Public API</h2>
         <ol>
-        <li><code>
-(youchoose.ai|localhost:9000)/api/v3/handshake
-        </code></li>
+          <li>
+            <code>(youchoose.ai|localhost:9000)/api/v3/handshake</code>
+          </li>
 
-        <li><code>
-(youchoose.ai|localhost:9000)/api/v3/video/:videoId/recommendations
-        </code></li>
+          <li>
+            <code>
+              (youchoose.ai|localhost:9000)/api/v3/video/:videoId/recommendations
+            </code>
+          </li>
 
-        <li><code>
-(youchoose.ai|localhost:9000)/api/v3/recommendations/:ids
-        </code></li>
+          <li>
+            <code>
+              (youchoose.ai|localhost:9000)/api/v3/recommendations/:ids
+            </code>
+          </li>
         </ol>
 
         <h2>Creator (authenticated) API</h2>
 
         <ol>
-        <li><code>
-(youchoose.ai|localhost:9000)/api/v3/creator/updateVideo
-        </code></li>
+          <li>
+            <code>
+              (youchoose.ai|localhost:9000)/api/v3/creator/updateVideo
+            </code>
+          </li>
 
-        <li><code>
-(youchoose.ai|localhost:9000)/api/v3/creator/ogp
-        </code></li>
+          <li>
+            <code>(youchoose.ai|localhost:9000)/api/v3/creator/ogp</code>
+          </li>
 
-        <li><code>
-(youchoose.ai|localhost:9000)/api/v3/creator/videos/:publicKey
-        </code></li>
+          <li>
+            <code>
+              (youchoose.ai|localhost:9000)/api/v3/creator/videos/:publicKey
+            </code>
+          </li>
 
-        <li><code>
-(youchoose.ai|localhost:9000)/api/v3/creator/recommendations/:publicKey
-        </code></li>
+          <li>
+            <code>
+              (youchoose.ai|localhost:9000)/api/v3/creator/recommendations/:publicKey
+            </code>
+          </li>
 
-        <li><code>
-(youchoose.ai|localhost:9000)/api/v3/creator/register/:channelId
-        </code></li>
+          <li>
+            <code>
+              (youchoose.ai|localhost:9000)/api/v3/creator/register/:channelId
+            </code>
+          </li>
         </ol>
 
         <h2>Existing API from our previously developed backend</h2>

@@ -13,6 +13,7 @@
   "scripts": {
     "clean": "rm -rf ./build ./dist",
     "lint": "eslint ./src --quiet",
+    "format": "prettier -w ./src",
     "build": "rm -rf ./build && mkdir build && cross-env webpack && cp -r src/embedded/* manifest.json icons/* ./build/",
     "build:watch": "rimraf ./build && mkdir build && cp -r src/embedded/* manifest.json icons/* ./build/ && cross-env webpack -w",
     "build:dist": "sh pack-extension.sh",
@@ -54,6 +55,7 @@
     "mini-css-extract-plugin": "^1.6.2",
     "mocha": "^7.2.0",
     "postcss-loader": "^6.1.1",
+    "prettier": "^2.4.0",
     "react-transform-hmr": "^1.0.4",
     "style-loader": "^3.2.1",
     "uglifyjs-webpack-plugin": "^2.2.0",

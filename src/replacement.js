@@ -8,9 +8,9 @@ function recommandation_dispatcher(recc, i) {
 
   // console.log(recc, i);
 
-  if(recc.type === 'youtube') {
+  if (recc.type === 'youtube') {
     return make_video_box(recc, i);
-  } else if(recc.type === 'article') {
+  } else if (recc.type === 'article') {
     return make_article_box(recc, i);
   } else {
     // all the type should be embedded
@@ -25,7 +25,7 @@ function max_url_box(ogblob, i) {
   const thumb_div = document.createElement('div');
   thumb_div.setAttribute('class', 'thumb_div');
 
-  if(ogblob.image) {
+  if (ogblob.image) {
     const video_thumb = document.createElement('img');
     video_thumb.className = 'video_thumb';
     video_thumb.src = ogblob.image;
@@ -45,7 +45,7 @@ url_box.innerHTML= `
 }
 
   url_box.append(thumb_div);
-  return url_box
+  return url_box;
 }
 
 function make_article_box(article, i) {
@@ -60,13 +60,13 @@ function make_article_box(article, i) {
   video_thumb.src = article.image;
   thumb_div.append(video_thumb);
 
-  article_box.innerHTML= `
+  article_box.innerHTML = `
     <a href="${article.url}">${article.title}</a>
     <br>
     <small>${article.description}</small>
   `;
   article_box.append(thumb_div);
-  return article_box
+  return article_box;
 }
 
 function make_video_box(video, i) {
@@ -128,13 +128,14 @@ const recache = { alphabeth: null, ycaibar: null };
 
 /* primary invoked function */
 export function updateUX(response) {
-
-  if(!recache.alphabeth) {
-    const seen = document.getElementsByTagName('ytd-watch-next-secondary-results-renderer');
-    if(seen.length === 0) {
-      return { status: 'waitForPage' }
-    } else if(seen.length > 1) {
-      console.log("This is weird!");
+  if (!recache.alphabeth) {
+    const seen = document.getElementsByTagName(
+      'ytd-watch-next-secondary-results-renderer'
+    );
+    if (seen.length === 0) {
+      return { status: 'waitForPage' };
+    } else if (seen.length > 1) {
+      console.log('This is weird!');
     }
     recache.alphabeth = seen[0];
     recache.alphabeth.style.display = 'none';
@@ -145,7 +146,9 @@ export function updateUX(response) {
   // Verify that YCAI's container has not yet been rendered
   const old_container = document.getElementById('ycai_container');
   if (old_container) {
-    console.warn("should this redrawings happen? it shouldn't ever, this check might be removed");
+    console.warn(
+      "should this redrawings happen? it shouldn't ever, this check might be removed"
+    );
     old_container.remove();
   }
 
@@ -187,14 +190,14 @@ export function updateUX(response) {
   const video_box_width = targetElement.children[0].clientWidth;
   console.log(video_box_height, video_box_width);
 
-  response.forEach((recommendation, i) => ycai_container.append(
-    recommandation_dispatcher(recommendation, i))
+  response.forEach((recommendation, i) =>
+    ycai_container.append(recommandation_dispatcher(recommendation, i))
   );
   recache.alphabeth.parentNode.append(ycai_container);
 
   /* third party coming soon confuguration infos */
   const ycai_third_p = document.createElement('div');
-  ycai_third_p.innerHTML= `
+  ycai_third_p.innerHTML = `
     <h4 class="thirdpd">
       Community recommendation protocol.
     </h4>
@@ -229,12 +232,12 @@ export function updateUX(response) {
       The client might render recommendations different, for example, based on type.
     </p>
   `;
-  ycai_third_p.id ="ycai_third_party";
+  ycai_third_p.id = 'ycai_third_party';
   ycai_third_p.style = { display: 'none' };
   ycai_container.parentNode.append(ycai_third_p);
   recache.tournesol = ycai_third_p;
 
-  if(!recache.ycaibar) {
+  if (!recache.ycaibar) {
     const bar = document.createElement('div');
     bar.id = 'ycaibar';
     bar.innerHTML = `
