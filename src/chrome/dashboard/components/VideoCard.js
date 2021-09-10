@@ -1,3 +1,4 @@
+import { Button, CardActions } from '@material-ui/core';
 import Card from '@material-ui/core/Card';
 import CardActionArea from '@material-ui/core/CardActionArea';
 import CardContent from '@material-ui/core/CardContent';
@@ -15,7 +16,6 @@ export const VideoCard = ({ videoId, title, onClick }) => {
         /* width:"200px", */
         margin: '6px',
       }}
-      onClick={() => onClick(videoId)}
     >
       <CardActionArea>
         <CardMedia
@@ -25,17 +25,36 @@ export const VideoCard = ({ videoId, title, onClick }) => {
           title={title}
         />
         <CardContent>
-          <a href={"https://youtube.tracking.exposed/compare/#" + videoId}>
-            Cmp
-          </a> — <a href={"https://youtube.tracking.exposed/related/#" + videoId}>
-            Rel
-          </a> 
           <Typography gutterBottom variant="h5" component="h4">
-            <a href={"https://youtu.be/" + videoId} target="_blank">
+            <a href={'https://youtu.be/' + videoId} target="_blank">
               {title}
             </a>
           </Typography>
+          <a
+            target="_blank"
+            href={'https://youtube.tracking.exposed/compare/#' + videoId}
+          >
+            Compare
+          </a>{' '}
+          —{' '}
+          <a
+            target="_blank"
+            href={'https://youtube.tracking.exposed/related/#' + videoId}
+          >
+            Related
+          </a>
         </CardContent>
+        <CardActions>
+          {onClick ? (
+            <Button
+              variant="contained"
+              color="primary"
+              onClick={() => onClick(videoId)}
+            >
+              Edit this video
+            </Button>
+          ) : null}
+        </CardActions>
       </CardActionArea>
     </Card>
   );
