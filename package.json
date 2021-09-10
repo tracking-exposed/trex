@@ -11,6 +11,7 @@
     "url": "git+https://github.com/tracking-exposed/YCAI.git"
   },
   "scripts": {
+    "prepare": "husky install",
     "clean": "rm -rf ./build ./dist",
     "lint": "eslint ./src --quiet",
     "format": "prettier -w ./src",
@@ -52,6 +53,7 @@
     "eslint-plugin-react": "^6.10.3",
     "eslint-plugin-standard": "^2.3.1",
     "glob": "^7.1.7",
+    "husky": "^7.0.2",
     "mini-css-extract-plugin": "^1.6.2",
     "mocha": "^7.2.0",
     "postcss-loader": "^6.1.1",
@@ -100,5 +102,10 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "npm run lint"
+    }
   }
 }
