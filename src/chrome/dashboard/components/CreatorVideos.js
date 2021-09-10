@@ -1,13 +1,12 @@
-import { declareQueries, WithQueries } from 'avenger/lib/react';
+import { Typography } from '@material-ui/core';
+import * as QR from 'avenger/lib/QueryResult';
+import { declareQueries } from 'avenger/lib/react';
+import { pipe } from 'fp-ts/lib/function';
 import React from 'react';
 import { creatorVideos } from '../API/queries';
-import * as QR from 'avenger/lib/QueryResult';
-import { LazyFullSizeLoader } from './common/FullSizeLoader';
 import { ErrorBox } from './common/ErrorBox';
+import { LazyFullSizeLoader } from './common/FullSizeLoader';
 import { VideoCard } from './VideoCard';
-import { setCurrentVideo } from '../API/commands';
-import { pipe } from 'fp-ts/lib/function';
-import { Typography } from '@material-ui/core';
 
 export const CreatorVideos = declareQueries({ videos: creatorVideos })(
   ({ queries, onVideoClick }) => {
@@ -15,7 +14,7 @@ export const CreatorVideos = declareQueries({ videos: creatorVideos })(
       queries,
       QR.fold(LazyFullSizeLoader, ErrorBox, ({ videos }) => {
         if (!videos.length) {
-          return <Typography>No videos found.</Typography>
+          return <Typography>No videos found.</Typography>;
         }
 
         return videos.map((v, i) => (
@@ -23,9 +22,13 @@ export const CreatorVideos = declareQueries({ videos: creatorVideos })(
             key={i}
             videoId={v.videoId}
             title={v.title}
-            onClick={() => {
-              onVideoClick(v);
-            }}
+            onClick={
+              onVideoClick
+                ? () => {
+                    onVideoClick(v);
+                  }
+                : undefined
+            }
           />
         ));
       })
