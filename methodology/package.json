@@ -1,9 +1,9 @@
 {
-  "name": "yttrex-automation",
-  "version": "1.1.0",
-  "description": "a tool for https://youtube.tracking.exposed for reseachers",
+  "name": "guardoni",
+  "version": "1.2.0",
+  "description": "Guardoni is a tool to automate access and coordinate personalization algorithm analysis",
   "scripts": {
-    "guardoni": "DEBUG=*,-puppeteer* node src/guardoni.js --source json/truth-on-climate.json --experiment truth-1 --profile withan",
+    "guardoni": "node src/guardoni.js",
     "pkg": "pkg ./package.json"
   },
   "bin": "./src/guardoni.js",
@@ -25,6 +25,7 @@
     "moment": "^2.29.1",
     "nconf": "^0.11.3",
     "node-fetch": "^2.6.2",
+    "csv-parse": "^4.15.3",
     "puppeteer": "^10.2.0",
     "puppeteer-extra": "^3.1.18",
     "puppeteer-extra-plugin-stealth": "^2.7.8"

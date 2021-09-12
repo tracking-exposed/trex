@@ -76,11 +76,13 @@ npm run watch
 ```
 mongod
 ```
-By default now, data collected will be sent to the default mongo at `localhost:127.0.0.1`
+
+By default now, data collected will be sent to the default mongo, configured in `yttrex/backend/config/settings.json`
 
 **Launch parserv**
 
 To parse the HTMLs that are collected and stored in mongo, another process is launch to extract the metadata. Launch it with:
+
 ```
 cd yttrex/backend
 npm run parserv
@@ -95,21 +97,47 @@ Use the option `--backend localhost:9000`
 
 **Launch Hugo server**
 
-If you want to see your extension homepage generated from your local data, you need to launch the hugo server of [youtube.tracking.exposed](url)
-Clone this repo (and its theme, as described in its readMe) then start Hugo with
+If you want to see your extension homepage generated from your local data, you need to launch the hugo server of [youtube.tracking.exposed](https://github.com/tracking-exposed/youtube.tracking.exposed)
+Clone this repo (and its theme, as described in its README) then start Hugo with
+
 `hugo -D server`
-Make sure you dont have another hugo server running so that this one runs on the default port at `//localhost:1313/`
-With this, the personnal page from the extnesion should be able to render
 
---------------------
+With this, the personal page from the extnesion should be able to render
 
-options to describe:
---exclude
---experiment
---backend
---chrome
+TODO options to describe:
+
+  --exclude
+  --experiment
+  --backend
+  --chrome
 
 
-supported parameters in directives:
+## ChiaroScuro usage 
 
+you need a CSV with this format:
+
+  videoURL,title
+
+the videoURL should start with http and must be a valid youtube video Id
+the title should be the title of that video (hint: they might be translated)
+
+guardoni, if invoked with --csv option, it perfor the chiaroscuro test and this makes onother option mandatory:
+
+ --csv
+ --nickname
+
+behind the scene, it would offer as feedback:
+
+* and experiment name and the associated URL where you can compare this test
+* in the same link you can compare the result from different nicknames
+* it would create a temporary profile, from scratch, at every execution; because of this, you should open youtube.com and accept the opt-in manually.
+
+if you want to use an existing profile, --profile option can be used.
+
+### ChiaroScuro design
+
+1. from the CSV content is computed an hash, that's identify the experiment. same people with same csv = same experiment
+2. guardoni invokes an API (POST to /api/v3/chiaroscuro) that upload the CSV and the hash. the server save the list of video and title, and thanks to this would produce a guardoni directive. this API avoid duplication of the same experiments. in the backend, is the collection 'chiaroscuro' containing these entries.
+3. guardoni uses the same experiment API to mark contribution with 'nickname'
+4. it would then access to the directive API, and by using the experimentId, will then perform the searches as instructed.
 

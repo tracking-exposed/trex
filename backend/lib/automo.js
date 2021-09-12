@@ -21,7 +21,6 @@ const chardet = require('chardet')
 
 const utils = require('../lib/utils');
 const mongo3 = require('./mongo3');
-const { update } = require('./supporters');
 
 async function getSummaryByPublicKey(publicKey, options) {
     /* this function return the basic information necessary to compile the
@@ -785,6 +784,30 @@ async function registerVideos(videol, channelId) {
     // no return value here
 }
 
+async function registerChiaroscuro(objnfo, nickname) {
+    const experimentId = utils.hash({
+        type: 'chiaroscuro',
+        objnfo
+    });
+    const mongoc = await mongo3.clientConnect({concurrency: 1});
+    const experimentNumbs = await mongo3.count(mongoc,
+        nconf.get('schema').chiaroscuro, {
+            experimentId
+        });
+    debug("%j", objnfo);
+    await mongo3.writeOne(mongoc, nconf.get('schema').chiaroscuro, {
+        when: new Date(),
+        experimentId,
+        nickname,
+        links: objnfo
+    })
+    await mongoc.close();
+    return {
+        experimentId,
+        experimentNumbs
+    }
+}
+
 module.exports = {
     /* used by routes/personal */
     getSummaryByPublicKey,
@@ -844,4 +867,7 @@ module.exports = {
     recommendationById,
     updateRecommendations,
     registerVideos,
+
+    /* chiaroscuro */
+    registerChiaroscuro,
 };

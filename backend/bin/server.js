@@ -200,6 +200,11 @@ app.get('/api/v3/creator/register/:channelId', function(req, res) {
     return dispatchPromise('creatorRegister', req, res);
 });
 
+/* tDBDHS */
+app.post('/api/v3/chiaroscuro', function(req, res) {
+    return dispatchPromise('chiaroScuro', req, res);
+})
+
 /* impact */
 app.get('/api/v2/statistics/:name/:unit/:amount', function(req, res) {
     return dispatchPromise('getStatistics', req, res);
