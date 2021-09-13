@@ -6,11 +6,10 @@ const pluginStealth = require("puppeteer-extra-plugin-stealth");
 const fs = require('fs');
 const path = require('path');
 const nconf = require('nconf');
-// const moment = require('moment');
+const moment = require('moment');
 const fetch = require('node-fetch');
 const execSync = require('child_process').execSync;
 const parse = require('csv-parse/lib/sync');
-const { reduce } = require('lodash');
 
 const COMMANDJSONEXAMPLE = "https://youtube.tracking.exposed/json/automation-example.json";
 const EXTENSION_WITH_OPT_IN_ALREADY_CHECKED='https://github.com/tracking-exposed/yttrex/releases/download/1.4.99/extension.zip';
@@ -125,8 +124,15 @@ async function manageChiaroscuro() {
   debug("Your experimentId is %s", experimentId);
 
   const direcurl = `${server}/api/v3/chiaroscuro/${experimentId}/${nickname}`;
-  const directives = await pullDirectives(direcurl);
-  debug(directives);
+  let directives = await pullDirectives(direcurl);
+  directives = enhanceDirectives(experimentId, directives);
+
+  let profile = nconf.get('profile');
+  if(!profile)
+    profile =  nickname + "—" + moment().format("YYYY-MM-DD_HHmm");
+
+  debug("Executing browser")
+  await guardoniExecution(experimentId, directives, profile);
 }
 
 
@@ -156,6 +162,23 @@ async function pullDirectives(sourceUrl) {
   }
 }
 
+function enhanceDirectives(experiment, directives, profile) {
+  return  _.map(directives, function(d) {
+    const watchForSwp = d.watchFor;
+    const loadForSwp = d.loadFor;
+
+    d.loadFor = timeconv(loadForSwp, 3000);
+    d.watchFor = timeconv(watchForSwp, 20000);
+    debug("Time converstion results: loadFor %s watchFor %s",
+      d.loadFor, d.watchFor);
+
+    d.profile = profile;
+    if(experiment)
+      d.experiment = experiment;
+    return d;
+  });
+}
+
 async function main() {
 
   if(nconf.get('csv') || nconf.get('nickname'))
@@ -180,8 +203,22 @@ async function main() {
     process.exit(1);
   }
 
-  const directives = await pullDirectives(sourceUrl);
+  let directives = await pullDirectives(sourceUrl);
   debug("directives loaded: %j", _.map(directives, 'name'));
+  /* enrich directives with profile and experiment name */
+  const experiment = nconf.get('experiment');
+  directives = enhanceDirectives(experiment, directives);
+
+  const profile = nconf.get('profile');
+  if(!profile) {
+    console.log("--profile it is necessary and if you don't have one: pick up a name and this tool would assist during the creation");
+    process.exit(1)
+  }
+
+  await guardoniExecution(experiment, directives, profile);
+}
+
+async function guardoniExecution(experiment, directives, profile) {
 
   const cwd = process.cwd();
   const dist = path.resolve(path.join(cwd, 'extension'));
@@ -191,13 +228,6 @@ async function main() {
     const tmpzipf = path.resolve(path.join(cwd, 'extension', 'tmpzipf.zip'));
     console.log("Using " + tmpzipf + " as temporary file");
     downloadExtension(tmpzipf);
-  }
-
-  const profile = nconf.get('profile');
-  if(!profile) {
-    console.log("--profile it is necessary and if you don't have one: pick up a name and this tool would assist during the creation");
-    // console.log(localbrowser, "--user-data-dir=profiles/<YOUR PROFILE NAME> to init browser");
-    process.exit(1)
   }
 
   let setupDelay = false;
@@ -210,22 +240,6 @@ async function main() {
     setupDelay = true;
   }
 
-  /* enrich directives with profile and experiment name */
-  const experiment = nconf.get('experiment');
-  directives = _.map(directives, function(d) {
-    const watchForSwp = d.watchFor;
-    const loadForSwp = d.loadFor;
-
-    d.loadFor = timeconv(loadForSwp, 3000);
-    d.watchFor = timeconv(watchForSwp, 20000);
-    debug("Time converstion results: loadFor %s watchFor %s",
-      d.loadFor, d.watchFor);
-
-    d.profile = profile;
-    if(experiment)
-      d.experiment = experiment;
-    return d;
-  });
 
   const chromePath = getChromePath();
 

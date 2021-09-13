@@ -90,6 +90,7 @@ function reproducibleConversion(nickname, videoinfo, experimentId) {
     return {
       url: squri,
       loadFor: "5s",
+      watchFor: "3s",
       name: "chiaroscuro-" + mutation,
       description: JSON.stringify(details)
     }
