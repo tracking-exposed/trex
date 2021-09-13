@@ -784,7 +784,7 @@ async function registerVideos(videol, channelId) {
     // no return value here
 }
 
-async function registerChiaroscuro(objnfo, nickname) {
+async function registerChiaroScuro(objnfo, nickname) {
     const experimentId = utils.hash({
         type: 'chiaroscuro',
         objnfo
@@ -794,7 +794,6 @@ async function registerChiaroscuro(objnfo, nickname) {
         nconf.get('schema').chiaroscuro, {
             experimentId
         });
-    debug("%j", objnfo);
     await mongo3.writeOne(mongoc, nconf.get('schema').chiaroscuro, {
         when: new Date(),
         experimentId,
@@ -802,10 +801,21 @@ async function registerChiaroscuro(objnfo, nickname) {
         links: objnfo
     })
     await mongoc.close();
+    debug("Registered %j", {experimentId, experimentNumbs});
     return {
         experimentId,
         experimentNumbs
     }
+}
+
+async function pickChiaroscuro(experimentId) {
+    const mongoc = await mongo3.clientConnect({concurrency: 1});
+    const rb = await mongo3.readOne(mongoc,
+        nconf.get('schema').chiaroscuro,
+        { experimentId},
+        { when: -1});
+    await mongoc.close();
+    return rb;
 }
 
 module.exports = {
@@ -869,5 +879,6 @@ module.exports = {
     registerVideos,
 
     /* chiaroscuro */
-    registerChiaroscuro,
+    registerChiaroScuro,
+    pickChiaroscuro,
 };

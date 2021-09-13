@@ -136,7 +136,7 @@ if you want to use an existing profile, --profile option can be used.
 
 ### ChiaroScuro design
 
-1. from the CSV content is computed an hash, that's identify the experiment. same people with same csv = same experiment
+1. from the CSV + the nickname guardoni defines the local paths, names, IDs. Same people with same csv = same experiment
 2. guardoni invokes an API (POST to /api/v3/chiaroscuro) that upload the CSV and the hash. the server save the list of video and title, and thanks to this would produce a guardoni directive. this API avoid duplication of the same experiments. in the backend, is the collection 'chiaroscuro' containing these entries.
 3. guardoni uses the same experiment API to mark contribution with 'nickname'
 4. it would then access to the directive API, and by using the experimentId, will then perform the searches as instructed.
