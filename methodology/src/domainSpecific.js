@@ -126,24 +126,6 @@ async function beforeDirectives(page, experiment, profile, directives) {
 
 async function beforeWait(page, directive) {
     // debug("Nothing in beforeWait but might be screencapture or ad checking");
-    debug("TESTING AUTOSCROLL!")
-    async () => {
-        await new Promise((resolve, reject) => {
-            var totalHeight = 0;
-            var distance = 400;
-            var timer = setInterval(() => {
-                var scrollHeight = document.body.scrollHeight;
-                window.scrollBy(0, distance);
-                totalHeight += distance;
-
-                if(totalHeight >= scrollHeight){
-                    clearInterval(timer);
-                    window.scrollTo(0, 0);
-                    resolve();
-                }
-            }, 500);
-        });
-    }
 }
 
 async function afterWait(page, directive) {
@@ -213,7 +195,7 @@ async function interactWithYT(page, directive, wantedState) {
     }
     if(state.name == "unstarted") {
         const res = await state.player.press("Space");
-        await page.waitFor(600);
+        await page.waitForTimeout(600);
         state = await getYTstatus(page);
     } else
         debug("Not pressing space as the video is in state %s", state.name);
@@ -231,7 +213,7 @@ async function interactWithYT(page, directive, wantedState) {
     if(specialwatch == "end") {
         debug("This video would be watched till the end");
         for(checktime of _.times(DEFAULT_MAX_TIME / PERIODIC_CHECK_ms)) {
-            await page.waitFor(PERIODIC_CHECK_ms);
+            await page.waitForTimeout(PERIODIC_CHECK_ms);
             let newst = await getYTstatus(page);
 
             if(newst.name == "unstarted") {
@@ -245,7 +227,7 @@ async function interactWithYT(page, directive, wantedState) {
         }
     } else if(_.isInteger(specialwatch)) {
         console.log("watching video for the specified time of:", specialwatch, "milliseconds")
-        await page.waitFor(specialwatch);
+        await page.waitForTimeout(specialwatch);
         console.log("finished special watchining time of:", specialwatch, "milliseconds");
     } else {
         console.log("Error: waitFor is not 'end' and it is not a number", specialwatch);

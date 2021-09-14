@@ -18,6 +18,7 @@ methodology/dist/*
 methodology/config/*
 methodology/profiles/*
 methodology/executions/*
+methodology/experiments/*
 methodology/node_modules/*
 methodology/extension/*
 

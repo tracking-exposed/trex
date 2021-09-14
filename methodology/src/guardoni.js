@@ -315,14 +315,14 @@ async function operateTab(page, directive, domainSpecific, timeout) {
   await page.goto(directive.url, { 
     waitUntil: "networkidle0",
   });
-  debug("— Loading %s (for %s)", directive.name, directive.humanized);
+  debug("— Loading %s (for %dms)", directive.name, directive.loadFor);
   try {
     await domainSpecific.beforeWait(page, directive);
   } catch(error) {
     console.log("error in beforeWait", error.message, error.stack);
   }
   debug("Directive to URL %s, Loading delay %d", directive.url, directive.loadFor);
-  await page.waitFor(directive.loadFor);
+  await page.waitForTimeout(directive.loadFor);
   console.log("Done loading wait. Calling domainSpecific");
   try {
     await domainSpecific.afterWait(page, directive);
