@@ -11,7 +11,7 @@ async function chiaroScuro(req) {
   const nickname = _.get(req.body, 'nickname', "");
 
   if(_.size(nickname) < 2 ) {
-    console.log(!parsedCSV.lenght, !nickname.lenght);
+    console.log(!parsedCSV.length, !nickname.length);
     debug("Invalid nickname%j", req.body);
     return { json: { error: true, message: 'Nickname should be at lest 2 chars' }};
   }
@@ -19,9 +19,9 @@ async function chiaroScuro(req) {
   if(_.filter(parsedCSV, function(validityCheck) {
     return (!_.startsWith(validityCheck.videoURL, "http") || 
        !validityCheck.videoURL.match(/watch/) ||
-       validityCheck.title.lenght < 5
+       validityCheck.title.length < 5
     )
-  }).lenght) {
+  }).length) {
     debug("Invalid parsedCSV content %j", parsedCSV);
     return { json: { error: true, message: 'videoURL and title validation error' }};
   }
@@ -40,7 +40,7 @@ async function guardoniface(req) {
   const experimentId = req.params.experimentId;
   const nickname = req.params.nickname;
 
-  debug("guardonifae should return directives for %s", experimentId);
+  debug("guardoniface should return directives for %s", experimentId);
   const videosinfo = await automo.pickChiaroscuro(experimentId);
   // regardless of the amont of experiment, it return videoinfos
 
@@ -48,7 +48,7 @@ async function guardoniface(req) {
     return reproducibleConversion(nickname, vidblock, experimentId);
   } ));
 
-  debug("returning directives %j", directives);
+  debug("returning %d", directives.length);
   return { json: directives };
 }
 
