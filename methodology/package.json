@@ -39,7 +39,7 @@
       "./node_modules/**/*.js"
     ],
     "assets": [
-      "./json/**/**"
+      "./extension/*"
     ],
     "targets": [
       "node12-linux-x64",

@@ -125,26 +125,52 @@ async function beforeDirectives(page, experiment, profile, directives) {
 }
 
 async function beforeWait(page, directive) {
-    debug("Nothing in beforeWait but might be screencapture or ad checking");
+    // debug("Nothing in beforeWait but might be screencapture or ad checking");
+    debug("TESTING AUTOSCROLL!")
+    async () => {
+        await new Promise((resolve, reject) => {
+            var totalHeight = 0;
+            var distance = 400;
+            var timer = setInterval(() => {
+                var scrollHeight = document.body.scrollHeight;
+                window.scrollBy(0, distance);
+                totalHeight += distance;
+
+                if(totalHeight >= scrollHeight){
+                    clearInterval(timer);
+                    window.scrollTo(0, 0);
+                    resolve();
+                }
+            }, 500);
+        });
+    }
 }
 
 async function afterWait(page, directive) {
     // const innerWidth = await page.evaluate(_ => { return window.innerWidth });
     // const innerHeight = await page.evaluate(_ => { return window.innerHeight });
+    const hasPlayer = false;
     if(directive.url.match(/\/watch\?v=/)) {
         const state = await getYTstatus(page);
         debug("afterWait status found to be: %s", state.name);
         await interactWithYT(page, directive, "playing");
-    } else {
-        debug("We don't know what you're doing on %s but you're free to do it!", directive.url);
+        hasPlayer = true;
     }
-    /*
-    if(directive.nodump !== true) {
-        const screendumpf = moment().format("YYYYMMDD-HHmm") + '-' + directive.name + '-' + directive.profile + '.png';
-        const fullpath = path.join('tmp', screendumpf);
-        debug("afterWait, collecting screenshot in %s", fullpath);
-        await state.player.screenshot({ path: fullpath });
-    } */
+
+    if(directive.screenshot) {
+        const screendumpf = moment().format("YYYYMMDD-HHmm") + '-' + directive.name + '.png';
+        const fullpath = path.join(directive.profile, screendumpf);
+        debug("afterWait: collecting screenshot in %s", fullpath);
+
+        if(hasPlayer)
+            await state.player.screenshot({ path: fullpath });
+        else
+            await page.screenshot({
+                path: screenshotname,
+                fullPage: true
+            });
+    }
+
 }
 const condition = {
     "-1": "unstarted",

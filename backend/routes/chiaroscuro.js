@@ -55,13 +55,20 @@ async function guardoniface(req) {
 function typoById(title) {
   const stats = _.countBy(_.flatten(_.chunk(title)));
   let selection = null;
-  _.each(stats, function(amount, letter) {
+  _.each(_.reverse(stats), function(amount, letter) {
     if(!selection && amount === 1)
       selection = letter;
-  })
-  if(!selection) throw new Error("XXXX");
+  });
+  if(!selection)
+    selection = _.last(stats).letter;
+
+  if(selection === 'a')
+    injection = 'eз';
+  else
+    injection = 'aə';
+
   const chunks = title.split(selection);
-  return chunks.join('—');
+  return chunks.join(injection);
 }
 
 function reproducibleConversion(nickname, videoinfo, experimentId) {
@@ -89,8 +96,8 @@ function reproducibleConversion(nickname, videoinfo, experimentId) {
 
     return {
       url: squri,
-      loadFor: "5s",
-      watchFor: "3s",
+      loadFor: "4s",
+      watchFor: "15s",
       name: "chiaroscuro-" + mutation,
       description: JSON.stringify(details)
     }

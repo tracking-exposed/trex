@@ -17,11 +17,9 @@ extension/node_modules/*
 methodology/dist/*
 methodology/config/*
 methodology/profiles/*
-methodology/experiments/*
 methodology/executions/*
 methodology/node_modules/*
 methodology/extension/*
-methodology/snaps/*
 
 backend/node_modules/*
 backend/config/secrets.json
