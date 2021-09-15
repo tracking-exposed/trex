@@ -97,7 +97,7 @@ function reproducibleConversion(nickname, videoinfo, experimentId) {
     return {
       url: squri,
       loadFor: "8s",
-      watchFor: "1s", // ignored in this URL format
+      watchFor: "5s", // ignored in this URL format
       name: "chiaroscuro-" + mutation,
       description: JSON.stringify(details)
     }

@@ -23,6 +23,7 @@ methodology/node_modules/*
 methodology/extension/*
 
 backend/node_modules/*
+backend/experiments/*
 backend/config/secrets.json
 
 react-pieces/node_modules/*

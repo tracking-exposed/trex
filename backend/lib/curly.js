@@ -35,11 +35,11 @@ async function experimentalFetch(channelId) {
   }
   const videob = _.filter(blob.contents.twoColumnBrowseResultsRenderer.tabs,
     function(tabSlot) {
-      if(tabSlot.tabRenderer && tabSlot.tabRenderer.title)
-          debug("%s", tabSlot.tabRenderer.title);
+      /* if(tabSlot.tabRenderer && tabSlot.tabRenderer.title)
+        debug("%s", tabSlot.tabRenderer.title); */
       return (tabSlot.tabRenderer &&
         tabSlot.tabRenderer.title &&
-        tabSlot.tabRenderer.title === 'Videos');
+        (tabSlot.tabRenderer.title === 'Videos' || tabSlot.tabRenderer.title === 'Video') );
         // warning this depends from the server locale
         // for example in Germany is 
         // Übersicht Videos Playlists Community Kanäle Kanalinfo
@@ -47,8 +47,10 @@ async function experimentalFetch(channelId) {
 
   if(!videob.length) {
     debug("Not found the expected piece in channel %s", channelId);
+    // uncomment the debug above, perhaps is a language?
     return null;
   }
+
   const videonfo = videob[0].tabRenderer.content.sectionListRenderer.contents[0].itemSectionRenderer.contents[0].gridRenderer.items;
   const videtails = _.compact(_.map(videonfo, function(ve) { return ve.gridVideoRenderer }));
   const titlesandId = _.map(videtails, function(ve) { return { videoId: ve.videoId, title: ve.title.runs[0].text }})
