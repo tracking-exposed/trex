@@ -44,8 +44,8 @@ async function guardoniface(req) {
   const videosinfo = await automo.pickChiaroscuro(experimentId);
   // regardless of the amont of experiment, it return videoinfos
 
-  const directives = _.flatten(_.map(videosinfo.links, function(vidblock) {
-    return reproducibleConversion(nickname, vidblock, experimentId);
+  const directives = _.flatten(_.map(videosinfo.links, function(vidblock, counter) {
+    return reproducibleConversion(nickname, vidblock, experimentId, counter);
   } ));
 
   debug("returning %d", directives.length);
@@ -71,7 +71,7 @@ function typoById(title) {
   return chunks.join(injection);
 }
 
-function reproducibleConversion(nickname, videoinfo, experimentId) {
+function reproducibleConversion(nickname, videoinfo, experimentId, counter) {
   // this produces three conversion of the video under test
   // and it guarantee the conversion is reproducible
 
@@ -98,7 +98,7 @@ function reproducibleConversion(nickname, videoinfo, experimentId) {
       url: squri,
       loadFor: "8s",
       watchFor: "5s", // ignored in this URL format
-      name: "chiaroscuro-" + mutation,
+      name: "chiaroscuro-" + counter + "-" + mutation,
       description: JSON.stringify(details)
     }
 

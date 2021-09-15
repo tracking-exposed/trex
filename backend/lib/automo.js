@@ -593,15 +593,15 @@ async function extendMetaByExperiment(experimentId) {
         // save the previous test as "lte" clausole.
         let boundary = null;
         const filter = { publicKey };
-        _.each(guarord, function(experiment) { /*
+        _.each(guarord, function(experiment) {
             filter.savingTime = {
                 "$gte": new Date(experiment.testTime)
             };
             if(boundary)
-                filter.savingTime["$lt"] = boundary; */
+                filter.savingTime["$lt"] = boundary;
             boundary = new Date(moment(experiment.testTime).toISOString());
             _.each(experiment.info, function(directive) {
-                filter.url = directive.url;
+                // filter.href = directive.url;
                 // this for integrity checking, decomment only and try the API
                 memo.push({
                     filter: _.cloneDeep(filter),
@@ -627,7 +627,7 @@ async function extendMetaByExperiment(experimentId) {
     const ret = [];
     for (expl of experslinks) {
         const meta = await mongo3
-            .readLimit(mongoc, nconf.get('schema').metadata, 
+            .readLimit(mongoc, nconf.get('schema').searches,
                 expl.filter, { savingTime: -1 }, 100, 1);
         debug("With filter %j found %d", expl.filter, meta.length);
         _.each(meta, function(mentry) {
