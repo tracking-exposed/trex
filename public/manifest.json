@@ -1,25 +1,47 @@
 {
-  "short_name": "React App",
-  "name": "Create React App Sample",
-  "icons": [
+  "manifest_version": 2,
+
+  "name": "YouChoose.AI",
+
+  "short_name": "YCAI",
+  "description": "Content creator should control their videos' recommendation",
+  "version": "0.1.10",
+  "author": "Tracking Exposed team, check it our on https://youchoose.ai",
+
+  "icons": {
+    "16": "ycai16.png",
+    "48": "ycai48.png",
+    "128": "ycai128.png"
+  },
+
+  "browser_action": {
+    "default_icon": "ycai16.png",
+    "default_popup": "popup.html"
+  },
+
+  "permissions": [
+    "storage",
+    "alarms",
+    "http://localhost:9000/",
+    "https://*.youtube.com/",
+    "https://youchoose.tracking.exposed/"
+  ],
+
+  "background": {
+    "scripts": ["./background.js"]
+  },
+
+  "content_scripts": [
     {
-      "src": "favicon.ico",
-      "sizes": "64x64 32x32 24x24 16x16",
-      "type": "image/x-icon"
-    },
-    {
-      "src": "logo192.png",
-      "type": "image/png",
-      "sizes": "192x192"
-    },
-    {
-      "src": "logo512.png",
-      "type": "image/png",
-      "sizes": "512x512"
+      "matches": [
+        "http://localhost/*",
+        "http://127.0.0.1/*",
+        "https://youchoose.tracking.exposed/*",
+        "https://*.youtube.com/*"
+      ],
+      "js": ["./main.js"],
+      "css": ["./css/Trex-Regular.ttf", "./css/font.css", "./css/youchoose-ux.css"]
     }
   ],
-  "start_url": ".",
-  "display": "standalone",
-  "theme_color": "#000000",
-  "background_color": "#ffffff"
+  "web_accessible_resources": ["*.png", "/css/TRex-Regular.tff", "/css/font.css", "/css/youchoose-ux.css"]
 }

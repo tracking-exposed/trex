@@ -1,3 +1,15 @@
+body {
+  margin: 0;
+  font-family: 'Trex-Regular';
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
+    monospace;
+}
+
 #ycaibar {
   background-color: #f50057;
   padding: 4px;

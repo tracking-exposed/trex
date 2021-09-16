@@ -1,0 +1,37 @@
+{
+  "extends": "./tsconfig.paths.json",
+  "compilerOptions": {
+    "module": "esnext",
+    "target": "es5",
+    "jsx": "react-jsx",
+    "noEmit": true,
+    "allowJs": true,
+    "strict": true,
+    "esModuleInterop": true,
+    "noUnusedLocals": false,
+    "resolveJsonModule": true,
+    "forceConsistentCasingInFileNames": true,
+    "lib": [
+      "dom",
+      "esnext"
+    ],
+    "skipLibCheck": true,
+    "skipDefaultLibCheck": true,
+    "typeRoots": [
+      "typings",
+      "node_modules/@types"
+    ],
+    "baseUrl": "./src",
+    "allowSyntheticDefaultImports": true,
+    "noFallthroughCasesInSwitch": true,
+    "moduleResolution": "node",
+    "isolatedModules": true
+  },
+  "include": [
+    "./src",
+  ],
+  "exclude": [
+    "node_modules",
+    "public"
+  ]
+}

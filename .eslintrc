@@ -10,7 +10,7 @@
       "jsx": true
     },
     "sourceType": "module",
-    "allowImportExportEverywhere": true
+    "project": "./tsconfig.json"
   },
   "plugins": [
     "@typescript-eslint"
