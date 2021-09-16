@@ -10,6 +10,7 @@ import { setCurrentVideo } from './API/commands';
 import { LinkAccount } from './LinkAccount';
 import RecommendationsPanel from './RecommendationsPanel';
 import YCAInalitics from './YCAInalitics';
+import Grid from '@material-ui/core/Grid';
 
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -60,6 +61,7 @@ export default function Dashboard() {
 
   return (
     <div className={classes.root}>
+      <img alt="YCAI Logo" src="/ycai-logo.png" />
       <AppBar position="static">
         <Tabs
           value={value}
@@ -72,18 +74,22 @@ export default function Dashboard() {
           <Tab label="Advanced Settings" {...a11yProps(3)} />
         </Tabs>
       </AppBar>
-      <TabPanel value={value} index={0}>
-        <LinkAccount />
-      </TabPanel>
-      <TabPanel value={value} index={1}>
-        <RecommendationsPanel />
-      </TabPanel>
-      <TabPanel value={value} index={2}>
-        <YCAInalitics />
-      </TabPanel>
-      <TabPanel value={value} index={3}>
-        <Advanced />
-      </TabPanel>
+      <Grid container>
+        <Grid item md={12}>
+          <TabPanel value={value} index={0}>
+            <LinkAccount />
+          </TabPanel>
+          <TabPanel value={value} index={1}>
+            <RecommendationsPanel />
+          </TabPanel>
+          <TabPanel value={value} index={2}>
+            <YCAInalitics />
+          </TabPanel>
+          <TabPanel value={value} index={3}>
+            <Advanced />
+          </TabPanel>
+        </Grid>
+      </Grid>
     </div>
   );
 }

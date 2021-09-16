@@ -1,14 +1,15 @@
+import { ThemeProvider } from '@material-ui/styles';
 import React from 'react';
 import ReactDOM from 'react-dom';
 import Dashboard from './chrome/dashboard/Dashboard';
 import reportWebVitals from './chrome/dashboard/reportWebVitals';
+import { YCAITheme } from './theme';
 
 ReactDOM.render(
   <React.StrictMode>
-    <div>
-      <img alt="YCAI Logo" src="/ycai-logo.png" />
+    <ThemeProvider theme={YCAITheme}>
       <Dashboard />
-    </div>
+    </ThemeProvider>
   </React.StrictMode>,
   document.getElementById('ycai--dashboard')
 );
