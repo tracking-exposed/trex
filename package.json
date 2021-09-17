@@ -15,8 +15,6 @@
     "clean": "rm -rf ./build ./dist",
     "lint": "eslint ./src",
     "format": "prettier -w ./src config-overrides.js",
-    "build:watch": "rimraf ./build && mkdir build && cp -r src/embedded/* manifest.json icons/* ./build/ && cross-env webpack -w",
-    "build:dist": "sh pack-extension.sh",
     "build": "react-app-rewired build",
     "start": "react-app-rewired start",
     "test": "react-app-rewired test",

@@ -41,7 +41,7 @@ module.exports = {
 
     config.entry = {
       main: path.resolve(__dirname, 'src/index.tsx'),
-      app: [path.resolve(__dirname, 'src/app.js')],
+      app: path.resolve(__dirname, 'src/app.js'),
       popup: path.resolve(__dirname, 'src/chrome/popup/index.tsx'),
       background: path.resolve(__dirname, 'src/chrome/background/index.js'),
     };
@@ -62,7 +62,6 @@ module.exports = {
       new BrowserExtensionPlugin({
         autoReload: !isProduction ? false : false,
         backgroundEntry: 'background',
-        // ignoreEntries: ['popup', 'dashboard', 'app'],
         manifestFilePath: 'public/manifest.json',
         onCompileManifest: (manifest) => {
           const content_scripts = isProduction
@@ -80,7 +79,7 @@ module.exports = {
           const buildManifest = {
             ...manifest,
             content_scripts,
-            version: pkgJson.version,
+            version: isProduction ? pkgJson.version : `${pkgJson.version}-dev`,
           };
 
           return buildManifest;
@@ -115,34 +114,31 @@ module.exports = {
           contentImage: path.join(__dirname, 'icons', 'ycai128.png'),
           timeout: 2,
           excludeWarnings: true,
+        }),
+        new FileManagerPlugin({
+          events: {
+            onEnd: {
+              archive: isProduction
+                ? [
+                    {
+                      source: './build',
+                      destination: './build/extension.zip',
+                    },
+                  ]
+                : [],
+            },
+          },
         })
       );
     }
 
-    config.plugins = config.plugins.concat(
-      new FileManagerPlugin({
-        events: {
-          onEnd: {
-            archive: isProduction
-              ? [
-                  {
-                    source: './build',
-                    destination: './build/extension.zip',
-                  },
-                ]
-              : [],
-          },
-        },
-      })
-    );
-
     // Disable bundle splitting,
     // a single bundle file has to loaded as `content_script`.
-    config.optimization.splitChunks = {
-      cacheGroups: {
-        default: false,
-      },
-    };
+    // config.optimization.splitChunks = {
+    //   cacheGroups: {
+    //     default: false,
+    //   },
+    // };
 
     // `false`: each entry chunk embeds runtime.
     // The extension is built with a single entry including all JS.
