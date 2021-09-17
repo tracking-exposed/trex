@@ -128,10 +128,12 @@ async function manageChiaroscuro() {
   directives = enhanceDirectives(experimentId, directives);
 
   let profile = nconf.get('profile');
-  if(!profile)
-    profile =  nickname + "—" + moment().format("YYYY-MM-DD_HHmm");
+  if(!profile) {
+    profile = nickname ;
+    debug("Executing browser, profile is = to nickname %s", profile);
+  } else
+    debug("Executing browser for profile %s (nickname %s)", profile, nickname);
 
-  debug("Executing browser")
   await guardoniExecution(experimentId, directives, profile);
 }
 
@@ -169,8 +171,7 @@ function enhanceDirectives(experiment, directives, profile) {
 
     d.loadFor = timeconv(loadForSwp, 3000);
     d.watchFor = timeconv(watchForSwp, 20000);
-    debug("Time converstion results: loadFor %s watchFor %s",
-      d.loadFor, d.watchFor);
+    /* debug("Time converstion results: loadFor %s watchFor %s", d.loadFor, d.watchFor); */
 
     d.profile = profile;
     if(experiment)
@@ -231,15 +232,19 @@ async function guardoniExecution(experiment, directives, profile) {
   }
 
   let setupDelay = false;
-  const udd = path.resolve(path.join('profiles', profile));
+  let udd = path.resolve(path.join('profiles', profile));
   if(!fs.existsSync(udd)) {
     console.log("--profile name hasn't an associated directory: " + udd + "\nLet's create it!");
     // console.log(localbrowser," --user-data-dir=profiles/path to initialize a new profile");
     // process.exit(1)
-    fs.mkdirSync(udd);
+    try {
+      fs.mkdirSync(udd);
+    } catch(error) {
+      udd = profile;
+      fs.mkdirSync(udd);
+    }
     setupDelay = true;
   }
-
 
   const chromePath = getChromePath();
 
@@ -304,7 +309,7 @@ function timeconv(maybestr, defaultMs) {
   } else if(_.isString(maybestr) && maybestr == 'end') {
     return 'end';
   } else {
-    throw new Error("unexpected content in time " + maybestr);
+    return null;
   }
 }
 
@@ -323,7 +328,6 @@ async function operateTab(page, directive, domainSpecific, timeout) {
   }
   debug("Directive to URL %s, Loading delay %d", directive.url, directive.loadFor);
   await page.waitForTimeout(directive.loadFor);
-  console.log("Done loading wait. Calling domainSpecific");
   try {
     await domainSpecific.afterWait(page, directive);
   } catch(error) {

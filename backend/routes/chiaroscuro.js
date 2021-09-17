@@ -1,6 +1,4 @@
-const { match } = require('assert');
 const _ = require('lodash');
-const moment = require('moment');
 const debug = require('debug')('routes:chiaroscuro');
 
 const automo = require('../lib/automo');
@@ -52,8 +50,10 @@ async function guardoniface(req) {
   return { json: directives };
 }
 
-function typoById(title) {
-  const stats = _.countBy(_.flatten(_.chunk(title)));
+function reproducibleTypo(title) {
+  let trimmedT = title.replace(/.$/, '').replace(/^./, '');
+  return trimmedT
+  const stats = _.countBy(_.flatten(_.chunk(trimmedT)));
   let selection = null;
   _.each(_.reverse(stats), function(amount, letter) {
     if(!selection && amount === 1)
@@ -62,12 +62,8 @@ function typoById(title) {
   if(!selection)
     selection = _.last(stats).letter;
 
-  if(selection === 'a')
-    injection = 'eз';
-  else
-    injection = 'aə';
-
-  const chunks = title.split(selection);
+  injection = ' з ';
+  const chunks = trimmedT.split(selection);
   return chunks.join(injection);
 }
 
@@ -76,30 +72,31 @@ function reproducibleConversion(nickname, videoinfo, experimentId, counter) {
   // and it guarantee the conversion is reproducible
 
   const { videoId } = utils.getNatureFromURL(videoinfo.videoURL);
-  return _.times(3, function(mutation) {
-
-    const details = {
-      nickname,
-      mutation,
-      videoId,
-    }
+  return _.times(2, function(mutation) {
 
     let sq = null;
-    if(mutation === 0)
-      sq = encodeURIComponent(typoById(videoinfo.title))
-    else if(mutation === 1) 
+    let mutationStr = "";
+    if(mutation === 0) {
+      mutationStr = "trimming";
+      sq = encodeURIComponent(reproducibleTypo(videoinfo.title))
+    }
+    else if(mutation === 1)  {
+      mutationStr = "exact-title";
       sq = encodeURIComponent(videoinfo.title);
-    else if(mutation === 2)
+    }
+    else if(mutation === 2) {
+      mutationStr = "videoId";
       sq = videoId;
+    }
 
     const squri = `https://www.youtube.com/results?search_query=${sq}`;
 
     return {
       url: squri,
-      loadFor: "8s",
-      watchFor: "5s", // ignored in this URL format
-      name: "chiaroscuro-" + counter + "-" + mutation,
-      description: JSON.stringify(details)
+      loadFor: "11s",
+      name: mutationStr,
+      targetVideoId: videoId,
+      description: nickname + counter + mutation
     }
 
   });

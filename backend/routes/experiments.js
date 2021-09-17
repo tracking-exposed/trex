@@ -67,7 +67,6 @@ async function dot(req) {
 
 async function json(req) {
     const expname = params.getString(req, 'expname', true);
-    debug("XXXX");
     const related = await automo.extendMetaByExperiment(expname);
     // this return data that are already the mixture between
     // collection 'metadata' and 'experiments'
@@ -78,7 +77,7 @@ async function json(req) {
 
 async function csv(req) {
     const expname = params.getString(req, 'expname', true);
-    const related = await automo.fetchExperimentData(expname);
+    const related = await automo.extendMetaByExperiment(expname);
     // this return data that are already the mixture between
     // collection 'metadata' and 'experiments'
     const textcsv = CSV.produceCSVv1(related);

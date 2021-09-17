@@ -19,6 +19,10 @@ const debug = require('debug')('lib:automo');
 const moment = require('moment');
 const chardet = require('chardet')
 
+/* these two only for the experiment chiaroscuro thing */
+const url = require('url');
+const qustr = require('querystring')
+
 const utils = require('../lib/utils');
 const mongo3 = require('./mongo3');
 
@@ -587,7 +591,7 @@ async function extendMetaByExperiment(experimentId) {
     const profiles = _.groupBy(expers, 'publicKey');
     const experslinks = _.reduce(profiles, function(memo, explist, publicKey) {
         const guarord = _.sortBy(explist, 'testTime')
-        debug(guarord);
+        // debug(guarord);
         // guarantee order it means, because we need to write mongofilter
         // that takes all the metadata after the test. this piece of code 
         // save the previous test as "lte" clausole.
@@ -599,10 +603,16 @@ async function extendMetaByExperiment(experimentId) {
             };
             if(boundary)
                 filter.savingTime["$lt"] = boundary;
+
             boundary = new Date(moment(experiment.testTime).toISOString());
             _.each(experiment.info, function(directive) {
-                // filter.href = directive.url;
-                // this for integrity checking, decomment only and try the API
+                const uq = url.parse(directive.url);
+                if(uq.pathname !== '/results')
+                    return null;
+
+                const searchTerms = _.trim(qustr.parse(uq.query).search_query);
+                filter.searchTerms = searchTerms;
+
                 memo.push({
                     filter: _.cloneDeep(filter),
                     publicKey,
@@ -611,6 +621,7 @@ async function extendMetaByExperiment(experimentId) {
                     directiveName: directive.name,
                     experimentId: experiment.name,
                     url: directive.url,
+                    targetVideoId: directive.targetVideoId,
                     profile: experiment.profile,
                     sessionCounter: experiment.sessionCounter,
                 });
@@ -618,7 +629,6 @@ async function extendMetaByExperiment(experimentId) {
         })
         return memo;
     }, [])
-    debugger;
 
     debug("expl %d", experslinks.length);
 
