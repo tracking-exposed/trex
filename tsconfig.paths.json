@@ -2,7 +2,7 @@
   "compilerOptions": {
     "module": "esnext",
     "target": "es5",
-    "jsx": "react",
+    "jsx": "react-jsx",
     "noEmit": true,
     "allowJs": true,
     "strict": true,
@@ -11,11 +11,15 @@
     "resolveJsonModule": true,
     "forceConsistentCasingInFileNames": true,
     "lib": ["dom", "esnext"],
-    "skipLibCheck": true,
-    "typeRoots": ["node_modules/@types", "./typings"],
+    "typeRoots": ["node_modules/@types", "typings"],
     "baseUrl": "./src",
+    "allowSyntheticDefaultImports": true,
+    "noFallthroughCasesInSwitch": true,
+    "moduleResolution": "node",
+    "isolatedModules": true,
     "paths": {
       "@chrome/*": ["./chrome/*"]
-    }
-  }
+    },
+  },
+  "include": ["./src"]
 }

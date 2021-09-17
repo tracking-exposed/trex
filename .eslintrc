@@ -10,7 +10,7 @@
       "jsx": true
     },
     "sourceType": "module",
-    "project": "./tsconfig.json"
+    "project": ["./tsconfig.paths.json"]
   },
   "plugins": [
     "@typescript-eslint"
@@ -28,6 +28,11 @@
     "window": false,
     "browser": true,
     "_": true
+  },
+  "settings": {
+    "react": {
+      "version": "16.12.0"
+    }
   },
   "rules": {
     "no-console": 1
