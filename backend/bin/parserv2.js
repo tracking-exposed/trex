@@ -141,17 +141,17 @@ async function newLoop(htmlFilter) {
     return rv;
 }
 
-function processEachHTML(e) {
+function processEachHTML(htmlentry) {
     /* main function invoked by the main loop */
-    if(!e || !e.html || typeof e.html !== "string") {
+    if(!htmlentry || !htmlentry.html || typeof htmlentry.html !== "string") {
         debug("Not usable evidence id %s (incremental %d pkt %d)",
-            e.id, e.incremental, e.packet);
+            htmlentry.id, htmlentry.incremental, htmlentry.packet);
         return null;
     }
 
     const envelop = {
-        impression: _.omit(e, ['html', '_id']),
-        jsdom: new JSDOM(e.html.replace(/\n\ +/g, ''))
+        impression: _.omit(htmlentry, ['html', '_id']),
+        jsdom: new JSDOM(htmlentry.html.replace(/\n\ +/g, ''))
                 .window.document,
     }
 
@@ -159,29 +159,30 @@ function processEachHTML(e) {
     try {
         debug("#%d\ton (%d minutes ago) %s %d.%d %s %s %s",
             processedCounter,
-            _.round(moment.duration( moment() - moment(e.savingTime)).asMinutes(), 0),
-            e.metadataId,
-            e.packet, e.incremental,
-            e.href.replace(/https:\/\//, ''), e.size, e.selector);
+            _.round(moment.duration( moment() - moment(htmlentry.savingTime)).asMinutes(), 0),
+            htmlentry.metadataId,
+            htmlentry.packet, htmlentry.incremental,
+            htmlentry.href.replace(/https:\/\//, ''), htmlentry.size, htmlentry.selector);
         processedCounter++;
 
-        const curi = e.href.replace(/.*youtube\.com\//, '').replace(/\?.*/, '')
+        const curi = htmlentry.href.replace(/.*youtube\.com\//, '').replace(/\?.*/, '')
+        // Replace with URL parsing
 
-        if(!_.size(curi) && e.selector == "ytd-app") {
+        if(!_.size(curi) && htmlentry.selector == "ytd-app") {
             /* without clean URI, it is an youtube home */
             metadata = homeparser.process(envelop);
             _.unset(metadata, 'sections');
         }
-        else if(e.selector == "ytd-app") {
+        else if(htmlentry.selector == "ytd-app") {
             /* else, if is ytd-app, it is a full video content */
             metadata = videoparser.process(envelop);
         }
-        else if(_.indexOf(_.keys(advSelectors), e.selector) != -1)  {
+        else if(_.indexOf(_.keys(advSelectors), htmlentry.selector) != -1)  {
             /* if the selector is one of the adveritising related dissector, find it out */
-            metadata = advSelectors[e.selector](envelop, e.selector);
+            metadata = advSelectors[htmlentry.selector](envelop, htmlentry.selector);
             /* possible fields: 'adLink', 'adLabel', 'adChannel' */
         } else {
-            debuge("Selector not supported %s", e.selector);
+            debuge("Selector not supported %s", htmlentry.selector);
             return null;
         }
 
@@ -193,7 +194,7 @@ function processEachHTML(e) {
             metadata.experiment = envelop.impression.experiment;
 
     } catch(error) {
-        debuge("#%d\t selector (%s) error: %s", processedCounter, e.selector, error.message);
+        debuge("#%d\t selector (%s) error: %s", processedCounter, htmlentry.selector, error.message);
         return null;
     }
 
