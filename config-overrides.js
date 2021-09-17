@@ -1,6 +1,7 @@
 const { configPaths } = require('react-app-rewire-alias');
 const { aliasDangerous } = require('react-app-rewire-alias/lib/aliasDangerous');
 const { pipe } = require('fp-ts/lib/pipeable');
+const A = require('fp-ts/lib/Array');
 const R = require('fp-ts/lib/Record');
 const path = require('path');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
@@ -64,10 +65,25 @@ module.exports = {
         // ignoreEntries: ['popup', 'dashboard', 'app'],
         manifestFilePath: 'public/manifest.json',
         onCompileManifest: (manifest) => {
-          return {
+          const content_scripts = isProduction
+            ? [
+                {
+                  ...manifest.content_scripts[0],
+                  matches: pipe(
+                    manifest.content_scripts[0].matches,
+                    A.takeRight(2)
+                  ),
+                },
+              ]
+            : manifest.content_scripts;
+
+          const buildManifest = {
             ...manifest,
+            content_scripts,
             version: pkgJson.version,
           };
+
+          return buildManifest;
         },
       })
     );
@@ -110,8 +126,8 @@ module.exports = {
             archive: isProduction
               ? [
                   {
-                    source: '/build',
-                    destination: '/build/extension.zip',
+                    source: './build',
+                    destination: './build/extension.zip',
                   },
                 ]
               : [],
