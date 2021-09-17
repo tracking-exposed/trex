@@ -1,14 +1,11 @@
 import { Card, makeStyles } from '@material-ui/core';
 import { Alert, AlertTitle } from '@material-ui/lab';
-import { string } from 'fp-ts';
 import moment from 'moment';
 import React from 'react';
 import config from '../../../config';
 import InfoBox from './infoBox';
 import Settings from './settings';
-
-// bo is the browser object, in chrome is named 'chrome', in firefox is 'browser'
-const bo = (window as any).chrome || (window as any).browser;
+import { bo } from '../utils';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -49,7 +46,7 @@ const Popup: React.FC<PopupProps> = () => {
       });
     } catch (e: any) {
       // eslint-disable-next-line no-console
-      console.log('catch error', e.message, bo.runtime.lastError);
+      console.log('catch error', e.message, bo?.runtime.lastError);
       setLocalLookup({ status: 'error', data: '' });
     }
   }, []);

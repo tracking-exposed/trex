@@ -8,7 +8,7 @@ import Button from '@material-ui/core/Button';
 
 const InfoBox = createReactClass({
   render() {
-    const about = '/dashboard.html';
+    const about = '/index.html';
     const privacy = config.WEB_ROOT + '/privacy';
     const experiments = config.WEB_ROOT + '/wetest/next';
 

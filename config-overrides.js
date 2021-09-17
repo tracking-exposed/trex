@@ -12,14 +12,6 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 const webpack = require('webpack');
 const { BrowserExtensionPlugin } = require('webpack-browser-extension-plugin');
 const pkgJson = require('./package.json');
-const multipleEntry = require('react-app-rewire-multiple-entry')([
-  {
-    name: 'dashboard',
-    entry: 'src/index.tsx',
-    tempalte: 'public/dashboard.html',
-    outPath: '/dashboard.html',
-  },
-]);
 
 module.exports = {
   webpack: function (config) {
@@ -36,7 +28,6 @@ module.exports = {
       ...webPaths,
     };
 
-    multipleEntry.addMultiEntry(config);
     aliasDangerous(paths)(config);
 
     config.entry = {
@@ -53,14 +44,9 @@ module.exports = {
         inject: true,
         filename: 'popup.html',
       }),
-      new HtmlWebpackPlugin({
-        chunks: ['main'],
-        template: path.resolve(__dirname, 'public/dashboard.html'),
-        inject: true,
-        filename: 'dashboard.html',
-      }),
       new BrowserExtensionPlugin({
-        autoReload: !isProduction ? false : false,
+        // todo: it fails due to a webpack-inject-plugin-loader error
+        autoReload: false,
         backgroundEntry: 'background',
         manifestFilePath: 'public/manifest.json',
         onCompileManifest: (manifest) => {
@@ -114,7 +100,10 @@ module.exports = {
           contentImage: path.join(__dirname, 'icons', 'ycai128.png'),
           timeout: 2,
           excludeWarnings: true,
-        }),
+        })
+      );
+    } else {
+      config.plugins = config.plugins.concat(
         new FileManagerPlugin({
           events: {
             onEnd: {
