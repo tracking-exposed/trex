@@ -5,5 +5,5 @@ require('./account');
 require('./utils');
 
 if (config.DEVELOPMENT) {
-    require('./reloadExtension');
+  require('./reloadExtension');
 }

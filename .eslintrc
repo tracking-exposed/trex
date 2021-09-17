@@ -1,0 +1,35 @@
+{
+  "extends": [
+    "plugin:@typescript-eslint/eslint-recommended",
+    "prettier"
+  ],
+  "parser": "@typescript-eslint/parser",
+  "parserOptions": {
+    "ecmaVersion": 9,
+    "ecmaFeatures": {
+      "jsx": true
+    },
+    "sourceType": "module",
+    "allowImportExportEverywhere": true
+  },
+  "plugins": [
+    "@typescript-eslint"
+  ],
+  "env": {
+    "es6": true,
+    "node": true,
+    "mocha": true,
+    "browser": true
+  },
+  "globals": {
+    "chrome": true,
+    "document": false,
+    "navigator": false,
+    "window": false,
+    "browser": true,
+    "_": true
+  },
+  "rules": {
+    "no-console": 1
+  }
+}

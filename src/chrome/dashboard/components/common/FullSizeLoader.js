@@ -11,7 +11,7 @@ export const FullSizeLoader = () => {
         minHeight: 600,
         display: 'flex',
         alignItems: 'center',
-        justifyContent: 'center'
+        justifyContent: 'center',
       }}
     >
       <CircularProgress />
