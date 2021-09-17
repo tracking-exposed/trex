@@ -94,7 +94,7 @@ async function savekey(message, experimentName, directives, profile) {
     }
     fs.writeFileSync(keylog, JSON.stringify(payload), {
         encoding: "utf-8", flag: "w+" });
-    console.log("written keylog", keylog);
+    console.log("saved publicKey in ", keylog);
 }
 
 let sentOnce = false;

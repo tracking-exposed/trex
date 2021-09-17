@@ -35,7 +35,14 @@ async function keypress() {
 }
 
 async function allowResearcherSomeTimeToSetupTheBrowser() {
-  console.log("Now you can configure your chrome browser, define default settings and when you're done, press enter");
+  console.log("\n\n.:*~*:._.:*~*:._.:*~*:._.:*~*:._.:*~*:._.:*~*:._.:*~*:._.:*~*:.");
+  console.log("Creating profile", nconf.get('nickname'));
+  console.log("You should see a chrome browser (with yttrex installed)")
+  console.log("\nPLEASE in that window, open youtube.com and accept the cookie processing.");
+  console.log("ONLY AFTER, press ANY KEY here. It will start the collection");
+  console.log("\n(without accepting the cookie banner the test will fail and you have to remove the directory with your nickname, to restart.)");
+  console.log("\nnext time you'll use the same nickname, this step would not appear, as long as you keep the directory.");
+  console.log('\n~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~');
   await keypress();
 }
 
@@ -234,7 +241,7 @@ async function guardoniExecution(experiment, directives, profile) {
   let setupDelay = false;
   let udd = path.resolve(path.join('profiles', profile));
   if(!fs.existsSync(udd)) {
-    console.log("--profile name hasn't an associated directory: " + udd + "\nLet's create it!");
+    console.log("--profile name hasn't an associated directory: " + udd);
     // console.log(localbrowser," --user-data-dir=profiles/path to initialize a new profile");
     // process.exit(1)
     try {
