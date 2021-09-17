@@ -37,6 +37,14 @@ module.exports = {
       background: path.resolve(__dirname, 'src/chrome/background/index.js'),
     };
 
+    // override default html-webpack-plugin for 'all' chunks
+    config.plugins[0] = new HtmlWebpackPlugin({
+      chunks: ['main'],
+      template: path.resolve(__dirname, 'public/index.html'),
+      inject: true,
+      filename: 'index.html',
+    });
+
     config.plugins = config.plugins.concat(
       new HtmlWebpackPlugin({
         chunks: ['popup'],
@@ -48,6 +56,7 @@ module.exports = {
         // todo: it fails due to a webpack-inject-plugin-loader error
         autoReload: false,
         backgroundEntry: 'background',
+        ignoreEntries: ['main', 'app', 'popup'],
         manifestFilePath: 'public/manifest.json',
         onCompileManifest: (manifest) => {
           const content_scripts = isProduction
