@@ -636,6 +636,78 @@ async function getAllExperiments(max) {
     return result;
 }
 
+async function fetchRecommendations(videoId, kind) {
+    // kind might be 'demo', 'producer', 'community'
+    let filter = {};
+    if(kind !== 'demo') {
+        filter.videoId = videoId;
+    }
+    // in demo, every links is ok to be returned
+    const RECOMMENDATION_MAX = 10;
+    const mongoc = await mongo3.clientConnect({concurrency: 1});
+    const result = await mongo3
+        .readLimit(mongoc, nconf.get('schema').recommendations,
+            filter, {}, RECOMMENDATION_MAX, 0);
+    if(RECOMMENDATION_MAX == result.length) {
+        debug("More recommendations than what is possible!")
+    }
+    await mongoc.close();
+    return result;
+}
+
+async function fetchRecommendationsByProfile(profileInfo) {
+    // cryptography and authentication not yet implemented
+    const INTERFACE_MAX = 100;
+    const mongoc = await mongo3.clientConnect({concurrency: 1});
+    const results = await mongo3
+        .readLimit(mongoc, nconf.get('schema').recommendations, {
+        }, {}, INTERFACE_MAX, 0);
+    if(INTERFACE_MAX == results.length) {
+        debug("More recommendations than what is possible!")
+    }
+    await mongoc.close();
+    return results;
+}
+
+async function saveRecommendationOGP(ogblob) {
+    // this opengraph might have redundant fields so we pick only what's matter
+    const fields = ['title', 'description', 'url', 'image']
+    const keep = _.pick(ogblob, fields);
+    // TODO here we should associate a 'type' by the kind of domain name
+
+    // ensure the presence of every required field except image
+    const error = [];
+    _.each(['title', 'description', 'url'], function(fname) {
+        if(!keep[fname] || !keep[fname].length) {
+            error.push(fname);
+        }
+    });
+    if(error.length)
+        return error;
+
+    keep.when = new Date();
+    keep.urlId = utils.hash({url: keep.url})
+    const mongoc = await mongo3.clientConnect({concurrency: 1});
+    const res = await mongo3
+        .writeOne(mongoc, nconf.get('schema').recommendations, keep);
+    await mongoc.close();
+
+    if(!res.result || !res.result.ok) {
+        debug("Mongo error? %j", res);
+        return ["MongoDB error!"];
+    }
+    return keep;
+}
+
+async function getRecommendationByURL(url) {
+    const urlId = utils.hash({url});
+    const mongoc = await mongo3.clientConnect({concurrency: 1});
+    const res = await mongo3
+        .readOne(mongoc, nconf.get('schema').recommendations, {urlId});
+    await mongoc.close();
+    return res;
+}
+
 module.exports = {
     /* used by routes/personal */
     getSummaryByPublicKey,
@@ -685,4 +757,10 @@ module.exports = {
     enhanceHTMLifExperiment,
     fetchExperimentData,
     getAllExperiments,
+
+    /* youchoose related functions */
+    fetchRecommendations,
+    fetchRecommendationsByProfile,
+    saveRecommendationOGP,
+    getRecommendationByURL,
 };

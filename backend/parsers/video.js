@@ -45,8 +45,8 @@ function closestForTime(e, sele) {
     }));
 
     if(_.first(combo)) {
-        const expandedTime = _.first(combo).label;  // '3:02'
-        const displayTime = _.first(combo).text;    // '3 minutes, 2 seconds'
+        const expandedTime = _.first(combo).label.trim();  // '3:02'
+        const displayTime = _.first(combo).text.trim();    // '3 minutes, 2 seconds'
         return { displayTime, expandedTime };
     }
 
@@ -61,22 +61,12 @@ function closestForTime(e, sele) {
 
 function relatedMetadata(e, i) {
     // here we find metadata inside the preview snippet on the right column
-    let source, verified, vizstr, foryou, mined;
+    let source, verified, foryou, mined;
     const title = e.querySelector('#video-title').textContent;
     const metadata = e.querySelector('#metadata');
 
-    if(metadata.children.length > 0) {
-        // if is verified, the keyword vary language by language, but you've always
-        // TED\nVerified\n•, and this allow us a more technical check:
-        source = _.first(metadata.children[0].textContent.split('\n'));
-        verified = !!(_.size(metadata.children[0].textContent.split('\n')) > 1 );
-    }
-
-    if(metadata.children.length > 1)
-        vizstr = _.size(metadata.children[1].textContent) ? metadata.children[1].textContent : null;
-
-    if(vizstr && _.size(vizstr))
-        foryou = vizstr.match(/\d+/) ? false : true;
+    verified = !!metadata.querySelector('svg');
+    source = metadata.querySelector("yt-formatted-string").textContent;
 
     const link = e.querySelector('a') ? e.querySelector('a').getAttribute('href') : null;
     const urlinfo = url.parse(link);
@@ -188,10 +178,10 @@ function parseSingleTry(D, memo, spec) {
         return memo;
     }
 
-    if(!spec.selected && _.size(elems) > 1) {
+    /* if(!spec.selected && _.size(elems) > 1) {
         debug("%s with %s gives %d elements. only the 1st kept (%j)",
             spec.name, spec.selector, _.size(elems), _.map(elems, 'textContent') );
-    }
+    } */
 
     if(spec.selected) {
         debug("this look like a too overcomplex framework to define scraper... %d",
@@ -262,8 +252,10 @@ function processVideo(D, blang, clientTime, urlinfo) {
         throw new Error("unable to get video title");
     }
 
-    const check = D.querySelectorAll('a.ytd-video-owner-renderer').length; // should be 1
-    if(check != 1) debuge("unexpected thing");
+    const check = D
+        .querySelectorAll('ytd-channel-name.ytd-video-owner-renderer')
+        .length // should be 2
+    if(check != 2) debuge("unexpected thing in channel/author mining");
 
     let authorName, authorSource = null;
     const authorinfo = mineAuthorInfo(D);
@@ -284,8 +276,12 @@ function processVideo(D, blang, clientTime, urlinfo) {
         throw new Error(`Unable to mine related: ${error.message}, ${error.stack.substr(0, 220)}...`);
     }
 
-    debug("Video <%s> attempted to parse %d related, found actually %d < isLive %j >",
-        title, _.size(related), _.size(_.compact(related)), _.countBy(related, 'isLive'));
+    debug("Video <%s> has %d recommended (found %d, live %j)",
+        title,
+        _.size(related),
+        _.size(_.compact(related)),
+        _.countBy(related, 'isLive')
+    );
     related = makeAbsolutePublicationTime(_.compact(related), clientTime);
 
     /* non mandatory info */

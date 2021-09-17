@@ -37,6 +37,9 @@ ret = db.errors.createIndex({ when: -1 }); checkret('errors when', ret);
 
 ret = db.campaigns.createIndex({ name: 1 }, { unique: true }); checkret('campaigns name', ret);
 
+ret = db.recommendations.createIndex({ urlId: 1 }, { unique: true }); checkret('recommendation urlId', ret);
+ret = db.recommendations.createIndex({ when: -1 }); checkret('recommendation when', ret);
+
 function checkret(info, retval) {
     retval.info = info;
     printjson(retval);

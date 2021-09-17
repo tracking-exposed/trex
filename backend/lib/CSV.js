@@ -4,9 +4,9 @@ const moment = require('moment');
 
 const utils = require('./utils');
 
-function produceCSVv1(entries) {
+function produceCSVv1(entries, requestedKeys) {
 
-    const keys = _.keys(entries[0]);
+    const keys = requestedKeys ? requestedKeys : _.keys(entries[0]);
 
     let produced = _.reduce(entries, function(memo, entry, cnt) {
         if(!memo.init) {
@@ -25,7 +25,7 @@ function produceCSVv1(entries) {
 
         _.each(keys, function(k, i) {
             let swap = _.get(entry, k, "");
-            if(_.endsWith(k,'Time'))
+            if(_.endsWith(k,'Time') || k == 'lastUpdate')
                 memo.csv += moment(swap).toISOString();
             else if(_.isInteger(swap)) {
                 memo.csv += swap;

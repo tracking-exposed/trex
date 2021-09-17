@@ -101,7 +101,7 @@ function parser(l, source, isLive) {
         debuge("Not seen any known 'sostantivo' in %s", l);
         throw new Error("1> locale not found!" + viewssost);
     }
- 
+
     l = NoViewsReplacer(l, langi.sostantivo);
     const { views, liveStatus, reducedLabel } = langi.viewcount(l, langi.sostantivo, isLive);
     if(_.isNaN(views)) {
@@ -110,7 +110,7 @@ function parser(l, source, isLive) {
     }
 
     /* logic:
-        3) by $authorName it is guarantee come at last, after every user controller input and 
+        3) by $authorName it is guarantee come at last, after every user controller input and
            before the timing info. We retrive the time info and parse the duration and relative */
     const halfsep = `${_.size(langi.separator) ? " ": ""}${langi.separator} ${source}`;
     const separatorCheck = _.size(reducedLabel.split(halfsep));

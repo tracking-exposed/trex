@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 const _ = require('lodash');
-const debug = require('debug')('guardoni:cli');
+const debug = require('debug')('guardoni:yt-cli');
 const puppeteer = require("puppeteer-extra")
 const pluginStealth = require("puppeteer-extra-plugin-stealth");
 const fs = require('fs');
