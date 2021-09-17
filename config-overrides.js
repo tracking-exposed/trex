@@ -12,11 +12,36 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 const webpack = require('webpack');
 const { BrowserExtensionPlugin } = require('webpack-browser-extension-plugin');
 const pkgJson = require('./package.json');
+const t = require('io-ts');
+const { BooleanFromString } = require('io-ts-types/lib/BooleanFromString');
+const { PathReporter } = require('io-ts/lib/PathReporter');
+
+const processENV = t.strict(
+  {
+    NODE_ENV: t.union(
+      [t.literal('development'), t.literal('production')],
+      'NODE_ENV'
+    ),
+    BUNDLE_STATS: BooleanFromString,
+    BUNDLE_ENABLE_NOTIFY: BooleanFromString,
+  },
+  'processENV'
+);
+
+const env = pipe(process.env, processENV.decode, (validation) => {
+  if (validation._tag === 'Left') {
+    console.error(PathReporter.report(validation).join('\n'))
+    console.log('\n');
+    throw new Error("process.env decoding failed.");
+  }
+  return validation.right;
+});
 
 module.exports = {
   webpack: function (config) {
-    const produceBundleStats = process.env.REACT_APP_BUNDLE_STATS === 'true';
-    const isProduction = process.env.REACT_APP_NODE_ENV === 'production';
+    const produceBundleStats = env.BUNDLE_STATS;
+    const isProduction = env.NODE_ENV === 'production';
+    const enableNotification = env.BUNDLE_ENABLE_NOTIFY;
 
     // add ts paths as aliases
     const webPaths = pipe(
@@ -96,21 +121,28 @@ module.exports = {
     }
 
     if (!isProduction) {
-      config.plugins = config.plugins.concat(
-        new webpack.LoaderOptionsPlugin({
-          debug: true,
-        }),
-        new WebpackNotifierPlugin({
-          // My notification daemon displays "critical" messages only.
-          // Dunno if this is the case for every Ubuntu machine.
-          urgency: 'critical',
-          alwaysNotify: false,
-          title: 'ycai',
-          contentImage: path.join(__dirname, 'icons', 'ycai128.png'),
-          timeout: 2,
-          excludeWarnings: true,
-        })
-      );
+      config.plugins = config.plugins
+        .concat(
+          new webpack.LoaderOptionsPlugin({
+            debug: true,
+          })
+        )
+        .concat(
+          enableNotification
+            ? [
+                new WebpackNotifierPlugin({
+                  // My notification daemon displays "critical" messages only.
+                  // Dunno if this is the case for every Ubuntu machine.
+                  urgency: 'critical',
+                  alwaysNotify: false,
+                  title: 'ycai',
+                  contentImage: path.join(__dirname, 'icons', 'ycai128.png'),
+                  timeout: 2,
+                  excludeWarnings: true,
+                }),
+              ]
+            : []
+        );
     } else {
       config.plugins = config.plugins.concat(
         new FileManagerPlugin({

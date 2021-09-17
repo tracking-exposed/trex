@@ -78,6 +78,7 @@
     "fetch-opengraph": "^1.0.30",
     "fp-ts": "^2.11.1",
     "io-ts": "^2.2.16",
+    "io-ts-types": "^0.5.16",
     "jquery": "^3.6.0",
     "lodash": "^4.17.21",
     "marked": "^0.8.2",

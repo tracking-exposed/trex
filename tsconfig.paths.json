@@ -19,7 +19,7 @@
     "isolatedModules": true,
     "paths": {
       "@chrome/*": ["./chrome/*"]
-    },
+    }
   },
   "include": ["./src"]
 }
