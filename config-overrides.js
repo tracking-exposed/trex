@@ -64,7 +64,6 @@ module.exports = {
         // ignoreEntries: ['popup', 'dashboard', 'app'],
         manifestFilePath: 'public/manifest.json',
         onCompileManifest: (manifest) => {
-          console.log(manifest);
           return {
             ...manifest,
             version: pkgJson.version,
@@ -95,6 +94,7 @@ module.exports = {
           // My notification daemon displays "critical" messages only.
           // Dunno if this is the case for every Ubuntu machine.
           urgency: 'critical',
+          alwaysNotify: false,
           title: 'ycai',
           contentImage: path.join(__dirname, 'icons', 'ycai128.png'),
           timeout: 2,

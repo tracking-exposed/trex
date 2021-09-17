@@ -43,5 +43,5 @@
       "css": ["./css/Trex-Regular.ttf", "./css/font.css", "./css/youchoose-ux.css"]
     }
   ],
-  "web_accessible_resources": ["*.png", "/css/TRex-Regular.tff", "/css/font.css", "/css/youchoose-ux.css"]
+  "web_accessible_resources": ["*.png", "/css/Trex-Regular.tff", "/css/font.css", "/css/youchoose-ux.css"]
 }

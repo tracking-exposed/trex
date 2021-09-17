@@ -1,15 +1,13 @@
 import React from 'react';
 import _ from 'lodash';
-
 import Switch from '@material-ui/core/Switch';
 import FormGroup from '@material-ui/core/FormGroup';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import FormControl from '@material-ui/core/FormControl';
-
 import Divider from './Divider';
+import { bo } from '../utils';
 
 // bo is the browser object, in chrome is named 'chrome', in firefox is 'browser'
-const bo = chrome || browser;
 
 class Settings extends React.Component {
   constructor(props) {

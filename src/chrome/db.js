@@ -14,7 +14,7 @@ function get(key, setIfMissing) {
         var newVal = isFunction(setIfMissing)
           ? setIfMissing(key)
           : setIfMissing;
-          // eslint-disable-next-line no-console
+        // eslint-disable-next-line no-console
         console.log('get is empty ', newVal);
         backend.set(newVal, () => resolve(newVal));
       } else {

@@ -10,14 +10,13 @@ import Settings from './settings';
 // bo is the browser object, in chrome is named 'chrome', in firefox is 'browser'
 const bo = (window as any).chrome || (window as any).browser;
 
-
 const useStyles = makeStyles((theme) => ({
   root: {
     width: '100%',
-    height:'100%',
+    height: '100%',
   },
   container: {
-    padding: theme.spacing(2)
+    padding: theme.spacing(2),
   },
   img: {
     width: '100%',
@@ -66,7 +65,6 @@ const Popup: React.FC<PopupProps> = () => {
   if (!localLookup) {
     return <div>Loading...</div>;
   }
-
 
   if (localLookup.status !== 'done') {
     // eslint-disable-next-line no-console
