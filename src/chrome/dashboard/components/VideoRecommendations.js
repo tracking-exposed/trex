@@ -16,7 +16,6 @@ export const VideoRecommendations = () => {
       videoRecommendations: queries.currentVideoRecommendations,
     }),
     QR.fold(LazyFullSizeLoader, ErrorBox, ({ video, videoRecommendations }) => {
-      console.log({ video, videoRecommendations });
       return (
         <Box>
           <Typography variant="h5">Recommendations</Typography>

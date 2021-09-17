@@ -2,6 +2,7 @@ const bo = chrome || browser;
 
 function handleReload(hub) {
   bo.runtime.sendMessage({ type: 'reloadExtension' }, (response) =>
+    // eslint-disable-next-line no-console
     console.log('Reloading Extension')
   );
 }

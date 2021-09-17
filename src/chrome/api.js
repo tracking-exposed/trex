@@ -63,15 +63,18 @@ function get(apiUrl, version, userId) {
         xhr.send();
         xhr.onload = function () {
           if (this.status >= 200 && this.status < 300) {
+            // eslint-disable-next-line no-console
             console.log(this.response);
             resolve(this.response);
           } else {
+            // eslint-disable-next-line no-console
             console.log('Load error', this.statusText);
             reject(this.statusText);
           }
         };
 
         xhr.onerror = function () {
+          // eslint-disable-next-line no-console
           console.log('onerror', this.statusText);
           reject(this.statusText);
         };

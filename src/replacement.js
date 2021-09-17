@@ -135,6 +135,7 @@ export function updateUX(response) {
     if (seen.length === 0) {
       return { status: 'waitForPage' };
     } else if (seen.length > 1) {
+      // eslint-disable-next-line no-console
       console.log('This is weird!');
     }
     recache.alphabeth = seen[0];
@@ -146,6 +147,7 @@ export function updateUX(response) {
   // Verify that YCAI's container has not yet been rendered
   const old_container = document.getElementById('ycai_container');
   if (old_container) {
+    // eslint-disable-next-line no-console
     console.warn(
       "should this redrawings happen? it shouldn't ever, this check might be removed"
     );
@@ -188,6 +190,7 @@ export function updateUX(response) {
   // Push videos into new container
   const video_box_height = targetElement.children[0].clientHeight;
   const video_box_width = targetElement.children[0].clientWidth;
+  // eslint-disable-next-line no-console
   console.log(video_box_height, video_box_width);
 
   response.forEach((recommendation, i) =>

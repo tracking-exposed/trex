@@ -2,7 +2,7 @@ import { available, compose, param, product, queryStrict } from 'avenger';
 import { pipe } from 'fp-ts/lib/function';
 import * as TE from 'fp-ts/lib/TaskEither';
 import { getItem, getPersistentItem } from '../storage/Store';
-import { fetch } from './HTTPAPI';
+import { fetchTE } from './HTTPAPI';
 
 export const creatorChannel = queryStrict(
   () =>
@@ -22,9 +22,8 @@ export const creatorChannel = queryStrict(
 export const recommendations = compose(
   product({ creatorChannel, params: param() }),
   queryStrict(({ creatorChannel, params }) => {
-    console.log({ creatorChannel });
     if (creatorChannel.publicKey) {
-      return fetch(
+      return fetchTE(
         `/creator/recommendations/${creatorChannel.publicKey}`,
         params
       );
@@ -42,7 +41,7 @@ export const creatorVideos = compose(
     // publication date
     // recommendations: number
     if (publicKey) {
-      return fetch(`/creator/videos/${publicKey}`);
+      return fetchTE(`/creator/videos/${publicKey}`);
     }
     return TE.right([]);
   }, available)
@@ -51,14 +50,14 @@ export const creatorVideos = compose(
 export const recommendedVideos = compose(
   creatorChannel,
   queryStrict(({ publicKey, params }) => {
-    return fetch(`/creator/recommendations/${publicKey}`, params);
+    return fetchTE(`/creator/recommendations/${publicKey}`, params);
   }, available)
 );
 
 export const recommendedChannels = compose(
   creatorChannel,
   queryStrict(({ publicKey, params }) => {
-    return fetch(`/profile/recommendations/${publicKey}`, params);
+    return fetchTE(`/profile/recommendations/${publicKey}`, params);
   }, available)
 );
 
@@ -73,7 +72,7 @@ export const currentVideoRecommendations = compose(
   currentVideoOnEdit,
   queryStrict((video) => {
     if (video) {
-      return fetch(`/video/${video.videoId}/recommendations`);
+      return fetchTE(`/video/${video.videoId}/recommendations`);
     }
     return TE.right([]);
   }, available)

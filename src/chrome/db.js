@@ -14,9 +14,11 @@ function get(key, setIfMissing) {
         var newVal = isFunction(setIfMissing)
           ? setIfMissing(key)
           : setIfMissing;
+          // eslint-disable-next-line no-console
         console.log('get is empty ', newVal);
         backend.set(newVal, () => resolve(newVal));
       } else {
+        // eslint-disable-next-line no-console
         console.log('get returns', val, key, val[key]);
         resolve(isEmpty(val[key]) ? null : val[key]);
       }
@@ -25,6 +27,7 @@ function get(key, setIfMissing) {
 }
 
 function set(key, value) {
+  // eslint-disable-next-line no-console
   console.log(key, value);
   return new Promise((resolve, reject) => {
     var newVal = {};

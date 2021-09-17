@@ -13,6 +13,7 @@ const bo = chrome || browser;
 
 class Settings extends React.Component {
   constructor(props) {
+    // eslint-disable-next-line no-console
     console.log('Props in Settings constructor', props);
     super(props);
     this.state = {
@@ -27,11 +28,13 @@ class Settings extends React.Component {
       const switchname = event.target.parentElement.parentElement
         .getAttribute('aria-labelledby')
         .split('-')[1];
+      // eslint-disable-next-line no-console
       console.log(
         `it is checked: ${event.target.checked} | switchname ${switchname}`
       );
       const payload = {};
       payload[switchname] = event.target.checked;
+      // eslint-disable-next-line no-console
       console.log(`update is ${JSON.stringify(payload)} current ${_t.state}`);
       _t.setState(payload);
       bo.runtime.sendMessage(
@@ -40,6 +43,7 @@ class Settings extends React.Component {
           payload,
         },
         (status) => {
+          // eslint-disable-next-line no-console
           console.log('status confirmed', JSON.stringify(status));
         }
       );
@@ -48,7 +52,7 @@ class Settings extends React.Component {
     if (!this.state) {
       return <p>Loading...</p>;
     }
-
+    // eslint-disable-next-line no-console
     console.log('settings props', this.props, '& state', this.state);
     /* <ListItemText primary={ (!!this.state && !!this.state.active) ? "LEAVE evidence collection pool" : "JOIN evidence collection pool"} /> */
 

@@ -37,6 +37,7 @@ function handleInfo(type, e) {
 function sync(hub) {
   if (state.content.length) {
     const uuids = _.size(_.uniq(_.map(state.content, 'randomUUID')));
+    // eslint-disable-next-line no-console
     console.log(
       `sync tot (${state.content.length}/${state.incremental}) ${JSON.stringify(
         _.countBy(state.content, 'type')

@@ -5,6 +5,7 @@ var setPseudo = function (response) {
   // and I'm doing some cargo cult programming here
   //
   // -- confession of a sinful programmer
+  // eslint-disable-next-line no-console
   console.log('saving the pseudonym from:', response);
   pseudonym.set(response);
 };

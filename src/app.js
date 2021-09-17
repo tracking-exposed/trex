@@ -72,12 +72,14 @@ function boot() {
       config.ux = response.active;
       config.community = response.svg;
       config.alphabeth = response.videorep;
+      // eslint-disable-next-line no-console
       console.log(`YouChoose operative: ${JSON.stringify(config)}`);
       // this makes
       // hrefUpdateMonitor();
       // flush();
     });
   } else if (_.startsWith(window.location.origin, 'localhost')) {
+    // eslint-disable-next-line no-console
     console.log('YCAI in localhost: ignored condition');
     return null;
   }
@@ -93,8 +95,10 @@ function boot() {
           try {
             const freshj = JSON.parse(response.response);
             const uxstatus = updateUX(freshj);
+            // eslint-disable-next-line no-console
             console.log('UXStatus:', uxstatus);
           } catch (erro) {
+            // eslint-disable-next-line no-console
             console.warn('unable to fetch recommendation and to trim UX', erro);
           }
         });
@@ -112,6 +116,7 @@ function matchUXhackURL(locat) {
 let initializedWatchers = false;
 function initializeHackedYTUX() {
   if (!initializedWatchers) {
+    // eslint-disable-next-line no-console
     console.log('This should be the first time you see this, and the last');
     initializedWatchers = true;
   } else {
@@ -121,6 +126,7 @@ function initializeHackedYTUX() {
   /* actual code for monitoring */
   const needResize = checkRecommendationStatus();
   if (needResize) {
+    // eslint-disable-next-line no-console
     console.log('we might wants to redraw?', lastObservedSize);
   }
 
@@ -131,6 +137,7 @@ function initializeHackedYTUX() {
 let lastObservedSize = null;
 function checkRecommendationStatus() {
   const rw = $('.ytd-watch-next-secondary-results-renderer').clientWidth;
+  // eslint-disable-next-line no-console
   console.log('please note this size is', rw, 'previous', lastObservedSize);
   if (lastObservedSize === rw) {
     return false;

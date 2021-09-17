@@ -29,6 +29,7 @@ export const LinkAccount = () => {
 
   const handleChange = (e) => {
     const channelValue = e.target.value;
+    // eslint-disable-next-line no-console
     console.log('on change', channelValue);
     setChannel(channelValue || '');
   };
@@ -42,6 +43,7 @@ export const LinkAccount = () => {
 
   const handleChannelSubmit = () => {
     const channelId = inputRef.current.lastChild.value;
+    // eslint-disable-next-line no-console
     console.log({ channelId });
     if (channelId) {
       saveCreatorChannel(channelId, {
@@ -59,6 +61,7 @@ export const LinkAccount = () => {
   return pipe(
     useQueries({ creatorChannel: queries.creatorChannel }),
     QR.fold(LazyFullSizeLoader, ErrorBox, ({ creatorChannel }) => {
+      // eslint-disable-next-line no-console
       console.log({ channel, creatorChannel });
       const creatorChannelValue =
         channel !== undefined ? channel : creatorChannel.publicKey;

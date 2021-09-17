@@ -7,6 +7,7 @@ function get() {
 }
 
 function set(input) {
+  // eslint-disable-next-line no-console
   console.log('pseudonym.set:', input);
   recorded = input;
 }

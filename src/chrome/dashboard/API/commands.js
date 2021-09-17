@@ -6,7 +6,7 @@ import {
   setItem,
   setPersistentItem,
 } from '../storage/Store';
-import { fetch } from './HTTPAPI';
+import { fetchTE } from './HTTPAPI';
 import {
   creatorChannel,
   currentVideoOnEdit,
@@ -39,7 +39,7 @@ export const deleteCreatorChannel = command(
 
 export const addRecommendation = command(
   (r) =>
-    fetch(`/creator/ogp`, {
+    fetchTE(`/creator/ogp`, {
       // TODO this api need also to be signed/authenticated
       method: 'POST',
       headers: {
@@ -62,9 +62,8 @@ export const setCurrentVideo = command(
 
 export const updateRecommendationForVideo = command(
   ({ videoId, creatorId, recommendations }) => {
-    console.log('Updating video', { videoId, creatorId, recommendations });
     return pipe(
-      fetch(`/creator/updateVideo`, {
+      fetchTE(`/creator/updateVideo`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

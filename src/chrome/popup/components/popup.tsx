@@ -40,6 +40,7 @@ const Popup: React.FC<PopupProps> = () => {
   React.useEffect(() => {
     try {
       bo.runtime.sendMessage({ type: 'localLookup' }, (userSettings: any) => {
+        // eslint-disable-next-line no-console
         console.log('here got', userSettings);
         if (userSettings && userSettings.publicKey) {
           setLocalLookup({ status: 'done', data: userSettings });
@@ -48,6 +49,7 @@ const Popup: React.FC<PopupProps> = () => {
         }
       });
     } catch (e: any) {
+      // eslint-disable-next-line no-console
       console.log('catch error', e.message, bo.runtime.lastError);
       setLocalLookup({ status: 'error', data: '' });
     }
@@ -67,6 +69,7 @@ const Popup: React.FC<PopupProps> = () => {
 
 
   if (localLookup.status !== 'done') {
+    // eslint-disable-next-line no-console
     console.log('Incomplete info before render');
     return (
       <div className={classes.root}>

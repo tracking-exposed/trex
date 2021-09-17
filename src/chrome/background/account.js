@@ -17,6 +17,7 @@ const DEFAULT_SETTINGS = {
 };
 
 bo.runtime.onMessage.addListener((request, sender, sendResponse) => {
+  // eslint-disable-next-line no-console
   console.log('focacci', request);
   if (request.type === 'localLookup') {
     userLookup(
@@ -37,6 +38,7 @@ bo.runtime.onMessage.addListener((request, sender, sendResponse) => {
 
 function initializeKey() {
   var newKeypair = nacl.sign.keyPair();
+  // eslint-disable-next-line no-console
   console.log('Initializing new key pair:', bs58.encode(newKeypair.publicKey));
   return {
     publicKey: bs58.encode(newKeypair.publicKey),
@@ -54,10 +56,12 @@ function userLookup({ userId }, sendResponse) {
     if (isEmpty(val)) {
       val = setDefaults(initializeKey());
       db.set(userId, val).then((val) => {
+        // eslint-disable-next-line no-console
         console.log('First access attempted, created config', val);
         sendResponse(val);
       });
     } else {
+      // eslint-disable-next-line no-console
       console.log('sending back from userLookup', userId, val);
       sendResponse(val);
     }
@@ -72,6 +76,7 @@ function serverLookup(payload, sendResponse) {
     .then((val) => {
       if (isEmpty(val)) {
         val = setDefaults(initializeKey());
+        // eslint-disable-next-line no-console
         console.log(
           "serverLookup isn't used since a while and have been trimmed: double check!"
         );
@@ -81,15 +86,13 @@ function serverLookup(payload, sendResponse) {
       }
       return val;
     })
-    .then(function (x) {
-      return api
-        .handshake(payload, FIXED_USER_NAME)
-        .then((response) =>
-          sendResponse({ type: 'handshakeResponse', response: response })
-        )
-        .catch((error) =>
-          sendResponse({ type: 'handshakeError', response: error })
-        );
+    .then(async (x) => {
+      try {
+        const response = await api.handshake(payload, FIXED_USER_NAME);
+        return sendResponse({ type: 'handshakeResponse', response: response });
+      } catch (error) {
+        return sendResponse({ type: 'handshakeError', response: error });
+      }
     });
 }
 
@@ -101,6 +104,7 @@ function configUpdate(payload, sendResponse) {
       return db.set(userId, update);
     })
     .then((val) => {
+      // eslint-disable-next-line no-console
       console.log('ConfigUpdate completed and return', val);
       sendResponse(val);
     });

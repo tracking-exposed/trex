@@ -18,7 +18,6 @@ const RecommendationCards = declareQueries({
   recommendations,
   currentVideoOnEdit,
 })(({ queries }) => {
-  console.log(queries);
   return (
     <div>
       <div style={styles}>
@@ -52,7 +51,6 @@ const RecommendationCards = declareQueries({
                     item.urlId
                   );
 
-                  console.log({ videoReccomendations, alreadyPresent });
                   return (
                     <UrlCard
                       key={i}
