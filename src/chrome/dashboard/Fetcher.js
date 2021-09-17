@@ -1,5 +1,5 @@
+import { Box, Button, TextField } from '@material-ui/core';
 import React from 'react';
-import { TextField, Chip, Box, Button } from '@material-ui/core';
 import { addRecommendation } from './API/commands';
 
 const styles = {

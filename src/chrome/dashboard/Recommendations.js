@@ -1,7 +1,6 @@
 import { Card } from '@material-ui/core';
-import { ContactsOutlined } from '@material-ui/icons';
 import * as QR from 'avenger/lib/QueryResult';
-import { declareQueries, WithQueries } from 'avenger/lib/react';
+import { declareQueries } from 'avenger/lib/react';
 import { pipe } from 'fp-ts/lib/function';
 import React from 'react';
 import { updateRecommendationForVideo } from './API/commands';

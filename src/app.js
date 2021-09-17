@@ -1,3 +1,4 @@
+/* eslint-disable */
 // # Welcome to the extension docs!
 // Here you can learn how the extension works and, if this is what you aim for,
 // where to put your hands to hack the code.

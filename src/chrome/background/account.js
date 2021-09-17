@@ -16,28 +16,9 @@ const DEFAULT_SETTINGS = {
   playhide: false,
 };
 
-bo.runtime.onMessage.addListener((request, sender, sendResponse) => {
-  // eslint-disable-next-line no-console
-  console.log('focacci', request);
-  if (request.type === 'localLookup') {
-    userLookup(
-      request.payload ? request.payload : { userId: FIXED_USER_NAME },
-      sendResponse
-    );
-    return true;
-  }
-  if (request.type === 'recommendationsFetch') {
-    serverLookup(request.payload, sendResponse);
-    return true;
-  }
-  if (request.type === 'configUpdate') {
-    configUpdate(request.payload, sendResponse);
-    return true;
-  }
-});
 
 function initializeKey() {
-  var newKeypair = nacl.sign.keyPair();
+  const newKeypair = nacl.sign.keyPair();
   // eslint-disable-next-line no-console
   console.log('Initializing new key pair:', bs58.encode(newKeypair.publicKey));
   return {
@@ -100,7 +81,7 @@ function configUpdate(payload, sendResponse) {
   const userId = FIXED_USER_NAME;
   db.get(userId)
     .then((val) => {
-      let update = _.merge(val, payload);
+      const update = _.merge(val, payload);
       return db.set(userId, update);
     })
     .then((val) => {
@@ -109,3 +90,23 @@ function configUpdate(payload, sendResponse) {
       sendResponse(val);
     });
 }
+
+bo.runtime.onMessage.addListener((request, sender, sendResponse) => {
+  // eslint-disable-next-line no-console
+  console.log('focacci', request);
+  if (request.type === 'localLookup') {
+    userLookup(
+      request.payload ? request.payload : { userId: FIXED_USER_NAME },
+      sendResponse
+    );
+    return true;
+  }
+  if (request.type === 'recommendationsFetch') {
+    serverLookup(request.payload, sendResponse);
+    return true;
+  }
+  if (request.type === 'configUpdate') {
+    configUpdate(request.payload, sendResponse);
+    return true;
+  }
+});

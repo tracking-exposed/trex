@@ -25,7 +25,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 interface PopupProps {
-  publicKey: string;
+  publicKey?: string;
 }
 
 const Popup: React.FC<PopupProps> = () => {
@@ -38,7 +38,7 @@ const Popup: React.FC<PopupProps> = () => {
       bo.runtime.sendMessage({ type: 'localLookup' }, (userSettings: any) => {
         // eslint-disable-next-line no-console
         console.log('here got', userSettings);
-        if (userSettings && userSettings.publicKey) {
+        if ((userSettings?.publicKey) !== undefined) {
           setLocalLookup({ status: 'done', data: userSettings });
         } else {
           setLocalLookup({ status: 'error', data: userSettings });
@@ -59,7 +59,7 @@ const Popup: React.FC<PopupProps> = () => {
       .duration((moment() as any) - (moment(config.BUILDISODATE) as any))
       .humanize() + ' ago';
 
-  if (!localLookup) {
+  if (localLookup === undefined) {
     return <div>Loading...</div>;
   }
 

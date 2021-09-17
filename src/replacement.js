@@ -2,22 +2,6 @@
 
 // import config from "./config";
 
-function recommandation_dispatcher(recc, i) {
-  // this {recc} might belong to different 'type':
-  // 'youtube', 'wikipedia', 'article', 'tiktok', 'url'
-
-  // console.log(recc, i);
-
-  if (recc.type === 'youtube') {
-    return make_video_box(recc, i);
-  } else if (recc.type === 'article') {
-    return make_article_box(recc, i);
-  } else {
-    // all the type should be embedded
-    return max_url_box(recc, i);
-  }
-}
-
 function max_url_box(ogblob, i) {
   const url_box = document.createElement('div');
   url_box.className = 'video_box';
@@ -122,6 +106,26 @@ function make_video_box(video, i) {
   video_box.append(details_div);
   return video_box;
 }
+
+
+
+function recommandation_dispatcher(recc, i) {
+  // this {recc} might belong to different 'type':
+  // 'youtube', 'wikipedia', 'article', 'tiktok', 'url'
+
+  // console.log(recc, i);
+
+  if (recc.type === 'youtube') {
+    return make_video_box(recc, i);
+  } else if (recc.type === 'article') {
+    return make_article_box(recc, i);
+  } else {
+    // all the type should be embedded
+    return max_url_box(recc, i);
+  }
+}
+
+
 
 /* recommendation cache, pointers to the HTML elements */
 const recache = { alphabeth: null, ycaibar: null };

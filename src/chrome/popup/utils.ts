@@ -1,6 +1,6 @@
-const getBO = () => {
-  if (typeof window !== undefined) {
-    return (window as any).chrome || (window as any).browser;
+const getBO = (): any => {
+  if (typeof window !== "undefined") {
+    return (window as any).chrome ?? (window as any).browser;
   }
 };
 

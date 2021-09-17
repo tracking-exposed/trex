@@ -1,6 +1,6 @@
 // This code just store in a global setting the pseudonym
 
-var recorded = null;
+let recorded = null;
 
 function get() {
   return recorded;

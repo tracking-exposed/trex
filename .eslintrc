@@ -1,6 +1,6 @@
 {
   "extends": [
-    "plugin:@typescript-eslint/eslint-recommended",
+    "standard-with-typescript",
     "plugin:react/recommended",
     "prettier"
   ],
@@ -38,6 +38,8 @@
   },
   "rules": {
     "no-console": 1,
-    "react/prop-types": 0
+    "react/prop-types": 0,
+    "no-use-before-define": "off",
+    "@typescript-eslint/no-use-before-define": ["error"]
   }
 }

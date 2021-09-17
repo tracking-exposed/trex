@@ -1,6 +1,6 @@
 import pseudonym from '../pseudonym';
 
-var setPseudo = function (response) {
+const setPseudo = function (response) {
   // this do not get ever called, because I didn't yet mastered the sendMessages
   // and I'm doing some cargo cult programming here
   //

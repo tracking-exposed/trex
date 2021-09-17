@@ -11,7 +11,7 @@ function get(key, setIfMissing) {
       if (bo.runtime.lastError) {
         reject(bo.runtime.lastError);
       } else if (isEmpty(val) && !isEmpty(setIfMissing)) {
-        var newVal = isFunction(setIfMissing)
+        const newVal = isFunction(setIfMissing)
           ? setIfMissing(key)
           : setIfMissing;
         // eslint-disable-next-line no-console
@@ -30,7 +30,7 @@ function set(key, value) {
   // eslint-disable-next-line no-console
   console.log(key, value);
   return new Promise((resolve, reject) => {
-    var newVal = {};
+    const newVal = {};
     newVal[key] = isFunction(value) ? value(key) : value;
     backend.set(newVal, () => {
       if (bo.runtime.lastError) {
@@ -46,7 +46,7 @@ function update(key, value) {
   return new Promise((resolve, reject) => {
     get(key)
       .then((oldVal) => {
-        var newVal;
+        let newVal;
         if (isFunction(value)) {
           newVal = value(oldVal);
         } else {

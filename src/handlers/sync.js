@@ -4,7 +4,7 @@ const bo = chrome || browser;
 
 const INTERVAL = config.FLUSH_INTERVAL;
 
-var state = {
+const state = {
   incremental: 0,
   content: [],
 };

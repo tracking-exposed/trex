@@ -69,10 +69,10 @@ export function isFunction(value) {
 
 export function decodeString(s) {
   // Credits: https://github.com/dchest/tweetnacl-util-js
-  var d = unescape(encodeURIComponent(s));
-  var b = new Uint8Array(d.length);
+  const d = unescape(encodeURIComponent(s));
+  const b = new Uint8Array(d.length);
 
-  for (var i = 0; i < d.length; i++) {
+  for (let i = 0; i < d.length; i++) {
     b[i] = d.charCodeAt(i);
   }
   return b;
