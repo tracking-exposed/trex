@@ -32,17 +32,17 @@ function max_url_box(ogblob, i) {
     thumb_div.append(video_thumb);
   }
 
-  if(ogblob.description) {
-url_box.innerHTML= `
+  if (ogblob.description) {
+    url_box.innerHTML = `
       <a href="${ogblob.url}">${ogblob.title}</a>
       <br>
       <small>${ogblob.description}</small>
     `;
-} else {
-url_box.innerHTML= `
+  } else {
+    url_box.innerHTML = `
       <a href="${ogblob.url}">${ogblob.title}</a>
     `;
-}
+  }
 
   url_box.append(thumb_div);
   return url_box;
