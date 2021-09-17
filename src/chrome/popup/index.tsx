@@ -1,4 +1,5 @@
-import * as React from 'react';
+// @ts-ignore
+import React from 'react';
 import ReactDOM from 'react-dom';
 import { ThemeProvider } from '@material-ui/core/styles';
 import Popup from './components/popup';
@@ -6,7 +7,7 @@ import { YCAITheme } from '../../theme';
 import { bo } from './utils';
 import * as t from 'io-ts';
 
-function main() {
+function Main() {
   bo.runtime.sendMessage(
     {
       type: 'localLookup',
@@ -31,4 +32,4 @@ function main() {
   );
 }
 
-main();
+Main();

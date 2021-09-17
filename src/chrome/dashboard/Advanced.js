@@ -105,7 +105,7 @@ class Advanced extends React.Component {
 
         <p>
           Excluded from this list, but work in progress: shadowban analysis. At
-          the moment it is developed as a separated tool/binary, and we're
+          the moment it is developed as a separated tool/binary, and we&apos;re
           completing research. It is in alpha stage, and we can discuss more on
           the methodology.
         </p>

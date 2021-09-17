@@ -26,12 +26,13 @@ export const VideoCard = ({ videoId, title, onClick }) => {
         />
         <CardContent>
           <Typography gutterBottom variant="h5" component="h4">
-            <a href={'https://youtu.be/' + videoId} target="_blank">
+            <a href={'https://youtu.be/' + videoId} target="_blank" rel="noreferrer">
               {title}
             </a>
           </Typography>
           <a
             target="_blank"
+            rel="noreferrer"
             href={'https://youtube.tracking.exposed/compare/#' + videoId}
           >
             Compare
@@ -39,6 +40,7 @@ export const VideoCard = ({ videoId, title, onClick }) => {
           —{' '}
           <a
             target="_blank"
+            rel="noreferrer"
             href={'https://youtube.tracking.exposed/related/#' + videoId}
           >
             Related

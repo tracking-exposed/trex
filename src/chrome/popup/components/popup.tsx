@@ -71,10 +71,14 @@ const Popup: React.FC<PopupProps> = () => {
         <Card className={classes.container}>
           <Alert severity="error">
             <AlertTitle>Error</AlertTitle>
-            Extension isn't initialized yet —{' '}
+            Extension isn&apos;t initialized yet —{' '}
             <strong>
               Access{' '}
-              <a href="https://www.youtube.com" target="_blank">
+              <a
+                href="https://www.youtube.com"
+                target="_blank"
+                rel="noreferrer"
+              >
                 yutube.com
               </a>
               .
@@ -89,7 +93,12 @@ const Popup: React.FC<PopupProps> = () => {
   return (
     <div className={classes.root}>
       <Card className={classes.container}>
-        <a target="_blank" href={config.WEB_ROOT} className={classes.link}>
+        <a
+          className={classes.link}
+          href={config.WEB_ROOT}
+          target="_blank"
+          rel="noreferrer"
+        >
           <img className={classes.img} src="/ycai-logo.png" />
         </a>
         <Settings lastSettings={localLookup.data} />
