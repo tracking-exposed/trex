@@ -150,6 +150,7 @@ async function getMetadataFromAuthor(filter, options) {
     await mongoc.close();
     return {
         content: videos,
+        overflow: (_.size(videos) === options.amount),
         total,
         pagination: options,
         authorName: sourceVideo.authorName,

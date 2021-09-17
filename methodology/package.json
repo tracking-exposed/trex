@@ -3,7 +3,7 @@
   "version": "1.2.0",
   "description": "Guardoni is a tool to automate access and coordinate personalization algorithm analysis",
   "scripts": {
-    "guardoni": "node src/guardoni.js",
+    "dist": "cd dist; mkdir extension; touch extension/.keep; mkdir experiments; touch experiments/.keep; zip guardoni-win.txt ex* guardoni.zip",
     "pkg": "pkg ./package.json"
   },
   "bin": "./src/guardoni.js",
