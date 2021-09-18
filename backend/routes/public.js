@@ -192,7 +192,7 @@ async function getByAuthor(req) {
      * but a data format ready for the visualization provided - this has been 
      * temporarly suspended: https://github.com/tracking-exposed/youtube.tracking.exposed/issues/18 */
 
-    const { amount, skip } = params.optionParsing(req.params.paging, PUBLIC_AMOUNT_ELEMS);
+    const { amount, skip } = params.optionParsing(req.params.amount, PUBLIC_AMOUNT_ELEMS);
     debug("getByAuthor %s amount %d skip %d", req.params.query, amount, skip);
 
     let authorStruct;
@@ -223,80 +223,31 @@ async function getByAuthor(req) {
         return _.pick(e, publicFields)
     });
 
-    /* first step is separate the three categories and merge infos */
-    const sameAuthor = _.map(clean, function(video) {
-        return _.map(_.filter(video.related, { source: authorName }), function(r) {
+    const final = _.flatten(_.map(clean, function(video, i) {
+        return _.map(video.related, function(recommended, n) {
+            const cleanVideoId = recommended.videoId.replace(/\&.*/, '');
             return {
-                watchedTitle: video.title,
-                id: video.id + r.videoId,
-                savingTime: video.savingTime,
-                watchedVideoId: video.videoId,
-                relatedVideoId: r.videoId,
-                relatedTitle: r.title,
-            }
-        });
-    });
-
-    const foryou = _.map(clean, function(video) {
-        return _.map(_.filter(video.related, { foryou: true }), function(r) {
-            return {
-                watchedTitle: video.title,
-                id: video.id + r.videoId,
-                savingTime: video.savingTime,
-                watchedVideoId: video.videoId,
-                relatedVideoId: r.videoId,
-                relatedTitle: r.title,
-                relatedAuthorName: authorName,
-            }
-        });
-    });
-
-    const treasure = _.map(clean, function(video) {
-        debug("byAuthor quick check ø SA %d FY %d T %d (total %d)", 
-            _.size(_.filter(video.related, { source: authorName })),
-            _.size(_.filter(video.related, { foryou: true })),
-            _.size( _.reject( _.reject(video.related, { source: authorName }), { foryou: true })),
-            _.size(clean)
-        );
-        return _.map( _.reject( _.reject(video.related, { source: authorName }), { foryou: true }), function(r) { 
-            return {
-                id: video.id + r.videoId,
+                id: video.id + i + cleanVideoId + n,
                 watchedTitle: video.title,
                 watchedVideoId: video.videoId,
                 savingTime: video.savingTime,
-                relatedVideoId: r.videoId,
-                relatedTitle: r.title,
-                relatedAuthorName: authorName,
+                recommendedVideoId: cleanVideoId,
+                recommendedViews: recommended.recome,
+                recommendedTitle: recommended.recommendedTitle,
+                recommendedChannel: recommended.recommendedSource,
             }
         });
-    })
+    }));
 
-    /* second step to filter them by time (if needed) */
-    /* and filter the fields */
-
-    /* this step is group and count */
-    const csa = _.groupBy(_.flatten(sameAuthor), 'relatedVideoId');
-    const cfy = _.groupBy(_.flatten(foryou), 'relatedVideoId');
-    const ct = _.groupBy(_.flatten(treasure), 'relatedVideoId');
-
-    const reduced = {
-        sameAuthor: csa,
-        foryou: cfy,
-        treasure: ct,
-    };
-
-    debug("byAuthor [%s], %d evidences, returning %d bytes instead of %d", 
-        authorName,
-        _.size(authorStruct.content),
-        _.size(JSON.stringify(reduced)),
-        _.size(JSON.stringify(authorStruct.content))
-    );
+    debug("Returning byAuthor (%s) %d video considered, %d recommendations",
+        authorName, _.size(authorStruct.content), _.size(final) );
 
     return { json: {
         authorName,
-        content: reduced,
+        content: final,
         authorSource: authorStruct.authorSource,
         paging: authorStruct.paging,
+        overflow: authorStruct.overflow,
         total: authorStruct.total,
     }};
 };

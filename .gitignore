@@ -14,15 +14,17 @@ extension/build/*
 extension/dist/*
 extension/node_modules/*
 
+methodology/dist/*
 methodology/config/*
 methodology/profiles/*
-methodology/experiments/*
 methodology/executions/*
+methodology/experiments/*
 methodology/node_modules/*
 methodology/extension/*
-methodology/snaps/*
 
 backend/node_modules/*
+backend/experiments/*
+backend/config/secrets.json
 
 react-pieces/node_modules/*
 

@@ -361,7 +361,7 @@ async function appendLabelError(currentList, lastSentAmount) {
             });
             return true;
         } catch(error) {
-            debuge("appendLabelError: Unable to write on collection 'errors': %s", e.message);
+            debuge("appendLabelError: Unable to write on collection 'errors': %s", error.message);
             return false;
         }
     });

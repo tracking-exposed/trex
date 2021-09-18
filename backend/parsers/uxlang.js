@@ -250,13 +250,13 @@ function sequenceForPublicationTime(D, blang, clientTime) {
     let publicationTime, publicationString = null;
     const serverSideBlang = findLanguage('video', m);
     blang = serverSideBlang ? serverSideBlang : blang;
-
+/*
     if(!serverSideBlang && !blang)
         nlpdebug("OOO wtf! lack of ssblang and csblang (%j)", m);
 
     if(serverSideBlang != blang)
         nlpdebug("!*! Difference in ssblang (winner) %s and csblang %s", serverSideBlang, blang);
-
+*/
     publicationString = D.querySelector("#dot + .ytd-video-primary-info-renderer").textContent;
     if(publicationString.length > 2) {
 
@@ -292,11 +292,6 @@ function sequenceForPublicationTime(D, blang, clientTime) {
         throw new Error("Failure in spotting publication date")
     }
 
-    if(blang != serverSideBlang) {
-        nlpdebug("%s %s differs, blang and serverblang", blang, serverSideBlang);
-        // is not yet managed, should be both considered? 
-        process.quit(2)
-    }
     nlpdebug("SOURCE |%s| BECOME => |%s| (uxlang %s)", publicationString, publicationTime, blang);
 
     return { publicationTime, publicationString, ifLang: blang };
