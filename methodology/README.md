@@ -122,9 +122,17 @@ Clone this repo (and its theme, as described in its readMe) then start Hugo with
 Make sure you dont have another hugo server running so that this one runs on the default port at `//localhost:1313/`
 With this, the personnal page from the extnesion should be able to render
 
---------------------
+# API testing 
 
+The APIs are listed is `yttrex/backend/bin/server.js` and defined in `backend/routes/`
 
-supported parameters in directives:
+To test them locally, make sure that you have:
+- A local version of the backend server running (`npm run watch` in `backend`)
+- A local version of the parserver running. Do: 
+<br>`DEBUG=*,-parser:home:warning node bin/parserv2.js --minutesago 100000`<br>
+Where `minutesago` indicates the server to also parse the upstanding HTMLS which where collected less than X minutes ago.
+- A `mongod` server running. You can also launch Robo3T for a nice visual interface.
 
+Then you can query the local API by running things like:
+`http://localhost:9000/api/v1/last/`
 
