@@ -24,14 +24,6 @@ console.log(redOn + "ઉ nconf loaded, using " + cfgFile + redOff);
 if(!nconf.get('interface') || !nconf.get('port') )
     throw new Error("check your config/settings.json, config of 'interface' and 'post' missing");
 
-var returnHTTPError = function(req, res, funcName, where) {
-    debug("HTTP error 500 %s [%s]", funcName, where);
-    res.status(500);
-    res.send();
-    return false;
-};
-
-
 /* This function wraps all the API call, checking the verionNumber
  * managing error in 4XX/5XX messages and making all these asyncronous
  * I/O with DB, inside this Bluebird */
@@ -185,16 +177,36 @@ app.get('/api/v1/mirror/:key', function(req, res) {
 app.post('/api/v3/handshake', function(req, res) {
     return dispatchPromise('youChooseByVideoId', req, res);
 });
-app.get('/api/v3/recommendations/:videoId', function(req, res) {
-    console.log("this shouldn't exist anymore");
+app.get('/api/v3/video/:videoId/recommendations', function(req, res) {
     return dispatchPromise('youChooseByVideoId', req, res);
 });
-app.get('/api/v3/profile/recommendations/:publicKey', function(req, res) {
-    return dispatchPromise('youChooseByProfile', req, res);
+app.get('/api/v3/recommendations/:ids', function(req, res) {
+    return dispatchPromise('recommendationById', req, res);
 });
-app.get('/api/v3/ogp/:url', cors(), function(req, res) {
+
+app.post('/api/v3/creator/updateVideo', function(req, res) {
+    return dispatchPromise('updateVideoRec', req, res);
+});
+app.post('/api/v3/creator/ogp', cors(), function(req, res) {
     return dispatchPromise('ogpProxy', req, res);
 });
+app.get('/api/v3/creator/videos/:publicKey', function(req, res) {
+    return dispatchPromise('getVideoByCreators', req, res);
+});
+app.get('/api/v3/creator/recommendations/:publicKey', function(req, res) {
+    return dispatchPromise('youChooseByProfile', req, res);
+});
+app.get('/api/v3/creator/register/:channelId', function(req, res) {
+    return dispatchPromise('creatorRegister', req, res);
+});
+
+/* tDBDHS */
+app.post('/api/v3/chiaroscuro', function(req, res) {
+    return dispatchPromise('chiaroScuro', req, res);
+})
+app.get('/api/v3/chiaroscuro/:experimentId/:nickname', function(req, res) {
+    return dispatchPromise('chiaroScuroDirective', req, res);
+})
 
 /* impact */
 app.get('/api/v2/statistics/:name/:unit/:amount', function(req, res) {

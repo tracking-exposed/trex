@@ -9,25 +9,18 @@ const automo = require('../lib/automo');
 const params = require('../lib/params');
 const CSV = require('../lib/CSV');
 
-function getVideoId(videol) {
-    const urlinfo = url.parse(videol.url);
-    const p = querystring.parse(urlinfo.query);
-    return p.v;
-}
-
 async function submission(req) {
     /* this function is invoked by guardoni at the end */
     const experiment = {
         name: req.body.experimentName,
         profile: req.body.profile,
-        videos: _.map(req.body.videos, getVideoId),
         info: req.body.videos,
         sessionCounter: req.body.sessionCounter,
         publicKey: req.body.publicKey,
         testTime: new Date(req.body.when)
     };
-    debug("Test in progress (session %d, videos %d) %s on %s",
-        experiment.sessionCounter, experiment.videos.length,
+    debug("savingExperiment (session %d, videos %d) %s on %s",
+        experiment.sessionCounter, experiment.info.length,
         experiment.profile, experiment.name);
     const retval = await automo.saveExperiment(experiment);
     return { json: retval };
@@ -74,7 +67,7 @@ async function dot(req) {
 
 async function json(req) {
     const expname = params.getString(req, 'expname', true);
-    const related = await automo.fetchExperimentData(expname);
+    const related = await automo.extendMetaByExperiment(expname);
     // this return data that are already the mixture between
     // collection 'metadata' and 'experiments'
     debug("Requested experiment %s, fetch %d related",
@@ -84,7 +77,7 @@ async function json(req) {
 
 async function csv(req) {
     const expname = params.getString(req, 'expname', true);
-    const related = await automo.fetchExperimentData(expname);
+    const related = await automo.extendMetaByExperiment(expname);
     // this return data that are already the mixture between
     // collection 'metadata' and 'experiments'
     const textcsv = CSV.produceCSVv1(related);

@@ -37,8 +37,11 @@ ret = db.errors.createIndex({ when: -1 }); checkret('errors when', ret);
 
 ret = db.campaigns.createIndex({ name: 1 }, { unique: true }); checkret('campaigns name', ret);
 
-ret = db.recommendations.createIndex({ urlId: 1 }, { unique: true }); checkret('recommendation urlId', ret);
-ret = db.recommendations.createIndex({ when: -1 }); checkret('recommendation when', ret);
+ret = db.recommendations.createIndex({ urlId: 1 }, { unique: true }); checkret('recommendations urlId', ret);
+ret = db.recommendations.createIndex({ when: -1 }); checkret('recommendations when', ret);
+
+ret = db.ytvids.createIndex({ videoId: -1}, { unique: true}); checkret('ytvids videoId', ret);
+ret = db.ytvids.createIndex({ creatorId: -1}); checkret('ytvids creatorId', ret);
 
 function checkret(info, retval) {
     retval.info = info;

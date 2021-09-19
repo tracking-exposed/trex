@@ -9,8 +9,6 @@ const params = require('../lib/params');
 const dbutils = require('../lib/dbutils');
 const security = require('../lib/security');
 const utils = require('../lib/utils');
-const { platform } = require('os');
-const { indexOf } = require('food-words');
 
 const MAXRVS = 5000;
 

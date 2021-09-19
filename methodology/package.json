@@ -1,7 +1,12 @@
 {
-  "name": "yttrex-automation",
-  "version": "1.1.0",
-  "description": "a tool for https://youtube.tracking.exposed for reseachers",
+  "name": "guardoni",
+  "version": "1.2.0",
+  "description": "Guardoni is a tool to automate access and coordinate personalization algorithm analysis",
+  "scripts": {
+    "dist": "cd dist; mkdir extension; touch extension/.keep; mkdir experiments; touch experiments/.keep; zip guardoni-win.txt ex* guardoni.zip",
+    "pkg": "pkg ./package.json"
+  },
+  "bin": "./src/guardoni.js",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/tracking-exposed/yttrex.git"
@@ -15,13 +20,32 @@
   "license": "AGPL-3.0-or-later",
   "homepage": "https://github.com/tracking-exposed/yttrex#readme",
   "dependencies": {
-    "debug": "^4.3.1",
+    "debug": "^4.3.2",
     "lodash": "^4.17.21",
     "moment": "^2.29.1",
     "nconf": "^0.11.2",
-    "node-fetch": "^2.6.1",
-    "puppeteer": "^2.1.1",
-    "puppeteer-extra": "^2.1.3",
-    "puppeteer-extra-plugin-stealth": "^2.7.6"
+    "node-fetch": "^2.6.2",
+    "csv-parse": "^4.15.3",
+    "puppeteer": "^10.2.0",
+    "puppeteer-extra": "^3.1.18",
+    "puppeteer-extra-plugin-stealth": "^2.7.8"
+  },
+  "devDependencies": {
+    "pkg": "^5.3.1"
+  },
+  "pkg": {
+    "scripts": [
+      "./src/**/*.js",
+      "./node_modules/**/*.js"
+    ],
+    "assets": [
+      "./extension/**"
+    ],
+    "targets": [
+      "node12-linux-x64",
+      "node12-win-x64",
+      "node12-macos-x64"
+    ],
+    "outputPath": "dist"
   }
 }

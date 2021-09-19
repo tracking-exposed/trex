@@ -19,6 +19,10 @@ const debug = require('debug')('lib:automo');
 const moment = require('moment');
 const chardet = require('chardet')
 
+/* these two only for the experiment chiaroscuro thing */
+const url = require('url');
+const qustr = require('querystring')
+
 const utils = require('../lib/utils');
 const mongo3 = require('./mongo3');
 
@@ -146,6 +150,7 @@ async function getMetadataFromAuthor(filter, options) {
     await mongoc.close();
     return {
         content: videos,
+        overflow: (_.size(videos) === options.amount),
         total,
         pagination: options,
         authorName: sourceVideo.authorName,
@@ -532,6 +537,7 @@ async function getGuardoni(guardobj) {
 }
 
 async function saveExperiment(expobj) {
+    debug(expobj);
     const mongoc = await mongo3.clientConnect({concurrency: 1});
     const result = await mongo3
         .writeOne(mongoc, nconf.get('schema').experiments, expobj);
@@ -576,14 +582,90 @@ async function enhanceHTMLifExperiment(htmls) {
     return ret;
 }
 
+async function extendMetaByExperiment(experimentId) {
+
+    const mongoc = await mongo3.clientConnect({concurrency: 10});
+    const expers = await mongo3.readLimit(mongoc, nconf.get('schema').experiments, {
+        name: experimentId,
+    }, {}, 3000, 0);
+    /* here would be used: name, publicKey, testTime, to iterate over metadata and mark them */
+    const profiles = _.groupBy(expers, 'publicKey');
+    const experslinks = _.reduce(profiles, function(memo, explist, publicKey) {
+        const guarord = _.sortBy(explist, 'testTime')
+        // debug(guarord);
+        // guarantee order it means, because we need to write mongofilter
+        // that takes all the metadata after the test. this piece of code 
+        // save the previous test as "lte" clausole.
+        let boundary = null;
+        const filter = { publicKey };
+        _.each(guarord, function(experiment) {
+            filter.savingTime = {
+                "$gte": new Date(experiment.testTime)
+            };
+            if(boundary)
+                filter.savingTime["$lt"] = boundary;
+
+            boundary = new Date(moment(experiment.testTime).toISOString());
+            _.each(experiment.info, function(directive) {
+                const uq = url.parse(directive.url);
+                if(uq.pathname !== '/results')
+                    return null;
+
+                const searchTerms = _.trim(qustr.parse(uq.query).search_query);
+                filter.searchTerms = searchTerms;
+
+                memo.push({
+                    filter: _.cloneDeep(filter),
+                    publicKey,
+                    testTime: experiment.testTime,
+                    /* no object-unpacking because of these renames */
+                    directiveName: directive.name,
+                    experimentId: experiment.name,
+                    url: directive.url,
+                    targetVideoId: directive.targetVideoId,
+                    profile: experiment.profile,
+                    sessionCounter: experiment.sessionCounter,
+                });
+            })
+        })
+        return memo;
+    }, [])
+
+    debug("expl %d", experslinks.length);
+
+    // this list of filters perhaps would have been obtained 
+    // with a more efficient mongo query TODO.
+    const ret = [];
+    for (expl of experslinks) {
+        const meta = await mongo3
+            .readLimit(mongoc, nconf.get('schema').searches,
+                expl.filter, { savingTime: -1 }, 100, 1);
+        debug("With filter %j found %d", expl.filter, meta.length);
+        _.each(meta, function(mentry) {
+            ret.push({
+                ...mentry,
+                ..._.omit(expl, ['filter'])
+            })
+        })
+    }
+        
+    await mongoc.close();
+    debug("ret %d data", ret.length);
+    return ret;
+}
+
+/* enhance experiment add an .experiment to an html and then to a metadata,
+ * the function above, extendMetaByExperiment() is the more generic method
+ * to return evidences to /experiments/#ID
+ */
 async function fetchExperimentData(name) {
     const EVIDLIM = 200;
     const mongoc = await mongo3.clientConnect({concurrency: 1});
     const results = await mongo3
         .aggregate(mongoc, nconf.get('schema').metadata, [
             { $match: { "experiment.experiment": name } },
-            { $limit: EVIDLIM},
-            { $unwind: '$related' }
+            { $limit: EVIDLIM },
+            { $unwind: "$related" }
         ]);
     await mongoc.close();
     const problem = _.keys(_.countBy(results, 'id')).length === EVIDLIM;
@@ -639,17 +721,35 @@ async function getAllExperiments(max) {
 async function fetchRecommendations(videoId, kind) {
     // kind might be 'demo', 'producer', 'community'
     let filter = {};
-    if(kind !== 'demo') {
+    if(kind === 'producer') {
         filter.videoId = videoId;
+    } else if(kind === 'community') {
+        debug("Not yet supported community recommendations");
+        return [];
     }
-    // in demo, every links is ok to be returned
-    const RECOMMENDATION_MAX = 10;
+
+    const RECOMMENDATION_MAX = 20;
     const mongoc = await mongo3.clientConnect({concurrency: 1});
-    const result = await mongo3
-        .readLimit(mongoc, nconf.get('schema').recommendations,
-            filter, {}, RECOMMENDATION_MAX, 0);
-    if(RECOMMENDATION_MAX == result.length) {
-        debug("More recommendations than what is possible!")
+    const videoInfo = await mongo3
+        .readOne(mongoc, nconf.get('schema').ytvids, filter);
+
+    let result = [];
+    if(videoInfo &&
+        videoInfo.recommendations &&
+        videoInfo.recommendations.length) {
+
+        result = await mongo3
+            .readLimit(mongoc, nconf.get('schema').recommendations, {
+                urlId: { "$in": videoInfo.recommendations }
+            }, {}, RECOMMENDATION_MAX, 0)
+
+        if(RECOMMENDATION_MAX == result.length)
+            debug("More recommendations than what is possible!")
+
+        result = _.map(result, function(e) {
+            _.unset(e, '_id');
+            return e;
+        })
     }
     await mongoc.close();
     return result;
@@ -675,9 +775,9 @@ async function saveRecommendationOGP(ogblob) {
     const keep = _.pick(ogblob, fields);
     // TODO here we should associate a 'type' by the kind of domain name
 
-    // ensure the presence of every required field except image
+    // ensure the presence of the required field (except image+desc)
     const error = [];
-    _.each(['title', 'description', 'url'], function(fname) {
+    _.each(['title', 'url'], function(fname) {
         if(!keep[fname] || !keep[fname].length) {
             error.push(fname);
         }
@@ -706,6 +806,98 @@ async function getRecommendationByURL(url) {
         .readOne(mongoc, nconf.get('schema').recommendations, {urlId});
     await mongoc.close();
     return res;
+}
+
+async function getVideoFromYTprofiles(creator, limit) {
+    const mongoc = await mongo3.clientConnect({concurrency: 1});
+    const res = await mongo3
+        .readLimit(mongoc, nconf.get('schema').ytvids, {
+            creatorId: creator.id
+        }, {}, limit, 0);
+    await mongoc.close();
+    return res;
+}
+
+async function recommendationById(ids) {
+    const mongoc = await mongo3.clientConnect({concurrency: 1});
+    const res = await mongo3
+        .readLimit(mongoc, nconf.get('schema').recommendations, {
+            "urlId": { "$in": ids }
+        }, {}, limit, 0);
+    await mongoc.close();
+    return res;
+}
+
+async function updateRecommendations(videoId, recommendations) {
+    const mongoc = await mongo3.clientConnect({concurrency: 1});
+    const one = await mongo3
+        .readOne(mongoc, nconf.get('schema').ytvids, {
+            videoId });
+    one.recommendations = recommendations;
+    one.when = new Date();
+    const check = await mongo3
+        .updateOne(mongoc, nconf.get('schema').ytvids, {
+            videoId
+        }, one);
+    await mongoc.close();
+    _.unset(one, '_id');
+    debug("returning the updated videoId with new reccs %j", one);
+    return one;
+}
+
+async function registerVideos(videol, channelId) {
+    const objl = _.map(videol, function(vi) {
+        return {
+            ...vi,
+            creatorId: channelId,
+            when: new Date(),
+        };
+    })
+    const mongoc = await mongo3.clientConnect({concurrency: 1});
+    for (ytv of objl) {
+        try {
+            await mongo3
+                .writeOne(mongoc, nconf.get('schema').ytvids, ytv);
+        } catch(error) {
+            debug("Error in writeOne ytvids of %s: %s", JSON.stringify(ytv), error.message);
+        }
+    }
+    await mongoc.close();
+    // no return value here
+}
+
+async function registerChiaroScuro(objnfo, nickname) {
+    const experimentId = utils.hash({
+        type: 'chiaroscuro',
+        objnfo
+    });
+    const mongoc = await mongo3.clientConnect({concurrency: 1});
+    const experimentNumbs = await mongo3.count(mongoc,
+        nconf.get('schema').chiaroscuro, {
+            experimentId
+        });
+    await mongo3.writeOne(mongoc, nconf.get('schema').chiaroscuro, {
+        when: new Date(),
+        experimentId,
+        nickname,
+        links: objnfo
+    })
+    await mongoc.close();
+    debug("Registered %j", {experimentId, experimentNumbs});
+    return {
+        experimentId,
+        experimentNumbs
+    }
+}
+
+async function pickChiaroscuro(experimentId) {
+    const mongoc = await mongo3.clientConnect({concurrency: 1});
+    const rb = await mongo3.readOne(mongoc,
+        nconf.get('schema').chiaroscuro,
+        { experimentId},
+        { when: -1});
+    await mongoc.close();
+    return rb;
 }
 
 module.exports = {
@@ -755,6 +947,7 @@ module.exports = {
     /* experiment related operations */
     saveExperiment,
     enhanceHTMLifExperiment,
+    extendMetaByExperiment,
     fetchExperimentData,
     getAllExperiments,
 
@@ -763,4 +956,12 @@ module.exports = {
     fetchRecommendationsByProfile,
     saveRecommendationOGP,
     getRecommendationByURL,
+    getVideoFromYTprofiles,
+    recommendationById,
+    updateRecommendations,
+    registerVideos,
+
+    /* chiaroscuro */
+    registerChiaroScuro,
+    pickChiaroscuro,
 };

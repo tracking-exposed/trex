@@ -1,0 +1,20 @@
+[
+    {
+        "name": "first-typo",
+        "url": "https://www.youtube.com/results?search_query=the+real+the+truth+about+global+warming+nobody+is+talking+ab",
+        "watchFor": "15s",
+        "loadFor": "15s"
+    },
+    {
+        "name": "second-good-title",
+        "url": "https://www.youtube.com/results?search_query=the+real+the+truth+about+global+warming+nobody+is+talking+about",
+        "watchFor": "15s",
+        "loadFor": "15s"
+    },
+    {
+        "name": "third-with-author",
+        "url": "https://www.youtube.com/results?search_query=the+real+the+truth+about+global+warming+nobody+is+talking+about+riddle",
+        "watchFor": "15s",
+        "loadFor": "15s"
+    }
+]

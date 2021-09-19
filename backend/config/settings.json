@@ -13,7 +13,9 @@
       "experiments": "experiments2",
       "guardoni": "guardoni",
       "answers": "answers",
-      "recommendations": "recommendations"
+      "recommendations": "recommendations",
+      "ytvids": "ytvids",
+      "chiaroscuro": "chiaroscuro"
   },
   "mongoHost": "localhost",
   "mongoPort": 27017,

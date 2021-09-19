@@ -2,6 +2,7 @@ const _ = require('lodash');
 const moment = require('moment');
 const debug = require('debug')('guardoni:youtube');
 const bcons = require('debug')('guardoni:console');
+const bconsError = require('debug')('guardoni:error');
 const path = require('path');
 const fs = require('fs');
 const nconf = require('nconf');
@@ -93,7 +94,7 @@ async function savekey(message, experimentName, directives, profile) {
     }
     fs.writeFileSync(keylog, JSON.stringify(payload), {
         encoding: "utf-8", flag: "w+" });
-    console.log("written keylog", keylog);
+    console.log("saved publicKey in ", keylog);
 }
 
 let sentOnce = false;
@@ -109,40 +110,49 @@ async function lookForPubkey(experimentName, profile, directives, message) {
 };
 
 async function beforeDirectives(page, experiment, profile, directives) {
-debug("Listening in console...");
-if(experiment)
-    page.on('console', await _.partial(lookForPubkey, experiment, profile, directives));
-else
-    page.on('console', function(message) { debug("%s", message.text())});
-page
-    .on('pageerror', ({ message }) => debug('error' + message)) /*
-    .on('response', response =>
-        debug(`response: ${response.status()} ${response.url()}`))
-    .on('requestfailed', request =>
-        debug(`requestfail: ${request.failure().errorText} ${request.url()}`)); */
+    if(experiment)
+        page.on('console', await _.partial(lookForPubkey, experiment, profile, directives));
+    else
+        page.on('console', function(message) { bcons("%s", message.text())});
+
+    page
+        .on('pageerror', ({ message }) =>
+            bconsError('Error %s', message) )
+        .on('response', response =>
+            bcons(`Response: ${response.status()} ${response.url()}`))
+        .on('requestfailed', request =>
+            bconsError(`Requestfail: ${request.failure().errorText} ${request.url()}`));
 }
 
 async function beforeWait(page, directive) {
-    debug("Nothing in beforeWait but might be screencapture or ad checking");
+    // debug("Nothing in beforeWait but might be screencapture or ad checking");
 }
 
 async function afterWait(page, directive) {
     // const innerWidth = await page.evaluate(_ => { return window.innerWidth });
     // const innerHeight = await page.evaluate(_ => { return window.innerHeight });
+    const hasPlayer = false;
     if(directive.url.match(/\/watch\?v=/)) {
         const state = await getYTstatus(page);
         debug("afterWait status found to be: %s", state.name);
         await interactWithYT(page, directive, "playing");
-    } else {
-        debug("We don't know what you're doing on %s but you're free to do it!", directive.url);
+        hasPlayer = true;
     }
-    /*
-    if(directive.nodump !== true) {
-        const screendumpf = moment().format("YYYYMMDD-HHmm") + '-' + directive.name + '-' + directive.profile + '.png';
-        const fullpath = path.join('tmp', screendumpf);
-        debug("afterWait, collecting screenshot in %s", fullpath);
-        await state.player.screenshot({ path: fullpath });
-    } */
+
+    if(directive.screenshot) {
+        const screendumpf = moment().format("YYYYMMDD-HHmm") + '-' + directive.name + '.png';
+        const fullpath = path.join(directive.profile, screendumpf);
+        debug("afterWait: collecting screenshot in %s", fullpath);
+
+        if(hasPlayer)
+            await state.player.screenshot({ path: fullpath });
+        else
+            await page.screenshot({
+                path: screenshotname,
+                fullPage: true
+            });
+    }
+
 }
 const condition = {
     "-1": "unstarted",
@@ -185,7 +195,7 @@ async function interactWithYT(page, directive, wantedState) {
     }
     if(state.name == "unstarted") {
         const res = await state.player.press("Space");
-        await page.waitFor(600);
+        await page.waitForTimeout(600);
         state = await getYTstatus(page);
     } else
         debug("Not pressing space as the video is in state %s", state.name);
@@ -203,7 +213,7 @@ async function interactWithYT(page, directive, wantedState) {
     if(specialwatch == "end") {
         debug("This video would be watched till the end");
         for(checktime of _.times(DEFAULT_MAX_TIME / PERIODIC_CHECK_ms)) {
-            await page.waitFor(PERIODIC_CHECK_ms);
+            await page.waitForTimeout(PERIODIC_CHECK_ms);
             let newst = await getYTstatus(page);
 
             if(newst.name == "unstarted") {
@@ -217,7 +227,7 @@ async function interactWithYT(page, directive, wantedState) {
         }
     } else if(_.isInteger(specialwatch)) {
         console.log("watching video for the specified time of:", specialwatch, "milliseconds")
-        await page.waitFor(specialwatch);
+        await page.waitForTimeout(specialwatch);
         console.log("finished special watchining time of:", specialwatch, "milliseconds");
     } else {
         console.log("Error: waitFor is not 'end' and it is not a number", specialwatch);

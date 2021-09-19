@@ -73,7 +73,15 @@ const apiList = {
     /* v3 youchoose */
     youChooseByVideoId:  require('../routes/youchoose').byVideoId,
     youChooseByProfile:  require('../routes/youchoose').byProfile,
-    ogpProxy:		     require('../routes/youchoose').ogpProxy,
+    ogpProxy:            require('../routes/youchoose').ogpProxy,
+    getVideoByCreators:  require('../routes/youchoose').videoByCreator,
+    recommendationById:  require('../routes/youchoose').getRecommendationById,
+    updateVideoRec:      require('../routes/youchoose').updateVideoRec,
+    creatorRegister:     require('../routes/youchoose').creatorRegister,
+
+    /* v3 chiaroscuro support */
+    chiaroScuro:         require('../routes/chiaroscuro').chiaroScuro,
+    chiaroScuroDirective:require('../routes/chiaroscuro').guardoniface,
 };
 
 module.exports = {
