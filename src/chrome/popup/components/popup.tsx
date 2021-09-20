@@ -1,11 +1,15 @@
+import { localLookup } from '@chrome/dashboard/API/queries';
+import { ErrorBox } from '@chrome/dashboard/components/common/ErrorBox';
 import { Card, makeStyles } from '@material-ui/core';
 import { Alert, AlertTitle } from '@material-ui/lab';
+import * as QR from 'avenger/lib/QueryResult';
+import { declareQueries } from 'avenger/lib/react';
+import { pipe } from 'fp-ts/lib/function';
 import moment from 'moment';
 import React from 'react';
 import config from '../../../config';
 import InfoBox from './infoBox';
-import Settings from './settings';
-import { bo } from '../utils';
+import Settings from './Settings';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -24,33 +28,24 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-interface PopupProps {
-  publicKey?: string;
-}
+const PopupLoader: React.FC = () => {
+  return (
+    <Alert severity="info">
+      <AlertTitle>Loading settings...</AlertTitle>
+      <strong>
+        Access{' '}
+        <a href="https://www.youtube.com" target="_blank" rel="noreferrer">
+          yutube.com
+        </a>
+        .
+      </strong>
+    </Alert>
+  );
+};
 
-const Popup: React.FC<PopupProps> = () => {
-  const [localLookup, setLocalLookup] = React.useState<
-    undefined | { status: string; data: any }
-  >();
+const withQueries = declareQueries({ settings: localLookup });
 
-  React.useEffect(() => {
-    try {
-      bo.runtime.sendMessage({ type: 'localLookup' }, (userSettings: any) => {
-        // eslint-disable-next-line no-console
-        console.log('here got', userSettings);
-        if ((userSettings?.publicKey) !== undefined) {
-          setLocalLookup({ status: 'done', data: userSettings });
-        } else {
-          setLocalLookup({ status: 'error', data: userSettings });
-        }
-      });
-    } catch (e: any) {
-      // eslint-disable-next-line no-console
-      console.log('catch error', e.message, bo?.runtime.lastError);
-      setLocalLookup({ status: 'error', data: '' });
-    }
-  }, []);
-
+export const Popup = withQueries(({ queries }) => {
   const classes = useStyles();
 
   const version = config.VERSION;
@@ -59,56 +54,38 @@ const Popup: React.FC<PopupProps> = () => {
       .duration((moment() as any) - (moment(config.BUILDISODATE) as any))
       .humanize() + ' ago';
 
-  if (localLookup === undefined) {
-    return <div>Loading...</div>;
-  }
-
-  if (localLookup.status !== 'done') {
-    // eslint-disable-next-line no-console
-    console.log('Incomplete info before render');
-    return (
-      <div className={classes.root}>
-        <Card className={classes.container}>
-          <Alert severity="error">
-            <AlertTitle>Error</AlertTitle>
-            Extension isn&apos;t initialized yet —{' '}
-            <strong>
-              Access{' '}
+  return pipe(
+    queries,
+    QR.fold(
+      () => (
+        <div className={classes.root}>
+          <Card className={classes.container}>
+            <PopupLoader />
+          </Card>
+        </div>
+      ),
+      ErrorBox,
+      ({ settings }) => {
+        return (
+          <div className={classes.root}>
+            <Card className={classes.container}>
               <a
-                href="https://www.youtube.com"
+                className={classes.link}
+                href={config.WEB_ROOT}
                 target="_blank"
                 rel="noreferrer"
               >
-                yutube.com
+                <img className={classes.img} src="/ycai-logo.png" />
               </a>
-              .
-            </strong>
-          </Alert>
-          <InfoBox />
-        </Card>
-      </div>
-    );
-  }
-
-  return (
-    <div className={classes.root}>
-      <Card className={classes.container}>
-        <a
-          className={classes.link}
-          href={config.WEB_ROOT}
-          target="_blank"
-          rel="noreferrer"
-        >
-          <img className={classes.img} src="/ycai-logo.png" />
-        </a>
-        <Settings lastSettings={localLookup.data} />
-        <InfoBox />
-      </Card>
-      <small>
-        version {version}, released {timeago}
-      </small>
-    </div>
+              <Settings settings={settings} />
+              <InfoBox />
+            </Card>
+            <small>
+              version {version}, released {timeago}
+            </small>
+          </div>
+        );
+      }
+    )
   );
-};
-
-export default Popup;
+});

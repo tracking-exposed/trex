@@ -3,6 +3,8 @@ import { Alert, AlertTitle } from '@material-ui/lab';
 import * as React from 'react';
 
 export const ErrorBox = (e) => {
+  // eslint-disable-next-line
+  console.error(e);
   return (
     <Grid item>
       <Card>

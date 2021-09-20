@@ -59,7 +59,7 @@ module.exports = {
       main: path.resolve(__dirname, 'src/index.tsx'),
       app: path.resolve(__dirname, 'src/app.js'),
       popup: path.resolve(__dirname, 'src/chrome/popup/index.tsx'),
-      background: path.resolve(__dirname, 'src/chrome/background/index.js'),
+      background: path.resolve(__dirname, 'src/chrome/background/index.ts'),
     };
 
     // override default html-webpack-plugin for 'all' chunks
@@ -81,7 +81,7 @@ module.exports = {
         // todo: it fails due to a webpack-inject-plugin-loader error
         autoReload: false,
         backgroundEntry: 'background',
-        ignoreEntries: ['main', 'app', 'popup'],
+        ignoreEntries: [],
         manifestFilePath: 'public/manifest.json',
         onCompileManifest: (manifest) => {
           const content_scripts = isProduction

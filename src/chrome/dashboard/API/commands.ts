@@ -1,17 +1,20 @@
+import db from '@chrome/db';
 import { command } from 'avenger';
 import { pipe } from 'fp-ts/lib/function';
 import * as TE from 'fp-ts/lib/TaskEither';
+import { AccountSettings } from 'models/AccountSettings';
 import {
-  clearPersistentItem,
+  removePersistenItem,
   setItem,
-  setPersistentItem,
+  setPersistentItem
 } from '../storage/Store';
 import { fetchTE } from './HTTPAPI';
 import {
   creatorChannel,
   currentVideoOnEdit,
   currentVideoRecommendations,
-  recommendations,
+  localLookup,
+  recommendations
 } from './queries';
 
 export const setCreatorChannel = command(
@@ -22,7 +25,7 @@ export const setCreatorChannel = command(
 );
 
 export const saveCreatorChannel = command(
-  (channel) => setPersistentItem('creator-channel', channel),
+  (channel: string) => setPersistentItem('creator-channel', channel),
   {
     recommendations,
     currentVideoOnEdit,
@@ -30,7 +33,7 @@ export const saveCreatorChannel = command(
 );
 
 export const deleteCreatorChannel = command(
-  (channel) => clearPersistentItem('creator-channel', channel),
+  () => removePersistenItem('creator-channel'),
   {
     recommendations,
     currentVideoOnEdit,
@@ -83,3 +86,6 @@ export const updateRecommendationForVideo = command(
     currentVideoOnEdit,
   }
 );
+
+export const updateSettings = command((settings: AccountSettings) => db.update('local', settings), { localLookup })
+
