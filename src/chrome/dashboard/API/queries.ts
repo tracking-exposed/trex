@@ -6,7 +6,7 @@ import { LocalLookup } from 'models/MessageRequest';
 import { bo } from 'utils/browser.utils';
 import { getItem, getPersistentItem } from '../storage/Store';
 import { fetchTE } from './HTTPAPI';
-import { catchRuntimeLastError } from '@chrome/db';
+import { catchRuntimeLastError } from '../../../providers/browser.provider';
 import { AccountSettings } from 'models/AccountSettings';
 
 export const creatorChannel = queryStrict(
@@ -100,11 +100,5 @@ export const localLookup = queryStrict(() => {
       E.toError
     ),
     TE.chain(catchRuntimeLastError),
-    TE.chain((settings) => {
-      if (settings?.publicKey !== undefined) {
-        return TE.right(settings);
-      }
-      return TE.left(new Error('Public key is missing'));
-    })
   );
 }, available);

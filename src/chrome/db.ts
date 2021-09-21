@@ -3,19 +3,9 @@ import * as TE from 'fp-ts/lib/TaskEither';
 import { bo } from '../utils/browser.utils';
 import { pipe } from 'fp-ts/lib/function';
 import { getAssignSemigroup } from 'fp-ts/lib/struct';
+import { catchRuntimeLastError } from '../providers/browser.provider';
 
 const backend = bo.storage.local;
-
-export const catchRuntimeLastError = <A>(
-  v: A
-): TE.TaskEither<chrome.runtime.LastError, A> => {
-  if (bo.runtime.lastError !== null && bo.runtime.lastError !== undefined) {
-    // eslint-disable-next-line
-    console.error('LastError', bo.runtime.lastError);
-    return TE.left(bo.runtime.lastError);
-  }
-  return TE.right(v);
-};
 
 const backendGet = (
   keys: string | string[]

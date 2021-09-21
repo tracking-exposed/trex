@@ -31,7 +31,7 @@ import $ from 'jquery';
 import _ from 'lodash';
 import moment from 'moment';
 import { updateUX } from './replacement';
-import config from './config';
+import { config } from './config';
 import hub from './hub';
 import { registerHandlers } from './handlers/index';
 import { getVideoId } from './youtube';

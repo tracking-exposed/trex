@@ -1,7 +1,6 @@
 import nacl from 'tweetnacl';
 import bs58 from 'bs58';
-
-import config from '../config';
+import {config} from '../config';
 import { decodeString, decodeKey } from '../utils';
 import db from './db';
 

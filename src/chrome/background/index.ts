@@ -1,7 +1,7 @@
 import * as E from 'fp-ts/lib/Either';
 import * as TE from 'fp-ts/lib/TaskEither';
 import { MessageResponse } from 'models/MessageResponse';
-import config from '../../config';
+import { config } from '../../config';
 import {
   ConfigUpdate,
   LocalLookup,
@@ -41,7 +41,7 @@ bo.runtime.onMessage.addListener(
     // eslint-disable-next-line no-console
     console.log('focacci', request, sender);
 
-    if (config.DEVELOPMENT !== undefined) {
+    if (config.NODE_ENV === "development") {
       if (request.type === ReloadExtension.value) {
         development.reloadExtension();
       }

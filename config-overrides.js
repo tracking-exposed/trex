@@ -1,6 +1,6 @@
-const { configPaths } = require('react-app-rewire-alias');
+const { configPaths, aliasJest } = require('react-app-rewire-alias');
 const { aliasDangerous } = require('react-app-rewire-alias/lib/aliasDangerous');
-const { pipe } = require('fp-ts/lib/pipeable');
+const { pipe } = require('fp-ts/lib/function');
 const A = require('fp-ts/lib/Array');
 const R = require('fp-ts/lib/Record');
 const path = require('path');
@@ -15,43 +15,64 @@ const pkgJson = require('./package.json');
 const t = require('io-ts');
 const { BooleanFromString } = require('io-ts-types/lib/BooleanFromString');
 const { PathReporter } = require('io-ts/lib/PathReporter');
+const { DefinePlugin } = require('webpack');
 
-const processENV = t.strict(
+const NODE_ENV = t.union(
+  [t.literal('development'), t.literal('test'), t.literal('production')],
+  'NODE_ENV'
+);
+
+const BUILD_ENV = t.strict(
   {
-    NODE_ENV: t.union(
-      [t.literal('development'), t.literal('production')],
-      'NODE_ENV'
-    ),
+    NODE_ENV,
     BUNDLE_STATS: BooleanFromString,
     BUNDLE_ENABLE_NOTIFY: BooleanFromString,
   },
   'processENV'
 );
 
-const env = pipe(process.env, processENV.decode, (validation) => {
-  if (validation._tag === 'Left') {
-    console.error(PathReporter.report(validation).join('\n'))
-    console.log('\n');
-    throw new Error("process.env decoding failed.");
-  }
-  return validation.right;
-});
+const APP_ENV = t.strict(
+  {
+    NODE_ENV,
+    REACT_APP_API_URL: t.string,
+    REACT_APP_WEB_URL: t.string,
+  },
+  'Config'
+);
+
+// add ts paths as aliases
+const webPaths = pipe(
+  configPaths('tsconfig.paths.json'),
+  R.map((p) => path.join('./src', p))
+);
+
+const paths = {
+  ...webPaths,
+};
 
 module.exports = {
   webpack: function (config) {
-    const produceBundleStats = env.BUNDLE_STATS;
-    const isProduction = env.NODE_ENV === 'production';
-    const enableNotification = env.BUNDLE_ENABLE_NOTIFY;
+    const buildENV = pipe(process.env, BUILD_ENV.decode, (validation) => {
+      if (validation._tag === 'Left') {
+        console.error(PathReporter.report(validation).join('\n'));
+        console.log('\n');
+        throw new Error('process.env decoding failed.');
+      }
+      return validation.right;
+    });
 
-    // add ts paths as aliases
-    const webPaths = pipe(
-      configPaths('tsconfig.paths.json'),
-      R.map((p) => path.resolve('./src', p))
-    );
+    pipe(process.env, APP_ENV.decode, (validation) => {
+      if (validation._tag === 'Left') {
+        console.error(PathReporter.report(validation).join('\n'));
+        console.log('\n');
+        throw new Error('process.env decoding failed.');
+      }
+      return validation.right;
+    });
 
-    const paths = {
-      ...webPaths,
-    };
+    const produceBundleStats = buildENV.BUNDLE_STATS;
+    const isProduction = buildENV.NODE_ENV === 'production';
+    const enableNotification = buildENV.BUNDLE_ENABLE_NOTIFY;
 
     aliasDangerous(paths)(config);
 
@@ -68,6 +89,15 @@ module.exports = {
       template: path.resolve(__dirname, 'public/index.html'),
       inject: true,
       filename: 'index.html',
+    });
+
+    // console.log(config.plugins[4]);
+    // override define plugin
+    config.plugins[4] = new DefinePlugin({
+      'process.env': {
+        ...config.plugins[4]['process.env'],
+        REACT_APP_BUILD_DATE: `"${new Date().toISOString()}"`,
+      },
     });
 
     config.plugins = config.plugins.concat(
@@ -164,11 +194,11 @@ module.exports = {
 
     // Disable bundle splitting,
     // a single bundle file has to loaded as `content_script`.
-    // config.optimization.splitChunks = {
-    //   cacheGroups: {
-    //     default: false,
-    //   },
-    // };
+    config.optimization.splitChunks = {
+      cacheGroups: {
+        default: false,
+      },
+    };
 
     // `false`: each entry chunk embeds runtime.
     // The extension is built with a single entry including all JS.
@@ -187,5 +217,9 @@ module.exports = {
       );
 
     return config;
+  },
+  jest: (config) => {
+    config.setupFilesAfterEnv = ['./jest.setup.js'];
+    return aliasJest(paths)(config);
   },
 };

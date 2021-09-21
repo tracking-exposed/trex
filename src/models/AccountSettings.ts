@@ -1,15 +1,21 @@
 
 interface AccountKeys {
-  publicKey?: string;
-  secretKey?: string;
+  publicKey: string;
+  secretKey: string;
 }
 
+/**
+ * Account Settings
+ * 
+ */
 export interface AccountSettings extends AccountKeys {
   active: boolean;
+  ccRecommendations: boolean;
+  communityRecommendations: boolean;
+  stats: boolean;
   svg: boolean;
   videorep: boolean;
   playhide: boolean;
-  community: boolean;
   alphabeth: boolean;
   ux: boolean;
 }

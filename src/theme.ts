@@ -1,5 +1,7 @@
 import { createTheme } from '@material-ui/core/styles';
 
+const pink = '#E33180';
+
 const Zimplon = {
   fontFamily: 'Trex-Regular',
   fontStyle: 'normal',
@@ -23,13 +25,18 @@ export const YCAITheme = createTheme({
         '@font-face': [Zimplon],
       },
     },
+    MuiTabs: {
+      root: {
+        background: pink,
+      },
+    },
   },
   palette: {
     primary: {
-      light: '#f00',
-      main: '#f00',
-      dark: '#FF0',
-      contrastText: 'white',
+      light: '#ff5983',
+      main: '#f50057',
+      dark: '#bb002f',
+      contrastText: '#FFFFFF',
     },
   },
 });

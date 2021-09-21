@@ -4,10 +4,11 @@ import { pipe } from 'fp-ts/lib/pipeable';
 import * as T from 'fp-ts/lib/Task';
 import * as TE from 'fp-ts/lib/TaskEither';
 import { ServerLookupResponse } from 'models/MessageResponse';
+import { catchRuntimeLastError } from 'providers/browser.provider';
 import nacl from 'tweetnacl';
 import { AccountSettings } from '../../models/AccountSettings';
 import api from '../api';
-import db, { catchRuntimeLastError } from '../db';
+import db from '../db';
 
 export const DEFAULT_USER_NAME = 'local';
 
@@ -22,23 +23,18 @@ function initializeKey(): Pick<AccountSettings, 'publicKey' | 'secretKey'> {
 }
 
 // defaults of the settings stored in 'config' and controlled by popup
-const DEFAULT_SETTINGS: AccountSettings = {
+const getDefaultSettings = (): AccountSettings => ({
   active: true,
+  ccRecommendations: true,
   svg: false,
   videorep: true,
   playhide: false,
   ux: false,
-  community: false,
+  communityRecommendations: false,
   alphabeth: false,
+  stats: false,
   ...initializeKey(),
-};
-
-// function setDefaults(val: Partial<AccountSettings>): AccountSettings {
-//   return {
-//     ...DEFAULT_SETTINGS,
-//     ...val,
-//   };
-// }
+});
 
 export function userLookup({
   userId,
@@ -48,11 +44,9 @@ export function userLookup({
   return pipe(
     db.get<AccountSettings>(userId),
     TE.chain((val) => {
-      if (val === undefined) {
-        console.log('First access attempted, created config', val);
-        return db.set(userId, DEFAULT_SETTINGS);
+      if (val === undefined || Object.keys(val).length === 0) {
+        return db.set(userId, getDefaultSettings());
       }
-      console.log('sending back from userLookup', userId, val);
       return TE.right(val);
     })
   );
@@ -88,28 +82,6 @@ export function serverLookup<A>(
       )
     )
   );
-  // db.get(userId)
-  //   .then((val) => {
-  //     if (isEmpty(val)) {
-  //       val = setDefaults(initializeKey());
-  //       // eslint-disable-next-line no-console
-  //       console.log(
-  //         "serverLookup isn't used since a while and have been trimmed: double check!"
-  //       );
-  //       return db.set(userId, val).then(function () {
-  //         return val;
-  //       });
-  //     }
-  //     return val;
-  //   })
-  //   .then(async (x) => {
-  //     try {
-  //       const response = await api.handshake(payload, FIXED_USER_NAME);
-  //       return sendResponse({ type: 'handshakeResponse', response: response });
-  //     } catch (error) {
-  //       return sendResponse({ type: 'handshakeError', response: error });
-  //     }
-  //   });
 }
 
 export function configUpdate<A extends object>(

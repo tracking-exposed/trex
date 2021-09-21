@@ -1,12 +1,13 @@
-import db from '@chrome/db';
+// import db from '@chrome/db';
 import { command } from 'avenger';
 import { pipe } from 'fp-ts/lib/function';
 import * as TE from 'fp-ts/lib/TaskEither';
 import { AccountSettings } from 'models/AccountSettings';
+import { ConfigUpdate } from 'models/MessageRequest';
 import {
   removePersistenItem,
   setItem,
-  setPersistentItem
+  setPersistentItem,
 } from '../storage/Store';
 import { fetchTE } from './HTTPAPI';
 import {
@@ -14,8 +15,9 @@ import {
   currentVideoOnEdit,
   currentVideoRecommendations,
   localLookup,
-  recommendations
+  recommendations,
 } from './queries';
+import { sendMessage } from '../../../providers/browser.provider';
 
 export const setCreatorChannel = command(
   (channel) => setItem('creator-channel', channel),
@@ -87,5 +89,8 @@ export const updateRecommendationForVideo = command(
   }
 );
 
-export const updateSettings = command((settings: AccountSettings) => db.update('local', settings), { localLookup })
-
+export const updateSettings = command(
+  (payload: AccountSettings) =>
+    sendMessage({ type: ConfigUpdate.value, payload: payload }),
+  { localLookup }
+);

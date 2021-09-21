@@ -1,4 +1,6 @@
 #main {
-  width: 300px;
+  max-width: 600px;
+  min-width: 300px;
+  width: 100%;
   min-height: 100px;
 }

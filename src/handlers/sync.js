@@ -1,4 +1,4 @@
-import config from '../config';
+import { config } from '../config';
 const bo = chrome || browser;
 
 const INTERVAL = config.FLUSH_INTERVAL;

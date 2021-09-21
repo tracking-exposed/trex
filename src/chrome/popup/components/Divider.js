@@ -1,21 +1,23 @@
 import React from 'react';
 import FormHelperText from '@material-ui/core/FormHelperText';
+import { makeStyles, Divider as MUIDivider } from '@material-ui/core';
 
-const divStyles = {
-  width: '100%',
-  paddingLeft: '10%',
+const divStyles = makeStyles((theme) => ({
+  root: {
+    width: '100%',
+    marginTop: theme.spacing(2),
+    marginBottom: theme.spacing(2)
+  },
+}));
+
+const Divider = ({ helperText }) => {
+  const classes = divStyles();
+  return (
+    <div className={classes.root}>
+      <FormHelperText>{helperText}</FormHelperText>
+      <MUIDivider />
+    </div>
+  );
 };
-
-class Divider extends React.Component {
-  /* this element might have the helper text and the horizonal dividing tow */
-  render() {
-    return (
-      <div style={divStyles}>
-        <FormHelperText>{this.props.helperText}</FormHelperText>
-        <br />
-      </div>
-    );
-  }
-}
 
 export default Divider;

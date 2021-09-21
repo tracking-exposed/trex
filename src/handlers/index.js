@@ -1,4 +1,4 @@
-import config from '../config';
+import { config } from '../config';
 
 export function registerHandlers(hub) {
   require('./sync').register(hub);

@@ -1,6 +1,6 @@
 import * as TE from 'fp-ts/lib/TaskEither';
 import * as E from 'fp-ts/lib/Either';
-import config from '../../../config';
+import { config } from '../../../config';
 
 const getURL = (path) => `${config.API_ROOT}${path}`;
 

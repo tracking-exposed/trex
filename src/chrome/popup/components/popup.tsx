@@ -1,26 +1,40 @@
+import { updateSettings } from '@chrome/dashboard/API/commands';
 import { localLookup } from '@chrome/dashboard/API/queries';
 import { ErrorBox } from '@chrome/dashboard/components/common/ErrorBox';
-import { Card, makeStyles } from '@material-ui/core';
+import {
+  Button,
+  Card,
+  CardActions,
+  CardContent,
+  Divider,
+  FormControlLabel,
+  Grid,
+  makeStyles,
+  Switch,
+} from '@material-ui/core';
 import { Alert, AlertTitle } from '@material-ui/lab';
 import * as QR from 'avenger/lib/QueryResult';
 import { declareQueries } from 'avenger/lib/react';
+import { formatDistance } from 'date-fns';
+import parseISO from 'date-fns/parseISO';
 import { pipe } from 'fp-ts/lib/function';
-import moment from 'moment';
 import React from 'react';
-import config from '../../../config';
-import InfoBox from './infoBox';
+import { config } from '../../../config';
 import Settings from './Settings';
 
 const useStyles = makeStyles((theme) => ({
-  root: {
-    width: '100%',
-    height: '100%',
-  },
   container: {
     padding: theme.spacing(2),
   },
+  content: {
+    marginBottom: theme.spacing(2),
+  },
+  header: {
+    marginBottom: theme.spacing(2),
+  },
   img: {
     width: '100%',
+    maxWidth: 200,
   },
   link: {
     color: 'black',
@@ -48,42 +62,73 @@ const withQueries = declareQueries({ settings: localLookup });
 export const Popup = withQueries(({ queries }) => {
   const classes = useStyles();
 
-  const version = config.VERSION;
-  const timeago =
-    moment
-      .duration((moment() as any) - (moment(config.BUILDISODATE) as any))
-      .humanize() + ' ago';
+  const version = config.REACT_APP_VERSION;
+  const timeago = formatDistance(
+    parseISO(config.REACT_APP_BUILD_DATE),
+    new Date(),
+    {
+      addSuffix: true,
+    }
+  );
 
   return pipe(
     queries,
     QR.fold(
-      () => (
-        <div className={classes.root}>
-          <Card className={classes.container}>
-            <PopupLoader />
-          </Card>
-        </div>
-      ),
+      () => <PopupLoader />,
       ErrorBox,
       ({ settings }) => {
         return (
-          <div className={classes.root}>
-            <Card className={classes.container}>
-              <a
-                className={classes.link}
-                href={config.WEB_ROOT}
-                target="_blank"
-                rel="noreferrer"
-              >
-                <img className={classes.img} src="/ycai-logo.png" />
-              </a>
+          <Card className={classes.container}>
+            <CardContent className={classes.content}>
+              <Grid className={classes.header} container alignItems="center">
+                <Grid item sm={8} xs={8}>
+                  <a
+                    className={classes.link}
+                    href={config.REACT_APP_WEB_URL}
+                    target="_blank"
+                    rel="noreferrer"
+                  >
+                    <img className={classes.img} src="/ycai-logo.png" />
+                  </a>
+                </Grid>
+                <Grid item sm={4} xs={4} justifyContent="center">
+                  <FormControlLabel
+                    control={
+                      <Switch
+                        value={settings.active}
+                        size="small"
+                        onChange={(e, c) =>
+                          updateSettings({ ...settings, active: c })()
+                        }
+                      />
+                    }
+                    label="Enable"
+                    labelPlacement="end"
+                  />
+                </Grid>
+                <Grid item xs={12}>
+                  <small>
+                    version {version}, released {timeago}
+                  </small>
+                </Grid>
+              </Grid>
+              <Divider />
               <Settings settings={settings} />
-              <InfoBox />
-            </Card>
-            <small>
-              version {version}, released {timeago}
-            </small>
-          </div>
+            </CardContent>
+
+            <CardActions>
+              <Button
+                size="medium"
+                color="primary"
+                variant="contained"
+                href={'/index.html'}
+                target="_blank"
+                fullWidth
+              >
+                Dashboard
+              </Button>
+            </CardActions>
+          </Card>
         );
       }
     )
