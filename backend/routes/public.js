@@ -42,19 +42,14 @@ function formatReturn(updated) {
 
 async function getLast(req) {
 
-    const fields = ['watcher', 'title', 'viewInfo', 'savingTime',
-                    'videoId', 'authorName', 'authorSource', 'likeInfo',
-                    'publicationString', 'relatedN' ];
-    const amount = 10;
-
     if(_.isNull(cache.content) || (cache.next && moment().isAfter(cache.next)) ) {
         // if not initialized ^^^^ or if the cache time is expired: do the query
         const last = await automo.getTransformedMetadata([
             { $match: { title: { $exists: true }, "related.19": { $exists: true } }},
             { $sort: { savingTime: -1 }},
-            { $limit: 400 },
+            { $limit: 1500 },
             { $group: { _id: "$videoId", amount: { $sum: 1 }}},
-            { $match: { amount: { $gte: 2 }}},
+            { $match: { amount: { $gte: 4 }}},
             { $lookup: { from: 'metadata', localField: '_id', foreignField: 'videoId', as: 'info' }},
             { $limit: 20 }
         ])
