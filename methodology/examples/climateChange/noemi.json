@@ -3,8 +3,8 @@
     {"name":"noemi2","url":"https://www.youtube.com/watch?v=HxX-1cWSvVc", "watchFor":"end","loadFor":8000},
     {"name":"noemi3","url":"https://www.youtube.com/watch?v=v8dXpe1Pp6Q","watchFor":"end","loadFor":8000},
     {"name":"noemi4","url":"https://www.youtube.com/watch?v=NlIzY12D2Z0","watchFor":21000,"loadFor":8000},
-    {"name":"climatechange","url":"https://www.youtube.com/results?search_query=climate+change","watchFor":20000,"loadFor":8000},
-    {"name":"climatechange","url":"https://www.youtube.com/results?search_query=climate+alarmism","watchFor":20000,"loadFor":8000}
+    {"name":"climatechange","url":"https://www.youtube.com/results?search_query=climate+change","loadFor":20000},
+    {"name":"climatechange","url":"https://www.youtube.com/results?search_query=climate+alarmism","loadFor":20000}
 
 ]
 
