@@ -17,6 +17,7 @@
     "format": "prettier -w ./src config-overrides.js",
     "tsc": "tsc",
     "build": "DISABLE_ESLINT_PLUGIN=true react-app-rewired build",
+    "watch": "node ./scripts/watch",
     "start": "react-app-rewired start",
     "test": "react-app-rewired test",
     "stats": "webpack-bundle-analyzer build/stats.json"

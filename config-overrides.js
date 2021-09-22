@@ -33,9 +33,12 @@ const BUILD_ENV = t.strict(
 
 const APP_ENV = t.strict(
   {
-    NODE_ENV,
+    NODE_ENV: t.union(NODE_ENV.types.map((v) => t.literal(`"${v.value}"`))),
+    PUBLIC_URL: t.string,
     REACT_APP_API_URL: t.string,
     REACT_APP_WEB_URL: t.string,
+    REACT_APP_BUILD_DATE: t.string,
+    REACT_APP_VERSION: t.string,
   },
   'Config'
 );
@@ -52,23 +55,18 @@ const paths = {
 
 module.exports = {
   webpack: function (config) {
-    const buildENV = pipe(process.env, BUILD_ENV.decode, (validation) => {
-      if (validation._tag === 'Left') {
-        console.error(PathReporter.report(validation).join('\n'));
-        console.log('\n');
-        throw new Error('process.env decoding failed.');
+    const buildENV = pipe(
+      { ...process.env },
+      BUILD_ENV.decode,
+      (validation) => {
+        if (validation._tag === 'Left') {
+          console.error(PathReporter.report(validation).join('\n'));
+          console.log('\n');
+          throw new Error('process.env decoding failed.');
+        }
+        return validation.right;
       }
-      return validation.right;
-    });
-
-    pipe(process.env, APP_ENV.decode, (validation) => {
-      if (validation._tag === 'Left') {
-        console.error(PathReporter.report(validation).join('\n'));
-        console.log('\n');
-        throw new Error('process.env decoding failed.');
-      }
-      return validation.right;
-    });
+    );
 
     const produceBundleStats = buildENV.BUNDLE_STATS;
     const isProduction = buildENV.NODE_ENV === 'production';
@@ -91,13 +89,32 @@ module.exports = {
       filename: 'index.html',
     });
 
-    // console.log(config.plugins[4]);
-    // override define plugin
-    config.plugins[4] = new DefinePlugin({
-      'process.env': {
-        ...config.plugins[4]['process.env'],
+    // console.log(process.env, config.plugins[4].definitions['process.env']);
+
+    const definePluginIndex = config.plugins.findIndex(
+      (p) => p.definitions && p.definitions['process.env'] !== undefined
+    );
+
+    const appEnv = pipe(
+      {
+        ...config.plugins[definePluginIndex].definitions['process.env'],
+        REACT_APP_VERSION: `"${pkgJson.version}"`,
         REACT_APP_BUILD_DATE: `"${new Date().toISOString()}"`,
       },
+      APP_ENV.decode,
+      (validation) => {
+        if (validation._tag === 'Left') {
+          console.error(PathReporter.report(validation).join('\n'));
+          console.log('\n');
+          throw new Error('process.env decoding failed.');
+        }
+        return validation.right;
+      }
+    );
+    // console.log(appEnv);
+    // override define plugin
+    config.plugins[definePluginIndex] = new DefinePlugin({
+      'process.env': appEnv,
     });
 
     config.plugins = config.plugins.concat(
