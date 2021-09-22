@@ -232,8 +232,8 @@ async function getByAuthor(req) {
                 watchedVideoId: video.videoId,
                 savingTime: video.savingTime,
                 recommendedVideoId: cleanVideoId,
-                recommendedViews: recommended.recome,
-                recommendedTitle: recommended.recommendedTitle,
+                recommendedViews: recommended.recommendedViews,
+                recommendedTitle: recommended.recommendedTitle || recommended.title,
                 recommendedChannel: recommended.recommendedSource,
             }
         });
