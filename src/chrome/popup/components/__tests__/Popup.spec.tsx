@@ -4,7 +4,7 @@ import renderer from 'react-test-renderer';
 import { Popup } from '../popup';
 
 const onMessageListener = jest.fn().mockImplementation((r, s, sendRes) => {
-  sendRes({ active: true })
+  sendRes({ active: true });
   return true;
 });
 

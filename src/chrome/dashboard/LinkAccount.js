@@ -3,17 +3,14 @@ import {
   FormControl,
   Grid,
   Input,
-  Typography
+  Typography,
 } from '@material-ui/core';
 import InputLabel from '@material-ui/core/InputLabel';
 import * as QR from 'avenger/lib/QueryResult';
 import { useQueries } from 'avenger/lib/react';
 import { pipe } from 'fp-ts/lib/function';
 import React from 'react';
-import {
-  deleteCreatorChannel,
-  saveCreatorChannel
-} from './API/commands';
+import { deleteCreatorChannel, saveCreatorChannel } from './API/commands';
 import * as queries from './API/queries';
 import { ErrorBox } from './components/common/ErrorBox';
 import { LazyFullSizeLoader } from './components/common/FullSizeLoader';

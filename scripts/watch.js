@@ -28,11 +28,9 @@ for (const rule of webpackConfig.module.rules) {
   }
 }
 
-webpackConfig.plugins = webpackConfig.plugins.filter(
-  (plugin) =>
-    !(plugin instanceof webpack.HotModuleReplacementPlugin) &&
-    !(plugin instanceof ReactRefreshPlugin)
-);
+// remove HotModuleReplacementPlugin and ReactRefreshPlugin
+webpackConfig.plugins.splice(4, 2);
+// console.log(webpackConfig.plugins);
 
 webpack(webpackConfig).watch({}, (err, stats) => {
   if (err) {

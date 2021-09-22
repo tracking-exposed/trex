@@ -1,5 +1,11 @@
 import { updateSettings } from '@chrome/dashboard/API/commands';
-import { FormHelperText, FormLabel, Typography, Divider, makeStyles } from '@material-ui/core';
+import {
+  FormHelperText,
+  FormLabel,
+  Typography,
+  Divider,
+  makeStyles,
+} from '@material-ui/core';
 import FormControl from '@material-ui/core/FormControl';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Switch from '@material-ui/core/Switch';
@@ -9,9 +15,9 @@ import { AccountSettings } from '../../../models/AccountSettings';
 const useStyles = makeStyles((theme) => ({
   divider: {
     marginTop: theme.spacing(1),
-    marginBottom: theme.spacing(2)
+    marginBottom: theme.spacing(2),
   },
-}))
+}));
 
 interface SettingsProps {
   settings: AccountSettings;

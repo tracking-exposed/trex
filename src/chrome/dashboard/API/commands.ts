@@ -15,21 +15,26 @@ import {
   currentVideoOnEdit,
   currentVideoRecommendations,
   localLookup,
-  recommendations,
+  creatorRecommendations,
+  CREATOR_CHANNEL_KEY,
 } from './queries';
 import { sendMessage } from '../../../providers/browser.provider';
 
 export const setCreatorChannel = command(
-  (channel) => setItem('creator-channel', channel),
+  (channel: string) => setItem(CREATOR_CHANNEL_KEY, channel),
   {
     creatorChannel,
   }
 );
 
 export const saveCreatorChannel = command(
-  (channel: string) => setPersistentItem('creator-channel', channel),
+  (channel: string) =>
+    TE.sequenceSeqArray([
+      setItem(CREATOR_CHANNEL_KEY, channel),
+      setPersistentItem(CREATOR_CHANNEL_KEY, channel),
+    ]),
   {
-    recommendations,
+    creatorRecommendations,
     currentVideoOnEdit,
   }
 );
@@ -37,7 +42,7 @@ export const saveCreatorChannel = command(
 export const deleteCreatorChannel = command(
   () => removePersistenItem('creator-channel'),
   {
-    recommendations,
+    creatorRecommendations,
     currentVideoOnEdit,
   }
 );
@@ -53,7 +58,7 @@ export const addRecommendation = command(
       body: JSON.stringify({ url: r }),
     }),
   {
-    recommendations,
+    creatorRecommendations,
   }
 );
 

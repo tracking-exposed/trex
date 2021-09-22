@@ -76,7 +76,7 @@ module.exports = {
 
     config.entry = {
       main: path.resolve(__dirname, 'src/index.tsx'),
-      app: path.resolve(__dirname, 'src/app.js'),
+      app: path.resolve(__dirname, 'src/app.tsx'),
       popup: path.resolve(__dirname, 'src/chrome/popup/index.tsx'),
       background: path.resolve(__dirname, 'src/chrome/background/index.ts'),
     };
@@ -124,6 +124,7 @@ module.exports = {
         inject: true,
         filename: 'popup.html',
       }),
+      
       new BrowserExtensionPlugin({
         // todo: it fails due to a webpack-inject-plugin-loader error
         autoReload: false,

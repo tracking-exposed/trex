@@ -11,8 +11,12 @@ export const sync = (request: SyncRequest): TE.TaskEither<Error, any> => {
       E.toError
     ),
     TE.fold(
-      (e): TE.TaskEither<Error, any> => () => Promise.resolve(E.right({ type: 'syncError', response: e })),
-      (response): TE.TaskEither<Error, any> => () => Promise.resolve(E.right({ type: 'syncResponse', response }))
+      (e): TE.TaskEither<Error, any> =>
+        () =>
+          Promise.resolve(E.right({ type: 'syncError', response: e })),
+      (response): TE.TaskEither<Error, any> =>
+        () =>
+          Promise.resolve(E.right({ type: 'syncResponse', response }))
     )
   );
 };

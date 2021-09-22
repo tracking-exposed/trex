@@ -57,8 +57,6 @@ export function getLogoDataURI(): Document {
 //   ].join('');
 // }
 
-
-
 export function isEmpty(object: any): boolean {
   return (
     object === null || object === undefined || Object.keys(object).length === 0

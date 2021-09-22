@@ -1,4 +1,3 @@
-
 interface AccountKeys {
   publicKey: string;
   secretKey: string;
@@ -6,7 +5,7 @@ interface AccountKeys {
 
 /**
  * Account Settings
- * 
+ *
  */
 export interface AccountSettings extends AccountKeys {
   active: boolean;

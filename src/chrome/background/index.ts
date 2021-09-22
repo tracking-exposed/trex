@@ -36,12 +36,12 @@ const getMessageHandler = (
   }
 };
 
-bo.runtime.onMessage.addListener(
+bo.runtime.onMessageExternal.addListener(
   (request: MessageRequest, sender, sendResponse) => {
     // eslint-disable-next-line no-console
     console.log('focacci', request, sender);
 
-    if (config.NODE_ENV === "development") {
+    if (config.NODE_ENV === 'development') {
       if (request.type === ReloadExtension.value) {
         development.reloadExtension();
       }

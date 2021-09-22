@@ -1,6 +1,7 @@
-import * as TE from 'fp-ts/lib/TaskEither';
-import * as IOE from 'fp-ts/lib/IOEither';
 import * as E from 'fp-ts/lib/Either';
+import * as IOE from 'fp-ts/lib/IOEither';
+import * as O from 'fp-ts/lib/Option';
+import * as TE from 'fp-ts/lib/TaskEither';
 
 export const setPersistentItem = (
   key: string,
@@ -16,12 +17,12 @@ export const setPersistentItem = (
 
 export const getPersistentItem = (
   key: string
-): TE.TaskEither<Error, string | null> =>
+): TE.TaskEither<Error, string | undefined> =>
   TE.fromIOEither(
     IOE.tryCatch(() => {
       // eslint-disable-next-line no-console
       console.log(`Getting item at key ${key}`);
-      return window.localStorage.getItem(key);
+      return window.localStorage.getItem(key) ?? undefined;
     }, E.toError)
   );
 
@@ -51,7 +52,5 @@ export const setItem = <A>(key: string, value: A): TE.TaskEither<Error, void> =>
     (store as any)[key] = value;
   });
 
-export const getItem = <A>(key: string): TE.TaskEither<Error, A> =>
-  TE.fromIO(() => {
-    return (store as any)[key];
-  });
+export const getItem = <A>(key: string): TE.TaskEither<Error, O.Option<A>> =>
+  TE.right(O.fromNullable((store as any)[key]));

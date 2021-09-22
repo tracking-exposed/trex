@@ -95,7 +95,7 @@ export const Popup = withQueries(({ queries }) => {
                   <FormControlLabel
                     control={
                       <Switch
-                        value={settings.active}
+                        value={settings.active ?? false}
                         size="small"
                         onChange={(e, c) =>
                           updateSettings({ ...settings, active: c })()
