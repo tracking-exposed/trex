@@ -214,16 +214,17 @@ async function getByAuthor(req) {
     debug("getByAuthor returns %d elements from %s",
         _.size(authorStruct.content), authorName);
 
-    const publicFields = ['id', 'title', 'savingTime', 'videoId', 'linkinfo',
-        'viewInfo', 'related', 'authorName', 'authorSource', 'publicationString' ];
+    const units = { total: 0, stripped: 0 }
+    const ready = _.flatten(_.compact(_.map(authorStruct.content, function(video, i) {
+        if(video.related && video.related[0] && video.related[0].title) {
+            units.stripped++;
+            return null;
+        }
+        // ^^^ this because old data with .title haven't the recommendedSource
+        // and client can't do anything. so we'll count the effective values
+        units.total++;
+        video.id = video.id.substr(0, 20);
 
-    const clean = _.map(authorStruct.content, function(e) {
-        // id is anonymized in this way, and is still an useful unique id
-        e.id = e['id'].substr(0, 20);
-        return _.pick(e, publicFields)
-    });
-
-    const final = _.flatten(_.map(clean, function(video, i) {
         return _.map(video.related, function(recommended, n) {
             const cleanVideoId = recommended.videoId.replace(/\&.*/, '');
             return {
@@ -233,22 +234,22 @@ async function getByAuthor(req) {
                 savingTime: video.savingTime,
                 recommendedVideoId: cleanVideoId,
                 recommendedViews: recommended.recommendedViews,
-                recommendedTitle: recommended.recommendedTitle || recommended.title,
+                recommendedTitle: recommended.recommendedTitle,
                 recommendedChannel: recommended.recommendedSource,
             }
         });
-    }));
+    })));
 
     debug("Returning byAuthor (%s) %d video considered, %d recommendations",
-        authorName, _.size(authorStruct.content), _.size(final) );
+        authorName, _.size(authorStruct.content), _.size(ready) );
 
     return { json: {
         authorName,
-        content: final,
         authorSource: authorStruct.authorSource,
         paging: authorStruct.paging,
         overflow: authorStruct.overflow,
-        total: authorStruct.total,
+        ...units,
+        content: ready,
     }};
 };
 
