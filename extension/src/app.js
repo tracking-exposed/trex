@@ -28,36 +28,24 @@
 // Import other utils to handle the DOM and scrape data.
 import $ from 'jquery';
 import _ from 'lodash';
-import moment from 'moment';
 
 import config from './config';
 import hub from './hub';
-import { dom } from './dom';
+import dom from './dom';
 import { registerHandlers } from './handlers/index';
-
-const selectors = {
-    video: '.lazyload-wrapper',
-    suggested: '.user-list',
-}
 
 // bo is the browser object, in chrome is named 'chrome', in firefox is 'browser'
 const bo = chrome || browser;
 
-// variable used to spot differences due to refresh and url change
-let randomUUID = 'INIT' + Math.random().toString(36).substring(2, 13) +
-                Math.random().toString(36).substring(2, 13);
-
 // Boot the user script. This is the first function called.
 // Everything starts from here.
 function boot () {
-    console.log(window.location);
     if (_.endsWith(window.location.origin, 'tiktok.tracking.exposed')) {
         if (_.isUndefined($('#extension--parsable').html())) {
-            return null;
         } else {
             // $(".extension-missing").hide();
-            return null;
         }
+        return;
     } else if (_.endsWith(window.location.origin, 'tiktok.com')) {
         // this get executed only on youtube.com
         console.log(`tktrex ${config}`);
@@ -78,7 +66,7 @@ function boot () {
             config.ux = response.ux;
 
             if(config.active !== true) {
-                console.log("ytTREX disabled!"); // TODO some UX change
+                console.log("TikTokTREX disabled!"); // TODO some UX change
                 return null;
             }
 
@@ -86,38 +74,37 @@ function boot () {
             flush();
         });
     } else if (_.startsWith(window.location.origin, 'localhost')) {
-        console.log('yttrex in localhost: ignored condition');
-        return null;
+        console.log('TikTokTrex in localhost: ignored condition');
     }
 }
+
+const selectors = {
+    video: '.video-feed-item',
+    suggested: 'div.user-list > a.user-item'
+};
 
 function hrefUpdateMonitor() {
     const sugwat = dom.on(selectors.suggested, handleSuggested);
     const vidwat = dom.on(selectors.video, handleVideo);
-    console.log("Listener installed ", JSON.stringify(selectors));
+    console.log("Listener installed ",
+        JSON.stringify(selectors), sugwat, vidwat);
 }
 
 function handleSuggested(elem) {
-    console.log("handleSugg", elem);
+    console.log("handleSugg", elem, "should go to parentNode");
     hub.event('suggested', {
-        element: elem.outerHTML,
+        html: elem.parentNode.outerHTML,
         href: window.location.href,
-        when: Date(),
-        randomUUID,
     });
 }
 
 function handleVideo(elem) {
     console.log("handleVideo", elem);
     hub.event('newVideo', {
-        element: elem.outerHTML,
+        html: elem.outerHTML,
         href: window.location.href,
-        when: Date(),
-        randomUUID,
     });
 }
-
-
 
 // The function `localLookup` communicates with the **action pages**
 // to get information about the current user from the browser storage

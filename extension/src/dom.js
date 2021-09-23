@@ -2,7 +2,7 @@
 //
 // This module takes care of triggering events when the DOM changes.
 
-export function watch(root, selector, callback) {
+function watch(root, selector, callback) {
   // ## `watch(root, selector, callback)`
   //
   // Watch for changes and do something. Since the DOM can be quite big, the
@@ -19,6 +19,7 @@ export function watch(root, selector, callback) {
   // tree. We initialize it with a callback function that takes an array of
   // mutations. Watch out because things are gonna be _nesty_ here (hehe pun
   // intended).
+  debugger;
   const mutationObserver = new MutationObserver(mutations =>
     // Each `mutation` in the `mutations` array contains an...
     mutations.forEach(mutation =>
@@ -41,8 +42,10 @@ export function watch(root, selector, callback) {
   // next event loop.
   setTimeout(() => {
     // Query for all elements and run `callback`.
+    debugger;
     root.querySelectorAll(selector).forEach(callback);
 
+    debugger;
     // Start observing events on `root`, using the configuration specified. For
     // more information about the configuration parameters, check the
     // [MutationObserverInit
@@ -56,11 +59,13 @@ export function watch(root, selector, callback) {
   return mutationObserver;
 }
 
-export function on(selector, callback) {
+function on(selector, callback) {
+  debugger;
   return watch(document, selector, callback);
 }
 
-export function one(selector, callback) {
+function one(selector, callback) {
+  debugger;
   let mutationObserver;
   let once = false;
 
@@ -73,4 +78,10 @@ export function one(selector, callback) {
   };
 
   mutationObserver = on(selector, wrapper);
+}
+
+module.exports = {
+  watch,
+  on,
+  one
 }
