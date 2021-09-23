@@ -18,7 +18,8 @@ bo.runtime.onMessage.addListener((request, sender, sendResponse) => {
         return true;
     }
     if (request.type === 'remoteLookup') {
-        serverLookup(request.payload, sendResponse);
+        getExperiment(request.payload, sendResponse);
+        // this function after callback to serverLookup
         return true;
     }
     if (request.type === 'configUpdate') {
@@ -58,16 +59,49 @@ function userLookup ({ userId }, sendResponse) {
     });
 };
 
-function serverLookup (payload, sendResponse) {
+function getExperiment(payload, sendResponse) {
 
     /* remoteLookup might be call as first function after the extension has been
      * installed, and the keys not be yet instanciated */
+
+    return new Promise((resolve, reject) => {
+
+        const xhttp = new XMLHttpRequest();
+        const experimentPath = bo.extension.getURL('experiment.json');
+        xhttp.open('GET', experimentPath, true);
+
+        xhttp.send();
+        xhttp.onload = function() {
+            try {
+                const data = JSON.parse(xhttp.responseText);
+                console.log(data);
+                payload.experimentId = 
+                    data.experimentId === "DEFAULT_NAME" ? null :
+                    data.experimentId;
+            } catch(errro) {
+                console.log("Error in parsing experiment.json", errro.message);
+            }
+            serverLookup(payload, sendResponse);
+        };
+        xhttp.onerror = function() {
+            // Do whatever you want on error. Don't forget to invoke the
+            // callback to clean up the communication port.
+            console.log(experimentPath, "not found");
+            serverLookup(payload, sendResponse);
+        };
+        return true; // prevents the callback from being called too early on return
+    })
+}
+
+function serverLookup (payload, sendResponse) {
+
     const userId = FIXED_USER_NAME;
     db.get(userId).then(val => {
         if (isEmpty(val)) {
             var val = initializeKey();
             val = setDefaults(val);
-            console.log("serverLookup isn't used since a while and have been trimmed: double check!");
+            // console.log("serverLookup isn't used since a while and have been trimmed: double check!");
+            // thanks past claudio and alberto - everything worked smoothly!
             return db.set(userId, val).then(function() { return val; });
         }
         return val;

@@ -255,6 +255,16 @@ async function legacyGuardoni(req) {
     return { json: retval };
 }
 
+async function opening(req) {
+    throw new Error("Not implement yet");
+}
+
+async function channel3(req) {
+    console.log(req.body);
+    console.log("channel3");
+    return {json: { "channel3": false } };
+}
+
 module.exports = {
     submission,
     csv,
@@ -264,4 +274,7 @@ module.exports = {
     legacyGuardoni,
     guardoniConfigure,
     guardoniGenerate,
+
+    opening,
+    channel3,
 };

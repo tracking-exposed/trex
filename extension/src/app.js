@@ -57,8 +57,7 @@ function boot () {
         }
     } else if (_.endsWith(window.location.origin, 'youtube.com')) {
         // this get executed only on youtube.com
-        console.log(`yttrex version ${config.VERSION}`);
-        console.log(config);
+        console.log(`yttrex version ${JSON.stringify(config)}`);
 
         // Register all the event handlers.
         // An event handler is a piece of code responsible for a specific task.
@@ -79,16 +78,20 @@ function boot () {
                 console.log("ytTREX disabled!"); // TODO some UX change
                 return null;
             }
-
-            initializeBlinks();
-            adMonitor();
-            hrefUpdateMonitor();
-            flush();
+            remoteLookup(ytTrexActions);
         });
     } else if (_.startsWith(window.location.origin, 'localhost')) {
         console.log('yttrex in localhost: ignored condition');
         return null;
     }
+}
+
+function ytTrexActions() {
+    /* these functions are the main activity made in content_script */
+    initializeBlinks();
+    adMonitor();
+    hrefUpdateMonitor();
+    flush();
 }
 
 function phase (path) {
@@ -295,11 +298,8 @@ function remoteLookup (callback) {
     bo.runtime.sendMessage({
         type: 'remoteLookup',
         payload: {
-            // window.location.pathname.split('/')
-            // Array(4) [ "", "d", "1886119869", "Soccer" ]
-            // window.location.pathname.split('/')[2]
-            // "1886119869"
-            testId: window.location.pathname.split('/')[2]
+            config,
+            pathname: window.location.pathname
         }
     }, callback);
 }

@@ -207,6 +207,10 @@ app.post('/api/v3/chiaroscuro', function(req, res) {
 app.get('/api/v3/chiaroscuro/:experimentId/:nickname', function(req, res) {
     return dispatchPromise('chiaroScuroDirective', req, res);
 })
+app.post('/api/v2/handshake', function(req, res) {
+    return dispatchPromise('experimentChannel3', req, res)
+})
+/* ^^^^^^^^^^^^^^^^^^^^^^^^^^ */
 
 /* impact */
 app.get('/api/v2/statistics/:name/:unit/:amount', function(req, res) {
@@ -255,6 +259,10 @@ app.post('/api/v2/campaigns/:key', (req, res) => {
 });
 
 /* guardoni support APIs */
+app.post('/api/v2/experiment/opening', (req, res) => {
+    // this is the fourth way tested to track experiments 
+    return dispatchPromise('experimentOpening', req, res);
+});
 app.post('/api/v2/experiment', (req, res) => {
     return dispatchPromise('experimentSubmission', req, res);
 });
