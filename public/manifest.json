@@ -39,8 +39,8 @@
         "https://youchoose.tracking.exposed/*",
         "https://*.youtube.com/*"
       ],
-      "js": ["./main.js"],
-      "css": ["./css/Trex-Regular.ttf", "./css/font.css", "./css/youchoose-ux.css"]
+      "js": ["main.js"],
+      "css": ["/css/font.css", "/css/youchoose-ux.css"]
     }
   ],
   "web_accessible_resources": ["*.png", "/css/Trex-Regular.tff", "/css/font.css", "/css/youchoose-ux.css"]
