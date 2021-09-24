@@ -262,6 +262,7 @@ async function opening(req) {
 async function channel3(req) {
     console.log(req.body);
     console.log("channel3");
+    return await submission(req);
     return {json: { "channel3": false } };
 }
 

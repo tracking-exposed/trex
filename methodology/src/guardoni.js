@@ -36,12 +36,12 @@ async function keypress() {
 
 async function allowResearcherSomeTimeToSetupTheBrowser() {
   console.log("\n\n.:*~*:._.:*~*:._.:*~*:._.:*~*:._.:*~*:._.:*~*:._.:*~*:._.:*~*:.");
-  console.log("Creating profile", nconf.get('nickname'));
+  console.log("Creating profile", nconf.get('evidencetag'));
   console.log("You should see a chrome browser (with yttrex installed)")
   console.log("\nPLEASE in that window, open youtube.com and accept the cookie processing.");
   console.log("ONLY AFTER, press ANY KEY here. It will start the collection");
-  console.log("\n(without accepting the cookie banner the test will fail and you have to remove the directory with your nickname, to restart.)");
-  console.log("\nnext time you'll use the same nickname, this step would not appear, as long as you keep the directory.");
+  console.log("\n(without accepting the cookie banner the test will fail and you have to remove the directory with your evidencetag, to restart.)");
+  console.log("\nnext time you'll use the same evidencetag, this step would not appear, as long as you keep the directory.");
   console.log('\n~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~');
   await keypress();
 }
@@ -74,17 +74,17 @@ function getChromePath() {
 }
 
 /*
-3. guardoni uses the same experiment API to mark contribution with 'nickname'
+3. guardoni uses the same experiment API to mark contribution with 'evidencetag'
 4. it would then access to the directive API, and by using the experimentId, will then perform the searches as instructed.
 */
 
 async function manageChiaroscuro() {
 
   const csvfile = nconf.get('csv');
-  const nickname = nconf.get('nickname');
+  const evidencetag = nconf.get('evidencetag');
 
-  if(!nickname)
-    return console.log("Error: you need a --nickname to mark you collection");
+  if(!evidencetag)
+    return console.log("Error: you need a --evidencetag to mark you collection");
 
   let records;
   try {
@@ -107,7 +107,7 @@ async function manageChiaroscuro() {
   // implemented in backend/routes/chiaroscuro.js
   const apipayload = {
     parsedCSV: records,
-    nickname
+    evidencetag
   };
 
   let experimentId = null;
@@ -130,20 +130,20 @@ async function manageChiaroscuro() {
 
   debug("Your experimentId is %s", experimentId);
 
-  const direcurl = `${server}/api/v3/chiaroscuro/${experimentId}/${nickname}`;
+  const direcurl = `${server}/api/v3/chiaroscuro/${experimentId}/${evidencetag}`;
   let directives = await pullDirectives(direcurl);
   directives = enhanceDirectives(experimentId, directives);
 
   let profile = nconf.get('profile');
   if(!profile) {
-    profile = nickname ;
-    debug("Executing browser, profile is = to nickname %s", profile);
+    profile = evidencetag ;
+    debug("Executing browser, profile is = to evidencetag %s", profile);
   } else
-    debug("Executing browser for profile %s (nickname %s)", profile, nickname);
+    debug("Executing browser for profile %s (evidencetag %s)", profile, evidencetag);
 
-  await guardoniExecution(experimentId, directives, profile);
+  const browser = await dispatchBrowser(true, profile);
+  await guardoniExecution(experimentId, directives, browser);
 }
-
 
 async function pullDirectives(sourceUrl) {
   let directives = null;
@@ -187,46 +187,125 @@ function enhanceDirectives(experiment, directives, profile) {
   });
 }
 
+
+async function readExperiment(profile) {
+
+  if(!profile)
+    profile = `guardoni-${moment().format("YYYY-MM-DD")}`;
+
+  let experiment = null;
+  const browser = await dispatchBrowser(false, profile);
+
+  try {
+    const page = (await browser.pages())[0];
+    _.tail(await browser.pages()).forEach(async function(opage) {
+      debug("Closing a tab that shouldn't be there!");
+      await opage.close();
+    });
+
+    const introPage = path.join(process.cwd(), 'static', 'index.html');
+    await page.goto(introPage);
+
+    const poller = setInterval(async function() {
+      const inputs = await page.$$eval("input[type=radio]", function(elist) {
+        return elist.map(function(e) {
+          if(e.checked) {
+            return { experiment: e.getAttribute('experimentId') };
+          }
+        })
+      })
+      const selected = _.compact(inputs);
+      if(selected.length) {
+        experiment = selected[0].experiment;
+        await page.$eval("#nextstep", function(e) {
+          e.removeAttribute('disabled');
+        });
+      }
+
+      if(experiment) {
+        page.goto("https://www.youtube.com");
+        clearInterval(poller);
+      }
+
+    }, 1000);
+
+    const seconds = 30;
+    console.log(`You've ${seconds} seconds to select your experiment and save cookies;`)
+    await page.waitForTimeout(1000 * seconds);
+
+    if(!experiment)
+      clearInterval(poller);
+
+    await browser.close();
+
+    if(!experiment) {
+      console.log("Error: you should select something!");
+      process.exit(1);
+    }
+
+    sourceUrl = '/api/v2/directives/' + experiment;
+    return {
+      experiment,
+      sourceUrl,
+    }
+  } catch(error) {
+    debug("Browser et al error: %s", error.message);
+  }
+}
+
 async function main() {
 
-  if(nconf.get('csv') || nconf.get('nickname'))
+  if( nconf.get('shadowban') )
     return await manageChiaroscuro();
 
-  const sourceUrl = nconf.get('source');
-  if(!sourceUrl) {
-    console.log("Mandatory options are --source or | --csv");
-    console.log("for example --source " + COMMANDJSONEXAMPLE);
-    console.log("Via --source you can specify an URL <or> a filepath")
-    console.log(`\nIt should be a valid JSON with objects like: [ {
-      "watchFor": <number in millisec>,
-      "url": "https://youtube.come/watch=v?videoNumber1",
-      "name": "optional, in case you want to see this label, specifiy DEBUG=* as environment var"
-    }, {...}
-]\n\tDocumentation: https://youtube.tracking.exposed/automation`);
-    process.exit(1);
-  }
+  let sourceUrl, profile, directives, experiment = null;
 
-  if(!nconf.get('experiment')) {
-    console.log("--experiment it is now mandatory, you can specify in config file too.");
-    process.exit(1);
-  }
+  experiment = nconf.get('experiment');
+  profile = nconf.get('profile');
+  sourceUrl = nconf.get('source');
 
-  let directives = await pullDirectives(sourceUrl);
-  debug("directives loaded: %j", _.map(directives, 'name'));
-  /* enrich directives with profile and experiment name */
-  const experiment = nconf.get('experiment');
-  directives = enhanceDirectives(experiment, directives);
-
-  const profile = nconf.get('profile');
-  if(!profile) {
+  if(experiment && !profile) {
     console.log("--profile it is necessary and if you don't have one: pick up a name and this tool would assist during the creation");
     process.exit(1)
   }
 
-  await guardoniExecution(experiment, directives, profile);
+  if(experiment && !sourceUrl) {
+    console.log("If you set --experiment");
+    console.log("You might add --source " + COMMANDJSONEXAMPLE);
+    console.log("Via --source you can specify an URL <or> a filepath")
+    console.log("Check on github.com/tracking-exposed/yttrex directive protocol");
+    console.log("This condition causes the usage of directive protocol");
+    sourceUrl = "/api/v3/directives/videos/" + experiment;
+  }
+
+  if(!experiment) {
+    debug("Dispatch browser for local questioning");
+    let restrictedSettings = await readExperiment(profile);
+    // this implicitly has also absolved the delayForSearcher call.
+    debug("experiment read via local page: %j", restrictedSettings);
+    experiment = restrictedSettings.experiment;
+    sourceUrl = restrictedSettings.sourceUrl;
+  }
+
+  debug("Profile %s, experimentId %s pulling directive from %s",
+    profile, experiment, sourceUrl);
+
+  directives = await pullDirectives(sourceUrl);
+  debug("directives loaded: %j", _.map(directives, 'name'));
+  /* enrich directives with profile and experiment name */
+  directives = enhanceDirectives(experiment, directives);
+  /* ^^^^ remove and supply by API ? */
+
+  /* TODO INJECT DIRECTIVES + EXPERIMENT INTO THE EXTENSION */
+  const browser = await dispatchBrowser(experiment, directives, profile);
+  
+  if(browser.newProfile)
+    await allowResearcherSomeTimeToSetupTheBrowser();
+
+  await guardoniExecution(experiment, directives, browser);
 }
 
-async function guardoniExecution(experiment, directives, profile) {
+async function dispatchBrowser(headless, profile) {
 
   const cwd = process.cwd();
   const dist = path.resolve(path.join(cwd, 'extension'));
@@ -238,7 +317,7 @@ async function guardoniExecution(experiment, directives, profile) {
     downloadExtension(tmpzipf);
   }
 
-  let setupDelay = false;
+  let newProfile = false;
   let udd = path.resolve(path.join('profiles', profile));
   if(!fs.existsSync(udd)) {
     console.log("--profile name hasn't an associated directory: " + udd);
@@ -250,7 +329,7 @@ async function guardoniExecution(experiment, directives, profile) {
       udd = profile;
       fs.mkdirSync(udd);
     }
-    setupDelay = true;
+    newProfile = true;
   }
 
   const chromePath = getChromePath();
@@ -259,7 +338,7 @@ async function guardoniExecution(experiment, directives, profile) {
   try {
     puppeteer.use(pluginStealth());
     browser = await puppeteer.launch({
-        headless: false,
+        headless,
         userDataDir: udd,
         executablePath: chromePath,
         args: ["--no-sandbox",
@@ -268,10 +347,21 @@ async function guardoniExecution(experiment, directives, profile) {
           "--disable-extensions-except=" + dist
         ],
     });
-  
-    if(setupDelay)
-      await allowResearcherSomeTimeToSetupTheBrowser();
 
+    // add this boolean to the return value as we need it in a case
+    browser.newProfile = newProfile;
+    return browser;
+
+  } catch(error) {
+    console.log("Error in dispatchBrowser:", error.message);
+    await browser.close();
+    process.exit(1);
+  }
+}
+
+async function guardoniExecution(experiment, directives, browser) {
+
+  try {
     const DS = './domainSpecific';
     let domainSpecific = null;
     try {

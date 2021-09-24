@@ -74,10 +74,10 @@ function getExperiment(payload, sendResponse) {
         xhttp.onload = function() {
             try {
                 const data = JSON.parse(xhttp.responseText);
-                console.log(data);
-                payload.experimentId = 
-                    data.experimentId === "DEFAULT_NAME" ? null :
-                    data.experimentId;
+                payload = {
+                    ...payload,
+                    ...data
+                };
             } catch(errro) {
                 console.log("Error in parsing experiment.json", errro.message);
             }

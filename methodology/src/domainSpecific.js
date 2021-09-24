@@ -131,7 +131,7 @@ async function beforeWait(page, directive) {
 async function afterWait(page, directive) {
     // const innerWidth = await page.evaluate(_ => { return window.innerWidth });
     // const innerHeight = await page.evaluate(_ => { return window.innerHeight });
-    const hasPlayer = false;
+    let hasPlayer = false;
     if(directive.url.match(/\/watch\?v=/)) {
         const state = await getYTstatus(page);
         debug("afterWait status found to be: %s", state.name);
