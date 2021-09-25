@@ -13,6 +13,10 @@ const parse = require('csv-parse/lib/sync');
 
 const COMMANDJSONEXAMPLE = "https://youtube.tracking.exposed/json/automation-example.json";
 const EXTENSION_WITH_OPT_IN_ALREADY_CHECKED='https://github.com/tracking-exposed/yttrex/releases/download/1.4.99/extension.zip';
+const server = nconf.get('backend') ?
+  ( _.endsWith(nconf.get('backend'), '/') ? 
+    nconf.get('backend').replace(/\/$/, '') : nconf.get('backend') ) : 
+  'https://youtube.tracking.exposed';
 
 nconf.argv().env();
 
@@ -101,8 +105,6 @@ async function manageChiaroscuro() {
 
   // TODO validate records
 
-  let server = nconf.get('backend') ? nconf.get('backend') : 'https://youtube.tracking.exposed';
-  if(_.endsWith(server, '/')) server = server.replace(/\/$/, '');
   const registeruri = `${server}/api/v3/chiaroscuro`;
   // implemented in backend/routes/chiaroscuro.js
   const apipayload = {
@@ -193,7 +195,7 @@ async function readExperiment(profile) {
   if(!profile)
     profile = `guardoni-${moment().format("YYYY-MM-DD")}`;
 
-  let experiment = null;
+  let experiment, sourceUrl = null;
   const browser = await dispatchBrowser(false, profile);
 
   try {
@@ -207,13 +209,20 @@ async function readExperiment(profile) {
     await page.goto(introPage);
 
     const poller = setInterval(async function() {
-      const inputs = await page.$$eval("input[type=radio]", function(elist) {
-        return elist.map(function(e) {
-          if(e.checked) {
-            return { experiment: e.getAttribute('experimentId') };
-          }
+      let inputs = [];
+      try {
+        inputs = await page.$$eval("input[type=radio]", function(elist) {
+          return elist.map(function(e) {
+            if(e.checked) {
+              return { experiment: e.getAttribute('experimentId') };
+            }
+          })
         })
-      })
+      } catch(error) {
+        clearInterval(poller);
+        console.log("Failure in interacting with browser, still you've to wait a few seconds. Error message:");
+        console.log("\t" + error.message);
+      }
       const selected = _.compact(inputs);
       if(selected.length) {
         experiment = selected[0].experiment;
@@ -223,14 +232,15 @@ async function readExperiment(profile) {
       }
 
       if(experiment) {
-        page.goto("https://www.youtube.com");
         clearInterval(poller);
+        page.waitForTimeout(900);
+        page.goto("https://www.youtube.com");
       }
 
-    }, 1000);
+    }, 1600);
 
     const seconds = 30;
-    console.log(`You've ${seconds} seconds to select your experiment and save cookies;`)
+    console.log(`You've ${seconds} seconds to select your experiment and accept cookies banner on YouTube!;`)
     await page.waitForTimeout(1000 * seconds);
 
     if(!experiment)
@@ -239,18 +249,31 @@ async function readExperiment(profile) {
     await browser.close();
 
     if(!experiment) {
-      console.log("Error: you should select something!");
+      console.log("Error: you should has select an experiment from the browser!");
       process.exit(1);
     }
 
-    sourceUrl = '/api/v2/directives/' + experiment;
     return {
       experiment,
-      sourceUrl,
+      sourceUrl: buildAPIurl('directives', experiment),
     }
   } catch(error) {
-    debug("Browser et al error: %s", error.message);
+    debug("Browser forcefully closed? %s", error.message);
+    if(experiment)
+      return {
+        experiment,
+        sourceUrl: buildAPIurl('directives', experiment),
+      }
+    else {
+      console.log("Browser closed before experiment was selected: quitting")
+      process.exit(1)
+    }
   }
+}
+
+function buildAPIurl(route, params) {
+  if(route=='directive')
+    return `${server}/api/v3/${route}/${params}/${evidencetag}`;
 }
 
 async function main() {
@@ -265,17 +288,14 @@ async function main() {
   sourceUrl = nconf.get('source');
 
   if(experiment && !profile) {
-    console.log("--profile it is necessary and if you don't have one: pick up a name and this tool would assist during the creation");
+    console.log("--profile it is necessary and if you don't have one: pick up any name and this tool would assist during the creation");
     process.exit(1)
   }
 
   if(experiment && !sourceUrl) {
-    console.log("If you set --experiment");
-    console.log("You might add --source " + COMMANDJSONEXAMPLE);
-    console.log("Via --source you can specify an URL <or> a filepath")
     console.log("Check on github.com/tracking-exposed/yttrex directive protocol");
     console.log("This condition causes the usage of directive protocol");
-    sourceUrl = "/api/v3/directives/videos/" + experiment;
+    sourceUrl = buildAPIurl('directives', experiment);
   }
 
   if(!experiment) {
