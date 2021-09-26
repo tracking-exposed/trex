@@ -82,8 +82,8 @@ const apiList = {
     creatorRegister:     require('../routes/youchoose').creatorRegister,
 
     /* v3 chiaroscuro support */
-    chiaroScuro:         require('../routes/chiaroscuro').chiaroScuro,
-    chiaroScuroDirective:require('../routes/chiaroscuro').guardoniface,
+    postDirective:       require('../routes/directives').post,
+    fetchDirective:      require('../routes/directives').get,
 };
 
 module.exports = {

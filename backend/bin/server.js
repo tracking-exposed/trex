@@ -200,17 +200,17 @@ app.get('/api/v3/creator/register/:channelId', function(req, res) {
     return dispatchPromise('creatorRegister', req, res);
 });
 
-/* tDBDHS */
-app.post('/api/v3/chiaroscuro', function(req, res) {
-    return dispatchPromise('chiaroScuro', req, res);
-})
-app.get('/api/v3/chiaroscuro/:experimentId/:nickname', function(req, res) {
-    return dispatchPromise('chiaroScuroDirective', req, res);
+/* ^^^^^ T t T ^^^^ * T * t * T * t * ^^^^^^^^^ */
+app.post('/api/v3/directives/:directiveType', function(req, res) {
+    return dispatchPromise('postDirective', req, res);
+});
+app.get('/api/v3/directives/:experimentId', function(req, res) {
+    return dispatchPromise('fetchDirective', req, res);
 })
 app.post('/api/v2/handshake', function(req, res) {
     return dispatchPromise('experimentChannel3', req, res)
 })
-/* ^^^^^^^^^^^^^^^^^^^^^^^^^^ */
+/* ^^^^^ T t T ^^^^ * T * t * T * t * ^^^^^^^^^ */
 
 /* impact */
 app.get('/api/v2/statistics/:name/:unit/:amount', function(req, res) {

@@ -866,34 +866,39 @@ async function registerVideos(videol, channelId) {
     // no return value here
 }
 
-async function registerChiaroScuro(objnfo, nickname) {
+async function registerDirective(objnfo, nickname) {
     const experimentId = utils.hash({
-        type: 'chiaroscuro',
-        objnfo
+        type: objnfo.directiveType,
+        urls: objnfo.links, 
     });
     const mongoc = await mongo3.clientConnect({concurrency: 1});
-    const experimentNumbs = await mongo3.count(mongoc,
-        nconf.get('schema').chiaroscuro, {
+    const exist = await mongo3.readOne(mongoc,
+        nconf.get('schema').directives, {
             experimentId
         });
-    await mongo3.writeOne(mongoc, nconf.get('schema').chiaroscuro, {
+
+    if(exist && exist.experimentId) {
+        debug("Directive already found in the DB!")
+        await mongoc.close();
+        return exist.experimentId;
+    }
+
+    /* else, we don't had such data, hence */
+    await mongo3.writeOne(mongoc,
+        nconf.get('schema').directives, {
         when: new Date(),
+        ...objnfo,
         experimentId,
-        nickname,
-        links: objnfo
     })
     await mongoc.close();
-    debug("Registered %j", {experimentId, experimentNumbs});
-    return {
-        experimentId,
-        experimentNumbs
-    }
+    debug("Registered experiment %s", experimentId);
+    return experimentId;
 }
 
-async function pickChiaroscuro(experimentId) {
+async function pickDirective(experimentId) {
     const mongoc = await mongo3.clientConnect({concurrency: 1});
     const rb = await mongo3.readOne(mongoc,
-        nconf.get('schema').chiaroscuro,
+        nconf.get('schema').directives,
         { experimentId},
         { when: -1});
     await mongoc.close();
@@ -962,6 +967,6 @@ module.exports = {
     registerVideos,
 
     /* chiaroscuro */
-    registerChiaroScuro,
-    pickChiaroscuro,
+    registerDirective,
+    pickDirective,
 };

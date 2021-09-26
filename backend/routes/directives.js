@@ -1,19 +1,10 @@
 const _ = require('lodash');
-const debug = require('debug')('routes:chiaroscuro');
+const debug = require('debug')('routes:directives');
 
 const automo = require('../lib/automo');
 const utils = require('../lib/utils');
 
-async function chiaroScuro(req) {
-  const parsedCSV = _.get(req.body, 'parsedCSV', []);
-  const nickname = _.get(req.body, 'nickname', "");
-
-  if(_.size(nickname) < 2 ) {
-    console.log(!parsedCSV.length, !nickname.length);
-    debug("Invalid nickname%j", req.body);
-    return { json: { error: true, message: 'Nickname should be at lest 2 chars' }};
-  }
-
+function validateChiaroscuro(parsedCSV) {
   if(_.filter(parsedCSV, function(validityCheck) {
     return (!_.startsWith(validityCheck.videoURL, "http") || 
        !validityCheck.videoURL.match(/watch/) ||
@@ -23,34 +14,59 @@ async function chiaroScuro(req) {
     debug("Invalid parsedCSV content %j", parsedCSV);
     return { json: { error: true, message: 'videoURL and title validation error' }};
   }
+}
 
-  debug("Registering chiaroScuro for %s", nickname);
-  const { experimentId, experimentNumbs } = await automo
-    .registerChiaroScuro(parsedCSV, nickname);
+function validateComparison(parsedCSV) {
+  debug("Let's say it is ok");
+}
 
-  return { json: {
-    experimentId,
-    experimentNumbs
-  }};
+async function post(req) {
+  const directiveType = _.get(req.params, 'directiveType', "");
+  const directiveTypes = [
+    "chiaroscuro", "comparison"
+  ];
+
+  if(directiveTypes.indexOf(directiveType) === -1) {
+    debug("Invalid directive type (%s), supported %j)",
+      directiveType, directiveTypes);
+    return { json: { error: true, message: "Invalid directive type"}};
+  }
+
+  const parsedCSV = _.get(req.body, 'parsedCSV', []);
+  const evidencetag = _.get(req.body, 'evidencetag', null);
+
+  if(directiveType === directiveTypes[0])
+    validateChiaroscuro(parsedCSV);
+  if(directiveType === directiveTypes[1])
+    validateComparison(parsedCSV);
+
+
+  debug("Registering directive %s for %s (%d urls)",
+    directiveType, evidencetag, _.size(parsedCSV));
+
+  const experimentId  = await automo
+    .registerDirective(parsedCSV, evidencetag);
+
+  return { json: { experimentId }};
 };
 
-async function guardoniface(req) {
+async function get(req) {
   const experimentId = req.params.experimentId;
-  const nickname = req.params.nickname;
 
-  debug("guardoniface should return directives for %s", experimentId);
-  const videosinfo = await automo.pickChiaroscuro(experimentId);
+  debug("GET: should return directives for %s", experimentId);
+  const videosinfo = await automo.pickDirective(experimentId);
   // regardless of the amont of experiment, it return videoinfos
 
+  throw new Error("not yet implemented here");
   const directives = _.flatten(_.map(videosinfo.links, function(vidblock, counter) {
-    return reproducibleConversion(nickname, vidblock, experimentId, counter);
+    return chiaroScuroReproducibleTypo(evidencetag, vidblock, experimentId, counter);
   } ));
 
   debug("returning %d", directives.length);
   return { json: directives };
 }
 
-function reproducibleTypo(title) {
+function chiaroScuroReproducibleTypo(title) {
   let trimmedT = title.replace(/.$/, '').replace(/^./, '');
   return trimmedT
   const stats = _.countBy(_.flatten(_.chunk(trimmedT)));
@@ -67,7 +83,7 @@ function reproducibleTypo(title) {
   return chunks.join(injection);
 }
 
-function reproducibleConversion(nickname, videoinfo, experimentId, counter) {
+function reproducibleConversion(evidencetag, videoinfo, experimentId, counter) {
   // this produces three conversion of the video under test
   // and it guarantee the conversion is reproducible
 
@@ -96,7 +112,7 @@ function reproducibleConversion(nickname, videoinfo, experimentId, counter) {
       loadFor: "11s",
       name: mutationStr,
       targetVideoId: videoId,
-      description: nickname + counter + mutation
+      description: evidencetag + counter + mutation
     }
 
   });
@@ -104,7 +120,7 @@ function reproducibleConversion(nickname, videoinfo, experimentId, counter) {
 }
 
 module.exports = {
-  chiaroScuro,
-  guardoniface,
-  reproducibleConversion,
+  chiaroScuroReproducibleTypo,
+  post,
+  get,
 };

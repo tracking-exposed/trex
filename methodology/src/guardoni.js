@@ -120,7 +120,7 @@ async function registerCSV(evidencetag, directiveType) {
   }
 
   const registeruri = buildAPIurl('directives', directiveType);
-  // implemented in backend/routes/chiaroscuro.js
+  // implemented in backend/routes/directives.js
   const apipayload = {
     parsedCSV: records,
     evidencetag
@@ -141,7 +141,7 @@ async function registerCSV(evidencetag, directiveType) {
       return console.log("Error received from the server: ", experimentInfo.message);
     experimentId = experimentInfo.experimentId;
   } catch(error) {
-    return console.log("Failure in talking with API: ", error.message);
+    return console.log("Failure in talking with API:", error.message);
   }
 
   debug("This generated experimentId is %s", experimentId);

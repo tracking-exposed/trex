@@ -43,6 +43,10 @@ ret = db.recommendations.createIndex({ when: -1 }); checkret('recommendations wh
 ret = db.ytvids.createIndex({ videoId: -1}, { unique: true}); checkret('ytvids videoId', ret);
 ret = db.ytvids.createIndex({ creatorId: -1}); checkret('ytvids creatorId', ret);
 
+ret = db.directives.createIndex({ experimentId: -1}, {unique: true}); checkret('directives experimentId', ret);
+
+ret = db.experiments.createIndex({ experimentId: -1}); checkret('experiments experimentId', ret);
+
 function checkret(info, retval) {
     retval.info = info;
     printjson(retval);
