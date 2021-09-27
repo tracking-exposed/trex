@@ -6,9 +6,20 @@ import CardMedia from '@material-ui/core/CardMedia';
 import Typography from '@material-ui/core/Typography';
 import React from 'react';
 
-const getYTThumbnailById = (id) => `https://i.ytimg.com/vi/${id}/hqdefault.jpg`;
+const getYTThumbnailById = (id: string): string =>
+  `https://i.ytimg.com/vi/${id}/hqdefault.jpg`;
 
-export const VideoCard = ({ videoId, title, onClick }) => {
+interface VideoCardProps {
+  videoId: string;
+  title: string;
+  onClick?: (id: string) => void;
+}
+
+export const VideoCard: React.FC<VideoCardProps> = ({
+  videoId,
+  title,
+  onClick,
+}) => {
   return (
     <Card
       style={{
@@ -51,7 +62,7 @@ export const VideoCard = ({ videoId, title, onClick }) => {
           </a>
         </CardContent>
         <CardActions>
-          {onClick ? (
+          {onClick !== undefined ? (
             <Button
               variant="contained"
               color="primary"

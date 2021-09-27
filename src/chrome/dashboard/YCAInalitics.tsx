@@ -23,7 +23,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function YCAInalitics() {
+export const YCAInalitics: React.FC = () =>  {
   const classes = useStyles();
   return (
     <Grid container alignItems="center">

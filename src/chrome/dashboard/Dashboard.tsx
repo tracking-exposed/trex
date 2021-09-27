@@ -7,10 +7,10 @@ import React from 'react';
 import Advanced from './Advanced';
 import { TabPanel } from '../../components/TabPanel';
 import { LinkAccount } from './LinkAccount';
-import RecommendationsPanel from './RecommendationsPanel';
-import YCAInalitics from './YCAInalitics';
+import { ManageVideosPanel } from './ManageVideosPanel';
+import { YCAInalitics } from './YCAInalitics';
 
-function a11yProps(index) {
+function a11yProps(index: number): { [key: string]: string } {
   return {
     id: `simple-tab-${index}`,
     'aria-controls': `simple-tabpanel-${index}`,
@@ -24,11 +24,11 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function Dashboard() {
+export const Dashboard: React.FC = () => {
   const classes = useStyles();
   const [value, setValue] = React.useState(0);
 
-  const handleChange = (event, newValue) => {
+  const handleChange = (event: any, newValue: number): void => {
     setValue(newValue);
   };
 
@@ -53,7 +53,7 @@ export default function Dashboard() {
             <LinkAccount />
           </TabPanel>
           <TabPanel value={value} index={1}>
-            <RecommendationsPanel />
+            <ManageVideosPanel />
           </TabPanel>
           <TabPanel value={value} index={2}>
             <YCAInalitics />
@@ -65,4 +65,4 @@ export default function Dashboard() {
       </Grid>
     </div>
   );
-}
+};

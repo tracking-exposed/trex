@@ -1,3 +1,5 @@
+import { Video } from "./Video";
+
 interface AccountKeys {
   publicKey: string;
   secretKey: string;
@@ -18,7 +20,5 @@ export interface AccountSettings extends AccountKeys {
   playhide: boolean;
   alphabeth: boolean;
   ux: boolean;
-  edit: {
-    currentVideoId: string | undefined
-  }
+  edit: Video | null
 }

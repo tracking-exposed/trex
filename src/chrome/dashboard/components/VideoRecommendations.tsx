@@ -9,7 +9,7 @@ import * as queries from '../API/queries';
 import { ErrorBox } from './common/ErrorBox';
 import { LazyFullSizeLoader } from './common/FullSizeLoader';
 
-export const VideoRecommendations = () => {
+export const VideoRecommendations: React.FC = () => {
   return pipe(
     useQueries({
       settings: queries.accountSettings,
@@ -35,14 +35,11 @@ export const VideoRecommendations = () => {
                   onDelete={() =>
                     updateRecommendationForVideo(
                       {
-                        videoId: settings.edit.currentVideoId,
+                        videoId: settings.edit?.videoId,
                         creatorId: settings.channelCreatorId,
                         recommendations: videoRecommendations
                           .map((r) => r.urlId)
                           .filter((rr) => rr !== r.urlId),
-                      },
-                      {
-                        currentVideoOnEdit: undefined,
                       }
                     )()
                   }

@@ -10,7 +10,7 @@ const backend = bo.storage.local;
 const backendGet = (
   keys: string | string[]
 ): TE.TaskEither<chrome.runtime.LastError, Record<string, any>> => {
-  console.log(`Getting ${keys.toString()} from local storage`);
+  // console.log(`Getting ${keys.toString()} from local storage`);
   return pipe(
     TE.tryCatch(() => {
       return new Promise<Record<string, any>>((resolve) => {
@@ -26,7 +26,7 @@ const backendSet = <A>(
   key: string,
   value: A
 ): TE.TaskEither<chrome.runtime.LastError, void> => {
-  console.log(`Save ${JSON.stringify(value)} as ${key}`);
+  // console.log(`Save ${JSON.stringify(value)} as ${key}`);
   return pipe(
     TE.fromIO<undefined, chrome.runtime.LastError>(() =>
       (backend as any).set({ [key]: value })
@@ -51,7 +51,7 @@ function get<A>(
   return pipe(
     backendGet([key]),
     TE.map((val) => {
-      console.log(`Got value from ${key}`, val);
+      // console.log(`Got value from ${key}`, val);
       return val;
     }),
     TE.map((val) => (val?.[key] !== undefined ? val[key] : val))
@@ -83,10 +83,7 @@ function set<A>(
   // eslint-disable-next-line no-console
   return pipe(
     backendSet(key, value),
-    TE.map(() => {
-      console.log('after set');
-      return value;
-    })
+    TE.map(() => value)
   );
   // return new Promise((resolve, reject) => {
   //   const newVal = {};

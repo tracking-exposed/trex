@@ -34,9 +34,7 @@ const getDefaultSettings = (): AccountSettings => ({
   alphabeth: false,
   stats: false,
   channelCreatorId: 'default',
-  edit: {
-    currentVideoId: undefined
-  },
+  edit: null,
   ...initializeKey(),
 });
 
@@ -88,7 +86,7 @@ export function serverLookup<A>(
   );
 }
 
-export function configUpdate<A extends object>(
+export function update<A extends object>(
   payload: A
 ): TE.TaskEither<chrome.runtime.LastError, A> {
   const userId = DEFAULT_USER_NAME;
