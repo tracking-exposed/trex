@@ -7,10 +7,13 @@ const security = require('../lib/security');
 
 async function getMonitor(req) {
 
+    if(!security.checkPassword(req))
+        throw new Error("Invalid Key")
+
     const MINUTES = 5;
     const timeBehind = moment().subtract(MINUTES, 'minutes').toISOString();
-    security.checkPassword(req);
-    const amount = 30;
+    const amount = 60;
+
     /* debug("getMonitor request: contents since %d minutes ago: %s (max %d)",
         minutesAgo, timeBehind, amount); */
 
