@@ -61,14 +61,10 @@ async function ogpProxy(req) {
 async function videoByCreator(req) {
   // this function should validate req.params.authMaterial
   let creator = {};
-  if(!req.params.publicKey || !req.params.publicKey.length) {
-    debug("Warning: hardcoding 'uno' because the params wasn't supply!");
-    creator.id = 'uno';
-  }
-  else
-    creator.id = req.params.publicKey;
+  creator.id = req.params.publicKey;
+  // at the moment the publicKey is the channelId
 
-  debug("Querying youtube-based-list via profile %s", creator.id);
+  debug("Querying DB.ytvids for profile [%s]", creator.id);
   const MAXVIDOEL = 100;
   const videos = await automo
     .getVideoFromYTprofiles(creator, MAXVIDOEL);
@@ -82,7 +78,9 @@ async function videoByCreator(req) {
     return v;
   })
 
-  debug("requested Video List by content creator, returning mockup")
+  debug("Requested Video List by content creator (%s) returning %d",
+    creator.id, ready.length);
+
   return { json: ready };
 }
 
@@ -129,7 +127,8 @@ async function creatorRegister(req) {
   if(!titlesandId) {
     debug("Failure in extracting video details from channel %s", channelId);
     return { json: { error: true, message: "Failure in extracting info from YouTube; investigate"}}
-  }
+  } else
+    debug("Success in fetching initial video list via curly! %d", titlesandId.length);
 
   await automo.registerVideos(titlesandId, channelId);
   return { json: titlesandId };

@@ -256,7 +256,7 @@ async function channel3(req) {
         evidencetag: _.get(req.body, 'evidencetag'),
         execount: _.get(req.body, 'execount'),
         newProfile: _.get(req.body, 'newProfile'),
-        when: new Date(_.get(req.body, 'when')),
+        testTime: new Date(_.get(req.body, 'when')),
         directiveType: _.get(req.body, 'directiveType'),
     }
     debug("3rd—experiment-comm-channel %j", experimentInfo);

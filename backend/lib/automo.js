@@ -813,6 +813,7 @@ async function getRecommendationByURL(url) {
 }
 
 async function getVideoFromYTprofiles(creator, limit) {
+    // TODO in the future the creator would be a post auth object
     const mongoc = await mongo3.clientConnect({concurrency: 1});
     const res = await mongo3
         .readLimit(mongoc, nconf.get('schema').ytvids, {
@@ -856,7 +857,8 @@ async function registerVideos(videol, channelId) {
             creatorId: channelId,
             when: new Date(),
         };
-    })
+    });
+    debug("Adding %d videos to recorded YCAI available videos", objl.length);
     const mongoc = await mongo3.clientConnect({concurrency: 1});
     for (ytv of objl) {
         try {
