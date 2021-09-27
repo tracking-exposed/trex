@@ -1,6 +1,7 @@
 const _ = require('lodash');
 const debug = require('debug')('lib:curly');
 const { curly } = require('node-libcurl');
+const fs = require('fs');
 
 async function experimentalFetch(channelId) {
   // Questa funzione potrebbe essere instabile
@@ -17,7 +18,8 @@ async function experimentalFetch(channelId) {
 
   debug("CURL from youtube %d", statusCode);
   const dumblist = data.split('ytInitialData = ');
-  const largestr = dumblist[1].replace(/}};<\/script>.*/g, '}}');
+  const largestr = dumblist[1].replace(/[\n\t\r]/g,"").replace(/}};<.script.*/g, '}}');
+  debug("stripped %d ", largestr.length - dumblist[1].length)
   let blob = null;
   try {
     blob = JSON.parse(largestr);
@@ -31,6 +33,9 @@ async function experimentalFetch(channelId) {
       _.size(largestr), _.size(dumblist),
       _.map(dumblist, _.size)
     );
+    const logf = "tmp-log-" + _.random(0, 0xfffff) + ".json";
+    dumblist.push(largestr);
+    fs.writeFileSync(logf, JSON.stringify(dumblist, null, 2), 'utf-8');
     return null;
   }
   const videob = _.filter(blob.contents.twoColumnBrowseResultsRenderer.tabs,
