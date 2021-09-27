@@ -11,18 +11,7 @@ const CSV = require('../lib/CSV');
 
 async function submission(req) {
     /* this function is invoked by guardoni at the end */
-    const experiment = {
-        name: req.body.experimentName,
-        profile: req.body.profile,
-        info: req.body.videos,
-        sessionCounter: req.body.sessionCounter,
-        publicKey: req.body.publicKey,
-        testTime: new Date(req.body.when)
-    };
-    debug("savingExperiment (session %d, videos %d) %s on %s",
-        experiment.sessionCounter, experiment.info.length,
-        experiment.profile, experiment.name);
-    const retval = await automo.saveExperiment(experiment);
+    throw new Error("DISCONTINUED!")
     return { json: retval };
 };
 
@@ -260,10 +249,19 @@ async function opening(req) {
 }
 
 async function channel3(req) {
-    console.log(req.body);
-    console.log("channel3");
-    return await submission(req);
-    return {json: { "channel3": false } };
+    const experimentInfo = {
+        publicKey: _.get(req.body, 'config.publicKey'),
+        href: _.get(req.body, 'href'),
+        experimentId: _.get(req.body, 'experimentId'),
+        evidencetag: _.get(req.body, 'evidencetag'),
+        execount: _.get(req.body, 'execount'),
+        newProfile: _.get(req.body, 'newProfile'),
+        when: new Date(_.get(req.body, 'when')),
+        directiveType: _.get(req.body, 'directiveType'),
+    }
+    debug("3rd—experiment-comm-channel %j", experimentInfo);
+    const retval = await automo.saveExperiment(experimentInfo);
+    return {json: retval };
 }
 
 module.exports = {

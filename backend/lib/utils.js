@@ -12,7 +12,11 @@ var hash = function(obj, fields) {
     if(_.isUndefined(fields))
         fields = _.keys(obj);
     var plaincnt = fields.reduce(function(memo, fname) {
-        return memo += fname + "∴" + _.get(obj, fname, '…miss!') + ",";
+        return memo +=
+            fname +
+            "∴" +
+            JSON.stringify(_.get(obj, fname, '…miss!')) +
+            ",";
     }, "");
     // debug("Hashing of %s", plaincnt);
     sha1sum = crypto.createHash('sha1');

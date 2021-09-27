@@ -31,12 +31,19 @@ function dispatchPromise(name, req, res) {
 
     const func = _.get(APIs.implementations, name, null);
     if(_.isNull(func)) {
-        debug("Invalid function request %s", name);
+        debug("Unexistend function requested %s", name);
         res.status(404);
         res.send("function not found");
         return false;
     }
     return new Promise.resolve(func(req)).then(function(httpresult) {
+
+        if(!httpresult) {
+            debug("Undetermined failure in API call, result →  %j", httpresult);
+            res.status(502);
+            res.send("Error?");
+            return false;
+        }
 
         if(_.isObject(httpresult.headers))
             _.each(httpresult.headers, function(value, key) {

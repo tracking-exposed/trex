@@ -4,20 +4,23 @@ const debug = require('debug')('routes:directives');
 const automo = require('../lib/automo');
 const utils = require('../lib/utils');
 
-function validateChiaroscuro(parsedCSV) {
+function acquireChiaroscuro(parsedCSV) {
   if(_.filter(parsedCSV, function(validityCheck) {
     return (!_.startsWith(validityCheck.videoURL, "http") || 
        !validityCheck.videoURL.match(/watch/) ||
        validityCheck.title.length < 5
     )
-  }).length) {
-    debug("Invalid parsedCSV content %j", parsedCSV);
-    return { json: { error: true, message: 'videoURL and title validation error' }};
-  }
+  }).length)
+    throw new Error("Invalid parsedCSV content");
+
+  return parsedCSV;
 }
 
-function validateComparison(parsedCSV) {
-  debug("Let's say it is ok");
+function acquireComparison(parsedCSV) {
+  return _.map(parsedCSV, function(o) { 
+    o.watchFor = timeconv(o.watchFor, 20123);
+    return o;
+  });
 }
 
 async function post(req) {
@@ -34,18 +37,18 @@ async function post(req) {
 
   const parsedCSV = _.get(req.body, 'parsedCSV', []);
   const evidencetag = _.get(req.body, 'evidencetag', null);
+  let links = [];
 
   if(directiveType === directiveTypes[0])
-    validateChiaroscuro(parsedCSV);
+    links = acquireChiaroscuro(parsedCSV);
   if(directiveType === directiveTypes[1])
-    validateComparison(parsedCSV);
-
+    links = acquireComparison(parsedCSV);
 
   debug("Registering directive %s for %s (%d urls)",
-    directiveType, evidencetag, _.size(parsedCSV));
+    directiveType, evidencetag, _.size(links));
 
   const experimentId  = await automo
-    .registerDirective(parsedCSV, evidencetag);
+    .registerDirective(links, directiveType);
 
   return { json: { experimentId }};
 };
@@ -54,19 +57,23 @@ async function get(req) {
   const experimentId = req.params.experimentId;
 
   debug("GET: should return directives for %s", experimentId);
-  const videosinfo = await automo.pickDirective(experimentId);
-  // regardless of the amont of experiment, it return videoinfos
+  const expinfo = await automo.pickDirective(experimentId);
 
-  throw new Error("not yet implemented here");
-  const directives = _.flatten(_.map(videosinfo.links, function(vidblock, counter) {
-    return chiaroScuroReproducibleTypo(evidencetag, vidblock, experimentId, counter);
-  } ));
-
-  debug("returning %d", directives.length);
-  return { json: directives };
+  if(expinfo.directiveType === 'chiaroscuro') {
+    const directives = _.flatten(_.map(expinfo.links, function(vidblock, counter) {
+      return chiaroScuro(vidblock, experimentId, counter);
+    } ));
+    debug("ChiaroScuro %s produced %d", experimentId, directives.length);
+    return { json: directives };
+  } else {
+    // expinfo.directiveType === 'comparison'
+    const directives = _.map(expinfo.links, standardDirectives);
+    debug("Comparison %s produced %d", experimentId, directives.length);
+    return { json: directives };
+  }
 }
 
-function chiaroScuroReproducibleTypo(title) {
+function reproducibleTypo(title) {
   let trimmedT = title.replace(/.$/, '').replace(/^./, '');
   return trimmedT
   const stats = _.countBy(_.flatten(_.chunk(trimmedT)));
@@ -83,7 +90,32 @@ function chiaroScuroReproducibleTypo(title) {
   return chunks.join(injection);
 }
 
-function reproducibleConversion(evidencetag, videoinfo, experimentId, counter) {
+function timeconv(maybestr, defaultMs) {
+  if(_.isInteger(maybestr) && maybestr > 100) {
+    /* it is already ms */
+    return maybestr;
+  } else if(_.isInteger(maybestr) && maybestr < 100) {
+    /* throw an error as it is unclear if you forgot the unit */
+    throw new Error("Did you forget unit? " + maybestr + " milliseconds is too little!");
+  } else if(_.isString(maybestr) && _.endsWith(maybestr, 's')) {
+    return _.parseInt(maybestr) * 1000;
+  } else if(_.isString(maybestr) && _.endsWith(maybestr, 'm')) {
+    return _.parseInt(maybestr) * 1000 * 60;
+  } else if(_.isString(maybestr) && maybestr == 'end') {
+    return 'end';
+  } else {
+    return null;
+  }
+}
+
+function standardDirectives(videoinfo, counter) {
+  return {
+    ...videoinfo, // watchTime, urltag, url
+    loadFor: 4000,
+  };
+}
+
+function chiaroScuro(videoinfo, counter) {
   // this produces three conversion of the video under test
   // and it guarantee the conversion is reproducible
 
@@ -109,10 +141,9 @@ function reproducibleConversion(evidencetag, videoinfo, experimentId, counter) {
 
     return {
       url: squri,
-      loadFor: "11s",
-      name: mutationStr,
+      loadFor: 11000,
+      name: `${mutationStr}-video-${counter}`,
       targetVideoId: videoId,
-      description: evidencetag + counter + mutation
     }
 
   });
@@ -120,7 +151,7 @@ function reproducibleConversion(evidencetag, videoinfo, experimentId, counter) {
 }
 
 module.exports = {
-  chiaroScuroReproducibleTypo,
+  chiaroScuro,
   post,
   get,
 };

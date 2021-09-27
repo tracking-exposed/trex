@@ -536,8 +536,12 @@ async function getGuardoni(guardobj) {
     return result;
 }
 
+async function deleteLeftovers(mongoc, publicKey) {
+    
+}
+
 async function saveExperiment(expobj) {
-    debug(expobj);
+    /* a given public Key can have only one experiment per time */
     const mongoc = await mongo3.clientConnect({concurrency: 1});
     const result = await mongo3
         .writeOne(mongoc, nconf.get('schema').experiments, expobj);
@@ -866,10 +870,10 @@ async function registerVideos(videol, channelId) {
     // no return value here
 }
 
-async function registerDirective(objnfo, nickname) {
+async function registerDirective(links, directiveType) {
     const experimentId = utils.hash({
-        type: objnfo.directiveType,
-        urls: objnfo.links, 
+        type: directiveType,
+        links, 
     });
     const mongoc = await mongo3.clientConnect({concurrency: 1});
     const exist = await mongo3.readOne(mongoc,
@@ -887,7 +891,8 @@ async function registerDirective(objnfo, nickname) {
     await mongo3.writeOne(mongoc,
         nconf.get('schema').directives, {
         when: new Date(),
-        ...objnfo,
+        directiveType,
+        links,
         experimentId,
     })
     await mongoc.close();

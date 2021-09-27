@@ -47,7 +47,7 @@ async function allowResearcherSomeTimeToSetupTheBrowser() {
   console.log("\nPLEASE in that window, open youtube.com and accept the cookie processing.");
   console.log("ONLY AFTER, press ANY KEY here. It will start the collection");
   console.log("\n(without accepting the cookie banner the test will fail and you have to remove the directory with your evidencetag, to restart.)");
-  console.log("\nnext time you'll use the same evidencetag, this step would not appear, as long as you keep the directory.");
+  console.log("\nnext time you'll use the same profile, this step would not appear, as long as you keep the directory.");
   console.log('\n~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~');
   await keypress();
 }
@@ -116,7 +116,8 @@ async function registerCSV(evidencetag, directiveType) {
     console.log("You can find examples on https://youtube.tracking.exposed/guardoni");
     process.exit(1);
   } else {
-    debug("CSV validated as %s", directiveType)
+    debug("CSV validated in [%s] format specifications",
+      directiveType);
   }
 
   const registeruri = buildAPIurl('directives', directiveType);
@@ -136,7 +137,7 @@ async function registerCSV(evidencetag, directiveType) {
       }
     });
     const experimentInfo = await commit.json(); 
-    debug("Experiment registered successful: %j", experimentInfo.directiveType, experimentInfo);
+    debug("Experiment fetched from server: %s", experimentInfo.experimentId);
     if(experimentInfo.error)
       return console.log("Error received from the server: ", experimentInfo.message);
     experimentId = experimentInfo.experimentId;
@@ -144,7 +145,6 @@ async function registerCSV(evidencetag, directiveType) {
     return console.log("Failure in talking with API:", error.message);
   }
 
-  debug("This generated experimentId is %s", experimentId);
   return experimentId;
 }
 
@@ -152,9 +152,9 @@ async function manageChiaroscuro(evidencetag, directiveType, profinfo) {
   const browser = await dispatchBrowser(true, profinfo);
   const experimentId = await registerCSV(evidencetag, directiveType);
 
-  const direcurl = `${server}/api/v3/chiaroscuro/${experimentId}/${evidencetag}`;
-  let directives = await pullDirectives(direcurl);
-  directives = enhanceDirectives(experimentId, directives);
+  const direurl = buildAPIurl('directives', experimentId);
+  const directives = await pullDirectives(direurl);
+  await writeExperimentInfo(experimentId, profinfo, evidencetag, directiveType);
 
   await guardoniExecution(experimentId, directives, browser);
 }
@@ -170,6 +170,7 @@ async function pullDirectives(sourceUrl) {
       }
       directives = await response.json();
     } else {
+      throw new Error("A local file isn't supported anymore");
       directives = JSON.parse(fs.readFileSync(sourceUrl, 'utf-8'));
     }
     if(!directives.length) {
@@ -185,30 +186,13 @@ async function pullDirectives(sourceUrl) {
   }
 }
 
-function enhanceDirectives(experiment, directives, profile) {
-  return  _.map(directives, function(d) {
-    const watchForSwp = d.watchFor;
-    const loadForSwp = d.loadFor;
-
-    d.loadFor = timeconv(loadForSwp, 3000);
-    d.watchFor = timeconv(watchForSwp, 20000);
-    /* debug("Time converstion results: loadFor %s watchFor %s", d.loadFor, d.watchFor); */
-
-    d.profile = profile;
-    if(experiment)
-      d.experiment = experiment;
-    return d;
-  });
-}
-
-
 async function readExperiment(profinfo) {
 
-  let experiment, sourceUrl = null;
+  let page, experiment = null;
   const browser = await dispatchBrowser(false, profinfo);
 
   try {
-    const page = (await browser.pages())[0];
+    page = (await browser.pages())[0];
     _.tail(await browser.pages()).forEach(async function(opage) {
       debug("Closing a tab that shouldn't be there!");
       await opage.close();
@@ -216,56 +200,6 @@ async function readExperiment(profinfo) {
 
     const introPage = path.join(process.cwd(), 'static', 'index.html');
     await page.goto(introPage);
-
-    const poller = setInterval(async function() {
-      let inputs = [];
-      try {
-        inputs = await page.$$eval("input[type=radio]", function(elist) {
-          return elist.map(function(e) {
-            if(e.checked) {
-              return { experiment: e.getAttribute('experimentId') };
-            }
-          })
-        })
-      } catch(error) {
-        clearInterval(poller);
-        console.log("Failure in interacting with browser, still you've to wait a few seconds. Error message:");
-        console.log("\t" + error.message);
-      }
-      const selected = _.compact(inputs);
-      if(selected.length) {
-        experiment = selected[0].experiment;
-        await page.$eval("#nextstep", function(e) {
-          e.removeAttribute('disabled');
-        });
-      }
-
-      if(experiment) {
-        clearInterval(poller);
-        page.waitForTimeout(900);
-        page.goto("https://www.youtube.com");
-      }
-
-    }, 1600);
-
-    const seconds = 30;
-    console.log(`You've ${seconds} seconds to select your experiment and accept cookies banner on YouTube!;`)
-    await page.waitForTimeout(1000 * seconds);
-
-    if(!experiment)
-      clearInterval(poller);
-
-    await browser.close();
-
-    if(!experiment) {
-      console.log("Error: you should has select an experiment from the browser!");
-      process.exit(1);
-    }
-
-    return {
-      experiment,
-      sourceUrl: buildAPIurl('directives', experiment),
-    }
   } catch(error) {
     debug("Browser forcefully closed? %s", error.message);
     if(experiment)
@@ -278,13 +212,70 @@ async function readExperiment(profinfo) {
       process.exit(1)
     }
   }
+
+  const poller = setInterval(async function() {
+    let inputs = [];
+    try {
+      inputs = await page.$$eval("input[type=radio]", function(elist) {
+        return elist.map(function(e) {
+          if(e.checked) {
+            return { experiment: e.getAttribute('experimentId') };
+          }
+        })
+      })
+    } catch(error) {
+      clearInterval(poller);
+      console.log("Failure in interacting with browser, still you've to wait a few seconds. Error message:");
+      console.log("\t" + error.message);
+    }
+
+    const selected = _.compact(inputs);
+    if(selected.length) {
+      experiment = selected[0].experiment;
+      await page.$eval("#nextstep", function(e) {
+        e.removeAttribute('disabled');
+      });
+    }
+
+    if(experiment) {
+      clearInterval(poller);
+      page.waitForTimeout(900);
+      page.goto("https://www.youtube.com");
+    }
+
+  }, 1600);
+
+  const seconds = 30;
+  console.log(`You've ${seconds} seconds to select your experiment and accept cookies banner on YouTube!;`)
+
+  try {
+    await page.waitForTimeout(1000 * seconds);
+    if(!experiment)
+      clearInterval(poller);
+    await browser.close();
+  } catch(error) {
+    console.log("Error in browser/page control:", error.message);
+    process.exit(1);
+  }
+
+  if(!experiment) {
+    console.log("Error: you should has select an experiment from the browser!");
+    process.exit(1);
+  }
+
+  return {
+    experiment,
+    sourceUrl: buildAPIurl('directives', experiment),
+  }
 }
 
 function buildAPIurl(route, params) {
   if(route === 'directives' && ["chiaroscuro", "comparison"].indexOf(params) !== -1)
     return `${server}/api/v3/${route}/${params}`;
-  else
-    throw new Error("Unrecognized route");
+  else {
+    debug("route %s params %s", route, params);
+    return `${server}/api/v3/${route}/${params}`;
+  }
 }
 
 function profileExecount(profile, evidencetag) {
@@ -352,6 +343,7 @@ async function main() {
   const comparison = nconf.get('comparison');
   const directiveType = !!shadowban ? "chiaroscuro" : "comparison";
 
+  debug("Operating as per directive type %s", directiveType);
   if(directiveType == 'chiaroscuro')
     return await manageChiaroscuro(evidencetag, profinfo);
 
@@ -363,14 +355,14 @@ async function main() {
   experiment = nconf.get('experiment');
   sourceUrl = nconf.get('csv');
 
-  if(experiment && !sourceUrl) {
-    console.log("Resolving experiment directives with github.com/tracking-exposed/yttrex directive protocol");
-    sourceUrl = buildAPIurl('directives', experiment);
-  }
-
   if(sourceUrl && experiment) {
     console.log("Error: when registering a CSV, you can't specify the --experiment");
     process.exit(1);
+  }
+
+  if(experiment && !sourceUrl) {
+    console.log("Resolving experiment directives with github.com/tracking-exposed/yttrex directive protocol");
+    sourceUrl = buildAPIurl('directives', experiment);
   }
 
   if(!experiment && !sourceUrl) {
@@ -388,21 +380,34 @@ async function main() {
     experiment = await registerCSV(evidencetag, directiveType) 
   }
 
-  debug("Profile %s, experimentId %s pulling directive from %s",
-    profile, experiment, sourceUrl);
+  debug("Profile %s, experiment %s pulling directive from server %s",
+    profile, experiment, server);
 
-  directives = await pullDirectives(sourceUrl);
-  debug("directives loaded: %j", _.map(directives, 'name'));
-  /* enrich directives with profile and experiment name */
-  directives = enhanceDirectives(experiment, directives);
-  /* ^^^^ remove and supply by API ? */
+  const direurl = buildAPIurl('directives', experiment)
+  directives = await pullDirectives(direurl);
+  debug("loaded %d directives", directives.length);
 
-  const browser = await dispatchBrowser(experiment, directives, profinfo);
+  await writeExperimentInfo(experiment, profinfo, evidencetag, directiveType);
+
+  const browser = await dispatchBrowser(false, profinfo);
 
   if(browser.newProfile)
     await allowResearcherSomeTimeToSetupTheBrowser();
 
   await guardoniExecution(experiment, directives, browser);
+}
+
+async function writeExperimentInfo(experimentId, profinfo, evidencetag, directiveType) {
+  debug("Writing experiment Info into extension/experiment.json");
+  const cfgfile = path.join('extension', 'experiment.json');
+  fs.writeFileSync(cfgfile, JSON.stringify({
+    experimentId,
+    evidencetag,
+    directiveType,
+    execount: profinfo.execount,
+    newProfile: profinfo.newProfile,
+    when: new Date()
+  }), 'utf-8');
 }
 
 async function dispatchBrowser(headless, profinfo) {
@@ -422,6 +427,7 @@ async function dispatchBrowser(headless, profinfo) {
   const execount = profinfo.execount;
   const chromePath = getChromePath();
 
+  debug("Dispatching a browser in a profile usage count %d", execount);
   let browser = null;
   try {
     puppeteer.use(pluginStealth());
@@ -467,7 +473,7 @@ async function guardoniExecution(experiment, directives, browser) {
       debug("Closing a tab that shouldn't be there!");
       await opage.close();
     })
-    await domainSpecific.beforeDirectives(page, experiment, profile, directives);
+    await domainSpecific.beforeDirectives(page);
     // the BS above should close existing open tabs except 1st
     await operateBroweser(page, directives, domainSpecific);
     console.log("Operations completed: check results at https://youtube.tracking.exposed/experiment/#" + experiment);
@@ -480,24 +486,6 @@ async function guardoniExecution(experiment, directives, browser) {
   process.exit(0);
 }
 
-function timeconv(maybestr, defaultMs) {
-  if(_.isInteger(maybestr) && maybestr > 100) {
-    /* it is already ms */
-    return maybestr;
-  } else if(_.isInteger(maybestr) && maybestr < 100) {
-    /* throw an error as it is unclear if you forgot the unit */
-    throw new Error("Did you forget unit? " + maybestr + " milliseconds is too little!");
-  } else if(_.isString(maybestr) && _.endsWith(maybestr, 's')) {
-    return _.parseInt(maybestr) * 1000;
-  } else if(_.isString(maybestr) && _.endsWith(maybestr, 'm')) {
-    return _.parseInt(maybestr) * 1000 * 60;
-  } else if(_.isString(maybestr) && maybestr == 'end') {
-    return 'end';
-  } else {
-    return null;
-  }
-}
-
 async function operateTab(page, directive, domainSpecific, timeout) {
 
   // TODO the 'timeout' would allow to repeat this operation with
@@ -505,7 +493,7 @@ async function operateTab(page, directive, domainSpecific, timeout) {
   await page.goto(directive.url, { 
     waitUntil: "networkidle0",
   });
-  debug("— Loading %s (for %dms)", directive.name, directive.loadFor);
+  debug("— Loading %s (for %dms)", directive.urltag, directive.loadFor);
   try {
     await domainSpecific.beforeWait(page, directive);
   } catch(error) {
@@ -518,22 +506,28 @@ async function operateTab(page, directive, domainSpecific, timeout) {
   } catch(error) {
     console.log("Error in afterWait", error.message, error.stack);
   }
-  debug("— Completed %s", directive.name);
+  debug("— Completed %s", directive.urltag);
 }
 
 async function operateBroweser(page, directives, domainSpecific) {
   // await page.setViewport({width: 1024, height: 768});
   for (directive of directives) {
-    if(nconf.get('exclude') && directive.name == nconf.get('exclude')) {
-      console.log("excluded!", directive.name);
+    if(nconf.get('exclude') && directive.urltag == nconf.get('exclude')) {
+      console.log("excluded!", directive.urltag);
     } else {
       try {
         await operateTab(page, directive, domainSpecific);
       } catch(error) {
-        debug("operateTab in %s — error: %s", directive.name, error.message);
+        debug("operateTab in %s — error: %s", directive.urltag, error.message);
       }
     }
   }
 }
 
 main ();
+
+
+/* cose mosse da domainspecific che vanno in giro:
+ - il salvataggio della chiave pubblica va via estensione
+ - la comunicazione all'API experiments viene fatta dall'estensione
+ */

@@ -3,123 +3,29 @@ const moment = require('moment');
 const debug = require('debug')('guardoni:youtube');
 const bcons = require('debug')('guardoni:console');
 const bconsError = require('debug')('guardoni:error');
+const keyprint = require('debug')('guardoni:key');
 const path = require('path');
-const fs = require('fs');
-const nconf = require('nconf');
-const fetch = require('node-fetch');
-
-
-async function markingExperiment(experimentName, profile, directives) {
-    /* in sequence:
-    - build the URL to record the experiment 
-    - create a profile log and an experiment log 
-    - update profile log if exists 
-    - send a mixture of the information to the server */
-  let server = nconf.get('backend') ? nconf.get('backend') : 'https://youtube.tracking.exposed';
-  if(_.endsWith(server, '/')) server = server.replace(/\/$/, '');
-  const uri = `${server}/api/v2/experiment`;
-  const profilefile = path.join("executions", profile + ".json");
-  let sessionCounter = 0;
-  try {
-    const profinfo = JSON.parse(fs.readFileSync(profilefile, 'utf-8'));
-    sessionCounter = profinfo.counter +=1;
-    profinfo.usages.push(new Date());
-    debug("Found profile log %s, this is sessionCounter %d", profilefile, sessionCounter)
-    fs.writeFileSync(profilefile, JSON.stringify(profinfo), {
-      flag: 'w+', encoding: 'utf-8'
-    });
-  } catch(error) {
-    debug("Catch error %s, creation of new profile log (%s)",
-      error.message, profilefile);
-    const profinfo = {
-      usages: [ new Date() ],
-      counter: 1
-    }
-    fs.writeFileSync(profilefile, JSON.stringify(profinfo), {
-      flag: 'w+', encoding: 'utf-8'
-    });
-    sessionCounter = 1;
-  }
-  try {
-    const keylog = path.join("experiments", [experimentName, profile].join('-') + ".json");
-    const explog = JSON.parse(fs.readFileSync(keylog, 'utf-8'))
-    const payload = _.reduce(directives, function(memo, d) {
-      memo.videos.push(_.pick(d, ['url', 'name', 'watchFor']));
-      return memo;
-    }, {
-      sessionCounter,
-      experimentName,
-      profile,
-      videos: [],
-      publicKey: explog.publicKey,
-      when: explog.when
-    });
-    debug("ready to push %s %s", uri, payload);
-    const commit = await fetch(uri, {
-      method: 'POST',
-      body: JSON.stringify(payload),
-      headers: {
-        "Content-Type": "application/json; charset=UTF-8"
-      }
-    });
-    const result = await commit.json();
-    if(!result.ok) 
-      debug("Server error? %s", JSON.stringify(result, undefined, 2));
-  } catch(error) {
-      console.log("Errro", error.message);
-  }
-}
-
-async function savekey(message, experimentName, directives, profile) {
-    const keylog = path.join("experiments", [ experimentName, profile ].join("-") + ".json");
-    let parsedcnsl = null;
-    try {
-        parsedcnsl = JSON.parse(message.text().replace(/\n/g, '').replace(/.*{/, '{').replace(/}.*/, '}') );
-        debug("savelog %s %s", parsedcnsl, experimentName);
-    } catch(error) {
-        // if this error happens it is because the regexp is failing in cleaning the input 
-        // from browser extension and therefore JSON parsing fails. the Text expected is:
-        // message.text()
-        // "app.js gets {\n  \"active\": true,\n  \"publicKey\": \"6gVBjX7CrA7jTCxowexugCKQtt7\",\n  \"secretKey\": \"3KZhpyV6qECzaeTDJKdJCzmT21GSFFBThsvh3V6ZLAs\",\n  \"ux\": false\n} from localLookup"
-        console.log("ERROR!", error);
-        console.log(message.text());
-        process.exit(1);
-    }
-    const payload = {
-        directives,
-        profile,
-        publicKey: parsedcnsl.publicKey,
-        day: moment().format("DD MMMM YYYY"),
-        when: moment().toISOString(),
-    }
-    fs.writeFileSync(keylog, JSON.stringify(payload), {
-        encoding: "utf-8", flag: "w+" });
-    console.log("saved publicKey in ", keylog);
-}
 
 let sentOnce = false;
-async function lookForPubkey(experimentName, profile, directives, message) {
+function lookForPubkey(message) {
     /* only the first time the key is seen, the full experiment plan is sent */
     if(sentOnce)
         return;
     if(message.text().match(/publicKey/)) {
-        await savekey(message, experimentName, directives, profile);
-        await markingExperiment(experimentName, profile, directives);
+        const parsedcnsl = JSON.parse(message.text().replace(/\n/g, '').replace(/.*{/, '{').replace(/}.*/, '}') );
+        const publicKey = parsedcnsl.publicKey;
+        keyprint("Publickey: %s", publicKey);
         sentOnce = true;
     }
 };
 
-async function beforeDirectives(page, experiment, profile, directives) {
-    if(experiment)
-        page.on('console', await _.partial(lookForPubkey, experiment, profile, directives));
-    else
-        page.on('console', function(message) { bcons("%s", message.text())});
-
+async function beforeDirectives(page) {
+    page.on('console', lookForPubkey);
     page
         .on('pageerror', ({ message }) =>
-            bconsError('Error %s', message) )
+            bconsError('Error %s', message) ) /*
         .on('response', response =>
-            bcons(`Response: ${response.status()} ${response.url()}`))
+            bcons(`Response: ${response.status()} ${response.url()}`)) */
         .on('requestfailed', request =>
             bconsError(`Requestfail: ${request.failure().errorText} ${request.url()}`));
 }
@@ -211,7 +117,7 @@ async function interactWithYT(page, directive, wantedState) {
         "end": directive.watchFor;
     // here is managed the special condition directive.watchFor == "end"
     if(specialwatch == "end") {
-        debug("This video would be watched till the end");
+        console.log("This video would be watched till the end!");
         for(checktime of _.times(DEFAULT_MAX_TIME / PERIODIC_CHECK_ms)) {
             await page.waitForTimeout(PERIODIC_CHECK_ms);
             let newst = await getYTstatus(page);
@@ -220,17 +126,17 @@ async function interactWithYT(page, directive, wantedState) {
                 debug("Check n# %d — Forcing to start? (should not be necessary!)", checktime);
                 await newst.player.press("Space");
             } else if(newst.name == "ended" || newst.name == "paused") {
-                console.log("Video status [%s] at check n#%d — closing loop", newst.name, checktime);
+                debug("Video status [%s] at check n#%d — closing loop", newst.name, checktime);
                 break;
             } else if(newst.name != "playing")
-                debug("While video gets reprooduced (#%d check) the state is [%s]", newst.name);
+                debug("While video gets reproduced (#%d check) the state is [%s]", checktime, newst.name);
         }
     } else if(_.isInteger(specialwatch)) {
-        console.log("watching video for the specified time of:", specialwatch, "milliseconds")
+        console.log("Watching video for the specified time of:", specialwatch, "milliseconds")
         await page.waitForTimeout(specialwatch);
-        console.log("finished special watchining time of:", specialwatch, "milliseconds");
+        debug("Finished special watchining time of:", specialwatch, "milliseconds");
     } else {
-        console.log("Error: waitFor is not 'end' and it is not a number", specialwatch);
+        console.log("Error: invalid waitFor value [%s]", directive.watchFor);
         process.exit(1);
     }
 }
