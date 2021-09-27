@@ -299,7 +299,7 @@ function remoteLookup (callback) {
         type: 'remoteLookup',
         payload: {
             config,
-            pathname: window.location.pathname
+            href: window.location.href,
         }
     }, callback);
 }
