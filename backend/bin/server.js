@@ -50,7 +50,10 @@ function dispatchPromise(name, req, res) {
                 res.setHeader(key, value);
             });
 
-        if(httpresult.json) {
+        if(httpresult.status) {
+            res.status(httpresult.status);
+            res.send();
+        } else if(httpresult.json) {
             debug("%s API success, returning JSON (%d bytes)",
                 name, _.size(JSON.stringify(httpresult.json)) );
             res.setHeader('Access-Control-Allow-Origin', '*');

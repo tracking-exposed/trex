@@ -8,7 +8,7 @@ const security = require('../lib/security');
 async function getMonitor(req) {
 
     if(!security.checkPassword(req))
-        throw new Error("Invalid Key")
+        return { status: 403 };
 
     const MINUTES = 5;
     const timeBehind = moment().subtract(MINUTES, 'minutes').toISOString();
