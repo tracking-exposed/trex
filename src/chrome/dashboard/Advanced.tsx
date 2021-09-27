@@ -1,7 +1,7 @@
 import React from 'react';
 
 class Advanced extends React.Component {
-  render() {
+  render(): JSX.Element {
     return (
       <div>
         <h3>

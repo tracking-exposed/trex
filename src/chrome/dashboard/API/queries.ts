@@ -4,6 +4,8 @@ import { pipe } from 'fp-ts/lib/function';
 import * as TE from 'fp-ts/lib/TaskEither';
 import { AccountSettings } from 'models/AccountSettings';
 import { LocalLookup } from 'models/MessageRequest';
+import { Video } from '../../../models/Video';
+import { Recommendation } from '../../../models/Recommendation';
 import { catchRuntimeLastError } from '../../../providers/browser.provider';
 import { bo } from '../../../utils/browser.utils';
 import { fetchTE } from './HTTPAPI';
@@ -23,10 +25,6 @@ export const accountSettings = queryStrict(() => {
         }),
       E.toError
     ),
-    TE.map((result) => {
-      console.log(result);
-      return result;
-    }),
     TE.chain(catchRuntimeLastError)
   );
 }, available);
@@ -35,7 +33,7 @@ export const creatorRecommendations = compose(
   product({ accountSettings, params: param() }),
   queryStrict(
     ({ accountSettings, params }) =>
-      fetchTE(
+      fetchTE<Recommendation[]>(
         `/v3/creator/recommendations/${accountSettings.publicKey}`,
         params
       ),
@@ -45,9 +43,9 @@ export const creatorRecommendations = compose(
 
 export const creatorVideos = compose(
   accountSettings,
-  queryStrict((settings) => {
+  queryStrict((settings): TE.TaskEither<Error, Video[]> => {
     if (settings.channelCreatorId !== undefined) {
-      return fetchTE(`/v1/creator/videos/${settings.channelCreatorId}`);
+      return fetchTE(`/v3/creator/videos/${settings.channelCreatorId}`);
     }
     return TE.right([]);
   }, available)
@@ -58,7 +56,7 @@ export const recommendedChannels = compose(
   queryStrict(({ accountSettings, params }) => {
     if (accountSettings.channelCreatorId !== undefined) {
       return fetchTE(
-        `/v1/profile/recommendations/${accountSettings.channelCreatorId}`,
+        `/v3/profile/recommendations/${accountSettings.channelCreatorId}`,
         params
       );
     }
@@ -68,11 +66,9 @@ export const recommendedChannels = compose(
 
 export const currentVideoRecommendations = compose(
   accountSettings,
-  queryStrict((settings) => {
-    if (settings?.edit.currentVideoId !== undefined) {
-      return fetchTE(
-        `/v1/video/${settings.edit.currentVideoId}/recommendations`
-      );
+  queryStrict((settings): TE.TaskEither<Error, Recommendation[]> => {
+    if (settings?.edit?.videoId !== undefined) {
+      return fetchTE(`/v3/video/${settings.edit.videoId}/recommendations`);
     }
     return TE.right([]);
   }, available)

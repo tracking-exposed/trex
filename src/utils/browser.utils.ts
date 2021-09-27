@@ -1,10 +1,13 @@
+import { config } from "config";
 
 const getBO = (): typeof chrome => {
+  if (config.NODE_ENV === 'development') {
+    // eslint-disable-next-line @typescript-eslint/no-var-requires
+  }
+
   if (typeof browser !== 'undefined') {
-    console.log('browser available', browser);
     return browser;
   }
-  console.log('chrome available', chrome);
   return chrome;
 };
 

@@ -13,10 +13,7 @@
     "sourceType": "module",
     "project": ["./tsconfig.paths.json"]
   },
-  "plugins": [
-    "@typescript-eslint",
-    "react"
-  ],
+  "plugins": ["@typescript-eslint", "react"],
   "env": {
     "es6": true,
     "node": true,
@@ -43,6 +40,7 @@
     "@typescript-eslint/no-use-before-define": ["error"],
     "@typescript-eslint/return-await": ["off"],
     "@typescript-eslint/promise-function-async": ["off"],
-    "@typescript-eslint/no-redeclare": ["off"]
+    "@typescript-eslint/no-redeclare": ["off"],
+    "@typescript-eslint/restrict-plus-operands": ["off"]
   }
 }

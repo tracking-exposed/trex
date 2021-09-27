@@ -1,21 +1,32 @@
-// import db from '@chrome/db';
 import { command } from 'avenger';
 import { pipe } from 'fp-ts/lib/function';
 import { AccountSettings } from 'models/AccountSettings';
 import { ConfigUpdate } from 'models/MessageRequest';
 import { sendMessage } from '../../../providers/browser.provider';
 import { fetchTE } from './HTTPAPI';
-import { accountSettings, creatorRecommendations } from './queries';
+import * as TE from 'fp-ts/lib/TaskEither';
+import {
+  accountSettings,
+  creatorRecommendations,
+  creatorVideos,
+} from './queries';
+
+export const registerCreatorChannel = command(
+  (channelId: string) => fetchTE(`/v3/creator/register/${channelId}`),
+  {
+    creatorVideos,
+  }
+);
 
 export const addRecommendation = command(
-  (r) =>
-    fetchTE(`/creator/ogp`, {
+  ({ url }: { url: string }) =>
+    fetchTE(`/v3/creator/ogp`, {
       // TODO this api need also to be signed/authenticated
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ url: r }),
+      body: JSON.stringify({ url }),
     }),
   {
     creatorRecommendations,
@@ -25,7 +36,7 @@ export const addRecommendation = command(
 export const updateRecommendationForVideo = command(
   ({ videoId, creatorId, recommendations }) => {
     return pipe(
-      fetchTE(`/creator/updateVideo`, {
+      fetchTE(`/v3/creator/updateVideo`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -35,7 +46,24 @@ export const updateRecommendationForVideo = command(
           videoId,
           recommendations,
         }),
-      })
+      }),
+      TE.chain(() =>
+        pipe(
+          accountSettings.run(),
+          TE.chain((settings) =>
+            sendMessage({
+              type: ConfigUpdate.value,
+              payload: {
+                ...settings,
+                edit: {
+                  ...settings.edit,
+                  recommendations
+                },
+              },
+            })
+          )
+        )
+      )
     );
   },
   {
@@ -44,7 +72,8 @@ export const updateRecommendationForVideo = command(
 );
 
 export const updateSettings = command(
-  (payload: AccountSettings) =>
-    sendMessage({ type: ConfigUpdate.value, payload: payload }),
-  { accountSettings }
+  (payload: AccountSettings) => {
+    return sendMessage({ type: ConfigUpdate.value, payload: payload });
+  },
+  { accountSettings, creatorRecommendations, creatorVideos }
 );

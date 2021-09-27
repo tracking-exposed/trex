@@ -28,7 +28,7 @@ const getMessageHandler = (
     case RecommendationsFetch.value:
       return accounts.serverLookup(r.payload);
     case ConfigUpdate.value:
-      return accounts.configUpdate(r.payload);
+      return accounts.update(r.payload);
     case Sync.value:
       return sync.sync(r);
     default:

@@ -58,8 +58,7 @@ exports[`Dashboard Should mount the dashboard 1`] = `
               Link your account
             </span>
             <span
-              className="PrivateTabIndicator-root-2 PrivateTabIndicator-colorSecondary-4 MuiTabs-indicator"
-              style={Object {}}
+              className="MuiTouchRipple-root"
             />
           </button>
           <button
@@ -89,6 +88,9 @@ exports[`Dashboard Should mount the dashboard 1`] = `
             >
               Manage recommendations
             </span>
+            <span
+              className="MuiTouchRipple-root"
+            />
           </button>
           <button
             aria-controls="simple-tabpanel-2"
@@ -117,6 +119,9 @@ exports[`Dashboard Should mount the dashboard 1`] = `
             >
               Collaborative Analytics
             </span>
+            <span
+              className="MuiTouchRipple-root"
+            />
           </button>
           <button
             aria-controls="simple-tabpanel-3"
@@ -145,8 +150,20 @@ exports[`Dashboard Should mount the dashboard 1`] = `
             >
               Advanced Settings
             </span>
+            <span
+              className="MuiTouchRipple-root"
+            />
           </button>
         </div>
+        <span
+          className="PrivateTabIndicator-root-2 PrivateTabIndicator-colorSecondary-4 MuiTabs-indicator"
+          style={
+            Object {
+              "left": 0,
+              "width": 0,
+            }
+          }
+        />
       </div>
     </div>
   </header>
