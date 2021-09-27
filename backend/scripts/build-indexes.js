@@ -46,6 +46,8 @@ ret = db.ytvids.createIndex({ creatorId: -1}); checkret('ytvids creatorId', ret)
 ret = db.directives.createIndex({ experimentId: -1}, {unique: true}); checkret('directives experimentId', ret);
 
 ret = db.experiments.createIndex({ experimentId: -1}); checkret('experiments experimentId', ret);
+ret = db.experiments.createIndex({ publicKey: -1}); checkret('experiments publicKey', ret);
+ret = db.experiments.createIndex({ testTime: -1}, { expireAfterSeconds: 18 * 3600 }); checkret('experiments savingTime 18 hours TTL', ret);
 
 function checkret(info, retval) {
     retval.info = info;
