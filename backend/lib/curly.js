@@ -51,8 +51,8 @@ async function experimentalFetch(channelId) {
   });
 
   if(!videob.length) {
-    debug("Not found the expected piece in channel %s", channelId);
-    // uncomment the debug above, perhaps is a language?
+    debug("Not found the expected HTML/JSON in channel %s", channelId);
+    // note on the debug above — perhaps it is the language?
     return null;
   }
 

@@ -1,6 +1,6 @@
 {
   "name": "yttrex",
-  "version": "1.5.0",
+  "version": "1.6.2",
   "description": "yttrex is the extension + backend for youtube algorithm analysis. This is part of the https://tracking.exposed umbrella project",
   "homepage": "https://youtube.tracking.exposed",
   "bugs": "https://github.com/tracking-exposed/yttrex/issues",
@@ -12,9 +12,9 @@
   },
   "scripts": {
     "lint": "eslint ./ --quiet",
-    "build": "rm -rf ./build && mkdir build && cross-env webpack && cp -r src/popup/* manifest.json icons/* ./build/",
+    "build": "rm -rf ./build && mkdir build && cross-env webpack && cp -r public/* ./build/",
     "start": "npm run build:watch:files",
-    "build:watch": "rimraf ./build && mkdir build && cp -r manifest.json icons/* src/popup/* ./build/ && cross-env webpack -w",
+    "build:watch": "rimraf ./build && mkdir build && cp -r public/* ./build/ && cross-env webpack -w",
     "build:dist": "sh pack-extension.sh",
     "clean": "rm -rf ./build ./dist",
     "test": "mocha --compilers js:babel-register --reporter spec",

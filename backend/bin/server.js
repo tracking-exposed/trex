@@ -31,12 +31,19 @@ function dispatchPromise(name, req, res) {
 
     const func = _.get(APIs.implementations, name, null);
     if(_.isNull(func)) {
-        debug("Invalid function request %s", name);
+        debug("Unexistend function requested %s", name);
         res.status(404);
         res.send("function not found");
         return false;
     }
     return new Promise.resolve(func(req)).then(function(httpresult) {
+
+        if(!httpresult) {
+            debug("Undetermined failure in API call, result →  %j", httpresult);
+            res.status(502);
+            res.send("Error?");
+            return false;
+        }
 
         if(_.isObject(httpresult.headers))
             _.each(httpresult.headers, function(value, key) {
@@ -200,13 +207,17 @@ app.get('/api/v3/creator/register/:channelId', function(req, res) {
     return dispatchPromise('creatorRegister', req, res);
 });
 
-/* tDBDHS */
-app.post('/api/v3/chiaroscuro', function(req, res) {
-    return dispatchPromise('chiaroScuro', req, res);
+/* ^^^^^ T t T ^^^^ * T * t * T * t * ^^^^^^^^^ */
+app.post('/api/v3/directives/:directiveType', function(req, res) {
+    return dispatchPromise('postDirective', req, res);
+});
+app.get('/api/v3/directives/:experimentId', function(req, res) {
+    return dispatchPromise('fetchDirective', req, res);
 })
-app.get('/api/v3/chiaroscuro/:experimentId/:nickname', function(req, res) {
-    return dispatchPromise('chiaroScuroDirective', req, res);
+app.post('/api/v2/handshake', function(req, res) {
+    return dispatchPromise('experimentChannel3', req, res)
 })
+/* ^^^^^ T t T ^^^^ * T * t * T * t * ^^^^^^^^^ */
 
 /* impact */
 app.get('/api/v2/statistics/:name/:unit/:amount', function(req, res) {
@@ -255,6 +266,10 @@ app.post('/api/v2/campaigns/:key', (req, res) => {
 });
 
 /* guardoni support APIs */
+app.post('/api/v2/experiment/opening', (req, res) => {
+    // this is the fourth way tested to track experiments 
+    return dispatchPromise('experimentOpening', req, res);
+});
 app.post('/api/v2/experiment', (req, res) => {
     return dispatchPromise('experimentSubmission', req, res);
 });
