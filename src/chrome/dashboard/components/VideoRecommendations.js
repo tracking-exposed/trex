@@ -12,10 +12,10 @@ import { LazyFullSizeLoader } from './common/FullSizeLoader';
 export const VideoRecommendations = () => {
   return pipe(
     useQueries({
-      video: queries.currentVideoOnEdit,
+      settings: queries.accountSettings,
       videoRecommendations: queries.currentVideoRecommendations,
     }),
-    QR.fold(LazyFullSizeLoader, ErrorBox, ({ video, videoRecommendations }) => {
+    QR.fold(LazyFullSizeLoader, ErrorBox, ({ settings, videoRecommendations }) => {
       return (
         <Box>
           <Typography variant="h5">Recommendations</Typography>
@@ -35,8 +35,8 @@ export const VideoRecommendations = () => {
                   onDelete={() =>
                     updateRecommendationForVideo(
                       {
-                        videoId: video.videoId,
-                        creatorId: video.creatorId,
+                        videoId: settings.edit.currentVideoId,
+                        creatorId: settings.channelCreatorId,
                         recommendations: videoRecommendations
                           .map((r) => r.urlId)
                           .filter((rr) => rr !== r.urlId),

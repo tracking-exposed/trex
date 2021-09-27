@@ -1,5 +1,5 @@
 import { updateSettings } from '@chrome/dashboard/API/commands';
-import { localLookup } from '@chrome/dashboard/API/queries';
+import { accountSettings } from '@chrome/dashboard/API/queries';
 import { ErrorBox } from '@chrome/dashboard/components/common/ErrorBox';
 import {
   Button,
@@ -57,7 +57,7 @@ const PopupLoader: React.FC = () => {
   );
 };
 
-const withQueries = declareQueries({ settings: localLookup });
+const withQueries = declareQueries({ settings: accountSettings });
 
 export const Popup = withQueries(({ queries }) => {
   const classes = useStyles();
@@ -91,7 +91,7 @@ export const Popup = withQueries(({ queries }) => {
                     <img className={classes.img} src="/ycai-logo.png" />
                   </a>
                 </Grid>
-                <Grid item sm={4} xs={4} justifyContent="center">
+                <Grid item sm={4} xs={4}>
                   <FormControlLabel
                     control={
                       <Switch

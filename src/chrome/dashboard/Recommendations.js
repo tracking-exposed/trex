@@ -4,7 +4,7 @@ import { declareQueries } from 'avenger/lib/react';
 import { pipe } from 'fp-ts/lib/function';
 import React from 'react';
 import { updateRecommendationForVideo } from './API/commands';
-import { currentVideoOnEdit, creatorRecommendations } from './API/queries';
+import { accountSettings, creatorRecommendations } from './API/queries';
 import { ErrorBox } from './components/common/ErrorBox';
 import { LazyFullSizeLoader } from './components/common/FullSizeLoader';
 import UrlCard from './UrlCard';
@@ -15,7 +15,7 @@ const styles = {
 
 const RecommendationCards = declareQueries({
   recommendations: creatorRecommendations,
-  currentVideoOnEdit,
+  settings: accountSettings,
 })(({ queries }) => {
   return (
     <div>
@@ -27,7 +27,7 @@ const RecommendationCards = declareQueries({
         QR.fold(
           LazyFullSizeLoader,
           ErrorBox,
-          ({ recommendations, currentVideoOnEdit: video }) => {
+          ({ recommendations, settings: { edit: video } }) => {
             if (recommendations.length === 0) {
               return (
                 <div style={styles}>

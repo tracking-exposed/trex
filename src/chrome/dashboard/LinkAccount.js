@@ -10,7 +10,7 @@ import * as QR from 'avenger/lib/QueryResult';
 import { useQueries } from 'avenger/lib/react';
 import { pipe } from 'fp-ts/lib/function';
 import React from 'react';
-import { deleteCreatorChannel, saveCreatorChannel } from './API/commands';
+import { updateSettings } from './API/commands';
 import * as queries from './API/queries';
 import { ErrorBox } from './components/common/ErrorBox';
 import { LazyFullSizeLoader } from './components/common/FullSizeLoader';
@@ -28,37 +28,46 @@ export const LinkAccount = () => {
     setChannel(channelValue || '');
   };
 
-  const onSubmit = (e) => {
-    // this handle the pressing of "Enter" key
-    if (e.keyCode === 13) {
-      saveCreatorChannel(e.target.value)();
-    }
-  };
-
-  const handleChannelSubmit = () => {
-    const channelId = inputRef.current.lastChild.value;
-    // eslint-disable-next-line no-console
-    console.log({ channelId });
-    if (channelId) {
-      saveCreatorChannel(channelId, {
-        recommendations: {},
-        currentVideoOnEdit: {},
-      })();
-    }
-  };
-
-  const handleChannelDelete = () => {
-    setChannel(undefined);
-    deleteCreatorChannel()();
-  };
-
   return pipe(
-    useQueries({ creatorChannel: queries.creatorChannel }),
-    QR.fold(LazyFullSizeLoader, ErrorBox, ({ creatorChannel }) => {
+    useQueries({ accountSettings: queries.accountSettings }),
+    QR.fold(LazyFullSizeLoader, ErrorBox, ({ accountSettings }) => {
       // eslint-disable-next-line no-console
-      console.log({ channel, creatorChannel });
+      console.log({ channel, accountSettings });
+
+      const onSubmit = (e) => {
+        // this handle the pressing of "Enter" key
+        if (e.keyCode === 13) {
+          updateSettings({
+            ...accountSettings,
+            edit: {
+              ...accountSettings.edit,
+              currentVideoId: e.target.value,
+            },
+          })();
+        }
+      };
+
+      const handleChannelSubmit = () => {
+        const channelId = inputRef.current.lastChild.value;
+        // eslint-disable-next-line no-console
+
+        if (channelId) {
+          setChannel(channelId);
+        }
+      };
+
+      const handleChannelDelete = () => {
+        setChannel(undefined);
+        updateSettings({
+          ...accountSettings,
+          edit: {
+            currentVideoId: undefined,
+          },
+        })();
+      };
+
       const creatorChannelValue =
-        channel !== undefined ? channel : creatorChannel.publicKey;
+        channel !== undefined ? channel : accountSettings.publicKey;
 
       return (
         <Grid container>

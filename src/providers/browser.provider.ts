@@ -9,7 +9,7 @@ export const catchRuntimeLastError = <A>(
 ): TE.TaskEither<chrome.runtime.LastError, A> => {
   if (bo.runtime.lastError !== null && bo.runtime.lastError !== undefined) {
     // eslint-disable-next-line
-    console.error('LastError', bo.runtime.lastError);
+    console.error(bo.runtime.lastError.message);
     return TE.left(bo.runtime.lastError);
   }
   return TE.right(v);

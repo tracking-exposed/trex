@@ -33,6 +33,10 @@ const getDefaultSettings = (): AccountSettings => ({
   communityRecommendations: false,
   alphabeth: false,
   stats: false,
+  channelCreatorId: 'default',
+  edit: {
+    currentVideoId: undefined
+  },
   ...initializeKey(),
 });
 

@@ -4,16 +4,21 @@ import Fetcher from './Fetcher';
 import { CreatorVideos } from './components/CreatorVideos';
 import { CurrentVideoOnEdit } from './components/CurrentVideoOnEdit';
 import { Grid } from '@material-ui/core';
-import { setCurrentVideo as setCurrentVideoCmd } from './API/commands';
+import { updateSettings } from './API/commands';
 
-const RecommendationsPanel = () => {
+const RecommendationsPanel = ({ settings }) => {
   return (
     <Grid container spacing={3}>
       <Grid item md={4}>
         <h4>Your videos:</h4>
         <CreatorVideos
           onVideoClick={(v) => {
-            setCurrentVideoCmd(v, { currentVideoOnEdit: undefined })();
+            updateSettings({
+              ...settings,
+              edit: {
+                currentVideoId: undefined,
+              },
+            })();
           }}
         />
       </Grid>

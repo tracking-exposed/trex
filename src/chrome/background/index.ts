@@ -36,7 +36,7 @@ const getMessageHandler = (
   }
 };
 
-bo.runtime.onMessageExternal.addListener(
+bo.runtime.onMessage.addListener(
   (request: MessageRequest, sender, sendResponse) => {
     // eslint-disable-next-line no-console
     console.log('focacci', request, sender);

@@ -4,7 +4,7 @@ import * as React from 'react';
 
 export const ErrorBox = (e: unknown): React.ReactElement<any, string> => {
   // eslint-disable-next-line
-  console.error(e);
+  console.dir(e);
   return (
     <Grid item>
       <Card>

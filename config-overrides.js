@@ -124,7 +124,7 @@ module.exports = {
         inject: true,
         filename: 'popup.html',
       }),
-      
+
       new BrowserExtensionPlugin({
         // todo: it fails due to a webpack-inject-plugin-loader error
         autoReload: false,

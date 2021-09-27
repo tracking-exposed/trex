@@ -1,12 +1,11 @@
-import { pipe } from 'fp-ts/lib/function';
-import * as O from 'fp-ts/lib/Option';
 
 const getBO = (): typeof chrome => {
-  return pipe(
-    browser,
-    O.fromNullable,
-    O.getOrElse(() => chrome)
-  );
+  if (typeof browser !== 'undefined') {
+    console.log('browser available', browser);
+    return browser;
+  }
+  console.log('chrome available', chrome);
+  return chrome;
 };
 
 export const bo = getBO();

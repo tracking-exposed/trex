@@ -8,6 +8,7 @@ interface AccountKeys {
  *
  */
 export interface AccountSettings extends AccountKeys {
+  channelCreatorId: string;
   active: boolean;
   ccRecommendations: boolean;
   communityRecommendations: boolean;
@@ -17,4 +18,7 @@ export interface AccountSettings extends AccountKeys {
   playhide: boolean;
   alphabeth: boolean;
   ux: boolean;
+  edit: {
+    currentVideoId: string | undefined
+  }
 }
