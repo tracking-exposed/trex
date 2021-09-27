@@ -3,13 +3,13 @@ const moment = require('moment');
 const debug = require('debug')('routes:monitor');
 
 const automo = require('../lib/automo');
-const params = require('../lib/params');
+const security = require('../lib/security');
 
 async function getMonitor(req) {
 
     const MINUTES = 5;
-    const minutesAgo = params.getInt(req, 'minutes', MINUTES);
-    const timeBehind = moment().subtract(minutesAgo, 'minutes').toISOString();
+    const timeBehind = moment().subtract(MINUTES, 'minutes').toISOString();
+    security.checkPassword(req);
     const amount = 30;
     /* debug("getMonitor request: contents since %d minutes ago: %s (max %d)",
         minutesAgo, timeBehind, amount); */

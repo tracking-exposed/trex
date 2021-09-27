@@ -166,7 +166,7 @@ app.get('/api/v1/rsync/:daysago?', function(req, res) {
 });
 
 /* monitor for admin */
-app.get('/api/v2/monitor/:minutes?', function(req, res) {
+app.get('/api/v2/monitor/:key', function(req, res) {
     return dispatchPromise('getMonitor', req, res);
 });
 
