@@ -1,22 +1,40 @@
-import { Card, makeStyles } from '@material-ui/core';
+import { updateSettings } from '@chrome/dashboard/API/commands';
+import { accountSettings } from '@chrome/dashboard/API/queries';
+import { ErrorBox } from '@chrome/dashboard/components/common/ErrorBox';
+import {
+  Button,
+  Card,
+  CardActions,
+  CardContent,
+  Divider,
+  FormControlLabel,
+  Grid,
+  makeStyles,
+  Switch,
+} from '@material-ui/core';
 import { Alert, AlertTitle } from '@material-ui/lab';
-import moment from 'moment';
+import * as QR from 'avenger/lib/QueryResult';
+import { declareQueries } from 'avenger/lib/react';
+import { formatDistance } from 'date-fns';
+import parseISO from 'date-fns/parseISO';
+import { pipe } from 'fp-ts/lib/function';
 import React from 'react';
-import config from '../../../config';
-import InfoBox from './infoBox';
-import Settings from './settings';
-import { bo } from '../utils';
+import { config } from '../../../config';
+import Settings from './Settings';
 
 const useStyles = makeStyles((theme) => ({
-  root: {
-    width: '100%',
-    height: '100%',
-  },
   container: {
     padding: theme.spacing(2),
   },
+  content: {
+    marginBottom: theme.spacing(2),
+  },
+  header: {
+    marginBottom: theme.spacing(2),
+  },
   img: {
     width: '100%',
+    maxWidth: 200,
   },
   link: {
     color: 'black',
@@ -24,91 +42,95 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-interface PopupProps {
-  publicKey?: string;
-}
-
-const Popup: React.FC<PopupProps> = () => {
-  const [localLookup, setLocalLookup] = React.useState<
-    undefined | { status: string; data: any }
-  >();
-
-  React.useEffect(() => {
-    try {
-      bo.runtime.sendMessage({ type: 'localLookup' }, (userSettings: any) => {
-        // eslint-disable-next-line no-console
-        console.log('here got', userSettings);
-        if ((userSettings?.publicKey) !== undefined) {
-          setLocalLookup({ status: 'done', data: userSettings });
-        } else {
-          setLocalLookup({ status: 'error', data: userSettings });
-        }
-      });
-    } catch (e: any) {
-      // eslint-disable-next-line no-console
-      console.log('catch error', e.message, bo?.runtime.lastError);
-      setLocalLookup({ status: 'error', data: '' });
-    }
-  }, []);
-
-  const classes = useStyles();
-
-  const version = config.VERSION;
-  const timeago =
-    moment
-      .duration((moment() as any) - (moment(config.BUILDISODATE) as any))
-      .humanize() + ' ago';
-
-  if (localLookup === undefined) {
-    return <div>Loading...</div>;
-  }
-
-  if (localLookup.status !== 'done') {
-    // eslint-disable-next-line no-console
-    console.log('Incomplete info before render');
-    return (
-      <div className={classes.root}>
-        <Card className={classes.container}>
-          <Alert severity="error">
-            <AlertTitle>Error</AlertTitle>
-            Extension isn&apos;t initialized yet —{' '}
-            <strong>
-              Access{' '}
-              <a
-                href="https://www.youtube.com"
-                target="_blank"
-                rel="noreferrer"
-              >
-                yutube.com
-              </a>
-              .
-            </strong>
-          </Alert>
-          <InfoBox />
-        </Card>
-      </div>
-    );
-  }
-
+const PopupLoader: React.FC = () => {
   return (
-    <div className={classes.root}>
-      <Card className={classes.container}>
-        <a
-          className={classes.link}
-          href={config.WEB_ROOT}
-          target="_blank"
-          rel="noreferrer"
-        >
-          <img className={classes.img} src="/ycai-logo.png" />
+    <Alert severity="info">
+      <AlertTitle>Loading settings...</AlertTitle>
+      <strong>
+        Access{' '}
+        <a href="https://www.youtube.com" target="_blank" rel="noreferrer">
+          yutube.com
         </a>
-        <Settings lastSettings={localLookup.data} />
-        <InfoBox />
-      </Card>
-      <small>
-        version {version}, released {timeago}
-      </small>
-    </div>
+        .
+      </strong>
+    </Alert>
   );
 };
 
-export default Popup;
+const withQueries = declareQueries({ settings: accountSettings });
+
+export const Popup = withQueries(({ queries }) => {
+  const classes = useStyles();
+
+  const version = config.REACT_APP_VERSION;
+  const timeago = formatDistance(
+    parseISO(config.REACT_APP_BUILD_DATE),
+    new Date(),
+    {
+      addSuffix: true,
+    }
+  );
+
+  return pipe(
+    queries,
+    QR.fold(
+      () => <PopupLoader />,
+      ErrorBox,
+      ({ settings }) => {
+        return (
+          <Card className={classes.container}>
+            <CardContent className={classes.content}>
+              <Grid className={classes.header} container alignItems="center">
+                <Grid item sm={8} xs={8}>
+                  <a
+                    className={classes.link}
+                    href={config.REACT_APP_WEB_URL}
+                    target="_blank"
+                    rel="noreferrer"
+                  >
+                    <img className={classes.img} src="/ycai-logo.png" />
+                  </a>
+                </Grid>
+                <Grid item sm={4} xs={4}>
+                  <FormControlLabel
+                    control={
+                      <Switch
+                        value={settings.active ?? false}
+                        size="small"
+                        onChange={(e, c) =>
+                          updateSettings({ ...settings, active: c })()
+                        }
+                      />
+                    }
+                    label="Enable"
+                    labelPlacement="end"
+                  />
+                </Grid>
+                <Grid item xs={12}>
+                  <small>
+                    version {version}, released {timeago}
+                  </small>
+                </Grid>
+              </Grid>
+              <Divider />
+              <Settings settings={settings} />
+            </CardContent>
+
+            <CardActions>
+              <Button
+                size="medium"
+                color="primary"
+                variant="contained"
+                href={'/index.html'}
+                target="_blank"
+                fullWidth
+              >
+                Dashboard
+              </Button>
+            </CardActions>
+          </Card>
+        );
+      }
+    )
+  );
+});

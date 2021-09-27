@@ -5,7 +5,6 @@ import createReactClass from 'create-react-class';
 import React from 'react';
 // import config from '../../../config';
 
-
 const InfoBox = createReactClass({
   render() {
     const about = '/index.html';

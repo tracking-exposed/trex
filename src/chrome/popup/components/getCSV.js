@@ -1,6 +1,5 @@
 import React from 'react';
-import config from '../../../config';
-
+import { config } from '../../../config';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import StayCurrentLandscapeIcon from '@material-ui/icons/StayCurrentLandscape';

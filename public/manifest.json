@@ -5,7 +5,7 @@
 
   "short_name": "YCAI",
   "description": "Content creator should control their videos' recommendation",
-  "version": "0.1.10",
+  "version": "0.2.0",
   "author": "Tracking Exposed team, check it our on https://youchoose.ai",
 
   "icons": {
@@ -28,7 +28,8 @@
   ],
 
   "background": {
-    "scripts": ["./background.js"]
+    "scripts": ["./background.js"],
+    "persistent": true
   },
 
   "content_scripts": [
@@ -39,9 +40,9 @@
         "https://youchoose.tracking.exposed/*",
         "https://*.youtube.com/*"
       ],
-      "js": ["./main.js"],
-      "css": ["./css/Trex-Regular.ttf", "./css/font.css", "./css/youchoose-ux.css"]
+      "js": ["./app.js"],
+      "css": ["./css/font.css", "./css/youchoose-ux.css"]
     }
   ],
-  "web_accessible_resources": ["*.png", "/css/Trex-Regular.tff", "/css/font.css", "/css/youchoose-ux.css"]
+  "web_accessible_resources": ["*.png", "./css/**"]
 }

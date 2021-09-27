@@ -1,5 +1,4 @@
-import config from '../config';
-import { getTimeISO8601 } from '../utils';
+import { config } from '../config';
 const bo = chrome || browser;
 
 const INTERVAL = config.FLUSH_INTERVAL;
@@ -14,7 +13,7 @@ function handleVideo(type, e) {
     element: e.element,
     href: e.href,
     incremental: state.incremental,
-    clientTime: getTimeISO8601(),
+    clientTime: new Date().toISOString(),
     type: 'video',
     selector: e.selector,
     size: e.size,
@@ -27,7 +26,7 @@ function handleInfo(type, e) {
   state.content.push(
     _.merge(e, {
       incremental: state.incremental,
-      clientTime: getTimeISO8601(),
+      clientTime: new Date().toISOString(),
       type: 'info',
     })
   );

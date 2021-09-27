@@ -107,8 +107,6 @@ function make_video_box(video, i) {
   return video_box;
 }
 
-
-
 function recommandation_dispatcher(recc, i) {
   // this {recc} might belong to different 'type':
   // 'youtube', 'wikipedia', 'article', 'tiktok', 'url'
@@ -124,8 +122,6 @@ function recommandation_dispatcher(recc, i) {
     return max_url_box(recc, i);
   }
 }
-
-
 
 /* recommendation cache, pointers to the HTML elements */
 const recache = { alphabeth: null, ycaibar: null };

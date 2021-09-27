@@ -1,7 +1,6 @@
 import nacl from 'tweetnacl';
 import bs58 from 'bs58';
-
-import config from '../config';
+import { config } from '../config';
 import { decodeString, decodeKey } from '../utils';
 import db from './db';
 
@@ -11,7 +10,7 @@ function post(apiUrl, data, cookieId) {
       .then((keypair) => {
         const xhr = new XMLHttpRequest();
         const payload = JSON.stringify(data);
-        const url = config.API_ROOT + '/' + apiUrl;
+        const url = config.REACT_APP_API_URL + '/' + apiUrl;
 
         xhr.open('POST', url, true);
 

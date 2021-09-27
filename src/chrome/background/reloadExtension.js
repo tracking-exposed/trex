@@ -1,7 +1,5 @@
-const bo = chrome || browser;
+import { bo } from '../../utils/browser.utils';
 
-bo.runtime.onMessage.addListener((request, sender, sendResponse) => {
-  if (request.type === 'reloadExtension') {
-    bo.runtime.reload();
-  }
-});
+export const reloadExtension = () => {
+  bo.runtime.reload();
+};

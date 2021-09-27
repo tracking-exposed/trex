@@ -1,1 +1,1 @@
-export default process.env;
+export const config = process.env;

@@ -26,7 +26,11 @@ export const VideoCard = ({ videoId, title, onClick }) => {
         />
         <CardContent>
           <Typography gutterBottom variant="h5" component="h4">
-            <a href={'https://youtu.be/' + videoId} target="_blank" rel="noreferrer">
+            <a
+              href={'https://youtu.be/' + videoId}
+              target="_blank"
+              rel="noreferrer"
+            >
               {title}
             </a>
           </Typography>
