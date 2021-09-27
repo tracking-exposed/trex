@@ -10,11 +10,10 @@
       "campaigns": "campaigns",
       "searches": "searches",
       "errors": "errors",
-      "experiments": "experiments2",
-      "guardoni": "guardoni",
       "answers": "answers",
       "recommendations": "recommendations",
       "ytvids": "ytvids",
+      "experiments": "experiments",
       "directives": "directives"
   },
   "mongoHost": "localhost",
