@@ -41,8 +41,8 @@
         "https://*.youtube.com/*"
       ],
       "js": ["./app.js"],
-      "css": ["./css/Trex-Regular.ttf", "./css/font.css", "./css/youchoose-ux.css"]
+      "css": ["./css/font.css", "./css/youchoose-ux.css"]
     }
   ],
-  "web_accessible_resources": ["*.png", "/css/Trex-Regular.ttf", "/css/font.css", "/css/youchoose-ux.css"]
+  "web_accessible_resources": ["*.png", "/css/Trex-Regular.ttf", "/css/*.css" ]
 }

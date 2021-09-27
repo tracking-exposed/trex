@@ -147,7 +147,7 @@ module.exports = {
           const buildManifest = {
             ...manifest,
             content_scripts,
-            version: isProduction ? pkgJson.version : `${pkgJson.version}-dev`,
+            version: isProduction ? pkgJson.version : `${pkgJson.version}.88`,
           };
 
           return buildManifest;
