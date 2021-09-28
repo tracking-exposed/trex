@@ -1,4 +1,5 @@
 /* eslint-disable */
+import './i18n';
 import { ThemeProvider } from '@material-ui/styles';
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';

@@ -1,4 +1,4 @@
-import { updateSettings } from 'API/commands';
+import { updateSettings } from '../../API/commands';
 import {
   FormHelperText,
   FormLabel,
@@ -11,6 +11,7 @@ import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Switch from '@material-ui/core/Switch';
 import * as React from 'react';
 import { AccountSettings } from '../../models/AccountSettings';
+import { useTranslation } from 'react-i18next';
 
 const useStyles = makeStyles((theme) => ({
   divider: {
@@ -24,10 +25,11 @@ interface SettingsProps {
 }
 
 const Settings: React.FC<SettingsProps> = ({ settings }) => {
+  const { t } = useTranslation();
   const classes = useStyles();
   return (
     <>
-      <FormHelperText>YouChoose AI</FormHelperText>
+      <FormHelperText>{t('title')}</FormHelperText>
       <FormControlLabel
         disabled={!settings.active}
         control={
@@ -42,9 +44,9 @@ const Settings: React.FC<SettingsProps> = ({ settings }) => {
         }
         label={
           <FormLabel>
-            Content Creator Recommendations
+            {t('settings:contentCreatorRecommendationLabel')}
             <Typography variant="caption" display="block">
-              See what video author are suggesting
+              {t('settings:contentCreatorRecommendationHint')}
             </Typography>
           </FormLabel>
         }
@@ -67,9 +69,9 @@ const Settings: React.FC<SettingsProps> = ({ settings }) => {
         }
         label={
           <FormLabel>
-            Community Recommendations
+            {t('settings:communityRecommendationsLabel')}
             <Typography variant="caption" display="block">
-              Coming soon
+              {t('settings:communityRecommendationsHint')}
             </Typography>
           </FormLabel>
         }
@@ -77,7 +79,7 @@ const Settings: React.FC<SettingsProps> = ({ settings }) => {
       />
       <Divider className={classes.divider} />
 
-      <FormHelperText>Statistics</FormHelperText>
+      <FormHelperText>{t('statistics:title')}</FormHelperText>
       <FormControl component="fieldset">
         <FormControlLabel
           disabled={!settings.active}
@@ -91,9 +93,9 @@ const Settings: React.FC<SettingsProps> = ({ settings }) => {
           }
           label={
             <FormLabel>
-              Contribute to indipendent stats
+              {t('settings:contributeToIndipendentStatsLabel')}
               <Typography variant="caption" display="block">
-                Donate anonymously what Youtube recommends you
+                {t('settings:contributeToIndipendentStatsHint')}
               </Typography>
             </FormLabel>
           }

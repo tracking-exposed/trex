@@ -15,43 +15,45 @@ export const VideoRecommendations: React.FC = () => {
       settings: queries.accountSettings,
       videoRecommendations: queries.currentVideoRecommendations,
     }),
-    QR.fold(LazyFullSizeLoader, ErrorBox, ({ settings, videoRecommendations }) => {
-      return (
-        <Box>
-          <Typography variant="h5">Recommendations</Typography>
-          {videoRecommendations.map((r, i) => (
-            <Grid
-              key={i}
-              container
-              alignItems="center"
-              justifyContent="flex-start"
-              style={{ marginBottom: 10 }}
-            >
-              <Grid item md={2}>
-                <Chip
-                  label={i + 1}
-                  variant="outlined"
-                  deleteIcon={<DeleteIcon />}
-                  onDelete={() =>
-                    updateRecommendationForVideo(
-                      {
+    QR.fold(
+      LazyFullSizeLoader,
+      ErrorBox,
+      ({ settings, videoRecommendations }) => {
+        return (
+          <Box>
+            <Typography variant="h5">Recommendations</Typography>
+            {videoRecommendations.map((r, i) => (
+              <Grid
+                key={i}
+                container
+                alignItems="center"
+                justifyContent="flex-start"
+                style={{ marginBottom: 10 }}
+              >
+                <Grid item md={2}>
+                  <Chip
+                    label={i + 1}
+                    variant="outlined"
+                    deleteIcon={<DeleteIcon />}
+                    onDelete={() =>
+                      updateRecommendationForVideo({
                         videoId: settings.edit?.videoId,
                         creatorId: settings.channelCreatorId,
                         recommendations: videoRecommendations
                           .map((r) => r.urlId)
                           .filter((rr) => rr !== r.urlId),
-                      }
-                    )()
-                  }
-                />
+                      })()
+                    }
+                  />
+                </Grid>
+                <Grid item md={10}>
+                  <p>{r.title}</p>
+                </Grid>
               </Grid>
-              <Grid item md={10}>
-                <p>{r.title}</p>
-              </Grid>
-            </Grid>
-          ))}
-        </Box>
-      );
-    })
+            ))}
+          </Box>
+        );
+      }
+    )
   );
 };
