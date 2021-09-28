@@ -11,6 +11,7 @@ import {
   Grid,
   makeStyles,
   Switch,
+  Typography,
 } from '@material-ui/core';
 import { Alert, AlertTitle } from '@material-ui/lab';
 import * as QR from 'avenger/lib/QueryResult';
@@ -25,6 +26,7 @@ import Settings from './Settings';
 const useStyles = makeStyles((theme) => ({
   container: {
     padding: theme.spacing(2),
+    maxWidth: 300,
   },
   content: {
     marginBottom: theme.spacing(2),
@@ -107,9 +109,9 @@ export const Popup = withQueries(({ queries }) => {
                   />
                 </Grid>
                 <Grid item xs={12}>
-                  <small>
+                  <Typography variant="caption">
                     version {version}, released {timeago}
-                  </small>
+                  </Typography>
                 </Grid>
               </Grid>
               <Divider />
