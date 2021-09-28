@@ -2,7 +2,7 @@ import { ThemeProvider } from '@material-ui/core/styles';
 import * as React from 'react';
 import ReactDOM from 'react-dom';
 import { YCAITheme } from '../../theme';
-import { Popup } from './components/popup';
+import { Popup } from './components/Popup';
 
 const Index: React.FC = () => {
   return (
