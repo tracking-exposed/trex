@@ -75,7 +75,6 @@
     "avenger": "^7.0.0",
     "bs58": "^3.0.0",
     "classnames": "^2.3.1",
-    "create-react-class": "^15.7.0",
     "date-fns": "^2.24.0",
     "fetch-opengraph": "^1.0.30",
     "fp-ts": "^2.11.1",
