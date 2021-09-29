@@ -2,10 +2,17 @@ import * as React from 'react';
 import { TabPanelProps as MUITabPanelProps } from '@material-ui/lab/TabPanel';
 import { Box } from '@material-ui/core';
 
-interface TabPanelProps extends Omit<MUITabPanelProps, 'value' | 'ref'> {
-  index: number;
-  value: number;
-}
+type TabPanelProps = Omit<MUITabPanelProps, 'value' | 'ref'> &
+  (
+    | {
+        index: number;
+        value: number;
+      }
+    | {
+        index: string;
+        value: string;
+      }
+  );
 
 export const TabPanel: React.FC<TabPanelProps> = (props) => {
   const { children, value, index, ...other } = props;

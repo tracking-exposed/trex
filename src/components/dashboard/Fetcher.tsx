@@ -28,7 +28,7 @@ const Fetcher: React.FC = () => {
         placeholder="Placeholder"
         multiline
       />
-      <Button variant="contained" color="primary" onClick={completed}>
+      <Button variant="contained" color="secondary" onClick={completed}>
         {t('actions:add')}
       </Button>
     </Box>

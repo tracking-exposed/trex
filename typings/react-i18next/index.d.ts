@@ -17,6 +17,7 @@ declare module 'react-i18next' {
         removeFromCurrentVideo: string;
         compare: string;
         related: string;
+        linkChannel: string;
       };
       account: {
         channel: string;
@@ -69,6 +70,11 @@ declare module 'react-i18next' {
         firstTab: string;
         secondTab: string;
         thirdTab: string;
+      };
+      routes: {
+        studio: string;
+        community: string;
+        settings: string;
       };
     };
   }

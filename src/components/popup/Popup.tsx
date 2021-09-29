@@ -101,6 +101,7 @@ export const Popup = withQueries(({ queries }) => {
                       <Switch
                         checked={settings.active}
                         size="small"
+                        color="primary"
                         onChange={(e, c) =>
                           updateSettings({ ...settings, active: c })()
                         }

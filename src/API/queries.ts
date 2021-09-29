@@ -64,16 +64,6 @@ export const recommendedChannels = compose(
   }, available)
 );
 
-export const currentVideoRecommendations = compose(
-  accountSettings,
-  queryStrict((settings): TE.TaskEither<Error, Recommendation[]> => {
-    if (settings?.edit?.videoId !== undefined) {
-      return fetchTE(`/v3/video/${settings.edit.videoId}/recommendations`);
-    }
-    return TE.right([]);
-  }, available)
-);
-
 export const videoRecommendations = queryStrict(
   ({ videoId }: { videoId: string }): TE.TaskEither<Error, Recommendation[]> =>
     fetchTE(`/v3/video/${videoId}/recommendations`),

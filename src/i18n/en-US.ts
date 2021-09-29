@@ -7,6 +7,7 @@ const resources: CustomTypeOptions['resources'] = {
   },
   actions: {
     add: 'Add',
+    linkChannel: 'Link channel',
     delete: 'Delete',
     clear: 'Clear',
     editThisVideo: 'Edit this video',
@@ -15,6 +16,11 @@ const resources: CustomTypeOptions['resources'] = {
     removeFromCurrentVideo: 'Remove from current video',
     compare: 'Compare',
     related: 'Related',
+  },
+  routes: {
+    studio: 'Studio',
+    community: 'Community',
+    settings: 'Settings'
   },
   account: {
     channel: 'Your channel',
