@@ -8,10 +8,12 @@ import { VideoRecommendations } from './VideoRecommendations';
 import * as QR from 'avenger/lib/QueryResult';
 import { LazyFullSizeLoader } from '../common/FullSizeLoader';
 import { ErrorBox } from '../common/ErrorBox';
+import { useTranslation } from 'react-i18next';
 
 const withQueries = declareQueries({ accountSettings });
 
 const VideoCardWithQuery = withQueries((props) => {
+  const { t} = useTranslation();
   return pipe(
     props.queries,
     QR.fold(
@@ -19,7 +21,7 @@ const VideoCardWithQuery = withQueries((props) => {
       ErrorBox,
       ({ accountSettings: { edit: video } }) => {
         if (video === null) {
-          return <div>No video selected</div>;
+          return <div>{t('videos:no_selected')}</div>;
         }
         return <VideoCard videoId={video.videoId} title={video.title} />;
       }

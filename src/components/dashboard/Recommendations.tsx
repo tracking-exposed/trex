@@ -1,8 +1,9 @@
-import { Card } from '@material-ui/core';
+import { Box, Card, Typography } from '@material-ui/core';
 import * as QR from 'avenger/lib/QueryResult';
 import { declareQueries } from 'avenger/lib/react';
 import { pipe } from 'fp-ts/lib/function';
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { updateRecommendationForVideo } from '../../API/commands';
 import { accountSettings, creatorRecommendations } from '../../API/queries';
 import { ErrorBox } from '../common/ErrorBox';
@@ -20,11 +21,11 @@ const withQueries = declareQueries({
 
 export const Recommendations = withQueries(
   ({ queries }): React.ReactElement => {
+    const { t } = useTranslation();
     return (
-      <div>
-        <div style={styles}>
-          <h4>Your recommendations</h4>
-        </div>
+      <Box>
+        <Typography variant="h4">{t('recommendations:yours')}</Typography>
+
         {pipe(
           queries,
           QR.fold(
@@ -100,7 +101,7 @@ export const Recommendations = withQueries(
             }
           )
         )}
-      </div>
+      </Box>
     );
   }
 );

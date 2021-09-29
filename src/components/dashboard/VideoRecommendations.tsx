@@ -4,12 +4,14 @@ import * as QR from 'avenger/lib/QueryResult';
 import { useQueries } from 'avenger/lib/react';
 import { pipe } from 'fp-ts/lib/function';
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { updateRecommendationForVideo } from '../../API/commands';
 import * as queries from '../../API/queries';
 import { ErrorBox } from '../common/ErrorBox';
 import { LazyFullSizeLoader } from '../common/FullSizeLoader';
 
 export const VideoRecommendations: React.FC = () => {
+  const { t } = useTranslation();
   return pipe(
     useQueries({
       settings: queries.accountSettings,
@@ -21,7 +23,7 @@ export const VideoRecommendations: React.FC = () => {
       ({ settings, videoRecommendations }) => {
         return (
           <Box>
-            <Typography variant="h5">Recommendations</Typography>
+            <Typography variant="h5">{t('recommendations:title')}</Typography>
             {videoRecommendations.map((r, i) => (
               <Grid
                 key={i}

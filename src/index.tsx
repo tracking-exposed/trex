@@ -1,3 +1,4 @@
+import './i18n';
 import { ThemeProvider } from '@material-ui/styles';
 import React from 'react';
 import ReactDOM from 'react-dom';

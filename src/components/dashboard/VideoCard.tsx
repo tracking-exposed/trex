@@ -5,9 +5,9 @@ import CardContent from '@material-ui/core/CardContent';
 import CardMedia from '@material-ui/core/CardMedia';
 import Typography from '@material-ui/core/Typography';
 import React from 'react';
+import { useTranslation } from 'react-i18next';
+import { getYTThumbnailById } from 'utils/yt.utils';
 
-const getYTThumbnailById = (id: string): string =>
-  `https://i.ytimg.com/vi/${id}/hqdefault.jpg`;
 
 interface VideoCardProps {
   videoId: string;
@@ -20,11 +20,11 @@ export const VideoCard: React.FC<VideoCardProps> = ({
   title,
   onClick,
 }) => {
+  const { t } = useTranslation();
   return (
     <Card
       style={{
         textAlign: 'left',
-        /* width:"200px", */
         margin: '6px',
       }}
     >
@@ -50,7 +50,7 @@ export const VideoCard: React.FC<VideoCardProps> = ({
             rel="noreferrer"
             href={'https://youtube.tracking.exposed/compare/#' + videoId}
           >
-            Compare
+            {t('actions:compare')}
           </a>{' '}
           —{' '}
           <a
@@ -58,7 +58,7 @@ export const VideoCard: React.FC<VideoCardProps> = ({
             rel="noreferrer"
             href={'https://youtube.tracking.exposed/related/#' + videoId}
           >
-            Related
+            {t('actions:related')}
           </a>
         </CardContent>
         <CardActions>
@@ -68,7 +68,7 @@ export const VideoCard: React.FC<VideoCardProps> = ({
               color="primary"
               onClick={() => onClick(videoId)}
             >
-              Edit this video
+              {t('actions:editThisVideo')}
             </Button>
           ) : null}
         </CardActions>

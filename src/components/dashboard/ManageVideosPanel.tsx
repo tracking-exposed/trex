@@ -1,4 +1,4 @@
-import { Button, Grid } from '@material-ui/core';
+import { Button, Grid, Typography } from '@material-ui/core';
 import { declareQueries } from 'avenger/lib/react';
 import { pipe } from 'fp-ts/lib/function';
 import React from 'react';
@@ -11,17 +11,20 @@ import { Recommendations } from './Recommendations';
 import * as QR from 'avenger/lib/QueryResult';
 import { LazyFullSizeLoader } from '../common/FullSizeLoader';
 import { ErrorBox } from '../../components/common/ErrorBox';
+import { useTranslation } from 'react-i18next';
 
 const withQueries = declareQueries({ accountSettings });
 
 export const ManageVideosPanel = withQueries(
   ({ queries }): React.ReactElement => {
+    const { t } = useTranslation();
+
     return pipe(
       queries,
       QR.fold(LazyFullSizeLoader, ErrorBox, ({ accountSettings }) => (
         <Grid container spacing={3}>
           <Grid item md={4}>
-            <h4>Your videos:</h4>
+            <Typography variant="h4">{t('account:channelVideos')}</Typography>
             <Button
               onClick={async () =>
                 await updateSettings({
@@ -30,7 +33,7 @@ export const ManageVideosPanel = withQueries(
                 })()
               }
             >
-              Clear
+              {t('actions:clear')}
             </Button>
             <CreatorVideos
               onVideoClick={async (v) => {

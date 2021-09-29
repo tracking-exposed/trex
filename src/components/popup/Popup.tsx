@@ -22,6 +22,7 @@ import { pipe } from 'fp-ts/lib/function';
 import React from 'react';
 import { config } from '../../config';
 import Settings from './Settings';
+import { useTranslation } from 'react-i18next';
 
 const useStyles = makeStyles((theme) => ({
   container: {
@@ -62,6 +63,7 @@ const PopupLoader: React.FC = () => {
 const withQueries = declareQueries({ settings: accountSettings });
 
 export const Popup = withQueries(({ queries }) => {
+  const { t } = useTranslation();
   const classes = useStyles();
 
   const version = config.REACT_APP_VERSION;
@@ -110,7 +112,7 @@ export const Popup = withQueries(({ queries }) => {
                 </Grid>
                 <Grid item xs={12}>
                   <Typography variant="caption">
-                    version {version}, released {timeago}
+                    {t('popup:version', { version, date: timeago })}
                   </Typography>
                 </Grid>
               </Grid>
@@ -127,7 +129,7 @@ export const Popup = withQueries(({ queries }) => {
                 target="_blank"
                 fullWidth
               >
-                Dashboard
+                {t('dashboard:title')}
               </Button>
             </CardActions>
           </Card>

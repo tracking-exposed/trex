@@ -6,6 +6,7 @@ import CardMedia from '@material-ui/core/CardMedia';
 import Typography from '@material-ui/core/Typography';
 import { Recommendation } from '../../models/Recommendation';
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 
 interface URLCardProps {
   data: Recommendation;
@@ -20,6 +21,7 @@ export const URLCard: React.FC<URLCardProps> = ({
   onAddClick,
   onDeleteClick,
 }) => {
+  const { t } = useTranslation();
   const addButton =
     !alreadyPresent && onAddClick !== undefined ? (
       <CardActions>
@@ -31,7 +33,7 @@ export const URLCard: React.FC<URLCardProps> = ({
             onAddClick();
           }}
         >
-          Add to current video
+          {t('actions:addToCurrentVideo')}
         </Button>
       </CardActions>
     ) : null;
@@ -47,7 +49,7 @@ export const URLCard: React.FC<URLCardProps> = ({
             onDeleteClick();
           }}
         >
-          Remove from current video
+          {t('actions:removeFromCurrentVideo')}
         </Button>
       </CardActions>
     ) : null;

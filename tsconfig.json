@@ -16,8 +16,8 @@
       "esnext"
     ],
     "typeRoots": [
-      "typings",
-      "node_modules/@types"
+      "node_modules/@types",
+      "typings"
     ],
     "baseUrl": "./src",
     "allowSyntheticDefaultImports": true,

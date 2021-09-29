@@ -1,7 +1,9 @@
+import '../../../i18n';
 import { chrome } from 'jest-chrome';
 import * as React from 'react';
 import renderer from 'react-test-renderer';
 import { Popup } from '../Popup';
+
 
 const onMessageListener = jest.fn().mockImplementation((r, s, sendRes) => {
   sendRes({ active: true });
