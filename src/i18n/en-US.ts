@@ -2,6 +2,9 @@ import { CustomTypeOptions } from 'react-i18next';
 
 const resources: CustomTypeOptions['resources'] = {
   title: 'YouChoose AI',
+  common: {
+    coming_soon: 'Coming soon',
+  },
   actions: {
     add: 'Add',
     delete: 'Delete',
@@ -16,6 +19,15 @@ const resources: CustomTypeOptions['resources'] = {
   account: {
     channel: 'Your channel',
     channelVideos: 'Channel Videos',
+  },
+  creator: {
+    title: 'Creator',
+  },
+  community: {
+    title: 'Community',
+  },
+  youtube: {
+    title: 'Youtube',
   },
   recommendations: {
     title: 'Recommendations',
@@ -49,9 +61,9 @@ const resources: CustomTypeOptions['resources'] = {
     faq_4_question: 'Shadow-banning analysis',
   },
   ytVideoPage: {
-    firstTab: 'Recommendations',
-    secondTab: 'Youtube',
-    thirdTab: 'Youtube',
+    firstTab: 'Creator Raccomendations',
+    secondTab: 'Community Raccomendations',
+    thirdTab: 'Youtube Raccomenations',
   },
 };
 

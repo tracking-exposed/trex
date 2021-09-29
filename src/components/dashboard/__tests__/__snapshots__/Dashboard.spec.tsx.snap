@@ -36,6 +36,7 @@ exports[`Dashboard Should mount the dashboard 1`] = `
             className="MuiButtonBase-root MuiTab-root MuiTab-textColorInherit Mui-selected"
             disabled={false}
             id="simple-tab-0"
+            index={0}
             onBlur={[Function]}
             onClick={[Function]}
             onDragLeave={[Function]}
@@ -55,7 +56,11 @@ exports[`Dashboard Should mount the dashboard 1`] = `
             <span
               className="MuiTab-wrapper"
             >
-              Link your account
+              <span
+                className="MuiTypography-root MuiTypography-caption"
+              >
+                Link your account
+              </span>
             </span>
             <span
               className="MuiTouchRipple-root"
@@ -67,6 +72,7 @@ exports[`Dashboard Should mount the dashboard 1`] = `
             className="MuiButtonBase-root MuiTab-root MuiTab-textColorInherit"
             disabled={false}
             id="simple-tab-1"
+            index={1}
             onBlur={[Function]}
             onClick={[Function]}
             onDragLeave={[Function]}
@@ -86,7 +92,11 @@ exports[`Dashboard Should mount the dashboard 1`] = `
             <span
               className="MuiTab-wrapper"
             >
-              Manage recommendations
+              <span
+                className="MuiTypography-root MuiTypography-caption"
+              >
+                Manage recommendations
+              </span>
             </span>
             <span
               className="MuiTouchRipple-root"
@@ -98,6 +108,7 @@ exports[`Dashboard Should mount the dashboard 1`] = `
             className="MuiButtonBase-root MuiTab-root MuiTab-textColorInherit"
             disabled={false}
             id="simple-tab-2"
+            index={2}
             onBlur={[Function]}
             onClick={[Function]}
             onDragLeave={[Function]}
@@ -117,7 +128,11 @@ exports[`Dashboard Should mount the dashboard 1`] = `
             <span
               className="MuiTab-wrapper"
             >
-              Collaborative Analytics
+              <span
+                className="MuiTypography-root MuiTypography-caption"
+              >
+                Collaborative Analytics
+              </span>
             </span>
             <span
               className="MuiTouchRipple-root"
@@ -129,6 +144,7 @@ exports[`Dashboard Should mount the dashboard 1`] = `
             className="MuiButtonBase-root MuiTab-root MuiTab-textColorInherit"
             disabled={false}
             id="simple-tab-3"
+            index={3}
             onBlur={[Function]}
             onClick={[Function]}
             onDragLeave={[Function]}
@@ -148,7 +164,11 @@ exports[`Dashboard Should mount the dashboard 1`] = `
             <span
               className="MuiTab-wrapper"
             >
-              Advanced Settings
+              <span
+                className="MuiTypography-root MuiTypography-caption"
+              >
+                Advanced Settings
+              </span>
             </span>
             <span
               className="MuiTouchRipple-root"

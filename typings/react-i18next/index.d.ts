@@ -4,15 +4,38 @@ declare module 'react-i18next' {
   export interface CustomTypeOptions {
     resources: {
       title: string;
+      common: {
+        coming_soon: string;
+      };
+      actions: {
+        add: string;
+        delete: string;
+        clear: string;
+        editThisVideo: string;
+        importVideos: string;
+        addToCurrentVideo: string;
+        removeFromCurrentVideo: string;
+        compare: string;
+        related: string;
+      };
+      account: {
+        channel: string;
+        channelVideos: string;
+      };
+      creator: {
+        title: string;
+      };
+      community: {
+        title: string;
+      };
+      youtube: {
+        title: string;
+      };
       recommendations: {
         title: string;
         total: string;
         url: string;
         yours: string;
-      };
-      account: {
-        channel: string;
-        channelVideos: string;
       };
       dashboard: {
         title: string;
@@ -35,17 +58,6 @@ declare module 'react-i18next' {
         no_results: string;
         no_selected: string;
         no_video_id: string;
-      };
-      actions: {
-        add: string;
-        delete: string;
-        clear: string;
-        editThisVideo: string;
-        importVideos: string;
-        addToCurrentVideo: string;
-        removeFromCurrentVideo: string;
-        compare: string;
-        related: string;
       };
       collaborativeAnalytics: {
         faq_1_question: string;

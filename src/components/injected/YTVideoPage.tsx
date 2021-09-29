@@ -1,9 +1,28 @@
 import { AppBar, Box, Tabs, Typography } from '@material-ui/core';
+import { makeStyles } from '@material-ui/styles';
+import { TabPanel } from 'components/common/TabPanel';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
 import { getVideoId } from 'utils/yt.utils';
 import { Tab } from '../common/Tab';
-import { VideoRecommendations } from '../dashboard/VideoRecommendations';
+import { VideoRecommendations } from '../dashboard/ContentCreatorVideoRecommendations';
+
+const useStyles = makeStyles(() => ({
+  appBar: {
+    marginBottom: 20,
+  },
+  tab: {
+    minWidth: 100,
+  },
+  ytItemsVisible: {
+    display: 'block',
+  },
+  ytItemshidden: {
+    display: 'none',
+  },
+}));
+
+let ytItemsRendererEl: Element | null = null;
 
 export const YTVideoPage: React.FC = () => {
   const { t } = useTranslation();
@@ -13,26 +32,70 @@ export const YTVideoPage: React.FC = () => {
     [window.location.href]
   );
 
+  ytItemsRendererEl = React.useMemo(
+    () =>
+      document.getElementsByTagName(
+        'ytd-watch-next-secondary-results-renderer'
+      )[0],
+    [ytItemsRendererEl === null]
+  );
+
+  const ytItemsRendererElClasses = React.useMemo(
+    () => ytItemsRendererEl?.className ?? '',
+    [ytItemsRendererEl === null]
+  );
+
+  const classes = useStyles();
+
+  React.useEffect(() => {
+    if (ytItemsRendererEl !== null) {
+      if (value === 2) {
+        ytItemsRendererEl.className = ytItemsRendererElClasses;
+      } else {
+        ytItemsRendererEl.className = `${ytItemsRendererElClasses}  + ${classes.ytItemshidden}`;
+      }
+    }
+  }, [value]);
+
   return (
     <Box>
       {videoId === undefined ? (
         <Typography variant="h3">{t('videos:no_video_id')}</Typography>
       ) : (
         <Box>
-          <AppBar position="static">
+          <AppBar className={classes.appBar} position="static">
             <Tabs
               value={value}
               onChange={(e, n) => setValue(n)}
-              aria-label="simple tabs example"
+              aria-label="recommendations tabs"
+              variant="fullWidth"
             >
-              <Tab label={t('ytVideoPage:firstTab')} index={0} />
-              <Tab label={t('ytVideoPage:secondTab')} index={1} />
-              <Tab label={t('ytVideoPage:thirdTab')} index={2} />
+              <Tab
+                className={classes.tab}
+                label={t('creator:title')}
+                index={0}
+              />
+              <Tab
+                className={classes.tab}
+                label={t('community:title')}
+                index={1}
+              />
+              <Tab
+                className={classes.tab}
+                label={t('youtube:title')}
+                index={2}
+              />
             </Tabs>
           </AppBar>
-          <VideoRecommendations
-            queries={{ videoRecommendations: { videoId } }}
-          />
+
+          <TabPanel value={value} index={0}>
+            <VideoRecommendations
+              queries={{ videoRecommendations: { videoId } }}
+            />
+          </TabPanel>
+          <TabPanel value={value} index={1}>
+            <Typography variant="h4">{t('common:coming_soon')}</Typography>
+          </TabPanel>
         </Box>
       )}
     </Box>

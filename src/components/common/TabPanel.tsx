@@ -18,7 +18,11 @@ export const TabPanel: React.FC<TabPanelProps> = (props) => {
       aria-labelledby={`simple-tab-${index}`}
       {...other}
     >
-      {value === index && <Box p={3}>{children}</Box>}
+      {value === index && (
+        <Box p={3} padding={0}>
+          {children}
+        </Box>
+      )}
     </div>
   );
 };

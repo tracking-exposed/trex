@@ -4,7 +4,7 @@ import { pipe } from 'fp-ts/lib/function';
 import * as React from 'react';
 import { accountSettings } from '../../API/queries';
 import { VideoCard } from './VideoCard';
-import { VideoRecommendations } from './VideoRecommendations';
+import { VideoRecommendations } from './ContentCreatorVideoRecommendations';
 import * as QR from 'avenger/lib/QueryResult';
 import { LazyFullSizeLoader } from '../common/FullSizeLoader';
 import { ErrorBox } from '../common/ErrorBox';
