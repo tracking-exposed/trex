@@ -9,6 +9,7 @@ import { creatorVideos } from '../../API/queries';
 import { ErrorBox } from '../common/ErrorBox';
 import { LazyFullSizeLoader } from '../common/FullSizeLoader';
 import { VideoCard } from './VideoCard';
+import { useTranslation } from 'react-i18next';
 
 const withQueries = declareQueries({ videos: creatorVideos });
 
@@ -20,11 +21,12 @@ interface CreatorVideosProps extends Q {
 
 export const CreatorVideos = withQueries<CreatorVideosProps>(
   ({ queries, onVideoClick }): React.ReactElement => {
+    const { t } = useTranslation();
     return pipe(
       queries,
       QR.fold(LazyFullSizeLoader, ErrorBox, ({ videos }) => {
         if (videos.length === 0) {
-          return <Typography>No videos found.</Typography>;
+          return <Typography>{t('videos:no_results')}</Typography>;
         }
 
         return (

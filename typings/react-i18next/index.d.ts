@@ -5,17 +5,24 @@ declare module 'react-i18next' {
     resources: {
       title: string;
       recommendations: {
-        total: string
-      }
+        title: string;
+        total: string;
+        url: string;
+        yours: string;
+      };
+      account: {
+        channel: string;
+        channelVideos: string;
+      };
       dashboard: {
-        title: string
-      },
+        title: string;
+      };
       popup: {
         version: string;
-      },
+      };
       statistics: {
-        title: string
-      },
+        title: string;
+      };
       settings: {
         contentCreatorRecommendationLabel: string;
         contentCreatorRecommendationHint: string;
@@ -23,7 +30,28 @@ declare module 'react-i18next' {
         communityRecommendationsHint: string;
         contributeToIndipendentStatsLabel: string;
         contributeToIndipendentStatsHint: string;
-      }
+      };
+      videos: {
+        no_results: string;
+        no_selected: string;
+      };
+      actions: {
+        add: string;
+        delete: string;
+        clear: string;
+        editThisVideo: string;
+        importVideos: string;
+        addToCurrentVideo: string;
+        removeFromCurrentVideo: string;
+        compare: string;
+        related: string;
+      };
+      collaborativeAnalytics: {
+        faq_1_question: string;
+        faq_2_question: string;
+        faq_3_question: string;
+        faq_4_question: string;
+      };
     };
   }
 }

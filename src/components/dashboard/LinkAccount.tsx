@@ -10,6 +10,7 @@ import * as QR from 'avenger/lib/QueryResult';
 import { declareQueries } from 'avenger/lib/react';
 import { pipe } from 'fp-ts/lib/function';
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { registerCreatorChannel, updateSettings } from '../../API/commands';
 import * as queries from '../../API/queries';
 import { ErrorBox } from '../../components/common/ErrorBox';
@@ -24,6 +25,8 @@ export const LinkAccount = withQueries(({ queries }) => {
   return pipe(
     queries,
     QR.fold(LazyFullSizeLoader, ErrorBox, ({ accountSettings }) => {
+      const { t } = useTranslation();
+
       const [channel, setChannel] = React.useState<string | null>(
         accountSettings.channelCreatorId
       );
@@ -72,7 +75,7 @@ export const LinkAccount = withQueries(({ queries }) => {
           <Grid item md={4}>
             <FormControl>
               <InputLabel htmlFor="creator-channel">
-                Your Channel name (uno, due)
+                {t('account:channel')}
               </InputLabel>
               <Input
                 id="creator-channel"
@@ -88,7 +91,7 @@ export const LinkAccount = withQueries(({ queries }) => {
                 disabled={creatorChannelValue === ''}
                 onClick={() => handleChannelDelete()}
               >
-                Delete
+                {t('actions:delete')}
               </Button>
 
               <Button
@@ -97,12 +100,12 @@ export const LinkAccount = withQueries(({ queries }) => {
                 disabled={creatorChannelValue === ''}
                 onClick={handleChannelSubmit}
               >
-                Import videos
+                {t('actions:importVideos')}
               </Button>
             </FormControl>
           </Grid>
           <Grid item md={4}>
-            <Typography>Channel videos</Typography>
+            <Typography>{t('account:channelVideos')}</Typography>
             <CreatorVideos />
           </Grid>
         </Grid>

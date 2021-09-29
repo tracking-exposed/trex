@@ -1,7 +1,9 @@
+import { Typography } from '@material-ui/core';
 import Chip from '@material-ui/core/Chip';
 import Grid from '@material-ui/core/Grid';
 import { makeStyles } from '@material-ui/core/styles';
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -25,10 +27,13 @@ const useStyles = makeStyles((theme) => ({
 
 export const YCAInalitics: React.FC = () => {
   const classes = useStyles();
+  const { t } = useTranslation();
   return (
     <Grid container alignItems="center">
       <Grid item md={12}>
-        <h2>Which videos are recommended close to yours video?</h2>
+        <Typography variant="h4">
+          {t('collaborativeAnalytics:faq_1_question')}
+        </Typography>
         <Chip
           className={classes.chip}
           color="primary"
@@ -46,16 +51,22 @@ export const YCAInalitics: React.FC = () => {
         />
       </Grid>
       <Grid item md={12}>
-        <h2>Where your videos appears as recommended?</h2>
+        <Typography variant="h4">
+          {t('collaborativeAnalytics:faq_1_question')}
+        </Typography>
         <Chip className={classes.chip} color="primary" label="Load list" />
       </Grid>
       <Grid item md={12}>
-        <h2>Which advertising get served over your videos?</h2>
+        <Typography variant="h4">
+          {t('collaborativeAnalytics:faq_3_question')}
+        </Typography>
         <Chip className={classes.chip} color="primary" label="Load list" />
       </Grid>
 
       <Grid item md={12}>
-        <h2>Shadow-banning analysis</h2>
+        <Typography variant="h4">
+          {t('collaborativeAnalytics:faq_4_question')}
+        </Typography>
         <Chip
           className={classes.chip}
           color="primary"
