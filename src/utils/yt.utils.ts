@@ -1,14 +1,4 @@
-/*
- * A list of youtube specific function to parse and assess URLs or conditions
- */
-
-import url from 'url';
-import querystring from 'querystring';
-
-export function getVideoId(
-  locationhref: string
-): string | string[] | undefined {
-  const urlinfo = new url.URL(locationhref);
-  const p = querystring.parse(urlinfo.search);
-  return p.v;
+export function getVideoId(locationhref: string): string | undefined {
+  const p = new URLSearchParams(locationhref.split('?')[1]);
+  return p.get('v') ?? undefined;
 }

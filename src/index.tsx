@@ -1,8 +1,8 @@
 import { ThemeProvider } from '@material-ui/styles';
 import React from 'react';
 import ReactDOM from 'react-dom';
-import { Dashboard } from './chrome/dashboard/Dashboard';
-import reportWebVitals from './chrome/dashboard/reportWebVitals';
+import { Dashboard } from './components/dashboard/Dashboard';
+import reportWebVitals from './reportWebVitals';
 import { YCAITheme } from './theme';
 
 ReactDOM.render(
