@@ -1,7 +1,7 @@
 import { Box } from '@material-ui/core';
 import { declareQueries } from 'avenger/lib/react';
 import { pipe } from 'fp-ts/lib/function';
-import React from 'react';
+import * as React from 'react';
 import { accountSettings } from '../../API/queries';
 import { VideoCard } from './VideoCard';
 import { VideoRecommendations } from './VideoRecommendations';
@@ -12,8 +12,8 @@ import { useTranslation } from 'react-i18next';
 
 const withQueries = declareQueries({ accountSettings });
 
-const VideoCardWithQuery = withQueries((props) => {
-  const { t} = useTranslation();
+export const CurrentVideoOnEdit = withQueries((props): React.ReactElement => {
+  const { t } = useTranslation();
   return pipe(
     props.queries,
     QR.fold(
@@ -23,17 +23,15 @@ const VideoCardWithQuery = withQueries((props) => {
         if (video === null) {
           return <div>{t('videos:no_selected')}</div>;
         }
-        return <VideoCard videoId={video.videoId} title={video.title} />;
+        return (
+          <Box>
+            <VideoCard videoId={video.videoId} title={video.title} />
+            <VideoRecommendations
+              queries={{ videoRecommendations: { videoId: video.videoId } }}
+            />
+          </Box>
+        );
       }
     )
   );
 });
-
-export const CurrentVideoOnEdit: React.FC = () => {
-  return (
-    <Box>
-      <VideoCardWithQuery />
-      <VideoRecommendations />
-    </Box>
-  );
-};

@@ -1,21 +1,14 @@
 import AppBar from '@material-ui/core/AppBar';
 import Grid from '@material-ui/core/Grid';
 import { makeStyles } from '@material-ui/core/styles';
-import Tab from '@material-ui/core/Tab';
 import Tabs from '@material-ui/core/Tabs';
 import React from 'react';
 import Advanced from './Advanced';
-import { TabPanel } from '../TabPanel';
+import { Tab} from '../common/Tab';
+import { TabPanel } from '../common/TabPanel';
 import { LinkAccount } from './LinkAccount';
 import { ManageVideosPanel } from './ManageVideosPanel';
 import { YCAInalitics } from './YCAInalitics';
-
-function a11yProps(index: number): { [key: string]: string } {
-  return {
-    id: `simple-tab-${index}`,
-    'aria-controls': `simple-tabpanel-${index}`,
-  };
-}
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -41,10 +34,10 @@ export const Dashboard: React.FC = () => {
           onChange={handleChange}
           aria-label="simple tabs example"
         >
-          <Tab label="Link your account" {...a11yProps(0)} />
-          <Tab label="Manage recommendations" {...a11yProps(1)} />
-          <Tab label="Collaborative Analytics" {...a11yProps(2)} />
-          <Tab label="Advanced Settings" {...a11yProps(3)} />
+          <Tab label="Link your account" index={0} />
+          <Tab label="Manage recommendations" index={1} />
+          <Tab label="Collaborative Analytics" index={2} />
+          <Tab label="Advanced Settings" index={3} />
         </Tabs>
       </AppBar>
       <Grid container>

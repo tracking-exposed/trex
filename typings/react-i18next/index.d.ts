@@ -34,6 +34,7 @@ declare module 'react-i18next' {
       videos: {
         no_results: string;
         no_selected: string;
+        no_video_id: string;
       };
       actions: {
         add: string;
@@ -51,6 +52,11 @@ declare module 'react-i18next' {
         faq_2_question: string;
         faq_3_question: string;
         faq_4_question: string;
+      };
+      ytVideoPage: {
+        firstTab: string;
+        secondTab: string;
+        thirdTab: string;
       };
     };
   }

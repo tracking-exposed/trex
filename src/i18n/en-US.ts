@@ -31,6 +31,7 @@ const resources: CustomTypeOptions['resources'] = {
   videos: {
     no_results: 'No videos found.',
     no_selected: 'No video selected',
+    no_video_id: 'No video id found',
   },
   settings: {
     contentCreatorRecommendationLabel: 'Content Creator Recommendations',
@@ -44,8 +45,13 @@ const resources: CustomTypeOptions['resources'] = {
   collaborativeAnalytics: {
     faq_1_question: 'Which videos are recommended close to yours video?',
     faq_2_question: 'Where your videos appears as recommended?',
-    faq_3_question: "Which advertising get served over your videos?",
-    faq_4_question: "Shadow-banning analysis"
+    faq_3_question: 'Which advertising get served over your videos?',
+    faq_4_question: 'Shadow-banning analysis',
+  },
+  ytVideoPage: {
+    firstTab: 'Recommendations',
+    secondTab: 'Youtube',
+    thirdTab: 'Youtube',
   },
 };
 
