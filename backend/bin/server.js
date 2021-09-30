@@ -98,36 +98,25 @@ app.get('/api/v1/videoId/:query', function(req, res) {
 app.get('/api/v1/related/:query', function(req, res) {
     return dispatchPromise('getRelated', req, res);
 });
-app.get('/api/v1/videoCSV/:query/:amount?', function(req, res) {
-    return dispatchPromise('getVideoCSV', req, res);
-});
-app.get('/api/v1/author/:query/:amount?', function(req, res) {
-    return dispatchPromise('getByAuthor', req, res);
-});
+app.get('/api/v1/videoCSV/:query/:amount?', (req, res) => dispatchPromise('getVideoCSV', req, res));
+
+app.get('/api/v1/author/:query/:amount?', (req, res) => dispatchPromise('getByAuthor', req, res));
 
 /* This is import and validate the key */
-app.post('/api/v:version/validate', function(req, res) {
-    return dispatchPromise('validateKey', req, res);
-});
-app.post('/api/v1/events', function(req, res) {
-    return dispatchPromise('discontinued', req, res);
-});
-app.post('/api/v2/events', function(req, res) {
-    return dispatchPromise('processEvents2', req, res);
-});
+app.post('/api/v:version/validate', (req, res) => dispatchPromise('validateKey', req, res));
+
+app.post('/api/v1/events', (req, res) => dispatchPromise('discontinued', req, res));
+
+app.post('/api/v2/events', (req, res) => dispatchPromise('processEvents2', req, res))
 
 /* new timeline timeseries on top */
-app.get('/api/v1/personal/:publicKey/timeline/:paging?', (req, res) => {
-    return dispatchPromise('getPersonalTimeline', req, res);
-});
+app.get('/api/v1/personal/:publicKey/timeline/:paging?', (req, res) => dispatchPromise('getPersonalTimeline', req, res));
+
 /* download your CSV (home or video) */
-app.get('/api/v2/personal/:publicKey/:type/csv', function(req, res) {
-    return dispatchPromise('getPersonalCSV', req, res);
-});
+app.get('/api/v2/personal/:publicKey/:type/csv', (req, res) => dispatchPromise('getPersonalCSV', req, res);
+
 /* API for researcher: get your related as single list */
-app.get('/api/v1/personal/:publicKey/related/:paging?', function(req, res) {
-    return dispatchPromise('getPersonalRelated', req, res);
-});
+app.get('/api/v1/personal/:publicKey/related/:paging?', (req, res) => dispatchPromise('getPersonalRelated', req, res));
 
 app.post('/api/v1/registerEmail', (req, res) => dispatchPromise('registerEmail', req, res));
 
