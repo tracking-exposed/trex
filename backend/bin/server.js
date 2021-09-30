@@ -36,7 +36,6 @@ function dispatchPromise(name, req, res) {
         res.send("function not found");
         return false;
     }
-    console.log(name, "params", req.params, "body", req.body);
     return new Promise.resolve(func(req)).then(function(httpresult) {
 
         if(!httpresult) {
