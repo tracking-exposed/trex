@@ -108,7 +108,7 @@ app.get('/api/v2/personal/:publicKey/:type/csv', (req, res) => dispatchPromise('
 /* API for researcher: get your related as single list */
 app.get('/api/v1/personal/:publicKey/related/:paging?', (req, res) => dispatchPromise('getPersonalRelated', req, res));
 
-app.post('/api/v1/registerEmail', (req, res) => dispatchPromise('registerEmail', req, res));
+app.post('/api/v3/registerEmail', (req, res) => dispatchPromise('registerEmail', req, res));
 
 /* record answers from surveys */
 app.post('/api/v1/recordAnswers', (req, res) => dispatchPromise("recordAnswers", req, res))
