@@ -86,34 +86,23 @@ app.options('/api/', cors())
 app.use(bodyParser.json({limit: '6mb'}));
 app.use(bodyParser.urlencoded({limit: '6mb', extended: true}));
 
-app.get('/api/v1/last', function(req, res) {
-    return dispatchPromise('getLast', req, res);
-});
-app.get('/api/v1/home', function(req, res) {
-    return dispatchPromise('getLastHome', req, res);
-});
-app.get('/api/v1/videoId/:query', function(req, res) {
-    return dispatchPromise('getVideoId', req, res);
-});
-app.get('/api/v1/related/:query', function(req, res) {
-    return dispatchPromise('getRelated', req, res);
-});
-app.get('/api/v1/videoCSV/:query/:amount?', (req, res) => dispatchPromise('getVideoCSV', req, res));
-
-app.get('/api/v1/author/:query/:amount?', (req, res) => dispatchPromise('getByAuthor', req, res));
+app.get('/api/v1/last', (req, res) => dispatchPromise('getLast', req, res))
+app.get('/api/v1/home', (req, res) => dispatchPromise('getLastHome', req, res))
+app.get('/api/v1/videoId/:query', (req, res) => dispatchPromise('getVideoId', req, res))
+app.get('/api/v1/related/:query', (req, res) => dispatchPromise('getRelated', req, res))
+app.get('/api/v1/videoCSV/:query/:amount?', (req, res) => dispatchPromise('getVideoCSV', req, res))
+app.get('/api/v1/author/:query/:amount?', (req, res) => dispatchPromise('getByAuthor', req, res))
 
 /* This is import and validate the key */
-app.post('/api/v:version/validate', (req, res) => dispatchPromise('validateKey', req, res));
-
-app.post('/api/v1/events', (req, res) => dispatchPromise('discontinued', req, res));
-
+app.post('/api/v:version/validate', (req, res) => dispatchPromise('validateKey', req, res))
+app.post('/api/v1/events', (req, res) => dispatchPromise('discontinued', req, res))
 app.post('/api/v2/events', (req, res) => dispatchPromise('processEvents2', req, res))
 
 /* new timeline timeseries on top */
-app.get('/api/v1/personal/:publicKey/timeline/:paging?', (req, res) => dispatchPromise('getPersonalTimeline', req, res));
+app.get('/api/v1/personal/:publicKey/timeline/:paging?', (req, res) => dispatchPromise('getPersonalTimeline', req, res))
 
 /* download your CSV (home or video) */
-app.get('/api/v2/personal/:publicKey/:type/csv', (req, res) => dispatchPromise('getPersonalCSV', req, res);
+app.get('/api/v2/personal/:publicKey/:type/csv', (req, res) => dispatchPromise('getPersonalCSV', req, res))
 
 /* API for researcher: get your related as single list */
 app.get('/api/v1/personal/:publicKey/related/:paging?', (req, res) => dispatchPromise('getPersonalRelated', req, res));
@@ -121,175 +110,87 @@ app.get('/api/v1/personal/:publicKey/related/:paging?', (req, res) => dispatchPr
 app.post('/api/v1/registerEmail', (req, res) => dispatchPromise('registerEmail', req, res));
 
 /* record answers from surveys */
-app.post('/api/v1/recordAnswers', function(req, res) {
-    return dispatchPromise("recordAnswers", req, res);
-});
-
-app.get('/api/v1/retrieveAnswers/:key', function(req, res) {
-    return dispatchPromise("retrieveAnswers", req, res);
-});
-app.get('/api/v1/retrieveAnswersCSV/:qName/:key', function(req, res) {
-    return dispatchPromise("retrieveAnswersCSV", req, res);
-});
+app.post('/api/v1/recordAnswers', (req, res) => dispatchPromise("recordAnswers", req, res))
+app.get('/api/v1/retrieveAnswers/:key', (req, res) => dispatchPromise("retrieveAnswers", req, res))
+app.get('/api/v1/retrieveAnswersCSV/:qName/:key', (req, res) => dispatchPromise("retrieveAnswersCSV", req, res))
 
 /* researcher */
-app.get('/api/v1/wetest/:key/:filter', function(req, res) {
-    return dispatchPromise('researcher', req, res);
-});
+app.get('/api/v1/wetest/:key/:filter', (req, res) => dispatchPromise('researcher', req, res))
 
 /* this return a summary (profile, total amount of videos, last videos, last searches */
-app.get('/api/v1/personal/:publicKey/:paging?', function(req, res) {
-    return dispatchPromise('getPersonal', req, res);
-});
+app.get('/api/v1/personal/:publicKey/:paging?', (req, res) => dispatchPromise('getPersonal', req, res))
 
 /* action on specific evidence */
-app.delete('/api/v2/personal/:publicKey/selector/id/:id', (req, res) => {
-    return dispatchPromise('removeEvidence', req, res);
-});
-app.get('/api/v2/personal/:publicKey/selector/:key/:value', (req, res) => {
-    return dispatchPromise('getEvidences', req, res);
-});
+app.delete('/api/v2/personal/:publicKey/selector/id/:id', (req, res) => dispatchPromise('removeEvidence', req, res))
+app.get('/api/v2/personal/:publicKey/selector/:key/:value', (req, res) => dispatchPromise('getEvidences', req, res))
 
 /* Update in progress, toward parserv3 */
-app.get('/api/v1/html/:metadataId', function(req, res) {
-    return dispatchPromise('unitById', req, res);
-});
+app.get('/api/v1/html/:metadataId', (req, res) => dispatchPromise('unitById', req, res))
 
 /* rsync your data back */
-app.get('/api/v1/rsync/:daysago?', function(req, res) {
-    return dispatchPromise('rsync', req, res);
-});
+app.get('/api/v1/rsync/:daysago?', (req, res) => dispatchPromise('rsync', req, res))
 
 /* monitor for admin */
-app.get('/api/v2/monitor/:key', function(req, res) {
-    return dispatchPromise('getMonitor', req, res);
-});
+app.get('/api/v2/monitor/:key', (req, res) => dispatchPromise('getMonitor', req, res))
 
 /* research subscription and I/O --- note the promise is still rsync? wtf. */
-app.get('/api/v1/research/:publicKey', function(req, res) {
-    return dispatchPromise('rsync', req, res);
-});
+app.get('/api/v1/research/:publicKey', (req, res) => dispatchPromise('rsync', req, res))
 
 /* admin */
-app.get('/api/v1/mirror/:key', function(req, res) {
-    return dispatchPromise('getMirror', req, res);
-});
+app.get('/api/v1/mirror/:key', (req, res) => dispatchPromise('getMirror', req, res))
 
 /* handshake should be renamed for youchoose functionality */
-app.post('/api/v3/handshake', function(req, res) {
-    return dispatchPromise('youChooseByVideoId', req, res);
-});
-app.get('/api/v3/video/:videoId/recommendations', function(req, res) {
-    return dispatchPromise('youChooseByVideoId', req, res);
-});
-app.get('/api/v3/recommendations/:ids', function(req, res) {
-    return dispatchPromise('recommendationById', req, res);
-});
+app.post('/api/v3/handshake', (req, res) => dispatchPromise('youChooseByVideoId', req, res))
+app.get('/api/v3/video/:videoId/recommendations', (req, res) => dispatchPromise('youChooseByVideoId', req, res))
+app.get('/api/v3/recommendations/:ids', (req, res) => dispatchPromise('recommendationById', req, res))
 
-app.post('/api/v3/creator/updateVideo', function(req, res) {
-    return dispatchPromise('updateVideoRec', req, res);
-});
-app.post('/api/v3/creator/ogp', cors(), function(req, res) {
-    return dispatchPromise('ogpProxy', req, res);
-});
-app.get('/api/v3/creator/videos/:publicKey', function(req, res) {
-    return dispatchPromise('getVideoByCreators', req, res);
-});
-app.get('/api/v3/creator/recommendations/:publicKey', function(req, res) {
-    return dispatchPromise('youChooseByProfile', req, res);
-});
-app.get('/api/v3/creator/register/:channelId', function(req, res) {
-    return dispatchPromise('creatorRegister', req, res);
-});
+app.post('/api/v3/creator/updateVideo', (req, res) => dispatchPromise('updateVideoRec', req, res))
+app.post('/api/v3/creator/ogp', cors(), (req, res) => dispatchPromise('ogpProxy', req, res))
+app.get('/api/v3/creator/videos/:publicKey', (req, res) => dispatchPromise('getVideoByCreators', req, res))
+
+app.get('/api/v3/creator/recommendations/:publicKey', (req, res) => dispatchPromise('youChooseByProfile', req, res))
+app.get('/api/v3/creator/register/:channelId', (req, res) => dispatchPromise('creatorRegister', req, res))
 
 /* ^^^^^ T t T ^^^^ * T * t * T * t * ^^^^^^^^^ */
-app.post('/api/v3/directives/:directiveType', function(req, res) {
-    return dispatchPromise('postDirective', req, res);
-});
-app.get('/api/v3/directives/:experimentId', function(req, res) {
-    return dispatchPromise('fetchDirective', req, res);
-})
-app.post('/api/v2/handshake', function(req, res) {
-    return dispatchPromise('experimentChannel3', req, res)
-})
-app.delete('/api/v3/experiment/:testTime', function(req, res) {
-    return dispatchPromise('concludeExperiment3', req, res);
-});
+app.post('/api/v3/directives/:directiveType', (req, res) => dispatchPromise('postDirective', req, res))
+app.get('/api/v3/directives/:experimentId', (req, res) => dispatchPromise('fetchDirective', req, res))
+app.post('/api/v2/handshake', (req, res) => dispatchPromise('experimentChannel3', req, res))
+app.delete('/api/v3/experiment/:testTime', (req, res) => dispatchPromise('concludeExperiment3', req, res))
 /* ^^^^^ T t T ^^^^ * T * t * T * t * ^^^^^^^^^ */
 
 /* impact */
-app.get('/api/v2/statistics/:name/:unit/:amount', function(req, res) {
-    return dispatchPromise('getStatistics', req, res);
-});
+app.get('/api/v2/statistics/:name/:unit/:amount', (req, res) => dispatchPromise('getStatistics', req, res))
 
 /* delete a group from your profile, create a new tagId */
-app.delete('/api/v2/profile/:publicKey/tag/:tagName', (req, res) => {
-    return dispatchPromise('removeTag', req, res);
-});
-app.post('/api/v2/profile/:publicKey/tag', (req, res) => {
-    return dispatchPromise('createAndOrJoinTag', req, res);
-});
+app.delete('/api/v2/profile/:publicKey/tag/:tagName', (req, res) => dispatchPromise('removeTag', req, res))
+app.post('/api/v2/profile/:publicKey/tag', (req, res) => dispatchPromise('createAndOrJoinTag', req, res))
 
 /* update and current profile */
-app.get('/api/v2/profile/:publicKey/tag', (req, res) => {
-    return dispatchPromise('profileStatus', req, res);
-});
-app.post('/api/v2/profile/:publicKey', (req, res) => {
-    return dispatchPromise("updateProfile", req, res);
-});
+app.get('/api/v2/profile/:publicKey/tag', (req, res) => dispatchPromise('profileStatus', req, res))
+app.post('/api/v2/profile/:publicKey', (req, res) => dispatchPromise("updateProfile", req, res))
 
 /* to get results of search queries! */
-app.get('/api/v2/searches/:idList/dot', (req, res) => {
-    return dispatchPromise('getSearchesDot', req, res);
-});
-app.get('/api/v2/searches/:query/CSV', (req, res) => {
-    return dispatchPromise('getSearchesCSV', req, res);
-});
-app.get('/api/v2/queries/:campaignName', (req, res) => {
-    return dispatchPromise('getQueries', req, res);
-});
-app.get('/api/v2/searches/:query/:paging?', (req, res) => {
-    return dispatchPromise('getSearches', req, res);
-});
-app.get('/api/v2/searchid/:listof', (req, res) => {
-    return dispatchPromise('getSearchDetails', req, res);
-});
-app.get('/api/v2/search/keywords/:paging?', (req, res) => {
-    return dispatchPromise('getSearchKeywords', req, res);
-});
+app.get('/api/v2/searches/:idList/dot', (req, res) => dispatchPromise('getSearchesDot', req, res))
+app.get('/api/v2/searches/:query/CSV', (req, res) => dispatchPromise('getSearchesCSV', req, res))
+app.get('/api/v2/queries/:campaignName', (req, res) => dispatchPromise('getQueries', req, res))
+app.get('/api/v2/searches/:query/:paging?', (req, res) => dispatchPromise('getSearches', req, res))
+app.get('/api/v2/searchid/:listof', (req, res) => dispatchPromise('getSearchDetails', req, res))
+app.get('/api/v2/search/keywords/:paging?', (req, res) => dispatchPromise('getSearchKeywords', req, res))
 
 /* to configure search comparison */
-app.post('/api/v2/campaigns/:key', (req, res) => {
-    return dispatchPromise('updateCampaigns', req, res);
-});
+app.post('/api/v2/campaigns/:key', (req, res) => dispatchPromise('updateCampaigns', req, res))
 
 /* guardoni support APIs */
-app.post('/api/v2/experiment/opening', (req, res) => {
-    // this is the fourth way tested to track experiments 
-    return dispatchPromise('experimentOpening', req, res);
-});
-app.post('/api/v2/experiment', (req, res) => {
-    return dispatchPromise('experimentSubmission', req, res);
-});
-app.get('/api/v2/experiment/:expname/csv', (req, res) => {
-    return dispatchPromise('experimentCSV', req, res);
-});
-app.get('/api/v2/experiment/:expname/dot', cors(), (req, res) => {
-    return dispatchPromise('experimentDOT', req, res);
-});
-app.get('/api/v2/experiment/:expname/json', cors(), (req, res) => {
-    return dispatchPromise('experimentJSON', req, res);
-});
-app.get('/api/v2/guardoni/list', (req, res) => {
-    return dispatchPromise('getAllExperiments', req, res);
-});
+app.post('/api/v2/experiment/opening', (req, res) => dispatchPromise('experimentOpening', req, res))
+app.post('/api/v2/experiment', (req, res) => dispatchPromise('experimentSubmission', req, res))
+app.get('/api/v2/experiment/:expname/csv', (req, res) => dispatchPromise('experimentCSV', req, res))
+app.get('/api/v2/experiment/:expname/dot', cors(), (req, res) => dispatchPromise('experimentDOT', req, res))
+app.get('/api/v2/experiment/:expname/json', cors(), (req, res) => dispatchPromise('experimentJSON', req, res))
+app.get('/api/v2/guardoni/list', (req, res) => dispatchPromise('getAllExperiments', req, res))
+
 // dynamically configured and retrived guardoni settings 
-app.post('/api/v2/guardoni/:experiment/:botname', (req, res) => {
-    return dispatchPromise('guardoniConfigure', req, res);
-});
-app.get('/api/v2/guardoni/:experiment/:botname', (req, res) => {
-    return dispatchPromise('guardoniGenerate', req, res);
-});
+app.post('/api/v2/guardoni/:experiment/:botname', (req, res) => dispatchPromise('guardoniConfigure', req, res))
+app.get('/api/v2/guardoni/:experiment/:botname', (req, res) => dispatchPromise('guardoniGenerate', req, res))
 
 /* security checks = is the password set and is not the default? (more checks might come) */
 security.checkKeyIsSet();
