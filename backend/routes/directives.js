@@ -111,7 +111,7 @@ function timeconv(maybestr, defaultMs) {
 function standardDirectives(videoinfo, counter) {
   return {
     ...videoinfo, // watchTime, urltag, url
-    loadFor: 4000,
+    loadFor: 10000,
   };
 }
 
@@ -145,9 +145,7 @@ function chiaroScuro(videoinfo, counter) {
       name: `${mutationStr}-video-${counter}`,
       targetVideoId: videoId,
     }
-
   });
-
 }
 
 module.exports = {

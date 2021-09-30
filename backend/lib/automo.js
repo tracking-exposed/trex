@@ -520,6 +520,7 @@ async function getTransformedMetadata(chain) {
 }
 
 async function saveGuardoni(guardobj) {
+    throw new Error("Please update this!");
     const mongoc = await mongo3.clientConnect({concurrency: 1});
     const result = await mongo3
         .writeOne(mongoc, nconf.get('schema').guardoni, guardobj);
@@ -528,6 +529,7 @@ async function saveGuardoni(guardobj) {
 }
 
 async function getGuardoni(guardobj) {
+    throw new Error("Please update this!");
     const mongoc = await mongo3.clientConnect({concurrency: 1});
     const result = await mongo3
         .readLimit(mongoc, nconf.get('schema').guardoni, guardobj,
@@ -536,126 +538,55 @@ async function getGuardoni(guardobj) {
     return result;
 }
 
-async function deleteLeftovers(mongoc, publicKey) {
-    
+async function markExperCompleted(mongoc, filter) {
+    return await mongo3
+        .updateOne(mongoc, nconf.get('schema').experiments,
+            filter, {
+                status: "completed",
+                completeAt: new Date()
+            });
+}
+
+async function concludeExperiment(testTime) {
+    const mongoc = await mongo3.clientConnect({concurrency: 1});
+    debug("concludeExperiment—mark experiments by %j", { testTime } );
+    const r = await markExperCompleted(mongoc, { testTime } );
+    debug("з %j", r.result);
+    await mongoc.close();
+    return r;
 }
 
 async function saveExperiment(expobj) {
     /* a given public Key can have only one experiment per time */
     const mongoc = await mongo3.clientConnect({concurrency: 1});
+    const filter = {
+        publicKey: expobj.publicKey,
+        status: 'active'
+    };
+    debug("saveExperiment—mark experiment %j as completed", filter);
+    const sure = await markExperCompleted(mongoc, filter);
+    debug("ə %j", sure.result);
+    expobj.status = "active";
     const result = await mongo3
         .writeOne(mongoc, nconf.get('schema').experiments, expobj);
     await mongoc.close();
     return result;
 }
 
-async function enhanceHTMLifExperiment(htmls) {
-    /* this function remove the html.type = info
-     * and look if an experiment fits in the html */
-    const ret = [];
-    let enhanced = 0; // counter for debugging
-    const mongoc = await mongo3.clientConnect({concurrency: 8});
-    for (html of htmls) {
-        if(html.nature.type != 'video') {
-            ret.push(html);
-            continue;
+async function pullExperimentInfo(publicKey) {
+    // because only one experiment per publicKey might
+    // exist in a due time, we can be quite sure on the results
+    // here
+    debug("TODO —pullExperimentInfo— evaluate if is better use the two timings");
+    const mongoc = await mongo3.clientConnect({concurrency: 1});
+    const exp = await mongo3.readOne(mongoc,
+        nconf.get('schema').experiments, {
+            publicKey,
+            status: "active"
         }
-        const exp = await mongo3.readLimit(mongoc,
-            nconf.get('schema').experiments, {
-            videos: html.nature.videoId,
-            publicKey: html.publicKey,
-        }, { testTime: -1 }, 1, 0);
-        if(!exp.length) {
-            ret.push(html);
-            continue;
-        }
-        const order = exp[0].videos.indexOf(html.nature.videoId);
-        html.experiment = {
-            profile: exp[0].profile,
-            experiment: exp[0].name,
-            session: exp[0].sessionCounter,
-            videoName: exp[0].info[order].name,
-            watchingTime: exp[0].info[order].watchFor,
-        }
-        enhanced++;
-        ret.push(html);
-    }
-    if(enhanced)
-        debug("enhanceHTMLS enhanced %d", enhanced);
+    );
     await mongoc.close();
-    return ret;
-}
-
-async function extendMetaByExperiment(experimentId) {
-
-    const mongoc = await mongo3.clientConnect({concurrency: 10});
-    const expers = await mongo3.readLimit(mongoc, nconf.get('schema').experiments, {
-        name: experimentId,
-    }, {}, 3000, 0);
-    /* here would be used: name, publicKey, testTime, to iterate over metadata and mark them */
-    const profiles = _.groupBy(expers, 'publicKey');
-    const experslinks = _.reduce(profiles, function(memo, explist, publicKey) {
-        const guarord = _.sortBy(explist, 'testTime')
-        // debug(guarord);
-        // guarantee order it means, because we need to write mongofilter
-        // that takes all the metadata after the test. this piece of code 
-        // save the previous test as "lte" clausole.
-        let boundary = null;
-        const filter = { publicKey };
-        _.each(guarord, function(experiment) {
-            filter.savingTime = {
-                "$gte": new Date(experiment.testTime)
-            };
-            if(boundary)
-                filter.savingTime["$lt"] = boundary;
-
-            boundary = new Date(moment(experiment.testTime).toISOString());
-            _.each(experiment.info, function(directive) {
-                const uq = url.parse(directive.url);
-                if(uq.pathname !== '/results')
-                    return null;
-
-                const searchTerms = _.trim(qustr.parse(uq.query).search_query);
-                filter.searchTerms = searchTerms;
-
-                memo.push({
-                    filter: _.cloneDeep(filter),
-                    publicKey,
-                    testTime: experiment.testTime,
-                    /* no object-unpacking because of these renames */
-                    directiveName: directive.name,
-                    experimentId: experiment.name,
-                    url: directive.url,
-                    targetVideoId: directive.targetVideoId,
-                    profile: experiment.profile,
-                    sessionCounter: experiment.sessionCounter,
-                });
-            })
-        })
-        return memo;
-    }, [])
-
-    debug("expl %d", experslinks.length);
-
-    // this list of filters perhaps would have been obtained 
-    // with a more efficient mongo query TODO.
-    const ret = [];
-    for (expl of experslinks) {
-        const meta = await mongo3
-            .readLimit(mongoc, nconf.get('schema').searches,
-                expl.filter, { savingTime: -1 }, 100, 1);
-        debug("With filter %j found %d", expl.filter, meta.length);
-        _.each(meta, function(mentry) {
-            ret.push({
-                ...mentry,
-                ..._.omit(expl, ['filter'])
-            })
-        })
-    }
-        
-    await mongoc.close();
-    debug("ret %d data", ret.length);
-    return ret;
+    return exp;
 }
 
 /* enhance experiment add an .experiment to an html and then to a metadata,
@@ -663,6 +594,7 @@ async function extendMetaByExperiment(experimentId) {
  * to return evidences to /experiments/#ID
  */
 async function fetchExperimentData(name) {
+    throw new Error("Please update this!");
     const EVIDLIM = 200;
     const mongoc = await mongo3.clientConnect({concurrency: 1});
     const results = await mongo3
@@ -958,10 +890,11 @@ module.exports = {
 
     /* experiment related operations */
     saveExperiment,
-    enhanceHTMLifExperiment,
-    extendMetaByExperiment,
+    pullExperimentInfo,
     fetchExperimentData,
     getAllExperiments,
+
+    concludeExperiment,
 
     /* youchoose related functions */
     fetchRecommendations,

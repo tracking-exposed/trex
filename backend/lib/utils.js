@@ -217,6 +217,18 @@ function getNatureFromURL(href) {
     }
 }
 
+function extendIfExperiment(expinfo, listOf) {
+    if(expinfo && expinfo.experimentId) {
+        debug("Marking %d objects as part of the experiment %s",
+            listOf.length, expinfo.experimentId);
+        return _.map(listOf, function(o) {
+            o.experiment = expinfo.experimentId;
+            return o;
+        });
+    } else
+        return listOf;
+}
+
 module.exports = {
     hash,
     activeUserCount,
@@ -232,4 +244,5 @@ module.exports = {
     prettify,
     judgeIncrement,
     getNatureFromURL,
+    extendIfExperiment,
 };

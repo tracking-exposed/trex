@@ -114,15 +114,15 @@ async function processEvents2(req) {
         return html;
     });
 
-    const enhanced = await automo.enhanceHTMLifExperiment(htmls);
-    let check;
-    if(enhanced.length) {
-        check = await automo.write(nconf.get('schema').htmls, enhanced);
+    const experinfo = await automo.pullExperimentInfo(supporter.publicKey);
+    const htmlexpstended = utils.extendIfExperiment(experinfo, htmls);
+    if(htmlexpstended.length) {
+        const check = await automo.write(nconf.get('schema').htmls, htmlexpstended);
         if(check && check.error) {
             debug("Error in saving %d htmls %j", _.size(htmls), check);
             return { json: {status: "error", info: check.info }};
         }
-        debug("Saved %d htmls metadataId: %j", enhanced.length, _.uniq(_.map(enhanced, 'metadataId')));
+        debug("Saved %d htmls metadataId: %j", htmlexpstended.length, _.uniq(_.map(htmlexpstended, 'metadataId')));
     }
  
     const labels = _.map(_.filter(htmls, { type: 'info'}), function(e) {
@@ -132,24 +132,22 @@ async function processEvents2(req) {
         _.unset(e, 'html');
         return e;
     });
-    let labelret;
-    if(labels.length) {
-        labelret = await automo.write(nconf.get('schema').labels, labels);
-        if(labelret && labelret.error) {
-            debug("Error in saving %d labels %j", _.size(labels), labelret);
-            return { json: {status: "error", info: labelret.info }};
+    const enhanced = utils.extendIfExperiment(experinfo, labels);
+    if(enhanced.length) {
+        const check = await automo.write(nconf.get('schema').labels, enhanced);
+        if(check && check.error) {
+            debug("Error in saving %d labels %j", _.size(labels), check);
+            return { json: {status: "error", info: check.info }};
         }
         debug("Saved %d labels metadataId: %j", labels.length, _.uniq(_.map(labels, 'metadataId')));
     }
-
-    if(_.size(_.compact(_.map(htmls, 'experiment'))))
-        debug("Experiment submission (%j)", _.map(htmls, 'experiment'));
 
     /* this is what returns to the web-extension */
     return { json: {
         status: "OK",
         supporter,
-        labels: _.size(labels),
+        labels: _.size(enhanced),
+        htmls: _.size(htmlexpstended),
     }};
 };
 

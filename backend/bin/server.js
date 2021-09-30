@@ -212,6 +212,9 @@ app.get('/api/v3/directives/:experimentId', function(req, res) {
 app.post('/api/v2/handshake', function(req, res) {
     return dispatchPromise('experimentChannel3', req, res)
 })
+app.delete('/api/v3/experiment/:testTime', function(req, res) {
+    return dispatchPromise('concludeExperiment3', req, res);
+});
 /* ^^^^^ T t T ^^^^ * T * t * T * t * ^^^^^^^^^ */
 
 /* impact */

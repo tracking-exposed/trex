@@ -67,7 +67,38 @@ async function sleep(ms) {
     })
 }
 
+async function extendAsExperiment(listOf) {
+    // this listOf might belong to different people, so:
+    const byppls = _.groupBy(listOf, 'publicKey');
+    const keys = _.keys(byppls);
+    debug("Looking for experiments related to %d ppls", keys.length);
+    const experiments = [];
+    for (key of keys) {
+        const exp = await automo.pullExperimentInfo(key);
+        if (exp && exp.experimentId)
+            experiments.push(Object.assign({}, key, exp));
+    }
+
+    if (experiments.length)
+        debugger;
+
+    if (!experiments.length)
+        return listOf;
+
+    return _.map(listOf, function (obj) {
+        const exp = experiments[obj.publicKey];
+        if (exp)
+            return {
+                ...obj,
+                ...exp
+            }
+        else
+            return obj;
+    });
+}
+
 function prepareObjectList(o) {
+    console.log(o);
     try {
         const D = new JSDOM(o.html).window.document;
         const node = D.querySelector('[aria-label]');
@@ -152,6 +183,7 @@ function processSearches(e, i) {
      * return either null or a list of video belonging to a search result */
     processedCounter++;
 
+    console.log(e);
     if(!e || !e.acquired || _.size(e.acquired)  === 0 ) {
         debuge("Unmanaged labels.id %s has empty 'acquired' labels", e.id);
         return null;
@@ -319,9 +351,10 @@ async function fetchAndAnalyze(labelFilter) {
     stats.lastamount = stats.currentamount;
     stats.currentamount = _.size(labels.content);
 
+    console.log(labels.content);
     const products = _.map(labels.content, processSearches);
     /* analysis is a list with [ [ video1@searchX, video2@searchX ], null, [ videos@searchY ] ] or 'null' this is why we need to compact asap */
-    const effective = _.flatten(_.compact(products));
+    const effective = await extendAsExperiment(_.flatten(_.compact(products)));
     debug("Processed %d entries, effective searches %d, total searches video entry %d",
         _.size(labels.content), _.size(_.compact(products)), _.size(effective))
 

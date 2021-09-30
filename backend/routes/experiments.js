@@ -259,9 +259,24 @@ async function channel3(req) {
         testTime: new Date(_.get(req.body, 'when')),
         directiveType: _.get(req.body, 'directiveType'),
     }
-    debug("3rd—experiment-comm-channel %j", experimentInfo);
+    debug("channel3: %j", experimentInfo);
     const retval = await automo.saveExperiment(experimentInfo);
     return {json: retval };
+};
+
+async function conclude3(req) {
+    const testTime = req.params.testTime
+    debug("Conclude3 received: %s", testTime);
+    if(testTime.length < 10)
+        return { status: 403 };
+
+    const test = moment(testTime);
+    if(!test.isValid)
+        return { status: 403 };
+    
+    const retval = await automo.concludeExperiment(testTime);
+    debug("ConcludedExperiment retval %j", retval);
+    return { json: retval };
 }
 
 module.exports = {
@@ -276,4 +291,5 @@ module.exports = {
 
     opening,
     channel3,
+    conclude3,
 };

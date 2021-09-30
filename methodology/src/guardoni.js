@@ -40,9 +40,9 @@ async function keypress() {
   }))
 }
 
-async function allowResearcherSomeTimeToSetupTheBrowser() {
+async function allowResearcherSomeTimeToSetupTheBrowser(profileName) {
   console.log("\n\n.:*~*:._.:*~*:._.:*~*:._.:*~*:._.:*~*:._.:*~*:._.:*~*:._.:*~*:.");
-  console.log("Creating profile", nconf.get('evidencetag'));
+  console.log("Creating profile", profileName);
   console.log("You should see a chrome browser (with yttrex installed)")
   console.log("\nPLEASE in that window, open youtube.com and accept the cookie processing.");
   console.log("ONLY AFTER, press ANY KEY here. It will start the collection");
@@ -148,6 +148,7 @@ async function registerCSV(evidencetag, directiveType) {
   return experimentId;
 }
 
+/*
 async function manageChiaroscuro(evidencetag, directiveType, profinfo) {
   const browser = await dispatchBrowser(true, profinfo);
   const experimentId = await registerCSV(evidencetag, directiveType);
@@ -156,8 +157,12 @@ async function manageChiaroscuro(evidencetag, directiveType, profinfo) {
   const directives = await pullDirectives(direurl);
   await writeExperimentInfo(experimentId, profinfo, evidencetag, directiveType);
 
-  await guardoniExecution(experimentId, directives, browser);
-}
+  const t = await guardoniExecution(experimentId, directives, browser);
+  debug("— Guardoni execution took %s",
+    moment.duration(t.end - t.start).humanize());
+  await concludeExperiment(experimentId, profinfo);
+  process.exit(0);
+} */
 
 async function pullDirectives(sourceUrl) {
   let directives = null;
@@ -273,7 +278,6 @@ function buildAPIurl(route, params) {
   if(route === 'directives' && ["chiaroscuro", "comparison"].indexOf(params) !== -1)
     return `${server}/api/v3/${route}/${params}`;
   else {
-    debug("route %s params %s", route, params);
     return `${server}/api/v3/${route}/${params}`;
   }
 }
@@ -307,6 +311,7 @@ function profileExecount(profile, evidencetag) {
   }
 
   data.newProfile = newProfile;
+  data.profileName = profile;
   fs.writeFileSync(guardfile, JSON.stringify(data, undefined, 2), 'utf-8');
   debug("profile %s wrote %j", profile, data);
   return data;
@@ -344,8 +349,9 @@ async function main() {
   const directiveType = !!shadowban ? "chiaroscuro" : "comparison";
 
   debug("Operating as per directive type %s", directiveType);
+  /*
   if(directiveType == 'chiaroscuro')
-    return await manageChiaroscuro(evidencetag, profinfo);
+    return await manageChiaroscuro(evidencetag, profinfo); */
 
   if(!comparison)
     debug("Assuming you want to say --comparison as experiment type");
@@ -392,22 +398,28 @@ async function main() {
   const browser = await dispatchBrowser(false, profinfo);
 
   if(browser.newProfile)
-    await allowResearcherSomeTimeToSetupTheBrowser();
+    await allowResearcherSomeTimeToSetupTheBrowser(profinfo.profileName);
 
-  await guardoniExecution(experiment, directives, browser);
+  const t = await guardoniExecution(experiment, directives, browser);
+  debug("— Guardoni execution took %s",
+    moment.duration(t.end - t.start).humanize());
+  await concludeExperiment(experiment, profinfo);
+  process.exit(0);
 }
 
 async function writeExperimentInfo(experimentId, profinfo, evidencetag, directiveType) {
   debug("Writing experiment Info into extension/experiment.json");
   const cfgfile = path.join('extension', 'experiment.json');
-  fs.writeFileSync(cfgfile, JSON.stringify({
+  const expinfo = {
     experimentId,
     evidencetag,
     directiveType,
     execount: profinfo.execount,
     newProfile: profinfo.newProfile,
     when: new Date()
-  }), 'utf-8');
+  };
+  fs.writeFileSync(cfgfile, JSON.stringify(expinfo), 'utf-8');
+  profinfo.expinfo = expinfo;
 }
 
 async function dispatchBrowser(headless, profinfo) {
@@ -454,7 +466,8 @@ async function dispatchBrowser(headless, profinfo) {
 }
 
 async function guardoniExecution(experiment, directives, browser) {
-
+  let retval = { start: null };
+  retval.start = moment();
   try {
     const DS = './domainSpecific';
     let domainSpecific = null;
@@ -483,7 +496,22 @@ async function guardoniExecution(experiment, directives, browser) {
     await browser.close();
     process.exit(1);
   }
-  process.exit(0);
+  retval.end = moment();
+  return retval;
+}
+
+async function concludeExperiment(experiment, profinfo) {
+  // this conclude the API sent by extension remoteLookup,
+  // a connection to DELETE /api/v3/experiment/:publicKey
+  const url = buildAPIurl(
+    'experiment',
+    moment(profinfo.expinfo.when).toISOString());
+  const response = await fetch(url, {
+    method: 'DELETE'
+  });
+  const body = await response.json();
+  debug("Marked as completed experiment (%s) in DB! %j",
+    experiment, body);
 }
 
 async function operateTab(page, directive, domainSpecific, timeout) {
@@ -524,10 +552,10 @@ async function operateBroweser(page, directives, domainSpecific) {
   }
 }
 
-main ();
-
-
-/* cose mosse da domainspecific che vanno in giro:
- - il salvataggio della chiave pubblica va via estensione
- - la comunicazione all'API experiments viene fatta dall'estensione
- */
+try {
+  main ();
+} catch(error) {
+  console.error(error);
+  console.error("⬆️ Unhandled error! =( ⬆️");
+  process.exit(1);
+}

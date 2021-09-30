@@ -104,7 +104,7 @@ async function interactWithYT(page, directive, wantedState) {
         await page.waitForTimeout(600);
         state = await getYTstatus(page);
     } else
-        debug("Not pressing space as the video is in state %s", state.name);
+        debug("DO NOT press [space] please, as the video is in state [%s]", state.name);
 
     const isError = await page.$('yt-player-error-message-renderer');
     if(!_.isNull(isError)) {
@@ -117,7 +117,9 @@ async function interactWithYT(page, directive, wantedState) {
         "end": directive.watchFor;
     // here is managed the special condition directive.watchFor == "end"
     if(specialwatch == "end") {
-        console.log("This video would be watched till the end!");
+        console.log(directive.url, 
+            "This video would be watched till the end");
+
         for(checktime of _.times(DEFAULT_MAX_TIME / PERIODIC_CHECK_ms)) {
             await page.waitForTimeout(PERIODIC_CHECK_ms);
             let newst = await getYTstatus(page);
@@ -132,7 +134,9 @@ async function interactWithYT(page, directive, wantedState) {
                 debug("While video gets reproduced (#%d check) the state is [%s]", checktime, newst.name);
         }
     } else if(_.isInteger(specialwatch)) {
-        console.log("Watching video for the specified time of:", specialwatch, "milliseconds")
+        console.log(directive.url,
+            "Watching video for the specified time of:",
+            specialwatch, "milliseconds")
         await page.waitForTimeout(specialwatch);
         debug("Finished special watchining time of:", specialwatch, "milliseconds");
     } else {

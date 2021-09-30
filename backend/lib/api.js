@@ -64,7 +64,11 @@ const apiList = {
     experimentDOT:       require('../routes/experiments').dot,
     experimentJSON:      require('../routes/experiments').json,
     experimentOpening:   require('../routes/experiments').opening,
+
+    // used from extension
     experimentChannel3:  require('../routes/experiments').channel3,
+    // used by guardoni to close it
+    concludeExperiment3: require('../routes/experiments').conclude3,
 
     getAllExperiments:   require('../routes/experiments').list,
     guardoniGenerate:    require('../routes/experiments').guardoniGenerate,

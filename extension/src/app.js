@@ -78,7 +78,7 @@ function boot () {
                 console.log("ytTREX disabled!"); // TODO some UX change
                 return null;
             }
-            remoteLookup(ytTrexActions);
+            return remoteLookup(ytTrexActions);
         });
     } else if (_.startsWith(window.location.origin, 'localhost')) {
         console.log('yttrex in localhost: ignored condition');
@@ -86,8 +86,11 @@ function boot () {
     }
 }
 
-function ytTrexActions() {
-    /* these functions are the main activity made in content_script */
+function ytTrexActions(remoteInfo) {
+    /* these functions are the main activity made in 
+       content_script, and ytTrexActions is a callback
+       after remoteLookup */
+    console.log(remoteInfo);
     initializeBlinks();
     adMonitor();
     hrefUpdateMonitor();
@@ -184,71 +187,72 @@ const watchedPaths = {
     'channel': '.ytp-title-channel', // title top
     'title': '.ytp-title-text', // title
     'over': '.ytp-chrome-top', // other title top
-    'label': '[aria-label]',
+    'label': '[aria-label]', 
+    'toprightad': 'ytd-promoted-sparkles-web-renderer',
+    'section': 'h2',
+    'searchcard': '.ytd-search-refinement-card-renderer',
+    'channellink': '.channel-link',
+    'toprightpict': '.ytd-action-companion-ad-renderer',
 };
 
 let contentcache = {};
-function adMonitor () {
-   
-    function lookForExistingNodes(selector, name) {
-        const matches = document.querySelectorAll(selector);
-        if(!matches.length)
-            return false;
+function lookForExistingNodes(selector, name) {
+    const matches = document.querySelectorAll(selector);
+    if(!matches.length)
+        return false;
 
-        // console.log(name, _.size(matches));
-        const acquired = _.map(matches, function(e, i) {
-            let content = {
-                html: e.outerHTML,
-                order: i,
-            };
-            return content;
-        });
-        // console.log(JSON.stringify(_.map(acquired, 'label')));
-        const ready = {
-            href: window.location.href,
-            name,
-            acquired,
+    // this to highlight what is collected as fragments
+    _.each(matches, function(e) {
+        e.style.border = '1px solid red';
+    });
+    // console.log(name, _.size(matches));
+    const acquired = _.map(matches, function(e, i) {
+        let content = {
+            html: e.outerHTML,
+            order: i,
         };
-        const formatted = JSON.stringify(ready);
-        const hash = formatted.split('').reduce((a,b)=>{a=((a<<5)-a)+b.charCodeAt(0);return a&a},0);
-
-        const c = _.get(contentcache, hash);
-        // console.log("newVideo/label", _.size(contentcache), matches, acquired, ready,formatted, hash, !!c);
-        if(!!c)
-            return false;
-
-        _.set(contentcache, hash, { selector, name });
-
-        const extra = extractor.mineExtraMetadata(name, matches);
-
-        /* element contains the HTML pieces usable to do backend parsing
-           extra contans metadata took from the interface which might be saved
-           client side (localstorage)
-           --
-           the parsing function above depends on a statis dataset which must
-           be sync via backend before any usage */
-        hub.event('newInfo', {
-            element: ready,
-            href: window.location.href,
-            hash,
-            when: Date(),
-            selector,
-            name,
-            randomUUID,
-            extra,
-        });
-        phase('adv.seen');
-        return name;
+        return content;
+    });
+    // this aggregation imply that we are adding one name
+    // for many different nodes, into "acquired" field,
+    // to avoid redundancy.
+    const ready = {
+        name,
+        acquired,
     };
+    const formatted = JSON.stringify(ready);
+    const hash = formatted.split('').reduce((a,b)=>{a=((a<<5)-a)+b.charCodeAt(0);return a&a},0);
 
-    // TODO a smart message if someone working for Google reads here.
-    // well, a bot would surely read this, but 
+    const c = _.get(contentcache, hash);
+    if(!!c)
+        return false;
+
+    console.log("Label cache report:",
+        _.size(contentcache), matches, ready, hash);
+
+    _.set(contentcache, hash, { selector, name });
+
+    /* this can be removed and it should be */
+    const extra = extractor.mineExtraMetadata(name, matches);
+    console.log(extra);
+
+    hub.event('newInfo', {
+        element: ready,
+        href: window.location.href,
+        hash,
+        name,
+        randomUUID,
+    });
+    phase('adv.seen');
+    return name;
+};
+
+function adMonitor () {
     window.setInterval(function () {
         const results = _.map(watchedPaths, lookForExistingNodes);
         const printabled = _.compact(results);
         if(_.size(printabled))
-            console.log("changeMonitor", JSON.stringify(printabled));
-        // might change nodePeriodicCheck 
+            console.log("adMonitor:", JSON.stringify(printabled));
     }, nodePeriodicCheck);
 }
 
