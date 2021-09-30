@@ -56,6 +56,8 @@ const apiList = {
     /* realtime monitor */
     getMonitor:          require('../routes/monitor').getMonitor,
 
+    /** emails */
+    registerEmail:       require('../routes/emails').registerEmail,
     /* guardoni support */
     experimentSubmission:require('../routes/experiments').submission,
     experimentCSV:       require('../routes/experiments').csv,
