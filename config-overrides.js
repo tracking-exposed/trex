@@ -111,7 +111,7 @@ module.exports = {
         return validation.right;
       }
     );
-    // console.log(appEnv);
+    console.log(appEnv);
     // override define plugin
     config.plugins[definePluginIndex] = new DefinePlugin({
       'process.env': appEnv,

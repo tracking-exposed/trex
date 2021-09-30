@@ -18,7 +18,7 @@ export const Tab: React.FC<TabProps> = ({ label, ...props }) => {
     <MUITab
       {...props}
       {...a11yProps(props.index)}
-      label={<Typography variant="caption">{label}</Typography>}
+      label={<Typography variant="h5">{label}</Typography>}
     />
   );
 };

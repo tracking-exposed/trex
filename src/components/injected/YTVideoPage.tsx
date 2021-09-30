@@ -26,7 +26,7 @@ let ytItemsRendererEl: Element | null = null;
 
 export const YTVideoPage: React.FC = () => {
   const { t } = useTranslation();
-  const [value, setValue] = React.useState(0);
+  const [currentTab, setValue] = React.useState(0);
   const videoId = React.useMemo(
     () => getVideoId(window.location.href),
     [window.location.href]
@@ -49,13 +49,14 @@ export const YTVideoPage: React.FC = () => {
 
   React.useEffect(() => {
     if (ytItemsRendererEl !== null) {
-      if (value === 2) {
+      // tab n2 = youtube, tab1 = community
+      if (currentTab === 2) {
         ytItemsRendererEl.className = ytItemsRendererElClasses;
       } else {
         ytItemsRendererEl.className = `${ytItemsRendererElClasses}  + ${classes.ytItemshidden}`;
       }
     }
-  }, [value]);
+  }, [currentTab]);
 
   return (
     <Box>
@@ -65,7 +66,7 @@ export const YTVideoPage: React.FC = () => {
         <Box>
           <AppBar className={classes.appBar} position="static">
             <Tabs
-              value={value}
+              value={currentTab}
               onChange={(e, n) => setValue(n)}
               aria-label="recommendations tabs"
               variant="fullWidth"
@@ -88,12 +89,12 @@ export const YTVideoPage: React.FC = () => {
             </Tabs>
           </AppBar>
 
-          <TabPanel value={value} index={0}>
+          <TabPanel value={currentTab} index={0}>
             <VideoRecommendations
               queries={{ videoRecommendations: { videoId } }}
             />
           </TabPanel>
-          <TabPanel value={value} index={1}>
+          <TabPanel value={currentTab} index={1}>
             <Typography variant="h4">{t('common:coming_soon')}</Typography>
           </TabPanel>
         </Box>
