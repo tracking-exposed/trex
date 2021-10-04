@@ -1,0 +1,10 @@
+{
+  "compilerOptions": {
+    "allowJs": true,
+    "noEmit": true,
+    "rootDir": "./",
+    "baseUrl": "./"
+  },
+  "include": ["./bin", "./lib", "./parsers", "./routes"],
+  "exclude": ["./tests"]
+}
