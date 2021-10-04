@@ -17,7 +17,6 @@ const communityRegex = /^\/community$/;
 const settingsRegex = /^\/settings$/;
 
 export function locationToView(location: HistoryLocation): CurrentView {
-
   const studioEditViewMatch = location.pathname.match(studioEditRegex);
 
   if (studioEditViewMatch !== null) {
@@ -54,7 +53,7 @@ export function viewToLocation(view: CurrentView): HistoryLocation {
     case 'settings':
       return { pathname: '/settings', search: {} };
     case 'index':
-      return { pathname: '/', search: {} };
+      return { pathname: '/index.html', search: {} };
   }
 }
 

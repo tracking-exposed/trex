@@ -8,14 +8,14 @@ import { Recommendation } from '../../models/Recommendation';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 
-interface URLCardProps {
+interface RecommendationCardProps {
   data: Recommendation;
   alreadyPresent: boolean;
   onAddClick?: () => void;
   onDeleteClick?: () => void;
 }
 
-export const URLCard: React.FC<URLCardProps> = ({
+export const RecommendationCard: React.FC<RecommendationCardProps> = ({
   data,
   alreadyPresent,
   onAddClick,
@@ -61,29 +61,27 @@ export const URLCard: React.FC<URLCardProps> = ({
         margin: '6px',
       }}
     >
-      <CardActionArea>
-        {data.image !== undefined ? (
-          <CardMedia
-            component="img"
-            style={{ height: '120px', paddingTop: '2%' }}
-            src={data.image}
-            title={data.title}
-          />
-        ) : (
-          <small>
-            🗲<code>𝕟𝕠 𝕡𝕚𝕔𝕥𝕦𝕣𝕖</code>
-          </small>
-        )}
-        <CardContent>
-          <Typography gutterBottom variant="h5" component="h4">
-            {data.title}
-          </Typography>
-          <Typography variant="body2" color="textSecondary" component="small">
-            {data.description}
-          </Typography>
-        </CardContent>
-      </CardActionArea>
-      {addButton ?? deleteButton}
+      {data.image !== undefined ? (
+        <CardMedia
+          component="img"
+          style={{ height: '120px', paddingTop: '2%' }}
+          src={data.image}
+          title={data.title}
+        />
+      ) : (
+        <small>
+          🗲<code>𝕟𝕠 𝕡𝕚𝕔𝕥𝕦𝕣𝕖</code>
+        </small>
+      )}
+      <CardContent>
+        <Typography gutterBottom variant="h5" component="h4">
+          {data.title}
+        </Typography>
+        <Typography variant="body2" color="textSecondary" component="small">
+          {data.description}
+        </Typography>
+      </CardContent>
+      <CardActionArea>{addButton ?? deleteButton}</CardActionArea>
     </Card>
   );
 };

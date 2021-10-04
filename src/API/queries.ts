@@ -1,4 +1,4 @@
-import { available, compose, param, product, queryStrict } from 'avenger';
+import { available, compose, param, product, queryShallow, queryStrict } from 'avenger';
 import * as E from 'fp-ts/lib/Either';
 import { pipe } from 'fp-ts/lib/function';
 import * as TE from 'fp-ts/lib/TaskEither';
@@ -64,7 +64,7 @@ export const recommendedChannels = compose(
   }, available)
 );
 
-export const videoRecommendations = queryStrict(
+export const videoRecommendations = queryShallow(
   ({ videoId }: { videoId: string }): TE.TaskEither<Error, Recommendation[]> =>
     fetchTE(`/v3/video/${videoId}/recommendations`),
   available

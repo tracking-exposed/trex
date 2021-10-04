@@ -20,7 +20,7 @@ const resources: CustomTypeOptions['resources'] = {
   routes: {
     studio: 'Studio',
     community: 'Community',
-    settings: 'Settings'
+    settings: 'Settings',
   },
   account: {
     channel: 'Your channel',
@@ -40,6 +40,9 @@ const resources: CustomTypeOptions['resources'] = {
     total: 'Total recommendations',
     url: 'Recommendation url',
     yours: 'Yours recommendations',
+    add_to_video: 'Add a recommendation to this video',
+    url_placeholder: 'https://youtube.com/watch?v=xxxxx',
+    url_helper_text: 'Insert a link'
   },
   dashboard: { title: 'Dashboard' },
   popup: { version: 'version {{version}} build {{data}}' },

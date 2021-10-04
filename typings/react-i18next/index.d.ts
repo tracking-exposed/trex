@@ -37,6 +37,9 @@ declare module 'react-i18next' {
         total: string;
         url: string;
         yours: string;
+        add_to_video: string;
+        url_placeholder: string;
+        url_helper_text: string;
       };
       dashboard: {
         title: string;

@@ -9,6 +9,7 @@ import {
   accountSettings,
   creatorRecommendations,
   creatorVideos,
+  videoRecommendations,
 } from './queries';
 
 export const registerCreatorChannel = command(
@@ -52,39 +53,21 @@ export const addRecommendation = command(
 
 export const updateRecommendationForVideo = command(
   ({ videoId, creatorId, recommendations }) => {
-    return pipe(
-      fetchTE(`/v3/creator/updateVideo`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          creatorId,
-          videoId,
-          recommendations,
-        }),
+    return fetchTE(`/v3/creator/updateVideo`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        creatorId,
+        videoId,
+        recommendations,
       }),
-      TE.chain(() =>
-        pipe(
-          accountSettings.run(),
-          TE.chain((settings) =>
-            sendMessage({
-              type: ConfigUpdate.value,
-              payload: {
-                ...settings,
-                edit: {
-                  ...settings.edit,
-                  recommendations,
-                },
-              },
-            })
-          )
-        )
-      )
-    );
+    });
   },
   {
     accountSettings,
+    videoRecommendations,
   }
 );
 

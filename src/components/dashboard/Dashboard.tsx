@@ -31,25 +31,6 @@ const useStyles = makeStyles((theme) => ({
   listItemIcon: {
     marginRight: 20,
   },
-  diagonalBox: {
-    position: 'relative',
-    width: 'calc(100% - 16px)',
-    height: 300,
-    '&::before': {
-      content: '""',
-      position: 'absolute',
-      top: 0,
-      right: 0,
-      left: 0,
-      bottom: 0,
-      backgroundImage: `linear-gradient(170deg, ${theme.palette.primary.main} 50%, transparent 50%)`,
-    },
-  },
-  diagonalBoxContent: {
-    maxWidth: '50em',
-    margin: '0 auto',
-    position: 'relative',
-  },
 }));
 
 const withQueries = declareQueries({ currentView: currentView });
@@ -61,59 +42,60 @@ export const Dashboard = withQueries(({ queries }): React.ReactElement => {
       const classes = useStyles();
       const { t } = useTranslation();
 
-      const currentViewContent = React.useMemo(() => {
+      const [currentViewLabel, currentViewContent] = React.useMemo(() => {
         switch (currentView.view) {
           case 'community':
-            return <YCAInalitics />;
+            // eslint-disable-next-line react/jsx-key
+            return [t('routes:community'), <YCAInalitics />];
           case 'settings':
-            return <Advanced />;
+            // eslint-disable-next-line react/jsx-key
+            return [t('routes:settings'), <Advanced />];
           case 'studio':
           case 'studioEdit':
           default:
-            return <Studio currentView={currentView} />;
+            // eslint-disable-next-line react/jsx-key
+            return [t('routes:studio'), <Studio currentView={currentView} />];
         }
       }, [currentView]);
       return (
-        <Box>
+        <Box padding={2}>
           <Grid container className={classes.root} spacing={2}>
             <Grid item md={3}>
-              <Box padding={2}>
-                <img alt="YCAI Logo" src="/ycai-logo.png" />
+              <img alt="YCAI Logo" src="/ycai-logo.png" />
 
-                <LinkAccount />
+              <LinkAccount />
 
-                <List className={classes.routesList}>
-                  <ListItem
-                    className={classes.listItem}
-                    button={true}
-                    onClick={doUpdateCurrentView({ view: 'studio' })}
-                  >
-                    <EditIcon className={classes.listItemIcon} />
-                    <Typography>{t('routes:studio')}</Typography>
-                  </ListItem>
-                  <ListItem
-                    className={classes.listItem}
-                    button={true}
-                    onClick={doUpdateCurrentView({ view: 'community' })}
-                  >
-                    <GroupsIcon className={classes.listItemIcon} />
-                    <Typography>{t('routes:community')}</Typography>
-                  </ListItem>
-                  <ListItem
-                    className={classes.listItem}
-                    button={true}
-                    onClick={doUpdateCurrentView({ view: 'settings' })}
-                  >
-                    <SettingsIcon className={classes.listItemIcon} />
-                    <Typography>{t('routes:settings')}</Typography>
-                  </ListItem>
-                </List>
-              </Box>
+              <List className={classes.routesList}>
+                <ListItem
+                  className={classes.listItem}
+                  button={true}
+                  onClick={doUpdateCurrentView({ view: 'studio' })}
+                >
+                  <EditIcon className={classes.listItemIcon} />
+                  <Typography>{t('routes:studio')}</Typography>
+                </ListItem>
+                <ListItem
+                  className={classes.listItem}
+                  button={true}
+                  onClick={doUpdateCurrentView({ view: 'community' })}
+                >
+                  <GroupsIcon className={classes.listItemIcon} />
+                  <Typography>{t('routes:community')}</Typography>
+                </ListItem>
+                <ListItem
+                  className={classes.listItem}
+                  button={true}
+                  onClick={doUpdateCurrentView({ view: 'settings' })}
+                >
+                  <SettingsIcon className={classes.listItemIcon} />
+                  <Typography>{t('routes:settings')}</Typography>
+                </ListItem>
+              </List>
             </Grid>
             <Grid item md={9} style={{ padding: 0 }}>
-              <div className={classes.diagonalBox}>
-                <div className={classes.diagonalBoxContent} />
-              </div>
+              <Typography variant="h4" color="primary">
+                {currentViewLabel}
+              </Typography>
               {currentViewContent}
             </Grid>
           </Grid>

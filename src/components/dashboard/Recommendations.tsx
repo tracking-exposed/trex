@@ -5,10 +5,14 @@ import { pipe } from 'fp-ts/lib/function';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { updateRecommendationForVideo } from '../../API/commands';
-import { accountSettings, creatorRecommendations } from '../../API/queries';
+import {
+  accountSettings,
+  creatorRecommendations,
+  videoRecommendations,
+} from '../../API/queries';
 import { ErrorBox } from '../common/ErrorBox';
 import { LazyFullSizeLoader } from '../common/FullSizeLoader';
-import { URLCard } from './URLCard';
+import { RecommendationCard } from './RecommendationCard';
 
 const styles = {
   textAlign: 'left' as 'left',
@@ -16,11 +20,18 @@ const styles = {
 
 const withQueries = declareQueries({
   recommendations: creatorRecommendations,
+  videoRecommendations: videoRecommendations,
   settings: accountSettings,
 });
 
-export const Recommendations = withQueries(
-  ({ queries }): React.ReactElement => {
+type Queries = typeof withQueries['Props'];
+
+interface RecommendationsProps extends Queries {
+  videoId: string;
+}
+
+export const Recommendations = withQueries<RecommendationsProps>(
+  ({ queries, videoId }): React.ReactElement => {
     const { t } = useTranslation();
     return (
       <Box>
@@ -31,71 +42,72 @@ export const Recommendations = withQueries(
           QR.fold(
             LazyFullSizeLoader,
             ErrorBox,
-            ({ recommendations, settings }) => {
+            ({ recommendations, videoRecommendations, settings }) => {
               if (recommendations.length === 0) {
                 return (
                   <div style={styles}>
                     <Card>
-                      <h3>
+                      <Typography variant="h3">
                         Altought connection with server worked, no content was
                         available!?
-                      </h3>
+                      </Typography>
                     </Card>
                   </div>
                 );
               }
+
+              const videoCurrentRecommendations = videoRecommendations.map(
+                (v) => v.urlId
+              );
+
               return (
                 <div className="card-group">
-                  {recommendations.map((item, i) => {
-                    const currentVideoOnEdit = settings.edit;
-                    const videoRaccomendations =
-                      currentVideoOnEdit !== null
-                        ? currentVideoOnEdit.recommendations
-                        : [];
-                    const alreadyPresent = videoRaccomendations.includes(
-                      item.urlId
-                    );
+                  {recommendations
+                    // remove already selected recommendations from list
+                    .filter(
+                      (r) => !videoCurrentRecommendations.includes(r.urlId)
+                    )
+                    .map((item, i) => {
+                      const alreadyPresent =
+                        videoCurrentRecommendations.includes(item.urlId);
 
-                    return (
-                      <URLCard
-                        key={i}
-                        data={item}
-                        alreadyPresent={alreadyPresent}
-                        onDeleteClick={
-                          currentVideoOnEdit !== null
-                            ? async () => {
-                                const newVideoRecommendations =
-                                  videoRaccomendations.filter(
-                                    (v) => v !== item.urlId
-                                  );
+                      return (
+                        <RecommendationCard
+                          key={i}
+                          data={item}
+                          alreadyPresent={alreadyPresent}
+                          onDeleteClick={async () => {
+                            const newVideoRecommendations =
+                              videoCurrentRecommendations.filter(
+                                (v) => v !== item.urlId
+                              );
 
-                                await updateRecommendationForVideo({
-                                  videoId: currentVideoOnEdit.videoId,
-                                  creatorId: settings.channelCreatorId,
-                                  recommendations: newVideoRecommendations,
-                                })();
-                              }
-                            : undefined
-                        }
-                        onAddClick={
-                          currentVideoOnEdit !== null
-                            ? async () => {
-                                const newVideoRecommendations =
-                                  currentVideoOnEdit.recommendations
-                                    .filter((v) => v !== item.urlId)
-                                    .concat(item.urlId);
-
-                                await updateRecommendationForVideo({
-                                  videoId: currentVideoOnEdit.videoId,
-                                  creatorId: settings.channelCreatorId,
-                                  recommendations: newVideoRecommendations,
-                                })();
-                              }
-                            : undefined
-                        }
-                      />
-                    );
-                  })}
+                            await updateRecommendationForVideo(
+                              {
+                                videoId: videoId,
+                                creatorId: settings.channelCreatorId,
+                                recommendations: newVideoRecommendations,
+                              },
+                              { videoRecommendations: { videoId } }
+                            )();
+                          }}
+                          onAddClick={async () => {
+                            const newVideoRecommendations =
+                              videoCurrentRecommendations
+                                .filter((v) => v !== item.urlId)
+                                .concat(item.urlId);
+                            await updateRecommendationForVideo(
+                              {
+                                videoId,
+                                creatorId: settings.channelCreatorId,
+                                recommendations: newVideoRecommendations,
+                              },
+                              { videoRecommendations: { videoId } }
+                            )();
+                          }}
+                        />
+                      );
+                    })}
                 </div>
               );
             }

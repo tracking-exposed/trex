@@ -2,7 +2,7 @@ import { Grid, Typography } from '@material-ui/core';
 import { YTVideo } from 'components/common/YTVideo';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
-import Fetcher from '../Fetcher';
+import AddRecommendationBox from '../AddRecommendationBox';
 import { Recommendations } from '../Recommendations';
 import { VideoRecommendations } from '../VideoRecommendationsEdit';
 
@@ -20,11 +20,17 @@ export const StudioVideoEdit: React.FC<StudioVideoEditProps> = ({
       <Grid item md={8}>
         <Typography variant="h4">{t('account:channelVideos')}</Typography>
         <YTVideo videoId={videoId} />
-        <Fetcher />
-        <Recommendations />
+        <AddRecommendationBox />
+        <Recommendations
+          queries={{ videoRecommendations: { videoId } }}
+          videoId={videoId}
+        />
       </Grid>
       <Grid item md={4}>
-        <VideoRecommendations queries={{ videoRecommendations: { videoId } }} />
+        <VideoRecommendations
+          queries={{ videoRecommendations: { videoId } }}
+          videoId={videoId}
+        />
       </Grid>
     </Grid>
   );

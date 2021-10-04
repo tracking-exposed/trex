@@ -15,50 +15,65 @@ const withQueries = declareQueries({
   videoRecommendations: queries.videoRecommendations,
 });
 
-export const VideoRecommendations = withQueries((props): React.ReactElement => {
-  return pipe(
-    props.queries,
-    QR.fold(
-      LazyFullSizeLoader,
-      ErrorBox,
-      ({ settings, videoRecommendations }) => {
-        const { t } = useTranslation();
+type Queries = typeof withQueries['Props'];
 
-        return (
-          <Box>
-            <Typography variant="h5">{t('recommendations:title')}</Typography>
-            {videoRecommendations.map((r, i) => (
-              <Grid
-                key={i}
-                container
-                alignItems="center"
-                justifyContent="flex-start"
-                style={{ marginBottom: 10 }}
-              >
-                <Grid item md={2}>
-                  <Chip
-                    label={i + 1}
-                    variant="outlined"
-                    deleteIcon={<DeleteIcon />}
-                    onDelete={() =>
-                      updateRecommendationForVideo({
-                        videoId: settings.edit?.videoId,
-                        creatorId: settings.channelCreatorId,
-                        recommendations: videoRecommendations
-                          .map((r) => r.urlId)
-                          .filter((rr) => rr !== r.urlId),
-                      })()
-                    }
-                  />
+interface VideoRecommendationsProps extends Queries {
+  videoId: string;
+}
+
+export const VideoRecommendations = withQueries<VideoRecommendationsProps>(
+  ({ queries, videoId }): React.ReactElement => {
+    return pipe(
+      queries,
+      QR.fold(
+        LazyFullSizeLoader,
+        ErrorBox,
+        ({ settings, videoRecommendations }) => {
+          const { t } = useTranslation();
+
+          return (
+            <Box>
+              <Typography variant="h5">{t('recommendations:title')}</Typography>
+              {videoRecommendations.map((r, i) => (
+                <Grid
+                  key={i}
+                  container
+                  alignItems="center"
+                  justifyContent="flex-start"
+                  style={{ marginBottom: 10 }}
+                >
+                  <Grid item md={2}>
+                    <Chip
+                      label={i + 1}
+                      variant="outlined"
+                      deleteIcon={<DeleteIcon />}
+                      onDelete={() =>
+                        updateRecommendationForVideo(
+                          {
+                            videoId: videoId,
+                            creatorId: settings.channelCreatorId,
+                            recommendations: videoRecommendations
+                              .map((r) => r.urlId)
+                              .filter((rr) => rr !== r.urlId),
+                          },
+                          {
+                            videoRecommendations: {
+                              videoId,
+                            },
+                          }
+                        )()
+                      }
+                    />
+                  </Grid>
+                  <Grid item md={10}>
+                    <p>{r.title}</p>
+                  </Grid>
                 </Grid>
-                <Grid item md={10}>
-                  <p>{r.title}</p>
-                </Grid>
-              </Grid>
-            ))}
-          </Box>
-        );
-      }
-    )
-  );
-});
+              ))}
+            </Box>
+          );
+        }
+      )
+    );
+  }
+);
