@@ -1,4 +1,4 @@
-import { Video } from './Video';
+import { Video } from '@models/Video';
 
 interface AccountKeys {
   publicKey: string;

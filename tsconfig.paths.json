@@ -18,8 +18,14 @@
     "moduleResolution": "node",
     "isolatedModules": true,
     "paths": {
-      "@chrome/*": ["./chrome/*"]
+      "@chrome/*": ["./chrome/*"],
+      "@models/*": ["../yttrex-backend/backend/models/*"]
     }
   },
-  "include": ["./src"]
+  "include": ["./src"],
+  "references": [
+    {
+      "path": "./yttrex-backend/backend"
+    }
+  ]
 }
