@@ -38,6 +38,7 @@ declare module 'react-i18next' {
         url: string;
         yours: string;
         add_to_video: string;
+        no_items: string;
         url_placeholder: string;
         url_helper_text: string;
       };

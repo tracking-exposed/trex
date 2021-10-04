@@ -3,7 +3,7 @@ import { declareQueries } from 'avenger/lib/react';
 import { pipe } from 'fp-ts/lib/function';
 import * as React from 'react';
 import { accountSettings } from '../../API/queries';
-import { VideoCard } from './VideoCard';
+import { VideoCard } from '../common/VideoCard';
 import { VideoRecommendations } from './VideoRecommendations';
 import * as QR from 'avenger/lib/QueryResult';
 import { LazyFullSizeLoader } from '../common/FullSizeLoader';
@@ -32,6 +32,7 @@ export const CurrentVideoOnEdit = withQueries((props): React.ReactElement => {
             <VideoCard videoId={video.videoId} title={video.title} />
             <VideoRecommendations
               queries={{ videoRecommendations: { videoId: video.videoId } }}
+              videoId={video.videoId}
             />
           </Box>
         );

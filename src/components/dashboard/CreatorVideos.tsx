@@ -3,12 +3,12 @@ import * as QR from 'avenger/lib/QueryResult';
 import { declareQueries } from 'avenger/lib/react';
 import * as Q from 'avenger/lib/Query';
 import { pipe } from 'fp-ts/lib/function';
-import { Video } from 'models/Video';
+import { Video } from '../../models/Video';
 import React from 'react';
 import { creatorVideos } from '../../API/queries';
 import { ErrorBox } from '../common/ErrorBox';
 import { LazyFullSizeLoader } from '../common/FullSizeLoader';
-import { VideoCard } from './VideoCard';
+import { VideoCard } from '../common/VideoCard';
 import { useTranslation } from 'react-i18next';
 
 const withQueries = declareQueries({ videos: creatorVideos });

@@ -31,7 +31,7 @@ export const accountSettings = queryStrict(() => {
 
 export const creatorRecommendations = compose(
   product({ accountSettings, params: param() }),
-  queryStrict(
+  queryShallow(
     ({ accountSettings, params }) =>
       fetchTE<Recommendation[]>(
         `/v3/creator/recommendations/${accountSettings.publicKey}`,

@@ -12,7 +12,7 @@ import {
 } from '../../API/queries';
 import { ErrorBox } from '../common/ErrorBox';
 import { LazyFullSizeLoader } from '../common/FullSizeLoader';
-import { RecommendationCard } from './RecommendationCard';
+import { RecommendationCard } from '../common/RecommendationCard';
 
 const styles = {
   textAlign: 'left' as 'left',
@@ -36,7 +36,6 @@ export const Recommendations = withQueries<RecommendationsProps>(
     return (
       <Box>
         <Typography variant="h4">{t('recommendations:yours')}</Typography>
-
         {pipe(
           queries,
           QR.fold(
@@ -47,9 +46,8 @@ export const Recommendations = withQueries<RecommendationsProps>(
                 return (
                   <div style={styles}>
                     <Card>
-                      <Typography variant="h3">
-                        Altought connection with server worked, no content was
-                        available!?
+                      <Typography variant="body1">
+                        {t('recommendations:no_items')}
                       </Typography>
                     </Card>
                   </div>

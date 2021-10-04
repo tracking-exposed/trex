@@ -40,9 +40,10 @@ const resources: CustomTypeOptions['resources'] = {
     total: 'Total recommendations',
     url: 'Recommendation url',
     yours: 'Yours recommendations',
+    no_items: 'No recommendations found',
     add_to_video: 'Add a recommendation to this video',
     url_placeholder: 'https://youtube.com/watch?v=xxxxx',
-    url_helper_text: 'Insert a link'
+    url_helper_text: 'Insert a link',
   },
   dashboard: { title: 'Dashboard' },
   popup: { version: 'version {{version}} build {{data}}' },

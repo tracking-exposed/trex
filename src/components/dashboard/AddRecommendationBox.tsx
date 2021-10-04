@@ -16,6 +16,7 @@ const AddRecommendationBox: React.FC = () => {
     async (e): Promise<void> => {
       if (recommendation !== undefined) {
         await addRecommendation({ url: recommendation })();
+        setRecommendation('');
       }
     },
     [recommendation]

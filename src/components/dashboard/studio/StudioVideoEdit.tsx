@@ -17,7 +17,7 @@ export const StudioVideoEdit: React.FC<StudioVideoEditProps> = ({
 
   return (
     <Grid container spacing={3}>
-      <Grid item md={8}>
+      <Grid item md={6} sm={5}>
         <Typography variant="h4">{t('account:channelVideos')}</Typography>
         <YTVideo videoId={videoId} />
         <AddRecommendationBox />

@@ -11,8 +11,8 @@ import { useTranslation } from 'react-i18next';
 interface RecommendationCardProps {
   data: Recommendation;
   alreadyPresent: boolean;
-  onAddClick?: () => void;
-  onDeleteClick?: () => void;
+  onAddClick?: (r: Recommendation) => void;
+  onDeleteClick?: (r: Recommendation) => void;
 }
 
 export const RecommendationCard: React.FC<RecommendationCardProps> = ({
@@ -30,7 +30,7 @@ export const RecommendationCard: React.FC<RecommendationCardProps> = ({
           variant="contained"
           color="primary"
           onClick={() => {
-            onAddClick();
+            onAddClick(data);
           }}
         >
           {t('actions:addToCurrentVideo')}
@@ -45,9 +45,7 @@ export const RecommendationCard: React.FC<RecommendationCardProps> = ({
           size="small"
           variant="contained"
           color="secondary"
-          onClick={() => {
-            onDeleteClick();
-          }}
+          onClick={() => onDeleteClick(data)}
         >
           {t('actions:removeFromCurrentVideo')}
         </Button>

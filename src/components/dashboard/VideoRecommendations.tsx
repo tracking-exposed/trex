@@ -7,13 +7,19 @@ import { useTranslation } from 'react-i18next';
 import * as queries from '../../API/queries';
 import { ErrorBox } from '../common/ErrorBox';
 import { LazyFullSizeLoader } from '../common/FullSizeLoader';
-import { VideoCard } from './VideoCard';
+import { VideoCard } from '../common/VideoCard';
 
 const withQueries = declareQueries({
   videoRecommendations: queries.videoRecommendations,
 });
 
-export const VideoRecommendations = withQueries((props): React.ReactElement => {
+type Q = typeof withQueries['Props']
+
+interface VideoRecommendationsProps extends Q {
+  videoId: string 
+}
+
+export const VideoRecommendations = withQueries<VideoRecommendationsProps>((props): React.ReactElement => {
   return pipe(
     props.queries,
     QR.fold(LazyFullSizeLoader, ErrorBox, ({ videoRecommendations }) => {
@@ -23,7 +29,7 @@ export const VideoRecommendations = withQueries((props): React.ReactElement => {
         <Box>
           <Typography variant="h5">{t('recommendations:title')}</Typography>
           {videoRecommendations.map((r, i) => (
-            <VideoCard key={i} {...r} />
+            <VideoCard key={i} {...r} videoId={props.videoId} />
           ))}
         </Box>
       );
