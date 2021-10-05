@@ -28,5 +28,6 @@ services:
       - ./parsers:/app/parsers
       - ./routes:/app/routes
       - ./node_modules:/app/node_modules
+      - ./package.json:/app/package.json
     working_dir: /app
-    command: ./node_modules/nodemon/bin/nodemon.js --config config/nodemon.json bin/server
+    command: npm run watch
