@@ -14,18 +14,14 @@ node_modules
 
 extension/build/*
 extension/dist/*
-extension/node_modules/*
 
 methodology/dist/*
 methodology/config/*
 methodology/profiles/*
 methodology/executions/*
 methodology/experiments/*
-methodology/node_modules/*
 methodology/extension/*
 
 backend/dump
 backend/experiments/*
 backend/config/secrets.json
-
-react-pieces/node_modules/*
