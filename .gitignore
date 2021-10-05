@@ -11,11 +11,9 @@
 .vscode/*
 
 node_modules
+build
+dist
 
-extension/build/*
-extension/dist/*
-
-methodology/dist/*
 methodology/config/*
 methodology/profiles/*
 methodology/executions/*
