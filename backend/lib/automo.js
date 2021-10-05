@@ -686,6 +686,7 @@ async function fetchRecommendations(videoId, kind) {
             _.unset(e, '_id');
             return e;
         })
+        result = _.sortBy(result, [(r) => videoInfo.recommendations.indexOf(r.urlId)])
     }
     await mongoc.close();
     return result;
