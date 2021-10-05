@@ -21,7 +21,6 @@
   "mongoPort": 27017,
   "mongoDb": "yttrex",
   "port": 9000,
-
   "storage": "htmls",
   "interface": "0.0.0.0",
   "key": "invalid_default"
