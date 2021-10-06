@@ -15,20 +15,20 @@ const COMMANDJSONEXAMPLE = "https://youtube.tracking.exposed/json/automation-exa
 const EXTENSION_WITH_OPT_IN_ALREADY_CHECKED='https://github.com/tracking-exposed/yttrex/releases/download/1.4.99/extension.zip';
 
 nconf.argv().env().file("static/settings.json");
+debug.enabled = true;
 
 const server = nconf.get('backend') ?
   ( _.endsWith(nconf.get('backend'), '/') ? 
     nconf.get('backend').replace(/\/$/, '') : nconf.get('backend') ) : 
   'https://youtube.tracking.exposed';
 
-
-defaultAfter = async function(page, directive) {
+defaultAfter = async function() {
   debug("afterWait function is not implemented");
 }
-defaultBefore = async function(page, directive) {
+defaultBefore = async function() {
   debug("beforeWait function is not implemented");
 }
-defaultInit = async function(page, directive) {
+defaultInit = async function() {
   debug("beforeDirective function is not implemented");
 }
 
@@ -50,6 +50,7 @@ async function allowResearcherSomeTimeToSetupTheBrowser(profileName) {
   console.log("\nnext time you'll use the same profile, this step would not appear, as long as you keep the directory.");
   console.log('\n~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~');
   await keypress();
+  console.log("\n[Received] Reproduction starts now!")
 }
 
 function downloadExtension(zipFileP) {
@@ -97,7 +98,8 @@ async function registerCSV(evidencetag, directiveType) {
     debug("Read input from file %s (%d bytes) %d records",
       csvfile, input.length, records.length);
   } catch(error) {
-    return console.log("Error: invalid CSV file from options --csv ", error.message);
+    console.log("Error: invalid CSV file from options --csv ", error.message);
+    process.exit(1)
   }
 
   const uniqueKeys = _.sortBy(_.uniq(_.flatten(_.map(records, _.keys))), 'length');
@@ -319,19 +321,17 @@ function profileExecount(profile, evidencetag) {
 
 function printHelp() {
   const helptext = `Configuration options is read via: environment, --longopt, and static/config.json file
-Three mode exists to launch Guardoni:\n
-1— Without any command line option: It start a browser offering you to join existing experiments.
+Three modes exists to launch Guardoni:\n
+1— With --auto: It start a browser offering you to join existing experiments (currently two).
 2— With --csv option and one between --shadowban and --comparison: Register an experiment.
 3— With --experiment it would fetch what have been registered in the case n.2 ^^^^^^^^^^^.
 
-Consult https://youtube.tracking.exposed/guardoni for the full documentation.`;
+Consult https://youtube.tracking.exposed/guardoni for the full documentation.
+You need to have a reliable internet connection to ensure a proper data collection!`;
   console.log(helptext);
 }
 
 async function main() {
-
-  if(!!nconf.get('help') || !!nconf.get('h') || !!nconf.get('?'))
-    return printHelp();
 
   const evidencetag = nconf.get('evidencetag') || 'none-' + _.random(0, 0xffff);
   let profile = nconf.get('profile');
@@ -353,13 +353,24 @@ async function main() {
   if(directiveType == 'chiaroscuro')
     return await manageChiaroscuro(evidencetag, profinfo); */
 
-  if(!comparison)
-    debug("Assuming you want to say --comparison as experiment type");
+  let sourceUrl = nconf.get('csv');
+  if(sourceUrl) {
+    if(!comparison && !shadowban) {
+      console.log("\nError in uploading the --csv. You must specify if:");
+      console.log("\tit is a shadowban test with --shadowban");
+      console.log("\tit is an experiment by comparison, with --comparison");
+      process.exit(1);
+    }
+  }
 
-  let sourceUrl, directives, experiment = null;
-
+  let directives, experiment = null;
   experiment = nconf.get('experiment');
-  sourceUrl = nconf.get('csv');
+
+  if(experiment && (!_.isString(experiment) || experiment.length < 20)) {
+    console.log("\n--experiment awaits for an experiment ID, try it out:");
+    console.log("--experiment TODO");
+    process.exit(1);
+  }
 
   if(sourceUrl && experiment) {
     console.log("Error: when registering a CSV, you can't specify the --experiment");
@@ -400,7 +411,7 @@ async function main() {
   if(browser.newProfile)
     await allowResearcherSomeTimeToSetupTheBrowser(profinfo.profileName);
 
-  const t = await guardoniExecution(experiment, directives, browser);
+  const t = await guardoniExecution(experiment, directives, browser, profinfo);
   debug("— Guardoni execution took %s",
     moment.duration(t.end - t.start).humanize());
   await concludeExperiment(experiment, profinfo);
@@ -465,7 +476,7 @@ async function dispatchBrowser(headless, profinfo) {
   }
 }
 
-async function guardoniExecution(experiment, directives, browser) {
+async function guardoniExecution(experiment, directives, browser, profinfo) {
   let retval = { start: null };
   retval.start = moment();
   try {
@@ -486,10 +497,11 @@ async function guardoniExecution(experiment, directives, browser) {
       debug("Closing a tab that shouldn't be there!");
       await opage.close();
     })
-    await domainSpecific.beforeDirectives(page);
+    await domainSpecific.beforeDirectives(page, profinfo);
     // the BS above should close existing open tabs except 1st
-    await operateBroweser(page, directives, domainSpecific);
-    console.log("Operations completed: check results at https://youtube.tracking.exposed/experiment/#" + experiment);
+    await operateBrowser(page, directives, domainSpecific);
+    console.log(`Operations completed: check results at ${server}/experiment/#${experiment}`);
+    debug("Number of external requests logged: %d", domainSpecific.loggedextreqs);
     await browser.close();
   } catch(error) {
     console.log("Error in operateBrowser (collection fail):", error);
@@ -537,7 +549,7 @@ async function operateTab(page, directive, domainSpecific, timeout) {
   debug("— Completed %s", directive.urltag);
 }
 
-async function operateBroweser(page, directives, domainSpecific) {
+async function operateBrowser(page, directives, domainSpecific) {
   // await page.setViewport({width: 1024, height: 768});
   for (directive of directives) {
     if(nconf.get('exclude') && directive.urltag == nconf.get('exclude')) {
@@ -553,6 +565,20 @@ async function operateBroweser(page, directives, domainSpecific) {
 }
 
 try {
+
+  if(!!nconf.get('h') || !!nconf.get('?') || process.argv.length < 3)
+    return printHelp();
+
+  // backend is an option we don't even disclose, as only developers needs it
+  // --chome as well
+  if(!!nconf.get('auto')) {
+    console.log("AUTO mode, no mandatory options; --profile, --evidencetag OPTIONAL")
+  } else if(!!nconf.get('csv')) {
+    console.log("CSV mode: mandatory --comparison or --shadowban; --profile, --evidencetag OPTIONAL")
+  } else if(!!nconf.get('experiment')) {
+    console.log("EXPERIMENT mode: no mandatory options; --profile, --evidencetag OPTIONAL")
+  }
+
   main ();
 } catch(error) {
   console.error(error);
