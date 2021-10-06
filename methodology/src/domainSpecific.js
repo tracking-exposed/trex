@@ -31,37 +31,36 @@ async function beforeDirectives(page, profinfo) {
     page.on('pageerror', message => bconsError('Error %s', message));
     page.on('requestfailed', request => bconsError(`Requestfail: ${request.failure().errorText} ${request.url()}`));
     // await page.setRequestInterception(true);
-    page.on('request', await manageRequest);
+    page.on('request', await _.partial(manageRequest, profinfo));
 }
 
-async function manageRequest(reqpptr) {
+async function manageRequest(profinfo, reqpptr) {
     try {
-    const up = url.parse(reqpptr.url());
-    debugger;
-    const x  =await reqpptr.resourceType()
-    console.log(reqpptr.resourceType(), up.pathname)
-    const full3rdparty = {
-        // method: request.method(),
-        host: up.host,
-        pathname: up.pathname,
-        search: up.search,
-        type: reqpptr.resourceType(),
-        when: new Date()
-    };
-    if(full3rdparty.method != 'GET')
-        full3rdparty.postData = request.postData();
+        const up = url.parse(reqpptr.url());
+        const full3rdparty = {
+            method: reqpptr.method(),
+            host: up.host,
+            pathname: up.pathname,
+            search: up.search,
+            type: reqpptr.resourceType(),
+            when: new Date()
+        };
+        if(full3rdparty.method != 'GET')
+            full3rdparty.postData = reqpptr.postData();
 
-    const reqlogfilename = path.join(
-        'profiles',
-        profinfo.profileName,
-        'requestlog.json'
-    );
-    fs.appendFileSync(
-        reqlogfilename,
-        JSON.stringify(full3rdparty)
-    );
-    loggedextreqs++;
-    logreqst("Logged external request to %s", full3rdparty.host)
+        const reqlogfilename = path.join(
+            'profiles',
+            profinfo.profileName,
+            'requestlog.json'
+        );
+        fs.appendFileSync(
+            reqlogfilename,
+            JSON.stringify(full3rdparty) + "\n"
+        );
+        loggedextreqs[up.host] =  loggedextreqs[up.host] ? 
+            loggedextreqs[up.host]++ : 1;
+        if(up.host !== 'www.youtube.com')
+            logreqst("Logged external request to %s", full3rdparty.host)
     } catch(error) {
         debug("Error in manageRequest function: %s", error.message);
     }
