@@ -249,9 +249,6 @@ async function getByAuthor(req) {
 };
 
 async function getCreatorRelated(req) {
-    /* this API do not return the standard format with videos and related inside,
-     * but a data format ready for the visualization provided - this has been 
-     * temporarly suspended: https://github.com/tracking-exposed/youtube.tracking.exposed/issues/18 */
 
     const { amount, skip } = params.optionParsing(req.params.amount, PUBLIC_AMOUNT_ELEMS);
     debug("getCreatorRelated %s amount %d skip %d", req.params.channelId, amount, skip);
