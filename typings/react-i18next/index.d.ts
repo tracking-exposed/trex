@@ -17,6 +17,7 @@ declare module 'react-i18next' {
         removeFromCurrentVideo: string;
         compare: string;
         related: string;
+        linkChannel: string;
       };
       account: {
         channel: string;
@@ -36,6 +37,10 @@ declare module 'react-i18next' {
         total: string;
         url: string;
         yours: string;
+        add_to_video: string;
+        no_items: string;
+        url_placeholder: string;
+        url_helper_text: string;
       };
       dashboard: {
         title: string;
@@ -69,6 +74,11 @@ declare module 'react-i18next' {
         firstTab: string;
         secondTab: string;
         thirdTab: string;
+      };
+      routes: {
+        studio: string;
+        community: string;
+        settings: string;
       };
     };
   }

@@ -1,5 +1,4 @@
-import { Box, Chip, Grid, Typography } from '@material-ui/core';
-import DeleteIcon from '@material-ui/icons/Delete';
+import { Box, Grid, Typography } from '@material-ui/core';
 import * as QR from 'avenger/lib/QueryResult';
 import { declareQueries } from 'avenger/lib/react';
 import { pipe } from 'fp-ts/lib/function';
@@ -9,56 +8,86 @@ import { updateRecommendationForVideo } from '../../API/commands';
 import * as queries from '../../API/queries';
 import { ErrorBox } from '../common/ErrorBox';
 import { LazyFullSizeLoader } from '../common/FullSizeLoader';
+import { RecommendationCard } from '../common/RecommendationCard';
+import { ReorderList } from '../common/ReorderList';
 
 const withQueries = declareQueries({
   settings: queries.accountSettings,
   videoRecommendations: queries.videoRecommendations,
 });
 
-export const VideoRecommendations = withQueries((props): React.ReactElement => {
-  return pipe(
-    props.queries,
-    QR.fold(
-      LazyFullSizeLoader,
-      ErrorBox,
-      ({ settings, videoRecommendations }) => {
-        const { t } = useTranslation();
+type Queries = typeof withQueries['Props'];
 
-        return (
-          <Box>
-            <Typography variant="h5">{t('recommendations:title')}</Typography>
-            {videoRecommendations.map((r, i) => (
-              <Grid
-                key={i}
-                container
-                alignItems="center"
-                justifyContent="flex-start"
-                style={{ marginBottom: 10 }}
-              >
-                <Grid item md={2}>
-                  <Chip
-                    label={i + 1}
-                    variant="outlined"
-                    deleteIcon={<DeleteIcon />}
-                    onDelete={() =>
-                      updateRecommendationForVideo({
-                        videoId: settings.edit?.videoId,
+interface VideoRecommendationsProps extends Queries {
+  videoId: string;
+}
+
+export const VideoRecommendations = withQueries<VideoRecommendationsProps>(
+  ({ queries, videoId }): React.ReactElement => {
+    return pipe(
+      queries,
+      QR.fold(
+        LazyFullSizeLoader,
+        ErrorBox,
+        ({ settings, videoRecommendations }) => {
+          const { t } = useTranslation();
+
+          return (
+            <Box>
+              <Typography variant="h5">{t('recommendations:title')}</Typography>
+              <Grid container>
+                <ReorderList
+                  getKey={(item) => item.urlId}
+                  items={videoRecommendations.map((v, i) => ({
+                    ...v,
+                    index: i,
+                  }))}
+                  compareItem={(item, dragItem) => {
+                    return item.urlId !== dragItem.urlId;
+                  }}
+                  onDragComplete={(recommendations) => {
+                    void updateRecommendationForVideo(
+                      {
+                        videoId,
                         creatorId: settings.channelCreatorId,
-                        recommendations: videoRecommendations
-                          .map((r) => r.urlId)
-                          .filter((rr) => rr !== r.urlId),
-                      })()
-                    }
-                  />
-                </Grid>
-                <Grid item md={10}>
-                  <p>{r.title}</p>
-                </Grid>
+                        recommendations: recommendations.map((r) => r.urlId),
+                      },
+                      {
+                        videoRecommendations: {
+                          videoId,
+                        },
+                      }
+                    )();
+                  }}
+                  renderItem={(item, i) => (
+                    <RecommendationCard
+                      key={i}
+                      data={item}
+                      alreadyPresent={true}
+                      onDeleteClick={(r) => {
+                        void updateRecommendationForVideo(
+                          {
+                            videoId,
+                            creatorId: settings.channelCreatorId,
+                            recommendations: videoRecommendations
+                              .map((d) => d.urlId)
+                              .filter((dd) => dd !== r.urlId),
+                          },
+                          {
+                            videoRecommendations: {
+                              videoId,
+                            },
+                          }
+                        )();
+                      }}
+                    />
+                  )}
+                />
               </Grid>
-            ))}
-          </Box>
-        );
-      }
-    )
-  );
-});
+            </Box>
+          );
+        }
+      )
+    );
+  }
+);

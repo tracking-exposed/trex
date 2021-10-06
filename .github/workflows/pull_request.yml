@@ -79,5 +79,5 @@ jobs:
           path: "**/node_modules"
           key: ${{ runner.os }}-modules-${{ hashFiles('**/package-lock.json') }}
 
-      - name: Build
+      - name: Test
         run: npm test

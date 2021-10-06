@@ -1,4 +1,4 @@
-import { available, compose, param, product, queryStrict } from 'avenger';
+import { available, compose, param, product, queryShallow, queryStrict } from 'avenger';
 import * as E from 'fp-ts/lib/Either';
 import { pipe } from 'fp-ts/lib/function';
 import * as TE from 'fp-ts/lib/TaskEither';
@@ -31,7 +31,7 @@ export const accountSettings = queryStrict(() => {
 
 export const creatorRecommendations = compose(
   product({ accountSettings, params: param() }),
-  queryStrict(
+  queryShallow(
     ({ accountSettings, params }) =>
       fetchTE<Recommendation[]>(
         `/v3/creator/recommendations/${accountSettings.publicKey}`,
@@ -64,17 +64,7 @@ export const recommendedChannels = compose(
   }, available)
 );
 
-export const currentVideoRecommendations = compose(
-  accountSettings,
-  queryStrict((settings): TE.TaskEither<Error, Recommendation[]> => {
-    if (settings?.edit?.videoId !== undefined) {
-      return fetchTE(`/v3/video/${settings.edit.videoId}/recommendations`);
-    }
-    return TE.right([]);
-  }, available)
-);
-
-export const videoRecommendations = queryStrict(
+export const videoRecommendations = queryShallow(
   ({ videoId }: { videoId: string }): TE.TaskEither<Error, Recommendation[]> =>
     fetchTE(`/v3/video/${videoId}/recommendations`),
   available

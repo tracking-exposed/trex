@@ -5,7 +5,7 @@ import * as React from 'react';
 import { useTranslation } from 'react-i18next';
 import { getVideoId } from 'utils/yt.utils';
 import { Tab } from '../common/Tab';
-import { VideoRecommendations } from '../dashboard/ContentCreatorVideoRecommendations';
+import { VideoRecommendations } from '../dashboard/VideoRecommendations';
 
 const useStyles = makeStyles(() => ({
   appBar: {
@@ -92,6 +92,7 @@ export const YTVideoPage: React.FC = () => {
           <TabPanel value={currentTab} index={0}>
             <VideoRecommendations
               queries={{ videoRecommendations: { videoId } }}
+              videoId={videoId}
             />
           </TabPanel>
           <TabPanel value={currentTab} index={1}>

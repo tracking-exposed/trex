@@ -7,6 +7,7 @@ const resources: CustomTypeOptions['resources'] = {
   },
   actions: {
     add: 'Add',
+    linkChannel: 'Link channel',
     delete: 'Delete',
     clear: 'Clear',
     editThisVideo: 'Edit this video',
@@ -15,6 +16,11 @@ const resources: CustomTypeOptions['resources'] = {
     removeFromCurrentVideo: 'Remove from current video',
     compare: 'Compare',
     related: 'Related',
+  },
+  routes: {
+    studio: 'Studio',
+    community: 'Community',
+    settings: 'Settings',
   },
   account: {
     channel: 'Your channel',
@@ -34,6 +40,10 @@ const resources: CustomTypeOptions['resources'] = {
     total: 'Total recommendations',
     url: 'Recommendation url',
     yours: 'Yours recommendations',
+    no_items: 'No recommendations found',
+    add_to_video: 'Add a recommendation to this video',
+    url_placeholder: 'https://youtube.com/watch?v=xxxxx',
+    url_helper_text: 'Insert a link',
   },
   dashboard: { title: 'Dashboard' },
   popup: { version: 'version {{version}} build {{data}}' },

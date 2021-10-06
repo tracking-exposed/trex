@@ -1,9 +1,10 @@
 import {
+  Box,
   Button,
+  ButtonGroup,
   FormControl,
-  Grid,
   Input,
-  Typography,
+  InputAdornment,
 } from '@material-ui/core';
 import InputLabel from '@material-ui/core/InputLabel';
 import * as QR from 'avenger/lib/QueryResult';
@@ -15,7 +16,7 @@ import { registerCreatorChannel, updateSettings } from '../../API/commands';
 import * as queries from '../../API/queries';
 import { ErrorBox } from '../../components/common/ErrorBox';
 import { LazyFullSizeLoader } from '../common/FullSizeLoader';
-import { CreatorVideos } from './CreatorVideos';
+import DeleteIcon from '@material-ui/icons/DeleteOutline';
 
 const withQueries = declareQueries({
   accountSettings: queries.accountSettings,
@@ -39,23 +40,14 @@ export const LinkAccount = withQueries(({ queries }) => {
         // this handle the pressing of "Enter" key
         if (e.keyCode === 13) {
           await registerCreatorChannel(e.currentTarget.value)();
-          // await updateSettings({
-          //   ...accountSettings,
-          //   edit: {
-          //     title: "Default title",
-          //     recommendations: [],
-          //     ...accountSettings.edit,
-          //     videoId: e.currentTarget.value,
-          //   },
-          // })();
         }
       };
 
       const handleChannelSubmit: React.MouseEventHandler<HTMLButtonElement> =
         async () => {
-          if (inputRef.current?.lastChild !== null) {
+          if (inputRef.current?.firstChild !== null) {
             await registerCreatorChannel(
-              (inputRef.current?.lastChild as any).value
+              (inputRef.current?.firstChild as any).value
             )();
           }
         };
@@ -71,44 +63,38 @@ export const LinkAccount = withQueries(({ queries }) => {
       const creatorChannelValue = channel ?? '';
 
       return (
-        <Grid container>
-          <Grid item md={4}>
-            <FormControl>
-              <InputLabel htmlFor="creator-channel">
-                {t('account:channel')}
-              </InputLabel>
-              <Input
-                id="creator-channel"
-                ref={inputRef}
-                fullWidth={true}
-                value={creatorChannelValue}
-                onChange={(e) => setChannel(e.target.value)}
-                onKeyDown={onSubmit}
-              />
+        <Box>
+          <FormControl>
+            <InputLabel htmlFor="creator-channel">
+              {t('account:channel')}
+            </InputLabel>
+            <Input
+              id="creator-channel"
+              ref={inputRef}
+              fullWidth={true}
+              value={creatorChannelValue}
+              onChange={(e) => setChannel(e.target.value)}
+              onKeyDown={onSubmit}
+              endAdornment={
+                accountSettings.channelCreatorId !== null ? (
+                  <InputAdornment position="end">
+                    <DeleteIcon onClick={() => handleChannelDelete()} />
+                  </InputAdornment>
+                ) : null
+              }
+            />
+            <ButtonGroup style={{ marginTop: 10 }}>
               <Button
-                variant="contained"
+                variant="outlined"
                 color="secondary"
-                disabled={creatorChannelValue === ''}
-                onClick={() => handleChannelDelete()}
-              >
-                {t('actions:delete')}
-              </Button>
-
-              <Button
-                variant="contained"
-                color="primary"
-                disabled={creatorChannelValue === ''}
+                disabled={creatorChannelValue === accountSettings.channelCreatorId}
                 onClick={handleChannelSubmit}
               >
-                {t('actions:importVideos')}
+                {t('actions:linkChannel')}
               </Button>
-            </FormControl>
-          </Grid>
-          <Grid item md={4}>
-            <Typography>{t('account:channelVideos')}</Typography>
-            <CreatorVideos />
-          </Grid>
-        </Grid>
+            </ButtonGroup>
+          </FormControl>
+        </Box>
       );
     })
   );

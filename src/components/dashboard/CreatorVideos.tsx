@@ -1,14 +1,14 @@
-import { Typography } from '@material-ui/core';
+import { Grid, Typography } from '@material-ui/core';
 import * as QR from 'avenger/lib/QueryResult';
 import { declareQueries } from 'avenger/lib/react';
 import * as Q from 'avenger/lib/Query';
 import { pipe } from 'fp-ts/lib/function';
-import { Video } from 'models/Video';
+import { Video } from '../../models/Video';
 import React from 'react';
 import { creatorVideos } from '../../API/queries';
 import { ErrorBox } from '../common/ErrorBox';
 import { LazyFullSizeLoader } from '../common/FullSizeLoader';
-import { VideoCard } from './VideoCard';
+import { VideoCard } from '../common/VideoCard';
 import { useTranslation } from 'react-i18next';
 
 const withQueries = declareQueries({ videos: creatorVideos });
@@ -30,22 +30,24 @@ export const CreatorVideos = withQueries<CreatorVideosProps>(
         }
 
         return (
-          <div>
+          <Grid container>
             {videos.map((v, i) => (
-              <VideoCard
-                key={i}
-                videoId={v.videoId}
-                title={v.title}
-                onClick={
-                  onVideoClick !== undefined
-                    ? () => {
-                        onVideoClick(v);
-                      }
-                    : undefined
-                }
-              />
+              <Grid item md={3} key={v.videoId}>
+                <VideoCard
+                  key={i}
+                  videoId={v.videoId}
+                  title={v.title}
+                  onClick={
+                    onVideoClick !== undefined
+                      ? () => {
+                          onVideoClick(v);
+                        }
+                      : undefined
+                  }
+                />
+              </Grid>
             ))}
-          </div>
+          </Grid>
         );
       })
     );
