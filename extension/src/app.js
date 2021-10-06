@@ -209,6 +209,8 @@ function lookForExistingNodes(selector, name) {
     const acquired = _.map(matches, function(e, i) {
         let content = {
             html: e.outerHTML,
+            offsetTop: e.offsetTop,
+            offsetLeft: e.offsetLeft,
             order: i,
         };
         return content;
