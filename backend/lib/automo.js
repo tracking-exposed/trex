@@ -161,10 +161,9 @@ async function getMetadataFromAuthor(filter, options) {
 async function getMetadataFromAuthorChannelId(channelId, options) {
     const mongoc = await mongo3.clientConnect({ concurrency: 1 });
 
-    const hardcodedDumbLimit  = 100;
     const videos = await mongo3.readLimit(mongoc,
         nconf.get('schema').metadata, { authorSource: channelId },
-        { savingTime: -1 }, hardcodedDumbLimit, options.skip);
+        { savingTime: -1 }, 100, options.skip);
 
     const authors = _.reduce(_.flatten(_.map(videos, 'related')), function(memo, related) {
         rs = related.recommendedSource;
@@ -190,8 +189,8 @@ async function getMetadataFromAuthorChannelId(channelId, options) {
     // TODO considerare options.skip e options.amount
     await mongoc.close();
     return {
-        content: ordered,
-        overflow: (_.size(videos) === hardcodedDumbLimit),
+        content: _.take(ordered, options.amount),
+        overflow: (_.size(videos) === options.amount),
         total,
         pagination: options,
     }
