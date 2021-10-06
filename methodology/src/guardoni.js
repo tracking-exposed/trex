@@ -501,7 +501,7 @@ async function guardoniExecution(experiment, directives, browser, profinfo) {
     // the BS above should close existing open tabs except 1st
     await operateBrowser(page, directives, domainSpecific);
     console.log(`Operations completed: check results at ${server}/experiment/#${experiment}`);
-    debug("Number of external requests logged: %j", domainSpecific.loggedextreqs);
+    debug("Number of external requests logged: %d", domainSpecific.loggedextreqs);
     await browser.close();
   } catch(error) {
     console.log("Error in operateBrowser (collection fail):", error);
