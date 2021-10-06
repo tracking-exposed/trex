@@ -158,6 +158,38 @@ async function getMetadataFromAuthor(filter, options) {
     }
 };
 
+async function getMetadataFromAuthorChannelId(channelId, options) {
+    const mongoc = await mongo3.clientConnect({ concurrency: 1 });
+
+    const videos = await mongo3.readLimit(mongoc,
+        nconf.get('schema').metadata, { authorSource: channelId },
+        { savingTime: -1 }, options.amount, options.skip);
+
+
+    const authors = _.map(_.groupBy(videos, 'authorSource'), (list, key) => ({
+        username: list[0].authorName,
+        avatar: "",
+        channelId: key.replace('/channel/', ''),
+        recommendedVideosCount: list.length
+    }))
+
+    debug('videos %O', { videos, authors });
+
+
+    const total = await mongo3.count(mongoc,
+        nconf.get('schema').metadata, { authorSource: channelId });
+
+
+    await mongoc.close();
+    return {
+        content: authors,
+        overflow: (_.size(videos) === options.amount),
+        total,
+        pagination: options,
+    }
+};
+
+
 async function getRelatedByWatcher(publicKey, options) {
     const mongoc = await mongo3.clientConnect({concurrency: 1});
 
@@ -856,6 +888,7 @@ module.exports = {
     /* used by routes/public */
     getMetadataByFilter,
     getMetadataFromAuthor,
+    getMetadataFromAuthorChannelId,
 
     /* used by routes/rsync */
     getFirstVideos,

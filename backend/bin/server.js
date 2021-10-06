@@ -150,6 +150,7 @@ app.get('/api/v3/creator/videos/:publicKey', (req, res) => dispatchPromise('getV
 
 app.get('/api/v3/creator/recommendations/:publicKey', (req, res) => dispatchPromise('youChooseByProfile', req, res))
 app.get('/api/v3/creator/register/:channelId', (req, res) => dispatchPromise('creatorRegister', req, res))
+app.get('/api/v3/creator/:channelId/related/:amount?', (req, res) => dispatchPromise('getCreatorRelated', req, res))
 
 /* ^^^^^ T t T ^^^^ * T * t * T * t * ^^^^^^^^^ */
 app.post('/api/v3/directives/:directiveType', (req, res) => dispatchPromise('postDirective', req, res))

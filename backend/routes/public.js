@@ -194,7 +194,7 @@ async function getByAuthor(req) {
     try {
         authorStruct = await automo.getMetadataFromAuthor({
             videoId: req.params.query
-        }, { amount, skip});
+        }, { amount, skip });
     } catch(e) {
         debug("getByAuthor error: %s", e.message);
         return {
@@ -248,6 +248,32 @@ async function getByAuthor(req) {
     }};
 };
 
+async function getCreatorRelated(req) {
+    /* this API do not return the standard format with videos and related inside,
+     * but a data format ready for the visualization provided - this has been 
+     * temporarly suspended: https://github.com/tracking-exposed/youtube.tracking.exposed/issues/18 */
+
+    const { amount, skip } = params.optionParsing(req.params.amount, PUBLIC_AMOUNT_ELEMS);
+    debug("getCreatorRelated %s amount %d skip %d", req.params.channelId, amount, skip);
+
+    let authorStruct;
+    try {
+        authorStruct = await automo.getMetadataFromAuthorChannelId(`/channel/${req.params.channelId}`, { amount, skip });
+    } catch(e) {
+        debug("getCreatorRelated error: %s", e.message);
+        return {
+            json: {
+                error: true,
+                message: e.message
+            }
+        }
+    }
+
+
+    return { json: authorStruct };
+};
+
+
 async function discontinued(req) {
     discodebug("%j", req);
     return { text: "discontinued" };
@@ -260,6 +286,7 @@ module.exports = {
     getRelated,
     getVideoCSV,
     getByAuthor,
+    getCreatorRelated,
 
     /* this special handler is used for all the API who aren't supported anymore.
      * It might be elsewhere, not just in routes/public.js, but ... */
