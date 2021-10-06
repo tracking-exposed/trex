@@ -1,9 +1,20 @@
-To run `guardoni`make sure you are in the methodology directory before executing:
+## Methodology folder, what's about?
+
+If you pose the Question: *How to run your own algoritmh accountability experiment?*...
+
+... the answer would be: *by controlling a methodology*
+
+This directory contains a list of scripts that Tracking Exposed team is using to test the youtube algorithm. **Guardoni** is the tool built to allow an easy ripetition of action, evidence collection, and data analysis.
+
+To run `guardoni` make sure you are in the methodology directory before executing:
 ``` 
 cd yttrex/methodology
-src/guardoni.js 
+npm install
+node src/guardoni.js 
 ```
+
 Then follow the guidance from the command line to provide the options, such as:
+
 ```
 src/guardoni.js --source https://youtube.tracking.exposed/json/automation-example.json --profile yourCustomName
 ```
@@ -130,25 +141,20 @@ Clone this repo (and its theme, as described in its README) then start Hugo with
 
 `hugo -D server`
 
-Make sure you dont have another hugo server running so that this one runs on the default port at `//localhost:1313/`
-With this, the personnal page from the extnesion should be able to render
+With this, the personal page from the extnesion should be able to render
 
-# API testing 
+TODO options to describe:
 
-The APIs are listed is `yttrex/backend/bin/server.js` and defined in `backend/routes/`
+  --exclude
+  --experiment
+  --backend
+  --chrome
 
-To test them locally, make sure that you have:
-- A local version of the backend server running (`npm run watch` in `backend`)
-- A local version of the parserver running. Do: 
-<br>`DEBUG=*,-parser:home:warning node bin/parserv2.js --minutesago 100000`<br>
-Where `minutesago` indicates the server to also parse the upstanding HTMLS which where collected less than X minutes ago.
-- A `mongod` server running. You can also launch Robo3T for a nice visual interface.
+## ChiaroScuro experiments
 
-Then you can query the local API by running things like:
-`http://localhost:9000/api/v1/last/`
+ChiaroScuro is one of the techniques used to test shadowban or what's alike. Other techniques exists beside ChiaroScuro.
 
-
-## ChiaroScuro usage 
+#### details
 
 you need a CSV with this format:
 
@@ -176,4 +182,19 @@ if you want to use an existing profile, --profile option can be used.
 2. guardoni invokes an API (POST to /api/v3/chiaroscuro) that upload the CSV and the hash. the server save the list of video and title, and thanks to this would produce a guardoni directive. this API avoid duplication of the same experiments. in the backend, is the collection 'chiaroscuro' containing these entries.
 3. guardoni uses the same experiment API to mark contribution with 'nickname'
 4. it would then access to the directive API, and by using the experimentId, will then perform the searches as instructed.
+
+
+# API testing 
+
+The APIs are listed is `yttrex/backend/bin/server.js` and defined in `backend/routes/`
+
+To test them locally, make sure that you have:
+- A local version of the backend server running (`npm run watch` in `backend`)
+- A local version of the parserver running. Do: 
+<br>`DEBUG=*,-parser:home:warning node bin/parserv2.js --minutesago 100000`<br>
+Where `minutesago` indicates the server to also parse the upstanding HTMLS which where collected less than X minutes ago.
+- A `mongod` server running. You can also launch Robo3T for a nice visual interface.
+
+Then you can query the local API by running things like:
+`http://localhost:9000/api/v1/last/`
 
