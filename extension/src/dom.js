@@ -19,7 +19,8 @@ function watch(root, selector, callback) {
   // tree. We initialize it with a callback function that takes an array of
   // mutations. Watch out because things are gonna be _nesty_ here (hehe pun
   // intended).
-  debugger;
+
+  // debugger;
   const mutationObserver = new MutationObserver(mutations =>
     // Each `mutation` in the `mutations` array contains an...
     mutations.forEach(mutation =>
@@ -60,12 +61,12 @@ function watch(root, selector, callback) {
 }
 
 function on(selector, callback) {
-  debugger;
+  // debugger;
   return watch(document, selector, callback);
 }
 
 function one(selector, callback) {
-  debugger;
+  // debugger;
   let mutationObserver;
   let once = false;
 

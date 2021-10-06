@@ -79,8 +79,8 @@ function boot () {
 }
 
 const selectors = {
-    video: '.video-feed-item',
-    suggested: 'div.user-list > a.user-item'
+    video: 'div[class$="DivItemContainer"]',
+    suggested: 'div[class$="DivUserContainer"]'
 };
 
 function hrefUpdateMonitor() {
