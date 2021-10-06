@@ -43,10 +43,12 @@ function watch(root, selector, callback) {
   // next event loop.
   setTimeout(() => {
     // Query for all elements and run `callback`.
-    debugger;
+
+    // debugger;
     root.querySelectorAll(selector).forEach(callback);
 
-    debugger;
+    // debugger;
+
     // Start observing events on `root`, using the configuration specified. For
     // more information about the configuration parameters, check the
     // [MutationObserverInit

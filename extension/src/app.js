@@ -48,7 +48,7 @@ function boot () {
         return;
     } else if (_.endsWith(window.location.origin, 'tiktok.com')) {
         // this get executed only on youtube.com
-        console.log(`tktrex ${config}`);
+        console.log(`tktrex ${JSON.stringify(config)}`);
 
         // Register all the event handlers.
         // An event handler is a piece of code responsible for a specific task.
@@ -79,15 +79,47 @@ function boot () {
 }
 
 const selectors = {
-    video: 'div[class$="DivItemContainer"]',
-    suggested: 'div[class$="DivUserContainer"]'
+    video: 'video',
+    suggested: 'div[class$="DivUserContainer"]',
+    creator: 'a[href^="/@"]',
 };
 
 function hrefUpdateMonitor() {
     const sugwat = dom.on(selectors.suggested, handleSuggested);
     const vidwat = dom.on(selectors.video, handleVideo);
+    const creatwat = dom.on(selectors.creator, handleTest);
     console.log("Listener installed ",
         JSON.stringify(selectors), sugwat, vidwat);
+}
+
+let videoCounter = 0;
+function handleTest(element) {
+    return null;
+
+    const refe = _.reduce(_.times(5),
+        function(memo, iteration) {
+            const check = memo.parentNode.outerHTML.length;
+            console.log(videoCounter, iteration, check);
+            return (check > 10000) ? memo : memo.parentNode;
+        }, element);
+
+    if(!refe.querySelector('video')) {
+        console.log("Skipping non video area");
+        return null;
+    }
+    
+    if(refe.hasAttribute('trex')) {
+        console.log("Element already acquired: skipping")
+        return null;
+    }
+    videoCounter++;
+    console.log("New element found, marking as ", videoCounter);
+    refe.setAttribute('trex', videoCounter);
+    hub.event('newVideo', {
+        videoCounter,
+        html: refe.outerHTML,
+        href: window.location.href,
+    })
 }
 
 function handleSuggested(elem) {
@@ -99,11 +131,28 @@ function handleSuggested(elem) {
 }
 
 function handleVideo(elem) {
-    console.log("handleVideo", elem);
+
+    const refe = _.reduce(_.times(8),
+        function(memo, iteration) {
+            const check = memo.parentNode.outerHTML.length;
+            console.log(videoCounter, iteration, check);
+            return (check > 10000) ? memo : memo.parentNode;
+        }, elem);
+
+    console.log(refe);
+
+    if(refe.hasAttribute('trex')) {
+        console.log("Element already acquired: skipping")
+        return null;
+    }
+    videoCounter++;
+    console.log("New element found, marking as ", videoCounter);
+    refe.setAttribute('trex', videoCounter);
     hub.event('newVideo', {
-        html: elem.outerHTML,
+        videoCounter,
+        html: refe.outerHTML,
         href: window.location.href,
-    });
+    })
 }
 
 // The function `localLookup` communicates with the **action pages**
