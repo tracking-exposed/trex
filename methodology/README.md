@@ -1,3 +1,42 @@
+## Methodology folder, what's about?
+
+If you pose the Question: *How to run your own algoritmh accountability experiment?*...
+
+... the answer would be: *by controlling a methodology*
+
+This directory contains a list of scripts that Tracking Exposed team is using to test the youtube algorithm. **Guardoni** is the tool built to allow an easy ripetition of action, evidence collection, and data analysis.
+
+To run `guardoni` make sure you are in the methodology directory before executing:
+``` 
+cd yttrex/methodology
+npm install
+node src/guardoni.js 
+```
+
+Then follow the guidance from the command line to provide the options, such as:
+
+```
+src/guardoni.js --source https://youtube.tracking.exposed/json/automation-example.json --profile yourCustomName
+```
+
+don't forget to set environment variable 'DEBUG' to control the verbosity
+`DEBUG=*` will print everything, including a lot of `pupeteer` noise
+to exclude it, do for instance:
+```
+DEBUG=*,-puppeteer:* src/guardoni.js
+```
+
+If you get the error (seen on mac):
+```
+Error in operateBrowser (collection fail): Error: Browser is not downloaded. Run "npm install" or "yarn install"
+```
+It means that `puppeteer` cannot find the chromium executable. First try to run `npm install`, if it still doesn't run, you need to specify the path of the chromium executable by hand. To find it, open chromium and go to the page `chrome://version`, copy paste the `Executable Path` and add it as an argument `--chrome`  to the guardoni script, as such:
+```
+src/guardoni.js --source https://youtube.tracking.exposed/json/automation-example.json --profile profileTest --chrome /Applications/Chromium.app/Contents/MacOS/Chromium
+```
+
+
+=======
 ## Run Guardoni and send results to server
 
 To run `guardoni` make sure you are in the methodology directory before executing:
@@ -111,8 +150,11 @@ TODO options to describe:
   --backend
   --chrome
 
+## ChiaroScuro experiments
 
-## ChiaroScuro usage 
+ChiaroScuro is one of the techniques used to test shadowban or what's alike. Other techniques exists beside ChiaroScuro.
+
+#### details
 
 you need a CSV with this format:
 
@@ -140,4 +182,19 @@ if you want to use an existing profile, --profile option can be used.
 2. guardoni invokes an API (POST to /api/v3/chiaroscuro) that upload the CSV and the hash. the server save the list of video and title, and thanks to this would produce a guardoni directive. this API avoid duplication of the same experiments. in the backend, is the collection 'chiaroscuro' containing these entries.
 3. guardoni uses the same experiment API to mark contribution with 'nickname'
 4. it would then access to the directive API, and by using the experimentId, will then perform the searches as instructed.
+
+
+# API testing 
+
+The APIs are listed is `yttrex/backend/bin/server.js` and defined in `backend/routes/`
+
+To test them locally, make sure that you have:
+- A local version of the backend server running (`npm run watch` in `backend`)
+- A local version of the parserver running. Do: 
+<br>`DEBUG=*,-parser:home:warning node bin/parserv2.js --minutesago 100000`<br>
+Where `minutesago` indicates the server to also parse the upstanding HTMLS which where collected less than X minutes ago.
+- A `mongod` server running. You can also launch Robo3T for a nice visual interface.
+
+Then you can query the local API by running things like:
+`http://localhost:9000/api/v1/last/`
 
