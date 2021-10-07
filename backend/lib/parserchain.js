@@ -19,7 +19,7 @@ const parserList = {
 module.exports = {
     /* this sequence is executed in this order.
      * after the newline there are modules that levegared on previously mined metadata */
-    dissectorList: _.keys(parserList),
+    dissectorList: parserList,
 
     // functions
     initializeMongo,

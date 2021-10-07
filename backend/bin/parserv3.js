@@ -45,9 +45,11 @@ async function pipeline(e) {
             log: {},
             findings: {}
         };
-        for (extractorName of pchain.dissectorList ) {
+        for (extractorName of _.keys(pchain.dissectorList) ) {
             try {
-                let mined = await pchain.wrapDissector(pchain[extractorName], extractorName, e, structure);
+                let mined = await pchain.wrapDissector(
+                    pchain.dissectorList[extractorName], extractorName, e, structure
+                );
                 _.set(structure.findings, extractorName, mined);
             } catch(error) {
                 _.set(structure.failures, extractorName, error.message);

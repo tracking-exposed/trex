@@ -1,13 +1,22 @@
 const _ = require('lodash');
 const nconf = require("nconf");
-const debug = require('debug')('parsers:home');
+const debug = require('debug')('parsers:description');
 
-function home(envelop, previous) {
+function description(envelop, previous) {
 
-    if(previous.nature.type !== "home")
-        return false;
+    if(previous.nature.type == "foryou" || 
+       previous.nature.type == "following" )
+        return { description: null };
 
-    return { };
+    const spans = envelop.jsdom.querySelectorAll('span');
+    const texts = _.map(spans, function(span) {
+        return span.textContent;
+    });
+
+    const retval = texts.join('').trim();
+    debug("%d = %s", spans.length, retval);
+
+    return { description: retval }
 };
 
-module.exports = home;
+module.exports = description;
