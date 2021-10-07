@@ -37,16 +37,16 @@ const useStyles = makeStyles((theme) => ({
   img: {
     width: '100%',
     maxWidth: 200,
-    display: 'block'
+    display: 'block',
   },
   link: {
     color: 'black',
     textDecoration: 'none',
-    display: 'block'
+    display: 'block',
   },
   switchFormControl: {
-    margin: 0
-  }
+    margin: 0,
+  },
 }));
 
 const PopupLoader: React.FC = () => {
@@ -102,7 +102,8 @@ export const Popup = withQueries(({ queries }) => {
 
                 <Grid item xs={1} />
                 <Grid item xs={4} justifyContent="center">
-                  <FormControlLabel className={classes.switchFormControl}
+                  <FormControlLabel
+                    className={classes.switchFormControl}
                     control={
                       <Switch
                         color="primary"
@@ -113,9 +114,8 @@ export const Popup = withQueries(({ queries }) => {
                         }
                       />
                     }
-                    label="Enable" 
+                    label="Enable"
                     labelPlacement="end"
-                    style={{ background: 'red' }}
                   />
                 </Grid>
                 <Grid item xs={12}>

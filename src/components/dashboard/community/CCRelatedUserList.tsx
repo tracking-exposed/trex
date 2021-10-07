@@ -1,10 +1,12 @@
-import { pipe } from 'fp-ts/lib/pipeable';
-import * as React from 'react';
 import * as QR from 'avenger/lib/QueryResult';
 import { useQueries } from 'avenger/lib/react';
+import { pipe } from 'fp-ts/lib/pipeable';
+import * as React from 'react';
+import { useTranslation } from 'react-i18next';
 import { ccRelatedUsers } from '../../../API/queries';
-import { LazyFullSizeLoader } from 'components/common/FullSizeLoader';
-import { ErrorBox } from 'components/common/ErrorBox';
+import { EmptyList } from '../../common/EmptyList';
+import { ErrorBox } from '../../common/ErrorBox';
+import { LazyFullSizeLoader } from '../../common/FullSizeLoader';
 import { UserList } from './UserList';
 
 interface CCRelatedUserListProps {
@@ -20,9 +22,14 @@ export const CCRelatedUserList: React.FC<CCRelatedUserListProps> = ({
     { ccRelatedUsers },
     { ccRelatedUsers: { channelId, amount } }
   );
+  const {t} = useTranslation();
+
   return pipe(
     queries,
     QR.fold(LazyFullSizeLoader, ErrorBox, ({ ccRelatedUsers }) => {
+      if (ccRelatedUsers.length === 0) {
+        return <EmptyList resource={t('creator:title')} />
+      }
       return (
         <UserList
           users={ccRelatedUsers}

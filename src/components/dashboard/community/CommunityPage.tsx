@@ -1,4 +1,5 @@
 import {
+  Box,
   Card,
   CardContent,
   CardHeader,
@@ -11,10 +12,11 @@ import NotificationIcon from '@material-ui/icons/NotificationImportantOutlined';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { StatsCard } from '../../common/StatsCard';
+import { LinkAccount } from '../LinkAccount';
 import { CCRelatedUserList } from './CCRelatedUserList';
 
 interface CommunityPageProps {
-  channelId: string;
+  channelId?: string;
 }
 
 export const CommunityPage: React.FC<CommunityPageProps> = ({ channelId }) => {
@@ -33,10 +35,16 @@ export const CommunityPage: React.FC<CommunityPageProps> = ({ channelId }) => {
         </Card>
       </Grid>
       <Grid item md={4}>
-        <Typography variant="h5" color="primary">
-          {t('statistics:top_n_cc_related_to_your_channel', { count: 5 })}
-        </Typography>
-        <CCRelatedUserList channelId={channelId} amount={5} />
+        {channelId === undefined ? (
+          <LinkAccount />
+        ) : (
+          <Box>
+            <Typography variant="h5" color="primary">
+              {t('statistics:top_n_cc_related_to_your_channel', { count: 5 })}
+            </Typography>
+            <CCRelatedUserList channelId={channelId} amount={5} />
+          </Box>
+        )}
       </Grid>
       <Grid item md={4}>
         <StatsCard

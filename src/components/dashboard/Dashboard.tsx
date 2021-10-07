@@ -21,11 +21,18 @@ import Advanced from './Advanced';
 import { CommunityPage } from './community/CommunityPage';
 import { LinkAccount } from './LinkAccount';
 import { Studio } from './studio/Studio';
+import { UserProfileBox } from './UserProfileBox';
 
 const useStyles = makeStyles((theme) => ({
   root: {
     flexGrow: 1,
     backgroundColor: theme.palette.background.default,
+  },
+  title: {
+    marginBottom: 15,
+  },
+  subtitle: {
+    marginBottom: 20,
   },
   routesList: {
     marginTop: 100,
@@ -51,6 +58,19 @@ const DashboardContent = withQueriesDashboardContent<DashboardContentProps>(
       queries,
       QR.fold(LazyFullSizeLoader, ErrorBox, ({ accountSettings }) => {
         const { t } = useTranslation();
+        const classes = useStyles();
+
+        const getLinkAccountView = React.useCallback(() => {
+          return [
+            t('routes:link_account'),
+            t('link_account:subtitle'),
+            // eslint-disable-next-line react/jsx-key
+            <Grid item md={4}>
+              <LinkAccount />
+            </Grid>,
+          ];
+        }, []);
+
         const [currentViewLabel, currentViewSubtitle, currentViewContent] =
           React.useMemo(() => {
             switch (currentView.view) {
@@ -59,12 +79,17 @@ const DashboardContent = withQueriesDashboardContent<DashboardContentProps>(
                 return [t('routes:settings'), '', <Advanced />];
               case 'studio':
               case 'studioEdit':
+                if (accountSettings.channelCreatorId === null) {
+                  return getLinkAccountView();
+                }
                 return [
                   t('routes:studio'),
                   '',
                   // eslint-disable-next-line react/jsx-key
                   <Studio currentView={currentView} />,
                 ];
+              case 'linkAccount':
+                return getLinkAccountView();
               case 'community':
               default:
                 return [
@@ -72,22 +97,22 @@ const DashboardContent = withQueriesDashboardContent<DashboardContentProps>(
                   t('community:subtitle'),
                   // eslint-disable-next-line react/jsx-key
                   <CommunityPage
-                    channelId={accountSettings.channelCreatorId ?? ''}
+                    channelId={accountSettings.channelCreatorId ?? undefined}
                   />,
                 ];
             }
-          }, [currentView]);
-
-        if (accountSettings.channelCreatorId === null) {
-          return <Box>Set channel id</Box>;
-        }
+          }, [currentView, accountSettings]);
 
         return (
           <Grid item md={9} style={{ padding: 0 }}>
-            <Typography variant="h4" color="primary">
+            <Typography variant="h4" color="primary" className={classes.title}>
               {currentViewLabel}
             </Typography>
-            <Typography variant="subtitle1" color="textPrimary">
+            <Typography
+              variant="subtitle1"
+              color="textPrimary"
+              className={classes.subtitle}
+            >
               {currentViewSubtitle}
             </Typography>
             {currentViewContent}
@@ -111,9 +136,15 @@ export const Dashboard = withQueries(({ queries }): React.ReactElement => {
         <Box className={classes.root} padding={2}>
           <Grid container spacing={2}>
             <Grid item md={3}>
-              <img alt="YCAI Logo" src="/ycai-logo.png" />
+              <img
+                alt="YCAI Logo"
+                src="/ycai-logo.png"
+                onClick={() => {
+                  void doUpdateCurrentView({ view: "index" })();
+                }}
+              />
 
-              <LinkAccount />
+              <UserProfileBox />
 
               <List className={classes.routesList}>
                 <ListItem

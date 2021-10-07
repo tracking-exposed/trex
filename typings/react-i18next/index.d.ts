@@ -1,3 +1,4 @@
+import { string } from 'fp-ts';
 import 'react-i18next';
 
 declare module 'react-i18next' {
@@ -6,6 +7,7 @@ declare module 'react-i18next' {
       title: string;
       common: {
         coming_soon: string;
+        empty_list: string;
       };
       actions: {
         add: string;
@@ -17,7 +19,8 @@ declare module 'react-i18next' {
         removeFromCurrentVideo: string;
         compare: string;
         related: string;
-        linkChannel: string;
+        link_channel: string;
+        unlink_channel: string;
       };
       account: {
         channel: string;
@@ -32,6 +35,11 @@ declare module 'react-i18next' {
         recommendability_score_title: string;
         recommendability_score_subtitle: string;
       };
+      link_account: {
+        title: string;
+        subtitle: string;
+        label: string;
+      },
       youtube: {
         title: string;
       };
@@ -81,6 +89,7 @@ declare module 'react-i18next' {
         studio: string;
         community: string;
         settings: string;
+        link_account: string;
       };
     };
   }

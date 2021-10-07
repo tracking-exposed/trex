@@ -5,6 +5,7 @@ import {
   FormControl,
   Input,
   InputAdornment,
+  Typography,
 } from '@material-ui/core';
 import InputLabel from '@material-ui/core/InputLabel';
 import * as QR from 'avenger/lib/QueryResult';
@@ -66,7 +67,10 @@ export const LinkAccount = withQueries(({ queries }) => {
       const creatorChannelValue = channel ?? '';
 
       return (
-        <Box>
+        <Box display="flex" flexDirection="column">
+          <Typography color="secondary" variant="subtitle1">
+            {t('link_account:label')}
+          </Typography>
           <FormControl>
             <InputLabel htmlFor="creator-channel">
               {t('account:channel')}
@@ -95,7 +99,7 @@ export const LinkAccount = withQueries(({ queries }) => {
                 }
                 onClick={handleChannelSubmit}
               >
-                {t('actions:linkChannel')}
+                {t('actions:link_channel')}
               </Button>
             </ButtonGroup>
           </FormControl>

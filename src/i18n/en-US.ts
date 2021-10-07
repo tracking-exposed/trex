@@ -4,10 +4,12 @@ const resources: CustomTypeOptions['resources'] = {
   title: 'YouChoose AI',
   common: {
     coming_soon: 'Coming soon',
+    empty_list: 'No {{resource}} found.'
   },
   actions: {
     add: 'Add',
-    linkChannel: 'Link channel',
+    link_channel: 'Link channel',
+    unlink_channel: 'Unlink channel',
     delete: 'Delete',
     clear: 'Clear',
     editThisVideo: 'Edit this video',
@@ -21,6 +23,7 @@ const resources: CustomTypeOptions['resources'] = {
     studio: 'Studio',
     community: 'Community',
     settings: 'Settings',
+    link_account: 'Link your account'
   },
   account: {
     channel: 'Your channel',
@@ -35,6 +38,11 @@ const resources: CustomTypeOptions['resources'] = {
     recommendability_score_title: 'Recommendability Score',
     recommendability_score_subtitle:
       'Where your videos appears as recommended?',
+  },
+  link_account: {
+    title: 'Link your account',
+    subtitle: 'Our system will verify that you own the channel on this browser',
+    label: 'Link your account to start choosing recommendations'
   },
   youtube: {
     title: 'Youtube',
