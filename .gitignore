@@ -10,20 +10,16 @@
 .env
 .vscode/*
 
-extension/build/*
-extension/dist/*
-extension/node_modules/*
+node_modules
+build
+dist
 
-methodology/dist/*
 methodology/config/*
 methodology/profiles/*
 methodology/executions/*
 methodology/experiments/*
-methodology/node_modules/*
 methodology/extension/*
 
-backend/node_modules/*
+backend/dump
 backend/experiments/*
 backend/config/secrets.json
-
-react-pieces/node_modules/*
