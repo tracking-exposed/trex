@@ -36,6 +36,7 @@
     "nodemon": "^2.0.12",
     "numeral": "^2.0.6",
     "request": "^2.88.2",
+    "ts-endpoint": "^2.0.0",
     "tweetnacl": "^0.14.3"
   },
   "devDependencies": {
