@@ -10,11 +10,12 @@ var state = {
 };
 
 function handleVideo (type, e) {
+
     state.content.push({
         ...e,
-        incremental: state.incremental,
         clientTime: getTimeISO8601(),
         type: 'video',
+        incremental: state.incremental,
     });
     state.incremental++;
 }

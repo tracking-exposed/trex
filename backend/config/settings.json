@@ -1,0 +1,17 @@
+{
+  "schema": { 
+      "supporters": "supporters",
+      "stats": "trexstats",
+      "htmls": "htmls",
+      "metadata": "metadata"
+  },
+
+  "mongoHost": "localhost",
+  "mongoPort": 27017,
+  "mongoDb": "tktrex",
+
+  "port": 14000,
+  "interface": "0.0.0.0",
+
+  "key": "invalid_default"
+}

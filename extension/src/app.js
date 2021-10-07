@@ -36,6 +36,9 @@ import { registerHandlers } from './handlers/index';
 
 // bo is the browser object, in chrome is named 'chrome', in firefox is 'browser'
 const bo = chrome || browser;
+// below the usage of unnecessary code
+let feedId = (Math.random() + "-init-" + _.random(0, 0xffff));
+let feedCounter = 0;
 
 // Boot the user script. This is the first function called.
 // Everything starts from here.
@@ -58,7 +61,8 @@ function boot () {
         // Lookup the current user and decide what to do.
         localLookup(response => {
             // `response` contains the user's public key, we save it global for the blinks
-            console.log("app.js gets", response, "from localLookup");
+            console.log("app.js gets", response,
+                "from localLookup, and accessId", feedId);
 
             /* these parameters are loaded from localstorage */
             config.publicKey = response.publicKey;
@@ -85,41 +89,36 @@ const selectors = {
 };
 
 function hrefUpdateMonitor() {
+    /* this initizalise dom listened by mutation observer */
     const sugwat = dom.on(selectors.suggested, handleSuggested);
     const vidwat = dom.on(selectors.video, handleVideo);
     const creatwat = dom.on(selectors.creator, handleTest);
     console.log("Listener installed ",
         JSON.stringify(selectors), sugwat, vidwat);
+
+    /* and monitor href changes to randomize a new accessId */
+    let oldHref = document.location.href;
+    const bodyList = document.querySelector("body");
+    const observer = new MutationObserver(function(mutations) {
+        mutations.forEach(function(mutation) {
+            if (oldHref != document.location.href) {
+                console.log(oldHref, "changed", document.location.href, feedId, feedCounter);
+                oldHref = document.location.href;
+                feedCounter++;
+                feedId = Math.random() + "++" + feedCounter;
+            }
+        });
+    });
+    var config = {
+        childList: true,
+        subtree: true
+    };
+    observer.observe(bodyList, config);
 }
 
 let videoCounter = 0;
 function handleTest(element) {
     return null;
-
-    const refe = _.reduce(_.times(5),
-        function(memo, iteration) {
-            const check = memo.parentNode.outerHTML.length;
-            console.log(videoCounter, iteration, check);
-            return (check > 10000) ? memo : memo.parentNode;
-        }, element);
-
-    if(!refe.querySelector('video')) {
-        console.log("Skipping non video area");
-        return null;
-    }
-    
-    if(refe.hasAttribute('trex')) {
-        console.log("Element already acquired: skipping")
-        return null;
-    }
-    videoCounter++;
-    console.log("New element found, marking as ", videoCounter);
-    refe.setAttribute('trex', videoCounter);
-    hub.event('newVideo', {
-        videoCounter,
-        html: refe.outerHTML,
-        href: window.location.href,
-    })
 }
 
 function handleSuggested(elem) {
@@ -132,10 +131,11 @@ function handleSuggested(elem) {
 
 function handleVideo(elem) {
 
-    const refe = _.reduce(_.times(8),
+    const refe = _.reduce(_.times(20),
         function(memo, iteration) {
             const check = memo.parentNode.outerHTML.length;
-            console.log(videoCounter, iteration, check);
+            if(check < 10000)
+                console.log(videoCounter, iteration, check);
             return (check > 10000) ? memo : memo.parentNode;
         }, elem);
 
@@ -149,9 +149,12 @@ function handleVideo(elem) {
     console.log("New element found, marking as ", videoCounter);
     refe.setAttribute('trex', videoCounter);
     hub.event('newVideo', {
-        videoCounter,
         html: refe.outerHTML,
         href: window.location.href,
+        feedId,
+        feedCounter,
+        videoCounter,
+        rect:  refe.getBoundingClientRect(),
     })
 }
 
