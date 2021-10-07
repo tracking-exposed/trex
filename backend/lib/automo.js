@@ -158,6 +158,45 @@ async function getMetadataFromAuthor(filter, options) {
     }
 };
 
+async function getMetadataFromAuthorChannelId(channelId, options) {
+    const mongoc = await mongo3.clientConnect({ concurrency: 1 });
+
+    const videos = await mongo3.readLimit(mongoc,
+        nconf.get('schema').metadata, { authorSource: channelId },
+        { savingTime: -1 }, 100, options.skip);
+
+    const authors = _.reduce(_.flatten(_.map(videos, 'related')), function(memo, related) {
+        rs = related.recommendedSource;
+        if(!memo[rs]) {
+            const obj = {
+                username: rs,
+                avatar: "",
+                recommendedVideosCount: 1
+            }
+            memo[rs] = obj;
+        } else {
+            memo[rs].recommendedVideosCount++;
+        }
+        return memo;
+    }, {});
+
+    const total = await mongo3.count(mongoc,
+        nconf.get('schema').metadata, { authorSource: channelId });
+
+    const ordered = _.orderBy(
+        authors, ['recommendedVideosCount'], ['desc']);
+
+    // TODO considerare options.skip e options.amount
+    await mongoc.close();
+    return {
+        content: _.take(ordered, options.amount),
+        overflow: (_.size(videos) === options.amount),
+        total,
+        pagination: options,
+    }
+};
+
+
 async function getRelatedByWatcher(publicKey, options) {
     const mongoc = await mongo3.clientConnect({concurrency: 1});
 
@@ -686,6 +725,7 @@ async function fetchRecommendations(videoId, kind) {
             _.unset(e, '_id');
             return e;
         })
+        result = _.sortBy(result, [(r) => videoInfo.recommendations.indexOf(r.urlId)])
     }
     await mongoc.close();
     return result;
@@ -855,6 +895,7 @@ module.exports = {
     /* used by routes/public */
     getMetadataByFilter,
     getMetadataFromAuthor,
+    getMetadataFromAuthorChannelId,
 
     /* used by routes/rsync */
     getFirstVideos,

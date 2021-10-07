@@ -12,6 +12,17 @@ services:
     volumes:
       - ./dump:/dump/
 
+  mongo-indexes:
+    image: mongo
+    container_name: mongo-indexes
+    links:
+      - mongo
+    volumes:
+      - ./scripts:/scripts
+    command: mongo --host mongo /scripts/build-indexes.js
+    depends_on:
+      - mongo
+
   api:
     image: node:12-slim
     ports:

@@ -23,3 +23,5 @@ methodology/extension/*
 backend/dump
 backend/experiments/*
 backend/config/secrets.json
+
+qa/*.pyc
