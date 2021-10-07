@@ -4,7 +4,6 @@ const debug = require('debug')('parsers:categorizer');
 const { JSDOM } = require("jsdom");
 
 const mongo3 = require('../lib/mongo3');
-const shared = require('./shared');
 
 async function attemptCatInfo(mongoc, videoId) {
 
@@ -16,10 +15,8 @@ async function attemptCatInfo(mongoc, videoId) {
             const e = await mongo3.readOne(mongoc,
                 nconf.get('schema').retrieved, { videoId });
             const dom = new JSDOM(e.html).window.document;
-            const t = shared.getCategories(dom);
             cinfo = await mongo3.writeOne(mongoc, nconf.get('schema').categories, {
                 videoId,
-                categories: t,
                 when: new Date()
             });
         } catch(error) {
