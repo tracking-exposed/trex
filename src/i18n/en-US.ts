@@ -18,6 +18,7 @@ const resources: CustomTypeOptions['resources'] = {
     removeFromCurrentVideo: 'Remove from current video',
     compare: 'Compare',
     related: 'Related',
+    verify_channel: 'Verify channel'
   },
   routes: {
     studio: 'Studio',

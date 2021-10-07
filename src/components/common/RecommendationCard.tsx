@@ -4,7 +4,7 @@ import CardActionArea from '@material-ui/core/CardActionArea';
 import CardContent from '@material-ui/core/CardContent';
 import CardMedia from '@material-ui/core/CardMedia';
 import Typography from '@material-ui/core/Typography';
-import { Recommendation } from '@models/Recommendation';
+import { Recommendation } from '@backend/models/Recommendation';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 

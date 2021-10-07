@@ -1,4 +1,3 @@
-import { string } from 'fp-ts';
 import 'react-i18next';
 
 declare module 'react-i18next' {
@@ -21,6 +20,7 @@ declare module 'react-i18next' {
         related: string;
         link_channel: string;
         unlink_channel: string;
+        verify_channel: string;
       };
       account: {
         channel: string;

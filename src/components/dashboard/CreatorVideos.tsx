@@ -3,7 +3,7 @@ import * as QR from 'avenger/lib/QueryResult';
 import { declareQueries } from 'avenger/lib/react';
 import * as Q from 'avenger/lib/Query';
 import { pipe } from 'fp-ts/lib/function';
-import { Video } from '../../models/Video';
+import { Video } from '@backend/models/Video';
 import React from 'react';
 import { creatorVideos } from '../../API/queries';
 import { ErrorBox } from '../common/ErrorBox';

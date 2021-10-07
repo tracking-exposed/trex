@@ -9,7 +9,6 @@ import { declareQueries } from 'avenger/lib/react';
 import { pipe } from 'fp-ts/lib/function';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { accountSettings } from '../../API/queries';
 import {
   CurrentView,
   currentView,
@@ -21,6 +20,7 @@ import Advanced from './Advanced';
 import { CommunityPage } from './community/CommunityPage';
 import { LinkAccount } from './LinkAccount';
 import { Studio } from './studio/Studio';
+import { StudioVideoEdit } from './studio/StudioVideoEdit';
 import { UserProfileBox } from './UserProfileBox';
 
 const useStyles = makeStyles((theme) => ({
@@ -45,85 +45,76 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const withQueriesDashboardContent = declareQueries({ accountSettings });
-type Q = typeof withQueriesDashboardContent['Props'];
-
-interface DashboardContentProps extends Q {
+interface DashboardContentProps {
   currentView: CurrentView;
 }
 
-const DashboardContent = withQueriesDashboardContent<DashboardContentProps>(
-  ({ queries, currentView }) => {
-    return pipe(
-      queries,
-      QR.fold(LazyFullSizeLoader, ErrorBox, ({ accountSettings }) => {
-        const { t } = useTranslation();
-        const classes = useStyles();
+const DashboardContent: React.FC<DashboardContentProps> = ({ currentView }) => {
+  const { t } = useTranslation();
+  const classes = useStyles();
 
-        const getLinkAccountView = React.useCallback(() => {
+  const getLinkAccountView = React.useCallback(() => {
+    return [
+      t('routes:link_account'),
+      t('link_account:subtitle'),
+      // eslint-disable-next-line react/jsx-key
+      <Grid item md={4}>
+        <LinkAccount />
+      </Grid>,
+    ];
+  }, []);
+
+  const [currentViewLabel, currentViewSubtitle, currentViewContent] =
+    React.useMemo(() => {
+      switch (currentView.view) {
+        case 'settings':
+          // eslint-disable-next-line react/jsx-key
+          return [t('routes:settings'), '', <Advanced />];
+        case 'studio':
           return [
-            t('routes:link_account'),
-            t('link_account:subtitle'),
+            t('routes:studio'),
+            '',
             // eslint-disable-next-line react/jsx-key
-            <Grid item md={4}>
-              <LinkAccount />
-            </Grid>,
+            <Studio />,
           ];
-        }, []);
+        case 'studioEdit':
+          return [
+            t('routes:studio'),
+            '',
+            // eslint-disable-next-line react/jsx-key
+            <StudioVideoEdit videoId={currentView.videoId} />,
+          ];
+        case 'linkAccount':
+          return getLinkAccountView();
+        case 'community':
+        default:
+          return [
+            t('routes:community'),
+            t('community:subtitle'),
+            // eslint-disable-next-line react/jsx-key
+            <CommunityPage />,
+          ];
+      }
+    }, [currentView]);
 
-        const [currentViewLabel, currentViewSubtitle, currentViewContent] =
-          React.useMemo(() => {
-            switch (currentView.view) {
-              case 'settings':
-                // eslint-disable-next-line react/jsx-key
-                return [t('routes:settings'), '', <Advanced />];
-              case 'studio':
-              case 'studioEdit':
-                if (accountSettings.channelCreatorId === null) {
-                  return getLinkAccountView();
-                }
-                return [
-                  t('routes:studio'),
-                  '',
-                  // eslint-disable-next-line react/jsx-key
-                  <Studio currentView={currentView} />,
-                ];
-              case 'linkAccount':
-                return getLinkAccountView();
-              case 'community':
-              default:
-                return [
-                  t('routes:community'),
-                  t('community:subtitle'),
-                  // eslint-disable-next-line react/jsx-key
-                  <CommunityPage
-                    channelId={accountSettings.channelCreatorId ?? undefined}
-                  />,
-                ];
-            }
-          }, [currentView, accountSettings]);
+  return (
+    <Grid item md={9} style={{ padding: 0 }}>
+      <Typography variant="h4" color="primary" className={classes.title}>
+        {currentViewLabel}
+      </Typography>
+      <Typography
+        variant="subtitle1"
+        color="textPrimary"
+        className={classes.subtitle}
+      >
+        {currentViewSubtitle}
+      </Typography>
+      {currentViewContent}
+    </Grid>
+  );
+};
 
-        return (
-          <Grid item md={9} style={{ padding: 0 }}>
-            <Typography variant="h4" color="primary" className={classes.title}>
-              {currentViewLabel}
-            </Typography>
-            <Typography
-              variant="subtitle1"
-              color="textPrimary"
-              className={classes.subtitle}
-            >
-              {currentViewSubtitle}
-            </Typography>
-            {currentViewContent}
-          </Grid>
-        );
-      })
-    );
-  }
-);
-
-const withQueries = declareQueries({ currentView: currentView });
+const withQueries = declareQueries({ currentView });
 
 export const Dashboard = withQueries(({ queries }): React.ReactElement => {
   return pipe(
@@ -140,7 +131,7 @@ export const Dashboard = withQueries(({ queries }): React.ReactElement => {
                 alt="YCAI Logo"
                 src="/ycai-logo.png"
                 onClick={() => {
-                  void doUpdateCurrentView({ view: "index" })();
+                  void doUpdateCurrentView({ view: 'index' })();
                 }}
               />
 
