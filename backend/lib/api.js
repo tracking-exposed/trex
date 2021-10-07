@@ -86,6 +86,7 @@ const apiList = {
     recommendationById:  require('../routes/youchoose').getRecommendationById,
     updateVideoRec:      require('../routes/youchoose').updateVideoRec,
     creatorRegister:     require('../routes/youchoose').creatorRegister,
+    getCreatorRelated:   require('../routes/public').getCreatorRelated,
 
     /* v3 chiaroscuro support */
     postDirective:       require('../routes/directives').post,
