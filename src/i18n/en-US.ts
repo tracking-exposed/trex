@@ -56,13 +56,13 @@ const resources: CustomTypeOptions['resources'] = {
     no_video_id: 'No video id found',
   },
   settings: {
-    contentCreatorRecommendationLabel: 'Content Creator Recommendations',
-    contentCreatorRecommendationHint: 'See what video author are suggesting',
-    communityRecommendationsLabel: 'Community Recommendations',
-    communityRecommendationsHint: 'Coming soon',
-    contributeToIndipendentStatsLabel: 'Contribute to indipendent stats',
+    contentCreatorRecommendationLabel: 'Content Creators',
+    contentCreatorRecommendationHint: 'See suggestions by real authors',
+    communityRecommendationsLabel: 'Community',
+    communityRecommendationsHint: 'Coming soon 🌻',
+    contributeToIndipendentStatsLabel: 'Independent stats',
     contributeToIndipendentStatsHint:
-      'Donate anonymously what Youtube recommends you',
+      'Donate anonymously what Youtube recommends and advertises you',
   },
   collaborativeAnalytics: {
     faq_1_question: 'Which videos are recommended close to yours video?',
