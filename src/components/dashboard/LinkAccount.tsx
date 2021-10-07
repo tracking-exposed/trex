@@ -39,16 +39,19 @@ export const LinkAccount = withQueries(({ queries }) => {
       ): Promise<void> => {
         // this handle the pressing of "Enter" key
         if (e.keyCode === 13) {
-          await registerCreatorChannel(e.currentTarget.value)();
+          await registerCreatorChannel(e.currentTarget.value, {
+            ccRelatedUsers: { channelId: e.currentTarget.value, amount: 5 },
+          })();
         }
       };
 
       const handleChannelSubmit: React.MouseEventHandler<HTMLButtonElement> =
         async () => {
           if (inputRef.current?.firstChild !== null) {
-            await registerCreatorChannel(
-              (inputRef.current?.firstChild as any).value
-            )();
+            const channelId = (inputRef.current?.firstChild as any).value;
+            await registerCreatorChannel(channelId, {
+              ccRelatedUsers: { channelId, amount: 5 },
+            })();
           }
         };
 
@@ -87,7 +90,9 @@ export const LinkAccount = withQueries(({ queries }) => {
               <Button
                 variant="outlined"
                 color="secondary"
-                disabled={creatorChannelValue === accountSettings.channelCreatorId}
+                disabled={
+                  creatorChannelValue === accountSettings.channelCreatorId
+                }
                 onClick={handleChannelSubmit}
               >
                 {t('actions:linkChannel')}

@@ -1,4 +1,11 @@
-import { available, compose, param, product, queryShallow, queryStrict } from 'avenger';
+import {
+  available,
+  compose,
+  param,
+  product,
+  queryShallow,
+  queryStrict,
+} from 'avenger';
 import * as E from 'fp-ts/lib/Either';
 import { pipe } from 'fp-ts/lib/function';
 import * as TE from 'fp-ts/lib/TaskEither';
@@ -9,6 +16,7 @@ import { Recommendation } from '../models/Recommendation';
 import { catchRuntimeLastError } from '../providers/browser.provider';
 import { bo } from '../utils/browser.utils';
 import { fetchTE } from './HTTPAPI';
+import { ContentCreator } from '../models/ContentCreator';
 
 export const CREATOR_CHANNEL_KEY = 'creator-channel';
 export const CURRENT_VIDEO_ON_EDIT = 'current-video-on-edit';
@@ -67,5 +75,20 @@ export const recommendedChannels = compose(
 export const videoRecommendations = queryShallow(
   ({ videoId }: { videoId: string }): TE.TaskEither<Error, Recommendation[]> =>
     fetchTE(`/v3/video/${videoId}/recommendations`),
+  available
+);
+
+export const ccRelatedUsers = queryShallow(
+  ({
+    channelId,
+    amount,
+  }: {
+    channelId: string;
+    amount: number;
+  }): TE.TaskEither<Error, ContentCreator[]> =>
+    pipe(
+      fetchTE(`/v3/creator/${channelId}/related/${amount}-0`),
+      TE.map(d => d.content)
+    ),
   available
 );

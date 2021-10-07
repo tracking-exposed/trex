@@ -30,10 +30,7 @@ export const CurrentVideoOnEdit = withQueries((props): React.ReactElement => {
         return (
           <Box>
             <VideoCard videoId={video.videoId} title={video.title} />
-            <VideoRecommendations
-              queries={{ videoRecommendations: { videoId: video.videoId } }}
-              videoId={video.videoId}
-            />
+            <VideoRecommendations videoId={video.videoId} />
           </Box>
         );
       }

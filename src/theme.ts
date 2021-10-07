@@ -2,6 +2,7 @@ import { createTheme } from '@material-ui/core/styles';
 
 const pink = '#E33180';
 const green = '#017374';
+const white = "#FFFFFF";
 
 export const YCAITheme = createTheme({
   typography: {
@@ -27,6 +28,9 @@ export const YCAITheme = createTheme({
     },
   },
   palette: {
+    background: {
+      default: white
+    },
     primary: {
       light: '#FF338F',
       main: '#e33180',
@@ -37,8 +41,9 @@ export const YCAITheme = createTheme({
       light: green,
       main: green,
       dark: green,
-      contrastText: '#FFFFFF'
+      contrastText: white
     }
   },
 });
 
+export type YCAITheme = typeof YCAITheme;

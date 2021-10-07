@@ -1,21 +1,26 @@
 import { Box, List, ListItem, Typography } from '@material-ui/core';
 import Grid from '@material-ui/core/Grid';
 import { makeStyles } from '@material-ui/core/styles';
-import React from 'react';
-import { useTranslation } from 'react-i18next';
-import Advanced from './Advanced';
-import { LinkAccount } from './LinkAccount';
-import { Studio } from './studio/Studio';
-import { YCAInalitics } from './YCAInalitics';
 import EditIcon from '@material-ui/icons/EditSharp';
 import GroupsIcon from '@material-ui/icons/GroupSharp';
 import SettingsIcon from '@material-ui/icons/SettingsOutlined';
-import { declareQueries } from 'avenger/lib/react';
-import { currentView, doUpdateCurrentView } from '../../utils/location.utils';
-import { pipe } from 'fp-ts/lib/function';
 import * as QR from 'avenger/lib/QueryResult';
-import { LazyFullSizeLoader } from 'components/common/FullSizeLoader';
-import { ErrorBox } from 'components/common/ErrorBox';
+import { declareQueries } from 'avenger/lib/react';
+import { pipe } from 'fp-ts/lib/function';
+import React from 'react';
+import { useTranslation } from 'react-i18next';
+import { accountSettings } from '../../API/queries';
+import {
+  CurrentView,
+  currentView,
+  doUpdateCurrentView,
+} from '../../utils/location.utils';
+import { ErrorBox } from '../common/ErrorBox';
+import { LazyFullSizeLoader } from '../common/FullSizeLoader';
+import Advanced from './Advanced';
+import { CommunityPage } from './community/CommunityPage';
+import { LinkAccount } from './LinkAccount';
+import { Studio } from './studio/Studio';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -33,6 +38,66 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
+const withQueriesDashboardContent = declareQueries({ accountSettings });
+type Q = typeof withQueriesDashboardContent['Props'];
+
+interface DashboardContentProps extends Q {
+  currentView: CurrentView;
+}
+
+const DashboardContent = withQueriesDashboardContent<DashboardContentProps>(
+  ({ queries, currentView }) => {
+    return pipe(
+      queries,
+      QR.fold(LazyFullSizeLoader, ErrorBox, ({ accountSettings }) => {
+        const { t } = useTranslation();
+        const [currentViewLabel, currentViewSubtitle, currentViewContent] =
+          React.useMemo(() => {
+            switch (currentView.view) {
+              case 'settings':
+                // eslint-disable-next-line react/jsx-key
+                return [t('routes:settings'), '', <Advanced />];
+              case 'studio':
+              case 'studioEdit':
+                return [
+                  t('routes:studio'),
+                  '',
+                  // eslint-disable-next-line react/jsx-key
+                  <Studio currentView={currentView} />,
+                ];
+              case 'community':
+              default:
+                return [
+                  t('routes:community'),
+                  t('community:subtitle'),
+                  // eslint-disable-next-line react/jsx-key
+                  <CommunityPage
+                    channelId={accountSettings.channelCreatorId ?? ''}
+                  />,
+                ];
+            }
+          }, [currentView]);
+
+        if (accountSettings.channelCreatorId === null) {
+          return <Box>Set channel id</Box>;
+        }
+
+        return (
+          <Grid item md={9} style={{ padding: 0 }}>
+            <Typography variant="h4" color="primary">
+              {currentViewLabel}
+            </Typography>
+            <Typography variant="subtitle1" color="textPrimary">
+              {currentViewSubtitle}
+            </Typography>
+            {currentViewContent}
+          </Grid>
+        );
+      })
+    );
+  }
+);
+
 const withQueries = declareQueries({ currentView: currentView });
 
 export const Dashboard = withQueries(({ queries }): React.ReactElement => {
@@ -42,24 +107,9 @@ export const Dashboard = withQueries(({ queries }): React.ReactElement => {
       const classes = useStyles();
       const { t } = useTranslation();
 
-      const [currentViewLabel, currentViewContent] = React.useMemo(() => {
-        switch (currentView.view) {
-          case 'community':
-            // eslint-disable-next-line react/jsx-key
-            return [t('routes:community'), <YCAInalitics />];
-          case 'settings':
-            // eslint-disable-next-line react/jsx-key
-            return [t('routes:settings'), <Advanced />];
-          case 'studio':
-          case 'studioEdit':
-          default:
-            // eslint-disable-next-line react/jsx-key
-            return [t('routes:studio'), <Studio currentView={currentView} />];
-        }
-      }, [currentView]);
       return (
-        <Box padding={2}>
-          <Grid container className={classes.root} spacing={2}>
+        <Box className={classes.root} padding={2}>
+          <Grid container spacing={2}>
             <Grid item md={3}>
               <img alt="YCAI Logo" src="/ycai-logo.png" />
 
@@ -92,12 +142,7 @@ export const Dashboard = withQueries(({ queries }): React.ReactElement => {
                 </ListItem>
               </List>
             </Grid>
-            <Grid item md={9} style={{ padding: 0 }}>
-              <Typography variant="h4" color="primary">
-                {currentViewLabel}
-              </Typography>
-              {currentViewContent}
-            </Grid>
+            <DashboardContent currentView={currentView} />
           </Grid>
         </Box>
       );

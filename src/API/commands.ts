@@ -10,6 +10,7 @@ import {
   creatorRecommendations,
   creatorVideos,
   videoRecommendations,
+  ccRelatedUsers
 } from './queries';
 
 export const registerCreatorChannel = command(
@@ -33,6 +34,7 @@ export const registerCreatorChannel = command(
     ),
   {
     creatorVideos,
+    ccRelatedUsers
   }
 );
 

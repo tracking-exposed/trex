@@ -90,10 +90,7 @@ export const YTVideoPage: React.FC = () => {
           </AppBar>
 
           <TabPanel value={currentTab} index={0}>
-            <VideoRecommendations
-              queries={{ videoRecommendations: { videoId } }}
-              videoId={videoId}
-            />
+            <VideoRecommendations videoId={videoId} />
           </TabPanel>
           <TabPanel value={currentTab} index={1}>
             <Typography variant="h4">{t('common:coming_soon')}</Typography>

@@ -28,6 +28,9 @@ declare module 'react-i18next' {
       };
       community: {
         title: string;
+        subtitle: string;
+        recommendability_score_title: string;
+        recommendability_score_subtitle: string;
       };
       youtube: {
         title: string;
@@ -50,6 +53,11 @@ declare module 'react-i18next' {
       };
       statistics: {
         title: string;
+        unique_watchers: string;
+        evidences_title: string;
+        notifications_title: string;
+        top_n_cc_related_to_your_channel: string
+        advertising_connected_to_your_videos: string;
       };
       settings: {
         contentCreatorRecommendationLabel: string;
@@ -63,12 +71,6 @@ declare module 'react-i18next' {
         no_results: string;
         no_selected: string;
         no_video_id: string;
-      };
-      collaborativeAnalytics: {
-        faq_1_question: string;
-        faq_2_question: string;
-        faq_3_question: string;
-        faq_4_question: string;
       };
       ytVideoPage: {
         firstTab: string;

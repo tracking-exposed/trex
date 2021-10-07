@@ -49,39 +49,6 @@ function post(apiUrl, data, cookieId) {
   });
 }
 
-// function get(apiUrl, version, userId) {
-//   return new Promise((resolve, reject) => {
-//     db.get('local')
-//       .then((keypair) => {
-//         const xhr = new XMLHttpRequest();
-//         const url = config.API_ROOT + '/' + apiUrl;
-
-//         xhr.open('GET', url, true);
-
-//         xhr.setRequestHeader('X-YTtrex-Version', version);
-//         xhr.send();
-//         xhr.onload = function () {
-//           if (this.status >= 200 && this.status < 300) {
-//             // eslint-disable-next-line no-console
-//             console.log(this.response);
-//             resolve(this.response);
-//           } else {
-//             // eslint-disable-next-line no-console
-//             console.log('Load error', this.statusText);
-//             reject(this.statusText);
-//           }
-//         };
-
-//         xhr.onerror = function () {
-//           // eslint-disable-next-line no-console
-//           console.log('onerror', this.statusText);
-//           reject(this.statusText);
-//         };
-//       })
-//       .catch((error) => reject(error));
-//   });
-// }
-
 const api = {
   postEvents: post.bind(null, 'events'),
   validate: post.bind(null, 'validate'),

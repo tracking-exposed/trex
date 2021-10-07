@@ -31,6 +31,10 @@ const resources: CustomTypeOptions['resources'] = {
   },
   community: {
     title: 'Community',
+    subtitle: 'Statistics computed with resources from other users',
+    recommendability_score_title: 'Recommendability Score',
+    recommendability_score_subtitle:
+      'Where your videos appears as recommended?',
   },
   youtube: {
     title: 'Youtube',
@@ -49,6 +53,12 @@ const resources: CustomTypeOptions['resources'] = {
   popup: { version: 'version {{version}} build {{data}}' },
   statistics: {
     title: 'Statistics',
+    unique_watchers: 'Unique watchers',
+    evidences_title: 'Evidences',
+    notifications_title: 'Notifications',
+    top_n_cc_related_to_your_channel: 'Top {{count}} CC related to your channel',
+    advertising_connected_to_your_videos: 'Advertising connected to your videos'
+
   },
   videos: {
     no_results: 'No videos found.',
@@ -63,12 +73,6 @@ const resources: CustomTypeOptions['resources'] = {
     contributeToIndipendentStatsLabel: 'Independent stats',
     contributeToIndipendentStatsHint:
       'Donate anonymously what Youtube recommends and advertises you',
-  },
-  collaborativeAnalytics: {
-    faq_1_question: 'Which videos are recommended close to yours video?',
-    faq_2_question: 'Where your videos appears as recommended?',
-    faq_3_question: 'Which advertising get served over your videos?',
-    faq_4_question: 'Shadow-banning analysis',
   },
   ytVideoPage: {
     firstTab: 'Creator Raccomendations',
