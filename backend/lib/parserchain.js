@@ -6,27 +6,20 @@ const JSDOM = require('jsdom').JSDOM;
 const utils = require('./utils');
 const mongo3 = require('./mongo3');
 
+const parserList = {
+    nature: require('../parsers/nature'),
+    description: require('../parsers/description'),
+    tiktoknative: require('../parsers/tiktoknative'),
+    tiktokmessages: require('../parsers/tiktokmessages'),
+    music: require('../parsers/music'),
+    hashtags: require('../parsers/hashtags'),
+    numbers: require('../parsers/numbers'),
+};
+
 module.exports = {
     /* this sequence is executed in this order.
      * after the newline there are modules that levegared on previously mined metadata */
-    dissectorList: [
-        'nature',
-        'advertising',
-        'home',
-        'video',
-        'search',
-        'related',
-        'downloader',
-        'categorizer'
-    ],
-    nature: require('../parsers/nature'),
-    advertising: require('../parsers/advertising'),
-    home: require('../parsers/home'),
-    video: require('../parsers/video'),
-    search: require('../parsers/search'),
-    related: require('../parsers/related'),
-    downloader: require('../parsers/downloader'),
-    categorizer: require('../parsers/categorizer'),
+    dissectorList: _.keys(parserList),
 
     // functions
     initializeMongo,

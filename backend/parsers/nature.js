@@ -27,9 +27,19 @@ function addParams(src, dest, namemap) {
 }
 
 function nature(envelop, previous) {
+/* this parser is meant to analye the URL 
+ * and understand which kind of nature has this html */
 
-  const retval = { type: null };
+/* types we want as output:
+ * 'foryou', 'following', 
+ * 'lists' (user page, search result, music result)
+ * 'video' 
+ */
+
+  const retval = {};
   const urlO = new URL(envelop.html.href);
+  console.log(urlO);
+  debugger;
 
   const domainSections = urlO.host.split('.');
   retval.site = domainSections[0];

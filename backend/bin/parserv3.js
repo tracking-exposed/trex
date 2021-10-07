@@ -2,9 +2,9 @@
 const { parse } = require('cookie');
 const _ = require('lodash');
 const moment = require('moment');
-const debug = require('debug')('potrex:parserv3');
-const debuge = require('debug')('potrex:parserv3:error');
-const overflowReport = require('debug')('potrex:OVERFLOW');
+const debug = require('debug')('tktrex:parserv3');
+const debuge = require('debug')('tktrex:parserv3:error');
+const overflowReport = require('debug')('tktrex:OVERFLOW');
 const nconf = require('nconf');
 
 /* pchain is the utility modeuly for the parser chain */

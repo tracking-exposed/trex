@@ -81,6 +81,7 @@ async function processEvents2(req) {
     appendLast(req);
 
     const htmls = _.map(req.body, function(body, i) {
+        debug("keys %j", _.keys(body));
         const id = utils.hash({
             x: Math.random() + "+" + body.feedId,
         });
@@ -89,6 +90,7 @@ async function processEvents2(req) {
             type: body.type,
             rect: body.rect,
             href: body.href,
+            accessId: body.accessId,
             publicKey: headers.publickey,
             savingTime: new Date(),
             html: body.html,

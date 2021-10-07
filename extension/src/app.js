@@ -85,6 +85,7 @@ function boot () {
 const selectors = {
     video: 'video',
     suggested: 'div[class$="DivUserContainer"]',
+    title: 'h1',
     creator: 'a[href^="/@"]',
 };
 
@@ -103,6 +104,7 @@ function hrefUpdateMonitor() {
         mutations.forEach(function(mutation) {
             if (oldHref != document.location.href) {
                 console.log(oldHref, "changed", document.location.href, feedId, feedCounter);
+                // TODO url parsing
                 oldHref = document.location.href;
                 feedCounter++;
                 feedId = Math.random() + "++" + feedCounter;
