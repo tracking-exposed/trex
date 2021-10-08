@@ -139,7 +139,7 @@ app.get('/api/v1/research/:publicKey', (req, res) => dispatchPromise('rsync', re
 /* admin */
 app.get('/api/v1/mirror/:key', (req, res) => dispatchPromise('getMirror', req, res))
 
-/* handshake should be renamed for youchoose functionality */
+/* below, youchoose v3 */
 app.post('/api/v3/handshake', (req, res) => dispatchPromise('youChooseByVideoId', req, res))
 app.get('/api/v3/video/:videoId/recommendations', (req, res) => dispatchPromise('youChooseByVideoId', req, res))
 app.get('/api/v3/recommendations/:ids', (req, res) => dispatchPromise('recommendationById', req, res))
@@ -149,15 +149,17 @@ app.post('/api/v3/creator/ogp', cors(), (req, res) => dispatchPromise('ogpProxy'
 app.get('/api/v3/creator/videos/:publicKey', (req, res) => dispatchPromise('getVideoByCreators', req, res))
 
 app.get('/api/v3/creator/recommendations/:publicKey', (req, res) => dispatchPromise('youChooseByProfile', req, res))
-app.get('/api/v3/creator/register/:channelId', (req, res) => dispatchPromise('creatorRegister', req, res))
 app.get('/api/v3/creator/:channelId/related/:amount?', (req, res) => dispatchPromise('getCreatorRelated', req, res))
-
-/* ^^^^^ T t T ^^^^ * T * t * T * t * ^^^^^^^^^ */
+/* below, guardoni-v2 */
 app.post('/api/v3/directives/:directiveType', (req, res) => dispatchPromise('postDirective', req, res))
 app.get('/api/v3/directives/:experimentId', (req, res) => dispatchPromise('fetchDirective', req, res))
 app.post('/api/v2/handshake', (req, res) => dispatchPromise('experimentChannel3', req, res))
 app.delete('/api/v3/experiment/:testTime', (req, res) => dispatchPromise('concludeExperiment3', req, res))
-/* ^^^^^ T t T ^^^^ * T * t * T * t * ^^^^^^^^^ */
+
+/* below, the few API endpoints */
+app.post('/api/v3/creator/:channelId/register', (req, res) => dispatchPromise('creatorRegister', req, res))
+app.post('/api/v3/creator/:channelId/verify', (req, res) => dispatchPromise('creatorVerify', req, res))
+
 
 /* impact */
 app.get('/api/v2/statistics/:name/:unit/:amount', (req, res) => dispatchPromise('getStatistics', req, res))

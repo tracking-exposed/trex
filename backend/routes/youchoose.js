@@ -3,11 +3,11 @@ const moment = require('moment');
 const debug = require('debug')('routes:youchoose');
 const fetchOpengraph = require('fetch-opengraph');
 
-const automo = require('../lib/automo');
+const ycai = require('../lib/ycai');
 const params = require('../lib/params');
 const utils = require('../lib/utils');
 const CSV = require('../lib/CSV');
-const { experimentalFetch } = require('../lib/curly');
+const curly = require('../lib/curly');
 
 async function byVideoId(req) {
   /* this function can be invoked in two ways: POST or GET */
@@ -22,12 +22,12 @@ async function byVideoId(req) {
     return { json: { error: true, message: "missing videoId"}}
   }
   debug("Looking recommendations for videoId %s", videoId);
-  const avail = await automo.fetchRecommendations(videoId, 'producer');
+  const avail = await ycai.fetchRecommendations(videoId, 'producer');
   return { json: avail };
 };
 
 async function byProfile(req) {
-  const avail = await automo.fetchRecommendationsByProfile();
+  const avail = await ycai.fetchRecommendationsByProfile();
   debug("byProfile (%s) returning without filter %d recommendations",
     req.params.publicKey, avail.length);
   return { json: _.reverse(avail) };
@@ -36,7 +36,7 @@ async function byProfile(req) {
 async function ogpProxy(req) {
   const url = req.body.url;
   debug("ogpProxy: %s", url);
-  const exists = await automo.getRecommendationByURL(url);
+  const exists = await ycai.getRecommendationByURL(url);
   if(exists) {
     debug("Requested OGP to an already acquired URL %s", url);
     return {
@@ -44,7 +44,7 @@ async function ogpProxy(req) {
     }
   }
   const result = await fetchOpengraph.fetch(url);
-  const review = await automo.saveRecommendationOGP(result);
+  const review = await ycai.saveRecommendationOGP(result);
   if(!review.title) {
     debug("We got an error in OGP (%s) %j", url, review);
     return {
@@ -66,7 +66,7 @@ async function videoByCreator(req) {
 
   debug("Querying DB.ytvids for profile [%s]", creator.id);
   const MAXVIDOEL = 100;
-  const videos = await automo
+  const videos = await ycai
     .getVideoFromYTprofiles(creator, MAXVIDOEL);
 
   // format: recommendation might be empty or unset
@@ -88,7 +88,7 @@ async function getRecommendationById(req) {
   // this is a public function, anyone can query a recommandation detail
   // this function support a single Id or a list of IDs
   const ids = req.params.id.split(',');
-  const recomms = await automo.recommendationById(ids);
+  const recomms = await ycai.recommendationById(ids);
   debug("getRecommendationById (%d ids) found %d",
     ids.length, recomms.length);
   return { json: recomms };
@@ -114,26 +114,45 @@ async function updateVideoRec(req) {
   debug("Updating videoId %s with %d recommendations",
     update.videoId, update.recommendations.length);
 
-  const updated = await automo.updateRecommendations(
+  const updated = await ycai.updateRecommendations(
     update.videoId, update.recommendations);
 
   return { json: updated };
 };
 
 async function creatorRegister(req) {
-  const channelId = req.params.channelId;
-  const titlesandId = await experimentalFetch(channelId)
+  const channelId = _.get(req.body, 'channelId');
+  if(!channelId || channelId.length < 10)
+    return { json: { error: true, message: "channelId?"}}
 
+  const type = _.get(req.body, 'type');
+  if(type !== "channel")
+    return { json: { error: true, message: "Not supported type"}};
+
+  const expireAt = moment().add(1, 'month').toISOString();
+  const token = await ycai
+    .generateToken({channelId, type}, expireAt);
+
+  return { json: {
+    token,
+    expireAt,
+  }}
+}
+
+
+async function creatorVerify(req) {
+
+  const titlesandId = await curly.experimentalFetch(channelId)
+  // TODO this also has to return any kind of description string
   if(!titlesandId) {
     debug("Failure in extracting video details from channel %s", channelId);
     return { json: { error: true, message: "Failure in extracting info from YouTube; investigate"}}
   } else
     debug("Success in fetching initial video list via curly! %d", titlesandId.length);
 
-  await automo.registerVideos(titlesandId, channelId);
+  await ycai.registerVideos(titlesandId, channelId);
   return { json: titlesandId };
 };
-
 
 module.exports = {
   byVideoId,
@@ -143,4 +162,5 @@ module.exports = {
   getRecommendationById,
   updateVideoRec,
   creatorRegister,
+  creatorVerify,
 };
