@@ -4,9 +4,6 @@ const debug = require('debug')('routes:youchoose');
 const fetchOpengraph = require('fetch-opengraph');
 
 const ycai = require('../lib/ycai');
-const params = require('../lib/params');
-const utils = require('../lib/utils');
-const CSV = require('../lib/CSV');
 const curly = require('../lib/curly');
 
 async function byVideoId(req) {
@@ -123,24 +120,38 @@ async function updateVideoRec(req) {
 async function creatorRegister(req) {
   const channelId = _.get(req.body, 'channelId');
   if(!channelId || channelId.length < 10)
-    return { json: { error: true, message: "channelId?"}}
+    return { json: {
+        error: true,
+        message: "channelId missing?!"
+    }};
 
   const type = _.get(req.body, 'type');
   if(type !== "channel")
-    return { json: { error: true, message: "Not supported type"}};
+    return { json: {
+      error: true,
+      message: "Not supported type?"
+    }};
 
   const expireAt = moment().add(1, 'month').toISOString();
   const token = await ycai
-    .generateToken({channelId, type}, expireAt);
+    .generateToken({input: channelId, type},
+      expireAt);
+
+  const matchableToken = `YTTREX-${token}-ENDC0DE`;
 
   return { json: {
-    token,
+    token: matchableToken,
     expireAt,
   }}
 }
 
-
 async function creatorVerify(req) {
+
+  const channelId = req.body.channelId;
+  const code = await curly.tokenFetch(channelId)
+  debug("Code retrieved %s", code);
+
+  // if code === existing, validate!
 
   const titlesandId = await curly.experimentalFetch(channelId)
   // TODO this also has to return any kind of description string
@@ -153,6 +164,7 @@ async function creatorVerify(req) {
   await ycai.registerVideos(titlesandId, channelId);
   return { json: titlesandId };
 };
+
 
 module.exports = {
   byVideoId,

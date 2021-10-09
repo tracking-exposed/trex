@@ -137,7 +137,14 @@ async function updateRecommendations(videoId, recommendations) {
 
 async function generateToken(seed, expireISOdate) {
     const token = utils.hash({token: seed});
+    const mongoc = await mongo3.clientConnect({concurrency: 1});
     debug("This is the token %s for %j", token, seed);
+    const r = await mongo3.writeOne(mongoc,
+        nconf.get('schema').tokens, {
+            ...seed,
+            token,
+            exporeAt: new Date(expireISOdate) });
+    await mongoc.close();
     return token;
 }
 
