@@ -148,6 +148,17 @@ async function generateToken(seed, expireISOdate) {
     return token;
 }
 
+async function getToken(filter) {
+// TODO a channelId should be a unique key in the collection
+    const mongoc = await mongo3.clientConnect({concurrency: 1});
+    debug("This is the token %s for %j", token, seed);
+    if(!filter.type) throw new Error("Filter need to contain .type");
+    const r = await mongo3.readOne(mongoc, nconf.get('schema').tokens, filter);
+    debug("getToken with %j: %s", filter, (r && r.type) ? r.token : "Not Found");
+    await mongoc.close();
+    return r;
+}
+
 async function registerVideos(videol, channelId) {
     const objl = _.map(videol, function(vi) {
         return {
@@ -179,5 +190,6 @@ module.exports = {
     recommendationById,
     updateRecommendations,
     generateToken,
+    getToken,
     registerVideos,
 };

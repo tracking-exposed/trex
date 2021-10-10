@@ -138,6 +138,8 @@ async function creatorRegister(req) {
       expireAt);
 
   const matchableToken = `YTTREX-${token}-ENDC0DE`;
+  // remind self, if you change these hardcoded strings
+  // like YTTREX-ENC0DE, also change on lib/curly.js
 
   return { json: {
     token: matchableToken,
@@ -151,7 +153,18 @@ async function creatorVerify(req) {
   const code = await curly.tokenFetch(channelId)
   debug("Code retrieved %s", code);
 
-  // if code === existing, validate!
+  const expectedToken = await ycai.getToken({
+    type: 'channel',
+    input: channelId
+  });
+
+  if(expectedToken != code) {
+    debug("Validation fail: %s != %s", expectedToken, code);
+    return { json: {
+      error: true,
+      message: "code not found!"
+    }};
+  }
 
   const titlesandId = await curly.experimentalFetch(channelId)
   // TODO this also has to return any kind of description string
