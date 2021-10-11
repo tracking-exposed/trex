@@ -6,6 +6,7 @@ export const ContentCreator = t.strict(
     channelId: t.string,
     username: t.string,
     avatar: t.string,
+    verified: t.boolean
   },
   'ContentCreator'
 );

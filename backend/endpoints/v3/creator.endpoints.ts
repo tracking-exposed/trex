@@ -5,11 +5,12 @@ import { ContentCreator } from "../../models/ContentCreator";
 
 const ChannelType = t.literal("channel");
 
+// const SingleContentCreatorResponse = t.strict({ data: ContentCreator })
 const SingleContentCreatorResponse = ContentCreator;
 
 const GetCreator = Endpoint({
   Method: "GET",
-  getPath: ({ channelId }) => `/creator/${channelId}`,
+  getPath: () => `/creator/me`,
   Input: {
     Params: t.type({ channelId: t.string }),
   },
