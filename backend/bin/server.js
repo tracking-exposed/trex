@@ -159,6 +159,7 @@ app.delete('/api/v3/experiment/:testTime', (req, res) => dispatchPromise('conclu
 /* below, the few API endpoints */
 app.post('/api/v3/creator/:channelId/register', (req, res) => dispatchPromise('creatorRegister', req, res))
 app.post('/api/v3/creator/:channelId/verify', (req, res) => dispatchPromise('creatorVerify', req, res))
+app.get('/api/v3/creator/me', (req, res) => dispatchPromise('getCreator', req, res))
 
 
 /* impact */

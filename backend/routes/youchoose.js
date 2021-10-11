@@ -118,7 +118,7 @@ async function updateVideoRec(req) {
 };
 
 async function creatorRegister(req) {
-  const channelId = _.get(req.body, 'channelId');
+  const channelId = _.get(req.params, 'channelId');
   if(!channelId || channelId.length < 10)
     return { json: {
         error: true,
@@ -178,6 +178,12 @@ async function creatorVerify(req) {
   return { json: titlesandId };
 };
 
+async function getCreator(req, res) {
+  const channelId = req.params.channelId;
+  const creator = await ycai.getCreatorByChannelId(channelId);
+  return { json: creator }
+}
+
 
 module.exports = {
   byVideoId,
@@ -188,4 +194,5 @@ module.exports = {
   updateVideoRec,
   creatorRegister,
   creatorVerify,
+  getCreator
 };

@@ -10,7 +10,7 @@ const SingleContentCreatorResponse = ContentCreator;
 
 const GetCreator = Endpoint({
   Method: "GET",
-  getPath: ({ channelId }) => `/creator/${channelId}`,
+  getPath: () => `/creator/me`,
   Input: {
     Params: t.type({ channelId: t.string }),
   },

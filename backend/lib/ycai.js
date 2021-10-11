@@ -181,6 +181,12 @@ async function registerVideos(videol, channelId) {
     // no return value here
 }
 
+async function getCreatorByChannelId(channelId) {
+    return {
+        username: 'default-user'
+    }
+}
+
 module.exports = {
     fetchRecommendations,
     fetchRecommendationsByProfile,
@@ -192,4 +198,5 @@ module.exports = {
     generateToken,
     getToken,
     registerVideos,
+    getCreatorByChannelId
 };
