@@ -32,7 +32,7 @@ export const LoggedUserProfileBox: React.FC<LoggedUserProfileBoxProps> = ({
         creator: { Params: { channelId } },
       }}
       render={QR.fold(LazyFullSizeLoader, ErrorBox, ({ creator }) => {
-        return creator.verified === false ? (
+        return !creator.verified ? (
           <Box>
             <Button
               onClick={() =>

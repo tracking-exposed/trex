@@ -13,4 +13,4 @@ const Index: React.FC = () => {
   );
 };
 
-ReactDOM.render(<Index />, document.getElementById('main'));
+ReactDOM.render(<Index />, document.getElementById('ycai'));
