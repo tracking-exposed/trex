@@ -15,7 +15,8 @@
       "ytvids": "ytvids",
       "experiments": "experiments",
       "directives": "directives",
-      "emails": "emails"
+      "emails": "emails",
+      "tokens": "tokens"
   },
   "mongoHost": "localhost",
   "mongoPort": 27017,

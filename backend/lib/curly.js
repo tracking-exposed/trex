@@ -66,6 +66,24 @@ async function experimentalFetch(channelId) {
   return titlesandId;
 };
 
+async function tokenFetch(channelId) {
+
+  const ytvidsurl = `https://www.youtube.com/channel/${channelId}/about`;
+  const { statusCode, data, headers } = await curly.get(ytvidsurl, {
+    verbose: false,
+    timeoutMs: 4000,
+    sslVerifyPeer: false,
+    followLocation: true
+  });
+
+  debug("Retrieved channel about, length: %d", data.length);
+  const s = data.split("YTTREX-");
+  const la = s[1].split("-ENDC0DE");
+
+  return la[0];
+}
+
 module.exports = {
-  experimentalFetch
+  experimentalFetch,
+  tokenFetch,
 }
