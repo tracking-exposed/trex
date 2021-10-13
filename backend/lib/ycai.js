@@ -180,7 +180,8 @@ async function generateToken(seed, expireISOdate) {
   const r = await mongo3.writeOne(mongoc, nconf.get("schema").tokens, {
     ...seed,
     token,
-    exporeAt: new Date(expireISOdate),
+    verified: false,
+    expireAt: new Date(expireISOdate),
   });
   await mongoc.close();
   return token;
@@ -189,12 +190,18 @@ async function generateToken(seed, expireISOdate) {
 async function getToken(filter) {
   // TODO a channelId should be a unique key in the collection
   const mongoc = await mongo3.clientConnect({ concurrency: 1 });
-  debug("This is the token %s for %j", token, seed);
+  debug("This is the token %s for %j", filter);
   if (!filter.type) throw new Error("Filter need to contain .type");
   const r = await mongo3.readOne(mongoc, nconf.get("schema").tokens, filter);
   debug("getToken with %j: %s", filter, r && r.type ? r.token : "Not Found");
   await mongoc.close();
   return r;
+}
+
+async function updateToken(token) {
+  const mongoc = await mongo3.clientConnect({ concurrency: 1 });
+  debug("Update token for channelId %s with data %O", token);
+  await mongo3.updateOne(mongoc, nconf.get("schema").tokens, { type: token.type, input: token.input }, token);
 }
 
 async function registerVideos(videol, channelId) {
@@ -244,4 +251,5 @@ module.exports = {
   getToken,
   registerVideos,
   getCreatorByChannelId,
+  updateToken,
 };
