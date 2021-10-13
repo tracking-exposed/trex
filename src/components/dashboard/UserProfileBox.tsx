@@ -5,21 +5,20 @@ import { pipe } from 'fp-ts/lib/pipeable';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
 import { Queries } from '../../API/APIProvider';
-import { updateSettings, verifyChannel } from '../../API/commands';
-import { accountSettings } from '../../API/queries';
-import { AccountSettings } from '../../models/AccountSettings';
+import { updateAuth } from '../../API/commands';
+import { getAuth } from '../../API/queries';
 import { ErrorBox } from '../common/ErrorBox';
 import { LazyFullSizeLoader } from '../common/FullSizeLoader';
 import { LinkAccount } from './LinkAccount';
 
 interface LoggedUserProfileBoxProps {
   channelId: string;
-  onUnlinkChannel: () => void;
+  onLogout: () => void;
 }
 
 export const LoggedUserProfileBox: React.FC<LoggedUserProfileBoxProps> = ({
   channelId,
-  onUnlinkChannel,
+  onLogout,
 }) => {
   const { t } = useTranslation();
 
@@ -32,22 +31,7 @@ export const LoggedUserProfileBox: React.FC<LoggedUserProfileBoxProps> = ({
         creator: { Params: { channelId } },
       }}
       render={QR.fold(LazyFullSizeLoader, ErrorBox, ({ creator }) => {
-        return !creator.verified ? (
-          <Box>
-            <Button
-              onClick={() =>
-                verifyChannel(
-                  {
-                    channelId,
-                  },
-                  { creator: { Params: { channelId } } }
-                )()
-              }
-            >
-              {t('actions:verify_channel')}
-            </Button>
-          </Box>
-        ) : (
+        return (
           <Box display="flex" alignItems="center">
             <Avatar
               src={`http://placekitten.com/400/200`}
@@ -64,7 +48,7 @@ export const LoggedUserProfileBox: React.FC<LoggedUserProfileBoxProps> = ({
                 color="secondary"
                 variant="outlined"
                 size="small"
-                onClick={() => onUnlinkChannel()}
+                onClick={() => onLogout()}
               >
                 {t('actions:unlink_channel')}
               </Button>
@@ -76,28 +60,24 @@ export const LoggedUserProfileBox: React.FC<LoggedUserProfileBoxProps> = ({
   );
 };
 
-const withQueries = declareQueries({ accountSettings });
+const withQueries = declareQueries({ auth: getAuth });
 
 export const UserProfileBox = withQueries(({ queries }): React.ReactElement => {
-  const handleChannelDelete = React.useCallback(
-    async (settings: AccountSettings): Promise<void> => {
-      await updateSettings({
-        ...settings,
-        channelCreatorId: null,
-      })();
-    },
-    []
-  );
+  const handleChannelDelete = React.useCallback(async (): Promise<void> => {
+    await updateAuth(undefined)();
+  }, []);
 
   return pipe(
     queries,
-    QR.fold(LazyFullSizeLoader, ErrorBox, ({ accountSettings }) => {
-      return accountSettings.channelCreatorId === null ? (
-        <LinkAccount />
-      ) : (
+    QR.fold(LazyFullSizeLoader, ErrorBox, ({ auth }) => {
+      if (auth === undefined || !auth.verified) {
+        return <LinkAccount auth={auth} />;
+      }
+
+      return (
         <LoggedUserProfileBox
-          channelId={accountSettings.channelCreatorId}
-          onUnlinkChannel={() => handleChannelDelete(accountSettings)}
+          channelId={auth.channelId}
+          onLogout={() => handleChannelDelete()}
         />
       );
     })

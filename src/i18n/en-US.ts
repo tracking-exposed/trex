@@ -4,7 +4,7 @@ const resources: CustomTypeOptions['resources'] = {
   title: 'YouChoose AI',
   common: {
     coming_soon: 'Coming soon',
-    empty_list: 'No {{resource}} found.'
+    empty_list: 'No {{resource}} found.',
   },
   actions: {
     add: 'Add',
@@ -18,13 +18,15 @@ const resources: CustomTypeOptions['resources'] = {
     removeFromCurrentVideo: 'Remove from current video',
     compare: 'Compare',
     related: 'Related',
-    verify_channel: 'Verify channel'
+    verify_channel: 'Verify channel',
+    verify_channel_hint:
+      "Copy the code below and add it to your YouTube channel's description",
   },
   routes: {
     studio: 'Studio',
     community: 'Community',
     settings: 'Settings',
-    link_account: 'Link your account'
+    link_account: 'Link your account',
   },
   account: {
     channel: 'Your channel',
@@ -43,7 +45,7 @@ const resources: CustomTypeOptions['resources'] = {
   link_account: {
     title: 'Link your account',
     subtitle: 'Our system will verify that you own the channel on this browser',
-    label: 'Link your account to start choosing recommendations'
+    label: 'Link your account to start choosing recommendations',
   },
   youtube: {
     title: 'Youtube',
@@ -65,9 +67,10 @@ const resources: CustomTypeOptions['resources'] = {
     unique_watchers: 'Unique watchers',
     evidences_title: 'Evidences',
     notifications_title: 'Notifications',
-    top_n_cc_related_to_your_channel: 'Top {{count}} CC related to your channel',
-    advertising_connected_to_your_videos: 'Advertising connected to your videos'
-
+    top_n_cc_related_to_your_channel:
+      'Top {{count}} CC related to your channel',
+    advertising_connected_to_your_videos:
+      'Advertising connected to your videos',
   },
   videos: {
     no_results: 'No videos found.',

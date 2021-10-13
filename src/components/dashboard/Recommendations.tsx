@@ -6,7 +6,7 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { updateRecommendationForVideo } from '../../API/commands';
 import {
-  accountSettings,
+  settings,
   creatorRecommendations,
   videoRecommendations,
 } from '../../API/queries';
@@ -21,7 +21,7 @@ const styles = {
 const withQueries = declareQueries({
   recommendations: creatorRecommendations,
   videoRecommendations: videoRecommendations,
-  settings: accountSettings,
+  settings: settings,
 });
 
 type Queries = typeof withQueries['Props'];

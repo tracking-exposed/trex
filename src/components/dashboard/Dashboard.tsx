@@ -17,8 +17,8 @@ import {
 import { ErrorBox } from '../common/ErrorBox';
 import { LazyFullSizeLoader } from '../common/FullSizeLoader';
 import Advanced from './Advanced';
+import { AuthBox } from './AuthBox';
 import { CommunityPage } from './community/CommunityPage';
-import { LinkAccount } from './LinkAccount';
 import { Studio } from './studio/Studio';
 import { StudioVideoEdit } from './studio/StudioVideoEdit';
 import { UserProfileBox } from './UserProfileBox';
@@ -53,13 +53,13 @@ const DashboardContent: React.FC<DashboardContentProps> = ({ currentView }) => {
   const { t } = useTranslation();
   const classes = useStyles();
 
-  const getLinkAccountView = React.useCallback(() => {
+  const getAuthBoxView = React.useCallback(() => {
     return [
       t('routes:link_account'),
       t('link_account:subtitle'),
       // eslint-disable-next-line react/jsx-key
       <Grid item md={4}>
-        <LinkAccount />
+        <AuthBox />
       </Grid>,
     ];
   }, []);
@@ -75,17 +75,21 @@ const DashboardContent: React.FC<DashboardContentProps> = ({ currentView }) => {
             t('routes:studio'),
             '',
             // eslint-disable-next-line react/jsx-key
-            <Studio />,
+            <AuthBox>
+              <Studio />
+            </AuthBox>,
           ];
         case 'studioEdit':
           return [
             t('routes:studio'),
             '',
             // eslint-disable-next-line react/jsx-key
-            <StudioVideoEdit videoId={currentView.videoId} />,
+            <AuthBox>
+              <StudioVideoEdit videoId={currentView.videoId} />
+            </AuthBox>,
           ];
         case 'linkAccount':
-          return getLinkAccountView();
+          return getAuthBoxView();
         case 'community':
         default:
           return [

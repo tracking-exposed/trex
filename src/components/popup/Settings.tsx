@@ -1,15 +1,10 @@
 import { updateSettings } from '../../API/commands';
-import {
-  FormLabel,
-  Typography,
-  Divider,
-  makeStyles,
-} from '@material-ui/core';
+import { FormLabel, Typography, Divider, makeStyles } from '@material-ui/core';
 import FormControl from '@material-ui/core/FormControl';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Switch from '@material-ui/core/Switch';
 import * as React from 'react';
-import { AccountSettings } from '../../models/AccountSettings';
+import * as models from '../../models';
 import { useTranslation } from 'react-i18next';
 
 const useStyles = makeStyles((theme) => ({
@@ -31,7 +26,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 interface SettingsProps {
-  settings: AccountSettings;
+  settings: models.Settings.Settings;
 }
 
 const Settings: React.FC<SettingsProps> = ({ settings }) => {
@@ -40,8 +35,9 @@ const Settings: React.FC<SettingsProps> = ({ settings }) => {
   return (
     <>
       {/* <FormHelperText className={classes.smallTitle}>{t('recommendations:title')}</FormHelperText> */}
-      <br/>
-      <FormControlLabel className={classes.noMargin}
+      <br />
+      <FormControlLabel
+        className={classes.noMargin}
         disabled={!settings.active}
         control={
           <Switch
@@ -57,7 +53,7 @@ const Settings: React.FC<SettingsProps> = ({ settings }) => {
         label={
           <FormLabel>
             <Typography variant="h6">
-            {t('settings:contentCreatorRecommendationLabel')}
+              {t('settings:contentCreatorRecommendationLabel')}
             </Typography>
             <Typography variant="body2" display="block">
               {t('settings:contentCreatorRecommendationHint')}
@@ -66,9 +62,10 @@ const Settings: React.FC<SettingsProps> = ({ settings }) => {
         }
         labelPlacement="end"
       />
-      <br/>
-      <br/>
-      <FormControlLabel className={classes.noMargin}
+      <br />
+      <br />
+      <FormControlLabel
+        className={classes.noMargin}
         disabled={true}
         control={
           <Switch
@@ -96,12 +93,14 @@ const Settings: React.FC<SettingsProps> = ({ settings }) => {
         }
         labelPlacement="end"
       />
-      <br/><br/>
+      <br />
+      <br />
       <Divider className={classes.divider} />
 
       {/* <FormHelperText className={classes.smallTitle}>{t('statistics:title')}</FormHelperText> */}
       <FormControl component="fieldset">
-        <FormControlLabel className={classes.noMargin}
+        <FormControlLabel
+          className={classes.noMargin}
           disabled={!settings.active}
           control={
             <Switch
@@ -114,8 +113,8 @@ const Settings: React.FC<SettingsProps> = ({ settings }) => {
           }
           label={
             <FormLabel>
-              <Typography variant="h6"> 
-              {t('settings:contributeToIndipendentStatsLabel')}
+              <Typography variant="h6">
+                {t('settings:contributeToIndipendentStatsLabel')}
               </Typography>
               <Typography variant="body2" display="block">
                 {t('settings:contributeToIndipendentStatsHint')}

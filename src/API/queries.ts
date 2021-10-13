@@ -7,42 +7,35 @@ import {
   param,
   product,
   queryShallow,
-  queryStrict
+  queryStrict,
 } from 'avenger';
-import * as E from 'fp-ts/lib/Either';
 import { pipe } from 'fp-ts/lib/function';
 import * as TE from 'fp-ts/lib/TaskEither';
-import { AccountSettings } from '../models/AccountSettings';
-import { LocalLookup } from '../models/MessageRequest';
-import { catchRuntimeLastError } from '../providers/browser.provider';
-import { bo } from '../utils/browser.utils';
+import {
+  BackgroundSettingsResponse,
+  BackgroundAuthResponse,
+} from '../models/MessageResponse';
+import { GetAuth, GetSettings } from '../models/MessageRequest';
+import { sendMessage } from '../providers/browser.provider';
 import * as HTTPClient from './HTTPClient';
+import { apiLogger } from '../utils/logger.utils';
 
 export const CREATOR_CHANNEL_KEY = 'creator-channel';
 export const CURRENT_VIDEO_ON_EDIT = 'current-video-on-edit';
 
-export const accountSettings = queryShallow(() => {
+export const settings = queryShallow(() => {
   return pipe(
-    TE.tryCatch(
-      () =>
-        new Promise<AccountSettings>((resolve) => {
-          bo.runtime.sendMessage<any, AccountSettings>(
-            { type: LocalLookup.value },
-            resolve
-          );
-        }),
-      E.toError
-    ),
-    TE.chain(catchRuntimeLastError)
+    sendMessage<BackgroundSettingsResponse>({ type: GetSettings.value }),
+    TE.map(({ response }) => response)
   );
 }, available);
 
 export const creatorRecommendations = compose(
-  product({ accountSettings, params: param() }),
+  product({ settings, params: param() }),
   queryShallow(
-    ({ accountSettings, params }) =>
+    ({ settings, params }) =>
       HTTPClient.get<Recommendation[]>(
-        `/v3/creator/recommendations/${accountSettings.publicKey}`,
+        `/v3/creator/recommendations/${settings.publicKey}`,
         params
       ),
     available
@@ -50,7 +43,7 @@ export const creatorRecommendations = compose(
 );
 
 export const creatorVideos = compose(
-  accountSettings,
+  settings,
   queryStrict((settings): TE.TaskEither<Error, Video[]> => {
     if (settings.channelCreatorId !== null) {
       return HTTPClient.get(`/v3/creator/videos/${settings.channelCreatorId}`);
@@ -60,11 +53,11 @@ export const creatorVideos = compose(
 );
 
 export const recommendedChannels = compose(
-  product({ accountSettings, params: param() }),
-  queryStrict(({ accountSettings, params }) => {
-    if (accountSettings.channelCreatorId !== null) {
+  product({  settings, params: param() }),
+  queryStrict(({ settings, params }) => {
+    if (settings.channelCreatorId !== null) {
       return HTTPClient.get(
-        `/v3/profile/recommendations/${accountSettings.channelCreatorId}`,
+        `/v3/profile/recommendations/${settings.channelCreatorId}`,
         params
       );
     }
@@ -88,7 +81,20 @@ export const ccRelatedUsers = queryShallow(
   }): TE.TaskEither<Error, ContentCreator[]> =>
     pipe(
       HTTPClient.get<any>(`/v3/creator/${channelId}/related/${amount}-0`),
-      TE.map(d => d.content)
+      TE.map((d) => d.content)
+    ),
+  available
+);
+
+export const getAuth = queryShallow(
+  () =>
+    pipe(
+      sendMessage<BackgroundAuthResponse>({ type: GetAuth.value }),
+      TE.map((r) => {
+        apiLogger.debug('Get auth %O', r);
+        return r;
+      }),
+      TE.map((r) => r.response)
     ),
   available
 );

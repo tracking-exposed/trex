@@ -1,19 +1,33 @@
+import { AuthResponse } from '@backend/models/Auth';
 import {
   Box,
   Button,
   ButtonGroup,
   FormControl,
-  Input, Typography
+  IconButton,
+  Input,
+  InputAdornment,
+  Typography,
 } from '@material-ui/core';
 import InputLabel from '@material-ui/core/InputLabel';
+import CopyIcon from '@material-ui/icons/FileCopyOutlined';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { registerCreatorChannel } from '../../API/commands';
+import {
+  copyToClipboard,
+  registerCreatorChannel,
+  updateAuth,
+  verifyChannel,
+} from '../../API/commands';
 
-export const LinkAccount: React.FC = () => {
+interface LinkAccountProps {
+  auth?: AuthResponse;
+}
+export const LinkAccount: React.FC<LinkAccountProps> = ({ auth }) => {
   const { t } = useTranslation();
 
   const [channel, setChannel] = React.useState<string>('');
+  const [showPopup, setShowPopup] = React.useState(false);
 
   const inputRef = React.useRef<HTMLInputElement>(null);
 
@@ -37,36 +51,115 @@ export const LinkAccount: React.FC = () => {
         })();
       }
     };
+  const handleUnlinkChannel: React.MouseEventHandler<HTMLButtonElement> =
+    async () => {
+      await updateAuth(undefined)();
+    };
 
   const creatorChannelValue = channel ?? '';
 
-  return (
-    <Box display="flex" flexDirection="column">
-      <Typography color="secondary" variant="subtitle1">
-        {t('link_account:label')}
-      </Typography>
-      <FormControl>
-        <InputLabel htmlFor="creator-channel">
-          {t('account:channel')}
-        </InputLabel>
-        <Input
-          id="creator-channel"
-          ref={inputRef}
-          fullWidth={true}
-          value={creatorChannelValue}
-          onChange={(e) => setChannel(e.target.value)}
-          onKeyDown={onSubmit}
-        />
-        <ButtonGroup style={{ marginTop: 10 }}>
+  if (auth === undefined) {
+    return (
+      <Box display="flex" flexDirection="column">
+        <Typography color="secondary" variant="subtitle1">
+          {t('link_account:label')}
+        </Typography>
+        <FormControl>
+          <InputLabel htmlFor="creator-channel">
+            {t('account:channel')}
+          </InputLabel>
+          <Input
+            id="creator-channel"
+            ref={inputRef}
+            fullWidth={true}
+            value={creatorChannelValue}
+            onChange={(e) => setChannel(e.target.value)}
+            onKeyDown={onSubmit}
+          />
+          <ButtonGroup style={{ marginTop: 10 }}>
+            <Button
+              variant="outlined"
+              color="secondary"
+              onClick={handleChannelSubmit}
+            >
+              {t('actions:link_channel')}
+            </Button>
+          </ButtonGroup>
+        </FormControl>
+      </Box>
+    );
+  }
+
+  if (!auth.verified) {
+    return (
+      <Box>
+        <Typography variant="body2">
+          {t('actions:verify_channel_hint')}
+        </Typography>
+        <FormControl style={{ margin: 10, display: 'flex' }}>
+          <InputLabel htmlFor="link-account-password">Password</InputLabel>
+
+          <Input
+            id="link-account-password"
+            type={'text'}
+            value={auth.tokenString}
+            endAdornment={
+              <InputAdornment position="end">
+                <IconButton
+                  aria-label="toggle password visibility"
+                  onClick={async () => {
+                    await copyToClipboard(auth.tokenString)().then(() => {
+                      setShowPopup(true);
+                      setTimeout(() => {
+                        setShowPopup(false);
+                      }, 2000);
+                    });
+                  }}
+                  edge="end"
+                >
+                  {<CopyIcon />}
+                </IconButton>
+              </InputAdornment>
+            }
+          />
+          <Box style={{ visibility: showPopup ? 'visible' : 'hidden' }}>
+            <Typography>Copied!</Typography>
+          </Box>
+        </FormControl>
+
+        <ButtonGroup>
+          <Button size="small" onClick={handleUnlinkChannel}>
+            {t('actions:unlink_channel')}
+          </Button>
           <Button
-            variant="outlined"
             color="secondary"
-            onClick={handleChannelSubmit}
+            variant="outlined"
+            onClick={() =>
+              verifyChannel(
+                {
+                  channelId: auth.channelId,
+                },
+                { creator: { Params: { channelId: auth.channelId } } }
+              )()
+            }
           >
-            {t('actions:link_channel')}
+            {t('actions:verify_channel')}
           </Button>
         </ButtonGroup>
-      </FormControl>
+      </Box>
+    );
+  }
+
+  return (
+    <Box>
+      <Button
+        color="secondary"
+        variant="outlined"
+        size="small"
+        onClick={handleUnlinkChannel}
+      >
+        {t('actions:unlink_channel')}
+      </Button>
     </Box>
   );
 };

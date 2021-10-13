@@ -3,34 +3,38 @@ import * as TE from 'fp-ts/lib/TaskEither';
 import { MessageResponse } from '../models/MessageResponse';
 import { config } from '../config';
 import {
-  ConfigUpdate,
-  LocalLookup,
+  UpdateSettings,
+  GetSettings,
   MessageRequest,
-  RecommendationsFetch,
   ReloadExtension,
   Sync,
+  UpdateAuth,
+  GetAuth,
 } from '../models/MessageRequest';
 import { bo } from '../utils/browser.utils';
-import * as accounts from './account';
+import * as settings from './settings';
 import * as development from './reloadExtension';
 import * as sync from './sync';
+import { auth } from './auth';
+import { bkgLogger } from '../utils/logger.utils';
 
 const getMessageHandler = (
   r: MessageRequest
 ): TE.TaskEither<chrome.runtime.LastError, MessageResponse> => {
   switch (r.type) {
-    case LocalLookup.value:
-      return accounts.userLookup(
-        r.payload !== undefined
-          ? r.payload
-          : { userId: accounts.DEFAULT_USER_NAME }
-      );
-    case RecommendationsFetch.value:
-      return accounts.serverLookup(r.payload);
-    case ConfigUpdate.value:
-      return accounts.update(r.payload);
+    case GetSettings.value:
+      return settings.userLookup();
+    // case RecommendationsFetch.value:
+    //   return settings.serverLookup(r.payload);
+    case UpdateSettings.value:
+      return settings.update(r.payload);
     case Sync.value:
       return sync.sync(r);
+    // auth
+    case GetAuth.value:
+      return auth.get();
+    case UpdateAuth.value:
+      return auth.update(r.payload);
     default:
       return TE.right({} as any);
   }
@@ -39,7 +43,7 @@ const getMessageHandler = (
 bo.runtime.onMessage.addListener(
   (request: MessageRequest, sender, sendResponse) => {
     // eslint-disable-next-line no-console
-    console.log('focacci', request, sender);
+    bkgLogger.debug('message received', request, sender);
 
     if (config.NODE_ENV === 'development') {
       if (request.type === ReloadExtension.value) {
@@ -54,12 +58,12 @@ bo.runtime.onMessage.addListener(
         }
 
         // eslint-disable-next-line
-        console.error(r.left);
+        bkgLogger.error('Failed to process request %O', r.left);
 
         return undefined;
       })
       // eslint-disable-next-line
-      .catch(console.error);
+      .catch((e) => bkgLogger.error('An error occured %O', e));
 
     // this enable async response
     return true;

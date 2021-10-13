@@ -39,6 +39,7 @@ const APP_ENV = t.strict(
     REACT_APP_WEB_URL: t.string,
     REACT_APP_BUILD_DATE: t.string,
     REACT_APP_VERSION: t.string,
+    REACT_APP_LOGGER: t.string,
   },
   'Config'
 );

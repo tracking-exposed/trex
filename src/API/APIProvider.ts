@@ -11,6 +11,7 @@ import * as TE from 'fp-ts/lib/TaskEither';
 import * as t from 'io-ts';
 import { PathReporter } from 'io-ts/lib/PathReporter';
 import { MinimalEndpointInstance, TypeOfEndpointInstance } from 'ts-endpoint';
+import { apiLogger } from 'utils/logger.utils';
 
 const client = axios.create({
   baseURL: config.REACT_APP_API_URL + '/v3',
@@ -26,7 +27,7 @@ export class APIError extends Error {
 
 const toError = (e: unknown): APIError => {
   // eslint-disable-next-line
-  console.error(e);
+  apiLogger.error('An error occured %O', e);
   if (e instanceof Error) {
     return new APIError(e.message, []);
   }

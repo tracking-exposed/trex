@@ -1,41 +1,40 @@
 import { command } from 'avenger';
 import { pipe } from 'fp-ts/lib/function';
-import { AccountSettings } from 'models/AccountSettings';
-import { ConfigUpdate } from 'models/MessageRequest';
+import { Settings } from 'models/AccountSettings';
+import { UpdateAuth, UpdateSettings } from '../models/MessageRequest';
 import { sendMessage } from '../providers/browser.provider';
 import * as HTTPClient from './HTTPClient';
+import * as E from 'fp-ts/lib/Either';
 import * as TE from 'fp-ts/lib/TaskEither';
 import {
-  accountSettings,
+  settings,
   creatorRecommendations,
   creatorVideos,
   videoRecommendations,
   ccRelatedUsers,
+  getAuth,
 } from './queries';
 import { Queries } from './APIProvider';
+import { AuthResponse } from '@backend/models/Auth';
 
 export const registerCreatorChannel = command(
   (channelId: string) =>
     pipe(
-      HTTPClient.post(`/v3/creator/${channelId}/register`, { type: 'channel' }),
-      TE.chainFirst(() =>
-        pipe(
-          accountSettings.run(),
-          TE.chain((settings) =>
-            sendMessage({
-              type: ConfigUpdate.value,
-              payload: {
-                ...settings,
-                channelCreatorId: channelId,
-              },
-            })
-          )
-        )
-      )
+      HTTPClient.post<{ type: string; channelId: string }, AuthResponse>(
+        `/v3/creator/${channelId}/register`,
+        { type: 'channel', channelId }
+      ),
+      TE.chainFirst((payload) => {
+        return sendMessage({
+          type: UpdateAuth.value,
+          payload,
+        });
+      })
     ),
   {
     creatorVideos,
     ccRelatedUsers,
+    getAuth,
   }
 );
 
@@ -72,21 +71,35 @@ export const updateRecommendationForVideo = command(
     );
   },
   {
-    accountSettings,
+    settings,
     videoRecommendations,
   }
 );
 
 export const updateSettings = command(
-  (payload: AccountSettings) =>
-    sendMessage({ type: ConfigUpdate.value, payload: payload }),
-  { accountSettings, creatorRecommendations, creatorVideos }
+  (payload: Settings) =>
+    sendMessage({ type: UpdateSettings.value, payload: payload }),
+  { accountSettings: settings, creatorRecommendations, creatorVideos }
 );
 
 export const verifyChannel = command(
   ({ channelId }: { channelId: string }) =>
-    HTTPClient.post(`/v3/creator/${channelId}/verify`),
+    pipe(
+      HTTPClient.post<any, AuthResponse>(`/v3/creator/${channelId}/verify`),
+      TE.chain((auth) => updateAuth(auth))
+    ),
   {
     creator: Queries.creator.GetCreator,
   }
+);
+
+export const updateAuth = command(
+  (payload?: AuthResponse) => sendMessage({ type: UpdateAuth.value, payload }),
+  {
+    getAuth,
+  }
+);
+
+export const copyToClipboard = command((text: string) =>
+  TE.tryCatch(() => navigator.clipboard.writeText(text), E.toError)
 );

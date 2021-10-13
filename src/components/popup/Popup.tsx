@@ -1,5 +1,5 @@
 import { updateSettings } from 'API/commands';
-import { accountSettings } from 'API/queries';
+import { settings } from 'API/queries';
 import { ErrorBox } from '../common/ErrorBox';
 import {
   Button,
@@ -64,7 +64,7 @@ const PopupLoader: React.FC = () => {
   );
 };
 
-const withQueries = declareQueries({ settings: accountSettings });
+const withQueries = declareQueries({ settings: settings });
 
 export const Popup = withQueries(({ queries }) => {
   const { t } = useTranslation();

@@ -9,7 +9,7 @@ import {
 import Grid from '@material-ui/core/Grid';
 import CommunityIcon from '@material-ui/icons/GroupOutlined';
 import NotificationIcon from '@material-ui/icons/NotificationImportantOutlined';
-import { accountSettings } from 'API/queries';
+import { settings } from 'API/queries';
 import * as QR from 'avenger/lib/QueryResult';
 import { declareQueries } from 'avenger/lib/react';
 import { ErrorBox } from '../../common/ErrorBox';
@@ -21,7 +21,7 @@ import { StatsCard } from '../../common/StatsCard';
 import { LinkAccount } from '../LinkAccount';
 import { CCRelatedUserList } from './CCRelatedUserList';
 
-const withQueries = declareQueries({ accountSettings });
+const withQueries = declareQueries({ accountSettings: settings });
 
 export const CommunityPage = withQueries(
   ({ queries }): React.ReactElement => {
