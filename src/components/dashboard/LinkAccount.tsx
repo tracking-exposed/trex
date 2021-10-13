@@ -139,7 +139,6 @@ export const LinkAccount: React.FC<LinkAccountProps> = ({ auth }) => {
                 {
                   channelId: auth.channelId,
                 },
-                { creator: { Params: { channelId: auth.channelId } } }
               )()
             }
           >

@@ -1,29 +1,29 @@
+import { AuthResponse } from '@backend/models/Auth';
 import { command } from 'avenger';
+import * as E from 'fp-ts/lib/Either';
 import { pipe } from 'fp-ts/lib/function';
+import * as TE from 'fp-ts/lib/TaskEither';
 import { Settings } from 'models/AccountSettings';
 import { UpdateAuth, UpdateSettings } from '../models/MessageRequest';
+import { API } from '../providers/api.provider';
 import { sendMessage } from '../providers/browser.provider';
-import * as HTTPClient from './HTTPClient';
-import * as E from 'fp-ts/lib/Either';
-import * as TE from 'fp-ts/lib/TaskEither';
 import {
-  settings,
+  ccRelatedUsers,
   creatorRecommendations,
   creatorVideos,
-  videoRecommendations,
-  ccRelatedUsers,
   getAuth,
+  getContentCreator,
+  settings,
+  videoRecommendations,
 } from './queries';
-import { Queries } from './APIProvider';
-import { AuthResponse } from '@backend/models/Auth';
 
 export const registerCreatorChannel = command(
   (channelId: string) =>
     pipe(
-      HTTPClient.post<{ type: string; channelId: string }, AuthResponse>(
-        `/v3/creator/${channelId}/register`,
-        { type: 'channel', channelId }
-      ),
+      API.Creator.RegisterCreator({
+        Params: { channelId, type: 'channel' },
+        Body: { type: 'channel' },
+      }),
       TE.chainFirst((payload) => {
         return sendMessage({
           type: UpdateAuth.value,
@@ -40,15 +40,7 @@ export const registerCreatorChannel = command(
 
 export const addRecommendation = command(
   ({ url }: { url: string }) =>
-    HTTPClient.post(
-      `/v3/creator/ogp`,
-      { url },
-      {
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      }
-    ),
+    API.Creator.CreateRecommendation({ Body: { url } }),
   {
     creatorRecommendations,
   }
@@ -56,19 +48,13 @@ export const addRecommendation = command(
 
 export const updateRecommendationForVideo = command(
   ({ videoId, creatorId, recommendations }) => {
-    return HTTPClient.post(
-      `/v3/creator/updateVideo`,
-      {
+    return API.Creator.UpdateVideo({
+      Body: {
         creatorId,
         videoId,
         recommendations,
       },
-      {
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      }
-    );
+    });
   },
   {
     settings,
@@ -85,11 +71,11 @@ export const updateSettings = command(
 export const verifyChannel = command(
   ({ channelId }: { channelId: string }) =>
     pipe(
-      HTTPClient.post<any, AuthResponse>(`/v3/creator/${channelId}/verify`),
+      API.Creator.VerifyCreator({ Params: { channelId } }),
       TE.chain((auth) => updateAuth(auth))
     ),
   {
-    creator: Queries.creator.GetCreator,
+    getContentCreator,
   }
 );
 

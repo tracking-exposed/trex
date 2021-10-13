@@ -6,8 +6,8 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { updateRecommendationForVideo } from '../../API/commands';
 import {
-  settings,
   creatorRecommendations,
+  settings,
   videoRecommendations,
 } from '../../API/queries';
 import { ErrorBox } from '../common/ErrorBox';

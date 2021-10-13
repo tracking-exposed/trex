@@ -28,8 +28,7 @@ const backendSet = <A>(
   key: string,
   value: A
 ): TE.TaskEither<chrome.runtime.LastError, void> => {
-  // eslint-disable-next-line
-  console.log(`Save ${JSON.stringify(value)} as ${key}`);
+  bkgLogger.debug(`Save ${JSON.stringify(value)} as ${key}`);
   return pipe(
     TE.tryCatch(() => backend.set({ [key]: value }), E.toError),
     TE.chain(catchRuntimeLastError)
