@@ -2,6 +2,7 @@ import { Endpoint } from "ts-endpoint";
 import * as t from "io-ts";
 import { AuthResponse } from "../../models/Auth";
 import { ContentCreator } from "../../models/ContentCreator";
+import { Recommendation } from "../../models/Recommendation";
 
 const ChannelType = t.literal("channel");
 
@@ -10,7 +11,7 @@ const SingleContentCreatorResponse = ContentCreator;
 
 const GetCreator = Endpoint({
   Method: "GET",
-  getPath: () => `/creator/me`,
+  getPath: () => `/v3/creator/me`,
   Input: {
     Params: t.type({ channelId: t.string }),
   },
@@ -19,9 +20,9 @@ const GetCreator = Endpoint({
 
 const RegisterCreator = Endpoint({
   Method: "POST",
-  getPath: ({ channelId }) => `/creator/${channelId}/register`,
+  getPath: ({ channelId }) => `/v3/creator/${channelId}/register`,
   Input: {
-    Params: t.type({ channelId: t.string }),
+    Params: t.type({ channelId: t.string, type: t.literal("channel") }),
     Body: t.type({
       type: ChannelType,
     }),
@@ -31,15 +32,25 @@ const RegisterCreator = Endpoint({
 
 const VerifyCreator = Endpoint({
   Method: "POST",
-  getPath: ({ channelId }) => `/creator/${channelId}/verify`,
+  getPath: ({ channelId }) => `/v3/creator/${channelId}/verify`,
   Input: {
     Params: t.type({ channelId: t.string }),
   },
   Output: AuthResponse,
 });
 
+const CreatorRecommendations = Endpoint({
+  Method: "GET",
+  getPath: ({ channelId }) => `/v3/creator/videos/${channelId}`,
+  Input: {
+    Params: t.type({ channelId: t.string }),
+  },
+  Output: t.array(Recommendation),
+});
+
 export const endpoints = {
   GetCreator,
   RegisterCreator,
   VerifyCreator,
+  CreatorRecommendations
 };
