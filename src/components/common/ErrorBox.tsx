@@ -11,7 +11,7 @@ export const ErrorBox = (e: unknown): React.ReactElement<any, string> => {
         {e instanceof Error ? (
           <Alert severity="error">
             <AlertTitle>Error {e.name}</AlertTitle>
-            {e.message})
+            {e.message}
           </Alert>
         ) : null}
         {typeof e === 'object' ? (

@@ -1,4 +1,5 @@
-import { AccountSettings } from './AccountSettings';
+import { AuthResponse } from '@backend/models/Auth';
+import { Settings } from './AccountSettings';
 
 export type SyncResponse =
   | {
@@ -20,7 +21,18 @@ export type ServerLookupResponse =
       response: chrome.runtime.LastError;
     };
 
+export interface BackgroundAuthResponse {
+  type: 'auth';
+  response: AuthResponse | undefined;
+}
+
+export interface BackgroundSettingsResponse {
+  type: 'settings'
+  response: Settings
+}
+
 export type MessageResponse =
   | ServerLookupResponse
   | SyncResponse
-  | AccountSettings;
+  | BackgroundSettingsResponse
+  | BackgroundAuthResponse;

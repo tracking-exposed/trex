@@ -4,20 +4,22 @@ import { bo } from '../utils/browser.utils';
 import { pipe } from 'fp-ts/lib/function';
 import { getAssignSemigroup } from 'fp-ts/lib/struct';
 import { catchRuntimeLastError } from '../providers/browser.provider';
+import { bkgLogger } from 'utils/logger.utils';
 
 const backend = bo.storage.local;
 
 const backendGet = (
   keys: string | string[]
 ): TE.TaskEither<chrome.runtime.LastError, Record<string, any>> => {
-  // console.log(`Getting ${keys.toString()} from local storage`);
+  bkgLogger.debug(`Getting %O from local storage`, keys);
   return pipe(
-    TE.tryCatch(() => {
-      return new Promise<Record<string, any>>((resolve) => {
-        // eslint-disable-next-line
-        backend.get(keys, resolve);
-      });
-    }, E.toError),
+    TE.tryCatch(
+      () =>
+        new Promise<Record<string, any>>((resolve) =>
+          backend.get(keys, resolve)
+        ),
+      E.toError
+    ),
     TE.chain(catchRuntimeLastError)
   );
 };
@@ -49,7 +51,11 @@ function get<A>(
 ): TE.TaskEither<chrome.runtime.LastError, A | undefined> {
   return pipe(
     backendGet([key]),
-    TE.map((val) => (val?.[key] !== undefined ? val[key] : val))
+    TE.map((val) => {
+      bkgLogger.debug('DB: value for key %s %O', key, val);
+      return val;
+    }),
+    TE.map((val) => val?.[key])
   );
 }
 
@@ -65,13 +71,16 @@ function set<A>(
 
 function update<A extends object>(
   key: string,
-  value: A
-): TE.TaskEither<chrome.runtime.LastError, A> {
+  value: A | undefined
+): TE.TaskEither<chrome.runtime.LastError, A | undefined> {
   const S = getAssignSemigroup<A>();
+  bkgLogger.debug(`Update key %s with data: %O`, key, value);
   return pipe(
     get<A>(key),
     TE.chain((val) =>
-      val !== undefined ? set(key, S.concat(val, value)) : set(key, value)
+      val !== undefined && value !== undefined
+        ? set(key, S.concat(val, value))
+        : set(key, value)
     )
   );
 }

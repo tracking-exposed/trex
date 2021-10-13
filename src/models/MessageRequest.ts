@@ -1,17 +1,21 @@
+import { AuthResponse } from '@backend/models/Auth';
 import * as t from 'io-ts';
+import { Settings } from './AccountSettings';
 
-export const LocalLookup = t.literal('localLookup');
 export const ServerLookup = t.literal('serverLookup');
-export const ConfigUpdate = t.literal('configUpdate');
+export const GetSettings = t.literal('GetSettings');
+export const UpdateSettings = t.literal('UpdateSettings');
 export const RecommendationsFetch = t.literal('recommendationsFetch');
 export const ReloadExtension = t.literal('ReloadExtension');
 export const Sync = t.literal('Sync');
+export const GetAuth = t.literal('GetAuth');
+export const UpdateAuth = t.literal('UpdateAuth');
 
 export const MessageType = t.union(
   [
-    LocalLookup,
+    GetSettings,
+    UpdateSettings,
     ServerLookup,
-    ConfigUpdate,
     RecommendationsFetch,
     ReloadExtension,
     Sync,
@@ -29,11 +33,16 @@ export type SyncRequest = t.TypeOf<typeof SyncRequest>;
 
 export const MessageRequest = t.union(
   [
-    t.strict({ type: LocalLookup, payload: t.any }),
+    t.strict({ type: GetSettings }),
     t.strict({ type: ServerLookup }),
-    t.strict({ type: ConfigUpdate, payload: t.any }),
+    t.strict({ type: UpdateSettings, payload: Settings }),
     t.strict({ type: RecommendationsFetch, payload: t.any }),
     t.strict({ type: ReloadExtension }),
+    t.strict({ type: GetAuth }),
+    t.strict({
+      type: UpdateAuth,
+      payload: t.union([AuthResponse, t.undefined]),
+    }),
     SyncRequest,
   ],
   'MessageRequest'

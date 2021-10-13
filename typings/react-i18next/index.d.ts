@@ -21,6 +21,8 @@ declare module 'react-i18next' {
         related: string;
         link_channel: string;
         unlink_channel: string;
+        verify_channel: string;
+        verify_channel_hint: string;
       };
       account: {
         channel: string;
@@ -39,7 +41,7 @@ declare module 'react-i18next' {
         title: string;
         subtitle: string;
         label: string;
-      },
+      };
       youtube: {
         title: string;
       };
@@ -64,7 +66,7 @@ declare module 'react-i18next' {
         unique_watchers: string;
         evidences_title: string;
         notifications_title: string;
-        top_n_cc_related_to_your_channel: string
+        top_n_cc_related_to_your_channel: string;
         advertising_connected_to_your_videos: string;
       };
       settings: {

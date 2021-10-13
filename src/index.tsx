@@ -16,7 +16,7 @@ ReactDOM.render(
       </DndProvider>
     </ThemeProvider>
   </React.StrictMode>,
-  document.getElementById('ycai--dashboard')
+  document.getElementById('ycai')
 );
 
 // If you want to start measuring performance in your app, pass a function

@@ -13,6 +13,7 @@ interface StudioVideoEditProps {
 export const StudioVideoEdit: React.FC<StudioVideoEditProps> = ({
   videoId,
 }) => {
+
   const { t } = useTranslation();
 
   return (
