@@ -1,28 +1,15 @@
-import { Endpoint } from "ts-endpoint";
 import * as t from "io-ts";
-import { DateFromISOString } from "io-ts-types/lib/DateFromISOString";
+import { Endpoint } from "ts-endpoint";
+import { HandshakeBody } from "../../models/HandshakeBody";
 import { Recommendation } from "../../models/Recommendation";
+
+
 
 const Handshake = Endpoint({
   Method: "POST",
   getPath: () => `/v3/handshake`,
   Input: {
-    Body: t.type(
-      {
-        config: t.strict({
-          publicKey: t.string,
-        }),
-
-        href: t.string,
-        experimentId: t.string,
-        evidencetag: t.string,
-        execount: t.string,
-        newProfile: t.string,
-        testTime: DateFromISOString,
-        directiveType: t.string,
-      },
-      "HandshakeBody"
-    ),
+    Body: HandshakeBody,
   },
   Output: t.any,
 });
