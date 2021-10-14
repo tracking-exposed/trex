@@ -1,4 +1,24 @@
+# YTTREX BACKEND
+
 This is the backend implementation of [youtube.tracking.exposed](https://youtube.tracking.exposed)
+
+## Develop
+
+### Install dependencies
+
+Project bootstrapping requires to install `node` dependencies and `mongo`.
+
+```bash
+$ npm i // install node deps
+// install mongo
+$ mongo ./scripts/build-indexes.js
+```
+
+### Run server
+
+Run `npm run watch` to start the development server.
+
+**Optional:** the project can be also bootstrapped with `docker-compose up`
 
 ### Current API list
 
