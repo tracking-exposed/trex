@@ -9,7 +9,7 @@ import {
 import Grid from '@material-ui/core/Grid';
 import CommunityIcon from '@material-ui/icons/GroupOutlined';
 import NotificationIcon from '@material-ui/icons/NotificationImportantOutlined';
-import { settings } from 'API/queries';
+import { settings } from '../../../state/public.queries';
 import * as QR from 'avenger/lib/QueryResult';
 import { declareQueries } from 'avenger/lib/react';
 import { ErrorBox } from '../../common/ErrorBox';
@@ -55,6 +55,7 @@ export const CommunityPage = withQueries(
                   <CCRelatedUserList
                     channelId={accountSettings.channelCreatorId}
                     amount={5}
+                    skip={0}
                   />
                 </Box>
               )}

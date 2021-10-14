@@ -1,5 +1,5 @@
+import { AuthResponse } from '@backend/models/Auth';
 import { ContentCreator } from '@backend/models/ContentCreator';
-import { Recommendation } from '@backend/models/Recommendation';
 import { Video } from '@backend/models/Video';
 import {
   available,
@@ -7,20 +7,17 @@ import {
   param,
   product,
   queryShallow,
-  queryStrict,
+  queryStrict
 } from 'avenger';
 import { pipe } from 'fp-ts/lib/function';
 import * as TE from 'fp-ts/lib/TaskEither';
-import { GetAuth, GetSettings } from '../models/MessageRequest';
-import {
-  BackgroundAuthResponse,
-  BackgroundSettingsResponse,
-} from '../models/MessageResponse';
+import * as t from 'io-ts';
+import { GetAuth } from '../models/MessageRequest';
+import { BackgroundAuthResponse } from '../models/MessageResponse';
 import { API, APIError } from '../providers/api.provider';
 import { sendMessage } from '../providers/browser.provider';
 import { apiLogger } from '../utils/logger.utils';
-import * as t from 'io-ts';
-import { AuthResponse } from '@backend/models/Auth';
+import { settings } from './public.queries';
 
 export const CREATOR_CHANNEL_KEY = 'creator-channel';
 export const CURRENT_VIDEO_ON_EDIT = 'current-video-on-edit';
@@ -35,13 +32,6 @@ const throwOnMissingAuth = (
       () => new APIError('Missing Auth', [])
     )
   );
-
-export const settings = queryShallow(() => {
-  return pipe(
-    sendMessage<BackgroundSettingsResponse>({ type: GetSettings.value }),
-    TE.map(({ response }) => response)
-  );
-}, available);
 
 export const getAuth = queryShallow(
   () =>
@@ -90,14 +80,16 @@ export const creatorRecommendations = compose(
 );
 
 export const creatorVideos = compose(
-  settings,
-  queryStrict((settings): TE.TaskEither<Error, Video[]> => {
-    if (settings.channelCreatorId !== null) {
-      return API.Creator.CreatorVideos({
-        Params: { channelId: settings.channelCreatorId },
-      });
-    }
-    return TE.right([]);
+  getAuth,
+  queryStrict((auth): TE.TaskEither<Error, Video[]> => {
+    return pipe(
+      throwOnMissingAuth(auth),
+      TE.chain((auth) =>
+        API.Creator.CreatorVideos({
+          Params: { channelId: auth.channelId },
+        })
+      )
+    );
   }, available)
 );
 
@@ -117,25 +109,17 @@ export const recommendedChannels = compose(
   }, available)
 );
 
-export const videoRecommendations = queryShallow(
-  ({ videoId }: { videoId: string }): TE.TaskEither<Error, Recommendation[]> =>
-    API.Public.VideoRecommendations({ Params: { videoId } }),
-  available
-);
-
-export const ccRelatedUsers = queryShallow(
-  ({
-    channelId,
-    amount,
-  }: {
-    channelId: string;
-    amount: number;
-  }): TE.TaskEither<Error, ContentCreator[]> =>
-    pipe(
-      API.Creator.CreatorRelatedChannels({
-        Params: { channelId, amount, skip: 0 },
-      }),
+export const ccRelatedUsers = compose(
+  product({  getAuth, params: param<{ amount: number; skip: number }>() }),
+  queryShallow(({getAuth, params }): TE.TaskEither<Error, ContentCreator[]> => {
+    return pipe(
+      throwOnMissingAuth(getAuth),
+      TE.chain((auth) =>
+        API.Creator.CreatorRelatedChannels({
+          Params: { channelId: auth.channelId, amount: params.amount, skip: params.skip },
+        })
+      ),
       TE.map((d) => d.content)
-    ),
-  available
+    );
+  }, available)
 );

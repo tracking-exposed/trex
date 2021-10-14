@@ -5,7 +5,7 @@ import * as Q from 'avenger/lib/Query';
 import { pipe } from 'fp-ts/lib/function';
 import { Video } from '@backend/models/Video';
 import React from 'react';
-import { creatorVideos } from '../../API/queries';
+import { creatorVideos } from '../../state/creator.queries';
 import { ErrorBox } from '../common/ErrorBox';
 import { LazyFullSizeLoader } from '../common/FullSizeLoader';
 import { VideoCard } from '../common/VideoCard';

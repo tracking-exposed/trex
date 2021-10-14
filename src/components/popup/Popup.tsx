@@ -1,5 +1,5 @@
-import { updateSettings } from 'API/commands';
-import { settings } from 'API/queries';
+import { updateSettings } from '../../state/creator.commands';
+import { settings } from '../../state/public.queries';
 import { ErrorBox } from '../common/ErrorBox';
 import {
   Button,

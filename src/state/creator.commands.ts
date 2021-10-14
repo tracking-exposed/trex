@@ -7,15 +7,14 @@ import { Settings } from 'models/AccountSettings';
 import { UpdateAuth, UpdateSettings } from '../models/MessageRequest';
 import { API } from '../providers/api.provider';
 import { sendMessage } from '../providers/browser.provider';
+import { settings, videoRecommendations } from './public.queries';
 import {
   ccRelatedUsers,
   creatorRecommendations,
   creatorVideos,
   getAuth,
   getContentCreator,
-  settings,
-  videoRecommendations,
-} from './queries';
+} from './creator.queries';
 
 export const registerCreatorChannel = command(
   (channelId: string) =>

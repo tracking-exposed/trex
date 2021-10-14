@@ -4,7 +4,7 @@ import { useQueries } from 'avenger/lib/react';
 import { pipe } from 'fp-ts/lib/function';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { videoRecommendations } from '../../API/queries';
+import { videoRecommendations } from '../../state/public.queries';
 import { ErrorBox } from '../common/ErrorBox';
 import { LazyFullSizeLoader } from '../common/FullSizeLoader';
 import { VideoCard } from '../common/VideoCard';

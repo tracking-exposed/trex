@@ -2,7 +2,7 @@ import { Box, Typography } from '@material-ui/core';
 import { declareQueries } from 'avenger/lib/react';
 import { pipe } from 'fp-ts/lib/function';
 import * as React from 'react';
-import { settings } from '../../API/queries';
+import { settings } from '../../state/public.queries';
 import { VideoCard } from '../common/VideoCard';
 import { VideoRecommendations } from './VideoRecommendations';
 import * as QR from 'avenger/lib/QueryResult';

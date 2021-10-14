@@ -18,7 +18,7 @@ import {
   registerCreatorChannel,
   updateAuth,
   verifyChannel,
-} from '../../API/commands';
+} from '../../state/creator.commands';
 
 interface LinkAccountProps {
   auth?: AuthResponse;
@@ -37,7 +37,7 @@ export const LinkAccount: React.FC<LinkAccountProps> = ({ auth }) => {
     // this handle the pressing of "Enter" key
     if (e.keyCode === 13) {
       await registerCreatorChannel(e.currentTarget.value, {
-        ccRelatedUsers: { channelId: e.currentTarget.value, amount: 5 },
+        ccRelatedUsers: { params: { skip: 0, amount: 5 } },
       })();
     }
   };
@@ -47,7 +47,7 @@ export const LinkAccount: React.FC<LinkAccountProps> = ({ auth }) => {
       if (inputRef.current?.firstChild !== null) {
         const channelId = (inputRef.current?.firstChild as any).value;
         await registerCreatorChannel(channelId, {
-          ccRelatedUsers: { channelId, amount: 5 },
+          ccRelatedUsers: { params: { skip: 0, amount: 5 } },
         })();
       }
     };
@@ -135,11 +135,9 @@ export const LinkAccount: React.FC<LinkAccountProps> = ({ auth }) => {
             color="secondary"
             variant="outlined"
             onClick={() =>
-              verifyChannel(
-                {
-                  channelId: auth.channelId,
-                },
-              )()
+              verifyChannel({
+                channelId: auth.channelId,
+              })()
             }
           >
             {t('actions:verify_channel')}
