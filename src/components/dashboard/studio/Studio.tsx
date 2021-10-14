@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { doUpdateCurrentView } from 'utils/location.utils';
+import { doUpdateCurrentView } from '../../../utils/location.utils';
 import { CreatorVideos } from '../CreatorVideos';
 
 export const Studio: React.FC = () => {

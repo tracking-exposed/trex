@@ -76,6 +76,7 @@ declare module 'react-i18next' {
         communityRecommendationsHint: string;
         contributeToIndipendentStatsLabel: string;
         contributeToIndipendentStatsHint: string;
+        api_list_title: string
       };
       videos: {
         no_results: string;

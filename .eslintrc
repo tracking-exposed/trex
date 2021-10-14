@@ -41,6 +41,7 @@
     "@typescript-eslint/return-await": ["off"],
     "@typescript-eslint/promise-function-async": ["off"],
     "@typescript-eslint/no-redeclare": ["off"],
-    "@typescript-eslint/restrict-plus-operands": ["off"]
+    "@typescript-eslint/restrict-plus-operands": ["off"],
+    "react/jsx-key": "off"
   }
 }

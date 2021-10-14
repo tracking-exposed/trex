@@ -1,4 +1,4 @@
-import { updateSettings } from '../../API/commands';
+import { updateSettings } from '../../state/creator.commands';
 import { FormLabel, Typography, Divider, makeStyles } from '@material-ui/core';
 import FormControl from '@material-ui/core/FormControl';
 import FormControlLabel from '@material-ui/core/FormControlLabel';

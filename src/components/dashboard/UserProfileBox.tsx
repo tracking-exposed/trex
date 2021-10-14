@@ -4,9 +4,9 @@ import { declareQueries, WithQueries } from 'avenger/lib/react';
 import { pipe } from 'fp-ts/lib/pipeable';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
-import { Queries } from '../../API/APIProvider';
-import { updateAuth } from '../../API/commands';
-import { getAuth } from '../../API/queries';
+import { updateAuth } from '../../state/creator.commands';
+import { getAuth } from '../../state/public.queries';
+import { getContentCreator } from '../../state/creator.queries';
 import { ErrorBox } from '../common/ErrorBox';
 import { LazyFullSizeLoader } from '../common/FullSizeLoader';
 import { LinkAccount } from './LinkAccount';
@@ -25,10 +25,7 @@ export const LoggedUserProfileBox: React.FC<LoggedUserProfileBoxProps> = ({
   return (
     <WithQueries
       queries={{
-        creator: Queries.creator.GetCreator,
-      }}
-      params={{
-        creator: { Params: { channelId } },
+        creator: getContentCreator,
       }}
       render={QR.fold(LazyFullSizeLoader, ErrorBox, ({ creator }) => {
         return (

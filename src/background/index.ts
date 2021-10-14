@@ -7,14 +7,12 @@ import {
   GetSettings,
   MessageRequest,
   ReloadExtension,
-  Sync,
   UpdateAuth,
   GetAuth,
 } from '../models/MessageRequest';
 import { bo } from '../utils/browser.utils';
 import * as settings from './settings';
 import * as development from './reloadExtension';
-import * as sync from './sync';
 import { auth } from './auth';
 import { bkgLogger } from '../utils/logger.utils';
 
@@ -28,8 +26,6 @@ const getMessageHandler = (
     //   return settings.serverLookup(r.payload);
     case UpdateSettings.value:
       return settings.update(r.payload);
-    case Sync.value:
-      return sync.sync(r);
     // auth
     case GetAuth.value:
       return auth.get();

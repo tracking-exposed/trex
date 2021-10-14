@@ -7,7 +7,7 @@ import {
 } from '@material-ui/core';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { addRecommendation } from '../../API/commands';
+import { addRecommendation } from '../../state/creator.commands';
 
 const AddRecommendationBox: React.FC = () => {
   const { t } = useTranslation();
