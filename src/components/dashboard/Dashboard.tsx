@@ -11,8 +11,8 @@ import { ErrorBox } from '../common/ErrorBox';
 import { LazyFullSizeLoader } from '../common/FullSizeLoader';
 import Advanced from './Advanced';
 import { AuthBox } from './AuthBox';
-import { CommunityPage } from './community/CommunityPage';
 import { Sidebar } from './Sidebar';
+import { StatisticsPage } from './community/StatisticsPage';
 import { Studio } from './studio/Studio';
 import { StudioVideoEdit } from './studio/StudioVideoEdit';
 
@@ -76,13 +76,13 @@ const DashboardContent: React.FC<DashboardContentProps> = ({ currentView }) => {
           ];
         case 'linkAccount':
           return getAuthBoxView();
-        case 'community':
+        case 'statistics':
         default:
           return [
-            t('routes:community'),
-            t('community:subtitle'),
+            t('routes:statistics'),
+            t('statistics:subtitle'),
             // eslint-disable-next-line react/jsx-key
-            <CommunityPage />,
+            <StatisticsPage />,
           ];
       }
     }, [currentView]);

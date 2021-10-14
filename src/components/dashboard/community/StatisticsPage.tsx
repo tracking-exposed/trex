@@ -23,7 +23,7 @@ import { CCRelatedUserList } from './CCRelatedUserList';
 
 const withQueries = declareQueries({ accountSettings: settings });
 
-export const CommunityPage = withQueries(
+export const StatisticsPage = withQueries(
   ({ queries }): React.ReactElement => {
     const { t } = useTranslation();
     const theme = useTheme();
@@ -36,8 +36,8 @@ export const CommunityPage = withQueries(
             <Grid item md={4}>
               <Card>
                 <CardHeader
-                  title={t('community:recommendability_score_title')}
-                  subheader={t('community:recommendability_score_subtitle')}
+                  title={t('statistics:recommendability_score_title')}
+                  subheader={t('statistics:recommendability_score_subtitle')}
                 />
                 <CardContent>30%</CardContent>
               </Card>

@@ -7,14 +7,14 @@ import {
 export type CurrentView =
   | { view: 'studioEdit'; videoId: string }
   | { view: 'studio' }
-  | { view: 'community' }
+  | { view: 'statistics' }
   | { view: 'settings' }
   | { view: 'linkAccount' }
   | { view: 'index' };
 
 const studioEditRegex = /^\/studio\/([^/]+)$/;
 const studioRegex = /^\/studio$/;
-const communityRegex = /^\/community$/;
+const statisticsRegex = /^\/statistics$/;
 const settingsRegex = /^\/settings$/;
 const linkAccountRegex = /^\/link-account$/;
 
@@ -31,9 +31,9 @@ export function locationToView(location: HistoryLocation): CurrentView {
     return { view: 'studio' };
   }
 
-  const communityMatch = location.pathname.match(communityRegex);
+  const communityMatch = location.pathname.match(statisticsRegex);
   if (communityMatch !== null) {
-    return { view: 'community' };
+    return { view: 'statistics' };
   }
 
   const settingsMatch = location.pathname.match(settingsRegex);
@@ -55,8 +55,8 @@ export function viewToLocation(view: CurrentView): HistoryLocation {
       return { pathname: `/studio/${view.videoId}`, search: {} };
     case 'studio':
       return { pathname: '/studio', search: {} };
-    case 'community':
-      return { pathname: '/community', search: {} };
+    case 'statistics':
+      return { pathname: '/statistics', search: {} };
     case 'settings':
       return { pathname: '/settings', search: {} };
     case 'linkAccount':
