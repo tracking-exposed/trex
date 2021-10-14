@@ -25,8 +25,10 @@ import { useTranslation } from 'react-i18next';
 
 const useStyles = makeStyles((theme) => ({
   container: {
+    width: '100%',
     padding: theme.spacing(2),
-    maxWidth: 300,
+    boxSizing: 'border-box',
+    maxWidth: 400
   },
   content: {
     marginBottom: theme.spacing(2),
@@ -101,7 +103,7 @@ export const Popup = withQueries(({ queries }) => {
                 </Grid>
 
                 <Grid item xs={1} />
-                <Grid item xs={4} justifyContent="center">
+                <Grid item xs={4}>
                   <FormControlLabel
                     className={classes.switchFormControl}
                     control={
