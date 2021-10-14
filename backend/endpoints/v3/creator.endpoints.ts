@@ -20,7 +20,7 @@ const RegisterCreator = Endpoint({
   Method: "POST",
   getPath: ({ channelId }) => `/v3/creator/${channelId}/register`,
   Input: {
-    Params: t.type({ channelId: t.string, type: t.literal("channel") }),
+    Params: t.type({ channelId: t.string }),
     Body: t.type({
       type: ChannelType,
     }),
