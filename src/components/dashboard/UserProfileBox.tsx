@@ -5,19 +5,16 @@ import { pipe } from 'fp-ts/lib/pipeable';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
 import { updateAuth } from '../../state/creator.commands';
-import { getAuth } from '../../state/public.queries';
-import { getContentCreator } from '../../state/creator.queries';
+import { profile, auth } from '../../state/creator.queries';
 import { ErrorBox } from '../common/ErrorBox';
 import { LazyFullSizeLoader } from '../common/FullSizeLoader';
-import { LinkAccount } from './LinkAccount';
+import { LinkAccountButton } from 'components/common/LinkAccountButton';
 
 interface LoggedUserProfileBoxProps {
-  channelId: string;
   onLogout: () => void;
 }
 
 export const LoggedUserProfileBox: React.FC<LoggedUserProfileBoxProps> = ({
-  channelId,
   onLogout,
 }) => {
   const { t } = useTranslation();
@@ -25,22 +22,19 @@ export const LoggedUserProfileBox: React.FC<LoggedUserProfileBoxProps> = ({
   return (
     <WithQueries
       queries={{
-        creator: getContentCreator,
+        profile,
       }}
-      render={QR.fold(LazyFullSizeLoader, ErrorBox, ({ creator }) => {
+      render={QR.fold(LazyFullSizeLoader, ErrorBox, ({ profile }) => {
         return (
           <Box display="flex" alignItems="center">
-            <Avatar
-              src={`http://placekitten.com/400/200`}
-              style={{ marginRight: 10 }}
-            />
+            <Avatar src={profile.avatar} style={{ marginRight: 10 }} />
             <Box
               display="flex"
               flexDirection="column"
               style={{ marginRight: 20 }}
             >
-              <Typography variant="subtitle1">{creator.channelId}</Typography>
-              <Typography variant="caption">{creator.channelId}</Typography>
+              <Typography variant="subtitle1">{profile.channelId}</Typography>
+              <Typography variant="caption">{profile.channelId}</Typography>
               <Button
                 color="secondary"
                 variant="outlined"
@@ -57,7 +51,7 @@ export const LoggedUserProfileBox: React.FC<LoggedUserProfileBoxProps> = ({
   );
 };
 
-const withQueries = declareQueries({ auth: getAuth });
+const withQueries = declareQueries({ auth });
 
 export const UserProfileBox = withQueries(({ queries }): React.ReactElement => {
   const handleChannelDelete = React.useCallback(async (): Promise<void> => {
@@ -68,15 +62,14 @@ export const UserProfileBox = withQueries(({ queries }): React.ReactElement => {
     queries,
     QR.fold(LazyFullSizeLoader, ErrorBox, ({ auth }) => {
       if (auth === undefined || !auth.verified) {
-        return <LinkAccount auth={auth} />;
+        return (
+          <Box>
+            <LinkAccountButton />
+          </Box>
+        );
       }
 
-      return (
-        <LoggedUserProfileBox
-          channelId={auth.channelId}
-          onLogout={() => handleChannelDelete()}
-        />
-      );
+      return <LoggedUserProfileBox onLogout={() => handleChannelDelete()} />;
     })
   );
 });

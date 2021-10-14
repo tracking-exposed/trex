@@ -1,4 +1,4 @@
-import { getAuth } from '../../state/public.queries';
+import { auth } from '../../state/creator.queries';
 import * as QR from 'avenger/lib/QueryResult';
 import { WithQueries } from 'avenger/lib/react';
 import { ErrorBox } from '../../components/common/ErrorBox';
@@ -9,7 +9,7 @@ import { LinkAccount } from './LinkAccount';
 export const AuthBox: React.FC = ({ children }) => {
   return (
     <WithQueries
-      queries={{ auth: getAuth }}
+      queries={{ auth }}
       render={QR.fold(LazyFullSizeLoader, ErrorBox, ({ auth }) => {
         if (auth === undefined || !auth.verified) {
           return <LinkAccount auth={auth} />;

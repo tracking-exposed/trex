@@ -1,3 +1,4 @@
+import { AuthResponse } from '@backend/models/Auth';
 import { Typography } from '@material-ui/core';
 import Grid from '@material-ui/core/Grid';
 import { makeStyles } from '@material-ui/core/styles';
@@ -6,13 +7,14 @@ import { declareQueries } from 'avenger/lib/react';
 import { pipe } from 'fp-ts/lib/function';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
+import { auth } from '../../state/creator.queries';
 import { CurrentView, currentView } from '../../utils/location.utils';
 import { ErrorBox } from '../common/ErrorBox';
 import { LazyFullSizeLoader } from '../common/FullSizeLoader';
 import Advanced from './Advanced';
-import { AuthBox } from './AuthBox';
-import { Sidebar } from './Sidebar';
 import { StatisticsPage } from './community/StatisticsPage';
+import { LinkAccount } from './LinkAccount';
+import { Sidebar } from './Sidebar';
 import { Studio } from './studio/Studio';
 import { StudioVideoEdit } from './studio/StudioVideoEdit';
 
@@ -33,22 +35,15 @@ const useStyles = makeStyles((theme) => ({
 
 interface DashboardContentProps {
   currentView: CurrentView;
+  auth: AuthResponse | undefined;
 }
 
-const DashboardContent: React.FC<DashboardContentProps> = ({ currentView }) => {
+const DashboardContent: React.FC<DashboardContentProps> = ({
+  currentView,
+  auth,
+}) => {
   const { t } = useTranslation();
   const classes = useStyles();
-
-  const getAuthBoxView = React.useCallback(() => {
-    return [
-      t('routes:link_account'),
-      t('link_account:subtitle'),
-      // eslint-disable-next-line react/jsx-key
-      <Grid item md={4}>
-        <AuthBox />
-      </Grid>,
-    ];
-  }, []);
 
   const [currentViewLabel, currentViewSubtitle, currentViewContent] =
     React.useMemo(() => {
@@ -56,36 +51,44 @@ const DashboardContent: React.FC<DashboardContentProps> = ({ currentView }) => {
         case 'settings':
           // eslint-disable-next-line react/jsx-key
           return [t('routes:settings'), '', <Advanced />];
-        case 'studio':
-          return [
-            t('routes:studio'),
-            '',
-            // eslint-disable-next-line react/jsx-key
-            <AuthBox>
-              <Studio />
-            </AuthBox>,
-          ];
-        case 'studioEdit':
-          return [
-            t('routes:studio'),
-            '',
-            // eslint-disable-next-line react/jsx-key
-            <AuthBox>
-              <StudioVideoEdit videoId={currentView.videoId} />
-            </AuthBox>,
-          ];
-        case 'linkAccount':
-          return getAuthBoxView();
         case 'statistics':
-        default:
           return [
             t('routes:statistics'),
             t('statistics:subtitle'),
             // eslint-disable-next-line react/jsx-key
             <StatisticsPage />,
           ];
+        case 'linkAccount':
+        default: {
+          if (auth === undefined || !auth.verified) {
+            return [
+              t('routes:link_account'),
+              t('link_account:subtitle'),
+              // eslint-disable-next-line react/jsx-key
+              <LinkAccount auth={auth} />,
+            ];
+          }
+
+          switch (currentView.view) {
+            case 'studioEdit':
+              return [
+                t('routes:studio'),
+                '',
+                // eslint-disable-next-line react/jsx-key
+                <StudioVideoEdit videoId={currentView.videoId} />,
+              ];
+            case 'studio':
+            default:
+              return [
+                t('routes:studio'),
+                '',
+                // eslint-disable-next-line react/jsx-key
+                <Studio />,
+              ];
+          }
+        }
       }
-    }, [currentView]);
+    }, [currentView, auth]);
 
   return (
     <Grid item md={9} style={{ padding: 0 }}>
@@ -104,12 +107,12 @@ const DashboardContent: React.FC<DashboardContentProps> = ({ currentView }) => {
   );
 };
 
-const withQueries = declareQueries({ currentView });
+const withQueries = declareQueries({ currentView, auth });
 
 export const Dashboard = withQueries(({ queries }): React.ReactElement => {
   return pipe(
     queries,
-    QR.fold(LazyFullSizeLoader, ErrorBox, ({ currentView }) => {
+    QR.fold(LazyFullSizeLoader, ErrorBox, ({ currentView, auth }) => {
       const classes = useStyles();
 
       return (
@@ -117,7 +120,7 @@ export const Dashboard = withQueries(({ queries }): React.ReactElement => {
           <Grid item md={3}>
             <Sidebar />
           </Grid>
-          <DashboardContent currentView={currentView} />
+          <DashboardContent currentView={currentView} auth={auth} />
         </Grid>
       );
     })

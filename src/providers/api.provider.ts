@@ -32,17 +32,18 @@ export const toAPIError = (e: unknown): APIError => {
 
 export const endpointClient = axios.create({
   baseURL: config.REACT_APP_API_URL,
-  transformRequest: (req) => {
-    // req.headers('X-YTtrex-Version', config.VERSION);
-    // req.headers('X-YTtrex-Build', config.BUILD);
-    // const signature = nacl.sign.detached(
-    //   decodeString(payload),
-    //   decodeKey(keypair.secretKey)
-    // );
-    // xhr.setRequestHeader('X-YTtrex-NonAuthCookieId', cookieId);
-    // xhr.setRequestHeader('X-YTtrex-PublicKey', keypair.publicKey);
-    // xhr.setRequestHeader('X-YTtrex-Signature', bs58.encode(signature));
-  },
+  // transformRequest: (req) => {
+  //   // req.headers('X-YTtrex-Version', config.VERSION);
+  //   // req.headers('X-YTtrex-Build', config.BUILD);
+  //   // const signature = nacl.sign.detached(
+  //   //   decodeString(payload),
+  //   //   decodeKey(keypair.secretKey)
+  //   // );
+  //   // xhr.setRequestHeader('X-YTtrex-NonAuthCookieId', cookieId);
+  //   // xhr.setRequestHeader('X-YTtrex-PublicKey', keypair.publicKey);
+  //   // xhr.setRequestHeader('X-YTtrex-Signature', bs58.encode(signature));
+  //   return req;
+  // },
 });
 
 export const liftFetch = <B>(
@@ -108,18 +109,23 @@ type API = {
 
 const toTERequest = <E extends MinimalEndpointInstance>(e: E): TERequest<E> => {
   return command<any, APIError, TypeOfEndpointInstance<E>['Output']>((b) =>
-    liftFetch<TypeOfEndpointInstance<E>['Output']>(
-      () =>
-        endpointClient.request<
-          TypeOfEndpointInstance<E>['Input'],
-          AxiosResponse<TypeOfEndpointInstance<E>['Output']>
-        >({
-          method: e.Method,
-          url: e.getPath(e.Input?.Params),
-          data: b,
-        }),
-      e.Output.decode
-    )
+    liftFetch<TypeOfEndpointInstance<E>['Output']>(() => {
+      const url = e.getPath(b.Params);
+      apiLogger.debug('%s %s %O', e.Method, url, b);
+
+      return endpointClient.request<
+        TypeOfEndpointInstance<E>['Input'],
+        AxiosResponse<TypeOfEndpointInstance<E>['Output']>
+      >({
+        method: e.Method,
+        url,
+        data: b.Body,
+        responseType: 'json',
+        headers: {
+          Accept: 'application/json',
+        },
+      });
+    }, e.Output.decode)
   );
 };
 

@@ -29,7 +29,7 @@ export const Sidebar: React.FC = () => {
   const { t } = useTranslation();
   const classes = useStyles();
   return (
-    <Grid container style={{ height: '100%' }} direction="row">
+    <Grid container style={{ height: '100%' }}>
       <Grid item>
         <img
           alt="YCAI Logo"
@@ -51,10 +51,10 @@ export const Sidebar: React.FC = () => {
           <ListItem
             className={classes.listItem}
             button={true}
-            onClick={doUpdateCurrentView({ view: 'community' })}
+            onClick={doUpdateCurrentView({ view: 'statistics' })}
           >
             <GroupsIcon className={classes.listItemIcon} />
-            <Typography>{t('routes:community')}</Typography>
+            <Typography>{t('routes:statistics')}</Typography>
           </ListItem>
           <ListItem
             className={classes.listItem}

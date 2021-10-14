@@ -7,7 +7,7 @@ import {
   param,
   product,
   queryShallow,
-  queryStrict
+  queryStrict,
 } from 'avenger';
 import { pipe } from 'fp-ts/lib/function';
 import * as TE from 'fp-ts/lib/TaskEither';
@@ -28,12 +28,12 @@ const throwOnMissingAuth = (
   pipe(
     auth,
     TE.fromPredicate(
-      (s): s is AuthResponse => s !== undefined,
+      (s): s is AuthResponse => s?.verified ?? false,
       () => new APIError('Missing Auth', [])
     )
   );
 
-export const getAuth = queryShallow(
+export const auth = queryStrict(
   () =>
     pipe(
       sendMessage<BackgroundAuthResponse>({ type: GetAuth.value }),
@@ -48,12 +48,12 @@ export const getAuth = queryShallow(
 
 // content creator
 
-export const getContentCreator = compose(
-  product({ getAuth }),
+export const profile = compose(
+  product({ auth }),
   queryStrict(
-    ({ getAuth }) =>
+    ({ auth }) =>
       pipe(
-        throwOnMissingAuth(getAuth),
+        throwOnMissingAuth(auth),
         TE.chain((auth) =>
           API.Creator.GetCreator({ Params: { channelId: auth.channelId } })
         )
@@ -63,11 +63,11 @@ export const getContentCreator = compose(
 );
 
 export const creatorRecommendations = compose(
-  product({ getAuth, params: param() }),
+  product({ auth, params: param() }),
   queryStrict(
-    ({ getAuth }) =>
+    ({ auth }) =>
       pipe(
-        throwOnMissingAuth(getAuth),
+        throwOnMissingAuth(auth),
         TE.chain((auth) =>
           API.Creator.CreatorRecommendations({
             Params: { channelId: auth.channelId },
@@ -80,7 +80,7 @@ export const creatorRecommendations = compose(
 );
 
 export const creatorVideos = compose(
-  getAuth,
+  auth,
   queryStrict((auth): TE.TaskEither<Error, Video[]> => {
     return pipe(
       throwOnMissingAuth(auth),
@@ -110,13 +110,17 @@ export const recommendedChannels = compose(
 );
 
 export const ccRelatedUsers = compose(
-  product({  getAuth, params: param<{ amount: number; skip: number }>() }),
-  queryShallow(({getAuth, params }): TE.TaskEither<Error, ContentCreator[]> => {
+  product({ auth, params: param<{ amount: number; skip: number }>() }),
+  queryShallow(({ auth, params }): TE.TaskEither<Error, ContentCreator[]> => {
     return pipe(
-      throwOnMissingAuth(getAuth),
+      throwOnMissingAuth(auth),
       TE.chain((auth) =>
         API.Creator.CreatorRelatedChannels({
-          Params: { channelId: auth.channelId, amount: params.amount, skip: params.skip },
+          Params: {
+            channelId: auth.channelId,
+            amount: params.amount,
+            skip: params.skip,
+          },
         })
       ),
       TE.map((d) => d.content)
