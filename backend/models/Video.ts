@@ -1,9 +1,9 @@
 import * as t from 'io-ts';
+import { Recommendation } from './Recommendation';
 
 export const Video = t.strict(
   {
-    videoId: t.string,
-    title: t.string,
+    ...Recommendation.type.props,
     recommendations: t.array(t.string),
   },
   'Video'
