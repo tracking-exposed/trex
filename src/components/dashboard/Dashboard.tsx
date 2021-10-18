@@ -51,15 +51,9 @@ const DashboardContent: React.FC<DashboardContentProps> = ({
         case 'settings':
           // eslint-disable-next-line react/jsx-key
           return [t('routes:settings'), '', <Advanced />];
-        case 'statistics':
-          return [
-            t('routes:statistics'),
-            t('statistics:subtitle'),
-            // eslint-disable-next-line react/jsx-key
-            <StatisticsPage />,
-          ];
         case 'linkAccount':
-        default: {
+        case 'studioEdit':
+        case 'studio': {
           if (auth === undefined || !auth.verified) {
             return [
               t('routes:link_account'),
@@ -87,6 +81,14 @@ const DashboardContent: React.FC<DashboardContentProps> = ({
               ];
           }
         }
+        case 'statistics':
+        default:
+          return [
+            t('routes:statistics'),
+            t('statistics:subtitle'),
+            // eslint-disable-next-line react/jsx-key
+            <StatisticsPage />,
+          ];
       }
     }, [currentView, auth]);
 
