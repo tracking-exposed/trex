@@ -35,16 +35,6 @@ const backendSet = <A>(
   );
 };
 
-const backendRemove = (
-  key: string
-): TE.TaskEither<chrome.runtime.LastError, void> =>
-  pipe(
-    TE.fromIO<undefined, chrome.runtime.LastError>(
-      () => backend.remove(key) as any
-    ),
-    TE.chain(catchRuntimeLastError)
-  );
-
 function get<A>(
   key: string
 ): TE.TaskEither<chrome.runtime.LastError, A | undefined> {
@@ -84,7 +74,11 @@ function update<A extends object>(
   );
 }
 
-const remove = backendRemove;
+const remove = (key: string): TE.TaskEither<chrome.runtime.LastError, void> =>
+  pipe(
+    TE.tryCatch(() => backend.remove(key), E.toError),
+    TE.chain(catchRuntimeLastError)
+  );
 
 export default {
   get: get,
