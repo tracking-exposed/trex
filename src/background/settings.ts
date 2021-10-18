@@ -1,55 +1,20 @@
-import bs58 from 'bs58';
+import * as E from 'fp-ts/lib/Either';
 import { pipe } from 'fp-ts/lib/pipeable';
 import * as TE from 'fp-ts/lib/TaskEither';
-import * as E from 'fp-ts/lib/Either';
-import nacl from 'tweetnacl';
-import { Settings } from '../models/AccountSettings';
 import { BackgroundSettingsResponse } from '../models/MessageResponse';
+import { Keypair, Settings } from '../models/Settings';
+import { makePublicKey } from '../providers/security.provider';
 import db from './db';
-import { bkgLogger } from '../utils/logger.utils';
-
-
 
 export const SETTINGS_NAMESPACE = 'local';
+export const PUBLIC_PAIRKEY = 'public-pairkey';
 
-function initializeKey(): Pick<Settings, 'publicKey' | 'secretKey'> {
-  const newKeypair = nacl.sign.keyPair();
-  // eslint-disable-next-line no-console
-  bkgLogger.debug('No keys found, initializing...')
-  return {
-    publicKey: bs58.encode(newKeypair.publicKey),
-    secretKey: bs58.encode(newKeypair.secretKey),
-  };
-}
-
-// defaults of the settings stored in 'config' and controlled by popup
-const getDefaultSettings = (): Settings => ({
-  active: true,
-  ccRecommendations: true,
-  svg: false,
-  videorep: true,
-  playhide: false,
-  ux: false,
-  communityRecommendations: false,
-  alphabeth: false,
-  stats: false,
-  channelCreatorId: null,
-  edit: null,
-  ...initializeKey(),
-});
-
-export function userLookup(): TE.TaskEither<
+export function get(): TE.TaskEither<
   chrome.runtime.LastError,
   BackgroundSettingsResponse
 > {
   return pipe(
     db.get<Settings>(SETTINGS_NAMESPACE),
-    TE.chain((val) => {
-      if (val === undefined || Object.keys(val).length === 0) {
-        return db.set(SETTINGS_NAMESPACE, getDefaultSettings());
-      }
-      return TE.right(val);
-    }),
     TE.map((response) => ({ type: 'settings', response }))
   );
 }
@@ -85,13 +50,22 @@ export function userLookup(): TE.TaskEither<
 //     )
 //   );
 // }
+export function generatePublicKey(): TE.TaskEither<
+  chrome.runtime.LastError,
+  Keypair
+> {
+  return pipe(
+    db.get(PUBLIC_PAIRKEY),
+    TE.chain(() => makePublicKey('')),
+    TE.chain((pairkey) => db.set(PUBLIC_PAIRKEY, pairkey))
+  );
+}
 
 export function update(
   payload: Settings | undefined
 ): TE.TaskEither<chrome.runtime.LastError, BackgroundSettingsResponse> {
-  const userId = SETTINGS_NAMESPACE;
   return pipe(
-    db.update(userId, payload),
+    db.update(SETTINGS_NAMESPACE, payload),
     TE.chain((r) =>
       TE.fromEither(
         pipe(

@@ -1,6 +1,6 @@
 import { AuthResponse } from '@backend/models/Auth';
 import * as t from 'io-ts';
-import { Settings } from './AccountSettings';
+import { Settings } from './Settings';
 
 export const ServerLookup = t.literal('serverLookup');
 export const GetSettings = t.literal('GetSettings');

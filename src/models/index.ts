@@ -1,3 +1,3 @@
-export * as Settings from './AccountSettings';
+export * as Settings from './Settings';
 
 

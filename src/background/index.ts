@@ -1,27 +1,41 @@
+import { sequenceS } from 'fp-ts/lib/Apply';
 import * as E from 'fp-ts/lib/Either';
 import * as TE from 'fp-ts/lib/TaskEither';
-import { MessageResponse } from '../models/MessageResponse';
 import { config } from '../config';
 import {
-  UpdateSettings,
-  GetSettings,
+  GetAuth, GetSettings,
   MessageRequest,
   ReloadExtension,
-  UpdateAuth,
-  GetAuth,
+  UpdateAuth, UpdateSettings
 } from '../models/MessageRequest';
+import { MessageResponse } from '../models/MessageResponse';
+import { Settings } from '../models/Settings';
 import { bo } from '../utils/browser.utils';
-import * as settings from './settings';
-import * as development from './reloadExtension';
-import { auth } from './auth';
 import { bkgLogger } from '../utils/logger.utils';
+import { auth } from './auth';
+import * as development from './reloadExtension';
+import * as settings from './settings';
+
+const getDefaultSettings = (): Settings => ({
+  active: true,
+  ccRecommendations: true,
+  svg: false,
+  videorep: true,
+  playhide: false,
+  ux: false,
+  communityRecommendations: false,
+  alphabeth: false,
+  stats: false,
+  channelCreatorId: null,
+  edit: null,
+});
 
 const getMessageHandler = (
   r: MessageRequest
 ): TE.TaskEither<chrome.runtime.LastError, MessageResponse> => {
   switch (r.type) {
     case GetSettings.value:
-      return settings.userLookup();
+      return settings.get();
     // case RecommendationsFetch.value:
     //   return settings.serverLookup(r.payload);
     case UpdateSettings.value:
@@ -35,6 +49,19 @@ const getMessageHandler = (
       return TE.right({} as any);
   }
 };
+
+bo.runtime.onInstalled.addListener((details) => {
+  if (details.reason === 'install') {
+    bkgLogger.debug('Extension installed %O', details);
+    // create default settings
+    void sequenceS(TE.ApplicativePar)({
+      keypair: settings.generatePublicKey(),
+      settings: settings.update(getDefaultSettings()),
+    })();
+  } else if (details.reason === 'update') {
+    bkgLogger.debug('Extension update %O', details);
+  }
+});
 
 bo.runtime.onMessage.addListener(
   (request: MessageRequest, sender, sendResponse) => {
