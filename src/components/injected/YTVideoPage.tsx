@@ -78,7 +78,7 @@ export const YTVideoPage: React.FC = () => {
               />
               <Tab
                 className={classes.tab}
-                label={t('community:title')}
+                label={t('statistics:title')}
                 index={1}
               />
               <Tab

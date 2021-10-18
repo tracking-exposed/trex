@@ -1,6 +1,14 @@
-#main {
-  max-width: 600px;
-  min-width: 300px;
+@import url('./font.css');
+
+#ycai-popup {
+  font-family: 'Trex-Regular';
   width: 100%;
-  min-height: 100px;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+#ycai-popup body {
+  margin: 0;
+  padding: 0;
 }

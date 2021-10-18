@@ -7,41 +7,42 @@ import {
 export type CurrentView =
   | { view: 'studioEdit'; videoId: string }
   | { view: 'studio' }
-  | { view: 'community' }
+  | { view: 'statistics' }
   | { view: 'settings' }
   | { view: 'linkAccount' }
   | { view: 'index' };
 
 const studioEditRegex = /^\/studio\/([^/]+)$/;
-const studioRegex = /^\/studio$/;
-const communityRegex = /^\/community$/;
-const settingsRegex = /^\/settings$/;
-const linkAccountRegex = /^\/link-account$/;
+const studioRegex = /^\/studio\/$/;
+const statisticsRegex = /^\/statistics\/$/;
+const settingsRegex = /^\/settings\/$/;
+const linkAccountRegex = /^\/link-account\/$/;
 
 export function locationToView(location: HistoryLocation): CurrentView {
-  const studioEditViewMatch = location.pathname.match(studioEditRegex);
+  const { path: currentPath = '', ...search } = location.search;
+  const studioEditViewMatch = currentPath.match(studioEditRegex);
 
   if (studioEditViewMatch !== null) {
-    return { view: 'studioEdit', videoId: studioEditViewMatch[1] };
+    return { view: 'studioEdit', videoId: studioEditViewMatch[1], ...search };
   }
 
-  const studioViewMatch = location.pathname.match(studioRegex);
+  const studioViewMatch = currentPath.match(studioRegex);
 
   if (studioViewMatch !== null) {
     return { view: 'studio' };
   }
 
-  const communityMatch = location.pathname.match(communityRegex);
+  const communityMatch = currentPath.match(statisticsRegex);
   if (communityMatch !== null) {
-    return { view: 'community' };
+    return { view: 'statistics' };
   }
 
-  const settingsMatch = location.pathname.match(settingsRegex);
+  const settingsMatch = currentPath.match(settingsRegex);
   if (settingsMatch !== null) {
     return { view: 'settings' };
   }
 
-  const linkAccountMatch = location.pathname.match(linkAccountRegex);
+  const linkAccountMatch = currentPath.match(linkAccountRegex);
   if (linkAccountMatch !== null) {
     return { view: 'linkAccount' };
   }
@@ -52,15 +53,40 @@ export function locationToView(location: HistoryLocation): CurrentView {
 export function viewToLocation(view: CurrentView): HistoryLocation {
   switch (view.view) {
     case 'studioEdit':
-      return { pathname: `/studio/${view.videoId}`, search: {} };
+      return {
+        pathname: `index.html`,
+        search: {
+          path: `/studio/${view.videoId}`,
+        },
+      };
     case 'studio':
-      return { pathname: '/studio', search: {} };
-    case 'community':
-      return { pathname: '/community', search: {} };
+      return {
+        pathname: `index.html`,
+        search: {
+          path: '/studio/',
+        },
+      };
+    case 'statistics':
+      return {
+        pathname: `index.html`,
+        search: {
+          path: '/statistics/',
+        },
+      };
     case 'settings':
-      return { pathname: '/settings', search: {} };
+      return {
+        pathname: 'index.html',
+        search: {
+          path: '/settings/',
+        },
+      };
     case 'linkAccount':
-      return { pathname: '/link-account', search: {} };
+      return {
+        pathname: 'index.html',
+        search: {
+          path: '/link-account/',
+        },
+      };
     case 'index':
       return { pathname: '/index.html', search: {} };
   }

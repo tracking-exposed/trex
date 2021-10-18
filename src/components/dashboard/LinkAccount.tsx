@@ -4,6 +4,7 @@ import {
   Button,
   ButtonGroup,
   FormControl,
+  Grid,
   IconButton,
   Input,
   InputAdornment,
@@ -60,33 +61,38 @@ export const LinkAccount: React.FC<LinkAccountProps> = ({ auth }) => {
 
   if (auth === undefined) {
     return (
-      <Box display="flex" flexDirection="column">
-        <Typography color="secondary" variant="subtitle1">
-          {t('link_account:label')}
-        </Typography>
-        <FormControl>
-          <InputLabel htmlFor="creator-channel">
-            {t('account:channel')}
-          </InputLabel>
-          <Input
-            id="creator-channel"
-            ref={inputRef}
-            fullWidth={true}
-            value={creatorChannelValue}
-            onChange={(e) => setChannel(e.target.value)}
-            onKeyDown={onSubmit}
-          />
-          <ButtonGroup style={{ marginTop: 10 }}>
-            <Button
-              variant="outlined"
-              color="secondary"
-              onClick={handleChannelSubmit}
-            >
-              {t('actions:link_channel')}
-            </Button>
-          </ButtonGroup>
-        </FormControl>
-      </Box>
+      <Grid container style={{ width: '100%' }}>
+        <Grid item md={3} />
+        <Grid item md={6}>
+          <Box display="flex" flexDirection="column">
+            <Typography color="secondary" variant="subtitle1">
+              {t('link_account:label')}
+            </Typography>
+            <FormControl>
+              <InputLabel htmlFor="creator-channel">
+                {t('account:channel')}
+              </InputLabel>
+              <Input
+                id="creator-channel"
+                ref={inputRef}
+                fullWidth={true}
+                value={creatorChannelValue}
+                onChange={(e) => setChannel(e.target.value)}
+                onKeyDown={onSubmit}
+              />
+              <ButtonGroup style={{ marginTop: 10 }}>
+                <Button
+                  variant="outlined"
+                  color="secondary"
+                  onClick={handleChannelSubmit}
+                >
+                  {t('actions:link_channel')}
+                </Button>
+              </ButtonGroup>
+            </FormControl>
+          </Box>
+        </Grid>
+      </Grid>
     );
   }
 

@@ -1,6 +1,5 @@
 import * as QR from 'avenger/lib/QueryResult';
-import { useQueries } from 'avenger/lib/react';
-import { pipe } from 'fp-ts/lib/pipeable';
+import { WithQueries } from 'avenger/lib/react';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
 import { ccRelatedUsers } from '../../../state/creator.queries';
@@ -19,26 +18,25 @@ export const CCRelatedUserList: React.FC<CCRelatedUserListProps> = ({
   amount,
   skip,
 }) => {
-  const queries = useQueries(
-    { ccRelatedUsers },
-    { ccRelatedUsers: { params: { amount, skip } } }
-  );
   const { t } = useTranslation();
 
-  return pipe(
-    queries,
-    QR.fold(LazyFullSizeLoader, ErrorBox, ({ ccRelatedUsers }) => {
-      if (ccRelatedUsers.length === 0) {
-        return <EmptyList resource={t('creator:title')} />;
-      }
-      return (
-        <UserList
-          users={ccRelatedUsers}
-          onUserClick={() => {
-            alert('clicked');
-          }}
-        />
-      );
-    })
+  return (
+    <WithQueries
+      queries={{ ccRelatedUsers }}
+      params={{ ccRelatedUsers: { params: { amount, skip } } }}
+      render={QR.fold(LazyFullSizeLoader, ErrorBox, ({ ccRelatedUsers }) => {
+        if (ccRelatedUsers.length === 0) {
+          return <EmptyList resource={t('creator:title')} />;
+        }
+        return (
+          <UserList
+            users={ccRelatedUsers}
+            onUserClick={() => {
+              alert('clicked');
+            }}
+          />
+        );
+      })}
+    />
   );
 };

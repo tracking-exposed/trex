@@ -5,6 +5,15 @@ import { pipe } from 'fp-ts/lib/pipeable';
 import * as E from 'fp-ts/lib/Either';
 import { bkgLogger } from '../utils/logger.utils';
 
+export const toBrowserError = (e: unknown): chrome.runtime.LastError => {
+  // eslint-disable-next-line
+  bkgLogger.error('An error occured %O', e);
+  if (e instanceof Error) {
+    return { message: e.message };
+  }
+  return { message: 'Unknown error' };
+};
+
 export const catchRuntimeLastError = <A>(
   v: A
 ): TE.TaskEither<chrome.runtime.LastError, A> => {

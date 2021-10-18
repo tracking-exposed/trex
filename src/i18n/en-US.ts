@@ -24,7 +24,7 @@ const resources: CustomTypeOptions['resources'] = {
   },
   routes: {
     studio: 'Studio',
-    community: 'Community',
+    statistics: 'Statistics',
     settings: 'Settings',
     link_account: 'Link your account',
   },
@@ -34,13 +34,6 @@ const resources: CustomTypeOptions['resources'] = {
   },
   creator: {
     title: 'Creator',
-  },
-  community: {
-    title: 'Community',
-    subtitle: 'Statistics computed with resources from other users',
-    recommendability_score_title: 'Recommendability Score',
-    recommendability_score_subtitle:
-      'Where your videos appears as recommended?',
   },
   link_account: {
     title: 'Link your account',
@@ -64,6 +57,10 @@ const resources: CustomTypeOptions['resources'] = {
   popup: { version: 'version {{version}} build {{data}}' },
   statistics: {
     title: 'Statistics',
+    subtitle: 'Statistics computed with resources from other users',
+    recommendability_score_title: 'Recommendability Score',
+    recommendability_score_subtitle:
+      'Where your videos appears as recommended?',
     unique_watchers: 'Unique watchers',
     evidences_title: 'Evidences',
     notifications_title: 'Notifications',

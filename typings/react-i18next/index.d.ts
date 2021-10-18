@@ -1,4 +1,3 @@
-import { string } from 'fp-ts';
 import 'react-i18next';
 
 declare module 'react-i18next' {
@@ -31,12 +30,6 @@ declare module 'react-i18next' {
       creator: {
         title: string;
       };
-      community: {
-        title: string;
-        subtitle: string;
-        recommendability_score_title: string;
-        recommendability_score_subtitle: string;
-      };
       link_account: {
         title: string;
         subtitle: string;
@@ -63,6 +56,9 @@ declare module 'react-i18next' {
       };
       statistics: {
         title: string;
+        subtitle: string;
+        recommendability_score_title: string;
+        recommendability_score_subtitle: string;
         unique_watchers: string;
         evidences_title: string;
         notifications_title: string;
@@ -90,7 +86,7 @@ declare module 'react-i18next' {
       };
       routes: {
         studio: string;
-        community: string;
+        statistics: string;
         settings: string;
         link_account: string;
       };
