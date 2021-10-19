@@ -16,7 +16,8 @@
       "experiments": "experiments",
       "directives": "directives",
       "emails": "emails",
-      "tokens": "tokens"
+      "tokens": "tokens",
+      "creators": "creators"
   },
   "mongoHost": "localhost",
   "mongoPort": 27017,

@@ -351,7 +351,7 @@ async function fetchAndAnalyze(labelFilter) {
     stats.lastamount = stats.currentamount;
     stats.currentamount = _.size(labels.content);
 
-    console.log(labels.content);
+    // console.log(labels.content);
     const products = _.map(labels.content, processSearches);
     /* analysis is a list with [ [ video1@searchX, video2@searchX ], null, [ videos@searchY ] ] or 'null' this is why we need to compact asap */
     const effective = await extendAsExperiment(_.flatten(_.compact(products)));

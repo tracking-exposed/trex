@@ -174,6 +174,7 @@ async function creatorRegister(req) {
 
 async function creatorVerify(req) {
   const channelId = req.params.channelId;
+  debug("Fetching youtube while looking for a token!");
   const code = await curly.tokenFetch(channelId);
   debug("Code retrieved %s", code);
 
@@ -192,15 +193,10 @@ async function creatorVerify(req) {
     };
   }
   // verify user
-  await ycai.updateToken({ ...expectedToken, verified: true });
+  const creator = await ycai.updateToken({ ...expectedToken, verified: true });
 
   return {
-    json: {
-      token: expectedToken.token,
-      tokenString: `[youchoose:${expectedToken.token}]`,
-      channelId,
-      verified: true,
-    },
+    json: creator
   };
 
   // const titlesandId = await curly.experimentalFetch(channelId)
@@ -215,11 +211,28 @@ async function creatorVerify(req) {
   // return { json: titlesandId };
 }
 
-async function creatorGet(req, res) {
-  const channelId = req.params.channelId;
-  debug("Channel id %s", channelId);
-  const creator = await ycai.getCreatorByChannelId(channelId);
+async function creatorGet(req) {
+  // this is the /v3/creator/me query, it looks into 
+  // 'creators' mongodb collection.
+  const verificationToken = req.headers.verificationToken;
+  const channelId = req.headers.channelId;
+  console.log(req.headers, !channelId && !verificationToken)
+  if(!channelId && !verificationToken)
+    return { json: { error: true, message: "missing channelId or verificationToken in the header"}};
+
+  const filter = verificationToken ? {
+    token: verificationToken
+  } : { channelId };
+
+  debug("getCreator (by token or channel) %j", filter);
+  const creator = await ycai.getCreatorByFilter(filter);
   return { json: creator };
+}
+
+async function creatorDelete(req) {
+  // this function is invoked when a content creator wants to 
+  // delete every data on their belong
+  return true;
 }
 
 module.exports = {
@@ -232,4 +245,5 @@ module.exports = {
   creatorRegister,
   creatorVerify,
   creatorGet,
+  creatorDelete,
 };

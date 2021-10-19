@@ -201,7 +201,12 @@ async function getToken(filter) {
 async function updateToken(token) {
   const mongoc = await mongo3.clientConnect({ concurrency: 1 });
   debug("Update token for channelId %s with data %O", token);
-  await mongo3.updateOne(mongoc, nconf.get("schema").tokens, { type: token.type, input: token.input }, token);
+  const retrieved = await mongo3.writeOne(mongoc,
+    nconf.get("schema").tokens,
+    { type: token.type, input: token.input }, token);
+  console.log(retrieved);
+  await mongoc.close()
+  return creator;
 }
 
 async function registerVideos(videol, channelId) {
@@ -229,14 +234,29 @@ async function registerVideos(videol, channelId) {
   // no return value here
 }
 
-async function getCreatorByChannelId(channelId) {
-  return {
+async function getCreatorByFilter(filter) {
+  // this function might be executed to query the 
+  // state of a content creator. it might be 
+  // fully authenticated, or not. the filter 
+  // works on creators and tokens, considering the 
+  // token are going to expire automatically.
+  const mongoc = await mongo3.clientConnect({ concurrency: 1 });
+  const creator = await mongo3
+    .readOne(mongoc, nconf.get("schema").creators, filter);
+  const token = await mongo3
+    .readOne(mongoc, nconf.get("schema").tokens, filter);
+  debug("getCreatorByFilter via %j: found %j / %j",
+    filter, creator, token);
+  // TODO assume anyone knows channelId or token.
+  await mongoc.close();
+  return { ...creator, ...token };
+  /* {
     id: "default-user-id",
     channelId: "fake-channel-id",
     username: "default-user",
     avatar: "http://placekitten.com/600/500",
     verified: false,
-  };
+  } */
 }
 
 module.exports = {
@@ -250,6 +270,6 @@ module.exports = {
   generateToken,
   getToken,
   registerVideos,
-  getCreatorByChannelId,
+  getCreatorByFilter,
   updateToken,
 };
