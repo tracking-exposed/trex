@@ -1,7 +1,9 @@
-import { endpoints as Creator } from './creator.endpoints';
+import { endpoints as Creator } from "./creator.endpoints";
+import { endpoints as Public } from "./public.endpoints";
 
 export const Endpoints = {
-  creator: Creator,
+  Public,
+  Creator,
 };
 
 export type Endpoints = typeof Endpoints;
