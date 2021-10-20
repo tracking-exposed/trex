@@ -1,7 +1,7 @@
 import * as t from "io-ts";
 import { Endpoint } from "ts-endpoint";
 import { HandshakeBody } from "../../models/HandshakeBody";
-import { Recommendation } from "../../models/Recommendation";
+import { GetRecommendationsParams, GetRecommendationsQuery, Recommendation } from "../../models/Recommendation";
 
 
 
@@ -28,7 +28,8 @@ const GetRecommendations = Endpoint({
   Method: "POST",
   getPath: ({ ids }) => `/v3/recommendations/${ids}`,
   Input: {
-    Params: t.type({ ids: t.string }),
+    Query: GetRecommendationsQuery,
+    Params: GetRecommendationsParams,
   },
   Output: t.array(Recommendation),
 });

@@ -5,6 +5,11 @@ const fetchOpengraph = require("fetch-opengraph");
 
 const ycai = require("../lib/ycai");
 const curly = require("../lib/curly");
+const utils = require("../utils/decode.utils");
+const {
+  GetRecommendationsParams,
+  GetRecommendationsQuery,
+} = require("../models/Recommendation");
 
 async function byVideoId(req) {
   /* this function can be invoked in two ways: POST or GET */
@@ -86,8 +91,25 @@ async function videoByCreator(req) {
 async function getRecommendationById(req) {
   // this is a public function, anyone can query a recommandation detail
   // this function support a single Id or a list of IDs
-  const ids = req.params.id.split(",");
-  const recomms = await ycai.recommendationById(ids);
+  const paramsResult = utils.decode(req.params, GetRecommendationsParams);
+  debug("params result %O", paramsResult);
+  if (paramsResult.error) {
+    return {
+      json: paramsResult,
+    };
+  }
+  const ids = paramsResult.result.ids.split(",");
+
+  const queryResult = utils.decode(req.query, GetRecommendationsQuery);
+  debug("query result %O", queryResult);
+  if (queryResult.error) {
+    return {
+      json: queryResult,
+    };
+  }
+
+  const limit = queryResult.result.limit;
+  const recomms = await ycai.recommendationById(ids, limit);
   debug("getRecommendationById (%d ids) found %d", ids.length, recomms.length);
   return { json: recomms };
 }
