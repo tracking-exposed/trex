@@ -180,7 +180,8 @@ async function generateToken(seed, expireISOdate) {
   const r = await mongo3.writeOne(mongoc, nconf.get("schema").tokens, {
     ...seed,
     token,
-    exporeAt: new Date(expireISOdate),
+    verified: false,
+    expireAt: new Date(expireISOdate),
   });
   await mongoc.close();
   return token;
@@ -189,12 +190,38 @@ async function generateToken(seed, expireISOdate) {
 async function getToken(filter) {
   // TODO a channelId should be a unique key in the collection
   const mongoc = await mongo3.clientConnect({ concurrency: 1 });
-  debug("This is the token %s for %j", token, seed);
   if (!filter.type) throw new Error("Filter need to contain .type");
   const r = await mongo3.readOne(mongoc, nconf.get("schema").tokens, filter);
   debug("getToken with %j: %s", filter, r && r.type ? r.token : "Not Found");
   await mongoc.close();
   return r;
+}
+
+async function confirmCreator(token, creatorInfo) {
+  const mongoc = await mongo3.clientConnect({ concurrency: 1 });
+  const r = await mongo3.deleteMany(mongoc,
+    nconf.get("schema").tokens, { input: token.input });
+  if(r.result.ok != 1)
+    debug("Error? not found token to remove for channelId %s", token.input);
+  
+  const creator = {
+    channelId: token.input,
+    registeredOn: new Date(),
+    ...creatorInfo,
+    accessToken: "ACTK" + utils.hash({
+      ...token,
+      x: _.random(0, 0xffff)
+    })
+  }
+  const x = await mongo3.writeOne(mongoc,
+    nconf.get("schema").creators, creator);
+  await mongoc.close();
+
+  if(x.result.ok != 1) {
+    debug("Error? unable to write creator on the DB");
+    throw new Error("Unable to write creator in the DB");
+  }
+  return creator;
 }
 
 async function registerVideos(videol, channelId) {
@@ -222,14 +249,26 @@ async function registerVideos(videol, channelId) {
   // no return value here
 }
 
-async function getCreatorByChannelId(channelId) {
-  return {
-    id: "default-user-id",
-    channelId: "fake-channel-id",
-    username: "default-user",
-    avatar: "http://placekitten.com/600/500",
-    verified: false,
-  };
+async function getCreatorByFilter(filter) {
+  // this function might be executed to query the 
+  // state of a content creator. it might be 
+  // fully authenticated, or not. the filter 
+  // works on creators and tokens, considering the 
+  // token are going to expire automatically.
+  const mongoc = await mongo3.clientConnect({ concurrency: 1 });
+  const creator = await mongo3
+    .readOne(mongoc, nconf.get("schema").creators, filter);
+  const token = await mongo3
+    .readOne(mongoc, nconf.get("schema").tokens, filter);
+  await mongoc.close();
+
+  debug("getCreatorByFilter via %j: found %j / %j",
+    filter, creator, token);
+
+  if(creator) 
+    return { ...creator, verified: true };
+  else
+    return token;
 }
 
 module.exports = {
@@ -243,5 +282,6 @@ module.exports = {
   generateToken,
   getToken,
   registerVideos,
-  getCreatorByChannelId,
+  getCreatorByFilter,
+  confirmCreator,
 };
