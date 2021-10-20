@@ -83,6 +83,7 @@ const resources: CustomTypeOptions['resources'] = {
     contributeToIndipendentStatsHint:
       'Donate anonymously what Youtube recommends and advertises you',
     api_list_title: 'API List',
+    encrypted_contributions_private_key: 'You can download your private key in dashboard.'
   },
   ytVideoPage: {
     firstTab: 'Creator Raccomendations',

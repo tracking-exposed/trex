@@ -73,6 +73,7 @@ declare module 'react-i18next' {
         contributeToIndipendentStatsLabel: string;
         contributeToIndipendentStatsHint: string;
         api_list_title: string
+        encrypted_contributions_private_key: string;
       };
       videos: {
         no_results: string;

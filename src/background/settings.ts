@@ -1,9 +1,12 @@
 import * as E from 'fp-ts/lib/Either';
 import { pipe } from 'fp-ts/lib/pipeable';
 import * as TE from 'fp-ts/lib/TaskEither';
-import { BackgroundSettingsResponse } from '../models/MessageResponse';
+import {
+  BackgroundKeypairResponse,
+  BackgroundSettingsResponse
+} from '../models/MessageResponse';
 import { Keypair, Settings } from '../models/Settings';
-import { makePublicKey } from '../providers/security.provider';
+import { security } from '../providers/bs58.provider';
 import db from './db';
 
 export const SETTINGS_NAMESPACE = 'local';
@@ -18,45 +21,22 @@ export function get(): TE.TaskEither<
     TE.map((response) => ({ type: 'settings', response }))
   );
 }
-// export function serverLookup<A>(
-//   payload: A
-// ): TE.TaskEither<chrome.runtime.LastError, ServerLookupResponse> {
-//   /* remoteLookup might be call as first function after the extension has been
-//    * installed, and the keys not be yet instanciated */
 
-//   return pipe(
-//     userLookup(),
-//     TE.chain(() =>
-//       pipe(
-//         TE.tryCatch(() => api.handshake(payload, SETTINGS_NAMESPACE), E.toError),
-//         TE.fold(
-//           (e) =>
-//             T.of(
-//               E.right<chrome.runtime.LastError, ServerLookupResponse>({
-//                 type: 'handshakeError',
-//                 response: e,
-//               })
-//             ),
-//           (r) =>
-//             T.of(
-//               E.right<chrome.runtime.LastError, ServerLookupResponse>({
-//                 type: 'handshakeResponse',
-//                 response: r,
-//               })
-//             )
-//         ),
-//         TE.chain(catchRuntimeLastError)
-//       )
-//     )
-//   );
-// }
-export function generatePublicKey(): TE.TaskEither<
+export function getKeypair(): TE.TaskEither<
   chrome.runtime.LastError,
-  Keypair
+  BackgroundKeypairResponse
 > {
   return pipe(
-    db.get(PUBLIC_PAIRKEY),
-    TE.chain(() => makePublicKey('')),
+    db.get<Keypair>(PUBLIC_PAIRKEY),
+    TE.map((response) => ({ type: 'keypair', response }))
+  );
+}
+
+export function generatePublicKeypair(
+  secretKey: string
+): TE.TaskEither<chrome.runtime.LastError, Keypair> {
+  return pipe(
+    security.makeKeypair(secretKey),
     TE.chain((pairkey) => db.set(PUBLIC_PAIRKEY, pairkey))
   );
 }

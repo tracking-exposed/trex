@@ -1,5 +1,5 @@
 import { AuthResponse } from '@backend/models/Auth';
-import { Settings } from './Settings';
+import { Keypair, Settings } from './Settings';
 
 export type SyncResponse =
   | {
@@ -29,6 +29,11 @@ export interface BackgroundAuthResponse {
 export interface BackgroundSettingsResponse {
   type: 'settings'
   response: Settings | undefined
+}
+
+export interface BackgroundKeypairResponse {
+  type: 'keypair'
+  response: Keypair | undefined
 }
 
 export type MessageResponse =

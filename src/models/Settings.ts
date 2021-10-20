@@ -21,7 +21,7 @@ export const Settings = t.strict(
     active: t.boolean,
     ccRecommendations: t.boolean,
     communityRecommendations: t.boolean,
-    stats: t.boolean,
+    indipendentContributions: t.boolean,
     svg: t.boolean,
     videorep: t.boolean,
     playhide: t.boolean,

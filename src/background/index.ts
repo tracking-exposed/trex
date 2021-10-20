@@ -1,12 +1,15 @@
 import { sequenceS } from 'fp-ts/lib/Apply';
 import * as E from 'fp-ts/lib/Either';
+import { pipe } from 'fp-ts/lib/pipeable';
 import * as TE from 'fp-ts/lib/TaskEither';
 import { config } from '../config';
 import {
-  GetAuth, GetSettings,
+  GetAuth,
+  GetSettings,
   MessageRequest,
   ReloadExtension,
-  UpdateAuth, UpdateSettings
+  UpdateAuth,
+  UpdateSettings,
 } from '../models/MessageRequest';
 import { MessageResponse } from '../models/MessageResponse';
 import { Settings } from '../models/Settings';
@@ -25,7 +28,7 @@ const getDefaultSettings = (): Settings => ({
   ux: false,
   communityRecommendations: false,
   alphabeth: false,
-  stats: false,
+  indipendentContributions: false,
   channelCreatorId: null,
   edit: null,
 });
@@ -54,12 +57,24 @@ bo.runtime.onInstalled.addListener((details) => {
   if (details.reason === 'install') {
     bkgLogger.debug('Extension installed %O', details);
     // create default settings
-    void sequenceS(TE.ApplicativePar)({
-      keypair: settings.generatePublicKey(),
-      settings: settings.update(getDefaultSettings()),
-    })();
+    void pipe(
+      sequenceS(TE.ApplicativePar)({
+        keypair: settings.generatePublicKeypair("789098765456789876543456789765434567898765456789"),
+        settings: settings.update(getDefaultSettings()),
+      })
+    )();
   } else if (details.reason === 'update') {
     bkgLogger.debug('Extension update %O', details);
+    void pipe(
+      sequenceS(TE.ApplicativeSeq)({
+        keypair: settings.generatePublicKeypair("987656909876546ijhgr568ijhgr56uiklo9876trdwe45tyhnmkoiuyg"),
+        settings: settings.getKeypair(),
+      }),
+      TE.map(({ keypair, settings }) => {
+        bkgLogger.debug(`Update %O`, { keypair, settings });
+        return undefined;
+      })
+    )();
   }
 });
 

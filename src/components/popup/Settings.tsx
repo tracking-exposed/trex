@@ -101,14 +101,16 @@ const Settings: React.FC<SettingsProps> = ({ settings }) => {
       <FormControl component="fieldset">
         <FormControlLabel
           className={classes.noMargin}
-          disabled={!settings.active}
+          disabled={!settings.indipendentContributions}
           control={
             <Switch
               className={classes.marginRight}
               aria-labelledby="switch-stats"
               color="primary"
-              checked={settings.stats}
-              onChange={(e, b) => updateSettings({ ...settings, stats: b })()}
+              checked={settings.indipendentContributions}
+              onChange={(e, b) =>
+                updateSettings({ ...settings, indipendentContributions: b })()
+              }
             />
           }
           label={
@@ -119,6 +121,12 @@ const Settings: React.FC<SettingsProps> = ({ settings }) => {
               <Typography variant="body2" display="block">
                 {t('settings:contributeToIndipendentStatsHint')}
               </Typography>
+              <br />
+              {settings.indipendentContributions ? (
+                <Typography color="primary" variant="body2">
+                  {t('settings:encrypted_contributions_private_key')}
+                </Typography>
+              ) : null}
             </FormLabel>
           }
           labelPlacement="end"
