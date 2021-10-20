@@ -199,11 +199,13 @@ app.get('/api/v2/guardoni/:experiment/:botname', (req, res) => dispatchPromise('
 /* security checks = is the password set and is not the default? (more checks might come) */
 security.checkKeyIsSet();
 
-Promise.resolve().then(function() {
-    if(dbutils.checkMongoWorks()) {
-        debug("mongodb connection works");
-    } else {
-        console.log("mongodb is not running - check", cfgFile," - quitting");
+Promise.resolve().then(async function() {
+    const success = await dbutils.checkMongoWorks();
+    if(success)
+        debug("mongodb connection works!");
+    else {
+        console.log("mongodb is not running: quitting");
+        console.log("config derived", nconf.get('mongoDb'));
         process.exit(1);
     }
 });
