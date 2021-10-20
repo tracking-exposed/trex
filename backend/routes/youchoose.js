@@ -174,16 +174,16 @@ async function creatorRegister(req) {
 
 async function creatorVerify(req) {
   const channelId = req.params.channelId;
-  debug("Fetching youtube while looking for a token!");
-  const code = await curly.tokenFetch(channelId);
-  debug("Code retrieved %s", code);
+  debug("Fetching youtube.com while looking for the token string!");
+  const pageData = await curly.tokenFetch(channelId);
+  debug("Code retrieved %s", pageData.code);
 
   const expectedToken = await ycai.getToken({
     type: "channel",
     input: channelId,
   });
 
-  if (expectedToken.token != code) {
+  if (expectedToken.token != pageData.code) {
     debug("Validation fail: %s != %s", expectedToken.token, code);
     return {
       json: {
@@ -192,23 +192,23 @@ async function creatorVerify(req) {
       },
     };
   }
-  // verify user
-  const creator = await ycai.updateToken({ ...expectedToken, verified: true });
 
-  return {
-    json: creator
-  };
-
-  // const titlesandId = await curly.experimentalFetch(channelId)
-  // // TODO this also has to return any kind of description string
-  // if(!titlesandId) {
-  //   debug("Failure in extracting video details from channel %s", channelId);
-  //   return { json: { error: true, message: "Failure in extracting info from YouTube; investigate"}}
-  // } else
-  //   debug("Success in fetching initial video list via curly! %d", titlesandId.length);
-
-  // await ycai.registerVideos(titlesandId, channelId);
-  // return { json: titlesandId };
+  try {
+    // two action happens in this function:
+    // 1) remove the token
+    // 2) create a 'creator' entry with the new auth material
+    const creator = await ycai.confirmCreator({...expectedToken}, pageData);
+    return {
+      json: creator
+    };
+  } catch(error) {
+    return {
+      json: {
+        error: true,
+        message: error.message,
+      }
+    }
+  }
 }
 
 async function creatorGet(req) {
@@ -216,7 +216,6 @@ async function creatorGet(req) {
   // 'creators' mongodb collection.
   const verificationToken = req.headers.verificationToken;
   const channelId = req.headers.channelId;
-  console.log(req.headers, !channelId && !verificationToken)
   if(!channelId && !verificationToken)
     return { json: { error: true, message: "missing channelId or verificationToken in the header"}};
 

@@ -190,7 +190,6 @@ async function generateToken(seed, expireISOdate) {
 async function getToken(filter) {
   // TODO a channelId should be a unique key in the collection
   const mongoc = await mongo3.clientConnect({ concurrency: 1 });
-  debug("This is the token %s for %j", filter);
   if (!filter.type) throw new Error("Filter need to contain .type");
   const r = await mongo3.readOne(mongoc, nconf.get("schema").tokens, filter);
   debug("getToken with %j: %s", filter, r && r.type ? r.token : "Not Found");
@@ -198,14 +197,30 @@ async function getToken(filter) {
   return r;
 }
 
-async function updateToken(token) {
+async function confirmCreator(token, creatorInfo) {
   const mongoc = await mongo3.clientConnect({ concurrency: 1 });
-  debug("Update token for channelId %s with data %O", token);
-  const retrieved = await mongo3.writeOne(mongoc,
-    nconf.get("schema").tokens,
-    { type: token.type, input: token.input }, token);
-  console.log(retrieved);
-  await mongoc.close()
+  const r = await mongo3.deleteMany(mongoc,
+    nconf.get("schema").tokens, { input: token.input });
+  if(r.result.ok != 1)
+    debug("Error? not found token to remove for channelId %s", token.input);
+  
+  const creator = {
+    channelId: token.input,
+    registeredOn: new Date(),
+    ...creatorInfo,
+    accessToken: "ACTK" + utils.hash({
+      ...token,
+      x: _.random(0, 0xffff)
+    })
+  }
+  const x = await mongo3.writeOne(mongoc,
+    nconf.get("schema").creators, creator);
+  await mongoc.close();
+
+  if(x.result.ok != 1) {
+    debug("Error? unable to write creator on the DB");
+    throw new Error("Unable to write creator in the DB");
+  }
   return creator;
 }
 
@@ -245,18 +260,15 @@ async function getCreatorByFilter(filter) {
     .readOne(mongoc, nconf.get("schema").creators, filter);
   const token = await mongo3
     .readOne(mongoc, nconf.get("schema").tokens, filter);
+  await mongoc.close();
+
   debug("getCreatorByFilter via %j: found %j / %j",
     filter, creator, token);
-  // TODO assume anyone knows channelId or token.
-  await mongoc.close();
-  return { ...creator, ...token };
-  /* {
-    id: "default-user-id",
-    channelId: "fake-channel-id",
-    username: "default-user",
-    avatar: "http://placekitten.com/600/500",
-    verified: false,
-  } */
+
+  if(creator) 
+    return { ...creator, verified: true };
+  else
+    return token;
 }
 
 module.exports = {
@@ -271,5 +283,5 @@ module.exports = {
   getToken,
   registerVideos,
   getCreatorByFilter,
-  updateToken,
+  confirmCreator,
 };
