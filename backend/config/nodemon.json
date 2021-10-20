@@ -1,9 +1,12 @@
 {
   "watch": [
-    "lib/*.js",
-    "routes/*.js",
-    "bin/*.js",
+    "bin/**",
+    "endpoints/**",
+    "lib/**",
+    "models/**",
+    "routes/**",
+    "utils/**",
     "node_modules/**"
   ],
-  "ext": "js"
+  "ext": "js,ts"
 }
