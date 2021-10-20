@@ -11,7 +11,7 @@ import { auth } from '../../state/creator.queries';
 import { CurrentView, currentView } from '../../utils/location.utils';
 import { ErrorBox } from '../common/ErrorBox';
 import { LazyFullSizeLoader } from '../common/FullSizeLoader';
-import Advanced from './Advanced';
+import Settings from './Settings';
 import { StatisticsPage } from './community/StatisticsPage';
 import { LinkAccount } from './LinkAccount';
 import { Sidebar } from './Sidebar';
@@ -50,7 +50,7 @@ const DashboardContent: React.FC<DashboardContentProps> = ({
       switch (currentView.view) {
         case 'settings':
           // eslint-disable-next-line react/jsx-key
-          return [t('routes:settings'), '', <Advanced />];
+          return [t('routes:settings'), '', <Settings />];
         case 'linkAccount':
         case 'studioEdit':
         case 'studio': {

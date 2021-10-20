@@ -36,8 +36,15 @@ export interface BackgroundKeypairResponse {
   response: Keypair | undefined
 }
 
+export interface ErrorResponse {
+  type: 'error';
+  response: chrome.runtime.LastError
+}
+
 export type MessageResponse =
   | ServerLookupResponse
   | SyncResponse
+  | BackgroundKeypairResponse
   | BackgroundSettingsResponse
-  | BackgroundAuthResponse;
+  | BackgroundAuthResponse
+  | ErrorResponse;

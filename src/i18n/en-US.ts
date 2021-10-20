@@ -21,6 +21,8 @@ const resources: CustomTypeOptions['resources'] = {
     verify_channel: 'Verify channel',
     verify_channel_hint:
       "Copy the code below and add it to your YouTube channel's description",
+    delete_keypair: 'Delete keypair',
+    download_keypair: 'Download keypair',
   },
   routes: {
     studio: 'Studio',
@@ -83,7 +85,11 @@ const resources: CustomTypeOptions['resources'] = {
     contributeToIndipendentStatsHint:
       'Donate anonymously what Youtube recommends and advertises you',
     api_list_title: 'API List',
-    encrypted_contributions_private_key: 'You can download your private key in dashboard.'
+    encrypted_contributions_private_key: 'You can download your private key in dashboard.',
+    keypair_passphrase: 'Key pair passphrase',
+    keypair_private_key: 'Key pair secret key',
+    keypair_public_key: 'Key pair public key',
+    keypair_title: 'Keypair for indipendent contribution'
   },
   ytVideoPage: {
     firstTab: 'Creator Raccomendations',

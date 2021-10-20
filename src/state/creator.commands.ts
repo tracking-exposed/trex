@@ -3,9 +3,8 @@ import { command } from 'avenger';
 import * as E from 'fp-ts/lib/Either';
 import { pipe } from 'fp-ts/lib/function';
 import * as TE from 'fp-ts/lib/TaskEither';
-import { Settings } from '../models/Settings';
 import { doUpdateCurrentView } from '../utils/location.utils';
-import { UpdateAuth, UpdateSettings } from '../models/MessageRequest';
+import { UpdateAuth } from '../models/MessageRequest';
 import { API } from '../providers/api.provider';
 import { sendMessage, toBrowserError } from '../providers/browser.provider';
 import {
@@ -60,12 +59,6 @@ export const updateRecommendationForVideo = command(
     settings,
     videoRecommendations,
   }
-);
-
-export const updateSettings = command(
-  (payload: Settings) =>
-    sendMessage({ type: UpdateSettings.value, payload: payload }),
-  { accountSettings: settings, creatorRecommendations, creatorVideos }
 );
 
 export const verifyChannel = command(

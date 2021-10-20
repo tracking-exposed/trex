@@ -1,4 +1,4 @@
-import { updateSettings } from '../../state/creator.commands';
+import { updateSettings } from '../../state/public.commands';
 import { settings } from '../../state/public.queries';
 import { ErrorBox } from '../common/ErrorBox';
 import {

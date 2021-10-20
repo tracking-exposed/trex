@@ -1,8 +1,8 @@
-import { bo } from '../utils/browser.utils';
-import { MessageRequest } from '../models/MessageRequest';
-import * as TE from 'fp-ts/lib/TaskEither';
-import { pipe } from 'fp-ts/lib/pipeable';
 import * as E from 'fp-ts/lib/Either';
+import { pipe } from 'fp-ts/lib/pipeable';
+import * as TE from 'fp-ts/lib/TaskEither';
+import { MessageRequest } from '../models/MessageRequest';
+import { bo } from '../utils/browser.utils';
 import { bkgLogger } from '../utils/logger.utils';
 
 export const toBrowserError = (e: unknown): chrome.runtime.LastError => {
@@ -10,6 +10,12 @@ export const toBrowserError = (e: unknown): chrome.runtime.LastError => {
   bkgLogger.error('An error occured %O', e);
   if (e instanceof Error) {
     return { message: e.message };
+  }
+
+  if (e !== undefined) {
+    if ((e as any).message !== undefined) {
+      return { message: (e as any).message };
+    }
   }
   return { message: 'Unknown error' };
 };
@@ -25,9 +31,9 @@ export const catchRuntimeLastError = <A>(
   return TE.right(v);
 };
 
-export const sendMessage = <R>(
+export const sendMessage = <R extends { type: string; response: any }>(
   r: MessageRequest
-): TE.TaskEither<chrome.runtime.LastError, R> =>
+): TE.TaskEither<chrome.runtime.LastError, R['response']> =>
   pipe(
     TE.tryCatch(
       () =>
@@ -36,5 +42,11 @@ export const sendMessage = <R>(
         }),
       E.toError
     ),
-    TE.chain(catchRuntimeLastError)
+    TE.chain(catchRuntimeLastError),
+    TE.chain((r) => {
+      if (r.type === 'error') {
+        return TE.left(toBrowserError(r.response));
+      }
+      return TE.right(r.response);
+    })
   );

@@ -2,9 +2,13 @@ import { sequenceS } from 'fp-ts/lib/Apply';
 import * as E from 'fp-ts/lib/Either';
 import { pipe } from 'fp-ts/lib/pipeable';
 import * as TE from 'fp-ts/lib/TaskEither';
+import { toBrowserError } from 'providers/browser.provider';
 import { config } from '../config';
 import {
+  DeleteKeypair,
+  GenerateKeypair,
   GetAuth,
+  GetKeypair,
   GetSettings,
   MessageRequest,
   ReloadExtension,
@@ -37,8 +41,15 @@ const getMessageHandler = (
   r: MessageRequest
 ): TE.TaskEither<chrome.runtime.LastError, MessageResponse> => {
   switch (r.type) {
+    // keypair
+    case GetKeypair.value:
+      return settings.getKeypair();
+    case DeleteKeypair.value:
+      return settings.deleteKeypair();
     case GetSettings.value:
       return settings.get();
+    case GenerateKeypair.value:
+      return settings.generatePublicKeypair('');
     // case RecommendationsFetch.value:
     //   return settings.serverLookup(r.payload);
     case UpdateSettings.value:
@@ -49,7 +60,12 @@ const getMessageHandler = (
     case UpdateAuth.value:
       return auth.update(r.payload);
     default:
-      return TE.right({} as any);
+      return TE.right({
+        type: 'error',
+        response: toBrowserError(
+          new Error(`Message type ${r.type} does not exist.`)
+        ),
+      });
   }
 };
 
@@ -59,20 +75,29 @@ bo.runtime.onInstalled.addListener((details) => {
     // create default settings
     void pipe(
       sequenceS(TE.ApplicativePar)({
-        keypair: settings.generatePublicKeypair("789098765456789876543456789765434567898765456789"),
+        keypair: settings.generatePublicKeypair(''),
         settings: settings.update(getDefaultSettings()),
       })
     )();
   } else if (details.reason === 'update') {
-    bkgLogger.debug('Extension update %O', details);
     void pipe(
-      sequenceS(TE.ApplicativeSeq)({
-        keypair: settings.generatePublicKeypair("987656909876546ijhgr568ijhgr56uiklo9876trdwe45tyhnmkoiuyg"),
-        settings: settings.getKeypair(),
-      }),
-      TE.map(({ keypair, settings }) => {
-        bkgLogger.debug(`Update %O`, { keypair, settings });
-        return undefined;
+      sequenceS(TE.ApplicativePar)({
+        keypair: pipe(
+          settings.getKeypair(),
+          TE.chain((r) =>
+            r.response === undefined
+              ? settings.generatePublicKeypair('')
+              : TE.right(r)
+          )
+        ),
+        settings: pipe(
+          settings.get(),
+          TE.chain((r) =>
+            r.response === undefined
+              ? settings.update(getDefaultSettings())
+              : TE.right(r)
+          )
+        ),
       })
     )();
   }
@@ -92,6 +117,7 @@ bo.runtime.onMessage.addListener(
     getMessageHandler(request)()
       .then((r) => {
         if (E.isRight(r)) {
+          bkgLogger.debug('Response for request %s: %O', request.type, r.right);
           return sendResponse(r.right);
         }
 

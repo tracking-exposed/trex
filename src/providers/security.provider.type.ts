@@ -3,5 +3,6 @@ import { Keypair } from 'models/Settings';
 
 
 export interface SecurityProvider {
-  makeKeypair: (secretKey: string) => TE.TaskEither<chrome.runtime.LastError, Keypair>
+  makeKeypair: (passphrase: string) => TE.TaskEither<chrome.runtime.LastError, Keypair>,
+  makeToken: (date: Date, secretKey: string) => TE.TaskEither<chrome.runtime.LastError, string> 
 }

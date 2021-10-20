@@ -40,8 +40,7 @@ export const auth = queryStrict(
       TE.map((r) => {
         apiLogger.debug('Get auth %O', r);
         return r;
-      }),
-      TE.map((r) => r.response)
+      })
     ),
   available
 );

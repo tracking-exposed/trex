@@ -25,12 +25,12 @@ export const makeKeypair = (
   );
 };
 
-export const encrypt = (
-  message: string,
-  password: string
+const makeToken = (
+  date: Date,
+  secretKey: string
 ): TE.TaskEither<Error, string> => {
-  const keys = JSON.stringify({ password });
-  const data = JSON.stringify({ message });
+  const keys = JSON.stringify({ secretKey });
+  const data = JSON.stringify({ date });
   const contract = `Scenario 'ecdh': Encrypt a message with a password/secret
       Given that I have a 'string' named 'password'
       and that I have a 'string' named 'message'
@@ -40,10 +40,13 @@ export const encrypt = (
   return pipe(
     TE.tryCatch(() => zencode_exec(contract, { data, keys, conf }), E.toError),
     TE.map((r) => {
-      console.log(r);
+      bkgLogger.debug(`Make token result: %O`, r);
       return r.result;
     })
   );
 };
 
-export const security: SecurityProvider = { makeKeypair };
+export const security: SecurityProvider = {
+  makeKeypair,
+  makeToken,
+};

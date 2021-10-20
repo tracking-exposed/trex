@@ -1,11 +1,11 @@
-import { updateSettings } from '../../state/creator.commands';
-import { FormLabel, Typography, Divider, makeStyles } from '@material-ui/core';
+import { Divider, FormLabel, makeStyles, Typography } from '@material-ui/core';
 import FormControl from '@material-ui/core/FormControl';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Switch from '@material-ui/core/Switch';
 import * as React from 'react';
-import * as models from '../../models';
 import { useTranslation } from 'react-i18next';
+import * as models from '../../models';
+import { generateKeypair, updateSettings } from '../../state/public.commands';
 
 const useStyles = makeStyles((theme) => ({
   divider: {
@@ -32,6 +32,7 @@ interface SettingsProps {
 const Settings: React.FC<SettingsProps> = ({ settings }) => {
   const { t } = useTranslation();
   const classes = useStyles();
+
   return (
     <>
       {/* <FormHelperText className={classes.smallTitle}>{t('recommendations:title')}</FormHelperText> */}
@@ -97,20 +98,26 @@ const Settings: React.FC<SettingsProps> = ({ settings }) => {
       <br />
       <Divider className={classes.divider} />
 
-      {/* <FormHelperText className={classes.smallTitle}>{t('statistics:title')}</FormHelperText> */}
       <FormControl component="fieldset">
         <FormControlLabel
           className={classes.noMargin}
-          disabled={!settings.indipendentContributions}
+          disabled={!settings.active}
           control={
             <Switch
               className={classes.marginRight}
-              aria-labelledby="switch-stats"
+              aria-labelledby="switch-indipendentContributions"
               color="primary"
               checked={settings.indipendentContributions}
-              onChange={(e, b) =>
-                updateSettings({ ...settings, indipendentContributions: b })()
-              }
+              onChange={(e, indipendentContributions) => {
+                if (indipendentContributions) {
+                  void generateKeypair({})();
+                }
+
+                void updateSettings({
+                  ...settings,
+                  indipendentContributions,
+                })();
+              }}
             />
           }
           label={
