@@ -176,13 +176,13 @@ async function updateRecommendations(videoId, recommendations) {
 async function generateToken(seed, expireISOdate) {
   const token = utils.hash({ token: seed });
   const mongoc = await mongo3.clientConnect({ concurrency: 1 });
-  debug("This is the token %s for %j", token, seed);
   const r = await mongo3.writeOne(mongoc, nconf.get("schema").tokens, {
     ...seed,
     token,
     verified: false,
     expireAt: new Date(expireISOdate),
   });
+  debug("Generated token %s for %j (result %O)", token, seed, r.result);
   await mongoc.close();
   return token;
 }
@@ -197,20 +197,25 @@ async function getToken(filter) {
   return r;
 }
 
-async function confirmCreator(token, creatorInfo) {
+async function confirmCreator(tokeno, creatorInfo) {
+  // this function create 'creator' entry and means the
+  // user is not VERIFIED. therefore has full access to
+  // YCAI recommendation control.
   const mongoc = await mongo3.clientConnect({ concurrency: 1 });
+
+  // assume tokeno.type === 'channel'
   const r = await mongo3.deleteMany(mongoc,
-    nconf.get("schema").tokens, { input: token.input });
+    nconf.get("schema").tokens, { input: tokeno.input });
   if(r.result.ok != 1)
     debug("Error? not found token to remove for channelId %s", token.input);
-  
+
+  _.unset(creatorInfo, 'code');
   const creator = {
     channelId: token.input,
     registeredOn: new Date(),
     ...creatorInfo,
     accessToken: "ACTK" + utils.hash({
-      ...token,
-      x: _.random(0, 0xffff)
+      random: _.random(0, 0xffffff)
     })
   }
   const x = await mongo3.writeOne(mongoc,
@@ -265,10 +270,29 @@ async function getCreatorByFilter(filter) {
   debug("getCreatorByFilter via %j: found %j / %j",
     filter, creator, token);
 
-  if(creator) 
-    return { ...creator, verified: true };
-  else
-    return token;
+  if(creator) {
+    return {
+      ...creator,
+      verified: true,
+      verificationToken: null,
+    }
+  } else if(token) {
+    return {
+      channelId: token.input,
+      verificationToken: token.token,
+      verified: false,
+      username: undefined,
+      avatar: undefined,
+      accessToken: undefined,
+      url: undefined,
+      registeredOn: undefined,
+    }
+  } else {
+    return {
+      error: true,
+      message: "Not found"
+    }
+  }
 }
 
 module.exports = {

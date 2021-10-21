@@ -175,7 +175,7 @@ async function creatorRegister(req) {
 
   const expireAt = moment().add(1, "month").toISOString();
   const token = await ycai.generateToken(
-    { input: channelId, type, verified: false },
+    { input: channelId, type },
     expireAt
   );
 
@@ -200,13 +200,13 @@ async function creatorVerify(req) {
   const pageData = await curly.tokenFetch(channelId);
   debug("Code retrieved %s", pageData.code);
 
-  const expectedToken = await ycai.getToken({
+  const tokeno = await ycai.getToken({
     type: "channel",
     input: channelId,
   });
 
-  if (expectedToken.token != pageData.code) {
-    debug("Validation fail: %s != %s", expectedToken.token, code);
+  if (tokeno.token != pageData.code) {
+    debug("Validation fail: %s != %s", tokeno.token, pageData.code);
     return {
       json: {
         error: true,
@@ -219,7 +219,7 @@ async function creatorVerify(req) {
     // two action happens in this function:
     // 1) remove the token
     // 2) create a 'creator' entry with the new auth material
-    const creator = await ycai.confirmCreator({...expectedToken}, pageData);
+    const creator = await ycai.confirmCreator(tokeno, pageData);
     return {
       json: creator
     };
@@ -242,7 +242,7 @@ async function creatorGet(req) {
     return { json: { error: true, message: "missing channelId or verificationToken in the header"}};
 
   const filter = verificationToken ? {
-    token: verificationToken
+    verificationToken
   } : { channelId };
 
   debug("getCreator (by token or channel) %j", filter);

@@ -9,8 +9,7 @@
     "start:ts": "DEBUG=*,-body-parser:*,-express:*,-lib:mongo ts-node bin/server",
     "parserv": "DEBUG=*,-parser:home:warning node bin/parserv2.js",
     "searches": "DEBUG=* node bin/searches.js",
-    "t:lib": "mocha tests/lib/*",
-    "test": "mocha tests/basic/*",
+    "test": "mocha --require ts-node/register tests/*/*",
     "campaigns": "node bin/campaignUpdater.js --dest https://youtube.tracking.exposed"
   },
   "author": "Claudio Agosti <claudio@tracking.exposed> and https://github.com/tracking-exposed/yttrex/graphs/contributors",

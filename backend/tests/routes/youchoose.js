@@ -30,6 +30,8 @@ describe("Testing the token request", function() {
   it("Request a token", async function() {
     const result = await youchoose.creatorRegister(registerRequest);
     expect(result.json.token).to.be.a("string");
+    expect(result.json.token.length).to.be.equal(40)
+    expect(result.json.tokenString).to.be.a("string");
     verificationToken = _.get(result.json, 'token');
 
     /* this should happen */
@@ -40,14 +42,23 @@ describe("Testing the token request", function() {
     }
   }).timeout(10000);
 
-  it("The creator should not be verified yet", async function() {
+  it("The creator should not be verified yet (test by Token)", async function() {
     /* by invoking creatorGet a creator would retrieved 
      * information on their channel. The filter might be 
      * composed by verificationToken or by channelId, and 
      * must be in the header */
     const result = await youchoose.creatorGet({
       headers: {
-        verificationToken: "5f094abf391c0ab6ca9092998dd29868dadb9835",
+        verificationToken: "4b891ee8a88f1907b317f0d896eb92af5dea9dfc",
+      }
+    });
+    expect(result.json.verified).to.be.false;
+  }).timeout(10000);
+
+  it("The creator should not be verified yet (test by Channel)", async function() {
+    const result = await youchoose.creatorGet({
+      headers: {
+        channelId: "UCbaf8gVrbDzolaeMtP3-XhA",
       }
     });
     expect(result.json.verified).to.be.false;
