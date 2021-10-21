@@ -280,7 +280,7 @@ function sequenceForPublicationTime(D, blang, clientTime) {
         if(!mobj.isValid()) {
             debug("Fatal error in deducing format and extrating publicationTime from |%s| with %s\n%j do some googleHappinessCheck ;)",
                 publicationString, blang, moment.monthsShort());
-            process.exit(2);
+            throw new Error("Failure in spotting format");
         }
         nlpdebug("publicationString parsing complete %s\t=>\t%s", publicationString, mobj.format());
 
