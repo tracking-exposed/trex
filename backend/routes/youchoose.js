@@ -5,7 +5,7 @@ const fetchOpengraph = require("fetch-opengraph");
 
 const ycai = require("../lib/ycai");
 const curly = require("../lib/curly");
-const utils = require("../utils/decode.utils");
+const decode = require("../lib/decode");
 const {
   GetRecommendationsParams,
   GetRecommendationsQuery,
@@ -91,7 +91,7 @@ async function videoByCreator(req) {
 async function getRecommendationById(req) {
   // this is a public function, anyone can query a recommandation detail
   // this function support a single Id or a list of IDs
-  const paramsResult = utils.decode(req.params, GetRecommendationsParams);
+  const paramsResult = decode.decode(req.params, GetRecommendationsParams);
   debug("params result %O", paramsResult);
   if (paramsResult.error) {
     return {
@@ -100,7 +100,7 @@ async function getRecommendationById(req) {
   }
   const ids = paramsResult.result.ids.split(",");
 
-  const queryResult = utils.decode(req.query, GetRecommendationsQuery);
+  const queryResult = decode.decode(req.query, GetRecommendationsQuery);
   debug("query result %O", queryResult);
   if (queryResult.error) {
     return {
