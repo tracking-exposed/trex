@@ -34,7 +34,7 @@ const VerifyCreator = Endpoint({
   Input: {
     Params: t.type({ channelId: t.string }),
   },
-  Output: AuthResponse,
+  Output: ContentCreator,
 });
 
 const CreatorVideos = Endpoint({

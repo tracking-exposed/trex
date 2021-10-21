@@ -1,12 +1,16 @@
 import * as t from 'io-ts';
+import { DateFromISOString } from 'io-ts-types/lib/DateFromISOString';
 
 export const ContentCreator = t.strict(
   {
-    id: t.string,
+    _id: t.string,
     channelId: t.string,
     username: t.string,
     avatar: t.string,
-    verified: t.boolean
+    accessToken: t.string,
+    url: t.string,
+    code: t.string,
+    registeredOn: DateFromISOString,
   },
   'ContentCreator'
 );
