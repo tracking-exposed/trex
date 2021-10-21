@@ -5,7 +5,7 @@ import { pipe } from 'fp-ts/lib/pipeable';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
 import { updateAuth } from '../../state/creator.commands';
-import { profile, auth } from '../../state/creator.queries';
+import { auth, localProfile } from '../../state/creator.queries';
 import { ErrorBox } from '../common/ErrorBox';
 import { LazyFullSizeLoader } from '../common/FullSizeLoader';
 import { LinkAccountButton } from 'components/common/LinkAccountButton';
@@ -22,31 +22,38 @@ export const LoggedUserProfileBox: React.FC<LoggedUserProfileBoxProps> = ({
   return (
     <WithQueries
       queries={{
-        profile,
+        localProfile,
       }}
-      render={QR.fold(LazyFullSizeLoader, ErrorBox, ({ profile }) => {
-        return (
-          <Box display="flex" alignItems="center">
-            <Avatar src={profile.avatar} style={{ marginRight: 10 }} />
-            <Box
-              display="flex"
-              flexDirection="column"
-              style={{ marginRight: 20 }}
-            >
-              <Typography variant="subtitle1">{profile.channelId}</Typography>
-              <Typography variant="caption">{profile.channelId}</Typography>
-              <Button
-                color="secondary"
-                variant="outlined"
-                size="small"
-                onClick={() => onLogout()}
+      render={QR.fold(
+        LazyFullSizeLoader,
+        ErrorBox,
+        ({ localProfile: profile }) => {
+          if (profile === undefined) {
+            return null;
+          }
+          return (
+            <Box display="flex" alignItems="center">
+              <Avatar src={profile.avatar} style={{ marginRight: 10 }} />
+              <Box
+                display="flex"
+                flexDirection="column"
+                style={{ marginRight: 20 }}
               >
-                {t('actions:unlink_channel')}
-              </Button>
+                <Typography variant="subtitle1">{profile.channelId}</Typography>
+                <Typography variant="caption">{profile.channelId}</Typography>
+                <Button
+                  color="secondary"
+                  variant="outlined"
+                  size="small"
+                  onClick={() => onLogout()}
+                >
+                  {t('actions:unlink_channel')}
+                </Button>
+              </Box>
             </Box>
-          </Box>
-        );
-      })}
+          );
+        }
+      )}
     />
   );
 };

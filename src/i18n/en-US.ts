@@ -7,6 +7,7 @@ const resources: CustomTypeOptions['resources'] = {
     empty_list: 'No {{resource}} found.',
   },
   actions: {
+    popup_bootstrap: 'Bootstrap',
     add: 'Add',
     link_channel: 'Link channel',
     unlink_channel: 'Unlink channel',

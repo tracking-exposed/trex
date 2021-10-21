@@ -12,8 +12,7 @@ import {
 import { pipe } from 'fp-ts/lib/function';
 import * as TE from 'fp-ts/lib/TaskEither';
 import * as t from 'io-ts';
-import { GetAuth } from '../models/MessageRequest';
-import { BackgroundAuthResponse } from '../models/MessageResponse';
+import { Messages } from '../models/Messages';
 import { API, APIError } from '../providers/api.provider';
 import { sendMessage } from '../providers/browser.provider';
 import { apiLogger } from '../utils/logger.utils';
@@ -36,7 +35,7 @@ const throwOnMissingAuth = (
 export const auth = queryStrict(
   () =>
     pipe(
-      sendMessage<BackgroundAuthResponse>({ type: GetAuth.value }),
+      sendMessage(Messages.GetAuth)(),
       TE.map((r) => {
         apiLogger.debug('Get auth %O', r);
         return r;
@@ -46,6 +45,18 @@ export const auth = queryStrict(
 );
 
 // content creator
+
+export const localProfile = queryStrict(
+  () =>
+    pipe(
+      sendMessage(Messages.GetContentCreator)(),
+      TE.map((r) => {
+        apiLogger.debug('Get profile %O', r);
+        return r;
+      })
+    ),
+  available
+);
 
 export const profile = compose(
   product({ auth }),
@@ -95,7 +106,10 @@ export const creatorVideos = compose(
 export const recommendedChannels = compose(
   product({ settings, params: param() }),
   queryStrict(({ settings, params }) => {
-    if (settings.channelCreatorId !== null) {
+    if (
+      settings?.channelCreatorId !== undefined &&
+      settings?.channelCreatorId !== null
+    ) {
       return API.request(
         {
           url: `/v3/profile/recommendations/${settings.channelCreatorId}`,

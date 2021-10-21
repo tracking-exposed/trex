@@ -1,7 +1,5 @@
-import { updateSettings } from '../../state/public.commands';
-import { settings } from '../../state/public.queries';
-import { ErrorBox } from '../common/ErrorBox';
 import {
+  Box,
   Button,
   Card,
   CardActions,
@@ -15,20 +13,24 @@ import {
 import { Alert, AlertTitle } from '@material-ui/lab';
 import * as QR from 'avenger/lib/QueryResult';
 import { declareQueries } from 'avenger/lib/react';
+import { getDefaultSettings } from 'background';
 import { formatDistance } from 'date-fns';
 import parseISO from 'date-fns/parseISO';
 import { pipe } from 'fp-ts/lib/function';
 import React from 'react';
-import { config } from '../../config';
-import Settings from './Settings';
 import { useTranslation } from 'react-i18next';
+import { config } from '../../config';
+import { updateSettings } from '../../state/public.commands';
+import { popupSettings } from '../../state/public.queries';
+import { ErrorBox } from '../common/ErrorBox';
+import Settings from './Settings';
 
 const useStyles = makeStyles((theme) => ({
   container: {
     width: '100%',
     padding: theme.spacing(2),
     boxSizing: 'border-box',
-    maxWidth: 400
+    maxWidth: 400,
   },
   content: {
     marginBottom: theme.spacing(2),
@@ -66,7 +68,7 @@ const PopupLoader: React.FC = () => {
   );
 };
 
-const withQueries = declareQueries({ settings: settings });
+const withQueries = declareQueries({ popupSettings });
 
 export const Popup = withQueries(({ queries }) => {
   const { t } = useTranslation();
@@ -86,7 +88,7 @@ export const Popup = withQueries(({ queries }) => {
     QR.fold(
       () => <PopupLoader />,
       ErrorBox,
-      ({ settings }) => {
+      ({ popupSettings: settings }) => {
         return (
           <Card className={classes.container}>
             <CardContent className={classes.content}>
@@ -102,17 +104,19 @@ export const Popup = withQueries(({ queries }) => {
                   </a>
                 </Grid>
 
-                <Grid item xs={1} />
                 <Grid item xs={4}>
                   <FormControlLabel
                     className={classes.switchFormControl}
                     control={
                       <Switch
                         color="primary"
-                        checked={settings.active}
+                        checked={settings?.active ?? false}
                         size="small"
                         onChange={(e, c) =>
-                          updateSettings({ ...settings, active: c })()
+                          updateSettings({
+                            ...(settings ?? getDefaultSettings()),
+                            active: c,
+                          })()
                         }
                       />
                     }
@@ -126,7 +130,15 @@ export const Popup = withQueries(({ queries }) => {
                   </Typography>
                 </Grid>
               </Grid>
-              <Settings settings={settings} />
+              {settings === undefined ? (
+                <Box>
+                  <Button onClick={updateSettings(getDefaultSettings())}>
+                    {t('actions:popup_bootstrap')}
+                  </Button>
+                </Box>
+              ) : (
+                <Settings settings={settings} />
+              )}
             </CardContent>
 
             <CardActions>

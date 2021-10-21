@@ -1,6 +1,6 @@
 import { HandshakeBody } from '@backend/models/HandshakeBody';
 import { command } from 'avenger';
-import { DeleteKeypair, GenerateKeypair, UpdateSettings } from '../models/MessageRequest';
+import { Messages } from '../models/Messages';
 import { Settings } from '../models/Settings';
 import { API } from '../providers/api.provider';
 import { sendMessage } from '../providers/browser.provider';
@@ -11,21 +11,20 @@ export const handshake = command((handshake: HandshakeBody) =>
 );
 
 export const generateKeypair = command(
-  () => sendMessage({ type: GenerateKeypair.value }),
+  () => sendMessage(Messages.GenerateKeypair)(),
   {
     keypair,
   }
 );
 
 export const deleteKeypair = command(
-  () => sendMessage({ type: DeleteKeypair.value }),
+  () => sendMessage(Messages.DeleteKeypair)(),
   {
     keypair,
   }
 );
 
 export const updateSettings = command(
-  (payload: Settings) =>
-    sendMessage({ type: UpdateSettings.value, payload: payload }),
+  (payload: Settings) => sendMessage(Messages.UpdateSettings)(payload),
   { settings, keypair }
 );

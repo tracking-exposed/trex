@@ -1,7 +1,7 @@
 import * as E from 'fp-ts/lib/Either';
 import { pipe } from 'fp-ts/lib/pipeable';
 import * as TE from 'fp-ts/lib/TaskEither';
-import { MessageRequest } from '../models/MessageRequest';
+import { ErrorOccured, Messages } from '../models/Messages';
 import { bo } from '../utils/browser.utils';
 import { bkgLogger } from '../utils/logger.utils';
 
@@ -31,22 +31,27 @@ export const catchRuntimeLastError = <A>(
   return TE.right(v);
 };
 
-export const sendMessage = <R extends { type: string; response: any }>(
-  r: MessageRequest
-): TE.TaskEither<chrome.runtime.LastError, R['response']> =>
-  pipe(
-    TE.tryCatch(
-      () =>
-        new Promise<R>((resolve) => {
-          bo.runtime.sendMessage<any, R>(r, resolve);
-        }),
-      E.toError
-    ),
-    TE.chain(catchRuntimeLastError),
-    TE.chain((r) => {
-      if (r.type === 'error') {
-        return TE.left(toBrowserError(r.response));
-      }
-      return TE.right(r.response);
-    })
-  );
+export const sendMessage =
+  <R extends Messages[keyof Messages]>(r: R) =>
+  (
+    p?: R['Request']['payload']
+  ): TE.TaskEither<chrome.runtime.LastError, R['Response']['response']> =>
+    pipe(
+      TE.tryCatch(
+        () =>
+          new Promise<R['Response']>((resolve) => {
+            bo.runtime.sendMessage<R['Request'], R['Response']>(
+              { type: r.Request.type, payload: p },
+              resolve
+            );
+          }),
+        E.toError
+      ),
+      TE.chain(catchRuntimeLastError),
+      TE.chain((result) => {
+        if (result.type === ErrorOccured.value) {
+          return TE.left(toBrowserError(result.response));
+        }
+        return TE.right(result.response);
+      })
+    );

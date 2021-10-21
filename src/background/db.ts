@@ -4,14 +4,16 @@ import { bo } from '../utils/browser.utils';
 import { pipe } from 'fp-ts/lib/function';
 import { getAssignSemigroup } from 'fp-ts/lib/struct';
 import { catchRuntimeLastError } from '../providers/browser.provider';
-import { bkgLogger } from '../utils/logger.utils';
+import { GetLogger } from '../utils/logger.utils';
+
+const dbLogger = GetLogger('db');
 
 const backend = bo.storage.local;
 
 const backendGet = (
   keys: string | string[]
 ): TE.TaskEither<chrome.runtime.LastError, Record<string, any>> => {
-  bkgLogger.debug(`Getting %O from local storage`, keys);
+  dbLogger.debug(`Getting %O from local storage`, keys);
   return pipe(
     TE.tryCatch(
       () =>
@@ -28,7 +30,7 @@ const backendSet = <A>(
   key: string,
   value: A
 ): TE.TaskEither<chrome.runtime.LastError, void> => {
-  bkgLogger.debug(`Save ${JSON.stringify(value)} as ${key}`);
+  dbLogger.debug(`Save ${JSON.stringify(value)} as ${key}`);
   return pipe(
     TE.tryCatch(() => backend.set({ [key]: value }), E.toError),
     TE.chain(catchRuntimeLastError)
@@ -41,7 +43,7 @@ function get<A>(
   return pipe(
     backendGet([key]),
     TE.map((val) => {
-      bkgLogger.debug('DB: value for key %s %O', key, val);
+      dbLogger.debug('DB: value for key %s %O', key, val);
       return val;
     }),
     TE.map((val) => val?.[key])
@@ -63,7 +65,7 @@ function update<A extends object>(
   value: A | undefined
 ): TE.TaskEither<chrome.runtime.LastError, A | undefined> {
   const S = getAssignSemigroup<A>();
-  bkgLogger.debug(`Update key %s with data: %O`, key, value);
+  dbLogger.debug(`Update key %s with data: %O`, key, value);
   return pipe(
     get<A>(key),
     TE.chain((val) =>

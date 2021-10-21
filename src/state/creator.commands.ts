@@ -3,16 +3,16 @@ import { command } from 'avenger';
 import * as E from 'fp-ts/lib/Either';
 import { pipe } from 'fp-ts/lib/function';
 import * as TE from 'fp-ts/lib/TaskEither';
-import { doUpdateCurrentView } from '../utils/location.utils';
-import { UpdateAuth } from '../models/MessageRequest';
+import {
+  Messages
+} from '../models/Messages';
 import { API } from '../providers/api.provider';
 import { sendMessage, toBrowserError } from '../providers/browser.provider';
+import { doUpdateCurrentView } from '../utils/location.utils';
 import {
-  ccRelatedUsers,
+  auth, ccRelatedUsers,
   creatorRecommendations,
-  creatorVideos,
-  auth,
-  profile
+  creatorVideos, profile
 } from './creator.queries';
 import { settings, videoRecommendations } from './public.queries';
 
@@ -24,10 +24,7 @@ export const registerCreatorChannel = command(
         Body: { type: 'channel' },
       }),
       TE.chainFirst((payload) => {
-        return sendMessage({
-          type: UpdateAuth.value,
-          payload,
-        });
+        return sendMessage(Messages.UpdateAuth)(payload);
       })
     ),
   {
@@ -65,22 +62,20 @@ export const verifyChannel = command(
   ({ channelId }: { channelId: string }) =>
     pipe(
       API.Creator.VerifyCreator({ Params: { channelId } }),
-      TE.chain((auth) => updateAuth(auth))
+      TE.chain(sendMessage(Messages.UpdateContentCreator))
     ),
   {
     profile,
+    auth,
   }
 );
 
 export const updateAuth = command(
   (payload?: AuthResponse) =>
     pipe(
-      sendMessage({ type: UpdateAuth.value, payload }),
+      sendMessage(Messages.UpdateAuth)(payload),
       TE.chain(() =>
-        pipe(
-          doUpdateCurrentView({ view: 'index' }),
-          TE.mapLeft(toBrowserError)
-        )
+        pipe(doUpdateCurrentView({ view: 'index' }), TE.mapLeft(toBrowserError))
       )
     ),
   {

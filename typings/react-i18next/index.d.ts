@@ -9,6 +9,7 @@ declare module 'react-i18next' {
         empty_list: string;
       };
       actions: {
+        popup_bootstrap: string;
         add: string;
         delete: string;
         clear: string;

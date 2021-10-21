@@ -1,31 +1,38 @@
 import { Recommendation } from '@backend/models/Recommendation';
-import { available, queryShallow, queryStrict, refetch } from 'avenger';
-import { pipe } from 'fp-ts/lib/function';
-import * as TE from 'fp-ts/lib/TaskEither';
-import { API } from '../providers/api.provider';
-import { GetKeypair, GetSettings } from '../models/MessageRequest';
 import {
-  BackgroundKeypairResponse,
-  BackgroundSettingsResponse,
-} from '../models/MessageResponse';
-import { Settings } from '../models/Settings';
+  available,
+  compose,
+  product,
+  queryShallow,
+  queryStrict,
+  refetch,
+} from 'avenger';
+import { pipe } from 'fp-ts/lib/pipeable';
+import * as TE from 'fp-ts/lib/TaskEither';
+import { Settings } from 'models/Settings';
+import { Messages } from '../models/Messages';
+import { API } from '../providers/api.provider';
 import { sendMessage, toBrowserError } from '../providers/browser.provider';
 
-export const CREATOR_CHANNEL_KEY = 'creator-channel';
-export const CURRENT_VIDEO_ON_EDIT = 'current-video-on-edit';
-
-export const settings = queryShallow(() => {
-  return pipe(
-    sendMessage<BackgroundSettingsResponse>({ type: GetSettings.value }),
-    TE.filterOrElse(
-      (r): r is Settings => r !== undefined,
-      () => toBrowserError(new Error())
-    )
-  );
+export const popupSettings = queryShallow(() => {
+  return sendMessage(Messages.GetSettings)();
 }, available);
 
+export const settings = compose(
+  product({ popupSettings }),
+  queryShallow(({ popupSettings }) => {
+    return pipe(
+      popupSettings,
+      TE.fromPredicate(
+        (r): r is Settings => r !== undefined,
+        () => toBrowserError(new Error())
+      )
+    );
+  }, available)
+);
+
 export const keypair = queryStrict(() => {
-  return sendMessage<BackgroundKeypairResponse>({ type: GetKeypair.value });
+  return sendMessage(Messages.GetKeypair)();
 }, refetch);
 
 // public

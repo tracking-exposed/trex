@@ -5,25 +5,27 @@ import * as TE from 'fp-ts/lib/TaskEither';
 import { toBrowserError } from 'providers/browser.provider';
 import { config } from '../config';
 import {
-  DeleteKeypair,
+  ErrorOccured,
   GenerateKeypair,
   GetAuth,
+  GetContentCreator,
   GetKeypair,
   GetSettings,
-  MessageRequest,
+  Messages,
+  MessageType,
   ReloadExtension,
   UpdateAuth,
+  UpdateContentCreator,
   UpdateSettings,
-} from '../models/MessageRequest';
-import { MessageResponse } from '../models/MessageResponse';
-import { Settings } from '../models/Settings';
+} from '../models/Messages';
+import { Keypair, Settings } from '../models/Settings';
 import { bo } from '../utils/browser.utils';
 import { bkgLogger } from '../utils/logger.utils';
-import { auth } from './auth';
+import db from './db';
 import * as development from './reloadExtension';
 import * as settings from './settings';
 
-const getDefaultSettings = (): Settings => ({
+export const getDefaultSettings = (): Settings => ({
   active: true,
   ccRecommendations: true,
   svg: false,
@@ -37,31 +39,55 @@ const getDefaultSettings = (): Settings => ({
   edit: null,
 });
 
-const getMessageHandler = (
-  r: MessageRequest
-): TE.TaskEither<chrome.runtime.LastError, MessageResponse> => {
+const SETTINGS_KEY = 'settings';
+const AUTH_KEY = 'auth';
+const CONTENT_CREATOR = 'content-creator';
+
+export const getStorageKey = (type: string): string => {
+  switch (type) {
+    case GetKeypair.value:
+      return settings.PUBLIC_KEYPAIR;
+    case GetSettings.value:
+    case UpdateSettings.value:
+      return SETTINGS_KEY;
+    case GetAuth.value:
+    case UpdateAuth.value:
+      return AUTH_KEY;
+    case GetContentCreator.value:
+    case UpdateContentCreator.value:
+      return CONTENT_CREATOR;
+    default:
+      return '';
+  }
+};
+
+const getMessageHandler = <M extends Messages[keyof Messages]>(
+  r: M['Request']
+): TE.TaskEither<chrome.runtime.LastError, M['Response']> => {
   switch (r.type) {
     // keypair
-    case GetKeypair.value:
-      return settings.getKeypair();
-    case DeleteKeypair.value:
-      return settings.deleteKeypair();
-    case GetSettings.value:
-      return settings.get();
     case GenerateKeypair.value:
       return settings.generatePublicKeypair('');
-    // case RecommendationsFetch.value:
-    //   return settings.serverLookup(r.payload);
-    case UpdateSettings.value:
-      return settings.update(r.payload);
-    // auth
+    // gets
+    case GetSettings.value:
+    case GetKeypair.value:
     case GetAuth.value:
-      return auth.get();
+    case GetContentCreator.value:
+      return pipe(
+        db.get<any>(getStorageKey(r.type)),
+        TE.map((response) => ({ type: r.type, response }))
+      );
+    // updates
+    case UpdateContentCreator.value:
+    case UpdateSettings.value:
     case UpdateAuth.value:
-      return auth.update(r.payload);
+      return pipe(
+        db.update(getStorageKey(r.type), r.payload),
+        TE.map((response): M['Response'] => ({ type: r.type as any, response }))
+      );
     default:
       return TE.right({
-        type: 'error',
+        type: ErrorOccured.value,
         response: toBrowserError(
           new Error(`Message type ${r.type} does not exist.`)
         ),
@@ -76,25 +102,35 @@ bo.runtime.onInstalled.addListener((details) => {
     void pipe(
       sequenceS(TE.ApplicativePar)({
         keypair: settings.generatePublicKeypair(''),
-        settings: settings.update(getDefaultSettings()),
+        settings: db.update(UpdateSettings.value, getDefaultSettings()),
       })
     )();
   } else if (details.reason === 'update') {
     void pipe(
       sequenceS(TE.ApplicativePar)({
         keypair: pipe(
-          settings.getKeypair(),
-          TE.chain((r) =>
-            r.response === undefined
-              ? settings.generatePublicKeypair('')
-              : TE.right(r)
+          db.get<Keypair>(getStorageKey(GetKeypair.value)),
+          TE.chain(
+            (
+              r
+            ): TE.TaskEither<
+              chrome.runtime.LastError,
+              | Messages['GenerateKeypair']['Response']
+              | Messages['GetKeypair']['Response']
+            > =>
+              r === undefined
+                ? settings.generatePublicKeypair('')
+                : TE.right({ type: GetKeypair.value, response: r })
           )
         ),
         settings: pipe(
-          settings.get(),
+          db.get<Settings>(getStorageKey(GetSettings.value)),
           TE.chain((r) =>
-            r.response === undefined
-              ? settings.update(getDefaultSettings())
+            r === undefined
+              ? db.update(
+                  getStorageKey(GetSettings.value),
+                  getDefaultSettings()
+                )
               : TE.right(r)
           )
         ),
@@ -104,7 +140,7 @@ bo.runtime.onInstalled.addListener((details) => {
 });
 
 bo.runtime.onMessage.addListener(
-  (request: MessageRequest, sender, sendResponse) => {
+  (request: MessageType<any, any, any>, sender, sendResponse) => {
     // eslint-disable-next-line no-console
     bkgLogger.debug('message received', request, sender);
 

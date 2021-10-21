@@ -1,70 +1,17 @@
-import * as E from 'fp-ts/lib/Either';
 import { pipe } from 'fp-ts/lib/function';
 import * as TE from 'fp-ts/lib/TaskEither';
-import {
-  BackgroundKeypairResponse,
-  BackgroundSettingsResponse,
-} from '../models/MessageResponse';
-import { Keypair, Settings } from '../models/Settings';
+import { Messages } from 'models/Messages';
 import { security } from '../providers/bs58.provider';
 import db from './db';
 
-export const SETTINGS_NAMESPACE = 'local';
 export const PUBLIC_KEYPAIR = 'public-keypair';
-
-export function getKeypair(): TE.TaskEither<
-  chrome.runtime.LastError,
-  BackgroundKeypairResponse
-> {
-  return pipe(
-    db.get<Keypair>(PUBLIC_KEYPAIR),
-    TE.map((response) => ({ type: 'keypair', response }))
-  );
-}
-
-export function deleteKeypair(): TE.TaskEither<
-  chrome.runtime.LastError,
-  BackgroundKeypairResponse
-> {
-  return pipe(
-    db.update<Keypair>(PUBLIC_KEYPAIR, undefined),
-    TE.map((response) => ({ type: 'keypair', response }))
-  );
-}
 
 export function generatePublicKeypair(
   passphrase: string
-): TE.TaskEither<chrome.runtime.LastError, BackgroundKeypairResponse> {
+): TE.TaskEither<chrome.runtime.LastError, Messages['GenerateKeypair']['Response']> {
   return pipe(
     security.makeKeypair(passphrase),
     TE.chain((keypair) => db.set(PUBLIC_KEYPAIR, keypair)),
-    TE.map((response) => ({ type: 'keypair', response }))
-  );
-}
-
-export function get(): TE.TaskEither<
-  chrome.runtime.LastError,
-  BackgroundSettingsResponse
-> {
-  return pipe(
-    db.get<Settings>(SETTINGS_NAMESPACE),
-    TE.map((response) => ({ type: 'settings', response }))
-  );
-}
-
-export function update(
-  payload: Settings | undefined
-): TE.TaskEither<chrome.runtime.LastError, BackgroundSettingsResponse> {
-  return pipe(
-    db.update(SETTINGS_NAMESPACE, payload),
-    TE.chain((r) =>
-      TE.fromEither(
-        pipe(
-          Settings.decode(r),
-          E.mapLeft((e) => e as any as chrome.runtime.LastError)
-        )
-      )
-    ),
-    TE.map((response) => ({ type: 'settings', response }))
+    TE.map((response) => ({ type: Messages.GenerateKeypair.Response.type, response }))
   );
 }

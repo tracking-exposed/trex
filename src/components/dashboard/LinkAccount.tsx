@@ -21,6 +21,8 @@ import {
   verifyChannel,
 } from '../../state/creator.commands';
 
+const youtubeChannelUrlRegex = /^https:\/\/www.youtube.com\/channel\/([^/]+)$/;
+
 interface LinkAccountProps {
   auth?: AuthResponse;
 }
@@ -31,6 +33,18 @@ export const LinkAccount: React.FC<LinkAccountProps> = ({ auth }) => {
   const [showPopup, setShowPopup] = React.useState(false);
 
   const inputRef = React.useRef<HTMLInputElement>(null);
+
+  const handleChannelChange: React.ChangeEventHandler<
+    HTMLInputElement | HTMLTextAreaElement
+  > = (e) => {
+    const youtubeChannelUrlMatch = e.target.value.match(youtubeChannelUrlRegex);
+    if (youtubeChannelUrlMatch !== null) {
+      setChannel(youtubeChannelUrlMatch[1]);
+      return;
+    }
+
+    setChannel(e.target.value);
+  };
 
   const onSubmit: React.KeyboardEventHandler<HTMLInputElement> = async (
     e
@@ -77,7 +91,7 @@ export const LinkAccount: React.FC<LinkAccountProps> = ({ auth }) => {
                 ref={inputRef}
                 fullWidth={true}
                 value={creatorChannelValue}
-                onChange={(e) => setChannel(e.target.value)}
+                onChange={handleChannelChange}
                 onKeyDown={onSubmit}
               />
               <ButtonGroup style={{ marginTop: 10 }}>
@@ -86,7 +100,8 @@ export const LinkAccount: React.FC<LinkAccountProps> = ({ auth }) => {
                   color="secondary"
                   onClick={handleChannelSubmit}
                 >
-                  {t('actions:link_channel')}
+                  {t('actions:link_channel')}{' '}
+                  {creatorChannelValue !== '' ? `(${creatorChannelValue})` : ''}
                 </Button>
               </ButtonGroup>
             </FormControl>
@@ -115,6 +130,10 @@ export const LinkAccount: React.FC<LinkAccountProps> = ({ auth }) => {
                   aria-label="toggle password visibility"
                   onClick={async () => {
                     await copyToClipboard(auth.tokenString)().then(() => {
+                      // open studio edit tab
+                      window.open(
+                        `https://studio.youtube.com/channel/${auth.channelId}/editing/details`
+                      );
                       setShowPopup(true);
                       setTimeout(() => {
                         setShowPopup(false);
