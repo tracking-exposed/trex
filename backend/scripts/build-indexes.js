@@ -49,6 +49,13 @@ ret = db.experiments.createIndex({ experimentId: -1}); checkret('experiments exp
 ret = db.experiments.createIndex({ publicKey: -1}); checkret('experiments publicKey', ret);
 ret = db.experiments.createIndex({ testTime: -1}, { expireAfterSeconds: 18 * 3600 }); checkret('experiments savingTime 18 hours TTL', ret);
 
+ret = db.tokens.createIndex({ channelId: 1 }, { unique: true }); checkret('tokens unique channelId', ret);
+ret = db.tokens.createIndex({ verificationToken: 1 }); checkret('tokens verificationToken', ret);
+ret = db.tokens.createIndex({ expireAt: -1}, { expireAfterSeconds: 7 * 24 * 3600 }); checkret('tokens expireAt expiring', ret);
+
+ret = db.creators.createIndex({ channelId: 1 }, { unique: true }); checkret('creators channelId', ret);
+ret = db.creators.createIndex({ accessToken: 1 }); checkret('creators accessToken', ret);
+
 ret = db.ads.createIndex({ metadataId: 1 }); checkret('ads metadataId', ret);
 ret = db.ads.createIndex({ savingTime: -1 }); checkret('ads savingTime', ret);
 ret = db.ads.createIndex({ id: 1 }, { unique: true }); checkret('ads id', ret);

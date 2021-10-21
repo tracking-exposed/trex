@@ -10,6 +10,7 @@ const {
   GetRecommendationsParams,
   GetRecommendationsQuery,
 } = require("../models/Recommendation");
+const { ContentCreator } = require("../models/ContentCreator");
 
 async function byVideoId(req) {
   /* this function can be invoked in two ways: POST or GET */
@@ -173,20 +174,18 @@ async function creatorRegister(req) {
       },
     };
 
-  const expireAt = moment().add(1, "month").toISOString();
-  const token = await ycai.generateToken(
-    { input: channelId, type },
+  const expireAt = moment().add(1, "week").toISOString();
+  const verificationToken = await ycai.generateToken(
+    { channelId, type },
     expireAt
   );
 
-  // remind self, if you change these hardcoded strings
-  // like YTTREX-ENC0DE, also change on lib/curly.js
-  const matchableToken = `[youchoose:${token}]`;
-
+  // remind self:
+  // if you change these hardcoded strings update lib/curly.js too
   return {
     json: {
-      token,
-      tokenString: matchableToken,
+      verificationToken,
+      tokenString: `[youchoose:${verificationToken}]`,
       channelId,
       expireAt,
       verified: false,
@@ -202,11 +201,11 @@ async function creatorVerify(req) {
 
   const tokeno = await ycai.getToken({
     type: "channel",
-    input: channelId,
+    channelId,
   });
 
-  if (tokeno.token != pageData.code) {
-    debug("Validation fail: %s != %s", tokeno.token, pageData.code);
+  if (tokeno.verificationToken != pageData.code) {
+    debug("Validation fail: %s != %s", tokeno.verificationToken, pageData.code);
     return {
       json: {
         error: true,
@@ -246,13 +245,20 @@ async function creatorGet(req) {
   } : { channelId };
 
   debug("getCreator (by token or channel) %j", filter);
-  const creator = await ycai.getCreatorByFilter(filter);
-  return { json: creator };
+  const infoavail = await ycai.getCreatorByFilter(filter);
+  const validatedc = decode.decode(infoavail, ContentCreator);
+
+  if(validatedc.error) {
+    debug("Invalid generated output for creatorGet %O", validatedc);
+    return { json: validatedc }
+  }
+  return { json: validatedc.result };
 }
 
 async function creatorDelete(req) {
   // this function is invoked when a content creator wants to 
   // delete every data on their belong
+  console.log("TODO: Not implemented nor yet specify")
   return true;
 }
 

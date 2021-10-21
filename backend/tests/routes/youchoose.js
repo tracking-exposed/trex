@@ -7,6 +7,8 @@ const youchoose = require('../../routes/youchoose');
 
 nconf.argv().env().file({ file: "config/settings.json" });
 
+const TMPRWRKR = 'UCbaf8gVrbDzolaeMtP3-XhA';
+
 /* This first check the capacity of load data and verify they are avail */
 describe("Testing the token request", function() {
 
@@ -18,7 +20,7 @@ describe("Testing the token request", function() {
       type: "channel",
     },
     params: {
-      channelId: "UCbaf8gVrbDzolaeMtP3-XhA",
+      channelId: TMPRWRKR,
     }
   };
 
@@ -49,7 +51,7 @@ describe("Testing the token request", function() {
      * must be in the header */
     const result = await youchoose.creatorGet({
       headers: {
-        verificationToken: "4b891ee8a88f1907b317f0d896eb92af5dea9dfc",
+        verificationToken: "e6d09bc0bdbeabe21da5d617aae43d8f5af72109",
       }
     });
     expect(result.json.verified).to.be.false;
@@ -58,7 +60,7 @@ describe("Testing the token request", function() {
   it("The creator should not be verified yet (test by Channel)", async function() {
     const result = await youchoose.creatorGet({
       headers: {
-        channelId: "UCbaf8gVrbDzolaeMtP3-XhA",
+        channelId: TMPRWRKR,
       }
     });
     expect(result.json.verified).to.be.false;
@@ -76,7 +78,7 @@ describe("Testing the token request", function() {
   it("Test creator/me when validated", async function() {
     const result = await youchoose.creatorGet({
       headers: {
-        channelId: 'UCbaf8gVrbDzolaeMtP3-XhA'
+        channelId: TMPRWRKR,
       }
     });
     expect(result.json.verified).to.be.true;

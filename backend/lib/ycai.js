@@ -174,26 +174,42 @@ async function updateRecommendations(videoId, recommendations) {
 }
 
 async function generateToken(seed, expireISOdate) {
-  const token = utils.hash({ token: seed });
+  const verificationToken = utils.hash({ token: seed });
   const mongoc = await mongo3.clientConnect({ concurrency: 1 });
-  const r = await mongo3.writeOne(mongoc, nconf.get("schema").tokens, {
-    ...seed,
-    token,
-    verified: false,
-    expireAt: new Date(expireISOdate),
+  const p = await mongo3.readOne(mongoc, nconf.get('schema').tokens, {
+    verificationToken
   });
-  debug("Generated token %s for %j (result %O)", token, seed, r.result);
+
+  if(!p) {
+    const r = await mongo3.writeOne(mongoc, nconf.get("schema").tokens, {
+      ...seed,
+      verificationToken,
+      verified: false,
+      expireAt: new Date(expireISOdate),
+    });
+    debug("Generated token %s for %j (result %O)",
+      verificationToken, seed, r.result);
+  } else {
+    debug("Token %s not generated (already present, expires on %s)",
+      verificationToken, p.expireAt);
+  }
+
   await mongoc.close();
-  return token;
+  return verificationToken;
 }
 
 async function getToken(filter) {
-  // TODO a channelId should be a unique key in the collection
   const mongoc = await mongo3.clientConnect({ concurrency: 1 });
   if (!filter.type) throw new Error("Filter need to contain .type");
   const r = await mongo3.readOne(mongoc, nconf.get("schema").tokens, filter);
-  debug("getToken with %j: %s", filter, r && r.type ? r.token : "Not Found");
   await mongoc.close();
+
+  const found = (r && r.type)
+  if(!found) {
+    debug("getToken with %j: Not found", filter);
+    return null;
+  }
+  debug("getToken with %j: %s", filter, r.verificationToken);
   return r;
 }
 
@@ -205,13 +221,14 @@ async function confirmCreator(tokeno, creatorInfo) {
 
   // assume tokeno.type === 'channel'
   const r = await mongo3.deleteMany(mongoc,
-    nconf.get("schema").tokens, { input: tokeno.input });
+    nconf.get("schema").tokens, { channelId: tokeno.channelId });
   if(r.result.ok != 1)
-    debug("Error? not found token to remove for channelId %s", token.input);
+    debug("Error? not found token to remove for channelId %s", tokeno.channelId);
 
   _.unset(creatorInfo, 'code');
+  // 'code' is how the curly function return the token found.
   const creator = {
-    channelId: token.input,
+    channelId: tokeno.channelId,
     registeredOn: new Date(),
     ...creatorInfo,
     accessToken: "ACTK" + utils.hash({
@@ -267,7 +284,7 @@ async function getCreatorByFilter(filter) {
     .readOne(mongoc, nconf.get("schema").tokens, filter);
   await mongoc.close();
 
-  debug("getCreatorByFilter via %j: found %j / %j",
+  debug("getCreatorByFilter via %j: creator %j / token %j",
     filter, creator, token);
 
   if(creator) {
@@ -278,8 +295,8 @@ async function getCreatorByFilter(filter) {
     }
   } else if(token) {
     return {
-      channelId: token.input,
-      verificationToken: token.token,
+      channelId: token.channelId,
+      verificationToken: token.verificationToken,
       verified: false,
       username: undefined,
       avatar: undefined,

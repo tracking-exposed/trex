@@ -3,14 +3,14 @@ import { DateFromISOString } from 'io-ts-types/lib/DateFromISOString';
 
 export const ContentCreator = t.strict(
   {
-    _id: t.string,
     channelId: t.string,
-    username: t.string,
-    avatar: t.string,
-    accessToken: t.string,
-    url: t.string,
-    code: t.string,
-    registeredOn: DateFromISOString,
+    username: t.union([t.undefined, t.string]),
+    avatar: t.union([t.undefined, t.string]),
+    accessToken: t.union([t.undefined, t.string]),
+    url: t.union([t.undefined, t.string]),
+    verificationToken: t.union([t.string, t.null]),
+    verified: t.boolean,
+    registeredOn: t.union([t.undefined, DateFromISOString])
   },
   'ContentCreator'
 );
