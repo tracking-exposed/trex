@@ -7,9 +7,11 @@ const moment = require('moment');
 const nconf = require('nconf');
 const JSDOM = require('jsdom').JSDOM;
 
-const debug = require('debug')('yttrex:searches');
-const debuge = require('debug')('yttrex:searches:error');
-const overflowReport = require('debug')('yttrex:label:OVERFLOW');
+const debug = require('debug')('yttrex:parserv¾');
+const debuge = require('debug')('yttrex:parserv¾:error');
+const debugads = require('debug')('yttrex:ads');
+const debugres = require('debug')('yttrex:+');
+const overflowReport = require('debug')('yttrex:OVERFLOW');
 
 const longlabel = require('../parsers/longlabel');
 const automo = require('../lib/automo');
@@ -47,6 +49,13 @@ const id = nconf.get('id');
 const filter = nconf.get('filter') ? JSON.parse(fs.readFileSync(nconf.get('filter'))) : null;
 const singleUse = !!id;
 
+const selector = nconf.get('selector') || null;
+const allowedSelectors = [ "ad", "banner", "channel", "label", "over", "title" ];
+if(selector)
+    if(allowedSelectors.indexOf(selector) === -1)
+        return console
+            .log(`Error ${selector} should be one of ${allowedSelectors}`);
+
 let nodatacounter = 0;
 let processedCounter = skipCount;
 let lastExecution = moment().subtract(backInTime, 'minutes').toISOString();
@@ -71,7 +80,8 @@ async function extendAsExperiment(listOf) {
     // this listOf might belong to different people, so:
     const byppls = _.groupBy(listOf, 'publicKey');
     const keys = _.keys(byppls);
-    debug("Looking for experiments related to %d ppls", keys.length);
+    if(keys.length)
+        debug("Looking for experiments related to %d ppls", keys.length);
     const experiments = [];
     for (key of keys) {
         const exp = await automo.pullExperimentInfo(key);
@@ -97,8 +107,7 @@ async function extendAsExperiment(listOf) {
     });
 }
 
-function prepareObjectList(o) {
-    console.log(o);
+function prepareAriaList(o) {
     try {
         const D = new JSDOM(o.html).window.document;
         const node = D.querySelector('[aria-label]');
@@ -178,31 +187,132 @@ function fuzzyFind(nodes, natureKind, expectedPlace) {
     }, null);
 }
 
+function mineAd(D, e) {
+    const sponsoredSite = D.querySelector('.ytp-ad-button-text').textContent;
+    const remaining = D.querySelector(".ytp-ad-duration-remaining").textContent;
+    const fixed = remaining.length > 6 ?
+        remaining : "00:" + remaining;
+    const adseconds = moment.duration(fixed).asSeconds();
+    return {
+        sponsoredSite,
+        adseconds,
+    };
+}
+
+function mineBanner(D, e) {
+
+    /* exclude the 'Ads in 2' label, among others */
+    if(e.acquired[0].html.length < 350)
+        return null;
+
+    const imgs = D.querySelectorAll('img');
+    if(imgs.length == 0) {
+        const errorretval = {
+            error: true, reason: 1,
+            images: imgs.length,
+            wouldebug: e.acquired[0].html.length > 6000,
+            htmlsize: e.acquired[0].html.length,
+            texts: D.querySelector('div').textContent
+        }
+        debuge("mineBanner error: %O", errorretval);
+        if(e.acquired[0].html.length > 6000) debugger;
+        return errorretval;
+    }
+
+    const spans = D.querySelectorAll('span');
+    if(!spans.length) {
+        const errorretval = {
+            error: true, reason: 2,
+            wouldebug: e.acquired[0].html.length > 2000,
+            htmlsize: e.acquired[0].html.length,
+            texts: D.querySelector('div').textContent
+        }
+        debuge("mineBanner error: %O", errorretval);
+        if(e.acquired[0].html.length > 2000) debugger;
+        return errorretval;
+    }
+
+    /* pick the first span with a value */
+    const buyer = _.reduce(spands, function(memo, span) {
+        if(memo) return memo;
+        if(span.textContent.length > 0)
+            memo = span.textContent;
+        return memo;
+    }, null);
+
+    retval = { buyer };
+    if(imgs.length === 1) {
+        const videot = imgs[0].getAttribute('src');
+        if(!_.endsWith(srci, "mqdefault.jpg"))
+            debuge("Unexpected condition! %s", srci);
+        
+        return {
+            ...retval,
+            videot
+        }
+    }
+    /* else */
+    return {
+        buyeri: imgs[0].getAttribute('src'),
+        videot: imgs[1].getAttribute('src'),
+        ...retval,
+    }
+}
+
+function processAds(e, i) {
+    /* this function is equivalent to the one below, but 
+     * it focus in processing different kinds of payload */
+    if(e.selectorName != 'ad' && e.selectorName != 'banner')
+        return null;
+
+    if(e.acquired.length > 1)
+        throw new Error("Test! does this happens?");
+
+    processedCounter++;
+
+    const D = new JSDOM(e.acquired[0].html).window.document;
+    const retval = _.pick(e, ["selectorName", "href", "metadataId", "id", "savingTime"]);
+    if(e.selectorName === 'ad') {
+        try {
+            return {
+                ...retval,
+                ...mineAd(D, e)
+            };
+        } catch(error) {
+            debugger;
+            return null;
+        }
+    }
+    if(e.selectorName === 'banner') {
+        try {
+            return {
+                ...retval,
+                ...mineBanner(D, e)
+            };
+        } catch(error) {
+            return null;
+        }
+    }
+}
+
 function processSearches(e, i) {
     /* main function invoked by the core loop, it is argument of _.map,
      * return either null or a list of video belonging to a search result */
-    processedCounter++;
-
-    console.log(e);
-    if(!e || !e.acquired || _.size(e.acquired)  === 0 ) {
-        debuge("Unmanaged labels.id %s has empty 'acquired' labels", e.id);
-        return null;
-    }
-
     const uq = url.parse(e.href);
-    if(uq.pathname !== '/results')
+    if(uq.pathname !== '/results' || e.selectorName != 'label')
         return null;
 
+    processedCounter++;
     const searchTerms = _.trim(qustr.parse(uq.query).search_query);
 
     /* extend db object with DOM and compute side effects stats */
-    const nodes = _.compact(_.map(e.acquired, prepareObjectList));
-    if(!_.size(nodes)) {
-        debug("%d) No nodes found in\t\t\t\t%s, quitting processing", i, e.metadataId);
+    const arianodes = _.compact(_.map(e.acquired, prepareAriaList));
+    if(!_.size(arianodes)) {
+        debug("%d) No aria nodes found in\t\t\t\t%s, quitting processing", i, e.metadataId);
         return null;
     }
 
-    const possibleWordForViews = _.reduce(nodes, function(memo, n) {
+    const possibleWordForViews = _.reduce(arianodes, function(memo, n) {
         // long aria-label are the one we are interested on
         // > "1 hour, 12 minutes, 12 seconds, 1 day".length  =  37
         // 50 as tolerance in case non english labels have longer names
@@ -228,7 +338,7 @@ function processSearches(e, i) {
     }
     /* uxInfo now contains uxInfo.locale and uxInfo.separator */
 
-    const foundVideos = _.filter(nodes, { nature: 'video'});
+    const foundVideos = _.filter(arianodes, { nature: 'video'});
     /* the function below is instead of a _.reduce with a FSM inside. we need to take three objects with this 
        patten to build a complete video entry: {
         order: 138,
@@ -255,8 +365,8 @@ function processSearches(e, i) {
     const searchOutput = _.map(foundVideos, function(video, priorityOrder) {
         let expectedDurationOrder = (video.order - 1);
         let expectedChannelOrder = (video.order + 3);
-        let duration = fuzzyFind(nodes, 'duration', expectedDurationOrder);
-        let channel = fuzzyFind(nodes, 'author', expectedChannelOrder);
+        let duration = fuzzyFind(arianodes, 'duration', expectedDurationOrder);
+        let channel = fuzzyFind(arianodes, 'author', expectedChannelOrder);
         let uinfo = url.parse(video.href);
         let params = qustr.parse(uinfo.query);
         let retval = {
@@ -351,14 +461,33 @@ async function fetchAndAnalyze(labelFilter) {
     stats.lastamount = stats.currentamount;
     stats.currentamount = _.size(labels.content);
 
-    // console.log(labels.content);
-    const products = _.map(labels.content, processSearches);
-    /* analysis is a list with [ [ video1@searchX, video2@searchX ], null, [ videos@searchY ] ] or 'null' this is why we need to compact asap */
-    const effective = await extendAsExperiment(_.flatten(_.compact(products)));
-    debug("Processed %d entries, effective searches %d, total searches video entry %d",
-        _.size(labels.content), _.size(_.compact(products)), _.size(effective))
+    const available = _.filter(labels.content, function(e) {
+        return (!(!e.acquired || _.size(e.acquired)  === 0 ));
+    });
+    if(available.length != labels.content.length)
+        debug("Stripped %d invalid payloads form DB! (processedCounter %d)",
+            (labels.content.length - available.length),
+            processedCounter
+        );
 
-    if(_.size(effective)) {
+    const advertising = _.compact(_.map(available, processAds));
+    if(_.size(advertising)) {
+        const advretv = await automo.upsertSearchResults(advertising, nconf.get('schema').ads);
+        debugads("%d processed, took %d secs = %d mins [ %d +ads ]",
+            processedCounter, moment.duration(moment() - stats.current).asSeconds(),
+            _.round(moment.duration(moment() - stats.current).asMinutes(), 2),
+            advretv
+        );
+    }
+
+    const findingsproduc = _.compact(_.map(available, processSearches));
+    const effective = await extendAsExperiment(_.flatten(findingsproduc));
+
+    if(_.size(findingsproduc)) {
+        debug("Processed %d entries, effective searches %d, total searches video entry %d",
+            _.size(labels.content),
+            _.size(findingsproduc),_.size(effective))
+
         const queries = _.map(_.groupBy(effective, 'metadataId'), function(pelist, metadataId) {
             return {
                 id: metadataId,
@@ -371,12 +500,20 @@ async function fetchAndAnalyze(labelFilter) {
         });
         const queriesWritten = await automo.upsertSearchResults(queries, nconf.get('schema').queries);
         const unCheckedRetVal = await automo.upsertSearchResults(effective, nconf.get('schema').searches);
-        debug("%d completed, took %d secs = %d mins [ %d Qs - %d RESs ]",
+        if(queriesWritten || unCheckedRetVal)
+            debug("Saved %d query and %d search results", queriesWritten, unCheckedRetVal);
+    }
+
+    if(!_.size(findingsproduc) && !_.size(advertising))
+        debugres("From %d entries in DB, 0 searches, 0 ad! %O",
+            labels.content.length,
+            _.countBy(labels.content, 'selectorName'))
+    else
+        debugres("%d completed, took %d secs = %d mins (%O)",
             processedCounter, moment.duration(moment() - stats.current).asSeconds(),
             _.round(moment.duration(moment() - stats.current).asMinutes(), 2),
-            queriesWritten, unCheckedRetVal
+            _.countBy(labels.content, 'selectorName')
         );
-    }
 }
 
 // this function is duplicated with bin/parserv2.js -- might be generalized
@@ -411,11 +548,15 @@ async function wrapperLoop() {
             if(filter)
                 labelFilter.metadataId = { '$in': filter };
             if(id) {
-                debug("Targeting a specific metadataId");
                 labelFilter = {
                     metadataId: id
                 }
+                debug("Targeting a specific metadataId: %s", id);
             }
+            if(selector) {
+                labelFilter.selectorName = selector;
+            }
+
             if(stop && stop <= processedCounter) {
                 console.log("Reached configured limit of ", stop, "( processed:", processedCounter, ")");
                 process.exit(processedCounter);
@@ -443,7 +584,13 @@ async function wrapperLoop() {
 
 try {
     if(filter && id)
-        throw new Error("Invalid combo, you can't use --filter and --id");
+        return console.log("Invalid combo, you can't use --filter and --id");
+
+    if(selector) {
+        if(id)
+            return console.log("Invalid combo, you can't use --selector and --id");
+        debug("Targeting selectorName %s", selector);
+    }
 
     if( id && (skipCount || (htmlAmount != AMOUNT_DEFAULT) ) ) {
         debug("Ignoring --skip and --amount because of --id");
