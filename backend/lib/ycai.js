@@ -136,7 +136,7 @@ async function getVideoFromYTprofiles(creator, limit) {
   return res;
 }
 
-async function recommendationById(ids) {
+async function recommendationById(ids, limit) {
   const mongoc = await mongo3.clientConnect({ concurrency: 1 });
   const res = await mongo3.readLimit(
     mongoc,

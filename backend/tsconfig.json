@@ -5,6 +5,14 @@
     "rootDir": "./",
     "baseUrl": "./"
   },
-  "include": ["./bin", "./lib", "./parsers", "./routes"],
+  "include": [
+    "./bin",
+    "./lib",
+    "./endpoints",
+    "./models",
+    "./parsers",
+    "./routes",
+    "./utils"
+  ],
   "exclude": ["./tests"]
 }

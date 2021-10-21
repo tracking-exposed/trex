@@ -4,6 +4,7 @@
   "description": "youtube.tracking.exposed - backend data collector",
   "scripts": {
     "watch": "key=fuffa DEBUG=*,-body-parser*,-express*,-follow-redirects nodemon --config config/nodemon.json bin/server",
+    "watch:ts": "key=fuffa DEBUG=*,-body-parser*,-express*,-follow-redirects nodemon --config config/nodemon.json --exec 'ts-node bin/server'",
     "start": "DEBUG=*,-body-parser:*,-express:*,-lib:mongo node bin/server",
     "start:ts": "DEBUG=*,-body-parser:*,-express:*,-lib:mongo ts-node bin/server",
     "parserv": "DEBUG=*,-parser:home:warning node bin/parserv2.js",

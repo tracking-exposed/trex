@@ -360,8 +360,6 @@ async function getLastLabels(filter, skip, amount) {
     const mongoc = await mongo3.clientConnect({concurrency: 1});
     const defskip = skip ? skip : 0;
 
-    _.set(filter, {selectorName: 'label'});
-
     const labels = await mongo3.readLimit(mongoc, nconf.get('schema').labels,
         filter, { savingTime: 1}, amount, defskip);
 
