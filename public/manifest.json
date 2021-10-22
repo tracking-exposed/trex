@@ -39,7 +39,7 @@
         "https://*.youtube.com/*"
       ],
       "js": ["./app.js"],
-      "css": ["./css/font.css", "./css/youchoose-ux.css"]
+      "css": ["./css/font.css", "./css/popup.css", "./css/dashboard.css"]
     }
   ],
   "web_accessible_resources": ["*.png", "./css/**"]
