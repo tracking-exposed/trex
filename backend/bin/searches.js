@@ -37,7 +37,7 @@ nconf.argv().env().file({ file: 'config/settings.json' });
     <incomplete>: undefined or true, wheres error are present in extraction
 }                                                                                     */
 
-const FREQUENCY = 5; // seconds
+const FREQUENCY = 15; // seconds
 const AMOUNT_DEFAULT = 20;
 const BACKINTIMEDEFAULT = 1; // minutes 
 
@@ -424,40 +424,41 @@ function processSearches(e, i) {
     return searchOutput;
 }
 
-async function fetchAndAnalyze(labelFilter) {
+async function fetchAndAnalyze(filter) {
     /* this is the begin of the label parser pipeline, labelFilter contains a shifting savingTime to take
      * the oldest before and the most recent later. It is meant to constantly monitoring 'labels' for the new one */
 
-    const labels = await automo.getLastLabels(labelFilter, skipCount, htmlAmount);
-    if(!_.size(labels.content)) {
+    const leafs = await automo.getLastLabels(filter, skipCount, htmlAmount);
+    if(!_.size(leafs.content)) {
 
         nodatacounter++;
         if( (nodatacounter % 10) == 1)
-            debug("%d no data at the last query: %j", nodatacounter, labelFilter);
+            debug("%d no data at the last query: %j", processedCounter, filter);
 
-        lastExecution = moment().subtract(2, 'm').toISOString();
+        lastExecution = moment().toISOString();
         computedFrequency = FREQUENCY;
         return;
     } else {
         computedFrequency = 0.01;
+        nodatacounter = 0;
     }
 
-    if(!labels.overflow) {
+    if(!leafs.overflow) {
         lastExecution = moment().toISOString();
         /* 1 minute is the average stop, so it comeback to check 3 minutes before */
         overflowReport("<NOT>\t\t%d documents [mago %d]",
-            _.size(labels.content), _.size(labels.content) ?
-                _.round(moment.duration( moment() - moment(_.last(labels.content).savingTime)).asMinutes(), 1) :
+            _.size(leafs.content), _.size(leafs.content) ?
+                _.round(moment.duration( moment() - moment(_.last(leafs.content).savingTime)).asMinutes(), 1) :
                 NaN
         );
     }
     else {
-        lastExecution = moment(_.last(labels.content).savingTime);
-        const mago = _.round(moment.duration( moment() - moment(_.last(labels.content).savingTime)).asMinutes(), 1);
+        lastExecution = moment(_.last(leafs.content).savingTime);
+        const mago = _.round(moment.duration( moment() - moment(_.last(leafs.content).savingTime)).asMinutes(), 1);
         overflowReport("first %s [mago %d] (on %d) <window of %d minutes> next filter set to %s",
-            _.first(labels.content).savingTime, mago, _.size(labels.content),
+            _.first(leafs.content).savingTime, mago, _.size(leafs.content),
             _.round(moment.duration(
-                moment(_.last(labels.content).savingTime ) - moment(_.first(labels.content).savingTime )
+                moment(_.last(leafs.content).savingTime ) - moment(_.first(leafs.content).savingTime )
             ).asMinutes(), 1),
             lastExecution);
     }
@@ -466,18 +467,18 @@ async function fetchAndAnalyze(labelFilter) {
         debug("[+] %d start a new cicle, %d took: %s and now process %d htmls",
             processedCounter,
             stats.currentamount, moment.duration(moment() - stats.current).humanize(),
-            _.size(labels.content));
+            _.size(leafs.content));
     stats.last = stats.current;
     stats.current = moment();
     stats.lastamount = stats.currentamount;
-    stats.currentamount = _.size(labels.content);
+    stats.currentamount = _.size(leafs.content);
 
-    const available = _.filter(labels.content, function(e) {
+    const available = _.filter(leafs.content, function(e) {
         return (!(!e.acquired || _.size(e.acquired)  === 0 ));
     });
-    if(available.length != labels.content.length)
+    if(available.length != leafs.content.length)
         debug("Stripped %d invalid payloads form DB! (processedCounter %d)",
-            (labels.content.length - available.length),
+            (leafs.content.length - available.length),
             processedCounter
         );
 
@@ -496,7 +497,7 @@ async function fetchAndAnalyze(labelFilter) {
 
     if(_.size(findingsproduc)) {
         debug("Processed %d entries, effective searches %d, total searches video entry %d",
-            _.size(labels.content),
+            _.size(leafs.content),
             _.size(findingsproduc),_.size(effective))
 
         const queries = _.map(_.groupBy(effective, 'metadataId'), function(pelist, metadataId) {
@@ -515,15 +516,23 @@ async function fetchAndAnalyze(labelFilter) {
             debug("Saved %d query and %d search results", queriesWritten, unCheckedRetVal);
     }
 
+    /* special debug thing */
+    if(selector == 'over') {
+        x = _.flatten(_.map(leafs.content, function(e) { return e.acquired }))
+        debugger;
+        _.each(x, function(y) { console.log(y.html) })
+        debugger;
+    }
+
     if(!_.size(findingsproduc) && !_.size(advertising))
         debugres("From %d entries in DB, 0 searches, 0 ad! %O",
-            labels.content.length,
-            _.countBy(labels.content, 'selectorName'))
+            leafs.content.length,
+            _.countBy(leafs.content, 'selectorName'))
     else
         debugres("%d completed, took %d secs = %d mins (%O)",
             processedCounter, moment.duration(moment() - stats.current).asSeconds(),
             _.round(moment.duration(moment() - stats.current).asMinutes(), 2),
-            _.countBy(labels.content, 'selectorName')
+            _.countBy(leafs.content, 'selectorName')
         );
 }
 

@@ -184,12 +184,12 @@ function sizeCheck(nodeHTML, selector) {
 const watchedPaths = {
     'banner': '.video-ads.ytp-ad-module', // middle banner
     'ad': '.ytp-ad-player-overlay-instream-info', // ad below
-    'channel': '.ytp-title-channel', // title top
-    'title': '.ytp-title-text', // title
+    // 'channel': '.ytp-title-channel', // title top
+    // 'title': '.ytp-title-text', // title
     'over': '.ytp-chrome-top', // other title top
     'label': '[aria-label]', 
     'toprightad': 'ytd-promoted-sparkles-web-renderer',
-    'section': 'h2',
+    'sectionName': 'h2',
     'searchcard': '.ytd-search-refinement-card-renderer',
     'channellink': '.channel-link',
     'toprightpict': '.ytd-action-companion-ad-renderer',
