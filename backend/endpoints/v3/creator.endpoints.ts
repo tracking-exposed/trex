@@ -25,7 +25,7 @@ const RegisterCreator = Endpoint({
       type: ChannelType,
     }),
   },
-  Output: AuthResponse,
+  Output: ContentCreator,
 });
 
 const VerifyCreator = Endpoint({
