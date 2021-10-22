@@ -77,6 +77,7 @@ const apiList = {
     recordAnswers:       require('../routes/answers').recordAnswers,
     retrieveAnswers:     require('../routes/answers').retrieveAnswers,
     retrieveAnswersCSV:  require('../routes/answers').retrieveAnswersCSV,
+    retrieveMails:       require('../routes/answers').retrieveMails,
 
     /* v3 youchoose */
     youChooseByVideoId:  require('../routes/youchoose').byVideoId,

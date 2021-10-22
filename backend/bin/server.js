@@ -113,6 +113,7 @@ app.post('/api/v3/registerEmail', (req, res) => dispatchPromise('registerEmail',
 app.post('/api/v1/recordAnswers', (req, res) => dispatchPromise("recordAnswers", req, res))
 app.get('/api/v1/retrieveAnswers/:key', (req, res) => dispatchPromise("retrieveAnswers", req, res))
 app.get('/api/v1/retrieveAnswersCSV/:qName/:key', (req, res) => dispatchPromise("retrieveAnswersCSV", req, res))
+app.get('/api/v1/retrieveMails/:key', (req, res) => dispatchPromise("retrieveMails", req, res))
 
 /* researcher */
 app.get('/api/v1/wetest/:key/:filter', (req, res) => dispatchPromise('researcher', req, res))

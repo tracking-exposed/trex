@@ -11,7 +11,6 @@ const security = require('../lib/security');
 const allowqnames = ['watchers', 'youtubers'];
 
 async function recordAnswers(req) {
-    debug("%j", req.body);
     const sessionId = utils.hash({ randomSeed: req.body.sessionId })
     const qName = req.body.qName;
     const version = 1;
@@ -78,6 +77,24 @@ async function retrieveAnswers(req) {
     return { json: revisited };
 };
 
+async function retrieveMails(req) {
+    if(!security.checkPassword(req))
+        return {json: { error: true, message: "Invalid key" }};
+
+    const mongoc = await mongo3.clientConnect({concurrency: 1});
+    const emails = await mongo3.read(mongoc, nconf.get('schema').emails, {}, { registeredAt: 1 });
+    await mongoc.close();
+
+    const revisited = _.map(emails, function(email, order) {
+        _.unset(email, '_id');
+        email.order = order;
+        return email;
+    });
+    debug("Email API: returning %d addresses", _.size(revisited));
+    return { json: _.reverse(revisited) };
+};
+
+
 /* this is helpful to produce a CSV without a wasy too big complexity
  * in keys enumeration. has not other meanings */
 const youtubersQmap = [
@@ -129,11 +146,13 @@ async function retrieveAnswersCSV(req) {
 };
 
 async function deleteAnswer(req, res) {
+    throw new Error("TODO implement this")
 };
 
 module.exports = {
     recordAnswers,
     retrieveAnswers,
+    retrieveMails,
     retrieveAnswersCSV,
     deleteAnswer,
 };
