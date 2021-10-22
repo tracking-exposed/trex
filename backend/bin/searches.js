@@ -6,6 +6,7 @@ const qustr = require('querystring');
 const moment = require('moment');
 const nconf = require('nconf');
 const JSDOM = require('jsdom').JSDOM;
+const querystring = require('querystring');
 
 const debug = require('debug')('yttrex:parserv¾');
 const debuge = require('debug')('yttrex:parserv¾:error');
@@ -270,29 +271,35 @@ function processAds(e, i) {
 
     processedCounter++;
 
+    const urlinfo = url.parse(e.href);
+    if(urlinfo.pathname != '/watch') {
+        debugads("Ignoring AD from 'non-video' page [%s]", e.href);
+        return null;
+    }
+    const params = querystring.parse(urlinfo.query);
+    const videoId = params.v;
+
     const D = new JSDOM(e.acquired[0].html).window.document;
-    const retval = _.pick(e, ["selectorName", "href", "metadataId", "id", "savingTime"]);
-    if(e.selectorName === 'ad') {
-        try {
-            return {
-                ...retval,
-                ...mineAd(D, e)
-            };
-        } catch(error) {
-            debugger;
-            return null;
-        }
+    const retval = _.pick(e, ["selectorName", "href", "metadataId", "id", "savingTime", "publicKey"]);
+
+    let mined = null;
+    try {
+        if(e.selectorName === 'ad')
+            mined = mineAd(D, e)
+        if(e.selectorName === 'banner')
+            mined = mineBanner(D, e)
+    } catch(error) {
+        debugger;
+        return null;
     }
-    if(e.selectorName === 'banner') {
-        try {
-            return {
-                ...retval,
-                ...mineBanner(D, e)
-            };
-        } catch(error) {
-            return null;
-        }
-    }
+
+    if(_.isNull(mined)) return null;
+
+    return {
+        ...retval,
+        videoId,
+        ...mined,
+    };
 }
 
 function processSearches(e, i) {
@@ -438,7 +445,11 @@ async function fetchAndAnalyze(labelFilter) {
     if(!labels.overflow) {
         lastExecution = moment().toISOString();
         /* 1 minute is the average stop, so it comeback to check 3 minutes before */
-        overflowReport("<NOT>\t\t%d documents", _.size(labels.content));
+        overflowReport("<NOT>\t\t%d documents [mago %d]",
+            _.size(labels.content), _.size(labels.content) ?
+                _.round(moment.duration( moment() - moment(_.last(labels.content).savingTime)).asMinutes(), 1) :
+                NaN
+        );
     }
     else {
         lastExecution = moment(_.last(labels.content).savingTime);

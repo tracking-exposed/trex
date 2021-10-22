@@ -161,6 +161,9 @@ app.post('/api/v3/creator/:channelId/register', (req, res) => dispatchPromise('c
 app.post('/api/v3/creator/:channelId/verify', (req, res) => dispatchPromise('creatorVerify', req, res))
 app.get('/api/v3/creator/me', (req, res) => dispatchPromise('creatorGet', req, res))
 
+/* below, the new API for advertising */
+app.get('/api/v2/ad/video/:videoId', (req, res) => dispatchPromise('adsPerVideo', req, res));
+app.get('/api/v2/ad/channel/:videoId', (req, res) => dispatchPromise('adsPerChannel', req, res));
 
 /* impact */
 app.get('/api/v2/statistics/:name/:unit/:amount', (req, res) => dispatchPromise('getStatistics', req, res))

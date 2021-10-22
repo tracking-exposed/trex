@@ -93,6 +93,10 @@ const apiList = {
     /* v3 chiaroscuro support */
     postDirective:       require('../routes/directives').post,
     fetchDirective:      require('../routes/directives').get,
+
+    /* advertising support */
+    adsPerVideo:         require('../routes/ads').perVideo,
+    adsPerChannel:       require('../routes/ads').perChannel,
 };
 
 module.exports = {
