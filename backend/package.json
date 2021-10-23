@@ -3,7 +3,7 @@
   "version": "1.7.2",
   "description": "youtube.tracking.exposed - backend data collector",
   "scripts": {
-    "server:watch": "key=fuffa DEBUG=*,-express:*,-body-parser:* node_modules/.bin/ts-node-dev --respawn --transpile-only bin/server.js",
+    "watch": "key=fuffa DEBUG=*,-express:*,-body-parser:* node_modules/.bin/ts-node-dev --respawn --transpile-only bin/server.js",
     "start": "DEBUG=*,-body-parser:*,-express:*,-lib:* ts-node bin/server",
     "parserv": "DEBUG=*,-parser:home:warning node bin/parserv2.js",
     "parserv:watch": "DEBUG=*,-parser:home:warning node_modules/.bin/ts-node-dev --respawn --transpile-only bin/parserv2.js",

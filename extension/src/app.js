@@ -239,35 +239,16 @@ function manageNodes(command, selectorName, selected) {
     }
 
     // this to highlight what is collected as fragments
-    _.each(matches, function(e) {
-        e.style.border = '1px solid red';
-    });
-    // console.log(name, _.size(matches));
-    const acquired = _.map(matches, function(e, i) {
-        let content = {
-            html: e.outerHTML,
-            offsetTop: e.offsetTop,
-            offsetLeft: e.offsetLeft,
-            order: i,
-        };
-        return content;
-    });
-    // this aggregation imply that we are adding one name
-    // for many different nodes, into "acquired" field,
-    // to avoid redundancy.
-    const ready = {
-        name,
-        acquired,
-    };
-    const formatted = JSON.stringify(ready);
-    const hash = formatted.split('').reduce((a,b)=>{a=((a<<5)-a)+b.charCodeAt(0);return a&a},0);
+    selected.style.border = '1px solid ' + (command.color ? command.color : 'red');
 
-    const c = _.get(contentcache, hash);
-    if(!!c)
-        return false;
-
-    console.log("Label cache report:",
-        _.size(contentcache), matches, ready, hash);
+    // if escalation to parents, highlight with different color
+    if(command.parents) {
+        selected = _.reduce(_.times(command.parents), function(memo) {
+            // console.log("collecting parent", selectorName, memo.tagName, memo.parentNode.tagName);
+            return memo.parentNode;
+        }, selected);
+        selected.style.border = '3px dotted green';
+    }
 
     if(command.screen) {
         console.log("Processing screen!");
@@ -308,15 +289,10 @@ function manageNodes(command, selectorName, selected) {
     };
 
     // helpful only at development time:
-    // const extra = extractor.mineExtraMetadata(selectorName, selected);
+    // const extra = extractor.mineExtraMetadata(selectorName, acquired);
     // console.table(extra);
 
-    hub.event('newInfo', {
-        element: newly,
-        href: window.location.href,
-        name: selectorName,
-        randomUUID,
-    });
+    hub.event('newInfo', acquired);
     phase('adv.seen');
 };
 
