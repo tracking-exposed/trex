@@ -91,6 +91,9 @@ async function extendAsExperiment(listOf) {
     }
 
     if (experiments.length)
+        console.trace("extendIfExperiment match", listOf);
+
+    if (experiments.length)
         debugger;
 
     if (!experiments.length)

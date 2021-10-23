@@ -81,18 +81,17 @@ async function processEvents2(req) {
 
     const blang = headers.language.replace(/;.*/, '').replace(/,.*/, '');
     // debug("CHECK: %s <%s>", blang, headers.language );
-    const htmls = _.map(req.body, function(body, i) {
+    const htmls = _.map(_.filter(req.body, { type: 'video'}), function(body, i) {
         const nature = utils.getNatureFromURL(body.href);
         const metadataId = utils.hash({
             publicKey: headers.publickey,
             randomUUID: body.randomUUID,
             href: body.href,
+            type: 'video',
         });
         const id = utils.hash({
             metadataId,
-            size: _.size(body.element),
-            contenthash: body.contenthash,
-            href: body.href,
+            size: body.size,
             i,
         });
         const html = {
@@ -104,10 +103,8 @@ async function processEvents2(req) {
             clientTime: new Date(body.clientTime),
             savingTime: new Date(),
             html: body.element,
-            size: _.size(JSON.stringify(body.element)),
-            selector: body.selector,
+            size: _.size(body.element),
             incremental: body.incremental,
-            type: body.type,
             packet: i,
             nature,
         }
@@ -124,12 +121,14 @@ async function processEvents2(req) {
         }
         debug("Saved %d htmls metadataId: %j", htmlexpstended.length, _.uniq(_.map(htmlexpstended, 'metadataId')));
     }
- 
-    const labels = _.map(_.filter(htmls, { type: 'info'}), function(e) {
-        e.acquired = e.html.acquired;
-        e.selectorName = e.html.name;
+
+    /* MIGRATION IN PROGRES */
+    /* MIGRATION IN PROGRES would be removed in favor or LEAFS */
+    const labels = _.map(_.filter(req.body, { type: 'info'}), function(e) {
+        debug("<<x>> %O %s %j", _.keys(e), e.type, e.nature);
+        e.acquired = [ { html: e.html, order: 'migration-in-review' } ];
+        e.selectorName = e.selectorName;
         e.contenthash = e.contenthash;
-        debug(_.keys(e));
         _.unset(e, 'html');
         return e;
     });
@@ -140,14 +139,48 @@ async function processEvents2(req) {
             debug("Error in saving %d labels %j", _.size(labels), check);
             return { json: {status: "error", info: check.info }};
         }
-        debug("Saved %d labels metadataId: %j", labels.length, _.uniq(_.map(labels, 'metadataId')));
+        debug("Saved %d metadataId: %j", labels.length, _.uniq(_.map(labels, 'metadataId')));
+    }
+    /* MIGRATION IN PROGRES */
+    /* MIGRATION IN PROGRES */
+
+    const leafs = _.map(_.filter(req.body, { type: 'leafs'}), function(e) {
+        const nature = utils.getNatureFromURL(e.href);
+        const metadataId = utils.hash({
+            publicKey: headers.publickey,
+            randomUUID: e.randomUUID,
+            type: 'leaf',
+        });
+        const id = utils.hash({
+            metadataId,
+            contentHash: e.hash,
+        });
+        // return leaf
+        return {
+            id,
+            metadataId,
+            blang,
+            publicKey: headers.publickey,
+            ..._.omit(e, ['randomUUID', 'hash', 'clientTime']),
+            nature,
+            clientTime: new Date(e.clientTime),
+            savingTime: new Date(),
+        }
+    });
+    if(leafs.length) {
+        const check = await automo.write(nconf.get('schema').leafs, leafs);
+        if(check && check.error) {
+            debug("🍃Error in saving %d %j", _.size(leafs), check);
+            return { json: {status: "error", info: check.info }};
+        }
+        debug("Saved %d leafs selectors: %j", leafs.length, _.countBy(leafs, 'selectorName'));
     }
 
     /* this is what returns to the web-extension */
     return { json: {
         status: "OK",
         supporter,
-        labels: _.size(enhanced),
+        leafs: _.size(leafs),
         htmls: _.size(htmlexpstended),
     }};
 };

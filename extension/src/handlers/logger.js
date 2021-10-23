@@ -1,5 +1,5 @@
 function eventHandler (type, e) {
-    console.debug(type, e);
+    // console.debug(type, e);
 }
 
 export function register (hub) {

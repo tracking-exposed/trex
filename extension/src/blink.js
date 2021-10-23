@@ -17,14 +17,18 @@ import config from './config';
  * phases are all the div which can appears on the right bottom.
  * the function below is called in the code, when the condition is
  * met, and make append the proper span */
-const phases = {
-    'adv': {'seen': advSeen },
-    'video': {'seen': videoSeen, 'wait': videoWait, 'send': videoSend},
-    'counters': {
-        'adv': { seen: 0 },
-        'video': { seen: 0, wait: 0, send: 0}
-    }
-  };
+function phase (path) {
+    const phases = {
+        'adv': {'seen': advSeen },
+        'video': {'seen': videoSeen, 'wait': videoWait, 'send': videoSend},
+        'counters': {
+            'adv': { seen: 0 },
+            'video': { seen: 0, wait: 0, send: 0}
+        }
+    };
+    const f = _.get(phases, path);
+    f(path);
+}
 
 const VIDEO_WAIT = 'video wait';
 const VIDEO_SEEN = 'video seen';
@@ -94,7 +98,7 @@ function advSeen (path) {
 };
 
 module.exports = {
-    phases,
+    phase,
     initializeBlinks,
     videoSeen,
     videoWait,

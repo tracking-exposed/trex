@@ -35,7 +35,7 @@ import hub from './hub';
 import { registerHandlers } from './handlers/index';
 import extractor from './extractor';
 import dom from './dom';
-import { phases, initializeBlinks, videoSeen, videoSend, videoWait, advSeen, logo } from './blink';
+import { phase, initializeBlinks } from './blink';
 
 const YT_VIDEOTITLE_SELECTOR = 'h1.title';
 
@@ -45,6 +45,10 @@ const bo = chrome || browser;
 // variable used to spot differences due to refresh and url change
 let randomUUID = 'INIT' + Math.random().toString(36).substring(2, 13) +
                 Math.random().toString(36).substring(2, 13);
+
+// to optimize the amount of reported data, we used a local cache
+let lastObservedSize = 1;
+let leafsCache = {};
 
 // Boot the user script. This is the first function called.
 // Everything starts from here.
@@ -87,120 +91,152 @@ function boot () {
     }
 }
 
+const hrefPERIODICmsCHECK = 9000;
+let hrefWatcher = null;
 function ytTrexActions(remoteInfo) {
     /* these functions are the main activity made in 
        content_script, and ytTrexActions is a callback
        after remoteLookup */
-    console.log("remoteInfo available:", remoteInfo);
+    console.log("initialize watchers, remoteInfo available:", remoteInfo);
+
+    if(hrefWatcher)
+        clearInterval(hrefWatcher);
+
+    hrefWatcher = window.setInterval(hrefAndPageWatcher, hrefPERIODICmsCHECK);
     initializeBlinks();
     leafsWatcher();
-    hrefAndPageWatcher();
     flush();
+    // capture();
 }
 
-function phase (path) {
-    const f = _.get(phases, path);
-    f(path);
-}
-
-const hrefPERIODICmsCHECK = 9000;
-const nodePERIODICmsCHECK = 4000;
-let nodePeriodicCheck = nodePERIODICmsCHECK; // this check is dynamics, it grows if nothing change
-let hrefPeriodicCheck = hrefPERIODICmsCHECK;
-var lastVideoURL = null;
-var lastVideoCNT = 0;
-
+let lastVideoURL = null;
+let lastVideoCNT = 0;
 function hrefAndPageWatcher () {
+    // phase('video.wait');
+    let diff = (window.location.href !== lastVideoURL);
 
-    window.setInterval(function () {
-        // phase('video.wait');
-        let diff = (window.location.href !== lastVideoURL);
-
-        // client might duplicate the sending of the same
-        // video. using a random identifier, we spot the
-        // clones and drop them server side.
-        // also, here is cleaned the cache declared below
-        if (diff) {
-            phase('video.seen');
-            cleanCache();
-            refreshUUID();
+    // client might duplicate the sending of the same
+    // video. using a random identifier, we spot the
+    // clones and drop them server side.
+    // also, here is cleaned the cache declared below
+    if (diff) {
+        phase('video.seen');
+        cleanCache();
+        refreshUUID();
+    }
+    if (!diff) {
+        lastVideoCNT++;
+        if (lastVideoCNT > 3) {
+            // console.log(lastVideoCNT, "too many repetition: stop");
+            return;
         }
-        if (!diff) {
-            lastVideoCNT++;
-            if (lastVideoCNT > 3) {
-                // console.log(lastVideoCNT, "too many repetition: stop");
-                return;
-            }
-        }
+    }
 
-        lastVideoURL = window.location.href;
-        document
-            .querySelectorAll(YT_VIDEOTITLE_SELECTOR)
-            .forEach(function () { /*
-                console.log("Video Selector match in ",
-                    window.location.href,
-                    ", sending",
-                    _.size($('ytd-app').html()),
-                    " <- ",
-                    $(YT_VIDEOTITLE_SELECTOR).length,
-                    $(YT_VIDEOTITLE_SELECTOR).text()
-                ); */
-                if (sizeCheck($('ytd-app').html(), 'ytd-app')) { phase('video.send'); }
-            });
-    }, hrefPeriodicCheck);
-}
+    lastVideoURL = window.location.href;
+    const isPresent = document.querySelector(YT_VIDEOTITLE_SELECTOR);
+    if(!isPresent)
+        return;
 
-let sizecache = [];
-function sizeCheck(nodeHTML, selector) {
-    // this function look at the LENGTH of the proposed element.
-    // this is used in video because the full html body page would be too big
-    // this is also a case of premature optimization. known mother of all evil.
+    const sendableNode = document.querySelector('ytd-app');
 
-    // if an element with the same size has been already sent with
-    // this URL, this duplication is ignored.
+    if (!sizeCheck(sendableNode.outerHTML))
+        return;
 
-    const s = _.size(nodeHTML);
-    if(!s)
-        return false;
-    if(sizecache.indexOf(s) != -1)
-        return false;
-
-    sizecache.push(s);
     hub.event('newVideo', {
-        element: nodeHTML,
+        element: sendableNode.outerHTML,
+        size: sendableNode.outerHTML.length,
         href: window.location.href,
-        when: Date(),
-        selector,
-        size: s,
         randomUUID
     });
-    console.log("->",
-        _.size(sizecache),
-        "new href+content sent, selector", selector,
-        Date(), "size", s,
-        sizecache,
-    );
+    phase('video.send');
+}
+
+function sizeCheck(nodeHTML) {
+    // this function look at the LENGTH of the proposed element.
+    // this is used in video because the full html body page would be too big.
+    const s = _.size(nodeHTML);
+
+    // check if the increment is more than 4%, otherwise is not interesting
+    const percentile = (100 / s);
+    const percentage = _.round(percentile * lastObservedSize, 2);
+
+    if(percentage > 95) {
+        console.log(`Skipping update as ${percentage}% of the page is already sent (size ${s}, lastObservedSize ${lastObservedSize})`);
+        return false;
+    }
+
+    // this is the minimum size worthy of reporting
+    if(s < 100000) {
+        console.log("Too small to consider!", s);
+        return false;
+    }
+
+    console.log(`Valid update as a new ${100-percentage}% of the page is worthy (size ${s}, lastObservedSize ${lastObservedSize})`);
+    lastObservedSize = s;
     return true;
 }
 
 const watchedPaths = {
-    banner: { selector: '.video-ads.ytp-ad-module' }, // middle banner
-    ad: { selector: '.ytp-ad-player-overlay-instream-info' }, // ad below
-    label: { selector: '[aria-label]' }, 
+    banner: { selector: '.video-ads.ytp-ad-module', parents: 4, color: 'blue', screen: true },
+    ad: { selector: '.ytp-ad-player-overlay', parents: 4, color: 'blue', screen: true },
+    overlay: { selector: '.ytp-ad-player-overlay-instream-info', parents: 4, color: 'blue', screen: true },
     toprightad: { selector: 'ytd-promoted-sparkles-web-renderer' },
-    sectionName: { selector: 'h2' },
+    toprightpict: { selector: '.ytd-action-companion-ad-renderer' },
+
     channel: {
         selector: '[href^="/channel/"].ytd-video-owner-renderer',
-        parents: 2,
+        parents: 1,
     },
     searchcard: { selector: '.ytd-search-refinement-card-renderer' },
     channellink: { selector: '.channel-link' },
-    toprightpict: { selector: '.ytd-action-companion-ad-renderer' },
+    label: { selector: '[aria-label]' }, 
+
+    /* for searches, + aria label */
+    sectionName: { selector: 'h2', color: "goldenrod" },
+    searchAds: {
+        selector: '.ytd-promoted-sparkles-text-search-renderer',
+        parents: 2
+    },
 };
 
-let cacheByLocation = {};
+const getOffsetLeft = element => {
+  let offsetLeft = 0;
+  while(element) {
+    offsetLeft += element.offsetLeft;
+    element = element.offsetParent;
+  }
+  return offsetLeft;
+}
+
+const getOffsetTop = element => {
+  let offsetTop = 0;
+  while(element) {
+    offsetTop += element.offsetTop;
+    element = element.offsetParent;
+  }
+  return offsetTop;
+}
+
+function onCaptured(imageUri) {
+  console.log(imageUri);
+}
+
+function onError(error) {
+  console.log(`Error: ${error}`);
+}
+
 function manageNodes(command, selectorName, selected) {
-    // command has .selector .parents (this might be undefined)
+    // command has .selector .parents .preserveInvisible (this might be undefined)
+
+    const offsetTop = getOffsetTop(selected);
+    const offsetLeft = getOffsetLeft(selected);
+    let isVisible = (offsetTop + offsetLeft) > 0;
+    if(command.preserveInvisible != true) {
+        if(!isVisible) {
+            // console.log("killing an invisible", offsetLeft, offsetTop, selectorName, selected);
+            return;
+        }
+    }
 
     // this to highlight what is collected as fragments
     _.each(matches, function(e) {
@@ -233,22 +269,43 @@ function manageNodes(command, selectorName, selected) {
     console.log("Label cache report:",
         _.size(contentcache), matches, ready, hash);
 
+    if(command.screen) {
+        console.log("Processing screen!");
+        try {
+            // debugger;
+            const c= bo.tab.captureVisibleTab();
+            c.then(onCaptured, onError);
+            const capturing = bo.tabs.Tab.captureVisibleTab();
+            capturing.then(onCaptured, onError);
+        } catch(error) {
+            console.warn("tab screencapture fail", error);
+        }
+    }
     const html = selected.outerHTML;
     const hash = html
         .split('')
         .reduce((a,b)=>{a=((a<<5)-a)+b.charCodeAt(0); return a&a},0);
 
-    let newly = null;
-    if(cacheByLocation[hash]) {
-        cacheByLocation[hash]++;
-        console.log("cache increment",
-            hash, cacheByLocation[hash], selectorName);
+    if(leafsCache[hash]) {
+        leafsCache[hash]++;
         return;
-    } else {
-        console.log("initalizing hash", hash);
-        cacheByLocation[hash] = 1;
-        newly = { html, hash };
+        console.log("cache increment",
+            hash, leafsCache[hash], selectorName);
     }
+    // most of the time this doesn't happens: duplication are many!
+    // is debug-worthy remove the 'return' and send cache counter.
+
+    leafsCache[hash] = 1;
+    // as it is the first observation, take infos and send it
+    const acquired = {
+        html,
+        hash,
+        offsetTop,
+        offsetLeft,
+        href: window.location.href,
+        selectorName,
+        randomUUID,
+    };
 
     // helpful only at development time:
     // const extra = extractor.mineExtraMetadata(selectorName, selected);
@@ -261,11 +318,9 @@ function manageNodes(command, selectorName, selected) {
         randomUUID,
     });
     phase('adv.seen');
-    return selectorName;
 };
 
 function leafsWatcher () {
-
     // inizialized MutationObserver with the selectors and 
     // then a list of functions would handle it
     _.each(watchedPaths, function(command, selectorName) {
@@ -273,20 +328,11 @@ function leafsWatcher () {
             _.partial(manageNodes, command, selectorName)
         );
     })
-    /*
-    window.setInterval(function () {
-      const results = _.each(watchedPaths, function(command, selectorName) {
-        return lookForExistingNodes(command, selectorName);
-      });
-      const printabled = _.compact(results);
-      if(_.size(printabled))
-        console.log("adMonitor:", JSON.stringify(printabled));
-    }, nodePeriodicCheck); */
 }
 
 function cleanCache() {
-    cacheByLocation = {};
-    sizecache = [];
+    leafsCache = {};
+    lastObservedSize = 1;
 }
 
 var lastCheck = null;

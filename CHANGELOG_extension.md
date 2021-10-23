@@ -1,6 +1,15 @@
 The format is based on [Keep a Changelog](http://keepachangelog.com/) and this
 project adheres to [Semantic Versioning](http://semver.org/).
 
+## [1.6.6] - 2021-10-22
+### Added
+- supporting offset
+- MutationObserver
+- remoteLookup
+- experiment local file reading 
+### Fixed
+- useless selector removed
+
 ## [1.4.3] - 2020-06-25
 ### Fixed
 - Building scripts, got inputs from extension reviewers. 
