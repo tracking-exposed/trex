@@ -129,6 +129,7 @@ async function processEvents2(req) {
         e.acquired = e.html.acquired;
         e.selectorName = e.html.name;
         e.contenthash = e.contenthash;
+        debug(_.keys(e));
         _.unset(e, 'html');
         return e;
     });

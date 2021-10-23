@@ -516,13 +516,13 @@ async function fetchAndAnalyze(filter) {
             debug("Saved %d query and %d search results", queriesWritten, unCheckedRetVal);
     }
 
-    /* special debug thing */
+    /* special debug thing
     if(selector == 'over') {
         x = _.flatten(_.map(leafs.content, function(e) { return e.acquired }))
         debugger;
         _.each(x, function(y) { console.log(y.html) })
         debugger;
-    }
+    } */
 
     if(!_.size(findingsproduc) && !_.size(advertising))
         debugres("From %d entries in DB, 0 searches, 0 ad! %O",

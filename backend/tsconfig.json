@@ -14,5 +14,11 @@
     "./routes",
     "./utils"
   ],
-  "exclude": ["./tests"]
+  "exclude": ["./tests"],
+  "watchOptions": {
+"watchFile": "useFsEvents",
+"watchDirectory": "useFsEvents",
+"synchronousWatchDirectory": true
+  }
 }
+

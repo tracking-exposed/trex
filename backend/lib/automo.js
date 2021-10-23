@@ -25,6 +25,7 @@ const qustr = require('querystring')
 
 const utils = require('../lib/utils');
 const mongo3 = require('./mongo3');
+const { keyof } = require('io-ts');
 
 async function getSummaryByPublicKey(publicKey, options) {
     /* this function return the basic information necessary to compile the
@@ -576,6 +577,7 @@ async function getGuardoni(guardobj) {
 }
 
 async function markExperCompleted(mongoc, filter) {
+    console.trace(filter);
     return await mongo3
         .updateOne(mongoc, nconf.get('schema').experiments,
             filter, {
@@ -585,6 +587,7 @@ async function markExperCompleted(mongoc, filter) {
 }
 
 async function concludeExperiment(testTime) {
+    console.trace(testTime);
     const mongoc = await mongo3.clientConnect({concurrency: 1});
     debug("concludeExperiment—mark experiments by %j", { testTime } );
     const r = await markExperCompleted(mongoc, { testTime } );
@@ -594,14 +597,19 @@ async function concludeExperiment(testTime) {
 }
 
 async function saveExperiment(expobj) {
-    /* a given public Key can have only one experiment per time */
+    if(expobj.experimentId === 'DEFAULT_UNSET')
+        return null;
+
+    console.trace("named experiment!", expobj);
     const mongoc = await mongo3.clientConnect({concurrency: 1});
+    /* a given public Key can have only one experiment per time */
     const filter = {
         publicKey: expobj.publicKey,
         status: 'active'
     };
-    debug("saveExperiment—mark experiment %j as completed", filter);
-    const sure = await markExperCompleted(mongoc, filter);
+    debug("if exist %s mark it as %j completed if match %j",
+        expobj.experimentId, filter);
+    const precedent = await markExperCompleted(mongoc, filter);
     debug("ə %j", sure.result);
     expobj.status = "active";
     const result = await mongo3
@@ -614,14 +622,11 @@ async function pullExperimentInfo(publicKey) {
     // because only one experiment per publicKey might
     // exist in a due time, we can be quite sure on the results
     // here
-    debug("TODO —pullExperimentInfo— evaluate if is better use the two timings");
     const mongoc = await mongo3.clientConnect({concurrency: 1});
-    const exp = await mongo3.readOne(mongoc,
-        nconf.get('schema').experiments, {
-            publicKey,
-            status: "active"
-        }
-    );
+    const exp = await mongo3.readOne(mongoc, nconf.get('schema').experiments,
+        { publicKey, status: "active" });
+    if(exp)
+        debug("found experimentInfo %O", exp);
     await mongoc.close();
     return exp;
 }
@@ -631,6 +636,7 @@ async function pullExperimentInfo(publicKey) {
  * to return evidences to /experiments/#ID
  */
 async function fetchExperimentData(name) {
+    console.trace(name);
     throw new Error("Please update this!");
     const EVIDLIM = 200;
     const mongoc = await mongo3.clientConnect({concurrency: 1});
@@ -684,6 +690,7 @@ async function fetchExperimentData(name) {
 }
 
 async function getAllExperiments(max) {
+    console.trace(max);
     const mongoc = await mongo3.clientConnect({concurrency: 1});
     const result = await mongo3
         .readLimit(mongoc, nconf.get('schema').experiments, {}, {}, max, 0);
@@ -692,6 +699,7 @@ async function getAllExperiments(max) {
 }
 
 async function registerDirective(links, directiveType) {
+    console.trace(links, directiveType);
     const experimentId = utils.hash({
         type: directiveType,
         links, 
@@ -722,6 +730,7 @@ async function registerDirective(links, directiveType) {
 }
 
 async function pickDirective(experimentId) {
+    console.trace(experimentId);
     const mongoc = await mongo3.clientConnect({concurrency: 1});
     const rb = await mongo3.readOne(mongoc,
         nconf.get('schema').directives,

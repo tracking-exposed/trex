@@ -249,6 +249,8 @@ async function opening(req) {
 }
 
 async function channel3(req) {
+    // this is invoked as handshake v2, and might return information
+    // helpful for the extension, if any.
     const experimentInfo = {
         publicKey: _.get(req.body, 'config.publicKey'),
         href: _.get(req.body, 'href'),
@@ -256,12 +258,16 @@ async function channel3(req) {
         evidencetag: _.get(req.body, 'evidencetag'),
         execount: _.get(req.body, 'execount'),
         newProfile: _.get(req.body, 'newProfile'),
-        testTime: new Date(_.get(req.body, 'when')),
+        testTime: new Date(_.get(req.body, 'when')) || undefined,
         directiveType: _.get(req.body, 'directiveType'),
-    }
-    debug("channel3: %j", experimentInfo);
+    };
     const retval = await automo.saveExperiment(experimentInfo);
-    return {json: retval };
+    if(_.isNull(retval)) {
+        return { json: { experiment: false }};
+    }
+    // else if has any value 
+    debug("channel3: %j gives %o", experimentInfo, retval);
+    return { json: retval };
 };
 
 async function conclude3(req) {
