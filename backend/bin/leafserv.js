@@ -8,11 +8,11 @@ const nconf = require('nconf');
 const JSDOM = require('jsdom').JSDOM;
 const querystring = require('querystring');
 
-const debug = require('debug')('yttrex:parserv¾');
-const debuge = require('debug')('yttrex:parserv¾:error');
+const debug = require('debug')('yttrex:leafserv');
+const debuge = require('debug')('yttrex:leafserv:error');
 const debugads = require('debug')('yttrex:ads');
-const debugres = require('debug')('yttrex:+');
-const overflowReport = require('debug')('yttrex:OVERFLOW');
+const debugres = require('debug')('leafserv:result');
+const overflowReport = require('debug')('leafserv:OVERFLOW');
 
 const longlabel = require('../parsers/longlabel');
 const automo = require('../lib/automo');

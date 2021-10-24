@@ -122,28 +122,6 @@ async function processEvents2(req) {
         debug("Saved %d htmls metadataId: %j", htmlexpstended.length, _.uniq(_.map(htmlexpstended, 'metadataId')));
     }
 
-    /* MIGRATION IN PROGRES */
-    /* MIGRATION IN PROGRES would be removed in favor or LEAFS */
-    const labels = _.map(_.filter(req.body, { type: 'info'}), function(e) {
-        debug("<<x>> %O %s %j", _.keys(e), e.type, e.nature);
-        e.acquired = [ { html: e.html, order: 'migration-in-review' } ];
-        e.selectorName = e.selectorName;
-        e.contenthash = e.contenthash;
-        _.unset(e, 'html');
-        return e;
-    });
-    const enhanced = utils.extendIfExperiment(experinfo, labels);
-    if(enhanced.length) {
-        const check = await automo.write(nconf.get('schema').labels, enhanced);
-        if(check && check.error) {
-            debug("Error in saving %d labels %j", _.size(labels), check);
-            return { json: {status: "error", info: check.info }};
-        }
-        debug("Saved %d metadataId: %j", labels.length, _.uniq(_.map(labels, 'metadataId')));
-    }
-    /* MIGRATION IN PROGRES */
-    /* MIGRATION IN PROGRES */
-
     const leafs = _.map(_.filter(req.body, { type: 'leafs'}), function(e) {
         const nature = utils.getNatureFromURL(e.href);
         const metadataId = utils.hash({

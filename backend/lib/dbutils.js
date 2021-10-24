@@ -5,7 +5,7 @@ const moment = require('moment');
 const mongo3 = require('./mongo3');
 const utils = require('./utils');
 
-async function checkMongoWorks() {
+async function checkMongoWorks(beFatal) {
     try {
         const mongoc = await mongo3.clientConnect({concurrency: 1});
         const results = await mongo3.listCollections(mongoc);
@@ -13,6 +13,11 @@ async function checkMongoWorks() {
         return results;
     } catch(error) {
         debug("Failure in checkMongoWorks: %s", error.message);
+        if(beFatal) {
+            console.log("mongodb is not running: quitting");
+            console.log("config derived", nconf.get('mongoDb'));
+            process.exit(1);
+        }
         return false;
     }
 };

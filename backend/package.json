@@ -3,17 +3,18 @@
   "version": "1.7.2",
   "description": "youtube.tracking.exposed - backend data collector",
   "scripts": {
-    "watch": "key=fuffa DEBUG=*,-express:*,-body-parser:* node_modules/.bin/ts-node-dev --respawn --transpile-only bin/server.js",
-    "start": "DEBUG=*,-body-parser:*,-express:*,-lib:mongo ts-node bin/server",
+    "server:watch": "key=fuffa DEBUG=*,-express:*,-body-parser:* node_modules/.bin/ts-node-dev --respawn --transpile-only bin/server.js",
+    "start": "DEBUG=*,-body-parser:*,-express:*,-lib:* ts-node bin/server",
     "parserv": "DEBUG=*,-parser:home:warning node bin/parserv2.js",
-    "searches": "DEBUG=* node bin/searches.js",
-    "test": "mocha --require ts-node/register tests/basic/*",
+    "parserv:watch": "DEBUG=*,-parser:home:warning node_modules/.bin/ts-node-dev --respawn --transpile-only bin/parserv2.js",
+    "leafserv": "DEBUG=* node bin/leafserv.js",
+    "leafserv:watch": "DEBUG=* node_modules/.bin/ts-node-dev --respawn --transpile-only bin/leafserv.js",
+    "test": "mocha --require ts-node/register tests/*/*",
     "campaigns": "node bin/campaignUpdater.js --dest https://youtube.tracking.exposed"
   },
   "author": "Claudio Agosti <claudio@tracking.exposed> and https://github.com/tracking-exposed/yttrex/graphs/contributors",
   "license": "AGPL-3.0",
   "dependencies": {
-    "bluebird": "^3.7.2",
     "body-parser": "^1.15.2",
     "bs58": "^3.1.0",
     "chardet": "^1.3.0",

@@ -19,13 +19,8 @@ const debug = require('debug')('lib:automo');
 const moment = require('moment');
 const chardet = require('chardet')
 
-/* these two only for the experiment chiaroscuro thing */
-const url = require('url');
-const qustr = require('querystring')
-
 const utils = require('../lib/utils');
 const mongo3 = require('./mongo3');
-const { keyof } = require('io-ts');
 
 async function getSummaryByPublicKey(publicKey, options) {
     /* this function return the basic information necessary to compile the
