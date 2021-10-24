@@ -21,7 +21,6 @@ const chardet = require('chardet')
 
 const utils = require('../lib/utils');
 const mongo3 = require('./mongo3');
-const { keyof } = require('io-ts');
 
 async function getSummaryByPublicKey(publicKey, options) {
     /* this function return the basic information necessary to compile the
