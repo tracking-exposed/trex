@@ -1,6 +1,15 @@
 The format is based on [Keep a Changelog](http://keepachangelog.com/) and this
 project adheres to [Semantic Versioning](http://semver.org/).
 
+## [1.7.2] - 2021-10-22
+### Notes
+- the leaf parsing concept was in experiment till now and is going to be in 1.8.x
+- this is the last version using Bluebird and nodemon, the next would not have compatibility
+- this is the last version using 'labels' 'queries' and 'searches'
+### Added
+- typescript support
+- APIv3 for YouChoose.AI interfaces
+
 ## [1.7.1] - 2020-06-26
 ### Fixed
 - backend and extension versions differ and this is OK to reflect code updates
