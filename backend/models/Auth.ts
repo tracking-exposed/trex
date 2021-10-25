@@ -11,3 +11,8 @@ export const AuthResponse = t.strict(
 );
 
 export type AuthResponse = t.TypeOf<typeof AuthResponse>
+
+
+export const AuthorizationHeader = t.type({
+  'X-Authorization': t.string
+}, 'AuthorizationHeader')
