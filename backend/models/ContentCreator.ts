@@ -8,8 +8,6 @@ export const ContentCreator = t.strict(
     avatar: t.union([t.undefined, t.string]),
     accessToken: t.union([t.undefined, t.string]),
     url: t.union([t.undefined, t.string]),
-    verificationToken: t.union([t.string, t.null]),
-    verified: t.boolean,
     registeredOn: t.union([t.undefined, DateFromISOString])
   },
   'ContentCreator'
