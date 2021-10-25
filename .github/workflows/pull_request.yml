@@ -8,6 +8,9 @@ on:
 jobs:
   install:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [12.x]
     defaults:
       run:
         working-directory: ./backend
@@ -69,6 +72,9 @@ jobs:
 
   test:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [12.x]
     needs: [install]
     defaults:
       run:
