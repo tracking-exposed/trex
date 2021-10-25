@@ -2,7 +2,7 @@ import * as t from "io-ts";
 
 export const AuthResponse = t.strict(
   {
-    token: t.string,
+    verificationToken: t.string,
     tokenString: t.string,
     channelId: t.string,
     verified: t.boolean,
