@@ -14,5 +14,5 @@ export type AuthResponse = t.TypeOf<typeof AuthResponse>
 
 
 export const AuthorizationHeader = t.type({
-  'X-Authorization': t.string
+  'x-authorization': t.string
 }, 'AuthorizationHeader')

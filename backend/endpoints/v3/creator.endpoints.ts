@@ -12,7 +12,6 @@ const GetCreator = Endpoint({
   getPath: () => `/v3/creator/me`,
   Input: {
     Headers: AuthorizationHeader,
-    Params: t.type({ channelId: t.string }),
   },
   Output: ContentCreator,
 });

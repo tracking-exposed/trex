@@ -25,6 +25,7 @@
     "express": "^4.14.0",
     "fetch-opengraph": "^1.0.30",
     "food-words": "^1.1.0",
+    "fp-ts": "^2.11.5",
     "io-ts": "^2.2.16",
     "io-ts-types": "^0.5.16",
     "jsdom": "^13.0.0",
@@ -38,6 +39,7 @@
     "numeral": "^2.0.6",
     "request": "^2.88.2",
     "ts-endpoint": "^2.0.0",
+    "ts-io-error": "^2.0.0",
     "tweetnacl": "^0.14.3"
   },
   "devDependencies": {
