@@ -5,12 +5,12 @@ const fetchOpengraph = require("fetch-opengraph");
 
 const ycai = require("../lib/ycai");
 const curly = require("../lib/curly");
-const decode = require("../lib/decode");
+const endpoints = require("../lib/endpoint");
 const {
-  GetRecommendationsParams,
   GetRecommendationsQuery,
 } = require("../models/Recommendation");
 const { ContentCreator } = require("../models/ContentCreator");
+const { v3 } = require("../endpoints");
 
 async function byVideoId(req) {
   /* this function can be invoked in two ways: POST or GET */
@@ -103,24 +103,16 @@ async function repullByCreator(req) {
 async function getRecommendationById(req) {
   // this is a public function, anyone can query a recommandation detail
   // this function support a single Id or a list of IDs
-  const paramsResult = decode.decode(req.params, GetRecommendationsParams);
+  const paramsResult = endpoints.decodeRequest(v3.Endpoints.Public.GetRecommendations, req);
   debug("params result %O", paramsResult);
-  if (paramsResult.error) {
+  if (paramsResult.type === 'error') {
     return {
       json: paramsResult,
     };
   }
-  const ids = paramsResult.result.ids.split(",");
+  const ids = paramsResult.result.params.ids.split(",");
 
-  const queryResult = decode.decode(req.query, GetRecommendationsQuery);
-  debug("query result %O", queryResult);
-  if (queryResult.error) {
-    return {
-      json: queryResult,
-    };
-  }
-
-  const limit = queryResult.result.limit;
+  const limit = paramsResult.result.query.limit
   const recomms = await ycai.recommendationById(ids, limit);
   debug("getRecommendationById (%d ids) found %d", ids.length, recomms.length);
   return { json: recomms };
@@ -246,15 +238,31 @@ async function creatorVerify(req) {
 async function creatorGet(req) {
   // this is the /v3/creator/me query, it looks into 
   // 'creators' mongodb collection.
-  const token = req.headers['X-authenticationToken'];
+  
+  const decodedReq = endpoints.decodeRequest(v3.Endpoints.Creator.GetCreator, req);
+  if (decodedReq.type === 'error') {
+    return {
+      json: {
+        error: true,
+        details: decodedReq.result
+      }
+    }
+  }
+  const verificationToken = decodedReq.result.headers["X-Authorization"];
+  // const channelId = req.headers.channelId;
+  // if(!channelId && !verificationToken)
+  //   return { json: { error: true, message: "missing channelId or verificationToken in the header"}};
 
-  debug("getCreator by token %s", token);
-  const infoavail = await ycai.getCreatorByToken(token);
-  const validatedc = decode.decode(infoavail, ContentCreator);
-
-  if(validatedc.error) {
+  debug("getCreator by token %s", verificationToken);
+  const infoavail = await ycai.getCreatorByToken(verificationToken);
+  const validatedc = endpoints.decodeResponse(v3.Endpoints.Creator.GetCreator, {...infoavail, registeredOn: infoavail.registeredOn.toISOString() });
+  
+  if(validatedc.type === 'error') {
     debug("Invalid generated output for creatorGet %O", validatedc);
-    return { json: validatedc }
+    return { json: {
+        details: validatedc.result
+      }
+    }
   }
   return { json: validatedc.result };
 }
