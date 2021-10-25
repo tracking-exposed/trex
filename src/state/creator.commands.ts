@@ -42,7 +42,7 @@ export const addRecommendation = command(
       TE.chain((p) =>
         API.Creator.CreateRecommendation({
           Headers: {
-            verificationToken: p.accessToken,
+            'x-authorization': p.accessToken,
           },
           Body: { url },
         })
@@ -60,7 +60,7 @@ export const updateRecommendationForVideo = command(
       TE.chain((p) =>
         API.Creator.UpdateVideo({
           Headers: {
-            verificationToken: p?.accessToken,
+            'x-authorization': p?.accessToken,
           },
           Body: {
             creatorId,

@@ -82,8 +82,7 @@ export const profile = compose(
         throwOnMissingProfile(profile),
         TE.chain((p) =>
           API.Creator.GetCreator({
-            Headers: { verificationToken: p.accessToken },
-            Params: { channelId: p.channelId },
+            Headers: { 'x-authorization': p.accessToken },
           })
         ),
         TE.chain(throwOnMissingProfile)
@@ -97,7 +96,7 @@ export const creatorRecommendations = compose(
   queryStrict(
     ({ profile }) =>
       API.Creator.CreatorRecommendations({
-        Headers: { verificationToken: profile.accessToken },
+        Headers: { 'x-authorization': profile.accessToken },
         Params: { channelId: profile.channelId },
       }),
     available
@@ -108,9 +107,7 @@ export const creatorVideos = compose(
   product({ profile }),
   queryStrict(({ profile }): TE.TaskEither<Error, Video[]> => {
     return API.Creator.CreatorVideos({
-      Headers: {
-        verificationToken: profile.accessToken,
-      },
+      Headers: { 'x-authorization': profile.accessToken },
       Params: {
         channelId: profile.channelId,
       },
@@ -144,7 +141,7 @@ export const ccRelatedUsers = compose(
       return pipe(
         API.Creator.CreatorRelatedChannels({
           Headers: {
-            verificationToken: profile.accessToken,
+            'x-authorization': profile.accessToken,
           },
           Params: {
             channelId: profile.channelId,
