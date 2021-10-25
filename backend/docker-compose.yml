@@ -35,10 +35,13 @@ services:
     volumes:
       - ./bin:/app/bin
       - ./config:/app/config
+      - ./endpoints:/app/endpoints
       - ./lib:/app/lib
+      - ./models:/app/models
       - ./parsers:/app/parsers
       - ./routes:/app/routes
       - ./node_modules:/app/node_modules
       - ./package.json:/app/package.json
+      - ./tsconfig.json:/app/tsconfig.json
     working_dir: /app
-    command: npm run watch
+    command: npm run watch:ts
