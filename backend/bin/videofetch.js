@@ -6,12 +6,12 @@ const nconf = require('nconf');
 const path = require('path');
 
 const CSV = require('../lib/CSV');
-const { experimentalFetch } = require('../lib/curly');
+const { recentVideoFetch } = require('../lib/curly');
 
 nconf.argv().env().file({ file: 'config/settings.json'});
 
 async function vfet(channelId) {
-  const titlesandId = await experimentalFetch(channelId)
+  const titlesandId = await recentVideoFetch(channelId)
 
   if(!titlesandId) {
     debug("Failure in extracting video details from channel %s", channelId);
