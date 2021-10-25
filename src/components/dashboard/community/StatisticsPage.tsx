@@ -1,35 +1,35 @@
+import { ContentCreator } from '@backend/models/ContentCreator';
 import {
   Card,
   CardContent,
   CardHeader,
   Typography,
-  useTheme,
+  useTheme
 } from '@material-ui/core';
 import Grid from '@material-ui/core/Grid';
 import CommunityIcon from '@material-ui/icons/GroupOutlined';
 import NotificationIcon from '@material-ui/icons/NotificationImportantOutlined';
 import * as QR from 'avenger/lib/QueryResult';
 import { declareQueries } from 'avenger/lib/react';
-import { ErrorBox } from '../../common/ErrorBox';
-import { LazyFullSizeLoader } from '../../common/FullSizeLoader';
 import { pipe } from 'fp-ts/lib/function';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
+import { profile } from '../../../state/creator.queries';
+import { ErrorBox } from '../../common/ErrorBox';
+import { LazyFullSizeLoader } from '../../common/FullSizeLoader';
+import { LinkAccountButton } from '../../common/LinkAccountButton';
 import { StatsCard } from '../../common/StatsCard';
 import { CCRelatedUserList } from './CCRelatedUserList';
-import { auth } from '../../../state/creator.queries';
-import { LinkAccountButton } from 'components/common/LinkAccountButton';
-import { AuthResponse } from '@backend/models/Auth';
 
 interface CreatorStatsProps {
-  auth?: AuthResponse;
+  profile?: ContentCreator;
 }
-const CreatorStats: React.FC<CreatorStatsProps> = ({ auth }) => {
+const CreatorStats: React.FC<CreatorStatsProps> = ({ profile }) => {
   const theme = useTheme();
   const { t } = useTranslation();
   return (
     <Grid item md={12}>
-      {auth === undefined || !auth.verified ? (
+      {profile === undefined ? (
         <LinkAccountButton />
       ) : (
         <Grid container>
@@ -39,7 +39,7 @@ const CreatorStats: React.FC<CreatorStatsProps> = ({ auth }) => {
                 count: 5,
               })}
             </Typography>
-            <CCRelatedUserList channelId={auth.channelId} amount={5} skip={0} />
+            <CCRelatedUserList channelId={profile.channelId} amount={5} skip={0} />
           </Grid>
 
           <Grid item md={6}>
@@ -93,16 +93,16 @@ const CreatorStats: React.FC<CreatorStatsProps> = ({ auth }) => {
   );
 };
 
-const withQueries = declareQueries({ auth });
+const withQueries = declareQueries({ profile });
 
 export const StatisticsPage = withQueries(({ queries }): React.ReactElement => {
   return pipe(
     queries,
-    QR.fold(LazyFullSizeLoader, ErrorBox, ({ auth }) => {
+    QR.fold(LazyFullSizeLoader, ErrorBox, ({ profile }) => {
       return (
         <Grid container spacing={3}>
           <Grid item md={12}>
-            <CreatorStats auth={auth} />
+            <CreatorStats profile={profile} />
           </Grid>
         </Grid>
       );

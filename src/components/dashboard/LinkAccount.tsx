@@ -14,6 +14,7 @@ import InputLabel from '@material-ui/core/InputLabel';
 import CopyIcon from '@material-ui/icons/FileCopyOutlined';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
+import { doUpdateCurrentView } from 'utils/location.utils';
 import {
   copyToClipboard,
   registerCreatorChannel,
@@ -24,7 +25,7 @@ import {
 const youtubeChannelUrlRegex = /^https:\/\/www.youtube.com\/channel\/([^/]+)$/;
 
 interface LinkAccountProps {
-  auth?: AuthResponse;
+  auth: AuthResponse;
 }
 export const LinkAccount: React.FC<LinkAccountProps> = ({ auth }) => {
   const { t } = useTranslation();
@@ -68,7 +69,9 @@ export const LinkAccount: React.FC<LinkAccountProps> = ({ auth }) => {
     };
   const handleUnlinkChannel: React.MouseEventHandler<HTMLButtonElement> =
     async () => {
-      await updateAuth(undefined)();
+      await updateAuth(undefined)().then(() =>
+        doUpdateCurrentView({ view: 'index' })()
+      );
     };
 
   const creatorChannelValue = channel ?? '';
@@ -111,7 +114,7 @@ export const LinkAccount: React.FC<LinkAccountProps> = ({ auth }) => {
     );
   }
 
-  if (!auth.verified) {
+  if (auth.verified === false) {
     return (
       <Box>
         <Typography variant="body2">
@@ -132,6 +135,7 @@ export const LinkAccount: React.FC<LinkAccountProps> = ({ auth }) => {
                     await copyToClipboard(auth.tokenString)().then(() => {
                       // open studio edit tab
                       window.open(
+                        // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
                         `https://studio.youtube.com/channel/${auth.channelId}/editing/details`
                       );
                       setShowPopup(true);

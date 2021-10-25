@@ -1,18 +1,19 @@
 import { AuthResponse } from '@backend/models/Auth';
+import { ContentCreator } from '@backend/models/ContentCreator';
 import { command } from 'avenger';
 import * as E from 'fp-ts/lib/Either';
 import { pipe } from 'fp-ts/lib/function';
 import * as TE from 'fp-ts/lib/TaskEither';
-import {
-  Messages
-} from '../models/Messages';
+import { Messages } from '../models/Messages';
 import { API } from '../providers/api.provider';
-import { sendMessage, toBrowserError } from '../providers/browser.provider';
-import { doUpdateCurrentView } from '../utils/location.utils';
+import { sendMessage } from '../providers/browser.provider';
 import {
-  auth, ccRelatedUsers,
+  auth,
+  ccRelatedUsers,
   creatorRecommendations,
-  creatorVideos, profile
+  creatorVideos,
+  localProfile,
+  profile,
 } from './creator.queries';
 import { settings, videoRecommendations } from './public.queries';
 
@@ -36,7 +37,17 @@ export const registerCreatorChannel = command(
 
 export const addRecommendation = command(
   ({ url }: { url: string }) =>
-    API.Creator.CreateRecommendation({ Body: { url } }),
+    pipe(
+      profile.run(),
+      TE.chain((p) =>
+        API.Creator.CreateRecommendation({
+          Headers: {
+            verificationToken: p.accessToken,
+          },
+          Body: { url },
+        })
+      )
+    ),
   {
     creatorRecommendations,
   }
@@ -44,13 +55,21 @@ export const addRecommendation = command(
 
 export const updateRecommendationForVideo = command(
   ({ videoId, creatorId, recommendations }) => {
-    return API.Creator.UpdateVideo({
-      Body: {
-        creatorId,
-        videoId,
-        recommendations,
-      },
-    });
+    return pipe(
+      profile.run(),
+      TE.chain((p) =>
+        API.Creator.UpdateVideo({
+          Headers: {
+            verificationToken: p?.accessToken,
+          },
+          Body: {
+            creatorId,
+            videoId,
+            recommendations,
+          },
+        })
+      )
+    );
   },
   {
     settings,
@@ -65,21 +84,24 @@ export const verifyChannel = command(
       TE.chain(sendMessage(Messages.UpdateContentCreator))
     ),
   {
-    profile,
+    localProfile,
     auth,
   }
 );
 
 export const updateAuth = command(
-  (payload?: AuthResponse) =>
-    pipe(
-      sendMessage(Messages.UpdateAuth)(payload),
-      TE.chain(() =>
-        pipe(doUpdateCurrentView({ view: 'index' }), TE.mapLeft(toBrowserError))
-      )
-    ),
+  (payload?: AuthResponse) => sendMessage(Messages.UpdateAuth)(payload),
   {
     auth,
+  }
+);
+
+export const updateProfile = command(
+  (payload?: ContentCreator) =>
+    sendMessage(Messages.UpdateContentCreator)(payload),
+  {
+    profile,
+    localProfile,
   }
 );
 

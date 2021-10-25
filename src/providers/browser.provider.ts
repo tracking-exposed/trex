@@ -40,6 +40,7 @@ export const sendMessage =
       TE.tryCatch(
         () =>
           new Promise<R['Response']>((resolve) => {
+            bkgLogger.debug('Sending message %s with payload %O', r.Request.type, p)
             bo.runtime.sendMessage<R['Request'], R['Response']>(
               { type: r.Request.type, payload: p },
               resolve
