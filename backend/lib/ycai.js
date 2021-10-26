@@ -271,7 +271,7 @@ async function registerVideos(videol, channelId) {
   // no return value here
 }
 
-async function getCreatorByFilter(filter) {
+async function getCreatorByToken(token) {
   // this function might be executed to query the 
   // state of a content creator. it might be 
   // fully authenticated, or not. the filter 
@@ -279,31 +279,14 @@ async function getCreatorByFilter(filter) {
   // token are going to expire automatically.
   const mongoc = await mongo3.clientConnect({ concurrency: 1 });
   const creator = await mongo3
-    .readOne(mongoc, nconf.get("schema").creators, filter);
-  const token = await mongo3
-    .readOne(mongoc, nconf.get("schema").tokens, filter);
+    .readOne(mongoc, nconf.get("schema").creators, {
+      accessToken: token
+    });
   await mongoc.close();
 
-  debug("getCreatorByFilter via %j: creator %j / token %j",
-    filter, creator, token);
-
   if(creator) {
-    return {
-      ...creator,
-      verified: true,
-      verificationToken: null,
-    }
-  } else if(token) {
-    return {
-      channelId: token.channelId,
-      verificationToken: token.verificationToken,
-      verified: false,
-      username: undefined,
-      avatar: undefined,
-      accessToken: undefined,
-      url: undefined,
-      registeredOn: undefined,
-    }
+    debug("getCreatorByToken creator %j", creator);
+    return creator;
   } else {
     return {
       error: true,
@@ -323,6 +306,6 @@ module.exports = {
   generateToken,
   getToken,
   registerVideos,
-  getCreatorByFilter,
+  getCreatorByToken,
   confirmCreator,
 };

@@ -6,34 +6,37 @@ on:
       - master
 
 jobs:
-  install:
-    runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: ./backend
-    steps:
-      - uses: actions/checkout@v2
+  # install:
+  #   runs-on: ubuntu-latest
+  #   strategy:
+  #     matrix:
+  #       node-version: [12.x]
+  #   defaults:
+  #     run:
+  #       working-directory: ./backend
+  #   steps:
+  #     - uses: actions/checkout@v2
 
-      - name: Get npm cache directory path
-        id: npm-cache-dir-path
-        run: echo "::set-output name=dir::~/.npm"
+  #     - name: Get npm cache directory path
+  #       id: npm-cache-dir-path
+  #       run: echo "::set-output name=dir::~/.npm"
 
-      - uses: actions/cache@v2
-        id: npm-cache # use this to check for `cache-hit` (`steps.yarn-cache.outputs.cache-hit != 'true'`)
-        with:
-          path: ${{ steps.npm-cache-dir-path.outputs.dir }}
-          key: ${{ runner.os }}-npm-${{ hashFiles('**/package-lock.json') }}
-          restore-keys: |
-            ${{ runner.os }}-npm-
+  #     - uses: actions/cache@v2
+  #       id: npm-cache # use this to check for `cache-hit` (`steps.yarn-cache.outputs.cache-hit != 'true'`)
+  #       with:
+  #         path: ${{ steps.npm-cache-dir-path.outputs.dir }}
+  #         key: ${{ runner.os }}-npm-${{ hashFiles('**/package-lock.json') }}
+  #         restore-keys: |
+  #           ${{ runner.os }}-npm-
 
-      - name: Install modules
-        # if: steps.yarn-cache.outputs.cache-hit != 'true'
-        run: npm install --production=false
+  #     - name: Install modules
+  #       # if: steps.yarn-cache.outputs.cache-hit != 'true'
+  #       run: npm install
 
-      - uses: actions/cache@v2
-        with:
-          path: "**/node_modules"
-          key: ${{ runner.os }}-modules-${{ hashFiles('**/package-lock.json') }}
+  #     - uses: actions/cache@v2
+  #       with:
+  #         path: "**/node_modules"
+  #         key: ${{ runner.os }}-modules-${{ hashFiles('**/package-lock.json') }}
 
 
   # lint:
@@ -69,17 +72,17 @@ jobs:
 
   test:
     runs-on: ubuntu-latest
-    needs: [install]
+    strategy:
+      matrix:
+        node-version: [12.x]
     defaults:
       run:
         working-directory: ./backend
     steps:
       - uses: actions/checkout@v2
 
-      - uses: actions/cache@v2
-        with:
-          path: "**/node_modules"
-          key: ${{ runner.os }}-modules-${{ hashFiles('**/package-lock.json') }}
+      - name: Install node_modules
+        run: npm install
 
       - name: Install mocha
         run: npm i -D mocha

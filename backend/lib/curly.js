@@ -37,7 +37,7 @@ function lookForJSONblob(data) {
 
 }
 
-async function experimentalFetch(channelId) {
+async function recentVideoFetch(channelId) {
 
   const ytvidsurl = `https://www.youtube.com/channel/${channelId}/videos`;
   const { statusCode, data, headers } = await curly.get(ytvidsurl, {
@@ -142,6 +142,6 @@ async function tokenFetch(channelId) {
 }
 
 module.exports = {
-  experimentalFetch,
+  recentVideoFetch,
   tokenFetch,
 };

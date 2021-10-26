@@ -34,6 +34,7 @@ const GetRecommendations = Endpoint({
   Output: t.array(Recommendation),
 });
 
+
 export const endpoints = {
   Handshake,
   GetRecommendations,
