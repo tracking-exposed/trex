@@ -89,6 +89,17 @@ async function videoByCreator(req) {
   return { json: ready };
 }
 
+async function repullByCreator(req) {
+  const token = _.get(req.headers, 'X-AuthenticationToken');
+  debug("repullByCreator %s", token)
+  const creator = await ycai.getCreatorByToken(token);
+  debug("repullByCreator %j", creator)
+  const titlesandId = await curly.recentVideoFetch(creator.channelId);
+  debug("repull of %j", titlesandId);
+  await ycai.registerVideos(titlesandId, creator.channelId);
+  return { json: titlesandId };
+}
+
 async function getRecommendationById(req) {
   // this is a public function, anyone can query a recommandation detail
   // this function support a single Id or a list of IDs
@@ -227,6 +238,7 @@ async function creatorVerify(req) {
 async function creatorGet(req) {
   // this is the /v3/creator/me query, it looks into 
   // 'creators' mongodb collection.
+  
   const decodedReq = endpoints.decodeRequest(v3.Endpoints.Creator.GetCreator, req);
   if (decodedReq.type === 'error') {
     return {
@@ -241,14 +253,10 @@ async function creatorGet(req) {
   // if(!channelId && !verificationToken)
   //   return { json: { error: true, message: "missing channelId or verificationToken in the header"}};
 
-  const filter = {
-    verificationToken
-  };
-
-  debug("getCreator (by token or channel) %j", filter);
-  const infoavail = await ycai.getCreatorByFilter(filter);
+  debug("getCreator by token %s", verificationToken);
+  const infoavail = await ycai.getCreatorByToken(verificationToken);
   const validatedc = endpoints.decodeResponse(v3.Endpoints.Creator.GetCreator, {...infoavail, registeredOn: infoavail.registeredOn.toISOString() });
-
+  
   if(validatedc.type === 'error') {
     debug("Invalid generated output for creatorGet %O", validatedc);
     return { json: {
@@ -271,6 +279,7 @@ module.exports = {
   byProfile,
   ogpProxy,
   videoByCreator,
+  repullByCreator,
   getRecommendationById,
   updateVideoRec,
   creatorRegister,
