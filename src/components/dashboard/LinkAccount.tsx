@@ -14,6 +14,7 @@ import InputLabel from '@material-ui/core/InputLabel';
 import CopyIcon from '@material-ui/icons/FileCopyOutlined';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
+import { doUpdateCurrentView } from 'utils/location.utils';
 import {
   copyToClipboard,
   registerCreatorChannel,
@@ -21,8 +22,10 @@ import {
   verifyChannel,
 } from '../../state/creator.commands';
 
+const youtubeChannelUrlRegex = /^https:\/\/www.youtube.com\/channel\/([^/]+)$/;
+
 interface LinkAccountProps {
-  auth?: AuthResponse;
+  auth: AuthResponse;
 }
 export const LinkAccount: React.FC<LinkAccountProps> = ({ auth }) => {
   const { t } = useTranslation();
@@ -31,6 +34,18 @@ export const LinkAccount: React.FC<LinkAccountProps> = ({ auth }) => {
   const [showPopup, setShowPopup] = React.useState(false);
 
   const inputRef = React.useRef<HTMLInputElement>(null);
+
+  const handleChannelChange: React.ChangeEventHandler<
+    HTMLInputElement | HTMLTextAreaElement
+  > = (e) => {
+    const youtubeChannelUrlMatch = e.target.value.match(youtubeChannelUrlRegex);
+    if (youtubeChannelUrlMatch !== null) {
+      setChannel(youtubeChannelUrlMatch[1]);
+      return;
+    }
+
+    setChannel(e.target.value);
+  };
 
   const onSubmit: React.KeyboardEventHandler<HTMLInputElement> = async (
     e
@@ -54,7 +69,9 @@ export const LinkAccount: React.FC<LinkAccountProps> = ({ auth }) => {
     };
   const handleUnlinkChannel: React.MouseEventHandler<HTMLButtonElement> =
     async () => {
-      await updateAuth(undefined)();
+      await updateAuth(undefined)().then(() =>
+        doUpdateCurrentView({ view: 'index' })()
+      );
     };
 
   const creatorChannelValue = channel ?? '';
@@ -77,7 +94,7 @@ export const LinkAccount: React.FC<LinkAccountProps> = ({ auth }) => {
                 ref={inputRef}
                 fullWidth={true}
                 value={creatorChannelValue}
-                onChange={(e) => setChannel(e.target.value)}
+                onChange={handleChannelChange}
                 onKeyDown={onSubmit}
               />
               <ButtonGroup style={{ marginTop: 10 }}>
@@ -86,7 +103,8 @@ export const LinkAccount: React.FC<LinkAccountProps> = ({ auth }) => {
                   color="secondary"
                   onClick={handleChannelSubmit}
                 >
-                  {t('actions:link_channel')}
+                  {t('actions:link_channel')}{' '}
+                  {creatorChannelValue !== '' ? `(${creatorChannelValue})` : ''}
                 </Button>
               </ButtonGroup>
             </FormControl>
@@ -96,7 +114,7 @@ export const LinkAccount: React.FC<LinkAccountProps> = ({ auth }) => {
     );
   }
 
-  if (!auth.verified) {
+  if (auth.verified === false) {
     return (
       <Box>
         <Typography variant="body2">
@@ -115,6 +133,11 @@ export const LinkAccount: React.FC<LinkAccountProps> = ({ auth }) => {
                   aria-label="toggle password visibility"
                   onClick={async () => {
                     await copyToClipboard(auth.tokenString)().then(() => {
+                      // open studio edit tab
+                      window.open(
+                        // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
+                        `https://studio.youtube.com/channel/${auth.channelId}/editing/details`
+                      );
                       setShowPopup(true);
                       setTimeout(() => {
                         setShowPopup(false);

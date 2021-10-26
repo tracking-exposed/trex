@@ -1,19 +1,19 @@
 import { AuthResponse } from '@backend/models/Auth';
+import { ContentCreator } from '@backend/models/ContentCreator';
 import { command } from 'avenger';
 import * as E from 'fp-ts/lib/Either';
 import { pipe } from 'fp-ts/lib/function';
 import * as TE from 'fp-ts/lib/TaskEither';
-import { Settings } from 'models/AccountSettings';
-import { doUpdateCurrentView } from 'utils/location.utils';
-import { UpdateAuth, UpdateSettings } from '../models/MessageRequest';
+import { Messages } from '../models/Messages';
 import { API } from '../providers/api.provider';
-import { sendMessage, toBrowserError } from '../providers/browser.provider';
+import { sendMessage } from '../providers/browser.provider';
 import {
+  auth,
   ccRelatedUsers,
   creatorRecommendations,
   creatorVideos,
-  auth,
-  profile
+  localProfile,
+  profile,
 } from './creator.queries';
 import { settings, videoRecommendations } from './public.queries';
 
@@ -25,10 +25,7 @@ export const registerCreatorChannel = command(
         Body: { type: 'channel' },
       }),
       TE.chainFirst((payload) => {
-        return sendMessage({
-          type: UpdateAuth.value,
-          payload,
-        });
+        return sendMessage(Messages.UpdateAuth)(payload);
       })
     ),
   {
@@ -40,7 +37,17 @@ export const registerCreatorChannel = command(
 
 export const addRecommendation = command(
   ({ url }: { url: string }) =>
-    API.Creator.CreateRecommendation({ Body: { url } }),
+    pipe(
+      profile.run(),
+      TE.chain((p) =>
+        API.Creator.CreateRecommendation({
+          Headers: {
+            'x-authorization': p.accessToken,
+          },
+          Body: { url },
+        })
+      )
+    ),
   {
     creatorRecommendations,
   }
@@ -48,13 +55,21 @@ export const addRecommendation = command(
 
 export const updateRecommendationForVideo = command(
   ({ videoId, creatorId, recommendations }) => {
-    return API.Creator.UpdateVideo({
-      Body: {
-        creatorId,
-        videoId,
-        recommendations,
-      },
-    });
+    return pipe(
+      profile.run(),
+      TE.chain((p) =>
+        API.Creator.UpdateVideo({
+          Headers: {
+            'x-authorization': p?.accessToken,
+          },
+          Body: {
+            creatorId,
+            videoId,
+            recommendations,
+          },
+        })
+      )
+    );
   },
   {
     settings,
@@ -62,36 +77,31 @@ export const updateRecommendationForVideo = command(
   }
 );
 
-export const updateSettings = command(
-  (payload: Settings) =>
-    sendMessage({ type: UpdateSettings.value, payload: payload }),
-  { accountSettings: settings, creatorRecommendations, creatorVideos }
-);
-
 export const verifyChannel = command(
   ({ channelId }: { channelId: string }) =>
     pipe(
       API.Creator.VerifyCreator({ Params: { channelId } }),
-      TE.chain((auth) => updateAuth(auth))
+      TE.chain(sendMessage(Messages.UpdateContentCreator))
     ),
   {
-    profile,
+    localProfile,
+    auth,
   }
 );
 
 export const updateAuth = command(
-  (payload?: AuthResponse) =>
-    pipe(
-      sendMessage({ type: UpdateAuth.value, payload }),
-      TE.chain(() =>
-        pipe(
-          doUpdateCurrentView({ view: 'index' }),
-          TE.mapLeft(toBrowserError)
-        )
-      )
-    ),
+  (payload?: AuthResponse) => sendMessage(Messages.UpdateAuth)(payload),
   {
     auth,
+  }
+);
+
+export const updateProfile = command(
+  (payload?: ContentCreator) =>
+    sendMessage(Messages.UpdateContentCreator)(payload),
+  {
+    profile,
+    localProfile,
   }
 );
 

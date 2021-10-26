@@ -57,10 +57,9 @@ export const liftFetch = <B>(
       return pipe(
         decode(content),
         E.mapLeft((e): APIError => {
-          return new APIError(
-            'Validation failed.',
-            PathReporter.report(E.left(e))
-          );
+          const details = PathReporter.report(E.left(e));
+          apiLogger.error('Validation failed %O', details);
+          return new APIError('Validation failed.', details);
         }),
         TE.fromEither
       );
@@ -123,6 +122,7 @@ const toTERequest = <E extends MinimalEndpointInstance>(e: E): TERequest<E> => {
         responseType: 'json',
         headers: {
           Accept: 'application/json',
+          ...b.Headers
         },
       });
     }, e.Output.decode)

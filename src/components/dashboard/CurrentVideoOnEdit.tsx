@@ -10,7 +10,7 @@ import { LazyFullSizeLoader } from '../common/FullSizeLoader';
 import { ErrorBox } from '../common/ErrorBox';
 import { useTranslation } from 'react-i18next';
 
-const withQueries = declareQueries({ accountSettings: settings });
+const withQueries = declareQueries({ settings });
 
 export const CurrentVideoOnEdit = withQueries((props): React.ReactElement => {
   const { t } = useTranslation();
@@ -19,7 +19,7 @@ export const CurrentVideoOnEdit = withQueries((props): React.ReactElement => {
     QR.fold(
       LazyFullSizeLoader,
       ErrorBox,
-      ({ accountSettings: { edit: video } }) => {
+      ({ settings: { edit: video } }) => {
         if (video === null) {
           return (
             <Box>

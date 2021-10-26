@@ -125,7 +125,6 @@ module.exports = {
         inject: true,
         filename: 'popup.html',
       }),
-
       new BrowserExtensionPlugin({
         // todo: it fails due to a webpack-inject-plugin-loader error
         autoReload: false,
@@ -234,6 +233,16 @@ module.exports = {
         // which doesn't contain `[contenthash]`.
         new MiniCssExtractPlugin()
       );
+    config.module.rules[1] = {
+      oneOf: config.module.rules[1].oneOf.concat({
+        test: /\.wasm$/,
+        type: 'javascript/auto',
+        loader: 'file-loader',
+        options: {
+          name: '[name]-[hash].[ext]',
+        },
+      }),
+    };
 
     return config;
   },

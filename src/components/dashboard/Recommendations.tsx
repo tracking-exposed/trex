@@ -6,7 +6,7 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { updateRecommendationForVideo } from '../../state/creator.commands';
 import { settings, videoRecommendations } from '../../state/public.queries';
-import { creatorRecommendations } from '../../state/creator.queries';
+import { creatorRecommendations, profile } from '../../state/creator.queries';
 import { ErrorBox } from '../common/ErrorBox';
 import { LazyFullSizeLoader } from '../common/FullSizeLoader';
 import { RecommendationCard } from '../common/RecommendationCard';
@@ -16,6 +16,7 @@ const styles = {
 };
 
 const withQueries = declareQueries({
+  profile,
   recommendations: creatorRecommendations,
   videoRecommendations: videoRecommendations,
   settings: settings,
@@ -38,7 +39,7 @@ export const Recommendations = withQueries<RecommendationsProps>(
           QR.fold(
             LazyFullSizeLoader,
             ErrorBox,
-            ({ recommendations, videoRecommendations, settings }) => {
+            ({ recommendations, videoRecommendations, settings, profile }) => {
               if (recommendations.length === 0) {
                 return (
                   <div style={styles}>

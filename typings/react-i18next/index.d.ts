@@ -9,6 +9,7 @@ declare module 'react-i18next' {
         empty_list: string;
       };
       actions: {
+        popup_bootstrap: string;
         add: string;
         delete: string;
         clear: string;
@@ -22,6 +23,8 @@ declare module 'react-i18next' {
         unlink_channel: string;
         verify_channel: string;
         verify_channel_hint: string;
+        delete_keypair: string;
+        download_keypair: string;
       };
       account: {
         channel: string;
@@ -72,7 +75,12 @@ declare module 'react-i18next' {
         communityRecommendationsHint: string;
         contributeToIndipendentStatsLabel: string;
         contributeToIndipendentStatsHint: string;
-        api_list_title: string
+        api_list_title: string;
+        encrypted_contributions_private_key: string;
+        keypair_title: string;
+        keypair_passphrase: string;
+        keypair_public_key: string;
+        keypair_private_key: string;
       };
       videos: {
         no_results: string;

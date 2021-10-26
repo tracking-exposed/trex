@@ -1,8 +1,8 @@
-import { bo } from '../utils/browser.utils';
-import { MessageRequest } from '../models/MessageRequest';
-import * as TE from 'fp-ts/lib/TaskEither';
-import { pipe } from 'fp-ts/lib/pipeable';
 import * as E from 'fp-ts/lib/Either';
+import { pipe } from 'fp-ts/lib/pipeable';
+import * as TE from 'fp-ts/lib/TaskEither';
+import { ErrorOccured, Messages } from '../models/Messages';
+import { bo } from '../utils/browser.utils';
 import { bkgLogger } from '../utils/logger.utils';
 
 export const toBrowserError = (e: unknown): chrome.runtime.LastError => {
@@ -10,6 +10,12 @@ export const toBrowserError = (e: unknown): chrome.runtime.LastError => {
   bkgLogger.error('An error occured %O', e);
   if (e instanceof Error) {
     return { message: e.message };
+  }
+
+  if (e !== undefined) {
+    if ((e as any).message !== undefined) {
+      return { message: (e as any).message };
+    }
   }
   return { message: 'Unknown error' };
 };
@@ -25,16 +31,28 @@ export const catchRuntimeLastError = <A>(
   return TE.right(v);
 };
 
-export const sendMessage = <R>(
-  r: MessageRequest
-): TE.TaskEither<chrome.runtime.LastError, R> =>
-  pipe(
-    TE.tryCatch(
-      () =>
-        new Promise<R>((resolve) => {
-          bo.runtime.sendMessage<any, R>(r, resolve);
-        }),
-      E.toError
-    ),
-    TE.chain(catchRuntimeLastError)
-  );
+export const sendMessage =
+  <R extends Messages[keyof Messages]>(r: R) =>
+  (
+    p?: R['Request']['payload']
+  ): TE.TaskEither<chrome.runtime.LastError, R['Response']['response']> =>
+    pipe(
+      TE.tryCatch(
+        () =>
+          new Promise<R['Response']>((resolve) => {
+            bkgLogger.debug('Sending message %s with payload %O', r.Request.type, p)
+            bo.runtime.sendMessage<R['Request'], R['Response']>(
+              { type: r.Request.type, payload: p },
+              resolve
+            );
+          }),
+        E.toError
+      ),
+      TE.chain(catchRuntimeLastError),
+      TE.chain((result) => {
+        if (result.type === ErrorOccured.value) {
+          return TE.left(toBrowserError(result.response));
+        }
+        return TE.right(result.response);
+      })
+    );
