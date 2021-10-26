@@ -148,7 +148,7 @@ app.get('/api/v3/recommendations/:ids', (req, res) => dispatchPromise('recommend
 app.post('/api/v3/creator/updateVideo', (req, res) => dispatchPromise('updateVideoRec', req, res))
 app.post('/api/v3/creator/ogp', cors(), (req, res) => dispatchPromise('ogpProxy', req, res))
 app.get('/api/v3/creator/videos', (req, res) => dispatchPromise('getVideoByCreator', req, res))
-app.get('/api/v3/creator/videos/repull', (req, res) => dispatchPromise('repullByCreator', req, res))
+app.post('/api/v3/creator/videos/repull', (req, res) => dispatchPromise('repullByCreator', req, res))
 
 app.get('/api/v3/creator/recommendations/:publicKey', (req, res) => dispatchPromise('youChooseByProfile', req, res))
 app.get('/api/v3/creator/:channelId/related/:amount?', (req, res) => dispatchPromise('getCreatorRelated', req, res))

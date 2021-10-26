@@ -6,10 +6,6 @@ const fetchOpengraph = require("fetch-opengraph");
 const ycai = require("../lib/ycai");
 const curly = require("../lib/curly");
 const endpoints = require("../lib/endpoint");
-const {
-  GetRecommendationsQuery,
-} = require("../models/Recommendation");
-const { ContentCreator } = require("../models/ContentCreator");
 const { v3 } = require("../endpoints");
 
 async function byVideoId(req) {
@@ -64,13 +60,22 @@ async function ogpProxy(req) {
 
 async function videoByCreator(req) {
   // this function should validate req.params.authMaterial
-  let creator = {};
-  creator.id = req.params.publicKey;
+  const decodedReq = endpoints.decodeRequest(v3.Endpoints.Creator.CreatorVideos, req);
+  if (decodedReq.type === 'error') {
+    return {
+      json: {
+        error: true,
+        details: decodedReq.result
+      }
+    }
+  }
+  const token = decodedReq.result.headers['x-authorization'];
+  const creator = await ycai.getCreatorByToken(token);
   // at the moment the publicKey is the channelId
 
-  debug("Querying DB.ytvids for profile [%s]", creator.id);
+  debug("Querying DB.ytvids for profile [%s]", creator._id);
   const MAXVIDOEL = 100;
-  const videos = await ycai.getVideoFromYTprofiles(creator, MAXVIDOEL);
+  const videos = await ycai.getVideoFromYTprofiles({ id: creator.channelId }, MAXVIDOEL);
 
   // format: recommendation might be empty or unset
   // creatorId, when, videoId, title, recommendations: []
@@ -90,8 +95,16 @@ async function videoByCreator(req) {
 }
 
 async function repullByCreator(req) {
-  const token = _.get(req.headers, 'X-AuthenticationToken');
-  debug("repullByCreator %s", token)
+  const decodedReq = endpoints.decodeRequest(v3.Endpoints.Creator.PullCreatorVideos, req);
+  if (decodedReq.type === 'error') {
+    return { json: {
+      error: true,
+      details: decodedReq.result
+      }
+    }
+  }
+  const token = decodedReq.result.headers['x-authorization'];
+  debug("repullByCreator token %s", token)
   const creator = await ycai.getCreatorByToken(token);
   debug("repullByCreator %j", creator)
   const titlesandId = await curly.recentVideoFetch(creator.channelId);
@@ -238,7 +251,7 @@ async function creatorVerify(req) {
 async function creatorGet(req) {
   // this is the /v3/creator/me query, it looks into 
   // 'creators' mongodb collection.
-  
+
   const decodedReq = endpoints.decodeRequest(v3.Endpoints.Creator.GetCreator, req);
   if (decodedReq.type === 'error') {
     return {

@@ -32,10 +32,6 @@ const decodeRequest = <E extends MinimalEndpointInstance>(
       params: pipe(req.params, (e.Input?.Params ?? t.unknown).decode),
       body: pipe(req.body, (e.Input?.Body ?? t.unknown).decode),
     }),
-    (r) => {
-      console.log(r);
-      return r;
-    },
     E.fold(
       (e): DecodeRequestResult<E> => ({
         type: "error",
