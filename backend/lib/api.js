@@ -84,7 +84,7 @@ const apiList = {
     youChooseByProfile:  require('../routes/youchoose').byProfile,
     ogpProxy:            require('../routes/youchoose').ogpProxy,
     getVideoByCreator:   require('../routes/youchoose').videoByCreator,
-    repullByCreators:    require('../routes/youchoose').repullByCreator,
+    repullByCreator:     require('../routes/youchoose').repullByCreator,
     recommendationById:  require('../routes/youchoose').getRecommendationById,
     updateVideoRec:      require('../routes/youchoose').updateVideoRec,
     getCreatorRelated:   require('../routes/public').getCreatorRelated,
