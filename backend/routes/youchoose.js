@@ -248,7 +248,7 @@ async function creatorGet(req) {
       }
     }
   }
-  const verificationToken = decodedReq.result.headers["X-Authorization"];
+  const verificationToken = decodedReq.result.headers["x-authorization"];
   // const channelId = req.headers.channelId;
   // if(!channelId && !verificationToken)
   //   return { json: { error: true, message: "missing channelId or verificationToken in the header"}};
@@ -256,7 +256,7 @@ async function creatorGet(req) {
   debug("getCreator by token %s", verificationToken);
   const infoavail = await ycai.getCreatorByToken(verificationToken);
   const validatedc = endpoints.decodeResponse(v3.Endpoints.Creator.GetCreator, {...infoavail, registeredOn: infoavail.registeredOn.toISOString() });
-  
+
   if(validatedc.type === 'error') {
     debug("Invalid generated output for creatorGet %O", validatedc);
     return { json: {
