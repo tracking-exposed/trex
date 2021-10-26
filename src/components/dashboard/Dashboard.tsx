@@ -54,9 +54,7 @@ const DashboardContent: React.FC<DashboardContentProps> = ({
         case 'settings':
           // eslint-disable-next-line react/jsx-key
           return [t('routes:settings'), '', <Settings />];
-        case 'linkAccount':
-        case 'studioEdit':
-        case 'studio': {
+        default: {
           if (profile === undefined) {
             return [
               t('routes:link_account'),
@@ -75,23 +73,21 @@ const DashboardContent: React.FC<DashboardContentProps> = ({
                 <StudioVideoEdit videoId={currentView.videoId} />,
               ];
             case 'studio':
-            default:
               return [
                 t('routes:studio'),
                 '',
                 // eslint-disable-next-line react/jsx-key
                 <Studio />,
               ];
+            default:
+              return [
+                t('routes:statistics'),
+                t('statistics:subtitle'),
+                // eslint-disable-next-line react/jsx-key
+                <StatisticsPage />,
+              ];
           }
         }
-        case 'statistics':
-        default:
-          return [
-            t('routes:statistics'),
-            t('statistics:subtitle'),
-            // eslint-disable-next-line react/jsx-key
-            <StatisticsPage />,
-          ];
       }
     }, [currentView, auth]);
 

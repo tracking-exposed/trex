@@ -74,17 +74,19 @@ export const localProfile = queryStrict(
   available
 );
 
-export const profile = compose(
+export const requiredLocalProfile = compose(
   product({ profile: localProfile }),
+  queryStrict(({ profile }) => pipe(profile, throwOnMissingProfile), available)
+);
+
+export const profile = compose(
+  product({ profile: requiredLocalProfile }),
   queryStrict(
     ({ profile }) =>
       pipe(
-        throwOnMissingProfile(profile),
-        TE.chain((p) =>
-          API.Creator.GetCreator({
-            Headers: { 'x-authorization': p.accessToken },
-          })
-        ),
+        API.Creator.GetCreator({
+          Headers: { 'x-authorization': profile.accessToken },
+        }),
         TE.chain(throwOnMissingProfile)
       ),
     available
@@ -108,9 +110,6 @@ export const creatorVideos = compose(
   queryStrict(({ profile }): TE.TaskEither<Error, Video[]> => {
     return API.Creator.CreatorVideos({
       Headers: { 'x-authorization': profile.accessToken },
-      Params: {
-        channelId: profile.channelId,
-      },
     });
   }, available)
 );

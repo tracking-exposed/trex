@@ -24,6 +24,7 @@ const resources: CustomTypeOptions['resources'] = {
       "Copy the code below and add it to your YouTube channel's description",
     delete_keypair: 'Delete keypair',
     download_keypair: 'Download keypair',
+    pull_creator_videos: 'Import your videos'
   },
   routes: {
     studio: 'Studio',

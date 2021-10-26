@@ -25,6 +25,7 @@ declare module 'react-i18next' {
         verify_channel_hint: string;
         delete_keypair: string;
         download_keypair: string;
+        pull_creator_videos: string;
       };
       account: {
         channel: string;

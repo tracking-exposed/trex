@@ -1,11 +1,12 @@
 import { Video } from '@backend/models/Video';
-import { Grid, Typography } from '@material-ui/core';
+import { Button, Grid, Typography } from '@material-ui/core';
 import * as Q from 'avenger/lib/Query';
 import * as QR from 'avenger/lib/QueryResult';
 import { declareQueries } from 'avenger/lib/react';
 import { pipe } from 'fp-ts/lib/function';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
+import { pullContentCreatorVideos } from 'state/creator.commands';
 import { creatorVideos } from '../../state/creator.queries';
 import { ErrorBox } from '../common/ErrorBox';
 import { LazyFullSizeLoader } from '../common/FullSizeLoader';
@@ -30,6 +31,9 @@ export const CreatorVideos = withQueries<CreatorVideosProps>(
             {videos.length === 0 ? (
               <Grid>
                 <Typography>{t('videos:no_results')}</Typography>
+                <Button onClick={() => pullContentCreatorVideos({})()}>
+                  {t('actions:pull_creator_videos')}
+                </Button>
               </Grid>
             ) : (
               videos.map((v, i) => (
