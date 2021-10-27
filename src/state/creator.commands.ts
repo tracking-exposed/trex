@@ -14,6 +14,7 @@ import {
   creatorVideos,
   localProfile,
   profile,
+  requiredLocalProfile,
 } from './creator.queries';
 import { settings, videoRecommendations } from './public.queries';
 
@@ -32,6 +33,34 @@ export const registerCreatorChannel = command(
     creatorVideos,
     ccRelatedUsers,
     auth,
+  }
+);
+
+export const verifyChannel = command(
+  ({ channelId }: { channelId: string }) =>
+    pipe(
+      API.Creator.VerifyCreator({ Params: { channelId } }),
+      TE.chain(sendMessage(Messages.UpdateContentCreator))
+    ),
+  {
+    localProfile,
+    auth,
+  }
+);
+
+export const pullContentCreatorVideos = command(() =>
+  pipe(
+    requiredLocalProfile.run(),
+    TE.chain((p) =>
+      API.Creator.PullCreatorVideos({
+        Headers: {
+          'x-authorization': p.accessToken,
+        },
+      })
+    )
+  ),
+  {
+    creatorVideos,
   }
 );
 
@@ -74,18 +103,6 @@ export const updateRecommendationForVideo = command(
   {
     settings,
     videoRecommendations,
-  }
-);
-
-export const verifyChannel = command(
-  ({ channelId }: { channelId: string }) =>
-    pipe(
-      API.Creator.VerifyCreator({ Params: { channelId } }),
-      TE.chain(sendMessage(Messages.UpdateContentCreator))
-    ),
-  {
-    localProfile,
-    auth,
   }
 );
 
