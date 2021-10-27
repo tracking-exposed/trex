@@ -1,7 +1,7 @@
 import * as bs58 from 'bs58';
 import { pipe } from 'fp-ts/lib/pipeable';
 import * as TE from 'fp-ts/lib/TaskEither';
-import * as nacl from 'tweetnacl';
+import nacl from 'tweetnacl';
 import { Keypair } from '../models/Settings';
 import { bkgLogger } from '../utils/logger.utils';
 import { SecurityProvider } from './security.provider.type';

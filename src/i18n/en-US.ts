@@ -20,11 +20,10 @@ const resources: CustomTypeOptions['resources'] = {
     compare: 'Compare',
     related: 'Related',
     verify_channel: 'Verify channel',
-    verify_channel_hint:
-      "Copy the code below and add it to your YouTube channel's description",
     delete_keypair: 'Delete keypair',
     download_keypair: 'Download keypair',
-    pull_creator_videos: 'Import your videos'
+    pull_creator_videos: 'Import your videos',
+    copy_verification_code: 'Copy code'
   },
   routes: {
     studio: 'Studio',
@@ -43,6 +42,9 @@ const resources: CustomTypeOptions['resources'] = {
     title: 'Link your account',
     subtitle: 'Our system will verify that you own the channel on this browser',
     label: 'Link your account to start choosing recommendations',
+    verification_code_label: 'Verification code',
+    verification_code_hint:
+      "Copy the code below and add it to your YouTube channel's description",
   },
   youtube: {
     title: 'Youtube',

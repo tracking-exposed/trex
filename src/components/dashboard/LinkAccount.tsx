@@ -5,9 +5,8 @@ import {
   ButtonGroup,
   FormControl,
   Grid,
-  IconButton,
   Input,
-  InputAdornment,
+  makeStyles,
   Typography,
 } from '@material-ui/core';
 import InputLabel from '@material-ui/core/InputLabel';
@@ -24,14 +23,33 @@ import {
 
 const youtubeChannelUrlRegex = /^https:\/\/www.youtube.com\/channel\/([^/]+)$/;
 
+const useStyles = makeStyles((theme) => ({
+  box: {
+    marginBottom: theme.spacing(2),
+  },
+  boxGrid: {
+    marginTop: theme.spacing(1),
+    marginBottom: theme.spacing(3),
+  },
+}));
 interface LinkAccountProps {
-  auth: AuthResponse;
+  auth?: AuthResponse;
 }
 export const LinkAccount: React.FC<LinkAccountProps> = ({ auth }) => {
   const { t } = useTranslation();
 
-  const [channel, setChannel] = React.useState<string>('');
+  const [channel, setChannel] = React.useState<string>(auth?.channelId ?? '');
+  const [channelCopied, setChannelCopied] = React.useState(false);
   const [showPopup, setShowPopup] = React.useState(false);
+
+  const showVerificationCodeBox = auth?.tokenString !== undefined;
+
+  const showVerificationBox =
+    channelCopied &&
+    auth?.channelId !== undefined &&
+    auth.tokenString !== undefined;
+
+  const classes = useStyles();
 
   const inputRef = React.useRef<HTMLInputElement>(null);
 
@@ -69,6 +87,7 @@ export const LinkAccount: React.FC<LinkAccountProps> = ({ auth }) => {
     };
   const handleUnlinkChannel: React.MouseEventHandler<HTMLButtonElement> =
     async () => {
+      setChannel('');
       await updateAuth(undefined)().then(() =>
         doUpdateCurrentView({ view: 'index' })()
       );
@@ -76,116 +95,138 @@ export const LinkAccount: React.FC<LinkAccountProps> = ({ auth }) => {
 
   const creatorChannelValue = channel ?? '';
 
-  if (auth === undefined) {
-    return (
-      <Grid container style={{ width: '100%' }}>
-        <Grid item md={3} />
-        <Grid item md={6}>
-          <Box display="flex" flexDirection="column">
-            <Typography color="secondary" variant="subtitle1">
-              {t('link_account:label')}
+  return (
+    <Grid container style={{ width: '100%' }}>
+      <Grid item md={6}>
+        {/** Verify your channel */}
+        {showVerificationBox ? (
+          <Box className={classes.box}>
+            <Typography variant="subtitle2" color="secondary">
+              3/3 {t('actions:verify_channel')}
             </Typography>
-            <FormControl>
-              <InputLabel htmlFor="creator-channel">
-                {t('account:channel')}
-              </InputLabel>
-              <Input
-                id="creator-channel"
-                ref={inputRef}
-                fullWidth={true}
-                value={creatorChannelValue}
-                onChange={handleChannelChange}
-                onKeyDown={onSubmit}
-              />
-              <ButtonGroup style={{ marginTop: 10 }}>
+            <Button
+              variant="contained"
+              color="secondary"
+              size="small"
+              onClick={() =>
+                verifyChannel({
+                  channelId: auth.channelId,
+                })()
+              }
+            >
+              {t('actions:verify_channel')}
+            </Button>
+          </Box>
+        ) : null}
+        {showVerificationCodeBox ? (
+          <Box
+            className={classes.box}
+            style={{
+              opacity: showVerificationBox ? 0.5 : 1,
+            }}
+          >
+            <Typography variant="subtitle2" color="secondary">
+              2/3 {t('link_account:verification_code_label')}
+            </Typography>
+            <Typography variant="body2" color="secondary">
+              {t('link_account:verification_code_hint')}
+            </Typography>
+            <Grid className={classes.boxGrid} container spacing={2}>
+              <Grid item md={8} sm={8}>
+                <FormControl style={{ display: 'flex' }}>
+                  <Input
+                    id="account-channelId"
+                    type={'text'}
+                    value={auth.tokenString}
+                  />
+                  <Box style={{ visibility: showPopup ? 'visible' : 'hidden' }}>
+                    <Typography>Copied!</Typography>
+                  </Box>
+                </FormControl>
+              </Grid>
+              <Grid item md={4} sm={4}>
+                <ButtonGroup
+                  variant="contained"
+                  size="small"
+                  orientation="vertical"
+                >
+                  <Button
+                    color="secondary"
+                    startIcon={<CopyIcon />}
+                    onClick={async () => {
+                      await copyToClipboard(auth.tokenString)().then(() => {
+                        setChannelCopied(true);
+                        // open studio edit tab
+                        setShowPopup(true);
+                        setTimeout(() => {
+                          setShowPopup(false);
+                        }, 2000);
+                      });
+                    }}
+                  >
+                    {t('actions:copy_verification_code')}
+                  </Button>
+                </ButtonGroup>
+              </Grid>
+            </Grid>
+          </Box>
+        ) : null}
+
+        <Box
+          className={classes.box}
+          style={{
+            opacity: showVerificationCodeBox ? 0.5 : 1,
+          }}
+        >
+          <Typography color="secondary" variant="subtitle2">
+            1/3 {t('link_account:label')}
+          </Typography>
+          <Grid
+            className={classes.boxGrid}
+            container
+            spacing={2}
+            alignItems="flex-end"
+          >
+            <Grid item md={8} sm={8}>
+              <FormControl style={{ display: 'flex', flexDirection: 'row' }}>
+                <InputLabel htmlFor="creator-channel">
+                  {t('account:channel')}
+                </InputLabel>
+                <Input
+                  id="creator-channel"
+                  ref={inputRef}
+                  fullWidth={true}
+                  value={creatorChannelValue}
+                  onChange={handleChannelChange}
+                  onKeyDown={onSubmit}
+                />
+              </FormControl>
+            </Grid>
+            <Grid item md={4} sm={4}>
+              <ButtonGroup>
                 <Button
-                  variant="outlined"
+                  variant="contained"
                   color="secondary"
+                  size="small"
                   onClick={handleChannelSubmit}
                 >
-                  {t('actions:link_channel')}{' '}
-                  {creatorChannelValue !== '' ? `(${creatorChannelValue})` : ''}
+                  {t('actions:link_channel')}
                 </Button>
               </ButtonGroup>
-            </FormControl>
-          </Box>
-        </Grid>
-      </Grid>
-    );
-  }
-
-  if (auth.verified === false) {
-    return (
-      <Box>
-        <Typography variant="body2">
-          {t('actions:verify_channel_hint')}
-        </Typography>
-        <FormControl style={{ margin: 10, display: 'flex' }}>
-          <InputLabel htmlFor="link-account-password">Password</InputLabel>
-
-          <Input
-            id="link-account-password"
-            type={'text'}
-            value={auth.tokenString}
-            endAdornment={
-              <InputAdornment position="end">
-                <IconButton
-                  aria-label="toggle password visibility"
-                  onClick={async () => {
-                    await copyToClipboard(auth.tokenString)().then(() => {
-                      // open studio edit tab
-                      window.open(
-                        // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
-                        `https://studio.youtube.com/channel/${auth.channelId}/editing/details`
-                      );
-                      setShowPopup(true);
-                      setTimeout(() => {
-                        setShowPopup(false);
-                      }, 2000);
-                    });
-                  }}
-                  edge="end"
-                >
-                  {<CopyIcon />}
-                </IconButton>
-              </InputAdornment>
-            }
-          />
-          <Box style={{ visibility: showPopup ? 'visible' : 'hidden' }}>
-            <Typography>Copied!</Typography>
-          </Box>
-        </FormControl>
-
-        <ButtonGroup>
-          <Button size="small" onClick={handleUnlinkChannel}>
+            </Grid>
+          </Grid>
+        </Box>
+        {auth?.channelId !== undefined ? (
+          <Button
+            variant="contained"
+            color="primary"
+            size="small"
+            onClick={handleUnlinkChannel}
+          >
             {t('actions:unlink_channel')}
           </Button>
-          <Button
-            color="secondary"
-            variant="outlined"
-            onClick={() =>
-              verifyChannel({
-                channelId: auth.channelId,
-              })()
-            }
-          >
-            {t('actions:verify_channel')}
-          </Button>
-        </ButtonGroup>
-      </Box>
-    );
-  }
-
-  return (
-    <Box>
-      <Button
-        color="secondary"
-        variant="outlined"
-        size="small"
-        onClick={handleUnlinkChannel}
-      >
-        {t('actions:unlink_channel')}
-      </Button>
-    </Box>
+        ) : null}
+      </Grid>
+    </Grid>
   );
 };
