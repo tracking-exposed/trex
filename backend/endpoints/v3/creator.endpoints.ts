@@ -39,10 +39,18 @@ const VerifyCreator = Endpoint({
 
 const CreatorVideos = Endpoint({
   Method: "GET",
-  getPath: ({ channelId }) => `/v3/creator/videos/${channelId}`,
+  getPath: () => `/v3/creator/videos`,
   Input: {
-    Params: t.type({ channelId: t.string }),
-    Headers: AuthorizationHeader
+    Headers: AuthorizationHeader,
+  },
+  Output: t.array(Video),
+});
+
+const PullCreatorVideos = Endpoint({
+  Method: "POST",
+  getPath: () => `/v3/creator/videos/repull`,
+  Input: {
+    Headers: AuthorizationHeader,
   },
   Output: t.array(Video),
 });
@@ -52,7 +60,7 @@ const CreatorRecommendations = Endpoint({
   getPath: ({ channelId }) => `/v3/creator/recommendations/${channelId}`,
   Input: {
     Params: t.type({ channelId: t.string }),
-    Headers: AuthorizationHeader
+    Headers: AuthorizationHeader,
   },
   Output: t.array(Recommendation),
 });
@@ -63,7 +71,7 @@ const CreatorRelatedChannels = Endpoint({
     `/v3/creator/${channelId}/related/${amount}-${skip}`,
   Input: {
     Params: t.type({ channelId: t.string, amount: t.number, skip: t.number }),
-    Headers: AuthorizationHeader
+    Headers: AuthorizationHeader,
   },
   Output: t.strict({ content: t.array(ContentCreator) }),
 });
@@ -100,5 +108,6 @@ export const endpoints = {
   CreatorRecommendations,
   CreatorRelatedChannels,
   UpdateVideo,
-  CreateRecommendation
+  CreateRecommendation,
+  PullCreatorVideos
 };
