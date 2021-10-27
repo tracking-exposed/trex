@@ -22,10 +22,10 @@ declare module 'react-i18next' {
         link_channel: string;
         unlink_channel: string;
         verify_channel: string;
-        verify_channel_hint: string;
         delete_keypair: string;
         download_keypair: string;
         pull_creator_videos: string;
+        copy_verification_code: string;
       };
       account: {
         channel: string;
@@ -38,6 +38,8 @@ declare module 'react-i18next' {
         title: string;
         subtitle: string;
         label: string;
+        verification_code_label: string;
+        verification_code_hint: string;
       };
       youtube: {
         title: string;

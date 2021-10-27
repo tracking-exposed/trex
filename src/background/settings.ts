@@ -1,6 +1,6 @@
 import { pipe } from 'fp-ts/lib/function';
 import * as TE from 'fp-ts/lib/TaskEither';
-import { Messages } from 'models/Messages';
+import { Messages } from '../models/Messages';
 import { security } from '../providers/bs58.provider';
 import db from './db';
 

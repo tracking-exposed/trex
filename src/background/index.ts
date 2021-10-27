@@ -2,7 +2,7 @@ import { sequenceS } from 'fp-ts/lib/Apply';
 import * as E from 'fp-ts/lib/Either';
 import { pipe } from 'fp-ts/lib/pipeable';
 import * as TE from 'fp-ts/lib/TaskEither';
-import { toBrowserError } from 'providers/browser.provider';
+import { toBrowserError } from '../providers/browser.provider';
 import { config } from '../config';
 import {
   ErrorOccured,

@@ -13,7 +13,7 @@ const onMessageListener = jest.fn().mockImplementation((r, s, sendRes) => {
 describe('Popup', () => {
   test('Should mount the Popup', () => {
     chrome.runtime.onMessage.addListener(onMessageListener);
-    const component = renderer.create(<Popup queries={{} as any} />);
+    const component = renderer.create(<Popup />);
     const tree = component.toJSON();
     expect(tree).toMatchSnapshot();
   });
