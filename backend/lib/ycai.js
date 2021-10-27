@@ -235,6 +235,7 @@ async function confirmCreator(tokeno, creatorInfo) {
       random: _.random(0, 0xffffff)
     })
   }
+
   const x = await mongo3.writeOne(mongoc,
     nconf.get("schema").creators, creator);
   await mongoc.close();

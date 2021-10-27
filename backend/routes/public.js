@@ -11,9 +11,10 @@ const CSV = require('../lib/CSV');
 const endpoints = require("../lib/endpoint");
 const { CreatorStats } = require("../models/CreatorStats");
 const { v1 } = require('../endpoints');
+const structured = require('../lib/structured');
 
 // This variables is used as cap in every readLimit below
-const PUBLIC_AMOUNT_ELEMS = 110;
+const PUBLIC_AMOUNT_ELEMS = 100;
 // This is in regards of the 'last' API cache, (which might be discontinued?)
 const CACHE_SECONDS = 600;
 
@@ -201,9 +202,16 @@ async function getByAuthor(req) {
     debug("getByAuthor %s amount %d skip %d", req.params.query, amount, skip);
     let authorStruct;
     try {
-        authorStruct = await automo.getMetadataFromAuthor({
+        const sourceVideo = await structured.getVideo({
             videoId: req.params.query
+        });
+        authorStruct = await structured.getMetadata({
+            authorSource: sourceVideo.authorSource
         }, { amount, skip });
+        authorStruct = _.merge({
+            authorSource: sourceVideo.authorSource,
+            authorName: sourceVideo.authorName,
+        }, authorStruct);
     } catch(e) {
         debug("getByAuthor error: %s", e.message);
         return {
@@ -214,41 +222,14 @@ async function getByAuthor(req) {
         }
     }
 
-    const authorName = authorStruct.authorName;
     debug("getByAuthor returns %d elements from %s",
-        _.size(authorStruct.content), authorName);
+        _.size(authorStruct.content), authorStruct.authorName);
+    const { units, ready } = structured.buildRecommFlat(authorStruct);
 
-    const units = { total: 0, stripped: 0 }
-    const ready = _.flatten(_.compact(_.map(authorStruct.content, function(video, i) {
-        if(video.related && video.related[0] && video.related[0].title) {
-            units.stripped++;
-            return null;
-        }
-        // ^^^ this because old data with .title haven't the recommendedSource
-        // and client can't do anything. so we'll count the effective values
-        units.total++;
-        video.id = video.id.substr(0, 20);
-
-        return _.map(video.related, function(recommended, n) {
-            const cleanVideoId = recommended.videoId.replace(/\&.*/, '');
-            return {
-                id: video.id + i + cleanVideoId + n,
-                watchedTitle: video.title,
-                watchedVideoId: video.videoId,
-                savingTime: video.savingTime.toISOString(),
-                recommendedVideoId: cleanVideoId,
-                recommendedViews: recommended.recommendedViews,
-                recommendedTitle: recommended.recommendedTitle,
-                recommendedChannel: recommended.recommendedSource,
-            }
-        });
-    })));
-
-    debug("Returning byAuthor (%s) %d video considered, %d recommendations",
-        authorName, _.size(authorStruct.content), _.size(ready) );
-
-    const retval = endpoints.decodeResponse(v1.Endpoints.Public.GetCreatorStats, {
-        authorName,
+    debug("Returning byAuthor %d video considered, %d recommendations",
+        _.size(authorStruct.content), _.size(ready) );
+    const retval = endpoints.decodeResponse(v1.Endpoints.Public.GetAuthorStatsByVideoId, {
+        authorName: authorStruct.authorName,
         authorSource: authorStruct.authorSource,
         paging: authorStruct.paging,
         overflow: authorStruct.overflow,

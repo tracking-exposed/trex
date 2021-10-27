@@ -88,6 +88,7 @@ const apiList = {
     recommendationById:  require('../routes/youchoose').getRecommendationById,
     updateVideoRec:      require('../routes/youchoose').updateVideoRec,
     getCreatorRelated:   require('../routes/public').getCreatorRelated,
+    getCreatorStats:     require('../routes/youchoose').getCreatorStats,
     creatorRegister:     require('../routes/youchoose').creatorRegister,
     creatorVerify:       require('../routes/youchoose').creatorVerify,
     creatorGet:          require('../routes/youchoose').creatorGet,

@@ -71,9 +71,14 @@ async function recentVideoFetch(channelId) {
     return null;
   }
 
-  const videonfo =
-    videob[0].tabRenderer.content.sectionListRenderer.contents[0]
+  let videonfo = [];
+  try {
+    videonfo = videob[0].tabRenderer.content.sectionListRenderer.contents[0]
       .itemSectionRenderer.contents[0].gridRenderer.items;
+  } catch(error) {
+    debug("Error in reading Machine Readable format: %s", error.message);
+  }
+
   const videtails = _.compact(
     _.map(videonfo, function (ve) {
       return ve.gridVideoRenderer;

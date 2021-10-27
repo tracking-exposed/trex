@@ -2,6 +2,7 @@ import { Endpoint } from "ts-endpoint";
 import * as t from "io-ts";
 import { AuthorizationHeader, AuthResponse } from "../../models/Auth";
 import { ContentCreator } from "../../models/ContentCreator";
+import { CreatorStats } from "../../models/CreatorStats";
 import { Recommendation } from "../../models/Recommendation";
 import { Video } from "../../models/Video";
 
@@ -100,6 +101,15 @@ const CreateRecommendation = Endpoint({
   Output: Recommendation,
 });
 
+const GetCreatorStats = Endpoint({
+  Method: "GET",
+  getPath: ({channelId}) => `/v3/creator/${channelId}/stats`,
+  Input: {
+    Params: t.type({ channelId: t.string }),
+  },
+  Output: CreatorStats,
+});
+
 export const endpoints = {
   GetCreator,
   RegisterCreator,
@@ -109,5 +119,6 @@ export const endpoints = {
   CreatorRelatedChannels,
   UpdateVideo,
   CreateRecommendation,
-  PullCreatorVideos
+  PullCreatorVideos,
+  GetCreatorStats,
 };

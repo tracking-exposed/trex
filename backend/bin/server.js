@@ -152,6 +152,8 @@ app.post('/api/v3/creator/videos/repull', (req, res) => dispatchPromise('repullB
 
 app.get('/api/v3/creator/recommendations/:publicKey', (req, res) => dispatchPromise('youChooseByProfile', req, res))
 app.get('/api/v3/creator/:channelId/related/:amount?', (req, res) => dispatchPromise('getCreatorRelated', req, res))
+app.get('/api/v3/creator/:channelId/stats', (req, res) => dispatchPromise('getCreatorStats', req, res))
+
 /* below, guardoni-v2 */
 app.post('/api/v3/directives/:directiveType', (req, res) => dispatchPromise('postDirective', req, res))
 app.get('/api/v3/directives/:experimentId', (req, res) => dispatchPromise('fetchDirective', req, res))

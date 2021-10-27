@@ -2,7 +2,7 @@ import * as t from "io-ts";
 import { Endpoint } from "ts-endpoint";
 import { CreatorStats } from "../../models/CreatorStats";
 
-const GetCreatorStats = Endpoint({
+const GetAuthorStatsByVideoId = Endpoint({
   Method: "GET",
   getPath: ({videoId}) => `/v1/author/${videoId}`,
   Input: {
@@ -12,5 +12,5 @@ const GetCreatorStats = Endpoint({
 });
 
 export const endpoints = {
-  GetCreatorStats,
+  GetAuthorStatsByVideoId,
 };
