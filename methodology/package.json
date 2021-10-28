@@ -6,7 +6,7 @@
     "dist": "cd dist; mkdir extension; touch extension/.keep; mkdir experiments; touch experiments/.keep; zip guardoni-win.txt ex* guardoni.zip",
     "pkg": "pkg ./package.json"
   },
-  "bin": "./src/guardoni.js",
+  "bin": "./bin/guardoni.js",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/tracking-exposed/yttrex.git"
@@ -35,11 +35,13 @@
   },
   "pkg": {
     "scripts": [
-      "./src/**/*.js",
+      "./bin/guardoni.js",
+      "./src/domainSpecific.js",
       "./node_modules/**/*.js"
     ],
     "assets": [
-      "./extension/**"
+      "./extension/**",
+      "./profiles/.keep"
     ],
     "targets": [
       "node12-linux-x64",
