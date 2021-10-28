@@ -9,7 +9,7 @@ const nconf = require('nconf');
 const cors = require('cors');
 
 const dbutils = require('../lib/dbutils');
-const APIs = require('../lib/api');
+const { apiList }= require('../lib/api');
 const security = require('../lib/security');
 
 const cfgFile = "config/settings.json";
@@ -25,17 +25,9 @@ if(!nconf.get('interface') || !nconf.get('port') )
 
 async function iowrapper(fname, req, res) {
   try {
-    const funct = APIs[fname];
-    await asyncWebWrapper(funct, req, res);
-  } catch(error) {
-    res.send(error.message);
-    debug("Error: %s", error.message);
-  }
-}
+    const funct = apiList[fname];
+    const httpresult = await funct(req, res)
 
-async function asyncWebWrapper(what, req, res) {
-
-    const httpresult = await what(req, res);
     if (!httpresult) {
         res.send("Error: not implemented");
         debug("Error, not implemented function in this API");
@@ -64,6 +56,11 @@ async function asyncWebWrapper(what, req, res) {
         res.send("Error?");
         return false;
     }
+
+  } catch(error) {
+    res.send(error.message);
+    debug("Error: %o", error);
+  }
 }
 
 /* This function wraps all the API call, checking the verionNumber

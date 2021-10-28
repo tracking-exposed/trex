@@ -103,5 +103,5 @@ const apiList = {
 };
 
 module.exports = {
-    implementations: apiList
+    apiList
 };
