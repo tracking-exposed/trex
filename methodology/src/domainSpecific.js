@@ -188,4 +188,5 @@ module.exports= {
     interactWithYT,
     getYTstatus,
     loggedextreqs,
+    DOMAIN_NAME: 'youtube.com',
 }

@@ -84,7 +84,7 @@ function getChromePath() {
 3. guardoni uses the same experiment API to mark contribution with 'evidencetag'
 4. it would then access to the directive API, and by using the experimentId, will then perform the searches as instructed.
 */
-async function registerCSV(evidencetag, directiveType) {
+async function registerCSV(directiveType) {
 
   const csvfile = nconf.get('csv');
 
@@ -124,30 +124,26 @@ async function registerCSV(evidencetag, directiveType) {
 
   const registeruri = buildAPIurl('directives', directiveType);
   // implemented in backend/routes/directives.js
-  const apipayload = {
-    parsedCSV: records,
-    evidencetag
-  };
 
-  let experimentId = null;
   try {
     const commit = await fetch(registeruri, {
       method: 'POST',
-      body: JSON.stringify(apipayload),
+      body: JSON.stringify({ parsedCSV: records }),
       headers: {
         "Content-Type": "application/json; charset=utf-8"
       }
     });
     const experimentInfo = await commit.json(); 
-    debug("Experiment fetched from server: %s", experimentInfo.experimentId);
     if(experimentInfo.error)
       return console.log("Error received from the server: ", experimentInfo.message);
-    experimentId = experimentInfo.experimentId;
-  } catch(error) {
-    return console.log("Failure in talking with API:", error.message);
-  }
+    
+    return experimentInfo;
+    // contains .experimentId and .status (created|exist)
 
-  return experimentId;
+  } catch(error) {
+    console.log("Failure in talking with API:", error.message);
+    return null;
+  }
 }
 
 /*
@@ -169,9 +165,9 @@ async function manageChiaroscuro(evidencetag, directiveType, profinfo) {
 async function pullDirectives(sourceUrl) {
   let directives = null;
   try {
-    if(_.startsWith(sourceUrl, 'http')) {
+    if (_.startsWith(sourceUrl, 'http')) {
       const response = await fetch(sourceUrl);
-      if(response.status !== 200) {
+      if (response.status !== 200) {
         console.log("Error in fetching directives from URL", response.status);
         process.exit(1);
       }
@@ -180,7 +176,7 @@ async function pullDirectives(sourceUrl) {
       throw new Error("A local file isn't supported anymore");
       directives = JSON.parse(fs.readFileSync(sourceUrl, 'utf-8'));
     }
-    if(!directives.length) {
+    if (!directives.length) {
       console.log("URL/file do not include any directive in expected format");
       console.log("Check the example with --source ", COMMANDJSONEXAMPLE);
       process.exit(1);
@@ -200,16 +196,16 @@ async function readExperiment(profinfo) {
 
   try {
     page = (await browser.pages())[0];
-    _.tail(await browser.pages()).forEach(async function(opage) {
+    _.tail(await browser.pages()).forEach(async function (opage) {
       debug("Closing a tab that shouldn't be there!");
       await opage.close();
     });
 
     const introPage = path.join(process.cwd(), 'static', 'index.html');
     await page.goto(introPage);
-  } catch(error) {
+  } catch (error) {
     debug("Browser forcefully closed? %s", error.message);
-    if(experiment)
+    if (experiment)
       return {
         experiment,
         sourceUrl: buildAPIurl('directives', experiment),
@@ -220,31 +216,31 @@ async function readExperiment(profinfo) {
     }
   }
 
-  const poller = setInterval(async function() {
+  const poller = setInterval(async function () {
     let inputs = [];
     try {
-      inputs = await page.$$eval("input[type=radio]", function(elist) {
-        return elist.map(function(e) {
-          if(e.checked) {
+      inputs = await page.$$eval("input[type=radio]", function (elist) {
+        return elist.map(function (e) {
+          if (e.checked) {
             return { experiment: e.getAttribute('experimentId') };
           }
         })
       })
-    } catch(error) {
+    } catch (error) {
       clearInterval(poller);
       console.log("Failure in interacting with browser, still you've to wait a few seconds. Error message:");
       console.log("\t" + error.message);
     }
 
     const selected = _.compact(inputs);
-    if(selected.length) {
+    if (selected.length) {
       experiment = selected[0].experiment;
-      await page.$eval("#nextstep", function(e) {
+      await page.$eval("#nextstep", function (e) {
         e.removeAttribute('disabled');
       });
     }
 
-    if(experiment) {
+    if (experiment) {
       clearInterval(poller);
       page.waitForTimeout(900);
       page.goto("https://www.youtube.com");
@@ -257,15 +253,15 @@ async function readExperiment(profinfo) {
 
   try {
     await page.waitForTimeout(1000 * seconds);
-    if(!experiment)
+    if (!experiment)
       clearInterval(poller);
     await browser.close();
-  } catch(error) {
+  } catch (error) {
     console.log("Error in browser/page control:", error.message);
     process.exit(1);
   }
 
-  if(!experiment) {
+  if (!experiment) {
     console.log("Error: you should has select an experiment from the browser!");
     process.exit(1);
   }
@@ -277,7 +273,7 @@ async function readExperiment(profinfo) {
 }
 
 function buildAPIurl(route, params) {
-  if(route === 'directives' && ["chiaroscuro", "comparison"].indexOf(params) !== -1)
+  if (route === 'directives' && ["chiaroscuro", "comparison"].indexOf(params) !== -1)
     return `${server}/api/v3/${route}/${params}`;
   else {
     return `${server}/api/v3/${route}/${params}`;
@@ -288,27 +284,27 @@ function profileExecount(profile, evidencetag) {
   let data, newProfile = false;
   const udd = path.resolve(path.join('profiles', profile));
   const guardfile = path.join(udd, 'guardoni.json');
-  if(!fs.existsSync(udd)) {
+  if (!fs.existsSync(udd)) {
     console.log("--profile name hasn't an associated directory: " + udd);
     try {
       fs.mkdirSync(udd);
-    } catch(error) {
+    } catch (error) {
       console.log("Unable to create directory:", error.message);
       process.exit(1)
     }
     newProfile = true;
   }
 
-  if(!newProfile) {
+  if (!newProfile) {
     const jdata = fs.readFileSync(guardfile, 'utf-8');
     data = JSON.parse(jdata);
     debug("profile %s read %d execount", profile, data.execount);
-    data.execount +=1;
+    data.execount += 1;
     data.evidencetags.push(evidencetag);
   } else {
     data = {
-      execount : 1,
-      evidencetags: [ evidencetag ]
+      execount: 1,
+      evidencetags: [evidencetag]
     }
   }
 
@@ -333,42 +329,44 @@ You need to have a reliable internet connection to ensure a proper data collecti
 
 async function main() {
 
-  const evidencetag = nconf.get('evidencetag') || 'none-' + _.random(0, 0xffff);
-  let profile = nconf.get('profile');
-  if(!profile)
-    profile = nconf.get('evidencetag') ?
-      evidencetag : `guardoni-${moment().format("YYYY-MM-DD")}`;
-  /* if not profile, if evidencetag take it, or use a daily profile */
-
-  debug("Executing browser for profile %s (evidencetag %s)", profile, evidencetag);
-
-  const profinfo = await profileExecount(profile, evidencetag);
-
   const shadowban = nconf.get('shadowban');
   const comparison = nconf.get('comparison');
   const directiveType = !!shadowban ? "chiaroscuro" : "comparison";
 
-  debug("Operating as per directive type %s", directiveType);
+  debug("Getting ready for directive type [%s]", directiveType);
   /*
   if(directiveType == 'chiaroscuro')
     return await manageChiaroscuro(evidencetag, profinfo); */
 
   let sourceUrl = nconf.get('csv');
-  if(sourceUrl) {
-    if(!comparison && !shadowban) {
+  if (sourceUrl) {
+    if (!comparison && !shadowban) {
       console.log("\nError in uploading the --csv. You must specify if:");
       console.log("\tit is a shadowban test with --shadowban");
       console.log("\tit is an experiment by comparison, with --comparison");
       process.exit(1);
     }
+
+    debug("Registering CSV %s as %s", sourceUrl, directiveType);
+    const note = await registerCSV(directiveType)
+    if(note && note.since)
+      console.log("CSV %s, experimentId %s exists since %s",
+        note.status, note.experimentId, note.since);
+    else if(note && note.experimentId)
+      console.log("Directive from CSV created: experimentId %s",
+        note.experimentId);
+    else
+      console.log("CSV error in upload.");
+
+    process.exit(1);
   }
 
-  let directives, experiment = null;
-  experiment = nconf.get('experiment');
+  let directives = null;
+  const experiment = nconf.get('experiment');
 
   if(experiment && (!_.isString(experiment) || experiment.length < 20)) {
     console.log("\n--experiment awaits for an experiment ID, try it out:");
-    console.log("--experiment TODO");
+    console.log("For example: --experiment d75f9eaf465d2cd555de65eaf61a770c82d59451");
     process.exit(1);
   }
 
@@ -376,6 +374,17 @@ async function main() {
     console.log("Error: when registering a CSV, you can't specify the --experiment");
     process.exit(1);
   }
+
+  const evidencetag = nconf.get('evidencetag') || 'none-' + _.random(0, 0xffff);
+  let profile = nconf.get('profile');
+  if (!profile)
+    profile = nconf.get('evidencetag') ?
+      evidencetag : `guardoni-${moment().format("YYYY-MM-DD")}`;
+  /* if not profile, if evidencetag take it, or use a daily profile */
+
+  debug("Configuring browser for profile %s (evidencetag %s)", profile, evidencetag);
+
+  const profinfo = await profileExecount(profile, evidencetag);
 
   if(experiment && !sourceUrl) {
     console.log("Resolving experiment directives with github.com/tracking-exposed/yttrex directive protocol");
@@ -391,11 +400,6 @@ async function main() {
     sourceUrl = restrictedSettings.sourceUrl;
   }
 
-  if(!experiment && sourceUrl) {
-    debug("Registering CSV %s as %s (tag by %s)",
-      sourceUrl, directiveType, evidencetag);
-    experiment = await registerCSV(evidencetag, directiveType) 
-  }
 
   debug("Profile %s, experiment %s pulling directive from server %s",
     profile, experiment, server);
@@ -480,12 +484,13 @@ async function guardoniExecution(experiment, directives, browser, profinfo) {
   let retval = { start: null };
   retval.start = moment();
   try {
-    const DS = './domainSpecific';
+    const DS = '../src/domainSpecific';
     let domainSpecific = null;
     try {
       domainSpecific = require(DS);
+      debug("Loaded domain specific module for: %s", domainSpecific.DOMAIN_NAME);
     } catch(error) {
-      console.log("Not found domainSpecific!?", DS, error);
+      console.log("Not found domainSpecific filemodule?", DS, error);
       domainSpecific = {
         beforeWait: defaultBefore,
         afterWait: defaultAfter,
@@ -572,9 +577,9 @@ try {
   // backend is an option we don't even disclose, as only developers needs it
   // --chome as well
   if(!!nconf.get('auto')) {
-    console.log("AUTO mode, no mandatory options; --profile, --evidencetag OPTIONAL")
+    console.log("AUTO mode. No mandatory options; --profile, --evidencetag OPTIONAL")
   } else if(!!nconf.get('csv')) {
-    console.log("CSV mode: mandatory --comparison or --shadowban; --profile, --evidencetag OPTIONAL")
+    console.log("CSV mode: mandatory --comparison or --shadowban; Guardoni exit after upload")
   } else if(!!nconf.get('experiment')) {
     console.log("EXPERIMENT mode: no mandatory options; --profile, --evidencetag OPTIONAL")
   }

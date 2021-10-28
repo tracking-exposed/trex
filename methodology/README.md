@@ -1,4 +1,55 @@
-## Methodology folder, what's about?
+## Guardoni simple crash course
+
+``` 
+$ node bin/guardoni.js
+Configuration options is read via: environment, --longopt, and static/config.json file
+Three modes exists to launch Guardoni:
+
+1— With --auto: It start a browser offering you to join existing experiments (currently two).
+2— With --csv option and one between --shadowban and --comparison: Register an experiment.
+3— With --experiment it would fetch what have been registered in the case n.2 ^^^^^^^^^^^.
+
+Consult https://youtube.tracking.exposed/guardoni for the full documentation.
+You need to have a reliable internet connection to ensure a proper data collection!
+``` 
+
+Three foundamental commands exists, and at least one is required. How do they works?
+
+
+``` 
+$ node bin/guardoni.js --csv examples/climateChange/greta-v2.csv
+CSV mode: mandatory --comparison or --shadowban; --profile, --evidencetag OPTIONAL
+``` 
+
+When you use the --csv command you are SENDING your CSV to the server, and this would answer you with an experimentId. Every guardoni execution with --experiment <experimentId> would repeat the same configuration of your uploaded CSV.
+
+After the upload, it 
+
+``` 
+$ node bin/guardoni.js --csv examples/climateChange/greta-v2.csv --comparison 
+CSV mode: mandatory --comparison or --shadowban; Guardoni exit after upload
+  guardoni:yt-cli Getting ready for directive type [comparison] +0ms
+  guardoni:yt-cli Registering CSV examples/climateChange/greta-v2.csv as comparison +2ms
+  guardoni:yt-cli Read input from file examples/climateChange/greta-v2.csv (407 bytes) 6 records +8ms
+  guardoni:yt-cli CSV validated in [comparison] format specifications +3ms
+CSV exist, experimentId d75f9eaf465d2cd555de65eaf61a770c82d59451 exists since 2021-09-27T21:30:28.903Z
+``` 
+
+as you can see, it tell you if the CSV registered already exists or since how long it is there.
+
+
+### Effectively executing guardoni
+
+Once you've an experimentId, you can run, for example:
+
+``` 
+$ node bin/guardoni.js --experiment d75f9eaf465d2cd555de65eaf61a770c82d59451 
+``` 
+
+
+... and now a less tutorialish README:
+
+# Methodology folder, what's about?
 
 If you pose the Question: *How to run your own algoritmh accountability experiment?*...
 
@@ -6,74 +57,7 @@ If you pose the Question: *How to run your own algoritmh accountability experime
 
 This directory contains a list of scripts that Tracking Exposed team is using to test the youtube algorithm. **Guardoni** is the tool built to allow an easy ripetition of action, evidence collection, and data analysis.
 
-To run `guardoni` make sure you are in the methodology directory before executing:
-``` 
-cd yttrex/methodology
-npm install
-node src/guardoni.js 
-```
-
-Then follow the guidance from the command line to provide the options, such as:
-
-```
-src/guardoni.js --source https://youtube.tracking.exposed/json/automation-example.json --profile yourCustomName
-```
-
-don't forget to set environment variable 'DEBUG' to control the verbosity
-`DEBUG=*` will print everything, including a lot of `pupeteer` noise
-to exclude it, do for instance:
-```
-DEBUG=*,-puppeteer:* src/guardoni.js
-```
-
-If you get the error (seen on mac):
-```
-Error in operateBrowser (collection fail): Error: Browser is not downloaded. Run "npm install" or "yarn install"
-```
-It means that `puppeteer` cannot find the chromium executable. First try to run `npm install`, if it still doesn't run, you need to specify the path of the chromium executable by hand. To find it, open chromium and go to the page `chrome://version`, copy paste the `Executable Path` and add it as an argument `--chrome`  to the guardoni script, as such:
-```
-src/guardoni.js --source https://youtube.tracking.exposed/json/automation-example.json --profile profileTest --chrome /Applications/Chromium.app/Contents/MacOS/Chromium
-```
-
-
-=======
-## Run Guardoni and send results to server
-
-To run `guardoni` make sure you are in the methodology directory before executing:
-
-``` 
-cd yttrex/methodology
-npm install
-node src/guardoni.js
-```
-
-Then follow the guidance from the command line to provide the options, such as:
-```
-src/guardoni.js --source https://youtube.tracking.exposed/json/automation-example.json --profile yourCustomName --experiment yourExperimentName
-```
-
-You can (we normally do) set the environment variable 'DEBUG' to control the verbosity of additional logging.
-
-`DEBUG=*` will print everything, including a lot of `puppeteer` noise
-to exclude it, do for instance:
-
-```
-DEBUG=*,-puppeteer:* src/guardoni.js
-```
-
-If you get the error (seen on mac):
-```
-Error in operateBrowser (collection fail): Error: Browser is not downloaded. Run "npm install" or "yarn install"
-```
-
-It means that `puppeteer` cannot find the chromium executable. First did you run `npm install` ? if it still doesn't run, you need to specify the path of the chromium executable by hand. To find it, open chromium and go to the page `chrome://version`, copy paste the `Executable Path` and add it as an argument `--chrome`  to the guardoni script, as such:
-```
-src/guardoni.js --source https://youtube.tracking.exposed/json/automation-example.json --profile profileTest --chrome /Applications/Chromium.app/Contents/MacOS/Chromium
-```
-
-## Run guardoni locally
-
-**Build the extension**
+### Build the extension
 
 By default guardoni downloads an extension version `.99` already built and places it in `yttrex/methodology/extension` which has default opt-in (meant for robots). 
 By default this extension sends the results to the server.
@@ -102,59 +86,28 @@ Before you can use it, you need to load it by hand:
 Before this can work, you need to start the backend server, the mongo database and the parser process.
 
 
-**Launch the backend server locally:**
+## "--comparison" kind of CSV
 
-```
-cd yttrex/backend
-npm install
-npm run watch
-```
+Comparison is the technique you use when a bunch of profiles should perform the exact same actions so they results might be easily compared.
 
-**Launch mongo locally:**
+#### CSV format details
 
-```
-mongod
-```
+$ cat examples/climateChange/greta-v2.csv
+urltag,watchFor,url
+greta1,end,https://www.youtube.com/watch?v=v33ro5lGHQg
+greta2,end,https://www.youtube.com/watch?v=GlfW7aYouYQ
+greta3,end,https://www.youtube.com/watch?v=2fycgrYgXpA
+greta4,21s,https://www.youtube.com/watch?v=DQWMDWWYVz4
+climate change,6s,https://www.youtube.com/results?search_query=climate+change
+climate alarmism,6s,https://www.youtube.com/results?search_query=climate+alarmism
 
-By default now, data collected will be sent to the default mongo, configured in `yttrex/backend/config/settings.json`
+watchFor might be a number of seconds (s), minutes (m), or *end* to specify the video should play till the end.
 
-**Launch parserv**
-
-To parse the HTMLs that are collected and stored in mongo, another process is launch to extract the metadata. Launch it with:
-
-```
-cd yttrex/backend
-npm run parserv
-```
-
-Now you should be set! Get back to the browser and start navigating on YouTube. The backend server, mongo database and the parserv should be receiving new inputs and printing logs.
-
-**To Run a guardoni experiment locally**
-
-You need to specify to `guardoni.js` that the experiment registration should be done with the local backend server.
-Use the option `--backend localhost:9000`
-
-**Launch Hugo server**
-
-If you want to see your extension homepage generated from your local data, you need to launch the hugo server of [youtube.tracking.exposed](https://github.com/tracking-exposed/youtube.tracking.exposed)
-Clone this repo (and its theme, as described in its README) then start Hugo with
-
-`hugo -D server`
-
-With this, the personal page from the extnesion should be able to render
-
-TODO options to describe:
-
-  --exclude
-  --experiment
-  --backend
-  --chrome
-
-## ChiaroScuro experiments
+## "--shadowban" kind of CSV (chiaroscuro test)
 
 ChiaroScuro is one of the techniques used to test shadowban or what's alike. Other techniques exists beside ChiaroScuro.
 
-#### details
+#### CSV format details
 
 you need a CSV with this format:
 
@@ -163,18 +116,8 @@ you need a CSV with this format:
 the videoURL should start with http and must be a valid youtube video Id
 the title should be the title of that video (hint: they might be translated)
 
-guardoni, if invoked with --csv option, it perfor the chiaroscuro test and this makes onother option mandatory:
 
- --csv
- --nickname
-
-behind the scene, it would offer as feedback:
-
-* and experiment name and the associated URL where you can compare this test
-* in the same link you can compare the result from different nicknames
-* it would create a temporary profile, from scratch, at every execution; because of this, you should open youtube.com and accept the opt-in manually.
-
-if you want to use an existing profile, --profile option can be used.
+# TODO review below 
 
 ### ChiaroScuro design
 

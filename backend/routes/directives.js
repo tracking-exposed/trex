@@ -36,21 +36,20 @@ async function post(req) {
   }
 
   const parsedCSV = _.get(req.body, 'parsedCSV', []);
-  const evidencetag = _.get(req.body, 'evidencetag', null);
-  let links = [];
 
+  let links = [];
   if(directiveType === directiveTypes[0])
     links = acquireChiaroscuro(parsedCSV);
   if(directiveType === directiveTypes[1])
     links = acquireComparison(parsedCSV);
 
-  debug("Registering directive %s for %s (%d urls)",
-    directiveType, evidencetag, _.size(links));
+  debug("Registering directive %s (%d urls)",
+    directiveType, _.size(links));
 
-  const experimentId  = await automo
+  const feedback = await automo
     .registerDirective(links, directiveType);
-
-  return { json: { experimentId }};
+  // this feedback is printed at terminal when --csv is used
+  return { json: feedback };
 };
 
 async function get(req) {
