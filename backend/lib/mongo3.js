@@ -3,7 +3,7 @@ const MongoClient = require('mongodb3').MongoClient;
 const debug = require('debug')('lib:mongo3');
 const nconf = require('nconf');
 
-var savedMongoUri = null;
+let savedMongoUri = null;
 function mongoUri(forced) {
 
     // by passing 'null' you'll reset mongoUri
@@ -29,7 +29,6 @@ function mongoUri(forced) {
     return savedMongoUri;
 }
 
-
 async function clientConnect(config) {
     /* concurrency: <Int>, uri: <mongo address> */
     if(!config) config = {};
@@ -43,20 +42,17 @@ async function clientConnect(config) {
      * don't open a mongo connection every time the caller 
      * execute a query
      */
-    return new Promise((resolve, reject) => (
-        MongoClient.connect(mongoUri(), {
+
+    try {
+        const r = await MongoClient.connect(mongoUri(), {
             poolSize,
             useNewUrlParser: true
-        }, (err, client) => {
-            if(err) {
-                err.message = `mongo.clientConnect error in connecting at ${mongoUri()}`;
-                debug(err.message);
-                reject(err);
-            } else {
-                resolve(client);
-            }
-        })
-    ))
+        });
+        return r;
+    } catch(error) {
+        debug("mongo.clientConnect error in connecting at %s: %s",
+            mongoUri(), error.message);
+    }
 };
 
 async function listCollections(mongoc) {

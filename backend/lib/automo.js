@@ -351,13 +351,13 @@ async function tofu(publicKey, version) {
     return supporter;
 }
 
-async function getLastLabels(filter, skip, amount) {
+async function getLastLeafs(filter, skip, amount) {
 
     const mongoc = await mongo3.clientConnect({concurrency: 1});
-    const defskip = skip ? skip : 0;
 
-    const labels = await mongo3.readLimit(mongoc, nconf.get('schema').labels,
-        filter, { savingTime: 1}, amount, defskip);
+    const labels = await mongo3.readLimit(mongoc, nconf.get('schema').leafs,
+        filter, { savingTime: 1},
+        amount, skip ? skip : 0);
 
     await mongoc.close();
     return {
@@ -378,6 +378,23 @@ async function upsertSearchResults(listof, cName) {
     }
     await mongoc.close();
     return written;
+}
+
+async function updateAdvertisingAndMetadata(adlist) {
+    const mongoc = await mongo3.clientConnect({concurrency: 1});
+    let written = 0;
+    for (entry of adlist) {
+        a = await mongo3.upsertOne(mongoc, nconf.get('schema').ads,
+            { id: entry.id }, entry);
+        debug("update %s", entry.metadataId);
+        if(!a.result.ok)
+            debug("!OK with %s.id %s: %j", cName, entry.id, a);
+        else
+            written++;
+    }
+    await mongoc.close();
+    return written;
+
 }
 
 async function getLastHTMLs(filter, skip, amount) {
@@ -766,9 +783,10 @@ module.exports = {
     updateMetadata,
     markHTMLsUnprocessable,
 
-    /* used in searches */
-    getLastLabels,
+    /* used in leafs */
+    getLastLeafs,
     upsertSearchResults,
+    updateAdvertisingAndMetadata,
 
     /* used in getMonitor */
     getMixedDataSince,

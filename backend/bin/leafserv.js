@@ -272,8 +272,6 @@ function processAds(e, i) {
     if(e.acquired.length > 1)
         throw new Error("Test! does this happens?");
 
-    processedCounter++;
-
     const urlinfo = url.parse(e.href);
     if(urlinfo.pathname != '/watch') {
         debugads("Ignoring AD from 'non-video' page [%s]", e.href);
@@ -431,7 +429,7 @@ async function fetchAndAnalyze(filter) {
     /* this is the begin of the label parser pipeline, labelFilter contains a shifting savingTime to take
      * the oldest before and the most recent later. It is meant to constantly monitoring 'labels' for the new one */
 
-    const leafs = await automo.getLastLabels(filter, skipCount, htmlAmount);
+    const leafs = await automo.getLastLeafs(filter, skipCount, htmlAmount);
     if(!_.size(leafs.content)) {
 
         nodatacounter++;
@@ -485,9 +483,10 @@ async function fetchAndAnalyze(filter) {
             processedCounter
         );
 
+    /* this block is dedicated to filter the sources and find ADs */
     const advertising = _.compact(_.map(available, processAds));
     if(_.size(advertising)) {
-        const advretv = await automo.upsertSearchResults(advertising, nconf.get('schema').ads);
+        const advretv = await automo.updateAdvertisingAndMetadata(advertising);
         debugads("%d processed, took %d secs = %d mins [ %d +ads ]",
             processedCounter, moment.duration(moment() - stats.current).asSeconds(),
             _.round(moment.duration(moment() - stats.current).asMinutes(), 2),
@@ -495,9 +494,11 @@ async function fetchAndAnalyze(filter) {
         );
     }
 
+    /* the block below instead looks for seaerches */
     const findingsproduc = _.compact(_.map(available, processSearches));
     const effective = await extendAsExperiment(_.flatten(findingsproduc));
 
+    /* and this debug, reformat, and save the searches related data */
     if(_.size(findingsproduc)) {
         debug("Processed %d entries, effective searches %d, total searches video entry %d",
             _.size(leafs.content),
@@ -537,6 +538,8 @@ async function fetchAndAnalyze(filter) {
             _.round(moment.duration(moment() - stats.current).asMinutes(), 2),
             _.countBy(leafs.content, 'selectorName')
         );
+
+    processedCounter += available.length;
 }
 
 // this function is duplicated with bin/parserv2.js -- might be generalized
