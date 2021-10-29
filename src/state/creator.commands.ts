@@ -26,7 +26,7 @@ export const registerCreatorChannel = command(
         Body: { type: 'channel' },
       }),
       TE.chainFirst((payload) => {
-        return sendMessage(Messages.UpdateAuth)(payload);
+        return sendMessage(Messages.UpdateContentCreator)(payload);
       })
     ),
   {
@@ -83,16 +83,15 @@ export const addRecommendation = command(
 );
 
 export const updateRecommendationForVideo = command(
-  ({ videoId, creatorId, recommendations }) => {
+  ({ videoId, recommendations }) => {
     return pipe(
-      profile.run(),
+      requiredLocalProfile.run(),
       TE.chain((p) =>
         API.Creator.UpdateVideo({
           Headers: {
-            'x-authorization': p?.accessToken,
+            'x-authorization': p.accessToken,
           },
           Body: {
-            creatorId,
             videoId,
             recommendations,
           },

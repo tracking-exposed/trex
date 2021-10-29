@@ -36,7 +36,6 @@ export const getDefaultSettings = (): Settings => ({
   communityRecommendations: false,
   alphabeth: false,
   indipendentContributions: false,
-  channelCreatorId: null,
   edit: null,
 });
 
@@ -159,7 +158,7 @@ bo.runtime.onInstalled.addListener((details) => {
         settings: pipe(
           db.get<Settings>(getStorageKey(GetSettings.value)),
           TE.chain((r) =>
-            r === undefined
+            r === null
               ? db.update(
                   getStorageKey(GetSettings.value),
                   getDefaultSettings()

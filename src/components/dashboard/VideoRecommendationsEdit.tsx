@@ -50,7 +50,6 @@ export const VideoRecommendations = withQueries<VideoRecommendationsProps>(
                     void updateRecommendationForVideo(
                       {
                         videoId,
-                        creatorId: settings.channelCreatorId,
                         recommendations: recommendations.map((r) => r.urlId),
                       },
                       {
@@ -69,7 +68,6 @@ export const VideoRecommendations = withQueries<VideoRecommendationsProps>(
                         void updateRecommendationForVideo(
                           {
                             videoId,
-                            creatorId: settings.channelCreatorId,
                             recommendations: videoRecommendations
                               .map((d) => d.urlId)
                               .filter((dd) => dd !== r.urlId),

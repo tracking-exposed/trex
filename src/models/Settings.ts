@@ -17,7 +17,6 @@ export type Keypair = t.TypeOf<typeof Keypair>;
  */
 export const Settings = t.strict(
   {
-    channelCreatorId: t.union([t.string, t.null]),
     active: t.boolean,
     ccRecommendations: t.boolean,
     communityRecommendations: t.boolean,

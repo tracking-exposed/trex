@@ -81,7 +81,6 @@ export const Recommendations = withQueries<RecommendationsProps>(
                             await updateRecommendationForVideo(
                               {
                                 videoId: videoId,
-                                creatorId: settings.channelCreatorId,
                                 recommendations: newVideoRecommendations,
                               },
                               { videoRecommendations: { videoId } }
@@ -95,7 +94,6 @@ export const Recommendations = withQueries<RecommendationsProps>(
                             await updateRecommendationForVideo(
                               {
                                 videoId,
-                                creatorId: settings.channelCreatorId,
                                 recommendations: newVideoRecommendations,
                               },
                               { videoRecommendations: { videoId } }
