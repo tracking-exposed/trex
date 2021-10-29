@@ -1,6 +1,11 @@
 The format is based on [Keep a Changelog](http://keepachangelog.com/) and this
 project adheres to [Semantic Versioning](http://semver.org/).
 
+## [1.7.4] - 2021-10-29
+### Fixes
+- guardoni executable tested on windows
+
+
 ## [1.7.3] - 2021-10-23
 ### Notes
 - work in progress for 1.8.x version, aiming to feature parity with 1.7.2

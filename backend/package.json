@@ -1,6 +1,6 @@
 {
   "name": "yttrex-backend",
-  "version": "1.7.2",
+  "version": "1.7.5",
   "description": "youtube.tracking.exposed - backend data collector",
   "scripts": {
     "watch": "key=fuffa DEBUG=*,-express:*,-body-parser:* node_modules/.bin/ts-node-dev --respawn --transpile-only bin/server.js",
@@ -9,7 +9,7 @@
     "parserv:watch": "DEBUG=*,-parser:home:warning node_modules/.bin/ts-node-dev --respawn --transpile-only bin/parserv2.js",
     "leafserv": "DEBUG=* node bin/leafserv.js",
     "leafserv:watch": "DEBUG=* node_modules/.bin/ts-node-dev --respawn --transpile-only bin/leafserv.js",
-    "test": "mocha --require ts-node/register tests/*/*",
+    "test": "mocha --require ts-node/register tests/basic/*",
     "campaigns": "node bin/campaignUpdater.js --dest https://youtube.tracking.exposed"
   },
   "author": "Claudio Agosti <claudio@tracking.exposed> and https://github.com/tracking-exposed/yttrex/graphs/contributors",
