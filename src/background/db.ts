@@ -32,7 +32,11 @@ const backendSet = <A>(
 ): TE.TaskEither<chrome.runtime.LastError, void> => {
   dbLogger.debug(`Save ${JSON.stringify(value)} as ${key}`);
   return pipe(
-    TE.tryCatch(() => backend.set({ [key]: value }), E.toError),
+    TE.tryCatch(
+      () =>
+        new Promise<void>((resolve) => backend.set({ [key]: value }, resolve)),
+      E.toError
+    ),
     TE.chain(catchRuntimeLastError)
   );
 };
@@ -62,16 +66,16 @@ function set<A>(
 
 function update<A extends object>(
   key: string,
-  value: A | undefined
-): TE.TaskEither<chrome.runtime.LastError, A | undefined> {
+  value: A | undefined | null
+): TE.TaskEither<chrome.runtime.LastError, A | null> {
   const S = getAssignSemigroup<A>();
   dbLogger.debug(`Update key %s with data: %O`, key, value);
   return pipe(
     get<A>(key),
     TE.chain((val) =>
-      val !== undefined && value !== undefined
+      val !== undefined && value !== undefined && value !== null
         ? set(key, S.concat(val, value))
-        : set(key, value)
+        : set(key, value ?? null)
     )
   );
 }

@@ -51,8 +51,8 @@ export const UserProfileBox = withQueries(({ queries }): React.ReactElement => {
   const handleChannelDelete = React.useCallback(async (): Promise<void> => {
     void pipe(
       sequenceS(TE.ApplicativePar)({
-        auth: updateAuth(undefined),
-        profile: updateProfile(undefined),
+        auth: updateAuth(null),
+        profile: updateProfile(null),
       }),
       TE.chainFirst(() =>
         pipe(doUpdateCurrentView({ view: 'index' }), TE.mapLeft(toBrowserError))
@@ -63,7 +63,7 @@ export const UserProfileBox = withQueries(({ queries }): React.ReactElement => {
   return pipe(
     queries,
     QR.fold(LazyFullSizeLoader, ErrorBox, ({ profile }) => {
-      if (profile === undefined) {
+      if (profile === null) {
         return (
           <Box>
             <LinkAccountButton />

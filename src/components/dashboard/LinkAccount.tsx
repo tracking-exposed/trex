@@ -88,7 +88,7 @@ export const LinkAccount: React.FC<LinkAccountProps> = ({ auth }) => {
   const handleUnlinkChannel: React.MouseEventHandler<HTMLButtonElement> =
     async () => {
       setChannel('');
-      await updateAuth(undefined)().then(() =>
+      await updateAuth(null)().then(() =>
         doUpdateCurrentView({ view: 'index' })()
       );
     };

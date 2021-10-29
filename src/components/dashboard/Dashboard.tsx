@@ -36,8 +36,8 @@ const useStyles = makeStyles((theme) => ({
 
 interface DashboardContentProps {
   currentView: CurrentView;
-  profile?: ContentCreator;
-  auth: AuthResponse;
+  profile: ContentCreator | null;
+  auth: AuthResponse | null;
 }
 
 const DashboardContent: React.FC<DashboardContentProps> = ({
@@ -55,7 +55,7 @@ const DashboardContent: React.FC<DashboardContentProps> = ({
           // eslint-disable-next-line react/jsx-key
           return [t('routes:settings'), '', <Settings />];
         default: {
-          if (profile === undefined) {
+          if (profile === null) {
             return [
               t('routes:link_account'),
               t('link_account:subtitle'),
