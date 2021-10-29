@@ -33,7 +33,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 interface LinkAccountProps {
-  auth?: AuthResponse;
+  auth: AuthResponse | null;
 }
 export const LinkAccount: React.FC<LinkAccountProps> = ({ auth }) => {
   const { t } = useTranslation();

@@ -11,7 +11,7 @@ export const AuthBox: React.FC = ({ children }) => {
     <WithQueries
       queries={{ profile: localProfile, auth }}
       render={QR.fold(LazyFullSizeLoader, ErrorBox, ({ profile, auth }) => {
-        if (auth.verified === false) {
+        if (auth?.verified !== true) {
           return <LinkAccount auth={auth} />;
         }
 
