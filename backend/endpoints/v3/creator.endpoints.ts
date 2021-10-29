@@ -1,15 +1,15 @@
-import { Endpoint } from "ts-endpoint";
-import * as t from "io-ts";
-import { AuthorizationHeader, AuthResponse } from "../../models/Auth";
-import { ContentCreator } from "../../models/ContentCreator";
-import { CreatorStats } from "../../models/CreatorStats";
-import { Recommendation } from "../../models/Recommendation";
-import { Video } from "../../models/Video";
+import { Endpoint } from 'ts-endpoint';
+import * as t from 'io-ts';
+import { AuthorizationHeader } from '../../models/Auth';
+import { ContentCreator } from '../../models/ContentCreator';
+import { CreatorStats } from '../../models/CreatorStats';
+import { Recommendation } from '../../models/Recommendation';
+import { Video } from '../../models/Video';
 
-const ChannelType = t.literal("channel");
+const ChannelType = t.literal('channel');
 
 const GetCreator = Endpoint({
-  Method: "GET",
+  Method: 'GET',
   getPath: () => `/v3/creator/me`,
   Input: {
     Headers: AuthorizationHeader,
@@ -18,7 +18,7 @@ const GetCreator = Endpoint({
 });
 
 const RegisterCreator = Endpoint({
-  Method: "POST",
+  Method: 'POST',
   getPath: ({ channelId }) => `/v3/creator/${channelId}/register`,
   Input: {
     Params: t.type({ channelId: t.string }),
@@ -30,7 +30,7 @@ const RegisterCreator = Endpoint({
 });
 
 const VerifyCreator = Endpoint({
-  Method: "POST",
+  Method: 'POST',
   getPath: ({ channelId }) => `/v3/creator/${channelId}/verify`,
   Input: {
     Params: t.type({ channelId: t.string }),
@@ -39,7 +39,7 @@ const VerifyCreator = Endpoint({
 });
 
 const CreatorVideos = Endpoint({
-  Method: "GET",
+  Method: 'GET',
   getPath: () => `/v3/creator/videos`,
   Input: {
     Headers: AuthorizationHeader,
@@ -48,7 +48,7 @@ const CreatorVideos = Endpoint({
 });
 
 const PullCreatorVideos = Endpoint({
-  Method: "POST",
+  Method: 'POST',
   getPath: () => `/v3/creator/videos/repull`,
   Input: {
     Headers: AuthorizationHeader,
@@ -57,17 +57,16 @@ const PullCreatorVideos = Endpoint({
 });
 
 const CreatorRecommendations = Endpoint({
-  Method: "GET",
-  getPath: ({ channelId }) => `/v3/creator/recommendations/${channelId}`,
+  Method: 'GET',
+  getPath: () => `/v3/creator/recommendations`,
   Input: {
-    Params: t.type({ channelId: t.string }),
     Headers: AuthorizationHeader,
   },
   Output: t.array(Recommendation),
 });
 
 const CreatorRelatedChannels = Endpoint({
-  Method: "GET",
+  Method: 'GET',
   getPath: ({ channelId, amount, skip }) =>
     `/v3/creator/${channelId}/related/${amount}-${skip}`,
   Input: {
@@ -78,12 +77,11 @@ const CreatorRelatedChannels = Endpoint({
 });
 
 const UpdateVideo = Endpoint({
-  Method: "POST",
+  Method: 'POST',
   getPath: () => `/v3/creator/updateVideo`,
   Input: {
     Headers: AuthorizationHeader,
     Body: t.type({
-      creatorId: t.string,
       videoId: t.string,
       recommendations: t.array(t.string),
     }),
@@ -92,7 +90,7 @@ const UpdateVideo = Endpoint({
 });
 
 const CreateRecommendation = Endpoint({
-  Method: "POST",
+  Method: 'POST',
   getPath: () => `/v3/creator/ogp`,
   Input: {
     Headers: AuthorizationHeader,
@@ -102,8 +100,8 @@ const CreateRecommendation = Endpoint({
 });
 
 const GetCreatorStats = Endpoint({
-  Method: "GET",
-  getPath: ({channelId}) => `/v3/creator/${channelId}/stats`,
+  Method: 'GET',
+  getPath: ({ channelId }) => `/v3/creator/${channelId}/stats`,
   Input: {
     Params: t.type({ channelId: t.string }),
   },
