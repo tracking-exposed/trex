@@ -56,8 +56,10 @@ async function recentVideoFetch(channelId) {
       return (
         tabSlot.tabRenderer &&
         tabSlot.tabRenderer.title &&
-        (tabSlot.tabRenderer.title === "Videos" ||
-          tabSlot.tabRenderer.title === "Video")
+        (
+          tabSlot.tabRenderer.title === "Videos" ||
+          tabSlot.tabRenderer.title === "Video" ||
+          tabSlot.tabRenderer.title === "Vidéos")
       );
       // warning this depends from the server locale
       // for example in Germany is
