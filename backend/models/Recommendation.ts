@@ -16,13 +16,12 @@ export type GetRecommendationParams = t.TypeOf<typeof GetRecommendationsParams>;
 
 export const Recommendation = t.strict(
   {
-    videoId: t.union([t.string, t.undefined]),
+    // videoId: t.union([t.string, t.undefined]),
     urlId: t.string,
     title: t.string,
     description: t.string,
     image: t.union([t.string, t.undefined]),
   },
-
   'Recommendation'
 );
 

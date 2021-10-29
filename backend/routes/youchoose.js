@@ -12,11 +12,8 @@ const structured = require('../lib/structured');
 const PUBLIC_AMOUNT_ELEMS = 100;
 
 async function byVideoId(req) {
-  /* this function can be invoked in two ways: POST or GET */
-  const source1 = req.params ? _.get(req.params, 'videoId') : null;
-  const source2 = req.body ? _.get(req.body, 'videoId') : null;
-  const videoId = source1 || source2;
-  debug('videoId %s kind %s', videoId, source1 ? 'GET/params' : 'POST/body');
+  /* this function is invoked as GET when creators edit a video */
+  const videoId = req.params ? _.get(req.params, 'videoId') : null;
   if (!videoId) {
     debug('Missing mandatory parameter: videoId (%s)', JSON.stringify(req));
     return { json: { error: true, message: 'missing videoId' } };
@@ -27,13 +24,38 @@ async function byVideoId(req) {
 }
 
 async function byProfile(req) {
-  const avail = await ycai.fetchRecommendationsByProfile();
+  const decodedReq = endpoints.decodeRequest(v3.Endpoints.Creator.CreatorVideos, req);
+  if (decodedReq.type === 'error') {
+    return {
+      json: {
+        error: true,
+        details: decodedReq.result
+      }
+    }
+  }
+  const token = decodedReq.result.headers['x-authorization'];
+  const recommendations = await ycai.fetchRecommendationsByProfile(token);
   debug(
-    'byProfile (%s) returning without filter %d recommendations',
-    req.params.publicKey,
-    avail.length
+    'creator is fetching their %d recommendations',
+    recommendations.length
   );
-  return { json: _.reverse(avail) };
+  const x = _.map(recommendations, function(o) {
+    return _.pick(o, ['urlId', 'title', 'description', 'image']);
+  })
+  console.log(JSON.stringify(x, undefined, 2));
+  const valid = endpoints.decodeResponse(
+    v3.Endpoints.Creator.CreatorRecommendations,
+    x); // recommendations);
+
+  if (valid.type === 'error') {
+    debug('Invalid generated output for creator Recommendations %O', valid);
+    return {
+      json: {
+        details: valid.result,
+      },
+    };
+  }
+  return { json: valid.result };
 }
 
 async function ogpProxy(req) {
@@ -77,7 +99,6 @@ async function videoByCreator(req) {
   }
   const token = decodedReq.result.headers['x-authorization'];
   const creator = await ycai.getCreatorByToken(token);
-  // at the moment the publicKey is the channelId
 
   debug('Querying DB.ytvids for profile [%s]', creator._id);
   const MAXVIDOEL = 100;
@@ -96,7 +117,7 @@ async function videoByCreator(req) {
 
   debug(
     'Requested Video List by content creator (%s) returning %d',
-    creator.id,
+    creator.username,
     ready.length
   );
 

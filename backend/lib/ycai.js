@@ -56,20 +56,22 @@ async function fetchRecommendations(videoId, kind) {
   return result;
 }
 
-async function fetchRecommendationsByProfile(profileInfo) {
+async function fetchRecommendationsByProfile(token) {
   // cryptography and authentication not yet implemented
   const INTERFACE_MAX = 100;
   const mongoc = await mongo3.clientConnect({ concurrency: 1 });
+  const creator = await mongo3
+    .readOne(mongoc, nconf.get("schema").creators, {accessToken: token});
   const results = await mongo3.readLimit(
     mongoc,
     nconf.get("schema").recommendations,
-    {},
-    {},
+{}, //    { creator: creator.channelId },
+    {when: -1},
     INTERFACE_MAX,
     0
   );
   if (INTERFACE_MAX == results.length) {
-    debug("More recommendations than what is possible!");
+    debug("More recommendations than what is possible! (we should support pagination)");
   }
   await mongoc.close();
   return results;
@@ -291,7 +293,8 @@ async function getCreatorByToken(token) {
   await mongoc.close();
 
   if(creator) {
-    debug("getCreatorByToken creator %j", creator);
+    debug("getCreatorByToken found %s, %s",
+      creator.channelId, creator.username);
     return creator;
   } else {
     return {
