@@ -24,7 +24,7 @@ export const settings = compose(
     return pipe(
       popupSettings,
       TE.fromPredicate(
-        (r): r is Settings => r !== undefined,
+        (r): r is Settings => r !== null,
         () => toBrowserError(new Error())
       )
     );

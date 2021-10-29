@@ -130,7 +130,7 @@ export const Popup = withQueries(({ queries }) => {
                   </Typography>
                 </Grid>
               </Grid>
-              {settings === undefined ? (
+              {settings === null ? (
                 <Box>
                   <Button onClick={updateSettings(getDefaultSettings())}>
                     {t('actions:popup_bootstrap')}

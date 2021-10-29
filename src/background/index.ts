@@ -151,7 +151,7 @@ bo.runtime.onInstalled.addListener((details) => {
               | Messages['GenerateKeypair']['Response']
               | Messages['GetKeypair']['Response']
             > =>
-              r === undefined
+              r === null
                 ? settings.generatePublicKeypair('')
                 : TE.right({ type: GetKeypair.value, response: r })
           )

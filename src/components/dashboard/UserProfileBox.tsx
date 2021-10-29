@@ -13,7 +13,6 @@ import { updateAuth, updateProfile } from '../../state/creator.commands';
 import { localProfile } from '../../state/creator.queries';
 import { ErrorBox } from '../common/ErrorBox';
 import { LazyFullSizeLoader } from '../common/FullSizeLoader';
-import { LinkAccountButton } from '../common/LinkAccountButton';
 
 interface LoggedUserProfileBoxProps {
   onLogout: () => void;
@@ -47,7 +46,7 @@ export const LoggedUserProfileBox: React.FC<LoggedUserProfileBoxProps> = ({
 
 const withQueries = declareQueries({ profile: localProfile });
 
-export const UserProfileBox = withQueries(({ queries }): React.ReactElement => {
+export const UserProfileBox = withQueries(({ queries }): React.ReactElement | null => {
   const handleChannelDelete = React.useCallback(async (): Promise<void> => {
     void pipe(
       sequenceS(TE.ApplicativePar)({
@@ -63,12 +62,8 @@ export const UserProfileBox = withQueries(({ queries }): React.ReactElement => {
   return pipe(
     queries,
     QR.fold(LazyFullSizeLoader, ErrorBox, ({ profile }) => {
-      if (profile === null || profile === undefined) {
-        return (
-          <Box>
-            <LinkAccountButton />
-          </Box>
-        );
+      if (profile === null) {
+        return null;
       }
 
       return (

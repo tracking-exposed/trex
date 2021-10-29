@@ -95,9 +95,12 @@ export const Messages = MessagesAPI({
   // settings
   [GetSettings.value]: {
     payload: t.void,
-    response: t.union([Settings, t.undefined]),
+    response: t.union([Settings, t.null]),
   },
-  [UpdateSettings.value]: { payload: Settings, response: Settings },
+  [UpdateSettings.value]: {
+    payload: Settings,
+    response: Settings,
+  },
   // content creator auth
   [GetAuth.value]: {
     payload: t.void,
@@ -105,7 +108,7 @@ export const Messages = MessagesAPI({
   },
   [UpdateAuth.value]: {
     payload: t.union([AuthResponse, t.null]),
-    response: AuthResponse,
+    response: t.union([AuthResponse, t.null]),
   },
   [GetContentCreator.value]: {
     payload: t.void,
@@ -114,7 +117,7 @@ export const Messages = MessagesAPI({
 
   [UpdateContentCreator.value]: {
     payload: t.union([ContentCreator, t.null]),
-    response: ContentCreator,
+    response: t.union([ContentCreator, t.null]),
   },
   [RecommendationsFetch.value]: { payload: t.any, response: t.any },
   [ReloadExtension.value]: { payload: t.any, response: t.undefined },
