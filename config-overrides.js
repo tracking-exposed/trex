@@ -25,6 +25,7 @@ const NODE_ENV = t.union(
 const BUILD_ENV = t.strict(
   {
     NODE_ENV,
+    BUNDLE_TARGET: t.union([t.literal('firefox'), t.literal('chrome')]),
     BUNDLE_STATS: BooleanFromString,
     BUNDLE_ENABLE_NOTIFY: BooleanFromString,
   },
@@ -69,6 +70,8 @@ module.exports = {
       }
     );
 
+    console.log('Build ENV', buildENV);
+
     const produceBundleStats = buildENV.BUNDLE_STATS;
     const isProduction = buildENV.NODE_ENV === 'production';
     const enableNotification = buildENV.BUNDLE_ENABLE_NOTIFY;
@@ -112,7 +115,7 @@ module.exports = {
         return validation.right;
       }
     );
-    console.log(appEnv);
+    console.log('App ENV', appEnv);
     // override define plugin
     config.plugins[definePluginIndex] = new DefinePlugin({
       'process.env': appEnv,
@@ -146,6 +149,16 @@ module.exports = {
 
           const buildManifest = {
             ...manifest,
+            ...(buildENV.BUNDLE_TARGET === 'chrome'
+              ? {
+                  cross_origin_embedder_policy: {
+                    value: 'require-corp',
+                  },
+                  cross_origin_opener_policy: {
+                    value: 'same-origin',
+                  },
+                }
+              : {}),
             content_scripts,
             version: isProduction ? pkgJson.version : `${pkgJson.version}.88`,
           };
