@@ -30,7 +30,7 @@ export const VideoRecommendations: React.FC<VideoRecommendationsProps> = ({
         <Box>
           <Typography variant="h5">{t('recommendations:title')}</Typography>
           {videoRecommendations.map((r, i) => (
-            <VideoCard key={i} {...r} videoId={videoId} />
+            <VideoCard key={i} {...r} videoId={r.videoId} />
           ))}
         </Box>
       );
