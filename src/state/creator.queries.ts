@@ -48,10 +48,7 @@ const throwOnMissingProfile = (
   );
 
 export const auth = queryStrict(
-  () =>
-    
-      sendMessage(Messages.GetAuth)()
-    ,
+  () => sendMessage(Messages.GetAuth)(),
   available
 );
 

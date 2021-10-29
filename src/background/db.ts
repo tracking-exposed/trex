@@ -30,7 +30,7 @@ const backendSet = <A>(
   key: string,
   value: A
 ): TE.TaskEither<chrome.runtime.LastError, void> => {
-  dbLogger.debug(`Save ${JSON.stringify(value)} as ${key}`);
+  dbLogger.debug(`Save %j to "%s"`, value, key);
   return pipe(
     TE.tryCatch(
       () =>
@@ -43,14 +43,14 @@ const backendSet = <A>(
 
 function get<A>(
   key: string
-): TE.TaskEither<chrome.runtime.LastError, A | undefined> {
+): TE.TaskEither<chrome.runtime.LastError, A | null> {
   return pipe(
     backendGet([key]),
     TE.map((val) => {
       dbLogger.debug('DB: value for key %s %O', key, val);
       return val;
     }),
-    TE.map((val) => val?.[key])
+    TE.map((val) => val?.[key] ?? null)
   );
 }
 
@@ -73,7 +73,7 @@ function update<A extends object>(
   return pipe(
     get<A>(key),
     TE.chain((val) =>
-      val !== undefined && value !== undefined && value !== null
+      val !== null && value !== undefined && value !== null
         ? set(key, S.concat(val, value))
         : set(key, value ?? null)
     )

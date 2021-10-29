@@ -55,7 +55,7 @@ const DashboardContent: React.FC<DashboardContentProps> = ({
           // eslint-disable-next-line react/jsx-key
           return [t('routes:settings'), '', <Settings />];
         default: {
-          if (profile === null || profile === undefined) {
+          if (profile === null) {
             return [
               t('routes:link_account'),
               t('link_account:subtitle'),
