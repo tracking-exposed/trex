@@ -214,14 +214,23 @@ async function creatorRegister(req) {
 
 async function creatorVerify(req) {
   const channelId = req.params.channelId;
-  debug("Fetching youtube.com while looking for the token string!");
-  const pageData = await curly.tokenFetch(channelId);
-  debug("Code retrieved %s", pageData.code);
 
   const tokeno = await ycai.getToken({
     type: "channel",
     channelId,
   });
+
+  if(!tokeno || !tokeno.verificationToken) {
+    return {
+      json: {
+        error: true,
+        message: "token not found",
+      }
+    }
+  }
+  debug("Fetching youtube.com while looking for the token string!");
+  const pageData = await curly.tokenFetch(channelId);
+  debug("Code retrieved %s", pageData.code);
 
   if (tokeno.verificationToken != pageData.code) {
     debug("Validation fail: %s != %s", tokeno.verificationToken, pageData.code);

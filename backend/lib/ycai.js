@@ -236,14 +236,19 @@ async function confirmCreator(tokeno, creatorInfo) {
     })
   }
 
-  const x = await mongo3.writeOne(mongoc,
-    nconf.get("schema").creators, creator);
-  await mongoc.close();
-
-  if(x.result.ok != 1) {
-    debug("Error? unable to write creator on the DB");
-    throw new Error("Unable to write creator in the DB");
+  try {
+    await mongo3.deleteMany(mongoc,
+      nconf.get("schema").creators, { channelId: tokeno.channelId});
+    const x = await mongo3.writeOne(mongoc,
+      nconf.get("schema").creators, creator);
+    if(x.result.ok != 1)
+      debug("Error? unable to write creator on the DB %j", x.result);
+  } catch(error) {
+    debug("Error in confirmCreator: %s", error.message);
+    throw new Error(`Error in confirmCreator: ${error.message}`);
   }
+
+  await mongoc.close();
   return creator;
 }
 
