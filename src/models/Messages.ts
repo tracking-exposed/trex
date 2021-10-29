@@ -99,18 +99,21 @@ export const Messages = MessagesAPI({
   },
   [UpdateSettings.value]: { payload: Settings, response: Settings },
   // content creator auth
-  [GetAuth.value]: { payload: t.void, response: AuthResponse },
+  [GetAuth.value]: {
+    payload: t.void,
+    response: t.union([AuthResponse, t.null]),
+  },
   [UpdateAuth.value]: {
-    payload: t.union([AuthResponse, t.undefined]),
+    payload: t.union([AuthResponse, t.null]),
     response: AuthResponse,
   },
   [GetContentCreator.value]: {
     payload: t.void,
-    response: t.union([ContentCreator, t.undefined]),
+    response: t.union([ContentCreator, t.null]),
   },
 
   [UpdateContentCreator.value]: {
-    payload: ContentCreator,
+    payload: t.union([ContentCreator, t.null]),
     response: ContentCreator,
   },
   [RecommendationsFetch.value]: { payload: t.any, response: t.any },

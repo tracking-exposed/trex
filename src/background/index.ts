@@ -24,6 +24,7 @@ import { bkgLogger } from '../utils/logger.utils';
 import db from './db';
 import * as development from './reloadExtension';
 import * as settings from './settings';
+import { ContentCreator } from '@backend/models/ContentCreator';
 
 export const getDefaultSettings = (): Settings => ({
   active: true,
@@ -95,6 +96,37 @@ const getMessageHandler = <M extends Messages[keyof Messages]>(
   }
 };
 
+bo.runtime.onMessage.addListener(
+  (request: MessageType<any, any, any>, sender, sendResponse) => {
+    // eslint-disable-next-line no-console
+    bkgLogger.debug('message received', request, sender);
+
+    if (config.NODE_ENV === 'development') {
+      if (request.type === ReloadExtension.value) {
+        development.reloadExtension();
+      }
+    }
+
+    getMessageHandler(request)()
+      .then((r) => {
+        if (E.isRight(r)) {
+          bkgLogger.debug('Response for request %s: %O', request.type, r.right);
+          return sendResponse(r.right);
+        }
+
+        // eslint-disable-next-line
+        bkgLogger.error('Failed to process request %O', r.left);
+
+        return undefined;
+      })
+      // eslint-disable-next-line
+      .catch((e) => bkgLogger.error('An error occured %O', e));
+
+    // this enable async response
+    return true;
+  }
+);
+
 bo.runtime.onInstalled.addListener((details) => {
   if (details.reason === 'install') {
     bkgLogger.debug('Extension installed %O', details);
@@ -102,6 +134,7 @@ bo.runtime.onInstalled.addListener((details) => {
     void pipe(
       sequenceS(TE.ApplicativePar)({
         keypair: settings.generatePublicKeypair(''),
+        profile: db.update(UpdateContentCreator.value, null),
         settings: db.update(UpdateSettings.value, getDefaultSettings()),
       })
     )();
@@ -134,38 +167,16 @@ bo.runtime.onInstalled.addListener((details) => {
               : TE.right(r)
           )
         ),
+        // check profile is not `undefined` on extension update and set it to `null`
+        profile: pipe(
+          db.get<ContentCreator>(getStorageKey(GetContentCreator.value)),
+          TE.chain((r) =>
+            r === undefined
+              ? db.update(getStorageKey(GetContentCreator.value), null)
+              : TE.right(r)
+          )
+        ),
       })
     )();
   }
 });
-
-bo.runtime.onMessage.addListener(
-  (request: MessageType<any, any, any>, sender, sendResponse) => {
-    // eslint-disable-next-line no-console
-    bkgLogger.debug('message received', request, sender);
-
-    if (config.NODE_ENV === 'development') {
-      if (request.type === ReloadExtension.value) {
-        development.reloadExtension();
-      }
-    }
-
-    getMessageHandler(request)()
-      .then((r) => {
-        if (E.isRight(r)) {
-          bkgLogger.debug('Response for request %s: %O', request.type, r.right);
-          return sendResponse(r.right);
-        }
-
-        // eslint-disable-next-line
-        bkgLogger.error('Failed to process request %O', r.left);
-
-        return undefined;
-      })
-      // eslint-disable-next-line
-      .catch((e) => bkgLogger.error('An error occured %O', e));
-
-    // this enable async response
-    return true;
-  }
-);

@@ -107,14 +107,14 @@ export const updateRecommendationForVideo = command(
 );
 
 export const updateAuth = command(
-  (payload?: AuthResponse) => sendMessage(Messages.UpdateAuth)(payload),
+  (payload: AuthResponse | null) => sendMessage(Messages.UpdateAuth)(payload),
   {
     auth,
   }
 );
 
 export const updateProfile = command(
-  (payload?: ContentCreator) =>
+  (payload: ContentCreator | null) =>
     sendMessage(Messages.UpdateContentCreator)(payload),
   {
     profile,

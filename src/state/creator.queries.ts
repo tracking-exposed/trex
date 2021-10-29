@@ -36,7 +36,7 @@ type AuthorizedContentCreator = Omit<ContentCreator, 'accessToken'> & {
 };
 
 const throwOnMissingProfile = (
-  profile?: ContentCreator
+  profile: ContentCreator | null
 ): TE.TaskEither<APIError, AuthorizedContentCreator> =>
   pipe(
     profile,
@@ -49,13 +49,9 @@ const throwOnMissingProfile = (
 
 export const auth = queryStrict(
   () =>
-    pipe(
-      sendMessage(Messages.GetAuth)(),
-      TE.map((r) => {
-        apiLogger.debug('Get auth %O', r);
-        return r;
-      })
-    ),
+    
+      sendMessage(Messages.GetAuth)()
+    ,
   available
 );
 
