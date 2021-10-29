@@ -4,6 +4,7 @@ import { Recommendation } from './Recommendation';
 export const Video = t.strict(
   {
     ...Recommendation.type.props,
+    videoId: t.string,
     recommendations: t.array(t.string),
   },
   'Video'

@@ -1,7 +1,7 @@
 import * as t from 'io-ts';
 import { DateFromISOString } from 'io-ts-types/lib/DateFromISOString';
 
-const CreatorStatContent = t.strict(
+export const CreatorStatContent = t.strict(
   {
     id: t.string,
     watchedTitle: t.string,
@@ -12,8 +12,10 @@ const CreatorStatContent = t.strict(
     recommendedTitle: t.string,
     recommendedChannel: t.string,
   },
-  "CreatorStatContent"
+  'CreatorStatContent'
 );
+
+export type CreatorStatContent = t.TypeOf<typeof CreatorStatContent>;
 
 export const CreatorStats = t.strict(
   {
@@ -22,7 +24,7 @@ export const CreatorStats = t.strict(
     overflow: t.boolean,
     total: t.number,
     stripped: t.number,
-    content: t.array(CreatorStatContent)
+    content: t.array(CreatorStatContent),
   },
   'CreatorStats'
 );

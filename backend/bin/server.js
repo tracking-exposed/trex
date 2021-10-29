@@ -45,6 +45,8 @@ async function iowrapper(fname, req, res) {
           _.size(JSON.stringify(req.body)),
           _.size(JSON.stringify(httpresult.json)),
         );
+        if (httpresult.json.error)
+            res.status(500);
         res.setHeader('Access-Control-Allow-Origin', '*');
         res.json(httpresult.json);
     } else if (httpresult.text) {
