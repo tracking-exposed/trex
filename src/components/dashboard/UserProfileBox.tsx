@@ -63,7 +63,7 @@ export const UserProfileBox = withQueries(({ queries }): React.ReactElement => {
   return pipe(
     queries,
     QR.fold(LazyFullSizeLoader, ErrorBox, ({ profile }) => {
-      if (profile === null) {
+      if (profile === null || profile === undefined) {
         return (
           <Box>
             <LinkAccountButton />
