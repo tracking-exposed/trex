@@ -1,20 +1,21 @@
 import { ContentCreator } from '@backend/models/ContentCreator';
+import { CreatorStatContent, CreatorStats } from '@backend/models/CreatorStats';
 import {
   Card,
   CardContent,
   CardHeader,
   Typography,
-  useTheme
+  useTheme,
 } from '@material-ui/core';
 import Grid from '@material-ui/core/Grid';
 import CommunityIcon from '@material-ui/icons/GroupOutlined';
-import NotificationIcon from '@material-ui/icons/NotificationImportantOutlined';
 import * as QR from 'avenger/lib/QueryResult';
 import { declareQueries } from 'avenger/lib/react';
+import * as A from 'fp-ts/lib/Array';
 import { pipe } from 'fp-ts/lib/function';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { profile } from '../../../state/creator.queries';
+import { creatorStats, profile } from '../../../state/creator.queries';
 import { ErrorBox } from '../../common/ErrorBox';
 import { LazyFullSizeLoader } from '../../common/FullSizeLoader';
 import { LinkAccountButton } from '../../common/LinkAccountButton';
@@ -23,39 +24,101 @@ import { CCRelatedUserList } from './CCRelatedUserList';
 
 interface CreatorStatsProps {
   profile?: ContentCreator;
+  stats: CreatorStats;
 }
-const CreatorStats: React.FC<CreatorStatsProps> = ({ profile }) => {
+
+const CreatorStatsPage: React.FC<CreatorStatsProps> = ({ profile, stats }) => {
   const theme = useTheme();
   const { t } = useTranslation();
+  const recommendations = React.useMemo(
+    () =>
+      pipe(
+        stats.content,
+        A.reduce(
+          {
+            self: [] as CreatorStatContent[],
+            community: [] as CreatorStatContent[],
+            totalViews: 0,
+          },
+          (acc, s) => {
+            const totalViews = acc.totalViews + s.recommendedViews;
+            const updatedRecommendations =
+              s.recommendedChannel === stats.authorName
+                ? {
+                    self: acc.self.concat(s),
+                  }
+                : {
+                    community: acc.community.concat(s),
+                  };
+
+            return {
+              ...acc,
+              ...updatedRecommendations,
+              totalViews,
+            };
+          }
+        ),
+        (s) => {
+          const total = s.self.length + s.community.length;
+          const recommendabilityScore =
+            s.self.length === 0 && s.community.length === 0
+              ? 0
+              : (s.self.length / s.community.length) * 100;
+          return {
+            recommendabilityScore,
+            total,
+            ...s,
+          };
+        }
+      ),
+    [stats]
+  );
+
   return (
     <Grid item md={12}>
       {profile === undefined ? (
         <LinkAccountButton />
       ) : (
-        <Grid container>
-          <Grid item md={6}>
+        <Grid container spacing={2}>
+          <Grid item md={4}>
+            <Card>
+              <CardHeader
+                title={t('statistics:recommendability_score_title')}
+                subheader={t('statistics:recommendability_score_subtitle')}
+              />
+              <CardContent>
+                {recommendations.recommendabilityScore}%
+              </CardContent>
+            </Card>
+          </Grid>
+          <Grid item md={4}>
             <Typography variant="h5" color="primary">
               {t('statistics:top_n_cc_related_to_your_channel', {
                 count: 5,
               })}
             </Typography>
-            <CCRelatedUserList channelId={profile.channelId} amount={5} skip={0} />
+            <CCRelatedUserList
+              channelId={profile.channelId}
+              amount={5}
+              skip={0}
+            />
           </Grid>
 
-          <Grid item md={6}>
-            <StatsCard
-              header={t('recommendations:title')}
-              count={299}
-              color={theme.palette.primary.main}
-            />
+          <Grid item md={4}>
             <Grid container spacing={2}>
-              <Grid item sm={6}>
+              <Grid item sm={12}>
                 <StatsCard
-                  header={t('statistics:unique_watchers')}
-                  count={16}
+                  header={t('statistics:total_recommendations')}
+                  count={recommendations.total}
                 />
               </Grid>
-              <Grid item sm={6}>
+              <Grid item sm={12}>
+                <StatsCard
+                  header={t('statistics:total_views')}
+                  count={recommendations.totalViews}
+                />
+              </Grid>
+              <Grid item sm={12}>
                 <StatsCard
                   icon={<CommunityIcon />}
                   header={t('statistics:evidences_title')}
@@ -63,22 +126,6 @@ const CreatorStats: React.FC<CreatorStatsProps> = ({ profile }) => {
                   color={theme.palette.success.main}
                 />
               </Grid>
-            </Grid>
-
-            <Grid item md={2}>
-              <Card>
-                <CardHeader
-                  title={t('statistics:recommendability_score_title')}
-                  subheader={t('statistics:recommendability_score_subtitle')}
-                />
-                <CardContent>30%</CardContent>
-              </Card>
-              <StatsCard
-                icon={<NotificationIcon />}
-                header={t('statistics:notifications_title')}
-                count={3}
-                color={theme.palette.error.main}
-              />
             </Grid>
           </Grid>
 
@@ -93,16 +140,16 @@ const CreatorStats: React.FC<CreatorStatsProps> = ({ profile }) => {
   );
 };
 
-const withQueries = declareQueries({ profile });
+const withQueries = declareQueries({ profile, creatorStats });
 
 export const StatisticsPage = withQueries(({ queries }): React.ReactElement => {
   return pipe(
     queries,
-    QR.fold(LazyFullSizeLoader, ErrorBox, ({ profile }) => {
+    QR.fold(LazyFullSizeLoader, ErrorBox, ({ profile, creatorStats }) => {
       return (
         <Grid container spacing={3}>
           <Grid item md={12}>
-            <CreatorStats profile={profile} />
+            <CreatorStatsPage profile={profile} stats={creatorStats} />
           </Grid>
         </Grid>
       );

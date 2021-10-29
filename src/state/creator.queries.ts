@@ -36,7 +36,7 @@ type AuthorizedContentCreator = Omit<ContentCreator, 'accessToken'> & {
 };
 
 const throwOnMissingProfile = (
-  profile: ContentCreator | null
+  profile?: ContentCreator | null
 ): TE.TaskEither<APIError, AuthorizedContentCreator> =>
   pipe(
     profile,
@@ -146,4 +146,13 @@ export const ccRelatedUsers = compose(
     },
     available
   )
+);
+
+export const creatorStats = compose(
+  product({ profile }),
+  queryStrict(({ profile }) => {
+    return pipe(
+      API.Creator.GetCreatorStats({ Params: { channelId: profile.channelId } })
+    );
+  }, available)
 );

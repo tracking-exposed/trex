@@ -67,7 +67,8 @@ const resources: CustomTypeOptions['resources'] = {
     recommendability_score_title: 'Recommendability Score',
     recommendability_score_subtitle:
       'Where your videos appears as recommended?',
-    unique_watchers: 'Unique watchers',
+    total_views: 'Total Views',
+    total_recommendations: 'Total Recommendations',
     evidences_title: 'Evidences',
     notifications_title: 'Notifications',
     top_n_cc_related_to_your_channel:
