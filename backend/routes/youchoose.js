@@ -12,11 +12,8 @@ const structured = require('../lib/structured');
 const PUBLIC_AMOUNT_ELEMS = 100;
 
 async function byVideoId(req) {
-  /* this function can be invoked in two ways: POST or GET */
-  const source1 = req.params ? _.get(req.params, 'videoId') : null;
-  const source2 = req.body ? _.get(req.body, 'videoId') : null;
-  const videoId = source1 || source2;
-  debug('videoId %s kind %s', videoId, source1 ? 'GET/params' : 'POST/body');
+  /* this function is invoked as GET when creators edit a video */
+  const videoId = req.params ? _.get(req.params, 'videoId') : null;
   if (!videoId) {
     debug('Missing mandatory parameter: videoId (%s)', JSON.stringify(req));
     return { json: { error: true, message: 'missing videoId' } };
@@ -27,27 +24,78 @@ async function byVideoId(req) {
 }
 
 async function byProfile(req) {
-  const avail = await ycai.fetchRecommendationsByProfile();
+  const decodedReq = endpoints.decodeRequest(v3.Endpoints.Creator.CreatorVideos, req);
+  if (decodedReq.type === 'error') {
+    return {
+      json: {
+        error: true,
+        details: decodedReq.result
+      }
+    }
+  }
+  const token = decodedReq.result.headers['x-authorization'];
+  const recommendations = await ycai.fetchRecommendationsByProfile(token);
+
+  // the function below should not be that necessary but ATM it is.
+  const cleaned = _.compact(_.map(recommendations, function(o) {
+    if(!o.title) return null;
+    if(!o.description) o.description = undefined;
+    if(!o.image) o.image = undefined;
+    return _.pick(o, ['title', 'description', 'urlId', 'image']);
+  }));
   debug(
-    'byProfile (%s) returning without filter %d recommendations',
-    req.params.publicKey,
-    avail.length
+    'creator is fetching their %d recommendations (cleaned %d)',
+    recommendations.length, cleaned.length
   );
-  return { json: _.reverse(avail) };
+  const valid = endpoints.decodeResponse(
+    v3.Endpoints.Creator.CreatorRecommendations, cleaned);
+
+  if (valid.type === 'error') {
+    debug('Invalid generated output for creator Recommendations %O', valid);
+    return {
+      json: {
+        details: valid.result,
+      },
+    };
+  }
+  return { json: valid.result };
 }
 
 async function ogpProxy(req) {
-  const url = req.body.url;
-  debug('ogpProxy: %s', url);
-  const exists = await ycai.getRecommendationByURL(url);
+  const decodedReq = endpoints.decodeRequest(v3.Endpoints.Creator.CreateRecommendation, req);
+  const token = decodedReq.result.headers['x-authorization'];
+  const url = decodedReq.result.body.url;
+
+  const creator = await ycai.getCreatorByToken(token);
+  if (!creator) {
+    return {
+      json: {
+        error: true,
+        message: "Creator doesn't exists",
+      },
+    };
+  }
+  const exists = await ycai.getRecommendationByURL(url, creator);
   if (exists) {
     debug('Requested OGP to an already acquired URL %s', url);
     return {
       json: exists,
     };
   }
-  const result = await fetchOpengraph.fetch(url);
-  const review = await ycai.saveRecommendationOGP(result);
+  let ogresult = null;
+  try {
+    ogresult = await fetchOpengraph.fetch(url);
+  } catch(error) {
+    debug("Error with open graph protocol (%s): %s",
+      url, error.message);
+    return {
+      json: {
+        error: true,
+        message: error.message
+      }
+    }
+  }
+  const review = await ycai.saveRecommendationOGP(ogresult, creator);
   if (!review.title) {
     debug('We got an error in OGP (%s) %j', url, review);
     return {
@@ -77,12 +125,11 @@ async function videoByCreator(req) {
   }
   const token = decodedReq.result.headers['x-authorization'];
   const creator = await ycai.getCreatorByToken(token);
-  // at the moment the publicKey is the channelId
 
   debug('Querying DB.ytvids for profile [%s]', creator._id);
   const MAXVIDOEL = 100;
   const videos = await ycai.getVideoFromYTprofiles(
-    { id: creator.channelId },
+    creator,
     MAXVIDOEL
   );
 
@@ -96,7 +143,7 @@ async function videoByCreator(req) {
 
   debug(
     'Requested Video List by content creator (%s) returning %d',
-    creator.id,
+    creator.username,
     ready.length
   );
 

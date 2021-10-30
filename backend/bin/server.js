@@ -40,13 +40,12 @@ async function iowrapper(fname, req, res) {
             res.setHeader(key, value);
         });
 
-    if (httpresult.json) {
-        debug("API (%d bytes) success, returning JSON (%d bytes)",
-          _.size(JSON.stringify(req.body)),
-          _.size(JSON.stringify(httpresult.json)),
-        );
-        if (httpresult.json.error)
-            res.status(500);
+    if (httpresult.json && httpresult.json.error) {
+        debug("API (%s) failure, returning 500", fname);
+        res.status(500);
+    } else if (httpresult.json) {
+        debug("API (%s) success, returning %d bytes JSON",
+          fname, _.size(JSON.stringify(httpresult.json)));
         res.setHeader('Access-Control-Allow-Origin', '*');
         res.json(httpresult.json);
     } else if (httpresult.text) {
@@ -137,14 +136,14 @@ app.post('/api/v3/handshake', async (req, res) => await iowrapper('youChooseByVi
 app.get('/api/v3/video/:videoId/recommendations', async (req, res) => await iowrapper('youChooseByVideoId', req, res))
 app.get('/api/v3/recommendations/:ids', async (req, res) => await iowrapper('recommendationById', req, res))
 
-app.post('/api/v3/creator/updateVideo', (req, res) => dispatchPromise('updateVideoRec', req, res))
-app.post('/api/v3/creator/ogp', cors(), (req, res) => dispatchPromise('ogpProxy', req, res))
-app.get('/api/v3/creator/videos', (req, res) => dispatchPromise('getVideoByCreator', req, res))
-app.post('/api/v3/creator/videos/repull', (req, res) => dispatchPromise('repullByCreator', req, res))
+app.post('/api/v3/creator/updateVideo', async (req, res) => await iowrapper('updateVideoRec', req, res))
+app.post('/api/v3/creator/ogp', cors(), async (req, res) => await iowrapper('ogpProxy', req, res))
+app.get('/api/v3/creator/videos', async (req, res) => await iowrapper('getVideoByCreator', req, res))
+app.post('/api/v3/creator/videos/repull', async (req, res) => await iowrapper('repullByCreator', req, res))
 
-app.get('/api/v3/creator/recommendations/:publicKey', (req, res) => dispatchPromise('youChooseByProfile', req, res))
-app.get('/api/v3/creator/:channelId/related/:amount?', (req, res) => dispatchPromise('getCreatorRelated', req, res))
-app.get('/api/v3/creator/:channelId/stats', (req, res) => dispatchPromise('getCreatorStats', req, res))
+app.get('/api/v3/creator/recommendations/:IGNORED_CHANNELID', async (req, res) => await iowrapper('youChooseByProfile', req, res))
+app.get('/api/v3/creator/:channelId/related/:amount?', async (req, res) => await iowrapper('getCreatorRelated', req, res))
+app.get('/api/v3/creator/:channelId/stats', async (req, res) => await iowrapper('getCreatorStats', req, res))
 
 /* below, guardoni-v2 */
 app.post('/api/v3/directives/:directiveType', async (req, res) => await iowrapper('postDirective', req, res))

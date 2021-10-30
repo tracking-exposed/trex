@@ -56,30 +56,54 @@ async function fetchRecommendations(videoId, kind) {
   return result;
 }
 
-async function fetchRecommendationsByProfile(profileInfo) {
+async function fetchRecommendationsByProfile(token) {
   // cryptography and authentication not yet implemented
   const INTERFACE_MAX = 100;
   const mongoc = await mongo3.clientConnect({ concurrency: 1 });
+  const creator = await mongo3
+    .readOne(mongoc, nconf.get("schema").creators, {accessToken: token});
   const results = await mongo3.readLimit(
     mongoc,
     nconf.get("schema").recommendations,
-    {},
-    {},
+    { creator: creator.channelId },
+    { when: -1 },
     INTERFACE_MAX,
     0
   );
   if (INTERFACE_MAX == results.length) {
-    debug("More recommendations than what is possible!");
+    debug("More recommendations than what is possible! (we should support pagination)");
   }
   await mongoc.close();
   return results;
 }
 
-async function saveRecommendationOGP(ogblob) {
+function attributeFromDomain(domain) {
+  // for youtube, facebook, twitter, wikipedia, and
+  // any other website that we want to recognize with 
+  // their favicon in the interface, we can match it
+  const map = {
+    'youtube': ['youtube.com', 'youtu.be'],
+    'wikipedia': ['wikipedia.com'],
+    'twitter': ['twitter.com'],
+  }
+  return _.filter(_.keys(map), function(k) {
+    const dlist = map[k];
+    return _.same(dlist, function(dtest) {
+      return _.endsWith(domain, dtest);
+    });
+  });
+}
+
+async function saveRecommendationOGP(ogblob, creator) {
   // this opengraph might have redundant fields so we pick only what's matter
   const fields = ["title", "description", "url", "image"];
   const keep = _.pick(ogblob, fields);
-  // TODO here we should associate a 'type' by the kind of domain name
+  keep.channelId = creator.channelId;
+
+  const domain = (new URL(ogblob.url)).domain;
+  const domaintype = attributeFromDomain(domain);
+  debug("from domain %s type attributed %s", domain, domaintype);
+  keep.domaintype = domaintype;
 
   // ensure the presence of the required field (except image+desc)
   const error = [];
@@ -88,6 +112,8 @@ async function saveRecommendationOGP(ogblob) {
       error.push(fname);
     }
   });
+  /* read routes/youchoose.ogpProxy to fully understand
+   * the return value inconsistencies here */
   if (error.length) return error;
 
   keep.when = new Date();
@@ -101,33 +127,30 @@ async function saveRecommendationOGP(ogblob) {
   await mongoc.close();
 
   if (!res.result || !res.result.ok) {
-    debug("Mongo error? %j", res);
+    debug("Mongo error? %j", res.result);
     return ["MongoDB error!"];
   }
   return keep;
 }
 
-async function getRecommendationByURL(url) {
+async function getRecommendationByURL(url, creator) {
   const urlId = utils.hash({ url });
   const mongoc = await mongo3.clientConnect({ concurrency: 1 });
   const res = await mongo3.readOne(
     mongoc,
     nconf.get("schema").recommendations,
-    { urlId }
+    { urlId, channelId: creator.channelId },
   );
   await mongoc.close();
   return res;
 }
 
 async function getVideoFromYTprofiles(creator, limit) {
-  // TODO in the future the creator would be a post auth object
   const mongoc = await mongo3.clientConnect({ concurrency: 1 });
   const res = await mongo3.readLimit(
     mongoc,
     nconf.get("schema").ytvids,
-    {
-      creatorId: creator.id,
-    },
+    { creatorId: creator.channelId },
     {},
     limit,
     0
@@ -291,7 +314,8 @@ async function getCreatorByToken(token) {
   await mongoc.close();
 
   if(creator) {
-    debug("getCreatorByToken creator %j", creator);
+    debug("getCreatorByToken found %s, %s",
+      creator.channelId, creator.username);
     return creator;
   } else {
     return {
