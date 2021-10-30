@@ -35,17 +35,20 @@ async function byProfile(req) {
   }
   const token = decodedReq.result.headers['x-authorization'];
   const recommendations = await ycai.fetchRecommendationsByProfile(token);
+
+  // the function below should not be that necessary but ATM it is.
+  const cleaned = _.compact(_.map(recommendations, function(o) {
+    if(!o.title) return null;
+    if(!o.description) o.description = undefined;
+    if(!o.image) o.image = undefined;
+    return _.pick(o, ['title', 'description', 'urlId', 'image']);
+  }));
   debug(
-    'creator is fetching their %d recommendations',
-    recommendations.length
+    'creator is fetching their %d recommendations (cleaned %d)',
+    recommendations.length, cleaned.length
   );
-  const x = _.map(recommendations, function(o) {
-    return _.pick(o, ['urlId', 'title', 'description', 'image']);
-  })
-  console.log(JSON.stringify(x, undefined, 2));
   const valid = endpoints.decodeResponse(
-    v3.Endpoints.Creator.CreatorRecommendations,
-    x); // recommendations);
+    v3.Endpoints.Creator.CreatorRecommendations, cleaned);
 
   if (valid.type === 'error') {
     debug('Invalid generated output for creator Recommendations %O', valid);
@@ -59,17 +62,40 @@ async function byProfile(req) {
 }
 
 async function ogpProxy(req) {
-  const url = req.body.url;
-  debug('ogpProxy: %s', url);
-  const exists = await ycai.getRecommendationByURL(url);
+  const decodedReq = endpoints.decodeRequest(v3.Endpoints.Creator.CreateRecommendation, req);
+  const token = decodedReq.result.headers['x-authorization'];
+  const url = decodedReq.result.body.url;
+
+  const creator = await ycai.getCreatorByToken(token);
+  if (!creator) {
+    return {
+      json: {
+        error: true,
+        message: "Creator doesn't exists",
+      },
+    };
+  }
+  const exists = await ycai.getRecommendationByURL(url, creator);
   if (exists) {
     debug('Requested OGP to an already acquired URL %s', url);
     return {
       json: exists,
     };
   }
-  const result = await fetchOpengraph.fetch(url);
-  const review = await ycai.saveRecommendationOGP(result);
+  let ogresult = null;
+  try {
+    ogresult = await fetchOpengraph.fetch(url);
+  } catch(error) {
+    debug("Error with open graph protocol (%s): %s",
+      url, error.message);
+    return {
+      json: {
+        error: true,
+        message: error.message
+      }
+    }
+  }
+  const review = await ycai.saveRecommendationOGP(ogresult, creator);
   if (!review.title) {
     debug('We got an error in OGP (%s) %j', url, review);
     return {
@@ -103,7 +129,7 @@ async function videoByCreator(req) {
   debug('Querying DB.ytvids for profile [%s]', creator._id);
   const MAXVIDOEL = 100;
   const videos = await ycai.getVideoFromYTprofiles(
-    { id: creator.channelId },
+    creator,
     MAXVIDOEL
   );
 
