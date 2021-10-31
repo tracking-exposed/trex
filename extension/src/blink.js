@@ -59,25 +59,23 @@ function initializeBlinks() {
     <p style="font-size: 1.2rem">You can see the nearby icons <span>${logo('10px', '10px', '#bbb')}</span> and they blink. Each position/color is a different stage in the evidence collection.</p>
     <br /><br />
     <ul style="list-style-type: none;">
-        <li style="font-size: 1.2rem">${logo('15px', '15px', '#00aefe')} Video seen, waiting loading complete</li>
-        <li style="font-size: 1.2rem">${logo('15px', '15px', '#269072')} New video seen</li>
-        <li style="font-size: 1.2rem">${logo('15px', '15px', '#c03030')} Video is sent to a server. <a href="${config.WEB_ROOT}/personal/#${config.publicKey}" target=_blank><b>A</b>ccess your data</a>.</li>
+        <li style="font-size: 1.2rem">${logo('15px', '15px', '#00aefe')} URL ignored as not part of the data processing policy.</li>
+        <li style="font-size: 1.2rem">${logo('15px', '15px', '#269072')} Content processed</li>
+        <li style="font-size: 1.2rem">${logo('15px', '15px', '#c03030')} Evidence sent to the server; <a href="${config.WEB_ROOT}/personal/#${config.publicKey}" target=_blank><b>A</b>ccess your data</a>.</li>
         <li style="font-size: 1.2rem">${logo('15px', '15px', '#ffb545')} Advertising spotted and sent</li>
-        <!-- if you read this code, please consider a small git-commit as contribution :)
-             we're short in resources and the project is ambitious! -->
     </ul>
     <br />
-    <h3>Know more about the project:
+    <h2>More on the project:<br/>
         <button size="small" color="secondary" onclick=window.open("https://tracking.exposed/manifesto")>
         Manifesto
         </button>
         <button size="small" color="primary" onclick="window.open("https://github.com/tracking-exposed/yttrex/")> 
         Software Repository
         </button>
-        <button size="small" color="secondary" onclick="window.open("https://github.com/tracking-exposed/yttrex/")> 
-        Facebook support page
+        <button size="small" color="secondary" onclick="window.open("https://twitter.com/trackingexposed")> 
+        Twitter page
         </button>
-    </h3>
+    </h2>
 </div>
 `
     );

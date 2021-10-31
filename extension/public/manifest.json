@@ -36,9 +36,6 @@
   "content_scripts": [
     {
       "matches": [
-        "http://localhost/*",
-        "http://127.0.0.1/*",
-        "https://youtube.tracking.exposed/*",
         "https://*.youtube.com/*"
       ],
       "js": ["./app.js"]

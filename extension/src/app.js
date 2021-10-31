@@ -23,10 +23,7 @@
 //   - videoSequence is a list of youtube videos
 //   - comparativePage is the place where users accept to reproduce a videoSequence
 
-// # Code
-
 // Import other utils to handle the DOM and scrape data.
-import $ from 'jquery';
 import _ from 'lodash';
 import moment from 'moment';
 
@@ -36,8 +33,7 @@ import { registerHandlers } from './handlers/index';
 import extractor from './extractor';
 import dom from './dom';
 import { phase, initializeBlinks } from './blink';
-
-const YT_VIDEOTITLE_SELECTOR = 'h1.title';
+import consideredURLs from './consideredURLs';
 
 // bo is the browser object, in chrome is named 'chrome', in firefox is 'browser'
 const bo = chrome || browser;
@@ -48,50 +44,39 @@ let randomUUID = 'INIT' + Math.random().toString(36).substring(2, 13) +
 
 // to optimize the amount of reported data, we used a local cache
 let lastObservedSize = 1;
-let leafsCache = {};
+let leavesCache = {};
 
 // Boot the user script. This is the first function called.
 // Everything starts from here.
 function boot () {
-    if (_.endsWith(window.location.origin, 'youtube.tracking.exposed')) {
-        if (_.isUndefined($('#extension--parsable').html())) {
-            return null;
-        } else {
-            // $(".extension-missing").hide();
+
+    // this get executed only on youtube.com
+    console.log(`yttrex version ${JSON.stringify(config)}`);
+
+    // Register all the event handlers.
+    // An event handler is a piece of code responsible for a specific task.
+    // You can learn more in the [`./handlers`](./handlers/index.html) directory.
+    registerHandlers(hub);
+
+    // Lookup the current user and decide what to do.
+    localLookup(response => {
+        // `response` contains the user's public key, we save it global for the blinks
+        console.log("localLookup returned", response);
+
+        /* these parameters are loaded from localstorage */
+        config.publicKey = response.publicKey;
+        config.active = response.active;
+        config.ux = response.ux;
+
+        if(config.active !== true) {
+            console.log("ytTREX disabled!"); // TODO some UX change
             return null;
         }
-    } else if (_.endsWith(window.location.origin, 'youtube.com')) {
-        // this get executed only on youtube.com
-        console.log(`yttrex version ${JSON.stringify(config)}`);
-
-        // Register all the event handlers.
-        // An event handler is a piece of code responsible for a specific task.
-        // You can learn more in the [`./handlers`](./handlers/index.html) directory.
-        registerHandlers(hub);
-
-        // Lookup the current user and decide what to do.
-        localLookup(response => {
-            // `response` contains the user's public key, we save it global for the blinks
-            console.log("app.js gets", response, "from localLookup");
-
-            /* these parameters are loaded from localstorage */
-            config.publicKey = response.publicKey;
-            config.active = response.active;
-            config.ux = response.ux;
-
-            if(config.active !== true) {
-                console.log("ytTREX disabled!"); // TODO some UX change
-                return null;
-            }
-            return remoteLookup(ytTrexActions);
-        });
-    } else if (_.startsWith(window.location.origin, 'localhost')) {
-        console.log('yttrex in localhost: ignored condition');
-        return null;
-    }
+        return remoteLookup(ytTrexActions);
+    });
 }
 
-const hrefPERIODICmsCHECK = 9000;
+const hrefPERIODICmsCHECK = 2000;
 let hrefWatcher = null;
 function ytTrexActions(remoteInfo) {
     /* these functions are the main activity made in 
@@ -104,38 +89,51 @@ function ytTrexActions(remoteInfo) {
 
     hrefWatcher = window.setInterval(hrefAndPageWatcher, hrefPERIODICmsCHECK);
     initializeBlinks();
-    leafsWatcher();
+    leavesWatcher();
     flush();
-    // capture();
 }
 
-let lastVideoURL = null;
-let lastVideoCNT = 0;
-function hrefAndPageWatcher () {
-    // phase('video.wait');
-    let diff = (window.location.href !== lastVideoURL);
+function processableURL(validURLs, location) {
+    return _.reduce(validURLs, function(memo, matcher, name) {
+        if(memo)
+            return memo;
 
-    // client might duplicate the sending of the same
-    // video. using a random identifier, we spot the
-    // clones and drop them server side.
-    // also, here is cleaned the cache declared below
+        if(location.pathname.match(matcher))
+            memo = name;
+
+        return memo;
+    }, null)
+}
+
+let lastMeaningfulURL, urlkind = null;
+function hrefAndPageWatcher () {
+
+    let diff = (window.location.href !== lastMeaningfulURL);
+
     if (diff) {
+        // Considering the extension only runs on *.youtube.com
+        // we want to make sure the main code is executed only in
+        // website portion actually processed by us. If not, the
+        // blink maker would blink in BLUE.
+        // This code is executed by a window.setInterval because 
+        // the location might change 
+        urlkind = processableURL(consideredURLs, window.location);
+
+        if(!urlkind) {
+            phase('video.wait');
+            return null;
+        }
+
+        // client might duplicate the sending of the same
+        // content, that's 'versionsSent' counter
+        // using a random identifier (randomUUID), we spot the
+        // clones and drop them server side.
+        // also, here is cleaned the cache declared below
         phase('video.seen');
+        lastMeaningfulURL = window.location.href;
         cleanCache();
         refreshUUID();
     }
-    if (!diff) {
-        lastVideoCNT++;
-        if (lastVideoCNT > 3) {
-            // console.log(lastVideoCNT, "too many repetition: stop");
-            return;
-        }
-    }
-
-    lastVideoURL = window.location.href;
-    const isPresent = document.querySelector(YT_VIDEOTITLE_SELECTOR);
-    if(!isPresent)
-        return;
 
     const sendableNode = document.querySelector('ytd-app');
 
@@ -143,6 +141,7 @@ function hrefAndPageWatcher () {
         return;
 
     hub.event('newVideo', {
+        type: urlkind,
         element: sendableNode.outerHTML,
         size: sendableNode.outerHTML.length,
         href: window.location.href,
@@ -161,7 +160,7 @@ function sizeCheck(nodeHTML) {
     const percentage = _.round(percentile * lastObservedSize, 2);
 
     if(percentage > 95) {
-        console.log(`Skipping update as ${percentage}% of the page is already sent (size ${s}, lastObservedSize ${lastObservedSize})`);
+        // console.log(`Skipping update as ${percentage}% of the page is already sent (size ${s}, lastObservedSize ${lastObservedSize}) ${window.location.pathname}`);
         return false;
     }
 
@@ -171,7 +170,7 @@ function sizeCheck(nodeHTML) {
         return false;
     }
 
-    console.log(`Valid update as a new ${100-percentage}% of the page is worthy (size ${s}, lastObservedSize ${lastObservedSize})`);
+    console.log(`Valid update as a new ${_.round(100-percentage, 2)}% of the page have been received (size ${s}, lastObservedSize ${lastObservedSize}) ${window.location.pathname}`);
     lastObservedSize = s;
     return true;
 }
@@ -253,7 +252,6 @@ function manageNodes(command, selectorName, selected) {
     if(command.screen) {
         console.log("Processing screen!");
         try {
-            // debugger;
             const c= bo.tab.captureVisibleTab();
             c.then(onCaptured, onError);
             const capturing = bo.tabs.Tab.captureVisibleTab();
@@ -267,16 +265,16 @@ function manageNodes(command, selectorName, selected) {
         .split('')
         .reduce((a,b)=>{a=((a<<5)-a)+b.charCodeAt(0); return a&a},0);
 
-    if(leafsCache[hash]) {
-        leafsCache[hash]++;
+    if(leavesCache[hash]) {
+        leavesCache[hash]++;
         return;
         console.log("cache increment",
-            hash, leafsCache[hash], selectorName);
+            hash, leavesCache[hash], selectorName);
     }
     // most of the time this doesn't happens: duplication are many!
     // is debug-worthy remove the 'return' and send cache counter.
 
-    leafsCache[hash] = 1;
+    leavesCache[hash] = 1;
     // as it is the first observation, take infos and send it
     const acquired = {
         html,
@@ -296,7 +294,7 @@ function manageNodes(command, selectorName, selected) {
     phase('adv.seen');
 };
 
-function leafsWatcher () {
+function leavesWatcher () {
     // inizialized MutationObserver with the selectors and 
     // then a list of functions would handle it
     _.each(watchedPaths, function(command, selectorName) {
@@ -307,7 +305,7 @@ function leafsWatcher () {
 }
 
 function cleanCache() {
-    leafsCache = {};
+    leavesCache = {};
     lastObservedSize = 1;
 }
 
@@ -317,10 +315,6 @@ function refreshUUID () {
     if (lastCheck && lastCheck.isValid && lastCheck.isValid()) {
         var timed = moment.duration(moment() - lastCheck);
         if (timed.asSeconds() > REFERENCE) {
-            // here is an example of a non secure random generation
-            // but doesn't matter because the query on the server we
-            // has this with the user publicKey, so if someone wants to
-            // corrupt their data: they can ¯\_(ツ)_/¯
             randomUUID = Math.random().toString(36).substring(2, 15) +
                 Math.random().toString(36).substring(2, 15); /*
             console.log(

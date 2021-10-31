@@ -19,7 +19,7 @@ const InfoBox = createReactClass({
     render () {
         const about = config.WEB_ROOT + '/about';
         const privacy = config.WEB_ROOT + '/privacy';
-        const experiments = config.WEB_ROOT + '/wetest/next';
+        const guardonihref = config.WEB_ROOT + '/guardoni';
 
         return (
             <Card style={{'textAlign':'center'}}>
@@ -39,8 +39,8 @@ const InfoBox = createReactClass({
                 <Button size="small" color="primary"  href="https://github.com/tracking-exposed/yttrex/" target="_blank"> 
                   Software
                 </Button>
-                <Button size="small" color="secondary" href={experiments} target="_blank">
-                  Experiments
+                <Button size="small" color="secondary" href={guardonihref} target="_blank">
+                  Guardoni 
                 </Button>
               </CardActions>
             </Card>

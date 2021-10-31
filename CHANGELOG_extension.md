@@ -1,6 +1,11 @@
 The format is based on [Keep a Changelog](http://keepachangelog.com/) and this
 project adheres to [Semantic Versioning](http://semver.org/).
 
+
+## [1.6.7] - 2021-10-31
+### Added
+- Clarification and definition of URLs eligible for capture (#101)
+
 ## [1.6.6] - 2021-10-22
 ### Added
 - supporting offset
