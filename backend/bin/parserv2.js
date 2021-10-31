@@ -168,12 +168,16 @@ function processEachHTML(htmlentry) {
         const curi = htmlentry.href.replace(/.*youtube\.com\//, '').replace(/\?.*/, '')
         // Replace with URL parsing
 
-        if(!_.size(curi) && htmlentry.selector == "ytd-app") {
+        if(!_.size(curi) && (htmlentry.selector == "ytd-app" ||
+            /* ✨LEGACY✨, check out below */
+            _.isUndefined(htmlentry.selector) && htmlentry.size > 500000) ) {
             /* without clean URI, it is an youtube home */
             metadata = homeparser.process(envelop);
             _.unset(metadata, 'sections');
         }
-        else if(htmlentry.selector == "ytd-app") {
+        else if(htmlentry.selector == "ytd-app" || (
+            /* ✨LEGACY✨, extension 1.4.2 version causes the lack of this selector */
+            _.isUndefined(htmlentry.selector) && htmlentry.size > 500000) ) {
             /* else, if is ytd-app, it is a full video content */
             metadata = videoparser.process(envelop);
         }
