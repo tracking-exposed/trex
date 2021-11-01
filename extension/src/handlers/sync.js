@@ -31,8 +31,7 @@ function handleInfo(type, e) {
 function sync (hub) {
     if (state.content.length) {
         const uuids = _.size(_.uniq(_.map(state.content, 'randomUUID')));
-        const leaves = JSON.stringify(_.countBy(_.filter(state.content, {type: 'leaf'})));
-        console.log(`sync tot (${state.content.length}/${state.incremental}) ${JSON.stringify(_.countBy(state.content, 'type'))} with ${uuids} randomUUID(s) with ${uuids} randomUUID(s) [leaves ${leaves.length > 2 ? leaves : "∅"}]`);
+        console.log(`sync tot (${state.content.length}/${state.incremental}) ${JSON.stringify(_.countBy(state.content, 'type'))} with ${uuids} randomUUID(s) with ${uuids} randomUUID(s)`);
         // Send timelines to the page handling the communication with the API.
         // This might be refactored using something compatible to the HUB architecture.
         bo.runtime.sendMessage({ type: 'sync', payload: state.content, userId: 'local' },

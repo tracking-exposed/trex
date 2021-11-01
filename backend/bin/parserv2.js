@@ -11,12 +11,11 @@ const fs = require('fs');
 const videoparser = require('../parsers/video');
 const longlabel = require('../parsers/longlabel');
 const homeparser = require('../parsers/home');
+const searchparser = require('../parsers/searches');
 const automo = require('../lib/automo');
 const utils = require('../lib/utils');
 
 nconf.argv().env().file({ file: 'config/settings.json' });
-
-/* const echoes = require('../lib/echoes'); echoes.addEcho("elasticsearch"); echoes.setDefaultEcho("elasticsearch"); */
 
 const FREQUENCY = 10;
 const AMOUNT_DEFAULT = 20;
@@ -157,48 +156,38 @@ function processEachHTML(htmlentry) {
 
     let metadata = null;
     try {
-        debug("#%d\ton (%d minutes ago) %s %d.%d %s %s %s",
+        debug("#%d\ton (%d minutes ago) %s %s %s <%s>",
             processedCounter,
             _.round(moment.duration( moment() - moment(htmlentry.savingTime)).asMinutes(), 0),
             htmlentry.metadataId,
-            htmlentry.packet, htmlentry.incremental,
-            htmlentry.href.replace(/https:\/\//, ''), htmlentry.size, htmlentry.selector);
+            htmlentry.href.replace(/https:\/\//, ''), htmlentry.html.length,
+            htmlentry.selector ? ("S " + htmlentry.selector) : ("T " + htmlentry.type)
+        );
         processedCounter++;
 
-        const curi = htmlentry.href.replace(/.*youtube\.com\//, '').replace(/\?.*/, '')
-        // Replace with URL parsing
+        const urlo = new URL(htmlentry.href);
+        const curi = urlo.pathname;
 
-        if(!_.size(curi) && (htmlentry.selector == "ytd-app" ||
-            /* ✨LEGACY✨, check out below */
-            _.isUndefined(htmlentry.selector) && htmlentry.size > 500000) ) {
-            /* without clean URI, it is an youtube home */
-            metadata = homeparser.process(envelop);
-            _.unset(metadata, 'sections');
-        }
-        else if(htmlentry.selector == "ytd-app" || (
-            /* ✨LEGACY✨, extension 1.4.2 version causes the lack of this selector */
-            _.isUndefined(htmlentry.selector) && htmlentry.size > 500000) ) {
-            /* else, if is ytd-app, it is a full video content */
-            metadata = videoparser.process(envelop);
-        }
-        else if(_.indexOf(_.keys(advSelectors), htmlentry.selector) != -1)  {
-            /* if the selector is one of the adveritising related dissector, find it out */
-            metadata = advSelectors[htmlentry.selector](envelop, htmlentry.selector);
-            /* possible fields: 'adLink', 'adLabel', 'adChannel' */
-        } else {
-            debuge("Selector not supported %s", htmlentry.selector);
-            return null;
-        }
+        /* ✨LEGACY✨, extension 1.4.2 version causes the lack of this selector */
+        if(htmlentry.selector)
+            metadata = legacyParserDispatcher(envelop, curi, htmlentry);
+        /* ✔️ MODERN, selectors aren't discussed here ✔️ */
+        else if(htmlentry.type)
+            metadata = parserDispatcher(envelop, curi, htmlentry);
+        else
+            debug("Format and versioning bug! %s", htmlentry.metadataId);
 
         if(!metadata)
             return null;
+
+        // console.log(JSON.stringify(metadata, undefined, 2));
 
         /* experiment support */
         if(envelop.impression.experiment)
             metadata.experiment = envelop.impression.experiment;
 
     } catch(error) {
-        debuge("#%d\t selector (%s) error: %s", processedCounter, htmlentry.selector, error.message);
+        debuge("#%d\t selector (%s) error: %s", processedCounter, htmlentry.selector, error.message, error.stack);
         return null;
     }
 
@@ -223,6 +212,40 @@ async function appendLabelError(currentList, lastSentAmount) {
             return false;
         }
     });
+}
+
+function legacyParserDispatcher(envelop, curi, htmlentry) {
+    // this sets of functions only support home and video, non-video
+    // are rejected as not supported. Search results were implemented in
+    // what now have been renameds as leaveserv.js and now supported here
+    if(!_.size(curi) && htmlentry.html.length > 500000 ) {
+        /* without clean URI, it is an youtube home */
+        return homeparser.process(envelop);
+    }
+    else if(htmlentry.selector == "ytd-app") {
+        /* else, it is a full video content */
+        return videoparser.process(envelop);
+    } else {
+        debuge("Selector|Condition not supported %s", htmlentry.selector);
+        return null;
+    }
+}
+
+function parserDispatcher(envelop, curi, htmlentry) {
+    if(htmlentry.type === 'home')
+        return homeparser.process(envelop);
+    else if(htmlentry.type === 'video')
+        return videoparser.process(envelop);
+    else if(htmlentry.type === 'channel')
+        throw new Error("XX");
+    else if(htmlentry.type === 'search')
+        return searchparser.process(envelop);
+    else if(htmlentry.type === 'hashtag')
+        throw new Error("XX");
+    else {
+        debuge("Condition not supported %s", htmlentry.type);
+        return null;
+    }
 }
 
 async function sleep(ms) {
@@ -253,8 +276,7 @@ async function wrapperLoop() {
             let htmlFilter = {
                 savingTime: {
                     $gt: new Date(lastExecution),
-                },
-                type: 'video',
+                }
             };
             if(!actualRepeat)
                 htmlFilter.processed = { $exists: false };

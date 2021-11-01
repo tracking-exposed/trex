@@ -5,6 +5,7 @@ const nconf = require('nconf');
 const automo = require('../lib/automo');
 const utils = require('../lib/utils');
 const security = require('../lib/security');
+const { boundedLattice } = require('fp-ts');
 
 function processHeaders(received, required) {
     var ret = {};
@@ -81,13 +82,13 @@ async function processEvents2(req) {
 
     const blang = headers.language.replace(/;.*/, '').replace(/,.*/, '');
     // debug("CHECK: %s <%s>", blang, headers.language );
-    const htmls = _.map(_.filter(req.body, { type: 'video'}), function(body, i) {
+    const htmls = _.map(_.reject(req.body, { type: 'leaf'}), function(body, i) {
         const nature = utils.getNatureFromURL(body.href);
         const metadataId = utils.hash({
             publicKey: headers.publickey,
             randomUUID: body.randomUUID,
             href: body.href,
-            type: 'video',
+            type: body.type,
         });
         const id = utils.hash({
             metadataId,
@@ -103,9 +104,9 @@ async function processEvents2(req) {
             clientTime: new Date(body.clientTime),
             savingTime: new Date(),
             html: body.element,
-            size: _.size(body.element),
-            incremental: body.incremental,
+            counters: [body.incremental, i],
             packet: i,
+            type: body.type,
             nature,
         }
         return html;

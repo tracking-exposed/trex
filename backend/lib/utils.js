@@ -8,7 +8,7 @@ const foodWords = require('food-words');
 const url = require('url');
 const qustr = require('querystring');
 
-var hash = function(obj, fields) {
+function hash(obj, fields) {
     if(_.isUndefined(fields))
         fields = _.keys(obj);
     var plaincnt = fields.reduce(function(memo, fname) {
@@ -42,7 +42,7 @@ function parseLikes(likeInfo) {
     return {watchedLikes, watchedDislikes };
 }
 
-var activeUserCount = function(usersByDay) {
+function activeUserCount(usersByDay) {
     var uC = _.reduce(usersByDay, function(memo, stOb) {
         var date = stOb["_id"].year + '-' + stOb["_id"].month +
                    '-' + stOb["_id"].day;
@@ -190,6 +190,8 @@ function judgeIncrement(key, current, value) {
 }
 
 function getNatureFromURL(href) {
+    // this function MUST support the different URLs
+    // format specify in ../../extension/src/consideredURLs.js
     const uq = url.parse(href);
     if(uq.pathname == '/results') {
         const searchTerms = _.trim(qustr.parse(uq.query).search_query);
@@ -197,20 +199,21 @@ function getNatureFromURL(href) {
             type: 'search',
             query: searchTerms,
         }
-    }
-    else if(uq.pathname == '/watch') {
+    } else if(uq.pathname == '/watch') {
         const videoId = _.trim(qustr.parse(uq.query).v);
         return {
             type: 'video',
             videoId,
         }
-    }
-    else if(uq.pathname == '/') {
+    } else if(uq.pathname == '/') {
         return {
             type: 'home'
         }
-    }
-    else {
+    } else if(_.startsWith(uq.pathname, '/hashtag')) {
+        debug("PLEASE SUPPORT");
+    } else if(_.startsWith(uq.pathname, '/channel')) {
+        debug("PLEASE SUPPORT");
+    } else {
         return {
             type: 'unknown'
         }

@@ -5,7 +5,6 @@ const querystring = require('querystring');
 const debug = require('debug')('parser:video');
 const debuge = require('debug')('parser:video:error');
 const debugCheckup = require('debug')('parser:C');
-const debugTimef = require('debug')('parser:timeF');
 
 const utils = require('../lib/utils'); // this because parseLikes is an utils to be used also with version of the DB without the converted like. but should be a parsing related-only library once the issue with DB version is solved
 const uxlang = require('./uxlang');
@@ -360,76 +359,8 @@ function process(envelop) {
     return extracted;
 };
 
-function videoAd(envelop) { 
-    if ( envelop.impression.size == 58 ) {
-        return null;
-    }
-    if(!envelop.jsdom.querySelector('.ytp-ad-text'))
-        return null;
-
-    let candidate1 = envelop.jsdom.querySelector('.ytp-ad-text');
-    let candidate2 = envelop.jsdom.querySelector('.ytp-ad-button-text'); // it might be 'Play for free' or sth
-
-    if(candidate1 && _.size(candidate1.textContent))
-        return { adLabel: candidate1.textContent };
-    else if (candidate2 && _.size(candidate2.textContent))
-        return { adLabel: candidate2.textContent };
-    else
-        return null;
-}
-function overlay(envelop) {
-    if(
-        (envelop.jsdom.querySelector('body').outerHTML).length == 71 &&
-         envelop.impression.size == 58 ) {
-        debug("Fairly strict (undocumented) condition to ignore overlay matches");
-        return null;
-    }
-
-    const adbuyer = envelop.jsdom.querySelector('.ytp-ad-visit-advertiser-button').textContent;
-    if(!adbuyer)
-        return null;
-
-    return { 'adLink': adbuyer };
-}
-function adTitleChannel(envelop) {
-    const D = envelop.jsdom;
-    const a = D.querySelectorAll('a');
-    if(_.size(a) != 2)
-        debuge("Unexpected amount of element 'a' %d", _.size(a));
-    if(!a[0].getAttribute('href'))
-        return null;
-    return {
-        adChannel: a[0].getAttribute('href'),
-        adLabel: a[0].getAttribute('aria-label'),
-    };
-}
-function videoTitleTop(envelop, selector) {
-    const D = envelop.jsdom;
-    const as = D.querySelectorAll('a');
-    let adLabel, adChannel = null;
-
-    if(_.size(as) > 3) {
-        if( !_.size(as[1].textContent) && 
-             _.size(as[1].getAttribute('href')) > _.size("https://www.youtube.com/") )
-            adChannel = as[1].getAttribute('href');
-
-        if( _.size(as[2].textContent) > 3 /* 'ads' */ && !as[2].getAttribute('href')) 
-            adLabel = as[2].textContent;
-    }
-
-    if(adLabel && adChannel) {
-        return { adLabel, adChannel };
-    }
-    return null;
-}
-
-
 module.exports = {
     process,
-    videoAd,
-    overlay,
-    adTitleChannel,
-    videoTitleTop,
     closestForTime,
     checkUpDebug,
     makeAbsolutePublicationTime,
