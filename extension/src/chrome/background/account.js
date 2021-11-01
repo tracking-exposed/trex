@@ -10,7 +10,7 @@ const bo = chrome || browser;
 const FIXED_USER_NAME = 'local';
 
 // defaults of the settings stored in 'config' and controlled by popup
-const DEFAULT_SETTINGS = { active: false, ux: false };
+const DEFAULT_SETTINGS = { active: true, ux: false };
 
 bo.runtime.onMessage.addListener((request, sender, sendResponse) => {
     if (request.type === 'localLookup') {
