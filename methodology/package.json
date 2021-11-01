@@ -20,18 +20,18 @@
   "license": "AGPL-3.0-or-later",
   "homepage": "https://github.com/tracking-exposed/yttrex#readme",
   "dependencies": {
+    "csv-parse": "^4.15.3",
     "debug": "^4.3.2",
     "lodash": "^4.17.21",
     "moment": "^2.29.1",
     "nconf": "^0.11.3",
-    "node-fetch": "^2.6.2",
-    "csv-parse": "^4.15.3",
-    "puppeteer": "^10.2.0",
-    "puppeteer-extra": "^3.1.18",
-    "puppeteer-extra-plugin-stealth": "^2.7.8"
+    "node-fetch": "^2.6.6",
+    "puppeteer": "^10.4.0",
+    "puppeteer-extra": "^3.2.3",
+    "puppeteer-extra-plugin-stealth": "^2.9.0"
   },
   "devDependencies": {
-    "pkg": "^5.3.1"
+    "pkg": "^5.4.1"
   },
   "pkg": {
     "scripts": [

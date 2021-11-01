@@ -12,7 +12,7 @@ const execSync = require('child_process').execSync;
 const parse = require('csv-parse/lib/sync');
 
 const COMMANDJSONEXAMPLE = "https://youtube.tracking.exposed/json/automation-example.json";
-const EXTENSION_WITH_OPT_IN_ALREADY_CHECKED='https://github.com/tracking-exposed/yttrex/releases/download/1.4.99/extension.zip';
+const EXTENSION_WITH_OPT_IN_ALREADY_CHECKED='https://github.com/tracking-exposed/yttrex/releases/download/v1.8.99/yttrex-guardoni-1.8.99.zip';
 
 const configPath = path.join("static", "settings.json");
 nconf.argv().env().file(configPath);
@@ -179,7 +179,7 @@ async function pullDirectives(sourceUrl) {
     }
     if (!directives.length) {
       console.log("URL/file do not include any directive in expected format");
-      console.log("Check the example with --source ", COMMANDJSONEXAMPLE);
+      console.log("Example is --directive ", COMMANDJSONEXAMPLE);
       process.exit(1);
     }
     return directives;
@@ -403,8 +403,7 @@ async function main() {
     directiveurl = restrictedSettings.sourceUrl;
   }
 
-  debug("Profile %s, experiment %s pulling directive %s from server %s",
-    profile, experiment, directiveurl, server);
+  debug("Profile %s pulling directive %s", profile, directiveurl);
 
   directiveurl = buildAPIurl('directives', experiment)
   const directives = await pullDirectives(directiveurl);
@@ -444,14 +443,6 @@ async function dispatchBrowser(headless, profinfo) {
 
   const cwd = process.cwd();
   const dist = path.resolve(path.join(cwd, 'extension'));
-  const manifest = path.resolve(path.join(cwd, 'extension', 'manifest.json'));
-  if(!fs.existsSync(manifest)) {
-    console.log('Manifest in ' + dist + ' not found, the script now would download & unpack');
-    const tmpzipf = path.resolve(path.join(cwd, 'extension', 'tmpzipf.zip'));
-    console.log("Using " + tmpzipf + " as temporary file");
-    downloadExtension(tmpzipf);
-  }
-
   const newProfile = profinfo.newProfile;
   const udd = profinfo.udd;
   const execount = profinfo.execount;
@@ -509,7 +500,6 @@ async function guardoniExecution(experiment, directives, browser, profinfo) {
     // the BS above should close existing open tabs except 1st
     await operateBrowser(page, directives, domainSpecific);
     console.log(`Operations completed: check results at ${server}/experiment/#${experiment}`);
-    debug("Number of external requests logged: %j", domainSpecific.loggedextreqs);
     await browser.close();
   } catch(error) {
     console.log("Error in operateBrowser (collection fail):", error);
@@ -577,8 +567,8 @@ try {
   if(!!nconf.get('h') || !!nconf.get('?') || process.argv.length < 3)
     return printHelp();
 
-  // backend is an option we don't even disclose, as only developers needs it
-  // --chome as well
+  // backend is an option we don't even disclose in the help, 
+  // as only developers needs it --chrome as well
   if(!!nconf.get('auto')) {
     console.log("AUTO mode. No mandatory options; --profile, --evidencetag OPTIONAL")
   } else if(!!nconf.get('csv')) {
@@ -587,7 +577,20 @@ try {
     console.log("EXPERIMENT mode: no mandatory options; --profile, --evidencetag OPTIONAL")
   }
 
+  const cwd = process.cwd();
+  const dist = path.resolve(path.join(cwd, 'extension'));
+  const manifest = path.resolve(path.join(cwd, 'extension', 'manifest.json'));
+  if(!fs.existsSync(dist))
+    fs.mkdirSync(dist);
+  if(!fs.existsSync(manifest)) {
+    console.log('Manifest in ' + dist + ' not found, the script now would download & unpack');
+    const tmpzipf = path.resolve(path.join(cwd, 'extension', 'tmpzipf.zip'));
+    console.log("Using " + tmpzipf + " as temporary file");
+    downloadExtension(tmpzipf);
+  }
+
   main ();
+
 } catch(error) {
   console.error(error);
   console.error("⬆️ Unhandled error! =( ⬆️");

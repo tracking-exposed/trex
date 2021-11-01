@@ -7,6 +7,7 @@ const keyprint = require('debug')('guardoni:key');
 const path = require('path');
 const url = require('url');
 const fs = require('fs');
+const nconf = require('nconf');
 
 debug.enabled = true;
 keyprint.enabled = true;
@@ -29,46 +30,61 @@ async function beforeDirectives(page, profinfo) {
     page.on('console', lookForPubkey);
     page.on('pageerror', message => bconsError('Error %s', message));
     page.on('requestfailed', request => bconsError(`Requestfail: ${request.failure().errorText} ${request.url()}`));
+
     // await page.setRequestInterception(true);
-    page.on('request', await _.partial(manageRequest, profinfo));
-    window.setInterval(print3rdParties, 60 * 1000);
+    if(!!nconf.get('3rd')) {
+        page.on('request', await _.partial(manageRequest, profinfo));
+        setInterval(print3rdParties, 60 * 1000);
+    }
 }
 
+/* this is the variable we populate of statistics
+ * on third parties, and every minute, it is printed on terminal */
 const thirdParties = {};
-async function manageRequest(profinfo, reqpptr) {
-    try {
-        const up = url.parse(reqpptr.url());
-        const full3rdparty = {
-            method: reqpptr.method(),
-            host: up.host,
-            pathname: up.pathname,
-            search: up.search,
-            type: reqpptr.resourceType(),
-            when: new Date()
-        };
-        if(full3rdparty.method != 'GET')
-            full3rdparty.postData = reqpptr.postData();
+/* and this is the file where logging happen */
+let reqlogfilename;
 
-        const reqlogfilename = path.join(
-            'profiles',
-            profinfo.profileName,
-            'requestlog.json'
-        );
-        fs.appendFileSync(
-            reqlogfilename,
-            JSON.stringify(full3rdparty) + "\n"
-        );
-        if(up.host !== 'www.youtube.com')
-            thirdParties[up.host] =
-                thirdParties[up.host] ?
-                thirdParties[up.host]++ : 1
+function manageThirdParty(profinfo, reqpptr) {
+    const up = url.parse(reqpptr.url());
+    const full3rdparty = {
+        method: reqpptr.method(),
+        host: up.host,
+        pathname: up.pathname,
+        search: up.search,
+        type: reqpptr.resourceType(),
+        when: new Date()
+    };
+    if(full3rdparty.method != 'GET')
+        full3rdparty.postData = reqpptr.postData();
+
+    reqlogfilename = path.join(
+        'profiles',
+        profinfo.profileName,
+        'requestlog.json'
+    );
+    fs.appendFileSync(
+        reqlogfilename,
+        JSON.stringify(full3rdparty) + "\n"
+    );
+    if(up.host !== 'www.youtube.com') {
+        if(thirdParties[up.host])
+            thirdParties[up.host] = 1;
+        else
+            thirdParties[up.host] += 1;
+    }
+}
+
+function manageRequest(profinfo, reqpptr) {
+    try {
+        manageThirdParty(profinfo, reqpptr);
     } catch(error) {
         debug("Error in manageRequest function: %s", error.message);
     }
 }
 
 function print3rdParties() {
-    logreqst("Logged external request to %o", thirdParties)
+    logreqst("Logged third parties connections in [%s] to %o",
+        reqlogfilename, thirdParties);
 }
 
 async function beforeWait(page, directive) {
@@ -192,6 +208,5 @@ module.exports= {
     beforeDirectives,
     interactWithYT,
     getYTstatus,
-    loggedextreqs,
     DOMAIN_NAME: 'youtube.com',
 }
