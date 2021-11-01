@@ -1,9 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-
 import { createMuiTheme, ThemeProvider } from '@material-ui/core/styles';
 
-import db from '../db';
 import Popup from './components/popup';
 
 const bo = chrome || browser;
@@ -34,18 +32,17 @@ const theme = createMuiTheme({
     },
 });
 
-
 /*
 const devColors = 'linear-gradient(to left, #f1b9b9, #a2cff7, #c8e485, #f7c4f3)';
-
-      if (config.NODE_ENV == 'development') { styles['backgroundImage'] = devColors; }
-*/
+if (config.NODE_ENV == 'development') {
+    styles['backgroundImage'] = devColors;
+} */
 
 function main () {
     bo.runtime.sendMessage({
         type: 'localLookup',
         payload: {
-            userId: 'local' // config.userId
+            userId: 'local'
         }
     }, ucfg => {
         const publicKey = (ucfg && _.isString(ucfg.publicKey) ) ? ucfg.publicKey : 'missingPublicKey';

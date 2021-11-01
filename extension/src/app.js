@@ -238,7 +238,8 @@ function manageNodes(command, selectorName, selected) {
     }
 
     // this to highlight what is collected as fragments
-    selected.style.border = '1px solid ' + (command.color ? command.color : 'red');
+    if(config.ux)
+        selected.style.border = '1px solid ' + (command.color ? command.color : 'red');
 
     // if escalation to parents, highlight with different color
     if(command.parents) {
@@ -246,7 +247,9 @@ function manageNodes(command, selectorName, selected) {
             // console.log("collecting parent", selectorName, memo.tagName, memo.parentNode.tagName);
             return memo.parentNode;
         }, selected);
-        selected.style.border = '3px dotted green';
+
+        if(config.ux)
+            selected.style.border = '3px dotted green';
     }
 
     if(command.screen) {
