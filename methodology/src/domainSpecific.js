@@ -25,15 +25,16 @@ function lookForPubkey(message) {
     }
 };
 
-let loggedextreqs = 0;
 async function beforeDirectives(page, profinfo) {
     page.on('console', lookForPubkey);
     page.on('pageerror', message => bconsError('Error %s', message));
     page.on('requestfailed', request => bconsError(`Requestfail: ${request.failure().errorText} ${request.url()}`));
     // await page.setRequestInterception(true);
     page.on('request', await _.partial(manageRequest, profinfo));
+    window.setInterval(print3rdParties, 60 * 1000);
 }
 
+const thirdParties = {};
 async function manageRequest(profinfo, reqpptr) {
     try {
         const up = url.parse(reqpptr.url());
@@ -57,13 +58,17 @@ async function manageRequest(profinfo, reqpptr) {
             reqlogfilename,
             JSON.stringify(full3rdparty) + "\n"
         );
-        loggedextreqs[up.host] =  loggedextreqs[up.host] ? 
-            loggedextreqs[up.host]++ : 1;
         if(up.host !== 'www.youtube.com')
-            logreqst("Logged external request to %s", full3rdparty.host)
+            thirdParties[up.host] =
+                thirdParties[up.host] ?
+                thirdParties[up.host]++ : 1
     } catch(error) {
         debug("Error in manageRequest function: %s", error.message);
     }
+}
+
+function print3rdParties() {
+    logreqst("Logged external request to %o", thirdParties)
 }
 
 async function beforeWait(page, directive) {

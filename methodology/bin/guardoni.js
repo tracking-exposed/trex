@@ -14,7 +14,8 @@ const parse = require('csv-parse/lib/sync');
 const COMMANDJSONEXAMPLE = "https://youtube.tracking.exposed/json/automation-example.json";
 const EXTENSION_WITH_OPT_IN_ALREADY_CHECKED='https://github.com/tracking-exposed/yttrex/releases/download/1.4.99/extension.zip';
 
-nconf.argv().env().file("static/settings.json");
+const configPath = path.join("static", "settings.json");
+nconf.argv().env().file(configPath);
 debug.enabled = true;
 
 const server = nconf.get('backend') ?
@@ -316,7 +317,7 @@ function profileExecount(profile, evidencetag) {
 }
 
 function printHelp() {
-  const helptext = `Configuration options is read via: environment, --longopt, and static/config.json file
+  const helptext = `Configuration options can be specify via: environment, --longopts, and ${configPath} file
 Three modes exists to launch Guardoni:\n
 1— With --auto: It start a browser offering you to join existing experiments (currently two).
 2— With --csv option and one between --shadowban and --comparison: Register an experiment.
@@ -329,16 +330,21 @@ You need to have a reliable internet connection to ensure a proper data collecti
 
 async function main() {
 
+  const auto = !!nconf.get('auto');
   const shadowban = nconf.get('shadowban');
   const comparison = nconf.get('comparison');
   const directiveType = !!shadowban ? "chiaroscuro" : "comparison";
+  const experiment = nconf.get('experiment');
+  const sourceUrl = nconf.get('csv');
 
-  debug("Getting ready for directive type [%s]", directiveType);
+  if(!auto && !sourceUrl && !experiment) {
+    printHelp();
+    process.exit(1);
+  }
   /*
   if(directiveType == 'chiaroscuro')
     return await manageChiaroscuro(evidencetag, profinfo); */
 
-  let sourceUrl = nconf.get('csv');
   if (sourceUrl) {
     if (!comparison && !shadowban) {
       console.log("\nError in uploading the --csv. You must specify if:");
@@ -361,9 +367,6 @@ async function main() {
     process.exit(1);
   }
 
-  let directives = null;
-  const experiment = nconf.get('experiment');
-
   if(experiment && (!_.isString(experiment) || experiment.length < 20)) {
     console.log("\n--experiment awaits for an experiment ID, try it out:");
     console.log("For example: --experiment d75f9eaf465d2cd555de65eaf61a770c82d59451");
@@ -383,30 +386,30 @@ async function main() {
   /* if not profile, if evidencetag take it, or use a daily profile */
 
   debug("Configuring browser for profile %s (evidencetag %s)", profile, evidencetag);
-
   const profinfo = await profileExecount(profile, evidencetag);
+  let directiveurl = null;
 
   if(experiment && !sourceUrl) {
     console.log("Resolving experiment directives with github.com/tracking-exposed/yttrex directive protocol");
-    sourceUrl = buildAPIurl('directives', experiment);
+    directiveurl = buildAPIurl('directives', experiment);
   }
 
-  if(!experiment && !sourceUrl) {
+  if(auto) {
     debug("Dispatch browser for local questioning");
     let restrictedSettings = await readExperiment(profile);
     // this implicitly has also absolved the delayForSearcher call.
     debug("experiment read via local page: %j", restrictedSettings);
     experiment = restrictedSettings.experiment;
-    sourceUrl = restrictedSettings.sourceUrl;
+    directiveurl = restrictedSettings.sourceUrl;
   }
 
+  debug("Profile %s, experiment %s pulling directive %s from server %s",
+    profile, experiment, directiveurl, server);
 
-  debug("Profile %s, experiment %s pulling directive from server %s",
-    profile, experiment, server);
+  directiveurl = buildAPIurl('directives', experiment)
+  const directives = await pullDirectives(directiveurl);
 
-  const direurl = buildAPIurl('directives', experiment)
-  directives = await pullDirectives(direurl);
-  debug("loaded %d directives", directives.length);
+  debug("loaded %d directives from %s", directives.length, directiveurl);
 
   await writeExperimentInfo(experiment, profinfo, evidencetag, directiveType);
 

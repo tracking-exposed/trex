@@ -1,9 +1,0 @@
-[
-    {"name":"greta1","url":"https://www.youtube.com/watch?v=v33ro5lGHQg","watchFor":"end","loadFor":8000},
-    {"name":"greta2","url":"https://www.youtube.com/watch?v=GlfW7aYouYQ", "watchFor":"end","loadFor":8000},
-    {"name":"greta3","url":"https://www.youtube.com/watch?v=2fycgrYgXpA","watchFor":"end","loadFor":8000},
-    {"name":"greta4","url":"https://www.youtube.com/watch?v=DQWMDWWYVz4","watchFor":21000,"loadFor":8000},
-    {"name":"climatechange","url":"https://www.youtube.com/results?search_query=climate+change","loadFor":"30s"},
-    {"name":"climatechange","url":"https://www.youtube.com/results?search_query=climate+alarmism","loadFor":"30s"}
-]
-
