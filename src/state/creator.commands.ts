@@ -25,9 +25,7 @@ export const registerCreatorChannel = command(
         Params: { channelId },
         Body: { type: 'channel' },
       }),
-      TE.chainFirst((payload) => {
-        return sendMessage(Messages.UpdateContentCreator)(payload);
-      })
+      TE.chainFirst((payload) => sendMessage(Messages.UpdateAuth)(payload))
     ),
   {
     creatorVideos,
