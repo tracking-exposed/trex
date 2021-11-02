@@ -23,7 +23,8 @@
     "alarms",
     "http://localhost:9000/",
     "https://*.youtube.com/",
-    "https://youchoose.tracking.exposed/"
+    "https://youchoose.tracking.exposed/",
+    "https://yt3.ggpht.com/"
   ],
 
   "cross_origin_embedder_policy": {
@@ -37,14 +38,6 @@
     "scripts": ["./background.js"],
     "persistent": true
   },
-
-  "cross_origin_embedder_policy": {
-    "value": "require-corp"
-  },
-  "cross_origin_opener_policy": {
-    "value": "same-origin"
-  },
-
   "content_scripts": [
     {
       "matches": [

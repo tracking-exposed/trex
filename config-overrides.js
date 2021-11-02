@@ -17,6 +17,8 @@ const { BooleanFromString } = require('io-ts-types/lib/BooleanFromString');
 const { PathReporter } = require('io-ts/lib/PathReporter');
 const { DefinePlugin } = require('webpack');
 
+const manifestVersion = pkgJson.version.replace('-beta', '');
+
 const NODE_ENV = t.union(
   [t.literal('development'), t.literal('test'), t.literal('production')],
   'NODE_ENV'
@@ -160,7 +162,7 @@ module.exports = {
                 }
               : {}),
             content_scripts,
-            version: isProduction ? pkgJson.version : `${pkgJson.version}.88`,
+            version: manifestVersion,
           };
 
           return buildManifest;
