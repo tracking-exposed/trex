@@ -1,11 +1,11 @@
 {
   "name": "youchoose.ai",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "YouChoose AI",
   "homepage": "https://youchoose.ai",
   "bugs": "https://github.com/tracking-exposed/YCAI/issues",
   "license": "AGPL-3.0",
-  "author": "Claudio Agosti, Andrea Ascari, and the https://tracking.exposed team",
+  "author": "Claudio Agosti, Andrea Ascari, and the https://youchoose.ai team",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/tracking-exposed/YCAI.git"
