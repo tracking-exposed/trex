@@ -54,6 +54,67 @@ async function fetchRawChannelVideosHTML(channelId) {
   };
 }
 
+const parseRecentVideosHTML = (html) => {
+  const blob = lookForJSONblob(html);
+  const videob = _.filter(
+    blob.contents.twoColumnBrowseResultsRenderer.tabs,
+    function (tabSlot) {
+      /* if(tabSlot.tabRenderer && tabSlot.tabRenderer.title)
+        debug("%s", tabSlot.tabRenderer.title); */
+      return (
+        tabSlot.tabRenderer &&
+        tabSlot.tabRenderer.title &&
+        (
+          tabSlot.tabRenderer.title === "Videos" ||
+          tabSlot.tabRenderer.title === "Video" ||
+          tabSlot.tabRenderer.title === "Vidéos")
+      );
+      // warning this depends from the server locale
+      // for example in Germany is
+      // Übersicht Videos Playlists Community Kanäle Kanalinfo
+    }
+  );
+
+  if (!videob.length) {
+    throw new Error("Not found the expected HTML/JSON in channel %s.");
+    // note on the debug above — perhaps it is the language?
+  }
+
+  let videonfo = [];
+  try {
+    videonfo = videob[0].tabRenderer.content.sectionListRenderer.contents[0]
+      .itemSectionRenderer.contents[0].gridRenderer.items;
+  } catch(error) {
+    throw new Error(
+      `Error in reading Machine Readable format: ${error.message}`
+    );
+  }
+
+  const videtails = _.compact(
+    _.map(videonfo, function (ve) {
+      return ve.gridVideoRenderer;
+    })
+  );
+
+  const titlesandId = _.map(videtails, function (ve) {
+    return {
+      videoId: ve.videoId,
+      title: ve.title.runs[0].text,
+      urlId: utils.hash({
+        url: `https://www.youtube.com/watch?v=${ve.videoId}`,
+      }),
+      description: "",
+      recommendations: []
+    };
+  });
+
+  if (titlesandId.length === 0) {
+    throw new Error("Not found the video details in channel %s");
+  }
+
+  return titlesandId;
+};
+
 async function recentVideoFetch(channelId) {
   // log the raw HTML and results of this function for future debugging
   // or regression testing
@@ -81,73 +142,22 @@ async function recentVideoFetch(channelId) {
   // save raw HTML
   fs.writeFileSync(path.join(logDir, "raw.html"), html);
 
-  const blob = lookForJSONblob(html);
-  const videob = _.filter(
-    blob.contents.twoColumnBrowseResultsRenderer.tabs,
-    function (tabSlot) {
-      /* if(tabSlot.tabRenderer && tabSlot.tabRenderer.title)
-        debug("%s", tabSlot.tabRenderer.title); */
-      return (
-        tabSlot.tabRenderer &&
-        tabSlot.tabRenderer.title &&
-        (
-          tabSlot.tabRenderer.title === "Videos" ||
-          tabSlot.tabRenderer.title === "Video" ||
-          tabSlot.tabRenderer.title === "Vidéos")
-      );
-      // warning this depends from the server locale
-      // for example in Germany is
-      // Übersicht Videos Playlists Community Kanäle Kanalinfo
-    }
-  );
-
-  if (!videob.length) {
-    const message = "Not found the expected HTML/JSON in channel";
-    log({ message });
-    debug(`${message} %s`, channelId);
-    // note on the debug above — perhaps it is the language?
-    return null;
-  }
-
-  let videonfo = [];
+  // parse the HTML
   try {
-    videonfo = videob[0].tabRenderer.content.sectionListRenderer.contents[0]
-      .itemSectionRenderer.contents[0].gridRenderer.items;
-  } catch(error) {
-    const message = `Error in reading Machine Readable format: ${error.message}`;
-    log({ message });
-    debug(message);
+    const titlesandId = parseRecentVideosHTML(html);
+    log({
+      success: true,
+      result: titlesandId,
+    });
+    return titlesandId;
+  } catch (err) {
+    log({
+      success: false,
+      message: err.message,
+    });
+    debug(err.message, channelId);
+    return [];
   }
-
-  const videtails = _.compact(
-    _.map(videonfo, function (ve) {
-      return ve.gridVideoRenderer;
-    })
-  );
-  const titlesandId = _.map(videtails, function (ve) {
-    return {
-      videoId: ve.videoId,
-      title: ve.title.runs[0].text,
-      urlId: utils.hash({
-        url: `https://www.youtube.com/watch?v=${ve.videoId}`,
-      }),
-      description: "",
-      recommendations: []
-    };
-  });
-
-  if (titlesandId.length === 0) {
-    const message = "Not found the video details in channel";
-    log({ message });
-    debug(`${message} %s`, channelId);
-  }
-
-  log({
-    success: true,
-    result: titlesandId,
-  });
-
-  return titlesandId;
 }
 
 const tokenRegexp = /\[(youchoose):(\w+)\]/;
