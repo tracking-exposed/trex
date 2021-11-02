@@ -1,6 +1,6 @@
 import { Endpoint } from 'ts-endpoint';
 import * as t from 'io-ts';
-import { AuthorizationHeader, AuthResponse } from '../../models/Auth';
+import { AuthorizationHeader } from '../../models/Auth';
 import { ContentCreator } from '../../models/ContentCreator';
 import { CreatorStats } from '../../models/CreatorStats';
 import { Recommendation } from '../../models/Recommendation';
@@ -26,7 +26,7 @@ const RegisterCreator = Endpoint({
       type: ChannelType,
     }),
   },
-  Output: AuthResponse,
+  Output: ContentCreator,
 });
 
 const VerifyCreator = Endpoint({
