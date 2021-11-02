@@ -65,11 +65,12 @@ async function fetchRecommendationsByProfile(token) {
   const results = await mongo3.readLimit(
     mongoc,
     nconf.get("schema").recommendations,
-    { creator: creator.channelId },
+    { channelId: creator.channelId },
     { when: -1 },
     INTERFACE_MAX,
     0
   );
+  console.log('fetchRecommendationsByProfile', creator);
   if (INTERFACE_MAX == results.length) {
     debug("More recommendations than what is possible! (we should support pagination)");
   }
@@ -79,7 +80,7 @@ async function fetchRecommendationsByProfile(token) {
 
 function attributeFromDomain(domain) {
   // for youtube, facebook, twitter, wikipedia, and
-  // any other website that we want to recognize with 
+  // any other website that we want to recognize with
   // their favicon in the interface, we can match it
   const map = {
     'youtube': ['youtube.com', 'youtu.be'],
@@ -88,7 +89,7 @@ function attributeFromDomain(domain) {
   }
   return _.filter(_.keys(map), function(k) {
     const dlist = map[k];
-    return _.same(dlist, function(dtest) {
+    return _.some(dlist, function(dtest) {
       return _.endsWith(domain, dtest);
     });
   });
@@ -301,10 +302,10 @@ async function registerVideos(videol, channelId) {
 }
 
 async function getCreatorByToken(token) {
-  // this function might be executed to query the 
-  // state of a content creator. it might be 
-  // fully authenticated, or not. the filter 
-  // works on creators and tokens, considering the 
+  // this function might be executed to query the
+  // state of a content creator. it might be
+  // fully authenticated, or not. the filter
+  // works on creators and tokens, considering the
   // token are going to expire automatically.
   const mongoc = await mongo3.clientConnect({ concurrency: 1 });
   const creator = await mongo3
