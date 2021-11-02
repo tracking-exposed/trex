@@ -8,17 +8,19 @@ export const ErrorBox = (e: unknown): React.ReactElement<any, string> => {
   return (
     <Grid item>
       <Card>
-        {e instanceof Error ? (
-          <Alert severity="error">
-            <AlertTitle>Error {e.name}</AlertTitle>
-            {e.message}
-          </Alert>
-        ) : null}
-        {typeof e === 'object' ? (
-          <div>
-            <code>{JSON.stringify(e, null, 2)}</code>
-          </div>
-        ) : null}
+        <Alert severity="error">
+          {e instanceof Error ? (
+            <>
+              <AlertTitle>{e.name ?? 'Error'}</AlertTitle>
+              {e.message}
+            </>
+          ) : typeof e === 'object' ? (
+            <>
+              <AlertTitle>An object was thrown.</AlertTitle>
+              <code>{JSON.stringify(e, null, 2)}</code>
+            </>
+          ) : <AlertTitle>An unknown error occurred.</AlertTitle>}
+        </Alert>
       </Card>
     </Grid>
   );
