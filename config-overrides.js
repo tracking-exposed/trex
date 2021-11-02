@@ -259,6 +259,10 @@ module.exports = {
       }),
     };
 
+    if (!isProduction) {
+      config.devtool = 'inline-source-map';
+    }
+
     return config;
   },
   jest: (config) => {
