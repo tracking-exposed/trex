@@ -141,7 +141,7 @@ app.post('/api/v3/creator/ogp', cors(), async (req, res) => await iowrapper('ogp
 app.get('/api/v3/creator/videos', async (req, res) => await iowrapper('getVideoByCreator', req, res))
 app.post('/api/v3/creator/videos/repull', async (req, res) => await iowrapper('repullByCreator', req, res))
 
-app.get('/api/v3/creator/recommendations/:IGNORED_CHANNELID', async (req, res) => await iowrapper('youChooseByProfile', req, res))
+app.get('/api/v3/creator/recommendations', async (req, res) => await iowrapper('youChooseByProfile', req, res))
 app.get('/api/v3/creator/:channelId/related/:amount?', async (req, res) => await iowrapper('getCreatorRelated', req, res))
 app.get('/api/v3/creator/:channelId/stats', async (req, res) => await iowrapper('getCreatorStats', req, res))
 
@@ -190,7 +190,7 @@ app.get('/api/v2/experiment/:expname/dot', cors(), async (req, res) => await iow
 app.get('/api/v2/experiment/:expname/json', cors(), async (req, res) => await iowrapper('experimentJSON', req, res))
 app.get('/api/v2/guardoni/list', async (req, res) => await iowrapper('getAllExperiments', req, res))
 
-// dynamically configured and retrived guardoni settings 
+// dynamically configured and retrived guardoni settings
 app.post('/api/v2/guardoni/:experiment/:botname', async (req, res) => await iowrapper('guardoniConfigure', req, res))
 app.get('/api/v2/guardoni/:experiment/:botname', async (req, res) => await iowrapper('guardoniGenerate', req, res))
 
