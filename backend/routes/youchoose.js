@@ -364,6 +364,11 @@ async function creatorGet(req) {
 
   debug('getCreator by token %s', verificationToken);
   const infoavail = await ycai.getCreatorByToken(verificationToken);
+  if(infoavail.error) {
+    debug('Invalid token: %s', infoavail);
+    return { json: infoavail };
+  }
+
   const validatedc = endpoints.decodeResponse(v3.Endpoints.Creator.GetCreator, {
     ...infoavail,
     registeredOn: infoavail.registeredOn.toISOString(),
