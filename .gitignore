@@ -24,4 +24,7 @@ backend/dump
 backend/experiments/*
 backend/config/secrets.json
 
+backend/logs/*
+!backend/logs/.keep
+
 qa/*.pyc

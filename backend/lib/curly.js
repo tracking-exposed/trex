@@ -2,6 +2,7 @@ const _ = require("lodash");
 const debug = require("debug")("lib:curly");
 const { curly } = require("node-libcurl");
 const fs = require("fs");
+const path = require("path");
 const utils = require("./utils");
 
 function lookForJSONblob(data) {
@@ -37,17 +38,50 @@ function lookForJSONblob(data) {
   }
 }
 
-async function recentVideoFetch(channelId) {
-  const ytvidsurl = `https://www.youtube.com/channel/${channelId}/videos`;
-  const { statusCode, data, headers } = await curly.get(ytvidsurl, {
+async function fetchRawChannelVideosHTML(channelId) {
+  const url = `https://www.youtube.com/channel/${channelId}/videos`;
+  const { statusCode, data, headers } = await curly.get(url, {
     verbose: false,
     timeoutMs: 4000,
     sslVerifyPeer: false,
     followLocation: true,
   });
 
+  return {
+    headers,
+    statusCode,
+    html: data,
+  };
+}
+
+async function recentVideoFetch(channelId) {
+  // log the raw HTML and results of this function for future debugging
+  // or regression testing
+  const logDir = path.join(
+    __dirname,
+    `../logs/recentVideoFetch_${channelId}_${Date.now()}`
+  );
+  fs.mkdirSync(logDir);
+  const callLog = {
+    method: "recentVideoFetch",
+    channelId,
+    success: false,
+  };
+  // function to write the log in JSON to the log file
+  const log = (extraData) => {
+    fs.writeFileSync(path.join(logDir, "call.json"), JSON.stringify(
+      Object.assign(
+        {}, callLog, extraData,
+    ), null, 2));
+  };
+
+  const { html, statusCode } = await fetchRawChannelVideosHTML(channelId);
   debug("CURL from youtube %d", statusCode);
-  const blob = lookForJSONblob(data);
+
+  // save raw HTML
+  fs.writeFileSync(path.join(logDir, "raw.html"), html);
+
+  const blob = lookForJSONblob(html);
   const videob = _.filter(
     blob.contents.twoColumnBrowseResultsRenderer.tabs,
     function (tabSlot) {
@@ -68,7 +102,9 @@ async function recentVideoFetch(channelId) {
   );
 
   if (!videob.length) {
-    debug("Not found the expected HTML/JSON in channel %s", channelId);
+    const message = "Not found the expected HTML/JSON in channel";
+    log({ message });
+    debug(`${message} %s`, channelId);
     // note on the debug above — perhaps it is the language?
     return null;
   }
@@ -78,7 +114,9 @@ async function recentVideoFetch(channelId) {
     videonfo = videob[0].tabRenderer.content.sectionListRenderer.contents[0]
       .itemSectionRenderer.contents[0].gridRenderer.items;
   } catch(error) {
-    debug("Error in reading Machine Readable format: %s", error.message);
+    const message = `Error in reading Machine Readable format: ${error.message}`;
+    log({ message });
+    debug(message);
   }
 
   const videtails = _.compact(
@@ -99,8 +137,16 @@ async function recentVideoFetch(channelId) {
   });
 
   if (titlesandId.length === 0) {
-    debug("Not found the video details in channel %s", channelId);
+    const message = "Not found the video details in channel";
+    log({ message });
+    debug(`${message} %s`, channelId);
   }
+
+  log({
+    success: true,
+    result: titlesandId,
+  });
+
   return titlesandId;
 }
 
