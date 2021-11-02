@@ -10,6 +10,25 @@ const dbutils = require('../lib/dbutils');
 const security = require('../lib/security');
 const utils = require('../lib/utils');
 
+/* this file have been heavily refactored 
+ * because between 1.4.x and 1.8.x the search
+ * result collection method changed; now uses
+ * metadata; as part of the refactor, we defined
+ * the pages needed to be supported:
+ * 
+ * - personal page:
+ *      list of search queries made by PubKey 
+ * - personal page/popup:
+ *      download search queries in CSV (per PubKey)
+ * - campaign:
+ *      that logic is replaced by guardoni v2, and
+ *      might converget with the 'experiments'
+ * - experiments:
+ *      every content marked with an experimentId might return.
+ * - comparison:
+ *      run a comparison among the same search results
+ */
+
 const MAXRVS = 5000;
 
 async function getSearches(req) {
