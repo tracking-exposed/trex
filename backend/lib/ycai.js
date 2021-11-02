@@ -65,11 +65,12 @@ async function fetchRecommendationsByProfile(token) {
   const results = await mongo3.readLimit(
     mongoc,
     nconf.get("schema").recommendations,
-    { creator: creator.channelId },
+    { channelId: creator.channelId },
     { when: -1 },
     INTERFACE_MAX,
     0
   );
+  console.log('fetchRecommendationsByProfile', creator);
   if (INTERFACE_MAX == results.length) {
     debug("More recommendations than what is possible! (we should support pagination)");
   }
