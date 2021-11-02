@@ -256,7 +256,8 @@ async function confirmCreator(tokeno, creatorInfo) {
     registeredOn: new Date(),
     ...creatorInfo,
     accessToken: "ACTK" + utils.hash({
-      random: _.random(0, 0xffffff)
+      random: _.random(0, 0xfffffff),
+      channel: tokeno.channelId
     })
   }
 
