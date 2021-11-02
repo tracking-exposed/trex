@@ -141,6 +141,7 @@ async function recentVideoFetch(channelId) {
 
   // save raw HTML
   fs.writeFileSync(path.join(logDir, "raw.html"), html);
+  debug("recentVideoFetch saved raw.html and call.json in %s", logDir);
 
   // parse the HTML
   try {
@@ -213,6 +214,8 @@ async function tokenFetch(channelId) {
 }
 
 module.exports = {
+  fetchRawChannelVideosHTML,
+  parseRecentVideosHTML,
   recentVideoFetch,
   tokenFetch,
 };

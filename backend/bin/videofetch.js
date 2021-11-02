@@ -6,12 +6,15 @@ const nconf = require('nconf');
 const path = require('path');
 
 const CSV = require('../lib/CSV');
-const { recentVideoFetch } = require('../lib/curly');
+const curly = require('../lib/curly');
 
 nconf.argv().env().file({ file: 'config/settings.json'});
 
 async function vfet(channelId) {
-  const titlesandId = await recentVideoFetch(channelId)
+  const { html, statusCode }= await curly.fetchRawChannelVideosHTML(channelId);
+
+  debug("Status %d", statusCode);
+  const titlesandId = await curly.recentVideoFetch(channelId)
 
   if(!titlesandId) {
     debug("Failure in extracting video details from channel %s", channelId);
@@ -28,8 +31,10 @@ async function vfet(channelId) {
   const csvcontent = CSV.produceCSVv1(urltitle);
   const dfile = path.join('experiments', channelId + '-urls.csv');
   fs.writeFileSync(dfile, csvcontent);
-
-  debug("Produced %s", dfile);
+  debug("Produced %s with %d URLs and title",
+    dfile, urltitle.length);
 };
 
+if(!nconf.get('channel'))
+  return console.log("Mandatory --channel <channelId>");
 vfet(nconf.get('channel'));
