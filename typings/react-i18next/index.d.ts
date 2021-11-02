@@ -45,7 +45,7 @@ declare module 'react-i18next' {
         title: string;
       };
       recommendations: {
-        title: string;
+        by_creator_title: string;
         total: string;
         url: string;
         yours: string;

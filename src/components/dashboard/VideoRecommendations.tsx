@@ -7,7 +7,7 @@ import { useTranslation } from 'react-i18next';
 import { videoRecommendations } from '../../state/public.queries';
 import { ErrorBox } from '../common/ErrorBox';
 import { LazyFullSizeLoader } from '../common/FullSizeLoader';
-import { VideoCard } from '../common/VideoCard';
+import { InjectedVideoCard } from '../common/InjectedVideoCard';
 
 interface VideoRecommendationsProps {
   videoId: string;
@@ -16,6 +16,8 @@ interface VideoRecommendationsProps {
 export const VideoRecommendations: React.FC<VideoRecommendationsProps> = ({
   videoId,
 }): React.ReactElement => {
+  const { t } = useTranslation();
+
   const queries = useQueries(
     { videoRecommendations },
     { videoRecommendations: { videoId } }
@@ -24,13 +26,13 @@ export const VideoRecommendations: React.FC<VideoRecommendationsProps> = ({
   return pipe(
     queries,
     QR.fold(LazyFullSizeLoader, ErrorBox, ({ videoRecommendations }) => {
-      const { t } = useTranslation();
-
       return (
         <Box>
-          <Typography variant="h5">{t('recommendations:title')}</Typography>
-          {videoRecommendations.map((r, i) => (
-            <VideoCard key={i} {...r} videoId={r.videoId} />
+          <Typography variant="h5">{
+            t('recommendations:by_creator_title')
+          }</Typography>
+          {videoRecommendations.map((video, i) => (
+            <InjectedVideoCard key={video.urlId} {...video} />
           ))}
         </Box>
       );
