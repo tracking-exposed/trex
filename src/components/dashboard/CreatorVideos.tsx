@@ -27,7 +27,7 @@ export const CreatorVideos = withQueries<CreatorVideosProps>(
       queries,
       QR.fold(LazyFullSizeLoader, ErrorBox, ({ videos }) => {
         return (
-          <Grid container>
+          <Grid container spacing={1}>
             {videos.length === 0 ? (
               <Grid>
                 <Typography>{t('videos:no_results')}</Typography>
@@ -37,7 +37,7 @@ export const CreatorVideos = withQueries<CreatorVideosProps>(
               </Grid>
             ) : (<>
               {videos.map((v, i) => (
-                <Grid item md={3} key={v.videoId}>
+                <Grid item md={3} sm={6} xs={12} key={v.videoId}>
                   <VideoCard
                     key={i}
                     videoId={v.videoId}

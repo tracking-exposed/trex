@@ -9,6 +9,7 @@ const resources: CustomTypeOptions['resources'] = {
   actions: {
     popup_bootstrap: 'Bootstrap',
     add: 'Add',
+    add_recommendations: 'Add recommendations',
     link_channel: 'Link channel',
     unlink_channel: 'Unlink channel',
     delete: 'Delete',
