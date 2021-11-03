@@ -1,5 +1,6 @@
 import { ContentCreator } from '@backend/models/ContentCreator';
-import { Avatar, Box, Button, Typography } from '@material-ui/core';
+import { Box, Button, Typography } from '@material-ui/core';
+import Avatar from '../external/Avatar';
 import * as QR from 'avenger/lib/QueryResult';
 import { declareQueries } from 'avenger/lib/react';
 import { sequenceS } from 'fp-ts/lib/Apply';
