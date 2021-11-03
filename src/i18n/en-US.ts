@@ -52,6 +52,7 @@ const resources: CustomTypeOptions['resources'] = {
     title: 'Youtube',
   },
   recommendations: {
+    added_to_video_title: 'Recommendations added',
     by_creator_title: 'Author\'s video recommendations',
     total: 'Total recommendations',
     url: 'Recommendation url',

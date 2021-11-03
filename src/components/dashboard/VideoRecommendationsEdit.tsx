@@ -35,7 +35,7 @@ export const VideoRecommendations = withQueries<VideoRecommendationsProps>(
 
           return (
             <Box>
-              <Typography variant="h5">{t('recommendations:title')}</Typography>
+              <Typography variant="h5">{t('recommendations:added_to_video_title')}</Typography>
               <Grid container>
                 <ReorderList
                   getKey={(item) => item.urlId}
