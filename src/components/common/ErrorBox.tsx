@@ -12,12 +12,17 @@ export const ErrorBox = (e: unknown): React.ReactElement<any, string> => {
           {e instanceof Error ? (
             <>
               <AlertTitle>{e.name ?? 'Error'}</AlertTitle>
-              {e.message}
+              <p>{e.message}</p>
+              <pre>
+                <code>{JSON.stringify(e, null, 2)}</code>
+              </pre>
             </>
           ) : typeof e === 'object' ? (
             <>
               <AlertTitle>An object was thrown.</AlertTitle>
-              <code>{JSON.stringify(e, null, 2)}</code>
+              <pre>
+                <code>{JSON.stringify(e, null, 2)}</code>
+              </pre>
             </>
           ) : <AlertTitle>An unknown error occurred.</AlertTitle>}
         </Alert>
