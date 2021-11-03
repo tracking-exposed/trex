@@ -351,15 +351,15 @@ async function tofu(publicKey, version) {
     return supporter;
 }
 
-async function getLastLeafs(filter, skip, amount) {
-
+async function getLastLeaves(filter, skip, amount) {
     const mongoc = await mongo3.clientConnect({concurrency: 1});
-
-    const labels = await mongo3.readLimit(mongoc, nconf.get('schema').leafs,
-        filter, { savingTime: 1},
-        amount, skip ? skip : 0);
-
+    const labels = await mongo3
+        .readLimit(mongoc, nconf.get('schema').leaves,
+            filter, { savingTime: 1},
+            amount, skip ? skip : 0
+        );
     await mongoc.close();
+
     return {
         overflow: _.size(labels) == amount,
         content: labels
@@ -787,8 +787,8 @@ module.exports = {
     updateMetadata,
     markHTMLsUnprocessable,
 
-    /* used in leafs */
-    getLastLeafs,
+    /* used in bin/leaveserv.js */
+    getLastLeaves,
     upsertSearchResults,
     updateAdvertisingAndMetadata,
 

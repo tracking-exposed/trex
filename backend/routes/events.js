@@ -123,7 +123,7 @@ async function processEvents2(req) {
         debug("Saved %d htmls metadataId: %j", htmlexpstended.length, _.uniq(_.map(htmlexpstended, 'metadataId')));
     }
 
-    const leafs = _.map(_.filter(req.body, { type: 'leafs'}), function(e) {
+    const leaves = _.map(_.filter(req.body, { type: 'leaf'}), function(e) {
         const nature = utils.getNatureFromURL(e.href);
         const metadataId = utils.hash({
             publicKey: headers.publickey,
@@ -134,32 +134,30 @@ async function processEvents2(req) {
             metadataId,
             contentHash: e.hash,
         });
-        // return leaf
         return {
             id,
             metadataId,
             blang,
             publicKey: headers.publickey,
-            ..._.omit(e, ['randomUUID', 'hash', 'clientTime']),
+            ..._.omit(e, ['type', 'incremental', 'randomUUID', 'hash', 'clientTime']),
             nature,
-            clientTime: new Date(e.clientTime),
             savingTime: new Date(),
         }
     });
-    if(leafs.length) {
-        const check = await automo.write(nconf.get('schema').leafs, leafs);
+    if(leaves.length) {
+        const check = await automo.write(nconf.get('schema').leaves, leaves);
         if(check && check.error) {
-            debug("🍃Error in saving %d %j", _.size(leafs), check);
+            debug("🍃Error in saving %d %j", leaves.length, check);
             return { json: {status: "error", info: check.info }};
         }
-        debug("Saved %d leafs selectors: %j", leafs.length, _.countBy(leafs, 'selectorName'));
+        debug("🍃Saved %d leafs selectors: %j", leaves.length, _.countBy(leaves, 'selectorName'));
     }
 
     /* this is what returns to the web-extension */
     return { json: {
         status: "OK",
         supporter,
-        leafs: _.size(leafs),
+        leafs: _.size(leaves),
         htmls: _.size(htmlexpstended),
     }};
 };

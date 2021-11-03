@@ -166,12 +166,14 @@ async function repullByCreator(req) {
     };
   }
   const token = decodedReq.result.headers['x-authorization'];
-  debug('repullByCreator token %s', token);
+  // debug('repullByCreator token %s', token);
   const creator = await ycai.getCreatorByToken(token);
-  debug('repullByCreator %j', creator);
+  //debug('repullByCreator %j', creator);
   const titlesandId = await curly.recentVideoFetch(creator.channelId);
-  debug('repull of %j', titlesandId);
-  await ycai.registerVideos(titlesandId, creator.channelId);
+  debug('Repull caused retrival of %d new videos',
+    titlesandId.length);
+  await ycai
+    .registerVideos(titlesandId, creator.channelId);
   return { json: titlesandId };
 }
 
