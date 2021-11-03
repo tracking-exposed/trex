@@ -55,7 +55,7 @@ const resources: CustomTypeOptions['resources'] = {
     by_creator_title: 'Author\'s video recommendations',
     total: 'Total recommendations',
     url: 'Recommendation url',
-    yours: 'Yours recommendations',
+    yours: 'Your recommendations',
     no_items: 'No recommendations found',
     add_to_video: 'Add a recommendation to this video',
     url_placeholder: 'https://youtube.com/watch?v=xxxxx',
@@ -96,12 +96,12 @@ const resources: CustomTypeOptions['resources'] = {
     keypair_passphrase: 'Key pair passphrase',
     keypair_private_key: 'Key pair secret key',
     keypair_public_key: 'Key pair public key',
-    keypair_title: 'Keypair for indipendent contribution'
+    keypair_title: 'Keypair for independent contribution'
   },
   ytVideoPage: {
-    firstTab: 'Creator Raccomendations',
-    secondTab: 'Community Raccomendations',
-    thirdTab: 'Youtube Raccomenations',
+    firstTab: 'Creator Recommendations',
+    secondTab: 'Community Recommendations',
+    thirdTab: 'Youtube Recommendations',
   },
 };
 
