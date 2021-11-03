@@ -95,18 +95,20 @@ async function ogpProxy(req) {
       }
     }
   }
-  const review = await ycai.saveRecommendationOGP(ogresult, creator);
-  if (!review.title) {
-    debug('We got an error in OGP (%s) %j', url, review);
+  const savedInfo = await ycai.saveRecommendationOGP(ogresult, creator);
+  if (!savedInfo.title) {
+    debug('Missing one or more mandatory field: %j',
+      url, savedInfo);
     return {
       json: {
         error: true,
-        missingFields: review,
+        message: 'missing mandatory field',
+        info: savedInfo,
       },
     };
   }
   debug('Fetched correctly %s', url);
-  return { json: review };
+  return { json: savedInfo };
 }
 
 async function videoByCreator(req) {
@@ -246,6 +248,8 @@ async function updateVideoRec(req) {
     update.videoId,
     update.recommendations
   );
+  if(updated.error)
+    debug("Error in updateRecommendations: %s", updated.message);
 
   return { json: updated };
 }

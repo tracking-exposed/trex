@@ -28,21 +28,20 @@ async function iowrapper(fname, req, res) {
     const funct = apiList[fname];
     const httpresult = await funct(req, res)
 
-    if (!httpresult) {
-        res.send("Error: not implemented");
-        debug("Error, not implemented function in this API");
-        return;
-    }
-
     if (httpresult.headers)
         _.each(httpresult.headers, function(value, key) {
             debug("Setting header %s: %s", key, value);
             res.setHeader(key, value);
         });
 
-    if (httpresult.json && httpresult.json.error) {
+    if (!httpresult) {
+        res.send("Error: not implemented");
+        res.status(501);
+        debug("Error, not implemented function in this API");
+    } else if (httpresult.json && httpresult.json.error) {
         debug("API (%s) failure, returning 500", fname);
         res.status(500);
+        res.json(httpresult.json);
     } else if (httpresult.json) {
         debug("API (%s) success, returning %d bytes JSON",
           fname, _.size(JSON.stringify(httpresult.json)));
@@ -55,13 +54,14 @@ async function iowrapper(fname, req, res) {
         debug("Undetermined failure in API call, result →  %j", httpresult);
         res.status(502);
         res.send("Error?");
-        return false;
     }
 
   } catch(error) {
-    res.send(error.message);
-    debug("Error: %o", error);
+    res.status(502);
+    res.send("Software error" + error.message);
+    debug("Error in HTTP generic handler: %o", error);
   }
+  res.end();
 }
 
 /* This function wraps all the API call, checking the verionNumber
