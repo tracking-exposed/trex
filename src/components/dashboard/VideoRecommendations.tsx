@@ -7,7 +7,7 @@ import { useTranslation } from 'react-i18next';
 import { videoRecommendations } from '../../state/public.queries';
 import { ErrorBox } from '../common/ErrorBox';
 import { LazyFullSizeLoader } from '../common/FullSizeLoader';
-import { InjectedVideoCard } from '../common/InjectedVideoCard';
+import { InjectedRecommendationCard } from '../common/InjectedRecommendationCard';
 
 interface VideoRecommendationsProps {
   videoId: string;
@@ -32,7 +32,7 @@ export const VideoRecommendations: React.FC<VideoRecommendationsProps> = ({
             t('recommendations:by_creator_title')
           }</Typography>
           {videoRecommendations.map((video, i) => (
-            <InjectedVideoCard key={video.urlId} {...video} />
+            <InjectedRecommendationCard key={video.urlId} {...video} />
           ))}
         </Box>
       );

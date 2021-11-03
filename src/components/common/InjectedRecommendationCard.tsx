@@ -7,13 +7,13 @@ import {
   Grid,
 }from '@material-ui/core';
 
-export interface InjectedVideoCardProps {
+export interface InjectedRecommendationCardProps {
   url: string;
   title: string;
   image: string;
 }
 
-export const InjectedVideoCard: React.FC<InjectedVideoCardProps> = ({
+export const InjectedRecommendationCard: React.FC<InjectedRecommendationCardProps> = ({
   image,
   url,
   title,
