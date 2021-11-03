@@ -1,5 +1,6 @@
 import * as t from "io-ts";
 import { Endpoint } from "ts-endpoint";
+import { ContributionEvent } from "../../models/ContributionEvent";
 
 const CompareVideo = Endpoint({
   Method: "GET",
@@ -37,11 +38,27 @@ const Searches = Endpoint({
   Output: t.any,
 });
 
+const AddEvents = Endpoint({
+  Method: "POST",
+  getPath: () => `/v2/events`,
+  Input: {
+    Headers: t.type({
+      "X-YTtrex-Version": t.string,
+      "X-YTtrex-Build": t.string,
+      "X-YTtrex-PublicKey": t.string,
+      "X-YTtrex-Signature": t.string,
+    }),
+    Body: t.array(ContributionEvent),
+  },
+  Output: t.any,
+});
+
 const Endpoints = {
   CompareVideo,
   VideoRelated,
   VideoAuthor,
   Searches,
+  AddEvents,
 };
 
 type Endpoints = typeof Endpoints;
