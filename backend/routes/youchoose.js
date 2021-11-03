@@ -41,7 +41,7 @@ async function byProfile(req) {
     if(!o.title) return null;
     if(!o.description) o.description = undefined;
     if(!o.image) o.image = undefined;
-    return _.pick(o, ['title', 'description', 'urlId', 'image']);
+    return _.pick(o, ['title', 'description', 'urlId', 'image', 'url']);
   }));
   debug(
     'creator is fetching their %d recommendations (cleaned %d)',
