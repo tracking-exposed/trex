@@ -41,7 +41,6 @@ async function submitRecommendations(accessToken, urls) {
         }
     }
 
-    /* TODO post */
     const updvidrecAPIurl = backend + "/api/v3/creator/updateVideo";
     const response = await fetch(updvidrecAPIurl, {
         method: 'post',
@@ -55,7 +54,17 @@ async function submitRecommendations(accessToken, urls) {
         }
     });
     const answer = await response.json();
-    debug("Successfully expanded recommendations: %o", answer);
+    debug("Successfully expanded recommendations: %o: testing now", answer);
+
+    const testAPIurl = backend + "/api/v3/creator/recommendations";
+    const check = await fetch(testAPIurl, {
+        method: 'get',
+        headers: {
+            'x-authorization': accessToken,
+        }
+    })
+    const conclusion = await check.json();
+    debug("Result from API: %o", conclusion);
 }
 
 try {
