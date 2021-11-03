@@ -79,7 +79,9 @@ export const RecommendationCard: React.FC<RecommendationCardProps> = ({
           {data.description}
         </Typography>
       </CardContent>
-      <CardActionArea>{addButton ?? deleteButton}</CardActionArea>
+      <CardActionArea component="div">
+        {addButton ?? deleteButton}
+      </CardActionArea>
     </Card>
   );
 };
