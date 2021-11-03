@@ -87,12 +87,13 @@ function attributeFromDomain(domain) {
     'wikipedia': ['wikipedia.com'],
     'twitter': ['twitter.com'],
   }
-  return _.filter(_.keys(map), function(k) {
+  const found = _.filter(_.keys(map), function(k) {
     const dlist = map[k];
     return _.some(dlist, function(dtest) {
       return _.endsWith(domain, dtest);
     });
   });
+  return found.length ? _.first(found) : null;
 }
 
 async function saveRecommendationOGP(ogblob, creator) {
@@ -101,9 +102,10 @@ async function saveRecommendationOGP(ogblob, creator) {
   const keep = _.pick(ogblob, fields);
   keep.channelId = creator.channelId;
 
-  const domain = (new URL(ogblob.url)).domain;
+  const domain = (new URL(ogblob.url)).host;
   const domaintype = attributeFromDomain(domain);
-  debug("from domain %s type attributed %s", domain, domaintype);
+  if(domaintype)
+    debug("from domain %s type attributed %s", domain, domaintype);
   keep.domaintype = domaintype;
 
   // ensure the presence of the required field (except image+desc)
@@ -131,6 +133,7 @@ async function saveRecommendationOGP(ogblob, creator) {
     debug("Mongo error? %j", res.result);
     return ["MongoDB error!"];
   }
+  _.unset(keep, '_id');
   return keep;
 }
 
@@ -181,6 +184,9 @@ async function updateRecommendations(videoId, recommendations) {
   const one = await mongo3.readOne(mongoc, nconf.get("schema").ytvids, {
     videoId,
   });
+  if(!one)
+    return { error: true, message: "Video not found: are you sure you own it?" };
+
   one.recommendations = recommendations;
   one.when = new Date();
   const check = await mongo3.updateOne(
@@ -256,7 +262,8 @@ async function confirmCreator(tokeno, creatorInfo) {
     registeredOn: new Date(),
     ...creatorInfo,
     accessToken: "ACTK" + utils.hash({
-      random: _.random(0, 0xffffff)
+      random: _.random(0, 0xfffffff),
+      channel: tokeno.channelId
     })
   }
 
