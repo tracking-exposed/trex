@@ -65,6 +65,11 @@ async function submitRecommendations(accessToken, urls) {
     })
     const conclusion = await check.json();
     debug("Result from API: %o", conclusion);
+
+    const externalook = backend + "/api/v3/video/" + targetVideoId + "/recommendations";
+    const client = await fetch(externalook);
+    const forpeoples = await client.json();
+    debug("Result for people is %o", forpeoples);
 }
 
 try {
