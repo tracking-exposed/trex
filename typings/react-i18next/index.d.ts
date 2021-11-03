@@ -25,6 +25,7 @@ declare module 'react-i18next' {
         delete_keypair: string;
         download_keypair: string;
         pull_creator_videos: string;
+        update_creator_videos_list: string;
         copy_verification_code: string;
       };
       account: {

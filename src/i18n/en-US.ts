@@ -23,6 +23,7 @@ const resources: CustomTypeOptions['resources'] = {
     delete_keypair: 'Delete keypair',
     download_keypair: 'Download keypair',
     pull_creator_videos: 'Import your videos',
+    update_creator_videos_list: 'Update your list of videos',
     copy_verification_code: 'Copy code'
   },
   routes: {

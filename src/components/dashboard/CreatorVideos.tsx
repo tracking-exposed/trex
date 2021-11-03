@@ -35,8 +35,8 @@ export const CreatorVideos = withQueries<CreatorVideosProps>(
                   {t('actions:pull_creator_videos')}
                 </Button>
               </Grid>
-            ) : (
-              videos.map((v, i) => (
+            ) : (<>
+              {videos.map((v, i) => (
                 <Grid item md={3} key={v.videoId}>
                   <VideoCard
                     key={i}
@@ -51,8 +51,13 @@ export const CreatorVideos = withQueries<CreatorVideosProps>(
                     }
                   />
                 </Grid>
-              ))
-            )}
+              ))}
+              <Grid item xs={12}>
+                <Button onClick={() => pullContentCreatorVideos({})()}>
+                  {t('actions:update_creator_videos_list')}
+                </Button>
+              </Grid>
+            </>)}
           </Grid>
         );
       })
