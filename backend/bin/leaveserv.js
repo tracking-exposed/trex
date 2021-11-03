@@ -191,7 +191,7 @@ function processLeaf(e) {
     let mined = null;
     try {
         const D = new JSDOM(e.html).window.document;
-        console.log(e.nature, e.selectorName);
+        // console.log(e.nature, e.selectorName);
 
         if(e.selectorName === 'ad')
             mined = mineAd(D, e)
@@ -205,10 +205,10 @@ function processLeaf(e) {
             return null;
         else if(e.selectorName === 'adbadge')
             mined = mineAdBadge(D, e);
-        else 
-            debugger;
+        else
+            debug("Selector not handled %s", e.selectorName);
 
-        console.log(mined);
+        // console.log(mined);
     } catch(error) {
         debug("Error in content mining (%s %s): %s",
             e.selectorName, e.metadataId, error.message);

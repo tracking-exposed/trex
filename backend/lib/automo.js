@@ -386,7 +386,7 @@ async function updateAdvertisingAndMetadata(adlist) {
     for (entry of adlist) {
         a = await mongo3.upsertOne(mongoc, nconf.get('schema').ads,
             { id: entry.id }, entry);
-        debug("update %s", entry.metadataId);
+        // debug("update %s", entry.metadataId);
         if(!a.result.ok)
             debug("!OK with %s.id %s: %j", cName, entry.id, a);
         else
