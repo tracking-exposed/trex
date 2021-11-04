@@ -6,8 +6,37 @@ const debug = require("debug")("lib:ycai");
 const utils = require("../lib/utils");
 const mongo3 = require("./mongo3");
 
+
+function ensureRecommendationsDefault(recc) {
+  const DEFAULT_IMAGE_URL = "https://youchoose.tracking.exposed/images/creators.png";
+  return _.reduce(["urlId", "url", "title", "description", "image"], function(memo, field) {
+    /* as documented in #114 (yttrex repo) this function ensure 
+     * some default behavior, and uses a _.reduce here because 
+     * title should be replaced with URL if for any reason is missing */
+    if(field === "urlId" || field === "url")
+      memo[field] = recc[field];
+    else if(field === "title") {
+      if(!recc[field] || !recc[field].length)
+        memo[field] = _.toUpper(recc.url.replace(/^https?:\/\//, ''));
+      else
+        memo[field] = recc[field];
+    } else if(field === "description") {
+      if(recc[field] && recc[field].length)
+        memo[field] = recc[field];
+    } else if(field === "image") {
+      if(!recc[field] || !recc[field].length)
+        memo[field] = DEFAULT_IMAGE_URL;
+      else
+        memo[field] = recc[field];
+    }
+    return memo;
+  }, {});
+}
+
 async function fetchRecommendations(videoId, kind) {
-  // kind might be 'demo', 'producer', 'community'
+  // kind might be 'demo', 'producer', 'community', but,
+  // at the moment only producer is actually implemented and
+  // considered in the workflow.
   let filter = {};
   if (kind === "producer") {
     filter.videoId = videoId;
@@ -44,13 +73,7 @@ async function fetchRecommendations(videoId, kind) {
     if (RECOMMENDATION_MAX == result.length)
       debug("More recommendations than what is possible!");
 
-    result = _.map(result, function (e) {
-      _.unset(e, "_id");
-      if (e.description === null) {
-        delete e.description;
-      }
-      return e;
-    });
+    result = _.map(result, ensureRecommendationsDefault);
     result = _.sortBy(result, [
       (r) => videoInfo.recommendations.indexOf(r.urlId),
     ]);
@@ -78,7 +101,7 @@ async function fetchRecommendationsByProfile(token) {
     debug("More recommendations than what is possible! (we should support pagination)");
   }
   await mongoc.close();
-  return results;
+  return _.map(results, ensureRecommendationsDefault);
 }
 
 function attributeFromDomain(domain) {
@@ -99,31 +122,30 @@ function attributeFromDomain(domain) {
   return found.length ? _.first(found) : null;
 }
 
+const OGPfields = ["title", "description", "url", "image"];
 async function saveRecommendationOGP(ogblob, creator) {
-  // this opengraph might have redundant fields so we pick only what's matter
-  const fields = ["title", "description", "url", "image"];
-  const keep = _.pick(ogblob, fields);
-  keep.channelId = creator.channelId;
+  /* as per #114 the payload might be saved also if some fields 
+   * aren't present, an approrpiate conversion happens in 
+   * fetchRecommendation by providing default values */
+  const keep = _.reduce(OGPfields, function(memo, field) {
+    if(ogblob[field])
+      memo[field] = ogblob[field];
+    return memo;
+  }, {});
+
+  if(!keep.url)
+    return { error: true, message: "The only foundamental field is missing (url)"};
 
   const domain = (new URL(ogblob.url)).host;
   const domaintype = attributeFromDomain(domain);
   if(domaintype)
     debug("from domain %s type attributed %s", domain, domaintype);
+
   keep.domaintype = domaintype;
-
-  // ensure the presence of the required field (except image+desc)
-  const error = [];
-  _.each(["title", "url"], function (fname) {
-    if (!keep[fname] || !keep[fname].length) {
-      error.push(fname);
-    }
-  });
-  /* read routes/youchoose.ogpProxy to fully understand
-   * the return value inconsistencies here */
-  if (error.length) return error;
-
+  keep.channelId = creator.channelId;
   keep.when = new Date();
   keep.urlId = utils.hash({ url: keep.url });
+
   const mongoc = await mongo3.clientConnect({ concurrency: 1 });
   const res = await mongo3.writeOne(
     mongoc,
@@ -202,7 +224,7 @@ async function updateRecommendations(videoId, recommendations) {
   );
   await mongoc.close();
   _.unset(one, "_id");
-  debug("returning the updated videoId with new reccs %j", one);
+  debug("video Recommendations updated! (now %d)", one.recommendations.length);
   return one;
 }
 

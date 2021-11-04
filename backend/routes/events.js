@@ -5,7 +5,6 @@ const nconf = require('nconf');
 const automo = require('../lib/automo');
 const utils = require('../lib/utils');
 const security = require('../lib/security');
-const { boundedLattice } = require('fp-ts');
 
 function processHeaders(received, required) {
     var ret = {};
