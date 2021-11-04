@@ -65,17 +65,7 @@ function initializeBlinks() {
         <li style="font-size: 1.2rem">${logo('15px', '15px', '#ffb545')} Advertising spotted and sent</li>
     </ul>
     <br />
-    <h2>More on the project:<br/>
-        <button size="small" color="secondary" onclick=window.open("https://tracking.exposed/manifesto")>
-        Manifesto
-        </button>
-        <button size="small" color="primary" onclick="window.open("https://github.com/tracking-exposed/yttrex/")> 
-        Software Repository
-        </button>
-        <button size="small" color="secondary" onclick="window.open("https://twitter.com/trackingexposed")> 
-        Twitter page
-        </button>
-    </h2>
+    <h2>know on the project? Check the popup, or <a href="https://youtube.tracking.exposed" target=_blank>𝖍𝖊𝖗𝖊</a>.</h2>
 </div>
 `
     );

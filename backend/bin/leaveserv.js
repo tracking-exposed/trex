@@ -14,6 +14,7 @@ const debugres = require('debug')('leaveserv:result');
 const overflowReport = require('debug')('leaveserv:OVERFLOW');
 
 const automo = require('../lib/automo');
+const { head } = require('fp-ts/lib/ReadonlyNonEmptyArray');
 
 nconf.argv().env().file({ file: 'config/settings.json' });
 
@@ -34,7 +35,10 @@ const filter = nconf.get('filter') ? JSON.parse(fs.readFileSync(nconf.get('filte
 const singleUse = !!id;
 
 const selector = nconf.get('selector') || null;
-const allowedSelectors = [ "ad", "banner", "channel", "label", "over", "title" ];
+const allowedSelectors = [ "banner", "ad", "overlay", "toprightad",
+    "toprightpict", "toprightcta", "toprightattr", "adbadge",
+    "channel", "searchcard", "channellink", "searchAds" ];
+
 if(selector)
     if(allowedSelectors.indexOf(selector) === -1)
         return console
@@ -71,6 +75,66 @@ function mineAd(D, e) {
     };
 }
 
+function mineOverlay(D, e) {
+    const buttons = D.querySelectorAll('.ytp-ad-button-link');
+    const sponsoredSite = _.reduce(buttons, function(memo, b) {
+        if(memo)
+            return memo;
+        if(b.textContent.length)
+            return b.textContent;
+    }, null);
+    return { sponsoredSite };
+}
+
+function mineTRP(D, e) {
+    const header  = D.querySelector("#header");
+    const domain = D.querySelector('#domain');
+    if(!header && !domain)
+        return null;
+    const retval = {};
+    if(header)
+        retval["sponsoredName"] = header.textContent.trim();
+    if(domain)
+        retval["sponsoredSite"] = domain.textContent.trim();
+    return retval;
+}
+
+function mineAdBadge(D, e) {
+    const h3 = D.querySelector('h3');
+    const wt = D.querySelector("#website-text");
+    // one of the two conditions
+    const header = D.querySelector('#header');
+    const domain = D.querySelector('#domain');
+
+    if(wt && h3)
+        return {
+            sponsoredName: h3.textContent.trim(),
+            sponsoredSite: wt.textContent.trim(),
+        };
+    else if(header && domain)
+        return {
+            sponsoredName: header.textContent.trim(),
+            sponsoredSite: domain.textContent.trim(),
+        }
+    else
+        return null;
+}
+
+function mineChannel(D, e) {
+    const a = D.querySelector('a');
+    const channelLink = a.getAttribute('href');
+    const ct = D.querySelector("#text");
+    const channelName = ct ?
+        ct.textContent.trim() : a.textContent.trim();
+
+    if(channelName && (channelLink.split('/')[1] == 'channel')) {
+        return {
+            channelName,
+            channelId: channelLink.split('/')[2]
+        };
+    }
+}
+
 function mineBanner(D, e) {
 
     /* exclude the 'Ads in 2' label, among others */
@@ -105,7 +169,7 @@ function mineBanner(D, e) {
     }
 
     /* pick the first span with a value */
-    const buyer = _.reduce(spands, function(memo, span) {
+    const buyer = _.reduce(spans, function(memo, span) {
         if(memo) return memo;
         if(span.textContent.length > 0)
             memo = span.textContent;
@@ -131,42 +195,48 @@ function mineBanner(D, e) {
     }
 }
 
-function processAds(e, i) {
-    /* this function is equivalent to the one below, but 
-     * it focus in processing different kinds of payload */
-    if(e.selectorName != 'ad' && e.selectorName != 'banner')
-        return null;
-
-    if(e.acquired.length > 1)
-        throw new Error("Test! does this happens?");
-
-    const urlinfo = url.parse(e.href);
-    if(urlinfo.pathname != '/watch') {
-        debugads("Ignoring AD from 'non-video' page [%s]", e.href);
+function processLeaf(e) {
+    // e is the 'element', it comes from the DB, and we'll look the 
+    // e.html mostly. different e.selecotrName causes different sub-functions
+    if(allowedSelectors.indexOf(e.selectorName) == -1) {
+        // debug("Invalid/Unexpected selector received: %s", e.metadataId);
         return null;
     }
-    const params = querystring.parse(urlinfo.query);
-    const videoId = params.v;
-
-    const D = new JSDOM(e.acquired[0].html).window.document;
-    const retval = _.pick(e, ["selectorName", "href", "metadataId", "id", "savingTime", "publicKey"]);
 
     let mined = null;
     try {
+        const D = new JSDOM(e.html).window.document;
+        // console.log(e.nature, e.selectorName);
+
         if(e.selectorName === 'ad')
             mined = mineAd(D, e)
-        if(e.selectorName === 'banner')
+        else if(e.selectorName === 'banner')
             mined = mineBanner(D, e)
+        else if(e.selectorName === 'overlay')
+            mined = mineOverlay(D, e)
+        else if(e.selectorName === 'toprightpict')
+            mined = mineTRP(D, e)
+        else if(e.selectorName === 'channel')
+            mined = mineChannel(D, e);
+        else if(e.selectorName === 'adbadge')
+            mined = mineAdBadge(D, e);
+        else
+            debug("Selector not handled %s", e.selectorName);
+
+        // console.log(mined);
     } catch(error) {
-        debugger;
+        debug("Error in content mining (%s %s): %s",
+            e.selectorName, e.metadataId, error.message);
         return null;
     }
 
     if(_.isNull(mined)) return null;
 
+    const retval = _.pick(e, ["nature", "selectorName",
+        "offsetTop", "offsetLeft", "href", "metadataId",
+        "id", "savingTime", "publicKey"]);
     return {
         ...retval,
-        videoId,
         ...mined,
     };
 }
@@ -175,7 +245,7 @@ async function fetchAndAnalyze(filter) {
     /* this is the begin of the label parser pipeline, labelFilter contains a shifting savingTime to take
      * the oldest before and the most recent later. It is meant to constantly monitoring 'labels' for the new one */
 
-    const leaves = await automo.getLastLeafs(filter, skipCount, htmlAmount);
+    const leaves = await automo.getLastLeaves(filter, skipCount, htmlAmount);
     if(!_.size(leaves.content)) {
 
         nodatacounter++;
@@ -220,17 +290,8 @@ async function fetchAndAnalyze(filter) {
     stats.lastamount = stats.currentamount;
     stats.currentamount = _.size(leaves.content);
 
-    const available = _.filter(leaves.content, function(e) {
-        return (!(!e.acquired || _.size(e.acquired)  === 0 ));
-    });
-    if(available.length != leaves.content.length)
-        debug("Stripped %d invalid payloads form DB! (processedCounter %d)",
-            (leaves.content.length - available.length),
-            processedCounter
-        );
-
-    /* this block is dedicated to filter the sources and find ADs */
-    const advertising = _.compact(_.map(available, processAds));
+    /* this block calls processAds with focus on actual Ads  */
+    const advertising = _.compact(_.map(leaves.content, processLeaf));
     if(_.size(advertising)) {
         const advretv = await automo.updateAdvertisingAndMetadata(advertising);
         debugads("%d processed, took %d secs = %d mins [ %d +ads ]",
@@ -239,14 +300,6 @@ async function fetchAndAnalyze(filter) {
             advretv
         );
     }
-
-    /* special debug thing
-    if(selector == 'over') {
-        x = _.flatten(_.map(leaves.content, function(e) { return e.acquired }))
-        debugger;
-        _.each(x, function(y) { console.log(y.html) })
-        debugger;
-    } */
 
     if(!_.size(advertising))
         debugres("From %d entries in DB, 0 advertising, still to process|choke: %O",
@@ -259,7 +312,7 @@ async function fetchAndAnalyze(filter) {
             _.countBy(leaves.content, 'selectorName')
         );
 
-    processedCounter += available.length;
+    processedCounter += leaves.content.length;
 }
 
 async function wrapperLoop() {

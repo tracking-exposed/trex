@@ -176,26 +176,39 @@ function sizeCheck(nodeHTML) {
 }
 
 const watchedPaths = {
-    banner: { selector: '.video-ads.ytp-ad-module', parents: 4, color: 'blue', screen: true },
-    ad: { selector: '.ytp-ad-player-overlay', parents: 4, color: 'blue', screen: true },
-    overlay: { selector: '.ytp-ad-player-overlay-instream-info', parents: 4, color: 'blue', screen: true },
-    toprightad: { selector: 'ytd-promoted-sparkles-web-renderer' },
-    toprightpict: { selector: '.ytd-action-companion-ad-renderer' },
-
+    banner: {
+        selector: '.video-ads.ytp-ad-module',
+        parents: 4, color: 'blue', screen: true },
+    ad: {
+        selector: '.ytp-ad-player-overlay',
+        parents: 4, color: 'darkblue', screen: true },
+    overlay: {
+        selector: '.ytp-ad-player-overlay-instream-info',
+        parents: 4, color: 'lightblue', screen: true },
+    toprightad: {
+        selector: 'ytd-promoted-sparkles-web-renderer',
+        parents: 3, color: 'aliceblue' },
+    toprightpict: {
+        selector: '.ytd-action-companion-ad-renderer',
+        parents: 2, color: 'azure' },
+    toprightcta: {
+        selector: '.sparkles-light-cta',
+        parents: 1, color: 'violetblue' },
+    toprightattr: {
+        selector: '[data-google-av-cxn]',
+        color: 'deeppink' },
+    adbadge: {
+        selector: '#ad-badge',
+        parents: 4, color: 'deepskyblue' },
+    // video-ad-overlay-slot
     channel: {
-        selector: '[href^="/channel/"].ytd-video-owner-renderer',
-        parents: 1,
-    },
+        selector: '[href^="/channel/"]',
+        color: 'yellow', parents: 1 },
     searchcard: { selector: '.ytd-search-refinement-card-renderer' },
     channellink: { selector: '.channel-link' },
-    label: { selector: '[aria-label]' }, 
-
-    /* for searches, + aria label */
-    sectionName: { selector: 'h2', color: "goldenrod" },
     searchAds: {
         selector: '.ytd-promoted-sparkles-text-search-renderer',
-        parents: 2
-    },
+        parents: 2 },
 };
 
 const getOffsetLeft = element => {
@@ -216,14 +229,6 @@ const getOffsetTop = element => {
   return offsetTop;
 }
 
-function onCaptured(imageUri) {
-  console.log(imageUri);
-}
-
-function onError(error) {
-  console.log(`Error: ${error}`);
-}
-
 function manageNodes(command, selectorName, selected) {
     // command has .selector .parents .preserveInvisible (this might be undefined)
 
@@ -232,14 +237,17 @@ function manageNodes(command, selectorName, selected) {
     let isVisible = (offsetTop + offsetLeft) > 0;
     if(command.preserveInvisible != true) {
         if(!isVisible) {
-            // console.log("killing an invisible", offsetLeft, offsetTop, selectorName, selected);
+            console.log("Ignoring invisible node:", selectorName);
             return;
         }
     }
 
     // this to highlight what is collected as fragments
-    if(config.ux)
+    if(config.ux) {
         selected.style.border = '1px solid ' + (command.color ? command.color : 'red');
+        selected.setAttribute(selectorName, true);
+        selected.setAttribute("yttrex", 1);
+    }
 
     // if escalation to parents, highlight with different color
     if(command.parents) {
@@ -253,15 +261,7 @@ function manageNodes(command, selectorName, selected) {
     }
 
     if(command.screen) {
-        console.log("Processing screen!");
-        try {
-            const c= bo.tab.captureVisibleTab();
-            c.then(onCaptured, onError);
-            const capturing = bo.tabs.Tab.captureVisibleTab();
-            capturing.then(onCaptured, onError);
-        } catch(error) {
-            console.warn("tab screencapture fail", error);
-        }
+        // no screencapture capability in the extension
     }
     const html = selected.outerHTML;
     const hash = html
@@ -271,7 +271,7 @@ function manageNodes(command, selectorName, selected) {
     if(leavesCache[hash]) {
         leavesCache[hash]++;
         return;
-        console.log("cache increment",
+        console.log("ignoring because of cache",
             hash, leavesCache[hash], selectorName);
     }
     // most of the time this doesn't happens: duplication are many!

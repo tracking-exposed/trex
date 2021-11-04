@@ -58,7 +58,7 @@ async function iowrapper(fname, req, res) {
 
   } catch(error) {
     res.status(502);
-    res.send("Software error" + error.message);
+    res.send("Software error: " + error.message);
     debug("Error in HTTP generic handler: %o", error);
   }
   res.end();
@@ -158,7 +158,7 @@ app.get('/api/v3/creator/me', async (req, res) => await iowrapper('creatorGet', 
 
 /* below, the new API for advertising */
 app.get('/api/v2/ad/video/:videoId', async (req, res) => await iowrapper('adsPerVideo', req, res));
-app.get('/api/v2/ad/channel/:videoId', async (req, res) => await iowrapper('adsPerChannel', req, res));
+app.get('/api/v2/ad/channel/:channelId', async (req, res) => await iowrapper('adsPerChannel', req, res));
 
 /* impact */
 app.get('/api/v2/statistics/:name/:unit/:amount', async (req, res) => await iowrapper('getStatistics', req, res))
