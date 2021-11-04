@@ -1,12 +1,19 @@
-import { CardActions, Grid } from '@material-ui/core';
-import Card from '@material-ui/core/Card';
-import CardContent from '@material-ui/core/CardContent';
-import CardMedia from '@material-ui/core/CardMedia';
-import Typography from '@material-ui/core/Typography';
 import React from 'react';
+
+import {
+  Card,
+  CardMedia,
+  Grid,
+  Typography,
+} from '@material-ui/core';
+
+import { makeStyles } from '@material-ui/styles';
+
 import { useTranslation } from 'react-i18next';
-import { getYTThumbnailById } from '../../utils/yt.utils';
 import { useDrag } from 'react-dnd';
+
+import { getYTThumbnailById } from '../../utils/yt.utils';
+import { YCAITheme } from '../../theme';
 
 interface VideoCardProps {
   videoId: string;
@@ -14,12 +21,52 @@ interface VideoCardProps {
   onClick?: (id: string) => void;
 }
 
+const useStyles = makeStyles<YCAITheme>(theme => ({
+  videoCard: {
+    height: '100%',
+    '& a, a:visited, a:hover': {
+      color: theme.palette.common.black,
+      textDecoration: 'none',
+    },
+  },
+  cardGrid: {
+    height: '100%',
+    '& div img': {
+      height: '120px',
+      paddingTop: '2%'
+    },
+    '& > div:not(:first-child) > *:first-child': {
+      marginLeft: theme.spacing(1),
+    }
+  },
+  titleHeading: {
+    fontSize: '1em',
+    fontWeight: 'bold',
+  },
+  cardActionsGrid: {
+    justifyContent: 'space-between',
+    alignItems: 'center-end',
+    '& button': {
+      background: 'none',
+      border: 'none',
+      color: theme.palette.primary.dark,
+      padding: 0,
+      margin: 0,
+      '&:hover': {
+        cursor: 'pointer',
+      }
+    },
+  }
+}));
+
 export const VideoCard: React.FC<VideoCardProps> = ({
   videoId,
   title,
   onClick,
 }) => {
   const { t } = useTranslation();
+  const classes = useStyles();
+
   const [, drag] = useDrag(() => ({
     type: 'Card',
     item: { videoId, title },
@@ -37,53 +84,55 @@ export const VideoCard: React.FC<VideoCardProps> = ({
   return (
     <Card
       ref={drag}
-      style={{
-        textAlign: 'left',
-        margin: '6px',
-      }}
-      onClick={() => (onClick !== undefined ? onClick(videoId) : undefined)}
+      className={classes.videoCard}
     >
-      <Grid container>
-        <Grid item md={4}>
+      <Grid container className={classes.cardGrid}>
+        <Grid item xs={12}>
           <CardMedia
             component="img"
-            style={{ height: '120px', paddingTop: '2%' }}
             src={getYTThumbnailById(videoId)}
             title={title}
           />
         </Grid>
-        <Grid item md={8}>
-          <CardContent>
-            <Typography gutterBottom variant="h5" component="h4">
-              <a
-                href={'https://youtu.be/' + videoId}
-                target="_blank"
-                rel="noreferrer"
-              >
-                {title}
-              </a>
-            </Typography>
-          </CardContent>
+        <Grid item xs={12}>
+          <Typography gutterBottom component="h4" className={classes.titleHeading}>
+            <a
+              href={'https://youtu.be/' + videoId}
+              target="_blank"
+              rel="noreferrer"
+            >
+              {title}
+            </a>
+          </Typography>
+        </Grid>
+        <Grid item xs={12} container spacing={1} className={classes.cardActionsGrid}>
+          <Grid item>
+            <a
+              target="_blank"
+              rel="noreferrer"
+              href={'https://youtube.tracking.exposed/compare/#' + videoId}
+            >
+              {t('actions:compare')}
+            </a>
+          </Grid>
+          <Grid item>
+            <a
+              target="_blank"
+              rel="noreferrer"
+              href={'https://youtube.tracking.exposed/related/#' + videoId}
+            >
+              {t('actions:related')}
+            </a>
+          </Grid>
+          <Grid item>
+            <button
+              onClick={() => onClick?.(videoId)}
+            >
+              {t('actions:add_recommendations')}
+            </button>
+          </Grid>
         </Grid>
       </Grid>
-
-      <CardActions>
-        <a
-          target="_blank"
-          rel="noreferrer"
-          href={'https://youtube.tracking.exposed/compare/#' + videoId}
-        >
-          {t('actions:compare')}
-        </a>{' '}
-        —{' '}
-        <a
-          target="_blank"
-          rel="noreferrer"
-          href={'https://youtube.tracking.exposed/related/#' + videoId}
-        >
-          {t('actions:related')}
-        </a>
-      </CardActions>
     </Card>
   );
 };

@@ -48,7 +48,7 @@ export const YTVideoPage: React.FC = () => {
   const classes = useStyles();
 
   React.useEffect(() => {
-    if (ytItemsRendererEl !== null) {
+    if (typeof ytItemsRendererEl === 'object' && ytItemsRendererEl !== null) {
       // tab n2 = youtube, tab1 = community
       if (currentTab === 2) {
         ytItemsRendererEl.className = ytItemsRendererElClasses;

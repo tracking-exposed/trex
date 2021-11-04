@@ -9,6 +9,7 @@ const resources: CustomTypeOptions['resources'] = {
   actions: {
     popup_bootstrap: 'Bootstrap',
     add: 'Add',
+    add_recommendations: 'Add recommendations',
     link_channel: 'Link channel',
     unlink_channel: 'Unlink channel',
     delete: 'Delete',
@@ -23,6 +24,7 @@ const resources: CustomTypeOptions['resources'] = {
     delete_keypair: 'Delete keypair',
     download_keypair: 'Download keypair',
     pull_creator_videos: 'Import your videos',
+    update_creator_videos_list: 'Update your list of videos',
     copy_verification_code: 'Copy code'
   },
   routes: {
@@ -50,10 +52,11 @@ const resources: CustomTypeOptions['resources'] = {
     title: 'Youtube',
   },
   recommendations: {
-    title: 'Recommendations',
+    added_to_video_title: 'Recommendations added',
+    by_creator_title: 'Author\'s recommendations',
     total: 'Total recommendations',
     url: 'Recommendation url',
-    yours: 'Yours recommendations',
+    yours: 'Your recommendations',
     no_items: 'No recommendations found',
     add_to_video: 'Add a recommendation to this video',
     url_placeholder: 'https://youtube.com/watch?v=xxxxx',
@@ -94,12 +97,12 @@ const resources: CustomTypeOptions['resources'] = {
     keypair_passphrase: 'Key pair passphrase',
     keypair_private_key: 'Key pair secret key',
     keypair_public_key: 'Key pair public key',
-    keypair_title: 'Keypair for indipendent contribution'
+    keypair_title: 'Keypair for independent contribution'
   },
   ytVideoPage: {
-    firstTab: 'Creator Raccomendations',
-    secondTab: 'Community Raccomendations',
-    thirdTab: 'Youtube Raccomenations',
+    firstTab: 'Creator Recommendations',
+    secondTab: 'Community Recommendations',
+    thirdTab: 'Youtube Recommendations',
   },
 };
 

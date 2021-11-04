@@ -2,11 +2,12 @@ import { Button, CardActions } from '@material-ui/core';
 import Card from '@material-ui/core/Card';
 import CardActionArea from '@material-ui/core/CardActionArea';
 import CardContent from '@material-ui/core/CardContent';
-import CardMedia from '@material-ui/core/CardMedia';
 import Typography from '@material-ui/core/Typography';
 import { Recommendation } from '@backend/models/Recommendation';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
+
+import Image from './Image';
 
 interface RecommendationCardProps {
   data: Recommendation;
@@ -60,8 +61,7 @@ export const RecommendationCard: React.FC<RecommendationCardProps> = ({
       }}
     >
       {data.image !== undefined ? (
-        <CardMedia
-          component="img"
+        <Image
           style={{ height: '120px', paddingTop: '2%' }}
           src={data.image}
           title={data.title}
@@ -79,7 +79,9 @@ export const RecommendationCard: React.FC<RecommendationCardProps> = ({
           {data.description}
         </Typography>
       </CardContent>
-      <CardActionArea>{addButton ?? deleteButton}</CardActionArea>
+      <CardActionArea component="div">
+        {addButton ?? deleteButton}
+      </CardActionArea>
     </Card>
   );
 };

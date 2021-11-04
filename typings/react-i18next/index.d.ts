@@ -11,6 +11,7 @@ declare module 'react-i18next' {
       actions: {
         popup_bootstrap: string;
         add: string;
+        add_recommendations: string;
         delete: string;
         clear: string;
         editThisVideo: string;
@@ -25,6 +26,7 @@ declare module 'react-i18next' {
         delete_keypair: string;
         download_keypair: string;
         pull_creator_videos: string;
+        update_creator_videos_list: string;
         copy_verification_code: string;
       };
       account: {
@@ -45,7 +47,8 @@ declare module 'react-i18next' {
         title: string;
       };
       recommendations: {
-        title: string;
+        added_to_video_title: string;
+        by_creator_title: string;
         total: string;
         url: string;
         yours: string;
