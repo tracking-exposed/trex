@@ -3,13 +3,39 @@
     [
       "@semantic-release/commit-analyzer",
       {
-        "preset": "conventionalcommits"
+        "preset": "conventionalcommits",
+        "presetConfig": {
+          "types": [
+            {
+              "type": "feat",
+              "section": "Features"
+            },
+            {
+              "type": "fix",
+              "section": "Bug Fixes"
+            }
+          ]
+        }
       }
     ],
     [
       "@semantic-release/release-notes-generator",
       {
-        "preset": "conventionalcommits"
+        "preset": "conventionalcommits",
+        "presetConfig": {
+          "types": [
+            {
+              "type": "feat",
+              "section": "Features",
+              "release": "major"
+            },
+            {
+              "type": "fix",
+              "section": "Bug Fixes",
+              "release": "minor"
+            }
+          ]
+        }
       }
     ],
     [
@@ -28,6 +54,7 @@
       "@semantic-release/git",
       {
         "assets": [
+          "package.json",
           "CHANGELOG.md"
         ],
         "message": "chore(release): ${nextRelease.version} CHANGELOG [skip ci]"
