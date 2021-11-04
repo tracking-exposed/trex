@@ -200,8 +200,9 @@ const watchedPaths = {
     adbadge: {
         selector: '#ad-badge',
         parents: 4, color: 'deepskyblue' },
+    // video-ad-overlay-slot
     channel: {
-        selector: '[href^="/channel/"].ytd-video-owner-renderer',
+        selector: '[href^="/channel/"]',
         color: 'yellow', parents: 1 },
     searchcard: { selector: '.ytd-search-refinement-card-renderer' },
     channellink: { selector: '.channel-link' },
@@ -236,7 +237,7 @@ function manageNodes(command, selectorName, selected) {
     let isVisible = (offsetTop + offsetLeft) > 0;
     if(command.preserveInvisible != true) {
         if(!isVisible) {
-            // console.log("killing an invisible", offsetLeft, offsetTop, selectorName, selected);
+            console.log("Ignoring invisible node:", selectorName);
             return;
         }
     }
@@ -270,7 +271,7 @@ function manageNodes(command, selectorName, selected) {
     if(leavesCache[hash]) {
         leavesCache[hash]++;
         return;
-        console.log("cache increment",
+        console.log("ignoring because of cache",
             hash, leavesCache[hash], selectorName);
     }
     // most of the time this doesn't happens: duplication are many!

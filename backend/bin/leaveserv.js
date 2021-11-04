@@ -120,6 +120,21 @@ function mineAdBadge(D, e) {
         return null;
 }
 
+function mineChannel(D, e) {
+    const a = D.querySelector('a');
+    const channelLink = a.getAttribute('href');
+    const ct = D.querySelector("#text");
+    const channelName = ct ?
+        ct.textContent.trim() : a.textContent.trim();
+
+    if(channelName && (channelLink.split('/')[1] == 'channel')) {
+        return {
+            channelName,
+            channelId: channelLink.split('/')[2]
+        };
+    }
+}
+
 function mineBanner(D, e) {
 
     /* exclude the 'Ads in 2' label, among others */
@@ -202,7 +217,7 @@ function processLeaf(e) {
         else if(e.selectorName === 'toprightpict')
             mined = mineTRP(D, e)
         else if(e.selectorName === 'channel')
-            return null;
+            mined = mineChannel(D, e);
         else if(e.selectorName === 'adbadge')
             mined = mineAdBadge(D, e);
         else

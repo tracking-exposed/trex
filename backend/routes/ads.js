@@ -34,25 +34,20 @@ async function perVideo(req) {
 }
 
 async function perChannel(req) {
-    const videoId = params.getVideoId(req, 'videoId');
+    const channelId = params.getVideoId(req, 'channelId');
     const mongoc = await mongo3.clientConnect({concurrency: 1});
 
-    const sourceVideo = await mongo3.readOne(mongoc,
-        nconf.get('schema').metadata, {videoId});
+    const chanmat = await mongo3.readLimit(mongoc,
+        nconf.get('schema').ads, { channelId }, {}, 400, 0);
 
-    if(!sourceVideo || !sourceVideo.id)
-        throw new Error("Video not found, invalid videoId");
+    debug("look ads by Channel (%s) found %d matches",
+        channelId, chanmat.length);
 
-    // note a difference between this and 
-    // automo.getMwtadataFromAuthor is the usage of
-    // authorName vs authorSource
-    const ads = await mongo3.aggregate(mongoc,
-        nconf.get('schema').metadata, [
-            { "$match": { "authorName": sourceVideo.authorName } },
-            { "$project": { "id": 1 }},
-            { "$lookup": { from: "ads", localField: "id", foreignField: "metadataId", as: "ad" }}
-        ]
-    );
+    const metadatas = _.uniq(_.map(chanmat, 'metadataId'));
+    const ads = await mongo3.readLimit(mongoc,
+        nconf.get('schema').ads, { metadataId: { "$in": metadatas }}, {}, 400, 0);
+    debug("Total amount of ads sampled %d", ads.length);
+    await mongoc.close();
     return { text: "<html><body><pre>" + JSON.stringify(ads, null, 2) };
 }
 

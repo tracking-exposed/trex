@@ -147,10 +147,10 @@ async function processEvents2(req) {
     if(leaves.length) {
         const check = await automo.write(nconf.get('schema').leaves, leaves);
         if(check && check.error) {
-            debug("🍃Error in saving %d %j", leaves.length, check);
+            debug("Error in saving %d leaves %j", leaves.length, check);
             return { json: {status: "error", info: check.info }};
         }
-        debug("🍃Saved %d leafs selectors: %j", leaves.length, _.countBy(leaves, 'selectorName'));
+        debug("(L) Saved %d leaves selectors: %j", leaves.length, _.countBy(leaves, 'selectorName'));
     }
 
     /* this is what returns to the web-extension */
