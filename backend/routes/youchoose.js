@@ -36,19 +36,12 @@ async function byProfile(req) {
   const token = decodedReq.result.headers['x-authorization'];
   const recommendations = await ycai.fetchRecommendationsByProfile(token);
 
-  // the function below should not be that necessary but ATM it is.
-  const cleaned = _.compact(_.map(recommendations, function(o) {
-    if(!o.title) return null;
-    if(!o.description) o.description = undefined;
-    if(!o.image) o.image = undefined;
-    return _.pick(o, ['title', 'description', 'urlId', 'image', 'url']);
-  }));
   debug(
     'creator is fetching their %d recommendations (cleaned %d)',
-    recommendations.length, cleaned.length
+    recommendations.length, recommendations.length
   );
   const valid = endpoints.decodeResponse(
-    v3.Endpoints.Creator.CreatorRecommendations, cleaned);
+    v3.Endpoints.Creator.CreatorRecommendations, recommendations);
 
   if (valid.type === 'error') {
     debug('Invalid generated output for creator Recommendations %O', valid);
@@ -95,20 +88,13 @@ async function ogpProxy(req) {
       }
     }
   }
-  const savedInfo = await ycai.saveRecommendationOGP(ogresult, creator);
-  if (!savedInfo.title) {
-    debug('Missing one or more mandatory field: %j',
-      url, savedInfo);
-    return {
-      json: {
-        error: true,
-        message: 'missing mandatory field',
-        info: savedInfo,
-      },
-    };
+  const review = await ycai.saveRecommendationOGP(ogresult, creator);
+  if (review.error) {
+    debug('We got an error in OGP (%s) %s', url, review.message);
+    return { json: review };
   }
-  debug('Fetched correctly %s', url);
-  return { json: savedInfo };
+  debug('Fetched and saved correctly %s', url);
+  return { json: review };
 }
 
 async function videoByCreator(req) {
