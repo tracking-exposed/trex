@@ -46,6 +46,9 @@ async function fetchRecommendations(videoId, kind) {
 
     result = _.map(result, function (e) {
       _.unset(e, "_id");
+      if (e.description === null) {
+        delete e.description;
+      }
       return e;
     });
     result = _.sortBy(result, [
