@@ -32,11 +32,11 @@ async function submitRecommendations(accessToken, urls) {
             }
         });
         const answer = await response.json();
-        if(_.keys(answer).length != 9) {
+        if(answer.error) {
             console.log("Error in", url);
             console.log("<E>", JSON.stringify(answer));
         } else {
-            debug("url>_ %s %j", url, answer);
+            debug("[OK] %s %j", url, answer);
             urlIds.push(answer.urlId);
         }
     }
@@ -54,7 +54,12 @@ async function submitRecommendations(accessToken, urls) {
         }
     });
     const answer = await response.json();
-    debug("Successfully expanded recommendations: %o: testing now", answer);
+    if(answer.error) {
+        debug("Error: %o:", answer);
+	process.exit(1);
+    }
+    else
+        debug("Successfully expanded recommendations: %o: testing now", answer);
 
     const testAPIurl = backend + "/api/v3/creator/recommendations";
     const check = await fetch(testAPIurl, {
@@ -79,6 +84,8 @@ try {
         return console.log("--urls https://url.position.1,https://url.position.2");
     if(_.endsWith(backend, '/'))
         return console.log("--backend should not end with a '/' ");
+    if(!targetVideoId)
+	return console.log("--targetVideoId is mandatory");
 
     debug("Submitting recommendations to server %s", backend);
     submitRecommendations(accessToken, urls);
