@@ -272,7 +272,9 @@ module.exports = {
       ],
     });
 
-    if (!isProduction) {
+    if (isProduction) {
+      config.devtool = 'source-map';
+    } else {
       config.devtool = 'inline-source-map';
     }
 
