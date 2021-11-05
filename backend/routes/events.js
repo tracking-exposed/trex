@@ -104,7 +104,6 @@ async function processEvents2(req) {
             savingTime: new Date(),
             html: body.element,
             counters: [body.incremental, i],
-            packet: i,
             nature,
         }
         return html;
