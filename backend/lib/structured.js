@@ -1,21 +1,14 @@
 /* structured.js comes from automo, "automongo".
- * it produces structured data in the sense that a collection of object is nested over 
- * pagin, maximum count, when have been executed, etc.
+
+ * It produces structured data, in the sense that a collection of object is nested after:
+ * paging info, maximum objects available, info on when have been executed, etc.
  *
- * probably some format to handle this exist, I'm not aware of, that's why
- * we have this library.
+ * (probably a standard format to handle this exist;i'm not aware of, that's why this lib)
  */
 const _ = require('lodash');
 const nconf = require('nconf');
 const debug = require('debug')('lib:structured');
-const moment = require('moment');
-const chardet = require('chardet')
 
-/* these two only for the experiment chiaroscuro thing */
-const url = require('url');
-const qustr = require('querystring')
-
-const utils = require('../lib/utils');
 const mongo3 = require('./mongo3');
 
 let mongoc = null;
@@ -39,8 +32,6 @@ async function getVideo(filter) {
 
 async function getMetadata(filter, options) {
     const mongoc = await getMongoc();
-
-    debug("getobbyfi %o", filter);
     const videos = await mongo3.readLimit(mongoc,
         nconf.get('schema').metadata, filter, 
         { savingTime: -1 }, options.amount, options.skip);
@@ -61,7 +52,7 @@ async function getChannel(channelId) {
     const filter = { channelId };
     const creator = await mongo3.readOne(mongoc,
         nconf.get('schema').creators, filter);
-    debug("creator %o", creator);
+    // debug("creator %o", creator);
     return creator;
 }
 
