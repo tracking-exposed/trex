@@ -21,11 +21,17 @@ const resources: CustomTypeOptions['resources'] = {
     compare: 'Compare',
     related: 'Related',
     verify_channel: 'Verify channel',
+    generate_keypair: 'Generate keypair',
+    refresh_keypair: 'Refresh keypair',
     delete_keypair: 'Delete keypair',
     download_keypair: 'Download keypair',
     pull_creator_videos: 'Import your videos',
     update_creator_videos_list: 'Update your list of videos',
-    copy_verification_code: 'Copy code'
+    copy_verification_code: 'Copy code',
+    unlink_profile: 'Unlink profile',
+    edit_access_token: 'Edit Access Token',
+    download_access_token: 'Download Access Token',
+    download: 'Download'
   },
   routes: {
     studio: 'Studio',
@@ -97,7 +103,9 @@ const resources: CustomTypeOptions['resources'] = {
     keypair_passphrase: 'Key pair passphrase',
     keypair_private_key: 'Key pair secret key',
     keypair_public_key: 'Key pair public key',
-    keypair_title: 'Keypair for independent contribution'
+    keypair_title: 'Keypair for independent contribution',
+    access_token_title: 'You Access Token',
+    access_token: 'Access Token'
   },
   ytVideoPage: {
     firstTab: 'Creator Recommendations',

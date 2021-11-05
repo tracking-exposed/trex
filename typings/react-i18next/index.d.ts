@@ -23,11 +23,17 @@ declare module 'react-i18next' {
         link_channel: string;
         unlink_channel: string;
         verify_channel: string;
+        generate_keypair: string;
+        refresh_keypair: string;
         delete_keypair: string;
         download_keypair: string;
         pull_creator_videos: string;
         update_creator_videos_list: string;
         copy_verification_code: string;
+        unlink_profile: string;
+        edit_access_token: string;
+        download_access_token: string;
+        download: string;
       };
       account: {
         channel: string;
@@ -88,6 +94,8 @@ declare module 'react-i18next' {
         keypair_passphrase: string;
         keypair_public_key: string;
         keypair_private_key: string;
+        access_token: string;
+        access_token_title: string;
       };
       videos: {
         no_results: string;

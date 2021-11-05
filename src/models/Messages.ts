@@ -114,7 +114,6 @@ export const Messages = MessagesAPI({
     payload: t.void,
     response: t.union([ContentCreator, t.null]),
   },
-
   [UpdateContentCreator.value]: {
     payload: t.union([ContentCreator, t.null]),
     response: t.union([ContentCreator, t.null]),
