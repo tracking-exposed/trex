@@ -3,6 +3,7 @@ const _ = require('lodash');
 const moment = require('moment');
 const debug = require('debug')('yttrex:parserv');
 const debuge = require('debug')('yttrex:parserv:error');
+const debugel = require('debug')('legacy:parserv:error');
 const overflowReport = require('debug')('yttrex:OVERFLOW');
 const nconf = require('nconf');
 const JSDOM = require('jsdom').JSDOM;
@@ -141,6 +142,9 @@ function processEachHTML(htmlentry) {
             htmlentry.nature, htmlentry.type, htmlentry.selector);
         return null;
     }
+    // legacy version here saved a list, it was part of 'labels' (now renamed as 'leaves')
+    if(typeof htmlentry.html !== 'string')
+        return null;
 
     const envelop = {
         impression: _.omit(htmlentry, ['html', '_id']),
@@ -212,15 +216,15 @@ function legacyParserDispatcher(envelop, curi, htmlentry) {
     // this sets of functions only support home and video, non-video
     // are rejected as not supported. Search results were implemented in
     // what now have been renameds as leaveserv.js and now supported here
-    if(!_.size(curi) && htmlentry.html.length > 500000 ) {
+    if(curi.length === 1 && htmlentry.html.length > 200000 ) {
         /* without clean URI, it is an youtube home */
         return homeparser.process(envelop);
     }
-    else if(htmlentry.selector == "ytd-app") {
+    else if(htmlentry.selector == "ytd-app" && _.startsWith(curi, "/watch") ) {
         /* else, it is a full video content */
         return videoparser.process(envelop);
     } else {
-        debuge("Selector|Condition not supported %s", htmlentry.selector);
+        debugel("Condition not supported: %s", curi);
         return null;
     }
 }

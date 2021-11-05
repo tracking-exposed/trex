@@ -251,11 +251,13 @@ function processVideo(D, blang, clientTime, urlinfo) {
         throw new Error("unable to get video title");
     }
 
+    /*
     const check = D
         .querySelectorAll('ytd-channel-name.ytd-video-owner-renderer')
-        .length // should be 2
+        .length;
     if(check != 2)
         debuge("unexpected condition in channel/author mining, should be 2, is %d", check);
+    */
 
     let authorName, authorSource = null;
     const authorinfo = mineAuthorInfo(D);
