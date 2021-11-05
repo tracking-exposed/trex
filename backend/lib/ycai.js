@@ -138,13 +138,14 @@ async function saveRecommendationOGP(ogblob, creator) {
 
   const domain = (new URL(ogblob.url)).host;
   const domaintype = attributeFromDomain(domain);
-  if(domaintype)
+  if(domaintype) {
     debug("from domain %s type attributed %s", domain, domaintype);
+    keep.domaintype = domaintype;
+  }
 
-  keep.domaintype = domaintype;
   keep.channelId = creator.channelId;
   keep.when = new Date();
-  keep.urlId = utils.hash({ url: keep.url });
+  keep.urlId = utils.hash({ url: keep.url, channelId: creator.channelId });
 
   const mongoc = await mongo3.clientConnect({ concurrency: 1 });
   const res = await mongo3.writeOne(
@@ -163,12 +164,12 @@ async function saveRecommendationOGP(ogblob, creator) {
 }
 
 async function getRecommendationByURL(url, creator) {
-  const urlId = utils.hash({ url });
+  const urlId = utils.hash({ url, channelId: creator.channelId });
   const mongoc = await mongo3.clientConnect({ concurrency: 1 });
   const res = await mongo3.readOne(
     mongoc,
     nconf.get("schema").recommendations,
-    { urlId, channelId: creator.channelId },
+    { urlId },
   );
   await mongoc.close();
   return res;
