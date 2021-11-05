@@ -176,6 +176,12 @@
         "variables": [
             {   "name": "total",    "selector": { }                                     }
         ]
-    },
-    ]
+    }, {
+        "name": "ytvids",
+        "column": "ytvids",
+        "timevar": "when",
+        "variables": [
+            {   "name": "total",    "selector": { }                                     }
+        ]
+    }]
 }
