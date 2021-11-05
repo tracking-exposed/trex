@@ -131,17 +131,11 @@
             {
                 "name": "videos",
                 "selector": { "type": "video" }
+            },
+            {
+                "name": "searches",
+                "selector": { "type": "search" }
             }
-        ]
-    }, {
-        "name": "searches",
-        "column": "searches",
-        "timevar": "savingTime",
-        "variables": [
-            {   "name": "total",     "selector": { }                                      },
-            {   "name": "24hours",   "selector": { "relativeSeconds": { "$lt": 86400  } } },
-            {   "name": "7days",     "selector": { "relativeSeconds": { "$lt": 604800 } } },
-            {   "name": "1month",    "selector": { "relativeSeconds": { "$lt": 2592000} } }
         ]
     }, {
         "name": "active",
@@ -154,23 +148,40 @@
             }
         ]
     }, {
-        "name": "labels",
-        "column": "labels",
+        "name": "leaves",
+        "column": "leaves",
         "timevar": "savingTime",
         "variables": [
-            {   "name": "total",   "selector": { }                                   },
-            {   "name": "labels",  "selector": { "selectorName":"label"}             }
+            {   "name": "total",    "selector": { }                                     },
+            {   "name": "selector", "selector": { "selectorName":"selectorName"}        }
         ]
     }, {
-        "name": "deeper",
-        "column": "metadata",
+        "name": "creators",
+        "column": "creators",
+        "timevar": "registeredOn",
+        "variables": [
+            {   "name": "total",    "selector": { }                                     }
+        ]
+    }, {
+        "name": "ads",
+        "column": "ads",
         "timevar": "savingTime",
         "variables": [
-            {   "name": "foryou",  "innercount": [ "related", {"related.foryou": true} ]      },
-            {   "name": "verified",  "innercount": [ "related", {"related.verified": true} ]  },
-            {   "name": "total",  "innercount": [ "related", {} ]                             },
-            {   "name": "isLive",  "innercount": [ "related", {"related.isLive": true} ]      }
+            {   "name": "total",    "selector": { }                                     }
         ]
-    }
-    ]
+    }, {
+        "name": "recommendations",
+        "column": "recommendations",
+        "timevar": "when",
+        "variables": [
+            {   "name": "total",    "selector": { }                                     }
+        ]
+    }, {
+        "name": "ytvids",
+        "column": "ytvids",
+        "timevar": "when",
+        "variables": [
+            {   "name": "total",    "selector": { }                                     }
+        ]
+    }]
 }
