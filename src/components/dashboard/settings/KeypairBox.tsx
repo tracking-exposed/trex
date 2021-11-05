@@ -8,6 +8,7 @@ import {
   Input,
   InputAdornment,
   InputLabel,
+  makeStyles,
   Typography,
 } from '@material-ui/core';
 import { Keypair, Settings } from '../../../models/Settings';
@@ -22,6 +23,15 @@ interface KeypairBoxProps {
   settings: Settings;
 }
 
+const useStyles = makeStyles(() => ({
+  root: {
+    marginBottom: 100,
+  },
+  formControl: {
+    marginBottom: 16,
+  },
+}));
+
 export const KeypairBox: React.FC<KeypairBoxProps> = ({
   keypair,
   settings,
@@ -29,11 +39,12 @@ export const KeypairBox: React.FC<KeypairBoxProps> = ({
   const { t } = useTranslation();
   const [publicKeyVisible, setPublicKeyVisible] = React.useState(false);
   const [privateKeyVisible, setPrivateKeyVisible] = React.useState(false);
+  const classes = useStyles();
   return (
-    <Box style={{ width: '100%' }}>
+    <Box className={classes.root} style={{ width: '100%' }}>
       <Typography variant="h4">{t('settings:keypair_title')}</Typography>
       <FormGroup>
-        <FormControl>
+        <FormControl className={classes.formControl}>
           <InputLabel htmlFor="keypair-private-key">
             {t('settings:keypair_public_key')}
           </InputLabel>
@@ -62,7 +73,7 @@ export const KeypairBox: React.FC<KeypairBoxProps> = ({
             }
           />
         </FormControl>
-        <FormControl>
+        <FormControl className={classes.formControl}>
           <InputLabel htmlFor="keypair-private-key">
             {t('settings:keypair_private_key')}
           </InputLabel>

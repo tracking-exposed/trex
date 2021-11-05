@@ -5,6 +5,7 @@ import * as TE from 'fp-ts/lib/TaskEither';
 import { toBrowserError } from '../providers/browser.provider';
 import { config } from '../config';
 import {
+  DeleteKeypair,
   ErrorOccured,
   GenerateKeypair,
   GetAuth,
@@ -68,6 +69,8 @@ const getMessageHandler = <M extends Messages[keyof Messages]>(
     // keypair
     case GenerateKeypair.value:
       return settings.generatePublicKeypair('');
+    case DeleteKeypair.value:
+      return settings.deletePublicKeypair();
     // gets
     case GetSettings.value:
     case GetKeypair.value:
