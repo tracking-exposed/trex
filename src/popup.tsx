@@ -5,6 +5,8 @@ import ReactDOM from 'react-dom';
 import { YCAITheme } from './theme';
 import { Popup } from './components/popup/Popup';
 
+import './resources/global.css';
+
 const Index: React.FC = () => {
   return (
     <ThemeProvider theme={YCAITheme}>
