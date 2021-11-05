@@ -1,5 +1,4 @@
 #!/usr/bin/env node
-const { indexOf } = require('food-words');
 const _ = require('lodash');
 const moment = require('moment');
 const debug = require('debug')('bin:count-o-clock');

@@ -64,10 +64,6 @@ async function iowrapper(fname, req, res) {
   res.end();
 }
 
-/* This function wraps all the API call, checking the verionNumber
- * managing error in 4XX/5XX messages and making all these asyncronous
- * I/O with DB, inside this Bluebird */
-
 /* everything begin here, welcome */
 server.listen(nconf.get('port'), nconf.get('interface'));
 console.log(" Listening on http://" + nconf.get('interface') + ":" + nconf.get('port'));
