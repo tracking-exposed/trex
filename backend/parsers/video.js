@@ -254,7 +254,8 @@ function processVideo(D, blang, clientTime, urlinfo) {
     const check = D
         .querySelectorAll('ytd-channel-name.ytd-video-owner-renderer')
         .length // should be 2
-    if(check != 2) debuge("unexpected thing in channel/author mining");
+    if(check != 2)
+        debuge("unexpected condition in channel/author mining, should be 2, is %d", check);
 
     let authorName, authorSource = null;
     const authorinfo = mineAuthorInfo(D);
@@ -326,23 +327,17 @@ function processVideo(D, blang, clientTime, urlinfo) {
 
 function process(envelop) {
 
-    const urlinfo = url.parse(envelop.impression.href);
-    if(urlinfo.pathname != '/watch') {
-        debug("SKIP 'non-video' page [%s]", envelop.impression.href);
-        return null;
-    }
-
     let extracted = null;
     try {
         extracted = processVideo(
             envelop.jsdom,
             envelop.impression.blang,
             envelop.impression.clientTime,
-            urlinfo,
+            url.parse(envelop.impression.href),
         );
     } catch(e) {
-        debuge("Error in video.process %s (%d): %s\n\t-> %s",
-            envelop.impression.href, envelop.impression.size, e.message, e.stack.split('\n')[1]);
+        debuge("Error in video.process %s (%j): %s\n\t-> %s",
+            envelop.impression.href, envelop.impression.nature, e.message, e.stack.split('\n')[1]);
         return null;
     }
 

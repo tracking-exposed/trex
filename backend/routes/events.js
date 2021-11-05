@@ -105,7 +105,6 @@ async function processEvents2(req) {
             html: body.element,
             counters: [body.incremental, i],
             packet: i,
-            type: body.type,
             nature,
         }
         return html;

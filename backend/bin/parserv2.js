@@ -45,14 +45,6 @@ if(backInTime != BACKINTIMEDEFAULT) {
     debug(`Considering ${backInTime} minutes (${humanized}), as override the standard ${BACKINTIMEDEFAULT} minutes ${lastExecution}`);
 }
 
-const advSelectors = {
-    ".ytp-title-channel": videoparser.adTitleChannel,
-    ".video-ads.ytp-ad-module": videoparser.videoAd,
-    ".ytp-ad-player-overlay-instream-info": videoparser.overlay,
-    ".ytp-chrome-top": videoparser.videoTitleTop,
-    ".ytp-title-text": videoparser.videoTitleTop,
-};
-
 async function newLoop(htmlFilter) {
     /* this is the begin of the parsing core pipeline.
      * gets htmls from the db, if --repeat 1 then previously-analyzed-HTMLS would be
@@ -142,9 +134,11 @@ async function newLoop(htmlFilter) {
 
 function processEachHTML(htmlentry) {
     /* main function invoked by the main loop */
-    if(!htmlentry || !htmlentry.html || typeof htmlentry.html !== "string") {
-        debug("Not usable evidence id %s (incremental %d pkt %d)",
-            htmlentry.id, htmlentry.incremental, htmlentry.packet);
+    if(!htmlentry)
+        return null;
+    if(!htmlentry.html) {
+        debug("Missing HTML in id %s {%j|%s|%s}", htmlentry.id,
+            htmlentry.nature, htmlentry.type, htmlentry.selector);
         return null;
     }
 
@@ -161,7 +155,7 @@ function processEachHTML(htmlentry) {
             _.round(moment.duration( moment() - moment(htmlentry.savingTime)).asMinutes(), 0),
             htmlentry.metadataId,
             htmlentry.href.replace(/https:\/\//, ''), htmlentry.html.length,
-            htmlentry.selector ? ("S " + htmlentry.selector) : ("T " + htmlentry.type)
+            htmlentry.selector ? ("S " + htmlentry.selector) : ("T " + htmlentry.nature.type)
         );
         processedCounter++;
 
@@ -172,7 +166,7 @@ function processEachHTML(htmlentry) {
         if(htmlentry.selector)
             metadata = legacyParserDispatcher(envelop, curi, htmlentry);
         /* ✔️ MODERN, selectors aren't discussed here ✔️ */
-        else if(htmlentry.type)
+        else if(htmlentry.nature && htmlentry.nature.type)
             metadata = parserDispatcher(envelop, curi, htmlentry);
         else
             debug("Format and versioning bug! %s", htmlentry.metadataId);
@@ -232,18 +226,18 @@ function legacyParserDispatcher(envelop, curi, htmlentry) {
 }
 
 function parserDispatcher(envelop, curi, htmlentry) {
-    if(htmlentry.type === 'home')
+    if(htmlentry.nature.type === 'home')
         return homeparser.process(envelop);
-    else if(htmlentry.type === 'video')
+    else if(htmlentry.nature.type === 'video')
         return videoparser.process(envelop);
-    else if(htmlentry.type === 'channel')
-        throw new Error("XX");
-    else if(htmlentry.type === 'search')
+    else if(htmlentry.nature.type === 'channel')
+        throw new Error("Channel not supported yet");
+    else if(htmlentry.nature.type === 'search')
         return searchparser.process(envelop);
-    else if(htmlentry.type === 'hashtag')
-        throw new Error("XX");
+    else if(htmlentry.nature.type === 'hashtag')
+        throw new Error("Hashtag not supported yet");
     else {
-        debuge("Condition not supported %s", htmlentry.type);
+        debuge("Condition not supported %s", htmlentry.nature.type);
         return null;
     }
 }

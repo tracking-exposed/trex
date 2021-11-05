@@ -44,8 +44,11 @@ function dissectSelectedVideo(e, i, sections, offset) {
             // TED\nVerified\n•, and this allow us a more technical check:
             infos.source = _.first(metadata.children[0].textContent.split('\n'));
             infos.verified = !!(_.size(metadata.children[0].textContent.split('\n')) > 1 );
-            if(infos.source && infos.authorName && infos.source != infos.authorName)
-                debugw("To be investigated anomaly n.1 [%s]!=[%s]", infos.source, infos.authorName);
+            if(infos.source && infos.authorName && infos.source != infos.authorName) {
+                // debugw("To be investigated anomaly n.1 [%s]!=[%s]", infos.source, infos.authorName);
+
+                // this is interesting but .source isn't used and it is the one appearing duplicated
+            }
         }
     } catch(error) {
         errorLog.push("Failure in source/verified: " + error.message);
