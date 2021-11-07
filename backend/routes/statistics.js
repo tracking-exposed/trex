@@ -5,25 +5,15 @@ const nconf = require('nconf');
 
 const mongo3 = require('../lib/mongo3');
 
-/* -- this cache is shared with yttrex, might be generalized or figured out
- * if something native from mongo exists ? */
-
-/*
- -- suspended
-function formatCached(what, updated)
-function cacheAvailable(what)
-function countStoredDocuments()
-
-function counter(req)
-function parsers(req)
- */
-
 async function statistics(req) {
     // the content in 'stats' is saved by count-o-clock and the selector here required is
     // specifiy in config/stats.json
     const expectedFormat = "/api/v2/statistics/:name/:unit/:amount";
 
-    const allowedNames = ['supporters', 'active', 'related', 'processing', 'metadata', 'usage', 'searches', 'labels', 'deeper'];
+    const allowedNames = ['supporters', 'active', 'related',
+        'processing', 'metadata', 'usage', 'searches',
+        'labels', 'deeper', 'ads', 'ytvids', 'recommendations', 
+        'leaves', 'creators' ];
     const name = req.params.name;
     if(allowedNames.indexOf(name) == -1) {
         debug("Error! this might not appear in visualization: investigate on why an invalid stat-name is called by c3! (%s)", name);
@@ -57,10 +47,12 @@ async function statistics(req) {
     const content = _.map(fullc, function(e) {
         return _.omit(e, ['_id']);
     });
-    debug("Requested [%s] since %d %s ago = %d samples", name, amount, unit, _.size(content));
+    debug("Requested [%s] since %d %s ago = %d measures", name, amount, unit, _.size(content));
     mongoc.close();
     return { json: content,
-        headers: { amount, unit, name }
+        // headers: { amount, unit, name }
+        // there is no reason to add info in the header, 
+        // but that was also a standard in all the *trex backends
     };
 }
 

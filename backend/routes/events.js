@@ -87,11 +87,10 @@ async function processEvents2(req) {
             publicKey: headers.publickey,
             randomUUID: body.randomUUID,
             href: body.href,
-            type: body.type,
         });
         const id = utils.hash({
             metadataId,
-            size: body.size,
+            size: body.element.length,
             i,
         });
         const html = {
@@ -125,6 +124,7 @@ async function processEvents2(req) {
         const metadataId = utils.hash({
             publicKey: headers.publickey,
             randomUUID: e.randomUUID,
+            href: e.href,
             type: 'leaf',
         });
         const id = utils.hash({

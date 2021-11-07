@@ -4,7 +4,7 @@
   "description": "youtube.tracking.exposed - backend data collector",
   "scripts": {
     "watch": "key=fuffa DEBUG=*,-express:*,-body-parser:*,-follow-redirects node_modules/.bin/ts-node-dev --respawn --transpile-only bin/server.js",
-    "start": "DEBUG=*,-body-parser:*,-express:*,-lib:*,-follow-redirects ts-node bin/server",
+    "start": "gitlog=`git log -30 --stat --oneline --decorate --graph` DEBUG=*,-body-parser:*,-express:*,-lib:*,-follow-redirects ts-node bin/server",
     "parserv": "DEBUG=*,-pubtimeAPI node_modules/.bin/ts-node bin/parserv2.js",
     "parserv:watch": "DEBUG=*,-pubtimeAPI node_modules/.bin/ts-node-dev --respawn --transpile-only bin/parserv2.js",
     "leaveserv": "DEBUG=* node bin/leaveserv.js",

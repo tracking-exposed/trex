@@ -1,6 +1,6 @@
 
 const apiList = {
-    discontinued:        require('../routes/public').discontinued,
+    systemInfo:          require('../routes/system').systemInfo,
     processEvents2:      require('../routes/events').processEvents2,
     getMirror:           require('../routes/events').getMirror,
 

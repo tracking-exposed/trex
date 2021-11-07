@@ -73,6 +73,11 @@ app.options('/api/', cors())
 app.use(bodyParser.json({limit: '6mb'}));
 app.use(bodyParser.urlencoded({limit: '6mb', extended: true}));
 
+/* this API is v0 as it is platform neutral. it might be shared among 
+ * all the trex backends, and should return info on system health, echo OK
+ * if the system is OK, and the git log of the code running */
+app.get('/api/v0/info', async (req, res) => await iowrapper('systemInfo', req, res));
+
 app.get('/api/v1/last', async (req, res) => await iowrapper('getLast', req, res))
 app.get('/api/v1/home', async (req, res) => await iowrapper('getLastHome', req, res))
 app.get('/api/v1/videoId/:query', async (req, res) => await iowrapper('getVideoId', req, res))
@@ -80,9 +85,7 @@ app.get('/api/v1/related/:query', async (req, res) => await iowrapper('getRelate
 app.get('/api/v1/videoCSV/:query/:amount?', async (req, res) => await iowrapper('getVideoCSV', req, res))
 app.get('/api/v1/author/:query/:amount?', async (req, res) => await iowrapper('getByAuthor', req, res))
 
-/* This is import and validate the key */
-app.post('/api/v:version/validate', async (req, res) => await iowrapper('validateKey', req, res))
-app.post('/api/v1/events', async (req, res) => await iowrapper('discontinued', req, res))
+/* This is the API meant to receive data donation */
 app.post('/api/v2/events', async (req, res) => await iowrapper('processEvents2', req, res))
 
 /* new timeline timeseries on top */
@@ -133,7 +136,7 @@ app.get('/api/v3/video/:videoId/recommendations', async (req, res) => await iowr
 app.get('/api/v3/recommendations/:ids', async (req, res) => await iowrapper('recommendationById', req, res))
 
 app.post('/api/v3/creator/updateVideo', async (req, res) => await iowrapper('updateVideoRec', req, res))
-app.post('/api/v3/creator/ogp', cors(), async (req, res) => await iowrapper('ogpProxy', req, res))
+app.post('/api/v3/creator/ogp', async (req, res) => await iowrapper('ogpProxy', req, res))
 app.get('/api/v3/creator/videos', async (req, res) => await iowrapper('getVideoByCreator', req, res))
 app.post('/api/v3/creator/videos/repull', async (req, res) => await iowrapper('repullByCreator', req, res))
 
@@ -182,8 +185,8 @@ app.post('/api/v2/campaigns/:key', async (req, res) => await iowrapper('updateCa
 app.post('/api/v2/experiment/opening', async (req, res) => await iowrapper('experimentOpening', req, res))
 app.post('/api/v2/experiment', async (req, res) => await iowrapper('experimentSubmission', req, res))
 app.get('/api/v2/experiment/:expname/csv', async (req, res) => await iowrapper('experimentCSV', req, res))
-app.get('/api/v2/experiment/:expname/dot', cors(), async (req, res) => await iowrapper('experimentDOT', req, res))
-app.get('/api/v2/experiment/:expname/json', cors(), async (req, res) => await iowrapper('experimentJSON', req, res))
+app.get('/api/v2/experiment/:expname/dot', async (req, res) => await iowrapper('experimentDOT', req, res))
+app.get('/api/v2/experiment/:expname/json', async (req, res) => await iowrapper('experimentJSON', req, res))
 app.get('/api/v2/guardoni/list', async (req, res) => await iowrapper('getAllExperiments', req, res))
 
 // dynamically configured and retrived guardoni settings
