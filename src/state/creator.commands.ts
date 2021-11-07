@@ -46,17 +46,18 @@ export const verifyChannel = command(
   }
 );
 
-export const pullContentCreatorVideos = command(() =>
-  pipe(
-    requiredLocalProfile.run(),
-    TE.chain((p) =>
-      API.Creator.PullCreatorVideos({
-        Headers: {
-          'x-authorization': p.accessToken,
-        },
-      })
-    )
-  ),
+export const pullContentCreatorVideos = command(
+  () =>
+    pipe(
+      requiredLocalProfile.run(),
+      TE.chain((p) =>
+        API.Creator.PullCreatorVideos({
+          Headers: {
+            'x-authorization': p.accessToken,
+          },
+        })
+      )
+    ),
   {
     creatorVideos,
   }
@@ -121,4 +122,29 @@ export const updateProfile = command(
 
 export const copyToClipboard = command((text: string) =>
   TE.tryCatch(() => navigator.clipboard.writeText(text), E.toError)
+);
+
+export const assignAccessToken = command(
+  ({ token }: { token: string }) => {
+    return pipe(
+      API.Creator.GetCreator({
+        Headers: {
+          'x-authorization': token,
+        },
+      }),
+      TE.orElse((e) => {
+        // todo: define a proper NotFound error
+        const isNotFoundError =
+          e.message === 'Request failed with status code 500';
+        if (isNotFoundError) {
+          return TE.right(null);
+        }
+        return TE.left(e);
+      }),
+      TE.chain((creator) => sendMessage(Messages.UpdateContentCreator)(creator))
+    );
+  },
+  {
+    localProfile,
+  }
 );

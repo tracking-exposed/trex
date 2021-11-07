@@ -10,15 +10,21 @@ export const YCAITheme = createTheme({
     fontWeightRegular: 400,
     fontWeightMedium: 600,
     fontWeightBold: 800,
-    // h1: {
-    //   fontWeight: 600
-    // },
-    // h4: {
-    //   fontWeight: 600,
-    // },
-    // h6: {
-    //   fontWeight: 600
-    // }
+    h1: {
+      marginBottom: 30,
+    },
+    h3: {
+      marginBottom: 20,
+    },
+    h4: {
+      marginBottom: 18,
+    },
+    h5: {
+      marginBottom: 16,
+    },
+    h6: {
+      marginBottom: 14,
+    },
   },
   overrides: {
     MuiTabs: {

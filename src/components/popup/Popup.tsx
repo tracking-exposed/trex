@@ -60,7 +60,7 @@ const PopupLoader: React.FC = () => {
       <strong>
         Access{' '}
         <a href="https://www.youtube.com" target="_blank" rel="noreferrer">
-          yutube.com
+          youtube.com
         </a>
         .
       </strong>

@@ -1,4 +1,11 @@
-import { Divider, FormLabel, makeStyles, Typography } from '@material-ui/core';
+import {
+  Box,
+  Button,
+  Divider,
+  FormLabel,
+  makeStyles,
+  Typography,
+} from '@material-ui/core';
 import FormControl from '@material-ui/core/FormControl';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Switch from '@material-ui/core/Switch';
@@ -130,9 +137,14 @@ const Settings: React.FC<SettingsProps> = ({ settings }) => {
               </Typography>
               <br />
               {settings.indipendentContributions ? (
-                <Typography color="primary" variant="body2">
-                  {t('settings:encrypted_contributions_private_key')}
-                </Typography>
+                <Box>
+                  <Typography color="primary" variant="body2">
+                    {t('settings:encrypted_contributions_private_key')}
+                  </Typography>
+                  <Button href="/index.html?path=/settings/" target="_blank">
+                    Manage tokens
+                  </Button>
+                </Box>
               ) : null}
             </FormLabel>
           }

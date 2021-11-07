@@ -1,31 +1,38 @@
 import {
-  Box, List,
+  Box,
+  List,
   ListItem,
   ListItemText,
-  Typography
+  Typography,
 } from '@material-ui/core';
 import * as QR from 'avenger/lib/QueryResult';
 import { declareQueries } from 'avenger/lib/react';
 import { pipe } from 'fp-ts/lib/function';
 import React from 'react';
+import { localProfile } from 'state/creator.queries';
 import { keypair, settings } from '../../state/public.queries';
 import { ErrorBox } from '../common/ErrorBox';
 import { LazyFullSizeLoader } from '../common/FullSizeLoader';
+import { AccessTokenBox } from './settings/AccessTokenBox';
 import { APIList } from './settings/APIList';
 import { KeypairBox } from './settings/KeypairBox';
 
-
-const withQueries = declareQueries({ settings, keypair });
+const withQueries = declareQueries({
+  settings,
+  keypair,
+  profile: localProfile,
+});
 
 const Settings = withQueries(({ queries }): React.ReactElement => {
   return pipe(
     queries,
-    QR.fold(LazyFullSizeLoader, ErrorBox, ({ settings, keypair }) => {
+    QR.fold(LazyFullSizeLoader, ErrorBox, ({ settings, keypair, profile }) => {
       return (
         <Box>
-          {keypair !== undefined && settings.indipendentContributions ? (
-            <KeypairBox keypair={keypair} settings={settings} />
-          ) : null}
+          <AccessTokenBox profile={profile} />
+
+          <KeypairBox keypair={keypair} settings={settings} />
+
           <APIList />
 
           <Typography variant="h3">API TODOs</Typography>

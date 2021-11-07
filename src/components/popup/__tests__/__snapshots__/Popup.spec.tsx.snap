@@ -35,7 +35,7 @@ exports[`Popup Should mount the Popup 1`] = `
         rel="noreferrer"
         target="_blank"
       >
-        yutube.com
+        youtube.com
       </a>
       .
     </strong>
