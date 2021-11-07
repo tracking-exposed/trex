@@ -45,9 +45,8 @@
         "http://127.0.0.1/*",
         "https://*.youtube.com/*"
       ],
-      "js": ["./app.js"],
-      "css": ["./css/font.css", "./css/popup.css", "./css/dashboard.css"]
+      "js": ["./app.js"]
     }
   ],
-  "web_accessible_resources": ["*.png", "./css/**"]
+  "web_accessible_resources": ["*.png"]
 }

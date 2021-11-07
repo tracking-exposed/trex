@@ -17,7 +17,7 @@
     "lint": "eslint ./src",
     "format": "prettier -w ./src config-overrides.js",
     "tsc": "tsc",
-    "build": "react-app-rewired build",
+    "build": "GENERATE_SOURCEMAP=false react-app-rewired build",
     "build:development": "env-cmd -f .env react-app-rewired build",
     "watch": "node ./scripts/watch",
     "start": "react-app-rewired start",

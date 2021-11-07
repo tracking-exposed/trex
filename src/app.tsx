@@ -6,6 +6,8 @@ import { ErrorBoundary } from './components/common/ErrorBoundary';
 import { YCAITheme } from './theme';
 import { YTVideoPage } from './components/injected/YTVideoPage';
 
+import './resources/global.css';
+
 const ytRelatedVideoNode = document.querySelector('#related');
 const ycRecommendations = document.querySelector('#yc-recommendations');
 

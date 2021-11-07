@@ -248,6 +248,7 @@ module.exports = {
         // which doesn't contain `[contenthash]`.
         new MiniCssExtractPlugin()
       );
+
     config.module.rules[1] = {
       oneOf: config.module.rules[1].oneOf.concat({
         test: /\.wasm$/,
@@ -259,7 +260,21 @@ module.exports = {
       }),
     };
 
-    if (!isProduction) {
+    config.module.rules[1].oneOf.unshift({
+      test: /\.ttf$/,
+      use: [
+        {
+          loader: 'url-loader',
+          options: {
+            encoding: 'base64',
+          },
+        },
+      ],
+    });
+
+    if (isProduction) {
+      config.devtool = 'source-map';
+    } else {
       config.devtool = 'inline-source-map';
     }
 
