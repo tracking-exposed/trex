@@ -1,4 +1,4 @@
-import { Endpoints } from '@backend/endpoints/v3';
+import Endpoints from '@backend/endpoints/v3';
 import {
     Box, List,
     ListItem,
