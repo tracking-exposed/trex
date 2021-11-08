@@ -228,6 +228,9 @@ async function updateRecommendations(videoId, recommendations) {
 }
 
 async function generateToken(seed, expireISOdate) {
+  /* TODO we need to use a public/private key schema to generate
+   * a secure accessToken that can be used also if the verification
+   * process gets interrupted */
   const verificationToken = utils.hash({ token: seed });
   const mongoc = await mongo3.clientConnect({ concurrency: 1 });
   const p = await mongo3.readOne(mongoc, nconf.get('schema').tokens, {
