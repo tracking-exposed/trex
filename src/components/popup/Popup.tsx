@@ -1,5 +1,4 @@
 import {
-  Box,
   Button,
   Card,
   CardActions,
@@ -8,7 +7,7 @@ import {
   Grid,
   makeStyles,
   Switch,
-  Typography,
+  Typography
 } from '@material-ui/core';
 import { Alert, AlertTitle } from '@material-ui/lab';
 import * as QR from 'avenger/lib/QueryResult';
@@ -21,7 +20,7 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { config } from '../../config';
 import { updateSettings } from '../../state/public.commands';
-import { popupSettings } from '../../state/public.queries';
+import { settings } from '../../state/public.queries';
 import { ErrorBox } from '../common/ErrorBox';
 import Settings from './Settings';
 
@@ -68,7 +67,7 @@ const PopupLoader: React.FC = () => {
   );
 };
 
-const withQueries = declareQueries({ popupSettings });
+const withQueries = declareQueries({ settings });
 
 export const Popup = withQueries(({ queries }) => {
   const { t } = useTranslation();
@@ -88,7 +87,7 @@ export const Popup = withQueries(({ queries }) => {
     QR.fold(
       () => <PopupLoader />,
       ErrorBox,
-      ({ popupSettings: settings }) => {
+      ({ settings }) => {
         return (
           <Card className={classes.container}>
             <CardContent className={classes.content}>
@@ -130,15 +129,8 @@ export const Popup = withQueries(({ queries }) => {
                   </Typography>
                 </Grid>
               </Grid>
-              {settings === null ? (
-                <Box>
-                  <Button onClick={updateSettings(getDefaultSettings())}>
-                    {t('actions:popup_bootstrap')}
-                  </Button>
-                </Box>
-              ) : (
-                <Settings settings={settings} />
-              )}
+
+              <Settings settings={settings} />
             </CardContent>
 
             <CardActions>
