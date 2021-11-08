@@ -253,7 +253,7 @@ async function getCreatorRelated(req) {
     try {
         authorStruct = await automo.getMetadataFromAuthorChannelId(`/channel/${req.params.channelId}`, { amount, skip });
     } catch(e) {
-        debug("getCreatorRelated error: %s", e.message);
+        debug("getCreatorRelated error: %s, %s", e.message, e.stack);
         return {
             json: {
                 error: true,

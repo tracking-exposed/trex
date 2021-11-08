@@ -83,7 +83,6 @@ async function fetchRecommendations(videoId, kind) {
 }
 
 async function fetchRecommendationsByProfile(token) {
-  // cryptography and authentication not yet implemented
   const INTERFACE_MAX = 100;
   const mongoc = await mongo3.clientConnect({ concurrency: 1 });
   const creator = await mongo3
@@ -96,7 +95,6 @@ async function fetchRecommendationsByProfile(token) {
     INTERFACE_MAX,
     0
   );
-  console.log('fetchRecommendationsByProfile', creator);
   if (INTERFACE_MAX == results.length) {
     debug("More recommendations than what is possible! (we should support pagination)");
   }
