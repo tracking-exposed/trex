@@ -31,4 +31,17 @@ export const Settings = t.strict(
   'AccountSettings'
 );
 
+export const getDefaultSettings = (): Settings => ({
+  active: true,
+  ccRecommendations: true,
+  svg: false,
+  videorep: true,
+  playhide: false,
+  ux: false,
+  communityRecommendations: false,
+  alphabeth: false,
+  indipendentContributions: false,
+  edit: null,
+});
+
 export type Settings = t.TypeOf<typeof Settings>;

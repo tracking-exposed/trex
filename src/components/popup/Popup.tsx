@@ -12,7 +12,6 @@ import {
 import { Alert, AlertTitle } from '@material-ui/lab';
 import * as QR from 'avenger/lib/QueryResult';
 import { declareQueries } from 'avenger/lib/react';
-import { getDefaultSettings } from 'background';
 import { formatDistance } from 'date-fns';
 import parseISO from 'date-fns/parseISO';
 import { pipe } from 'fp-ts/lib/function';
@@ -20,6 +19,7 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { config } from '../../config';
 import { updateSettings } from '../../state/public.commands';
+import { getDefaultSettings } from '../../models/Settings';
 import { settings } from '../../state/public.queries';
 import { ErrorBox } from '../common/ErrorBox';
 import Settings from './Settings';

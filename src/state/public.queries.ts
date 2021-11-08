@@ -4,7 +4,7 @@ import {
   queryStrict,
   refetch
 } from 'avenger';
-import { getDefaultSettings } from 'background';
+import { getDefaultSettings } from '../models/Settings';
 import { pipe } from 'fp-ts/lib/pipeable';
 import * as TE from 'fp-ts/lib/TaskEither';
 import { Messages } from '../models/Messages';
