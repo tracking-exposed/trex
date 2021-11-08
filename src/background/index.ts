@@ -19,26 +19,13 @@ import {
   UpdateContentCreator,
   UpdateSettings,
 } from '../models/Messages';
-import { Keypair, Settings } from '../models/Settings';
+import { Keypair, Settings, getDefaultSettings } from '../models/Settings';
 import { bo } from '../utils/browser.utils';
 import { bkgLogger } from '../utils/logger.utils';
 import db from './db';
 import * as development from './reloadExtension';
 import * as settings from './settings';
 import { ContentCreator } from '@backend/models/ContentCreator';
-
-export const getDefaultSettings = (): Settings => ({
-  active: true,
-  ccRecommendations: true,
-  svg: false,
-  videorep: true,
-  playhide: false,
-  ux: false,
-  communityRecommendations: false,
-  alphabeth: false,
-  indipendentContributions: false,
-  edit: null,
-});
 
 const SETTINGS_KEY = 'settings';
 const AUTH_KEY = 'auth';

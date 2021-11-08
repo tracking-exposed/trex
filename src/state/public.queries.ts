@@ -1,35 +1,27 @@
 import { Recommendation } from '@backend/models/Recommendation';
 import {
-  available,
-  compose,
-  product,
-  queryShallow,
+  available, queryShallow,
   queryStrict,
-  refetch,
+  refetch
 } from 'avenger';
+import { getDefaultSettings } from '../models/Settings';
 import { pipe } from 'fp-ts/lib/pipeable';
 import * as TE from 'fp-ts/lib/TaskEither';
-import { Settings } from 'models/Settings';
 import { Messages } from '../models/Messages';
 import { API } from '../providers/api.provider';
-import { sendMessage, toBrowserError } from '../providers/browser.provider';
+import { sendMessage } from '../providers/browser.provider';
 
-export const popupSettings = queryShallow(() => {
-  return sendMessage(Messages.GetSettings)();
+export const settings = queryShallow(() => {
+  return pipe(
+    sendMessage(Messages.GetSettings)(),
+    TE.chain((s) => {
+      if (s === null) {
+        return sendMessage(Messages.UpdateSettings)(getDefaultSettings());
+      }
+      return TE.right(s);
+    })
+  );
 }, available);
-
-export const settings = compose(
-  product({ popupSettings }),
-  queryShallow(({ popupSettings }) => {
-    return pipe(
-      popupSettings,
-      TE.fromPredicate(
-        (r): r is Settings => r !== null,
-        () => toBrowserError(new Error())
-      )
-    );
-  }, available)
-);
 
 export const keypair = queryStrict(() => {
   return sendMessage(Messages.GetKeypair)();
