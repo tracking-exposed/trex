@@ -200,7 +200,10 @@ async function pullDirectives(sourceUrl) {
 async function readExperiment(profinfo) {
 
   let page, experiment = null;
-  const browser = await dispatchBrowser(false, profinfo);
+  // check if headless flag is defined
+  const headless = nconf.get('headless');
+
+  const browser = await dispatchBrowser(headless, profinfo);
 
   try {
     page = (await browser.pages())[0];
@@ -419,7 +422,10 @@ async function main() {
 
   await writeExperimentInfo(experiment, profinfo, evidencetag, directiveType);
 
-  const browser = await dispatchBrowser(false, profinfo);
+  // check if headless flag is defined
+  const headless = nconf.get('headless');
+
+  const browser = await dispatchBrowser(headless, profinfo);
 
   if(browser.newProfile)
     await allowResearcherSomeTimeToSetupTheBrowser(profinfo.profileName);
