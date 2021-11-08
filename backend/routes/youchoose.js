@@ -381,13 +381,12 @@ async function creatorDelete(req) {
   // this function is invoked when a content creator wants to
   // delete every data on their belong
   console.log('TODO: Not implemented nor yet specify');
-  return true;
+  throw new Error("NYI");
 }
 
 async function getCreatorStats(req) {
   const amount = PUBLIC_AMOUNT_ELEMS;
   const skip = 0;
-  debug('TODO glue stats by auth %o', req.params);
 
   const decodedReq = endpoints.decodeRequest(
     v3.Endpoints.Creator.GetCreatorStats,
@@ -395,10 +394,29 @@ async function getCreatorStats(req) {
   );
   const channelId = decodedReq.result.params.channelId;
   const creator = await structured.getChannel(channelId);
-  let authorStruct = await structured.getMetadata(
-    { authorName: creator.username },
-    { amount, skip }
-  );
+  if(!creator) {
+    debug("Creator not found by channelId %s", channelId);
+    return { json: { error: true,
+      message: "Creator not found" }
+    }
+  }
+
+  let authorStruct = null;
+  try {
+    authorStruct = await structured.getMetadata(
+      { authorName: creator.username },
+      { amount, skip }
+    );
+  } catch(error) {
+    debug("Error in structured.getMetadata: %s %s",
+      error.message, error.stack);
+  }
+
+  if(!authorStruct)
+    return { json: { error: true,
+      message: "Unable to fetch CreatorStats"}
+    };
+
   authorStruct = _.merge(authorStruct, {
     authorSource: creator.channelId,
     authorName: creator.username,
