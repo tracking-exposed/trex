@@ -1,12 +1,14 @@
+import { ContentCreator } from '@backend/models/ContentCreator';
 import { sequenceS } from 'fp-ts/lib/Apply';
 import * as E from 'fp-ts/lib/Either';
+import * as O from 'fp-ts/lib/Option';
 import { pipe } from 'fp-ts/lib/pipeable';
 import * as TE from 'fp-ts/lib/TaskEither';
-import { toBrowserError } from '../providers/browser.provider';
 import { config } from '../config';
 import {
+  APIRequest,
   DeleteKeypair,
-  ErrorOccured,
+  ErrorOccurred,
   GenerateKeypair,
   GetAuth,
   GetContentCreator,
@@ -17,15 +19,20 @@ import {
   ReloadExtension,
   UpdateAuth,
   UpdateContentCreator,
-  UpdateSettings,
+  UpdateSettings
 } from '../models/Messages';
-import { Keypair, Settings, getDefaultSettings } from '../models/Settings';
+import { getDefaultSettings, Keypair, Settings } from '../models/Settings';
+import { APIError, apiFromEndpoint } from '../providers/api.provider';
+import {
+  catchRuntimeLastError,
+  toBrowserError
+} from '../providers/browser.provider';
 import { bo } from '../utils/browser.utils';
+import { fromStaticPath } from '../utils/endpoint.utils';
 import { bkgLogger } from '../utils/logger.utils';
 import db from './db';
 import * as development from './reloadExtension';
 import * as settings from './settings';
-import { ContentCreator } from '@backend/models/ContentCreator';
 
 const SETTINGS_KEY = 'settings';
 const AUTH_KEY = 'auth';
@@ -49,15 +56,76 @@ export const getStorageKey = (type: string): string => {
   }
 };
 
+interface MessageHandlerError {
+  type: typeof ErrorOccurred.value;
+  response: {
+    name: string;
+    message: string;
+    details: string[];
+  };
+}
+
+const toMessageHandleError = (
+  e: chrome.runtime.LastError | APIError | Error
+): MessageHandlerError => {
+  if (e instanceof APIError) {
+    return {
+      type: ErrorOccurred.value,
+      response: {
+        name: e.name,
+        message: e.message,
+        details: [],
+      },
+    };
+  }
+
+  if (e instanceof Error) {
+    return {
+      type: ErrorOccurred.value,
+      response: {
+        name: e.name,
+        message: e.message ?? 'An error occurred',
+        details: [],
+      },
+    };
+  }
+
+  if (e.message !== undefined) {
+    return {
+      type: ErrorOccurred.value,
+      response: {
+        name: 'RuntimeLastError',
+        message: e.message ?? 'An error occurred',
+        details: [],
+      },
+    };
+  }
+
+  return {
+    type: ErrorOccurred.value,
+    response: {
+      name: 'UnknownError',
+      message: e.message ?? 'An error occurred',
+      details: [],
+    },
+  };
+};
+
 const getMessageHandler = <M extends Messages[keyof Messages]>(
   r: M['Request']
-): TE.TaskEither<chrome.runtime.LastError, M['Response']> => {
+): TE.TaskEither<MessageHandlerError, M['Response']> => {
   switch (r.type) {
     // keypair
     case GenerateKeypair.value:
-      return settings.generatePublicKeypair('');
+      return pipe(
+        settings.generatePublicKeypair(''),
+        TE.mapLeft(toMessageHandleError)
+      );
     case DeleteKeypair.value:
-      return settings.deletePublicKeypair();
+      return pipe(
+        settings.deletePublicKeypair(),
+        TE.mapLeft(toMessageHandleError)
+      );
     // gets
     case GetSettings.value:
     case GetKeypair.value:
@@ -65,6 +133,7 @@ const getMessageHandler = <M extends Messages[keyof Messages]>(
     case GetContentCreator.value:
       return pipe(
         db.get<any>(getStorageKey(r.type)),
+        TE.mapLeft(toMessageHandleError),
         TE.map((response) => ({ type: r.type, response }))
       );
     // updates
@@ -73,11 +142,37 @@ const getMessageHandler = <M extends Messages[keyof Messages]>(
     case UpdateAuth.value:
       return pipe(
         db.update(getStorageKey(r.type), r.payload),
+        TE.mapLeft(toMessageHandleError),
         TE.map((response): M['Response'] => ({ type: r.type as any, response }))
+      );
+    case APIRequest.value:
+      return pipe(
+        fromStaticPath(r.payload?.staticPath),
+        O.fromNullable,
+        TE.fromOption(() =>
+          toMessageHandleError(
+            new Error(
+              `No endpoint found by the given path: ${
+                r.payload?.staticPath ?? ''
+              }`
+            )
+          )
+        ),
+        TE.chain((e) =>
+          pipe(
+            apiFromEndpoint(e)(r.payload?.Input ?? {}),
+            TE.chain(catchRuntimeLastError),
+            TE.mapLeft(toMessageHandleError)
+          )
+        ),
+        TE.map((response): M['Response'] => ({
+          type: APIRequest.value,
+          response,
+        }))
       );
     default:
       return TE.right({
-        type: ErrorOccured.value,
+        type: ErrorOccurred.value,
         response: toBrowserError(
           new Error(`Message type ${r.type} does not exist.`)
         ),
@@ -109,7 +204,7 @@ bo.runtime.onMessage.addListener(
         return undefined;
       })
       // eslint-disable-next-line
-      .catch((e) => bkgLogger.error('An error occured %O', e));
+      .catch((e) => bkgLogger.error('An error occurred %O', e));
 
     // this enable async response
     return true;

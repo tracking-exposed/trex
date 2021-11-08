@@ -22,8 +22,7 @@ export function generatePublicKeypair(
   );
 }
 
-export function deletePublicKeypair(
-): TE.TaskEither<
+export function deletePublicKeypair(): TE.TaskEither<
   chrome.runtime.LastError,
   Messages['DeleteKeypair']['Response']
 > {
