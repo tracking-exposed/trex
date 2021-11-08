@@ -1,3 +1,10 @@
+# [1.1.0-beta.2](https://github.com/tracking-exposed/YCAI/compare/v1.1.0-beta.1...v1.1.0-beta.2) (2021-11-08)
+
+
+### Bug Fixes
+
+* closes issue [#53](https://github.com/tracking-exposed/YCAI/issues/53) ([2e54388](https://github.com/tracking-exposed/YCAI/commit/2e54388471d657d6bcd72afc0d9b428954d57ed0))
+
 # [1.1.0-beta.1](https://github.com/tracking-exposed/YCAI/compare/v1.0.0...v1.1.0-beta.1) (2021-11-08)
 
 
