@@ -161,11 +161,28 @@ async function getMetadataFromAuthorChannelId(channelId, options) {
         nconf.get('schema').metadata, { authorSource: channelId },
         { savingTime: -1 }, 100, options.skip);
 
-    const authors = _.reduce(_.flatten(_.map(videos, 'related')), function(memo, related) {
-        rs = related.recommendedSource;
+    const relatedl = _.compact(_.flatten(_.map(videos, 'related')));
+    debug("matching %d videos by authorSource (%j) had %d total related",
+        videos.length, channelId, relatedl.length);
+
+    if(!relatedl) {
+        await mongoc.close();
+        /* structure to say "No data available" */
+        return {
+            content: [], overflow: false, total: 0,
+            pagination: options,
+        };
+    }
+
+    const authors = _.reduce(relatedl, function(memo, related) {
+        // legacy .source, an open problem is the logic to
+        // get rid of old data, if that matters.
+        rs = related.recommendedSource || related.source;
         if(!memo[rs]) {
             const obj = {
                 username: rs,
+                channelId: "is-client-side",
+                // client side should replace the link w/ search Query
                 avatar: "",
                 recommendedVideosCount: 1
             }
