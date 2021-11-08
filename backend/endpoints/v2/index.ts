@@ -53,14 +53,12 @@ const AddEvents = Endpoint({
   Output: t.any,
 });
 
-const Endpoints = {
-  CompareVideo,
-  VideoRelated,
-  VideoAuthor,
-  Searches,
-  AddEvents,
+export default {
+  Public: {
+    CompareVideo,
+    VideoRelated,
+    VideoAuthor,
+    Searches,
+    AddEvents,
+  },
 };
-
-type Endpoints = typeof Endpoints;
-
-export { Endpoints as V2 };

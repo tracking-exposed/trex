@@ -24,7 +24,7 @@ async function byVideoId(req) {
 }
 
 async function byProfile(req) {
-  const decodedReq = endpoints.decodeRequest(v3.Endpoints.Creator.CreatorVideos, req);
+  const decodedReq = endpoints.decodeRequest(v3.Creator.CreatorVideos, req);
   if (decodedReq.type === 'error') {
     return {
       json: {
@@ -41,7 +41,7 @@ async function byProfile(req) {
     recommendations.length, recommendations.length
   );
   const valid = endpoints.decodeResponse(
-    v3.Endpoints.Creator.CreatorRecommendations, recommendations);
+    v3.Creator.CreatorRecommendations, recommendations);
 
   if (valid.type === 'error') {
     debug('Invalid generated output for creator Recommendations %O', valid);
@@ -55,7 +55,7 @@ async function byProfile(req) {
 }
 
 async function ogpProxy(req) {
-  const decodedReq = endpoints.decodeRequest(v3.Endpoints.Creator.CreateRecommendation, req);
+  const decodedReq = endpoints.decodeRequest(v3.Creator.CreateRecommendation, req);
   const token = decodedReq.result.headers['x-authorization'];
   const url = decodedReq.result.body.url;
 
@@ -100,7 +100,7 @@ async function ogpProxy(req) {
 async function videoByCreator(req) {
   // this function should validate req.params.authMaterial
   const decodedReq = endpoints.decodeRequest(
-    v3.Endpoints.Creator.CreatorVideos,
+    v3.Creator.CreatorVideos,
     req
   );
   if (decodedReq.type === 'error') {
@@ -140,7 +140,7 @@ async function videoByCreator(req) {
 
 async function repullByCreator(req) {
   const decodedReq = endpoints.decodeRequest(
-    v3.Endpoints.Creator.PullCreatorVideos,
+    v3.Creator.PullCreatorVideos,
     req
   );
   if (decodedReq.type === 'error') {
@@ -167,7 +167,7 @@ async function getRecommendationById(req) {
   // this is a public function, anyone can query a recommandation detail
   // this function support a single Id or a list of IDs
   const paramsResult = endpoints.decodeRequest(
-    v3.Endpoints.Public.GetRecommendations,
+    v3.Public.GetRecommendations,
     req
   );
   debug('params result %O', paramsResult);
@@ -187,7 +187,7 @@ async function getRecommendationById(req) {
 async function updateVideoRec(req) {
   const update = req.body;
   const decodedReq = endpoints.decodeRequest(
-    v3.Endpoints.Creator.UpdateVideo,
+    v3.Creator.UpdateVideo,
     req
   );
   if (decodedReq.type === 'error') {
@@ -338,7 +338,7 @@ async function creatorGet(req) {
   // 'creators' mongodb collection.
 
   const decodedReq = endpoints.decodeRequest(
-    v3.Endpoints.Creator.GetCreator,
+    v3.Creator.GetCreator,
     req
   );
   if (decodedReq.type === 'error') {
@@ -361,7 +361,7 @@ async function creatorGet(req) {
     return { json: infoavail };
   }
 
-  const validatedc = endpoints.decodeResponse(v3.Endpoints.Creator.GetCreator, {
+  const validatedc = endpoints.decodeResponse(v3.Creator.GetCreator, {
     ...infoavail,
     registeredOn: infoavail.registeredOn.toISOString(),
   });
@@ -390,7 +390,7 @@ async function getCreatorStats(req) {
   debug('TODO glue stats by auth %o', req.params);
 
   const decodedReq = endpoints.decodeRequest(
-    v3.Endpoints.Creator.GetCreatorStats,
+    v3.Creator.GetCreatorStats,
     req
   );
   const channelId = decodedReq.result.params.channelId;
@@ -413,7 +413,7 @@ async function getCreatorStats(req) {
   );
 
   const retval = endpoints.decodeResponse(
-    v3.Endpoints.Creator.GetCreatorStats,
+    v3.Creator.GetCreatorStats,
     {
       authorName: authorStruct.authorName,
       authorSource: authorStruct.authorSource,

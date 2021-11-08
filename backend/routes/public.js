@@ -228,7 +228,7 @@ async function getByAuthor(req) {
 
     debug("Returning byAuthor %d video considered, %d recommendations",
         _.size(authorStruct.content), _.size(ready) );
-    const retval = endpoints.decodeResponse(v1.Endpoints.Public.GetAuthorStatsByVideoId, {
+    const retval = endpoints.decodeResponse(v1.Public.GetAuthorStatsByVideoId, {
         authorName: authorStruct.authorName,
         authorSource: authorStruct.authorSource,
         paging: authorStruct.paging,
