@@ -1,3 +1,36 @@
+# [1.1.0-beta.1](https://github.com/tracking-exposed/YCAI/compare/v1.0.0...v1.1.0-beta.1) (2021-11-08)
+
+
+### Bug Fixes
+
+* bug when ytItemsRendererEl is undefined ([0f1a57d](https://github.com/tracking-exposed/YCAI/commit/0f1a57d23dc3a9dcd49aeb101fddb9df509db0b6))
+* correctly load the Trex font using url-loader ([afe7b20](https://github.com/tracking-exposed/YCAI/commit/afe7b209000dd53a0bf23345a19e24b1d7d3fa01))
+* cross-origin image loading in a generic way ([767e294](https://github.com/tracking-exposed/YCAI/commit/767e294fc47a36f9cf4bc9bd6bee912edda716a4))
+* display of Avatar - closes [#45](https://github.com/tracking-exposed/YCAI/issues/45) ([7893903](https://github.com/tracking-exposed/YCAI/commit/7893903779ab89425248d5d3eb2c1d2ffaa30878))
+* enable all levels of logging for 'production' release, closes [#89](https://github.com/tracking-exposed/YCAI/issues/89) ([3199221](https://github.com/tracking-exposed/YCAI/commit/319922187c108de785c6464dc267e22e667de7c5))
+* improved JSON display of errors in ErrorBox ([b67ee31](https://github.com/tracking-exposed/YCAI/commit/b67ee31be7d01157375aee0380402099b2deaa27))
+* missing translation ([05f1b77](https://github.com/tracking-exposed/YCAI/commit/05f1b7729be429a27cefa370d44554054547d1da))
+* moved getDefaultSettings to Settings.ts ([7f461db](https://github.com/tracking-exposed/YCAI/commit/7f461db3ca45658ae2199cdf26ac2fd1cca871b7))
+* removed 'bootstrap' button from popup, closes [#88](https://github.com/tracking-exposed/YCAI/issues/88) ([abf9a19](https://github.com/tracking-exposed/YCAI/commit/abf9a19d3d7fecfdc388fd1e25ce2e0e8f940142))
+* removed unwanted nested buttons ([c0978e5](https://github.com/tracking-exposed/YCAI/commit/c0978e58f1d7fe6abf7d3711d2bf6bdaf28d53e2))
+* renamed InjectedVideoCard component ([bed680e](https://github.com/tracking-exposed/YCAI/commit/bed680e247088a9f605d88c70c6d9858ebbe32ee))
+* replace video preview by picture cuz CORS ([31623ac](https://github.com/tracking-exposed/YCAI/commit/31623ac32ce8d48dca848cf8a2000cf52c64de5d))
+* typos in English translation ([238c2d1](https://github.com/tracking-exposed/YCAI/commit/238c2d1458e1cacbb6752eddfa5095f09fb8eed6))
+* update ytrex-backend submodule ([f70aa2d](https://github.com/tracking-exposed/YCAI/commit/f70aa2d95d110fdb50286c7c5be3bf6eb0876f5e))
+* wrong videoId prop passed to VideoCard ([cf7b81b](https://github.com/tracking-exposed/YCAI/commit/cf7b81b5c7acb159a469bb964f10ebf9e0aa939b))
+
+
+### Features
+
+* content creator access token form in settings ([c205ca5](https://github.com/tracking-exposed/YCAI/commit/c205ca5a82225c26af3ad64f662a0a075fbc4e4b)), closes [#59](https://github.com/tracking-exposed/YCAI/issues/59) [#76](https://github.com/tracking-exposed/YCAI/issues/76)
+* create dedicated component for injected vid ([51ba34e](https://github.com/tracking-exposed/YCAI/commit/51ba34ee10cad5b326fd1f1614c7c7b182e34709))
+* defined helper to send api request messages to background ([05e90cc](https://github.com/tracking-exposed/YCAI/commit/05e90cc7ad5b0f5a87c1aeb77dc3a45bcee7a53a))
+* display button to update list of videos ([da3d647](https://github.com/tracking-exposed/YCAI/commit/da3d647fd6a1a370ff29c0d9fa9e1e6c27f694ab))
+* make dashboard studio closer to figma ([6de482b](https://github.com/tracking-exposed/YCAI/commit/6de482bcfe975950bec412379d4ede5c73d9609b))
+* more clear error box component ([35907b8](https://github.com/tracking-exposed/YCAI/commit/35907b842c7d1f7198d8d8d602fae4802c5f0567))
+* public keypair deletion ([14e7828](https://github.com/tracking-exposed/YCAI/commit/14e782810c7e37fbc3dc5bb5e863585deb8b1852))
+* use inline source maps during development ([ecbc335](https://github.com/tracking-exposed/YCAI/commit/ecbc33557a21127244dd02c1399693e6a655eac8))
+
 # 1.0.0-beta.1 (2021-11-08)
 
 
