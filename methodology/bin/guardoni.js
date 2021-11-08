@@ -15,7 +15,14 @@ const COMMANDJSONEXAMPLE = "https://youtube.tracking.exposed/json/automation-exa
 const EXTENSION_WITH_OPT_IN_ALREADY_CHECKED='https://github.com/tracking-exposed/yttrex/releases/download/v1.8.99/yttrex-guardoni-1.8.99.zip';
 
 const configPath = path.join("static", "settings.json");
-nconf.argv().env().file(configPath);
+nconf.argv().env();
+nconf.defaults({
+  'headless': false,
+  'proxy': "",
+  'config_file' : configPath
+});
+const configFile = nconf.get('config_file');
+nconf.file(configFile);
 debug.enabled = true;
 
 const server = nconf.get('backend') ?
