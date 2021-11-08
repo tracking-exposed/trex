@@ -29,10 +29,40 @@ module.exports = {
     [
       '@semantic-release/commit-analyzer',
       {
+        preset: 'conventionalcommits',
         releaseRules,
       },
     ],
-    '@semantic-release/release-notes-generator',
+    [
+      '@semantic-release/release-notes-generator',
+      {
+        presetConfig: {
+          types: [
+            { type: 'major', section: 'Breaking' },
+            { type: 'breaking', section: 'Breaking' },
+            { type: 'feat', section: 'Features' },
+            { type: 'feature', section: 'Features' },
+            { type: 'fix', section: 'Fixes' },
+            { type: 'bugfix', section: 'Fixes' },
+            { type: 'hotfix', section: 'Fixes' },
+            { type: 'chore', section: 'Improvements' },
+            { type: 'perf', section: 'Improvements' },
+            { type: 'refactor', section: 'Improvements' },
+            { type: 'improvement', section: 'Improvements' },
+            { type: 'style', section: 'Improvements' },
+            { type: 'docs', section: 'Docs' },
+
+            { type: 'ci', section: 'Internals', hidden: true },
+            { type: 'build', section: 'Internals', hidden: true },
+            {
+              type: 'release',
+              section: 'Internals',
+              hidden: true,
+            },
+          ],
+        },
+      },
+    ],
     '@semantic-release/changelog',
     [
       '@semantic-release/npm',
@@ -40,9 +70,12 @@ module.exports = {
         npmPublish: false,
       },
     ],
-    ['@semantic-release/exec', {
-      prepareCmd: "npm run build -- ${nextRelease.version}"
-    }],
+    [
+      '@semantic-release/exec',
+      {
+        prepareCmd: 'npm run build -- ${nextRelease.version}',
+      },
+    ],
     [
       '@semantic-release/github',
       {
@@ -72,30 +105,4 @@ module.exports = {
       prerelease: true,
     },
   ],
-  preset: 'conventionalcommits',
-  presetConfig: {
-    types: [
-      { type: 'major', section: 'Breaking' },
-      { type: 'breaking', section: 'Breaking' },
-      { type: 'feat', section: 'Features' },
-      { type: 'feature', section: 'Features' },
-      { type: 'fix', section: 'Fixes' },
-      { type: 'bugfix', section: 'Fixes' },
-      { type: 'hotfix', section: 'Fixes' },
-      { type: 'chore', section: 'Improvements' },
-      { type: 'perf', section: 'Improvements' },
-      { type: 'refactor', section: 'Improvements' },
-      { type: 'improvement', section: 'Improvements' },
-      { type: 'style', section: 'Improvements' },
-      { type: 'docs', section: 'Docs' },
-
-      { type: 'ci', section: 'Internals', hidden: true },
-      { type: 'build', section: 'Internals', hidden: true },
-      {
-        type: 'release',
-        section: 'Internals',
-        hidden: true,
-      },
-    ],
-  },
 };
