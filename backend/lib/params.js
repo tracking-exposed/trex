@@ -2,7 +2,7 @@ const _ = require('lodash');
 const debug = require('debug')('lib:params');
 
 function getInt(req, what, def) {
-    var rv = _.parseInt(_.get(req.params, what));
+    let rv = _.parseInt(_.get(req.params, what));
     if(_.isNaN(rv)) {
         if(!_.isUndefined(def))
             rv  = def;
@@ -24,7 +24,7 @@ function getVideoId(req, what) {
 }
 
 function getString(req, what, mandatory) {
-    var rv = _.get(req.params, what);
+    let rv = _.get(req.params, what);
     if(_.isUndefined(rv)) {
         debug("getString: Missing parameter [%s] in %j", what, req.params);
         rv = "";
@@ -35,7 +35,7 @@ function getString(req, what, mandatory) {
 }
 
 function optionParsing(amountString, max) {
-    const MAXOBJS = max ? max : 200;
+    const MAXOBJS = max || 200;
     try {
         const amount = _.parseInt(_.first(amountString.split('-')));
         const skip = _.parseInt(_.last(amountString.split('-')));

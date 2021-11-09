@@ -26,8 +26,8 @@ Echoes.prototype.getEchoClient = function(client){
 }
 Echoes.prototype.addEcho = function(echoClient){
     if(isDisabled()) return null;
-    var clientConf = this.configuration[echoClient]
-    var client =  this.getEchoClient(echoClient)
+    const clientConf = this.configuration[echoClient]
+    const client =  this.getEchoClient(echoClient)
     try {
         this.debuggers[echoClient] = Reflect.construct(client, [clientConf])
     } catch(error) {
@@ -54,9 +54,9 @@ Echoes.prototype.echo = function(data){
      * should be verify if this might lead to future collisions */
     debug("sending id %d to index [%s]", data.id, data.index);
     
-    var defaultEcho = this.defaultEcho;
+    const defaultEcho = this.defaultEcho;
     new Promise(function(afterAction) {
-        var result = defaultEcho.sendDebug(data);
+        const result = defaultEcho.sendDebug(data);
         if(afterAction != null)
             afterAction(result);
     })

@@ -6,9 +6,9 @@ const utils = require('./utils');
 
 function produceCSVv1(entries, requestedKeys) {
 
-    const keys = requestedKeys ? requestedKeys : _.keys(entries[0]);
+    const keys = requestedKeys || _.keys(entries[0]);
 
-    let produced = _.reduce(entries, function(memo, entry, cnt) {
+    const produced = _.reduce(entries, function(memo, entry, cnt) {
         if(!memo.init) {
             memo.expect = _.size(keys);
             memo.csv = _.trim(JSON.stringify(keys), '][') + "\n";
@@ -49,9 +49,9 @@ function produceCSVv1(entries, requestedKeys) {
 function unrollRecommended(memo, evidence) { // metadata.type = video with 'related' 
     const numerizedLikes = utils.parseLikes(evidence.likeInfo); // converts '1233 me gusta'
     // TODO ^^^^^^^^^^^^^^ should be removed in the future because it will be part of 'evidence.related' 
-    let recommendedCounterCheck = _.size(evidence.related);
+    const recommendedCounterCheck = _.size(evidence.related);
     _.each(evidence.related, function(related, evidenceCounter) {
-        let entry = {
+        const entry = {
             /* this is removed or anonymized by the called */
             publicKey: evidence.publicKey,
 
@@ -106,13 +106,13 @@ function unrollRecommended(memo, evidence) { // metadata.type = video with 'rela
 }
 
 function unwindSections(memo, evidence) { // metadata.type = 'home' with 'selected'
-    let selectionCounterCheck = _.size(evidence.related);
+    const selectionCounterCheck = _.size(evidence.related);
     if(evidence.selected[0] && !(evidence.selected[0].videoId) ) {
         debug("Excluding id %s because seems the videoId have a problm", evidence.selected[0].id);
 	return memo;
     }
     _.each(evidence.selected, function(selected, evidenceCounter) {
-        let entry = {
+        const entry = {
             /* this is removed or anonymized by the called */
             publicKey: evidence.publicKey,
 

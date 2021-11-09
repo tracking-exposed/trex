@@ -39,27 +39,27 @@ async function pickFromDB(filter, sorting, special) {
 /* ------------- START of accuracy debug section ------------------ */
 const accuracyCounters = {};
 function upsert(key, subkey, update) {
-    let value = _.get(accuracyCounters, key + '.' + subkey, 0);
+    const value = _.get(accuracyCounters, key + '.' + subkey, 0);
     _.set(accuracyCounters, key + '.' + subkey, value + update);
 }
 function updateStats(entry) {
     /* THIS function is call when the raw data is cleaned/updated for release */
     _.each(entry, function(value, key) {
-        if(typeof value == typeof undefined)
+        if(typeof value === typeof undefined)
             upsert(key, 'undefined', 1);
         else if(_.isNull(value))
             upsert(key, 'null', 1);
-        else if(typeof value == typeof 1)
+        else if(typeof value === typeof 1)
             upsert(key, 'int', 1);
-        else if(typeof value == typeof "")
+        else if(typeof value === typeof "")
             upsert(key, 'string', 1);
         else if(_.isInteger(value.length))
             upsert(key, 'list', 1);
-        else if(typeof value == typeof {})
+        else if(typeof value === typeof {})
             upsert(key, 'object', 1);
-        else if(typeof value == typeof true && value)
+        else if(typeof value === typeof true && value)
             upsert(key, 'true', 1);
-        else if(typeof value == typeof true && !value)
+        else if(typeof value === typeof true && !value)
             upsert(key, 'false', 1);
         else
             debug("unknown value type %s", typeof value);
@@ -69,7 +69,7 @@ function accuracyDump(fullamount) {
     /* this dump the stats collected by accuracyCounter */
     _.each(accuracyCounters, function(value, entryName) {
         debug("%s%s%s", entryName, _.times(30 - _.size(entryName), " ").join(), _.map(value, function(amount, variableType) {
-            let p = (amount / fullamount) * 100;
+            const p = (amount / fullamount) * 100;
             return variableType + ": " + _.round(p, 1) + '%' ;
         }).join(" | "));
     });
@@ -81,7 +81,7 @@ function applyWetest1(e) {
         throw new Error("initialize startTime in the sw calling the lib");
 
     /* this is apply to video and homepage */
-    let hoursOffset = moment.duration( moment(e.savingTime) - START_TIME_FOR_RELATIVE_COUNTING.m ).asHours();
+    const hoursOffset = moment.duration( moment(e.savingTime) - START_TIME_FOR_RELATIVE_COUNTING.m ).asHours();
     _.set(e, 'hoursOffset', _.round(hoursOffset));
     _.set(e, 'experiment', 'wetest1');
     _.set(e, 'pseudonym', utils.string2Food(e.publicKey + "weTest#1") );

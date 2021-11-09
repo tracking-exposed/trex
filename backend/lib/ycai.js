@@ -37,7 +37,7 @@ async function fetchRecommendations(videoId, kind) {
   // kind might be 'demo', 'producer', 'community', but,
   // at the moment only producer is actually implemented and
   // considered in the workflow.
-  let filter = {};
+  const filter = {};
   if (kind === "producer") {
     filter.videoId = videoId;
   } else if (kind === "community") {

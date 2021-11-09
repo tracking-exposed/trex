@@ -89,9 +89,9 @@ async function getCampaignQuery(campaignColumn, queriesColumn, campaignName, opt
 
 async function writeCampaigns(cName, listof, kname) {
     const mongoc = await mongo3.clientConnect({concurrency: 1});
-    let retval = [];
+    const retval = [];
     for (o of listof) {
-        let r, filter = _.pick(o, [kname]);
+        let r; const filter = _.pick(o, [kname]);
         /* debugline is sent back to client as JSON */
         let debugline = 'campaign [' + filter[kname] + ']';
         try {
@@ -172,7 +172,7 @@ async function getLimitedCollection(cName, filter, maxAmount, reportOverflow) {
 }
 
 async function compareSearches(cName, idlist) {
-    let mongoc, structured = {}, info = {};
+    let mongoc; const structured = {}; const info = {};
     const maxAmount = 200;
     try {
         mongoc = await mongo3.clientConnect({concurrency: 1});
