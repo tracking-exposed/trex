@@ -156,7 +156,7 @@ export const LinkAccount: React.FC<LinkAccountProps> = ({ auth }) => {
                     onClick={async () => {
                       await copyToClipboard(auth.tokenString)().then(() => {
                         setChannelCopied(true);
-                        // open studio edit tab
+                        // open lab edit tab
                         setShowPopup(true);
                         setTimeout(() => {
                           setShowPopup(false);

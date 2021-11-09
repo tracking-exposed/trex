@@ -62,7 +62,7 @@ export const RecommendationCard: React.FC<RecommendationCardProps> = ({
     >
       {data.image !== undefined ? (
         <Image
-          style={{ height: '120px', paddingTop: '2%' }}
+          style={{ maxWidth: '100%' }}
           src={data.image}
           title={data.title}
         />

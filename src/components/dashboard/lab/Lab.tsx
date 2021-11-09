@@ -2,12 +2,12 @@ import * as React from 'react';
 import { doUpdateCurrentView } from '../../../utils/location.utils';
 import { CreatorVideos } from '../CreatorVideos';
 
-export const Studio: React.FC = () => {
+export const Lab: React.FC = () => {
   return (
     <CreatorVideos
-      onVideoClick={async (v) => {
+      openVideoRecommendations={async (v) => {
         await doUpdateCurrentView({
-          view: 'studioEdit',
+          view: 'labEdit',
           videoId: v.videoId,
         })();
       }}

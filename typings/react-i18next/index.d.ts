@@ -11,7 +11,7 @@ declare module 'react-i18next' {
       actions: {
         popup_bootstrap: string;
         add: string;
-        add_recommendations: string;
+        manage_recommendations: string;
         delete: string;
         clear: string;
         editThisVideo: string;
@@ -37,7 +37,6 @@ declare module 'react-i18next' {
       };
       account: {
         channel: string;
-        channelVideos: string;
       };
       creator: {
         title: string;
@@ -108,7 +107,9 @@ declare module 'react-i18next' {
         thirdTab: string;
       };
       routes: {
-        studio: string;
+        lab_title: string;
+        lab_title_short: string;
+        lab_subtitle: string;
         statistics: string;
         settings: string;
         link_account: string;

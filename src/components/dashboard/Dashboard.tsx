@@ -14,8 +14,8 @@ import Settings from './Settings';
 import { StatisticsPage } from './community/StatisticsPage';
 import { LinkAccount } from './LinkAccount';
 import { Sidebar } from './Sidebar';
-import { Studio } from './studio/Studio';
-import { StudioVideoEdit } from './studio/StudioVideoEdit';
+import { Lab } from './lab/Lab';
+import { LabVideoEdit } from './lab/LabVideoEdit';
 import { ContentCreator } from '@backend/models/ContentCreator';
 import { AuthResponse } from '@backend/models/Auth';
 
@@ -65,19 +65,19 @@ const DashboardContent: React.FC<DashboardContentProps> = ({
           }
 
           switch (currentView.view) {
-            case 'studioEdit':
+            case 'labEdit':
               return [
-                t('routes:studio'),
-                '',
+                t('routes:lab_title'),
+                t('routes:lab_subtitle'),
                 // eslint-disable-next-line react/jsx-key
-                <StudioVideoEdit videoId={currentView.videoId} />,
+                <LabVideoEdit videoId={currentView.videoId} />,
               ];
-            case 'studio':
+            case 'lab':
               return [
-                t('routes:studio'),
-                '',
+                t('routes:lab_title'),
+                t('routes:lab_subtitle'),
                 // eslint-disable-next-line react/jsx-key
-                <Studio />,
+                <Lab />,
               ];
             default:
               return [

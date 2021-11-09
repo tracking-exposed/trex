@@ -10,18 +10,18 @@ import { pullContentCreatorVideos } from 'state/creator.commands';
 import { creatorVideos } from '../../state/creator.queries';
 import { ErrorBox } from '../common/ErrorBox';
 import { LazyFullSizeLoader } from '../common/FullSizeLoader';
-import { VideoCard } from '../common/VideoCard';
+import { VideoCard } from './lab/VideoCard';
 
 const withQueries = declareQueries({ videos: creatorVideos });
 
 type Q = typeof withQueries['Props'];
 
 interface CreatorVideosProps extends Q {
-  onVideoClick?: (v: Video) => void;
+  openVideoRecommendations: (v: Video) => void;
 }
 
 export const CreatorVideos = withQueries<CreatorVideosProps>(
-  ({ queries, onVideoClick }): React.ReactElement => {
+  ({ queries, openVideoRecommendations }): React.ReactElement => {
     const { t } = useTranslation();
     return pipe(
       queries,
@@ -36,19 +36,12 @@ export const CreatorVideos = withQueries<CreatorVideosProps>(
                 </Button>
               </Grid>
             ) : (<>
-              {videos.map((v, i) => (
-                <Grid item md={3} sm={6} xs={12} key={v.videoId}>
+              {videos.map((v) => (
+                <Grid item lg={3} md={4} sm={6} xs={12} key={v.urlId}>
                   <VideoCard
-                    key={i}
                     videoId={v.videoId}
                     title={v.title}
-                    onClick={
-                      onVideoClick !== undefined
-                        ? () => {
-                            onVideoClick(v);
-                          }
-                        : undefined
-                    }
+                    openRecommendations={() => openVideoRecommendations(v)}
                   />
                 </Grid>
               ))}

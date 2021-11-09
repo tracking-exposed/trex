@@ -5,31 +5,31 @@ import {
 } from 'avenger/lib/browser';
 
 export type CurrentView =
-  | { view: 'studioEdit'; videoId: string }
-  | { view: 'studio' }
+  | { view: 'labEdit'; videoId: string }
+  | { view: 'lab' }
   | { view: 'statistics' }
   | { view: 'settings' }
   | { view: 'linkAccount' }
   | { view: 'index' };
 
-const studioEditRegex = /^\/studio\/([^/]+)$/;
-const studioRegex = /^\/studio\/$/;
+const labEditRegex = /^\/lab\/([^/]+)$/;
+const labRegex = /^\/lab\/$/;
 const statisticsRegex = /^\/statistics\/$/;
 const settingsRegex = /^\/settings\/$/;
 const linkAccountRegex = /^\/link-account\/$/;
 
 export function locationToView(location: HistoryLocation): CurrentView {
   const { path: currentPath = '', ...search } = location.search;
-  const studioEditViewMatch = currentPath.match(studioEditRegex);
+  const labEditViewMatch = currentPath.match(labEditRegex);
 
-  if (studioEditViewMatch !== null) {
-    return { view: 'studioEdit', videoId: studioEditViewMatch[1], ...search };
+  if (labEditViewMatch !== null) {
+    return { view: 'labEdit', videoId: labEditViewMatch[1], ...search };
   }
 
-  const studioViewMatch = currentPath.match(studioRegex);
+  const labViewMatch = currentPath.match(labRegex);
 
-  if (studioViewMatch !== null) {
-    return { view: 'studio' };
+  if (labViewMatch !== null) {
+    return { view: 'lab' };
   }
 
   const communityMatch = currentPath.match(statisticsRegex);
@@ -52,18 +52,18 @@ export function locationToView(location: HistoryLocation): CurrentView {
 
 export function viewToLocation(view: CurrentView): HistoryLocation {
   switch (view.view) {
-    case 'studioEdit':
+    case 'labEdit':
       return {
         pathname: `index.html`,
         search: {
-          path: `/studio/${view.videoId}`,
+          path: `/lab/${view.videoId}`,
         },
       };
-    case 'studio':
+    case 'lab':
       return {
         pathname: `index.html`,
         search: {
-          path: '/studio/',
+          path: '/lab/',
         },
       };
     case 'statistics':

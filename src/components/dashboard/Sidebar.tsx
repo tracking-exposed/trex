@@ -43,10 +43,10 @@ export const Sidebar: React.FC = () => {
           <ListItem
             className={classes.listItem}
             button={true}
-            onClick={doUpdateCurrentView({ view: 'studio' })}
+            onClick={doUpdateCurrentView({ view: 'lab' })}
           >
             <EditIcon className={classes.listItemIcon} />
-            <Typography>{t('routes:studio')}</Typography>
+            <Typography>{t('routes:lab_title_short')}</Typography>
           </ListItem>
           <ListItem
             className={classes.listItem}

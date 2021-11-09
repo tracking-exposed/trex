@@ -9,7 +9,7 @@ const resources: CustomTypeOptions['resources'] = {
   actions: {
     popup_bootstrap: 'Bootstrap',
     add: 'Add',
-    add_recommendations: 'Add recommendations',
+    manage_recommendations: 'Manage recommendations',
     link_channel: 'Link channel',
     unlink_channel: 'Unlink channel',
     delete: 'Delete',
@@ -34,14 +34,15 @@ const resources: CustomTypeOptions['resources'] = {
     download: 'Download'
   },
   routes: {
-    studio: 'Studio',
+    lab_title: 'LAB - Recommend on your videos',
+    lab_title_short: 'LAB',
+    lab_subtitle: 'Select a video and highlight content from all over the Internet',
     statistics: 'Statistics',
     settings: 'Settings',
     link_account: 'Link your account',
   },
   account: {
     channel: 'Your channel',
-    channelVideos: 'Channel Videos',
   },
   creator: {
     title: 'Creator',

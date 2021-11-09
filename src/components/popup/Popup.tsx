@@ -26,10 +26,9 @@ import Settings from './Settings';
 
 const useStyles = makeStyles((theme) => ({
   container: {
-    width: '100%',
+    width: 500,
     padding: theme.spacing(2),
     boxSizing: 'border-box',
-    maxWidth: 400,
   },
   content: {
     marginBottom: theme.spacing(2),
