@@ -52,7 +52,6 @@ async function getChannel(channelId) {
     const filter = { channelId };
     const creator = await mongo3.readOne(mongoc,
         nconf.get('schema').creators, filter);
-    // debug("creator %o", creator);
     return creator;
 }
 
