@@ -175,10 +175,16 @@ async function getMetadataFromAuthorChannelId(channelId, options) {
     }
 
     const authors = _.reduce(relatedl, function(memo, related) {
-        rs = related.recommendedSource;
+        // legacy .source, an open problem is the logic to
+        // get rid of old data, if that matters.
+        rs = related.recommendedSource || related.source;
         if(!memo[rs]) {
             const obj = {
                 username: rs,
+                channelId: "hack--to-use--the-same-TypeScript OBJ",
+                // client side should replace the link w/ search Query
+                // this hack, and so the empty avatar, is because
+                // the return value typescript is ContentCreator
                 avatar: "",
                 recommendedVideosCount: 1
             }
@@ -192,8 +198,15 @@ async function getMetadataFromAuthorChannelId(channelId, options) {
     const total = await mongo3.count(mongoc,
         nconf.get('schema').metadata, { authorSource: channelId });
 
-    const ordered = _.orderBy(
-        authors, ['recommendedVideosCount'], ['desc']);
+    const ordered = _.map(_.orderBy(
+        authors, ['recommendedVideosCount'], ['desc']), function(o) {
+            // this hack is because we would generate the link
+            // client side, and sneak into 'channelId' the number of
+            // times the channel got recommended.
+            o.channelId = (o.recommendedVideosCount + "");
+            delete o.recommendedVideosCount;
+            return o;
+        });
 
     // TODO considerare options.skip e options.amount
     await mongoc.close();
