@@ -6,7 +6,7 @@ import { Settings } from '../models/Settings';
 import { API } from '../providers/api.provider';
 import { sendMessage } from '../providers/browser.provider';
 import { profile } from './creator.queries';
-import { keypair, settings } from './public.queries';
+import { keypair, settings, settingsRefetch } from './public.queries';
 
 export const handshake = command((handshake: HandshakeBody) =>
   API.Public.Handshake({ Body: handshake })
@@ -51,3 +51,7 @@ export const downloadTXTFile = command(
     });
   }
 );
+
+export const refreshSettings = command(() => TE.right(undefined), {
+  settings: settingsRefetch
+})
