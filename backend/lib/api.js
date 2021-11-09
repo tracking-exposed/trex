@@ -55,8 +55,8 @@ const apiList = {
 
     /** emails */
     registerEmail:       require('../routes/emails').registerEmail,
+
     /* guardoni support */
-    experimentSubmission:require('../routes/experiments').submission,
     experimentCSV:       require('../routes/experiments').csv,
     experimentDOT:       require('../routes/experiments').dot,
     experimentJSON:      require('../routes/experiments').json,

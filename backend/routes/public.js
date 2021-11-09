@@ -9,7 +9,6 @@ const utils = require('../lib/utils');
 const CSV = require('../lib/CSV');
 
 const endpoints = require("../lib/endpoint");
-const { CreatorStats } = require("../models/CreatorStats");
 const { v1 } = require('../endpoints');
 const structured = require('../lib/structured');
 
@@ -61,9 +60,9 @@ async function getLast(req) {
 
         /* the complex entry has nested metadata */
         const reduction = _.map(last, function(ce) {
-            let lst = _.last(_.orderBy(ce.info, 'savingTime')).savingTime;
-            let d = moment.duration( moment(lst) - moment() );
-            let timeago = d.humanize();
+            const lst = _.last(_.orderBy(ce.info, 'savingTime')).savingTime;
+            const d = moment.duration( moment(lst) - moment() );
+            const timeago = d.humanize();
             return {
                 title: ce.info[0].title,
                 authorName: ce.info[0].authorName,
@@ -73,7 +72,7 @@ async function getLast(req) {
                 secondsago: d.asSeconds()
             }
         });
-        let cacheFormat = {
+        const cacheFormat = {
             content: _.reverse(_.orderBy(reduction, 'secondsago')),
             computedAt: moment(),
             next: moment().add(cache.seconds, 'seconds')
@@ -88,7 +87,7 @@ async function getLast(req) {
 async function getLastHome() {
     const DEFMAX = 100;
 
-    let homelist = await automo.getMetadataByFilter({
+    const homelist = await automo.getMetadataByFilter({
         type: 'home',
         savingTime: { $gte: new Date(moment().startOf('day').toISOString()) }
     }, {
@@ -99,7 +98,7 @@ async function getLastHome() {
     const rv = _.reduce(homelist, function(memo, e) {
         const accessId = utils.hash({who: e.publicKey, when: e.savingTime });
         _.each(e.selected, function(vinfo) {
-            let selected = {
+            const selected = {
                 accessId: accessId.substr(0, 10),
                 metadataId: e.id,
                 order: vinfo.index,
@@ -123,7 +122,7 @@ function ensureRelated(rv) {
      * page get returned. return 'null' if content is not complete */
     const demanded = ['recommendedSource', 'recommendedTitle',
         'videoId', 'recommendedDisplayL', 'verified', 'index'];
-    let sele = _.pick(rv, demanded);
+    const sele = _.pick(rv, demanded);
     return (_.some(_.map(demanded, function(k) {
         return _.isUndefined(sele[k]);
     }))) ? null : sele;
@@ -196,7 +195,7 @@ async function getByAuthor(req) {
     const amount = PUBLIC_AMOUNT_ELEMS;
     const skip = 0;
 
-    if(!req.params.query.match(/[A-Za-z0-9_\-]{11}/))
+    if(!req.params.query.match(/[A-Za-z0-9_-]{11}/))
         throw new Error("Invalid input videoId");
 
     debug("getByAuthor %s amount %d skip %d", req.params.query, amount, skip);

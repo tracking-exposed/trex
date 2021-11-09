@@ -10,6 +10,12 @@ const security = require('../lib/security');
 
 const allowqnames = ['watchers', 'youtubers'];
 
+function cleanAnswerFromDB(ans) {
+    _.unset(ans, '_id');
+    ans.timeago = moment.duration(moment(ans.lastUpdate) - moment()).humanize(true);
+    return ans;
+}
+
 async function recordAnswers(req) {
     const sessionId = utils.hash({ randomSeed: req.body.sessionId })
     const qName = req.body.qName;
@@ -24,11 +30,15 @@ async function recordAnswers(req) {
         qName,
         version
     });
-    let cumulated = answer ? answer : { sessionId };
-    cumulated.reference = _.get(req.body, 'reference.from');
-    cumulated.lastUpdate = new Date();
-    cumulated.qName = qName;
-    cumulated.version = version;
+
+    /* when unzip dictionary the latter key has priority */
+    let cumulated = {
+        reference: _.get(req.body, 'reference.from'),
+        qName,
+        version,
+        ...answer,
+        lastUpdate: new Date(),
+    };
 
     /* keep only the most recent update that is not invalidating existing answers */
     cumulated = _.reduce(req.body.texts, function(memo, textEntry) {
@@ -109,12 +119,6 @@ const watchersQmap = [
     ["71", "72", "73", "74", "75" ],
     ["81", "82", "83" ]
 ]
-
-function cleanAnswerFromDB(ans) {
-    _.unset(ans, '_id');
-    ans.timeago = moment.duration(moment(ans.lastUpdate) - moment()).humanize(true);
-    return ans;
-}
 
 async function retrieveAnswersCSV(req) {
     // CSV function require questionaire name specified, JSON don't

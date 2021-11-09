@@ -177,7 +177,6 @@ app.post('/api/v2/campaigns/:key', async (req, res) => await iowrapper('updateCa
 
 /* guardoni support APIs */
 app.post('/api/v2/experiment/opening', async (req, res) => await iowrapper('experimentOpening', req, res))
-app.post('/api/v2/experiment', async (req, res) => await iowrapper('experimentSubmission', req, res))
 app.get('/api/v2/experiment/:expname/csv', async (req, res) => await iowrapper('experimentCSV', req, res))
 app.get('/api/v2/experiment/:expname/dot', async (req, res) => await iowrapper('experimentDOT', req, res))
 app.get('/api/v2/experiment/:expname/json', async (req, res) => await iowrapper('experimentJSON', req, res))

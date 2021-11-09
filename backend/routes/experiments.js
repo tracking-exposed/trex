@@ -1,19 +1,11 @@
 const _ = require('lodash');
 const moment = require('moment');
 const debug = require('debug')('routes:experiments');
-const url = require('url');
-const querystring = require('querystring');
 const fs = require('fs');
 
 const automo = require('../lib/automo');
 const params = require('../lib/params');
 const CSV = require('../lib/CSV');
-
-async function submission(req) {
-    /* this function is invoked by guardoni at the end */
-    throw new Error("DISCONTINUED!")
-    return { json: retval };
-};
 
 function dotify(data) {
     const dot = Object({links: [], nodes: []})
@@ -141,12 +133,14 @@ async function guardoniConfigure(req) {
 }
 
 async function legacyGuardoni(req) {
+    // TODO kill for the new directive things
 
-    //const cat = req.params.category;
+    // const cat = req.params.category;
     const wtime = req.params.time;
-
     const fcontent = fs.readFileSync("config/expercont.json", "utf8");
     const vlist = JSON.parse(fcontent);
+    console.trace("This shouldn't be used, right?", wtime, vlist);
+
     /*  GUARDONI format:
      *    "name": "Tracking Exposed intro video",
      *    "url": "https://www.youtube.com/watch?v=SmYuYEhT81c",
@@ -166,14 +160,14 @@ async function legacyGuardoni(req) {
         const url = ventry[1];
         // memo.seen[thisc] = memo.seen[thisc] ? memo.seen[thisc] + 1 : 1;
 
-        if(thisc == "first")
+        if(thisc === "first")
             memo.first.push({
                 name: 'first',
                 url,
                 watchFor: 15000,
                 loadFor: 8000
             });
-        else if(thisc == "last")
+        else if(thisc === "last")
             memo.last.push({
                 name: 'last',
                 url,
@@ -183,7 +177,7 @@ async function legacyGuardoni(req) {
         else {
             memo.selected.push({
                 name: thisc,
-                watchFor: wtime == "end" ? "end" : wtime,
+                watchFor: wtime === "end" ? "end" : wtime,
                 loadFor: 8000,
                 url
             })
@@ -286,7 +280,6 @@ async function conclude3(req) {
 }
 
 module.exports = {
-    submission,
     csv,
     dot,
     json,
