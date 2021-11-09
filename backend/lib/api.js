@@ -36,9 +36,6 @@ const apiList = {
     removeEvidence:      require('../routes/personal').removeEvidence,
     getEvidences:        require('../routes/personal').getEvidences,
 
-    /* rsync for developer, overthrown by 'mirror' */
-    rsync:               require('../routes/rsync').rsync,
-
     /* researcher functionalities */
     researcher:          require('../routes/researcher').researcher,
 
@@ -58,8 +55,8 @@ const apiList = {
 
     /** emails */
     registerEmail:       require('../routes/emails').registerEmail,
+
     /* guardoni support */
-    experimentSubmission:require('../routes/experiments').submission,
     experimentCSV:       require('../routes/experiments').csv,
     experimentDOT:       require('../routes/experiments').dot,
     experimentJSON:      require('../routes/experiments').json,

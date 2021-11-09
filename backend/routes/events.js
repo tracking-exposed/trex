@@ -7,31 +7,30 @@ const utils = require('../lib/utils');
 const security = require('../lib/security');
 
 function processHeaders(received, required) {
-    var ret = {};
-    var errs = _.map(required, function(destkey, headerName) {
-        var r = _.get(received, headerName);
+    const ret = {};
+    const errs = _.compact(_.map(required, function(destkey, headerName) {
+        const r = _.get(received, headerName);
         if(_.isUndefined(r))
             return headerName;
 
         _.set(ret, destkey, r);
         return null;
-    });
-    errs = _.compact(errs);
+    }));
     if(_.size(errs)) {
-        debug("Error in processHeaders: %j", errs);
+        debug("Error in processHeaders, missing: %j", errs);
         return { 'errors': errs };
     }
     return ret;
 };
 
-var last = null;
+let last = null;
 function getMirror(req) {
 
     if(!security.checkPassword(req))
         return security.authError;
 
     if(last) {
-        let retval = Object(last);
+        const retval = Object(last);
         last = null;
         debug("getMirror: authentication successfull, %d elements in volatile memory",
             _.size(retval) );
@@ -60,10 +59,17 @@ function headerError(headers) {
     }};
 }
 
+const EXPECTED_HDRS =  {
+    'content-length': 'length',
+    'x-yttrex-version': 'version',
+    'x-yttrex-publickey': 'publickey',
+    'x-yttrex-signature': 'signature',
+    'accept-language': 'language',
+};
+
 async function processEvents2(req) {
 
-    const headers = processHeaders(_.get(req, 'headers'), hdrs);
-
+    const headers = processHeaders(req.headers, EXPECTED_HDRS);
     if(headers.error)
         return headerError(headers);
 
@@ -159,18 +165,10 @@ async function processEvents2(req) {
     }};
 };
 
-const hdrs =  {
-    'content-length': 'length',
-    'x-yttrex-build': 'build',
-    'x-yttrex-version': 'version',
-    'x-yttrex-publickey': 'publickey',
-    'x-yttrex-signature': 'signature',
-    'accept-language': 'language',
-};
 
 module.exports = {
     processEvents2,
     getMirror,
-    hdrs,
+    EXPECTED_HDRS,
     processHeaders,
 };

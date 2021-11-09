@@ -103,7 +103,7 @@ async function read(mongoc, cName, selector, sorter) {
         .db()
         .collection(cName)
         .find(selector)
-        .sort(sorter ? sorter : {})
+        .sort(sorter || {})
         .toArray();
 };
 
@@ -131,7 +131,7 @@ async function readLimit(mongoc, cName, selector, sorter, limitN, past) {
         .collection(cName)
         .find(selector)
         .sort(sorter)
-        .skip(past ? past : 0)
+        .skip(past || 0)
         .limit(limitN)
         .toArray();
 };

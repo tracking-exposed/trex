@@ -48,7 +48,7 @@ async function getPersonalCSV(req) {
     const k =  req.params.publicKey;
     const type = req.params.type;
 
-    if(['home', 'video'].indexOf(type) == -1 ) 
+    if(['home', 'video'].indexOf(type) === -1 ) 
         return { text: "Error 🤷 Invalid request, only 'video' or 'home' are supported" };
 
     const data = await automo.getMetadataByPublicKey(k, { amount: CSV_MAX_SIZE, skip: 0, typefilter: type });
@@ -56,7 +56,7 @@ async function getPersonalCSV(req) {
 
     debug("returned %d data in getPersonalCSV", _.size(data));
     const sourceCounter = _.size(data.metadata);
-    const unrolled = (type == 'home')
+    const unrolled = (type === 'home')
         ? _.reduce(data.metadata, CSV.unwindSections, [])
         : _.reduce(data.metadata, CSV.unrollRecommended, []);
 
@@ -90,7 +90,7 @@ async function getPersonalTimeline(req) {
 
     const { amount, skip } = params.optionParsing(req.params.paging, DEFMAX);
     debug("getPersonalTimelines request by %s using %d starting videos, skip %d (defmax %d)", k, amount, skip, DEFMAX);
-    let c = await automo.getMetadataByPublicKey(k, {
+    const c = await automo.getMetadataByPublicKey(k, {
         takefull: true,
         amount, skip,
         timefilter: moment().subtract(2, 'months').format("YYYY-MM-DD")
@@ -101,7 +101,7 @@ async function getPersonalTimeline(req) {
             _.pick(e, ['ad', 'title', 'authorName']) ); */
         e.value = utils.hash(e, _.keys(_.pick(e, ['ad', 'title', 'authorName'])));
         e.dayString = moment(e.savingTime).format("YYYY-MM-DD");
-        e.numb = _.parseInt(_.replace(e.value, '/\(c+)/', ''));
+        e.numb = _.parseInt(_.replace(e.value, '/(c+)/', ''));
         return e;
     });
     debug("getPersonalTimelines transforming %d last %s ", _.size(list), 
@@ -110,13 +110,13 @@ async function getPersonalTimeline(req) {
     const grouped = _.groupBy(list, 'dayString');
     const aggregated = _.map(grouped, function(perDayEvs, dayStr) {
 
-        let videos = _.filter(perDayEvs, { 'type': 'video' }); 
-        let homepages = _.filter(perDayEvs, { 'type': 'home' });
+        const videos = _.filter(perDayEvs, { 'type': 'video' }); 
+        const homepages = _.filter(perDayEvs, { 'type': 'home' });
 
-        let totalsuggested = _.sum(_.map(homepages, function(h) { return _.size(h.selected); }))
-        let typeUndef = _.sum(_.map(_.countBy(perDayEvs, 'type'), function(amount, name) { return amount; }));
-        let types = _.sum(_.map(_.omit(_.countBy(perDayEvs, 'type'), ['undefined']), function(amount, name) { return amount; }));
-        let authors = _.sum(_.map(_.countBy(videos, 'authorName'), function(amount, name) { return amount; }));
+        const totalsuggested = _.sum(_.map(homepages, function(h) { return _.size(h.selected); }))
+        const typeUndef = _.sum(_.map(_.countBy(perDayEvs, 'type'), function(amount, name) { return amount; }));
+        const types = _.sum(_.map(_.omit(_.countBy(perDayEvs, 'type'), ['undefined']), function(amount, name) { return amount; }));
+        const authors = _.sum(_.map(_.countBy(videos, 'authorName'), function(amount, name) { return amount; }));
         // let adverts = _.sum(_.map(_.omit(_.countBy(perDayEvs, 'advertiser'), ['undefined']), function(amount, name) { return amount; }));
         /* debug("%s <Vid %d Home %d> -> %j %d - %j %d", dayStr,
             _.size(videos), _.size(homepages),
@@ -149,7 +149,7 @@ async function getPersonalRelated(req) {
 
     const { amount, skip } = params.optionParsing(req.params.paging, DEFMAX);
     debug("getPersonalRelated request by %s using %d starting videos, skip %d (defmax %d)", k, amount, skip, DEFMAX);
-    let related = await automo.getRelatedByWatcher(k, { amount, skip });
+    const related = await automo.getRelatedByWatcher(k, { amount, skip });
     const formatted = _.map(related, function(r) {
         /* this is the same format in youtube.tracking.exposed/data,u
          * and should be in lib + documented */
@@ -190,7 +190,7 @@ async function getEvidences(req) {
     const targetValue = req.params.value;
 
     // TODO savingTime is not really supported|tested
-    if(allowFields.indexOf(targetKey) == -1)
+    if(allowFields.indexOf(targetKey) === -1)
         return { json: { "message": `Key ${targetKey} not allowed (${allowFields})`, error: true }};
 
     const matches = await automo

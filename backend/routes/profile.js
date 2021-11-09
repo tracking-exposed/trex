@@ -1,5 +1,4 @@
 const _ = require('lodash');
-const moment = require('moment');
 const debug = require('debug')('routes:profile');
 const nconf = require('nconf');
 
@@ -73,7 +72,7 @@ async function createAndOrJoinTag(req) {
         password: ''
     });
 
-    let ret = {json: {}};
+    const ret = {json: {}};
     const exists = await mongo3.readOne(mongoc, nconf.get('schema').groups, { id: id });
     if(_.get(exists, 'id')) {
         ret.json.group = Object(exists);
@@ -103,7 +102,7 @@ async function createTag(req) {
     const tag = req.body.tag;
     const password = req.body.password;
     const description = req.body.description;
-    const accessibility = (req.body.accessibility == "public") ? "public" : "private";
+    const accessibility = (req.body.accessibility === "public") ? "public" : "private";
 
     const k =  req.params.publicKey;
     if(_.size(k) < 26) // This is not a precise number. why I'm even using this check?
@@ -115,7 +114,7 @@ async function createTag(req) {
     if(_.size(description) < 1)
         return { json: { error: true, message: "When a new group is created a description is mandatory" }};
 
-    if(_.size(password) < PASSWORD_MIN && accessibility == 'private')
+    if(_.size(password) < PASSWORD_MIN && accessibility === 'private')
         return { json: { error: true, message: `Password should be more than ${PASSWORD_MIN} bytes` }};
 
     const mongoc = await mongo3.clientConnect({concurrency: 1});
@@ -175,7 +174,7 @@ async function removeTag(req) {
     });
 
     const profile = await supporters.get(k);
-    if(profile.tag.id == tagId) {
+    if(profile.tag.id === tagId) {
         _.unset(profile, 'tag');
         const updated = await supporters.update(k, profile);
         debug("removeTag, updated profile now: %j", updated);

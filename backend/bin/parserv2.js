@@ -206,7 +206,7 @@ async function appendLabelError(currentList, lastSentAmount) {
             });
             return true;
         } catch(error) {
-            debug("Unable to write on collection 'errors': %s", e.message);
+            debug("Unable to write on collection 'errors': %s", error.message);
             return false;
         }
     });

@@ -1,4 +1,3 @@
-const _ = require('lodash');
 const moment = require('moment');
 const debug = require('debug')('lib:aggregated-limited');
 

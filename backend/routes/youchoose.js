@@ -154,7 +154,7 @@ async function repullByCreator(req) {
   const token = decodedReq.result.headers['x-authorization'];
   // debug('repullByCreator token %s', token);
   const creator = await ycai.getCreatorByToken(token);
-  //debug('repullByCreator %j', creator);
+  // debug('repullByCreator %j', creator);
   const titlesandId = await curly.recentVideoFetch(creator.channelId);
   debug('Repull caused retrival of %d new videos',
     titlesandId.length);
@@ -302,7 +302,7 @@ async function creatorVerify(req) {
   const pageData = await curly.tokenFetch(channelId);
   debug("Code retrieved %s", pageData.code);
 
-  if (tokeno.verificationToken != pageData.code) {
+  if (tokeno.verificationToken !== pageData.code) {
     debug('Validation fail: %s != %s', tokeno.verificationToken, pageData.code);
     return {
       json: {
@@ -382,7 +382,6 @@ async function creatorGet(req) {
 async function creatorDelete(req) {
   // this function is invoked when a content creator wants to
   // delete every data on their belong
-  console.log('TODO: Not implemented nor yet specify');
   throw new Error("NYI");
 }
 

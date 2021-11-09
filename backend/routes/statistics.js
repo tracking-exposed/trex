@@ -15,14 +15,14 @@ async function statistics(req) {
         'labels', 'deeper', 'ads', 'ytvids', 'recommendations', 
         'leaves', 'creators' ];
     const name = req.params.name;
-    if(allowedNames.indexOf(name) == -1) {
+    if(allowedNames.indexOf(name) === -1) {
         debug("Error! this might not appear in visualization: investigate on why an invalid stat-name is called by c3! (%s)", name);
         return { json: { error: true, expectedFormat, allowedNames, note: `the statistic name you look for was ${name}` }}
     }
 
     const unit = req.params.unit;
     const allowedRanges = ['hours', 'hour', 'day', 'days'];
-    if(allowedRanges.indexOf(unit) == -1 ) {
+    if(allowedRanges.indexOf(unit) === -1 ) {
         debug("Error! this might not appear in visualization, but the API call has a malformed time-unit!");
         return { json: { error: true, expectedFormat, allowedRanges, note: `the statistic unit you look for was ${unit}` }}
     }

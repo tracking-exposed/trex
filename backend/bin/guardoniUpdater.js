@@ -1,9 +1,9 @@
 #!/usr/bin/env node
-var _ = require('lodash');
-var debug = require('debug')('bin:guardoniUpdater');
-var request = require('request');
-var fs = require('fs');
-var nconf = require('nconf');
+const _ = require('lodash');
+const debug = require('debug')('bin:guardoniUpdater');
+const request = require('request');
+const fs = require('fs');
+const nconf = require('nconf');
 const path = require('path');
 
 nconf.argv().env();

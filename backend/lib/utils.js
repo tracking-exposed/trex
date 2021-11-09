@@ -11,44 +11,47 @@ const qustr = require('querystring');
 function hash(obj, fields) {
     if(_.isUndefined(fields))
         fields = _.keys(obj);
-    var plaincnt = fields.reduce(function(memo, fname) {
-        return memo +=
-            fname +
-            "∴" +
+    const plaincnt = fields.reduce(function(memo, fname) {
+        memo += (fname + "∴" +
             JSON.stringify(_.get(obj, fname, '…miss!')) +
-            ",";
+            "," );
+        return memo;
     }, "");
     // debug("Hashing of %s", plaincnt);
-    sha1sum = crypto.createHash('sha1');
+    const sha1sum = crypto.createHash('sha1');
     sha1sum.update(plaincnt);
     return sha1sum.digest('hex');
 };
 
 function forceInteger(stri) {
-    // sometime you've "323,333 mi piace" or "gustaria a 222 333 personas" this filter+trim+parse only integer seqences 
     const digits = _.filter(stri, function(c) {
         return _.isInteger(_.parseInt(c))
     }).join("");
+    if(stri.length !== digits.length) {
+        debug("forceInteger convert %s in %s and then %d",
+            stri, digits, _.parseInt(digits) );
+    }
     return _.parseInt(digits);
 }
 
 function parseLikes(likeInfo) {
     if(!likeInfo)
-        return { watchedLikes: null, watchedDislikes: null };
-
-    watchedLikes = forceInteger(likeInfo.likes);
-    watchedDislikes = forceInteger(likeInfo.dislikes);
-
-    return {watchedLikes, watchedDislikes };
+        return { 'watchedLikes': null,
+            'watchedDislikes': null
+        };
+    return {
+        'watchedLikes': forceInteger(likeInfo.likes),
+        'watchedDislikes': forceInteger(likeInfo.dislikes)
+    };
 }
 
 function activeUserCount(usersByDay) {
-    var uC = _.reduce(usersByDay, function(memo, stOb) {
-        var date = stOb["_id"].year + '-' + stOb["_id"].month +
-                   '-' + stOb["_id"].day;
+    const uC = _.reduce(usersByDay, function(memo, stOb) {
+        const date = stOb._id.year + '-' + stOb._id.month +
+                   '-' + stOb._id.day;
         if(_.isUndefined(memo[date]))
             memo[date] = [];
-        memo[date].push(stOb["_id"].user);
+        memo[date].push(stOb._id.user);
         return memo;
     }, {});
     return _.map(uC, function(datec, datek) {
@@ -61,10 +64,10 @@ function activeUserCount(usersByDay) {
 
 function stringToArray (s) {
     // Credits: https://github.com/dchest/tweetnacl-util-js
-    var d = unescape(encodeURIComponent(s));
-    var b = new Uint8Array(d.length);
+    const d = unescape(encodeURIComponent(s));
+    const b = new Uint8Array(d.length);
 
-    for (var i = 0; i < d.length; i++) {
+    for (let i = 0; i < d.length; i++) {
         b[i] = d.charCodeAt(i);
     }
     return b;
@@ -79,11 +82,9 @@ function decodeFromBase58 (s) {
 }
 
 function verifyRequestSignature(req) {
-    // Assume that the tuple (userId, publicKey) exists in the DB.
-    var userId = req.headers['x-yttrex-userId'];
-    var publicKey = req.headers['x-yttrex-publickey'];
-    var signature = req.headers['x-yttrex-signature'];
-    var message = req.body;
+    const publicKey = req.headers['x-yttrex-publickey'];
+    const signature = req.headers['x-yttrex-signature'];
+    let message = req.body;
 
     // FIXME: apparently with Express 4 the body is a streamed buffer,
     // and I don't want to dig in that now. My "There I Fix It" solution
@@ -109,7 +110,7 @@ function string2Food(piistr) {
     const numberOf = 3;
     const inputs = _.times(numberOf, function(i) {
         return _.reduce(i + piistr, function(memo, acharacter) {
-            var x = memo * acharacter.charCodeAt(0);
+            const x = memo * acharacter.charCodeAt(0);
             memo += ( x / 23 );
             return memo;
         }, 1);
@@ -122,12 +123,12 @@ function string2Food(piistr) {
 };
 
 function parseIntNconf(name, def) {
-    let value = nconf.get(name) ? nconf.get(name) : def;
+    const value = nconf.get(name) ? nconf.get(name) : def;
     return _.parseInt(value);
 }
 
 function getInt(req, what, def) {
-    var rv = _.parseInt(_.get(req.params, what));
+    let rv = _.parseInt(_.get(req.params, what));
     if(_.isNaN(rv)) {
         if(!_.isUndefined(def))
             rv  = def;
@@ -140,7 +141,7 @@ function getInt(req, what, def) {
 }
 
 function getString(req, what) {
-    var rv = _.get(req.params, what);
+    const rv = _.get(req.params, what);
     if(_.isUndefined(rv)) {
         debug("getString: Missing parameter [%s] in %j", what, req.params);
         return "";
@@ -150,7 +151,7 @@ function getString(req, what) {
 
 function prettify(content, maxSize) {
     /* content might be an object or might not be */
-    let unrolled = typeof(content) === typeof({}) ? JSON.stringify(content) : content;
+    const unrolled = typeof(content) === typeof({}) ? JSON.stringify(content) : content;
     return _.size(unrolled.toString()) > maxSize ? unrolled.toString().substr(0, maxSize) + '…' : unrolled;
 }
 
@@ -170,19 +171,19 @@ function judgeIncrement(key, current, value) {
                 _.size(c), _.size(n), _.size(x), _.size(y) );
     } */
 
-    if(key == 'title' && _.size(value) && _.size(current) && current != value)
+    if(key === 'title' && _.size(value) && _.size(current) && current !== value)
         debug("title conflict in the same metadata.id 🤯 good fucking luck:\ncurrent <%s> new <%s>", current, value);
 
     // definitive code is below, above only debug lines.
-    if( typeof value == typeof(1) )
+    if( typeof value === typeof(1) )
         return (value !== current); // if return true overrides
-    if( typeof value == typeof('str') )
+    if( typeof value === typeof('str') )
         return _.size(value) > _.size(current); // if bigger overrides
-    if( typeof value == typeof(true) )
+    if( typeof value === typeof(true) )
         return current !== value;  // if different overrides
     if( _.get(value, 'getDate') && value.getDate() )
         return false;
-    if( typeof value == typeof([]) )
+    if( typeof value === typeof([]) )
         return _.size(JSON.stringify(value)) > _.size(JSON.stringify(current));
     if( _.isNull(value) || _.isUndefined(value) )
         return true;
@@ -192,20 +193,20 @@ function judgeIncrement(key, current, value) {
 function getNatureFromURL(href) {
     // this function MUST support the different URLs
     // format specify in ../../extension/src/consideredURLs.js
-    const uq = url.parse(href);
-    if(uq.pathname == '/results') {
+    const uq = url.URL(href);
+    if(uq.pathname === '/results') {
         const searchTerms = _.trim(qustr.parse(uq.query).search_query);
         return {
             type: 'search',
             query: searchTerms,
         }
-    } else if(uq.pathname == '/watch') {
+    } else if(uq.pathname === '/watch') {
         const videoId = _.trim(qustr.parse(uq.query).v);
         return {
             type: 'video',
             videoId,
         }
-    } else if(uq.pathname == '/') {
+    } else if(uq.pathname === '/') {
         return {
             type: 'home'
         }

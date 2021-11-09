@@ -1,11 +1,9 @@
 #!/usr/bin/env node
 const _ = require('lodash');
 const fs = require('fs');
-const url = require('url');
 const moment = require('moment');
 const nconf = require('nconf');
 const JSDOM = require('jsdom').JSDOM;
-const querystring = require('querystring');
 
 const debug = require('debug')('yttrex:leaveserv');
 const debuge = require('debug')('yttrex:leaveserv:error');
@@ -14,7 +12,6 @@ const debugres = require('debug')('leaveserv:result');
 const overflowReport = require('debug')('leaveserv:OVERFLOW');
 
 const automo = require('../lib/automo');
-const { head } = require('fp-ts/lib/ReadonlyNonEmptyArray');
 
 nconf.argv().env().file({ file: 'config/settings.json' });
 
@@ -50,7 +47,7 @@ let lastExecution = moment().subtract(backInTime, 'minutes').toISOString();
 let computedFrequency = 10;
 const stats = { lastamount: null, currentamount: null, last: null, current: null };
 
-if(backInTime != BACKINTIMEDEFAULT) {
+if(backInTime !== BACKINTIMEDEFAULT) {
     const humanized = moment.duration(
         moment().subtract(backInTime, 'minutes') - moment()
     ).humanize();
@@ -93,9 +90,9 @@ function mineTRP(D, e) {
         return null;
     const retval = {};
     if(header)
-        retval["sponsoredName"] = header.textContent.trim();
+        retval.sponsoredName = header.textContent.trim();
     if(domain)
-        retval["sponsoredSite"] = domain.textContent.trim();
+        retval.sponsoredSite = domain.textContent.trim();
     return retval;
 }
 
@@ -127,7 +124,7 @@ function mineChannel(D, e) {
     const channelName = ct ?
         ct.textContent.trim() : a.textContent.trim();
 
-    if(channelName && (channelLink.split('/')[1] == 'channel')) {
+    if(channelName && (channelLink.split('/')[1] === 'channel')) {
         return {
             channelName,
             channelId: channelLink.split('/')[2]
@@ -142,7 +139,7 @@ function mineBanner(D, e) {
         return null;
 
     const imgs = D.querySelectorAll('img');
-    if(imgs.length == 0) {
+    if(imgs.length === 0) {
         const errorretval = {
             error: true, reason: 1,
             images: imgs.length,
@@ -176,10 +173,10 @@ function mineBanner(D, e) {
         return memo;
     }, null);
 
-    retval = { buyer };
+    const retval = { buyer };
     if(imgs.length === 1) {
         const videot = imgs[0].getAttribute('src');
-        if(!_.endsWith(srci, "mqdefault.jpg"))
+        if(!_.endsWith(videot, "mqdefault.jpg"))
             debuge("Unexpected condition! %s", srci);
         
         return {
@@ -198,7 +195,7 @@ function mineBanner(D, e) {
 function processLeaf(e) {
     // e is the 'element', it comes from the DB, and we'll look the 
     // e.html mostly. different e.selecotrName causes different sub-functions
-    if(allowedSelectors.indexOf(e.selectorName) == -1) {
+    if(allowedSelectors.indexOf(e.selectorName) === -1) {
         // debug("Invalid/Unexpected selector received: %s", e.metadataId);
         return null;
     }
@@ -249,7 +246,7 @@ async function fetchAndAnalyze(filter) {
     if(!_.size(leaves.content)) {
 
         nodatacounter++;
-        if( (nodatacounter % 10) == 1)
+        if( (nodatacounter % 10) === 1)
             debug("%d no data at the last query: %j", processedCounter, filter);
 
         lastExecution = moment().toISOString();
@@ -363,7 +360,7 @@ try {
         debug("Targeting selectorName %s", selector);
     }
 
-    if( id && (skipCount || (htmlAmount != AMOUNT_DEFAULT) ) ) {
+    if( id && (skipCount || (htmlAmount !== AMOUNT_DEFAULT) ) ) {
         debug("Ignoring --skip and --amount because of --id");
         skipCount = 0;
         htmlAmount = AMOUNT_DEFAULT;

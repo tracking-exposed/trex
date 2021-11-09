@@ -1,15 +1,9 @@
 const _ = require('lodash');
-const moment = require('moment');
-const debug = require('debug')('routes:researcher');
-const nconf = require('nconf');
-
-const csv = require('../lib/CSV');
-const utils = require('../lib/utils');
-const mongo3 = require('../lib/mongo3');
-const security = require('../lib/security');
-const wetest  = require('../lib/wetest');
-
 const qustr = require('querystring');
+const debug = require('debug')('routes:researcher');
+
+const security = require('../lib/security');
+
 
 async function researcher(req) {
 
@@ -28,8 +22,10 @@ async function researcher(req) {
         return {json: { error: true, message: "filter missing" }};
 
     debug(filter)
-    return {json: { error: true, message: "Not completely implemented" }};
-
+    return {
+        json: { error: true, message: "Not completely implemented" }
+    };
+    /* 
     const watches = await wetest.pickFromDB(filter, { clientTime: -1 });
     const unroll = _.reduce(watches, csv.unrollRecommended, []);
     // const apivideos = _.uniq(_.flatten(_.map(_.compact(_.map(testVideos, 'apifile')), loadYTAPI)));
@@ -45,8 +41,7 @@ async function researcher(req) {
     // const csvtext = csv.produceCSVv1(ready);
 
     debug("Returning wetest of %j with %d elements from %d videos", )
-    return { json: ready };
-    debugger;
+    return { json: ready }; */
 };
 
 module.exports = {

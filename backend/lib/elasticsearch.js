@@ -1,7 +1,7 @@
-var elasticsearch=require('elasticsearch');
+const elasticsearch=require('elasticsearch');
 
 function ElasticsearchClient(conf){
-    this.hosts = conf["hosts"];
+    this.hosts = conf.hosts;
     this.client =  new elasticsearch.Client({  
         hosts: this.hosts
     });
@@ -13,7 +13,7 @@ function ElasticsearchClient(conf){
 }
 
 ElasticsearchClient.prototype.sendDebug = function(objectFeed){
-    var indexFeed = objectFeed.index;
+    const indexFeed = objectFeed.index;
     delete objectFeed.index;
     
     return this.client.index({  

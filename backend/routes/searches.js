@@ -61,7 +61,10 @@ async function getSearchesCSV(req) {
     // this is used by v.md and to download from the CHIARO's page
     const { amount, skip } = params.optionParsing(req.params.paging, MAXRVS);
     const searchTerms = _.first(_.keys(qustr.parse(req.params.query)));
-    debug("getSearchsCSV query string [%s] max amount %d", searchTerms, amount);
+
+    debug("getSearchsCSV query string [%s] max amount %d (skip %d)", searchTerms, amount, skip);
+    if(skip)
+        debug("Warning: skip %d isnt' considered", skip);
 
     const entries = await dbutils.getLimitedCollection(nconf.get('schema').searches, {searchTerms}, amount, true);
     const fixed = _.map(entries, function(e) {
@@ -69,7 +72,7 @@ async function getSearchesCSV(req) {
         return _.omit(e, ['_id', 'publicKey']);
     });
 
-    const overflow = (_.size(entries) == MAXRVS);
+    const overflow = (_.size(entries) === MAXRVS);
     const counters = _.countBy(entries, 'metadataId');
     debug("search query %s returned %d with max amount of %d (%j)",
         searchTerms, _.size(entries), MAXRVS, counters);
@@ -100,7 +103,7 @@ async function getSearchesDot(req) {
         metadataId: { "$in": idList }
     }, MAXRVS, true);
 
-    if(_.size(entries) == MAXRVS)
+    if(_.size(entries) === MAXRVS)
         debug("paging not managed in getSearchesDot, please review!!");
 
     const data = _.map(entries, function(e) {
@@ -130,7 +133,7 @@ async function getSearchesDot(req) {
 async function getSearchKeywords(req) {
     // '/api/v2/search/keywords/:paging?'
     // this returns an unchecked list of USG therefore should be discontinued
-    throw new Error("Discontinued");
+    throw new Error("Discontinued"); /*
     const hardcodedAmount = 3;
     const hardcodedUnit = 'days';
     const { amount, skip } = params.optionParsing(req.params.paging, MAXRVS);
@@ -149,11 +152,11 @@ async function getSearchKeywords(req) {
             hardcodedAmount,
             hardcodedUnit,
             amount: _.size(entries),
-            overflow: (_.size(entries) == MAXRVS),
+            overflow: (_.size(entries) === MAXRVS),
             skip,
             max: MAXRVS
         }
-    }};
+    }}; */
 };
 
 async function updateCampaigns(req) {

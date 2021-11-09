@@ -4,8 +4,6 @@ const debug = require('debug')('emergency-script:2:submitRecommendations');
 const nconf = require('nconf');
 const fetch = require('node-fetch');
 
-const ycai = require("../lib/ycai");
-
 nconf.argv().env().file('config/settings.json');
 
 const accessToken = nconf.get('accessToken');
@@ -22,7 +20,7 @@ async function submitRecommendations(accessToken, urls) {
 
     const ogpAPIurl = backend + "/api/v3/creator/ogp";
     const urlIds = [];
-    for (url of urlist) {
+    for (const url of urlist) {
         const response = await fetch(ogpAPIurl, {
             method: 'post',
             body: JSON.stringify({url}),

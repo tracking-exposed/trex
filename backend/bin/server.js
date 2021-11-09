@@ -118,14 +118,8 @@ app.get('/api/v2/personal/:publicKey/selector/:key/:value', async (req, res) => 
 /* Update in progress, toward parserv3 */
 app.get('/api/v1/html/:metadataId', async (req, res) => await iowrapper('unitById', req, res))
 
-/* rsync your data back */
-app.get('/api/v1/rsync/:daysago?', async (req, res) => await iowrapper('rsync', req, res))
-
 /* monitor for admin */
 app.get('/api/v2/monitor/:key', async (req, res) => await iowrapper('getMonitor', req, res))
-
-/* research subscription and I/O --- note the promise is still rsync? wtf. */
-app.get('/api/v1/research/:publicKey', async (req, res) => await iowrapper('rsync', req, res))
 
 /* admin */
 app.get('/api/v1/mirror/:key', async (req, res) => await iowrapper('getMirror', req, res))
@@ -183,7 +177,6 @@ app.post('/api/v2/campaigns/:key', async (req, res) => await iowrapper('updateCa
 
 /* guardoni support APIs */
 app.post('/api/v2/experiment/opening', async (req, res) => await iowrapper('experimentOpening', req, res))
-app.post('/api/v2/experiment', async (req, res) => await iowrapper('experimentSubmission', req, res))
 app.get('/api/v2/experiment/:expname/csv', async (req, res) => await iowrapper('experimentCSV', req, res))
 app.get('/api/v2/experiment/:expname/dot', async (req, res) => await iowrapper('experimentDOT', req, res))
 app.get('/api/v2/experiment/:expname/json', async (req, res) => await iowrapper('experimentJSON', req, res))
@@ -197,7 +190,7 @@ app.get('/api/v2/guardoni/:experiment/:botname', async (req, res) => await iowra
 async function initialSanityChecks() {
     /* security checks = is the password set and is not the default? (more checks might come) */
     security.checkKeyIsSet();
-    await dbutils.checkMongoWorks(beFatal=true);
+    await dbutils.checkMongoWorks(true /* if true means that failure is fatal */);
 }
 
 initialSanityChecks();

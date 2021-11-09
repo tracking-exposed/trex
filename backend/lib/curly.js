@@ -165,7 +165,8 @@ const tokenRegexp = /\[(youchoose):(\w+)\]/;
 
 async function tokenFetch(channelId) {
   const ytvidsurl = `https://www.youtube.com/channel/${channelId}/about`;
-  const { statusCode, data, headers } = await curly.get(ytvidsurl, {
+  // const { statusCode, data, headers } = await curly.get
+  const { data } = await curly.get(ytvidsurl, {
     verbose: false,
     timeoutMs: 4000,
     sslVerifyPeer: false,
@@ -206,7 +207,6 @@ async function tokenFetch(channelId) {
   return {
     avatar,
     username,
-    avatar,
     channelId,
     url,
     code: match[2],
