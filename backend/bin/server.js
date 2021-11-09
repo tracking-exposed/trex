@@ -190,7 +190,7 @@ app.get('/api/v2/guardoni/:experiment/:botname', async (req, res) => await iowra
 async function initialSanityChecks() {
     /* security checks = is the password set and is not the default? (more checks might come) */
     security.checkKeyIsSet();
-    await dbutils.checkMongoWorks(beFatal=true);
+    await dbutils.checkMongoWorks(true /* if true means that failure is fatal */);
 }
 
 initialSanityChecks();

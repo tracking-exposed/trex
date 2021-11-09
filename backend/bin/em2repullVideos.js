@@ -22,7 +22,7 @@ async function repullVideo(accessToken) {
     });
     const answer = await response.json();
     if(answer.error) {
-        console.log("Error in", url);
+        console.log("Error in", ogpAPIurl);
         console.log("<E>", JSON.stringify(answer));
     } else {
         debug("[OK] %j", answer);

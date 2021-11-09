@@ -31,8 +31,8 @@ async function computeCount(mongoc, statinfo, filter) {
         _.size(statinfo.variables)
     );
 
-    let counting = [];
-    for (v of statinfo.variables) {
+    const counting = [];
+    for (const v of statinfo.variables) {
 
         if(v.selector) {
             const thisfilter = Object.assign({}, filter, v.selector);
@@ -72,7 +72,7 @@ async function start() {
     debug("Loaded %d possible statistics%s: %d to be done",
         _.size(statsMap), name ? `, demanded '${name}'` : "", _.size(tobedone));
 
-    let daily = [];
+    const daily = [];
     for (const statinfo of tobedone) {
         const dayref = aggregated.dayData(statshour);
         const dayfilter = _.set({}, statinfo.timevar, {
@@ -88,7 +88,7 @@ async function start() {
             day: new Date(dayref.dayOnly),
             name: statinfo.name
         });
-        let r = await mongo.upsertOne(mongoc, schema.stats, { dayId: dayref.dayId, name: statinfo.name }, ready);
+        const r = await mongo.upsertOne(mongoc, schema.stats, { dayId: dayref.dayId, name: statinfo.name }, ready);
         daily.push(r);
     }
 
@@ -98,7 +98,7 @@ async function start() {
         return;
     }
 
-    let hourly = [];
+    const hourly = [];
     for (const statinfo of tobedone) {
         const hoursref = aggregated.hourData(statshour);
         const hourfilter = _.set({}, statinfo.timevar, {
@@ -114,7 +114,7 @@ async function start() {
             hour: new Date(hoursref.hourOnly),
             name: statinfo.name
         });
-        let r = await mongo.upsertOne(mongoc, schema.stats, { hourId: hoursref.hourId, name: statinfo.name }, entry);
+        const r = await mongo.upsertOne(mongoc, schema.stats, { hourId: hoursref.hourId, name: statinfo.name }, entry);
         hourly.push(r);
     }
 
