@@ -15,7 +15,14 @@ const COMMANDJSONEXAMPLE = "https://youtube.tracking.exposed/json/automation-exa
 const EXTENSION_WITH_OPT_IN_ALREADY_CHECKED='https://github.com/tracking-exposed/yttrex/releases/download/v1.8.99/yttrex-guardoni-1.8.99.zip';
 
 const configPath = path.join("static", "settings.json");
-nconf.argv().env().file(configPath);
+nconf.argv().env();
+nconf.defaults({
+  'headless': false,
+  'proxy': "",
+  'config_file' : configPath
+});
+const configFile = nconf.get('config_file');
+nconf.file(configFile);
 debug.enabled = true;
 
 const server = nconf.get('backend') ?
@@ -194,7 +201,10 @@ async function pullDirectives(sourceUrl) {
 async function readExperiment(profinfo) {
 
   let page, experiment = null;
-  const browser = await dispatchBrowser(false, profinfo);
+  // check if headless flag is defined
+  const headless = nconf.get('headless');
+
+  const browser = await dispatchBrowser(headless, profinfo);
 
   try {
     page = (await browser.pages())[0];
@@ -428,7 +438,10 @@ async function main() {
 
   await writeExperimentInfo(experiment, profinfo, evidencetag, directiveType);
 
-  const browser = await dispatchBrowser(false, profinfo);
+  // check if headless flag is defined
+  const headless = nconf.get('headless');
+
+  const browser = await dispatchBrowser(headless, profinfo);
 
   if(browser.newProfile)
     await allowResearcherSomeTimeToSetupTheBrowser(profinfo.profileName);
@@ -466,6 +479,12 @@ async function dispatchBrowser(headless, profinfo) {
 
   debug("Dispatching a browser in a profile usage count %d", execount);
   let browser = null;
+
+  let proxy = nconf.get('proxy');
+  if(proxy) {
+    proxy = "--proxy-server=" + proxy
+  }
+
   try {
     puppeteer.use(pluginStealth());
     browser = await puppeteer.launch({
@@ -475,7 +494,8 @@ async function dispatchBrowser(headless, profinfo) {
         args: ["--no-sandbox",
           "--disabled-setuid-sandbox",
           "--load-extension=" + dist,
-          "--disable-extensions-except=" + dist
+          "--disable-extensions-except=" + dist,
+          proxy
         ],
     });
 
