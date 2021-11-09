@@ -42,14 +42,14 @@ async function keypress() {
 }
 
 async function allowResearcherSomeTimeToSetupTheBrowser(profileName) {
-  console.log("\n\n.:*~*:._.:*~*:._.:*~*:._.:*~*:._.:*~*:._.:*~*:._.:*~*:._.:*~*:.");
+  console.log("\n\n.:*~*:._.:*~*:._.:*~*:._.:*~*:._.:*~*:._.:*~*:._.:*~*:._.:*~*:._.:*~*:.");
   console.log("Creating profile", profileName);
   console.log("You should see a chrome browser (with yttrex installed)")
-  console.log("\nPLEASE in that window, open youtube.com and accept the cookie processing.");
+  console.log("\nPLEASE in that window, open youtube.com and accept cookie banner.");
   console.log("ONLY AFTER, press ANY KEY here. It will start the collection");
-  console.log("\n(without accepting the cookie banner the test will fail and you have to remove the directory with your evidencetag, to restart.)");
-  console.log("\nnext time you'll use the same profile, this step would not appear, as long as you keep the directory.");
-  console.log('\n~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~');
+  console.log("\n(If you don't accept the cookie banner the test might fail)");
+  console.log("\nnext time you'll use the same profile, this step would not appear.");
+  console.log('\n~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~');
   await keypress();
   console.log("\n[Received] Reproduction starts now!")
 }
@@ -125,6 +125,7 @@ async function registerCSV(directiveType) {
 
   const registeruri = buildAPIurl('directives', directiveType);
   // implemented in backend/routes/directives.js
+  debug("Registering CSV via %s", registeruri);
 
   try {
     const commit = await fetch(registeruri, {
@@ -286,7 +287,7 @@ function profileExecount(profile, evidencetag) {
   const udd = path.resolve(path.join('profiles', profile));
   const guardfile = path.join(udd, 'guardoni.json');
   if (!fs.existsSync(udd)) {
-    console.log("--profile name hasn't an associated directory: " + udd);
+    console.log("--profile hasn't a directory: " + udd + "creating...");
     try {
       fs.mkdirSync(udd);
     } catch (error) {
@@ -317,41 +318,52 @@ function profileExecount(profile, evidencetag) {
 }
 
 function printHelp() {
-  const helptext = `Configuration options can be specify via: environment, --longopts, and ${configPath} file
+  const helptext = `\nOptions can be set via: env , --longopts, and ${configPath} file
 Three modes exists to launch Guardoni:\n
-1— With --auto: It start a browser offering you to join existing experiments (currently two).
-2— With --csv option and one between --shadowban and --comparison: Register an experiment.
-3— With --experiment it would fetch what have been registered in the case n.2 ^^^^^^^^^^^.
 
-Consult https://youtube.tracking.exposed/guardoni for the full documentation.
-You need to have a reliable internet connection to ensure a proper data collection!`;
+To quickly test the tool:
+   --auto:\t\tYou can specify 1 (is the default) or 2.
+
+To register an experiment:
+   --csv FILENAME.csv\tdefault is --comparison, optional --shadowban
+
+To execute a known experiment:
+   --experiment <experimentId>
+
+https://youtube.tracking.exposed/guardoni for full documentation.
+ [--evidencetag, --profile, --backend are special option]
+You need a reliable internet connection to ensure a flawless collection`;
+  console.log(".:*~*:._.:*~*:._.:*~*:._.:*~*:._.:*~*:._.:*~*:._.:*~*:._.:*~*:._.:*~*:.");
   console.log(helptext);
+  console.log('\n~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~');
 }
 
 async function main() {
 
-  const auto = !!nconf.get('auto');
+  const auto = nconf.get('auto');
   const shadowban = nconf.get('shadowban');
-  const comparison = nconf.get('comparison');
   const directiveType = !!shadowban ? "chiaroscuro" : "comparison";
-  const experiment = nconf.get('experiment');
+  let experiment = nconf.get('experiment');
   const sourceUrl = nconf.get('csv');
 
   if(!auto && !sourceUrl && !experiment) {
     printHelp();
     process.exit(1);
   }
+
+  if(auto === "2") {
+    debug("Selected experiment n.2 (codename: Naomi)")
+    experiment = "d75f9eaf465d2cd555de65eaf61a770c82d59451";
+  } else if(auto === "1" || !!nconf.get('auto')) {
+    debug("Selected experiment n.1 (codename: Greta)")
+    experiment = "37384a9b7dff26184cdea226ad5666ca8cbbf456";
+  }
+
   /*
   if(directiveType == 'chiaroscuro')
     return await manageChiaroscuro(evidencetag, profinfo); */
 
   if (sourceUrl) {
-    if (!comparison && !shadowban) {
-      console.log("\nError in uploading the --csv. You must specify if:");
-      console.log("\tit is a shadowban test with --shadowban");
-      console.log("\tit is an experiment by comparison, with --comparison");
-      process.exit(1);
-    }
 
     debug("Registering CSV %s as %s", sourceUrl, directiveType);
     const note = await registerCSV(directiveType)
@@ -394,6 +406,10 @@ async function main() {
     directiveurl = buildAPIurl('directives', experiment);
   }
 
+  /*
+   --- NOTE, the browser to let select experiment is temporarly suspended. To do test, 
+       you can use --auto (greta) or optionally --auto 2 (naomi) 
+
   if(auto) {
     debug("Dispatch browser for local questioning");
     let restrictedSettings = await readExperiment(profile);
@@ -401,7 +417,7 @@ async function main() {
     debug("experiment read via local page: %j", restrictedSettings);
     experiment = restrictedSettings.experiment;
     directiveurl = restrictedSettings.sourceUrl;
-  }
+  } */
 
   debug("Profile %s pulling directive %s", profile, directiveurl);
 
@@ -572,7 +588,7 @@ try {
   if(!!nconf.get('auto')) {
     console.log("AUTO mode. No mandatory options; --profile, --evidencetag OPTIONAL")
   } else if(!!nconf.get('csv')) {
-    console.log("CSV mode: mandatory --comparison or --shadowban; Guardoni exit after upload")
+    console.log("CSV mode: default is --comparison (special is --shadowban); Guardoni exit after upload")
   } else if(!!nconf.get('experiment')) {
     console.log("EXPERIMENT mode: no mandatory options; --profile, --evidencetag OPTIONAL")
   }

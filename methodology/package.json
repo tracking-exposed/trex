@@ -1,9 +1,8 @@
 {
   "name": "guardoni",
-  "version": "1.3.0",
+  "version": "1.8.0",
   "description": "Guardoni is a tool to automate access and coordinate personalization algorithm analysis",
   "scripts": {
-    "dist": "cd dist; mkdir extension; touch extension/.keep; mkdir experiments; touch experiments/.keep; zip guardoni-win.txt ex* guardoni.zip",
     "pkg": "pkg ./package.json"
   },
   "bin": "./bin/guardoni.js",
@@ -18,7 +17,7 @@
   ],
   "author": "Claudio Agosti and the TRex team",
   "license": "AGPL-3.0-or-later",
-  "homepage": "https://github.com/tracking-exposed/yttrex#readme",
+  "homepage": "https://youtube.tracking.exposed/guardoni",
   "dependencies": {
     "csv-parse": "^4.15.3",
     "debug": "^4.3.2",
@@ -40,9 +39,10 @@
       "./node_modules/**/*.js"
     ],
     "assets": [
-      "./extension/**",
-      "static/*",
-      "./profiles/.keep"
+      "extension/.keep",
+      "experiments/.keep",
+      "static/*.json",
+      "profiles/.keep"
     ],
     "targets": [
       "node12-linux-x64",
