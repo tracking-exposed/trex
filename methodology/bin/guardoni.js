@@ -15,14 +15,12 @@ const parse = require('csv-parse/lib/sync');
 const COMMANDJSONEXAMPLE = "https://youtube.tracking.exposed/json/automation-example.json";
 const EXTENSION_WITH_OPT_IN_ALREADY_CHECKED='https://github.com/tracking-exposed/yttrex/releases/download/v1.8.99/yttrex-guardoni-1.8.99.zip';
 
-const configPath = path.join("static", "settings.json");
+const defaultCfgPath = path.join("static", "settings.json");
 nconf.argv().env();
 nconf.defaults({
-  'headless': false,
-  'proxy': "",
-  'config_file' : configPath
+  'config' : defaultCfgPath
 });
-const configFile = nconf.get('config_file');
+const configFile = nconf.get('config');
 nconf.file(configFile);
 debug.enabled = true;
 
@@ -200,12 +198,12 @@ async function pullDirectives(sourceUrl) {
 }
 
 async function readExperiment(profinfo) {
-
+  /* this function is invoked to dispatch the assistance window.
+   * it is a piece of dead code, at the moment, but this would 
+   * start when --auto is invoked */
   let page, experiment = null;
-  // check if headless flag is defined
-  const headless = nconf.get('headless');
 
-  const browser = await dispatchBrowser(headless, profinfo);
+  const browser = await dispatchBrowser(false, profinfo);
 
   try {
     page = (await browser.pages())[0];
@@ -330,7 +328,7 @@ function profileExecount(profile, evidencetag) {
 }
 
 function printHelp() {
-  const helptext = `\nOptions can be set via: env , --longopts, and ${configPath} file
+  const helptext = `\nOptions can be set via: env , --longopts, and ${defaultCfgPath} file
 Three modes exists to launch Guardoni:\n
 
 To quickly test the tool:
@@ -343,7 +341,7 @@ To execute a known experiment:
    --experiment <experimentId>
 
 https://youtube.tracking.exposed/guardoni for full documentation.
- [--evidencetag, --profile, --backend are special option]
+ [--evidencetag, --profile, are special option], and --config <file>
 You need a reliable internet connection to ensure a flawless collection`;
   console.log(".:*~*:._.:*~*:._.:*~*:._.:*~*:._.:*~*:._.:*~*:._.:*~*:._.:*~*:._.:*~*:.");
   console.log(helptext);
@@ -440,13 +438,11 @@ async function main() {
   directiveurl = buildAPIurl('directives', experiment)
   const directives = await pullDirectives(directiveurl);
 
-  debug("loaded %d directives from %s", directives.length, directiveurl);
+  debug("Loaded %d directives from %s", directives.length, directiveurl);
 
   await writeExperimentInfo(experiment, profinfo, evidencetag, directiveType);
 
-  // check if headless flag is defined
   const headless = nconf.get('headless');
-
   const browser = await dispatchBrowser(headless, profinfo);
 
   if(browser.newProfile)

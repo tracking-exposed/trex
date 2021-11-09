@@ -1,3 +1,5 @@
 {
-    "backend":""
+    "backend":"",
+    "headless": false,
+    "proxy":""
 }
