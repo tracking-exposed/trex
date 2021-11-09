@@ -463,6 +463,12 @@ async function dispatchBrowser(headless, profinfo) {
 
   debug("Dispatching a browser in a profile usage count %d", execount);
   let browser = null;
+
+  let proxy = nconf.get('proxy');
+  if(proxy) {
+    proxy = "--proxy-server=" + proxy
+  }
+
   try {
     puppeteer.use(pluginStealth());
     browser = await puppeteer.launch({
@@ -472,7 +478,8 @@ async function dispatchBrowser(headless, profinfo) {
         args: ["--no-sandbox",
           "--disabled-setuid-sandbox",
           "--load-extension=" + dist,
-          "--disable-extensions-except=" + dist
+          "--disable-extensions-except=" + dist,
+          proxy
         ],
     });
 
