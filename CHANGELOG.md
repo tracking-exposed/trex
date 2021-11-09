@@ -1,3 +1,12 @@
+# [1.1.0-beta.4](https://github.com/tracking-exposed/YCAI/compare/v1.1.0-beta.3...v1.1.0-beta.4) (2021-11-09)
+
+
+### Bug Fixes
+
+*  lab flow ([#95](https://github.com/tracking-exposed/YCAI/issues/95)) ([b336fb6](https://github.com/tracking-exposed/YCAI/commit/b336fb620b70ce8dae8fe2f879963ccb866d4238))
+* video recommendations box ([#96](https://github.com/tracking-exposed/YCAI/issues/96)) ([421ec50](https://github.com/tracking-exposed/YCAI/commit/421ec50f40cdd6678881ec0390fd5d16a8f7357a)), closes [#78](https://github.com/tracking-exposed/YCAI/issues/78) [#80](https://github.com/tracking-exposed/YCAI/issues/80)
+* YT window listeners ([#94](https://github.com/tracking-exposed/YCAI/issues/94)) ([10c5f5a](https://github.com/tracking-exposed/YCAI/commit/10c5f5a5735dd5941b78e07af3b0002a8e566cda)), closes [#79](https://github.com/tracking-exposed/YCAI/issues/79) [#71](https://github.com/tracking-exposed/YCAI/issues/71)
+
 # [1.1.0-beta.3](https://github.com/tracking-exposed/YCAI/compare/v1.1.0-beta.2...v1.1.0-beta.3) (2021-11-09)
 
 
