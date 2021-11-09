@@ -118,14 +118,8 @@ app.get('/api/v2/personal/:publicKey/selector/:key/:value', async (req, res) => 
 /* Update in progress, toward parserv3 */
 app.get('/api/v1/html/:metadataId', async (req, res) => await iowrapper('unitById', req, res))
 
-/* rsync your data back */
-app.get('/api/v1/rsync/:daysago?', async (req, res) => await iowrapper('rsync', req, res))
-
 /* monitor for admin */
 app.get('/api/v2/monitor/:key', async (req, res) => await iowrapper('getMonitor', req, res))
-
-/* research subscription and I/O --- note the promise is still rsync? wtf. */
-app.get('/api/v1/research/:publicKey', async (req, res) => await iowrapper('rsync', req, res))
 
 /* admin */
 app.get('/api/v1/mirror/:key', async (req, res) => await iowrapper('getMirror', req, res))

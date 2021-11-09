@@ -1,10 +1,8 @@
 /* supporter library contains DB ops related to the supporter */
-const _ = require('lodash');
 const nconf = require('nconf');
 const debug = require('debug')('lib:supporters');
 
 const mongo3 = require('./mongo3');
-const params = require('./params');
 
 async function update(publicKey, updated) {
   // this function is used by routes/tags.js and might be 
@@ -15,7 +13,7 @@ async function update(publicKey, updated) {
     if(!exists)
         throw new Error("publicKey do not match any user - this function is only meant to update existing profiles");
 
-    if(updated.publicKey != publicKey)
+    if(updated.publicKey !== publicKey)
         throw new Error("publicKey can't be updated");
 
     updated.lastActivity = new Date();

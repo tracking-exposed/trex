@@ -7,7 +7,6 @@
  */
 const _ = require('lodash');
 const nconf = require('nconf');
-const debug = require('debug')('lib:structured');
 
 const mongo3 = require('./mongo3');
 
@@ -68,7 +67,7 @@ function buildRecommFlat(authorStruct) {
         video.id = video.id.substr(0, 20);
 
         return _.map(video.related, function(recommended, n) {
-            const cleanVideoId = recommended.videoId.replace(/\&.*/, '');
+            const cleanVideoId = recommended.videoId.replace(/&.*/, '');
             return {
                 id: video.id + i + cleanVideoId + n,
                 watchedTitle: video.title,

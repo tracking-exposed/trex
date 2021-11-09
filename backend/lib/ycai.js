@@ -70,7 +70,7 @@ async function fetchRecommendations(videoId, kind) {
       0
     );
 
-    if (RECOMMENDATION_MAX == result.length)
+    if (RECOMMENDATION_MAX === result.length)
       debug("More recommendations than what is possible!");
 
     result = _.map(result, ensureRecommendationsDefault);
@@ -95,7 +95,7 @@ async function fetchRecommendationsByProfile(token) {
     INTERFACE_MAX,
     0
   );
-  if (INTERFACE_MAX == results.length) {
+  if (INTERFACE_MAX === results.length) {
     debug("More recommendations than what is possible! (we should support pagination)");
   }
   await mongoc.close();
@@ -213,15 +213,9 @@ async function updateRecommendations(videoId, recommendations) {
 
   one.recommendations = recommendations;
   one.when = new Date();
-  const check = await mongo3.updateOne(
-    mongoc,
-    nconf.get("schema").ytvids,
-    {
-      videoId,
-    },
-    one
-  );
+  await mongo3.updateOne(mongoc, nconf.get("schema").ytvids, { videoId }, one);
   await mongoc.close();
+
   _.unset(one, "_id");
   debug("video Recommendations updated! (now %d)", one.recommendations.length);
   return one;
@@ -279,7 +273,7 @@ async function confirmCreator(tokeno, creatorInfo) {
   // assume tokeno.type === 'channel'
   const r = await mongo3.deleteMany(mongoc,
     nconf.get("schema").tokens, { channelId: tokeno.channelId });
-  if(r.result.ok != 1)
+  if(r.result.ok !== 1)
     debug("Error? not found token to remove for channelId %s", tokeno.channelId);
 
   _.unset(creatorInfo, 'code');
@@ -299,7 +293,7 @@ async function confirmCreator(tokeno, creatorInfo) {
       nconf.get("schema").creators, { channelId: tokeno.channelId});
     const x = await mongo3.writeOne(mongoc,
       nconf.get("schema").creators, creator);
-    if(x.result.ok != 1)
+    if(x.result.ok !== 1)
       debug("Error? unable to write creator on the DB %j", x.result);
   } catch(error) {
     debug("Error in confirmCreator: %s", error.message);
@@ -320,7 +314,7 @@ async function registerVideos(videol, channelId) {
   });
   debug("Adding %d videos to recorded YCAI available videos", objl.length);
   const mongoc = await mongo3.clientConnect({ concurrency: 1 });
-  for (ytv of objl) {
+  for (const ytv of objl) {
     try {
       await mongo3.writeOne(mongoc, nconf.get("schema").ytvids, ytv);
     } catch (error) {

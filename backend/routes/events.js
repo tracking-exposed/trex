@@ -161,7 +161,6 @@ async function processEvents2(req) {
 
 const hdrs =  {
     'content-length': 'length',
-    'x-yttrex-build': 'build',
     'x-yttrex-version': 'version',
     'x-yttrex-publickey': 'publickey',
     'x-yttrex-signature': 'signature',

@@ -12,34 +12,37 @@ function hash(obj, fields) {
     if(_.isUndefined(fields))
         fields = _.keys(obj);
     const plaincnt = fields.reduce(function(memo, fname) {
-        return memo +=
-            fname +
-            "∴" +
+        memo += (fname + "∴" +
             JSON.stringify(_.get(obj, fname, '…miss!')) +
-            ",";
+            "," );
+        return memo;
     }, "");
     // debug("Hashing of %s", plaincnt);
-    sha1sum = crypto.createHash('sha1');
+    const sha1sum = crypto.createHash('sha1');
     sha1sum.update(plaincnt);
     return sha1sum.digest('hex');
 };
 
 function forceInteger(stri) {
-    // sometime you've "323,333 mi piace" or "gustaria a 222 333 personas" this filter+trim+parse only integer seqences 
     const digits = _.filter(stri, function(c) {
         return _.isInteger(_.parseInt(c))
     }).join("");
+    if(stri.length !== digits.length) {
+        debug("forceInteger convert %s in %s and then %d",
+            stri, digits, _.parseInt(digits) );
+    }
     return _.parseInt(digits);
 }
 
 function parseLikes(likeInfo) {
     if(!likeInfo)
-        return { watchedLikes: null, watchedDislikes: null };
-
-    watchedLikes = forceInteger(likeInfo.likes);
-    watchedDislikes = forceInteger(likeInfo.dislikes);
-
-    return {watchedLikes, watchedDislikes };
+        return { 'watchedLikes': null,
+            'watchedDislikes': null
+        };
+    return {
+        'watchedLikes': forceInteger(likeInfo.likes),
+        'watchedDislikes': forceInteger(likeInfo.dislikes)
+    };
 }
 
 function activeUserCount(usersByDay) {
@@ -79,8 +82,6 @@ function decodeFromBase58 (s) {
 }
 
 function verifyRequestSignature(req) {
-    // Assume that the tuple (userId, publicKey) exists in the DB.
-    const userId = req.headers['x-yttrex-userId'];
     const publicKey = req.headers['x-yttrex-publickey'];
     const signature = req.headers['x-yttrex-signature'];
     let message = req.body;
@@ -170,7 +171,7 @@ function judgeIncrement(key, current, value) {
                 _.size(c), _.size(n), _.size(x), _.size(y) );
     } */
 
-    if(key == 'title' && _.size(value) && _.size(current) && current != value)
+    if(key === 'title' && _.size(value) && _.size(current) && current !== value)
         debug("title conflict in the same metadata.id 🤯 good fucking luck:\ncurrent <%s> new <%s>", current, value);
 
     // definitive code is below, above only debug lines.
@@ -192,20 +193,20 @@ function judgeIncrement(key, current, value) {
 function getNatureFromURL(href) {
     // this function MUST support the different URLs
     // format specify in ../../extension/src/consideredURLs.js
-    const uq = url.parse(href);
-    if(uq.pathname == '/results') {
+    const uq = url.URL(href);
+    if(uq.pathname === '/results') {
         const searchTerms = _.trim(qustr.parse(uq.query).search_query);
         return {
             type: 'search',
             query: searchTerms,
         }
-    } else if(uq.pathname == '/watch') {
+    } else if(uq.pathname === '/watch') {
         const videoId = _.trim(qustr.parse(uq.query).v);
         return {
             type: 'video',
             videoId,
         }
-    } else if(uq.pathname == '/') {
+    } else if(uq.pathname === '/') {
         return {
             type: 'home'
         }

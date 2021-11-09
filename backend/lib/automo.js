@@ -17,7 +17,7 @@ const _ = require('lodash');
 const nconf = require('nconf');
 const debug = require('debug')('lib:automo');
 const moment = require('moment');
-const chardet = require('chardet')
+// const chardet = require('chardet')
 
 const utils = require('../lib/utils');
 const mongo3 = require('./mongo3');
@@ -91,16 +91,16 @@ async function getMetadataByPublicKey(publicKey, options) {
 
     const filter = {
         publicKey: supporter.publicKey,
-        title: { $exists: true }
+        type: options.type,
     };
-    if(options.takefull)
-        _.unset(filter, 'title');
-    if(options.typefilter) {
-        _.set(filter, 'type', options.typefilter)
-        // this automo library is just retarded at this point!
-        if(options.typefilter == 'home')
-            _.unset(filter, 'title');
-    }
+    if(options.takefull || options.typefilter)
+        debug("Options takefull and typefilter were remove")
+
+    if(!options.type)
+        debug("This call might not work as expected");
+
+    /* remind self legacy data might not return */
+
     if(options.timefilter)
         _.set(filter, 'savingTime.$gte', new Date(options.timefilter));
 
@@ -177,7 +177,7 @@ async function getMetadataFromAuthorChannelId(channelId, options) {
     const authors = _.reduce(relatedl, function(memo, related) {
         // legacy .source, an open problem is the logic to
         // get rid of old data, if that matters.
-        rs = related.recommendedSource || related.source;
+        const rs = related.recommendedSource || related.source;
         if(!memo[rs]) {
             const obj = {
                 username: rs,
@@ -269,21 +269,6 @@ async function getHTMLVideosByMetadataId(metadataId) {
     return htmls;
 }
 
-async function getFirstVideos(when, options) {
-    // expected when to be a moment(), TODO assert when.isValid()
-    // function used from routes/rsync
-    throw new Error("Discontinued!");
-
-    const mongoc = await mongo3.clientConnect({concurrency: 1});
-    const selected = await mongo3
-        .readLimit(mongoc,
-            nconf.get('schema').videos,
-            { savingTime: { $gte: new Date(when.toISOString()) }}, { savingTime: 1 },
-            options.amount, options.skip);
-    await mongoc.close();
-    return selected;
-};
-
 async function deleteEntry(publicKey, id) {
     const mongoc = await mongo3.clientConnect({concurrency: 1});
     const supporter = await mongo3.readOne(mongoc, nconf.get('schema').supporters, { publicKey });
@@ -342,12 +327,11 @@ async function write(where, what) {
         await mongo3.insertMany(mongoc, where, what);
         retv = { error: false, ok: _.size(what) };
     } catch(error) {
-        debug("%s %j", error.message, _.keys(errors));
+        debug("db.write %s", error.message);
         retv = { error: true, info: error.message };
-    } finally {
-        await mongoc.close();
-        return retv;
     }
+    await mongoc.close();
+    return retv;
 }
 
 async function tofu(publicKey, version) {
@@ -387,7 +371,7 @@ async function getLastLeaves(filter, skip, amount) {
     await mongoc.close();
 
     return {
-        overflow: _.size(labels) == amount,
+        overflow: _.size(labels) === amount,
         content: labels
     };
 }
@@ -395,8 +379,8 @@ async function getLastLeaves(filter, skip, amount) {
 async function upsertSearchResults(listof, cName) {
     const mongoc = await mongo3.clientConnect({concurrency: 1});
     let written = 0;
-    for (entry of listof) {
-        a = await mongo3.upsertOne(mongoc, cName, {id: entry.id}, entry);
+    for (const entry of listof) {
+        const a = await mongo3.upsertOne(mongoc, cName, {id: entry.id}, entry);
         if(!a.result.ok)
             debug("!OK with %s.id %s: %j", cName, entry.id, a);
         else
@@ -409,12 +393,11 @@ async function upsertSearchResults(listof, cName) {
 async function updateAdvertisingAndMetadata(adlist) {
     const mongoc = await mongo3.clientConnect({concurrency: 1});
     let written = 0;
-    for (entry of adlist) {
-        a = await mongo3.upsertOne(mongoc, nconf.get('schema').ads,
+    for (const entry of adlist) {
+        const a = await mongo3.upsertOne(mongoc, nconf.get('schema').ads,
             { id: entry.id }, entry);
-        // debug("update %s", entry.metadataId);
         if(!a.result.ok)
-            debug("!OK with %s.id %s: %j", cName, entry.id, a);
+            debug("updateAdvAndMeta error: %j", a.result);
         else
             written++;
     }
@@ -434,7 +417,7 @@ async function getLastHTMLs(filter, skip, amount) {
 
     await mongoc.close();
     return {
-        overflow: _.size(htmls) == amount,
+        overflow: _.size(htmls) === amount,
         content: htmls
     }
 }
@@ -450,6 +433,14 @@ async function markHTMLsUnprocessable(htmls) {
     } */
     await mongoc.close();
     return r;
+}
+
+async function createMetadataEntry(mongoc, html, newsection) {
+    let exists = _.pick(html, ['publicKey', 'savingTime', 'clientTime', 'href' ]) ;
+    exists = _.extend(exists, newsection);
+    exists.id = html.metadataId;
+    await mongo3.writeOne(mongoc, nconf.get('schema').metadata, exists);
+    return exists;
 }
 
 async function updateMetadata(html, newsection, repeat) {
@@ -516,18 +507,10 @@ async function updateMetadata(html, newsection, repeat) {
     if(forceu || updates ) {
         // debug("Update from incremental %d to %d", exists.incremental, up.incremental);
         // not in youtube!
-        const r = await mongo3.updateOne(mongoc, nconf.get('schema').metadata, { id: html.metadataId }, up );
+        await mongo3.updateOne(mongoc, nconf.get('schema').metadata, { id: html.metadataId }, up );
         return await markHTMLandClose(mongoc, html, { what: 'updated'});
     }
     return await markHTMLandClose(mongoc, html, { what: 'duplicated'});
-}
-
-async function createMetadataEntry(mongoc, html, newsection) {
-    let exists = _.pick(html, ['publicKey', 'savingTime', 'clientTime', 'href' ]) ;
-    exists = _.extend(exists, newsection);
-    exists.id = html.metadataId;
-    await mongo3.writeOne(mongoc, nconf.get('schema').metadata, exists);
-    return exists;
 }
 
 async function getMixedDataSince(schema, since, maxAmount) {
@@ -547,7 +530,7 @@ async function getMixedDataSince(schema, since, maxAmount) {
             maxAmount, 0);
 
         /* if an overflow is spotted, with message is appended */
-        if(_.size(r) == maxAmount)
+        if(_.size(r) === maxAmount)
             retContent.push({
                 template: 'info',
                 message: 'Whoa, too many! capped limit at ' + maxAmount,
@@ -596,22 +579,22 @@ async function getTransformedMetadata(chain) {
 }
 
 async function saveGuardoni(guardobj) {
-    throw new Error("Please update this!");
+    throw new Error("Please update this!"); /*
     const mongoc = await mongo3.clientConnect({concurrency: 1});
     const result = await mongo3
         .writeOne(mongoc, nconf.get('schema').guardoni, guardobj);
     await mongoc.close();
-    return result;
+    return result; */
 }
 
 async function getGuardoni(guardobj) {
-    throw new Error("Please update this!");
+    throw new Error("Please update this!"); /*
     const mongoc = await mongo3.clientConnect({concurrency: 1});
     const result = await mongo3
         .readLimit(mongoc, nconf.get('schema').guardoni, guardobj,
         { when: -1 }, 1, 0);
     await mongoc.close();
-    return result;
+    return result; */
 }
 
 async function markExperCompleted(mongoc, filter) {
@@ -648,7 +631,7 @@ async function saveExperiment(expobj) {
     debug("if exist %s mark it as %j completed if match %j",
         expobj.experimentId, filter);
     const precedent = await markExperCompleted(mongoc, filter);
-    debug("ə %j", sure.result);
+    debug("X-ə %j", precedent.result);
     expobj.status = "active";
     const result = await mongo3
         .writeOne(mongoc, nconf.get('schema').experiments, expobj);
@@ -675,7 +658,7 @@ async function pullExperimentInfo(publicKey) {
  */
 async function fetchExperimentData(name) {
     console.trace(name);
-    throw new Error("Please update this!");
+    throw new Error("Please update this!"); /*
     const EVIDLIM = 200;
     const mongoc = await mongo3.clientConnect({concurrency: 1});
     const results = await mongo3
@@ -724,7 +707,7 @@ async function fetchExperimentData(name) {
             watchedTitle: r.title,
             // watchedChannel: r.authorSource,
         };
-    });
+    }); */
 }
 
 async function getAllExperiments(max) {
@@ -794,9 +777,6 @@ module.exports = {
     getMetadataByFilter,
     getMetadataFromAuthor,
     getMetadataFromAuthorChannelId,
-
-    /* used by routes/rsync */
-    getFirstVideos,
 
     /* used by routes/htmlunit */
     getHTMLVideosByMetadataId,

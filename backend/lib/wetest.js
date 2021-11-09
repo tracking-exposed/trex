@@ -9,6 +9,11 @@ const moment = require('moment');
 
 nconf.argv().env().file({ file: 'config/settings.json' });
 
+const START_TIME_FOR_RELATIVE_COUNTING = {};
+function startTime(t) {
+    START_TIME_FOR_RELATIVE_COUNTING.m = moment(t);
+}
+
 /* these function are explitic for wetest experiments and are kept separated from 
  * the invoker script and from the libraries */
 
@@ -88,11 +93,6 @@ function applyWetest1(e) {
     _.unset(e, 'publicKey');
     updateStats(e);
     return e;
-}
-
-const START_TIME_FOR_RELATIVE_COUNTING = {};
-function startTime(t) {
-    START_TIME_FOR_RELATIVE_COUNTING.m = moment(t);
 }
 
 module.exports = {

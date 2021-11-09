@@ -36,9 +36,6 @@ const apiList = {
     removeEvidence:      require('../routes/personal').removeEvidence,
     getEvidences:        require('../routes/personal').getEvidences,
 
-    /* rsync for developer, overthrown by 'mirror' */
-    rsync:               require('../routes/rsync').rsync,
-
     /* researcher functionalities */
     researcher:          require('../routes/researcher').researcher,
 
