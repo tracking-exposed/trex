@@ -5,11 +5,12 @@ import { MinimalEndpointInstance, TypeOfEndpointInstance } from 'ts-endpoint';
 import { getStaticPath } from 'utils/endpoint.utils';
 import { APIRequest, ErrorOccurred, Messages } from '../models/Messages';
 import { bo } from '../utils/browser.utils';
-import { bkgLogger } from '../utils/logger.utils';
+import { GetLogger } from '../utils/logger.utils';
 
+const log = GetLogger('browser');
 export const toBrowserError = (e: unknown): chrome.runtime.LastError => {
   // eslint-disable-next-line
-  bkgLogger.error('An error occurred %O', e);
+  log.error('An error occurred %O', e);
   if (e instanceof Error) {
     return { message: e.message };
   }
@@ -27,7 +28,7 @@ export const catchRuntimeLastError = <A>(
 ): TE.TaskEither<chrome.runtime.LastError, A> => {
   if (bo.runtime.lastError !== null && bo.runtime.lastError !== undefined) {
     // eslint-disable-next-line
-    bkgLogger.error('Runtime error caught %O', bo.runtime.lastError);
+    log.error('Runtime error caught %O', bo.runtime.lastError);
     return TE.left(bo.runtime.lastError);
   }
   return TE.right(v);
@@ -42,11 +43,7 @@ export const sendMessage =
       TE.tryCatch(
         () =>
           new Promise<M['Response']>((resolve) => {
-            bkgLogger.debug(
-              'Sending message %s with payload %O',
-              r.Request.type,
-              p
-            );
+            log.debug('Sending message %s with payload %O', r.Request.type, p);
             bo.runtime.sendMessage<M['Request'], M['Response']>(
               { type: r.Request.type, payload: p as any },
               resolve
@@ -71,14 +68,16 @@ export const sendAPIMessage =
     chrome.runtime.LastError,
     TypeOfEndpointInstance<E>['Output']
   > => {
+    const staticPath = getStaticPath(endpoint, Input);
+    log.debug(
+      'Sending API message for endpoint %s with payload %O',
+      staticPath,
+      Input
+    );
     return pipe(
       TE.tryCatch(
         () =>
           new Promise<TypeOfEndpointInstance<E>['Output']>((resolve) => {
-            bkgLogger.debug(
-              'Sending API message for endpoint %O',
-              endpoint
-            );
             bo.runtime.sendMessage<
               {
                 type: typeof APIRequest.value;
@@ -92,7 +91,7 @@ export const sendAPIMessage =
               {
                 type: APIRequest.value,
                 payload: {
-                  staticPath: getStaticPath(endpoint),
+                  staticPath,
                   Input,
                 },
               },
@@ -103,6 +102,7 @@ export const sendAPIMessage =
       ),
       TE.chain(catchRuntimeLastError),
       TE.chain((result) => {
+        log.debug('Response for %s received %O', staticPath, result);
         if (result.type === ErrorOccurred.value) {
           return TE.left(toBrowserError(result.response));
         }

@@ -19,13 +19,13 @@ import {
   ReloadExtension,
   UpdateAuth,
   UpdateContentCreator,
-  UpdateSettings
+  UpdateSettings,
 } from '../models/Messages';
 import { getDefaultSettings, Keypair, Settings } from '../models/Settings';
 import { APIError, apiFromEndpoint } from '../providers/api.provider';
 import {
   catchRuntimeLastError,
-  toBrowserError
+  toBrowserError,
 } from '../providers/browser.provider';
 import { bo } from '../utils/browser.utils';
 import { fromStaticPath } from '../utils/endpoint.utils';
@@ -147,7 +147,7 @@ const getMessageHandler = <M extends Messages[keyof Messages]>(
       );
     case APIRequest.value:
       return pipe(
-        fromStaticPath(r.payload?.staticPath),
+        fromStaticPath(r.payload?.staticPath, r.payload?.Input),
         O.fromNullable,
         TE.fromOption(() =>
           toMessageHandleError(
