@@ -1,3 +1,10 @@
+# [1.1.0-beta.3](https://github.com/tracking-exposed/YCAI/compare/v1.1.0-beta.2...v1.1.0-beta.3) (2021-11-09)
+
+
+### Bug Fixes
+
+* do not include corp keys in ff manifest ([a2c489f](https://github.com/tracking-exposed/YCAI/commit/a2c489f91712c9dd088895acd40a5615bb660304))
+
 # [1.1.0-beta.2](https://github.com/tracking-exposed/YCAI/compare/v1.1.0-beta.1...v1.1.0-beta.2) (2021-11-08)
 
 
