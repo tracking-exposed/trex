@@ -135,18 +135,11 @@ app.post('/api/v3/creator/ogp', async (req, res) => await iowrapper('ogpProxy', 
 app.post('/api/v3/creator/videos/repull', async (req, res) => await iowrapper('repullByCreator', req, res))
 app.get('/api/v3/creator/videos', async (req, res) => await iowrapper('getVideoByCreator', req, res))
 app.get('/api/v3/creator/videos/:videoId', async (req, res) => await iowrapper('getOneVideoByCreator', req, res))
-
 app.get('/api/v3/creator/recommendations', async (req, res) => await iowrapper('youChooseByProfile', req, res))
 app.get('/api/v3/creator/:channelId/related/:amount?', async (req, res) => await iowrapper('getCreatorRelated', req, res))
 app.get('/api/v3/creator/:channelId/stats', async (req, res) => await iowrapper('getCreatorStats', req, res))
 
 app.get('/api/v3/opendata/channels', async (req, res) => await iowrapper('opendataChannel', req, res));
-
-/* below, guardoni-v2 */
-app.post('/api/v3/directives/:directiveType', async (req, res) => await iowrapper('postDirective', req, res))
-app.get('/api/v3/directives/:experimentId', async (req, res) => await iowrapper('fetchDirective', req, res))
-app.post('/api/v2/handshake', async (req, res) => await iowrapper('experimentChannel3', req, res))
-app.delete('/api/v3/experiment/:testTime', async (req, res) => await iowrapper('concludeExperiment3', req, res))
 
 /* below, the few API endpoints */
 app.post('/api/v3/creator/:channelId/register', async (req, res) => await iowrapper('creatorRegister', req, res))
@@ -183,12 +176,25 @@ app.post('/api/v2/campaigns/:key', async (req, res) => await iowrapper('updateCa
 app.post('/api/v2/experiment/opening', async (req, res) => await iowrapper('experimentOpening', req, res))
 app.get('/api/v2/experiment/:expname/csv', async (req, res) => await iowrapper('experimentCSV', req, res))
 app.get('/api/v2/experiment/:expname/dot', async (req, res) => await iowrapper('experimentDOT', req, res))
-app.get('/api/v2/experiment/:expname/json', async (req, res) => await iowrapper('experimentJSON', req, res))
-app.get('/api/v2/guardoni/list', async (req, res) => await iowrapper('getAllExperiments', req, res))
 
 // dynamically configured and retrived guardoni settings
-app.post('/api/v2/guardoni/:experiment/:botname', async (req, res) => await iowrapper('guardoniConfigure', req, res))
-app.get('/api/v2/guardoni/:experiment/:botname', async (req, res) => await iowrapper('guardoniGenerate', req, res))
+// app.post('/api/v2/guardoni/:experiment/:botname', async (req, res) => await iowrapper('guardoniConfigure', req, res))
+// app.get('/api/v2/guardoni/:experiment/:botname', async (req, res) => await iowrapper('guardoniGenerate', req, res))
+
+
+/* experiments dependend API -- the one below have been tested */
+app.get('/api/v2/guardoni/list/:directiveType', async (req, res) => await iowrapper('getAllExperiments', req, res))
+app.post('/api/v3/directives/:directiveType', async (req, res) => await iowrapper('postDirective', req, res))
+app.get('/api/v3/directives/:experimentId', async (req, res) => await iowrapper('fetchDirective', req, res))
+app.post('/api/v2/handshake', async (req, res) => await iowrapper('experimentChannel3', req, res))
+app.delete('/api/v3/experiment/:testTime', async (req, res) => await iowrapper('concludeExperiment3', req, res))
+app.get('/api/v2/experiment/:experimentId/json', async (req, res) => await iowrapper('experimentJSON', req, res))
+
+app.get('*', async (req, res) => {
+    debug("URL not handled: %s", req.url);
+    res.status(404);
+    res.send("URL not found");
+})
 
 
 async function initialSanityChecks() {

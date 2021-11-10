@@ -2,10 +2,12 @@ const _ = require('lodash');
 const moment = require('moment');
 const debug = require('debug')('routes:experiments');
 const fs = require('fs');
+const nconf = require('nconf');
 
 const automo = require('../lib/automo');
 const params = require('../lib/params');
 const CSV = require('../lib/CSV');
+const mongo3 = require('../lib/mongo3');
 
 function dotify(data) {
     const dot = Object({links: [], nodes: []})
@@ -31,8 +33,11 @@ function dotify(data) {
 }
 
 async function dot(req) {
-    const expname = params.getString(req, 'expname', true);
-    const related = await automo.fetchExperimentData(expname);
+
+    const experiment = params.getString(req, 'experimentId', true);
+    const metadata = await sharedDataPull(experiment);
+
+    throw new Error("Remind this can't work because metadata has many type");
     if(!_.size(related))
         return { json: {error: true, message: "No data found with such parameters"}}
 
@@ -46,21 +51,65 @@ async function dot(req) {
     return { json: dotchain };
 }
 
-async function json(req) {
-    const expname = params.getString(req, 'expname', true);
-    const related = await automo.extendMetaByExperiment(expname);
-    // this return data that are already the mixture between
-    // collection 'metadata' and 'experiments'
-    debug("Requested experiment %s, fetch %d related",
-        expname, _.size(related));
-    return { json: related }
+async function sharedDataPull(experiment) {
+    debug("Requested experimentId %s", experiment);
+
+    const MAX = 3000;
+    const mongoc = await mongo3.clientConnect({concurrency: 1});
+    const metadata = await mongo3
+        .readLimit(mongoc, nconf.get('schema').metadata,
+        { experiment }, { savingTime: -1 }, MAX, 0);
+    await mongoc.close();
+
+    debug("Returning %d available data by experiment %s (max %d) %j",
+        metadata.length, experiment, MAX, _.countBy(metadata, 'type'));
 }
 
+async function json(req) {
+    const experiment = params.getString(req, 'experimentId', true);
+    const metadata = await sharedDataPull(experiment);
+    return { json: metadata}
+}
+
+/*
+    return _.map(results, function(r) {
+        // r is a metadata with only one related, duplicated as many related avail.
+        const chardetoutp = chardet.analyse(Buffer.from(r.related.recommendedTitle));
+        return {
+            savingTime: r.savingTime,
+            metadataId: r.id,
+            blang: r.blang,
+            watcher: utils.string2Food(r.publicKey),
+            // publicKey: l.publicKey,
+            profile: r.experiment.profile,
+            experiment: name,
+            videoName: r.experiment.videoName,
+            session: r.experiment.session,
+            watchFor: "" + r.experiment.watchingTime,
+
+            recommendedVideoId: r.related.videoId,
+            recommendedPubtime: r.related.publicationTime ? r.publicationTime.toISOString() : "Invalid Date",
+            recommendedReltiveS: r.related.recommendedRelativeSeconds,
+            recommendedTitle: r.related.recommendedTitle,
+            recommendedTitleCharset: chardetoutp[0].name,
+            recommendedTitleLang: chardetoutp[0].lang || "unknown",
+            recommendedAuthor: r.related.recommendedSource,
+            // recommendedVerified: r.verified,
+            recommendationOrder: r.related.index,
+            recommendedViews: r.related.recommendedViews,
+            isTop20: !!(r.related.index <= 20),
+
+            thumbnail: "https://i.ytimg.com/vi/" + r.related.videoId + "/mqdefault.jpg",
+            watchedId: r.videoId,
+            watchedAuthor: r.authorName,
+            // watchedPubtime: r.publicationTime ? r.publicationTime.toISOString() : "Invalid Date",
+            watchedTitle: r.title,
+            // watchedChannel: r.authorSource,
+        };
+*/
+
 async function csv(req) {
-    const expname = params.getString(req, 'expname', true);
-    const related = await automo.extendMetaByExperiment(expname);
-    // this return data that are already the mixture between
-    // collection 'metadata' and 'experiments'
+
     const textcsv = CSV.produceCSVv1(related);
     debug("Requested experiment %s, fetch %d related, and converted in a %d CSV",
         expname, _.size(related), _.size(textcsv));
@@ -75,24 +124,37 @@ async function csv(req) {
 };
 
 async function list(req) {
+    /* this function pull from the collection "directives"
+     * and filter by returning only the 'comparison' kind of
+     * experiment. This is imply req.params.type == 'comparison' */
     const MAX = 400;
-    const experiments = await automo.getAllExperiments(MAX);
-    /*  "name": "provaprova",
-        "profile": "testolomeo",
-        "sessionCounter": 3,
-        "testTime": "2021-05-20T08:13:23.823Z",
-        "videos": [ "t_19Wu3Y2AY",... ] */
-    const ret = _.reduce(experiments, function(memo, e) {
-        if(memo.experiments[e.name])
-            memo.experiments[e.name] += 1;
-        else
-            memo.experiments[e.name] = 1;
-        return memo;
-    }, {
-        overflow: experiments.length === MAX,
-        experiments: {}
-    });
-    return { json: ret };
+    const type = req.params.directiveType;
+    if(type !== 'comparison') {
+        console.trace("not supported", req.params);
+        return { text: "Not supported at the moment; "}
+    }
+    const filter = { directiveType: type };
+    const mongoc = await mongo3.clientConnect({concurrency: 1});
+
+    /* TODO aggregate pipeline,
+     * to count number of usage and last samples collected */
+    /* TODO consider to do a count of .experiments to know how many 
+     * are still in progress, and which are in progress */
+
+    const result = await mongo3
+        .readLimit(mongoc, nconf.get('schema').directives,
+        filter, { when: -1 }, MAX, 0);
+    await mongoc.close();
+
+    debug("Returning %d available directives on type %s (max %d)",
+        result.length, type, MAX);
+
+    return {
+        json: _.map(result, function(r) {
+            r.humanizedWhen = moment(r.when).format("YYYY-MM-DD");
+            return _.omit(r, ['_id', 'directiveType'])
+        })
+    };
 }
 
 async function guardoniGenerate(req) {
@@ -243,8 +305,8 @@ async function opening(req) {
 }
 
 async function channel3(req) {
-    // this is invoked as handshake v2, and might return information
-    // helpful for the extension, if any.
+    // this is invoked as handshake, and might return information
+    // helpful for the extension, about the experiment running.
     const experimentInfo = {
         publicKey: _.get(req.body, 'config.publicKey'),
         href: _.get(req.body, 'href'),
@@ -256,11 +318,15 @@ async function channel3(req) {
         directiveType: _.get(req.body, 'directiveType'),
     };
     const retval = await automo.saveExperiment(experimentInfo);
-    if(_.isNull(retval)) {
+
+    /* this is the default answer, as normally there is not an
+     * experiment running */
+    if(_.isNull(retval))
         return { json: { experiment: false }};
-    }
-    // else if has any value 
-    debug("channel3: %j gives %o", experimentInfo, retval);
+
+    debug("Marked experiment %s as 'active' for %s",
+        retval.experimentId, retval.publicKey);
+
     return { json: retval };
 };
 

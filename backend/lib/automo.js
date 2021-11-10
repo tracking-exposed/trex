@@ -458,10 +458,10 @@ async function updateMetadata(html, newsection, repeat) {
 
     if(!exists) {
         await createMetadataEntry(mongoc, html, newsection);
-        debug("Created metadata %s [%s] from %s with %s",
+        debug("Created metadata %s [%s] from %s",
             html.metadataId, 
             (newsection.title ? newsection.title : "+" + newsection.type + "+"),
-            html.href, html.selector);
+            html.href);
         return await markHTMLandClose(mongoc, html, { what: 'created'});
     }
 
@@ -592,7 +592,10 @@ async function getGuardoni(guardobj) {
 }
 
 async function markExperCompleted(mongoc, filter) {
-    console.trace(filter);
+    /* this is called in two different condition:
+     1) when a new experiment gets registered and the previously 
+        opened by the same publicKey should be closed
+     2) when the DELETE api is called to effectively close the exp */
     return await mongo3
         .updateOne(mongoc, nconf.get('schema').experiments,
             filter, {
@@ -602,35 +605,37 @@ async function markExperCompleted(mongoc, filter) {
 }
 
 async function concludeExperiment(testTime) {
-    console.trace(testTime);
+    /* this function is called by guardoni v.1.8 when the 
+     * access on a directive URL have been completed */
     const mongoc = await mongo3.clientConnect({concurrency: 1});
-    debug("concludeExperiment—mark experiments by %j", { testTime } );
     const r = await markExperCompleted(mongoc, { testTime } );
-    debug("з %j", r.result);
     await mongoc.close();
     return r;
 }
 
 async function saveExperiment(expobj) {
+    /* this is used by guardoni v.1.8 as handshake connection,
+       the expobj constains a variety of fields, check
+       routes/experiment.js function channel3 */
     if(expobj.experimentId === 'DEFAULT_UNSET')
         return null;
 
-    console.trace("named experiment!", expobj);
     const mongoc = await mongo3.clientConnect({concurrency: 1});
     /* a given public Key can have only one experiment per time */
     const filter = {
         publicKey: expobj.publicKey,
         status: 'active'
     };
-    debug("if exist %s mark it as %j completed if match %j",
-        expobj.experimentId, filter);
+
+    /* every existing experiment from the same pubkey, which
+     * is active, should also be marked "completed" */
     const precedent = await markExperCompleted(mongoc, filter);
-    debug("X-ə %j", precedent.result);
+
     expobj.status = "active";
-    const result = await mongo3
+    await mongo3
         .writeOne(mongoc, nconf.get('schema').experiments, expobj);
     await mongoc.close();
-    return result;
+    return expobj;
 }
 
 async function pullExperimentInfo(publicKey) {
@@ -646,75 +651,9 @@ async function pullExperimentInfo(publicKey) {
     return exp;
 }
 
-/* enhance experiment add an .experiment to an html and then to a metadata,
- * the function above, extendMetaByExperiment() is the more generic method
- * to return evidences to /experiments/#ID
- */
-async function fetchExperimentData(name) {
-    console.trace(name);
-    throw new Error("Please update this!"); /*
-    const EVIDLIM = 200;
-    const mongoc = await mongo3.clientConnect({concurrency: 1});
-    const results = await mongo3
-        .aggregate(mongoc, nconf.get('schema').metadata, [
-            { $match: { "experiment.experiment": name } },
-            { $limit: EVIDLIM },
-            { $unwind: "$related" }
-        ]);
-    await mongoc.close();
-    const problem = _.keys(_.countBy(results, 'id')).length === EVIDLIM;
-    if(problem)
-        debug("Warning! experiment %s has more than %d video evidence limit",
-            name, EVIDLIM);
-
-    return _.map(results, function(r) {
-        // r is a metadata with only one related, duplicated as many related avail.
-        const chardetoutp = chardet.analyse(Buffer.from(r.related.recommendedTitle));
-        return {
-            savingTime: r.savingTime,
-            metadataId: r.id,
-            blang: r.blang,
-            watcher: utils.string2Food(r.publicKey),
-            // publicKey: l.publicKey,
-            profile: r.experiment.profile,
-            experiment: name,
-            videoName: r.experiment.videoName,
-            session: r.experiment.session,
-            watchFor: "" + r.experiment.watchingTime,
-
-            recommendedVideoId: r.related.videoId,
-            recommendedPubtime: r.related.publicationTime ? r.publicationTime.toISOString() : "Invalid Date",
-            recommendedReltiveS: r.related.recommendedRelativeSeconds,
-            recommendedTitle: r.related.recommendedTitle,
-            recommendedTitleCharset: chardetoutp[0].name,
-            recommendedTitleLang: chardetoutp[0].lang || "unknown",
-            recommendedAuthor: r.related.recommendedSource,
-            // recommendedVerified: r.verified,
-            recommendationOrder: r.related.index,
-            recommendedViews: r.related.recommendedViews,
-            isTop20: !!(r.related.index <= 20),
-
-            thumbnail: "https://i.ytimg.com/vi/" + r.related.videoId + "/mqdefault.jpg",
-            watchedId: r.videoId,
-            watchedAuthor: r.authorName,
-            // watchedPubtime: r.publicationTime ? r.publicationTime.toISOString() : "Invalid Date",
-            watchedTitle: r.title,
-            // watchedChannel: r.authorSource,
-        };
-    }); */
-}
-
-async function getAllExperiments(max) {
-    console.trace(max);
-    const mongoc = await mongo3.clientConnect({concurrency: 1});
-    const result = await mongo3
-        .readLimit(mongoc, nconf.get('schema').experiments, {}, {}, max, 0);
-    await mongoc.close();
-    return result;
-}
-
 async function registerDirective(links, directiveType) {
-    console.trace(links, directiveType);
+    /* this API is called by guardoni when --csv is used,
+       the API is POST localhost:9000/api/v3/directives/comparison */
     const experimentId = utils.hash({
         type: directiveType,
         links, 
@@ -805,8 +744,6 @@ module.exports = {
     /* experiment related operations */
     saveExperiment,
     pullExperimentInfo,
-    fetchExperimentData,
-    getAllExperiments,
 
     concludeExperiment,
 

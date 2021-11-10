@@ -477,27 +477,26 @@ async function dispatchBrowser(headless, profinfo) {
   const newProfile = profinfo.newProfile;
   const execount = profinfo.execount;
   const chromePath = getChromePath();
+  const proxy = nconf.get('proxy');
 
   debug("Dispatching a browser in a profile usage count %d", execount);
-  let browser = null;
 
-  let proxy = nconf.get('proxy');
-  if(proxy) {
-    proxy = "--proxy-server=" + proxy
-  }
+  const commandLineArg = ["--no-sandbox",
+    "--disabled-setuid-sandbox",
+    "--load-extension=" + dist,
+    "--disable-extensions-except=" + dist,
+  ];
+
+  if(proxy)
+    commandLineArg.push("--proxy-server=" + proxy);
 
   try {
     puppeteer.use(pluginStealth());
-    browser = await puppeteer.launch({
+    const browser = await puppeteer.launch({
         headless,
         userDataDir: profinfo.udd,
         executablePath: chromePath,
-        args: ["--no-sandbox",
-          "--disabled-setuid-sandbox",
-          "--load-extension=" + dist,
-          "--disable-extensions-except=" + dist,
-          proxy
-        ],
+        args: commandLineArg,
     });
 
     // add this boolean to the return value as we need it in a case
