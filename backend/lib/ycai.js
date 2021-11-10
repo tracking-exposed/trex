@@ -10,8 +10,8 @@ const mongo3 = require("./mongo3");
 function ensureRecommendationsDefault(recc) {
   const DEFAULT_IMAGE_URL = "https://youchoose.tracking.exposed/images/creators.png";
   return _.reduce(["urlId", "url", "title", "description", "image"], function(memo, field) {
-    /* as documented in #114 (yttrex repo) this function ensure 
-     * some default behavior, and uses a _.reduce here because 
+    /* as documented in #114 (yttrex repo) this function ensure
+     * some default behavior, and uses a _.reduce here because
      * title should be replaced with URL if for any reason is missing */
     if(field === "urlId" || field === "url")
       memo[field] = recc[field];
@@ -122,8 +122,8 @@ function attributeFromDomain(domain) {
 
 const OGPfields = ["title", "description", "url", "image"];
 async function saveRecommendationOGP(ogblob, creator) {
-  /* as per #114 the payload might be saved also if some fields 
-   * aren't present, an approrpiate conversion happens in 
+  /* as per #114 the payload might be saved also if some fields
+   * aren't present, an approrpiate conversion happens in
    * fetchRecommendation by providing default values */
   const keep = _.reduce(OGPfields, function(memo, field) {
     if(ogblob[field])
@@ -185,6 +185,18 @@ async function getVideoFromYTprofiles(creator, limit) {
   );
   await mongoc.close();
   return res;
+}
+
+async function getOneVideoFromYTprofile(creator, videoId) {
+  const mongoc = await mongo3.clientConnect({ concurrency: 1 });
+  const cName = nconf.get("schema").ytvids;
+
+  const selector = {
+    creatorId: creator.channelId,
+    videoId,
+  };
+
+  return mongo3.readOne(mongoc, cName, selector, {});
 }
 
 async function recommendationById(ids, limit) {
@@ -360,6 +372,7 @@ module.exports = {
   saveRecommendationOGP,
   getRecommendationByURL,
   getVideoFromYTprofiles,
+  getOneVideoFromYTprofile,
   recommendationById,
   updateRecommendations,
   generateToken,
