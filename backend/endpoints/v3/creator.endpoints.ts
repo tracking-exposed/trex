@@ -47,6 +47,16 @@ const CreatorVideos = Endpoint({
   Output: t.array(Video),
 });
 
+const OneCreatorVideo = Endpoint({
+  Method: 'GET',
+  getPath: ({ videoId }) => `/v3/creator/videos/${videoId}`,
+  Input: {
+    Headers: AuthorizationHeader,
+    Params: t.type({ videoId: t.string }),
+  },
+  Output: Video,
+});
+
 const PullCreatorVideos = Endpoint({
   Method: 'POST',
   getPath: () => `/v3/creator/videos/repull`,
@@ -113,6 +123,7 @@ export const endpoints = {
   RegisterCreator,
   VerifyCreator,
   CreatorVideos,
+  OneCreatorVideo,
   CreatorRecommendations,
   CreatorRelatedChannels,
   UpdateVideo,

@@ -97,6 +97,14 @@ async function ogpProxy(req) {
   return { json: review };
 }
 
+const cleanVideoForAPIOutput = (video) => {
+  delete video._id;
+  if (!video.recommendations) {
+    video.recommendations = [];
+  }
+  return video;
+};
+
 async function videoByCreator(req) {
   // this function should validate req.params.authMaterial
   const decodedReq = endpoints.decodeRequest(
@@ -121,13 +129,7 @@ async function videoByCreator(req) {
     MAXVIDOEL
   );
 
-  // format: recommendation might be empty or unset
-  // creatorId, when, videoId, title, recommendations: []
-  const ready = _.map(videos, function (v) {
-    _.unset(v, '_id');
-    if (!v.recommendations) v.recommendations = [];
-    return v;
-  });
+  const ready = _.map(videos, cleanVideoForAPIOutput);
 
   debug(
     'Requested Video List by content creator (%s) returning %d',
@@ -136,6 +138,51 @@ async function videoByCreator(req) {
   );
 
   return { json: ready };
+}
+
+async function oneVideoByCreator(req) {
+  const decodedReq = endpoints.decodeRequest(
+    v3.Creator.OneCreatorVideo,
+    req
+  );
+
+  if (decodedReq.type === 'error') {
+    return {
+      json: {
+        error: true,
+        details: decodedReq.result,
+      },
+    };
+  }
+  const token = decodedReq.result.headers['x-authorization'];
+  const videoId = decodedReq.result.params.videoId;
+
+  const creator = await ycai.getCreatorByToken(token);
+
+  debug(
+    'Querying DB.ytvids to get video with id [%s] for profile [%s]',
+    videoId, creator._id
+  );
+
+  const video = await ycai.getOneVideoFromYTprofile(
+    creator, videoId
+  );
+
+  if (video === undefined) {
+    const message = `Video with id [${videoId}] not found`;
+
+    debug(message);
+    return {
+      json: {
+        error: true,
+        details: [message],
+      },
+    };
+  }
+
+  debug('Found video with id [%s]', videoId);
+
+  return { json: cleanVideoForAPIOutput(video) };
 }
 
 async function repullByCreator(req) {
@@ -455,6 +502,7 @@ module.exports = {
   byProfile,
   ogpProxy,
   videoByCreator,
+  oneVideoByCreator,
   repullByCreator,
   getRecommendationById,
   updateVideoRec,

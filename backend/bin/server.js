@@ -73,7 +73,7 @@ app.options('/api/', cors())
 app.use(bodyParser.json({limit: '6mb'}));
 app.use(bodyParser.urlencoded({limit: '6mb', extended: true}));
 
-/* this API is v0 as it is platform neutral. it might be shared among 
+/* this API is v0 as it is platform neutral. it might be shared among
  * all the trex backends, and should return info on system health, echo OK
  * if the system is OK, and the git log of the code running */
 app.get('/api/v0/info', async (req, res) => await iowrapper('systemInfo', req, res));
@@ -131,8 +131,9 @@ app.get('/api/v3/recommendations/:ids', async (req, res) => await iowrapper('rec
 
 app.post('/api/v3/creator/updateVideo', async (req, res) => await iowrapper('updateVideoRec', req, res))
 app.post('/api/v3/creator/ogp', async (req, res) => await iowrapper('ogpProxy', req, res))
-app.get('/api/v3/creator/videos', async (req, res) => await iowrapper('getVideoByCreator', req, res))
 app.post('/api/v3/creator/videos/repull', async (req, res) => await iowrapper('repullByCreator', req, res))
+app.get('/api/v3/creator/videos', async (req, res) => await iowrapper('getVideoByCreator', req, res))
+app.get('/api/v3/creator/videos/:videoId', async (req, res) => await iowrapper('getOneVideoByCreator', req, res))
 
 app.get('/api/v3/creator/recommendations', async (req, res) => await iowrapper('youChooseByProfile', req, res))
 app.get('/api/v3/creator/:channelId/related/:amount?', async (req, res) => await iowrapper('getCreatorRelated', req, res))
