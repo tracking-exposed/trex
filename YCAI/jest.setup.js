@@ -1,3 +1,6 @@
+// load the content of .env file in process.env
+require('dotenv/config')
+// patch global object with chrome api
 const { chrome } = require('jest-chrome/lib/index.cjs');
 const { SVGPathElement } = require('svgdom');
 

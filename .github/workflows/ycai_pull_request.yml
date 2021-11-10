@@ -19,7 +19,7 @@ jobs:
     strategy:
       matrix:
         node-version: [14.x]
-
+        mongo-version: [4.2]
     steps:
       - uses: actions/checkout@v2
 
@@ -39,11 +39,11 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-node-
 
-      - name: Install modules
+      - name: Install shared modules
         working-directory: shared
         run: npm i
 
-      - name: Install modules
+      - name: Install YCAI modules
         run: npm i
 
       - name: Lint code
@@ -53,11 +53,35 @@ jobs:
         working-directory: ./shared
         run: npm run build
 
-      - name: Build extension
-        run: npm run build:ext
-
       - name: Build dashboard
         run: npm run build
 
-      - name: Test
-        run: npm test
+      - name: Build extension for tests
+        run: npm run build:ext:dev
+
+      - name: Test spec
+        run: npm test spec
+
+      - name: Start MongoDB v${{ matrix.mongodb-version }}
+        uses: supercharge/mongodb-github-action@1.2.0
+        with:
+          mongodb-version: ${{ matrix.mongodb-version }}
+
+      - name: Start api service
+        working-directory: ./
+        run: docker-compose up -d api
+
+      - name: Log what's going on in docker
+        working-directory: ./
+        run: docker-compose logs api
+
+      - name: Test Code
+        uses: mujo-code/puppeteer-headful@v2
+        env:
+          CI: true
+        with:
+          args: npm test e2e -- --watchAll=false
+
+      - name: Stop api service
+        working-directory: yttrex-backend/backend
+        run: docker-compose down

@@ -33,6 +33,8 @@ jobs:
         run: npm ci
 
       - name: Install dependencies
+        env:
+          PUPPETEER_SKIP_CHROMIUM_DOWNLOAD: 'true'
         run: npm ci
 
       - name: Release

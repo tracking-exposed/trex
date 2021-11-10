@@ -27,6 +27,10 @@ import { doUpdateCurrentView } from '../../utils/location.utils';
 
 const youtubeChannelUrlRegex = /\/channel\/([^/]+)(?:$|\/)/;
 
+export const SET_CHANNEL_STEP_ID = 'link-account-set-channel';
+export const VERIFICATION_TOKEN_BOX_ID = 'channel-verification-token';
+export const VERIFY_CHANNEL_BOX_ID = 'link-account-verify-channel';
+
 const useStyles = makeStyles((theme) => ({
   box: {
     marginTop: theme.spacing(1),
@@ -153,7 +157,7 @@ export const LinkAccount: React.FC<LinkAccountProps> = ({ auth }) => {
   };
 
   return !channelIDPasted ? (
-    <Box className={classes.box}>
+    <Box id={SET_CHANNEL_STEP_ID} className={classes.box}>
       <Typography color="primary" variant="h5">
         1/2 {t('link_account:paste_channel_url')}
       </Typography>
@@ -169,7 +173,6 @@ export const LinkAccount: React.FC<LinkAccountProps> = ({ auth }) => {
               {t('account:channel')}
             </InputLabel>
             <Input
-              id="creator-channel"
               fullWidth={true}
               value={channel}
               onChange={handleChannelChange}
@@ -214,13 +217,13 @@ export const LinkAccount: React.FC<LinkAccountProps> = ({ auth }) => {
       </Grid>
     </Box>
   ) : (
-    <Box className={classes.box}>
+    <Box id={VERIFY_CHANNEL_BOX_ID} className={classes.box}>
       <Typography variant="h5" color="primary">
         2/2 {t('link_account:copy_verification_key')}
       </Typography>
       <Grid container className={classes.boxGrid} spacing={2}>
-        <Grid item xs={12}>
-          <Typography className={classes.tokenDisplay} id="account-channelId">
+        <Grid id={VERIFICATION_TOKEN_BOX_ID} item xs={12}>
+          <Typography className={classes.tokenDisplay}>
             {auth.tokenString}
           </Typography>
           {isCopied ? (
@@ -256,7 +259,12 @@ export const LinkAccount: React.FC<LinkAccountProps> = ({ auth }) => {
             </Trans>
           </Typography>
         </Grid>
-        <Grid item xs={12} className={classes.stepAction}>
+        <Grid
+          id={VERIFY_CHANNEL_BOX_ID}
+          item
+          xs={12}
+          className={classes.stepAction}
+        >
           <Button
             disabled={verifying}
             variant="contained"
