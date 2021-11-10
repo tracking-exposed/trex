@@ -1,9 +1,10 @@
 import { pipe } from 'fp-ts/lib/function';
 import * as TE from 'fp-ts/lib/TaskEither';
 import { Messages } from '../models/Messages';
-import { security } from '../providers/bs58.provider';
+import security from '../providers/bs58.provider';
 import db from './db';
 
+export const SETTINGS_KEY = 'settings';
 export const PUBLIC_KEYPAIR = 'public-keypair';
 
 export function generatePublicKeypair(

@@ -1,9 +1,10 @@
-import Endpoints from '@backend/endpoints/v3';
+import * as Endpoints from '@backend/endpoints';
 import {
-    Box, List,
-    ListItem,
-    ListItemText,
-    Typography
+  Box,
+  List,
+  ListItem,
+  ListItemText,
+  Typography,
 } from '@material-ui/core';
 import * as A from 'fp-ts/lib/Array';
 import { pipe } from 'fp-ts/lib/function';
@@ -13,14 +14,13 @@ import { useTranslation } from 'react-i18next';
 import { MinimalEndpointInstance } from 'ts-endpoint';
 import { config } from '../../../config';
 
-
 export const APIList: React.FC = () => {
   const { t } = useTranslation();
   return (
     <Box>
       <Typography variant="h3">{t('settings:api_list_title')}</Typography>
       {pipe(
-        Endpoints,
+        Endpoints.v3,
         R.toArray,
         A.map(([key, routeEndpoints]) => {
           return (

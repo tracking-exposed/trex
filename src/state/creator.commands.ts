@@ -21,7 +21,7 @@ import { settings, videoRecommendations } from './public.queries';
 export const registerCreatorChannel = command(
   (channelId: string) =>
     pipe(
-      API.Creator.RegisterCreator({
+      API.v3.Creator.RegisterCreator({
         Params: { channelId },
         Body: { type: 'channel' },
       }),
@@ -37,7 +37,7 @@ export const registerCreatorChannel = command(
 export const verifyChannel = command(
   ({ channelId }: { channelId: string }) =>
     pipe(
-      API.Creator.VerifyCreator({ Params: { channelId } }),
+      API.v3.Creator.VerifyCreator({ Params: { channelId } }),
       TE.chain(sendMessage(Messages.UpdateContentCreator))
     ),
   {
@@ -51,7 +51,7 @@ export const pullContentCreatorVideos = command(
     pipe(
       requiredLocalProfile.run(),
       TE.chain((p) =>
-        API.Creator.PullCreatorVideos({
+        API.v3.Creator.PullCreatorVideos({
           Headers: {
             'x-authorization': p.accessToken,
           },
@@ -68,7 +68,7 @@ export const addRecommendation = command(
     pipe(
       profile.run(),
       TE.chain((p) =>
-        API.Creator.CreateRecommendation({
+        API.v3.Creator.CreateRecommendation({
           Headers: {
             'x-authorization': p.accessToken,
           },
@@ -86,7 +86,7 @@ export const updateRecommendationForVideo = command(
     return pipe(
       requiredLocalProfile.run(),
       TE.chain((p) =>
-        API.Creator.UpdateVideo({
+        API.v3.Creator.UpdateVideo({
           Headers: {
             'x-authorization': p.accessToken,
           },
@@ -127,7 +127,7 @@ export const copyToClipboard = command((text: string) =>
 export const assignAccessToken = command(
   ({ token }: { token: string }) => {
     return pipe(
-      API.Creator.GetCreator({
+      API.v3.Creator.GetCreator({
         Headers: {
           'x-authorization': token,
         },

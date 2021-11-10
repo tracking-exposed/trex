@@ -31,7 +31,9 @@ const Settings = withQueries(({ queries }): React.ReactElement => {
         <Box>
           <AccessTokenBox profile={profile} />
 
-          <KeypairBox keypair={keypair} settings={settings} />
+          {keypair !== undefined && settings.independentContributions ? (
+            <KeypairBox keypair={keypair} settings={settings} />
+          ) : null}
 
           <APIList />
 

@@ -9,19 +9,25 @@ import { Keypair, Settings } from './Settings';
 export const GetKeypair = t.literal('GetKeypair');
 export const GenerateKeypair = t.literal('GenerateKeypair');
 export const DeleteKeypair = t.literal('DeleteKeypair');
+// settings
 export const GetSettings = t.literal('GetSettings');
 export const UpdateSettings = t.literal('UpdateSettings');
-export const ReloadExtension = t.literal('ReloadExtension');
+
+// content creator
 export const GetAuth = t.literal('GetAuth');
 export const UpdateAuth = t.literal('UpdateAuth');
 export const GetContentCreator = t.literal('GetContentCreator');
 export const UpdateContentCreator = t.literal('UpdateContentCreator');
-export const Update = t.literal('update');
-export const ErrorOccurred = t.literal('ErrorOccurred');
 
+// api request
 export const APIRequest = t.literal('APIRequest');
 
+// error
+export const ErrorOccurred = t.literal('ErrorOccurred');
+
 // unused
+export const ReloadExtension = t.literal('ReloadExtension');
+export const Update = t.literal('update');
 export const RecommendationsFetch = t.literal('recommendationsFetch');
 export const ServerLookup = t.literal('serverLookup');
 

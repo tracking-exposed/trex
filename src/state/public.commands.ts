@@ -9,7 +9,7 @@ import { profile } from './creator.queries';
 import { keypair, settings, settingsRefetch } from './public.queries';
 
 export const handshake = command((handshake: HandshakeBody) =>
-  API.Public.Handshake({ Body: handshake })
+  API.v3.Public.Handshake({ Body: handshake })
 );
 
 export const generateKeypair = command(
@@ -28,7 +28,7 @@ export const deleteKeypair = command(
 
 export const updateSettings = command(
   (payload: Settings) => sendMessage(Messages.UpdateSettings)(payload),
-  { settings, keypair }
+  { keypair, settings, settingsRefetch }
 );
 
 export const deleteProfile = command(

@@ -1,7 +1,9 @@
 import * as React from 'react';
 import { CircularProgress } from '@material-ui/core';
 
-export const FullSizeLoader: React.FC = () => {
+export const FullSizeLoader: React.FC<{ color?: 'primary' | 'secondary' }> = ({
+  color = 'primary',
+}) => {
   return (
     <div
       style={{
@@ -14,7 +16,7 @@ export const FullSizeLoader: React.FC = () => {
         justifyContent: 'center',
       }}
     >
-      <CircularProgress />
+      <CircularProgress color={color} />
     </div>
   );
 };

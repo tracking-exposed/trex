@@ -43,6 +43,7 @@ const APP_ENV = t.strict(
     REACT_APP_BUILD_DATE: t.string,
     REACT_APP_VERSION: t.string,
     REACT_APP_LOGGER: t.string,
+    REACT_APP_DATA_DONATION_FLUSH_INTERVAL: t.string
   },
   'Config'
 );

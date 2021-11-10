@@ -112,17 +112,17 @@ const Settings: React.FC<SettingsProps> = ({ settings }) => {
           control={
             <Switch
               className={classes.marginRight}
-              aria-labelledby="switch-indipendentContributions"
+              aria-labelledby="switch-independentContributions"
               color="primary"
-              checked={settings.indipendentContributions}
-              onChange={(e, indipendentContributions) => {
-                if (indipendentContributions) {
+              checked={settings.independentContributions}
+              onChange={(e, independentContributions) => {
+                if (independentContributions) {
                   void generateKeypair({})();
                 }
 
                 void updateSettings({
                   ...settings,
-                  indipendentContributions,
+                  independentContributions,
                 })();
               }}
             />
@@ -130,13 +130,13 @@ const Settings: React.FC<SettingsProps> = ({ settings }) => {
           label={
             <FormLabel>
               <Typography variant="h6">
-                {t('settings:contributeToIndipendentStatsLabel')}
+                {t('settings:contributeToIndependentStatsLabel')}
               </Typography>
               <Typography variant="body2" display="block">
-                {t('settings:contributeToIndipendentStatsHint')}
+                {t('settings:contributeToIndependentStatsHint')}
               </Typography>
               <br />
-              {settings.indipendentContributions ? (
+              {settings.independentContributions ? (
                 <Box>
                   <Typography color="primary" variant="body2">
                     {t('settings:encrypted_contributions_private_key')}

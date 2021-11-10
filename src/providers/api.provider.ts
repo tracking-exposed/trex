@@ -1,4 +1,4 @@
-import Endpoints from '@backend/endpoints/v3';
+import * as Endpoints from '@backend/endpoints';
 import { command } from 'avenger';
 import axios, { AxiosRequestConfig, AxiosResponse } from 'axios';
 import * as A from 'fp-ts/lib/Array';
@@ -91,14 +91,12 @@ export type TERequest<E extends MinimalEndpointInstance> = (
   input: TypeOfEndpointInstance<E>['Input']
 ) => TE.TaskEither<APIError, TypeOfEndpointInstance<E>['Output']>;
 
-type EndpointsT = typeof Endpoints;
-
-type API = {
-  [K in keyof EndpointsT]: EndpointsT[K] extends {
+type API<ES extends Record<string, Record<string, MinimalEndpointInstance>>> = {
+  [K in keyof ES]: ES[K] extends {
     [key: string]: MinimalEndpointInstance;
   }
     ? {
-        [KK in keyof EndpointsT[K]]: TERequest<EndpointsT[K][KK]>;
+        [KK in keyof ES[K]]: TERequest<ES[K][KK]>;
       }
     : never;
 } & {
@@ -124,35 +122,49 @@ export const apiFromEndpoint = <E extends MinimalEndpointInstance>(e: E): TERequ
         responseType: 'json',
         headers: {
           Accept: 'application/json',
-          ...b.Headers
+          ...b.Headers,
         },
       });
     }, e.Output.decode)
   );
 };
 
-const APIInit: API = {
-  request: <T, R>(
-    config: AxiosRequestConfig<T>,
-    decode: (o: unknown) => E.Either<t.Errors, R>
-  ) => liftFetch(() => endpointClient.request(config), decode),
-} as any;
+const toAPI = <
+  ES extends { [key: string]: Record<string, MinimalEndpointInstance> }
+>(
+  es: ES
+): API<ES> => {
+  const APIInit: API<ES> = {
+    request: <T, R>(
+      config: AxiosRequestConfig<T>,
+      decode: (o: unknown) => E.Either<t.Errors, R>
+    ) => liftFetch(() => endpointClient.request(config), decode),
+  } as any;
 
-const API: API = pipe(
-  R.toArray<keyof EndpointsT, { [key: string]: MinimalEndpointInstance }>(
-    Endpoints
-  ),
-  A.reduce<
-    [keyof EndpointsT, { [key: string]: MinimalEndpointInstance }],
-    API
-    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
-  >(APIInit, (q, [k, e]) => ({
-    ...q,
-    [k]: pipe(
-      e,
-      R.map((ee) => apiFromEndpoint(ee))
-    ) as any,
-  }))
-);
+  return pipe(
+    R.toArray<string, { [key: string]: MinimalEndpointInstance }>(es),
+    A.reduce<
+      [keyof ES, { [key: string]: MinimalEndpointInstance }],
+      API<ES>
+      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+    >(APIInit, (q, [k, e]) => ({
+      ...q,
+      [k]: pipe(
+        e,
+        R.map((ee) => apiFromEndpoint(ee))
+      ) as any,
+    }))
+  );
+};
+
+const v1 = toAPI(Endpoints.v1);
+const v2 = toAPI(Endpoints.v2);
+const v3 = toAPI(Endpoints.v3);
+
+const API = {
+  v1,
+  v2,
+  v3,
+};
 
 export { API };
