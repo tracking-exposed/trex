@@ -1,6 +1,9 @@
 import * as t from "io-ts";
 import { Endpoint } from "ts-endpoint";
-import { ContributionEvent } from "../../models/ContributionEvent";
+import {
+  ADVContributionEvent,
+  VideoContributionEvent,
+} from "../../models/ContributionEvent";
 
 const CompareVideo = Endpoint({
   Method: "GET",
@@ -48,7 +51,7 @@ const AddEvents = Endpoint({
       "X-YTtrex-PublicKey": t.string,
       "X-YTtrex-Signature": t.string,
     }),
-    Body: t.array(ContributionEvent),
+    Body: t.array(t.union([VideoContributionEvent, ADVContributionEvent])),
   },
   Output: t.any,
 });
