@@ -2,19 +2,26 @@ const _ = require('lodash');
 const debug = require('debug')('lib:cache');
 const moment = require('moment');
 
-const CACHE_SECONDS = 600;
+/* API last return a summary of last activities */
+const LAST_CACHE = 600;
+/* all the other cache 'names' have 1800 seconds */
+const STATS_CACHE = 1800;
+const allowedNames = ['supporters', 'active', 'related',
+    'processing', 'metadata', 'usage', 'searches',
+    'labels', 'deeper', 'ads', 'ytvids', 'recommendations', 
+    'leaves', 'creators' ];
 
 const cache = {
     'last': {
-        seconds: CACHE_SECONDS,
-        content: null,
-        computedAt: null,
-        next: null,
+        seconds: LAST_CACHE,
     },
 };
 
 function validSubject(sbj) {
-    return (_.keys(cache).indexOf(sbj) !== -1);
+    return (
+        _.concat(_.keys(cache), allowedNames)
+        .indexOf(sbj) !== -1
+    );
 }
 
 function repullCache(subject) {
@@ -22,7 +29,7 @@ function repullCache(subject) {
     if(!validSubject(subject))
         throw new Error("Invalid subject" + subject);
 
-    debug("returning cached copy of last duplicated evidences");
+    debug("returning cached copy of [%s] duplicated evidences", subject);
     return cache[subject];
 }
 
@@ -31,7 +38,8 @@ function stillValid(subject) {
     if(!validSubject(subject))
         throw new Error("Invalid subject" + subject);
 
-    return ( cache[subject].content &&
+    return ( cache[subject] &&
+        cache[subject].content &&
         cache[subject].next &&
         moment().isAfter(cache[subject].next)
     );
@@ -40,7 +48,10 @@ function stillValid(subject) {
 function setCache(subject, content) {
 
     if(!validSubject(subject))
-        throw new Error("Invalid subject" + subject);
+        throw new Error("Invalid subject " + subject);
+
+    if(!cache[subject])
+        cache[subject] = { seconds: STATS_CACHE };
 
     cache[subject].content = content;
     cache[subject].computedAt = moment();
@@ -50,6 +61,7 @@ function setCache(subject, content) {
 }
 
 module.exports = {
+    allowedNames,
     validSubject,
     repullCache,
     stillValid,

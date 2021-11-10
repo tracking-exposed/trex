@@ -4,20 +4,22 @@ const debug = require('debug')('routes:statistics');
 const nconf = require('nconf');
 
 const mongo3 = require('../lib/mongo3');
+const cache = require('../lib/cache');
 
 async function statistics(req) {
     // the content in 'stats' is saved by count-o-clock and the selector here required is
     // specifiy in config/stats.json
     const expectedFormat = "/api/v2/statistics/:name/:unit/:amount";
 
-    const allowedNames = ['supporters', 'active', 'related',
-        'processing', 'metadata', 'usage', 'searches',
-        'labels', 'deeper', 'ads', 'ytvids', 'recommendations', 
-        'leaves', 'creators' ];
     const name = req.params.name;
-    if(allowedNames.indexOf(name) === -1) {
+    if(cache.allowedNames.indexOf(name) === -1) {
         debug("Error! this might not appear in visualization: investigate on why an invalid stat-name is called by c3! (%s)", name);
-        return { json: { error: true, expectedFormat, allowedNames, note: `the statistic name you look for was ${name}` }}
+        return { json: {
+            error: true,
+            expectedFormat,
+            allowedNames: cache.allowedNames,
+            note: `the statistic name you look for was ${name}`
+        } };
     }
 
     const unit = req.params.unit;
@@ -31,6 +33,15 @@ async function statistics(req) {
     if(_.isNaN(amount)) {
         debug("Error! this might not appear in visualization, but the API call has an invalid number!");
         return { json: { error: true, expectedFormat, invalidNumber: req.params.amount }};
+    }
+
+    if(cache.stillValid(name)) {
+        const content = cache.repullCache(name).content;
+        debug("Cached [%s] since %d %s ago = %d measures",
+            name, amount, unit, _.size(content));
+        return {
+            json: content,
+        }
     }
 
     const filter = { name };
@@ -50,7 +61,9 @@ async function statistics(req) {
         })
         return e;
     });
+
     debug("Requested [%s] since %d %s ago = %d measures", name, amount, unit, _.size(content));
+    cache.setCache(name, content);
     await mongoc.close();
     return { json: content,
         // headers: { amount, unit, name }
