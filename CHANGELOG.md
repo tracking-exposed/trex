@@ -1,3 +1,10 @@
+# [1.1.0-beta.5](https://github.com/tracking-exposed/YCAI/compare/v1.1.0-beta.4...v1.1.0-beta.5) (2021-11-10)
+
+
+### Features
+
+* data donation ([#72](https://github.com/tracking-exposed/YCAI/issues/72)) ([70adee0](https://github.com/tracking-exposed/YCAI/commit/70adee036a3be6fa05b9cd604f89bbc4e531289b))
+
 # [1.1.0-beta.4](https://github.com/tracking-exposed/YCAI/compare/v1.1.0-beta.3...v1.1.0-beta.4) (2021-11-09)
 
 
