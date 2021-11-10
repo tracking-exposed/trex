@@ -45,13 +45,13 @@ async function statistics(req) {
     const fullc = await mongo3.read(mongoc, nconf.get('schema').stats, filter);
     const content = _.map(fullc, function(e) {
         _.each(_.keys(e), function(k) {
-            if(e[k] === 0)
+            if(e[k] === 0 || k === '_id')
                 _.unset(e, k);
         })
-        return _.omit(e, ['_id']);
+        return e;
     });
     debug("Requested [%s] since %d %s ago = %d measures", name, amount, unit, _.size(content));
-    mongoc.close();
+    await mongoc.close();
     return { json: content,
         // headers: { amount, unit, name }
         // there is no reason to add info in the header, 

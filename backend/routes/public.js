@@ -1,87 +1,57 @@
 const _ = require('lodash');
 const moment = require('moment');
 const debug = require('debug')('routes:public');
-const discodebug = require('debug')('DISCONTINUED');
 
 const params = require('../lib/params');
 const automo = require('../lib/automo');
 const utils = require('../lib/utils');
 const CSV = require('../lib/CSV');
-
+const cache = require('../lib/cache');
 const endpoints = require("../lib/endpoint");
 const { v1 } = require('../endpoints');
 const structured = require('../lib/structured');
 
 // This variables is used as cap in every readLimit below
 const PUBLIC_AMOUNT_ELEMS = 100;
-// This is in regards of the 'last' API cache, (which might be discontinued?)
-const CACHE_SECONDS = 600;
-
-const cache = {
-    seconds: CACHE_SECONDS,
-    content: null,
-    computedAt: null,
-    next: null,
-};
-
-function formatReturn(updated) {
-    if(updated) {
-        debug("Returning %d recent, at least duplicated, evidences part of a %d minutes long cache",
-            _.size(updated.content), CACHE_SECONDS / 60);
-        cache.content = updated.content;
-        cache.computedAt = updated.computedAt;
-        cache.next = updated.next
-    } else {
-        debug("returning cached copy of last duplicated evidences");
-    }
-    return {
-        json: {
-            content: cache.content,
-            computedt: cache.computedAt.toISOString(),
-            next: cache.next.toISOString(),
-            cacheTimeSeconds: cache.seconds,
-        }
-    };
-};
 
 async function getLast(req) {
 
-    if(_.isNull(cache.content) || (cache.next && moment().isAfter(cache.next)) ) {
-        // if not initialized ^^^^ or if the cache time is expired: do the query
-        const last = await automo.getTransformedMetadata([
-            { $match: { title: { $exists: true }, "related.19": { $exists: true } }},
-            { $sort: { savingTime: -1 }},
-            { $limit: 1500 },
-            { $group: { _id: "$videoId", amount: { $sum: 1 }}},
-            { $match: { amount: { $gte: 4 }}},
-            { $lookup: { from: 'metadata', localField: '_id', foreignField: 'videoId', as: 'info' }},
-            { $limit: 20 }
-        ])
+    if(cache.stillValid("last"))
+        return { json: cache.repullCache('last') };
 
-        /* the complex entry has nested metadata */
-        const reduction = _.map(last, function(ce) {
-            const lst = _.last(_.orderBy(ce.info, 'savingTime')).savingTime;
-            const d = moment.duration( moment(lst) - moment() );
-            const timeago = d.humanize();
-            return {
-                title: ce.info[0].title,
-                authorName: ce.info[0].authorName,
-                occurrencies: ce.amount,
-                videoId: ce._id,
-                timeago,
-                secondsago: d.asSeconds()
-            }
-        });
-        const cacheFormat = {
-            content: _.reverse(_.orderBy(reduction, 'secondsago')),
-            computedAt: moment(),
-            next: moment().add(cache.seconds, 'seconds')
-        };
-        return formatReturn(cacheFormat);
-    }
-    else {
-        return formatReturn();
-    }
+    // if not initialized or if the cache time is expired: do the query
+    const last = await automo.getTransformedMetadata([
+        { $match: { title: { $exists: true }, "related.19": { $exists: true } }},
+        { $sort: { savingTime: -1 }},
+        { $limit: 1500 },
+        { $group: { _id: "$videoId", amount: { $sum: 1 }}},
+        { $match: { amount: { $gte: 4 }}},
+        { $lookup: { from: 'metadata', localField: '_id', foreignField: 'videoId', as: 'info' }},
+        { $limit: 20 }
+    ]);
+
+    /* the complex entry has nested metadata */
+    const reduction = _.map(last, function(ce) {
+        const lst = _.last(_.orderBy(ce.info, 'savingTime')).savingTime;
+        const d = moment.duration( moment(lst) - moment() );
+        const timeago = d.humanize();
+        return {
+            title: ce.info[0].title,
+            authorName: ce.info[0].authorName,
+            occurrencies: ce.amount,
+            videoId: ce._id,
+            timeago,
+            secondsago: d.asSeconds()
+        }
+    });
+
+    const ready = _.reverse(_.orderBy(reduction, 'secondsago'));
+    return {
+        json: cache.setCache('last', ready)
+        // setCache return cache structure with
+        // 'content', 'computedAt',
+        // 'next', and 'cacheTimeSeconds'
+    };
 };
 
 async function getLastHome() {
@@ -264,11 +234,6 @@ async function getCreatorRelated(req) {
     return { json: authorStruct };
 };
 
-async function discontinued(req) {
-    discodebug("%j", req);
-    return { text: "discontinued" };
-}
-
 module.exports = {
     getLast,
     getLastHome,
@@ -277,8 +242,4 @@ module.exports = {
     getVideoCSV,
     getByAuthor,
     getCreatorRelated,
-
-    /* this special handler is used for all the API who aren't supported anymore.
-     * It might be elsewhere, not just in routes/public.js, but ... */
-    discontinued,
 };
