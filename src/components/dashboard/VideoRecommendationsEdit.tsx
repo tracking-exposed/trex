@@ -12,7 +12,6 @@ import { RecommendationCard } from '../common/RecommendationCard';
 import { ReorderList } from '../common/ReorderList';
 
 const withQueries = declareQueries({
-
   settings: queries.settings,
   videoRecommendations: queries.videoRecommendations,
 });

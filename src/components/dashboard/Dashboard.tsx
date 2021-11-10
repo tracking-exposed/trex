@@ -68,7 +68,7 @@ const DashboardContent: React.FC<DashboardContentProps> = ({
             case 'labEdit':
               return [
                 t('routes:lab_title'),
-                t('routes:lab_subtitle'),
+                t('routes:lab_edit_subtitle'),
                 // eslint-disable-next-line react/jsx-key
                 <LabVideoEdit videoId={currentView.videoId} />,
               ];

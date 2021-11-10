@@ -104,6 +104,22 @@ export const creatorVideos = compose(
   }, available)
 );
 
+export const oneCreatorVideo = compose(
+  product({
+    profile: requiredLocalProfile,
+    params: param<{ videoId: string }>()
+}),
+  queryShallow(
+    ({ profile, params }): TE.TaskEither<Error, Video> => {
+      return API.v3.Creator.OneCreatorVideo({
+        Headers: { 'x-authorization': profile.accessToken },
+        Params: { videoId: params.videoId },
+      });
+    },
+    available
+  ),
+);
+
 export const ccRelatedUsers = compose(
   product({
     profile: requiredLocalProfile,

@@ -37,6 +37,7 @@ const resources: CustomTypeOptions['resources'] = {
     lab_title: 'LAB - Recommend on your videos',
     lab_title_short: 'LAB',
     lab_subtitle: 'Select a video and highlight content from all over the Internet',
+    lab_edit_subtitle: 'Highlight content related to this video from anywhere on the Internet',
     statistics: 'Statistics',
     settings: 'Settings',
     link_account: 'Link your account',

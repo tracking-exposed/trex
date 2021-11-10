@@ -110,6 +110,7 @@ declare module 'react-i18next' {
         lab_title: string;
         lab_title_short: string;
         lab_subtitle: string;
+        lab_edit_subtitle: string;
         statistics: string;
         settings: string;
         link_account: string;
