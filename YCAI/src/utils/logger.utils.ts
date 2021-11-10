@@ -5,7 +5,7 @@ export const logger = debug('@ycai');
 
 type DebugFn = (s: string, ...args: any[]) => void;
 
-interface Logger {
+export interface Logger {
   info: DebugFn;
   error: DebugFn;
   debug: DebugFn;

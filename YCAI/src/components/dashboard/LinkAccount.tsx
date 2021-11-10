@@ -24,6 +24,10 @@ import { makeStyles } from '../../theme';
 
 const youtubeChannelUrlRegex = /\/channel\/([^/]+)(?:$|\/)/;
 
+export const SET_CHANNEL_STEP_ID = 'link-account-set-channel';
+export const COPY_CHANNEL_STEP_ID = 'link-account-copy-channel';
+export const VERIFY_CHANNEL_STEP_ID = 'link-account-verify-channel';
+
 const useStyles = makeStyles((theme) => ({
   box: {
     marginTop: theme.spacing(1),
