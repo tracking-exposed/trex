@@ -660,10 +660,10 @@ async function pullExperimentInfo(publicKey) {
     const mongoc = await mongo3.clientConnect({concurrency: 1});
     const exp = await mongo3.readOne(mongoc, nconf.get('schema').experiments,
         { publicKey, status: "active" });
-    if(exp)
-        debug("found experimentInfo %O", exp);
     await mongoc.close();
-    return exp;
+    if(exp)
+        return exp;
+    return null;
 }
 
 async function registerDirective(links, directiveType) {

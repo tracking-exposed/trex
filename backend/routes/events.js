@@ -67,6 +67,44 @@ const EXPECTED_HDRS =  {
     'accept-language': 'language',
 };
 
+function extendIfExperiment(expinfo, listOf) {
+
+    if(!expinfo)
+        return listOf;
+    debug("Linking %d objects to experiment %s",
+        listOf.length, expinfo.experimentId);
+
+    const nothelpf = ['_id', 'publicKey', 'href', 'status'];
+    return _.map(listOf, function(o) {
+        o.experiment = _.omit(expinfo, nothelpf);
+        return o;
+    });
+}
+
+async function saveInDB(experinfo, objects, dbcollection) {
+
+    if(!objects.length)
+        return { error: null, message: "no data", subject: dbcollection};
+
+    // this function saves leafs and htmls, and extend with exp
+    const expanded = extendIfExperiment(experinfo, objects);
+
+    try {
+        await automo.write(dbcollection, expanded);
+        debug("Saved %d %s metadataId %j",
+            objects.length, dbcollection,
+            _.uniq(_.map(objects, 'metadataId')));
+        return {
+            error: false, success: objects.length,
+            subject: dbcollection
+        };
+
+    } catch(error) {
+        debug("Error in saving %d %s %j", objects.length, dbcollection, error.message);
+        return { error: true, message: error.message };
+    }
+}
+
 async function processEvents2(req) {
 
     const headers = processHeaders(req.headers, EXPECTED_HDRS);
@@ -84,6 +122,9 @@ async function processEvents2(req) {
 
     // this is necessary for the mirror functionality
     appendLast(req);
+
+    // this information would be merged in htmls and leafs if exist 
+    const experinfo = await automo.pullExperimentInfo(supporter.publicKey);
 
     const blang = headers.language.replace(/;.*/, '').replace(/,.*/, '');
     // debug("CHECK: %s <%s>", blang, headers.language );
@@ -120,17 +161,6 @@ async function processEvents2(req) {
         return html;
     });
 
-    const experinfo = await automo.pullExperimentInfo(supporter.publicKey);
-    const htmlexpstended = utils.extendIfExperiment(experinfo, htmls);
-    if(htmlexpstended.length) {
-        const check = await automo.write(nconf.get('schema').htmls, htmlexpstended);
-        if(check && check.error) {
-            debug("Error in saving %d htmls %j", _.size(htmls), check);
-            return { json: {status: "error", info: check.info }};
-        }
-        debug("Saved %d htmls metadataId: %j", htmlexpstended.length, _.uniq(_.map(htmlexpstended, 'metadataId')));
-    }
-
     const leaves = _.map(_.filter(req.body, { type: 'leaf'}), function(e) {
         const nature = utils.getNatureFromURL(e.href);
         const metadataId = utils.hash({
@@ -153,21 +183,19 @@ async function processEvents2(req) {
             savingTime: new Date(),
         }
     });
-    if(leaves.length) {
-        const check = await automo.write(nconf.get('schema').leaves, leaves);
-        if(check && check.error) {
-            debug("Error in saving %d leaves %j", leaves.length, check);
-            return { json: {status: "error", info: check.info }};
-        }
-        debug("(L) Saved %d leaves selectors: %j", leaves.length, _.countBy(leaves, 'selectorName'));
-    }
+
+    /* after having prepared the objects, the functions below would:
+      1) extend with experiment if is not null
+      2) save it in the DB and return information on the saved objects */
+    const htmlrv = await saveInDB(experinfo, htmls, nconf.get('schema').htmls);
+    const leafrv = await saveInDB(experinfo, leaves, nconf.get('schema').leaves);
 
     /* this is what returns to the web-extension */
     return { json: {
         status: "OK",
         supporter,
-        leafs: _.size(leaves),
-        htmls: _.size(htmlexpstended),
+        leaves: leafrv,
+        htmls: htmlrv,
     }};
 };
 

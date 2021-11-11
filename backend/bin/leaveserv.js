@@ -232,6 +232,16 @@ function processLeaf(e) {
     const retval = _.pick(e, ["nature", "selectorName",
         "offsetTop", "offsetLeft", "href", "metadataId",
         "id", "savingTime", "publicKey"]);
+
+    /* this happens here because this is *the code loop*
+       where ADs is processed, and should be redoundant 
+       if exist any other place that is a parser-provider ---
+    -- experiment support, if there is an object with that 
+    name saved from the input (routes/events) make a copy.
+    Remind: the experiments are ephemerals (18 hours TTL)      */
+    if(e.experiment)
+        retval.experiment = e.experiment;
+
     return {
         ...retval,
         ...mined,

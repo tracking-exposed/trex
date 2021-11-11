@@ -180,7 +180,11 @@ function processEachHTML(htmlentry) {
 
         // console.log(JSON.stringify(metadata, undefined, 2));
 
-        /* experiment support */
+        /* experiment support, if there is an object with that 
+           name saved from the input (routes/events) handler, just
+           copy it. remind: the experiments are ephemerals, 
+           therefore this element should by copied fully and not only
+           the experimentId */
         if(envelop.impression.experiment)
             metadata.experiment = envelop.impression.experiment;
 

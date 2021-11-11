@@ -55,6 +55,9 @@ async function statistics(req) {
     const mongoc = await mongo3.clientConnect({concurrency: 1});
     const fullc = await mongo3.read(mongoc, nconf.get('schema').stats, filter);
     const content = _.map(fullc, function(e) {
+        /* this is helpful to avoid lines to the bottom, and just
+         * make the line disappear as missing evidence, that's why
+         * keys/entry with zero entry get removed. */
         _.each(_.keys(e), function(k) {
             if(e[k] === 0 || k === '_id')
                 _.unset(e, k);

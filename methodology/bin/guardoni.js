@@ -296,7 +296,7 @@ function profileExecount(profile, evidencetag) {
   const udd = path.resolve(path.join('profiles', profile));
   const guardfile = path.join(udd, 'guardoni.json');
   if (!fs.existsSync(udd)) {
-    console.log("--profile hasn't a directory: " + udd + "creating...");
+    console.log("--profile hasn't a directory. Creating " + udd);
     try {
       fs.mkdirSync(udd);
     } catch (error) {
