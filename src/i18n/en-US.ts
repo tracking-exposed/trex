@@ -9,6 +9,7 @@ const resources: CustomTypeOptions['resources'] = {
   actions: {
     popup_bootstrap: 'Bootstrap',
     add: 'Add',
+    drag_drop_recommendations: 'Drag and drop to change the order of appearance',
     manage_recommendations: 'Manage recommendations',
     link_channel: 'Link channel',
     unlink_channel: 'Unlink channel',
@@ -65,7 +66,7 @@ const resources: CustomTypeOptions['resources'] = {
     total: 'Total recommendations',
     url: 'Recommendation url',
     yours: 'Your recommendations',
-    no_items: 'No recommendations found',
+    no_items: 'Recommendations will appear here once added!',
     add_to_video: 'Add a recommendation to this video',
     url_placeholder: 'https://youtube.com/watch?v=xxxxx',
     url_helper_text: 'Insert a link',

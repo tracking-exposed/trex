@@ -1,4 +1,4 @@
-import { List } from '@material-ui/core';
+import { Grid, GridSpacing } from '@material-ui/core';
 import { XYCoord } from 'dnd-core';
 import React from 'react';
 import { DropTargetMonitor, useDrag, useDrop } from 'react-dnd';
@@ -112,6 +112,7 @@ interface ReorderListProps<I extends Item> {
   getKey: (item: I) => string;
   renderItem: (i: I, index: number) => JSX.Element;
   onDragComplete: (items: I[]) => void;
+  spacing?: GridSpacing;
 }
 
 export const ReorderList = <I extends Item>(
@@ -147,17 +148,18 @@ export const ReorderList = <I extends Item>(
   );
 
   return (
-    <List>
+    <Grid container spacing={props.spacing ?? 0}>
       {items.map((item, i) => (
-        <ReorderListItem
-          key={props.getKey(item)}
-          index={i}
-          item={item}
-          onDropCompleted={onDropCompleted}
-          moveListItem={moveListItem}
-          renderItem={props.renderItem}
-        />
+        <Grid item xs={12} key={props.getKey(item)}>
+          <ReorderListItem
+            index={i}
+            item={item}
+            moveListItem={moveListItem}
+            onDropCompleted={onDropCompleted}
+            renderItem={props.renderItem}
+          />
+        </Grid>
       ))}
-    </List>
+    </Grid>
   );
 };

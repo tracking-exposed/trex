@@ -27,11 +27,15 @@ interface VideoCardProps {
 
 const useStyles = makeStyles<YCAITheme>(theme => ({
   root: {
-    display: 'flex',
-    flexDirection: 'column',
     height: '100%',
-    '& .MuiCardContent-root': {
-      flexGrow: 1,
+    '& > button': {
+      display: 'flex',
+      flexDirection: 'column',
+      alignItems: 'flex-start',
+      height: '100%',
+      '& .MuiCardContent-root': {
+        flexGrow: 1,
+      }
     }
   },
   manage: {

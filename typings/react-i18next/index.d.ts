@@ -11,6 +11,7 @@ declare module 'react-i18next' {
       actions: {
         popup_bootstrap: string;
         add: string;
+        drag_drop_recommendations: string;
         manage_recommendations: string;
         delete: string;
         clear: string;

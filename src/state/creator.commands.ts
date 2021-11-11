@@ -3,6 +3,7 @@ import { ContentCreator } from '@backend/models/ContentCreator';
 import { command } from 'avenger';
 import * as E from 'fp-ts/lib/Either';
 import { pipe } from 'fp-ts/lib/function';
+import { sequenceS } from 'fp-ts/lib/Apply';
 import * as TE from 'fp-ts/lib/TaskEither';
 import { Messages } from '../models/Messages';
 import { API } from '../providers/api.provider';
@@ -100,6 +101,55 @@ export const updateRecommendationForVideo = command(
   },
   {
     settings,
+    videoRecommendations,
+  }
+);
+
+export const addRecommendationForVideo = command(
+  ({
+    videoId,
+    recommendationURL
+  }: {
+    videoId: string
+    recommendationURL: string
+  }) =>
+    pipe(
+      profile.run(),
+      TE.chain((p) => sequenceS(TE.ApplicativePar)({
+        video: API.v3.Creator.OneCreatorVideo({
+          Headers: {
+            'x-authorization': p.accessToken,
+          },
+          Params: { videoId }
+        }),
+        recommendation: API.v3.Creator.CreateRecommendation({
+          Headers: {
+            'x-authorization': p.accessToken,
+          },
+          Body: { url: recommendationURL }
+        })
+      })),
+      TE.chain(({
+        video,
+        recommendation,
+      }) => {
+        if (
+          // eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
+          video.recommendations.includes(
+            recommendation.urlId
+          )
+        ) {
+          return TE.right(video);
+        }
+
+        return updateRecommendationForVideo({
+          videoId,
+          recommendations: video.recommendations.concat(recommendation.urlId),
+        }, {
+          videoRecommendations: { videoId }
+        });
+      })
+    ), {
     videoRecommendations,
   }
 );

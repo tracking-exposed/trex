@@ -93,7 +93,7 @@ const DashboardContent: React.FC<DashboardContentProps> = ({
 
   return (
     <Grid item md={9} style={{ padding: 0 }}>
-      <Typography variant="h4" color="primary" className={classes.title}>
+      <Typography variant="h1" color="primary" className={classes.title}>
         {currentViewLabel}
       </Typography>
       <Typography

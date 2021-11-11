@@ -12,18 +12,27 @@ export const YCAITheme = createTheme({
     fontWeightBold: 800,
     h1: {
       marginBottom: 30,
+      fontSize: '1.75rem',
+    },
+    h2: {
+      marginBottom: 25,
+      fontSize: '1.60rem',
     },
     h3: {
       marginBottom: 20,
+      fontSize: '1.45rem',
     },
     h4: {
       marginBottom: 18,
+      fontSize: '1.30rem',
     },
     h5: {
       marginBottom: 16,
+      fontSize: '1.15rem',
     },
     h6: {
       marginBottom: 14,
+      fontSize: '1rem',
     },
   },
   overrides: {
