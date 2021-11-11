@@ -1,3 +1,15 @@
+# [1.1.0-beta.6](https://github.com/tracking-exposed/YCAI/compare/v1.1.0-beta.5...v1.1.0-beta.6) (2021-11-11)
+
+
+### Bug Fixes
+
+* add recommendations directly to video + Lab Edit page UI/UX ([#104](https://github.com/tracking-exposed/YCAI/issues/104)) ([b29bf92](https://github.com/tracking-exposed/YCAI/commit/b29bf92664bfb65ff08cc5fb8cc9f61b0132f009))
+
+
+### Features
+
+* add title on lab edit page ([#101](https://github.com/tracking-exposed/YCAI/issues/101)) ([0403e76](https://github.com/tracking-exposed/YCAI/commit/0403e76b146f846c7b7c98b7809123916cf8caff))
+
 # [1.1.0-beta.5](https://github.com/tracking-exposed/YCAI/compare/v1.1.0-beta.4...v1.1.0-beta.5) (2021-11-10)
 
 
