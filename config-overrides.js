@@ -43,7 +43,7 @@ const APP_ENV = t.strict(
     REACT_APP_BUILD_DATE: t.string,
     REACT_APP_VERSION: t.string,
     REACT_APP_LOGGER: t.string,
-    REACT_APP_DATA_DONATION_FLUSH_INTERVAL: t.string
+    REACT_APP_DATA_DONATION_FLUSH_INTERVAL: t.string,
   },
   'Config'
 );
@@ -60,6 +60,28 @@ const paths = {
 
 module.exports = {
   webpack: function (config) {
+    const appEnvKeys = Object.keys(APP_ENV.type.props);
+    const envKeys = [...Object.keys(BUILD_ENV.type.props), ...appEnvKeys];
+    /**
+     * react-scripts sets at runtime the value for `process.env.NODE_ENV`
+     * to "production" when you run `npm run build`.
+     *
+     * This is a reverse of the `process.env` patching before we reload
+     * the .env file with `dotenv`
+     */
+    Object.keys(process.env).forEach((key) => {
+      if (envKeys.includes(key)) {
+        delete process.env[key];
+      }
+    });
+
+    require('dotenv').config({
+      path:
+        process.env.DOTENV_CONFIG_PATH !== undefined
+          ? process.env.DOTENV_CONFIG_PATH
+          : '.env',
+    });
+
     const buildENV = pipe(
       { ...process.env },
       BUILD_ENV.decode,
@@ -102,9 +124,17 @@ module.exports = {
       (p) => p.definitions && p.definitions['process.env'] !== undefined
     );
 
+    const stringifiedProcessAppEnv = appEnvKeys.reduce(
+      (acc, k) => ({
+        ...acc,
+        [k]: process.env[k] ? `"${process.env[k]}"` : undefined,
+      }),
+      {}
+    );
+
     const appEnv = pipe(
       {
-        ...config.plugins[definePluginIndex].definitions['process.env'],
+        ...stringifiedProcessAppEnv,
         REACT_APP_VERSION: `"${pkgJson.version}"`,
         REACT_APP_BUILD_DATE: `"${new Date().toISOString()}"`,
       },
