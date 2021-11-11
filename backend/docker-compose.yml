@@ -24,12 +24,14 @@ services:
       - mongo
 
   api:
-    image: node:12-slim
+    build:
+      context: .
     ports:
       - "9000:9000"
     environment:
       DEBUG: "*,-body-parser*,-express*,-follow-redirects"
       key: my-dev-key
+      mongoHost: mongo
     links:
       - mongo
     volumes:
@@ -40,8 +42,7 @@ services:
       - ./models:/app/models
       - ./parsers:/app/parsers
       - ./routes:/app/routes
-      - ./node_modules:/app/node_modules
       - ./package.json:/app/package.json
       - ./tsconfig.json:/app/tsconfig.json
     working_dir: /app
-    command: npm run watch:ts
+    command: npm run watch
