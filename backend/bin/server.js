@@ -119,8 +119,9 @@ app.get('/api/v2/personal/:publicKey/selector/:key/:value', async (req, res) => 
 /* Update in progress, toward parserv3 */
 app.get('/api/v1/html/:metadataId', async (req, res) => await iowrapper('unitById', req, res))
 
-/* monitor for admin */
+/* monitor and flexible deleter for admin */
 app.get('/api/v2/monitor/:key', async (req, res) => await iowrapper('getMonitor', req, res))
+app.delete('/api/v2/deleter/:key/:c/:k/:id', async (req, res) => await iowrapper('deleter', req, res))
 
 /* admin */
 app.get('/api/v1/mirror/:key', async (req, res) => await iowrapper('getMirror', req, res))

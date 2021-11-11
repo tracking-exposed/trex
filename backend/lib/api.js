@@ -52,6 +52,7 @@ const apiList = {
 
     /* realtime monitor */
     getMonitor:          require('../routes/monitor').getMonitor,
+    deleter:             require('../routes/monitor').deleter,
 
     /** emails */
     registerEmail:       require('../routes/emails').registerEmail,

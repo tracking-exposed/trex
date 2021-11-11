@@ -564,6 +564,21 @@ async function getMixedDataSince(schema, since, maxAmount) {
     return retContent;
 }
 
+async function flexibleRemove(collection, filter) {
+    const mongoc = await mongo3.clientConnect({concurrency: 1});
+    const count = await mongo3.count(mongoc, collection, filter);
+    if(count === 1) {
+        const result = await mongo3
+            .deleteMany(mongoc, collection, filter);
+        debug("flexibleRemove result: %j", result.result);
+        return !!result.result.ok;
+    } else {
+        debug("flexibleRemove refuse to delete as matches are %d", count);
+    }
+    await mongoc.close();
+    return false;
+}
+
 async function getTransformedMetadata(chain) {
     const mongoc = await mongo3.clientConnect({concurrency: 1});
     const result = await mongo3
@@ -733,6 +748,7 @@ module.exports = {
 
     /* used in getMonitor */
     getMixedDataSince,
+    flexibleRemove,
 
     /* generalized aggregation call */
     getTransformedMetadata,

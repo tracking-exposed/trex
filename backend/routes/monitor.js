@@ -4,6 +4,7 @@ const debug = require('debug')('routes:monitor');
 
 const automo = require('../lib/automo');
 const security = require('../lib/security');
+const nconf = require('nconf');
 
 async function getMonitor(req) {
 
@@ -46,6 +47,44 @@ async function getMonitor(req) {
     };
 };
 
+async function deleter(req) {
+    if(!security.checkPassword(req)) {
+        return { json: {
+            error: true, message: "Invalid password"
+        }};
+    }
+
+    const collection = req.params.c;
+    if(-1 === _.keys(nconf.get('schema')).indexOf(collection)) {
+        debug("Invalid collection requested!")
+        return { json: {
+            error: true, message: "Invalid collection"
+        }};
+    }
+    const id = req.params.id;
+    if(id.length < 20) {
+        debug("Invalid ID requested: %s", id);
+        return { json: {
+            error: true, message: "Invalid ID format"
+        }};
+    }
+    const keyname = req.params.k;
+    if(!(keyname == 'id' || _.endsWith(keyname, 'Id'))) {
+        debug("Invalid key field name: %s", keyname);
+    }
+
+    const filter = _.set({}, keyname, id);
+    debug("Deleter function requested sucessfully: %s %j (executing)",
+        collection, filter);
+    const deleted = await automo.flexibleRemove(collection, filter);
+    const message =`Query executed, object ${deleted ? "deleted" : "NOT deleted"}`;
+
+    return { json: {
+        error: false, message
+    }};
+}
+
 module.exports = {
     getMonitor,
+    deleter,
 };
