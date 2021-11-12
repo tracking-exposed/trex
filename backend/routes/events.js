@@ -87,7 +87,13 @@ async function processEvents2(req) {
 
     const blang = headers.language.replace(/;.*/, '').replace(/,.*/, '');
     // debug("CHECK: %s <%s>", blang, headers.language );
-    const htmls = _.map(_.reject(req.body, { type: 'leaf'}), function(body, i) {
+    const htmls = _.map(
+        _.reject(_.reject(req.body, { type: 'leaf'}), { type: 'info'}),
+        /* once the version 1.8.x would be in production we might gradually 
+         * get rid of these filters, the issue was the presence of 'info' entry 
+         * fail in extracting a size and more likely a collision was happening */
+        function(body, i) {
+
         const nature = utils.getNatureFromURL(body.href);
         const metadataId = utils.hash({
             publicKey: headers.publickey,

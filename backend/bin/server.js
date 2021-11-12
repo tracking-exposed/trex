@@ -35,9 +35,9 @@ async function iowrapper(fname, req, res) {
         });
 
     if (!httpresult) {
-        res.send("Error: not implemented");
+        debug("API (%s) didn't return anything!?", fname);
+        res.send("Fatal error: Invalid output");
         res.status(501);
-        debug("Error, not implemented function in this API");
     } else if (httpresult.json && httpresult.json.error) {
         debug("API (%s) failure, returning 500", fname);
         res.status(500);
@@ -48,10 +48,10 @@ async function iowrapper(fname, req, res) {
         res.setHeader('Access-Control-Allow-Origin', '*');
         res.json(httpresult.json);
     } else if (httpresult.text) {
-        debug("API success, returning text (size %d)", _.size(httpresult.text));
+        debug("API (%s) success, returning text (size %d)", fname, _.size(httpresult.text));
         res.send(httpresult.text);
     } else {
-        debug("Undetermined failure in API call, result →  %j", httpresult);
+        debug("Undetermined failure in API (%s) →  %j", fname, httpresult);
         res.status(502);
         res.send("Error?");
     }
@@ -59,7 +59,7 @@ async function iowrapper(fname, req, res) {
   } catch(error) {
     res.status(502);
     res.send("Software error: " + error.message);
-    debug("Error in HTTP generic handler: %o", error);
+    debug("Error in HTTP handler API(%s): %o", fname, error);
   }
   res.end();
 }

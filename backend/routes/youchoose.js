@@ -312,7 +312,7 @@ async function creatorRegister(req) {
   /* channel and type is the seed, by adding a random
    * input we ensure monouse and unpredictable tokens */
   const verificationToken = await ycai.generateToken(
-    { channelId, type, predictplease: _.random(0, 0xffff) },
+    channelId,
     expireAt
   );
 

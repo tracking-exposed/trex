@@ -233,29 +233,30 @@ async function updateRecommendations(videoId, recommendations) {
   return one;
 }
 
-async function generateToken(seed, expireISOdate) {
+async function generateToken(channelId, expireISOdate) {
   /* TODO we need to use a public/private key schema to generate
    * a secure accessToken that can be used also if the verification
    * process gets interrupted */
-  const verificationToken = utils.hash({ token: seed });
+  const verificationToken = utils.hash({ channelId, r: Math.random() });
   const mongoc = await mongo3.clientConnect({ concurrency: 1 });
   const p = await mongo3.readOne(mongoc, nconf.get('schema').tokens, {
-    verificationToken
+    channelId
   });
 
-  if(!p) {
-    const r = await mongo3.writeOne(mongoc, nconf.get("schema").tokens, {
-      ...seed,
-      verificationToken,
-      verified: false,
-      expireAt: new Date(expireISOdate),
-    });
-    debug("Generated token %s for %j (result %O)",
-      verificationToken, seed, r.result);
-  } else {
-    debug("Token %s not generated (already present, expires on %s)",
-      verificationToken, p.expireAt);
-  }
+  /* this is to forcefully refresh a token and still wait one per channel */
+  if(p)
+    await mongo3.deleteMany(mongoc, nconf.get('schema').tokens, { channelId });
+
+  /* at the moment there is nothing beside 'channel' as type */
+  const r = await mongo3.writeOne(mongoc, nconf.get("schema").tokens, {
+    channelId,
+    verificationToken,
+    type: 'channel',
+    verified: false,
+    expireAt: new Date(expireISOdate),
+  });
+  debug("Generated token %s for %s (result %O)",
+    verificationToken, channelId, r.result);
 
   await mongoc.close();
   return verificationToken;

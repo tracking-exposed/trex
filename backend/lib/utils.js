@@ -193,7 +193,7 @@ function judgeIncrement(key, current, value) {
 function getNatureFromURL(href) {
     // this function MUST support the different URLs
     // format specify in ../../extension/src/consideredURLs.js
-    const uq = url.URL(href);
+    const uq = new url.URL(href);
     if(uq.pathname === '/results') {
         const searchTerms = _.trim(qustr.parse(uq.query).search_query);
         return {
