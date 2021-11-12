@@ -49,6 +49,9 @@ const resources: CustomTypeOptions['resources'] = {
   creator: {
     title: 'Creator',
   },
+  hide_all: {
+    title: 'Hide All',
+  },
   link_account: {
     title: 'Link your account',
     subtitle: 'Our system will verify that you own the channel on this browser',
