@@ -77,6 +77,7 @@ app.use(bodyParser.urlencoded({limit: '6mb', extended: true}));
  * all the trex backends, and should return info on system health, echo OK
  * if the system is OK, and the git log of the code running */
 app.get('/api/v0/info', async (req, res) => await iowrapper('systemInfo', req, res));
+app.get('/api/v0/health', function(req, res) { res.send("OK"); res.status(200); });
 
 app.get('/api/v1/last', async (req, res) => await iowrapper('getLast', req, res))
 app.get('/api/v1/home', async (req, res) => await iowrapper('getLastHome', req, res))
