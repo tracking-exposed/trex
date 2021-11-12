@@ -309,8 +309,6 @@ async function creatorRegister(req) {
     };
 
   const expireAt = moment().add(1, 'week').toISOString();
-  /* channel and type is the seed, by adding a random
-   * input we ensure monouse and unpredictable tokens */
   const verificationToken = await ycai.generateToken(
     channelId,
     expireAt
@@ -373,6 +371,7 @@ async function creatorVerify(req) {
       json: creator,
     };
   } catch (error) {
+    debug("Error in confirmCreator: %s", error.message);
     return {
       json: {
         error: true,

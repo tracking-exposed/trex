@@ -244,21 +244,21 @@ async function generateToken(channelId, expireISOdate) {
   });
 
   /* this is to forcefully refresh a token and still wait one per channel */
-  if(p)
+  if(p) {
+    debug("Removing previously generated token for channel %s", channelId);
     await mongo3.deleteMany(mongoc, nconf.get('schema').tokens, { channelId });
+  }
 
   /* at the moment there is nothing beside 'channel' as type */
-  const r = await mongo3.writeOne(mongoc, nconf.get("schema").tokens, {
+  await mongo3.writeOne(mongoc, nconf.get("schema").tokens, {
     channelId,
     verificationToken,
     type: 'channel',
-    verified: false,
     expireAt: new Date(expireISOdate),
   });
-  debug("Generated token %s for %s (result %O)",
-    verificationToken, channelId, r.result);
-
   await mongoc.close();
+
+  debug("Generated token %s for %s", verificationToken, channelId);
   return verificationToken;
 }
 
@@ -279,15 +279,14 @@ async function getToken(filter) {
 
 async function confirmCreator(tokeno, creatorInfo) {
   // this function create 'creator' entry and means the
-  // user is not VERIFIED. therefore has full access to
+  // user is now VERIFIED. Therefore has full access to
   // YCAI recommendation control.
   const mongoc = await mongo3.clientConnect({ concurrency: 1 });
 
-  // assume tokeno.type === 'channel'
-  const r = await mongo3.deleteMany(mongoc,
-    nconf.get("schema").tokens, { channelId: tokeno.channelId });
-  if(r.result.ok !== 1)
-    debug("Error? not found token to remove for channelId %s", tokeno.channelId);
+  await mongo3.deleteMany(mongoc, nconf.get("schema").tokens, {
+    channelId: tokeno.channelId,
+    type: 'channel',
+  });
 
   _.unset(creatorInfo, 'code');
   // 'code' is how the curly function return the token found.
@@ -302,12 +301,14 @@ async function confirmCreator(tokeno, creatorInfo) {
   }
 
   try {
-    await mongo3.deleteMany(mongoc,
-      nconf.get("schema").creators, { channelId: tokeno.channelId});
-    const x = await mongo3.writeOne(mongoc,
+
+    await mongo3.deleteMany(mongoc, nconf.get("schema").creators, {
+      channelId: creator.channelId
+    });
+
+    await mongo3.writeOne(mongoc,
       nconf.get("schema").creators, creator);
-    if(x.result.ok !== 1)
-      debug("Error? unable to write creator on the DB %j", x.result);
+
   } catch(error) {
     debug("Error in confirmCreator: %s", error.message);
     throw new Error(`Error in confirmCreator: ${error.message}`);
