@@ -153,10 +153,6 @@ async function saveRecommendationOGP(ogblob, creator) {
   );
   await mongoc.close();
 
-  if (!res.result || !res.result.ok) {
-    debug("Mongo error? %j", res.result);
-    return ["MongoDB error!"];
-  }
   _.unset(keep, '_id');
   return keep;
 }
@@ -368,6 +364,19 @@ async function getCreatorByToken(token) {
   }
 }
 
+async function getRecentChannels(max) {
+  /* this API is used to pull recent channels so we can 
+   * eventually watch it with 'Guardoni' and populate stats */
+  const mongoc = await mongo3.clientConnect({ concurrency: 1 });
+  const creators = await mongo3
+    .readLimit(mongoc, nconf.get("schema").creators, {}, {
+      registeredOn: -1
+    }, max, 0);
+  await mongoc.close();
+
+  return _.map(creators, 'url');
+}
+
 module.exports = {
   fetchRecommendations,
   fetchRecommendationsByProfile,
@@ -382,4 +391,5 @@ module.exports = {
   registerVideos,
   getCreatorByToken,
   confirmCreator,
+  getRecentChannels,
 };

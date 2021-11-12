@@ -381,10 +381,8 @@ async function upsertSearchResults(listof, cName) {
     let written = 0;
     for (const entry of listof) {
         const a = await mongo3.upsertOne(mongoc, cName, {id: entry.id}, entry);
-        if(!a.result.ok)
-            debug("!OK with %s.id %s: %j", cName, entry.id, a);
-        else
-            written++;
+        // TODO check return value to see if updated|upsert|fail
+        written++;
     }
     await mongoc.close();
     return written;
@@ -396,10 +394,8 @@ async function updateAdvertisingAndMetadata(adlist) {
     for (const entry of adlist) {
         const a = await mongo3.upsertOne(mongoc, nconf.get('schema').ads,
             { id: entry.id }, entry);
-        if(!a.result.ok)
-            debug("updateAdvAndMeta error: %j", a.result);
-        else
-            written++;
+        // TODO check return value to see if updated|upsert|fail
+        written++;
     }
     await mongoc.close();
     return written;
@@ -427,10 +423,8 @@ async function markHTMLsUnprocessable(htmls) {
     const ids = _.map(htmls, 'id');
     const r = await mongo3.updateMany(mongoc, nconf.get('schema').htmls,
         { id: { $in: ids }}, { processed: false });
-    /*
-    if( r.result.n != _.size(ids) || r.result.nModified != _.size(ids) || r.result.ok != 1) {
-        debug("partial update happened! (it should be ok) %j", r.result);
-    } */
+    // TODO check return value to check if updated or inserted
+    // debug("partial update happened! (it should be ok) %j", r.result);
     await mongoc.close();
     return r;
 }

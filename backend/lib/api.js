@@ -91,6 +91,9 @@ const apiList = {
     creatorVerify:          require('../routes/youchoose').creatorVerify,
     creatorGet:             require('../routes/youchoose').creatorGet,
 
+    /* v3 opendata */
+    opendataChannel:        require('../routes/opendata').opendataChannel,
+
     /* v3 chiaroscuro support */
     postDirective:       require('../routes/directives').post,
     fetchDirective:      require('../routes/directives').get,

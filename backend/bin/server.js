@@ -139,6 +139,8 @@ app.get('/api/v3/creator/recommendations', async (req, res) => await iowrapper('
 app.get('/api/v3/creator/:channelId/related/:amount?', async (req, res) => await iowrapper('getCreatorRelated', req, res))
 app.get('/api/v3/creator/:channelId/stats', async (req, res) => await iowrapper('getCreatorStats', req, res))
 
+app.get('/api/v3/opendata/channels', async (req, res) => await iowrapper('opendataChannel', req, res));
+
 /* below, guardoni-v2 */
 app.post('/api/v3/directives/:directiveType', async (req, res) => await iowrapper('postDirective', req, res))
 app.get('/api/v3/directives/:experimentId', async (req, res) => await iowrapper('fetchDirective', req, res))
