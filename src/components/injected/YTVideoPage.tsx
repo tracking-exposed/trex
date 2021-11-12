@@ -137,7 +137,7 @@ export const YTVideoPage = withQueries(
                   className={classes.tab}
                   icon={<CommunityIcon />}
                   wrapped={true}
-                  label={t('statistics:title')}
+                  label={t('hide_all:title')}
                   index={1}
                 />
                 <Tab

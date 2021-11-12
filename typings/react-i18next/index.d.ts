@@ -39,9 +39,6 @@ declare module 'react-i18next' {
       account: {
         channel: string;
       };
-      creator: {
-        title: string;
-      };
       link_account: {
         title: string;
         subtitle: string;
@@ -50,6 +47,12 @@ declare module 'react-i18next' {
         verification_code_hint: string;
       };
       youtube: {
+        title: string;
+      };
+      hide_all: {
+        title: string;
+      }
+      creator: {
         title: string;
       };
       recommendations: {
