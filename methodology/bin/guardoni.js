@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 const _ = require('lodash');
-const debug = require('debug')('guardoni:yt-cli');
+const debug = require('debug')('guardoni:notes');
+const info = require('debug')('guardoni:info');
 const puppeteer = require("puppeteer-extra")
 const pluginStealth = require("puppeteer-extra-plugin-stealth");
 const fs = require('fs');
@@ -322,6 +323,7 @@ function profileExecount(profile, evidencetag) {
 
   data.newProfile = newProfile;
   data.profileName = profile;
+  data.udd = udd;
   fs.writeFileSync(guardfile, JSON.stringify(data, undefined, 2), 'utf-8');
   debug("profile %s wrote %j", profile, data);
   return data;
@@ -377,12 +379,16 @@ async function main() {
 
     debug("Registering CSV %s as %s", sourceUrl, directiveType);
     const note = await registerCSV(directiveType)
-    if(note && note.since)
-      console.log("CSV %s, experimentId %s exists since %s",
+    if(note && note.since) {
+      debug("CSV %s, experimentId %s exists since %s",
         note.status, note.experimentId, note.since);
-    else if(note && note.experimentId)
-      console.log("Directive from CSV created: experimentId %s",
+      console.log(node.experimentId);
+    }
+    else if(note && note.experimentId) {
+      debug("Directive from CSV created: experimentId %s",
         note.experimentId);
+      console.log(note.experimentId);
+    }
     else
       console.log("CSV error in upload.");
 
@@ -473,7 +479,6 @@ async function dispatchBrowser(headless, profinfo) {
   const cwd = process.cwd();
   const dist = path.resolve(path.join(cwd, 'extension'));
   const newProfile = profinfo.newProfile;
-  const udd = profinfo.udd;
   const execount = profinfo.execount;
   const chromePath = getChromePath();
 
@@ -489,7 +494,7 @@ async function dispatchBrowser(headless, profinfo) {
     puppeteer.use(pluginStealth());
     browser = await puppeteer.launch({
         headless,
-        userDataDir: udd,
+        userDataDir: profinfo.udd,
         executablePath: chromePath,
         args: ["--no-sandbox",
           "--disabled-setuid-sandbox",
@@ -606,11 +611,11 @@ try {
   // backend is an option we don't even disclose in the help, 
   // as only developers needs it --chrome as well
   if(!!nconf.get('auto')) {
-    console.log("AUTO mode. No mandatory options; --profile, --evidencetag OPTIONAL")
+    info("AUTO mode. No mandatory options; --profile, --evidencetag OPTIONAL")
   } else if(!!nconf.get('csv')) {
-    console.log("CSV mode: default is --comparison (special is --shadowban); Guardoni exit after upload")
+    info("CSV mode: default is --comparison (special is --shadowban); Guardoni exit after upload")
   } else if(!!nconf.get('experiment')) {
-    console.log("EXPERIMENT mode: no mandatory options; --profile, --evidencetag OPTIONAL")
+    info("EXPERIMENT mode: no mandatory options; --profile, --evidencetag OPTIONAL")
   }
 
   const cwd = process.cwd();

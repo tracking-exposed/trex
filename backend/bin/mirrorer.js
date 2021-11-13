@@ -46,13 +46,3 @@ try {
 } catch(error) {
     console.log(error);
 }
-
-        /*
-            .then(function(result) {
-                if(result.body && result.body.supporter)
-                    debug("OK %s: %s",
-                        copiedReq.headers['x-yttrex-version'], result.body.supporter.p);
-                else
-                    debug("?? %s - %j",
-                        copiedReq.headers['x-yttrex-version'], result.body);
-                        */
