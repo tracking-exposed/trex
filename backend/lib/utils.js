@@ -6,7 +6,7 @@ const nacl = require('tweetnacl');
 const nconf = require('nconf');
 const foodWords = require('food-words');
 const url = require('url');
-const qustr = require('querystring');
+const querystring = require('querystring');
 
 function hash(obj, fields) {
     if(_.isUndefined(fields))
@@ -195,26 +195,38 @@ function getNatureFromURL(href) {
     // format specify in ../../extension/src/consideredURLs.js
     const uq = new url.URL(href);
     if(uq.pathname === '/results') {
-        const searchTerms = _.trim(qustr.parse(uq.query).search_query);
+        const searchTerms = uq.searchParams.get('search_query');
         return {
             type: 'search',
             query: searchTerms,
         }
     } else if(uq.pathname === '/watch') {
-        const videoId = _.trim(qustr.parse(uq.query).v);
+        const videoId = _.trim(querystring.parse(uq.query).v);
         return {
             type: 'video',
             videoId,
         }
     } else if(uq.pathname === '/') {
         return {
-            type: 'home'
+            type: 'home',
         }
     } else if(_.startsWith(uq.pathname, '/hashtag')) {
-        debug("PLEASE SUPPORT");
-    } else if(_.startsWith(uq.pathname, '/channel')) {
-        debug("PLEASE SUPPORT");
+        const hashtag = uq.pathname.split('/').pop();
+        return {
+            type: 'hashtag',
+            hashtag,
+        }
+    } else if(
+        _.startsWith(uq.pathname, '/channel') ||
+        _.startsWith(uq.pathname, '/user') ||
+        _.startsWith(uq.pathname, '/c')) {
+        const authorSource = uq.pathname.split('/').pop();
+        return {
+            type: 'channel',
+            authorSource,
+        }
     } else {
+        debug("Unknow condition: %s", uq.href);
         return {
             type: 'unknown'
         }

@@ -29,13 +29,11 @@ function dissectVideoAndParents(video, i) {
     // <ytd-video-renderer> element 
     const position = i + 1;
     const thuhref = video.querySelector('a#thumbnail');
-    const vlink = thuhref.getAttribute('href');
-    if(vlink.length !== 20) {
-        debuge("Not a standard direct link? %s in position %d", vlink, position);
-        return null;
-    }
+    const href = thuhref.getAttribute('href');
+    if(href.length !== 20)
+        debuge("Not a standard direct link? %s in position %d", href, position);
  
-    const videoId = vlink.substr(9);
+    const videoId = href.substr(9);
     const authorInfo = _.reduce(video.querySelectorAll('a'), function(memo, aele) {
         const linkto = aele.getAttribute('href');
         if(!linkto || !linkto.length || !aele.textContent.length)
@@ -71,6 +69,7 @@ function dissectVideoAndParents(video, i) {
         title,
         ...authorInfo,
         sectionName,
+        href,
         videoId,
         views: arinfo.views,
         arialabel,

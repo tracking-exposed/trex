@@ -63,12 +63,10 @@ function watch(root, selector, callback) {
 }
 
 function on(selector, callback) {
-  // debugger;
   return watch(document, selector, callback);
 }
 
 function one(selector, callback) {
-  // debugger;
   let mutationObserver;
   let once = false;
 

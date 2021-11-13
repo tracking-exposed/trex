@@ -178,13 +178,13 @@ function sizeCheck(nodeHTML) {
 const watchedPaths = {
     banner: {
         selector: '.video-ads.ytp-ad-module',
-        parents: 4, color: 'blue', screen: true },
+        parents: 4, color: 'blue' },
     ad: {
         selector: '.ytp-ad-player-overlay',
-        parents: 4, color: 'darkblue', screen: true },
+        parents: 4, color: 'darkblue' },
     overlay: {
         selector: '.ytp-ad-player-overlay-instream-info',
-        parents: 4, color: 'lightblue', screen: true },
+        parents: 4, color: 'lightblue' },
     toprightad: {
         selector: 'ytd-promoted-sparkles-web-renderer',
         parents: 3, color: 'aliceblue' },
@@ -200,9 +200,17 @@ const watchedPaths = {
     adbadge: {
         selector: '#ad-badge',
         parents: 4, color: 'deepskyblue' },
+    frontad: {
+        selector: 'ytd-banner-promo-renderer' },
     // video-ad-overlay-slot
-    channel: {
-        selector: '[href^="/channel/"]',
+    channel1: {
+        selector: '[href^="/channel"]',
+        color: 'yellow', parents: 1 },
+    channel2: {
+        selector: '[href^="/c"]',
+        color: 'yellow', parents: 1 },
+    channel3: {
+        selector: '[href^="/user"]',
         color: 'yellow', parents: 1 },
     searchcard: { selector: '.ytd-search-refinement-card-renderer' },
     channellink: { selector: '.channel-link' },
@@ -304,6 +312,16 @@ function leavesWatcher () {
         dom.on(command.selector,
             _.partial(manageNodes, command, selectorName)
         );
+    })
+    // the one below fetch the selectors that might be already
+    // present on page, that's why is put after
+    _.each(watchedPaths, function(command, selectorName) {
+        const ispres = document.querySelectorAll(command.selector);
+        if(ispres) {
+            _.each(Array(...ispres), function(nod) {
+                manageNodes(command, selectorName, nod);
+            })
+        }
     })
 }
 
