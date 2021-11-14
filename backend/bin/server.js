@@ -175,8 +175,6 @@ app.post('/api/v2/campaigns/:key', async (req, res) => await iowrapper('updateCa
 
 /* guardoni support APIs */
 app.post('/api/v2/experiment/opening', async (req, res) => await iowrapper('experimentOpening', req, res))
-app.get('/api/v2/experiment/:expname/csv', async (req, res) => await iowrapper('experimentCSV', req, res))
-app.get('/api/v2/experiment/:expname/dot', async (req, res) => await iowrapper('experimentDOT', req, res))
 
 // dynamically configured and retrived guardoni settings
 // app.post('/api/v2/guardoni/:experiment/:botname', async (req, res) => await iowrapper('guardoniConfigure', req, res))
@@ -190,6 +188,8 @@ app.get('/api/v3/directives/:experimentId', async (req, res) => await iowrapper(
 app.post('/api/v2/handshake', async (req, res) => await iowrapper('experimentChannel3', req, res))
 app.delete('/api/v3/experiment/:testTime', async (req, res) => await iowrapper('concludeExperiment3', req, res))
 app.get('/api/v2/experiment/:experimentId/json', async (req, res) => await iowrapper('experimentJSON', req, res))
+app.get('/api/v2/experiment/:experimentId/csv/:type', async (req, res) => await iowrapper('experimentCSV', req, res))
+app.get('/api/v2/experiment/:experimentId/dot', async (req, res) => await iowrapper('experimentDOT', req, res))
 
 app.get('*', async (req, res) => {
     debug("URL not handled: %s", req.url);

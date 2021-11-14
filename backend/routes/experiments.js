@@ -51,69 +51,50 @@ async function dot(req) {
     return { json: dotchain };
 }
 
-async function sharedDataPull(experiment) {
-    debug("Requested experimentId %s", experiment);
-
+async function sharedDataPull(filter) {
     const MAX = 3000;
     const mongoc = await mongo3.clientConnect({concurrency: 1});
     const metadata = await mongo3
         .readLimit(mongoc, nconf.get('schema').metadata,
-        { experiment }, { savingTime: -1 }, MAX, 0);
+        filter, { savingTime: -1 }, MAX, 0);
     await mongoc.close();
 
-    debug("Returning %d available data by experiment %s (max %d) %j",
-        metadata.length, experiment, MAX, _.countBy(metadata, 'type'));
+    debug("Found %d available data by filter %o (max %d) %j",
+        metadata.length, filter, MAX, _.countBy(metadata, 'type'));
+    return metadata;
 }
 
 async function json(req) {
-    const experiment = params.getString(req, 'experimentId', true);
-    const metadata = await sharedDataPull(experiment);
+    const experimentId = params.getString(req, 'experimentId', true);
+    const metadata = await sharedDataPull({
+        'experiment.experimentId': experimentId
+    });
     return { json: metadata}
 }
 
-/*
-    return _.map(results, function(r) {
-        // r is a metadata with only one related, duplicated as many related avail.
-        const chardetoutp = chardet.analyse(Buffer.from(r.related.recommendedTitle));
-        return {
-            savingTime: r.savingTime,
-            metadataId: r.id,
-            blang: r.blang,
-            watcher: utils.string2Food(r.publicKey),
-            // publicKey: l.publicKey,
-            profile: r.experiment.profile,
-            experiment: name,
-            videoName: r.experiment.videoName,
-            session: r.experiment.session,
-            watchFor: "" + r.experiment.watchingTime,
-
-            recommendedVideoId: r.related.videoId,
-            recommendedPubtime: r.related.publicationTime ? r.publicationTime.toISOString() : "Invalid Date",
-            recommendedReltiveS: r.related.recommendedRelativeSeconds,
-            recommendedTitle: r.related.recommendedTitle,
-            recommendedTitleCharset: chardetoutp[0].name,
-            recommendedTitleLang: chardetoutp[0].lang || "unknown",
-            recommendedAuthor: r.related.recommendedSource,
-            // recommendedVerified: r.verified,
-            recommendationOrder: r.related.index,
-            recommendedViews: r.related.recommendedViews,
-            isTop20: !!(r.related.index <= 20),
-
-            thumbnail: "https://i.ytimg.com/vi/" + r.related.videoId + "/mqdefault.jpg",
-            watchedId: r.videoId,
-            watchedAuthor: r.authorName,
-            // watchedPubtime: r.publicationTime ? r.publicationTime.toISOString() : "Invalid Date",
-            watchedTitle: r.title,
-            // watchedChannel: r.authorSource,
-        };
-*/
 
 async function csv(req) {
 
-    const textcsv = CSV.produceCSVv1(related);
-    debug("Requested experiment %s, fetch %d related, and converted in a %d CSV",
-        expname, _.size(related), _.size(textcsv));
-    const filename = expname + '-' + _.size(related) + '.csv';
+    const type = req.params.type;
+    if(CSV.allowedTypes.indexOf(type) === -1) {
+        debug("Invalid requested data type? %s", type);
+        return { text: "Error, invalid URL composed" };
+    }
+
+    const experimentId = params.getString(req, 'experimentId', true);
+    const metadata = await sharedDataPull({
+        'experiment.experimentId': experimentId, type
+    });
+
+    const transformed = CSV.unrollNested(metadata, {
+        type, experiment: true, private: true
+    });
+
+    const textcsv = CSV.produceCSVv1(transformed);
+    debug("Fetch %d metadata(s), and converted in a %d CSV",
+        _.size(metadata), _.size(textcsv));
+
+    const filename = `${experimentId.substr(0, 8)}-${type}-${transformed.length}.csv`;
     return {
         text: textcsv,
         headers: {

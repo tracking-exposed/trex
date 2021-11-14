@@ -48,7 +48,7 @@ async function getPersonalCSV(req) {
     const k =  req.params.publicKey;
     const type = req.params.type;
 
-    if(['home', 'video'].indexOf(type) === -1 ) 
+    if(['home', 'video', 'search'].indexOf(type) === -1 ) 
         return { text: "Error 🤷 Invalid request, only 'video' or 'home' are supported" };
 
     const data = await automo.getMetadataByPublicKey(k, { amount: CSV_MAX_SIZE, skip: 0, typefilter: type });
@@ -56,13 +56,8 @@ async function getPersonalCSV(req) {
 
     debug("returned %d data in getPersonalCSV", _.size(data));
     const sourceCounter = _.size(data.metadata);
-    const unrolled = (type === 'home')
-        ? _.reduce(data.metadata, CSV.unwindSections, [])
-        : _.reduce(data.metadata, CSV.unrollRecommended, []);
-
-    const ready = _.map(unrolled, function(e) {
-        _.unset(e, 'publickey');
-        return e;
+    const ready = CSV.unrollNested(data.metadata, {
+        type, private: true
     });
 
     debug("data were %d now unrolling each evidence %d", sourceCounter, _.size(ready));
