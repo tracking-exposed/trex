@@ -136,24 +136,60 @@ async function list(req) {
     const filter = { directiveType: type };
     const mongoc = await mongo3.clientConnect({concurrency: 1});
 
-    /* TODO aggregate pipeline,
-     * to count number of usage and last samples collected */
-    /* TODO consider to do a count of .experiments to know how many 
-     * are still in progress, and which are in progress */
-
-    const result = await mongo3
+    const configured = await mongo3
         .readLimit(mongoc, nconf.get('schema').directives,
         filter, { when: -1 }, MAX, 0);
+
+    const active = await mongo3
+        .readLimit(mongoc, nconf.get('schema').experiments,
+        filter, { testTime: -1 }, MAX, 0);
+
+    debug("Returning %d configured directives, %d active (type %s, max %d)",
+        configured.length, active.length, type, MAX);
+
+    const expIdList = _.map(configured, 'experimentId');
+    const lastweek = await mongo3
+        .readLimit(mongoc, nconf.get('schema').metadata, {
+            "experiment.experimentId": { "$in": expIdList }
+        }, { savingTime: -1}, MAX, 0);
+
     await mongoc.close();
 
-    debug("Returning %d available directives on type %s (max %d)",
-        result.length, type, MAX);
+    const infos = {};
+    /* this is the return value, it would contain:
+         .configured  (the directive list)
+         .active      (eventually non-completed experiments)
+         .recent      (activly marked metadata)
+     */
+    infos.configured = _.map(configured, function(r) {
+        r.humanizedWhen = moment(r.when).format("YYYY-MM-DD");
+        return _.omit(r, ['_id', 'directiveType'])
+    });
+
+    infos.active = _.compact(_.map(active, function(e) {
+        if(e.status === 'completed')
+            return null;
+        _.unset(e, '_id');
+        e.publicKey = e.publicKey.substr(0, 8);
+        return e;
+    }));
+
+    infos.recent = _.reduce(_.groupBy(_.map(lastweek, function(e) {
+         return {
+             publicKey: e.publicKey.substr(0, 8),
+             evidencetag: e.experiment.evidencetag,
+             experimentId: e.experiment.experimentId
+         }
+    }), 'experimentId'), function(memo, listOf, experimentId) {
+        memo[experimentId] = {
+            contributions: _.countBy(listOf, 'evidencetag'),
+            profiles: _.countBy(listOf, 'publicKey')
+        };
+        return memo;
+    }, {});
 
     return {
-        json: _.map(result, function(r) {
-            r.humanizedWhen = moment(r.when).format("YYYY-MM-DD");
-            return _.omit(r, ['_id', 'directiveType'])
-        })
+        json: infos
     };
 }
 
