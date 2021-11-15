@@ -47,7 +47,7 @@ const useStyles = makeStyles<YCAITheme>(theme => ({
     textAlign: 'center',
   },
   headerSpan: {
-    backgroundColor: 'white',
+    backgroundColor: theme.palette.background.default,
     display: 'inline-block',
     maxWidth: '70%',
     paddingLeft: theme.spacing(2),

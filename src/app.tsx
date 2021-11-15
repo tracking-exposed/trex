@@ -1,7 +1,6 @@
 import './i18n';
 import './resources/global.css';
-import { ThemeProvider } from '@material-ui/styles';
-import { YTContributionInfoBox } from 'components/injected/YTContributionInfoBox';
+import { YTContributionInfoBox } from './components/injected/YTContributionInfoBox';
 import { pipe } from 'fp-ts/lib/pipeable';
 import * as TE from 'fp-ts/lib/TaskEither';
 import { debounce } from 'lodash';
@@ -10,8 +9,9 @@ import * as ReactDOM from 'react-dom';
 import { settingsRefetch } from 'state/public.queries';
 import { ErrorBoundary } from './components/common/ErrorBoundary';
 import { YTVideoPage } from './components/injected/YTVideoPage';
-import { YCAITheme } from './theme';
+import { ThemeProvider, YCAITheme } from './theme';
 import { GetLogger } from './utils/logger.utils';
+;
 
 const appLogger = GetLogger('app');
 

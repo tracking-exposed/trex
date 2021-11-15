@@ -1,13 +1,14 @@
-import { Box, makeStyles, Typography } from '@material-ui/core';
+import * as React from 'react';
+import { Box, Typography } from '@material-ui/core';
 import * as QR from 'avenger/lib/QueryResult';
 import { declareQueries } from 'avenger/lib/react';
 import { pipe } from 'fp-ts/lib/pipeable';
-import * as React from 'react';
 import { ErrorBox } from '../../components/common/ErrorBox';
 import { LazyFullSizeLoader } from '../../components/common/FullSizeLoader';
 import { Keypair, Settings } from '../../models/Settings';
 import * as dataDonation from '../../providers/dataDonation.provider';
 import { keypair, settings } from '../../state/public.queries';
+import { makeStyles } from '../../theme';
 
 const useStyles = makeStyles((props) => ({
   root: {

@@ -1,4 +1,4 @@
-import { Typography } from '@material-ui/core';
+import { Typography, useTheme } from '@material-ui/core';
 import Grid from '@material-ui/core/Grid';
 import { makeStyles } from '@material-ui/core/styles';
 import * as QR from 'avenger/lib/QueryResult';
@@ -23,7 +23,6 @@ const useStyles = makeStyles((theme) => ({
   root: {
     height: '100%',
     width: '100%',
-    padding: theme.spacing(2),
     backgroundColor: theme.palette.background.default,
   },
   title: {
@@ -46,6 +45,7 @@ const DashboardContent: React.FC<DashboardContentProps> = ({
   auth,
 }) => {
   const { t } = useTranslation();
+  const theme = useTheme();
   const classes = useStyles();
 
   const [currentViewLabel, currentViewSubtitle, currentViewContent] =
@@ -92,18 +92,30 @@ const DashboardContent: React.FC<DashboardContentProps> = ({
     }, [currentView, auth]);
 
   return (
-    <Grid item md={9} style={{ padding: 0 }}>
-      <Typography variant="h1" color="primary" className={classes.title}>
-        {currentViewLabel}
-      </Typography>
-      <Typography
-        variant="subtitle1"
-        color="textPrimary"
-        className={classes.subtitle}
-      >
-        {currentViewSubtitle}
-      </Typography>
-      {currentViewContent}
+    <Grid
+      container
+      alignContent="flex-start"
+      style={{
+        padding: theme.spacing(2),
+        overflowY: 'scroll',
+        height: '100%',
+      }}
+    >
+      <Grid item xs={12}>
+        <Typography variant="h1" color="primary" className={classes.title}>
+          {currentViewLabel}
+        </Typography>
+        <Typography
+          variant="subtitle1"
+          color="textPrimary"
+          className={classes.subtitle}
+        >
+          {currentViewSubtitle}
+        </Typography>
+      </Grid>
+      <Grid item xs={12}>
+        {currentViewContent}
+      </Grid>
     </Grid>
   );
 };
@@ -118,18 +130,27 @@ export const Dashboard = withQueries(({ queries }): React.ReactElement => {
   return pipe(
     queries,
     QR.fold(LazyFullSizeLoader, ErrorBox, ({ currentView, profile, auth }) => {
+      const theme = useTheme();
       const classes = useStyles();
 
       return (
-        <Grid container className={classes.root} spacing={3}>
-          <Grid item md={3}>
-            <Sidebar />
+        <Grid container className={classes.root}>
+          <Grid
+            item
+            lg={2}
+            md={3}
+            sm={3}
+            style={{ padding: theme.spacing(2), height: '100%' }}
+          >
+            <Sidebar currentView={currentView} />
           </Grid>
-          <DashboardContent
-            currentView={currentView}
-            profile={profile}
-            auth={auth}
-          />
+          <Grid item lg={10} md={9} sm={9} style={{ height: '100%' }}>
+            <DashboardContent
+              currentView={currentView}
+              profile={profile}
+              auth={auth}
+            />
+          </Grid>
         </Grid>
       );
     })

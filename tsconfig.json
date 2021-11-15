@@ -7,13 +7,15 @@
     "noEmit": true,
     "allowJs": true,
     "strict": true,
+    "strictNullChecks": true,
     "esModuleInterop": true,
     "noUnusedLocals": true,
     "resolveJsonModule": true,
+    "skipDefaultLibCheck": true,
     "forceConsistentCasingInFileNames": true,
     "lib": [
       "dom",
-      "esnext"
+      "ESNext"
     ],
     "typeRoots": [
       "node_modules/@types",
@@ -22,15 +24,13 @@
     "baseUrl": "./src",
     "allowSyntheticDefaultImports": true,
     "noFallthroughCasesInSwitch": true,
-    "moduleResolution": "node",
-    "isolatedModules": true,
-    "skipLibCheck": true
+    "moduleResolution": "Node",
+    "isolatedModules": true
   },
   "include": [
     "./src"
   ],
   "exclude": [
-    "node_modules",
     "public",
     "**/__tests__/**"
   ]

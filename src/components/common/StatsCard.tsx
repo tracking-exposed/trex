@@ -1,6 +1,5 @@
-import { Card, CardContent, Typography, useTheme } from '@material-ui/core';
-import { makeStyles } from '@material-ui/styles';
-import { YCAITheme } from '../../theme';
+import { Card, CardContent, Typography } from '@material-ui/core';
+import { YCAITheme,makeStyles, useTheme } from '../../theme';
 import * as React from 'react';
 
 interface StatsBoxProps {

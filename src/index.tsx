@@ -1,4 +1,5 @@
 import './i18n';
+import './resources/global.css';
 import { ThemeProvider } from '@material-ui/styles';
 import React from 'react';
 import ReactDOM from 'react-dom';
@@ -8,7 +9,7 @@ import { YCAITheme } from './theme';
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 
-import './resources/global.css';
+
 
 ReactDOM.render(
   <React.StrictMode>

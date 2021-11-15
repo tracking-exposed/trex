@@ -1,15 +1,15 @@
+import * as React from 'react';
 import {
   Box,
   Button,
   Divider,
   FormLabel,
-  makeStyles,
   Typography,
+  Switch,
+  makeStyles,
+  FormControl,
+  FormControlLabel,
 } from '@material-ui/core';
-import FormControl from '@material-ui/core/FormControl';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
-import Switch from '@material-ui/core/Switch';
-import * as React from 'react';
 import { useTranslation } from 'react-i18next';
 import * as models from '../../models';
 import { generateKeypair, updateSettings } from '../../state/public.commands';
