@@ -5,6 +5,7 @@ const debug = require('debug')('parser:searches');
 const debuge = require('debug')('parser:searches:error');
 
 const longlabel = require('./longlabel');
+const { env } = require('process');
 
 function findSection(video) {
     // go up till a ytd-shelf-renderer
@@ -94,7 +95,8 @@ function process(envelop) {
 
     const videos = envelop.jsdom.querySelectorAll('ytd-video-renderer');
     if(!videos.length) {
-        debuge("Search result of %s doesn't seem havingg any video!", searchTerms);
+        debuge("Search result of %s doesn't seem having any video!",
+            envelop.impression.nature.query);
         return null;
     }
     const results = _.map(videos, dissectVideoAndParents);

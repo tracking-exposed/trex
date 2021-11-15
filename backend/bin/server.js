@@ -150,19 +150,20 @@ app.get('/api/v3/creator/me', async (req, res) => await iowrapper('creatorGet', 
 /* below, the new API for advertising */
 app.get('/api/v2/ad/video/:videoId', async (req, res) => await iowrapper('adsPerVideo', req, res));
 app.get('/api/v2/ad/channel/:channelId', async (req, res) => await iowrapper('adsPerChannel', req, res));
+app.get('/api/v2/ad/:amount?', async (req, res) => await iowrapper('adsUnbound', req, res));
 
 /* impact */
 app.get('/api/v2/statistics/:name/:unit/:amount', async (req, res) => await iowrapper('getStatistics', req, res))
 
-/* delete a group from your profile, create a new tagId */
+/* delete a group from your profile, create a new tagId --- outdated, verify */
 app.delete('/api/v2/profile/:publicKey/tag/:tagName', async (req, res) => await iowrapper('removeTag', req, res))
 app.post('/api/v2/profile/:publicKey/tag', async (req, res) => await iowrapper('createAndOrJoinTag', req, res))
 
-/* update and current profile */
+/* update and current profile  --- outdated, verify. */
 app.get('/api/v2/profile/:publicKey/tag', async (req, res) => await iowrapper('profileStatus', req, res))
 app.post('/api/v2/profile/:publicKey', async (req, res) => await iowrapper("updateProfile", req, res))
 
-/* to get results of search queries! */
+/* to get results of search queries! -- to be retested, CSV is OK, but perhaps only it. */
 app.get('/api/v2/searches/:idList/dot', async (req, res) => await iowrapper('getSearchesDot', req, res))
 app.get('/api/v2/searches/:query/CSV', async (req, res) => await iowrapper('getSearchesCSV', req, res))
 app.get('/api/v2/queries/:campaignName', async (req, res) => await iowrapper('getQueries', req, res))

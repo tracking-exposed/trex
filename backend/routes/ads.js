@@ -48,7 +48,38 @@ async function perChannel(req) {
     return { text: "<html><body><pre>" + JSON.stringify(ads, null, 2) };
 }
 
+async function unbound(req) {
+    const max = params.getInt(req, 'amount', 400);
+    const mongoc = await mongo3.clientConnect({concurrency: 1});
+    const r = await mongo3.aggregate(mongoc,
+        nconf.get('schema').ads, [
+            { $sort: { savingTime: -1} },
+            { $limit: max },
+            { $lookup: {
+                from: 'metadata', foreignField: 'id',
+                localField: 'metadataId', as: 'metadata' }
+            }
+        ])
+    debug("ADs unbound: %d", r.length);
+    await mongoc.close();
+
+    const x = _.compact(_.map(r, function(adret) {
+        const rv = _.pick(adret, 
+            ['href', 'selectorName', 'sponsoredName', 'sponsoredSite', 'savingTime']
+        );
+        if(adret.metadata && adret.metadata.length) {
+            rv.authorName = adret.metadata[0].authorName;
+            rv.authorSource = adret.metadata[0].authorSource;
+        } else 
+            return null;
+        return rv;
+    }));
+
+    return { json: x };
+}
+
 module.exports = {
     perVideo,
     perChannel,
+    unbound,
 };

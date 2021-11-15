@@ -102,6 +102,7 @@ const apiList = {
     /* advertising support */
     adsPerVideo:         require('../routes/ads').perVideo,
     adsPerChannel:       require('../routes/ads').perChannel,
+    adsUnbound:          require('../routes/ads').unbound,
 };
 
 module.exports = {

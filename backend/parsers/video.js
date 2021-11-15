@@ -173,18 +173,8 @@ function parseSingleTry(D, memo, spec) {
     const elems = D.querySelectorAll(spec.selector);
 
     if(!_.size(elems)) {
-        debuge("zero element selected: %s fail", spec.name);
+        // debuge("zero element selected: %s fail", spec.name);
         return memo;
-    }
-
-    /* if(!spec.selected && _.size(elems) > 1) {
-        debug("%s with %s gives %d elements. only the 1st kept (%j)",
-            spec.name, spec.selector, _.size(elems), _.map(elems, 'textContent') );
-    } */
-
-    if(spec.selected) {
-        debug("this look like a too overcomplex framework to define scraper... %d",
-            spec.selected);
     }
 
     const source = spec.selected ?  _.nth(elems, spec.selected) : _.first(elems);
@@ -231,10 +221,21 @@ function mineAuthorInfo(D) {
     return { authorName, authorSource };
 }
 
+function simpleTitlePicker(D) {
+    return _.reduce(D.querySelectorAll('h1'), function(memo, ne) {
+        if(memo)
+            return memo;
+        if(ne.textContent.length)
+            memo = ne.textContent;
+        return memo;
+    }, null);
+}
+
 function processVideo(D, blang, clientTime, urlinfo) {
 
-    /* this is the title of the view video, the related are mined in 'relatedMetadata' */
-    const title = manyTries(D, [{
+    /* this method to extract title was a nice experiment 
+     * and/but should be refactored and upgraded */
+    let title = manyTries(D, [{
         name: 'title h1',
         selector: 'h1 > yt-formatted-string',
         expected: null,
@@ -247,6 +248,9 @@ function processVideo(D, blang, clientTime, urlinfo) {
         selected: null,
         func: 'textContent'
     } ]);
+    if(!title)
+        title = simpleTitlePicker(D);
+
     if(!title) {
         throw new Error("unable to get video title");
     }

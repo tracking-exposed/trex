@@ -161,17 +161,17 @@ async function processEvents2(req) {
         return html;
     });
 
-    const leaves = _.map(_.filter(req.body, { type: 'leaf'}), function(e) {
+    const leaves = _.map(_.filter(req.body, { type: 'leaf'}), function(e, i) {
         const nature = utils.getNatureFromURL(e.href);
         const metadataId = utils.hash({
             publicKey: headers.publickey,
             randomUUID: e.randomUUID,
             href: e.href,
-            type: 'leaf',
         });
         const id = utils.hash({
             metadataId,
             contentHash: e.hash,
+            i
         });
         return {
             id,
