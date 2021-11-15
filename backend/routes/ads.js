@@ -4,6 +4,7 @@ const nconf = require('nconf');
 
 const params = require('../lib/params');
 const mongo3 = require('../lib/mongo3');
+const { traverse } = require('fp-ts/lib/Traversable');
 
 
 async function dbQuery(filter, amount, skip) {
@@ -67,9 +68,12 @@ async function unbound(req) {
         const rv = _.pick(adret, 
             ['href', 'selectorName', 'sponsoredName', 'sponsoredSite', 'savingTime']
         );
-        if(adret.metadata && adret.metadata.length) {
+        if(adret.metadata &&
+           adret.metadata.length &&
+           adret.metadata[0].type === 'video') {
             rv.authorName = adret.metadata[0].authorName;
             rv.authorSource = adret.metadata[0].authorSource;
+            rv.videoTitle = adret.metadata[0].title;
         } else 
             return null;
         return rv;

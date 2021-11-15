@@ -81,10 +81,10 @@ app.get('/api/v0/health', function(req, res) { res.send("OK"); res.status(200); 
 
 app.get('/api/v1/last', async (req, res) => await iowrapper('getLast', req, res))
 app.get('/api/v1/home', async (req, res) => await iowrapper('getLastHome', req, res))
-app.get('/api/v1/videoId/:query', async (req, res) => await iowrapper('getVideoId', req, res))
-app.get('/api/v1/related/:query', async (req, res) => await iowrapper('getRelated', req, res))
-app.get('/api/v1/videoCSV/:query/:amount?', async (req, res) => await iowrapper('getVideoCSV', req, res))
-app.get('/api/v1/author/:query/:amount?', async (req, res) => await iowrapper('getByAuthor', req, res))
+app.get('/api/v1/videoId/:videoId', async (req, res) => await iowrapper('getVideoId', req, res))
+app.get('/api/v1/related/:videoId', async (req, res) => await iowrapper('getRelated', req, res))
+app.get('/api/v1/videoCSV/:videoId/:amount?', async (req, res) => await iowrapper('getVideoCSV', req, res))
+app.get('/api/v1/author/:videoId/:amount?', async (req, res) => await iowrapper('getByAuthor', req, res))
 
 /* This is the API meant to receive data donation */
 app.post('/api/v2/events', async (req, res) => await iowrapper('processEvents2', req, res))

@@ -101,9 +101,9 @@ function ensureRelated(rv) {
 async function getVideoId(req) {
     const { amount, skip } = params.optionParsing(req.params.paging, PUBLIC_AMOUNT_ELEMS);
     debug("getVideoId %s amount %d skip %d default %d",
-        req.params.query, amount, skip, PUBLIC_AMOUNT_ELEMS);
+        req.params.videoId, amount, skip, PUBLIC_AMOUNT_ELEMS);
 
-    const entries = await automo.getMetadataByFilter({ videoId: req.params.query}, { amount, skip });
+    const entries = await automo.getMetadataByFilter({ videoId: req.params.videoId}, { amount, skip });
     /* this map function ensure there are the approrpiate data (and thus filter out)
      * old content parsed with different format */
 
@@ -115,14 +115,14 @@ async function getVideoId(req) {
         _.unset(meta, 'publicKey');
         return meta;
     }));
-    debug("getVideoId: found %d matches about %s", _.size(evidences), req.params.query);
+    debug("getVideoId: found %d matches about %s", _.size(evidences), req.params.videoId);
     return { json: evidences };
 };
 
 async function getRelated(req) {
     const { amount, skip } = params.optionParsing(req.params.paging, PUBLIC_AMOUNT_ELEMS);
-    debug("getRelated %s query directly 'related.videoId'. amount %d skip %d", req.params.query, amount, skip);
-    const entries = await automo.getMetadataByFilter({ "related.videoId": req.params.query }, { amount, skip});
+    debug("getRelated %s query directly 'related.videoId'. amount %d skip %d", req.params.videoId, amount, skip);
+    const entries = await automo.getMetadataByFilter({ "related.videoId": req.params.videoId}, { amount, skip});
     const evidences = _.map(entries, function(meta) {
         meta.related = _.map(meta.related, function(e) {
             return _.pick(e, ['recommendedTitle', 'recommendedSource', 'index', 'foryou', 'videoId']);
@@ -130,18 +130,18 @@ async function getRelated(req) {
         meta.timeago = moment.duration( meta.savingTime - moment() ).humanize();
         return _.omit(meta, ['_id', 'publicKey'])
     });
-    debug("getRelated: returning %d matches about %s", _.size(evidences), req.params.query);
+    debug("getRelated: returning %d matches about %s", _.size(evidences), req.params.videoId);
     return { json: evidences };
 };
 
 async function getVideoCSV(req) {
-    // /api/v1/videoCSV/:query/:amount
+    // /api/v1/videoCSV/:videoId/:amount
     const MAXENTRY = 2800;
     const { amount, skip } = params.optionParsing(req.params.paging, MAXENTRY);
-    debug("getVideoCSV %s, amount %d skip %d (default %d)", req.params.query, amount, skip, MAXENTRY);
-    const byrelated = await automo.getRelatedByVideoId(req.params.query, { amount, skip} );
+    debug("getVideoCSV %s, amount %d skip %d (default %d)", req.params.videoId, amount, skip, MAXENTRY);
+    const byrelated = await automo.getRelatedByVideoId(req.params.videoId, { amount, skip} );
     const csv = CSV.produceCSVv1(byrelated);
-    const filename = 'video-' + req.params.query + "-" + moment().format("YY-MM-DD") + ".csv"
+    const filename = 'video-' + req.params.videoId + "-" + moment().format("YY-MM-DD") + ".csv"
     debug("VideoCSV: produced %d bytes, returning %s", _.size(csv), filename);
 
     if(!_.size(csv))
@@ -165,14 +165,14 @@ async function getByAuthor(req) {
     const amount = PUBLIC_AMOUNT_ELEMS;
     const skip = 0;
 
-    if(!req.params.query.match(/[A-Za-z0-9_-]{11}/))
+    if(!req.params.videoId.match(/[A-Za-z0-9_-]{11}/))
         throw new Error("Invalid input videoId");
 
-    debug("getByAuthor %s amount %d skip %d", req.params.query, amount, skip);
+    debug("getByAuthor %s amount %d skip %d", req.params.videoId, amount, skip);
     let authorStruct;
     try {
         const sourceVideo = await structured.getVideo({
-            videoId: req.params.query
+            videoId: req.params.videoId
         });
         authorStruct = await structured.getMetadata({
             authorSource: sourceVideo.authorSource
