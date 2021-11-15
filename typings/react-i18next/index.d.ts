@@ -11,6 +11,7 @@ declare module 'react-i18next' {
       actions: {
         popup_bootstrap: string;
         add: string;
+        copied: string;
         drag_drop_recommendations: string;
         manage_recommendations: string;
         delete: string;
@@ -18,6 +19,7 @@ declare module 'react-i18next' {
         editThisVideo: string;
         importVideos: string;
         addToCurrentVideo: string;
+        next: string;
         removeFromCurrentVideo: string;
         compare: string;
         related: string;
@@ -40,11 +42,15 @@ declare module 'react-i18next' {
         channel: string;
       };
       link_account: {
+        copy_verification_key: string;
         title: string;
         subtitle: string;
         label: string;
-        verification_code_label: string;
         verification_code_hint: string;
+        paste_channel_url: string;
+        verification_failed: string;
+        verification_failed_hint: string;
+        go_back_to_step_one_hint: string;
       };
       youtube: {
         title: string;

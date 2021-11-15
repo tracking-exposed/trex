@@ -11,27 +11,27 @@ export const YCAITheme = createTheme({
     fontWeightMedium: 600,
     fontWeightBold: 800,
     h1: {
-      marginBottom: 30,
+      marginBottom: 32,
       fontSize: '1.75rem',
     },
     h2: {
-      marginBottom: 25,
-      fontSize: '1.60rem',
+      marginBottom: 16,
+      fontSize: '1.35rem',
     },
     h3: {
-      marginBottom: 20,
-      fontSize: '1.45rem',
-    },
-    h4: {
-      marginBottom: 18,
-      fontSize: '1.30rem',
-    },
-    h5: {
-      marginBottom: 16,
+      marginBottom: 12,
       fontSize: '1.15rem',
     },
+    h4: {
+      marginBottom: 8,
+      fontSize: '1.10rem',
+    },
+    h5: {
+      marginBottom: 4,
+      fontSize: '1.05rem',
+    },
     h6: {
-      marginBottom: 14,
+      marginBottom: 4,
       fontSize: '1rem',
     },
   },

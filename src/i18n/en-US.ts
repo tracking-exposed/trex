@@ -9,6 +9,7 @@ const resources: CustomTypeOptions['resources'] = {
   actions: {
     popup_bootstrap: 'Bootstrap',
     add: 'Add',
+    copied: 'Copied!',
     drag_drop_recommendations: 'Drag and drop to change the order of appearance',
     manage_recommendations: 'Manage recommendations',
     link_channel: 'Link channel',
@@ -21,7 +22,8 @@ const resources: CustomTypeOptions['resources'] = {
     removeFromCurrentVideo: 'Remove from current video',
     compare: 'Compare',
     related: 'Related',
-    verify_channel: 'Verify channel',
+    next: 'Next',
+    verify_channel: 'Verify',
     generate_keypair: 'Generate keypair',
     refresh_keypair: 'Refresh keypair',
     delete_keypair: 'Delete keypair',
@@ -41,7 +43,7 @@ const resources: CustomTypeOptions['resources'] = {
     lab_edit_subtitle: 'Highlight content related to this video from anywhere on the Internet',
     statistics: 'Statistics',
     settings: 'Settings',
-    link_account: 'Link your account',
+    link_account: 'Link your YouTube Channel to start recommending on your videos',
   },
   account: {
     channel: 'Your channel',
@@ -56,9 +58,13 @@ const resources: CustomTypeOptions['resources'] = {
     title: 'Link your account',
     subtitle: 'Our system will verify that you own the channel on this browser',
     label: 'Link your account to start choosing recommendations',
-    verification_code_label: 'Verification code',
+    copy_verification_key: 'Copy and paste this unique key in your channel\'s description',
     verification_code_hint:
-      "Copy the code below and add it to your YouTube channel's description",
+      "Paste and publish a new channel description containing the above code on <1>YouTube Studio</1>. You can remove the code from your channel's description after the verification is complete.",
+    paste_channel_url: 'Paste your YouTube Channel\'s URL or ID',
+    verification_failed: 'Oh no, the channel verification failed!',
+    verification_failed_hint: "Please double-check that you have published the code in your channel's description and try again.",
+    go_back_to_step_one_hint: 'If the verification keeps failing, <1>go back to step one</1> and make sure you have pasted the correct URL to your YouTube channel.',
   },
   youtube: {
     title: 'Youtube',
