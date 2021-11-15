@@ -1,3 +1,19 @@
+# [1.1.0-beta.7](https://github.com/tracking-exposed/YCAI/compare/v1.1.0-beta.6...v1.1.0-beta.7) (2021-11-15)
+
+
+### Bug Fixes
+
+* display recommendability score in a donut chart ([#114](https://github.com/tracking-exposed/YCAI/issues/114)) ([d224de7](https://github.com/tracking-exposed/YCAI/commit/d224de75835fbf558433f7bfcf3e4b01cf3324fe)), closes [#112](https://github.com/tracking-exposed/YCAI/issues/112)
+* improved access token edit UI sizes ([#120](https://github.com/tracking-exposed/YCAI/issues/120)) ([c3c3633](https://github.com/tracking-exposed/YCAI/commit/c3c3633c11d944e91e9d8c6b28c0a00ca1354e19))
+* rename Statistics tab to Hide all in navbar ([488039f](https://github.com/tracking-exposed/YCAI/commit/488039f8a13264bd5049fcd68e083702b5b6d160))
+* ui theming ([#108](https://github.com/tracking-exposed/YCAI/issues/108)) ([7954d07](https://github.com/tracking-exposed/YCAI/commit/7954d075746fd5105e10ba07076650665e06fd03)), closes [#117](https://github.com/tracking-exposed/YCAI/issues/117)
+
+
+### Features
+
+* extended selectors closes [#110](https://github.com/tracking-exposed/YCAI/issues/110) ([#111](https://github.com/tracking-exposed/YCAI/issues/111)) ([8d33b36](https://github.com/tracking-exposed/YCAI/commit/8d33b36525186ceb1529bce7bb1453a33dbd6472))
+* implemented 2-step account linking flow ([#116](https://github.com/tracking-exposed/YCAI/issues/116)), closes [#41](https://github.com/tracking-exposed/YCAI/issues/41) [#85](https://github.com/tracking-exposed/YCAI/issues/85) ([6634116](https://github.com/tracking-exposed/YCAI/commit/66341167d1be20f6c39521a8f4b5de404dbb1310))
+
 # [1.1.0-beta.6](https://github.com/tracking-exposed/YCAI/compare/v1.1.0-beta.5...v1.1.0-beta.6) (2021-11-11)
 
 
