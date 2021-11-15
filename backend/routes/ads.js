@@ -42,35 +42,36 @@ async function perChannel(req) {
         ]}
     };
 
+    /* the logic is otherway around compared to the function
+     * below, as we initially pick from metadata and then lookup to
+     * ad. this impact the filtering/map function below */
     const r = await mongo3.aggregate(mongoc,
-        nconf.get('schema').ads, [
+        nconf.get('schema').metadata, [
             { $sort: { savingTime: -1} },
             { $match: filter },
             { $limit: 400 },
             { $lookup: {
-                from: 'metadata', foreignField: 'id',
-                localField: 'metadataId', as: 'metadata' }
+                from: 'ads', foreignField: 'metadataId',
+                localField: 'id', as: 'ad' }
             }
         ]);
 
-    debug("look ads by Channel (%s) found %d matches, hardcoded 400 max",
-        channelId, r.length);
+    debug("looking for metadata by Channel (%j) found %d matches, hardcoded 400 max",
+        filter, r.length);
 
     await mongoc.close();
 
-    const x = _.compact(_.map(r, function(adret) {
-        const rv = _.pick(adret, 
-            ['href', 'selectorName', 'sponsoredName', 'sponsoredSite', 'savingTime']
-        );
-        if(adret.metadata &&
-           adret.metadata.length &&
-           adret.metadata[0].type === 'video') {
-            rv.authorName = adret.metadata[0].authorName;
-            rv.authorSource = adret.metadata[0].authorSource;
-            rv.videoTitle = adret.metadata[0].title;
+    const x = _.compact(_.map(r, function(metaret) {
+        if(metaret.ad && metaret.ad.length) {
+            metaret.sponsoredName = metaret.ad[0].sponsoredName;
+            metaret.sponsoredSite = metaret.ad[0].sponsoredSite;
+            metaret.selectorName = metaret.ad[0].selectorName;
         } else 
             return null;
-        return rv;
+
+        return _.pick(metaret, ['href', 'selectorName',
+            'sponsoredName', 'sponsoredSite', 'authorName',
+            'authorSource', 'title', 'savingTime']);
     }));
 
     debug("ads by Channel, selected results %d", x.length);

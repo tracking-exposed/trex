@@ -4,6 +4,7 @@ ret = db.metadata.createIndex({ type: 1 }); checkret('metadata type', ret);
 ret = db.metadata.createIndex({ "related.videoId": 1 }); checkret('metadata related.videoId', ret);
 ret = db.metadata.createIndex({ "selected.videoId": 1 }); checkret('metadata selected.videoId', ret);
 ret = db.metadata.createIndex({ authorName: 1 }); checkret('metadata authorName', ret);
+ret = db.metadata.createIndex({ authorSource: 1 }); checkret('metadata authorSource', ret);
 ret = db.metadata.createIndex({ savingTime: -1 }); checkret('metadata savingTime', ret);
 ret = db.metadata.createIndex({ "experiment.experimentId": 1 }); checkret('metadata experiment.experimentId', ret);
 
