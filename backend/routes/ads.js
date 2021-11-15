@@ -39,14 +39,14 @@ async function perChannel(req) {
         nconf.get('schema').ads, [
             { $sort: { savingTime: -1} },
             { $match: { channelId }},
-            { $limit: max },
+            { $limit: 400 },
             { $lookup: {
                 from: 'metadata', foreignField: 'id',
                 localField: 'metadataId', as: 'metadata' }
             }
         ]);
 
-    debug("look ads by Channel (%s) found %d matches",
+    debug("look ads by Channel (%s) found %d matches, hardcoded 400 max",
         channelId, r.length);
 
     await mongoc.close();
