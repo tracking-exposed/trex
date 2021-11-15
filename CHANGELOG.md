@@ -1,3 +1,10 @@
+# [1.1.0-beta.8](https://github.com/tracking-exposed/YCAI/compare/v1.1.0-beta.7...v1.1.0-beta.8) (2021-11-15)
+
+
+### Bug Fixes
+
+* popup height ([c08500b](https://github.com/tracking-exposed/YCAI/commit/c08500b0531dd7791d320297f6a74fe0e539e8de))
+
 # [1.1.0-beta.7](https://github.com/tracking-exposed/YCAI/compare/v1.1.0-beta.6...v1.1.0-beta.7) (2021-11-15)
 
 
