@@ -21,12 +21,19 @@ function reproducibleTypo(title) {
   return chunks.join(injection); */
 }
 
-function chiaroScuro(videoinfo, counter) {
+function chiaroScuro(videoinfo, experimentId, counter) {
   // this produces three conversion of the video under test
   // and it guarantee the conversion is reproducible
 
-  const { videoId } = utils.getNatureFromURL(videoinfo.videoURL);
-  return _.times(2, function(mutation) {
+  const { videoId }= utils.getNatureFromURL(videoinfo.videoURL);
+  if(!videoId) {
+    const m = "Invalid URL in shadowban experiment " +
+      videoinfo.videoURL + " (expected a video URL)";
+    debug("Fatal error in experiment %s: %s", experimentId, m);
+    throw new Error(m);
+  }
+
+  return _.times(3, function(mutation) {
 
     let sq = null;
     let mutationStr = "";
@@ -47,7 +54,7 @@ function chiaroScuro(videoinfo, counter) {
 
     return {
       url: squri,
-      loadFor: 11000,
+      loadFor: 15000,
       name: `${mutationStr}-video-${counter}`,
       targetVideoId: videoId,
     }

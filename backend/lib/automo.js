@@ -703,12 +703,9 @@ async function registerDirective(links, directiveType) {
 }
 
 async function pickDirective(experimentId) {
-    console.trace(experimentId);
     const mongoc = await mongo3.clientConnect({concurrency: 1});
     const rb = await mongo3.readOne(mongoc,
-        nconf.get('schema').directives,
-        { experimentId},
-        { when: -1});
+        nconf.get('schema').directives, { experimentId });
     await mongoc.close();
     return rb;
 }

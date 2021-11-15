@@ -201,7 +201,7 @@ function getNatureFromURL(href) {
             query: searchTerms,
         }
     } else if(uq.pathname === '/watch') {
-        const videoId = _.trim(querystring.parse(uq.query).v);
+        const videoId = uq.searchParams.get('v');
         return {
             type: 'video',
             videoId,
