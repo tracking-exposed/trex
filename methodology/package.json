@@ -1,9 +1,9 @@
 {
   "name": "guardoni",
-  "version": "1.8.2",
+  "version": "1.8.3",
   "description": "Guardoni is a tool to automate access and coordinate personalization algorithm analysis",
   "scripts": {
-    "pkg": "pkg ./package.json; bin/post-compile.sh"
+    "pkg": "pkg ./package.json && sh ./bin/post-compile.sh"
   },
   "bin": "./bin/guardoni.js",
   "repository": {

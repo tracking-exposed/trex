@@ -1,16 +1,27 @@
 ## Guardoni simple crash course
 
+`node bin/guardoni.js` or, if you downloaded the executable, the output would be an help message like this:
+
 ``` 
-$ node bin/guardoni.js
-Configuration options is read via: environment, --longopt, and static/config.json file
+
+.:*~*:._.:*~*:._.:*~*:._.:*~*:._.:*~*:._.:*~*:._.:*~*:._.:*~*:._.:*~*:.
+Options can be set via: env , --longopts, and static\settings.json file
 Three modes exists to launch Guardoni:
 
-1— With --auto: It start a browser offering you to join existing experiments (currently two).
-2— With --csv option and one between --shadowban and --comparison: Register an experiment.
-3— With --experiment it would fetch what have been registered in the case n.2 ^^^^^^^^^^^.
 
-Consult https://youtube.tracking.exposed/guardoni for the full documentation.
-You need to have a reliable internet connection to ensure a proper data collection!
+To quickly test the tool:
+   --auto:              You can specify 1 (is the default) or 2.
+
+To register an experiment:
+   --csv FILENAME.csv   default is --comparison, optional --shadowban
+
+To execute a known experiment:
+   --experiment <experimentId>
+
+https://youtube.tracking.exposed/guardoni for full documentation.
+ [--evidencetag, --profile, are special option], and --config <file>
+You need a reliable internet connection to ensure a flawless collection
+~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~
 ``` 
 
 Three foundamental commands exists, and at least one is required. How do they works?

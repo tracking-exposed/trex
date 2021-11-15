@@ -12,8 +12,10 @@ const fetch = require('node-fetch');
 const execSync = require('child_process').execSync;
 const parse = require('csv-parse/lib/sync');
 
+const domainSpecific = require('../src/domainSpecific');
+
 const COMMANDJSONEXAMPLE = "https://youtube.tracking.exposed/json/automation-example.json";
-const EXTENSION_WITH_OPT_IN_ALREADY_CHECKED='https://github.com/tracking-exposed/yttrex/releases/download/v1.8.99/yttrex-guardoni-1.8.99.zip';
+const EXTENSION_WITH_OPT_IN_ALREADY_CHECKED='https://github.com/tracking-exposed/yttrex/releases/download/v1.8.992/extension-1.8.992.zip';
 
 const defaultCfgPath = path.join("static", "settings.json");
 nconf.argv().env();
@@ -28,16 +30,6 @@ const server = nconf.get('backend') ?
   ( _.endsWith(nconf.get('backend'), '/') ? 
     nconf.get('backend').replace(/\/$/, '') : nconf.get('backend') ) : 
   'https://youtube.tracking.exposed';
-
-defaultAfter = async function() {
-  debug("afterWait function is not implemented");
-}
-defaultBefore = async function() {
-  debug("beforeWait function is not implemented");
-}
-defaultInit = async function() {
-  debug("beforeDirective function is not implemented");
-}
 
 async function keypress() {
   process.stdin.setRawMode(true)
@@ -153,22 +145,6 @@ async function registerCSV(directiveType) {
     return null;
   }
 }
-
-/*
-async function manageChiaroscuro(evidencetag, directiveType, profinfo) {
-  const browser = await dispatchBrowser(true, profinfo);
-  const experimentId = await registerCSV(evidencetag, directiveType);
-
-  const direurl = buildAPIurl('directives', experimentId);
-  const directives = await pullDirectives(direurl);
-  await writeExperimentInfo(experimentId, profinfo, evidencetag, directiveType);
-
-  const t = await guardoniExecution(experimentId, directives, browser);
-  debug("— Guardoni execution took %s",
-    moment.duration(t.end - t.start).humanize());
-  await concludeExperiment(experimentId, profinfo);
-  process.exit(0);
-} */
 
 async function pullDirectives(sourceUrl) {
   let directives = null;
@@ -369,10 +345,6 @@ async function main() {
     experiment = "37384a9b7dff26184cdea226ad5666ca8cbbf456";
   }
 
-  /*
-  if(directiveType == 'chiaroscuro')
-    return await manageChiaroscuro(evidencetag, profinfo); */
-
   if (sourceUrl) {
 
     debug("Registering CSV %s as %s", sourceUrl, directiveType);
@@ -416,8 +388,8 @@ async function main() {
   let directiveurl = null;
 
   if(experiment && !sourceUrl) {
-    console.log("Resolving experiment directives with github.com/tracking-exposed/yttrex directive protocol");
     directiveurl = buildAPIurl('directives', experiment);
+    debug("Fetching experiment directives (%s)", directiveurl);
   }
 
   /*
@@ -514,19 +486,6 @@ async function guardoniExecution(experiment, directives, browser, profinfo) {
   let retval = { start: null };
   retval.start = moment();
   try {
-    const DS = '../src/domainSpecific';
-    let domainSpecific = null;
-    try {
-      domainSpecific = require(DS);
-      debug("Loaded domain specific module for: %s", domainSpecific.DOMAIN_NAME);
-    } catch(error) {
-      console.log("Not found domainSpecific filemodule?", DS, error);
-      domainSpecific = {
-        beforeWait: defaultBefore,
-        afterWait: defaultAfter,
-        beforeDirectives: defaultInit,
-      };
-    }
     const page = (await browser.pages())[0];
     _.tail(await browser.pages()).forEach(async function(opage) {
       debug("Closing a tab that shouldn't be there!");
@@ -534,8 +493,8 @@ async function guardoniExecution(experiment, directives, browser, profinfo) {
     })
     await domainSpecific.beforeDirectives(page, profinfo);
     // the BS above should close existing open tabs except 1st
-    await operateBrowser(page, directives, domainSpecific);
-    console.log(`Operations completed: check results at ${server}/experiment/#${experiment}`);
+    await operateBrowser(page, directives);
+    console.log(`Operations completed: check results at ${server}/experiments/render/#${experiment}`);
     await browser.close();
   } catch(error) {
     console.log("Error in operateBrowser (collection fail):", error);
@@ -556,11 +515,13 @@ async function concludeExperiment(experiment, profinfo) {
     method: 'DELETE'
   });
   const body = await response.json();
-  debug("Marked as completed experiment (%s) in DB! %j",
-    experiment, body);
+  if(body.acknowledged === true)
+    debug("Experiment %s marked as completed on the server!", experiment);
+  else
+    debug("Error in communication with the server o_O (%j)", body);
 }
 
-async function operateTab(page, directive, domainSpecific, timeout) {
+async function operateTab(page, directive) {
 
   // TODO the 'timeout' would allow to repeat this operation with
   // different parameters. https://stackoverflow.com/questions/60051954/puppeteer-timeouterror-navigation-timeout-of-30000-ms-exceeded
@@ -583,14 +544,14 @@ async function operateTab(page, directive, domainSpecific, timeout) {
   debug("— Completed %s", directive.urltag);
 }
 
-async function operateBrowser(page, directives, domainSpecific) {
+async function operateBrowser(page, directives) {
   // await page.setViewport({width: 1024, height: 768});
   for (directive of directives) {
     if(nconf.get('exclude') && directive.urltag == nconf.get('exclude')) {
       console.log("excluded!", directive.urltag);
     } else {
       try {
-        await operateTab(page, directive, domainSpecific);
+        await operateTab(page, directive);
       } catch(error) {
         debug("operateTab in %s — error: %s", directive.urltag, error.message);
       }

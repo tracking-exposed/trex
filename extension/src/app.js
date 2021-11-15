@@ -245,7 +245,7 @@ function manageNodes(command, selectorName, selected) {
     let isVisible = (offsetTop + offsetLeft) > 0;
     if(command.preserveInvisible != true) {
         if(!isVisible) {
-            console.log("Ignoring invisible node:", selectorName);
+            // console.log("Ignoring invisible node:", selectorName);
             return;
         }
     }
