@@ -2,8 +2,9 @@ import * as t from "io-ts";
 import { Endpoint } from "ts-endpoint";
 import {
   ADVContributionEvent,
-  VideoContributionEvent,
+  VideoContributionEvent
 } from "../../models/ContributionEvent";
+import { ChannelADV } from "../../models/stats/ChannelADV";
 
 const CompareVideo = Endpoint({
   Method: "GET",
@@ -56,6 +57,15 @@ const AddEvents = Endpoint({
   Output: t.any,
 });
 
+const GetChannelADVStats = Endpoint({
+  Method: "GET",
+  getPath: ({ channelId }) => `/v2/ad/channel/${channelId}`,
+  Input: {
+    Params: t.type({ channelId: t.string }),
+  },
+  Output: t.array(ChannelADV),
+});
+
 export default {
   Public: {
     CompareVideo,
@@ -63,5 +73,6 @@ export default {
     VideoAuthor,
     Searches,
     AddEvents,
+    GetChannelADVStats,
   },
 };
