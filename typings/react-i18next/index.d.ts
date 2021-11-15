@@ -57,7 +57,7 @@ declare module 'react-i18next' {
       };
       hide_all: {
         title: string;
-      }
+      };
       creator: {
         title: string;
       };

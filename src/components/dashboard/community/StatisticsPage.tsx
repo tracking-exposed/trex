@@ -21,6 +21,7 @@ import { LazyFullSizeLoader } from '../../common/FullSizeLoader';
 import { LinkAccountButton } from '../../common/LinkAccountButton';
 import { StatsCard } from '../../common/StatsCard';
 import { CCRelatedUserList } from './CCRelatedUserList';
+import { DonutChart } from './DonutChart';
 
 interface CreatorStatsProps {
   profile?: ContentCreator;
@@ -87,7 +88,18 @@ const CreatorStatsPage: React.FC<CreatorStatsProps> = ({ profile, stats }) => {
                 subheader={t('statistics:recommendability_score_subtitle')}
               />
               <CardContent>
-                {recommendations.recommendabilityScore}%
+                <DonutChart
+                  id="creator-recommendations-score"
+                  title={`${recommendations.recommendabilityScore}%`}
+                  data={{
+                    score: [recommendations.recommendabilityScore],
+                    rest: [100 - recommendations.recommendabilityScore],
+                  }}
+                  colors={{
+                    score: theme.palette.primary.main,
+                    rest: theme.palette.grey[500],
+                  }}
+                />
               </CardContent>
             </Card>
           </Grid>
