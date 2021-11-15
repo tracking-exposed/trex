@@ -19,11 +19,17 @@
   font-style: normal;
 }
 
-html,
-body,
+html#ycai-dashboard,
+html#ycai-dashboard body,
 #ycai-dashboard body #ycai {
   height: 100%;
   margin: 0;
   padding: 0;
   overflow: hidden;
+}
+
+html#ycai-popup,
+html#ycai-popup body {
+  margin: 0;
+  padding: 0;
 }
