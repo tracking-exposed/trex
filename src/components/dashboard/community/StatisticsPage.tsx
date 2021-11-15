@@ -20,6 +20,7 @@ import { ErrorBox } from '../../common/ErrorBox';
 import { LazyFullSizeLoader } from '../../common/FullSizeLoader';
 import { LinkAccountButton } from '../../common/LinkAccountButton';
 import { StatsCard } from '../../common/StatsCard';
+import { ADVChannelStatsBox } from './ADVChannelStatsBox';
 import { CCRelatedUserList } from './CCRelatedUserList';
 import { DonutChart } from './DonutChart';
 
@@ -145,6 +146,7 @@ const CreatorStatsPage: React.FC<CreatorStatsProps> = ({ profile, stats }) => {
             <Typography variant="h5">
               {t('statistics:advertising_connected_to_your_videos')}
             </Typography>
+            <ADVChannelStatsBox />
           </Grid>
         </Grid>
       )}
