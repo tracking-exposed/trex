@@ -35,10 +35,17 @@ async function perChannel(req) {
     const channelId = params.getString(req, 'channelId');
     const mongoc = await mongo3.clientConnect({concurrency: 1});
 
+    const filter = {
+        'authorSource': { "$in": [
+            "/channel/" + channelId,
+            "/c/" + channelId
+        ]}
+    };
+
     const r = await mongo3.aggregate(mongoc,
         nconf.get('schema').ads, [
             { $sort: { savingTime: -1} },
-            { $match: { channelId }},
+            { $match: filter },
             { $limit: 400 },
             { $lookup: {
                 from: 'metadata', foreignField: 'id',
