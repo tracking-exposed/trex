@@ -1,5 +1,6 @@
 import {
   Box,
+  Grid,
   List,
   ListItem,
   ListItemText,
@@ -29,8 +30,11 @@ const Settings = withQueries(({ queries }): React.ReactElement => {
     QR.fold(LazyFullSizeLoader, ErrorBox, ({ settings, keypair, profile }) => {
       return (
         <Box>
-          <AccessTokenBox profile={profile} />
-
+          <Grid container>
+            <Grid item xs={12} lg={6}>
+              <AccessTokenBox profile={profile} />
+            </Grid>
+          </Grid>
           {keypair !== undefined && settings.independentContributions ? (
             <KeypairBox keypair={keypair} settings={settings} />
           ) : null}

@@ -56,7 +56,7 @@ export const AccessTokenBox: React.FC<AccessTokenBoxProps> = ({ profile }) => {
           justifyContent="flex-end"
           alignItems="flex-end"
         >
-          <Grid item md={10}>
+          <Grid item xs={9}>
             <FormControl fullWidth={true}>
               <InputLabel htmlFor="access-token">
                 {t('settings:access_token')}
@@ -93,7 +93,7 @@ export const AccessTokenBox: React.FC<AccessTokenBoxProps> = ({ profile }) => {
               />
             </FormControl>
           </Grid>
-          <Grid item md={2} style={{ textAlign: 'right' }}>
+          <Grid item xs={3}>
             {profile?.accessToken !== undefined ? (
               <Button
                 color="secondary"
@@ -112,8 +112,8 @@ export const AccessTokenBox: React.FC<AccessTokenBoxProps> = ({ profile }) => {
             ) : null}
           </Grid>
         </Grid>
-        <Grid container>
-          <Grid item md={6}>
+        <Grid container spacing={2}>
+          <Grid item>
             <Button
               variant="outlined"
               color="secondary"
@@ -131,7 +131,7 @@ export const AccessTokenBox: React.FC<AccessTokenBoxProps> = ({ profile }) => {
               {t('actions:edit_access_token')}
             </Button>
           </Grid>
-          <Grid item md={6} style={{ textAlign: 'right' }}>
+          <Grid item>
             {profile?.accessToken !== undefined ? (
               <Button
                 variant="outlined"
