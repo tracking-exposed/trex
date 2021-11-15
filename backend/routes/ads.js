@@ -32,21 +32,42 @@ async function perVideo(req) {
 }
 
 async function perChannel(req) {
-    const channelId = params.getVideoId(req, 'channelId');
+    const channelId = params.getString(req, 'channelId');
     const mongoc = await mongo3.clientConnect({concurrency: 1});
 
-    const chanmat = await mongo3.readLimit(mongoc,
-        nconf.get('schema').ads, { channelId }, {}, 400, 0);
+    const r = await mongo3.aggregate(mongoc,
+        nconf.get('schema').ads, [
+            { $sort: { savingTime: -1} },
+            { $match: { channelId }},
+            { $limit: max },
+            { $lookup: {
+                from: 'metadata', foreignField: 'id',
+                localField: 'metadataId', as: 'metadata' }
+            }
+        ]);
 
     debug("look ads by Channel (%s) found %d matches",
-        channelId, chanmat.length);
+        channelId, r.length);
 
-    const metadatas = _.uniq(_.map(chanmat, 'metadataId'));
-    const ads = await mongo3.readLimit(mongoc,
-        nconf.get('schema').ads, { metadataId: { "$in": metadatas }}, {}, 400, 0);
-    debug("Total amount of ads sampled %d", ads.length);
     await mongoc.close();
-    return { text: "<html><body><pre>" + JSON.stringify(ads, null, 2) };
+
+    const x = _.compact(_.map(r, function(adret) {
+        const rv = _.pick(adret, 
+            ['href', 'selectorName', 'sponsoredName', 'sponsoredSite', 'savingTime']
+        );
+        if(adret.metadata &&
+           adret.metadata.length &&
+           adret.metadata[0].type === 'video') {
+            rv.authorName = adret.metadata[0].authorName;
+            rv.authorSource = adret.metadata[0].authorSource;
+            rv.videoTitle = adret.metadata[0].title;
+        } else 
+            return null;
+        return rv;
+    }));
+
+    debug("ads by Channel, selected results %d", x.length);
+    return { json: x };
 }
 
 async function unbound(req) {
