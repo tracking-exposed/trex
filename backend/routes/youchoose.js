@@ -376,11 +376,14 @@ async function creatorGet(req) {
 async function creatorDelete(req) {
   // this function is invoked when a content creator wants to
   // delete every data on their belong,
-  const { creator, decodedReq } = verifyAuthorization(req, v3.Creator.GetCreator);
+  const { creator, decodedReq } = await verifyAuthorization(req, v3.Creator.GetCreator);
   if(creator.error)
     return { json: creator };
 
-  throw new Error("Not Yet implemented!");
+  const result = await ycai
+    .deleteMaterial(creator, ['recommendations', 'creators', 'tokens', 'ytvids']);
+
+  return { json: result };
 }
 
 async function getCreatorStats(req) {
