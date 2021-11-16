@@ -1,15 +1,16 @@
-import React from 'react';
-import { WithQueries } from 'avenger/lib/react';
+import { Card, CardContent, CardMedia, Link } from '@material-ui/core';
 import * as QR from 'avenger/lib/QueryResult';
-
-import { Card, CardContent, CardMedia, Typography } from '@material-ui/core';
-
-import { ErrorBox } from '../common/ErrorBox';
+import { WithQueries } from 'avenger/lib/react';
+import React from 'react';
+import { oneCreatorVideo } from 'state/creator.queries';
 import {
   getYTMaxResThumbnailById,
+  getYTVideoURLById
 } from '../../utils/yt.utils';
+import { ErrorBox } from '../common/ErrorBox';
 import { LazyFullSizeLoader } from './FullSizeLoader';
-import { oneCreatorVideo } from 'state/creator.queries';
+
+
 
 interface YTVideoProps {
   videoId: string;
@@ -30,9 +31,16 @@ export const YTVideo: React.FC<YTVideoProps> = ({ videoId }) => (
             title={video.title}
           />
           <CardContent>
-            <Typography color="textSecondary" variant="subtitle2">
+            <Link
+              color="textSecondary"
+              variant="subtitle2"
+              href={getYTVideoURLById(videoId)}
+              rel="noreferrer"
+              target="_blank"
+              underline="none"
+            >
               {video.title}
-            </Typography>
+            </Link>
           </CardContent>
         </Card>
       )
