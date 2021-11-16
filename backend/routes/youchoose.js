@@ -147,7 +147,18 @@ async function videoByCreator(req) {
     ready.length
   );
 
-  return { json: ready };
+  const valid = endpoints.decodeResponse(
+    v3.Creator.CreatorVideos, ready);
+
+  if (valid.type === 'error') {
+    debug('Invalid generated output for videoByCreator %O', valid);
+    return {
+      json: {
+        details: valid.result,
+      },
+    };
+  }
+  return { json: valid.result };
 }
 
 async function oneVideoByCreator(req) {
