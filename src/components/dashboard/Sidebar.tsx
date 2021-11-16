@@ -1,71 +1,137 @@
 import {
-  Grid,
+  Box,
   List,
   ListItem,
   makeStyles,
   Typography,
+  useTheme,
 } from '@material-ui/core';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
-import { doUpdateCurrentView } from 'utils/location.utils';
+import { CurrentView, doUpdateCurrentView } from 'utils/location.utils';
 import { UserProfileBox } from './UserProfileBox';
-import EditIcon from '@material-ui/icons/EditSharp';
-import GroupsIcon from '@material-ui/icons/GroupSharp';
-import SettingsIcon from '@material-ui/icons/SettingsOutlined';
+import LabIcon from '../common/icons/LabIcon';
+import AnalyticsIcon from '../common/icons/AnalyticsIcon';
+import SettingsIcon from '../common/icons/SettingsIcon';
+import YCAILogo from 'components/common/YCAILogo';
 
 const useStyles = makeStyles((theme) => ({
   routesList: {
     marginTop: 100,
   },
   listItem: {
-    color: theme.palette.secondary.main,
+    color: theme.palette.primary.main,
+  },
+  listItemSelected: {
+    color: theme.palette.violet.contrastText,
+    backgroundColor: `${theme.palette.grey[500]}`,
+    '&:hover': {
+      backgroundColor: `${theme.palette.grey[500]}`,
+      opacity: 0.6,
+    },
   },
   listItemIcon: {
     marginRight: 20,
   },
 }));
 
-export const Sidebar: React.FC = () => {
+interface MenuItem {
+  title: string;
+  icon: React.FC<{ className?: string; color: string }>;
+  iconClassName: string;
+  iconColor: string;
+  iconSelectedColor: string;
+  views: Array<CurrentView['view']>;
+  className: string;
+  selectedClassName: string;
+}
+
+const toMenuItem = (
+  d: MenuItem,
+  currentView: CurrentView
+): React.ReactElement => {
+  return (
+    <ListItem
+      key={d.views[0]}
+      className={
+        d.views.includes(currentView.view) ? d.selectedClassName : d.className
+      }
+      button={true}
+      onClick={doUpdateCurrentView({ view: d.views[0] as any })}
+    >
+      <d.icon
+        className={d.iconClassName}
+        color={
+          d.views.includes(currentView.view) ? d.iconSelectedColor : d.iconColor
+        }
+      />
+      <Typography
+        variant="subtitle2"
+        style={{ margin: 0, textTransform: 'uppercase' }}
+      >
+        {d.title}
+      </Typography>
+    </ListItem>
+  );
+};
+
+interface SidebarProps {
+  currentView: CurrentView;
+}
+
+export const Sidebar: React.FC<SidebarProps> = ({ currentView }) => {
   const { t } = useTranslation();
   const classes = useStyles();
+  const theme = useTheme();
   return (
-    <Grid container style={{ height: '100%' }}>
-      <Grid item>
-        <img
-          alt="YCAI Logo"
-          src="/ycai-logo.png"
-          onClick={() => {
-            void doUpdateCurrentView({ view: 'index' })();
-          }}
-        />
+    <div style={{ height: '100%' }}>
+      <Box
+        style={{
+          paddingTop: theme.spacing(2),
+          paddingRight: theme.spacing(2),
+          marginBottom: 50,
+        }}
+        onClick={() => {
+          void doUpdateCurrentView({ view: 'index' })();
+        }}
+      >
+        <YCAILogo width={'100%'} />
+      </Box>
+
+      <Box style={{ padding: theme.spacing(2) }}>
         <UserProfileBox />
-        <List className={classes.routesList}>
-          <ListItem
-            className={classes.listItem}
-            button={true}
-            onClick={doUpdateCurrentView({ view: 'studio' })}
-          >
-            <EditIcon className={classes.listItemIcon} />
-            <Typography>{t('routes:studio')}</Typography>
-          </ListItem>
-          <ListItem
-            className={classes.listItem}
-            button={true}
-            onClick={doUpdateCurrentView({ view: 'statistics' })}
-          >
-            <GroupsIcon className={classes.listItemIcon} />
-            <Typography>{t('routes:statistics')}</Typography>
-          </ListItem>
-          <ListItem
-            className={classes.listItem}
-            button={true}
-            onClick={doUpdateCurrentView({ view: 'settings' })}
-          >
-            <SettingsIcon className={classes.listItemIcon} />
-            <Typography>{t('routes:settings')}</Typography>
-          </ListItem>
-        </List>
-      </Grid>
-    </Grid>
+      </Box>
+      <List className={classes.routesList} disablePadding={true}>
+        {[
+          {
+            title: t('routes:lab_title_short'),
+            icon: LabIcon,
+            views: ['lab', 'labEdit'] as Array<CurrentView['view']>,
+          },
+          {
+            title: t('routes:statistics'),
+            icon: AnalyticsIcon,
+            views: ['statistics'] as Array<CurrentView['view']>,
+          },
+          {
+            title: t('routes:settings'),
+            icon: SettingsIcon,
+            views: ['settings'] as Array<CurrentView['view']>,
+          },
+        ].map((opts) =>
+          toMenuItem(
+            {
+              ...opts,
+              iconClassName: classes.listItemIcon,
+              iconColor: theme.palette.primary.main,
+              iconSelectedColor: theme.palette.common.white,
+              className: classes.listItem,
+              selectedClassName: classes.listItemSelected,
+            },
+            currentView
+          )
+        )}
+      </List>
+    </div>
   );
 };

@@ -6,7 +6,7 @@ import {
   param,
   product,
   queryShallow,
-  queryStrict
+  queryStrict,
 } from 'avenger';
 import { pipe } from 'fp-ts/lib/function';
 import * as TE from 'fp-ts/lib/TaskEither';
@@ -75,7 +75,7 @@ export const profile = compose(
   queryStrict(
     ({ profile }) =>
       pipe(
-        API.Creator.GetCreator({
+        API.v3.Creator.GetCreator({
           Headers: { 'x-authorization': profile.accessToken },
         }),
         TE.chain(throwOnMissingProfile)
@@ -88,7 +88,7 @@ export const creatorRecommendations = compose(
   product({ profile: requiredLocalProfile, params: param() }),
   queryStrict(
     ({ profile }) =>
-      API.Creator.CreatorRecommendations({
+      API.v3.Creator.CreatorRecommendations({
         Headers: { 'x-authorization': profile.accessToken },
       }),
     available
@@ -98,20 +98,34 @@ export const creatorRecommendations = compose(
 export const creatorVideos = compose(
   product({ profile: requiredLocalProfile }),
   queryStrict(({ profile }): TE.TaskEither<Error, Video[]> => {
-    return API.Creator.CreatorVideos({
+    return API.v3.Creator.CreatorVideos({
       Headers: { 'x-authorization': profile.accessToken },
     });
   }, available)
 );
 
-
+export const oneCreatorVideo = compose(
+  product({
+    profile: requiredLocalProfile,
+    params: param<{ videoId: string }>(),
+  }),
+  queryShallow(({ profile, params }): TE.TaskEither<Error, Video> => {
+    return API.v3.Creator.OneCreatorVideo({
+      Headers: { 'x-authorization': profile.accessToken },
+      Params: { videoId: params.videoId },
+    });
+  }, available)
+);
 
 export const ccRelatedUsers = compose(
-  product({ profile: requiredLocalProfile, params: param<{ amount: number; skip: number }>() }),
+  product({
+    profile: requiredLocalProfile,
+    params: param<{ amount: number; skip: number }>(),
+  }),
   queryShallow(
     ({ profile, params }): TE.TaskEither<Error, ContentCreator[]> => {
       return pipe(
-        API.Creator.CreatorRelatedChannels({
+        API.v3.Creator.CreatorRelatedChannels({
           Headers: {
             'x-authorization': profile.accessToken,
           },
@@ -132,7 +146,20 @@ export const creatorStats = compose(
   product({ profile: requiredLocalProfile }),
   queryStrict(({ profile }) => {
     return pipe(
-      API.Creator.GetCreatorStats({ Params: { channelId: profile.channelId } })
+      API.v3.Creator.GetCreatorStats({
+        Params: { channelId: profile.channelId },
+      })
+    );
+  }, available)
+);
+
+export const creatorADVStats = compose(
+  product({ profile: requiredLocalProfile }),
+  queryStrict(({ profile }) => {
+    return pipe(
+      API.v2.Public.GetChannelADVStats({
+        Params: { channelId: profile.channelId },
+      })
     );
   }, available)
 );

@@ -9,17 +9,25 @@ import { Keypair, Settings } from './Settings';
 export const GetKeypair = t.literal('GetKeypair');
 export const GenerateKeypair = t.literal('GenerateKeypair');
 export const DeleteKeypair = t.literal('DeleteKeypair');
+// settings
 export const GetSettings = t.literal('GetSettings');
 export const UpdateSettings = t.literal('UpdateSettings');
-export const ReloadExtension = t.literal('ReloadExtension');
+
+// content creator
 export const GetAuth = t.literal('GetAuth');
 export const UpdateAuth = t.literal('UpdateAuth');
 export const GetContentCreator = t.literal('GetContentCreator');
 export const UpdateContentCreator = t.literal('UpdateContentCreator');
-export const Update = t.literal('update');
-export const ErrorOccured = t.literal('ErrorOccured');
+
+// api request
+export const APIRequest = t.literal('APIRequest');
+
+// error
+export const ErrorOccurred = t.literal('ErrorOccurred');
 
 // unused
+export const ReloadExtension = t.literal('ReloadExtension');
+export const Update = t.literal('update');
 export const RecommendationsFetch = t.literal('recommendationsFetch');
 export const ServerLookup = t.literal('serverLookup');
 
@@ -31,11 +39,11 @@ export const MessageType = t.union(
     GenerateKeypair,
     DeleteKeypair,
     ServerLookup,
-    RecommendationsFetch,
+    APIRequest,
     ReloadExtension,
     GetContentCreator,
     UpdateContentCreator,
-    ErrorOccured,
+    ErrorOccurred,
   ],
   'MessageType'
 );
@@ -114,15 +122,19 @@ export const Messages = MessagesAPI({
     payload: t.void,
     response: t.union([ContentCreator, t.null]),
   },
-
   [UpdateContentCreator.value]: {
     payload: t.union([ContentCreator, t.null]),
     response: t.union([ContentCreator, t.null]),
   },
   [RecommendationsFetch.value]: { payload: t.any, response: t.any },
+  // API Request
+  [APIRequest.value]: {
+    payload: t.type({ staticPath: t.string, Input: t.any }),
+    response: t.any,
+  },
   [ReloadExtension.value]: { payload: t.any, response: t.undefined },
   [ServerLookup.value]: { payload: t.any, response: t.undefined },
-  [ErrorOccured.value]: { payload: t.any, response: t.any },
+  [ErrorOccurred.value]: { payload: t.any, response: t.any },
 });
 
 export type Messages = typeof Messages;

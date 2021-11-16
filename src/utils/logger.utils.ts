@@ -9,10 +9,11 @@ interface Logger {
   info: DebugFn;
   error: DebugFn;
   debug: DebugFn;
+  extend: (namespace: string) => Logger;
 }
 
-export const GetLogger = (name: string): Logger => {
-  const l = logger.extend(name);
+export const GetLogger = (name: string, d?: debug.Debugger): Logger => {
+  const l = (d ?? logger).extend(name);
 
   const info = l.extend('info');
   const error = l.extend('error');
@@ -22,10 +23,10 @@ export const GetLogger = (name: string): Logger => {
     info,
     error,
     debug,
+    extend: (ns) => GetLogger(ns, l),
   };
 };
 
-export const bkgLogger = GetLogger('background');
 export const apiLogger = GetLogger('API');
 
 debug.enable(config.REACT_APP_LOGGER);

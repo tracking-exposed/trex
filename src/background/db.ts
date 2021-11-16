@@ -6,8 +6,10 @@ import { getAssignSemigroup } from 'fp-ts/lib/struct';
 import { catchRuntimeLastError } from '../providers/browser.provider';
 import { GetLogger } from '../utils/logger.utils';
 
-const dbLogger = GetLogger('db');
+export const AUTH_KEY = 'auth';
+export const CONTENT_CREATOR = 'content-creator';
 
+const dbLogger = GetLogger('db');
 const backend = bo.storage.local;
 
 const backendGet = (
@@ -22,7 +24,7 @@ const backendGet = (
         ),
       E.toError
     ),
-    TE.chain(catchRuntimeLastError)
+    TE.chain((v) => TE.fromEither(catchRuntimeLastError(v)))
   );
 };
 
@@ -37,7 +39,7 @@ const backendSet = <A>(
         new Promise<void>((resolve) => backend.set({ [key]: value }, resolve)),
       E.toError
     ),
-    TE.chain(catchRuntimeLastError)
+    TE.chain((v) => TE.fromEither(catchRuntimeLastError(v)))
   );
 };
 
@@ -83,12 +85,12 @@ function update<A extends object>(
 const remove = (key: string): TE.TaskEither<chrome.runtime.LastError, void> =>
   pipe(
     TE.tryCatch(() => backend.remove(key), E.toError),
-    TE.chain(catchRuntimeLastError)
+    TE.chain((v) => TE.fromEither(catchRuntimeLastError(v)))
   );
 
 export default {
-  get: get,
-  set: set,
-  update: update,
-  remove: remove,
+  get,
+  set,
+  update,
+  remove,
 };

@@ -1,24 +1,89 @@
-import { createTheme } from '@material-ui/core/styles';
+import {
+  createTheme,
+  lighten,
+  darken,
+  ThemeProvider,
+  useTheme,
+  alpha,
+  makeStyles,
+} from '@material-ui/core/styles';
 
 const pink = '#E33180';
-const green = '#017374';
-const white = '#FFFFFF';
+const lightPink = lighten(pink, 0.2);
+const darkPink = darken(pink, 0.2);
+const grey = '#5B5F6F';
+const lightGrey = alpha(grey, 0.2);
+const darkGrey = darken(grey, 0.2);
+const yellow = '#DA9D00';
+const violet = '#572B8F';
+const lightViolet = lighten(violet, 0.2);
+const darkViolet = darken(violet, 0.2);
+const white = '#F5F5F5';
+const black = '#1A030E';
 
 export const YCAITheme = createTheme({
   typography: {
+    fontSize: 16,
     fontFamily: 'Trex',
     fontWeightRegular: 400,
     fontWeightMedium: 600,
     fontWeightBold: 800,
-    // h1: {
-    //   fontWeight: 600
-    // },
-    // h4: {
-    //   fontWeight: 600,
-    // },
-    // h6: {
-    //   fontWeight: 600
-    // }
+    h1: {
+      marginBottom: 32,
+      fontWeight: 700,
+      fontSize: '4rem',
+    },
+    h2: {
+      fontWeight: 300,
+      fontSize: '3.6rem',
+      marginBottom: 16,
+    },
+    h3: {
+      fontWeight: 800,
+      fontSize: '3.3rem',
+      marginBottom: 28,
+    },
+    h4: {
+      marginBottom: 8,
+      fontWeight: 400,
+      fontSize: '3rem',
+    },
+    h5: {
+      fontWeight: 600,
+      fontSize: '2rem',
+      marginBottom: 28,
+    },
+    h6: {
+      marginBottom: 4,
+      fontWeight: 500,
+      fontSize: '1.5rem',
+    },
+    subtitle1: {
+      fontSize: '1rem',
+      fontWeight: 300,
+      lineHeight: 1.3,
+      marginBottom: 28,
+    },
+    subtitle2: {
+      fontSize: '1.2rem',
+      fontWeight: 800,
+      lineHeight: 1.2,
+    },
+    body1: {
+      fontWeight: 400,
+      fontSize: '1rem',
+      lineHeight: 1.1,
+      color: black,
+    },
+    body2: {
+      fontWeight: 400,
+      fontSize: '0.8rem',
+      lineHeight: 1.2,
+    },
+    caption: {
+      fontSize: '0.7rem',
+      lineHeight: 1.3,
+    },
   },
   overrides: {
     MuiTabs: {
@@ -26,24 +91,65 @@ export const YCAITheme = createTheme({
         background: pink,
       },
     },
+    MuiButton: {
+      sizeSmall: {
+        fontSize: '0.8rem',
+      },
+      contained: {
+        color: grey,
+        backgroundColor: lightGrey
+      },
+      containedPrimary: {
+        color: white,
+      },
+      containedSecondary: {
+        color: white,
+        background: grey,
+      },
+    },
   },
   palette: {
+    text: {
+      primary: grey,
+      secondary: black,
+    },
+    common: {
+      white: white,
+      black: black,
+    },
     background: {
       default: white,
     },
     primary: {
-      light: '#FF338F',
+      light: lightPink,
       main: pink,
-      dark: '#C9065E',
-      contrastText: '#FFFFFF',
+      dark: darkPink,
+      contrastText: white,
     },
     secondary: {
-      light: green,
-      main: green,
-      dark: green,
+      light: lightViolet,
+      main: violet,
+      dark: darkViolet,
       contrastText: white,
+    },
+    violet: {
+      light: violet,
+      main: violet,
+      dark: darkViolet,
+      contrastText: white,
+    },
+    yellow: {
+      light: yellow,
+      main: yellow,
+    },
+    grey: {
+      300: lightGrey,
+      500: grey,
+      800: darkGrey,
     },
   },
 });
 
 export type YCAITheme = typeof YCAITheme;
+
+export { makeStyles, ThemeProvider, useTheme };

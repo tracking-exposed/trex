@@ -1,5 +1,4 @@
-import { List } from '@material-ui/core';
-import { XYCoord } from 'dnd-core';
+import { Grid, GridSpacing } from '@material-ui/core';
 import React from 'react';
 import { DropTargetMonitor, useDrag, useDrop } from 'react-dnd';
 
@@ -49,33 +48,6 @@ const ReorderListItem = <I extends Item>({
         return;
       }
 
-      // Determine rectangle on screen
-      const hoverBoundingRect = ref.current?.getBoundingClientRect();
-
-      // Get vertical middle
-      const hoverMiddleY =
-        (hoverBoundingRect.bottom - hoverBoundingRect.top) / 2;
-
-      // Determine mouse position
-      const clientOffset = monitor.getClientOffset();
-
-      // Get pixels to the top
-      const hoverClientY = (clientOffset as XYCoord).y - hoverBoundingRect.top;
-
-      // Only perform the move when the mouse has crossed half of the items height
-      // When dragging downwards, only move when the cursor is below 50%
-      // When dragging upwards, only move when the cursor is above 50%
-
-      // Dragging downwards
-      if (dragIndex < hoverIndex && hoverClientY < hoverMiddleY) {
-        return;
-      }
-
-      // Dragging upwards
-      if (dragIndex > hoverIndex && hoverClientY > hoverMiddleY) {
-        return;
-      }
-
       // Time to actually perform the action
       moveListItem(dragIndex, hoverIndex);
 
@@ -112,6 +84,7 @@ interface ReorderListProps<I extends Item> {
   getKey: (item: I) => string;
   renderItem: (i: I, index: number) => JSX.Element;
   onDragComplete: (items: I[]) => void;
+  spacing?: GridSpacing;
 }
 
 export const ReorderList = <I extends Item>(
@@ -147,17 +120,18 @@ export const ReorderList = <I extends Item>(
   );
 
   return (
-    <List>
+    <Grid container spacing={props.spacing ?? 0}>
       {items.map((item, i) => (
-        <ReorderListItem
-          key={props.getKey(item)}
-          index={i}
-          item={item}
-          onDropCompleted={onDropCompleted}
-          moveListItem={moveListItem}
-          renderItem={props.renderItem}
-        />
+        <Grid item xs={12} key={props.getKey(item)}>
+          <ReorderListItem
+            index={i}
+            item={item}
+            moveListItem={moveListItem}
+            onDropCompleted={onDropCompleted}
+            renderItem={props.renderItem}
+          />
+        </Grid>
       ))}
-    </List>
+    </Grid>
   );
 };

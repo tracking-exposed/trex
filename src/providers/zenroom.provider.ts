@@ -2,12 +2,14 @@ import * as E from 'fp-ts/lib/Either';
 import { pipe } from 'fp-ts/lib/pipeable';
 import * as TE from 'fp-ts/lib/TaskEither';
 import { Keypair } from '../models/Settings';
-import { bkgLogger } from '../utils/logger.utils';
+import { GetLogger } from '../utils/logger.utils';
 import { toBrowserError } from './browser.provider';
 import { zencode_exec } from 'zenroom';
 import { SecurityProvider } from './security.provider.type';
 
 const conf = 'memmanager=lw';
+
+const zrLogger = GetLogger('zenroom')
 
 export const makeKeypair = (
   knownAs: string
@@ -19,7 +21,7 @@ export const makeKeypair = (
   return pipe(
     TE.tryCatch(() => zencode_exec(contract, { conf }), toBrowserError),
     TE.map((r) => {
-      bkgLogger.debug(`zencode result %O`, r);
+      zrLogger.debug(`zencode result %O`, r);
       return r.result as any;
     })
   );
@@ -40,7 +42,7 @@ const makeToken = (
   return pipe(
     TE.tryCatch(() => zencode_exec(contract, { data, keys, conf }), E.toError),
     TE.map((r) => {
-      bkgLogger.debug(`Make token result: %O`, r);
+      zrLogger.debug(`Make token result: %O`, r);
       return r.result;
     })
   );
@@ -49,4 +51,5 @@ const makeToken = (
 export const security: SecurityProvider = {
   makeKeypair,
   makeToken,
+  makeSignature: () => E.left({ message: 'Not implemented '})
 };

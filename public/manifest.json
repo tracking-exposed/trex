@@ -23,38 +23,21 @@
     "alarms",
     "http://localhost:9000/",
     "https://*.youtube.com/",
-    "https://youchoose.tracking.exposed/"
+    "https://youchoose.tracking.exposed/",
+    "https://yt3.ggpht.com/"
   ],
-
-  "cross_origin_embedder_policy": {
-    "value": "require-corp"
-  },
-  "cross_origin_opener_policy": {
-    "value": "same-origin"
-  },
 
   "background": {
     "scripts": ["./background.js"],
     "persistent": true
   },
-
-  "cross_origin_embedder_policy": {
-    "value": "require-corp"
-  },
-  "cross_origin_opener_policy": {
-    "value": "same-origin"
-  },
-
   "content_scripts": [
     {
       "matches": [
-        "http://localhost/*",
-        "http://127.0.0.1/*",
         "https://*.youtube.com/*"
       ],
-      "js": ["./app.js"],
-      "css": ["./css/font.css", "./css/popup.css", "./css/dashboard.css"]
+      "js": ["./app.js"]
     }
   ],
-  "web_accessible_resources": ["*.png", "./css/**"]
+  "web_accessible_resources": ["*.png"]
 }

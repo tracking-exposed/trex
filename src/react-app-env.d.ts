@@ -10,5 +10,6 @@ declare namespace NodeJS {
     readonly REACT_APP_VERSION: string;
     readonly REACT_APP_BUILD_DATE: string;
     readonly REACT_APP_LOGGER: string;
+    readonly REACT_APP_DATA_DONATION_FLUSH_INTERVAL: string;
   }
 }

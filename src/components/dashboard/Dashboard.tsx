@@ -1,4 +1,4 @@
-import { Typography } from '@material-ui/core';
+import { Typography, useTheme } from '@material-ui/core';
 import Grid from '@material-ui/core/Grid';
 import { makeStyles } from '@material-ui/core/styles';
 import * as QR from 'avenger/lib/QueryResult';
@@ -14,8 +14,8 @@ import Settings from './Settings';
 import { StatisticsPage } from './community/StatisticsPage';
 import { LinkAccount } from './LinkAccount';
 import { Sidebar } from './Sidebar';
-import { Studio } from './studio/Studio';
-import { StudioVideoEdit } from './studio/StudioVideoEdit';
+import { Lab } from './lab/Lab';
+import { LabVideoEdit } from './lab/LabVideoEdit';
 import { ContentCreator } from '@backend/models/ContentCreator';
 import { AuthResponse } from '@backend/models/Auth';
 
@@ -23,14 +23,7 @@ const useStyles = makeStyles((theme) => ({
   root: {
     height: '100%',
     width: '100%',
-    padding: theme.spacing(2),
     backgroundColor: theme.palette.background.default,
-  },
-  title: {
-    marginBottom: 15,
-  },
-  subtitle: {
-    marginBottom: 20,
   },
 }));
 
@@ -46,7 +39,7 @@ const DashboardContent: React.FC<DashboardContentProps> = ({
   auth,
 }) => {
   const { t } = useTranslation();
-  const classes = useStyles();
+  const theme = useTheme();
 
   const [currentViewLabel, currentViewSubtitle, currentViewContent] =
     React.useMemo(() => {
@@ -65,19 +58,19 @@ const DashboardContent: React.FC<DashboardContentProps> = ({
           }
 
           switch (currentView.view) {
-            case 'studioEdit':
+            case 'labEdit':
               return [
-                t('routes:studio'),
-                '',
+                t('routes:lab_title'),
+                t('routes:lab_edit_subtitle'),
                 // eslint-disable-next-line react/jsx-key
-                <StudioVideoEdit videoId={currentView.videoId} />,
+                <LabVideoEdit videoId={currentView.videoId} />,
               ];
-            case 'studio':
+            case 'lab':
               return [
-                t('routes:studio'),
-                '',
+                t('routes:lab_title'),
+                t('routes:lab_subtitle'),
                 // eslint-disable-next-line react/jsx-key
-                <Studio />,
+                <Lab />,
               ];
             default:
               return [
@@ -92,18 +85,33 @@ const DashboardContent: React.FC<DashboardContentProps> = ({
     }, [currentView, auth]);
 
   return (
-    <Grid item md={9} style={{ padding: 0 }}>
-      <Typography variant="h4" color="primary" className={classes.title}>
-        {currentViewLabel}
-      </Typography>
-      <Typography
-        variant="subtitle1"
-        color="textPrimary"
-        className={classes.subtitle}
+    <Grid
+      container
+      alignContent="flex-start"
+      style={{
+        padding: theme.spacing(2),
+        overflowY: 'scroll',
+        height: '100%',
+      }}
+    >
+      <Grid
+        item
+        xs={12}
+        style={{
+          borderBottom: `1px solid ${theme.palette.grey[500]}`,
+          marginBottom: '4rem',
+        }}
       >
-        {currentViewSubtitle}
-      </Typography>
-      {currentViewContent}
+        <Typography variant="h3" color="textPrimary">
+          {currentViewLabel}
+        </Typography>
+        <Typography variant="subtitle1" color="textPrimary">
+          {currentViewSubtitle}
+        </Typography>
+      </Grid>
+      <Grid item xs={12}>
+        {currentViewContent}
+      </Grid>
     </Grid>
   );
 };
@@ -121,15 +129,23 @@ export const Dashboard = withQueries(({ queries }): React.ReactElement => {
       const classes = useStyles();
 
       return (
-        <Grid container className={classes.root} spacing={3}>
-          <Grid item md={3}>
-            <Sidebar />
+        <Grid container className={classes.root}>
+          <Grid
+            item
+            lg={2}
+            md={3}
+            sm={3}
+            style={{ height: '100%' }}
+          >
+            <Sidebar currentView={currentView} />
           </Grid>
-          <DashboardContent
-            currentView={currentView}
-            profile={profile}
-            auth={auth}
-          />
+          <Grid item lg={10} md={9} sm={9} style={{ height: '100%' }}>
+            <DashboardContent
+              currentView={currentView}
+              profile={profile}
+              auth={auth}
+            />
+          </Grid>
         </Grid>
       );
     })

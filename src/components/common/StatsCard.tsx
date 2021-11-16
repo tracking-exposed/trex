@@ -1,6 +1,5 @@
-import { Card, CardContent, Typography, useTheme } from '@material-ui/core';
-import { makeStyles } from '@material-ui/styles';
-import { YCAITheme } from '../../theme';
+import { Card, CardContent, Typography } from '@material-ui/core';
+import { YCAITheme,makeStyles, useTheme } from '../../theme';
 import * as React from 'react';
 
 interface StatsBoxProps {
@@ -13,6 +12,7 @@ interface StatsBoxProps {
 const useStyles = makeStyles<YCAITheme, { color: string }>(() => ({
   root: {
     marginBottom: 20,
+    border: `1px solid transparent`,
     '&:hover': {
       border: (props) => `1px solid ${props.color}`,
     },
@@ -30,7 +30,7 @@ export const StatsCard: React.FC<StatsBoxProps> = ({
   color,
 }) => {
   const theme = useTheme();
-  const classes = useStyles({ color: color ?? theme.palette.common.black });
+  const classes = useStyles({ color: color ?? theme.palette.text.primary });
   return (
     <Card className={classes.root}>
       <CardContent className={classes.content}>

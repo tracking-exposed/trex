@@ -1,4 +1,4 @@
-import { Endpoints } from '@backend/endpoints/v3';
+import * as Endpoints from '@backend/endpoints';
 import { command } from 'avenger';
 import axios, { AxiosRequestConfig, AxiosResponse } from 'axios';
 import * as A from 'fp-ts/lib/Array';
@@ -22,12 +22,12 @@ export class APIError extends Error {
 
 export const toAPIError = (e: unknown): APIError => {
   // eslint-disable-next-line
-  apiLogger.error('An error occured %O', e);
+  apiLogger.error('An error occurred %O', e);
   if (e instanceof Error) {
     return new APIError(e.message, []);
   }
 
-  return new APIError('An error occured', []);
+  return new APIError('An error occurred', [JSON.stringify(e)]);
 };
 
 export const endpointClient = axios.create({
@@ -87,16 +87,16 @@ export const put = <T, R>(
 ): TE.TaskEither<Error, R> =>
   liftFetch(() => endpointClient.put(url, data, config), t.any.decode);
 
-type TERequest<E extends MinimalEndpointInstance> = (
+export type TERequest<E extends MinimalEndpointInstance> = (
   input: TypeOfEndpointInstance<E>['Input']
 ) => TE.TaskEither<APIError, TypeOfEndpointInstance<E>['Output']>;
 
-type API = {
-  [K in keyof Endpoints]: Endpoints[K] extends {
+type API<ES extends Record<string, Record<string, MinimalEndpointInstance>>> = {
+  [K in keyof ES]: ES[K] extends {
     [key: string]: MinimalEndpointInstance;
   }
     ? {
-        [KK in keyof Endpoints[K]]: TERequest<Endpoints[K][KK]>;
+        [KK in keyof ES[K]]: TERequest<ES[K][KK]>;
       }
     : never;
 } & {
@@ -106,7 +106,7 @@ type API = {
   ) => TE.TaskEither<APIError, R>;
 };
 
-const toTERequest = <E extends MinimalEndpointInstance>(e: E): TERequest<E> => {
+export const apiFromEndpoint = <E extends MinimalEndpointInstance>(e: E): TERequest<E> => {
   return command<any, APIError, TypeOfEndpointInstance<E>['Output']>((b) =>
     liftFetch<TypeOfEndpointInstance<E>['Output']>(() => {
       const url = e.getPath(b.Params);
@@ -122,35 +122,49 @@ const toTERequest = <E extends MinimalEndpointInstance>(e: E): TERequest<E> => {
         responseType: 'json',
         headers: {
           Accept: 'application/json',
-          ...b.Headers
+          ...b.Headers,
         },
       });
     }, e.Output.decode)
   );
 };
 
-const APIInit: API = {
-  request: <T, R>(
-    config: AxiosRequestConfig<T>,
-    decode: (o: unknown) => E.Either<t.Errors, R>
-  ) => liftFetch(() => endpointClient.request(config), decode),
-} as any;
+const toAPI = <
+  ES extends { [key: string]: Record<string, MinimalEndpointInstance> }
+>(
+  es: ES
+): API<ES> => {
+  const APIInit: API<ES> = {
+    request: <T, R>(
+      config: AxiosRequestConfig<T>,
+      decode: (o: unknown) => E.Either<t.Errors, R>
+    ) => liftFetch(() => endpointClient.request(config), decode),
+  } as any;
 
-const API: API = pipe(
-  R.toArray<keyof Endpoints, { [key: string]: MinimalEndpointInstance }>(
-    Endpoints
-  ),
-  A.reduce<
-    [keyof Endpoints, { [key: string]: MinimalEndpointInstance }],
-    API
-    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
-  >(APIInit, (q, [k, e]) => ({
-    ...q,
-    [k]: pipe(
-      e,
-      R.map((ee) => toTERequest(ee))
-    ) as any,
-  }))
-);
+  return pipe(
+    R.toArray<string, { [key: string]: MinimalEndpointInstance }>(es),
+    A.reduce<
+      [keyof ES, { [key: string]: MinimalEndpointInstance }],
+      API<ES>
+      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+    >(APIInit, (q, [k, e]) => ({
+      ...q,
+      [k]: pipe(
+        e,
+        R.map((ee) => apiFromEndpoint(ee))
+      ) as any,
+    }))
+  );
+};
+
+const v1 = toAPI(Endpoints.v1);
+const v2 = toAPI(Endpoints.v2);
+const v3 = toAPI(Endpoints.v3);
+
+const API = {
+  v1,
+  v2,
+  v3,
+};
 
 export { API };
