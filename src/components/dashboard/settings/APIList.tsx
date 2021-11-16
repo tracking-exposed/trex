@@ -18,14 +18,14 @@ export const APIList: React.FC = () => {
   const { t } = useTranslation();
   return (
     <Box>
-      <Typography variant="h3">{t('settings:api_list_title')}</Typography>
+      <Typography color="textPrimary" variant="h5">{t('settings:api_list_title')}</Typography>
       {pipe(
         Endpoints.v3,
         R.toArray,
         A.map(([key, routeEndpoints]) => {
           return (
             <Box key={key}>
-              <Typography variant="h5">{key}</Typography>
+              <Typography color="primary" variant="h6">{key}</Typography>
               <List>
                 {pipe(
                   routeEndpoints as { [key: string]: MinimalEndpointInstance },
@@ -38,10 +38,10 @@ export const APIList: React.FC = () => {
                     return (
                       <ListItem key={routeName}>
                         <ListItemText>
-                          <Typography variant="subtitle1">
+                          <Typography color="primary" variant="subtitle1">
                             {routeName}
                           </Typography>{' '}
-                          <Typography variant="body2">
+                          <Typography variant="body1">
                             {endpoint.Method} {config.REACT_APP_API_URL}
                             {endpoint.getPath(params)}
                           </Typography>
@@ -55,9 +55,6 @@ export const APIList: React.FC = () => {
           );
         })
       )}
-      <Typography variant="caption">
-        TODO: <a href="https://swagger.io">swagger</a> for all these APIs
-      </Typography>
     </Box>
   );
 };

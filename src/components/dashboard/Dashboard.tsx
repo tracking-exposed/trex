@@ -25,12 +25,6 @@ const useStyles = makeStyles((theme) => ({
     width: '100%',
     backgroundColor: theme.palette.background.default,
   },
-  title: {
-    marginBottom: 15,
-  },
-  subtitle: {
-    marginBottom: 20,
-  },
 }));
 
 interface DashboardContentProps {
@@ -46,7 +40,6 @@ const DashboardContent: React.FC<DashboardContentProps> = ({
 }) => {
   const { t } = useTranslation();
   const theme = useTheme();
-  const classes = useStyles();
 
   const [currentViewLabel, currentViewSubtitle, currentViewContent] =
     React.useMemo(() => {
@@ -101,15 +94,18 @@ const DashboardContent: React.FC<DashboardContentProps> = ({
         height: '100%',
       }}
     >
-      <Grid item xs={12}>
-        <Typography variant="h1" color="primary" className={classes.title}>
+      <Grid
+        item
+        xs={12}
+        style={{
+          borderBottom: `1px solid ${theme.palette.grey[500]}`,
+          marginBottom: '4rem',
+        }}
+      >
+        <Typography variant="h3" color="textPrimary">
           {currentViewLabel}
         </Typography>
-        <Typography
-          variant="subtitle1"
-          color="textPrimary"
-          className={classes.subtitle}
-        >
+        <Typography variant="subtitle1" color="textPrimary">
           {currentViewSubtitle}
         </Typography>
       </Grid>
@@ -130,7 +126,6 @@ export const Dashboard = withQueries(({ queries }): React.ReactElement => {
   return pipe(
     queries,
     QR.fold(LazyFullSizeLoader, ErrorBox, ({ currentView, profile, auth }) => {
-      const theme = useTheme();
       const classes = useStyles();
 
       return (
@@ -140,7 +135,7 @@ export const Dashboard = withQueries(({ queries }): React.ReactElement => {
             lg={2}
             md={3}
             sm={3}
-            style={{ padding: theme.spacing(2), height: '100%' }}
+            style={{ height: '100%' }}
           >
             <Sidebar currentView={currentView} />
           </Grid>

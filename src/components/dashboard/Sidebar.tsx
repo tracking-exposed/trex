@@ -1,4 +1,5 @@
 import {
+  Box,
   List,
   ListItem,
   makeStyles,
@@ -12,6 +13,7 @@ import { UserProfileBox } from './UserProfileBox';
 import LabIcon from '../common/icons/LabIcon';
 import AnalyticsIcon from '../common/icons/AnalyticsIcon';
 import SettingsIcon from '../common/icons/SettingsIcon';
+import YCAILogo from 'components/common/YCAILogo';
 
 const useStyles = makeStyles((theme) => ({
   routesList: {
@@ -22,9 +24,9 @@ const useStyles = makeStyles((theme) => ({
   },
   listItemSelected: {
     color: theme.palette.violet.contrastText,
-    backgroundColor: `${theme.palette.violet.dark}`,
+    backgroundColor: `${theme.palette.grey[500]}`,
     '&:hover': {
-      backgroundColor: `${theme.palette.violet.dark}`,
+      backgroundColor: `${theme.palette.grey[500]}`,
       opacity: 0.6,
     },
   },
@@ -50,6 +52,7 @@ const toMenuItem = (
 ): React.ReactElement => {
   return (
     <ListItem
+      key={d.views[0]}
       className={
         d.views.includes(currentView.view) ? d.selectedClassName : d.className
       }
@@ -62,7 +65,12 @@ const toMenuItem = (
           d.views.includes(currentView.view) ? d.iconSelectedColor : d.iconColor
         }
       />
-      <Typography>{d.title}</Typography>
+      <Typography
+        variant="subtitle2"
+        style={{ margin: 0, textTransform: 'uppercase' }}
+      >
+        {d.title}
+      </Typography>
     </ListItem>
   );
 };
@@ -77,16 +85,23 @@ export const Sidebar: React.FC<SidebarProps> = ({ currentView }) => {
   const theme = useTheme();
   return (
     <div style={{ height: '100%' }}>
-      <img
-        alt="YCAI Logo"
-        src="/ycai-logo.png"
-        style={{ width: '100%', marginBottom: 50 }}
+      <Box
+        style={{
+          paddingTop: theme.spacing(2),
+          paddingRight: theme.spacing(2),
+          marginBottom: 50,
+        }}
         onClick={() => {
           void doUpdateCurrentView({ view: 'index' })();
         }}
-      />
-      <UserProfileBox />
-      <List className={classes.routesList}>
+      >
+        <YCAILogo width={'100%'} />
+      </Box>
+
+      <Box style={{ padding: theme.spacing(2) }}>
+        <UserProfileBox />
+      </Box>
+      <List className={classes.routesList} disablePadding={true}>
         {[
           {
             title: t('routes:lab_title_short'),

@@ -5,20 +5,22 @@ import {
   Chip,
   FormControl,
   Grid,
-  Input, InputLabel, Link, makeStyles, Typography
+  Input,
+  InputLabel,
+  Link,
+  makeStyles,
+  Typography,
 } from '@material-ui/core';
 import CopyIcon from '@material-ui/icons/FileCopyOutlined';
 import { isLeft } from 'fp-ts/lib/Either';
 import React from 'react';
-import {
-  Trans, useTranslation
-} from 'react-i18next';
+import { Trans, useTranslation } from 'react-i18next';
 import {
   copyToClipboard,
-  registerCreatorChannel, updateAuth, verifyChannel
+  registerCreatorChannel,
+  updateAuth,
+  verifyChannel,
 } from '../../state/creator.commands';
-
-
 
 const youtubeChannelUrlRegex = /\/channel\/([^/]+)\/?$/;
 
@@ -46,8 +48,8 @@ const useStyles = makeStyles((theme) => ({
   linkButton: {
     '&:hover': {
       cursor: 'pointer',
-    }
-  }
+    },
+  },
 }));
 interface LinkAccountProps {
   auth: AuthResponse | null;
@@ -106,32 +108,34 @@ export const LinkAccount: React.FC<LinkAccountProps> = ({ auth }) => {
     if (auth?.channelId !== undefined) {
       verifyChannel({
         channelId: auth.channelId,
-      })().then(
-        (res) => {
-          if (isLeft(res)) {
+      })()
+        .then(
+          (res) => {
+            if (isLeft(res)) {
+              setVerificationFailed(true);
+            }
+          },
+          () => {
             setVerificationFailed(true);
           }
-        },
-        () => {
-          setVerificationFailed(true);
-        }
-      ).finally(() => {
-        setVerifying(false);
-      });
+        )
+        .finally(() => {
+          setVerifying(false);
+        });
     }
-  }
+  };
 
   const handleGoBackToStepOneClicked = (): void => {
     setVerificationFailed(false);
 
     void updateAuth(null)();
-  }
+  };
 
   const creatorChannelValue = channel ?? '';
 
-  return (!channelIDPasted) ? (
-    <Box className={classes.box} >
-      <Typography color="primary" variant="h2">
+  return !channelIDPasted ? (
+    <Box className={classes.box}>
+      <Typography color="primary" variant="h5">
         1/2 {t('link_account:paste_channel_url')}
       </Typography>
       <Grid
@@ -170,34 +174,29 @@ export const LinkAccount: React.FC<LinkAccountProps> = ({ auth }) => {
       </Grid>
     </Box>
   ) : (
-    <Box
-      className={classes.box}
-    >
-      <Typography variant="h2" color="primary">
+    <Box className={classes.box}>
+      <Typography variant="h5" color="primary">
         2/2 {t('link_account:copy_verification_key')}
       </Typography>
       <Grid container className={classes.boxGrid} spacing={2}>
         <Grid
-          item container
-          xs={12} spacing={1}
+          item
+          container
+          xs={12}
+          spacing={1}
           style={{
             display: 'flex',
             alignItems: 'center',
           }}
         >
-          <Grid item
-            xs={12} md={6}
-          >
-            <Typography
-              className={classes.tokenDisplay}
-              id="account-channelId"
-            >
+          <Grid item lg={4} md={9} sm={8} xs={12}>
+            <Typography className={classes.tokenDisplay} id="account-channelId">
               {auth.tokenString}
             </Typography>
           </Grid>
-          <Grid item xs={12} md={6}>
+          <Grid item lg={3} md={3} sm={4} xs={12}>
             {showCopiedFeedback ? (
-              <Chip color="secondary" label={t('actions:copied')}/>
+              <Chip color="secondary" label={t('actions:copied')} />
             ) : (
               <Button
                 color="primary"
@@ -220,26 +219,22 @@ export const LinkAccount: React.FC<LinkAccountProps> = ({ auth }) => {
         <Grid item xs={12} sm={6}>
           <Typography variant="body2">
             <Trans i18nKey="link_account:verification_code_hint">
-              Paste and publish a new channel description containing the above code on
+              Paste and publish a new channel description containing the above
+              code on
               <Link
                 target="_blank"
                 rel="noreferrer"
                 href={`https://studio.youtube.com/channel/${channel}/editing/details`}
               >
                 YouTube Studio
-              </Link>.
-              You can remove the code from your channel&apos;s description
+              </Link>
+              . You can remove the code from your channel&apos;s description
               after the verification is complete.
             </Trans>
           </Typography>
         </Grid>
-        <Grid item container
-          xs={12} spacing={2}
-          className={classes.stepButton}
-        >
-          <Grid item
-            xs={12} md={2}
-          >
+        <Grid item container xs={12} spacing={2} className={classes.stepButton}>
+          <Grid item xs={12} md={2}>
             <Button
               disabled={verifying}
               variant="contained"
@@ -250,36 +245,34 @@ export const LinkAccount: React.FC<LinkAccountProps> = ({ auth }) => {
               {t('actions:verify_channel')}
             </Button>
           </Grid>
-          <Grid item
-            xs={12}
-            md={6}
-          >
-            {verificationFailed && (<>
-              <Typography>
-                {t('link_account:verification_failed')}
-              </Typography>
-              <ul>
-                <li>
-                  <Typography>
-                    {t('link_account:verification_failed_hint')}
-                  </Typography>
-                </li>
-                <li>
-                  <Typography>
-                    <Trans i18nKey="link_account:go_back_to_step_one_hint">
-                      If the verification keeps failing,
-                      <Link
-                        className={classes.linkButton}
-                        onClick={handleGoBackToStepOneClicked}
-                      >
-                        go back to step one
-                      </Link>
-                      and make sure you have pasted the correct URL to your YouTube channel.
-                    </Trans>
-                  </Typography>
-                </li>
-              </ul>
-            </>)}
+          <Grid item xs={12} md={6}>
+            {verificationFailed && (
+              <>
+                <Typography>{t('link_account:verification_failed')}</Typography>
+                <ul>
+                  <li>
+                    <Typography>
+                      {t('link_account:verification_failed_hint')}
+                    </Typography>
+                  </li>
+                  <li>
+                    <Typography>
+                      <Trans i18nKey="link_account:go_back_to_step_one_hint">
+                        If the verification keeps failing,
+                        <Link
+                          className={classes.linkButton}
+                          onClick={handleGoBackToStepOneClicked}
+                        >
+                          go back to step one
+                        </Link>
+                        and make sure you have pasted the correct URL to your
+                        YouTube channel.
+                      </Trans>
+                    </Typography>
+                  </li>
+                </ul>
+              </>
+            )}
           </Grid>
         </Grid>
       </Grid>
