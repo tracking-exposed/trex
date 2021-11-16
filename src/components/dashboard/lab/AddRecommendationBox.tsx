@@ -11,6 +11,10 @@ import {
   Typography,
 } from '@material-ui/core';
 
+import {
+  Add as AddIcon,
+} from '@material-ui/icons';
+
 import { makeStyles } from '@material-ui/styles';
 
 import { addRecommendationForVideo } from '../../../state/creator.commands';
@@ -27,6 +31,12 @@ const useStyles = makeStyles<YCAITheme>(theme => ({
   textField: {
     backgroundColor: theme.palette.background.default,
     flexGrow: 1,
+    '& .MuiFormHelperText-root': {
+      backgroundColor: theme.palette.grey[300],
+    },
+    '& textarea': {
+      color: theme.palette.text.secondary,
+    }
   },
   addButton: {
     marginLeft: theme.spacing(2),
@@ -58,6 +68,7 @@ const AddRecommendationBox: React.FC<AddRecommendationBoxProps> = ({ videoId }) 
             variant="h5"
           >
             {t('recommendations:add_to_video')}
+            <AddIcon fontSize="large"/>
           </Typography>
           <Box display="flex" alignItems="center">
             <TextField
@@ -68,7 +79,7 @@ const AddRecommendationBox: React.FC<AddRecommendationBoxProps> = ({ videoId }) 
               multiline
               value={recommendationURL}
               onChange={(v) => setRecommendationURL(v.target.value)}
-              color="secondary"
+              color="primary"
             />
             <Button
               className={classes.addButton}
