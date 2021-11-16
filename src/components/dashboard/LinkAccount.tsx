@@ -35,12 +35,8 @@ const useStyles = makeStyles((theme) => ({
   tokenDisplay: {
     backgroundColor: theme.palette.grey[200],
     display: 'inline-block',
-    fontSize: '0.8rem',
-    padding: theme.spacing(1),
-  },
-  copiedFeedback: {
-    position: 'absolute',
-    bottom: 0,
+    padding: theme.spacing(2),
+    marginRight: theme.spacing(2),
   },
   stepButton: {
     marginTop: theme.spacing(4),
@@ -181,40 +177,30 @@ export const LinkAccount: React.FC<LinkAccountProps> = ({ auth }) => {
       <Grid container className={classes.boxGrid} spacing={2}>
         <Grid
           item
-          container
           xs={12}
-          spacing={1}
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-          }}
         >
-          <Grid item lg={4} md={9} sm={8} xs={12}>
-            <Typography className={classes.tokenDisplay} id="account-channelId">
-              {auth.tokenString}
-            </Typography>
-          </Grid>
-          <Grid item lg={3} md={3} sm={4} xs={12}>
-            {showCopiedFeedback ? (
-              <Chip color="secondary" label={t('actions:copied')} />
-            ) : (
-              <Button
-                color="primary"
-                variant="text"
-                startIcon={<CopyIcon />}
-                onClick={async () => {
-                  await copyToClipboard(auth.tokenString)().then(() => {
-                    setShowCopiedFeedback(true);
-                    setTimeout(() => {
-                      setShowCopiedFeedback(false);
-                    }, 2000);
-                  });
-                }}
-              >
-                {t('actions:copy_verification_code')}
-              </Button>
-            )}
-          </Grid>
+          <Typography className={classes.tokenDisplay} id="account-channelId">
+            {auth.tokenString}
+          </Typography>
+          {showCopiedFeedback ? (
+            <Chip color="secondary" label={t('actions:copied')} />
+          ) : (
+            <Button
+              color="primary"
+              variant="text"
+              startIcon={<CopyIcon />}
+              onClick={async () => {
+                await copyToClipboard(auth.tokenString)().then(() => {
+                  setShowCopiedFeedback(true);
+                  setTimeout(() => {
+                    setShowCopiedFeedback(false);
+                  }, 2000);
+                });
+              }}
+            >
+              {t('actions:copy_verification_code')}
+            </Button>
+          )}
         </Grid>
         <Grid item xs={12} sm={6}>
           <Typography variant="body2">
