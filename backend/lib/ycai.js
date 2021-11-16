@@ -364,17 +364,33 @@ async function getCreatorByToken(token) {
   }
 }
 
-async function getRecentChannels(max) {
+async function getRecentChannels(max, countoo) {
   /* this API is used to pull recent channels so we can 
-   * eventually watch it with 'Guardoni' and populate stats */
+   * eventually watch it with 'Guardoni' and populate stats,
+     countrecs (true|undefined) causes a count of  */
+
   const mongoc = await mongo3.clientConnect({ concurrency: 1 });
   const creators = await mongo3
     .readLimit(mongoc, nconf.get("schema").creators, {}, {
       registeredOn: -1
     }, max, 0);
+
+  if(countoo) {
+    debug("also counting recommendations by %d creators", creators.length);
+    for (const c of creators) {
+      const amount = await mongo3.count(mongoc,
+          nconf.get('schema').recommendations, {
+            channelId: c.channelId
+          })
+      c.recommendations = amount;
+    }
+  }
+
   await mongoc.close();
 
-  return _.map(creators, 'url');
+  return _.map(creators, function(c) {
+    return _.pick(c, ['url', 'username', 'recommendations']);
+  })
 }
 
 async function deleteMaterial(creator, targets) {
