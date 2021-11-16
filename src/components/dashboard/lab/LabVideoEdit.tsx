@@ -2,7 +2,7 @@ import { Grid } from '@material-ui/core';
 import { YTVideo } from 'components/common/YTVideo';
 import * as React from 'react';
 import AddRecommendationBox from './AddRecommendationBox';
-import { VideoRecommendations } from './VideoRecommendationsEdit';
+import { VideoRecommendations } from './VideoRecommendations';
 
 interface LabVideoEditProps {
   videoId: string;

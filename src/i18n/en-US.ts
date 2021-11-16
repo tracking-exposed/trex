@@ -19,7 +19,6 @@ const resources: CustomTypeOptions['resources'] = {
     editThisVideo: 'Edit this video',
     importVideos: 'Import videos',
     addToCurrentVideo: 'Add to current video',
-    removeFromCurrentVideo: 'Remove from current video',
     compare: 'Compare',
     related: 'Related',
     next: 'Next',
@@ -34,7 +33,10 @@ const resources: CustomTypeOptions['resources'] = {
     unlink_profile: 'Unlink profile',
     edit_access_token: 'Edit Access Token',
     download_access_token: 'Download Access Token',
-    download: 'Download'
+    download: 'Download',
+    move_recommendation_up: 'Move recommendation up',
+    move_recommendation_down: 'Move recommendation down',
+    remove_recommendation_from_video: 'Remove from current video',
   },
   routes: {
     lab_title: 'LAB - Recommend on your videos',
