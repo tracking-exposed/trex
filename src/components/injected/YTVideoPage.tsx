@@ -15,7 +15,7 @@ import { settingsRefetch } from 'state/public.queries';
 import { GetLogger } from 'utils/logger.utils';
 import { getVideoId } from 'utils/yt.utils';
 import { Tab } from '../common/Tab';
-import { VideoRecommendations } from '../common/VideoRecommendations';
+import { VideoRecommendations } from './VideoRecommendations';
 import ContentCreatorIcon from '@material-ui/icons/HealingOutlined';
 import CommunityIcon from '@material-ui/icons/GroupWorkOutlined';
 import YTIcon from '@material-ui/icons/YouTube';
