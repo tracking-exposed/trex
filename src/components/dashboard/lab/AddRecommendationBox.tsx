@@ -24,6 +24,7 @@ const useStyles = makeStyles<YCAITheme>(theme => ({
   root: {
     border: `2px dashed ${theme.palette.secondary.main}`,
     boxShadow: 'none',
+    backgroundColor: "transparent"
   },
   textField: {
     flexGrow: 1,

@@ -1,10 +1,6 @@
 import {
   Box,
-  Grid,
-  List,
-  ListItem,
-  ListItemText,
-  Typography,
+  Grid
 } from '@material-ui/core';
 import * as QR from 'avenger/lib/QueryResult';
 import { declareQueries } from 'avenger/lib/react';
@@ -39,50 +35,9 @@ const Settings = withQueries(({ queries }): React.ReactElement => {
             <KeypairBox keypair={keypair} settings={settings} />
           ) : null}
 
-          <APIList />
-
-          <Typography variant="h3">API TODOs</Typography>
-          <List>
-            <ListItem>
-              <ListItemText>
-                Bling signature verification in creator/register API
-              </ListItemText>
-            </ListItem>
-            <ListItem>
-              <ListItemText>
-                private key signature in all the creator APIs
-              </ListItemText>
-            </ListItem>
-            <ListItem>
-              <ListItemText>RESTful videos/recommendation</ListItemText>
-            </ListItem>
-            <ListItem>
-              <ListItemText>
-                Advertising (open data and query methods)
-              </ListItemText>
-            </ListItem>
-            <ListItem>
-              <ListItemText>
-                Restore existing account (for dump/import your keyrings)
-              </ListItemText>
-            </ListItem>
-            <ListItem>
-              <ListItemText>
-                Statistics on adoption, similar to{' '}
-                <a href="https://youtube.tracking.exposed/impact">
-                  yttrex impact page
-                </a>
-                .
-              </ListItemText>
-            </ListItem>
-          </List>
-
-          <Typography variant="body1">
-            Excluded from this list, but work in progress: shadowban analysis.
-            At the moment it is developed as a separated tool/binary, and
-            we&apos;re completing research. It is in alpha stage, and we can
-            discuss more on the methodology.
-          </Typography>
+          <Box style={{ paddingBottom: 100 }}>
+            <APIList />
+          </Box>
         </Box>
       );
     })

@@ -1,15 +1,17 @@
 import React from 'react';
 
 import {
+  Button,
   Card,
-  CardActionArea,
+  CardActions,
   CardContent,
   CardMedia,
   Link,
-  Typography,
+  useTheme,
+  makeStyles,
+  alpha,
 } from '@material-ui/core';
 
-import { makeStyles } from '@material-ui/styles';
 import { useTranslation } from 'react-i18next';
 
 import {
@@ -25,25 +27,20 @@ interface VideoCardProps {
   openRecommendations: () => void;
 }
 
-const useStyles = makeStyles<YCAITheme>(theme => ({
+const useStyles = makeStyles<YCAITheme>((theme) => ({
   root: {
     height: '100%',
-    '& > button': {
-      display: 'flex',
-      flexDirection: 'column',
-      alignItems: 'flex-start',
-      height: '100%',
-      '& .MuiCardContent-root': {
-        flexGrow: 1,
-      }
-    }
+    backgroundColor: alpha(theme.palette.grey[500], .2),
+    // '& > button': {
+    //   display: 'flex',
+    //   flexDirection: 'column',
+    //   alignItems: 'flex-start',
+    //   height: '100%',
+    //   '& .MuiCardContent-root': {
+    //     flexGrow: 1,
+    //   },
+    // },
   },
-  manage: {
-    fontWeight: 'bold',
-    fontSize: '0.8rem',
-    marginBottom: theme.spacing(1),
-    marginLeft: theme.spacing(2),
-  }
 }));
 
 export const VideoCard: React.FC<VideoCardProps> = ({
@@ -53,34 +50,39 @@ export const VideoCard: React.FC<VideoCardProps> = ({
 }) => {
   const { t } = useTranslation();
   const classes = useStyles();
+  const theme = useTheme();
 
   return (
     <Card className={classes.root}>
-      <CardActionArea onClick={openRecommendations}>
-        <CardMedia
-            component="img"
-            src={getYTMaxResThumbnailById(videoId)}
-            title={title}
-          />
-        <CardContent>
-          <Link
-            color="textPrimary"
-            href={getYTVideoURLById(videoId)}
-            rel="noreferrer"
-            target="_blank"
-            underline="none"
-            variant="subtitle1"
-          >
-            {title}
-          </Link>
-        </CardContent>
-        <Typography
+      <CardMedia
+        component="img"
+        src={getYTMaxResThumbnailById(videoId)}
+        title={title}
+        height={200}
+      />
+      <CardContent>
+        <Link
+          color="textSecondary"
+          href={getYTVideoURLById(videoId)}
+          rel="noreferrer"
+          target="_blank"
+          underline="none"
+          variant="subtitle2"
+        >
+          {title}
+        </Link>
+      </CardContent>
+      <CardActions style={{ padding: theme.spacing(2) }}>
+        <Button
           color="primary"
+          variant="contained"
+          size="small"
           className={classes.manage}
+          onClick={openRecommendations}
         >
           {t('actions:manage_recommendations')}
-        </Typography>
-      </CardActionArea>
+        </Button>
+      </CardActions>
     </Card>
   );
 };

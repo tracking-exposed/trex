@@ -47,7 +47,7 @@ export const AccessTokenBox: React.FC<AccessTokenBoxProps> = ({ profile }) => {
 
   return (
     <Box className={classes.root} style={{ width: '100%' }}>
-      <Typography variant="h4">{t('settings:access_token_title')}</Typography>
+      <Typography color="textPrimary" variant="h5">{t('settings:access_token_title')}</Typography>
       <FormGroup row={true}>
         <Grid
           container
