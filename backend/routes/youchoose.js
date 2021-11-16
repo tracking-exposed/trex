@@ -276,6 +276,14 @@ async function creatorRegister(req) {
       },
     };
 
+  const consistency = await curly.verifyChannel(channelId);
+  if(consistency !== true) {
+    debug("Impossible validate the channel: %s", consistency.message);
+    return {
+      json: consistency
+    }
+  }
+
   const expireAt = moment().add(1, 'week').toISOString();
   const verificationToken = await ycai.generateToken(
     channelId,

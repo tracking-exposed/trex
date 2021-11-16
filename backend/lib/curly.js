@@ -54,6 +54,28 @@ async function fetchRawChannelVideosHTML(channelId) {
   };
 }
 
+async function verifyChannel(channelId) {
+  const { html, statusCode, headers } = await fetchRawChannelVideosHTML(channelId);
+  debug(statusCode);
+  if(statusCode !== 200) {
+    const em = `Invalid HTTP Code ${statusCode}`;
+    return { error: true, message: em };
+  }
+  if(html.length < 20000) {
+    const em = `Way too small page ${html.length}`;
+    return { error: true, message: em };
+  }
+
+  const reg = new RegExp(channelId);
+  const check = html.match(reg);
+
+  if(check.index) {
+    return true;
+  }
+  const em = `Failed double check: Unexpected HTML!?`;
+  return { error: true, message: em };
+}
+
 const parseRecentVideosHTML = (html) => {
   const blob = lookForJSONblob(html);
   const videob = _.filter(
@@ -215,6 +237,7 @@ async function tokenFetch(channelId) {
 
 module.exports = {
   fetchRawChannelVideosHTML,
+  verifyChannel,
   parseRecentVideosHTML,
   recentVideoFetch,
   tokenFetch,
