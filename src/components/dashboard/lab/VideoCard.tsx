@@ -9,7 +9,6 @@ import {
   Link,
   useTheme,
   makeStyles,
-  alpha,
 } from '@material-ui/core';
 
 import { useTranslation } from 'react-i18next';
@@ -30,7 +29,7 @@ interface VideoCardProps {
 const useStyles = makeStyles<YCAITheme>((theme) => ({
   root: {
     height: '100%',
-    backgroundColor: alpha(theme.palette.grey[500], .2),
+    backgroundColor: theme.palette.grey[300],
     // '& > button': {
     //   display: 'flex',
     //   flexDirection: 'column',
@@ -59,6 +58,7 @@ export const VideoCard: React.FC<VideoCardProps> = ({
         src={getYTMaxResThumbnailById(videoId)}
         title={title}
         height={200}
+        onClick={openRecommendations}
       />
       <CardContent>
         <Link
