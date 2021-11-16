@@ -139,7 +139,7 @@ app.get('/api/v3/creator/videos/:videoId', async (req, res) => await iowrapper('
 app.get('/api/v3/creator/recommendations', async (req, res) => await iowrapper('youChooseByProfile', req, res))
 app.get('/api/v3/creator/:channelId/related/:amount?', async (req, res) => await iowrapper('getCreatorRelated', req, res))
 app.get('/api/v3/creator/:channelId/stats', async (req, res) => await iowrapper('getCreatorStats', req, res))
-
+app.delete('/api/v3/creator/unlink', async (req, res) => await iowrapper('creatorDelete', req, res));
 app.get('/api/v3/opendata/channels', async (req, res) => await iowrapper('opendataChannel', req, res));
 
 /* below, the few API endpoints */

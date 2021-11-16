@@ -91,7 +91,7 @@ const apiList = {
     creatorRegister:        require('../routes/youchoose').creatorRegister,
     creatorVerify:          require('../routes/youchoose').creatorVerify,
     creatorGet:             require('../routes/youchoose').creatorGet,
-
+    creatorDelete:          require('../routes/youchoose').creatorDelete,
     /* v3 opendata */
     opendataChannel:        require('../routes/opendata').opendataChannel,
 

@@ -377,6 +377,48 @@ async function getRecentChannels(max) {
   return _.map(creators, 'url');
 }
 
+async function deleteMaterial(creator, targets) {
+  /* this function is invoked to delete specific material belonging
+   * to a content creator */
+  const mongoc = await mongo3.clientConnect({ concurrency: 1 });
+  const results = {};
+
+  if(targets.indexOf('recommendations') !== -1) {
+    const r = await mongo3.deleteMany(mongoc, nconf.get('schema').recommendations, {
+      channelId: creator.channelId
+    })
+    debug("Recommendations deleted %d", r.deletedCount);
+    results.recommendations = r.deletedCount;
+  }
+
+  if(targets.indexOf('creators') !== -1) {
+    const r = await mongo3.deleteMany(mongoc, nconf.get('schema').creators, {
+      channelId: creator.channelId
+    })
+    debug("Creators deleted %d", r.deletedCount);
+    results.creators = r.deletedCount;
+  }
+
+  if(targets.indexOf('tokens') !== -1) {
+    const r = await mongo3.deleteMany(mongoc, nconf.get('schema').tokens, {
+      channelId: creator.channelId
+    })
+    debug("Tokens deleted %d", r.deletedCount);
+    results.tokens = r.deletedCount;
+  }
+
+  if(targets.indexOf('ytvids') !== -1) {
+    const r = await mongo3.deleteMany(mongoc, nconf.get('schema').ytvids, {
+      creatorId: creator.channelId
+    })
+    debug("ytvids deleted %d", r.deletedCount);
+    results.ytvids = r.deletedCount;
+  }
+
+  await mongoc.close();
+  return results;
+}
+
 module.exports = {
   fetchRecommendations,
   fetchRecommendationsByProfile,
@@ -392,4 +434,5 @@ module.exports = {
   getCreatorByToken,
   confirmCreator,
   getRecentChannels,
+  deleteMaterial,
 };

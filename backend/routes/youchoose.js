@@ -11,6 +11,32 @@ const structured = require('../lib/structured');
 
 const PUBLIC_AMOUNT_ELEMS = 100;
 
+async function verifyAuthorization(req, model) {
+  /* this function is called any time a route below 
+   * need to ensure the creator is valid. returns creator object */
+
+  const decodedReq = endpoints.decodeRequest(model, req);
+  if (decodedReq.type === 'error') {
+    debug("Failed input validation [%o] [%o]", model, {
+      params: req.params, body: req.body, headers: req.headers })
+    return { creator: {
+      error: true,
+      details: decodedReq.result,
+    } };
+  }
+  const verificationToken = decodedReq.result.headers['x-authorization'];
+
+  debug('verifiyAuthorization by token %s', verificationToken);
+  const check = await ycai.getCreatorByToken(verificationToken);
+
+  if(check.error) {
+    /* the 'check' contains an error and would be returned by handler */
+    debug('Invalid token: %s, authorization fail', check);
+  }
+  /* else, the 'check' contains the creator object for the route */
+  return { creator: check, decodedReq };
+}
+
 async function byVideoId(req) {
   /* this function is invoked as GET when creators edit a video */
   const videoId = req.params ? _.get(req.params, 'videoId') : null;
@@ -24,6 +50,8 @@ async function byVideoId(req) {
 }
 
 async function byProfile(req) {
+  // TODO verify this API, why is using the token
+  // to query the DB? 
   const decodedReq = endpoints.decodeRequest(v3.Creator.CreatorVideos, req);
   if (decodedReq.type === 'error') {
     return {
@@ -55,19 +83,12 @@ async function byProfile(req) {
 }
 
 async function ogpProxy(req) {
-  const decodedReq = endpoints.decodeRequest(v3.Creator.CreateRecommendation, req);
-  const token = decodedReq.result.headers['x-authorization'];
-  const url = decodedReq.result.body.url;
 
-  const creator = await ycai.getCreatorByToken(token);
-  if (!creator) {
-    return {
-      json: {
-        error: true,
-        message: "Creator doesn't exists",
-      },
-    };
-  }
+  const { creator, decodedReq } = await verifyAuthorization(req, v3.Creator.CreateRecommendation);
+  if(creator.error)
+    return { json: creator };
+
+  const url = decodedReq.result.body.url;
   const exists = await ycai.getRecommendationByURL(url, creator);
   if (exists) {
     debug('Requested OGP to an already acquired URL %s', url);
@@ -106,23 +127,12 @@ const cleanVideoForAPIOutput = (video) => {
 };
 
 async function videoByCreator(req) {
-  // this function should validate req.params.authMaterial
-  const decodedReq = endpoints.decodeRequest(
-    v3.Creator.CreatorVideos,
-    req
-  );
-  if (decodedReq.type === 'error') {
-    return {
-      json: {
-        error: true,
-        details: decodedReq.result,
-      },
-    };
-  }
-  const token = decodedReq.result.headers['x-authorization'];
-  const creator = await ycai.getCreatorByToken(token);
 
-  debug('Querying DB.ytvids for profile [%s]', creator._id);
+  const { creator, decodedReq } = await verifyAuthorization(req, v3.Creator.CreatorVideos);
+  if(creator.error)
+    return {json: creator };
+
+  debug('Querying DB.ytvids for profile [%s]', creator.username);
   const MAXVIDOEL = 100;
   const videos = await ycai.getVideoFromYTprofiles(
     creator,
@@ -141,23 +151,12 @@ async function videoByCreator(req) {
 }
 
 async function oneVideoByCreator(req) {
-  const decodedReq = endpoints.decodeRequest(
-    v3.Creator.OneCreatorVideo,
-    req
-  );
 
-  if (decodedReq.type === 'error') {
-    return {
-      json: {
-        error: true,
-        details: decodedReq.result,
-      },
-    };
-  }
-  const token = decodedReq.result.headers['x-authorization'];
+  const { creator, decodedReq } = await verifyAuthorization(req, v3.Creator.OneCreatorVideo);
+  if(creator.error)
+    return { json: creator };
+
   const videoId = decodedReq.result.params.videoId;
-
-  const creator = await ycai.getCreatorByToken(token);
 
   debug(
     'Querying DB.ytvids to get video with id [%s] for profile [%s]',
@@ -186,22 +185,11 @@ async function oneVideoByCreator(req) {
 }
 
 async function repullByCreator(req) {
-  const decodedReq = endpoints.decodeRequest(
-    v3.Creator.PullCreatorVideos,
-    req
-  );
-  if (decodedReq.type === 'error') {
-    return {
-      json: {
-        error: true,
-        details: decodedReq.result,
-      },
-    };
-  }
-  const token = decodedReq.result.headers['x-authorization'];
-  // debug('repullByCreator token %s', token);
-  const creator = await ycai.getCreatorByToken(token);
-  // debug('repullByCreator %j', creator);
+
+  const { creator } = await verifyAuthorization(req, v3.Creator.PullCreatorVideos);
+  if(creator.error)
+    return { json: creator };
+
   const titlesandId = await curly.recentVideoFetch(creator.channelId);
   debug('Repull caused retrival of %d new videos',
     titlesandId.length);
@@ -232,32 +220,12 @@ async function getRecommendationById(req) {
 }
 
 async function updateVideoRec(req) {
+
+ const { creator, decodedReq } = await verifyAuthorization(req, v3.Creator.UpdateVideo);
+  if(creator.error)
+    return {json: creator };
+
   const update = req.body;
-  const decodedReq = endpoints.decodeRequest(
-    v3.Creator.UpdateVideo,
-    req
-  );
-  if (decodedReq.type === 'error') {
-    return {
-      json: {
-        error: true,
-        details: decodedReq.result
-      },
-    };
-  }
-
-  const creator = await ycai.getCreatorByToken(
-    decodedReq.result.headers['x-authorization']
-  );
-
-  if (!creator) {
-    return {
-      json: {
-        error: true,
-        message: "Creator doesn't exists",
-      },
-    };
-  }
   if (!update.videoId)
     return { json: { error: true, message: 'missing videoId' } };
 
@@ -385,33 +353,13 @@ async function creatorGet(req) {
   // this is the /v3/creator/me query, it looks into
   // 'creators' mongodb collection.
 
-  const decodedReq = endpoints.decodeRequest(
-    v3.Creator.GetCreator,
-    req
-  );
-  if (decodedReq.type === 'error') {
-    return {
-      json: {
-        error: true,
-        details: decodedReq.result,
-      },
-    };
-  }
-  const verificationToken = decodedReq.result.headers['x-authorization'];
-  // const channelId = req.headers.channelId;
-  // if(!channelId && !verificationToken)
-  //   return { json: { error: true, message: "missing channelId or verificationToken in the header"}};
-
-  debug('getCreator by token %s', verificationToken);
-  const infoavail = await ycai.getCreatorByToken(verificationToken);
-  if(infoavail.error) {
-    debug('Invalid token: %s', infoavail);
-    return { json: infoavail };
-  }
+  const { creator }= await verifyAuthorization(req, v3.Creator.GetCreator);
+  if(creator.error)
+    return { json: creator };
 
   const validatedc = endpoints.decodeResponse(v3.Creator.GetCreator, {
-    ...infoavail,
-    registeredOn: infoavail.registeredOn.toISOString(),
+    ...creator,
+    registeredOn: creator.registeredOn.toISOString(),
   });
 
   if (validatedc.type === 'error') {
@@ -427,8 +375,15 @@ async function creatorGet(req) {
 
 async function creatorDelete(req) {
   // this function is invoked when a content creator wants to
-  // delete every data on their belong
-  throw new Error("NYI");
+  // delete every data on their belong,
+  const { creator, decodedReq } = await verifyAuthorization(req, v3.Creator.GetCreator);
+  if(creator.error)
+    return { json: creator };
+
+  const result = await ycai
+    .deleteMaterial(creator, ['recommendations', 'creators', 'tokens', 'ytvids']);
+
+  return { json: result };
 }
 
 async function getCreatorStats(req) {
