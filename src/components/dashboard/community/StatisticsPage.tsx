@@ -91,7 +91,11 @@ const CreatorStatsPage: React.FC<CreatorStatsProps> = ({ profile, stats }) => {
               <CardContent>
                 <DonutChart
                   id="creator-recommendations-score"
-                  title={`${recommendations.recommendabilityScore}%`}
+                  title={`${
+                    recommendations.recommendabilityScore < 10
+                      ? recommendations.recommendabilityScore.toFixed(1)
+                      : recommendations.recommendabilityScore.toFixed(0)
+                  }%`}
                   data={{
                     score: [recommendations.recommendabilityScore],
                     rest: [100 - recommendations.recommendabilityScore],
