@@ -348,16 +348,16 @@ async function main() {
   if (sourceUrl) {
 
     debug("Registering CSV %s as %s", sourceUrl, directiveType);
-    const note = await registerCSV(directiveType)
-    if(note && note.since) {
+    const feedback = await registerCSV(directiveType)
+    if(feedback && feedback.since) {
       debug("CSV %s, experimentId %s exists since %s",
-        note.status, note.experimentId, note.since);
-      console.log(node.experimentId);
+        feedback.status, feedback.experimentId, feedback.since);
+      console.log(feedback.experimentId);
     }
-    else if(note && note.experimentId) {
+    else if(feedback && feedback.experimentId) {
       debug("Directive from CSV created: experimentId %s",
-        note.experimentId);
-      console.log(note.experimentId);
+        feedback.experimentId);
+      console.log(feedback.experimentId);
     }
     else
       console.log("CSV error in upload.");
