@@ -29,16 +29,16 @@ interface VideoCardProps {
 const useStyles = makeStyles<YCAITheme>((theme) => ({
   root: {
     height: '100%',
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'flex-start',
+    '& .MuiCardContent-root': {
+      flexGrow: 1,
+    },
     backgroundColor: theme.palette.grey[300],
-    // '& > button': {
-    //   display: 'flex',
-    //   flexDirection: 'column',
-    //   alignItems: 'flex-start',
-    //   height: '100%',
-    //   '& .MuiCardContent-root': {
-    //     flexGrow: 1,
-    //   },
-    // },
+    '& img:hover': {
+      cursor: 'pointer',
+    }
   },
 }));
 
