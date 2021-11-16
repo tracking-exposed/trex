@@ -1,3 +1,29 @@
+# [1.1.0-beta.9](https://github.com/tracking-exposed/YCAI/compare/v1.1.0-beta.8...v1.1.0-beta.9) (2021-11-16)
+
+
+### Bug Fixes
+
+* injected page reacts to URL changes ([e7f8748](https://github.com/tracking-exposed/YCAI/commit/e7f874864f557b28e8eafaa111ecff1110ba6251))
+* lab titles alignment ([9571cb8](https://github.com/tracking-exposed/YCAI/commit/9571cb873bc16afa3022367a57fbcd621c8b197d))
+* list all api with version in settings ([eca84f7](https://github.com/tracking-exposed/YCAI/commit/eca84f7586c3478f3e8c6d1ff0f13fd48c44f25d))
+* more intuitive drag and drop ([#134](https://github.com/tracking-exposed/YCAI/issues/134)) ([06c60ea](https://github.com/tracking-exposed/YCAI/commit/06c60eaa5abe79cd7367c176b7e89bd84e231e5b))
+* recommendability score fixed decimals ([4e84d10](https://github.com/tracking-exposed/YCAI/commit/4e84d10b7a9b43bbdc9ef9b57ca5fc84836643e5))
+* renamed VideoRecommendationsEdit ([6b6a9c1](https://github.com/tracking-exposed/YCAI/commit/6b6a9c1362f346cbb76d4fa65f8a7e053ed74484))
+* restore link in YT video component ([34832f8](https://github.com/tracking-exposed/YCAI/commit/34832f84dab91600bb22ddb199850c29235a11de))
+* show a proper error when access token is not valid, closes [#129](https://github.com/tracking-exposed/YCAI/issues/129) ([572d003](https://github.com/tracking-exposed/YCAI/commit/572d00376654461c1bb6ed77544c452380ea24e5))
+* simpler, more legible 2nd step ([5f9dc33](https://github.com/tracking-exposed/YCAI/commit/5f9dc33b98c846dde3e49221b17b3024bef50a17))
+* styling of lab edit page ([0c78213](https://github.com/tracking-exposed/YCAI/commit/0c78213deeb7c43927ae730959af12ad5e7f833c))
+* video card clickable areas ([2cb689e](https://github.com/tracking-exposed/YCAI/commit/2cb689eb1cbe32c109ca9c467df16e23b9d5d85e))
+
+
+### Features
+
+* added link to video on lab edit page ([5a03674](https://github.com/tracking-exposed/YCAI/commit/5a03674ac1fd8b4eaa12de2049376ca916e9e6d6))
+* defined creator adv stats box ([31d6363](https://github.com/tracking-exposed/YCAI/commit/31d63633a81659a4f026526aa9afd623c88cc401))
+* improved display of injected cards ([#131](https://github.com/tracking-exposed/YCAI/issues/131)) ([ea5106d](https://github.com/tracking-exposed/YCAI/commit/ea5106db2e75a83772d71810aa1acd3fb2797d27))
+* lab edit page figma conformity ([a2cd726](https://github.com/tracking-exposed/YCAI/commit/a2cd726d6fa549a7ae7752a4f65a7c5e57b33d25))
+* theme improvement by [@ascariandrea](https://github.com/ascariandrea) ([e919897](https://github.com/tracking-exposed/YCAI/commit/e919897628f34af18f904f004ce294d64ce6d588))
+
 # [1.1.0-beta.8](https://github.com/tracking-exposed/YCAI/compare/v1.1.0-beta.7...v1.1.0-beta.8) (2021-11-15)
 
 
