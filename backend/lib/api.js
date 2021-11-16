@@ -57,20 +57,16 @@ const apiList = {
     /** emails */
     registerEmail:       require('../routes/emails').registerEmail,
 
-    /* guardoni support */
+    /* guardoni support for webapp */
+    getAllExperiments:   require('../routes/experiments').list,
     experimentCSV:       require('../routes/experiments').csv,
     experimentDOT:       require('../routes/experiments').dot,
     experimentJSON:      require('../routes/experiments').json,
-    experimentOpening:   require('../routes/experiments').opening,
-
     // used from extension
     experimentChannel3:  require('../routes/experiments').channel3,
     // used by guardoni to close it
     concludeExperiment3: require('../routes/experiments').conclude3,
 
-    getAllExperiments:   require('../routes/experiments').list,
-    // guardoniGenerate:    require('../routes/experiments').guardoniGenerate,
-    // guardoniConfigure:   require('../routes/experiments').guardoniConfigure,
 
     recordAnswers:       require('../routes/answers').recordAnswers,
     retrieveAnswers:     require('../routes/answers').retrieveAnswers,
