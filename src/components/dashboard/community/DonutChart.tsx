@@ -18,9 +18,9 @@ const useStyles = makeStyles<YCAITheme>((theme) => ({
     fontSize: theme.typography.h5.fontSize,
     color: theme.palette.primary.main,
     '& .c3-chart-arcs > .c3-chart-arcs-title': {
-      fontFamily: theme.typography.h1.fontFamily,
+      fontFamily: theme.typography.h3.fontFamily,
       fontWeight: 600,
-      fontSize: theme.typography.h1.fontSize,
+      fontSize: theme.typography.h3.fontSize,
       color: theme.palette.primary.main,
     },
   },

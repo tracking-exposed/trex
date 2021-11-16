@@ -11,6 +11,10 @@ import {
   Typography,
 } from '@material-ui/core';
 
+import {
+  Add as AddIcon,
+} from '@material-ui/icons';
+
 import { makeStyles } from '@material-ui/styles';
 
 import { addRecommendationForVideo } from '../../../state/creator.commands';
@@ -22,14 +26,22 @@ interface AddRecommendationBoxProps {
 
 const useStyles = makeStyles<YCAITheme>(theme => ({
   root: {
-    border: `2px dashed ${theme.palette.secondary.main}`,
-    boxShadow: 'none',
+    backgroundColor: theme.palette.grey[300],
   },
   textField: {
+    backgroundColor: theme.palette.background.default,
     flexGrow: 1,
+    '& .MuiFormHelperText-root': {
+      backgroundColor: theme.palette.grey[300],
+    },
+    '& textarea': {
+      color: theme.palette.text.secondary,
+    }
   },
   addButton: {
     marginLeft: theme.spacing(2),
+    color: theme.palette.common.black,
+    fontWeight: theme.typography.fontWeightBold,
   },
 }));
 
@@ -50,8 +62,13 @@ const AddRecommendationBox: React.FC<AddRecommendationBoxProps> = ({ videoId }) 
   return (
       <Card className={classes.root}>
         <CardContent>
-          <Typography component="h2" variant="h5" color="secondary">
+          <Typography
+            color="textSecondary"
+            component="h2"
+            variant="h5"
+          >
             {t('recommendations:add_to_video')}
+            <AddIcon fontSize="large"/>
           </Typography>
           <Box display="flex" alignItems="center">
             <TextField
@@ -62,12 +79,12 @@ const AddRecommendationBox: React.FC<AddRecommendationBoxProps> = ({ videoId }) 
               multiline
               value={recommendationURL}
               onChange={(v) => setRecommendationURL(v.target.value)}
-              color="secondary"
+              color="primary"
             />
             <Button
               className={classes.addButton}
               variant="contained"
-              color="secondary"
+              color="primary"
               onClick={onAddClick}
             >
               {t('actions:add')}

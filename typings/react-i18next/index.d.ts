@@ -20,7 +20,6 @@ declare module 'react-i18next' {
         importVideos: string;
         addToCurrentVideo: string;
         next: string;
-        removeFromCurrentVideo: string;
         compare: string;
         related: string;
         link_channel: string;
@@ -37,6 +36,9 @@ declare module 'react-i18next' {
         edit_access_token: string;
         download_access_token: string;
         download: string;
+        move_recommendation_up: string;
+        move_recommendation_down: string;
+        remove_recommendation_from_video: string;
       };
       account: {
         channel: string;

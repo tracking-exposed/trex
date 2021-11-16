@@ -4,6 +4,7 @@ import {
   Button,
   FormControl,
   FormGroup,
+  FormHelperText,
   Grid,
   IconButton,
   Input,
@@ -16,6 +17,7 @@ import CloudDownload from '@material-ui/icons/CloudDownload';
 import VisibilityIcon from '@material-ui/icons/Visibility';
 import VisibilityOffIcon from '@material-ui/icons/VisibilityOff';
 import * as E from 'fp-ts/lib/Either';
+import { APIError } from 'providers/api.provider';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
 import { assignAccessToken } from '../../../state/creator.commands';
@@ -39,6 +41,9 @@ export const AccessTokenBox: React.FC<AccessTokenBoxProps> = ({ profile }) => {
 
   const [token, setToken] = React.useState(profile?.accessToken ?? '');
   const [authTokenVisible, setAuthTokenVisible] = React.useState(token === '');
+  const [error, setError] = React.useState<
+    APIError | chrome.runtime.LastError | null
+  >(null);
 
   const classes = useStyles();
 
@@ -47,7 +52,7 @@ export const AccessTokenBox: React.FC<AccessTokenBoxProps> = ({ profile }) => {
 
   return (
     <Box className={classes.root} style={{ width: '100%' }}>
-      <Typography variant="h4">{t('settings:access_token_title')}</Typography>
+      <Typography color="textPrimary" variant="h5">{t('settings:access_token_title')}</Typography>
       <FormGroup row={true}>
         <Grid
           container
@@ -91,13 +96,16 @@ export const AccessTokenBox: React.FC<AccessTokenBoxProps> = ({ profile }) => {
                   ) : null
                 }
               />
+              {error !== null ? (
+                <FormHelperText error={true}>{error.message}</FormHelperText>
+              ) : null}
             </FormControl>
           </Grid>
           <Grid item xs={3}>
             {profile?.accessToken !== undefined ? (
               <Button
                 color="secondary"
-                variant="outlined"
+                variant="contained"
                 size="small"
                 startIcon={<CloudDownload />}
                 onClick={() => {
@@ -115,17 +123,24 @@ export const AccessTokenBox: React.FC<AccessTokenBoxProps> = ({ profile }) => {
         <Grid container spacing={2}>
           <Grid item>
             <Button
-              variant="outlined"
+              variant="contained"
               color="secondary"
               size="small"
               onClick={() => {
-                void assignAccessToken({ token })().then((c) => {
-                  if (E.isRight(c)) {
-                    if (c.right !== null) {
-                      setAuthTokenVisible(false);
+                setError(null);
+                if (authTokenVisible) {
+                  void assignAccessToken({ token })().then((c) => {
+                    if (E.isLeft(c)) {
+                      setError(c.left);
+                    } else if (E.isRight(c)) {
+                      if (c.right !== null) {
+                        setAuthTokenVisible(!authTokenVisible);
+                      }
                     }
-                  }
-                });
+                  });
+                } else {
+                  setAuthTokenVisible(true);
+                }
               }}
             >
               {t('actions:edit_access_token')}
@@ -134,13 +149,14 @@ export const AccessTokenBox: React.FC<AccessTokenBoxProps> = ({ profile }) => {
           <Grid item>
             {profile?.accessToken !== undefined ? (
               <Button
-                variant="outlined"
+                variant="contained"
                 color="primary"
                 size="small"
                 onClick={() => {
                   void deleteProfile({})().then(() => {
                     setToken('');
                     setAuthTokenVisible(true);
+                    setError(null);
                   });
                 }}
               >

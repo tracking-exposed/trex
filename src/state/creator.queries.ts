@@ -107,17 +107,14 @@ export const creatorVideos = compose(
 export const oneCreatorVideo = compose(
   product({
     profile: requiredLocalProfile,
-    params: param<{ videoId: string }>()
-}),
-  queryShallow(
-    ({ profile, params }): TE.TaskEither<Error, Video> => {
-      return API.v3.Creator.OneCreatorVideo({
-        Headers: { 'x-authorization': profile.accessToken },
-        Params: { videoId: params.videoId },
-      });
-    },
-    available
-  ),
+    params: param<{ videoId: string }>(),
+  }),
+  queryShallow(({ profile, params }): TE.TaskEither<Error, Video> => {
+    return API.v3.Creator.OneCreatorVideo({
+      Headers: { 'x-authorization': profile.accessToken },
+      Params: { videoId: params.videoId },
+    });
+  }, available)
 );
 
 export const ccRelatedUsers = compose(
@@ -150,6 +147,17 @@ export const creatorStats = compose(
   queryStrict(({ profile }) => {
     return pipe(
       API.v3.Creator.GetCreatorStats({
+        Params: { channelId: profile.channelId },
+      })
+    );
+  }, available)
+);
+
+export const creatorADVStats = compose(
+  product({ profile: requiredLocalProfile }),
+  queryStrict(({ profile }) => {
+    return pipe(
+      API.v2.Public.GetChannelADVStats({
         Params: { channelId: profile.channelId },
       })
     );

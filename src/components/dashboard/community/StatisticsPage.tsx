@@ -20,6 +20,7 @@ import { ErrorBox } from '../../common/ErrorBox';
 import { LazyFullSizeLoader } from '../../common/FullSizeLoader';
 import { LinkAccountButton } from '../../common/LinkAccountButton';
 import { StatsCard } from '../../common/StatsCard';
+import { ADVChannelStatsBox } from './ADVChannelStatsBox';
 import { CCRelatedUserList } from './CCRelatedUserList';
 import { DonutChart } from './DonutChart';
 
@@ -90,7 +91,11 @@ const CreatorStatsPage: React.FC<CreatorStatsProps> = ({ profile, stats }) => {
               <CardContent>
                 <DonutChart
                   id="creator-recommendations-score"
-                  title={`${recommendations.recommendabilityScore}%`}
+                  title={`${
+                    recommendations.recommendabilityScore < 10
+                      ? recommendations.recommendabilityScore.toFixed(1)
+                      : recommendations.recommendabilityScore.toFixed(0)
+                  }%`}
                   data={{
                     score: [recommendations.recommendabilityScore],
                     rest: [100 - recommendations.recommendabilityScore],
@@ -145,6 +150,7 @@ const CreatorStatsPage: React.FC<CreatorStatsProps> = ({ profile, stats }) => {
             <Typography variant="h5">
               {t('statistics:advertising_connected_to_your_videos')}
             </Typography>
+            <ADVChannelStatsBox />
           </Grid>
         </Grid>
       )}

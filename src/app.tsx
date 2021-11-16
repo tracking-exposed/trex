@@ -1,7 +1,7 @@
 import './i18n';
 import './resources/global.css';
 import { YTContributionInfoBox } from './components/injected/YTContributionInfoBox';
-import { pipe } from 'fp-ts/lib/pipeable';
+import { pipe } from 'fp-ts/lib/function';
 import * as TE from 'fp-ts/lib/TaskEither';
 import { debounce } from 'lodash';
 import * as React from 'react';
