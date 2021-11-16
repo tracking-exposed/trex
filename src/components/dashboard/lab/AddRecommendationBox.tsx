@@ -22,15 +22,16 @@ interface AddRecommendationBoxProps {
 
 const useStyles = makeStyles<YCAITheme>(theme => ({
   root: {
-    border: `2px dashed ${theme.palette.secondary.main}`,
-    boxShadow: 'none',
-    backgroundColor: "transparent"
+    backgroundColor: theme.palette.grey[300],
   },
   textField: {
+    backgroundColor: theme.palette.background.default,
     flexGrow: 1,
   },
   addButton: {
     marginLeft: theme.spacing(2),
+    color: theme.palette.common.black,
+    fontWeight: theme.typography.fontWeightBold,
   },
 }));
 
@@ -51,7 +52,11 @@ const AddRecommendationBox: React.FC<AddRecommendationBoxProps> = ({ videoId }) 
   return (
       <Card className={classes.root}>
         <CardContent>
-          <Typography component="h2" variant="h5" color="secondary">
+          <Typography
+            color="textSecondary"
+            component="h2"
+            variant="h5"
+          >
             {t('recommendations:add_to_video')}
           </Typography>
           <Box display="flex" alignItems="center">
@@ -68,7 +73,7 @@ const AddRecommendationBox: React.FC<AddRecommendationBoxProps> = ({ videoId }) 
             <Button
               className={classes.addButton}
               variant="contained"
-              color="secondary"
+              color="primary"
               onClick={onAddClick}
             >
               {t('actions:add')}

@@ -27,6 +27,7 @@ const useStyles = makeStyles<YCAITheme>((theme) => ({
   root: {
     height: 120,
     overflow: 'hidden',
+    backgroundColor: theme.palette.grey[300],
   },
   imageContainer: {
     '& img': {
@@ -39,7 +40,8 @@ const useStyles = makeStyles<YCAITheme>((theme) => ({
     textAlign: 'right',
   },
   title: {
-    fontSize: '1rem',
+    fontWeight: 'bold',
+    fontSize: '1rem'
   }
 }));
 
@@ -53,7 +55,7 @@ export const RecommendationCard: React.FC<RecommendationCardProps> = ({
   return (
     <Card className={classes.root}>
       <Grid container spacing={1}>
-        <Grid item xs={4}>
+        <Grid item xs={5}>
           <div className={classes.imageContainer}>
             <Image
               src={data.image}
@@ -61,9 +63,16 @@ export const RecommendationCard: React.FC<RecommendationCardProps> = ({
             />
           </div>
         </Grid>
-        <Grid item xs={6}>
-          <Typography gutterBottom variant="h6" component="h4" className={classes.title}>
+        <Grid item xs={5}>
+          <Typography
+            className={classes.title}
+            color="textSecondary"
+            component="h4"
+            gutterBottom
+            variant="h6"
+          >
             {data.title}
+
           </Typography>
           <Typography variant="body2" color="textSecondary" component="small">
             {data.description}

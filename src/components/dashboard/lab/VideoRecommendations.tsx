@@ -32,30 +32,6 @@ interface VideoRecommendationsProps extends Queries {
 }
 
 const useStyles = makeStyles<YCAITheme>(theme => ({
-  root: {
-    border: `2px dashed ${theme.palette.primary.main}`,
-    borderRadius: 2 * theme.shape.borderRadius,
-    padding: theme.spacing(1),
-    paddingTop: theme.spacing(4),
-    position: 'relative'
-  },
-  header: {
-    position: 'absolute',
-    left: 0,
-    right: 0,
-    top: '-1.75rem',
-    textAlign: 'center',
-  },
-  headerSpan: {
-    backgroundColor: theme.palette.background.default,
-    display: 'inline-block',
-    maxWidth: '70%',
-    paddingLeft: theme.spacing(2),
-    paddingRight: theme.spacing(2),
-    '& > *': {
-      margin: 0,
-    }
-  },
   empty: {
     textAlign: 'center',
   }
@@ -127,18 +103,14 @@ export const VideoRecommendations = withQueries<VideoRecommendationsProps>(
           );
 
           return (
-            <Box className={classes.root}>
-              <div className={classes.header}>
-                <span className={classes.headerSpan}>
-                  <Typography
-                    color="primary"
-                    component="h6"
-                    variant="h5"
-                  >
-                    {t('actions:drag_drop_recommendations')}
-                  </Typography>
-                </span>
-              </div>
+            <Box>
+              <Typography
+                color="textSecondary"
+                component="h2"
+                variant="h5"
+              >
+                {t('actions:drag_drop_recommendations')}
+              </Typography>
               {recElement}
             </Box>
           );
