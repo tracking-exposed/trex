@@ -8,11 +8,10 @@ import {
   LazyFullSizeLoader,
 } from 'components/common/FullSizeLoader';
 import { TabPanel } from 'components/common/TabPanel';
-import { pipe } from 'fp-ts/lib/pipeable';
+import { pipe } from 'fp-ts/lib/function';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
-import { refreshSettings } from 'state/public.commands';
-import * as publicQueries from 'state/public.queries';
+import { settingsRefetch } from 'state/public.queries';
 import { GetLogger } from 'utils/logger.utils';
 import { getVideoId } from 'utils/yt.utils';
 import { Tab } from '../common/Tab';
@@ -35,9 +34,7 @@ const useStyles = makeStyles(() => ({
   },
 }));
 
-let checkURLInterval: number = 0;
-
-const withQueries = declareQueries({ settings: publicQueries.settingsRefetch });
+const withQueries = declareQueries({ settings: settingsRefetch });
 
 export const YTVideoPage = withQueries(
   ({ queries }): React.ReactElement | null => {
@@ -79,30 +76,25 @@ export const YTVideoPage = withQueries(
         }, []);
 
         React.useEffect(() => {
-          logger.debug('Mounting component at url %s', window.location.href);
           patchYTRecommendations(currentTab);
-          checkURLInterval = window.setInterval(() => {
-            logger.debug('Video recommendations interval...');
-            void refreshSettings({})().then(() => {
-              logger.debug('Settings refreshed...');
-              const newVideoId = getVideoId(document.location.href);
-              if (currentVideoId !== newVideoId) {
-                logger.debug(
-                  'Video id changed from (%s) to (%s)',
-                  currentVideoId,
-                  newVideoId
-                );
 
-                setVideoId(newVideoId);
-              }
-            });
-          }, 3000);
+          const observer = new MutationObserver(() => {
+            const newVideoId = getVideoId(document.location.href);
+            if (newVideoId !== currentVideoId) {
+              logger.debug(
+                'Video id changed from (%s) to (%s)',
+                currentVideoId,
+                newVideoId
+              );
+              setVideoId(newVideoId);
+            }
+          });
 
-          return () => {
-            logger.debug('Clearing interval %o', checkURLInterval);
-            patchYTRecommendations(2);
-            window.clearInterval(checkURLInterval);
-          };
+          observer.observe(document, { childList: true, subtree: true });
+
+          return (() => {
+            observer.disconnect();
+          });
         }, [currentVideoId]);
 
         React.useEffect(() => {

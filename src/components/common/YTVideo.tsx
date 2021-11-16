@@ -6,11 +6,14 @@ import {
   Card,
   CardContent,
   CardMedia,
-  Typography
+  Link,
 } from '@material-ui/core';
 
 import { ErrorBox } from '../common/ErrorBox';
-import { getYTMaxResThumbnailById } from '../../utils/yt.utils';
+import {
+  getYTMaxResThumbnailById,
+  getYTVideoURLById,
+} from '../../utils/yt.utils';
 import { LazyFullSizeLoader } from './FullSizeLoader';
 import { oneCreatorVideo } from 'state/creator.queries';
 
@@ -30,9 +33,16 @@ export const YTVideo: React.FC<YTVideoProps> = ({ videoId }) =>
             title={video.title}
         />
         <CardContent>
-          <Typography variant="subtitle1">
+          <Link
+            color="textPrimary"
+            href={getYTVideoURLById(videoId)}
+            rel="noreferrer"
+            target="_blank"
+            underline="none"
+            variant="subtitle1"
+          >
             {video.title}
-          </Typography>
+          </Link>
         </CardContent>
       </Card>
     ))}

@@ -7,10 +7,10 @@ import { pipe } from 'fp-ts/lib/function';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { pullContentCreatorVideos } from 'state/creator.commands';
-import { creatorVideos } from '../../state/creator.queries';
-import { ErrorBox } from '../common/ErrorBox';
-import { LazyFullSizeLoader } from '../common/FullSizeLoader';
-import { VideoCard } from './lab/VideoCard';
+import { creatorVideos } from '../../../state/creator.queries';
+import { ErrorBox } from '../../common/ErrorBox';
+import { LazyFullSizeLoader } from '../../common/FullSizeLoader';
+import { VideoCard } from './VideoCard';
 
 const withQueries = declareQueries({ videos: creatorVideos });
 
