@@ -108,48 +108,49 @@ export const updateRecommendationForVideo = command(
 export const addRecommendationForVideo = command(
   ({
     videoId,
-    recommendationURL
+    recommendationURL,
   }: {
-    videoId: string
-    recommendationURL: string
+    videoId: string;
+    recommendationURL: string;
   }) =>
     pipe(
       profile.run(),
-      TE.chain((p) => sequenceS(TE.ApplicativePar)({
-        video: API.v3.Creator.OneCreatorVideo({
-          Headers: {
-            'x-authorization': p.accessToken,
-          },
-          Params: { videoId }
-        }),
-        recommendation: API.v3.Creator.CreateRecommendation({
-          Headers: {
-            'x-authorization': p.accessToken,
-          },
-          Body: { url: recommendationURL }
+      TE.chain((p) =>
+        sequenceS(TE.ApplicativePar)({
+          video: API.v3.Creator.OneCreatorVideo({
+            Headers: {
+              'x-authorization': p.accessToken,
+            },
+            Params: { videoId },
+          }),
+          recommendation: API.v3.Creator.CreateRecommendation({
+            Headers: {
+              'x-authorization': p.accessToken,
+            },
+            Body: { url: recommendationURL },
+          }),
         })
-      })),
-      TE.chain(({
-        video,
-        recommendation,
-      }) => {
+      ),
+      TE.chain(({ video, recommendation }) => {
         if (
           // eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
-          video.recommendations.includes(
-            recommendation.urlId
-          )
+          video.recommendations.includes(recommendation.urlId)
         ) {
           return TE.right(video);
         }
 
-        return updateRecommendationForVideo({
-          videoId,
-          recommendations: video.recommendations.concat(recommendation.urlId),
-        }, {
-          videoRecommendations: { videoId }
-        });
+        return updateRecommendationForVideo(
+          {
+            videoId,
+            recommendations: video.recommendations.concat(recommendation.urlId),
+          },
+          {
+            videoRecommendations: { videoId },
+          }
+        );
       })
-    ), {
+    ),
+  {
     videoRecommendations,
   }
 );
@@ -187,7 +188,7 @@ export const assignAccessToken = command(
         const isNotFoundError =
           e.message === 'Request failed with status code 500';
         if (isNotFoundError) {
-          return TE.right(null);
+          return TE.left({ message: 'The given access token is not valid.' });
         }
         return TE.left(e);
       }),
