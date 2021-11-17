@@ -106,7 +106,7 @@ export const Messages = MessagesAPI({
     response: t.union([Settings, t.null]),
   },
   [UpdateSettings.value]: {
-    payload: Settings,
+    payload: t.union([Settings, t.null]),
     response: Settings,
   },
   // content creator auth

@@ -30,7 +30,6 @@ export const Settings = t.strict(
     videorep: t.boolean,
     playhide: t.boolean,
     alphabeth: t.boolean,
-    ux: t.boolean,
     edit: t.union([Video, t.null]),
   },
   'AccountSettings'
@@ -42,7 +41,6 @@ export const getDefaultSettings = (): Settings => ({
   svg: false,
   videorep: true,
   playhide: false,
-  ux: false,
   communityRecommendations: false,
   alphabeth: false,
   independentContributions: null,

@@ -100,7 +100,7 @@ export const sendAPIMessage =
           }),
         E.toError
       ),
-      TE.chain(v => TE.fromEither(catchRuntimeLastError(v))),
+      TE.chain((v) => TE.fromEither(catchRuntimeLastError(v))),
       TE.chain((result) => {
         log.debug('Response for %s received %O', staticPath, result);
         if (result.type === ErrorOccurred.value) {
@@ -108,5 +108,32 @@ export const sendAPIMessage =
         }
         return TE.right(result.response);
       })
+    );
+  };
+
+export const sendTabMessage =
+  <M extends Messages[keyof Messages]>(r: M) =>
+  (
+    p?: M['Request']['payload']
+  ): TE.TaskEither<chrome.runtime.LastError, M['Response']['response']> => {
+    return pipe(
+      TE.tryCatch(() => {
+        return new Promise<any>((resolve, reject) => {
+          bo.tabs.query({ active: true, currentWindow: true }, function (tabs) {
+            if (tabs[0].id !== undefined) {
+              log.debug('Sending message to tab %s with payload %O', r.Request.type, p);
+              return bo.tabs.sendMessage<M['Request'], M['Response']>(
+                tabs[0].id,
+                { type: r.Request.type, payload: p },
+                function (response) {
+                  resolve(response);
+                }
+              );
+            }
+            reject(new Error('No active tab to send message to.'));
+          });
+        });
+      }, E.toError),
+      TE.chain((e) => TE.fromEither(catchRuntimeLastError(e)))
     );
   };

@@ -1,7 +1,7 @@
 import * as Endpoints from '@backend/endpoints';
 import {
   ADVContributionEvent,
-  VideoContributionEvent,
+  VideoContributionEvent
 } from '@backend/models/ContributionEvent';
 import { differenceInSeconds } from 'date-fns';
 import { pipe } from 'fp-ts/lib/function';
@@ -31,7 +31,7 @@ const consideredURLs = {
 };
 
 export type ContributionState =
-  | { type: 'checking' }
+  | { type: 'idle' }
   | { type: 'video-wait' }
   | { type: 'video-seen' }
   | { type: 'video-sent' }
@@ -138,11 +138,13 @@ let leavesCache: Record<string, any> = {};
 
 let collectDataTimer: any;
 let flushInterval: any;
+let isRunning = false;
 
 const clearCache = (): void => {
   leavesCache = {};
   lastObservedSize = 1;
 };
+
 
 function watch(
   root: Document,
@@ -302,6 +304,8 @@ function manageNodes(
     selected.style.border = `${stroke} solid ${color}`;
     selected.setAttribute(selectorName, 'true');
     selected.setAttribute('yttrex', '1');
+  } else {
+    selected.style.border = "none";
   }
 
   // if escalation to parents, highlight with different color
@@ -386,6 +390,11 @@ const boot = (
   keypair: Keypair,
   setState: SetState
 ): void => {
+  if (isRunning) {
+    ddLogger.debug('Already running, returning...');
+    return;
+  }
+  isRunning = true;
   // this get executed on pornhub.com and it is the start of potrex extension
   ddLogger.debug('Version %s', config.REACT_APP_VERSION);
 
@@ -512,6 +521,8 @@ const clear = (keypair: Keypair): void => {
   clearCache();
   clearInterval(flushInterval);
   clearInterval(collectDataTimer);
+  isRunning = false;
+  ddLogger.debug(`Cleared all cache and timers.`);
 };
 
 export { boot, flush, clear };
