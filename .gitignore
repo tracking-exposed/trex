@@ -19,6 +19,7 @@ methodology/profiles/*
 methodology/executions/*
 methodology/experiments/*
 methodology/extension/*
+methodology/screenshots/*
 
 backend/dump
 backend/experiments/*
