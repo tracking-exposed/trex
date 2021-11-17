@@ -1,3 +1,11 @@
+## [1.1.1-beta.1](https://github.com/tracking-exposed/YCAI/compare/v1.1.0...v1.1.1-beta.1) (2021-11-17)
+
+
+### Bug Fixes
+
+* logo studio update ([1c3c65f](https://github.com/tracking-exposed/YCAI/commit/1c3c65f14b4c63998cf703aa6219ddc57028660e))
+* update submodule and stop using urlId in lab ([#138](https://github.com/tracking-exposed/YCAI/issues/138)) ([6236706](https://github.com/tracking-exposed/YCAI/commit/62367066e40f06a8ce09250b20bc006031a8754f))
+
 # [1.1.0](https://github.com/tracking-exposed/YCAI/compare/v1.0.0...v1.1.0) (2021-11-16)
 
 
