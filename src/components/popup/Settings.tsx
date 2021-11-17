@@ -1,4 +1,6 @@
 import {
+  Box,
+  Button,
   Divider,
   FormControl,
   FormControlLabel,
@@ -145,7 +147,7 @@ const Settings: React.FC<SettingsProps> = ({ settings }) => {
           labelPlacement="end"
         />
         {settings.independentContributions !== null ? (
-          <FormControl style={{ paddingLeft: 60 }}>
+          <FormControl style={{ paddingLeft: 80 }}>
             <FormControlLabel
               control={
                 <Switch
@@ -178,6 +180,17 @@ const Settings: React.FC<SettingsProps> = ({ settings }) => {
                 </FormLabel>
               }
             />
+            <Box>
+              <Button
+                color="primary"
+                variant="outlined"
+                size="small"
+                href="/index.html?path=/settings/"
+                target="_blank"
+              >
+                {t('actions:manage_tokens')}
+              </Button>
+            </Box>
           </FormControl>
         ) : null}
       </FormControl>

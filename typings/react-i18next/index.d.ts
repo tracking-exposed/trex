@@ -39,6 +39,7 @@ declare module 'react-i18next' {
         move_recommendation_up: string;
         move_recommendation_down: string;
         remove_recommendation_from_video: string;
+        manage_tokens: string;
       };
       account: {
         channel: string;

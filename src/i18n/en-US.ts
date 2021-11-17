@@ -38,6 +38,7 @@ const resources: CustomTypeOptions['resources'] = {
     move_recommendation_up: 'Move recommendation up',
     move_recommendation_down: 'Move recommendation down',
     remove_recommendation_from_video: 'Remove from current video',
+    manage_tokens: 'Manage tokens',
   },
   routes: {
     lab_title: 'LAB - Recommend on your videos',
