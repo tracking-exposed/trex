@@ -99,6 +99,8 @@ declare module 'react-i18next' {
         communityRecommendationsHint: string;
         contributeToIndependentStatsLabel: string;
         contributeToIndependentStatsHint: string;
+        contributeToIndependentStatsShowUILabel: string;
+        contributeToIndependentStatsShowUIHint: string;
         api_list_title: string;
         encrypted_contributions_private_key: string;
         keypair_title: string;

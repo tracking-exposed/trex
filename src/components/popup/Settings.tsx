@@ -1,15 +1,14 @@
-import * as React from 'react';
 import {
-  Box,
-  Button,
   Divider,
-  FormLabel,
-  Typography,
-  Switch,
-  makeStyles,
   FormControl,
   FormControlLabel,
+  FormLabel,
+  makeStyles,
+  Switch,
+  Typography,
+  useTheme,
 } from '@material-ui/core';
+import * as React from 'react';
 import { useTranslation } from 'react-i18next';
 import * as models from '../../models';
 import { generateKeypair, updateSettings } from '../../state/public.commands';
@@ -39,6 +38,7 @@ interface SettingsProps {
 const Settings: React.FC<SettingsProps> = ({ settings }) => {
   const { t } = useTranslation();
   const classes = useStyles();
+  const theme = useTheme();
 
   return (
     <>
@@ -114,7 +114,7 @@ const Settings: React.FC<SettingsProps> = ({ settings }) => {
               className={classes.marginRight}
               aria-labelledby="switch-independentContributions"
               color="primary"
-              checked={settings.independentContributions}
+              checked={settings.independentContributions !== null}
               onChange={(e, independentContributions) => {
                 if (independentContributions) {
                   void generateKeypair({})();
@@ -122,7 +122,11 @@ const Settings: React.FC<SettingsProps> = ({ settings }) => {
 
                 void updateSettings({
                   ...settings,
-                  independentContributions,
+                  independentContributions: independentContributions
+                    ? {
+                        showUI: false,
+                      }
+                    : null,
                 })();
               }}
             />
@@ -136,20 +140,46 @@ const Settings: React.FC<SettingsProps> = ({ settings }) => {
                 {t('settings:contributeToIndependentStatsHint')}
               </Typography>
               <br />
-              {settings.independentContributions ? (
-                <Box>
-                  <Typography color="primary" variant="body2">
-                    {t('settings:encrypted_contributions_private_key')}
-                  </Typography>
-                  <Button href="/index.html?path=/settings/" target="_blank">
-                    Manage tokens
-                  </Button>
-                </Box>
-              ) : null}
             </FormLabel>
           }
           labelPlacement="end"
         />
+        {settings.independentContributions !== null ? (
+          <FormControl style={{ paddingLeft: 60 }}>
+            <FormControlLabel
+              control={
+                <Switch
+                  size="small"
+                  aria-labelledby="switch-independentContributions-showUI"
+                  color="primary"
+                  checked={settings.independentContributions.showUI}
+                  onChange={(e, showUI) => {
+                    void updateSettings({
+                      ...settings,
+                      independentContributions: {
+                        showUI,
+                      },
+                    })();
+                  }}
+                />
+              }
+              label={
+                <FormLabel>
+                  <Typography
+                    variant="subtitle1"
+                    style={{ marginBottom: theme.spacing(2) }}
+                  >
+                    {t('settings:contributeToIndependentStatsShowUILabel')}
+                  </Typography>
+                  <Typography variant="body2" display="block">
+                    {t('settings:contributeToIndependentStatsShowUIHint')}
+                  </Typography>
+                  <br />
+                </FormLabel>
+              }
+            />
+          </FormControl>
+        ) : null}
       </FormControl>
     </>
   );

@@ -31,7 +31,7 @@ const Settings = withQueries(({ queries }): React.ReactElement => {
               <AccessTokenBox profile={profile} />
             </Grid>
           </Grid>
-          {keypair !== undefined && settings.independentContributions ? (
+          {keypair !== undefined && (settings.independentContributions !== null) ? (
             <KeypairBox keypair={keypair} settings={settings} />
           ) : null}
 

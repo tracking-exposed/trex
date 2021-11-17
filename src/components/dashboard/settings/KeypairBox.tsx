@@ -180,7 +180,7 @@ export const KeypairBox: React.FC<KeypairBoxProps> = ({
                   void deleteKeypair({})();
                   void updateSettings({
                     ...settings,
-                    independentContributions: false,
+                    independentContributions: null,
                   })();
                 }}
               >

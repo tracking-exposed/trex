@@ -59,44 +59,67 @@ const observers: MutationObserver[] = [];
 const watchedPaths = {
   banner: {
     selector: '.video-ads.ytp-ad-module',
-    parents: 4, color: 'blue' },
+    parents: 4,
+    color: 'blue',
+  },
   ad: {
     selector: '.ytp-ad-player-overlay',
-    parents: 4, color: 'darkblue' },
+    parents: 4,
+    color: 'darkblue',
+  },
   overlay: {
     selector: '.ytp-ad-player-overlay-instream-info',
-    parents: 4, color: 'lightblue' },
+    parents: 4,
+    color: 'lightblue',
+  },
   toprightad: {
     selector: 'ytd-promoted-sparkles-web-renderer',
-    parents: 3, color: 'aliceblue' },
+    parents: 3,
+    color: 'aliceblue',
+  },
   toprightpict: {
     selector: '.ytd-action-companion-ad-renderer',
-    parents: 2, color: 'azure' },
+    parents: 2,
+    color: 'azure',
+  },
   toprightcta: {
     selector: '.sparkles-light-cta',
-    parents: 1, color: 'violetblue' },
+    parents: 1,
+    color: 'violetblue',
+  },
   toprightattr: {
     selector: '[data-google-av-cxn]',
-    color: 'deeppink' },
+    color: 'deeppink',
+  },
   adbadge: {
     selector: '#ad-badge',
-    parents: 4, color: 'deepskyblue' },
+    parents: 4,
+    color: 'deepskyblue',
+  },
   frontad: {
-    selector: 'ytd-banner-promo-renderer' },
+    selector: 'ytd-banner-promo-renderer',
+  },
   channel1: {
     selector: '[href^="/channel"]',
-    color: 'yellow', parents: 1 },
+    color: 'yellow',
+    parents: 1,
+  },
   channel2: {
     selector: '[href^="/c"]',
-    color: 'yellow', parents: 1 },
+    color: 'yellow',
+    parents: 1,
+  },
   channel3: {
     selector: '[href^="/user"]',
-    color: 'yellow', parents: 1 },
+    color: 'yellow',
+    parents: 1,
+  },
   searchcard: { selector: '.ytd-search-refinement-card-renderer' },
   channellink: { selector: '.channel-link' },
   searchAds: {
     selector: '.ytd-promoted-sparkles-text-search-renderer',
-    parents: 2 },
+    parents: 2,
+  },
 };
 
 const state: CollectedState = {
@@ -273,10 +296,10 @@ function manageNodes(
   }
 
   // this to highlight what is collected as fragments
-  if (settings.ux) {
-    selected.style.border = `1px solid ${
-      command.color !== undefined ? command.color : 'red'
-    }`;
+  if (settings.independentContributions?.showUI === true) {
+    const stroke = config.NODE_ENV === 'development' ? '5px' : '1px';
+    const color = command.color ?? 'red';
+    selected.style.border = `${stroke} solid ${color}`;
     selected.setAttribute(selectorName, 'true');
     selected.setAttribute('yttrex', '1');
   }
@@ -291,10 +314,6 @@ function manageNodes(
       },
       selected
     );
-
-    if (config.NODE_ENV === 'development') {
-      selected.style.border = '3px dotted green';
-    }
   }
 
   if (command.screen === true) {
@@ -332,7 +351,7 @@ function manageNodes(
     selectorName,
     randomUUID,
     incremental: state.incremental,
-    clientTime: getTimeISO8601()
+    clientTime: getTimeISO8601(),
   };
 
   // helpful only at development time:
@@ -420,7 +439,7 @@ const boot = (
       href: window.location.href,
       randomUUID,
       incremental: state.incremental,
-      clientTime: getTimeISO8601()
+      clientTime: getTimeISO8601(),
     });
     setState({ type: 'video-sent' });
   }, videoPeriodicTimeout);

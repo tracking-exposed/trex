@@ -20,7 +20,12 @@ export const Settings = t.strict(
     active: t.boolean,
     ccRecommendations: t.boolean,
     communityRecommendations: t.boolean,
-    independentContributions: t.boolean,
+    independentContributions: t.union([
+      t.strict({
+        showUI: t.boolean,
+      }),
+      t.null,
+    ]),
     svg: t.boolean,
     videorep: t.boolean,
     playhide: t.boolean,
@@ -40,7 +45,7 @@ export const getDefaultSettings = (): Settings => ({
   ux: false,
   communityRecommendations: false,
   alphabeth: false,
-  independentContributions: false,
+  independentContributions: null,
   edit: null,
 });
 
