@@ -5,6 +5,7 @@ const resources: CustomTypeOptions['resources'] = {
   common: {
     coming_soon: 'Coming soon',
     empty_list: 'No {{resource}} found.',
+    empty_string: '',
   },
   actions: {
     popup_bootstrap: 'Bootstrap',

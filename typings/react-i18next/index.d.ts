@@ -7,6 +7,7 @@ declare module 'react-i18next' {
       common: {
         coming_soon: string;
         empty_list: string;
+        empty_string: string;
       };
       actions: {
         popup_bootstrap: string;

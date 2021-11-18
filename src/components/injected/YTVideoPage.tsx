@@ -1,6 +1,6 @@
 import { AppBar, Box, Tabs, Typography } from '@material-ui/core';
-import CommunityIcon from '@material-ui/icons/GroupWorkOutlined';
 import ContentCreatorIcon from '@material-ui/icons/HealingOutlined';
+import HideIcon from '@material-ui/icons/VisibilityOffOutlined';
 import YTIcon from '@material-ui/icons/YouTube';
 import { makeStyles } from '@material-ui/styles';
 import * as QR from 'avenger/lib/QueryResult';
@@ -8,7 +8,7 @@ import { WithQueries } from 'avenger/lib/react';
 import { ErrorBox } from 'components/common/ErrorBox';
 import {
   FullSizeLoader,
-  LazyFullSizeLoader,
+  LazyFullSizeLoader
 } from 'components/common/FullSizeLoader';
 import { TabPanel } from 'components/common/TabPanel';
 import * as React from 'react';
@@ -137,7 +137,7 @@ export const YTVideoPage: React.FC = () => {
                 />
                 <Tab
                   className={classes.tab}
-                  icon={<CommunityIcon />}
+                  icon={<HideIcon />}
                   wrapped={true}
                   label={t('hide_all:title')}
                   index={2}
@@ -159,7 +159,7 @@ export const YTVideoPage: React.FC = () => {
               )}
             </TabPanel>
             <TabPanel value={currentTab} index={2}>
-              <Typography variant="h4">{t('common:coming_soon')}</Typography>
+              <Typography variant="h4">{t('common:empty_string')}</Typography>
             </TabPanel>
           </Box>
         );
