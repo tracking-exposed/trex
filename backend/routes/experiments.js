@@ -110,10 +110,10 @@ async function list(req) {
      * experiment. This is imply req.params.type == 'comparison' */
     const MAX = 400;
     const type = req.params.directiveType;
-    if(type !== 'comparison') {
-        console.trace("not supported", req.params);
-        return { text: "Not supported at the moment; "}
-    }
+
+    if(["comparison", "chiaroscuro"].indexOf(type) === -1)
+        return { text: "Directive Type not supported! "}
+
     const filter = { directiveType: type };
     const mongoc = await mongo3.clientConnect({concurrency: 1});
 
@@ -194,8 +194,8 @@ async function channel3(req) {
     if(_.isNull(retval))
         return { json: { experiment: false }};
 
-    debug("Marked experiment %s as 'active' for %s",
-        retval.experimentId, retval.publicKey);
+    debug("Marked experiment %s as 'active' for %s (%s)",
+        retval.experimentId, retval.publicKey, retval.testTime);
 
     return { json: retval };
 };

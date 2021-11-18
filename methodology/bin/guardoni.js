@@ -529,7 +529,9 @@ async function operateTab(page, directive) {
     console.log("error in beforeLoad", error.message, error.stack);
   }
 
-  debug("— Loading %s (for %dms)", directive.urltag, directive.loadFor);
+  debug("— Loading %s (for %dms)", directive.urltag ?
+    directive.urltag : directive.name, directive.loadFor);
+
   // TODO the 'timeout' would allow to repeat this operation with
   // different parameters. https://stackoverflow.com/questions/60051954/puppeteer-timeouterror-navigation-timeout-of-30000-ms-exceeded
   await page.goto(directive.url, { 
@@ -550,7 +552,7 @@ async function operateTab(page, directive) {
   } catch(error) {
     console.log("Error in afterWait", error.message, error.stack);
   }
-  debug("— Completed %s", directive.urltag);
+  debug("— Completed %s", directive.urltag ? directive.urltag : directive.name);
 }
 
 async function operateBrowser(page, directives) {

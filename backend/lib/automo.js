@@ -681,7 +681,7 @@ async function registerDirective(links, directiveType) {
         experimentId,
     })
     await mongoc.close();
-    debug("Registered experiment %s", experimentId);
+    debug("Registered directive %s|%s", directiveType, experimentId);
     return { status: 'created', experimentId };
 }
 
