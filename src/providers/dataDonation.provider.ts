@@ -292,7 +292,7 @@ function manageNodes(
   const isVisible = offsetTop + offsetLeft > 0;
   if (command.preserveInvisible !== true) {
     if (!isVisible) {
-      ddLogger.debug('Ignoring invisible node: %O', selectorName);
+      // ddLogger.debug('Ignoring invisible node: %O', selectorName);
       return;
     }
   }
@@ -330,13 +330,9 @@ function manageNodes(
   }, 0);
 
   if (leavesCache[hash] !== undefined) {
-    ddLogger.debug(
-      'Found cache for hash (%s) and selector %s: %O',
-      hash,
-      selectorName,
-      leavesCache[hash]
-    );
-
+    /* ddLogger.debug(
+      'Element cached, not saving it (%s) via selector %s: %O',
+      hash, selectorName, leavesCache[hash]); */
     leavesCache[hash]++;
     return;
   }
@@ -357,10 +353,6 @@ function manageNodes(
     incremental: state.incremental,
     clientTime: getTimeISO8601(),
   };
-
-  // helpful only at development time:
-  // const extra = extractor.mineExtraMetadata(selectorName, acquired);
-  // console.table(extra);
 
   addContribution(acquired);
 
