@@ -151,7 +151,7 @@ app.get('/api/v3/creator/me', async (req, res) => await iowrapper('creatorGet', 
 
 /* below, the new API for advertising */
 app.get('/api/v2/ad/video/:videoId', async (req, res) => await iowrapper('adsPerVideo', req, res));
-app.get('/api/v2/ad/channel/:channelId', async (req, res) => await iowrapper('adsPerChannel', req, res));
+app.get('/api/v2/ad/channel/:channelId/since-:sdate/till-:edate', async (req, res) => await iowrapper('adsPerChannel', req, res));
 app.get('/api/v2/ad/:amount?', async (req, res) => await iowrapper('adsUnbound', req, res));
 
 /* impact */

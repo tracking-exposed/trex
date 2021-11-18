@@ -4,7 +4,7 @@ import {
   ADVContributionEvent,
   VideoContributionEvent
 } from "../../models/ContributionEvent";
-import { ChannelADV } from "../../models/stats/ChannelADV";
+import { ChannelADVStats } from "../../models/stats/ChannelADV";
 
 const CompareVideo = Endpoint({
   Method: "GET",
@@ -59,11 +59,15 @@ const AddEvents = Endpoint({
 
 const GetChannelADVStats = Endpoint({
   Method: "GET",
-  getPath: ({ channelId }) => `/v2/ad/channel/${channelId}`,
+  getPath: ({ channelId, sdate, edate }) => `/v2/ad/channel/${channelId}/since-${sdate}/till-${edate}`,
   Input: {
-    Params: t.type({ channelId: t.string }),
+    Params: t.type({
+      channelId: t.string,
+      sdate: t.string,
+      edate: t.string,
+     }),
   },
-  Output: t.array(ChannelADV),
+  Output: t.array(ChannelADVStats),
 });
 
 export default {

@@ -15,3 +15,14 @@ export const ChannelADV = t.strict(
   "ChannelADV"
 );
 export type ChannelADV = t.TypeOf<typeof ChannelADV>;
+
+export const ChannelADVStats = t.strict(
+  {
+    sponsoredName: t.union([t.undefined, t.string]),
+    sponsoredSite: t.string,
+    count: t.number,
+  },
+  "ChannelADVStats"
+);
+
+export type ChannelADVStats = t.TypeOf<typeof ChannelADVStats>;
