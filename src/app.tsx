@@ -2,7 +2,8 @@ import './i18n';
 import './resources/global.css';
 import { pipe } from 'fp-ts/lib/function';
 import * as TE from 'fp-ts/lib/TaskEither';
-import { debounce } from 'lodash';
+// import { debounce } from 'lodash';
+// RIMETTI DEBOUNCE QUANDO DECOMMENTI IL PEZZO LINEA 106
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import { settingsRefetch } from 'state/public.queries';
@@ -27,40 +28,34 @@ const renderInjectedElements = (settings: Settings): void => {
   appLogger.debug('Settings refreshed %O', settings);
   const ytRelatedVideoNode = document.querySelector(YT_RELATED_SELECTOR);
 
-  if (settings.active) {
-    if (settings.independentContributions !== null) {
-      appLogger.debug(
-        'Independent contribution enabled. Getting the keypair...'
-      );
 
-      if (document.querySelector(YC_CONTRIBUTION_INFO_BOX_SELECTOR) === null) {
-        const contributionBoxEl = document.createElement('div');
-        contributionBoxEl.id = YC_CONTRIBUTION_INFO_BOX_ID;
-        contributionBoxEl.style.position = 'fixed';
-        contributionBoxEl.style.width = '120px';
-        contributionBoxEl.style.textAlign = 'right';
-        contributionBoxEl.style.height = '50px';
-        contributionBoxEl.style.right = '20px';
-        contributionBoxEl.style.bottom = '20px';
-        contributionBoxEl.style.padding = '4px';
-        contributionBoxEl.style.zIndex = '9000';
-        contributionBoxEl.style.borderRadius = '10px';
+  if (document.querySelector(YC_CONTRIBUTION_INFO_BOX_SELECTOR) === null) {
+    const contributionBoxEl = document.createElement('div');
+    contributionBoxEl.id = YC_CONTRIBUTION_INFO_BOX_ID;
+    contributionBoxEl.style.position = 'fixed';
+    contributionBoxEl.style.width = '120px';
+    contributionBoxEl.style.textAlign = 'right';
+    contributionBoxEl.style.height = '50px';
+    contributionBoxEl.style.right = '20px';
+    contributionBoxEl.style.bottom = '20px';
+    contributionBoxEl.style.padding = '4px';
+    contributionBoxEl.style.zIndex = '9000';
+    contributionBoxEl.style.borderRadius = '10px';
 
-        document.body.appendChild(contributionBoxEl);
+    document.body.appendChild(contributionBoxEl);
 
-        ReactDOM.render(
-          <React.StrictMode>
-            <ErrorBoundary>
-              <ThemeProvider theme={YCAITheme}>
-                <YTContributionInfoBox />
-              </ThemeProvider>
-            </ErrorBoundary>
-          </React.StrictMode>,
-          document.getElementById('ycai-contribution-box')
-        );
-      }
-    }
+    ReactDOM.render(
+      <React.StrictMode>
+        <ErrorBoundary>
+          <ThemeProvider theme={YCAITheme}>
+            <YTContributionInfoBox />
+          </ThemeProvider>
+        </ErrorBoundary>
+      </React.StrictMode>,
+      document.getElementById('ycai-contribution-box')
+    );
   }
+
   // video recommendations box
   if (settings.ccRecommendations) {
     appLogger.debug('Settings: active');
@@ -108,19 +103,45 @@ const renderInjectedElements = (settings: Settings): void => {
 /**
  * Define mutation observer to listen for window's dom changes
  */
-const observer = new MutationObserver(
-  debounce(
-    (mutations) => {
-      appLogger.debug(`Mutations received %O`, mutations);
-      void pipe(
-        settingsRefetch.run(),
-        TE.map((settings) => renderInjectedElements(settings))
-      )();
-    },
-    500,
-    { trailing: true }
-  )
-);
+
+/* THIS IS COMMITTE ONLY BECAUSE I CAN'T TAKE settings
+  and I'm just writing here Settings --- but this code 
+  matter 
+
+Questo cambio di codice è utile perchè non si deve fare un
+loop infinito ad altra frequenza (500 ms erano troppo pochi),
+e poi fare la verifica del booleano per capire se 
+va fatto o no. è un check che va messo fuori da un loop 
+così frequente, e specialmente considerando che avvien con 
+altra ripetizione, non dobbiamo mettere alcun log ridondante
+ma solo riportare quello che c'è di utile/nuovo 
+
+if (Settings.active) {
+  if (Settings.independentContributions !== null) {
+
+    appLogger.debug(
+      'Independent contribution enabled. Getting the keypair...'
+    );
+
+    const observer = new MutationObserver(
+      debounce(
+        (mutations) => {
+          appLogger.debug(`Mutations received %O`, mutations);
+          void pipe(
+            settingsRefetch.run(),
+            TE.map((settings) => renderInjectedElements(settings))
+          )();
+        },
+        2500,
+        // NOTE: 2500 instead of 500, to collect evidence we 
+        // don't need that much frequency.
+        { trailing: true }
+      )
+    );
+  }
+}
+
+ */
 
 observer.observe(window.document.body, {
   subtree: true,
