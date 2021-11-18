@@ -91,15 +91,20 @@ export const Popup = withQueries(({ queries }) => {
           <Card className={classes.container}>
             <CardContent className={classes.content}>
               <Grid className={classes.header} container alignItems="center">
-                <Grid item xs={7}>
+                <Grid item xs={12}>
                   <a
                     className={classes.link}
                     href={config.REACT_APP_WEB_URL}
                     target="_blank"
                     rel="noreferrer"
                   >
-                    <img className={classes.img} src="/ycai-logo.png" />
+                    <img className={classes.img} src="/ycai-logo.svg" />
                   </a>
+                </Grid>
+                <Grid item xs={12}>
+                  <Typography variant="caption">
+                    {t('popup:version', { version, date: timeago })}
+                  </Typography>
                 </Grid>
 
                 <Grid item xs={4}>
@@ -122,20 +127,14 @@ export const Popup = withQueries(({ queries }) => {
                     labelPlacement="end"
                   />
                 </Grid>
-                <Grid item xs={12}>
-                  <Typography variant="caption">
-                    {t('popup:version', { version, date: timeago })}
-                  </Typography>
-                </Grid>
               </Grid>
-
               <Settings settings={settings} />
             </CardContent>
 
             <CardActions>
               <Button
                 size="medium"
-                color="primary"
+                color= "grey[500]"
                 variant="contained"
                 href={'/index.html'}
                 target="_blank"

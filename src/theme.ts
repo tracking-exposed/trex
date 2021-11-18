@@ -97,7 +97,7 @@ export const YCAITheme = createTheme({
       },
       contained: {
         color: grey,
-        backgroundColor: lightGrey
+        backgroundColor: lightGrey,
       },
       containedPrimary: {
         color: white,
