@@ -57,7 +57,7 @@ export const YTVideoPage: React.FC = () => {
             typeof ytItemsRendererEl === 'object'
           ) {
             // tab n2 = youtube, tab1 = community
-            if (tab === 2) {
+            if (tab === 1) {
               ytItemsRendererEl.className = ytItemsRendererEl.className.replace(
                 displayNoneClassName,
                 ''
@@ -130,16 +130,16 @@ export const YTVideoPage: React.FC = () => {
                 />
                 <Tab
                   className={classes.tab}
-                  icon={<CommunityIcon />}
+                  icon={<YTIcon />}
                   wrapped={true}
-                  label={t('hide_all:title')}
+                  label={t('youtube:title')}
                   index={1}
                 />
                 <Tab
                   className={classes.tab}
-                  icon={<YTIcon />}
+                  icon={<CommunityIcon />}
                   wrapped={true}
-                  label={t('youtube:title')}
+                  label={t('hide_all:title')}
                   index={2}
                 />
               </Tabs>
@@ -158,7 +158,7 @@ export const YTVideoPage: React.FC = () => {
                 />
               )}
             </TabPanel>
-            <TabPanel value={currentTab} index={1}>
+            <TabPanel value={currentTab} index={2}>
               <Typography variant="h4">{t('common:coming_soon')}</Typography>
             </TabPanel>
           </Box>
