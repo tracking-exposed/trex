@@ -27,9 +27,11 @@ export const toAPIError = (e: unknown): APIError => {
   apiLogger.error('An error occurred %O', e);
   if (e instanceof Error) {
     if (e.message === 'Network Error') {
-      return new APIError('Network Error', e.message, [
-        "Be sure you're connected to internet.",
-      ]);
+      return new APIError(
+        'Network Error',
+        'The API endpoint is not reachable',
+        ["Be sure you're connected to internet."]
+      );
     }
     return new APIError('UnknownError', e.message, []);
   }
