@@ -76,12 +76,24 @@ async function beforeDirectives(page, profinfo) {
         setInterval(print3rdParties, 60 * 1000);
     }
 
+    const advdump = nconf.get('advdump');
+    if(!advdump)
+        return;
+
+    /* if the advertisement dumping folder is set, first we check
+     * if exist, and if doens't we call it fatal error */
+    if(!fs.existsSync(advdump)) {
+        debug("Fatal error: advdump folder (%s) not exist", advdump);
+        process.exit(1);
+    } else
+        debug("Advertisement screenshotting enable in folder: %s", path.resolve(advdump));
+
     /* this is to monitor presence of special selectors that
      * should trigger screencapture */
     if(global.interval)
         clearInterval(global.interval);
 
-    global.screenshotPrefix = path.join('screenshots', `${profinfo.profileName}..${profinfo.execount}`);
+    global.screenshotPrefix = path.join(advdump, `${profinfo.profileName}..${profinfo.execount}`);
 
 
     try {
