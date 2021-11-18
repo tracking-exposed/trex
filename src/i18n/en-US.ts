@@ -39,6 +39,11 @@ const resources: CustomTypeOptions['resources'] = {
     move_recommendation_down: 'Move recommendation down',
     remove_recommendation_from_video: 'Remove from current video',
     manage_tokens: 'Manage tokens',
+    reset_settings: 'Reset settings',
+    reload_extension: 'Reload extension',
+  },
+  errors: {
+    an_error_occurred: 'An error occurred',
   },
   routes: {
     lab_title: 'LAB - Recommend on your videos',

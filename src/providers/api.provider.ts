@@ -13,9 +13,11 @@ import { config } from '../config';
 import { apiLogger } from '../utils/logger.utils';
 
 export class APIError extends Error {
+  name: string;
   details: string[];
-  constructor(message: string, details: string[]) {
+  constructor(name: string, message: string, details: string[]) {
     super(message);
+    this.name = name;
     this.details = details;
   }
 }
@@ -24,10 +26,15 @@ export const toAPIError = (e: unknown): APIError => {
   // eslint-disable-next-line
   apiLogger.error('An error occurred %O', e);
   if (e instanceof Error) {
-    return new APIError(e.message, []);
+    if (e.message === 'Network Error') {
+      return new APIError('Network Error', e.message, [
+        "Be sure you're connected to internet.",
+      ]);
+    }
+    return new APIError('UnknownError', e.message, []);
   }
 
-  return new APIError('An error occurred', [JSON.stringify(e)]);
+  return new APIError('UnknownError', 'An error occurred', [JSON.stringify(e)]);
 };
 
 export const endpointClient = axios.create({
@@ -59,7 +66,7 @@ export const liftFetch = <B>(
         E.mapLeft((e): APIError => {
           const details = PathReporter.report(E.left(e));
           apiLogger.error('Validation failed %O', details);
-          return new APIError('Validation failed.', details);
+          return new APIError('ValidationError', 'Validation failed.', details);
         }),
         TE.fromEither
       );
@@ -106,7 +113,9 @@ type API<ES extends Record<string, Record<string, MinimalEndpointInstance>>> = {
   ) => TE.TaskEither<APIError, R>;
 };
 
-export const apiFromEndpoint = <E extends MinimalEndpointInstance>(e: E): TERequest<E> => {
+export const apiFromEndpoint = <E extends MinimalEndpointInstance>(
+  e: E
+): TERequest<E> => {
   return command<any, APIError, TypeOfEndpointInstance<E>['Output']>((b) =>
     liftFetch<TypeOfEndpointInstance<E>['Output']>(() => {
       const url = e.getPath(b.Params);
