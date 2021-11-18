@@ -508,7 +508,9 @@ async function updateMetadata(html, newsection, repeat) {
 }
 
 async function getMixedDataSince(schema, since, maxAmount) {
-   
+    // investigate on usage and meaninging: possible refactor
+    console.trace("getMixedData", schema, since, maxAmount);
+
     const mongoc = await mongo3.clientConnect({concurrency: 1});
     const retContent = [];
 
@@ -585,25 +587,6 @@ async function getTransformedMetadata(chain) {
         .aggregate(mongoc, nconf.get('schema').metadata, chain);
     await mongoc.close();
     return result;
-}
-
-async function saveGuardoni(guardobj) {
-    throw new Error("Please update this!"); /*
-    const mongoc = await mongo3.clientConnect({concurrency: 1});
-    const result = await mongo3
-        .writeOne(mongoc, nconf.get('schema').guardoni, guardobj);
-    await mongoc.close();
-    return result; */
-}
-
-async function getGuardoni(guardobj) {
-    throw new Error("Please update this!"); /*
-    const mongoc = await mongo3.clientConnect({concurrency: 1});
-    const result = await mongo3
-        .readLimit(mongoc, nconf.get('schema').guardoni, guardobj,
-        { when: -1 }, 1, 0);
-    await mongoc.close();
-    return result; */
 }
 
 async function markExperCompleted(mongoc, filter) {
@@ -698,7 +681,7 @@ async function registerDirective(links, directiveType) {
         experimentId,
     })
     await mongoc.close();
-    debug("Registered experiment %s", experimentId);
+    debug("Registered directive %s|%s", directiveType, experimentId);
     return { status: 'created', experimentId };
 }
 
@@ -749,10 +732,6 @@ module.exports = {
 
     /* generalized aggregation call */
     getTransformedMetadata,
-
-    /* guardoni experiment saving from list URL + expname & botname */
-    saveGuardoni,
-    getGuardoni,
 
     /* experiment related operations */
     saveExperiment,

@@ -110,10 +110,10 @@ async function list(req) {
      * experiment. This is imply req.params.type == 'comparison' */
     const MAX = 400;
     const type = req.params.directiveType;
-    if(type !== 'comparison') {
-        console.trace("not supported", req.params);
-        return { text: "Not supported at the moment; "}
-    }
+
+    if(["comparison", "chiaroscuro"].indexOf(type) === -1)
+        return { text: "Directive Type not supported! "}
+
     const filter = { directiveType: type };
     const mongoc = await mongo3.clientConnect({concurrency: 1});
 
@@ -174,153 +174,6 @@ async function list(req) {
     };
 }
 
-async function guardoniGenerate(req) {
-    const experiment = req.params.experiment;
-    const botname = req.params.botname;
-    const guardobj = await automo.getGuardoni({
-        experiment,
-        botname
-    });
-    const guardonified = _.map(guardobj[0].urls, function(url, index, total) {
-        return {
-            name: `${experiment}__${botname} video ${index+1} of ${total.length}`,
-            watchFor: '5m',
-            loadFor: 3000,
-            url,
-            experiment,
-        }
-    }) 
-    debug("guardoniGenerate for %s (%s) produced %d", experiment, botname, _.size(guardonified));
-    return { json: guardonified };
-}
-
-async function guardoniConfigure(req) {
-    // parameters: experiment + botname
-    const experiment = req.params.experiment;
-    const botname = req.params.botname;
-    const urls = req.body;
-    // remind self, urls.experiment and urls.botname aren't checked
-    const guardobj = {
-        urls : _.filter(urls.urls, 'length'),
-        experiment,
-        botname,
-        when: new Date(),
-    }
-    debug("Guardoni saving in progress %j", guardobj);
-    const retval = await automo.saveGuardoni(guardobj);
-    return { json: retval };
-}
-
-async function legacyGuardoni(req) {
-    // TODO kill for the new directive things
-
-    // const cat = req.params.category;
-    const wtime = req.params.time;
-    const fcontent = fs.readFileSync("config/expercont.json", "utf8");
-    const vlist = JSON.parse(fcontent);
-    console.trace("This shouldn't be used, right?", wtime, vlist);
-
-    /*  GUARDONI format:
-     *    "name": "Tracking Exposed intro video",
-     *    "url": "https://www.youtube.com/watch?v=SmYuYEhT81c",
-     *    "watchFor": "end",
-     *    "loadFor": 2000
-     */
-    /*
-    const keys = _.uniq(_.map(vlist, function(ventry) {
-        return ventry[0]
-    }));
-    if(keys.indexOf(cat) === -1)
-        return { json: [ "Invalid requested category name. allowed:", keys]};
-    */
-
-    const guardonified = _.reduce(vlist, function(memo, ventry) {
-        const thisc = ventry[0];
-        const url = ventry[1];
-        // memo.seen[thisc] = memo.seen[thisc] ? memo.seen[thisc] + 1 : 1;
-
-        if(thisc === "first")
-            memo.first.push({
-                name: 'first',
-                url,
-                watchFor: 15000,
-                loadFor: 8000
-            });
-        else if(thisc === "last")
-            memo.last.push({
-                name: 'last',
-                url,
-                watchFor: 15000,
-                loadFor: 8000
-            });
-        else {
-            memo.selected.push({
-                name: thisc,
-                watchFor: wtime === "end" ? "end" : wtime,
-                loadFor: 8000,
-                url
-            })
-        }
-
-        /*
-        if(thisc == cat) {
-            if(!memo.second.length)
-                memo.second.push({
-                    name: cat+'-first', url,
-                    watchFor: 'end', loadFor: 8000
-                })
-            else
-                memo.selected.push({
-                    name: cat+'-'+memo.seen[cat], url,
-                    watchFor: 'end', loadFor: 8000
-                })
-        }
-        else {
-            memo.others.push({
-                name: thisc+'-'+memo.seen[thisc], url,
-                watchFor: 18000, loadFor: 8000
-            });
-        } */
-
-        return memo;
-    }, {
-        first: [],
-        last: [],
-        second: [],
-        selected: [],
-        others: [],
-        seen: {},
-    });
-
-    /*
-    const shuffled = _.reduce(_.concat(guardonified.others, guardonified.selected), function(memo, guarv) {
-        // poor randomizer but ..
-        const x = _.random(0, memo.length || 1) % 3;
-        if(x == 0)
-            return _.concat(guarv, memo);
-        else if(x==1) {
-            memo.push(guarv);
-            return memo;
-        } else {
-            const half = _.round(memo.length / 2);
-            const chunks = _.chunk(memo, half)
-            return _.concat(_.reverse(chunks[1]), guarv, _.reverse(chunks[0]));
-        }
-    }, []);
-    */
-
-    const retval = [
-        ...guardonified.first,
-        ...guardonified.selected,
-        ...guardonified.last,
-    ];
-    return { json: retval };
-}
-
-async function opening(req) {
-    throw new Error("Not implement yet");
-}
-
 async function channel3(req) {
     // this is invoked as handshake, and might return information
     // helpful for the extension, about the experiment running.
@@ -341,8 +194,8 @@ async function channel3(req) {
     if(_.isNull(retval))
         return { json: { experiment: false }};
 
-    debug("Marked experiment %s as 'active' for %s",
-        retval.experimentId, retval.publicKey);
+    debug("Marked experiment %s as 'active' for %s (%s)",
+        retval.experimentId, retval.publicKey, retval.testTime);
 
     return { json: retval };
 };
@@ -363,15 +216,13 @@ async function conclude3(req) {
 }
 
 module.exports = {
+    /* used by the webapps */
     csv,
     dot,
     json,
     list,
-    legacyGuardoni,
-    guardoniConfigure,
-    guardoniGenerate,
 
-    opening,
+    /* used by the browser extension/guardoni */
     channel3,
     conclude3,
 };

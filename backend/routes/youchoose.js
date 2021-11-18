@@ -171,8 +171,7 @@ async function oneVideoByCreator(req) {
 
   debug(
     'Querying DB.ytvids to get video with id [%s] for profile [%s]',
-    videoId, creator._id
-  );
+    videoId, creator.username);
 
   const video = await ycai.getOneVideoFromYTprofile(
     creator, videoId

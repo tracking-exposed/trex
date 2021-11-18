@@ -2,32 +2,71 @@ const _ = require('lodash');
 const moment = require('moment');
 const debug = require('debug')('guardoni:youtube');
 const logreqst = require('debug')('guardoni:requests');
+const screendebug = require('debug')('guardoni:screenshots');
 const bconsError = require('debug')('guardoni:error');
-const keyprint = require('debug')('guardoni:key');
 const path = require('path');
 const url = require('url');
 const fs = require('fs');
 const nconf = require('nconf');
 
 debug.enabled = true;
-keyprint.enabled = true;
 logreqst.enabled = true;
 
-let sentOnce = false;
-function lookForPubkey(message) {
-    /* only the first time the key is seen, the full experiment plan is sent */
-    if(sentOnce)
-        return;
-    if(message.text().match(/publicKey/)) {
-        const parsedcnsl = JSON.parse(message.text().replace(/\n/g, '').replace(/.*{/, '{').replace(/}.*/, '}') );
-        const publicKey = parsedcnsl.publicKey;
-        keyprint("Publickey: %s", publicKey);
-        sentOnce = true;
+const SCREENSHOT_MARKER = "SCREENSHOTMARKER";
+const scrnshtrgxp = new RegExp(SCREENSHOT_MARKER);
+
+global.lastScreenTime = moment().subtract(4, 'seconds');
+global.currentURLlabel = null;
+global.screenshotPrefix = null;
+global.interval = null;
+
+function pickNextScreenshot() {
+    /* this function return null if no screenshot has to be taken,
+     * and the criteria is to take max one screen every 5 seconds */
+    const now = moment();
+    if(moment.duration(now - global.lastScreenTime).asSeconds() < 5)
+        return null;
+
+    global.lastScreenTime = now;
+    /* screenshotPrefix would exist as a directory */
+    return path.join(global.screenshotPrefix,
+        `${global.currentURLlabel}-${global.lastScreenTime.format("YYYY-MM-DD-HH-mm-SS")}.jpeg`);
+}
+
+async function consoleLogParser(page, message) {
+    /* this function is primarly meant to collect the public key,
+     * but it is also an indirect, pseudo-efficent way to communicate
+     * between puppeteer evaluated selectors and action we had to do */
+    const consoleline = message.text();
+    if(consoleline.match(scrnshtrgxp)) {
+        const fdestname = pickNextScreenshot();
+        // if the screenshot are less than 5 seconds close, the function
+        // above would return null, so we don't take it.
+        if(fdestname) {
+            screendebug("Taking screenshot in [%s]", fdestname)
+            await page.screenshot({ path: fdestname, type: 'jpeg' });
+        }
     }
 };
 
+/* these advertising selectors comes from browser extension,
+ * and they should be centralized in a piece of updated code */
+const advSelectors = [
+    '.video-ads.ytp-ad-module',
+    '.ytp-ad-player-overlay',
+    '.ytp-ad-player-overlay-instream-info',
+    'ytd-promoted-sparkles-web-renderer',
+    '.ytd-action-companion-ad-renderer',
+    '.sparkles-light-cta',
+    '[data-google-av-cxn]',
+    '#ad-badge',
+    'ytd-banner-promo-renderer',
+    '.ytd-search-refinement-card-renderer',
+    '.ytd-promoted-sparkles-text-search-renderer'
+];
+
 async function beforeDirectives(page, profinfo) {
-    page.on('console', lookForPubkey);
+    page.on('console', await _.partial(consoleLogParser, page));
     page.on('pageerror', message => bconsError('Error %s', message));
     page.on('requestfailed', request => bconsError(`Requestfail: ${request.failure().errorText} ${request.url()}`));
 
@@ -36,6 +75,43 @@ async function beforeDirectives(page, profinfo) {
         page.on('request', await _.partial(manageRequest, profinfo));
         setInterval(print3rdParties, 60 * 1000);
     }
+
+    const advdump = nconf.get('advdump');
+    if(!advdump)
+        return;
+
+    /* if the advertisement dumping folder is set, first we check
+     * if exist, and if doens't we call it fatal error */
+    if(!fs.existsSync(advdump)) {
+        debug("Fatal error: advdump folder (%s) not exist", advdump);
+        process.exit(1);
+    } else
+        debug("Advertisement screenshotting enable in folder: %s", path.resolve(advdump));
+
+    /* this is to monitor presence of special selectors that
+     * should trigger screencapture */
+    if(global.interval)
+        clearInterval(global.interval);
+
+    global.screenshotPrefix = path.join(advdump, `${profinfo.profileName}..${profinfo.execount}`);
+
+
+    try {
+        fs.mkdirSync(global.screenshotPrefix)
+    } catch(error) { }
+
+    global.interval = setInterval(function() {
+        _.each(advSelectors, function(selector) {
+            try {
+            /* variables from node need to be passed this way to pptr */
+                page.evaluate( (selector, SCREENSHOT_MARKER) => {
+                    const x = document.querySelector(selector);
+                    if(x)
+                        console.log(SCREENSHOT_MARKER, selector);
+                }, selector, SCREENSHOT_MARKER);
+            } catch(error) {}
+        });
+    }, 5000);
 }
 
 /* this is the variable we populate of statistics
@@ -85,6 +161,10 @@ function manageRequest(profinfo, reqpptr) {
 function print3rdParties() {
     logreqst("Logged third parties connections in [%s] to %o",
         reqlogfilename, thirdParties);
+}
+
+async function beforeLoad(page, directive) {
+    global.currentURLlabel = directive.urltag;
 }
 
 async function beforeWait(page, directive) {
@@ -202,7 +282,8 @@ async function interactWithYT(page, directive, wantedState) {
     }
 }
 
-module.exports= {
+module.exports = {
+    beforeLoad,
     beforeWait,
     afterWait,
     beforeDirectives,
