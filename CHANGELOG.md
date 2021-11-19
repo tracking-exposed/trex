@@ -1,3 +1,20 @@
+## [1.1.1-beta.2](https://github.com/tracking-exposed/YCAI/compare/v1.1.1-beta.1...v1.1.1-beta.2) (2021-11-19)
+
+
+### Bug Fixes
+
+* data donation ui setting ([1668d34](https://github.com/tracking-exposed/YCAI/commit/1668d34f9c8bffe1f105bf1da3c12f73fdf008b6))
+* defined proper error box for popup ([1ff6d64](https://github.com/tracking-exposed/YCAI/commit/1ff6d6458554510710d06ecaf85d417fbe6bb0a4))
+* hide all tab text and icon ([5b85539](https://github.com/tracking-exposed/YCAI/commit/5b8553904b5536d42bdb677041d2f8887d9559e5))
+* improve the APIError structure and ErrorBox UI ([f8e58ad](https://github.com/tracking-exposed/YCAI/commit/f8e58ad0fe060adc63f097d84c10c397033500c5))
+* realtime UI updates for data contribution ([61feb23](https://github.com/tracking-exposed/YCAI/commit/61feb23fc371ffae3566e62ebba601508d64cccb))
+* remove settings refetch on deferred dom mutation callback ([5f7fa49](https://github.com/tracking-exposed/YCAI/commit/5f7fa49a17feffea074024e3cc37a8b7f525f37c))
+* restore 'manage tokens' button in popup settings ([db125aa](https://github.com/tracking-exposed/YCAI/commit/db125aad1374bcfdea6bd8b873943ae5ea221468))
+* revert popup button to valid color ([3755454](https://github.com/tracking-exposed/YCAI/commit/3755454e84dc6c385dcb073f6b453dfe83bfc0ad))
+* send message to active tab only when available ([a0ea5cc](https://github.com/tracking-exposed/YCAI/commit/a0ea5ccfc6684673337af7d5d8869a852b7ae74f))
+* some wording ([7ea0937](https://github.com/tracking-exposed/YCAI/commit/7ea093768b770fbd79392ee6f0bc4fd29600f667))
+* swap hide all and youtube tab ([211628b](https://github.com/tracking-exposed/YCAI/commit/211628b5f55cec398f1cef3505b05f51fae7e885))
+
 ## [1.1.1-beta.1](https://github.com/tracking-exposed/YCAI/compare/v1.1.0...v1.1.1-beta.1) (2021-11-17)
 
 
