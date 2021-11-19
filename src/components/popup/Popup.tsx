@@ -3,25 +3,20 @@ import {
   Card,
   CardActions,
   CardContent,
-  FormControlLabel,
   Grid,
   makeStyles,
-  Switch,
-  Typography
+  Typography,
 } from '@material-ui/core';
 import { Alert, AlertTitle } from '@material-ui/lab';
 import * as QR from 'avenger/lib/QueryResult';
-import { declareQueries } from 'avenger/lib/react';
+import { WithQueries } from 'avenger/lib/react';
 import { formatDistance } from 'date-fns';
 import parseISO from 'date-fns/parseISO';
-import { pipe } from 'fp-ts/lib/function';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { config } from '../../config';
-import { updateSettings } from '../../state/public.commands';
-import { getDefaultSettings } from '../../models/Settings';
 import { settings } from '../../state/public.queries';
-import { ErrorBox } from '../common/ErrorBox';
+import { PopupErrorBox } from './PopupErrorBox';
 import Settings from './Settings';
 
 const useStyles = makeStyles((theme) => ({
@@ -66,9 +61,7 @@ const PopupLoader: React.FC = () => {
   );
 };
 
-const withQueries = declareQueries({ settings });
-
-export const Popup = withQueries(({ queries }) => {
+export const Popup: React.FC = () => {
   const { t } = useTranslation();
   const classes = useStyles();
 
@@ -81,72 +74,74 @@ export const Popup = withQueries(({ queries }) => {
     }
   );
 
-  return pipe(
-    queries,
-    QR.fold(
-      () => <PopupLoader />,
-      ErrorBox,
-      ({ settings }) => {
-        return (
-          <Card className={classes.container}>
-            <CardContent className={classes.content}>
-              <Grid className={classes.header} container alignItems="center">
-                <Grid item xs={7}>
-                  <a
-                    className={classes.link}
-                    href={config.REACT_APP_WEB_URL}
-                    target="_blank"
-                    rel="noreferrer"
-                  >
-                    <img className={classes.img} src="/ycai-logo.png" />
-                  </a>
-                </Grid>
+  return (
+    <Card className={classes.container}>
+      <Grid className={classes.header} container alignItems="center">
+        <Grid item xs={7}>
+          <a
+            className={classes.link}
+            href={config.REACT_APP_WEB_URL}
+            target="_blank"
+            rel="noreferrer"
+          >
+            <img className={classes.img} src="/ycai-logo.png" />
+          </a>
+        </Grid>
+      </Grid>
 
-                <Grid item xs={4}>
-                  <FormControlLabel
-                    className={classes.switchFormControl}
-                    control={
-                      <Switch
-                        color="primary"
-                        checked={settings?.active ?? false}
-                        size="small"
-                        onChange={(e, c) =>
-                          updateSettings({
-                            ...(settings ?? getDefaultSettings()),
-                            active: c,
-                          })()
-                        }
-                      />
-                    }
-                    label="Enable"
-                    labelPlacement="end"
-                  />
-                </Grid>
-                <Grid item xs={12}>
+      <WithQueries
+        queries={{ settings }}
+        render={QR.fold(
+          () => (
+            <PopupLoader />
+          ),
+          PopupErrorBox,
+          ({ settings }): any => {
+            const content = (
+              <CardContent className={classes.content}>
+                <Grid key="app-version" item xs={12}>
                   <Typography variant="caption">
                     {t('popup:version', { version, date: timeago })}
                   </Typography>
+                  {config.NODE_ENV === 'development' ? (
+                    <Typography
+                      color="primary"
+                      variant="subtitle1"
+                      display="inline"
+                      style={{
+                        fontWeight: 800,
+                      }}
+                    >
+                      {' '}
+                      DEVELOPMENT
+                    </Typography>
+                  ) : null}
                 </Grid>
-              </Grid>
 
-              <Settings settings={settings} />
-            </CardContent>
+                <Settings key="settings" settings={settings} />
+              </CardContent>
+            );
 
-            <CardActions>
-              <Button
-                size="medium"
-                color="primary"
-                variant="contained"
-                href={'/index.html'}
-                target="_blank"
-                fullWidth
-              >
-                {t('dashboard:title')}
-              </Button>
-            </CardActions>
-          </Card>
-        );
-      }
-    )
+            const actions = (
+              <CardActions key="actions">
+                <Button
+                  size="medium"
+                  color={'grey[500]' as any}
+                  variant="contained"
+                  href={'/index.html'}
+                  target="_blank"
+                  fullWidth
+                >
+                  {t('dashboard:title')}
+                </Button>
+              </CardActions>
+            );
+
+            return [content, actions];
+          }
+        )}
+      />
+      {/* </Grid> */}
+    </Card>
   );
-});
+};

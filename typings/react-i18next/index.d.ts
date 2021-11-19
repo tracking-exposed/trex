@@ -7,6 +7,7 @@ declare module 'react-i18next' {
       common: {
         coming_soon: string;
         empty_list: string;
+        empty_string: string;
       };
       actions: {
         popup_bootstrap: string;
@@ -39,7 +40,13 @@ declare module 'react-i18next' {
         move_recommendation_up: string;
         move_recommendation_down: string;
         remove_recommendation_from_video: string;
+        manage_tokens: string;
+        reset_settings: string;
+        reload_extension: string;
       };
+      errors: {
+        an_error_occurred: string;
+      },
       account: {
         channel: string;
       };
@@ -99,6 +106,8 @@ declare module 'react-i18next' {
         communityRecommendationsHint: string;
         contributeToIndependentStatsLabel: string;
         contributeToIndependentStatsHint: string;
+        contributeToIndependentStatsShowUILabel: string;
+        contributeToIndependentStatsShowUIHint: string;
         api_list_title: string;
         encrypted_contributions_private_key: string;
         keypair_title: string;

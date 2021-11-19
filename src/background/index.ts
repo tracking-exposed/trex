@@ -10,7 +10,9 @@ import { getDefaultSettings, Keypair, Settings } from '../models/Settings';
 import { APIError, apiFromEndpoint } from '../providers/api.provider';
 import {
   catchRuntimeLastError,
-  toBrowserError
+  sendTabMessage,
+  tabsQuery,
+  toBrowserError,
 } from '../providers/browser.provider';
 import { bo } from '../utils/browser.utils';
 import { fromStaticPath } from '../utils/endpoint.utils';
@@ -121,9 +123,38 @@ const getMessageHandler = <
         TE.mapLeft(toMessageHandlerError),
         TE.map((response) => ({ type: r.type, response }))
       );
+    /**
+     * Settings update
+     *
+     * The content_script needs to be noticed when _settings_ are updated,
+     * in order to properly render the injected components.
+     */
+    case Messages.UpdateSettings.value:
+      return pipe(
+        db.update(getStorageKey(r.type), r.payload),
+        TE.mapLeft(toMessageHandlerError),
+        TE.chain((response) =>
+          pipe(
+            tabsQuery(),
+            TE.chain((tabs) => {
+              if (tabs?.[0]?.id !== undefined) {
+                return sendTabMessage(Messages.Messages.UpdateSettings)(
+                  tabs[0].id,
+                  response
+                );
+              }
+              return TE.right(response);
+            }),
+            TE.mapLeft(toMessageHandlerError)
+          )
+        ),
+        TE.map((response): Messages.Messages['UpdateSettings']['Response'] => ({
+          type: r.type,
+          response,
+        }))
+      );
     // updates
     case Messages.UpdateContentCreator.value:
-    case Messages.UpdateSettings.value:
     case Messages.UpdateAuth.value:
       return pipe(
         db.update(getStorageKey(r.type), r.payload),

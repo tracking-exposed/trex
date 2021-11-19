@@ -5,12 +5,14 @@ const resources: CustomTypeOptions['resources'] = {
   common: {
     coming_soon: 'Coming soon',
     empty_list: 'No {{resource}} found.',
+    empty_string: '',
   },
   actions: {
     popup_bootstrap: 'Bootstrap',
     add: 'Add',
     copied: 'Copied!',
-    drag_drop_recommendations: 'Drag and drop to change the order of appearance',
+    drag_drop_recommendations:
+      'Drag and drop to change the order of appearance',
     manage_recommendations: 'Manage recommendations',
     link_channel: 'Link channel',
     unlink_channel: 'Unlink channel',
@@ -37,18 +39,24 @@ const resources: CustomTypeOptions['resources'] = {
     move_recommendation_up: 'Move recommendation up',
     move_recommendation_down: 'Move recommendation down',
     remove_recommendation_from_video: 'Remove from current video',
+    manage_tokens: 'Manage tokens',
+    reset_settings: 'Reset settings',
+    reload_extension: 'Reload extension',
+  },
+  errors: {
+    an_error_occurred: 'An error occurred',
   },
   routes: {
-    lab_title: 'LAB - Recommend on your videos',
+    lab_title: 'LAB - Choose the Recommendations on Your Videos',
     lab_title_short: 'LAB',
-    lab_subtitle: 'Select a video and highlight content from all over the Internet',
-    lab_edit_subtitle: 'Highlight content related to this video from anywhere on the Internet',
+    lab_subtitle: 'Click on one of your videos below to pick and order the recommendations you want to display in the side bar. Your content, your choice!',
+    lab_edit_subtitle: 'Paste a link in the grey box below to add it to the recommendations of this video. You can add recommendations towards any website!',
     statistics: 'Statistics',
     settings: 'Settings',
-    link_account: 'Link your YouTube Channel to start recommending on your videos',
+    link_account: 'Authenticate your Channel to Choose Recommendations',
   },
   account: {
-    channel: 'Your channel',
+    channel: 'Your channel URL or ID',
   },
   creator: {
     title: 'Creator',
@@ -57,23 +65,23 @@ const resources: CustomTypeOptions['resources'] = {
     title: 'Hide All',
   },
   link_account: {
-    title: 'Link your account',
-    subtitle: 'Our system will verify that you own the channel on this browser',
-    label: 'Link your account to start choosing recommendations',
+    title: 'Authenticate your YouTube channel.',
+    subtitle: 'Authenticate the channel you own with this 1 min procedure to start choosing the recommendations on your videos.',
+    label: 'Authenticate your YouTube channel to start choosing your recommendations',
     copy_verification_key: 'Copy and paste this unique key in your channel\'s description',
     verification_code_hint:
-      "Paste and publish a new channel description containing the above code on <1>YouTube Studio</1>. You can remove the code from your channel's description after the verification is complete.",
-    paste_channel_url: 'Paste your YouTube Channel\'s URL or ID',
-    verification_failed: 'Oh no, the channel verification failed!',
+      "Click <1>here to access to your YouTube Studio</1> and edit your channel description. Just paste the link anywhere in it and click the Publish button on the top right. You can remove the code from your channel's description after the verification is finished.",
+    paste_channel_url: 'Paste your YouTube Channel\'s URL or ID:',
+    verification_failed: 'Oops, the channel authentication failed!',
     verification_failed_hint: "Please double-check that you have published the code in your channel's description and try again.",
-    go_back_to_step_one_hint: 'If the verification keeps failing, <1>go back to step one</1> and make sure you have pasted the correct URL to your YouTube channel.',
+    go_back_to_step_one_hint: 'If the verification keeps failing, <1>go back to step one</1> and make sure you have pasted the correct URL of your YouTube channel.',
   },
   youtube: {
     title: 'Youtube',
   },
   recommendations: {
     added_to_video_title: 'Recommendations added',
-    by_creator_title: 'Author\'s recommendations',
+    by_creator_title: "Author's recommendations",
     total: 'Total recommendations',
     url: 'Recommendation url',
     yours: 'Your recommendations',
@@ -112,14 +120,18 @@ const resources: CustomTypeOptions['resources'] = {
     contributeToIndependentStatsLabel: 'Independent stats',
     contributeToIndependentStatsHint:
       'Donate anonymously what Youtube recommends and advertises you',
+    contributeToIndependentStatsShowUILabel: 'UI highlight for donation',
+    contributeToIndependentStatsShowUIHint:
+      'Highlight the UI of collected and donated elements',
     api_list_title: 'API List',
-    encrypted_contributions_private_key: 'You can download your private key in dashboard.',
+    encrypted_contributions_private_key:
+      'You can download your private key in dashboard.',
     keypair_passphrase: 'Key pair passphrase',
     keypair_private_key: 'Key pair secret key',
     keypair_public_key: 'Key pair public key',
     keypair_title: 'Keypair for independent contribution',
     access_token_title: 'You Access Token',
-    access_token: 'Access Token'
+    access_token: 'Access Token',
   },
   ytVideoPage: {
     firstTab: 'Creator Recommendations',

@@ -31,7 +31,7 @@ const consideredURLs = {
 };
 
 export type ContributionState =
-  | { type: 'checking' }
+  | { type: 'idle' }
   | { type: 'video-wait' }
   | { type: 'video-seen' }
   | { type: 'video-sent' }
@@ -59,44 +59,67 @@ const observers: MutationObserver[] = [];
 const watchedPaths = {
   banner: {
     selector: '.video-ads.ytp-ad-module',
-    parents: 4, color: 'blue' },
+    parents: 4,
+    color: 'blue',
+  },
   ad: {
     selector: '.ytp-ad-player-overlay',
-    parents: 4, color: 'darkblue' },
+    parents: 4,
+    color: 'darkblue',
+  },
   overlay: {
     selector: '.ytp-ad-player-overlay-instream-info',
-    parents: 4, color: 'lightblue' },
+    parents: 4,
+    color: 'lightblue',
+  },
   toprightad: {
     selector: 'ytd-promoted-sparkles-web-renderer',
-    parents: 3, color: 'aliceblue' },
+    parents: 3,
+    color: 'aliceblue',
+  },
   toprightpict: {
     selector: '.ytd-action-companion-ad-renderer',
-    parents: 2, color: 'azure' },
+    parents: 2,
+    color: 'azure',
+  },
   toprightcta: {
     selector: '.sparkles-light-cta',
-    parents: 1, color: 'violetblue' },
+    parents: 1,
+    color: 'violetblue',
+  },
   toprightattr: {
     selector: '[data-google-av-cxn]',
-    color: 'deeppink' },
+    color: 'deeppink',
+  },
   adbadge: {
     selector: '#ad-badge',
-    parents: 4, color: 'deepskyblue' },
+    parents: 4,
+    color: 'deepskyblue',
+  },
   frontad: {
-    selector: 'ytd-banner-promo-renderer' },
+    selector: 'ytd-banner-promo-renderer',
+  },
   channel1: {
     selector: '[href^="/channel"]',
-    color: 'yellow', parents: 1 },
+    color: 'yellow',
+    parents: 1,
+  },
   channel2: {
     selector: '[href^="/c"]',
-    color: 'yellow', parents: 1 },
+    color: 'yellow',
+    parents: 1,
+  },
   channel3: {
     selector: '[href^="/user"]',
-    color: 'yellow', parents: 1 },
+    color: 'yellow',
+    parents: 1,
+  },
   searchcard: { selector: '.ytd-search-refinement-card-renderer' },
   channellink: { selector: '.channel-link' },
   searchAds: {
     selector: '.ytd-promoted-sparkles-text-search-renderer',
-    parents: 2 },
+    parents: 2,
+  },
 };
 
 const state: CollectedState = {
@@ -115,6 +138,7 @@ let leavesCache: Record<string, any> = {};
 
 let collectDataTimer: any;
 let flushInterval: any;
+let isRunning = false;
 
 const clearCache = (): void => {
   leavesCache = {};
@@ -267,18 +291,25 @@ function manageNodes(
   const isVisible = offsetTop + offsetLeft > 0;
   if (command.preserveInvisible !== true) {
     if (!isVisible) {
-      ddLogger.debug('Ignoring invisible node: %O', selectorName);
+      // ddLogger.debug('Ignoring invisible node: %O', selectorName);
       return;
     }
   }
 
   // this to highlight what is collected as fragments
-  if (settings.ux) {
-    selected.style.border = `1px solid ${
-      command.color !== undefined ? command.color : 'red'
-    }`;
+  if (
+    settings.independentContributions.enable &&
+    settings.independentContributions.showUI
+  ) {
+    const stroke = config.NODE_ENV === 'development' ? '5px' : '1px';
+    const color = command.color ?? 'red';
+    selected.style.border = `${stroke} solid ${color}`;
     selected.setAttribute(selectorName, 'true');
     selected.setAttribute('yttrex', '1');
+  } else {
+    selected.style.border = 'none';
+    selected.removeAttribute(selectorName);
+    selected.removeAttribute('yttrex');
   }
 
   // if escalation to parents, highlight with different color
@@ -291,10 +322,6 @@ function manageNodes(
       },
       selected
     );
-
-    if (config.NODE_ENV === 'development') {
-      selected.style.border = '3px dotted green';
-    }
   }
 
   if (command.screen === true) {
@@ -307,13 +334,9 @@ function manageNodes(
   }, 0);
 
   if (leavesCache[hash] !== undefined) {
-    ddLogger.debug(
-      'Found cache for hash (%s) and selector %s: %O',
-      hash,
-      selectorName,
-      leavesCache[hash]
-    );
-
+    /* ddLogger.debug(
+      'Element cached, not saving it (%s) via selector %s: %O',
+      hash, selectorName, leavesCache[hash]); */
     leavesCache[hash]++;
     return;
   }
@@ -332,12 +355,8 @@ function manageNodes(
     selectorName,
     randomUUID,
     incremental: state.incremental,
-    clientTime: getTimeISO8601()
+    clientTime: getTimeISO8601(),
   };
-
-  // helpful only at development time:
-  // const extra = extractor.mineExtraMetadata(selectorName, acquired);
-  // console.table(extra);
 
   addContribution(acquired);
 
@@ -367,6 +386,11 @@ const boot = (
   keypair: Keypair,
   setState: SetState
 ): void => {
+  if (isRunning) {
+    ddLogger.debug('Already running, returning...');
+    return;
+  }
+  isRunning = true;
   // this get executed on pornhub.com and it is the start of potrex extension
   ddLogger.debug('Version %s', config.REACT_APP_VERSION);
 
@@ -420,7 +444,7 @@ const boot = (
       href: window.location.href,
       randomUUID,
       incremental: state.incremental,
-      clientTime: getTimeISO8601()
+      clientTime: getTimeISO8601(),
     });
     setState({ type: 'video-sent' });
   }, videoPeriodicTimeout);
@@ -493,6 +517,8 @@ const clear = (keypair: Keypair): void => {
   clearCache();
   clearInterval(flushInterval);
   clearInterval(collectDataTimer);
+  isRunning = false;
+  ddLogger.debug(`Cleared all cache and timers.`);
 };
 
 export { boot, flush, clear };
