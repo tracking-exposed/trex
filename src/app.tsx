@@ -2,8 +2,7 @@ import './i18n';
 import './resources/global.css';
 import { pipe } from 'fp-ts/lib/function';
 import * as TE from 'fp-ts/lib/TaskEither';
-// import { debounce } from 'lodash';
-// RIMETTI DEBOUNCE QUANDO DECOMMENTI IL PEZZO LINEA 106
+import { debounce } from 'lodash';
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import { settingsRefetch } from 'state/public.queries';
@@ -27,7 +26,6 @@ const YC_CONTRIBUTION_INFO_BOX_SELECTOR = `#${YC_CONTRIBUTION_INFO_BOX_ID}`;
 const renderInjectedElements = (settings: Settings): void => {
   appLogger.debug('Settings refreshed %O', settings);
   const ytRelatedVideoNode = document.querySelector(YT_RELATED_SELECTOR);
-
 
   if (document.querySelector(YC_CONTRIBUTION_INFO_BOX_SELECTOR) === null) {
     const contributionBoxEl = document.createElement('div');
@@ -115,38 +113,44 @@ va fatto o no. è un check che va messo fuori da un loop
 così frequente, e specialmente considerando che avvien con 
 altra ripetizione, non dobbiamo mettere alcun log ridondante
 ma solo riportare quello che c'è di utile/nuovo 
+*/
 
-if (Settings.active) {
-  if (Settings.independentContributions !== null) {
+void pipe(
+  settingsRefetch.run(),
+  TE.map((settings) => {
+    if (settings.active) {
+      if (settings.independentContributions !== null) {
+        appLogger.debug(
+          'Independent contribution enabled. Getting the keypair...'
+        );
 
-    appLogger.debug(
-      'Independent contribution enabled. Getting the keypair...'
-    );
+        const observer = new MutationObserver(
+          debounce(
+            (mutations) => {
+              appLogger.debug(`Mutations received %O`, mutations);
+              renderInjectedElements(settings);
+            },
+            2500,
+            // NOTE: 2500 instead of 500, to collect evidence we
+            // don't need that much frequency.
+            { trailing: true }
+          )
+        );
 
-    const observer = new MutationObserver(
-      debounce(
-        (mutations) => {
-          appLogger.debug(`Mutations received %O`, mutations);
-          void pipe(
-            settingsRefetch.run(),
-            TE.map((settings) => renderInjectedElements(settings))
-          )();
-        },
-        2500,
-        // NOTE: 2500 instead of 500, to collect evidence we 
-        // don't need that much frequency.
-        { trailing: true }
-      )
-    );
-  }
-}
+        observer.observe(window.document.body, {
+          subtree: true,
+          childList: true,
+        });
 
- */
+        window.addEventListener('unload', () => {
+          observer.disconnect();
+        });
+      }
+    }
 
-observer.observe(window.document.body, {
-  subtree: true,
-  childList: true,
-});
+    return undefined;
+  })
+)();
 
 const handleMessage = <M extends Messages.MessageType<any, any, any>>(
   msg: M

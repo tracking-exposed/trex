@@ -1,14 +1,16 @@
 import { AppBar, Box, Tabs, Typography } from '@material-ui/core';
+import CommunityIcon from '@material-ui/icons/GroupWorkOutlined';
+import ContentCreatorIcon from '@material-ui/icons/HealingOutlined';
+import YTIcon from '@material-ui/icons/YouTube';
 import { makeStyles } from '@material-ui/styles';
 import * as QR from 'avenger/lib/QueryResult';
-import { declareQueries } from 'avenger/lib/react';
+import { WithQueries } from 'avenger/lib/react';
 import { ErrorBox } from 'components/common/ErrorBox';
 import {
   FullSizeLoader,
   LazyFullSizeLoader,
 } from 'components/common/FullSizeLoader';
 import { TabPanel } from 'components/common/TabPanel';
-import { pipe } from 'fp-ts/lib/function';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
 import { settingsRefetch } from 'state/public.queries';
@@ -16,9 +18,6 @@ import { GetLogger } from 'utils/logger.utils';
 import { getVideoId } from 'utils/yt.utils';
 import { Tab } from '../common/Tab';
 import { VideoRecommendations } from './VideoRecommendations';
-import ContentCreatorIcon from '@material-ui/icons/HealingOutlined';
-import CommunityIcon from '@material-ui/icons/GroupWorkOutlined';
-import YTIcon from '@material-ui/icons/YouTube';
 
 const logger = GetLogger('yt-video-recommendations');
 
@@ -34,13 +33,11 @@ const useStyles = makeStyles(() => ({
   },
 }));
 
-const withQueries = declareQueries({ settings: settingsRefetch });
-
-export const YTVideoPage = withQueries(
-  ({ queries }): React.ReactElement | null => {
-    return pipe(
-      queries,
-      QR.fold(LazyFullSizeLoader, ErrorBox, ({ settings }) => {
+export const YTVideoPage: React.FC = () => {
+  return (
+    <WithQueries
+      queries={{ settings: settingsRefetch }}
+      render={QR.fold(LazyFullSizeLoader, ErrorBox, ({ settings }) => {
         const { t } = useTranslation();
         const [currentTab, setCurrentTab] = React.useState(0);
         const [currentVideoId, setVideoId] = React.useState(
@@ -50,30 +47,36 @@ export const YTVideoPage = withQueries(
         const classes = useStyles();
 
         const patchYTRecommendations = (tab: number): void => {
+          const displayNoneClassName = `+ ${classes.displayNone}`;
           const ytItemsRendererEl = document.getElementsByTagName(
             'ytd-watch-next-secondary-results-renderer'
           )[0];
 
           if (
-            typeof ytItemsRendererEl === 'object' &&
-            ytItemsRendererEl !== null
+            ytItemsRendererEl !== null &&
+            typeof ytItemsRendererEl === 'object'
           ) {
             // tab n2 = youtube, tab1 = community
             if (tab === 2) {
               ytItemsRendererEl.className = ytItemsRendererEl.className.replace(
-                `+ ${classes.displayNone}`,
+                displayNoneClassName,
                 ''
               );
-            } else {
-              ytItemsRendererEl.className += `+ ${classes.displayNone}`;
+            } else if (
+              !ytItemsRendererEl.className.includes(displayNoneClassName)
+            ) {
+              ytItemsRendererEl.className += displayNoneClassName;
             }
           }
         };
 
-        const onTabChange = React.useCallback((tab: number) => {
-          setCurrentTab(tab);
-          patchYTRecommendations(tab);
-        }, []);
+        const onTabChange = React.useCallback(
+          (tab: number) => {
+            setCurrentTab(tab);
+            patchYTRecommendations(tab);
+          },
+          []
+        );
 
         React.useEffect(() => {
           patchYTRecommendations(currentTab);
@@ -92,9 +95,9 @@ export const YTVideoPage = withQueries(
 
           observer.observe(document, { childList: true, subtree: true });
 
-          return (() => {
+          return () => {
             observer.disconnect();
-          });
+          };
         }, [currentVideoId]);
 
         React.useEffect(() => {
@@ -160,7 +163,7 @@ export const YTVideoPage = withQueries(
             </TabPanel>
           </Box>
         );
-      })
-    );
-  }
-);
+      })}
+    />
+  );
+};

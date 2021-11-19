@@ -1,6 +1,6 @@
 import { Box, Typography } from '@material-ui/core';
 import * as QR from 'avenger/lib/QueryResult';
-import { declareQueries, WithQueries } from 'avenger/lib/react';
+import { WithQueries } from 'avenger/lib/react';
 import * as React from 'react';
 import { ErrorBox } from '../../components/common/ErrorBox';
 import { LazyFullSizeLoader } from '../../components/common/FullSizeLoader';
@@ -69,11 +69,7 @@ const YTContributionInfoBoxComponent: React.FC<{
   );
 };
 
-const withQueries = declareQueries({
-  keypair: keypair,
-  settings: settingsRefetch,
-});
-export const YTContributionInfoBox = withQueries(({ queries }) => {
+export const YTContributionInfoBox: React.FC = () => {
   return (
     <WithQueries
       queries={{ keypair, settings: settingsRefetch }}
@@ -90,4 +86,4 @@ export const YTContributionInfoBox = withQueries(({ queries }) => {
       })}
     />
   );
-});
+};
