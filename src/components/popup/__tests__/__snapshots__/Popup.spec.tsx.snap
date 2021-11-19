@@ -12,7 +12,6 @@ exports[`Popup Should mount the Popup 1`] = `
     >
       <a
         className="makeStyles-link-5"
-        href="http://localhost:3000"
         rel="noreferrer"
         target="_blank"
       >

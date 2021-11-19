@@ -1,6 +1,6 @@
 import { AuthResponse } from '@backend/models/Auth';
 import { ContentCreator } from '@backend/models/ContentCreator';
-import { pipe } from 'fp-ts/lib/pipeable';
+import { pipe } from 'fp-ts/lib/function';
 import * as R from 'fp-ts/lib/Record';
 import * as t from 'io-ts';
 import { Keypair, Settings } from './Settings';

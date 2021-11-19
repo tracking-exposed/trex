@@ -1,3 +1,5 @@
+/* eslint-disable no-template-curly-in-string */
+
 const releaseRules = [
   { breaking: true, release: 'major' },
   { revert: true, release: 'patch' },
@@ -73,7 +75,7 @@ module.exports = {
     [
       '@semantic-release/exec',
       {
-        prepareCmd: 'npm run build -- ${nextRelease.version}',
+        prepareCmd: 'MANIFEST_VERSION=${nextRelease.version} npm run build',
       },
     ],
     [

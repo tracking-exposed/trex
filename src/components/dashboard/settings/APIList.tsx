@@ -40,7 +40,7 @@ export const APIList: React.FC = () => {
                 R.toArray,
                 A.map(([apiNamespace, api]) => {
                   return (
-                    <Box>
+                    <Box key={`${apiVersionKey}-${apiNamespace}`}>
                       <Typography variant="h6">{apiNamespace}</Typography>
                       <List>
                         {pipe(
@@ -52,7 +52,7 @@ export const APIList: React.FC = () => {
                               R.mapWithIndex((key) => `:${key}`)
                             );
                             return (
-                              <ListItem key={apiNamespace}>
+                              <ListItem key={routeName}>
                                 <ListItemText>
                                   <Typography
                                     color="primary"

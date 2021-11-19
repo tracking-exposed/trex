@@ -4,6 +4,7 @@ on:
   pull_request:
     branches:
       - daily
+      - beta
 
 jobs:
   install:

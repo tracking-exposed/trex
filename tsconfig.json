@@ -1,18 +1,18 @@
 {
-  "extends": "./tsconfig.paths.json",
   "compilerOptions": {
     "module": "esnext",
     "target": "es5",
-    "jsx": "react-jsx",
+    "jsx": "react",
     "noEmit": true,
     "allowJs": true,
     "strict": true,
-    "strictNullChecks": true,
     "esModuleInterop": true,
     "noUnusedLocals": true,
     "resolveJsonModule": true,
-    "skipDefaultLibCheck": true,
     "forceConsistentCasingInFileNames": true,
+    "strictNullChecks": true,
+    "skipDefaultLibCheck": true,
+    "skipLibCheck": true,
     "lib": [
       "dom",
       "ESNext"
@@ -26,13 +26,15 @@
     "noFallthroughCasesInSwitch": true,
     "moduleResolution": "Node",
     "isolatedModules": true,
-    "skipLibCheck": true
+    "paths": {
+      "@chrome/*": ["./chrome/*"],
+      "@backend/*": ["../yttrex-backend/backend/*"]
+    }
   },
-  "include": [
-    "./src"
-  ],
   "exclude": [
-    "public",
-    "**/__tests__/**"
+    "./public/**",
+    "**/node_modules/**",
+    "./yttrex-backend/**",
+    "./build/**"
   ]
 }
