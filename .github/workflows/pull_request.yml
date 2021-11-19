@@ -12,7 +12,9 @@ jobs:
     steps:
       - uses: actions/checkout@v2
         with:
+          fetch-depth: 0
           submodules: recursive
+          persist-credentials: false
 
       - name: Get npm cache directory path
         id: npm-cache-dir-path
@@ -22,7 +24,7 @@ jobs:
         id: npm-cache # use this to check for `cache-hit` (`steps.yarn-cache.outputs.cache-hit != 'true'`)
         with:
           path: ${{ steps.npm-cache-dir-path.outputs.dir }}
-          key: ${{ runner.os }}-npm-${{ hashFiles('package-lock.json') }}
+          key: ${{ runner.os }}-npm-${{ hashFiles('**/package-lock.json') }}
           restore-keys: |
             ${{ runner.os }}-npm-
 
@@ -41,7 +43,9 @@ jobs:
     steps:
       - uses: actions/checkout@v2
         with:
+          fetch-depth: 0
           submodules: recursive
+          persist-credentials: false
 
       - uses: actions/cache@v2
         with:
@@ -58,7 +62,9 @@ jobs:
     steps:
       - uses: actions/checkout@v2
         with:
+          fetch-depth: 0
           submodules: recursive
+          persist-credentials: false
 
       - uses: actions/cache@v2
         with:
@@ -75,7 +81,9 @@ jobs:
     steps:
       - uses: actions/checkout@v2
         with:
+          fetch-depth: 0
           submodules: recursive
+          persist-credentials: false
 
       - uses: actions/cache@v2
         with:

@@ -6,7 +6,7 @@
   "bugs": "https://github.com/tracking-exposed/YCAI/issues",
   "private": true,
   "license": "AGPL-3.0",
-  "author": "Claudio Agosti, Andrea Ascari, and the https://youchoose.ai team",
+  "author": "Read the CREDITS file in the repository linked in https://youchoose.ai",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/tracking-exposed/YCAI.git"

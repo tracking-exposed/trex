@@ -134,7 +134,7 @@ export const Popup = withQueries(({ queries }) => {
             <CardActions>
               <Button
                 size="medium"
-                color= "grey[500]"
+                color="primary"
                 variant="contained"
                 href={'/index.html'}
                 target="_blank"

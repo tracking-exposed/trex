@@ -1,7 +1,4 @@
-import {
-  Box,
-  Grid
-} from '@material-ui/core';
+import { Box, Grid } from '@material-ui/core';
 import * as QR from 'avenger/lib/QueryResult';
 import { declareQueries } from 'avenger/lib/react';
 import { pipe } from 'fp-ts/lib/function';
@@ -31,7 +28,9 @@ const Settings = withQueries(({ queries }): React.ReactElement => {
               <AccessTokenBox profile={profile} />
             </Grid>
           </Grid>
-          {keypair !== undefined && settings.independentContributions ? (
+          {keypair !== undefined &&
+          settings !== null &&
+          settings.independentContributions.enable ? (
             <KeypairBox keypair={keypair} settings={settings} />
           ) : null}
 

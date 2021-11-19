@@ -100,7 +100,7 @@ export const sendAPIMessage =
           }),
         E.toError
       ),
-      TE.chain(v => TE.fromEither(catchRuntimeLastError(v))),
+      TE.chain((v) => TE.fromEither(catchRuntimeLastError(v))),
       TE.chain((result) => {
         log.debug('Response for %s received %O', staticPath, result);
         if (result.type === ErrorOccurred.value) {
@@ -108,5 +108,48 @@ export const sendAPIMessage =
         }
         return TE.right(result.response);
       })
+    );
+  };
+
+export const tabsQuery = (): TE.TaskEither<
+  chrome.runtime.LastError,
+  chrome.tabs.Tab[] | undefined
+> => {
+  return pipe(
+    TE.tryCatch(() => {
+      return new Promise<chrome.tabs.Tab[] | undefined>((resolve) => {
+        bo.tabs.query(
+          { active: true, currentWindow: true, url: 'https://*.youtube.com/*' },
+          resolve
+        );
+      });
+    }, E.toError),
+    TE.chain((v) => TE.fromEither(catchRuntimeLastError(v)))
+  );
+};
+
+export const sendTabMessage =
+  <M extends Messages[keyof Messages]>(r: M) =>
+  (
+    tabId: number,
+    p?: M['Request']['payload']
+  ): TE.TaskEither<chrome.runtime.LastError, M['Response']['response']> => {
+    return pipe(
+      TE.tryCatch(() => {
+        return new Promise<any>((resolve, reject) => {
+          log.debug(
+            'Sending message to tab %s %s with payload %O',
+            tabId,
+            r.Request.type,
+            p
+          );
+          return bo.tabs.sendMessage<M['Request'], M['Response']>(
+            tabId,
+            { type: r.Request.type, payload: p },
+            resolve
+          );
+        });
+      }, E.toError),
+      TE.chain((e) => TE.fromEither(catchRuntimeLastError(e)))
     );
   };

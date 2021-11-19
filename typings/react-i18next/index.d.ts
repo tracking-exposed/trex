@@ -39,6 +39,7 @@ declare module 'react-i18next' {
         move_recommendation_up: string;
         move_recommendation_down: string;
         remove_recommendation_from_video: string;
+        manage_tokens: string;
       };
       account: {
         channel: string;
@@ -99,6 +100,8 @@ declare module 'react-i18next' {
         communityRecommendationsHint: string;
         contributeToIndependentStatsLabel: string;
         contributeToIndependentStatsHint: string;
+        contributeToIndependentStatsShowUILabel: string;
+        contributeToIndependentStatsShowUIHint: string;
         api_list_title: string;
         encrypted_contributions_private_key: string;
         keypair_title: string;
