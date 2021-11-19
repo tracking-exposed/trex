@@ -1,7 +1,7 @@
 import * as Endpoints from '@backend/endpoints';
 import {
   ADVContributionEvent,
-  VideoContributionEvent
+  VideoContributionEvent,
 } from '@backend/models/ContributionEvent';
 import { differenceInSeconds } from 'date-fns';
 import { pipe } from 'fp-ts/lib/function';
@@ -144,7 +144,6 @@ const clearCache = (): void => {
   leavesCache = {};
   lastObservedSize = 1;
 };
-
 
 function watch(
   root: Document,
@@ -298,14 +297,19 @@ function manageNodes(
   }
 
   // this to highlight what is collected as fragments
-  if (settings.independentContributions?.showUI === true) {
+  if (
+    settings.independentContributions.enable &&
+    settings.independentContributions.showUI
+  ) {
     const stroke = config.NODE_ENV === 'development' ? '5px' : '1px';
     const color = command.color ?? 'red';
     selected.style.border = `${stroke} solid ${color}`;
     selected.setAttribute(selectorName, 'true');
     selected.setAttribute('yttrex', '1');
   } else {
-    selected.style.border = "none";
+    selected.style.border = 'none';
+    selected.removeAttribute(selectorName);
+    selected.removeAttribute('yttrex');
   }
 
   // if escalation to parents, highlight with different color

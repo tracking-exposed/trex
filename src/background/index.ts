@@ -11,6 +11,7 @@ import { APIError, apiFromEndpoint } from '../providers/api.provider';
 import {
   catchRuntimeLastError,
   sendTabMessage,
+  tabsQuery,
   toBrowserError,
 } from '../providers/browser.provider';
 import { bo } from '../utils/browser.utils';
@@ -132,9 +133,18 @@ const getMessageHandler = <
       return pipe(
         db.update(getStorageKey(r.type), r.payload),
         TE.mapLeft(toMessageHandlerError),
-        TE.chain((res) =>
+        TE.chain((response) =>
           pipe(
-            sendTabMessage(Messages.Messages.UpdateSettings)(res),
+            tabsQuery(),
+            TE.chain((tabs) => {
+              if (tabs?.[0]?.id !== undefined) {
+                return sendTabMessage(Messages.Messages.UpdateSettings)(
+                  tabs[0].id,
+                  response
+                );
+              }
+              return TE.right(response);
+            }),
             TE.mapLeft(toMessageHandlerError)
           )
         ),

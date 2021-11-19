@@ -23,7 +23,7 @@ const YC_RECOMMENDATIONS_SELECTOR = `#${YC_RECOMMENDATIONS_ID}`;
 const YC_CONTRIBUTION_INFO_BOX_ID = 'ycai-contribution-box';
 const YC_CONTRIBUTION_INFO_BOX_SELECTOR = `#${YC_CONTRIBUTION_INFO_BOX_ID}`;
 
-const renderInjectedElements = (settings: Settings): void => {
+const renderInjectedElements = (settings: Settings | null): void => {
   appLogger.debug('Settings refreshed %O', settings);
   const ytRelatedVideoNode = document.querySelector(YT_RELATED_SELECTOR);
 
@@ -55,8 +55,7 @@ const renderInjectedElements = (settings: Settings): void => {
   }
 
   // video recommendations box
-  if (settings.ccRecommendations) {
-    appLogger.debug('Settings: active');
+  if (settings?.ccRecommendations === true) {
     if (ytRelatedVideoNode !== null) {
       appLogger.debug('Element (%s) found in yt page', ytRelatedVideoNode.id);
       const ycRecommendationsEl = ytRelatedVideoNode.querySelector(
@@ -119,7 +118,7 @@ void pipe(
   settingsRefetch.run(),
   TE.map((settings) => {
     if (settings.active) {
-      if (settings.independentContributions !== null) {
+      if (settings.independentContributions.enable) {
         appLogger.debug(
           'Independent contribution enabled. Getting the keypair...'
         );

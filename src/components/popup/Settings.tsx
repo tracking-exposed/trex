@@ -116,19 +116,18 @@ const Settings: React.FC<SettingsProps> = ({ settings }) => {
               className={classes.marginRight}
               aria-labelledby="switch-independentContributions"
               color="primary"
-              checked={settings.independentContributions !== null}
-              onChange={(e, independentContributions) => {
-                if (independentContributions) {
+              checked={settings.independentContributions.enable}
+              onChange={(e, enable) => {
+                if (enable) {
                   void generateKeypair({})();
                 }
 
                 void updateSettings({
                   ...settings,
-                  independentContributions: independentContributions
-                    ? {
-                        showUI: false,
-                      }
-                    : null,
+                  independentContributions: {
+                    ...settings.independentContributions,
+                    enable,
+                  },
                 })();
               }}
             />
@@ -146,7 +145,7 @@ const Settings: React.FC<SettingsProps> = ({ settings }) => {
           }
           labelPlacement="end"
         />
-        {settings.independentContributions !== null ? (
+        {settings.independentContributions.enable ? (
           <FormControl style={{ paddingLeft: 80 }}>
             <FormControlLabel
               control={
@@ -159,6 +158,7 @@ const Settings: React.FC<SettingsProps> = ({ settings }) => {
                     void updateSettings({
                       ...settings,
                       independentContributions: {
+                        ...settings.independentContributions,
                         showUI,
                       },
                     })();

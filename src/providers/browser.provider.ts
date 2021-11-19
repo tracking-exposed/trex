@@ -111,27 +111,43 @@ export const sendAPIMessage =
     );
   };
 
+export const tabsQuery = (): TE.TaskEither<
+  chrome.runtime.LastError,
+  chrome.tabs.Tab[] | undefined
+> => {
+  return pipe(
+    TE.tryCatch(() => {
+      return new Promise<chrome.tabs.Tab[] | undefined>((resolve) => {
+        bo.tabs.query(
+          { active: true, currentWindow: true, url: 'https://*.youtube.com/*' },
+          resolve
+        );
+      });
+    }, E.toError),
+    TE.chain((v) => TE.fromEither(catchRuntimeLastError(v)))
+  );
+};
+
 export const sendTabMessage =
   <M extends Messages[keyof Messages]>(r: M) =>
   (
+    tabId: number,
     p?: M['Request']['payload']
   ): TE.TaskEither<chrome.runtime.LastError, M['Response']['response']> => {
     return pipe(
       TE.tryCatch(() => {
         return new Promise<any>((resolve, reject) => {
-          bo.tabs.query({ active: true, currentWindow: true }, function (tabs) {
-            if (tabs[0].id !== undefined) {
-              log.debug('Sending message to tab %s with payload %O', r.Request.type, p);
-              return bo.tabs.sendMessage<M['Request'], M['Response']>(
-                tabs[0].id,
-                { type: r.Request.type, payload: p },
-                function (response) {
-                  resolve(response);
-                }
-              );
-            }
-            reject(new Error('No active tab to send message to.'));
-          });
+          log.debug(
+            'Sending message to tab %s %s with payload %O',
+            tabId,
+            r.Request.type,
+            p
+          );
+          return bo.tabs.sendMessage<M['Request'], M['Response']>(
+            tabId,
+            { type: r.Request.type, payload: p },
+            resolve
+          );
         });
       }, E.toError),
       TE.chain((e) => TE.fromEither(catchRuntimeLastError(e)))

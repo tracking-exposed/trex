@@ -74,7 +74,7 @@ export const YTContributionInfoBox: React.FC = () => {
     <WithQueries
       queries={{ keypair, settings: settingsRefetch }}
       render={QR.fold(LazyFullSizeLoader, ErrorBox, ({ keypair, settings }) => {
-        if (settings.independentContributions !== null) {
+        if (settings !== null) {
           return (
             <YTContributionInfoBoxComponent
               keypair={keypair}
