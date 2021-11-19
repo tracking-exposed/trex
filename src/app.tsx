@@ -100,20 +100,6 @@ const renderInjectedElements = (settings: Settings | null): void => {
 /**
  * Define mutation observer to listen for window's dom changes
  */
-
-/* THIS IS COMMITTE ONLY BECAUSE I CAN'T TAKE settings
-  and I'm just writing here Settings --- but this code 
-  matter 
-
-Questo cambio di codice è utile perchè non si deve fare un
-loop infinito ad altra frequenza (500 ms erano troppo pochi),
-e poi fare la verifica del booleano per capire se 
-va fatto o no. è un check che va messo fuori da un loop 
-così frequente, e specialmente considerando che avvien con 
-altra ripetizione, non dobbiamo mettere alcun log ridondante
-ma solo riportare quello che c'è di utile/nuovo 
-*/
-
 void pipe(
   settingsRefetch.run(),
   TE.map((settings) => {
@@ -130,7 +116,7 @@ void pipe(
               renderInjectedElements(settings);
             },
             2500,
-            // NOTE: 2500 instead of 500, to collect evidence we
+            // NOTE: 2500ms to collect evidence as
             // don't need that much frequency.
             { trailing: true }
           )
