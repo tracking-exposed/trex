@@ -25,7 +25,7 @@ const VideoRecommendations = Endpoint({
 });
 
 const GetRecommendations = Endpoint({
-  Method: "POST",
+  Method: "GET",
   getPath: ({ ids }) => `/v3/recommendations/${ids}`,
   Input: {
     Query: GetRecommendationsQuery,
