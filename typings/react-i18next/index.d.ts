@@ -40,7 +40,12 @@ declare module 'react-i18next' {
         move_recommendation_down: string;
         remove_recommendation_from_video: string;
         manage_tokens: string;
+        reset_settings: string;
+        reload_extension: string;
       };
+      errors: {
+        an_error_occurred: string;
+      },
       account: {
         channel: string;
       };
