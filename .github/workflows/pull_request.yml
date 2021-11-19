@@ -36,7 +36,7 @@ jobs:
 
       - name: Install modules
         # if: steps.yarn-cache.outputs.cache-hit != 'true'
-        run: npm i
+        run: npm ci
 
   lint:
     runs-on: ubuntu-latest
