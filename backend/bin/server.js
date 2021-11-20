@@ -50,12 +50,14 @@ async function iowrapper(fname, req, res) {
     } else if (httpresult.text) {
         debug("API (%s) success, returning text (size %d)", fname, _.size(httpresult.text));
         res.send(httpresult.text);
+    } else if(httpresult.status) {
+        debug("Returning empty status %d from API (%s)", httpresult.status, fname);
+        res.status(httpresult.status);
     } else {
         debug("Undetermined failure in API (%s) →  %j", fname, httpresult);
         res.status(502);
         res.send("Error?");
     }
-
   } catch(error) {
     res.status(502);
     res.send("Software error: " + error.message);
