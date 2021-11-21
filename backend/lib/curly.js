@@ -5,22 +5,31 @@ const fs = require("fs");
 const path = require("path");
 const utils = require("./utils");
 
+/* 
+ * This library allow us to:
+ 1) Fetch from curl two possible pages from any youtube channel
+ 2) Save the retrived HTML
+ 3) Parse a few data present in such pages, to return the information we might need.
+
+The informations we wants to extract is:
+ - list of the last 30 published videos/title
+ - presence of the authorization secret code
+ *
+ */
+
 function lookForJSONblob(data) {
-  // Questa funzione potrebbe essere instabile
-  // Permettendoci una licenza poetica:
-  // Stà come d'autuno, sugli alberi, ed è una foglia secca con sopra un bruco affamato.
-  const dumblist = data.split("ytInitialData = ");
-  const largestr = dumblist[1]
+  const jsonldinit = data.split("ytInitialData = ");
+  const largestr = jsonldinit[1]
     .replace(/[\n\t\r]/g, "")
     .replace(/}};<.script.*/g, "}}");
-  debug("stripped %d ", largestr.length - dumblist[1].length);
+  debug("stripped %d ", largestr.length - jsonldinit[1].length);
   try {
     const blob = JSON.parse(largestr);
     debug(
       "Success in parsing JSON: <%d, %d, %j>",
       _.size(largestr),
-      _.size(dumblist),
-      _.map(dumblist, _.size)
+      _.size(jsonldinit),
+      _.map(jsonldinit, _.size)
     );
     return blob;
   } catch (error) {
@@ -28,12 +37,12 @@ function lookForJSONblob(data) {
       "Error in parsing JSON: %s <%d, %d, %j>",
       error.message,
       _.size(largestr),
-      _.size(dumblist),
-      _.map(dumblist, _.size)
+      _.size(jsonldinit),
+      _.map(jsonldinit, _.size)
     );
     const logf = "tmp-log-" + _.random(0, 0xfffff) + ".json";
-    dumblist.push(largestr);
-    fs.writeFileSync(logf, JSON.stringify(dumblist, null, 2), "utf-8");
+    jsonldinit.push(largestr);
+    fs.writeFileSync(logf, JSON.stringify(jsonldinit, null, 2), "utf-8");
     return null;
   }
 }
