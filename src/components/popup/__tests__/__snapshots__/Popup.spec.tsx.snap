@@ -5,22 +5,18 @@ exports[`Popup Should mount the Popup 1`] = `
   className="MuiPaper-root MuiCard-root makeStyles-container-1 MuiPaper-elevation1 MuiPaper-rounded"
 >
   <div
-    className="MuiGrid-root makeStyles-header-3 MuiGrid-container MuiGrid-align-items-xs-center"
+    className="MuiBox-root MuiBox-root-9 makeStyles-header-3"
   >
-    <div
-      className="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-7"
+    <a
+      className="makeStyles-link-6"
+      rel="noreferrer"
+      target="_blank"
     >
-      <a
-        className="makeStyles-link-5"
-        rel="noreferrer"
-        target="_blank"
-      >
-        <img
-          className="makeStyles-img-4"
-          src="/ycai-logo.png"
-        />
-      </a>
-    </div>
+      <img
+        className="makeStyles-img-5"
+        src="/ycai-logo.svg"
+      />
+    </a>
   </div>
   <div
     className="MuiPaper-root MuiAlert-root MuiAlert-standardInfo MuiPaper-elevation0"

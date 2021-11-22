@@ -26,10 +26,11 @@ const youtubeChannelUrlRegex = /\/channel\/([^/]+)\/?$/;
 
 const useStyles = makeStyles((theme) => ({
   box: {
+    marginTop: theme.spacing(1),
     marginBottom: theme.spacing(2),
   },
   boxGrid: {
-    marginTop: theme.spacing(1),
+    marginTop: theme.spacing(10),
     marginBottom: theme.spacing(3),
   },
   tokenDisplay: {
@@ -39,7 +40,7 @@ const useStyles = makeStyles((theme) => ({
     marginRight: theme.spacing(2),
   },
   stepButton: {
-    marginTop: theme.spacing(4),
+    marginTop: theme.spacing(5),
   },
   linkButton: {
     '&:hover': {
