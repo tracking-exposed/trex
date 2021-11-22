@@ -1,3 +1,11 @@
+## [1.1.1-beta.3](https://github.com/tracking-exposed/YCAI/compare/v1.1.1-beta.2...v1.1.1-beta.3) (2021-11-22)
+
+
+### Bug Fixes
+
+* styling ([#164](https://github.com/tracking-exposed/YCAI/issues/164)) ([1091669](https://github.com/tracking-exposed/YCAI/commit/10916696f0201a22a43b13a4c4c8dd5f2f1aa8c6))
+* updated README ([#160](https://github.com/tracking-exposed/YCAI/issues/160)) ([ca4f134](https://github.com/tracking-exposed/YCAI/commit/ca4f1349367f11e7997e322d94be5c80dc78ebb1))
+
 ## [1.1.1-beta.2](https://github.com/tracking-exposed/YCAI/compare/v1.1.1-beta.1...v1.1.1-beta.2) (2021-11-19)
 
 
