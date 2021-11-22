@@ -53,9 +53,6 @@ const apiList = {
     getMonitor:          require('../routes/monitor').getMonitor,
     deleter:             require('../routes/monitor').deleter,
 
-    /** emails */
-    registerEmail:       require('../routes/emails').registerEmail,
-
     /* guardoni support for webapp */
     getAllExperiments:   require('../routes/experiments').list,
     experimentCSV:       require('../routes/experiments').csv,
@@ -66,11 +63,13 @@ const apiList = {
     // used by guardoni to close it
     concludeExperiment3: require('../routes/experiments').conclude3,
 
-
+    /* for survey (with emails) */
     recordAnswers:       require('../routes/answers').recordAnswers,
     retrieveAnswers:     require('../routes/answers').retrieveAnswers,
     retrieveAnswersCSV:  require('../routes/answers').retrieveAnswersCSV,
     retrieveMails:       require('../routes/answers').retrieveMails,
+    /* and specificly for the email, opt-in, and who wants to be get updated */
+    registerEmail:       require('../routes/emails').registerEmail,
 
     /* v3 youchoose */
     youChooseByVideoId:     require('../routes/youchoose').byVideoId,
