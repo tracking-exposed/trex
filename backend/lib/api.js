@@ -21,7 +21,6 @@ const apiList = {
     getSearchesDot:      require('../routes/searches').getSearchesDot,
     getSearchKeywords:   require('../routes/searches').getSearchKeywords,
     getSearchDetails:    require('../routes/searches').getSearchDetails,
-    updateCampaigns:     require('../routes/searches').updateCampaigns,
 
 
     getByAuthor:         require('../routes/public').getByAuthor,

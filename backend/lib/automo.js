@@ -42,14 +42,11 @@ async function getSummaryByPublicKey(publicKey, options) {
             $exists: true
         } });
 
-    const searches = await mongo3.readLimit(mongoc,
-        nconf.get('schema').queries, { publicKey: supporter.publicKey }, { savingTime: -1},
-            options.amount, options.skip);
-
     await mongoc.close();
 
-    debug("Retrieved in getSummaryByPublicKey: data %d, total %d (amount %d skip %d) and searches %d",
-        _.size(metadata), total, options.amount, options.skip, _.size(searches));
+    debug("Retrieved in getSummaryByPublicKey: data %d, total %d (amount %d skip %d)",
+        _.size(metadata), total, options.amount, options.skip);
+
 
     const fields = [ 'id', 'login', 'videoId', 'savingTime', 'title', 'relative',
                      'authorName', 'authorSource', 'publicationTime', 'relatedN' ];
@@ -59,6 +56,8 @@ async function getSummaryByPublicKey(publicKey, options) {
         e.relative = moment.duration( moment(e.savingTime) - moment() ).humanize() + " ago";
         return _.pick(e, fields);
     });
+
+    const grouped = _.groupBy(redacted, 'type');
 
     const graphs = {};
     const listOfRelated = _.flatten(_.map(metadata, 'related'));

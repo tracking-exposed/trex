@@ -20,10 +20,10 @@ const EXTENSION_WITH_OPT_IN_ALREADY_CHECKED='https://github.com/tracking-exposed
 const defaultCfgPath = path.join("static", "settings.json");
 nconf.argv().env();
 nconf.defaults({
-  'config' : defaultCfgPath
+  config: defaultCfgPath
 });
 const configFile = nconf.get('config');
-nconf.file(configFile);
+nconf.argv().env().file(configFile);
 debug.enabled = true;
 
 const server = nconf.get('backend') ?
@@ -305,7 +305,6 @@ function profileExecount(profile, evidencetag) {
 
 function printHelp() {
   const helptext = `\nOptions can be set via: env , --longopts, and ${defaultCfgPath} file
-Three modes exists to launch Guardoni:\n
 
 To quickly test the tool:
    --auto:\t\tYou can specify 1 (is the default) or 2.
@@ -316,12 +315,21 @@ To register an experiment:
 To execute a known experiment:
    --experiment <experimentId>
 
-https://youtube.tracking.exposed/guardoni for full documentation.
- [--evidencetag, --profile, are special option], and --config <file>
+Advanced options:
+   --evendencetag <string>
+   --profile <string>
+   --config <file>
+   --proxy <string>
+   --advdump <directory>
+   --3rd
+   --headless
+
+.:*~*:._.:*~*:._.:*~*:._.:*~*:._.:*~*:._.:*~*:._.:*~*:._.:*~*:._.:*~*:.
+\nhttps://youtube.tracking.exposed/guardoni for full documentation.
 You need a reliable internet connection to ensure a flawless collection`;
   console.log(".:*~*:._.:*~*:._.:*~*:._.:*~*:._.:*~*:._.:*~*:._.:*~*:._.:*~*:._.:*~*:.");
   console.log(helptext);
-  console.log('\n~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~');
+  console.log('~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~');
 }
 
 async function main() {
@@ -451,16 +459,25 @@ async function dispatchBrowser(headless, profinfo) {
   const chromePath = getChromePath();
   const proxy = nconf.get('proxy');
 
-  debug("Dispatching a browser in a profile usage count %d", execount);
-
   const commandLineArg = ["--no-sandbox",
     "--disabled-setuid-sandbox",
     "--load-extension=" + dist,
     "--disable-extensions-except=" + dist,
   ];
 
-  if(proxy)
+  if(proxy) {
+    if(!_.startsWith(proxy, 'socks5://')) {
+      console.log("Error, --proxy must start with socks5://");
+      process.exit(1);
+    }
     commandLineArg.push("--proxy-server=" + proxy);
+    debug("Dispatching browser: profile usage count %d proxy %s",
+      execount, proxy);
+  }
+  else {
+    debug("Dispatching browser: profile usage count %d, with NO PROXY",
+      execount);
+  }
 
   try {
     puppeteer.use(pluginStealth());
