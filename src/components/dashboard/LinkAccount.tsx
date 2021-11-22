@@ -8,7 +8,6 @@ import {
   Input,
   InputLabel,
   Link,
-  makeStyles,
   Typography,
 } from '@material-ui/core';
 import CopyIcon from '@material-ui/icons/FileCopyOutlined';
@@ -21,6 +20,7 @@ import {
   updateAuth,
   verifyChannel,
 } from '../../state/creator.commands';
+import { makeStyles } from '../../theme';
 
 const youtubeChannelUrlRegex = /\/channel\/([^/]+)\/?$/;
 
@@ -161,8 +161,8 @@ export const LinkAccount: React.FC<LinkAccountProps> = ({ auth }) => {
             disabled={channel === ''}
             className={classes.stepButton}
             variant="contained"
-            color="primary"
             size="large"
+            color="primary"
             onClick={handleChannelSubmit}
           >
             {t('actions:next')}
@@ -176,10 +176,7 @@ export const LinkAccount: React.FC<LinkAccountProps> = ({ auth }) => {
         2/2 {t('link_account:copy_verification_key')}
       </Typography>
       <Grid container className={classes.boxGrid} spacing={2}>
-        <Grid
-          item
-          xs={12}
-        >
+        <Grid item xs={12}>
           <Typography className={classes.tokenDisplay} id="account-channelId">
             {auth.tokenString}
           </Typography>

@@ -29,10 +29,11 @@ const useStyles = makeStyles((theme) => ({
     marginBottom: theme.spacing(2),
   },
   header: {
+    marginTop: theme.spacing(2),
     marginBottom: theme.spacing(0),
   },
   version:{
-    marginBottom: theme.spacing(5),
+    marginBottom: theme.spacing(7),
   },
   img: {
     width: '280%',

@@ -98,8 +98,9 @@ const DashboardContent: React.FC<DashboardContentProps> = ({
         item
         xs={12}
         style={{
+          marginTop: '0.5rem',
           /* borderBottom: `1px solid ${theme.palette.grey[500]}`, */
-          marginBottom: '4rem',
+          marginBottom: '0.4rem',
         }}
       >
         <Typography variant="h3" color="textPrimary" style={{ whiteSpace: 'pre-line' }}>

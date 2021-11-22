@@ -91,7 +91,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ currentView }) => {
         style={{
           paddingTop: theme.spacing(4),
           paddingRight: theme.spacing(10),
-          marginBottom: theme.spacing(6),
+          marginBottom: theme.spacing(8),
         }}
         onClick={() => {
           void doUpdateCurrentView({ view: 'index' })();
