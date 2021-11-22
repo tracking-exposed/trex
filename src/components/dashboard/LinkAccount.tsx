@@ -8,7 +8,6 @@ import {
   Input,
   InputLabel,
   Link,
-  makeStyles,
   Typography,
 } from '@material-ui/core';
 import CopyIcon from '@material-ui/icons/FileCopyOutlined';
@@ -21,15 +20,17 @@ import {
   updateAuth,
   verifyChannel,
 } from '../../state/creator.commands';
+import { makeStyles } from '../../theme';
 
 const youtubeChannelUrlRegex = /\/channel\/([^/]+)\/?$/;
 
 const useStyles = makeStyles((theme) => ({
   box: {
+    marginTop: theme.spacing(1),
     marginBottom: theme.spacing(2),
   },
   boxGrid: {
-    marginTop: theme.spacing(1),
+    marginTop: theme.spacing(10),
     marginBottom: theme.spacing(3),
   },
   tokenDisplay: {
@@ -39,7 +40,7 @@ const useStyles = makeStyles((theme) => ({
     marginRight: theme.spacing(2),
   },
   stepButton: {
-    marginTop: theme.spacing(4),
+    marginTop: theme.spacing(5),
   },
   linkButton: {
     '&:hover': {
@@ -160,8 +161,8 @@ export const LinkAccount: React.FC<LinkAccountProps> = ({ auth }) => {
             disabled={channel === ''}
             className={classes.stepButton}
             variant="contained"
-            color="primary"
             size="large"
+            color="primary"
             onClick={handleChannelSubmit}
           >
             {t('actions:next')}
@@ -175,10 +176,7 @@ export const LinkAccount: React.FC<LinkAccountProps> = ({ auth }) => {
         2/2 {t('link_account:copy_verification_key')}
       </Typography>
       <Grid container className={classes.boxGrid} spacing={2}>
-        <Grid
-          item
-          xs={12}
-        >
+        <Grid item xs={12}>
           <Typography className={classes.tokenDisplay} id="account-channelId">
             {auth.tokenString}
           </Typography>

@@ -11,6 +11,8 @@ import { Recommendation } from '@backend/models/Recommendation';
 import { makeStyles, YCAITheme } from '../../theme';
 import { isYTURL } from '../../utils/yt.utils';
 
+const imgHeight = 100;
+
 const useStyles = makeStyles<YCAITheme>(theme => ({
   link: {
     '&:hover': {
@@ -18,9 +20,11 @@ const useStyles = makeStyles<YCAITheme>(theme => ({
     }
   },
   card: {
-    height: 100,
+    height: imgHeight,
     '& img': {
-      height: '100%',
+      objectFit: 'cover',
+      height: imgHeight,
+      width: '100%',
     },
   },
   content: {
@@ -28,10 +32,12 @@ const useStyles = makeStyles<YCAITheme>(theme => ({
     paddingTop: theme.spacing(0.5),
   },
   title: {
+    fontSize: '1.3rem',
     fontWeight: 'bold',
     marginBottom: theme.spacing(0.5),
   },
   description: {
+    fontSize: '1.2rem',
     textOverflow: 'ellipsis',
   }
 }));

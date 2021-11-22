@@ -101,13 +101,13 @@ export const YTVideoPage: React.FC = () => {
         }, [currentVideoId]);
 
         React.useEffect(() => {
-          if (!settings.active || !settings.ccRecommendations) {
+          if (!settings.active || !settings.enhanceYouTubeExperience) {
             patchYTRecommendations(2);
           }
         }, [settings]);
 
         // do not show this component when extension is not `active` or `ux` is disabled
-        if (!settings.active || !settings.ccRecommendations) {
+        if (!settings.active || !settings.enhanceYouTubeExperience) {
           return null;
         }
 

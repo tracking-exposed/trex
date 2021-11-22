@@ -1,9 +1,9 @@
 import {
+  Box,
   Button,
   Card,
   CardActions,
   CardContent,
-  Grid,
   makeStyles,
   Typography,
 } from '@material-ui/core';
@@ -29,11 +29,15 @@ const useStyles = makeStyles((theme) => ({
     marginBottom: theme.spacing(2),
   },
   header: {
-    marginBottom: theme.spacing(2),
+    marginTop: theme.spacing(2),
+    marginBottom: theme.spacing(0),
+  },
+  version:{
+    marginBottom: theme.spacing(7),
   },
   img: {
-    width: '100%',
-    maxWidth: 200,
+    width: '280%',
+    maxWidth: 280,
     display: 'block',
   },
   link: {
@@ -43,6 +47,13 @@ const useStyles = makeStyles((theme) => ({
   },
   switchFormControl: {
     margin: 0,
+  },
+  dashboardButton: {
+    backgroundColor: theme.palette.common.black,
+    padding: theme.spacing(3),
+    '& span': {
+      lineHeight: 1,
+    },
   },
 }));
 
@@ -76,18 +87,20 @@ export const Popup: React.FC = () => {
 
   return (
     <Card className={classes.container}>
-      <Grid className={classes.header} container alignItems="center">
-        <Grid item xs={7}>
-          <a
-            className={classes.link}
-            href={config.REACT_APP_WEB_URL}
-            target="_blank"
-            rel="noreferrer"
-          >
-            <img className={classes.img} src="/ycai-logo.png" />
-          </a>
-        </Grid>
-      </Grid>
+      <Box
+        className={classes.header}
+        display="flex"
+        justifyContent="center"
+      >
+        <a
+          className={classes.link}
+          href={config.REACT_APP_WEB_URL}
+          target="_blank"
+          rel="noreferrer"
+        >
+          <img className={classes.img} src="/ycai-logo.svg" />
+        </a>
+      </Box>
 
       <WithQueries
         queries={{ settings }}
@@ -96,10 +109,15 @@ export const Popup: React.FC = () => {
             <PopupLoader />
           ),
           PopupErrorBox,
-          ({ settings }): any => {
-            const content = (
+          ({ settings }): any => (
+            <>
               <CardContent className={classes.content}>
-                <Grid key="app-version" item xs={12}>
+                <Box
+                  className={classes.version}
+                  alignItems="center"
+                  display="flex"
+                  justifyContent="center"
+                >
                   <Typography variant="caption">
                     {t('popup:version', { version, date: timeago })}
                   </Typography>
@@ -110,35 +128,31 @@ export const Popup: React.FC = () => {
                       display="inline"
                       style={{
                         fontWeight: 800,
+                        marginBottom: 0,
                       }}
                     >
-                      {' '}
-                      DEVELOPMENT
+                      &nbsp;DEVELOPMENT
                     </Typography>
                   ) : null}
-                </Grid>
+                </Box>
 
-                <Settings key="settings" settings={settings} />
+                <Settings settings={settings} />
               </CardContent>
-            );
-
-            const actions = (
-              <CardActions key="actions">
+              <CardActions>
                 <Button
-                  size="medium"
-                  color={'grey[500]' as any}
-                  variant="contained"
-                  href={'/index.html'}
-                  target="_blank"
+                  className={classes.dashboardButton}
+                  color="primary"
                   fullWidth
+                  href={'/index.html'}
+                  size="large"
+                  target="_blank"
+                  variant="contained"
                 >
                   {t('dashboard:title')}
                 </Button>
               </CardActions>
-            );
-
-            return [content, actions];
-          }
+            </>
+          )
         )}
       />
       {/* </Grid> */}

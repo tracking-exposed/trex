@@ -55,7 +55,7 @@ const renderInjectedElements = (settings: Settings | null): void => {
   }
 
   // video recommendations box
-  if (settings?.ccRecommendations === true) {
+  if (settings?.enhanceYouTubeExperience === true) {
     if (ytRelatedVideoNode !== null) {
       appLogger.debug('Element (%s) found in yt page', ytRelatedVideoNode.id);
       const ycRecommendationsEl = ytRelatedVideoNode.querySelector(
