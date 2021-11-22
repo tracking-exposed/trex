@@ -37,8 +37,8 @@ async function perVideo(req) {
 
 async function perChannel(req) {
     const channelId = params.getString(req, 'channelId');
-    const startDate = params.getString(req, 'sdate');
-    const endtDate = params.getString(req, 'edate');
+    const startDate = req.query.since;
+    const endtDate = req.query.till;
 
     const filter = {
         'authorSource': { "$in": [
@@ -48,18 +48,19 @@ async function perChannel(req) {
     };
     try {
         filter.savingTime = {
-            "$lte": new Date(startDate),
-            "$gte": new Date(endtDate)
+            "$gte": new Date(startDate),
+            "$lte": new Date(endtDate)
         }
 
-        if(!!filter.savingTime["$lte"].valueOf())
-            throw new Error("Invalid 'since-' Date " + startDate);
-        if(!!filter.savingTime["$gte"].valueOf())
-            throw new Error("Invalid 'till-' Date " + endtDate);
+        if(_.isNaN(filter.savingTime["$gte"].valueOf()))
+            throw new Error("Invalid 'since' query param" + startDate);
+        if(_.isNaN(filter.savingTime["$lte"].valueOf()))
+            throw new Error("Invalid 'till' query param" + endtDate);
 
     } catch(error) {
         /* The error appears as Date("Invalid Date") and
            .valueOf returns NaN */
+        debug("Error in date format: %s", error.message);
         return { json: {
             error: true,
             message: "Error in date format, expected YYYY-MM-DD: " + error.message
