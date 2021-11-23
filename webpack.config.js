@@ -62,7 +62,7 @@ const buildENV = pipe(
 );
 
 const pkgJson = require('./package.json');
-const manifestVersion = process.env.MANIFEST_VERSION || pkgJson.version.replace('-beta', '');
+const manifestVersion = (process.env.MANIFEST_VERSION || pkgJson.version).replace('-beta', '');
 
 const plugins = [
   new DefinePlugin({
