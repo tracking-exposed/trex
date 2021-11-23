@@ -3,7 +3,11 @@
   "compilerOptions": {
     "allowJs": true,
     "rootDir": "./",
-    "baseUrl": "./"
+    "baseUrl": "./",
+    "outDir": "./build",
+    "paths": {
+      "@shared/*": ["../shared/*"]
+    }
   },
   "include": [
     "./bin",

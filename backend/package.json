@@ -10,7 +10,9 @@
     "leaveserv": "DEBUG=* node bin/leaveserv.js",
     "leaveserv:watch": "DEBUG=* node_modules/.bin/ts-node-dev --respawn --transpile-only bin/leaveserv.js",
     "test": "mocha --require ts-node/register tests/basic/*",
-    "campaigns": "node bin/campaignUpdater.js --dest https://youtube.tracking.exposed"
+    "campaigns": "node bin/campaignUpdater.js --dest https://youtube.tracking.exposed",
+    "build": "tsc --build",
+    "build:watch": "tsc --build -w"
   },
   "author": "Claudio Agosti <claudio@tracking.exposed> and https://github.com/tracking-exposed/yttrex/graphs/contributors",
   "license": "AGPL-3.0",
