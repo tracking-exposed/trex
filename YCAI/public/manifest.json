@@ -1,0 +1,43 @@
+{
+  "manifest_version": 2,
+
+  "name": "YouChoose.AI",
+  "short_name": "YCAI",
+
+  "description": "Content creator should control their videos' recommendation",
+  "author": "Tracking Exposed team, check it our on https://youchoose.ai",
+
+  "icons": {
+    "16": "ycai16.png",
+    "48": "ycai48.png",
+    "128": "ycai128.png"
+  },
+
+  "browser_action": {
+    "default_icon": "ycai16.png",
+    "default_popup": "popup.html"
+  },
+
+  "permissions": [
+    "storage",
+    "alarms",
+    "http://localhost:9000/",
+    "https://*.youtube.com/",
+    "https://youchoose.tracking.exposed/",
+    "https://yt3.ggpht.com/"
+  ],
+
+  "background": {
+    "scripts": ["./background.js"],
+    "persistent": true
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "https://*.youtube.com/*"
+      ],
+      "js": ["./app.js"]
+    }
+  ],
+  "web_accessible_resources": ["*.png"]
+}
