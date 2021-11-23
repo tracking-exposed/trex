@@ -1,4 +1,4 @@
-import { ContentCreator } from '@backend/models/ContentCreator';
+import { ContentCreator } from '@shared/models/ContentCreator';
 import { sequenceS } from 'fp-ts/lib/Apply';
 import * as E from 'fp-ts/lib/Either';
 import * as O from 'fp-ts/lib/Option';

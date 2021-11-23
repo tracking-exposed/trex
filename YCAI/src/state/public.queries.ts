@@ -1,5 +1,5 @@
-import * as Endpoints from '@backend/endpoints';
-import { Recommendation } from '@backend/models/Recommendation';
+import * as Endpoints from '@shared/endpoints';
+import { Recommendation } from '@shared/models/Recommendation';
 import { available, queryShallow, queryStrict, refetch } from 'avenger';
 import { pipe } from 'fp-ts/lib/pipeable';
 import * as TE from 'fp-ts/lib/TaskEither';

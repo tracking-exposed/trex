@@ -1,4 +1,4 @@
-import { ContentCreator } from '@backend/models/ContentCreator';
+import { ContentCreator } from '@shared/models/ContentCreator';
 import { Box, Button, Typography, makeStyles } from '@material-ui/core';
 import Avatar from '../external/Avatar';
 import * as QR from 'avenger/lib/QueryResult';

@@ -1,4 +1,4 @@
-import { Video } from '@backend/models/Video';
+import { Video } from '@shared/models/Video';
 import { Button, Box, Grid, Typography } from '@material-ui/core';
 import * as Q from 'avenger/lib/Query';
 import * as QR from 'avenger/lib/QueryResult';

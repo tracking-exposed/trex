@@ -16,8 +16,8 @@ import { LinkAccount } from './LinkAccount';
 import { Sidebar } from './Sidebar';
 import { Lab } from './lab/Lab';
 import { LabVideoEdit } from './lab/LabVideoEdit';
-import { ContentCreator } from '@backend/models/ContentCreator';
-import { AuthResponse } from '@backend/models/Auth';
+import { ContentCreator } from '@shared/models/ContentCreator';
+import { AuthResponse } from '@shared/models/Auth';
 
 const useStyles = makeStyles((theme) => ({
   root: {

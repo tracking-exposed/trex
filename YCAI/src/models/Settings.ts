@@ -1,4 +1,4 @@
-import { Video } from '@backend/models/Video';
+import { Video } from '@shared/models/Video';
 import * as t from 'io-ts';
 
 export const Keypair = t.strict(

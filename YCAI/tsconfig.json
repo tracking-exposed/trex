@@ -28,7 +28,7 @@
     "moduleResolution": "Node",
     "isolatedModules": true,
     "paths": {
-      "@backend/*": ["../../shared/*"]
+      "@shared/*": ["../../shared/*"]
     }
   },
   "references": [

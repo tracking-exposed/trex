@@ -1,8 +1,8 @@
-import * as Endpoints from '@backend/endpoints';
+import * as Endpoints from '@shared/endpoints';
 import {
   ADVContributionEvent,
   VideoContributionEvent,
-} from '@backend/models/ContributionEvent';
+} from '@shared/models/ContributionEvent';
 import { debounce } from '@material-ui/core';
 import { differenceInSeconds } from 'date-fns';
 import { pipe } from 'fp-ts/lib/function';

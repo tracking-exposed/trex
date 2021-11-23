@@ -1,5 +1,5 @@
-import { AuthResponse } from '@backend/models/Auth';
-import { ContentCreator } from '@backend/models/ContentCreator';
+import { AuthResponse } from '@shared/models/Auth';
+import { ContentCreator } from '@shared/models/ContentCreator';
 import { pipe } from 'fp-ts/lib/function';
 import * as R from 'fp-ts/lib/Record';
 import * as t from 'io-ts';

@@ -1,4 +1,4 @@
-import { ContentCreator } from '@backend/models/ContentCreator';
+import { ContentCreator } from '@shared/models/ContentCreator';
 import {
   Box,
   Button,

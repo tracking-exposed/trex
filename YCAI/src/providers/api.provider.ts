@@ -1,4 +1,4 @@
-import * as Endpoints from '@backend/endpoints';
+import * as Endpoints from '@shared/endpoints';
 import { command } from 'avenger';
 import axios, { AxiosRequestConfig, AxiosResponse } from 'axios';
 import * as A from 'fp-ts/lib/Array';

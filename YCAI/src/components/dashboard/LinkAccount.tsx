@@ -1,4 +1,4 @@
-import { AuthResponse } from '@backend/models/Auth';
+import { AuthResponse } from '@shared/models/Auth';
 import {
   Box,
   Button,

@@ -1,5 +1,5 @@
-import { ContentCreator } from '@backend/models/ContentCreator';
-import { Video } from '@backend/models/Video';
+import { ContentCreator } from '@shared/models/ContentCreator';
+import { Video } from '@shared/models/Video';
 import {
   available,
   compose,

@@ -1,5 +1,5 @@
-import { ContentCreator } from '@backend/models/ContentCreator';
-import { CreatorStatContent, CreatorStats } from '@backend/models/CreatorStats';
+import { ContentCreator } from '@shared/models/ContentCreator';
+import { CreatorStatContent, CreatorStats } from '@shared/models/CreatorStats';
 import {
   Card,
   CardContent,

@@ -17,7 +17,7 @@ import {
 import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/styles';
 
-import { Recommendation } from '@backend/models/Recommendation';
+import { Recommendation } from '@shared/models/Recommendation';
 import { YCAITheme } from '../../../theme';
 import Image from '../../common/Image';
 

@@ -1,4 +1,4 @@
-import { HandshakeBody } from '@backend/models/HandshakeBody';
+import { HandshakeBody } from '@shared/models/HandshakeBody';
 import { command } from 'avenger';
 import * as TE from 'fp-ts/lib/TaskEither';
 import { Messages } from '../models/Messages';

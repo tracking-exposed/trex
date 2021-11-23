@@ -1,5 +1,5 @@
-import { AuthResponse } from '@backend/models/Auth';
-import { ContentCreator } from '@backend/models/ContentCreator';
+import { AuthResponse } from '@shared/models/Auth';
+import { ContentCreator } from '@shared/models/ContentCreator';
 import { command } from 'avenger';
 import * as E from 'fp-ts/lib/Either';
 import { pipe } from 'fp-ts/lib/function';

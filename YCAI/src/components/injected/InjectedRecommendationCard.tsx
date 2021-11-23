@@ -7,7 +7,7 @@ import {
   Typography,
 }from '@material-ui/core';
 
-import { Recommendation } from '@backend/models/Recommendation';
+import { Recommendation } from '@shared/models/Recommendation';
 import { makeStyles, YCAITheme } from '../../theme';
 import { isYTURL } from '../../utils/yt.utils';
 
