@@ -98,11 +98,12 @@ const DashboardContent: React.FC<DashboardContentProps> = ({
         item
         xs={12}
         style={{
-          borderBottom: `1px solid ${theme.palette.grey[500]}`,
-          marginBottom: '4rem',
+          marginTop: '0.5rem',
+          /* borderBottom: `1px solid ${theme.palette.grey[500]}`, */
+          marginBottom: '0.4rem',
         }}
       >
-        <Typography variant="h3" color="textPrimary">
+        <Typography variant="h3" color="textPrimary" style={{ whiteSpace: 'pre-line' }}>
           {currentViewLabel}
         </Typography>
         <Typography variant="subtitle1" color="textPrimary">

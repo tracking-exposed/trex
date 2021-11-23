@@ -18,14 +18,15 @@ export type Keypair = t.TypeOf<typeof Keypair>;
 export const Settings = t.strict(
   {
     active: t.boolean,
-    ccRecommendations: t.boolean,
-    communityRecommendations: t.boolean,
-    independentContributions: t.boolean,
+    enhanceYouTubeExperience: t.boolean,
+    independentContributions: t.strict({
+      enable: t.boolean,
+      showUI: t.boolean,
+    }),
     svg: t.boolean,
     videorep: t.boolean,
     playhide: t.boolean,
     alphabeth: t.boolean,
-    ux: t.boolean,
     edit: t.union([Video, t.null]),
   },
   'AccountSettings'
@@ -33,14 +34,12 @@ export const Settings = t.strict(
 
 export const getDefaultSettings = (): Settings => ({
   active: true,
-  ccRecommendations: true,
+  enhanceYouTubeExperience: true,
   svg: false,
   videorep: true,
   playhide: false,
-  ux: false,
-  communityRecommendations: false,
   alphabeth: false,
-  independentContributions: false,
+  independentContributions: { enable: true, showUI: false },
   edit: null,
 });
 

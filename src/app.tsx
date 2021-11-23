@@ -1,137 +1,146 @@
-import './i18n';
-import './resources/global.css';
-import { YTContributionInfoBox } from './components/injected/YTContributionInfoBox';
-import { pipe } from 'fp-ts/lib/function';
-import * as TE from 'fp-ts/lib/TaskEither';
-import { debounce } from 'lodash';
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import { settingsRefetch } from 'state/public.queries';
 import { ErrorBoundary } from './components/common/ErrorBoundary';
+import { YTContributionInfoBox } from './components/injected/YTContributionInfoBox';
 import { YTVideoPage } from './components/injected/YTVideoPage';
+import './i18n';
+import * as Messages from './models/Messages';
+import './resources/global.css';
 import { ThemeProvider, YCAITheme } from './theme';
+import { bo } from './utils/browser.utils';
 import { GetLogger } from './utils/logger.utils';
-;
+import * as TE from 'fp-ts/lib/TaskEither';
+import { pipe } from 'fp-ts/lib/function';
+import { Settings } from 'models/Settings';
 
 const appLogger = GetLogger('app');
-
 
 const YT_RELATED_SELECTOR = '#related';
 const YC_RECOMMENDATIONS_ID = 'yc-recommendations';
 const YC_RECOMMENDATIONS_SELECTOR = `#${YC_RECOMMENDATIONS_ID}`;
 const YC_CONTRIBUTION_INFO_BOX_ID = 'ycai-contribution-box';
-const YC_CONTRIBUTION_INFO_BOX_SELECTOR = `#${YC_CONTRIBUTION_INFO_BOX_ID}`;
 
-const renderInjectedElements = (): void => {
-  void pipe(
-    settingsRefetch.run(),
-    TE.map((settings) => {
-      appLogger.debug('Settings refreshed %O', settings);
-      const ytRelatedVideoNode = document.querySelector(YT_RELATED_SELECTOR);
+const InjectedApp: React.FC = () => {
+  // nodes
+  // for YTVideoPage
+  const ytRelatedVideoNode = document.querySelector(YT_RELATED_SELECTOR);
+  const ycRecommendationsNode =
+    (ytRelatedVideoNode?.querySelector(
+      YC_RECOMMENDATIONS_SELECTOR
+    ) as HTMLDivElement | null) ?? null;
 
-      if (settings.active) {
-        if (settings.independentContributions) {
-          appLogger.debug(
-            'Independent contribution enabled. Getting the keypair...'
-          );
+  // for YCVideoContributionInfoBox
+  const ycContributionInfoBoxNode = document.getElementById(
+    YC_CONTRIBUTION_INFO_BOX_ID
+  ) as HTMLDivElement | null;
 
-          if (
-            document.querySelector(YC_CONTRIBUTION_INFO_BOX_SELECTOR) === null
-          ) {
-            const contributionBoxEl = document.createElement('div');
-            contributionBoxEl.id = YC_CONTRIBUTION_INFO_BOX_ID;
-            contributionBoxEl.style.position = 'fixed';
-            contributionBoxEl.style.width = '120px';
-            contributionBoxEl.style.textAlign = 'right';
-            contributionBoxEl.style.height = '50px';
-            contributionBoxEl.style.right = '10px';
-            contributionBoxEl.style.bottom = '50px';
-            contributionBoxEl.style.padding = '4px';
-            contributionBoxEl.style.zIndex = '9000';
-            contributionBoxEl.style.borderRadius = '10px';
+  // state
+  const [settings, setSettings] = React.useState<Settings | null>(null);
 
-            document.body.appendChild(contributionBoxEl);
-
-            ReactDOM.render(
-              <React.StrictMode>
-                <ErrorBoundary>
-                  <ThemeProvider theme={YCAITheme}>
-                    <YTContributionInfoBox />
-                  </ThemeProvider>
-                </ErrorBoundary>
-              </React.StrictMode>,
-              document.getElementById('ycai-contribution-box')
-            );
-          }
+  const handleMessage = React.useCallback(
+    <M extends Messages.MessageType<any, any, any>>(msg: M): void => {
+      switch (msg.type) {
+        case Messages.UpdateSettings.value: {
+          return setSettings(msg.payload);
         }
+        default:
+          return undefined;
       }
-      // video recommendations box
-      if (settings.ccRecommendations) {
-        appLogger.debug('Settings: active');
-        if (ytRelatedVideoNode !== null) {
-          appLogger.debug(
-            'Element (%s) found in yt page',
-            ytRelatedVideoNode.id
-          );
-          const ycRecommendationsEl = ytRelatedVideoNode.querySelector(
-            YC_RECOMMENDATIONS_SELECTOR
-          );
+    },
+    [settings]
+  );
 
-          if (ycRecommendationsEl !== null) {
-            appLogger.debug(
-              'Element (%s) present. Returning...',
-              YC_RECOMMENDATIONS_SELECTOR
-            );
-            return undefined;
-          }
+  React.useEffect(() => {
 
-          appLogger.debug(
-            'Element (%s) not found in dom, attaching it..',
-            YC_RECOMMENDATIONS_SELECTOR
-          );
-          const ycMainNode = document.createElement('div');
-          ycMainNode.id = YC_RECOMMENDATIONS_ID;
-          ytRelatedVideoNode.prepend(ycMainNode);
+    // append yt video page recommendations dom element
+    if (ytRelatedVideoNode !== null) {
+      appLogger.debug('Element (%s) found in yt page', ytRelatedVideoNode.id);
 
-          ReactDOM.render(
-            <React.StrictMode>
-              <ErrorBoundary>
-                <ThemeProvider theme={YCAITheme}>
-                  <YTVideoPage />
-                </ThemeProvider>
-              </ErrorBoundary>
-            </React.StrictMode>,
-            document.getElementById(YC_RECOMMENDATIONS_ID)
-          );
-        }
-      } else {
-        appLogger.debug('Removing element (%s)', YC_RECOMMENDATIONS_SELECTOR);
-        document.querySelector(YC_RECOMMENDATIONS_SELECTOR)?.remove();
-        document.querySelector(YC_CONTRIBUTION_INFO_BOX_SELECTOR)?.remove();
+      if (ycRecommendationsNode === null) {
+        appLogger.debug(
+          'Element (%s) not found in dom, attaching it..',
+          YC_RECOMMENDATIONS_SELECTOR
+        );
+        const ycRelatedNode = document.createElement('div');
+        ycRelatedNode.id = YC_RECOMMENDATIONS_ID;
+        ytRelatedVideoNode.prepend(ycRelatedNode);
       }
-      return undefined;
-    })
-  )();
+      appLogger.debug(
+        'Element (%s) present. Returning...',
+        YC_RECOMMENDATIONS_SELECTOR
+      );
+    }
+
+    // append yc contribution box
+    if (ycContributionInfoBoxNode === null) {
+      const contributionBoxEl = document.createElement('div');
+      contributionBoxEl.id = YC_CONTRIBUTION_INFO_BOX_ID;
+      contributionBoxEl.style.position = 'fixed';
+      contributionBoxEl.style.width = '200px';
+      contributionBoxEl.style.height = '30px';
+      contributionBoxEl.style.right = '20px';
+      contributionBoxEl.style.bottom = '20px';
+      contributionBoxEl.style.padding = '4px';
+      contributionBoxEl.style.zIndex = '9000';
+      contributionBoxEl.style.borderRadius = '10px';
+      document.body.appendChild(contributionBoxEl);
+    }
+
+    // register the on message listener
+    bo.runtime.onMessage.addListener(
+      <M extends Messages.MessageType<any, any, any>>(
+        msg: M,
+        sender: any,
+        sendResponse: any
+      ) => {
+        appLogger.debug(`Message received %O from sender %O`, msg, sender);
+        void handleMessage(msg);
+        sendResponse(msg);
+      }
+    );
+
+    // fetch settings on first time
+    if (settings === null) {
+      void pipe(
+        settingsRefetch.run(),
+        TE.map((settings) => setSettings(settings))
+      )();
+    }
+  }, [ycRecommendationsNode, ycContributionInfoBoxNode]);
+
+
+  return (
+    <ErrorBoundary>
+      <ThemeProvider theme={YCAITheme}>
+        {ycContributionInfoBoxNode !== null && settings !== null && (
+          <YTContributionInfoBox
+            node={ycContributionInfoBoxNode}
+            settings={settings}
+          />
+        )}
+        {ycRecommendationsNode !== null && settings !== null && (
+          <YTVideoPage settings={settings} node={ycRecommendationsNode} />
+        )}
+      </ThemeProvider>
+    </ErrorBoundary>
+  );
 };
 
-/**
- * Define mutation observer to listen for window's dom changes
- */
-const observer = new MutationObserver(
-  debounce(
-    (mutations) => {
-      appLogger.debug(`Mutations received %O`, mutations);
-      renderInjectedElements();
-    },
-    500,
-    { trailing: true }
-  )
-);
+const YC_ROOT_ID = 'yc-root-injected';
 
-observer.observe(window.document.body, {
-  subtree: true,
-  childList: true,
-});
+const ycRootNode = document.querySelector(`#${YC_ROOT_ID}`);
+if (ycRootNode === null) {
+  const ycRoot = document.createElement('div');
+  ycRoot.id = YC_ROOT_ID;
+  ycRoot.style.position = 'absolute';
+  ycRoot.style.width = "0";
+  document.body.appendChild(ycRoot);
 
-// render video recommendations box
-renderInjectedElements();
+  ReactDOM.render(
+    <React.StrictMode>
+      <InjectedApp />
+    </React.StrictMode>,
+    ycRoot
+  );
+}

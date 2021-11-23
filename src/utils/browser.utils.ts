@@ -1,4 +1,4 @@
-import { config } from 'config';
+import { config } from '../config';
 
 const getBO = (): typeof chrome => {
   if (config.NODE_ENV === 'development') {

@@ -22,10 +22,11 @@ interface LoggedUserProfileBoxProps {
 
 const useStyles = makeStyles((theme) => ({
   username: {
-    marginBottom: theme.spacing(1),
+    marginBottom: theme.spacing(0),
   },
   caption: {
     marginBottom: theme.spacing(1),
+    marginTop: theme.spacing(0.7),
   },
 }));
 
@@ -37,7 +38,8 @@ export const LoggedUserProfileBox: React.FC<LoggedUserProfileBoxProps> = ({
   const classes = useStyles();
 
   return (
-    <Box display="flex" alignItems="center">
+    <Box display="flex" alignItems="flex-start" flexDirection="column">
+      <Box display="flex" alignItems="center">
       <Avatar src={profile.avatar} style={{ marginRight: 10 }} />
       <Box display="flex" flexDirection="column" style={{ marginRight: 20 }}>
         <Typography variant="body1" className={classes.username}>
@@ -46,14 +48,16 @@ export const LoggedUserProfileBox: React.FC<LoggedUserProfileBoxProps> = ({
         <Typography variant="caption" className={classes.caption}>
           {profile.channelId}
         </Typography>
-        <Button
+      </Box>
+      </Box>
+      <Button
           variant="contained"
           size="small"
           onClick={() => onLogout()}
+          style={{ marginLeft: 50 }}
         >
           {t('actions:unlink_channel')}
         </Button>
-      </Box>
     </Box>
   );
 };

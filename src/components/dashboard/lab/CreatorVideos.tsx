@@ -22,10 +22,10 @@ interface CreatorVideosProps extends Q {
 
 export const CreatorVideos = withQueries<CreatorVideosProps>(
   ({ queries, openVideoRecommendations }): React.ReactElement => {
-    const { t } = useTranslation();
     return pipe(
       queries,
       QR.fold(LazyFullSizeLoader, ErrorBox, ({ videos }) => {
+        const { t } = useTranslation();
         return (
           <Grid container spacing={2} style={{ width: '100%' }}>
             {videos.length === 0 ? (
@@ -37,7 +37,7 @@ export const CreatorVideos = withQueries<CreatorVideosProps>(
               </Grid>
             ) : (
               videos.map((v) => (
-                <Grid item lg={3} md={4} sm={6} xs={12} key={v.urlId}>
+                <Grid item lg={3} md={4} sm={6} xs={12} key={v.videoId}>
                   <VideoCard
                     videoId={v.videoId}
                     title={v.title}

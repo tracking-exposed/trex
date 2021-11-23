@@ -1,3 +1,50 @@
+# [1.2.0-beta.1](https://github.com/tracking-exposed/YCAI/compare/v1.1.1-beta.3...v1.2.0-beta.1) (2021-11-23)
+
+
+### Bug Fixes
+
+* fix the manifest version output with valid format ([64f8d0c](https://github.com/tracking-exposed/YCAI/commit/64f8d0c5be1835d491cf738394483902b64c2543))
+* use react portal strategy for yc injected nodes ([#163](https://github.com/tracking-exposed/YCAI/issues/163)) ([8e3d76a](https://github.com/tracking-exposed/YCAI/commit/8e3d76a3ea6fc7d8e1b632f471c496bd5a2963e1))
+
+
+### Features
+
+* analytics tree map ([#162](https://github.com/tracking-exposed/YCAI/issues/162)) ([37b58d5](https://github.com/tracking-exposed/YCAI/commit/37b58d58d65e0912a793545401e1881e382dab02))
+* swagger io ([#151](https://github.com/tracking-exposed/YCAI/issues/151)) ([e838ad6](https://github.com/tracking-exposed/YCAI/commit/e838ad6cd495fb06028ca182bb3dd17c7ea71551))
+
+## [1.1.1-beta.3](https://github.com/tracking-exposed/YCAI/compare/v1.1.1-beta.2...v1.1.1-beta.3) (2021-11-22)
+
+
+### Bug Fixes
+
+* styling ([#164](https://github.com/tracking-exposed/YCAI/issues/164)) ([1091669](https://github.com/tracking-exposed/YCAI/commit/10916696f0201a22a43b13a4c4c8dd5f2f1aa8c6))
+* updated README ([#160](https://github.com/tracking-exposed/YCAI/issues/160)) ([ca4f134](https://github.com/tracking-exposed/YCAI/commit/ca4f1349367f11e7997e322d94be5c80dc78ebb1))
+
+## [1.1.1-beta.2](https://github.com/tracking-exposed/YCAI/compare/v1.1.1-beta.1...v1.1.1-beta.2) (2021-11-19)
+
+
+### Bug Fixes
+
+* data donation ui setting ([1668d34](https://github.com/tracking-exposed/YCAI/commit/1668d34f9c8bffe1f105bf1da3c12f73fdf008b6))
+* defined proper error box for popup ([1ff6d64](https://github.com/tracking-exposed/YCAI/commit/1ff6d6458554510710d06ecaf85d417fbe6bb0a4))
+* hide all tab text and icon ([5b85539](https://github.com/tracking-exposed/YCAI/commit/5b8553904b5536d42bdb677041d2f8887d9559e5))
+* improve the APIError structure and ErrorBox UI ([f8e58ad](https://github.com/tracking-exposed/YCAI/commit/f8e58ad0fe060adc63f097d84c10c397033500c5))
+* realtime UI updates for data contribution ([61feb23](https://github.com/tracking-exposed/YCAI/commit/61feb23fc371ffae3566e62ebba601508d64cccb))
+* remove settings refetch on deferred dom mutation callback ([5f7fa49](https://github.com/tracking-exposed/YCAI/commit/5f7fa49a17feffea074024e3cc37a8b7f525f37c))
+* restore 'manage tokens' button in popup settings ([db125aa](https://github.com/tracking-exposed/YCAI/commit/db125aad1374bcfdea6bd8b873943ae5ea221468))
+* revert popup button to valid color ([3755454](https://github.com/tracking-exposed/YCAI/commit/3755454e84dc6c385dcb073f6b453dfe83bfc0ad))
+* send message to active tab only when available ([a0ea5cc](https://github.com/tracking-exposed/YCAI/commit/a0ea5ccfc6684673337af7d5d8869a852b7ae74f))
+* some wording ([7ea0937](https://github.com/tracking-exposed/YCAI/commit/7ea093768b770fbd79392ee6f0bc4fd29600f667))
+* swap hide all and youtube tab ([211628b](https://github.com/tracking-exposed/YCAI/commit/211628b5f55cec398f1cef3505b05f51fae7e885))
+
+## [1.1.1-beta.1](https://github.com/tracking-exposed/YCAI/compare/v1.1.0...v1.1.1-beta.1) (2021-11-17)
+
+
+### Bug Fixes
+
+* logo studio update ([1c3c65f](https://github.com/tracking-exposed/YCAI/commit/1c3c65f14b4c63998cf703aa6219ddc57028660e))
+* update submodule and stop using urlId in lab ([#138](https://github.com/tracking-exposed/YCAI/issues/138)) ([6236706](https://github.com/tracking-exposed/YCAI/commit/62367066e40f06a8ce09250b20bc006031a8754f))
+
 # [1.1.0](https://github.com/tracking-exposed/YCAI/compare/v1.0.0...v1.1.0) (2021-11-16)
 
 

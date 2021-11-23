@@ -41,7 +41,7 @@ const useStyles = makeStyles<YCAITheme>(theme => ({
   addButton: {
     marginLeft: theme.spacing(2),
     color: theme.palette.common.black,
-    fontWeight: theme.typography.fontWeightBold,
+    fontWeight: 'bold',
   },
 }));
 

@@ -5,6 +5,7 @@ import {
   makeStyles,
   Typography,
   useTheme,
+  Divider,
 } from '@material-ui/core';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
@@ -15,9 +16,10 @@ import AnalyticsIcon from '../common/icons/AnalyticsIcon';
 import SettingsIcon from '../common/icons/SettingsIcon';
 import YCAILogo from 'components/common/YCAILogo';
 
+
 const useStyles = makeStyles((theme) => ({
   routesList: {
-    marginTop: 100,
+    marginTop: 60,
   },
   listItem: {
     color: theme.palette.primary.main,
@@ -27,11 +29,11 @@ const useStyles = makeStyles((theme) => ({
     backgroundColor: `${theme.palette.grey[500]}`,
     '&:hover': {
       backgroundColor: `${theme.palette.grey[500]}`,
-      opacity: 0.6,
+      opacity: 0.8,
     },
   },
   listItemIcon: {
-    marginRight: 20,
+    marginRight: 40,
   },
 }));
 
@@ -87,20 +89,25 @@ export const Sidebar: React.FC<SidebarProps> = ({ currentView }) => {
     <div style={{ height: '100%' }}>
       <Box
         style={{
-          paddingTop: theme.spacing(2),
-          paddingRight: theme.spacing(2),
-          marginBottom: 50,
+          paddingTop: theme.spacing(4),
+          paddingRight: theme.spacing(10),
+          marginBottom: theme.spacing(8),
         }}
         onClick={() => {
           void doUpdateCurrentView({ view: 'index' })();
         }}
       >
-        <YCAILogo width={'100%'} />
+        <YCAILogo width={'50%'} />
       </Box>
 
       <Box style={{ padding: theme.spacing(2) }}>
         <UserProfileBox />
       </Box>
+
+      <Box style={{ padding: theme.spacing(2) }}>
+      <Divider light />
+      </Box>
+
       <List className={classes.routesList} disablePadding={true}>
         {[
           {

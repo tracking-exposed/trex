@@ -1,27 +1,22 @@
 import {
+  Box,
   Button,
   Card,
   CardActions,
   CardContent,
-  FormControlLabel,
-  Grid,
   makeStyles,
-  Switch,
-  Typography
+  Typography,
 } from '@material-ui/core';
 import { Alert, AlertTitle } from '@material-ui/lab';
 import * as QR from 'avenger/lib/QueryResult';
-import { declareQueries } from 'avenger/lib/react';
+import { WithQueries } from 'avenger/lib/react';
 import { formatDistance } from 'date-fns';
 import parseISO from 'date-fns/parseISO';
-import { pipe } from 'fp-ts/lib/function';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { config } from '../../config';
-import { updateSettings } from '../../state/public.commands';
-import { getDefaultSettings } from '../../models/Settings';
 import { settings } from '../../state/public.queries';
-import { ErrorBox } from '../common/ErrorBox';
+import { PopupErrorBox } from './PopupErrorBox';
 import Settings from './Settings';
 
 const useStyles = makeStyles((theme) => ({
@@ -34,11 +29,15 @@ const useStyles = makeStyles((theme) => ({
     marginBottom: theme.spacing(2),
   },
   header: {
-    marginBottom: theme.spacing(2),
+    marginTop: theme.spacing(2),
+    marginBottom: theme.spacing(0),
+  },
+  version:{
+    marginBottom: theme.spacing(7),
   },
   img: {
-    width: '100%',
-    maxWidth: 200,
+    width: '280%',
+    maxWidth: 280,
     display: 'block',
   },
   link: {
@@ -48,6 +47,13 @@ const useStyles = makeStyles((theme) => ({
   },
   switchFormControl: {
     margin: 0,
+  },
+  dashboardButton: {
+    backgroundColor: theme.palette.common.black,
+    padding: theme.spacing(3),
+    '& span': {
+      lineHeight: 1,
+    },
   },
 }));
 
@@ -66,9 +72,7 @@ const PopupLoader: React.FC = () => {
   );
 };
 
-const withQueries = declareQueries({ settings });
-
-export const Popup = withQueries(({ queries }) => {
+export const Popup: React.FC = () => {
   const { t } = useTranslation();
   const classes = useStyles();
 
@@ -81,72 +85,77 @@ export const Popup = withQueries(({ queries }) => {
     }
   );
 
-  return pipe(
-    queries,
-    QR.fold(
-      () => <PopupLoader />,
-      ErrorBox,
-      ({ settings }) => {
-        return (
-          <Card className={classes.container}>
-            <CardContent className={classes.content}>
-              <Grid className={classes.header} container alignItems="center">
-                <Grid item xs={7}>
-                  <a
-                    className={classes.link}
-                    href={config.REACT_APP_WEB_URL}
-                    target="_blank"
-                    rel="noreferrer"
-                  >
-                    <img className={classes.img} src="/ycai-logo.png" />
-                  </a>
-                </Grid>
+  return (
+    <Card className={classes.container}>
+      <Box
+        className={classes.header}
+        display="flex"
+        justifyContent="center"
+      >
+        <a
+          className={classes.link}
+          href={config.REACT_APP_WEB_URL}
+          target="_blank"
+          rel="noreferrer"
+        >
+          <img className={classes.img} src="/ycai-logo.svg" />
+        </a>
+      </Box>
 
-                <Grid item xs={4}>
-                  <FormControlLabel
-                    className={classes.switchFormControl}
-                    control={
-                      <Switch
-                        color="primary"
-                        checked={settings?.active ?? false}
-                        size="small"
-                        onChange={(e, c) =>
-                          updateSettings({
-                            ...(settings ?? getDefaultSettings()),
-                            active: c,
-                          })()
-                        }
-                      />
-                    }
-                    label="Enable"
-                    labelPlacement="end"
-                  />
-                </Grid>
-                <Grid item xs={12}>
+      <WithQueries
+        queries={{ settings }}
+        render={QR.fold(
+          () => (
+            <PopupLoader />
+          ),
+          PopupErrorBox,
+          ({ settings }): any => (
+            <>
+              <CardContent className={classes.content}>
+                <Box
+                  className={classes.version}
+                  alignItems="center"
+                  display="flex"
+                  justifyContent="center"
+                >
                   <Typography variant="caption">
                     {t('popup:version', { version, date: timeago })}
                   </Typography>
-                </Grid>
-              </Grid>
+                  {config.NODE_ENV === 'development' ? (
+                    <Typography
+                      color="primary"
+                      variant="subtitle1"
+                      display="inline"
+                      style={{
+                        fontWeight: 800,
+                        marginBottom: 0,
+                      }}
+                    >
+                      &nbsp;DEVELOPMENT
+                    </Typography>
+                  ) : null}
+                </Box>
 
-              <Settings settings={settings} />
-            </CardContent>
-
-            <CardActions>
-              <Button
-                size="medium"
-                color="primary"
-                variant="contained"
-                href={'/index.html'}
-                target="_blank"
-                fullWidth
-              >
-                {t('dashboard:title')}
-              </Button>
-            </CardActions>
-          </Card>
-        );
-      }
-    )
+                <Settings settings={settings} />
+              </CardContent>
+              <CardActions>
+                <Button
+                  className={classes.dashboardButton}
+                  color="primary"
+                  fullWidth
+                  href={'/index.html'}
+                  size="large"
+                  target="_blank"
+                  variant="contained"
+                >
+                  {t('dashboard:title')}
+                </Button>
+              </CardActions>
+            </>
+          )
+        )}
+      />
+      {/* </Grid> */}
+    </Card>
   );
-});
+};
