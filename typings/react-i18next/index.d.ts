@@ -5,6 +5,8 @@ declare module 'react-i18next' {
     resources: {
       title: string;
       common: {
+        title: string;
+        description: string;
         coming_soon: string;
         empty_list: string;
         empty_string: string;

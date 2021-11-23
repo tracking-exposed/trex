@@ -8,8 +8,8 @@ import { keypair, settings } from '../../state/public.queries';
 import { ErrorBox } from '../common/ErrorBox';
 import { LazyFullSizeLoader } from '../common/FullSizeLoader';
 import { AccessTokenBox } from './settings/AccessTokenBox';
-import { APIList } from './settings/APIList';
 import { KeypairBox } from './settings/KeypairBox';
+import { Swagger } from './settings/Swagger';
 
 const withQueries = declareQueries({
   settings,
@@ -35,7 +35,7 @@ const Settings = withQueries(({ queries }): React.ReactElement => {
           ) : null}
 
           <Box style={{ paddingBottom: 100 }}>
-            <APIList />
+            <Swagger />
           </Box>
         </Box>
       );

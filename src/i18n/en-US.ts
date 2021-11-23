@@ -3,6 +3,8 @@ import { CustomTypeOptions } from 'react-i18next';
 const resources: CustomTypeOptions['resources'] = {
   title: 'YouChoose AI',
   common: {
+    title: 'YouChoose AI',
+    description: 'YouChoose the recommendation model',
     coming_soon: 'Coming soon',
     empty_list: 'No {{resource}} found.',
     empty_string: '',
