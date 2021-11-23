@@ -3,6 +3,8 @@ import { CustomTypeOptions } from 'react-i18next';
 const resources: CustomTypeOptions['resources'] = {
   title: 'YouChoose AI',
   common: {
+    title: 'YouChoose AI',
+    description: 'YouChoose the recommendation model',
     coming_soon: 'Coming soon',
     empty_list: 'No {{resource}} found.',
     empty_string: '',
@@ -49,8 +51,10 @@ const resources: CustomTypeOptions['resources'] = {
   routes: {
     lab_title: 'LAB - Choose the Recommendations on Your Videos',
     lab_title_short: 'LAB',
-    lab_subtitle: 'Click on one of your videos below to pick and order the recommendations you want to display in the side bar. Your content, your choice!',
-    lab_edit_subtitle: 'Paste a link in the grey box below to add it to the recommendations of this video. You can add recommendations towards any website!',
+    lab_subtitle:
+      'Click on one of your videos below to pick and order the recommendations you want to display in the side bar. Your content, your choice!',
+    lab_edit_subtitle:
+      'Paste a link in the grey box below to add it to the recommendations of this video. You can add recommendations towards any website!',
     statistics: 'Statistics',
     settings: 'Settings',
     link_account: 'Authenticate your Channel \n to start recommending on your videos',
@@ -66,15 +70,20 @@ const resources: CustomTypeOptions['resources'] = {
   },
   link_account: {
     title: 'Authenticate your YouTube channel.',
-    subtitle: 'Authenticate the channel you own with this 1 min procedure to start choosing the recommendations on your videos.',
-    label: 'Authenticate your YouTube channel to start choosing your recommendations',
-    copy_verification_key: 'Copy and paste this unique key in your channel\'s description',
+    subtitle:
+      'Authenticate the channel you own with this 1 min procedure to start choosing the recommendations on your videos.',
+    label:
+      'Authenticate your YouTube channel to start choosing your recommendations',
+    copy_verification_key:
+      "Copy and paste this unique key in your channel's description",
     verification_code_hint:
       "Click <1>here to access to your YouTube Studio</1> and edit your channel description. Just paste the link anywhere in it and click the Publish button on the top right. You can remove the code from your channel's description after the verification is finished.",
-    paste_channel_url: 'Paste your YouTube Channel\'s URL or ID:',
+    paste_channel_url: "Paste your YouTube Channel's URL or ID:",
     verification_failed: 'Oops, the channel authentication failed!',
-    verification_failed_hint: "Please double-check that you have published the code in your channel's description and try again.",
-    go_back_to_step_one_hint: 'If the verification keeps failing, <1>go back to step one</1> and make sure you have pasted the correct URL of your YouTube channel.',
+    verification_failed_hint:
+      "Please double-check that you have published the code in your channel's description and try again.",
+    go_back_to_step_one_hint:
+      'If the verification keeps failing, <1>go back to step one</1> and make sure you have pasted the correct URL of your YouTube channel.',
   },
   youtube: {
     title: 'Youtube',
@@ -104,8 +113,9 @@ const resources: CustomTypeOptions['resources'] = {
     notifications_title: 'Notifications',
     top_n_cc_related_to_your_channel:
       'Top {{count}} CC related to your channel',
-    advertising_connected_to_your_videos:
-      'Advertising connected to your videos',
+    advertising_connected_to_your_videos_title: 'Advertising',
+    advertising_connected_to_your_videos_subtitle:
+      'Advertising connected to your video',
   },
   videos: {
     no_results: 'No videos found.',

@@ -3,6 +3,7 @@ import {
   ADVContributionEvent,
   VideoContributionEvent,
 } from '@backend/models/ContributionEvent';
+import { debounce } from '@material-ui/core';
 import { differenceInSeconds } from 'date-fns';
 import { pipe } from 'fp-ts/lib/function';
 import * as TE from 'fp-ts/lib/TaskEither';
@@ -221,7 +222,7 @@ function leavesWatcher(setState: SetState, settings: Settings): void {
       manageNodes,
       command,
       selectorName,
-      setState,
+      debounce(setState, 1000),
       settings
     );
     watch(document, command.selector, cb);
@@ -296,12 +297,9 @@ function manageNodes(
     }
   }
 
-  // this to highlight what is collected as fragments
-  if (
-    settings.independentContributions.enable &&
-    settings.independentContributions.showUI
-  ) {
-    const stroke = config.NODE_ENV === 'development' ? '5px' : '1px';
+  // highligh collected fragments in development
+  if (config.NODE_ENV === 'development') {
+    const stroke = '3px';
     const color = command.color ?? 'red';
     selected.style.border = `${stroke} solid ${color}`;
     selected.setAttribute(selectorName, 'true');
