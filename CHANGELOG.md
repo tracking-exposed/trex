@@ -1,3 +1,17 @@
+# [1.2.0-beta.1](https://github.com/tracking-exposed/YCAI/compare/v1.1.1-beta.3...v1.2.0-beta.1) (2021-11-23)
+
+
+### Bug Fixes
+
+* fix the manifest version output with valid format ([64f8d0c](https://github.com/tracking-exposed/YCAI/commit/64f8d0c5be1835d491cf738394483902b64c2543))
+* use react portal strategy for yc injected nodes ([#163](https://github.com/tracking-exposed/YCAI/issues/163)) ([8e3d76a](https://github.com/tracking-exposed/YCAI/commit/8e3d76a3ea6fc7d8e1b632f471c496bd5a2963e1))
+
+
+### Features
+
+* analytics tree map ([#162](https://github.com/tracking-exposed/YCAI/issues/162)) ([37b58d5](https://github.com/tracking-exposed/YCAI/commit/37b58d58d65e0912a793545401e1881e382dab02))
+* swagger io ([#151](https://github.com/tracking-exposed/YCAI/issues/151)) ([e838ad6](https://github.com/tracking-exposed/YCAI/commit/e838ad6cd495fb06028ca182bb3dd17c7ea71551))
+
 ## [1.1.1-beta.3](https://github.com/tracking-exposed/YCAI/compare/v1.1.1-beta.2...v1.1.1-beta.3) (2021-11-22)
 
 
