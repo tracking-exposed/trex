@@ -1,5 +1,5 @@
 import * as endpoints from '@backend/endpoints';
-import * as models from '@backend/models';
+import models from '@backend/models';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
 import SwaggerUI from 'swagger-ui';

@@ -1,24 +1,27 @@
 {
+  "extends": "../tsconfig.json",
   "compilerOptions": {
     "allowJs": true,
-    "noEmit": true,
     "rootDir": "./",
     "baseUrl": "./"
   },
   "include": [
     "./bin",
     "./lib",
-    "./endpoints",
-    "./models",
     "./parsers",
     "./routes",
     "./utils"
   ],
   "exclude": ["./tests"],
   "watchOptions": {
-"watchFile": "useFsEvents",
-"watchDirectory": "useFsEvents",
-"synchronousWatchDirectory": true
-  }
+    "watchFile": "useFsEvents",
+    "watchDirectory": "useFsEvents",
+    "synchronousWatchDirectory": true
+  },
+  "references": [
+    {
+      "path": "../shared"
+    }
+  ]
 }
 

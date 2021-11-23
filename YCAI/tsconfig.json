@@ -1,4 +1,5 @@
 {
+  "extends": "../tsconfig.json",
   "compilerOptions": {
     "module": "esnext",
     "target": "es5",
@@ -18,8 +19,8 @@
       "ESNext"
     ],
     "typeRoots": [
-      "node_modules/@types",
-      "typings"
+      "./node_modules/@types",
+      "./typings"
     ],
     "baseUrl": "./src",
     "allowSyntheticDefaultImports": true,
@@ -27,14 +28,12 @@
     "moduleResolution": "Node",
     "isolatedModules": true,
     "paths": {
-      "@chrome/*": ["./chrome/*"],
-      "@backend/*": ["../yttrex-backend/backend/*"]
+      "@backend/*": ["../../shared/*"]
     }
   },
-  "exclude": [
-    "./public/**",
-    "**/node_modules/**",
-    "./yttrex-backend/**",
-    "./build/**"
+  "references": [
+    {
+      "path": "../shared"
+    }
   ]
 }

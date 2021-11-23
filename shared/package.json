@@ -1,0 +1,16 @@
+{
+  "name": "shared",
+  "description": "shared files needed by the backend and the YCAI extension",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "license": "AGPL-3.0",
+  "dependencies": {
+    "fp-ts": "^2.11.5",
+    "io-ts": "^2.2.16",
+    "io-ts-types": "^0.5.16",
+    "ts-endpoint": "^2.0.0",
+    "ts-io-error": "^2.0.0",
+    "typelevel-ts": "^0.4.0"
+  }
+}
