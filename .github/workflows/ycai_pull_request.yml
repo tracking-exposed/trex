@@ -22,7 +22,7 @@ jobs:
         run: echo "::set-output name=dir::~/.npm"
 
       - uses: actions/cache@v2
-         with:
+        with:
           path: ~/.npm
           key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
           restore-keys: |
