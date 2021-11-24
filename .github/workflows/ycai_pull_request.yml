@@ -1,4 +1,4 @@
-name: Pull Request
+name: YCAI - Pull Request
 
 on:
   pull_request:
@@ -25,16 +25,17 @@ jobs:
         id: npm-cache # use this to check for `cache-hit` (`steps.yarn-cache.outputs.cache-hit != 'true'`)
         with:
           path: ${{ steps.npm-cache-dir-path.outputs.dir }}
-          key: ${{ runner.os }}-npm-${{ hashFiles('**/package-lock.json') }}
+          key: ${{ runner.os }}-npm-${{ hashFiles('YCAI/package-lock.json') }}
           restore-keys: |
             ${{ runner.os }}-npm-
 
       - uses: actions/cache@v2
         with:
           path: '**/node_modules'
-          key: ${{ runner.os }}-modules-${{ hashFiles('**/package-lock.json') }}
+          key: ${{ runner.os }}-modules-${{ hashFiles('YCAI/package-lock.json') }}
 
       - name: Install modules
+        working-directory: ./YCAI
         # if: steps.yarn-cache.outputs.cache-hit != 'true'
         run: npm ci
 
@@ -51,9 +52,10 @@ jobs:
       - uses: actions/cache@v2
         with:
           path: '**/node_modules'
-          key: ${{ runner.os }}-modules-${{ hashFiles('**/package-lock.json') }}
+          key: ${{ runner.os }}-modules-${{ hashFiles('YCAI/package-lock.json') }}
 
       - name: Lint code
+        working-directory: ./YCAI
         run: npm run lint
 
   build:
@@ -70,9 +72,10 @@ jobs:
       - uses: actions/cache@v2
         with:
           path: '**/node_modules'
-          key: ${{ runner.os }}-modules-${{ hashFiles('**/package-lock.json') }}
+          key: ${{ runner.os }}-modules-${{ hashFiles('YCAI/package-lock.json') }}
 
       - name: Build
+        working-directory: ./YCAI
         run: npm run build
 
   test:
@@ -89,7 +92,8 @@ jobs:
       - uses: actions/cache@v2
         with:
           path: '**/node_modules'
-          key: ${{ runner.os }}-modules-${{ hashFiles('**/package-lock.json') }}
+          key: ${{ runner.os }}-modules-${{ hashFiles('YCAI/package-lock.json') }}
 
       - name: Test
+        working-directory: ./YCAI
         run: npm test
