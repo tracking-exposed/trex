@@ -6,16 +6,10 @@
     "baseUrl": "./",
     "outDir": "./build",
     "paths": {
-      "@shared/*": ["../shared/*"]
+      "@shared/*": ["../shared/src/*"]
     }
   },
-  "include": [
-    "./bin",
-    "./lib",
-    "./parsers",
-    "./routes",
-    "./utils"
-  ],
+  "include": ["./bin", "./lib", "./parsers", "./routes", "./utils"],
   "exclude": ["./tests"],
   "watchOptions": {
     "watchFile": "useFsEvents",
@@ -28,4 +22,3 @@
     }
   ]
 }
-

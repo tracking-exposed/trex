@@ -1,6 +1,6 @@
 import { PathReporter } from "io-ts/lib/PathReporter";
 import * as t from "io-ts";
-import { MinimalEndpointInstance } from "ts-endpoint";
+import { InferEndpointInstanceParams, MinimalEndpointInstance, TypeOfEndpointInstance } from "ts-endpoint";
 import * as E from "fp-ts/lib/Either";
 import { sequenceS } from "fp-ts/lib/Apply";
 import { pipe } from "fp-ts/lib/function";
@@ -14,10 +14,10 @@ type DecodeRequestResult<E extends MinimalEndpointInstance> =
   | {
       type: "success";
       result: {
-        params: serializedType<E["Input"]["Params"]>;
-        query: serializedType<E["Input"]["Query"]>;
-        headers: serializedType<E["Input"]["Headers"]>;
-        body: serializedType<E["Input"]["Body"]>;
+        params: InferEndpointInstanceParams<E>['params'];
+        query: InferEndpointInstanceParams<E>['query'];
+        headers: InferEndpointInstanceParams<E>['query'];
+        body: InferEndpointInstanceParams<E>['body'];
       };
     };
 

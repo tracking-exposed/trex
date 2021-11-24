@@ -1,6 +1,9 @@
 {
-  "exclude": [
-    "**/node_modules/*",
-    "**/build/*"
-  ],
+  "compilerOptions": {
+    "strict": true,
+    "strictNullChecks": true,
+    "allowUnusedLabels": false,
+    "isolatedModules": true,
+  },
+  "exclude": ["**/node_modules/*", "**/build/*"]
 }

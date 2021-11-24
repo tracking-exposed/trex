@@ -11,7 +11,7 @@ const fileExists = (path: string) => {
   }
 };
 
-const findFileInHierarchy = (candidateFolder: string, fileName: string) => {
+const findFileInHierarchy = (candidateFolder: string, fileName: string): any => {
   const candidateFile = resolve(candidateFolder, fileName);
   if (fileExists(candidateFile)) {
     return candidateFile;
