@@ -3,7 +3,8 @@
   "compilerOptions": {
     "composite": true,
     "outDir": "./build",
-    "baseUrl": "./src",
+    "baseUrl": "./",
+    "rootDir": "./src",
     "tsBuildInfoFile": "./build/.tsbuildinfo"
   },
   "include": ["./src"]

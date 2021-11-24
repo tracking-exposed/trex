@@ -29,4 +29,4 @@ export const GetLogger = (name: string, d?: debug.Debugger): Logger => {
 
 export const apiLogger = GetLogger('API');
 
-debug.enable(config.REACT_APP_LOGGER);
+debug.enable(config.LOGGER);

@@ -1,17 +1,17 @@
-if (process.env.REACT_APP_BUILD_DATE === undefined) {
-  throw new Error('REACT_APP_BUILD_DATE is not defined');
+if (process.env.BUILD_DATE === undefined) {
+  throw new Error('BUILD_DATE is not defined');
 }
 
-if (process.env.REACT_APP_VERSION === undefined) {
-  throw new Error('REACT_APP_VERSION is not defined');
+if (process.env.VERSION === undefined) {
+  throw new Error('VERSION is not defined');
 }
 
 export const config = {
   NODE_ENV: process.env.NODE_ENV,
-  REACT_APP_API_URL: process.env.REACT_APP_API_URL,
-  REACT_APP_DATA_DONATION_FLUSH_INTERVAL: process.env.REACT_APP_DATA_DONATION_FLUSH_INTERVAL ?? '3000',
-  REACT_APP_LOGGER: process.env.REACT_APP_LOGGER ?? '@ycai:*',
-  REACT_APP_WEB_URL: process.env.REACT_APP_WEB_URL,
-  REACT_APP_BUILD_DATE: process.env.REACT_APP_BUILD_DATE,
-  REACT_APP_VERSION: process.env.REACT_APP_VERSION,
+  API_URL: process.env.API_URL,
+  DATA_DONATION_FLUSH_INTERVAL: process.env.DATA_DONATION_FLUSH_INTERVAL ?? '3000',
+  LOGGER: process.env.LOGGER ?? '@ycai:*',
+  WEB_URL: process.env.WEB_URL,
+  BUILD_DATE: process.env.BUILD_DATE,
+  VERSION: process.env.VERSION,
 };

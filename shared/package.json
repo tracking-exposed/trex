@@ -2,6 +2,7 @@
   "name": "shared",
   "description": "shared files needed by the backend and the YCAI extension",
   "scripts": {
+    "build": "tsc -b",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "license": "AGPL-3.0",
@@ -11,6 +12,7 @@
     "io-ts-types": "^0.5.16",
     "ts-endpoint": "^2.0.0",
     "ts-io-error": "^2.0.0",
-    "typelevel-ts": "^0.4.0"
+    "typelevel-ts": "^0.4.0",
+    "typescript": "^4.5.2"
   }
 }

@@ -15,19 +15,14 @@ const DotenvPlugin = require('dotenv-webpack');
 const FileManagerPlugin = require('filemanager-webpack-plugin');
 const { BundleAnalyzerPlugin } = require('webpack-bundle-analyzer');
 
-const {
-  generateWebpackAliasesFromTSConfig,
-} = require('./webpackConfigUtils');
+const { generateWebpackAliasesFromTSConfig } = require('./webpackConfigUtils');
 
-const dotEnvConfigPath = process.env.DOTENV_CONFIG_PATH || (
-  process.env.NODE_ENV === 'production'
-    ? '.env.production'
-    : '.env'
-);
+const dotEnvConfigPath =
+  process.env.DOTENV_CONFIG_PATH ||
+  (process.env.NODE_ENV === 'production' ? '.env.production' : '.env');
 
-const mode = process.env.NODE_ENV === 'production'
-  ? 'production'
-  : 'development';
+const mode =
+  process.env.NODE_ENV === 'production' ? 'production' : 'development';
 
 const NODE_ENV = t.union(
   [t.literal('development'), t.literal('test'), t.literal('production')],
@@ -48,7 +43,7 @@ const buildENV = pipe(
     BUNDLE_TARGET: 'chrome',
     BUNDLE_STATS: 'false',
     NODE_ENV: mode,
-    ...process.env
+    ...process.env,
   },
   BUILD_ENV.decode,
   (validation) => {
@@ -62,12 +57,14 @@ const buildENV = pipe(
 );
 
 const pkgJson = require('./package.json');
-const manifestVersion = (process.env.MANIFEST_VERSION || pkgJson.version).replace('-beta', '');
+const manifestVersion = (
+  process.env.MANIFEST_VERSION || pkgJson.version
+).replace('-beta', '');
 
 const plugins = [
   new DefinePlugin({
-    'process.env.REACT_APP_BUILD_DATE': JSON.stringify(new Date().toISOString()),
-    'process.env.REACT_APP_VERSION': JSON.stringify(manifestVersion),
+    'process.env.BUILD_DATE': JSON.stringify(new Date().toISOString()),
+    'process.env.VERSION': JSON.stringify(manifestVersion),
     'process.env.NODE_ENV': JSON.stringify(mode),
   }),
 
@@ -76,58 +73,67 @@ const plugins = [
   }),
 
   new CopyWebpackPlugin({
-    patterns: [{
-      from: 'public',
-      filter: (file) => {
-        const { base } = path.parse(file);
+    patterns: [
+      {
+        from: 'public',
+        filter: (file) => {
+          const { base } = path.parse(file);
 
-        if (base === 'manifest.json') {
-          return false;
-        }
+          if (base === 'manifest.json') {
+            return false;
+          }
 
-        return true;
-      }
-    }, {
-      from: 'public/manifest.json',
-      transform: (content) => {
-        const manifest = JSON.parse(content);
+          return true;
+        },
+      },
+      {
+        from: 'public/manifest.json',
+        transform: (content) => {
+          const manifest = JSON.parse(content);
 
-        if (buildENV.BUNDLE_TARGET === 'chrome') {
-          manifest.cross_origin_embedder_policy = {
-            value: 'require-corp',
-          };
+          if (buildENV.BUNDLE_TARGET === 'chrome') {
+            manifest.cross_origin_embedder_policy = {
+              value: 'require-corp',
+            };
 
-          manifest.cross_origin_opener_policy = {
-            value: 'same-origin',
-          };
-        }
+            manifest.cross_origin_opener_policy = {
+              value: 'same-origin',
+            };
+          }
 
-        manifest.version = manifestVersion;
+          manifest.version = manifestVersion;
 
-        return JSON.stringify(manifest, null, 2);
-      }
-    }],
+          return JSON.stringify(manifest, null, 2);
+        },
+      },
+    ],
   }),
 ];
 
 if (mode === 'production') {
-  plugins.push(new FileManagerPlugin({
-    events: {
-      onEnd: {
-        archive: [{
-          source: './build',
-          destination: './build/extension.zip',
-        }],
+  plugins.push(
+    new FileManagerPlugin({
+      events: {
+        onEnd: {
+          archive: [
+            {
+              source: './build',
+              destination: './build/extension.zip',
+            },
+          ],
+        },
       },
-    },
-  }));
+    })
+  );
 }
 
 if (buildENV.BUNDLE_STATS) {
-  plugins.push(new BundleAnalyzerPlugin({
-    generateStatsFile: true,
-    analyzerMode: 'json',
-  }));
+  plugins.push(
+    new BundleAnalyzerPlugin({
+      generateStatsFile: true,
+      analyzerMode: 'json',
+    })
+  );
 }
 
 module.exports = {
@@ -146,32 +152,41 @@ module.exports = {
   },
 
   module: {
-    rules: [{
-      test: /\.tsx?$/,
-      use: [{
-        loader: 'ts-loader',
-        options: {
-          compilerOptions: {
-            noEmit: false,
-            sourceMap: true,
+    rules: [
+      {
+        test: /\.tsx?$/,
+        use: [
+          {
+            loader: 'ts-loader',
+            options: {
+              compilerOptions: {
+                noEmit: false,
+                sourceMap: true,
+              },
+              transpileOnly: true,
+            },
           },
-          transpileOnly: true,
-        },
-      }],
-    }, {
-      test: /\.(ttf|svg)$/,
-      type: 'asset/inline',
-    }, {
-      test: /\.css$/,
-      use: [{
-        loader: 'style-loader',
-      }, {
-        loader: 'css-loader',
-      }],
-    }],
+        ],
+      },
+      {
+        test: /\.(ttf|svg)$/,
+        type: 'asset/inline',
+      },
+      {
+        test: /\.css$/,
+        use: [
+          {
+            loader: 'style-loader',
+          },
+          {
+            loader: 'css-loader',
+          },
+        ],
+      },
+    ],
   },
 
-  devtool: (mode === 'development') ? 'inline-source-map' : false,
+  devtool: mode === 'development' ? 'inline-source-map' : false,
 
   resolve: {
     extensions: ['.ts', '.tsx', '.js'],

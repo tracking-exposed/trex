@@ -76,9 +76,9 @@ export const Popup: React.FC = () => {
   const { t } = useTranslation();
   const classes = useStyles();
 
-  const version = config.REACT_APP_VERSION;
+  const version = config.VERSION;
   const timeago = formatDistance(
-    parseISO(config.REACT_APP_BUILD_DATE),
+    parseISO(config.BUILD_DATE),
     new Date(),
     {
       addSuffix: true,
@@ -94,7 +94,7 @@ export const Popup: React.FC = () => {
       >
         <a
           className={classes.link}
-          href={config.REACT_APP_WEB_URL}
+          href={config.WEB_URL}
           target="_blank"
           rel="noreferrer"
         >

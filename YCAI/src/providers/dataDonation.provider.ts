@@ -18,7 +18,7 @@ import security from './bs58.provider';
 const ddLogger = GetLogger('data-donation');
 
 const FLUSH_INTERVAL = parseInt(
-  config.REACT_APP_DATA_DONATION_FLUSH_INTERVAL,
+  config.DATA_DONATION_FLUSH_INTERVAL,
   10
 );
 
@@ -390,7 +390,7 @@ const boot = (
   }
   isRunning = true;
   // this get executed on pornhub.com and it is the start of potrex extension
-  ddLogger.debug('Version %s', config.REACT_APP_VERSION);
+  ddLogger.debug('Version %s', config.VERSION);
 
   // register flush timer
 
@@ -493,8 +493,8 @@ const flush = (keypair: Keypair): void => {
       TE.chain((signature) =>
         sendAPIMessage(Endpoints.v2.Public.AddEvents)({
           Headers: {
-            'X-YTtrex-Build': config.REACT_APP_VERSION,
-            'X-YTtrex-Version': config.REACT_APP_VERSION,
+            'X-YTtrex-Build': config.VERSION,
+            'X-YTtrex-Version': config.VERSION,
             'X-YTtrex-PublicKey': keypair.publicKey,
             'X-YTtrex-Signature': signature,
           },
