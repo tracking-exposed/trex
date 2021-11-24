@@ -22,67 +22,24 @@ jobs:
         run: echo "::set-output name=dir::~/.npm"
 
       - uses: actions/cache@v2
-        id: npm-cache # use this to check for `cache-hit` (`steps.yarn-cache.outputs.cache-hit != 'true'`)
-        with:
-          path: ${{ steps.npm-cache-dir-path.outputs.dir }}
-          key: ${{ runner.os }}-npm-${{ hashFiles('**/package-lock.json') }}
+         with:
+          path: ~/.npm
+          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
           restore-keys: |
-            ${{ runner.os }}-npm-
-
-      - uses: actions/cache@v2
-        with:
-          path: '**/node_modules'
-          key: ${{ runner.os }}-modules-${{ hashFiles('**/package-lock.json') }}
+            ${{ runner.os }}-node-
 
       - name: Install modules
         working-directory: shared
-        # if: steps.yarn-cache.outputs.cache-hit != 'true'
         run: npm i
 
       - name: Install modules
-        # if: steps.yarn-cache.outputs.cache-hit != 'true'
         run: npm i
-
-  lint:
-    runs-on: ubuntu-latest
-    needs: [install]
-    steps:
-      - uses: actions/checkout@v2
-
-      - uses: actions/cache@v2
-        with:
-          path: '**/node_modules'
-          key: ${{ runner.os }}-modules-${{ hashFiles('**/package-lock.json') }}
 
       - name: Lint code
         run: npm run lint
 
-  build:
-    runs-on: ubuntu-latest
-    needs: [install]
-
-    steps:
-      - uses: actions/checkout@v2
-
-      - uses: actions/cache@v2
-        with:
-          path: '**/node_modules'
-          key: ${{ runner.os }}-modules-${{ hashFiles('**/package-lock.json') }}
-
       - name: Build
         run: npm run build
-
-  test:
-    runs-on: ubuntu-latest
-    needs: [install]
-
-    steps:
-      - uses: actions/checkout@v2
-
-      - uses: actions/cache@v2
-        with:
-          path: '**/node_modules'
-          key: ${{ runner.os }}-modules-${{ hashFiles('**/package-lock.json') }}
 
       - name: Test
         run: npm test
