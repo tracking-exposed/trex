@@ -1,9 +1,17 @@
-name: Release
+name: YCAI - Release
 on:
   push:
     branches:
       - main
       - beta
+    paths:
+      - "shared/**"
+      - "YCAI/**"
+
+defaults:
+  run:
+    working-directory: YCAI
+
 jobs:
   release:
     name: Release
@@ -19,6 +27,11 @@ jobs:
         uses: actions/setup-node@v2
         with:
           node-version: "14"
+
+      - name: Install shared dependencies
+        working-directory: shared
+        run: npm ci
+
       - name: Install dependencies
         run: npm ci
 
