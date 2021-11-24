@@ -6,16 +6,16 @@ on:
       - daily
       - beta
 
+defaults:
+  run:
+    working-directory: YCAI
+
 jobs:
   install:
     runs-on: ubuntu-latest
 
     steps:
       - uses: actions/checkout@v2
-        with:
-          fetch-depth: 0
-          submodules: recursive
-          persist-credentials: false
 
       - name: Get npm cache directory path
         id: npm-cache-dir-path
@@ -35,24 +35,19 @@ jobs:
           key: ${{ runner.os }}-modules-${{ hashFiles('**/package-lock.json') }}
 
       - name: Install modules
-        working-directory: ./shared
+        working-directory: shared
         # if: steps.yarn-cache.outputs.cache-hit != 'true'
-        run: npm ci
+        run: npm i
 
       - name: Install modules
-        working-directory: ./YCAI
         # if: steps.yarn-cache.outputs.cache-hit != 'true'
-        run: npm ci
+        run: npm i
 
   lint:
     runs-on: ubuntu-latest
     needs: [install]
     steps:
       - uses: actions/checkout@v2
-        with:
-          fetch-depth: 0
-          submodules: recursive
-          persist-credentials: false
 
       - uses: actions/cache@v2
         with:
@@ -60,7 +55,6 @@ jobs:
           key: ${{ runner.os }}-modules-${{ hashFiles('**/package-lock.json') }}
 
       - name: Lint code
-        working-directory: ./YCAI
         run: npm run lint
 
   build:
@@ -69,10 +63,6 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
-        with:
-          fetch-depth: 0
-          submodules: recursive
-          persist-credentials: false
 
       - uses: actions/cache@v2
         with:
@@ -80,7 +70,6 @@ jobs:
           key: ${{ runner.os }}-modules-${{ hashFiles('**/package-lock.json') }}
 
       - name: Build
-        working-directory: ./YCAI
         run: npm run build
 
   test:
@@ -89,10 +78,6 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
-        with:
-          fetch-depth: 0
-          submodules: recursive
-          persist-credentials: false
 
       - uses: actions/cache@v2
         with:
@@ -100,5 +85,4 @@ jobs:
           key: ${{ runner.os }}-modules-${{ hashFiles('**/package-lock.json') }}
 
       - name: Test
-        working-directory: ./YCAI
         run: npm test
