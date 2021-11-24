@@ -4,6 +4,8 @@ on:
   pull_request:
     branches:
       - master
+      - beta
+      - daily
     paths:
       - "shared/**"
       - "backend/**"
