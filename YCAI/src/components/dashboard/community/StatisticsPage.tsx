@@ -147,9 +147,6 @@ const CreatorStatsPage: React.FC<CreatorStatsProps> = ({ profile, stats }) => {
           </Grid>
 
           <Grid item md={12}>
-            <Typography variant="h5">
-              {t('statistics:advertising_connected_to_your_videos')}
-            </Typography>
             <ADVChannelStatsBox />
           </Grid>
         </Grid>

@@ -48,7 +48,7 @@ declare module 'react-i18next' {
       };
       errors: {
         an_error_occurred: string;
-      },
+      };
       account: {
         channel: string;
       };
@@ -99,7 +99,8 @@ declare module 'react-i18next' {
         evidences_title: string;
         notifications_title: string;
         top_n_cc_related_to_your_channel: string;
-        advertising_connected_to_your_videos: string;
+        advertising_connected_to_your_videos_title: string;
+        advertising_connected_to_your_videos_subtitle: string;
       };
       settings: {
         contentCreatorRecommendationLabel: string;
