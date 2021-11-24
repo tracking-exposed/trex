@@ -8,6 +8,7 @@
 .idea
 *.swp
 .env
+.env.local
 .vscode/*
 
 node_modules

@@ -38,6 +38,7 @@ services:
       DEBUG: "*,-body-parser*,-express*,-follow-redirects"
       key: my-dev-key
       mongoHost: mongo
+      port: 9002
     links:
       - mongo
     volumes:
@@ -50,8 +51,9 @@ services:
 
   ycai:
     image: yttrex_base
-    ports:
-      - "4005:4005"
+    environment:
+      - NODE_ENV=development
+      - DOTENV_CONFIG_PATH=.env.local
     volumes:
       - ./tsconfig.json:/app/tsconfig.json
       - ./shared:/app/shared

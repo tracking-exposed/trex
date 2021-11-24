@@ -19,5 +19,3 @@ RUN npm install
 WORKDIR /app/YCAI
 RUN npm install
 RUN npm run build
-
-CMD ["npm", "run", "watch"]
