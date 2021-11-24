@@ -40,7 +40,7 @@ export const toAPIError = (e: unknown): APIError => {
 };
 
 export const endpointClient = axios.create({
-  baseURL: config.REACT_APP_API_URL,
+  baseURL: config.API_URL,
   // transformRequest: (req) => {
   //   // req.headers('X-YTtrex-Version', config.VERSION);
   //   // req.headers('X-YTtrex-Build', config.BUILD);

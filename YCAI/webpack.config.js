@@ -66,8 +66,8 @@ const manifestVersion = (process.env.MANIFEST_VERSION || pkgJson.version).replac
 
 const plugins = [
   new DefinePlugin({
-    'process.env.REACT_APP_BUILD_DATE': JSON.stringify(new Date().toISOString()),
-    'process.env.REACT_APP_VERSION': JSON.stringify(manifestVersion),
+    'process.env.BUILD_DATE': JSON.stringify(new Date().toISOString()),
+    'process.env.VERSION': JSON.stringify(manifestVersion),
     'process.env.NODE_ENV': JSON.stringify(mode),
   }),
 

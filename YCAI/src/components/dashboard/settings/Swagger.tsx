@@ -16,7 +16,7 @@ export const Swagger: React.FC = () => {
     const swaggerConfig = swagger.generateDoc({
       title: t('common:title'),
       description: t('common:description'),
-      version: config.REACT_APP_VERSION,
+      version: config.VERSION,
       // TODO: this should come from the env
       server: {
         protocol: 'https',
