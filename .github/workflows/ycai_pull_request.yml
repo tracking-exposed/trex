@@ -5,13 +5,16 @@ on:
     branches:
       - daily
       - beta
+    paths:
+      - "shared/**"
+      - "YCAI/**"
 
 defaults:
   run:
     working-directory: YCAI
 
 jobs:
-  install:
+  pull_request:
     runs-on: ubuntu-latest
 
     steps:

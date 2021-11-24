@@ -4,6 +4,9 @@ on:
   pull_request:
     branches:
       - master
+    paths:
+      - "shared/**"
+      - "backend/**"
 
 jobs:
   # install:
