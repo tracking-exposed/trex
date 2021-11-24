@@ -33,12 +33,11 @@ services:
     image: yttrex_base
     container_name: api
     ports:
-      - "9002:9002"
+      - "9000:9000"
     environment:
       DEBUG: "*,-body-parser*,-express*,-follow-redirects"
       key: my-dev-key
       mongoHost: mongo
-      port: 9002
     links:
       - mongo
     volumes:
@@ -53,7 +52,6 @@ services:
     image: yttrex_base
     environment:
       - NODE_ENV=development
-      - DOTENV_CONFIG_PATH=.env.local
     volumes:
       - ./tsconfig.json:/app/tsconfig.json
       - ./shared:/app/shared
