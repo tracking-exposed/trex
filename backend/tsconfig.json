@@ -2,11 +2,12 @@
   "extends": "../tsconfig.json",
   "compilerOptions": {
     "allowJs": true,
+    "strict": false,
     "rootDir": "./",
     "baseUrl": "./",
     "outDir": "./build",
     "paths": {
-      "@shared/*": ["../shared/src/*"]
+      "@shared/*": ["../shared/*"]
     }
   },
   "include": ["./bin", "./lib", "./parsers", "./routes", "./utils"],

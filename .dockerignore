@@ -1,0 +1,4 @@
+__mocks__
+.husky
+**/build
+**/node_modules
