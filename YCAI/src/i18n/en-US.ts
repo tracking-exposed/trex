@@ -100,7 +100,7 @@ const resources: CustomTypeOptions['resources'] = {
     url_helper_text: 'Insert a link',
   },
   dashboard: { title: 'Youchoose Creator Studio' },
-  popup: { version: 'version {{version}} build {{data}}' },
+  popup: { version: 'version {{version}} build {{date}}' },
   statistics: {
     title: 'Statistics',
     subtitle: 'Statistics computed with resources from other users',

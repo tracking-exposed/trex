@@ -56,6 +56,7 @@ services:
       - ./tsconfig.json:/app/tsconfig.json
       - ./shared:/app/shared
       - ./YCAI:/app/YCAI
+      - ./YCAI/build:/app/YCAI/build
     working_dir: /app/YCAI
     depends_on:
       - api
