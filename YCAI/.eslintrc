@@ -43,6 +43,7 @@
     "@typescript-eslint/no-redeclare": ["off"],
     "@typescript-eslint/restrict-plus-operands": ["off"],
     "@typescript-eslint/restrict-template-expressions": ["off"],
+    "@typescript-eslint/strict-boolean-expressions": ["off"],
     "react/jsx-key": "off"
   }
 }

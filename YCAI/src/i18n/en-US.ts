@@ -77,13 +77,14 @@ const resources: CustomTypeOptions['resources'] = {
     copy_verification_key:
       "Copy and paste this unique key in your channel's description",
     verification_code_hint:
-      "Click <1>here to access to your YouTube Studio</1> and edit your channel description. Just paste the link anywhere in it and click the Publish button on the top right. You can remove the code from your channel's description after the verification is finished.",
+      "Click <1>here to access to your YouTube Studio</1> and edit your channel description.\nJust paste the link anywhere in it and click the Publish button on the top right.\nYou can remove the code from your channel's description after the verification is finished.",
     paste_channel_url: "Paste your YouTube Channel's URL or ID:",
     verification_failed: 'Oops, the channel authentication failed!',
     verification_failed_hint:
-      "Please double-check that you have published the code in your channel's description and try again.",
+      "Please double-check that you have published the code\nin your channel's description and try again.",
     go_back_to_step_one_hint:
-      'If the verification keeps failing, <1>go back to step one</1> and make sure you have pasted the correct URL of your YouTube channel.',
+      'If the verification keeps failing, <1>go back to step one</1> and make sure\nyou have pasted the correct URL of your YouTube channel.',
+    channel_not_found: "We couldn't find a channel with the ID you provided.\nPlease make sure the URL or ID you pasted is correct."
   },
   youtube: {
     title: 'Youtube',

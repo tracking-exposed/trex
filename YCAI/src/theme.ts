@@ -72,13 +72,13 @@ export const YCAITheme = createTheme({
     body1: {
       fontWeight: 400,
       fontSize: '1rem',
-      lineHeight: 1.1,
+      lineHeight: 1.2,
       color: black,
     },
     body2: {
       fontWeight: 400,
       fontSize: '0.8rem',
-      lineHeight: 1.2,
+      lineHeight: 1.1,
     },
     caption: {
       fontSize: '0.7rem',
@@ -105,6 +105,11 @@ export const YCAITheme = createTheme({
       containedSecondary: {
         color: white,
         background: grey,
+      },
+    },
+    MuiTypography: {
+      root: {
+        whiteSpace: 'pre-line',
       },
     },
   },
