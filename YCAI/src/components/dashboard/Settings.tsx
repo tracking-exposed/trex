@@ -26,14 +26,11 @@ const Settings = withQueries(({ queries }): React.ReactElement => {
           <Grid container>
             <Grid item xs={12} lg={6}>
               <AccessTokenBox profile={profile} />
+              {keypair && settings?.independentContributions.enable && (
+                <KeypairBox keypair={keypair} settings={settings} />
+              )}
             </Grid>
           </Grid>
-          {keypair !== undefined &&
-          settings !== null &&
-          settings.independentContributions.enable ? (
-            <KeypairBox keypair={keypair} settings={settings} />
-          ) : null}
-
           <Box style={{ paddingBottom: 100 }}>
             <Swagger />
           </Box>

@@ -107,6 +107,11 @@ export const YCAITheme = createTheme({
         background: grey,
       },
     },
+    MuiTypography: {
+      root: {
+        whiteSpace: 'pre-wrap',
+      }
+    }
   },
   palette: {
     text: {

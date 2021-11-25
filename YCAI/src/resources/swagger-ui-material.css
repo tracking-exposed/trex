@@ -1454,9 +1454,10 @@
 
 .swagger-ui .info h2.title {
   font-family: TRex;
-  margin-bottom: 8px;
-  font-weight: 400;
+  font-weight: 600;
   font-size: 1.6rem;
+  margin-bottom: 8px;
+  color: #1A030E;
 }
 
 .swagger-ui .scope-def {

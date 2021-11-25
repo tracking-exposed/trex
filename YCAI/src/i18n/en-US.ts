@@ -36,6 +36,7 @@ const resources: CustomTypeOptions['resources'] = {
     copy_verification_code: 'Copy code',
     unlink_profile: 'Unlink profile',
     edit_access_token: 'Edit Access Token',
+    save_access_token: 'Save Access Token',
     download_access_token: 'Download Access Token',
     download: 'Download',
     move_recommendation_up: 'Move recommendation up',
@@ -141,7 +142,9 @@ const resources: CustomTypeOptions['resources'] = {
     keypair_private_key: 'Key pair secret key',
     keypair_public_key: 'Key pair public key',
     keypair_title: 'Keypair for independent contribution',
-    access_token_title: 'You Access Token',
+    keypair_description: 'These are the secure cryptographic keys that are used to encrypt the data that you share with YouChoose.\nOnly you have access to the secret key and without it nobody can link together the information you share.',
+    access_token_title: 'Your access token',
+    access_token_description: 'This access token allows this browser to access your profile on YouChoose.\nYou can share it with team-members to give them access to the YouChoose dashboard.',
     access_token: 'Access Token',
   },
   ytVideoPage: {
