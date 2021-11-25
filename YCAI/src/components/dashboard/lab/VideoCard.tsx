@@ -75,7 +75,7 @@ export const VideoCard: React.FC<VideoCardProps> = ({
       <CardActions style={{ padding: theme.spacing(2) }}>
         <Button
           color="primary"
-          variant="contained"
+          variant="text"
           size="small"
           className={classes.manage}
           onClick={openRecommendations}

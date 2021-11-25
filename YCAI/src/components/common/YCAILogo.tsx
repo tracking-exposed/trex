@@ -1,10 +1,10 @@
 import * as React from 'react';
 import ycaiLogoSrc from '../../resources/studio-logo-youchoose.svg';
 
-const YCAILogo: React.FC<{ width: string | number }> = ({ width }) => {
+const YCAILogo: React.FC<{ height: string | number }> = ({ height }) => {
   return <img
     src={ycaiLogoSrc}
-    style={{ width }}
+    style={{ height }}
   />;
 };
 

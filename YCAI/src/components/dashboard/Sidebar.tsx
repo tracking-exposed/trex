@@ -19,9 +19,10 @@ import YCAILogo from 'components/common/YCAILogo';
 
 const useStyles = makeStyles((theme) => ({
   routesList: {
-    marginTop: 60,
+    marginLeft: -theme.spacing(2),
+    flexGrow: 1,
   },
-  listItem: {
+  listItemNotSelected: {
     color: theme.palette.primary.main,
   },
   listItemSelected: {
@@ -32,8 +33,19 @@ const useStyles = makeStyles((theme) => ({
       opacity: 0.8,
     },
   },
+  listItem: {
+    paddingTop: theme.spacing(2),
+    paddingBottom: theme.spacing(2),
+    borderTopRightRadius: theme.shape.borderRadius,
+    borderBottomRightRadius: theme.shape.borderRadius,
+  },
   listItemIcon: {
-    marginRight: 40,
+    marginLeft: theme.spacing(1),
+    marginRight: theme.spacing(2),
+  },
+  divider: {
+    marginTop: theme.spacing(8),
+    marginBottom: theme.spacing(8),
   },
 }));
 
@@ -44,8 +56,9 @@ interface MenuItem {
   iconColor: string;
   iconSelectedColor: string;
   views: Array<CurrentView['view']>;
-  className: string;
+  notSelectedClassName: string;
   selectedClassName: string;
+  className: string;
 }
 
 const toMenuItem = (
@@ -56,7 +69,7 @@ const toMenuItem = (
     <ListItem
       key={d.views[0]}
       className={
-        d.views.includes(currentView.view) ? d.selectedClassName : d.className
+        `${d.views.includes(currentView.view) ? d.selectedClassName : d.notSelectedClassName} ${d.className}`
       }
       button={true}
       onClick={doUpdateCurrentView({ view: d.views[0] as any })}
@@ -69,8 +82,11 @@ const toMenuItem = (
       />
       <Typography
         variant="subtitle2"
-        style={{ margin: 0, textTransform: 'uppercase' }}
-      >
+        style={{
+          lineHeight: 1,
+          margin: 0,
+          textTransform: 'uppercase'
+      }}>
         {d.title}
       </Typography>
     </ListItem>
@@ -86,27 +102,25 @@ export const Sidebar: React.FC<SidebarProps> = ({ currentView }) => {
   const classes = useStyles();
   const theme = useTheme();
   return (
-    <Box style={{ position: 'sticky', top: theme.spacing(2) }}>
+    <Box
+      style={{
+        position: 'sticky',
+      }}
+    >
       <Box
         style={{
-          paddingTop: theme.spacing(4),
-          paddingRight: theme.spacing(10),
+          marginTop: theme.spacing(1),
           marginBottom: theme.spacing(8),
         }}
         onClick={() => {
           void doUpdateCurrentView({ view: 'index' })();
         }}
       >
-        <YCAILogo width={'100%'} />
+        <YCAILogo height={24} />
       </Box>
 
-      <Box style={{ padding: theme.spacing(2) }}>
-        <UserProfileBox />
-      </Box>
-
-      <Box style={{ padding: theme.spacing(2) }}>
-      <Divider light />
-      </Box>
+      <UserProfileBox />
+      <Divider light className={classes.divider}/>
 
       <List className={classes.routesList} disablePadding={true}>
         {[
@@ -133,6 +147,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ currentView }) => {
               iconColor: theme.palette.primary.main,
               iconSelectedColor: theme.palette.common.white,
               className: classes.listItem,
+              notSelectedClassName: classes.listItemNotSelected,
               selectedClassName: classes.listItemSelected,
             },
             currentView

@@ -35,7 +35,7 @@ const resources: CustomTypeOptions['resources'] = {
     delete_keypair: 'Delete keypair',
     download_keypair: 'Download keypair',
     pull_creator_videos: 'Import your videos',
-    update_creator_videos_list: 'Update your list of videos',
+    update_creator_videos_list: 'Refresh',
     copy_verification_code: 'Copy code',
     unlink_profile: 'Unlink profile',
     edit_access_token: 'Edit Access Token',
