@@ -62,6 +62,7 @@ declare module 'react-i18next' {
         verification_failed: string;
         verification_failed_hint: string;
         go_back_to_step_one_hint: string;
+        channel_not_found: string;
       };
       youtube: {
         title: string;

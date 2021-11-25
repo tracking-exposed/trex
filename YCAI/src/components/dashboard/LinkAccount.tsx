@@ -22,7 +22,7 @@ import {
 } from '../../state/creator.commands';
 import { makeStyles } from '../../theme';
 
-const youtubeChannelUrlRegex = /\/channel\/([^/]+)\/?$/;
+const youtubeChannelUrlRegex = /\/channel\/([^/]+)(?:$|\/)/;
 
 const useStyles = makeStyles((theme) => ({
   box: {
@@ -39,14 +39,27 @@ const useStyles = makeStyles((theme) => ({
     padding: theme.spacing(2),
     marginRight: theme.spacing(2),
   },
-  stepButton: {
+  stepAction: {
+    display: 'flex',
+    alignItems: 'flex-start',
     marginTop: theme.spacing(5),
+    '& button': {
+      marginRight: theme.spacing(4),
+    }
   },
   linkButton: {
     '&:hover': {
       cursor: 'pointer',
     },
   },
+  list: {
+    '& li': {
+      marginBottom: theme.spacing(1),
+    }
+  },
+  errorBox: {
+    display: 'inline-block',
+  }
 }));
 interface LinkAccountProps {
   auth: AuthResponse | null;
@@ -56,14 +69,13 @@ export const LinkAccount: React.FC<LinkAccountProps> = ({ auth }) => {
 
   const [channel, setChannel] = React.useState<string>(auth?.channelId ?? '');
   const [showCopiedFeedback, setShowCopiedFeedback] = React.useState(false);
+  const [submitChannelFailed, setSubmitChannelFailed] = React.useState(false);
   const [verificationFailed, setVerificationFailed] = React.useState(false);
   const [verifying, setVerifying] = React.useState(false);
 
   const channelIDPasted = auth?.tokenString !== undefined;
 
   const classes = useStyles();
-
-  const inputRef = React.useRef<HTMLInputElement>(null);
 
   const handleChannelChange: React.ChangeEventHandler<
     HTMLInputElement | HTMLTextAreaElement
@@ -90,12 +102,10 @@ export const LinkAccount: React.FC<LinkAccountProps> = ({ auth }) => {
 
   const handleChannelSubmit: React.MouseEventHandler<HTMLButtonElement> =
     async () => {
-      if (inputRef.current?.firstChild !== null) {
-        const channelId = (inputRef.current?.firstChild as any).value;
-        await registerCreatorChannel(channelId, {
-          ccRelatedUsers: { params: { skip: 0, amount: 5 } },
-        })();
-      }
+      const resp = await registerCreatorChannel(channel, {
+        ccRelatedUsers: { params: { skip: 0, amount: 5 } },
+      })();
+      setSubmitChannelFailed(isLeft(resp));
     };
 
   const handleVerifyChannelClicked = (): void => {
@@ -124,11 +134,11 @@ export const LinkAccount: React.FC<LinkAccountProps> = ({ auth }) => {
 
   const handleGoBackToStepOneClicked = (): void => {
     setVerificationFailed(false);
+    setSubmitChannelFailed(false);
+    setChannel('');
 
     void updateAuth(null)();
   };
-
-  const creatorChannelValue = channel ?? '';
 
   return !channelIDPasted ? (
     <Box className={classes.box}>
@@ -148,18 +158,16 @@ export const LinkAccount: React.FC<LinkAccountProps> = ({ auth }) => {
             </InputLabel>
             <Input
               id="creator-channel"
-              ref={inputRef}
               fullWidth={true}
-              value={creatorChannelValue}
+              value={channel}
               onChange={handleChannelChange}
               onKeyDown={onSubmit}
             />
           </FormControl>
         </Grid>
-        <Grid item xs={12}>
+        <Grid item xs={12} className={classes.stepAction}>
           <Button
-            disabled={channel === ''}
-            className={classes.stepButton}
+            disabled={channel.length < 5}
             variant="contained"
             size="large"
             color="primary"
@@ -167,6 +175,13 @@ export const LinkAccount: React.FC<LinkAccountProps> = ({ auth }) => {
           >
             {t('actions:next')}
           </Button>
+          {submitChannelFailed && (
+            <Box className={classes.errorBox}>
+              <Typography>
+                {t('link_account:channel_not_found')}
+              </Typography>
+            </Box>
+          )}
         </Grid>
       </Grid>
     </Box>
@@ -200,64 +215,60 @@ export const LinkAccount: React.FC<LinkAccountProps> = ({ auth }) => {
             </Button>
           )}
         </Grid>
-        <Grid item xs={12} sm={6}>
-          <Typography variant="body2">
+        <Grid item xs={12}>
+          <Typography>
             <Trans i18nKey="link_account:verification_code_hint">
-              Paste and publish a new channel description containing the above
-              code on
+              Click
               <Link
                 target="_blank"
                 rel="noreferrer"
                 href={`https://studio.youtube.com/channel/${channel}/editing/details`}
               >
-                YouTube Studio
+                here to access to your YouTube Studio
               </Link>
-              . You can remove the code from your channel&apos;s description
-              after the verification is complete.
+              and edit your channel description.
+              Just paste the link anywhere in it and click the Publish button on the top right.
+              You can remove the code from your channel&apos;s description after the verification is finished.
             </Trans>
           </Typography>
         </Grid>
-        <Grid item container xs={12} spacing={2} className={classes.stepButton}>
-          <Grid item xs={12} md={2}>
-            <Button
-              disabled={verifying}
-              variant="contained"
-              color="primary"
-              size="large"
-              onClick={handleVerifyChannelClicked}
-            >
-              {t('actions:verify_channel')}
-            </Button>
-          </Grid>
-          <Grid item xs={12} md={6}>
-            {verificationFailed && (
-              <>
-                <Typography>{t('link_account:verification_failed')}</Typography>
-                <ul>
-                  <li>
-                    <Typography>
-                      {t('link_account:verification_failed_hint')}
-                    </Typography>
-                  </li>
-                  <li>
-                    <Typography>
-                      <Trans i18nKey="link_account:go_back_to_step_one_hint">
-                        If the verification keeps failing,
-                        <Link
-                          className={classes.linkButton}
-                          onClick={handleGoBackToStepOneClicked}
-                        >
-                          go back to step one
-                        </Link>
-                        and make sure you have pasted the correct URL to your
-                        YouTube channel.
-                      </Trans>
-                    </Typography>
-                  </li>
-                </ul>
-              </>
-            )}
-          </Grid>
+        <Grid item xs={12} className={classes.stepAction}>
+          <Button
+            disabled={verifying}
+            variant="contained"
+            color="primary"
+            size="large"
+            onClick={handleVerifyChannelClicked}
+          >
+            {t('actions:verify_channel')}
+          </Button>
+          {verificationFailed && (
+            <Box className={classes.errorBox}>
+              <Typography>{t('link_account:verification_failed')}</Typography>
+              <ul className={classes.list}>
+                <li>
+                  <Typography>
+                    {t('link_account:verification_failed_hint')}
+                  </Typography>
+                </li>
+                <li>
+                  <Typography>
+                    <Trans i18nKey="link_account:go_back_to_step_one_hint">
+                      If the verification keeps failing,
+                      <Link
+                        className={classes.linkButton}
+                        onClick={handleGoBackToStepOneClicked}
+                      >
+                        go back to step one
+                      </Link>
+                      and make sure you have pasted the correct URL to your
+                      YouTube channel.
+                    </Trans>
+                  </Typography>
+                </li>
+              </ul>
+            </Box>
+          )}
         </Grid>
       </Grid>
     </Box>
