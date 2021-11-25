@@ -27,7 +27,7 @@ export const CreatorVideos = withQueries<CreatorVideosProps>(
       QR.fold(LazyFullSizeLoader, ErrorBox, ({ videos }) => {
         const { t } = useTranslation();
         return (
-          <Grid container spacing={2} style={{ width: '100%' }}>
+          <Grid container spacing={2}>
             {videos.length === 0 ? (
               <Grid item lg={12} md={12}>
                 <Typography>{t('videos:no_results')}</Typography>

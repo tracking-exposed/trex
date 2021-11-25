@@ -86,7 +86,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ currentView }) => {
   const classes = useStyles();
   const theme = useTheme();
   return (
-    <div style={{ height: '100%' }}>
+    <Box style={{ position: 'sticky', top: theme.spacing(2) }}>
       <Box
         style={{
           paddingTop: theme.spacing(4),
@@ -97,7 +97,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ currentView }) => {
           void doUpdateCurrentView({ view: 'index' })();
         }}
       >
-        <YCAILogo width={'50%'} />
+        <YCAILogo width={'100%'} />
       </Box>
 
       <Box style={{ padding: theme.spacing(2) }}>
@@ -139,6 +139,6 @@ export const Sidebar: React.FC<SidebarProps> = ({ currentView }) => {
           )
         )}
       </List>
-    </div>
+    </Box>
   );
 };
