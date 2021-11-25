@@ -102,7 +102,7 @@ const DashboardContent: React.FC<DashboardContentProps> = ({
           backgroundColor: theme.palette.background.default,
         }}
       >
-        <Typography variant="h3" color="textPrimary" style={{ whiteSpace: 'pre-line' }}>
+        <Typography variant="h3" component="h1" color="textPrimary" style={{ whiteSpace: 'pre-line' }}>
           {currentViewLabel}
         </Typography>
         <Typography variant="subtitle1" color="textPrimary">
