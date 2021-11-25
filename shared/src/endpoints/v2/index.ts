@@ -61,6 +61,10 @@ const GetChannelADVStats = Endpoint({
   Method: "GET",
   getPath: ({ channelId }) => `/v2/ad/channel/${channelId}`,
   Input: {
+    Query: t.type({
+      since: t.string,
+      till: t.string
+    }),
     Params: t.type({
       channelId: t.string
      }),
