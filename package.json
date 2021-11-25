@@ -2,6 +2,7 @@
   "description": "installs all the YCAI dependencies and YCAI",
   "license": "AGPL-3.0",
   "scripts": {
+    "clean": "cd shared && npm run clean && cd ../YCAI && npm run clean",
     "preinstall": "cd shared && npm i && cd ../backend && npm i && cd ../YCAI && npm i"
   }
 }

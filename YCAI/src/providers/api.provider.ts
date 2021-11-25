@@ -129,6 +129,7 @@ export const apiFromEndpoint = <E extends MinimalEndpointInstance>(
       >({
         method: e.Method,
         url,
+        params: b.Query,
         data: b.Body,
         responseType: 'json',
         headers: {

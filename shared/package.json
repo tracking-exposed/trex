@@ -2,6 +2,7 @@
   "name": "shared",
   "description": "shared files needed by the backend and the YCAI extension",
   "scripts": {
+    "clean": "rm -rf ./build",
     "build": "tsc -b",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
