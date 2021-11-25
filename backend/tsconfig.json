@@ -5,9 +5,9 @@
     "strict": false,
     "rootDir": "./",
     "baseUrl": "./",
-    "outDir": "./build",
+    "noEmit": true,
     "paths": {
-      "@shared/*": ["../shared/*"]
+      "@shared/*": ["../shared/src/*"]
     }
   },
   "include": ["./bin", "./lib", "./parsers", "./routes", "./utils"],
