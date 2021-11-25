@@ -19,10 +19,14 @@ import YCAILogo from 'components/common/YCAILogo';
 
 const useStyles = makeStyles((theme) => ({
   routesList: {
-    marginTop: 60,
+    marginLeft: -theme.spacing(2),
+    flexGrow: 1,
   },
   listItem: {
     color: theme.palette.primary.main,
+    marginBottom: theme.spacing(2),
+    paddingTop: theme.spacing(2),
+    paddingBottom: theme.spacing(2),
   },
   listItemSelected: {
     color: theme.palette.violet.contrastText,
@@ -31,9 +35,16 @@ const useStyles = makeStyles((theme) => ({
       backgroundColor: `${theme.palette.grey[500]}`,
       opacity: 0.8,
     },
+    marginBottom: theme.spacing(2),
+    paddingTop: theme.spacing(2),
+    paddingBottom: theme.spacing(2),
   },
   listItemIcon: {
-    marginRight: 40,
+    marginRight: theme.spacing(4),
+  },
+  divider: {
+    marginTop: theme.spacing(8),
+    marginBottom: theme.spacing(8),
   },
 }));
 
@@ -86,11 +97,15 @@ export const Sidebar: React.FC<SidebarProps> = ({ currentView }) => {
   const classes = useStyles();
   const theme = useTheme();
   return (
-    <Box style={{ position: 'sticky', top: theme.spacing(2) }}>
+    <Box
+      style={{
+        position: 'sticky',
+        top: theme.spacing(2),
+      }}
+    >
       <Box
         style={{
           paddingTop: theme.spacing(4),
-          paddingRight: theme.spacing(10),
           marginBottom: theme.spacing(8),
         }}
         onClick={() => {
@@ -98,14 +113,6 @@ export const Sidebar: React.FC<SidebarProps> = ({ currentView }) => {
         }}
       >
         <YCAILogo width={'100%'} />
-      </Box>
-
-      <Box style={{ padding: theme.spacing(2) }}>
-        <UserProfileBox />
-      </Box>
-
-      <Box style={{ padding: theme.spacing(2) }}>
-      <Divider light />
       </Box>
 
       <List className={classes.routesList} disablePadding={true}>
@@ -139,6 +146,10 @@ export const Sidebar: React.FC<SidebarProps> = ({ currentView }) => {
           )
         )}
       </List>
+
+      <Divider light className={classes.divider}/>
+
+      <UserProfileBox />
     </Box>
   );
 };
