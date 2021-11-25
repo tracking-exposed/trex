@@ -26,7 +26,6 @@
 // # Code
 
 // Import other utils to handle the DOM and scrape data.
-import $ from 'jquery';
 import _ from 'lodash';
 
 import config from './config';
@@ -36,167 +35,272 @@ import { registerHandlers } from './handlers/index';
 
 // bo is the browser object, in chrome is named 'chrome', in firefox is 'browser'
 const bo = chrome || browser;
-// below the usage of unnecessary code
-let feedId = (Math.random() + "-init-" + _.random(0, 0xffff));
+
+let feedId = ("—" + Math.random() + "-" + _.random(0, 0xff) + "—");
 let feedCounter = 0;
+const SPECIAL_DEBUG = false;
 
 // Boot the user script. This is the first function called.
 // Everything starts from here.
 function boot () {
-    if (_.endsWith(window.location.origin, 'tiktok.tracking.exposed')) {
-        if (_.isUndefined($('#extension--parsable').html())) {
-        } else {
-            // $(".extension-missing").hide();
-        }
-        return;
-    } else if (_.endsWith(window.location.origin, 'tiktok.com')) {
-        // this get executed only on youtube.com
-        console.log(`tktrex ${JSON.stringify(config)}`);
+  console.log(`tktrex ${JSON.stringify(config)}`);
 
-        // Register all the event handlers.
-        // An event handler is a piece of code responsible for a specific task.
-        // You can learn more in the [`./handlers`](./handlers/index.html) directory.
-        registerHandlers(hub);
+  // Register all the event handlers.
+  // An event handler is a piece of code responsible for a specific task.
+  // You can learn more in the [`./handlers`](./handlers/index.html) directory.
+  registerHandlers(hub);
 
-        // Lookup the current user and decide what to do.
-        localLookup(response => {
-            // `response` contains the user's public key, we save it global for the blinks
-            console.log("app.js gets", response,
-                "from localLookup, and accessId", feedId);
+  // Lookup the current user and decide what to do.
+  localLookup(response => {
+    // `response` contains the user's public key, we save it global for the blinks
+    console.log("app.js gets", response,
+      "from localLookup, and feedId", feedId);
 
-            /* these parameters are loaded from localstorage */
-            config.publicKey = response.publicKey;
-            config.active = response.active;
-            config.ux = response.ux;
+    /* these parameters are loaded from localstorage */
+    config.publicKey = response.publicKey;
+    config.active = response.active;
+    config.ux = response.ux;
 
-            if(config.active !== true) {
-                console.log("TikTokTREX disabled!"); // TODO some UX change
-                return null;
-            }
-
-            hrefUpdateMonitor();
-            flush();
-        });
-    } else if (_.startsWith(window.location.origin, 'localhost')) {
-        console.log('TikTokTrex in localhost: ignored condition');
+    if(config.active !== true) {
+      console.log("tktrex disabled!");
+      return null;
     }
+
+    // emergency button should be used when a supported with
+    // UX hack in place didn't see any UX change, so they
+    // can report the problem and we can handle it.
+    initializeEmergencyButton();
+    return remoteLookup(tktrexActions);
+  });
+}
+
+const hrefPERIODICmsCHECK = 2000;
+let hrefWatcher = null;
+function tktrexActions(remoteInfo) {
+  /* these functions are the main activity made in
+     content_script, and tktrexActions is a callback
+     after remoteLookup */
+  console.log("initialize watchers, remoteInfo available:", remoteInfo);
+
+  // if(hrefWatcher)
+  //   clearInterval(hrefWatcher);
+  // hrefWatcher = window.setInterval(hrefAndPageWatcher, hrefPERIODICmsCHECK);
+
+  setupObserver();
+  flush();
+}
+
+let lastMeaningfulURL, urlkind = null;
+function fullSave() {
+  console.log("Invoked fullSave");
+  let diff = (window.location.href !== lastMeaningfulURL);
+
+  if (diff) {
+    // Considering the extension only runs on *.youtube.com
+    // we want to make sure the main code is executed only in
+    // website portion actually processed by us. If not, the
+    // blink maker would blink in BLUE.
+    // This code is executed by a window.setInterval because
+    // the location might change
+    urlkind = getNatureByHref(window.location.href);
+
+    if(!urlkind)
+      return null;
+
+    // client might duplicate the sending of the same
+    // content, that's 'versionsSent' counter
+    // using a random identifier (randomUUID), we spot the
+    // clones and drop them server side.
+    lastMeaningfulURL = window.location.href;
+    refreshUUID();
+  }
+                                       
+  const sendableNode = document.querySelector('body');      
+  console.log("sending effectively full save html.body");
+  hub.event('newVideo', {                      
+    type: urlkind,
+    element: sendableNode.outerHTML,
+    size: sendableNode.outerHTML.length,
+    href: window.location.href,            
+    reason: 'fullsave',
+    feedId, 
+  });
+}                                    
+
+function refreshUUID() {
+  feedId = (feedCounter + "—" + Math.random() + "-" + _.random(0, 0xff) );
+}
+
+function getNatureByHref(href) {
+  /* this piece of code is shared with backend/parsers/nature */
+  try {
+    const urlO = new URL(href);
+    const chunks = urlO.pathname.split('/');
+    const retval = {};
+
+    if(urlO.pathname == "/foryou") {
+      retval.type = 'foryou'
+    } else if(urlO.pathname == "/") {
+      retval.type = 'foryou';
+    } else if(urlO.pathname == "/following") {
+      retval.type = 'following';
+    } else if(chunks[1] === 'video' && chunks.length === 3) {
+      retval.type = 'video';
+      retval.videoId = chunks[2];
+      retval.authorId = chunks[0];
+    } else if(_.startsWith(urlO.pathname, "/@")) {
+      retval.type = 'creator';
+      retval.creatorName = urlO.pathname.substr(1);
+    } else {
+      console.log("Unmanaged condition from URL:", urlO)
+      return null;
+    }
+    console.log("from", urlO, "attributed", retval);
+    return retval;
+  } catch(error) {
+    console.log("getNatureByHref:", error.message);
+    return null;
+  }
 }
 
 const selectors = {
-    video: 'video',
-    suggested: 'div[class$="DivUserContainer"]',
-    title: 'h1',
-    creator: 'a[href^="/@"]',
+  video: {
+    selector: 'video',
+  },
+  suggested: {
+    selector: 'div[class$="DivUserContainer"]',
+  },
+  title: {
+    selector: 'h1',
+  },
+  creator: {
+    selector: 'a[href^="/@"]',
+  }
 };
 
-function hrefUpdateMonitor() {
-    /* this initizalise dom listened by mutation observer */
-    const sugwat = dom.on(selectors.suggested, handleSuggested);
-    const vidwat = dom.on(selectors.video, handleVideo);
-    const creatwat = dom.on(selectors.creator, handleTest);
-    console.log("Listener installed ",
-        JSON.stringify(selectors), sugwat, vidwat);
+function setupObserver() {
+  /* this initizalise dom listened by mutation observer */
+  const sugwat = dom.on(selectors.suggested.selector, handleSuggested);
+  const vidwat = dom.on(selectors.video.selector, handleVideo);
+  const creatwat = dom.on(selectors.creator.selector, handleTest);
+  console.log("Listener installed ",
+    JSON.stringify(selectors), sugwat, vidwat);
 
-    /* and monitor href changes to randomize a new accessId */
-    let oldHref = document.location.href;
-    const bodyList = document.querySelector("body");
-    const observer = new MutationObserver(function(mutations) {
-        mutations.forEach(function(mutation) {
-            if (oldHref != document.location.href) {
-                console.log(oldHref, "changed", document.location.href, feedId, feedCounter);
-                // TODO url parsing
-                oldHref = document.location.href;
-                feedCounter++;
-                feedId = Math.random() + "++" + feedCounter;
-            }
-        });
+  /* and monitor href changes to randomize a new accessId */
+  let oldHref = window.location.href;
+  const bodyList = document.querySelector("body");
+  const observer = new MutationObserver(function(mutations) {
+    mutations.forEach(function(mutation) {
+      if (oldHref != window.location.href) {
+        let nature = getNatureByHref(window.location.href);
+        feedCounter++;
+        refreshUUID();
+        console.log(oldHref, "changed (and doing nothing)",
+          window.location.href, feedId, feedCounter, nature);
+        // TODO url parsing
+        oldHref = window.location.href;
+      }
     });
-    var config = {
-        childList: true,
-        subtree: true
-    };
-    observer.observe(bodyList, config);
+  });
+  var config = {
+    childList: true,
+    subtree: true
+  };
+  observer.observe(bodyList, config);
 }
 
-let videoCounter = 0;
 function handleTest(element) {
-    return null;
+  return null;
 }
 
 function handleSuggested(elem) {
-    console.log("handleSugg", elem, "should go to parentNode");
-    hub.event('suggested', {
-        html: elem.parentNode.outerHTML,
-        href: window.location.href,
-    });
+  console.log("handleSuggested", elem, "should go to parentNode");
+  hub.event('suggested', {
+    html: elem.parentNode.outerHTML,
+    href: window.location.href,
+  });
 }
 
+let videoCounter = 0;
 function handleVideo(elem) {
 
-    const refe = _.reduce(_.times(20),
-        function(memo, iteration) {
-            const check = memo.parentNode.outerHTML.length;
-            if(check < 10000)
-                console.log(videoCounter, iteration, check);
-            return (check > 10000) ? memo : memo.parentNode;
-        }, elem);
+  const refe = _.reduce(_.times(20),
+    function(memo, iteration) {
+      const check = memo.parentNode.outerHTML.length;
+      if(check < 10000 && SPECIAL_DEBUG)
+        console.log(videoCounter, iteration, check);
+      return (check > 10000) ? memo : memo.parentNode;
+    }, elem);
 
-    console.log(refe);
+  if(refe.hasAttribute('trex')) {
+    console.log("Element already acquired: skipping")
+    return null;
+  }
 
-    if(refe.hasAttribute('trex')) {
-        console.log("Element already acquired: skipping")
-        return null;
-    }
-    videoCounter++;
-    console.log("New element found, marking as ", videoCounter);
-    refe.setAttribute('trex', videoCounter);
-    hub.event('newVideo', {
-        html: refe.outerHTML,
-        href: window.location.href,
-        feedId,
-        feedCounter,
-        videoCounter,
-        rect:  refe.getBoundingClientRect(),
-    })
+  console.log(refe);
+  refe.setAttribute("trex", 1);
+
+  if(config.ux || true) {
+    refe.style.border = '1px solid green';
+  }
+
+  videoCounter++;
+  console.log("New element found, marking as ", videoCounter);
+  refe.setAttribute('trex', videoCounter);
+  hub.event('newVideo', {
+    html: refe.outerHTML,
+    href: window.location.href,
+    feedId,
+    feedCounter,
+    videoCounter,
+    rect:  refe.getBoundingClientRect(),
+  })
 }
 
 // The function `localLookup` communicates with the **action pages**
 // to get information about the current user from the browser storage
 // (the browser storage is unreachable from a **content script**).
 function localLookup (callback) {
-    bo.runtime.sendMessage({
-        type: 'localLookup',
-        payload: {
-            userId: 'local' // at the moment is fixed to 'local'
-        }
-    }, callback);
+  bo.runtime.sendMessage({
+    type: 'localLookup',
+    payload: {
+      userId: 'local' // at the moment is fixed to 'local'
+    }
+  }, callback);
 }
 
 // The function `remoteLookup` communicate the intention
 // to the server of performing a certain test, and retrive
-// the userPseudonym from the server - this is not used in ytTREX
+// updated parsers
 function remoteLookup (callback) {
-    bo.runtime.sendMessage({
-        type: 'remoteLookup',
-        payload: {
-            // window.location.pathname.split('/')
-            // Array(4) [ "", "d", "1886119869", "Soccer" ]
-            // window.location.pathname.split('/')[2]
-            // "1886119869"
-            testId: window.location.pathname.split('/')[2]
-        }
-    }, callback);
+  bo.runtime.sendMessage({
+    type: 'remoteLookup',
+    payload: {
+      feedId,
+      href: window.location.href,
+    }
+  }, callback);
 }
 
 function flush () {
-    window.addEventListener('beforeunload', (e) => {
-        hub.event('windowUnload');
-    });
+  window.addEventListener('beforeunload', (e) => {
+    hub.event('windowUnload');
+  });
+}
+
+function initializeEmergencyButton() {
+  // const expectedSVG = $('[role="banner"] svg');
+  const element = document.createElement('h1');
+  element.onclick = fullSave;
+  element.setAttribute('id', "full--save");
+  element.style = "position: fixed; top:50%; left: 1rem; display: flex; font-size: 3em; cursor: pointer; flex-direction: column; z-index: 9999; visibility: visible;"
+  element.innerText = "💾";
+  document.body.appendChild(element);  
 }
 
 // Before booting the app, we need to update the current configuration
 // with some values we can retrieve only from the `chrome`space.
 bo.runtime.sendMessage({type: 'chromeConfig'}, (response) => {
-    Object.assign(config, response);
-    boot();
+  Object.assign(config, response);
+  boot();
 });

@@ -62,7 +62,7 @@ function headerError(headers) {
     }};
 }
 
-async function processEvents2(req) {
+async function processEvents(req) {
 
     const headers = processHeaders(_.get(req, 'headers'), mandatoryHeaders);
     if(headers.error)
@@ -81,16 +81,21 @@ async function processEvents2(req) {
     appendLast(req);
 
     const htmls = _.map(req.body, function(body, i) {
-        debug("keys %j", _.keys(body));
+        // _.keys(body)
+        // ["html","href","feedId","feedCounter",
+        //  "videoCounter","rect","clientTime","type","incremental"]
         const id = utils.hash({
             x: Math.random() + "+" + body.feedId,
         });
+        const accessId = utils.hash({
+            session: body.feedId,
+        })
         const html = {
             id,
             type: body.type,
             rect: body.rect,
             href: body.href,
-            accessId: body.accessId,
+            accessId,
             publicKey: headers.publickey,
             savingTime: new Date(),
             html: body.html,
@@ -139,11 +144,18 @@ function TOFU(pubkey) {
         .return( [ supporter ] )
 };
 
+async function handshake(req) {
+    debug("handshake API %j", req.body);
+    return {
+        json: { ignored: true }
+    }
+}
 
 module.exports = {
-    processEvents2,
+    processEvents,
     getMirror,
     mandatoryHeaders,
     processHeaders,
-    TOFU: TOFU
+    TOFU: TOFU,
+    handshake,
 };

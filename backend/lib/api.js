@@ -1,7 +1,8 @@
 
 var apiList = {
-    processEvents2:   require('../routes/events').processEvents2,
+    processEvents:    require('../routes/events').processEvents,
     getMirror:        require('../routes/events').getMirror,
+    handshake:        require('../routes/events').handshake,
 
     /* for revision */
     unitById:         require('./htmlunit').unitById,
@@ -61,5 +62,5 @@ var apiList = {
 };
 
 module.exports = {
-    implementations: apiList
+    apiList
 };

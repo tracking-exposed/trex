@@ -9,13 +9,12 @@ const nconf = require('nconf');
 const cors = require('cors');
 
 const dbutils = require('../lib/dbutils');
-const APIs = require('../lib/api');
+const { apiList }= require('../lib/api');
 const security = require('../lib/security');
 
 const cfgFile = "config/settings.json";
 const redOn = "\033[31m";
 const redOff = "\033[0m";
-
 
 nconf.argv().env().file({ file: cfgFile });
 
@@ -24,58 +23,51 @@ console.log(redOn + "ઉ nconf loaded, using " + cfgFile + redOff);
 if(!nconf.get('interface') || !nconf.get('port') )
     throw new Error("check your config/settings.json, config of 'interface' and 'post' missing");
 
-var returnHTTPError = function(req, res, funcName, where) {
-    debug("%s HTTP error 500 %s [%s]", req.url, funcName, where);
-    res.status(500);
-    res.send();
-    return false;
-};
+async function iowrapper(fname, req, res) {
+  try {
+    const funct = apiList[fname];
+    const httpresult = await funct(req, res)
 
-/* This function wraps all the API call, checking the verionNumber
- * managing error in 4XX/5XX messages and making all these asyncronous
- * I/O with DB, inside this Bluebird */
-async function dispatchPromise(name, req, res) {
-    var func = _.get(APIs.implementations, name, null);
-    if(_.isNull(func)) {
-        debug("API name %s (%s): ERROR: missing function", name, req.url);
-        return returnHTTPError(req, res, name, "Server Error");
+    if (httpresult.headers)
+        _.each(httpresult.headers, function(value, key) {
+            debug("Setting header %s: %s", key, value);
+            res.setHeader(key, value);
+        });
+
+    if (!httpresult) {
+        debug("API (%s) didn't return anything!?", fname);
+        res.send("Fatal error: Invalid output");
+        res.status(501);
+    } else if (httpresult.json && httpresult.json.error) {
+        debug("API (%s) failure, returning 500", fname);
+        res.status(500);
+        res.json(httpresult.json);
+    } else if (httpresult.json) {
+        debug("API (%s) success, returning %d bytes JSON",
+          fname, _.size(JSON.stringify(httpresult.json)));
+        res.setHeader('Access-Control-Allow-Origin', '*');
+        res.json(httpresult.json);
+    } else if (httpresult.text) {
+        debug("API (%s) success, returning text (size %d)", fname, _.size(httpresult.text));
+        res.send(httpresult.text);
+    } else if(httpresult.status) {
+        debug("Returning empty status %d from API (%s)", httpresult.status, fname);
+        res.status(httpresult.status);
+    } else {
+        debug("Undetermined failure in API (%s) →  %j", fname, httpresult);
+        res.status(502);
+        res.send("Error?");
     }
-    try {
-        const httpresult = await func(req);
+  } catch(error) {
+    res.status(505);
+    res.send("Software error: " + error.message);
+    debug("Error in HTTP handler API(%s): %s %s",
+        fname, error.message, error.stack);
+  }
+  res.end();
+}
 
-        if(_.isObject(httpresult.headers))
-            _.each(httpresult.headers, function(value, key) {
-                // debug("Setting header %s: %s", key, value);
-                res.setHeader(key, value);
-            });
-
-        if(httpresult.json) {
-            debug("%s API success, returning JSON (%d bytes)",
-                name, _.size(JSON.stringify(httpresult.json)) );
-            res.json(httpresult.json)
-        } else if(httpresult.text) {
-            debug("%s API success, returning text (size %d)",
-                name, _.size(httpresult.text));
-            res.send(httpresult.text)
-        } else if(httpresult.file) {
-            /* this is used for special files, beside the css/js below */
-            debug("API success, returning file (%s)",
-                name, httpresult.file);
-            res.sendFile(__dirname + "/html/" + httpresult.file);
-        } else {
-            debug("Undetermined failure in API %s %s, result → %j",
-            httpresult, name, req.url);
-            return returnHTTPError(req, res, name, "Undetermined failure");
-        }
-
-    } catch(error) {
-        debug("API %s %s - Trigger an Exception: %s",
-            name, req.url, error);
-        return returnHTTPError(req, res, name, "Exception");
-    }
-};
-
-/* everything begin here, welcome */
+/* everything starts here, welcome */
 server.listen(nconf.get('port'), nconf.get('interface'));
 console.log(" Listening on http://" + nconf.get('interface') + ":" + nconf.get('port'));
 /* configuration of express4 */
@@ -83,52 +75,40 @@ app.use(cors());
 app.use(bodyParser.json({limit: '10mb' }));
 app.use(bodyParser.urlencoded({ limit: '10mb', extended: true, parameterLimit: 10 }));
 
-app.get('/api/v1/uptime', async (req, res) => {
-    res.send("OK");
-});
+/* this API is v0 as it is platform neutral. it might be shared among
+ * all the trex backends, and should return info on system health, echo OK
+ * if the system is OK, and the git log of the code running */
+app.get('/api/v0/info', async (req, res) => await iowrapper('systemInfo', req, res));
+app.get('/api/v0/health', function(req, res) { res.send("OK"); res.status(200); });
 
 app.get('/api/v2/statistics/:name/:unit/:amount', async (req, res) => {
     return await dispatchPromise('getStatistics', req, res);
 });
+/* This is the API meant to receive data donation */
+app.post('/api/v2/events', async (req, res) => await iowrapper('processEvents', req, res));
+app.post('/api/v2/handshake', async (req, res) => await iowrapper('handshake', req, res));
 
-app.post('/api/v2/events', async (req, res) => {
-    return await dispatchPromise('processEvents2', req, res);
-});
-app.get('/api/v1/personal/:publicKey/:what?', async (req, res) => {
-    return await dispatchPromise('getPersonal', req, res);
-});
+/* download your CSV (home or video) */
+app.get('/api/v1/personal/:publicKey/:what/:format', async (req, res) => await iowrapper('getPersonalCSV', req, res))
 
 /* debug API */
-app.get('/api/v2/debug/html/:htmlId', async (req, res) => {
-    return await dispatchPromise('getDebugHTML', req, res);
-});
-
-app.get('/api/v1/mirror/:key', async (req, res) => {
-    return await dispatchPromise('getMirror', req, res);
-});
+app.get('/api/v2/debug/html/:htmlId', async (req, res) => await iowrapper('getDebugHTML', req, res));
+app.get('/api/v1/mirror/:key', async (req, res) => await iowrapper('getMirror', req, res));
 
 /* monitor for admin */
-app.get('/api/v2/monitor/:minutes?', async (req, res) => {
-    return await dispatchPromise('getMonitor', req, res);
-});
+app.get('/api/v2/monitor/:minutes?', async (req, res) => await iowrapper('getMonitor', req, res));
 
 /* Capture All 404 errors */
-app.use(async (req, res, next) => {
-    debug("Reached URL %s: not handled!", req.originalUrl);
-	res.status(404).send('Unable to find the requested resource!');
-});
+app.get('*', async (req, res) => {
+    debug("URL not handled: %s", req.url);
+    res.status(404);
+    res.send("URL not found");
+})
 
-/* the remaining code */
-security.checkKeyIsSet();
+async function initialSanityChecks() {
+    /* security checks = is the password set and is not the default? (more checks might come) */
+    security.checkKeyIsSet();
+    await dbutils.checkMongoWorks(true /* if true means that failure is fatal */);
+}
 
-Promise.resolve().then(function() {
-    return dbutils
-        .checkMongoWorks()
-        .then(function(result) {
-            if(!result) {
-                console.log("mongodb is not running - check", cfgFile,"- quitting");
-                process.exit(1);
-            } 
-            debug("mongodb connection works!");
-        })
-});
+initialSanityChecks();

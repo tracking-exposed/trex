@@ -1,5 +1,4 @@
 const _ = require('lodash');
-const nconf = require("nconf");
 const debug = require('debug')('parsers:description');
 
 function description(envelop, previous) {

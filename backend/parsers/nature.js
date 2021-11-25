@@ -23,7 +23,6 @@ function nature(envelop, previous) {
   } else if(urlO.pathname == "/following") {
     retval.type = 'following';
   } else if(chunks[1] === 'video' && chunks.length === 3) {
-    // /@timothyfletcher_/video/7014949386434252038?is_from_webapp=v1
     retval.type = 'video';
     retval.videoId = chunks[2];
     retval.authorId = chunks[0];

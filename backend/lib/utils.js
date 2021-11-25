@@ -1,45 +1,26 @@
-var _ = require('lodash');
-var debug = require('debug')('lib:utils');
-var crypto = require('crypto');
-var bs58 = require('bs58');
-var nacl = require('tweetnacl');
-var nconf = require('nconf');
-var foodWords = require('food-words');
+const _ = require('lodash');
+const debug = require('debug')('lib:utils');
+const crypto = require('crypto');
+const bs58 = require('bs58');
+const nacl = require('tweetnacl');
+const nconf = require('nconf');
+const foodWords = require('food-words');
 
-var hash = function(obj, fields) {
+function hash(obj, fields) {
     if(_.isUndefined(fields))
         fields = _.keys(obj);
     print = true;
-    var plaincnt = fields.reduce(function(memo, fname) {
-        let content =  _.get(obj, fname);
-        if(_.isUndefined(content)) {
-            print  = true;
-            content = '…miss!';
-        }
-        return memo += fname + "∴" + JSON.stringify(content) + ",";
+    const plaincnt = fields.reduce(function(memo, fname) {
+        memo += (fname + "∴" +
+            JSON.stringify(_.get(obj, fname, '…miss!')) +
+            "," );
+        return memo;
     }, "");
     if(print)
         debug("(note) hashing of %s", plaincnt);
-    sha1sum = crypto.createHash('sha1');
+    const sha1sum = crypto.createHash('sha1');
     sha1sum.update(plaincnt);
     return sha1sum.digest('hex');
-};
-
-var activeUserCount = function(usersByDay) {
-    var uC = _.reduce(usersByDay, function(memo, stOb) {
-        var date = stOb["_id"].year + '-' + stOb["_id"].month +
-                   '-' + stOb["_id"].day;
-        if(_.isUndefined(memo[date]))
-            memo[date] = [];
-        memo[date].push(stOb["_id"].user);
-        return memo;
-    }, {});
-    return _.map(uC, function(datec, datek) {
-        return {
-            'date': datek,
-            'count': _.size(datec)
-        }
-    });
 };
 
 function stringToArray (s) {
@@ -104,11 +85,6 @@ function string2Food(piistr) {
     return _.join(ret, '-');
 };
 
-function parseIntNconf(name, def) {
-    let value = nconf.get(name) ? nconf.get(name) : def;
-    return _.parseInt(value);
-}
-
 function getInt(req, what, def) {                                                       
     var rv = _.parseInt(_.get(req.params, what));                                       
     if(_.isNaN(rv)) {                                                                   
@@ -132,14 +108,12 @@ function getString(req, what) {
 }                                                                                       
 
 module.exports = {
-    hash: hash,
-    activeUserCount: activeUserCount,
-    stringToArray: stringToArray,
-    encodeToBase58: encodeToBase58,
-    decodeFromBase58: decodeFromBase58,
-    verifyRequestSignature: verifyRequestSignature,
-    string2Food: string2Food,
-    getInt: getInt,                                                                     
-    getString: getString,
-    parseIntNconf
+    hash,
+    stringToArray,
+    encodeToBase58,
+    decodeFromBase58,
+    verifyRequestSignature,
+    string2Food,
+    getInt,                                                                     
+    getString,
 };
