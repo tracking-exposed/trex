@@ -4,9 +4,9 @@ import * as React from 'react';
 import { useTranslation } from 'react-i18next';
 import SwaggerUI from 'swagger-ui';
 import 'swagger-ui/dist/swagger-ui.css';
+import '../../../resources/swagger-ui-material.css';
 import { config } from '../../../config';
 import * as swagger from '../../../providers/swagger/swagger.provider';
-import '../../../resources/swagger-ui-material.css';
 
 export const Swagger: React.FC = () => {
   const { t } = useTranslation();
@@ -16,8 +16,8 @@ export const Swagger: React.FC = () => {
     const apiURL = new URL(config.API_URL);
 
     const swaggerConfig = swagger.generateDoc({
-      title: t('common:title'),
-      description: t('common:description'),
+      title: t('swagger:title'),
+      description: t('swagger:description'),
       version: config.VERSION,
       server: {
         protocol: apiURL.protocol === 'http:' ? 'http' : 'https',

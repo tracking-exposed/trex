@@ -149,6 +149,10 @@ const resources: CustomTypeOptions['resources'] = {
     secondTab: 'Community Recommendations',
     thirdTab: 'Youtube Recommendations',
   },
+  swagger: {
+    title: 'The YouChoose AI API workbench',
+    description: 'In this section dedicated to developers you can explore and try out all of the API routes used by YouChoose.<br>You can use these APIs outside of YouChoose as you please.'
+  }
 };
 
 export default resources;

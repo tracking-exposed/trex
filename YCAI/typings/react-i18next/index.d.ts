@@ -140,6 +140,10 @@ declare module 'react-i18next' {
         settings: string;
         link_account: string;
       };
+      swagger: {
+        title: string;
+        description: string;
+      }
     };
   }
 }
