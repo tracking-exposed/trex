@@ -27,6 +27,9 @@ declare module 'react-i18next' {
         related: string;
         link_channel: string;
         unlink_channel: string;
+        unlink_channel_confirm_text: string;
+        unlink_channel_confirm_no: string;
+        unlink_channel_confirm_yes: string;
         verify_channel: string;
         generate_keypair: string;
         refresh_keypair: string;

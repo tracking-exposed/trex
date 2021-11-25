@@ -23,6 +23,7 @@ import { useTranslation } from 'react-i18next';
 import { assignAccessToken } from '../../../state/creator.commands';
 import { deleteProfile, downloadTXTFile } from '../../../state/public.commands';
 import { YCAITheme } from '../../../theme';
+import UnlinkProfileButton from '../../common/UnlinkProfileButton';
 
 interface AccessTokenBoxProps {
   profile: ContentCreator | null;
@@ -151,20 +152,18 @@ export const AccessTokenBox: React.FC<AccessTokenBoxProps> = ({ profile }) => {
           </Grid>
           <Grid item xs={3}>
             {profile?.accessToken !== undefined ? (
-              <Button
+              <UnlinkProfileButton
                 variant="outlined"
                 color="secondary"
                 size="small"
-                onClick={() => {
+                onLogout={() => {
                   void deleteProfile({})().then(() => {
                     setToken('');
                     setAuthTokenVisible(true);
                     setError(null);
                   });
                 }}
-              >
-                {t('actions:unlink_profile')}
-              </Button>
+              />
             ) : null}
           </Grid>
         </Grid>

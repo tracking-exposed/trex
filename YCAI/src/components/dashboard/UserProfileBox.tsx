@@ -1,19 +1,19 @@
+import React from 'react';
 import { ContentCreator } from '@shared/models/ContentCreator';
-import { Box, Button, Typography, makeStyles } from '@material-ui/core';
+import { Box, Typography, makeStyles } from '@material-ui/core';
 import Avatar from '../external/Avatar';
 import * as QR from 'avenger/lib/QueryResult';
 import { declareQueries } from 'avenger/lib/react';
 import { sequenceS } from 'fp-ts/lib/Apply';
-import { pipe } from 'fp-ts/lib/pipeable';
+import { pipe } from 'fp-ts/lib/function';
 import * as TE from 'fp-ts/lib/TaskEither';
 import { toBrowserError } from 'providers/browser.provider';
-import * as React from 'react';
-import { useTranslation } from 'react-i18next';
 import { doUpdateCurrentView } from 'utils/location.utils';
 import { updateAuth, updateProfile } from '../../state/creator.commands';
 import { localProfile } from '../../state/creator.queries';
 import { ErrorBox } from '../common/ErrorBox';
 import { LazyFullSizeLoader } from '../common/FullSizeLoader';
+import UnlinkProfileButton from '../common/UnlinkProfileButton';
 
 interface LoggedUserProfileBoxProps {
   onLogout: () => void;
@@ -34,7 +34,6 @@ export const LoggedUserProfileBox: React.FC<LoggedUserProfileBoxProps> = ({
   onLogout,
   profile,
 }) => {
-  const { t } = useTranslation();
   const classes = useStyles();
 
   return (
@@ -50,14 +49,12 @@ export const LoggedUserProfileBox: React.FC<LoggedUserProfileBoxProps> = ({
         </Typography>
       </Box>
       </Box>
-      <Button
-          variant="contained"
-          size="small"
-          onClick={() => onLogout()}
-          style={{ marginLeft: 50 }}
-        >
-          {t('actions:unlink_channel')}
-        </Button>
+      <UnlinkProfileButton
+        style={{ marginLeft: 50 }}
+        variant="contained"
+        size="small"
+        onLogout={onLogout}
+      />
     </Box>
   );
 };
