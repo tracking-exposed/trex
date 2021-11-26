@@ -3,14 +3,12 @@ const debug = require('debug')('lib:utils');
 const crypto = require('crypto');
 const bs58 = require('bs58');
 const nacl = require('tweetnacl');
-const nconf = require('nconf');
 const foodWords = require('food-words');
-const { toUSVString } = require('util');
 
 function hash(obj, fields) {
     if(_.isUndefined(fields))
         fields = _.keys(obj);
-    print = true;
+    print = false; // true;
     const plaincnt = fields.reduce(function(memo, fname) {
         memo += (fname + "∴" +
             JSON.stringify(_.get(obj, fname, '…miss!')) +

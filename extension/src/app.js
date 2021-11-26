@@ -134,11 +134,11 @@ function getNatureByHref(href) {
     const chunks = urlO.pathname.split('/');
     const retval = {};
 
-    if(urlO.pathname == "/foryou") {
+    if(urlO.pathname === "/foryou") {
       retval.type = 'foryou'
-    } else if(urlO.pathname == "/") {
+    } else if(urlO.pathname === "/") {
       retval.type = 'foryou';
-    } else if(urlO.pathname == "/following") {
+    } else if(urlO.pathname === "/following") {
       retval.type = 'following';
     } else if(chunks[1] === 'video' && chunks.length === 3) {
       retval.type = 'video';
@@ -147,6 +147,10 @@ function getNatureByHref(href) {
     } else if(_.startsWith(urlO.pathname, "/@")) {
       retval.type = 'creator';
       retval.creatorName = urlO.pathname.substr(1);
+    } else if(urlO.pathname === "/search") {
+      retval.type = 'search';
+      retval.query = urlO.searchParams.get('q');
+      retval.timestamp = urlO.searchParams.get('t');
     } else {
       console.log("Unmanaged condition from URL:", urlO)
       return null;

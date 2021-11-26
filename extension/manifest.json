@@ -1,7 +1,7 @@
 {
   "manifest_version": 2,
 
-  "name": "TikTokTrackingExposed",
+  "name": "triktroktrex",
 
   "short_name": "tktrex",
   "description": "A tool for academic researchers. Part of the tracking.exposed project, is meant to analyze the algorithm of a popular video portal.",

@@ -1,6 +1,6 @@
 {
   "name": "tktrex",
-  "version": "0.2.0",
+  "version": "0.2.2",
   "description": "tktrex is the extension + backend for tiktok algorithm analysis. This is part of the https://tracking.exposed umbrella project",
   "homepage": "https://tiktok.tracking.exposed",
   "bugs": "https://github.com/tracking-exposed/tktrex/issues",

@@ -77,14 +77,14 @@ async function saveInDB(experinfo, objects, dbcollection) {
 
     try {
         await automo.write(dbcollection, expanded);
-        debug("Saved %d %s metadataId %j",
-            objects.length, dbcollection,
-            _.uniq(_.map(objects, 'metadataId')));
+        debug("Saved %d [%s] accessId %j", objects.length,
+            dbcollection, _.uniq(_.map(objects, 'accessId')));
+
         return {
-            error: false, success: objects.length,
+            error: false,
+            success: objects.length,
             subject: dbcollection
         };
-
     } catch(error) {
         debug("Error in saving %d %s %j", objects.length, dbcollection, error.message);
         return { error: true, message: error.message };
@@ -99,7 +99,7 @@ function handleFullSave(body, headers) {
     });
     const accessId = utils.hash({
         session: body.feedId,
-    })
+    });
     return {
         id,
         href: body.href,
@@ -148,7 +148,7 @@ async function processEvents(req) {
         });
         const accessId = utils.hash({
             session: body.feedId,
-        })
+        });
         const html = {
             id,
             type: body.type,
