@@ -11,12 +11,19 @@ services:
     scale: 0
 
   mongo:
-    image: mongo:latest
+    image: mongo:4.2
     restart: always
     ports:
       - "27017:27017"
     volumes:
       - ./backend/dump:/dump/
+
+  # provide a test for testing purposo on a specific port
+  mongo-test:
+    image: mongo:4.2
+    ports:
+      - "27017:27019"
+
 
   mongo-indexes:
     image: mongo
