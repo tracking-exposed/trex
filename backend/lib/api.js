@@ -5,16 +5,9 @@ var apiList = {
     handshake:        require('../routes/events').handshake,
 
     /* for revision */
-    unitById:         require('./htmlunit').unitById,
+    unitById:         require('../routes/htmlunit').unitById,
 
-    /* return basic data, the video-impression unit, and support optional parameters */
-    getBasicData:     require('./basic').all,
-    /* return the content for one supporter only */
-    getSelectedData:  require('./basic').selected,
-    /* return contenr formatted for radarChart */
-    getRadarData:     require('./basic').radar,
-
-    /* --- from yt -- to become standard --- */
+    getRecent:        require('../routes/public').getRecent,
     getLast:          require('../routes/public').getLast,
     getVideoId:       require('../routes/public').getVideoId,
     getRelated:       require('../routes/public').getRelated,

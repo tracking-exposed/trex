@@ -23,7 +23,6 @@
     "storage",
     "alarms",
     "http://localhost:14000/",
-    "https://*.tiktok.com/",
     "https://tiktok.tracking.exposed/"
   ],
 

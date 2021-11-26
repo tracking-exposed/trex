@@ -20,32 +20,51 @@ const name = nconf.get('name');
 async function computeCount(mongoc, statinfo, filter) {
     /* here each section of config/stats.json is processed,
      * this function is called twice: once with 'hour' filter
-     * and another with 'day' */
-
-    debug("HourCollection: [%s], named %s, has %d variables",
+     * and another with 'day'
+     *
+     * the 'selector' is meant to be a selector of function mongo.count(),
+     * the 'innercount' is implemented to count in lists
+     *  */
+    debug("in [%s] %s [%d variables] %s",
         statinfo.column,
         statinfo.name,
         _.size(statinfo.variables)
     );
 
-    let counting = await _.map(statinfo.variables, async function(v) {
-        const thisfilter = Object.assign({}, filter, v.selector);
-        const amount = await mongo.count(mongoc, statinfo.column, thisfilter);
-        return _.set({}, v.name, amount);
-    });
+    const counting = [];
+    for (const v of statinfo.variables) {
 
-    /* todo other kind of calculus which are not count */
-    return await Promise
-        .all(counting)
-        .catch(function(error) {
-            debug("Error in computeHourCount (%s): %s", statinfo.name, error.message);
-        });
+        if(v.selector) {
+            const thisfilter = Object.assign({}, filter, v.selector);
+            const amount = await mongo.count(mongoc, statinfo.column, thisfilter);
+            counting.push(_.set({}, v.name, amount));
+        } else {
+            /* there is 'innercount' the deep counter
+             * v.innercount = [ 'related', { 'related.foryou': true } ]
+                                 unwind,       matchToCount,
+               projectComposed = { 'related': 1 }
+             */
+            const projectComposed = {};
+            projectComposed[v.innercount[0]] = 1;
+            const amount = await mongo.aggregate(mongoc, statinfo.column, [
+                { $match: filter },
+                { $project: projectComposed },
+                { $unwind: "$" + v.innercount[0] },
+                { $match: v.innercount[1] },
+                { $count: "amount" }
+            ]);
+            if(amount && _.size(amount))
+                counting.push(_.set({}, v.name, _.first(amount).amount));
+        }
+    }
+    return counting;
 };
 
 
 async function start() {
     const hoursago = utils.parseIntNconf('hoursago', 0);
-    const statshour = moment().subtract(hoursago, 'h').format();
+    const daysago = utils.parseIntNconf('daysago', 0);
+    const statshour = moment().subtract(daysago, 'd').subtract(hoursago, 'h').format();
     const tobedone = name ? _.filter(statsMap, { name }) : statsMap;
 
     const mongoc = await mongo.clientConnect();
@@ -53,24 +72,8 @@ async function start() {
     debug("Loaded %d possible statistics%s: %d to be done",
         _.size(statsMap), name ? `, demanded '${name}'` : "", _.size(tobedone));
 
-    let statsp = await _.map(tobedone, async function(statinfo) {
-        const hoursref = aggregated.hourData(statshour);
-        const hourfilter = _.set({}, statinfo.timevar, {
-            $gte: new Date(hoursref.reference),
-            $lt: new Date(hoursref.hourOnext)
-        });
-        const hourC = await computeCount(mongoc, statinfo, hourfilter);
-        debug("Hour computed %s: %j", statinfo.name, hourC);
-        const entry = _.reduce(hourC, function(memo, e) {
-            return _.merge(memo, e);
-        }, {
-            hourId: hoursref.hourId,
-            hour: new Date(hoursref.hourOnly),
-            name: statinfo.name
-        });
-        const rv1 = await mongo.upsertOne(mongoc, schema.stats, { hourId: hoursref.hourId, name: statinfo.name }, entry);
-
-        /* -- Day -- */
+    const daily = [];
+    for (const statinfo of tobedone) {
         const dayref = aggregated.dayData(statshour);
         const dayfilter = _.set({}, statinfo.timevar, {
             $gte: new Date(dayref.reference),
@@ -85,13 +88,35 @@ async function start() {
             day: new Date(dayref.dayOnly),
             name: statinfo.name
         });
-        const rv2 = await mongo.upsertOne(mongoc, schema.stats, { dayId: dayref.dayId, name: statinfo.name }, ready);
-    });
+        const r = await mongo.upsertOne(mongoc, schema.stats, { dayId: dayref.dayId, name: statinfo.name }, ready);
+        daily.push(r);
+    }
 
-    await Promise.all(statsp)
-        .catch(function(error) {
-            debug("Error in main function: %s", error.message);
+    if(nconf.get('dayonly')) {
+        console.log("--dayonly is present! quitting")
+        await mongoc.close();
+        return;
+    }
+
+    const hourly = [];
+    for (const statinfo of tobedone) {
+        const hoursref = aggregated.hourData(statshour);
+        const hourfilter = _.set({}, statinfo.timevar, {
+            $gte: new Date(hoursref.reference),
+            $lt: new Date(hoursref.hourOnext)
         });
+        const hourC = await computeCount(mongoc, statinfo, hourfilter);
+        debug("Hour computed %s: %j", statinfo.name, hourC);
+        const entry = _.reduce(hourC, function(memo, e) {
+            return _.merge(memo, e);
+        }, {
+            hourId: hoursref.hourId,
+            hour: new Date(hoursref.hourOnly),
+            name: statinfo.name
+        });
+        const r = await mongo.upsertOne(mongoc, schema.stats, { hourId: hoursref.hourId, name: statinfo.name }, entry);
+        hourly.push(r);
+    }
 
     await mongoc.close();
 };
@@ -101,5 +126,3 @@ try {
 } catch(error) {
     debug("Unexpected error: %s", error.message);
 }
-
-

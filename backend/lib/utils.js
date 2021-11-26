@@ -5,6 +5,7 @@ const bs58 = require('bs58');
 const nacl = require('tweetnacl');
 const nconf = require('nconf');
 const foodWords = require('food-words');
+const { toUSVString } = require('util');
 
 function hash(obj, fields) {
     if(_.isUndefined(fields))
@@ -86,20 +87,20 @@ function string2Food(piistr) {
 };
 
 function getInt(req, what, def) {                                                       
-    var rv = _.parseInt(_.get(req.params, what));                                       
-    if(_.isNaN(rv)) {                                                                   
-        if(!_.isUndefined(def))                                                         
-            rv  = def;                                                                  
-        else  {                                                                         
-            debug("getInt: Error with parameter [%s] in %j", what, req.params);         
-            rv = 0;                                                                     
-        }                                                                               
+    const rv = _.parseInt(_.get(req.params, what));
+    if(_.isNaN(rv)) {
+        if(!_.isUndefined(def))
+            return def;
+        else  {
+            debug("getInt: Error with parameter [%s] in %j", what, req.params);
+            throw new Error("Invalid integer in params " + req.params[what]);
+        }
     }
-    return rv;                                                                          
+    return rv;
 }                                                                                       
 
 function getString(req, what) {                                                         
-    var rv = _.get(req.params, what);                                                   
+    const rv = _.get(req.params, what);                                                   
     if(_.isUndefined(rv)) {                                                             
         debug("getString: Missing parameter [%s] in %j", what, req.params);             
         return "";                                                                      

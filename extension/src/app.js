@@ -74,17 +74,11 @@ function boot () {
   });
 }
 
-const hrefPERIODICmsCHECK = 2000;
-let hrefWatcher = null;
 function tktrexActions(remoteInfo) {
   /* these functions are the main activity made in
      content_script, and tktrexActions is a callback
      after remoteLookup */
   console.log("initialize watchers, remoteInfo available:", remoteInfo);
-
-  // if(hrefWatcher)
-  //   clearInterval(hrefWatcher);
-  // hrefWatcher = window.setInterval(hrefAndPageWatcher, hrefPERIODICmsCHECK);
 
   setupObserver();
   flush();
@@ -92,10 +86,10 @@ function tktrexActions(remoteInfo) {
 
 let lastMeaningfulURL, urlkind = null;
 function fullSave() {
-  console.log("Invoked fullSave");
   let diff = (window.location.href !== lastMeaningfulURL);
 
   if (diff) {
+    console.log("Invoked fullSave: new URL observed");
     // Considering the extension only runs on *.youtube.com
     // we want to make sure the main code is executed only in
     // website portion actually processed by us. If not, the
@@ -104,8 +98,10 @@ function fullSave() {
     // the location might change
     urlkind = getNatureByHref(window.location.href);
 
-    if(!urlkind)
+    if(!urlkind) {
+      console.log("Unsupported URL type: rejected fullsave");
       return null;
+    }
 
     // client might duplicate the sending of the same
     // content, that's 'versionsSent' counter
@@ -114,16 +110,16 @@ function fullSave() {
     lastMeaningfulURL = window.location.href;
     refreshUUID();
   }
-                                       
-  const sendableNode = document.querySelector('body');      
-  console.log("sending effectively full save html.body");
-  hub.event('newVideo', {                      
+
+  const sendableNode = document.querySelector('body');
+  console.log("Sending fullSave!");
+  hub.event('newVideo', {
     type: urlkind,
     element: sendableNode.outerHTML,
     size: sendableNode.outerHTML.length,
-    href: window.location.href,            
+    href: window.location.href,
     reason: 'fullsave',
-    feedId, 
+    feedId,
   });
 }                                    
 
@@ -155,7 +151,7 @@ function getNatureByHref(href) {
       console.log("Unmanaged condition from URL:", urlO)
       return null;
     }
-    console.log("from", urlO, "attributed", retval);
+    // console.log("getNatureByHref ", urlO.pathname, "attributed", retval);
     return retval;
   } catch(error) {
     console.log("getNatureByHref:", error.message);
@@ -233,20 +229,15 @@ function handleVideo(elem) {
     }, elem);
 
   if(refe.hasAttribute('trex')) {
-    console.log("Element already acquired: skipping")
+    console.log("Element already acquired: skipping",
+      refe.getAttribute('trex'));
     return null;
   }
 
-  console.log(refe);
-  refe.setAttribute("trex", 1);
-
-  if(config.ux || true) {
-    refe.style.border = '1px solid green';
-  }
-
   videoCounter++;
-  console.log("New element found, marking as ", videoCounter);
+  console.log("New element found, marking as ", videoCounter, refe);
   refe.setAttribute('trex', videoCounter);
+
   hub.event('newVideo', {
     html: refe.outerHTML,
     href: window.location.href,
@@ -254,7 +245,10 @@ function handleVideo(elem) {
     feedCounter,
     videoCounter,
     rect:  refe.getBoundingClientRect(),
-  })
+  });
+
+  if(config.ux)
+    refe.style.border = '1px solid green';
 }
 
 // The function `localLookup` communicates with the **action pages**

@@ -19,6 +19,7 @@ const InfoBox = createReactClass({
     render () {
         const about = config.WEB_ROOT + '/about';
         const privacy = config.WEB_ROOT + '/privacy';
+        const services = config.WEB_ROOT + '/services';
 
         return (
             <Card style={{'textAlign':'center'}}>
@@ -37,6 +38,9 @@ const InfoBox = createReactClass({
                 </Button>
                 <Button size="small" color="primary"  href="https://github.com/tracking-exposed/tktrex/" target="_blank"> 
                   Software
+                </Button>
+                <Button size="small" color="secondary"  href={services} target="_blank"> 
+                  Services
                 </Button>
               </CardActions>
             </Card>

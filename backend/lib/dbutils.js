@@ -1,17 +1,24 @@
 const _ = require('lodash');
-const moment = require('moment');
 const debug = require('debug')('lib:dbutils');
+const nconf = require('nconf');
+
 const mongo3 = require('./mongo3');
 
-async function checkMongoWorks() {
-
+async function checkMongoWorks(beFatal) {
     try {
         const mongoc = await mongo3.clientConnect({concurrency: 1});
-        let results = await mongo3.listCollections(mongoc);
+        const results = await mongo3.listCollections(mongoc);
+        debug("collection list: %j", results);
         await mongoc.close();
         return results;
     } catch(error) {
         debug("Failure in checkMongoWorks: %s", error.message);
+        console.log(error.stack);
+        if(beFatal) {
+            console.log("mongodb is not running: quitting");
+            console.log("config derived", nconf.get('mongoDb'));
+            process.exit(1);
+        }
         return false;
     }
 };
@@ -19,37 +26,3 @@ async function checkMongoWorks() {
 module.exports = {
     checkMongoWorks,
 };
-
-/*
-async function countByFeature(cName, filter, looker) {
-    if(!_.startsWith(looker, '$'))
-        throw new Error("developer please: looker wants '$'");
-
-    const mongoc = await mongo.clientConnect({concurrency: 1});
-    const totalQ = [
-        { $match: filter },
-        { $group: {
-            _id: looker,
-            amount: { $sum: 1 }
-        }},
-        { $sort: { count: -1 } }
-    ];
-
-    debug("countByFeature[%s] by [%j] %s", cName, filter, looker);
-    let results = await mongo.aggregate(mongoc, cName, totalQ);
-    const origName = _.replace(looker, /\$/, '');
-    let avg = 0;
-    results = _.map(results, function(e) {
-        e[origName] = e._id;
-        _.unset(e, '_id');
-        avg += e.amount;
-        return e;
-    });
-    avg = _.round(avg / _.size(results), 1);
-    debug("countByFeature returns %d docs, 'amount' avg %d", _.size(results), avg);
-
-    await mongoc.close();
-    return results;
-};
-
-*/

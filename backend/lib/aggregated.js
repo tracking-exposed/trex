@@ -1,6 +1,5 @@
 const _ = require('lodash');
 const moment = require('moment');
-const Promise = require('bluebird');
 const debug = require('debug')('lib:aggregated-limited');
 const nconf = require('nconf');
 

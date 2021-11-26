@@ -3,7 +3,8 @@
       "supporters": "supporters",
       "stats": "trexstats",
       "htmls": "htmls",
-      "metadata": "metadata"
+      "metadata": "metadata",
+      "full": "full"
   },
 
   "mongoHost": "localhost",

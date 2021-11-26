@@ -81,15 +81,15 @@ app.use(bodyParser.urlencoded({ limit: '10mb', extended: true, parameterLimit: 1
 app.get('/api/v0/info', async (req, res) => await iowrapper('systemInfo', req, res));
 app.get('/api/v0/health', function(req, res) { res.send("OK"); res.status(200); });
 
-app.get('/api/v2/statistics/:name/:unit/:amount', async (req, res) => {
-    return await dispatchPromise('getStatistics', req, res);
-});
 /* This is the API meant to receive data donation */
 app.post('/api/v2/events', async (req, res) => await iowrapper('processEvents', req, res));
 app.post('/api/v2/handshake', async (req, res) => await iowrapper('handshake', req, res));
 
+app.get('/api/v2/recent', async (req, res) => await iowrapper('getRecent', req, res));
 /* download your CSV (home or video) */
 app.get('/api/v1/personal/:publicKey/:what/:format', async (req, res) => await iowrapper('getPersonalCSV', req, res))
+
+app.get('/api/v2/statistics/:name/:unit/:amount', async (req, res) => await iowrapper('getStatistics', req, res));
 
 /* debug API */
 app.get('/api/v2/debug/html/:htmlId', async (req, res) => await iowrapper('getDebugHTML', req, res));
@@ -109,6 +109,7 @@ async function initialSanityChecks() {
     /* security checks = is the password set and is not the default? (more checks might come) */
     security.checkKeyIsSet();
     await dbutils.checkMongoWorks(true /* if true means that failure is fatal */);
+    debug("tiktok.tracking.exposed backend is operative!")
 }
 
 initialSanityChecks();
