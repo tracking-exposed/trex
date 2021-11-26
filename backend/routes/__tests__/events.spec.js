@@ -1,24 +1,22 @@
 const _ = require('lodash');
-const expect    = require("chai").expect;
 const nconf = require("nconf");
 const moment = require("moment");
 const debug = require("debug")("test:testRoutesEvents");
 const fs = require('fs');
 const path = require('path');
 
-const events = require('../../routes/events');
-const tags = require('../../routes/tags');
+const events = require('../events');
+// const tags = require('../tags');
 const supporters = require('../../lib/supporters');
-const personal = require('../../routes/personal');
+const personal = require('../personal');
 
-nconf.argv().env().file({ file: "config/settings.json" });
 nconf.stores.env.readOnly = false;
 nconf.set('storage', '_test_htmls');
 nconf.stores.env.readOnly = true;
 
 
 /* This first check the capacity of load data and verify they are avail */
-describe("Testing the video submission", function() {
+describe.skip("Testing the video submission", function() {
 
   const dummyKey = "ABCDEF789012345678901234567890";
   const dummyVideoId = 'MOCKUPID';
@@ -31,14 +29,14 @@ describe("Testing the video submission", function() {
 
   it("delete if exists the dummy supporter", async function() {
       const result = await supporters.remove(dummyKey);
-      expect(result.result.ok).to.be.equal(1);
+      expect(result.result.ok).toBe(1);
   });
 
   it("creates the dummy directory", function() {
       try {
           fs.mkdirSync(diskdir);
       } catch(error) {
-          expect(error.code).to.be.equal("EEXIST");
+          expect(error.code).toBe("EEXIST");
       }
 
       const check = fs.existsSync(diskdir);
@@ -48,8 +46,8 @@ describe("Testing the video submission", function() {
   it("commit a video from an unknow profile", async function() {
 
       const inserted = await events.TOFU(dummyKey);
-      expect(inserted).to.be.an('array');
-      expect(_.first(inserted).publicKey).to.be.equal(dummyKey);
+      expect(inserted).toBeInstanceOf(Array);
+      expect(_.first(inserted).publicKey).toBe(dummyKey);
 
       const answer = await events.saveVideo(mockUpVideoCapture, inserted[0]);
       expect(answer).to.be.true;
@@ -61,7 +59,7 @@ describe("Testing the video submission", function() {
           publicKey: dummyKey
       }});
 
-      expect(evidence.json).to.be.an('array');
+      expect(evidence.json).toBeInstanceOf(Array);
 
       _.map(evidence.json, async function(efound) {
           const check = await personal.evidenceRemove({
@@ -82,9 +80,9 @@ describe("Testing the video submission", function() {
       });
 
       const supporter = taganswer.json;
-      expect(supporter.publicKey).to.be.equal(dummyKey);
-      expect(supporter.tags).to.be.an('array');
-      expect(supporter.tags[0]).to.be.equal(randomTag);
+      expect(supporter.publicKey).toBe(dummyKey);
+      expect(supporter.tags).toBeInstanceOf(Array);
+      expect(supporter.tags[0]).toBe(randomTag);
 
       const video = await events.saveVideo(mockUpVideoCapture, supporter);
       expect(video).to.be.true;
@@ -94,10 +92,10 @@ describe("Testing the video submission", function() {
           publicKey: dummyKey
       }});
 
-      expect(evidence.json).to.be.an('array');
-      expect(_.size(evidence.json)).to.be.equal(1);
-      expect(evidence.json[0].tags).to.be.an('array');
-      expect(evidence.json[0].tags[0]).to.be.equal(randomTag);
+      expect(evidence.json).toBeInstanceOf(Array);
+      expect(_.size(evidence.json)).toBe(1);
+      expect(evidence.json[0].tags).toBeInstanceOf(Array);
+      expect(evidence.json[0].tags[0]).toBe(randomTag);
 
       const clean = await personal.evidenceRemove({
           params: {
@@ -108,7 +106,7 @@ describe("Testing the video submission", function() {
       expect(clean.json.success).to.be.true;
 
       const cleanSupporter = await supporters.remove(dummyKey);
-      expect(cleanSupporter.result.ok).to.be.equal(1);
+      expect(cleanSupporter.result.ok).toBe(1);
 
   });
 
