@@ -1,10 +1,5 @@
-const _ = require("lodash");
-const nconf = require("nconf");
-const moment = require("moment");
-
-const youchoose = require("../youchoose");
-
-nconf.argv().env().file({ file: "config/settings.json" });
+import youchoose from "../youchoose";
+const nconf = require('nconf');
 
 const TMPRWRKR = "UCbaf8gVrbDzolaeMtP3-XhA";
 
@@ -30,12 +25,13 @@ describe("Testing the token request", function () {
 
   it("Request a token", async function () {
     jest.setTimeout(10000);
+    console.log(nconf.get());
     const result = await youchoose.creatorRegister(registerRequest);
 
     expect(typeof result.json.verificationToken).toEqual("string");
     expect(result.json.verificationToken.length).toBe(40);
     expect(typeof result.json.tokenString).toEqual("string");
-    verificationToken = _.get(result.json, "token");
+    verificationToken = result.json.verificationToken;
 
     /* this should happen */
     if (result.json.token) {
@@ -53,7 +49,7 @@ describe("Testing the token request", function () {
      * must be in the header */
     const result = await youchoose.creatorGet({
       headers: {
-        verificationToken: "e6d09bc0bdbeabe21da5d617aae43d8f5af72109",
+        'x-authorization-token': "e6d09bc0bdbeabe21da5d617aae43d8f5af72109",
       },
     });
     // expect(result.json.verified).toBe(false);
