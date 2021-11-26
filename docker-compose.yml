@@ -10,31 +10,39 @@ services:
       target: build
     scale: 0
 
-  mongo:
+  mongodb:
     image: mongo:4.2
-    restart: always
     ports:
       - "27017:27017"
     volumes:
       - ./backend/dump:/dump/
+    restart: unless-stopped
 
   # provide a test for testing purposo on a specific port
-  mongo-test:
+  mongodb-test:
     image: mongo:4.2
     ports:
-      - "27017:27019"
+      - "27019:27017"
+    restart: unless-stopped
 
 
   mongo-indexes:
-    image: mongo
+    image: mongo:4.2
     container_name: mongo-indexes
-    links:
-      - mongo
     volumes:
       - ./backend/scripts:/scripts
-    command: mongo --host mongo /scripts/build-indexes.js
+    command: mongo mongodb:27017/yttrex /scripts/build-indexes.js
     depends_on:
-      - mongo
+      - mongodb
+
+  mongo-test-indexes:
+    image: mongo:4.2
+    container_name: mongo-test-indexes
+    volumes:
+      - ./backend/scripts:/scripts
+    command: mongo mongodb-test:27017/test /scripts/build-indexes.js
+    depends_on:
+      - mongodb-test
 
   api:
     image: yttrex_base
@@ -45,13 +53,12 @@ services:
       DEBUG: "*,-body-parser*,-express*,-follow-redirects"
       key: my-dev-key
       mongoHost: mongo
-    links:
-      - mongo
+      mongodb: yttrex
     volumes:
       - ./shared:/app/shared
       - ./backend:/app/backend/
     depends_on:
-      - mongo
+      - mongodb
     working_dir: /app/backend
     command: npm run watch
 
