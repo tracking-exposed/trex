@@ -21,7 +21,6 @@
     "chardet": "^1.4.0",
     "cookie": "^0.3.1",
     "cors": "^2.8.1",
-    "debug": "^2.2.0",
     "express": "^4.14.0",
     "fetch-opengraph": "^1.0.30",
     "food-words": "^1.1.0",
@@ -42,7 +41,10 @@
     "tweetnacl": "^0.14.3"
   },
   "devDependencies": {
+    "@types/body-parser": "^1.19.2",
+    "@types/cors": "^2.8.12",
     "@types/jest": "^27.0.3",
+    "debug": "^4.3.2",
     "jest": "^27.3.1",
     "ts-jest": "^27.0.7",
     "ts-node": "^10.4.0",
