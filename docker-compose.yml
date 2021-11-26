@@ -43,8 +43,6 @@ services:
     volumes:
       - ./shared:/app/shared
       - ./backend:/app/backend/
-      - shared-node_modules:/app/shared/node_modules
-      - backend-node_modules:/app/backend/node_modules
     depends_on:
       - mongo
     working_dir: /app/backend
@@ -59,14 +57,7 @@ services:
       - ./shared:/app/shared
       - ./YCAI:/app/YCAI
       - ./YCAI/build:/app/YCAI/build
-      - shared-node_modules:/app/shared/node_modules
-      - ycai-node_modules:/app/YCAI/node_modules
     working_dir: /app/YCAI
     depends_on:
       - api
-    command: npm run watch
-
-volumes:
-  shared-node_modules: {}
-  backend-node_modules: {}
-  ycai-node_modules: {}
+    command: sh -c "chmod -R 777 /app/YCAI/build && npm run watch"
