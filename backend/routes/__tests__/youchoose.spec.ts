@@ -31,6 +31,9 @@ describe("Testing the token request", () => {
   beforeAll(() => {
     tests = GetTest();
   });
+  afterAll(() => {
+    jest.clearAllMocks();
+  })
 
   /* the "register" causes one thing:
    - it is produced a verificationToken, which has to go 

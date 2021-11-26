@@ -64,7 +64,9 @@ const iowrapper =
   };
 
 interface MakeAppContext {
-  config: any;
+  config: {
+    port: number;
+  };
 }
 
 export const makeApp = (ctx: MakeAppContext): express.Application => {
@@ -216,10 +218,12 @@ export const makeApp = (ctx: MakeAppContext): express.Application => {
   app.get("/api/v2/experiment/:experimentId/dot", iowrapper("experimentDOT"));
 
   app.get("*", async (req, res) => {
-    debug("URL not handled: %s", req.url);
+    logger("URL not handled: %s", req.url);
     res.status(404);
     res.send("URL not found");
   });
+
+  app.set('port', ctx.config.port);
 
   return app;
 };

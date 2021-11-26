@@ -22,7 +22,7 @@ if (!nconf.get("interface") || !nconf.get("port"))
 
 /* everything begin here, welcome */
 /* create express app */
-const app = makeApp({});
+const app = makeApp({ config: nconf.get() });
 const server = new http.Server(app as any);
 server.listen(nconf.get("port"), nconf.get("interface"), () => {
   d(` Listening on http://${nconf.get("interface")}:${nconf.get("port")}`);

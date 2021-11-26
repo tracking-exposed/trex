@@ -26,5 +26,6 @@ module.exports = {
   },
   transform: jsWithTsESM.transform,
   clearMocks: true,
+  testTimeout: 10000,
   setupFilesAfterEnv: ["./jest.setup.js"],
 };
