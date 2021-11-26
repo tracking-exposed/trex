@@ -10,13 +10,11 @@ const moduleNameMapper = pathsToModuleNameMapper(
   }
 );
 
-console.log(moduleNameMapper);
-
 /** @type {import('ts-jest/dist/types').InitialOptionsTsJest} */
 module.exports = {
   preset: "ts-jest",
   testEnvironment: "node",
-  roots: ["./", "../", "../shared"],
+  projects: ["./", "../shared"],
   moduleNameMapper,
   globals: {
     "ts-jest": {
