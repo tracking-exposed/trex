@@ -89,8 +89,5 @@ jobs:
       - name: Install node_modules
         run: npm install
 
-      - name: Install mocha
-        run: npm i -D mocha
-
       - name: Test
         run: npm test
