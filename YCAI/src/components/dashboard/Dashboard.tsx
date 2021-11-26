@@ -90,19 +90,16 @@ const DashboardContent: React.FC<DashboardContentProps> = ({
       alignContent="flex-start"
       style={{
         minHeight: '100%',
-        padding: theme.spacing(2),
       }}
     >
       <Grid
         item
         xs={12}
         style={{
-          marginTop: '0.5rem',
-          marginBottom: '0.4rem',
           backgroundColor: theme.palette.background.default,
         }}
       >
-        <Typography variant="h3" component="h1" color="textPrimary" style={{ whiteSpace: 'pre-line' }}>
+        <Typography variant="h3" component="h1" color="primary" style={{ whiteSpace: 'pre-line' }}>
           {currentViewLabel}
         </Typography>
         <Typography variant="subtitle1" color="textPrimary">
