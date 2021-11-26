@@ -15,8 +15,8 @@
 .swagger-ui .wrapper {
   width: 100%;
   max-width: 1460px;
-  margin: 0 auto;
-  padding: 0 20px
+  margin: 0;
+  padding: 0;
 }
 
 .swagger-ui .opblock-tag-section {
@@ -460,7 +460,8 @@
 
 .swagger-ui .scheme-container {
   margin: 0 0 20px;
-  padding: 30px 0;
+  padding: 32px;
+  max-width: 1458px;
   background: #fff;
   box-shadow: 0 1px 2px 0 rgba(0, 0, 0, .15)
 }
@@ -956,16 +957,12 @@
   appearance: none
 }
 
-.swagger-ui .dialog-ux .modal-ux-header h3 {
-  font-size: 20px;
-  font-weight: 600;
-  margin: 0;
-  padding: 0 20px;
-  -webkit-box-flex: 1;
-  -ms-flex: 1;
-  flex: 1;
-  font-family: Titillium Web, sans-serif;
-  color: #3b4151
+.swagger-ui h3.opblock-tag {
+  font-weight: 400;
+  font-size: 1.3rem;
+  margin: 24px 0 16px 0;
+  padding: 0;
+  font-family: TRex;
 }
 
 .swagger-ui .model {
@@ -1158,15 +1155,27 @@
   color: #999
 }
 
-.swagger-ui table {
+.swagger-ui table.model {
   width: 100%;
-  padding: 0 10px;
+  margin: 12px 0 12px 24px;
   border-collapse: collapse
 }
 
-.swagger-ui table.model tbody tr td {
-  padding: 0;
+.swagger-ui table.model tr:nth-child(odd) {
+  background: #F5F5F5;
+}
+
+.swagger-ui table.model table.model tr {
+  background: none;
+}
+
+.swagger-ui table.model tbody tr td, .swagger-ui table.model tr.description td:first-child, .swagger-ui table.model tr.property-row td:first-child {
+  padding: 8px;
   vertical-align: top
+}
+
+.swagger-ui table.model div.renderedMarkdown p {
+  margin: 0;
 }
 
 .swagger-ui table.model tbody tr td:first-of-type {
@@ -1388,13 +1397,9 @@
 }
 
 .swagger-ui .auth-btn-wrapper {
-  display: -webkit-box;
-  display: -ms-flexbox;
   display: flex;
   padding: 10px 0;
-  -webkit-box-pack: center;
-  -ms-flex-pack: center;
-  justify-content: center
+  justify-content: flex-start;
 }
 
 .swagger-ui .auth-wrapper {
@@ -1435,7 +1440,7 @@
 }
 
 .swagger-ui .auth-container input[type=password], .swagger-ui .auth-container input[type=text] {
-  min-width: 230px
+  width: 100%;
 }
 
 .swagger-ui .auth-container .errors {
@@ -1447,20 +1452,21 @@
   color: #3b4151
 }
 
-.swagger-ui .scopes h2 {
-  font-size: 14px;
-  font-family: Titillium Web, sans-serif;
-  color: #3b4151
+.swagger-ui .info h2.title {
+  font-family: TRex;
+  font-weight: 600;
+  font-size: 1.6rem;
+  margin-bottom: 8px;
+  color: #1A030E;
 }
 
 .swagger-ui .scope-def {
   padding: 0 0 20px
 }
 
-.swagger-ui .errors-wrapper {
-  margin: 20px;
+.swagger-ui pre.errors-wrapper {
   padding: 10px 20px;
-  -webkit-animation: scaleUp .5s;
+  margin: 0;
   animation: scaleUp .5s;
   border: 2px solid #f93e3e;
   border-radius: 4px;
@@ -1651,6 +1657,10 @@
 
  .swagger-ui .opblock.opblock-options .opblock-summary {
    border-color: #ffffff;
+ }
+
+ .swagger-ui button.opblock-summary-control {
+   padding: 4px 8px;
  }
 
  .swagger-ui .opblock.opblock-options .tab-header .tab-item.active h4 span:after {

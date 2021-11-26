@@ -65,7 +65,7 @@ const AddRecommendationBox: React.FC<AddRecommendationBoxProps> = ({ videoId }) 
           <Typography
             color="textSecondary"
             component="h2"
-            variant="h5"
+            variant="h4"
           >
             {t('recommendations:add_to_video')}
             <AddIcon fontSize="large"/>

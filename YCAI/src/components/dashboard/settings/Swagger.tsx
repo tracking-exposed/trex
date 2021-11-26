@@ -4,25 +4,26 @@ import * as React from 'react';
 import { useTranslation } from 'react-i18next';
 import SwaggerUI from 'swagger-ui';
 import 'swagger-ui/dist/swagger-ui.css';
+import '../../../resources/swagger-ui-material.css';
 import { config } from '../../../config';
 import * as swagger from '../../../providers/swagger/swagger.provider';
-import '../../../resources/swagger-ui-material.css';
 
 export const Swagger: React.FC = () => {
   const { t } = useTranslation();
   const ref = React.createRef<HTMLDivElement>();
 
   React.useEffect(() => {
+    const apiURL = new URL(config.API_URL);
+
     const swaggerConfig = swagger.generateDoc({
-      title: t('common:title'),
-      description: t('common:description'),
+      title: t('swagger:title'),
+      description: t('swagger:description'),
       version: config.VERSION,
-      // TODO: this should come from the env
       server: {
-        protocol: 'https',
-        host: 'youchoose.tracking.exposed',
-        port: 443,
-        basePath: 'api',
+        protocol: apiURL.protocol === 'http:' ? 'http' : 'https',
+        host: apiURL.hostname,
+        port: parseInt(apiURL.port, 10),
+        basePath: apiURL.pathname.slice(1),
       },
       components: {
         security: {

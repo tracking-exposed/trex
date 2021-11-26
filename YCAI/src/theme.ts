@@ -29,12 +29,12 @@ export const YCAITheme = createTheme({
     fontWeightMedium: 600,
     fontWeightBold: 800,
     h1: {
-      marginBottom: 32,
-      fontWeight: 700,
+      fontWeight: 800,
       fontSize: '4rem',
+      marginBottom: 32,
     },
     h2: {
-      fontWeight: 300,
+      fontWeight: 800,
       fontSize: '3.6rem',
       marginBottom: 16,
     },
@@ -44,19 +44,19 @@ export const YCAITheme = createTheme({
       marginBottom: 10,
     },
     h4: {
+      fontWeight: 600,
+      fontSize: '1.6rem',
       marginBottom: 8,
-      fontWeight: 400,
-      fontSize: '3rem',
     },
     h5: {
-      fontWeight: 800,
+      fontWeight: 400,
       fontSize: '1.3rem',
       marginBottom: 8,
     },
     h6: {
+      fontWeight: 400,
+      fontSize: '1.1rem',
       marginBottom: 4,
-      fontWeight: 500,
-      fontSize: '1.5rem',
     },
     subtitle1: {
       fontSize: '1rem',
@@ -72,13 +72,13 @@ export const YCAITheme = createTheme({
     body1: {
       fontWeight: 400,
       fontSize: '1rem',
-      lineHeight: 1.2,
+      lineHeight: 1.1,
       color: black,
     },
     body2: {
       fontWeight: 400,
       fontSize: '0.8rem',
-      lineHeight: 1.1,
+      lineHeight: 1.2,
     },
     caption: {
       fontSize: '0.7rem',
@@ -109,9 +109,9 @@ export const YCAITheme = createTheme({
     },
     MuiTypography: {
       root: {
-        whiteSpace: 'pre-line',
-      },
-    },
+        whiteSpace: 'pre-wrap',
+      }
+    }
   },
   palette: {
     text: {

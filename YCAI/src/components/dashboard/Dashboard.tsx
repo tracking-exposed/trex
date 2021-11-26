@@ -1,10 +1,9 @@
-import { Typography, useTheme } from '@material-ui/core';
-import Grid from '@material-ui/core/Grid';
+import React from 'react';
+import { Grid, Typography, useTheme } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import * as QR from 'avenger/lib/QueryResult';
 import { declareQueries } from 'avenger/lib/react';
 import { pipe } from 'fp-ts/lib/function';
-import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { auth, localProfile } from '../../state/creator.queries';
 import { CurrentView, currentView } from '../../utils/location.utils';
@@ -21,8 +20,9 @@ import { AuthResponse } from '@shared/models/Auth';
 
 const useStyles = makeStyles((theme) => ({
   root: {
-    height: '100%',
+    margin: 0,
     width: '100%',
+    minHeight: '100%',
     backgroundColor: theme.palette.background.default,
   },
 }));
@@ -89,9 +89,8 @@ const DashboardContent: React.FC<DashboardContentProps> = ({
       container
       alignContent="flex-start"
       style={{
+        minHeight: '100%',
         padding: theme.spacing(2),
-        overflowY: 'scroll',
-        height: '100%',
       }}
     >
       <Grid
@@ -99,11 +98,11 @@ const DashboardContent: React.FC<DashboardContentProps> = ({
         xs={12}
         style={{
           marginTop: '0.5rem',
-          /* borderBottom: `1px solid ${theme.palette.grey[500]}`, */
           marginBottom: '0.4rem',
+          backgroundColor: theme.palette.background.default,
         }}
       >
-        <Typography variant="h3" color="textPrimary" style={{ whiteSpace: 'pre-line' }}>
+        <Typography variant="h3" component="h1" color="textPrimary" style={{ whiteSpace: 'pre-line' }}>
           {currentViewLabel}
         </Typography>
         <Typography variant="subtitle1" color="textPrimary">
@@ -130,17 +129,11 @@ export const Dashboard = withQueries(({ queries }): React.ReactElement => {
       const classes = useStyles();
 
       return (
-        <Grid container className={classes.root}>
-          <Grid
-            item
-            lg={2}
-            md={3}
-            sm={3}
-            style={{ height: '100%' }}
-          >
+        <Grid container className={classes.root} spacing={4}>
+          <Grid item sm={12} md={3} lg={2}>
             <Sidebar currentView={currentView} />
           </Grid>
-          <Grid item lg={10} md={9} sm={9} style={{ height: '100%' }}>
+          <Grid item sm={12} md={9} lg={10}>
             <DashboardContent
               currentView={currentView}
               profile={profile}

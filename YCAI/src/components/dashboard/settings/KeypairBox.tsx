@@ -23,18 +23,19 @@ import {
   generateKeypair,
   updateSettings,
 } from '../../../state/public.commands';
+import { YCAITheme } from '../../../theme';
 
 interface KeypairBoxProps {
   keypair: Keypair;
   settings: Settings;
 }
 
-const useStyles = makeStyles(() => ({
+const useStyles = makeStyles<YCAITheme>((theme) => ({
   root: {
-    marginBottom: 100,
+    marginBottom: theme.spacing(10),
   },
   formControl: {
-    marginBottom: 16,
+    marginBottom: theme.spacing(2),
   },
 }));
 
@@ -48,7 +49,10 @@ export const KeypairBox: React.FC<KeypairBoxProps> = ({
   const classes = useStyles();
   return (
     <Box className={classes.root} style={{ width: '100%' }}>
-      <Typography variant="h4">{t('settings:keypair_title')}</Typography>
+      <Typography component="h2" color="textSecondary" variant="h4">
+        {t('settings:keypair_title')}
+      </Typography>
+
       {keypair === null ? (
         <Box>
           <Button
@@ -64,6 +68,9 @@ export const KeypairBox: React.FC<KeypairBoxProps> = ({
         </Box>
       ) : (
         <FormGroup>
+          <Typography color="textPrimary" gutterBottom>
+            {t('settings:keypair_description')}
+          </Typography>
           <Grid
             container
             className={classes.formControl}
@@ -71,7 +78,7 @@ export const KeypairBox: React.FC<KeypairBoxProps> = ({
             alignItems="flex-end"
             justifyContent="flex-end"
           >
-            <Grid item md={5}>
+            <Grid item xs={9}>
               <FormControl fullWidth={true}>
                 <InputLabel htmlFor="keypair-private-key">
                   {t('settings:keypair_public_key')}
@@ -106,7 +113,23 @@ export const KeypairBox: React.FC<KeypairBoxProps> = ({
                 />
               </FormControl>
             </Grid>
-            <Grid item md={5}>
+            <Grid item xs={3} style={{textAlign: 'right'}}>
+              <Button
+                color="secondary"
+                variant="outlined"
+                size="small"
+                startIcon={<CloudDownload />}
+                onClick={() => {
+                  void downloadTXTFile({
+                    name: 'anonymous-identity.txt',
+                    data: `publicKey: ${keypair.publicKey} \n secretKey: ${keypair.secretKey}\n`,
+                  })();
+                }}
+              >
+                  {t('actions:download')}
+              </Button>
+            </Grid>
+            <Grid item xs={9}>
               <FormControl fullWidth={true}>
                 <InputLabel htmlFor="keypair-private-key">
                   {t('settings:keypair_private_key')}
@@ -141,28 +164,13 @@ export const KeypairBox: React.FC<KeypairBoxProps> = ({
                 />
               </FormControl>
             </Grid>
-            <Grid item md={2} style={{ textAlign: 'right' }}>
-              <Button
-                variant="outlined"
-                size="small"
-                color="secondary"
-                startIcon={<CloudDownload />}
-                onClick={() => {
-                  void downloadTXTFile({
-                    name: 'anonymous-identity.txt',
-                    data: `publicKey: ${keypair.publicKey} \n secretKey: ${keypair.secretKey}\n`,
-                  })();
-                }}
-              >
-                {t('actions:download')}
-              </Button>
-            </Grid>
+            <Grid item xs={3} />
           </Grid>
           <Grid container spacing={2}>
-            <Grid item md={6}>
+            <Grid item xs={3}>
               <Button
                 variant="outlined"
-                color="secondary"
+                color="primary"
                 size="small"
                 onClick={() => {
                   void generateKeypair({})();
@@ -171,10 +179,10 @@ export const KeypairBox: React.FC<KeypairBoxProps> = ({
                 {t('actions:refresh_keypair')}
               </Button>
             </Grid>
-            <Grid item md={6} style={{ textAlign: 'right' }}>
+            <Grid item xs={3}>
               <Button
                 variant="outlined"
-                color="primary"
+                color="secondary"
                 size="small"
                 onClick={() => {
                   void deleteKeypair({})();

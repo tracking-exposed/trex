@@ -22,17 +22,19 @@ import * as React from 'react';
 import { useTranslation } from 'react-i18next';
 import { assignAccessToken } from '../../../state/creator.commands';
 import { deleteProfile, downloadTXTFile } from '../../../state/public.commands';
+import { YCAITheme } from '../../../theme';
+import UnlinkProfileButton from '../../common/UnlinkProfileButton';
 
 interface AccessTokenBoxProps {
   profile: ContentCreator | null;
 }
 
-const useStyles = makeStyles(() => ({
+const useStyles = makeStyles<YCAITheme>((theme) => ({
   root: {
-    marginBottom: 100,
+    marginBottom: theme.spacing(10),
   },
   formControl: {
-    marginBottom: 16,
+    marginBottom: theme.spacing(2),
   },
 }));
 
@@ -51,8 +53,13 @@ export const AccessTokenBox: React.FC<AccessTokenBoxProps> = ({ profile }) => {
     token === '' ? '' : authTokenVisible ? token : 'ACTK********';
 
   return (
-    <Box className={classes.root} style={{ width: '100%' }}>
-      <Typography color="textPrimary" variant="h5">{t('settings:access_token_title')}</Typography>
+    <Box className={classes.root}>
+      <Typography variant="h4" component="h2" color="textSecondary">
+        {t('settings:access_token_title')}
+      </Typography>
+      <Typography color="textPrimary" gutterBottom>
+        {t('settings:access_token_description')}
+      </Typography>
       <FormGroup row={true}>
         <Grid
           container
@@ -80,9 +87,6 @@ export const AccessTokenBox: React.FC<AccessTokenBoxProps> = ({ profile }) => {
                         aria-label="toggle password visibility"
                         onClick={async () => {
                           setAuthTokenVisible(!authTokenVisible);
-                          // setTimeout(() => {
-                          //   setAuthTokenVisible(authTokenVisible);
-                          // }, 2000);
                         }}
                         edge="end"
                       >
@@ -101,11 +105,11 @@ export const AccessTokenBox: React.FC<AccessTokenBoxProps> = ({ profile }) => {
               ) : null}
             </FormControl>
           </Grid>
-          <Grid item xs={3}>
+          <Grid item xs={3} style={{textAlign: 'right'}}>
             {profile?.accessToken !== undefined ? (
               <Button
                 color="secondary"
-                variant="contained"
+                variant="outlined"
                 size="small"
                 startIcon={<CloudDownload />}
                 onClick={() => {
@@ -121,10 +125,10 @@ export const AccessTokenBox: React.FC<AccessTokenBoxProps> = ({ profile }) => {
           </Grid>
         </Grid>
         <Grid container spacing={2}>
-          <Grid item>
+          <Grid item xs={3}>
             <Button
-              variant="contained"
-              color="secondary"
+              variant="outlined"
+              color="primary"
               size="small"
               onClick={() => {
                 setError(null);
@@ -143,25 +147,23 @@ export const AccessTokenBox: React.FC<AccessTokenBoxProps> = ({ profile }) => {
                 }
               }}
             >
-              {t('actions:edit_access_token')}
+              {authTokenVisible ? t('actions:save_access_token') : t('actions:edit_access_token')}
             </Button>
           </Grid>
-          <Grid item>
+          <Grid item xs={3}>
             {profile?.accessToken !== undefined ? (
-              <Button
-                variant="contained"
-                color="primary"
+              <UnlinkProfileButton
+                variant="outlined"
+                color="secondary"
                 size="small"
-                onClick={() => {
+                onLogout={() => {
                   void deleteProfile({})().then(() => {
                     setToken('');
                     setAuthTokenVisible(true);
                     setError(null);
                   });
                 }}
-              >
-                {t('actions:unlink_profile')}
-              </Button>
+              />
             ) : null}
           </Grid>
         </Grid>

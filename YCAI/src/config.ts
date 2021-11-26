@@ -6,6 +6,10 @@ if (process.env.VERSION === undefined) {
   throw new Error('VERSION is not defined');
 }
 
+if (process.env.API_URL === undefined) {
+  throw new Error('API_URL is not defined');
+}
+
 export const config = {
   NODE_ENV: process.env.NODE_ENV,
   API_URL: process.env.API_URL,

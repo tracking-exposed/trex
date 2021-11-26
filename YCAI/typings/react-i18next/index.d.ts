@@ -27,6 +27,9 @@ declare module 'react-i18next' {
         related: string;
         link_channel: string;
         unlink_channel: string;
+        unlink_channel_confirm_text: string;
+        unlink_channel_confirm_no: string;
+        unlink_channel_confirm_yes: string;
         verify_channel: string;
         generate_keypair: string;
         refresh_keypair: string;
@@ -37,6 +40,7 @@ declare module 'react-i18next' {
         copy_verification_code: string;
         unlink_profile: string;
         edit_access_token: string;
+        save_access_token: string;
         download_access_token: string;
         download: string;
         move_recommendation_up: string;
@@ -115,11 +119,13 @@ declare module 'react-i18next' {
         api_list_title: string;
         encrypted_contributions_private_key: string;
         keypair_title: string;
+        keypair_description: string;
         keypair_passphrase: string;
         keypair_public_key: string;
         keypair_private_key: string;
         access_token: string;
         access_token_title: string;
+        access_token_description: string;
       };
       videos: {
         no_results: string;
@@ -140,6 +146,10 @@ declare module 'react-i18next' {
         settings: string;
         link_account: string;
       };
+      swagger: {
+        title: string;
+        description: string;
+      }
     };
   }
 }

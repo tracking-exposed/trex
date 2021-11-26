@@ -125,7 +125,7 @@ export const VideoRecommendations = withQueries<VideoRecommendationsProps>(
               <Typography
                 color="textSecondary"
                 component="h2"
-                variant="h5"
+                variant="h4"
               >
                 {t('actions:drag_drop_recommendations')}
               </Typography>
