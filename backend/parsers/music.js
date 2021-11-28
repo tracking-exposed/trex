@@ -23,8 +23,10 @@ function music(envelop, previous) {
   const name = elem.textContent;
 
   return {
-    url,
-    name
+    music: {
+      url,
+      name
+    }
   };
 };
 

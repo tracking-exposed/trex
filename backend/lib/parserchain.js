@@ -100,12 +100,12 @@ async function wrapDissector(dissectorF, dissectorName, source, envelope) {
         // this function pointer point to all the functions in parsers/*
         // as argument they take function(source ({.jsdom, .html}, previous {...}))
         const retval = await dissectorF(source, envelope.findings);
-        if(_.isUndefined(retval) || _.isNull(retval) || retval === false) {
-            _.set(envelope.log, dissectorName, false);
-        } else {
-            let resultIndicator = JSON.stringify(retval).length;
-            _.set(envelope.log, dissectorName, resultIndicator);
-        }
+
+        if(_.isUndefined(retval) || _.isNull(retval) || retval === false)
+            envelope.log[dissectorName] = "∅";
+        else
+            envelope.log[dissectorName] = JSON.stringify(retval).length;
+
         return retval;
     } catch(error) {
         debug("Error in %s: %s %s", dissectorName, error.message, error.stack);

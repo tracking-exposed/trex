@@ -26,7 +26,8 @@ async function getSummaryByPublicKey(publicKey, kind) {
 
     const total = await mongo3.count(mongoc,
         nconf.get('schema').metadata, {
-            publicKey: supporter.publicKey
+            publicKey: supporter.publicKey,
+            type: { "$in": [ "following", "foryou" ] }
         });
 
     const full = await mongo3.count(mongoc,
@@ -34,28 +35,41 @@ async function getSummaryByPublicKey(publicKey, kind) {
             publicKey: supporter.publicKey
         });
 
-    const htmls = await mongo3.readLimit(mongoc,
+    const htmlavail = await mongo3.count(mongoc,
         nconf.get('schema').htmls, {
             publicKey: supporter.publicKey
+        });
+
+    const htmls = await mongo3.readLimit(mongoc,
+        nconf.get('schema').htmls, {
+            publicKey: supporter.publicKey,
         }, { savingTime: -1 }, 10, 0);
 
     const metadata = await mongo3.readLimit(mongoc,
         nconf.get('schema').metadata, {
-            publicKey: supporter.publicKey
+            publicKey: supporter.publicKey,
+            type: { "$in": [ "following", "foryou" ] }
         }, { savingTime: -1 }, 100, 0);
 
     await mongoc.close();
 
     return {
-        supporter,
-        total,
-        full,
+        counters: {
+            metadata: total,
+            full,
+            htmlavail,
+        },
         htmls: _.map(htmls, function(h) {
             return _.omit(h, ['html', '_id', 'publicKey'])
         }),
         metadata: _.map(metadata, function(m) {
-            return _.omit(m, ['_id', 'publicKey'])
-        })
+            const updat = _.omit(m, ['_id', 'publicKey']);
+            updat.relative = moment
+                .duration( moment() - moment(m.savingTime) )
+                .humanize();
+            return updat;
+        }),
+        supporter,
     };
 }
 

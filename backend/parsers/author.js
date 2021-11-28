@@ -12,6 +12,12 @@ function author(envelop, previous) {
     return null;
   }
 
+  /*
+  const images = envelop.jsdom.querySelectorAll('img');
+  _.each(images, function(i) {
+    debug("IMAGE: %s", i.getAttribute('src'));
+  }) */
+
   const username = envelop.jsdom.querySelector('a > h3');
   const name = envelop.jsdom.querySelector('a > h4');
 

@@ -6,8 +6,7 @@ const debug = require('debug')('parser:messages');
 
 function search(envelop, previous) {
 
-    debugger;
-    return { results: "", reason: 123 };
+    return null;
 };
 
 module.exports = search;

@@ -2,6 +2,8 @@ const _ = require('lodash');
 const nconf = require('nconf');
 const debug = require('debug')('parsers:downloader');
 const fetch = require('node-fetch');
+const fs = require('fs');
+const path = require('path');
 
 const mongo3 = require('../lib/mongo3');
 
