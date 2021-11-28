@@ -1,25 +1,28 @@
 const _ = require('lodash');
 const debug = require('debug')('parsers:hashtags');
-const querystring = require('querystring');
 
 function hashtags(envelop, previous) {
 
-  const iframes = envelop.jsdom.querySelectorAll('iframe');
-  const meaningful = _.filter(iframes, function(iframe) {
-    return iframe.parentNode.querySelectorAll('img').length
-  });
-  debug("From %d iframes we kept %d meaningful",
-    iframes.length, meaningful.length);
+  /* only feedId on 'foryou' and 'following' have a description,
+     not really because also if you scroll on an user timeline */
+  const availin = ["foryou", "following"];
 
-  const srcs = _.map(meaningful, function(iframe) {
-    try {
-      return findAllTj(iframe.parentNode.innerHTML.replace(/\n/g, ''));
-    } catch(error) {
-      console.log("Line 67 advertising.js:", error);
-      return null;
-    }
+  if(previous.nature && availin.indexOf(previous.nature.type) === -1) {
+    debug("No hashtag for previous.nature %o", previous.nature);
+    return null;
+  }
+
+  const hashtags = envelop.jsdom.querySelectorAll('a[href^="/tag/"]');
+  const results = _.map(hashtags, function(anode) {
+    return anode.textContent;
   });
-  return { hashtags: _.flatten(srcs) };
+
+  debug("TAGs %j", results);
+
+  if(results.length)
+    return { hashtags: results };
+  else
+    return null;
 };
 
 module.exports = hashtags;

@@ -77,8 +77,8 @@ async function saveInDB(experinfo, objects, dbcollection) {
 
     try {
         await automo.write(dbcollection, expanded);
-        debug("Saved %d [%s] accessId %j", objects.length,
-            dbcollection, _.uniq(_.map(objects, 'accessId')));
+        debug("Saved %d [%s] timelineId %j", objects.length,
+            dbcollection, _.uniq(_.map(objects, 'timelineId')));
 
         return {
             error: false,
@@ -97,13 +97,13 @@ function handleFullSave(body, headers) {
     const id = utils.hash({
         x: Math.random() + "+" + body.feedId,
     });
-    const accessId = utils.hash({
+    const timelineId = utils.hash({
         session: body.feedId,
     });
     return {
         id,
         href: body.href,
-        accessId,
+        timelineId,
         publicKey: headers.publickey,
         version: headers.version,
         savingTime: new Date(),
@@ -135,27 +135,31 @@ async function processEvents(req) {
         // ["html","href","feedId","feedCounter",
         //  "videoCounter","rect","clientTime","type","incremental"]
 
+        const id = utils.hash({
+            clientRGN: body.feedId,
+            serverPRGN: supporter.publicKey,
+            impressionNumber: body.videoCounter
+        });
+        const timelineIdHash = utils.hash({
+            session: body.feedId,
+        });
+        const timelineWord = utils.pickFoodWord(timelineIdHash);
+
         // optionally there is 'reason':"fullsave" and it should
         // be collected as a different thing. it returns null
         // and append to fullsaves as side effect
         if(body.reason === 'fullsave') {
-            fullsaves.push(handleFullSave(body, headers));
+            fullsaves.push(handleFullSave(body, timelineIdHash));
             return null;
         }
 
-        const id = utils.hash({
-            x: Math.random() + "+" + body.feedId,
-        });
-        const accessId = utils.hash({
-            session: body.feedId,
-        });
         const html = {
             id,
             type: body.type,
             rect: body.rect,
             href: body.href,
-            accessId,
-            publicKey: headers.publickey,
+            timelineId: timelineWord + '-' + timelineIdHash.substr(0, 10),
+            publicKey: supporter.publicKey,
             savingTime: new Date(),
             html: body.html,
             n: [ body.videoCounter, i, body.incremental, body.feedCounter ]
@@ -165,7 +169,7 @@ async function processEvents(req) {
 
     debug("[+] %s %s", supporter.p, JSON.stringify(
         _.map(htmls, (e) => {
-            return [ e.n, e.href ];
+            return [ e.n, e.type ];
         })
     ));
 

@@ -87,12 +87,12 @@ app.post('/api/v2/handshake', async (req, res) => await iowrapper('handshake', r
 
 app.get('/api/v2/recent', async (req, res) => await iowrapper('getRecent', req, res));
 /* download your CSV (home or video) */
-app.get('/api/v1/personal/:publicKey/:what/:format', async (req, res) => await iowrapper('getPersonalCSV', req, res))
+app.get('/api/v1/personal/:publicKey/:what/:format', async (req, res) => await iowrapper('getPersonal', req, res))
 
 app.get('/api/v2/statistics/:name/:unit/:amount', async (req, res) => await iowrapper('getStatistics', req, res));
 
 /* debug API */
-app.get('/api/v2/debug/html/:htmlId', async (req, res) => await iowrapper('getDebugHTML', req, res));
+app.get('/api/v2/debug/html/:htmlId', async (req, res) => await iowrapper('unitById', req, res));
 app.get('/api/v1/mirror/:key', async (req, res) => await iowrapper('getMirror', req, res));
 
 /* monitor for admin */

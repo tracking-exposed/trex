@@ -51,38 +51,6 @@ async function getLast(req) {
     };
 };
 
-async function getLastHome() {
-    const DEFMAX = 100;
-
-    const homelist = await automo.getMetadataByFilter({
-        type: 'home',
-        savingTime: { $gte: new Date(moment().startOf('day').toISOString()) }
-    }, {
-        amount: DEFMAX,
-        skip: 0,
-    });
-
-    const rv = _.reduce(homelist, function(memo, e) {
-        const accessId = utils.hash({who: e.publicKey, when: e.savingTime });
-        _.each(e.selected, function(vinfo) {
-            const selected = {
-                accessId: accessId.substr(0, 10),
-                metadataId: e.id,
-                order: vinfo.index,
-                source: vinfo.recommendedSource,
-                title: vinfo.recommendedTitle,
-                videoId: vinfo.videoId,
-                thumbnailHref: vinfo.thumbnailHref,
-                publicationTime: vinfo.publicationTime,
-            }
-            memo.push(selected);
-        })
-        return memo;
-    }, []);
-
-    debug("Returning as getLastHome, %d selected videos from %d evidences", _.size(rv), _.size(homelist));
-    return { json: rv };
-}
 
 function ensureRelated(rv) {
     /* for each related it is called and only the basic info used in 'compare'
@@ -159,7 +127,6 @@ async function getRecent(req) {
 
 module.exports = {
     getLast,
-    getLastHome,
     getVideoId,
     getRelated,
     getVideoCSV,

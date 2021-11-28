@@ -102,35 +102,56 @@ async function executeParsingChain(htmlFilter) {
 
     stats.current = moment();
     stats.currentamount = _.size(envelops.sources);
-    const logof = [];
 
-    let results = [];
+    const results = [];
     for(entry of envelops.sources) {
         results.push(await pipeline(entry));
     }
     /* results is a list of objects: [ {
-        source: { timeline, impression, dom, html },
+        source: { dom, html },
         findings: { $dissector1, $dissector2 },
-        failures: { $dissectorN, $dissectorX }           } ] */
+        failures: { $dissectorN, $dissectorX } },
+        log: { $dissectorName: sizeOfFinding }
+    ] */
 
-    console.table(_.map(results, function(e) {
-        _.set(e.log, 'id', e.source.html.id);
-        _.set(e.log, 'metadataId', e.source.html.metadataId);
-        _.set(e.log, 'type', _.get(e, 'findings.nature.type'));
-        return e.log;
+    console.table(_.map(results, function(r) {
+        r.log.id = r.source.html.id;
+        if(r.findings.nature) {
+            return {
+                ...r.log,
+                ...r.findings.nature
+            };
+        } else {
+            return {
+                ...r.log,
+                type: 'error'
+            }
+        }
     }));
+
+    const newmetas = [];
     for (const entry of results) {
         try {
-            const metaentry = pchain.buildMetadata(entry);
-            if(metaentry) {
-                let x = await pchain.updateMetadataAndMarkHTML(metaentry);
-                logof.push(x);
-            }
+            const m = pchain.buildMetadata(entry);
+            newmetas.push(m);
         } catch(error) {
-            debug("Lost a submission (%s) ID %s (currenty done %d)", error.message, entry.source.html.id, _.size(logof));
+            debug("Error in pchain.buildMetadata [%s] id %s",
+                error.message, entry.source.html.id);
+            debug("%s", error.stack);
         }
     }
-    /* logof isn't used, and it contains log of update/write operation to mongodb */
+
+    const logof = [];
+    for (const metadata of newmetas) {
+        try {
+            let x = await pchain.updateMetadataAndMarkHTML(metadata);
+            logof.push(x);
+        } catch(error) {
+            debug("Error in pchain.updateMetaAndMarkHTML [%s] id %s",
+                error.message, metadata.id);
+            debug("%s", error.stack);
+        }
+    }
 
     return {
         findings: _.map(results, function(e) { return _.size(e.findings) }),

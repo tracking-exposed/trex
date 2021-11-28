@@ -38,7 +38,6 @@ const bo = chrome || browser;
 
 let feedId = ("—" + Math.random() + "-" + _.random(0, 0xff) + "—");
 let feedCounter = 0;
-const SPECIAL_DEBUG = false;
 
 // Boot the user script. This is the first function called.
 // Everything starts from here.
@@ -128,7 +127,7 @@ function refreshUUID() {
 }
 
 function getNatureByHref(href) {
-  /* this piece of code is shared with backend/parsers/nature */
+  /* this piece of code is duplicated in backend/parsers/nature.js */
   try {
     const urlO = new URL(href);
     const chunks = urlO.pathname.split('/');
@@ -195,8 +194,9 @@ function setupObserver() {
         let nature = getNatureByHref(window.location.href);
         feedCounter++;
         refreshUUID();
-        console.log(oldHref, "changed (and doing nothing)",
-          window.location.href, feedId, feedCounter, nature);
+        console.log(oldHref, "changed to",
+          window.location.href, "new feedId", feedId, 
+          "feedCounter", feedCounter);
         // TODO url parsing
         oldHref = window.location.href;
       }
@@ -221,6 +221,9 @@ function handleSuggested(elem) {
   });
 }
 
+/* function below manages every new video sample  
+ * that got display in a 'following' or 'foryou' tab */
+const SPECIAL_DEBUG = false;
 let videoCounter = 0;
 function handleVideo(elem) {
 
@@ -248,7 +251,7 @@ function handleVideo(elem) {
     feedId,
     feedCounter,
     videoCounter,
-    rect:  refe.getBoundingClientRect(),
+    rect: refe.getBoundingClientRect(),
   });
 
   if(config.ux)

@@ -8,7 +8,7 @@ const foodWords = require('food-words');
 function hash(obj, fields) {
     if(_.isUndefined(fields))
         fields = _.keys(obj);
-    print = false; // true;
+    print = true;
     const plaincnt = fields.reduce(function(memo, fname) {
         memo += (fname + "∴" +
             JSON.stringify(_.get(obj, fname, '…miss!')) +
@@ -68,21 +68,39 @@ function verifyRequestSignature(req) {
 };
 
 function string2Food(piistr) {
-    /* this is fbtrex's pseudonymize */
     const numberOf = 3;
     const inputs = _.times(numberOf, function(i) {
         return _.reduce(i + piistr, function(memo, acharacter) {
-            var x = memo * acharacter.charCodeAt(0);
+            /* charCodeAt never return 0 as number */
+            let x = memo * acharacter.charCodeAt(0);
             memo += ( x / 23 );
             return memo;
         }, 1);
     });
     const size = _.size(foodWords);
     const ret = _.map(inputs, function(pseudornumber) {
-        return _.nth(foodWords, (_.round(pseudornumber) % size));
+        /* considering the calculus above would produce a 
+           number that might be < foodWords.length and with decimals,
+           it is multiply by 1000 to be sure would be bigger than
+           variable 'size' */
+        return _.nth(foodWords,
+            (_.round(pseudornumber * 1000) % size));
     });
     return _.join(ret, '-');
 };
+
+function pickFoodWord(rginput) {
+    const seed = hash({ rginput }).replace(/[a-f]/gi, '')
+    
+    const rnum = seed.length > 5 ?
+        _.parseInt(seed.substr(0, 5)) :
+        _.parseInt(seed) + rginput.length;
+
+    const wordpos = rnum % foodWords.length;
+    /* debug("pickFoodWord number %d, module %d, word [%s]",
+        rnum, wordpos, _.nth(foodWords, wordpos)); */
+    return _.nth(foodWords, wordpos);
+}
 
 function getInt(req, what, def) {                                                       
     const rv = _.parseInt(_.get(req.params, what));
@@ -113,6 +131,7 @@ module.exports = {
     decodeFromBase58,
     verifyRequestSignature,
     string2Food,
+    pickFoodWord,
     getInt,                                                                     
     getString,
 };

@@ -1,53 +1,33 @@
 const _ = require('lodash');
-const nconf = require("nconf");
-const debug = require('debug')('parsers:categorizer');
-const { JSDOM } = require("jsdom");
+const debug = require('debug')('parsers:numbers');
 
-const mongo3 = require('../lib/mongo3');
+function metrics(envelop, previous) {
 
-async function attemptCatInfo(mongoc, videoId) {
+  /* only feedId on 'foryou' and 'following' have a description,
+     not really because also if you scroll on an user timeline */
+  const availin = ["foryou", "following"];
 
-    let cinfo = await mongo3.readOne(mongoc,
-        nconf.get('schema').categories, { videoId });
+  if(previous.nature && availin.indexOf(previous.nature.type) === -1) {
+    debug("No hashtag for previous.nature %o", previous.nature);
+    return null;
+  }
 
-    if(!cinfo) {
-        try {
-            const e = await mongo3.readOne(mongoc,
-                nconf.get('schema').retrieved, { videoId });
-            const dom = new JSDOM(e.html).window.document;
-            cinfo = await mongo3.writeOne(mongoc, nconf.get('schema').categories, {
-                videoId,
-                when: new Date()
-            });
-        } catch(error) {
-            debug("Impossible return categories of %s: %s", videoId, error.message);
-            return null;
-        }
-    }
-    return cinfo;
-}
+  const likee = envelop.jsdom.querySelector('[data-e2e="like-count"]');
+  const liken = likee.textContent;
 
-async function categorize(envelop, previous) {
+  const commente = envelop.jsdom.querySelector('[data-e2e="comment-count"]');
+  const commentn = commente.textContent;
 
-    if(previous.nature.type !== 'home') return false;
+  const sharee = envelop.jsdom.querySelector('[data-e2e="share-count"]');
+  const sharen = sharee.textContent;
 
-    const mongoc = await mongo3.clientConnect({concurrency: 10});
-    const catinfo = [];
-
-    for(section of (previous.home && previous.home.sections ? previous.home.sections: []) ) {
-        for(video of (section && section.videos ? section.videos: []) ) {
-            try {
-                const cinfo = await attemptCatInfo(mongoc, video.videoId);
-                if(cinfo)
-                    catinfo.push(cinfo);
-            } catch(error) {
-                debug("Unacceptable error in categorize: %s", error.message);
-            }
-        }
-    }
-
-    await mongoc.close();
-    return catinfo;
+  return {
+      metrics: {
+          liken,
+          commentn,
+          sharen
+      }
+  }
 };
 
-module.exports = categorize;
+module.exports = metrics;

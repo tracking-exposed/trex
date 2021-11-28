@@ -3,7 +3,6 @@ const debug = require('debug')('lib:parserchain');
 const nconf = require('nconf'); 
 const JSDOM = require('jsdom').JSDOM;
 
-const utils = require('./utils');
 const mongo3 = require('./mongo3');
 
 const parserList = {
@@ -14,6 +13,8 @@ const parserList = {
     music: require('../parsers/music'),
     hashtags: require('../parsers/hashtags'),
     numbers: require('../parsers/numbers'),
+    stitch: require('../parsers/stitch'),
+    author: require('../parsers/author'),
 };
 
 module.exports = {
@@ -32,40 +33,20 @@ module.exports = {
 function buildMetadata(entry) {
     // this contains the original .source (html, impression, timeline), the .findings and .failures 
     // the metadata is aggregated by unit and not unrolled in any way
-    let metadata = null;
-
-    if(entry.findings.nature.type == 'home') {
-        metadata = _.merge(
-            _.pick(entry.source.html, [ 'href', 'profileStory', 'publicKey']),
-            entry.findings.advertising,
-            entry.findings.home,
-            entry.findings.nature
-        );
-    }
-    else if(entry.findings.nature.type == 'search') {
-        metadata = _.merge(
-            _.pick(entry.source.html, [ 'href', 'profileStory', 'publicKey']),
-            entry.findings.advertising,
-            entry.findings.search,
-            entry.findings.params,
-            entry.findings.related,
-            entry.findings.nature
-        );
-    }
-    else if(entry.findings.nature.type == 'video') {
-        metadata = _.merge(
-            _.pick(entry.source.html, [ 'href', 'profileStory', 'publicKey']),
-            entry.findings.advertising,
-            entry.findings.video,
-            entry.findings.nature
-        );
-    }
-    else return null; // 'video' 'pornstar' etc.. are discharged now.
+    const metadata = {
+        ...entry.findings.nature,
+        ...entry.findings.description,
+        ...entry.findings.music,
+        ...entry.findings.hashtags,
+        ...entry.findings.numbers,
+        ...entry.findings.stitch,
+        ...entry.findings.author,
+    };
 
     metadata.savingTime = new Date(entry.source.html.savingTime);
-    metadata.clientTime = new Date(entry.source.html.clientTime);
-    metadata.id = entry.source.html.metadataId;
-    metadata.htmlId = entry.source.html.id;
+    metadata.id = entry.source.html.id;
+    metadata.publicKey = entry.source.html.publicKey;
+    // console.log("->", JSON.stringify(metadata, undefined, 2));
     return metadata;
 }
 
@@ -118,9 +99,13 @@ async function wrapDissector(dissectorF, dissectorName, source, envelope) {
     try {
         // this function pointer point to all the functions in parsers/*
         // as argument they take function(source ({.jsdom, .html}, previous {...}))
-        let retval = await dissectorF(source, envelope.findings);
-        let resultIndicator = JSON.stringify(retval).length;
-        _.set(envelope.log, dissectorName, resultIndicator);
+        const retval = await dissectorF(source, envelope.findings);
+        if(_.isUndefined(retval) || _.isNull(retval) || retval === false) {
+            _.set(envelope.log, dissectorName, false);
+        } else {
+            let resultIndicator = JSON.stringify(retval).length;
+            _.set(envelope.log, dissectorName, resultIndicator);
+        }
         return retval;
     } catch(error) {
         debug("Error in %s: %s %s", dissectorName, error.message, error.stack);
@@ -133,5 +118,5 @@ async function updateMetadataAndMarkHTML(e) {
     if(!e) return null;
     let r = await mongo3.upsertOne(mongodrivers.writec, nconf.get('schema').metadata, { id: e.id }, e);
     let u = await mongo3.updateOne(mongodrivers.writec, nconf.get('schema').htmls, { id: e.id }, { processed: true });
-    return [ r.result.ok, u.result.ok ];
+    return [ r.modifiedCount, u.modifiedCount ];
 }
