@@ -11,7 +11,8 @@
     "leaveserv:watch": "DEBUG=* node_modules/.bin/ts-node-dev --respawn --transpile-only bin/leaveserv.js",
     "test": "mocha --require ts-node/register tests/basic/*",
     "campaigns": "node bin/campaignUpdater.js --dest https://youtube.tracking.exposed",
-    "type-check": "tsc"
+    "type-check": "tsc",
+    "lint": "eslint ./"
   },
   "author": "Claudio Agosti <claudio@tracking.exposed> and https://github.com/tracking-exposed/yttrex/graphs/contributors",
   "license": "AGPL-3.0",
@@ -42,7 +43,15 @@
     "tweetnacl": "^0.14.3"
   },
   "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^5.4.0",
+    "@typescript-eslint/parser": "^5.4.0",
     "chai": "^4.3.4",
+    "eslint": "^8.3.0",
+    "eslint-config-prettier": "^8.3.0",
+    "eslint-config-standard-with-typescript": "^21.0.1",
+    "eslint-plugin-import": "^2.25.3",
+    "eslint-plugin-node": "^11.1.0",
+    "eslint-plugin-promise": "^5.1.1",
     "mocha": "^9.1.3",
     "ts-node": "^10.4.0",
     "ts-node-dev": "^1.1.8",

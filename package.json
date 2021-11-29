@@ -3,6 +3,7 @@
   "license": "AGPL-3.0",
   "scripts": {
     "clean": "cd shared && npm run clean && cd ../YCAI && npm run clean",
+    "lint": "cd backend && npm run lint && cd ../YCAI && npm run lint",
     "preinstall": "cd shared && npm i && cd ../backend && npm i && cd ../YCAI && npm i"
   }
 }
