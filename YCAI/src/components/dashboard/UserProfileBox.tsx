@@ -15,46 +15,54 @@ import { ErrorBox } from '../common/ErrorBox';
 import { LazyFullSizeLoader } from '../common/FullSizeLoader';
 import UnlinkProfileButton from '../common/UnlinkProfileButton';
 
-interface LoggedUserProfileBoxProps {
+interface LoggedInUserProfileBoxProps {
   onLogout: () => void;
   profile: ContentCreator;
 }
 
 const useStyles = makeStyles((theme) => ({
-  username: {
-    marginBottom: theme.spacing(0),
+  avatar: {
+    marginRight: theme.spacing(1),
   },
-  caption: {
+  username: {
     marginBottom: theme.spacing(1),
-    marginTop: theme.spacing(0.7),
+    lineHeight: 1,
+  },
+  channel: {
+    display: 'block',
+    marginBottom: theme.spacing(1),
+    wordBreak: 'break-all',
+  },
+  unlink: {
+    padding: 0,
+    lineHeight: 1,
+    marginBottom: 0,
   },
 }));
 
-export const LoggedUserProfileBox: React.FC<LoggedUserProfileBoxProps> = ({
+export const LoggedInUserProfileBox: React.FC<LoggedInUserProfileBoxProps> = ({
   onLogout,
   profile,
 }) => {
   const classes = useStyles();
 
   return (
-    <Box display="flex" alignItems="flex-start" flexDirection="column">
-      <Box display="flex" alignItems="center">
-      <Avatar src={profile.avatar} style={{ marginRight: 10 }} />
-      <Box display="flex" flexDirection="column" style={{ marginRight: 20 }}>
-        <Typography variant="body1" className={classes.username}>
+    <Box display="flex" alignItems="flex-start">
+      <Avatar src={profile.avatar} className={classes.avatar} />
+      <Box>
+        <Typography className={classes.username}>
           {profile.username}
         </Typography>
-        <Typography variant="caption" className={classes.caption}>
-          {profile.channelId}
+        <Typography variant="caption" className={classes.channel}>
+          Channel ID:<br />{profile.channelId}
         </Typography>
+        <UnlinkProfileButton
+          className={classes.unlink}
+          variant="text"
+          size="small"
+          onLogout={onLogout}
+        />
       </Box>
-      </Box>
-      <UnlinkProfileButton
-        style={{ marginLeft: 50 }}
-        variant="contained"
-        size="small"
-        onLogout={onLogout}
-      />
     </Box>
   );
 };
@@ -86,7 +94,7 @@ export const UserProfileBox = withQueries(
         }
 
         return (
-          <LoggedUserProfileBox
+          <LoggedInUserProfileBox
             profile={profile}
             onLogout={() => handleChannelDelete()}
           />
