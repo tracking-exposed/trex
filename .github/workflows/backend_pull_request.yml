@@ -94,6 +94,7 @@ jobs:
       - name: Start MongoDB
         uses: supercharge/mongodb-github-action@1.7.0
         with:
+          mongodb-port: 27019
           mongodb-version: ${{ matrix.mongodb-version }}
 
       - name: Install node_modules
@@ -103,5 +104,4 @@ jobs:
       - name: Test
         run: npm test
         env:
-          mongoPort: 27017
           CI: true
