@@ -171,23 +171,3 @@ export const creatorADVStats = compose(
     );
   }, available)
 );
-
-export const creatorADVStatsMocked = compose(
-  product({ profile: requiredLocalProfile }),
-  queryStrict(({ profile }) => {
-    return TE.right([
-      {
-        sponsoredName: 'google.com',
-        count: 100,
-      },
-      {
-        sponsoredName: 'facebook.com',
-        count: 87,
-      },
-      {
-        sponsoredName: 'gamberorosso.com',
-        count: 65,
-      },
-    ]);
-  }, available)
-);
