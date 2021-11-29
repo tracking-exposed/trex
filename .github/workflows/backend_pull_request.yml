@@ -103,4 +103,5 @@ jobs:
       - name: Test
         run: npm test
         env:
+          mongoPort: 27017
           CI: true

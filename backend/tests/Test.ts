@@ -8,8 +8,8 @@ debug.enable(process.env.DEBUG ?? "");
 
 const config = nconf
   .argv()
-  .env()
-  .file({ file: path.resolve(__dirname, "../config/settings.json") });
+  .file({ file: path.resolve(__dirname, "../config/settings.json") })
+  .env();
 
 const logger = debug("yttrex").extend("test");
 
