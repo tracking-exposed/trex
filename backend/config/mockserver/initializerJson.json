@@ -1,0 +1,10 @@
+[
+  {
+    "httpRequest": {
+      "path": "/channel/{channelId}/videos"
+    },
+    "httpResponse": {
+      "body": "<html>mocked html</html>"
+    }
+  }
+]

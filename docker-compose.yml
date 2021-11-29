@@ -10,6 +10,27 @@ services:
       target: build
     scale: 0
 
+  youtube-mock:
+    image: mockserver/mockserver:latest
+    hostname: youtube
+    ports:
+      - 1080:1080
+      - 80:1080
+      - 443:1080
+    environment:
+      MOCKSERVER_WATCH_INITIALIZATION_JSON: "true"
+      MOCKSERVER_PROPERTY_FILE: /config/mockserver.properties
+      MOCKSERVER_INITIALIZATION_JSON_PATH: /config/initializerJson.json
+    volumes:
+      - type: bind
+        source: ./backend/config/mockserver
+        target: /config
+    command: -logLevel DEBUG -serverPort 1080
+    networks:
+      youtube:
+        aliases:
+          - www.youtube.com
+
   mongodb:
     image: mongo:4.2
     ports:
@@ -17,6 +38,8 @@ services:
     volumes:
       - ./backend/dump:/dump/
     restart: unless-stopped
+    networks:
+      - youtube
 
   # provide a test for testing purposo on a specific port
   mongodb-test:
@@ -57,10 +80,16 @@ services:
     volumes:
       - ./shared:/app/shared
       - ./backend:/app/backend/
+    links:
+      - mongodb
     depends_on:
+      - youtube-mock
       - mongodb
     working_dir: /app/backend
     command: npm run watch
+    restart: always
+    networks:
+      - youtube
 
   ycai:
     image: yttrex_base
@@ -75,3 +104,6 @@ services:
     depends_on:
       - api
     command: sh -c "chmod -R 777 /app/YCAI/build && npm run watch"
+
+networks:
+  youtube:
