@@ -1,24 +1,26 @@
 {
+  "extends": "../tsconfig.json",
   "compilerOptions": {
     "allowJs": true,
-    "noEmit": true,
+    "strict": false,
     "rootDir": "./",
-    "baseUrl": "./"
+    "baseUrl": "./",
+    "noEmit": true,
+    "esModuleInterop": true,
+    "paths": {
+      "@shared/*": ["../shared/src/*"]
+    }
   },
-  "include": [
-    "./bin",
-    "./lib",
-    "./endpoints",
-    "./models",
-    "./parsers",
-    "./routes",
-    "./utils"
-  ],
+  "include": ["./bin", "./lib", "./parsers", "./routes", "./utils", "./tests"],
   "exclude": ["./tests"],
   "watchOptions": {
-"watchFile": "useFsEvents",
-"watchDirectory": "useFsEvents",
-"synchronousWatchDirectory": true
-  }
+    "watchFile": "useFsEvents",
+    "watchDirectory": "useFsEvents",
+    "synchronousWatchDirectory": true
+  },
+  "references": [
+    {
+      "path": "../shared"
+    }
+  ]
 }
-

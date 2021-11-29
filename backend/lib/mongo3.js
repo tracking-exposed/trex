@@ -21,8 +21,10 @@ function mongoUri(forced) {
     const mongoPort = nconf.get('mongoPort');
     const mongoDb = nconf.get('mongoDb');
 
-    if(!mongoHost || !mongoPort || !mongoDb)
+    if(!mongoHost || !mongoPort || !mongoDb) {
+        debug('Configuration missing %o', { mongoHost, mongoPort, mongoDb})
         throw new Error("configuration missing");
+    }
 
     savedMongoUri = `mongodb://${mongoHost}:${mongoPort}/${mongoDb}`;
     debug("Initializing mongoUri with %s", savedMongoUri);
