@@ -173,9 +173,6 @@ app.get('/api/v2/searches/:query/:paging?', async (req, res) => await iowrapper(
 app.get('/api/v2/searchid/:listof', async (req, res) => await iowrapper('getSearchDetails', req, res))
 app.get('/api/v2/search/keywords/:paging?', async (req, res) => await iowrapper('getSearchKeywords', req, res))
 
-/* to configure search comparison */
-app.post('/api/v2/campaigns/:key', async (req, res) => await iowrapper('updateCampaigns', req, res))
-
 /* experiments dependend API -- the one below have been tested */
 app.get('/api/v2/guardoni/list/:directiveType', async (req, res) => await iowrapper('getAllExperiments', req, res))
 app.post('/api/v3/directives/:directiveType', async (req, res) => await iowrapper('postDirective', req, res))
