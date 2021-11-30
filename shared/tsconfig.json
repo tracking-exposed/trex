@@ -2,6 +2,7 @@
   "extends": "../tsconfig.json",
   "compilerOptions": {
     "composite": true,
+    "lib": ["ES2015"],
     "outDir": "./build",
     "baseUrl": "./",
     "rootDir": "./src",

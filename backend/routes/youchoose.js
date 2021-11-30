@@ -128,7 +128,7 @@ const cleanVideoForAPIOutput = (video) => {
 
 async function videoByCreator(req) {
 
-  const { creator, decodedReq } = await verifyAuthorization(req, v3.Creator.CreatorVideos);
+  const { creator } = await verifyAuthorization(req, v3.Creator.CreatorVideos);
   if(creator.error)
     return {json: creator };
 
@@ -231,7 +231,7 @@ async function getRecommendationById(req) {
 
 async function updateVideoRec(req) {
 
- const { creator, decodedReq } = await verifyAuthorization(req, v3.Creator.UpdateVideo);
+ const { creator } = await verifyAuthorization(req, v3.Creator.UpdateVideo);
   if(creator.error)
     return {json: creator };
 
@@ -394,7 +394,7 @@ async function creatorGet(req) {
 async function creatorDelete(req) {
   // this function is invoked when a content creator wants to
   // delete every data on their belong,
-  const { creator, decodedReq } = await verifyAuthorization(req, v3.Creator.GetCreator);
+  const { creator } = await verifyAuthorization(req, v3.Creator.GetCreator);
   if(creator.error)
     return { json: creator };
 
