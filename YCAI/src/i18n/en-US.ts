@@ -121,6 +121,7 @@ const resources: CustomTypeOptions['resources'] = {
     advertising_connected_to_your_videos_title: 'Advertising',
     advertising_connected_to_your_videos_subtitle:
       'Advertising connected to your video',
+      advertising_empty_data: 'No advertising data collected yet'
   },
   videos: {
     no_results: 'No videos found.',
