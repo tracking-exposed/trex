@@ -83,6 +83,9 @@ function unrollRecommended(evidence, shared) {
     });
 }
 
+function reconnectAdvertising(evidence, shared) {
+    throw new Error("Not working ATM! special condition to handle -- test with experiments especially");
+}
 
 function unwindSections(evidence, shared) {
     // HOME
@@ -117,12 +120,13 @@ function unwindSections(evidence, shared) {
 
 function unrollNested(metadata, options) {
     /*  | options can be:               |
-        | type (home|video|search)      |
+        | type (home|video|search|adv)  |
         | private (true|undefined)      |
         | experiment (true|undefined)   | */
 
     return _.flatten(_.compact(_.map(metadata, function(evidence) {
-        if(evidence.type !== options.type)
+        if( options.type !== 'adv' &&
+            evidence.type !== options.type)
             return null;
 
         const shared = {
@@ -144,18 +148,24 @@ function unrollNested(metadata, options) {
         }
 
         let entry = null;
+        /* entry is a list, this piece of code is diving into
+         * the linked list inside the elements, and based on the
+         * sub-entry the result is offered back. advertising 
+         * might be eterogeneous type */
         if(options.type === 'home')
             entry = unwindSections(evidence, shared);
         else if(options.type === 'video')
             entry = unrollRecommended(evidence, shared);
         else if(options.type === 'search')
             entry = flattenSearches(evidence, shared);
+        else if(options.type === 'adv')
+            entry = reconnectAdvertising(evidence, shared);
 
         return entry;
     })))
 }
 
-const allowedTypes = ['video', 'search', 'home'];
+const allowedTypes = ['video', 'search', 'home', 'adv' ];
 
 module.exports = {
     produceCSVv1,

@@ -320,7 +320,7 @@ To execute a known experiment:
    --experiment <experimentId>
 
 Advanced options:
-   --evendencetag <string>
+   --evidencetag <string>
    --profile <string>
    --config <file>
    --proxy <string>
