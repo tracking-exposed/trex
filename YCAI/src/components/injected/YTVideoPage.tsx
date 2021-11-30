@@ -3,6 +3,8 @@ import ContentCreatorIcon from '@material-ui/icons/HealingOutlined';
 import HideIcon from '@material-ui/icons/VisibilityOffOutlined';
 import YTIcon from '@material-ui/icons/YouTube';
 import { makeStyles } from '@material-ui/styles';
+import * as TE from 'fp-ts/lib/TaskEither';
+import { pipe } from 'fp-ts/lib/function';
 import { FullSizeLoader } from 'components/common/FullSizeLoader';
 import { TabPanel } from 'components/common/TabPanel';
 import { Settings } from 'models/Settings';
@@ -13,6 +15,8 @@ import { GetLogger } from 'utils/logger.utils';
 import { getVideoId } from 'utils/yt.utils';
 import { Tab } from '../common/Tab';
 import { VideoRecommendations } from './VideoRecommendations';
+import { videoRecommendations } from 'state/public.queries';
+import { Recommendation } from '@shared/models/Recommendation';
 
 const logger = GetLogger('yt-video-recommendations');
 
@@ -41,6 +45,8 @@ export const YTVideoPage: React.FC<{
   const [currentVideoId, setVideoId] = React.useState(
     getVideoId(window.location.href)
   );
+  const [recommendations, setRecommendations] = React.useState<Recommendation[]>([]);
+  const [recommendationsLoading, setRecommendationsLoading] = React.useState(false);
 
   const classes = useStyles();
 
@@ -66,6 +72,27 @@ export const YTVideoPage: React.FC<{
     setCurrentTab(tab);
     patchYTRecommendations(tab);
   }, []);
+
+  React.useEffect(() => {
+    if (currentVideoId) {
+      setRecommendationsLoading(true);
+      void pipe(
+        videoRecommendations.run({ videoId: currentVideoId }),
+        // eslint-disable-next-line array-callback-return
+        TE.map((recs) => {
+          setRecommendationsLoading(false);
+          setRecommendations(recs);
+          if (currentTab !== HIDE_ALL_TAB_INDEX) {
+            if (recs.length > 0) {
+              onTabChange(CC_TAB_INDEX);
+            } else {
+              onTabChange(YT_TAB_INDEX);
+            }
+          }
+        }),
+      )();
+    }
+  }, [currentVideoId]);
 
   React.useEffect(() => {
     patchYTRecommendations(currentTab);
@@ -141,9 +168,8 @@ export const YTVideoPage: React.FC<{
             </Box>
           ) : (
             <VideoRecommendations
-              queries={{
-                videoRecommendations: { videoId: currentVideoId },
-              }}
+              recommendations={recommendations}
+              loading={recommendationsLoading}
             />
           )}
         </TabPanel>
