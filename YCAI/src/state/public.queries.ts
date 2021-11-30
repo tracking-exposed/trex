@@ -1,7 +1,7 @@
 import * as Endpoints from '@shared/endpoints';
 import { Recommendation } from '@shared/models/Recommendation';
 import { available, queryShallow, queryStrict, refetch } from 'avenger';
-import { pipe } from 'fp-ts/lib/pipeable';
+import { pipe } from 'fp-ts/lib/function';
 import * as TE from 'fp-ts/lib/TaskEither';
 import { Messages } from '../models/Messages';
 import { getDefaultSettings, Settings } from '../models/Settings';
