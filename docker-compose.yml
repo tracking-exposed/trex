@@ -52,7 +52,7 @@ services:
     environment:
       DEBUG: "*,-body-parser*,-express*,-follow-redirects"
       key: my-dev-key
-      mongoHost: mongo
+      mongoHost: mongodb
       mongodb: yttrex
     volumes:
       - ./shared:/app/shared
