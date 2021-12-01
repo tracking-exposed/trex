@@ -10,7 +10,7 @@ import {
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
 import * as models from '../../models';
-import { generateKeypair, updateSettings } from '../../state/dashboard/public.commands';
+import { generateKeypair, updateSettings } from '../../state/popup.commands';
 
 const useStyles = makeStyles((theme) => ({
   divider: {
