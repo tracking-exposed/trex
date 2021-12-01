@@ -4,10 +4,7 @@ import { command } from 'avenger';
 import { sequenceS } from 'fp-ts/lib/Apply';
 import { pipe } from 'fp-ts/lib/function';
 import * as TE from 'fp-ts/lib/TaskEither';
-import { AppError } from 'models/errors/AppError';
-import * as constants from '../../constants';
 import { API } from '../../providers/api.provider';
-import { setItem } from '../../providers/localStorage.provider';
 import {
   auth,
   ccRelatedUsers,
@@ -18,6 +15,9 @@ import {
   requiredLocalProfile
 } from './creator.queries';
 import { settings, videoRecommendations } from './public.queries';
+import { setItem } from '../../providers/localStorage.provider';
+import * as constants from '../../constants';
+import { AppError } from 'models/errors/AppError';
 
 export const registerCreatorChannel = command(
   (channelId: string) =>

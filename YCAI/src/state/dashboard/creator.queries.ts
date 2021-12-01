@@ -6,7 +6,7 @@ import {
   param,
   product,
   queryShallow,
-  queryStrict,
+  queryStrict
 } from 'avenger';
 import { formatISO, subMonths } from 'date-fns';
 import { pipe } from 'fp-ts/lib/function';
@@ -18,17 +18,6 @@ import { API, APIError } from '../../providers/api.provider';
 
 export const CREATOR_CHANNEL_KEY = 'creator-channel';
 export const CURRENT_VIDEO_ON_EDIT = 'current-video-on-edit';
-
-// const throwOnMissingAuth = (
-//   auth?: AuthResponse
-// ): TE.TaskEither<APIError, AuthResponse> =>
-//   pipe(
-//     auth,
-//     TE.fromPredicate(
-//       (s): s is AuthResponse => s?.verified ?? false,
-//       () => new APIError('Missing Auth', [])
-//     )
-//   );
 
 type AuthorizedContentCreator = Omit<ContentCreator, 'accessToken'> & {
   accessToken: string;
@@ -54,7 +43,18 @@ export const auth = queryStrict(
 // content creator
 
 export const localProfile = queryStrict(
+<<<<<<< HEAD:YCAI/src/state/dashboard/creator.queries.ts
   () => TE.fromIO<any, AppError>(getItem(constants.CONTENT_CREATOR)),
+=======
+  () =>
+    pipe(
+      TE.fromIO<any, AppError>(getItem(constants.CONTENT_CREATOR)),
+      TE.map((r) => {
+        apiLogger.debug('Get profile %O', r);
+        return r;
+      })
+    ),
+>>>>>>> b57b5a8 (feat: decoupled queries and commands to avoid import 'chrome' in dashboard):YCAI/src/state/creator.queries.ts
   available
 );
 

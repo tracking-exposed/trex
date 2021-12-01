@@ -1,10 +1,10 @@
 import { available, queryShallow, queryStrict, refetch } from 'avenger';
 import { pipe } from 'fp-ts/lib/function';
 import * as TE from 'fp-ts/lib/TaskEither';
+import { AppError } from 'models/errors/AppError';
+import { API } from 'providers/api.provider';
 import * as constants from '../../constants';
-import { AppError } from '../../models/errors/AppError';
 import { getDefaultSettings, Keypair } from '../../models/Settings';
-import { API } from '../../providers/api.provider';
 import * as localStorage from '../../providers/localStorage.provider';
 
 export const settingsRefetch = queryShallow(() => {
