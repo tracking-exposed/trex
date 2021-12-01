@@ -229,6 +229,34 @@ async function updateRecommendations(videoId, recommendations) {
   return one;
 }
 
+async function patchRecommendation(creator, urlId, partialRecommendation) {
+  const mongoc = await mongo3.clientConnect({ concurrency: 1 });
+
+  // check that the recommendation is associated with a video belonging
+  // to the creator, because recommendations do not have ownership data
+  const video = await mongo3.readOne(mongoc, nconf.get("schema").ytvids, {
+    recommendations: urlId,
+    creatorId: creator.channelId,
+  });
+  if(!video) {
+    return { error: true, message: "are you sure you own that recommendation?" };
+  }
+
+  const rec = await mongo3.readOne(mongoc, nconf.get("schema").recommendations, {
+    urlId,
+  });
+  if (!rec) {
+    return { error: true, message: "recommendation not found" };
+  }
+
+  const patchedRec = Object.assign(rec, partialRecommendation, { urlId });
+
+  await mongo3.updateOne(mongoc, nconf.get("schema").recommendations, { urlId }, patchedRec);
+  mongoc.close();
+
+  return patchedRec;
+}
+
 async function generateToken(channelId, expireISOdate) {
   /* TODO we need to use a public/private key schema to generate
    * a secure accessToken that can be used also if the verification
@@ -365,7 +393,7 @@ async function getCreatorByToken(token) {
 }
 
 async function getRecentChannels(max, countoo) {
-  /* this API is used to pull recent channels so we can 
+  /* this API is used to pull recent channels so we can
    * eventually watch it with 'Guardoni' and populate stats,
      countrecs (true|undefined) causes a count of  */
 
@@ -444,6 +472,7 @@ module.exports = {
   getOneVideoFromYTprofile,
   recommendationById,
   updateRecommendations,
+  patchRecommendation,
   generateToken,
   getToken,
   registerVideos,
