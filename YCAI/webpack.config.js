@@ -14,7 +14,7 @@ const CopyWebpackPlugin = require('copy-webpack-plugin');
 const DotenvPlugin = require('dotenv-webpack');
 const FileManagerPlugin = require('filemanager-webpack-plugin');
 const { BundleAnalyzerPlugin } = require('webpack-bundle-analyzer');
-
+const { WebpackPluginServe } = require('webpack-plugin-serve');
 const { generateWebpackAliasesFromTSConfig } = require('./webpackConfigUtils');
 
 const dotEnvConfigPath =
@@ -127,6 +127,19 @@ if (mode === 'production') {
   );
 }
 
+if (mode === 'development') {
+  plugins.push(
+    new WebpackPluginServe({
+      port: 3000,
+      host: '0.0.0.0',
+      hmr: true,
+      historyFallback: true,
+      open: true,
+      static: [path.resolve(__dirname, 'build')],
+    })
+  );
+}
+
 if (buildENV.BUNDLE_STATS) {
   plugins.push(
     new BundleAnalyzerPlugin({
@@ -136,26 +149,17 @@ if (buildENV.BUNDLE_STATS) {
   );
 }
 
-const devServerConf = {
-  devServer: {
-    static: {
-      directory: path.join(__dirname, "build"),
-    },
-    host: "0.0.0.0",
-    compress: true,
-  },
-};
-
 module.exports = {
   mode,
-
   entry: {
-    dashboard: path.resolve(__dirname, 'src/dashboard.tsx'),
+    dashboard: [
+      'webpack-plugin-serve/client',
+      path.resolve(__dirname, 'src/dashboard.tsx'),
+    ],
     app: path.resolve(__dirname, 'src/app.tsx'),
     popup: path.resolve(__dirname, 'src/popup.tsx'),
     background: path.resolve(__dirname, 'src/background/index.ts'),
   },
-  ...devServerConf,
   output: {
     path: path.resolve(__dirname, 'build'),
     filename: '[name].js',

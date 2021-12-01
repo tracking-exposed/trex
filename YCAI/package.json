@@ -18,7 +18,7 @@
     "tsc": "tsc",
     "build": "tsc --build && NODE_ENV=production webpack",
     "build:dev": "webpack",
-    "watch": "webpack serve",
+    "watch": "webpack -w",
     "watch:prod": "DOTENV_CONFIG_PATH=.env.production webpack -w",
     "test": "jest",
     "stats": "webpack-bundle-analyzer build/stats.json",
@@ -40,6 +40,7 @@
     "@types/react-dom": "^16.9.14",
     "@types/react-test-renderer": "^16.0.0",
     "@types/swagger-ui": "^3.52.0",
+    "@types/webpack-plugin-serve": "^1.4.1",
     "@typescript-eslint/eslint-plugin": "^4.33.0",
     "@typescript-eslint/parser": "^4.33.0",
     "buffer": "^6.0.3",
@@ -70,6 +71,7 @@
     "webpack-bundle-analyzer": "^4.5.0",
     "webpack-cli": "^4.9.1",
     "webpack-dev-server": "^4.6.0",
+    "webpack-plugin-serve": "^1.5.0",
     "zenroom": "^2.2.1"
   },
   "dependencies": {
