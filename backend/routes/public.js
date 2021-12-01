@@ -8,7 +8,7 @@ const utils = require('../lib/utils');
 const CSV = require('../lib/CSV');
 const cache = require('../lib/cache');
 const endpoints = require("../lib/endpoint");
-const { v1 } = require('../endpoints');
+const { v1 } = require('@shared/endpoints');
 const structured = require('../lib/structured');
 
 // This variables is used as cap in every readLimit below
@@ -158,9 +158,9 @@ async function getVideoCSV(req) {
 
 async function getByAuthor(req) {
     /* this API do not return the standard format with videos and related inside,
-     * but a data format ready for the visualization provided - this has been 
+     * but a data format ready for the visualization provided - this has been
      * temporarly suspended: https://github.com/tracking-exposed/youtube.tracking.exposed/issues/18 */
-    
+
     /* TODO implement pagination (when overflow is true) */
     const amount = PUBLIC_AMOUNT_ELEMS;
     const skip = 0;

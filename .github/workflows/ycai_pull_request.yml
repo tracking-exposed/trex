@@ -1,0 +1,48 @@
+name: YCAI - Pull Request
+
+on:
+  pull_request:
+    branches:
+      - daily
+      - beta
+    paths:
+      - "shared/**"
+      - "YCAI/**"
+
+defaults:
+  run:
+    working-directory: YCAI
+
+jobs:
+  pull_request:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Get npm cache directory path
+        id: npm-cache-dir-path
+        run: echo "::set-output name=dir::~/.npm"
+
+      - uses: actions/cache@v2
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
+
+      - name: Install modules
+        working-directory: shared
+        run: npm i
+
+      - name: Install modules
+        run: npm i
+
+      - name: Lint code
+        run: npm run lint
+
+      - name: Build
+        run: npm run build
+
+      - name: Test
+        run: npm test

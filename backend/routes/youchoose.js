@@ -6,13 +6,13 @@ const fetchOpengraph = require('fetch-opengraph');
 const ycai = require('../lib/ycai');
 const curly = require('../lib/curly');
 const endpoints = require('../lib/endpoint');
-const { v3 } = require('../endpoints');
+const { v3 } = require('@shared/endpoints');
 const structured = require('../lib/structured');
 
 const PUBLIC_AMOUNT_ELEMS = 100;
 
 async function verifyAuthorization(req, model) {
-  /* this function is called any time a route below 
+  /* this function is called any time a route below
    * need to ensure the creator is valid. returns creator object */
 
   const decodedReq = endpoints.decodeRequest(model, req);
@@ -51,7 +51,7 @@ async function byVideoId(req) {
 
 async function byProfile(req) {
   // TODO verify this API, why is using the token
-  // to query the DB? 
+  // to query the DB?
   const decodedReq = endpoints.decodeRequest(v3.Creator.CreatorVideos, req);
   if (decodedReq.type === 'error') {
     return {
