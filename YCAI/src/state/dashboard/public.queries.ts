@@ -4,7 +4,7 @@ import * as TE from 'fp-ts/lib/TaskEither';
 import { AppError } from 'models/errors/AppError';
 import { API } from 'providers/api.provider';
 import * as constants from '../../constants';
-import { getDefaultSettings } from '../../models/Settings';
+import { getDefaultSettings, Keypair } from '../../models/Settings';
 import * as localStorage from '../../providers/localStorage.provider';
 
 export const settingsRefetch = queryShallow(() => {
@@ -44,7 +44,7 @@ export const settings = queryShallow(() => {
 }, available);
 
 // todo:
-export const keypair = queryStrict(() => {
+export const keypair = queryStrict<any, AppError, Keypair | null>(() => {
   return TE.right(null);
 }, refetch);
 

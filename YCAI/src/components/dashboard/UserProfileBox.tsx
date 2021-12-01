@@ -1,21 +1,22 @@
-import React from 'react';
+import { Box, makeStyles, Typography } from '@material-ui/core';
 import { ContentCreator } from '@shared/models/ContentCreator';
-import { Box, Typography, makeStyles } from '@material-ui/core';
-import Avatar from '../external/Avatar';
 import * as QR from 'avenger/lib/QueryResult';
 import { declareQueries } from 'avenger/lib/react';
 import { sequenceS } from 'fp-ts/lib/Apply';
 import { pipe } from 'fp-ts/lib/function';
 import * as TE from 'fp-ts/lib/TaskEither';
-import { doUpdateCurrentView } from '../../utils/location.utils';
+import { toAppError } from 'models/errors/AppError';
+import React from 'react';
 import {
   updateAuth,
-  updateProfile,
+  updateProfile
 } from '../../state/dashboard/creator.commands';
 import { localProfile } from '../../state/dashboard/creator.queries';
+import { doUpdateCurrentView } from '../../utils/location.utils';
 import { ErrorBox } from '../common/ErrorBox';
 import { LazyFullSizeLoader } from '../common/FullSizeLoader';
 import UnlinkProfileButton from '../common/UnlinkProfileButton';
+import Avatar from '../external/Avatar';
 
 interface LoggedInUserProfileBoxProps {
   onLogout: () => void;
@@ -79,7 +80,9 @@ export const UserProfileBox = withQueries(
           auth: updateAuth(null),
           profile: updateProfile(null),
         }),
-        TE.chainFirst(() => doUpdateCurrentView({ view: 'index' }))
+        TE.chain(() =>
+          pipe(doUpdateCurrentView({ view: 'index' }), TE.mapLeft(toAppError))
+        )
       )();
     }, []);
 
