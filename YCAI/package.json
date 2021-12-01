@@ -111,6 +111,7 @@
     "react-dnd-html5-backend": "^14.0.2",
     "react-dom": "^16.14.0",
     "react-i18next": "^11.13.0",
+    "react-use-clipboard": "^1.0.7",
     "swagger-ui": "^4.1.0",
     "ts-endpoint": "^2.0.0",
     "tweetnacl": "^1.0.3",
