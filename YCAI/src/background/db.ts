@@ -6,9 +6,6 @@ import { getAssignSemigroup } from 'fp-ts/lib/struct';
 import { catchRuntimeLastError } from '../providers/browser.provider';
 import { GetLogger } from '../utils/logger.utils';
 
-export const AUTH_KEY = 'auth';
-export const CONTENT_CREATOR = 'content-creator';
-
 const dbLogger = GetLogger('db');
 const backend = bo.storage.local;
 

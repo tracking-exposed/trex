@@ -7,10 +7,12 @@ import { declareQueries } from 'avenger/lib/react';
 import { sequenceS } from 'fp-ts/lib/Apply';
 import { pipe } from 'fp-ts/lib/function';
 import * as TE from 'fp-ts/lib/TaskEither';
-import { toBrowserError } from 'providers/browser.provider';
-import { doUpdateCurrentView } from 'utils/location.utils';
-import { updateAuth, updateProfile } from '../../state/creator.commands';
-import { localProfile } from '../../state/creator.queries';
+import { doUpdateCurrentView } from '../../utils/location.utils';
+import {
+  updateAuth,
+  updateProfile,
+} from '../../state/dashboard/creator.commands';
+import { localProfile } from '../../state/dashboard/creator.queries';
 import { ErrorBox } from '../common/ErrorBox';
 import { LazyFullSizeLoader } from '../common/FullSizeLoader';
 import UnlinkProfileButton from '../common/UnlinkProfileButton';
@@ -50,11 +52,11 @@ export const LoggedInUserProfileBox: React.FC<LoggedInUserProfileBoxProps> = ({
     <Box display="flex" alignItems="flex-start">
       <Avatar src={profile.avatar} className={classes.avatar} />
       <Box>
-        <Typography className={classes.username}>
-          {profile.username}
-        </Typography>
+        <Typography className={classes.username}>{profile.username}</Typography>
         <Typography variant="caption" className={classes.channel}>
-          Channel ID:<br />{profile.channelId}
+          Channel ID:
+          <br />
+          {profile.channelId}
         </Typography>
         <UnlinkProfileButton
           className={classes.unlink}
@@ -77,12 +79,7 @@ export const UserProfileBox = withQueries(
           auth: updateAuth(null),
           profile: updateProfile(null),
         }),
-        TE.chainFirst(() =>
-          pipe(
-            doUpdateCurrentView({ view: 'index' }),
-            TE.mapLeft(toBrowserError)
-          )
-        )
+        TE.chainFirst(() => doUpdateCurrentView({ view: 'index' }))
       )();
     }, []);
 

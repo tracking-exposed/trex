@@ -5,9 +5,7 @@ import * as E from 'fp-ts/lib/Either';
 import { pipe } from 'fp-ts/lib/function';
 import { sequenceS } from 'fp-ts/lib/Apply';
 import * as TE from 'fp-ts/lib/TaskEither';
-import { Messages } from '../models/Messages';
-import { API } from '../providers/api.provider';
-import { sendMessage } from '../providers/browser.provider';
+import { API } from '../../providers/api.provider';
 import {
   auth,
   ccRelatedUsers,
@@ -18,6 +16,9 @@ import {
   requiredLocalProfile,
 } from './creator.queries';
 import { settings, videoRecommendations } from './public.queries';
+import { setItem } from '../../providers/localStorage.provider';
+import * as constants from '../../constants';
+import { AppError } from 'models/errors/AppError';
 
 export const registerCreatorChannel = command(
   (channelId: string) =>
@@ -26,7 +27,9 @@ export const registerCreatorChannel = command(
         Params: { channelId },
         Body: { type: 'channel' },
       }),
-      TE.chainFirst((payload) => sendMessage(Messages.UpdateAuth)(payload))
+      TE.chainFirst((payload) =>
+        TE.fromIO(setItem(constants.AUTH_KEY, payload))
+      )
     ),
   {
     creatorVideos,
@@ -39,7 +42,7 @@ export const verifyChannel = command(
   ({ channelId }: { channelId: string }) =>
     pipe(
       API.v3.Creator.VerifyCreator({ Params: { channelId } }),
-      TE.chain(sendMessage(Messages.UpdateContentCreator))
+      TE.chain((cc) => TE.fromIO(setItem(constants.CONTENT_CREATOR, cc)))
     ),
   {
     localProfile,
@@ -156,7 +159,8 @@ export const addRecommendationForVideo = command(
 );
 
 export const updateAuth = command(
-  (payload: AuthResponse | null) => sendMessage(Messages.UpdateAuth)(payload),
+  (payload: AuthResponse | null) =>
+    TE.fromIO<any, AppError>(setItem(constants.AUTH_KEY, payload)),
   {
     auth,
   }
@@ -164,7 +168,7 @@ export const updateAuth = command(
 
 export const updateProfile = command(
   (payload: ContentCreator | null) =>
-    sendMessage(Messages.UpdateContentCreator)(payload),
+    TE.fromIO<any, AppError>(setItem(constants.CONTENT_CREATOR, payload)),
   {
     profile,
     localProfile,
@@ -192,7 +196,9 @@ export const assignAccessToken = command(
         }
         return TE.left(e);
       }),
-      TE.chain((creator) => sendMessage(Messages.UpdateContentCreator)(creator))
+      TE.chain((creator) =>
+        TE.fromIO(setItem(constants.CONTENT_CREATOR, creator))
+      )
     );
   },
   {

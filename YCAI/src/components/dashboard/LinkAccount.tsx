@@ -19,7 +19,7 @@ import {
   registerCreatorChannel,
   updateAuth,
   verifyChannel,
-} from '../../state/creator.commands';
+} from '../../state/dashboard/creator.commands';
 import { makeStyles } from '../../theme';
 
 const youtubeChannelUrlRegex = /\/channel\/([^/]+)(?:$|\/)/;

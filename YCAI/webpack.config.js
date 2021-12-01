@@ -136,6 +136,16 @@ if (buildENV.BUNDLE_STATS) {
   );
 }
 
+const devServerConf = {
+  devServer: {
+    static: {
+      directory: path.join(__dirname, "build"),
+    },
+    host: "0.0.0.0",
+    compress: true,
+  },
+};
+
 module.exports = {
   mode,
 
@@ -145,7 +155,7 @@ module.exports = {
     popup: path.resolve(__dirname, 'src/popup.tsx'),
     background: path.resolve(__dirname, 'src/background/index.ts'),
   },
-
+  ...devServerConf,
   output: {
     path: path.resolve(__dirname, 'build'),
     filename: '[name].js',

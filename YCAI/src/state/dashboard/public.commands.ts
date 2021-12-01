@@ -1,10 +1,10 @@
 import { HandshakeBody } from '@shared/models/HandshakeBody';
 import { command } from 'avenger';
 import * as TE from 'fp-ts/lib/TaskEither';
-import { Messages } from '../models/Messages';
-import { Settings } from '../models/Settings';
-import { API } from '../providers/api.provider';
-import { sendMessage } from '../providers/browser.provider';
+import { setItem } from 'providers/localStorage.provider';
+import * as constants from '../../constants';
+import { Settings } from '../../models/Settings';
+import { API } from '../../providers/api.provider';
 import { profile } from './creator.queries';
 import { keypair, settings, settingsRefetch } from './public.queries';
 
@@ -12,27 +12,22 @@ export const handshake = command((handshake: HandshakeBody) =>
   API.v3.Public.Handshake({ Body: handshake })
 );
 
-export const generateKeypair = command(
-  () => sendMessage(Messages.GenerateKeypair)(),
-  {
-    keypair,
-  }
-);
-
-export const deleteKeypair = command(
-  () => sendMessage(Messages.DeleteKeypair)(),
-  {
-    keypair,
-  }
-);
+// todo:
+export const generateKeypair = command(() => TE.right({}), {
+  keypair,
+});
+// todo:
+export const deleteKeypair = command(() => TE.right({}), {
+  keypair,
+});
 
 export const updateSettings = command(
-  (payload: Settings) => sendMessage(Messages.UpdateSettings)(payload),
+  (payload: Settings) => TE.fromIO(setItem(constants.SETTINGS_KEY, payload)),
   { keypair, settings, settingsRefetch }
 );
 
 export const deleteProfile = command(
-  () => sendMessage(Messages.UpdateContentCreator)(null),
+  () => TE.fromIO(setItem(constants.CONTENT_CREATOR, null)),
   { profile }
 );
 
@@ -53,5 +48,5 @@ export const downloadTXTFile = command(
 );
 
 export const refreshSettings = command(() => TE.right(undefined), {
-  settings: settingsRefetch
-})
+  settings: settingsRefetch,
+});

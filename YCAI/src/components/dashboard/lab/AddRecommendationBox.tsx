@@ -17,7 +17,7 @@ import {
 
 import { makeStyles } from '@material-ui/styles';
 
-import { addRecommendationForVideo } from '../../../state/creator.commands';
+import { addRecommendationForVideo } from '../../../state/dashboard/creator.commands';
 import { YCAITheme } from '../../../theme';
 
 interface AddRecommendationBoxProps {

@@ -15,7 +15,7 @@ import { GetLogger } from 'utils/logger.utils';
 import { getVideoId } from 'utils/yt.utils';
 import { Tab } from '../common/Tab';
 import { VideoRecommendations } from './VideoRecommendations';
-import { videoRecommendations } from 'state/public.queries';
+import { videoRecommendations } from '../../state/popup.queries';
 import { Recommendation } from '@shared/models/Recommendation';
 
 const logger = GetLogger('yt-video-recommendations');

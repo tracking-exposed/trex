@@ -18,7 +18,7 @@
     "tsc": "tsc",
     "build": "tsc --build && NODE_ENV=production webpack",
     "build:dev": "webpack",
-    "watch": "webpack -w",
+    "watch": "webpack serve",
     "watch:prod": "DOTENV_CONFIG_PATH=.env.production webpack -w",
     "test": "jest",
     "stats": "webpack-bundle-analyzer build/stats.json",
@@ -71,6 +71,7 @@
     "webpack": "^5.64.1",
     "webpack-bundle-analyzer": "^4.5.0",
     "webpack-cli": "^4.9.1",
+    "webpack-dev-server": "^4.6.0",
     "zenroom": "^2.2.1"
   },
   "dependencies": {

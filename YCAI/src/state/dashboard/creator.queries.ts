@@ -6,15 +6,16 @@ import {
   param,
   product,
   queryShallow,
-  queryStrict,
+  queryStrict
 } from 'avenger';
+import { formatISO, subMonths } from 'date-fns';
 import { pipe } from 'fp-ts/lib/function';
 import * as TE from 'fp-ts/lib/TaskEither';
-import { Messages } from '../models/Messages';
-import { API, APIError, toAPIError } from '../providers/api.provider';
-import { sendMessage } from '../providers/browser.provider';
-import { apiLogger } from '../utils/logger.utils';
-import { formatISO, subMonths } from 'date-fns';
+import { AppError } from 'models/errors/AppError';
+import { getItem } from 'providers/localStorage.provider';
+import * as constants from '../../constants';
+import { API, APIError } from '../../providers/api.provider';
+import { apiLogger } from '../../utils/logger.utils';
 
 export const CREATOR_CHANNEL_KEY = 'creator-channel';
 export const CURRENT_VIDEO_ON_EDIT = 'current-video-on-edit';
@@ -47,7 +48,7 @@ const throwOnMissingProfile = (
   );
 
 export const auth = queryStrict(
-  () => sendMessage(Messages.GetAuth)(),
+  () => TE.fromIO<any, AppError>(getItem(constants.AUTH_KEY)),
   available
 );
 
@@ -56,12 +57,11 @@ export const auth = queryStrict(
 export const localProfile = queryStrict(
   () =>
     pipe(
-      sendMessage(Messages.GetContentCreator)(),
+      TE.fromIO<any, AppError>(getItem(constants.CONTENT_CREATOR)),
       TE.map((r) => {
         apiLogger.debug('Get profile %O', r);
         return r;
-      }),
-      TE.mapLeft(toAPIError)
+      })
     ),
   available
 );
