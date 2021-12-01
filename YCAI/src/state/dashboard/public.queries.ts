@@ -1,15 +1,11 @@
-import * as Endpoints from '@shared/endpoints';
-import { Recommendation } from '@shared/models/Recommendation';
 import { available, queryShallow, queryStrict, refetch } from 'avenger';
 import { pipe } from 'fp-ts/lib/function';
 import * as TE from 'fp-ts/lib/TaskEither';
-import * as localStorage from '../../providers/localStorage.provider';
-import { Messages } from '../../models/Messages';
-import { getDefaultSettings, Settings } from '../../models/Settings';
-import { sendAPIMessage, sendMessage } from '../../providers/browser.provider';
-import * as constants from '../../constants';
 import { AppError } from 'models/errors/AppError';
 import { API } from 'providers/api.provider';
+import * as constants from '../../constants';
+import { getDefaultSettings } from '../../models/Settings';
+import * as localStorage from '../../providers/localStorage.provider';
 
 export const settingsRefetch = queryShallow(() => {
   return pipe(
