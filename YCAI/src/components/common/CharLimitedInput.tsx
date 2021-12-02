@@ -2,29 +2,34 @@ import React from 'react';
 
 import { TextField, StandardTextFieldProps } from '@material-ui/core';
 
-interface CharLimitedInputProps extends StandardTextFieldProps {
+type CharLimitedInputProps = Omit<StandardTextFieldProps, 'onChange'> & {
   limit: number;
+  onChange: (value: string) => void;
 }
 
 const CharLimitedInput: React.FC<CharLimitedInputProps> = ({
   limit,
+  value: initialValue,
+  onChange,
   ...props
 }) => {
-  const [value, setValue] = React.useState<string>(props.value as string ?? '');
+  const [value, setValue] = React.useState<string>(initialValue as string ?? '');
   const [overflowed, setOverflowed] = React.useState<boolean>(false);
 
   const tooLong = value.length > limit || overflowed;
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>): void => {
-    const { value } = event.target;
-    if (value.length > limit) {
-      setValue(value.substring(0, limit));
+    const { value: newValue } = event.target;
+    if (newValue.length > limit) {
+      const trimmed = newValue.substring(0, limit);
+      setValue(trimmed);
       setOverflowed(true);
+      onChange?.(trimmed);
     } else {
-      setValue(value);
+      setValue(newValue);
       setOverflowed(false);
+      onChange?.(newValue);
     }
-    props.onChange?.(event);
   };
 
   return (

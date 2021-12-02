@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 
 import {
   Button,
-  IconButton,
+  ButtonProps,
   Dialog,
   DialogActions,
   DialogContent,
@@ -10,7 +10,6 @@ import {
   DialogTitle,
   Typography,
 } from '@material-ui/core';
-import { Edit as EditIcon } from '@material-ui/icons';
 import { makeStyles } from '@material-ui/styles';
 
 import { useTranslation } from 'react-i18next';
@@ -20,7 +19,7 @@ import { YCAITheme } from '../../../theme';
 import { patchRecommendation } from '../../../state/dashboard/creator.commands';
 import CharLimitedInput from '../../common/CharLimitedInput';
 
-interface EditRecommendationProps {
+interface EditRecommendationProps extends ButtonProps {
   data: Recommendation;
   videoId: string;
 }
@@ -42,7 +41,7 @@ const useClasses = makeStyles<YCAITheme>((theme) => ({
   }
 }));
 
-const EditRecommendation: React.FC<EditRecommendationProps> = ({ data, videoId }) => {
+const EditRecommendation: React.FC<EditRecommendationProps> = ({ data, videoId, ...props }) => {
   const { t } = useTranslation();
   const [formIsOpen, setFormIsOpen] = useState(false);
   const [title, setTitle] = useState(data.title);
@@ -69,20 +68,15 @@ const EditRecommendation: React.FC<EditRecommendationProps> = ({ data, videoId }
 
   return (
     <>
-      <IconButton
-        aria-label={t('actions:edit_recommendation')}
-        color="primary"
-        size="small"
-        onClick={() => { setFormIsOpen(true); }}
-      >
-        <EditIcon />
-      </IconButton>
+      <Button {...props} variant="text" onClick={() => { setFormIsOpen(true); }}>
+        {t('actions:edit_recommendation_button')}
+      </Button>
       {formIsOpen && (
         <Dialog
           open={formIsOpen}
           onClose={() => setFormIsOpen(false)}
         >
-          <DialogTitle>{t('actions:edit_recommendation')}</DialogTitle>
+          <DialogTitle>{t('actions:edit_recommendation_form_title')}</DialogTitle>
           <Image src={data.image} alt={data.title} className={classes.image} />
           <DialogContent>
             <DialogContentText>
@@ -96,7 +90,7 @@ const EditRecommendation: React.FC<EditRecommendationProps> = ({ data, videoId }
               label={t('recommendations:title')}
               limit={50}
               onChange={
-                (e: React.ChangeEvent<HTMLInputElement>) => setTitle(e.target.value)
+                (str) => setTitle(str)
               }
               value={title}
             />
@@ -106,7 +100,7 @@ const EditRecommendation: React.FC<EditRecommendationProps> = ({ data, videoId }
               label={t('recommendations:description')}
               limit={100}
               onChange={
-                (e: React.ChangeEvent<HTMLInputElement>) => setDescription(e.target.value)
+                (str) => setDescription(str)
               }
               value={description}
             />

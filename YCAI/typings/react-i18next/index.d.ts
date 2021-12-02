@@ -45,8 +45,9 @@ declare module 'react-i18next' {
         download: string;
         move_recommendation_up: string;
         move_recommendation_down: string;
-        remove_recommendation_from_video: string;
-        edit_recommendation: string;
+        delete_recommendation_button: string;
+        edit_recommendation_form_title: string;
+        edit_recommendation_button: string;
         edit_recommendation_description: string;
         cancel: string;
         save: string;
