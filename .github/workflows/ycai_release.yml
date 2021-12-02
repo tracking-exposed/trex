@@ -2,7 +2,7 @@ name: YCAI - Release
 on:
   push:
     branches:
-      - main
+      - master
       - beta
     paths:
       - "shared/**"
