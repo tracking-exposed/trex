@@ -49,6 +49,10 @@ jobs:
       - name: Lint code
         run: npm run lint
 
+      - name: Build shared
+        working-directory: ./shared
+        run: npm run build
+
       - name: Build
         run: npm run build
 

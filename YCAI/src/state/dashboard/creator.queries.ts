@@ -6,7 +6,7 @@ import {
   param,
   product,
   queryShallow,
-  queryStrict
+  queryStrict,
 } from 'avenger';
 import { formatISO, subMonths } from 'date-fns';
 import { pipe } from 'fp-ts/lib/function';
@@ -15,7 +15,6 @@ import { AppError } from 'models/errors/AppError';
 import { getItem } from 'providers/localStorage.provider';
 import * as constants from '../../constants';
 import { API, APIError } from '../../providers/api.provider';
-import { apiLogger } from '@shared/logger';
 
 export const CREATOR_CHANNEL_KEY = 'creator-channel';
 export const CURRENT_VIDEO_ON_EDIT = 'current-video-on-edit';
@@ -55,14 +54,7 @@ export const auth = queryStrict(
 // content creator
 
 export const localProfile = queryStrict(
-  () =>
-    pipe(
-      TE.fromIO<any, AppError>(getItem(constants.CONTENT_CREATOR)),
-      TE.map((r) => {
-        apiLogger.debug('Get profile %O', r);
-        return r;
-      })
-    ),
+  () => TE.fromIO<any, AppError>(getItem(constants.CONTENT_CREATOR)),
   available
 );
 
@@ -164,7 +156,9 @@ export const creatorADVStats = compose(
           // TODO: move this to params given by caller
         },
         Query: {
-          since: formatISO(subMonths(new Date(), 1), { representation: 'date' }),
+          since: formatISO(subMonths(new Date(), 1), {
+            representation: 'date',
+          }),
           till: formatISO(new Date(), { representation: 'date' }),
         },
       })
