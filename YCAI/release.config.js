@@ -83,8 +83,8 @@ module.exports = {
       {
         assets: [
           {
-            path: 'build/extension.zip',
-            label: 'Web Extension',
+            path: 'build/extension/extension.zip',
+            label: 'YCAI - Web Extension',
           },
         ],
       },
