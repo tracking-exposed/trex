@@ -13,6 +13,7 @@ const execSync = require('child_process').execSync;
 const parse = require('csv-parse/lib/sync');
 
 const domainSpecific = require('../src/domainSpecific');
+const { formatWithOptions } = require('util');
 
 const COMMANDJSONEXAMPLE = "https://youtube.tracking.exposed/json/automation-example.json";
 const EXTENSION_WITH_OPT_IN_ALREADY_CHECKED='https://github.com/tracking-exposed/yttrex/releases/download/v1.8.992/extension-1.8.992.zip';
@@ -24,7 +25,10 @@ nconf.defaults({
 });
 const configFile = nconf.get('config');
 nconf.argv().env().file(configFile);
-debug.enabled = true;
+
+/* this also happens in 'src/domainSpecific' and causes debug to print regardless of the 
+ * environment variable sets */
+debug.enabled = info.enabled = true;
 
 const server = nconf.get('backend') ?
   ( _.endsWith(nconf.get('backend'), '/') ? 
@@ -587,7 +591,7 @@ async function operateBrowser(page, directives) {
   }
 }
 
-try {
+function initialSetup() {
 
   if(!!nconf.get('h') || !!nconf.get('?') || process.argv.length < 3)
     return printHelp();
@@ -626,7 +630,40 @@ try {
     downloadExtension(tmpzipf);
   }
 
-  main ();
+  return manifest;
+}
+
+async function validateAndStart(manifest) {
+  /* initial test is meant to assure the extension is an acceptable version */
+
+  const manifestValues = JSON.parse(fs.readFileSync(manifest));
+  const vblocks = manifestValues.version.split('.');
+  /* guardoni versioning explained:
+    1.MAJOR.MINOR, 
+    MINOR that starts with 99 or more 99 are meant to be auto opt-in
+    MAJOR depends on the package.json version and it is used for feature support 
+    a possible version 2.x isn't foresaw at the moment
+   */
+  const MINIMUM_ACCEPTABLE_MAJOR = 8;
+  if(_.parseInt(vblocks[1]) < MINIMUM_ACCEPTABLE_MAJOR) {
+    console.log("Error/Warning: in the directory 'extension/' the software is too old!");
+    process.exit(1);
+  }
+
+  if(!_.startsWith(vblocks[2], '99')) {
+    console.log("Warning/Reminder: the extension used might not be opt-in! you need to do it by hand");
+    console.log("Press any key to start");
+    await keypress();
+  }
+
+  /* this finally start the main execution */
+  await main ();
+}
+
+try {
+
+  const manifest = initialSetup();
+  validateAndStart(manifest);
 
 } catch(error) {
   console.error(error);

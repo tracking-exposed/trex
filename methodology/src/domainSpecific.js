@@ -9,8 +9,7 @@ const url = require('url');
 const fs = require('fs');
 const nconf = require('nconf');
 
-debug.enabled = true;
-logreqst.enabled = true;
+debug.enabled = logreqst.enabled = screendebug.enabled = true;
 
 const SCREENSHOT_MARKER = "SCREENSHOTMARKER";
 const scrnshtrgxp = new RegExp(SCREENSHOT_MARKER);
