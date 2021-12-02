@@ -8,7 +8,6 @@ import {
   DialogContent,
   DialogContentText,
   DialogTitle,
-  TextField,
   Typography,
 } from '@material-ui/core';
 import { Edit as EditIcon } from '@material-ui/icons';
@@ -19,6 +18,7 @@ import { Recommendation } from '@shared/models/Recommendation';
 import Image from '../../common/Image';
 import { YCAITheme } from '../../../theme';
 import { patchRecommendation } from '../../../state/dashboard/creator.commands';
+import CharLimitedInput from '../../common/CharLimitedInput';
 
 interface EditRecommendationProps {
   data: Recommendation;
@@ -32,6 +32,7 @@ const useClasses = makeStyles<YCAITheme>((theme) => ({
     objectFit: 'cover',
   },
   textField: {
+    marginTop: theme.spacing(2),
     '& input': {
       color: theme.palette.common.black,
     },
@@ -89,20 +90,24 @@ const EditRecommendation: React.FC<EditRecommendationProps> = ({ data, videoId }
                 {t('actions:edit_recommendation_description')}
               </Typography>
             </DialogContentText>
-            <TextField
+            <CharLimitedInput
               className={classes.textField}
               fullWidth
               label={t('recommendations:title')}
-              onChange={(e) => setTitle(e.target.value)}
+              limit={50}
+              onChange={
+                (e: React.ChangeEvent<HTMLInputElement>) => setTitle(e.target.value)
+              }
               value={title}
-              />
-            <TextField
+            />
+            <CharLimitedInput
               className={classes.textField}
               fullWidth
               label={t('recommendations:description')}
-              onChange={(e) => setDescription(e.target.value)}
-              multiline
-              rows={2}
+              limit={100}
+              onChange={
+                (e: React.ChangeEvent<HTMLInputElement>) => setDescription(e.target.value)
+              }
               value={description}
             />
           </DialogContent>
