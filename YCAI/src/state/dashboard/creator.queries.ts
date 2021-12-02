@@ -43,18 +43,7 @@ export const auth = queryStrict(
 // content creator
 
 export const localProfile = queryStrict(
-<<<<<<< HEAD:YCAI/src/state/dashboard/creator.queries.ts
   () => TE.fromIO<any, AppError>(getItem(constants.CONTENT_CREATOR)),
-=======
-  () =>
-    pipe(
-      TE.fromIO<any, AppError>(getItem(constants.CONTENT_CREATOR)),
-      TE.map((r) => {
-        apiLogger.debug('Get profile %O', r);
-        return r;
-      })
-    ),
->>>>>>> b57b5a8 (feat: decoupled queries and commands to avoid import 'chrome' in dashboard):YCAI/src/state/creator.queries.ts
   available
 );
 
