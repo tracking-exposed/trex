@@ -9,7 +9,7 @@
   "author": "Read the CREDITS file in the repository linked in https://youchoose.ai",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/tracking-exposed/YCAI.git"
+    "url": "git+https://github.com/tracking-exposed/yttrex.git"
   },
   "scripts": {
     "clean": "rm -rf ./build",
