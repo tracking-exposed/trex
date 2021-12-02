@@ -143,7 +143,7 @@ export const Popup: React.FC = () => {
                   className={classes.dashboardButton}
                   color="primary"
                   fullWidth
-                  href={'/index.html'}
+                  href={config.PUBLIC_URL}
                   size="large"
                   target="_blank"
                   variant="contained"
