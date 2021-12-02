@@ -1,4 +1,5 @@
 import * as Endpoints from '@shared/endpoints';
+import { GetLogger } from '@shared/logger';
 import { command } from 'avenger';
 import axios, { AxiosRequestConfig, AxiosResponse } from 'axios';
 import * as A from 'fp-ts/lib/Array';
@@ -10,8 +11,8 @@ import * as t from 'io-ts';
 import { PathReporter } from 'io-ts/lib/PathReporter';
 import { MinimalEndpointInstance, TypeOfEndpointInstance } from 'ts-endpoint';
 import { config } from '../config';
-import { apiLogger } from '../utils/logger.utils';
 
+export const apiLogger = GetLogger('API');
 export class APIError extends Error {
   name: string;
   details: string[];

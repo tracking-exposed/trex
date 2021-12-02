@@ -9,7 +9,7 @@ import {
 } from '@material-ui/core';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
-import { CurrentView, doUpdateCurrentView } from 'utils/location.utils';
+import { CurrentView, doUpdateCurrentView } from '../../utils/location.utils';
 import { UserProfileBox } from './UserProfileBox';
 import LabIcon from '../common/icons/LabIcon';
 import AnalyticsIcon from '../common/icons/AnalyticsIcon';

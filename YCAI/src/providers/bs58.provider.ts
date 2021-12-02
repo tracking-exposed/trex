@@ -4,7 +4,7 @@ import * as E from 'fp-ts/lib/Either';
 import * as TE from 'fp-ts/lib/TaskEither';
 import nacl from 'tweetnacl';
 import { Keypair } from '../models/Settings';
-import { GetLogger } from '../utils/logger.utils';
+import { GetLogger } from '@shared/logger';
 import { SecurityProvider } from './security.provider.type';
 import { formatISO } from 'date-fns';
 import { catchRuntimeLastError } from './browser.provider';

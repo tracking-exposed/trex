@@ -15,7 +15,7 @@ import { AppError } from 'models/errors/AppError';
 import { getItem } from 'providers/localStorage.provider';
 import * as constants from '../../constants';
 import { API, APIError } from '../../providers/api.provider';
-import { apiLogger } from '../../utils/logger.utils';
+import { apiLogger } from '@shared/logger';
 
 export const CREATOR_CHANNEL_KEY = 'creator-channel';
 export const CURRENT_VIDEO_ON_EDIT = 'current-video-on-edit';

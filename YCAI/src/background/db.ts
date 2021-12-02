@@ -4,7 +4,7 @@ import { bo } from '../utils/browser.utils';
 import { pipe } from 'fp-ts/lib/function';
 import { getAssignSemigroup } from 'fp-ts/lib/struct';
 import { catchRuntimeLastError } from '../providers/browser.provider';
-import { GetLogger } from '../utils/logger.utils';
+import { GetLogger } from '@shared/logger';
 
 const dbLogger = GetLogger('db');
 const backend = bo.storage.local;

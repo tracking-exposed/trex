@@ -12,7 +12,7 @@ import './resources/global.css';
 import { settingsRefetch } from './state/popup.queries';
 import { ThemeProvider, YCAITheme } from './theme';
 import { bo } from './utils/browser.utils';
-import { GetLogger } from './utils/logger.utils';
+import { GetLogger } from '@shared/logger';
 
 const appLogger = GetLogger('app');
 

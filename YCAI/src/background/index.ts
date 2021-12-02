@@ -16,7 +16,7 @@ import {
 } from '../providers/browser.provider';
 import { bo } from '../utils/browser.utils';
 import { fromStaticPath } from '../utils/endpoint.utils';
-import { GetLogger } from '../utils/logger.utils';
+import { GetLogger } from '@shared/logger';
 import * as constants from '../constants';
 import db from './db';
 import * as development from './reloadExtension';
