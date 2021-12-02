@@ -26,5 +26,3 @@ export const GetLogger = (name: string, d?: debug.Debugger): Logger => {
     extend: (ns) => GetLogger(ns, l),
   };
 };
-
-debug.enable(process.env.DEBUG ?? '');
