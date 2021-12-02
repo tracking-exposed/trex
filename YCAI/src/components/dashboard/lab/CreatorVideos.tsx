@@ -6,7 +6,7 @@ import * as QR from 'avenger/lib/QueryResult';
 import { declareQueries } from 'avenger/lib/react';
 import { pipe } from 'fp-ts/lib/function';
 import { useTranslation } from 'react-i18next';
-import { pullContentCreatorVideos } from 'state/dashboard/creator.commands';
+import { pullContentCreatorVideos } from '../../../state/dashboard/creator.commands';
 import { creatorVideos } from '../../../state/dashboard/creator.queries';
 import { ErrorBox } from '../../common/ErrorBox';
 import { LazyFullSizeLoader } from '../../common/FullSizeLoader';

@@ -3,7 +3,7 @@ import * as E from 'fp-ts/lib/Either';
 import { pipe } from 'fp-ts/lib/function';
 import * as TE from 'fp-ts/lib/TaskEither';
 import { MinimalEndpointInstance, TypeOfEndpointInstance } from 'ts-endpoint';
-import { getStaticPath } from 'utils/endpoint.utils';
+import { getStaticPath } from '../utils/endpoint.utils';
 import { APIRequest, ErrorOccurred, Messages } from '../models/Messages';
 import { bo } from '../utils/browser.utils';
 

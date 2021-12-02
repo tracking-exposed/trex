@@ -1,7 +1,7 @@
 import { HandshakeBody } from '@shared/models/HandshakeBody';
 import { command } from 'avenger';
 import * as TE from 'fp-ts/lib/TaskEither';
-import { setItem } from 'providers/localStorage.provider';
+import { setItem } from '../../providers/localStorage.provider';
 import * as constants from '../../constants';
 import { Settings } from '../../models/Settings';
 import { API } from '../../providers/api.provider';

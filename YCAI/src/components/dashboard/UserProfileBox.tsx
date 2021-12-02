@@ -5,7 +5,7 @@ import { declareQueries } from 'avenger/lib/react';
 import { sequenceS } from 'fp-ts/lib/Apply';
 import { pipe } from 'fp-ts/lib/function';
 import * as TE from 'fp-ts/lib/TaskEither';
-import { toAppError } from 'models/errors/AppError';
+import { toAppError } from '../../models/errors/AppError';
 import React from 'react';
 import {
   updateAuth,

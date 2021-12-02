@@ -11,8 +11,8 @@ import {
 import { formatISO, subMonths } from 'date-fns';
 import { pipe } from 'fp-ts/lib/function';
 import * as TE from 'fp-ts/lib/TaskEither';
-import { AppError } from 'models/errors/AppError';
-import { getItem } from 'providers/localStorage.provider';
+import { AppError } from '../../models/errors/AppError';
+import { getItem } from '../../providers/localStorage.provider';
 import * as constants from '../../constants';
 import { API, APIError } from '../../providers/api.provider';
 

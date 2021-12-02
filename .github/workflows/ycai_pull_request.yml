@@ -53,7 +53,10 @@ jobs:
         working-directory: ./shared
         run: npm run build
 
-      - name: Build
+      - name: Build extension
+        run: npm run build:ext
+
+      - name: Build dashboard
         run: npm run build
 
       - name: Test

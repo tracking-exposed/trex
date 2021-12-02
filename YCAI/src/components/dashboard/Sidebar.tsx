@@ -14,7 +14,7 @@ import { UserProfileBox } from './UserProfileBox';
 import LabIcon from '../common/icons/LabIcon';
 import AnalyticsIcon from '../common/icons/AnalyticsIcon';
 import SettingsIcon from '../common/icons/SettingsIcon';
-import YCAILogo from 'components/common/YCAILogo';
+import YCAILogo from '../common/YCAILogo';
 
 
 const useStyles = makeStyles((theme) => ({

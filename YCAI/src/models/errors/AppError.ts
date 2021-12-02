@@ -1,4 +1,4 @@
-import { APIError } from 'providers/api.provider';
+import { APIError } from '../../providers/api.provider';
 
 export class AppError extends Error {
   name: string;
