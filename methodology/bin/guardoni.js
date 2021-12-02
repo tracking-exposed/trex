@@ -17,7 +17,7 @@ const domainSpecific = require('../src/domainSpecific');
 const COMMANDJSONEXAMPLE = "https://youtube.tracking.exposed/json/automation-example.json";
 const EXTENSION_WITH_OPT_IN_ALREADY_CHECKED='https://github.com/tracking-exposed/yttrex/releases/download/v1.8.992/extension-1.8.992.zip';
 
-const defaultCfgPath = path.join("static", "settings.json");
+const defaultCfgPath = path.join("config", "default.json");
 nconf.argv().env();
 nconf.defaults({
   config: defaultCfgPath
@@ -600,6 +600,18 @@ try {
     info("CSV mode: default is --comparison (special is --shadowban); Guardoni exit after upload")
   } else if(!!nconf.get('experiment')) {
     info("EXPERIMENT mode: no mandatory options; --profile, --evidencetag OPTIONAL")
+  }
+
+  // check if the additional directory for screenshot is present
+  const advdump = nconf.get('advdump');
+  if(advdump) {
+    /* if the advertisement dumping folder is set, first we check
+     * if exist, and if doens't we call it fatal error */
+    if(!fs.existsSync(advdump)) {
+      debug("Fatal error: advdump folder (%s) not exist", advdump);
+      process.exit(1);
+    }
+    debug("Advertisement screenshotting enable in folder: %s", path.resolve(advdump));
   }
 
   const cwd = process.cwd();

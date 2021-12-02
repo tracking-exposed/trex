@@ -20,7 +20,7 @@ global.currentURLlabel = null;
 global.screenshotPrefix = null;
 global.interval = null;
 
-function pickNextScreenshot() {
+function getScreenshotFilename() {
     /* this function return null if no screenshot has to be taken,
      * and the criteria is to take max one screen every 5 seconds */
     const now = moment();
@@ -39,12 +39,12 @@ async function consoleLogParser(page, message) {
      * between puppeteer evaluated selectors and action we had to do */
     const consoleline = message.text();
     if(consoleline.match(scrnshtrgxp)) {
-        const fdestname = pickNextScreenshot();
+        const fdestname = getScreenshotFilename();
         // if the screenshot are less than 5 seconds close, the function
         // above would return null, so we don't take it.
         if(fdestname) {
             screendebug("Taking screenshot in [%s]", fdestname)
-            await page.screenshot({ path: fdestname, type: 'jpeg' });
+            await page.screenshot({ path: fdestname, type: 'jpeg', fullPage: true });
         }
     }
 };
@@ -80,21 +80,12 @@ async function beforeDirectives(page, profinfo) {
     if(!advdump)
         return;
 
-    /* if the advertisement dumping folder is set, first we check
-     * if exist, and if doens't we call it fatal error */
-    if(!fs.existsSync(advdump)) {
-        debug("Fatal error: advdump folder (%s) not exist", advdump);
-        process.exit(1);
-    } else
-        debug("Advertisement screenshotting enable in folder: %s", path.resolve(advdump));
-
     /* this is to monitor presence of special selectors that
      * should trigger screencapture */
     if(global.interval)
         clearInterval(global.interval);
 
     global.screenshotPrefix = path.join(advdump, `${profinfo.profileName}..${profinfo.execount}`);
-
 
     try {
         fs.mkdirSync(global.screenshotPrefix)
