@@ -5,19 +5,37 @@ import { pipe } from "fp-ts/lib/function";
 import { PathReporter } from "io-ts/lib/PathReporter";
 import { BooleanFromString } from "io-ts-types/lib/BooleanFromString";
 
-import { DefinePlugin } from "webpack";
-import CopyWebpackPlugin from "copy-webpack-plugin";
+import webpack from "webpack";
 import DotenvPlugin from "dotenv-webpack";
 import { BundleAnalyzerPlugin } from "webpack-bundle-analyzer";
 
 import { TsconfigPathsPlugin } from "tsconfig-paths-webpack-plugin";
 import * as R from "fp-ts/lib/Record";
 import { GetLogger } from "../logger";
-import { string } from "fp-ts";
+import * as S from "fp-ts/lib/string";
 
 const webpackLogger = GetLogger("webpack");
 
 // TODO: babel, browserlist, auto-prefixing, ...?
+
+const NODE_ENV = t.union(
+  [t.literal("development"), t.literal("test"), t.literal("production")],
+  "NODE_ENV"
+);
+
+const BUILD_ENV = t.strict(
+  {
+    NODE_ENV,
+    BUNDLE_TARGET: t.union([t.literal("firefox"), t.literal("chrome")]),
+    BUNDLE_STATS: BooleanFromString,
+  },
+  "processENV"
+);
+
+type BUILD_ENV = t.TypeOf<typeof BUILD_ENV>;
+interface WebpackConfig extends webpack.Configuration {
+  buildENV: BUILD_ENV;
+}
 
 interface GetConfigParams<A extends Record<string, t.Mixed>> {
   cwd: string;
@@ -25,12 +43,12 @@ interface GetConfigParams<A extends Record<string, t.Mixed>> {
   env: t.Type<A, unknown, unknown>;
   entry: {
     [key: string]: string;
-  }
+  };
 }
 
 const getConfig = <A extends Record<string, t.Mixed>>(
   opts: GetConfigParams<A>
-) => {
+): WebpackConfig => {
   const mode =
     process.env.NODE_ENV === "production" ? "production" : "development";
 
@@ -41,20 +59,6 @@ const getConfig = <A extends Record<string, t.Mixed>>(
   webpackLogger.debug(`DOTENV_CONFIG_PATH %s`, DOTENV_CONFIG_PATH);
 
   require("dotenv").config({ path: DOTENV_CONFIG_PATH });
-
-  const NODE_ENV = t.union(
-    [t.literal("development"), t.literal("test"), t.literal("production")],
-    "NODE_ENV"
-  );
-
-  const BUILD_ENV = t.strict(
-    {
-      NODE_ENV,
-      BUNDLE_TARGET: t.union([t.literal("firefox"), t.literal("chrome")]),
-      BUNDLE_STATS: BooleanFromString,
-    },
-    "processENV"
-  );
 
   const buildENV = pipe(
     {
@@ -74,80 +78,51 @@ const getConfig = <A extends Record<string, t.Mixed>>(
     }
   );
 
-  const appEnv = pipe(process.env, opts.env.decode, (validation) => {
-    if (validation._tag === "Left") {
-      webpackLogger.error(
-        `Validation error for build end: %O`,
-        PathReporter.report(validation).join("\n")
-      );
-      throw new Error(`${opts.env.name} decoding failed.`);
+  const appEnv = pipe(
+    {
+      ...process.env,
+      NODE_ENV: mode,
+      BUILD_DATE: new Date().toISOString(),
+    },
+    opts.env.decode,
+    (validation) => {
+      if (validation._tag === "Left") {
+        webpackLogger.error(
+          `Validation error for build end: %O`,
+          PathReporter.report(validation).join("\n")
+        );
+        throw new Error(`${opts.env.name} decoding failed.`);
+      }
+      return validation.right;
     }
-    return validation.right;
-  });
-
-  const pkgJson = require(path.resolve(opts.cwd, "./package.json"));
-  const manifestVersion = (
-    process.env.MANIFEST_VERSION || pkgJson.version
-  ).replace("-beta", "");
+  );
 
   const stringifiedAppEnv = pipe(
-    appEnv,
-    R.reduceWithIndex(
+    appEnv as any,
+    R.reduceWithIndex(S.Ord)(
       {
-        "process.env.BUILD_DATE": JSON.stringify(new Date().toISOString()),
-        "process.env.VERSION": JSON.stringify(manifestVersion),
         "process.env.NODE_ENV": JSON.stringify(mode),
       },
-      (key, acc, v) => ({
-        ...acc,
-        [`process.env.${key}`]: JSON.stringify(v),
-      })
+      (key, acc, v) => {
+        // this is cause DefinePlugin to complain when we override
+        // process.env vars
+        // (process.env as any)[key] = v;
+        return {
+          ...acc,
+          [`process.env.${key}`]: JSON.stringify(v),
+        };
+      }
     )
   );
 
-  const plugins = [
-    new DefinePlugin(stringifiedAppEnv as any),
+  console.log(stringifiedAppEnv, process.env.DEBUG);
 
+  const plugins: any[] = [
     new DotenvPlugin({
       path: DOTENV_CONFIG_PATH,
+      silent: true,
     }),
-
-    new CopyWebpackPlugin({
-      patterns: [
-        {
-          from: "public",
-          filter: (file: string) => {
-            const { base } = path.parse(file);
-
-            if (base === "manifest.json") {
-              return false;
-            }
-
-            return true;
-          },
-        },
-        {
-          from: "public/manifest.json",
-          transform: (content: Buffer) => {
-            const manifest = JSON.parse(content.toString());
-
-            if (buildENV.BUNDLE_TARGET === "chrome") {
-              manifest.cross_origin_embedder_policy = {
-                value: "require-corp",
-              };
-
-              manifest.cross_origin_opener_policy = {
-                value: "same-origin",
-              };
-            }
-
-            manifest.version = manifestVersion;
-
-            return JSON.stringify(manifest, null, 2);
-          },
-        },
-      ],
-    }),
+    new webpack.DefinePlugin(stringifiedAppEnv as any),
   ];
 
   if (buildENV.BUNDLE_STATS) {
@@ -204,8 +179,6 @@ const getConfig = <A extends Record<string, t.Mixed>>(
       ],
     },
 
-    devtool: mode === "development" ? "inline-source-map" : false,
-
     resolve: {
       extensions: [".ts", ".tsx", ".js"],
       plugins: [
@@ -216,6 +189,8 @@ const getConfig = <A extends Record<string, t.Mixed>>(
     },
 
     plugins,
+    // custom options
+    buildENV,
   };
 };
 
