@@ -6,7 +6,7 @@ import {
   param,
   product,
   queryShallow,
-  queryStrict
+  queryStrict,
 } from 'avenger';
 import { formatISO, subMonths } from 'date-fns';
 import { pipe } from 'fp-ts/lib/function';
