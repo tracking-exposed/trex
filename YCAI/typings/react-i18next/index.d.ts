@@ -46,6 +46,10 @@ declare module 'react-i18next' {
         move_recommendation_up: string;
         move_recommendation_down: string;
         remove_recommendation_from_video: string;
+        edit_recommendation: string;
+        edit_recommendation_description: string;
+        cancel: string;
+        save: string;
         manage_tokens: string;
         reset_settings: string;
         reload_extension: string;
@@ -87,6 +91,8 @@ declare module 'react-i18next' {
         no_items: string;
         url_placeholder: string;
         url_helper_text: string;
+        title: string;
+        description: string;
       };
       dashboard: {
         title: string;

@@ -1,5 +1,3 @@
-import { AuthResponse } from '@shared/models/Auth';
-import { ContentCreator } from '@shared/models/ContentCreator';
 import { command } from 'avenger';
 import { sequenceS } from 'fp-ts/lib/Apply';
 import { pipe } from 'fp-ts/lib/function';
@@ -8,6 +6,10 @@ import { AppError } from 'models/errors/AppError';
 import * as constants from '../../constants';
 import { API } from '../../providers/api.provider';
 import { setItem } from '../../providers/localStorage.provider';
+
+import { AuthResponse } from '@shared/models/Auth';
+import { ContentCreator } from '@shared/models/ContentCreator';
+import { PartialRecommendation } from '@shared/endpoints/v3/creator.endpoints';
 import {
   auth,
   ccRelatedUsers,
@@ -84,7 +86,7 @@ export const addRecommendation = command(
   }
 );
 
-export const updateRecommendationForVideo = command(
+export const updateRecommendationsForVideo = command(
   ({ videoId, recommendations }) => {
     return pipe(
       requiredLocalProfile.run(),
@@ -141,7 +143,7 @@ export const addRecommendationForVideo = command(
           return TE.right(video);
         }
 
-        return updateRecommendationForVideo(
+        return updateRecommendationsForVideo(
           {
             videoId,
             recommendations: video.recommendations.concat(recommendation.urlId),
@@ -155,6 +157,25 @@ export const addRecommendationForVideo = command(
   {
     videoRecommendations,
   }
+);
+
+export const patchRecommendation = command(
+  ({ urlId, data }: {
+    urlId: string;
+    data: PartialRecommendation;
+  }) => pipe(
+    profile.run(),
+    TE.chain((p) => {
+      return API.v3.Creator.PatchRecommendation({
+        Headers: {
+          'x-authorization': p.accessToken,
+        },
+        Params: { urlId },
+        Body: data,
+      });
+    })
+  ),
+  { videoRecommendations }
 );
 
 export const updateAuth = command(

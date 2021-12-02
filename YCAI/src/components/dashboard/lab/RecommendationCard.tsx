@@ -20,8 +20,10 @@ import { makeStyles } from '@material-ui/styles';
 import { Recommendation } from '@shared/models/Recommendation';
 import { YCAITheme } from '../../../theme';
 import Image from '../../common/Image';
+import EditRecommendation from './EditRecommendation';
 
 interface RecommendationCardProps {
+  videoId: string;
   data: Recommendation;
   onDeleteClick: () => void;
   onMoveUpClick: (() => void) | false;
@@ -64,6 +66,7 @@ const useStyles = makeStyles<YCAITheme>((theme) => ({
 
 export const RecommendationCard: React.FC<RecommendationCardProps> = ({
   data,
+  videoId,
   onDeleteClick,
   onMoveUpClick,
   onMoveDownClick,
@@ -134,6 +137,7 @@ export const RecommendationCard: React.FC<RecommendationCardProps> = ({
               >
               <ArrowDownwardIcon />
           </IconButton>
+          <EditRecommendation data={data} videoId={videoId} />
           <IconButton
             aria-label={t('actions:remove_recommendation_from_video')}
             color="primary"

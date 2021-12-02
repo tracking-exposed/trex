@@ -109,6 +109,25 @@ const CreateRecommendation = Endpoint({
   Output: Recommendation,
 });
 
+export const PartialRecommendation = t.partial(
+  {...Recommendation.type.props},
+  'PartialRecommendation'
+);
+
+export type PartialRecommendation = t.TypeOf<typeof PartialRecommendation>;
+
+// TODO: Swagger
+const PatchRecommendation = Endpoint({
+  Method: "PATCH",
+  getPath: ({ urlId }) => `/v3/creator/recommendations/${urlId}`,
+  Input: {
+    Params: t.type({ urlId: t.string }),
+    Headers: AuthorizationHeader,
+    Body: PartialRecommendation,
+  },
+  Output: Recommendation,
+});
+
 const GetCreatorStats = Endpoint({
   Method: "GET",
   getPath: ({ channelId }) => `/v3/creator/${channelId}/stats`,
@@ -125,6 +144,7 @@ export const endpoints = {
   CreatorVideos,
   OneCreatorVideo,
   CreatorRecommendations,
+  PatchRecommendation,
   CreatorRelatedChannels,
   UpdateVideo,
   CreateRecommendation,

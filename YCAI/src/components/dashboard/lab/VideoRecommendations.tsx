@@ -7,8 +7,8 @@ import * as QR from 'avenger/lib/QueryResult';
 import { declareQueries } from 'avenger/lib/react';
 import { pipe } from 'fp-ts/lib/function';
 
-import { updateRecommendationForVideo } from '../../../state/dashboard/creator.commands';
-import * as queries from '../../../state/dashboard/public.queries';
+import { updateRecommendationsForVideo } from '../../../state/dashboard/creator.commands';
+import * as queries from '../../../state/popup.queries';
 import { ErrorBox } from '../../common/ErrorBox';
 import { LazyFullSizeLoader } from '../../common/FullSizeLoader';
 import { RecommendationCard } from './RecommendationCard';
@@ -48,7 +48,7 @@ export const VideoRecommendations = withQueries<VideoRecommendationsProps>(
                   return item.urlId !== dragItem.urlId;
                 }}
                 onDragComplete={(recommendations) => {
-                  void updateRecommendationForVideo(
+                  void updateRecommendationsForVideo(
                     {
                       videoId,
                       recommendations: recommendations.map((r) => r.urlId),
@@ -62,10 +62,11 @@ export const VideoRecommendations = withQueries<VideoRecommendationsProps>(
                 }}
                 renderItem={(item, i) => (
                   <RecommendationCard
+                    videoId={videoId}
                     key={item.urlId}
                     data={item}
                     onDeleteClick={() => {
-                      void updateRecommendationForVideo(
+                      void updateRecommendationsForVideo(
                         {
                           videoId,
                           recommendations: videoRecommendations
@@ -91,7 +92,7 @@ export const VideoRecommendations = withQueries<VideoRecommendationsProps>(
                         const tmp = urlIds[pos - 1];
                         urlIds[pos - 1] = urlIds[pos];
                         urlIds[pos] = tmp;
-                        void updateRecommendationForVideo(
+                        void updateRecommendationsForVideo(
                           {
                             videoId,
                             recommendations: urlIds,
@@ -116,7 +117,7 @@ export const VideoRecommendations = withQueries<VideoRecommendationsProps>(
                         const tmp = urlIds[pos + 1];
                         urlIds[pos + 1] = urlIds[pos];
                         urlIds[pos] = tmp;
-                        void updateRecommendationForVideo(
+                        void updateRecommendationsForVideo(
                           {
                             videoId,
                             recommendations: urlIds,
