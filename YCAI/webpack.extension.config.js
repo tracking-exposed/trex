@@ -31,7 +31,7 @@ config.plugins.push(
         from: 'public',
         filter: (file) => {
           const { base } = path.parse(file);
-          return base === 'manifest.json';
+          return base !== 'manifest.json';
         },
       },
       {

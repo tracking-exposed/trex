@@ -37,7 +37,7 @@
       "matches": [
         "https://*.youtube.com/*"
       ],
-      "js": ["./app.js"]
+      "js": ["./ext.js"]
     }
   ],
 
