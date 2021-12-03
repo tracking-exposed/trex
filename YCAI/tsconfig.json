@@ -30,7 +30,12 @@
       "path": "../shared"
     }
   ],
-  "include": ["./src", "./webpack.config.ts", "./webpack.extension.config.ts"],
+  "include": [
+    "./src",
+    "./typings",
+    "./webpack.config.ts",
+    "./webpack.extension.config.ts"
+  ],
   "ts-node": {
     "compilerOptions": {
       "module": "CommonJS"
