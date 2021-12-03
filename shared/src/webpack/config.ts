@@ -1,18 +1,18 @@
-import path from "path";
-
-import * as t from "io-ts";
-import { pipe } from "fp-ts/lib/function";
-import { PathReporter } from "io-ts/lib/PathReporter";
-import { BooleanFromString } from "io-ts-types/lib/BooleanFromString";
-
-import webpack from "webpack";
 import DotenvPlugin from "dotenv-webpack";
-import { BundleAnalyzerPlugin } from "webpack-bundle-analyzer";
-
-import { TsconfigPathsPlugin } from "tsconfig-paths-webpack-plugin";
+import { pipe } from "fp-ts/lib/function";
 import * as R from "fp-ts/lib/Record";
-import { GetLogger } from "../logger";
 import * as S from "fp-ts/lib/string";
+import * as t from "io-ts";
+import { BooleanFromString } from "io-ts-types/lib/BooleanFromString";
+import { PathReporter } from "io-ts/lib/PathReporter";
+import path from "path";
+import ReactRefreshTypescript from "react-refresh-typescript";
+import { TsconfigPathsPlugin } from "tsconfig-paths-webpack-plugin";
+import webpack from "webpack";
+import { BundleAnalyzerPlugin } from "webpack-bundle-analyzer";
+import { GetLogger } from "../logger";
+
+
 
 const webpackLogger = GetLogger("webpack");
 
@@ -35,7 +35,7 @@ const BUILD_ENV = t.strict(
 type BUILD_ENV = t.TypeOf<typeof BUILD_ENV>;
 interface WebpackConfig extends webpack.Configuration {
   buildENV: BUILD_ENV;
-  plugins: any[] //webpack.WebpackPluginInstance[]
+  plugins: any[]; //webpack.WebpackPluginInstance[]
 }
 
 interface GetConfigParams<E extends t.Props> {
@@ -153,6 +153,11 @@ const getConfig = <E extends t.Props>(
             {
               loader: "ts-loader",
               options: {
+                getCustomTransformers: () => ({
+                  before: [mode === 'development' && ReactRefreshTypescript()].filter(
+                    Boolean
+                  ),
+                }),
                 compilerOptions: {
                   noEmit: false,
                   sourceMap: true,
