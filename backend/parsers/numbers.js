@@ -7,6 +7,7 @@ function metrics(envelop, previous) {
      not really because also if you scroll on an user timeline */
   const availin = ["foryou", "following"];
 
+  debugger;
   if(previous.nature && availin.indexOf(previous.nature.type) === -1) {
     debug("No hashtag for previous.nature %o", previous.nature);
     return null;

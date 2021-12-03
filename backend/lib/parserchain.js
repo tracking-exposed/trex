@@ -15,6 +15,7 @@ const parserList = {
     numbers: require('../parsers/numbers'),
     stitch: require('../parsers/stitch'),
     author: require('../parsers/author'),
+    downloader: require('../parsers/downloader'),
 };
 
 module.exports = {
@@ -41,6 +42,7 @@ function buildMetadata(entry) {
         ...entry.findings.numbers,
         ...entry.findings.stitch,
         ...entry.findings.author,
+        ...entry.findings.downloader,
     };
 
     metadata.savingTime = new Date(entry.source.html.savingTime);

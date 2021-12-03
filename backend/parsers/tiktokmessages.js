@@ -6,6 +6,7 @@ const debug = require('debug')('parser:messages');
 
 function search(envelop, previous) {
 
+    debugger;
     return null;
 };
 

@@ -133,16 +133,17 @@ function getNatureByHref(href) {
     const chunks = urlO.pathname.split('/');
     const retval = {};
 
+    // console.log(urlO.pathname, chunks, chunks.length);
     if(urlO.pathname === "/foryou") {
       retval.type = 'foryou'
     } else if(urlO.pathname === "/") {
       retval.type = 'foryou';
     } else if(urlO.pathname === "/following") {
       retval.type = 'following';
-    } else if(chunks[1] === 'video' && chunks.length === 3) {
+    } else if(chunks[2] === 'video' && chunks.length >= 3) {
       retval.type = 'video';
-      retval.videoId = chunks[2];
-      retval.authorId = chunks[0];
+      retval.videoId = chunks[3];
+      retval.authorId = chunks[1];
     } else if(_.startsWith(urlO.pathname, "/@")) {
       retval.type = 'creator';
       retval.creatorName = urlO.pathname.substr(1);
@@ -154,7 +155,7 @@ function getNatureByHref(href) {
       console.log("Unmanaged condition from URL:", urlO)
       return null;
     }
-    // console.log("getNatureByHref ", urlO.pathname, "attributed", retval);
+    console.log("getNatureByHref attributed", JSON.stringify(retval));
     return retval;
   } catch(error) {
     console.log("getNatureByHref:", error.message);
@@ -191,13 +192,13 @@ function setupObserver() {
   const observer = new MutationObserver(function(mutations) {
     mutations.forEach(function(mutation) {
       if (oldHref != window.location.href) {
-        let nature = getNatureByHref(window.location.href);
         feedCounter++;
         refreshUUID();
         console.log(oldHref, "changed to",
           window.location.href, "new feedId", feedId, 
-          "feedCounter", feedCounter);
-        // TODO url parsing
+          "feedCounter", feedCounter,
+          "videoCounter resetting after poking", videoCounter);
+        videoCounter = 0;
         oldHref = window.location.href;
       }
     });
@@ -222,14 +223,18 @@ function handleSuggested(elem) {
 }
 
 /* function below manages every new video sample  
- * that got display in a 'following' or 'foryou' tab */
+ * that got display in 'following' 'foryou' or 'creator' page */
 const SPECIAL_DEBUG = false;
 let videoCounter = 0;
 function handleVideo(elem) {
 
+  /* this function return a node element that has a size
+   * lesser than 10k, and stop when find out the parent
+   * would be more than 10k big. */
   const refe = _.reduce(_.times(20),
     function(memo, iteration) {
-      const check = memo.parentNode.outerHTML.length;
+      const check = memo.parentNode ?
+        memo.parentNode.outerHTML.length : 0;
       if(check < 10000 && SPECIAL_DEBUG)
         console.log(videoCounter, iteration, check);
       return (check > 10000) ? memo : memo.parentNode;
@@ -242,7 +247,7 @@ function handleVideo(elem) {
   }
 
   videoCounter++;
-  console.log("New element found, marking as ", videoCounter, refe);
+  console.log("+video -- marking as ", videoCounter, "details:", refe);
   refe.setAttribute('trex', videoCounter);
 
   hub.event('newVideo', {

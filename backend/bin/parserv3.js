@@ -1,5 +1,4 @@
 #!/usr/bin/env node
-const { parse } = require('cookie');
 const _ = require('lodash');
 const moment = require('moment');
 const debug = require('debug')('tktrex:parserv3');

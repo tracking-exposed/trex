@@ -13,6 +13,7 @@
 
   "port": 14000,
   "interface": "0.0.0.0",
+  "downloads": "downloads",
 
   "key": "invalid_default"
 }

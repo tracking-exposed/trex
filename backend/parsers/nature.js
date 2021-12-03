@@ -15,10 +15,10 @@ function getNatureByHref(href) {
       retval.type = 'foryou';
     } else if(urlO.pathname === "/following") {
       retval.type = 'following';
-    } else if(chunks[1] === 'video' && chunks.length === 3) {
+    } else if(chunks[2] === 'video' && chunks.length >= 3) {
       retval.type = 'video';
-      retval.videoId = chunks[2];
-      retval.authorId = chunks[0];
+      retval.videoId = chunks[3];
+      retval.authorId = chunks[1];
     } else if(_.startsWith(urlO.pathname, "/@")) {
       retval.type = 'creator';
       retval.creatorName = urlO.pathname.substr(1);
@@ -30,8 +30,9 @@ function getNatureByHref(href) {
       debug("Unmanaged condition from URL: %o", urlO);
       return null;
     }
-    // console.log("getNatureByHref ", urlO.pathname, "attributed", retval);
+    debug("getNatureByHref attributed %o", retval);
     return retval;
+
   } catch(error) {
     debug("Error in getNatureByHref: %s", error.message);
     return null;
@@ -41,9 +42,7 @@ function getNatureByHref(href) {
 function nature(envelop, previous) {
 /* this parser is meant to analye the URL 
  * and understand which kind of nature has this html */
-
-  const nature = getNatureByHref(envelop.html.href);
-  return nature;
+  return getNatureByHref(envelop.html.href);
 };
 
 module.exports = nature;

@@ -191,7 +191,7 @@ async function processEvents(req) {
 
 
 async function handshake(req) {
-    debug("handshake API %j", req.body);
+    debug("Ignored handshake API %j", _.keys(req.body) );
     return {
         json: { ignored: true }
     }

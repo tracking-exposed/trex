@@ -8,7 +8,7 @@ async function checkMongoWorks(beFatal) {
     try {
         const mongoc = await mongo3.clientConnect({concurrency: 1});
         const results = await mongo3.listCollections(mongoc);
-        debug("collection list: %j", results);
+        debug("collection list: %j", _.map(results, 'name') );
         await mongoc.close();
         return results;
     } catch(error) {

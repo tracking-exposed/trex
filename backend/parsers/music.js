@@ -3,9 +3,9 @@ const debug = require('debug')('parsers:music');
 
 function music(envelop, previous) {
 
-  /* only feedId on 'foryou' and 'following' have a description,
-     not really because also if you scroll on an user timeline */
-  const availin = ["foryou", "following"];
+  /* feedId on 'foryou' 'following' and 'music' equally
+     share the same pattern to link the music */
+  const availin = ["foryou", "following", "video"];
 
   if(previous.nature && availin.indexOf(previous.nature.type) === -1) {
     debug("No music for previous.nature %o", previous.nature);
@@ -15,7 +15,8 @@ function music(envelop, previous) {
   const elem = envelop.jsdom.querySelector('a[href^="/music/"]');
 
   if(!elem) {
-    debug("No music in tiktok!? investigate %s", envelop.source.html.id);
+    debug("No music in tiktok!? investigate");
+    debugger;
     return null;
   }
 
