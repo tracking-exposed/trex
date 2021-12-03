@@ -36,10 +36,13 @@ const allowedSelectors = [ "banner", "ad", "overlay", "toprightad",
     "toprightpict", "toprightcta", "toprightattr", "adbadge",
     "channel", "searchcard", "channellink", "searchAds" ];
 
-if(selector)
-    if(allowedSelectors.indexOf(selector) === -1)
+if(selector) {
+    if(allowedSelectors.indexOf(selector) === -1) {
+        // eslint-disable-next-line no-console
         return console
             .log(`Error ${selector} should be one of ${allowedSelectors}`);
+    }
+}
 
 let nodatacounter = 0;
 let processedCounter = skipCount;
@@ -148,7 +151,10 @@ function mineBanner(D, e) {
             texts: D.querySelector('div').textContent
         }
         debuge("mineBanner error: %O", errorretval);
-        if(e.acquired[0].html.length > 6000) debugger;
+        if(e.acquired[0].html.length > 6000) {
+            // eslint-disable-next-line no-console
+            console.trace("DEBUG HERE!")
+        }
         return errorretval;
     }
 
@@ -161,7 +167,10 @@ function mineBanner(D, e) {
             texts: D.querySelector('div').textContent
         }
         debuge("mineBanner error: %O", errorretval);
-        if(e.acquired[0].html.length > 2000) debugger;
+        if(e.acquired[0].html.length > 2000) {
+            // eslint-disable-next-line no-console
+            console.trace("DEBUG HERE!")
+        }
         return errorretval;
     }
 
@@ -177,7 +186,7 @@ function mineBanner(D, e) {
     if(imgs.length === 1) {
         const videot = imgs[0].getAttribute('src');
         if(!_.endsWith(videot, "mqdefault.jpg"))
-            debuge("Unexpected condition! %s", srci);
+            debuge("Unexpected condition! %s", videot);
         
         return {
             ...retval,
@@ -203,6 +212,7 @@ function processLeaf(e) {
     let mined = null;
     try {
         const D = new JSDOM(e.html).window.document;
+        // eslint-disable-next-line no-console
         // console.log(e.nature, e.selectorName);
 
         if(e.selectorName === 'ad')
@@ -220,6 +230,7 @@ function processLeaf(e) {
         else
             debug("Selector not handled %s", e.selectorName);
 
+        // eslint-disable-next-line no-console
         // console.log(mined);
     } catch(error) {
         debug("Error in content mining (%s %s): %s",
@@ -343,6 +354,7 @@ async function wrapperLoop() {
             }
 
             if(stop && stop <= processedCounter) {
+                // eslint-disable-next-line no-console
                 console.log("Reached configured limit of ", stop, "( processed:", processedCounter, ")");
                 process.exit(processedCounter);
             }
@@ -350,6 +362,7 @@ async function wrapperLoop() {
             await fetchAndAnalyze(labelFilter);
         }
         catch(e) {
+            // eslint-disable-next-line no-console
             console.log("Error in fetchAndAnalyze", e.message, e.stack);
         }
         if(singleUse) {
@@ -361,12 +374,16 @@ async function wrapperLoop() {
 }
 
 try {
-    if(filter && id)
+    if(filter && id) {
+        // eslint-disable-next-line no-console
         return console.log("Invalid combo, you can't use --filter and --id");
+    }
 
     if(selector) {
-        if(id)
+        if(id) {
+            // eslint-disable-next-line no-console
             return console.log("Invalid combo, you can't use --selector and --id");
+        }
         debug("Targeting selectorName %s", selector);
     }
 
@@ -383,5 +400,6 @@ try {
 
     wrapperLoop();
 } catch(e) {
+    // eslint-disable-next-line no-console
     console.log("Error in wrapperLoop", e.message);
 }

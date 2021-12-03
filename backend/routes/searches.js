@@ -7,7 +7,6 @@ const qustr = require('querystring');
 const CSV = require('../lib/CSV');
 const params = require('../lib/params');
 const dbutils = require('../lib/dbutils');
-const security = require('../lib/security');
 const utils = require('../lib/utils');
 
 /* this file have been heavily refactored 

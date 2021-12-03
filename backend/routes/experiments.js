@@ -1,13 +1,26 @@
 const _ = require('lodash');
 const moment = require('moment');
 const debug = require('debug')('routes:experiments');
-const fs = require('fs');
 const nconf = require('nconf');
 
 const automo = require('../lib/automo');
 const params = require('../lib/params');
 const CSV = require('../lib/CSV');
 const mongo3 = require('../lib/mongo3');
+
+async function sharedDataPull(filter) {
+    /* this function is invoked by the various API below */
+    const MAX = 3000;
+    const mongoc = await mongo3.clientConnect({concurrency: 1});
+    const metadata = await mongo3
+        .readLimit(mongoc, nconf.get('schema').metadata,
+        filter, { savingTime: -1 }, MAX, 0);
+    await mongoc.close();
+
+    debug("Found %d available data by filter %o (max %d) %j",
+        metadata.length, filter, MAX, _.countBy(metadata, 'type'));
+    return metadata;
+}
 
 function dotify(data) {
     const dot = Object({links: [], nodes: []})
@@ -34,10 +47,11 @@ function dotify(data) {
 
 async function dot(req) {
 
+    throw new Error("Remind this can't work because metadata has many type");
+
     const experiment = params.getString(req, 'experimentId', true);
     const metadata = await sharedDataPull(experiment);
 
-    throw new Error("Remind this can't work because metadata has many type");
     if(!_.size(related))
         return { json: {error: true, message: "No data found with such parameters"}}
 
@@ -49,19 +63,6 @@ async function dot(req) {
         };
     })
     return { json: dotchain };
-}
-
-async function sharedDataPull(filter) {
-    const MAX = 3000;
-    const mongoc = await mongo3.clientConnect({concurrency: 1});
-    const metadata = await mongo3
-        .readLimit(mongoc, nconf.get('schema').metadata,
-        filter, { savingTime: -1 }, MAX, 0);
-    await mongoc.close();
-
-    debug("Found %d available data by filter %o (max %d) %j",
-        metadata.length, filter, MAX, _.countBy(metadata, 'type'));
-    return metadata;
 }
 
 async function json(req) {

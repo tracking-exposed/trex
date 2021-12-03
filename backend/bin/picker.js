@@ -1,7 +1,6 @@
 #!/usr/bin/env node
 const _ = require('lodash');
 const debug = require('debug')('bin:picker');
-const Promise = require('bluebird');
 const fetch = require('node-fetch');
 const nconf = require('nconf');
 
@@ -46,8 +45,10 @@ async function main(metadataId) {
     return _.size(htmls);
 }
 
-if(!nconf.get('id'))
+if(!nconf.get('id')) {
+    // eslint-disable-next-line no-console
     return console.log("--id required (should be a metadataId)");
+}
 
 
 try {

@@ -31,8 +31,8 @@ async function submitRecommendations(accessToken, urls) {
         });
         const answer = await response.json();
         if(answer.error) {
-            console.log("Error in", url);
-            console.log("<E>", JSON.stringify(answer));
+            // eslint-disable-next-line no-console
+            console.log("Error in", url, "\n", JSON.stringify(answer));
         } else {
             debug("[OK] %s %j", url, answer);
             urlIds.push(answer.urlId);
@@ -76,17 +76,26 @@ async function submitRecommendations(accessToken, urls) {
 }
 
 try {
-    if(!accessToken)
+    if(!accessToken) {
+        // eslint-disable-next-line no-console
         return console.log("--accessToken is mandatory");
-    if(!urls)
+    }
+    if(!urls) {
+        // eslint-disable-next-line no-console
         return console.log("--urls https://url.position.1,https://url.position.2");
-    if(_.endsWith(backend, '/'))
+    }
+    if(_.endsWith(backend, '/')) {
+        // eslint-disable-next-line no-console
         return console.log("--backend should not end with a '/' ");
-    if(!targetVideoId)
-	return console.log("--targetVideoId is mandatory");
+    }
+    if(!targetVideoId) {
+        // eslint-disable-next-line no-console
+        return console.log("--targetVideoId is mandatory");
+    }
 
     debug("Submitting recommendations to server %s", backend);
     submitRecommendations(accessToken, urls);
 } catch(error) {
+    // eslint-disable-next-line no-console
     console.log(error);
 }

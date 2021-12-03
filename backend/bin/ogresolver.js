@@ -8,12 +8,13 @@ nconf.argv().env().file({ file: 'config/settings.json'});
 
 async function start() {
 
-  for (pourl of process.argv) {
+  for (const pourl of process.argv) {
     if(_.startsWith(pourl, 'https://')) {
       debug("Fetching %s", pourl);
       const result = await fetchOpengraph.fetch(pourl);
       const fields = ['title', 'description', 'url', 'image']
       const keep = _.pick(result, fields);
+      // eslint-disable-next-line no-console
       console.log(keep.title);
     }
   };

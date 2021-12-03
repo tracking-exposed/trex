@@ -17,58 +17,14 @@ function aggregationCount(collection) {
     });
     return _.map(protorv, function(listOf, sponsoredSite) {
         return {
-            /* not all the ad have a sponsoredName */
+            /* not all the ad have a sponsoredName, take the first valid */
             sponsoredName: _.reduce(listOf, function(memo, ade) {
-                return memo ? memo : ade.sponsoredName
+                return memo || ade.sponsoredName;
             }, null),
             sponsoredSite,
             count: listOf.length,
         }
     })
-}
-
-async function perVideo(req) {
-    const videoId = params.getVideoId(req, 'videoId');
-    const filter = { videoId };
-    const adlist = await advertisingViaMetadata(filter);
-    debug("ads by Video (%o), selected results %d", filter, adlist.length);
-    return { json: aggregationCount(x) };
-}
-
-async function perChannel(req) {
-    const channelId = params.getString(req, 'channelId');
-    const startDate = req.query.since;
-    const endtDate = req.query.till;
-
-    const filter = {
-        'authorSource': { "$in": [
-            "/channel/" + channelId,
-            "/c/" + channelId
-        ]}
-    };
-    try {
-        filter.savingTime = {
-            "$gte": new Date(startDate),
-            "$lte": new Date(endtDate)
-        }
-
-        if(_.isNaN(filter.savingTime["$gte"].valueOf()))
-            throw new Error("Invalid 'since' query param" + startDate);
-        if(_.isNaN(filter.savingTime["$lte"].valueOf()))
-            throw new Error("Invalid 'till' query param" + endtDate);
-
-    } catch(error) {
-        /* The error appears as Date("Invalid Date") and
-           .valueOf returns NaN */
-        debug("Error in date format: %s", error.message);
-        return { json: {
-            error: true,
-            message: "Error in date format, expected YYYY-MM-DD: " + error.message
-        }}
-    }
-    const adlist = await advertisingViaMetadata(filter);
-    debug("ads by Channel (%o), selected results %d", filter, adlist.length);
-    return { json: aggregationCount(adlist) };
 }
 
 async function advertisingViaMetadata(filter) {
@@ -106,6 +62,51 @@ async function advertisingViaMetadata(filter) {
     })));
 }
 
+
+async function perVideo(req) {
+    const videoId = params.getVideoId(req, 'videoId');
+    const filter = { videoId };
+    const adlist = await advertisingViaMetadata(filter);
+    debug("ads by Video (%o), selected results %d", filter, adlist.length);
+    return { json: aggregationCount(adlist) };
+}
+
+async function perChannel(req) {
+    const channelId = params.getString(req, 'channelId');
+    const startDate = req.query.since;
+    const endtDate = req.query.till;
+
+    const filter = {
+        'authorSource': { "$in": [
+            "/channel/" + channelId,
+            "/c/" + channelId
+        ]}
+    };
+    try {
+        filter.savingTime = {
+            "$gte": new Date(startDate),
+            "$lte": new Date(endtDate)
+        }
+
+        if(_.isNaN(filter.savingTime.$gte.valueOf()))
+            throw new Error("Invalid 'since' query param" + startDate);
+        if(_.isNaN(filter.savingTime.$lte.valueOf()))
+            throw new Error("Invalid 'till' query param" + endtDate);
+
+    } catch(error) {
+        /* The error appears as Date("Invalid Date") and
+           .valueOf returns NaN */
+        debug("Error in date format: %s", error.message);
+        return { json: {
+            error: true,
+            message: "Error in date format, expected YYYY-MM-DD: " + error.message
+        }}
+    }
+    const adlist = await advertisingViaMetadata(filter);
+    debug("ads by Channel (%o), selected results %d", filter, adlist.length);
+    return { json: aggregationCount(adlist) };
+}
+
 async function unbound(req) {
     const max = params.getInt(req, 'amount', 400);
     const mongoc = await mongo3.clientConnect({concurrency: 1});
@@ -138,7 +139,7 @@ async function unbound(req) {
         return rv;
     }));
 
-    return { json: agggregationCount(x) };
+    return { json: aggregationCount(x) };
 }
 
 module.exports = {

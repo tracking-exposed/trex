@@ -6,8 +6,10 @@ const fetch = require('node-fetch');
 
 nconf.argv().env();
 
-if(!nconf.get('key'))
+if(!nconf.get('key')) {
+    // eslint-disable-next-line no-console
     return console.log("--key required");
+}
 
 const source = nconf.get('source') || 'https://youtube.tracking.exposed';
 const sourceUrl = `${source}/api/v1/mirror/${nconf.get('key')}/`;
@@ -44,5 +46,6 @@ async function main() {
 try {
     main();
 } catch(error) {
+    // eslint-disable-next-line no-console
     console.log(error);
 }

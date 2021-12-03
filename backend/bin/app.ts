@@ -24,7 +24,7 @@ const iowrapper =
         logger("API (%s) didn't return anything!?", fname);
         res.send("Fatal error: Invalid output");
         res.status(501);
-      } else if (httpresult.json && httpresult.json.error) {
+      } else if (httpresult.json?.error) {
         logger("API (%s) failure, returning 500", fname);
         res.status(500);
         res.json(httpresult.json);

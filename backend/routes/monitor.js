@@ -55,7 +55,7 @@ async function deleter(req) {
     }
 
     const collection = req.params.c;
-    if(-1 === _.keys(nconf.get('schema')).indexOf(collection)) {
+    if(_.keys(nconf.get('schema')).indexOf(collection) === -1) {
         debug("Invalid collection requested!")
         return { json: {
             error: true, message: "Invalid collection"
@@ -69,7 +69,7 @@ async function deleter(req) {
         }};
     }
     const keyname = req.params.k;
-    if(!(keyname == 'id' || _.endsWith(keyname, 'Id'))) {
+    if(!(keyname === 'id' || _.endsWith(keyname, 'Id'))) {
         debug("Invalid key field name: %s", keyname);
     }
 

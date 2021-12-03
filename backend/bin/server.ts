@@ -1,6 +1,5 @@
 #!/usr/bin/env node
 import * as http from "http";
-import _ from "lodash";
 import debug from "debug";
 import nconf from "nconf";
 import dbutils from "../lib/dbutils";
@@ -28,10 +27,10 @@ server.listen(nconf.get("port"), nconf.get("interface"), () => {
   d(` Listening on http://${nconf.get("interface")}:${nconf.get("port")}`);
 });
 
-async function initialSanityChecks() {
+const initialSanityChecks: () => void = async () => {
   /* security checks = is the password set and is not the default? (more checks might come) */
   security.checkKeyIsSet();
-  await dbutils.checkMongoWorks(true /* if true means that failure is fatal */);
+  return await dbutils.checkMongoWorks(true /* if true means that failure is fatal */);
 }
 
 initialSanityChecks();

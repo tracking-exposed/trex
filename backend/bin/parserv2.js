@@ -39,98 +39,45 @@ let computedFrequency = 10;
 const stats = { lastamount: null, currentamount: null, last: null, current: null };
 let lastErrorAmount = 0;
 
-if(backInTime != BACKINTIMEDEFAULT) {
+if(backInTime !== BACKINTIMEDEFAULT) {
     const humanized = moment.duration(
         moment().subtract(backInTime, 'minutes') - moment()
     ).humanize();
     debug(`Considering ${backInTime} minutes (${humanized}), as override the standard ${BACKINTIMEDEFAULT} minutes ${lastExecution}`);
 }
 
-async function newLoop(htmlFilter) {
-    /* this is the begin of the parsing core pipeline.
-     * gets htmls from the db, if --repeat 1 then previously-analyzed-HTMLS would be
-     * re-analyzed. otherwise, the default, is to skip those and wait for new 
-     * htmls. To receive htmls you should have a producer consistend with the 
-     * browser extension format, and bin/server listening 
-     * 
-     * This script pipeline might optionally start from the past, and 
-     * re-analyze HTMLs based on --minutesago <number> option.
-     * 
-     * At the end update metadata only if meaningful update is present,
-     * you might notice the library calls in automo, they should be refactored
-     * and optimized.
-     * */
-
-    const htmls = await automo.getLastHTMLs(htmlFilter, skipCount, htmlAmount);
-    if(!_.size(htmls.content)) {
-
-        nodatacounter++;
-        if( (nodatacounter % 10) == 1) {
-            debug("%d no data at the last query: %j %j",
-                nodatacounter, _.keys(htmlFilter), htmlFilter.savingTime);
-        }
-        lastExecution = moment().subtract(2, 'm').toISOString();
-        computedFrequency = FREQUENCY;
-        return;
-    } else {
-        computedFrequency = 0.1;
-    }
-
-    if(!htmls.overflow) {
-        lastExecution = moment().subtract(BACKINTIMEDEFAULT, 'm').toISOString();
-        /* 1 minute is the average stop, so it comeback to check 3 minutes before */
-        overflowReport("<NOT>\t\t%d documents", _.size(htmls.content));
-    }
+function parserDispatcher(envelop, curi, htmlentry) {
+    if(htmlentry.nature.type === 'home')
+        return homeparser.process(envelop);
+    else if(htmlentry.nature.type === 'video')
+        return videoparser.process(envelop);
+    else if(htmlentry.nature.type === 'channel')
+        throw new Error("Channel not supported yet");
+    else if(htmlentry.nature.type === 'search')
+        return searchparser.process(envelop);
+    else if(htmlentry.nature.type === 'hashtag')
+        throw new Error("Hashtag not supported yet");
     else {
-        lastExecution = moment(_.last(htmls.content).savingTime);
-        overflowReport("first %s (on %d) <last +minutes %d> next filter set to %s",
-            _.first(htmls.content).savingTime, _.size(htmls.content),
-            _.round(moment.duration(
-                moment(_.last(htmls.content).savingTime ) - moment(_.first(htmls.content).savingTime )
-            ).asMinutes(), 1),
-            lastExecution);
+        debuge("Condition not supported %s", htmlentry.nature.type);
+        return null;
     }
+}
 
-    if(stats.currentamount || stats.lastamount)
-        debug("[+] %d start a new cicle, %d took: %s and now process %d htmls",
-            processedCounter,
-            stats.currentamount, moment.duration(moment() - stats.current).humanize(),
-            _.size(htmls.content));
-    stats.last = stats.current;
-    stats.current = moment();
-    stats.lastamount = stats.currentamount;
-    stats.currentamount = _.size(htmls.content);
-
-    const analysis = _.map(htmls.content, processEachHTML);
-    /* analysis is a list with [ impression, metadata ] */
-
-    const updates = [];
-    for (const entry of _.compact(analysis)) {
-        let r = await automo.updateMetadata(entry[0], entry[1], repeat);
-        updates.push(r);
+function legacyParserDispatcher(envelop, curi, htmlentry) {
+    // this sets of functions only support home and video, non-video
+    // are rejected as not supported. Search results were implemented in
+    // what now have been renameds as leaveserv.js and now supported here
+    if(curi.length === 1 && htmlentry.html.length > 200000 ) {
+        /* without clean URI, it is an youtube home */
+        return homeparser.process(envelop);
     }
-    debug("%d html.content, %d analysis, compacted %d, effects: %j",
-        _.size(htmls.content), _.size(analysis),
-        _.size(_.compact(analysis)), _.countBy(updates, 'what'));
-
-    /* reset no-data-counter if data has been sucessfully processed */
-    if(_.size(_.compact(analysis)))
-        nodatacounter = 0;
-
-    /* also the HTML cutted off the pipeline, the many skipped
-     * by _.compact all the null in the lists, should be marked as processed */
-    const remaining = _.reduce(_.compact(analysis), function(memo, blob) {
-        return _.reject(memo, { id: blob[0].id });
-    }, htmls.content);
-
-    debug("Usable HTMLs %d/%d - marking as processed the useless %d HTMLs\t\t(sleep %d)",
-        _.size(_.compact(analysis)), _.size(htmls.content), _.size(remaining), computedFrequency);
-
-    const rv = await automo.markHTMLsUnprocessable(remaining);
-    debug("%d completed, took %d secs = %d mins",
-        processedCounter, moment.duration(moment() - stats.current).asSeconds(),
-        _.round(moment.duration(moment() - stats.current).asMinutes(), 2));
-    return rv;
+    else if(htmlentry.selector === "ytd-app" && _.startsWith(curi, "/watch") ) {
+        /* else, it is a full video content */
+        return videoparser.process(envelop);
+    } else {
+        debugel("Condition not supported: %s", curi);
+        return null;
+    }
 }
 
 function processEachHTML(htmlentry) {
@@ -148,7 +95,7 @@ function processEachHTML(htmlentry) {
 
     const envelop = {
         impression: _.omit(htmlentry, ['html', '_id']),
-        jsdom: new JSDOM(htmlentry.html.replace(/\n\ +/g, ''))
+        jsdom: new JSDOM(htmlentry.html.replace(/\n +/g, ''))
                 .window.document,
     }
 
@@ -196,6 +143,93 @@ function processEachHTML(htmlentry) {
     return [ envelop.impression, metadata ];
 }
 
+async function newLoop(htmlFilter) {
+    /* this is the begin of the parsing core pipeline.
+     * gets htmls from the db, if --repeat 1 then previously-analyzed-HTMLS would be
+     * re-analyzed. otherwise, the default, is to skip those and wait for new 
+     * htmls. To receive htmls you should have a producer consistend with the 
+     * browser extension format, and bin/server listening 
+     * 
+     * This script pipeline might optionally start from the past, and 
+     * re-analyze HTMLs based on --minutesago <number> option.
+     * 
+     * At the end update metadata only if meaningful update is present,
+     * you might notice the library calls in automo, they should be refactored
+     * and optimized.
+     * */
+
+    const htmls = await automo.getLastHTMLs(htmlFilter, skipCount, htmlAmount);
+    if(!_.size(htmls.content)) {
+
+        nodatacounter++;
+        if( (nodatacounter % 10) === 1) {
+            debug("%d no data at the last query: %j %j",
+                nodatacounter, _.keys(htmlFilter), htmlFilter.savingTime);
+        }
+        lastExecution = moment().subtract(2, 'm').toISOString();
+        computedFrequency = FREQUENCY;
+        return;
+    } else {
+        computedFrequency = 0.1;
+    }
+
+    if(!htmls.overflow) {
+        lastExecution = moment().subtract(BACKINTIMEDEFAULT, 'm').toISOString();
+        /* 1 minute is the average stop, so it comeback to check 3 minutes before */
+        overflowReport("<NOT>\t\t%d documents", _.size(htmls.content));
+    }
+    else {
+        lastExecution = moment(_.last(htmls.content).savingTime);
+        overflowReport("first %s (on %d) <last +minutes %d> next filter set to %s",
+            _.first(htmls.content).savingTime, _.size(htmls.content),
+            _.round(moment.duration(
+                moment(_.last(htmls.content).savingTime ) - moment(_.first(htmls.content).savingTime )
+            ).asMinutes(), 1),
+            lastExecution);
+    }
+
+    if(stats.currentamount || stats.lastamount)
+        debug("[+] %d start a new cicle, %d took: %s and now process %d htmls",
+            processedCounter,
+            stats.currentamount, moment.duration(moment() - stats.current).humanize(),
+            _.size(htmls.content));
+    stats.last = stats.current;
+    stats.current = moment();
+    stats.lastamount = stats.currentamount;
+    stats.currentamount = _.size(htmls.content);
+
+    const analysis = _.map(htmls.content, processEachHTML);
+    /* analysis is a list with [ impression, metadata ] */
+
+    const updates = [];
+    for (const entry of _.compact(analysis)) {
+        const r = await automo.updateMetadata(entry[0], entry[1], repeat);
+        updates.push(r);
+    }
+    debug("%d html.content, %d analysis, compacted %d, effects: %j",
+        _.size(htmls.content), _.size(analysis),
+        _.size(_.compact(analysis)), _.countBy(updates, 'what'));
+
+    /* reset no-data-counter if data has been sucessfully processed */
+    if(_.size(_.compact(analysis)))
+        nodatacounter = 0;
+
+    /* also the HTML cutted off the pipeline, the many skipped
+     * by _.compact all the null in the lists, should be marked as processed */
+    const remaining = _.reduce(_.compact(analysis), function(memo, blob) {
+        return _.reject(memo, { id: blob[0].id });
+    }, htmls.content);
+
+    debug("Usable HTMLs %d/%d - marking as processed the useless %d HTMLs\t\t(sleep %d)",
+        _.size(_.compact(analysis)), _.size(htmls.content), _.size(remaining), computedFrequency);
+
+    const rv = await automo.markHTMLsUnprocessable(remaining);
+    debug("%d completed, took %d secs = %d mins",
+        processedCounter, moment.duration(moment() - stats.current).asSeconds(),
+        _.round(moment.duration(moment() - stats.current).asMinutes(), 2));
+    return rv;
+}
+
 async function appendLabelError(currentList, lastSentAmount) {
     // pick the last appended errors 
     const newerrors = currentList.slice( currentList.length - lastSentAmount );
@@ -216,40 +250,6 @@ async function appendLabelError(currentList, lastSentAmount) {
     });
 }
 
-function legacyParserDispatcher(envelop, curi, htmlentry) {
-    // this sets of functions only support home and video, non-video
-    // are rejected as not supported. Search results were implemented in
-    // what now have been renameds as leaveserv.js and now supported here
-    if(curi.length === 1 && htmlentry.html.length > 200000 ) {
-        /* without clean URI, it is an youtube home */
-        return homeparser.process(envelop);
-    }
-    else if(htmlentry.selector == "ytd-app" && _.startsWith(curi, "/watch") ) {
-        /* else, it is a full video content */
-        return videoparser.process(envelop);
-    } else {
-        debugel("Condition not supported: %s", curi);
-        return null;
-    }
-}
-
-function parserDispatcher(envelop, curi, htmlentry) {
-    if(htmlentry.nature.type === 'home')
-        return homeparser.process(envelop);
-    else if(htmlentry.nature.type === 'video')
-        return videoparser.process(envelop);
-    else if(htmlentry.nature.type === 'channel')
-        throw new Error("Channel not supported yet");
-    else if(htmlentry.nature.type === 'search')
-        return searchparser.process(envelop);
-    else if(htmlentry.nature.type === 'hashtag')
-        throw new Error("Hashtag not supported yet");
-    else {
-        debuge("Condition not supported %s", htmlentry.nature.type);
-        return null;
-    }
-}
-
 async function sleep(ms) {
     return new Promise(resolve => {
         setTimeout(resolve, ms)
@@ -258,7 +258,7 @@ async function sleep(ms) {
 
 async function wrapperLoop() {
 
-    if( id && (skipCount || (htmlAmount != AMOUNT_DEFAULT) ) ) {
+    if( id && (skipCount || (htmlAmount !== AMOUNT_DEFAULT) ) ) {
         debug("Ignoring --skip and --amount because of --id");
         skipCount = 0;
         htmlAmount = AMOUNT_DEFAULT;
@@ -269,8 +269,8 @@ async function wrapperLoop() {
         debug("--stop %d imply --amount %d", stop, htmlAmount);
     }
 
-    let actualRepeat = (repeat || !!id || !!filter || (backInTime != BACKINTIMEDEFAULT) );
-    if(actualRepeat != repeat)
+    const actualRepeat = (repeat || !!id || !!filter || (backInTime !== BACKINTIMEDEFAULT) );
+    if(actualRepeat !== repeat)
         debug("--repeat it is implicit!");
 
     while(true) {
@@ -294,18 +294,20 @@ async function wrapperLoop() {
             }
 
             if(stop && stop <= processedCounter) {
+                // eslint-disable-next-line no-console
                 console.log("Reached configured limit of ", stop, "( processed:", processedCounter, ")");
                 process.exit(processedCounter);
             }
             await newLoop(htmlFilter);
 
             if(_.size(longlabel.unrecognized) && _.size(longlabel.unrecognized) > lastErrorAmount )  {
-                let tmpr = await appendLabelError(longlabel.unrecognized, lastErrorAmount);
+                const tmpr = await appendLabelError(longlabel.unrecognized, lastErrorAmount);
                 debug("Appended last errors in longlabel: %s (%j)", _.last(longlabel.unrecognized), tmpr);
                 lastErrorAmount = _.size(longlabel.unrecognized);
             }
 
         } catch(e) {
+            // eslint-disable-next-line no-console
             console.log("Error in newLoop", e.message, e.stack);
         }
         if(singleUse) {
@@ -322,5 +324,6 @@ try {
 
     wrapperLoop();
 } catch(e) {
+    // eslint-disable-next-line no-console
     console.log("Error in wrapperLoop", e.message);
 }

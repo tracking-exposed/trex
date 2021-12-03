@@ -9,7 +9,6 @@ nconf.argv().env().file('config/settings.json');
 const accessToken = nconf.get('accessToken');
 const backend = nconf.get('backend') || 'https://youchoose.tracking.exposed';
 
-
 async function repullVideo(accessToken) {
 
     const ogpAPIurl = backend + "/api/v3/creator/videos/repull";
@@ -22,21 +21,26 @@ async function repullVideo(accessToken) {
     });
     const answer = await response.json();
     if(answer.error) {
-        console.log("Error in", ogpAPIurl);
-        console.log("<E>", JSON.stringify(answer));
+        // eslint-disable-next-line no-console
+        console.log("Error in", ogpAPIurl, "\n", JSON.stringify(answer));
     } else {
         debug("[OK] %j", answer);
     }
 }
 
 try {
-    if(!accessToken)
+    if(!accessToken) {
+        // eslint-disable-next-line no-console
         return console.log("--accessToken is mandatory");
-    if(_.endsWith(backend, '/'))
+    }
+    if(_.endsWith(backend, '/')) {
+        // eslint-disable-next-line no-console
         return console.log("--backend should not end with a '/' ");
+    }
 
     debug("Repulling videos in server %s", backend);
     repullVideo(accessToken);
 } catch(error) {
+    // eslint-disable-next-line no-console
     console.log(error);
 }
