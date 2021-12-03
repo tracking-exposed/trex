@@ -31,7 +31,7 @@ config.plugins.push(
         from: 'public',
         filter: (file: string) => {
           const { base } = path.parse(file);
-          return base !== 'manifest.json';
+          return !['manifest.json', 'index.html'].includes(base);
         },
       },
       {

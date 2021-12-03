@@ -1,7 +1,8 @@
-const { AppEnv } = require('./src/AppEnv');
-const path = require('path');
-const { getConfig } = require('../shared/build/webpack/config');
-const packageJson = require('./package.json');
+import { AppEnv } from './src/AppEnv';
+import path from 'path';
+import { getConfig } from '../shared/build/webpack/config';
+import CopyWebpackPlugin from 'copy-webpack-plugin';
+import packageJson from './package.json';
 
 process.env.VERSION = packageJson.version;
 
@@ -13,6 +14,20 @@ const { buildENV, ...config } = getConfig({
     dashboard: path.resolve(__dirname, 'src/dashboard.tsx'),
   },
 });
+
+config.plugins.push(
+  new CopyWebpackPlugin({
+    patterns: [
+      {
+        from: 'public',
+        filter: (file: string) => {
+          const { base } = path.parse(file);
+          return !['manifest.json', 'popup.html'].includes(base);
+        },
+      },
+    ],
+  })
+);
 
 export default {
   ...config,
