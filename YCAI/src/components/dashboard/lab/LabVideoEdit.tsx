@@ -1,5 +1,5 @@
 import { Grid } from '@material-ui/core';
-import { YTVideo } from 'components/common/YTVideo';
+import { YTVideo } from '../../common/YTVideo';
 import * as React from 'react';
 import AddRecommendationBox from './AddRecommendationBox';
 import { VideoRecommendations } from './VideoRecommendations';

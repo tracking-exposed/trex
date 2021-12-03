@@ -2,15 +2,13 @@ import { Card, CardContent, CardMedia, Link } from '@material-ui/core';
 import * as QR from 'avenger/lib/QueryResult';
 import { WithQueries } from 'avenger/lib/react';
 import React from 'react';
-import { oneCreatorVideo } from 'state/creator.queries';
+import { oneCreatorVideo } from '../../state/dashboard/creator.queries';
 import {
   getYTMaxResThumbnailById,
-  getYTVideoURLById
+  getYTVideoURLById,
 } from '../../utils/yt.utils';
 import { ErrorBox } from '../common/ErrorBox';
 import { LazyFullSizeLoader } from './FullSizeLoader';
-
-
 
 interface YTVideoProps {
   videoId: string;

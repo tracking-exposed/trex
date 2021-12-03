@@ -15,12 +15,12 @@ import { isLeft } from 'fp-ts/lib/Either';
 import React from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 import {
-  copyToClipboard,
   registerCreatorChannel,
   updateAuth,
   verifyChannel,
-} from '../../state/creator.commands';
+} from '../../state/dashboard/creator.commands';
 import { makeStyles } from '../../theme';
+import useCopyClipboard from 'react-use-clipboard';
 
 const youtubeChannelUrlRegex = /\/channel\/([^/]+)(?:$|\/)/;
 
@@ -45,7 +45,7 @@ const useStyles = makeStyles((theme) => ({
     marginTop: theme.spacing(5),
     '& button': {
       marginRight: theme.spacing(4),
-    }
+    },
   },
   linkButton: {
     '&:hover': {
@@ -55,11 +55,11 @@ const useStyles = makeStyles((theme) => ({
   list: {
     '& li': {
       marginBottom: theme.spacing(1),
-    }
+    },
   },
   errorBox: {
     display: 'inline-block',
-  }
+  },
 }));
 interface LinkAccountProps {
   auth: AuthResponse | null;
@@ -67,8 +67,14 @@ interface LinkAccountProps {
 export const LinkAccount: React.FC<LinkAccountProps> = ({ auth }) => {
   const { t } = useTranslation();
 
+  const [isCopied, setCopied] = useCopyClipboard(
+    auth?.tokenString ?? '',
+    {
+      successDuration: 2000,
+    }
+  );
+
   const [channel, setChannel] = React.useState<string>(auth?.channelId ?? '');
-  const [showCopiedFeedback, setShowCopiedFeedback] = React.useState(false);
   const [submitChannelFailed, setSubmitChannelFailed] = React.useState(false);
   const [verificationFailed, setVerificationFailed] = React.useState(false);
   const [verifying, setVerifying] = React.useState(false);
@@ -177,9 +183,7 @@ export const LinkAccount: React.FC<LinkAccountProps> = ({ auth }) => {
           </Button>
           {submitChannelFailed && (
             <Box className={classes.errorBox}>
-              <Typography>
-                {t('link_account:channel_not_found')}
-              </Typography>
+              <Typography>{t('link_account:channel_not_found')}</Typography>
             </Box>
           )}
         </Grid>
@@ -195,20 +199,15 @@ export const LinkAccount: React.FC<LinkAccountProps> = ({ auth }) => {
           <Typography className={classes.tokenDisplay} id="account-channelId">
             {auth.tokenString}
           </Typography>
-          {showCopiedFeedback ? (
+          {isCopied ? (
             <Chip color="secondary" label={t('actions:copied')} />
           ) : (
             <Button
               color="primary"
               variant="text"
               startIcon={<CopyIcon />}
-              onClick={async () => {
-                await copyToClipboard(auth.tokenString)().then(() => {
-                  setShowCopiedFeedback(true);
-                  setTimeout(() => {
-                    setShowCopiedFeedback(false);
-                  }, 2000);
-                });
+              onClick={() => {
+                setCopied();
               }}
             >
               {t('actions:copy_verification_code')}
@@ -226,9 +225,10 @@ export const LinkAccount: React.FC<LinkAccountProps> = ({ auth }) => {
               >
                 here to access to your YouTube Studio
               </Link>
-              and edit your channel description.
-              Just paste the link anywhere in it and click the Publish button on the top right.
-              You can remove the code from your channel&apos;s description after the verification is finished.
+              and edit your channel description. Just paste the link anywhere in
+              it and click the Publish button on the top right. You can remove
+              the code from your channel&apos;s description after the
+              verification is finished.
             </Trans>
           </Typography>
         </Grid>

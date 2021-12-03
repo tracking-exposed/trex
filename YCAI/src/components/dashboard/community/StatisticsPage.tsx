@@ -15,7 +15,7 @@ import * as A from 'fp-ts/lib/Array';
 import { pipe } from 'fp-ts/lib/function';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { creatorStats, profile } from '../../../state/creator.queries';
+import { creatorStats, profile } from '../../../state/dashboard/creator.queries';
 import { ErrorBox } from '../../common/ErrorBox';
 import { LazyFullSizeLoader } from '../../common/FullSizeLoader';
 import { LinkAccountButton } from '../../common/LinkAccountButton';

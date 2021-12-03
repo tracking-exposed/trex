@@ -5,7 +5,7 @@ import * as QR from 'avenger/lib/QueryResult';
 import { declareQueries } from 'avenger/lib/react';
 import { pipe } from 'fp-ts/lib/function';
 import { useTranslation } from 'react-i18next';
-import { auth, localProfile } from '../../state/creator.queries';
+import { auth, localProfile } from '../../state/dashboard/creator.queries';
 import { CurrentView, currentView } from '../../utils/location.utils';
 import { ErrorBox } from '../common/ErrorBox';
 import { LazyFullSizeLoader } from '../common/FullSizeLoader';

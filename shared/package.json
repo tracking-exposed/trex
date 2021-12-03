@@ -3,11 +3,13 @@
   "description": "shared files needed by the backend and the YCAI extension",
   "scripts": {
     "clean": "rm -rf ./build",
+    "tsc": "tsc",
     "build": "tsc -b",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "license": "AGPL-3.0",
   "dependencies": {
+    "debug": "^4.3.3",
     "fp-ts": "^2.11.5",
     "io-ts": "^2.2.16",
     "io-ts-types": "^0.5.16",
@@ -17,7 +19,15 @@
     "typescript": "^4.5.2"
   },
   "devDependencies": {
+    "@types/debug": "^4.1.7",
+    "@types/dotenv-webpack": "^7.0.3",
+    "@types/node": "^14",
+    "@types/webpack-bundle-analyzer": "^4.4.1",
+    "dotenv-webpack": "^7.0.3",
     "fast-check": "^2.20.0",
-    "fast-check-io-ts": "^0.5.0"
+    "fast-check-io-ts": "^0.5.0",
+    "tsconfig-paths-webpack-plugin": "^3.5.2",
+    "webpack": "^5.64.4",
+    "webpack-bundle-analyzer": "^4.5.0"
   }
 }

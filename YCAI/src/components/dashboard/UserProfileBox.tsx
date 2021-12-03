@@ -1,19 +1,22 @@
-import React from 'react';
+import { Box, makeStyles, Typography } from '@material-ui/core';
 import { ContentCreator } from '@shared/models/ContentCreator';
-import { Box, Typography, makeStyles } from '@material-ui/core';
-import Avatar from '../external/Avatar';
 import * as QR from 'avenger/lib/QueryResult';
 import { declareQueries } from 'avenger/lib/react';
 import { sequenceS } from 'fp-ts/lib/Apply';
 import { pipe } from 'fp-ts/lib/function';
 import * as TE from 'fp-ts/lib/TaskEither';
-import { toBrowserError } from 'providers/browser.provider';
-import { doUpdateCurrentView } from 'utils/location.utils';
-import { updateAuth, updateProfile } from '../../state/creator.commands';
-import { localProfile } from '../../state/creator.queries';
+import { toAppError } from '../../models/errors/AppError';
+import React from 'react';
+import {
+  updateAuth,
+  updateProfile
+} from '../../state/dashboard/creator.commands';
+import { localProfile } from '../../state/dashboard/creator.queries';
+import { doUpdateCurrentView } from '../../utils/location.utils';
 import { ErrorBox } from '../common/ErrorBox';
 import { LazyFullSizeLoader } from '../common/FullSizeLoader';
 import UnlinkProfileButton from '../common/UnlinkProfileButton';
+import Avatar from '../external/Avatar';
 
 interface LoggedInUserProfileBoxProps {
   onLogout: () => void;
@@ -50,11 +53,11 @@ export const LoggedInUserProfileBox: React.FC<LoggedInUserProfileBoxProps> = ({
     <Box display="flex" alignItems="flex-start">
       <Avatar src={profile.avatar} className={classes.avatar} />
       <Box>
-        <Typography className={classes.username}>
-          {profile.username}
-        </Typography>
+        <Typography className={classes.username}>{profile.username}</Typography>
         <Typography variant="caption" className={classes.channel}>
-          Channel ID:<br />{profile.channelId}
+          Channel ID:
+          <br />
+          {profile.channelId}
         </Typography>
         <UnlinkProfileButton
           className={classes.unlink}
@@ -77,11 +80,8 @@ export const UserProfileBox = withQueries(
           auth: updateAuth(null),
           profile: updateProfile(null),
         }),
-        TE.chainFirst(() =>
-          pipe(
-            doUpdateCurrentView({ view: 'index' }),
-            TE.mapLeft(toBrowserError)
-          )
+        TE.chain(() =>
+          pipe(doUpdateCurrentView({ view: 'index' }), TE.mapLeft(toAppError))
         )
       )();
     }, []);

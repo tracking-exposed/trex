@@ -1,7 +1,6 @@
 import debug from 'debug';
-import { config } from '../config';
 
-export const logger = debug('@ycai');
+export const logger = debug('@yttrex');
 
 type DebugFn = (s: string, ...args: any[]) => void;
 
@@ -13,7 +12,8 @@ interface Logger {
 }
 
 export const GetLogger = (name: string, d?: debug.Debugger): Logger => {
-  const l = (d ?? logger).extend(name);
+  const baseLogger = d ?? logger;
+  const l = baseLogger.extend(name);
 
   const info = l.extend('info');
   const error = l.extend('error');
@@ -26,7 +26,3 @@ export const GetLogger = (name: string, d?: debug.Debugger): Logger => {
     extend: (ns) => GetLogger(ns, l),
   };
 };
-
-export const apiLogger = GetLogger('API');
-
-debug.enable(config.LOGGER);

@@ -5,17 +5,17 @@ import YTIcon from '@material-ui/icons/YouTube';
 import { makeStyles } from '@material-ui/styles';
 import * as TE from 'fp-ts/lib/TaskEither';
 import { pipe } from 'fp-ts/lib/function';
-import { FullSizeLoader } from 'components/common/FullSizeLoader';
-import { TabPanel } from 'components/common/TabPanel';
-import { Settings } from 'models/Settings';
+import { FullSizeLoader } from '../common/FullSizeLoader';
+import { TabPanel } from '../common/TabPanel';
+import { Settings } from '../../models/Settings';
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import { useTranslation } from 'react-i18next';
-import { GetLogger } from 'utils/logger.utils';
-import { getVideoId } from 'utils/yt.utils';
+import { GetLogger } from '@shared/logger';
+import { getVideoId } from '../../utils/yt.utils';
 import { Tab } from '../common/Tab';
 import { VideoRecommendations } from './VideoRecommendations';
-import { videoRecommendations } from 'state/public.queries';
+import { videoRecommendations } from '../../state/popup.queries';
 import { Recommendation } from '@shared/models/Recommendation';
 
 const logger = GetLogger('yt-video-recommendations');
@@ -45,8 +45,11 @@ export const YTVideoPage: React.FC<{
   const [currentVideoId, setVideoId] = React.useState(
     getVideoId(window.location.href)
   );
-  const [recommendations, setRecommendations] = React.useState<Recommendation[]>([]);
-  const [recommendationsLoading, setRecommendationsLoading] = React.useState(false);
+  const [recommendations, setRecommendations] = React.useState<
+    Recommendation[]
+  >([]);
+  const [recommendationsLoading, setRecommendationsLoading] =
+    React.useState(false);
 
   const classes = useStyles();
 
@@ -89,7 +92,7 @@ export const YTVideoPage: React.FC<{
               onTabChange(YT_TAB_INDEX);
             }
           }
-        }),
+        })
       )();
     }
   }, [currentVideoId]);

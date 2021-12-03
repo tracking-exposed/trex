@@ -2,11 +2,12 @@
   "extends": "../tsconfig.json",
   "compilerOptions": {
     "composite": true,
-    "lib": ["ES2015"],
+    "lib": ["ES2015", "DOM"],
     "outDir": "./build",
     "baseUrl": "./",
     "rootDir": "./src",
-    "tsBuildInfoFile": "./build/.tsbuildinfo"
+    "tsBuildInfoFile": "./build/.tsbuildinfo",
+    "esModuleInterop": true
   },
   "include": ["./src"]
 }

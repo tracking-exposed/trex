@@ -3,7 +3,7 @@ import * as QR from 'avenger/lib/QueryResult';
 import { WithQueries } from 'avenger/lib/react';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
-import { creatorADVStats } from '../../../state/creator.queries';
+import { creatorADVStats } from '../../../state/dashboard/creator.queries';
 import { makeStyles } from '../../../theme';
 import { ErrorBox } from '../../common/ErrorBox';
 import { LazyFullSizeLoader } from '../../common/FullSizeLoader';

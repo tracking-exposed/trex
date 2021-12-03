@@ -1,18 +1,18 @@
+import { pipe } from 'fp-ts/lib/function';
+import * as TE from 'fp-ts/lib/TaskEither';
+import { Settings } from './models/Settings';
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
-import { settingsRefetch } from 'state/public.queries';
 import { ErrorBoundary } from './components/common/ErrorBoundary';
 import { YTContributionInfoBox } from './components/injected/YTContributionInfoBox';
 import { YTVideoPage } from './components/injected/YTVideoPage';
 import './i18n';
 import * as Messages from './models/Messages';
 import './resources/global.css';
+import { settingsRefetch } from './state/popup.queries';
 import { ThemeProvider, YCAITheme } from './theme';
 import { bo } from './utils/browser.utils';
-import { GetLogger } from './utils/logger.utils';
-import * as TE from 'fp-ts/lib/TaskEither';
-import { pipe } from 'fp-ts/lib/function';
-import { Settings } from 'models/Settings';
+import { GetLogger } from '@shared/logger';
 
 const appLogger = GetLogger('app');
 

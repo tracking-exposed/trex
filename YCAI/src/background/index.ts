@@ -12,12 +12,13 @@ import {
   catchRuntimeLastError,
   sendTabMessage,
   tabsQuery,
-  toBrowserError,
+  toBrowserError
 } from '../providers/browser.provider';
 import { bo } from '../utils/browser.utils';
 import { fromStaticPath } from '../utils/endpoint.utils';
-import { GetLogger } from '../utils/logger.utils';
-import db, { AUTH_KEY, CONTENT_CREATOR } from './db';
+import { GetLogger } from '@shared/logger';
+import * as constants from '../constants';
+import db from './db';
 import * as development from './reloadExtension';
 import * as settings from './settings';
 
@@ -26,16 +27,16 @@ const bkgLogger = GetLogger('bkg');
 export const getStorageKey = (type: string): string => {
   switch (type) {
     case Messages.GetKeypair.value:
-      return settings.PUBLIC_KEYPAIR;
+      return constants.PUBLIC_KEYPAIR;
     case Messages.GetSettings.value:
     case Messages.UpdateSettings.value:
-      return settings.SETTINGS_KEY;
+      return constants.SETTINGS_KEY;
     case Messages.GetAuth.value:
     case Messages.UpdateAuth.value:
-      return AUTH_KEY;
+      return constants.AUTH_KEY;
     case Messages.GetContentCreator.value:
     case Messages.UpdateContentCreator.value:
-      return CONTENT_CREATOR;
+      return constants.CONTENT_CREATOR;
     default:
       return '';
   }

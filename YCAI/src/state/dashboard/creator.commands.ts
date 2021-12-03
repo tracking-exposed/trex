@@ -1,13 +1,13 @@
 import { AuthResponse } from '@shared/models/Auth';
 import { ContentCreator } from '@shared/models/ContentCreator';
 import { command } from 'avenger';
-import * as E from 'fp-ts/lib/Either';
-import { pipe } from 'fp-ts/lib/function';
 import { sequenceS } from 'fp-ts/lib/Apply';
+import { pipe } from 'fp-ts/lib/function';
 import * as TE from 'fp-ts/lib/TaskEither';
-import { Messages } from '../models/Messages';
-import { API } from '../providers/api.provider';
-import { sendMessage } from '../providers/browser.provider';
+import { AppError } from 'models/errors/AppError';
+import * as constants from '../../constants';
+import { API } from '../../providers/api.provider';
+import { setItem } from '../../providers/localStorage.provider';
 import {
   auth,
   ccRelatedUsers,
@@ -15,7 +15,7 @@ import {
   creatorVideos,
   localProfile,
   profile,
-  requiredLocalProfile,
+  requiredLocalProfile
 } from './creator.queries';
 import { settings, videoRecommendations } from './public.queries';
 
@@ -26,7 +26,9 @@ export const registerCreatorChannel = command(
         Params: { channelId },
         Body: { type: 'channel' },
       }),
-      TE.chainFirst((payload) => sendMessage(Messages.UpdateAuth)(payload))
+      TE.chainFirst((payload) =>
+        TE.fromIO(setItem(constants.AUTH_KEY, payload))
+      )
     ),
   {
     creatorVideos,
@@ -39,7 +41,7 @@ export const verifyChannel = command(
   ({ channelId }: { channelId: string }) =>
     pipe(
       API.v3.Creator.VerifyCreator({ Params: { channelId } }),
-      TE.chain(sendMessage(Messages.UpdateContentCreator))
+      TE.chain((cc) => TE.fromIO(setItem(constants.CONTENT_CREATOR, cc)))
     ),
   {
     localProfile,
@@ -156,7 +158,8 @@ export const addRecommendationForVideo = command(
 );
 
 export const updateAuth = command(
-  (payload: AuthResponse | null) => sendMessage(Messages.UpdateAuth)(payload),
+  (payload: AuthResponse | null) =>
+    TE.fromIO<any, AppError>(setItem(constants.AUTH_KEY, payload)),
   {
     auth,
   }
@@ -164,15 +167,11 @@ export const updateAuth = command(
 
 export const updateProfile = command(
   (payload: ContentCreator | null) =>
-    sendMessage(Messages.UpdateContentCreator)(payload),
+    TE.fromIO<any, AppError>(setItem(constants.CONTENT_CREATOR, payload)),
   {
     profile,
     localProfile,
   }
-);
-
-export const copyToClipboard = command((text: string) =>
-  TE.tryCatch(() => navigator.clipboard.writeText(text), E.toError)
 );
 
 export const assignAccessToken = command(
@@ -192,7 +191,9 @@ export const assignAccessToken = command(
         }
         return TE.left(e);
       }),
-      TE.chain((creator) => sendMessage(Messages.UpdateContentCreator)(creator))
+      TE.chain((creator) =>
+        TE.fromIO(setItem(constants.CONTENT_CREATOR, creator))
+      )
     );
   },
   {
