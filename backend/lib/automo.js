@@ -511,8 +511,7 @@ async function updateMetadata(html, newsection, repeat) {
 }
 
 async function getMixedDataSince(schema, since, maxAmount) {
-    // investigate on usage and meaninging: possible refactor
-    console.trace("getMixedData", schema, since, maxAmount);
+    // This is used in admin/monitor with password protected access
 
     const mongoc = await mongo3.clientConnect({concurrency: 1});
     const retContent = [];

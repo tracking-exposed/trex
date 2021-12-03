@@ -186,9 +186,9 @@ export const makeApp = (ctx: MakeAppContext): express.Application => {
   app.get("/api/v2/searchid/:listof", iowrapper("getSearchDetails"));
   app.get("/api/v2/search/keywords/:paging?", iowrapper("getSearchKeywords"));
 
-  /* experiments dependend API -- the one below have been tested */
+  /* experiments API: "comparison" require password, "chiaroscuro" doesn't */
   app.get(
-    "/api/v2/guardoni/list/:directiveType",
+    "/api/v2/guardoni/list/:directiveType/:key?",
     iowrapper("getAllExperiments")
   );
   app.post("/api/v3/directives/:directiveType", iowrapper("postDirective"));
