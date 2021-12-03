@@ -278,7 +278,7 @@ function profileExecount(profile, evidencetag) {
   if (!fs.existsSync(udd)) {
     console.log("--profile hasn't a directory. Creating " + udd);
     try {
-      fs.mkdirSync(udd);
+      fs.mkdirSync(udd, {recursive: true});
     } catch (error) {
       console.log("Unable to create directory:", error.message);
       process.exit(1)
@@ -310,8 +310,8 @@ function profileExecount(profile, evidencetag) {
 function printHelp() {
   const helptext = `\nOptions can be set via: env , --longopts, and ${defaultCfgPath} file
 
-To quickly test the tool:
-   --auto:\t\tYou can specify 1 (is the default) or 2.
+To quickly test the tool, execute and follow instructions:
+   --auto <1 or 2>:\tdefault 1, a.k.a. "Greta experiment"
 
 To register an experiment:
    --csv FILENAME.csv\tdefault is --comparison, optional --shadowban
@@ -426,7 +426,7 @@ async function main() {
 
   await writeExperimentInfo(experiment, profinfo, evidencetag, directiveType);
 
-  const headless = nconf.get('headless');
+  const headless = (!!nconf.get('headless'));
   const browser = await dispatchBrowser(headless, profinfo);
 
   if(browser.newProfile)
@@ -440,7 +440,7 @@ async function main() {
 }
 
 async function writeExperimentInfo(experimentId, profinfo, evidencetag, directiveType) {
-  debug("Writing experiment Info into extension/experiment.json");
+  debug("Saving experiment info in extension/experiment.json (would be read by the extension)");
   const cfgfile = path.join('extension', 'experiment.json');
   const expinfo = {
     experimentId,
@@ -482,7 +482,7 @@ async function dispatchBrowser(headless, profinfo) {
     debug("Dispatching browser: profile usage count %d, with NO PROXY",
       execount);
   }
-
+console.log("REMIND NOTE HEADLESS", headless);
   try {
     puppeteer.use(pluginStealth());
     const browser = await puppeteer.launch({
@@ -612,8 +612,8 @@ function initialSetup() {
     /* if the advertisement dumping folder is set, first we check
      * if exist, and if doens't we call it fatal error */
     if(!fs.existsSync(advdump)) {
-      debug("Fatal error: advdump folder (%s) not exist", advdump);
-      process.exit(1);
+      debug("--advdump folder (%s) not exist: creating", advdump);
+      fs.mkdirSync(advdump, {recursive: true});
     }
     debug("Advertisement screenshotting enable in folder: %s", path.resolve(advdump));
   }
@@ -663,6 +663,9 @@ async function validateAndStart(manifest) {
 try {
 
   const manifest = initialSetup();
+  if(!manifest)
+    process.exit(1);
+
   validateAndStart(manifest);
 
 } catch(error) {
