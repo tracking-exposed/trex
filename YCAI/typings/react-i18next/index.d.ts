@@ -94,6 +94,7 @@ declare module 'react-i18next' {
         url_helper_text: string;
         title: string;
         description: string;
+        missing_description: string;
       };
       dashboard: {
         title: string;

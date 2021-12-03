@@ -110,6 +110,7 @@ const resources: CustomTypeOptions['resources'] = {
     url_helper_text: 'Insert a link',
     title: 'Recommendation title',
     description: 'Recommendation description',
+    missing_description: 'This recommendation does not have a description.',
   },
   dashboard: { title: 'Youchoose Creator Studio' },
   popup: { version: 'version {{version}} build {{date}}' },

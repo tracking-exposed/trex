@@ -25,4 +25,7 @@ export const Recommendation = t.strict(
   'Recommendation'
 );
 
+export const titleMaxLength = 50;
+export const descriptionMaxLength = 100;
+
 export type Recommendation = t.TypeOf<typeof Recommendation>;

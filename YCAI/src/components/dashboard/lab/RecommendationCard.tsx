@@ -14,11 +14,15 @@ import {
   ArrowDownward as ArrowDownwardIcon,
 } from '@material-ui/icons';
 
-import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/styles';
 
-import { Recommendation } from '@shared/models/Recommendation';
+import {
+  titleMaxLength,
+  descriptionMaxLength,
+  Recommendation
+} from '@shared/models/Recommendation';
 import { YCAITheme } from '../../../theme';
+import CharLimitedTypography from '../../common/CharLimitedTypography';
 import Image from '../../common/Image';
 import EditRecommendation from './EditRecommendation';
 
@@ -109,23 +113,24 @@ export const RecommendationCard: React.FC<RecommendationCardProps> = ({
             display="flex"
             flexDirection="column"
           >
-            <Typography
-                className={classes.title}
-                color="textSecondary"
-                component="h4"
-                gutterBottom
-                variant="h6"
-              >
-                {data.title}
-
-            </Typography>
+            <CharLimitedTypography
+              className={classes.title}
+              color="textSecondary"
+              component="h4"
+              gutterBottom
+              limit={titleMaxLength}
+              variant="h6"
+            >
+              {data.title}
+            </CharLimitedTypography>
             <Box flexGrow={1}>
-              <Typography
+              <CharLimitedTypography
                 color="textSecondary"
+                limit={descriptionMaxLength}
                 variant="body2"
               >
-                {data.description}
-              </Typography>
+                {data.description ?? t('recommendations:missing_description')}
+              </CharLimitedTypography>
             </Box>
             <Box>
               <Button

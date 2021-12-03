@@ -13,7 +13,11 @@ import {
 import { makeStyles } from '@material-ui/styles';
 
 import { useTranslation } from 'react-i18next';
-import { Recommendation } from '@shared/models/Recommendation';
+import {
+  titleMaxLength,
+  descriptionMaxLength,
+  Recommendation,
+} from '@shared/models/Recommendation';
 import Image from '../../common/Image';
 import { YCAITheme } from '../../../theme';
 import { patchRecommendation } from '../../../state/dashboard/creator.commands';
@@ -88,7 +92,7 @@ const EditRecommendation: React.FC<EditRecommendationProps> = ({ data, videoId, 
               className={classes.textField}
               fullWidth
               label={t('recommendations:title')}
-              limit={50}
+              limit={titleMaxLength}
               onChange={
                 (str) => setTitle(str)
               }
@@ -98,7 +102,7 @@ const EditRecommendation: React.FC<EditRecommendationProps> = ({ data, videoId, 
               className={classes.textField}
               fullWidth
               label={t('recommendations:description')}
-              limit={100}
+              limit={descriptionMaxLength}
               onChange={
                 (str) => setDescription(str)
               }
