@@ -3,7 +3,7 @@ import * as t from "io-ts";
 import { AuthorizationHeader, AuthResponse } from "../../models/Auth";
 import { ContentCreator } from "../../models/ContentCreator";
 import { CreatorStats } from "../../models/CreatorStats";
-import { Recommendation } from "../../models/Recommendation";
+import { Recommendation, PartialRecommendation } from "../../models/Recommendation";
 import { Video } from "../../models/Video";
 
 const ChannelType = t.literal("channel");
@@ -108,13 +108,6 @@ const CreateRecommendation = Endpoint({
   },
   Output: Recommendation,
 });
-
-export const PartialRecommendation = t.partial(
-  {...Recommendation.type.props},
-  'PartialRecommendation'
-);
-
-export type PartialRecommendation = t.TypeOf<typeof PartialRecommendation>;
 
 // TODO: Swagger
 const PatchRecommendation = Endpoint({
