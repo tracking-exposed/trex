@@ -1,12 +1,12 @@
-const { AppEnv } = require('./src/AppEnv');
-const { getConfig } = require('../shared/build/webpack/config');
-const path = require('path');
-const FileManagerPlugin = require('filemanager-webpack-plugin');
-const CopyWebpackPlugin = require('copy-webpack-plugin');
+import { AppEnv } from './src/AppEnv';
+import { getConfig } from '../shared/src/webpack/config';
+import * as path from 'path';
+import FileManagerPlugin from 'filemanager-webpack-plugin';
+import CopyWebpackPlugin from 'copy-webpack-plugin';
+import pkgJson from './package.json';
 
-const pkgJson = require('./package.json');
 const manifestVersion = (
-  process.env.MANIFEST_VERSION || pkgJson.version
+  process.env.MANIFEST_VERSION ?? pkgJson.version
 ).replace('-beta', '');
 
 process.env.VERSION = manifestVersion;
@@ -29,14 +29,14 @@ config.plugins.push(
     patterns: [
       {
         from: 'public',
-        filter: (file) => {
+        filter: (file: string) => {
           const { base } = path.parse(file);
           return base !== 'manifest.json';
         },
       },
       {
         from: 'public/manifest.json',
-        transform: (content) => {
+        transform: (content: Buffer) => {
           const manifest = JSON.parse(content.toString());
 
           if (buildENV.BUNDLE_TARGET === 'chrome') {
@@ -75,4 +75,4 @@ if (config.mode === 'production') {
   );
 }
 
-module.exports = config;
+export default config;

@@ -1,7 +1,5 @@
-import * as t from 'io-ts';
 import { AppEnv } from './AppEnv';
 
-type AppEnv = t.TypeOf<typeof AppEnv>;
 
 export const config: AppEnv = {
   NODE_ENV: process.env.NODE_ENV as any,

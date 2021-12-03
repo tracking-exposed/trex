@@ -1,4 +1,4 @@
-const t = require('io-ts');
+import * as t from 'io-ts';
 
 const AppEnv = t.strict(
   {
@@ -18,4 +18,10 @@ const AppEnv = t.strict(
   'AppEnv'
 );
 
-module.exports = { AppEnv };
+type AppEnv = t.TypeOf<typeof AppEnv>
+
+export {
+  AppEnv
+}
+
+export {}

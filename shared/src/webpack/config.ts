@@ -35,19 +35,20 @@ const BUILD_ENV = t.strict(
 type BUILD_ENV = t.TypeOf<typeof BUILD_ENV>;
 interface WebpackConfig extends webpack.Configuration {
   buildENV: BUILD_ENV;
+  plugins: any[] //webpack.WebpackPluginInstance[]
 }
 
-interface GetConfigParams<A extends Record<string, t.Mixed>> {
+interface GetConfigParams<E extends t.Props> {
   cwd: string;
   outputDir: string;
-  env: t.Type<A, unknown, unknown>;
+  env: t.ExactC<t.TypeC<E>>;
   entry: {
     [key: string]: string;
   };
 }
 
-const getConfig = <A extends Record<string, t.Mixed>>(
-  opts: GetConfigParams<A>
+const getConfig = <E extends t.Props>(
+  opts: GetConfigParams<E>
 ): WebpackConfig => {
   const mode =
     process.env.NODE_ENV === "production" ? "production" : "development";
