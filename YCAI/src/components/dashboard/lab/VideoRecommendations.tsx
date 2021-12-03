@@ -8,7 +8,7 @@ import { declareQueries } from 'avenger/lib/react';
 import { pipe } from 'fp-ts/lib/function';
 
 import { updateRecommendationsForVideo } from '../../../state/dashboard/creator.commands';
-import * as queries from '../../../state/popup.queries';
+import * as queries from '../../../state/dashboard/public.queries';
 import { ErrorBox } from '../../common/ErrorBox';
 import { LazyFullSizeLoader } from '../../common/FullSizeLoader';
 import { RecommendationCard } from './RecommendationCard';
