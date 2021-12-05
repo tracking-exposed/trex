@@ -8,13 +8,12 @@ const mongo3 = require('./mongo3');
 const parserList = {
     nature: require('../parsers/nature'),
     description: require('../parsers/description'),
-    tiktoknative: require('../parsers/tiktoknative'),
-    tiktokmessages: require('../parsers/tiktokmessages'),
     music: require('../parsers/music'),
     hashtags: require('../parsers/hashtags'),
     numbers: require('../parsers/numbers'),
     stitch: require('../parsers/stitch'),
     author: require('../parsers/author'),
+    search: require('../parsers/search'),
     downloader: require('../parsers/downloader'),
 };
 
@@ -48,7 +47,9 @@ function buildMetadata(entry) {
     metadata.savingTime = new Date(entry.source.html.savingTime);
     metadata.id = entry.source.html.id;
     metadata.publicKey = entry.source.html.publicKey;
-    // console.log("->", JSON.stringify(metadata, undefined, 2));
+    metadata.timelineId = entry.source.html.timelineId;
+    metadata.order = entry.source.html.n[0];
+    // from routes/events.js the 0 is videoCounter, client side
     return metadata;
 }
 

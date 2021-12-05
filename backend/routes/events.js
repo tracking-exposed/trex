@@ -134,6 +134,7 @@ async function processEvents(req) {
         // _.keys(body)
         // ["html","href","feedId","feedCounter",
         //  "videoCounter","rect","clientTime","type","incremental"]
+        // 'type' can be ignored as it is always 'video' and doesn't reflect nature
 
         const id = utils.hash({
             clientRGN: body.feedId,
@@ -155,7 +156,6 @@ async function processEvents(req) {
 
         const html = {
             id,
-            type: body.type,
             rect: body.rect,
             href: body.href,
             timelineId: timelineWord + '-' + timelineIdHash.substr(0, 10),
