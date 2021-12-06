@@ -12,8 +12,6 @@ import webpack from "webpack";
 import { BundleAnalyzerPlugin } from "webpack-bundle-analyzer";
 import { GetLogger } from "../logger";
 
-
-
 const webpackLogger = GetLogger("webpack");
 
 // TODO: babel, browserlist, auto-prefixing, ...?
@@ -45,6 +43,7 @@ interface GetConfigParams<E extends t.Props> {
   entry: {
     [key: string]: string;
   };
+  hot: boolean;
 }
 
 const getConfig = <E extends t.Props>(
@@ -154,9 +153,11 @@ const getConfig = <E extends t.Props>(
               loader: "ts-loader",
               options: {
                 getCustomTransformers: () => ({
-                  before: [mode === 'development' && ReactRefreshTypescript()].filter(
-                    Boolean
-                  ),
+                  before: [
+                    mode === "development" &&
+                      opts.hot &&
+                      ReactRefreshTypescript(),
+                  ].filter(Boolean),
                 }),
                 compilerOptions: {
                   noEmit: false,
