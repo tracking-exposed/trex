@@ -1,3 +1,10 @@
+# [1.9.0-beta.2](https://github.com/tracking-exposed/yttrex/compare/v1.9.0-beta.1...v1.9.0-beta.2) (2021-12-06)
+
+
+### Bug Fixes
+
+* semantic release build ext ([784d956](https://github.com/tracking-exposed/yttrex/commit/784d95643749e1403055d58010d1a50c3f86a86c))
+
 # [1.9.0-beta.1](https://github.com/tracking-exposed/yttrex/compare/v1.8.992...v1.9.0-beta.1) (2021-12-06)
 
 
