@@ -170,7 +170,7 @@ function sizeCheck(nodeHTML) {
         return false;
     }
 
-    console.log(`Valid update as a new ${_.round(100-percentage, 2)}% of the page have been received (size ${s}, lastObservedSize ${lastObservedSize}) ${window.location.pathname}`);
+    // console.log(`Valid update as a new ${_.round(100-percentage, 2)}% of the page have been received (size ${s}, lastObservedSize ${lastObservedSize}) ${window.location.pathname}`);
     lastObservedSize = s;
     return true;
 }

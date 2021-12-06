@@ -5,7 +5,7 @@
 
   "short_name": "ytTREX",
   "description": "A tool for academic researchers. Part of the tracking.exposed project, is meant to analyze the algorithm of a popular video portal.",
-  "version": "1.7.2",
+  "version": "1.8.0",
   "author": "The team of Tracking Exposed",
 
   "icons": {
@@ -22,7 +22,6 @@
   "permissions": [
     "storage",
     "alarms",
-    "tabs",
     "http://localhost:9000/",
     "https://*.youtube.com/",
     "https://youtube.tracking.exposed/"
