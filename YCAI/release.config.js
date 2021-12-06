@@ -99,7 +99,7 @@ module.exports = {
   ],
   branches: [
     {
-      name: 'main',
+      name: 'master',
       prerelease: false,
     },
     {
