@@ -136,24 +136,20 @@ const InjectedApp: React.FC = () => {
 const YC_ROOT_ID = 'yc-root-injected';
 
 const observer = new MutationObserver(() => {
-  const ycRootNode = document.querySelector(`#${YC_ROOT_ID}`);
+  const ycRoot = document.createElement('div');
+  ycRoot.id = YC_ROOT_ID;
+  ycRoot.style.position = 'absolute';
+  ycRoot.style.width = '0';
+  document.body.appendChild(ycRoot);
 
-  if (ycRootNode === null) {
-    const ycRoot = document.createElement('div');
-    ycRoot.id = YC_ROOT_ID;
-    ycRoot.style.position = 'absolute';
-    ycRoot.style.width = '0';
-    document.body.appendChild(ycRoot);
+  ReactDOM.render(
+    <React.StrictMode>
+      <InjectedApp />
+    </React.StrictMode>,
+    ycRoot
+  );
 
-    ReactDOM.render(
-      <React.StrictMode>
-        <InjectedApp />
-      </React.StrictMode>,
-      ycRoot
-    );
-
-    observer.disconnect();
-  }
+  observer.disconnect();
 });
 
 observer.observe(document, { childList: true, subtree: true });
