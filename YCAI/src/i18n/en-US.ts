@@ -93,7 +93,12 @@ const resources: CustomTypeOptions['resources'] = {
       "Please double-check that you have published the code\nin your channel's description and try again.",
     go_back_to_step_one_hint:
       'If the verification keeps failing, <1>go back to step one</1> and make sure\nyou have pasted the correct URL of your YouTube channel.',
-    channel_not_found: "We couldn't find a channel with the ID you provided.\nPlease make sure the URL or ID you pasted is correct."
+    channel_not_found: "We couldn't find a channel with the ID you provided.\nPlease make sure the URL or ID you pasted is correct.",
+    already_have_token: 'Or <1>click here</1> if you already have an access token.',
+    token_modal_title: 'Authenticate with an access token',
+    token_modal_description: 'If you already have an access token, paste it below:',
+    token_modal_submit: 'Authenticate',
+    token_authentication_failed: 'Authentication failed, please check your access token.',
   },
   youtube: {
     title: 'Youtube',

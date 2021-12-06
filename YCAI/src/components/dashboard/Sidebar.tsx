@@ -1,3 +1,4 @@
+import React from 'react';
 import {
   Box,
   List,
@@ -7,15 +8,15 @@ import {
   useTheme,
   Divider,
 } from '@material-ui/core';
-import * as React from 'react';
 import { useTranslation } from 'react-i18next';
+
+import { ContentCreator } from '@shared/models/ContentCreator';
 import { CurrentView, doUpdateCurrentView } from '../../utils/location.utils';
 import { UserProfileBox } from './UserProfileBox';
 import LabIcon from '../common/icons/LabIcon';
 import AnalyticsIcon from '../common/icons/AnalyticsIcon';
 import SettingsIcon from '../common/icons/SettingsIcon';
 import YCAILogo from '../common/YCAILogo';
-
 
 const useStyles = makeStyles((theme) => ({
   routesList: {
@@ -95,9 +96,10 @@ const toMenuItem = (
 
 interface SidebarProps {
   currentView: CurrentView;
+  profile?: ContentCreator;
 }
 
-export const Sidebar: React.FC<SidebarProps> = ({ currentView }) => {
+export const Sidebar: React.FC<SidebarProps> = ({ currentView, profile }) => {
   const { t } = useTranslation();
   const classes = useStyles();
   const theme = useTheme();
@@ -105,6 +107,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ currentView }) => {
     <Box
       style={{
         position: 'sticky',
+        top: theme.spacing(3),
       }}
     >
       <Box
@@ -119,41 +122,46 @@ export const Sidebar: React.FC<SidebarProps> = ({ currentView }) => {
         <YCAILogo height={24} />
       </Box>
 
-      <UserProfileBox />
-      <Divider light className={classes.divider}/>
+      {profile && (
+        <>
+          <UserProfileBox />
 
-      <List className={classes.routesList} disablePadding={true}>
-        {[
-          {
-            title: t('routes:lab_title_short'),
-            icon: LabIcon,
-            views: ['lab', 'labEdit'] as Array<CurrentView['view']>,
-          },
-          {
-            title: t('routes:analytics'),
-            icon: AnalyticsIcon,
-            views: ['statistics'] as Array<CurrentView['view']>,
-          },
-          {
-            title: t('routes:settings'),
-            icon: SettingsIcon,
-            views: ['settings'] as Array<CurrentView['view']>,
-          },
-        ].map((opts) =>
-          toMenuItem(
-            {
-              ...opts,
-              iconClassName: classes.listItemIcon,
-              iconColor: theme.palette.primary.main,
-              iconSelectedColor: theme.palette.common.white,
-              className: classes.listItem,
-              notSelectedClassName: classes.listItemNotSelected,
-              selectedClassName: classes.listItemSelected,
-            },
-            currentView
-          )
-        )}
-      </List>
+          <Divider light className={classes.divider}/>
+
+          <List className={classes.routesList} disablePadding={true}>
+            {[
+              {
+                title: t('routes:lab_title_short'),
+                icon: LabIcon,
+                views: ['lab', 'labEdit'] as Array<CurrentView['view']>,
+              },
+              {
+                title: t('routes:analytics'),
+                icon: AnalyticsIcon,
+                views: ['analytics'] as Array<CurrentView['view']>,
+              },
+              {
+                title: t('routes:settings'),
+                icon: SettingsIcon,
+                views: ['settings'] as Array<CurrentView['view']>,
+              },
+            ].map((opts) =>
+              toMenuItem(
+                {
+                  ...opts,
+                  iconClassName: classes.listItemIcon,
+                  iconColor: theme.palette.primary.main,
+                  iconSelectedColor: theme.palette.common.white,
+                  className: classes.listItem,
+                  notSelectedClassName: classes.listItemNotSelected,
+                  selectedClassName: classes.listItemSelected,
+                },
+                currentView
+              )
+            )}
+          </List>
+        </>
+      )}
     </Box>
   );
 };
