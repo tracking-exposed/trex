@@ -8,7 +8,7 @@
  * https://swagger.io/docs/specification/about/
  */
 
-import { pipe } from 'fp-ts/lib/pipeable';
+import { pipe } from 'fp-ts/lib/function';
 import * as R from 'fp-ts/lib/Record';
 import * as S from 'fp-ts/lib/string';
 import {
@@ -62,7 +62,7 @@ interface DocConfig {
  */
 const hasRequestBody = <E extends MinimalEndpoint>(e: E): boolean => {
   return (
-    (e.Method === 'POST' || e.Method === 'PUT') &&
+    (e.Method === 'POST' || e.Method === 'PUT' || e.Method === 'PATCH') &&
     (e.Input as any)?.Body !== undefined
   );
 };

@@ -3,25 +3,31 @@ import { useTranslation } from 'react-i18next';
 
 import {
   Box,
+  Button,
   IconButton,
   Card,
   Grid,
 } from '@material-ui/core';
 
 import {
-  Delete as DeleteIcon,
   ArrowUpward as ArrowUpwardIcon,
   ArrowDownward as ArrowDownwardIcon,
 } from '@material-ui/icons';
 
-import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/styles';
 
-import { Recommendation } from '@shared/models/Recommendation';
+import {
+  titleMaxLength,
+  descriptionMaxLength,
+  Recommendation
+} from '@shared/models/Recommendation';
 import { YCAITheme } from '../../../theme';
+import CharLimitedTypography from '../../common/CharLimitedTypography';
 import Image from '../../common/Image';
+import EditRecommendation from './EditRecommendation';
 
 interface RecommendationCardProps {
+  videoId: string;
   data: Recommendation;
   onDeleteClick: () => void;
   onMoveUpClick: (() => void) | false;
@@ -35,6 +41,9 @@ const useStyles = makeStyles<YCAITheme>((theme) => ({
     height: cardHeight,
     overflow: 'hidden',
     backgroundColor: theme.palette.grey[300],
+    '& a:hover': {
+      cursor: 'pointer',
+    },
   },
   imageContainer: {
     '& img': {
@@ -47,9 +56,14 @@ const useStyles = makeStyles<YCAITheme>((theme) => ({
     height: cardHeight,
     overflow: 'hidden',
   },
+  right: {
+    padding: theme.spacing(2),
+    height: `calc(100% - ${theme.spacing(2)}px)`,
+  },
   title: {
     fontWeight: 'bold',
-    fontSize: '1rem'
+    fontSize: '1rem',
+    lineHeight: 1,
   },
   iconsContainer: {
     display: 'flex',
@@ -60,10 +74,17 @@ const useStyles = makeStyles<YCAITheme>((theme) => ({
       marginRight: theme.spacing(1),
     },
   },
+  button: {
+    lineHeight: 1,
+    marginRight: theme.spacing(2),
+    minWidth: 0,
+    padding: 0,
+  }
 }));
 
 export const RecommendationCard: React.FC<RecommendationCardProps> = ({
   data,
+  videoId,
   onDeleteClick,
   onMoveUpClick,
   onMoveDownClick,
@@ -87,23 +108,48 @@ export const RecommendationCard: React.FC<RecommendationCardProps> = ({
           item xs={6}
           className={classes.body}
         >
-          <Box p={2}>
-            <Typography
+          <Box
+            className={classes.right}
+            display="flex"
+            flexDirection="column"
+          >
+            <CharLimitedTypography
               className={classes.title}
               color="textSecondary"
               component="h4"
               gutterBottom
+              limit={titleMaxLength}
               variant="h6"
             >
               {data.title}
-
-            </Typography>
-            <Typography
-              color="textSecondary"
-              variant="body2"
-            >
-              {data.description}
-            </Typography>
+            </CharLimitedTypography>
+            <Box flexGrow={1}>
+              <CharLimitedTypography
+                color="textSecondary"
+                limit={descriptionMaxLength}
+                variant="body2"
+              >
+                {data.description ?? t('recommendations:missing_description')}
+              </CharLimitedTypography>
+            </Box>
+            <Box>
+              <Button
+                className={classes.button}
+                onClick={onDeleteClick}
+                size="small"
+                variant="text"
+              >
+                {t('actions:delete_recommendation_button')}
+              </Button>
+              <EditRecommendation
+                className={classes.button}
+                color="primary"
+                variant="text"
+                size="small"
+                data={data}
+                videoId={videoId}
+              />
+            </Box>
           </Box>
         </Grid>
 
@@ -134,16 +180,7 @@ export const RecommendationCard: React.FC<RecommendationCardProps> = ({
               >
               <ArrowDownwardIcon />
           </IconButton>
-          <IconButton
-            aria-label={t('actions:remove_recommendation_from_video')}
-            color="primary"
-            onClick={onDeleteClick}
-            size="small"
-          >
-            <DeleteIcon />
-          </IconButton>
         </Grid>
-
       </Grid>
     </Card>
   );

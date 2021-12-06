@@ -149,6 +149,7 @@ export const makeApp = (ctx: MakeAppContext): express.Application => {
   app.get("/api/v3/creator/videos", iowrapper("getVideoByCreator"));
   app.get("/api/v3/creator/videos/:videoId", iowrapper("getOneVideoByCreator"));
   app.get("/api/v3/creator/recommendations", iowrapper("youChooseByProfile"));
+  app.patch("/api/v3/creator/recommendations/:urlId", iowrapper("patchRecommendation"));
   app.get(
     "/api/v3/creator/:channelId/related/:amount?",
     iowrapper("getCreatorRelated")

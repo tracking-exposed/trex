@@ -5,11 +5,12 @@ import React, {
 type PropsObject = Record<string, number | string>;
 
 export interface ImageProps {
+  alt?: string;
+  className?: string;
+  extraImgProps?: PropsObject;
   src: string;
   style?: PropsObject;
-  alt?: string;
   title?: string;
-  extraImgProps?: PropsObject;
 };
 
 type ImageState =
