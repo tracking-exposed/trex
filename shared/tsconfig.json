@@ -3,6 +3,7 @@
   "compilerOptions": {
     "composite": true,
     "lib": ["ES2015", "DOM"],
+    "typeRoots": ["../node_modules/@types", "./node_modules/@types"],
     "outDir": "./build",
     "baseUrl": "./",
     "rootDir": "./src",
