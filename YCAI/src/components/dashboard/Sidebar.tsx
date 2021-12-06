@@ -105,6 +105,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ currentView }) => {
     <Box
       style={{
         position: 'sticky',
+        top: theme.spacing(3),
       }}
     >
       <Box
