@@ -130,7 +130,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ currentView }) => {
             views: ['lab', 'labEdit'] as Array<CurrentView['view']>,
           },
           {
-            title: t('routes:statistics'),
+            title: t('routes:analytics'),
             icon: AnalyticsIcon,
             views: ['statistics'] as Array<CurrentView['view']>,
           },
