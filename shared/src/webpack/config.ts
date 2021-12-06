@@ -11,6 +11,7 @@ import { TsconfigPathsPlugin } from "tsconfig-paths-webpack-plugin";
 import webpack from "webpack";
 import { BundleAnalyzerPlugin } from "webpack-bundle-analyzer";
 import { GetLogger } from "../logger";
+const ReactRefreshWebpackPlugin = require("@pmmmwh/react-refresh-webpack-plugin");
 
 const webpackLogger = GetLogger("webpack");
 
@@ -125,6 +126,10 @@ const getConfig = <E extends t.Props>(
     new webpack.DefinePlugin(stringifiedAppEnv as any),
   ];
 
+  if (mode === "development") {
+    plugins.push(new ReactRefreshWebpackPlugin());
+  }
+
   if (buildENV.BUNDLE_STATS) {
     plugins.push(
       new BundleAnalyzerPlugin({
@@ -148,6 +153,7 @@ const getConfig = <E extends t.Props>(
       rules: [
         {
           test: /\.tsx?$/,
+          exclude: /node_modules/,
           use: [
             {
               loader: "ts-loader",
@@ -159,10 +165,6 @@ const getConfig = <E extends t.Props>(
                       ReactRefreshTypescript(),
                   ].filter(Boolean),
                 }),
-                compilerOptions: {
-                  noEmit: false,
-                  sourceMap: true,
-                },
                 transpileOnly: true,
               },
             },
