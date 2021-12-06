@@ -9,7 +9,7 @@ import { setItem } from '../../providers/localStorage.provider';
 
 import { AuthResponse } from '@shared/models/Auth';
 import { ContentCreator } from '@shared/models/ContentCreator';
-import { PartialRecommendation } from '@shared/endpoints/v3/creator.endpoints';
+import { PartialRecommendation } from '@shared/models/Recommendation';
 import {
   auth,
   ccRelatedUsers,
