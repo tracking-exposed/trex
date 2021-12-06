@@ -24,10 +24,10 @@ export const ADVChannelStatsBox: React.FC = () => {
   return (
     <Box className={classes.root}>
       <Typography color="primary" variant="h5">
-        {t('statistics:advertising_connected_to_your_videos_title')}
+        {t('analytics:advertising_connected_to_your_videos_title')}
       </Typography>
       <Typography color="primary" variant="subtitle1">
-        {t('statistics:advertising_connected_to_your_videos_subtitle')}
+        {t('analytics:advertising_connected_to_your_videos_subtitle')}
       </Typography>
       <WithQueries
         queries={{
@@ -36,7 +36,7 @@ export const ADVChannelStatsBox: React.FC = () => {
         render={QR.fold(LazyFullSizeLoader, ErrorBox, ({ creatorADVStats }) => {
           if (creatorADVStats.length === 0 ) {
             return (
-              <Typography variant="subtitle1">{t('statistics:advertising_empty_data')}</Typography>
+              <Typography variant="subtitle1">{t('analytics:advertising_empty_data')}</Typography>
             )
           }
           const treeData = {

@@ -102,8 +102,7 @@ declare module 'react-i18next' {
       popup: {
         version: string;
       };
-      statistics: {
-        title: string;
+      analytics: {
         subtitle: string;
         recommendability_score_title: string;
         recommendability_score_subtitle: string;
@@ -151,7 +150,7 @@ declare module 'react-i18next' {
         lab_title_short: string;
         lab_subtitle: string;
         lab_edit_subtitle: string;
-        statistics: string;
+        analytics: string;
         settings: string;
         link_account: string;
       };

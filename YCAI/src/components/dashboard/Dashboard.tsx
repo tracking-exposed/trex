@@ -10,7 +10,7 @@ import { CurrentView, currentView } from '../../utils/location.utils';
 import { ErrorBox } from '../common/ErrorBox';
 import { LazyFullSizeLoader } from '../common/FullSizeLoader';
 import Settings from './Settings';
-import { StatisticsPage } from './community/StatisticsPage';
+import { AnalyticsPage } from './community/AnalyticsPage';
 import { LinkAccount } from './LinkAccount';
 import { Sidebar } from './Sidebar';
 import { Lab } from './lab/Lab';
@@ -74,10 +74,10 @@ const DashboardContent: React.FC<DashboardContentProps> = ({
               ];
             default:
               return [
-                t('routes:statistics'),
-                t('statistics:subtitle'),
+                t('routes:analytics'),
+                t('analytics:subtitle'),
                 // eslint-disable-next-line react/jsx-key
-                <StatisticsPage />,
+                <AnalyticsPage />,
               ];
           }
         }

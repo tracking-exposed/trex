@@ -64,7 +64,7 @@ const resources: CustomTypeOptions['resources'] = {
       'Click on one of your videos below to pick and order the recommendations you want to display in the side bar. Your content, your choice!',
     lab_edit_subtitle:
       'Paste a link in the grey box below to add it to the recommendations of this video. You can add recommendations towards any website!',
-    statistics: 'Statistics',
+    analytics: 'Analytics',
     settings: 'Settings',
     link_account: 'Authenticate your Channel \n to start recommending on your videos',
   },
@@ -114,8 +114,7 @@ const resources: CustomTypeOptions['resources'] = {
   },
   dashboard: { title: 'Youchoose Creator Studio' },
   popup: { version: 'version {{version}} build {{date}}' },
-  statistics: {
-    title: 'Statistics',
+  analytics: {
     subtitle: 'Statistics computed with resources from other users',
     recommendability_score_title: 'Recommendability Score',
     recommendability_score_subtitle:
