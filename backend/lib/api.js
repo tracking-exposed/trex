@@ -21,7 +21,6 @@ const apiList = {
     getSearchesDot:      require('../routes/searches').getSearchesDot,
     getSearchKeywords:   require('../routes/searches').getSearchKeywords,
     getSearchDetails:    require('../routes/searches').getSearchDetails,
-    updateCampaigns:     require('../routes/searches').updateCampaigns,
 
 
     getByAuthor:         require('../routes/public').getByAuthor,
@@ -54,9 +53,6 @@ const apiList = {
     getMonitor:          require('../routes/monitor').getMonitor,
     deleter:             require('../routes/monitor').deleter,
 
-    /** emails */
-    registerEmail:       require('../routes/emails').registerEmail,
-
     /* guardoni support for webapp */
     getAllExperiments:   require('../routes/experiments').list,
     experimentCSV:       require('../routes/experiments').csv,
@@ -67,29 +63,32 @@ const apiList = {
     // used by guardoni to close it
     concludeExperiment3: require('../routes/experiments').conclude3,
 
-
+    /* for survey (with emails) */
     recordAnswers:       require('../routes/answers').recordAnswers,
     retrieveAnswers:     require('../routes/answers').retrieveAnswers,
     retrieveAnswersCSV:  require('../routes/answers').retrieveAnswersCSV,
     retrieveMails:       require('../routes/answers').retrieveMails,
+    /* and specificly for the email, opt-in, and who wants to be get updated */
+    registerEmail:       require('../routes/emails').registerEmail,
 
     /* v3 youchoose */
-    youChooseByVideoId:     require('../routes/youchoose').byVideoId,
-    youChooseByProfile:     require('../routes/youchoose').byProfile,
-    ogpProxy:               require('../routes/youchoose').ogpProxy,
-    getVideoByCreator:      require('../routes/youchoose').videoByCreator,
-    getOneVideoByCreator:   require('../routes/youchoose').oneVideoByCreator,
-    repullByCreator:        require('../routes/youchoose').repullByCreator,
-    recommendationById:     require('../routes/youchoose').getRecommendationById,
-    updateVideoRec:         require('../routes/youchoose').updateVideoRec,
-    getCreatorRelated:      require('../routes/public').getCreatorRelated,
-    getCreatorStats:        require('../routes/youchoose').getCreatorStats,
-    creatorRegister:        require('../routes/youchoose').creatorRegister,
-    creatorVerify:          require('../routes/youchoose').creatorVerify,
-    creatorGet:             require('../routes/youchoose').creatorGet,
-    creatorDelete:          require('../routes/youchoose').creatorDelete,
+    youChooseByVideoId:    require('../routes/youchoose').byVideoId,
+    youChooseByProfile:    require('../routes/youchoose').byProfile,
+    patchRecommendation:   require('../routes/youchoose').patchRecommendation,
+    ogpProxy:              require('../routes/youchoose').ogpProxy,
+    getVideoByCreator:     require('../routes/youchoose').videoByCreator,
+    getOneVideoByCreator:  require('../routes/youchoose').oneVideoByCreator,
+    repullByCreator:       require('../routes/youchoose').repullByCreator,
+    recommendationById:    require('../routes/youchoose').getRecommendationById,
+    updateVideoRec:        require('../routes/youchoose').updateVideoRec,
+    getCreatorRelated:     require('../routes/public').getCreatorRelated,
+    getCreatorStats:       require('../routes/youchoose').getCreatorStats,
+    creatorRegister:       require('../routes/youchoose').creatorRegister,
+    creatorVerify:         require('../routes/youchoose').creatorVerify,
+    creatorGet:            require('../routes/youchoose').creatorGet,
+    creatorDelete:         require('../routes/youchoose').creatorDelete,
     /* v3 opendata */
-    opendataChannel:        require('../routes/opendata').opendataChannel,
+    opendataChannel:     require('../routes/opendata').opendataChannel,
 
     /* v3 chiaroscuro support */
     postDirective:       require('../routes/directives').post,

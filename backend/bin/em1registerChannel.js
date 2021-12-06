@@ -1,5 +1,4 @@
 #!/usr/bin/env node
-const _ = require('lodash');
 const debug = require('debug')('emergency-script:1:registerChannel');
 const nconf = require('nconf');
 
@@ -22,6 +21,7 @@ async function registerChannel(channelId, avatar, username, force) {
 
     if(creator && !force) {
         debug("Creator %O", creator);
+        // eslint-disable-next-line no-console
         console.log("Creator already configured, please add --force option to override");
         process.exit(1);
     }
@@ -32,21 +32,30 @@ async function registerChannel(channelId, avatar, username, force) {
             username,
             url: "https://www.youtube.com/channel/" + channelId });
 
+    // eslint-disable-next-line no-console
     console.log("Creator created, accessToken:", created.accessToken);
 }
 
 try {
-    if(!channelId)
+    if(!channelId) {
+        // eslint-disable-next-line no-console
         return console.log("--channelId is mandatory");
-    if(!avatar)
+    }
+    if(!avatar) {
+        // eslint-disable-next-line no-console
         return console.log("--avatar is mandatory");
-    if(!username)
+    }
+    if(!username) {
+        // eslint-disable-next-line no-console
         return console.log("--username is mandatory");
-
-    if(force)
+    }
+    if(force) {
+        // eslint-disable-next-line no-console
         console.log("--force is set");
+    }
 
     registerChannel(channelId, avatar, username, force);
 } catch(error) {
+    // eslint-disable-next-line no-console
     console.log(error);
 }

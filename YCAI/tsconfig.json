@@ -14,11 +14,10 @@
     "strictNullChecks": true,
     "skipDefaultLibCheck": true,
     "skipLibCheck": true,
-    "lib": [
-      "dom",
-      "ESNext"
-    ],
+    "lib": ["dom", "ESNext"],
     "typeRoots": [
+      "../node_modules/@types",
+      "../shared/node_modules/@types",
       "./node_modules/@types",
       "./typings"
     ],
@@ -35,5 +34,16 @@
     {
       "path": "../shared"
     }
-  ]
+  ],
+  "include": [
+    "./src",
+    "./typings",
+    "./webpack.config.ts",
+    "./webpack.extension.config.ts"
+  ],
+  "ts-node": {
+    "compilerOptions": {
+      "module": "CommonJS"
+    }
+  }
 }

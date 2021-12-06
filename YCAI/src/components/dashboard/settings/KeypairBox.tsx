@@ -22,7 +22,7 @@ import {
   downloadTXTFile,
   generateKeypair,
   updateSettings,
-} from '../../../state/public.commands';
+} from '../../../state/dashboard/public.commands';
 import { YCAITheme } from '../../../theme';
 
 interface KeypairBoxProps {

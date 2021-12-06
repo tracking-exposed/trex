@@ -16,9 +16,17 @@ defaults:
 jobs:
   pull_request:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [14.x]
 
     steps:
       - uses: actions/checkout@v2
+
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v2
+        with:
+          node-version: ${{ matrix.node-version }}
 
       - name: Get npm cache directory path
         id: npm-cache-dir-path
@@ -41,7 +49,14 @@ jobs:
       - name: Lint code
         run: npm run lint
 
-      - name: Build
+      - name: Build shared
+        working-directory: ./shared
+        run: npm run build
+
+      - name: Build extension
+        run: npm run build:ext
+
+      - name: Build dashboard
         run: npm run build
 
       - name: Test

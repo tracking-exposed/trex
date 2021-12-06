@@ -34,52 +34,55 @@ async function getSummaryByPublicKey(publicKey, options) {
         throw new Error("Authentication failure");
 
     const metadata = await mongo3.readLimit(mongoc,
-        nconf.get('schema').metadata, { publicKey: supporter.publicKey, title: {
-            $exists: true }}, { savingTime: -1 }, options.amount, options.skip);
+        nconf.get('schema').metadata, { publicKey: supporter.publicKey },
+        { savingTime: -1 }, options.amount, options.skip
+    );
 
     const total = await mongo3.count(mongoc,
-        nconf.get('schema').metadata, { publicKey: supporter.publicKey, title: {
-            $exists: true
-        } });
-
-    const searches = await mongo3.readLimit(mongoc,
-        nconf.get('schema').queries, { publicKey: supporter.publicKey }, { savingTime: -1},
-            options.amount, options.skip);
+        nconf.get('schema').metadata,
+        { publicKey: supporter.publicKey }
+    );
 
     await mongoc.close();
 
-    debug("Retrieved in getSummaryByPublicKey: data %d, total %d (amount %d skip %d) and searches %d",
-        _.size(metadata), total, options.amount, options.skip, _.size(searches));
+    debug("Retrieved in getSummaryByPublicKey: data %d, total %d (amount %d skip %d)",
+        _.size(metadata), total, options.amount, options.skip);
 
-    const fields = [ 'id', 'login', 'videoId', 'savingTime', 'title', 'relative',
-                     'authorName', 'authorSource', 'publicationTime', 'relatedN' ];
+    const stats = _.countBy(metadata, 'type');
+
+    const videof = [ 'id', 'videoId', 'savingTime', 'title', 
+                     'authorName', 'authorSource', 'publicationTime' ];
+    const homef = ['id', 'savingTime'];
+    const searchf = ['id', 'savingTime', 'query' ];
+    const payload = _.reduce(metadata, function(memo, entry) {
+        if(entry.type === 'home') {
+            memo.homes.push(_.pick(entry, homef));
+        } else if(entry.type === 'video') {
+            memo.videos.push({
+                ..._.pick(entry, videof),
+                relatedN: entry.related.length,
+                relative: moment.duration( moment(entry.savingTime) - moment() ).humanize() + " ago",
+            });
+        } else if(entry.type === 'search') {
+            memo.searches.push({
+                ..._.pick(entry, searchf),
+                results: entry.results.length,
+            });
+        }
+        return memo;
+    }, {
+        homes: [],
+        videos: [],
+        searches: []
+    });
+    /*
     const cleandata = _.map(metadata, function(e) {
         e.publicationTime = new Date(e.publicationTime);
         e.relatedN = _.size(e.related);
-        e.relative = moment.duration( moment(e.savingTime) - moment() ).humanize() + " ago";
         return _.pick(e, fields);
-    });
+    }); */
 
-    const graphs = {};
-    const listOfRelated = _.flatten(_.map(metadata, 'related'));
-
-    /* the pie chars are generated from these reduction and rendered with c3js.org */
-    graphs.views = _.countBy(metadata, 'authorName');
-
-    /* a pie chart by counting how many video is recommended for you */
-    graphs.reason = _.countBy(listOfRelated, 'foryou');
-    graphs.reason = _.reduce(graphs.reason, function(memo, value, key) {
-        _.set(memo, (key === 'true') ? 'for you' : 'organic', value);
-        return memo;
-    }, {});
-
-    graphs.related = _.countBy(listOfRelated, 'recommendedSource')
-    graphs.related = _.map(graphs.related, function(amount, name) {
-        return { name, 'recommended videos': amount };
-    });
-    graphs.related = _.reverse(_.orderBy(graphs.related, 'recommended videos'));
-
-    return { supporter, recent: cleandata, graphs, total, searches };
+    return { supporter, ...payload, total, stats };
 }
 
 async function getMetadataByPublicKey(publicKey, options) {
@@ -508,8 +511,7 @@ async function updateMetadata(html, newsection, repeat) {
 }
 
 async function getMixedDataSince(schema, since, maxAmount) {
-    // investigate on usage and meaninging: possible refactor
-    console.trace("getMixedData", schema, since, maxAmount);
+    // This is used in admin/monitor with password protected access
 
     const mongoc = await mongo3.clientConnect({concurrency: 1});
     const retContent = [];

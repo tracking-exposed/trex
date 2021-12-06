@@ -24,31 +24,19 @@ const iowrapper =
         logger("API (%s) didn't return anything!?", fname);
         res.send("Fatal error: Invalid output");
         res.status(501);
-      } else if (httpresult.json && httpresult.json.error) {
+      } else if (httpresult.json?.error) {
         logger("API (%s) failure, returning 500", fname);
         res.status(500);
         res.json(httpresult.json);
       } else if (httpresult.json) {
-        logger(
-          "API (%s) success, returning %d bytes JSON",
-          fname,
-          _.size(JSON.stringify(httpresult.json))
-        );
+        logger("API (%s) success, returning %d bytes JSON", fname, _.size(JSON.stringify(httpresult.json)));
         res.setHeader("Access-Control-Allow-Origin", "*");
         res.json(httpresult.json);
       } else if (httpresult.text) {
-        logger(
-          "API (%s) success, returning text (size %d)",
-          fname,
-          _.size(httpresult.text)
-        );
+        logger("API (%s) success, returning text (size %d)", fname, _.size(httpresult.text));
         res.send(httpresult.text);
       } else if (httpresult.status) {
-        logger(
-          "Returning empty status %d from API (%s)",
-          httpresult.status,
-          fname
-        );
+        logger("Returning empty status %d from API (%s)", httpresult.status, fname);
         res.status(httpresult.status);
       } else {
         logger("Undetermined failure in API (%s) →  %j", fname, httpresult);
@@ -161,6 +149,7 @@ export const makeApp = (ctx: MakeAppContext): express.Application => {
   app.get("/api/v3/creator/videos", iowrapper("getVideoByCreator"));
   app.get("/api/v3/creator/videos/:videoId", iowrapper("getOneVideoByCreator"));
   app.get("/api/v3/creator/recommendations", iowrapper("youChooseByProfile"));
+  app.patch("/api/v3/creator/recommendations/:urlId", iowrapper("patchRecommendation"));
   app.get(
     "/api/v3/creator/:channelId/related/:amount?",
     iowrapper("getCreatorRelated")
@@ -198,12 +187,9 @@ export const makeApp = (ctx: MakeAppContext): express.Application => {
   app.get("/api/v2/searchid/:listof", iowrapper("getSearchDetails"));
   app.get("/api/v2/search/keywords/:paging?", iowrapper("getSearchKeywords"));
 
-  /* to configure search comparison */
-  app.post("/api/v2/campaigns/:key", iowrapper("updateCampaigns"));
-
-  /* experiments dependend API -- the one below have been tested */
+  /* experiments API: "comparison" require password, "chiaroscuro" doesn't */
   app.get(
-    "/api/v2/guardoni/list/:directiveType",
+    "/api/v2/guardoni/list/:directiveType/:key?",
     iowrapper("getAllExperiments")
   );
   app.post("/api/v3/directives/:directiveType", iowrapper("postDirective"));

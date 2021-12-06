@@ -1,40 +1,33 @@
+import { pipe } from 'fp-ts/lib/function';
+import * as TE from 'fp-ts/lib/TaskEither';
+import { Settings } from './models/Settings';
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
-import { settingsRefetch } from 'state/public.queries';
 import { ErrorBoundary } from './components/common/ErrorBoundary';
 import { YTContributionInfoBox } from './components/injected/YTContributionInfoBox';
 import { YTVideoPage } from './components/injected/YTVideoPage';
 import './i18n';
 import * as Messages from './models/Messages';
 import './resources/global.css';
+import { settingsRefetch } from './state/popup.queries';
 import { ThemeProvider, YCAITheme } from './theme';
 import { bo } from './utils/browser.utils';
-import { GetLogger } from './utils/logger.utils';
-import * as TE from 'fp-ts/lib/TaskEither';
-import { pipe } from 'fp-ts/lib/function';
-import { Settings } from 'models/Settings';
+import { GetLogger } from '@shared/logger';
 
 const appLogger = GetLogger('app');
 
-const YT_RELATED_SELECTOR = '#related';
+const YT_RELATED_SELECTOR = '#secondary-inner';
 const YC_RECOMMENDATIONS_ID = 'yc-recommendations';
 const YC_RECOMMENDATIONS_SELECTOR = `#${YC_RECOMMENDATIONS_ID}`;
 const YC_CONTRIBUTION_INFO_BOX_ID = 'ycai-contribution-box';
 
 const InjectedApp: React.FC = () => {
   // nodes
-  // for YTVideoPage
-  const ytRelatedVideoNode = document.querySelector(YT_RELATED_SELECTOR);
-  const ycRecommendationsNode =
-    (ytRelatedVideoNode?.querySelector(
-      YC_RECOMMENDATIONS_SELECTOR
-    ) as HTMLDivElement | null) ?? null;
 
-  // for YCVideoContributionInfoBox
-  const ycContributionInfoBoxNode = document.getElementById(
-    YC_CONTRIBUTION_INFO_BOX_ID
-  ) as HTMLDivElement | null;
-
+  const [recommendationNode, setRecommendationNode] =
+    React.useState<HTMLDivElement | null>(null);
+  const [contributionInfoBoxNode, setContributionInfoNode] =
+    React.useState<HTMLDivElement | null>(null);
   // state
   const [settings, setSettings] = React.useState<Settings | null>(null);
 
@@ -52,6 +45,12 @@ const InjectedApp: React.FC = () => {
   );
 
   React.useEffect(() => {
+    // for YTVideoPage
+    const ytRelatedVideoNode = document.querySelector(YT_RELATED_SELECTOR);
+    const ycRecommendationsNode =
+      (ytRelatedVideoNode?.querySelector(
+        YC_RECOMMENDATIONS_SELECTOR
+      ) as HTMLDivElement | null) ?? null;
 
     // append yt video page recommendations dom element
     if (ytRelatedVideoNode !== null) {
@@ -65,12 +64,18 @@ const InjectedApp: React.FC = () => {
         const ycRelatedNode = document.createElement('div');
         ycRelatedNode.id = YC_RECOMMENDATIONS_ID;
         ytRelatedVideoNode.prepend(ycRelatedNode);
+        setRecommendationNode(ycRelatedNode);
       }
       appLogger.debug(
         'Element (%s) present. Returning...',
         YC_RECOMMENDATIONS_SELECTOR
       );
     }
+
+    // for YCVideoContributionInfoBox
+    const ycContributionInfoBoxNode = document.getElementById(
+      YC_CONTRIBUTION_INFO_BOX_ID
+    ) as HTMLDivElement | null;
 
     // append yc contribution box
     if (ycContributionInfoBoxNode === null) {
@@ -85,6 +90,8 @@ const InjectedApp: React.FC = () => {
       contributionBoxEl.style.zIndex = '9000';
       contributionBoxEl.style.borderRadius = '10px';
       document.body.appendChild(contributionBoxEl);
+
+      setContributionInfoNode(ycContributionInfoBoxNode);
     }
 
     // register the on message listener
@@ -107,20 +114,19 @@ const InjectedApp: React.FC = () => {
         TE.map((settings) => setSettings(settings))
       )();
     }
-  }, [ycRecommendationsNode, ycContributionInfoBoxNode]);
-
+  }, [recommendationNode, contributionInfoBoxNode]);
 
   return (
     <ErrorBoundary>
       <ThemeProvider theme={YCAITheme}>
-        {ycContributionInfoBoxNode !== null && settings !== null && (
+        {contributionInfoBoxNode !== null && settings !== null && (
           <YTContributionInfoBox
-            node={ycContributionInfoBoxNode}
+            node={contributionInfoBoxNode}
             settings={settings}
           />
         )}
-        {ycRecommendationsNode !== null && settings !== null && (
-          <YTVideoPage settings={settings} node={ycRecommendationsNode} />
+        {recommendationNode !== null && settings !== null && (
+          <YTVideoPage settings={settings} node={recommendationNode} />
         )}
       </ThemeProvider>
     </ErrorBoundary>
@@ -129,12 +135,11 @@ const InjectedApp: React.FC = () => {
 
 const YC_ROOT_ID = 'yc-root-injected';
 
-const ycRootNode = document.querySelector(`#${YC_ROOT_ID}`);
-if (ycRootNode === null) {
+const observer = new MutationObserver(() => {
   const ycRoot = document.createElement('div');
   ycRoot.id = YC_ROOT_ID;
   ycRoot.style.position = 'absolute';
-  ycRoot.style.width = "0";
+  ycRoot.style.width = '0';
   document.body.appendChild(ycRoot);
 
   ReactDOM.render(
@@ -143,4 +148,8 @@ if (ycRootNode === null) {
     </React.StrictMode>,
     ycRoot
   );
-}
+
+  observer.disconnect();
+});
+
+observer.observe(document, { childList: true, subtree: true });

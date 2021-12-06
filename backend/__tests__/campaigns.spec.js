@@ -1,7 +1,8 @@
 import _ from 'lodash';
 import * as fs from 'fs';
+import * as path from 'path';
 
-const sourcefile = "config/campaigns.json";
+const sourcefile = path.resolve(__dirname, "../config/campaigns.json");
 
 describe("Test if config/campaigns.json is properly formatted", function() {
 

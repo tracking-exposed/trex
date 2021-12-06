@@ -1,8 +1,7 @@
 #!/usr/bin/env node
 const _ = require('lodash');
 const debug = require('debug')('bin:picker');
-const Promise = require('bluebird');
-const request = Promise.promisifyAll(require('request'));
+const fetch = require('node-fetch');
 const nconf = require('nconf');
 
 const mongo3 = require('../lib/mongo3');
@@ -12,17 +11,10 @@ nconf.argv().env().file({ file: 'config/settings.json' });
 const source = nconf.get('source') || 'https://youtube.tracking.exposed';
 
 async function fetchRemote(sourceUrl) {
-    return request
-        .getAsync({url: sourceUrl, rejectUnauthorized: false } )
-        .then(function(res) {
-            debug("Download completed (%d)", _.size(res.body) );
-            return res.body;
-        })
-        .then(JSON.parse)
-        .catch(function(error) {
-            debug("――― [E] %s", error.message);
-            return [];
-        });
+    const res = await fetch(sourceUrl);
+    const payload = await res.json();
+    debug("Download completed (%d)", _.size(JSON.stringify(payload)) );
+    return payload;
 }
 
 async function main(metadataId) {
@@ -53,8 +45,10 @@ async function main(metadataId) {
     return _.size(htmls);
 }
 
-if(!nconf.get('id'))
+if(!nconf.get('id')) {
+    // eslint-disable-next-line no-console
     return console.log("--id required (should be a metadataId)");
+}
 
 
 try {

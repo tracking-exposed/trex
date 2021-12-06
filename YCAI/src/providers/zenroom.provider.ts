@@ -2,7 +2,7 @@ import * as E from 'fp-ts/lib/Either';
 import { pipe } from 'fp-ts/lib/pipeable';
 import * as TE from 'fp-ts/lib/TaskEither';
 import { Keypair } from '../models/Settings';
-import { GetLogger } from '../utils/logger.utils';
+import { GetLogger } from '@shared/logger';
 import { toBrowserError } from './browser.provider';
 import { zencode_exec } from 'zenroom';
 import { SecurityProvider } from './security.provider.type';

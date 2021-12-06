@@ -1,20 +1,21 @@
-const { generateWebpackAliasesFromTSConfig } = require('./webpackConfigUtils');
+const { pathsToModuleNameMapper } = require('ts-jest/utils');
+const tsConfig = require('./tsconfig.json');
 
-const aliases = generateWebpackAliasesFromTSConfig()
-
-const moduleNameMapper = Object.keys(aliases).reduce((acc, alias) => ({
-  ...acc,
-  [`^${alias}/(.*)$`]: `${aliases[alias]}/$1`,
-}), {
-  '\\.(svg|ttf)$': '<rootDir>/__mocks__/fileMock.js',
-  '\\.(css)$': '<rootDir>/__mocks__/styleMock.js',
-});
+const moduleNameMapper = pathsToModuleNameMapper(
+  tsConfig.compilerOptions.paths, {
+    prefix: '<rootDir>/src'
+  }
+);
 
 /** @type {import('ts-jest/dist/types').InitialOptionsTsJest} */
 module.exports = {
   preset: 'ts-jest',
   testEnvironment: 'jsdom',
-  moduleNameMapper,
+  moduleNameMapper: {
+    ...moduleNameMapper,
+    '\\.(svg|ttf)$': '<rootDir>/__mocks__/fileMock.js',
+    '\\.(css)$': '<rootDir>/__mocks__/styleMock.js',
+  },
   globals: {
     'ts-jest': {
       // TS reports strange errors with jest,

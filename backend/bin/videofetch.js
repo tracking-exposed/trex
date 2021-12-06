@@ -28,19 +28,24 @@ function simpleFormat(e) {
 }
 
 async function vfet(channelId) {
-  let selectedcontent, htmlfile, dfile = null;
+  let selectedcontent = null;
+  let dfile = null;
 
-  if(!!nconf.get('guardoni'))
+  if(nconf.get('guardoni'))
     dfile = path.join(DEFAULT_EXPERIMENT, `guardoni-${channelId}.csv`);
   else
     dfile = path.join(DEFAULT_EXPERIMENT, `${channelId}-urls.csv`);
 
-  if(fs.existsSync(dfile))
+  if(fs.existsSync(dfile)) {
+    // eslint-disable-next-line no-console
     return console.log(`File ${dfile} exists, quitting!`);
+  }
 
-  htmlfile = path.join(DEFAULT_EXPERIMENT, `${channelId}-dump.html`);
-  if(fs.existsSync(htmlfile))
+  const htmlfile = path.join(DEFAULT_EXPERIMENT, `${channelId}-dump.html`);
+  if(fs.existsSync(htmlfile)) {
+    // eslint-disable-next-line no-console
     return console.log(`HTML dump file ${htmlfile} exists, quitting!`);
+  }
 
   const { html, statusCode } = await curly.fetchRawChannelVideosHTML(channelId);
 
@@ -52,7 +57,7 @@ async function vfet(channelId) {
     return;
   }
 
-  if(!!nconf.get('guardoni'))
+  if(nconf.get('guardoni'))
     selectedcontent = _.map(titlesandId, guardoniFormat);
   else
     selectedcontent = _.map(titlesandId, simpleFormat);
@@ -63,7 +68,9 @@ async function vfet(channelId) {
     dfile, selectedcontent.length);
 };
 
-if(!nconf.get('channel'))
+if(!nconf.get('channel')) {
+  // eslint-disable-next-line no-console
   return console.log("Mandatory --channel <channelId>, <--guardoni> is optional");
+}
 
 vfet(nconf.get('channel'));

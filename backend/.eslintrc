@@ -23,9 +23,10 @@
   },
   "settings": {
     "node": {
-        "version": "14"
+      "version": "14"
     }
   },
+  "ignorePatterns": ["__tests__"],
   "rules": {
     "no-console": 1,
     "no-use-before-define": "off",

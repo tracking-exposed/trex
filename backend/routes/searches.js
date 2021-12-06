@@ -7,7 +7,6 @@ const qustr = require('querystring');
 const CSV = require('../lib/CSV');
 const params = require('../lib/params');
 const dbutils = require('../lib/dbutils');
-const security = require('../lib/security');
 const utils = require('../lib/utils');
 
 /* this file have been heavily refactored 
@@ -20,9 +19,6 @@ const utils = require('../lib/utils');
  *      list of search queries made by PubKey 
  * - personal page/popup:
  *      download search queries in CSV (per PubKey)
- * - campaign:
- *      that logic is replaced by guardoni v2, and
- *      might converget with the 'experiments'
  * - experiments:
  *      every content marked with an experimentId might return.
  * - comparison:
@@ -54,6 +50,7 @@ async function getSearches(req) {
 };
 
 async function getQueries(req) {
+    // TO BE REVIEW THIS,  or just to be removed becaue the by Campaign is useless.
     // this is the API used in campaigns like: http://localhost:1313/chiaro/example/
     const campaignName = req.params.campaignName;
     debug("getQueries of %s", campaignName);
@@ -178,21 +175,6 @@ async function getSearchKeywords(req) {
     }}; */
 };
 
-async function updateCampaigns(req) {
-    if(!security.checkPassword(req))
-        return {json: { error: true, message: "Invalid key" }};
-
-    const fixed = _.map(req.body, function(c) {
-        c.endDate = new Date(c.endDate);
-        c.startDate = new Date(c.startDate);
-        c.lastUpdate = new Date();
-        return c;
-    });
-    debug("Fixed %d campaigns to update", _.size(fixed))
-    const result = await dbutils.writeCampaigns(nconf.get('schema').campaigns, fixed, 'name');
-    return { json: result }
-}
-
 async function getSearchDetails(req) {
     /* this API is used to ask for individual metadataId, and by a visualization that want to 
      * visualize small snippet in a look-and-feel close to the one of youtube */
@@ -216,5 +198,4 @@ module.exports = {
     getSearchesCSV,
     getSearchKeywords,
     getSearchDetails,
-    updateCampaigns,
 };

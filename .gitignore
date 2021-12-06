@@ -30,3 +30,6 @@ backend/logs/*
 !backend/logs/.keep
 
 qa/*.pyc
+
+# test coverage
+coverage

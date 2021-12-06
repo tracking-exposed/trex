@@ -13,18 +13,22 @@ const execSync = require('child_process').execSync;
 const parse = require('csv-parse/lib/sync');
 
 const domainSpecific = require('../src/domainSpecific');
+const { formatWithOptions } = require('util');
 
 const COMMANDJSONEXAMPLE = "https://youtube.tracking.exposed/json/automation-example.json";
 const EXTENSION_WITH_OPT_IN_ALREADY_CHECKED='https://github.com/tracking-exposed/yttrex/releases/download/v1.8.992/extension-1.8.992.zip';
 
-const defaultCfgPath = path.join("static", "settings.json");
+const defaultCfgPath = path.join("config", "default.json");
 nconf.argv().env();
 nconf.defaults({
-  'config' : defaultCfgPath
+  config: defaultCfgPath
 });
 const configFile = nconf.get('config');
-nconf.file(configFile);
-debug.enabled = true;
+nconf.argv().env().file(configFile);
+
+/* this also happens in 'src/domainSpecific' and causes debug to print regardless of the 
+ * environment variable sets */
+debug.enabled = info.enabled = true;
 
 const server = nconf.get('backend') ?
   ( _.endsWith(nconf.get('backend'), '/') ? 
@@ -274,7 +278,7 @@ function profileExecount(profile, evidencetag) {
   if (!fs.existsSync(udd)) {
     console.log("--profile hasn't a directory. Creating " + udd);
     try {
-      fs.mkdirSync(udd);
+      fs.mkdirSync(udd, {recursive: true});
     } catch (error) {
       console.log("Unable to create directory:", error.message);
       process.exit(1)
@@ -305,10 +309,9 @@ function profileExecount(profile, evidencetag) {
 
 function printHelp() {
   const helptext = `\nOptions can be set via: env , --longopts, and ${defaultCfgPath} file
-Three modes exists to launch Guardoni:\n
 
-To quickly test the tool:
-   --auto:\t\tYou can specify 1 (is the default) or 2.
+To quickly test the tool, execute and follow instructions:
+   --auto <1 or 2>:\tdefault 1, a.k.a. "Greta experiment"
 
 To register an experiment:
    --csv FILENAME.csv\tdefault is --comparison, optional --shadowban
@@ -316,12 +319,21 @@ To register an experiment:
 To execute a known experiment:
    --experiment <experimentId>
 
-https://youtube.tracking.exposed/guardoni for full documentation.
- [--evidencetag, --profile, are special option], and --config <file>
+Advanced options:
+   --evendencetag <string>
+   --profile <string>
+   --config <file>
+   --proxy <string>
+   --advdump <directory>
+   --3rd
+   --headless
+
+.:*~*:._.:*~*:._.:*~*:._.:*~*:._.:*~*:._.:*~*:._.:*~*:._.:*~*:._.:*~*:.
+\nhttps://youtube.tracking.exposed/guardoni for full documentation.
 You need a reliable internet connection to ensure a flawless collection`;
   console.log(".:*~*:._.:*~*:._.:*~*:._.:*~*:._.:*~*:._.:*~*:._.:*~*:._.:*~*:._.:*~*:.");
   console.log(helptext);
-  console.log('\n~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~');
+  console.log('~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~');
 }
 
 async function main() {
@@ -414,7 +426,7 @@ async function main() {
 
   await writeExperimentInfo(experiment, profinfo, evidencetag, directiveType);
 
-  const headless = nconf.get('headless');
+  const headless = (!!nconf.get('headless'));
   const browser = await dispatchBrowser(headless, profinfo);
 
   if(browser.newProfile)
@@ -428,7 +440,7 @@ async function main() {
 }
 
 async function writeExperimentInfo(experimentId, profinfo, evidencetag, directiveType) {
-  debug("Writing experiment Info into extension/experiment.json");
+  debug("Saving experiment info in extension/experiment.json (would be read by the extension)");
   const cfgfile = path.join('extension', 'experiment.json');
   const expinfo = {
     experimentId,
@@ -451,17 +463,26 @@ async function dispatchBrowser(headless, profinfo) {
   const chromePath = getChromePath();
   const proxy = nconf.get('proxy');
 
-  debug("Dispatching a browser in a profile usage count %d", execount);
-
   const commandLineArg = ["--no-sandbox",
     "--disabled-setuid-sandbox",
     "--load-extension=" + dist,
     "--disable-extensions-except=" + dist,
   ];
 
-  if(proxy)
+  if(proxy) {
+    if(!_.startsWith(proxy, 'socks5://')) {
+      console.log("Error, --proxy must start with socks5://");
+      process.exit(1);
+    }
     commandLineArg.push("--proxy-server=" + proxy);
-
+    debug("Dispatching browser: profile usage count %d proxy %s",
+      execount, proxy);
+  }
+  else {
+    debug("Dispatching browser: profile usage count %d, with NO PROXY",
+      execount);
+  }
+console.log("REMIND NOTE HEADLESS", headless);
   try {
     puppeteer.use(pluginStealth());
     const browser = await puppeteer.launch({
@@ -570,7 +591,7 @@ async function operateBrowser(page, directives) {
   }
 }
 
-try {
+function initialSetup() {
 
   if(!!nconf.get('h') || !!nconf.get('?') || process.argv.length < 3)
     return printHelp();
@@ -585,6 +606,18 @@ try {
     info("EXPERIMENT mode: no mandatory options; --profile, --evidencetag OPTIONAL")
   }
 
+  // check if the additional directory for screenshot is present
+  const advdump = nconf.get('advdump');
+  if(advdump) {
+    /* if the advertisement dumping folder is set, first we check
+     * if exist, and if doens't we call it fatal error */
+    if(!fs.existsSync(advdump)) {
+      debug("--advdump folder (%s) not exist: creating", advdump);
+      fs.mkdirSync(advdump, {recursive: true});
+    }
+    debug("Advertisement screenshotting enable in folder: %s", path.resolve(advdump));
+  }
+
   const cwd = process.cwd();
   const dist = path.resolve(path.join(cwd, 'extension'));
   const manifest = path.resolve(path.join(cwd, 'extension', 'manifest.json'));
@@ -597,7 +630,43 @@ try {
     downloadExtension(tmpzipf);
   }
 
-  main ();
+  return manifest;
+}
+
+async function validateAndStart(manifest) {
+  /* initial test is meant to assure the extension is an acceptable version */
+
+  const manifestValues = JSON.parse(fs.readFileSync(manifest));
+  const vblocks = manifestValues.version.split('.');
+  /* guardoni versioning explained:
+    1.MAJOR.MINOR, 
+    MINOR that starts with 99 or more 99 are meant to be auto opt-in
+    MAJOR depends on the package.json version and it is used for feature support 
+    a possible version 2.x isn't foresaw at the moment
+   */
+  const MINIMUM_ACCEPTABLE_MAJOR = 8;
+  if(_.parseInt(vblocks[1]) < MINIMUM_ACCEPTABLE_MAJOR) {
+    console.log("Error/Warning: in the directory 'extension/' the software is too old!");
+    process.exit(1);
+  }
+
+  if(!_.startsWith(vblocks[2], '99')) {
+    console.log("Warning/Reminder: the extension used might not be opt-in! you need to do it by hand");
+    console.log("Press any key to start");
+    await keypress();
+  }
+
+  /* this finally start the main execution */
+  await main ();
+}
+
+try {
+
+  const manifest = initialSetup();
+  if(!manifest)
+    process.exit(1);
+
+  validateAndStart(manifest);
 
 } catch(error) {
   console.error(error);

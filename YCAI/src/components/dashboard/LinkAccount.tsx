@@ -1,4 +1,4 @@
-import { AuthResponse } from '@shared/models/Auth';
+import React from 'react';
 import {
   Box,
   Button,
@@ -11,16 +11,18 @@ import {
   Typography,
 } from '@material-ui/core';
 import CopyIcon from '@material-ui/icons/FileCopyOutlined';
+import useCopyClipboard from 'react-use-clipboard';
 import { isLeft } from 'fp-ts/lib/Either';
-import React from 'react';
 import { Trans, useTranslation } from 'react-i18next';
+
+import { AuthResponse } from '@shared/models/Auth';
 import {
-  copyToClipboard,
   registerCreatorChannel,
   updateAuth,
   verifyChannel,
-} from '../../state/creator.commands';
+} from '../../state/dashboard/creator.commands';
 import { makeStyles } from '../../theme';
+import TokenLoginModal from './TokenLoginModal';
 
 const youtubeChannelUrlRegex = /\/channel\/([^/]+)(?:$|\/)/;
 
@@ -31,6 +33,11 @@ const useStyles = makeStyles((theme) => ({
   },
   boxGrid: {
     marginTop: theme.spacing(10),
+    marginBottom: theme.spacing(3),
+  },
+  channelInput: {
+    display: 'flex',
+    flexDirection: 'row',
     marginBottom: theme.spacing(3),
   },
   tokenDisplay: {
@@ -45,7 +52,7 @@ const useStyles = makeStyles((theme) => ({
     marginTop: theme.spacing(5),
     '& button': {
       marginRight: theme.spacing(4),
-    }
+    },
   },
   linkButton: {
     '&:hover': {
@@ -55,11 +62,11 @@ const useStyles = makeStyles((theme) => ({
   list: {
     '& li': {
       marginBottom: theme.spacing(1),
-    }
+    },
   },
   errorBox: {
     display: 'inline-block',
-  }
+  },
 }));
 interface LinkAccountProps {
   auth: AuthResponse | null;
@@ -67,11 +74,18 @@ interface LinkAccountProps {
 export const LinkAccount: React.FC<LinkAccountProps> = ({ auth }) => {
   const { t } = useTranslation();
 
+  const [isCopied, setCopied] = useCopyClipboard(
+    auth?.tokenString ?? '',
+    {
+      successDuration: 2000,
+    }
+  );
+
   const [channel, setChannel] = React.useState<string>(auth?.channelId ?? '');
-  const [showCopiedFeedback, setShowCopiedFeedback] = React.useState(false);
   const [submitChannelFailed, setSubmitChannelFailed] = React.useState(false);
   const [verificationFailed, setVerificationFailed] = React.useState(false);
   const [verifying, setVerifying] = React.useState(false);
+  const [showTokenLoginModal, setShowTokenLoginModal] = React.useState(false);
 
   const channelIDPasted = auth?.tokenString !== undefined;
 
@@ -89,24 +103,18 @@ export const LinkAccount: React.FC<LinkAccountProps> = ({ auth }) => {
     setChannel(e.target.value);
   };
 
-  const onSubmit: React.KeyboardEventHandler<HTMLInputElement> = async (
-    e
-  ): Promise<void> => {
-    // this handle the pressing of "Enter" key
-    if (e.keyCode === 13) {
-      await registerCreatorChannel(e.currentTarget.value, {
-        ccRelatedUsers: { params: { skip: 0, amount: 5 } },
-      })();
-    }
+  const handleChannelSubmit = async (): Promise<void> => {
+    const resp = await registerCreatorChannel(channel, {
+      ccRelatedUsers: { params: { skip: 0, amount: 5 } },
+    })();
+    setSubmitChannelFailed(isLeft(resp));
   };
 
-  const handleChannelSubmit: React.MouseEventHandler<HTMLButtonElement> =
-    async () => {
-      const resp = await registerCreatorChannel(channel, {
-        ccRelatedUsers: { params: { skip: 0, amount: 5 } },
-      })();
-      setSubmitChannelFailed(isLeft(resp));
-    };
+  const onChannelKeyDown: React.KeyboardEventHandler<HTMLInputElement> = (e) => {
+    if (e.key === 'Enter') {
+      void handleChannelSubmit();
+    }
+  };
 
   const handleVerifyChannelClicked = (): void => {
     setVerifying(true);
@@ -152,7 +160,7 @@ export const LinkAccount: React.FC<LinkAccountProps> = ({ auth }) => {
         alignItems="flex-end"
       >
         <Grid item xs={12} sm={6}>
-          <FormControl style={{ display: 'flex', flexDirection: 'row' }}>
+          <FormControl className={classes.channelInput}>
             <InputLabel htmlFor="creator-channel">
               {t('account:channel')}
             </InputLabel>
@@ -161,9 +169,27 @@ export const LinkAccount: React.FC<LinkAccountProps> = ({ auth }) => {
               fullWidth={true}
               value={channel}
               onChange={handleChannelChange}
-              onKeyDown={onSubmit}
+              onKeyDown={onChannelKeyDown}
             />
           </FormControl>
+          <Typography>
+            <Trans i18nKey="link_account:already_have_token">
+              Or
+              <Link
+                className={classes.linkButton}
+                onClick={() => setShowTokenLoginModal(true)}
+              >
+                click here
+              </Link>
+              if you already have an access token.
+            </Trans>
+          </Typography>
+          {showTokenLoginModal && (
+            <TokenLoginModal
+              isOpen={showTokenLoginModal}
+              onClose={() => setShowTokenLoginModal(false)}
+            />
+          )}
         </Grid>
         <Grid item xs={12} className={classes.stepAction}>
           <Button
@@ -177,9 +203,7 @@ export const LinkAccount: React.FC<LinkAccountProps> = ({ auth }) => {
           </Button>
           {submitChannelFailed && (
             <Box className={classes.errorBox}>
-              <Typography>
-                {t('link_account:channel_not_found')}
-              </Typography>
+              <Typography>{t('link_account:channel_not_found')}</Typography>
             </Box>
           )}
         </Grid>
@@ -195,20 +219,15 @@ export const LinkAccount: React.FC<LinkAccountProps> = ({ auth }) => {
           <Typography className={classes.tokenDisplay} id="account-channelId">
             {auth.tokenString}
           </Typography>
-          {showCopiedFeedback ? (
+          {isCopied ? (
             <Chip color="secondary" label={t('actions:copied')} />
           ) : (
             <Button
               color="primary"
               variant="text"
               startIcon={<CopyIcon />}
-              onClick={async () => {
-                await copyToClipboard(auth.tokenString)().then(() => {
-                  setShowCopiedFeedback(true);
-                  setTimeout(() => {
-                    setShowCopiedFeedback(false);
-                  }, 2000);
-                });
+              onClick={() => {
+                setCopied();
               }}
             >
               {t('actions:copy_verification_code')}
@@ -226,9 +245,10 @@ export const LinkAccount: React.FC<LinkAccountProps> = ({ auth }) => {
               >
                 here to access to your YouTube Studio
               </Link>
-              and edit your channel description.
-              Just paste the link anywhere in it and click the Publish button on the top right.
-              You can remove the code from your channel&apos;s description after the verification is finished.
+              and edit your channel description. Just paste the link anywhere in
+              it and click the Publish button on the top right. You can remove
+              the code from your channel&apos;s description after the
+              verification is finished.
             </Trans>
           </Typography>
         </Grid>

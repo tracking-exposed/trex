@@ -45,7 +45,12 @@ declare module 'react-i18next' {
         download: string;
         move_recommendation_up: string;
         move_recommendation_down: string;
-        remove_recommendation_from_video: string;
+        delete_recommendation_button: string;
+        edit_recommendation_form_title: string;
+        edit_recommendation_button: string;
+        edit_recommendation_description: string;
+        cancel: string;
+        save: string;
         manage_tokens: string;
         reset_settings: string;
         reload_extension: string;
@@ -67,6 +72,11 @@ declare module 'react-i18next' {
         verification_failed_hint: string;
         go_back_to_step_one_hint: string;
         channel_not_found: string;
+        already_have_token: string;
+        token_modal_title: string;
+        token_modal_description: string;
+        token_modal_submit: string;
+        token_authentication_failed: string;
       };
       youtube: {
         title: string;
@@ -87,6 +97,9 @@ declare module 'react-i18next' {
         no_items: string;
         url_placeholder: string;
         url_helper_text: string;
+        title: string;
+        description: string;
+        missing_description: string;
       };
       dashboard: {
         title: string;
@@ -94,8 +107,7 @@ declare module 'react-i18next' {
       popup: {
         version: string;
       };
-      statistics: {
-        title: string;
+      analytics: {
         subtitle: string;
         recommendability_score_title: string;
         recommendability_score_subtitle: string;
@@ -143,7 +155,7 @@ declare module 'react-i18next' {
         lab_title_short: string;
         lab_subtitle: string;
         lab_edit_subtitle: string;
-        statistics: string;
+        analytics: string;
         settings: string;
         link_account: string;
       };

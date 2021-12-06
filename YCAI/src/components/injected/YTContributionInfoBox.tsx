@@ -8,7 +8,7 @@ import { LazyFullSizeLoader } from '../../components/common/FullSizeLoader';
 import { config } from '../../config';
 import { Keypair, Settings } from '../../models/Settings';
 import * as dataDonation from '../../providers/dataDonation.provider';
-import { keypair } from '../../state/public.queries';
+import { keypair } from '../../state/popup.queries';
 import { makeStyles } from '../../theme';
 
 const useStyles = makeStyles((props) => ({

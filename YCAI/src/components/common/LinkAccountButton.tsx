@@ -1,7 +1,7 @@
 import { Button } from '@material-ui/core';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
-import { doUpdateCurrentView } from 'utils/location.utils';
+import { doUpdateCurrentView } from '../../utils/location.utils';
 
 
 

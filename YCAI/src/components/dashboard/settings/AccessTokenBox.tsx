@@ -20,8 +20,8 @@ import * as E from 'fp-ts/lib/Either';
 import { APIError } from 'providers/api.provider';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
-import { assignAccessToken } from '../../../state/creator.commands';
-import { deleteProfile, downloadTXTFile } from '../../../state/public.commands';
+import { assignAccessToken } from '../../../state/dashboard/creator.commands';
+import { deleteProfile, downloadTXTFile } from '../../../state/dashboard/public.commands';
 import { YCAITheme } from '../../../theme';
 import UnlinkProfileButton from '../../common/UnlinkProfileButton';
 

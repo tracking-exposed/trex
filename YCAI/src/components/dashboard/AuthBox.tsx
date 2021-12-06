@@ -1,4 +1,4 @@
-import { auth, localProfile } from '../../state/creator.queries';
+import { auth, localProfile } from '../../state/dashboard/creator.queries';
 import * as QR from 'avenger/lib/QueryResult';
 import { WithQueries } from 'avenger/lib/react';
 import { ErrorBox } from '../../components/common/ErrorBox';

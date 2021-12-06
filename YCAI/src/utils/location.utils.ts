@@ -7,14 +7,14 @@ import {
 export type CurrentView =
   | { view: 'labEdit'; videoId: string }
   | { view: 'lab' }
-  | { view: 'statistics' }
+  | { view: 'analytics' }
   | { view: 'settings' }
   | { view: 'linkAccount' }
   | { view: 'index' };
 
 const labEditRegex = /^\/lab\/([^/]+)$/;
 const labRegex = /^\/lab\/$/;
-const statisticsRegex = /^\/statistics\/$/;
+const analyticsRegex = /^\/analytics\/$/;
 const settingsRegex = /^\/settings\/$/;
 const linkAccountRegex = /^\/link-account\/$/;
 
@@ -32,9 +32,9 @@ export function locationToView(location: HistoryLocation): CurrentView {
     return { view: 'lab' };
   }
 
-  const communityMatch = currentPath.match(statisticsRegex);
+  const communityMatch = currentPath.match(analyticsRegex);
   if (communityMatch !== null) {
-    return { view: 'statistics' };
+    return { view: 'analytics' };
   }
 
   const settingsMatch = currentPath.match(settingsRegex);
@@ -66,11 +66,11 @@ export function viewToLocation(view: CurrentView): HistoryLocation {
           path: '/lab/',
         },
       };
-    case 'statistics':
+    case 'analytics':
       return {
         pathname: `index.html`,
         search: {
-          path: '/statistics/',
+          path: '/analytics/',
         },
       };
     case 'settings':

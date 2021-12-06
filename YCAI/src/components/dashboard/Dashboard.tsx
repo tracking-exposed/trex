@@ -5,12 +5,12 @@ import * as QR from 'avenger/lib/QueryResult';
 import { declareQueries } from 'avenger/lib/react';
 import { pipe } from 'fp-ts/lib/function';
 import { useTranslation } from 'react-i18next';
-import { auth, localProfile } from '../../state/creator.queries';
+import { auth, localProfile } from '../../state/dashboard/creator.queries';
 import { CurrentView, currentView } from '../../utils/location.utils';
 import { ErrorBox } from '../common/ErrorBox';
 import { LazyFullSizeLoader } from '../common/FullSizeLoader';
 import Settings from './Settings';
-import { StatisticsPage } from './community/StatisticsPage';
+import { AnalyticsPage } from './community/AnalyticsPage';
 import { LinkAccount } from './LinkAccount';
 import { Sidebar } from './Sidebar';
 import { Lab } from './lab/Lab';
@@ -74,10 +74,10 @@ const DashboardContent: React.FC<DashboardContentProps> = ({
               ];
             default:
               return [
-                t('routes:statistics'),
-                t('statistics:subtitle'),
+                t('routes:analytics'),
+                t('analytics:subtitle'),
                 // eslint-disable-next-line react/jsx-key
-                <StatisticsPage />,
+                <AnalyticsPage />,
               ];
           }
         }
@@ -97,9 +97,17 @@ const DashboardContent: React.FC<DashboardContentProps> = ({
         xs={12}
         style={{
           backgroundColor: theme.palette.background.default,
+          paddingTop: profile ? 0 : theme.spacing(12),
         }}
       >
-        <Typography variant="h3" component="h1" color="primary" style={{ whiteSpace: 'pre-line' }}>
+        <Typography
+          variant="h3"
+          component="h1"
+          color={profile ? 'primary' : 'textPrimary'}
+          style={{
+            whiteSpace: 'pre-line'
+          }}
+        >
           {currentViewLabel}
         </Typography>
         <Typography variant="subtitle1" color="textPrimary">
@@ -128,7 +136,10 @@ export const Dashboard = withQueries(({ queries }): React.ReactElement => {
       return (
         <Grid container className={classes.root} spacing={4}>
           <Grid item sm={12} md={3} lg={2}>
-            <Sidebar currentView={currentView} />
+            <Sidebar
+              currentView={currentView}
+              profile={profile}
+            />
           </Grid>
           <Grid item sm={12} md={9} lg={10}>
             <DashboardContent

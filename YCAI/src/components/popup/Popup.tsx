@@ -15,7 +15,7 @@ import parseISO from 'date-fns/parseISO';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { config } from '../../config';
-import { settings } from '../../state/public.queries';
+import { settings } from '../../state/popup.queries';
 import { PopupErrorBox } from './PopupErrorBox';
 import Settings from './Settings';
 
@@ -143,7 +143,7 @@ export const Popup: React.FC = () => {
                   className={classes.dashboardButton}
                   color="primary"
                   fullWidth
-                  href={'/index.html'}
+                  href={config.PUBLIC_URL}
                   size="large"
                   target="_blank"
                   variant="contained"

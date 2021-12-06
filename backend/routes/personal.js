@@ -24,7 +24,6 @@ async function getPersonal(req) {
         debug("Returning %d videos of %d from a profile hereSince %s, search %d",
             _.size(data.recent), data.total, data.supporter.hereSince, _.size(data.searches));
     } catch(error) {
-        console.log(error);
         debug("Catch exception in getSummaryByPublicKey: %s", error.message);
         return { json: { "message": error.message, "error": true }};
     }
@@ -78,6 +77,7 @@ async function getPersonalCSV(req) {
 };
 
 async function getPersonalTimeline(req) {
+    throw new Error("not used anymore")
     const DEFMAX = 300;
     const k =  req.params.publicKey;
     if(_.size(k) < 26)
