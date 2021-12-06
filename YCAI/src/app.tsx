@@ -136,6 +136,7 @@ const InjectedApp: React.FC = () => {
 const YC_ROOT_ID = 'yc-root-injected';
 
 const observer = new MutationObserver(() => {
+
   const ycRoot = document.createElement('div');
   ycRoot.id = YC_ROOT_ID;
   ycRoot.style.position = 'absolute';
