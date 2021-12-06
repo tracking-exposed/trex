@@ -7,7 +7,6 @@ import {
   DialogContent,
   DialogContentText,
   DialogTitle,
-  Typography,
 } from '@material-ui/core';
 import { useTranslation } from 'react-i18next';
 
@@ -55,9 +54,7 @@ const UnlinkProfileButton: React.FC<UnlinkProfileButtonProps> = (props) => {
           </DialogTitle>
           <DialogContent>
             <DialogContentText>
-              <Typography>
-                {t('actions:unlink_channel_confirm_text')}
-              </Typography>
+              {t('actions:unlink_channel_confirm_text')}
             </DialogContentText>
           </DialogContent>
           <DialogActions>

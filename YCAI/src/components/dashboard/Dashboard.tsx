@@ -97,9 +97,17 @@ const DashboardContent: React.FC<DashboardContentProps> = ({
         xs={12}
         style={{
           backgroundColor: theme.palette.background.default,
+          paddingTop: profile ? 0 : theme.spacing(12),
         }}
       >
-        <Typography variant="h3" component="h1" color="primary" style={{ whiteSpace: 'pre-line' }}>
+        <Typography
+          variant="h3"
+          component="h1"
+          color={profile ? 'primary' : 'textPrimary'}
+          style={{
+            whiteSpace: 'pre-line'
+          }}
+        >
           {currentViewLabel}
         </Typography>
         <Typography variant="subtitle1" color="textPrimary">
@@ -128,7 +136,10 @@ export const Dashboard = withQueries(({ queries }): React.ReactElement => {
       return (
         <Grid container className={classes.root} spacing={4}>
           <Grid item sm={12} md={3} lg={2}>
-            <Sidebar currentView={currentView} />
+            <Sidebar
+              currentView={currentView}
+              profile={profile}
+            />
           </Grid>
           <Grid item sm={12} md={9} lg={10}>
             <DashboardContent
