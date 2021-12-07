@@ -64,7 +64,10 @@ async function getSummaryByPublicKey(publicKey, options) {
     const searchf = ['id', 'savingTime', 'query' ];
     const payload = _.reduce(metadata, function(memo, entry) {
         if(entry.type === 'home') {
-            memo.homes.push(_.pick(entry, homef));
+            memo.homes.push({
+                ..._.pick(entry, homef),
+                selected: _.map(entry.selected, 'recommendedTitle'),
+            });
         } else if(entry.type === 'video') {
             memo.videos.push({
                 ..._.pick(entry, videof),
