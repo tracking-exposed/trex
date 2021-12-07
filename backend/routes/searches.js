@@ -8,6 +8,7 @@ const CSV = require('../lib/CSV');
 const params = require('../lib/params');
 const dbutils = require('../lib/dbutils');
 const utils = require('../lib/utils');
+const automo = require('../lib/automo');
 
 /* this file have been heavily refactored 
  * because between 1.4.x and 1.8.x the search
@@ -25,11 +26,13 @@ const utils = require('../lib/utils');
  *      run a comparison among the same search results
  */
 
-const MAXRVS = 5000;
+const MAXRVS = 90;
 
 async function getSearches(req) {
     // '/api/v2/searches/:query/:paging?' 
     // this is used in v.md
+    throw new Error("Not yet updated!");
+    // this is not updates as have been the CSV -- TODO FIX REFACTOR 
     const AMOUNT = 400; // THIS differs from MAXRVS because want to load differently CSV than page;
     const { amount, skip } = params.optionParsing(req.params.paging, AMOUNT);
     const qs = qustr.unescape(req.params.query);
@@ -52,6 +55,7 @@ async function getSearches(req) {
 async function getQueries(req) {
     // TO BE REVIEW THIS,  or just to be removed becaue the by Campaign is useless.
     // this is the API used in campaigns like: http://localhost:1313/chiaro/example/
+    throw new Error("Not yet updated!");
     const campaignName = req.params.campaignName;
     debug("getQueries of %s", campaignName);
     const entries = await dbutils.getCampaignQuery(
@@ -82,24 +86,17 @@ async function getSearchesCSV(req) {
     if(skip)
         debug("Warning: skip %d isnt' considered", skip);
 
-    const entries = await dbutils.getLimitedCollection(nconf.get('schema').searches, {searchTerms}, amount, true);
-    const fixed = _.map(entries, function(e) {
-        e.pseudo = utils.string2Food(e.publicKey);
-        return _.omit(e, ['_id', 'publicKey']);
-    });
-
+    const entries = await automo.getMetadataByFilter({query: searchTerms}, {amount, skip});
     const overflow = (_.size(entries) === MAXRVS);
-    const counters = _.countBy(entries, 'metadataId');
-    debug("search query %s returned %d with max amount of %d (%j)",
-        searchTerms, _.size(entries), MAXRVS, counters);
-
-    const csv = CSV.produceCSVv1(fixed);
+    const depacked = CSV.unrollNested(entries, { type: 'search', private: true });
+    debug("Once depacked the %s entries become %d", entries.length, depacked.length);
+    const csv = CSV.produceCSVv1(depacked);
     if(!_.size(csv))
         return { text: "Error 🤷 No content produced in this CSV!" };
 
     const filename = overflow ? 
-        'overflow' + searchTerms + '-' + _.size(entries) + "-" + moment().format("YY-MM-DD") + ".csv" : 
-        searchTerms + '-' + _.size(entries) + "-" + moment().format("YY-MM-DD") + ".csv" ;
+        'overflow-' + searchTerms + '-#' + _.size(entries) + "-" + moment().format("YYYY-MM-DD") + ".csv" : 
+        searchTerms + '-#' + _.size(entries) + "-" + moment().format("YYYY-MM-DD") + ".csv" ;
 
     return {
         headers: {
@@ -112,6 +109,7 @@ async function getSearchesCSV(req) {
 
 async function getSearchesDot(req) {
 
+    throw new Error("Not yet updated!");
     const qs = req.params.idList;
     const idList = qs.split(',');
     debug("getSearchesDot take as source id list: %j", idList);
@@ -176,6 +174,7 @@ async function getSearchKeywords(req) {
 };
 
 async function getSearchDetails(req) {
+    throw new Error("Not yet updated!");
     /* this API is used to ask for individual metadataId, and by a visualization that want to 
      * visualize small snippet in a look-and-feel close to the one of youtube */
     const ids = req.params.listof.split(',');

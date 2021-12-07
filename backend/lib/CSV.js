@@ -168,8 +168,9 @@ function unrollNested(metadata, options) {
 const allowedTypes = ['video', 'search', 'home', 'adv' ];
 
 module.exports = {
-    produceCSVv1,
     allowedTypes,
-    // this is the function to call
+    // this is the function to call to convert raw metadata
     unrollNested,
+    // this is the one that converts JSON to CSV
+    produceCSVv1,
 };
