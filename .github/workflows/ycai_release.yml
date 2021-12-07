@@ -39,3 +39,13 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: npx semantic-release
+
+      - name: Deploy YCAI dashboard
+        uses: burnett01/rsync-deployments@5.1
+        with:
+          switches: -avzr --delete
+          path: ./YCAI/build/dashboard
+          remote_path: ~/public
+          remote_host: ${{ secrets.YCAI_DEPLOY_HOST }}
+          remote_user: ${{ secrets.YCAI_DEPLOY_USER }}
+          remote_key: ${{ secrets.YCAI_DEPLOY_KEY }}
