@@ -15,7 +15,10 @@ import * as A from 'fp-ts/lib/Array';
 import { pipe } from 'fp-ts/lib/function';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { creatorStats, profile } from '../../../state/dashboard/creator.queries';
+import {
+  creatorStats,
+  profile,
+} from '../../../state/dashboard/creator.queries';
 import { ErrorBox } from '../../common/ErrorBox';
 import { LazyFullSizeLoader } from '../../common/FullSizeLoader';
 import { LinkAccountButton } from '../../common/LinkAccountButton';
@@ -23,15 +26,35 @@ import { StatsCard } from '../../common/StatsCard';
 import { ADVChannelStatsBox } from './ADVChannelStatsBox';
 import { CCRelatedUserList } from './CCRelatedUserList';
 import { DonutChart } from './DonutChart';
+import { makeStyles } from '../../../theme';
 
-interface CreatorStatsProps {
+const useStyles = makeStyles((theme) => ({
+  recommendabilityScore: {
+    background: theme.palette.primary.main,
+    '& .MuiCardHeader-content .MuiCardHeader-title': {
+      color: theme.palette.common.white,
+      ...theme.typography.h4,
+    },
+    '& .MuiCardHeader-content .MuiCardHeader-subheader': {
+      color: theme.palette.common.white,
+      ...theme.typography.h6,
+    },
+  },
+}));
+
+interface CreatorAnalyticsPageProps {
   profile?: ContentCreator;
   stats: CreatorStats;
 }
 
-const CreatorStatsPage: React.FC<CreatorStatsProps> = ({ profile, stats }) => {
+const CreatorAnalyticsPage: React.FC<CreatorAnalyticsPageProps> = ({
+  profile,
+  stats,
+}) => {
+  const classes = useStyles();
   const theme = useTheme();
   const { t } = useTranslation();
+
   const recommendations = React.useMemo(
     () =>
       pipe(
@@ -83,7 +106,7 @@ const CreatorStatsPage: React.FC<CreatorStatsProps> = ({ profile, stats }) => {
       ) : (
         <Grid container spacing={2}>
           <Grid item md={4}>
-            <Card>
+            <Card className={classes.recommendabilityScore}>
               <CardHeader
                 title={t('analytics:recommendability_score_title')}
                 subheader={t('analytics:recommendability_score_subtitle')}
@@ -97,12 +120,12 @@ const CreatorStatsPage: React.FC<CreatorStatsProps> = ({ profile, stats }) => {
                       : recommendations.recommendabilityScore.toFixed(0)
                   }%`}
                   data={{
-                    score: [recommendations.recommendabilityScore],
-                    rest: [100 - recommendations.recommendabilityScore],
+                    recommended: [recommendations.recommendabilityScore],
+                    other: [100 - recommendations.recommendabilityScore],
                   }}
                   colors={{
-                    score: theme.palette.primary.main,
-                    rest: theme.palette.grey[500],
+                    recommended: theme.palette.common.white,
+                    other: theme.palette.grey[500],
                   }}
                 />
               </CardContent>
@@ -164,7 +187,7 @@ export const AnalyticsPage = withQueries(({ queries }): React.ReactElement => {
       return (
         <Grid container spacing={3}>
           <Grid item md={12}>
-            <CreatorStatsPage profile={profile} stats={creatorStats} />
+            <CreatorAnalyticsPage profile={profile} stats={creatorStats} />
           </Grid>
         </Grid>
       );
