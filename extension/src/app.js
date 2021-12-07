@@ -60,8 +60,9 @@ function boot () {
 
     // Lookup the current user and decide what to do.
     localLookup(response => {
-        // `response` contains the user's public key, we save it global for the blinks
-        console.log("localLookup returned", response);
+        // `response` contains the user's public key, and this format is 
+        console.log(JSON.stringify(response));
+        // SHOULD NOT CHANGE because Guardoni parse it.
 
         /* these parameters are loaded from localstorage */
         config.publicKey = response.publicKey;

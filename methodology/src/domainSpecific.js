@@ -18,6 +18,7 @@ global.lastScreenTime = moment().subtract(4, 'seconds');
 global.currentURLlabel = null;
 global.screenshotPrefix = null;
 global.interval = null;
+global.publicKeySpot = null;
 
 function getScreenshotFilename() {
     /* this function return null if no screenshot has to be taken,
@@ -37,6 +38,10 @@ async function consoleLogParser(page, message) {
      * but it is also an indirect, pseudo-efficent way to communicate
      * between puppeteer evaluated selectors and action we had to do */
     const consoleline = message.text();
+    if( global.publicKeySpot === null && consoleline.match(/publicKey/) ) {
+        const material = JSON.parse(consoleline);
+        global.publicKeySpot = material.publicKey;
+    }
     if(consoleline.match(scrnshtrgxp)) {
         const fdestname = getScreenshotFilename();
         // if the screenshot are less than 5 seconds close, the function
@@ -155,6 +160,10 @@ function print3rdParties() {
 
 async function beforeLoad(page, directive) {
     global.currentURLlabel = directive.urltag;
+}
+
+async function completed() {
+    return global.publicKeySpot;
 }
 
 async function beforeWait(page, directive) {
@@ -277,6 +286,7 @@ module.exports = {
     beforeWait,
     afterWait,
     beforeDirectives,
+    completed,
     interactWithYT,
     getYTstatus,
     DOMAIN_NAME: 'youtube.com',

@@ -444,7 +444,6 @@ async function writeExperimentInfo(experimentId, profinfo, evidencetag, directiv
   const expinfo = {
     experimentId,
     evidencetag,
-    directiveType,
     execount: profinfo.execount,
     newProfile: profinfo.newProfile,
     when: new Date()
@@ -481,7 +480,7 @@ async function dispatchBrowser(headless, profinfo) {
     debug("Dispatching browser: profile usage count %d, with NO PROXY",
       execount);
   }
-console.log("REMIND NOTE HEADLESS", headless);
+
   try {
     puppeteer.use(pluginStealth());
     const browser = await puppeteer.launch({
@@ -505,6 +504,7 @@ console.log("REMIND NOTE HEADLESS", headless);
 async function guardoniExecution(experiment, directives, browser, profinfo) {
   let retval = { start: null };
   retval.start = moment();
+  const directiveType = _.first(directives).name ? "chiaroscuro" : "comparison";
   try {
     const page = (await browser.pages())[0];
     _.tail(await browser.pages()).forEach(async function(opage) {
@@ -514,7 +514,9 @@ async function guardoniExecution(experiment, directives, browser, profinfo) {
     await domainSpecific.beforeDirectives(page, profinfo);
     // the BS above should close existing open tabs except 1st
     await operateBrowser(page, directives);
-    console.log(`Operations completed: check results at ${server}/experiments/render/#${experiment}`);
+    const publicKey = await domainSpecific.completed();
+    console.log(`Operations completed: check results at ${server}/${directiveType === 'chiaroscuro' ? "shadowban" : "experiments"}/render/#${experiment}`);
+    console.log(`Personal log at ${server}/personal/#${publicKey}`);
     await browser.close();
   } catch(error) {
     console.log("Error in operateBrowser (collection fail):", error);

@@ -664,10 +664,14 @@ async function pullExperimentInfo(publicKey) {
     // exist in a due time, we can be quite sure on the results
     // here
     const mongoc = await mongo3.clientConnect({concurrency: 1});
-    const exp = await mongo3.readOne(mongoc, nconf.get('schema').experiments,
-        { publicKey, status: "active" });
+    const exp = await mongo3.aggregate(mongoc, nconf.get('schema').experiments, [
+        { "$match": { publicKey, status: "active" } },
+        { "$lookup": { from: 'directives', localField: 'experimentId', foreignField: 'experimentId', as: 'directive' } }
+    ])
     await mongoc.close();
-    return exp || null;
+    if(exp && exp[0]?.directive[0].directiveType)
+        return _.first(exp);
+    return null;
 }
 
 async function registerDirective(links, directiveType) {

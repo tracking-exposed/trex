@@ -71,12 +71,15 @@ function extendIfExperiment(expinfo, listOf) {
 
     if(!expinfo)
         return listOf;
-    debug("Linking %d objects to experiment %s",
-        listOf.length, expinfo.experimentId);
+    debug("Linking %d objects to experiment %s (%s)",
+        listOf.length, expinfo.experimentId,
+        expinfo.directive[0].directiveType);
 
-    const nothelpf = ['_id', 'publicKey', 'href', 'status'];
+    const nothelpf = ['_id', 'publicKey',
+        'href', 'directiveType', 'status'];
     return _.map(listOf, function(o) {
         o.experiment = _.omit(expinfo, nothelpf);
+        o.directiveType = expinfo.directive[0].directiveType;
         return o;
     });
 }
@@ -125,6 +128,8 @@ async function processEvents2(req) {
 
     // this information would be merged in htmls and leafs if exist 
     const experinfo = await automo.pullExperimentInfo(supporter.publicKey);
+    // experinfo is an aggregation from collection 'experiments' and 
+    // collection 'directives'
 
     const blang = headers.language.replace(/;.*/, '').replace(/,.*/, '');
     // debug("CHECK: %s <%s>", blang, headers.language );
