@@ -38,7 +38,15 @@ const useStyles = makeStyles<YCAITheme>((theme) => ({
     backgroundColor: theme.palette.grey[300],
     '& img:hover': {
       cursor: 'pointer',
-    }
+    },
+    boxShadow: "none",
+  },
+  customBox: {
+    display: '-webkit-box',
+    boxOrient: 'vertical',
+    lineClamp: 2,
+    wordBreak: 'keep-all',
+    overflow: 'hidden'
   },
 }));
 
@@ -52,15 +60,15 @@ export const VideoCard: React.FC<VideoCardProps> = ({
   const theme = useTheme();
 
   return (
-    <Card className={classes.root}>
+    <Card className={classes.root} style={{ boxShadow: 'none' }}>
       <CardMedia
         component="img"
         src={getYTMaxResThumbnailById(videoId)}
         title={title}
-        height={200}
+        height={120}
         onClick={openRecommendations}
       />
-      <CardContent>
+      <CardContent style={{ paddingBottom: theme.spacing(0.3) }} classes={{root: classes.customBox}}>
         <Link
           color="textSecondary"
           href={getYTVideoURLById(videoId)}
@@ -72,7 +80,7 @@ export const VideoCard: React.FC<VideoCardProps> = ({
           {title}
         </Link>
       </CardContent>
-      <CardActions style={{ padding: theme.spacing(2) }}>
+      <CardActions style={{ paddingLeft: theme.spacing(1.5), paddingTop: theme.spacing(0)}}>
         <Button
           color="primary"
           variant="text"

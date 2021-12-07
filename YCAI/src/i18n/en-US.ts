@@ -61,7 +61,7 @@ const resources: CustomTypeOptions['resources'] = {
     lab_title: 'LAB - Choose the Recommendations on Your Videos',
     lab_title_short: 'LAB',
     lab_subtitle:
-      'Click on one of your videos below to pick and order the recommendations you want to display in the side bar. Your content, your choice!',
+      'Click on one video below to pick and order the recommendations \nyou want to display in the side bar. Your content, your choice!',
     lab_edit_subtitle:
       'Paste a link in the grey box below to add it to the recommendations of this video. You can add recommendations towards any website!',
     analytics: 'Analytics',
