@@ -42,11 +42,11 @@ const useStyles = makeStyles<YCAITheme>((theme) => ({
     boxShadow: "none",
   },
   customBox: {
-    display: "-webkit-box",
-    boxOrient: "vertical",
+    display: '-webkit-box',
+    boxOrient: 'vertical',
     lineClamp: 2,
-    wordBreak: "false",
-    overflow: "hidden"
+    wordBreak: 'keep-all',
+    overflow: 'hidden'
   },
 }));
 
@@ -60,13 +60,12 @@ export const VideoCard: React.FC<VideoCardProps> = ({
   const theme = useTheme();
 
   return (
-    <Card className={classes.root} sx={{ boxShadow: 0 }}>
+    <Card className={classes.root} style={{ boxShadow: 'none' }}>
       <CardMedia
         component="img"
         src={getYTMaxResThumbnailById(videoId)}
         title={title}
         height={120}
-        weight={60}
         onClick={openRecommendations}
       />
       <CardContent style={{ paddingBottom: theme.spacing(0.3) }} classes={{root: classes.customBox}}>
