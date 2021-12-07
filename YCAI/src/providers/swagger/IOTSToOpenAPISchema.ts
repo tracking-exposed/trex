@@ -24,6 +24,7 @@ export type HasOpenAPISchema =
   | t.BooleanType
   | t.KeyofType<any>
   | t.LiteralType<any>
+  | t.PartialType<any>
   | ArrayType
   | RecordType
   | StructType

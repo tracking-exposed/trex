@@ -1,4 +1,4 @@
-import { AuthResponse } from '@shared/models/Auth';
+import React from 'react';
 import {
   Box,
   Button,
@@ -11,16 +11,19 @@ import {
   Typography,
 } from '@material-ui/core';
 import CopyIcon from '@material-ui/icons/FileCopyOutlined';
+import useCopyClipboard from 'react-use-clipboard';
 import { isLeft } from 'fp-ts/lib/Either';
-import React from 'react';
 import { Trans, useTranslation } from 'react-i18next';
+
+import { AuthResponse } from '@shared/models/Auth';
 import {
   registerCreatorChannel,
   updateAuth,
   verifyChannel,
 } from '../../state/dashboard/creator.commands';
 import { makeStyles } from '../../theme';
-import useCopyClipboard from 'react-use-clipboard';
+import TokenLoginModal from './TokenLoginModal';
+import { doUpdateCurrentView } from '../../utils/location.utils';
 
 const youtubeChannelUrlRegex = /\/channel\/([^/]+)(?:$|\/)/;
 
@@ -31,6 +34,11 @@ const useStyles = makeStyles((theme) => ({
   },
   boxGrid: {
     marginTop: theme.spacing(10),
+    marginBottom: theme.spacing(3),
+  },
+  channelInput: {
+    display: 'flex',
+    flexDirection: 'row',
     marginBottom: theme.spacing(3),
   },
   tokenDisplay: {
@@ -78,6 +86,7 @@ export const LinkAccount: React.FC<LinkAccountProps> = ({ auth }) => {
   const [submitChannelFailed, setSubmitChannelFailed] = React.useState(false);
   const [verificationFailed, setVerificationFailed] = React.useState(false);
   const [verifying, setVerifying] = React.useState(false);
+  const [showTokenLoginModal, setShowTokenLoginModal] = React.useState(false);
 
   const channelIDPasted = auth?.tokenString !== undefined;
 
@@ -95,24 +104,18 @@ export const LinkAccount: React.FC<LinkAccountProps> = ({ auth }) => {
     setChannel(e.target.value);
   };
 
-  const onSubmit: React.KeyboardEventHandler<HTMLInputElement> = async (
-    e
-  ): Promise<void> => {
-    // this handle the pressing of "Enter" key
-    if (e.keyCode === 13) {
-      await registerCreatorChannel(e.currentTarget.value, {
-        ccRelatedUsers: { params: { skip: 0, amount: 5 } },
-      })();
-    }
+  const handleChannelSubmit = async (): Promise<void> => {
+    const resp = await registerCreatorChannel(channel, {
+      ccRelatedUsers: { params: { skip: 0, amount: 5 } },
+    })();
+    setSubmitChannelFailed(isLeft(resp));
   };
 
-  const handleChannelSubmit: React.MouseEventHandler<HTMLButtonElement> =
-    async () => {
-      const resp = await registerCreatorChannel(channel, {
-        ccRelatedUsers: { params: { skip: 0, amount: 5 } },
-      })();
-      setSubmitChannelFailed(isLeft(resp));
-    };
+  const onChannelKeyDown: React.KeyboardEventHandler<HTMLInputElement> = (e) => {
+    if (e.key === 'Enter') {
+      void handleChannelSubmit();
+    }
+  };
 
   const handleVerifyChannelClicked = (): void => {
     setVerifying(true);
@@ -134,6 +137,9 @@ export const LinkAccount: React.FC<LinkAccountProps> = ({ auth }) => {
         )
         .finally(() => {
           setVerifying(false);
+          void doUpdateCurrentView({
+            view: 'lab'
+          })()
         });
     }
   };
@@ -158,7 +164,7 @@ export const LinkAccount: React.FC<LinkAccountProps> = ({ auth }) => {
         alignItems="flex-end"
       >
         <Grid item xs={12} sm={6}>
-          <FormControl style={{ display: 'flex', flexDirection: 'row' }}>
+          <FormControl className={classes.channelInput}>
             <InputLabel htmlFor="creator-channel">
               {t('account:channel')}
             </InputLabel>
@@ -167,9 +173,27 @@ export const LinkAccount: React.FC<LinkAccountProps> = ({ auth }) => {
               fullWidth={true}
               value={channel}
               onChange={handleChannelChange}
-              onKeyDown={onSubmit}
+              onKeyDown={onChannelKeyDown}
             />
           </FormControl>
+          <Typography>
+            <Trans i18nKey="link_account:already_have_token">
+              Or
+              <Link
+                className={classes.linkButton}
+                onClick={() => setShowTokenLoginModal(true)}
+              >
+                click here
+              </Link>
+              if you already have an access token.
+            </Trans>
+          </Typography>
+          {showTokenLoginModal && (
+            <TokenLoginModal
+              isOpen={showTokenLoginModal}
+              onClose={() => setShowTokenLoginModal(false)}
+            />
+          )}
         </Grid>
         <Grid item xs={12} className={classes.stepAction}>
           <Button

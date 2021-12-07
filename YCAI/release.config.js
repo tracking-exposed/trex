@@ -75,7 +75,7 @@ module.exports = {
     [
       '@semantic-release/exec',
       {
-        prepareCmd: 'MANIFEST_VERSION=${nextRelease.version} npm run build',
+        prepareCmd: 'MANIFEST_VERSION=${nextRelease.version} npm run build:ext',
       },
     ],
     [
@@ -99,7 +99,7 @@ module.exports = {
   ],
   branches: [
     {
-      name: 'main',
+      name: 'master',
       prerelease: false,
     },
     {

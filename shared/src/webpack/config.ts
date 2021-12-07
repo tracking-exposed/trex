@@ -1,18 +1,17 @@
-import path from "path";
-
-import * as t from "io-ts";
-import { pipe } from "fp-ts/lib/function";
-import { PathReporter } from "io-ts/lib/PathReporter";
-import { BooleanFromString } from "io-ts-types/lib/BooleanFromString";
-
-import webpack from "webpack";
 import DotenvPlugin from "dotenv-webpack";
-import { BundleAnalyzerPlugin } from "webpack-bundle-analyzer";
-
-import { TsconfigPathsPlugin } from "tsconfig-paths-webpack-plugin";
+import { pipe } from "fp-ts/lib/function";
 import * as R from "fp-ts/lib/Record";
-import { GetLogger } from "../logger";
 import * as S from "fp-ts/lib/string";
+import * as t from "io-ts";
+import { BooleanFromString } from "io-ts-types/lib/BooleanFromString";
+import { PathReporter } from "io-ts/lib/PathReporter";
+import path from "path";
+import ReactRefreshTypescript from "react-refresh-typescript";
+import { TsconfigPathsPlugin } from "tsconfig-paths-webpack-plugin";
+import webpack from "webpack";
+import { BundleAnalyzerPlugin } from "webpack-bundle-analyzer";
+import { GetLogger } from "../logger";
+const ReactRefreshWebpackPlugin = require("@pmmmwh/react-refresh-webpack-plugin");
 
 const webpackLogger = GetLogger("webpack");
 
@@ -35,7 +34,7 @@ const BUILD_ENV = t.strict(
 type BUILD_ENV = t.TypeOf<typeof BUILD_ENV>;
 interface WebpackConfig extends webpack.Configuration {
   buildENV: BUILD_ENV;
-  plugins: any[] //webpack.WebpackPluginInstance[]
+  plugins: any[]; //webpack.WebpackPluginInstance[]
 }
 
 interface GetConfigParams<E extends t.Props> {
@@ -45,6 +44,7 @@ interface GetConfigParams<E extends t.Props> {
   entry: {
     [key: string]: string;
   };
+  hot: boolean;
 }
 
 const getConfig = <E extends t.Props>(
@@ -126,6 +126,10 @@ const getConfig = <E extends t.Props>(
     new webpack.DefinePlugin(stringifiedAppEnv as any),
   ];
 
+  if (opts.hot) {
+    plugins.push(new ReactRefreshWebpackPlugin());
+  }
+
   if (buildENV.BUNDLE_STATS) {
     plugins.push(
       new BundleAnalyzerPlugin({
@@ -149,14 +153,18 @@ const getConfig = <E extends t.Props>(
       rules: [
         {
           test: /\.tsx?$/,
+          exclude: /node_modules/,
           use: [
             {
               loader: "ts-loader",
               options: {
-                compilerOptions: {
-                  noEmit: false,
-                  sourceMap: true,
-                },
+                getCustomTransformers: () => ({
+                  before: [
+                    mode === "development" &&
+                      opts.hot &&
+                      ReactRefreshTypescript(),
+                  ].filter(Boolean),
+                }),
                 transpileOnly: true,
               },
             },

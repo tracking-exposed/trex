@@ -85,8 +85,8 @@ const CreatorStatsPage: React.FC<CreatorStatsProps> = ({ profile, stats }) => {
           <Grid item md={4}>
             <Card>
               <CardHeader
-                title={t('statistics:recommendability_score_title')}
-                subheader={t('statistics:recommendability_score_subtitle')}
+                title={t('analytics:recommendability_score_title')}
+                subheader={t('analytics:recommendability_score_subtitle')}
               />
               <CardContent>
                 <DonutChart
@@ -110,7 +110,7 @@ const CreatorStatsPage: React.FC<CreatorStatsProps> = ({ profile, stats }) => {
           </Grid>
           <Grid item md={4}>
             <Typography variant="h5" color="primary">
-              {t('statistics:top_n_cc_related_to_your_channel', {
+              {t('analytics:top_n_cc_related_to_your_channel', {
                 count: 5,
               })}
             </Typography>
@@ -125,20 +125,20 @@ const CreatorStatsPage: React.FC<CreatorStatsProps> = ({ profile, stats }) => {
             <Grid container spacing={2}>
               <Grid item sm={12}>
                 <StatsCard
-                  header={t('statistics:total_recommendations')}
+                  header={t('analytics:total_recommendations')}
                   count={recommendations.total}
                 />
               </Grid>
               <Grid item sm={12}>
                 <StatsCard
-                  header={t('statistics:total_views')}
+                  header={t('analytics:total_views')}
                   count={recommendations.totalViews}
                 />
               </Grid>
               <Grid item sm={12}>
                 <StatsCard
                   icon={<CommunityIcon />}
-                  header={t('statistics:evidences_title')}
+                  header={t('analytics:evidences_title')}
                   count={3}
                   color={theme.palette.success.main}
                 />
@@ -157,7 +157,7 @@ const CreatorStatsPage: React.FC<CreatorStatsProps> = ({ profile, stats }) => {
 
 const withQueries = declareQueries({ profile, creatorStats });
 
-export const StatisticsPage = withQueries(({ queries }): React.ReactElement => {
+export const AnalyticsPage = withQueries(({ queries }): React.ReactElement => {
   return pipe(
     queries,
     QR.fold(LazyFullSizeLoader, ErrorBox, ({ profile, creatorStats }) => {

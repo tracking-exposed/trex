@@ -44,7 +44,12 @@ const resources: CustomTypeOptions['resources'] = {
     download: 'Download',
     move_recommendation_up: 'Move recommendation up',
     move_recommendation_down: 'Move recommendation down',
-    remove_recommendation_from_video: 'Remove from current video',
+    delete_recommendation_button: 'Delete',
+    edit_recommendation_form_title: 'Edit recommendation',
+    edit_recommendation_button: 'Edit',
+    edit_recommendation_description: 'Explain briefly why you found this content relevant for your audience',
+    cancel: 'Cancel',
+    save: 'Save',
     manage_tokens: 'Manage tokens',
     reset_settings: 'Reset settings',
     reload_extension: 'Reload extension',
@@ -56,10 +61,10 @@ const resources: CustomTypeOptions['resources'] = {
     lab_title: 'LAB - Choose the Recommendations on Your Videos',
     lab_title_short: 'LAB',
     lab_subtitle:
-      'Click on one of your videos below to pick and order the recommendations you want to display in the side bar. Your content, your choice!',
+      'Click on one video below to pick and order the recommendations \nyou want to display in the side bar. Your content, your choice!',
     lab_edit_subtitle:
       'Paste a link in the grey box below to add it to the recommendations of this video. You can add recommendations towards any website!',
-    statistics: 'Statistics',
+    analytics: 'Analytics',
     settings: 'Settings',
     link_account: 'Authenticate your Channel \n to start recommending on your videos',
   },
@@ -88,7 +93,12 @@ const resources: CustomTypeOptions['resources'] = {
       "Please double-check that you have published the code\nin your channel's description and try again.",
     go_back_to_step_one_hint:
       'If the verification keeps failing, <1>go back to step one</1> and make sure\nyou have pasted the correct URL of your YouTube channel.',
-    channel_not_found: "We couldn't find a channel with the ID you provided.\nPlease make sure the URL or ID you pasted is correct."
+    channel_not_found: "We couldn't find a channel with the ID you provided.\nPlease make sure the URL or ID you pasted is correct.",
+    already_have_token: 'Or <1>click here</1> if you already have an access token.',
+    token_modal_title: 'Authenticate with an access token',
+    token_modal_description: 'If you already have an access token, paste it below:',
+    token_modal_submit: 'Authenticate',
+    token_authentication_failed: 'Authentication failed, please check your access token.',
   },
   youtube: {
     title: 'Youtube',
@@ -103,11 +113,13 @@ const resources: CustomTypeOptions['resources'] = {
     add_to_video: 'Add a recommendation to this video',
     url_placeholder: 'https://youtube.com/watch?v=xxxxx',
     url_helper_text: 'Insert a link',
+    title: 'Recommendation title',
+    description: 'Recommendation description',
+    missing_description: 'This recommendation does not have a description.',
   },
   dashboard: { title: 'Youchoose Creator Studio' },
   popup: { version: 'version {{version}} build {{date}}' },
-  statistics: {
-    title: 'Statistics',
+  analytics: {
     subtitle: 'Statistics computed with resources from other users',
     recommendability_score_title: 'Recommendability Score',
     recommendability_score_subtitle:

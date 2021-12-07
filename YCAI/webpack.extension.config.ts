@@ -1,8 +1,10 @@
 import { AppEnv } from './src/AppEnv';
 import { getConfig } from '../shared/src/webpack/config';
+import {
+  CopyWebpackPlugin,
+  FileManagerPlugin,
+} from '../shared/src/webpack/plugins';
 import * as path from 'path';
-import FileManagerPlugin from 'filemanager-webpack-plugin';
-import CopyWebpackPlugin from 'copy-webpack-plugin';
 import pkgJson from './package.json';
 
 const manifestVersion = (
@@ -15,6 +17,7 @@ const { buildENV, ...config } = getConfig({
   cwd: __dirname,
   outputDir: path.resolve(__dirname, 'build/extension'),
   env: AppEnv,
+  hot: false,
   entry: {
     ext: path.resolve(__dirname, 'src/app.tsx'),
     popup: path.resolve(__dirname, 'src/popup.tsx'),

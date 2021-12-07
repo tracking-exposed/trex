@@ -15,7 +15,12 @@
     "skipDefaultLibCheck": true,
     "skipLibCheck": true,
     "lib": ["dom", "ESNext"],
-    "typeRoots": ["./node_modules/@types", "./typings"],
+    "typeRoots": [
+      "../node_modules/@types",
+      "../shared/node_modules/@types",
+      "./node_modules/@types",
+      "./typings"
+    ],
     "baseUrl": "./src",
     "allowSyntheticDefaultImports": true,
     "noFallthroughCasesInSwitch": true,

@@ -3,7 +3,7 @@ import * as t from "io-ts";
 import { AuthorizationHeader, AuthResponse } from "../../models/Auth";
 import { ContentCreator } from "../../models/ContentCreator";
 import { CreatorStats } from "../../models/CreatorStats";
-import { Recommendation } from "../../models/Recommendation";
+import { Recommendation, PartialRecommendation } from "../../models/Recommendation";
 import { Video } from "../../models/Video";
 
 const ChannelType = t.literal("channel");
@@ -109,6 +109,18 @@ const CreateRecommendation = Endpoint({
   Output: Recommendation,
 });
 
+// TODO: Swagger
+const PatchRecommendation = Endpoint({
+  Method: "PATCH",
+  getPath: ({ urlId }) => `/v3/creator/recommendations/${urlId}`,
+  Input: {
+    Params: t.type({ urlId: t.string }),
+    Headers: AuthorizationHeader,
+    Body: PartialRecommendation,
+  },
+  Output: Recommendation,
+});
+
 const GetCreatorStats = Endpoint({
   Method: "GET",
   getPath: ({ channelId }) => `/v3/creator/${channelId}/stats`,
@@ -125,6 +137,7 @@ export const endpoints = {
   CreatorVideos,
   OneCreatorVideo,
   CreatorRecommendations,
+  PatchRecommendation,
   CreatorRelatedChannels,
   UpdateVideo,
   CreateRecommendation,

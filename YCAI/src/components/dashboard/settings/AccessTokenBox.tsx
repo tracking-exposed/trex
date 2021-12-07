@@ -21,9 +21,13 @@ import { APIError } from 'providers/api.provider';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
 import { assignAccessToken } from '../../../state/dashboard/creator.commands';
-import { deleteProfile, downloadTXTFile } from '../../../state/dashboard/public.commands';
+import {
+  deleteProfile,
+  downloadTXTFile,
+} from '../../../state/dashboard/public.commands';
 import { YCAITheme } from '../../../theme';
 import UnlinkProfileButton from '../../common/UnlinkProfileButton';
+import { doUpdateCurrentView } from '../../../utils/location.utils';
 
 interface AccessTokenBoxProps {
   profile: ContentCreator | null;
@@ -105,7 +109,7 @@ export const AccessTokenBox: React.FC<AccessTokenBoxProps> = ({ profile }) => {
               ) : null}
             </FormControl>
           </Grid>
-          <Grid item xs={3} style={{textAlign: 'right'}}>
+          <Grid item xs={3} style={{ textAlign: 'right' }}>
             {profile?.accessToken !== undefined ? (
               <Button
                 color="secondary"
@@ -157,11 +161,13 @@ export const AccessTokenBox: React.FC<AccessTokenBoxProps> = ({ profile }) => {
                 color="secondary"
                 size="small"
                 onLogout={() => {
-                  void deleteProfile({})().then(() => {
-                    setToken('');
-                    setAuthTokenVisible(true);
-                    setError(null);
-                  });
+                  void deleteProfile({})()
+                    .then(doUpdateCurrentView({ view: 'index' }))
+                    .then(() => {
+                      setToken('');
+                      setAuthTokenVisible(true);
+                      setError(null);
+                    });
                 }}
               />
             ) : null}

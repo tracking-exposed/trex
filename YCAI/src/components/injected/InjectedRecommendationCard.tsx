@@ -1,15 +1,20 @@
 import React from 'react';
 import {
+  Box,
   Card,
   CardMedia,
   Grid,
   Link,
-  Typography,
 }from '@material-ui/core';
 
-import { Recommendation } from '@shared/models/Recommendation';
+import {
+  titleMaxLength,
+  descriptionMaxLength,
+  Recommendation,
+} from '@shared/models/Recommendation';
 import { makeStyles, YCAITheme } from '../../theme';
 import { isYTURL } from '../../utils/yt.utils';
+import CharLimitedTypography from '../common/CharLimitedTypography';
 
 const imgHeight = 100;
 
@@ -28,7 +33,9 @@ const useStyles = makeStyles<YCAITheme>(theme => ({
     },
   },
   content: {
+    height: `calc(100% - ${theme.spacing(1)}px)`,
     padding: theme.spacing(1),
+    paddingBottom: theme.spacing(0.5),
     paddingTop: theme.spacing(0.5),
   },
   title: {
@@ -67,13 +74,27 @@ export const InjectedRecommendationCard: React.FC<Recommendation> = ({
               title={title}
             />
           </Grid>
-          <Grid item xs={7} className={classes.content}>
-            <Typography className={classes.title}>
-              {title}
-            </Typography>
-            <Typography className={classes.description}>
-              {description}
-            </Typography>
+          <Grid item xs={7}>
+            <Box
+              className={classes.content}
+              display="flex"
+              flexDirection="column"
+            >
+              <CharLimitedTypography
+                className={classes.title}
+                limit={titleMaxLength}
+              >
+                {title}
+              </CharLimitedTypography>
+              <Box display="flex" flexGrow={1} alignItems="center">
+                <CharLimitedTypography
+                  className={classes.description}
+                  limit={descriptionMaxLength}
+                  >
+                  {description ?? ''}
+                </CharLimitedTypography>
+              </Box>
+            </Box>
           </Grid>
         </Grid>
       </Card>
