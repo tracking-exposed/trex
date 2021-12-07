@@ -21,6 +21,7 @@ const moment = require('moment');
 
 const utils = require('../lib/utils');
 const mongo3 = require('./mongo3');
+const { getConfigFileParsingDiagnostics } = require('typescript');
 
 async function getSummaryByPublicKey(publicKey, options) {
     /* this function return the basic information necessary to compile the
@@ -43,13 +44,20 @@ async function getSummaryByPublicKey(publicKey, options) {
         { publicKey: supporter.publicKey }
     );
 
+    const ads = await mongo3.readLimit(mongoc,
+        nconf.get('schema').ads, { publicKey: supporter.publicKey },
+        { savingTime: -1}, options.amount, options.skip);
+
     await mongoc.close();
 
-    debug("Retrieved in getSummaryByPublicKey: data %d, total %d (amount %d skip %d)",
-        _.size(metadata), total, options.amount, options.skip);
+    debug("Retrieved in getSummaryByPublicKey: metadata %d, total %d and ads %d (amount %d skip %d)",
+        _.size(metadata), total, ads.length, options.amount, options.skip);
 
     const stats = _.countBy(metadata, 'type');
-
+    const cleanedads = _.map(ads, function(ad) {
+        return _.pick(ad, ['href','metadataId',
+            'sponsoredSite', 'sponsoredName', 'savingTime']);
+    });
     const videof = [ 'id', 'videoId', 'savingTime', 'title', 
                      'authorName', 'authorSource', 'publicationTime' ];
     const homef = ['id', 'savingTime'];
@@ -75,14 +83,14 @@ async function getSummaryByPublicKey(publicKey, options) {
         videos: [],
         searches: []
     });
-    /*
-    const cleandata = _.map(metadata, function(e) {
-        e.publicationTime = new Date(e.publicationTime);
-        e.relatedN = _.size(e.related);
-        return _.pick(e, fields);
-    }); */
 
-    return { supporter, ...payload, total, stats };
+    return {
+        supporter,
+        ...payload,
+        total,
+        stats,
+        ads: cleanedads,
+    };
 }
 
 async function getMetadataByPublicKey(publicKey, options) {
@@ -96,13 +104,9 @@ async function getMetadataByPublicKey(publicKey, options) {
         publicKey: supporter.publicKey,
         type: options.type,
     };
-    if(options.takefull || options.typefilter)
-        debug("Options takefull and typefilter were remove")
 
     if(!options.type)
-        debug("This call might not work as expected");
-
-    /* remind self legacy data might not return */
+        debug("Missing 'type': this API might not work as expected");
 
     if(options.timefilter)
         _.set(filter, 'savingTime.$gte', new Date(options.timefilter));
@@ -646,9 +650,7 @@ async function pullExperimentInfo(publicKey) {
     const exp = await mongo3.readOne(mongoc, nconf.get('schema').experiments,
         { publicKey, status: "active" });
     await mongoc.close();
-    if(exp)
-        return exp;
-    return null;
+    return exp || null;
 }
 
 async function registerDirective(links, directiveType) {
