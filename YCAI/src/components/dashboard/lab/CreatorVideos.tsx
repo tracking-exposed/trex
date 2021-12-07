@@ -63,7 +63,7 @@ export const CreatorVideos = withQueries<CreatorVideosProps>(
               </Grid>
             ) : (
               videos.map((v) => (
-                <Grid item lg={3} md={3} sm={6} xs={12} key={v.videoId}>
+                <Grid item lg={2} md={3} sm={6} xs={12} key={v.videoId}>
                   <VideoCard
                     videoId={v.videoId}
                     title={v.title}
