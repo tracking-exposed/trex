@@ -1,8 +1,8 @@
+import React from 'react';
 import { Box, Typography } from '@material-ui/core';
 import * as QR from 'avenger/lib/QueryResult';
 import { WithQueries } from 'avenger/lib/react';
-import * as React from 'react';
-import * as ReactDOM from 'react-dom';
+
 import { ErrorBox } from '../../components/common/ErrorBox';
 import { LazyFullSizeLoader } from '../../components/common/FullSizeLoader';
 import { config } from '../../config';
@@ -30,10 +30,9 @@ const useStyles = makeStyles((props) => ({
 }));
 
 const YTContributionInfoBoxComponent: React.FC<{
-  node: HTMLDivElement;
   keypair: Keypair;
   settings: Settings;
-}> = ({ keypair, settings, node }) => {
+}> = ({ keypair, settings }) => {
   const classes = useStyles();
   const [state, setState] = React.useState<dataDonation.ContributionState>({
     type: 'idle',
@@ -48,14 +47,14 @@ const YTContributionInfoBoxComponent: React.FC<{
 
   // don't render anything in production
   if (config.NODE_ENV === 'production') {
-    return ReactDOM.createPortal(null, node);
+    return null;
   }
 
-  return ReactDOM.createPortal(
+  return (
     <Box className={classes.root}>
       <Typography
         variant="subtitle1"
-        style={{ marginBottom: 0, marginRight: 10, fontWeight: 800 }}
+        style={{ fontWeight: 800 }}
         display="inline"
         color="primary"
       >
@@ -70,30 +69,38 @@ const YTContributionInfoBoxComponent: React.FC<{
           ? 'ADV seen...'
           : 'ADV sent...'}
       </Typography>
-    </Box>,
-    node
+    </Box>
   );
 };
 
 export const YTContributionInfoBox: React.FC<{
-  node: HTMLDivElement;
   settings: Settings;
-}> = ({ node, settings }) => {
+}> = ({ settings }) => {
   return (
-    <WithQueries
-      queries={{ keypair }}
-      render={QR.fold(LazyFullSizeLoader, ErrorBox, ({ keypair }) => {
-        if (settings === null || !settings.independentContributions.enable) {
-          return null;
-        }
-        return (
-          <YTContributionInfoBoxComponent
-            node={node}
-            keypair={keypair}
-            settings={settings}
-          />
-        );
-      })}
-    />
+    <div style={{
+      position: 'fixed',
+      width: 200,
+      height: 30,
+      right: 20,
+      bottom: 20,
+      padding: 4,
+      zIndex: 9000,
+      borderRadius: 10,
+    }}>
+      <WithQueries
+        queries={{ keypair }}
+        render={QR.fold(LazyFullSizeLoader, ErrorBox, ({ keypair }) => {
+          if (settings === null || !settings.independentContributions.enable) {
+            return null;
+          }
+          return (
+            <YTContributionInfoBoxComponent
+              keypair={keypair}
+              settings={settings}
+            />
+          );
+        })}
+      />
+    </div>
   );
 };
