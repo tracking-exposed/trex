@@ -53,19 +53,11 @@ export const LoggedInUserProfileBox: React.FC<LoggedInUserProfileBoxProps> = ({
     <Box display="flex" alignItems="flex-start">
       <Avatar src={profile.avatar} className={classes.avatar} />
       <Box>
-<<<<<<< HEAD
         <Typography className={classes.username}>{profile.username}</Typography>
         <Typography variant="caption" className={classes.channel}>
           Channel ID:
           <br />
           {profile.channelId}
-=======
-        <Typography className={classes.username}>
-          {profile.username}
-        </Typography>
-        <Typography variant="caption" className={classes.channel}>
-          Channel ID:<br />{profile.channelId}
->>>>>>> 65a8dddad059e4f13946ba5d4fb7b9d8427c9c3e
         </Typography>
         <UnlinkProfileButton
           className={classes.unlink}

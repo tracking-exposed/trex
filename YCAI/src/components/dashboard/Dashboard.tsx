@@ -100,7 +100,6 @@ const DashboardContent: React.FC<DashboardContentProps> = ({
           paddingTop: profile ? 0 : theme.spacing(12),
         }}
       >
-<<<<<<< HEAD
         <Typography
           variant="h3"
           component="h1"
@@ -110,9 +109,6 @@ const DashboardContent: React.FC<DashboardContentProps> = ({
             paddingTop: theme.spacing(1),
           }}
         >
-=======
-        <Typography variant="h3" component="h1" color="primary" style={{ whiteSpace: 'pre-line' }}>
->>>>>>> 65a8dddad059e4f13946ba5d4fb7b9d8427c9c3e
           {currentViewLabel}
         </Typography>
         <Typography variant="subtitle1" color="textPrimary">

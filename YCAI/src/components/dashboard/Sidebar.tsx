@@ -107,10 +107,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ currentView, profile }) => {
     <Box
       style={{
         position: 'sticky',
-<<<<<<< HEAD
         top: theme.spacing(3),
-=======
->>>>>>> 65a8dddad059e4f13946ba5d4fb7b9d8427c9c3e
       }}
     >
       <Box
@@ -125,7 +122,6 @@ export const Sidebar: React.FC<SidebarProps> = ({ currentView, profile }) => {
         <YCAILogo height={24} />
       </Box>
 
-<<<<<<< HEAD
       {profile && (
         <>
           <UserProfileBox />
@@ -166,43 +162,6 @@ export const Sidebar: React.FC<SidebarProps> = ({ currentView, profile }) => {
           </List>
         </>
       )}
-=======
-      <UserProfileBox />
-      <Divider light className={classes.divider}/>
-
-      <List className={classes.routesList} disablePadding={true}>
-        {[
-          {
-            title: t('routes:lab_title_short'),
-            icon: LabIcon,
-            views: ['lab', 'labEdit'] as Array<CurrentView['view']>,
-          },
-          {
-            title: t('routes:statistics'),
-            icon: AnalyticsIcon,
-            views: ['statistics'] as Array<CurrentView['view']>,
-          },
-          {
-            title: t('routes:settings'),
-            icon: SettingsIcon,
-            views: ['settings'] as Array<CurrentView['view']>,
-          },
-        ].map((opts) =>
-          toMenuItem(
-            {
-              ...opts,
-              iconClassName: classes.listItemIcon,
-              iconColor: theme.palette.primary.main,
-              iconSelectedColor: theme.palette.common.white,
-              className: classes.listItem,
-              notSelectedClassName: classes.listItemNotSelected,
-              selectedClassName: classes.listItemSelected,
-            },
-            currentView
-          )
-        )}
-      </List>
->>>>>>> 65a8dddad059e4f13946ba5d4fb7b9d8427c9c3e
     </Box>
   );
 };
