@@ -1,5 +1,5 @@
 import React from 'react';
-import { Grid, Typography, useTheme } from '@material-ui/core';
+import { Grid, Typography, useTheme, Divider } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import * as QR from 'avenger/lib/QueryResult';
 import { declareQueries } from 'avenger/lib/react';
@@ -105,7 +105,8 @@ const DashboardContent: React.FC<DashboardContentProps> = ({
           component="h1"
           color={profile ? 'primary' : 'textPrimary'}
           style={{
-            whiteSpace: 'pre-line'
+            whiteSpace: 'pre-line',
+            paddingTop: theme.spacing(1),
           }}
         >
           {currentViewLabel}
@@ -113,8 +114,14 @@ const DashboardContent: React.FC<DashboardContentProps> = ({
         <Typography variant="subtitle1" color="textPrimary">
           {currentViewSubtitle}
         </Typography>
+        <Divider light />
       </Grid>
-      <Grid item xs={12}>
+
+      <Grid 
+        item xs={12}
+        style={{
+          paddingTop: theme.spacing(4),
+        }} >
         {currentViewContent}
       </Grid>
     </Grid>
