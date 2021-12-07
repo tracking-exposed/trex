@@ -44,7 +44,7 @@ const TokenLoginModal: React.FC<TokenLoginModalProps> = ({
         setError(t('link_account:token_authentication_failed'));
       } else {
         onClose();
-        void doUpdateCurrentView({ view: 'analytics' })();
+        void doUpdateCurrentView({ view: 'lab' })();
       }
     });
   };

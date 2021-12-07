@@ -23,6 +23,7 @@ import {
 } from '../../state/dashboard/creator.commands';
 import { makeStyles } from '../../theme';
 import TokenLoginModal from './TokenLoginModal';
+import { doUpdateCurrentView } from '../../utils/location.utils';
 
 const youtubeChannelUrlRegex = /\/channel\/([^/]+)(?:$|\/)/;
 
@@ -136,6 +137,9 @@ export const LinkAccount: React.FC<LinkAccountProps> = ({ auth }) => {
         )
         .finally(() => {
           setVerifying(false);
+          void doUpdateCurrentView({
+            view: 'lab'
+          })()
         });
     }
   };
