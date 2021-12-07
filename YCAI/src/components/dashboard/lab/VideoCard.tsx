@@ -41,6 +41,13 @@ const useStyles = makeStyles<YCAITheme>((theme) => ({
     },
     boxShadow: "none",
   },
+  customBox: {
+    display: "-webkit-box",
+    boxOrient: "vertical",
+    lineClamp: 2,
+    wordBreak: "false",
+    overflow: "hidden"
+  },
 }));
 
 export const VideoCard: React.FC<VideoCardProps> = ({
@@ -62,7 +69,7 @@ export const VideoCard: React.FC<VideoCardProps> = ({
         weight={60}
         onClick={openRecommendations}
       />
-      <CardContent style={{ paddingBottom: theme.spacing(0.3) }}>
+      <CardContent style={{ paddingBottom: theme.spacing(0.3) }} classes={{root: classes.customBox}}>
         <Link
           color="textSecondary"
           href={getYTVideoURLById(videoId)}

@@ -65,7 +65,7 @@ export const YCAITheme = createTheme({
       marginBottom: 20,
     },
     subtitle2: {
-      fontSize: '1rem',
+      fontSize: '0.9rem',
       fontWeight: 800,
       lineHeight: 1.1,
     },
@@ -93,7 +93,7 @@ export const YCAITheme = createTheme({
     },
     MuiButton: {
       sizeSmall: {
-        fontSize: '0.8rem',
+        fontSize: '0.7rem',
       },
       contained: {
         color: grey,
