@@ -23,7 +23,7 @@ const useStyles = makeStyles<YCAITheme>((theme) => ({
       fontFamily: theme.typography.h3.fontFamily,
       fontWeight: 600,
       fontSize: theme.typography.h3.fontSize,
-      color: theme.palette.primary.main,
+      fill: theme.palette.common.white,
     },
   },
 }));
@@ -61,6 +61,7 @@ export const DonutChart = <D extends Data>({
         label: {
           show: false,
         },
+        width: 20
       },
     };
 
