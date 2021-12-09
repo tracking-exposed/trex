@@ -146,7 +146,7 @@ async function saveRecommendationOGP(ogblob, creator) {
   keep.urlId = utils.hash({ url: keep.url, channelId: creator.channelId });
 
   const mongoc = await mongo3.clientConnect({ concurrency: 1 });
-  const res = await mongo3.writeOne(
+  await mongo3.writeOne(
     mongoc,
     nconf.get("schema").recommendations,
     keep

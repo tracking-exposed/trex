@@ -45,7 +45,7 @@ function getFormatCleanString(publicationString) {
     }, null);
 
     const cleanString = _.reduce(conditionalExtra, function(memo, o) {
-        let chk = new RegExp(o.match).exec(memo);
+        const chk = new RegExp(o.match).exec(memo);
         if(chk)
             debug("<!> %s match with: |%s|", memo, o.name);
         return chk ? o.trimWith(memo) : memo;
@@ -76,7 +76,7 @@ const localized = {
     'ore': 'hours',
     'λεπτά': 'hours',
     'heures': 'hours',
-    'godzin': 'hours',      // Transmisja rozpoczęta 5 godzin temu
+    'godzin': 'hours',      // Transmisja rozpoczęta 5 godzin temu
     'Stunden': 'hours',
 
     'minutos': 'minutes',
@@ -117,7 +117,7 @@ function localizedRegexpChain(stri) {
         debug("WARNING: |%s| not match", stri);
         throw new Error("|regexpChain and localized need an update|" + stri+ "|");
     }
-    return fit ? fit : { amount: 0, unit: null };
+    return fit || { amount: 0, unit: null };
 }
 
 const relativeOpeningString = [
@@ -129,16 +129,16 @@ const relativeOpeningString = [
     'Premiered',
     'Streamed',
     'Comenzó',
-    'Трансляция',   // Трансляция началась 93 минуты назад
+    'Трансляция',   // Трансляция началась 93 минуты назад
     'Trasmissione', // Trasmissione in live streaming 7 ore
     'Streaming',    // Streaming avviato 115 minuti fa
     'Ξεκίνησε',     // Ξεκίνησε ροή πριν από
     'Stream',       // Stream iniciado há 
     'Aktiver',      // Aktiver Livestream seit 22 Minuten
     'Diffusion',    // Diffusion lancée il y a 37 minutes
-    'Diffusé',      // Diffusé en direct il y a 4 heures
+    'Diffusé',      // Diffusé en direct il y a 4 heures
     'Première',     // Première in corso. Trasmissione iniziata 13 minuti fa
-    'Transmisja',   // Transmisja rozpoczęta 5 godzin temu
+    'Transmisja',   // Transmisja rozpoczęta 5 godzin temu
     'Aktiver',      // Aktiver Livestream seit 3 Stunden
     'Livestream',   // Livestream vor 6 Stunden
     'streamen',     // 37 minuten geleden begonnen met streamen
@@ -243,13 +243,13 @@ function sequenceForPublicationTime(D, blang, clientTime) {
 
     // from the language in the buttons we infer the language
     const m = _.uniq(_.compact(_.map(D.querySelectorAll('button'), function(e) {
-        let l = _.trim(e.textContent)
+        const l = _.trim(e.textContent)
         if(_.size(l)) return l;
     })));
 
-    let publicationTime, publicationString = null;
+    let publicationTime; let publicationString = null;
     const serverSideBlang = findLanguage('video', m);
-    blang = serverSideBlang ? serverSideBlang : blang;
+    blang = serverSideBlang || blang;
 /*
     if(!serverSideBlang && !blang)
         nlpdebug("OOO wtf! lack of ssblang and csblang (%j)", m);
@@ -258,6 +258,7 @@ function sequenceForPublicationTime(D, blang, clientTime) {
         nlpdebug("!*! Difference in ssblang (winner) %s and csblang %s", serverSideBlang, blang);
 */
     publicationString = D.querySelector("#dot + .ytd-video-primary-info-renderer").textContent;
+    let mobj;
     if(publicationString.length > 2) {
 
         moment.locale(blang);

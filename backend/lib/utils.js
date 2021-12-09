@@ -6,7 +6,6 @@ const nacl = require('tweetnacl');
 const nconf = require('nconf');
 const foodWords = require('food-words');
 const url = require('url');
-const querystring = require('querystring');
 
 function hash(obj, fields) {
     if(_.isUndefined(fields))

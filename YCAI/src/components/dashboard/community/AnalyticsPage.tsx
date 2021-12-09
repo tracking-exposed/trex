@@ -1,21 +1,18 @@
+import { Card, CardContent, CardHeader, useTheme } from '@material-ui/core';
+import Grid from '@material-ui/core/Grid';
 import { ContentCreator } from '@shared/models/ContentCreator';
 import { CreatorStatContent, CreatorStats } from '@shared/models/CreatorStats';
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  Typography,
-  useTheme,
-} from '@material-ui/core';
-import Grid from '@material-ui/core/Grid';
-import CommunityIcon from '@material-ui/icons/GroupOutlined';
 import * as QR from 'avenger/lib/QueryResult';
 import { declareQueries } from 'avenger/lib/react';
 import * as A from 'fp-ts/lib/Array';
 import { pipe } from 'fp-ts/lib/function';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { creatorStats, profile } from '../../../state/dashboard/creator.queries';
+import {
+  creatorStats,
+  profile,
+} from '../../../state/dashboard/creator.queries';
+import { makeStyles } from '../../../theme';
 import { ErrorBox } from '../../common/ErrorBox';
 import { LazyFullSizeLoader } from '../../common/FullSizeLoader';
 import { LinkAccountButton } from '../../common/LinkAccountButton';
@@ -24,14 +21,57 @@ import { ADVChannelStatsBox } from './ADVChannelStatsBox';
 import { CCRelatedUserList } from './CCRelatedUserList';
 import { DonutChart } from './DonutChart';
 
-interface CreatorStatsProps {
+const useStyles = makeStyles((theme) => ({
+  recommendabilityScore: {
+    background: theme.palette.primary.main,
+    '& .MuiCardHeader-content .MuiCardHeader-title': {
+      color: theme.palette.common.white,
+      ...theme.typography.h4,
+    },
+    '& .MuiCardHeader-content .MuiCardHeader-subheader': {
+      color: theme.palette.common.white,
+      ...theme.typography.h6,
+    },
+  },
+  relatedChannels: {
+    boxShadow: 'none',
+    background: 'transparent',
+    '& .MuiCardHeader-content .MuiCardHeader-title': {
+      color: theme.palette.primary.main,
+      ...theme.typography.h4,
+    },
+    '& .MuiCardHeader-content .MuiCardHeader-subheader': {
+      color: theme.palette.primary.main,
+      ...theme.typography.h6,
+    },
+  },
+  recommendations: {
+    boxShadow: 'none',
+    background: 'transparent',
+    '& .MuiCardHeader-content .MuiCardHeader-title': {
+      color: theme.palette.primary.main,
+      ...theme.typography.h4,
+    },
+    '& .MuiCardHeader-content .MuiCardHeader-subheader': {
+      color: theme.palette.primary.main,
+      ...theme.typography.h6,
+    },
+  },
+}));
+
+interface CreatorAnalyticsPageProps {
   profile?: ContentCreator;
   stats: CreatorStats;
 }
 
-const CreatorStatsPage: React.FC<CreatorStatsProps> = ({ profile, stats }) => {
+const CreatorAnalyticsPage: React.FC<CreatorAnalyticsPageProps> = ({
+  profile,
+  stats,
+}) => {
+  const classes = useStyles();
   const theme = useTheme();
   const { t } = useTranslation();
+
   const recommendations = React.useMemo(
     () =>
       pipe(
@@ -39,7 +79,7 @@ const CreatorStatsPage: React.FC<CreatorStatsProps> = ({ profile, stats }) => {
         A.reduce(
           {
             self: [] as CreatorStatContent[],
-            community: [] as CreatorStatContent[],
+            other: [] as CreatorStatContent[],
             totalViews: 0,
           },
           (acc, s) => {
@@ -50,7 +90,7 @@ const CreatorStatsPage: React.FC<CreatorStatsProps> = ({ profile, stats }) => {
                     self: acc.self.concat(s),
                   }
                 : {
-                    community: acc.community.concat(s),
+                    other: acc.other.concat(s),
                   };
 
             return {
@@ -61,11 +101,11 @@ const CreatorStatsPage: React.FC<CreatorStatsProps> = ({ profile, stats }) => {
           }
         ),
         (s) => {
-          const total = s.self.length + s.community.length;
+          const total = s.self.length + s.other.length;
           const recommendabilityScore =
-            s.self.length === 0 && s.community.length === 0
+            s.self.length === 0 && s.other.length === 0
               ? 0
-              : (s.self.length / s.community.length) * 100;
+              : (s.self.length / s.other.length) * 100;
           return {
             recommendabilityScore,
             total,
@@ -83,7 +123,24 @@ const CreatorStatsPage: React.FC<CreatorStatsProps> = ({ profile, stats }) => {
       ) : (
         <Grid container spacing={2}>
           <Grid item md={4}>
-            <Card>
+            <Card className={classes.relatedChannels}>
+              <CardHeader
+                title={t('analytics:top_n_cc_related_to_your_channel', {
+                  count: 5,
+                })}
+              />
+              <CardContent>
+                <CCRelatedUserList
+                  channelId={profile.channelId}
+                  amount={5}
+                  skip={0}
+                />
+              </CardContent>
+            </Card>
+          </Grid>
+
+          <Grid item md={4}>
+            <Card className={classes.recommendabilityScore}>
               <CardHeader
                 title={t('analytics:recommendability_score_title')}
                 subheader={t('analytics:recommendability_score_subtitle')}
@@ -97,53 +154,50 @@ const CreatorStatsPage: React.FC<CreatorStatsProps> = ({ profile, stats }) => {
                       : recommendations.recommendabilityScore.toFixed(0)
                   }%`}
                   data={{
-                    score: [recommendations.recommendabilityScore],
-                    rest: [100 - recommendations.recommendabilityScore],
+                    recommended: [recommendations.recommendabilityScore],
+                    other: [100 - recommendations.recommendabilityScore],
                   }}
                   colors={{
-                    score: theme.palette.primary.main,
-                    rest: theme.palette.grey[500],
+                    recommended: theme.palette.common.white,
+                    other: theme.palette.grey[500],
                   }}
                 />
               </CardContent>
             </Card>
           </Grid>
-          <Grid item md={4}>
-            <Typography variant="h5" color="primary">
-              {t('analytics:top_n_cc_related_to_your_channel', {
-                count: 5,
-              })}
-            </Typography>
-            <CCRelatedUserList
-              channelId={profile.channelId}
-              amount={5}
-              skip={0}
-            />
-          </Grid>
 
-          <Grid item md={4}>
-            <Grid container spacing={2}>
-              <Grid item sm={12}>
-                <StatsCard
-                  header={t('analytics:total_recommendations')}
-                  count={recommendations.total}
-                />
-              </Grid>
-              <Grid item sm={12}>
-                <StatsCard
-                  header={t('analytics:total_views')}
-                  count={recommendations.totalViews}
-                />
-              </Grid>
-              <Grid item sm={12}>
-                <StatsCard
-                  icon={<CommunityIcon />}
-                  header={t('analytics:evidences_title')}
-                  count={3}
-                  color={theme.palette.success.main}
-                />
-              </Grid>
-            </Grid>
+          <Grid item md={4} sm={6}>
+            <Card className={classes.recommendations}>
+              <CardHeader
+                title={t('analytics:recommendations_title')}
+                style={{
+                  textAlign: 'center',
+                }}
+              />
+              <CardContent>
+                <Grid
+                  container
+                  spacing={2}
+                  direction="column"
+                  alignContent="center"
+                  justifyContent="center"
+                >
+                  <Grid item md={10}>
+                    <StatsCard
+                      header={t('analytics:total_recommendations')}
+                      count={recommendations.total}
+                      color={theme.palette.primary.main}
+                    />
+                  </Grid>
+                  <Grid item md={10}>
+                    <StatsCard
+                      header={t('analytics:recommendations_for_other_channels')}
+                      count={recommendations.other.length}
+                    />
+                  </Grid>
+                </Grid>
+              </CardContent>
+            </Card>
           </Grid>
 
           <Grid item md={12}>
@@ -164,7 +218,7 @@ export const AnalyticsPage = withQueries(({ queries }): React.ReactElement => {
       return (
         <Grid container spacing={3}>
           <Grid item md={12}>
-            <CreatorStatsPage profile={profile} stats={creatorStats} />
+            <CreatorAnalyticsPage profile={profile} stats={creatorStats} />
           </Grid>
         </Grid>
       );

@@ -1,4 +1,3 @@
-const _ = require('lodash');
 const debug = require('debug')('parser:shared');
 const debuge = require('debug')('parser:shared:error');
 const url = require('url');
@@ -17,6 +16,7 @@ function getThumbNailHref(e) {
         if(!thumbnailSrc)
             return null;
 
+        // eslint-disable-next-line node/no-deprecated-api
         const c = url.parse(thumbnailSrc);
         thumbnailHref = 'https://' + c.host + c.pathname;
     } catch(e) {
@@ -43,9 +43,9 @@ function logged(D) {
 
 function fixHumanizedTime(inputstr) {
     // this function fix the time 0:10, 10:10,  in HH:MM:SS
-    if(inputstr.length == 4)
+    if(inputstr.length === 4)
         return '0:0' + inputstr;
-    if(inputstr.length == 5)
+    if(inputstr.length === 5)
         return '0:' + inputstr;
     if(inputstr.length > 9)
         debug("Warning this is weird in fixHumanizedTime: [%s]", inputstr);

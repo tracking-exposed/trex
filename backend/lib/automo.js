@@ -383,7 +383,7 @@ async function upsertSearchResults(listof, cName) {
     const mongoc = await mongo3.clientConnect({concurrency: 1});
     let written = 0;
     for (const entry of listof) {
-        const a = await mongo3.upsertOne(mongoc, cName, {id: entry.id}, entry);
+        await mongo3.upsertOne(mongoc, cName, {id: entry.id}, entry);
         // TODO check return value to see if updated|upsert|fail
         written++;
     }
@@ -395,7 +395,7 @@ async function updateAdvertisingAndMetadata(adlist) {
     const mongoc = await mongo3.clientConnect({concurrency: 1});
     let written = 0;
     for (const entry of adlist) {
-        const a = await mongo3.upsertOne(mongoc, nconf.get('schema').ads,
+        await mongo3.upsertOne(mongoc, nconf.get('schema').ads,
             { id: entry.id }, entry);
         // TODO check return value to see if updated|upsert|fail
         written++;
@@ -629,7 +629,7 @@ async function saveExperiment(expobj) {
 
     /* every existing experiment from the same pubkey, which
      * is active, should also be marked "completed" */
-    const precedent = await markExperCompleted(mongoc, filter);
+    await markExperCompleted(mongoc, filter);
 
     expobj.status = "active";
     await mongo3

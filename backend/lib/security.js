@@ -14,7 +14,9 @@ function checkPassword(req) {
 
 function checkKeyIsSet() {
     if(nconf.get('key') === 'invalid_default') {
+        // eslint-disable-next-line
         console.log("key is not set, and this is not allowed");
+        // eslint-disable-next-line
         console.log("Please use something like --key 'arandomstring' ");
         process.exit(1);
     }

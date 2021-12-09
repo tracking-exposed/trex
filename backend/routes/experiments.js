@@ -23,47 +23,47 @@ async function sharedDataPull(filter) {
     return metadata;
 }
 
-function dotify(data) {
-    const dot = Object({links: [], nodes: []})
-    dot.links = _.map(data, function(video) {
-        return {
-            target:
-                video.profile + '—' +
-                video.expnumber + '—' +
-                moment(video.savingTime).format("dddd"),
-            source: video.recommendedVideoId,
-            value: 1
-        } });
-    const vList = _.uniq(_.map(data, function(video) { return video.recommendedVideoId }));
-    const videoObject = _.map(vList, function(v) { return { id: v, group: 1 }});
-    const pList = _.uniq(_.map(data, function(video) {
-        return video.profile + '—' +
-               video.expnumber + '—' +
-               moment(video.savingTime).format("dddd")
-    }));
-    const pseudoObject = _.map(pList, function(v) { return { id: v, group: 2 }});
-    dot.nodes = _.concat(videoObject, pseudoObject);
-    return dot;
-}
+// function dotify(data) {
+//     const dot = Object({links: [], nodes: []})
+//     dot.links = _.map(data, function(video) {
+//         return {
+//             target:
+//                 video.profile + '—' +
+//                 video.expnumber + '—' +
+//                 moment(video.savingTime).format("dddd"),
+//             source: video.recommendedVideoId,
+//             value: 1
+//         } });
+//     const vList = _.uniq(_.map(data, function(video) { return video.recommendedVideoId }));
+//     const videoObject = _.map(vList, function(v) { return { id: v, group: 1 }});
+//     const pList = _.uniq(_.map(data, function(video) {
+//         return video.profile + '—' +
+//                video.expnumber + '—' +
+//                moment(video.savingTime).format("dddd")
+//     }));
+//     const pseudoObject = _.map(pList, function(v) { return { id: v, group: 2 }});
+//     dot.nodes = _.concat(videoObject, pseudoObject);
+//     return dot;
+// }
 
 async function dot(req) {
 
     throw new Error("Remind this can't work because metadata has many type");
 
-    const experiment = params.getString(req, 'experimentId', true);
-    const metadata = await sharedDataPull(experiment);
+    // const experiment = params.getString(req, 'experimentId', true);
+    // const metadata = await sharedDataPull(experiment);
 
-    if(!_.size(related))
-        return { json: {error: true, message: "No data found with such parameters"}}
+    // if(!_.size(related))
+    //     return { json: {error: true, message: "No data found with such parameters"}}
 
-    const grouped = _.groupBy(related, 'videoName');
-    const dotchain = _.map(grouped, function(vidlist, videoName) {
-        return {
-            videoName,
-            dotted: dotify(vidlist)
-        };
-    })
-    return { json: dotchain };
+    // const grouped = _.groupBy(related, 'videoName');
+    // const dotchain = _.map(grouped, function(vidlist, videoName) {
+    //     return {
+    //         videoName,
+    //         dotted: dotify(vidlist)
+    //     };
+    // })
+    // return { json: dotchain };
 }
 
 async function json(req) {
