@@ -168,7 +168,12 @@ const CreatorAnalyticsPage: React.FC<CreatorAnalyticsPageProps> = ({
 
           <Grid item md={4} sm={6}>
             <Card className={classes.recommendations}>
-              <CardHeader title={t('analytics:recommendations_title')} />
+              <CardHeader
+                title={t('analytics:recommendations_title')}
+                style={{
+                  textAlign: 'center',
+                }}
+              />
               <CardContent>
                 <Grid
                   container
