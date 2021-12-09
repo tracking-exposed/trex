@@ -45,7 +45,7 @@ function getFormatCleanString(publicationString) {
     }, null);
 
     const cleanString = _.reduce(conditionalExtra, function(memo, o) {
-        let chk = new RegExp(o.match).exec(memo);
+        const chk = new RegExp(o.match).exec(memo);
         if(chk)
             debug("<!> %s match with: |%s|", memo, o.name);
         return chk ? o.trimWith(memo) : memo;
@@ -117,7 +117,7 @@ function localizedRegexpChain(stri) {
         debug("WARNING: |%s| not match", stri);
         throw new Error("|regexpChain and localized need an update|" + stri+ "|");
     }
-    return fit ? fit : { amount: 0, unit: null };
+    return fit || { amount: 0, unit: null };
 }
 
 const relativeOpeningString = [
@@ -243,13 +243,13 @@ function sequenceForPublicationTime(D, blang, clientTime) {
 
     // from the language in the buttons we infer the language
     const m = _.uniq(_.compact(_.map(D.querySelectorAll('button'), function(e) {
-        let l = _.trim(e.textContent)
+        const l = _.trim(e.textContent)
         if(_.size(l)) return l;
     })));
 
-    let publicationTime, publicationString = null;
+    let publicationTime; let publicationString = null;
     const serverSideBlang = findLanguage('video', m);
-    blang = serverSideBlang ? serverSideBlang : blang;
+    blang = serverSideBlang || blang;
 /*
     if(!serverSideBlang && !blang)
         nlpdebug("OOO wtf! lack of ssblang and csblang (%j)", m);

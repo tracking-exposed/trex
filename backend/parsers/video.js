@@ -16,7 +16,7 @@ const stats = { skipped: 0, error: 0, suberror: 0, success: 0 };
 function parseViews(D) {
     const node = _.first(D.getElementsByClassName('view-count'));
     const viewStr = node.innerHTML
-    let tmp = _.first(viewStr.split(' '))
+    const tmp = _.first(viewStr.split(' '))
     const viewNumber = _.parseInt(tmp.replace(/[.,]/g, ''));
     return { viewStr: viewStr, viewNumber: viewNumber };
 };
@@ -95,7 +95,7 @@ function relatedMetadata(e, i) {
     /* estimate live also by missing metadata but presence of certain few */
     const estimatedLive = function() {
         if(mined && mined.isLive) return true;
-        return (!displayTime && !expandedTime && !recommendedLength) ? true : false;
+        return !!((!displayTime && !expandedTime && !recommendedLength));
     }();
 
     const r = {
@@ -105,10 +105,10 @@ function relatedMetadata(e, i) {
         videoId,
         params: p,
         recommendedSource: source,
-        recommendedTitle: mined ? mined.title : (title ? title : null),
+        recommendedTitle: mined ? mined.title : (title || null),
         recommendedLength,
-        recommendedDisplayL: displayTime ? displayTime : null,
-        recommendedLengthText: expandedTime ? expandedTime : null,
+        recommendedDisplayL: displayTime || null,
+        recommendedLengthText: expandedTime || null,
         recommendedPubTime: estimatedLive ? null : (mined ? mined.timeago : null),
         /* ^^^^  is deleted in makeAbsolutePublicationTime, when clientTime is available,
          * this field produces -> recommendedPubtime and ptPrecison */
@@ -144,7 +144,7 @@ function checkUpDebug(r) {
     } else
         second = first.acc;
 
-    let debstr = _.times(second, function(k) { return "!"+k; }).join('') + "";
+    const debstr = _.times(second, function(k) { return "!"+k; }).join('') + "";
 
     if(_.size(debstr))
         debugCheckup("%s\n\t%d\t%s", debstr, r.index, r.label);
@@ -263,7 +263,7 @@ function processVideo(D, blang, clientTime, urlinfo) {
         debuge("unexpected condition in channel/author mining, should be 2, is %d", check);
     */
 
-    let authorName, authorSource = null;
+    let authorName; let authorSource = null;
     const authorinfo = mineAuthorInfo(D);
     if(authorinfo) {
         authorName = authorinfo.authorName;
@@ -291,7 +291,7 @@ function processVideo(D, blang, clientTime, urlinfo) {
     related = makeAbsolutePublicationTime(_.compact(related), clientTime);
 
     /* non mandatory info */
-    let viewInfo, likeInfo = null;
+    let viewInfo; let likeInfo = null;
     try {
         viewInfo = parseViews(D);
         likeInfo = parseLikes(D);
@@ -322,7 +322,7 @@ function processVideo(D, blang, clientTime, urlinfo) {
         login,
         publicationString,
         publicationTime,
-        blang: blang ? blang : ifLang,
+        blang: blang || ifLang,
         authorName,
         authorSource,
         related,

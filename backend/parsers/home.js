@@ -187,7 +187,7 @@ function actualHomeProcess(D) {
         try {
             const ubication = D.querySelector('body').outerHTML.indexOf(e.outerHTML);
             selectorOffsetMap.push({ i, offset: ubication });
-            let videoInfo = dissectSelectedVideo(e, i, titles, ubication);
+            const videoInfo = dissectSelectedVideo(e, i, titles, ubication);
             videoInfo.thumbnailHref = thumbnailHref;
             return videoInfo;
         } catch(error) {
@@ -218,9 +218,9 @@ function guessUXlanguage(D) {
 
 function process(envelop) {
 
-    let retval = {};
+    const retval = {};
     try {
-        let { selected, sections } = actualHomeProcess(envelop.jsdom);
+        const { selected, sections } = actualHomeProcess(envelop.jsdom);
         retval.selected = selected;
         retval.sections = sections;
     } catch(e) {
