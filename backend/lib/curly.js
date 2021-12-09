@@ -64,7 +64,7 @@ async function fetchRawChannelVideosHTML(channelId) {
 }
 
 async function verifyChannel(channelId) {
-  const { html, statusCode, headers } = await fetchRawChannelVideosHTML(channelId);
+  const { html, statusCode } = await fetchRawChannelVideosHTML(channelId);
   debug(statusCode);
   if(statusCode !== 200) {
     const em = `Invalid HTTP Code ${statusCode}`;

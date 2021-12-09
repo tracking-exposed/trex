@@ -16,7 +16,7 @@ const stats = { skipped: 0, error: 0, suberror: 0, success: 0 };
 function parseViews(D) {
     const node = _.first(D.getElementsByClassName('view-count'));
     const viewStr = node.innerHTML
-    let tmp = _.first(viewStr.split(' '))
+    const tmp = _.first(viewStr.split(' '))
     const viewNumber = _.parseInt(tmp.replace(/[.,]/g, ''));
     return { viewStr: viewStr, viewNumber: viewNumber };
 };
@@ -58,70 +58,6 @@ function closestForTime(e, sele) {
     return closestForTime(e.parentNode, null);
 }
 
-function relatedMetadata(e, i) {
-    // here we find metadata inside the preview snippet on the right column
-    let source, verified, foryou, mined;
-    const title = e.querySelector('#video-title').textContent;
-    const metadata = e.querySelector('#metadata');
-
-    verified = !!metadata.querySelector('svg');
-    source = metadata.querySelector("yt-formatted-string").textContent;
-
-    const link = e.querySelector('a') ? e.querySelector('a').getAttribute('href') : null;
-    const urlinfo = url.parse(link);
-    const p = querystring.parse(urlinfo.query);
-    const videoId = p.v;
-    const liveBadge = !!e.querySelector(".badge-style-type-live-now");
-    const thumbnailHref = shared.getThumbNailHref(e);
-
-    const { displayTime, expandedTime } = closestForTime(e, '.ytd-thumbnail-overlay-time-status-renderer');
-    // 2:03  -  2 minutes and 3 seconds, they might be null.
-    const recommendedLength = displayTime ? moment.duration(shared.fixHumanizedTime(displayTime)).asSeconds() : null;
-    const arialabel = e.querySelector('#video-title').getAttribute('aria-label');
-    // Beastie Boys - Sabotage by BeastieBoys 9 years ago 3 minutes, 2 seconds 62,992,821 views
-
-    if(!arialabel)
-        return null;
-
-    try {
-        mined = arialabel ? longlabel.parser(arialabel, source, liveBadge): null;
-        if(mined.title != title) {
-            debug("Interesting anomaly: %s != %s", mined.title, title);
-        }
-    } catch(e) {
-        debuge("longlabel parser error: %s", e.message);
-    }
-
-    /* estimate live also by missing metadata but presence of certain few */
-    const estimatedLive = function() {
-        if(mined && mined.isLive) return true;
-        return (!displayTime && !expandedTime && !recommendedLength) ? true : false;
-    }();
-
-    const r = {
-        index: i + 1,
-        verified,
-        foryou,
-        videoId,
-        params: p,
-        recommendedSource: source,
-        recommendedTitle: mined ? mined.title : (title ? title : null),
-        recommendedLength,
-        recommendedDisplayL: displayTime ? displayTime : null,
-        recommendedLengthText: expandedTime ? expandedTime : null,
-        recommendedPubTime: estimatedLive ? null : (mined ? mined.timeago : null),
-        /* ^^^^  is deleted in makeAbsolutePublicationTime, when clientTime is available,
-         * this field produces -> recommendedPubtime and ptPrecison */
-        recommendedRelativeSeconds: estimatedLive ? null : ( mined ? mined.timeago.asSeconds() : null),
-        recommendedViews: mined ? mined.views : null,
-        recommendedThumbnail: thumbnailHref,
-        isLive: (estimatedLive || liveBadge),
-        label: arialabel,
-    };
-    checkUpDebug(r);
-    return r;
-};
-
 function checkUpDebug(r) {
     const liveSpecialFields = [ 'displayTime', 'expandedTime', 'recommendedLength' ];
     /* this is a friendly debug line to help summarize */
@@ -139,16 +75,83 @@ function checkUpDebug(r) {
     }, { acc: [], cnt: 0, livecombo: 0 });
 
     let second = []
-    if(_.size(first.acc) >= 3 && first.livecombo == 3) {
+    if(_.size(first.acc) >= 3 && first.livecombo === 3) {
         second = _.reject(first.acc, liveSpecialFields);
     } else
         second = first.acc;
 
-    let debstr = _.times(second, function(k) { return "!"+k; }).join('') + "";
+    const debstr = _.times(second, function(k) { return "!"+k; }).join('') + "";
 
     if(_.size(debstr))
         debugCheckup("%s\n\t%d\t%s", debstr, r.index, r.label);
 };
+
+function relatedMetadata(e, i) {
+    // here we find metadata inside the preview snippet on the right column
+    let foryou, mined;
+    const title = e.querySelector('#video-title').textContent;
+    const metadata = e.querySelector('#metadata');
+
+    const verified = !!metadata.querySelector('svg');
+    const source = metadata.querySelector("yt-formatted-string").textContent;
+
+    const link = e.querySelector('a') ? e.querySelector('a').getAttribute('href') : null;
+    // eslint-disable-next-line node/no-deprecated-api
+    const urlinfo = url.parse(link);
+    const p = querystring.parse(urlinfo.query);
+    const videoId = p.v;
+    const liveBadge = !!e.querySelector(".badge-style-type-live-now");
+    const thumbnailHref = shared.getThumbNailHref(e);
+
+    const { displayTime, expandedTime } = closestForTime(e, '.ytd-thumbnail-overlay-time-status-renderer');
+    // 2:03  -  2 minutes and 3 seconds, they might be null.
+    const recommendedLength = displayTime ? moment.duration(shared.fixHumanizedTime(displayTime)).asSeconds() : null;
+    const arialabel = e.querySelector('#video-title').getAttribute('aria-label');
+    // Beastie Boys - Sabotage by BeastieBoys 9 years ago 3 minutes, 2 seconds 62,992,821 views
+
+    if(!arialabel)
+        return null;
+
+    try {
+        mined = arialabel ? longlabel.parser(arialabel, source, liveBadge): null;
+        if(mined.title !== title) {
+            debug("Interesting anomaly: %s != %s", mined.title, title);
+        }
+    } catch(e) {
+        debuge("longlabel parser error: %s", e.message);
+    }
+
+    /* estimate live also by missing metadata but presence of certain few */
+    const estimatedLive = function() {
+        if(mined && mined.isLive) return true;
+        return !!((!displayTime && !expandedTime && !recommendedLength));
+    }();
+
+    const r = {
+        index: i + 1,
+        verified,
+        foryou,
+        videoId,
+        params: p,
+        recommendedSource: source,
+        recommendedTitle: mined ? mined.title : (title || null),
+        recommendedLength,
+        recommendedDisplayL: displayTime || null,
+        recommendedLengthText: expandedTime || null,
+        recommendedPubTime: estimatedLive ? null : (mined ? mined.timeago : null),
+        /* ^^^^  is deleted in makeAbsolutePublicationTime, when clientTime is available,
+         * this field produces -> recommendedPubtime and ptPrecison */
+        recommendedRelativeSeconds: estimatedLive ? null : ( mined ? mined.timeago.asSeconds() : null),
+        recommendedViews: mined ? mined.views : null,
+        recommendedThumbnail: thumbnailHref,
+        isLive: (estimatedLive || liveBadge),
+        label: arialabel,
+    };
+    checkUpDebug(r);
+    return r;
+};
+
+
 
 function makeAbsolutePublicationTime(list, clientTime) {
     /* this function is call before video.js and home.js return their 
@@ -202,7 +205,7 @@ function manyTries(D, opportunities) {
 
 function mineAuthorInfo(D) {
     const as = D.querySelector('a.ytd-video-owner-renderer').parentNode.querySelectorAll('a');
-    if(_.size(as) == 1 || _.size(as) == 0)
+    if(_.size(as) === 1 || _.size(as) === 0)
         return null;
 
     const authorName = D.querySelector('a.ytd-video-owner-renderer').parentNode.querySelectorAll('a')[1].textContent;
@@ -211,7 +214,7 @@ function mineAuthorInfo(D) {
     if( D.querySelector('a.ytd-video-owner-renderer')
             .parentNode
             .querySelectorAll('a')[1]
-            .getAttribute('href') != authorSource ) {
+            .getAttribute('href') !== authorSource ) {
         debug("%s and %s should lead to the same youtube-content-page", 
             D.querySelector('a.ytd-video-owner-renderer')
                 .parentNode
@@ -263,7 +266,7 @@ function processVideo(D, blang, clientTime, urlinfo) {
         debuge("unexpected condition in channel/author mining, should be 2, is %d", check);
     */
 
-    let authorName, authorSource = null;
+    let authorName; let authorSource = null;
     const authorinfo = mineAuthorInfo(D);
     if(authorinfo) {
         authorName = authorinfo.authorName;
@@ -291,7 +294,7 @@ function processVideo(D, blang, clientTime, urlinfo) {
     related = makeAbsolutePublicationTime(_.compact(related), clientTime);
 
     /* non mandatory info */
-    let viewInfo, likeInfo = null;
+    let viewInfo; let likeInfo = null;
     try {
         viewInfo = parseViews(D);
         likeInfo = parseLikes(D);
@@ -322,7 +325,7 @@ function processVideo(D, blang, clientTime, urlinfo) {
         login,
         publicationString,
         publicationTime,
-        blang: blang ? blang : ifLang,
+        blang: blang || ifLang,
         authorName,
         authorSource,
         related,
@@ -339,6 +342,7 @@ function process(envelop) {
             envelop.jsdom,
             envelop.impression.blang,
             envelop.impression.clientTime,
+            // eslint-disable-next-line node/no-deprecated-api
             url.parse(envelop.impression.href),
         );
     } catch(e) {

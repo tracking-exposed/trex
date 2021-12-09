@@ -44,7 +44,7 @@ function dissectSelectedVideo(e, i, sections, offset) {
             // TED\nVerified\n•, and this allow us a more technical check:
             infos.source = _.first(metadata.children[0].textContent.split('\n'));
             infos.verified = !!(_.size(metadata.children[0].textContent.split('\n')) > 1 );
-            if(infos.source && infos.authorName && infos.source != infos.authorName) {
+            if(infos.source && infos.authorName && infos.source !== infos.authorName) {
                 // debugw("To be investigated anomaly n.1 [%s]!=[%s]", infos.source, infos.authorName);
 
                 // this is interesting but .source isn't used and it is the one appearing duplicated
@@ -66,7 +66,7 @@ function dissectSelectedVideo(e, i, sections, offset) {
     try {
         infos.link = e.querySelector('a') ? e.querySelector('a').getAttribute('href') : null;
         infos.videoId = infos.link.replace(/.*v=/, '');
-        infos.parameter = infos.videoId.match(/&.*/) ? videoId.replace(/.*&/, '&') : null;
+        infos.parameter = infos.videoId.match(/&.*/) ? infos.videoId.replace(/.*&/, '&') : null;
         infos.liveBadge = !!e.querySelector(".badge-style-type-live-now");
     } catch(e) {
         errorLog.push("simple metadata parser error: " + e.message);
@@ -74,7 +74,7 @@ function dissectSelectedVideo(e, i, sections, offset) {
     try {
         infos.aria = e.querySelector('#video-title-link').getAttribute('aria-label');
         infos.mined = infos.aria ? longlabel.parser(infos.aria, infos.authorName, infos.liveBadge): null;
-        if(infos.mined.title && infos.textTitle && infos.mined.title != infos.textTitle)
+        if(infos.mined.title && infos.textTitle && infos.mined.title !== infos.textTitle)
             debugw("To be investigated anomaly n.2 [%s]!=[%s]", infos.mined.title, infos.textTitle);
     } catch(e) {
         errorLog.push("longlabel parser error: " +
@@ -128,7 +128,10 @@ function dissectSelectedVideo(e, i, sections, offset) {
  * enabled only by explicitly patching the variable below */
 const RECURSIZE_SIZE_ENABLED = false;
 function recursiveSize(e, memo) {
-    if(!RECURSIZE_SIZE_ENABLED) { console.log("function shouldn't be invoked"); return null; }
+    if(!RECURSIZE_SIZE_ENABLED) {
+        // eslint-disable-next-line
+        console.log("function shouldn't be invoked"); return null;
+    }
     const elementSize = _.size(e.outerHTML);
     const tagName = e.tagName;
     if(!tagName)
@@ -139,7 +142,7 @@ function recursiveSize(e, memo) {
     memo.push(combo);
     return recursiveSize(e.parentNode, memo);
 }
-const sizes = [];
+let sizes = [];
 function sizeTreeResearch(e, i) {
     if(!RECURSIZE_SIZE_ENABLED) return;
     if(!i)
@@ -187,7 +190,7 @@ function actualHomeProcess(D) {
         try {
             const ubication = D.querySelector('body').outerHTML.indexOf(e.outerHTML);
             selectorOffsetMap.push({ i, offset: ubication });
-            let videoInfo = dissectSelectedVideo(e, i, titles, ubication);
+            const videoInfo = dissectSelectedVideo(e, i, titles, ubication);
             videoInfo.thumbnailHref = thumbnailHref;
             return videoInfo;
         } catch(error) {
@@ -218,9 +221,9 @@ function guessUXlanguage(D) {
 
 function process(envelop) {
 
-    let retval = {};
+    const retval = {};
     try {
-        let { selected, sections } = actualHomeProcess(envelop.jsdom);
+        const { selected, sections } = actualHomeProcess(envelop.jsdom);
         retval.selected = selected;
         retval.sections = sections;
     } catch(e) {

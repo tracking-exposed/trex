@@ -4,7 +4,6 @@ const debug = require('debug')('routes:personal');
 
 const automo = require('../lib/automo');
 const params = require('../lib/params');
-const utils = require('../lib/utils');
 const CSV = require('../lib/CSV');
 
 async function getPersonal(req) {
@@ -78,62 +77,62 @@ async function getPersonalCSV(req) {
 
 async function getPersonalTimeline(req) {
     throw new Error("not used anymore")
-    const DEFMAX = 300;
-    const k =  req.params.publicKey;
-    if(_.size(k) < 26)
-        return { json: { "message": "Invalid publicKey", "error": true }};
+    // const DEFMAX = 300;
+    // const k =  req.params.publicKey;
+    // if(_.size(k) < 26)
+    //     return { json: { "message": "Invalid publicKey", "error": true }};
 
-    const { amount, skip } = params.optionParsing(req.params.paging, DEFMAX);
-    debug("getPersonalTimelines request by %s using %d starting videos, skip %d (defmax %d)", k, amount, skip, DEFMAX);
-    const c = await automo.getMetadataByPublicKey(k, {
-        takefull: true,
-        amount, skip,
-        timefilter: moment().subtract(2, 'months').format("YYYY-MM-DD")
-    });
+    // const { amount, skip } = params.optionParsing(req.params.paging, DEFMAX);
+    // debug("getPersonalTimelines request by %s using %d starting videos, skip %d (defmax %d)", k, amount, skip, DEFMAX);
+    // const c = await automo.getMetadataByPublicKey(k, {
+    //     takefull: true,
+    //     amount, skip,
+    //     timefilter: moment().subtract(2, 'months').format("YYYY-MM-DD")
+    // });
 
-    const list = _.map(c.metadata, function(e) {
-        /* console.log( e.value, _.keys(_.pick(e, ['ad', 'title', 'authorName'])),
-            _.pick(e, ['ad', 'title', 'authorName']) ); */
-        e.value = utils.hash(e, _.keys(_.pick(e, ['ad', 'title', 'authorName'])));
-        e.dayString = moment(e.savingTime).format("YYYY-MM-DD");
-        e.numb = _.parseInt(_.replace(e.value, '/(c+)/', ''));
-        return e;
-    });
-    debug("getPersonalTimelines transforming %d last %s ", _.size(list), 
-        ( _.first(list) ? _.first(list).title : "[nothing]" )  );
+    // const list = _.map(c.metadata, function(e) {
+    //     /* console.log( e.value, _.keys(_.pick(e, ['ad', 'title', 'authorName'])),
+    //         _.pick(e, ['ad', 'title', 'authorName']) ); */
+    //     e.value = utils.hash(e, _.keys(_.pick(e, ['ad', 'title', 'authorName'])));
+    //     e.dayString = moment(e.savingTime).format("YYYY-MM-DD");
+    //     e.numb = _.parseInt(_.replace(e.value, '/(c+)/', ''));
+    //     return e;
+    // });
+    // debug("getPersonalTimelines transforming %d last %s ", _.size(list), 
+    //     ( _.first(list) ? _.first(list).title : "[nothing]" )  );
 
-    const grouped = _.groupBy(list, 'dayString');
-    const aggregated = _.map(grouped, function(perDayEvs, dayStr) {
+    // const grouped = _.groupBy(list, 'dayString');
+    // const aggregated = _.map(grouped, function(perDayEvs, dayStr) {
 
-        const videos = _.filter(perDayEvs, { 'type': 'video' }); 
-        const homepages = _.filter(perDayEvs, { 'type': 'home' });
+    //     const videos = _.filter(perDayEvs, { 'type': 'video' }); 
+    //     const homepages = _.filter(perDayEvs, { 'type': 'home' });
 
-        const totalsuggested = _.sum(_.map(homepages, function(h) { return _.size(h.selected); }))
-        const typeUndef = _.sum(_.map(_.countBy(perDayEvs, 'type'), function(amount, name) { return amount; }));
-        const types = _.sum(_.map(_.omit(_.countBy(perDayEvs, 'type'), ['undefined']), function(amount, name) { return amount; }));
-        const authors = _.sum(_.map(_.countBy(videos, 'authorName'), function(amount, name) { return amount; }));
-        // let adverts = _.sum(_.map(_.omit(_.countBy(perDayEvs, 'advertiser'), ['undefined']), function(amount, name) { return amount; }));
-        /* debug("%s <Vid %d Home %d> -> %j %d - %j %d", dayStr,
-            _.size(videos), _.size(homepages),
-            _.countBy(perDayEvs, 'type'), types,
-            _.countBy(videos, 'authorName'), authors,
-        ); */
-        return {
-            titles: _.map(videos, 'title'),
-            homepages,
-            types,
-            typeUndef,
-            totalsuggested,
-            authors,
-            type: _.countBy(perDayEvs, 'type'),
-            authorName: _.countBy(videos, 'authorName'),
-            dayStr,
-        }
-    });
-    const oneWeekAgoDateString = moment().subtract(1, 'week').format("YYYY-MM-DD");
-    return {
-        json: { aggregated, oneWeekAgoDateString }
-    };
+    //     const totalsuggested = _.sum(_.map(homepages, function(h) { return _.size(h.selected); }))
+    //     const typeUndef = _.sum(_.map(_.countBy(perDayEvs, 'type'), function(amount, name) { return amount; }));
+    //     const types = _.sum(_.map(_.omit(_.countBy(perDayEvs, 'type'), ['undefined']), function(amount, name) { return amount; }));
+    //     const authors = _.sum(_.map(_.countBy(videos, 'authorName'), function(amount, name) { return amount; }));
+    //     // let adverts = _.sum(_.map(_.omit(_.countBy(perDayEvs, 'advertiser'), ['undefined']), function(amount, name) { return amount; }));
+    //     /* debug("%s <Vid %d Home %d> -> %j %d - %j %d", dayStr,
+    //         _.size(videos), _.size(homepages),
+    //         _.countBy(perDayEvs, 'type'), types,
+    //         _.countBy(videos, 'authorName'), authors,
+    //     ); */
+    //     return {
+    //         titles: _.map(videos, 'title'),
+    //         homepages,
+    //         types,
+    //         typeUndef,
+    //         totalsuggested,
+    //         authors,
+    //         type: _.countBy(perDayEvs, 'type'),
+    //         authorName: _.countBy(videos, 'authorName'),
+    //         dayStr,
+    //     }
+    // });
+    // const oneWeekAgoDateString = moment().subtract(1, 'week').format("YYYY-MM-DD");
+    // return {
+    //     json: { aggregated, oneWeekAgoDateString }
+    // };
 }
 
 async function getPersonalRelated(req) {
