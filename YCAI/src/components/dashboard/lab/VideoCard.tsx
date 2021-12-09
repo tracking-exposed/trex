@@ -52,6 +52,9 @@ const useStyles = makeStyles<YCAITheme>((theme) => ({
     paddingTop: '6px',
     lineHeight: 1,
     minWidth: 0,
+    '&:hover': {
+      background: 'inherit'
+    }
   }
 }));
 
