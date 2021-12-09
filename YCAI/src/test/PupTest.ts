@@ -1,10 +1,10 @@
+// import puppeteerExtra from 'puppeteer-extra';
+import { GetLogger, Logger } from '@shared/logger';
 import * as E from 'fp-ts/lib/Either';
 import * as t from 'io-ts';
 import { PathReporter } from 'io-ts/lib/PathReporter';
 import * as path from 'path';
 import puppeteer from 'puppeteer';
-// import puppeteerExtra from 'puppeteer-extra';
-import { GetLogger, Logger } from '../utils/logger.utils';
 import { TestENV } from './TestENV';
 
 const logger = GetLogger('pup-test');
