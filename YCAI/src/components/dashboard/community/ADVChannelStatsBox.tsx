@@ -41,7 +41,7 @@ export const ADVChannelStatsBox: React.FC = () => {
           }
           const treeData = {
             id: 'ADV',
-            ...creatorADVStats.reduce(
+            ...creatorADVStats.slice(0, 10).reduce(
               (acc, c) => ({
                 value: acc.value + c.count,
                 children: acc.children.concat({
