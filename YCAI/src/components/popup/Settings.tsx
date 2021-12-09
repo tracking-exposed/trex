@@ -44,7 +44,6 @@ const Settings: React.FC<SettingsProps> = ({ settings }) => {
     <>
       <FormControlLabel
         className={classes.controlLabel}
-        disabled={!settings.active}
         control={
           <Switch
             className={classes.marginRight}
@@ -76,7 +75,6 @@ const Settings: React.FC<SettingsProps> = ({ settings }) => {
       <FormControl component="fieldset">
         <FormControlLabel
           className={classes.controlLabel}
-          disabled={!settings.active}
           control={
             <Switch
               className={classes.marginRight}
