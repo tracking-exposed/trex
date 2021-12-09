@@ -71,7 +71,9 @@ jobs:
 
       - name: Start api service
         working-directory: ./
-        run: docker-compose up -d api
+        run: |
+          docker-compose build
+          docker-compose up -d api
 
       - name: Log what's going on in docker
         working-directory: ./
