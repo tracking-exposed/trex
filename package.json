@@ -1,11 +1,20 @@
 {
   "description": "installs all the YCAI dependencies and YCAI",
   "license": "AGPL-3.0",
+  "engines": {
+    "node": "14"
+  },
+  "private": true,
+  "workspaces":[
+    "shared",
+    "backend",
+    "YCAI"
+  ],
+  "packageManager": "yarn@1.22.5",
   "scripts": {
-    "clean": "cd shared && npm run clean && cd ../YCAI && npm run clean",
-    "lint": "cd ./YCAI && npm run lint",
-    "test": "jest",
-    "preinstall": "cd shared && npm i && cd ../backend && npm i && cd ../YCAI && npm i"
+    "clean": "yarn workspaces run clean",
+    "lint": "yarn workspaces run lint",
+    "test": "jest"
   },
   "devDependencies": {
     "husky": "^7.0.4",

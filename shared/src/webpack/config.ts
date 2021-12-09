@@ -1,5 +1,6 @@
 import DotenvPlugin from "dotenv-webpack";
 import { pipe } from "fp-ts/lib/function";
+import dotenv from 'dotenv';
 import * as R from "fp-ts/lib/Record";
 import * as S from "fp-ts/lib/string";
 import * as t from "io-ts";
@@ -11,7 +12,7 @@ import { TsconfigPathsPlugin } from "tsconfig-paths-webpack-plugin";
 import webpack from "webpack";
 import { BundleAnalyzerPlugin } from "webpack-bundle-analyzer";
 import { GetLogger } from "../logger";
-const ReactRefreshWebpackPlugin = require("@pmmmwh/react-refresh-webpack-plugin");
+import ReactRefreshWebpackPlugin from "@pmmmwh/react-refresh-webpack-plugin";
 
 const webpackLogger = GetLogger("webpack");
 
@@ -34,7 +35,7 @@ const BUILD_ENV = t.strict(
 type BUILD_ENV = t.TypeOf<typeof BUILD_ENV>;
 interface WebpackConfig extends webpack.Configuration {
   buildENV: BUILD_ENV;
-  plugins: any[]; //webpack.WebpackPluginInstance[]
+  plugins: any[]; // webpack.WebpackPluginInstance[]
 }
 
 interface GetConfigParams<E extends t.Props> {
@@ -59,7 +60,7 @@ const getConfig = <E extends t.Props>(
 
   webpackLogger.debug(`DOTENV_CONFIG_PATH %s`, DOTENV_CONFIG_PATH);
 
-  require("dotenv").config({ path: DOTENV_CONFIG_PATH });
+  dotenv.config({ path: DOTENV_CONFIG_PATH });
 
   const buildENV = pipe(
     {
@@ -71,7 +72,9 @@ const getConfig = <E extends t.Props>(
     BUILD_ENV.decode,
     (validation) => {
       if (validation._tag === "Left") {
+        // eslint-disable-next-line
         console.error(PathReporter.report(validation).join("\n"));
+        // eslint-disable-next-line
         console.log("\n");
         throw new Error("process.env decoding failed.");
       }
@@ -116,7 +119,8 @@ const getConfig = <E extends t.Props>(
     )
   );
 
-  console.log(stringifiedAppEnv, process.env.DEBUG);
+  // eslint-disable-next-line
+  webpackLogger.debug(`Process env %O`, stringifiedAppEnv);
 
   const plugins: any[] = [
     new DotenvPlugin({
