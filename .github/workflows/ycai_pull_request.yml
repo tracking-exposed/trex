@@ -19,7 +19,7 @@ jobs:
     strategy:
       matrix:
         node-version: [14.x]
-        mongo-version: [4.2]
+        mongodb-version: ['4.2']
     steps:
       - uses: actions/checkout@v2
 
@@ -27,6 +27,7 @@ jobs:
         uses: actions/setup-node@v2
         with:
           node-version: ${{ matrix.node-version }}
+          mongodb-db: test
 
       - name: Get npm cache directory path
         id: npm-cache-dir-path
@@ -63,9 +64,10 @@ jobs:
         run: npm test spec
 
       - name: Start MongoDB v${{ matrix.mongodb-version }}
-        uses: supercharge/mongodb-github-action@1.2.0
+        uses: supercharge/mongodb-github-action@1.7.0
         with:
           mongodb-version: ${{ matrix.mongodb-version }}
+          mongodb-db: test
 
       - name: Start api service
         working-directory: ./
