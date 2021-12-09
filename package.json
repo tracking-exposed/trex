@@ -5,19 +5,19 @@
     "node": "14"
   },
   "private": true,
-  "workspaces":[
+  "workspaces": [
     "shared",
     "backend",
     "YCAI"
   ],
-  "packageManager": "yarn@1.22.5",
+  "packageManager": "yarn@1.22.15",
   "scripts": {
     "clean": "yarn workspaces run clean",
     "lint": "yarn workspaces run lint",
     "test": "jest",
     "shared": "yarn workspace shared",
-    "backend": "yarn workspace backend",
-    "ycai": "yarn workspace YCAI"
+    "backend": "yarn workspace yttrex-backend",
+    "ycai": "yarn workspace youchoose.ai"
   },
   "devDependencies": {
     "husky": "^7.0.4",
