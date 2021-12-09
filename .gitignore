@@ -33,3 +33,6 @@ qa/*.pyc
 
 # test coverage
 coverage
+
+#yarn v2
+.yarn/*
