@@ -9,11 +9,8 @@ import {
   Button,
   TextField,
   Typography,
+  Divider,
 } from '@material-ui/core';
-
-import {
-  Add as AddIcon,
-} from '@material-ui/icons';
 
 import { makeStyles } from '@material-ui/styles';
 
@@ -26,7 +23,9 @@ interface AddRecommendationBoxProps {
 
 const useStyles = makeStyles<YCAITheme>(theme => ({
   root: {
-    backgroundColor: theme.palette.grey[300],
+    backgroundColor: 'transparent',
+    boxShadow: 'none',
+    paddingTop: '0px',
   },
   textField: {
     backgroundColor: theme.palette.background.default,
@@ -39,8 +38,8 @@ const useStyles = makeStyles<YCAITheme>(theme => ({
     }
   },
   addButton: {
-    marginLeft: theme.spacing(2),
-    color: theme.palette.common.black,
+    marginLeft: theme.spacing(3),
+    color: theme.palette.common.white,
     fontWeight: 'bold',
   },
 }));
@@ -60,26 +59,28 @@ const AddRecommendationBox: React.FC<AddRecommendationBoxProps> = ({ videoId }) 
   };
 
   return (
-      <Card className={classes.root}>
-        <CardContent>
+      <Card className={classes.root} >
+        <CardContent style={{paddingLeft: '0px', paddingTop: '0px'}}>
+        <Divider light style={{marginBottom: '24px' }}/>
           <Typography
-            color="textSecondary"
+            color="primary"
             component="h2"
-            variant="h4"
+            variant="h5"
           >
             {t('recommendations:add_to_video')}
-            <AddIcon fontSize="large"/>
           </Typography>
           <Box display="flex" alignItems="center">
             <TextField
               className={classes.textField}
               label={t('recommendations:url')}
               placeholder={t('recommendations:url_placeholder')}
-              helperText={t('recommendations:url_helper_text')}
+              /*helperText={t('recommendations:url_helper_text')}*/
               multiline
               value={recommendationURL}
               onChange={(v) => setRecommendationURL(v.target.value)}
+              variant="filled"
               color="primary"
+              focused
             />
             <Button
               className={classes.addButton}
