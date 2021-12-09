@@ -17,6 +17,7 @@ import { Settings } from '../../models/Settings';
 import { TabPanel } from '../common/TabPanel';
 import { Tab } from '../common/Tab';
 import { VideoRecommendations } from './VideoRecommendations';
+import DonationOptInNudger from './DonationOptInNudger';
 
 const logger = GetLogger('yt-video-recommendations');
 
@@ -159,6 +160,8 @@ export const YTVideoPage: React.FC<{
           />
         </Tabs>
       </AppBar>
+
+      <DonationOptInNudger />
 
       <TabPanel value={currentTab} index={CC_TAB_INDEX}>
         {currentVideoId === undefined ? (

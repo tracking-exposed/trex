@@ -1,16 +1,19 @@
+import React from 'react';
 import {
   Divider,
   FormControl,
   FormControlLabel,
   FormLabel,
+  Link,
   makeStyles,
   Switch,
   Typography,
 } from '@material-ui/core';
-import * as React from 'react';
+import { Folder as FolderIcon } from '@material-ui/icons';
 import { useTranslation } from 'react-i18next';
 import * as models from '../../models';
 import { generateKeypair, updateSettings } from '../../state/popup.commands';
+import { DATA_DONATION_LEARN_MORE_URL } from '../../constants';
 
 const useStyles = makeStyles((theme) => ({
   divider: {
@@ -30,6 +33,16 @@ const useStyles = makeStyles((theme) => ({
   marginRight: {
     marginRight: 15,
   },
+  learnMore: {
+    alignItems: 'center',
+    display: 'flex',
+    lineHeight: 1,
+    marginTop: theme.spacing(1),
+    marginLeft: -6,
+    '& svg': {
+      height: 16,
+    }
+  }
 }));
 
 interface SettingsProps {
@@ -44,7 +57,6 @@ const Settings: React.FC<SettingsProps> = ({ settings }) => {
     <>
       <FormControlLabel
         className={classes.controlLabel}
-        disabled={!settings.active}
         control={
           <Switch
             className={classes.marginRight}
@@ -76,7 +88,6 @@ const Settings: React.FC<SettingsProps> = ({ settings }) => {
       <FormControl component="fieldset">
         <FormControlLabel
           className={classes.controlLabel}
-          disabled={!settings.active}
           control={
             <Switch
               className={classes.marginRight}
@@ -106,6 +117,14 @@ const Settings: React.FC<SettingsProps> = ({ settings }) => {
               <Typography display="block">
                 {t('settings:contributeToIndependentStatsHint')}
               </Typography>
+              <Link
+                className={classes.learnMore}
+                href={DATA_DONATION_LEARN_MORE_URL}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <FolderIcon /> {t('settings:data_donation_learn_more')}
+              </Link>
               <br />
               <Divider light />
             </FormLabel>

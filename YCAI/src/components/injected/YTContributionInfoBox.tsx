@@ -5,7 +5,6 @@ import { WithQueries } from 'avenger/lib/react';
 
 import { ErrorBox } from '../../components/common/ErrorBox';
 import { LazyFullSizeLoader } from '../../components/common/FullSizeLoader';
-import { config } from '../../config';
 import { Keypair, Settings } from '../../models/Settings';
 import * as dataDonation from '../../providers/dataDonation.provider';
 import { keypair } from '../../state/popup.queries';
@@ -45,8 +44,7 @@ const YTContributionInfoBoxComponent: React.FC<{
     };
   }, [settings]);
 
-  // don't render anything in production
-  if (config.NODE_ENV === 'production') {
+  if (!settings.independentContributions.showUI) {
     return null;
   }
 
