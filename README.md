@@ -1,8 +1,8 @@
 ## Browser extension reviewer? please do this after cloning the repository:
 
     cd yttrex/extension
-    npm install
-    npm run build:dist
+    yarn install
+    yarn run build:dist
 
 This produces the **distributed** release, in the directory `dist` you should find `extension.zip` which is thw same file uploaded to Mozilla and Chrome add-ons stores.
 
@@ -23,7 +23,7 @@ Directories:
 
 Instead of `build:dist`, use:
 
-  npm run build
+  yarn run build
 
 The command above produce the in **development release**, the results it is *not minify* and is in `build/`. The in Firefox/Chrom load the directory 'build' because manifest.json is there.
 
@@ -40,25 +40,25 @@ code modular, easy to test, and beautiful.
 Setting up the dev environment is super easy.
 
 ### Dependencies
-This project requires Node 5+. Install [nvm](https://github.com/creationix/nvm) for easy version maintaining. Alternatively install Nodejs from a package, but make sure it's the right version and install npm as well for package management.  
+This project requires Node 5+. Install [nvm](https://github.com/creationix/nvm) for easy version maintaining. Alternatively install Nodejs from a package, but make sure it's the right version and install yarn as well for package management.  
 
 ### Set up your build system
 The build system uses a simple `package.json` file to describe the tasks, you can check it out to find out the packages that we rely on to make this extension available or for troubleshooting.
 
 To get started run:
 ```
-npm install
-npm test
-npm start
+yarn install
+yarn test
+yarn start
 ```
 
-The second line (`npm test`) is optional, but testing is cool and you should do
+The second line (`yarn test`) is optional, but testing is cool and you should do
 it anyway. It's also a nice way to check if the installation succeeded.
-If npm test fails, don't worry and try npm start nonetheless, it might be due to facebook frequent html structure changes or nodejs extensions incompatibility, please report it back to us if this is the case.  
+If yarn test fails, don't worry and try yarn start nonetheless, it might be due to facebook frequent html structure changes or nodejs extensions incompatibility, please report it back to us if this is the case.  
 
-`npm start` will build the application using `webpack` and watch for changes.
+`yarn start` will build the application using `webpack` and watch for changes.
 
-Keep `npm start` running in the background to take advantage of the autoreload.
+Keep `yarn start` running in the background to take advantage of the autoreload.
 
 
 ### Set up your browser (for Chromium / Google Chrome)

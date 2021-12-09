@@ -9,13 +9,13 @@ COPY ./YCAI ./YCAI
 
 
 WORKDIR /app/shared
-RUN npm install
-RUN npm run build
+RUN yarn install
+RUN yarn run build
 
 WORKDIR /app/backend
-RUN npm install
+RUN yarn install
 
 
 WORKDIR /app/YCAI
-RUN npm install
-RUN npm run build
+RUN yarn install
+RUN yarn run build
