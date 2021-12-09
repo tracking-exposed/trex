@@ -1,3 +1,16 @@
+# [1.9.0-beta.3](https://github.com/tracking-exposed/yttrex/compare/v1.9.0-beta.2...v1.9.0-beta.3) (2021-12-09)
+
+
+### Bug Fixes
+
+* analytics UI ([#234](https://github.com/tracking-exposed/yttrex/issues/234)) ([3d5b1f2](https://github.com/tracking-exposed/yttrex/commit/3d5b1f2b47d6d95f487b40f683b540709e799d30))
+* backend linting, closes [#191](https://github.com/tracking-exposed/yttrex/issues/191) ([#235](https://github.com/tracking-exposed/yttrex/issues/235)) ([ebd68d7](https://github.com/tracking-exposed/yttrex/commit/ebd68d7e58e2111295216235cfb89cdff94506f9))
+* injected page reliability ([9e0e48c](https://github.com/tracking-exposed/yttrex/commit/9e0e48c0f35e4e9b32f5dcc7c484f546a64b2de9))
+* more cards ([4f88df1](https://github.com/tracking-exposed/yttrex/commit/4f88df13fcf60f678ec47d585443e7464159411c))
+* recommendability score style ([a2555ba](https://github.com/tracking-exposed/yttrex/commit/a2555ba6810400bd09c00b17a357baf88f6c05e2))
+* redirect to lab after login and to index after logout, closes [#223](https://github.com/tracking-exposed/yttrex/issues/223) ([e992902](https://github.com/tracking-exposed/yttrex/commit/e9929022be2f9d88bd1ab44c0033e7c6a1190879))
+* type errors ([5316304](https://github.com/tracking-exposed/yttrex/commit/531630404b23e8719284ad6d775868aa5a90541b))
+
 # [1.9.0-beta.2](https://github.com/tracking-exposed/yttrex/compare/v1.9.0-beta.1...v1.9.0-beta.2) (2021-12-06)
 
 
