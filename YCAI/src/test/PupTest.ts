@@ -8,7 +8,7 @@ import puppeteer from 'puppeteer';
 import { TestENV } from './TestENV';
 
 const logger = GetLogger('pup-test');
-const extensionOutputDir = path.resolve(path.join(process.cwd(), 'build'));
+const extensionOutputDir = path.resolve(path.join(process.cwd(), 'build/extension'));
 
 const extensionMatch = /^chrome-extension:\/\/([^.*]+)\/.+/;
 
