@@ -9,7 +9,7 @@ export const ContentCreator = t.strict(
     accessToken: t.union([t.undefined, t.string]),
     url: t.union([t.undefined, t.string]),
     registeredOn: t.union([t.undefined, DateFromISOString]),
-    count: t.union([t.number, t.undefined]),
+    // count: t.union([t.number, t.undefined]),
   },
   "ContentCreator"
 );
