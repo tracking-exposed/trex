@@ -58,16 +58,45 @@ function closestForTime(e, sele) {
     return closestForTime(e.parentNode, null);
 }
 
+function checkUpDebug(r) {
+    const liveSpecialFields = [ 'displayTime', 'expandedTime', 'recommendedLength' ];
+    /* this is a friendly debug line to help summarize */
+    const first = _.reduce(r, function(memo, v, k) {
+        if(_.isNull(v)) {
+            memo.acc.push(k);
+            if(liveSpecialFields.indexOf(k) !== -1)
+                memo.livecombo++;
+            memo.cnt++;
+        }
+        if(_.isNull(v))
+            _.unset(r, k);
+
+        return memo;
+    }, { acc: [], cnt: 0, livecombo: 0 });
+
+    let second = []
+    if(_.size(first.acc) >= 3 && first.livecombo === 3) {
+        second = _.reject(first.acc, liveSpecialFields);
+    } else
+        second = first.acc;
+
+    const debstr = _.times(second, function(k) { return "!"+k; }).join('') + "";
+
+    if(_.size(debstr))
+        debugCheckup("%s\n\t%d\t%s", debstr, r.index, r.label);
+};
+
 function relatedMetadata(e, i) {
     // here we find metadata inside the preview snippet on the right column
-    let source, verified, foryou, mined;
+    let foryou, mined;
     const title = e.querySelector('#video-title').textContent;
     const metadata = e.querySelector('#metadata');
 
-    verified = !!metadata.querySelector('svg');
-    source = metadata.querySelector("yt-formatted-string").textContent;
+    const verified = !!metadata.querySelector('svg');
+    const source = metadata.querySelector("yt-formatted-string").textContent;
 
     const link = e.querySelector('a') ? e.querySelector('a').getAttribute('href') : null;
+    // eslint-disable-next-line node/no-deprecated-api
     const urlinfo = url.parse(link);
     const p = querystring.parse(urlinfo.query);
     const videoId = p.v;
@@ -85,7 +114,7 @@ function relatedMetadata(e, i) {
 
     try {
         mined = arialabel ? longlabel.parser(arialabel, source, liveBadge): null;
-        if(mined.title != title) {
+        if(mined.title !== title) {
             debug("Interesting anomaly: %s != %s", mined.title, title);
         }
     } catch(e) {
@@ -122,33 +151,7 @@ function relatedMetadata(e, i) {
     return r;
 };
 
-function checkUpDebug(r) {
-    const liveSpecialFields = [ 'displayTime', 'expandedTime', 'recommendedLength' ];
-    /* this is a friendly debug line to help summarize */
-    const first = _.reduce(r, function(memo, v, k) {
-        if(_.isNull(v)) {
-            memo.acc.push(k);
-            if(liveSpecialFields.indexOf(k) !== -1)
-                memo.livecombo++;
-            memo.cnt++;
-        }
-        if(_.isNull(v))
-            _.unset(r, k);
 
-        return memo;
-    }, { acc: [], cnt: 0, livecombo: 0 });
-
-    let second = []
-    if(_.size(first.acc) >= 3 && first.livecombo == 3) {
-        second = _.reject(first.acc, liveSpecialFields);
-    } else
-        second = first.acc;
-
-    const debstr = _.times(second, function(k) { return "!"+k; }).join('') + "";
-
-    if(_.size(debstr))
-        debugCheckup("%s\n\t%d\t%s", debstr, r.index, r.label);
-};
 
 function makeAbsolutePublicationTime(list, clientTime) {
     /* this function is call before video.js and home.js return their 
@@ -202,7 +205,7 @@ function manyTries(D, opportunities) {
 
 function mineAuthorInfo(D) {
     const as = D.querySelector('a.ytd-video-owner-renderer').parentNode.querySelectorAll('a');
-    if(_.size(as) == 1 || _.size(as) == 0)
+    if(_.size(as) === 1 || _.size(as) === 0)
         return null;
 
     const authorName = D.querySelector('a.ytd-video-owner-renderer').parentNode.querySelectorAll('a')[1].textContent;
@@ -211,7 +214,7 @@ function mineAuthorInfo(D) {
     if( D.querySelector('a.ytd-video-owner-renderer')
             .parentNode
             .querySelectorAll('a')[1]
-            .getAttribute('href') != authorSource ) {
+            .getAttribute('href') !== authorSource ) {
         debug("%s and %s should lead to the same youtube-content-page", 
             D.querySelector('a.ytd-video-owner-renderer')
                 .parentNode
@@ -339,6 +342,7 @@ function process(envelop) {
             envelop.jsdom,
             envelop.impression.blang,
             envelop.impression.clientTime,
+            // eslint-disable-next-line node/no-deprecated-api
             url.parse(envelop.impression.href),
         );
     } catch(e) {

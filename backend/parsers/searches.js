@@ -1,18 +1,14 @@
 const _ = require('lodash');
-const url = require('url');
-const moment = require('moment');
-const debug = require('debug')('parser:searches');
 const debuge = require('debug')('parser:searches:error');
 
 const longlabel = require('./longlabel');
-const { env } = require('process');
 
 function findSection(video) {
     // go up till a ytd-shelf-renderer
     // don't go further a ytd-item-section-renderer
     let sectionName = "Search results";
     _.reduce(_.times(5), function(memo) {
-        if(memo.parentNode.tagName == _.toUpper("ytd-item-section-renderer"))
+        if(memo.parentNode.tagName === _.toUpper("ytd-item-section-renderer"))
             return memo;
         memo = memo.parentNode;
         const h2 = memo.firstElementChild.querySelector('h2');

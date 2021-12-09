@@ -76,7 +76,7 @@ const localized = {
     'ore': 'hours',
     'λεπτά': 'hours',
     'heures': 'hours',
-    'godzin': 'hours',      // Transmisja rozpoczęta 5 godzin temu
+    'godzin': 'hours',      // Transmisja rozpoczęta 5 godzin temu
     'Stunden': 'hours',
 
     'minutos': 'minutes',
@@ -129,16 +129,16 @@ const relativeOpeningString = [
     'Premiered',
     'Streamed',
     'Comenzó',
-    'Трансляция',   // Трансляция началась 93 минуты назад
+    'Трансляция',   // Трансляция началась 93 минуты назад
     'Trasmissione', // Trasmissione in live streaming 7 ore
     'Streaming',    // Streaming avviato 115 minuti fa
     'Ξεκίνησε',     // Ξεκίνησε ροή πριν από
     'Stream',       // Stream iniciado há 
     'Aktiver',      // Aktiver Livestream seit 22 Minuten
     'Diffusion',    // Diffusion lancée il y a 37 minutes
-    'Diffusé',      // Diffusé en direct il y a 4 heures
+    'Diffusé',      // Diffusé en direct il y a 4 heures
     'Première',     // Première in corso. Trasmissione iniziata 13 minuti fa
-    'Transmisja',   // Transmisja rozpoczęta 5 godzin temu
+    'Transmisja',   // Transmisja rozpoczęta 5 godzin temu
     'Aktiver',      // Aktiver Livestream seit 3 Stunden
     'Livestream',   // Livestream vor 6 Stunden
     'streamen',     // 37 minuten geleden begonnen met streamen
@@ -258,6 +258,7 @@ function sequenceForPublicationTime(D, blang, clientTime) {
         nlpdebug("!*! Difference in ssblang (winner) %s and csblang %s", serverSideBlang, blang);
 */
     publicationString = D.querySelector("#dot + .ytd-video-primary-info-renderer").textContent;
+    let mobj;
     if(publicationString.length > 2) {
 
         moment.locale(blang);

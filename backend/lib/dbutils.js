@@ -15,8 +15,8 @@ async function checkMongoWorks(beFatal) {
     } catch(error) {
         debug("Failure in checkMongoWorks: %s", error.message);
         if(beFatal) {
-            console.log("mongodb is not running: quitting");
-            console.log("config derived", nconf.get('mongoDb'));
+            debug("mongodb is not running: quitting");
+            debug("config derived", nconf.get('mongoDb'));
             process.exit(1);
         }
         return false;

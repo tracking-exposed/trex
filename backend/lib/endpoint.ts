@@ -1,9 +1,9 @@
-import { PathReporter } from "io-ts/lib/PathReporter";
-import * as t from "io-ts";
-import { InferEndpointInstanceParams, MinimalEndpointInstance, TypeOfEndpointInstance } from "ts-endpoint";
-import * as E from "fp-ts/lib/Either";
 import { sequenceS } from "fp-ts/lib/Apply";
+import * as E from "fp-ts/lib/Either";
 import { pipe } from "fp-ts/lib/function";
+import * as t from "io-ts";
+import { PathReporter } from "io-ts/lib/PathReporter";
+import { InferEndpointInstanceParams, MinimalEndpointInstance } from "ts-endpoint";
 import { serializedType } from "ts-io-error/lib/Codec";
 
 type DecodeRequestResult<E extends MinimalEndpointInstance> =
