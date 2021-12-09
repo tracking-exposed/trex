@@ -66,6 +66,7 @@ const CreatorAnalyticsPage: React.FC<CreatorAnalyticsPageProps> = ({
             totalViews: 0,
           },
           (acc, s) => {
+
             const totalViews = acc.totalViews + s.recommendedViews;
             const updatedRecommendations =
               s.recommendedChannel === stats.authorName
@@ -98,6 +99,7 @@ const CreatorAnalyticsPage: React.FC<CreatorAnalyticsPageProps> = ({
       ),
     [stats]
   );
+
 
   return (
     <Grid item md={12}>
@@ -144,26 +146,20 @@ const CreatorAnalyticsPage: React.FC<CreatorAnalyticsPageProps> = ({
             />
           </Grid>
 
-          <Grid item md={4}>
-            <Grid container spacing={2}>
-              <Grid item sm={12}>
+          <Grid item md={4} sm={6}>
+            <Grid container spacing={2} direction="column" alignContent="center" justifyContent="center">
+              <Grid item md={10}>
                 <StatsCard
+                  icon={<CommunityIcon />}
                   header={t('analytics:total_recommendations')}
                   count={recommendations.total}
+                  color={theme.palette.primary.main}
                 />
               </Grid>
-              <Grid item sm={12}>
+              <Grid item md={10}>
                 <StatsCard
                   header={t('analytics:total_views')}
                   count={recommendations.totalViews}
-                />
-              </Grid>
-              <Grid item sm={12}>
-                <StatsCard
-                  icon={<CommunityIcon />}
-                  header={t('analytics:evidences_title')}
-                  count={3}
-                  color={theme.palette.success.main}
                 />
               </Grid>
             </Grid>

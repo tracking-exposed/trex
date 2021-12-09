@@ -1,6 +1,7 @@
 import { Card, CardContent, Typography } from '@material-ui/core';
-import { YCAITheme,makeStyles, useTheme } from '../../theme';
+import { YCAITheme, makeStyles, useTheme } from '../../theme';
 import * as React from 'react';
+import * as NumberUtils from '@shared/utils/number.utils';
 
 interface StatsBoxProps {
   header: string;
@@ -9,12 +10,12 @@ interface StatsBoxProps {
   color?: string;
 }
 
-const useStyles = makeStyles<YCAITheme, { color: string }>(() => ({
+const useStyles = makeStyles<YCAITheme, { color: string }>((theme) => ({
   root: {
     marginBottom: 20,
-    border: `1px solid transparent`,
+    border: (props) => `1px solid ${props.color}`,
     '&:hover': {
-      border: (props) => `1px solid ${props.color}`,
+      backgroundColor: theme.palette.grey[100],
     },
   },
   content: {
@@ -36,7 +37,7 @@ export const StatsCard: React.FC<StatsBoxProps> = ({
       <CardContent className={classes.content}>
         {icon ?? null}
         <Typography variant="h5">{header}</Typography>
-        <Typography variant="h3">{count}</Typography>
+        <Typography variant="h3">{NumberUtils.formatter.format(count)}</Typography>
       </CardContent>
     </Card>
   );
