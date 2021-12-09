@@ -15,8 +15,10 @@ async function checkMongoWorks(beFatal) {
     } catch(error) {
         debug("Failure in checkMongoWorks: %s", error.message);
         if(beFatal) {
-            debug("mongodb is not running: quitting");
-            debug("config derived", nconf.get('mongoDb'));
+            // eslint-disable-next-line
+            console.log("mongodb is not running: quitting");
+            // eslint-disable-next-line
+            console.log("config derived", nconf.get('mongoDb'));
             process.exit(1);
         }
         return false;
