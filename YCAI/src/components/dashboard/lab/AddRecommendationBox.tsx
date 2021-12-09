@@ -74,7 +74,6 @@ const AddRecommendationBox: React.FC<AddRecommendationBoxProps> = ({ videoId }) 
               className={classes.textField}
               label={t('recommendations:url')}
               placeholder={t('recommendations:url_placeholder')}
-              /*helperText={t('recommendations:url_helper_text')}*/
               multiline
               value={recommendationURL}
               onChange={(v) => setRecommendationURL(v.target.value)}
