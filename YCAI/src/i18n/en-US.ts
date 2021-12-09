@@ -162,6 +162,12 @@ const resources: CustomTypeOptions['resources'] = {
     access_token_title: 'Your access token',
     access_token_description: 'This access token allows this browser to access your profile on YouChoose.\nYou can share it with team-members to give them access to the YouChoose dashboard.',
     access_token: 'Access Token',
+    data_donation_learn_more: 'Learn more',
+    nudge_donation_opt_in: 'Please consider donating anonymous data to help us understand the YouTube algorithm.',
+    nudge_learn_more: 'Learn more.',
+    nudge_not_now: 'Not now',
+    nudge_agree: 'I agree',
+
   },
   ytVideoPage: {
     firstTab: 'Creator Recommendations',

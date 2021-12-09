@@ -77,7 +77,7 @@ export const Popup: React.FC = () => {
   const classes = useStyles();
 
   const version = config.VERSION;
-  const timeago = formatDistance(
+  const timeAgo = formatDistance(
     parseISO(config.BUILD_DATE),
     new Date(),
     {
@@ -119,7 +119,7 @@ export const Popup: React.FC = () => {
                   justifyContent="center"
                 >
                   <Typography variant="caption">
-                    {t('popup:version', { version, date: timeago })}
+                    {t('popup:version', { version, date: timeAgo })}
                   </Typography>
                   {config.NODE_ENV === 'development' ? (
                     <Typography
@@ -155,7 +155,6 @@ export const Popup: React.FC = () => {
           )
         )}
       />
-      {/* </Grid> */}
     </Card>
   );
 };
