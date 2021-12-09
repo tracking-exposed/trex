@@ -111,7 +111,8 @@ declare module 'react-i18next' {
         subtitle: string;
         recommendability_score_title: string;
         recommendability_score_subtitle: string;
-        total_views: string;
+        recommendations_title: string;
+        recommendations_for_other_channels: string;
         total_recommendations: string;
         notifications_title: string;
         top_n_cc_related_to_your_channel: string;

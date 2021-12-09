@@ -11,6 +11,7 @@ export const CreatorStatContent = t.strict(
     recommendedViews: t.number,
     recommendedTitle: t.string,
     recommendedChannel: t.string,
+    count: t.number
   },
   'CreatorStatContent'
 );

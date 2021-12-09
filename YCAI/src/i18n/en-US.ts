@@ -18,7 +18,8 @@ const resources: CustomTypeOptions['resources'] = {
     manage_recommendations: 'Manage recommendations',
     link_channel: 'Link channel',
     unlink_channel: 'Unlink Channel',
-    unlink_channel_confirm_text: 'Are you sure you want to unlink your channel from the YouChoose extension?\nYour recommendations will remain visible on the YouChoose platform.',
+    unlink_channel_confirm_text:
+      'Are you sure you want to unlink your channel from the YouChoose extension?\nYour recommendations will remain visible on the YouChoose platform.',
     unlink_channel_confirm_no: 'No, stay signed-in',
     unlink_channel_confirm_yes: 'Yes, unlink my channel',
     delete: 'Delete',
@@ -47,7 +48,8 @@ const resources: CustomTypeOptions['resources'] = {
     delete_recommendation_button: 'Delete',
     edit_recommendation_form_title: 'Edit recommendation',
     edit_recommendation_button: 'Edit',
-    edit_recommendation_description: 'Explain briefly why you found this content relevant for your audience',
+    edit_recommendation_description:
+      'Explain briefly why you found this content relevant for your audience',
     cancel: 'Cancel',
     save: 'Save',
     manage_tokens: 'Manage tokens',
@@ -66,7 +68,8 @@ const resources: CustomTypeOptions['resources'] = {
       'Paste a link in the grey box below to add it to the recommendations of this video. You can add recommendations towards any website!',
     analytics: 'Analytics',
     settings: 'Settings',
-    link_account: 'Authenticate your Channel \n to start recommending on your videos',
+    link_account:
+      'Authenticate your Channel \n to start recommending on your videos',
   },
   account: {
     channel: 'Your channel URL or ID',
@@ -93,12 +96,16 @@ const resources: CustomTypeOptions['resources'] = {
       "Please double-check that you have published the code\nin your channel's description and try again.",
     go_back_to_step_one_hint:
       'If the verification keeps failing, <1>go back to step one</1> and make sure\nyou have pasted the correct URL of your YouTube channel.',
-    channel_not_found: "We couldn't find a channel with the ID you provided.\nPlease make sure the URL or ID you pasted is correct.",
-    already_have_token: 'Or <1>click here</1> if you already have an access token.',
+    channel_not_found:
+      "We couldn't find a channel with the ID you provided.\nPlease make sure the URL or ID you pasted is correct.",
+    already_have_token:
+      'Or <1>click here</1> if you already have an access token.',
     token_modal_title: 'Authenticate with an access token',
-    token_modal_description: 'If you already have an access token, paste it below:',
+    token_modal_description:
+      'If you already have an access token, paste it below:',
     token_modal_submit: 'Authenticate',
-    token_authentication_failed: 'Authentication failed, please check your access token.',
+    token_authentication_failed:
+      'Authentication failed, please check your access token.',
   },
   youtube: {
     title: 'Youtube',
@@ -124,15 +131,16 @@ const resources: CustomTypeOptions['resources'] = {
     recommendability_score_title: 'Recommendability Score',
     recommendability_score_subtitle:
       'Where your videos appears as recommended?',
-    total_views: 'Total Views',
-    total_recommendations: 'Total Recommendations Analyzed',
+    recommendations_title: 'Recommendations Analyzed',
+    recommendations_for_other_channels: 'From other channels',
+    total_recommendations: 'Total',
     notifications_title: 'Notifications',
     top_n_cc_related_to_your_channel:
       'Top {{count}} CC related to your channel',
     advertising_connected_to_your_videos_title: 'Advertising',
     advertising_connected_to_your_videos_subtitle:
       'Advertising connected to your video',
-      advertising_empty_data: 'No advertising data collected yet'
+    advertising_empty_data: 'No advertising data collected yet',
   },
   videos: {
     no_results: 'No videos found.',
@@ -141,7 +149,8 @@ const resources: CustomTypeOptions['resources'] = {
   },
   settings: {
     contentCreatorRecommendationLabel: 'Enhance Youtube experience',
-    contentCreatorRecommendationHint: 'Show YouChoose pop in the YouTube sidebar',
+    contentCreatorRecommendationHint:
+      'Show YouChoose pop in the YouTube sidebar',
     communityRecommendationsLabel: 'Community',
     communityRecommendationsHint: 'Coming soon 🌻',
     contributeToIndependentStatsLabel: 'Donate Anonymous Data',
@@ -157,9 +166,11 @@ const resources: CustomTypeOptions['resources'] = {
     keypair_private_key: 'Key pair secret key',
     keypair_public_key: 'Key pair public key',
     keypair_title: 'Keypair for independent contribution',
-    keypair_description: 'These are the secure cryptographic keys that are used to encrypt the data that you share with YouChoose.\nOnly you have access to the secret key and without it nobody can link together the information you share.',
+    keypair_description:
+      'These are the secure cryptographic keys that are used to encrypt the data that you share with YouChoose.\nOnly you have access to the secret key and without it nobody can link together the information you share.',
     access_token_title: 'Your access token',
-    access_token_description: 'This access token allows this browser to access your profile on YouChoose.\nYou can share it with team-members to give them access to the YouChoose dashboard.',
+    access_token_description:
+      'This access token allows this browser to access your profile on YouChoose.\nYou can share it with team-members to give them access to the YouChoose dashboard.',
     access_token: 'Access Token',
   },
   ytVideoPage: {
@@ -169,8 +180,9 @@ const resources: CustomTypeOptions['resources'] = {
   },
   swagger: {
     title: 'The YouChoose AI API workbench',
-    description: 'In this section dedicated to developers you can explore and try out all of the API routes used by YouChoose.<br>You can use these APIs outside of YouChoose as you please.'
-  }
+    description:
+      'In this section dedicated to developers you can explore and try out all of the API routes used by YouChoose.<br>You can use these APIs outside of YouChoose as you please.',
+  },
 };
 
 export default resources;
