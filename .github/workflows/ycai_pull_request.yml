@@ -39,15 +39,8 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-node-
 
-      - name: Install shared modules
-        working-directory: shared
-        run: npm i
-
-      - name: Install backend modules
-        working-directory: backend
-        run: npm i
-
-      - name: Install YCAI modules
+      - name: Install modules
+        working-directory: ./
         run: npm i
 
       - name: Lint code
