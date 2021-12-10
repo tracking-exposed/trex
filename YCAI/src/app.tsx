@@ -19,6 +19,8 @@ import { ErrorBoundary } from './components/common/ErrorBoundary';
 import { YCAITheme } from './theme';
 import './i18n';
 
+import './resources/global.css';
+
 const YT_RECOMMENDATIONS_SELECTOR = 'ytd-watch-next-secondary-results-renderer';
 const YC_ROOT_ID = 'yc-root-injected';
 
