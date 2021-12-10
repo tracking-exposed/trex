@@ -79,7 +79,3 @@ jobs:
           CI: true
         with:
           args: npm test e2e -- --watchAll=false
-
-      - name: Stop api service
-        working-directory: yttrex-backend/backend
-        run: docker-compose down
