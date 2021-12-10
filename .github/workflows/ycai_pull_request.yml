@@ -27,7 +27,6 @@ jobs:
         uses: actions/setup-node@v2
         with:
           node-version: ${{ matrix.node-version }}
-          mongodb-db: test
 
       - name: Get npm cache directory path
         id: npm-cache-dir-path
@@ -42,6 +41,10 @@ jobs:
 
       - name: Install shared modules
         working-directory: shared
+        run: npm i
+
+      - name: Install backend modules
+        working-directory: backend
         run: npm i
 
       - name: Install YCAI modules
@@ -71,7 +74,7 @@ jobs:
 
       - name: Start api service
         working-directory: ./backend
-        run: nohup npm run start --key ci-key
+        run: nohup npm run start --key ci-key --mongoDb test
 
       - name: Test Code
         uses: mujo-code/puppeteer-headful@v2
