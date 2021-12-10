@@ -24,6 +24,7 @@ const logger = GetLogger('yt-video-recommendations');
 const useStyles = makeStyles(() => ({
   appBar: {
     marginBottom: 20,
+    borderRadius: '8px',
   },
   tab: {
     minWidth: 100,
@@ -128,14 +129,17 @@ export const YTVideoPage: React.FC<{
   }, [currentTab, settings]);
 
   return (
-    <Box mb={4}>
+    <Box mb={4} style={{borderRadius: '8px'}}>
       <AppBar className={classes.appBar} position="static">
         <Tabs
           value={currentTab}
           onChange={(e, n) => onTabChange(n)}
           aria-label="recommendations tabs"
-          variant="fullWidth"
+          variant="fullWidth" 
           centered
+          style={{
+            borderRadius: '8px',
+          }}
         >
           <Tab
             className={classes.tab}

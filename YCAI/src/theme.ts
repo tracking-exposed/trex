@@ -51,7 +51,6 @@ export const YCAITheme = createTheme({
     h5: {
       fontWeight: 800,
       fontSize: '1.3rem',
-      marginBottom: 10,
     },
     h6: {
       fontWeight: 400,
@@ -133,7 +132,7 @@ export const YCAITheme = createTheme({
     },
     secondary: {
       light: lightViolet,
-      main: violet,
+      main: white,
       dark: darkViolet,
       contrastText: white,
     },
