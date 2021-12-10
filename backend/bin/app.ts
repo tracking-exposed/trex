@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-misused-promises */
 import bodyParser from "body-parser";
 import cors from "cors";
 import debug from "debug";
