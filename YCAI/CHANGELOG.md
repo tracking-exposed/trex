@@ -1,3 +1,17 @@
+# [1.9.0-beta.4](https://github.com/tracking-exposed/yttrex/compare/v1.9.0-beta.3...v1.9.0-beta.4) (2021-12-10)
+
+
+### Bug Fixes
+
+* layout LAB improvements ([#241](https://github.com/tracking-exposed/yttrex/issues/241)) ([8a7652e](https://github.com/tracking-exposed/yttrex/commit/8a7652e5f47e55557f2b69535fe7fcfae3521408))
+* nudge users into opting in to data donation ([#239](https://github.com/tracking-exposed/yttrex/issues/239)) ([06bd395](https://github.com/tracking-exposed/yttrex/commit/06bd395a48dd45a593e905a021793a5a94f2a19c))
+* updated data donation learn more URL + font ([#243](https://github.com/tracking-exposed/yttrex/issues/243)) ([42f5929](https://github.com/tracking-exposed/yttrex/commit/42f5929ff9098a962ea23db2cac2c14353f09300))
+
+
+### Features
+
+* migrate from npm to yarn ([#238](https://github.com/tracking-exposed/yttrex/issues/238)) ([71ef0db](https://github.com/tracking-exposed/yttrex/commit/71ef0db7436f8fe966fe5cece9e7e54950dbe0f9))
+
 # [1.9.0](https://github.com/tracking-exposed/yttrex/compare/v1.8.992...v1.9.0) (2021-12-07)
 
 
