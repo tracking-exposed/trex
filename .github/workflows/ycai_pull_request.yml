@@ -70,14 +70,8 @@ jobs:
           mongodb-db: test
 
       - name: Start api service
-        working-directory: ./
-        run: |
-          docker-compose build
-          docker-compose up -d api
-
-      - name: Log what's going on in docker
-        working-directory: ./
-        run: docker-compose logs api
+        working-directory: ./backend
+        run: nohup npm run start --key ci-key
 
       - name: Test Code
         uses: mujo-code/puppeteer-headful@v2
