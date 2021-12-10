@@ -12,8 +12,8 @@
   ],
   "packageManager": "yarn@3.1.1",
   "scripts": {
-    "clean": "yarn workspaces run clean",
-    "lint": "yarn workspaces run lint",
+    "clean": "yarn workspaces foreach run clean",
+    "lint": "yarn workspaces foreach run lint",
     "test": "jest",
     "shared": "yarn workspace shared",
     "backend": "yarn workspace yttrex-backend",
@@ -22,6 +22,8 @@
   "devDependencies": {
     "@commitlint/cli": "^13.2.1",
     "@commitlint/config-conventional": "^13.2.0",
+    "@types/eslint": "^8",
+    "eslint": "^8.4.1",
     "husky": "^7.0.4",
     "jest": "^27.4.1",
     "ts-jest": "^27.0.7",
