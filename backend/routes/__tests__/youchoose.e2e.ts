@@ -33,6 +33,10 @@ describe("The YouChoose API", () => {
     test = await GetTest();
   });
 
+  afterAll(async () => {
+    await test.mongo.close();
+  });
+
   describe("Register a Content Creator", () => {
     it("fails using channelId", async () => {
       const registrationError = {
@@ -145,6 +149,7 @@ describe("The YouChoose API", () => {
     it("succeeds with access token", async () => {
       const newVideoData = fc.sample(VideoArb, 1).map((v) => ({
         ...v,
+        urlId: v.videoId,
         description: "description-is-required",
         recommendations: [],
       }));
@@ -180,6 +185,7 @@ describe("The YouChoose API", () => {
     it("succeeds by access token", async () => {
       const newVideoData = fc.sample(VideoArb, 1).map((v) => ({
         ...v,
+        urlId: v.videoId,
         description: "always-present",
         recommendations: [],
       }));

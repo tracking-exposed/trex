@@ -21,8 +21,8 @@ describe.skip("Testing the video submission", function () {
 
   let test: Test, storageDir;
 
-  beforeAll(() => {
-    test = GetTest();
+  beforeAll(async () => {
+    test = await GetTest();
     storageDir = path.join(
       test.config.get("storage"),
       moment().format("YYYY-MM-DD")

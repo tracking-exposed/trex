@@ -3,6 +3,8 @@ import { makeApp } from "../bin/app";
 import nconf from "nconf";
 import debug from "debug";
 import * as path from "path";
+import { MongoClient } from "mongodb";
+import mongo3 from "../lib/mongo3";
 
 debug.enable(process.env.DEBUG ?? "");
 
@@ -15,8 +17,10 @@ const logger = debug("yttrex").extend("test");
 
 export interface Test {
   app: supertest.SuperTest<supertest.Test>;
+  mongo3: typeof mongo3;
+  mongo: MongoClient;
   debug: debug.Debugger;
-  config: any;
+  config: nconf.Provider;
 }
 
 export const GetTest = async (): Promise<Test> => {
@@ -28,9 +32,12 @@ export const GetTest = async (): Promise<Test> => {
 
   const app = makeApp({ config: config.get() });
 
+  const mongo = await mongo3.clientConnect({ concurrency: 1 });
   return {
     app: supertest(app),
     debug: logger,
     config,
+    mongo: mongo as any,
+    mongo3
   };
 };
