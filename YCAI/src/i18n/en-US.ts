@@ -65,7 +65,7 @@ const resources: CustomTypeOptions['resources'] = {
     lab_subtitle:
       'Click on one video below to pick and order the recommendations \nyou want to display in the side bar. Your content, your choice!',
     lab_edit_subtitle:
-      'Paste a link in the grey box below to add it to the recommendations of this video. You can add recommendations towards any website!',
+      'Paste a link in the grey box below to add it to the recommendations of this video.\nYou can add recommendations towards any website!',
     analytics: 'Analytics',
     settings: 'Settings',
     link_account:
@@ -114,7 +114,7 @@ const resources: CustomTypeOptions['resources'] = {
     added_to_video_title: 'Recommendations added',
     by_creator_title: "Author's recommendations",
     total: 'Total recommendations',
-    url: 'Recommendation url',
+    url: 'Recommendation URL',
     yours: 'Your recommendations',
     no_items: 'Recommendations will appear here once added!',
     add_to_video: 'Add a recommendation to this video',

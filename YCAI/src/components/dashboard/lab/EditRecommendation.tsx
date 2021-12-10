@@ -84,7 +84,7 @@ const EditRecommendation: React.FC<EditRecommendationProps> = ({ data, videoId, 
           <Image src={data.image} alt={data.title} className={classes.image} />
           <DialogContent>
             <DialogContentText>
-              <Typography>
+              <Typography variant="h6">
                 {t('actions:edit_recommendation_description')}
               </Typography>
             </DialogContentText>
@@ -101,6 +101,7 @@ const EditRecommendation: React.FC<EditRecommendationProps> = ({ data, videoId, 
             <CharLimitedInput
               className={classes.textField}
               fullWidth
+              multiline
               label={t('recommendations:description')}
               limit={descriptionMaxLength}
               onChange={

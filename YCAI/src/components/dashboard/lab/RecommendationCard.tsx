@@ -116,7 +116,7 @@ export const RecommendationCard: React.FC<RecommendationCardProps> = ({
             <CharLimitedTypography
               className={classes.title}
               color="textSecondary"
-              component="h4"
+              component="h6"
               gutterBottom
               limit={titleMaxLength}
               variant="h6"

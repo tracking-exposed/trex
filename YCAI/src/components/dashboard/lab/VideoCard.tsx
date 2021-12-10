@@ -48,6 +48,14 @@ const useStyles = makeStyles<YCAITheme>((theme) => ({
     wordBreak: 'keep-all',
     overflow: 'hidden'
   },
+  manage: {
+    paddingTop: '6px',
+    lineHeight: 1,
+    minWidth: 0,
+    '&:hover': {
+      background: 'inherit'
+    }
+  }
 }));
 
 export const VideoCard: React.FC<VideoCardProps> = ({

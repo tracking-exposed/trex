@@ -1,4 +1,4 @@
-import { Card, CardContent, CardMedia, Link } from '@material-ui/core';
+import { Card, CardContent, CardMedia, Link, } from '@material-ui/core';
 import * as QR from 'avenger/lib/QueryResult';
 import { WithQueries } from 'avenger/lib/react';
 import React from 'react';
@@ -14,6 +14,7 @@ interface YTVideoProps {
   videoId: string;
 }
 
+
 export const YTVideo: React.FC<YTVideoProps> = ({ videoId }) => (
   <WithQueries
     queries={{ oneCreatorVideo }}
@@ -22,16 +23,17 @@ export const YTVideo: React.FC<YTVideoProps> = ({ videoId }) => (
       LazyFullSizeLoader,
       ErrorBox,
       ({ oneCreatorVideo: video }) => (
-        <Card>
+        <Card style={{boxShadow: "none", backgroundColor: 'transparent',}}>
           <CardMedia
             component="img"
             src={getYTMaxResThumbnailById(videoId)}
             title={video.title}
+            style={{borderRadius: "8px",}}
           />
-          <CardContent>
+          <CardContent style={{paddingLeft: '0px', paddingTop: '10px', paddingBottom: '0px'}}>
             <Link
               color="textSecondary"
-              variant="subtitle2"
+              variant="h5"
               href={getYTVideoURLById(videoId)}
               rel="noreferrer"
               target="_blank"
@@ -45,3 +47,4 @@ export const YTVideo: React.FC<YTVideoProps> = ({ videoId }) => (
     )}
   />
 );
+

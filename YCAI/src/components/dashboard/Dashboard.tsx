@@ -103,7 +103,7 @@ const DashboardContent: React.FC<DashboardContentProps> = ({
         <Typography
           variant="h3"
           component="h1"
-          color={profile ? 'primary' : 'textPrimary'}
+          color= "textSecondary"
           style={{
             whiteSpace: 'pre-line',
             paddingTop: theme.spacing(1),

@@ -14,7 +14,7 @@ export const LabVideoEdit: React.FC<LabVideoEditProps> = ({
 
   return (
     <Grid container spacing={4} alignItems="flex-start">
-      <Grid container item lg={7} md={6} xs={12} spacing={4}>
+      <Grid container item lg={6} md={6} xs={12} spacing={4}>
         <Grid item xs={12}>
           <YTVideo videoId={videoId} />
         </Grid>
@@ -22,7 +22,7 @@ export const LabVideoEdit: React.FC<LabVideoEditProps> = ({
           <AddRecommendationBox videoId={videoId} />
         </Grid>
       </Grid>
-      <Grid item lg={5} md={6} xs={12}>
+      <Grid item lg={5} md={5} xs={12}>
         <VideoRecommendations
           queries={{ videoRecommendations: { videoId } }}
           videoId={videoId}
