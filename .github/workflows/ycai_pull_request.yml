@@ -74,7 +74,7 @@ jobs:
 
       - name: Start api service
         working-directory: ./backend
-        run: nohup npm run start -- --key ci-key --mongoDb test
+        run: npm run start -- --key ci-key --mongoDb test &
 
       - name: Test Code
         uses: mujo-code/puppeteer-headful@v2
