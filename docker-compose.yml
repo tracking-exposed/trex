@@ -60,7 +60,7 @@ services:
     depends_on:
       - mongodb
     working_dir: /app/backend
-    command: npm run watch
+    command: yarn run watch
 
   ycai:
     image: yttrex_base
@@ -74,4 +74,4 @@ services:
     working_dir: /app/YCAI
     depends_on:
       - api
-    command: sh -c "chmod -R 777 /app/YCAI/build && npm run watch"
+    command: sh -c "chmod -R 777 /app/YCAI/build && yarn run watch"

@@ -1,10 +1,12 @@
 {
   "name": "shared",
   "description": "shared files needed by the backend and the YCAI extension",
+  "version": "0.1.0",
   "scripts": {
     "clean": "rm -rf ./build",
     "tsc": "tsc",
     "build": "tsc -b",
+    "lint": "eslint ./src",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "license": "AGPL-3.0",

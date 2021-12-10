@@ -9,14 +9,14 @@ This is the backend implementation of [youtube.tracking.exposed](https://youtube
 Project bootstrapping requires to install `node` dependencies and `mongo`.
 
 ```bash
-$ npm i // install node deps
+$ yarn // install node deps
 // install mongo
 $ mongo ./scripts/build-indexes.js
 ```
 
 ### Run server
 
-Run `npm run watch` to start the development server.
+Run `yarn watch` to start the development server.
 
 **Optional:** the project can be also bootstrapped with `docker-compose up`
 

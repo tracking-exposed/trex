@@ -28,12 +28,8 @@ jobs:
         with:
           node-version: "14"
 
-      - name: Install shared dependencies
-        working-directory: shared
-        run: npm ci
-
       - name: Install dependencies
-        run: npm ci
+        run: yarn
 
       - name: Release
         env:

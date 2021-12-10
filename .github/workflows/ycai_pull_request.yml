@@ -28,36 +28,22 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
 
-      - name: Get npm cache directory path
-        id: npm-cache-dir-path
-        run: echo "::set-output name=dir::~/.npm"
-
-      - uses: actions/cache@v2
-        with:
-          path: ~/.npm
-          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
-          restore-keys: |
-            ${{ runner.os }}-node-
-
       - name: Install modules
-        working-directory: shared
-        run: npm i
-
-      - name: Install modules
-        run: npm i
+        working-directory: ./
+        run: yarn
 
       - name: Lint code
-        run: npm run lint
+        run: yarn lint
 
       - name: Build shared
         working-directory: ./shared
-        run: npm run build
+        run: yarn build
 
       - name: Build extension
-        run: npm run build:ext
+        run: yarn build:ext
 
       - name: Build dashboard
-        run: npm run build
+        run: yarn build
 
       - name: Test
-        run: npm test
+        run: yarn test

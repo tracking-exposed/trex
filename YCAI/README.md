@@ -15,14 +15,14 @@ It contains the browser extension for development as well as a the .zip file for
 ### For developers and local testing
 
 ```
-npm install
-npm run build:dev
+yarn install
+yarn run build:dev
 ```
 
 Or, tu run the compilation in continuous mode while developing:
 
 ```
-npm run watch
+yarn run watch
 ```
 
 At this point you can load it in your browser. Firefox and Chrome have slightly different action required.
@@ -30,7 +30,7 @@ At this point you can load it in your browser. Firefox and Chrome have slightly 
 To create a production build, run:
 
 ```
-npm run build
+yarn run build
 ```
 
 **Chrome**:
@@ -55,13 +55,13 @@ npm run build
 1. `docker` with `docker-compose` installed
 2. Follow this initialization (submodule, dependency) from the YouChoose directory
 
-```
+```sh
 git submodule init
 git submodule update
 cd yttrex-backend/backend
-npm install
+yarn install
 docker-compose up -d mongo
-npm run watch
+yarn run watch
 ```
 
 ## API used by YouChoose
