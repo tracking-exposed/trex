@@ -1,3 +1,12 @@
+## [1.9.1](https://github.com/tracking-exposed/yttrex/compare/v1.9.0...v1.9.1) (2021-12-10)
+
+
+### Bug Fixes
+
+* analytics UI ([#234](https://github.com/tracking-exposed/yttrex/issues/234)) ([3d5b1f2](https://github.com/tracking-exposed/yttrex/commit/3d5b1f2b47d6d95f487b40f683b540709e799d30))
+* backend linting, closes [#191](https://github.com/tracking-exposed/yttrex/issues/191) ([#235](https://github.com/tracking-exposed/yttrex/issues/235)) ([ebd68d7](https://github.com/tracking-exposed/yttrex/commit/ebd68d7e58e2111295216235cfb89cdff94506f9))
+* recommendability score style ([a2555ba](https://github.com/tracking-exposed/yttrex/commit/a2555ba6810400bd09c00b17a357baf88f6c05e2))
+
 # [1.9.0-beta.3](https://github.com/tracking-exposed/yttrex/compare/v1.9.0-beta.2...v1.9.0-beta.3) (2021-12-09)
 
 
