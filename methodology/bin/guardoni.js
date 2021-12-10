@@ -13,7 +13,6 @@ const execSync = require('child_process').execSync;
 const parse = require('csv-parse/lib/sync');
 
 const domainSpecific = require('../src/domainSpecific');
-const { formatWithOptions } = require('util');
 
 const COMMANDJSONEXAMPLE = "https://youtube.tracking.exposed/json/automation-example.json";
 const EXTENSION_WITH_OPT_IN_ALREADY_CHECKED='https://github.com/tracking-exposed/yttrex/releases/download/v1.8.992/extension-1.8.992.zip';
@@ -320,7 +319,7 @@ To execute a known experiment:
    --experiment <experimentId>
 
 Advanced options:
-   --evendencetag <string>
+   --evidencetag <string>
    --profile <string>
    --config <file>
    --proxy <string>

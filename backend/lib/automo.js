@@ -43,20 +43,30 @@ async function getSummaryByPublicKey(publicKey, options) {
         { publicKey: supporter.publicKey }
     );
 
+    const ads = await mongo3.readLimit(mongoc,
+        nconf.get('schema').ads, { publicKey: supporter.publicKey },
+        { savingTime: -1}, options.amount, options.skip);
+
     await mongoc.close();
 
-    debug("Retrieved in getSummaryByPublicKey: data %d, total %d (amount %d skip %d)",
-        _.size(metadata), total, options.amount, options.skip);
+    debug("Retrieved in getSummaryByPublicKey: metadata %d, total %d and ads %d (amount %d skip %d)",
+        _.size(metadata), total, ads.length, options.amount, options.skip);
 
     const stats = _.countBy(metadata, 'type');
-
+    const cleanedads = _.map(ads, function(ad) {
+        return _.pick(ad, ['href','metadataId',
+            'sponsoredSite', 'sponsoredName', 'savingTime']);
+    });
     const videof = [ 'id', 'videoId', 'savingTime', 'title', 
                      'authorName', 'authorSource', 'publicationTime' ];
     const homef = ['id', 'savingTime'];
     const searchf = ['id', 'savingTime', 'query' ];
     const payload = _.reduce(metadata, function(memo, entry) {
         if(entry.type === 'home') {
-            memo.homes.push(_.pick(entry, homef));
+            memo.homes.push({
+                ..._.pick(entry, homef),
+                selected: _.map(entry.selected, 'recommendedTitle'),
+            });
         } else if(entry.type === 'video') {
             memo.videos.push({
                 ..._.pick(entry, videof),
@@ -75,14 +85,14 @@ async function getSummaryByPublicKey(publicKey, options) {
         videos: [],
         searches: []
     });
-    /*
-    const cleandata = _.map(metadata, function(e) {
-        e.publicationTime = new Date(e.publicationTime);
-        e.relatedN = _.size(e.related);
-        return _.pick(e, fields);
-    }); */
 
-    return { supporter, ...payload, total, stats };
+    return {
+        supporter,
+        ...payload,
+        total,
+        stats,
+        ads: cleanedads,
+    };
 }
 
 async function getMetadataByPublicKey(publicKey, options) {
@@ -96,13 +106,9 @@ async function getMetadataByPublicKey(publicKey, options) {
         publicKey: supporter.publicKey,
         type: options.type,
     };
-    if(options.takefull || options.typefilter)
-        debug("Options takefull and typefilter were remove")
 
     if(!options.type)
-        debug("This call might not work as expected");
-
-    /* remind self legacy data might not return */
+        debug("Missing 'type': this API might not work as expected");
 
     if(options.timefilter)
         _.set(filter, 'savingTime.$gte', new Date(options.timefilter));
@@ -159,10 +165,17 @@ async function getMetadataFromAuthor(filter, options) {
 
 async function getMetadataFromAuthorChannelId(channelId, options) {
     const mongoc = await mongo3.clientConnect({ concurrency: 1 });
+    const consideredAmount = 500;
+    const filter = {
+        authorSource: { "$in": [
+            `/channel/${channelId}`,
+            `/c/${channelId}`
+        ]}
+    }
 
     const videos = await mongo3.readLimit(mongoc,
-        nconf.get('schema').metadata, { authorSource: channelId },
-        { savingTime: -1 }, 100, options.skip);
+        nconf.get('schema').metadata, filter,
+        { savingTime: -1 }, consideredAmount, 0);
 
     const relatedl = _.compact(_.flatten(_.map(videos, 'related')));
     debug("matching %d videos by authorSource (%j) had %d total related",
@@ -183,40 +196,35 @@ async function getMetadataFromAuthorChannelId(channelId, options) {
         const rs = related.recommendedSource || related.source;
         if(!memo[rs]) {
             const obj = {
-                username: rs,
-                channelId: "hack--to-use--the-same-TypeScript OBJ",
-                // client side should replace the link w/ search Query
-                // this hack, and so the empty avatar, is because
-                // the return value typescript is ContentCreator
-                avatar: "",
-                recommendedVideosCount: 1
+                channelId: rs,
+                // TODO we don't have the 
+                // avatar but in a future this should happen
+                recommendedChannelCount: 1
             }
             memo[rs] = obj;
         } else {
-            memo[rs].recommendedVideosCount++;
+            memo[rs].recommendedChannelCount++;
         }
         return memo;
     }, {});
 
     const total = await mongo3.count(mongoc,
-        nconf.get('schema').metadata, { authorSource: channelId });
+        nconf.get('schema').metadata, filter);
 
     const ordered = _.map(_.orderBy(
-        authors, ['recommendedVideosCount'], ['desc']), function(o) {
-            // this hack is because we would generate the link
-            // client side, and sneak into 'channelId' the number of
-            // times the channel got recommended.
-            o.channelId = (o.recommendedVideosCount + "");
-            delete o.recommendedVideosCount;
+        authors, ['recommendedChannelCount'], ['desc']), function(o) {
+            o.percentage = _.round((100 / relatedl.length) * o.recommendedChannelCount, 1);
             return o;
         });
 
-    // TODO considerare options.skip e options.amount
     await mongoc.close();
     return {
+        channelId,
+        authorName: _.first(videos).authorName,
         content: _.take(ordered, options.amount),
         overflow: (_.size(videos) === options.amount),
         total,
+        recommendations: relatedl.length,
         pagination: options,
     }
 };
@@ -646,9 +654,7 @@ async function pullExperimentInfo(publicKey) {
     const exp = await mongo3.readOne(mongoc, nconf.get('schema').experiments,
         { publicKey, status: "active" });
     await mongoc.close();
-    if(exp)
-        return exp;
-    return null;
+    return exp || null;
 }
 
 async function registerDirective(links, directiveType) {
