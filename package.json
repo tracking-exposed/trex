@@ -19,7 +19,7 @@
     "test": "jest",
     "shared": "yarn workspace shared",
     "backend": "yarn workspace yttrex-backend",
-    "ycai": "yarn workspace youchoose.ai"
+    "ycai": "yarn workspace YCAI"
   },
   "devDependencies": {
     "@commitlint/cli": "^13.2.1",

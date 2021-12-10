@@ -1,41 +1,37 @@
 .DS_Store
-*.seed
-*.log
-*.dat
-*.out
-*.pid
-*.gz
-.idea
-*.swp
-.env
 .env.local
-.vscode/*
 
+# in every folder those path should be IGNORED
 node_modules
 build
 dist
 
+# methodology it is used by developer but users download a .exe
 methodology/config/*
 methodology/profiles/*
+methodology/extension/*
 methodology/executions/*
 methodology/experiments/*
-methodology/extension/*
 methodology/screenshots/*
 
-backend/dump
+# experiments related folders, the first keep .jpeg(s), the second .csv(s)
+backend/thumbnails/*
 backend/experiments/*
+# this it is overriden by 'key' environment variable or --key option
 backend/config/secrets.json
 
+# this is necessary because lib/fetcher keeps a cache of public YT html
 backend/logs/*
 !backend/logs/.keep
 
+# not really maintain ATM
 qa/*.pyc
 
 # test coverage
 coverage
 
 #yarn v2
-.yarn/*
+.yarn
 !.yarn/cache
 !.yarn/patches
 !.yarn/plugins
