@@ -1,11 +1,12 @@
 const _ = require("lodash");
 const debug = require("debug")("lib:curly");
-const { curly } = require("node-libcurl");
+const fetch = require("node-fetch");
+const AbortController = require("abort-controller");
 const fs = require("fs");
 const path = require("path");
 const utils = require("./utils");
 
-/* 
+/*
  * This library allow us to:
  1) Fetch from curl two possible pages from any youtube channel
  2) Save the retrived HTML
@@ -49,18 +50,34 @@ function lookForJSONblob(data) {
 
 async function fetchRawChannelVideosHTML(channelId) {
   const url = `https://www.youtube.com/channel/${channelId}/videos`;
-  const { statusCode, data, headers } = await curly.get(url, {
-    verbose: false,
-    timeoutMs: 4000,
-    sslVerifyPeer: false,
-    followLocation: true,
-  });
+  const abortCtl = new AbortController();
+  const timeout = setTimeout(() => {
+    abortCtl.abort();
+  }, 4000);
 
-  return {
-    headers,
-    statusCode,
-    html: data,
-  };
+  try {
+    const response = await fetch(url, {
+      redirect: 'follow',
+      signal: abortCtl.signal,
+    });
+
+    if (response.ok) {
+      const html = await response.text();
+      return {
+        html,
+        statusCode: response.status,
+        headers: response.headers,
+      };
+    }
+  } catch (error) {
+    return {
+      html: '',
+      statusCode: 500,
+      headers: {},
+    };
+  } finally {
+    clearTimeout(timeout);
+  }
 }
 
 async function verifyChannel(channelId) {
@@ -195,19 +212,27 @@ async function recentVideoFetch(channelId) {
 const tokenRegexp = /\[(youchoose):(\w+)\]/;
 
 async function tokenFetch(channelId) {
-  const ytvidsurl = `https://www.youtube.com/channel/${channelId}/about`;
-  // const { statusCode, data, headers } = await curly.get
-  const { data } = await curly.get(ytvidsurl, {
-    verbose: false,
-    timeoutMs: 4000,
-    sslVerifyPeer: false,
-    followLocation: true,
+  const ytVidsURL = `https://www.youtube.com/channel/${channelId}/about`;
+
+  const abortCtl = new AbortController();
+  const timeout = setTimeout(() => {
+    abortCtl.abort();
+  }, 4000);
+  const response = await fetch(ytVidsURL, {
+    redirect: 'follow',
+    signal: abortCtl.signal,
   });
+  clearTimeout(timeout);
+  if (!response.ok) {
+    return { code: undefined };
+  }
+
+  const data = await response.text();
 
   debug("Retrieved channel about, length: %d", data.length);
   const match = data.match(tokenRegexp);
   if (match === null) {
-    debug("Token not found in %s", ytvidsurl);
+    debug("Token not found in %s", ytVidsURL);
     throw new Error("Token not found.");
   } else {
     debug("Token found!, %s", match[2]);
