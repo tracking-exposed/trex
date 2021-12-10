@@ -75,7 +75,7 @@ module.exports = {
     [
       '@semantic-release/exec',
       {
-        prepareCmd: 'MANIFEST_VERSION=${nextRelease.version} npm run build:ext',
+        prepareCmd: 'MANIFEST_VERSION=${nextRelease.version} yarn build:ext',
       },
     ],
     [

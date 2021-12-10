@@ -31,17 +31,19 @@ const useStyles = makeStyles<YCAITheme>(theme => ({
       height: imgHeight,
       width: '100%',
     },
+    backgroundColor: theme.palette.grey[300],
   },
   content: {
     height: `calc(100% - ${theme.spacing(1)}px)`,
     padding: theme.spacing(1),
-    paddingBottom: theme.spacing(0.5),
-    paddingTop: theme.spacing(0.5),
+    paddingBottom: theme.spacing(1),
+    paddingTop: theme.spacing(1.5),
   },
   title: {
-    fontSize: '1.3rem',
+    fontSize: '1.4rem',
     fontWeight: 'bold',
-    marginBottom: theme.spacing(0.5),
+    letterSpacing: '0.015em',
+    marginBottom: theme.spacing(0.1),
   },
   description: {
     fontSize: '1.2rem',

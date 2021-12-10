@@ -65,7 +65,7 @@ const resources: CustomTypeOptions['resources'] = {
     lab_subtitle:
       'Click on one video below to pick and order the recommendations \nyou want to display in the side bar. Your content, your choice!',
     lab_edit_subtitle:
-      'Paste a link in the grey box below to add it to the recommendations of this video. You can add recommendations towards any website!',
+      'Paste a link in the grey box below to add it to the recommendations of this video.\nYou can add recommendations towards any website!',
     analytics: 'Analytics',
     settings: 'Settings',
     link_account:
@@ -114,7 +114,7 @@ const resources: CustomTypeOptions['resources'] = {
     added_to_video_title: 'Recommendations added',
     by_creator_title: "Author's recommendations",
     total: 'Total recommendations',
-    url: 'Recommendation url',
+    url: 'Recommendation URL',
     yours: 'Your recommendations',
     no_items: 'Recommendations will appear here once added!',
     add_to_video: 'Add a recommendation to this video',
@@ -172,6 +172,12 @@ const resources: CustomTypeOptions['resources'] = {
     access_token_description:
       'This access token allows this browser to access your profile on YouChoose.\nYou can share it with team-members to give them access to the YouChoose dashboard.',
     access_token: 'Access Token',
+    data_donation_learn_more: 'Learn more',
+    nudge_donation_opt_in: 'Please consider donating anonymous data to help us understand the YouTube algorithm.',
+    nudge_learn_more: 'Learn more.',
+    nudge_not_now: 'Not now',
+    nudge_agree: 'I agree',
+
   },
   ytVideoPage: {
     firstTab: 'Creator Recommendations',

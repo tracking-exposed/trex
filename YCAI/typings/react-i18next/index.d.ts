@@ -139,6 +139,11 @@ declare module 'react-i18next' {
         access_token: string;
         access_token_title: string;
         access_token_description: string;
+        data_donation_learn_more: string;
+        nudge_donation_opt_in: string;
+        nudge_learn_more: string;
+        nudge_not_now: string;
+        nudge_agree: string;
       };
       videos: {
         no_results: string;

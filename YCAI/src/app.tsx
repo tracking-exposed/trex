@@ -8,7 +8,9 @@ import { pipe } from 'fp-ts/lib/function';
 import * as TE from 'fp-ts/lib/TaskEither';
 
 import { GetLogger } from '@shared/logger';
+import debug from 'debug';
 
+import { config } from './config';
 import * as Messages from './models/Messages';
 import { bo } from './utils/browser.utils';
 import { settingsRefetch } from './state/popup.queries';
@@ -19,9 +21,12 @@ import { ErrorBoundary } from './components/common/ErrorBoundary';
 import { YCAITheme } from './theme';
 import './i18n';
 
+import './resources/global.css';
+
 const YT_RECOMMENDATIONS_SELECTOR = 'ytd-watch-next-secondary-results-renderer';
 const YC_ROOT_ID = 'yc-root-injected';
 
+debug.enable(config.DEBUG);
 const { debug: log } = GetLogger('app');
 
 const InjectedApp: React.FC = () => {

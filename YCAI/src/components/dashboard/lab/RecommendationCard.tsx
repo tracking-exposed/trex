@@ -57,6 +57,7 @@ const useStyles = makeStyles<YCAITheme>((theme) => ({
     overflow: 'hidden',
   },
   right: {
+    paddingLeft: theme.spacing(0.7),
     padding: theme.spacing(2),
     height: `calc(100% - ${theme.spacing(2)}px)`,
   },
@@ -116,7 +117,7 @@ export const RecommendationCard: React.FC<RecommendationCardProps> = ({
             <CharLimitedTypography
               className={classes.title}
               color="textSecondary"
-              component="h4"
+              component="h6"
               gutterBottom
               limit={titleMaxLength}
               variant="h6"

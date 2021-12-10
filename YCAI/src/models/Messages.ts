@@ -3,7 +3,7 @@ import { ContentCreator } from '@shared/models/ContentCreator';
 import { pipe } from 'fp-ts/lib/function';
 import * as R from 'fp-ts/lib/Record';
 import * as t from 'io-ts';
-import { Keypair, Settings } from './Settings';
+import { Keypair, Settings, OptInNudgeStatus } from './Settings';
 
 // keypair
 export const GetKeypair = t.literal('GetKeypair');
@@ -31,6 +31,9 @@ export const Update = t.literal('update');
 export const RecommendationsFetch = t.literal('recommendationsFetch');
 export const ServerLookup = t.literal('serverLookup');
 
+export const GetDonationOptInNudgeStatus = t.literal('GetDonationOptInNudgeStatus');
+export const SetDonationOptInNudgeStatus = t.literal('SetDonationOptInNudgeStatus');
+
 export const MessageType = t.union(
   [
     GetSettings,
@@ -44,6 +47,8 @@ export const MessageType = t.union(
     GetContentCreator,
     UpdateContentCreator,
     ErrorOccurred,
+    GetDonationOptInNudgeStatus,
+    SetDonationOptInNudgeStatus,
   ],
   'MessageType'
 );
@@ -135,6 +140,8 @@ export const Messages = MessagesAPI({
   [ReloadExtension.value]: { payload: t.any, response: t.undefined },
   [ServerLookup.value]: { payload: t.any, response: t.undefined },
   [ErrorOccurred.value]: { payload: t.any, response: t.any },
+  [GetDonationOptInNudgeStatus.value]: { payload: t.void, response: OptInNudgeStatus },
+  [SetDonationOptInNudgeStatus.value]: { payload: OptInNudgeStatus, response: OptInNudgeStatus },
 });
 
 export type Messages = typeof Messages;

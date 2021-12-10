@@ -2,7 +2,7 @@ import { ContentCreator } from '@shared/models/ContentCreator';
 import { sequenceS } from 'fp-ts/lib/Apply';
 import * as E from 'fp-ts/lib/Either';
 import * as O from 'fp-ts/lib/Option';
-import { pipe } from 'fp-ts/lib/pipeable';
+import { pipe } from 'fp-ts/lib/function';
 import * as TE from 'fp-ts/lib/TaskEither';
 import { config } from '../config';
 import * as Messages from '../models/Messages';
@@ -37,6 +37,9 @@ export const getStorageKey = (type: string): string => {
     case Messages.GetContentCreator.value:
     case Messages.UpdateContentCreator.value:
       return constants.CONTENT_CREATOR;
+    case Messages.GetDonationOptInNudgeStatus.value:
+    case Messages.SetDonationOptInNudgeStatus.value:
+      return constants.DONATION_OPT_IN_NUDGE_STATUS_KEY;
     default:
       return '';
   }
@@ -119,6 +122,7 @@ const getMessageHandler = <
     case Messages.GetKeypair.value:
     case Messages.GetAuth.value:
     case Messages.GetContentCreator.value:
+    case Messages.GetDonationOptInNudgeStatus.value:
       return pipe(
         db.get<any>(getStorageKey(r.type)),
         TE.mapLeft(toMessageHandlerError),
@@ -157,6 +161,7 @@ const getMessageHandler = <
     // updates
     case Messages.UpdateContentCreator.value:
     case Messages.UpdateAuth.value:
+    case Messages.SetDonationOptInNudgeStatus.value:
       return pipe(
         db.update(getStorageKey(r.type), r.payload),
         TE.mapLeft(toMessageHandlerError),

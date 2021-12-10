@@ -166,10 +166,17 @@ async function getMetadataFromAuthor(filter, options) {
 
 async function getMetadataFromAuthorChannelId(channelId, options) {
     const mongoc = await mongo3.clientConnect({ concurrency: 1 });
+    const consideredAmount = 500;
+    const filter = {
+        authorSource: { "$in": [
+            `/channel/${channelId}`,
+            `/c/${channelId}`
+        ]}
+    }
 
     const videos = await mongo3.readLimit(mongoc,
-        nconf.get('schema').metadata, { authorSource: channelId },
-        { savingTime: -1 }, 100, options.skip);
+        nconf.get('schema').metadata, filter,
+        { savingTime: -1 }, consideredAmount, 0);
 
     const relatedl = _.compact(_.flatten(_.map(videos, 'related')));
     debug("matching %d videos by authorSource (%j) had %d total related",
@@ -190,40 +197,35 @@ async function getMetadataFromAuthorChannelId(channelId, options) {
         const rs = related.recommendedSource || related.source;
         if(!memo[rs]) {
             const obj = {
-                username: rs,
-                channelId: "hack--to-use--the-same-TypeScript OBJ",
-                // client side should replace the link w/ search Query
-                // this hack, and so the empty avatar, is because
-                // the return value typescript is ContentCreator
-                avatar: "",
-                recommendedVideosCount: 1
+                channelId: rs,
+                // TODO we don't have the 
+                // avatar but in a future this should happen
+                recommendedChannelCount: 1
             }
             memo[rs] = obj;
         } else {
-            memo[rs].recommendedVideosCount++;
+            memo[rs].recommendedChannelCount++;
         }
         return memo;
     }, {});
 
     const total = await mongo3.count(mongoc,
-        nconf.get('schema').metadata, { authorSource: channelId });
+        nconf.get('schema').metadata, filter);
 
     const ordered = _.map(_.orderBy(
-        authors, ['recommendedVideosCount'], ['desc']), function(o) {
-            // this hack is because we would generate the link
-            // client side, and sneak into 'channelId' the number of
-            // times the channel got recommended.
-            o.channelId = (o.recommendedVideosCount + "");
-            delete o.recommendedVideosCount;
+        authors, ['recommendedChannelCount'], ['desc']), function(o) {
+            o.percentage = _.round((100 / relatedl.length) * o.recommendedChannelCount, 1);
             return o;
         });
 
-    // TODO considerare options.skip e options.amount
     await mongoc.close();
     return {
+        channelId,
+        authorName: _.first(videos).authorName,
         content: _.take(ordered, options.amount),
         overflow: (_.size(videos) === options.amount),
         total,
+        recommendations: relatedl.length,
         pagination: options,
     }
 };
