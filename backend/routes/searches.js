@@ -1,23 +1,20 @@
 const _ = require('lodash');
 const moment = require('moment');
 const debug = require('debug')('routes:searches');
-const nconf = require('nconf');
 const qustr = require('querystring');
 
 const CSV = require('../lib/CSV');
 const params = require('../lib/params');
-const dbutils = require('../lib/dbutils');
-const utils = require('../lib/utils');
 const automo = require('../lib/automo');
 
-/* this file have been heavily refactored 
+/* this file have been heavily refactored
  * because between 1.4.x and 1.8.x the search
  * result collection method changed; now uses
  * metadata; as part of the refactor, we defined
  * the pages needed to be supported:
- * 
+ *
  * - personal page:
- *      list of search queries made by PubKey 
+ *      list of search queries made by PubKey
  * - personal page/popup:
  *      download search queries in CSV (per PubKey)
  * - experiments:
@@ -33,47 +30,47 @@ async function getSearches(req) {
     // this is used in v.md
     throw new Error("Not yet updated!");
     // this is not updates as have been the CSV -- TODO FIX REFACTOR 
-    const AMOUNT = 400; // THIS differs from MAXRVS because want to load differently CSV than page;
-    const { amount, skip } = params.optionParsing(req.params.paging, AMOUNT);
-    const qs = qustr.unescape(req.params.query);
-    debug("getSearches %s query amount %d skip %d", qs, amount, skip);
-    const entries = await dbutils.getLimitedCollection(nconf.get('schema').searches, {searchTerms: qs}, amount, true);
-    const rv = _.map(entries, function(e) {
-        e.pseudo = utils.string2Food(e.publicKey);
-        if(e.relativeSeconds)
-            e.ttl = moment.duration(e.relativeSeconds * 1000).humanize();
-        return _.omit(e, ['_id', 'publicKey', 'selectedChannel', 'relativeSeconds']);
-    });
-    debug("getSearches: returning %d matches about %s", _.size(rv), req.params.query);
-    return { json: {
-        data: rv,
-        maxAmount: AMOUNT,
-        overflow: (_.size(rv) === AMOUNT) }
-    };
+    // const AMOUNT = 400; // THIS differs from MAXRVS because want to load differently CSV than page;
+    // const { amount, skip } = params.optionParsing(req.params.paging, AMOUNT);
+    // const qs = qustr.unescape(req.params.query);
+    // debug("getSearches %s query amount %d skip %d", qs, amount, skip);
+    // const entries = await dbutils.getLimitedCollection(nconf.get('schema').searches, {searchTerms: qs}, amount, true);
+    // const rv = _.map(entries, function(e) {
+    //     e.pseudo = utils.string2Food(e.publicKey);
+    //     if(e.relativeSeconds)
+    //         e.ttl = moment.duration(e.relativeSeconds * 1000).humanize();
+    //     return _.omit(e, ['_id', 'publicKey', 'selectedChannel', 'relativeSeconds']);
+    // });
+    // debug("getSearches: returning %d matches about %s", _.size(rv), req.params.query);
+    // return { json: {
+    //     data: rv,
+    //     maxAmount: AMOUNT,
+    //     overflow: (_.size(rv) === AMOUNT) }
+    // };
 };
 
 async function getQueries(req) {
     // TO BE REVIEW THIS,  or just to be removed becaue the by Campaign is useless.
     // this is the API used in campaigns like: http://localhost:1313/chiaro/example/
     throw new Error("Not yet updated!");
-    const campaignName = req.params.campaignName;
-    debug("getQueries of %s", campaignName);
-    const entries = await dbutils.getCampaignQuery(
-        nconf.get('schema').campaigns,
-        nconf.get('schema').queries,
-        campaignName
-    );
+    // const campaignName = req.params.campaignName;
+    // debug("getQueries of %s", campaignName);
+    // const entries = await dbutils.getCampaignQuery(
+    //     nconf.get('schema').campaigns,
+    //     nconf.get('schema').queries,
+    //     campaignName
+    // );
 
-    if(!entries)
-        return { json: {
-                error: true,
-                message: "Campaign not found in our DB",
-                request: campaignName,
-            }
-        }
+    // if(!entries)
+    //     return { json: {
+    //             error: true,
+    //             message: "Campaign not found in our DB",
+    //             request: campaignName,
+    //         }
+    //     }
 
-    debug("getQueries success: %s returns %d elements", campaignName, _.size(entries));
-    return { json: entries };
+    // debug("getQueries success: %s returns %d elements", campaignName, _.size(entries));
+    // return { json: entries };
 }
 
 async function getSearchesCSV(req) {
@@ -110,38 +107,38 @@ async function getSearchesCSV(req) {
 async function getSearchesDot(req) {
 
     throw new Error("Not yet updated!");
-    const qs = req.params.idList;
-    const idList = qs.split(',');
-    debug("getSearchesDot take as source id list: %j", idList);
-    const entries = await dbutils.getLimitedCollection(nconf.get('schema').searches, {
-        metadataId: { "$in": idList }
-    }, MAXRVS, true);
+    // const qs = req.params.idList;
+    // const idList = qs.split(',');
+    // debug("getSearchesDot take as source id list: %j", idList);
+    // const entries = await dbutils.getLimitedCollection(nconf.get('schema').searches, {
+    //     metadataId: { "$in": idList }
+    // }, MAXRVS, true);
 
-    if(_.size(entries) === MAXRVS)
-        debug("paging not managed in getSearchesDot, please review!!");
+    // if(_.size(entries) === MAXRVS)
+    //     debug("paging not managed in getSearchesDot, please review!!");
 
-    const data = _.map(entries, function(e) {
-        e.pseudo = utils.string2Food(e.publicKey);
-        if(e.relativeSeconds)
-            e.ttl = moment.duration(e.relativeSeconds * 1000).humanize();
-        return _.omit(e, ['_id', 'publicKey', 'selectedChannel', 'relativeSeconds']);
-    });
+    // const data = _.map(entries, function(e) {
+    //     e.pseudo = utils.string2Food(e.publicKey);
+    //     if(e.relativeSeconds)
+    //         e.ttl = moment.duration(e.relativeSeconds * 1000).humanize();
+    //     return _.omit(e, ['_id', 'publicKey', 'selectedChannel', 'relativeSeconds']);
+    // });
 
-    if(!data.length)
-        return { json: { error: true, message: "no data returned?"}};
+    // if(!data.length)
+    //     return { json: { error: true, message: "no data returned?"}};
 
-    const dot = Object({links: [], nodes: []})
-    dot.links = _.map(data, function(video) { return { target: video.pseudo, source: video.videoId, value: 1} });
+    // const dot = Object({links: [], nodes: []})
+    // dot.links = _.map(data, function(video) { return { target: video.pseudo, source: video.videoId, value: 1} });
 
-    const vList = _.uniq(_.map(data, function(video) { return video.videoId }));
-    const videoObject = _.map(vList, function(v) { return { id: v, group: 1 }});
-    const pList = _.uniq(_.map(data, function(video) { return video.pseudo }));
-    const pseudoObject = _.map(pList, function(v) { return { id: v, group: 2 }});
-    dot.nodes = _.concat(videoObject, pseudoObject);
+    // const vList = _.uniq(_.map(data, function(video) { return video.videoId }));
+    // const videoObject = _.map(vList, function(v) { return { id: v, group: 1 }});
+    // const pList = _.uniq(_.map(data, function(video) { return video.pseudo }));
+    // const pseudoObject = _.map(pList, function(v) { return { id: v, group: 2 }});
+    // dot.nodes = _.concat(videoObject, pseudoObject);
 
-    debug("getSearchesDot: params %d metadataId(s) = %d videos = %d nodes and %d links",
-        idList.length, data.length, dot.nodes.length, dot.links.length);
-    return { json: dot };
+    // debug("getSearchesDot: params %d metadataId(s) = %d videos = %d nodes and %d links",
+    //     idList.length, data.length, dot.nodes.length, dot.links.length);
+    // return { json: dot };
 }
 
 async function getSearchKeywords(req) {
@@ -177,16 +174,16 @@ async function getSearchDetails(req) {
     throw new Error("Not yet updated!");
     /* this API is used to ask for individual metadataId, and by a visualization that want to 
      * visualize small snippet in a look-and-feel close to the one of youtube */
-    const ids = req.params.listof.split(',');
-    debug("getSearchDetails got a request for %d searches.metadataId", ids.length);
-    const { structured, info } = await dbutils.compareSearches(nconf.get('schema').searches, ids);
-    debug("Returning %d search results with: %j videos (forced limit of 200 per metadataId)",
-        _.size(_.keys(structured)), _.values(structured).map(_.size), 
-    );
-    return { json: {
-        structured,
-        info,
-    }};
+    // const ids = req.params.listof.split(',');
+    // debug("getSearchDetails got a request for %d searches.metadataId", ids.length);
+    // const { structured, info } = await dbutils.compareSearches(nconf.get('schema').searches, ids);
+    // debug("Returning %d search results with: %j videos (forced limit of 200 per metadataId)",
+    //     _.size(_.keys(structured)), _.values(structured).map(_.size), 
+    // );
+    // return { json: {
+    //     structured,
+    //     info,
+    // }};
 }
 
 
