@@ -3,6 +3,7 @@
   "version": "1.7.5",
   "description": "youtube.tracking.exposed - backend data collector",
   "scripts": {
+    "build": "tsc -b",
     "watch": "key=fuffa DEBUG=\"*,-express:*,-body-parser:*,-follow-redirects\" ts-node-dev -r tsconfig-paths/register --respawn --transpile-only bin/server",
     "start": "gitlog=$(bash -c 'git log -30 --stat --oneline --decorate --graph') DEBUG=\"*,-body-parser:*,-express:*,-lib:*,-follow-redirects\" ts-node -r tsconfig-paths/register bin/server",
     "parserv": "DEBUG=\"*,-pubtimeAPI\" ts-node bin/parserv2.js",
