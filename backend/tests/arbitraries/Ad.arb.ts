@@ -10,5 +10,6 @@ import { Ad } from "../../models/Ad";
 export const AdArb = getArbitrary(Ad).map((ad) => ({
   ...ad,
   id: fc.sample(fc.uuid(), 1)[0],
+  sponsoredSite: fc.sample(fc.webUrl(), 1)[0],
   savingTime: new Date(),
 }));

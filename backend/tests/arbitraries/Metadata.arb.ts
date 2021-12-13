@@ -11,9 +11,15 @@ import * as t from "io-ts";
  **/
 
 export const MetadataArb = getArbitrary(
-  t.strict({ ...Metadata.type.props, savingTime: t.unknown })
+  t.strict({
+    ...Metadata.type.props,
+    clientTime: t.unknown,
+    savingTime: t.unknown,
+    publicationTime: t.unknown
+  })
 ).map((ad) => ({
   ...ad,
   id: fc.sample(fc.uuid(), 1)[0],
   savingTime: fc.sample(fc.date(), 1)[0],
+  clientTime: fc.sample(fc.date(), 1)[0],
 }));

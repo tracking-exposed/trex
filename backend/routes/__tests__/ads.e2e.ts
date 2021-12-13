@@ -107,24 +107,22 @@ describe("The ADS API", () => {
       expect(body).toEqual([]);
     });
 
-    it.skip("succeeds using videoId", async () => {
+    it("succeeds using videoId", async () => {
       const videoId = fc.sample(fc.uuid(), 1)[0];
       const [metadata] = fc.sample(MetadataArb, 1).map((meta) => ({
         ...meta,
-        nature: {
-          type: 'video',
-          videoId,
-        },
+        videoId,
         savingTime: sub(new Date(), { weeks: 3 }),
       }));
       const ads = fc.sample(AdArb, 5).map((ad) => ({
         ...ad,
-        metadataId: metadata.metadataId,
-        videoId,
+        metadataId: metadata.id,
+        nature: {
+          type: 'video',
+          videoId
+        },
         savingTime: sub(new Date(), { weeks: 3 }),
       }));
-
-      console.log({ metadata, ads });
 
       // insert video
       await test.mongo3.insertMany(
@@ -140,7 +138,7 @@ describe("The ADS API", () => {
       );
 
       const { body } = await test.app
-        .get(`/api/v2/ad/video/${video.videoId}`)
+        .get(`/api/v2/ad/video/${videoId}`)
         .expect(200);
 
       expect(body).toHaveLength(5);
