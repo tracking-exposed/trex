@@ -5,7 +5,7 @@ jest.mock("fetch-opengraph");
 
 import { VideoArb } from "@shared/arbitraries/Video.arb";
 import { AdArb } from "../../tests/arbitraries/Ad.arb";
-import { MetadataArb } from "../../tests/arbitraries/Metadata.arb";
+import { VideoMetadataArb } from "../../tests/arbitraries/Metadata.arb";
 import { fc } from "@shared/test";
 import { v4 as uuid } from "uuid";
 import { GetTest, Test } from "../../tests/Test";
@@ -109,7 +109,7 @@ describe("The ADS API", () => {
 
     it("succeeds using videoId", async () => {
       const videoId = fc.sample(fc.uuid(), 1)[0];
-      const [metadata] = fc.sample(MetadataArb, 1).map((meta) => ({
+      const [metadata] = fc.sample(VideoMetadataArb, 1).map((meta) => ({
         ...meta,
         videoId,
         savingTime: sub(new Date(), { weeks: 3 }),

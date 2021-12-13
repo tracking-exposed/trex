@@ -1,11 +1,11 @@
 import * as t from "io-ts";
 
-const ChannelType = t.literal("channel");
-const HashtagType = t.literal("hashtag");
-const SearchType = t.literal("search");
-const VideoType = t.literal("video");
-const HomeType = t.literal("home");
-const UnknownType = t.literal("unknown");
+export const ChannelType = t.literal("channel");
+export type ChannelType = t.TypeOf<typeof ChannelType>
+export const HashtagType = t.literal("hashtag");
+export const SearchType = t.literal("search");
+export const VideoType = t.literal("video");
+export const HomeType = t.literal("home");
 
 const Nature = t.union(
   [
@@ -28,9 +28,6 @@ const Nature = t.union(
     t.strict({
       type: HomeType,
     }),
-    t.strict({
-      type: UnknownType,
-    }),
   ],
   "Nature"
 );
@@ -38,7 +35,7 @@ const Nature = t.union(
 type Nature = t.TypeOf<typeof Nature>;
 
 export const NatureType = t.union(
-  [ChannelType, HashtagType, SearchType, VideoType, HomeType, UnknownType],
+  [ChannelType, HashtagType, SearchType, VideoType, HomeType],
   "NatureType"
 );
 

@@ -10,12 +10,13 @@ import * as t from "io-ts";
  *
  **/
 
-export const MetadataArb = getArbitrary(
+export const VideoMetadataArb = getArbitrary(
   t.strict({
-    ...Metadata.type.props,
+    ...Metadata.types[0].type.props,
+    ...Metadata.types[1].types[0].type.props,
     clientTime: t.unknown,
     savingTime: t.unknown,
-    publicationTime: t.unknown
+    publicationTime: t.unknown,
   })
 ).map((ad) => ({
   ...ad,
