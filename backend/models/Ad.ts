@@ -1,38 +1,48 @@
 import * as t from "io-ts";
 
+const ChannelType = t.literal("channel");
+const HashtagType = t.literal("hashtag");
+const SearchType = t.literal("search");
+const VideoType = t.literal("video");
+const HomeType = t.literal("home");
+const UnknownType = t.literal("unknown");
+
 const Nature = t.union(
   [
     t.strict({
-      type: t.literal("leaf"),
-      query: t.unknown,
-    }),
-    t.strict({
-      type: t.literal("channel"),
+      type: ChannelType,
       authorSource: t.string,
     }),
     t.strict({
-      type: t.literal("hashtag"),
+      type: HashtagType,
       hashtag: t.string,
     }),
     t.strict({
-      type: t.literal("search"),
+      type: SearchType,
       query: t.unknown,
     }),
     t.strict({
-      type: t.literal("video"),
+      type: VideoType,
       videoId: t.string,
     }),
     t.strict({
-      type: t.literal("home"),
+      type: HomeType,
     }),
     t.strict({
-      type: t.literal("unknown"),
+      type: UnknownType,
     }),
   ],
   "Nature"
 );
 
 type Nature = t.TypeOf<typeof Nature>;
+
+export const NatureType = t.union(
+  [ChannelType, HashtagType, SearchType, VideoType, HomeType, UnknownType],
+  "NatureType"
+);
+
+export type NatureType = t.TypeOf<typeof NatureType>;
 
 export const Ad = t.strict(
   {
