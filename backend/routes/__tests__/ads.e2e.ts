@@ -19,9 +19,9 @@ describe("The ADS API", () => {
     test = await GetTest();
   });
 
-  afterAll(async() => {
-    await test.mongo.close()
-  })
+  afterAll(async () => {
+    await test.mongo.close();
+  });
 
   describe("Get by channel", () => {
     it("fails using channelId without date range", async () => {
@@ -114,12 +114,18 @@ describe("The ADS API", () => {
         videoId,
         savingTime: sub(new Date(), { weeks: 3 }),
       }));
-      const ads = fc.sample(AdArb, 5).map((ad) => ({
+      const ads = fc.sample(AdArb, 5).map((ad, i) => ({
         ...ad,
+        sponsoredSite:
+          i % 2 === 0
+            ? ad.sponsoredSite
+            : i % 3 === 0
+            ? undefined
+            : ad.sponsoredSite.concat(`/`),
         metadataId: metadata.id,
         nature: {
-          type: 'video',
-          videoId
+          type: "video",
+          videoId,
         },
         savingTime: sub(new Date(), { weeks: 3 }),
       }));

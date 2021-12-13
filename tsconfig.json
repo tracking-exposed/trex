@@ -4,6 +4,7 @@
     "strictNullChecks": true,
     "allowUnusedLabels": false,
     "isolatedModules": true,
+    "rootDir": "./"
   },
   "exclude": ["**/node_modules/*", "**/build/*"]
 }
