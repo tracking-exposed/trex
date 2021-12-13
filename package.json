@@ -16,6 +16,7 @@
   "scripts": {
     "clean": "yarn workspaces foreach run clean",
     "lint": "yarn workspaces foreach run lint",
+    "build": "yarn workspaces foreach run build",
     "test": "jest",
     "shared": "yarn workspace shared",
     "backend": "yarn workspace yttrex-backend",
