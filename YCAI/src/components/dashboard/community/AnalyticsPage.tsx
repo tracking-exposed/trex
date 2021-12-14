@@ -1,14 +1,13 @@
 import { Card, CardContent, CardHeader, useTheme } from '@material-ui/core';
 import Grid from '@material-ui/core/Grid';
 import { ContentCreator } from '@shared/models/ContentCreator';
-import { CreatorStats } from '@shared/models/CreatorStats';
+import * as QR from 'avenger/lib/QueryResult';
 import { declareQueries, WithQueries } from 'avenger/lib/react';
 import { pipe } from 'fp-ts/lib/function';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import {
   ccRelatedUsers,
-  creatorStats,
   profile,
 } from '../../../state/dashboard/creator.queries';
 import { makeStyles } from '../../../theme';
@@ -19,11 +18,11 @@ import { StatsCard } from '../../common/StatsCard';
 import { ADVChannelStatsBox } from './ADVChannelStatsBox';
 import { CCRelatedUserList } from './CCRelatedUserList';
 import { DonutChart } from './DonutChart';
-import * as QR from 'avenger/lib/QueryResult';
 
 const useStyles = makeStyles((theme) => ({
   recommendabilityScore: {
     background: theme.palette.primary.main,
+    borderRadius: theme.spacing(1),
     '& .MuiCardHeader-content .MuiCardHeader-title': {
       color: theme.palette.common.white,
       ...theme.typography.h4,
@@ -61,17 +60,16 @@ const useStyles = makeStyles((theme) => ({
 
 interface CreatorAnalyticsPageProps {
   profile?: ContentCreator;
-  stats: CreatorStats;
 }
 
 const CreatorAnalyticsPage: React.FC<CreatorAnalyticsPageProps> = ({
   profile,
-  stats,
 }) => {
   const classes = useStyles();
   const theme = useTheme();
   const { t } = useTranslation();
 
+  const amount = 5;
   return (
     <Grid item md={12}>
       {profile === undefined ? (
@@ -79,38 +77,30 @@ const CreatorAnalyticsPage: React.FC<CreatorAnalyticsPageProps> = ({
       ) : (
         <WithQueries
           queries={{ stats: ccRelatedUsers }}
-          params={{ stats: { params: { amount: 5, skip: 0 } } }}
+          params={{ stats: { params: { amount, skip: 0 } } }}
           render={QR.fold(LazyFullSizeLoader, ErrorBox, ({ stats }) => {
             return (
               <Grid container spacing={2}>
-                <Grid item md={4} sm={6}>
+                <Grid item md={3} sm={6}>
                   <Card className={classes.recommendations}>
-                    <CardHeader
-                      title={t('analytics:recommendations_title')}
-                      style={{
-                        textAlign: 'center',
-                      }}
-                    />
+                    <CardHeader title={t('analytics:recommendations_title')} />
                     <CardContent>
                       <Grid
                         container
-                        spacing={2}
                         direction="column"
-                        alignContent="center"
+                        alignContent="flex-start"
                         justifyContent="center"
                       >
-                        <Grid item md={10}>
+                        <Grid item sm={12}>
                           <StatsCard
                             header={t('analytics:total_metadata')}
                             count={stats.totalMetadata}
                             color={theme.palette.primary.main}
                           />
                         </Grid>
-                        <Grid item md={10}>
+                        <Grid item sm={12}>
                           <StatsCard
-                            header={t(
-                              'analytics:total_recommendations'
-                            )}
+                            header={t('analytics:total_recommendations')}
                             count={stats.totalRecommendations}
                           />
                         </Grid>
@@ -135,21 +125,21 @@ const CreatorAnalyticsPage: React.FC<CreatorAnalyticsPageProps> = ({
                         }}
                         colors={{
                           recommended: theme.palette.common.white,
-                          other: theme.palette.grey[500],
+                          other: theme.palette.grey[300],
                         }}
                       />
                     </CardContent>
                   </Card>
                 </Grid>
 
-                <Grid item md={4}>
+                <Grid item md={5}>
                   <Card className={classes.relatedChannels}>
                     <CardHeader
                       title={t('analytics:top_n_cc_related_to_your_channel', {
-                        count: 5,
+                        count: amount,
                       })}
                     />
-                    <CardContent>
+                    <CardContent style={{ paddingTop: 0 }}>
                       <CCRelatedUserList channels={stats.content} />
                     </CardContent>
                   </Card>
@@ -167,16 +157,16 @@ const CreatorAnalyticsPage: React.FC<CreatorAnalyticsPageProps> = ({
   );
 };
 
-const withQueries = declareQueries({ profile, creatorStats });
+const withQueries = declareQueries({ profile });
 
 export const AnalyticsPage = withQueries(({ queries }): React.ReactElement => {
   return pipe(
     queries,
-    QR.fold(LazyFullSizeLoader, ErrorBox, ({ profile, creatorStats }) => {
+    QR.fold(LazyFullSizeLoader, ErrorBox, ({ profile }) => {
       return (
         <Grid container spacing={3}>
           <Grid item md={12}>
-            <CreatorAnalyticsPage profile={profile} stats={creatorStats} />
+            <CreatorAnalyticsPage profile={profile} />
           </Grid>
         </Grid>
       );

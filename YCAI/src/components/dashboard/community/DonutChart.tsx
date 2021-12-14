@@ -17,12 +17,10 @@ interface DonutChartProps<D extends Data> {
 
 const useStyles = makeStyles<YCAITheme>((theme) => ({
   donutChart: {
-    fontSize: theme.typography.h5.fontSize,
+    fontSize: theme.typography.h2.fontSize,
     color: theme.palette.primary.main,
     '& .c3-chart-arcs > .c3-chart-arcs-title': {
-      fontFamily: theme.typography.h3.fontFamily,
-      fontWeight: 600,
-      fontSize: theme.typography.h3.fontSize,
+      ...theme.typography.h2,
       fill: theme.palette.common.white,
     },
   },
@@ -61,7 +59,7 @@ export const DonutChart = <D extends Data>({
         label: {
           show: false,
         },
-        width: 20
+        width: 20,
       },
     };
 

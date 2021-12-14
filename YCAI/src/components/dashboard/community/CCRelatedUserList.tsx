@@ -5,7 +5,7 @@ import {
   List,
   ListItem,
   Typography,
-  useTheme
+  useTheme,
 } from '@material-ui/core';
 import { ChannelRelated } from '@shared/models/ChannelRelated';
 import * as React from 'react';
@@ -16,28 +16,30 @@ import { EmptyList } from '../../common/EmptyList';
 const useStyles = makeStyles((theme) => ({
   root: {},
   listItem: {
-    height: 40,
     width: '100%',
+    '& .MuiLinearProgress-root': {
+      border: `2px solid ${theme.palette.grey[100]}`,
+    },
     '& .MuiLinearProgress-bar': {
-      backgroundColor: theme.palette.grey[100],
+      backgroundColor: theme.palette.grey[500],
     },
     '& :hover .MuiLinearProgress-bar': {
       backgroundColor: theme.palette.primary.main,
     },
   },
   bar: {
-    height: 30,
-    borderRadius: 5,
+    height: 15,
+    borderRadius: theme.spacing(1),
     backgroundColor: 'transparent',
   },
 }));
 
 interface CCRelatedUserListProps {
-  channels: ChannelRelated[]
+  channels: ChannelRelated[];
 }
 
 export const CCRelatedUserList: React.FC<CCRelatedUserListProps> = ({
-  channels
+  channels,
 }) => {
   const { t } = useTranslation();
   const theme = useTheme();
@@ -47,16 +49,27 @@ export const CCRelatedUserList: React.FC<CCRelatedUserListProps> = ({
     return <EmptyList resource={t('creator:title')} />;
   }
   return (
-    <List className={classes.root}>
+    <List className={classes.root} disablePadding={true}>
       {channels.map((u, i) => (
         <ListItem key={u.channelId} className={classes.listItem}>
-          <Box style={{ height: 40, width: '100%', position: 'absolute' }}>
+          <Box style={{ width: '100%' }}>
+            <Link
+              href={`https://www.youtube.com/results?search_query=${u.channelId}`}
+              target="_blank"
+              rel="noreferrer"
+              variant="h6"
+              style={{
+                paddingBottom: theme.spacing(1),
+                color: theme.palette.grey[500],
+              }}
+            >
+              {u.channelId}
+            </Link>
             <Box
               display="flex"
               alignItems="center"
               style={{
                 width: '100%',
-                position: 'absolute',
                 height: '100%',
               }}
             >
@@ -69,26 +82,12 @@ export const CCRelatedUserList: React.FC<CCRelatedUserListProps> = ({
               </Box>
               <Box minWidth={35}>
                 <Typography
-                  variant="body2"
+                  variant="body1"
                   color="textSecondary"
+                  style={{ marginBottom: 10 }}
                 >{`${Math.round(u.percentage)}%`}</Typography>
               </Box>
             </Box>
-
-            <Link
-              href={`https://www.youtube.com/results?search_query=${u.channelId}`}
-              target="_blank"
-              rel="noreferrer"
-              variant="h6"
-              color="textSecondary"
-              style={{
-                position: 'absolute',
-                height: 20,
-                padding: theme.spacing(1),
-              }}
-            >
-              {u.channelId}
-            </Link>
           </Box>
         </ListItem>
       ))}
