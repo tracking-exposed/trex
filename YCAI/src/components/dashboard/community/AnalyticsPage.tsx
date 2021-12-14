@@ -122,19 +122,36 @@ const CreatorAnalyticsPage: React.FC<CreatorAnalyticsPageProps> = ({
         <LinkAccountButton />
       ) : (
         <Grid container spacing={2}>
-          <Grid item md={4}>
-            <Card className={classes.relatedChannels}>
+          <Grid item md={4} sm={6}>
+            <Card className={classes.recommendations}>
               <CardHeader
-                title={t('analytics:top_n_cc_related_to_your_channel', {
-                  count: 5,
-                })}
+                title={t('analytics:recommendations_title')}
+                style={{
+                  textAlign: 'center',
+                }}
               />
               <CardContent>
-                <CCRelatedUserList
-                  channelId={profile.channelId}
-                  amount={5}
-                  skip={0}
-                />
+                <Grid
+                  container
+                  spacing={2}
+                  direction="column"
+                  alignContent="center"
+                  justifyContent="center"
+                >
+                  <Grid item md={10}>
+                    <StatsCard
+                      header={t('analytics:total_recommendations')}
+                      count={recommendations.total}
+                      color={theme.palette.primary.main}
+                    />
+                  </Grid>
+                  <Grid item md={10}>
+                    <StatsCard
+                      header={t('analytics:recommendations_for_other_channels')}
+                      count={recommendations.other.length}
+                    />
+                  </Grid>
+                </Grid>
               </CardContent>
             </Card>
           </Grid>
@@ -166,36 +183,19 @@ const CreatorAnalyticsPage: React.FC<CreatorAnalyticsPageProps> = ({
             </Card>
           </Grid>
 
-          <Grid item md={4} sm={6}>
-            <Card className={classes.recommendations}>
+          <Grid item md={4}>
+            <Card className={classes.relatedChannels}>
               <CardHeader
-                title={t('analytics:recommendations_title')}
-                style={{
-                  textAlign: 'center',
-                }}
+                title={t('analytics:top_n_cc_related_to_your_channel', {
+                  count: 5,
+                })}
               />
               <CardContent>
-                <Grid
-                  container
-                  spacing={2}
-                  direction="column"
-                  alignContent="center"
-                  justifyContent="center"
-                >
-                  <Grid item md={10}>
-                    <StatsCard
-                      header={t('analytics:total_recommendations')}
-                      count={recommendations.total}
-                      color={theme.palette.primary.main}
-                    />
-                  </Grid>
-                  <Grid item md={10}>
-                    <StatsCard
-                      header={t('analytics:recommendations_for_other_channels')}
-                      count={recommendations.other.length}
-                    />
-                  </Grid>
-                </Grid>
+                <CCRelatedUserList
+                  channelId={profile.channelId}
+                  amount={5}
+                  skip={0}
+                />
               </CardContent>
             </Card>
           </Grid>
