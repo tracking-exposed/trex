@@ -1,9 +1,12 @@
-import { Endpoint } from "ts-endpoint";
 import * as t from "io-ts";
+import { Endpoint } from "ts-endpoint";
 import { AuthorizationHeader, AuthResponse } from "../../models/Auth";
+import { GetRelatedChannelsOutput } from "../../models/ChannelRelated";
 import { ContentCreator } from "../../models/ContentCreator";
 import { CreatorStats } from "../../models/CreatorStats";
-import { Recommendation, PartialRecommendation } from "../../models/Recommendation";
+import {
+  PartialRecommendation, Recommendation
+} from "../../models/Recommendation";
 import { Video } from "../../models/Video";
 
 const ChannelType = t.literal("channel");
@@ -83,7 +86,7 @@ const CreatorRelatedChannels = Endpoint({
     Params: t.type({ channelId: t.string, amount: t.number, skip: t.number }),
     Headers: AuthorizationHeader,
   },
-  Output: t.strict({ content: t.array(ContentCreator) }),
+  Output: GetRelatedChannelsOutput,
 });
 
 const UpdateVideo = Endpoint({

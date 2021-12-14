@@ -133,7 +133,8 @@ const resources: CustomTypeOptions['resources'] = {
       'Where your videos appears as recommended?',
     recommendations_title: 'Recommendations Analyzed',
     recommendations_for_other_channels: 'From other channels',
-    total_recommendations: 'Total',
+    total_recommendations: 'Total recommendations',
+    total_metadata: 'Total metadata',
     notifications_title: 'Notifications',
     top_n_cc_related_to_your_channel:
       'Top {{count}} CC related to your channel',

@@ -1,7 +1,7 @@
 import { Card, CardContent, Typography } from '@material-ui/core';
-import { YCAITheme, makeStyles, useTheme } from '../../theme';
-import * as React from 'react';
 import * as NumberUtils from '@shared/utils/number.utils';
+import * as React from 'react';
+import { makeStyles, useTheme } from '../../theme';
 
 interface StatsBoxProps {
   header: string;
@@ -10,9 +10,10 @@ interface StatsBoxProps {
   color?: string;
 }
 
-const useStyles = makeStyles<YCAITheme, { color: string }>((theme) => ({
+const useStyles = makeStyles<{ color: string }>((theme) => ({
   root: {
     marginBottom: 20,
+    width: '100%',
     border: (props) => `1px solid ${props.color}`,
     '&:hover': {
       backgroundColor: theme.palette.grey[100],
@@ -31,13 +32,15 @@ export const StatsCard: React.FC<StatsBoxProps> = ({
   color,
 }) => {
   const theme = useTheme();
-  const classes = useStyles({ color: color ?? theme.palette.text.primary });
+  const classes = useStyles({ color: color ?? theme.palette.grey[500] });
   return (
-    <Card className={classes.root}>
-      <CardContent className={classes.content}>
+    <Card className={classes.root} elevation={0}>
+      <CardContent className={classes.content} style={{ paddingBottom: 0 }}>
         {icon ?? null}
         <Typography variant="h5">{header}</Typography>
-        <Typography variant="h3">{NumberUtils.formatter.format(count)}</Typography>
+        <Typography variant="h2" style={{ marginBottom: 0 }}>
+          {NumberUtils.formatter.format(count)}
+        </Typography>
       </CardContent>
     </Card>
   );

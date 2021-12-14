@@ -1,42 +1,96 @@
-import * as QR from 'avenger/lib/QueryResult';
-import { WithQueries } from 'avenger/lib/react';
+import {
+  Box,
+  LinearProgress,
+  Link,
+  List,
+  ListItem,
+  Typography,
+  useTheme,
+} from '@material-ui/core';
+import { ChannelRelated } from '@shared/models/ChannelRelated';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
-import { ccRelatedUsers } from '../../../state/dashboard/creator.queries';
+import { makeStyles } from '../../../theme';
 import { EmptyList } from '../../common/EmptyList';
-import { ErrorBox } from '../../common/ErrorBox';
-import { LazyFullSizeLoader } from '../../common/FullSizeLoader';
-import { UserList } from './UserList';
+
+const useStyles = makeStyles((theme) => ({
+  root: {},
+  listItem: {
+    width: '100%',
+    '& .MuiLinearProgress-root': {
+      border: `2px solid ${theme.palette.grey[100]}`,
+    },
+    '& .MuiLinearProgress-bar': {
+      backgroundColor: theme.palette.grey[500],
+    },
+    '& :hover .MuiLinearProgress-bar': {
+      backgroundColor: theme.palette.primary.main,
+    },
+  },
+  bar: {
+    height: 15,
+    borderRadius: theme.spacing(1),
+    backgroundColor: 'transparent',
+  },
+}));
 
 interface CCRelatedUserListProps {
-  channelId: string;
-  amount: number;
-  skip: number;
+  channels: ChannelRelated[];
 }
 
 export const CCRelatedUserList: React.FC<CCRelatedUserListProps> = ({
-  amount,
-  skip,
+  channels,
 }) => {
   const { t } = useTranslation();
+  const theme = useTheme();
+  const classes = useStyles();
 
+  if (channels.length === 0) {
+    return <EmptyList resource={t('creator:title')} />;
+  }
   return (
-    <WithQueries
-      queries={{ ccRelatedUsers }}
-      params={{ ccRelatedUsers: { params: { amount, skip } } }}
-      render={QR.fold(LazyFullSizeLoader, ErrorBox, ({ ccRelatedUsers }) => {
-        if (ccRelatedUsers.length === 0) {
-          return <EmptyList resource={t('creator:title')} />;
-        }
-        return (
-          <UserList
-            users={ccRelatedUsers}
-            onUserClick={() => {
-              alert('clicked');
-            }}
-          />
-        );
-      })}
-    />
+    <List className={classes.root} disablePadding={true}>
+      {channels.map((u, i) => (
+        <ListItem key={u.channelId} className={classes.listItem}>
+          <Box style={{ width: '100%' }}>
+            <Link
+              href={`https://www.youtube.com/results?search_query=${u.channelId}`}
+              target="_blank"
+              rel="noreferrer"
+              variant="h6"
+              style={{
+                paddingBottom: theme.spacing(1),
+                color: theme.palette.grey[500],
+              }}
+            >
+              {u.channelId}
+            </Link>
+            <Box
+              display="flex"
+              alignItems="center"
+              style={{
+                width: '100%',
+                height: '100%',
+              }}
+            >
+              <Box width="100%" mr={1}>
+                <LinearProgress
+                  className={classes.bar}
+                  variant="determinate"
+                  value={u.percentage}
+                />
+              </Box>
+              <Box minWidth={35}>
+                <Typography
+                  variant="body1"
+                  color="textSecondary"
+                  style={{ marginBottom: 10 }}
+                >{`${Math.round(u.percentage)}%`}</Typography>
+              </Box>
+            </Box>
+          </Box>
+        </ListItem>
+      ))}
+    </List>
   );
 };
