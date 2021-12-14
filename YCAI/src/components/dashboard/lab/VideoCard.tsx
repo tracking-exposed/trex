@@ -15,7 +15,6 @@ import { useTranslation } from 'react-i18next';
 
 import {
   getYTMaxResThumbnailById,
-  getYTVideoURLById,
 } from '../../../utils/yt.utils';
 
 import { YCAITheme } from '../../../theme';
@@ -40,6 +39,11 @@ const useStyles = makeStyles<YCAITheme>((theme) => ({
       cursor: 'pointer',
     },
     boxShadow: "none",
+  },
+  link: {
+    '&:hover': {
+      cursor: 'pointer',
+    },
   },
   customBox: {
     display: '-webkit-box',
@@ -79,7 +83,8 @@ export const VideoCard: React.FC<VideoCardProps> = ({
       <CardContent style={{ paddingBottom: theme.spacing(0.3) }} classes={{root: classes.customBox}}>
         <Link
           color="textSecondary"
-          href={getYTVideoURLById(videoId)}
+          className={classes.link}
+          onClick={openRecommendations}
           rel="noreferrer"
           target="_blank"
           underline="none"
