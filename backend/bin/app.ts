@@ -8,7 +8,7 @@ import { apiList } from "../lib/api";
 const logger = debug('yttrex:api');
 const logAPICount = { requests: {}, responses: {}, errors: {} };
 
-function loginc(kind, fname) {
+function loginc(kind: string, fname: string): void {
   logAPICount[kind][fname] = (
     logAPICount[kind][fname] ?
     logAPICount[kind][fname]++ : 1
@@ -74,10 +74,11 @@ interface MakeAppContext {
 }
 
 /* one log entry per minute about the amount of API absolved */
-setInterval(async () => {
+setInterval(() => {
   let print = false;
   _.each(_.keys(logAPICount), function(k) {
     if(!_.keys(logAPICount[k]).length)
+      // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
       delete logAPICount[k];
     else
       print = true;
