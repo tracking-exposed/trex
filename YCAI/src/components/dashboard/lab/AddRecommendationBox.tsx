@@ -37,6 +37,9 @@ const useStyles = makeStyles<YCAITheme>(theme => ({
       color: theme.palette.text.secondary,
     }
   },
+  title: {
+    marginBottom: theme.spacing(1),
+  },
   addButton: {
     marginLeft: theme.spacing(3),
     color: theme.palette.common.white,
@@ -63,6 +66,7 @@ const AddRecommendationBox: React.FC<AddRecommendationBoxProps> = ({ videoId }) 
         <CardContent style={{paddingLeft: '0px', paddingTop: '0px'}}>
         <Divider light style={{marginBottom: '24px' }}/>
           <Typography
+            className={classes.title}
             color="primary"
             component="h2"
             variant="h5"
