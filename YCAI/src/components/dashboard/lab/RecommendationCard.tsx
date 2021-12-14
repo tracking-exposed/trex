@@ -7,11 +7,13 @@ import {
   IconButton,
   Card,
   Grid,
+  Typography,
 } from '@material-ui/core';
 
 import {
   ArrowUpward as ArrowUpwardIcon,
   ArrowDownward as ArrowDownwardIcon,
+  Link as LinkIcon,
 } from '@material-ui/icons';
 
 import { makeStyles } from '@material-ui/styles';
@@ -25,6 +27,8 @@ import { YCAITheme } from '../../../theme';
 import CharLimitedTypography from '../../common/CharLimitedTypography';
 import Image from '../../common/Image';
 import EditRecommendation from './EditRecommendation';
+import { isYTURL } from '../../../utils/yt.utils';
+import { getHostFromURL } from '../../../utils/location.utils';
 
 interface RecommendationCardProps {
   videoId: string;
@@ -75,11 +79,27 @@ const useStyles = makeStyles<YCAITheme>((theme) => ({
       marginRight: theme.spacing(1),
     },
   },
+  arrowButton: {
+    '&:disabled': {
+      color: theme.palette.grey[600],
+    },
+  },
   button: {
+    fontWeight: 'bold',
     lineHeight: 1,
     marginRight: theme.spacing(2),
     minWidth: 0,
     padding: 0,
+  },
+  source: {
+    alignItems: 'center',
+    color: theme.palette.grey[600],
+    display: 'flex',
+    fontSize: '0.8rem',
+    '& svg': {
+      marginTop: -1,
+      marginRight: theme.spacing(.5),
+    },
   },
   clamped: {
     display: '-webkit-box',
@@ -87,6 +107,9 @@ const useStyles = makeStyles<YCAITheme>((theme) => ({
     lineClamp: 2,
     wordBreak: 'keep-all',
     overflow: 'hidden'
+  },
+  description: {
+    color: theme.palette.grey[600],
   }
 }));
 
@@ -99,6 +122,9 @@ export const RecommendationCard: React.FC<RecommendationCardProps> = ({
 }) => {
   const { t } = useTranslation();
   const classes = useStyles();
+
+  const isYT = isYTURL(data.url);
+  const isExternal = !isYT;
 
   return (
     <Card className={classes.root}>
@@ -121,19 +147,24 @@ export const RecommendationCard: React.FC<RecommendationCardProps> = ({
             display="flex"
             flexDirection="column"
           >
+            <CharLimitedTypography
+              className={`${classes.title} ${classes.clamped}`}
+              color="textSecondary"
+              component="h6"
+              gutterBottom
+              limit={titleMaxLength}
+              variant="h6"
+            >
+              {data.title}
+            </CharLimitedTypography>
+            {isExternal && (<Typography className={classes.source}>
+              <LinkIcon />
+              {getHostFromURL(data.url)}
+            </Typography>)}
+
+            <Box flexGrow={1} display="flex" alignItems="center">
               <CharLimitedTypography
-                className={`${classes.title} ${classes.clamped}`}
-                color="textSecondary"
-                component="h6"
-                gutterBottom
-                limit={titleMaxLength}
-                variant="h6"
-              >
-                {data.title}
-              </CharLimitedTypography>
-            <Box flexGrow={1}>
-              <CharLimitedTypography
-                className={classes.clamped}
+                className={`${classes.description} ${classes.clamped}`}
                 color="textSecondary"
                 limit={descriptionMaxLength}
                 variant="body2"
@@ -170,6 +201,7 @@ export const RecommendationCard: React.FC<RecommendationCardProps> = ({
           <IconButton
               aria-label={t('actions:move_recommendation_up')}
               color="primary"
+              className={classes.arrowButton}
               disabled={onMoveUpClick === false}
               // there seems to be an eslint bug,
               // there is no way to get rid of all the warnings whatever I do
@@ -182,6 +214,7 @@ export const RecommendationCard: React.FC<RecommendationCardProps> = ({
           <IconButton
               aria-label={t('actions:move_recommendation_down')}
               color="primary"
+              className={classes.arrowButton}
               disabled={onMoveDownClick === false}
               // eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
               onClick={onMoveDownClick || undefined}
