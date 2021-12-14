@@ -1,4 +1,34 @@
+# [1.11.0-beta.1](https://github.com/tracking-exposed/yttrex/compare/v1.10.0...v1.11.0-beta.1) (2021-12-14)
+
+
+### Bug Fixes
+
+* correct link to data donation policy is https://youchoose.ai/data-donation ([e3fc811](https://github.com/tracking-exposed/yttrex/commit/e3fc8118e6ff9bc716944ee60fd0acc232f4cdc0))
+* deps order ([ee157e6](https://github.com/tracking-exposed/yttrex/commit/ee157e656b4dac87339d130af6952be71494c2d6))
+* replace libcurl with fetch, node 16 compatible ([#247](https://github.com/tracking-exposed/yttrex/issues/247)) ([9e31eb4](https://github.com/tracking-exposed/yttrex/commit/9e31eb43d8fd11549101793dd25d4687187af8b5))
+
+
+### Features
+
+* node 16 and ci perfs ([#252](https://github.com/tracking-exposed/yttrex/issues/252)) ([db3575c](https://github.com/tracking-exposed/yttrex/commit/db3575c09d25475b4d1e59dc266bf069f98254b5))
+
 # [1.10.0](https://github.com/tracking-exposed/yttrex/compare/v1.9.1...v1.10.0) (2021-12-10)
+
+# [1.9.0-beta.4](https://github.com/tracking-exposed/yttrex/compare/v1.9.0-beta.3...v1.9.0-beta.4) (2021-12-10)
+
+
+### Bug Fixes
+
+* layout LAB improvements ([#241](https://github.com/tracking-exposed/yttrex/issues/241)) ([8a7652e](https://github.com/tracking-exposed/yttrex/commit/8a7652e5f47e55557f2b69535fe7fcfae3521408))
+* nudge users into opting in to data donation ([#239](https://github.com/tracking-exposed/yttrex/issues/239)) ([06bd395](https://github.com/tracking-exposed/yttrex/commit/06bd395a48dd45a593e905a021793a5a94f2a19c))
+* updated data donation learn more URL + font ([#243](https://github.com/tracking-exposed/yttrex/issues/243)) ([42f5929](https://github.com/tracking-exposed/yttrex/commit/42f5929ff9098a962ea23db2cac2c14353f09300))
+
+
+### Features
+
+* migrate from npm to yarn ([#238](https://github.com/tracking-exposed/yttrex/issues/238)) ([71ef0db](https://github.com/tracking-exposed/yttrex/commit/71ef0db7436f8fe966fe5cece9e7e54950dbe0f9))
+
+# [1.9.0](https://github.com/tracking-exposed/yttrex/compare/v1.8.992...v1.9.0) (2021-12-07)
 
 
 ### Bug Fixes
@@ -117,7 +147,6 @@
 * supported empty http status reply ([c021c4b](https://github.com/tracking-exposed/yttrex/commit/c021c4be6c7e778108d5b4480aa48932030482ea))
 * swap hide all and youtube tab ([211628b](https://github.com/tracking-exposed/yttrex/commit/211628b5f55cec398f1cef3505b05f51fae7e885))
 * type errors ([5316304](https://github.com/tracking-exposed/yttrex/commit/531630404b23e8719284ad6d775868aa5a90541b))
-<<<<<<< HEAD
 *  lab flow ([#95](https://github.com/tracking-exposed/yttrex/issues/95)) ([b336fb6](https://github.com/tracking-exposed/yttrex/commit/b336fb620b70ce8dae8fe2f879963ccb866d4238))
 * add authentication to creator recommendations api ([9160d69](https://github.com/tracking-exposed/yttrex/commit/9160d692539371c12820472228d1ad6f5895768a))
 * add recommendations directly to video + Lab Edit page UI/UX ([#104](https://github.com/tracking-exposed/yttrex/issues/104)) ([b29bf92](https://github.com/tracking-exposed/yttrex/commit/b29bf92664bfb65ff08cc5fb8cc9f61b0132f009))
@@ -209,8 +238,6 @@
 * supported empty http status reply ([c021c4b](https://github.com/tracking-exposed/yttrex/commit/c021c4be6c7e778108d5b4480aa48932030482ea))
 * swap hide all and youtube tab ([211628b](https://github.com/tracking-exposed/yttrex/commit/211628b5f55cec398f1cef3505b05f51fae7e885))
 * type errors ([5316304](https://github.com/tracking-exposed/yttrex/commit/531630404b23e8719284ad6d775868aa5a90541b))
-=======
->>>>>>> beta
 * typos in English translation ([238c2d1](https://github.com/tracking-exposed/yttrex/commit/238c2d1458e1cacbb6752eddfa5095f09fb8eed6))
 * ui theming ([#108](https://github.com/tracking-exposed/yttrex/issues/108)) ([7954d07](https://github.com/tracking-exposed/yttrex/commit/7954d075746fd5105e10ba07076650665e06fd03)), closes [#117](https://github.com/tracking-exposed/yttrex/issues/117)
 * update auth flow ([0cfe66b](https://github.com/tracking-exposed/yttrex/commit/0cfe66bb3cc3bc86a0e948c02470752bc0743922))

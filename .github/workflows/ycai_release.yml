@@ -4,9 +4,6 @@ on:
     branches:
       - master
       - beta
-    paths:
-      - "shared/**"
-      - "YCAI/**"
 
 defaults:
   run:
@@ -30,6 +27,9 @@ jobs:
       - name: Install dependencies
         working-directory: ./
         run: yarn
+
+      - name: Build dashboard
+        run: yarn build
 
       - name: Release
         env:
