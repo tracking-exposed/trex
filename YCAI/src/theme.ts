@@ -132,7 +132,7 @@ export const YCAITheme = createTheme({
     },
     secondary: {
       light: lightViolet,
-      main: white,
+      main: violet,
       dark: darkViolet,
       contrastText: white,
     },

@@ -80,9 +80,6 @@ jobs:
       matrix:
         node-version: [14.x]
         mongodb-version: ['4.2']
-    defaults:
-      run:
-        working-directory: ./backend
     steps:
       - uses: actions/checkout@v2
 
@@ -90,10 +87,11 @@ jobs:
         uses: actions/setup-node@v2
         with:
           node-version: ${{ matrix.node-version }}
+          cache: "yarn"
+          cache-dependency-path: yarn.lock
 
       - name: Install node_modules
-        working-directory: ./
-        run: yarn install
+        run: yarn
 
       - name: Lint code
         run: yarn lint
