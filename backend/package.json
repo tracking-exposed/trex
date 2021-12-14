@@ -10,7 +10,7 @@
     "parserv": "DEBUG=\"*,-pubtimeAPI\" ts-node bin/parserv2.js",
     "parserv:watch": "DEBUG=\"*,-pubtimeAPI\" ts-node-dev --respawn --transpile-only bin/parserv2.js",
     "leaveserv": "DEBUG=\"*\" node bin/leaveserv.js",
-    "leaveserv:watch": "DEBUG=* ts-node-dev --respawn --transpile-only bin/leaveserv.js",
+    "leaveserv:watch": "DEBUG=\"*\" ts-node-dev --respawn --transpile-only bin/leaveserv.js",
     "test": "jest",
     "campaigns": "node bin/campaignUpdater.js --dest https://youtube.tracking.exposed",
     "type-check": "tsc",
