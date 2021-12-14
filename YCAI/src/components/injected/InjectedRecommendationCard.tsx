@@ -1,28 +1,21 @@
-import React from 'react';
+import { Box, Card, CardMedia, Grid, Link } from '@material-ui/core';
 import {
-  Box,
-  Card,
-  CardMedia,
-  Grid,
-  Link,
-}from '@material-ui/core';
-
-import {
-  titleMaxLength,
   descriptionMaxLength,
   Recommendation,
+  titleMaxLength,
 } from '@shared/models/Recommendation';
-import { makeStyles, YCAITheme } from '../../theme';
+import React from 'react';
+import { makeStyles } from '../../theme';
 import { isYTURL } from '../../utils/yt.utils';
 import CharLimitedTypography from '../common/CharLimitedTypography';
 
 const imgHeight = 100;
 
-const useStyles = makeStyles<YCAITheme>(theme => ({
+const useStyles = makeStyles((theme) => ({
   link: {
     '&:hover': {
       textDecoration: 'none',
-    }
+    },
   },
   card: {
     height: imgHeight,
@@ -48,7 +41,7 @@ const useStyles = makeStyles<YCAITheme>(theme => ({
   description: {
     fontSize: '1.2rem',
     textOverflow: 'ellipsis',
-  }
+  },
 }));
 
 export const InjectedRecommendationCard: React.FC<Recommendation> = ({
@@ -65,16 +58,12 @@ export const InjectedRecommendationCard: React.FC<Recommendation> = ({
       className={classes.link}
       href={url}
       rel="noreferrer"
-      target={isYouTube ? undefined: '_blank'}
+      target={isYouTube ? undefined : '_blank'}
     >
       <Card className={classes.card}>
         <Grid container>
           <Grid item xs={5}>
-            <CardMedia
-              component="img"
-              src={image}
-              title={title}
-            />
+            <CardMedia component="img" src={image} title={title} />
           </Grid>
           <Grid item xs={7}>
             <Box
@@ -92,7 +81,7 @@ export const InjectedRecommendationCard: React.FC<Recommendation> = ({
                 <CharLimitedTypography
                   className={classes.description}
                   limit={descriptionMaxLength}
-                  >
+                >
                   {description ?? ''}
                 </CharLimitedTypography>
               </Box>
