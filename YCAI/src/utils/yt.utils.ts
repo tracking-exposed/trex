@@ -12,5 +12,8 @@ export const getYTMaxResThumbnailById = (id: string): string =>
 export const getYTVideoURLById = (id: string): string =>
   `https://youtu.be/${id}`;
 
+export const getYTEmbeddingURLById = (id: string): string =>
+  `https://www.youtube-nocookie.com/embed/${id}`;
+
 export const isYTURL = (url: string): boolean =>
   url.includes('youtube.com/') || url.includes('youtu.be/');
