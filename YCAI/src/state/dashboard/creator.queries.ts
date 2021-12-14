@@ -15,7 +15,9 @@ import { AppError } from '../../models/errors/AppError';
 import { getItem } from '../../providers/localStorage.provider';
 import * as constants from '../../constants';
 import { API, APIError } from '../../providers/api.provider';
-import { ChannelRelated } from '@shared/models/ChannelRelated';
+import {
+  GetRelatedChannelsOutput,
+} from '@shared/models/ChannelRelated';
 
 export const CREATOR_CHANNEL_KEY = 'creator-channel';
 export const CURRENT_VIDEO_ON_EDIT = 'current-video-on-edit';
@@ -106,20 +108,17 @@ export const ccRelatedUsers = compose(
     params: param<{ amount: number; skip: number }>(),
   }),
   queryShallow(
-    ({ profile, params }): TE.TaskEither<Error, ChannelRelated[]> => {
-      return pipe(
-        API.v3.Creator.CreatorRelatedChannels({
-          Headers: {
-            'x-authorization': profile.accessToken,
-          },
-          Params: {
-            channelId: profile.channelId,
-            amount: params.amount,
-            skip: params.skip,
-          },
-        }),
-        TE.map((d) => d.content)
-      );
+    ({ profile, params }): TE.TaskEither<Error, GetRelatedChannelsOutput> => {
+      return API.v3.Creator.CreatorRelatedChannels({
+        Headers: {
+          'x-authorization': profile.accessToken,
+        },
+        Params: {
+          channelId: profile.channelId,
+          amount: params.amount,
+          skip: params.skip,
+        },
+      });
     },
     available
   )
