@@ -80,6 +80,13 @@ const useStyles = makeStyles<YCAITheme>((theme) => ({
     marginRight: theme.spacing(2),
     minWidth: 0,
     padding: 0,
+  },
+  clamped: {
+    display: '-webkit-box',
+    boxOrient: 'vertical',
+    lineClamp: 2,
+    wordBreak: 'keep-all',
+    overflow: 'hidden'
   }
 }));
 
@@ -114,18 +121,19 @@ export const RecommendationCard: React.FC<RecommendationCardProps> = ({
             display="flex"
             flexDirection="column"
           >
-            <CharLimitedTypography
-              className={classes.title}
-              color="textSecondary"
-              component="h6"
-              gutterBottom
-              limit={titleMaxLength}
-              variant="h6"
-            >
-              {data.title}
-            </CharLimitedTypography>
+              <CharLimitedTypography
+                className={`${classes.title} ${classes.clamped}`}
+                color="textSecondary"
+                component="h6"
+                gutterBottom
+                limit={titleMaxLength}
+                variant="h6"
+              >
+                {data.title}
+              </CharLimitedTypography>
             <Box flexGrow={1}>
               <CharLimitedTypography
+                className={classes.clamped}
                 color="textSecondary"
                 limit={descriptionMaxLength}
                 variant="body2"
