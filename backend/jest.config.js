@@ -1,6 +1,6 @@
 const tsConfig = require("./tsconfig.json");
 // jest.config.js
-const { pathsToModuleNameMapper } = require("ts-jest/utils");
+const { pathsToModuleNameMapper } = require("ts-jest");
 const { jsWithTsESM } = require("ts-jest/presets");
 
 const moduleNameMapper = pathsToModuleNameMapper(

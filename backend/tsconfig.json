@@ -11,7 +11,15 @@
       "@shared/*": ["../shared/src/*"]
     }
   },
-  "include": ["./bin", "./lib", "./parsers", "./routes", "./utils", "./tests"],
+  "include": [
+    "./bin",
+    "./lib",
+    "./models",
+    "./parsers",
+    "./routes",
+    "./utils",
+    "./tests"
+  ],
   "exclude": ["./tests"],
   "watchOptions": {
     "watchFile": "useFsEvents",

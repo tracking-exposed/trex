@@ -17,7 +17,7 @@ async function verifyAuthorization(req, model) {
 
   const decodedReq = endpoints.decodeRequest(model, req);
   if (decodedReq.type === 'error') {
-    debug("Failed input validation [%o] [%o]", model, {
+    debug("Failed input validation [%o] [%o]", decodedReq.result, {
       params: req.params, body: req.body, headers: req.headers })
     return { creator: {
       error: true,
