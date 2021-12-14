@@ -21,7 +21,6 @@ const moment = require('moment');
 
 const utils = require('../lib/utils');
 const mongo3 = require('./mongo3');
-const { getConfigFileParsingDiagnostics } = require('typescript');
 
 async function getSummaryByPublicKey(publicKey, options) {
     /* this function return the basic information necessary to compile the
