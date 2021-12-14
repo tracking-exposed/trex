@@ -5,12 +5,21 @@ import express from "express";
 import * as _ from "lodash";
 import { apiList } from "../lib/api";
 
-const logger = debug('yttrex');
+const logger = debug('yttrex:api');
+const logAPICount = { requests: {}, responses: {}, errors: {} };
+
+function loginc(kind: string, fname: string): void {
+  logAPICount[kind][fname] = (
+    logAPICount[kind][fname] ?
+    logAPICount[kind][fname]++ : 1
+  );
+}
 
 const iowrapper =
   (fname: string) =>
   async (req: express.Request, res: express.Response): Promise<void> => {
     try {
+      loginc('requests', fname);
       const funct = apiList[fname];
       const httpresult = await funct(req, res);
 
@@ -22,30 +31,37 @@ const iowrapper =
 
       if (!httpresult) {
         logger("API (%s) didn't return anything!?", fname);
+        loginc('errors', fname);
         res.send("Fatal error: Invalid output");
         res.status(501);
       } else if (httpresult.json?.error) {
         logger("API (%s) failure, returning 500", fname);
+        loginc('errors', fname);
         res.status(500);
         res.json(httpresult.json);
       } else if (httpresult.json) {
-        logger("API (%s) success, returning %d bytes JSON", fname, _.size(JSON.stringify(httpresult.json)));
+        // logger("API (%s) success, returning %d bytes JSON", fname, _.size(JSON.stringify(httpresult.json)));
+        loginc('responses', fname);
         res.setHeader("Access-Control-Allow-Origin", "*");
         res.json(httpresult.json);
       } else if (httpresult.text) {
-        logger("API (%s) success, returning text (size %d)", fname, _.size(httpresult.text));
+        // logger("API (%s) success, returning text (size %d)", fname, _.size(httpresult.text));
+        loginc('responses', fname);
         res.send(httpresult.text);
       } else if (httpresult.status) {
-        logger("Returning empty status %d from API (%s)", httpresult.status, fname);
+        // logger("Returning empty status %d from API (%s)", httpresult.status, fname);
+        loginc('responses', fname);
         res.status(httpresult.status);
       } else {
         logger("Undetermined failure in API (%s) →  %j", fname, httpresult);
+        loginc('errors', fname);
         res.status(502);
         res.send("Error?");
       }
     } catch (error) {
       res.status(502);
       res.send("Software error: " + error.message);
+      loginc('errors', fname);
       logger("Error in HTTP handler API(%s): %o", fname, error);
     }
     res.end();
@@ -56,6 +72,23 @@ interface MakeAppContext {
     port: number;
   };
 }
+
+/* one log entry per minute about the amount of API absolved */
+setInterval(() => {
+  let print = false;
+  _.each(_.keys(logAPICount), function(k) {
+    if(!_.keys(logAPICount[k]).length)
+      // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
+      delete logAPICount[k];
+    else
+      print = true;
+  });
+  if(print)
+    logger("%j", logAPICount);
+  logAPICount.responses = {};
+  logAPICount.errors = {};
+  logAPICount.requests = {};
+}, 60 * 1000);
 
 export const makeApp = (ctx: MakeAppContext): express.Application => {
   const app = express();

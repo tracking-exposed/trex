@@ -1,6 +1,6 @@
-import { ContentCreator } from '@shared/models/ContentCreator';
 import { Avatar, List, ListItem, makeStyles, Typography } from '@material-ui/core';
 import { deepOrange } from '@material-ui/core/colors';
+import { ContentCreator } from '@shared/models/ContentCreator';
 import * as React from 'react';
 
 interface UserListProps {

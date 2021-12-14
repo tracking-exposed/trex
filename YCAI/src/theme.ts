@@ -5,14 +5,20 @@ import {
   ThemeProvider,
   useTheme,
   alpha,
-  makeStyles,
+  makeStyles as _makeStyles,
 } from '@material-ui/core/styles';
+import {
+  ClassNameMap,
+  Styles,
+  WithStylesOptions,
+} from '@material-ui/core/styles/withStyles';
 
 const pink = '#E33180';
 const lightPink = lighten(pink, 0.2);
 const darkPink = darken(pink, 0.2);
 const grey = '#5B5F6F';
 const lightGrey = alpha(grey, 0.2);
+const grey100 = `#DDE3EE`;
 const darkGrey = darken(grey, 0.2);
 const yellow = '#DA9D00';
 const violet = '#572B8F';
@@ -109,8 +115,8 @@ export const YCAITheme = createTheme({
     MuiTypography: {
       root: {
         whiteSpace: 'pre-wrap',
-      }
-    }
+      },
+    },
   },
   palette: {
     text: {
@@ -147,6 +153,7 @@ export const YCAITheme = createTheme({
       main: yellow,
     },
     grey: {
+      100: grey100,
       300: lightGrey,
       500: grey,
       800: darkGrey,
@@ -156,4 +163,14 @@ export const YCAITheme = createTheme({
 
 export type YCAITheme = typeof YCAITheme;
 
-export { makeStyles, ThemeProvider, useTheme };
+export const makeStyles = <
+  Props extends object = {},
+  ClassKey extends string = string
+>(
+  styles: Styles<YCAITheme, Props, ClassKey>,
+  options?: Omit<WithStylesOptions<YCAITheme>, 'withTheme'>
+): keyof Props extends never
+  ? (props?: any) => ClassNameMap<ClassKey>
+  : (props: Props) => ClassNameMap<ClassKey> => _makeStyles<YCAITheme, Props, ClassKey>(styles, options);
+
+export { ThemeProvider, useTheme };
