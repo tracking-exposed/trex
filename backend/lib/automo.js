@@ -181,11 +181,14 @@ async function getMetadataFromAuthorChannelId(channelId, options) {
     debug("matching %d videos by authorSource (%j) had %d total related",
         videos.length, channelId, relatedl.length);
 
-    if(!relatedl) {
+    if(!videos.length || !relatedl.length) {
         await mongoc.close();
         /* structure to say "No data available" */
         return {
-            content: [], overflow: false, total: 0,
+            content: [],
+            overflow: false, totalMetadata: 0, totalRecommendations: 0, score: 0,
+            channelId,
+            authorName: "",
             pagination: options,
         };
     }
@@ -217,15 +220,25 @@ async function getMetadataFromAuthorChannelId(channelId, options) {
             return o;
         });
 
+    const authorName = _.first(videos).authorName;
+    // recommendatability score is computed here because the queried
+    // channel might not be present among the taken objects, OR might not be 
+    // present at all
+    let score = 0;
+    const isPresent = _.find(ordered, { channelId: authorName });
+    if(isPresent)
+        score = isPresent.percentage;
+
     await mongoc.close();
     return {
         channelId,
-        authorName: _.first(videos).authorName,
-        content: _.take(ordered, options.amount),
-        overflow: (_.size(videos) === options.amount),
-        total,
-        recommendations: relatedl.length,
+        authorName,
+        overflow: (_.size(videos) === consideredAmount),
+        totalMetadata: total,
+        totalRecommendations: relatedl.length,
+        score,
         pagination: options,
+        content: _.take(ordered, options.amount),
     }
 };
 
