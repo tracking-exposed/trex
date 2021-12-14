@@ -79,6 +79,7 @@ function unrollRecommended(evidence, shared) {
             watchedAuthor: evidence.authorName,
             watchedChannel: evidence.authorSource,
             watchedPubTime: evidence.publicationTime,
+            forKids: evidence.forKids,
         };
     });
 }
