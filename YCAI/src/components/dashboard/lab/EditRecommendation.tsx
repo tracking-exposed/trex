@@ -62,6 +62,7 @@ const EditRecommendation: React.FC<EditRecommendationProps> = ({ data, videoId, 
     }, {
       videoRecommendations: { videoId }
     })();
+    setFormIsOpen(false)
   };
 
   const dirty = title !== data.title

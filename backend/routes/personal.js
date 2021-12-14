@@ -46,26 +46,28 @@ async function getPersonalCSV(req) {
     const k =  req.params.publicKey;
     const type = req.params.type;
 
-    if(['home', 'video', 'search'].indexOf(type) === -1 ) 
-        return { text: "Error 🤷 Invalid request, only 'video' or 'home' are supported" };
+    const supportedATM = ['home', 'video', 'search'];
+    if(supportedATM.indexOf(type) === -1 ) 
+        return { text: "Error 🤷 Invalid request, supported only " + supportedATM };
 
-    const data = await automo.getMetadataByPublicKey(k, { amount: CSV_MAX_SIZE, skip: 0, typefilter: type });
+    const data = await automo.getMetadataByPublicKey(k, { amount: CSV_MAX_SIZE, skip: 0, type: type });
     /* this return of videos or homepage, they generated slightly different CSV formats */
 
-    debug("returned %d data in getPersonalCSV", _.size(data));
-    const sourceCounter = _.size(data.metadata);
+    debug("Returned %d data in getPersonalCSV", _.size(data));
     const ready = CSV.unrollNested(data.metadata, {
-        type, private: true
+        type, private: true /* might also be 'false' but ... */
     });
 
-    debug("data were %d now unrolling each evidence %d", sourceCounter, _.size(ready));
+    debug("Data were %d now unrolling each evidence %d", data.metadata.length, _.size(ready));
     const csv = CSV.produceCSVv1(ready);
     debug("getPersonalCSV produced %d bytes, with CSV_MAX_SIZE %d", _.size(csv), CSV_MAX_SIZE);
 
     if(!_.size(csv))
         return { text: "Error 🤷 No content produced in this CSV!" };
 
-    const filename = 'personal-' + type + '-yttrex-' + moment().format("YY-MM-DD") + '-' + sourceCounter + ".csv";
+    const filename = 'personal-' + type + '-yttrex-' +
+        moment().format("YYYY-MM-DD") + '-#' +
+        data.metadata.length + ".csv";
     return {
         headers: {
             "Content-Type": "csv/text",

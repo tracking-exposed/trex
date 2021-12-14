@@ -199,7 +199,7 @@ async function getByAuthor(req) {
         _.size(authorStruct.content), _.size(ready) );
     const retval = endpoints.decodeResponse(v1.Public.GetAuthorStatsByVideoId, {
         authorName: authorStruct.authorName,
-        authorSource: authorStruct.authorSource,
+        authorSource: authorStruct.authorSource.split('/').pop(),
         paging: authorStruct.paging,
         overflow: authorStruct.overflow,
         ...units,
@@ -214,13 +214,18 @@ async function getByAuthor(req) {
 };
 
 async function getCreatorRelated(req) {
+    /* this is the route invoked by API 
+       /api/v3/creator/:channelId/related/:amount?
+       and differs from the others because take as an input a 
+       channel and return as output aggregation by channel */
 
-    const { amount, skip } = params.optionParsing(req.params.amount, PUBLIC_AMOUNT_ELEMS);
-    debug("getCreatorRelated %s amount %d skip %d", req.params.channelId, amount, skip);
+    const amount = req.params.amount ? _.parseInt(req.params.amount) : 10;
 
-    let authorStruct;
     try {
-        authorStruct = await automo.getMetadataFromAuthorChannelId(`/channel/${req.params.channelId}`, { amount, skip });
+        /* pagination not supported, only enlarging the max amount of evidences */
+        debug("getCreatorRelated %s amount %d", req.params.channelId, amount);
+        const authorStruct = await automo.getMetadataFromAuthorChannelId(req.params.channelId, { amount });
+        return { json: authorStruct };
     } catch(e) {
         debug("getCreatorRelated error: %s, %s", e.message, e.stack);
         return {
@@ -230,8 +235,6 @@ async function getCreatorRelated(req) {
             }
         }
     }
-
-    return { json: authorStruct };
 };
 
 module.exports = {
