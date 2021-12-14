@@ -1,12 +1,13 @@
 import React from 'react';
-import { Grid, Typography, useTheme, Divider } from '@material-ui/core';
+import { Grid, Link, Typography, useTheme, Divider } from '@material-ui/core';
+import { ArrowBack as ArrowBackIcon } from '@material-ui/icons';
 import { makeStyles } from '@material-ui/core/styles';
 import * as QR from 'avenger/lib/QueryResult';
 import { declareQueries } from 'avenger/lib/react';
 import { pipe } from 'fp-ts/lib/function';
 import { useTranslation } from 'react-i18next';
 import { auth, localProfile } from '../../state/dashboard/creator.queries';
-import { CurrentView, currentView } from '../../utils/location.utils';
+import { CurrentView, currentView, doUpdateCurrentView } from '../../utils/location.utils';
 import { ErrorBox } from '../common/ErrorBox';
 import { LazyFullSizeLoader } from '../common/FullSizeLoader';
 import Settings from './Settings';
@@ -25,6 +26,20 @@ const useStyles = makeStyles((theme) => ({
     minHeight: '100%',
     backgroundColor: theme.palette.background.default,
   },
+  labEditTitle: {
+    whiteSpace: 'pre-line',
+    paddingTop: theme.spacing(1),
+    display: 'flex',
+    alignItems: 'center',
+    '& a': {
+      color: theme.palette.common.black,
+      marginTop: 3,
+      marginRight: theme.spacing(1),
+      '&:hover': {
+        cursor: 'pointer',
+      },
+    },
+  },
 }));
 
 interface DashboardContentProps {
@@ -40,6 +55,7 @@ const DashboardContent: React.FC<DashboardContentProps> = ({
 }) => {
   const { t } = useTranslation();
   const theme = useTheme();
+  const classes = useStyles();
 
   const [currentViewLabel, currentViewSubtitle, currentViewContent] =
     React.useMemo(() => {
@@ -100,24 +116,41 @@ const DashboardContent: React.FC<DashboardContentProps> = ({
           paddingTop: profile ? 0 : theme.spacing(12),
         }}
       >
-        <Typography
-          variant="h3"
-          component="h1"
-          color= "textSecondary"
-          style={{
-            whiteSpace: 'pre-line',
-            paddingTop: theme.spacing(1),
-          }}
-        >
-          {currentViewLabel}
-        </Typography>
+        {currentView.view === 'labEdit' ? (
+          <Typography
+            variant="h3"
+            component="h1"
+            color= "textSecondary"
+            className={classes.labEditTitle}
+          >
+            <Link
+              onClick={doUpdateCurrentView({ view: 'lab' })}
+            >
+              <ArrowBackIcon />
+            </Link>
+            {currentViewLabel}
+          </Typography>
+        ): (
+          <Typography
+            variant="h3"
+            component="h1"
+            color= "textSecondary"
+            style={{
+              whiteSpace: 'pre-line',
+              paddingTop: theme.spacing(1),
+            }}
+          >
+            {currentViewLabel}
+          </Typography>
+        )}
+
         <Typography variant="subtitle1" color="textPrimary">
           {currentViewSubtitle}
         </Typography>
         <Divider light />
       </Grid>
 
-      <Grid 
+      <Grid
         item xs={12}
         style={{
           paddingTop: theme.spacing(4),

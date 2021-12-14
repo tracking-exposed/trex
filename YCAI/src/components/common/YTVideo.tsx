@@ -1,11 +1,11 @@
-import { Card, CardContent, CardMedia, Link, } from '@material-ui/core';
+import { Card, CardContent, Link } from '@material-ui/core';
 import * as QR from 'avenger/lib/QueryResult';
 import { WithQueries } from 'avenger/lib/react';
 import React from 'react';
 import { oneCreatorVideo } from '../../state/dashboard/creator.queries';
 import {
-  getYTMaxResThumbnailById,
   getYTVideoURLById,
+  getYTEmbeddingURLById,
 } from '../../utils/yt.utils';
 import { ErrorBox } from '../common/ErrorBox';
 import { LazyFullSizeLoader } from './FullSizeLoader';
@@ -24,11 +24,14 @@ export const YTVideo: React.FC<YTVideoProps> = ({ videoId }) => (
       ErrorBox,
       ({ oneCreatorVideo: video }) => (
         <Card style={{boxShadow: "none", backgroundColor: 'transparent',}}>
-          <CardMedia
-            component="img"
-            src={getYTMaxResThumbnailById(videoId)}
-            title={video.title}
-            style={{borderRadius: "8px",}}
+          <iframe
+            sandbox="allow-scripts allow-same-origin"
+            src={getYTEmbeddingURLById(videoId)}
+            width="100%"
+            height={315}
+            style={{
+              border: 'none',
+            }}
           />
           <CardContent style={{paddingLeft: '0px', paddingTop: '10px', paddingBottom: '0px'}}>
             <Link
@@ -47,4 +50,3 @@ export const YTVideo: React.FC<YTVideoProps> = ({ videoId }) => (
     )}
   />
 );
-
