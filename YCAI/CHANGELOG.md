@@ -1,3 +1,17 @@
+## [1.10.1](https://github.com/tracking-exposed/yttrex/compare/v1.10.0...v1.10.1) (2021-12-14)
+
+
+### Bug Fixes
+
+* correct link to data donation policy is https://youchoose.ai/data-donation ([e3fc811](https://github.com/tracking-exposed/yttrex/commit/e3fc8118e6ff9bc716944ee60fd0acc232f4cdc0))
+* deps order ([ee157e6](https://github.com/tracking-exposed/yttrex/commit/ee157e656b4dac87339d130af6952be71494c2d6))
+* replace libcurl with fetch, node 16 compatible ([#247](https://github.com/tracking-exposed/yttrex/issues/247)) ([9e31eb4](https://github.com/tracking-exposed/yttrex/commit/9e31eb43d8fd11549101793dd25d4687187af8b5))
+
+
+### Performance Improvements
+
+* store release ([#253](https://github.com/tracking-exposed/yttrex/issues/253)) ([2c4ea93](https://github.com/tracking-exposed/yttrex/commit/2c4ea93ee1d30dff6e7e67c749472eee6beb4322))
+
 # [1.11.0-beta.1](https://github.com/tracking-exposed/yttrex/compare/v1.10.0...v1.11.0-beta.1) (2021-12-14)
 
 
