@@ -156,7 +156,6 @@ async function aggregate(mongoc, cName, pipeline) {
 module.exports = {
     clientConnect,
     mongoUri,
-
     listCollections,
     writeOne,
     insertMany,

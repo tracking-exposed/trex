@@ -28,8 +28,8 @@ describe("Testing the token request", () => {
   };
   let verificationToken, tests: Test;
 
-  beforeAll(() => {
-    tests = GetTest();
+  beforeAll(async () => {
+    tests = await GetTest();
   });
   afterAll(() => {
     jest.clearAllMocks();
