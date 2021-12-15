@@ -82,7 +82,7 @@ const useStyles = makeStyles<YCAITheme>((theme) => ({
   },
   arrowButton: {
     '&:disabled': {
-      color: theme.palette.grey[600],
+      color: theme.palette.grey[500],
     },
   },
   button: {
@@ -94,7 +94,7 @@ const useStyles = makeStyles<YCAITheme>((theme) => ({
   },
   source: {
     alignItems: 'center',
-    color: theme.palette.grey[600],
+    color: theme.palette.grey[500],
     display: 'flex',
     fontSize: '0.8rem',
     '& svg': {
@@ -109,7 +109,7 @@ const useStyles = makeStyles<YCAITheme>((theme) => ({
     overflow: 'hidden'
   },
   description: {
-    color: theme.palette.grey[600],
+    color: theme.palette.grey[500],
     lineClamp: 3,
   }
 }));
