@@ -20,7 +20,7 @@
   "license": "AGPL-3.0",
   "dependencies": {
     "abort-controller": "^3.0.0",
-    "body-parser": "^1.19.0",
+    "body-parser": "^1.19.1",
     "bs58": "^3.1.0",
     "chardet": "^1.4.0",
     "cookie": "^0.3.1",
@@ -35,7 +35,7 @@
     "io-ts-types": "^0.5.16",
     "jsdom": "^13.2.0",
     "moment": "^2.29.1",
-    "mongodb": "^4.2.1",
+    "mongodb": "^4.2.2",
     "nacl-signature": "^1.0.0",
     "nconf": "^0.8.5",
     "node-fetch": "^2.6.6",
@@ -54,18 +54,18 @@
     "@types/node": "^16.11.13",
     "@types/supertest": "^2.0.11",
     "@types/uuid": "^8.3.3",
-    "@typescript-eslint/eslint-plugin": "^5.6.0",
-    "@typescript-eslint/parser": "^5.6.0",
+    "@typescript-eslint/eslint-plugin": "^5.7.0",
+    "@typescript-eslint/parser": "^5.7.0",
     "eslint": "^8.4.1",
     "eslint-config-prettier": "^8.3.0",
     "eslint-config-standard-with-typescript": "^21.0.1",
     "eslint-plugin-import": "^2.25.3",
     "eslint-plugin-node": "^11.1.0",
     "eslint-plugin-promise": "^5.2.0",
-    "jest": "^27.4.4",
+    "jest": "^27.4.5",
     "supertest": "^6.1.6",
     "ts-jest": "^27.1.1",
     "tsconfig-paths": "^3.12.0",
-    "typescript": "^4.5.3"
+    "typescript": "^4.5.4"
   }
 }
