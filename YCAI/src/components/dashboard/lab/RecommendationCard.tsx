@@ -44,7 +44,7 @@ const useStyles = makeStyles<YCAITheme>((theme) => ({
   root: {
     height: cardHeight,
     overflow: 'hidden',
-    backgroundColor: theme.palette.grey[300],
+    backgroundColor: theme.palette.background.default,
     '& a:hover': {
       cursor: 'pointer',
     },
@@ -69,6 +69,7 @@ const useStyles = makeStyles<YCAITheme>((theme) => ({
     fontWeight: 'bold',
     fontSize: '1rem',
     lineHeight: 1,
+    lineClamp: 2,
   },
   iconsContainer: {
     display: 'flex',
@@ -104,12 +105,12 @@ const useStyles = makeStyles<YCAITheme>((theme) => ({
   clamped: {
     display: '-webkit-box',
     boxOrient: 'vertical',
-    lineClamp: 2,
     wordBreak: 'keep-all',
     overflow: 'hidden'
   },
   description: {
     color: theme.palette.grey[600],
+    lineClamp: 3,
   }
 }));
 

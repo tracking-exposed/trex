@@ -36,41 +36,41 @@ const useStyles = makeStyles((theme) => ({
       height: imgHeight,
       width: '100%',
     },
-    backgroundColor: theme.palette.grey[300],
+    backgroundColor: theme.palette.background.default,
   },
   content: {
     height: `calc(100% - ${theme.spacing(1)}px)`,
-    padding: theme.spacing(1),
-    paddingBottom: theme.spacing(1),
-    paddingTop: theme.spacing(1.5),
+    padding: theme.spacing(1.5),
   },
   title: {
     fontSize: '1.4rem',
     fontWeight: 'bold',
     letterSpacing: '0.015em',
     lineHeight: 1.25,
-    marginBottom: theme.spacing(0.1),
+    marginBottom: theme.spacing(0.5),
+    lineClamp: 2,
   },
   description: {
     color: theme.palette.grey[600],
     fontSize: '1.2rem',
     textOverflow: 'ellipsis',
     letterSpacing: '0.015em',
+    lineClamp: 3,
   },
   source: {
     alignItems: 'center',
-    color: theme.palette.grey[600],
+    color: theme.palette.violet.light,
     display: 'flex',
     fontSize: '1.2rem',
     '& svg': {
       marginTop: -1,
       marginRight: theme.spacing(.5),
     },
+    marginBottom: theme.spacing(0.5),
   },
   clamped: {
     display: '-webkit-box',
     boxOrient: 'vertical',
-    lineClamp: 2,
     wordBreak: 'keep-all',
     overflow: 'hidden'
   },
@@ -115,7 +115,7 @@ export const InjectedRecommendationCard: React.FC<Recommendation> = ({
                   {getHostFromURL(url)}
                 </Typography>
               )}
-              <Box display="flex" flexGrow={1} alignItems="center">
+              <Box display="flex" alignItems="center">
                 <CharLimitedTypography
                   className={`${classes.description} ${classes.clamped}`}
                   limit={descriptionMaxLength}
