@@ -17,17 +17,23 @@ import { TabPanel } from '../common/TabPanel';
 import { Tab } from '../common/Tab';
 import { VideoRecommendations } from './VideoRecommendations';
 import DonationOptInNudger from './DonationOptInNudger';
+import { YCAITheme } from '../../theme';
 import ccIconSrc from '../../resources/youchoose-icon.svg';
 
 const logger = GetLogger('yt-video-recommendations');
 
-const useStyles = makeStyles(() => ({
+const useStyles = makeStyles<YCAITheme>((theme) => ({
   appBar: {
     marginBottom: 20,
     borderRadius: '8px',
   },
   tab: {
     minWidth: 100,
+  },
+  text: {
+    color: theme.palette.grey[400],
+    fontSize: '1.4rem',
+    textAlign: 'center',
   },
 }));
 
@@ -135,7 +141,7 @@ export const YTVideoPage: React.FC<{
           value={currentTab}
           onChange={(e, n) => onTabChange(n)}
           aria-label="recommendations tabs"
-          variant="fullWidth" 
+          variant="fullWidth"
           centered
           style={{
             borderRadius: '8px',
@@ -181,6 +187,11 @@ export const YTVideoPage: React.FC<{
       </TabPanel>
       <TabPanel value={currentTab} index={YT_TAB_INDEX}>
         <Typography variant="h4">{t('common:empty_string')}</Typography>
+      </TabPanel>
+      <TabPanel value={currentTab} index={HIDE_ALL_TAB_INDEX}>
+        <Typography variant="h5" className={classes.text}>
+          {t('ytVideoPage:distractionFree')}
+        </Typography>
       </TabPanel>
     </Box>
   );
