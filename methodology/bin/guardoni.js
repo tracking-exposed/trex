@@ -82,6 +82,14 @@ function getChromePath() {
   return chromePath;
 }
 
+function buildAPIurl(route, params) {
+  if (route === 'directives' && ["chiaroscuro", "comparison"].indexOf(params) !== -1)
+    return `${server}/api/v3/${route}/${params}`;
+  else {
+    return `${server}/api/v3/${route}/${params}`;
+  }
+}
+
 /*
 3. guardoni uses the same experiment API to mark contribution with 'evidencetag'
 4. it would then access to the directive API, and by using the experimentId, will then perform the searches as instructed.
@@ -161,7 +169,7 @@ async function pullDirectives(sourceUrl) {
       directives = await response.json();
     } else {
       throw new Error("A local file isn't supported anymore");
-      directives = JSON.parse(fs.readFileSync(sourceUrl, 'utf-8'));
+      // directives = JSON.parse(fs.readFileSync(sourceUrl, 'utf-8'));
     }
     if (!directives.length) {
       console.log("URL/file do not include any directive in expected format");
@@ -179,7 +187,7 @@ async function pullDirectives(sourceUrl) {
 async function readExperiment(profinfo) {
   /* this function is invoked to dispatch the assistance window.
    * it is a piece of dead code, at the moment, but this would 
-   * start when --auto is invoked */
+   * start when --auto is invoked -- AT THE MOMENT IS NOT USED */
   let page; let experiment = null;
 
   const browser = await dispatchBrowser(false, profinfo);
@@ -262,14 +270,6 @@ async function readExperiment(profinfo) {
   }
 }
 
-function buildAPIurl(route, params) {
-  if (route === 'directives' && ["chiaroscuro", "comparison"].indexOf(params) !== -1)
-    return `${server}/api/v3/${route}/${params}`;
-  else {
-    return `${server}/api/v3/${route}/${params}`;
-  }
-}
-
 function profileExecount(profile, evidencetag) {
   let data; let newProfile = false;
   const udd = path.resolve(path.join('profiles', profile));
@@ -333,6 +333,21 @@ You need a reliable internet connection to ensure a flawless collection`;
   console.log(".:*~*:._.:*~*:._.:*~*:._.:*~*:._.:*~*:._.:*~*:._.:*~*:._.:*~*:._.:*~*:.");
   console.log(helptext);
   console.log('~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~');
+}
+
+async function writeExperimentInfo(experimentId, profinfo, evidencetag, directiveType) {
+  debug("Saving experiment info in extension/experiment.json (would be read by the extension)");
+  const cfgfile = path.join('extension', 'experiment.json');
+  const expinfo = {
+    experimentId,
+    evidencetag,
+    directiveType,
+    execount: profinfo.execount,
+    newProfile: profinfo.newProfile,
+    when: new Date()
+  };
+  fs.writeFileSync(cfgfile, JSON.stringify(expinfo), 'utf-8');
+  profinfo.expinfo = expinfo;
 }
 
 async function main() {
@@ -445,20 +460,6 @@ async function main() {
   process.exit(0);
 }
 
-async function writeExperimentInfo(experimentId, profinfo, evidencetag, directiveType) {
-  debug("Saving experiment info in extension/experiment.json (would be read by the extension)");
-  const cfgfile = path.join('extension', 'experiment.json');
-  const expinfo = {
-    experimentId,
-    evidencetag,
-    directiveType,
-    execount: profinfo.execount,
-    newProfile: profinfo.newProfile,
-    when: new Date()
-  };
-  fs.writeFileSync(cfgfile, JSON.stringify(expinfo), 'utf-8');
-  profinfo.expinfo = expinfo;
-}
 
 async function dispatchBrowser(headless, profinfo) {
 
@@ -509,57 +510,18 @@ async function dispatchBrowser(headless, profinfo) {
   }
 }
 
-async function guardoniExecution(experiment, directives, browser, profinfo) {
-  const retval = { start: null };
-  retval.start = moment();
-  const directiveType = _.first(directives).name ? "chiaroscuro" : "comparison";
-  try {
-    const page = (await browser.pages())[0];
-    _.tail(await browser.pages()).forEach(async function(opage) {
-      debug("Closing a tab that shouldn't be there!");
-      await opage.close();
-    })
-    await domainSpecific.beforeDirectives(page, profinfo);
-    // the BS above should close existing open tabs except 1st
-    await operateBrowser(page, directives);
-    const publicKey = await domainSpecific.completed();
-    console.log(`Operations completed: check results at ${server}/${directiveType === 'chiaroscuro' ? "shadowban" : "experiments"}/render/#${experiment}`);
-    console.log(`Personal log at ${server}/personal/#${publicKey}`);
-    await browser.close();
-  } catch(error) {
-    console.log("Error in operateBrowser (collection fail):", error);
-    await browser.close();
-    process.exit(1);
-  }
-  retval.end = moment();
-  return retval;
-}
-
-async function concludeExperiment(experiment, profinfo) {
-  // this conclude the API sent by extension remoteLookup,
-  // a connection to DELETE /api/v3/experiment/:publicKey
-  const url = buildAPIurl(
-    'experiment',
-    moment(profinfo.expinfo.when).toISOString());
-  const response = await fetch(url, {
-    method: 'DELETE'
-  });
-  const body = await response.json();
-  if(body.acknowledged !== true)
-    debug("Error in communication with the server o_O (%j)", body);
-  //  debug("Experiment %s marked as completed on the server!", experiment);
-}
-
 async function operateTab(page, directive) {
 
   try {
     await domainSpecific.beforeLoad(page, directive);
   } catch(error) {
-    console.log("error in beforeLoad", error.message, error.stack);
+    debug("error in beforeLoad %s %s directive %o",
+      error.message, error.stack, directive);
   }
 
   debug("— Loading %s (for %dms)", directive.urltag ?
     directive.urltag : directive.name, directive.loadFor);
+  // Remind you can exclude directive with env/--exclude=urltag
 
   // TODO the 'timeout' would allow to repeat this operation with
   // different parameters. https://stackoverflow.com/questions/60051954/puppeteer-timeouterror-navigation-timeout-of-30000-ms-exceeded
@@ -582,21 +544,6 @@ async function operateTab(page, directive) {
     console.log("Error in afterWait", error.message, error.stack);
   }
   debug("— Completed %s", directive.urltag ? directive.urltag : directive.name);
-}
-
-async function operateBrowser(page, directives) {
-  // await page.setViewport({width: 1024, height: 768});
-  for (directive of directives) {
-    if(nconf.get('exclude') && directive.urltag == nconf.get('exclude')) {
-      console.log("excluded!", directive.urltag);
-    } else {
-      try {
-        await operateTab(page, directive);
-      } catch(error) {
-        debug("operateTab in %s — error: %s", directive.urltag, error.message);
-      }
-    }
-  }
 }
 
 function initialSetup() {
@@ -639,6 +586,64 @@ function initialSetup() {
   }
 
   return manifest;
+}
+
+
+async function operateBrowser(page, directives) {
+  // await page.setViewport({width: 1024, height: 768});
+  for (const directive of directives) {
+    if(nconf.get('exclude') && directive.urltag == nconf.get('exclude')) {
+      debug("[!!!] excluded directive %s", directive.urltag);
+    } else {
+      try {
+        await operateTab(page, directive);
+      } catch(error) {
+        debug("operateTab in %s — error: %s", directive.urltag, error.message);
+      }
+    }
+  }
+}
+
+
+async function guardoniExecution(experiment, directives, browser, profinfo) {
+  const retval = { start: null };
+  retval.start = moment();
+  const directiveType = _.first(directives).name ? "chiaroscuro" : "comparison";
+  try {
+    const page = (await browser.pages())[0];
+    _.tail(await browser.pages()).forEach(async function(opage) {
+      debug("Closing a tab that shouldn't be there!");
+      await opage.close();
+    })
+    await domainSpecific.beforeDirectives(page, profinfo);
+    // the BS above should close existing open tabs except 1st
+    await operateBrowser(page, directives);
+    const publicKey = await domainSpecific.completed();
+    console.log(`Operations completed: check results at ${server}/${directiveType === 'chiaroscuro' ? "shadowban" : "experiments"}/render/#${experiment}`);
+    console.log(`Personal log at ${server}/personal/#${publicKey}`);
+    await browser.close();
+  } catch(error) {
+    console.log("Error in operateBrowser (collection fail):", error);
+    await browser.close();
+    process.exit(1);
+  }
+  retval.end = moment();
+  return retval;
+}
+
+async function concludeExperiment(experiment, profinfo) {
+  // this conclude the API sent by extension remoteLookup,
+  // a connection to DELETE /api/v3/experiment/:publicKey
+  const url = buildAPIurl(
+    'experiment',
+    moment(profinfo.expinfo.when).toISOString());
+  const response = await fetch(url, {
+    method: 'DELETE'
+  });
+  const body = await response.json();
+  if(body.acknowledged !== true)
+    debug("Error in communication with the server o_O (%j)", body);
+  //  debug("Experiment %s marked as completed on the server!", experiment);
 }
 
 async function validateAndStart(manifest) {
