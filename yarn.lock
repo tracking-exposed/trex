@@ -8548,6 +8548,7 @@ __metadata:
   resolution: "guardoni@workspace:methodology"
   dependencies:
     "@types/electron": ^1.6.10
+    "@types/eslint": ^8.2.1
     "@types/react": ^17.0.37
     csv-parse: ^4.15.3
     debug: ^4.3.2
