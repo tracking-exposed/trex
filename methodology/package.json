@@ -4,7 +4,7 @@
   "description": "Guardoni is a tool to automate access and coordinate personalization algorithm analysis",
   "scripts": {
     "pkg": "pkg ./package.json && sh ./bin/post-compile.sh",
-    "tsc": "tsc",
+    "lint": "eslint ./src",
     "build": "tsc -b",
     "electron": "electron ./build/electron/index.js"
   },
