@@ -51,7 +51,7 @@ const useStyles = makeStyles((theme) => ({
     lineClamp: 2,
   },
   description: {
-    color: theme.palette.grey[600],
+    color: theme.palette.grey[500],
     fontSize: '1.2rem',
     textOverflow: 'ellipsis',
     letterSpacing: '0.015em',
