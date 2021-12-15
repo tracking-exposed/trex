@@ -2413,10 +2413,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/node@npm:^14.18.0":
-  version: 14.18.0
-  resolution: "@types/node@npm:14.18.0"
-  checksum: b120c26fe5f30bc358e861db8d7e401e419d14bd9dd25c022f3c2ea8b0b429d4c9efd77ad5d6d2a8bde61702a6786fb74d409f1b2cbb61c79133e2a65aab4fb1
+"@types/node@npm:^16.11.13":
+  version: 16.11.13
+  resolution: "@types/node@npm:16.11.13"
+  checksum: 7c9d62c024537d7c9f2229097b9e7a93a60bc60efbc9171977f172819e229b01d0b6ed276d335996d39b0096aed2cefa58c4a34b264d712ae3595449e8d96ab7
   languageName: node
   linkType: hard
 
@@ -13745,6 +13745,7 @@ __metadata:
     "@commitlint/cli": ^13.2.1
     "@commitlint/config-conventional": ^13.2.0
     "@types/eslint": ^8.2.1
+    "@types/node": ^16.11.13
     eslint: ^8.4.1
     husky: ^7.0.4
     jest: ^27.4.4
@@ -14141,7 +14142,7 @@ __metadata:
     "@types/copy-webpack-plugin": ^8.0.1
     "@types/debug": ^4.1.7
     "@types/dotenv-webpack": ^7.0.3
-    "@types/node": ^14.18.0
+    "@types/node": ^16.11.13
     "@types/webpack-bundle-analyzer": ^4.4.1
     copy-webpack-plugin: ^9.0.0
     css-loader: ^6.5.1
@@ -16764,6 +16765,7 @@ __metadata:
     "@types/cors": ^2.8.12
     "@types/jest": ^27.0.3
     "@types/nconf": ^0.10.1
+    "@types/node": ^16.11.13
     "@types/supertest": ^2.0.11
     "@types/uuid": ^8.3.3
     "@typescript-eslint/eslint-plugin": ^5.6.0
