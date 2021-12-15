@@ -36,7 +36,8 @@ const useStyles = makeStyles((theme) => ({
       height: imgHeight,
       width: '100%',
     },
-    backgroundColor: theme.palette.background.default,
+    backgroundColor: 'transparent',
+    boxShadow: 'none',
   },
   content: {
     height: `calc(100% - ${theme.spacing(1)}px)`,
