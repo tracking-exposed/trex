@@ -1,6 +1,5 @@
 import React from 'react';
 import { AppBar, Box, Tabs, Typography } from '@material-ui/core';
-import ContentCreatorIcon from '@material-ui/icons/HealingOutlined';
 import HideIcon from '@material-ui/icons/VisibilityOffOutlined';
 import YTIcon from '@material-ui/icons/YouTube';
 import { makeStyles } from '@material-ui/styles';
@@ -18,6 +17,7 @@ import { TabPanel } from '../common/TabPanel';
 import { Tab } from '../common/Tab';
 import { VideoRecommendations } from './VideoRecommendations';
 import DonationOptInNudger from './DonationOptInNudger';
+import ccIconSrc from '../../resources/youchoose-icon.svg';
 
 const logger = GetLogger('yt-video-recommendations');
 
@@ -143,7 +143,7 @@ export const YTVideoPage: React.FC<{
         >
           <Tab
             className={classes.tab}
-            icon={<ContentCreatorIcon />}
+            icon={<img src={ccIconSrc} style={{width:17}}/>}
             wrapped={true}
             label={t('creator:title')}
             index={CC_TAB_INDEX}
