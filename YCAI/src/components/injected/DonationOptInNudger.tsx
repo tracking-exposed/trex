@@ -19,7 +19,7 @@ const useStyles = makeStyles<YCAITheme>(theme => ({
     marginBottom: theme.spacing(1),
   },
   text: {
-    fontSize: '1.5rem',
+    fontSize: '1.4rem',
     marginBottom: theme.spacing(1),
   },
 }));
