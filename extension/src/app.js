@@ -61,7 +61,9 @@ function boot () {
     // Lookup the current user and decide what to do.
     localLookup(response => {
         // `response` contains the user's public key, and this format is 
-        console.log(JSON.stringify(response));
+        console.log((`${JSON.stringify({
+            response,
+            ...{localLookup: 'for guardoni!'}})}`));
         // SHOULD NOT CHANGE because Guardoni parse it.
 
         /* these parameters are loaded from localstorage */

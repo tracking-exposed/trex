@@ -30,7 +30,7 @@ function getScreenshotFilename() {
     global.lastScreenTime = now;
     /* screenshotPrefix would exist as a directory */
     return path.join(global.screenshotPrefix,
-        `${global.currentURLlabel}-${global.lastScreenTime.format("YYYY-MM-DD-HH-mm-SS")}.jpeg`);
+        `${global.currentURLlabel}-${global.lastScreenTime.toISOString()}.jpeg`);
 }
 
 async function consoleLogParser(page, message) {
@@ -40,7 +40,7 @@ async function consoleLogParser(page, message) {
     const consoleline = message.text();
     if( global.publicKeySpot === null && consoleline.match(/publicKey/) ) {
         const material = JSON.parse(consoleline);
-        global.publicKeySpot = material.publicKey;
+        global.publicKeySpot = material.response.publicKey;
     }
     if(consoleline.match(scrnshtrgxp)) {
         const fdestname = getScreenshotFilename();

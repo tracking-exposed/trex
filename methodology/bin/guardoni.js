@@ -180,7 +180,7 @@ async function readExperiment(profinfo) {
   /* this function is invoked to dispatch the assistance window.
    * it is a piece of dead code, at the moment, but this would 
    * start when --auto is invoked */
-  let page, experiment = null;
+  let page; let experiment = null;
 
   const browser = await dispatchBrowser(false, profinfo);
 
@@ -271,7 +271,7 @@ function buildAPIurl(route, params) {
 }
 
 function profileExecount(profile, evidencetag) {
-  let data, newProfile = false;
+  let data; let newProfile = false;
   const udd = path.resolve(path.join('profiles', profile));
   const guardfile = path.join(udd, 'guardoni.json');
   if (!fs.existsSync(udd)) {
@@ -339,9 +339,14 @@ async function main() {
 
   const auto = nconf.get('auto');
   const shadowban = nconf.get('shadowban');
-  const directiveType = !!shadowban ? "chiaroscuro" : "comparison";
   let experiment = nconf.get('experiment');
   const sourceUrl = nconf.get('csv');
+
+  /* directiveType is an important variable but when
+     --experiment is used, it is not specify. Therefore
+     is set below, after the directive is pull */
+  let directiveType = experiment ? null:
+    (shadowban ? "chiaroscuro" : "comparison");
 
   if(!auto && !sourceUrl && !experiment) {
     printHelp();
@@ -420,8 +425,10 @@ async function main() {
 
   directiveurl = buildAPIurl('directives', experiment)
   const directives = await pullDirectives(directiveurl);
+  directiveType = _.first(directives).name ? "chiaroscuro" : "comparison";
 
-  debug("Loaded %d directives from %s", directives.length, directiveurl);
+  debug("Loaded %d directives, detected type [%s] from %s",
+    directives.length, directiveType, directiveurl);
 
   await writeExperimentInfo(experiment, profinfo, evidencetag, directiveType);
 
@@ -432,7 +439,7 @@ async function main() {
     await allowResearcherSomeTimeToSetupTheBrowser(profinfo.profileName);
 
   const t = await guardoniExecution(experiment, directives, browser, profinfo);
-  debug("— Guardoni execution took %s",
+  console.log("— Guardoni execution completed in ",
     moment.duration(t.end - t.start).humanize());
   await concludeExperiment(experiment, profinfo);
   process.exit(0);
@@ -444,6 +451,7 @@ async function writeExperimentInfo(experimentId, profinfo, evidencetag, directiv
   const expinfo = {
     experimentId,
     evidencetag,
+    directiveType,
     execount: profinfo.execount,
     newProfile: profinfo.newProfile,
     when: new Date()
@@ -502,7 +510,7 @@ async function dispatchBrowser(headless, profinfo) {
 }
 
 async function guardoniExecution(experiment, directives, browser, profinfo) {
-  let retval = { start: null };
+  const retval = { start: null };
   retval.start = moment();
   const directiveType = _.first(directives).name ? "chiaroscuro" : "comparison";
   try {
@@ -537,10 +545,9 @@ async function concludeExperiment(experiment, profinfo) {
     method: 'DELETE'
   });
   const body = await response.json();
-  if(body.acknowledged === true)
-    debug("Experiment %s marked as completed on the server!", experiment);
-  else
+  if(body.acknowledged !== true)
     debug("Error in communication with the server o_O (%j)", body);
+  //  debug("Experiment %s marked as completed on the server!", experiment);
 }
 
 async function operateTab(page, directive) {
@@ -599,11 +606,11 @@ function initialSetup() {
 
   // backend is an option we don't even disclose in the help, 
   // as only developers needs it --chrome as well
-  if(!!nconf.get('auto')) {
+  if(nconf.get('auto')) {
     info("AUTO mode. No mandatory options; --profile, --evidencetag OPTIONAL")
-  } else if(!!nconf.get('csv')) {
+  } else if(nconf.get('csv')) {
     info("CSV mode: default is --comparison (special is --shadowban); Guardoni exit after upload")
-  } else if(!!nconf.get('experiment')) {
+  } else if(nconf.get('experiment')) {
     info("EXPERIMENT mode: no mandatory options; --profile, --evidencetag OPTIONAL")
   }
 
@@ -647,13 +654,13 @@ async function validateAndStart(manifest) {
    */
   const MINIMUM_ACCEPTABLE_MAJOR = 8;
   if(_.parseInt(vblocks[1]) < MINIMUM_ACCEPTABLE_MAJOR) {
-    console.log("Error/Warning: in the directory 'extension/' the software is too old!");
+    console.log("Error/Warning: in the directory 'extension/' the software is too old: remove it!");
     process.exit(1);
   }
 
   if(!_.startsWith(vblocks[2], '99')) {
-    console.log("Warning/Reminder: the extension used might not be opt-in! you need to do it by hand");
-    console.log("Press any key to start");
+    console.log("Warning/Reminder: the extension used might not be opt-in! YOU NEED TO DO IT BY HAND");
+    console.log("<Press any key to start>");
     await keypress();
   }
 
