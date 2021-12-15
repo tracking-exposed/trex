@@ -10,6 +10,7 @@
   "workspaces": [
     "shared",
     "backend",
+    "methodology",
     "YCAI"
   ],
   "packageManager": "yarn@3.1.1",
@@ -20,6 +21,7 @@
     "test": "jest",
     "shared": "yarn workspace shared",
     "backend": "yarn workspace yttrex-backend",
+    "methodology": "yarn workspace guardoni",
     "ycai": "yarn workspace YCAI",
     "lint-staged": "lint-staged"
   },

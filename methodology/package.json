@@ -5,12 +5,10 @@
   "scripts": {
     "pkg": "pkg ./package.json && sh ./bin/post-compile.sh",
     "tsc": "tsc",
-    "electron": "electron ./build/electron/index.js",
-    "electron:debug": "electron --inspect=5858 ./build/electron/index.js"
+    "build": "tsc -b",
+    "electron": "electron ./build/electron/index.js"
   },
-  "bin": {
-    "guardoni": "./build/guardoni-cli.js"
-  },
+  "bin": "./build/guardoni-cli.js",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/tracking-exposed/yttrex.git"
