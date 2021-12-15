@@ -3,7 +3,10 @@
   "version": "1.9.0",
   "description": "Guardoni is a tool to automate access and coordinate personalization algorithm analysis",
   "scripts": {
-    "pkg": "pkg ./package.json && sh ./bin/post-compile.sh"
+    "pkg": "pkg ./package.json && sh ./bin/post-compile.sh",
+    "tsc": "tsc",
+    "electron": "electron ./build/electron/index.js",
+    "electron:debug": "electron --inspect=5858 ./build/electron/index.js"
   },
   "bin": "./bin/guardoni.js",
   "repository": {
@@ -21,17 +24,24 @@
   "dependencies": {
     "csv-parse": "^4.15.3",
     "debug": "^4.3.2",
+    "electron": "^16.0.4",
     "eslint": "^8.4.1",
     "lodash": "^4.17.21",
     "moment": "^2.29.1",
     "nconf": "^0.11.3",
     "node-fetch": "^2.6.6",
     "puppeteer": "^10.4.0",
+    "puppeteer-core": "^13.0.0",
     "puppeteer-extra": "^3.2.3",
-    "puppeteer-extra-plugin-stealth": "^2.9.0"
+    "puppeteer-extra-plugin-stealth": "^2.9.0",
+    "puppeteer-in-electron": "^3.0.5"
   },
   "devDependencies": {
-    "pkg": "^5.4.1"
+    "@types/electron": "^1.6.10",
+    "@types/react": "^17.0.37",
+    "electron-reload": "^2.0.0-alpha.1",
+    "pkg": "^5.4.1",
+    "typescript": "^4.5.4"
   },
   "pkg": {
     "scripts": [

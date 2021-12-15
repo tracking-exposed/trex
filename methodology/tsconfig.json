@@ -1,0 +1,34 @@
+{
+  "extends": "../tsconfig.json",
+  "compilerOptions": {
+    "allowJs": true,
+    "strict": false,
+    "target": "ES3",
+    "lib": ["ESNext", "DOM"],
+    "jsx": "react",
+    "outDir": "./build",
+    "rootDir": "./src",
+    "baseUrl": "./",
+    "esModuleInterop": true,
+    "typeRoots": [
+      "../node_modules/@types",
+      "node_modules/@types",
+    ],
+    "paths": {
+      "@shared/*": ["../shared/src/*"]
+    }
+  },
+  "include": [
+    "./src",
+  ],
+  "watchOptions": {
+    "watchFile": "useFsEvents",
+    "watchDirectory": "useFsEvents",
+    "synchronousWatchDirectory": true
+  },
+  "references": [
+    {
+      "path": "../shared"
+    }
+  ]
+}
