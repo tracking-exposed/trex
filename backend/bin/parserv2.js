@@ -9,6 +9,7 @@ const nconf = require('nconf');
 const JSDOM = require('jsdom').JSDOM;
 const fs = require('fs');
 
+const conditionalDownload = require('../parsers/thumbnail');
 const videoparser = require('../parsers/video');
 const longlabel = require('../parsers/longlabel');
 const homeparser = require('../parsers/home');
@@ -200,6 +201,10 @@ async function newLoop(htmlFilter) {
 
     const analysis = _.map(htmls.content, processEachHTML);
     /* analysis is a list with [ impression, metadata ] */
+
+    /* after the parsing process, eventually we download 
+     * the thumbnails if an experiment is seen */
+    await conditionalDownload(analysis);
 
     const updates = [];
     for (const entry of _.compact(analysis)) {
