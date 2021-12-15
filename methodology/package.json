@@ -8,7 +8,9 @@
     "electron": "electron ./build/electron/index.js",
     "electron:debug": "electron --inspect=5858 ./build/electron/index.js"
   },
-  "bin": "./bin/guardoni.js",
+  "bin": {
+    "guardoni": "./build/guardoni-cli.js"
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/tracking-exposed/yttrex.git"

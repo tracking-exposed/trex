@@ -1,18 +1,19 @@
-#!/usr/bin/env node
-const _ = require('lodash');
-const debug = require('debug')('guardoni:notes');
-const info = require('debug')('guardoni:info');
-const puppeteer = require("puppeteer-extra")
-const pluginStealth = require("puppeteer-extra-plugin-stealth");
-const fs = require('fs');
-const path = require('path');
-const nconf = require('nconf');
-const moment = require('moment');
-const fetch = require('node-fetch');
-const execSync = require('child_process').execSync;
-const parse = require('csv-parse/lib/sync');
+/* eslint-disable */
 
-const domainSpecific = require('../src/domainSpecific');
+const _ = require("lodash");
+const debug = require("debug")("guardoni:notes");
+const info = require("debug")("guardoni:info");
+const puppeteer = require("puppeteer-extra");
+const pluginStealth = require("puppeteer-extra-plugin-stealth");
+const fs = require("fs");
+const path = require("path");
+const nconf = require("nconf");
+const moment = require("moment");
+const fetch = require("node-fetch");
+const execSync = require("child_process").execSync;
+const parse = require("csv-parse/lib/sync");
+
+const domainSpecific = require("./domainSpecific");
 
 const COMMANDJSONEXAMPLE = "https://youtube.tracking.exposed/json/automation-example.json";
 const EXTENSION_WITH_OPT_IN_ALREADY_CHECKED="https://github.com/tracking-exposed/yttrex/releases/download/v1.8.992/extension-1.9.0.99.zip";
@@ -20,49 +21,64 @@ const EXTENSION_WITH_OPT_IN_ALREADY_CHECKED="https://github.com/tracking-exposed
 const defaultCfgPath = path.join("config", "default.json");
 nconf.argv().env();
 nconf.defaults({
-  config: defaultCfgPath
+  config: defaultCfgPath,
 });
-const configFile = nconf.get('config');
+const configFile = nconf.get("config");
 nconf.argv().env().file(configFile);
 
-/* this also happens in 'src/domainSpecific' and causes debug to print regardless of the 
+/* this also happens in 'src/domainSpecific' and causes debug to print regardless of the
  * environment variable sets */
 debug.enabled = info.enabled = true;
 
-const server = nconf.get('backend') ?
-  ( _.endsWith(nconf.get('backend'), '/') ? 
-    nconf.get('backend').replace(/\/$/, '') : nconf.get('backend') ) : 
-  'https://youtube.tracking.exposed';
+const server = nconf.get("backend")
+  ? _.endsWith(nconf.get("backend"), "/")
+    ? nconf.get("backend").replace(/\/$/, "")
+    : nconf.get("backend")
+  : "https://youtube.tracking.exposed";
 
 async function keypress() {
-  process.stdin.setRawMode(true)
-  return new Promise(resolve => process.stdin.once('data', () => {
-    process.stdin.setRawMode(false)
-    resolve()
-  }))
+  process.stdin.setRawMode(true);
+  return new Promise((resolve) =>
+    process.stdin.once("data", () => {
+      process.stdin.setRawMode(false);
+      resolve();
+    })
+  );
 }
 
 async function allowResearcherSomeTimeToSetupTheBrowser(profileName) {
-  console.log("\n\n.:*~*:._.:*~*:._.:*~*:._.:*~*:._.:*~*:._.:*~*:._.:*~*:._.:*~*:._.:*~*:.");
+  console.log(
+    "\n\n.:*~*:._.:*~*:._.:*~*:._.:*~*:._.:*~*:._.:*~*:._.:*~*:._.:*~*:._.:*~*:."
+  );
   console.log("Creating profile", profileName);
-  console.log("You should see a chrome browser (with yttrex installed)")
-  console.log("\nPLEASE in that window, open youtube.com and accept cookie banner.");
+  console.log("You should see a chrome browser (with yttrex installed)");
+  console.log(
+    "\nPLEASE in that window, open youtube.com and accept cookie banner."
+  );
   console.log("ONLY AFTER, press ANY KEY here. It will start the collection");
   console.log("\n(If you don't accept the cookie banner the test might fail)");
-  console.log("\nnext time you'll use the same profile, this step would not appear.");
-  console.log('\n~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~');
+  console.log(
+    "\nnext time you'll use the same profile, this step would not appear."
+  );
+  console.log(
+    "\n~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~"
+  );
   await keypress();
-  console.log("\n[Received] Reproduction starts now!")
+  console.log("\n[Received] Reproduction starts now!");
 }
 
 function downloadExtension(zipFileP) {
-  debug("Executing curl and unzip (if these binary aren't present in your system please mail support at tracking dot exposed because you might have worst problems)");
-  execSync('curl -L ' + EXTENSION_WITH_OPT_IN_ALREADY_CHECKED + " -o " + zipFileP);
-  execSync('unzip ' + zipFileP + " -d extension");
+  debug(
+    "Executing curl and unzip (if these binary aren't present in your system please mail support at tracking dot exposed because you might have worst problems)"
+  );
+  execSync(
+    "curl -L " + EXTENSION_WITH_OPT_IN_ALREADY_CHECKED + " -o " + zipFileP
+  );
+  execSync("unzip " + zipFileP + " -d extension");
 }
 
 function getChromePath() {
-  // this function check for standard chrome executabled path and 
+  // this function check for standard chrome executabled path and
   // return it. If not found, raise an error
   const knownPaths = [
     "/usr/bin/google-chrome",
@@ -71,12 +87,14 @@ function getChromePath() {
     "/Applications/Chromium.app/Contents/MacOS/Chromium",
   ];
 
-  const chromePath = _.find(knownPaths, function(p) {
+  const chromePath = _.find(knownPaths, function (p) {
     return fs.existsSync(p);
-  })
-  if(!chromePath) {
+  });
+  if (!chromePath) {
     console.log("Tried to guess your Chrome executable and wasn't found");
-    console.log("Solutions: Install Google Chrome in your system or contact the developers");
+    console.log(
+      "Solutions: Install Google Chrome in your system or contact the developers"
+    );
     process.exit(1);
   }
   return chromePath;
@@ -95,63 +113,73 @@ function buildAPIurl(route, params) {
 4. it would then access to the directive API, and by using the experimentId, will then perform the searches as instructed.
 */
 async function registerCSV(directiveType) {
-
-  const csvfile = nconf.get('csv');
+  const csvfile = nconf.get("csv");
 
   let records;
   try {
-    const input = fs.readFileSync(csvfile, 'utf-8');
+    const input = fs.readFileSync(csvfile, "utf-8");
     records = parse(input, {
       columns: true,
-      skip_empty_lines: true
+      skip_empty_lines: true,
     });
-    debug("Read input from file %s (%d bytes) %d records",
-      csvfile, input.length, records.length);
-  } catch(error) {
+    debug(
+      "Read input from file %s (%d bytes) %d records",
+      csvfile,
+      input.length,
+      records.length
+    );
+  } catch (error) {
     console.log("Error: invalid CSV file from options --csv ", error.message);
-    process.exit(1)
+    process.exit(1);
   }
 
-  const uniqueKeys = _.sortBy(_.uniq(_.flatten(_.map(records, _.keys))), 'length');
+  const uniqueKeys = _.sortBy(
+    _.uniq(_.flatten(_.map(records, _.keys))),
+    "length"
+  );
   let euk = []; // effective unique keys
-  if(directiveType === 'chiaroscuro')
-    euk = _.sortBy(["videoURL", "title"], 'length');
-  else if(directiveType === 'comparison')
+  if (directiveType === "chiaroscuro")
+    euk = _.sortBy(["videoURL", "title"], "length");
+  else if (directiveType === "comparison")
     euk = _.sortBy(["url", "urltag", "watchFor"]);
-  else
-    throw new Error("Unmanaged directiveType");
+  else throw new Error("Unmanaged directiveType");
 
-  if(_.filter(uniqueKeys, function(keyavail) {
-    return euk.indexOf(keyavail) === -1;
-  }).length) {
+  if (
+    _.filter(uniqueKeys, function (keyavail) {
+      return euk.indexOf(keyavail) === -1;
+    }).length
+  ) {
     console.log("Invalid CSV key read. expected only these:", euk);
-    console.log("You can find examples on https://youtube.tracking.exposed/guardoni");
+    console.log(
+      "You can find examples on https://youtube.tracking.exposed/guardoni"
+    );
     process.exit(1);
   } else {
-    debug("CSV validated in [%s] format specifications",
-      directiveType);
+    debug("CSV validated in [%s] format specifications", directiveType);
   }
 
-  const registeruri = buildAPIurl('directives', directiveType);
+  const registeruri = buildAPIurl("directives", directiveType);
   // implemented in backend/routes/directives.js
   debug("Registering CSV via %s", registeruri);
 
   try {
     const commit = await fetch(registeruri, {
-      method: 'POST',
+      method: "POST",
       body: JSON.stringify({ parsedCSV: records }),
       headers: {
-        "Content-Type": "application/json; charset=utf-8"
-      }
+        "Content-Type": "application/json; charset=utf-8",
+      },
     });
-    const experimentInfo = await commit.json(); 
-    if(experimentInfo.error)
-      return console.log("Error received from the server: ", experimentInfo.message);
-    
+    const experimentInfo = await commit.json();
+    if (experimentInfo.error)
+      return console.log(
+        "Error received from the server: ",
+        experimentInfo.message
+      );
+
     return experimentInfo;
     // contains .experimentId and .status (created|exist)
-
-  } catch(error) {
+  } catch (error) {
     console.log("Failure in talking with API:", error.message);
     return null;
   }
@@ -160,7 +188,7 @@ async function registerCSV(directiveType) {
 async function pullDirectives(sourceUrl) {
   let directives = null;
   try {
-    if (_.startsWith(sourceUrl, 'http')) {
+    if (_.startsWith(sourceUrl, "http")) {
       const response = await fetch(sourceUrl);
       if (response.status !== 200) {
         console.log("Error in fetching directives from URL", response.status);
@@ -199,18 +227,18 @@ async function readExperiment(profinfo) {
       await opage.close();
     });
 
-    const introPage = path.join(process.cwd(), 'static', 'index.html');
+    const introPage = path.join(process.cwd(), "static", "index.html");
     await page.goto(introPage);
   } catch (error) {
     debug("Browser forcefully closed? %s", error.message);
     if (experiment)
       return {
         experiment,
-        sourceUrl: buildAPIurl('directives', experiment),
-      }
+        sourceUrl: buildAPIurl("directives", experiment),
+      };
     else {
-      console.log("Browser closed before experiment was selected: quitting")
-      process.exit(1)
+      console.log("Browser closed before experiment was selected: quitting");
+      process.exit(1);
     }
   }
 
@@ -220,13 +248,15 @@ async function readExperiment(profinfo) {
       inputs = await page.$$eval("input[type=radio]", function (elist) {
         return elist.map(function (e) {
           if (e.checked) {
-            return { experiment: e.getAttribute('experimentId') };
+            return { experiment: e.getAttribute("experimentId") };
           }
-        })
-      })
+        });
+      });
     } catch (error) {
       clearInterval(poller);
-      console.log("Failure in interacting with browser, still you've to wait a few seconds. Error message:");
+      console.log(
+        "Failure in interacting with browser, still you've to wait a few seconds. Error message:"
+      );
       console.log("\t" + error.message);
     }
 
@@ -234,7 +264,7 @@ async function readExperiment(profinfo) {
     if (selected.length) {
       experiment = selected[0].experiment;
       await page.$eval("#nextstep", function (e) {
-        e.removeAttribute('disabled');
+        e.removeAttribute("disabled");
       });
     }
 
@@ -243,16 +273,16 @@ async function readExperiment(profinfo) {
       page.waitForTimeout(900);
       page.goto("https://www.youtube.com");
     }
-
   }, 1600);
 
   const seconds = 30;
-  console.log(`You've ${seconds} seconds to select your experiment and accept cookies banner on YouTube!;`)
+  console.log(
+    `You've ${seconds} seconds to select your experiment and accept cookies banner on YouTube!;`
+  );
 
   try {
     await page.waitForTimeout(1000 * seconds);
-    if (!experiment)
-      clearInterval(poller);
+    if (!experiment) clearInterval(poller);
     await browser.close();
   } catch (error) {
     console.log("Error in browser/page control:", error.message);
@@ -266,8 +296,8 @@ async function readExperiment(profinfo) {
 
   return {
     experiment,
-    sourceUrl: buildAPIurl('directives', experiment),
-  }
+    sourceUrl: buildAPIurl("directives", experiment),
+  };
 }
 
 function profileExecount(profile, evidencetag) {
@@ -277,16 +307,16 @@ function profileExecount(profile, evidencetag) {
   if (!fs.existsSync(udd)) {
     console.log("--profile hasn't a directory. Creating " + udd);
     try {
-      fs.mkdirSync(udd, {recursive: true});
+      fs.mkdirSync(udd, { recursive: true });
     } catch (error) {
       console.log("Unable to create directory:", error.message);
-      process.exit(1)
+      process.exit(1);
     }
     newProfile = true;
   }
 
   if (!newProfile) {
-    const jdata = fs.readFileSync(guardfile, 'utf-8');
+    const jdata = fs.readFileSync(guardfile, "utf-8");
     data = JSON.parse(jdata);
     debug("profile %s read %d execount", profile, data.execount);
     data.execount += 1;
@@ -294,14 +324,14 @@ function profileExecount(profile, evidencetag) {
   } else {
     data = {
       execount: 1,
-      evidencetags: [evidencetag]
-    }
+      evidencetags: [evidencetag],
+    };
   }
 
   data.newProfile = newProfile;
   data.profileName = profile;
   data.udd = udd;
-  fs.writeFileSync(guardfile, JSON.stringify(data, undefined, 2), 'utf-8');
+  fs.writeFileSync(guardfile, JSON.stringify(data, undefined, 2), "utf-8");
   debug("profile %s wrote %j", profile, data);
   return data;
 }
@@ -330,9 +360,13 @@ Advanced options:
 .:*~*:._.:*~*:._.:*~*:._.:*~*:._.:*~*:._.:*~*:._.:*~*:._.:*~*:._.:*~*:.
 \nhttps://youtube.tracking.exposed/guardoni for full documentation.
 You need a reliable internet connection to ensure a flawless collection`;
-  console.log(".:*~*:._.:*~*:._.:*~*:._.:*~*:._.:*~*:._.:*~*:._.:*~*:._.:*~*:._.:*~*:.");
+  console.log(
+    ".:*~*:._.:*~*:._.:*~*:._.:*~*:._.:*~*:._.:*~*:._.:*~*:._.:*~*:._.:*~*:."
+  );
   console.log(helptext);
-  console.log('~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~');
+  console.log(
+    "~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~"
+  );
 }
 
 async function writeExperimentInfo(experimentId, profinfo, evidencetag, directiveType) {
@@ -369,58 +403,69 @@ async function main() {
     process.exit(1);
   }
 
-  if(auto === "2") {
-    debug("Selected experiment n.2 (codename: Naomi)")
+  if (auto === "2") {
+    debug("Selected experiment n.2 (codename: Naomi)");
     experiment = "d75f9eaf465d2cd555de65eaf61a770c82d59451";
-  } else if(auto === "1" || !!nconf.get('auto')) {
-    debug("Selected experiment n.1 (codename: Greta)")
+  } else if (auto === "1" || !!nconf.get("auto")) {
+    debug("Selected experiment n.1 (codename: Greta)");
     experiment = "37384a9b7dff26184cdea226ad5666ca8cbbf456";
   }
 
   if (sourceUrl) {
-
     debug("Registering CSV %s as %s", sourceUrl, directiveType);
-    const feedback = await registerCSV(directiveType)
-    if(feedback && feedback.since) {
-      debug("CSV %s, experimentId %s exists since %s",
-        feedback.status, feedback.experimentId, feedback.since);
+    const feedback = await registerCSV(directiveType);
+    if (feedback && feedback.since) {
+      debug(
+        "CSV %s, experimentId %s exists since %s",
+        feedback.status,
+        feedback.experimentId,
+        feedback.since
+      );
       console.log(feedback.experimentId);
-    }
-    else if(feedback && feedback.experimentId) {
-      debug("Directive from CSV created: experimentId %s",
-        feedback.experimentId);
+    } else if (feedback && feedback.experimentId) {
+      debug(
+        "Directive from CSV created: experimentId %s",
+        feedback.experimentId
+      );
       console.log(feedback.experimentId);
-    }
-    else
-      console.log("CSV error in upload.");
+    } else console.log("CSV error in upload.");
 
     process.exit(1);
   }
 
-  if(experiment && (!_.isString(experiment) || experiment.length < 20)) {
+  if (experiment && (!_.isString(experiment) || experiment.length < 20)) {
     console.log("\n--experiment awaits for an experiment ID, try it out:");
-    console.log("For example: --experiment d75f9eaf465d2cd555de65eaf61a770c82d59451");
+    console.log(
+      "For example: --experiment d75f9eaf465d2cd555de65eaf61a770c82d59451"
+    );
     process.exit(1);
   }
 
-  if(sourceUrl && experiment) {
-    console.log("Error: when registering a CSV, you can't specify the --experiment");
+  if (sourceUrl && experiment) {
+    console.log(
+      "Error: when registering a CSV, you can't specify the --experiment"
+    );
     process.exit(1);
   }
 
   const evidencetag = nconf.get('evidencetag') || 'no-tag-' + _.random(0, 0xffff);
   let profile = nconf.get('profile');
   if (!profile)
-    profile = nconf.get('evidencetag') ?
-      evidencetag : `guardoni-${moment().format("YYYY-MM-DD")}`;
+    profile = nconf.get("evidencetag")
+      ? evidencetag
+      : `guardoni-${moment().format("YYYY-MM-DD")}`;
   /* if not profile, if evidencetag take it, or use a daily profile */
 
-  debug("Configuring browser for profile %s (evidencetag %s)", profile, evidencetag);
+  debug(
+    "Configuring browser for profile %s (evidencetag %s)",
+    profile,
+    evidencetag
+  );
   const profinfo = await profileExecount(profile, evidencetag);
   let directiveurl = null;
 
-  if(experiment && !sourceUrl) {
-    directiveurl = buildAPIurl('directives', experiment);
+  if (experiment && !sourceUrl) {
+    directiveurl = buildAPIurl("directives", experiment);
     debug("Fetching experiment directives (%s)", directiveurl);
   }
 
@@ -439,7 +484,7 @@ async function main() {
 
   debug("Profile %s pulling directive %s", profile, directiveurl);
 
-  directiveurl = buildAPIurl('directives', experiment)
+  directiveurl = buildAPIurl("directives", experiment);
   const directives = await pullDirectives(directiveurl);
   directiveType = _.first(directives).name ? "chiaroscuro" : "comparison";
 
@@ -448,10 +493,10 @@ async function main() {
 
   await writeExperimentInfo(experiment, profinfo, evidencetag, directiveType);
 
-  const headless = (!!nconf.get('headless'));
+  const headless = !!nconf.get("headless");
   const browser = await dispatchBrowser(headless, profinfo);
 
-  if(browser.newProfile)
+  if (browser.newProfile)
     await allowResearcherSomeTimeToSetupTheBrowser(profinfo.profileName);
 
   const t = await guardoniExecution(experiment, directives, browser, profinfo);
@@ -464,48 +509,50 @@ async function main() {
 
 
 async function dispatchBrowser(headless, profinfo) {
-
   const cwd = process.cwd();
-  const dist = path.resolve(path.join(cwd, 'extension'));
+  const dist = path.resolve(path.join(cwd, "extension"));
   const newProfile = profinfo.newProfile;
   const execount = profinfo.execount;
   const chromePath = getChromePath();
-  const proxy = nconf.get('proxy');
+  const proxy = nconf.get("proxy");
 
-  const commandLineArg = ["--no-sandbox",
+  const commandLineArg = [
+    "--no-sandbox",
     "--disabled-setuid-sandbox",
     "--load-extension=" + dist,
     "--disable-extensions-except=" + dist,
   ];
 
-  if(proxy) {
-    if(!_.startsWith(proxy, 'socks5://')) {
+  if (proxy) {
+    if (!_.startsWith(proxy, "socks5://")) {
       console.log("Error, --proxy must start with socks5://");
       process.exit(1);
     }
     commandLineArg.push("--proxy-server=" + proxy);
-    debug("Dispatching browser: profile usage count %d proxy %s",
-      execount, proxy);
+    debug(
+      "Dispatching browser: profile usage count %d proxy %s",
+      execount,
+      proxy
+    );
+  } else {
+    debug(
+      "Dispatching browser: profile usage count %d, with NO PROXY",
+      execount
+    );
   }
-  else {
-    debug("Dispatching browser: profile usage count %d, with NO PROXY",
-      execount);
-  }
-
   try {
     puppeteer.use(pluginStealth());
     const browser = await puppeteer.launch({
-        headless,
-        userDataDir: profinfo.udd,
-        executablePath: chromePath,
-        args: commandLineArg,
+      headless,
+      userDataDir: profinfo.udd,
+      executablePath: chromePath,
+      args: commandLineArg,
     });
 
     // add this boolean to the return value as we need it in a case
     browser.newProfile = newProfile;
     return browser;
-
-  } catch(error) {
+  } catch (error) {
     console.log("Error in dispatchBrowser:", error.message);
     await browser.close();
     process.exit(1);
@@ -513,7 +560,6 @@ async function dispatchBrowser(headless, profinfo) {
 }
 
 async function operateTab(page, directive) {
-
   try {
     await domainSpecific.beforeLoad(page, directive);
   } catch(error) {
@@ -527,13 +573,13 @@ async function operateTab(page, directive) {
 
   // TODO the 'timeout' would allow to repeat this operation with
   // different parameters. https://stackoverflow.com/questions/60051954/puppeteer-timeouterror-navigation-timeout-of-30000-ms-exceeded
-  await page.goto(directive.url, { 
+  await page.goto(directive.url, {
     waitUntil: "networkidle0",
   });
 
   try {
     await domainSpecific.beforeWait(page, directive);
-  } catch(error) {
+  } catch (error) {
     console.log("error in beforeWait", error.message, error.stack);
   }
 
@@ -543,7 +589,7 @@ async function operateTab(page, directive) {
 
   try {
     await domainSpecific.afterWait(page, directive);
-  } catch(error) {
+  } catch (error) {
     console.log("Error in afterWait", error.message, error.stack);
   }
   debug("— Completed %s", directive.urltag ? directive.urltag : directive.name);
@@ -554,7 +600,7 @@ function initialSetup() {
   if(!!nconf.get('h') || !!nconf.get('?') || process.argv.length < 3)
     return printHelp();
 
-  // backend is an option we don't even disclose in the help, 
+  // backend is an option we don't even disclose in the help,
   // as only developers needs it --chrome as well
   if(nconf.get('auto')) {
     info("AUTO mode. No mandatory options; --profile, --evidencetag OPTIONAL")
@@ -565,25 +611,31 @@ function initialSetup() {
   }
 
   // check if the additional directory for screenshot is present
-  const advdump = nconf.get('advdump');
-  if(advdump) {
+  const advdump = nconf.get("advdump");
+  if (advdump) {
     /* if the advertisement dumping folder is set, first we check
      * if exist, and if doens't we call it fatal error */
-    if(!fs.existsSync(advdump)) {
+    if (!fs.existsSync(advdump)) {
       debug("--advdump folder (%s) not exist: creating", advdump);
-      fs.mkdirSync(advdump, {recursive: true});
+      fs.mkdirSync(advdump, { recursive: true });
     }
-    debug("Advertisement screenshotting enable in folder: %s", path.resolve(advdump));
+    debug(
+      "Advertisement screenshotting enable in folder: %s",
+      path.resolve(advdump)
+    );
   }
 
   const cwd = process.cwd();
-  const dist = path.resolve(path.join(cwd, 'extension'));
-  const manifest = path.resolve(path.join(cwd, 'extension', 'manifest.json'));
-  if(!fs.existsSync(dist))
-    fs.mkdirSync(dist);
-  if(!fs.existsSync(manifest)) {
-    console.log('Manifest in ' + dist + ' not found, the script now would download & unpack');
-    const tmpzipf = path.resolve(path.join(cwd, 'extension', 'tmpzipf.zip'));
+  const dist = path.resolve(path.join(cwd, "extension"));
+  const manifest = path.resolve(path.join(cwd, "extension", "manifest.json"));
+  if (!fs.existsSync(dist)) fs.mkdirSync(dist);
+  if (!fs.existsSync(manifest)) {
+    console.log(
+      "Manifest in " +
+        dist +
+        " not found, the script now would download & unpack"
+    );
+    const tmpzipf = path.resolve(path.join(cwd, "extension", "tmpzipf.zip"));
     console.log("Using " + tmpzipf + " as temporary file");
     downloadExtension(tmpzipf);
   }
@@ -655,7 +707,7 @@ async function validateAndStart(manifest) {
   /* initial test is meant to assure the extension is an acceptable version */
 
   const manifestValues = JSON.parse(fs.readFileSync(manifest));
-  const vblocks = manifestValues.version.split('.');
+  const vblocks = manifestValues.version.split(".");
   /* guardoni versioning explained:
     1.MAJOR.MINOR, 
     MINOR that starts with 99 or more 99 are meant to be auto opt-in
@@ -675,18 +727,15 @@ async function validateAndStart(manifest) {
   }
 
   /* this finally start the main execution */
-  await main ();
+  await main();
 }
 
 try {
-
   const manifest = initialSetup();
-  if(!manifest)
-    process.exit(1);
+  if (!manifest) process.exit(1);
 
   validateAndStart(manifest);
-
-} catch(error) {
+} catch (error) {
   console.error(error);
   console.error("⬆️ Unhandled error! =( ⬆️");
   process.exit(1);
