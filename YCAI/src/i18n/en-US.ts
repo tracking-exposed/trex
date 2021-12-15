@@ -185,6 +185,7 @@ const resources: CustomTypeOptions['resources'] = {
     secondTab: 'Community Recommendations',
     thirdTab: 'Youtube Recommendations',
     distractionFree: 'Enjoy a distraction-free experience',
+    noCCRecommendations: 'This creator has not uploaded customized recommendations yet. If you own this channel, you can do it <1>here</1>.',
   },
   swagger: {
     title: 'The YouChoose AI API workbench',

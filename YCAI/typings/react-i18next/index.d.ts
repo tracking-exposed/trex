@@ -156,6 +156,7 @@ declare module 'react-i18next' {
         secondTab: string;
         thirdTab: string;
         distractionFree: string;
+        noCCRecommendations: string;
       };
       routes: {
         lab_title: string;
