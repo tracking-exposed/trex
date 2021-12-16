@@ -58,7 +58,7 @@ async function downloadIfNew(videoId) {
 
 async function downloadFromVideoId(videoIds) {
     const retval = [];
-    for(videoId of videoIds) {
+    for(const videoId of videoIds) {
         const ret = await downloadIfNew(videoId);
         retval.push(ret);
     }

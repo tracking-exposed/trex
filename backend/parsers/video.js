@@ -267,7 +267,6 @@ function processVideo(D, blang, clientTime, urlinfo) {
         debuge("unexpected condition in channel/author mining, should be 2, is %d", check);
     */
 
-    let authorName; let authorSource = null;
     const authorinfo = mineAuthorInfo(D);
     if(!authorinfo)
         throw new Error("lack of mandatory HTML snippet!");

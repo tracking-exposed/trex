@@ -5,8 +5,6 @@ const debug = require('debug')('routes:personal');
 const automo = require('../lib/automo');
 const params = require('../lib/params');
 const CSV = require('../lib/CSV');
-const { csv } = require('./experiments');
-const { getConstantValue } = require('typescript');
 
 async function getPersonal(req) {
     const DEFMAX = 100;
