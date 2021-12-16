@@ -21,7 +21,7 @@ function reproducibleTypo(title) {
   return chunks.join(injection); */
 }
 
-function chiaroScuro(videoinfo, experimentId, counter) {
+function chiaroScuro(videoinfo, counter) {
   // this produces three conversion of the video under test
   // and it guarantee the conversion is reproducible
 
@@ -29,7 +29,6 @@ function chiaroScuro(videoinfo, experimentId, counter) {
   if(!videoId) {
     const m = "Invalid URL in shadowban experiment " +
       videoinfo.videoURL + " (expected a video URL)";
-    debug("Fatal error in experiment %s: %s", experimentId, m);
     throw new Error(m);
   }
 
@@ -91,10 +90,10 @@ function timeconv(maybestr, defaultMs) {
   }
 }
 
-function standardDirectives(videoinfo, counter) {
+function comparison(videoinfo, counter) {
   return {
     ...videoinfo, // watchTime, urltag, url
-    loadFor: 10000,
+    loadFor: 5000,
   };
 }
 
@@ -142,13 +141,13 @@ async function get(req) {
 
   if(expinfo.directiveType === 'chiaroscuro') {
     const directives = _.flatten(_.map(expinfo.links, function(vidblock, counter) {
-      return chiaroScuro(vidblock, experimentId, counter);
+      return chiaroScuro(vidblock, counter);
     } ));
     debug("ChiaroScuro %s produced %d", experimentId, directives.length);
     return { json: directives };
   } else {
     // expinfo.directiveType === 'comparison'
-    const directives = _.map(expinfo.links, standardDirectives);
+    const directives = _.map(expinfo.links, comparison);
     debug("Comparison %s produced %d", experimentId, directives.length);
     return { json: directives };
   }
@@ -158,6 +157,7 @@ async function get(req) {
 
 module.exports = {
   chiaroScuro,
+  comparison,
   post,
   get,
 };

@@ -242,27 +242,6 @@ async function getMetadataFromAuthorChannelId(channelId, options) {
     }
 };
 
-
-async function getRelatedByWatcher(publicKey, options) {
-    const mongoc = await mongo3.clientConnect({concurrency: 1});
-
-    const supporter = await mongo3.readOne(mongoc, nconf.get('schema').supporters, { publicKey });
-    if(!supporter)
-        throw new Error("publicKey do not match any user");
-
-    const related = await mongo3
-        .aggregate(mongoc, nconf.get('schema').metadata, [
-            { $match: { 'watcher': supporter.p }},
-            { $sort: { savingTime: -1 }},
-            { $skip: options.skip },
-            { $limit : options.amount },
-            { $lookup: { from: 'videos', localField: 'id', foreignField: 'id', as: 'videos' }},
-            { $unwind: '$related' }
-        ]);
-    await mongoc.close();
-    return related;
-}
-
 async function getVideosByPublicKey(publicKey, filter, htmlToo) {
     // refactor: this was a double purpose API but actually has only one pourpose. htmlToo should never be true here
     const mongoc = await mongo3.clientConnect({concurrency: 1});
@@ -664,10 +643,14 @@ async function pullExperimentInfo(publicKey) {
     // exist in a due time, we can be quite sure on the results
     // here
     const mongoc = await mongo3.clientConnect({concurrency: 1});
-    const exp = await mongo3.readOne(mongoc, nconf.get('schema').experiments,
-        { publicKey, status: "active" });
+    const exp = await mongo3.aggregate(mongoc, nconf.get('schema').experiments, [
+        { "$match": { publicKey, status: "active" } },
+        { "$lookup": { from: 'directives', localField: 'experimentId', foreignField: 'experimentId', as: 'directive' } }
+    ])
     await mongoc.close();
-    return exp || null;
+    if(exp && exp[0]?.directive[0].directiveType)
+        return _.first(exp);
+    return null;
 }
 
 async function registerDirective(links, directiveType) {
@@ -718,7 +701,6 @@ module.exports = {
     /* used by routes/personal */
     getSummaryByPublicKey,
     getMetadataByPublicKey,
-    getRelatedByWatcher,
     getVideosByPublicKey,
     deleteEntry,
 

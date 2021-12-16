@@ -187,26 +187,23 @@ async function list(req) {
 async function channel3(req) {
     // this is invoked as handshake, and might return information
     // helpful for the extension, about the experiment running.
-    const experimentInfo = {
-        publicKey: _.get(req.body, 'config.publicKey'),
-        href: _.get(req.body, 'href'),
-        experimentId: _.get(req.body, 'experimentId'),
-        evidencetag: _.get(req.body, 'evidencetag'),
-        execount: _.get(req.body, 'execount'),
-        newProfile: _.get(req.body, 'newProfile'),
-        testTime: new Date(_.get(req.body, 'when')) || undefined,
-        directiveType: _.get(req.body, 'directiveType'),
-    };
-    const retval = await automo.saveExperiment(experimentInfo);
+    const fields = [ 'href', 'experimentId',
+        'evidencetag', 'execount', 'newProfile', 'profileName',
+        'directiveType' ];
+    const experimentInfo = _.pick(req.body, fields);
 
+    experimentInfo.testName = new Date(req.body.when);
+    experimentInfo.publicKey = _.get(req.body, 'config.publicKey');
+
+    const retval = await automo.saveExperiment(experimentInfo);
     /* this is the default answer, as normally there is not an
      * experiment running */
     if(_.isNull(retval))
-        return { json: { experiment: false }};
+        return { json: { experimentId: false }};
 
-    debug("Marked experiment %s as 'active' for %s (%s)",
-        retval.experimentId, retval.publicKey, retval.testTime);
-
+    debug("Marked experiment as 'active' — %j", _.pick(retval, [
+        'evidencetag', 'execount', 'directiveType'
+    ]));
     return { json: retval };
 };
 
@@ -221,7 +218,7 @@ async function conclude3(req) {
         return { status: 403 };
     
     const retval = await automo.concludeExperiment(testTime);
-    debug("ConcludedExperiment retval %j", retval);
+    // retval is {"acknowledged":true,"modifiedCount":0,"upsertedId":null,"upsertedCount":0,"matchedCount":0}
     return { json: retval };
 }
 

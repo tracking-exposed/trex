@@ -210,6 +210,7 @@ function mineAuthorInfo(D) {
 
     const authorName = D.querySelector('a.ytd-video-owner-renderer').parentNode.querySelectorAll('a')[1].textContent;
     const authorSource = D.querySelector('a.ytd-video-owner-renderer').parentNode.querySelectorAll('a')[0].getAttribute('href');
+    const forKids = !!D.querySelector('a[href="https://www.youtubekids.com/"]');
 
     if( D.querySelector('a.ytd-video-owner-renderer')
             .parentNode
@@ -221,7 +222,7 @@ function mineAuthorInfo(D) {
                 .querySelectorAll('a')[1]
                 .getAttribute('href'), authorSource );
     }
-    return { authorName, authorSource };
+    return { forKids, authorName, authorSource };
 }
 
 function simpleTitlePicker(D) {
@@ -266,14 +267,9 @@ function processVideo(D, blang, clientTime, urlinfo) {
         debuge("unexpected condition in channel/author mining, should be 2, is %d", check);
     */
 
-    let authorName; let authorSource = null;
     const authorinfo = mineAuthorInfo(D);
-    if(authorinfo) {
-        authorName = authorinfo.authorName;
-        authorSource = authorinfo.authorSource;
-    } else {
+    if(!authorinfo)
         throw new Error("lack of mandatory HTML snippet!");
-    }
 
     const { publicationTime, publicationString, ifLang } = uxlang.sequenceForPublicationTime(D, blang, clientTime);
 
@@ -326,8 +322,7 @@ function processVideo(D, blang, clientTime, urlinfo) {
         publicationString,
         publicationTime,
         blang: blang || ifLang,
-        authorName,
-        authorSource,
+        ...authorinfo,
         related,
         viewInfo,
         likeInfo

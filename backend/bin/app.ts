@@ -127,7 +127,7 @@ export const makeApp = (ctx: MakeAppContext): express.Application => {
 
   /* API for researcher: get your related as single list */
   app.get(
-    "/api/v1/personal/:publicKey/related/:paging?",
+    "/api/v1/personal/:publicKey/related/:type/:paging?",
     iowrapper("getPersonalRelated")
   );
 
