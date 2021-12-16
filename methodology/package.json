@@ -3,10 +3,13 @@
   "version": "1.9.0",
   "description": "Guardoni is a tool to automate access and coordinate personalization algorithm analysis",
   "scripts": {
+    "clean": "rm -rf build/**",
     "pkg": "pkg ./package.json && sh ./bin/post-compile.sh",
     "lint": "eslint ./src",
-    "build": "tsc -b",
-    "electron": "electron ./build/electron/index.js"
+    "build": "webpack",
+    "watch:main": "webpack watch",
+    "watch:renderer": "webpack watch -c webpack.renderer.config.ts",
+    "electron": "electron ./build/desktop/index.js"
   },
   "bin": "./build/guardoni-cli.js",
   "repository": {
@@ -22,6 +25,9 @@
   "license": "AGPL-3.0-or-later",
   "homepage": "https://youtube.tracking.exposed/guardoni",
   "dependencies": {
+    "@material-ui/core": "^4.12.3",
+    "@material-ui/icons": "^4.11.2",
+    "@material-ui/lab": "^4.0.0-alpha.60",
     "csv-parse": "^4.15.3",
     "debug": "^4.3.2",
     "electron": "^16.0.4",
@@ -40,10 +46,20 @@
     "@types/electron": "^1.6.10",
     "@types/eslint": "^8.2.1",
     "@types/react": "^17.0.37",
+    "@types/webpack-node-externals": "^2.5.3",
+    "bufferutil": "^4.0.5",
+    "electron": "^14",
     "electron-reload": "^2.0.0-alpha.1",
     "eslint": "^8.4.1",
+    "fsevents": "^2.3.2",
     "pkg": "^5.4.1",
-    "typescript": "^4.5.4"
+    "style-loader": "^3.3.1",
+    "ts-loader": "^9.2.6",
+    "typescript": "^4.5.4",
+    "utf-8-validate": "^5.0.7",
+    "webpack": "^5.65.0",
+    "webpack-bundle-analyzer": "^4.5.0",
+    "webpack-node-externals": "^3.0.0"
   },
   "pkg": {
     "scripts": [

@@ -643,7 +643,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@electron/get@npm:^1.13.0":
+"@electron/get@npm:^1.0.1, @electron/get@npm:^1.13.0":
   version: 1.13.1
   resolution: "@electron/get@npm:1.13.1"
   dependencies:
@@ -2734,6 +2734,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/webpack-node-externals@npm:^2.5.3":
+  version: 2.5.3
+  resolution: "@types/webpack-node-externals@npm:2.5.3"
+  dependencies:
+    "@types/node": "*"
+    webpack: ^5
+  checksum: 9cd0f7821d4a322479ef3264f82192ec62d582e7505b28af1d3e352be8ec98fd8432edc4184c2644caa5f75de88266edf5b45661e9be766cb6ae54b0c484636b
+  languageName: node
+  linkType: hard
+
 "@types/whatwg-url@npm:^8.2.1":
   version: 8.2.1
   resolution: "@types/whatwg-url@npm:8.2.1"
@@ -4561,6 +4571,16 @@ __metadata:
     base64-js: ^1.3.1
     ieee754: ^1.2.1
   checksum: 5ad23293d9a731e4318e420025800b42bf0d264004c0286c8cc010af7a270c7a0f6522e84f54b9ad65cbd6db20b8badbfd8d2ebf4f80fa03dab093b89e68c3f9
+  languageName: node
+  linkType: hard
+
+"bufferutil@npm:^4.0.5":
+  version: 4.0.5
+  resolution: "bufferutil@npm:4.0.5"
+  dependencies:
+    node-gyp: latest
+    node-gyp-build: ^4.3.0
+  checksum: 37d5bef7cb38d29f9377b8891ff8a57f53ae6057313d77a8aa2a7417df37a72f16987100796cb2f1e1862f3eb80057705f3c052615ec076a0dcc7aa6c83b68c9
   languageName: node
   linkType: hard
 
@@ -6717,7 +6737,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"electron@npm:*, electron@npm:^16.0.4":
+"electron@npm:*":
   version: 16.0.4
   resolution: "electron@npm:16.0.4"
   dependencies:
@@ -6727,6 +6747,19 @@ __metadata:
   bin:
     electron: cli.js
   checksum: 16d7211da6b050e78e79c1a2d8607724592dba7e5fa70da3ef9043c5f8ed11487b42d5821539af82dbbf7cc331da7a89b87dadd8391b9d33c9651d1008f84f47
+  languageName: node
+  linkType: hard
+
+"electron@npm:^14":
+  version: 14.2.2
+  resolution: "electron@npm:14.2.2"
+  dependencies:
+    "@electron/get": ^1.0.1
+    "@types/node": ^14.6.2
+    extract-zip: ^1.0.3
+  bin:
+    electron: cli.js
+  checksum: c56e561f175c3016e31844d4e518ac548cc06588c52fa9e4c3dc5bccd8c6ec30cf392316c9749ef18d5d4d91daeb4513c4575a0828dfd8a7881ac465725f1e83
   languageName: node
   linkType: hard
 
@@ -8547,14 +8580,20 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "guardoni@workspace:methodology"
   dependencies:
+    "@material-ui/core": ^4.12.3
+    "@material-ui/icons": ^4.11.2
+    "@material-ui/lab": ^4.0.0-alpha.60
     "@types/electron": ^1.6.10
     "@types/eslint": ^8.2.1
     "@types/react": ^17.0.37
+    "@types/webpack-node-externals": ^2.5.3
+    bufferutil: ^4.0.5
     csv-parse: ^4.15.3
     debug: ^4.3.2
-    electron: ^16.0.4
+    electron: ^14
     electron-reload: ^2.0.0-alpha.1
     eslint: ^8.4.1
+    fsevents: ^2.3.2
     lodash: ^4.17.21
     moment: ^2.29.1
     nconf: ^0.11.3
@@ -8565,7 +8604,13 @@ __metadata:
     puppeteer-extra: ^3.2.3
     puppeteer-extra-plugin-stealth: ^2.9.0
     puppeteer-in-electron: ^3.0.5
+    style-loader: ^3.3.1
+    ts-loader: ^9.2.6
     typescript: ^4.5.4
+    utf-8-validate: ^5.0.7
+    webpack: ^5.65.0
+    webpack-bundle-analyzer: ^4.5.0
+    webpack-node-externals: ^3.0.0
   bin:
     guardoni: ./build/guardoni-cli.js
   languageName: unknown
@@ -12197,6 +12242,17 @@ __metadata:
   version: 0.10.0
   resolution: "node-forge@npm:0.10.0"
   checksum: 5aa6dc9922e424a20ef101d2f517418e2bc9cfc0255dd22e0701c0fad1568445f510ee67f6f3fcdf085812c4ca1b847b8ba45683b34776828e41f5c1794e42e1
+  languageName: node
+  linkType: hard
+
+"node-gyp-build@npm:^4.3.0":
+  version: 4.3.0
+  resolution: "node-gyp-build@npm:4.3.0"
+  bin:
+    node-gyp-build: bin.js
+    node-gyp-build-optional: optional.js
+    node-gyp-build-test: build-test.js
+  checksum: 1ecab16d9f275174d516e223f60f65ebe07540347d5c04a6a7d6921060b7f2e3af4f19463d9d1dcedc452e275c2ae71354a99405e55ebd5b655bb2f38025c728
   languageName: node
   linkType: hard
 
@@ -17174,6 +17230,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"utf-8-validate@npm:^5.0.7":
+  version: 5.0.7
+  resolution: "utf-8-validate@npm:5.0.7"
+  dependencies:
+    node-gyp: latest
+    node-gyp-build: ^4.3.0
+  checksum: 588d272b359bf555a0c4c2ffe97286edc73126de132f63f4f0c80110bd06b67d3ce44d2b3d24feea6da13ced50c04d774ba4d25fe28576371cd714cd013bd3b7
+  languageName: node
+  linkType: hard
+
 "util-deprecate@npm:^1.0.1, util-deprecate@npm:^1.0.2, util-deprecate@npm:~1.0.1":
   version: 1.0.2
   resolution: "util-deprecate@npm:1.0.2"
@@ -17518,6 +17584,13 @@ __metadata:
     clone-deep: ^4.0.1
     wildcard: ^2.0.0
   checksum: 88786ab91013f1bd2a683834ff381be81c245a4b0f63304a5103e90f6653f44dab496a0768287f8531761f8ad957d1f9f3ccb2cb55df0de1bd9ee343e079da26
+  languageName: node
+  linkType: hard
+
+"webpack-node-externals@npm:^3.0.0":
+  version: 3.0.0
+  resolution: "webpack-node-externals@npm:3.0.0"
+  checksum: 355080c35c821115b97dda8c93d9d0565a90a6012a532324eb0d6a64f8f0d609431fd29504fc7ce414755841ac14f601f3eef99472c2c5dc00233b504ebe73f2
   languageName: node
   linkType: hard
 
