@@ -18,6 +18,7 @@ global.lastScreenTime = moment().subtract(4, 'seconds');
 global.currentURLlabel = null;
 global.screenshotPrefix = null;
 global.interval = null;
+global.publicKeySpot = null;
 
 function getScreenshotFilename() {
     /* this function return null if no screenshot has to be taken,
@@ -29,7 +30,7 @@ function getScreenshotFilename() {
     global.lastScreenTime = now;
     /* screenshotPrefix would exist as a directory */
     return path.join(global.screenshotPrefix,
-        `${global.currentURLlabel}-${global.lastScreenTime.format("YYYY-MM-DD-HH-mm-SS")}.jpeg`);
+        `${global.currentURLlabel}-${global.lastScreenTime.toISOString()}.jpeg`);
 }
 
 async function consoleLogParser(page, message) {
@@ -37,13 +38,19 @@ async function consoleLogParser(page, message) {
      * but it is also an indirect, pseudo-efficent way to communicate
      * between puppeteer evaluated selectors and action we had to do */
     const consoleline = message.text();
+    if( global.publicKeySpot === null && consoleline.match(/publicKey/) ) {
+        const material = JSON.parse(consoleline);
+        global.publicKeySpot = material.response.publicKey;
+    }
     if(consoleline.match(scrnshtrgxp)) {
         const fdestname = getScreenshotFilename();
         // if the screenshot are less than 5 seconds close, the function
         // above would return null, so we don't take it.
         if(fdestname) {
             screendebug("Taking screenshot in [%s]", fdestname)
-            await page.screenshot({ path: fdestname, type: 'jpeg', fullPage: true });
+            await page.screenshot({ path: fdestname,
+                type: 'jpeg',
+                fullPage: nconf.get('fullpage') || false });
         }
     }
 };
@@ -75,8 +82,11 @@ async function beforeDirectives(page, profinfo) {
         setInterval(print3rdParties, 60 * 1000);
     }
 
-    const advdump = nconf.get('advdump');
-    if(!advdump)
+    if(!nconf.get('screenshots'))
+        return;
+
+    const screenshotsPath = nconf.get('screenshotsPath');
+    if(!screenshotsPath)
         return;
 
     /* this is to monitor presence of special selectors that
@@ -84,7 +94,7 @@ async function beforeDirectives(page, profinfo) {
     if(global.interval)
         clearInterval(global.interval);
 
-    global.screenshotPrefix = path.join(advdump, `${profinfo.profileName}..${profinfo.execount}`);
+    global.screenshotPrefix = path.join(screenshotsPath, `${profinfo.profileName}..${profinfo.execount}`);
 
     try {
         fs.mkdirSync(global.screenshotPrefix)
@@ -101,7 +111,7 @@ async function beforeDirectives(page, profinfo) {
                 }, selector, SCREENSHOT_MARKER);
             } catch(error) {}
         });
-    }, 5000);
+    }, nconf.get('screenshotTime') || 5000);
 }
 
 /* this is the variable we populate of statistics
@@ -155,6 +165,10 @@ function print3rdParties() {
 
 async function beforeLoad(page, directive) {
     global.currentURLlabel = directive.urltag;
+}
+
+async function completed() {
+    return global.publicKeySpot;
 }
 
 async function beforeWait(page, directive) {
@@ -277,6 +291,7 @@ module.exports = {
     beforeWait,
     afterWait,
     beforeDirectives,
+    completed,
     interactWithYT,
     getYTstatus,
     DOMAIN_NAME: 'youtube.com',
