@@ -2,6 +2,8 @@ const _ = require('lodash');
 const debug = require('debug')('lib:CSV');
 const moment = require('moment');
 
+const utils = require('./utils');
+
 function produceCSVv1(entries, requestedKeys) {
 
     const keys = requestedKeys || _.keys(entries[0]);
@@ -131,7 +133,7 @@ function unrollNested(metadata, options) {
             return null;
 
         const shared = {
-            publicKey: evidence.publicKey,
+            pseudo: utils.string2Food(evidence.publicKey),
             metadataId: evidence.id.substr(0, 8),
             savingTime: evidence.savingTime,
             clientTime: evidence.clientTime,
@@ -140,7 +142,8 @@ function unrollNested(metadata, options) {
         };
 
         if(options.private) {
-            shared.publicKey = shared.publicKey.substr(0, 8)
+            const smp = shared.pseudo.split('-');
+            shared.pseudo = smp[0] + '-' + smp[1];
         }
         if(options.experiment) {
             shared.experimentId = evidence.experiment.experimentId;

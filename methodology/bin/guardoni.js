@@ -343,6 +343,7 @@ async function writeExperimentInfo(experimentId, profinfo, evidencetag, directiv
     evidencetag,
     directiveType,
     execount: profinfo.execount,
+    profileName: profinfo.profileName,
     newProfile: profinfo.newProfile,
     when: new Date()
   };
@@ -407,7 +408,7 @@ async function main() {
     process.exit(1);
   }
 
-  const evidencetag = nconf.get('evidencetag') || 'none-' + _.random(0, 0xffff);
+  const evidencetag = nconf.get('evidencetag') || 'no-tag-' + _.random(0, 0xffff);
   let profile = nconf.get('profile');
   if (!profile)
     profile = nconf.get('evidencetag') ?
@@ -456,6 +457,7 @@ async function main() {
   const t = await guardoniExecution(experiment, directives, browser, profinfo);
   console.log("— Guardoni execution completed in ",
     moment.duration(t.end - t.start).humanize());
+
   await concludeExperiment(experiment, profinfo);
   process.exit(0);
 }
@@ -535,8 +537,9 @@ async function operateTab(page, directive) {
     console.log("error in beforeWait", error.message, error.stack);
   }
 
-  debug("Directive to URL %s, Loading delay %d", directive.url, directive.loadFor);
-  await page.waitForTimeout(directive.loadFor);
+  const loadFor = _.parseInt(nconf.get('load')) || directive.loadFor;
+  debug("Directive to URL %s, Loading delay %d (--load optional)", directive.url, loadFor);
+  await page.waitForTimeout(loadFor);
 
   try {
     await domainSpecific.afterWait(page, directive);
@@ -588,7 +591,6 @@ function initialSetup() {
   return manifest;
 }
 
-
 async function operateBrowser(page, directives) {
   // await page.setViewport({width: 1024, height: 768});
   for (const directive of directives) {
@@ -602,8 +604,11 @@ async function operateBrowser(page, directives) {
       }
     }
   }
+  const loadFor = _.parseInt(nconf.get('load')) || directive.loadFor;
+  if(loadFor < 20000) {
+    await page.waitForTimeout(15000);
+  }
 }
-
 
 async function guardoniExecution(experiment, directives, browser, profinfo) {
   const retval = { start: null };

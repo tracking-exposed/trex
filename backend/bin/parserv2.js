@@ -167,7 +167,7 @@ async function newLoop(htmlFilter) {
             debug("%d no data at the last query: %j %j",
                 nodatacounter, _.keys(htmlFilter), htmlFilter.savingTime);
         }
-        lastExecution = moment().subtract(2, 'm').toISOString();
+        lastExecution = moment().toISOString();
         computedFrequency = FREQUENCY;
         return;
     } else {

@@ -48,7 +48,9 @@ async function consoleLogParser(page, message) {
         // above would return null, so we don't take it.
         if(fdestname) {
             screendebug("Taking screenshot in [%s]", fdestname)
-            await page.screenshot({ path: fdestname, type: 'jpeg', fullPage: true });
+            await page.screenshot({ path: fdestname,
+                type: 'jpeg',
+                fullPage: nconf.get('fullpage') || false });
         }
     }
 };
@@ -80,8 +82,11 @@ async function beforeDirectives(page, profinfo) {
         setInterval(print3rdParties, 60 * 1000);
     }
 
-    const advdump = nconf.get('advdump');
-    if(!advdump)
+    if(!nconf.get('screenshots'))
+        return;
+
+    const screenshotsPath = nconf.get('screenshotsPath');
+    if(!screenshotsPath)
         return;
 
     /* this is to monitor presence of special selectors that
@@ -89,7 +94,7 @@ async function beforeDirectives(page, profinfo) {
     if(global.interval)
         clearInterval(global.interval);
 
-    global.screenshotPrefix = path.join(advdump, `${profinfo.profileName}..${profinfo.execount}`);
+    global.screenshotPrefix = path.join(screenshotsPath, `${profinfo.profileName}..${profinfo.execount}`);
 
     try {
         fs.mkdirSync(global.screenshotPrefix)
@@ -106,7 +111,7 @@ async function beforeDirectives(page, profinfo) {
                 }, selector, SCREENSHOT_MARKER);
             } catch(error) {}
         });
-    }, 5000);
+    }, nconf.get('screenshotTime') || 5000);
 }
 
 /* this is the variable we populate of statistics
