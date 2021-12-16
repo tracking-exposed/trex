@@ -3,3 +3,9 @@ extension/dist/*
 extension/node_modules/*
 
 backend/node_modules/*
+backend/downloads/*
+
+methodology/node_modules/*
+methodology/profiles/*
+methodology/extension/*
+methodology/dist/*

@@ -21,7 +21,6 @@ async function getPersonal(req) {
 
     const what = req.params.what;
     const format = req.params.format;
-    // TODO expand if the personal page needs more views
     const allowed = ['summary'];
 
     if(allowed.indexOf(what) === -1) {
@@ -34,10 +33,14 @@ async function getPersonal(req) {
     }
 
     debug("Asked to get data kind %s, format %s", what, format);
-
     let retval = null;
-    if(what === 'summary')
-        retval = await automo.getSummaryByPublicKey(k, what);
+    try {
+        if(what === 'summary')
+            retval = await automo.getSummaryByPublicKey(k, what);
+    } catch(error) {
+        debug("%s", error.message);
+        return { json: { error: true, message: error.message}};
+    }
 
     return { json: retval };
 };
