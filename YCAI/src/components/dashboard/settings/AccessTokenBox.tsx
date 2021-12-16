@@ -17,7 +17,7 @@ import CloudDownload from '@material-ui/icons/CloudDownload';
 import VisibilityIcon from '@material-ui/icons/Visibility';
 import VisibilityOffIcon from '@material-ui/icons/VisibilityOff';
 import * as E from 'fp-ts/lib/Either';
-import { APIError } from 'providers/api.provider';
+import { APIError } from '@shared/errors/APIError';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
 import { assignAccessToken } from '../../../state/dashboard/creator.commands';
@@ -151,7 +151,9 @@ export const AccessTokenBox: React.FC<AccessTokenBoxProps> = ({ profile }) => {
                 }
               }}
             >
-              {authTokenVisible ? t('actions:save_access_token') : t('actions:edit_access_token')}
+              {authTokenVisible
+                ? t('actions:save_access_token')
+                : t('actions:edit_access_token')}
             </Button>
           </Grid>
           <Grid item xs={3}>

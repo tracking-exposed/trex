@@ -3,7 +3,7 @@ import { command } from 'avenger';
 import * as TE from 'fp-ts/lib/TaskEither';
 import { Messages } from '../models/Messages';
 import { Settings } from '../models/Settings';
-import { API } from '@shared/providers/api.provider';
+import { API } from '../api';
 import { sendMessage } from '../providers/browser.provider';
 import { settings, settingsRefetch, keypair } from './popup.queries';
 

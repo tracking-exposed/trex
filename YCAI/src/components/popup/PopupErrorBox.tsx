@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { Box, Button, ButtonGroup } from '@material-ui/core';
-import { ErrorBox } from '../../components/common/ErrorBox';
+import { ErrorBox } from '@shared/components/Error/ErrorBox';
 import { getDefaultSettings } from '../../models/Settings';
 import { useTranslation } from 'react-i18next';
 import { updateSettings } from '../../state/popup.commands';
