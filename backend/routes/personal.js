@@ -138,36 +138,24 @@ async function getPersonalTimeline(req) {
 }
 
 async function getPersonalRelated(req) {
-    const DEFMAX = 40;
+    const METADATAMAXCONSIDERED = 40;
     const k =  req.params.publicKey;
-    if(_.size(k) < 26)
-        return { json: { "message": "Invalid publicKey", "error": true }};
+    const type = req.params.type;
 
-    const { amount, skip } = params.optionParsing(req.params.paging, DEFMAX);
-    debug("getPersonalRelated request by %s using %d starting videos, skip %d (defmax %d)", k, amount, skip, DEFMAX);
-    const related = await automo.getRelatedByWatcher(k, { amount, skip });
-    const formatted = _.map(related, function(r) {
-        /* this is the same format in youtube.tracking.exposed/data,u
-         * and should be in lib + documented */
-        return {
-            id: r.id,
-            videoId: r.related.videoId,
-            title: r.related.title,
-            source: _.replace(r.related.source, /\n/g, ' ⁞ '),
-            vizstr: r.related.vizstr,
-            suggestionOrder: r.related.index,
-            displayLength: r.related.displayTime,
-            watched: r.title,
-            since: r.publicationString,
-            credited: r.authorName,
-            channel: r.authorSource,
-            savingTime: r.savingTime,
-            watcher: r.watcher,
-            watchedId: r.videoId,
-        };
+    if(CSV.allowedTypes.indexOf(type) === -1)
+        return { status: 401,
+            text: "Invalid type: allowed " + CSV.allowedTypes};
+
+    const { amount, skip } = params.optionParsing(req.params.paging, METADATAMAXCONSIDERED);
+    debug("getPersonalRelated request by %s using %d starting videos, skip %d (defmax %d)", k, amount, skip, METADATAMAXCONSIDERED);
+    const { metadata } = await automo.getMetadataByPublicKey(k, {
+        amount, skip, type
     });
-
-    debug("getPersonalRelated produced %d results", _.size(formatted));
+    debug("arrive %d", metadata.length)
+    const formatted = CSV.unrollNested(metadata, {
+        type, experiment: true
+    });
+    debug("getPersonalRelated produced %d results", formatted.length);
     return {
         json: formatted
     };
