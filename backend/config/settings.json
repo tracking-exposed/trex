@@ -4,7 +4,9 @@
       "stats": "trexstats",
       "htmls": "htmls",
       "metadata": "metadata",
-      "full": "full"
+      "full": "full",
+      "directives": "directives",
+      "experiments": "experiments"
   },
 
   "mongoHost": "localhost",

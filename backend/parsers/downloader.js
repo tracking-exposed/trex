@@ -50,6 +50,7 @@ async function downloadVideoSelected(searchFinding) {
 
 async function downloader(envelop, previous) {
 
+  console.log(previous);
   if(previous.nature.type === 'video')
     retval = await downloadVideoNative(envelop);
   else if(previous.nature.type === 'search')

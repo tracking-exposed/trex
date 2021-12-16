@@ -52,8 +52,8 @@ function boot () {
   // Lookup the current user and decide what to do.
   localLookup(response => {
     // `response` contains the user's public key, we save it global for the blinks
-    console.log("app.js gets", response,
-      "from localLookup, and feedId", feedId);
+    console.log(JSON.stringify(response));
+    // this output is interpreted and read by guardoni
 
     /* these parameters are loaded from localstorage */
     config.publicKey = response.publicKey;
@@ -184,7 +184,7 @@ function setupObserver() {
   const vidwat = dom.on(selectors.video.selector, handleVideo);
   const creatwat = dom.on(selectors.creator.selector, handleTest);
   console.log("Listener installed ",
-    JSON.stringify(selectors), sugwat, vidwat);
+    JSON.stringify(selectors), sugwat, vidwat, creatwat);
 
   /* and monitor href changes to randomize a new accessId */
   let oldHref = window.location.href;
@@ -211,7 +211,11 @@ function setupObserver() {
 }
 
 function handleTest(element) {
-  return null;
+  console.log("handleText", element, "lah lah lah");
+  console.log(element.parentNode.parentNode.parentNode.outerHTML.length);
+  console.log(element.parentNode.parentNode.outerHTML.length);
+  console.log(element.parentNode.outerHTML.length);
+  console.log(element.outerHTML.length);
 }
 
 function handleSuggested(elem) {

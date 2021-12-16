@@ -4,7 +4,12 @@ const debug = require('debug')('parsers:description');
 function videoDescriptionGuess(envelop) {
   const uno = envelop.jsdom.querySelector('[data-e2e="browse-video-desc"]');
   const due = envelop.jsdom.querySelector('[data-e2e="video-desc"]');
-  const tre = envelop.jsdom.querySelector('img');
+  const tre = envelop.jsdom.querySelectorAll('img');
+  const tops = _.sortBy(tre, function(i) {
+    const alt = i.getAttribute('alt');
+    return alt?.length;
+  });
+  console.log(tops);
   let retval = null;
   if(uno) {
     debug("first condition happened in this 'video'");
@@ -16,8 +21,8 @@ function videoDescriptionGuess(envelop) {
     debug("third condition happened in this 'video'");
     retval = { description: tre.getAttribute('alt') }
   } else {
-    debug("only failure condition in this 'video'");
-    onsole.log(envelop.jsdom.querySelector('body').outerHTML);
+    debug("only failure condition in this 'video' %s %s %s", uno, due, tre);
+    console.log(envelop.jsdom.querySelector('body').outerHTML);
     return null;
   }
   debug("Retval is %o", retval);

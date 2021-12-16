@@ -39,7 +39,8 @@ async function consoleLogParser(page, message) {
     const consoleline = message.text();
     if( global.publicKeySpot === null && consoleline.match(/publicKey/) ) {
         const material = JSON.parse(consoleline);
-        global.publicKeySpot = material.response.publicKey;
+        global.publicKeySpot = material?.publicKey;
+        console.log(material);
     }
     if(consoleline.match(scrnshtrgxp)) {
         const fdestname = getScreenshotFilename();

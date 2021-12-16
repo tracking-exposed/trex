@@ -27,7 +27,7 @@ debug.enabled = info.enabled = true;
 const server = nconf.get('backend') ?
   ( _.endsWith(nconf.get('backend'), '/') ? 
     nconf.get('backend').replace(/\/$/, '') : nconf.get('backend') ) : 
-  'https://youtube.tracking.exposed';
+  'https://tiktok.tracking.exposed';
 
 async function keypress() {
   process.stdin.setRawMode(true)
@@ -189,15 +189,15 @@ async function main() {
   }
 
   const rawf = fs.readFileSync(searchFile, 'utf-8');
-  const urls = _.reduce(rawf.split('\n'), function(memo, query) {
+  const queries = _.reduce(rawf.split('\n'), function(memo, query) {
     const sureq = query.trim();
     if(sureq.length)
-      memo.push(u);
+      memo.push(sureq);
     return memo;
   }, [])
 
-  if (!urls.length ) {
-    debug("Error, we need --searches and you should specifiy a FILE");
+  if (!queries.length ) {
+    debug("Error, we need --searches and you should be a .txt FILE, with a query per each line");
     process.exit(1);
   }
 
@@ -211,16 +211,26 @@ async function main() {
   debug("Configuring browser for profile %s (evidencetag %s)", profile, evidencetag);
   const profinfo = await profileExecount(profile, evidencetag);
 
-  const directiveurl = buildAPIurl('directives', 'search');
-  debug("Fetching experiment directives (%s)", directiveurl);
-  debug("Profile %s pulling directive %s", profile, directiveurl);
-
-  const directives = await pullDirectives(directiveurl);
+  /* pullDirectives SKIPPED! local generation, this is part of v0 */
+  const directives = _.map(queries, function(q, counter) {
+    const u = "https://tiktok.com/search?q=" + q;
+    console.log(u);
+    return {
+      url: u,
+      loadFor: 5500,
+      name: `search-for-${q}-${counter}`,
+      query: q,
+    }
+  });
+  
+  // debug("Fetching experiment directives (%s)", directiveurl);
+  // debug("Profile %s pulling directive %s", profile, directiveurl);
+  // const directives = await pullDirectives(directiveurl);
   const directiveType = 'search';
 
-  debug("Loaded %d directives, detected type [%s] from %s",
-    directives.length, directiveType, directiveurl);
-
+  // debug("Loaded %d directives, detected type [%s] from %s",
+  //  directives.length, directiveType, directiveurl);
+  const experiment = "exp" + _.reduce(JSON.stringify(queries).split(''), function(memo, e) { return memo + e.charCodeAt(0) }, 0);
   await writeExperimentInfo(experiment, profinfo, evidencetag, directiveType);
 
   const headless = (!!nconf.get('headless'));
@@ -337,7 +347,7 @@ async function operateBrowser(page, directives) {
       }
     }
   }
-  const loadFor = _.parseInt(nconf.get('load')) || directive.loadFor;
+  const loadFor = _.parseInt(nconf.get('load')) || directives[0].loadFor;
   if(loadFor < 20000) {
     await page.waitForTimeout(15000);
   }

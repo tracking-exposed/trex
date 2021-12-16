@@ -14,6 +14,7 @@ function search(envelop, previous) {
     const vlink = envelop.jsdom.querySelector('a[href^="https://www.tiktok.com/@"]');
     const noRes = envelop.jsdom.querySelector("#noResultBigText");
     const relatedS = envelop.jsdom.querySelector('.relatedSearchTermsBottom');
+    const bigE = envelop.jsdom.querySelector('h2');
     const img = envelop.jsdom.querySelector('img');
     const video = envelop.jsdom.querySelector('video');
 
@@ -34,7 +35,10 @@ function search(envelop, previous) {
     if(vlink && video)
         retval.selected.video = video.getAttribute('src');
 
-    debug("%o --- %s .-- %s",
+    if(bigE)
+        retval.warning = bigE.parentNode.textContent();
+
+    debug("%o --- %s --- %s",
         retval,
         noRes ? noRes.textContent : "!noResultBitText",
         relatedS ? relatedS.textContent : "!relatedS"

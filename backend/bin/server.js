@@ -26,7 +26,7 @@ if(!nconf.get('interface') || !nconf.get('port') )
 async function iowrapper(fname, req, res) {
   try {
     const funct = apiList[fname];
-    const httpresult = await funct(req, res)
+    const httpresult = await funct(req, res);
 
     if (httpresult.headers)
         _.each(httpresult.headers, function(value, key) {
@@ -97,6 +97,22 @@ app.get('/api/v1/mirror/:key', async (req, res) => await iowrapper('getMirror', 
 
 /* monitor for admin */
 app.get('/api/v2/monitor/:minutes?', async (req, res) => await iowrapper('getMonitor', req, res));
+
+/* experiments API: "comparison" require password, "chiaroscuro" doesn't */
+app.get(
+  "/api/v2/guardoni/list/:directiveType/:key?",
+  async (req, res) => await iowrapper("getAllExperiments")
+);
+app.post("/api/v3/directives/:directiveType", async (req, res) => await iowrapper("postDirective", req, res));
+app.get("/api/v3/directives/:experimentId", async (req, res) => await iowrapper("fetchDirective", req, res));
+app.post("/api/v2/handshake", async (req, res) => await iowrapper("experimentChannel3", req, res));
+app.delete("/api/v3/experiment/:testTime", async (req, res) => await iowrapper("concludeExperiment3", req, res));
+app.get("/api/v2/experiment/:experimentId/json", async (req, res) => await iowrapper("experimentJSON", req, res));
+app.get(
+  "/api/v2/experiment/:experimentId/csv/:type",
+  async (req, res) => await iowrapper("experimentCSV", req, res)
+);
+app.get("/api/v2/experiment/:experimentId/dot", async (req, res) => await iowrapper("experimentDOT", req, res));
 
 /* Capture All 404 errors */
 app.get('*', async (req, res) => {
