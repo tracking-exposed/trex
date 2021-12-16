@@ -92,5 +92,8 @@ export function viewToLocation(view: CurrentView): HistoryLocation {
   }
 }
 
+export const getHostFromURL = (url: string): string =>
+  new URL(url).host;
+
 export const currentView = getCurrentView(locationToView); // ObservableQuery
 export const doUpdateCurrentView = getDoUpdateCurrentView(viewToLocation); // Command

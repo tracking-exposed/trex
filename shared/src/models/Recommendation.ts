@@ -32,7 +32,7 @@ export const PartialRecommendation = t.partial(
 
 export type PartialRecommendation = t.TypeOf<typeof PartialRecommendation>;
 
-export const titleMaxLength = 50;
-export const descriptionMaxLength = 100;
+export const titleMaxLength = 80;
+export const descriptionMaxLength = 200;
 
 export type Recommendation = t.TypeOf<typeof Recommendation>;
