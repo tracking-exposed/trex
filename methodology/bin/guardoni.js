@@ -15,7 +15,7 @@ const parse = require('csv-parse/lib/sync');
 const domainSpecific = require('../src/domainSpecific');
 
 const COMMANDJSONEXAMPLE = "https://youtube.tracking.exposed/json/automation-example.json";
-const EXTENSION_WITH_OPT_IN_ALREADY_CHECKED='https://github.com/tracking-exposed/yttrex/releases/download/v1.8.992/extension-1.8.992.zip';
+const EXTENSION_WITH_OPT_IN_ALREADY_CHECKED="https://github.com/tracking-exposed/yttrex/releases/download/v1.8.992/extension-1.9.0.99.zip";
 
 const defaultCfgPath = path.join("config", "default.json");
 nconf.argv().env();
