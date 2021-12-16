@@ -382,6 +382,8 @@ async function guardoniExecution(experiment, directives, browser, profinfo) {
 async function concludeExperiment(experiment, profinfo) {
   // this conclude the API sent by extension remoteLookup,
   // a connection to DELETE /api/v3/experiment/:publicKey
+  return;
+
   const url = buildAPIurl(
     'experiment',
     moment(profinfo.expinfo.when).toISOString());
