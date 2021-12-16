@@ -1,4 +1,4 @@
-import { APIError } from '../../providers/api.provider';
+import { APIError } from "../errors/APIError";
 
 export class AppError extends Error {
   name: string;
@@ -19,5 +19,5 @@ export const toAppError = (e: unknown): AppError => {
     return new AppError(e.name, e.message, []);
   }
 
-  return new AppError(`Unknown Error`, 'Something bad happened', []);
+  return new AppError(`Unknown Error`, "Something bad happened", []);
 };

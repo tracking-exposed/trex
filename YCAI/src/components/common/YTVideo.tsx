@@ -3,17 +3,13 @@ import * as QR from 'avenger/lib/QueryResult';
 import { WithQueries } from 'avenger/lib/react';
 import React from 'react';
 import { oneCreatorVideo } from '../../state/dashboard/creator.queries';
-import {
-  getYTVideoURLById,
-  getYTEmbeddingURLById,
-} from '../../utils/yt.utils';
-import { ErrorBox } from '../common/ErrorBox';
+import { getYTVideoURLById, getYTEmbeddingURLById } from '../../utils/yt.utils';
+import { ErrorBox } from '@shared/components/Error/ErrorBox';
 import { LazyFullSizeLoader } from './FullSizeLoader';
 
 interface YTVideoProps {
   videoId: string;
 }
-
 
 export const YTVideo: React.FC<YTVideoProps> = ({ videoId }) => (
   <WithQueries
@@ -23,7 +19,7 @@ export const YTVideo: React.FC<YTVideoProps> = ({ videoId }) => (
       LazyFullSizeLoader,
       ErrorBox,
       ({ oneCreatorVideo: video }) => (
-        <Card style={{boxShadow: "none", backgroundColor: 'transparent',}}>
+        <Card style={{ boxShadow: 'none', backgroundColor: 'transparent' }}>
           <iframe
             sandbox="allow-scripts allow-same-origin"
             src={getYTEmbeddingURLById(videoId)}
@@ -33,7 +29,13 @@ export const YTVideo: React.FC<YTVideoProps> = ({ videoId }) => (
               border: 'none',
             }}
           />
-          <CardContent style={{paddingLeft: '0px', paddingTop: '10px', paddingBottom: '0px'}}>
+          <CardContent
+            style={{
+              paddingLeft: '0px',
+              paddingTop: '10px',
+              paddingBottom: '0px',
+            }}
+          >
             <Link
               color="textSecondary"
               variant="h5"

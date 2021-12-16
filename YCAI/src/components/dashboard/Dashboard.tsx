@@ -7,8 +7,12 @@ import { declareQueries } from 'avenger/lib/react';
 import { pipe } from 'fp-ts/lib/function';
 import { useTranslation } from 'react-i18next';
 import { auth, localProfile } from '../../state/dashboard/creator.queries';
-import { CurrentView, currentView, doUpdateCurrentView } from '../../utils/location.utils';
-import { ErrorBox } from '../common/ErrorBox';
+import {
+  CurrentView,
+  currentView,
+  doUpdateCurrentView,
+} from '../../utils/location.utils';
+import { ErrorBox } from '@shared/components/Error/ErrorBox';
 import { LazyFullSizeLoader } from '../common/FullSizeLoader';
 import Settings from './Settings';
 import { AnalyticsPage } from './community/AnalyticsPage';
@@ -120,21 +124,19 @@ const DashboardContent: React.FC<DashboardContentProps> = ({
           <Typography
             variant="h3"
             component="h1"
-            color= "textSecondary"
+            color="textSecondary"
             className={classes.labEditTitle}
           >
-            <Link
-              onClick={doUpdateCurrentView({ view: 'lab' })}
-            >
+            <Link onClick={doUpdateCurrentView({ view: 'lab' })}>
               <ArrowBackIcon />
             </Link>
             {currentViewLabel}
           </Typography>
-        ): (
+        ) : (
           <Typography
             variant="h3"
             component="h1"
-            color= "textSecondary"
+            color="textSecondary"
             style={{
               whiteSpace: 'pre-line',
               paddingTop: theme.spacing(1),
@@ -151,10 +153,12 @@ const DashboardContent: React.FC<DashboardContentProps> = ({
       </Grid>
 
       <Grid
-        item xs={12}
+        item
+        xs={12}
         style={{
           paddingTop: theme.spacing(4),
-        }} >
+        }}
+      >
         {currentViewContent}
       </Grid>
     </Grid>
@@ -176,10 +180,7 @@ export const Dashboard = withQueries(({ queries }): React.ReactElement => {
       return (
         <Grid container className={classes.root} spacing={4}>
           <Grid item sm={12} md={3} lg={2}>
-            <Sidebar
-              currentView={currentView}
-              profile={profile}
-            />
+            <Sidebar currentView={currentView} profile={profile} />
           </Grid>
           <Grid item sm={12} md={9} lg={10}>
             <DashboardContent

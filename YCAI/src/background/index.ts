@@ -7,36 +7,38 @@ import * as TE from 'fp-ts/lib/TaskEither';
 import { config } from '../config';
 import * as Messages from '../models/Messages';
 import { getDefaultSettings, Keypair, Settings } from '../models/Settings';
-import { APIError, apiFromEndpoint } from '../providers/api.provider';
+import { APIError } from '@shared/errors/APIError';
 import {
   catchRuntimeLastError,
   sendTabMessage,
   tabsQuery,
-  toBrowserError
+  toBrowserError,
 } from '../providers/browser.provider';
 import { bo } from '../utils/browser.utils';
 import { fromStaticPath } from '../utils/endpoint.utils';
 import { GetLogger } from '@shared/logger';
-import * as constants from '../constants';
+import * as sharedConst from '@shared/constants';
 import db from './db';
 import * as development from './reloadExtension';
 import * as settings from './settings';
+import * as constants from '../constants';
+import { HTTPClient } from '../api';
 
 const bkgLogger = GetLogger('bkg');
 
 export const getStorageKey = (type: string): string => {
   switch (type) {
     case Messages.GetKeypair.value:
-      return constants.PUBLIC_KEYPAIR;
+      return sharedConst.PUBLIC_KEYPAIR;
     case Messages.GetSettings.value:
     case Messages.UpdateSettings.value:
-      return constants.SETTINGS_KEY;
+      return sharedConst.SETTINGS_KEY;
     case Messages.GetAuth.value:
     case Messages.UpdateAuth.value:
-      return constants.AUTH_KEY;
+      return sharedConst.AUTH_KEY;
     case Messages.GetContentCreator.value:
     case Messages.UpdateContentCreator.value:
-      return constants.CONTENT_CREATOR;
+      return sharedConst.CONTENT_CREATOR;
     case Messages.GetDonationOptInNudgeStatus.value:
     case Messages.SetDonationOptInNudgeStatus.value:
       return constants.DONATION_OPT_IN_NUDGE_STATUS_KEY;
@@ -182,7 +184,7 @@ const getMessageHandler = <
         ),
         TE.chain((e) =>
           pipe(
-            apiFromEndpoint(e)(r.payload?.Input ?? {}),
+            HTTPClient.apiFromEndpoint(e)(r.payload?.Input ?? {}),
             TE.chain((v) => TE.fromEither(catchRuntimeLastError(v))),
             TE.mapLeft(toMessageHandlerError)
           )

@@ -2,11 +2,10 @@ import { command } from 'avenger';
 import { sequenceS } from 'fp-ts/lib/Apply';
 import { pipe } from 'fp-ts/lib/function';
 import * as TE from 'fp-ts/lib/TaskEither';
-import { AppError } from 'models/errors/AppError';
-import * as constants from '../../constants';
-import { API } from '../../providers/api.provider';
-import { setItem } from '../../providers/localStorage.provider';
-
+import { AppError } from '@shared/errors/AppError';
+import * as sharedConst from '@shared/constants';
+import { API } from '../../api';
+import { setItem } from '@shared/providers/localStorage.provider';
 import { AuthResponse } from '@shared/models/Auth';
 import { ContentCreator } from '@shared/models/ContentCreator';
 import { PartialRecommendation } from '@shared/models/Recommendation';
@@ -17,7 +16,7 @@ import {
   creatorVideos,
   localProfile,
   profile,
-  requiredLocalProfile
+  requiredLocalProfile,
 } from './creator.queries';
 import { settings, videoRecommendations } from './public.queries';
 
@@ -29,7 +28,7 @@ export const registerCreatorChannel = command(
         Body: { type: 'channel' },
       }),
       TE.chainFirst((payload) =>
-        TE.fromIO(setItem(constants.AUTH_KEY, payload))
+        TE.fromIO(setItem(sharedConst.AUTH_KEY, payload))
       )
     ),
   {
@@ -43,7 +42,7 @@ export const verifyChannel = command(
   ({ channelId }: { channelId: string }) =>
     pipe(
       API.v3.Creator.VerifyCreator({ Params: { channelId } }),
-      TE.chain((cc) => TE.fromIO(setItem(constants.CONTENT_CREATOR, cc)))
+      TE.chain((cc) => TE.fromIO(setItem(sharedConst.CONTENT_CREATOR, cc)))
     ),
   {
     localProfile,
@@ -160,27 +159,25 @@ export const addRecommendationForVideo = command(
 );
 
 export const patchRecommendation = command(
-  ({ urlId, data }: {
-    urlId: string;
-    data: PartialRecommendation;
-  }) => pipe(
-    profile.run(),
-    TE.chain((p) => {
-      return API.v3.Creator.PatchRecommendation({
-        Headers: {
-          'x-authorization': p.accessToken,
-        },
-        Params: { urlId },
-        Body: data,
-      });
-    })
-  ),
+  ({ urlId, data }: { urlId: string; data: PartialRecommendation }) =>
+    pipe(
+      profile.run(),
+      TE.chain((p) => {
+        return API.v3.Creator.PatchRecommendation({
+          Headers: {
+            'x-authorization': p.accessToken,
+          },
+          Params: { urlId },
+          Body: data,
+        });
+      })
+    ),
   { videoRecommendations }
 );
 
 export const updateAuth = command(
   (payload: AuthResponse | null) =>
-    TE.fromIO<any, AppError>(setItem(constants.AUTH_KEY, payload)),
+    TE.fromIO<any, AppError>(setItem(sharedConst.AUTH_KEY, payload)),
   {
     auth,
   }
@@ -188,7 +185,7 @@ export const updateAuth = command(
 
 export const updateProfile = command(
   (payload: ContentCreator | null) =>
-    TE.fromIO<any, AppError>(setItem(constants.CONTENT_CREATOR, payload)),
+    TE.fromIO<any, AppError>(setItem(sharedConst.CONTENT_CREATOR, payload)),
   {
     profile,
     localProfile,
@@ -213,7 +210,7 @@ export const assignAccessToken = command(
         return TE.left(e);
       }),
       TE.chain((creator) =>
-        TE.fromIO(setItem(constants.CONTENT_CREATOR, creator))
+        TE.fromIO(setItem(sharedConst.CONTENT_CREATOR, creator))
       )
     );
   },

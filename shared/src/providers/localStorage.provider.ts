@@ -2,7 +2,7 @@ const getItem =
   <T = any>(key: string) =>
   (): T | null => {
     const result = window.localStorage.getItem(key);
-    if (typeof result === 'string') {
+    if (typeof result === "string") {
       return JSON.parse(result);
     }
     return result;

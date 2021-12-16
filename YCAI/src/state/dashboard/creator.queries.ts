@@ -11,13 +11,12 @@ import {
 import { formatISO, subMonths } from 'date-fns';
 import { pipe } from 'fp-ts/lib/function';
 import * as TE from 'fp-ts/lib/TaskEither';
-import { AppError } from '../../models/errors/AppError';
-import { getItem } from '../../providers/localStorage.provider';
-import * as constants from '../../constants';
-import { API, APIError } from '../../providers/api.provider';
-import {
-  GetRelatedChannelsOutput,
-} from '@shared/models/ChannelRelated';
+import { AppError } from '@shared/errors/AppError';
+import { getItem } from '@shared/providers/localStorage.provider';
+import { API } from '../../api';
+import { APIError } from '@shared/errors/APIError';
+import { GetRelatedChannelsOutput } from '@shared/models/ChannelRelated';
+import * as sharedConst from '@shared/constants';
 
 export const CREATOR_CHANNEL_KEY = 'creator-channel';
 export const CURRENT_VIDEO_ON_EDIT = 'current-video-on-edit';
@@ -39,14 +38,14 @@ const throwOnMissingProfile = (
   );
 
 export const auth = queryStrict(
-  () => TE.fromIO<any, AppError>(getItem(constants.AUTH_KEY)),
+  () => TE.fromIO<any, AppError>(getItem(sharedConst.AUTH_KEY)),
   available
 );
 
 // content creator
 
 export const localProfile = queryStrict(
-  () => TE.fromIO<any, AppError>(getItem(constants.CONTENT_CREATOR)),
+  () => TE.fromIO<any, AppError>(getItem(sharedConst.CONTENT_CREATOR)),
   available
 );
 

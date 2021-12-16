@@ -1,7 +1,4 @@
-import React, {
-  useEffect,
-  useState,
-} from 'react';
+import React, { useEffect, useState } from 'react';
 import ReactDOM from 'react-dom';
 import { ThemeProvider } from '@material-ui/styles';
 import { pipe } from 'fp-ts/lib/function';
@@ -17,7 +14,7 @@ import { settingsRefetch } from './state/popup.queries';
 import { Settings } from './models/Settings';
 import { YTContributionInfoBox } from './components/injected/YTContributionInfoBox';
 import { YTVideoPage } from './components/injected/YTVideoPage';
-import { ErrorBoundary } from './components/common/ErrorBoundary';
+import { ErrorBoundary } from '@shared/components/Error/ErrorBoundary';
 import { YCAITheme } from './theme';
 import './i18n';
 
@@ -79,7 +76,7 @@ const InjectedApp: React.FC = () => {
             ytRecommendationsSelector={YT_RECOMMENDATIONS_SELECTOR}
           />
         </ThemeProvider>
-        <YTContributionInfoBox settings={settings}/>
+        <YTContributionInfoBox settings={settings} />
       </ErrorBoundary>
     </React.StrictMode>
   );
