@@ -82,6 +82,14 @@ function getChromePath() {
   return chromePath;
 }
 
+function buildAPIurl(route, params) {
+  if (route === 'directives' && ["chiaroscuro", "comparison"].indexOf(params) !== -1)
+    return `${server}/api/v3/${route}/${params}`;
+  else {
+    return `${server}/api/v3/${route}/${params}`;
+  }
+}
+
 /*
 3. guardoni uses the same experiment API to mark contribution with 'evidencetag'
 4. it would then access to the directive API, and by using the experimentId, will then perform the searches as instructed.
@@ -161,7 +169,7 @@ async function pullDirectives(sourceUrl) {
       directives = await response.json();
     } else {
       throw new Error("A local file isn't supported anymore");
-      directives = JSON.parse(fs.readFileSync(sourceUrl, 'utf-8'));
+      // directives = JSON.parse(fs.readFileSync(sourceUrl, 'utf-8'));
     }
     if (!directives.length) {
       console.log("URL/file do not include any directive in expected format");
@@ -179,8 +187,8 @@ async function pullDirectives(sourceUrl) {
 async function readExperiment(profinfo) {
   /* this function is invoked to dispatch the assistance window.
    * it is a piece of dead code, at the moment, but this would 
-   * start when --auto is invoked */
-  let page, experiment = null;
+   * start when --auto is invoked -- AT THE MOMENT IS NOT USED */
+  let page; let experiment = null;
 
   const browser = await dispatchBrowser(false, profinfo);
 
@@ -262,16 +270,8 @@ async function readExperiment(profinfo) {
   }
 }
 
-function buildAPIurl(route, params) {
-  if (route === 'directives' && ["chiaroscuro", "comparison"].indexOf(params) !== -1)
-    return `${server}/api/v3/${route}/${params}`;
-  else {
-    return `${server}/api/v3/${route}/${params}`;
-  }
-}
-
 function profileExecount(profile, evidencetag) {
-  let data, newProfile = false;
+  let data; let newProfile = false;
   const udd = path.resolve(path.join('profiles', profile));
   const guardfile = path.join(udd, 'guardoni.json');
   if (!fs.existsSync(udd)) {
@@ -335,13 +335,34 @@ You need a reliable internet connection to ensure a flawless collection`;
   console.log('~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~');
 }
 
+async function writeExperimentInfo(experimentId, profinfo, evidencetag, directiveType) {
+  debug("Saving experiment info in extension/experiment.json (would be read by the extension)");
+  const cfgfile = path.join('extension', 'experiment.json');
+  const expinfo = {
+    experimentId,
+    evidencetag,
+    directiveType,
+    execount: profinfo.execount,
+    profileName: profinfo.profileName,
+    newProfile: profinfo.newProfile,
+    when: new Date()
+  };
+  fs.writeFileSync(cfgfile, JSON.stringify(expinfo), 'utf-8');
+  profinfo.expinfo = expinfo;
+}
+
 async function main() {
 
   const auto = nconf.get('auto');
   const shadowban = nconf.get('shadowban');
-  const directiveType = !!shadowban ? "chiaroscuro" : "comparison";
   let experiment = nconf.get('experiment');
   const sourceUrl = nconf.get('csv');
+
+  /* directiveType is an important variable but when
+     --experiment is used, it is not specify. Therefore
+     is set below, after the directive is pull */
+  let directiveType = experiment ? null:
+    (shadowban ? "chiaroscuro" : "comparison");
 
   if(!auto && !sourceUrl && !experiment) {
     printHelp();
@@ -387,7 +408,7 @@ async function main() {
     process.exit(1);
   }
 
-  const evidencetag = nconf.get('evidencetag') || 'none-' + _.random(0, 0xffff);
+  const evidencetag = nconf.get('evidencetag') || 'no-tag-' + _.random(0, 0xffff);
   let profile = nconf.get('profile');
   if (!profile)
     profile = nconf.get('evidencetag') ?
@@ -420,8 +441,10 @@ async function main() {
 
   directiveurl = buildAPIurl('directives', experiment)
   const directives = await pullDirectives(directiveurl);
+  directiveType = _.first(directives).name ? "chiaroscuro" : "comparison";
 
-  debug("Loaded %d directives from %s", directives.length, directiveurl);
+  debug("Loaded %d directives, detected type [%s] from %s",
+    directives.length, directiveType, directiveurl);
 
   await writeExperimentInfo(experiment, profinfo, evidencetag, directiveType);
 
@@ -432,26 +455,13 @@ async function main() {
     await allowResearcherSomeTimeToSetupTheBrowser(profinfo.profileName);
 
   const t = await guardoniExecution(experiment, directives, browser, profinfo);
-  debug("— Guardoni execution took %s",
+  console.log("— Guardoni execution completed in ",
     moment.duration(t.end - t.start).humanize());
+
   await concludeExperiment(experiment, profinfo);
   process.exit(0);
 }
 
-async function writeExperimentInfo(experimentId, profinfo, evidencetag, directiveType) {
-  debug("Saving experiment info in extension/experiment.json (would be read by the extension)");
-  const cfgfile = path.join('extension', 'experiment.json');
-  const expinfo = {
-    experimentId,
-    evidencetag,
-    directiveType,
-    execount: profinfo.execount,
-    newProfile: profinfo.newProfile,
-    when: new Date()
-  };
-  fs.writeFileSync(cfgfile, JSON.stringify(expinfo), 'utf-8');
-  profinfo.expinfo = expinfo;
-}
 
 async function dispatchBrowser(headless, profinfo) {
 
@@ -481,7 +491,7 @@ async function dispatchBrowser(headless, profinfo) {
     debug("Dispatching browser: profile usage count %d, with NO PROXY",
       execount);
   }
-console.log("REMIND NOTE HEADLESS", headless);
+
   try {
     puppeteer.use(pluginStealth());
     const browser = await puppeteer.launch({
@@ -502,55 +512,18 @@ console.log("REMIND NOTE HEADLESS", headless);
   }
 }
 
-async function guardoniExecution(experiment, directives, browser, profinfo) {
-  let retval = { start: null };
-  retval.start = moment();
-  try {
-    const page = (await browser.pages())[0];
-    _.tail(await browser.pages()).forEach(async function(opage) {
-      debug("Closing a tab that shouldn't be there!");
-      await opage.close();
-    })
-    await domainSpecific.beforeDirectives(page, profinfo);
-    // the BS above should close existing open tabs except 1st
-    await operateBrowser(page, directives);
-    console.log(`Operations completed: check results at ${server}/experiments/render/#${experiment}`);
-    await browser.close();
-  } catch(error) {
-    console.log("Error in operateBrowser (collection fail):", error);
-    await browser.close();
-    process.exit(1);
-  }
-  retval.end = moment();
-  return retval;
-}
-
-async function concludeExperiment(experiment, profinfo) {
-  // this conclude the API sent by extension remoteLookup,
-  // a connection to DELETE /api/v3/experiment/:publicKey
-  const url = buildAPIurl(
-    'experiment',
-    moment(profinfo.expinfo.when).toISOString());
-  const response = await fetch(url, {
-    method: 'DELETE'
-  });
-  const body = await response.json();
-  if(body.acknowledged === true)
-    debug("Experiment %s marked as completed on the server!", experiment);
-  else
-    debug("Error in communication with the server o_O (%j)", body);
-}
-
 async function operateTab(page, directive) {
 
   try {
     await domainSpecific.beforeLoad(page, directive);
   } catch(error) {
-    console.log("error in beforeLoad", error.message, error.stack);
+    debug("error in beforeLoad %s %s directive %o",
+      error.message, error.stack, directive);
   }
 
   debug("— Loading %s (for %dms)", directive.urltag ?
     directive.urltag : directive.name, directive.loadFor);
+  // Remind you can exclude directive with env/--exclude=urltag
 
   // TODO the 'timeout' would allow to repeat this operation with
   // different parameters. https://stackoverflow.com/questions/60051954/puppeteer-timeouterror-navigation-timeout-of-30000-ms-exceeded
@@ -564,8 +537,9 @@ async function operateTab(page, directive) {
     console.log("error in beforeWait", error.message, error.stack);
   }
 
-  debug("Directive to URL %s, Loading delay %d", directive.url, directive.loadFor);
-  await page.waitForTimeout(directive.loadFor);
+  const loadFor = _.parseInt(nconf.get('load')) || directive.loadFor;
+  debug("Directive to URL %s, Loading delay %d (--load optional)", directive.url, loadFor);
+  await page.waitForTimeout(loadFor);
 
   try {
     await domainSpecific.afterWait(page, directive);
@@ -575,21 +549,6 @@ async function operateTab(page, directive) {
   debug("— Completed %s", directive.urltag ? directive.urltag : directive.name);
 }
 
-async function operateBrowser(page, directives) {
-  // await page.setViewport({width: 1024, height: 768});
-  for (directive of directives) {
-    if(nconf.get('exclude') && directive.urltag == nconf.get('exclude')) {
-      console.log("excluded!", directive.urltag);
-    } else {
-      try {
-        await operateTab(page, directive);
-      } catch(error) {
-        debug("operateTab in %s — error: %s", directive.urltag, error.message);
-      }
-    }
-  }
-}
-
 function initialSetup() {
 
   if(!!nconf.get('h') || !!nconf.get('?') || process.argv.length < 3)
@@ -597,11 +556,11 @@ function initialSetup() {
 
   // backend is an option we don't even disclose in the help, 
   // as only developers needs it --chrome as well
-  if(!!nconf.get('auto')) {
+  if(nconf.get('auto')) {
     info("AUTO mode. No mandatory options; --profile, --evidencetag OPTIONAL")
-  } else if(!!nconf.get('csv')) {
+  } else if(nconf.get('csv')) {
     info("CSV mode: default is --comparison (special is --shadowban); Guardoni exit after upload")
-  } else if(!!nconf.get('experiment')) {
+  } else if(nconf.get('experiment')) {
     info("EXPERIMENT mode: no mandatory options; --profile, --evidencetag OPTIONAL")
   }
 
@@ -632,6 +591,66 @@ function initialSetup() {
   return manifest;
 }
 
+async function operateBrowser(page, directives) {
+  // await page.setViewport({width: 1024, height: 768});
+  for (const directive of directives) {
+    if(nconf.get('exclude') && directive.urltag == nconf.get('exclude')) {
+      debug("[!!!] excluded directive %s", directive.urltag);
+    } else {
+      try {
+        await operateTab(page, directive);
+      } catch(error) {
+        debug("operateTab in %s — error: %s", directive.urltag, error.message);
+      }
+    }
+  }
+  const loadFor = _.parseInt(nconf.get('load')) || directive.loadFor;
+  if(loadFor < 20000) {
+    await page.waitForTimeout(15000);
+  }
+}
+
+async function guardoniExecution(experiment, directives, browser, profinfo) {
+  const retval = { start: null };
+  retval.start = moment();
+  const directiveType = _.first(directives).name ? "chiaroscuro" : "comparison";
+  try {
+    const page = (await browser.pages())[0];
+    _.tail(await browser.pages()).forEach(async function(opage) {
+      debug("Closing a tab that shouldn't be there!");
+      await opage.close();
+    })
+    await domainSpecific.beforeDirectives(page, profinfo);
+    // the BS above should close existing open tabs except 1st
+    await operateBrowser(page, directives);
+    const publicKey = await domainSpecific.completed();
+    console.log(`Operations completed: check results at ${server}/${directiveType === 'chiaroscuro' ? "shadowban" : "experiments"}/render/#${experiment}`);
+    console.log(`Personal log at ${server}/personal/#${publicKey}`);
+    await browser.close();
+  } catch(error) {
+    console.log("Error in operateBrowser (collection fail):", error);
+    await browser.close();
+    process.exit(1);
+  }
+  retval.end = moment();
+  return retval;
+}
+
+async function concludeExperiment(experiment, profinfo) {
+  // this conclude the API sent by extension remoteLookup,
+  // a connection to DELETE /api/v3/experiment/:publicKey
+  const url = buildAPIurl(
+    'experiment',
+    moment(profinfo.expinfo.when).toISOString());
+  const response = await fetch(url, {
+    method: 'DELETE'
+  });
+  const body = await response.json();
+  if(body.acknowledged !== true)
+    debug("Error in communication with the server o_O (%j)", body);
+  //  debug("Experiment %s marked as completed on the server!", experiment);
+}
+
 async function validateAndStart(manifest) {
   /* initial test is meant to assure the extension is an acceptable version */
 
@@ -645,13 +664,13 @@ async function validateAndStart(manifest) {
    */
   const MINIMUM_ACCEPTABLE_MAJOR = 8;
   if(_.parseInt(vblocks[1]) < MINIMUM_ACCEPTABLE_MAJOR) {
-    console.log("Error/Warning: in the directory 'extension/' the software is too old!");
+    console.log("Error/Warning: in the directory 'extension/' the software is too old: remove it!");
     process.exit(1);
   }
 
   if(!_.startsWith(vblocks[2], '99')) {
-    console.log("Warning/Reminder: the extension used might not be opt-in! you need to do it by hand");
-    console.log("Press any key to start");
+    console.log("Warning/Reminder: the extension used might not be opt-in! YOU NEED TO DO IT BY HAND");
+    console.log("<Press any key to start>");
     await keypress();
   }
 

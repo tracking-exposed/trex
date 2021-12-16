@@ -2,6 +2,7 @@ const _ = require('lodash');
 const debug = require('debug')('routes:events');
 const nconf = require('nconf');
 
+const { chiaroScuro, comparison } = require('./directives');
 const automo = require('../lib/automo');
 const utils = require('../lib/utils');
 const security = require('../lib/security');
@@ -71,12 +72,34 @@ function extendIfExperiment(expinfo, listOf) {
 
     if(!expinfo)
         return listOf;
-    debug("Linking %d objects to experiment %s",
-        listOf.length, expinfo.experimentId);
+    debug("Linking %d objects to experiment %s (%s)",
+        listOf.length, expinfo.experimentId,
+        expinfo.directive[0].directiveType);
 
-    const nothelpf = ['_id', 'publicKey', 'href', 'status'];
+    const nothelpf = ['_id', 'publicKey',
+        'directive', 'href', 'status'];
+
     return _.map(listOf, function(o) {
+        /* this function link the experiment object to the
+           element found, and then rebuild the directives to 
+           check if the URL belong or not to the plans.
+           If is does, it save it, otherwise, is activity 
+           made by the browser outside the directives is causes
+           o.belonginn = false; */
         o.experiment = _.omit(expinfo, nothelpf);
+        o.experiment.directiveType = expinfo.directive[0].directiveType;
+        const directives = (o.experiment.directiveType === 'comparison') ?
+            _.map(expinfo.directive[0].links, comparison) :
+            _.flatten(_.map(expinfo.directive[0].links,  chiaroScuro));
+        o.experiment.directiveN = _.reduce(directives, function(memo, d, cnt) {
+            if(_.isInteger(memo))
+                return memo;
+            return d.url === o.href.replace(/\+/, '%20') ? cnt : memo;
+        }, NaN);
+        o.experiment.directive = _.isNaN(o.experiment.directiveN) ?
+            null : _.nth(directives, o.experiment.directiveN);
+        o.experiment.belonging = !_.isNaN(o.experiment.directiveN);
+        o.experiment.directives = directives;
         return o;
     });
 }
@@ -125,6 +148,8 @@ async function processEvents2(req) {
 
     // this information would be merged in htmls and leafs if exist 
     const experinfo = await automo.pullExperimentInfo(supporter.publicKey);
+    // experinfo is an aggregation from collection 'experiments' and 
+    // collection 'directives'
 
     const blang = headers.language.replace(/;.*/, '').replace(/,.*/, '');
     // debug("CHECK: %s <%s>", blang, headers.language );
