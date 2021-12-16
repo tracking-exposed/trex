@@ -1,15 +1,27 @@
-import { Box, Card, CardMedia, Grid, Link } from '@material-ui/core';
+import React from 'react';
+
+import {
+  Box,
+  Card,
+  CardMedia,
+  Grid,
+  Link,
+  Typography,
+}from '@material-ui/core';
+import { Link as LinkIcon } from '@material-ui/icons';
+
 import {
   descriptionMaxLength,
   Recommendation,
   titleMaxLength,
 } from '@shared/models/Recommendation';
-import React from 'react';
+
 import { makeStyles } from '../../theme';
 import { isYTURL } from '../../utils/yt.utils';
 import CharLimitedTypography from '../common/CharLimitedTypography';
+import { getHostFromURL } from '../../utils/location.utils';
 
-const imgHeight = 100;
+const imgHeight = 120;
 
 const useStyles = makeStyles((theme) => ({
   link: {
@@ -24,23 +36,44 @@ const useStyles = makeStyles((theme) => ({
       height: imgHeight,
       width: '100%',
     },
-    backgroundColor: theme.palette.grey[300],
+    backgroundColor: 'transparent',
+    boxShadow: 'none',
   },
   content: {
     height: `calc(100% - ${theme.spacing(1)}px)`,
-    padding: theme.spacing(1),
-    paddingBottom: theme.spacing(1),
-    paddingTop: theme.spacing(1.5),
+    padding: theme.spacing(1.5),
   },
   title: {
     fontSize: '1.4rem',
     fontWeight: 'bold',
     letterSpacing: '0.015em',
-    marginBottom: theme.spacing(0.1),
+    lineHeight: 1.25,
+    marginBottom: theme.spacing(0.5),
+    lineClamp: 2,
   },
   description: {
+    color: theme.palette.grey[500],
     fontSize: '1.2rem',
     textOverflow: 'ellipsis',
+    letterSpacing: '0.015em',
+    lineClamp: 3,
+  },
+  source: {
+    alignItems: 'center',
+    color: theme.palette.violet.light,
+    display: 'flex',
+    fontSize: '1.2rem',
+    '& svg': {
+      marginTop: -1,
+      marginRight: theme.spacing(.5),
+    },
+    marginBottom: theme.spacing(0.5),
+  },
+  clamped: {
+    display: '-webkit-box',
+    boxOrient: 'vertical',
+    wordBreak: 'keep-all',
+    overflow: 'hidden'
   },
 }));
 
@@ -72,14 +105,20 @@ export const InjectedRecommendationCard: React.FC<Recommendation> = ({
               flexDirection="column"
             >
               <CharLimitedTypography
-                className={classes.title}
+                className={`${classes.title} ${classes.clamped}`}
                 limit={titleMaxLength}
               >
                 {title}
               </CharLimitedTypography>
-              <Box display="flex" flexGrow={1} alignItems="center">
+              {!isYouTube && (
+                <Typography className={classes.source}>
+                  <LinkIcon />
+                  {getHostFromURL(url)}
+                </Typography>
+              )}
+              <Box display="flex" alignItems="center">
                 <CharLimitedTypography
-                  className={classes.description}
+                  className={`${classes.description} ${classes.clamped}`}
                   limit={descriptionMaxLength}
                 >
                   {description ?? ''}
