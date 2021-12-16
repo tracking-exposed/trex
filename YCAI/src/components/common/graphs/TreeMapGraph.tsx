@@ -66,12 +66,10 @@ const TreeMapGraph = <T extends Datum>({
     range: [12, 38],
   });
   const fontColorScale = scaleLinear<string>({
-    domain: [0, maxSize / 3, maxSize / 2, maxSize],
+    domain: [0, maxSize],
     range: [
       theme.palette.common.black,
       theme.palette.common.black,
-      theme.palette.common.white,
-      theme.palette.common.white,
     ],
   });
 
