@@ -401,6 +401,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@babel/runtime@npm:^7.14.8":
+  version: 7.16.5
+  resolution: "@babel/runtime@npm:7.16.5"
+  dependencies:
+    regenerator-runtime: ^0.13.4
+  checksum: b96e67280efe581c6147b4fe984dfe08a8fbea048934a092f3cbf4dcf61725f6b221cb0c879b6e6e98671f83a104c9e8cfbd24c683e5ebcc886a731aa8984ad0
+  languageName: node
+  linkType: hard
+
 "@babel/template@npm:^7.16.0, @babel/template@npm:^7.3.3":
   version: 7.16.0
   resolution: "@babel/template@npm:7.16.0"
@@ -1034,6 +1043,22 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@material-ui/data-grid@npm:^4.0.0-alpha.37":
+  version: 4.0.0-alpha.37
+  resolution: "@material-ui/data-grid@npm:4.0.0-alpha.37"
+  dependencies:
+    "@material-ui/utils": ^5.0.0-alpha.14
+    clsx: ^1.0.4
+    prop-types: ^15.7.2
+    reselect: ^4.0.0
+  peerDependencies:
+    "@material-ui/core": ^4.12.0 || ^5.0.0-beta.0
+    "@material-ui/styles": ^4.11.4 || ^5.0.0-beta.0
+    react: ^17.0.0
+  checksum: 01c8b81b49e77b14bcaf7c726f9c91730631f2279ecb8b60e90213613dd3296662f2355255ec8506c2b230797eafe49b89eb710a5799c2b307069c49f4745bfa
+  languageName: node
+  linkType: hard
+
 "@material-ui/icons@npm:^4.11.2":
   version: 4.11.2
   resolution: "@material-ui/icons@npm:4.11.2"
@@ -1145,6 +1170,21 @@ __metadata:
     react: ^16.8.0 || ^17.0.0
     react-dom: ^16.8.0 || ^17.0.0
   checksum: 30e15b197c52bb607ba2f00293acbda66388427560e30f5dd82714dee69f565cf0896baa98f869b191a881e14e0df08155fd9d598b356ac2262b8e60e43a5499
+  languageName: node
+  linkType: hard
+
+"@material-ui/utils@npm:^5.0.0-alpha.14":
+  version: 5.0.0-beta.5
+  resolution: "@material-ui/utils@npm:5.0.0-beta.5"
+  dependencies:
+    "@babel/runtime": ^7.14.8
+    "@types/prop-types": ^15.7.4
+    "@types/react-is": ^16.7.1 || ^17.0.0
+    prop-types: ^15.7.2
+    react-is: ^17.0.2
+  peerDependencies:
+    react: ^17.0.2
+  checksum: 397d318861fb315ff9814e1878fdd0259f3c6cb6396b0500b5c0e13b6eeeb3a88c2ee03b9a731b57f75b29469a7bfe412010e75b7bd251a941bb7f078abfbaae
   languageName: node
   linkType: hard
 
@@ -2670,7 +2710,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/prop-types@npm:*":
+"@types/prop-types@npm:*, @types/prop-types@npm:^15.7.4":
   version: 15.7.4
   resolution: "@types/prop-types@npm:15.7.4"
   checksum: ef6e1899e59b876c273811b1bd845022fc66d5a3d11cb38a25b6c566b30514ae38fe20a40f67622f362a4f4f7f9224e22d8da101cff3d6e97e11d7b4c307cfc1
@@ -2724,6 +2764,15 @@ __metadata:
   dependencies:
     "@types/react": "*"
   checksum: 4d5730dffbef86c887cecad7e3cecda424ce6a64d0b5441c63b5b015d48219868660a2bb1aa15e897e565ad8867fa6b885d4358b04e1c4e589ba4c07c3fda55c
+  languageName: node
+  linkType: hard
+
+"@types/react-is@npm:^16.7.1 || ^17.0.0":
+  version: 17.0.3
+  resolution: "@types/react-is@npm:17.0.3"
+  dependencies:
+    "@types/react": "*"
+  checksum: 6abb7c47d54f012272650df8a962a28bd82f219291e5ef8b4dfa7fe0bb98ae243b060bf9fbe8ceff6213141794855a006db194b490b00ffd15842ae19d0ce1f0
   languageName: node
   linkType: hard
 
@@ -6960,6 +7009,26 @@ __metadata:
   checksum: 3634c249570f7f34e3d34f866c93f866c5b417f0dd616275decae08147dcdf8fccfaa5947380ccfb0473998ea3a8057c0b4cd90c875740ee685d0624b2983598
   languageName: node
   linkType: hard
+
+"data-table@workspace:data-table":
+  version: 0.0.0-use.local
+  resolution: "data-table@workspace:data-table"
+  dependencies:
+    "@material-ui/data-grid": ^4.0.0-alpha.37
+    "@types/eslint": ^8.2.1
+    avenger: ^7.0.1
+    debug: ^4.3.3
+    eslint: ^8.4.1
+    fp-ts: ^2.11.5
+    io-ts: ^2.2.16
+    io-ts-types: ^0.5.16
+    ts-endpoint: ^2.0.0
+    ts-io-error: ^2.0.0
+    typelevel-ts: ^0.4.0
+    typescript: ^4.5.4
+    webpack: ^5.65.0
+  languageName: unknown
+  linkType: soft
 
 "data-urls@npm:^1.1.0":
   version: 1.1.0

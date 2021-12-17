@@ -11,7 +11,8 @@
     "shared",
     "backend",
     "methodology",
-    "YCAI"
+    "YCAI",
+    "data-table"
   ],
   "packageManager": "yarn@3.1.1",
   "scripts": {
@@ -19,6 +20,7 @@
     "lint": "yarn workspaces foreach run lint",
     "build": "yarn workspaces foreach run build",
     "test": "jest",
+    "data-table": "yarn workspace data-table",
     "shared": "yarn workspace shared",
     "backend": "yarn workspace yttrex-backend",
     "guardoni": "yarn workspace guardoni",
