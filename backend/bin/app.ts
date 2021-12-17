@@ -185,7 +185,7 @@ export const makeApp = (ctx: MakeAppContext): express.Application => {
     iowrapper("patchRecommendation")
   );
   app.get(
-    "/api/v3/creator/:channelId/related/:amount?",
+    "/api/v3/creator/:channelId/related",
     iowrapper("getCreatorRelated")
   );
   app.get("/api/v3/creator/:channelId/stats", iowrapper("getCreatorStats"));

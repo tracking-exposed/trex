@@ -219,7 +219,7 @@ async function getCreatorRelated(req) {
        and differs from the others because take as an input a 
        channel and return as output aggregation by channel */
 
-    const amount = req.params.amount ? _.parseInt(req.params.amount) : 10;
+    const amount = req.query.amount ? _.parseInt(req.query.amount) : 10;
 
     try {
         /* pagination not supported, only enlarging the max amount of evidences */

@@ -114,6 +114,8 @@ export const ccRelatedUsers = compose(
         },
         Params: {
           channelId: profile.channelId,
+        },
+        Query: {
           amount: params.amount,
           skip: params.skip,
         },
