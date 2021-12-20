@@ -1,21 +1,26 @@
 import * as React from "react";
 import * as ReactDOM from "react-dom";
 import { ThemeProvider, createTheme } from "@material-ui/core";
-import { Table } from "./components/Table";
+import { Table, TableProps } from "./components/Table";
+import { DataTableQueries } from "state/queries";
 
-interface DataTableProps {
+interface DataTableProps<Q extends keyof DataTableQueries>
+  extends TableProps<Q> {
   node: HTMLDivElement;
 }
 
-export const DataTable = (props: DataTableProps): void => {
+const DataTable = <Q extends keyof DataTableQueries>({
+  node,
+  ...props
+}: DataTableProps<Q>): void => {
   const theme = createTheme();
 
   ReactDOM.render(
     <ThemeProvider theme={theme}>
-      <Table query="ccRelatedUsers" baseURL="http://localhost:9000/api" />
+      <Table {...props} />
     </ThemeProvider>,
-    props.node
+    node
   );
 };
 
-DataTable({ node: document.getElementById("main") as any });
+export default DataTable;

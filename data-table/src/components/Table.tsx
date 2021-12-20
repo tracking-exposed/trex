@@ -40,7 +40,7 @@ const defaultConfiguration: TableConfiguration = {
   },
 };
 
-interface TableProps<Q extends keyof DataTableQueries>
+export interface TableProps<Q extends keyof DataTableQueries>
   extends Omit<DataGridProps, "rows" | "columns"> {
   query: Q;
   baseURL: string;

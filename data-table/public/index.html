@@ -1,6 +1,20 @@
 <html>
+  <head>
+    <style>
+      #main {
+        padding: 100px;
+      }
+    </style>
+  </head>
   <body>
     <div id="main"></div>
   </body>
   <script type="text/javascript" src="./data-table.js"></script>
+  <script type="text/javascript">
+    window.DataTable({
+      node: document.getElementById('main'),
+      baseURL: 'https://youchoose.ai/api/',
+      query: 'ccRelatedUsers'
+    })
+  </script>
 </html>

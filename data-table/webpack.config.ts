@@ -1,21 +1,18 @@
-import path from 'path';
-import { getConfig } from '../shared/src/webpack/config';
-import {
-  CopyWebpackPlugin,
-} from '../shared/src/webpack/plugins';
-import packageJson from './package.json';
-import * as t from 'io-ts';
+import path from "path";
+import { getConfig } from "../shared/src/webpack/config";
+import { CopyWebpackPlugin } from "../shared/src/webpack/plugins";
+import packageJson from "./package.json";
+import * as t from "io-ts";
 
 process.env.VERSION = packageJson.version;
 
-
 const { buildENV, ...config } = getConfig({
   cwd: __dirname,
-  outputDir: path.resolve(__dirname, 'build'),
+  outputDir: path.resolve(__dirname, "build"),
   env: t.strict({}),
   hot: true,
   entry: {
-    ['data-table']: path.resolve(__dirname, 'src/index.tsx'),
+    ["data-table"]: path.resolve(__dirname, "src/index.tsx"),
   },
 });
 
@@ -23,7 +20,7 @@ config.plugins.push(
   new CopyWebpackPlugin({
     patterns: [
       {
-        from: 'public',
+        from: "public",
       },
     ],
   })
@@ -31,9 +28,17 @@ config.plugins.push(
 
 export default {
   ...config,
-  devtool: 'source-map',
+  devtool: "source-map",
+  output: {
+    ...config.output,
+    library: {
+      name: "DataTable",
+      type: "window",
+      export: ["default"],
+    },
+  },
   devServer: {
-    host: '0.0.0.0',
+    host: "0.0.0.0",
     port: 3002,
     hot: true,
   },
