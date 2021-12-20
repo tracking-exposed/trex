@@ -165,7 +165,6 @@ async function getMetadataFromAuthor(filter, options) {
 
 async function getMetadataFromAuthorChannelId(channelId, options) {
     const mongoc = await mongo3.clientConnect({ concurrency: 1 });
-    const consideredAmount = 500;
     const filter = {
         authorSource: { "$in": [
             `/channel/${channelId}`,
@@ -173,73 +172,88 @@ async function getMetadataFromAuthorChannelId(channelId, options) {
         ]}
     }
 
-    const videos = await mongo3.readLimit(mongoc,
-        nconf.get('schema').metadata, filter,
-        { savingTime: -1 }, consideredAmount, 0);
-
-    const relatedl = _.compact(_.flatten(_.map(videos, 'related')));
-    debug("matching %d videos by authorSource (%j) had %d total related",
-        videos.length, channelId, relatedl.length);
-
-    if(!videos.length || !relatedl.length) {
-        await mongoc.close();
-        /* structure to say "No data available" */
-        return {
-            content: [],
-            overflow: false, totalMetadata: 0, totalRecommendations: 0, score: 0,
-            channelId,
-            authorName: "",
-            pagination: options,
-        };
-    }
-
-    const authors = _.reduce(relatedl, function(memo, related) {
-        // legacy .source, an open problem is the logic to
-        // get rid of old data, if that matters.
-        const rs = related.recommendedSource || related.source;
-        if(!memo[rs]) {
-            const obj = {
-                channelId: rs,
-                // TODO we don't have the 
-                // avatar but in a future this should happen
-                recommendedChannelCount: 1
-            }
-            memo[rs] = obj;
-        } else {
-            memo[rs].recommendedChannelCount++;
+    const cappedResultsOpts = [
+      { "$match": filter },
+      { "$project": { "_id": false, "authorName": true, "related": true }},
+      { "$unwind": "$related" },
+      { "$group":  {
+          "_id": "$related.recommendedSource",
+          "recommendedChannelCount": { "$sum": 1 },
+          "queryAuthorName": { "$first": "$authorName" }
         }
-        return memo;
-    }, {});
+      },
+      { "$sort": { "recommendedChannelCount": -1 }},
+      { "$skip": options.skip },
+      { "$limit": options.amount }
+    ]
 
-    const total = await mongo3.count(mongoc,
-        nconf.get('schema').metadata, filter);
+    const results = await mongo3.aggregate(mongoc,
+      nconf.get('schema').metadata,
+      cappedResultsOpts
+    );
 
-    const ordered = _.map(_.orderBy(
-        authors, ['recommendedChannelCount'], ['desc']), function(o) {
-            o.percentage = _.round((100 / relatedl.length) * o.recommendedChannelCount, 1);
-            return o;
-        });
+    const totalRelatedCount = [
+      {
+        $match: filter
+      },
+      { "$project": { "id": true, "related": true }},
+      { "$group": { "_id": "id", "total": {$sum: {$size: "$related" }} } }
+    ]
 
-    const authorName = _.first(videos).authorName;
-    // recommendatability score is computed here because the queried
-    // channel might not be present among the taken objects, OR might not be 
-    // present at all
-    let score = 0;
-    const isPresent = _.find(ordered, { channelId: authorName });
-    if(isPresent)
-        score = isPresent.percentage;
+    const [relatedTotal] = await mongo3.aggregate(
+      mongoc,
+      nconf.get('schema').metadata,
+      totalRelatedCount
+    )
+
+    const [totalRecommendedSource] = await mongo3.aggregate(
+      mongoc,
+      nconf.get('schema').metadata,
+      [
+        { "$match": filter },
+        { "$project": { "_id": false, "related": true }},
+        { "$unwind": "$related" },
+        { "$group":  {
+            "_id": "$related.recommendedSource",
+          }
+        },
+        { $count: "total" }
+      ]
+    )
+
+    if (results.length === 0) {
+      return {
+        channelId,
+        authorName: null,
+        totalRecommendations: totalRecommendedSource?.total ?? 0,
+        score: 0,
+        pagination: options,
+        content: [],
+      }
+    }
 
     await mongoc.close();
-    return {
+
+    const content = results.map(r => ({
+      ...r,
+      recommendedSource: r._id,
+      percentage: Math.round((100 / relatedTotal.total) * r.recommendedChannelCount)
+    }))
+
+    const authorName = _.first(content).queryAuthorName;
+    const isPresent = _.find(content, { _id: authorName });
+    const score = isPresent ? isPresent.percentage : 0;
+
+    const result = {
         channelId,
         authorName,
-        overflow: (_.size(videos) === consideredAmount),
-        totalMetadata: total,
-        totalRecommendations: relatedl.length,
+        totalRecommendations: totalRecommendedSource.total,
         score,
         pagination: options,
-        content: _.take(ordered, options.amount),
+        content,
     }
+
+    return result;
 };
 
 async function getVideosByPublicKey(publicKey, filter, htmlToo) {
