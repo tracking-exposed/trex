@@ -12,7 +12,7 @@ const { buildENV, ...config } = getConfig({
   env: t.strict({}),
   hot: true,
   entry: {
-    ["data-table"]: path.resolve(__dirname, "src/index.tsx"),
+    taboule: path.resolve(__dirname, "src/index.tsx"),
   },
 });
 
@@ -32,7 +32,7 @@ export default {
   output: {
     ...config.output,
     library: {
-      name: "DataTable",
+      name: "Taboule",
       type: "window",
       export: ["default"],
     },

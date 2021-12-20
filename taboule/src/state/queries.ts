@@ -18,7 +18,7 @@ export interface Results<T> {
 
 type EndpointQuery<C> = CachedQuery<SearchQueryInput, APIError, Results<C>>;
 
-export interface DataTableQueries {
+export interface TabouleQueries {
   ccRelatedUsers: EndpointQuery<ChannelRelated>;
 }
 
@@ -30,7 +30,7 @@ interface GetDataTableQueriesProps {
 export const GetDataTableQueries = ({
   baseURL,
   accessToken,
-}: GetDataTableQueriesProps): DataTableQueries => {
+}: GetDataTableQueriesProps): TabouleQueries => {
   const { API } = GetAPI({ baseURL });
   const ccRelatedUsers = queryStrict<
     SearchQueryInput,

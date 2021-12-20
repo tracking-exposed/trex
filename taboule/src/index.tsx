@@ -1,15 +1,15 @@
 import * as React from "react";
 import * as ReactDOM from "react-dom";
 import { ThemeProvider, createTheme } from "@material-ui/core";
-import { Table, TableProps } from "./components/Table";
-import { DataTableQueries } from "state/queries";
+import { Taboule, TabouleProps } from "./components/Taboule";
+import { TabouleQueries } from "state/queries";
 
-interface DataTableProps<Q extends keyof DataTableQueries>
-  extends TableProps<Q> {
+interface DataTableProps<Q extends keyof TabouleQueries>
+  extends TabouleProps<Q> {
   node: HTMLDivElement;
 }
 
-const DataTable = <Q extends keyof DataTableQueries>({
+const appendTo = <Q extends keyof TabouleQueries>({
   node,
   ...props
 }: DataTableProps<Q>): void => {
@@ -17,10 +17,10 @@ const DataTable = <Q extends keyof DataTableQueries>({
 
   ReactDOM.render(
     <ThemeProvider theme={theme}>
-      <Table {...props} />
+      <Taboule {...props} />
     </ThemeProvider>,
     node
   );
 };
 
-export default DataTable;
+export default appendTo;

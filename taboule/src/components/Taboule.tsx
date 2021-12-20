@@ -8,7 +8,7 @@ import { WithQueries } from "avenger/lib/react";
 import * as React from "react";
 import { ObservableQuery } from "avenger/lib/Query";
 import {
-  DataTableQueries,
+  TabouleQueries,
   GetDataTableQueries,
   SearchQueryInput,
   Results,
@@ -17,20 +17,20 @@ import { ErrorBox } from "@shared/components/Error/ErrorBox";
 import { ChannelRelated } from "@shared/models/ChannelRelated";
 import { APIError } from "@shared/errors/APIError";
 
-interface TableColumnProps<K> extends Omit<GridColTypeDef, "field"> {
+interface TabouleColumnProps<K> extends Omit<GridColTypeDef, "field"> {
   field: K;
 }
 
-interface TableQueryConfiguration<P extends Record<string, any>>
+interface TabouleQueryConfiguration<P extends Record<string, any>>
   extends Omit<DataGridProps, "columns" | "rows"> {
-  columns: Array<TableColumnProps<keyof P>>;
+  columns: Array<TabouleColumnProps<keyof P>>;
 }
 
-interface TableConfiguration {
-  ccRelatedUsers: TableQueryConfiguration<ChannelRelated>;
+interface TabouleConfiguration {
+  ccRelatedUsers: TabouleQueryConfiguration<ChannelRelated>;
 }
 
-const defaultConfiguration: TableConfiguration = {
+const defaultConfiguration: TabouleConfiguration = {
   ccRelatedUsers: {
     columns: [
       {
@@ -50,7 +50,7 @@ const defaultConfiguration: TableConfiguration = {
   },
 };
 
-export interface TableProps<Q extends keyof DataTableQueries>
+export interface TabouleProps<Q extends keyof TabouleQueries>
   extends Omit<DataGridProps, "rows" | "columns"> {
   query: Q;
   baseURL: string;
@@ -58,12 +58,12 @@ export interface TableProps<Q extends keyof DataTableQueries>
   columns?: GridColTypeDef[];
 }
 
-export const Table = <Q extends keyof DataTableQueries>({
+export const Taboule = <Q extends keyof TabouleQueries>({
   query: queryKey,
   baseURL,
   defaultParams,
   ...props
-}: TableProps<Q>): JSX.Element => {
+}: TabouleProps<Q>): JSX.Element => {
   const config = React.useMemo(
     () => defaultConfiguration[queryKey],
     [queryKey]
