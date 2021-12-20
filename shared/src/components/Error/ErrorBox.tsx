@@ -1,8 +1,8 @@
-import { Card, Grid } from '@material-ui/core';
-import { Alert, AlertTitle } from '@material-ui/lab';
-import * as React from 'react';
-import { useTranslation } from 'react-i18next';
-import { APIError } from '../../models/errors/APIError';
+import { Card, CardContent, Grid, Typography } from "@material-ui/core";
+import { Alert, AlertTitle } from "@material-ui/lab";
+import * as React from "react";
+import { useTranslation } from "react-i18next";
+import { APIError } from "../../models/errors/APIError";
 
 // todo: add NODE_ENV as parameter
 export const ErrorBox = (e: unknown): React.ReactElement<any, string> => {
@@ -15,7 +15,7 @@ export const ErrorBox = (e: unknown): React.ReactElement<any, string> => {
         <Alert severity="error">
           {e instanceof Error || e instanceof APIError ? (
             <>
-              <AlertTitle>{e.name ?? 'Error'}</AlertTitle>
+              <AlertTitle>{e.name ?? "Error"}</AlertTitle>
               <p>{e.message}</p>
               {e instanceof APIError ? (
                 <ul>
@@ -27,18 +27,17 @@ export const ErrorBox = (e: unknown): React.ReactElement<any, string> => {
             </>
           ) : (
             <>
-              <AlertTitle>{t('errors:an_error_occurred')}</AlertTitle>
+              <AlertTitle>{t("errors:an_error_occurred")}</AlertTitle>
             </>
           )}
         </Alert>
-        {/* {config.NODE_ENV === 'development' ? (
-          <CardContent>
-            <Typography variant="h6">Debug</Typography>
-            <pre style={{ backgroundColor: 'white' }}>
-              <code>{JSON.stringify(e, null, 2)}</code>
-            </pre>
-          </CardContent>
-        ) : null} */}
+
+        <CardContent>
+          <Typography variant="h6">Debug</Typography>
+          <pre style={{ backgroundColor: "white" }}>
+            <code>{JSON.stringify(e, null, 2)}</code>
+          </pre>
+        </CardContent>
       </Card>
     </Grid>
   );

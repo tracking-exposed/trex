@@ -9,7 +9,10 @@ process.env.VERSION = packageJson.version;
 const { buildENV, ...config } = getConfig({
   cwd: __dirname,
   outputDir: path.resolve(__dirname, "build"),
-  env: t.strict({}),
+  env: t.strict({
+    VERSION: t.string,
+    DEBUG: t.string
+  }),
   hot: true,
   entry: {
     taboule: path.resolve(__dirname, "src/index.tsx"),

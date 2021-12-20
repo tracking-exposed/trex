@@ -3,20 +3,21 @@ import { ChannelRelated } from "@shared/models/ChannelRelated";
 import { GetAPI } from "@shared/providers/api.provider";
 import { available, queryStrict } from "avenger";
 import { CachedQuery } from "avenger/lib/Query";
+import { SearchQuery } from "@shared/models/http/SearchQuery";
+import { pipe } from "fp-ts/lib/function";
+import * as TE from "fp-ts/lib/TaskEither";
 
-export interface SearchQueryInput {
+export interface SearchRequestInput {
   Params: any;
-  Query: {
-    amount: number;
-    skip: number;
-  };
+  Query: SearchQuery;
 }
 
 export interface Results<T> {
+  total: number;
   content: T[];
 }
 
-type EndpointQuery<C> = CachedQuery<SearchQueryInput, APIError, Results<C>>;
+type EndpointQuery<C> = CachedQuery<SearchRequestInput, APIError, Results<C>>;
 
 export interface TabouleQueries {
   ccRelatedUsers: EndpointQuery<ChannelRelated>;
@@ -32,18 +33,26 @@ export const GetDataTableQueries = ({
   accessToken,
 }: GetDataTableQueriesProps): TabouleQueries => {
   const { API } = GetAPI({ baseURL });
+
   const ccRelatedUsers = queryStrict<
-    SearchQueryInput,
+    SearchRequestInput,
     APIError,
     Results<ChannelRelated>
   >(
     (input) =>
-      API.v3.Creator.CreatorRelatedChannels({
-        ...input,
-        Headers: {
-          "x-authorization": accessToken ?? "",
-        },
-      }),
+      pipe(
+        API.v3.Creator.CreatorRelatedChannels({
+          ...input,
+          Headers: {
+            "x-authorization": accessToken ?? "",
+          },
+        }),
+        TE.map(({ totalRecommendations, ...r }) => ({
+          ...r,
+          total: totalRecommendations,
+          content: r.content.map((r) => ({ ...r, id: r.recommendedSource })),
+        }))
+      ),
     available
   );
 

@@ -13,8 +13,11 @@
   <script type="text/javascript">
     window.Taboule({
       node: document.getElementById('main'),
-      baseURL: 'https://youchoose.ai/api/',
-      query: 'ccRelatedUsers'
+      baseURL: 'http://localhost:9000/api/',
+      query: 'ccRelatedUsers',
+      defaultParams: {
+        channelId: 'c14bb994-d13d-4a5e-bdee-a62976facca9'
+      }
     })
   </script>
 </html>

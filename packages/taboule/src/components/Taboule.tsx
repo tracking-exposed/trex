@@ -10,12 +10,15 @@ import { ObservableQuery } from "avenger/lib/Query";
 import {
   TabouleQueries,
   GetDataTableQueries,
-  SearchQueryInput,
+  SearchRequestInput,
   Results,
 } from "../state/queries";
 import { ErrorBox } from "@shared/components/Error/ErrorBox";
 import { ChannelRelated } from "@shared/models/ChannelRelated";
 import { APIError } from "@shared/errors/APIError";
+import { GetLogger } from "@shared/logger";
+
+const log = GetLogger("taboule");
 
 interface TabouleColumnProps<K> extends Omit<GridColTypeDef, "field"> {
   field: K;
@@ -34,8 +37,8 @@ const defaultConfiguration: TabouleConfiguration = {
   ccRelatedUsers: {
     columns: [
       {
-        field: "channelId",
-        headerName: "Channel ID",
+        field: "recommendedSource",
+        headerName: "Recommended Source",
         minWidth: 160,
       },
       {
@@ -54,6 +57,7 @@ export interface TabouleProps<Q extends keyof TabouleQueries>
   extends Omit<DataGridProps, "rows" | "columns"> {
   query: Q;
   baseURL: string;
+  pageSize?: number;
   defaultParams?: any;
   columns?: GridColTypeDef[];
 }
@@ -64,12 +68,14 @@ export const Taboule = <Q extends keyof TabouleQueries>({
   defaultParams,
   ...props
 }: TabouleProps<Q>): JSX.Element => {
+  const [page, setPage] = React.useState(0);
+  const [pageSize, setPageSize] = React.useState(props.pageSize ?? 25);
   const config = React.useMemo(
     () => defaultConfiguration[queryKey],
     [queryKey]
   );
   const query: ObservableQuery<
-    SearchQueryInput,
+    SearchRequestInput,
     APIError,
     Results<any>
   > = React.useMemo(
@@ -77,11 +83,26 @@ export const Taboule = <Q extends keyof TabouleQueries>({
     [baseURL, queryKey]
   );
 
-  const dataGridProps = {
+  const handlePageSizeChange = React.useCallback((pageSize: number) => {
+    setPageSize(pageSize);
+  }, []);
+
+  const handlePageChange = React.useCallback((page: number) => {
+    setPage(page);
+  }, []);
+
+  const dataGridProps: DataGridProps = {
     ...props,
+    page,
     filterMode: "server",
     ...config,
+    rows: [],
+    rowsPerPageOptions: [5, 10, 25, 50],
+    pageSize,
+    paginationMode: "server",
   };
+
+  log.debug(`Rendering with props %O`, dataGridProps);
 
   return (
     <WithQueries
@@ -92,18 +113,27 @@ export const Taboule = <Q extends keyof TabouleQueries>({
             ...defaultParams,
           },
           Query: {
-            amount: 10,
-            skip: 0,
+            amount: pageSize,
+            skip: page * pageSize,
           },
         },
       }}
       render={QR.fold(
         () => (
-          <DataGrid {...dataGridProps} loading={true} rows={[]} />
+          <DataGrid {...dataGridProps} loading={true} />
         ),
         ErrorBox,
-        ({ query: { content } }) => {
-          return <DataGrid {...dataGridProps} rows={content} />;
+        ({ query }) => {
+          return (
+            <DataGrid
+              {...dataGridProps}
+              page={page}
+              rowCount={query.total}
+              rows={query.content}
+              onPageSizeChange={handlePageSizeChange}
+              onPageChange={handlePageChange}
+            />
+          );
         }
       )}
     />
