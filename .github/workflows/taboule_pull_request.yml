@@ -7,11 +7,11 @@ on:
       - beta
     paths:
       - "shared/**"
-      - "taboule/**"
+      - "packages/taboule/**"
 
 defaults:
   run:
-    working-directory: taboule
+    working-directory: packages/taboule
 
 jobs:
   pull_request:
@@ -41,5 +41,5 @@ jobs:
         working-directory: ./shared
         run: yarn build
 
-      - name: Build dashboard
+      - name: Build Taboule
         run: yarn build
