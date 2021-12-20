@@ -1910,6 +1910,26 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@trex/data-table@workspace:data-table":
+  version: 0.0.0-use.local
+  resolution: "@trex/data-table@workspace:data-table"
+  dependencies:
+    "@material-ui/data-grid": ^4.0.0-alpha.37
+    "@types/eslint": ^8.2.1
+    avenger: ^7.0.1
+    debug: ^4.3.3
+    eslint: ^8.4.1
+    fp-ts: ^2.11.5
+    io-ts: ^2.2.16
+    io-ts-types: ^0.5.16
+    ts-endpoint: ^2.0.0
+    ts-io-error: ^2.0.0
+    typelevel-ts: ^0.4.0
+    typescript: ^4.5.4
+    webpack: ^5.65.0
+  languageName: unknown
+  linkType: soft
+
 "@tsconfig/node10@npm:^1.0.7":
   version: 1.0.8
   resolution: "@tsconfig/node10@npm:1.0.8"
@@ -7009,26 +7029,6 @@ __metadata:
   checksum: 3634c249570f7f34e3d34f866c93f866c5b417f0dd616275decae08147dcdf8fccfaa5947380ccfb0473998ea3a8057c0b4cd90c875740ee685d0624b2983598
   languageName: node
   linkType: hard
-
-"data-table@workspace:data-table":
-  version: 0.0.0-use.local
-  resolution: "data-table@workspace:data-table"
-  dependencies:
-    "@material-ui/data-grid": ^4.0.0-alpha.37
-    "@types/eslint": ^8.2.1
-    avenger: ^7.0.1
-    debug: ^4.3.3
-    eslint: ^8.4.1
-    fp-ts: ^2.11.5
-    io-ts: ^2.2.16
-    io-ts-types: ^0.5.16
-    ts-endpoint: ^2.0.0
-    ts-io-error: ^2.0.0
-    typelevel-ts: ^0.4.0
-    typescript: ^4.5.4
-    webpack: ^5.65.0
-  languageName: unknown
-  linkType: soft
 
 "data-urls@npm:^1.1.0":
   version: 1.1.0

@@ -1,5 +1,5 @@
 {
-  "name": "data-table",
+  "name": "@trex/data-table",
   "description": "Table component to display TrEx data",
   "version": "0.1.0",
   "scripts": {
