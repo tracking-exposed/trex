@@ -1,4 +1,4 @@
-name: Data Table - Pull Request
+name: Taboule - Pull Request
 
 on:
   pull_request:
@@ -7,11 +7,11 @@ on:
       - beta
     paths:
       - "shared/**"
-      - "data-table/**"
+      - "taboule/**"
 
 defaults:
   run:
-    working-directory: data-table
+    working-directory: taboule
 
 jobs:
   pull_request:
