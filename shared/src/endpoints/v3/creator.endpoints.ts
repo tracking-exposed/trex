@@ -1,4 +1,5 @@
 import * as t from "io-ts";
+import { SearchQuery } from "../../models/http/SearchQuery";
 import { Endpoint } from "ts-endpoint";
 import { AuthorizationHeader, AuthResponse } from "../../models/Auth";
 import { GetRelatedChannelsOutput } from "../../models/ChannelRelated";
@@ -85,7 +86,7 @@ const CreatorRelatedChannels = Endpoint({
   Input: {
     Headers: AuthorizationHeader,
     Params: t.type({ channelId: t.string }),
-    Query: t.type({ amount: t.number, skip: t.number }),
+    Query: SearchQuery,
   },
   Output: GetRelatedChannelsOutput,
 });
