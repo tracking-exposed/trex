@@ -12,7 +12,7 @@
     "backend",
     "methodology",
     "YCAI",
-    "taboule"
+    "packages/*"
   ],
   "packageManager": "yarn@3.1.1",
   "scripts": {
@@ -20,7 +20,7 @@
     "lint": "yarn workspaces foreach run lint",
     "build": "yarn workspaces foreach run build",
     "test": "jest",
-    "data-table": "yarn workspace @trex/taboule",
+    "taboule": "yarn workspace @trex/taboule",
     "shared": "yarn workspace shared",
     "backend": "yarn workspace yttrex-backend",
     "guardoni": "yarn workspace guardoni",

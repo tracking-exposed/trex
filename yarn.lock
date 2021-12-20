@@ -1910,9 +1910,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@trex/taboule@workspace:taboule":
+"@trex/taboule@workspace:packages/taboule":
   version: 0.0.0-use.local
-  resolution: "@trex/taboule@workspace:taboule"
+  resolution: "@trex/taboule@workspace:packages/taboule"
   dependencies:
     "@material-ui/data-grid": ^4.0.0-alpha.37
     "@types/eslint": ^8.2.1

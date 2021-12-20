@@ -1,6 +1,6 @@
 import path from "path";
-import { getConfig } from "../shared/src/webpack/config";
-import { CopyWebpackPlugin } from "../shared/src/webpack/plugins";
+import { getConfig } from "../../shared/src/webpack/config";
+import { CopyWebpackPlugin } from "../../shared/src/webpack/plugins";
 import packageJson from "./package.json";
 import * as t from "io-ts";
 

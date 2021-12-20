@@ -1,5 +1,5 @@
 {
-  "extends": "../tsconfig.json",
+  "extends": "../../tsconfig.json",
   "compilerOptions": {
     "module": "esnext",
     "target": "es5",
@@ -16,8 +16,8 @@
     "skipLibCheck": true,
     "lib": ["dom", "ESNext"],
     "typeRoots": [
-      "../node_modules/@types",
-      "../shared/node_modules/@types",
+      "../../node_modules/@types",
+      "../../shared/node_modules/@types",
       "./node_modules/@types",
       "./typings"
     ],
@@ -27,13 +27,11 @@
     "moduleResolution": "Node",
     "isolatedModules": true,
     "paths": {
-      "@shared/*": ["../../shared/src/*"]
+      "@shared/*": ["../../../shared/src/*"]
     }
   },
   "references": [
-    {
-      "path": "../shared"
-    }
+    { "path": "../../shared" }
   ],
   "include": [
     "./src",
