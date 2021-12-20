@@ -34,7 +34,17 @@ const defaultConfiguration: TableConfiguration = {
   ccRelatedUsers: {
     columns: [
       {
+        field: "channelId",
+        headerName: "Channel ID",
+        minWidth: 160,
+      },
+      {
         field: "percentage",
+        minWidth: 160,
+      },
+      {
+        field: "recommendedChannelCount",
+        minWidth: 160,
       },
     ],
   },
