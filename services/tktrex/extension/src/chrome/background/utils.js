@@ -12,7 +12,7 @@ bo.runtime.onMessage.addListener((request, sender, sendResponse) => {
                         lessInfo: settings.lessInfo,
                         tagId: settings.tagId,
                         isStudyGroup: settings.isStudyGroup,
-                        isNew: false,
+                        isNew: false
                     } : {
                         isNew: true,
                         lessInfo: false,

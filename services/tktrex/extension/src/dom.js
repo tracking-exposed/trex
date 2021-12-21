@@ -2,7 +2,7 @@
 //
 // This module takes care of triggering events when the DOM changes.
 
-function watch(root, selector, callback) {
+function watch (root, selector, callback) {
   // ## `watch(root, selector, callback)`
   //
   // Watch for changes and do something. Since the DOM can be quite big, the
@@ -62,12 +62,12 @@ function watch(root, selector, callback) {
   return mutationObserver;
 }
 
-function on(selector, callback) {
+function on (selector, callback) {
   // debugger;
   return watch(document, selector, callback);
 }
 
-function one(selector, callback) {
+function one (selector, callback) {
   // debugger;
   let mutationObserver;
   let once = false;
@@ -87,4 +87,4 @@ module.exports = {
   watch,
   on,
   one
-}
+};

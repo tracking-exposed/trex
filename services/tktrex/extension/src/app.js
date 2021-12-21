@@ -36,7 +36,7 @@ import { registerHandlers } from './handlers/index';
 // bo is the browser object, in chrome is named 'chrome', in firefox is 'browser'
 const bo = chrome || browser;
 
-let feedId = ("—" + Math.random() + "-" + _.random(0, 0xff) + "—");
+let feedId = ('—' + Math.random() + '-' + _.random(0, 0xff) + '—');
 let feedCounter = 0;
 
 // Boot the user script. This is the first function called.
@@ -60,8 +60,8 @@ function boot () {
     config.active = response.active;
     config.ux = response.ux;
 
-    if(config.active !== true) {
-      console.log("tktrex disabled!");
+    if (config.active !== true) {
+      console.log('tktrex disabled!');
       return null;
     }
 
@@ -73,22 +73,22 @@ function boot () {
   });
 }
 
-function tktrexActions(remoteInfo) {
+function tktrexActions (remoteInfo) {
   /* these functions are the main activity made in
      content_script, and tktrexActions is a callback
      after remoteLookup */
-  console.log("initialize watchers, remoteInfo available:", remoteInfo);
+  console.log('initialize watchers, remoteInfo available:', remoteInfo);
 
   setupObserver();
   flush();
 }
 
-let lastMeaningfulURL, urlkind = null;
-function fullSave() {
+let lastMeaningfulURL; let urlkind = null;
+function fullSave () {
   let diff = (window.location.href !== lastMeaningfulURL);
 
   if (diff) {
-    console.log("Invoked fullSave: new URL observed");
+    console.log('Invoked fullSave: new URL observed');
     // Considering the extension only runs on *.youtube.com
     // we want to make sure the main code is executed only in
     // website portion actually processed by us. If not, the
@@ -97,8 +97,8 @@ function fullSave() {
     // the location might change
     urlkind = getNatureByHref(window.location.href);
 
-    if(!urlkind) {
-      console.log("Unsupported URL type: rejected fullsave");
+    if (!urlkind) {
+      console.log('Unsupported URL type: rejected fullsave');
       return null;
     }
 
@@ -111,22 +111,22 @@ function fullSave() {
   }
 
   const sendableNode = document.querySelector('body');
-  console.log("Sending fullSave!");
+  console.log('Sending fullSave!');
   hub.event('newVideo', {
     type: urlkind,
     element: sendableNode.outerHTML,
     size: sendableNode.outerHTML.length,
     href: window.location.href,
     reason: 'fullsave',
-    feedId,
+    feedId
   });
-}                                    
-
-function refreshUUID() {
-  feedId = (feedCounter + "—" + Math.random() + "-" + _.random(0, 0xff) );
 }
 
-function getNatureByHref(href) {
+function refreshUUID () {
+  feedId = (feedCounter + '—' + Math.random() + '-' + _.random(0, 0xff));
+}
+
+function getNatureByHref (href) {
   /* this piece of code is duplicated in backend/parsers/nature.js */
   try {
     const urlO = new URL(href);
@@ -134,70 +134,70 @@ function getNatureByHref(href) {
     const retval = {};
 
     // console.log(urlO.pathname, chunks, chunks.length);
-    if(urlO.pathname === "/foryou") {
-      retval.type = 'foryou'
-    } else if(urlO.pathname === "/") {
+    if (urlO.pathname === '/foryou') {
       retval.type = 'foryou';
-    } else if(urlO.pathname === "/following") {
+    } else if (urlO.pathname === '/') {
+      retval.type = 'foryou';
+    } else if (urlO.pathname === '/following') {
       retval.type = 'following';
-    } else if(chunks[2] === 'video' && chunks.length >= 3) {
+    } else if (chunks[2] === 'video' && chunks.length >= 3) {
       retval.type = 'video';
       retval.videoId = chunks[3];
       retval.authorId = chunks[1];
-    } else if(_.startsWith(urlO.pathname, "/@")) {
+    } else if (_.startsWith(urlO.pathname, '/@')) {
       retval.type = 'creator';
       retval.creatorName = urlO.pathname.substr(1);
-    } else if(urlO.pathname === "/search") {
+    } else if (urlO.pathname === '/search') {
       retval.type = 'search';
       retval.query = urlO.searchParams.get('q');
       retval.timestamp = urlO.searchParams.get('t');
     } else {
-      console.log("Unmanaged condition from URL:", urlO)
+      console.log('Unmanaged condition from URL:', urlO);
       return null;
     }
-    console.log("getNatureByHref attributed", JSON.stringify(retval));
+    console.log('getNatureByHref attributed', JSON.stringify(retval));
     return retval;
-  } catch(error) {
-    console.log("getNatureByHref:", error.message);
+  } catch (error) {
+    console.log('getNatureByHref:', error.message);
     return null;
   }
 }
 
 const selectors = {
   video: {
-    selector: 'video',
+    selector: 'video'
   },
   suggested: {
-    selector: 'div[class$="DivUserContainer"]',
+    selector: 'div[class$="DivUserContainer"]'
   },
   title: {
-    selector: 'h1',
+    selector: 'h1'
   },
   creator: {
-    selector: 'a[href^="/@"]',
+    selector: 'a[href^="/@"]'
   }
 };
 
-function setupObserver() {
+function setupObserver () {
   /* this initizalise dom listened by mutation observer */
   const sugwat = dom.on(selectors.suggested.selector, handleSuggested);
   const vidwat = dom.on(selectors.video.selector, handleVideo);
   const creatwat = dom.on(selectors.creator.selector, handleTest);
-  console.log("Listener installed ",
+  console.log('Listener installed ',
     JSON.stringify(selectors), sugwat, vidwat, creatwat);
 
   /* and monitor href changes to randomize a new accessId */
   let oldHref = window.location.href;
-  const bodyList = document.querySelector("body");
-  const observer = new MutationObserver(function(mutations) {
-    mutations.forEach(function(mutation) {
-      if (oldHref != window.location.href) {
+  const bodyList = document.querySelector('body');
+  const observer = new MutationObserver(function (mutations) {
+    mutations.forEach(function (mutation) {
+      if (oldHref !== window.location.href) {
         feedCounter++;
         refreshUUID();
-        console.log(oldHref, "changed to",
-          window.location.href, "new feedId", feedId, 
-          "feedCounter", feedCounter,
-          "videoCounter resetting after poking", videoCounter);
+        console.log(oldHref, 'changed to',
+          window.location.href, 'new feedId', feedId,
+          'feedCounter', feedCounter,
+          'videoCounter resetting after poking', videoCounter);
         videoCounter = 0;
         oldHref = window.location.href;
       }
@@ -210,48 +210,46 @@ function setupObserver() {
   observer.observe(bodyList, config);
 }
 
-function handleTest(element) {
-  console.log("handleText", element, "lah lah lah");
+function handleTest (element) {
+  console.log('handleText', element, 'lah lah lah');
   console.log(element.parentNode.parentNode.parentNode.outerHTML.length);
   console.log(element.parentNode.parentNode.outerHTML.length);
   console.log(element.parentNode.outerHTML.length);
   console.log(element.outerHTML.length);
 }
 
-function handleSuggested(elem) {
-  console.log("handleSuggested", elem, "should go to parentNode");
+function handleSuggested (elem) {
+  console.log('handleSuggested', elem, 'should go to parentNode');
   hub.event('suggested', {
     html: elem.parentNode.outerHTML,
-    href: window.location.href,
+    href: window.location.href
   });
 }
 
-/* function below manages every new video sample  
+/* function below manages every new video sample
  * that got display in 'following' 'foryou' or 'creator' page */
 const SPECIAL_DEBUG = false;
 let videoCounter = 0;
-function handleVideo(elem) {
-
+function handleVideo (elem) {
   /* this function return a node element that has a size
    * lesser than 10k, and stop when find out the parent
    * would be more than 10k big. */
   const refe = _.reduce(_.times(20),
-    function(memo, iteration) {
-      const check = memo.parentNode ?
-        memo.parentNode.outerHTML.length : 0;
-      if(check < 10000 && SPECIAL_DEBUG)
-        console.log(videoCounter, iteration, check);
+    function (memo, iteration) {
+      const check = memo.parentNode
+        ? memo.parentNode.outerHTML.length : 0;
+      if (check < 10000 && SPECIAL_DEBUG) { console.log(videoCounter, iteration, check); }
       return (check > 10000) ? memo : memo.parentNode;
     }, elem);
 
-  if(refe.hasAttribute('trex')) {
-    console.log("Element already acquired: skipping",
+  if (refe.hasAttribute('trex')) {
+    console.log('Element already acquired: skipping',
       refe.getAttribute('trex'));
     return null;
   }
 
   videoCounter++;
-  console.log("+video -- marking as ", videoCounter, "details:", refe);
+  console.log('+video -- marking as ', videoCounter, 'details:', refe);
   refe.setAttribute('trex', videoCounter);
 
   hub.event('newVideo', {
@@ -260,11 +258,10 @@ function handleVideo(elem) {
     feedId,
     feedCounter,
     videoCounter,
-    rect: refe.getBoundingClientRect(),
+    rect: refe.getBoundingClientRect()
   });
 
-  if(config.ux)
-    refe.style.border = '1px solid green';
+  if (config.ux) { refe.style.border = '1px solid green'; }
 }
 
 // The function `localLookup` communicates with the **action pages**
@@ -287,7 +284,7 @@ function remoteLookup (callback) {
     type: 'remoteLookup',
     payload: {
       feedId,
-      href: window.location.href,
+      href: window.location.href
     }
   }, callback);
 }
@@ -298,14 +295,14 @@ function flush () {
   });
 }
 
-function initializeEmergencyButton() {
+function initializeEmergencyButton () {
   // const expectedSVG = $('[role="banner"] svg');
   const element = document.createElement('h1');
   element.onclick = fullSave;
-  element.setAttribute('id', "full--save");
-  element.style = "position: fixed; top:50%; left: 1rem; display: flex; font-size: 3em; cursor: pointer; flex-direction: column; z-index: 9999; visibility: visible;"
-  element.innerText = "💾";
-  document.body.appendChild(element);  
+  element.setAttribute('id', 'full--save');
+  element.style = 'position: fixed; top:50%; left: 1rem; display: flex; font-size: 3em; cursor: pointer; flex-direction: column; z-index: 9999; visibility: visible;';
+  element.innerText = '💾';
+  document.body.appendChild(element);
 }
 
 // Before booting the app, we need to update the current configuration

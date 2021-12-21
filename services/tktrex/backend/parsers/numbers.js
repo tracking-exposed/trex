@@ -1,15 +1,14 @@
 const _ = require('lodash');
 const debug = require('debug')('parsers:numbers');
 
-function metrics(envelop, previous) {
-
+function metrics (envelop, previous) {
   /* only feedId on 'foryou' and 'following' have a description,
      not really because also if you scroll on an user timeline */
-  const availin = ["foryou", "following"];
+  const availin = ['foryou', 'following'];
 
   debugger;
-  if(previous.nature && availin.indexOf(previous.nature.type) === -1) {
-    debug("No hashtag for previous.nature %o", previous.nature);
+  if (previous.nature && availin.indexOf(previous.nature.type) === -1) {
+    debug('No hashtag for previous.nature %o', previous.nature);
     return null;
   }
 
@@ -28,7 +27,7 @@ function metrics(envelop, previous) {
           commentn,
           sharen
       }
-  }
+  };
 };
 
 module.exports = metrics;

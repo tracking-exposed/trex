@@ -5,13 +5,12 @@ const nconf = require('nconf');
 
 const utils = require('./utils');
 
-function dayData(reference) {
+function dayData (reference) {
     // dayData is the hourData called by bin/count-o-clock but for 24h
 
-    const fmt = "YYYY-MM-DD 00:00:00";
+    const fmt = 'YYYY-MM-DD 00:00:00';
 
-    if(!reference)
-        reference = moment().format(fmt);
+    if (!reference) { reference = moment().format(fmt); }
 
     const m = moment(reference);
     const offset = m.utcOffset();
@@ -22,7 +21,7 @@ function dayData(reference) {
     const dayOnext = m.add(1, 'd').format(fmt);
     const dayId = utils.hash({impressionTime: dayOnly });
 
-    debug("dayData: %s with offset %d is returning the ID between %s and %s",
+    debug('dayData: %s with offset %d is returning the ID between %s and %s',
         reference, offset, dayOnly, dayOnext);
 
     return {
@@ -30,20 +29,19 @@ function dayData(reference) {
         dayOnext,
         dayId,
         reference: dayOnly,
-        m: m,
+        m: m
     };
 }
 
-function hourData(reference) {
+function hourData (reference) {
     // hourData is called by bin/count-o-clock
     //
     // if is absent, we take moment.gmt()
     // if is the 'reference' variable, still should be aligned to gmt
 
-    const fmt = "YYYY-MM-DD HH:00:00";
+    const fmt = 'YYYY-MM-DD HH:00:00';
 
-    if(!reference)
-        reference = moment().format(fmt);
+    if (!reference) { reference = moment().format(fmt); }
 
     const m = moment(reference);
     const offset = m.utcOffset();
@@ -54,7 +52,7 @@ function hourData(reference) {
     const hourOnext = m.add(1, 'h').format(fmt);
     const hourId = utils.hash({impressionTime: hourOnly });
 
-    debug("hourData: %s with offset %d is returning the ID between %s and %s",
+    debug('hourData: %s with offset %d is returning the ID between %s and %s',
         reference, offset, hourOnly, hourOnext);
 
     return {
@@ -62,7 +60,7 @@ function hourData(reference) {
         hourOnext,
         hourId,
         reference: hourOnly,
-        m: m,
+        m: m
     };
 }
 

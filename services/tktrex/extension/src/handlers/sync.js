@@ -6,26 +6,25 @@ const INTERVAL = config.FLUSH_INTERVAL;
 
 var state = {
     incremental: 0,
-    content: [],
+    content: []
 };
 
 function handleVideo (type, e) {
-
     state.content.push({
         ...e,
         clientTime: getTimeISO8601(),
         type: 'video',
-        incremental: state.incremental,
+        incremental: state.incremental
     });
     state.incremental++;
 }
 
-function handleSugg(type, e) {
+function handleSugg (type, e) {
     state.content.push({
         ...e,
         incremental: state.incremental,
         clientTime: getTimeISO8601(),
-        type: 'suggested',
+        type: 'suggested'
     });
     state.incremental++;
 }
@@ -47,4 +46,3 @@ export function register (hub) {
     hub.register('windowUnload', sync.bind(null, hub));
     window.setInterval(sync.bind(null, hub), INTERVAL);
 }
-

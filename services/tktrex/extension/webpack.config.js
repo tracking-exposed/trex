@@ -27,7 +27,7 @@ const PATHS = {
     APPS: {
         app: path.resolve(__dirname, 'src/app.js'),
         popup: path.resolve(__dirname, 'src/chrome/popup/index.js'),
-        background: path.resolve(__dirname, 'src/chrome/background/index.js'),
+        background: path.resolve(__dirname, 'src/chrome/background/index.js')
     },
     BUILD: path.resolve(__dirname, 'build'),
     DIST: path.resolve(__dirname, 'dist'),
@@ -46,7 +46,7 @@ const DEFINITIONS = {
         API_ROOT: JSON.stringify(ENV_DEP_SERVER + '/api/v' + LAST_VERSION),
         WEB_ROOT: JSON.stringify(ENV_DEP_WEB),
         VERSION: JSON.stringify(packageJSON.version + (DEVELOPMENT ? '-dev' : '')),
-        BUILD: JSON.stringify(`On the ${moment().format("DD of MMMM at HH:mm")}.`),
+        BUILD: JSON.stringify(`On the ${moment().format('DD of MMMM at HH:mm')}.`),
         BUILDISODATE: JSON.stringify(BUILDISODATE),
         FLUSH_INTERVAL: JSON.stringify(DEVELOPMENT ? 4500 : 9000)
     }

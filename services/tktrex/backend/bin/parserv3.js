@@ -11,11 +11,7 @@ const pchain = require('../lib/parserchain');
 
 nconf.argv().env().file({ file: 'config/settings.json' });
 
-async function sleep(ms) {
-    return new Promise(resolve => {
-        setTimeout(resolve, ms)
-    })
-}
+const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 
 const FREQUENCY = 10;
 const AMOUNT_DEFAULT = 20;
@@ -218,11 +214,11 @@ try {
 
     /* this is the begin of the parsing core pipeline.
      * gets htmls from the db, if --repeat 1 then previously-analyzed-HTMLS would be
-     * re-analyzed. otherwise, the default, is to skip those and wait for new 
-     * htmls. To receive htmls you should have a producer consistend with the 
-     * browser extension format, and bin/server listening 
-     * 
-     * This script pipeline might optionally start from the past, and 
+     * re-analyzed. otherwise, the default, is to skip those and wait for new
+     * htmls. To receive htmls you should have a producer consistend with the
+     * browser extension format, and bin/server listening
+     *
+     * This script pipeline might optionally start from the past, and
      * re-analyze HTMLs based on --minutesago <number> option.
      * */
 
