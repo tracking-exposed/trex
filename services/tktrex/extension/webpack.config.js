@@ -1,9 +1,7 @@
 /* eslint-disable strict, no-console, object-shorthand */
-/* eslint-disable import/no-extraneous-dependencies, import/newline-after-import */
 'use strict';
 
 const path = require('path');
-const exec = require('child_process').exec;
 const moment = require('moment');
 
 const webpack = require('webpack');
@@ -58,6 +56,7 @@ const PLUGINS = [
     new webpack.NoErrorsPlugin()
 ];
 
+/*
 const PROD_PLUGINS = [
     new webpack.optimize.UglifyJsPlugin({
         compress: {
@@ -76,6 +75,7 @@ const PROD_PLUGINS = [
 
     // Add additional production plugins
 ];
+*/
 
 const DEV_PLUGINS = [
     new WebpackNotifierPlugin({
@@ -142,6 +142,18 @@ const CSS_LOADER = combineLoaders([
 // Add additional loaders to handle other formats (ie. images, svg)
 
 const LOADERS = [
+    {
+      test: /\.tsx?$/,
+      exclude: /node_modules/,
+      use: [
+        {
+          loader: 'ts-loader',
+          options: {
+            transpileOnly: true
+          }
+        }
+      ]
+    },
     {
         test: /\.jsx?$/,
         exclude: [PATHS.NODE_MODULES],

@@ -1,0 +1,9 @@
+{
+  "compilerOptions": {
+    "allowJs": true,
+    "noEmit": true,
+    "strict": true,
+    "target": "es5",
+  },
+  "include": ["./src"]
+}

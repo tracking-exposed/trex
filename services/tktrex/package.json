@@ -1,6 +1,9 @@
 {
-  "name": "tktrex",
+  "name": "tktrex-lint",
   "packageManager": "yarn@3.1.1",
+  "workspaces": [
+    "extension"
+  ],
   "devDependencies": {
     "eslint": "^8.5.0",
     "eslint-config-ascribe-react": "^1.4.0",
@@ -11,6 +14,9 @@
     "eslint-plugin-standard": "^2.3.1"
   },
   "dependencies": {
-    "eslint-plugin-prettier": "^4.0.0"
+    "@types/node": "^17.0.2",
+    "eslint-plugin-prettier": "^4.0.0",
+    "ts-loader": "^9.2.6",
+    "typescript": "^4.5.4"
   }
 }

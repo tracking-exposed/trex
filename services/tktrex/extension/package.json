@@ -6,6 +6,7 @@
   "bugs": "https://github.com/tracking-exposed/tktrex/issues",
   "license": "AGPL-3.0",
   "author": "Tracking Exposed team",
+  "packageManager": "yarn@3.1.1",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/tracking-exposed/tktrex.git"
@@ -13,14 +14,15 @@
   "scripts": {
     "lint": "eslint ./ --quiet",
     "build": "rm -rf ./build && mkdir build && cross-env webpack && cp -r src/popup/* manifest.json icons/* ./build/",
-    "start": "npm run build:watch:files",
-    "build:watch": "rimraf ./build && mkdir build && cp -r manifest.json icons/* src/popup/* ./build/ && cross-env webpack -w",
+    "start": "yarn build:watch:files",
+    "watch": "rimraf ./build && mkdir build && cp -r manifest.json icons/* src/popup/* ./build/ && cross-env webpack -w",
     "build:dist": "sh pack-extension.sh",
     "clean": "rm -rf ./build ./dist",
     "test": "mocha --compilers js:babel-register --reporter spec",
     "test:watch": "mocha -w --compilers js:babel-register --reporter spec"
   },
   "devDependencies": {
+    "@types/rimraf": "^3",
     "autoprefixer": "^6.7.7",
     "babel-cli": "^6.26.0",
     "babel-core": "^6.26.3",
@@ -45,6 +47,7 @@
     "mocha": "^7.2.0",
     "postcss-loader": "^0.10.1",
     "react-transform-hmr": "^1.0.4",
+    "rimraf": "^3.0.2",
     "style-loader": "^0.13.2",
     "webpack": "=2.1.0-beta.17",
     "webpack-combine-loaders": "^2.0.4",
