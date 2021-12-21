@@ -11,7 +11,7 @@ const { buildENV, ...config } = getConfig({
   outputDir: path.resolve(__dirname, "build"),
   env: t.strict({
     VERSION: t.string,
-    DEBUG: t.string
+    DEBUG: t.union([t.undefined, t.string]) 
   }),
   hot: true,
   entry: {

@@ -51,10 +51,10 @@ export const CCRelatedUserList: React.FC<CCRelatedUserListProps> = ({
   return (
     <List className={classes.root} disablePadding={true}>
       {channels.map((u, i) => (
-        <ListItem key={u.channelId} className={classes.listItem}>
+        <ListItem key={u.recommendedSource} className={classes.listItem}>
           <Box style={{ width: '100%' }}>
             <Link
-              href={`https://www.youtube.com/results?search_query=${u.channelId}`}
+              href={`https://www.youtube.com/results?search_query=${u.recommendedSource}`}
               target="_blank"
               rel="noreferrer"
               variant="h6"
@@ -63,7 +63,7 @@ export const CCRelatedUserList: React.FC<CCRelatedUserListProps> = ({
                 color: theme.palette.grey[500],
               }}
             >
-              {u.channelId}
+              {u.recommendedSource}
             </Link>
             <Box
               display="flex"
