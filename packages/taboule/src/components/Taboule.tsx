@@ -31,6 +31,7 @@ interface TabouleQueryConfiguration<P extends Record<string, any>>
 
 interface TabouleConfiguration {
   ccRelatedUsers: TabouleQueryConfiguration<ChannelRelated>;
+  compareExperiment: TabouleQueryConfiguration<ChannelRelated>;
 }
 
 const defaultConfiguration: TabouleConfiguration = {
@@ -48,6 +49,15 @@ const defaultConfiguration: TabouleConfiguration = {
       {
         field: "recommendedChannelCount",
         minWidth: 160,
+      },
+    ],
+  },
+  compareExperiment: {
+    columns: [
+      {
+        field: "savingTime",
+        headerName: "savingTime",
+        minWidth: 400,
       },
     ],
   },
