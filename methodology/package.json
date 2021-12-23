@@ -7,11 +7,12 @@
     "pkg": "pkg ./package.json && sh ./bin/post-compile.sh",
     "lint": "eslint ./src",
     "build": "webpack",
-    "watch:main": "webpack watch",
-    "watch:renderer": "webpack watch -c webpack.renderer.config.ts",
-    "electron": "electron ./build/desktop/index.js"
+    "watch": "webpack watch",
+    "start": "electron .",
+    "dev": "electron ./reload.js"
   },
   "bin": "./build/guardoni-cli.js",
+  "main": "./build/desktop/index.js",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/tracking-exposed/yttrex.git"
@@ -28,6 +29,7 @@
     "@material-ui/core": "^4.12.3",
     "@material-ui/icons": "^4.11.2",
     "@material-ui/lab": "^4.0.0-alpha.60",
+    "axios": "^0.24.0",
     "csv-parse": "^4.16.3",
     "debug": "^4.3.3",
     "electron": "^16.0.5",

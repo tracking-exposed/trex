@@ -1,6 +1,8 @@
 import * as t from "io-ts";
 import * as path from "path";
 import { getConfig } from "../shared/src/webpack/config";
+// import NodePolyfillPlugin from "node-polyfill-webpack-plugin";
+import { CopyWebpackPlugin } from "../shared/src/webpack/plugins";
 
 // process.env.VERSION = packageJson.version;
 
@@ -10,12 +12,51 @@ const { buildENV, ...config } = getConfig({
   env: t.strict({}),
   hot: true,
   entry: {
-    index: path.resolve(__dirname, "src/desktop/index.ts"),
+    main: path.resolve(__dirname, "src/desktop/main.ts"),
   },
 });
 
-export default {
-  ...config,
-  devtool: "source-map",
-  target: "electron-main",
-};
+// renderer config
+const { buildENV: rendererBuildENV, ...rendererConfig } = getConfig({
+  cwd: __dirname,
+  outputDir: path.resolve(__dirname, "build/desktop"),
+  env: t.strict({}),
+  hot: true,
+  entry: {
+    renderer: path.resolve(__dirname, "src/desktop/renderer.tsx"),
+  },
+});
+
+rendererConfig.plugins.push(
+  new CopyWebpackPlugin({
+    patterns: [
+      {
+        from: "static",
+        filter: (file: string) => {
+          const { base } = path.parse(file);
+          return ["guardoni.html"].includes(base);
+        },
+      },
+    ],
+  })
+);
+
+// config.plugins.push(new NodePolyfillPlugin());
+
+export default [
+  {
+    ...config,
+    devtool: "source-map",
+    target: "electron-main",
+    resolve: {
+      fallback: {
+        fsevents: false,
+      },
+    },
+  },
+  {
+    ...rendererConfig,
+    devtool: "source-map",
+    target: "electron-renderer",
+  },
+];

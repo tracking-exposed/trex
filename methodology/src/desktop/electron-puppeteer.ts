@@ -1,73 +1,122 @@
-import { App } from "electron";
-import * as puppeteer from "puppeteer";
-
 /**
- * Initialize the electron app to accept puppeteer/DevTools connections.
- * Must be called at startup before the electron app is ready.
- * @param {App} app The app imported from electron.
- * @param {number} port Port to host the DevTools websocket connection.
+ *
+ * references
+ *
+ * https://github.com/nondanee/puppeteer-electron
+ * https://github.com/loukaspd/puppeteer-electron-quickstart
+ * https://github.com/TrevorSundberg/puppeteer-in-electron
+ * https://github.com/peterdanis/electron-puppeteer-demo
+ * https://github.com/replace5/electron-puppeteer
+ *
+ *
  */
-export const initialize = async (app: App, port: number = 0): Promise<void> => {
-  if (!app) {
-    throw new Error(
-      "The parameter 'app' was not passed in. " +
-        "This may indicate that you are running in node rather than electron."
-    );
-  }
+import { GetLogger } from "@shared/logger";
+import * as electron from "electron";
+import * as E from "fp-ts/lib/Either";
+import * as TE from "fp-ts/lib/TaskEither";
+import * as path from "path";
+import puppeteer from "puppeteer-core";
+import * as pie from "puppeteer-in-electron";
 
-  if (app.isReady()) {
-    throw new Error(
-      "Must be called at startup before the electron app is ready."
-    );
-  }
+const pupLogger = GetLogger("pup");
 
-  if (port < 0 || port > 65535) {
-    throw new Error(`Invalid port ${port}.`);
-  }
+export const browserFetcher = (
+  puppeteer as any
+).createBrowserFetcher() as puppeteer.BrowserFetcher;
 
-  if (app.commandLine.getSwitchValue("remote-debugging-port")) {
-    throw new Error(
-      "The electron application is already listening on a port. Double `initialize`?"
-    );
-  }
+pupLogger.debug(`Browser fetcher %O`, browserFetcher);
 
-  // const actualPort = port === 0 ? await getPort({host: "127.0.0.1"}) : port;
-  // app.commandLine.appendSwitch(
-  //   "remote-debugging-port",
-  //   `${actualPort}`
-  // );
-  app.commandLine.appendSwitch("remote-debugging-address", "127.0.0.1");
-  const electronMajor = parseInt(app.getVersion().split(".")[0], 10);
-  // NetworkService crashes in electron 6.
-  if (electronMajor >= 7) {
-    app.commandLine.appendSwitch("enable-features", "NetworkService");
-  }
-};
+(puppeteer as any).defaultArgs({
+  userDataDir: path.join(process.cwd(), "./executions"),
+});
 
-/**
- * Connects puppeteer to the electron app. Must call {@link initialize} before connecting.
- * When connecting multiple times, you use the same port.
- * @param {App} app The app imported from electron.
- * @param {puppeteer} puppeteer The imported puppeteer namespace.
- * @returns {Promise<Browser>} An object containing the puppeteer browser, the port, and json received from DevTools.
- */
-export const connect = async (
-  app: App,
-  puppeteer: puppeteer.PuppeteerNode
-): Promise<puppeteer.Browser> => {
-  if (!puppeteer) {
-    throw new Error("The parameter 'puppeteer' was not passed in.");
-  }
+interface ConnectOptions {
+  extensionDir: string;
+  width: number;
+  height: number;
+  headless: boolean;
+}
 
-  await app.whenReady();
+// export const run = (options: ConnectOptions): TE.TaskEither<Error, void> => {
+//   pupLogger.debug(`Connect %O`, options);
 
-  const browser = await puppeteer.launch({
+//   return pipe(
+//     TE.fromIO<string, Error>(getChromePath),
+//     TE.filterOrElse(
+//       (chromePath) => chromePath !== undefined,
+//       () => new Error("Chrome path is missing!")
+//     ),
+//     TE.chain((chromePath) => {
+//       const launchOptions = {
+//         headless: options.headless,
+//         executablePath: chromePath,
+//         defaultViewport: null,
+//         ignoreDefaultArgs: ["--disable-extensions"],
+//         args: [
+//           "--no-sandbox",
+//           "--disable-gpu",
+//           "--disabled-setuid-sandbox",
+//           "--load-extension=" + options.extensionDir,
+//           "--disable-extensions-except=" + options.extensionDir,
+//           `--window-size=${options.width},${options.height}`,
+//         ],
+//       };
+//       pupLogger.debug("Launching %O", launchOptions);
+//       return TE.tryCatch(async (): Promise<void> => {
+//         const revisions = await browserFetcher.localRevisions();
+
+//         let revisionInfo;
+//         if (revisions.length === 0) {
+//           revisionInfo = await browserFetcher.download("533271");
+//           pupLogger.debug(`Revision info %O`, revisionInfo);
+//         } else {
+//           revisionInfo = revisions[0];
+//         }
+//         pupLogger.debug(`Revision info %O`, revisions);
+
+//         const browser = await puppeteer.launch({
+//           ...launchOptions,
+//           executablePath: revisionInfo.executablePath,
+//         });
+
+//         pupLogger.debug("Browser %O", browser);
+//         const page = await browser.newPage();
+//         await page.goto("http://tracking.exposed");
+//         pupLogger.debug("Page %O", page);
+//         await page.bringToFront();
+//       }, E.toError);
+//     })
+//   );
+//   // log.logInfo("Puppeteer initialized");
+// };
+
+export const run = (
+  app: electron.App,
+  options: ConnectOptions
+): TE.TaskEither<Error, void> => {
+  pupLogger.debug(`Connect %O`, options);
+
+  const launchOptions = {
+    headless: options.headless,
+    // executablePath: chromePath,
     defaultViewport: null,
-    headless: true,
-    userDataDir: undefined,
-    args: [],
-    executablePath: "/usr/bin/google-chrome",
-  });
+    ignoreDefaultArgs: ["--disable-extensions"],
+    args: [
+      "--no-sandbox",
+      "--disable-gpu",
+      "--disabled-setuid-sandbox",
+      "--load-extension=" + options.extensionDir,
+      "--disable-extensions-except=" + options.extensionDir,
+      `--window-size=${options.width},${options.height}`,
+    ],
+  };
+  pupLogger.debug("Launching %O", launchOptions);
+  return TE.tryCatch(async (): Promise<void> => {
+    const browser = await pie.connect(app, puppeteer);
 
-  return browser;
+    const page = await browser.newPage();
+    await page.goto("http://tracking.exposed");
+  }, E.toError);
+
+  // log.logInfo("Puppeteer initialized");
 };

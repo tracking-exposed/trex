@@ -1,6 +1,6 @@
 import DotenvPlugin from "dotenv-webpack";
 import { pipe } from "fp-ts/lib/function";
-import dotenv from 'dotenv';
+import dotenv from "dotenv";
 import * as R from "fp-ts/lib/Record";
 import * as S from "fp-ts/lib/string";
 import * as t from "io-ts";
@@ -58,6 +58,8 @@ const getConfig = <E extends t.Props>(
     process.env.DOTENV_CONFIG_PATH ??
     path.resolve(opts.cwd, mode === "production" ? ".env.production" : ".env");
 
+  const tsConfigFile = path.resolve(opts.cwd, "./tsconfig.json");
+
   webpackLogger.debug(`DOTENV_CONFIG_PATH %s`, DOTENV_CONFIG_PATH);
 
   dotenv.config({ path: DOTENV_CONFIG_PATH });
@@ -82,6 +84,8 @@ const getConfig = <E extends t.Props>(
     }
   );
 
+  webpackLogger.debug('Build ENV %O', buildENV);
+
   const appEnv = pipe(
     {
       ...process.env,
@@ -100,6 +104,8 @@ const getConfig = <E extends t.Props>(
       return validation.right;
     }
   );
+
+  webpackLogger.debug('App ENV %O', appEnv);
 
   const stringifiedAppEnv = pipe(
     appEnv as any,
@@ -162,6 +168,10 @@ const getConfig = <E extends t.Props>(
             {
               loader: "ts-loader",
               options: {
+                context: opts.cwd,
+                // configFile: require.resolve('./tsconfig.json'),
+                // projectReferences: true,
+                transpileOnly: mode === 'development',
                 getCustomTransformers: () => ({
                   before: [
                     mode === "development" &&
@@ -169,7 +179,6 @@ const getConfig = <E extends t.Props>(
                       ReactRefreshTypescript(),
                   ].filter(Boolean),
                 }),
-                transpileOnly: true,
               },
             },
           ],
@@ -196,7 +205,8 @@ const getConfig = <E extends t.Props>(
       extensions: [".ts", ".tsx", ".js"],
       plugins: [
         new TsconfigPathsPlugin({
-          configFile: path.resolve(opts.cwd, "./tsconfig.json"),
+          configFile: tsConfigFile,
+          // context: opts.cwd,
         }),
       ],
     },

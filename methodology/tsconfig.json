@@ -12,9 +12,10 @@
     "esModuleInterop": true,
     "skipLibCheck": true,
     // "isolatedModules": true,
+    "sourceMap": true,
     "typeRoots": ["../node_modules/@types", "node_modules/@types"],
     "paths": {
-      "@shared/*": ["../shared/src/*"]
+      "@shared/*": ["../../shared/src/*"]
     }
   },
   "include": ["./src"],

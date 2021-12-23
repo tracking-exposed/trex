@@ -4,19 +4,21 @@ const _ = require("lodash");
 const debug = require("debug")("guardoni:notes");
 const info = require("debug")("guardoni:info");
 const puppeteer = require("puppeteer-extra");
-const pluginStealth = require("puppeteer-extra-plugin-stealth");
+// const pluginStealth = require("puppeteer-extra-plugin-stealth");
 const fs = require("fs");
 const path = require("path");
 const nconf = require("nconf");
 const moment = require("moment");
-const fetch = require("node-fetch");
+const axios = require("axios");
 const execSync = require("child_process").execSync;
 const parse = require("csv-parse/lib/sync");
 
 const domainSpecific = require("./domainSpecific");
 
-const COMMANDJSONEXAMPLE = "https://youtube.tracking.exposed/json/automation-example.json";
-const EXTENSION_WITH_OPT_IN_ALREADY_CHECKED="https://github.com/tracking-exposed/yttrex/releases/download/v1.8.992/extension-1.9.0.99.zip";
+const COMMANDJSONEXAMPLE =
+  "https://youtube.tracking.exposed/json/automation-example.json";
+const EXTENSION_WITH_OPT_IN_ALREADY_CHECKED =
+  "https://github.com/tracking-exposed/yttrex/releases/download/v1.8.992/extension-1.9.0.99.zip";
 
 const defaultCfgPath = path.join("config", "default.json");
 nconf.argv().env();
@@ -77,7 +79,7 @@ function downloadExtension(zipFileP) {
   execSync("unzip " + zipFileP + " -d extension");
 }
 
-function getChromePath() {
+export function getChromePath() {
   // this function check for standard chrome executabled path and
   // return it. If not found, raise an error
   const knownPaths = [
@@ -100,8 +102,11 @@ function getChromePath() {
   return chromePath;
 }
 
-function buildAPIurl(route, params) {
-  if (route === 'directives' && ["chiaroscuro", "comparison"].indexOf(params) !== -1)
+export function buildAPIurl(route, params) {
+  if (
+    route === "directives" &&
+    ["chiaroscuro", "comparison"].indexOf(params) !== -1
+  )
     return `${server}/api/v3/${route}/${params}`;
   else {
     return `${server}/api/v3/${route}/${params}`;
@@ -163,7 +168,7 @@ async function registerCSV(directiveType) {
   debug("Registering CSV via %s", registeruri);
 
   try {
-    const commit = await fetch(registeruri, {
+    const commit = await axios.post(registeruri, {
       method: "POST",
       body: JSON.stringify({ parsedCSV: records }),
       headers: {
@@ -185,16 +190,16 @@ async function registerCSV(directiveType) {
   }
 }
 
-async function pullDirectives(sourceUrl) {
+export async function pullDirectives(sourceUrl) {
   let directives = null;
   try {
     if (_.startsWith(sourceUrl, "http")) {
-      const response = await fetch(sourceUrl);
+      const response = await axios.get(sourceUrl);
       if (response.status !== 200) {
         console.log("Error in fetching directives from URL", response.status);
         process.exit(1);
       }
-      directives = await response.json();
+      directives = await response.data;
     } else {
       throw new Error("A local file isn't supported anymore");
       // directives = JSON.parse(fs.readFileSync(sourceUrl, 'utf-8'));
@@ -212,98 +217,100 @@ async function pullDirectives(sourceUrl) {
   }
 }
 
-async function readExperiment(profinfo) {
-  /* this function is invoked to dispatch the assistance window.
-   * it is a piece of dead code, at the moment, but this would 
-   * start when --auto is invoked -- AT THE MOMENT IS NOT USED */
-  let page; let experiment = null;
+// async function readExperiment(profinfo) {
+//   /* this function is invoked to dispatch the assistance window.
+//    * it is a piece of dead code, at the moment, but this would
+//    * start when --auto is invoked -- AT THE MOMENT IS NOT USED */
+//   let page;
+//   let experiment = null;
 
-  const browser = await dispatchBrowser(false, profinfo);
+//   const browser = await dispatchBrowser(false, profinfo);
 
-  try {
-    page = (await browser.pages())[0];
-    _.tail(await browser.pages()).forEach(async function (opage) {
-      debug("Closing a tab that shouldn't be there!");
-      await opage.close();
-    });
+//   try {
+//     page = (await browser.pages())[0];
+//     _.tail(await browser.pages()).forEach(async function (opage) {
+//       debug("Closing a tab that shouldn't be there!");
+//       await opage.close();
+//     });
 
-    const introPage = path.join(process.cwd(), "static", "index.html");
-    await page.goto(introPage);
-  } catch (error) {
-    debug("Browser forcefully closed? %s", error.message);
-    if (experiment)
-      return {
-        experiment,
-        sourceUrl: buildAPIurl("directives", experiment),
-      };
-    else {
-      console.log("Browser closed before experiment was selected: quitting");
-      process.exit(1);
-    }
-  }
+//     const introPage = path.join(process.cwd(), "static", "index.html");
+//     await page.goto(introPage);
+//   } catch (error) {
+//     debug("Browser forcefully closed? %s", error.message);
+//     if (experiment)
+//       return {
+//         experiment,
+//         sourceUrl: buildAPIurl("directives", experiment),
+//       };
+//     else {
+//       console.log("Browser closed before experiment was selected: quitting");
+//       process.exit(1);
+//     }
+//   }
 
-  const poller = setInterval(async function () {
-    let inputs = [];
-    try {
-      inputs = await page.$$eval("input[type=radio]", function (elist) {
-        return elist.map(function (e) {
-          if (e.checked) {
-            return { experiment: e.getAttribute("experimentId") };
-          }
-        });
-      });
-    } catch (error) {
-      clearInterval(poller);
-      console.log(
-        "Failure in interacting with browser, still you've to wait a few seconds. Error message:"
-      );
-      console.log("\t" + error.message);
-    }
+//   const poller = setInterval(async function () {
+//     let inputs = [];
+//     try {
+//       inputs = await page.$$eval("input[type=radio]", function (elist) {
+//         return elist.map(function (e) {
+//           if (e.checked) {
+//             return { experiment: e.getAttribute("experimentId") };
+//           }
+//         });
+//       });
+//     } catch (error) {
+//       clearInterval(poller);
+//       console.log(
+//         "Failure in interacting with browser, still you've to wait a few seconds. Error message:"
+//       );
+//       console.log("\t" + error.message);
+//     }
 
-    const selected = _.compact(inputs);
-    if (selected.length) {
-      experiment = selected[0].experiment;
-      await page.$eval("#nextstep", function (e) {
-        e.removeAttribute("disabled");
-      });
-    }
+//     const selected = _.compact(inputs);
+//     if (selected.length) {
+//       experiment = selected[0].experiment;
+//       await page.$eval("#nextstep", function (e) {
+//         e.removeAttribute("disabled");
+//       });
+//     }
 
-    if (experiment) {
-      clearInterval(poller);
-      page.waitForTimeout(900);
-      page.goto("https://www.youtube.com");
-    }
-  }, 1600);
+//     if (experiment) {
+//       clearInterval(poller);
+//       page.waitForTimeout(900);
+//       page.goto("https://www.youtube.com");
+//     }
+//   }, 1600);
 
-  const seconds = 30;
-  console.log(
-    `You've ${seconds} seconds to select your experiment and accept cookies banner on YouTube!;`
-  );
+//   const seconds = 30;
+//   console.log(
+//     `You've ${seconds} seconds to select your experiment and accept cookies banner on YouTube!;`
+//   );
 
-  try {
-    await page.waitForTimeout(1000 * seconds);
-    if (!experiment) clearInterval(poller);
-    await browser.close();
-  } catch (error) {
-    console.log("Error in browser/page control:", error.message);
-    process.exit(1);
-  }
+//   try {
+//     await page.waitForTimeout(1000 * seconds);
+//     if (!experiment) clearInterval(poller);
+//     await browser.close();
+//   } catch (error) {
+//     console.log("Error in browser/page control:", error.message);
+//     process.exit(1);
+//   }
 
-  if (!experiment) {
-    console.log("Error: you should has select an experiment from the browser!");
-    process.exit(1);
-  }
+//   if (!experiment) {
+//     console.log("Error: you should has select an experiment from the browser!");
+//     process.exit(1);
+//   }
 
-  return {
-    experiment,
-    sourceUrl: buildAPIurl("directives", experiment),
-  };
-}
+//   return {
+//     experiment,
+//     sourceUrl: buildAPIurl("directives", experiment),
+//   };
+// }
 
-function profileExecount(profile, evidencetag) {
-  let data; let newProfile = false;
-  const udd = path.resolve(path.join('profiles', profile));
-  const guardfile = path.join(udd, 'guardoni.json');
+export function profileExecount(profile, evidencetag) {
+  let data;
+  let newProfile = false;
+  const udd = path.resolve(path.join("profiles", profile));
+  const guardfile = path.join(udd, "guardoni.json");
   if (!fs.existsSync(udd)) {
     console.log("--profile hasn't a directory. Creating " + udd);
     try {
@@ -369,9 +376,16 @@ You need a reliable internet connection to ensure a flawless collection`;
   );
 }
 
-async function writeExperimentInfo(experimentId, profinfo, evidencetag, directiveType) {
-  debug("Saving experiment info in extension/experiment.json (would be read by the extension)");
-  const cfgfile = path.join('extension', 'experiment.json');
+async function writeExperimentInfo(
+  experimentId,
+  profinfo,
+  evidencetag,
+  directiveType
+) {
+  debug(
+    "Saving experiment info in extension/experiment.json (would be read by the extension)"
+  );
+  const cfgfile = path.join("extension", "experiment.json");
   const expinfo = {
     experimentId,
     evidencetag,
@@ -379,26 +393,28 @@ async function writeExperimentInfo(experimentId, profinfo, evidencetag, directiv
     execount: profinfo.execount,
     profileName: profinfo.profileName,
     newProfile: profinfo.newProfile,
-    when: new Date()
+    when: new Date(),
   };
-  fs.writeFileSync(cfgfile, JSON.stringify(expinfo), 'utf-8');
+  fs.writeFileSync(cfgfile, JSON.stringify(expinfo), "utf-8");
   profinfo.expinfo = expinfo;
 }
 
-async function main() {
-
-  const auto = nconf.get('auto');
-  const shadowban = nconf.get('shadowban');
-  let experiment = nconf.get('experiment');
-  const sourceUrl = nconf.get('csv');
+export async function main() {
+  const auto = nconf.get("auto");
+  const shadowban = nconf.get("shadowban");
+  let experiment = nconf.get("experiment");
+  const sourceUrl = nconf.get("csv");
 
   /* directiveType is an important variable but when
      --experiment is used, it is not specify. Therefore
      is set below, after the directive is pull */
-  let directiveType = experiment ? null:
-    (shadowban ? "chiaroscuro" : "comparison");
+  let directiveType = experiment
+    ? null
+    : shadowban
+    ? "chiaroscuro"
+    : "comparison";
 
-  if(!auto && !sourceUrl && !experiment) {
+  if (!auto && !sourceUrl && !experiment) {
     printHelp();
     process.exit(1);
   }
@@ -448,8 +464,9 @@ async function main() {
     process.exit(1);
   }
 
-  const evidencetag = nconf.get('evidencetag') || 'no-tag-' + _.random(0, 0xffff);
-  let profile = nconf.get('profile');
+  const evidencetag =
+    nconf.get("evidencetag") || "no-tag-" + _.random(0, 0xffff);
+  let profile = nconf.get("profile");
   if (!profile)
     profile = nconf.get("evidencetag")
       ? evidencetag
@@ -488,8 +505,12 @@ async function main() {
   const directives = await pullDirectives(directiveurl);
   directiveType = _.first(directives).name ? "chiaroscuro" : "comparison";
 
-  debug("Loaded %d directives, detected type [%s] from %s",
-    directives.length, directiveType, directiveurl);
+  debug(
+    "Loaded %d directives, detected type [%s] from %s",
+    directives.length,
+    directiveType,
+    directiveurl
+  );
 
   await writeExperimentInfo(experiment, profinfo, evidencetag, directiveType);
 
@@ -500,13 +521,14 @@ async function main() {
     await allowResearcherSomeTimeToSetupTheBrowser(profinfo.profileName);
 
   const t = await guardoniExecution(experiment, directives, browser, profinfo);
-  console.log("— Guardoni execution completed in ",
-    moment.duration(t.end - t.start).humanize());
+  console.log(
+    "— Guardoni execution completed in ",
+    moment.duration(t.end - t.start).humanize()
+  );
 
   await concludeExperiment(experiment, profinfo);
   process.exit(0);
 }
-
 
 async function dispatchBrowser(headless, profinfo) {
   const cwd = process.cwd();
@@ -541,7 +563,7 @@ async function dispatchBrowser(headless, profinfo) {
     );
   }
   try {
-    puppeteer.use(pluginStealth());
+    // puppeteer.use(pluginStealth());
     const browser = await puppeteer.launch({
       headless,
       userDataDir: profinfo.udd,
@@ -562,13 +584,20 @@ async function dispatchBrowser(headless, profinfo) {
 async function operateTab(page, directive) {
   try {
     await domainSpecific.beforeLoad(page, directive);
-  } catch(error) {
-    debug("error in beforeLoad %s %s directive %o",
-      error.message, error.stack, directive);
+  } catch (error) {
+    debug(
+      "error in beforeLoad %s %s directive %o",
+      error.message,
+      error.stack,
+      directive
+    );
   }
 
-  debug("— Loading %s (for %dms)", directive.urltag ?
-    directive.urltag : directive.name, directive.loadFor);
+  debug(
+    "— Loading %s (for %dms)",
+    directive.urltag ? directive.urltag : directive.name,
+    directive.loadFor
+  );
   // Remind you can exclude directive with env/--exclude=urltag
 
   // TODO the 'timeout' would allow to repeat this operation with
@@ -583,8 +612,12 @@ async function operateTab(page, directive) {
     console.log("error in beforeWait", error.message, error.stack);
   }
 
-  const loadFor = _.parseInt(nconf.get('load')) || directive.loadFor;
-  debug("Directive to URL %s, Loading delay %d (--load optional)", directive.url, loadFor);
+  const loadFor = _.parseInt(nconf.get("load")) || directive.loadFor;
+  debug(
+    "Directive to URL %s, Loading delay %d (--load optional)",
+    directive.url,
+    loadFor
+  );
   await page.waitForTimeout(loadFor);
 
   try {
@@ -595,19 +628,22 @@ async function operateTab(page, directive) {
   debug("— Completed %s", directive.urltag ? directive.urltag : directive.name);
 }
 
-function initialSetup() {
-
-  if(!!nconf.get('h') || !!nconf.get('?') || process.argv.length < 3)
+export function initialSetup() {
+  if (!!nconf.get("h") || !!nconf.get("?") || process.argv.length < 3)
     return printHelp();
 
   // backend is an option we don't even disclose in the help,
   // as only developers needs it --chrome as well
-  if(nconf.get('auto')) {
-    info("AUTO mode. No mandatory options; --profile, --evidencetag OPTIONAL")
-  } else if(nconf.get('csv')) {
-    info("CSV mode: default is --comparison (special is --shadowban); Guardoni exit after upload")
-  } else if(nconf.get('experiment')) {
-    info("EXPERIMENT mode: no mandatory options; --profile, --evidencetag OPTIONAL")
+  if (nconf.get("auto")) {
+    info("AUTO mode. No mandatory options; --profile, --evidencetag OPTIONAL");
+  } else if (nconf.get("csv")) {
+    info(
+      "CSV mode: default is --comparison (special is --shadowban); Guardoni exit after upload"
+    );
+  } else if (nconf.get("experiment")) {
+    info(
+      "EXPERIMENT mode: no mandatory options; --profile, --evidencetag OPTIONAL"
+    );
   }
 
   // check if the additional directory for screenshot is present
@@ -646,40 +682,44 @@ function initialSetup() {
 async function operateBrowser(page, directives) {
   // await page.setViewport({width: 1024, height: 768});
   for (const directive of directives) {
-    if(nconf.get('exclude') && directive.urltag == nconf.get('exclude')) {
+    if (nconf.get("exclude") && directive.urltag == nconf.get("exclude")) {
       debug("[!!!] excluded directive %s", directive.urltag);
     } else {
       try {
         await operateTab(page, directive);
-      } catch(error) {
+      } catch (error) {
         debug("operateTab in %s — error: %s", directive.urltag, error.message);
       }
     }
   }
-  const loadFor = _.parseInt(nconf.get('load')) || directive.loadFor;
-  if(loadFor < 20000) {
+  const loadFor = _.parseInt(nconf.get("load")) || directive.loadFor;
+  if (loadFor < 20000) {
     await page.waitForTimeout(15000);
   }
 }
 
-async function guardoniExecution(experiment, directives, browser, profinfo) {
+export async function guardoniExecution(experiment, directives, page, profinfo) {
   const retval = { start: null };
   retval.start = moment();
   const directiveType = _.first(directives).name ? "chiaroscuro" : "comparison";
   try {
-    const page = (await browser.pages())[0];
-    _.tail(await browser.pages()).forEach(async function(opage) {
-      debug("Closing a tab that shouldn't be there!");
-      await opage.close();
-    })
+    // const page = (await browser.pages())[0];
+    // _.tail(await browser.pages()).forEach(async function (opage) {
+    //   debug("Closing a tab that shouldn't be there!");
+    //   await opage.close();
+    // });
     await domainSpecific.beforeDirectives(page, profinfo);
     // the BS above should close existing open tabs except 1st
     await operateBrowser(page, directives);
     const publicKey = await domainSpecific.completed();
-    console.log(`Operations completed: check results at ${server}/${directiveType === 'chiaroscuro' ? "shadowban" : "experiments"}/render/#${experiment}`);
+    console.log(
+      `Operations completed: check results at ${server}/${
+        directiveType === "chiaroscuro" ? "shadowban" : "experiments"
+      }/render/#${experiment}`
+    );
     console.log(`Personal log at ${server}/personal/#${publicKey}`);
     await browser.close();
-  } catch(error) {
+  } catch (error) {
     console.log("Error in operateBrowser (collection fail):", error);
     await browser.close();
     process.exit(1);
@@ -692,18 +732,19 @@ async function concludeExperiment(experiment, profinfo) {
   // this conclude the API sent by extension remoteLookup,
   // a connection to DELETE /api/v3/experiment/:publicKey
   const url = buildAPIurl(
-    'experiment',
-    moment(profinfo.expinfo.when).toISOString());
+    "experiment",
+    moment(profinfo.expinfo.when).toISOString()
+  );
   const response = await fetch(url, {
-    method: 'DELETE'
+    method: "DELETE",
   });
   const body = await response.json();
-  if(body.acknowledged !== true)
+  if (body.acknowledged !== true)
     debug("Error in communication with the server o_O (%j)", body);
   //  debug("Experiment %s marked as completed on the server!", experiment);
 }
 
-async function validateAndStart(manifest) {
+export async function validateAndStart(manifest) {
   /* initial test is meant to assure the extension is an acceptable version */
 
   const manifestValues = JSON.parse(fs.readFileSync(manifest));
@@ -715,13 +756,17 @@ async function validateAndStart(manifest) {
     a possible version 2.x isn't foresaw at the moment
    */
   const MINIMUM_ACCEPTABLE_MAJOR = 8;
-  if(_.parseInt(vblocks[1]) < MINIMUM_ACCEPTABLE_MAJOR) {
-    console.log("Error/Warning: in the directory 'extension/' the software is too old: remove it!");
+  if (_.parseInt(vblocks[1]) < MINIMUM_ACCEPTABLE_MAJOR) {
+    console.log(
+      "Error/Warning: in the directory 'extension/' the software is too old: remove it!"
+    );
     process.exit(1);
   }
 
-  if(!_.startsWith(vblocks[2], '99')) {
-    console.log("Warning/Reminder: the extension used might not be opt-in! YOU NEED TO DO IT BY HAND");
+  if (!_.startsWith(vblocks[2], "99")) {
+    console.log(
+      "Warning/Reminder: the extension used might not be opt-in! YOU NEED TO DO IT BY HAND"
+    );
     console.log("<Press any key to start>");
     await keypress();
   }
@@ -730,13 +775,13 @@ async function validateAndStart(manifest) {
   await main();
 }
 
-try {
-  const manifest = initialSetup();
-  if (!manifest) process.exit(1);
+// try {
+//   const manifest = initialSetup();
+//   if (!manifest) process.exit(1);
 
-  validateAndStart(manifest);
-} catch (error) {
-  console.error(error);
-  console.error("⬆️ Unhandled error! =( ⬆️");
-  process.exit(1);
-}
+//   validateAndStart(manifest);
+// } catch (error) {
+//   console.error(error);
+//   console.error("⬆️ Unhandled error! =( ⬆️");
+//   process.exit(1);
+// }

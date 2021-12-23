@@ -21,7 +21,7 @@
     "test": "jest",
     "shared": "yarn workspace shared",
     "backend": "yarn workspace yttrex-backend",
-    "methodology": "yarn workspace guardoni",
+    "guardoni": "yarn workspace guardoni",
     "ycai": "yarn workspace YCAI",
     "lint-staged": "lint-staged"
   },
@@ -44,5 +44,8 @@
     "*.{json,md,html,js,jsx,ts,tsx}": [
       "prettier --write"
     ]
+  },
+  "dependencies": {
+    "fsevents": "^2.3.2"
   }
 }
