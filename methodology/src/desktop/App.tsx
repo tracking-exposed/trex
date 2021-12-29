@@ -33,9 +33,8 @@ export const App: React.FC = () => {
 
   const [guardoniError, setGuardoniError] = React.useState<Error | null>(null);
 
-  const startGuardoni = async (): Promise<void> => {
-    console.log("start guardoni", config);
-    await ipcRenderer.send("startGuardoni", config);
+  const startGuardoni = (): void => {
+    void ipcRenderer.send("startGuardoni", config);
   };
 
   React.useEffect(() => {

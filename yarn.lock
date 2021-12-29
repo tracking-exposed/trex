@@ -3436,8 +3436,8 @@ __metadata:
     eslint-config-standard-with-typescript: ^21.0.1
     eslint-plugin-import: ^2.25.3
     eslint-plugin-node: ^11.1.0
-    eslint-plugin-promise: ^5.2.0
-    eslint-plugin-react: ^7.27.1
+    eslint-plugin-promise: ^6.0.0
+    eslint-plugin-react: ^7.28.0
     fp-ts: ^2.11.5
     husky: ^7.0.4
     i18next: ^21.6.3
@@ -3476,7 +3476,7 @@ __metadata:
     webpack: ^5.65.0
     webpack-bundle-analyzer: ^4.5.0
     webpack-cli: ^4.9.1
-    webpack-dev-server: ^4.7.0
+    webpack-dev-server: ^4.7.1
     zenroom: ^2.2.3
   languageName: unknown
   linkType: soft
@@ -7829,18 +7829,18 @@ __metadata:
   languageName: node
   linkType: hard
 
-"eslint-plugin-promise@npm:^5.2.0":
-  version: 5.2.0
-  resolution: "eslint-plugin-promise@npm:5.2.0"
+"eslint-plugin-promise@npm:^6.0.0":
+  version: 6.0.0
+  resolution: "eslint-plugin-promise@npm:6.0.0"
   peerDependencies:
-    eslint: ^7.0.0
-  checksum: 5d6b2d28408c5afde6386942862427af3d83c9a130eb2555bb54b26a1761914e2c7326aca1be26dd3fee6405e65a2ee9432a4526147e5962545060ea0ef64058
+    eslint: ^7.0.0 || ^8.0.0
+  checksum: 7e761507c51267b77e4ad710e7c8938aa4f8f69b975886034e57497a1816e9527eda364e25aac03d1b4e0df2e738ba98e49ad075d028824fcfea533a1419751c
   languageName: node
   linkType: hard
 
-"eslint-plugin-react@npm:^7.27.1":
-  version: 7.27.1
-  resolution: "eslint-plugin-react@npm:7.27.1"
+"eslint-plugin-react@npm:^7.28.0":
+  version: 7.28.0
+  resolution: "eslint-plugin-react@npm:7.28.0"
   dependencies:
     array-includes: ^3.1.4
     array.prototype.flatmap: ^1.2.5
@@ -7858,7 +7858,7 @@ __metadata:
     string.prototype.matchall: ^4.0.6
   peerDependencies:
     eslint: ^3 || ^4 || ^5 || ^6 || ^7 || ^8
-  checksum: db1ce303b597ede0bc8873d3f575b05873b06a058162c80f76604c9096eee8f72f299d7f849a86ac2e59f269c196575e6bcfb1ef9d7cbb23f533d081bcc15ea0
+  checksum: 90293d0fd53bb1f735ffd32141cdd211fb1120c9f7bbe5342f9e923261a39e52a2b2575d4e46c9cd77d257f42db4a99b8b339689fc5b5c1c26048929f69b1784
   languageName: node
   linkType: hard
 
@@ -19048,9 +19048,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"webpack-dev-server@npm:^4.7.0":
-  version: 4.7.0
-  resolution: "webpack-dev-server@npm:4.7.0"
+"webpack-dev-server@npm:^4.7.1":
+  version: 4.7.1
+  resolution: "webpack-dev-server@npm:4.7.1"
   dependencies:
     "@types/bonjour": ^3.5.9
     "@types/connect-history-api-fallback": ^1.3.5
@@ -19079,7 +19079,6 @@ __metadata:
     sockjs: ^0.3.21
     spdy: ^4.0.2
     strip-ansi: ^7.0.0
-    url: ^0.11.0
     webpack-dev-middleware: ^5.3.0
     ws: ^8.1.0
   peerDependencies:
@@ -19089,7 +19088,7 @@ __metadata:
       optional: true
   bin:
     webpack-dev-server: bin/webpack-dev-server.js
-  checksum: bf495e8da1307dae64eac37a233a202410ff4b9967e8dce47870944428de459bed2e3c09df127c0c301e00696c453b25bf29dea715950451abaa21a295da5b44
+  checksum: a47bff0f6371e63db19424831ce3804c85f7dc69b4feb3a401958fb5edfe1080d1dd8be80fb6e1960eb66b0d3b0aeeb2c92e1a49b3344c3ab14c902b2e74a5e7
   languageName: node
   linkType: hard
 
@@ -19611,7 +19610,7 @@ __metadata:
     eslint-config-standard-with-typescript: ^21.0.1
     eslint-plugin-import: ^2.25.3
     eslint-plugin-node: ^11.1.0
-    eslint-plugin-promise: ^5.2.0
+    eslint-plugin-promise: ^6.0.0
     express: ^4.17.2
     fetch-opengraph: ^1.0.35
     food-words: ^1.1.0

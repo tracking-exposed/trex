@@ -31,8 +31,6 @@ const createGuardoniWindow = async (
   app: Electron.App,
   parentWindow: BrowserWindow
 ): Promise<{ browser: puppeteer.Browser; window: BrowserWindow }> => {
-  console.log("initialize pup", app);
-  console.log("pup", puppeteer);
   const browser = await pie.connect(app, puppeteer);
 
   const window = new BrowserWindow({
@@ -62,7 +60,9 @@ export const run = async (): Promise<void> => {
       const evidenceTag = args.evidenceTag ?? "no-tag";
 
       const experiment = "d75f9eaf465d2cd555de65eaf61a770c82d59451";
-      console.log("star this", { event, args });
+
+      // eslint-disable-next-line no-console
+      console.log("Starting guardoni with", { profile, evidenceTag });
 
       try {
         const profileData = await guardoni.profileExecount(
@@ -70,14 +70,14 @@ export const run = async (): Promise<void> => {
           evidenceTag
         );
 
+        // eslint-disable-next-line no-console
         console.log(profileData);
 
         const directivesURL = guardoni.buildAPIurl("directives", experiment);
 
-        console.log({ directivesURL });
-
         const directives = await guardoni.pullDirectives(directivesURL);
 
+        // eslint-disable-next-line no-console
         console.log({ directives });
 
         await guardoniApp.window.show();
@@ -92,6 +92,7 @@ export const run = async (): Promise<void> => {
 
         await guardoniApp.window.destroy();
       } catch (e) {
+        // eslint-disable-next-line no-console
         console.error(e);
       }
     });
