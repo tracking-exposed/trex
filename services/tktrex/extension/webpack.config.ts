@@ -17,13 +17,13 @@ const PRODUCTION = NODE_ENV === 'production';
 
 const PATHS = {
   ENTRY: {
-      app: path.resolve(__dirname, 'src/app.js'),
-      popup: path.resolve(__dirname, 'src/chrome/popup/index.js'),
-      background: path.resolve(__dirname, 'src/chrome/background/index.js'),
+    app: path.resolve(__dirname, 'src/app.ts'),
+    popup: path.resolve(__dirname, 'src/chrome/popup/index.tsx'),
+    background: path.resolve(__dirname, 'src/chrome/background/index.ts'),
   },
   BUILD: path.resolve(__dirname, 'build'),
   DIST: path.resolve(__dirname, 'dist'),
-  NODE_MODULES: path.resolve(__dirname, 'node_modules')
+  NODE_MODULES: path.resolve(__dirname, 'node_modules'),
 };
 
 const DEV_SERVER = 'localhost';
@@ -35,9 +35,10 @@ const BUILDISODATE = new Date().toISOString();
 process.env.API_ROOT = `${ENV_DEP_SERVER}/api/v${LAST_VERSION}`;
 process.env.WEB_ROOT = ENV_DEP_WEB;
 process.env.VERSION = `${packageJSON.version}${(DEVELOPMENT ? '-dev' : '')}`;
-process.env.BUILD = `On the ${moment().format("DD of MMMM at HH:mm")}.`;
+process.env.BUILD = `On the ${moment().format('DD of MMMM at HH:mm')}.`;
 process.env.BUILDISODATE = BUILDISODATE;
 process.env.FLUSH_INTERVAL = DEVELOPMENT ? '4500' : '9000';
+process.env.DEVELOPMENT = DEVELOPMENT ? 'development' : 'production';
 
 const outputDir = PRODUCTION ? PATHS.DIST : PATHS.BUILD;
 
@@ -59,7 +60,7 @@ config.plugins.push(
         const manifest = JSON.parse(content.toString());
 
         if (NODE_ENV === 'development') {
-          manifest.permissions.push('http://localhost:14000/')
+          manifest.permissions.push('http://localhost:14000/');
         }
 
         return JSON.stringify(manifest, null, 2);
@@ -67,7 +68,7 @@ config.plugins.push(
     }, {
       from: 'icons',
     }],
-  })
+  }),
 );
 
 if (config.mode === 'production') {
@@ -83,10 +84,11 @@ if (config.mode === 'production') {
           ],
         },
       },
-    })
+    }),
   );
 }
 
+// eslint-disable-next-line no-console
 console.log({
   buildENV,
 });

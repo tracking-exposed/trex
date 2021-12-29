@@ -11,6 +11,7 @@ export const AppEnv = t.strict({
   BUILD: t.string,
   BUILDISODATE: t.string,
   FLUSH_INTERVAL: t.string,
+  DEBUG: t.string,
 }, 'TkTrexAppEnv');
 
 export type AppEnv = t.TypeOf<typeof AppEnv>

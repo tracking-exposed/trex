@@ -9,8 +9,17 @@
     "noEmit": true,
     "moduleResolution": "node",
     "resolveJsonModule": true,
-    "target": "es5"
+    "strict": true,
+    "target": "es5",
+    "paths": {
+      "@shared/*": ["../../../../shared/src/*"]
+    }
   },
+  "references": [
+    {
+      "path": "../../../shared"
+    }
+  ],
   "ts-node": {
     "compilerOptions": {
       "module": "CommonJS"

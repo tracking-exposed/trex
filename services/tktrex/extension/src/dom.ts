@@ -2,14 +2,26 @@
 //
 // This module takes care of triggering events when the DOM changes.
 
-function watch(root, selector, callback) {
+export type Callback = (node: HTMLElement) => void;
+
+const htmlElement = (cb: Callback) => (node: Node) => {
+  if (node instanceof HTMLElement) {
+    cb(node);
+  }
+};
+
+export function watch(
+  root: HTMLElement | Document,
+  selector: string,
+  callback: Callback,
+): MutationObserver {
   // ## `watch(root, selector, callback)`
   //
   // Watch for changes and do something. Since the DOM can be quite big, the
   // function requires a `root` to select which part of the DOM to observe. Every
   // time a child of the `root` is added, removed, or changed, this function will
   // check if `selector` matches any of the changes. If so, `callback` is
-  // triggered using `element` as the only argument.
+  // triggered using `HTMLElement` as the only argument.
   //
   // ### Implementation details
   //
@@ -27,25 +39,27 @@ function watch(root, selector, callback) {
       // ...array of added nodes. We need to iterate all of the nodes.
       mutation.addedNodes.forEach(
         node =>
-          // We analyze each `node`, if it is an `Element` then it implements the `querySelectorAll` interface, that we use to match our `selector`.
-          // For each element matching the selector, we finally trigger `callback` with the matching element.
-          node instanceof Element &&
-          node.querySelectorAll(selector).forEach(element => callback(element))
-      )
-    )
+          // We analyze each `node`, if it is an `HTMLElement` then it implements the `querySelectorAll` interface, that we use to match our `selector`.
+          // For each HTMLElement matching the selector, we finally trigger `callback` with the matching HTMLElement.
+          node instanceof HTMLElement &&
+          node.querySelectorAll(selector).forEach(
+            htmlElement(callback),
+          ),
+      ),
+    ),
   );
 
-  // We want this function to trigger `callback` on elements that are already in
+  // We want this function to trigger `callback` on HTMLElements that are already in
   // the DOM. Note that this function works asynchronously, and we expect to
   // start triggering `callback`s after it has been called.
   // To avoid the execution of `callback` to be synchronous, we wrap it
   // in a `setTimeout` with timeout `0` to execute this piece of code in the
   // next event loop.
   setTimeout(() => {
-    // Query for all elements and run `callback`.
+    // Query for all HTMLElements and run `callback`.
 
     // debugger;
-    root.querySelectorAll(selector).forEach(callback);
+    root.querySelectorAll(selector).forEach(htmlElement(callback));
 
     // debugger;
 
@@ -55,36 +69,24 @@ function watch(root, selector, callback) {
     // documentation](https://developer.mozilla.org/en-US/docs/Web/API/MutationObserverInit).
     mutationObserver.observe(root, {
       childList: true,
-      subtree: true
+      subtree: true,
     });
   }, 0);
 
   return mutationObserver;
 }
 
-function on(selector, callback) {
-  // debugger;
+export function on(selector: string, callback: Callback): MutationObserver {
   return watch(document, selector, callback);
 }
 
-function one(selector, callback) {
-  // debugger;
-  let mutationObserver;
-  let once = false;
+export function one(selector: string, callback: Callback): MutationObserver {
+  const observer = on(
+    selector, (node: HTMLElement) => {
+      observer.disconnect();
+      callback(node);
+    },
+  );
 
-  const wrapper = element => {
-    if (!once) {
-      callback(element);
-      once = true;
-      mutationObserver.disconnect();
-    }
-  };
-
-  mutationObserver = on(selector, wrapper);
-}
-
-module.exports = {
-  watch,
-  on,
-  one
+  return observer;
 }

@@ -1,4 +1,7 @@
 @font-face {
   font-family: Trex-Regular;
-  src: url('/Trex-Regular.ttf');
+  font-style: normal;
+  font-display: swap;
+  font-weight: 400;
+  src: url('./Trex-Regular.ttf');
 }

@@ -44,6 +44,10 @@
     "@typescript-eslint/restrict-plus-operands": ["off"],
     "@typescript-eslint/restrict-template-expressions": ["off"],
     "@typescript-eslint/strict-boolean-expressions": ["off"],
-    "react/jsx-key": "off"
+    "react/jsx-key": "off",
+    "comma-dangle": ["error", "always-multiline"],
+    "indent": [2, 2],
+    "quotes": [1, "single"],
+    "semi": [1, "always"]
   }
 }
