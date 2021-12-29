@@ -10,7 +10,8 @@
   "workspaces": [
     "shared",
     "backend",
-    "YCAI"
+    "YCAI",
+    "services/tktrex/extension"
   ],
   "packageManager": "yarn@3.1.1",
   "scripts": {

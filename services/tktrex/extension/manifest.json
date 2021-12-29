@@ -22,7 +22,6 @@
   "permissions": [
     "storage",
     "alarms",
-    "http://localhost:14000/",
     "https://tiktok.tracking.exposed/"
   ],
 

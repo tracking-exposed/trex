@@ -156,7 +156,7 @@ const getConfig = <E extends t.Props>(
     module: {
       rules: [
         {
-          test: /\.tsx?$/,
+          test: /\.(t|j)sx?$/,
           exclude: /node_modules/,
           use: [
             {
@@ -193,13 +193,15 @@ const getConfig = <E extends t.Props>(
     },
 
     resolve: {
-      extensions: [".ts", ".tsx", ".js"],
+      extensions: [".ts", ".tsx", ".js", ".jsx"],
       plugins: [
         new TsconfigPathsPlugin({
           configFile: path.resolve(opts.cwd, "./tsconfig.json"),
         }),
       ],
     },
+
+    devtool: mode === 'development' ? 'inline-source-map' : 'source-map',
 
     plugins,
     // custom options

@@ -1920,6 +1920,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/create-react-class@npm:^15":
+  version: 15.6.3
+  resolution: "@types/create-react-class@npm:15.6.3"
+  dependencies:
+    "@types/react": "*"
+  checksum: d39a33f6217a00442e5fecf3d94ddd7134bd0b3ff3138be549a15aa79c7d49c8541020936ee81c37656172cf392d3a306c2104275549ac435c955fe8cc0f1711
+  languageName: node
+  linkType: hard
+
 "@types/d3-array@npm:^1":
   version: 1.2.9
   resolution: "@types/d3-array@npm:1.2.9"
@@ -2357,6 +2366,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/jquery@npm:^3":
+  version: 3.5.11
+  resolution: "@types/jquery@npm:3.5.11"
+  dependencies:
+    "@types/sizzle": "*"
+  checksum: bad7c4495ade39e712462af534169790115d07874bb1a8c43a597676bd4e4d62caaf961353836f1e9f67309cac3a224b8743da07bad4cb2ff853b93f1856014b
+  languageName: node
+  linkType: hard
+
 "@types/json-schema@npm:*, @types/json-schema@npm:^7.0.8, @types/json-schema@npm:^7.0.9":
   version: 7.0.9
   resolution: "@types/json-schema@npm:7.0.9"
@@ -2417,6 +2435,13 @@ __metadata:
   version: 16.11.13
   resolution: "@types/node@npm:16.11.13"
   checksum: 7c9d62c024537d7c9f2229097b9e7a93a60bc60efbc9171977f172819e229b01d0b6ed276d335996d39b0096aed2cefa58c4a34b264d712ae3595449e8d96ab7
+  languageName: node
+  linkType: hard
+
+"@types/node@npm:^17.0.5":
+  version: 17.0.5
+  resolution: "@types/node@npm:17.0.5"
+  checksum: 105535e78722515c26cfdc1b0cbf1b19f55fe53b814e2e90d8b1e653bc63136d4760c7efc102eca111c6d124a291e37d60d761d569a3f4afb3fba05bad5d9ade
   languageName: node
   linkType: hard
 
@@ -2509,6 +2534,13 @@ __metadata:
   version: 0.16.2
   resolution: "@types/scheduler@npm:0.16.2"
   checksum: b6b4dcfeae6deba2e06a70941860fb1435730576d3689225a421280b7742318d1548b3d22c1f66ab68e414f346a9542f29240bc955b6332c5b11e561077583bc
+  languageName: node
+  linkType: hard
+
+"@types/sizzle@npm:*":
+  version: 2.3.3
+  resolution: "@types/sizzle@npm:2.3.3"
+  checksum: 586a9fb1f6ff3e325e0f2cc1596a460615f0bc8a28f6e276ac9b509401039dd242fa8b34496d3a30c52f5b495873922d09a9e76c50c2ab2bcc70ba3fb9c4e160
   languageName: node
   linkType: hard
 
@@ -5321,6 +5353,16 @@ __metadata:
     crc-32: ^1.2.0
     readable-stream: ^3.4.0
   checksum: 1099559283b86e8a55390228b57ff4d57a74cac6aa8086aa4730f84317c9f93e914aeece115352f2d706a9df7ed75327ffacd86cfe23f040aef821231b528e76
+  languageName: node
+  linkType: hard
+
+"create-react-class@npm:^15.7.0":
+  version: 15.7.0
+  resolution: "create-react-class@npm:15.7.0"
+  dependencies:
+    loose-envify: ^1.3.1
+    object-assign: ^4.1.1
+  checksum: 0c5f43da705fa9f67ec289051dd5780792652d440dfa17cd2c7d8423c1f604609596f895dabf46fda1960ddd93ee96fe1b61ef4d55a94fc4271b07d515486714
   languageName: node
   linkType: hard
 
@@ -9918,6 +9960,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"jquery@npm:^3.6.0":
+  version: 3.6.0
+  resolution: "jquery@npm:3.6.0"
+  checksum: 8fd5fef4aa48fd374ec716dd1c1df1af407814a228e15c1260ca140de3a697c2a77c30c54ff1d238b6a3ab4ddc445ddeef9adce6c6d28e4869d85eb9d3951c0e
+  languageName: node
+  linkType: hard
+
 "js-file-download@npm:^0.4.12":
   version: 0.4.12
   resolution: "js-file-download@npm:0.4.12"
@@ -10729,7 +10778,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"loose-envify@npm:^1.0.0, loose-envify@npm:^1.1.0, loose-envify@npm:^1.2.0, loose-envify@npm:^1.4.0":
+"loose-envify@npm:^1.0.0, loose-envify@npm:^1.1.0, loose-envify@npm:^1.2.0, loose-envify@npm:^1.3.1, loose-envify@npm:^1.4.0":
   version: 1.4.0
   resolution: "loose-envify@npm:1.4.0"
   dependencies:
@@ -15309,6 +15358,26 @@ __metadata:
   checksum: da62c4acac565902f0624b123eed6dd3509bc9a8d30c06e017104bedcf5d35810da8ff72864400ad19c5c7806fc0a8323c68baf3e326af7cb7d969f846100d71
   languageName: node
   linkType: hard
+
+"tktrex@workspace:services/tktrex/extension":
+  version: 0.0.0-use.local
+  resolution: "tktrex@workspace:services/tktrex/extension"
+  dependencies:
+    "@types/create-react-class": ^15
+    "@types/jquery": ^3
+    "@types/node": ^17.0.5
+    "@types/react": ^17.0.37
+    "@types/react-dom": ^17.0.11
+    create-react-class: ^15.7.0
+    io-ts: ^2.2.16
+    jquery: ^3.6.0
+    moment: ^2.29.1
+    react: ^17.0.2
+    react-dom: ^17.0.2
+    typescript: ^4.5.4
+    webpack: ^5.65.0
+  languageName: unknown
+  linkType: soft
 
 "tmpl@npm:1.0.5":
   version: 1.0.5

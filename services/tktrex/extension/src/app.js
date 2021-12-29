@@ -120,7 +120,7 @@ function fullSave() {
     reason: 'fullsave',
     feedId,
   });
-}                                    
+}
 
 function refreshUUID() {
   feedId = (feedCounter + "—" + Math.random() + "-" + _.random(0, 0xff) );
@@ -195,7 +195,7 @@ function setupObserver() {
         feedCounter++;
         refreshUUID();
         console.log(oldHref, "changed to",
-          window.location.href, "new feedId", feedId, 
+          window.location.href, "new feedId", feedId,
           "feedCounter", feedCounter,
           "videoCounter resetting after poking", videoCounter);
         videoCounter = 0;
@@ -226,7 +226,7 @@ function handleSuggested(elem) {
   });
 }
 
-/* function below manages every new video sample  
+/* function below manages every new video sample
  * that got display in 'following' 'foryou' or 'creator' page */
 const SPECIAL_DEBUG = false;
 let videoCounter = 0;
@@ -305,7 +305,7 @@ function initializeEmergencyButton() {
   element.setAttribute('id', "full--save");
   element.style = "position: fixed; top:50%; left: 1rem; display: flex; font-size: 3em; cursor: pointer; flex-direction: column; z-index: 9999; visibility: visible;"
   element.innerText = "💾";
-  document.body.appendChild(element);  
+  document.body.appendChild(element);
 }
 
 // Before booting the app, we need to update the current configuration
