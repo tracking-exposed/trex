@@ -12,7 +12,8 @@
     "backend",
     "YCAI",
     "services/tktrex/extension",
-    "services/tktrex/methodology"
+    "services/tktrex/methodology",
+    "services/tktrex/backend"
   ],
   "packageManager": "yarn@3.1.1",
   "scripts": {
