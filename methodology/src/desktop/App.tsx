@@ -1,13 +1,23 @@
 import {
   Box,
   Button,
-  FormControl,
-  FormHelperText,
+  FormControlLabel,
+  FormGroup,
   Input,
-  InputLabel,
+  makeStyles,
 } from "@material-ui/core";
 import { ipcRenderer } from "electron";
 import * as React from "react";
+
+const useStyles = makeStyles((theme) => ({
+  container: {
+    width: "100%",
+    height: "100%",
+  },
+  formControl: {
+    marginBottom: theme.spacing(2),
+  },
+}));
 
 interface Config {
   profileDir: string;
@@ -15,6 +25,7 @@ interface Config {
 }
 
 export const App: React.FC = () => {
+  const classes = useStyles();
   const [config, setConfig] = React.useState<Config>({
     profileDir: `~/guardoni/profiles/anonymous`,
     extensionDir: `~/guardoni/extension`,
@@ -22,69 +33,69 @@ export const App: React.FC = () => {
 
   const [guardoniError, setGuardoniError] = React.useState<Error | null>(null);
 
-  const startGuardoni = (): void => {
-    console.log('start guardoni', config);
-    void ipcRenderer.send('startGuardoni', config);
-    // void pie
-    //   .run(electron.app, {
-    //     headless: true,
-    //     width: 1000,
-    //     height: 600,
-    //     extensionDir: config.extensionDir,
-    //   })()
-    //   .then((result) => {
-    //     if (result._tag === "Left") {
-    //       console.error(result);
-    //       setGuardoniError(result.left);
-    //     }
-    //   });
+  const startGuardoni = async (): Promise<void> => {
+    console.log("start guardoni", config);
+    await ipcRenderer.send("startGuardoni", config);
   };
 
+  React.useEffect(() => {
+    ipcRenderer.on("guardoniError", (event, ...args) => {
+      setGuardoniError(new Error("Guardoni failed"));
+    });
+  }, []);
+
   return (
-    <Box maxWidth={"100%"}>
-      <FormControl>
-        <InputLabel htmlFor="profile-path">Profile path</InputLabel>
-        <Input
-          id="profile-path"
-          aria-describedby="profile-path-text"
-          value={config.profileDir}
-          onChange={(e) =>
-            setConfig({
-              ...config,
-              profileDir: e.target.value,
-            })
+    <Box className={classes.container}>
+      <FormGroup>
+        <FormControlLabel
+          className={classes.formControl}
+          label={"Profile path"}
+          labelPlacement="top"
+          control={
+            <Input
+              id="profile-path"
+              aria-describedby="profile-path-text"
+              value={config.profileDir}
+              fullWidth
+              onChange={(e) =>
+                setConfig({
+                  ...config,
+                  profileDir: e.target.value,
+                })
+              }
+            />
           }
         />
-        <FormHelperText id="profile-path-text">
-          User profile path
-        </FormHelperText>
-      </FormControl>
-      <FormControl>
-        <InputLabel htmlFor="my-input">Browser extension path</InputLabel>
-        <Input
-          id="my-input"
-          aria-describedby="my-helper-text"
-          value={config.extensionDir}
-          onChange={(e) =>
-            setConfig({
-              ...config,
-              extensionDir: e.target.value,
-            })
+
+        <FormControlLabel
+          className={classes.formControl}
+          label="Browser extension path"
+          labelPlacement="top"
+          control={
+            <Input
+              id="my-input"
+              aria-describedby="my-helper-text"
+              value={config.extensionDir}
+              fullWidth
+              onChange={(e) =>
+                setConfig({
+                  ...config,
+                  extensionDir: e.target.value,
+                })
+              }
+            />
           }
         />
-        <FormHelperText id="my-helper-text">
-          Browser extension path
-        </FormHelperText>
-      </FormControl>
-      <FormControl>
+
         <Button
+          color="primary"
           onClick={() => {
             void startGuardoni();
           }}
         >
           Start guardoni
         </Button>
-      </FormControl>
+      </FormGroup>
 
       {guardoniError ? (
         <Box color="error" maxWidth={"100%"}>

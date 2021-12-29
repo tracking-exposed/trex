@@ -1,4 +1,4 @@
-import { BrowserWindow, app, ipcMain } from "electron";
+import { BrowserWindow, app, ipcMain, session } from "electron";
 import * as path from "path";
 import pie from "puppeteer-in-electron";
 import puppeteer from "puppeteer-core";
@@ -9,8 +9,11 @@ const mainHTMLPath = `file:${path.join(__dirname, "./guardoni.html")}`;
 
 const creatMainWindow = async (): Promise<BrowserWindow> => {
   mainWindow = new BrowserWindow({
-    width: 1200,
-    height: 800,
+    width: 600,
+    height: 400,
+    fullscreenable: false,
+    resizable: false,
+    autoHideMenuBar: true,
     webPreferences: {
       nodeIntegration: true,
       contextIsolation: false,
@@ -33,7 +36,7 @@ const createGuardoniWindow = async (
   const browser = await pie.connect(app, puppeteer);
 
   const window = new BrowserWindow({
-    frame: false,
+    autoHideMenuBar: true,
     show: false,
     parent: parentWindow,
   });
@@ -43,17 +46,20 @@ const createGuardoniWindow = async (
 export const run = async (): Promise<void> => {
   app.setPath("userData", path.resolve(process.cwd(), "output"));
 
-  await pie.initialize(app, 5533);
+  await pie.initialize(app);
 
   // eslint-disable-next-line @typescript-eslint/no-misused-promises
   app.on("ready", async () => {
     const mainWindow = await creatMainWindow();
     const guardoniApp = await createGuardoniWindow(app, mainWindow);
 
+    await session.defaultSession.loadExtension(
+      path.join(process.cwd(), "./extension")
+    );
     // eslint-disable-next-line @typescript-eslint/no-misused-promises
     ipcMain.on("startGuardoni", async (event, args) => {
-      const profile = args.profileName ?? 'default';
-      const evidenceTag = args.evidenceTag ?? 'no-tag';
+      const profile = args.profileName ?? "default";
+      const evidenceTag = args.evidenceTag ?? "no-tag";
 
       const experiment = "d75f9eaf465d2cd555de65eaf61a770c82d59451";
       console.log("star this", { event, args });
@@ -72,7 +78,7 @@ export const run = async (): Promise<void> => {
 
         const directives = await guardoni.pullDirectives(directivesURL);
 
-        console.log({ directives })
+        console.log({ directives });
 
         await guardoniApp.window.show();
 
