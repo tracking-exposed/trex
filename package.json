@@ -11,7 +11,8 @@
     "shared",
     "backend",
     "YCAI",
-    "services/tktrex/extension"
+    "services/tktrex/extension",
+    "services/tktrex/methodology"
   ],
   "packageManager": "yarn@3.1.1",
   "scripts": {
