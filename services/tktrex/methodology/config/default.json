@@ -1,0 +1,6 @@
+{
+    "backend":"",
+    "headless": false,
+    "proxy":"",
+    "fullpage": true
+}
