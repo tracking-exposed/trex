@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+
+ARGS=$@
+ARGS=${ARGS// /\~ \~}
+
+node ./node_modules/@electron-forge/cli/dist/electron-forge-start --vscode -- \~$ARGS\~

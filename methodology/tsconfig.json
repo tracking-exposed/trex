@@ -3,10 +3,10 @@
   "compilerOptions": {
     "allowJs": true,
     "strict": true,
+    "noEmit": true,
     "target": "ES3",
     "lib": ["ESNext", "DOM"],
     "jsx": "react",
-    "outDir": "./build",
     "rootDir": "./",
     "baseUrl": "./src",
     "esModuleInterop": true,

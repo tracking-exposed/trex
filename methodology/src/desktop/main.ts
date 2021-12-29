@@ -5,22 +5,22 @@ import puppeteer from "puppeteer-core";
 import * as guardoni from "../guardoni";
 
 let mainWindow: BrowserWindow | null = null;
-const mainHTMLPath = `file:${path.join(__dirname, "./guardoni.html")}`;
 
+const mainWindowHTML= `file://${path.join(__dirname, 'renderer/guardoni.html')}`;
 const creatMainWindow = async (): Promise<BrowserWindow> => {
   mainWindow = new BrowserWindow({
-    width: 600,
-    height: 400,
+    width: 1000,
+    height: 800,
     fullscreenable: false,
     resizable: false,
     autoHideMenuBar: true,
     webPreferences: {
       nodeIntegration: true,
       contextIsolation: false,
+      devTools: true,
     },
   });
-  await mainWindow.loadURL(mainHTMLPath);
-  mainWindow.webContents.openDevTools();
+  await mainWindow.loadURL(mainWindowHTML);
   mainWindow.on("closed", function () {
     mainWindow = null;
   });
@@ -101,4 +101,4 @@ export const run = async (): Promise<void> => {
   });
 };
 
-void run();
+void run().catch(console.error);

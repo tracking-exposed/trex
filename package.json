@@ -44,8 +44,5 @@
     "*.{json,md,html,js,jsx,ts,tsx}": [
       "prettier --write"
     ]
-  },
-  "dependencies": {
-    "fsevents": "^2.3.2"
   }
 }

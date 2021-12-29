@@ -19,18 +19,20 @@
       }
     },
     {
-      "name": "Debug Guardoni Electron Process",
-      "type": "chrome",
+      "type": "node",
       "request": "launch",
-      "runtimeExecutable": "${workspaceRoot}/node_modules/.bin/electron",
+      "name": "Debug Guardoni Electron Main",
+      "runtimeExecutable": "${workspaceFolder}/methodology/bin/electron-forge-vscode-nix",
       "windows": {
-        "runtimeExecutable": "${workspaceRoot}/node_modules/.bin/electron.cmd"
+        "runtimeExecutable": "${workspaceFolder}/methodology/node_modules/.bin/electron-forge-vscode-win.cmd"
       },
+      // runtimeArgs will be passed directly to your Electron application
       "runtimeArgs": [
-        "${workspaceRoot}/metholody/build/electron/index.js",
-        "--remote-debugging-port=9222"
+        // "--app-path ${workspaceFolder}/methodology",
+        "--enable-logging",
+        "--inspect-electron"
       ],
-      "webRoot": "${workspaceRoot}"
+      "cwd": "${workspaceFolder}/methodology",
     }
   ]
 }
