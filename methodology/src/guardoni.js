@@ -698,7 +698,12 @@ async function operateBrowser(page, directives) {
   }
 }
 
-export async function guardoniExecution(experiment, directives, page, profinfo) {
+export async function guardoniExecution(
+  experiment,
+  directives,
+  page,
+  profinfo
+) {
   const retval = { start: null };
   retval.start = moment();
   const directiveType = _.first(directives).name ? "chiaroscuro" : "comparison";

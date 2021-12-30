@@ -1,12 +1,15 @@
-import { BrowserWindow, app, ipcMain, session } from "electron";
+import { app, BrowserWindow, ipcMain, session } from "electron";
 import * as path from "path";
-import pie from "puppeteer-in-electron";
 import puppeteer from "puppeteer-core";
+import pie from "puppeteer-in-electron";
 import * as guardoni from "../guardoni";
 
 let mainWindow: BrowserWindow | null = null;
 
-const mainWindowHTML= `file://${path.join(__dirname, 'renderer/guardoni.html')}`;
+const mainWindowHTML = `file://${path.join(
+  __dirname,
+  "renderer/guardoni.html"
+)}`;
 const creatMainWindow = async (): Promise<BrowserWindow> => {
   mainWindow = new BrowserWindow({
     width: 1000,
@@ -42,7 +45,7 @@ const createGuardoniWindow = async (
 };
 
 export const run = async (): Promise<void> => {
-  app.setPath("userData", path.resolve(process.cwd(), "output"));
+  app.setPath("userData", path.resolve(process.cwd(), "data"));
 
   await pie.initialize(app);
 
@@ -93,7 +96,8 @@ export const run = async (): Promise<void> => {
         await guardoniApp.window.destroy();
       } catch (e) {
         // eslint-disable-next-line no-console
-        console.error(e);
+        console.error("An error occured", e);
+        event.sender.send("guardoniError", e);
       }
     });
 
@@ -101,4 +105,5 @@ export const run = async (): Promise<void> => {
   });
 };
 
+// eslint-disable-next-line no-console
 void run().catch(console.error);

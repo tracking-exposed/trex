@@ -9,8 +9,8 @@ if (env === "development") {
     console.log(module);
     electronReloader(module, {
       ignore: [
-        'build',
-        'output',
+        'src',
+        "data",
         'experiments',
         'node_modules',
         '.*',

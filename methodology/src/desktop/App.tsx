@@ -39,6 +39,8 @@ export const App: React.FC = () => {
 
   React.useEffect(() => {
     ipcRenderer.on("guardoniError", (event, ...args) => {
+      // eslint-disable-next-line no-console
+      console.log({ event, args });
       setGuardoniError(new Error("Guardoni failed"));
     });
   }, []);
