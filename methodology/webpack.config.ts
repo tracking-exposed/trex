@@ -34,6 +34,10 @@ rendererConfig.plugins.push(
           return ["guardoni.html"].includes(base);
         },
       },
+      {
+        from: 'extension',
+        to: 'build/extension'
+      }
     ],
   })
 );
