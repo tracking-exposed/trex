@@ -8371,6 +8371,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"electron-log@npm:^4.4.4":
+  version: 4.4.4
+  resolution: "electron-log@npm:4.4.4"
+  checksum: b32808377214b1382842c5a7c37d6196d03b8ea093a6cd396031654ee7c674b5b61975dab2f50b64bb6204865ae9c9ea14453a7dfeace57e6b0c517f4ba44efa
+  languageName: node
+  linkType: hard
+
 "electron-notarize@npm:^1.1.1":
   version: 1.1.1
   resolution: "electron-notarize@npm:1.1.1"
@@ -10859,6 +10866,7 @@ __metadata:
     electron: ^16.0.5
     electron-builder: ^22.14.5
     electron-debug: ^3.2.0
+    electron-log: ^4.4.4
     electron-puppeteer: ^1.1.1
     electron-reloader: ^1.2.1
     electron-squirrel-startup: ^1.0.0
