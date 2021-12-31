@@ -1,28 +1,13 @@
-## Youtube Tracking Exposed toolkit
+## Tracking Exposed toolkit
 
-This repository contains four directories:
+This monorepo will eventually include all `packages` and `services` needed by `Tracking Exposed`:
 
-* YCAI: the browser extension for [YouChoose.AI](https://youchoose.ai) and react component of [studio.youchoose.ai](https://studio.youchoose.ai)
-* extension: the browser extension of [youtube.tracking.exposed](https://youtube.tracking.exposed) the youtube algorithm analysis toolkit for researcher, power user, and algorithm analysts.
-* backend: the express+mongodb server that process data donation from YouChoose and yttrex browser extension.
-* methodology: a complet pupetteer wrapper to orchestrate repetable data collection with yttrex extension, documented with the name of [Guardoni](https://youtube.tracking.exposed/guardoni).
+For now, these are the following projects included:
 
-### HOW TO rebuild YouChoose.AI browser extension
-
-    cd yttrex
-    yarn
-    yarn ycai built:ext
-    ls YCAI/build/extension
-
-### HOW TO rebuild youtube.tracking.exposed browser extension
-
-    cd yttrex
-    yarn
-    cd extension
-    npm run build:dist
-    ls dist/
-
-# Credits 
+* [YCAI](./YCAI/README.md): the browser extension for [YouChoose.AI](https://youchoose.ai) and react component of [studio.youchoose.ai](https://studio.youchoose.ai)
+* [YTTRex Extension](./extension/README.md): the browser extension of [youtube.tracking.exposed](https://youtube.tracking.exposed) the youtube algorithm analysis toolkit for researcher, power user, and algorithm analysts.
+* [backend](./backend/README.md): the express+mongodb server that process data donation from YouChoose and YTTRex browser extension.
+* [methodology](./methodology/README.md): a complete pupetteer wrapper to orchestrate reproducible data collection with YTTRex extension, documented with the name of [Guardoni](https://youtube.tracking.exposed/guardoni).
 
 ### Backend package
 
@@ -45,3 +30,6 @@ This repository contains four directories:
 # License
 
 Affero-GPL 3, as file attached in this repository display.
+
+
+# Credits
