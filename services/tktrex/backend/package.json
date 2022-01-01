@@ -6,7 +6,7 @@
   "scripts": {
     "watch": "key=fuffa DEBUG=\"*,-express:*,-body-parser:*\" nodemon --config config/nodemon.json bin/server",
     "start": "DEBUG=\"*,-body-parser:*,-express:*\" node bin/server",
-    "parserv": "DEBUG=* node bin/parserv3"
+    "parserv": "DEBUG=\"*\" node bin/parserv3"
   },
   "author": "https://github.com/tracking-exposed/tktrex/graphs/contributors",
   "license": "AGPL-3.0",
