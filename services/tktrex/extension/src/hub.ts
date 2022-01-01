@@ -14,9 +14,9 @@ export class Hub {
     this.genericHandlers = [];
   }
 
-  on<ET extends HubEvent>(
-    type: ET['type'],
-    handler: (event: ET) => void,
+  on<ET extends HubEvent['type']>(
+    type: ET,
+    handler: (event: HubEvent & { type: ET }) => void,
   ): Hub {
     if (!this.specificHandlers[type]) {
       this.specificHandlers[type] = [];
