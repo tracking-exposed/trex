@@ -13,8 +13,6 @@ import {
 
 import { Nature } from './models/Nature';
 
-const bo = chrome;
-
 let feedId = ('—' + Math.random() + '-' + _.random(0, 0xff) + '—');
 let feedCounter = 0;
 
@@ -309,9 +307,4 @@ function initializeEmergencyButton(): void {
   document.body.appendChild(element);
 }
 
-// Before booting the app, we need to update the current configuration
-// with some values we can retrieve only from the `chrome`space.
-bo.runtime.sendMessage({type: 'chromeConfig'}, (response) => {
-  Object.assign(config, response);
-  boot();
-});
+boot();
