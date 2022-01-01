@@ -27,15 +27,15 @@ function boot(): void {
   registerHandlers(hub);
 
   // Lookup the current user and decide what to do.
-  localLookup((response) => {
+  localLookup((settings) => {
     // `response` contains the user's public key, we save it global for the blinks
-    log.info(JSON.stringify(response));
+    log.info('retrieved locally stored user settings', settings);
     // this output is interpreted and read by guardoni
 
     /* these parameters are loaded from localStorage */
-    config.publicKey = response.publicKey;
-    config.active = response.active;
-    config.ux = response.ux;
+    config.publicKey = settings.publicKey;
+    config.active = settings.active;
+    config.ux = settings.ux;
 
     if(!config.active) {
       log.info('tktrex disabled!');
@@ -71,7 +71,7 @@ function fullSave(): void {
   const urlChanged = (window.location.href !== lastMeaningfulURL);
 
   if (urlChanged) {
-    log.info('Invoked fullSave: new URL observed');
+    log.info('fullSave invoked because new URL observed');
     // Considering the extension only runs on *.tiktok.com
     // we want to make sure the main code is executed only in
     // website portion actually processed by us. If not, the
@@ -81,7 +81,7 @@ function fullSave(): void {
     lastURLNature = getNatureByHref(window.location.href);
 
     if(!lastURLNature) {
-      log.info('Unsupported URL kind: rejected fullSave');
+      log.info('unsupported URL kind, rejecting fullSave');
       return;
     }
 
@@ -96,11 +96,11 @@ function fullSave(): void {
   const body = document.querySelector('body');
 
   if (!body) {
-    log.error('No body found, skipping fullSave');
+    log.error('no body found, skipping fullSave');
     return;
   }
 
-  log.info('Sending fullSave!');
+  log.info('sending fullSave!');
   hub.dispatch({
     type: 'FullSave',
     payload: {
@@ -147,11 +147,11 @@ function getNatureByHref(href: string): Nature | null {
         timestamp: urlO.searchParams.get('t') ?? '',
       };
     } else {
-      log.info('Unmanaged condition from URL:', urlO);
+      log.error('unexpected condition from URL', urlO);
       return null;
     }
   } catch(error) {
-    log.error('getNatureByHref:', error);
+    log.error('getNatureByHref', error);
     return null;
   }
 }
@@ -173,11 +173,10 @@ const selectors = {
 
 function setupObserver(): void {
   /* this initizalise dom listened by mutation observer */
-  const sugWhat = dom.on(selectors.suggested.selector, handleSuggested);
-  const vidWhat = dom.on(selectors.video.selector, handleVideo);
-  const creatWhat = dom.on(selectors.creator.selector, handleTest);
-  log.info('Listener installed ',
-    JSON.stringify(selectors), sugWhat, vidWhat, creatWhat);
+  dom.on(selectors.suggested.selector, handleSuggested);
+  dom.on(selectors.video.selector, handleVideo);
+  dom.on(selectors.creator.selector, handleTest);
+  log.info('listeners installed, selectors', selectors);
 
   /* and monitor href changes to randomize a new accessId */
   let oldHref = window.location.href;
@@ -263,7 +262,7 @@ function handleVideo(node: HTMLElement): void {
 
   if(videoRoot.hasAttribute('trex')) {
     log.info(
-      'Element already acquired: skipping',
+      'element already acquired: skipping',
       videoRoot.getAttribute('trex'),
     );
 
@@ -272,12 +271,7 @@ function handleVideo(node: HTMLElement): void {
 
   videoCounter++;
 
-  log.info(
-    '+video -- marking as ',
-    videoCounter,
-    'details:',
-    videoRoot,
-  );
+  log.info('+video', videoRoot, ' acquired, now', videoCounter, 'in total');
 
   videoRoot.setAttribute('trex', `${videoCounter}`);
 

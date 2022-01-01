@@ -4,7 +4,7 @@ import { isLeft } from 'fp-ts/lib/Either';
 
 import $ from 'jquery';
 
-import { isEmpty, isFunction } from '../utils';
+import { isEmpty } from '../utils';
 import log from '../logger';
 
 const bo = chrome;
@@ -20,7 +20,7 @@ const getP = (key: string): Promise<unknown> =>
     });
   });
 
-const setP = (key: string, value: unknown): Promise<unknown> =>
+const setP = <T>(key: string, value: T): Promise<T> =>
   new Promise((resolve, reject) => {
     storage.set({
       [key]: value,
@@ -32,8 +32,8 @@ const setP = (key: string, value: unknown): Promise<unknown> =>
     });
   });
 
-const init = (key: string, initializer: unknown): unknown => {
-  if (isFunction(initializer)) {
+const init = <T>(key: string, initializer: T | ((str: string) => T)): T => {
+  if (initializer instanceof Function) {
     return initializer(key);
   }
   return initializer;
@@ -44,7 +44,7 @@ export const get = async (key: string, initializer?: unknown): Promise<unknown> 
   if (isEmpty(value) && !isEmpty(initializer)) {
     const newValue = init(key, initializer);
     await setP(key, newValue);
-    log.info(`"${key}" was empty, initializing with ${newValue}`);
+    log.info(`"${key}" was empty, initializing with`, newValue);
     return newValue;
   }
   log.info(`returning "${key}" from storage`, value);
@@ -57,7 +57,7 @@ export const getValid = <C extends t.Any>(codec: C) =>
 
     if (isLeft(validation)) {
       const details = PathReporter.report(validation).join('\n');
-      const msg = `Error decoding "${key}" from storage:\n${details}`;
+      const msg = `error decoding "${key}" from storage:\n${details}`;
       log.error(msg);
       throw new Error(msg);
     }
@@ -65,17 +65,17 @@ export const getValid = <C extends t.Any>(codec: C) =>
     return validation.right;
   };
 
-export const set = (key: string, value: unknown): Promise<unknown> => {
+export const set = <T>(key: string, value: T): Promise<T> => {
   const newValue = init(key, value);
-  log.info(`setting "${key}" = ${newValue} in storage`);
+  log.info(`setting "${key}" in storage to`, newValue);
   return setP(key, newValue);
 };
 
-export const update = async (key: string, updater: unknown): Promise<unknown> => {
+export const update = async <T>(key: string, updater: (T | ((x: unknown) => T))): Promise<T> => {
   log.info(`updating "${key}" in storage`);
   const oldValue = await getP(key);
 
-  if (isFunction(updater)) {
+  if (updater instanceof Function) {
     const newValue = updater(oldValue);
     return setP(key, newValue);
   }

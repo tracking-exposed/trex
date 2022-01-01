@@ -6,7 +6,7 @@ const bo = chrome;
 function handleReload(): void {
   bo.runtime.sendMessage(
     { type: 'ReloadExtension' },
-    (response) => log.info('Reloading Extension'),
+    () => log.info('reloading extension'),
   );
 }
 
