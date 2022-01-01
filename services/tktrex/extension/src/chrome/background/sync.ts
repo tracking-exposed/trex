@@ -13,6 +13,7 @@ bo.runtime.onMessage.addListener((request, sender, sendResponse) => {
         type: 'Error',
         error,
       }));
+
     return true;
   }
 });

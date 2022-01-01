@@ -2,15 +2,16 @@ import nacl from 'tweetnacl';
 import bs58 from 'bs58';
 
 import config from '../config';
+import UserSettings from '../models/UserSettings';
 import { decodeString, decodeKey } from '../utils';
 import db from './db';
 
-function post (apiUrl, data, cookieId) {
+const post = (path: string) => (data: unknown, cookieId: string): Promise<unknown> => {
   return new Promise((resolve, reject) => {
-    db.get('local').then(keypair => {
+    db.getValid(UserSettings)('local').then(keypair => {
       const xhr = new XMLHttpRequest();
       const payload = JSON.stringify(data);
-      const url = config.API_ROOT + '/' + apiUrl;
+      const url = `${config.API_ROOT}/${path}`;
 
       xhr.open('POST', url, true);
 
@@ -18,13 +19,10 @@ function post (apiUrl, data, cookieId) {
       xhr.setRequestHeader('X-tktrex-Version', config.VERSION);
       xhr.setRequestHeader('X-tktrex-Build', config.BUILD);
 
-      if (!keypair) {
-        reject('Cannot sign payload, no keypair found!');
-        return;
-      }
-
-      const signature = nacl.sign.detached(decodeString(payload),
-        decodeKey(keypair.secretKey));
+      const signature = nacl.sign.detached(
+        decodeString(payload),
+        decodeKey(keypair.secretKey),
+      );
 
       xhr.setRequestHeader('X-tktrex-NonAuthCookieId', cookieId);
       xhr.setRequestHeader('X-tktrex-PublicKey', keypair.publicKey);
@@ -33,7 +31,11 @@ function post (apiUrl, data, cookieId) {
       xhr.send(payload);
       xhr.onload = function () {
         if (this.status >= 200 && this.status < 300) {
-          resolve(this.response);
+          try {
+            resolve(JSON.parse(this.response));
+          } catch (e) {
+            reject(new Error('Invalid JSON received from API'));
+          }
         } else {
           reject(this.statusText);
         }
@@ -42,44 +44,14 @@ function post (apiUrl, data, cookieId) {
       xhr.onerror = function () {
         reject(this.statusText);
       };
-    })
-      .catch(error => reject(error));
+    }).catch(reject);
   });
-}
-
-function get (apiUrl, version, userId) {
-  return new Promise((resolve, reject) => {
-    db.get('local').then(keypair => {
-      const xhr = new XMLHttpRequest();
-      const url = config.API_ROOT + '/' + apiUrl;
-
-      xhr.open('GET', url, true);
-
-      xhr.setRequestHeader('X-tktrex-Version', version);
-      xhr.send();
-      xhr.onload = function () {
-        if (this.status >= 200 && this.status < 300) {
-          console.log(this.response);
-          resolve(this.response);
-        } else {
-          console.log('Load error', this.statusText);
-          reject(this.statusText);
-        }
-      };
-
-      xhr.onerror = function () {
-        console.log('onerror', this.statusText);
-        reject(this.statusText);
-      };
-    })
-      .catch(error => reject(error));
-  });
-}
+};
 
 const api = {
-  postEvents: post.bind(null, 'events'),
-  validate: post.bind(null, 'validate'),
-  handshake: post.bind(null, 'handshake'),
+  postEvents: post('events'),
+  validate: post('validate'),
+  handshake: post('handshake'),
 };
 
 export default api;

@@ -1,76 +1,94 @@
+import * as t from 'io-ts';
+import { PathReporter } from 'io-ts/lib/PathReporter';
+import { isLeft } from 'fp-ts/lib/Either';
+
 import $ from 'jquery';
 
 import { isEmpty, isFunction } from '../utils';
 import log from '../logger';
 
 const bo = chrome;
-const backend = bo.storage.local;
+const storage = bo.storage.local;
 
-export function get(
-  key: string,
-  setIfMissing: unknown = undefined,
-): Promise<unknown> {
-  return new Promise((resolve, reject) => {
-    backend.get(key, val => {
+const getP = (key: string): Promise<unknown> =>
+  new Promise((resolve, reject) => {
+    storage.get(key, (val) => {
       if (bo.runtime.lastError) {
-        reject(bo.runtime.lastError);
-      } else if (isEmpty(val) && !isEmpty(setIfMissing)) {
-        const newVal = isFunction(setIfMissing)
-          ? setIfMissing(key) : setIfMissing;
-        log.debug('get is empty ', newVal);
-        backend.set(newVal, () => resolve(newVal));
-      } else {
-        log.debug('get returns', val, key, val[key]);
-        resolve(isEmpty(val[key]) ? null : val[key]);
+        return reject(bo.runtime.lastError);
       }
+      resolve(val[key]);
     });
   });
-}
 
-export function set(key: string, value: unknown): Promise<unknown> {
-  log.debug('db.set', key, value);
-
-  return new Promise((resolve, reject) => {
-    const newVal = {
-      [key]: isFunction(value) ? value(key) : value,
-    };
-    backend.set(newVal, () => {
+const setP = (key: string, value: unknown): Promise<unknown> =>
+  new Promise((resolve, reject) => {
+    storage.set({
+      [key]: value,
+    }, () => {
       if (bo.runtime.lastError) {
-        reject(bo.runtime.lastError);
-      } else {
-        resolve(newVal[key]);
+        return reject(bo.runtime.lastError);
       }
+      resolve(value);
     });
   });
-}
 
-export function update(key: string, value: unknown): Promise<unknown> {
-  return new Promise((resolve, reject) => {
-    get(key)
-      .then(oldVal => {
-        let newVal;
-        if (isFunction(value)) {
-          newVal = value(oldVal);
-        } else {
-          newVal = $.extend(true, oldVal, value);
-        }
-        set(key, newVal)
-          .then(val => resolve(val))
-          .catch(error => reject(error));
-      })
-      .catch(error => reject(error));
-  });
+const init = (key: string, initializer: unknown): unknown => {
+  if (isFunction(initializer)) {
+    return initializer(key);
+  }
+  return initializer;
 };
 
-export function remove(key: string): Promise<unknown> {
-  return new Promise((resolve, reject) => {
-    backend.remove(key)
-      .then(val => resolve(val))
-      .catch(error => reject(error));
-  });
+export const get = async (key: string, initializer?: unknown): Promise<unknown> => {
+  const value = await getP(key);
+  if (isEmpty(value) && !isEmpty(initializer)) {
+    const newValue = init(key, initializer);
+    await setP(key, newValue);
+    log.info(`"${key}" was empty, initializing with ${newValue}`);
+    return newValue;
+  }
+  log.info(`returning "${key}" from storage`, value);
+  return value;
+};
+
+export const getValid = <C extends t.Any>(codec: C) =>
+  async (key: string, initializer?: unknown): Promise<t.TypeOf<C>> => {
+    const validation = codec.decode(await get(key, initializer));
+
+    if (isLeft(validation)) {
+      const details = PathReporter.report(validation).join('\n');
+      const msg = `Error decoding "${key}" from storage:\n${details}`;
+      log.error(msg);
+      throw new Error(msg);
+    }
+
+    return validation.right;
+  };
+
+export const set = (key: string, value: unknown): Promise<unknown> => {
+  const newValue = init(key, value);
+  log.info(`setting "${key}" = ${newValue} in storage`);
+  return setP(key, newValue);
+};
+
+export const update = async (key: string, updater: unknown): Promise<unknown> => {
+  log.info(`updating "${key}" in storage`);
+  const oldValue = await getP(key);
+
+  if (isFunction(updater)) {
+    const newValue = updater(oldValue);
+    return setP(key, newValue);
+  }
+
+  return setP(key, $.extend(true, oldValue, updater));
+};
+
+export const remove = (key: string): Promise<unknown> => {
+  log.info(`removing "${key}" from storage`);
+  return storage.remove(key);
 };
 
 export default {
-  get, set,
+  get, getValid, set,
   update, remove,
 };

@@ -1,9 +1,9 @@
 import * as t from 'io-ts';
 
-
 export const UserSettings = t.type({
-  publicKey: t.string,
   active: t.boolean,
+  publicKey: t.string,
+  secretKey: t.string,
   ux: t.boolean,
 }, 'UserSettings');
 

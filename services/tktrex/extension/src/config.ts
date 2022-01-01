@@ -2,12 +2,12 @@ export interface Config {
   active: boolean;
   ux: boolean;
   API_ROOT: string;
-  BUILD?: string;
-  BUILDISODATE?: string;
+  BUILD: string;
   DEVELOPMENT: boolean;
   FLUSH_INTERVAL: number;
-  publicKey?: string;
   VERSION: string;
+  BUILDISODATE?: string;
+  publicKey?: string;
   WEB_ROOT?: string;
 }
 
@@ -21,6 +21,10 @@ if (!process.env.VERSION) {
 
 if (!process.env.FLUSH_INTERVAL) {
   throw new Error('FLUSH_INTERVAL is not defined');
+}
+
+if (!process.env.BUILD) {
+  throw new Error('BUILD is not defined');
 }
 
 const config: Config = {
