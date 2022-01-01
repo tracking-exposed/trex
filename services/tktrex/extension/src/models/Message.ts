@@ -24,5 +24,9 @@ export interface ConfigUpdate extends MessageBase {
   payload: Partial<UserSettings>;
 }
 
+export interface ReloadExtension extends MessageBase {
+  type: 'ReloadExtension';
+}
+
 export type Message =
-  LocalLookup | ServerLookup | ConfigUpdate;
+  LocalLookup | ServerLookup | ConfigUpdate | ReloadExtension;

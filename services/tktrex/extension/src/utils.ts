@@ -6,9 +6,9 @@ export function getLogoDataURI(): Document {
   );
 };
 
-export function getTimeISO8601(date: Date): string {
+export function getTimeISO8601(date?: Date): string {
   // Thanks to http://stackoverflow.com/a/17415677/597097
-  const now = date || new Date();
+  const now = date ?? new Date();
   const tzo = -now.getTimezoneOffset();
   const dif = tzo >= 0 ? '+' : '-';
   const pad = (num: number): string => {

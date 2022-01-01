@@ -19,7 +19,7 @@ let feedCounter = 0;
 // Boot the user script. This is the first function called.
 // Everything starts from here.
 function boot(): void {
-  log.debug('booting with config', config);
+  log.info('booting with config', config);
 
   // Register all the event handlers.
   // An event handler is a piece of code responsible for a specific task.
@@ -29,7 +29,7 @@ function boot(): void {
   // Lookup the current user and decide what to do.
   localLookup((response) => {
     // `response` contains the user's public key, we save it global for the blinks
-    log.debug(JSON.stringify(response));
+    log.info(JSON.stringify(response));
     // this output is interpreted and read by guardoni
 
     /* these parameters are loaded from localStorage */
@@ -38,7 +38,7 @@ function boot(): void {
     config.ux = response.ux;
 
     if(!config.active) {
-      log.debug('tktrex disabled!');
+      log.info('tktrex disabled!');
       return null;
     }
 
@@ -58,7 +58,7 @@ function tktrexActions(remoteInfo: unknown): void {
   /* these functions are the main activity made in
      content_script, and tktrexActions is a callback
      after remoteLookup */
-  log.debug('initialize watchers, remoteInfo available:', remoteInfo);
+  log.info('initialize watchers, remoteInfo available:', remoteInfo);
 
   setupObserver();
   flush();
@@ -71,7 +71,7 @@ function fullSave(): void {
   const urlChanged = (window.location.href !== lastMeaningfulURL);
 
   if (urlChanged) {
-    log.debug('Invoked fullSave: new URL observed');
+    log.info('Invoked fullSave: new URL observed');
     // Considering the extension only runs on *.tiktok.com
     // we want to make sure the main code is executed only in
     // website portion actually processed by us. If not, the
@@ -81,7 +81,7 @@ function fullSave(): void {
     lastURLNature = getNatureByHref(window.location.href);
 
     if(!lastURLNature) {
-      log.debug('Unsupported URL kind: rejected fullSave');
+      log.info('Unsupported URL kind: rejected fullSave');
       return;
     }
 
@@ -96,18 +96,21 @@ function fullSave(): void {
   const body = document.querySelector('body');
 
   if (!body) {
-    log.debug('No body found, skipping fullSave');
+    log.error('No body found, skipping fullSave');
     return;
   }
 
-  log.debug('Sending fullSave!');
-  hub.event('newVideo', {
-    type: lastURLNature,
-    element: body.outerHTML,
-    size: body.outerHTML.length,
-    href: window.location.href,
-    reason: 'fullsave',
-    feedId,
+  log.info('Sending fullSave!');
+  hub.dispatch({
+    type: 'FullSave',
+    payload: {
+      type: lastURLNature,
+      element: body.outerHTML,
+      size: body.outerHTML.length,
+      href: window.location.href,
+      reason: 'fullsave',
+      feedId,
+    },
   });
 }
 
@@ -144,7 +147,7 @@ function getNatureByHref(href: string): Nature | null {
         timestamp: urlO.searchParams.get('t') ?? '',
       };
     } else {
-      log.debug('Unmanaged condition from URL:', urlO);
+      log.info('Unmanaged condition from URL:', urlO);
       return null;
     }
   } catch(error) {
@@ -173,7 +176,7 @@ function setupObserver(): void {
   const sugWhat = dom.on(selectors.suggested.selector, handleSuggested);
   const vidWhat = dom.on(selectors.video.selector, handleVideo);
   const creatWhat = dom.on(selectors.creator.selector, handleTest);
-  log.debug('Listener installed ',
+  log.info('Listener installed ',
     JSON.stringify(selectors), sugWhat, vidWhat, creatWhat);
 
   /* and monitor href changes to randomize a new accessId */
@@ -185,7 +188,7 @@ function setupObserver(): void {
       if (oldHref !== window.location.href) {
         feedCounter++;
         refreshUUID();
-        log.debug(oldHref, 'changed to',
+        log.info(oldHref, 'changed to',
           window.location.href, 'new feedId', feedId,
           'feedCounter', feedCounter,
           'videoCounter resetting after poking', videoCounter);
@@ -209,27 +212,30 @@ function setupObserver(): void {
 
 function handleTest(element: Node): void {
   /*
-  log.debug('handleText', element, 'lah lah lah');
-  log.debug(element.parentNode.parentNode.parentNode.outerHTML.length);
-  log.debug(element.parentNode.parentNode.outerHTML.length);
-  log.debug(element.parentNode.outerHTML.length);
-  log.debug(element.outerHTML.length);
+  log.info('handleText', element, 'lah lah lah');
+  log.info(element.parentNode.parentNode.parentNode.outerHTML.length);
+  log.info(element.parentNode.parentNode.outerHTML.length);
+  log.info(element.parentNode.outerHTML.length);
+  log.info(element.outerHTML.length);
   */
 }
 
 function handleSuggested(elem: Node): void {
-  log.debug('handleSuggested', elem, 'should go to parentNode');
+  log.info('handleSuggested', elem, 'should go to parentNode');
   const { parentNode } = elem;
   const parent = parentNode as Element;
 
   if (!parent || !parent.outerHTML) {
-    log.debug('handleSuggested: no parent');
+    log.info('handleSuggested: no parent');
     return;
   }
 
-  hub.event('suggested', {
-    html: parent.outerHTML,
-    href: window.location.href,
+  hub.dispatch({
+    type: 'Suggested',
+    payload: {
+      html: parent.outerHTML,
+      href: window.location.href,
+    },
   });
 }
 
@@ -245,7 +251,7 @@ function handleVideo(node: HTMLElement): void {
     (memo: HTMLElement, iteration: number): HTMLElement => {
       if (memo.parentNode instanceof HTMLElement) {
         if (memo.parentNode.outerHTML.length > 10000) {
-          log.debug('handleVideo: parentNode too big',
+          log.info('handleVideo: parentNode too big',
             memo.parentNode.outerHTML.length);
           return memo;
         }
@@ -256,7 +262,7 @@ function handleVideo(node: HTMLElement): void {
     }, node);
 
   if(videoRoot.hasAttribute('trex')) {
-    log.debug(
+    log.info(
       'Element already acquired: skipping',
       videoRoot.getAttribute('trex'),
     );
@@ -266,7 +272,7 @@ function handleVideo(node: HTMLElement): void {
 
   videoCounter++;
 
-  log.debug(
+  log.info(
     '+video -- marking as ',
     videoCounter,
     'details:',
@@ -275,23 +281,28 @@ function handleVideo(node: HTMLElement): void {
 
   videoRoot.setAttribute('trex', `${videoCounter}`);
 
-  hub.event('newVideo', {
-    html: videoRoot.outerHTML,
-    href: window.location.href,
-    feedId,
-    feedCounter,
-    videoCounter,
-    rect: videoRoot.getBoundingClientRect(),
+  hub.dispatch({
+    type: 'NewVideo',
+    payload: {
+      html: videoRoot.outerHTML,
+      href: window.location.href,
+      feedId,
+      feedCounter,
+      videoCounter,
+      rect: videoRoot.getBoundingClientRect(),
+    },
   });
 
-  if(config.ux) {
+  if (config.ux) {
     videoRoot.style.border = '1px solid green';
   }
 }
 
 function flush(): void {
-  window.addEventListener('beforeunload', (e) => {
-    hub.event('windowUnload', undefined);
+  window.addEventListener('beforeunload', () => {
+    hub.dispatch({
+      type: 'WindowUnload',
+    });
   });
 }
 

@@ -1,36 +1,50 @@
-export type Handler = (type: HandlerType, payload: unknown) => void;
-export type HandlerType =
-  'windowUnload' | 'newVideo' | 'suggested' | '*';
-export type HandlerMap = Partial<Record<HandlerType, Handler[]>>;
+import HubEvent from './models/HubEvent';
 
-class Hub {
-  handlers: HandlerMap;
+export type Handler = (event: HubEvent) => void;
+
+type HandlerType = HubEvent['type'];
+type HandlerMap = { [key in HandlerType]?: Handler[] };
+
+export class Hub {
+  private readonly specificHandlers: HandlerMap;
+  private readonly genericHandlers: Handler[];
 
   constructor () {
-    this.handlers = {};
+    this.specificHandlers = {};
+    this.genericHandlers = [];
   }
 
-  register(type: HandlerType, handler: Handler): void {
-    if (!this.handlers[type]) {
-      this.handlers[type] = [];
+  on<ET extends HubEvent>(
+    type: ET['type'],
+    handler: (event: ET) => void,
+  ): Hub {
+    if (!this.specificHandlers[type]) {
+      this.specificHandlers[type] = [];
     }
 
-    (this.handlers[type] as Handler[]).push(handler);
+    (this.specificHandlers[type] as Handler[]).push(
+      handler as Handler,
+    );
+
+    return this;
   }
 
-  event(type: HandlerType, payload: unknown): void {
-    const funcs = this.handlers[type];
-    const funcsStar = this.handlers['*'];
-    if (funcs) {
-      funcs.forEach((func) => func(type, payload));
+  onAnyEvent(handler: Handler): Hub {
+    this.genericHandlers.push(handler);
+    return this;
+  }
+
+  dispatch(e: HubEvent): Hub {
+    const specificHandlers = this.specificHandlers[e.type];
+
+    if (specificHandlers) {
+      specificHandlers.forEach(func => func(e));
     }
 
-    if (funcsStar) {
-      funcsStar.forEach((func) => func(type, payload));
-    }
+    this.genericHandlers.forEach(func => func(e));
+
+    return this;
   }
 }
 
-const HUB = new Hub();
-
-export default HUB;
+export default new Hub();

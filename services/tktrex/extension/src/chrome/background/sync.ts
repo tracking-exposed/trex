@@ -5,8 +5,14 @@ bo.runtime.onMessage.addListener((request, sender, sendResponse) => {
   if (request.type === 'sync') {
     api
       .postEvents(request.payload, request.userId)
-      .then(response => sendResponse({type: 'syncResponse', response: response}))
-      .catch(error => sendResponse({type: 'syncError', response: error}));
+      .then((response) => sendResponse({
+        type: 'Success',
+        response,
+      }))
+      .catch((error) => sendResponse({
+        type: 'Error',
+        error,
+      }));
     return true;
   }
 });
