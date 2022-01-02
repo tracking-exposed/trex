@@ -53,8 +53,8 @@ function handleSuggested(e: SuggestedEvent): void {
 
 function sync(hub: Hub): void {
   if (state.content.length) {
-    log.info(
-      `synchronizing ${state.content.length} items (${state.incremental} since the beginning)`,
+    log.info.strong(
+      `synchronizing ${state.content.length} new items (total since beginning of session: ${state.incremental})`,
       countBy(state.content, 'type'),
     );
     // Send timelines to the page handling the communication with the API.

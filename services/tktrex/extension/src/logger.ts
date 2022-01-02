@@ -2,6 +2,31 @@
 // so I use the console.log instead for now.
 // I think it is due to the localStorage, which is not
 // available in the content script and upon which debug relies.
+
+const info = (msg: string, ...args: unknown[]): void => {
+  if (process.env.NODE_ENV === 'development') {
+    // eslint-disable-next-line no-console
+    console.log(
+      `%c(tktrex:info) %c${msg}`,
+      'color: #22F',
+      'color: #000',
+      ...args,
+    );
+  }
+};
+
+info.strong = (msg: string, ...args: unknown[]): void => {
+  if (process.env.NODE_ENV === 'development') {
+    // eslint-disable-next-line no-console
+    console.log(
+      `%c(tktrex:info) %c${msg}`,
+      'color: #22F; font-weight: bold',
+      'color: #000; font-weight: bold',
+      ...args,
+    );
+  }
+};
+
 export default {
   debug: (msg: string, ...args: unknown[]) => {
     // eslint-disable-next-line no-console
@@ -18,17 +43,7 @@ export default {
       ...args,
     );
   },
-  info: (msg: string, ...args: unknown[]) => {
-    if (process.env.NODE_ENV === 'development') {
-      // eslint-disable-next-line no-console
-      console.log(
-        `%c(tktrex:info) %c${msg}`,
-        'color: #22F',
-        'color: #000',
-        ...args,
-      );
-    }
-  },
+  info,
   error: (msg: string, ...args: unknown[]) => {
     // eslint-disable-next-line no-console
     console.log(
