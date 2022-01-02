@@ -16564,6 +16564,7 @@ __metadata:
     eslint-plugin-node: ^11.1.0
     eslint-plugin-promise: ^5.2.0
     eslint-plugin-react: ^7.27.1
+    fp-ts: ^2.11.5
     jest: ^27.4.5
     ts-jest: ^27.1.2
     typescript: ^4.5.4

@@ -1,12 +1,14 @@
+import { Either, left, right } from 'fp-ts/lib/Either';
+
 import { URLError } from '../models/Error';
 import { Nature } from '../models/Nature';
 
-export const getNatureByHref = (href: string): Nature | URLError => {
+export const getNatureByHref = (href: string): Either<URLError, Nature> => {
   const url = new URL(href);
   const chunks = url.pathname.split('/');
 
   if (url.hostname !== 'www.tiktok.com') {
-    return new URLError('URL is not from tiktok', url);
+    return left(new URLError('URL is not from tiktok', url));
   }
 
   if (
@@ -14,27 +16,27 @@ export const getNatureByHref = (href: string): Nature | URLError => {
     url.pathname === '/' ||
     /\/[a-z]{2}$/.test(url.pathname)
   ) {
-    return { type: 'foryou' };
+    return right({ type: 'foryou' });
   } else if (url.pathname === '/following') {
-    return { type: 'following' };
+    return right({ type: 'following' });
   } else if (chunks[2] === 'video' && chunks.length >= 3) {
-    return {
+    return right({
       type: 'video',
       authorId: chunks[1],
       videoId: chunks[3],
-    };
+    });
   } else if (url.pathname.startsWith('/@')) {
-    return {
+    return right({
       type: 'creator',
       creatorName: url.pathname.substring(1),
-    };
+    });
   } else if (url.pathname === '/search') {
-    return {
+    return right({
       type: 'search',
       query: url.searchParams.get('q') ?? '',
       timestamp: url.searchParams.get('t') ?? '',
-    };
+    });
   }
 
-  throw new URLError('unexpected condition from URL', url);
+  return left(new URLError('unexpected condition from URL', url));
 };

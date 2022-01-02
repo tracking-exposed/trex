@@ -20,7 +20,7 @@ export interface NewVideoEvent extends HubEventBase {
 export interface FullSaveEvent extends HubEventBase {
   type: 'FullSave';
   payload: {
-    type: Nature | null;
+    type: Nature;
     element: string;
     feedId: string;
     href: string;

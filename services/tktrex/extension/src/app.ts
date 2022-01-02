@@ -1,3 +1,6 @@
+import { map } from 'fp-ts/lib/Either';
+import { pipe } from 'fp-ts/lib/function';
+
 import _ from 'lodash';
 
 import config from './config';
@@ -11,11 +14,11 @@ import {
   serverLookup,
 } from './chrome/background/sendMessage';
 
-import { Nature } from '@tktrex/models/Nature';
 import { getNatureByHref } from '@tktrex/lib/nature';
 
 let feedId = ('—' + Math.random() + '-' + _.random(0, 0xff) + '—');
 let feedCounter = 0;
+let lastMeaningfulURL: string;
 
 // Boot the user script. This is the first function called.
 // Everything starts from here.
@@ -65,57 +68,48 @@ function tktrexActions(remoteInfo: unknown): void {
   flush();
 }
 
-let lastMeaningfulURL: string;
-let lastURLNature: Nature;
-
+/**
+ * Sends the full HTML of the current page to the server.
+ * Happens either manually when clicking on the emergency button,
+ * and should happen automatically or through a setInterval
+ * when the URL of the page changes.
+ */
 function fullSave(): void {
   const { href } = window.location;
-  const urlChanged = (href !== lastMeaningfulURL);
+  pipe(
+    getNatureByHref(href),
+    map((nature) => {
+      const urlChanged = (href !== lastMeaningfulURL);
 
-  if (urlChanged) {
-    log.info('fullSave invoked because new URL observed');
-    // Considering the extension only runs on *.tiktok.com
-    // we want to make sure the main code is executed only in
-    // website portion actually processed by us. If not, the
-    // blink maker would blink in BLUE.
-    // This code is executed by a window.setInterval because
-    // the location might change
-    const maybeNature = getNatureByHref(window.location.href);
+      if (urlChanged) {
+        lastMeaningfulURL = window.location.href;
+        // UUID is used server-side
+        // to eliminate potential duplicates
+        refreshUUID();
+      }
 
-    if (maybeNature instanceof Error) {
-      log.error('error trying to figure out the nature from the URL', href);
-      return;
-    }
+      const body = document.querySelector('body');
 
-    // client might duplicate the sending of the same
-    // content, that's 'versionsSent' counter
-    // using a random identifier (randomUUID), we spot the
-    // clones and drop them server side.
-    lastMeaningfulURL = window.location.href;
-    lastURLNature = maybeNature;
-    refreshUUID();
-  }
+      if (!body) {
+        log.error('no body found, skipping fullSave');
+        return;
+      }
 
-  const body = document.querySelector('body');
-
-  if (!body) {
-    log.error('no body found, skipping fullSave');
-    return;
-  }
-
-  log.info.strong('sending fullSave!');
-  hub.dispatch({
-    type: 'FullSave',
-    payload: {
-      type: lastURLNature,
-      element: body.outerHTML,
-      size: body.outerHTML.length,
-      href: window.location.href,
-      reason: 'fullsave',
-      feedId,
-    },
-  });
-}
+      log.info.strong('sending fullSave!', nature);
+      hub.dispatch({
+        type: 'FullSave',
+        payload: {
+          type: nature,
+          element: body.outerHTML,
+          size: body.outerHTML.length,
+          href: window.location.href,
+          reason: 'fullsave',
+          feedId,
+        },
+      });
+    }),
+  );
+};
 
 function refreshUUID(): void {
   feedId = (feedCounter + '—' + Math.random() + '-' + _.random(0, 0xff) );
