@@ -30,7 +30,7 @@ const Popup: React.FC = () => {
     localLookup((userSettings) => {
       if (!userSettings || !userSettings.publicKey) {
         setStatus('error');
-        log.error(bo.runtime.lastError);
+        log.error('could not get user settings', bo.runtime.lastError);
         return;
       }
       setUserSettings(userSettings);

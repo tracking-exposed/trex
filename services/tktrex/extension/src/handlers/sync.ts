@@ -1,3 +1,5 @@
+import { countBy } from 'lodash';
+
 import config from '../config';
 import { getTimeISO8601 } from '../utils';
 import { Hub } from '../hub';
@@ -51,7 +53,10 @@ function handleSuggested(e: SuggestedEvent): void {
 
 function sync(hub: Hub): void {
   if (state.content.length) {
-    log.info(`sync tot (${state.content.length}/${state.incremental}) ${JSON.stringify(_.countBy(state.content, 'type'))}`);
+    log.info(
+      `synchronizing ${state.content.length} items (${state.incremental} since the beginning)`,
+      countBy(state.content, 'type'),
+    );
     // Send timelines to the page handling the communication with the API.
     // This might be refactored using something compatible to the HUB architecture.
     bo.runtime.sendMessage({
