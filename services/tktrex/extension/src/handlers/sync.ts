@@ -77,5 +77,5 @@ export function register(hub: Hub): void {
     .on('Suggested', handleSuggested)
     .on('WindowUnload', () => sync(hub));
 
-  window.setInterval(sync.bind(null, hub), INTERVAL);
+  window.setInterval(() => sync(hub), INTERVAL);
 }
