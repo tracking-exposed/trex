@@ -13,7 +13,6 @@ import {
 
 import { Nature } from '@tktrex/models/Nature';
 import { getNatureByHref } from '@tktrex/lib/nature';
-import { URLError } from '@tktrex/models/Error';
 
 let feedId = ('—' + Math.random() + '-' + _.random(0, 0xff) + '—');
 let feedCounter = 0;
@@ -67,10 +66,11 @@ function tktrexActions(remoteInfo: unknown): void {
 }
 
 let lastMeaningfulURL: string;
-let lastURLNature: Nature | null = null;
+let lastURLNature: Nature;
 
 function fullSave(): void {
-  const urlChanged = (window.location.href !== lastMeaningfulURL);
+  const { href } = window.location;
+  const urlChanged = (href !== lastMeaningfulURL);
 
   if (urlChanged) {
     log.info('fullSave invoked because new URL observed');
@@ -80,22 +80,20 @@ function fullSave(): void {
     // blink maker would blink in BLUE.
     // This code is executed by a window.setInterval because
     // the location might change
-    try {
-      lastURLNature = getNatureByHref(window.location.href);
+    const maybeNature = getNatureByHref(window.location.href);
 
-      // client might duplicate the sending of the same
-      // content, that's 'versionsSent' counter
-      // using a random identifier (randomUUID), we spot the
-      // clones and drop them server side.
-      lastMeaningfulURL = window.location.href;
-      refreshUUID();
-    } catch (e) {
-      if (e instanceof URLError) {
-        log.error(e.message, e.url);
-      } else {
-        log.error('unexpected error during fullSave', e);
-      }
+    if (maybeNature instanceof Error) {
+      log.error('error trying to figure out the nature from the URL', href);
+      return;
     }
+
+    // client might duplicate the sending of the same
+    // content, that's 'versionsSent' counter
+    // using a random identifier (randomUUID), we spot the
+    // clones and drop them server side.
+    lastMeaningfulURL = window.location.href;
+    lastURLNature = maybeNature;
+    refreshUUID();
   }
 
   const body = document.querySelector('body');

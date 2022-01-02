@@ -4,7 +4,9 @@ import { URLError } from '../src/models/Error';
 describe('The tiktok "Nature" utilities', () => {
   describe('the getNatureByHref function', () => {
     it('throws an "URLError" if the page is not from "tiktok.com"', () => {
-      expect(() => getNatureByHref('https://example.com')).toThrow(
+      const actual = getNatureByHref('https://example.com');
+      expect(actual).toBeInstanceOf(URLError);
+      expect(actual).toEqual(
         new URLError('URL is not from tiktok', new URL('https://example.com')),
       );
     });

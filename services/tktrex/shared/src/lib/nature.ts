@@ -1,12 +1,12 @@
 import { URLError } from '../models/Error';
 import { Nature } from '../models/Nature';
 
-export const getNatureByHref = (href: string): Nature => {
+export const getNatureByHref = (href: string): Nature | URLError => {
   const url = new URL(href);
   const chunks = url.pathname.split('/');
 
   if (url.hostname !== 'www.tiktok.com') {
-    throw new URLError('URL is not from tiktok', url);
+    return new URLError('URL is not from tiktok', url);
   }
 
   if (
