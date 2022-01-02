@@ -9,7 +9,7 @@ export class Hub {
   private readonly specificHandlers: HandlerMap;
   private readonly genericHandlers: Handler[];
 
-  constructor () {
+  constructor() {
     this.specificHandlers = {};
     this.genericHandlers = [];
   }

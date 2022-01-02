@@ -29,7 +29,7 @@ const post = (path: string) => (data: unknown, cookieId: string): Promise<unknow
       xhr.setRequestHeader('X-tktrex-Signature', bs58.encode(signature));
 
       xhr.send(payload);
-      xhr.onload = function () {
+      xhr.onload = function() {
         if (this.status >= 200 && this.status < 300) {
           try {
             resolve(JSON.parse(this.response));
@@ -41,7 +41,7 @@ const post = (path: string) => (data: unknown, cookieId: string): Promise<unknow
         }
       };
 
-      xhr.onerror = function () {
+      xhr.onerror = function() {
         reject(this.statusText);
       };
     }).catch(reject);

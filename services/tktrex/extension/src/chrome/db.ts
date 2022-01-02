@@ -39,7 +39,7 @@ const init = <T>(key: string, initializer: T | ((str: string) => T)): T => {
   return initializer;
 };
 
-export const get = async (key: string, initializer?: unknown): Promise<unknown> => {
+export const get = async(key: string, initializer?: unknown): Promise<unknown> => {
   const value = await getP(key);
   if (isEmpty(value) && !isEmpty(initializer)) {
     const newValue = init(key, initializer);
@@ -52,7 +52,7 @@ export const get = async (key: string, initializer?: unknown): Promise<unknown> 
 };
 
 export const getValid = <C extends t.Any>(codec: C) =>
-  async (key: string, initializer?: unknown): Promise<t.TypeOf<C>> => {
+  async(key: string, initializer?: unknown): Promise<t.TypeOf<C>> => {
     const validation = codec.decode(await get(key, initializer));
 
     if (isLeft(validation)) {

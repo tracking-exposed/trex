@@ -37,7 +37,7 @@ function boot(): void {
     config.active = settings.active;
     config.ux = settings.ux;
 
-    if(!config.active) {
+    if (!config.active) {
       log.info('tktrex disabled!');
       return null;
     }
@@ -80,7 +80,7 @@ function fullSave(): void {
     // the location might change
     lastURLNature = getNatureByHref(window.location.href);
 
-    if(!lastURLNature) {
+    if (!lastURLNature) {
       log.info('unsupported URL kind, rejecting fullSave');
       return;
     }
@@ -125,22 +125,22 @@ function getNatureByHref(href: string): Nature | null {
     const chunks = urlO.pathname.split('/');
 
     // console.log(urlO.pathname, chunks, chunks.length);
-    if(urlO.pathname === '/foryou' || urlO.pathname === '/') {
+    if (urlO.pathname === '/foryou' || urlO.pathname === '/') {
       return { type: 'foryou' };
-    } else if(urlO.pathname === '/following') {
+    } else if (urlO.pathname === '/following') {
       return { type: 'following' };
-    } else if(chunks[2] === 'video' && chunks.length >= 3) {
+    } else if (chunks[2] === 'video' && chunks.length >= 3) {
       return {
         type: 'video',
         authorId: chunks[1],
         videoId: chunks[3],
       };
-    } else if(urlO.pathname.startsWith('/@')) {
+    } else if (urlO.pathname.startsWith('/@')) {
       return {
         type: 'creator',
         creatorName: urlO.pathname.substring(1),
       };
-    } else if(urlO.pathname === '/search') {
+    } else if (urlO.pathname === '/search') {
       return {
         type: 'search',
         query: urlO.searchParams.get('q') ?? '',
@@ -150,7 +150,7 @@ function getNatureByHref(href: string): Nature | null {
       log.error('unexpected condition from URL', urlO);
       return null;
     }
-  } catch(error) {
+  } catch (error) {
     log.error('getNatureByHref', error);
     return null;
   }
@@ -260,7 +260,7 @@ function handleVideo(node: HTMLElement): void {
       return memo;
     }, node);
 
-  if(videoRoot.hasAttribute('trex')) {
+  if (videoRoot.hasAttribute('trex')) {
     log.info(
       'element already acquired: skipping',
       videoRoot.getAttribute('trex'),

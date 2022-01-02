@@ -16,7 +16,7 @@ const lessStandardHref = {
 
 const InfoBox = createReactClass({
 
-  render () {
+  render() {
     const about = config.WEB_ROOT + '/about';
     const privacy = config.WEB_ROOT + '/privacy';
     const services = config.WEB_ROOT + '/services';
