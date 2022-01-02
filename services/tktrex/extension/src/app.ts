@@ -11,7 +11,9 @@ import {
   serverLookup,
 } from './chrome/background/sendMessage';
 
-import { Nature } from './models/Nature';
+import { Nature } from '@tktrex/models/Nature';
+import { getNatureByHref } from '@tktrex/lib/nature';
+import { URLError } from '@tktrex/models/Error';
 
 let feedId = ('—' + Math.random() + '-' + _.random(0, 0xff) + '—');
 let feedCounter = 0;
@@ -78,19 +80,22 @@ function fullSave(): void {
     // blink maker would blink in BLUE.
     // This code is executed by a window.setInterval because
     // the location might change
-    lastURLNature = getNatureByHref(window.location.href);
+    try {
+      lastURLNature = getNatureByHref(window.location.href);
 
-    if (!lastURLNature) {
-      log.info('unsupported URL kind, rejecting fullSave');
-      return;
+      // client might duplicate the sending of the same
+      // content, that's 'versionsSent' counter
+      // using a random identifier (randomUUID), we spot the
+      // clones and drop them server side.
+      lastMeaningfulURL = window.location.href;
+      refreshUUID();
+    } catch (e) {
+      if (e instanceof URLError) {
+        log.error(e.message, e.url);
+      } else {
+        log.error('unexpected error during fullSave', e);
+      }
     }
-
-    // client might duplicate the sending of the same
-    // content, that's 'versionsSent' counter
-    // using a random identifier (randomUUID), we spot the
-    // clones and drop them server side.
-    lastMeaningfulURL = window.location.href;
-    refreshUUID();
   }
 
   const body = document.querySelector('body');
@@ -100,7 +105,7 @@ function fullSave(): void {
     return;
   }
 
-  log.info('sending fullSave!');
+  log.info.strong('sending fullSave!');
   hub.dispatch({
     type: 'FullSave',
     payload: {
@@ -116,44 +121,6 @@ function fullSave(): void {
 
 function refreshUUID(): void {
   feedId = (feedCounter + '—' + Math.random() + '-' + _.random(0, 0xff) );
-}
-
-function getNatureByHref(href: string): Nature | null {
-  /* this piece of code is duplicated in backend/parsers/nature.js */
-  try {
-    const urlO = new URL(href);
-    const chunks = urlO.pathname.split('/');
-
-    // console.log(urlO.pathname, chunks, chunks.length);
-    if (urlO.pathname === '/foryou' || urlO.pathname === '/') {
-      return { type: 'foryou' };
-    } else if (urlO.pathname === '/following') {
-      return { type: 'following' };
-    } else if (chunks[2] === 'video' && chunks.length >= 3) {
-      return {
-        type: 'video',
-        authorId: chunks[1],
-        videoId: chunks[3],
-      };
-    } else if (urlO.pathname.startsWith('/@')) {
-      return {
-        type: 'creator',
-        creatorName: urlO.pathname.substring(1),
-      };
-    } else if (urlO.pathname === '/search') {
-      return {
-        type: 'search',
-        query: urlO.searchParams.get('q') ?? '',
-        timestamp: urlO.searchParams.get('t') ?? '',
-      };
-    } else {
-      log.error('unexpected condition from URL', urlO);
-      return null;
-    }
-  } catch (error) {
-    log.error('getNatureByHref', error);
-    return null;
-  }
 }
 
 const selectors = {

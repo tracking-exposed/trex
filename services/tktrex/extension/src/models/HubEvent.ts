@@ -1,4 +1,4 @@
-import Nature from './Nature';
+import Nature from '../../../shared/src/models/Nature';
 
 export interface HubEventBase {
   type: HubEvent['type'];

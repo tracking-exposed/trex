@@ -3,23 +3,24 @@
   "compilerOptions": {
     "allowJs": true,
     "baseUrl": "./src",
+    "composite": true,
     "esModuleInterop": true,
     "jsx": "react",
     "module": "esnext",
     "moduleResolution": "node",
-    "noEmit": true,
     "noImplicitAny": true,
+    "outDir": "./build",
     "resolveJsonModule": true,
     "strict": true,
     "target": "es5",
     "paths": {
-      "@shared/*": ["../../../../shared/src/*"],
-      "@tktrex/*": ["../../shared/src/*"]
+      "@shared/*": ["../../../../shared/src/*"]
     }
   },
   "references": [
-    { "path": "../../../shared" },
-    { "path": "../shared" }
+    {
+      "path": "../../../shared"
+    }
   ],
   "ts-node": {
     "compilerOptions": {
