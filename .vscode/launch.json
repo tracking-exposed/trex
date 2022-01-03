@@ -19,20 +19,16 @@
       }
     },
     {
+      "name": "Debug Guardoni Electron",
       "type": "node",
       "request": "launch",
-      "name": "Debug Guardoni Electron Main",
-      "runtimeExecutable": "${workspaceFolder}/methodology/bin/electron-forge-vscode-nix",
-      "windows": {
-        "runtimeExecutable": "${workspaceFolder}/methodology/node_modules/.bin/electron-forge-vscode-win.cmd"
-      },
-      // runtimeArgs will be passed directly to your Electron application
-      "runtimeArgs": [
-        // "--app-path ${workspaceFolder}/methodology",
-        "--enable-logging",
-        "--inspect-electron"
-      ],
       "cwd": "${workspaceFolder}/methodology",
+      "runtimeExecutable": "${workspaceFolder}/methodology/node_modules/.bin/electron",
+      "windows": {
+        "runtimeExecutable": "${workspaceFolder}/methodology/node_modules/.bin/electron.cmd"
+      },
+      "args": ["."],
+      "outputCapture": "std"
     }
   ]
 }

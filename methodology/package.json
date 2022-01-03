@@ -60,10 +60,6 @@
     "react-dom": "^17.0.2"
   },
   "devDependencies": {
-    "@electron-forge/cli": "^6.0.0-beta.61",
-    "@electron-forge/maker-deb": "^6.0.0-beta.61",
-    "@electron-forge/maker-rpm": "^6.0.0-beta.61",
-    "@electron-forge/maker-zip": "^6.0.0-beta.61",
     "@pmmmwh/react-refresh-webpack-plugin": "^0.5.4",
     "@types/eslint": "^8.2.1",
     "@types/prettier": "^2",
@@ -115,8 +111,5 @@
       "node14-macos-x64"
     ],
     "outputPath": "dist"
-  },
-  "config": {
-    "forge": "./forge.config.js"
   }
 }
