@@ -39,7 +39,9 @@ jobs:
 
       - name: Build extension
         working-directory: ./extension
-        run: yarn build
+        run: |
+          yarn install
+          yarn build
 
       - name: Build
         run: yarn build
