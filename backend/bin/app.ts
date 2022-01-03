@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-misused-promises */
 import bodyParser from "body-parser";
 import cors from "cors";
 import debug from "debug";
@@ -5,21 +6,20 @@ import express from "express";
 import * as _ from "lodash";
 import { apiList } from "../lib/api";
 
-const logger = debug('yttrex:api');
+const logger = debug("yttrex:api");
 const logAPICount = { requests: {}, responses: {}, errors: {} };
 
 function loginc(kind: string, fname: string): void {
-  logAPICount[kind][fname] = (
-    logAPICount[kind][fname] ?
-    logAPICount[kind][fname]++ : 1
-  );
+  logAPICount[kind][fname] = logAPICount[kind][fname]
+    ? logAPICount[kind][fname]++
+    : 1;
 }
 
 const iowrapper =
   (fname: string) =>
   async (req: express.Request, res: express.Response): Promise<void> => {
     try {
-      loginc('requests', fname);
+      loginc("requests", fname);
       const funct = apiList[fname];
       const httpresult = await funct(req, res);
 
@@ -31,37 +31,37 @@ const iowrapper =
 
       if (!httpresult) {
         logger("API (%s) didn't return anything!?", fname);
-        loginc('errors', fname);
+        loginc("errors", fname);
         res.send("Fatal error: Invalid output");
         res.status(501);
       } else if (httpresult.json?.error) {
         logger("API (%s) failure, returning 500", fname);
-        loginc('errors', fname);
+        loginc("errors", fname);
         res.status(500);
         res.json(httpresult.json);
       } else if (httpresult.json) {
         // logger("API (%s) success, returning %d bytes JSON", fname, _.size(JSON.stringify(httpresult.json)));
-        loginc('responses', fname);
+        loginc("responses", fname);
         res.setHeader("Access-Control-Allow-Origin", "*");
         res.json(httpresult.json);
       } else if (httpresult.text) {
         // logger("API (%s) success, returning text (size %d)", fname, _.size(httpresult.text));
-        loginc('responses', fname);
+        loginc("responses", fname);
         res.send(httpresult.text);
       } else if (httpresult.status) {
         // logger("Returning empty status %d from API (%s)", httpresult.status, fname);
-        loginc('responses', fname);
+        loginc("responses", fname);
         res.status(httpresult.status);
       } else {
         logger("Undetermined failure in API (%s) →  %j", fname, httpresult);
-        loginc('errors', fname);
+        loginc("errors", fname);
         res.status(502);
         res.send("Error?");
       }
     } catch (error) {
       res.status(502);
       res.send("Software error: " + error.message);
-      loginc('errors', fname);
+      loginc("errors", fname);
       logger("Error in HTTP handler API(%s): %o", fname, error);
     }
     res.end();
@@ -76,15 +76,13 @@ interface MakeAppContext {
 /* one log entry per minute about the amount of API absolved */
 setInterval(() => {
   let print = false;
-  _.each(_.keys(logAPICount), function(k) {
-    if(!_.keys(logAPICount[k]).length)
+  _.each(_.keys(logAPICount), function (k) {
+    if (!_.keys(logAPICount[k]).length)
       // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
       delete logAPICount[k];
-    else
-      print = true;
+    else print = true;
   });
-  if(print)
-    logger("%j", logAPICount);
+  if (print) logger("%j", logAPICount);
   logAPICount.responses = {};
   logAPICount.errors = {};
   logAPICount.requests = {};
@@ -182,7 +180,10 @@ export const makeApp = (ctx: MakeAppContext): express.Application => {
   app.get("/api/v3/creator/videos", iowrapper("getVideoByCreator"));
   app.get("/api/v3/creator/videos/:videoId", iowrapper("getOneVideoByCreator"));
   app.get("/api/v3/creator/recommendations", iowrapper("youChooseByProfile"));
-  app.patch("/api/v3/creator/recommendations/:urlId", iowrapper("patchRecommendation"));
+  app.patch(
+    "/api/v3/creator/recommendations/:urlId",
+    iowrapper("patchRecommendation")
+  );
   app.get(
     "/api/v3/creator/:channelId/related/:amount?",
     iowrapper("getCreatorRelated")
@@ -242,7 +243,7 @@ export const makeApp = (ctx: MakeAppContext): express.Application => {
     res.send("URL not found");
   });
 
-  app.set('port', ctx.config.port);
+  app.set("port", ctx.config.port);
 
   return app;
 };

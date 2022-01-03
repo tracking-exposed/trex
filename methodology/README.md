@@ -152,3 +152,43 @@ Where `minutesago` indicates the server to also parse the upstanding HTMLS which
 Then you can query the local API by running things like:
 `http://localhost:9000/api/v1/last/`
 
+
+## Guardoni Electron
+
+Guardoni electron is a portable version of guardoni with a simple UI to provide configuration for guardoni program.
+
+It uses `electron-builder` to produce the distributable packages for community and relies of some electron plugins:
+
+- electron-log
+- electron-reloader
+
+### Prerequisites
+
+- node >= 14
+- yarn >= 3
+
+### Development
+
+For app developmen, the code needs to be compiled with `webpack` to produce a valid js, that can be start with `electron`.
+Two handy commands are already in place:
+
+```sh
+# runs webpack
+yarn watch
+```
+
+and in another terminal pane:
+
+```sh
+# runs electron in reload mode
+yarn reload
+```
+
+**Debug**
+
+A debug task is defined for VSCode inside `.vscode/launch.json` named "Debug Guardoni Electron Main".
+
+### Making a release
+
+- `yarn build` to compile source code with webpack
+- `yarn dist` to package the build source for different targets (linux, macos, win)
