@@ -1,4 +1,5 @@
 import * as t from "io-ts";
+import { GuardoniExperiment, Metadata } from "src/models/Metadata";
 import { Endpoint } from "ts-endpoint";
 import {
   ADVContributionEvent,
@@ -72,6 +73,29 @@ const GetChannelADVStats = Endpoint({
   Output: t.array(ChannelADVStats),
 });
 
+const GetExperimentList = Endpoint({
+  Method: "GET",
+  getPath: ({ type, key }) => `/v2/guardoni/list/${type}/${key}`,
+  Input: {
+    Params: t.type({
+      type: t.union([t.literal("comparison"), t.literal("chiaroscuro")]),
+      key: t.string
+     }),
+  },
+  Output: t.array(GuardoniExperiment),
+})
+
+const GetExperimentById = Endpoint({
+  Method: "GET",
+  getPath: ({ experimentId }) => `/v2/experiment/${experimentId}/json`,
+  Input: {
+    Params: t.type({
+      experimentId: t.string
+     }),
+  },
+  Output: t.array(Metadata),
+})
+
 export default {
   Public: {
     CompareVideo,
@@ -80,5 +104,7 @@ export default {
     Searches,
     AddEvents,
     GetChannelADVStats,
+    GetExperimentList,
+    GetExperimentById,
   },
 };

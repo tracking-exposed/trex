@@ -31,7 +31,7 @@ interface TabouleQueryConfiguration<P extends Record<string, any>>
 
 interface TabouleConfiguration {
   ccRelatedUsers: TabouleQueryConfiguration<ChannelRelated>;
-  compareExperiment: TabouleQueryConfiguration<ChannelRelated>;
+  compareExperiment: TabouleQueryConfiguration<any>;
 }
 
 const defaultConfiguration: TabouleConfiguration = {

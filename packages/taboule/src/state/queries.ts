@@ -6,6 +6,7 @@ import { CachedQuery } from "avenger/lib/Query";
 import { SearchQuery } from "@shared/models/http/SearchQuery";
 import { pipe } from "fp-ts/lib/function";
 import * as TE from "fp-ts/lib/TaskEither";
+import { Metadata } from "@shared/models/Metadata";
 
 export interface SearchRequestInput {
   Params: any;
@@ -21,6 +22,7 @@ type EndpointQuery<C> = CachedQuery<SearchRequestInput, APIError, Results<C>>;
 
 export interface TabouleQueries {
   ccRelatedUsers: EndpointQuery<ChannelRelated>;
+  compareExperiment: EndpointQuery<Metadata>;
 }
 
 interface GetDataTableQueriesProps {
@@ -56,5 +58,17 @@ export const GetDataTableQueries = ({
     available
   );
 
-  return { ccRelatedUsers };
+  const compareExperiment = queryStrict<
+    SearchRequestInput,
+    APIError,
+    Results<any>
+  >(
+    (input) =>
+      API.v2.Public.GetExperimentById({
+        ...input,
+      }),
+    available
+  );
+
+  return { ccRelatedUsers, compareExperiment };
 };
