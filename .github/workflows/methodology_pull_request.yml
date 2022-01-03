@@ -6,7 +6,7 @@ on:
       - daily
       - beta
     paths:
-      # - "shared/**"
+      - "shared/**"
       - "methodology/**"
 
 defaults:
