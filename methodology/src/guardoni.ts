@@ -1,19 +1,18 @@
 /* eslint-disable */
 
-const _ = require('lodash');
+import _ from 'lodash';
 const debug = require('debug')('guardoni:notes');
 const info = require('debug')('guardoni:info');
-const puppeteer = require('puppeteer-core');
+import puppeteer from 'puppeteer-core';
 // const pluginStealth = require("puppeteer-extra-plugin-stealth");
-const fs = require('fs');
-const path = require('path');
-const nconf = require('nconf');
-const moment = require('moment');
-const axios = require('axios');
-const execSync = require('child_process').execSync;
-const parse = require('csv-parse/lib/sync');
-
-const domainSpecific = require('./domainSpecific');
+import fs from 'fs';
+import path from 'path';
+import nconf from 'nconf';
+import moment from 'moment';
+import axios from 'axios';
+import { execSync } from 'child_process';
+import parse from 'csv-parse/lib/sync';
+import domainSpecific from './domainSpecific';
 
 const COMMANDJSONEXAMPLE =
   'https://youtube.tracking.exposed/json/automation-example.json';
@@ -38,17 +37,33 @@ const server = nconf.get('backend')
     : nconf.get('backend')
   : 'https://youtube.tracking.exposed';
 
+interface Directive {
+  urltag: string;
+  name: string;
+  loadFor: number;
+  url: string;
+}
+
+interface Profile {
+  udd: string;
+  profileName: string;
+  newProfile: string;
+  execount: number;
+}
+
 async function keypress() {
   process.stdin.setRawMode(true);
   return new Promise((resolve) =>
     process.stdin.once('data', () => {
       process.stdin.setRawMode(false);
-      resolve();
+      resolve(undefined);
     })
   );
 }
 
-async function allowResearcherSomeTimeToSetupTheBrowser(profileName) {
+async function allowResearcherSomeTimeToSetupTheBrowser(
+  profileName: string
+): Promise<void> {
   console.log(
     '\n\n.:*~*:._.:*~*:._.:*~*:._.:*~*:._.:*~*:._.:*~*:._.:*~*:._.:*~*:._.:*~*:.'
   );
@@ -69,7 +84,7 @@ async function allowResearcherSomeTimeToSetupTheBrowser(profileName) {
   console.log('\n[Received] Reproduction starts now!');
 }
 
-function downloadExtension(zipFileP) {
+function downloadExtension(zipFileP: string): void {
   debug(
     "Executing curl and unzip (if these binary aren't present in your system please mail support at tracking dot exposed because you might have worst problems)"
   );
@@ -89,7 +104,7 @@ export function getChromePath() {
     '/Applications/Chromium.app/Contents/MacOS/Chromium',
   ];
 
-  const chromePath = _.find(knownPaths, function (p) {
+  const chromePath = _.find(knownPaths, function (p: string) {
     return fs.existsSync(p);
   });
   if (!chromePath) {
@@ -102,7 +117,7 @@ export function getChromePath() {
   return chromePath;
 }
 
-export function buildAPIurl(route, params) {
+export function buildAPIurl(route: string, params: string) {
   if (
     route === 'directives' &&
     ['chiaroscuro', 'comparison'].indexOf(params) !== -1
@@ -117,7 +132,7 @@ export function buildAPIurl(route, params) {
 3. guardoni uses the same experiment API to mark contribution with 'evidencetag'
 4. it would then access to the directive API, and by using the experimentId, will then perform the searches as instructed.
 */
-async function registerCSV(directiveType) {
+async function registerCSV(directiveType: string | null) {
   const csvfile = nconf.get('csv');
 
   let records;
@@ -134,7 +149,10 @@ async function registerCSV(directiveType) {
       records.length
     );
   } catch (error) {
-    console.log('Error: invalid CSV file from options --csv ', error.message);
+    console.log(
+      'Error: invalid CSV file from options --csv ',
+      (error as any).message
+    );
     process.exit(1);
   }
 
@@ -142,7 +160,7 @@ async function registerCSV(directiveType) {
     _.uniq(_.flatten(_.map(records, _.keys))),
     'length'
   );
-  let euk = []; // effective unique keys
+  let euk: string[] = []; // effective unique keys
   if (directiveType === 'chiaroscuro')
     euk = _.sortBy(['videoURL', 'title'], 'length');
   else if (directiveType === 'comparison')
@@ -150,7 +168,7 @@ async function registerCSV(directiveType) {
   else throw new Error('Unmanaged directiveType');
 
   if (
-    _.filter(uniqueKeys, function (keyavail) {
+    _.filter(uniqueKeys, function (keyavail: string) {
       return euk.indexOf(keyavail) === -1;
     }).length
   ) {
@@ -175,7 +193,7 @@ async function registerCSV(directiveType) {
         'Content-Type': 'application/json; charset=utf-8',
       },
     });
-    const experimentInfo = await commit.json();
+    const experimentInfo = commit.data;
     if (experimentInfo.error)
       return console.log(
         'Error received from the server: ',
@@ -185,12 +203,12 @@ async function registerCSV(directiveType) {
     return experimentInfo;
     // contains .experimentId and .status (created|exist)
   } catch (error) {
-    console.log('Failure in talking with API:', error.message);
+    console.log('Failure in talking with API:', (error as any).message);
     return null;
   }
 }
 
-export async function pullDirectives(sourceUrl) {
+export async function pullDirectives(sourceUrl: string): Promise<Directive[]> {
   let directives = null;
   try {
     if (_.startsWith(sourceUrl, 'http')) {
@@ -211,7 +229,7 @@ export async function pullDirectives(sourceUrl) {
     }
     return directives;
   } catch (error) {
-    console.log('Error in retriving directive URL: ' + error.message);
+    console.log('Error in retriving directive URL: ' + (error as any).message);
     // console.log(error.response.body);
     process.exit(1);
   }
@@ -306,7 +324,10 @@ export async function pullDirectives(sourceUrl) {
 //   };
 // }
 
-export function profileExecount(profile, evidencetag) {
+export function profileExecount(
+  profile: string,
+  evidencetag: string
+): Promise<Profile> {
   let data;
   let newProfile = false;
   const udd = path.resolve(path.join('profiles', profile));
@@ -316,7 +337,7 @@ export function profileExecount(profile, evidencetag) {
     try {
       fs.mkdirSync(udd, { recursive: true });
     } catch (error) {
-      console.log('Unable to create directory:', error.message);
+      console.log('Unable to create directory:', (error as any).message);
       process.exit(1);
     }
     newProfile = true;
@@ -377,10 +398,10 @@ You need a reliable internet connection to ensure a flawless collection`;
 }
 
 async function writeExperimentInfo(
-  experimentId,
-  profinfo,
-  evidencetag,
-  directiveType
+  experimentId: string,
+  profinfo: any,
+  evidencetag: string,
+  directiveType: string
 ) {
   debug(
     'Saving experiment info in extension/experiment.json (would be read by the extension)'
@@ -503,7 +524,7 @@ export async function main() {
 
   directiveurl = buildAPIurl('directives', experiment);
   const directives = await pullDirectives(directiveurl);
-  directiveType = _.first(directives).name ? 'chiaroscuro' : 'comparison';
+  directiveType = _.first(directives)?.name ? 'chiaroscuro' : 'comparison';
 
   debug(
     'Loaded %d directives, detected type [%s] from %s',
@@ -517,20 +538,25 @@ export async function main() {
   const headless = !!nconf.get('headless');
   const browser = await dispatchBrowser(headless, profinfo);
 
-  if (browser.newProfile)
+  if ((browser as any).newProfile)
     await allowResearcherSomeTimeToSetupTheBrowser(profinfo.profileName);
 
-  const t = await guardoniExecution(experiment, directives, browser, profinfo);
+  const page = (await browser.pages())[0];
+  _.tail(await browser.pages()).forEach(async function (opage) {
+    debug("Closing a tab that shouldn't be there!");
+    await opage.close();
+  });
+  const t = await guardoniExecution(experiment, directives, page, profinfo);
   console.log(
     '— Guardoni execution completed in ',
-    moment.duration(t.end - t.start).humanize()
+    moment.duration((t as any).end - (t as any).start).humanize()
   );
 
   await concludeExperiment(experiment, profinfo);
   process.exit(0);
 }
 
-async function dispatchBrowser(headless, profinfo) {
+async function dispatchBrowser(headless: boolean, profinfo: Profile) {
   const cwd = process.cwd();
   const dist = path.resolve(path.join(cwd, 'extension'));
   const newProfile = profinfo.newProfile;
@@ -572,23 +598,23 @@ async function dispatchBrowser(headless, profinfo) {
     });
 
     // add this boolean to the return value as we need it in a case
-    browser.newProfile = newProfile;
+    (browser as any).newProfile = newProfile;
     return browser;
   } catch (error) {
-    console.log('Error in dispatchBrowser:', error.message);
-    await browser.close();
+    console.log('Error in dispatchBrowser:', (error as any).message);
+    // await browser.close();
     process.exit(1);
   }
 }
 
-async function operateTab(page, directive) {
+async function operateTab(page: puppeteer.Page, directive: Directive) {
   try {
     await domainSpecific.beforeLoad(page, directive);
   } catch (error) {
     debug(
       'error in beforeLoad %s %s directive %o',
-      error.message,
-      error.stack,
+      (error as any).message,
+      (error as any).stack,
       directive
     );
   }
@@ -609,7 +635,11 @@ async function operateTab(page, directive) {
   try {
     await domainSpecific.beforeWait(page, directive);
   } catch (error) {
-    console.log('error in beforeWait', error.message, error.stack);
+    console.log(
+      'error in beforeWait',
+      (error as any).message,
+      (error as any).stack
+    );
   }
 
   const loadFor = _.parseInt(nconf.get('load')) || directive.loadFor;
@@ -623,7 +653,11 @@ async function operateTab(page, directive) {
   try {
     await domainSpecific.afterWait(page, directive);
   } catch (error) {
-    console.log('Error in afterWait', error.message, error.stack);
+    console.log(
+      'Error in afterWait',
+      (error as any).message,
+      (error as any).stack
+    );
   }
   debug('— Completed %s', directive.urltag ? directive.urltag : directive.name);
 }
@@ -679,7 +713,10 @@ export function initialSetup() {
   return manifest;
 }
 
-async function operateBrowser(page, directives) {
+async function operateBrowser(
+  page: puppeteer.Page,
+  directives: Directive[]
+): Promise<void> {
   // await page.setViewport({width: 1024, height: 768});
   for (const directive of directives) {
     if (nconf.get('exclude') && directive.urltag == nconf.get('exclude')) {
@@ -688,31 +725,31 @@ async function operateBrowser(page, directives) {
       try {
         await operateTab(page, directive);
       } catch (error) {
-        debug('operateTab in %s — error: %s', directive.urltag, error.message);
+        debug(
+          'operateTab in %s — error: %s',
+          directive.urltag,
+          (error as any).message
+        );
       }
     }
   }
-  const loadFor = _.parseInt(nconf.get('load')) || directive.loadFor;
+  const loadFor = _.parseInt(nconf.get('load')); // todo: || directive.loadFor;
   if (loadFor < 20000) {
     await page.waitForTimeout(15000);
   }
 }
 
 export async function guardoniExecution(
-  experiment,
-  directives,
-  page,
-  profinfo
-) {
-  const retval = { start: null };
-  retval.start = moment();
-  const directiveType = _.first(directives).name ? 'chiaroscuro' : 'comparison';
+  experiment: string,
+  directives: Directive[],
+  page: puppeteer.Page,
+  profinfo: any
+): Promise<{ start: moment.Moment; end: moment.Moment }> {
+  const retval = { start: moment(), end: null };
+  const directiveType = _.first(directives)?.name
+    ? 'chiaroscuro'
+    : 'comparison';
   try {
-    // const page = (await browser.pages())[0];
-    // _.tail(await browser.pages()).forEach(async function (opage) {
-    //   debug("Closing a tab that shouldn't be there!");
-    //   await opage.close();
-    // });
     await domainSpecific.beforeDirectives(page, profinfo);
     // the BS above should close existing open tabs except 1st
     await operateBrowser(page, directives);
@@ -723,17 +760,23 @@ export async function guardoniExecution(
       }/render/#${experiment}`
     );
     console.log(`Personal log at ${server}/personal/#${publicKey}`);
-    await browser.close();
+    // await browser.close();
   } catch (error) {
     console.log('Error in operateBrowser (collection fail):', error);
-    await browser.close();
+    // await browser.close();
     process.exit(1);
   }
-  retval.end = moment();
-  return retval;
+
+  return {
+    ...retval,
+    end: moment(),
+  };
 }
 
-async function concludeExperiment(experiment, profinfo) {
+async function concludeExperiment(
+  experiment: string,
+  profinfo: any
+): Promise<void> {
   // this conclude the API sent by extension remoteLookup,
   // a connection to DELETE /api/v3/experiment/:publicKey
   const url = buildAPIurl(
@@ -749,10 +792,10 @@ async function concludeExperiment(experiment, profinfo) {
   //  debug("Experiment %s marked as completed on the server!", experiment);
 }
 
-export async function validateAndStart(manifest) {
+export async function validateAndStart(manifest: string): Promise<void> {
   /* initial test is meant to assure the extension is an acceptable version */
 
-  const manifestValues = JSON.parse(fs.readFileSync(manifest));
+  const manifestValues = JSON.parse(fs.readFileSync(manifest, 'utf-8'));
   const vblocks = manifestValues.version.split('.');
   /* guardoni versioning explained:
     1.MAJOR.MINOR, 

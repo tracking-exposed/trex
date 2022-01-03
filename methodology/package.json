@@ -62,6 +62,8 @@
   "devDependencies": {
     "@pmmmwh/react-refresh-webpack-plugin": "^0.5.4",
     "@types/eslint": "^8.2.1",
+    "@types/lodash": "^4.14.178",
+    "@types/nconf": "^0.10.1",
     "@types/prettier": "^2",
     "@types/react": "^17.0.37",
     "@types/react-dom": "^17.0.11",

@@ -21,10 +21,6 @@ config.plugins.push(
         to: '../../extension',
       },
       {
-        from: 'experiments/truth-1-withan.json',
-        to: '../../extension/experiment.json',
-      },
-      {
         from: 'extension',
         to: '../extension',
       },
@@ -63,7 +59,7 @@ const { buildENV: guardoniBuildEnv, ...guardoniConfig } = getConfig({
   env: t.strict({}),
   hot: false,
   entry: {
-    guardoni: path.resolve(__dirname, 'src/guardoni.js'),
+    guardoni: path.resolve(__dirname, 'src/guardoni.ts'),
   },
 });
 
