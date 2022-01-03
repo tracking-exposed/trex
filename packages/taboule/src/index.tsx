@@ -1,8 +1,9 @@
-import * as React from "react";
-import * as ReactDOM from "react-dom";
-import { ThemeProvider, createTheme, Box, Typography } from "@material-ui/core";
-import { Taboule, TabouleProps } from "./components/Taboule";
-import { TabouleQueries } from "./state/queries";
+import * as React from 'react';
+import * as ReactDOM from 'react-dom';
+import { ThemeProvider, createTheme, Box, Typography } from '@material-ui/core';
+import { Taboule, TabouleProps } from './components/Taboule';
+import { TabouleQueries } from './state/queries';
+import { ErrorBoundary } from '@shared/components/Error/ErrorBoundary';
 
 interface DataTableProps<Q extends keyof TabouleQueries>
   extends TabouleProps<Q> {
@@ -18,10 +19,12 @@ const appendTo = <Q extends keyof TabouleQueries>({
   ReactDOM.render(
     <ThemeProvider theme={theme}>
       <Box>
-        <Taboule {...props} />
-        <Box>
-          <Typography>v{process.env.VERSION}</Typography>
-        </Box>
+        <ErrorBoundary>
+          <Taboule {...props} />
+          <Box>
+            <Typography>v{process.env.VERSION}</Typography>
+          </Box>
+        </ErrorBoundary>
       </Box>
     </ThemeProvider>,
     node

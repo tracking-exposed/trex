@@ -2,52 +2,53 @@ import {
   DataGrid,
   DataGridProps,
   GridColTypeDef,
-} from "@material-ui/data-grid";
-import * as QR from "avenger/lib/QueryResult";
-import { WithQueries } from "avenger/lib/react";
-import * as React from "react";
-import { ObservableQuery } from "avenger/lib/Query";
+} from '@material-ui/data-grid';
+import * as QR from 'avenger/lib/QueryResult';
+import { WithQueries } from 'avenger/lib/react';
+import * as React from 'react';
+import { ObservableQuery } from 'avenger/lib/Query';
 import {
   TabouleQueries,
   GetDataTableQueries,
   SearchRequestInput,
   Results,
-} from "../state/queries";
-import { ErrorBox } from "@shared/components/Error/ErrorBox";
-import { ChannelRelated } from "@shared/models/ChannelRelated";
-import { APIError } from "@shared/errors/APIError";
-import { GetLogger } from "@shared/logger";
+} from '../state/queries';
+import { ErrorBox } from '@shared/components/Error/ErrorBox';
+import { ChannelRelated } from '@shared/models/ChannelRelated';
+import { APIError } from '@shared/errors/APIError';
+import { GetLogger } from '@shared/logger';
+import { Metadata } from '@shared/models/Metadata';
 
-const log = GetLogger("taboule");
+const log = GetLogger('taboule');
 
-interface TabouleColumnProps<K> extends Omit<GridColTypeDef, "field"> {
+interface TabouleColumnProps<K> extends Omit<GridColTypeDef, 'field'> {
   field: K;
 }
 
 interface TabouleQueryConfiguration<P extends Record<string, any>>
-  extends Omit<DataGridProps, "columns" | "rows"> {
+  extends Omit<DataGridProps, 'columns' | 'rows'> {
   columns: Array<TabouleColumnProps<keyof P>>;
 }
 
 interface TabouleConfiguration {
   ccRelatedUsers: TabouleQueryConfiguration<ChannelRelated>;
-  compareExperiment: TabouleQueryConfiguration<any>;
+  compareExperiment: TabouleQueryConfiguration<Metadata>;
 }
 
 const defaultConfiguration: TabouleConfiguration = {
   ccRelatedUsers: {
     columns: [
       {
-        field: "recommendedSource",
-        headerName: "Recommended Source",
+        field: 'recommendedSource',
+        headerName: 'Recommended Source',
         minWidth: 160,
       },
       {
-        field: "percentage",
+        field: 'percentage',
         minWidth: 160,
       },
       {
-        field: "recommendedChannelCount",
+        field: 'recommendedChannelCount',
         minWidth: 160,
       },
     ],
@@ -55,8 +56,8 @@ const defaultConfiguration: TabouleConfiguration = {
   compareExperiment: {
     columns: [
       {
-        field: "savingTime",
-        headerName: "savingTime",
+        field: 'savingTime',
+        headerName: 'savingTime',
         minWidth: 400,
       },
     ],
@@ -64,7 +65,7 @@ const defaultConfiguration: TabouleConfiguration = {
 };
 
 export interface TabouleProps<Q extends keyof TabouleQueries>
-  extends Omit<DataGridProps, "rows" | "columns"> {
+  extends Omit<DataGridProps, 'rows' | 'columns'> {
   query: Q;
   baseURL: string;
   pageSize?: number;
@@ -104,12 +105,12 @@ export const Taboule = <Q extends keyof TabouleQueries>({
   const dataGridProps: DataGridProps = {
     ...props,
     page,
-    filterMode: "server",
+    filterMode: 'server',
     ...config,
     rows: [],
     rowsPerPageOptions: [5, 10, 25, 50],
     pageSize,
-    paginationMode: "server",
+    paginationMode: 'server',
   };
 
   log.debug(`Rendering with props %O`, dataGridProps);

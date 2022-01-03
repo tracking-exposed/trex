@@ -1,23 +1,42 @@
 <html>
   <head>
     <style>
-      #main {
-        padding: 100px;
+      body > div {
+        padding: 50px;
       }
     </style>
   </head>
   <body>
-    <div id="main"></div>
+    <div>
+      <h2>Content Creator Related Users</h2>
+      <div id="main"></div>
+    </div>
+
+    <div>
+      <h2>Compare Experiment</h2>
+      <div id="compareExperiment"></div>
+    </div>
   </body>
   <script type="text/javascript" src="./taboule.js"></script>
   <script type="text/javascript">
+    // var baseURL = 'http://localhost:9000/api/'
+    var baseURL = 'https://youtube.tracking.exposed/api/';
     window.Taboule({
       node: document.getElementById('main'),
-      baseURL: 'http://localhost:9000/api/',
+      baseURL: baseURL,
       query: 'ccRelatedUsers',
       defaultParams: {
-        channelId: 'c14bb994-d13d-4a5e-bdee-a62976facca9'
-      }
-    })
+        channelId: 'c14bb994-d13d-4a5e-bdee-a62976facca9',
+      },
+    });
+
+    window.Taboule({
+      node: document.getElementById('compareExperiment'),
+      baseURL: baseURL,
+      query: 'compareExperiment',
+      defaultParams: {
+        experimentId: 'c14bb994-d13d-4a5e-bdee-a62976facca9',
+      },
+    });
   </script>
 </html>

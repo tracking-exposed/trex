@@ -1905,6 +1905,7 @@ __metadata:
     "@typescript-eslint/eslint-plugin": ^5.8.1
     "@typescript-eslint/parser": ^5.8.1
     avenger: ^7.0.1
+    axios: ^0.24.0
     debug: ^4.3.3
     eslint: ^8.6.0
     eslint-config-prettier: ^8.3.0
@@ -1925,6 +1926,8 @@ __metadata:
     typelevel-ts: ^0.4.0
     typescript: ^4.5.4
     webpack: ^5.65.0
+    webpack-cli: ^4.9.1
+    webpack-dev-server: ^4.7.2
   languageName: unknown
   linkType: soft
 
@@ -16101,7 +16104,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-i18next@npm:^11.15.1":
+"react-i18next@npm:^11.15.1, react-i18next@npm:^11.15.3":
   version: 11.15.3
   resolution: "react-i18next@npm:11.15.3"
   dependencies:
@@ -17399,14 +17402,20 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "shared@workspace:shared"
   dependencies:
+    "@material-ui/core": ^4.12.3
+    "@material-ui/lab": ^4.0.0-alpha.60
     "@pmmmwh/react-refresh-webpack-plugin": ^0.5.4
     "@types/copy-webpack-plugin": ^8.0.1
     "@types/debug": ^4.1.7
     "@types/dotenv-webpack": ^7.0.3
     "@types/node": ^16.11.14
+    "@types/react": ^17.0.37
+    "@types/react-dom": ^17.0.11
     "@types/webpack-bundle-analyzer": ^4.4.1
     "@typescript-eslint/eslint-plugin": ^5.8.1
     "@typescript-eslint/parser": ^5.8.1
+    avenger: ^7.0.1
+    axios: ^0.24.0
     copy-webpack-plugin: ^9.1.0
     css-loader: ^6.5.1
     debug: ^4.3.3
@@ -17426,6 +17435,9 @@ __metadata:
     io-ts-types: ^0.5.16
     mini-css-extract-plugin: ^1.6.2
     prettier: ^2.5.1
+    react: ^17.0.2
+    react-dom: ^17.0.2
+    react-i18next: ^11.15.3
     react-refresh: ^0.11.0
     react-refresh-typescript: ^2.0.3
     style-loader: ^3.3.1
@@ -19958,7 +19970,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"webpack-dev-server@npm:^4.7.1":
+"webpack-dev-server@npm:^4.7.1, webpack-dev-server@npm:^4.7.2":
   version: 4.7.2
   resolution: "webpack-dev-server@npm:4.7.2"
   dependencies:

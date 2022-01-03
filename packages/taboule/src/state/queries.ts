@@ -1,12 +1,12 @@
-import { APIError } from "@shared/errors/APIError";
-import { ChannelRelated } from "@shared/models/ChannelRelated";
-import { GetAPI } from "@shared/providers/api.provider";
-import { available, queryStrict } from "avenger";
-import { CachedQuery } from "avenger/lib/Query";
-import { SearchQuery } from "@shared/models/http/SearchQuery";
-import { pipe } from "fp-ts/lib/function";
-import * as TE from "fp-ts/lib/TaskEither";
-import { Metadata } from "@shared/models/Metadata";
+import { APIError } from '@shared/errors/APIError';
+import { ChannelRelated } from '@shared/models/ChannelRelated';
+import { GetAPI } from '@shared/providers/api.provider';
+import { available, queryStrict } from 'avenger';
+import { CachedQuery } from 'avenger/lib/Query';
+import { SearchQuery } from '@shared/models/http/SearchQuery';
+import { pipe } from 'fp-ts/lib/function';
+import * as TE from 'fp-ts/lib/TaskEither';
+import { Metadata } from '@shared/models/Metadata';
 
 export interface SearchRequestInput {
   Params: any;
@@ -46,7 +46,7 @@ export const GetDataTableQueries = ({
         API.v3.Creator.CreatorRelatedChannels({
           ...input,
           Headers: {
-            "x-authorization": accessToken ?? "",
+            'x-authorization': accessToken ?? '',
           },
         }),
         TE.map(({ totalRecommendations, ...r }) => ({
@@ -61,12 +61,15 @@ export const GetDataTableQueries = ({
   const compareExperiment = queryStrict<
     SearchRequestInput,
     APIError,
-    Results<any>
+    Results<Metadata>
   >(
     (input) =>
-      API.v2.Public.GetExperimentById({
-        ...input,
-      }),
+      pipe(
+        API.v2.Public.GetExperimentById({
+          ...input,
+        }),
+        TE.map((content) => ({ total: content.length, content }))
+      ),
     available
   );
 
