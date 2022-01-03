@@ -3,21 +3,21 @@ import {
   DataGridProps,
   GridColTypeDef,
 } from '@material-ui/data-grid';
+import { APIError } from '@shared/errors/APIError';
+import { GetLogger } from '@shared/logger';
+import { ChannelRelated } from '@shared/models/ChannelRelated';
+import { Metadata } from '@shared/models/Metadata';
+import { ObservableQuery } from 'avenger/lib/Query';
 import * as QR from 'avenger/lib/QueryResult';
 import { WithQueries } from 'avenger/lib/react';
 import * as React from 'react';
-import { ObservableQuery } from 'avenger/lib/Query';
 import {
-  TabouleQueries,
   GetDataTableQueries,
-  SearchRequestInput,
   Results,
+  SearchRequestInput,
+  TabouleQueries,
 } from '../state/queries';
-import { ErrorBox } from '@shared/components/Error/ErrorBox';
-import { ChannelRelated } from '@shared/models/ChannelRelated';
-import { APIError } from '@shared/errors/APIError';
-import { GetLogger } from '@shared/logger';
-import { Metadata } from '@shared/models/Metadata';
+import { ErrorOverlay } from './ErrorOverlay';
 
 const log = GetLogger('taboule');
 
@@ -111,6 +111,9 @@ export const Taboule = <Q extends keyof TabouleQueries>({
     rowsPerPageOptions: [5, 10, 25, 50],
     pageSize,
     paginationMode: 'server',
+    components: {
+      ErrorOverlay,
+    },
   };
 
   log.debug(`Rendering with props %O`, dataGridProps);
@@ -133,7 +136,9 @@ export const Taboule = <Q extends keyof TabouleQueries>({
         () => (
           <DataGrid {...dataGridProps} loading={true} />
         ),
-        ErrorBox,
+        (e) => (
+          <DataGrid {...dataGridProps} error={e} />
+        ),
         ({ query }) => {
           return (
             <DataGrid

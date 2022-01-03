@@ -1,6 +1,6 @@
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
-import { ThemeProvider, createTheme, Box, Typography } from '@material-ui/core';
+import { ThemeProvider, Box, Typography, createTheme } from '@material-ui/core';
 import { Taboule, TabouleProps } from './components/Taboule';
 import { TabouleQueries } from './state/queries';
 import { ErrorBoundary } from '@shared/components/Error/ErrorBoundary';
@@ -17,16 +17,18 @@ const appendTo = <Q extends keyof TabouleQueries>({
   const theme = createTheme();
 
   ReactDOM.render(
-    <ThemeProvider theme={theme}>
-      <Box>
-        <ErrorBoundary>
-          <Taboule {...props} />
+    <React.StrictMode>
+      <ThemeProvider theme={theme}>
+        <Box>
+          <ErrorBoundary>
+            <Taboule {...props} />
+          </ErrorBoundary>
           <Box>
             <Typography>v{process.env.VERSION}</Typography>
           </Box>
-        </ErrorBoundary>
-      </Box>
-    </ThemeProvider>,
+        </Box>
+      </ThemeProvider>
+    </React.StrictMode>,
     node
   );
 };
