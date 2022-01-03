@@ -17,8 +17,16 @@ config.plugins.push(
   new CopyWebpackPlugin({
     patterns: [
       {
+        from: '../extension/build',
+        to: '../../extension',
+      },
+      {
+        from: 'experiments/truth-1-withan.json',
+        to: '../../extension/experiment.json',
+      },
+      {
         from: 'extension',
-        to: 'extension',
+        to: '../extension',
       },
     ],
   })
