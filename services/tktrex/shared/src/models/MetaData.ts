@@ -1,58 +1,93 @@
-import Nature from './Nature';
+import * as t from 'io-ts';
 
-interface Music {
-  url: string;
-  name: string;
-}
+const Music = t.type({
+  url: t.string,
+  name: t.string,
+}, 'Music');
 
-interface Author {
-  link: string;
-  username: string;
-}
+type Music = t.TypeOf<typeof Music>;
 
-interface AuthorWithName extends Author {
-  name: string;
-}
+const Author = t.type({
+  link: t.string,
+  username: t.string,
+}, 'Author');
 
-interface Metrics {
-  liken: string;
-  commentn: string;
-  sharen: string;
-}
+type Author = t.TypeOf<typeof Author>;
 
-export interface MetaDataBase {
-  type: Nature['type'];
-}
+const AuthorWithName = t.intersection([
+  Author,
+  t.type({
+    name: t.string,
+  }, 'name'),
+], 'AuthorWithName');
 
-export interface VideoMetaDataBase extends MetaDataBase {
-  type: VideoMetaData['type'];
-  baretext: string;
-  description: string;
-  hashtags: string[];
-  metrics: Metrics;
-}
+type AuthorWithName = t.TypeOf<typeof AuthorWithName>;
 
-export interface ForYouVideoMetaData extends VideoMetaDataBase {
-  type: 'foryou';
-  author: AuthorWithName;
-  music: Music;
-}
+const Metrics = t.type({
+  liken: t.string,
+  commentn: t.string,
+  sharen: t.string,
+}, 'Metrics');
 
-export interface FollowingVideoMetaData extends VideoMetaDataBase {
-  type: 'following';
-  author: AuthorWithName;
-  music: Music;
-}
+type Metrics = t.TypeOf<typeof Metrics>;
 
-export interface SearchVideoMetaData extends VideoMetaDataBase {
-  type: 'search';
-  author: Author;
-}
+export const VideoMetaDataBase = t.type({
+  type: t.union([
+    t.literal('foryou'),
+    t.literal('search'),
+    t.literal('following'),
+  ]),
+  baretext: t.string,
+  description: t.string,
+  hashtags: t.array(t.string),
+  metrics: Metrics,
+});
 
-type VideoMetaData =
-  ForYouVideoMetaData | SearchVideoMetaData |
-  FollowingVideoMetaData;
+export type VideoMetaDataBase = t.TypeOf<typeof VideoMetaDataBase>;
 
-export type MetaData = VideoMetaData;
+export const ForYouVideoMetaData = t.intersection([
+  VideoMetaDataBase,
+  t.type({
+    type: t.literal('foryou'),
+    author: AuthorWithName,
+    music: Music,
+  }),
+], 'ForYouVideoMetaData');
+
+export type ForYouVideoMetaData = t.TypeOf<typeof ForYouVideoMetaData>;
+
+export const FollowingVideoMetaData = t.intersection([
+  VideoMetaDataBase,
+  t.type({
+    type: t.literal('following'),
+    author: AuthorWithName,
+    music: Music,
+  }),
+], 'FollowingVideoMetaData');
+
+export type FollowingVideoMetaData = t.TypeOf<typeof FollowingVideoMetaData>;
+
+export const SearchVideoMetaData = t.intersection([
+  VideoMetaDataBase,
+  t.type({
+    type: t.literal('following'),
+    author: Author,
+    music: Music,
+  }),
+], 'SearchVideoMetaData');
+
+export type SearchVideoMetaData = t.TypeOf<typeof SearchVideoMetaData>;
+
+export const VideoMetaData = t.union([
+  ForYouVideoMetaData,
+  FollowingVideoMetaData,
+  SearchVideoMetaData,
+], 'VideoMetaData');
+
+export type VideoMetaData = t.TypeOf<typeof VideoMetaData>;
+
+export const MetaData = VideoMetaData;
+
+export type MetaData = t.TypeOf<typeof MetaData>;
 
 export default MetaData;

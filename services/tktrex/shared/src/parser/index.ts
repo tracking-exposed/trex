@@ -8,3 +8,5 @@ import { MetaData } from '../models/MetaData';
 export const parse = (html: string): Either<ParseError, MetaData> => {
   return left(new ParseError('not implemented'));
 };
+
+export default parse;

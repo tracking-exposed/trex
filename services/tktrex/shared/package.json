@@ -28,6 +28,7 @@
   "dependencies": {
     "@types/mongodb": "^4.0.7",
     "fp-ts": "^2.11.5",
+    "io-ts": "^2.2.16",
     "mongodb": "^4.2.2"
   }
 }
