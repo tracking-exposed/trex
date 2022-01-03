@@ -406,7 +406,7 @@ async function writeExperimentInfo(
   debug(
     'Saving experiment info in extension/experiment.json (would be read by the extension)'
   );
-  const cfgfile = path.join('extension', 'experiment.json');
+  const cfgfile = path.join(process.cwd(), 'build/extension/experiment.json');
   const expinfo = {
     experimentId,
     evidencetag,
@@ -696,8 +696,10 @@ export function initialSetup() {
   }
 
   const cwd = process.cwd();
-  const dist = path.resolve(path.join(cwd, 'extension'));
-  const manifest = path.resolve(path.join(cwd, 'extension', 'manifest.json'));
+  const dist = path.resolve(path.join(cwd, 'build/extension'));
+  const manifest = path.resolve(
+    path.join(cwd, 'build/extension', 'manifest.json')
+  );
   if (!fs.existsSync(dist)) fs.mkdirSync(dist);
   if (!fs.existsSync(manifest)) {
     console.log(
