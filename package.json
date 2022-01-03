@@ -8,6 +8,7 @@
   },
   "private": true,
   "workspaces": [
+    "extension",
     "shared",
     "packages/*",
     "backend",
@@ -23,6 +24,7 @@
     "taboule": "yarn workspace @trex/taboule",
     "shared": "yarn workspace shared",
     "backend": "yarn workspace yttrex-backend",
+    "extension": "yarn workspace yttrex-extension",
     "guardoni": "yarn workspace guardoni",
     "ycai": "yarn workspace YCAI",
     "lint-staged": "lint-staged",
