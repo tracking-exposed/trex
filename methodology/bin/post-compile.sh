@@ -6,8 +6,9 @@ version=`grep version package.json | cut -b 15- | sed -es/\".*//`
 # 1.8.2
 
 cd dist
-mv guardoni-win.exe guardoni-$version.exe
-mv guardoni-macos guardoni-$version-macos
-mv guardoni-linux guardoni-$version-linux
+mv guardoni-win.exe guardoni-cli-$version.exe
+mv guardoni-macos guardoni-cli-$version-macos
+mv guardoni-linux guardoni-cli-$version-linux
+chmod +x *
 ls -l
 cd ..
