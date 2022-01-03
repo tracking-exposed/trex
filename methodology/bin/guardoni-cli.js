@@ -1,9 +1,8 @@
 #!/usr/bin/env node
 
 /* eslint-disable no-console */
-require('ts-node').register();
 
-const guardoni = require('../src/guardoni.js');
+const guardoni = require('../build/guardoni/guardoni.js');
 
 const run = async () => {
   try {

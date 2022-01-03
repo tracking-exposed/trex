@@ -93,9 +93,8 @@
   },
   "pkg": {
     "scripts": [
-      "./bin/guardoni.js",
-      "./src/domainSpecific.js",
-      "./node_modules/**/*.js"
+      "./bin/guardoni-cli.js",
+      "./build/guardoni/**/*.js"
     ],
     "assets": [
       "extension/.keep",

@@ -39,3 +39,6 @@ jobs:
 
       - name: Build
         run: yarn build
+
+      - name: Package
+        run: yarn pkg

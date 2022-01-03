@@ -13,17 +13,6 @@ const { buildENV, ...config } = getConfig({
   entry: { main: path.resolve(__dirname, './src/desktop/main.ts') },
 });
 
-// renderer config
-const { buildENV: rendererBuildENV, ...rendererConfig } = getConfig({
-  cwd: __dirname,
-  outputDir: path.resolve(__dirname, 'build/desktop/renderer'),
-  env: t.strict({}),
-  hot: true,
-  entry: {
-    renderer: path.resolve(__dirname, 'src/desktop/renderer.tsx'),
-  },
-});
-
 config.plugins.push(
   new CopyWebpackPlugin({
     patterns: [
@@ -34,6 +23,17 @@ config.plugins.push(
     ],
   })
 );
+
+// renderer config
+const { buildENV: rendererBuildENV, ...rendererConfig } = getConfig({
+  cwd: __dirname,
+  outputDir: path.resolve(__dirname, 'build/desktop/renderer'),
+  env: t.strict({}),
+  hot: true,
+  entry: {
+    renderer: path.resolve(__dirname, 'src/desktop/renderer.tsx'),
+  },
+});
 
 rendererConfig.plugins.push(
   new CopyWebpackPlugin({
@@ -49,7 +49,15 @@ rendererConfig.plugins.push(
   })
 );
 
-// rendererConfig.plugins.push(new NodePolyfillPlugin());
+const { buildENV: guardoniBuildEnv, ...guardoniConfig } = getConfig({
+  cwd: __dirname,
+  outputDir: path.resolve(__dirname, 'build/guardoni'),
+  env: t.strict({}),
+  hot: false,
+  entry: {
+    guardoni: path.resolve(__dirname, 'src/guardoni.js'),
+  },
+});
 
 export default [
   {
@@ -61,5 +69,15 @@ export default [
     ...config,
     devtool: 'source-map',
     target: 'electron-main',
+  },
+  {
+    ...guardoniConfig,
+    output: {
+      ...guardoniConfig.output,
+      libraryTarget: 'commonjs',
+    },
+    stats: 'detailed',
+    target: 'node',
+    devtool: 'source-map',
   },
 ];
