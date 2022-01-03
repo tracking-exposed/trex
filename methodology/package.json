@@ -16,7 +16,7 @@
     "dist": "electron-builder build -l",
     "postinstall": "electron-builder install-app-deps"
   },
-  "bin": "./build/guardoni-cli.js",
+  "bin": "./bin/guardoni-cli.js",
   "main": "./build/desktop/main.js",
   "repository": {
     "type": "git",

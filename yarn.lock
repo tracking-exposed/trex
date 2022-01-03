@@ -10865,7 +10865,7 @@ __metadata:
     webpack-cli: ^4.9.1
     webpack-node-externals: ^3.0.0
   bin:
-    guardoni: ./build/guardoni-cli.js
+    guardoni: ./bin/guardoni-cli.js
   languageName: unknown
   linkType: soft
 

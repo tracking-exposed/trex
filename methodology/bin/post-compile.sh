@@ -1,6 +1,6 @@
 #!/usr/bin/sh
 
-# this script is invoked by npm run pkt, and simply should rename the executabled with the proper version name.
+# this script is invoked by npm run pkg, and simply should rename the executabled with the proper version name.
 
 version=`grep version package.json | cut -b 15- | sed -es/\".*//`
 # 1.8.2
