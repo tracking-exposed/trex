@@ -7,8 +7,11 @@ interface Music {
 
 interface Author {
   link: string;
-  name: string;
   username: string;
+}
+
+interface AuthorWithName extends Author {
+  name: string;
 }
 
 interface Metrics {
@@ -23,7 +26,6 @@ export interface MetaDataBase {
 
 export interface VideoMetaDataBase extends MetaDataBase {
   type: VideoMetaData['type'];
-  author: Author;
   baretext: string;
   description: string;
   hashtags: string[];
@@ -32,16 +34,19 @@ export interface VideoMetaDataBase extends MetaDataBase {
 
 export interface ForYouVideoMetaData extends VideoMetaDataBase {
   type: 'foryou';
+  author: AuthorWithName;
   music: Music;
 }
 
 export interface FollowingVideoMetaData extends VideoMetaDataBase {
   type: 'following';
+  author: AuthorWithName;
   music: Music;
 }
 
 export interface SearchVideoMetaData extends VideoMetaDataBase {
   type: 'search';
+  author: Author;
 }
 
 type VideoMetaData =
