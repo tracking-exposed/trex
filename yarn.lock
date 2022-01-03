@@ -2438,6 +2438,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/mongodb@npm:^4.0.7":
+  version: 4.0.7
+  resolution: "@types/mongodb@npm:4.0.7"
+  dependencies:
+    mongodb: "*"
+  checksum: 10ebdfed5beaeb9354adcaded3ff31a0597eec96d665155bf029fdf81384534cc054ffd4f3a431911e55055cea8dcea6233b2265d6d90f45fe233fd59a31bd56
+  languageName: node
+  linkType: hard
+
 "@types/ms@npm:*":
   version: 0.7.31
   resolution: "@types/ms@npm:0.7.31"
@@ -2708,6 +2717,15 @@ __metadata:
   dependencies:
     "@types/yargs-parser": "*"
   checksum: caa21d2c957592fe2184a8368c8cbe5a82a6c2e2f2893722e489f842dc5963293d2f3120bc06fe3933d60a3a0d1e2eb269649fd6b1947fe1820f8841ba611dd9
+  languageName: node
+  linkType: hard
+
+"@types/yargs@npm:^17.0.8":
+  version: 17.0.8
+  resolution: "@types/yargs@npm:17.0.8"
+  dependencies:
+    "@types/yargs-parser": "*"
+  checksum: 63d06700ffbed745f00d7994eb92416649c8a3ead22f26446979d383f3af52fa9400bb185268f3a44a2348749098ffe33a8185ca676b77bc3206c63b8b73fd01
   languageName: node
   linkType: hard
 
@@ -11983,7 +12001,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"mongodb@npm:^4.1.4, mongodb@npm:^4.2.2":
+"mongodb@npm:*, mongodb@npm:^4.1.4, mongodb@npm:^4.2.2":
   version: 4.2.2
   resolution: "mongodb@npm:4.2.2"
   dependencies:
@@ -16555,7 +16573,9 @@ __metadata:
   dependencies:
     "@types/eslint": ^8
     "@types/jest": ^27.4.0
+    "@types/mongodb": ^4.0.7
     "@types/node": ^17.0.6
+    "@types/yargs": ^17.0.8
     "@typescript-eslint/eslint-plugin": ^5.7.0
     "@typescript-eslint/parser": ^5.7.0
     eslint: ^8.4.1
@@ -16566,8 +16586,11 @@ __metadata:
     eslint-plugin-react: ^7.27.1
     fp-ts: ^2.11.5
     jest: ^27.4.5
+    mongodb: ^4.2.2
     ts-jest: ^27.1.2
+    ts-node: ^10.4.0
     typescript: ^4.5.4
+    yargs: ^17.3.1
   languageName: unknown
   linkType: soft
 
@@ -18277,6 +18300,21 @@ __metadata:
     y18n: ^5.0.5
     yargs-parser: ^21.0.0
   checksum: 2b687338684bf9645e9389ffdbe813fc5a2ddfede299d46fbe5ac80eb9a391e558b97861ba44d2256936ebe9d7f8135f6a38af1c76a5685eac4061008b2df57a
+  languageName: node
+  linkType: hard
+
+"yargs@npm:^17.3.1":
+  version: 17.3.1
+  resolution: "yargs@npm:17.3.1"
+  dependencies:
+    cliui: ^7.0.2
+    escalade: ^3.1.1
+    get-caller-file: ^2.0.5
+    require-directory: ^2.1.1
+    string-width: ^4.2.3
+    y18n: ^5.0.5
+    yargs-parser: ^21.0.0
+  checksum: 64fc2e32c56739f1d14d2d24acd17a6944c3c8e3e3558f09fc1953ac112e868cc16013d282886b9d5be22187f8b9ed4f60741a6b1011f595ce2718805a656852
   languageName: node
   linkType: hard
 
