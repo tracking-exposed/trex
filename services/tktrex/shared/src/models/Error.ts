@@ -10,3 +10,6 @@ export class URLError extends Error {
     super(message);
   }
 }
+
+export class ParseError extends Error {
+}
