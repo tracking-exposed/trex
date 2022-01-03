@@ -3,7 +3,7 @@
   "version": "0.2.3",
   "packageManager": "yarn@3.1.1",
   "scripts": {
-    "build": "tsc && NODE_ENV=production webpack",
+    "build": "tsc --build && DEBUG=\"*:debug *:error\" NODE_ENV=production webpack",
     "build:dev": "webpack",
     "watch": "DEBUG=\"*\" webpack --watch",
     "watch:prod": "NODE_ENV=production webpack --watch",

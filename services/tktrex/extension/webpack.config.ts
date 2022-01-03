@@ -12,8 +12,8 @@ import { AppEnv } from './src/AppEnv';
 import packageJSON from './package.json';
 
 const NODE_ENV = process.env.NODE_ENV === 'production' ? 'production' : 'development';
-const DEVELOPMENT = NODE_ENV === 'development';
 const PRODUCTION = NODE_ENV === 'production';
+const DEVELOPMENT = !PRODUCTION;
 
 const PATHS = {
   ENTRY: {
@@ -28,7 +28,7 @@ const PATHS = {
 
 const DEV_SERVER = 'localhost';
 const ENV_DEP_SERVER = DEVELOPMENT ? ('http://' + DEV_SERVER + ':14000') : 'https://tiktok.tracking.exposed';
-const ENV_DEP_WEB = DEVELOPMENT ? ('http://' + DEV_SERVER + ':1313') : 'https://tiktotk.tracking.exposed';
+const ENV_DEP_WEB = DEVELOPMENT ? ('http://' + DEV_SERVER + ':1313') : 'https://tiktok.tracking.exposed';
 const LAST_VERSION = 2;
 const BUILDISODATE = new Date().toISOString();
 
