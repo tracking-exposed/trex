@@ -16,13 +16,13 @@ It contains the browser extension for development as well as a the .zip file for
 
 ```
 yarn install
-yarn run build:dev
+yarn build:dev
 ```
 
 Or, tu run the compilation in continuous mode while developing:
 
 ```
-yarn run watch
+yarn watch
 ```
 
 At this point you can load it in your browser. Firefox and Chrome have slightly different action required.
@@ -30,7 +30,7 @@ At this point you can load it in your browser. Firefox and Chrome have slightly 
 To create a production build, run:
 
 ```
-yarn run build
+yarn build
 ```
 
 **Chrome**:
