@@ -30,6 +30,11 @@
   },
   "include": [
     "**/*.ts",
+    "**/*.js",
     "**/*.json"
+  ],
+  "exclude": [
+    "node_modules",
+    "build"
   ]
 }
