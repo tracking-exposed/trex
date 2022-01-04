@@ -1,3 +1,6 @@
+import { Either, isRight, map } from 'fp-ts/lib/Either';
+import { pipe } from 'fp-ts/lib/function';
+
 type Normalizable =
   number | string | undefined | null | boolean |
   Normalizable[] | { [key: string]: Normalizable };
@@ -45,8 +48,8 @@ export const hasKey = <T extends object>(key: string) =>
  *
  * Used in tests.
  */
-export const expectToBeIncludedIn = (expected: unknown) =>
-  (received: unknown): void => {
+export const expectToBeIncludedIn = <T>(expected: unknown) =>
+  (received: T): T => {
     if (typeof received !== 'object' || !received) {
       throw new Error(`expected ${received} to be an object`);
     }
@@ -72,4 +75,22 @@ export const expectToBeIncludedIn = (expected: unknown) =>
       }, {});
 
     expect(received).toEqual(newExpected);
+    return received;
+  };
+
+/**
+ * Accepts a function taking a normal value and
+ * returns a function taking an Either that will throw an error
+ * if its argument is not a Right and otherwise call the initial
+ * function on the unpacked Right value.
+ *
+ * Used in tests.
+ */
+export const expectToBeEitherRight = <E, A, B>(assertFn: (a: A) => B) =>
+  (received: Either<E, A>): Either<unknown, B> => {
+    if (!isRight(received)) {
+      throw new Error('expected received object to be a Right');
+    }
+
+    return pipe(received, map(assertFn));
   };

@@ -1,10 +1,8 @@
-import {
-  isRight, map, mapLeft,
-} from 'fp-ts/lib/Either';
-import { pipe } from 'fp-ts/lib/function';
+import { isRight } from 'fp-ts/lib/Either';
 
 import {
   expectToBeIncludedIn,
+  expectToBeEitherRight,
   normalizeDeepStrings,
 } from '../../src/lib/util';
 import { ForYouVideoMetaData } from '../../src/models/MetaData';
@@ -20,18 +18,16 @@ describe('The TikTok parser for the ForYou feed', () => {
 
   const { parseForYouVideo } = createServerSideParser();
 
+  // then run the tests on all the samples we deem valid
   test.each(forYouSamples)('"foryou" with id "$id"', (sample) => {
-    pipe(
-      parseForYouVideo(sample.html),
-      map((x) => {
-        expectToBeIncludedIn(
-          normalizeDeepStrings(sample.metadata),
-        )(x);
-        expect(isRight(ForYouVideoMetaData.decode(x))).toBe(true);
-      }),
-      mapLeft((err) => {
-        throw err;
-      }),
-    );
+    expectToBeEitherRight(
+      expectToBeIncludedIn(
+        // trim the strings in the sample metadata to
+        // avoid irrelevant errors
+        normalizeDeepStrings(
+          sample.metadata,
+        ),
+      ),
+    )(parseForYouVideo(sample.html));
   });
 });
