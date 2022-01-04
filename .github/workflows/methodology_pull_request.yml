@@ -1,4 +1,4 @@
-name: Methodology - Pull Request
+name: Guardoni - Pull Request
 
 on:
   pull_request:
