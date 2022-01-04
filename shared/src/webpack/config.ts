@@ -136,7 +136,7 @@ const getConfig = <E extends t.Props>(
     new webpack.DefinePlugin(stringifiedAppEnv as any),
   ];
 
-  if (opts.hot && mode === 'production') {
+  if (opts.hot && mode === 'development') {
     plugins.push(new ReactRefreshWebpackPlugin());
   }
 

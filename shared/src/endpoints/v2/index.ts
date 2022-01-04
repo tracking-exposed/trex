@@ -53,6 +53,18 @@ const SearchesAsCSV = Endpoint({
   Output: t.any,
 });
 
+const GetPersonalCSV = Endpoint({
+  Method: 'GET',
+  getPath: ({ publicKey, type }) => `/v2/personal/${publicKey}/${type}/csv`,
+  Input: {
+    Params: t.type({
+      publicKey: t.string,
+      type: t.union([t.literal('home'), t.literal('video'), t.literal('search')]),
+    }),
+  },
+  Output: t.any,
+});
+
 const AddEvents = Endpoint({
   Method: 'POST',
   getPath: () => `/v2/events`,
@@ -139,6 +151,7 @@ export default {
     GetChannelADVStats,
     GetExperimentList,
     GetExperimentById,
+    GetPersonalCSV,
     DeletePersonalContributionByPublicKey,
   },
 };

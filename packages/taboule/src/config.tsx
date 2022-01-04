@@ -12,7 +12,6 @@ import {
   GridColTypeDef,
 } from '@material-ui/data-grid';
 import CompareIcon from '@material-ui/icons/CompareOutlined';
-import DeleteIcon from '@material-ui/icons/DeleteOutline';
 import RelatedIcon from '@material-ui/icons/Replay30Outlined';
 import { ChannelRelated } from '@shared/models/ChannelRelated';
 import {
@@ -21,6 +20,7 @@ import {
   VideoMetadata,
 } from '@shared/models/contributor/ContributorPersonalStats';
 import { Metadata } from '@shared/models/Metadata';
+import DeleteButton from 'components/buttons/DeleteButton';
 import { formatDistanceToNow } from 'date-fns';
 import * as React from 'react';
 import CSVDownloadButton from './components/buttons/CSVDownloadButton';
@@ -34,6 +34,7 @@ interface TabouleQueryConfiguration<P extends Record<string, any>>
   extends Omit<DataGridProps, 'columns' | 'rows'> {
   columns: Array<TabouleColumnProps<keyof P>>;
   inputs?: (params: any, setParams: React.Dispatch<any>) => JSX.Element;
+  actions?: () => JSX.Element;
 }
 
 interface TabouleConfiguration {
@@ -120,23 +121,6 @@ const publicKeyInput = (
   );
 };
 
-const DeleteButton: React.FC<{ id: string; onClick: (id: string) => void }> = (
-  props
-) => {
-  return (
-    <Tooltip title="Delete" aria-label="Delete" placement="top">
-      <IconButton
-        size="small"
-        onClick={() => {
-          props.onClick(props.id);
-        }}
-      >
-        <DeleteIcon color="error" />
-      </IconButton>
-    </Tooltip>
-  );
-};
-
 const personalMetadataActions =
   (commands: TabouleCommands, params: any) =>
   // eslint-disable-next-line react/display-name
@@ -173,7 +157,7 @@ const personalMetadataActions =
         </Tooltip>
         <CSVDownloadButton
           onClick={() => {
-            void commands.downloadAsCSV(
+            void commands.downloadSearchesAsCSV(
               {
                 Params: {
                   queryString: cellParams.getValue(
@@ -197,149 +181,185 @@ const personalMetadataActions =
 export const defaultConfiguration = (
   commands: TabouleCommands,
   params: any
-): TabouleConfiguration => ({
-  ccRelatedUsers: {
-    inputs: channelIdInput,
-    columns: [
-      {
-        field: 'recommendedSource',
-        headerName: 'Recommended Source',
-        minWidth: 160,
-      },
-      {
-        field: 'percentage',
-        minWidth: 160,
-      },
-      {
-        field: 'recommendedChannelCount',
-        minWidth: 160,
-      },
-    ],
-  },
-  compareExperiment: {
-    columns: [
-      {
-        field: 'savingTime',
-        headerName: 'savingTime',
-        minWidth: 400,
-      },
-    ],
-  },
-  personalSearches: {
-    inputs: publicKeyInput,
-    columns: [
-      {
-        field: 'id',
-        minWidth: 100,
-      },
-      {
-        field: 'savingTime',
-        minWidth: 200,
-        renderCell: (params) => {
-          return formatDistanceToNow(new Date(params.formattedValue as any));
+): TabouleConfiguration => {
+  return {
+    ccRelatedUsers: {
+      inputs: channelIdInput,
+      columns: [
+        {
+          field: 'recommendedSource',
+          headerName: 'Recommended Source',
+          minWidth: 160,
         },
-      },
-      {
-        field: 'query',
-        minWidth: 350,
-        renderCell: (params) => {
-          return <Typography variant="h6">{params.formattedValue}</Typography>;
+        {
+          field: 'percentage',
+          minWidth: 160,
         },
+        {
+          field: 'recommendedChannelCount',
+          minWidth: 160,
+        },
+      ],
+    },
+    compareExperiment: {
+      columns: [
+        {
+          field: 'savingTime',
+          headerName: 'savingTime',
+          minWidth: 400,
+        },
+      ],
+    },
+    personalSearches: {
+      inputs: publicKeyInput,
+      actions: () => {
+        return (
+          <Box textAlign={'right'}>
+            <CSVDownloadButton
+              onClick={() => {
+                void commands.downloadAsCSV({
+                  Params: {
+                    publicKey: params.publicKey,
+                    type: 'search',
+                  },
+                })();
+              }}
+            />
+          </Box>
+        );
       },
-      {
-        field: 'results',
-        minWidth: 150,
-      },
-      {
-        field: 'actions',
-        minWidth: 200,
-        renderCell: (cellParams) => {
-          return (
-            <Box>
-              <DeleteButton
-                id={cellParams.row.id}
-                onClick={(id) => {
-                  void commands.deleteContribution(
-                    {
-                      Params: {
-                        publicKey: params.publicKey,
-                        selector: 'undefined',
+      columns: [
+        {
+          field: 'id',
+          minWidth: 100,
+        },
+        {
+          field: 'savingTime',
+          minWidth: 200,
+          renderCell: (params) => {
+            return formatDistanceToNow(new Date(params.formattedValue as any));
+          },
+        },
+        {
+          field: 'query',
+          minWidth: 350,
+          renderCell: (params) => {
+            return (
+              <Typography variant="h6">{params.formattedValue}</Typography>
+            );
+          },
+        },
+        {
+          field: 'results',
+          minWidth: 150,
+        },
+        {
+          field: 'actions',
+          minWidth: 200,
+          renderCell: (cellParams) => {
+            return (
+              <Box>
+                <DeleteButton
+                  id={cellParams.row.id}
+                  onClick={(id) => {
+                    void commands.deleteContribution(
+                      {
+                        Params: {
+                          publicKey: params.publicKey,
+                          selector: 'undefined',
+                        },
                       },
-                    },
-                    {}
-                  )();
-                }}
-              />
-              <CSVDownloadButton
-                onClick={() => {
-                  void commands.downloadAsCSV({
-                    Params: {
-                      queryString: cellParams.getValue(
-                        cellParams.row.id,
-                        'query'
-                      ) as string,
-                    },
-                  })();
-                }}
-              />
-            </Box>
-          );
+                      {}
+                    )();
+                  }}
+                />
+                <CSVDownloadButton
+                  onClick={() => {
+                    void commands.downloadSearchesAsCSV({
+                      Params: {
+                        queryString: cellParams.getValue(
+                          cellParams.row.id,
+                          'query'
+                        ) as string,
+                      },
+                    })();
+                  }}
+                />
+              </Box>
+            );
+          },
         },
+      ],
+    },
+    personalVideos: {
+      inputs: publicKeyInput,
+      actions: () => {
+        return (
+          <Box textAlign={'right'}>
+            <CSVDownloadButton
+              onClick={() => {
+                void commands.downloadAsCSV({
+                  Params: {
+                    publicKey: params.publicKey,
+                    type: 'video',
+                  },
+                })();
+              }}
+            />
+          </Box>
+        );
       },
-    ],
-  },
-  personalVideos: {
-    inputs: publicKeyInput,
-    columns: [
-      {
-        field: 'relative',
-        minWidth: 150,
-      },
-      {
-        field: 'authorName',
-        minWidth: 150,
-      },
-      {
-        field: 'authorSource',
-        minWidth: 150,
-      },
-      {
-        field: 'actions',
-        minWidth: 200,
-        renderCell: personalMetadataActions(commands, params),
-      },
-    ],
-  },
-  personalAds: {
-    inputs: publicKeyInput,
-    columns: [],
-  },
-  personalHomes: {
-    inputs: publicKeyInput,
-    columns: [
-      {
-        field: 'id',
-        minWidth: 100,
-      },
-      {
-        field: 'savingTime',
-        minWidth: 150,
-      },
-      {
-        field: 'selected',
-        minWidth: 150,
-        renderCell: (params) => {
-          if (Array.isArray(params.value)) {
-            return params.value.length;
-          }
-          return 0;
+      columns: [
+        {
+          field: 'relative',
+          minWidth: 150,
         },
-      },
-      {
-        field: 'actions',
-        minWidth: 200,
-        renderCell: personalMetadataActions(commands, params),
-      },
-    ],
-  },
-});
+        {
+          field: 'authorName',
+          minWidth: 150,
+        },
+        {
+          field: 'authorSource',
+          minWidth: 150,
+        },
+        {
+          field: 'actions',
+          minWidth: 200,
+          renderCell: personalMetadataActions(commands, params),
+        },
+      ],
+    },
+    personalAds: {
+      inputs: publicKeyInput,
+      columns: [],
+    },
+    personalHomes: {
+      inputs: publicKeyInput,
+      columns: [
+        {
+          field: 'id',
+          minWidth: 100,
+        },
+        {
+          field: 'savingTime',
+          minWidth: 150,
+        },
+        {
+          field: 'selected',
+          minWidth: 150,
+          renderCell: (params) => {
+            if (Array.isArray(params.value)) {
+              return params.value.length;
+            }
+            return 0;
+          },
+        },
+        {
+          field: 'actions',
+          minWidth: 200,
+          renderCell: personalMetadataActions(commands, params),
+        },
+      ],
+    },
+  };
+};
