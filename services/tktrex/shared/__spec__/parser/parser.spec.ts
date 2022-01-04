@@ -4,7 +4,7 @@ import {
 import { pipe } from 'fp-ts/lib/function';
 
 import { ForYouVideoMetaData } from '../../src/models/MetaData';
-import parse from '../../src/parser';
+import createServerSideParser from '../../src/parser/serverSideParser';
 import historicData from './fixtures/history.json';
 
 describe('The TikTok parser for the ForYou feed', () => {
@@ -14,9 +14,11 @@ describe('The TikTok parser for the ForYou feed', () => {
     (sample) => isRight(ForYouVideoMetaData.decode(sample.metadata)),
   );
 
+  const { parseForYouVideo } = createServerSideParser();
+
   test.each(forYouSamples)('"foryou" with id "$id"', (sample) => {
     pipe(
-      parse(sample.html),
+      parseForYouVideo(sample.html),
       map((x) => {
         expect(sample.metadata).toMatchObject(x);
         expect(isRight(ForYouVideoMetaData.decode(x))).toBe(true);
