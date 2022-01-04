@@ -132,7 +132,8 @@ export const MakeHTTPClient = (client: AxiosInstance): HTTPClient => {
 };
 
 export type TERequest<E extends MinimalEndpointInstance> = (
-  input: TypeOfEndpointInstance<E>["Input"]
+  input: TypeOfEndpointInstance<E>["Input"],
+  ia?: any
 ) => TE.TaskEither<APIError, TypeOfEndpointInstance<E>["Output"]>;
 
 type API<

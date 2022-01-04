@@ -44,6 +44,15 @@ const Searches = Endpoint({
   Output: t.any,
 });
 
+const SearchesAsCSV = Endpoint({
+  Method: 'GET',
+  getPath: ({ queryString }) => `/v2/searches/${queryString}/csv`,
+  Input: {
+    Params: t.type({ queryString: t.string }),
+  },
+  Output: t.any,
+});
+
 const AddEvents = Endpoint({
   Method: 'POST',
   getPath: () => `/v2/events`,
@@ -98,15 +107,38 @@ const GetExperimentById = Endpoint({
   Output: t.array(Metadata),
 });
 
+const DeletePersonalContributionByPublicKey = Endpoint({
+  Method: 'DELETE',
+  getPath: ({ publicKey, selector }) =>
+    `/v2/personal/${publicKey}/selector/id/${selector}`,
+  Input: {
+    Params: t.type({
+      publicKey: t.string,
+      selector: t.union([t.string, t.undefined]),
+    }),
+  },
+  Output: t.strict({
+    success: t.boolean,
+    result: t.strict({
+      metadata: t.strict({
+        acknowledged: t.boolean,
+        deletedCount: t.number,
+      }),
+    }),
+  }),
+});
+
 export default {
   Public: {
     CompareVideo,
     VideoRelated,
     VideoAuthor,
     Searches,
+    SearchesAsCSV,
     AddEvents,
     GetChannelADVStats,
     GetExperimentList,
     GetExperimentById,
+    DeletePersonalContributionByPublicKey,
   },
 };

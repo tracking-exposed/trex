@@ -4,39 +4,63 @@
       body > div {
         padding: 50px;
       }
+      #taboule-query-value {
+        margin: 0 20px 30px 0;
+      }
     </style>
   </head>
   <body>
     <div>
-      <h2>Content Creator Related Users</h2>
+      <h2>Taboule</h2>
+      <div>
+        <select id="taboule-query-value">
+          <option value="ccRelatedUsers">Content creator Related Users</option>
+          <option value="personalSearches">Personal Searches</option>
+          <option value="personalVideos">Personal Videos</option>
+          <option value="personalHomes">Personal Homes</option>
+          <option value="personalAds">Personal ADS</option>
+          <option value="compareExperiment" selected>Compare Experiment</option>
+        </select>
+        <div id="taboule-show-inputs" style="display: inline;">
+          <label>Show Params Inputs</label>
+          <input type="checkbox" checked="true">
+        </div>
+      </div>
       <div id="main"></div>
-    </div>
-
-    <div>
-      <h2>Compare Experiment</h2>
-      <div id="compareExperiment"></div>
     </div>
   </body>
   <script type="text/javascript" src="./taboule.js"></script>
   <script type="text/javascript">
     // var baseURL = 'http://localhost:9000/api/'
     var baseURL = 'https://youtube.tracking.exposed/api/';
-    window.Taboule({
-      node: document.getElementById('main'),
-      baseURL: baseURL,
-      query: 'ccRelatedUsers',
-      defaultParams: {
-        channelId: 'c14bb994-d13d-4a5e-bdee-a62976facca9',
-      },
+
+    const querySelect = document.querySelector('#taboule-query-value');
+    const showInputCheckbox = document.querySelector('#taboule-show-inputs input')
+
+    const runTaboule = (query, showInput = false) => {
+
+      console.log('Run taboule with config', { query, showInput })
+      window.Taboule({
+        showInput: showInput,
+        node: document.getElementById('main'),
+        baseURL: baseURL,
+        query: query,
+        pageSize: 25,
+        defaultParams: { },
+      });
+    };
+
+    querySelect.addEventListener('change', (e) => {
+      runTaboule(e.target.value, showInputCheckbox.getAttribute('checked') === "true");
     });
 
-    window.Taboule({
-      node: document.getElementById('compareExperiment'),
-      baseURL: baseURL,
-      query: 'compareExperiment',
-      defaultParams: {
-        experimentId: 'c14bb994-d13d-4a5e-bdee-a62976facca9',
-      },
-    });
+    showInputCheckbox.addEventListener('change', (e) => {
+      const isChecked = e.currentTarget.getAttribute('checked') === 'true';
+      e.currentTarget.setAttribute('checked', isChecked ? 'false' : 'true');
+      runTaboule(querySelect.value, !isChecked);
+    })
+
+    console.log('show input checked?', showInputCheckbox.getAttribute('checked'))
+    runTaboule(querySelect.value, showInputCheckbox.getAttribute('checked') === "true");
   </script>
 </html>

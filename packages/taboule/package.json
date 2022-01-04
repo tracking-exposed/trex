@@ -13,6 +13,7 @@
   "license": "AGPL-3.0",
   "dependencies": {
     "@material-ui/data-grid": "^4.0.0-alpha.37",
+    "@material-ui/icons": "^4.11.2",
     "avenger": "^7.0.1",
     "axios": "^0.24.0",
     "debug": "^4.3.3",
@@ -34,6 +35,7 @@
     "@types/react-dom": "^17.0.11",
     "@typescript-eslint/eslint-plugin": "^5.8.1",
     "@typescript-eslint/parser": "^5.8.1",
+    "date-fns": "^2.28.0",
     "eslint": "^8.6.0",
     "eslint-config-prettier": "^8.3.0",
     "eslint-config-standard-with-typescript": "^21.0.1",
