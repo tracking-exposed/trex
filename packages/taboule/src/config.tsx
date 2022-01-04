@@ -11,9 +11,8 @@ import {
   GridCellParams,
   GridColTypeDef,
 } from '@material-ui/data-grid';
-import DeleteIcon from '@material-ui/icons/DeleteOutline';
-import CSVIcon from '@material-ui/icons/CloudDownloadOutlined';
 import CompareIcon from '@material-ui/icons/CompareOutlined';
+import DeleteIcon from '@material-ui/icons/DeleteOutline';
 import RelatedIcon from '@material-ui/icons/Replay30Outlined';
 import { ChannelRelated } from '@shared/models/ChannelRelated';
 import {
@@ -22,8 +21,9 @@ import {
   VideoMetadata,
 } from '@shared/models/contributor/ContributorPersonalStats';
 import { Metadata } from '@shared/models/Metadata';
-import * as React from 'react';
 import { formatDistanceToNow } from 'date-fns';
+import * as React from 'react';
+import CSVDownloadButton from './components/buttons/CSVDownloadButton';
 import { TabouleCommands } from './state/commands';
 
 interface TabouleColumnProps<K> extends Omit<GridColTypeDef, 'field'> {
@@ -49,7 +49,7 @@ const defaultChannelId = 'c14bb994-d13d-4a5e-bdee-a62976facca9';
 const defaultPublicKey = '39kM5AyUrGXZaJPseoyKuNT2968Ee5SY6fbWxWcG1ivC';
 export const defaultParams = {
   ccRelatedUsers: {
-    channelId: defaultChannelId
+    channelId: defaultChannelId,
   },
   compareExperiment: {},
   personalHomes: {
@@ -66,7 +66,10 @@ export const defaultParams = {
   },
 };
 
-const channelIdInput = (params: any, setParams: React.Dispatch<any>) => {
+const channelIdInput = (
+  params: any,
+  setParams: React.Dispatch<any>
+): JSX.Element => {
   return (
     <Box margin={2}>
       <FormControlLabel
@@ -90,7 +93,10 @@ const channelIdInput = (params: any, setParams: React.Dispatch<any>) => {
   );
 };
 
-const publicKeyInput = (params: any, setParams: React.Dispatch<any>) => {
+const publicKeyInput = (
+  params: any,
+  setParams: React.Dispatch<any>
+): JSX.Element => {
   return (
     <Box margin={2}>
       <FormControlLabel
@@ -131,18 +137,10 @@ const DeleteButton: React.FC<{ id: string; onClick: (id: string) => void }> = (
   );
 };
 
-const CSVDownloadButton: React.FC<{ onClick: () => void }> = (props) => {
-  return (
-    <Tooltip title="Download CSV" placement="top">
-      <IconButton size="small" onClick={props.onClick}>
-        <CSVIcon color="error" />
-      </IconButton>
-    </Tooltip>
-  );
-};
-
 const personalMetadataActions =
-  (commands: TabouleCommands, params: any) => (cellParams: GridCellParams) => {
+  (commands: TabouleCommands, params: any) =>
+  // eslint-disable-next-line react/display-name
+  (cellParams: GridCellParams): JSX.Element => {
     return (
       <Box position={'relative'}>
         <DeleteButton

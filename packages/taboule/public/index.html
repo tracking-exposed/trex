@@ -21,9 +21,9 @@
           <option value="personalAds">Personal ADS</option>
           <option value="compareExperiment" selected>Compare Experiment</option>
         </select>
-        <div id="taboule-show-inputs" style="display: inline;">
+        <div id="taboule-show-inputs" style="display: inline">
           <label>Show Params Inputs</label>
-          <input type="checkbox" checked="true">
+          <input type="checkbox" checked="true" />
         </div>
       </div>
       <div id="main"></div>
@@ -35,32 +35,43 @@
     var baseURL = 'https://youtube.tracking.exposed/api/';
 
     const querySelect = document.querySelector('#taboule-query-value');
-    const showInputCheckbox = document.querySelector('#taboule-show-inputs input')
+    const showInputCheckbox = document.querySelector(
+      '#taboule-show-inputs input'
+    );
 
     const runTaboule = (query, showInput = false) => {
-
-      console.log('Run taboule with config', { query, showInput })
       window.Taboule({
         showInput: showInput,
         node: document.getElementById('main'),
         baseURL: baseURL,
         query: query,
         pageSize: 25,
-        defaultParams: { },
+        initialParams: {
+          channelId: '',
+        },
       });
     };
 
     querySelect.addEventListener('change', (e) => {
-      runTaboule(e.target.value, showInputCheckbox.getAttribute('checked') === "true");
+      runTaboule(
+        e.target.value,
+        showInputCheckbox.getAttribute('checked') === 'true'
+      );
     });
 
     showInputCheckbox.addEventListener('change', (e) => {
       const isChecked = e.currentTarget.getAttribute('checked') === 'true';
       e.currentTarget.setAttribute('checked', isChecked ? 'false' : 'true');
       runTaboule(querySelect.value, !isChecked);
-    })
+    });
 
-    console.log('show input checked?', showInputCheckbox.getAttribute('checked'))
-    runTaboule(querySelect.value, showInputCheckbox.getAttribute('checked') === "true");
+    console.log(
+      'show input checked?',
+      showInputCheckbox.getAttribute('checked')
+    );
+    runTaboule(
+      querySelect.value,
+      showInputCheckbox.getAttribute('checked') === 'true'
+    );
   </script>
 </html>

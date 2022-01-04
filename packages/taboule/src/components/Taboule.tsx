@@ -13,6 +13,7 @@ import * as React from 'react';
 import { defaultConfiguration, defaultParams } from '../config';
 import { TabouleDataProvider } from '../state';
 import { Results, SearchRequestInput, TabouleQueries } from '../state/queries';
+import CSVDownloadButton from './buttons/CSVDownloadButton';
 import { ErrorOverlay } from './ErrorOverlay';
 
 const log = GetLogger('taboule');
@@ -87,6 +88,13 @@ export const Taboule = <Q extends keyof TabouleQueries>({
     paginationMode: 'server',
     components: {
       ErrorOverlay,
+      Toolbar: () => {
+        return (
+          <Box margin={2} textAlign={'right'}>
+            <CSVDownloadButton onClick={() => {}} />
+          </Box>
+        );
+      },
     },
   };
 
