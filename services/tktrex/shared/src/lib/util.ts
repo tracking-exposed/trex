@@ -1,4 +1,6 @@
-import { Either, isRight, map } from 'fp-ts/lib/Either';
+import {
+  Either, map, mapLeft,
+} from 'fp-ts/lib/Either';
 import { pipe } from 'fp-ts/lib/function';
 
 type Normalizable =
@@ -88,9 +90,11 @@ export const expectToBeIncludedIn = <T>(expected: unknown) =>
  */
 export const expectToBeEitherRight = <E, A, B>(assertFn: (a: A) => B) =>
   (received: Either<E, A>): Either<unknown, B> => {
-    if (!isRight(received)) {
-      throw new Error('expected received object to be a Right');
-    }
-
-    return pipe(received, map(assertFn));
+    return pipe(received, map(assertFn), mapLeft((e) => {
+      if (e instanceof Error) {
+        throw e;
+      } else {
+        throw new Error('expected received object to be a Right');
+      }
+    }));
   };
