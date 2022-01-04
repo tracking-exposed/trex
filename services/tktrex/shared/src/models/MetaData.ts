@@ -37,9 +37,20 @@ export const VideoMetaDataBase = t.type({
     t.literal('search'),
     t.literal('following'),
   ]),
+
+  // baretext is the smallest part of the description,
+  // not including the tags
   baretext: t.string,
+
+  // description is the whole text written below the video,
+  // including the tags
   description: t.string,
+
+  // the hashtags, with their leading #
+  // note: they do not seem to be cleaned at the moment,
+  // some have trailing whitespace
   hashtags: t.array(t.string),
+
   metrics: Metrics,
 });
 

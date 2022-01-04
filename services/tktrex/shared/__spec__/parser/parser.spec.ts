@@ -3,6 +3,10 @@ import {
 } from 'fp-ts/lib/Either';
 import { pipe } from 'fp-ts/lib/function';
 
+import {
+  expectToBeIncludedIn,
+  normalizeDeepStrings,
+} from '../../src/lib/util';
 import { ForYouVideoMetaData } from '../../src/models/MetaData';
 import createServerSideParser from '../../src/parser/serverSideParser';
 import historicData from './fixtures/history.json';
@@ -20,7 +24,9 @@ describe('The TikTok parser for the ForYou feed', () => {
     pipe(
       parseForYouVideo(sample.html),
       map((x) => {
-        expect(sample.metadata).toMatchObject(x);
+        expectToBeIncludedIn(
+          normalizeDeepStrings(sample.metadata),
+        )(x);
         expect(isRight(ForYouVideoMetaData.decode(x))).toBe(true);
       }),
       mapLeft((err) => {
