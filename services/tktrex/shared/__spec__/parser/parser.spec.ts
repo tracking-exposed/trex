@@ -17,7 +17,10 @@ describe('The TikTok parser for the ForYou feed', () => {
   test.each(forYouSamples)('"foryou" with id "$id"', (sample) => {
     pipe(
       parse(sample.html),
-      map((x) => expect(x).toEqual(sample.metadata)),
+      map((x) => {
+        expect(sample.metadata).toMatchObject(x);
+        expect(isRight(ForYouVideoMetaData.decode(x))).toBe(true);
+      }),
       mapLeft((err) => {
         throw err;
       }),
