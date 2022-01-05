@@ -17,12 +17,12 @@ config.plugins.push(
   new CopyWebpackPlugin({
     patterns: [
       {
-        from: '../extension/build',
-        to: '../../extension',
+        from: path.resolve(__dirname, '../extension/build'),
+        to: path.resolve(__dirname, 'extension'),
       },
       {
-        from: 'extension',
-        to: '../extension',
+        from: path.resolve(__dirname, 'extension'),
+        to: path.resolve(__dirname, 'build/extension'),
       },
     ],
   })
