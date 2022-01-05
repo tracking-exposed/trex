@@ -11,7 +11,7 @@ import {
   profile,
 } from '../../../state/dashboard/creator.queries';
 import { makeStyles } from '../../../theme';
-import { ErrorBox } from '../../common/ErrorBox';
+import { ErrorBox } from '@shared/components/Error/ErrorBox';
 import { LazyFullSizeLoader } from '../../common/FullSizeLoader';
 import { LinkAccountButton } from '../../common/LinkAccountButton';
 import { StatsCard } from '../../common/StatsCard';
@@ -94,7 +94,7 @@ const CreatorAnalyticsPage: React.FC<CreatorAnalyticsPageProps> = ({
                         <Grid item sm={12}>
                           <StatsCard
                             header={t('analytics:total_metadata')}
-                            count={stats.totalMetadata}
+                            count={stats.totalRecommendations}
                             color={theme.palette.primary.main}
                           />
                         </Grid>

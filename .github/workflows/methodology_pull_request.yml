@@ -1,4 +1,4 @@
-name: Methodology - Pull Request
+name: Guardoni - Pull Request
 
 on:
   pull_request:
@@ -36,6 +36,10 @@ jobs:
 
       - name: Lint code
         run: yarn lint
+
+      - name: Build extension
+        working-directory: ./extension
+        run: yarn build
 
       - name: Build
         run: yarn build

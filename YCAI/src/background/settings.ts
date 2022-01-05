@@ -3,7 +3,7 @@ import * as TE from 'fp-ts/lib/TaskEither';
 import { Messages } from '../models/Messages';
 import security from '../providers/bs58.provider';
 import db from './db';
-import * as constants from '../constants'
+import * as constants from '@shared/constants';
 
 export function generatePublicKeypair(
   passphrase: string

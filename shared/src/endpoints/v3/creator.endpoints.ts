@@ -1,11 +1,13 @@
 import * as t from "io-ts";
+import { SearchQuery } from "../../models/http/SearchQuery";
 import { Endpoint } from "ts-endpoint";
 import { AuthorizationHeader, AuthResponse } from "../../models/Auth";
 import { GetRelatedChannelsOutput } from "../../models/ChannelRelated";
 import { ContentCreator } from "../../models/ContentCreator";
 import { CreatorStats } from "../../models/CreatorStats";
 import {
-  PartialRecommendation, Recommendation
+  PartialRecommendation,
+  Recommendation,
 } from "../../models/Recommendation";
 import { Video } from "../../models/Video";
 
@@ -80,11 +82,11 @@ const CreatorRecommendations = Endpoint({
 
 const CreatorRelatedChannels = Endpoint({
   Method: "GET",
-  getPath: ({ channelId, amount, skip }) =>
-    `/v3/creator/${channelId}/related/${amount}-${skip}`,
+  getPath: ({ channelId }) => `/v3/creator/${channelId}/related`,
   Input: {
-    Params: t.type({ channelId: t.string, amount: t.number, skip: t.number }),
     Headers: AuthorizationHeader,
+    Params: t.type({ channelId: t.string }),
+    Query: SearchQuery,
   },
   Output: GetRelatedChannelsOutput,
 });

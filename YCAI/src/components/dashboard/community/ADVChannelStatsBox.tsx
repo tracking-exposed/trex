@@ -5,7 +5,7 @@ import * as React from 'react';
 import { useTranslation } from 'react-i18next';
 import { creatorADVStats } from '../../../state/dashboard/creator.queries';
 import { makeStyles } from '../../../theme';
-import { ErrorBox } from '../../common/ErrorBox';
+import { ErrorBox } from '@shared/components/Error/ErrorBox';
 import { LazyFullSizeLoader } from '../../common/FullSizeLoader';
 import TreeMapGraph from '../../common/graphs/TreeMapGraph';
 
@@ -34,10 +34,12 @@ export const ADVChannelStatsBox: React.FC = () => {
           creatorADVStats: creatorADVStats,
         }}
         render={QR.fold(LazyFullSizeLoader, ErrorBox, ({ creatorADVStats }) => {
-          if (creatorADVStats.length === 0 ) {
+          if (creatorADVStats.length === 0) {
             return (
-              <Typography variant="subtitle1">{t('analytics:advertising_empty_data')}</Typography>
-            )
+              <Typography variant="subtitle1">
+                {t('analytics:advertising_empty_data')}
+              </Typography>
+            );
           }
           const treeData = {
             id: 'ADV',

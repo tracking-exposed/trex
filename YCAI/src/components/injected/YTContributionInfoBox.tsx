@@ -3,7 +3,7 @@ import { Box, Typography } from '@material-ui/core';
 import * as QR from 'avenger/lib/QueryResult';
 import { WithQueries } from 'avenger/lib/react';
 
-import { ErrorBox } from '../../components/common/ErrorBox';
+import { ErrorBox } from '@shared/components/Error/ErrorBox';
 import { LazyFullSizeLoader } from '../../components/common/FullSizeLoader';
 import { Keypair, Settings } from '../../models/Settings';
 import * as dataDonation from '../../providers/dataDonation.provider';
@@ -75,16 +75,18 @@ export const YTContributionInfoBox: React.FC<{
   settings: Settings;
 }> = ({ settings }) => {
   return (
-    <div style={{
-      position: 'fixed',
-      width: 200,
-      height: 30,
-      right: 20,
-      bottom: 20,
-      padding: 4,
-      zIndex: 9000,
-      borderRadius: 10,
-    }}>
+    <div
+      style={{
+        position: 'fixed',
+        width: 200,
+        height: 30,
+        right: 20,
+        bottom: 20,
+        padding: 4,
+        zIndex: 9000,
+        borderRadius: 10,
+      }}
+    >
       <WithQueries
         queries={{ keypair }}
         render={QR.fold(LazyFullSizeLoader, ErrorBox, ({ keypair }) => {
