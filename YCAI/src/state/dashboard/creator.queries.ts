@@ -45,7 +45,7 @@ export const auth = queryStrict(
 // content creator
 
 export const localProfile = queryStrict(
-  () => TE.fromIO<any, AppError>(getItem(sharedConst.CONTENT_CREATOR)),
+  () => TE.fromIO<any, APIError>(getItem(sharedConst.CONTENT_CREATOR)),
   available
 );
 
