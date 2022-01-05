@@ -10,7 +10,7 @@ interface DataTableProps<Q extends keyof TabouleQueries>
   node: HTMLDivElement;
 }
 
-let lastQuery: undefined | string = undefined;
+let lastQuery: undefined | string;
 
 const appendTo = <Q extends keyof TabouleQueries>({
   node,
@@ -19,7 +19,6 @@ const appendTo = <Q extends keyof TabouleQueries>({
   const theme = createTheme();
 
   if (lastQuery && lastQuery !== props.query) {
-    console.log('unmount component at node', node);
     ReactDOM.unmountComponentAtNode(node);
   }
 
