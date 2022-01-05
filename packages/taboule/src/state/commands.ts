@@ -17,7 +17,7 @@ const downloadFile = (filename: string, content: string): void => {
   // <a href="path of file" download="file name">
   document.body.appendChild(aElement);
 
-  //onClick property
+  // onClick property
   aElement.click();
 
   document.body.removeChild(aElement);

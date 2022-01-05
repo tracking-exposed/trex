@@ -44,6 +44,7 @@
     "@typescript-eslint/restrict-plus-operands": ["off"],
     "@typescript-eslint/restrict-template-expressions": ["off"],
     "@typescript-eslint/strict-boolean-expressions": ["off"],
-    "react/jsx-key": "off"
+    "react/jsx-key": "off",
+    "array-callback-return": "off"
   }
 }
