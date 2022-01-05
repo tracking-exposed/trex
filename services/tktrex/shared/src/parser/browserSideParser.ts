@@ -8,9 +8,6 @@ import {
 } from './TikTokParserInterface';
 import { ParseError } from '../models/Error';
 
-const cleanDescription = (str: string): string =>
-  str.replace(/[#@]\w+/g, '').trim();
-
 export const createParser = (): TikTokParserBrowserInterface => {
   const parseForYouVideo = (node: SearchableNode): Either<
     ParseError,
@@ -31,7 +28,10 @@ export const createParser = (): TikTokParserBrowserInterface => {
 
     const description = normalizeString(descriptionElt.textContent);
 
-    const baretext = cleanDescription(description);
+    const baretext = [...descriptionElt.querySelectorAll('span')]
+      .map((span) => normalizeString(span.textContent))
+      .filter(Boolean)
+      .join(' ');
 
     const hashtagsElts = descriptionElt.querySelectorAll(
       'strong',

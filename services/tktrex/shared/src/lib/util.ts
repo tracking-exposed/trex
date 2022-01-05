@@ -3,17 +3,26 @@ import {
 } from 'fp-ts/lib/Either';
 import { pipe } from 'fp-ts/lib/function';
 
+/**
+ * Normalize a string, removing leading and trailing white space,
+ * replacing all internal whitespace with a single space,
+ * and converting null and undefined to the empty string.
+ */
+export const normalizeString = (x: string | undefined | null): string =>
+  (typeof x === 'string' ? x.trim().replace(/\s+/g, ' ') : '');
+
 type Normalizable =
   number | string | undefined | null | boolean |
   Normalizable[] | { [key: string]: Normalizable };
 
 /**
  * Normalize an object recursively,
- * trimming the leading and trailing whitespace of all strings.
+ * trimming the leading and trailing whitespace of all strings,
+ * as well as replacing successive internal white space by a sing space.
  */
 export const normalizeDeepStrings = (x: Normalizable): Normalizable => {
   if (typeof x === 'string') {
-    return x.trim();
+    return normalizeString(x);
   }
 
   if (Array.isArray(x)) {
@@ -32,12 +41,7 @@ export const normalizeDeepStrings = (x: Normalizable): Normalizable => {
   return x;
 };
 
-/**
- * Normalize a string, removing leading and trailing white space,a
- * and converting null and undefined to the empty string.
- */
-export const normalizeString = (x: string | undefined | null): string =>
-  (typeof x === 'string' ? x.trim() : '');
+
 
 export const hasKey = <T extends object>(key: string) =>
   (x: T): x is T & { [key: string]: unknown } =>

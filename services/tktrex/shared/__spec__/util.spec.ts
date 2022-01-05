@@ -42,5 +42,9 @@ describe('The util library', () => {
         },
       );
     });
+
+    it('removes extraneous whitespace in the middle of a string', () => {
+      expect(normalizeDeepStrings('  foo  bar  ')).toBe('foo bar');
+    });
   });
 });

@@ -11,9 +11,13 @@ import historicData from './fixtures/history.json';
 
 describe('The TikTok parser for the ForYou feed', () => {
   // first, filter the test samples that match the schema for
-  // "foryou" videos so that we have complete data for our tests
+  // "foryou" videos so that we have complete data for our tests,
+  // and exclude the example that we know to be wrong
   const forYouSamples = historicData.filter(
-    (sample) => isRight(ForYouVideoMetaData.decode(sample.metadata)),
+    (sample) =>
+      isRight(ForYouVideoMetaData.decode(sample.metadata))
+      && sample.metadata.hashtags
+      && !sample.metadata.hashtags.some((tag) => !tag.startsWith('#')),
   );
 
   const { parseForYouVideo } = createServerSideParser();
