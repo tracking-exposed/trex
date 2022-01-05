@@ -37,7 +37,6 @@ export const createParser = (): TikTokParserBrowserInterface => {
       'strong',
     );
 
-    // TODO: some @tags are collected
     const hashtags = [...hashtagsElts].map(
       (node) => normalizeString(node.textContent),
     ).filter(Boolean).filter((str) => str.startsWith('#'));
