@@ -1,109 +1,200 @@
 import {
-  Box,
   Button,
+  Checkbox,
   FormControlLabel,
   FormGroup,
+  Grid,
   Input,
   makeStyles,
-} from "@material-ui/core";
-import { ipcRenderer } from "electron";
-import * as React from "react";
+} from '@material-ui/core';
+import { ipcRenderer } from 'electron';
+import * as React from 'react';
+import { v4 as uuid } from 'uuid';
+import type { Config } from '../guardoni';
+import OutputPanel, { OutputItem } from './OutputPanel';
 
 const useStyles = makeStyles((theme) => ({
   container: {
-    width: "100%",
-    height: "100%",
+    width: '100%',
+    height: '100%',
   },
   formControl: {
+    alignItems: 'flex-start',
     marginBottom: theme.spacing(2),
   },
 }));
 
-interface Config {
-  profileDir: string;
-  extensionDir: string;
-}
-
 export const App: React.FC = () => {
   const classes = useStyles();
   const [config, setConfig] = React.useState<Config>({
-    profileDir: `~/guardoni/profiles/anonymous`,
-    extensionDir: `~/guardoni/extension`,
+    profileId: 'anonymous',
+    auto: true,
+    shadowban: false,
+    experiment: 'd75f9eaf465d2cd555de65eaf61a770c82d59451',
+    sourceUrl: '',
+    evidenceTag: 'climate-change',
+    headless: false,
   });
 
-  const [guardoniError, setGuardoniError] = React.useState<Error | null>(null);
+  const [outputItems, setOutputItems] = React.useState<OutputItem[]>([]);
 
-  const startGuardoni = (): void => {
-    void ipcRenderer.send("startGuardoni", config);
+  const startGuardoni = async (): Promise<void> => {
+    void ipcRenderer.send('startGuardoni', config);
   };
 
   React.useEffect(() => {
-    ipcRenderer.on("guardoniError", (event, ...args) => {
+    ipcRenderer.on('guardoniError', (event, error) => {
       // eslint-disable-next-line no-console
-      console.log({ event, args });
-      setGuardoniError(new Error("Guardoni failed"));
+      console.log('hereee', { event, error });
+      setOutputItems(
+        outputItems.concat({
+          id: uuid(),
+          level: 'Error',
+          message: error.message,
+        })
+      );
     });
-  }, []);
+
+    ipcRenderer.on('guardoniOutput', (event, output) => {
+      setOutputItems(
+        outputItems.concat({
+          id: uuid(),
+          level: 'Info',
+          ...output,
+        })
+      );
+    });
+  }, [outputItems]);
 
   return (
-    <Box className={classes.container}>
-      <FormGroup>
-        <FormControlLabel
-          className={classes.formControl}
-          label={"Profile path"}
-          labelPlacement="top"
-          control={
-            <Input
-              id="profile-path"
-              aria-describedby="profile-path-text"
-              value={config.profileDir}
-              fullWidth
-              onChange={(e) =>
-                setConfig({
-                  ...config,
-                  profileDir: e.target.value,
-                })
-              }
-            />
-          }
-        />
+    <Grid container spacing={2} className={classes.container}>
+      <Grid item md={6} sm={6}>
+        <FormGroup>
+          <FormControlLabel
+            label="Profile"
+            className={classes.formControl}
+            labelPlacement="top"
+            control={
+              <Input
+                id="profile-path"
+                aria-describedby="profile-path-text"
+                value={config.profileId}
+                fullWidth
+                onChange={(e) =>
+                  setConfig({
+                    ...config,
+                    profileId: e.target.value,
+                  })
+                }
+              />
+            }
+          />
 
-        <FormControlLabel
-          className={classes.formControl}
-          label="Browser extension path"
-          labelPlacement="top"
-          control={
-            <Input
-              id="my-input"
-              aria-describedby="my-helper-text"
-              value={config.extensionDir}
-              fullWidth
-              onChange={(e) =>
-                setConfig({
-                  ...config,
-                  extensionDir: e.target.value,
-                })
-              }
-            />
-          }
-        />
+          <FormControlLabel
+            label="Experiment"
+            className={classes.formControl}
+            labelPlacement="top"
+            control={
+              <Input
+                id="my-input"
+                aria-describedby="my-helper-text"
+                value={config.experiment}
+                fullWidth
+                onChange={(e) =>
+                  setConfig({
+                    ...config,
+                    experiment: e.target.value,
+                  })
+                }
+              />
+            }
+          />
 
-        <Button
-          color="primary"
-          onClick={() => {
-            void startGuardoni();
-          }}
-        >
-          Start guardoni
-        </Button>
-      </FormGroup>
+          <FormControlLabel
+            label="Evidence Tag"
+            className={classes.formControl}
+            labelPlacement="top"
+            control={
+              <Input
+                id="evidence-tag-input"
+                value={config.evidenceTag}
+                fullWidth
+                onChange={(e) =>
+                  setConfig({
+                    ...config,
+                    evidenceTag: e.target.value,
+                  })
+                }
+              />
+            }
+          />
 
-      {guardoniError ? (
-        <Box color="error" maxWidth={"100%"}>
-          <h3>{guardoniError.message}</h3>
-          <pre style={{ maxWidth: "100%" }}>{guardoniError.stack}</pre>
-        </Box>
-      ) : null}
-    </Box>
+          <FormControlLabel
+            className={classes.formControl}
+            label={'Automatic'}
+            labelPlacement="top"
+            control={
+              <Checkbox
+                id="automatic"
+                checked={config.auto}
+                onChange={(e) =>
+                  setConfig({
+                    ...config,
+                    auto: e.target.checked,
+                  })
+                }
+              />
+            }
+          />
+
+          <FormControlLabel
+            className={classes.formControl}
+            label={'Shadow Ban'}
+            labelPlacement="top"
+            control={
+              <Checkbox
+                checked={config.shadowban}
+                onChange={(e) =>
+                  setConfig({
+                    ...config,
+                    shadowban: e.target.checked,
+                  })
+                }
+              />
+            }
+          />
+
+          <FormControlLabel
+            className={classes.formControl}
+            label={'Headless'}
+            labelPlacement="top"
+            control={
+              <Checkbox
+                checked={config.headless}
+                onChange={(e) =>
+                  setConfig({
+                    ...config,
+                    headless: e.target.checked,
+                  })
+                }
+              />
+            }
+          />
+
+          <Button
+            color="primary"
+            variant="contained"
+            onClick={() => {
+              void startGuardoni();
+            }}
+          >
+            Start guardoni
+          </Button>
+        </FormGroup>
+      </Grid>
+      <Grid item lg={6} md={6} sm={6}>
+        <OutputPanel items={outputItems} />
+      </Grid>
+    </Grid>
   );
 };

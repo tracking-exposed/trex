@@ -1,16 +1,16 @@
 /* eslint-disable no-console */
-const electronReloader = require("electron-reloader");
-require("./build/desktop/main");
+const electronReloader = require('electron-reloader');
+require('./build/desktop/main');
 
-const env = process.env.NODE_ENV ?? "development";
+const env = process.env.NODE_ENV ?? 'development';
 
-if (env === "development") {
+if (env === 'development') {
   try {
-    console.log(module);
     electronReloader(module, {
+      watchRenderer: true,
       ignore: [
         'src',
-        "data",
+        'data',
         'experiments',
         'node_modules',
         '.*',
@@ -18,11 +18,12 @@ if (env === "development") {
         'profiles',
         'dist',
         'extension',
-        'screenshots'
+        'screenshots',
+        '*.json',
+        '*.ts',
       ],
-      debug: true
     });
   } catch (err) {
-    console.error("Error", err);
+    console.error('Error', err);
   }
 }
