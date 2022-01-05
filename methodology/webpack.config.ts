@@ -21,7 +21,7 @@ config.plugins.push(
         to: path.resolve(__dirname, 'extension'),
       },
       {
-        from: path.resolve(__dirname, 'extension'),
+        from: path.resolve(__dirname, '../extension/build'),
         to: path.resolve(__dirname, 'build/extension'),
       },
     ],
