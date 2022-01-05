@@ -15,9 +15,7 @@ describe('The TikTok parser for the ForYou feed', () => {
   // and exclude the example that we know to be wrong
   const forYouSamples = historicData.filter(
     (sample) =>
-      isRight(ForYouVideoMetaData.decode(sample.metadata))
-      && sample.metadata.hashtags
-      && !sample.metadata.hashtags.some((tag) => !tag.startsWith('#')),
+      isRight(ForYouVideoMetaData.decode(sample.metadata)),
   );
 
   const { parseForYouVideo } = createServerSideParser();
