@@ -110,21 +110,9 @@ const GetExperimentList = Endpoint({
     Query: SearchQuery,
   },
   Output: t.strict({
-    active: t.array(
-      t.strict({
-        publicKey: t.string,
-        href: t.string,
-        experimentId: t.string,
-      })
-    ),
-    configured: t.array(GuardoniExperiment),
-    recent: t.record(
-      t.string,
-      t.strict({
-        contributions: t.record(t.string, t.number),
-        profiles: t.record(t.string, t.number),
-      })
-    ),
+    content: t.array(GuardoniExperiment),
+    total: t.number,
+    pagination: t.any,
   }),
 });
 
