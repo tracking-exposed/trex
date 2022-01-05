@@ -10,9 +10,9 @@ on:
       - "extension/**"
       - "methodology/**"
 
-# defaults:
-#   run:
-#     working-directory: methodology
+defaults:
+  run:
+    working-directory: methodology
 
 jobs:
   pull_request:
@@ -34,17 +34,18 @@ jobs:
           cache-dependency-path: yarn.lock
 
       - name: Install modules
-        # working-directory: ./
+        working-directory: ./
         run: yarn
 
       - name: Lint code
-        run: yarn guardoni lint
+        run: yarn lint
 
       - name: Build extension
-        run: yarn extension build
+        working-directory: ../extension
+        run: yarn build
 
       - name: Build
-        run: yarn guardoni build
+        run: yarn build
 
       - name: Package
-        run: yarn guardoni pkg
+        run: yarn pkg
