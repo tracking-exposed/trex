@@ -8343,16 +8343,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"electron@npm:^16.0.5":
-  version: 16.0.5
-  resolution: "electron@npm:16.0.5"
+"electron@npm:16.0.6":
+  version: 16.0.6
+  resolution: "electron@npm:16.0.6"
   dependencies:
     "@electron/get": ^1.13.0
     "@types/node": ^14.6.2
     extract-zip: ^1.0.3
   bin:
     electron: cli.js
-  checksum: 5b24d00e165d74d8039ac85646fb5953e3755bd503e0ffb27fe3a72c7f8acf8449fc661f51a1a8b42387e311aa44f161105796e13ed45ace4a3d8e0e586ece38
+  checksum: 0b0c7e109c871ced64493bdf7a39b334b732909228375d4bdb268f97de5a487f5e34fe763f72b9ab5be4ba35de861b3bd76efb1417207729b6146877f644fc81
   languageName: node
   linkType: hard
 
@@ -10635,7 +10635,7 @@ __metadata:
     bufferutil: ^4.0.6
     csv-parse: ^4.16.3
     debug: ^4.3.3
-    electron: ^16.0.5
+    electron: 16.0.6
     electron-builder: ^22.14.5
     electron-debug: ^3.2.0
     electron-log: ^4.4.4
