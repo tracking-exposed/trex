@@ -37,9 +37,10 @@ export const createParser = (): TikTokParserBrowserInterface => {
       'strong',
     );
 
+    // TODO: some @tags are collected
     const hashtags = [...hashtagsElts].map(
       (node) => normalizeString(node.textContent),
-    ).filter(Boolean);
+    ).filter(Boolean).filter((str) => str.startsWith('#'));
 
     const metricsAttrs = ['like-count', 'share-count', 'comment-count'] as readonly string[];
     const metricsMap: { [key: typeof metricsAttrs[number]]: string } = {

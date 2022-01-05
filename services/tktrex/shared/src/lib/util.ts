@@ -4,12 +4,14 @@ import {
 import { pipe } from 'fp-ts/lib/function';
 
 /**
- * Normalize a string, removing leading and trailing white space,
- * replacing all internal whitespace with a single space,
- * and converting null and undefined to the empty string.
+ * Normalize a string,
+ * - removing leading and trailing white space,
+ * - replacing all internal white space with a single space,
+ * - decoding URL encoded characters,
+ * - and converting null and undefined to the empty string.
  */
 export const normalizeString = (x: string | undefined | null): string =>
-  (typeof x === 'string' ? x.trim().replace(/\s+/g, ' ') : '');
+  (typeof x === 'string' ? decodeURI(x.trim().replace(/\s+/g, ' ')) : '');
 
 type Normalizable =
   number | string | undefined | null | boolean |
@@ -17,8 +19,7 @@ type Normalizable =
 
 /**
  * Normalize an object recursively,
- * trimming the leading and trailing whitespace of all strings,
- * as well as replacing successive internal white space by a sing space.
+ * @see normalizeString
  */
 export const normalizeDeepStrings = (x: Normalizable): Normalizable => {
   if (typeof x === 'string') {
