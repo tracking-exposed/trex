@@ -1,21 +1,23 @@
 import { available, queryShallow, queryStrict, refetch } from 'avenger';
 import { pipe } from 'fp-ts/lib/function';
 import * as TE from 'fp-ts/lib/TaskEither';
-import * as constants from '../../constants';
-import { AppError } from '../../models/errors/AppError';
+import { AppError } from '../../../../shared/src/errors/AppError';
 import { getDefaultSettings, Keypair } from '../../models/Settings';
-import { API } from '../../providers/api.provider';
-import * as localStorage from '../../providers/localStorage.provider';
+import { API } from '../../api';
+import * as localStorage from '@shared/providers/localStorage.provider';
+import * as sharedConstants from '@shared/constants';
 
 export const settingsRefetch = queryShallow(() => {
   return pipe(
-    TE.fromIO<any, AppError>(localStorage.getItem(constants.SETTINGS_KEY)),
+    TE.fromIO<any, AppError>(
+      localStorage.getItem(sharedConstants.SETTINGS_KEY)
+    ),
     TE.chain((s) => {
       if (s === null) {
         const defaultSettings = getDefaultSettings();
         return pipe(
           TE.fromIO(
-            localStorage.setItem(constants.SETTINGS_KEY, defaultSettings)
+            localStorage.setItem(sharedConstants.SETTINGS_KEY, defaultSettings)
           ),
           TE.map(() => defaultSettings)
         );
@@ -27,13 +29,15 @@ export const settingsRefetch = queryShallow(() => {
 
 export const settings = queryShallow(() => {
   return pipe(
-    TE.fromIO<any, AppError>(localStorage.getItem(constants.SETTINGS_KEY)),
+    TE.fromIO<any, AppError>(
+      localStorage.getItem(sharedConstants.SETTINGS_KEY)
+    ),
     TE.chain((s) => {
       if (s === null) {
         const defaultSettings = getDefaultSettings();
         return pipe(
           TE.fromIO(
-            localStorage.setItem(constants.SETTINGS_KEY, defaultSettings)
+            localStorage.setItem(sharedConstants.SETTINGS_KEY, defaultSettings)
           ),
           TE.map(() => defaultSettings)
         );

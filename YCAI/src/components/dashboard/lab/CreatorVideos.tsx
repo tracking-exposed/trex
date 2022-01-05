@@ -8,7 +8,7 @@ import { pipe } from 'fp-ts/lib/function';
 import { useTranslation } from 'react-i18next';
 import { pullContentCreatorVideos } from '../../../state/dashboard/creator.commands';
 import { creatorVideos } from '../../../state/dashboard/creator.queries';
-import { ErrorBox } from '../../common/ErrorBox';
+import { ErrorBox } from '@shared/components/Error/ErrorBox';
 import { LazyFullSizeLoader } from '../../common/FullSizeLoader';
 import { VideoCard } from './VideoCard';
 
