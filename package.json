@@ -12,7 +12,7 @@
     "shared",
     "packages/*",
     "backend",
-    "methodology",
+    "guardoni",
     "YCAI"
   ],
   "packageManager": "yarn@3.1.1",

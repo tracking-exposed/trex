@@ -1,21 +1,21 @@
 /* eslint-disable */
-const _ = require("lodash");
-const moment = require("moment");
-const debug = require("debug")("guardoni:youtube");
-const logreqst = require("debug")("guardoni:requests");
-const screendebug = require("debug")("guardoni:screenshots");
-const bconsError = require("debug")("guardoni:error");
-const path = require("path");
-const url = require("url");
-const fs = require("fs");
-const nconf = require("nconf");
+const _ = require('lodash');
+const moment = require('moment');
+const debug = require('debug')('guardoni:youtube');
+const logreqst = require('debug')('guardoni:requests');
+const screendebug = require('debug')('guardoni:screenshots');
+const bconsError = require('debug')('guardoni:error');
+const path = require('path');
+const url = require('url');
+const fs = require('fs');
+const nconf = require('nconf');
 
 debug.enabled = logreqst.enabled = screendebug.enabled = true;
 
-const SCREENSHOT_MARKER = "SCREENSHOTMARKER";
+const SCREENSHOT_MARKER = 'SCREENSHOTMARKER';
 const scrnshtrgxp = new RegExp(SCREENSHOT_MARKER);
 
-global.lastScreenTime = moment().subtract(4, "seconds");
+global.lastScreenTime = moment().subtract(4, 'seconds');
 global.currentURLlabel = null;
 global.screenshotPrefix = null;
 global.interval = null;
@@ -49,11 +49,11 @@ async function consoleLogParser(page, message) {
     // if the screenshot are less than 5 seconds close, the function
     // above would return null, so we don't take it.
     if (fdestname) {
-      screendebug("Taking screenshot in [%s]", fdestname);
+      screendebug('Taking screenshot in [%s]', fdestname);
       await page.screenshot({
         path: fdestname,
-        type: "jpeg",
-        fullPage: nconf.get("fullpage") || false,
+        type: 'jpeg',
+        fullPage: nconf.get('fullpage') || false,
       });
     }
   }
@@ -62,35 +62,35 @@ async function consoleLogParser(page, message) {
 /* these advertising selectors comes from browser extension,
  * and they should be centralized in a piece of updated code */
 const advSelectors = [
-  ".video-ads.ytp-ad-module",
-  ".ytp-ad-player-overlay",
-  ".ytp-ad-player-overlay-instream-info",
-  "ytd-promoted-sparkles-web-renderer",
-  ".ytd-action-companion-ad-renderer",
-  ".sparkles-light-cta",
-  "[data-google-av-cxn]",
-  "#ad-badge",
-  "ytd-banner-promo-renderer",
-  ".ytd-search-refinement-card-renderer",
-  ".ytd-promoted-sparkles-text-search-renderer",
+  '.video-ads.ytp-ad-module',
+  '.ytp-ad-player-overlay',
+  '.ytp-ad-player-overlay-instream-info',
+  'ytd-promoted-sparkles-web-renderer',
+  '.ytd-action-companion-ad-renderer',
+  '.sparkles-light-cta',
+  '[data-google-av-cxn]',
+  '#ad-badge',
+  'ytd-banner-promo-renderer',
+  '.ytd-search-refinement-card-renderer',
+  '.ytd-promoted-sparkles-text-search-renderer',
 ];
 
 async function beforeDirectives(page, profinfo) {
-  page.on("console", await _.partial(consoleLogParser, page));
-  page.on("pageerror", (message) => bconsError("Error %s", message));
-  page.on("requestfailed", (request) =>
+  page.on('console', await _.partial(consoleLogParser, page));
+  page.on('pageerror', (message) => bconsError('Error %s', message));
+  page.on('requestfailed', (request) =>
     bconsError(`Requestfail: ${request.failure().errorText} ${request.url()}`)
   );
 
   // await page.setRequestInterception(true);
-  if (!!nconf.get("3rd")) {
-    page.on("request", await _.partial(manageRequest, profinfo));
+  if (!!nconf.get('3rd')) {
+    page.on('request', await _.partial(manageRequest, profinfo));
     setInterval(print3rdParties, 60 * 1000);
   }
 
-  if (!nconf.get("screenshots")) return;
+  if (!nconf.get('screenshots')) return;
 
-  const screenshotsPath = nconf.get("screenshotsPath");
+  const screenshotsPath = nconf.get('screenshotsPath');
   if (!screenshotsPath) return;
 
   /* this is to monitor presence of special selectors that
@@ -120,7 +120,7 @@ async function beforeDirectives(page, profinfo) {
         );
       } catch (error) {}
     });
-  }, nconf.get("screenshotTime") || 5000);
+  }, nconf.get('screenshotTime') || 5000);
 }
 
 /* this is the variable we populate of statistics
@@ -139,15 +139,15 @@ function manageThirdParty(profinfo, reqpptr) {
     type: reqpptr.resourceType(),
     when: new Date(),
   };
-  if (full3rdparty.method != "GET") full3rdparty.postData = reqpptr.postData();
+  if (full3rdparty.method != 'GET') full3rdparty.postData = reqpptr.postData();
 
   reqlogfilename = path.join(
-    "profiles",
+    'profiles',
     profinfo.profileName,
-    "requestlog.json"
+    'requestlog.json'
   );
-  fs.appendFileSync(reqlogfilename, JSON.stringify(full3rdparty) + "\n");
-  if (up.host !== "www.youtube.com") {
+  fs.appendFileSync(reqlogfilename, JSON.stringify(full3rdparty) + '\n');
+  if (up.host !== 'www.youtube.com') {
     if (thirdParties[up.host]) thirdParties[up.host] = 1;
     else thirdParties[up.host] += 1;
   }
@@ -157,13 +157,13 @@ function manageRequest(profinfo, reqpptr) {
   try {
     manageThirdParty(profinfo, reqpptr);
   } catch (error) {
-    debug("Error in manageRequest function: %s", error.message);
+    debug('Error in manageRequest function: %s', error.message);
   }
 }
 
 function print3rdParties() {
   logreqst(
-    "Logged third parties connections in [%s] to %o",
+    'Logged third parties connections in [%s] to %o',
     reqlogfilename,
     thirdParties
   );
@@ -187,16 +187,16 @@ async function afterWait(page, directive) {
   let hasPlayer = false;
   if (directive.url.match(/\/watch\?v=/)) {
     const state = await getYTstatus(page);
-    debug("afterWait status found to be: %s", state.name);
-    await interactWithYT(page, directive, "playing");
+    debug('afterWait status found to be: %s', state.name);
+    await interactWithYT(page, directive, 'playing');
     hasPlayer = true;
   }
 
   if (directive.screenshot) {
     const screendumpf =
-      moment().format("YYYYMMDD-HHmm") + "-" + directive.name + ".png";
+      moment().format('YYYYMMDD-HHmm') + '-' + directive.name + '.png';
     const fullpath = path.join(directive.profile, screendumpf);
-    debug("afterWait: collecting screenshot in %s", fullpath);
+    debug('afterWait: collecting screenshot in %s', fullpath);
 
     if (hasPlayer) await state.player.screenshot({ path: fullpath });
     else
@@ -207,24 +207,24 @@ async function afterWait(page, directive) {
   }
 }
 const condition = {
-  "-1": "unstarted",
-  0: "ended",
-  1: "playing",
-  2: "paused",
-  3: "buffering",
-  5: "video cued",
+  '-1': 'unstarted',
+  0: 'ended',
+  1: 'playing',
+  2: 'paused',
+  3: 'buffering',
+  5: 'video cued',
 };
 
 async function getYTstatus(page) {
-  await page.waitForSelector("#movie_player");
+  await page.waitForSelector('#movie_player');
   const yt = await page.evaluateHandle(() =>
-    document.querySelector("#movie_player")
+    document.querySelector('#movie_player')
   );
   const ele = await yt.asElement();
   const st = await ele.evaluate(function (e) {
     return e.getPlayerState();
   });
-  const name = condition[st] ? condition[st] : "unmanaged-" + st;
+  const name = condition[st] ? condition[st] : 'unmanaged-' + st;
   return { name, player: yt };
 }
 
@@ -240,57 +240,57 @@ async function interactWithYT(page, directive, wantedState) {
   let state = await getYTstatus(page);
   if (state.name != wantedState) {
     debug(
-      "State switching necessary (now %s, wanted %s)",
+      'State switching necessary (now %s, wanted %s)',
       state.name,
       wantedState
     );
     // not really possible guarantee a full mapping of condition. this
     // function only deploy a space press to let video start
   }
-  if (state.name == "unstarted") {
-    const res = await state.player.press("Space");
+  if (state.name == 'unstarted') {
+    const res = await state.player.press('Space');
     await page.waitForTimeout(600);
     state = await getYTstatus(page);
   } else
     debug(
-      "DO NOT press [space] please, as the video is in state [%s]",
+      'DO NOT press [space] please, as the video is in state [%s]',
       state.name
     );
 
-  const isError = await page.$("yt-player-error-message-renderer");
+  const isError = await page.$('yt-player-error-message-renderer');
   if (!_.isNull(isError)) {
-    console.log("Youtube video error!");
+    console.log('Youtube video error!');
     return;
   }
 
-  debug("Entering watching loop (state %s)", state.name);
+  debug('Entering watching loop (state %s)', state.name);
   const specialwatch = _.isUndefined(directive.watchFor)
-    ? "end"
+    ? 'end'
     : directive.watchFor;
   // here is managed the special condition directive.watchFor == "end"
-  if (specialwatch == "end") {
-    console.log(directive.url, "This video would be watched till the end");
+  if (specialwatch == 'end') {
+    console.log(directive.url, 'This video would be watched till the end');
 
     for (checktime of _.times(DEFAULT_MAX_TIME / PERIODIC_CHECK_ms)) {
       await page.waitForTimeout(PERIODIC_CHECK_ms);
       let newst = await getYTstatus(page);
 
-      if (newst.name == "unstarted") {
+      if (newst.name == 'unstarted') {
         debug(
-          "Check n# %d — Forcing to start? (should not be necessary!)",
+          'Check n# %d — Forcing to start? (should not be necessary!)',
           checktime
         );
-        await newst.player.press("Space");
-      } else if (newst.name == "ended" || newst.name == "paused") {
+        await newst.player.press('Space');
+      } else if (newst.name == 'ended' || newst.name == 'paused') {
         debug(
-          "Video status [%s] at check n#%d — closing loop",
+          'Video status [%s] at check n#%d — closing loop',
           newst.name,
           checktime
         );
         break;
-      } else if (newst.name != "playing")
+      } else if (newst.name != 'playing')
         debug(
-          "While video gets reproduced (#%d check) the state is [%s]",
+          'While video gets reproduced (#%d check) the state is [%s]',
           checktime,
           newst.name
         );
@@ -298,14 +298,14 @@ async function interactWithYT(page, directive, wantedState) {
   } else if (_.isInteger(specialwatch)) {
     console.log(
       directive.url,
-      "Watching video for the specified time of:",
+      'Watching video for the specified time of:',
       specialwatch,
-      "milliseconds"
+      'milliseconds'
     );
     await page.waitForTimeout(specialwatch);
-    debug("Finished special watchining time of:", specialwatch, "milliseconds");
+    debug('Finished special watchining time of:', specialwatch, 'milliseconds');
   } else {
-    console.log("Error: invalid waitFor value [%s]", directive.watchFor);
+    console.log('Error: invalid waitFor value [%s]', directive.watchFor);
     process.exit(1);
   }
 }
@@ -318,5 +318,5 @@ module.exports = {
   completed,
   interactWithYT,
   getYTstatus,
-  DOMAIN_NAME: "youtube.com",
+  DOMAIN_NAME: 'youtube.com',
 };

@@ -10522,9 +10522,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"guardoni@workspace:methodology":
+"guardoni@workspace:guardoni":
   version: 0.0.0-use.local
-  resolution: "guardoni@workspace:methodology"
+  resolution: "guardoni@workspace:guardoni"
   dependencies:
     "@material-ui/core": ^4.12.3
     "@material-ui/icons": ^4.11.2
