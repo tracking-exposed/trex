@@ -1,10 +1,10 @@
 import { HandshakeBody } from '@shared/models/HandshakeBody';
 import { command } from 'avenger';
 import * as TE from 'fp-ts/lib/TaskEither';
-import { setItem } from '../../providers/localStorage.provider';
-import * as constants from '../../constants';
+import { setItem } from '@shared/providers/localStorage.provider';
+import * as sharedConst from '@shared/constants';
 import { Settings } from '../../models/Settings';
-import { API } from '../../providers/api.provider';
+import { API } from '../../api';
 import { profile } from './creator.queries';
 import { keypair, settings, settingsRefetch } from './public.queries';
 
@@ -22,12 +22,12 @@ export const deleteKeypair = command(() => TE.right({}), {
 });
 
 export const updateSettings = command(
-  (payload: Settings) => TE.fromIO(setItem(constants.SETTINGS_KEY, payload)),
+  (payload: Settings) => TE.fromIO(setItem(sharedConst.SETTINGS_KEY, payload)),
   { keypair, settings, settingsRefetch }
 );
 
 export const deleteProfile = command(
-  () => TE.fromIO(setItem(constants.CONTENT_CREATOR, null)),
+  () => TE.fromIO(setItem(sharedConst.CONTENT_CREATOR, null)),
   { profile }
 );
 

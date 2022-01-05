@@ -16,7 +16,7 @@ import ReactRefreshWebpackPlugin from '@pmmmwh/react-refresh-webpack-plugin';
 
 const webpackLogger = GetLogger('webpack');
 
-// TODO: babel, browserlist, auto-prefixing, ...?
+// TODO: browserlist, auto-prefixing, ...?
 
 const NODE_ENV = t.union(
   [t.literal('development'), t.literal('test'), t.literal('production')],
@@ -58,7 +58,7 @@ const getConfig = <E extends t.Props>(
     process.env.DOTENV_CONFIG_PATH ??
     path.resolve(opts.cwd, mode === 'production' ? '.env.production' : '.env');
 
-  const tsConfigFile = path.resolve(opts.cwd, './tsconfig.json');
+  // const tsConfigFile = path.resolve(opts.cwd, './tsconfig.json');
 
   webpackLogger.debug(`DOTENV_CONFIG_PATH %s`, DOTENV_CONFIG_PATH);
 
@@ -136,7 +136,7 @@ const getConfig = <E extends t.Props>(
     new webpack.DefinePlugin(stringifiedAppEnv as any),
   ];
 
-  if (opts.hot) {
+  if (opts.hot && mode === 'development') {
     plugins.push(new ReactRefreshWebpackPlugin());
   }
 
@@ -151,6 +151,8 @@ const getConfig = <E extends t.Props>(
 
   return {
     mode,
+
+    context: opts.cwd,
 
     entry: opts.entry,
 
@@ -169,8 +171,7 @@ const getConfig = <E extends t.Props>(
               loader: 'ts-loader',
               options: {
                 context: opts.cwd,
-                // configFile: require.resolve('./tsconfig.json'),
-                // projectReferences: true,
+                projectReferences: true,
                 transpileOnly: true,
                 getCustomTransformers: () => ({
                   before: [
@@ -205,10 +206,11 @@ const getConfig = <E extends t.Props>(
       extensions: ['.ts', '.tsx', '.js'],
       plugins: [
         new TsconfigPathsPlugin({
-          configFile: tsConfigFile,
+          // configFile: tsConfigFile,
           // context: opts.cwd,
         }),
       ],
+      modules: ['node_modules', path.resolve(opts.cwd)],
     },
 
     plugins,

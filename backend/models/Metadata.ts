@@ -2,7 +2,7 @@ import * as t from "io-ts";
 import { date } from "io-ts-types/lib/date";
 import { HomeType, SearchType, VideoType } from "./Ad";
 
-const ParsedInfo = t.intersection(
+export const ParsedInfo = t.intersection(
   [
     t.strict(
       {
@@ -31,6 +31,8 @@ const ParsedInfo = t.intersection(
   ],
   "ParsedInfo"
 );
+
+export type ParsedInfo = t.TypeOf<typeof ParsedInfo>;
 
 const VideoMetadata = t.strict(
   {
@@ -75,9 +77,12 @@ const HomeMetadata = t.strict(
   "HomeMetadata"
 );
 
-const SearchMetadata = t.strict({
-  type: SearchType,
-}, 'SearchMetadata');
+const SearchMetadata = t.strict(
+  {
+    type: SearchType,
+  },
+  "SearchMetadata"
+);
 
 export const Metadata = t.intersection(
   [

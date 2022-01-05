@@ -214,17 +214,17 @@ async function getByAuthor(req) {
 };
 
 async function getCreatorRelated(req) {
-    /* this is the route invoked by API 
+    /* this is the route invoked by API
        /api/v3/creator/:channelId/related/:amount?
-       and differs from the others because take as an input a 
+       and differs from the others because take as an input a
        channel and return as output aggregation by channel */
 
-    const amount = req.params.amount ? _.parseInt(req.params.amount) : 10;
-
+    const amount = req.query.amount ? _.parseInt(req.query.amount) : 10;
+    const skip = req.query.skip ? _.parseInt(req.query.skip): 0;
     try {
         /* pagination not supported, only enlarging the max amount of evidences */
         debug("getCreatorRelated %s amount %d", req.params.channelId, amount);
-        const authorStruct = await automo.getMetadataFromAuthorChannelId(req.params.channelId, { amount });
+        const authorStruct = await automo.getMetadataFromAuthorChannelId(req.params.channelId, { amount, skip });
         return { json: authorStruct };
     } catch(e) {
         debug("getCreatorRelated error: %s, %s", e.message, e.stack);

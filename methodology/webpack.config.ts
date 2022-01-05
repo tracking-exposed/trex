@@ -80,7 +80,6 @@ export default [
       ...guardoniConfig.output,
       libraryTarget: 'commonjs',
     },
-    stats: 'detailed',
     target: 'node',
     devtool: 'source-map',
   },

@@ -15,3 +15,15 @@ export const ContentCreator = t.strict(
 );
 
 export type ContentCreator = t.TypeOf<typeof ContentCreator>;
+
+export const AuthorizedContentCreator = t.strict(
+  {
+    ...ContentCreator.type.props,
+    accessToken: t.string,
+  },
+  "AuthorizedContentCreator"
+);
+
+export type AuthorizedContentCreator = t.TypeOf<
+  typeof AuthorizedContentCreator
+>;
