@@ -30,14 +30,8 @@
       "@shared/*": ["../../../shared/src/*"]
     }
   },
-  "references": [
-    { "path": "../../shared" }
-  ],
-  "include": [
-    "./src",
-    "./typings",
-    "./webpack.config.ts",
-  ],
+  "references": [{ "path": "../../shared" }],
+  "include": ["./src", "./typings"],
   "ts-node": {
     "compilerOptions": {
       "module": "CommonJS"
