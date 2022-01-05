@@ -93,7 +93,15 @@ export const GetTabouleQueries = ({
         API.v2.Public.GetExperimentList({
           ...input,
         }),
-        TE.map((content) => ({ total: content.length, content }))
+        TE.map((content) => {
+          return {
+            total: content.configured.length,
+            content: content.configured.map((c) => ({
+              ...c,
+              id: c.experimentId,
+            })),
+          };
+        })
       ),
     available
   );

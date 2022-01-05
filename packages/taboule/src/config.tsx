@@ -236,7 +236,7 @@ export const defaultConfiguration = (
           minWidth: 350,
           renderCell: (params) => {
             return (
-              <Box>
+              <Box key={params.id}>
                 {((params?.value as any[]) || []).map((linkinfo) => {
                   return <a href={linkinfo.url}>{linkinfo.urltag}</a>;
                 })}

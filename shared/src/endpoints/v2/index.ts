@@ -5,7 +5,7 @@ import {
   VideoContributionEvent,
 } from '../../models/ContributionEvent';
 import { SearchQuery } from '../../models/http/SearchQuery';
-import { Metadata } from '../../models/Metadata';
+import { GuardoniExperiment, Metadata } from '../../models/Metadata';
 import { ChannelADVStats } from '../../models/stats/ChannelADV';
 
 const CompareVideo = Endpoint({
@@ -109,9 +109,23 @@ const GetExperimentList = Endpoint({
     }),
     Query: SearchQuery,
   },
-  Output: t.any,
-  // TODO specs pagination/content/total
-  // content = t.array(GuardoniExperiment),
+  Output: t.strict({
+    active: t.array(
+      t.strict({
+        publicKey: t.string,
+        href: t.string,
+        experimentId: t.string,
+      })
+    ),
+    configured: t.array(GuardoniExperiment),
+    recent: t.record(
+      t.string,
+      t.strict({
+        contributions: t.record(t.string, t.number),
+        profiles: t.record(t.string, t.number),
+      })
+    ),
+  }),
 });
 
 const GetExperimentById = Endpoint({

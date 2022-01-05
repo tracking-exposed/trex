@@ -21,12 +21,12 @@ export type Metadata = t.TypeOf<typeof Metadata>;
 export const GuardoniExperiment = t.strict(
   {
     experimentId: t.string,
-    when: date,
+    when: t.string,
     humanizedWhen: t.string,
     links: t.array(
       t.type({
         urltag: t.string,
-        watchFor: t.number,
+        watchFor: t.union([t.string, t.number]),
         url: t.string,
       })
     ),
