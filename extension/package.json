@@ -5,7 +5,7 @@
   "homepage": "https://youtube.tracking.exposed",
   "bugs": "https://github.com/tracking-exposed/yttrex/issues",
   "license": "AGPL-3.0",
-  "author": "Claudio Agosti, Alberto Granzotto, and the tracking exposed team",
+  "author": "Claudio Agosti, Andrea Ascari, François-Marie de Jouvencel",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/tracking-exposed/yttrex.git"
