@@ -39,8 +39,7 @@ jobs:
         run: yarn lint
 
       - name: Build extension
-        working-directory: ./extension
-        run: yarn build
+        run: yarn extension build
 
       - name: Build
         run: yarn build
