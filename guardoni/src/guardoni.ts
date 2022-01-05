@@ -19,6 +19,17 @@ const COMMANDJSONEXAMPLE =
 const EXTENSION_WITH_OPT_IN_ALREADY_CHECKED =
   'https://github.com/tracking-exposed/yttrex/releases/download/v1.8.992/extension-1.9.0.99.zip';
 
+// guardoni configuration
+export interface Config {
+  profileId: string;
+  auto: boolean;
+  shadowban: boolean;
+  experiment: string;
+  sourceUrl: string;
+  evidenceTag: string;
+  headless: boolean;
+}
+
 const defaultCfgPath = path.join('config', 'default.json');
 nconf.argv().env();
 nconf.defaults({

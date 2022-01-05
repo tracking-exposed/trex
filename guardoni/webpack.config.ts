@@ -10,7 +10,9 @@ const { buildENV, ...config } = getConfig({
   outputDir: path.resolve(__dirname, 'build/desktop'),
   env: t.strict({}),
   hot: false,
-  entry: { main: path.resolve(__dirname, './src/desktop/main.ts') },
+  entry: {
+    main: path.resolve(__dirname, './src/desktop/main.ts'),
+  },
 });
 
 config.plugins.push(
@@ -33,7 +35,7 @@ const { buildENV: rendererBuildENV, ...rendererConfig } = getConfig({
   cwd: __dirname,
   outputDir: path.resolve(__dirname, 'build/desktop/renderer'),
   env: t.strict({}),
-  hot: true,
+  hot: false,
   entry: {
     renderer: path.resolve(__dirname, 'src/desktop/renderer.tsx'),
   },

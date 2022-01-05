@@ -8,11 +8,11 @@ on:
     paths:
       - "shared/**"
       - "extension/**"
-      - "methodology/**"
+      - "guardoni/**"
 
 defaults:
   run:
-    working-directory: methodology
+    working-directory: guardoni
 
 jobs:
   pull_request:

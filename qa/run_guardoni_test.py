@@ -4,7 +4,7 @@ import subprocess
 if __name__ == '__main__':
 
     # run guardoni test
-    os.chdir('../methodology')
+    os.chdir('../guardoni')
     # forge the command to start guardoni script
     guardoni_command = [
                         'src/guardoni.js',
