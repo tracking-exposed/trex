@@ -19,7 +19,7 @@ import {
   SearchMetadata,
   VideoMetadata,
 } from '@shared/models/contributor/ContributorPersonalStats';
-import { Metadata } from '@shared/models/Metadata';
+import { GuardoniExperiment, Metadata } from '@shared/models/Metadata';
 import DeleteButton from 'components/buttons/DeleteButton';
 import { formatDistanceToNow } from 'date-fns';
 import * as React from 'react';
@@ -39,7 +39,8 @@ interface TabouleQueryConfiguration<P extends Record<string, any>>
 
 interface TabouleConfiguration {
   ccRelatedUsers: TabouleQueryConfiguration<ChannelRelated>;
-  compareExperiment: TabouleQueryConfiguration<Metadata>;
+  getExperimentById: TabouleQueryConfiguration<Metadata>;
+  getExperimentList: TabouleQueryConfiguration<GuardoniExperiment>;
   personalAds: TabouleQueryConfiguration<{}>;
   personalHomes: TabouleQueryConfiguration<HomeMetadata>;
   personalSearches: TabouleQueryConfiguration<SearchMetadata>;
@@ -52,7 +53,12 @@ export const defaultParams = {
   ccRelatedUsers: {
     channelId: defaultChannelId,
   },
-  compareExperiment: {},
+  getExperimentById: {},
+  getExperimentList: {
+    type: 'comparison',
+    key: 'fuffa',
+    // this is the default as per 'yarn backend watch'
+  },
   personalHomes: {
     publicKey: defaultPublicKey,
   },
@@ -201,12 +207,42 @@ export const defaultConfiguration = (
         },
       ],
     },
-    compareExperiment: {
+    getExperimentById: {
       columns: [
         {
           field: 'savingTime',
           headerName: 'savingTime',
           minWidth: 400,
+        },
+      ],
+    },
+    getExperimentList: {
+      columns: [
+        {
+          field: 'experimentId',
+          headerName: 'experimentId',
+          minWidth: 400,
+        },
+        {
+          field: 'when',
+          headerName: 'Registered',
+          minWidth: 200,
+          renderCell: (params) => {
+            return formatDistanceToNow(new Date(params.formattedValue as any));
+          },
+        },
+        {
+          field: 'links',
+          minWidth: 350,
+          renderCell: (params) => {
+            return (
+              <Box>
+                {((params?.value as any[]) || []).map((linkinfo) => {
+                  return <a href={linkinfo.url}>{linkinfo.urltag}</a>;
+                })}
+              </Box>
+            );
+          },
         },
       ],
     },

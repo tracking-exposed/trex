@@ -18,12 +18,18 @@ export const Metadata = t.strict(
 );
 export type Metadata = t.TypeOf<typeof Metadata>;
 
-
 export const GuardoniExperiment = t.strict(
   {
-    // TODO 
-    id: t.string,
-    experimentTime: date,
+    experimentId: t.string,
+    when: date,
+    humanizedWhen: t.string,
+    links: t.array(
+      t.type({
+        urltag: t.string,
+        watchFor: t.number,
+        url: t.string,
+      })
+    ),
   },
   'GuardoniExperiment'
 );

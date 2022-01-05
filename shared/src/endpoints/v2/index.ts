@@ -5,7 +5,7 @@ import {
   VideoContributionEvent,
 } from '../../models/ContributionEvent';
 import { SearchQuery } from '../../models/http/SearchQuery';
-import { GuardoniExperiment, Metadata } from '../../models/Metadata';
+import { Metadata } from '../../models/Metadata';
 import { ChannelADVStats } from '../../models/stats/ChannelADV';
 
 const CompareVideo = Endpoint({
@@ -59,7 +59,11 @@ const GetPersonalCSV = Endpoint({
   Input: {
     Params: t.type({
       publicKey: t.string,
-      type: t.union([t.literal('home'), t.literal('video'), t.literal('search')]),
+      type: t.union([
+        t.literal('home'),
+        t.literal('video'),
+        t.literal('search'),
+      ]),
     }),
   },
   Output: t.any,
@@ -103,8 +107,11 @@ const GetExperimentList = Endpoint({
       type: t.union([t.literal('comparison'), t.literal('chiaroscuro')]),
       key: t.string,
     }),
+    Query: SearchQuery,
   },
-  Output: t.array(GuardoniExperiment),
+  Output: t.any,
+  // TODO specs pagination/content/total
+  // content = t.array(GuardoniExperiment),
 });
 
 const GetExperimentById = Endpoint({
