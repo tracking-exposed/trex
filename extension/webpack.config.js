@@ -178,7 +178,7 @@ const config = {
   },
 
   // devtool: PRODUCTION ? '#source-map' : '#inline-source-map',
-  devtool: PRODUCTION ? null : 'inline-source-map',
+  devtool: PRODUCTION ? false : 'inline-source-map',
 
   target: 'web',
 
@@ -193,20 +193,7 @@ const config = {
     rules: LOADERS,
   },
   optimization: {
-    minimizer: PRODUCTION
-      ? [
-          new UglifyJsPlugin({
-            compress: {
-              screw_ie8: true,
-              warnings: false,
-            },
-            output: {
-              comments: false,
-            },
-            sourceMap: true,
-          }),
-        ]
-      : [],
+    minimizer: PRODUCTION ? [new UglifyJsPlugin()] : [],
   },
 };
 

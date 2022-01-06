@@ -19,11 +19,11 @@ config.plugins.push(
   new CopyWebpackPlugin({
     patterns: [
       {
-        from: path.resolve(__dirname, '../extension/build'),
+        from: path.resolve(__dirname, '../extension/dist'),
         to: path.resolve(__dirname, 'extension'),
       },
       {
-        from: path.resolve(__dirname, '../extension/build'),
+        from: path.resolve(__dirname, '../extension/dist'),
         to: path.resolve(__dirname, 'build/extension'),
       },
     ],
