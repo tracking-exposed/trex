@@ -4,7 +4,7 @@
   "version": "0.1.0",
   "scripts": {
     "clean": "rm -rf ./build",
-    "tsc": "tsc",
+    "type-check": "tsc -b",
     "build": "tsc -b && webpack",
     "watch": "webpack serve",
     "lint": "eslint ./src",
