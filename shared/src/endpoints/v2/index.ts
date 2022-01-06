@@ -103,11 +103,11 @@ const GetExperimentList = Endpoint({
   Method: 'GET',
   getPath: ({ type, key }) => `/v2/guardoni/list/${type}/${key}`,
   Input: {
+    Query: SearchQuery,
     Params: t.type({
       type: t.union([t.literal('comparison'), t.literal('chiaroscuro')]),
       key: t.string,
     }),
-    Query: SearchQuery,
   },
   Output: t.strict({
     content: t.array(GuardoniExperiment),

@@ -95,8 +95,8 @@ export const GetTabouleQueries = ({
         }),
         TE.map((content) => {
           return {
-            total: content.configured.length,
-            content: content.configured.map((c) => ({
+            total: content.total,
+            content: content.content.map((c) => ({
               ...c,
               id: c.experimentId,
             })),
