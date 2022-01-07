@@ -1899,7 +1899,6 @@ __metadata:
     "@material-ui/data-grid": ^4.0.0-alpha.37
     "@material-ui/icons": ^4.11.2
     "@material-ui/styles": ^4.11.4
-    "@types/eslint": ^8.2.2
     "@types/node": ^16.11.19
     "@types/prettier": ^2.4.2
     "@types/react": ^17.0.38
@@ -1916,7 +1915,7 @@ __metadata:
     eslint-config-standard-with-typescript: ^21.0.1
     eslint-plugin-import: ^2.25.4
     eslint-plugin-node: ^11.1.0
-    eslint-plugin-promise: ^6.0.0
+    eslint-plugin-promise: ^5.2.0
     eslint-plugin-react: ^7.28.0
     fp-ts: ^2.11.6
     io-ts: ^2.2.16
@@ -2455,16 +2454,6 @@ __metadata:
     "@types/estree": "*"
     "@types/json-schema": "*"
   checksum: f32753ba184c212056f2bb7ee16937150a36e01da7eed15e2e179b7df76d0bbcbfa49972f30e9336f22be471c7f67fd91bcc8c25ff532462598de0f489df0cd8
-  languageName: node
-  linkType: hard
-
-"@types/eslint@npm:^8.2.2":
-  version: 8.2.2
-  resolution: "@types/eslint@npm:8.2.2"
-  dependencies:
-    "@types/estree": "*"
-    "@types/json-schema": "*"
-  checksum: acbbaecea2675b63cc4b067df499bb15906a56379a3603a9f6afffe2eb688b30bb73b1f5a402e44de36c5dc76abf59027a9f557b171d0b544ad01fa333118b6b
   languageName: node
   linkType: hard
 
@@ -8859,15 +8848,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"eslint-plugin-promise@npm:^6.0.0":
-  version: 6.0.0
-  resolution: "eslint-plugin-promise@npm:6.0.0"
-  peerDependencies:
-    eslint: ^7.0.0 || ^8.0.0
-  checksum: 7e761507c51267b77e4ad710e7c8938aa4f8f69b975886034e57497a1816e9527eda364e25aac03d1b4e0df2e738ba98e49ad075d028824fcfea533a1419751c
-  languageName: node
-  linkType: hard
-
 "eslint-plugin-react@npm:^7.28.0":
   version: 7.28.0
   resolution: "eslint-plugin-react@npm:7.28.0"
@@ -10566,7 +10546,6 @@ __metadata:
     "@material-ui/icons": ^4.11.2
     "@material-ui/lab": ^4.0.0-alpha.60
     "@pmmmwh/react-refresh-webpack-plugin": ^0.5.4
-    "@types/eslint": ^8.2.2
     "@types/lodash": ^4.14.178
     "@types/nconf": ^0.10.1
     "@types/prettier": ^2.4.2
@@ -18149,7 +18128,6 @@ __metadata:
   dependencies:
     "@commitlint/cli": ^13.2.1
     "@commitlint/config-conventional": ^13.2.0
-    "@types/eslint": ^8.2.2
     "@types/node": ^16.11.19
     "@types/prettier": ^2.4.2
     eslint: ^8.6.0
@@ -22124,6 +22102,7 @@ __metadata:
     "@material-ui/icons": ^4.11.2
     "@material-ui/lab": ^4.0.0-alpha.60
     "@types/mini-css-extract-plugin": ^2.4.0
+    "@typescript-eslint/eslint-plugin": ^5.9.0
     autoprefixer: ^6.7.7
     bs58: ^3.1.0
     chai: ^3.5.0
