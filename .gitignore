@@ -22,6 +22,9 @@ qa/*.pyc
 # test coverage
 coverage
 
+# docs
+docs/*
+
 #yarn v2
 .yarn/*
 !.yarn/cache
