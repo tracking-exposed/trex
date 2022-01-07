@@ -7,6 +7,7 @@ import {
   Grid,
   Input,
   makeStyles,
+  Typography,
 } from '@material-ui/core';
 import { ipcRenderer } from 'electron';
 import * as React from 'react';
@@ -89,6 +90,10 @@ export const App: React.FC = () => {
     <Grid container spacing={2} className={classes.container}>
       <Grid item md={6} sm={6}>
         <FormGroup className={classes.formGroup}>
+          <Typography variant="h3">Guardoni</Typography>
+          <Typography variant="caption" style={{ marginBottom: 40 }}>
+            v{process.env.VERSION} - {process.env.NODE_ENV}
+          </Typography>
           <FormControlLabel
             label="Profile"
             className={classes.formControl}
@@ -207,6 +212,7 @@ export const App: React.FC = () => {
           <Button
             color="primary"
             variant="contained"
+            style={{ marginBottom: 20 }}
             onClick={() => {
               void startGuardoni();
             }}

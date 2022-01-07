@@ -11,6 +11,7 @@
     "baseUrl": "./src",
     "esModuleInterop": true,
     "skipLibCheck": true,
+    "resolveJsonModule": true,
     // "isolatedModules": true,
     "sourceMap": true,
     "typeRoots": ["../node_modules/@types", "node_modules/@types"],

@@ -2,13 +2,16 @@ import * as t from 'io-ts';
 import * as path from 'path';
 import { getConfig } from '../shared/src/webpack/config';
 import { CopyWebpackPlugin } from '../shared/src/webpack/plugins';
+import { AppEnv } from './src/AppEnv';
+import packageJson from './package.json';
 
-// process.env.VERSION = packageJson.version;
+process.env.VERSION = packageJson.version;
 
 const { buildENV, ...config } = getConfig({
   cwd: __dirname,
+  target: 'electron-main',
   outputDir: path.resolve(__dirname, 'build/desktop'),
-  env: t.strict({}),
+  env: AppEnv,
   hot: false,
   entry: {
     main: path.resolve(__dirname, './src/desktop/main.ts'),
@@ -26,6 +29,13 @@ config.plugins.push(
         from: path.resolve(__dirname, '../extension/dist'),
         to: path.resolve(__dirname, 'build/extension'),
       },
+      {
+        from: path.resolve(
+          __dirname,
+          process.env.NODE_ENV === 'development' ? '.env.development' : '.env'
+        ),
+        to: path.resolve(__dirname, 'build/desktop/.env'),
+      },
     ],
   })
 );
@@ -34,8 +44,9 @@ config.plugins.push(
 const { buildENV: rendererBuildENV, ...rendererConfig } = getConfig({
   cwd: __dirname,
   outputDir: path.resolve(__dirname, 'build/desktop/renderer'),
-  env: t.strict({}),
+  env: AppEnv,
   hot: false,
+  target: 'electron-renderer',
   entry: {
     renderer: path.resolve(__dirname, 'src/desktop/renderer.tsx'),
   },
@@ -60,6 +71,7 @@ const { buildENV: guardoniBuildEnv, ...guardoniConfig } = getConfig({
   outputDir: path.resolve(__dirname, 'build/guardoni'),
   env: t.strict({}),
   hot: false,
+  target: 'node',
   entry: {
     guardoni: path.resolve(__dirname, 'src/guardoni.ts'),
   },
@@ -69,12 +81,10 @@ export default [
   {
     ...rendererConfig,
     devtool: 'source-map',
-    target: 'electron-renderer',
   },
   {
     ...config,
     devtool: 'source-map',
-    target: 'electron-main',
   },
   {
     ...guardoniConfig,
@@ -82,7 +92,6 @@ export default [
       ...guardoniConfig.output,
       libraryTarget: 'commonjs',
     },
-    target: 'node',
     devtool: 'source-map',
   },
 ];

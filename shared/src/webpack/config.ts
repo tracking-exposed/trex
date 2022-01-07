@@ -46,6 +46,7 @@ interface GetConfigParams<E extends t.Props> {
     [key: string]: string;
   };
   hot: boolean;
+  target: WebpackConfig['target'];
 }
 
 const getConfig = <E extends t.Props>(
@@ -133,8 +134,11 @@ const getConfig = <E extends t.Props>(
       path: DOTENV_CONFIG_PATH,
       silent: true,
     }),
-    new webpack.DefinePlugin(stringifiedAppEnv as any),
   ];
+
+  if (opts.target === 'web' || opts.target === 'electron-renderer') {
+    plugins.push(new webpack.DefinePlugin(stringifiedAppEnv as any));
+  }
 
   if (opts.hot && mode === 'development') {
     plugins.push(new ReactRefreshWebpackPlugin());
@@ -155,6 +159,7 @@ const getConfig = <E extends t.Props>(
     context: opts.cwd,
 
     entry: opts.entry,
+    target: opts.target,
 
     output: {
       path: opts.outputDir,

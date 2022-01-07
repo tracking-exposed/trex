@@ -57,47 +57,53 @@ const OutputPanel: React.FC<OutputPanelProps> = ({ items }) => {
     <Box>
       <Typography variant="h5">Output</Typography>
       <Box>
-        {items.map((item) => (
-          <Box
-            key={item.id}
-            style={{
-              marginBottom: 20,
-            }}
-          >
-            <Alert
-              className={classes.alert}
-              severity={alertSeverity(item.level)}
-              variant="outlined"
-              elevation={0}
+        {items.length === 0 ? (
+          <Typography variant="subtitle1">
+            Guardoni output will appear here
+          </Typography>
+        ) : (
+          items.map((item) => (
+            <Box
+              key={item.id}
+              style={{
+                marginBottom: 20,
+              }}
             >
-              <AlertTitle>{item.message}</AlertTitle>
-              {item.details === undefined ? null : (
-                <Accordion
-                  className={classes.accordion}
-                  variant="elevation"
-                  elevation={0}
-                  style={{ margin: 0, padding: 0, overflow: 'auto' }}
-                >
-                  <AccordionSummary>Details</AccordionSummary>
+              <Alert
+                className={classes.alert}
+                severity={alertSeverity(item.level)}
+                variant="outlined"
+                elevation={0}
+              >
+                <AlertTitle>{item.message}</AlertTitle>
+                {item.details === undefined ? null : (
+                  <Accordion
+                    className={classes.accordion}
+                    variant="elevation"
+                    elevation={0}
+                    style={{ margin: 0, padding: 0, overflow: 'auto' }}
+                  >
+                    <AccordionSummary>Details</AccordionSummary>
 
-                  {Array.isArray(item.details) ? (
-                    <AccordionDetails>
-                      {item.details.map((detail) => (
-                        <Typography key={uuid()}>{detail}</Typography>
-                      ))}
-                    </AccordionDetails>
-                  ) : (
-                    <AccordionDetails>
-                      <pre style={{ maxWidth: '100%' }}>
-                        {JSON.stringify(item.details, null, 2)}
-                      </pre>
-                    </AccordionDetails>
-                  )}
-                </Accordion>
-              )}
-            </Alert>
-          </Box>
-        ))}
+                    {Array.isArray(item.details) ? (
+                      <AccordionDetails>
+                        {item.details.map((detail) => (
+                          <Typography key={uuid()}>{detail}</Typography>
+                        ))}
+                      </AccordionDetails>
+                    ) : (
+                      <AccordionDetails>
+                        <pre style={{ maxWidth: '100%' }}>
+                          {JSON.stringify(item.details, null, 2)}
+                        </pre>
+                      </AccordionDetails>
+                    )}
+                  </Accordion>
+                )}
+              </Alert>
+            </Box>
+          ))
+        )}
       </Box>
     </Box>
   );
