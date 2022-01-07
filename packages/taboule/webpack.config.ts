@@ -14,6 +14,7 @@ const { buildENV, ...config } = getConfig({
     DEBUG: t.union([t.undefined, t.string]),
   }),
   hot: true,
+  target: 'web',
   entry: {
     taboule: path.resolve(__dirname, 'src/index.tsx'),
   },

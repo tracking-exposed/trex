@@ -6,14 +6,6 @@ node_modules
 build
 dist
 
-# methodology it is used by developer but users download a .exe
-methodology/config/*
-methodology/profiles/*
-methodology/extension/*
-methodology/executions/*
-methodology/experiments/*
-methodology/screenshots/*
-
 # experiments related folders, the first keep .jpeg(s), the second .csv(s)
 backend/thumbnails/*
 backend/experiments/*
