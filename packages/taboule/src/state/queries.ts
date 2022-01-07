@@ -6,7 +6,7 @@ import {
   VideoMetadata,
 } from '@shared/models/contributor/ContributorPersonalStats';
 import { SearchQuery } from '@shared/models/http/SearchQuery';
-import { Metadata } from '@shared/models/Metadata';
+import { GuardoniExperiment, Metadata } from '@shared/models/Metadata';
 import { GetAPI } from '@shared/providers/api.provider';
 import { available, queryStrict } from 'avenger';
 import { CachedQuery } from 'avenger/lib/Query';
@@ -27,7 +27,8 @@ type EndpointQuery<C> = CachedQuery<SearchRequestInput, APIError, Results<C>>;
 
 export interface TabouleQueries {
   ccRelatedUsers: EndpointQuery<ChannelRelated>;
-  compareExperiment: EndpointQuery<Metadata>;
+  getExperimentById: EndpointQuery<Metadata>;
+  getExperimentList: EndpointQuery<GuardoniExperiment>;
   personalSearches: EndpointQuery<SearchMetadata>;
   personalAds: EndpointQuery<any>;
   personalHomes: EndpointQuery<HomeMetadata>;
@@ -67,7 +68,7 @@ export const GetTabouleQueries = ({
     available
   );
 
-  const compareExperiment = queryStrict<
+  const getExperimentById = queryStrict<
     SearchRequestInput,
     APIError,
     Results<Metadata>
@@ -78,6 +79,29 @@ export const GetTabouleQueries = ({
           ...input,
         }),
         TE.map((content) => ({ total: content.length, content }))
+      ),
+    available
+  );
+
+  const getExperimentList = queryStrict<
+    SearchRequestInput,
+    APIError,
+    Results<GuardoniExperiment>
+  >(
+    (input) =>
+      pipe(
+        API.v2.Public.GetExperimentList({
+          ...input,
+        }),
+        TE.map((content) => {
+          return {
+            total: content.total,
+            content: content.content.map((c) => ({
+              ...c,
+              id: c.experimentId,
+            })),
+          };
+        })
       ),
     available
   );
@@ -152,7 +176,8 @@ export const GetTabouleQueries = ({
 
   return {
     ccRelatedUsers,
-    compareExperiment,
+    getExperimentById,
+    getExperimentList,
     personalHomes,
     personalAds,
     personalVideos,
