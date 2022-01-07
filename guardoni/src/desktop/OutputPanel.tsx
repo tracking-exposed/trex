@@ -1,12 +1,49 @@
-import { Box, Typography } from '@material-ui/core';
+import {
+  Accordion,
+  AccordionDetails,
+  AccordionSummary,
+  Box,
+  makeStyles,
+  Typography,
+} from '@material-ui/core';
 import * as React from 'react';
 import { v4 as uuid } from 'uuid';
+import MuiAlert, { AlertProps } from '@material-ui/lab/Alert';
+import { AlertTitle } from '@material-ui/lab';
+
+function Alert(props: AlertProps): JSX.Element {
+  return <MuiAlert elevation={6} variant="filled" {...props} />;
+}
+
+const alertSeverity = (level: OutputItem['level']): AlertProps['severity'] => {
+  if (level === 'Error') {
+    return 'error';
+  }
+  return 'info';
+};
+
+const useStyles = makeStyles((theme) => ({
+  accordion: {
+    '& > .MuiAccordionSummary-root': {
+      padding: 0,
+      '& > .MuiAccordionSummary-content': {
+        fontWeight: theme.typography.fontWeightBold,
+      },
+    },
+  },
+  alert: {
+    '&> .MuiAlert-message': {
+      maxWidth: '100%',
+      overflow: 'auto',
+    },
+  },
+}));
 
 export interface OutputItem {
   id: string;
   level: 'Error' | 'Info';
   message: string;
-  details?: string[];
+  details?: string[] | object;
 }
 
 interface OutputPanelProps {
@@ -14,6 +51,8 @@ interface OutputPanelProps {
 }
 
 const OutputPanel: React.FC<OutputPanelProps> = ({ items }) => {
+  const classes = useStyles();
+
   return (
     <Box>
       <Typography variant="h5">Output</Typography>
@@ -25,34 +64,38 @@ const OutputPanel: React.FC<OutputPanelProps> = ({ items }) => {
               marginBottom: 20,
             }}
           >
-            <Box>
-              <Typography
-                variant="h6"
-                color={item.level === 'Error' ? 'error' : 'inherit'}
-                style={{
-                  fontWeight: 600,
-                }}
-                display="inline"
-              >
-                {item.level}
-              </Typography>
-              :{' '}
-              <Typography
-                display="inline"
-                variant="subtitle1"
-                color={item.level === 'Error' ? 'error' : 'inherit'}
-              >
-                {item.message}
-              </Typography>
-            </Box>
+            <Alert
+              className={classes.alert}
+              severity={alertSeverity(item.level)}
+              variant="outlined"
+              elevation={0}
+            >
+              <AlertTitle>{item.message}</AlertTitle>
+              {item.details === undefined ? null : (
+                <Accordion
+                  className={classes.accordion}
+                  variant="elevation"
+                  elevation={0}
+                  style={{ margin: 0, padding: 0, overflow: 'auto' }}
+                >
+                  <AccordionSummary>Details</AccordionSummary>
 
-            {item.details ? (
-              <Box>
-                {item.details.map((detail) => (
-                  <Typography key={uuid()}>{detail}</Typography>
-                ))}
-              </Box>
-            ) : null}
+                  {Array.isArray(item.details) ? (
+                    <AccordionDetails>
+                      {item.details.map((detail) => (
+                        <Typography key={uuid()}>{detail}</Typography>
+                      ))}
+                    </AccordionDetails>
+                  ) : (
+                    <AccordionDetails>
+                      <pre style={{ maxWidth: '100%' }}>
+                        {JSON.stringify(item.details, null, 2)}
+                      </pre>
+                    </AccordionDetails>
+                  )}
+                </Accordion>
+              )}
+            </Alert>
           </Box>
         ))}
       </Box>

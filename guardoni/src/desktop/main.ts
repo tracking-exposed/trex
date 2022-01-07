@@ -74,105 +74,110 @@ export const run = async (): Promise<void> => {
         sequenceS(TE.ApplicativePar)({
           guardoniApp: createGuardoniWindow(app, win),
           mainWindow: TE.right(win),
+          extension: TE.tryCatch(
+            () =>
+              session.defaultSession.loadExtension(
+                path.join(__dirname, '../extension')
+              ),
+            E.toError
+          ),
         })
       ),
-      TE.chain(({ guardoniApp, mainWindow }) => {
+      TE.chain(({ guardoniApp, mainWindow, extension }) => {
+        mainWindow.webContents.postMessage('guardoniOutput', {
+          message: 'Extension loaded',
+          details: extension,
+        });
+
         return pipe(
-          sequenceS(TE.ApplicativeSeq)({
-            loadExtension: TE.tryCatch(
-              () =>
-                session.defaultSession.loadExtension(
-                  path.join(__dirname, '../extension')
-                ),
-              E.toError
-            ),
-            runGuardoni: TE.tryCatch(
-              () =>
-                new Promise((resolve, reject) => {
-                  ipcMain.on(
-                    'startGuardoni',
-                    // eslint-disable-next-line @typescript-eslint/no-misused-promises
-                    async (event, args: guardoni.Config): Promise<void> => {
-                      const {
-                        profileId: profile,
-                        evidenceTag,
-                        experiment,
-                      } = args;
+          TE.tryCatch(
+            () =>
+              new Promise((resolve, reject) => {
+                ipcMain.on(
+                  'startGuardoni',
+                  // eslint-disable-next-line @typescript-eslint/no-misused-promises
+                  async (event, args: guardoni.Config): Promise<void> => {
+                    const {
+                      profileId: profile,
+                      evidenceTag,
+                      experiment,
+                    } = args;
 
-                      if (guardoniApp.window.isDestroyed()) {
-                        mainWindow.webContents.postMessage('guardoniOutput', {
-                          message:
-                            'Guardoni window has been destroyed, creating it...',
-                        });
-                        const result = await createGuardoniWindow(
-                          app,
-                          mainWindow
-                        )();
-                        if (result._tag === 'Left') {
-                          return reject(
-                            new Error('Cant initialized guardoni window')
-                          );
-                        }
-                        guardoniApp = result.right;
-                      }
-                      guardoniApp.window.on('close', () => {
-                        const closeError = new Error(
-                          'Guardoni window closed before execution finished'
+                    if (guardoniApp.window.isDestroyed()) {
+                      mainWindow.webContents.postMessage('guardoniOutput', {
+                        message:
+                          'Guardoni window has been destroyed, creating it...',
+                      });
+
+                      const result = await createGuardoniWindow(
+                        app,
+                        mainWindow
+                      )();
+                      if (result._tag === 'Left') {
+                        return reject(
+                          new Error('Cant initialized guardoni window')
                         );
-                        reject(closeError);
-                      });
-
-                      // eslint-disable-next-line no-console
-                      log.info('Starting guardoni with', {
-                        profile,
-                        evidenceTag,
-                      });
-
-                      const profileData = await guardoni.profileExecount(
-                        profile,
-                        evidenceTag
-                      );
-
-                      mainWindow.webContents.postMessage('guardoniOutput', {
-                        message: 'Guardoni window has been destroyed',
-                        details: [profileData.profileName, profileData.udd],
-                      });
-
-                      const directivesURL = guardoni.buildAPIurl(
-                        'directives',
-                        experiment
-                      );
-
-                      const directives = await guardoni.pullDirectives(
-                        directivesURL
-                      );
-
-                      mainWindow.webContents.postMessage('guardoniOutput', {
-                        id: uuid(),
-                        message: 'Directives created',
-                        details: directives.map((d) => d.name),
-                      });
-
-                      guardoniApp.window.show();
-
-                      const page = await pie.getPage(
-                        guardoniApp.browser,
-                        guardoniApp.window
-                      );
-                      await guardoni.guardoniExecution(
-                        experiment,
-                        directives,
-                        page,
-                        profileData
-                      );
-
-                      return resolve(undefined);
+                      }
+                      guardoniApp = result.right;
                     }
-                  );
-                }),
-              E.toError
-            ),
-          }),
+
+                    guardoniApp.window.on('close', () => {
+                      const closeError = new Error(
+                        'Guardoni window closed before execution finished'
+                      );
+                      reject(closeError);
+                    });
+
+                    // eslint-disable-next-line no-console
+                    log.info('Starting guardoni with', {
+                      profile,
+                      evidenceTag,
+                    });
+
+                    const profileData = await guardoni.profileExecount(
+                      profile,
+                      evidenceTag
+                    );
+
+                    mainWindow.webContents.postMessage('guardoniOutput', {
+                      message: 'Guardoni window has been destroyed',
+                      details: [profileData.profileName, profileData.udd],
+                    });
+
+                    const directivesURL = guardoni.buildAPIurl(
+                      'directives',
+                      experiment
+                    );
+
+                    const directives = await guardoni.pullDirectives(
+                      directivesURL
+                    );
+
+                    mainWindow.webContents.postMessage('guardoniOutput', {
+                      id: uuid(),
+                      message: 'Directives created',
+                      details: directives.map((d) => d.name),
+                    });
+
+                    guardoniApp.window.show();
+
+                    const page = await pie.getPage(
+                      guardoniApp.browser,
+                      guardoniApp.window
+                    );
+                    await guardoni.guardoniExecution(
+                      experiment,
+                      directives,
+                      page,
+                      profileData
+                    );
+
+                    return resolve(undefined);
+                  }
+                );
+              }),
+            E.toError
+          ),
           TE.mapLeft((e) => {
             log.error('An error occured ', e);
             mainWindow.webContents.postMessage('guardoniError', e);
