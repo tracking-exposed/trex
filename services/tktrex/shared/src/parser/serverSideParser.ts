@@ -13,8 +13,14 @@ export const createParser = (): TikTokParserServerInterface => {
     browserSideParser.parseForYouVideo,
   );
 
+  const parseSearchVideo: (html: string) => ParseResult = flow(
+    ServerDOM.parseHTML,
+    browserSideParser.parseSearchVideo,
+  );
+
   return {
     parseForYouVideo,
+    parseSearchVideo,
   };
 };
 

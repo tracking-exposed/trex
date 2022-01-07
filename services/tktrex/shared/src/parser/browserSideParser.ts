@@ -58,12 +58,17 @@ const metrics = combineParsers({
 const name = parseEltText('[data-e2e="video-author-nickname"]');
 const username = parseEltText('[data-e2e="video-author-uniqueid"]');
 
-const author = combineParsers({
-  name,
+const baseAuthor = {
   username,
   link: mapValue(
     (parsedName) => `/@${parsedName}`,
   )(username),
+};
+
+const authorWithoutName = combineParsers(baseAuthor);
+const author = combineParsers({
+  ...baseAuthor,
+  name,
 });
 
 const music = combineParsers({
@@ -72,18 +77,28 @@ const music = combineParsers({
 });
 
 export const createParser = (): TikTokParserBrowserInterface => {
-  const parseForYouVideo = combineParsers({
+  const commonParsers = {
     type: parseAlways('foryou'),
-    author,
     baretext,
     description,
     hashtags,
     metrics,
     music,
+  };
+
+  const parseForYouVideo = combineParsers({
+    ...commonParsers,
+    author,
+  });
+
+  const parseSearchVideo = combineParsers({
+    ...commonParsers,
+    author: authorWithoutName,
   });
 
   return {
     parseForYouVideo,
+    parseSearchVideo,
   };
 };
 
