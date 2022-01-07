@@ -1,4 +1,4 @@
-import { app, BrowserWindow, ipcMain, session } from 'electron';
+import { app, BrowserWindow, ipcMain } from 'electron';
 import * as path from 'path';
 import puppeteer from 'puppeteer-core';
 import pie from 'puppeteer-in-electron';
@@ -32,6 +32,7 @@ const creatMainWindow = (): TE.TaskEither<Error, BrowserWindow> => {
     });
 
     await mainWindow.loadURL(mainWindowHTML);
+
     mainWindow.webContents.openDevTools();
     mainWindow.on('closed', function () {
       mainWindow = null;
@@ -51,7 +52,6 @@ const createGuardoniWindow = (
     const browser = await pie.connect(app, puppeteer);
 
     const window = new BrowserWindow({
-      autoHideMenuBar: true,
       show: false,
       parent: parentWindow,
     });
@@ -74,21 +74,9 @@ export const run = async (): Promise<void> => {
         sequenceS(TE.ApplicativePar)({
           guardoniApp: createGuardoniWindow(app, win),
           mainWindow: TE.right(win),
-          extension: TE.tryCatch(
-            () =>
-              session.defaultSession.loadExtension(
-                path.join(__dirname, '../extension')
-              ),
-            E.toError
-          ),
         })
       ),
-      TE.chain(({ guardoniApp, mainWindow, extension }) => {
-        mainWindow.webContents.postMessage('guardoniOutput', {
-          message: 'Extension loaded',
-          details: extension,
-        });
-
+      TE.chain(({ guardoniApp, mainWindow }) => {
         return pipe(
           TE.tryCatch(
             () =>
@@ -120,6 +108,16 @@ export const run = async (): Promise<void> => {
                       }
                       guardoniApp = result.right;
                     }
+
+                    const extension =
+                      await guardoniApp.window.webContents.session.loadExtension(
+                        path.join(__dirname, '../extension')
+                      );
+
+                    mainWindow.webContents.postMessage('guardoniOutput', {
+                      message: 'Extension loaded',
+                      details: extension,
+                    });
 
                     guardoniApp.window.on('close', () => {
                       const closeError = new Error(

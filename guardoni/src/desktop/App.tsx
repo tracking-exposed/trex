@@ -2,6 +2,7 @@ import {
   Button,
   Checkbox,
   FormControlLabel,
+  FormHelperText,
   FormGroup,
   Grid,
   Input,
@@ -18,9 +19,27 @@ const useStyles = makeStyles((theme) => ({
     width: '100%',
     height: '100%',
   },
+  formGroup: {
+    margin: theme.spacing(2),
+  },
   formControl: {
     alignItems: 'flex-start',
-    marginBottom: theme.spacing(2),
+    justifyContent: 'flex-start',
+    margin: 0,
+  },
+  formControlCheckbox: {
+    alignItems: 'center',
+    justifyContent: 'flex-start',
+    margin: 0,
+  },
+  formControlWithMarginBottom: {
+    alignItems: 'flex-start',
+    justifyContent: 'flex-start',
+    margin: 0,
+    marginBottom: theme.spacing(4),
+  },
+  formHelperText: {
+    marginBottom: theme.spacing(4),
   },
 }));
 
@@ -69,7 +88,7 @@ export const App: React.FC = () => {
   return (
     <Grid container spacing={2} className={classes.container}>
       <Grid item md={6} sm={6}>
-        <FormGroup>
+        <FormGroup className={classes.formGroup}>
           <FormControlLabel
             label="Profile"
             className={classes.formControl}
@@ -89,10 +108,14 @@ export const App: React.FC = () => {
               />
             }
           />
+          <FormHelperText className={classes.formHelperText}>
+            The profile data will be stored in{' '}
+            {`~/.config/guardoni/profiles/${config.profileId}`}
+          </FormHelperText>
 
           <FormControlLabel
             label="Experiment"
-            className={classes.formControl}
+            className={classes.formControlWithMarginBottom}
             labelPlacement="top"
             control={
               <Input
@@ -112,7 +135,7 @@ export const App: React.FC = () => {
 
           <FormControlLabel
             label="Evidence Tag"
-            className={classes.formControl}
+            className={`${classes.formControl} ${classes.formControlWithMarginBottom}`}
             labelPlacement="top"
             control={
               <Input
@@ -130,9 +153,9 @@ export const App: React.FC = () => {
           />
 
           <FormControlLabel
-            className={classes.formControl}
+            className={classes.formControlCheckbox}
             label={'Automatic'}
-            labelPlacement="top"
+            labelPlacement="end"
             control={
               <Checkbox
                 id="automatic"
@@ -148,9 +171,9 @@ export const App: React.FC = () => {
           />
 
           <FormControlLabel
-            className={classes.formControl}
+            className={classes.formControlCheckbox}
             label={'Shadow Ban'}
-            labelPlacement="top"
+            labelPlacement="end"
             control={
               <Checkbox
                 checked={config.shadowban}
@@ -165,9 +188,9 @@ export const App: React.FC = () => {
           />
 
           <FormControlLabel
-            className={classes.formControl}
+            className={classes.formControlCheckbox}
             label={'Headless'}
-            labelPlacement="top"
+            labelPlacement="end"
             control={
               <Checkbox
                 checked={config.headless}
