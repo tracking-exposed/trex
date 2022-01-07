@@ -3,7 +3,7 @@ import {
 } from 'fp-ts/lib/function';
 
 import {
-  chain, isRight, left, mapLeft, right,
+  chain, isRight, left, right,
   Either,
 } from 'fp-ts/lib/Either';
 
@@ -69,17 +69,6 @@ export const findEltAttrText = (selector: string, attr: string) =>
       }),
     );
 
-export const mapParseError:
-  (f: (e: ParseError) => ParseError) =>
-    <E, A>(fa: Either<E, A>) =>
-      Either<ParseError, A> = (transformError) => mapLeft((err) => {
-        if (err instanceof ParseError) {
-          return transformError(err);
-        }
-
-        return transformError(new ParseError('unknown error'));
-      });
-
 export type ScrapedValue = undefined | string | string[] | ScrapedObject;
 export interface ScrapedObject {
   [key: string]: ScrapedValue
@@ -126,17 +115,28 @@ const updateErrorPath = (key: string) => (errs: ParseError[]) =>
 export const combineParsers = (parsers: { [key: string]: Parser }): Parser =>
   (node: SearchableNode): ParseResult<ScrapedObject> =>
     Object.entries(parsers).reduce(
-      (acc: ParseResult<ScrapedObject>, [key, parser]: [string, Parser]) => {
+      (
+        acc: ParseResult<ScrapedObject>,
+        [key, parser]: [string, Parser],
+      ): ParseResult<ScrapedObject> => {
         const result = parser(node);
+
+        if (result.errors.length > 0) {
+          return {
+            ...acc,
+            errors: [
+              ...acc.errors,
+              ...updateErrorPath(key)(result.errors),
+            ],
+          };
+        }
+
         return {
+          ...acc,
           value: {
             ...acc.value,
             [key]: result.value,
           },
-          errors: [
-            ...acc.errors,
-            ...updateErrorPath(key)(result.errors),
-          ],
         };
       },
       { value: {}, errors: [] },
