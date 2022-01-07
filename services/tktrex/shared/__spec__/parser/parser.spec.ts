@@ -1,8 +1,8 @@
 import { isRight } from 'fp-ts/lib/Either';
+import { PathReporter } from 'io-ts/lib/PathReporter';
 
 import {
   expectToBeIncludedIn,
-  expectToBeEitherRight,
   normalizeDeepStrings,
 } from '../../src/lib/util';
 import { ForYouVideoMetaData } from '../../src/models/MetaData';
@@ -22,14 +22,27 @@ describe('The TikTok parser for the ForYou feed', () => {
 
   // then run the tests on all the samples we deem valid
   test.each(forYouSamples)('"foryou" with id "$id"', (sample) => {
-    expectToBeEitherRight(
-      expectToBeIncludedIn(
-        // trim the strings in the sample metadata to
-        // avoid irrelevant errors
-        normalizeDeepStrings(
-          sample.metadata,
-        ),
-      ),
-    )(parseForYouVideo(sample.html));
+    const expected = normalizeDeepStrings(sample.metadata);
+    const { value: actual, errors } = parseForYouVideo(sample.html);
+
+    expect(errors).toHaveLength(0);
+
+    // check that the parsed object is included in the sample
+    // (we only check for inclusion because the sample has
+    // extraneous keys)
+    expectToBeIncludedIn(expected)(actual);
+
+    // because we only checked for the inclusion of the parsed value
+    // inside the expected value,
+    // now we also check that it validates the schema of the
+    // expected value
+    const validation = ForYouVideoMetaData.decode(actual);
+    if (!isRight(validation)) {
+      const report = PathReporter.report(validation);
+      throw new Error([
+        'expected valid ForYouVideoMetaData:',
+        ...report,
+      ].join('\n'));
+    }
   });
 });

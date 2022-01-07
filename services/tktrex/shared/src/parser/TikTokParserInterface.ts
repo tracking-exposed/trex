@@ -1,16 +1,11 @@
-import { Either } from 'fp-ts/lib/Either';
+import { ParseResult } from './parserUtil';
 
-import { ParseError } from '../models/Error';
-import { ForYouVideoMetaData } from '../models/MetaData';
-
-export type SearchableNode = Element | Document;
-
-interface TikTokParserInterface<T extends string | SearchableNode> {
-  parseForYouVideo: (input: T) => Either<ParseError, ForYouVideoMetaData>;
+interface TikTokParserInterface<T extends string | Document> {
+  parseForYouVideo: (input: T) => ParseResult;
 }
 
 export interface TikTokParserServerInterface
   extends TikTokParserInterface<string> {}
 
 export interface TikTokParserBrowserInterface
-  extends TikTokParserInterface<SearchableNode> {}
+  extends TikTokParserInterface<Document> {}

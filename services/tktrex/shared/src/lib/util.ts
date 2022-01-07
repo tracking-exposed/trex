@@ -10,7 +10,7 @@ import { pipe } from 'fp-ts/lib/function';
  * - decoding URL encoded characters,
  * - and converting null and undefined to the empty string.
  */
-export const normalizeString = (x: string | undefined | null): string =>
+export const normalizeString = (x: unknown): string =>
   (typeof x === 'string' ? decodeURI(x.trim().replace(/\s+/g, ' ')) : '');
 
 type Normalizable =
@@ -103,3 +103,28 @@ export const expectToBeEitherRight = <E, A, B>(assertFn: (a: A) => B) =>
       }
     }));
   };
+
+/**
+ * Accepts an optional function that takes a Left value and returns
+ * a function taking an Either that will throw an error if its argument
+ * is not a Left and otherwise call the initial function (if provided)
+ * on the unpacked Left value.
+ *
+ * The provided optional function may be used to assert the type
+ * of the Left obtained.
+ *
+ * Used in tests.
+ */
+export const expectToBeEitherLeft = <E, A>(assertFn?: (e: E) => void) =>
+  (received: Either<E, A>): Either<unknown, A> =>
+    pipe(
+      received,
+      map(() => {
+        throw new Error('expected received object to be a Left');
+      }),
+      mapLeft((e) => {
+        if (assertFn) {
+          assertFn(e);
+        }
+      }),
+    );

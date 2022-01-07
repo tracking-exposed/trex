@@ -52,7 +52,7 @@ export const VideoMetaDataBase = t.type({
   hashtags: t.array(t.string),
 
   metrics: Metrics,
-});
+}, 'VideoMetaDataBase');
 
 export type VideoMetaDataBase = t.TypeOf<typeof VideoMetaDataBase>;
 
@@ -62,7 +62,7 @@ export const ForYouVideoMetaData = t.intersection([
     type: t.literal('foryou'),
     author: AuthorWithName,
     music: Music,
-  }),
+  }, 'foryou'),
 ], 'ForYouVideoMetaData');
 
 export type ForYouVideoMetaData = t.TypeOf<typeof ForYouVideoMetaData>;
@@ -73,7 +73,7 @@ export const FollowingVideoMetaData = t.intersection([
     type: t.literal('following'),
     author: AuthorWithName,
     music: Music,
-  }),
+  }, 'following'),
 ], 'FollowingVideoMetaData');
 
 export type FollowingVideoMetaData = t.TypeOf<typeof FollowingVideoMetaData>;
@@ -81,10 +81,10 @@ export type FollowingVideoMetaData = t.TypeOf<typeof FollowingVideoMetaData>;
 export const SearchVideoMetaData = t.intersection([
   VideoMetaDataBase,
   t.type({
-    type: t.literal('following'),
+    type: t.literal('search'),
     author: Author,
     music: Music,
-  }),
+  }, 'search'),
 ], 'SearchVideoMetaData');
 
 export type SearchVideoMetaData = t.TypeOf<typeof SearchVideoMetaData>;

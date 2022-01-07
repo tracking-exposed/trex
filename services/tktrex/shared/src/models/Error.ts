@@ -12,7 +12,7 @@ export class URLError extends Error {
 }
 
 export class ParseError extends Error {
-  public readonly missingFields: string[] = [];
+  public missingFields: string[] = [];
 
   addMissingField(field: string): ParseError {
     this.missingFields.push(field);
