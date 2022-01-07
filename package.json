@@ -12,7 +12,7 @@
     "shared",
     "packages/*",
     "backend",
-    "methodology",
+    "guardoni",
     "YCAI"
   ],
   "packageManager": "yarn@3.1.1",
@@ -33,7 +33,6 @@
   "devDependencies": {
     "@commitlint/cli": "^13.2.1",
     "@commitlint/config-conventional": "^13.2.0",
-    "@types/eslint": "^8.2.1",
     "@types/node": "^16.11.19",
     "@types/prettier": "^2.4.2",
     "eslint": "^8.6.0",

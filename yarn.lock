@@ -1899,7 +1899,6 @@ __metadata:
     "@material-ui/data-grid": ^4.0.0-alpha.37
     "@material-ui/icons": ^4.11.2
     "@material-ui/styles": ^4.11.4
-    "@types/eslint": ^8.2.1
     "@types/node": ^16.11.19
     "@types/prettier": ^2.4.2
     "@types/react": ^17.0.38
@@ -1916,7 +1915,7 @@ __metadata:
     eslint-config-standard-with-typescript: ^21.0.1
     eslint-plugin-import: ^2.25.4
     eslint-plugin-node: ^11.1.0
-    eslint-plugin-promise: ^6.0.0
+    eslint-plugin-promise: ^5.2.0
     eslint-plugin-react: ^7.28.0
     fp-ts: ^2.11.6
     io-ts: ^2.2.16
@@ -2448,7 +2447,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/eslint@npm:*, @types/eslint@npm:^8.2.1":
+"@types/eslint@npm:*":
   version: 8.2.1
   resolution: "@types/eslint@npm:8.2.1"
   dependencies:
@@ -2975,10 +2974,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/uuid@npm:^8.3.3":
-  version: 8.3.3
-  resolution: "@types/uuid@npm:8.3.3"
-  checksum: 3f340155bb1161f9ffa7163926d6222fea8f3505c23619b72bcc230883354926672c08a06510c7a543f73553c792a84444cc1744cff631b4ba988763e4bd7a8f
+"@types/uuid@npm:^8.3.4":
+  version: 8.3.4
+  resolution: "@types/uuid@npm:8.3.4"
+  checksum: 6f11f3ff70f30210edaa8071422d405e9c1d4e53abbe50fdce365150d3c698fe7bbff65c1e71ae080cbfb8fded860dbb5e174da96fdbbdfcaa3fb3daa474d20f
   languageName: node
   linkType: hard
 
@@ -5196,12 +5195,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"bson@npm:^4.6.0":
-  version: 4.6.0
-  resolution: "bson@npm:4.6.0"
+"bson@npm:^4.6.1":
+  version: 4.6.1
+  resolution: "bson@npm:4.6.1"
   dependencies:
     buffer: ^5.6.0
-  checksum: d38ca1b6c581d8667137c62258f22c0076575879c77f278c08282721844166afc0538d9fb4942976bb320a2e3dec3ddfae57b7ad52845bf7464bf997d3fdc5a2
+  checksum: 32c38400b0c5f85cf22c28b9f9bbc63b3c090c23a749a8c159db975f225161a7fe776f8a18ed1da3f58a9e7496ce2b7935753e9471f17c614bf02ebab145e052
   languageName: node
   linkType: hard
 
@@ -8127,7 +8126,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"electron-builder@npm:^22.14.5":
+"electron-builder@npm:^22.14.12":
   version: 22.14.12
   resolution: "electron-builder@npm:22.14.12"
   dependencies:
@@ -8846,15 +8845,6 @@ __metadata:
   peerDependencies:
     eslint: ^7.0.0
   checksum: 5d6b2d28408c5afde6386942862427af3d83c9a130eb2555bb54b26a1761914e2c7326aca1be26dd3fee6405e65a2ee9432a4526147e5962545060ea0ef64058
-  languageName: node
-  linkType: hard
-
-"eslint-plugin-promise@npm:^6.0.0":
-  version: 6.0.0
-  resolution: "eslint-plugin-promise@npm:6.0.0"
-  peerDependencies:
-    eslint: ^7.0.0 || ^8.0.0
-  checksum: 7e761507c51267b77e4ad710e7c8938aa4f8f69b975886034e57497a1816e9527eda364e25aac03d1b4e0df2e738ba98e49ad075d028824fcfea533a1419751c
   languageName: node
   linkType: hard
 
@@ -10548,15 +10538,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"guardoni@workspace:methodology":
+"guardoni@workspace:guardoni":
   version: 0.0.0-use.local
-  resolution: "guardoni@workspace:methodology"
+  resolution: "guardoni@workspace:guardoni"
   dependencies:
     "@material-ui/core": ^4.12.3
     "@material-ui/icons": ^4.11.2
     "@material-ui/lab": ^4.0.0-alpha.60
     "@pmmmwh/react-refresh-webpack-plugin": ^0.5.4
-    "@types/eslint": ^8.2.1
     "@types/lodash": ^4.14.178
     "@types/nconf": ^0.10.1
     "@types/prettier": ^2.4.2
@@ -10570,7 +10559,7 @@ __metadata:
     csv-parse: ^4.16.3
     debug: ^4.3.3
     electron: 16.0.6
-    electron-builder: ^22.14.5
+    electron-builder: ^22.14.12
     electron-debug: ^3.2.0
     electron-log: ^4.4.4
     electron-puppeteer: ^1.1.1
@@ -14469,14 +14458,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"mini-css-extract-plugin@npm:^2.4.5":
-  version: 2.4.5
-  resolution: "mini-css-extract-plugin@npm:2.4.5"
+"mini-css-extract-plugin@npm:^2.4.6":
+  version: 2.4.6
+  resolution: "mini-css-extract-plugin@npm:2.4.6"
   dependencies:
     schema-utils: ^4.0.0
   peerDependencies:
     webpack: ^5.0.0
-  checksum: 09ad56ac33fd960c6a645a2a18b0fee22c34c8e48e91fc48acc5ac3b9c101a5e9ea50d168b94c9fcdf571265271f6e4dd4fea835b2242907d4311b170aff322f
+  checksum: 7eb3dcbf1e46d5a9cdb6ed1c2b687f6ad5a739e420208511b01f59d45d69328fa7ba57aa44c9b3f7beff8e27cd9fe5188ecd636b4c33f9199ea3bdb9f4a5218e
   languageName: node
   linkType: hard
 
@@ -14759,18 +14748,19 @@ __metadata:
   languageName: node
   linkType: hard
 
-"mongodb@npm:^4.2.2":
-  version: 4.2.2
-  resolution: "mongodb@npm:4.2.2"
+"mongodb@npm:^4.3.0":
+  version: 4.3.0
+  resolution: "mongodb@npm:4.3.0"
   dependencies:
-    bson: ^4.6.0
+    bson: ^4.6.1
     denque: ^2.0.1
     mongodb-connection-string-url: ^2.3.2
     saslprep: ^1.0.3
+    socks: ^2.6.1
   dependenciesMeta:
     saslprep:
       optional: true
-  checksum: 645cc8889ee093c0d6479638aa4f5b3e587b84be5179a35993f0796fda6b25d22c4b6f7d5f27b4d23c3aacb694db2ff696ea0a5080ddc745508ffff95131f3b5
+  checksum: c1772ebf1d78076e998817c9fc49bdcb8f2b006e88ca31fa72e2d8c4cfcc15e0ce5f545e3523e240d2706cf482faaa0443939799c6a0880ec19566fa7cea6fa6
   languageName: node
   linkType: hard
 
@@ -18138,7 +18128,6 @@ __metadata:
   dependencies:
     "@commitlint/cli": ^13.2.1
     "@commitlint/config-conventional": ^13.2.0
-    "@types/eslint": ^8.2.1
     "@types/node": ^16.11.19
     "@types/prettier": ^2.4.2
     eslint: ^8.6.0
@@ -18668,7 +18657,7 @@ __metadata:
     fp-ts: ^2.11.6
     io-ts: ^2.2.16
     io-ts-types: ^0.5.16
-    mini-css-extract-plugin: ^2.4.5
+    mini-css-extract-plugin: ^2.4.6
     prettier: ^2.5.1
     react: ^17.0.2
     react-dom: ^17.0.2
@@ -22061,7 +22050,7 @@ __metadata:
     "@types/nconf": ^0.10.1
     "@types/node": ^16.11.19
     "@types/supertest": ^2.0.11
-    "@types/uuid": ^8.3.3
+    "@types/uuid": ^8.3.4
     "@typescript-eslint/eslint-plugin": ^5.9.0
     "@typescript-eslint/parser": ^5.9.0
     abort-controller: ^3.0.0
@@ -22087,7 +22076,7 @@ __metadata:
     jest: ^27.4.7
     jsdom: ^13.2.0
     moment: ^2.29.1
-    mongodb: ^4.2.2
+    mongodb: ^4.3.0
     nacl-signature: ^1.0.0
     nconf: ^0.8.5
     node-fetch: ^2.6.6
@@ -22113,11 +22102,13 @@ __metadata:
     "@material-ui/icons": ^4.11.2
     "@material-ui/lab": ^4.0.0-alpha.60
     "@types/mini-css-extract-plugin": ^2.4.0
+    "@typescript-eslint/eslint-plugin": ^5.9.0
     autoprefixer: ^6.7.7
     bs58: ^3.1.0
     chai: ^3.5.0
     cheerio: ^0.22.0
     classnames: ^2.3.1
+    copy-webpack-plugin: ^9.1.0
     create-react-class: ^15.7.0
     cross-env: ^2.0.1
     css-loader: ^6.5.1
@@ -22133,7 +22124,7 @@ __metadata:
     jquery: ^3.6.0
     lodash: ^4.17.21
     marked: ^0.8.2
-    mini-css-extract-plugin: ^2.4.5
+    mini-css-extract-plugin: ^2.4.6
     mocha: ^7.2.0
     postcss-loader: ^0.10.1
     react: ^16.14.0

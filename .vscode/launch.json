@@ -22,10 +22,10 @@
       "name": "Debug Guardoni Electron",
       "type": "node",
       "request": "launch",
-      "cwd": "${workspaceFolder}/methodology",
-      "runtimeExecutable": "${workspaceFolder}/methodology/node_modules/.bin/electron",
+      "cwd": "${workspaceFolder}/guardoni",
+      "runtimeExecutable": "${workspaceFolder}/guardoni/node_modules/.bin/electron",
       "windows": {
-        "runtimeExecutable": "${workspaceFolder}/methodology/node_modules/.bin/electron.cmd"
+        "runtimeExecutable": "${workspaceFolder}/guardoni/node_modules/.bin/electron.cmd"
       },
       "args": ["."],
       "outputCapture": "std"

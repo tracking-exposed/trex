@@ -6,11 +6,15 @@ const path = require('path');
 const moment = require('moment');
 
 const webpack = require('webpack');
-const autoPrefixer = require('autoprefixer');
+// const autoPrefixer = require('autoprefixer');
 const combineLoaders = require('webpack-combine-loaders');
 const WebpackNotifierPlugin = require('webpack-notifier');
 const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+const {
+  CopyWebpackPlugin,
+  FileManagerPlugin,
+} = require('../shared/build/webpack/plugins');
 
 require('dotenv').load({ silent: true });
 
@@ -20,6 +24,15 @@ const NODE_ENV = process.env.NODE_ENV || 'development';
 const PRODUCTION = NODE_ENV === 'production';
 const DEVELOPMENT = NODE_ENV === 'development';
 const BUILDISODATE = new Date().toISOString();
+const GUARDONI_TARGET = process.env.BUILD_TARGET === 'guardoni';
+const APP_VERSION = GUARDONI_TARGET
+  ? packageJSON.version
+      .split('.')
+      .filter((v, i) => i !== 2)
+      .concat('99')
+      .join('.')
+  : packageJSON.version;
+
 console.log(
   'NODE_ENV [' + process.env.NODE_ENV + '] Prod:',
   PRODUCTION,
@@ -40,11 +53,11 @@ const PATHS = {
 };
 
 /** EXTERNAL DEFINITIONS INJECTED INTO APP **/
-var DEV_SERVER = 'localhost';
-var ENV_DEP_SERVER = DEVELOPMENT
+const DEV_SERVER = 'localhost';
+const ENV_DEP_SERVER = DEVELOPMENT
   ? 'http://' + DEV_SERVER + ':9000'
   : 'https://youtube.tracking.exposed';
-var ENV_DEP_WEB = DEVELOPMENT
+const ENV_DEP_WEB = DEVELOPMENT
   ? 'http://' + DEV_SERVER + ':1313'
   : 'https://youtube.tracking.exposed';
 
@@ -54,28 +67,25 @@ const DEFINITIONS = {
     NODE_ENV: JSON.stringify(NODE_ENV),
     API_ROOT: JSON.stringify(ENV_DEP_SERVER + '/api/v' + LAST_VERSION),
     WEB_ROOT: JSON.stringify(ENV_DEP_WEB),
-    VERSION: JSON.stringify(packageJSON.version + (DEVELOPMENT ? '-dev' : '')),
+    VERSION: JSON.stringify(APP_VERSION + (DEVELOPMENT ? '-dev' : '')),
     BUILD: JSON.stringify(`On the ${moment().format('DD of MMMM at HH:mm')}.`),
     BUILDISODATE: JSON.stringify(BUILDISODATE),
     FLUSH_INTERVAL: JSON.stringify(DEVELOPMENT ? 10000 : 20000),
+    DATA_CONTRIBUTION_ENABLED: JSON.stringify(GUARDONI_TARGET),
   },
 };
 
 /** PLUGINS **/
-const PLUGINS = [
-  new webpack.DefinePlugin(DEFINITIONS),
-  // new webpack.plu.NoErrorsPlugin()
-];
+const PLUGINS = [new webpack.DefinePlugin(DEFINITIONS)];
 
-const PROD_PLUGINS = [
-  new webpack.LoaderOptionsPlugin({
-    debug: false,
-    minimize: true,
-    postcss: [autoPrefixer()],
-    debug: !PRODUCTION,
-  }),
-  // Add additional production plugins
-];
+// const PROD_PLUGINS = [
+//   new webpack.LoaderOptionsPlugin({
+//     minimize: true,
+//     postcss: [autoPrefixer()],
+//     debug: !PRODUCTION,
+//   }),
+//   // Add additional production plugins
+// ];
 
 const DEV_PLUGINS = [
   new WebpackNotifierPlugin({
@@ -90,12 +100,6 @@ const DEV_PLUGINS = [
   new MiniCssExtractPlugin(),
 ];
 
-// const EXTRACT_CSS_PLUGIN = new ExtractTextPlugin('styles.css', {
-//   allChunks: true,
-// });
-
-// PLUGINS.push(EXTRACT_CSS_PLUGIN);
-
 if (PRODUCTION) {
   /* firefox is giving me too many problem */
   // PLUGINS.push(...PROD_PLUGINS);
@@ -105,6 +109,57 @@ if (PRODUCTION) {
       JSON.stringify(DEFINITIONS['process.env'])
   );
   PLUGINS.push(...DEV_PLUGINS);
+}
+
+PLUGINS.push(
+  new CopyWebpackPlugin({
+    patterns: [
+      {
+        from: 'public',
+        to: PRODUCTION ? PATHS.DIST : PATHS.BUILD,
+        priority: 1,
+        filter: (file) => {
+          const { base } = path.parse(file);
+          return !['manifest.json'].includes(base);
+        },
+      },
+      {
+        priority: 0,
+        from: 'public/manifest.json',
+        to: PRODUCTION ? PATHS.DIST : PATHS.BUILD,
+        transform: (content) => {
+          const manifest = JSON.parse(content.toString());
+
+          manifest.version = APP_VERSION;
+
+          if (PRODUCTION) {
+            manifest.permissions = manifest.permissions.filter(
+              (p) => !p.includes('localhost')
+            );
+          }
+
+          return JSON.stringify(manifest, null, 2);
+        },
+      },
+    ],
+  })
+);
+
+if (NODE_ENV === 'production') {
+  PLUGINS.push(
+    new FileManagerPlugin({
+      events: {
+        onEnd: {
+          archive: [
+            {
+              source: './build',
+              destination: './extension.zip',
+            },
+          ],
+        },
+      },
+    })
+  );
 }
 
 /** LOADERS **/
@@ -178,7 +233,7 @@ const config = {
   },
 
   // devtool: PRODUCTION ? '#source-map' : '#inline-source-map',
-  devtool: PRODUCTION ? null : 'inline-source-map',
+  devtool: PRODUCTION ? false : 'inline-source-map',
 
   target: 'web',
 
@@ -193,20 +248,7 @@ const config = {
     rules: LOADERS,
   },
   optimization: {
-    minimizer: PRODUCTION
-      ? [
-          new UglifyJsPlugin({
-            compress: {
-              screw_ie8: true,
-              warnings: false,
-            },
-            output: {
-              comments: false,
-            },
-            sourceMap: true,
-          }),
-        ]
-      : [],
+    minimizer: PRODUCTION ? [new UglifyJsPlugin()] : [],
   },
 };
 
