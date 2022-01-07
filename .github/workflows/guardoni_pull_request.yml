@@ -40,6 +40,10 @@ jobs:
       - name: Lint code
         run: yarn lint
 
+      - name: Build shared
+        working-directory: ./
+        run: yarn shared build
+
       - name: Build extension
         working-directory: ./extension
         run: yarn build
