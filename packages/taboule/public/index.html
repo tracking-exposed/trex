@@ -19,7 +19,8 @@
           <option value="personalVideos">Personal Videos</option>
           <option value="personalHomes">Personal Homes</option>
           <option value="personalAds">Personal ADS</option>
-          <option value="compareExperiment" selected>Compare Experiment</option>
+          <option value="getExperimentById" selected>Compare Experiment</option>
+          <option value="getExperimentList" selected>Experiment list</option>
         </select>
         <div id="taboule-show-inputs" style="display: inline">
           <label>Show Params Inputs</label>
@@ -31,7 +32,7 @@
   </body>
   <script type="text/javascript" src="./taboule.js"></script>
   <script type="text/javascript">
-    // var baseURL = 'http://localhost:9000/api/'
+    // var baseURL = 'http://localhost:9000/api/';
     var baseURL = 'https://youtube.tracking.exposed/api/';
 
     const querySelect = document.querySelector('#taboule-query-value');

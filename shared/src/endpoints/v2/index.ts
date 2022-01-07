@@ -59,7 +59,11 @@ const GetPersonalCSV = Endpoint({
   Input: {
     Params: t.type({
       publicKey: t.string,
-      type: t.union([t.literal('home'), t.literal('video'), t.literal('search')]),
+      type: t.union([
+        t.literal('home'),
+        t.literal('video'),
+        t.literal('search'),
+      ]),
     }),
   },
   Output: t.any,
@@ -99,12 +103,17 @@ const GetExperimentList = Endpoint({
   Method: 'GET',
   getPath: ({ type, key }) => `/v2/guardoni/list/${type}/${key}`,
   Input: {
+    Query: SearchQuery,
     Params: t.type({
       type: t.union([t.literal('comparison'), t.literal('chiaroscuro')]),
       key: t.string,
     }),
   },
-  Output: t.array(GuardoniExperiment),
+  Output: t.strict({
+    content: t.array(GuardoniExperiment),
+    total: t.number,
+    pagination: t.any,
+  }),
 });
 
 const GetExperimentById = Endpoint({
