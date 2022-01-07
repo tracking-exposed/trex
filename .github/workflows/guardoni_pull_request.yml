@@ -44,9 +44,11 @@ jobs:
         working-directory: ./
         run: yarn shared build
 
-      - name: Build extension
+      - name: Build extension for guardoni
         working-directory: ./extension
-        run: yarn build
+        run: |
+          yarn build
+          yarn dist:guardoni
 
       - name: Build
         run: yarn build
