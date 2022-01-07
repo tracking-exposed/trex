@@ -41,7 +41,10 @@ export const Taboule = <Q extends keyof TabouleQueries>({
   );
   log.debug(`Default query params %O`, defaultQueryParams);
 
-  const [params, setParams] = React.useState(defaultQueryParams);
+  const [params, setParams] = React.useState({
+    ...defaultQueryParams,
+    ...initialParams,
+  });
 
   const [page, setPage] = React.useState(0);
   const [pageSize, setPageSize] = React.useState(props.pageSize ?? 25);
