@@ -4,6 +4,7 @@ const debug = require('debug')('routes:experiments');
 const nconf = require('nconf');
 
 const automo = require('../lib/automo');
+const experlib = require('../lib/experiments');
 const params = require('../lib/params');
 const CSV = require('../lib/CSV');
 const mongo3 = require('../lib/mongo3');
@@ -67,14 +68,14 @@ async function dot(req) {
 }
 
 async function json(req) {
-    const experimentId = params.getString(req, 'experimentId', true);
+    const experimentId = params.getString(req, 'experimentId');
     const metadata = await sharedDataPull({
         'experiment.experimentId': experimentId
     });
     return { json: metadata}
 }
 
-
+/*
 async function csv(req) {
 
     const type = req.params.type;
@@ -105,6 +106,7 @@ async function csv(req) {
         }
     }
 };
+*/
 
 async function list(req) {
     /* this function pull from the collection "directives"
@@ -175,9 +177,8 @@ async function list(req) {
         return memo;
     }, {});
 
-    debug("Directives found: %d configured %d active %d recent (type %s, max %d)",
-        infos.configured.length, infos.active.length,
-        infos.recent.length, type, MAX);
+    debug("Directives found: configured %d active %d (type %s, max %d)",
+        infos.configured.length, infos.active.length, type, MAX);
 
     return {
         json: infos
@@ -195,7 +196,7 @@ async function channel3(req) {
     experimentInfo.testName = new Date(req.body.when);
     experimentInfo.publicKey = _.get(req.body, 'config.publicKey');
 
-    const retval = await automo.saveExperiment(experimentInfo);
+    const retval = await experlib.saveExperiment(experimentInfo);
     /* this is the default answer, as normally there is not an
      * experiment running */
     if(_.isNull(retval))
@@ -217,14 +218,14 @@ async function conclude3(req) {
     if(!test.isValid)
         return { status: 403 };
     
-    const retval = await automo.concludeExperiment(testTime);
+    const retval = await experlib.concludeExperiment(testTime);
     // retval is {"acknowledged":true,"modifiedCount":0,"upsertedId":null,"upsertedCount":0,"matchedCount":0}
     return { json: retval };
 }
 
 module.exports = {
     /* used by the webapps */
-    csv,
+    // csv, -- before supporting this the CSV format should be redefined for tiktok
     dot,
     json,
     list,

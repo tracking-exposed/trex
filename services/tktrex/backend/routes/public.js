@@ -4,9 +4,9 @@ import createDebug from 'debug';
 
 import * as params from '../lib/params';
 import automo from '../lib/automo';
-import utils  from '../lib/utils';
+// import utils  from '../lib/utils';
 import CSV  from '../lib/CSV';
-import cache from '../lib/cache';
+// import cache from '../lib/cache';
 
 const debug = createDebug('routes:public');
 
@@ -130,7 +130,7 @@ async function getRecent(req) {
 
 const SEARCH_FIELDS = [ 'timelineId', 'id', 'query', 'publicKey', 'order', 'savingTime'];
 /* this is exported because also used in personal */
-async function getSearches(req) {
+export async function getSearches(req) {
     const amount = _.parseInt(req.query.amount) || 50;
     const skip = _.parseInt(req.query.skip) || 0;
     // this support the 'standard' format for Taboule
@@ -142,11 +142,11 @@ async function getSearches(req) {
 }
 
 module.exports = {
-    getLast,
+    // getLast,
     getVideoId,
     getRelated,
     getVideoCSV,
-    getRecent,
+    // getRecent,
     SEARCH_FIELDS,
     getSearches,
 };

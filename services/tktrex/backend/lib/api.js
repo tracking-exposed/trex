@@ -8,13 +8,12 @@ const apiList = {
     /* for revision */
     unitById:            require('../routes/htmlunit').unitById,
 
-    getRecent:           publicRoutes.getRecent,
     getVideoId:          publicRoutes.getVideoId,
     getRelated:          publicRoutes.getRelated,
     getVideoCSV:         publicRoutes.getVideoCSV,
 
+    getSearches:         publicRoutes.getSearches,
     getPersonal:         require('../routes/personal').getPersonal,
-    getSearches:         require('../routes/public').getSearches,
 
 
     /* impact */
@@ -25,7 +24,7 @@ const apiList = {
 
     /* experiment related APIs */
     getAllExperiments:   require('../routes/experiments').list,
-    experimentCSV:       require('../routes/experiments').csv,
+    // experimentCSV:       require('../routes/experiments').csv,
     experimentDOT:       require('../routes/experiments').dot,
     experimentJSON:      require('../routes/experiments').json,
     experimentChannel3:  require('../routes/experiments').channel3,

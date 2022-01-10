@@ -70,7 +70,7 @@ async function get(req) {
 
   console.log(expinfo);
   // if(expinfo.directiveType === 'search')
-  const directives = _.map(expinfo.links, searches);
+  const directives = _.map(expinfo.links, "searches");
   debug("search directive type %s produced %d", experimentId, directives.length);
   return { json: directives };
 }
