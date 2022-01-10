@@ -4,6 +4,7 @@ import {
   ADVContributionEvent,
   VideoContributionEvent,
 } from '../../models/ContributionEvent';
+import { PublicKeyParams } from '../../models/http/params/PublicKey';
 import { SearchQuery } from '../../models/http/SearchQuery';
 import { GuardoniExperiment, Metadata } from '../../models/Metadata';
 import { ChannelADVStats } from '../../models/stats/ChannelADV';
@@ -58,7 +59,7 @@ const GetPersonalCSV = Endpoint({
   getPath: ({ publicKey, type }) => `/v2/personal/${publicKey}/${type}/csv`,
   Input: {
     Params: t.type({
-      publicKey: t.string,
+      ...PublicKeyParams.props,
       type: t.union([
         t.literal('home'),
         t.literal('video'),
@@ -101,12 +102,12 @@ const GetChannelADVStats = Endpoint({
 
 const GetExperimentList = Endpoint({
   Method: 'GET',
-  getPath: ({ type, key }) => `/v2/guardoni/list/${type}/${key}`,
+  getPath: ({ type, publicKey }) => `/v2/guardoni/list/${type}/${publicKey}`,
   Input: {
     Query: SearchQuery,
     Params: t.type({
       type: t.union([t.literal('comparison'), t.literal('chiaroscuro')]),
-      key: t.string,
+      ...PublicKeyParams.props,
     }),
   },
   Output: t.strict({
@@ -134,7 +135,7 @@ const DeletePersonalContributionByPublicKey = Endpoint({
     `/v2/personal/${publicKey}/selector/id/${selector}`,
   Input: {
     Params: t.type({
-      publicKey: t.string,
+      ...PublicKeyParams.props,
       selector: t.union([t.string, t.undefined]),
     }),
   },

@@ -19,6 +19,10 @@ import {
   SearchMetadata,
   VideoMetadata,
 } from '@shared/models/contributor/ContributorPersonalStats';
+import {
+  SummaryHTMLMetadata,
+  SummaryMetadata,
+} from '@shared/models/contributor/ContributorPersonalSummary';
 import { GuardoniExperiment, Metadata } from '@shared/models/Metadata';
 import DeleteButton from 'components/buttons/DeleteButton';
 import { formatDistanceToNow } from 'date-fns';
@@ -45,32 +49,24 @@ interface TabouleConfiguration {
   personalHomes: TabouleQueryConfiguration<HomeMetadata>;
   personalSearches: TabouleQueryConfiguration<SearchMetadata>;
   personalVideos: TabouleQueryConfiguration<VideoMetadata>;
+  tikTokPersonalHTMLSummary: TabouleQueryConfiguration<SummaryHTMLMetadata>;
+  tikTokPersonalMetadataSummary: TabouleQueryConfiguration<SummaryMetadata>;
 }
 
-const defaultChannelId = 'c14bb994-d13d-4a5e-bdee-a62976facca9';
-const defaultPublicKey = '39kM5AyUrGXZaJPseoyKuNT2968Ee5SY6fbWxWcG1ivC';
 export const defaultParams = {
-  ccRelatedUsers: {
-    channelId: defaultChannelId,
-  },
+  ccRelatedUsers: {},
   getExperimentById: {},
   getExperimentList: {
     type: 'comparison',
     key: 'fuffa',
     // this is the default as per 'yarn backend watch'
   },
-  personalHomes: {
-    publicKey: defaultPublicKey,
-  },
-  personalSearches: {
-    publicKey: defaultPublicKey,
-  },
-  personalVideos: {
-    publicKey: defaultPublicKey,
-  },
-  personalAds: {
-    publicKey: defaultPublicKey,
-  },
+  personalHomes: {},
+  personalSearches: {},
+  personalVideos: {},
+  personalAds: {},
+  tikTokPersonalHTMLSummary: {},
+  tikTokPersonalMetadataSummary: {},
 };
 
 const channelIdInput = (
@@ -89,7 +85,7 @@ const channelIdInput = (
         control={
           <Input
             name="channelId"
-            value={params.channelId ?? defaultChannelId}
+            value={params.channelId ?? ''}
             onChange={(e) =>
               setParams({ ...params, publicKey: e.target.value })
             }
@@ -116,7 +112,7 @@ const publicKeyInput = (
         control={
           <Input
             name="publicKey"
-            value={params.publicKey ?? defaultPublicKey}
+            value={params.publicKey ?? ''}
             onChange={(e) =>
               setParams({ ...params, publicKey: e.target.value })
             }
@@ -394,6 +390,51 @@ export const defaultConfiguration = (
           field: 'actions',
           minWidth: 200,
           renderCell: personalMetadataActions(commands, params),
+        },
+      ],
+    },
+    tikTokPersonalHTMLSummary: {
+      inputs: publicKeyInput,
+      columns: [
+        {
+          field: 'id',
+          minWidth: 200,
+        },
+        {
+          field: 'timelineId',
+          minWidth: 200,
+        },
+        {
+          field: 'href',
+          minWidth: 200,
+        },
+        {
+          field: 'savingTime',
+          minWidth: 200,
+        },
+      ],
+    },
+    tikTokPersonalMetadataSummary: {
+      inputs: publicKeyInput,
+      columns: [
+        {
+          field: 'id',
+          minWidth: 200,
+        },
+        {
+          field: 'timelineId',
+          minWidth: 200,
+        },
+        {
+          field: 'author',
+          minWidth: 200,
+          renderCell: (props) => {
+            return <Typography>{(props.value as any)?.name ?? ''}</Typography>;
+          },
+        },
+        {
+          field: 'relative',
+          minWidth: 200,
         },
       ],
     },
