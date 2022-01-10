@@ -1,6 +1,6 @@
-import debug from "debug";
+import debug from 'debug';
 
-export const logger = debug("@yttrex");
+export const logger = debug('@yttrex');
 
 type DebugFn = (s: string, ...args: any[]) => void;
 
@@ -15,9 +15,9 @@ export const GetLogger = (name: string, d?: debug.Debugger): Logger => {
   const baseLogger = d ?? logger;
   const l = baseLogger.extend(name);
 
-  const info = l.extend("info");
-  const error = l.extend("error");
-  const debug = l.extend("debug");
+  const info = l.extend('info');
+  const error = l.extend('error');
+  const debug = l.extend('debug');
 
   return {
     info,

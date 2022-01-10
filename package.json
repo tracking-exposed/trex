@@ -12,8 +12,12 @@
     "shared",
     "packages/*",
     "backend",
-    "guardoni",
-    "YCAI"
+    "YCAI",
+    "services/tktrex/extension",
+    "services/tktrex/methodology",
+    "services/tktrex/backend",
+    "services/tktrex/shared",
+    "guardoni"
   ],
   "packageManager": "yarn@3.1.1",
   "scripts": {

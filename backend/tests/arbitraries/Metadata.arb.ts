@@ -1,15 +1,14 @@
-import { fc } from "@shared/test";
-import { getArbitrary } from "fast-check-io-ts";
-import { Metadata, ParsedInfo } from "../../models/Metadata";
-import * as t from "io-ts";
-
+import { fc } from '@shared/test';
+import { getArbitrary } from 'fast-check-io-ts';
+import { Metadata, ParsedInfo } from '../../models/Metadata';
+import * as t from 'io-ts';
 
 export const ParsedInfoArb = getArbitrary(
   t.strict({
     ...ParsedInfo.types[0].type.props,
-    ...ParsedInfo.types[1].props
+    ...ParsedInfo.types[1].props,
   })
-)
+);
 
 /**
  * Ad arbitrary
