@@ -194,6 +194,8 @@ export const run = async (): Promise<void> => {
                         profileData
                       );
 
+                      guardoniApp.window.close();
+
                       return resolve(undefined);
                     }
                   );
