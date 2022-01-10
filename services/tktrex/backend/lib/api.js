@@ -14,6 +14,7 @@ var apiList = {
     getVideoCSV:         require('../routes/public').getVideoCSV,
 
     getPersonal:         require('../routes/personal').getPersonal,
+    getSearches:         require('../routes/public').getSearches,
 
 
     /* impact */
@@ -31,6 +32,7 @@ var apiList = {
     concludeExperiment3: require('../routes/experiments').conclude3,
     postDirective:       require('../routes/directives').post,
     fetchDirective:      require('../routes/directives').get,
+
 };
 
 module.exports = {

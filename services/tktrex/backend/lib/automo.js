@@ -14,7 +14,7 @@ const utils = require('../lib/utils');
 const mongo3 = require('./mongo3');
 
 
-async function getSummaryByPublicKey(publicKey, kind) {
+async function getSummaryByPublicKey(publicKey) {
     /* this function return the basic information necessary to compile the
        landing personal page, 'options' might specify for specific details */
     const mongoc = await mongo3.clientConnect({concurrency: 1});

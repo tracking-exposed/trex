@@ -114,6 +114,9 @@ app.get(
 );
 app.get("/api/v2/experiment/:experimentId/dot", async (req, res) => await iowrapper("experimentDOT", req, res));
 
+/* implemented right before DMI winter school */
+app.get("/api/v2/searches", async (req, res) => await iowrapper("getSearches", req, res));
+
 /* Capture All 404 errors */
 app.get('*', async (req, res) => {
     debug("URL not handled: %s", req.url);

@@ -122,7 +122,21 @@ async function getVideoCSV(req) {
 };
 
 async function getRecent(req) {
+    // this still to be determined why was supposed to be implemented: perhaps 'compare' equivalent?
     return { json: { fuffa: true }};
+}
+
+const SEARCH_FIELDS = [ 'timelineId', 'id', 'query', 'publicKey', 'order', 'savingTime'];
+/* this is exported because also used in personal */
+async function getSearches(req) {
+    const amount = _.parseInt(req.query.amount) || 50;
+    const skip = _.parseInt(req.query.skip) || 0;
+    // this support the 'standard' format for Taboule
+    const retval = await automo.getMetadataByFilter({type: 'search'}, { amount, skip});
+    const filtered = _.map(retval, function(o) {
+        return _.pick(o, SEARCH_FIELDS);
+    })
+    return { json: filtered };
 }
 
 module.exports = {
@@ -131,4 +145,6 @@ module.exports = {
     getRelated,
     getVideoCSV,
     getRecent,
+    SEARCH_FIELDS,
+    getSearches,
 };

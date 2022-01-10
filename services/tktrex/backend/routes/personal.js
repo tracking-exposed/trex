@@ -8,20 +8,23 @@ const params = require('../lib/params');
 const CSV = require('../lib/CSV');
 const mongo3 = require('../lib/mongo3');
 
-// personal API format is
-// /api/v1/personal/:publicKey/:what/:format
+const SEARCH_FIELDS = require('./public').SEARCH_FIELDS;
 
 async function getPersonal(req) {
+    // personal API format is
+    // /api/v1/personal/:publicKey/:what/:format
     const k =  req.params.publicKey;
     if(_.size(k) < 26)
         return { json: {
             message: "Invalid publicKey",
             error: true
         }};
+    const amount = _.parseInt(req.query.amount) || 50;
+    const skip = _.parseInt(req.query.skip) || 0;
 
     const what = req.params.what;
     const format = req.params.format;
-    const allowed = ['summary'];
+    const allowed = ['summary', 'search', 'foryou'];
 
     if(allowed.indexOf(what) === -1) {
         return { json: {
@@ -33,10 +36,20 @@ async function getPersonal(req) {
     }
 
     debug("Asked to get data kind %s, format %s", what, format);
-    let retval = null;
+    let retval = [];
     try {
         if(what === 'summary')
-            retval = await automo.getSummaryByPublicKey(k, what);
+            retval = await automo.getSummaryByPublicKey(k);
+        else if(what === 'search') {
+            const avail = await automo.getMetadataByFilter({type: 'search', publicKey: k}, { amount, skip});
+            retval = _.map(avail, function(o) {
+                return _.pick(o, SEARCH_FIELDS);
+            });
+        }
+        else if(what === 'foryou')
+            retval = await automo.getMetadataByFilter({type: 'foryou', publicKey: k}, { amount, skip});
+
+        debug("Personal %s returning %d objects", what, retval.length);
     } catch(error) {
         debug("%s", error.message);
         return { json: { error: true, message: error.message}};
