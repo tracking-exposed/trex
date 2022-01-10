@@ -2,8 +2,8 @@ import {
   Button,
   Checkbox,
   FormControlLabel,
-  FormHelperText,
   FormGroup,
+  FormHelperText,
   Grid,
   Input,
   makeStyles,
@@ -12,7 +12,6 @@ import {
 import { ipcRenderer } from 'electron';
 import * as React from 'react';
 import { v4 as uuid } from 'uuid';
-import type { Config } from '../guardoni';
 import OutputPanel, { OutputItem } from './OutputPanel';
 
 const useStyles = makeStyles((theme) => ({
@@ -46,14 +45,14 @@ const useStyles = makeStyles((theme) => ({
 
 export const App: React.FC = () => {
   const classes = useStyles();
-  const [config, setConfig] = React.useState<Config>({
-    profileId: 'anonymous',
-    auto: true,
-    shadowban: false,
-    experiment: 'd75f9eaf465d2cd555de65eaf61a770c82d59451',
-    sourceUrl: '',
+  const [config, setConfig] = React.useState({
+    profile: 'anonymous',
     evidenceTag: 'climate-change',
     headless: false,
+    experiment: '',
+    run: 'experiment',
+    auto: '1',
+    shadowban: true,
   });
 
   const [outputItems, setOutputItems] = React.useState<OutputItem[]>([]);
@@ -102,12 +101,12 @@ export const App: React.FC = () => {
               <Input
                 id="profile-path"
                 aria-describedby="profile-path-text"
-                value={config.profileId}
+                value={config.profile}
                 fullWidth
                 onChange={(e) =>
                   setConfig({
                     ...config,
-                    profileId: e.target.value,
+                    profile: e.target.value,
                   })
                 }
               />
@@ -115,7 +114,7 @@ export const App: React.FC = () => {
           />
           <FormHelperText className={classes.formHelperText}>
             The profile data will be stored in{' '}
-            {`~/.config/guardoni/profiles/${config.profileId}`}
+            {`~/.config/guardoni/profiles/${config.profile}`}
           </FormHelperText>
 
           <FormControlLabel
@@ -164,11 +163,11 @@ export const App: React.FC = () => {
             control={
               <Checkbox
                 id="automatic"
-                checked={config.auto}
+                checked={config.auto === '1'}
                 onChange={(e) =>
                   setConfig({
                     ...config,
-                    auto: e.target.checked,
+                    auto: e.target.checked ? '1' : '2',
                   })
                 }
               />

@@ -57,7 +57,8 @@
     "puppeteer-extra-plugin-stealth": "^2.9.0",
     "puppeteer-in-electron": "^3.0.5",
     "react": "^17.0.2",
-    "react-dom": "^17.0.2"
+    "react-dom": "^17.0.2",
+    "yargs": "^17.3.1"
   },
   "devDependencies": {
     "@pmmmwh/react-refresh-webpack-plugin": "^0.5.4",
@@ -67,9 +68,11 @@
     "@types/react": "^17.0.38",
     "@types/react-dom": "^17.0.11",
     "@types/webpack-node-externals": "^2.5.3",
+    "@types/yargs": "^17",
     "@typescript-eslint/eslint-plugin": "^5.9.0",
     "@typescript-eslint/parser": "^5.9.0",
     "bufferutil": "^4.0.6",
+    "chalk": "^5.0.0",
     "electron": "16.0.6",
     "electron-builder": "^22.14.12",
     "electron-reloader": "^1.2.1",

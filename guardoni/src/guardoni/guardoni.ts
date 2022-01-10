@@ -1,8 +1,7 @@
 /* eslint-disable */
 
 import _ from 'lodash';
-const debug = require('debug')('guardoni:notes');
-const info = require('debug')('guardoni:info');
+import Debug from 'debug';
 import puppeteer from 'puppeteer-core';
 // const pluginStealth = require("puppeteer-extra-plugin-stealth");
 import fs from 'fs';
@@ -12,23 +11,17 @@ import moment from 'moment';
 import axios from 'axios';
 import { execSync } from 'child_process';
 import parse from 'csv-parse/lib/sync';
-import domainSpecific from './domainSpecific';
+import domainSpecific from '../domainSpecific';
+import { GuardoniConfig } from './types';
+import fetch from 'node-fetch';
+
+const debug = Debug('guardoni:notes');
+const info = Debug('guardoni:info');
 
 const COMMANDJSONEXAMPLE =
   'https://youtube.tracking.exposed/json/automation-example.json';
 const EXTENSION_WITH_OPT_IN_ALREADY_CHECKED =
   'https://github.com/tracking-exposed/yttrex/releases/download/v1.8.992/extension-1.9.0.99.zip';
-
-// guardoni configuration
-export interface Config {
-  profileId: string;
-  auto: boolean;
-  shadowban: boolean;
-  experiment: string;
-  sourceUrl: string;
-  evidenceTag: string;
-  headless: boolean;
-}
 
 const defaultCfgPath = path.join('config', 'default.json');
 nconf.argv().env();
@@ -431,91 +424,126 @@ async function writeExperimentInfo(
   profinfo.expinfo = expinfo;
 }
 
-export async function main() {
-  const auto = nconf.get('auto');
-  const shadowban = nconf.get('shadowban');
-  let experiment = nconf.get('experiment');
-  const sourceUrl = nconf.get('csv');
+export async function validateManifest(manifest: string): Promise<void> {
+  /* initial test is meant to assure the extension is an acceptable version */
+
+  const manifestValues = JSON.parse(fs.readFileSync(manifest, 'utf-8'));
+  const vChunks = manifestValues.version.split('.');
+  /* guardoni versioning explained:
+    1.MAJOR.MINOR,
+    MINOR that starts with 99 or more 99 are meant to be auto opt-in
+    MAJOR depends on the package.json version and it is used for feature support 
+    a possible version 2.x isn't foresaw at the moment
+   */
+  const MINIMUM_ACCEPTABLE_MAJOR = 8;
+  if (_.parseInt(vChunks[1]) < MINIMUM_ACCEPTABLE_MAJOR) {
+    console.log(
+      "Error/Warning: in the directory 'extension/' the software is too old: remove it!"
+    );
+    process.exit(1);
+  }
+
+  if (!_.startsWith(vChunks[2], '99')) {
+    console.log(
+      'Warning/Reminder: the extension used might not be opt-in! YOU NEED TO DO IT BY HAND'
+    );
+    console.log('<Press any key to start>');
+    await keypress();
+  }
+}
+
+export async function main(config: GuardoniConfig) {
+  await validateManifest(path.join(process.cwd(), 'package.json'));
+  // const auto = nconf.get('auto');
+  // const shadowban = nconf.get('shadowban');
+  // let experiment = nconf.get('experiment');
+  // const sourceUrl = nconf.get('csv');
 
   /* directiveType is an important variable but when
      --experiment is used, it is not specify. Therefore
      is set below, after the directive is pull */
-  let directiveType = experiment
-    ? null
-    : shadowban
-    ? 'chiaroscuro'
-    : 'comparison';
+  let directiveType =
+    config.run === 'experiment'
+      ? null
+      : config.run === 'csv'
+      ? config.type
+      : 'chiaroscuro';
 
-  if (!auto && !sourceUrl && !experiment) {
-    printHelp();
-    process.exit(1);
+  // if (!auto && !sourceUrl && !experiment) {
+  //   printHelp();
+  //   process.exit(1);
+  // }
+
+  debug('Default experiment n.1 (codename: Greta)');
+  let experiment = '37384a9b7dff26184cdea226ad5666ca8cbbf456';
+  if (config.run === 'auto') {
+    if (config.value === '2') {
+      debug('Selected experiment n.2 (codename: Naomi)');
+      experiment = 'd75f9eaf465d2cd555de65eaf61a770c82d59451';
+    }
   }
 
-  if (auto === '2') {
-    debug('Selected experiment n.2 (codename: Naomi)');
-    experiment = 'd75f9eaf465d2cd555de65eaf61a770c82d59451';
-  } else if (auto === '1' || !!nconf.get('auto')) {
-    debug('Selected experiment n.1 (codename: Greta)');
-    experiment = '37384a9b7dff26184cdea226ad5666ca8cbbf456';
+  if (config.run === 'csv') {
+    if (config.file) {
+      debug('Registering CSV %s as %s', config.file, directiveType);
+      const feedback = await registerCSV(directiveType);
+      if (feedback && feedback.since) {
+        debug(
+          'CSV %s, experimentId %s exists since %s',
+          feedback.status,
+          feedback.experimentId,
+          feedback.since
+        );
+        console.log(feedback.experimentId);
+      } else if (feedback && feedback.experimentId) {
+        debug(
+          'Directive from CSV created: experimentId %s',
+          feedback.experimentId
+        );
+        console.log(feedback.experimentId);
+      } else console.log('CSV error in upload.');
+
+      process.exit(1);
+    }
   }
 
-  if (sourceUrl) {
-    debug('Registering CSV %s as %s', sourceUrl, directiveType);
-    const feedback = await registerCSV(directiveType);
-    if (feedback && feedback.since) {
-      debug(
-        'CSV %s, experimentId %s exists since %s',
-        feedback.status,
-        feedback.experimentId,
-        feedback.since
-      );
-      console.log(feedback.experimentId);
-    } else if (feedback && feedback.experimentId) {
-      debug(
-        'Directive from CSV created: experimentId %s',
-        feedback.experimentId
-      );
-      console.log(feedback.experimentId);
-    } else console.log('CSV error in upload.');
+  // if (experiment && (!_.isString(experiment) || experiment.length < 20)) {
+  //   console.log('\n--experiment awaits for an experiment ID, try it out:');
+  //   console.log(
+  //     'For example: --experiment d75f9eaf465d2cd555de65eaf61a770c82d59451'
+  //   );
+  //   process.exit(1);
+  // }
 
-    process.exit(1);
-  }
+  // if (sourceUrl && experiment) {
+  //   console.log(
+  //     "Error: when registering a CSV, you can't specify the --experiment"
+  //   );
+  //   process.exit(1);
+  // }
 
-  if (experiment && (!_.isString(experiment) || experiment.length < 20)) {
-    console.log('\n--experiment awaits for an experiment ID, try it out:');
-    console.log(
-      'For example: --experiment d75f9eaf465d2cd555de65eaf61a770c82d59451'
-    );
-    process.exit(1);
-  }
-
-  if (sourceUrl && experiment) {
-    console.log(
-      "Error: when registering a CSV, you can't specify the --experiment"
-    );
-    process.exit(1);
-  }
-
-  const evidencetag =
-    nconf.get('evidencetag') || 'no-tag-' + _.random(0, 0xffff);
-  let profile = nconf.get('profile');
+  const evidenceTag =
+    config.evidenceTag || 'no-tag-' + _.random(0, 0xffff);
+  let profile = config.profile;
   if (!profile)
-    profile = nconf.get('evidencetag')
-      ? evidencetag
+    profile = config.evidenceTag
+      ? evidenceTag
       : `guardoni-${moment().format('YYYY-MM-DD')}`;
   /* if not profile, if evidencetag take it, or use a daily profile */
 
   debug(
     'Configuring browser for profile %s (evidencetag %s)',
     profile,
-    evidencetag
+    evidenceTag
   );
-  const profinfo = await profileExecount(profile, evidencetag);
+  const profinfo = await profileExecount(profile, evidenceTag);
   let directiveurl = null;
 
-  if (experiment && !sourceUrl) {
-    directiveurl = buildAPIurl('directives', experiment);
-    debug('Fetching experiment directives (%s)', directiveurl);
+  if (config.run === 'experiment') {
+    if (experiment) {
+      directiveurl = buildAPIurl('directives', experiment);
+      debug('Fetching experiment directives (%s)', directiveurl);
+    }
   }
 
   /*
@@ -544,7 +572,7 @@ export async function main() {
     directiveurl
   );
 
-  await writeExperimentInfo(experiment, profinfo, evidencetag, directiveType);
+  await writeExperimentInfo(experiment, profinfo, evidenceTag, directiveType);
 
   const headless = !!nconf.get('headless');
   const browser = await dispatchBrowser(headless, profinfo);
@@ -695,13 +723,13 @@ export function initialSetup() {
   const advdump = nconf.get('advdump');
   if (advdump) {
     /* if the advertisement dumping folder is set, first we check
-     * if exist, and if doens't we call it fatal error */
+     * if exist, and if doesn't we call it fatal error */
     if (!fs.existsSync(advdump)) {
       debug('--advdump folder (%s) not exist: creating', advdump);
       fs.mkdirSync(advdump, { recursive: true });
     }
     debug(
-      'Advertisement screenshotting enable in folder: %s',
+      'Advertisement screenshot enable in folder: %s',
       path.resolve(advdump)
     );
   }
@@ -718,9 +746,11 @@ export function initialSetup() {
         dist +
         ' not found, the script now would download & unpack'
     );
-    const tmpzipf = path.resolve(path.join(cwd, 'extension', 'tmpzipf.zip'));
-    console.log('Using ' + tmpzipf + ' as temporary file');
-    downloadExtension(tmpzipf);
+    const tmpZipFilePath = path.resolve(
+      path.join(cwd, 'extension', 'tmpzipf.zip')
+    );
+    console.log('Using ' + tmpZipFilePath + ' as temporary file');
+    downloadExtension(tmpZipFilePath);
   }
 
   return manifest;
@@ -758,7 +788,7 @@ export async function guardoniExecution(
   page: puppeteer.Page,
   profinfo: any
 ): Promise<{ start: moment.Moment; end: moment.Moment }> {
-  const retval = { start: moment(), end: null };
+  const result = { start: moment(), end: null };
   const directiveType = _.first(directives)?.name
     ? 'chiaroscuro'
     : 'comparison';
@@ -781,7 +811,7 @@ export async function guardoniExecution(
   }
 
   return {
-    ...retval,
+    ...result,
     end: moment(),
   };
 }
@@ -803,35 +833,4 @@ async function concludeExperiment(
   if (body.acknowledged !== true)
     debug('Error in communication with the server o_O (%j)', body);
   //  debug("Experiment %s marked as completed on the server!", experiment);
-}
-
-export async function validateAndStart(manifest: string): Promise<void> {
-  /* initial test is meant to assure the extension is an acceptable version */
-
-  const manifestValues = JSON.parse(fs.readFileSync(manifest, 'utf-8'));
-  const vblocks = manifestValues.version.split('.');
-  /* guardoni versioning explained:
-    1.MAJOR.MINOR, 
-    MINOR that starts with 99 or more 99 are meant to be auto opt-in
-    MAJOR depends on the package.json version and it is used for feature support 
-    a possible version 2.x isn't foresaw at the moment
-   */
-  const MINIMUM_ACCEPTABLE_MAJOR = 8;
-  if (_.parseInt(vblocks[1]) < MINIMUM_ACCEPTABLE_MAJOR) {
-    console.log(
-      "Error/Warning: in the directory 'extension/' the software is too old: remove it!"
-    );
-    process.exit(1);
-  }
-
-  if (!_.startsWith(vblocks[2], '99')) {
-    console.log(
-      'Warning/Reminder: the extension used might not be opt-in! YOU NEED TO DO IT BY HAND'
-    );
-    console.log('<Press any key to start>');
-    await keypress();
-  }
-
-  /* this finally start the main execution */
-  await main();
 }

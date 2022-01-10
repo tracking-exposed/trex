@@ -1,18 +1,19 @@
 import dotenv from 'dotenv';
 import { app, BrowserWindow, ipcMain } from 'electron';
+import log from 'electron-log';
+import { sequenceS } from 'fp-ts/lib/Apply';
+import * as E from 'fp-ts/lib/Either';
+import { pipe } from 'fp-ts/lib/function';
+import * as TE from 'fp-ts/lib/TaskEither';
+import { PathReporter } from 'io-ts/lib/PathReporter';
+import os from 'os';
 import * as path from 'path';
 import puppeteer from 'puppeteer-core';
 import pie from 'puppeteer-in-electron';
-import * as guardoni from '../guardoni';
-import * as TE from 'fp-ts/lib/TaskEither';
-import * as E from 'fp-ts/lib/Either';
-import { pipe } from 'fp-ts/lib/function';
-import { sequenceS } from 'fp-ts/lib/Apply';
-import log from 'electron-log';
 import { v4 as uuid } from 'uuid';
 import { AppEnv } from '../AppEnv';
-import { PathReporter } from 'io-ts/lib/PathReporter';
-import os from 'os';
+import * as guardoni from '../guardoni/guardoni';
+import { GuardoniConfig } from '../guardoni/types';
 
 dotenv.config();
 
@@ -106,12 +107,14 @@ export const run = async (): Promise<void> => {
                   ipcMain.on(
                     'startGuardoni',
                     // eslint-disable-next-line @typescript-eslint/no-misused-promises
-                    async (event, args: guardoni.Config): Promise<void> => {
+                    async (event, args: GuardoniConfig): Promise<void> => {
                       const {
-                        profileId: profile,
+                        profile,
                         evidenceTag,
-                        experiment,
+                        // experiment,
                       } = args;
+
+                      const experiment = '';
 
                       if (guardoniApp.window.isDestroyed()) {
                         mainWindow.webContents.postMessage('guardoniOutput', {

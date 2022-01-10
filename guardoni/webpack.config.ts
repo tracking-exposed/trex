@@ -23,10 +23,6 @@ config.plugins.push(
     patterns: [
       {
         from: path.resolve(__dirname, '../extension/dist'),
-        to: path.resolve(__dirname, 'extension'),
-      },
-      {
-        from: path.resolve(__dirname, '../extension/dist'),
         to: path.resolve(__dirname, 'build/extension'),
       },
       {
@@ -35,6 +31,7 @@ config.plugins.push(
           process.env.NODE_ENV === 'development' ? '.env.development' : '.env'
         ),
         to: path.resolve(__dirname, 'build/desktop/.env'),
+        toType: 'file'
       },
     ],
   })
@@ -73,7 +70,7 @@ const { buildENV: guardoniBuildEnv, ...guardoniConfig } = getConfig({
   hot: false,
   target: 'node',
   entry: {
-    guardoni: path.resolve(__dirname, 'src/guardoni.ts'),
+    guardoni: path.resolve(__dirname, 'src/guardoni/guardoni.ts'),
   },
 });
 
