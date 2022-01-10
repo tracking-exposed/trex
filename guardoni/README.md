@@ -205,4 +205,3 @@ Before you can use it, you need to load it by hand:
 - Open the extension and turn on the evidence collection.
 
 Before this can work, you need to start the backend server, the mongo database and the parser process.
-
