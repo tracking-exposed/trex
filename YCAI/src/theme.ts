@@ -171,6 +171,7 @@ export const makeStyles = <
   options?: Omit<WithStylesOptions<YCAITheme>, 'withTheme'>
 ): keyof Props extends never
   ? (props?: any) => ClassNameMap<ClassKey>
-  : (props: Props) => ClassNameMap<ClassKey> => _makeStyles<YCAITheme, Props, ClassKey>(styles, options);
+  : (props: Props) => ClassNameMap<ClassKey> =>
+  _makeStyles<YCAITheme, Props, ClassKey>(styles, options);
 
 export { ThemeProvider, useTheme };

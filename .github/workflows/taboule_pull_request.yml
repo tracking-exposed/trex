@@ -1,0 +1,45 @@
+name: Taboule - Pull Request
+
+on:
+  pull_request:
+    branches:
+      - daily
+      - beta
+    paths:
+      - "shared/**"
+      - "packages/taboule/**"
+
+defaults:
+  run:
+    working-directory: packages/taboule
+
+jobs:
+  pull_request:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [16.x]
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v2
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: "yarn"
+          cache-dependency-path: yarn.lock
+
+      - name: Install modules
+        working-directory: ./
+        run: yarn
+
+      - name: Lint code
+        run: yarn lint
+
+      - name: Build shared
+        working-directory: ./shared
+        run: yarn build
+
+      - name: Build Taboule
+        run: yarn build

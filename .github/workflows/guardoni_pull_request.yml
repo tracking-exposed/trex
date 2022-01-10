@@ -1,0 +1,57 @@
+name: Guardoni - Pull Request
+
+on:
+  pull_request:
+    branches:
+      - daily
+      - beta
+    paths:
+      - "shared/**"
+      - "extension/**"
+      - "guardoni/**"
+
+defaults:
+  run:
+    working-directory: guardoni
+
+jobs:
+  pull_request:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [16.x]
+
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          depth: 0
+
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v2
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: "yarn"
+          cache-dependency-path: yarn.lock
+
+      - name: Install modules
+        working-directory: ./
+        run: yarn
+
+      - name: Lint code
+        run: yarn lint
+
+      - name: Build shared
+        working-directory: ./
+        run: yarn shared build
+
+      - name: Build extension for guardoni
+        working-directory: ./extension
+        run: |
+          yarn build
+          yarn dist:guardoni
+
+      - name: Build
+        run: yarn build
+
+      - name: Package
+        run: yarn pkg

@@ -1,35 +1,35 @@
-import DotenvPlugin from "dotenv-webpack";
-import { pipe } from "fp-ts/lib/function";
+import DotenvPlugin from 'dotenv-webpack';
+import { pipe } from 'fp-ts/lib/function';
 import dotenv from 'dotenv';
-import * as R from "fp-ts/lib/Record";
-import * as S from "fp-ts/lib/string";
-import * as t from "io-ts";
-import { BooleanFromString } from "io-ts-types/lib/BooleanFromString";
-import { PathReporter } from "io-ts/lib/PathReporter";
-import path from "path";
-import ReactRefreshTypescript from "react-refresh-typescript";
-import { TsconfigPathsPlugin } from "tsconfig-paths-webpack-plugin";
-import webpack from "webpack";
-import { BundleAnalyzerPlugin } from "webpack-bundle-analyzer";
-import { GetLogger } from "../logger";
-import ReactRefreshWebpackPlugin from "@pmmmwh/react-refresh-webpack-plugin";
+import * as R from 'fp-ts/lib/Record';
+import * as S from 'fp-ts/lib/string';
+import * as t from 'io-ts';
+import { BooleanFromString } from 'io-ts-types/lib/BooleanFromString';
+import { PathReporter } from 'io-ts/lib/PathReporter';
+import path from 'path';
+import ReactRefreshTypescript from 'react-refresh-typescript';
+import { TsconfigPathsPlugin } from 'tsconfig-paths-webpack-plugin';
+import webpack from 'webpack';
+import { BundleAnalyzerPlugin } from 'webpack-bundle-analyzer';
+import { GetLogger } from '../logger';
+import ReactRefreshWebpackPlugin from '@pmmmwh/react-refresh-webpack-plugin';
 
-const webpackLogger = GetLogger("webpack");
+const webpackLogger = GetLogger('webpack');
 
-// TODO: babel, browserlist, auto-prefixing, ...?
+// TODO: browserlist, auto-prefixing, ...?
 
 const NODE_ENV = t.union(
-  [t.literal("development"), t.literal("test"), t.literal("production")],
-  "NODE_ENV"
+  [t.literal('development'), t.literal('test'), t.literal('production')],
+  'NODE_ENV'
 );
 
 const BUILD_ENV = t.strict(
   {
     NODE_ENV,
-    BUNDLE_TARGET: t.union([t.literal("firefox"), t.literal("chrome")]),
+    BUNDLE_TARGET: t.union([t.literal('firefox'), t.literal('chrome')]),
     BUNDLE_STATS: BooleanFromString,
   },
-  "processENV"
+  'processENV'
 );
 
 type BUILD_ENV = t.TypeOf<typeof BUILD_ENV>;
@@ -46,17 +46,20 @@ interface GetConfigParams<E extends t.Props> {
     [key: string]: string;
   };
   hot: boolean;
+  target: WebpackConfig['target'];
 }
 
 const getConfig = <E extends t.Props>(
   opts: GetConfigParams<E>
 ): WebpackConfig => {
   const mode =
-    process.env.NODE_ENV === "production" ? "production" : "development";
+    process.env.NODE_ENV === 'production' ? 'production' : 'development';
 
   const DOTENV_CONFIG_PATH =
     process.env.DOTENV_CONFIG_PATH ??
-    path.resolve(opts.cwd, mode === "production" ? ".env.production" : ".env");
+    path.resolve(opts.cwd, mode === 'production' ? '.env.production' : '.env');
+
+  // const tsConfigFile = path.resolve(opts.cwd, './tsconfig.json');
 
   webpackLogger.debug(`DOTENV_CONFIG_PATH %s`, DOTENV_CONFIG_PATH);
 
@@ -64,23 +67,25 @@ const getConfig = <E extends t.Props>(
 
   const buildENV = pipe(
     {
-      BUNDLE_TARGET: "chrome",
-      BUNDLE_STATS: "false",
+      BUNDLE_TARGET: 'chrome',
+      BUNDLE_STATS: 'false',
       NODE_ENV: mode,
       ...process.env,
     },
     BUILD_ENV.decode,
     (validation) => {
-      if (validation._tag === "Left") {
+      if (validation._tag === 'Left') {
         // eslint-disable-next-line
-        console.error(PathReporter.report(validation).join("\n"));
+        console.error(PathReporter.report(validation).join('\n'));
         // eslint-disable-next-line
-        console.log("\n");
-        throw new Error("process.env decoding failed.");
+        console.log('\n');
+        throw new Error('process.env decoding failed.');
       }
       return validation.right;
     }
   );
+
+  webpackLogger.debug('Build ENV %O', buildENV);
 
   const appEnv = pipe(
     {
@@ -90,10 +95,10 @@ const getConfig = <E extends t.Props>(
     },
     opts.env.decode,
     (validation) => {
-      if (validation._tag === "Left") {
+      if (validation._tag === 'Left') {
         webpackLogger.error(
           `Validation error for build end: %O`,
-          PathReporter.report(validation).join("\n")
+          PathReporter.report(validation).join('\n')
         );
         throw new Error(`${opts.env.name} decoding failed.`);
       }
@@ -101,11 +106,13 @@ const getConfig = <E extends t.Props>(
     }
   );
 
+  webpackLogger.debug('App ENV %O', appEnv);
+
   const stringifiedAppEnv = pipe(
     appEnv as any,
     R.reduceWithIndex(S.Ord)(
       {
-        "process.env.NODE_ENV": JSON.stringify(mode),
+        'process.env.NODE_ENV': JSON.stringify(mode),
       },
       (key, acc, v) => {
         // this is cause DefinePlugin to complain when we override
@@ -127,10 +134,13 @@ const getConfig = <E extends t.Props>(
       path: DOTENV_CONFIG_PATH,
       silent: true,
     }),
-    new webpack.DefinePlugin(stringifiedAppEnv as any),
   ];
 
-  if (opts.hot) {
+  if (opts.target === 'web' || opts.target === 'electron-renderer') {
+    plugins.push(new webpack.DefinePlugin(stringifiedAppEnv as any));
+  }
+
+  if (opts.hot && mode === 'development') {
     plugins.push(new ReactRefreshWebpackPlugin());
   }
 
@@ -138,7 +148,7 @@ const getConfig = <E extends t.Props>(
     plugins.push(
       new BundleAnalyzerPlugin({
         generateStatsFile: true,
-        analyzerMode: "json",
+        analyzerMode: 'json',
       })
     );
   }
@@ -146,11 +156,14 @@ const getConfig = <E extends t.Props>(
   return {
     mode,
 
+    context: opts.cwd,
+
     entry: opts.entry,
+    target: opts.target,
 
     output: {
       path: opts.outputDir,
-      filename: "[name].js",
+      filename: '[name].js',
     },
 
     module: {
@@ -160,32 +173,34 @@ const getConfig = <E extends t.Props>(
           exclude: /node_modules/,
           use: [
             {
-              loader: "ts-loader",
+              loader: 'ts-loader',
               options: {
+                context: opts.cwd,
+                projectReferences: true,
+                transpileOnly: true,
                 getCustomTransformers: () => ({
                   before: [
-                    mode === "development" &&
+                    mode === 'development' &&
                       opts.hot &&
                       ReactRefreshTypescript(),
                   ].filter(Boolean),
                 }),
-                transpileOnly: true,
               },
             },
           ],
         },
         {
           test: /\.(ttf|svg)$/,
-          type: "asset/inline",
+          type: 'asset/inline',
         },
         {
           test: /\.css$/,
           use: [
             {
-              loader: "style-loader",
+              loader: 'style-loader',
             },
             {
-              loader: "css-loader",
+              loader: 'css-loader',
             },
           ],
         },
@@ -193,12 +208,14 @@ const getConfig = <E extends t.Props>(
     },
 
     resolve: {
-      extensions: [".ts", ".tsx", ".js", ".jsx"],
+      extensions: ['.ts', '.tsx', '.js', '.jsx'],
       plugins: [
         new TsconfigPathsPlugin({
-          configFile: path.resolve(opts.cwd, "./tsconfig.json"),
+          // configFile: tsConfigFile,
+          // context: opts.cwd,
         }),
       ],
+      modules: ['node_modules', path.resolve(opts.cwd)],
     },
 
     devtool: mode === 'development' ? 'inline-source-map' : 'source-map',

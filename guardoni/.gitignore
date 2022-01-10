@@ -1,0 +1,13 @@
+# electron-forge output
+out
+
+# app local data
+data
+
+# guardoni configuration and output
+config/*
+profiles/*
+extension/*
+executions/*
+experiments/*
+screenshots/*

@@ -4,7 +4,7 @@ export const logger = debug('@yttrex');
 
 type DebugFn = (s: string, ...args: any[]) => void;
 
-interface Logger {
+export interface Logger {
   info: DebugFn;
   error: DebugFn;
   debug: DebugFn;

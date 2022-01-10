@@ -7,8 +7,10 @@
     "outDir": "./build",
     "baseUrl": "./",
     "rootDir": "./src",
+    "allowJs": true,
     "tsBuildInfoFile": "./build/.tsbuildinfo",
-    "esModuleInterop": true
+    "esModuleInterop": true,
+    "jsx": "react"
   },
   "include": ["./src"]
 }

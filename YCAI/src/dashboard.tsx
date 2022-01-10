@@ -9,8 +9,6 @@ import { YCAITheme } from './theme';
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 
-
-
 ReactDOM.render(
   <React.StrictMode>
     <ThemeProvider theme={YCAITheme}>

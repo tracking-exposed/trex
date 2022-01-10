@@ -3,6 +3,7 @@ dump/*
 scripts/*
 tests/*
 node_modules/*
+coverage/*
 
 jest.config.js
 jest.setup.js

@@ -9,7 +9,7 @@ import { pipe } from 'fp-ts/lib/function';
 
 import { updateRecommendationsForVideo } from '../../../state/dashboard/creator.commands';
 import * as queries from '../../../state/dashboard/public.queries';
-import { ErrorBox } from '../../common/ErrorBox';
+import { ErrorBox } from '@shared/components/Error/ErrorBox';
 import { LazyFullSizeLoader } from '../../common/FullSizeLoader';
 import { RecommendationCard } from './RecommendationCard';
 import { ReorderList } from '../../common/ReorderList';
@@ -139,11 +139,7 @@ export const VideoRecommendations = withQueries<VideoRecommendationsProps>(
               </div>
             );
 
-          return (
-            <Box>
-              {recElement}
-            </Box>
-          );
+          return <Box>{recElement}</Box>;
         }
       )
     );

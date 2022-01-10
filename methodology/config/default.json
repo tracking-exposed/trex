@@ -1,9 +1,0 @@
-{
-    "backend":"",
-    "headless": false,
-    "proxy":"",
-    "fullpage": true,
-    "screenshotsPath": "screenshots",
-    "screenshots": true,
-    "screenshotTime": 7000
-}

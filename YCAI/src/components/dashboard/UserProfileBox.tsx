@@ -5,15 +5,15 @@ import { declareQueries } from 'avenger/lib/react';
 import { sequenceS } from 'fp-ts/lib/Apply';
 import { pipe } from 'fp-ts/lib/function';
 import * as TE from 'fp-ts/lib/TaskEither';
-import { toAppError } from '../../models/errors/AppError';
+import { toAppError } from '@shared/errors/AppError';
 import React from 'react';
 import {
   updateAuth,
-  updateProfile
+  updateProfile,
 } from '../../state/dashboard/creator.commands';
 import { localProfile } from '../../state/dashboard/creator.queries';
 import { doUpdateCurrentView } from '../../utils/location.utils';
-import { ErrorBox } from '../common/ErrorBox';
+import { ErrorBox } from '@shared/components/Error/ErrorBox';
 import { LazyFullSizeLoader } from '../common/FullSizeLoader';
 import UnlinkProfileButton from '../common/UnlinkProfileButton';
 import Avatar from '../external/Avatar';

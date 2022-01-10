@@ -15,6 +15,7 @@ process.env.VERSION = manifestVersion;
 
 const { buildENV, ...config } = getConfig({
   cwd: __dirname,
+  target: 'web',
   outputDir: path.resolve(__dirname, 'build/extension'),
   env: AppEnv,
   hot: false,

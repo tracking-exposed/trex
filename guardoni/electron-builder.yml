@@ -1,0 +1,28 @@
+electronVersion: 16.0.6
+
+appId: guardoni.tracking.exposed
+
+productName: Guardoni
+
+asar: false
+
+extends: null
+
+extraMetadata:
+  main: "build/desktop/main.js"
+
+files: [
+  "build/**",
+  "!profiles/**",
+  "!src/**",
+  "!screenshots/**",
+  "!static/**"
+]
+
+icon: ./static/yttrex-128.png
+
+linux:
+  target: ["deb"]
+
+win:
+  target: ["portable" ]

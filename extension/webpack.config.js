@@ -3,14 +3,18 @@
 'use strict';
 
 const path = require('path');
-const exec = require('child_process').exec;
 const moment = require('moment');
 
 const webpack = require('webpack');
-const autoPrefixer = require('autoprefixer');
+// const autoPrefixer = require('autoprefixer');
 const combineLoaders = require('webpack-combine-loaders');
-const ExtractTextPlugin = require('extract-text-webpack-plugin');
 const WebpackNotifierPlugin = require('webpack-notifier');
+const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
+const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+const {
+  CopyWebpackPlugin,
+  FileManagerPlugin,
+} = require('../shared/build/webpack/plugins');
 
 require('dotenv').load({ silent: true });
 
@@ -20,169 +24,232 @@ const NODE_ENV = process.env.NODE_ENV || 'development';
 const PRODUCTION = NODE_ENV === 'production';
 const DEVELOPMENT = NODE_ENV === 'development';
 const BUILDISODATE = new Date().toISOString();
-console.log('NODE_ENV [' + process.env.NODE_ENV + '] Prod:', PRODUCTION, 'Devel: ', DEVELOPMENT);
+const GUARDONI_TARGET = process.env.BUILD_TARGET === 'guardoni';
+const APP_VERSION = GUARDONI_TARGET
+  ? packageJSON.version
+      .split('.')
+      .filter((v, i) => i !== 2)
+      .concat('99')
+      .join('.')
+  : packageJSON.version;
+
+console.log(
+  'NODE_ENV [' + process.env.NODE_ENV + '] Prod:',
+  PRODUCTION,
+  'Devel: ',
+  DEVELOPMENT
+);
 // const BUILD = require('child_process').execSync('git rev-parse HEAD').toString().trim();
 
 const PATHS = {
-    APPS: {
-        app: path.resolve(__dirname, 'src/app.js'),
-        popup: path.resolve(__dirname, 'src/chrome/popup/index.js'),
-        background: path.resolve(__dirname, 'src/chrome/background/index.js'),
-    },
-    BUILD: path.resolve(__dirname, 'build'),
-    DIST: path.resolve(__dirname, 'dist'),
-    NODE_MODULES: path.resolve(__dirname, 'node_modules')
+  APPS: {
+    app: path.resolve(__dirname, 'src/app.js'),
+    popup: path.resolve(__dirname, 'src/chrome/popup/index.js'),
+    background: path.resolve(__dirname, 'src/chrome/background/index.js'),
+  },
+  BUILD: path.resolve(__dirname, 'build'),
+  DIST: path.resolve(__dirname, 'dist'),
+  NODE_MODULES: path.resolve(__dirname, 'node_modules'),
 };
 
 /** EXTERNAL DEFINITIONS INJECTED INTO APP **/
-var DEV_SERVER = 'localhost';
-var ENV_DEP_SERVER = DEVELOPMENT ? ('http://' + DEV_SERVER + ':9000') : 'https://youtube.tracking.exposed';
-var ENV_DEP_WEB = DEVELOPMENT ? ('http://' + DEV_SERVER + ':1313') : 'https://youtube.tracking.exposed';
+const DEV_SERVER = 'localhost';
+const ENV_DEP_SERVER = DEVELOPMENT
+  ? 'http://' + DEV_SERVER + ':9000'
+  : 'https://youtube.tracking.exposed';
+const ENV_DEP_WEB = DEVELOPMENT
+  ? 'http://' + DEV_SERVER + ':1313'
+  : 'https://youtube.tracking.exposed';
 
 const DEFINITIONS = {
-    'process.env': {
-        DEVELOPMENT: JSON.stringify(DEVELOPMENT),
-        NODE_ENV: JSON.stringify(NODE_ENV),
-        API_ROOT: JSON.stringify(ENV_DEP_SERVER + '/api/v' + LAST_VERSION),
-        WEB_ROOT: JSON.stringify(ENV_DEP_WEB),
-        VERSION: JSON.stringify(packageJSON.version + (DEVELOPMENT ? '-dev' : '')),
-        BUILD: JSON.stringify(`On the ${moment().format("DD of MMMM at HH:mm")}.`),
-        BUILDISODATE: JSON.stringify(BUILDISODATE),
-        FLUSH_INTERVAL: JSON.stringify(DEVELOPMENT ? 10000 : 20000)
-    }
+  'process.env': {
+    DEVELOPMENT: JSON.stringify(DEVELOPMENT),
+    NODE_ENV: JSON.stringify(NODE_ENV),
+    API_ROOT: JSON.stringify(ENV_DEP_SERVER + '/api/v' + LAST_VERSION),
+    WEB_ROOT: JSON.stringify(ENV_DEP_WEB),
+    VERSION: JSON.stringify(APP_VERSION + (DEVELOPMENT ? '-dev' : '')),
+    BUILD: JSON.stringify(`On the ${moment().format('DD of MMMM at HH:mm')}.`),
+    BUILDISODATE: JSON.stringify(BUILDISODATE),
+    FLUSH_INTERVAL: JSON.stringify(DEVELOPMENT ? 10000 : 20000),
+    DATA_CONTRIBUTION_ENABLED: JSON.stringify(GUARDONI_TARGET),
+  },
 };
 
 /** PLUGINS **/
-const PLUGINS = [
-    new webpack.DefinePlugin(DEFINITIONS),
-    new webpack.NoErrorsPlugin()
-];
+const PLUGINS = [new webpack.DefinePlugin(DEFINITIONS)];
 
-const PROD_PLUGINS = [
-    new webpack.optimize.UglifyJsPlugin({
-        compress: {
-            screw_ie8: true,
-            warnings: false
-        },
-        output: {
-            comments: false
-        },
-        sourceMap: true
-    }),
-    new webpack.LoaderOptionsPlugin({
-        debug: false,
-        minimize: true
-    })
-
-    // Add additional production plugins
-];
+// const PROD_PLUGINS = [
+//   new webpack.LoaderOptionsPlugin({
+//     minimize: true,
+//     postcss: [autoPrefixer()],
+//     debug: !PRODUCTION,
+//   }),
+//   // Add additional production plugins
+// ];
 
 const DEV_PLUGINS = [
-    new WebpackNotifierPlugin({
-        // My notification daemon displays "critical" messages only.
-        // Dunno if this is the case for every Ubuntu machine.
-        urgency: 'critical',
-        title: 'yttrex',
-        contentImage: path.join(__dirname, 'icons', 'yttrex128.png'),
-        timeout: 2,
-        alwaysNotify: true
-    })
+  new WebpackNotifierPlugin({
+    // My notification daemon displays "critical" messages only.
+    // Dunno if this is the case for every Ubuntu machine.
+    urgency: 'critical',
+    title: 'yttrex',
+    contentImage: path.join(__dirname, 'icons', 'yttrex128.png'),
+    timeout: 2,
+    alwaysNotify: true,
+  }),
+  new MiniCssExtractPlugin(),
 ];
 
-const EXTRACT_CSS_PLUGIN = new ExtractTextPlugin(
-    'styles.css', {
-        allChunks: true
-    }
+if (PRODUCTION) {
+  /* firefox is giving me too many problem */
+  // PLUGINS.push(...PROD_PLUGINS);
+} else if (DEVELOPMENT) {
+  console.log(
+    'Development, using as environment variables: ' +
+      JSON.stringify(DEFINITIONS['process.env'])
+  );
+  PLUGINS.push(...DEV_PLUGINS);
+}
+
+PLUGINS.push(
+  new CopyWebpackPlugin({
+    patterns: [
+      {
+        from: 'public',
+        to: PRODUCTION ? PATHS.DIST : PATHS.BUILD,
+        priority: 1,
+        filter: (file) => {
+          const { base } = path.parse(file);
+          return !['manifest.json'].includes(base);
+        },
+      },
+      {
+        priority: 0,
+        from: 'public/manifest.json',
+        to: PRODUCTION ? PATHS.DIST : PATHS.BUILD,
+        transform: (content) => {
+          const manifest = JSON.parse(content.toString());
+
+          manifest.version = APP_VERSION;
+
+          if (PRODUCTION) {
+            manifest.permissions = manifest.permissions.filter(
+              (p) => !p.includes('localhost')
+            );
+          }
+
+          return JSON.stringify(manifest, null, 2);
+        },
+      },
+    ],
+  })
 );
 
-PLUGINS.push(EXTRACT_CSS_PLUGIN);
-
-if (PRODUCTION) {
-    /* PLUGINS.push(...PROD_PLUGINS); firefox is giving me too many problem */
-} else if (DEVELOPMENT) {
-    console.log('Development, using as environment variables: ' +
-        JSON.stringify(DEFINITIONS['process.env']));
-    PLUGINS.push(...DEV_PLUGINS);
+if (NODE_ENV === 'production') {
+  PLUGINS.push(
+    new FileManagerPlugin({
+      events: {
+        onEnd: {
+          archive: [
+            {
+              source: './build',
+              destination: './extension.zip',
+            },
+          ],
+        },
+      },
+    })
+  );
 }
 
 /** LOADERS **/
 const JS_LOADER = combineLoaders([
-    {
-        loader: 'babel',
-        query: {
-            cacheDirectory: true
-        }
-    }
+  {
+    loader: 'ts-loader',
+    options: {
+      transpileOnly: true,
+    },
+  },
 
-    // Add additional JS loaders
+  // Add additional JS loaders
 ]);
 
 const CSS_LOADER = combineLoaders([
-    {
-        loader: 'css',
-        query: {
-            sourceMap: true
-        }
+  { loader: MiniCssExtractPlugin.loader },
+  {
+    loader: 'css',
+    query: {
+      sourceMap: true,
     },
+  },
 
-    { loader: 'postcss' },
+  { loader: 'postcss' },
 
-    {
-        loader: 'sass',
-        query: {
-            precision: '8', // If you use bootstrap, must be >= 8. See https://github.com/twbs/bootstrap-sass#sass-number-precision
-            outputStyle: 'expanded',
-            sourceMap: true
-        }
-    }
+  {
+    loader: 'sass',
+    query: {
+      precision: '8', // If you use bootstrap, must be >= 8. See https://github.com/twbs/bootstrap-sass#sass-number-precision
+      outputStyle: 'expanded',
+      sourceMap: true,
+    },
+  },
 
-    // Add additional style / CSS loaders
+  // Add additional style / CSS loaders
 ]);
 
 // Add additional loaders to handle other formats (ie. images, svg)
 
 const LOADERS = [
-    {
-        test: /\.jsx?$/,
-        exclude: [PATHS.NODE_MODULES],
-        loader: JS_LOADER
-    }, {
-        test: /\.s[ac]ss$/,
-        exclude: [PATHS.NODE_MODULES],
-        loader: ExtractTextPlugin.extract('style', CSS_LOADER)
-    }
+  {
+    test: /\.jsx?$/,
+    exclude: [PATHS.NODE_MODULES],
+    use: [
+      {
+        loader: JS_LOADER,
+      },
+    ],
+  },
+  {
+    test: /\.s[ac]ss$/,
+    exclude: [PATHS.NODE_MODULES],
+    use: [
+      {
+        loader: CSS_LOADER,
+      },
+    ],
+  },
 
-    // Add additional loader specifications
+  // Add additional loader specifications
 ];
 
 /** EXPORTED WEBPACK CONFIG **/
 const config = {
-    entry: PATHS.APPS,
+  mode: NODE_ENV,
+  entry: PATHS.APPS,
 
-    output: {
-        path: PRODUCTION ? PATHS.DIST : PATHS.BUILD,
-        filename: '[name].js'
-    },
+  output: {
+    path: PRODUCTION ? PATHS.DIST : PATHS.BUILD,
+    filename: '[name].js',
+  },
 
-    debug: !PRODUCTION,
+  // devtool: PRODUCTION ? '#source-map' : '#inline-source-map',
+  devtool: PRODUCTION ? false : 'inline-source-map',
 
-    // devtool: PRODUCTION ? '#source-map' : '#inline-source-map',
-    devtool: PRODUCTION ? null : '#inline-source-map',
+  target: 'web',
 
-    target: 'web',
+  resolve: {
+    extensions: ['', '.js', '.jsx'],
+    modules: ['node_modules'], // Don't use absolute path here to allow recursive matching
+  },
 
-    resolve: {
-        extensions: ['', '.js', '.jsx'],
-        modules: ['node_modules'] // Don't use absolute path here to allow recursive matching
-    },
+  plugins: PLUGINS,
 
-    plugins: PLUGINS,
-
-    module: {
-        loaders: LOADERS
-    },
-
-    postcss: [autoPrefixer()]
+  module: {
+    rules: LOADERS,
+  },
+  optimization: {
+    minimizer: PRODUCTION ? [new UglifyJsPlugin()] : [],
+  },
 };
 
 module.exports = config;
