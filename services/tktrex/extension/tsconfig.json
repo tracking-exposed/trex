@@ -1,0 +1,30 @@
+{
+  "extends": "../../../tsconfig.json",
+  "compilerOptions": {
+    "allowJs": true,
+    "baseUrl": "./src",
+    "esModuleInterop": true,
+    "jsx": "react",
+    "module": "esnext",
+    "moduleResolution": "node",
+    "noEmit": true,
+    "noImplicitAny": true,
+    "resolveJsonModule": true,
+    "strict": true,
+    "strictNullChecks": true,
+    "target": "es2015",
+    "paths": {
+      "@shared/*": ["../../../../shared/src/*"],
+      "@tktrex/*": ["../../shared/src/*"]
+    }
+  },
+  "references": [
+    { "path": "../../../shared" },
+    { "path": "../shared" }
+  ],
+  "ts-node": {
+    "compilerOptions": {
+      "module": "CommonJS"
+    }
+  }
+}

@@ -1,6 +1,6 @@
-import * as t from "io-ts";
-import { date } from "io-ts-types/lib/date";
-import { HomeType, SearchType, VideoType } from "./Ad";
+import * as t from 'io-ts';
+import { date } from 'io-ts-types/lib/date';
+import { HomeType, SearchType, VideoType } from './Ad';
 
 export const ParsedInfo = t.intersection(
   [
@@ -19,17 +19,17 @@ export const ParsedInfo = t.intersection(
         timePrecision: t.string,
         thumbnailHref: t.string,
       },
-      "Common"
+      'Common'
     ),
     t.partial(
       {
         recommendedLength: t.number,
         recommendedDisplayL: t.string,
       },
-      "Partial"
+      'Partial'
     ),
   ],
-  "ParsedInfo"
+  'ParsedInfo'
 );
 
 export type ParsedInfo = t.TypeOf<typeof ParsedInfo>;
@@ -48,18 +48,18 @@ const VideoMetadata = t.strict(
         likes: t.string,
         dislikes: t.union([t.string, t.null]),
       },
-      "LikeInfo"
+      'LikeInfo'
     ),
     viewInfo: t.strict(
       {
         viewStr: t.string,
         viewNumber: t.number,
       },
-      "ViewInfo"
+      'ViewInfo'
     ),
     related: t.array(ParsedInfo),
   },
-  "VideoMetadata"
+  'VideoMetadata'
 );
 
 const HomeMetadata = t.strict(
@@ -74,14 +74,14 @@ const HomeMetadata = t.strict(
       })
     ),
   },
-  "HomeMetadata"
+  'HomeMetadata'
 );
 
 const SearchMetadata = t.strict(
   {
     type: SearchType,
   },
-  "SearchMetadata"
+  'SearchMetadata'
 );
 
 export const Metadata = t.intersection(
@@ -99,7 +99,7 @@ export const Metadata = t.intersection(
     }),
     t.union([VideoMetadata, HomeMetadata, SearchMetadata]),
   ],
-  "MetadataDB"
+  'MetadataDB'
 );
 
 export type Metadata = t.TypeOf<typeof Metadata>;

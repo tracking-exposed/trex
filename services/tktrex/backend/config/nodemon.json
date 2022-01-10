@@ -1,0 +1,10 @@
+{
+  "watch": [
+    "bin/*.js",
+    "lib/*.js",
+    "routes/*.js"
+  ],
+  "verbose": true,
+  "exitcrash": false,
+  "ext": "js"
+}
