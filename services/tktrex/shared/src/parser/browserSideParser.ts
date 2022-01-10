@@ -78,7 +78,6 @@ const music = combineParsers({
 
 export const createParser = (): TikTokParserBrowserInterface => {
   const commonParsers = {
-    type: parseAlways('foryou'),
     baretext,
     description,
     hashtags,
@@ -88,11 +87,13 @@ export const createParser = (): TikTokParserBrowserInterface => {
 
   const parseForYouVideo = combineParsers({
     ...commonParsers,
+    type: parseAlways('foryou'),
     author,
   });
 
   const parseSearchVideo = combineParsers({
     ...commonParsers,
+    type: parseAlways('search'),
     author: authorWithoutName,
   });
 
