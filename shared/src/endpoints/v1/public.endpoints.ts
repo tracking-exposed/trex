@@ -1,8 +1,10 @@
 import * as t from 'io-ts';
-import { ContributorPersonalStats } from '../../models/contributor/ContributorPersonalStats';
-import { SearchQuery } from '../../models/http/SearchQuery';
 import { Endpoint } from 'ts-endpoint';
+import { ContributorPersonalStats } from '../../models/contributor/ContributorPersonalStats';
+import { ContributorPersonalSummary } from '../../models/contributor/ContributorPersonalSummary';
 import { CreatorStats } from '../../models/CreatorStats';
+import { PublicKeyParams } from '../../models/http/params/PublicKey';
+import { SearchQuery } from '../../models/http/SearchQuery';
 
 const GetAuthorStatsByVideoId = Endpoint({
   Method: 'GET',
@@ -18,12 +20,23 @@ const GetPersonalStatsByPublicKey = Endpoint({
   getPath: ({ publicKey }) => `/v1/personal/${publicKey}`,
   Input: {
     Query: SearchQuery,
-    Params: t.type({ publicKey: t.string }),
+    Params: PublicKeyParams,
   },
   Output: ContributorPersonalStats,
+});
+
+const GetPersonalSummaryByPublicKey = Endpoint({
+  Method: 'GET',
+  getPath: ({ publicKey }) => `/v1/personal/${publicKey}/summary/json`,
+  Input: {
+    Query: SearchQuery,
+    Params: PublicKeyParams,
+  },
+  Output: ContributorPersonalSummary,
 });
 
 export const endpoints = {
   GetAuthorStatsByVideoId,
   GetPersonalStatsByPublicKey,
+  GetPersonalSummaryByPublicKey,
 };

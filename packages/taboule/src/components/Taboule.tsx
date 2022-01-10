@@ -5,17 +5,34 @@ import {
   GridColTypeDef,
 } from '@material-ui/data-grid';
 import { APIError } from '@shared/errors/APIError';
+import { AppError } from '@shared/errors/AppError';
 import { GetLogger } from '@shared/logger';
 import { ObservableQuery } from 'avenger/lib/Query';
 import * as QR from 'avenger/lib/QueryResult';
 import { WithQueries } from 'avenger/lib/react';
+import { pipe } from 'fp-ts/lib/function';
 import * as React from 'react';
 import { defaultConfiguration, defaultParams } from '../config';
 import { TabouleDataProvider } from '../state';
 import { Results, SearchRequestInput, TabouleQueries } from '../state/queries';
 import { ErrorOverlay } from './ErrorOverlay';
+import * as E from 'fp-ts/lib/Either';
+import * as t from 'io-ts';
+import { TabouleQueryKey } from '../state/types';
+import { PathReporter } from 'io-ts/lib/PathReporter';
 
 const log = GetLogger('taboule');
+
+const validateProps = <Q extends keyof TabouleQueries>(
+  props: TabouleProps<Q>
+): E.Either<t.Errors, TabouleProps<Q>> => {
+  return pipe(
+    TabouleQueryKey.decode(props.query),
+    E.map((q) => ({
+      ...props,
+    }))
+  );
+};
 
 export interface TabouleProps<Q extends keyof TabouleQueries>
   extends Omit<DataGridProps, 'rows' | 'columns'> {
@@ -27,14 +44,29 @@ export interface TabouleProps<Q extends keyof TabouleQueries>
   columns?: GridColTypeDef[];
 }
 
-export const Taboule = <Q extends keyof TabouleQueries>({
-  query: queryKey,
-  baseURL,
-  showInput,
-  initialParams,
-  ...props
-}: TabouleProps<Q>): JSX.Element => {
+export const Taboule = <Q extends keyof TabouleQueries>(
+  props: TabouleProps<Q>
+): JSX.Element => {
+  const propsValidation = validateProps(props);
+
+  if (propsValidation._tag === 'Left') {
+    throw new AppError(
+      'TabouleError',
+      'Taboule props are invalid',
+      PathReporter.report(propsValidation)
+    );
+  }
+
+  const {
+    initialParams,
+    query: queryKey,
+    baseURL,
+    showInput,
+    ...otherProps
+  } = propsValidation.right;
+
   log.debug(`Initial params %O`, initialParams);
+
   const defaultQueryParams = React.useMemo(
     () => defaultParams[queryKey],
     [queryKey]
@@ -80,7 +112,7 @@ export const Taboule = <Q extends keyof TabouleQueries>({
   }, []);
 
   const dataGridProps: DataGridProps = {
-    ...props,
+    ...otherProps,
     page,
     filterMode: 'server',
     ...config,
