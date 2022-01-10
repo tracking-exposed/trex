@@ -1,6 +1,6 @@
 {
   "name": "tktrex",
-  "version": "0.2.3",
+  "version": "0.2.4",
   "packageManager": "yarn@3.1.1",
   "scripts": {
     "build": "tsc --build && DEBUG=\"*:debug *:error\" NODE_ENV=production webpack",
