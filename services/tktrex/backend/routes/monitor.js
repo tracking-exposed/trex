@@ -32,9 +32,8 @@ async function getMonitor(req) {
     // the key template='info' is added if any special condition is triggered
     // the key 'template' and 'relative' are always added
 
+    /*
     const fixed = _.map(content, function(e) {
-        /* this allow us, client side, to keep a separated template instead of 
-         * a condition check in metadata template */
         if(e.template == 'metadata') {
             e.template = e.type;
             _.unset(e, 'type');
@@ -42,6 +41,8 @@ async function getMonitor(req) {
         }
         return e;
     })
+    */
+    const fixed = content;
 
     const ordered = _.orderBy(fixed, [ 'timevar' ], [ 'desc' ]);
     return {
@@ -49,7 +50,7 @@ async function getMonitor(req) {
             content: ordered,
             start: moment(lastExecution).format('HH:mm:ss'),
             end: moment(new Date()).format('HH:mm:ss'),
-            duration: moment.duration(moment() - moment(lastExecution)).asSeconds(),
+            duration: moment.duration(+moment() - +moment(lastExecution)).asSeconds(),
         }
     };
 };

@@ -8,15 +8,13 @@ const foodWords = require('food-words');
 function hash(obj, fields) {
     if(_.isUndefined(fields))
         fields = _.keys(obj);
-    print = true;
     const plaincnt = fields.reduce(function(memo, fname) {
         memo += (fname + "∴" +
             JSON.stringify(_.get(obj, fname, '…miss!')) +
             "," );
         return memo;
     }, "");
-    if(print)
-        debug("(note) hashing of %s", plaincnt);
+    debug("(note) hashing of %s", plaincnt);
     const sha1sum = crypto.createHash('sha1');
     sha1sum.update(plaincnt);
     return sha1sum.digest('hex');
@@ -42,7 +40,7 @@ function decodeFromBase58 (s) {
 }
 
 function verifyRequestSignature(req) {
-    // Warning: this is a duplication, also in events the 
+    // Warning: this is a duplication, also in events the
     // header list is defined, no sense specify here the key names:
     const publicKey = req.headers['x-tktrex-publickey'];
     const signature = req.headers['x-tktrex-signature'];
@@ -79,7 +77,7 @@ function string2Food(piistr) {
     });
     const size = _.size(foodWords);
     const ret = _.map(inputs, function(pseudornumber) {
-        /* considering the calculus above would produce a 
+        /* considering the calculus above would produce a
            number that might be < foodWords.length and with decimals,
            it is multiply by 1000 to be sure would be bigger than
            variable 'size' */
@@ -91,7 +89,7 @@ function string2Food(piistr) {
 
 function pickFoodWord(rginput) {
     const seed = hash({ rginput }).replace(/[a-f]/gi, '')
-    
+
     const rnum = seed.length > 5 ?
         _.parseInt(seed.substr(0, 5)) :
         _.parseInt(seed) + rginput.length;
@@ -102,7 +100,7 @@ function pickFoodWord(rginput) {
     return _.nth(foodWords, wordpos);
 }
 
-function getInt(req, what, def) {                                                       
+function getInt(req, what, def) {
     const rv = _.parseInt(_.get(req.params, what));
     if(_.isNaN(rv)) {
         if(!_.isUndefined(def))
@@ -113,16 +111,16 @@ function getInt(req, what, def) {
         }
     }
     return rv;
-}                                                                                       
+}
 
-function getString(req, what) {                                                         
-    const rv = _.get(req.params, what);                                                   
-    if(_.isUndefined(rv)) {                                                             
-        debug("getString: Missing parameter [%s] in %j", what, req.params);             
-        return "";                                                                      
-    }                                                                                   
-    return rv;                                                                          
-}                                                                                       
+function getString(req, what) {
+    const rv = _.get(req.params, what);
+    if(_.isUndefined(rv)) {
+        debug("getString: Missing parameter [%s] in %j", what, req.params);
+        return "";
+    }
+    return rv;
+}
 
 module.exports = {
     hash,
@@ -132,6 +130,6 @@ module.exports = {
     verifyRequestSignature,
     string2Food,
     pickFoodWord,
-    getInt,                                                                     
+    getInt,
     getString,
 };

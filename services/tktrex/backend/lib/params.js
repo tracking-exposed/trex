@@ -1,7 +1,9 @@
-var _ = require('lodash');
-var debug = require('debug')('lib:params');
+import _ from 'lodash';
+import createDebug from 'debug';
 
-function getInt(req, what, def) {
+var debug = createDebug('lib:params');
+
+export function getInt(req, what, def) {
     var rv = _.parseInt(_.get(req.params, what));
     if(_.isNaN(rv)) {
         if(!_.isUndefined(def))
@@ -14,7 +16,7 @@ function getInt(req, what, def) {
     return rv;
 }
 
-function getString(req, what) {
+export function getString(req, what) {
     var rv = _.get(req.params, what);
     if(_.isUndefined(rv)) {
         debug("getString: Missing parameter [%s] in %j", what, req.params);
@@ -23,26 +25,20 @@ function getString(req, what) {
     return rv;
 }
 
-function optionParsing(amountString, max) {
-    const MAXOBJS = max ? max : 2000;
+export function optionParsing(amountString, max) {
+    const maxObjs = max ? max : 2000;
+
     try {
-        const amount = _.parseInt(_.first(amountString.split('-')));
-        const skip = _.parseInt(_.last(amountString.split('-')));
-        if(_.isNaN(amount) || _.isNaN(skip))
-            throw new Error;
+        const amount = _.parseInt(_.first(amountString.split('-')) ?? maxObjs);
+        const skip = _.parseInt(_.last(amountString.split('-')) ?? '0');
         return {
             amount,
             skip
         };
     } catch(error) { }
+
     return {
-        amount: MAXOBJS,
+        amount: maxObjs,
         skip: 0
     };
-};
-
-module.exports = {
-    getInt: getInt,
-    getString: getString,
-    optionParsing: optionParsing
 };

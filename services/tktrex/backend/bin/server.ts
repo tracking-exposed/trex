@@ -1,24 +1,25 @@
 #!/usr/bin/env node
-const express = require('express');
+import express from 'express';
+import { Server } from 'http';
+import _ from 'lodash';
+import bodyParser from 'body-parser';
+import createDebug from 'debug';
+import nconf from 'nconf';
+import cors from 'cors';
+
+import dbUtils from '../lib/dbutils';
+import apiList from '../lib/api';
+import security from '../lib/security';
+
+const debug = createDebug('tktrex');
+
 const app = express();
-const server = require('http').Server(app);
-const _ = require('lodash');
-const bodyParser = require('body-parser');
-const debug = require('debug')('tktrex');
-const nconf = require('nconf');
-const cors = require('cors');
-
-const dbutils = require('../lib/dbutils');
-const { apiList }= require('../lib/api');
-const security = require('../lib/security');
-
+const server = new Server(app);
 const cfgFile = "config/settings.json";
-const redOn = "\033[31m";
-const redOff = "\033[0m";
 
 nconf.argv().env().file({ file: cfgFile });
 
-console.log(redOn + "ઉ nconf loaded, using " + cfgFile + redOff);
+console.log("ઉ nconf loaded, using ", cfgFile);
 
 if(!nconf.get('interface') || !nconf.get('port') )
     throw new Error("check your config/settings.json, config of 'interface' and 'post' missing");
@@ -58,11 +59,19 @@ async function iowrapper(fname, req, res) {
         res.status(502);
         res.send("Error?");
     }
-  } catch(error) {
+  } catch (error) {
     res.status(505);
-    res.send("Software error: " + error.message);
-    debug("Error in HTTP handler API(%s): %s %s",
-        fname, error.message, error.stack);
+    if (error instanceof Error) {
+      res.send("Software error: " + error.message);
+      debug(
+        "Error in HTTP handler API(%s): %s %s",
+        fname, error.message, error.stack,
+      );
+    } else {
+      res.send("Unknown software error.");
+      debug("Unknown error in HTTP handler API(%s): %s", fname, error);
+    }
+
   }
   res.end();
 }
@@ -101,7 +110,7 @@ app.get('/api/v2/monitor/:minutes?', async (req, res) => await iowrapper('getMon
 /* experiments API: "comparison" require password, "chiaroscuro" doesn't */
 app.get(
   "/api/v2/guardoni/list/:directiveType/:key?",
-  async (req, res) => await iowrapper("getAllExperiments")
+  async (req, res) => await iowrapper("getAllExperiments", req, res),
 );
 app.post("/api/v3/directives/:directiveType", async (req, res) => await iowrapper("postDirective", req, res));
 app.get("/api/v3/directives/:experimentId", async (req, res) => await iowrapper("fetchDirective", req, res));
@@ -127,7 +136,7 @@ app.get('*', async (req, res) => {
 async function initialSanityChecks() {
     /* security checks = is the password set and is not the default? (more checks might come) */
     security.checkKeyIsSet();
-    await dbutils.checkMongoWorks(true /* if true means that failure is fatal */);
+    await dbUtils.checkMongoWorks(true /* if true means that failure is fatal */);
     debug("tiktok.tracking.exposed backend is operative!")
 }
 

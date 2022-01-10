@@ -36,7 +36,7 @@ async function getPersonal(req) {
     }
 
     debug("Asked to get data kind %s, format %s", what, format);
-    let retval = [];
+    let retval = null;
     try {
         if(what === 'summary')
             retval = await automo.getSummaryByPublicKey(k);
@@ -51,8 +51,9 @@ async function getPersonal(req) {
 
         debug("Personal %s returning %d objects", what, retval.length);
     } catch(error) {
-        debug("%s", error.message);
-        return { json: { error: true, message: error.message}};
+        const message = error instanceof Error ? error.message : 'unknown error';
+        debug("%s", message);
+        return { json: { error: true, message }};
     }
 
     return { json: retval };
