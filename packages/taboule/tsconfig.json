@@ -30,11 +30,11 @@
       "@shared/*": ["../../../shared/src/*"]
     }
   },
-  "references": [{ "path": "../../shared" }],
   "include": ["./src", "./typings"],
   "ts-node": {
     "compilerOptions": {
       "module": "CommonJS"
     }
-  }
+  },
+  "references": [{ "path": "../../shared" }]
 }

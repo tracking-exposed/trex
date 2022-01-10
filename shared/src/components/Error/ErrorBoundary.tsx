@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { ErrorBox } from './ErrorBox';
 
 interface ErrorState {
   error?: Error;
@@ -29,14 +30,7 @@ export class ErrorBoundary extends React.Component<any, ErrorState> {
     if (this.state.error !== undefined) {
       // You can render any custom fallback UI
       // eslint-disable-next-line no-console
-      return (
-        <div>
-          <h1>Un error occurred: {this.state.error.name}</h1>
-          <pre style={{ backgroundColor: 'white' }}>
-            <code>{JSON.stringify(this.state.error, null, 2)}</code>
-          </pre>
-        </div>
-      );
+      return ErrorBox(this.state.error);
     }
     return this.props.children;
   }
