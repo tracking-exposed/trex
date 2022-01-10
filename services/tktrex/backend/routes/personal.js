@@ -37,9 +37,10 @@ async function getPersonal(req) {
     try {
         if(what === 'summary')
             retval = await automo.getSummaryByPublicKey(k, what);
-    } catch(error) {
-        debug("%s", error.message);
-        return { json: { error: true, message: error.message}};
+    } catch (error) {
+        const message = error instanceof Error ? error.message : 'unknown error';
+        debug("%s", message);
+        return { json: { error: true, message }};
     }
 
     return { json: retval };

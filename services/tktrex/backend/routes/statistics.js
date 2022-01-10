@@ -45,7 +45,7 @@ async function statistics(req) {
     }
 
     const filter = { name };
-    const refDate = new Date( moment().subtract(amount, _.nth(unit, 0)));
+    const refDate = new Date(+moment().subtract(amount, _.nth(unit, 0)));
 
     if(_.startsWith(unit, 'day'))
         _.set(filter, 'day', { '$gt': refDate });
@@ -70,7 +70,7 @@ async function statistics(req) {
     await mongoc.close();
     return { json: content,
         // headers: { amount, unit, name }
-        // there is no reason to add info in the header, 
+        // there is no reason to add info in the header,
         // but that was also a standard in all the *trex backends
     };
 }

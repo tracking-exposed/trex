@@ -11,15 +11,20 @@ async function checkMongoWorks(beFatal) {
         debug("collection list: %j", _.map(results, 'name') );
         await mongoc.close();
         return results;
-    } catch(error) {
-        debug("Failure in checkMongoWorks: %s", error.message);
-        console.log(error.stack);
-        if(beFatal) {
-            console.log("mongodb is not running: quitting");
-            console.log("config derived", nconf.get('mongoDb'));
-            process.exit(1);
-        }
+    } catch (error) {
+      if (!(error instanceof Error)) {
+        debug("checkMongoWorks: %s", error);
         return false;
+      }
+
+      debug("Failure in checkMongoWorks: %s", error.message);
+      console.log(error.stack);
+      if(beFatal) {
+          console.log("mongodb is not running: quitting");
+          console.log("config derived", nconf.get('mongoDb'));
+          process.exit(1);
+      }
+      return false;
     }
 };
 

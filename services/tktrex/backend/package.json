@@ -4,9 +4,10 @@
   "packageManager": "yarn@3.1.1",
   "description": "tiktok.tracking.exposed → backend data collector, to investigate personalization algorithms",
   "scripts": {
-    "watch": "key=fuffa DEBUG=\"*,-express:*,-body-parser:*\" nodemon --config config/nodemon.json bin/server",
-    "start": "DEBUG=\"*,-body-parser:*,-express:*\" node bin/server",
-    "parserv": "DEBUG=\"*\" node bin/parserv3"
+    "watch": "key=fuffa DEBUG=\"*,-express:*,-body-parser:*\" ts-node-dev bin/server",
+    "start": "DEBUG=\"*,-body-parser:*,-express:*\" ts-node bin/server",
+    "parserv": "DEBUG=\"*\" ts-node bin/parserv3",
+    "parserv:watch": "DEBUG=\"*\" ts-node-dev bin/parserv3"
   },
   "author": "https://github.com/tracking-exposed/tktrex/graphs/contributors",
   "license": "AGPL-3.0",
@@ -28,5 +29,13 @@
     "node-fetch": "^2.6.1",
     "nodemon": "^1.19.4",
     "tweetnacl": "^0.14.3"
+  },
+  "devDependencies": {
+    "@types/express": "^4.17.13",
+    "@types/lodash": "^4.14.178",
+    "@types/node": "^17.0.8",
+    "ts-node": "^10.4.0",
+    "ts-node-dev": "^1.1.8",
+    "typescript": "^4.5.4"
   }
 }

@@ -35,10 +35,18 @@ async function clientConnect(config) {
     try {
         const client = new MongoClient(mongoUri());
         return await client.connect();
-    } catch(error) {
-        debug("mongo.clientConnect error in connecting at %s: %s",
-            mongoUri(), error.message);
-        throw error;
+    } catch (error) {
+      if (!(error instanceof Error)) {
+        debug("Error: %s", error);
+        throw new Error("Error connecting to mongo");
+      }
+
+      debug(
+        "mongo.clientConnect error in connecting at %s: %s",
+        mongoUri(), error.message,
+      );
+
+      throw error;
     }
 };
 

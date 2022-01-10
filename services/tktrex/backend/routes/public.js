@@ -1,16 +1,19 @@
-const _ = require('lodash');
-const moment = require('moment');
-const debug = require('debug')('routes:public');
+import _ from 'lodash';
+import moment from 'moment';
+import createDebug from 'debug';
 
-const params = require('../lib/params');
-const automo = require('../lib/automo');
-const utils = require('../lib/utils');
-const CSV = require('../lib/CSV');
-const cache = require('../lib/cache');
+import * as params from '../lib/params';
+import automo from '../lib/automo';
+import utils  from '../lib/utils';
+import CSV  from '../lib/CSV';
+import cache from '../lib/cache';
+
+const debug = createDebug('routes:public');
 
 // This variables is used as cap in every readLimit below
 const PUBLIC_AMOUNT_ELEMS = 100;
 
+/*
 async function getLast(req) {
 
     if(cache.stillValid("last"))
@@ -27,7 +30,6 @@ async function getLast(req) {
         { $limit: 20 }
     ]);
 
-    /* the complex entry has nested metadata */
     const reduction = _.map(last, function(ce) {
         const lst = _.last(_.orderBy(ce.info, 'savingTime')).savingTime;
         const d = moment.duration( moment(lst) - moment() );
@@ -50,9 +52,9 @@ async function getLast(req) {
         // 'next', and 'cacheTimeSeconds'
     };
 };
+*/
 
-
-function ensureRelated(rv) {
+export function ensureRelated(rv) {
     /* for each related it is called and only the basic info used in 'compare'
      * page get returned. return 'null' if content is not complete */
     const demanded = ['recommendedSource', 'recommendedTitle',
@@ -63,7 +65,7 @@ function ensureRelated(rv) {
     }))) ? null : sele;
 }
 
-async function getVideoId(req) {
+export async function getVideoId(req) {
     const { amount, skip } = params.optionParsing(req.params.paging, PUBLIC_AMOUNT_ELEMS);
     debug("getVideoId %s amount %d skip %d default %d",
         req.params.videoId, amount, skip, PUBLIC_AMOUNT_ELEMS);
@@ -84,7 +86,7 @@ async function getVideoId(req) {
     return { json: evidences };
 };
 
-async function getRelated(req) {
+export async function getRelated(req) {
     const { amount, skip } = params.optionParsing(req.params.paging, PUBLIC_AMOUNT_ELEMS);
     debug("getRelated %s query directly 'related.videoId'. amount %d skip %d", req.params.videoId, amount, skip);
     const entries = await automo.getMetadataByFilter({ "related.videoId": req.params.videoId}, { amount, skip});
@@ -92,14 +94,14 @@ async function getRelated(req) {
         meta.related = _.map(meta.related, function(e) {
             return _.pick(e, ['recommendedTitle', 'recommendedSource', 'index', 'foryou', 'videoId']);
         });
-        meta.timeago = moment.duration( meta.savingTime - moment() ).humanize();
+        meta.timeago = moment.duration(meta.savingTime - +moment()).humanize();
         return _.omit(meta, ['_id', 'publicKey'])
     });
     debug("getRelated: returning %d matches about %s", _.size(evidences), req.params.videoId);
     return { json: evidences };
 };
 
-async function getVideoCSV(req) {
+export async function getVideoCSV(req) {
     // /api/v1/videoCSV/:videoId/:amount
     const MAXENTRY = 2800;
     const { amount, skip } = params.optionParsing(req.params.paging, MAXENTRY);
@@ -121,14 +123,6 @@ async function getVideoCSV(req) {
     };
 };
 
-async function getRecent(req) {
+export async function getRecent(req) {
     return { json: { fuffa: true }};
 }
-
-module.exports = {
-    getLast,
-    getVideoId,
-    getRelated,
-    getVideoCSV,
-    getRecent,
-};

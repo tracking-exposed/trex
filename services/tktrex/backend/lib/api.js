@@ -1,5 +1,6 @@
+import * as publicRoutes from '../routes/public';
 
-var apiList = {
+const apiList = {
     processEvents:       require('../routes/events').processEvents,
     getMirror:           require('../routes/events').getMirror,
     handshake:           require('../routes/events').handshake,
@@ -7,11 +8,10 @@ var apiList = {
     /* for revision */
     unitById:            require('../routes/htmlunit').unitById,
 
-    getRecent:           require('../routes/public').getRecent,
-    getLast:             require('../routes/public').getLast,
-    getVideoId:          require('../routes/public').getVideoId,
-    getRelated:          require('../routes/public').getRelated,
-    getVideoCSV:         require('../routes/public').getVideoCSV,
+    getRecent:           publicRoutes.getRecent,
+    getVideoId:          publicRoutes.getVideoId,
+    getRelated:          publicRoutes.getRelated,
+    getVideoCSV:         publicRoutes.getVideoCSV,
 
     getPersonal:         require('../routes/personal').getPersonal,
 
@@ -33,6 +33,4 @@ var apiList = {
     fetchDirective:      require('../routes/directives').get,
 };
 
-module.exports = {
-    apiList
-};
+export default apiList;

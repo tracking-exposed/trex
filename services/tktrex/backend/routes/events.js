@@ -52,7 +52,7 @@ function appendLast(req) {
      * used by developers with password */
     const MAX_STORED_CONTENT = 15;
     if(!last) last = [];
-    if(_.size(last) > MAX_STORED_CONTENT) 
+    if(_.size(last) > MAX_STORED_CONTENT)
         last = _.tail(last);
 
     last.push(_.pick(req, ['headers', 'body']));
@@ -85,7 +85,12 @@ async function saveInDB(experinfo, objects, dbcollection) {
             success: objects.length,
             subject: dbcollection
         };
-    } catch(error) {
+    } catch (error) {
+        if (!(error instanceof Error)) {
+            debug("Error in saveInDB: %s", error);
+            return { error: error, message: "error in saveInDB", subject: dbcollection};
+        }
+
         debug("Error in saving %d %s %j", objects.length, dbcollection, error.message);
         return { error: true, message: error.message };
     }

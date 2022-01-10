@@ -65,7 +65,7 @@ async function getSummaryByPublicKey(publicKey, kind) {
         metadata: _.map(metadata, function(m) {
             const updat = _.omit(m, ['_id', 'publicKey']);
             updat.relative = moment
-                .duration( moment() - moment(m.savingTime) )
+                .duration(+moment() - +moment(m.savingTime))
                 .humanize();
             return updat;
         }),
@@ -229,16 +229,15 @@ async function getRelatedByVideoId(videoId, options) {
 
 async function write(where, what) {
     const mongoc = await mongo3.clientConnect({concurrency: 1});
-    let retv;
     try {
         await mongo3.insertMany(mongoc, where, what);
-        retv = { error: false, ok: _.size(what) };
-    } catch(error) {
-        debug("%s %j", error.message, _.keys(errors));
-        retv = { error: true, info: error.message };
+        return { error: false, ok: _.size(what) };
+    } catch (error) {
+        const message = (error instanceof Error ? error.message : 'unknown error');
+        debug("error while writing: %s", message);
+        return { error: true, info: message };
     } finally {
         await mongoc.close();
-        return retv;
     }
 }
 
@@ -382,13 +381,14 @@ async function updateMetadata(html, newsection) {
     return await markHTMLandClose(mongoc, html, { what: 'duplicated'});
 }
 
-async function createMetadataEntry(mongoc, html, newsection) {
-    exists = {};
-    exists.publicKey = html.publicKey;
-    exists.savingTime = html.savingTime;
-    exists.version = 3;
-    exists = _.extend(exists, newsection);
-    exists.id = html.metadataId;
+async function createMetadataEntry(mongoc, html, newSection) {
+    const exists = {
+      publicKey: html.publicKey,
+      savingTime: html.savingTime,
+      version: 3,
+      ...newSection,
+      id: html.metadataId,
+    };
     await mongo3.writeOne(mongoc, nconf.get('schema').metadata, exists);
     return exists;
 }
@@ -401,7 +401,7 @@ async function getRandomRecent(minTime, maxAmount) {
     }, { lastActivity: -1}, maxAmount, 0);
 
     const validExamples = [];
-    for (supporter of supporters) {
+    for (const supporter of supporters) {
         let i = await mongo3.count(mongoc, nconf.get('schema').metadata, {
             publicKey: supporter.publicKey,
             type: 'video'
@@ -451,7 +451,7 @@ async function getMixedDataSince(schema, since, maxAmount) {
             let good = _.pick(o, fields)
             good.template = columnName;
             good.relative = _.round(
-                moment.duration( moment() - moment(o[timevar]) ).asSeconds()
+                moment.duration(+moment() - +moment(o[timevar]) ).asSeconds()
             , 1);
 
             good['timevar'] = new Date(o[timevar]);
