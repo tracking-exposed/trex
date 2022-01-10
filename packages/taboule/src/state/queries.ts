@@ -5,6 +5,10 @@ import {
   SearchMetadata,
   VideoMetadata,
 } from '@shared/models/contributor/ContributorPersonalStats';
+import {
+  SummaryHTMLMetadata,
+  SummaryMetadata,
+} from '@shared/models/contributor/ContributorPersonalSummary';
 import { SearchQuery } from '@shared/models/http/SearchQuery';
 import { GuardoniExperiment, Metadata } from '@shared/models/Metadata';
 import { GetAPI } from '@shared/providers/api.provider';
@@ -33,6 +37,9 @@ export interface TabouleQueries {
   personalAds: EndpointQuery<any>;
   personalHomes: EndpointQuery<HomeMetadata>;
   personalVideos: EndpointQuery<VideoMetadata>;
+  // tik tok
+  tikTokPersonalHTMLSummary: EndpointQuery<SummaryHTMLMetadata>;
+  tikTokPersonalMetadataSummary: EndpointQuery<SummaryMetadata>;
 }
 
 interface GetTabouleQueriesProps {
@@ -174,6 +181,42 @@ export const GetTabouleQueries = ({
     available
   );
 
+  const tikTokPersonalHTMLSummary = queryStrict<
+    SearchRequestInput,
+    APIError,
+    Results<SummaryHTMLMetadata>
+  >(
+    (input) =>
+      pipe(
+        API.v1.Public.GetPersonalSummaryByPublicKey({
+          ...input,
+        }),
+        TE.map((content) => ({
+          total: content.htmls.length,
+          content: content.htmls,
+        }))
+      ),
+    available
+  );
+
+  const tikTokPersonalMetadataSummary = queryStrict<
+    SearchRequestInput,
+    APIError,
+    Results<SummaryMetadata>
+  >(
+    (input) =>
+      pipe(
+        API.v1.Public.GetPersonalSummaryByPublicKey({
+          ...input,
+        }),
+        TE.map((content) => ({
+          total: content.metadata.length,
+          content: content.metadata,
+        }))
+      ),
+    available
+  );
+
   return {
     ccRelatedUsers,
     getExperimentById,
@@ -182,5 +225,7 @@ export const GetTabouleQueries = ({
     personalAds,
     personalVideos,
     personalSearches,
+    tikTokPersonalHTMLSummary,
+    tikTokPersonalMetadataSummary,
   };
 };

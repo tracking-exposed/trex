@@ -1,34 +1,35 @@
-import * as Endpoints from "../endpoints";
-import { GetLogger } from "../logger";
-import { command } from "avenger";
-import axios, { AxiosRequestConfig, AxiosResponse, AxiosInstance } from "axios";
-import * as A from "fp-ts/lib/Array";
-import * as E from "fp-ts/lib/Either";
-import { pipe } from "fp-ts/lib/function";
-import * as R from "fp-ts/lib/Record";
-import * as TE from "fp-ts/lib/TaskEither";
-import * as t from "io-ts";
-import { PathReporter } from "io-ts/lib/PathReporter";
-import { MinimalEndpointInstance, TypeOfEndpointInstance } from "ts-endpoint";
-import { APIError } from "../errors/APIError";
+import * as Endpoints from '../endpoints';
+import { GetLogger } from '../logger';
+import { command } from 'avenger';
+import axios, { AxiosRequestConfig, AxiosResponse, AxiosInstance } from 'axios';
+import * as A from 'fp-ts/lib/Array';
+import * as E from 'fp-ts/lib/Either';
+import { pipe } from 'fp-ts/lib/function';
+import * as R from 'fp-ts/lib/Record';
+import * as TE from 'fp-ts/lib/TaskEither';
+import * as t from 'io-ts';
+import { PathReporter } from 'io-ts/lib/PathReporter';
+import { MinimalEndpointInstance, TypeOfEndpointInstance } from 'ts-endpoint';
+import { APIError } from '../errors/APIError';
+import { sequenceS } from 'fp-ts/lib/Apply';
 
-export const apiLogger = GetLogger("API");
+export const apiLogger = GetLogger('API');
 
 export const toAPIError = (e: unknown): APIError => {
   // eslint-disable-next-line
-  apiLogger.error("An error occurred %O", e);
+  apiLogger.error('An error occurred %O', e);
   if (e instanceof Error) {
-    if (e.message === "Network Error") {
+    if (e.message === 'Network Error') {
       return new APIError(
-        "Network Error",
-        "The API endpoint is not reachable",
+        'Network Error',
+        'The API endpoint is not reachable',
         ["Be sure you're connected to internet."]
       );
     }
-    return new APIError("UnknownError", e.message, []);
+    return new APIError('UnknownError', e.message, []);
   }
 
-  return new APIError("UnknownError", "An error occurred", [JSON.stringify(e)]);
+  return new APIError('UnknownError', 'An error occurred', [JSON.stringify(e)]);
 };
 
 const liftFetch = <B>(
@@ -43,8 +44,8 @@ const liftFetch = <B>(
         decode(content),
         E.mapLeft((e): APIError => {
           const details = PathReporter.report(E.left(e));
-          apiLogger.error("Validation failed %O", details);
-          return new APIError("ValidationError", "Validation failed.", details);
+          apiLogger.error('Validation failed %O', details);
+          return new APIError('ValidationError', 'Validation failed.', details);
         }),
         TE.fromEither
       );
@@ -105,26 +106,43 @@ export const MakeHTTPClient = (client: AxiosInstance): HTTPClient => {
   const apiFromEndpoint = <E extends MinimalEndpointInstance>(
     e: E
   ): TERequest<E> => {
-    return command<any, APIError, TypeOfEndpointInstance<E>["Output"]>((b) =>
-      liftFetch<TypeOfEndpointInstance<E>["Output"]>(() => {
-        const url = e.getPath(b.Params);
-        apiLogger.debug("%s %s %O", e.Method, url, b);
+    return command<any, APIError, TypeOfEndpointInstance<E>['Output']>((b) =>
+      pipe(
+        sequenceS(E.Applicative)({
+          params: (e.Input?.Params ?? t.any).decode(b.Params),
+          query: (e.Input?.Query ?? t.any).decode(b.Query),
+          body: (e.Input?.Body ?? t.any).decode(b.Body),
+          headers: (e.Input?.Headers ?? t.any).decode(b.Headers),
+          method: E.right<any, E['Method']>(e.Method),
+        }),
+        TE.fromEither,
+        TE.mapLeft((e): APIError => {
+          const details = PathReporter.report(E.left(e));
+          apiLogger.error('Validation failed %O', details);
+          return new APIError('ValidationError', 'Validation failed.', details);
+        }),
+        TE.chain((input) =>
+          liftFetch<TypeOfEndpointInstance<E>['Output']>(() => {
+            const url = e.getPath(input.params);
+            apiLogger.debug('%s %s %O', e.Method, url, input);
 
-        return client.request<
-          TypeOfEndpointInstance<E>["Input"],
-          AxiosResponse<TypeOfEndpointInstance<E>["Output"]>
-        >({
-          method: e.Method,
-          url,
-          params: b.Query,
-          data: b.Body,
-          responseType: "json",
-          headers: {
-            Accept: "application/json",
-            ...b.Headers,
-          },
-        });
-      }, e.Output.decode)
+            return client.request<
+              TypeOfEndpointInstance<E>['Input'],
+              AxiosResponse<TypeOfEndpointInstance<E>['Output']>
+            >({
+              method: e.Method,
+              url,
+              params: input.query,
+              data: input.body,
+              responseType: 'json',
+              headers: {
+                Accept: 'application/json',
+                ...b.Headers,
+              },
+            });
+          }, e.Output.decode)
+        )
+      )
     );
   };
 
@@ -132,9 +150,9 @@ export const MakeHTTPClient = (client: AxiosInstance): HTTPClient => {
 };
 
 export type TERequest<E extends MinimalEndpointInstance> = (
-  input: TypeOfEndpointInstance<E>["Input"],
+  input: TypeOfEndpointInstance<E>['Input'],
   ia?: any
-) => TE.TaskEither<APIError, TypeOfEndpointInstance<E>["Output"]>;
+) => TE.TaskEither<APIError, TypeOfEndpointInstance<E>['Output']>;
 
 type API<
   ES extends {
@@ -148,7 +166,7 @@ type API<
         [KK in keyof ES[K]]: TERequest<ES[K][KK]>;
       }
     : never;
-} & { request: HTTPClient["request"] };
+} & { request: HTTPClient['request'] };
 
 const makeAPI =
   (client: HTTPClient) =>
