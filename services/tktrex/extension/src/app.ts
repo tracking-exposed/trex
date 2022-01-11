@@ -207,21 +207,22 @@ function handleSearch(element: Node): void {
 
   if (!truel || !truehtml) return;
 
-  const monocheck = truel.getAttribute('trex-taken');
-  if (monocheck === '1') return;
-  truel.setAttribute('trex-taken', '1');
+  try {
+    const monocheck = truel.getAttribute('trex-taken');
+    if (monocheck === '1') return;
+    truel.setAttribute('trex-taken', '1');
+  } catch (error) {
+    console.log('Error with attribute tampering, skipping');
+    return;
+  }
 
-  const SECONDSDELAY = 3;
-  // add 3 seconds delay to load a bit more of HTML
-  window.setTimeout(() => {
-    hub.dispatch({
-      type: 'Suggested', // I'm using Suggested only because of TS enforcing
-      payload: {
-        html: truehtml,
-        href: window.location.href,
-      },
-    });
-  }, SECONDSDELAY * 1000);
+  hub.dispatch({
+    type: 'Suggested', // I'm using Suggested only because of TS enforcing
+    payload: {
+      html: truehtml,
+      href: window.location.href,
+    },
+  });
 }
 
 function handleSuggested(elem: Node): void {

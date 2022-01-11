@@ -61,7 +61,10 @@ function search(envelop, previous) {
 
   const retval = {};
 
-  if (!results.length) {
+  if (results.length) {
+    retval.amount = results.length;
+    retval.results = results;
+  } else {
     const errmsg = 'No results found';
     const h2 = envelop.jsdom.querySelectorAll('h2');
     // there are various 'h2' but only one can be an error
@@ -75,9 +78,6 @@ function search(envelop, previous) {
       }
     });
   }
-
-  retval.amount = results.length;
-  retval.results = results;
 
   return retval;
 }
