@@ -45,6 +45,10 @@ interface TabouleConfiguration {
   tikTokSearches: TabouleQueryConfiguration<TikTokSearchMetadata>;
 }
 
+const columnDefault: Partial<GridColTypeDef> = {
+  minWidth: 200,
+};
+
 export const defaultConfiguration = (
   commands: TabouleCommands,
   params: any
@@ -54,15 +58,18 @@ export const defaultConfiguration = (
       inputs: inputs.channelIdInput,
       columns: [
         {
+          ...columnDefault,
           field: 'recommendedSource',
           headerName: 'Recommended Source',
           minWidth: 160,
         },
         {
+          ...columnDefault,
           field: 'percentage',
           minWidth: 160,
         },
         {
+          ...columnDefault,
           field: 'recommendedChannelCount',
           minWidth: 160,
         },
@@ -72,6 +79,7 @@ export const defaultConfiguration = (
       inputs: inputs.experimentIdInput,
       columns: [
         {
+          ...columnDefault,
           field: 'savingTime',
           headerName: 'savingTime',
           minWidth: 400,
@@ -82,17 +90,19 @@ export const defaultConfiguration = (
     getExperimentList: {
       columns: [
         {
+          ...columnDefault,
           field: 'experimentId',
           headerName: 'experimentId',
           minWidth: 400,
         },
         {
+          ...columnDefault,
           field: 'when',
           headerName: 'Registered',
-          minWidth: 200,
           renderCell: cells.distanceFromNowCell,
         },
         {
+          ...columnDefault,
           field: 'links',
           minWidth: 350,
           renderCell: (params) => {
@@ -127,15 +137,17 @@ export const defaultConfiguration = (
       },
       columns: [
         {
+          ...columnDefault,
           field: 'id',
           minWidth: 100,
         },
         {
+          ...columnDefault,
           field: 'savingTime',
-          minWidth: 200,
           renderCell: cells.distanceFromNowCell,
         },
         {
+          ...columnDefault,
           field: 'query',
           minWidth: 350,
           renderCell: (params) => {
@@ -145,12 +157,13 @@ export const defaultConfiguration = (
           },
         },
         {
+          ...columnDefault,
           field: 'results',
           minWidth: 150,
         },
         {
+          ...columnDefault,
           field: 'actions',
-          minWidth: 200,
           renderCell: (cellParams) => {
             return (
               <Box>
@@ -206,20 +219,20 @@ export const defaultConfiguration = (
       },
       columns: [
         {
+          ...columnDefault,
           field: 'relative',
-          minWidth: 150,
         },
         {
+          ...columnDefault,
           field: 'authorName',
-          minWidth: 150,
         },
         {
+          ...columnDefault,
           field: 'authorSource',
-          minWidth: 150,
         },
         {
+          ...columnDefault,
           field: 'actions',
-          minWidth: 200,
           renderCell: actions.personalMetadataActions(commands, params),
         },
       ],
@@ -232,17 +245,18 @@ export const defaultConfiguration = (
       inputs: inputs.publicKeyInput,
       columns: [
         {
+          ...columnDefault,
           field: 'id',
           minWidth: 100,
         },
         {
+          ...columnDefault,
           field: 'savingTime',
-          minWidth: 150,
           renderCell: cells.distanceFromNowCell,
         },
         {
+          ...columnDefault,
           field: 'selected',
-          minWidth: 150,
           renderCell: (params) => {
             if (Array.isArray(params.value)) {
               return params.value.length;
@@ -251,8 +265,8 @@ export const defaultConfiguration = (
           },
         },
         {
+          ...columnDefault,
           field: 'actions',
-          minWidth: 200,
           renderCell: actions.personalMetadataActions(commands, params),
         },
       ],
@@ -261,20 +275,20 @@ export const defaultConfiguration = (
       inputs: inputs.publicKeyInput,
       columns: [
         {
+          ...columnDefault,
           field: 'id',
-          minWidth: 200,
         },
         {
+          ...columnDefault,
           field: 'timelineId',
-          minWidth: 200,
         },
         {
+          ...columnDefault,
           field: 'href',
-          minWidth: 200,
         },
         {
+          ...columnDefault,
           field: 'savingTime',
-          minWidth: 200,
           renderCell: cells.distanceFromNowCell,
         },
       ],
@@ -283,23 +297,23 @@ export const defaultConfiguration = (
       inputs: inputs.publicKeyInput,
       columns: [
         {
+          ...columnDefault,
           field: 'id',
-          minWidth: 200,
         },
         {
+          ...columnDefault,
           field: 'timelineId',
-          minWidth: 200,
         },
         {
+          ...columnDefault,
           field: 'author',
-          minWidth: 200,
           renderCell: (props) => {
             return <Typography>{(props.value as any)?.name ?? ''}</Typography>;
           },
         },
         {
+          ...columnDefault,
           field: 'relative',
-          minWidth: 200,
         },
       ],
     },
@@ -323,30 +337,28 @@ export const defaultConfiguration = (
       },
       columns: [
         {
-          field: 'textdesc',
-          minWidth: 200,
+          ...columnDefault,
+          field: 'id',
         },
         {
+          ...columnDefault,
           field: 'query',
-          minWidth: 200,
+          renderCell: (params) => {
+            return (
+              <a href={`/search/${params.formattedValue}`}>
+                {params.formattedValue}
+              </a>
+            );
+          },
         },
         {
+          ...columnDefault,
           field: 'thumbnail',
           renderCell: cells.avatarCell,
         },
         {
-          field: 'video',
-          renderCell: (params) => {
-            const videoId = (params.value as any).videoId;
-            return <Typography variant="subtitle1">{videoId}</Typography>;
-          },
-        },
-        {
+          ...columnDefault,
           field: 'savingTime',
-          renderCell: cells.distanceFromNowCell,
-        },
-        {
-          field: 'publishingDate',
           renderCell: cells.distanceFromNowCell,
         },
       ],

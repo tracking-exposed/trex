@@ -128,7 +128,11 @@ export const Taboule = <Q extends keyof TabouleQueries>(
     components: {
       ErrorOverlay,
       Footer: () => {
-        return <Typography>v{process.env.VERSION}</Typography>;
+        return (
+          <Box margin={2}>
+            <Typography>Taboule - v{process.env.VERSION}</Typography>
+          </Box>
+        );
       },
       ...(config.actions !== undefined
         ? {
