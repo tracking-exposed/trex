@@ -30,7 +30,15 @@ export const getNatureByHref = (href: string): Either<URLError, Nature> => {
       type: 'creator',
       creatorName: url.pathname.substring(1),
     });
+  } else if (url.pathname.startsWith('/tag')) {
+    return right({
+      type: 'tag',
+      hashtag: chunks[2],
+    });
   } else if (url.pathname === '/search') {
+    // TODO check if tabs 'video' 'account' fit here;
+    // probably we should use _.startsWith or
+    // handle three search conditions
     return right({
       type: 'search',
       query: url.searchParams.get('q') ?? '',

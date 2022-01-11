@@ -9,14 +9,11 @@ import * as dom from './dom';
 import { registerHandlers } from './handlers/index';
 import log from './logger';
 
-import {
-  localLookup,
-  serverLookup,
-} from './chrome/background/sendMessage';
+import { localLookup, serverLookup } from './chrome/background/sendMessage';
 
 import { getNatureByHref } from '@tktrex/lib/nature';
 
-let feedId = ('—' + Math.random() + '-' + _.random(0, 0xff) + '—');
+let feedId = '—' + Math.random() + '-' + _.random(0, 0xff) + '—';
 let feedCounter = 0;
 let lastMeaningfulURL: string;
 
@@ -51,10 +48,13 @@ function boot(): void {
     // can report the problem and we can handle it.
     initializeEmergencyButton();
 
-    serverLookup({
-      feedId,
-      href: window.location.href,
-    }, tktrexActions);
+    serverLookup(
+      {
+        feedId,
+        href: window.location.href,
+      },
+      tktrexActions,
+    );
   });
 }
 
@@ -79,7 +79,7 @@ function fullSave(): void {
   pipe(
     getNatureByHref(href),
     map((nature) => {
-      const urlChanged = (href !== lastMeaningfulURL);
+      const urlChanged = href !== lastMeaningfulURL;
 
       if (urlChanged) {
         lastMeaningfulURL = window.location.href;
@@ -109,10 +109,10 @@ function fullSave(): void {
       });
     }),
   );
-};
+}
 
 function refreshUUID(): void {
-  feedId = (feedCounter + '—' + Math.random() + '-' + _.random(0, 0xff) );
+  feedId = feedCounter + '—' + Math.random() + '-' + _.random(0, 0xff);
 }
 
 const selectors = {
@@ -125,8 +125,15 @@ const selectors = {
   title: {
     selector: 'h1',
   },
+  error: {
+    selector: 'h2',
+  },
+  /* not currently used 'creator' */
   creator: {
     selector: 'a[href^="/@"]',
+  },
+  search: {
+    selector: '[data-e2e="search-card-desc"]',
   },
 };
 
@@ -134,7 +141,8 @@ function setupObserver(): void {
   /* this initizalise dom listened by mutation observer */
   dom.on(selectors.suggested.selector, handleSuggested);
   dom.on(selectors.video.selector, handleVideo);
-  dom.on(selectors.creator.selector, handleTest);
+  dom.on(selectors.search.selector, handleSearch);
+  dom.on(selectors.error.selector, handleSearch);
   log.info('listeners installed, selectors', selectors);
 
   /* and monitor href changes to randomize a new accessId */
@@ -146,10 +154,17 @@ function setupObserver(): void {
       if (oldHref !== window.location.href) {
         feedCounter++;
         refreshUUID();
-        log.info(oldHref, 'changed to',
-          window.location.href, 'new feedId', feedId,
-          'feedCounter', feedCounter,
-          'videoCounter resetting after poking', videoCounter);
+        log.info(
+          oldHref,
+          'changed to',
+          window.location.href,
+          'new feedId',
+          feedId,
+          'feedCounter',
+          feedCounter,
+          'videoCounter resetting after poking',
+          videoCounter,
+        );
         videoCounter = 0;
         oldHref = window.location.href;
       }
@@ -168,14 +183,45 @@ function setupObserver(): void {
   }
 }
 
-function handleTest(element: Node): void {
-  /*
-  log.info('handleText', element, 'lah lah lah');
-  log.info(element.parentNode.parentNode.parentNode.outerHTML.length);
-  log.info(element.parentNode.parentNode.outerHTML.length);
-  log.info(element.parentNode.outerHTML.length);
-  log.info(element.outerHTML.length);
-  */
+function handleSearch(element: Node): void {
+  if (!_.startsWith(window.location.pathname, '/search')) return;
+
+  // it is lame to do a double check only because they are both searches,
+  // but somehow now it is seems the best solution
+  const dat = document.querySelectorAll(selectors.search.selector);
+  const te = _.map(
+    document.querySelectorAll(selectors.error.selector),
+    'textContent',
+  );
+  if (dat.length === 0 && te.indexOf('No results found') === -1) {
+    console.log(
+      'Matched invalid h2:',
+      te,
+      '(which got ignored because they are not errors)',
+    );
+    return;
+  }
+
+  const truel = document.querySelector('body');
+  const truehtml = truel ? truel.innerHTML : null;
+
+  if (!truel || !truehtml) return;
+
+  const monocheck = truel.getAttribute('trex-taken');
+  if (monocheck === '1') return;
+  truel.setAttribute('trex-taken', '1');
+
+  const SECONDSDELAY = 3;
+  // add 3 seconds delay to load a bit more of HTML
+  window.setTimeout(() => {
+    hub.dispatch({
+      type: 'Suggested', // I'm using Suggested only because of TS enforcing
+      payload: {
+        html: truehtml,
+        href: window.location.href,
+      },
+    });
+  }, SECONDSDELAY * 1000);
 }
 
 function handleSuggested(elem: Node): void {
@@ -202,22 +248,34 @@ function handleSuggested(elem: Node): void {
 let videoCounter = 0;
 
 function handleVideo(node: HTMLElement): void {
+  /* this is not the right approach, but we shouldn't save 
+     video when we're in search or tag condition
+   -- I would have
+     used getNatureByHref(window.location.href) but I couldn't
+     manage the TS */
+  if (_.startsWith(window.location.pathname, '/search')) return;
+
   /* this function return a node element that has a size
    * lesser than 10k, and stop when find out the parent
    * would be more than 10k big. */
-  const videoRoot = _.reduce(_.times(20),
+  const videoRoot = _.reduce(
+    _.times(20),
     (memo: HTMLElement, iteration: number): HTMLElement => {
       if (memo.parentNode instanceof HTMLElement) {
         if (memo.parentNode.outerHTML.length > 10000) {
-          log.info('handleVideo: parentNode too big',
-            memo.parentNode.outerHTML.length);
+          log.info(
+            'handleVideo: parentNode too big',
+            memo.parentNode.outerHTML.length,
+          );
           return memo;
         }
         return memo.parentNode;
       }
 
       return memo;
-    }, node);
+    },
+    node,
+  );
 
   if (videoRoot.hasAttribute('trex')) {
     log.info(
