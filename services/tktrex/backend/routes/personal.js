@@ -4,6 +4,7 @@ const debug = require('debug')('routes:personal');
 
 const automo = require('../lib/automo');
 const CSV = require('../lib/CSV');
+const flattenSearch = require('./search').flattenSearch;
 
 const SEARCH_FIELDS = require('./public').SEARCH_FIELDS;
 
@@ -78,43 +79,7 @@ async function getPersonalCSV(req) {
 
   // Search it is using a nested model even if is not what we should
   // use in tiktok.
-  const unrolledData = _.reduce(
-    data,
-    function (memo, metasearch) {
-      _.each(metasearch.results || [], function (result, order) {
-        const thumbfile = metasearch.thumbnails[order]?.filename;
-        const readyo = {
-          ...result.video,
-          // @ts-ignore
-          order: result.order,
-          // @ts-ignore
-          tags: _.map(
-            _.filter(result.linked, function (link) {
-              return link.link.type === 'tag';
-            }),
-            'link.hashtag'
-          ).join(','),
-          // @ts-ignore
-          metadataId: metasearch.id,
-          // @ts-ignore
-          savingTime: metasearch.savingTime,
-          // @ts-ignore
-          publicKey: metasearch.publicKey,
-          // @ts-ignore
-          query: metasearch.query,
-          // @ts-ignore
-          textdesc: result.textdesc,
-          // @ts-ignore
-          thumbfile: thumbfile.replace(/(.*\/)|(.*\\)/, ''),
-        };
-        readyo.videoId = '' + readyo.videoId;
-        // @ts-ignore
-        memo.push(readyo);
-      });
-      return memo;
-    },
-    []
-  );
+  const unrolledData = _.reduce(data, flattenSearch, []);
   // console.table(unrolledData);
   const csv = CSV.produceCSVv1(unrolledData);
 

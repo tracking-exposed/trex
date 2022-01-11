@@ -128,6 +128,9 @@ app.get("/api/v2/experiment/:experimentId/dot", async (req, res) => await iowrap
 
 /* implemented right before DMI winter school */
 app.get("/api/v2/searches", async (req, res) => await iowrapper("getSearches", req, res));
+/* used in /search page for comparison of specific queries */
+app.get("/api/v2/query/:string/:format", async (req, res) => await iowrapper("getSearchByQuery", req, res));
+app.get("/api/v2/queries/list", async (req, res) => await iowrapper("getQueryList", req, res));
 
 /* Capture All 404 errors */
 app.get('*', async (req, res) => {
