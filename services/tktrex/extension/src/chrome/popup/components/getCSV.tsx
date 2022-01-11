@@ -5,7 +5,7 @@ import { List, ListItem, ListItemIcon, Link } from '@material-ui/core';
 
 import {
   StayCurrentLandscape as StayCurrentLandscapeIcon,
-  OndemandVideo as OndemandVideoIcon,
+  // OndemandVideo as OndemandVideoIcon,
   AccountBox as AccountBoxIcon,
 } from '@material-ui/icons';
 
@@ -14,8 +14,8 @@ export interface InfoBoxProps {
 }
 
 export const InfoBox: React.FC<InfoBoxProps> = ({ publicKey }) => {
-  const PersonalSearchCSV = `${config.API_ROOT}/personal/${publicKey}/home/csv`;
-  const videoCSV = `${config.API_ROOT}/personal/${publicKey}/video/csv`;
+  const PersonalSearchCSV = `${config.API_ROOT}/personal/${publicKey}/search/csv`;
+  // const videoCSV = `${config.API_ROOT}/personal/${publicKey}/video/csv`;
   const personalLink = `${config.WEB_ROOT}/personal/#${publicKey}`;
 
   return (
@@ -38,6 +38,10 @@ export const InfoBox: React.FC<InfoBoxProps> = ({ publicKey }) => {
         </Link>
       </ListItem>
 
+    </List>
+  );
+};
+/* -- kept only Personal Search CSV from popup
       <ListItem button>
         <ListItemIcon>
           <OndemandVideoIcon />
@@ -45,9 +49,6 @@ export const InfoBox: React.FC<InfoBoxProps> = ({ publicKey }) => {
         <Link href={videoCSV} target="_blank">
           Download ForYou Video (CSV)
         </Link>
-      </ListItem>
-    </List>
-  );
-};
+      </ListItem> */
 
 export default InfoBox;
