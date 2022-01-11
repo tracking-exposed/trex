@@ -1,18 +1,5 @@
-import {
-  Box,
-  FormControlLabel,
-  IconButton,
-  Input,
-  Tooltip,
-  Typography,
-} from '@material-ui/core';
-import {
-  DataGridProps,
-  GridCellParams,
-  GridColTypeDef,
-} from '@material-ui/data-grid';
-import CompareIcon from '@material-ui/icons/CompareOutlined';
-import RelatedIcon from '@material-ui/icons/Replay30Outlined';
+import { Box, Typography } from '@material-ui/core';
+import { DataGridProps, GridColTypeDef } from '@material-ui/data-grid';
 import { ChannelRelated } from '@shared/models/ChannelRelated';
 import {
   HomeMetadata,
@@ -23,12 +10,16 @@ import {
   SummaryHTMLMetadata,
   SummaryMetadata,
 } from '@shared/models/contributor/ContributorPersonalSummary';
+import { TikTokSearchMetadata } from '@shared/models/http/tiktok/TikTokSearch';
 import { GuardoniExperiment, Metadata } from '@shared/models/Metadata';
-import DeleteButton from 'components/buttons/DeleteButton';
-import { formatDistanceToNow } from 'date-fns';
 import * as React from 'react';
-import CSVDownloadButton from './components/buttons/CSVDownloadButton';
-import { TabouleCommands } from './state/commands';
+import CSVDownloadButton from '../components/buttons/CSVDownloadButton';
+import DeleteButton from '../components/buttons/DeleteButton';
+import * as cells from '../components/gridCells';
+import { TabouleCommands } from '../state/commands';
+import * as actions from './actions';
+import * as inputs from './inputs';
+import * as params from './params';
 
 interface TabouleColumnProps<K> extends Omit<GridColTypeDef, 'field'> {
   field: K | 'actions';
@@ -51,134 +42,8 @@ interface TabouleConfiguration {
   personalVideos: TabouleQueryConfiguration<VideoMetadata>;
   tikTokPersonalHTMLSummary: TabouleQueryConfiguration<SummaryHTMLMetadata>;
   tikTokPersonalMetadataSummary: TabouleQueryConfiguration<SummaryMetadata>;
+  tikTokSearches: TabouleQueryConfiguration<TikTokSearchMetadata>;
 }
-
-export const defaultParams = {
-  ccRelatedUsers: {},
-  getExperimentById: {},
-  getExperimentList: {
-    type: 'comparison',
-    key: 'fuffa',
-    // this is the default as per 'yarn backend watch'
-  },
-  personalHomes: {},
-  personalSearches: {},
-  personalVideos: {},
-  personalAds: {},
-  tikTokPersonalHTMLSummary: {},
-  tikTokPersonalMetadataSummary: {},
-};
-
-const channelIdInput = (
-  params: any,
-  setParams: React.Dispatch<any>
-): JSX.Element => {
-  return (
-    <Box margin={2}>
-      <FormControlLabel
-        style={{
-          alignItems: 'flex-start',
-        }}
-        labelPlacement="top"
-        label="Channel ID"
-        inputMode="text"
-        control={
-          <Input
-            name="channelId"
-            value={params.channelId ?? ''}
-            onChange={(e) =>
-              setParams({ ...params, publicKey: e.target.value })
-            }
-          />
-        }
-      />
-    </Box>
-  );
-};
-
-const publicKeyInput = (
-  params: any,
-  setParams: React.Dispatch<any>
-): JSX.Element => {
-  return (
-    <Box margin={2}>
-      <FormControlLabel
-        style={{
-          alignItems: 'flex-start',
-        }}
-        labelPlacement="top"
-        label="Public Key"
-        inputMode="text"
-        control={
-          <Input
-            name="publicKey"
-            value={params.publicKey ?? ''}
-            onChange={(e) =>
-              setParams({ ...params, publicKey: e.target.value })
-            }
-          />
-        }
-      />
-    </Box>
-  );
-};
-
-const personalMetadataActions =
-  (commands: TabouleCommands, params: any) =>
-  // eslint-disable-next-line react/display-name
-  (cellParams: GridCellParams): JSX.Element => {
-    return (
-      <Box position={'relative'}>
-        <DeleteButton
-          id={cellParams.row.id}
-          onClick={() => {
-            void commands.deleteContribution(
-              {
-                Params: {
-                  publicKey: params.publicKey,
-                  selector: 'undefined',
-                },
-              },
-              {
-                personalSearches: {
-                  Params: params,
-                },
-              }
-            )();
-          }}
-        />
-        <Tooltip title="Compare" placement="top">
-          <IconButton size="small">
-            <CompareIcon color="error" />
-          </IconButton>
-        </Tooltip>
-        <Tooltip title="Related" placement="top">
-          <IconButton size="small">
-            <RelatedIcon color="error" />
-          </IconButton>
-        </Tooltip>
-        <CSVDownloadButton
-          onClick={() => {
-            void commands.downloadSearchesAsCSV(
-              {
-                Params: {
-                  queryString: cellParams.getValue(
-                    cellParams.row.id,
-                    'query'
-                  ) as any,
-                },
-              },
-              {
-                personalSearch: {
-                  Params: params,
-                },
-              }
-            )();
-          }}
-        />
-      </Box>
-    );
-  };
 
 export const defaultConfiguration = (
   commands: TabouleCommands,
@@ -186,7 +51,7 @@ export const defaultConfiguration = (
 ): TabouleConfiguration => {
   return {
     ccRelatedUsers: {
-      inputs: channelIdInput,
+      inputs: inputs.channelIdInput,
       columns: [
         {
           field: 'recommendedSource',
@@ -204,11 +69,13 @@ export const defaultConfiguration = (
       ],
     },
     getExperimentById: {
+      inputs: inputs.experimentIdInput,
       columns: [
         {
           field: 'savingTime',
           headerName: 'savingTime',
           minWidth: 400,
+          renderCell: cells.distanceFromNowCell,
         },
       ],
     },
@@ -223,9 +90,7 @@ export const defaultConfiguration = (
           field: 'when',
           headerName: 'Registered',
           minWidth: 200,
-          renderCell: (params) => {
-            return formatDistanceToNow(new Date(params.formattedValue as any));
-          },
+          renderCell: cells.distanceFromNowCell,
         },
         {
           field: 'links',
@@ -243,7 +108,7 @@ export const defaultConfiguration = (
       ],
     },
     personalSearches: {
-      inputs: publicKeyInput,
+      inputs: inputs.publicKeyInput,
       actions: () => {
         return (
           <Box textAlign={'right'}>
@@ -268,9 +133,7 @@ export const defaultConfiguration = (
         {
           field: 'savingTime',
           minWidth: 200,
-          renderCell: (params) => {
-            return formatDistanceToNow(new Date(params.formattedValue as any));
-          },
+          renderCell: cells.distanceFromNowCell,
         },
         {
           field: 'query',
@@ -324,7 +187,7 @@ export const defaultConfiguration = (
       ],
     },
     personalVideos: {
-      inputs: publicKeyInput,
+      inputs: inputs.publicKeyInput,
       actions: () => {
         return (
           <Box textAlign={'right'}>
@@ -357,16 +220,16 @@ export const defaultConfiguration = (
         {
           field: 'actions',
           minWidth: 200,
-          renderCell: personalMetadataActions(commands, params),
+          renderCell: actions.personalMetadataActions(commands, params),
         },
       ],
     },
     personalAds: {
-      inputs: publicKeyInput,
+      inputs: inputs.publicKeyInput,
       columns: [],
     },
     personalHomes: {
-      inputs: publicKeyInput,
+      inputs: inputs.publicKeyInput,
       columns: [
         {
           field: 'id',
@@ -375,6 +238,7 @@ export const defaultConfiguration = (
         {
           field: 'savingTime',
           minWidth: 150,
+          renderCell: cells.distanceFromNowCell,
         },
         {
           field: 'selected',
@@ -389,12 +253,12 @@ export const defaultConfiguration = (
         {
           field: 'actions',
           minWidth: 200,
-          renderCell: personalMetadataActions(commands, params),
+          renderCell: actions.personalMetadataActions(commands, params),
         },
       ],
     },
     tikTokPersonalHTMLSummary: {
-      inputs: publicKeyInput,
+      inputs: inputs.publicKeyInput,
       columns: [
         {
           field: 'id',
@@ -411,11 +275,12 @@ export const defaultConfiguration = (
         {
           field: 'savingTime',
           minWidth: 200,
+          renderCell: cells.distanceFromNowCell,
         },
       ],
     },
     tikTokPersonalMetadataSummary: {
-      inputs: publicKeyInput,
+      inputs: inputs.publicKeyInput,
       columns: [
         {
           field: 'id',
@@ -438,5 +303,55 @@ export const defaultConfiguration = (
         },
       ],
     },
+    tikTokSearches: {
+      inputs: inputs.publicKeyInput,
+      actions: () => {
+        return (
+          <Box textAlign={'right'}>
+            <CSVDownloadButton
+              onClick={() => {
+                void commands.downloadAsCSV({
+                  Params: {
+                    publicKey: params.publicKey,
+                    type: 'search',
+                  },
+                })();
+              }}
+            />
+          </Box>
+        );
+      },
+      columns: [
+        {
+          field: 'textdesc',
+          minWidth: 200,
+        },
+        {
+          field: 'query',
+          minWidth: 200,
+        },
+        {
+          field: 'thumbnail',
+          renderCell: cells.avatarCell,
+        },
+        {
+          field: 'video',
+          renderCell: (params) => {
+            const videoId = (params.value as any).videoId;
+            return <Typography variant="subtitle1">{videoId}</Typography>;
+          },
+        },
+        {
+          field: 'savingTime',
+          renderCell: cells.distanceFromNowCell,
+        },
+        {
+          field: 'publishingDate',
+          renderCell: cells.distanceFromNowCell,
+        },
+      ],
+    },
   };
 };
+
+export { actions, inputs, params };
