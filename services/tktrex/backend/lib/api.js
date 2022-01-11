@@ -12,9 +12,10 @@ const apiList = {
     getRelated:          publicRoutes.getRelated,
     getVideoCSV:         publicRoutes.getVideoCSV,
 
+    /* changes made in emergency during the winter school - might be reviewed */
     getSearches:         publicRoutes.getSearches,
     getPersonal:         require('../routes/personal').getPersonal,
-
+    getPersonalCSV:      require('../routes/personal').getPersonalCSV,
 
     /* impact */
     getStatistics:       require('../routes/statistics').statistics,
