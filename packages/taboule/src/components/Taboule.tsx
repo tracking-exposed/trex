@@ -10,16 +10,19 @@ import { GetLogger } from '@shared/logger';
 import { ObservableQuery } from 'avenger/lib/Query';
 import * as QR from 'avenger/lib/QueryResult';
 import { WithQueries } from 'avenger/lib/react';
+import debug from 'debug';
+import * as E from 'fp-ts/lib/Either';
 import { pipe } from 'fp-ts/lib/function';
+import * as t from 'io-ts';
+import { PathReporter } from 'io-ts/lib/PathReporter';
 import * as React from 'react';
 import { defaultConfiguration, defaultParams } from '../config';
 import { TabouleDataProvider } from '../state';
 import { Results, SearchRequestInput, TabouleQueries } from '../state/queries';
-import { ErrorOverlay } from './ErrorOverlay';
-import * as E from 'fp-ts/lib/Either';
-import * as t from 'io-ts';
 import { TabouleQueryKey } from '../state/types';
-import { PathReporter } from 'io-ts/lib/PathReporter';
+import { ErrorOverlay } from './ErrorOverlay';
+
+debug.enable(process.env.DEBUG ?? '');
 
 const log = GetLogger('taboule');
 
@@ -50,6 +53,7 @@ export const Taboule = <Q extends keyof TabouleQueries>(
   const propsValidation = validateProps(props);
 
   if (propsValidation._tag === 'Left') {
+    // eslint-disable-next-line @typescript-eslint/no-throw-literal
     throw new AppError(
       'TabouleError',
       'Taboule props are invalid',

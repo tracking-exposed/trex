@@ -4,12 +4,12 @@ import {
   IconButton,
   Input,
   Tooltip,
-  Typography,
+  Typography
 } from '@material-ui/core';
 import {
   DataGridProps,
   GridCellParams,
-  GridColTypeDef,
+  GridColTypeDef
 } from '@material-ui/data-grid';
 import CompareIcon from '@material-ui/icons/CompareOutlined';
 import RelatedIcon from '@material-ui/icons/Replay30Outlined';
@@ -17,17 +17,18 @@ import { ChannelRelated } from '@shared/models/ChannelRelated';
 import {
   HomeMetadata,
   SearchMetadata,
-  VideoMetadata,
+  VideoMetadata
 } from '@shared/models/contributor/ContributorPersonalStats';
 import {
   SummaryHTMLMetadata,
-  SummaryMetadata,
+  SummaryMetadata
 } from '@shared/models/contributor/ContributorPersonalSummary';
+import { TikTokSearchMetadata } from '@shared/models/http/tiktok/TikTokSearch';
 import { GuardoniExperiment, Metadata } from '@shared/models/Metadata';
-import DeleteButton from 'components/buttons/DeleteButton';
-import { formatDistanceToNow } from 'date-fns';
 import * as React from 'react';
 import CSVDownloadButton from './components/buttons/CSVDownloadButton';
+import DeleteButton from './components/buttons/DeleteButton';
+import { avatarCell, distanceFromNowCell } from './components/gridCells';
 import { TabouleCommands } from './state/commands';
 
 interface TabouleColumnProps<K> extends Omit<GridColTypeDef, 'field'> {
@@ -51,6 +52,7 @@ interface TabouleConfiguration {
   personalVideos: TabouleQueryConfiguration<VideoMetadata>;
   tikTokPersonalHTMLSummary: TabouleQueryConfiguration<SummaryHTMLMetadata>;
   tikTokPersonalMetadataSummary: TabouleQueryConfiguration<SummaryMetadata>;
+  tikTokSearches: TabouleQueryConfiguration<TikTokSearchMetadata>;
 }
 
 export const defaultParams = {
@@ -67,9 +69,11 @@ export const defaultParams = {
   personalAds: {},
   tikTokPersonalHTMLSummary: {},
   tikTokPersonalMetadataSummary: {},
+  tikTokSearches: {},
 };
 
-const channelIdInput = (
+// eslint-disable-next-line react/display-name
+const makeTextInput = ({label, key }: { label: string, key: string, }) => (
   params: any,
   setParams: React.Dispatch<any>
 ): JSX.Element => {
@@ -80,14 +84,14 @@ const channelIdInput = (
           alignItems: 'flex-start',
         }}
         labelPlacement="top"
-        label="Channel ID"
+        label={label}
         inputMode="text"
         control={
           <Input
-            name="channelId"
-            value={params.channelId ?? ''}
+            name={key}
+            value={params[key] ?? ''}
             onChange={(e) =>
-              setParams({ ...params, publicKey: e.target.value })
+              setParams({ ...params, [key]: e.target.value })
             }
           />
         }
@@ -186,7 +190,7 @@ export const defaultConfiguration = (
 ): TabouleConfiguration => {
   return {
     ccRelatedUsers: {
-      inputs: channelIdInput,
+      inputs: makeTextInput({ label: 'Channel ID', key: 'channelId' }),
       columns: [
         {
           field: 'recommendedSource',
@@ -204,11 +208,13 @@ export const defaultConfiguration = (
       ],
     },
     getExperimentById: {
+      inputs: makeTextInput({ label: 'Experiment ID', key: 'experimentId' }),
       columns: [
         {
           field: 'savingTime',
           headerName: 'savingTime',
           minWidth: 400,
+          renderCell: distanceFromNowCell
         },
       ],
     },
@@ -223,9 +229,7 @@ export const defaultConfiguration = (
           field: 'when',
           headerName: 'Registered',
           minWidth: 200,
-          renderCell: (params) => {
-            return formatDistanceToNow(new Date(params.formattedValue as any));
-          },
+          renderCell: distanceFromNowCell
         },
         {
           field: 'links',
@@ -268,9 +272,7 @@ export const defaultConfiguration = (
         {
           field: 'savingTime',
           minWidth: 200,
-          renderCell: (params) => {
-            return formatDistanceToNow(new Date(params.formattedValue as any));
-          },
+          renderCell: distanceFromNowCell,
         },
         {
           field: 'query',
@@ -375,6 +377,7 @@ export const defaultConfiguration = (
         {
           field: 'savingTime',
           minWidth: 150,
+          renderCell: distanceFromNowCell
         },
         {
           field: 'selected',
@@ -411,6 +414,7 @@ export const defaultConfiguration = (
         {
           field: 'savingTime',
           minWidth: 200,
+          renderCell: distanceFromNowCell
         },
       ],
     },
@@ -435,6 +439,38 @@ export const defaultConfiguration = (
         {
           field: 'relative',
           minWidth: 200,
+        },
+      ],
+    },
+    tikTokSearches: {
+      inputs: publicKeyInput,
+      columns: [
+        {
+          field: 'textdesc',
+          minWidth: 200,
+        },
+        {
+          field: 'query',
+          minWidth: 200,
+        },
+        {
+          field: 'thumbnail',
+          renderCell: avatarCell,
+        },
+        {
+          field: 'video',
+          renderCell: (params) => {
+            const videoId = (params.value as any).videoId;
+            return <Typography variant="subtitle1">{videoId}</Typography>;
+          },
+        },
+        {
+          field: 'savingTime',
+          renderCell: distanceFromNowCell
+        },
+        {
+          field: 'publishingDate',
+          renderCell: distanceFromNowCell
         },
       ],
     },

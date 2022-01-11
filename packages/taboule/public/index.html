@@ -21,11 +21,14 @@
           <option value="personalAds">Personal ADS</option>
           <option value="getExperimentById">Compare Experiment</option>
           <option value="getExperimentList">Experiment list</option>
-          <option value="tikTokPersonalHTMLSummary" selected>
+          <option value="tikTokPersonalHTMLSummary">
             TikTok Personal HTML Summary
           </option>
-          <option value="tikTokPersonalMetadataSummary" selected>
+          <option value="tikTokPersonalMetadataSummary">
             TikTok Personal Metadata Summary
+          </option>
+          <option value="tikTokSearches" selected>
+            TikTok Searches
           </option>
         </select>
         <div id="taboule-show-inputs" style="display: inline">
@@ -39,7 +42,7 @@
   <script type="text/javascript" src="./taboule.js"></script>
   <script type="text/javascript">
     // var baseURL = 'http://localhost:9000/api/';
-    var baseURL = 'https://youtube.tracking.exposed/api/';
+    var baseURL = 'https://tiktok.tracking.exposed/api/';
 
     const querySelect = document.querySelector('#taboule-query-value');
     const showInputCheckbox = document.querySelector(

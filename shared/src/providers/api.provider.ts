@@ -40,6 +40,7 @@ const liftFetch = <B>(
     TE.tryCatch(lp, toAPIError),
     TE.map((d) => d.data),
     TE.chain((content) => {
+      apiLogger.debug('Content received %O', content);
       return pipe(
         decode(content),
         E.mapLeft((e): APIError => {
@@ -121,27 +122,32 @@ export const MakeHTTPClient = (client: AxiosInstance): HTTPClient => {
           apiLogger.error('Validation failed %O', details);
           return new APIError('ValidationError', 'Validation failed.', details);
         }),
-        TE.chain((input) =>
-          liftFetch<TypeOfEndpointInstance<E>['Output']>(() => {
-            const url = e.getPath(input.params);
-            apiLogger.debug('%s %s %O', e.Method, url, input);
-
-            return client.request<
-              TypeOfEndpointInstance<E>['Input'],
-              AxiosResponse<TypeOfEndpointInstance<E>['Output']>
-            >({
-              method: e.Method,
-              url,
-              params: input.query,
-              data: input.body,
-              responseType: 'json',
-              headers: {
-                Accept: 'application/json',
-                ...b.Headers,
-              },
-            });
-          }, e.Output.decode)
-        )
+        TE.chain((input) => {
+          const url = e.getPath(input.params);
+          apiLogger.debug('%s %s %O', e.Method, url, input);
+          return pipe(
+            liftFetch<TypeOfEndpointInstance<E>['Output']>(() => {
+              return client.request<
+                TypeOfEndpointInstance<E>['Input'],
+                AxiosResponse<TypeOfEndpointInstance<E>['Output']>
+              >({
+                method: e.Method,
+                url,
+                params: input.query,
+                data: input.body,
+                responseType: 'json',
+                headers: {
+                  Accept: 'application/json',
+                  ...b.Headers,
+                },
+              });
+            }, e.Output.decode),
+            TE.map((output) => {
+              apiLogger.debug('%s %s output: %O', e.Method, url, output);
+              return output;
+            })
+          );
+        })
       )
     );
   };
