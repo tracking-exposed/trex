@@ -9,6 +9,7 @@ const CSV = require('../lib/CSV');
 const mongo3 = require('../lib/mongo3');
 
 const SEARCH_FIELDS = require('./public').SEARCH_FIELDS;
+const { result, memoize } = require('lodash');
 
 async function getPersonal(req) {
     // personal API format is
@@ -59,21 +60,52 @@ async function getPersonal(req) {
     return { json: retval };
 };
 
-/*
 async function getPersonalCSV(req) {
     const CSV_MAX_SIZE = 1000;
     const k =  req.params.publicKey;
-    const data = await automo.getMetadataByFilter({ publicKey: k, type: 'home'}, { amount: CSV_MAX_SIZE, skip: 0 });
-    // get metadata by filter actually return metadata object so we need unnesting
-    const unrolledData = _.reduce(data, unNestHome, []);
+    const data = await automo.getMetadataByFilter({ publicKey: k, type: 'search'}, { amount: CSV_MAX_SIZE, skip: 0 });
+
+    // Search it is using a nested model even if is not what we should
+    // use in tiktok.
+    const unrolledData = _.reduce(data, function(memo, metasearch) {
+        _.each(metasearch.results || [], function(result, order) {
+            const thumbfile = metasearch.thumbnails[order]?.filename;
+            const readyo = {
+                ...result.video,
+                // @ts-ignore
+                order: result.order,
+                // @ts-ignore
+                tags: _.map(_.filter(result.linked, function(link) {
+                    return link.link.type === 'tag'
+                }), 'link.hashtag').join(','),
+                // @ts-ignore
+                metadataId: metasearch.id,
+                // @ts-ignore
+                savingTime: metasearch.savingTime,
+                // @ts-ignore
+                publicKey: metasearch.publicKey,
+                // @ts-ignore
+                query: metasearch.query,
+                // @ts-ignore
+                textdesc: result.textdesc,
+                // @ts-ignore
+                thumbfile: thumbfile.replace(/(.*\/)|(.*\\)/, '')
+            };
+            readyo.videoId = "" + readyo.videoId;
+            // @ts-ignore
+            memo.push(readyo);
+        });
+        return memo;
+    }, []);
+    // console.table(unrolledData);
     const csv = CSV.produceCSVv1(unrolledData);
 
     debug("getPersonalCSV produced %d bytes from %d homepages (max %d)",
         _.size(csv), _.size(data), CSV_MAX_SIZE);
     if(!_.size(csv))
-        return { text: "Data not found: are you sure you've any pornhub homepage acquired?" };
+        return { text: "Data not found: are you sure you've any search acquired?" };
 
-    const filename = 'potrex-homepages-' + moment().format("YY-MM-DD") + ".csv"
+    const filename = 'tk-search-' + moment().format("YY-MM-DD") + "-" + unrolledData.length + ".csv"
     return {
         headers: {
             "Content-Type": "csv/text",
@@ -82,7 +114,6 @@ async function getPersonalCSV(req) {
         text: csv,
     };
 };
-*/
 
 /*
 async function removeEvidence(req) {
@@ -100,4 +131,5 @@ async function removeEvidence(req) {
 
 module.exports = {
     getPersonal,
+    getPersonalCSV,
 };
