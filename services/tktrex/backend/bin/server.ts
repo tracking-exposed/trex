@@ -95,8 +95,11 @@ app.post('/api/v2/events', async (req, res) => await iowrapper('processEvents', 
 app.post('/api/v2/handshake', async (req, res) => await iowrapper('handshake', req, res));
 
 app.get('/api/v2/recent', async (req, res) => await iowrapper('getRecent', req, res));
-/* download your CSV (home or video) */
-app.get('/api/v1/personal/:publicKey/:what/:format', async (req, res) => await iowrapper('getPersonal', req, res))
+
+/* note this is kept v1 because initially personal page was pulling here; but TODO should be v2 */
+app.get('/api/v1/personal/:publicKey/:what/json', async (req, res) => await iowrapper('getPersonal', req, res))
+/* download your CSV (only search is supported at the moment) */
+app.get('/api/v2/personal/:publicKey/:what/csv', async (req, res) => await iowrapper('getPersonalCSV', req, res))
 
 app.get('/api/v2/statistics/:name/:unit/:amount', async (req, res) => await iowrapper('getStatistics', req, res));
 
@@ -107,7 +110,7 @@ app.get('/api/v1/mirror/:key', async (req, res) => await iowrapper('getMirror', 
 /* monitor for admin */
 app.get('/api/v2/monitor/:minutes?', async (req, res) => await iowrapper('getMonitor', req, res));
 
-/* experiments API: "comparison" require password, "chiaroscuro" doesn't */
+/* experiments API: at the moment not implemented for tiktok, only copied by yttrex */
 app.get(
   "/api/v2/guardoni/list/:directiveType/:key?",
   async (req, res) => await iowrapper("getAllExperiments", req, res),
