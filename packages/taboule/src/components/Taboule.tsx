@@ -1,4 +1,4 @@
-import { Box } from '@material-ui/core';
+import { Box, Typography } from '@material-ui/core';
 import {
   DataGrid,
   DataGridProps,
@@ -127,6 +127,9 @@ export const Taboule = <Q extends keyof TabouleQueries>(
     paginationMode: 'server',
     components: {
       ErrorOverlay,
+      Footer: () => {
+        return <Typography>v{process.env.VERSION}</Typography>;
+      },
       ...(config.actions !== undefined
         ? {
             Toolbar: (props) => {
