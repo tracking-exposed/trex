@@ -16,7 +16,7 @@ import { pipe } from 'fp-ts/lib/function';
 import * as t from 'io-ts';
 import { PathReporter } from 'io-ts/lib/PathReporter';
 import * as React from 'react';
-import { defaultConfiguration, defaultParams } from '../config';
+import * as config from '../config';
 import { TabouleDataProvider } from '../state';
 import { Results, SearchRequestInput, TabouleQueries } from '../state/queries';
 import { TabouleQueryKey } from '../state/types';
@@ -72,7 +72,7 @@ export const Taboule = <Q extends keyof TabouleQueries>(
   log.debug(`Initial params %O`, initialParams);
 
   const defaultQueryParams = React.useMemo(
-    () => defaultParams[queryKey],
+    () => config.params.defaultParams[queryKey],
     [queryKey]
   );
   log.debug(`Default query params %O`, defaultQueryParams);
@@ -95,8 +95,9 @@ export const Taboule = <Q extends keyof TabouleQueries>(
     Results<any>
   > = tabouleQueries.queries[queryKey];
 
-  const { inputs, ...config } = React.useMemo(
-    () => defaultConfiguration(tabouleQueries.commands, params)[queryKey],
+  const { inputs, ...queryConfig } = React.useMemo(
+    () =>
+      config.defaultConfiguration(tabouleQueries.commands, params)[queryKey],
     [queryKey, params]
   );
 
@@ -119,7 +120,7 @@ export const Taboule = <Q extends keyof TabouleQueries>(
     ...otherProps,
     page,
     filterMode: 'server',
-    ...config,
+    ...queryConfig,
     rows: [],
     rowsPerPageOptions: [25, 50, 100],
     pageSize,
@@ -129,7 +130,7 @@ export const Taboule = <Q extends keyof TabouleQueries>(
       ...(config.actions !== undefined
         ? {
             Toolbar: (props) => {
-              return <Box margin={2}>{config.actions?.()}</Box>;
+              return <Box margin={2}>{queryConfig.actions?.()}</Box>;
             },
           }
         : {}),
