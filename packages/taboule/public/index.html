@@ -27,9 +27,7 @@
           <option value="tikTokPersonalMetadataSummary">
             TikTok Personal Metadata Summary
           </option>
-          <option value="tikTokSearches" selected>
-            TikTok Searches
-          </option>
+          <option value="tikTokSearches" selected>TikTok Searches</option>
         </select>
         <div id="taboule-show-inputs" style="display: inline">
           <label>Show Params Inputs</label>
@@ -42,7 +40,9 @@
   <script type="text/javascript" src="./taboule.js"></script>
   <script type="text/javascript">
     // var baseURL = 'http://localhost:9000/api/';
-    var baseURL = 'https://tiktok.tracking.exposed/api/';
+    var baseURL = 'http://localhost:14000/api/';
+    // var baseURL = 'https://tiktok.tracking.exposed/api/';
+    // var baseURL = 'https://youtube.tracking.exposed/api/';
 
     const querySelect = document.querySelector('#taboule-query-value');
     const showInputCheckbox = document.querySelector(
@@ -57,7 +57,7 @@
         query: query,
         pageSize: 25,
         initialParams: {
-          channelId: '',
+          publicKey: 'fake-key',
         },
       });
     };

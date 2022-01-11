@@ -13,7 +13,7 @@ export const TikTokSearchMetadata = t.strict(
     query: t.string,
     thumbnail: t.string,
     savingTime: t.string,
-    publishingDate: t.string,
+    publishingDate: t.union([t.string, t.null]),
   },
   'TikTokSearchResult'
 );
