@@ -5,7 +5,7 @@ import createDebug from 'debug';
 import * as params from '../lib/params';
 import automo from '../lib/automo';
 // import utils  from '../lib/utils';
-import CSV  from '../lib/CSV';
+import CSV from '../lib/CSV';
 // import cache from '../lib/cache';
 
 const debug = createDebug('routes:public');
@@ -55,98 +55,165 @@ async function getLast(req) {
 */
 
 export function ensureRelated(rv) {
-    /* for each related it is called and only the basic info used in 'compare'
-     * page get returned. return 'null' if content is not complete */
-    const demanded = ['recommendedSource', 'recommendedTitle',
-        'videoId', 'recommendedDisplayL', 'verified', 'index'];
-    const sele = _.pick(rv, demanded);
-    return (_.some(_.map(demanded, function(k) {
-        return _.isUndefined(sele[k]);
-    }))) ? null : sele;
+  /* for each related it is called and only the basic info used in 'compare'
+   * page get returned. return 'null' if content is not complete */
+  const demanded = [
+    'recommendedSource',
+    'recommendedTitle',
+    'videoId',
+    'recommendedDisplayL',
+    'verified',
+    'index',
+  ];
+  const sele = _.pick(rv, demanded);
+  return _.some(
+    _.map(demanded, function (k) {
+      return _.isUndefined(sele[k]);
+    })
+  )
+    ? null
+    : sele;
 }
 
 export async function getVideoId(req) {
-    const { amount, skip } = params.optionParsing(req.params.paging, PUBLIC_AMOUNT_ELEMS);
-    debug("getVideoId %s amount %d skip %d default %d",
-        req.params.videoId, amount, skip, PUBLIC_AMOUNT_ELEMS);
+  const { amount, skip } = params.optionParsing(
+    req.params.paging,
+    PUBLIC_AMOUNT_ELEMS
+  );
+  debug(
+    'getVideoId %s amount %d skip %d default %d',
+    req.params.videoId,
+    amount,
+    skip,
+    PUBLIC_AMOUNT_ELEMS
+  );
 
-    const entries = await automo.getMetadataByFilter({ videoId: req.params.videoId}, { amount, skip });
-    /* this map function ensure there are the approrpiate data (and thus filter out)
-     * old content parsed with different format */
+  const entries = await automo.getMetadataByFilter(
+    { videoId: req.params.videoId },
+    { amount, skip }
+  );
+  /* this map function ensure there are the approrpiate data (and thus filter out)
+   * old content parsed with different format */
 
-    const evidences = _.compact(_.map(entries, function(meta) {
-        meta.related = _.reverse(_.compact(_.map(meta.related, ensureRelated)));
-        if(!_.size(meta.related))
-            return null;
-        _.unset(meta, '_id');
-        _.unset(meta, 'publicKey');
-        return meta;
-    }));
-    debug("getVideoId: found %d matches about %s", _.size(evidences), req.params.videoId);
-    return { json: evidences };
-};
-
-export async function getRelated(req) {
-    const { amount, skip } = params.optionParsing(req.params.paging, PUBLIC_AMOUNT_ELEMS);
-    debug("getRelated %s query directly 'related.videoId'. amount %d skip %d", req.params.videoId, amount, skip);
-    const entries = await automo.getMetadataByFilter({ "related.videoId": req.params.videoId}, { amount, skip});
-    const evidences = _.map(entries, function(meta) {
-        meta.related = _.map(meta.related, function(e) {
-            return _.pick(e, ['recommendedTitle', 'recommendedSource', 'index', 'foryou', 'videoId']);
-        });
-        meta.timeago = moment.duration(meta.savingTime - +moment()).humanize();
-        return _.omit(meta, ['_id', 'publicKey'])
-    });
-    debug("getRelated: returning %d matches about %s", _.size(evidences), req.params.videoId);
-    return { json: evidences };
-};
-
-export async function getVideoCSV(req) {
-    // /api/v1/videoCSV/:videoId/:amount
-    const MAXENTRY = 2800;
-    const { amount, skip } = params.optionParsing(req.params.paging, MAXENTRY);
-    debug("getVideoCSV %s, amount %d skip %d (default %d)", req.params.videoId, amount, skip, MAXENTRY);
-    const byrelated = await automo.getRelatedByVideoId(req.params.videoId, { amount, skip} );
-    const csv = CSV.produceCSVv1(byrelated);
-    const filename = 'video-' + req.params.videoId + "-" + moment().format("YY-MM-DD") + ".csv"
-    debug("VideoCSV: produced %d bytes, returning %s", _.size(csv), filename);
-
-    if(!_.size(csv))
-        return { text: "Error, Zorry: 🤷" };
-
-    return {
-        headers: {
-            "Content-Type": "csv/text",
-            "Content-Disposition": "attachment; filename=" + filename
-        },
-        text: csv,
-    };
-};
-
-async function getRecent(req) {
-    // this still to be determined why was supposed to be implemented: perhaps 'compare' equivalent?
-    return { json: { fuffa: true }};
+  const evidences = _.compact(
+    _.map(entries, function (meta) {
+      meta.related = _.reverse(_.compact(_.map(meta.related, ensureRelated)));
+      if (!_.size(meta.related)) return null;
+      _.unset(meta, '_id');
+      _.unset(meta, 'publicKey');
+      return meta;
+    })
+  );
+  debug(
+    'getVideoId: found %d matches about %s',
+    _.size(evidences),
+    req.params.videoId
+  );
+  return { json: evidences };
 }
 
-const SEARCH_FIELDS = [ 'timelineId', 'id', 'query', 'publicKey', 'order', 'savingTime'];
+export async function getRelated(req) {
+  const { amount, skip } = params.optionParsing(
+    req.params.paging,
+    PUBLIC_AMOUNT_ELEMS
+  );
+  debug(
+    "getRelated %s query directly 'related.videoId'. amount %d skip %d",
+    req.params.videoId,
+    amount,
+    skip
+  );
+  const entries = await automo.getMetadataByFilter(
+    { 'related.videoId': req.params.videoId },
+    { amount, skip }
+  );
+  const evidences = _.map(entries, function (meta) {
+    meta.related = _.map(meta.related, function (e) {
+      return _.pick(e, [
+        'recommendedTitle',
+        'recommendedSource',
+        'index',
+        'foryou',
+        'videoId',
+      ]);
+    });
+    meta.timeago = moment.duration(meta.savingTime - +moment()).humanize();
+    return _.omit(meta, ['_id', 'publicKey']);
+  });
+  debug(
+    'getRelated: returning %d matches about %s',
+    _.size(evidences),
+    req.params.videoId
+  );
+  return { json: evidences };
+}
+
+export async function getVideoCSV(req) {
+  // /api/v1/videoCSV/:videoId/:amount
+  const MAXENTRY = 2800;
+  const { amount, skip } = params.optionParsing(req.params.paging, MAXENTRY);
+  debug(
+    'getVideoCSV %s, amount %d skip %d (default %d)',
+    req.params.videoId,
+    amount,
+    skip,
+    MAXENTRY
+  );
+  const byrelated = await automo.getRelatedByVideoId(req.params.videoId, {
+    amount,
+    skip,
+  });
+  const csv = CSV.produceCSVv1(byrelated);
+  const filename =
+    'video-' + req.params.videoId + '-' + moment().format('YY-MM-DD') + '.csv';
+  debug('VideoCSV: produced %d bytes, returning %s', _.size(csv), filename);
+
+  if (!_.size(csv)) return { text: 'Error, Zorry: 🤷' };
+
+  return {
+    headers: {
+      'Content-Type': 'csv/text',
+      'Content-Disposition': 'attachment; filename=' + filename,
+    },
+    text: csv,
+  };
+}
+
+async function getRecent(req) {
+  // this still to be determined why was supposed to be implemented: perhaps 'compare' equivalent?
+  return { json: { fuffa: true } };
+}
+
+const SEARCH_FIELDS = ['id', 'query', 'publicKey', 'savingTime'];
 /* this is exported because also used in personal */
 export async function getSearches(req) {
-    const amount = _.parseInt(req.query.amount) || 50;
-    const skip = _.parseInt(req.query.skip) || 0;
-    // this support the 'standard' format for Taboule
-    const retval = await automo.getMetadataByFilter({type: 'search'}, { amount, skip});
-    const filtered = _.map(retval, function(o) {
-        return _.pick(o, SEARCH_FIELDS);
+  const amount = _.parseInt(req.query.amount) || 50;
+  const skip = _.parseInt(req.query.skip) || 0;
+  // this support the 'standard' format for Taboule
+  const retval = await automo.getMetadataByFilter(
+    { type: 'search' },
+    { amount, skip }
+  );
+  const filtered = _.flatten(
+    _.map(retval, function (o) {
+      const core = _.pick(o, SEARCH_FIELDS);
+      return _.map(o.results, function (r) {
+        return {
+          ...r,
+          ...core,
+        };
+      });
     })
-    return { json: filtered };
+  );
+  return { json: filtered };
 }
 
 module.exports = {
-    // getLast,
-    getVideoId,
-    getRelated,
-    getVideoCSV,
-    // getRecent,
-    SEARCH_FIELDS,
-    getSearches,
+  // getLast,
+  getVideoId,
+  getRelated,
+  getVideoCSV,
+  // getRecent,
+  SEARCH_FIELDS,
+  getSearches,
 };

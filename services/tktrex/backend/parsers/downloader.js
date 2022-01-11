@@ -61,16 +61,18 @@ async function downloader(envelop, previous) {
       retval.thumbnail.reason
     );
   } else if (previous.nature.type === 'search') {
-    retval = [];
-    for (const result of previous.search.results) {
-      const info = await processLink(result.thumbnail, 'thumbnail');
-      retval.push(info);
+    retval = { thumbnails: [] };
+    // this nesting would be inherit in metadata
+    for (const result of previous.search.results || []) {
+      const fildata = await processLink(result.thumbnail, 'thumbnail');
+      retval.thumbnails.push(fildata);
     }
     debug(
       'No download of all the search results videos, but done %d thumbnails',
-      retval.length
+      retval.thumbnails.length
     );
-  } else return null;
+    if (!retval.thumbnails.length) return null;
+  }
 
   return retval;
 }
