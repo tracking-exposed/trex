@@ -2,7 +2,6 @@
   "extends": "../../../tsconfig.json",
   "compilerOptions": {
     "allowJs": true,
-    "checkJs": true,
     "baseUrl": ".",
     "composite": true,
     "esModuleInterop": true,
@@ -29,13 +28,6 @@
       "module": "CommonJS"
     }
   },
-  "include": [
-    "**/*.ts",
-    "**/*.js",
-    "**/*.json"
-  ],
-  "exclude": [
-    "node_modules",
-    "build"
-  ]
+  "include": ["**/*.ts", "**/*.js", "**/*.json"],
+  "exclude": ["node_modules", "build"]
 }

@@ -6,6 +6,7 @@ import {
 } from '../../models/ContributionEvent';
 import { PublicKeyParams } from '../../models/http/params/PublicKey';
 import { SearchQuery } from '../../models/http/SearchQuery';
+import { TikTokSearch } from '../../models/http/tiktok/TikTokSearch';
 import { GuardoniExperiment, Metadata } from '../../models/Metadata';
 import { ChannelADVStats } from '../../models/stats/ChannelADV';
 
@@ -52,6 +53,15 @@ const SearchesAsCSV = Endpoint({
     Params: t.type({ queryString: t.string }),
   },
   Output: t.any,
+});
+
+const TikTokSearches = Endpoint({
+  Method: 'GET',
+  getPath: () => `/v2/searches`,
+  Input: {
+    Query: SearchQuery,
+  },
+  Output: TikTokSearch,
 });
 
 const GetPersonalCSV = Endpoint({
@@ -157,6 +167,7 @@ export default {
     VideoAuthor,
     Searches,
     SearchesAsCSV,
+    TikTokSearches,
     AddEvents,
     GetChannelADVStats,
     GetExperimentList,
