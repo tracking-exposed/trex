@@ -10,30 +10,29 @@ async function processLink(link, linkType) {
   // linkType is 'video' or 'thumbnail'
   const fuuid = getUUID(link, linkType);
 
-  if(!fs.existsSync(fuuid))
-    return await download(fuuid, link);
+  if (!fs.existsSync(fuuid)) return await download(fuuid, link);
 
   return {
     downloaded: true,
     filename: path.relative(process.cwd(), fuuid),
     reason: 0,
     // a cached file has reason 0
-  }
+  };
 }
 
 async function downloadVideoNative(envelop) {
   const retval = {};
 
-  const jpegauthlink = envelop.jsdom.querySelector('img').getAttribute('src')
+  const jpegauthlink = envelop.jsdom.querySelector('img').getAttribute('src');
   retval.thumbnail = await processLink(jpegauthlink, 'thumbnail');
-  const mp4authlink = envelop.jsdom.querySelector('video').getAttribute('src')
+  const mp4authlink = envelop.jsdom.querySelector('video').getAttribute('src');
   retval.video = await processLink(mp4authlink, 'video');
 
   return retval;
 }
 
 async function downloadVideoSelected(searchFinding) {
-/* selected: {
+  /* selected: {
     videoId: '7034225944881646854',
     href: 'https://www.tiktok.com/@mia.kkhalifa/video/7034225944881646854',
     thumbnail: 'https://p16-sign-va.tiktokcdn.com/obj/tos-maliva-p-0068/1e6d261af8454fc190c4c7d053f30859?x-expires=1638597600&x-signature=QgDjdwR8lHSyGux51DsrfMzsEXE%3D',
@@ -41,28 +40,37 @@ async function downloadVideoSelected(searchFinding) {
   } */
   const retval = {};
 
-  retval.thumbnail = await processLink(searchFinding.selected.thumbnail, 'thumbnail');
+  retval.thumbnail = await processLink(
+    searchFinding.selected.thumbnail,
+    'thumbnail'
+  );
   retval.video = await processLink(searchFinding.selected.video, 'video');
 
   return retval;
 }
 
-
 async function downloader(envelop, previous) {
-
-  console.log(previous);
-  if(previous.nature.type === 'video')
+  let retval = null;
+  if (previous.nature.type === 'video') {
     retval = await downloadVideoNative(envelop);
-  else if(previous.nature.type === 'search')
-    retval = await downloadVideoSelected(previous.search)
-  else
-    return null;
-
-  debug("video avail %d download %d | thumbnail avail %d download %d",
-    retval.video.downloaded,
-    retval.video.reason,
-    retval.thumbnail.downloaded,
-    retval.thumbnail.reason);
+    debug(
+      'video avail %d download %d | thumbnail avail %d download %d',
+      retval.video.downloaded,
+      retval.video.reason,
+      retval.thumbnail.downloaded,
+      retval.thumbnail.reason
+    );
+  } else if (previous.nature.type === 'search') {
+    retval = [];
+    for (const result of previous.search.results) {
+      const info = await processLink(result.thumbnail, 'thumbnail');
+      retval.push(info);
+    }
+    debug(
+      'No download of all the search results videos, but done %d thumbnails',
+      retval.length
+    );
+  } else return null;
 
   return retval;
 }
