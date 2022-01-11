@@ -8,7 +8,7 @@
     "noEmit": true,
     "esModuleInterop": true,
     "paths": {
-      "@shared/*": ["../shared/src/*"]
+      "@shared/*": ["../packages/shared/src/*"]
     }
   },
   "include": [
@@ -28,7 +28,7 @@
   },
   "references": [
     {
-      "path": "../shared"
+      "path": "../packages/shared"
     }
   ]
 }

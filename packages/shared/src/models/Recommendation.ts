@@ -19,14 +19,14 @@ export const Recommendation = t.strict(
     urlId: t.string,
     url: t.string,
     title: t.string,
-    description: t.union([t.string, t.undefined ]),
+    description: t.union([t.string, t.undefined]),
     image: t.string,
   },
   'Recommendation'
 );
 
 export const PartialRecommendation = t.partial(
-  {...Recommendation.type.props},
+  { ...Recommendation.type.props },
   'PartialRecommendation'
 );
 

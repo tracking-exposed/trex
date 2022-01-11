@@ -1,5 +1,5 @@
-import * as t from "io-ts";
-import { DateFromISOString } from "io-ts-types/lib/DateFromISOString";
+import * as t from 'io-ts';
+import { DateFromISOString } from 'io-ts-types/lib/DateFromISOString';
 
 export const ChannelADV = t.strict(
   {
@@ -12,7 +12,7 @@ export const ChannelADV = t.strict(
     title: t.string,
     savingTime: DateFromISOString,
   },
-  "ChannelADV"
+  'ChannelADV'
 );
 export type ChannelADV = t.TypeOf<typeof ChannelADV>;
 
@@ -22,7 +22,7 @@ export const ChannelADVStats = t.strict(
     sponsoredSite: t.string,
     count: t.number,
   },
-  "ChannelADVStats"
+  'ChannelADVStats'
 );
 
 export type ChannelADVStats = t.TypeOf<typeof ChannelADVStats>;

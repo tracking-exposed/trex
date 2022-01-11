@@ -1,4 +1,4 @@
-import { MinimalEndpoint } from "ts-endpoint";
+import { MinimalEndpoint } from 'ts-endpoint';
 
 export interface ResourceEndpoints<
   G extends MinimalEndpoint,

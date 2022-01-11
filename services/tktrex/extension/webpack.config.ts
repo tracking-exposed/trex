@@ -4,9 +4,9 @@ import moment from 'moment';
 import {
   CopyWebpackPlugin,
   FileManagerPlugin,
-} from '../../../shared/src/webpack/plugins';
+} from '../../../packages/shared/src/webpack/plugins';
 
-import { getConfig } from '../../../shared/src/webpack/config';
+import { getConfig } from '../../../packages/shared/src/webpack/config';
 
 import { AppEnv } from './src/AppEnv';
 import packageJSON from './package.json';
