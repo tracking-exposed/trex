@@ -1,4 +1,4 @@
-import * as t from "io-ts";
+import * as t from 'io-ts';
 
 export const VideoContributionEvent = t.strict(
   {
@@ -10,14 +10,14 @@ export const VideoContributionEvent = t.strict(
     incremental: t.number,
     clientTime: t.string,
   },
-  "VideoContributionEvent"
+  'VideoContributionEvent'
 );
 
 export type VideoContributionEvent = t.TypeOf<typeof VideoContributionEvent>;
 
 export const ADVContributionEvent = t.strict(
   {
-    type: t.literal("leaf"),
+    type: t.literal('leaf'),
     html: t.string,
     hash: t.number,
     offsetTop: t.number,
@@ -28,7 +28,7 @@ export const ADVContributionEvent = t.strict(
     incremental: t.number,
     clientTime: t.string,
   },
-  "ADVContributionEvent"
+  'ADVContributionEvent'
 );
 
 export type ADVContributionEvent = t.TypeOf<typeof ADVContributionEvent>;

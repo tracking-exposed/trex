@@ -6,7 +6,7 @@ on:
       - daily
       - beta
     paths:
-      - "shared/**"
+      - "packages/**"
       - "YCAI/**"
 
 defaults:
@@ -38,7 +38,7 @@ jobs:
         run: yarn lint
 
       - name: Build shared
-        working-directory: ./shared
+        working-directory: ./packages/shared
         run: yarn build
 
       - name: Build extension

@@ -1,12 +1,14 @@
-import * as t from "io-ts";
-import { Endpoint } from "ts-endpoint";
-import { HandshakeBody } from "../../models/HandshakeBody";
-import { GetRecommendationsParams, GetRecommendationsQuery, Recommendation } from "../../models/Recommendation";
-
-
+import * as t from 'io-ts';
+import { Endpoint } from 'ts-endpoint';
+import { HandshakeBody } from '../../models/HandshakeBody';
+import {
+  GetRecommendationsParams,
+  GetRecommendationsQuery,
+  Recommendation,
+} from '../../models/Recommendation';
 
 const Handshake = Endpoint({
-  Method: "POST",
+  Method: 'POST',
   getPath: () => `/v3/handshake`,
   Input: {
     Body: HandshakeBody,
@@ -14,9 +16,8 @@ const Handshake = Endpoint({
   Output: t.any,
 });
 
-
 const VideoRecommendations = Endpoint({
-  Method: "GET",
+  Method: 'GET',
   getPath: ({ videoId }) => `/v3/video/${videoId}/recommendations`,
   Input: {
     Params: t.type({ videoId: t.string }),
@@ -25,7 +26,7 @@ const VideoRecommendations = Endpoint({
 });
 
 const GetRecommendations = Endpoint({
-  Method: "GET",
+  Method: 'GET',
   getPath: ({ ids }) => `/v3/recommendations/${ids}`,
   Input: {
     Query: GetRecommendationsQuery,
@@ -33,7 +34,6 @@ const GetRecommendations = Endpoint({
   },
   Output: t.array(Recommendation),
 });
-
 
 export const endpoints = {
   Handshake,
