@@ -78,6 +78,7 @@ export const run = async (): Promise<void> => {
     AppEnv.decode(process.env),
     TE.fromEither,
     TE.mapLeft((e) => {
+      // eslint-disable-next-line
       console.log(PathReporter.report(E.left(e)));
       return new Error('failed to parse process.env');
     }),

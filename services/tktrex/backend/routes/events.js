@@ -193,15 +193,7 @@ async function processEvents(req) {
     })
   );
 
-  debug(
-    '[+] %s %s',
-    supporter.p,
-    JSON.stringify(
-      _.map(htmls, (e) => {
-        return [e.n, e.type];
-      })
-    )
-  );
+  debug('[+] %s %s', supporter.p, JSON.stringify(_.map(htmls, 'n')));
 
   /* after having prepared the objects, the functions below would:
       1) extend with experiment if is not null

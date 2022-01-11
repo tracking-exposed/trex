@@ -10,16 +10,19 @@ import { GetLogger } from '@shared/logger';
 import { ObservableQuery } from 'avenger/lib/Query';
 import * as QR from 'avenger/lib/QueryResult';
 import { WithQueries } from 'avenger/lib/react';
+import debug from 'debug';
+import * as E from 'fp-ts/lib/Either';
 import { pipe } from 'fp-ts/lib/function';
+import * as t from 'io-ts';
+import { PathReporter } from 'io-ts/lib/PathReporter';
 import * as React from 'react';
-import { defaultConfiguration, defaultParams } from '../config';
+import * as config from '../config';
 import { TabouleDataProvider } from '../state';
 import { Results, SearchRequestInput, TabouleQueries } from '../state/queries';
-import { ErrorOverlay } from './ErrorOverlay';
-import * as E from 'fp-ts/lib/Either';
-import * as t from 'io-ts';
 import { TabouleQueryKey } from '../state/types';
-import { PathReporter } from 'io-ts/lib/PathReporter';
+import { ErrorOverlay } from './ErrorOverlay';
+
+debug.enable(process.env.DEBUG ?? '');
 
 const log = GetLogger('taboule');
 
@@ -50,6 +53,7 @@ export const Taboule = <Q extends keyof TabouleQueries>(
   const propsValidation = validateProps(props);
 
   if (propsValidation._tag === 'Left') {
+    // eslint-disable-next-line @typescript-eslint/no-throw-literal
     throw new AppError(
       'TabouleError',
       'Taboule props are invalid',
@@ -68,7 +72,7 @@ export const Taboule = <Q extends keyof TabouleQueries>(
   log.debug(`Initial params %O`, initialParams);
 
   const defaultQueryParams = React.useMemo(
-    () => defaultParams[queryKey],
+    () => config.params.defaultParams[queryKey],
     [queryKey]
   );
   log.debug(`Default query params %O`, defaultQueryParams);
@@ -91,8 +95,9 @@ export const Taboule = <Q extends keyof TabouleQueries>(
     Results<any>
   > = tabouleQueries.queries[queryKey];
 
-  const { inputs, ...config } = React.useMemo(
-    () => defaultConfiguration(tabouleQueries.commands, params)[queryKey],
+  const { inputs, ...queryConfig } = React.useMemo(
+    () =>
+      config.defaultConfiguration(tabouleQueries.commands, params)[queryKey],
     [queryKey, params]
   );
 
@@ -115,7 +120,7 @@ export const Taboule = <Q extends keyof TabouleQueries>(
     ...otherProps,
     page,
     filterMode: 'server',
-    ...config,
+    ...queryConfig,
     rows: [],
     rowsPerPageOptions: [25, 50, 100],
     pageSize,
@@ -125,7 +130,7 @@ export const Taboule = <Q extends keyof TabouleQueries>(
       ...(config.actions !== undefined
         ? {
             Toolbar: (props) => {
-              return <Box margin={2}>{config.actions?.()}</Box>;
+              return <Box margin={2}>{queryConfig.actions?.()}</Box>;
             },
           }
         : {}),
