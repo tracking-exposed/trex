@@ -37,7 +37,7 @@ function description(envelop, previous) {
   }
 
   /* otherwise 'foryou' and 'following' have a description */
-  const availin = ['foryou', 'following', 'search'];
+  const availin = ['foryou', 'following'];
 
   if (previous.nature && availin.indexOf(previous.nature.type) === -1) {
     debug('No description for previous.nature %o', previous.nature);

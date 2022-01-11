@@ -4,11 +4,10 @@ const debug = require('debug')('parsers:hashtags');
 function hashtags(envelop, previous) {
   /* only feedId on 'foryou' and 'following' have a description,
      not really because also if you scroll on an user timeline */
-  const availin = ['foryou', 'following', 'search'];
+  const availin = ['foryou', 'following'];
 
-  debugger;
   if (previous.nature && availin.indexOf(previous.nature.type) === -1) {
-    debug('No hashtag for previous.nature %o', previous.nature);
+    debug('No hashtags for previous.nature %o', previous.nature);
     return null;
   }
 

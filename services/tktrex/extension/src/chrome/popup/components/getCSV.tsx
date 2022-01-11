@@ -1,12 +1,7 @@
 import React from 'react';
 import config from '../../../config';
 
-import {
-  List,
-  ListItem,
-  ListItemIcon,
-  Link,
-} from '@material-ui/core';
+import { List, ListItem, ListItemIcon, Link } from '@material-ui/core';
 
 import {
   StayCurrentLandscape as StayCurrentLandscapeIcon,
@@ -19,7 +14,7 @@ export interface InfoBoxProps {
 }
 
 export const InfoBox: React.FC<InfoBoxProps> = ({ publicKey }) => {
-  const homeCSV = `${config.API_ROOT}/personal/${publicKey}/home/csv`;
+  const PersonalSearchCSV = `${config.API_ROOT}/personal/${publicKey}/home/csv`;
   const videoCSV = `${config.API_ROOT}/personal/${publicKey}/video/csv`;
   const personalLink = `${config.WEB_ROOT}/personal/#${publicKey}`;
 
@@ -29,21 +24,27 @@ export const InfoBox: React.FC<InfoBoxProps> = ({ publicKey }) => {
         <ListItemIcon>
           <AccountBoxIcon />
         </ListItemIcon>
-        <Link href={personalLink} target="_blank">Personal page</Link>
+        <Link href={personalLink} target="_blank">
+          Evidence log page
+        </Link>
       </ListItem>
 
       <ListItem button>
         <ListItemIcon>
           <StayCurrentLandscapeIcon />
         </ListItemIcon>
-        <Link href={homeCSV} target="_blank">Download Homepage Video CSV</Link>
+        <Link href={PersonalSearchCSV} target="_blank">
+          Download Your Searches (CSV)
+        </Link>
       </ListItem>
 
       <ListItem button>
         <ListItemIcon>
           <OndemandVideoIcon />
         </ListItemIcon>
-        <Link href={videoCSV} target="_blank">Download Related Video CSV</Link>
+        <Link href={videoCSV} target="_blank">
+          Download ForYou Video (CSV)
+        </Link>
       </ListItem>
     </List>
   );
