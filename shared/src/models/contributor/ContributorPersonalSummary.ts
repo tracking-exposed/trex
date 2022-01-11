@@ -15,25 +15,31 @@ export type SummaryHTMLMetadata = t.TypeOf<typeof SummaryHTMLMetadata>;
 export const SummaryMetadata = t.type(
   {
     id: t.string,
-    author: t.type(
-      {
-        link: t.string,
-        name: t.string,
-        username: t.string,
-      },
-      'Author'
-    ),
-    baretext: t.string,
-    description: t.string,
+    author: t.union([
+      t.type(
+        {
+          link: t.string,
+          name: t.string,
+          username: t.string,
+        },
+        'Author'
+      ),
+      t.undefined,
+    ]),
+    baretext: t.union([t.string, t.undefined]),
+    description: t.union([t.string, t.undefined]),
     hashtags: t.union([t.array(t.string, 'Hashtags'), t.undefined]),
-    metrics: t.type(
-      {
-        liken: t.string,
-        commentsn: t.union([t.string, t.undefined]),
-        sharen: t.string,
-      },
-      'Metrics'
-    ),
+    metrics: t.union([
+      t.type(
+        {
+          liken: t.string,
+          commentsn: t.union([t.string, t.undefined]),
+          sharen: t.string,
+        },
+        'Metrics'
+      ),
+      t.undefined,
+    ]),
     music: t.union([
       t.type(
         {
@@ -57,7 +63,10 @@ export const SummaryMetadata = t.type(
       t.undefined,
     ]),
     timelineId: t.string,
-    type: t.union([t.literal('foryou'), t.literal('home')], 'MetadataType'),
+    type: t.union(
+      [t.literal('foryou'), t.literal('home'), t.literal('following')],
+      'MetadataType'
+    ),
     relative: t.string,
   },
   'Metadata'
