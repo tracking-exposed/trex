@@ -1,7 +1,7 @@
-import { getArbitrary } from "fast-check-io-ts";
-import { ContentCreator } from "../models/ContentCreator";
-import * as t from "io-ts";
-import fc from "fast-check";
+import { getArbitrary } from 'fast-check-io-ts';
+import { ContentCreator } from '../models/ContentCreator';
+import * as t from 'io-ts';
+import fc from 'fast-check';
 
 /**
  * Content Creator arbitrary

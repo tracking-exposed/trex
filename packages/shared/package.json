@@ -1,6 +1,6 @@
 {
-  "name": "shared",
-  "description": "shared files needed by the backend and the YCAI extension",
+  "name": "@trex/shared",
+  "description": "Shared types definitions needed by @trex services",
   "version": "0.1.0",
   "scripts": {
     "clean": "rm -rf ./build",

@@ -9,7 +9,6 @@
   "private": true,
   "workspaces": [
     "extension",
-    "shared",
     "packages/*",
     "backend",
     "YCAI",
@@ -23,10 +22,11 @@
   "scripts": {
     "clean": "yarn workspaces foreach run clean",
     "lint": "yarn workspaces foreach run lint",
+    "type-check": "yarn workspaces foreach run tsc --noEmit",
     "build": "yarn workspaces foreach run build",
     "test": "jest",
     "taboule": "yarn workspace @trex/taboule",
-    "shared": "yarn workspace shared",
+    "shared": "yarn workspace @trex/shared",
     "backend": "yarn workspace yttrex-backend",
     "extension": "yarn workspace yttrex-extension",
     "guardoni": "yarn workspace guardoni",

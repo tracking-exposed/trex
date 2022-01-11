@@ -27,7 +27,7 @@
     "moduleResolution": "Node",
     "isolatedModules": true,
     "paths": {
-      "@shared/*": ["../../../shared/src/*"]
+      "@shared/*": ["../../shared/src/*"]
     }
   },
   "include": ["./src", "./typings"],
@@ -36,5 +36,5 @@
       "module": "CommonJS"
     }
   },
-  "references": [{ "path": "../../shared" }]
+  "references": [{ "path": "../shared" }]
 }

@@ -6,8 +6,7 @@ on:
       - daily
       - beta
     paths:
-      - "shared/**"
-      - "packages/taboule/**"
+      - "packages/**"
 
 defaults:
   run:
@@ -36,10 +35,6 @@ jobs:
 
       - name: Lint code
         run: yarn lint
-
-      - name: Build shared
-        working-directory: ./shared
-        run: yarn build
 
       - name: Build Taboule
         run: yarn build

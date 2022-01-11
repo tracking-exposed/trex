@@ -14,8 +14,8 @@ const moduleNameMapper = pathsToModuleNameMapper(
 module.exports = {
   preset: "ts-jest",
   testEnvironment: "node",
-  roots: ["./", "../shared"],
-  projects: ['./', '../shared'],
+  roots: ["./", "../packages/shared"],
+  projects: ['./', '../packages/shared'],
   moduleNameMapper,
   globals: {
     "ts-jest": {

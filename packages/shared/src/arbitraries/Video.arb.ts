@@ -1,6 +1,6 @@
-import fc from "fast-check";
-import { getArbitrary } from "fast-check-io-ts";
-import { Video } from "../models/Video";
+import fc from 'fast-check';
+import { getArbitrary } from 'fast-check-io-ts';
+import { Video } from '../models/Video';
 
 /**
  * Video arbitrary

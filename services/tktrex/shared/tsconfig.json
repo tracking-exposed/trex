@@ -15,12 +15,12 @@
     "skipLibCheck": true,
     "target": "es2015",
     "paths": {
-      "@shared/*": ["../../../../shared/src/*"]
+      "@shared/*": ["../../../../packages/shared/src/*"]
     }
   },
   "references": [
     {
-      "path": "../../../shared"
+      "path": "../../../packages/shared"
     }
   ],
   "ts-node": {
@@ -28,13 +28,6 @@
       "module": "CommonJS"
     }
   },
-  "include": [
-    "**/*.ts",
-    "**/*.js",
-    "**/*.json"
-  ],
-  "exclude": [
-    "node_modules",
-    "build"
-  ]
+  "include": ["**/*.ts", "**/*.js", "**/*.json"],
+  "exclude": ["node_modules", "build"]
 }

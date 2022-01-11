@@ -1,5 +1,5 @@
-import * as t from "io-ts";
-import { DateFromISOString } from "io-ts-types/lib/DateFromISOString";
+import * as t from 'io-ts';
+import { DateFromISOString } from 'io-ts-types/lib/DateFromISOString';
 
 export const HandshakeBody = t.type(
   {
@@ -15,7 +15,7 @@ export const HandshakeBody = t.type(
     testTime: DateFromISOString,
     directiveType: t.string,
   },
-  "HandshakeBody"
+  'HandshakeBody'
 );
 
 export type HandshakeBody = t.TypeOf<typeof HandshakeBody>;

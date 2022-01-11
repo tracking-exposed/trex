@@ -6,13 +6,9 @@ on:
       - daily
       - beta
     paths:
-      - "shared/**"
+      - "packages/shared/**"
       - "extension/**"
       - "guardoni/**"
-
-defaults:
-  run:
-    working-directory: guardoni
 
 jobs:
   pull_request:
@@ -34,24 +30,21 @@ jobs:
           cache-dependency-path: yarn.lock
 
       - name: Install modules
-        working-directory: ./
         run: yarn
 
       - name: Lint code
-        run: yarn lint
+        run: yarn guardoni lint
 
       - name: Build shared
-        working-directory: ./
         run: yarn shared build
 
       - name: Build extension for guardoni
-        working-directory: ./extension
         run: |
-          yarn build
-          yarn dist:guardoni
+          yarn extension build
+          yarn extension dist:guardoni
 
       - name: Build
-        run: yarn build
+        run: yarn guardoni build
 
       - name: Package
-        run: yarn pkg
+        run: yarn guardoni pkg

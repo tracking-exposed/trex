@@ -16,7 +16,7 @@
     "sourceMap": true,
     "typeRoots": ["../node_modules/@types", "node_modules/@types"],
     "paths": {
-      "@shared/*": ["../../shared/src/*"]
+      "@shared/*": ["../../packages/shared/src/*"]
     }
   },
   "include": ["./src"],
@@ -32,7 +32,7 @@
   },
   "references": [
     {
-      "path": "../shared"
+      "path": "../packages/shared"
     }
   ]
 }
