@@ -17,6 +17,10 @@ const apiList = {
     getPersonal:         require('../routes/personal').getPersonal,
     getPersonalCSV:      require('../routes/personal').getPersonalCSV,
 
+    /* Search Queries functions */
+    getQueryList:        require('../routes/search').getQueryList,
+    getSearchByQuery:    require('../routes/search').getSearchByQuery,
+
     /* impact */
     getStatistics:       require('../routes/statistics').statistics,
 
