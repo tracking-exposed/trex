@@ -345,7 +345,9 @@ export const defaultConfiguration = (
           field: 'query',
           renderCell: (params) => {
             return (
-              <a href={`/search/${params.formattedValue}`}>
+              <a
+                href={`/search/#${encodeURI(params.formattedValue as string)}`}
+              >
                 {params.formattedValue}
               </a>
             );
