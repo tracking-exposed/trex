@@ -6,6 +6,7 @@
     "clean": "rm -rf ./build",
     "type-check": "tsc -b",
     "build": "tsc -b && webpack",
+    "dist": "tsc -b && NODE_ENV=production webpack",
     "watch": "webpack serve",
     "lint": "eslint ./src",
     "test": "echo \"Error: no test specified\" && exit 1",
