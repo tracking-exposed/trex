@@ -148,7 +148,7 @@ async function removeEvidence(req) {
 */
 
 module.exports = {
-  pickForYouFields: pickFeedFields,
+  pickFeedFields,
   getPersonal,
   getPersonalCSV,
 };
