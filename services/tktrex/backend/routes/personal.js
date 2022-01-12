@@ -8,6 +8,22 @@ const flattenSearch = require('./search').flattenSearch;
 
 const SEARCH_FIELDS = require('./public').SEARCH_FIELDS;
 
+function pickFeedFields(metae) {
+  return {
+    authorName: metae.author?.name,
+    authorUser: metae.author?.username,
+    id: metae.id,
+    description: metae.description,
+    tags: metae.hashtags?.join(',') || "",
+    ...metae.metrics,
+    musicURL: metae.music.url,
+    musicTitle: metae.music.name,
+    publicKey: metae.publicKey,
+    savingTime: metae.savingTime,
+    hasStitch: !!_.get(metae, 'stitch', false),
+  }
+}
+
 async function getPersonal(req) {
   // personal API format is
   // /api/v1/personal/:publicKey/:what/:format
@@ -72,33 +88,42 @@ async function getPersonal(req) {
 async function getPersonalCSV(req) {
   const CSV_MAX_SIZE = 1000;
   const k = req.params.publicKey;
+  const type = req.params.what;
+  if(['foryou', 'search', 'following'].indexOf(type) === -1)
+    return { text: "Error, only foryou and search is supported "};
+
   const data = await automo.getMetadataByFilter(
-    { publicKey: k, type: 'search' },
+    { publicKey: k, type },
     { amount: CSV_MAX_SIZE, skip: 0 }
   );
 
-  // Search it is using a nested model even if is not what we should
-  // use in tiktok.
-  const unrolledData = _.reduce(data, flattenSearch, []);
+  /* remind self, search has a different logic than for you,
+     this is why is a reduce instead of map */
+  let unrolledData = [];
+  if(type === 'search')
+    unrolledData = _.reduce(data, flattenSearch, []);
+  else
+    unrolledData = _.map(data, pickFeedFields);
+
   // console.table(unrolledData);
   const csv = CSV.produceCSVv1(unrolledData);
 
   debug(
-    'getPersonalCSV produced %d entries from %d metadata, %d bytes (max %d)',
+    'getPersonalCSV produced %d entries from %d metadata (type %s), %d bytes (max %d)',
     unrolledData.length,
     data.length,
     csv.length,
+    type,
     CSV_MAX_SIZE
   );
   if (!unrolledData.length)
     return { text: 'Data not found: are you sure any search worked?' };
 
   const filename =
-    'tk-search-' +
-    moment().format('YY-MM-DD') +
-    '--' +
-    unrolledData.length +
-    '.csv';
+    'tk-' + type + '-' +
+    moment().format('YY-MM-DD') + '--' +
+    unrolledData.length + '.csv';
+
   return {
     headers: {
       'Content-Type': 'csv/text',
@@ -123,6 +148,7 @@ async function removeEvidence(req) {
 */
 
 module.exports = {
+  pickForYouFields: pickFeedFields,
   getPersonal,
   getPersonalCSV,
 };
