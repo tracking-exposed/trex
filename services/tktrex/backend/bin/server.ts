@@ -6,6 +6,7 @@ import bodyParser from 'body-parser';
 import createDebug from 'debug';
 import nconf from 'nconf';
 import cors from 'cors';
+import path from 'path';
 
 import dbUtils from '../lib/dbutils';
 import apiList from '../lib/api';
@@ -131,6 +132,14 @@ app.get("/api/v2/searches", async (req, res) => await iowrapper("getSearches", r
 /* used in /search page for comparison of specific queries */
 app.get("/api/v2/query/:string/:format", async (req, res) => await iowrapper("getSearchByQuery", req, res));
 app.get("/api/v2/queries/list", async (req, res) => await iowrapper("getQueryList", req, res));
+
+/* quick experiment to return static images: nginx might do a better job */
+app.get("/api/v0/images/:subd/:fname", (req, res) => {
+  res.sendFile(
+    path.join(process.cwd(),
+      "downloads", "thumbnail", req.params.subd, req.params.fname)
+    );
+});
 
 /* Capture All 404 errors */
 app.get('*', async (req, res) => {

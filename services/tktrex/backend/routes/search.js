@@ -19,6 +19,8 @@ export function flattenSearch(memo, metasearch) {
     const readyo = {
       ...result.video,
       // @ts-ignore
+      publishingDate: result.publishingDate,
+      // @ts-ignore
       order: result.order,
       // @ts-ignore
       tags: _.map(
