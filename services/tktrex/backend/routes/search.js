@@ -1,5 +1,6 @@
 import _ from 'lodash';
 import moment from 'moment';
+import nconf from 'nconf';
 
 import * as params from '../lib/params';
 import automo from '../lib/automo';
@@ -92,13 +93,35 @@ export async function getSearchByQuery(req) {
 
 export async function getQueryList(req) {
   // /api/v2/queries/list
+  // TODO support the queries that returned only errors?
 
+  const lastWeek = moment().subtract(1, 'week').startOf('day').toISOString;
   const mongoc = await mongo.clientConnect({concurrency: 1});
-  const queries = await mongo.distinct(mongoc, nconf.get('schema').metadata, 'query');
+
+  const toomanyqueries = await mongo
+    .aggregate(mongoc, nconf.get('schema').metadata, [
+      { $match: {
+        type: 'search',
+        savingTime: { "$gte": new Date(lastWeek) },
+        "results.1": { $exists: true }
+      } },
+      { $group: {
+        "_id": "$query",
+        "amount": { $sum: 1 },
+        "from": { $push: "$publicKey" }
+      } },
+      { $match: { "from.1" : { $exists: true } } }
+  ]);
+  // they are too many because it lack of the check if the query 
+  // have been performed in fact by at least two browsers
   await mongoc.close();
 
-  debug("found %d query names");
-  return { json: queries };
+  const queries = _.filter(toomanyqueries, function(q) {
+    return _.uniq(q.from).length > 1
+  })
+
+  debug("found %d query names", queries.length);
+  return { json: _.sortBy(_.map(queries, '_id'), 'Asc') };
 }
 
 
