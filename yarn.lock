@@ -1923,6 +1923,7 @@ __metadata:
     react-refresh-typescript: ^2.0.3
     style-loader: ^3.3.1
     ts-endpoint: ^2.0.0
+    ts-endpoint-express: ^2.0.0
     ts-io-error: ^2.0.0
     tsconfig-paths-webpack-plugin: ^3.5.2
     type-fest: ^2.8.0
@@ -20988,6 +20989,20 @@ __metadata:
   dependencies:
     utf8-byte-length: ^1.0.1
   checksum: ad097314709ea98444ad9c80c03aac8da805b894f37ceb5685c49ad297483afe3a5ec9572ebcaff699dda72b6cd447a2ba2a3fd10e96c2628cd16d94abeb328a
+  languageName: node
+  linkType: hard
+
+"ts-endpoint-express@npm:^2.0.0":
+  version: 2.0.0
+  resolution: "ts-endpoint-express@npm:2.0.0"
+  dependencies:
+    fp-ts: ^2.0.0
+    ts-endpoint: ^2.0.0
+    ts-io-error: ^2.0.0
+  peerDependencies:
+    express: ^4.17.1
+    ts-endpoint: ^2.0.0-alpha.19
+  checksum: dda4336d92dd61580661220bb11badadc03b83f7b6f97b0d3b921804bd6961b43ae2a68032190ff7ff80c33de5efcd359ade171dcf47a66ed583e4972a3f4374
   languageName: node
   linkType: hard
 
