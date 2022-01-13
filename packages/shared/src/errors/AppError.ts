@@ -9,6 +9,7 @@ export class AppError {
 }
 
 export const toAppError = (e: unknown): AppError => {
+  console.error(e);
   if (e instanceof APIError) {
     return e;
   }
@@ -17,5 +18,9 @@ export const toAppError = (e: unknown): AppError => {
     return new AppError(e.name, e.message, []);
   }
 
-  return new AppError(`Unknown Error`, 'Something bad happened', []);
+  return new AppError(
+    (e as any).name ?? `Unknown Error`,
+    (e as any).message ?? 'Something bad happened',
+    []
+  );
 };

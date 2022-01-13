@@ -1,4 +1,5 @@
 import * as t from 'io-ts';
+import { GuardoniExperiment } from '../../models/Experiment';
 import { Endpoint } from 'ts-endpoint';
 import {
   ADVContributionEvent,
@@ -7,7 +8,7 @@ import {
 import { PublicKeyParams } from '../../models/http/params/PublicKey';
 import { SearchQuery } from '../../models/http/SearchQuery';
 import { TikTokSearch } from '../../models/http/tiktok/TikTokSearch';
-import { GuardoniExperiment, Metadata } from '../../models/Metadata';
+import { Metadata } from '../../models/Metadata';
 import { ChannelADVStats } from '../../models/stats/ChannelADV';
 
 const CompareVideo = Endpoint({

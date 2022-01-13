@@ -12,7 +12,6 @@
     "esModuleInterop": true,
     "skipLibCheck": true,
     "resolveJsonModule": true,
-    // "isolatedModules": true,
     "sourceMap": true,
     "typeRoots": ["../node_modules/@types", "node_modules/@types"],
     "paths": {
@@ -20,6 +19,7 @@
     }
   },
   "include": ["./src"],
+  "exclude": ["**/__tests__", "./src/guardoni/guardoni.ts"],
   "watchOptions": {
     "watchFile": "useFsEvents",
     "watchDirectory": "useFsEvents",

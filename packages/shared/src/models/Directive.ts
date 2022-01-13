@@ -1,0 +1,96 @@
+import { pipe } from 'fp-ts/lib/function';
+import * as R from 'fp-ts/lib/Record';
+import * as t from 'io-ts';
+import { DateFromISOString } from 'io-ts-types';
+import { GuardoniExperiment } from './Experiment';
+
+export const ComparisonDirectiveType = t.literal('comparison');
+export const ChiaroScuroDirectiveType = t.literal('chiaroscuro');
+
+export const DirectiveType = t.union(
+  [ComparisonDirectiveType, ChiaroScuroDirectiveType],
+  'DirectiveType'
+);
+export type DirectiveType = t.TypeOf<typeof DirectiveType>;
+
+const ComparisonDirectiveRow = t.type(
+  {
+    title: t.string,
+    url: t.string,
+    urltag: t.string,
+    watchFor: t.string,
+  },
+  'ComparisonDirectiveRow'
+);
+
+const ChiaroScuroDirectiveRow = t.type(
+  {
+    videoURL: t.string,
+    title: t.string,
+  },
+  'ChiaroScuroDirectiveRow'
+);
+// todo: this should be named CreateExperimentBody
+export const CreateDirectiveBody = t.type(
+  {
+    parsedCSV: t.union([
+      t.array(ComparisonDirectiveRow),
+      t.array(ChiaroScuroDirectiveRow),
+    ]),
+  },
+  'CreateDirectiveBody'
+);
+
+const directiveKeysMap = pipe(
+  { chiaroscuro: ChiaroScuroDirectiveRow, comparison: ComparisonDirectiveRow },
+  R.map((type) => t.array(type))
+);
+
+export const DirectiveKeysMap = t.type(directiveKeysMap, 'DirectiveKeysMap');
+
+export const PostDirectiveSuccessResponse = t.union(
+  [
+    GuardoniExperiment,
+    t.strict({
+      status: t.union([t.literal('exist'), t.literal('created')]),
+      experimentId: t.string,
+      since: DateFromISOString,
+    }),
+  ],
+  'PostDirectiveSuccessResponse'
+);
+
+export type PostDirectiveSuccessResponse = t.TypeOf<
+  typeof PostDirectiveResponse
+>;
+
+export const PostDirectiveResponse = t.union([
+  t.type({ error: t.type({ message: t.string }) }),
+  ...PostDirectiveSuccessResponse.types,
+]);
+
+export const ComparisonDirective = t.strict(
+  {
+    title: t.string,
+    url: t.string,
+  },
+  'ComparisonDirective'
+);
+
+export const ChiaroScuroDirective = t.strict(
+  {
+    loadFor: t.number,
+    url: t.string,
+    watchFor: t.union([t.number, t.undefined]),
+    name: t.string,
+    targetVideoId: t.string,
+  },
+  'ChiaroScuroDirective'
+);
+
+export const Directive = t.union(
+  [ChiaroScuroDirective, ComparisonDirective],
+  'Directive'
+);
+
+export type Directive = t.TypeOf<typeof Directive>;

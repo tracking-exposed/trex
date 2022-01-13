@@ -12,7 +12,7 @@ import puppeteer from 'puppeteer-core';
 import pie from 'puppeteer-in-electron';
 import { v4 as uuid } from 'uuid';
 import { AppEnv } from '../AppEnv';
-import * as guardoni from '../guardoni/guardoni';
+import { GetGuardoni } from '../guardoni/guardoniV2';
 import { GuardoniConfig } from '../guardoni/types';
 
 dotenv.config();
@@ -116,23 +116,23 @@ export const run = async (): Promise<void> => {
 
                       const experiment = '';
 
-                      if (guardoniApp.window.isDestroyed()) {
-                        mainWindow.webContents.postMessage('guardoniOutput', {
-                          message:
-                            'Guardoni window has been destroyed, creating it...',
-                        });
+                      // if (guardoniApp.window.isDestroyed()) {
+                      //   mainWindow.webContents.postMessage('guardoniOutput', {
+                      //     message:
+                      //       'Guardoni window has been destroyed, creating it...',
+                      //   });
 
-                        const result = await createGuardoniWindow(
-                          app,
-                          mainWindow
-                        )();
-                        if (result._tag === 'Left') {
-                          return reject(
-                            new Error('Cant initialized guardoni window')
-                          );
-                        }
-                        guardoniApp = result.right;
-                      }
+                      //   const result = await createGuardoniWindow(
+                      //     app,
+                      //     mainWindow
+                      //   )();
+                      //   if (result._tag === 'Left') {
+                      //     return reject(
+                      //       new Error('Cant initialized guardoni window')
+                      //     );
+                      //   }
+                      //   guardoniApp = result.right;
+                      // }
 
                       const extension =
                         await guardoniApp.window.webContents.session.loadExtension(
@@ -157,49 +157,67 @@ export const run = async (): Promise<void> => {
                         evidenceTag,
                       });
 
-                      const profileData = await guardoni.profileExecount(
-                        profile,
-                        evidenceTag
-                      );
-
-                      mainWindow.webContents.postMessage('guardoniOutput', {
-                        message: 'Guardoni window has been destroyed',
-                        details: [profileData.profileName, profileData.udd],
-                      });
-
-                      const directivesURL = guardoni.buildAPIurl(
-                        'directives',
-                        experiment
-                      );
-
-                      const directives = await guardoni.pullDirectives(
-                        directivesURL
-                      );
-
-                      log.info('Directives ', directives);
-
-                      mainWindow.webContents.postMessage('guardoniOutput', {
-                        id: uuid(),
-                        message: 'Directives created',
-                        details: directives.map((d) => d.name),
-                      });
-
-                      guardoniApp.window.show();
-
                       const page = await pie.getPage(
                         guardoniApp.browser,
                         guardoniApp.window
                       );
-                      await guardoni.guardoniExecution(
-                        experiment,
-                        directives,
-                        page,
-                        profileData
-                      );
 
-                      guardoniApp.window.close();
+                      const guardoni = GetGuardoni({
+                        profile,
+                        evidenceTag,
+                        headless: false,
+                        verbose: true,
+                      });
 
-                      return resolve(undefined);
+                      return pipe(
+                        TE.right(guardoni),
+                        TE.chain((g) => {
+                          // const profileData = await guardoni.profileExecount(
+                          //   profile,
+                          //   evidenceTag
+                          // );
+
+                          // mainWindow.webContents.postMessage('guardoniOutput', {
+                          //   message: 'Guardoni window has been destroyed',
+                          //   details: [profileData.profileName, profileData.udd],
+                          // });
+
+                          // const directivesURL = guardoni.buildAPIurl(
+                          //   'directives',
+                          //   experiment
+                          // );
+
+                          // const directives = await guardoni.pullDirectives(
+                          //   directivesURL
+                          // );
+
+                          // log.info('Directives ', directives);
+
+                          // mainWindow.webContents.postMessage('guardoniOutput', {
+                          //   id: uuid(),
+                          //   message: 'Directives created',
+                          //   details: directives.map((d) => d.name),
+                          // });
+
+                          guardoniApp.window.show();
+
+                          return g.runExperimentForPage(page, experiment, (progress) => {
+                            mainWindow.webContents.postMessage(
+                              'guardoniOutput',
+                              {
+                                id: uuid(),
+                                ...progress,
+                              }
+                            );
+                          });
+                        }),
+                        // eslint-disable-next-line array-callback-return
+                        TE.map(() => {
+                          guardoniApp.window.close();
+                        })
+                      )()
+                        .then(resolve)
+                        .catch(reject);
                     }
                   );
                 }),

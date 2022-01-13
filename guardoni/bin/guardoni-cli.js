@@ -4,12 +4,20 @@
 
 const yargs = require('yargs/yargs');
 const { hideBin } = require('yargs/helpers');
-const guardoni = require('../build/guardoni/guardoni.js');
+const { GetGuardoni } = require('../build/guardoni/guardoni.js');
 
-const runGuardoni = ({ _, $0, ...argv }) => {
-  console.log('runguardoni', argv);
-  guardoni.main(argv);
-};
+const runGuardoni = ({ _, $0, v, headless, verbose, basePath, ...command }) =>
+{
+  console.log('run guardoni cli', { headless, verbose, basePath, command})
+ return GetGuardoni({
+    headless,
+    verbose,
+    basePath,
+  })
+    .cli(command)
+    .runOrThrow()
+    .then(() => process.exit(0));
+}
 
 yargs(hideBin(process.argv))
   .scriptName('guardoni-cli')
@@ -27,8 +35,8 @@ yargs(hideBin(process.argv))
     (argv) => runGuardoni({ ...argv, run: 'experiment' })
   )
   .command(
-    'csv <file>',
-    'Run guardoni from a CSV',
+    'register <file>',
+    'Register an experiment from a CSV',
     (yargs) => {
       return yargs
         .positional('file', {
@@ -38,7 +46,7 @@ yargs(hideBin(process.argv))
         })
         .example('$0 csv ./path/to/file.csv');
     },
-    (argv) => runGuardoni({ ...argv, run: 'csv' })
+    (argv) => runGuardoni({ ...argv, run: 'register' })
   )
   .usage(
     '$0 [type]',
@@ -68,11 +76,11 @@ yargs(hideBin(process.argv))
   })
   .option('proxy', {
     type: 'string',
-    desc: 'Socket proxy for puppeteer.'
+    desc: 'Socket proxy for puppeteer.',
   })
   .options('advdump', {
     type: 'string',
-    desc: 'ADV dump directory path'
+    desc: 'ADV dump directory path',
   })
   .option('verbose', {
     alias: 'v',

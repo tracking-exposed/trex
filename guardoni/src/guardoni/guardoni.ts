@@ -41,13 +41,6 @@ const server = nconf.get('backend')
     : nconf.get('backend')
   : 'https://youtube.tracking.exposed';
 
-interface Directive {
-  urltag: string;
-  name: string;
-  loadFor: number;
-  url: string;
-}
-
 interface Profile {
   udd: string;
   profileName: string;
@@ -462,12 +455,7 @@ export async function main(config: GuardoniConfig) {
   /* directiveType is an important variable but when
      --experiment is used, it is not specify. Therefore
      is set below, after the directive is pull */
-  let directiveType =
-    config.run === 'experiment'
-      ? null
-      : config.run === 'csv'
-      ? config.type
-      : 'chiaroscuro';
+  let directiveType ='chiaroscuro';
 
   // if (!auto && !sourceUrl && !experiment) {
   //   printHelp();

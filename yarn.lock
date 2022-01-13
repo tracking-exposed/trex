@@ -10938,6 +10938,8 @@ __metadata:
     eslint-plugin-promise: ^5.2.0
     fp-ts: ^2.11.6
     io-ts: ^2.2.16
+    io-ts-types: ^0.5.16
+    jest: ^27.4.7
     lodash: ^4.17.21
     moment: ^2.29.1
     nconf: ^0.11.3
@@ -10954,6 +10956,7 @@ __metadata:
     react-dom: ^17.0.2
     rpmbuild: ^0.0.23
     style-loader: ^3.3.1
+    ts-jest: ^27.1.2
     ts-loader: ^9.2.6
     typescript: ^4.5.4
     utf-8-validate: ^5.0.7

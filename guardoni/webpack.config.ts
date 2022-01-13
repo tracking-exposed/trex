@@ -70,7 +70,7 @@ const { buildENV: guardoniBuildEnv, ...guardoniConfig } = getConfig({
   hot: false,
   target: 'node',
   entry: {
-    guardoni: path.resolve(__dirname, 'src/guardoni/guardoni.ts'),
+    guardoni: path.resolve(__dirname, 'src/guardoni/guardoniV2.ts'),
   },
 });
 
