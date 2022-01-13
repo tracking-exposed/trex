@@ -14,14 +14,14 @@ function pickFeedFields(metae) {
     authorUser: metae.author?.username,
     id: metae.id,
     description: metae.description,
-    tags: metae.hashtags?.join(',') || "",
+    tags: metae.hashtags?.join(',') || '',
     ...metae.metrics,
-    musicURL: metae.music.url,
-    musicTitle: metae.music.name,
+    musicURL: metae?.music?.url || null,
+    musicTitle: metae?.music?.name || null,
     publicKey: metae.publicKey,
     savingTime: metae.savingTime,
     hasStitch: !!_.get(metae, 'stitch', false),
-  }
+  };
 }
 
 async function getPersonal(req) {
@@ -89,8 +89,8 @@ async function getPersonalCSV(req) {
   const CSV_MAX_SIZE = 1000;
   const k = req.params.publicKey;
   const type = req.params.what;
-  if(['foryou', 'search', 'following'].indexOf(type) === -1)
-    return { text: "Error, only foryou and search is supported "};
+  if (['foryou', 'search', 'following'].indexOf(type) === -1)
+    return { text: 'Error, only foryou and search is supported ' };
 
   const data = await automo.getMetadataByFilter(
     { publicKey: k, type },
@@ -100,10 +100,8 @@ async function getPersonalCSV(req) {
   /* remind self, search has a different logic than for you,
      this is why is a reduce instead of map */
   let unrolledData = [];
-  if(type === 'search')
-    unrolledData = _.reduce(data, flattenSearch, []);
-  else
-    unrolledData = _.map(data, pickFeedFields);
+  if (type === 'search') unrolledData = _.reduce(data, flattenSearch, []);
+  else unrolledData = _.map(data, pickFeedFields);
 
   // console.table(unrolledData);
   const csv = CSV.produceCSVv1(unrolledData);
@@ -120,9 +118,13 @@ async function getPersonalCSV(req) {
     return { text: 'Data not found: are you sure any search worked?' };
 
   const filename =
-    'tk-' + type + '-' +
-    moment().format('YY-MM-DD') + '--' +
-    unrolledData.length + '.csv';
+    'tk-' +
+    type +
+    '-' +
+    moment().format('YY-MM-DD') +
+    '--' +
+    unrolledData.length +
+    '.csv';
 
   return {
     headers: {
