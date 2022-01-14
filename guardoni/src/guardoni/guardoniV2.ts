@@ -6,7 +6,6 @@
 import { AppError, toAppError } from '@shared/errors/AppError';
 import { toValidationError } from '@shared/errors/ValidationError';
 import {
-  ChiaroScuroDirective,
   ChiaroScuroDirectiveType,
   ComparisonDirective,
   ComparisonDirectiveType,
@@ -106,7 +105,6 @@ interface GuardoniContext {
 const dispatchBrowser = (
   ctx: GuardoniContext
 ): TE.TaskEither<AppError, puppeteer.Browser> => {
-  const newProfile = ctx.profile.newProfile;
   const execCount = ctx.profile.execCount;
   const proxy = ctx.config.proxy;
 
@@ -148,8 +146,6 @@ const dispatchBrowser = (
       args: commandLineArg,
     });
 
-    // add this boolean to the return value as we need it in a case
-    (browser as any).newProfile = newProfile;
     return browser;
   }, toAppError);
 };
@@ -446,7 +442,7 @@ const registerCSV =
       TE.map((experiment) => {
         guardoniLogger.debug('Experiment received %O', experiment);
         // handle output for existing experiment
-        if (PostDirectiveSuccessResponse.types[1].is(experiment)) {
+        if (PostDirectiveSuccessResponse.is(experiment)) {
           return {
             type: 'success',
             message: `Experiment already available`,
@@ -654,12 +650,18 @@ const runExperiment =
       TE.chain(({ profile, expId }) =>
         pipe(
           pullDirectives(ctx)(expId),
-          TE.chain((directive) =>
-            pipe(
-              saveExperiment(ctx)(expId, 'chiaroscuro', profile),
+          TE.chain((directive) => {
+            // infer directive type from first returned item
+
+            const directiveType = ComparisonDirective.is(directive[0])
+              ? ComparisonDirectiveType.value
+              : ChiaroScuroDirectiveType.value;
+
+            return pipe(
+              saveExperiment(ctx)(expId, directiveType, profile),
               TE.chain((exp) => runBrowser(ctx)(exp, directive))
-            )
-          )
+            );
+          })
         )
       ),
       TE.map((result) => ({
@@ -721,10 +723,7 @@ const loadContext = (
   guardoniLogger.debug('User data dir %s', userDataDir);
 
   // guardoni config
-  const guardoniConfigFile = path.join(
-    userDataDir,
-    `${configWithDefaults.profile}.json`
-  );
+  const guardoniConfigFile = path.join(userDataDir, 'guardoni.json');
 
   guardoniLogger.debug('Guardoni profile config file %s', guardoniConfigFile);
 

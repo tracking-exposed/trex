@@ -2,7 +2,6 @@ import { pipe } from 'fp-ts/lib/function';
 import * as R from 'fp-ts/lib/Record';
 import * as t from 'io-ts';
 import { DateFromISOString } from 'io-ts-types';
-import { GuardoniExperiment } from './Experiment';
 
 export const ComparisonDirectiveType = t.literal('comparison');
 export const ChiaroScuroDirectiveType = t.literal('chiaroscuro');
@@ -13,17 +12,16 @@ export const DirectiveType = t.union(
 );
 export type DirectiveType = t.TypeOf<typeof DirectiveType>;
 
-const ComparisonDirectiveRow = t.type(
+export const ComparisonDirectiveRow = t.type(
   {
     title: t.string,
     url: t.string,
     urltag: t.string,
-    watchFor: t.string,
   },
   'ComparisonDirectiveRow'
 );
 
-const ChiaroScuroDirectiveRow = t.type(
+export const ChiaroScuroDirectiveRow = t.type(
   {
     videoURL: t.string,
     title: t.string,
@@ -48,15 +46,12 @@ const directiveKeysMap = pipe(
 
 export const DirectiveKeysMap = t.type(directiveKeysMap, 'DirectiveKeysMap');
 
-export const PostDirectiveSuccessResponse = t.union(
-  [
-    GuardoniExperiment,
-    t.strict({
-      status: t.union([t.literal('exist'), t.literal('created')]),
-      experimentId: t.string,
-      since: DateFromISOString,
-    }),
-  ],
+export const PostDirectiveSuccessResponse = t.strict(
+  {
+    status: t.union([t.literal('exist'), t.literal('created')]),
+    experimentId: t.string,
+    since: DateFromISOString,
+  },
   'PostDirectiveSuccessResponse'
 );
 
@@ -66,7 +61,7 @@ export type PostDirectiveSuccessResponse = t.TypeOf<
 
 export const PostDirectiveResponse = t.union([
   t.type({ error: t.type({ message: t.string }) }),
-  ...PostDirectiveSuccessResponse.types,
+  PostDirectiveSuccessResponse,
 ]);
 
 export const ComparisonDirective = t.strict(

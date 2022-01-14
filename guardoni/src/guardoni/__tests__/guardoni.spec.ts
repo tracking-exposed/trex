@@ -1,7 +1,45 @@
+jest.mock('axios');
+jest.mock('puppeteer-core');
+
+import {
+  ChiaroScuroDirectiveArb,
+  ChiaroScuroDirectiveRowArb,
+  ComparisonDirectiveRowArb,
+  PostDirectiveSuccessResponseArb,
+} from '@shared/arbitraries/Directive.arb';
+import * as tests from '@shared/test';
+import axios from 'axios';
+import * as fs from 'fs';
 import * as path from 'path';
+import * as puppeteer from 'puppeteer-core';
 import { GetGuardoni } from '../guardoniV2';
 
-describe.skip('Guardoni', () => {
+const axiosMock = axios as jest.Mocked<typeof axios>;
+axiosMock.create.mockImplementation(() => axiosMock);
+
+const puppeteerMock = puppeteer as jest.Mocked<typeof puppeteer>;
+const pageMock = {
+  on: jest.fn(),
+  goto: jest.fn(),
+  waitForTimeout: jest.fn(),
+};
+const browserMock = {
+  pages: jest.fn().mockResolvedValue([pageMock] as any),
+};
+puppeteerMock.launch.mockResolvedValue(browserMock as any);
+
+const writeCSVFile = (p: fs.PathLike, content: any[]): void => {
+  const keys = Object.keys(content[0]);
+  const commaSeparatedString = [
+    keys.join(','),
+    content
+      .map((row) => keys.map((key) => `"${row[key]}"`).join(','))
+      .join('\n'),
+  ].join('\n');
+  fs.writeFileSync(p, commaSeparatedString, 'utf-8');
+};
+
+describe('Guardoni', () => {
   let experimentId: string;
   const guardoni = GetGuardoni({
     headless: false,
@@ -9,15 +47,24 @@ describe.skip('Guardoni', () => {
     basePath: path.resolve(__dirname, '../../../'),
     profile: 'test-profile',
     extensionDir: path.resolve(__dirname, '../../../build/extension'),
+    backend: 'http://localhost:9009/api',
+  });
+
+  beforeAll(() => {
+    writeCSVFile(
+      path.resolve(process.cwd(), 'experiments/experiment-comparison.csv'),
+      tests.fc.sample(ComparisonDirectiveRowArb, 10)
+    );
+
+    writeCSVFile(
+      path.resolve(process.cwd(), 'experiments/experiment-chiaroscuro.csv'),
+      tests.fc.sample(ChiaroScuroDirectiveRowArb, 10)
+    );
   });
 
   describe('Register an experiment', () => {
     test('fails when the file path is wrong', async () => {
       // mocks
-      // read csv from filesystem
-      // fsMock.readFile.mockImplementationOnce((path, _opts, cb) => {
-      //   cb(new Error('Can\'t find the file'), null);
-      // });
 
       await expect(
         guardoni
@@ -74,6 +121,11 @@ describe.skip('Guardoni', () => {
     });
 
     test('success with type comparison and proper csv file', async () => {
+      // return experiment
+      axiosMock.request.mockResolvedValueOnce({
+        data: tests.fc.sample(PostDirectiveSuccessResponseArb, 1)[0],
+      });
+
       const result: any = await guardoni
         .cli({
           run: 'register',
@@ -107,6 +159,17 @@ describe.skip('Guardoni', () => {
     });
 
     test('succeed when experimentId is valid', async () => {
+      // return directive
+      axiosMock.request.mockResolvedValueOnce({
+        data: tests.fc.sample(ChiaroScuroDirectiveArb, 2),
+      });
+
+      axiosMock.request.mockResolvedValueOnce({
+        data: {
+          acknowledged: true,
+        },
+      });
+
       const result: any = await guardoni
         .cli({ run: 'experiment', experiment: experimentId })
         .run();
