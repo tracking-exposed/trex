@@ -1,18 +1,38 @@
-import puppeteer from 'puppeteer';
+import yargs from 'yargs';
+import { hideBin } from 'yargs/helpers';
 
-const main = async(): Promise<void> => {
-  const browser = await puppeteer.launch({
-    headless: false,
-    defaultViewport: null,
-    args: ['--start-maximized'],
-  });
+import registerAutomation from './commands/register-automation';
 
-  const page = await browser.newPage();
-  await page.goto('https://example.com');
+const menu = yargs(hideBin(process.argv))
+  .scriptName('tktrex-automation')
+  .command(
+    'register <file>',
+    'Register an automation file',
+    (y) =>
+      y
+        .positional('file', {
+          demandOption: true,
+          desc: 'File containing one automation step per line',
+          type: 'string',
+        })
+        .option('comment', {
+          alias: 'c',
+          desc: 'Save a comment together with this automation',
+          type: 'string',
+        })
+        .option('label', {
+          alias: 'l',
+          desc: 'Save a label together with this automation',
+          type: 'string',
+        })
+        .option('type', {
+          alias: 't',
+          desc: 'Automation type',
+          type: 'string',
+          demandOption: true,
+          choices: ['tiktok-fr-elections'],
+        }),
+    async(argv) => registerAutomation(argv),
+  );
 
-  await browser.close();
-};
-
-main().finally(() => {
-  process.exit(0);
-});
+void menu.strictCommands().demandCommand(1, 'Please provide a command').parse();
