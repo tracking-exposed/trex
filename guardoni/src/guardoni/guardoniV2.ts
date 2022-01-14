@@ -49,7 +49,7 @@ import { csvParseTE, getChromePath } from './utils';
 //   'https://github.com/tracking-exposed/yttrex/releases/download/v1.8.992/extension-1.9.0.99.zip';
 
 const DEFAULT_BASE_PATH = process.cwd();
-const DEFAULT_SERVER = 'http://localhost:9000/api';
+const DEFAULT_SERVER = 'https://yttrex.tracking.exposed/api';
 const DEFAULT_EXTENSION_DIR = path.resolve(
   DEFAULT_BASE_PATH,
   'build/extension'
@@ -202,6 +202,7 @@ const operateTab =
       try {
         await domainSpecific.afterWait(page, directive);
       } catch (error) {
+        // eslint-disable-next-line no-console
         console.log(
           'Error in afterWait',
           (error as any).message,

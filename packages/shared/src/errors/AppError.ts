@@ -9,7 +9,6 @@ export class AppError {
 }
 
 export const toAppError = (e: unknown): AppError => {
-  console.error(e);
   if (e instanceof APIError) {
     return e;
   }
