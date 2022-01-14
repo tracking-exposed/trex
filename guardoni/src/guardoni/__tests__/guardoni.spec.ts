@@ -1,6 +1,6 @@
+/* eslint-disable import/first */
 jest.mock('axios');
 jest.mock('puppeteer-core');
-
 import {
   ChiaroScuroDirectiveArb,
   ChiaroScuroDirectiveRowArb,

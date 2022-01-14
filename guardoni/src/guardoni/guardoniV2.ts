@@ -304,7 +304,9 @@ const runBrowser =
       TE.chain((browser) => {
         return TE.tryCatch(async () => {
           const [page, ...otherPages] = await browser.pages();
-          _.tail(otherPages).forEach(async (p) => {
+
+          // eslint-disable-next-line @typescript-eslint/no-misused-promises
+          _.tail(otherPages).forEach(async (p): Promise<void> => {
             guardoniLogger.debug("Closing a tab that shouldn't be there!");
             await p.close();
           });

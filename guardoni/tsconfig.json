@@ -19,7 +19,6 @@
     }
   },
   "include": ["./src"],
-  "exclude": ["**/__tests__", "./src/guardoni/guardoni.ts"],
   "watchOptions": {
     "watchFile": "useFsEvents",
     "watchDirectory": "useFsEvents",

@@ -5,7 +5,7 @@
   "scripts": {
     "clean": "rm -rf build/**",
     "pkg": "pkg ./package.json && sh ./bin/post-compile.sh",
-    "lint": "eslint ./src",
+    "lint": "eslint ./src/**",
     "format": "prettier -w ./src",
     "test": "jest",
     "build": "webpack",
