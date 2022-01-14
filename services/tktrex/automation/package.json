@@ -1,0 +1,26 @@
+{
+  "name": "tktrex-automation",
+  "version": "0.2.5",
+  "packageManager": "yarn@3.1.1",
+  "scripts": {
+    "build": "tsc --build",
+    "automate": "ts-node ./src/index.ts"
+  },
+  "devDependencies": {
+    "@types/node": "^17.0.8",
+    "@typescript-eslint/eslint-plugin": "^5.7.0",
+    "@typescript-eslint/parser": "^5.7.0",
+    "eslint": "^8.4.1",
+    "eslint-config-prettier": "^8.3.0",
+    "eslint-config-standard-with-typescript": "^21.0.1",
+    "eslint-plugin-import": "^2.25.3",
+    "eslint-plugin-node": "^11.1.0",
+    "eslint-plugin-promise": "^5.2.0",
+    "ts-node": "^10.4.0",
+    "typescript": "^4.5.4"
+  },
+  "dependencies": {
+    "@types/puppeteer": "^5.4.4",
+    "puppeteer": "^13.0.1"
+  }
+}

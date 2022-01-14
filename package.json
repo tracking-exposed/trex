@@ -12,10 +12,7 @@
     "packages/*",
     "backend",
     "YCAI",
-    "services/tktrex/extension",
-    "services/tktrex/methodology",
-    "services/tktrex/backend",
-    "services/tktrex/shared",
+    "services/tktrex/*",
     "guardoni"
   ],
   "packageManager": "yarn@3.1.1",
