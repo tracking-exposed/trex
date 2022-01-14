@@ -49,7 +49,7 @@ import { csvParseTE, getChromePath } from './utils';
 //   'https://github.com/tracking-exposed/yttrex/releases/download/v1.8.992/extension-1.9.0.99.zip';
 
 const DEFAULT_BASE_PATH = process.cwd();
-const DEFAULT_SERVER = 'https://yttrex.tracking.exposed/api';
+const DEFAULT_SERVER = 'https://youtube.tracking.exposed/api';
 const DEFAULT_EXTENSION_DIR = path.resolve(
   DEFAULT_BASE_PATH,
   'build/extension'
@@ -89,6 +89,16 @@ type GuardoniConfigRequired = Omit<
   loadFor: number;
   chromePath: string;
 };
+
+interface ExperimentInfo {
+  experimentId: string;
+  evidenceTag: string;
+  directiveType: DirectiveType;
+  execCount: number;
+  profileName: string;
+  newProfile: boolean;
+  when: Date;
+}
 
 interface GuardoniContext {
   API: APIClient;
@@ -366,16 +376,6 @@ const createExperimentInAPI =
 3. guardoni uses the same experiment API to mark contribution with 'evidencetag'
 4. it would then access to the directive API, and by using the experimentId, will then perform the searches as instructed.
 */
-
-interface ExperimentInfo {
-  experimentId: string;
-  evidenceTag: string;
-  directiveType: DirectiveType;
-  execCount: number;
-  profileName: string;
-  newProfile: boolean;
-  when: Date;
-}
 
 const registerCSV =
   (ctx: GuardoniContext) =>
@@ -680,9 +680,18 @@ const runExperimentForPage = (): TE.TaskEither<
   GuardoniSuccessOutput
 > => TE.left(toAppError(new Error('Not implemented')));
 
-const runAuto = (): TE.TaskEither<AppError, GuardoniSuccessOutput> => {
-  return TE.left(toAppError(new Error('run auto not implemented')));
-};
+const runAuto =
+  (ctx: GuardoniContext) =>
+  (value: '1' | '2'): TE.TaskEither<AppError, GuardoniSuccessOutput> => {
+    const experimentId: NonEmptyString =
+      value === '2'
+        ? ('d75f9eaf465d2cd555de65eaf61a770c82d59451' as any)
+        : ('37384a9b7dff26184cdea226ad5666ca8cbbf456' as any);
+
+    guardoniLogger.debug('Run in auto mode with experiment %s', experimentId);
+
+    return runExperiment(ctx)(experimentId);
+  };
 
 const foldOutput = (
   command: GuardoniCommandConfig,
@@ -813,7 +822,7 @@ export const GetGuardoni: GetGuardoni = (config) => {
             return runExperiment(context)(command.experiment);
           case 'auto':
           default:
-            return runAuto();
+            return runAuto(context)(command.value);
         }
       }),
       TE.mapLeft((e) => {
@@ -834,12 +843,12 @@ export const GetGuardoni: GetGuardoni = (config) => {
               details: e.details,
             })
           );
-          return Promise.reject(e);
+          return Promise.resolve(process.exit(1));
         },
         (result) => () => {
           // eslint-disable-next-line
           console.log(foldOutput(command, result));
-          return Promise.resolve();
+          return Promise.resolve(process.exit(0));
         }
       )
     );

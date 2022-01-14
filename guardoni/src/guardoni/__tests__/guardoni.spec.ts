@@ -188,4 +188,29 @@ describe('Guardoni', () => {
       });
     });
   });
+
+  describe('auto', () => {
+    test('succeed when value is "1"', async () => {
+      // return directive
+      axiosMock.request.mockResolvedValueOnce({
+        data: tests.fc.sample(ChiaroScuroDirectiveArb, 2),
+      });
+
+      axiosMock.request.mockResolvedValueOnce({
+        data: {
+          acknowledged: true,
+        },
+      });
+
+      const result: any = await guardoni.cli({ run: 'auto', value: '1' }).run();
+
+      expect(result).toMatchObject({
+        _tag: 'Right',
+        right: {
+          message: 'Experiment completed',
+          values: {},
+        },
+      });
+    });
+  });
 });

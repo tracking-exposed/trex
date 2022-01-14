@@ -66,7 +66,7 @@ export const PostDirectiveResponse = t.union([
 
 export const ComparisonDirective = t.strict(
   {
-    title: t.string,
+    title: t.union([t.string, t.undefined]),
     url: t.string,
   },
   'ComparisonDirective'
@@ -76,7 +76,7 @@ export const ChiaroScuroDirective = t.strict(
   {
     loadFor: t.number,
     url: t.string,
-    watchFor: t.union([t.number, t.undefined]),
+    watchFor: t.union([t.number, t.string, t.undefined]),
     name: t.string,
     targetVideoId: t.string,
   },
@@ -84,7 +84,7 @@ export const ChiaroScuroDirective = t.strict(
 );
 
 export const Directive = t.union(
-  [ChiaroScuroDirective, ComparisonDirective],
+  [ComparisonDirective, ChiaroScuroDirective],
   'Directive'
 );
 

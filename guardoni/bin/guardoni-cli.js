@@ -6,10 +6,9 @@ const yargs = require('yargs/yargs');
 const { hideBin } = require('yargs/helpers');
 const { GetGuardoni } = require('../build/guardoni/guardoni.js');
 
-const runGuardoni = ({ _, $0, v, headless, verbose, basePath, ...command }) =>
-{
-  console.log('run guardoni cli', { headless, verbose, basePath, command})
- return GetGuardoni({
+const runGuardoni = ({ _, $0, v, headless, verbose, basePath, ...command }) => {
+  console.log('run guardoni cli', { headless, verbose, basePath, command });
+  return GetGuardoni({
     headless,
     verbose,
     basePath,
@@ -17,7 +16,7 @@ const runGuardoni = ({ _, $0, v, headless, verbose, basePath, ...command }) =>
     .cli(command)
     .runOrThrow()
     .then(() => process.exit(0));
-}
+};
 
 yargs(hideBin(process.argv))
   .scriptName('guardoni-cli')
@@ -49,12 +48,12 @@ yargs(hideBin(process.argv))
     (argv) => runGuardoni({ ...argv, run: 'register' })
   )
   .usage(
-    '$0 [type]',
+    '$0 [index]',
     'Run guardoni in auto mode cli.',
     (yargs) => {
-      return yargs.option('type', {
+      return yargs.option('index', {
         type: 'string',
-        choices: ['comparison', 'shadowban'],
+        choices: ['1', '2'],
         demandOption: 'Run comparison or shadow ban experiment run',
       });
     },
