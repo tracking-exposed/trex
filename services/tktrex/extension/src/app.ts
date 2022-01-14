@@ -217,7 +217,7 @@ function handleSearch(element: Node): void {
   }
 
   hub.dispatch({
-    type: 'Suggested', // I'm using Suggested only because of TS enforcing
+    type: 'Search',
     payload: {
       html: truehtml,
       href: window.location.href,
