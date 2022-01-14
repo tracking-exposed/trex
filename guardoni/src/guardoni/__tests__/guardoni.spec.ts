@@ -38,30 +38,31 @@ const writeCSVFile = (p: fs.PathLike, content: any[]): void => {
   ].join('\n');
   fs.writeFileSync(p, commaSeparatedString, 'utf-8');
 };
+const basePath = path.resolve(__dirname, '../../../');
 
 describe('Guardoni', () => {
   let experimentId: string;
   const guardoni = GetGuardoni({
     headless: false,
     verbose: false,
-    basePath: path.resolve(__dirname, '../../../'),
+    basePath,
     profile: 'test-profile',
     extensionDir: path.resolve(__dirname, '../../../build/extension'),
     backend: 'http://localhost:9009/api',
   });
 
   beforeAll(() => {
-    fs.mkdirSync(path.resolve(process.cwd(), 'experiments'), {
+    fs.mkdirSync(path.resolve(basePath, 'experiments'), {
       recursive: true,
     });
 
     writeCSVFile(
-      path.resolve(process.cwd(), 'experiments/experiment-comparison.csv'),
+      path.resolve(basePath, 'experiments/experiment-comparison.csv'),
       tests.fc.sample(ComparisonDirectiveRowArb, 10)
     );
 
     writeCSVFile(
-      path.resolve(process.cwd(), 'experiments/experiment-chiaroscuro.csv'),
+      path.resolve(basePath, 'experiments/experiment-chiaroscuro.csv'),
       tests.fc.sample(ChiaroScuroDirectiveRowArb, 10)
     );
   });
