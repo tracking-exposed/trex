@@ -136,10 +136,8 @@ async function processEvents(req) {
   if (!utils.verifyRequestSignature(req)) {
     debug('Verification fail (signature %s)', headers.signature);
     return {
-      json: {
-        status: 'error',
-        info: 'Signature does not match request body',
-      },
+      status: 'error',
+      info: 'Signature does not match request body',
     };
   }
 

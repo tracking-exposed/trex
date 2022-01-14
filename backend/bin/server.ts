@@ -21,16 +21,23 @@ if (!nconf.get("interface") || !nconf.get("port"))
 
 /* everything begin here, welcome */
 /* create express app */
-const app = makeApp({ config: nconf.get() });
-const server = new http.Server(app as any);
-server.listen(nconf.get("port"), nconf.get("interface"), () => {
-  d(` Listening on http://${nconf.get("interface")}:${nconf.get("port")}`);
+const main = async(): Promise<void> => {
+  const app = await makeApp({ config: nconf.get() });
+  const server = new http.Server(app as any);
+  server.listen(nconf.get("port"), nconf.get("interface"), () => {
+    d(` Listening on http://${nconf.get("interface")}:${nconf.get("port")}`);
+  });
+
+  const initialSanityChecks: () => void = async () => {
+    /* security checks = is the password set and is not the default? (more checks might come) */
+    security.checkKeyIsSet();
+    return await dbutils.checkMongoWorks(true /* if true means that failure is fatal */);
+  }
+
+  initialSanityChecks();
+};
+
+main().catch(e => {
+  d("ઉ Fatal error: ", e);
+  process.exit(1);
 });
-
-const initialSanityChecks: () => void = async () => {
-  /* security checks = is the password set and is not the default? (more checks might come) */
-  security.checkKeyIsSet();
-  return await dbutils.checkMongoWorks(true /* if true means that failure is fatal */);
-}
-
-initialSanityChecks();

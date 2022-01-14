@@ -2,10 +2,10 @@ import { pipe } from 'fp-ts/lib/pipeable';
 import * as TE from 'fp-ts/lib/TaskEither';
 import { toBackendError } from '../../errors/BackendError';
 import * as Endpoints from '../../../endpoints';
-import { Route } from '../../types';
+import { RouteCreator } from '../../types';
 import { AddEndpoint } from '../../utils/endpoint';
 
-export const MakeHealthRoute: Route = (r, { db, logger }) => {
+export const MakeHealthRoute: RouteCreator = (r, { db, logger }) => {
   AddEndpoint(r)(Endpoints.v0.Public.GetHealth, () => {
     logger.debug('Get Health');
 

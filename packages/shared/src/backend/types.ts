@@ -7,4 +7,4 @@ export interface RouteContext {
   logger: logger.Logger;
 }
 
-export type Route = (r: Router, ctx: RouteContext) => void;
+export type RouteCreator = (r: Router, ctx: RouteContext) => void;

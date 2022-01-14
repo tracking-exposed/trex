@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-misused-promises */
-import { makeBackend } from '@shared/backend';
+import { makeBackend } from '@shared/backend/router-enhancers';
 import { GetLogger } from '@shared/logger';
 import bodyParser from 'body-parser';
 import cors from 'cors';
@@ -94,7 +94,7 @@ setInterval(() => {
   logAPICount.requests = {};
 }, 60 * 1000);
 
-export const makeApp = (ctx: MakeAppContext): express.Application => {
+export const makeApp = async(ctx: MakeAppContext): Promise<express.Application> => {
   const app = express();
 
   app.use(cors());
@@ -102,9 +102,22 @@ export const makeApp = (ctx: MakeAppContext): express.Application => {
   app.use(bodyParser.json({ limit: '6mb' }));
   app.use(bodyParser.urlencoded({ limit: '6mb', extended: true }));
 
+  const client = await mongo3.clientConnect();
+  if (!client) {
+    logger.error('Could not connect to MongoDB');
+    process.exit(1);
+  }
+
   // get a router instance from express
   const router = express.Router();
-  const apiRouter = makeBackend({ db: mongo3, logger }, express.Router());
+
+  // add the new routes to the router
+  const apiRouter = makeBackend({
+    db: { ...mongo3, client },
+    logger,
+  }, router);
+
+  // add the legacy routes
 
   /* this API is v0 as it is platform neutral. it might be shared among
    * all the trex backends, and should return info on system health, echo OK

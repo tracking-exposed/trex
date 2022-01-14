@@ -1,5 +1,5 @@
 import express from 'express';
-import { RouteContext } from './types';
+import { RouteContext } from '../types';
 import { MakeV0Routes } from './v0';
 
 interface BackendContext extends RouteContext {}

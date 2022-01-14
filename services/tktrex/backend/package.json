@@ -4,7 +4,7 @@
   "packageManager": "yarn@3.1.1",
   "description": "tiktok.tracking.exposed → backend data collector, to investigate personalization algorithms",
   "scripts": {
-    "watch": "key=fuffa DEBUG=\"*,-express:*,-body-parser:*,-send\" ts-node-dev bin/server",
+    "watch": "key=fuffa DEBUG=\"*,-express:*,-body-parser:*,-send\" ts-node-dev -r \"tsconfig-paths/register\" bin/server",
     "start": "DEBUG=\"*,-body-parser:*,-express:*,-send\" ts-node bin/server",
     "parserv": "DEBUG=\"*\" ts-node bin/parserv3",
     "parserv:watch": "DEBUG=\"*\" ts-node-dev bin/parserv3"
@@ -28,6 +28,7 @@
     "nconf": "^0.8.4",
     "node-fetch": "^2.6.1",
     "nodemon": "^1.19.4",
+    "tsconfig-paths": "^3.12.0",
     "tweetnacl": "^0.14.3"
   },
   "devDependencies": {

@@ -15,15 +15,16 @@
     "skipLibCheck": true,
     "target": "es2015",
     "paths": {
-      "@shared/*": ["../../../shared/src/*"]
+      "@shared/*": ["../../../packages/shared/src/*"]
     }
   },
   "references": [
     {
-      "path": "../../../shared"
+      "path": "../../../packages/shared"
     }
   ],
   "ts-node": {
+    "require": ["tsconfig-paths/register"],
     "compilerOptions": {
       "module": "CommonJS"
     }

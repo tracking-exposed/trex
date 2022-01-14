@@ -45,7 +45,7 @@ async function post(req) {
     return { json: { error: true, message: "Invalid directive type"}};
   }
 
-  /* warning, this is different from YOUTUBE, it uses a list of 
+  /* warning, this is different from YOUTUBE, it uses a list of
    * queries instead of a CSV format parsed. */
 
   const data = req.body; // parsedCSV was the name from guardoni fmt

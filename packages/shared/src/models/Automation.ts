@@ -1,0 +1,39 @@
+import * as t from 'io-ts';
+
+export const VisitStep = t.type(
+  {
+    type: t.literal('visit'),
+    url: t.string,
+  },
+  'VisitStep'
+);
+export type VisitStep = t.TypeOf<typeof VisitStep>;
+
+export const WaitStep = t.type(
+  {
+    type: t.literal('wait'),
+    duration: t.number,
+  },
+  'WaitStep'
+);
+export type WaitStep = t.TypeOf<typeof WaitStep>;
+
+export const AutomationStep = t.union([VisitStep, WaitStep], 'AutomationStep');
+export type AutomationStep = t.TypeOf<typeof AutomationStep>;
+
+export const AutomationScript = t.array(AutomationStep, 'AutomationScript');
+export type AutomationScript = t.TypeOf<typeof AutomationScript>;
+
+export const AutomationScenario = t.type(
+  {
+    type: t.string,
+    label: t.union([t.string, t.undefined]),
+    description: t.union([t.string, t.undefined]),
+    script: AutomationScript,
+  },
+  'AutomationScenario'
+);
+
+export type AutomationScenario = t.TypeOf<typeof AutomationScenario>;
+
+export default AutomationScript;

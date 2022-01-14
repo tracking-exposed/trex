@@ -146,5 +146,7 @@ const DBClient = {
   aggregate,
 };
 
-type DBClient = typeof DBClient;
+type DBClient = typeof DBClient & {
+  client: MongoClient;
+};
 export default DBClient;
