@@ -51,6 +51,10 @@ describe('Guardoni', () => {
   });
 
   beforeAll(() => {
+    fs.mkdirSync(path.resolve(process.cwd(), 'experiments'), {
+      recursive: true,
+    });
+
     writeCSVFile(
       path.resolve(process.cwd(), 'experiments/experiment-comparison.csv'),
       tests.fc.sample(ComparisonDirectiveRowArb, 10)
