@@ -11,7 +11,8 @@ import {
   SummaryMetadata,
 } from '@shared/models/contributor/ContributorPersonalSummary';
 import { TikTokSearchMetadata } from '@shared/models/http/tiktok/TikTokSearch';
-import { GuardoniExperiment, Metadata } from '@shared/models/Metadata';
+import { Metadata } from '@shared/models/Metadata';
+import { GuardoniExperiment } from '@shared/models/Experiment';
 import * as React from 'react';
 import CSVDownloadButton from '../components/buttons/CSVDownloadButton';
 import DeleteButton from '../components/buttons/DeleteButton';

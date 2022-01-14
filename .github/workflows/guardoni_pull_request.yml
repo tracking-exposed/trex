@@ -46,5 +46,8 @@ jobs:
       - name: Build
         run: yarn guardoni build
 
+      - name: Test
+        run: yarn guardoni test --ci
+
       - name: Package
         run: yarn guardoni pkg
