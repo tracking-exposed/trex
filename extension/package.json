@@ -71,7 +71,7 @@
     "immutability-helper": "^2.9.1",
     "jquery": "^3.6.0",
     "lodash": "^4.17.21",
-    "marked": "^0.8.2",
+    "marked": "^4.0.10",
     "react": "^16.14.0",
     "react-dom": "^16.14.0",
     "tweetnacl": "^0.14.3",
