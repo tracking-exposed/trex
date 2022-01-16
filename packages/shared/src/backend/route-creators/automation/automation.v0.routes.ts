@@ -18,12 +18,10 @@ const register: RouteCreator = (router, ctx) => {
           .collection('scenari')
           .insertOne(doc);
       }, toBackendError),
-      TE.map((x) => ({
-        body: {
-          ok: true,
-        },
+      TE.map(() => ({
         statusCode: 201,
-      }))
+        body: {}
+      })),
     )
   );
 };

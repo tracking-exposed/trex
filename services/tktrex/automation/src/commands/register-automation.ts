@@ -69,7 +69,7 @@ export const registerAutomation =
         description,
         label,
         script: steps,
-        createdAt: new Date(),
+        // createdAt: new Date(),
       };
 
       const { API } = GetAPI({
@@ -84,11 +84,10 @@ export const registerAutomation =
         },
         endpoint,
         // eslint-disable-next-line array-callback-return
-        TE.map(({ ok }) => {
+        TE.map(() => {
           config.log.info('Automation registered');
-          config.log.info(ok ? 'Success' : 'Failure');
         }),
-        TE.mapLeft(error => {
+        TE.mapLeft((error) => {
           config.log.error('Automation registration failed');
           config.log.error('%o', error);
         }),

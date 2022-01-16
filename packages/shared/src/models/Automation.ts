@@ -1,5 +1,7 @@
 import * as t from 'io-ts';
-import { date } from 'io-ts-types';
+
+// TODO: can't get date to encode / decode properly...
+// import { date } from 'io-ts-types';
 
 export const VisitStep = t.type(
   {
@@ -46,7 +48,7 @@ export const AutomationScenario = t.type(
     description: t.union([t.string, t.undefined]),
     label: t.union([t.string, t.undefined]),
     script: AutomationScript,
-    createdAt: date,
+    // FIXME: createdAt: date,
   },
   'AutomationScenario'
 );
