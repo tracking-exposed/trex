@@ -5,17 +5,17 @@ import { toBackendError } from '@shared/backend/errors/BackendError';
 import { RouteCreator } from '@shared/backend/types';
 import { AddEndpoint } from '@shared/backend/utils/endpoint';
 
-import Endpoints from '@shared/endpoints/automation/v0';
+import AutomationEndpoints from '@shared/endpoints/automation';
 
 const register: RouteCreator = (router, ctx) => {
-  AddEndpoint(router)(Endpoints.CreateScenario, (req) =>
+  AddEndpoint(router)(AutomationEndpoints.v0.CreateScenario, (req) =>
     pipe(
       TE.tryCatch(() => {
         const doc = req.body;
 
         return ctx.db.client
           .db('automation')
-          .collection('scripts')
+          .collection('scenari')
           .insertOne(doc);
       }, toBackendError),
       TE.map((x) => ({

@@ -210,7 +210,13 @@ export interface APIClient {
 export const GetAPI = (
   opts: GetAPIOptions
 ): {
-  API: APIClient;
+  API: {
+    v0: API<typeof Endpoints.v0>;
+    v1: API<typeof Endpoints.v1>;
+    v2: API<typeof Endpoints.v2>;
+    v3: API<typeof Endpoints.v3>;
+    automation: API<typeof Endpoints.automation>;
+  };
   HTTPClient: HTTPClient;
 } => {
   const HTTPClient = MakeHTTPClient(
@@ -233,14 +239,18 @@ export const GetAPI = (
 
   const toAPI = makeAPI(HTTPClient);
 
+  const v0 = toAPI(Endpoints.v0);
   const v1 = toAPI(Endpoints.v1);
   const v2 = toAPI(Endpoints.v2);
   const v3 = toAPI(Endpoints.v3);
+  const automation = toAPI(Endpoints.automation);
 
   const API = {
+    v0,
     v1,
     v2,
     v3,
+    automation,
   };
 
   return { API, HTTPClient };

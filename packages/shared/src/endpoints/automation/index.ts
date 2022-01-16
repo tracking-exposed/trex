@@ -12,7 +12,7 @@ const RequestResult = t.type(
 
 const CreateScenario = Endpoint({
   Method: 'POST',
-  getPath: () => `v0/automation`,
+  getPath: () => `automation/v0`,
   Input: {
     Body: AutomationScenario,
   },
@@ -20,5 +20,7 @@ const CreateScenario = Endpoint({
 });
 
 export default {
-  CreateScenario,
+  v0: {
+    CreateScenario,
+  }
 };

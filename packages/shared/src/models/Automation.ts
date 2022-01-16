@@ -19,7 +19,22 @@ export const WaitStep = t.type(
 );
 export type WaitStep = t.TypeOf<typeof WaitStep>;
 
-export const AutomationStep = t.union([VisitStep, WaitStep], 'AutomationStep');
+export const SearchStep = t.type({
+  type: t.literal('search'),
+  query: t.string,
+  platform: t.union([
+    t.literal('tiktok'),
+    t.literal('youtube'),
+  ], 'platform'),
+  platformURL: t.string,
+}, 'SearchStep');
+export type SearchStep = t.TypeOf<typeof SearchStep>;
+
+export const AutomationStep = t.union([
+  VisitStep,
+  WaitStep,
+  SearchStep,
+], 'AutomationStep');
 export type AutomationStep = t.TypeOf<typeof AutomationStep>;
 
 export const AutomationScript = t.array(AutomationStep, 'AutomationScript');
