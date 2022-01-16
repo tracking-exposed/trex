@@ -7,27 +7,27 @@ import { failure } from 'io-ts/lib/PathReporter';
 import rawConfig from './loadEnv';
 import Config from './models/Config';
 
-import {
-  GetLogger,
-} from '@shared/logger';
+import { GetLogger } from '@shared/logger';
 
 import main from './main';
 
 const log = GetLogger('tt-automation');
 
-log.debug(
-  'loaded config\n%O',
-  rawConfig,
-);
+log.debug('loaded config\n%O', rawConfig);
 
 pipe(
   rawConfig,
   Config.decode,
   mapLeft((errors) => {
-    log.error(
-      'configuration errors\n%O',
-      failure(errors),
-    );
+    log.error('configuration errors\n%O', failure(errors));
   }),
-  map(main),
+  map((config) =>
+    main({
+      ...config,
+      log,
+    }).catch((err) => {
+      log.error('an error occurred\n%O', err);
+      process.exit(1);
+    }),
+  ),
 );
