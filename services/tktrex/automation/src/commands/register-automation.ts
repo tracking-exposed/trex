@@ -3,12 +3,12 @@
 export const registerAutomation = async({
   type,
   file,
-  comment,
+  description,
   label,
 }: {
   type: string;
   file: string;
-  comment?: string;
+  description?: string;
   label?: string;
 }): Promise<void> => {
   console.log(`Registering automation for "${type}"...`);

@@ -3,11 +3,15 @@
   "version": "0.2.5",
   "packageManager": "yarn@3.1.1",
   "scripts": {
-    "build": "tsc --build",
-    "automate": "ts-node ./src/index.ts"
+    "build": "webpack",
+    "clean": "rm -Rf dist",
+    "dev": "ts-node ./src/index.ts",
+    "automate": "node ./dist/index.js"
   },
+  "main": "./dist/index.js",
   "devDependencies": {
     "@types/node": "^17.0.8",
+    "@types/webpack": "^5.28.0",
     "@types/yargs": "^17.0.8",
     "@typescript-eslint/eslint-plugin": "^5.7.0",
     "@typescript-eslint/parser": "^5.7.0",
@@ -17,8 +21,12 @@
     "eslint-plugin-import": "^2.25.3",
     "eslint-plugin-node": "^11.1.0",
     "eslint-plugin-promise": "^5.2.0",
+    "ts-loader": "^9.2.6",
     "ts-node": "^10.4.0",
-    "typescript": "^4.5.4"
+    "tsconfig-paths": "^3.12.0",
+    "typescript": "^4.5.4",
+    "webpack": "^5.66.0",
+    "webpack-cli": "^4.9.1"
   },
   "dependencies": {
     "@types/puppeteer": "^5.4.4",

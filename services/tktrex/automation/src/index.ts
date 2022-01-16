@@ -15,8 +15,8 @@ const menu = yargs(hideBin(process.argv))
           desc: 'File containing one automation step per line',
           type: 'string',
         })
-        .option('comment', {
-          alias: 'c',
+        .option('description', {
+          alias: 'd',
           desc: 'Save a comment together with this automation',
           type: 'string',
         })
