@@ -1,4 +1,5 @@
 import * as t from 'io-ts';
+import { date } from 'io-ts-types';
 
 export const VisitStep = t.type(
   {
@@ -27,9 +28,10 @@ export type AutomationScript = t.TypeOf<typeof AutomationScript>;
 export const AutomationScenario = t.type(
   {
     type: t.string,
-    label: t.union([t.string, t.undefined]),
     description: t.union([t.string, t.undefined]),
+    label: t.union([t.string, t.undefined]),
     script: AutomationScript,
+    createdAt: date,
   },
   'AutomationScenario'
 );

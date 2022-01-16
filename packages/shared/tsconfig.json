@@ -10,7 +10,10 @@
     "allowJs": true,
     "tsBuildInfoFile": "./build/.tsbuildinfo",
     "esModuleInterop": true,
-    "jsx": "react"
+    "jsx": "react",
+    "paths": {
+      "@shared/*": ["./src/*"]
+    }
   },
   "include": ["./src"]
 }

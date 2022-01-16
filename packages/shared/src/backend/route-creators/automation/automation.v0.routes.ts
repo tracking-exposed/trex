@@ -1,11 +1,11 @@
 import { pipe } from 'fp-ts/lib/function';
 import * as TE from 'fp-ts/lib/TaskEither';
 
-import { toBackendError } from '../../errors/BackendError';
-import { RouteCreator } from '../../types';
-import { AddEndpoint } from '../../utils/endpoint';
+import { toBackendError } from '@shared/backend/errors/BackendError';
+import { RouteCreator } from '@shared/backend/types';
+import { AddEndpoint } from '@shared/backend/utils/endpoint';
 
-import Endpoints from '../../../endpoints/automation/v0';
+import Endpoints from '@shared/endpoints/automation/v0';
 
 const register: RouteCreator = (router, ctx) => {
   AddEndpoint(router)(Endpoints.CreateScenario, (req) =>
