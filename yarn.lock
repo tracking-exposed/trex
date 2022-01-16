@@ -1979,6 +1979,38 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@trex/tt-automation@workspace:services/tktrex/automation":
+  version: 0.0.0-use.local
+  resolution: "@trex/tt-automation@workspace:services/tktrex/automation"
+  dependencies:
+    "@types/dotenv": ^8.2.0
+    "@types/node": ^17.0.8
+    "@types/puppeteer": ^5.4.4
+    "@types/webpack": ^5.28.0
+    "@types/yargs": ^17.0.8
+    "@typescript-eslint/eslint-plugin": ^5.7.0
+    "@typescript-eslint/parser": ^5.7.0
+    dotenv: ^12.0.4
+    eslint: ^8.4.1
+    eslint-config-prettier: ^8.3.0
+    eslint-config-standard-with-typescript: ^21.0.1
+    eslint-plugin-import: ^2.25.3
+    eslint-plugin-node: ^11.1.0
+    eslint-plugin-promise: ^5.2.0
+    fp-ts: ^2.11.7
+    io-ts: ^2.2.16
+    puppeteer: ^13.0.1
+    ts-loader: ^9.2.6
+    ts-node: ^10.4.0
+    tsconfig-paths: ^3.12.0
+    tsconfig-paths-webpack-plugin: ^3.5.2
+    typescript: ^4.5.4
+    webpack: ^5.66.0
+    webpack-cli: ^4.9.1
+    yargs: ^17.3.1
+  languageName: unknown
+  linkType: soft
+
 "@tsconfig/node10@npm:^1.0.7":
   version: 1.0.8
   resolution: "@tsconfig/node10@npm:1.0.8"
@@ -2487,6 +2519,15 @@ __metadata:
     tapable: ^2.2.0
     webpack: ^5
   checksum: db5401515df936615447364da0ced0ffcc458f83ac1a4f5c52d9285b88471c5fd9272d9bef56a2514a9b47cef482636f8032c346d1a2605b77b3a55741a7be0b
+  languageName: node
+  linkType: hard
+
+"@types/dotenv@npm:^8.2.0":
+  version: 8.2.0
+  resolution: "@types/dotenv@npm:8.2.0"
+  dependencies:
+    dotenv: "*"
+  checksum: a1f524da7dc18b09bdb6c2613b9abbbe8ca575621cce4625efc7f98daf2ba07c7dbab622c9bb394507a12c5c515f9cbbbba4aeec17b801c88faeb8e8e656d460
   languageName: node
   linkType: hard
 
@@ -8312,6 +8353,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"dotenv@npm:*, dotenv@npm:^12.0.4":
+  version: 12.0.4
+  resolution: "dotenv@npm:12.0.4"
+  checksum: d79a69fae72b5c5785906600ce42388b48bf7ab20bbac8346bac327cc87a68617a09b1b3cd39965210f011ab07ea4641d5952d46f67f4e40a66b9ad76cf456c0
+  languageName: node
+  linkType: hard
+
 "dotenv@npm:^10.0.0":
   version: 10.0.0
   resolution: "dotenv@npm:10.0.0"
@@ -10217,7 +10265,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"fp-ts@npm:^2.0.0, fp-ts@npm:^2.11.5, fp-ts@npm:^2.11.6, fp-ts@npm:^2.6.6":
+"fp-ts@npm:^2.0.0, fp-ts@npm:^2.11.5, fp-ts@npm:^2.11.6, fp-ts@npm:^2.11.7, fp-ts@npm:^2.6.6":
   version: 2.11.7
   resolution: "fp-ts@npm:2.11.7"
   checksum: 8d841e19cc4f9c799bb633b137af322e90f11d0176583ffa7c351f33be01b683bfa2f044f7d07893b2f9c6fe7baed8e0bce5c5346f10bae0237a28252d71f357
@@ -20659,33 +20707,6 @@ __metadata:
   checksum: da62c4acac565902f0624b123eed6dd3509bc9a8d30c06e017104bedcf5d35810da8ff72864400ad19c5c7806fc0a8323c68baf3e326af7cb7d969f846100d71
   languageName: node
   linkType: hard
-
-"tktrex-automation@workspace:services/tktrex/automation":
-  version: 0.0.0-use.local
-  resolution: "tktrex-automation@workspace:services/tktrex/automation"
-  dependencies:
-    "@types/node": ^17.0.8
-    "@types/puppeteer": ^5.4.4
-    "@types/webpack": ^5.28.0
-    "@types/yargs": ^17.0.8
-    "@typescript-eslint/eslint-plugin": ^5.7.0
-    "@typescript-eslint/parser": ^5.7.0
-    eslint: ^8.4.1
-    eslint-config-prettier: ^8.3.0
-    eslint-config-standard-with-typescript: ^21.0.1
-    eslint-plugin-import: ^2.25.3
-    eslint-plugin-node: ^11.1.0
-    eslint-plugin-promise: ^5.2.0
-    puppeteer: ^13.0.1
-    ts-loader: ^9.2.6
-    ts-node: ^10.4.0
-    tsconfig-paths: ^3.12.0
-    typescript: ^4.5.4
-    webpack: ^5.66.0
-    webpack-cli: ^4.9.1
-    yargs: ^17.3.1
-  languageName: unknown
-  linkType: soft
 
 "tktrex-backend@workspace:services/tktrex/backend":
   version: 0.0.0-use.local

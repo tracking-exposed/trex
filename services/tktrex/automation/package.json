@@ -1,12 +1,14 @@
 {
-  "name": "tktrex-automation",
+  "name": "@trex/tt-automation",
   "version": "0.2.5",
   "packageManager": "yarn@3.1.1",
   "scripts": {
-    "build": "webpack",
+    "build": "NODE_ENV=production webpack",
     "clean": "rm -Rf dist",
-    "dev": "ts-node ./src/index.ts",
-    "automate": "node ./dist/index.js"
+    "automate:dev": "NODE_ENV=development ts-node ./src/index.ts",
+    "automate:prod": "NODE_ENV=production ts-node ./src/index.ts",
+    "automate": "node ./dist/index.js",
+    "tmp": "yarn automate:dev register ~/work/French\\ Elections/TTNeutralSearchFM.csv -t tiktok-fr-elections"
   },
   "main": "./dist/index.js",
   "devDependencies": {
@@ -24,12 +26,17 @@
     "ts-loader": "^9.2.6",
     "ts-node": "^10.4.0",
     "tsconfig-paths": "^3.12.0",
+    "tsconfig-paths-webpack-plugin": "^3.5.2",
     "typescript": "^4.5.4",
     "webpack": "^5.66.0",
     "webpack-cli": "^4.9.1"
   },
   "dependencies": {
+    "@types/dotenv": "^8.2.0",
     "@types/puppeteer": "^5.4.4",
+    "dotenv": "^12.0.4",
+    "fp-ts": "^2.11.7",
+    "io-ts": "^2.2.16",
     "puppeteer": "^13.0.1",
     "yargs": "^17.3.1"
   }

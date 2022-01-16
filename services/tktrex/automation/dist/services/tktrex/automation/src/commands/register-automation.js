@@ -8,7 +8,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-export const registerAutomation = ({ type, file, comment, label, }) => __awaiter(void 0, void 0, void 0, function* () {
+export const registerAutomation = ({ type, file, description, label, }) => __awaiter(void 0, void 0, void 0, function* () {
     console.log(`Registering automation for "${type}"...`);
 });
 export default registerAutomation;

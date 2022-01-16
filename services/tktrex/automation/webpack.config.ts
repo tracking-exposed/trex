@@ -1,4 +1,5 @@
 import path from 'path';
+import { TsconfigPathsPlugin } from 'tsconfig-paths-webpack-plugin';
 
 const mode = process.env.NODE_ENV === 'production'
   ? 'production' : 'development';
@@ -21,6 +22,9 @@ export default {
   },
   resolve: {
     extensions: ['.ts', '.js'],
+    plugins: [
+      new TsconfigPathsPlugin({}),
+    ],
   },
   target: 'node',
 };

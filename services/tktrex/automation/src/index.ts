@@ -1,38 +1,33 @@
-import yargs from 'yargs';
-import { hideBin } from 'yargs/helpers';
+import { pipe } from 'fp-ts/lib/function';
+import { map, mapLeft } from 'fp-ts/lib/Either';
+import { failure } from 'io-ts/lib/PathReporter';
 
-import registerAutomation from './commands/register-automation';
+// this needs to go before the import of
+// GetLogger to set the DEBUG environment variable
+import rawConfig from './loadEnv';
+import Config from './models/Config';
 
-const menu = yargs(hideBin(process.argv))
-  .scriptName('tktrex-automation')
-  .command(
-    'register <file>',
-    'Register an automation file',
-    (y) =>
-      y
-        .positional('file', {
-          demandOption: true,
-          desc: 'File containing one automation step per line',
-          type: 'string',
-        })
-        .option('description', {
-          alias: 'd',
-          desc: 'Save a comment together with this automation',
-          type: 'string',
-        })
-        .option('label', {
-          alias: 'l',
-          desc: 'Save a label together with this automation',
-          type: 'string',
-        })
-        .option('type', {
-          alias: 't',
-          desc: 'Automation type',
-          type: 'string',
-          demandOption: true,
-          choices: ['tiktok-fr-elections'],
-        }),
-    async(argv) => registerAutomation(argv),
-  );
+import {
+  GetLogger,
+} from '@shared/logger';
 
-void menu.strictCommands().demandCommand(1, 'Please provide a command').parse();
+import main from './main';
+
+const log = GetLogger('tt-automation');
+
+log.debug(
+  'loaded config\n%O',
+  rawConfig,
+);
+
+pipe(
+  rawConfig,
+  Config.decode,
+  mapLeft((errors) => {
+    log.error(
+      'configuration errors\n%O',
+      failure(errors),
+    );
+  }),
+  map(main),
+);
