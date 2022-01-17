@@ -1,7 +1,7 @@
 {
     "mongoHost": "localhost",
     "mongoPort": "27017",
-    "mongoDb": "potrex",
+    "mongoDb": "tktrex",
 
     "stats": [ {
         "name": "supporters",
@@ -24,8 +24,8 @@
             }
         ]
     }, {
-        "name": "contributions",
-        "column": "metadata2",
+        "name": "feeds",
+        "column": "metadata",
         "timevar": "savingTime",
         "variables": [
             {
@@ -33,38 +33,34 @@
                 "selector": { }
             },
             {
-                "name": "videos",
-                "selector": { "type": "video" }
+                "name": "foryou",
+                "selector": { "type": "foryou" }
             },
             {
-                "name": "home",
-                "selector": { "type": "home" }
+                "name": "following",
+                "selector": { "type": "following" }
+            },
+            {
+                "name": "creator",
+                "selector": { "type": "creator" }
+            },
+            {
+                "name": "leftover",
+                "selector": { "type" : { "$nin": ["creator", "following", "foryou"] } }
             }
         ]
     }, {
-        "name": "sizes",
-        "column": "htmls",
+        "name": "search",
+        "column": "metadata",
         "timevar": "savingTime",
         "variables": [
             {
-                "name": "total",
-                "selector": { }
+                "name": "search",
+                "selector": { "type": "search" }
             },
             {
-                "name": "less-500k",
-                "selector": { "size": { "$lt": 500000 } }
-            },
-            {
-                "name": "500k-1m",
-                "selector": { "size": { "$gte": 500000, "$lte": 1000000 } }
-            },
-            {
-                "name": "1m-1500k",
-                "selector": { "size": { "$gt": 1000000, "$lt": 1500000 } }
-            },
-            {
-                "name": "more-1500k",
-                "selector": { "size": { "$gt": 1500000 } }
+                "name": "rejected",
+                "selector": { "message": { "$exists": true } }
             }
         ]
     }, {
@@ -81,84 +77,8 @@
                 "selector": { "processed": false }
             },
             {
-                "name": "unprocessed",
-                "selector": { "processed": { "$exists": false } }
-            },
-            {
-                "name": "hasMetadata",
-                "selector": { "metadataId": { "$exists": true } }
-            },
-            {
                 "name": "total",
                 "selector": { }
-            }
-        ]
-    }, {
-        "name": "video-metadata",
-        "column": "metadata2",
-        "timevar": "savingTime",
-        "variables": [
-            {
-                "name": "hasTitle",
-                "selector": { "title": { "$exists": true }}
-            },
-            {
-                "name": "hasAuthor",
-                "selector": { "producer.name": { "$exists": true }}
-            },
-            {
-                "name": "hasRelated",
-                "selector": { "related.7": { "$exists": true }}
-            },
-            {
-                "name": "hasCategories",
-                "selector": { "categories.0": { "$exists": true }}
-            },
-            {
-                "name": "total",
-                "selector": { "type": "video" }
-            }
-        ]
-    }, {
-        "name": "home-metadata",
-        "column": "metadata2",
-        "timevar": "savingTime",
-        "variables": [
-            {
-                "name": "section-1",
-                "selector": { "sections.0": { "$exists": true }}
-            },
-            {
-                "name": "section-2",
-                "selector": { "sections.1": { "$exists": true }}
-            },
-            {
-                "name": "section-3",
-                "selector": { "sections.2": { "$exists": true }}
-            },
-            {
-                "name": "section-4",
-                "selector": { "sections.3": { "$exists": true }}
-            },
-            {
-                "name": "section-5",
-                "selector": { "sections.4": { "$exists": true }}
-            },
-            {
-                "name": "section-6",
-                "selector": { "sections.5": { "$exists": true }}
-            },
-            {
-                "name": "section-7",
-                "selector": { "sections.6": { "$exists": true }}
-            },
-            {
-                "name": "section-8",
-                "selector": { "sections.7": { "$exists": true }}
-            },
-            {
-                "name": "total",
-                "selector": { "type": "home" }
             }
         ]
     }]
