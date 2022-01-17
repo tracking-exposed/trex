@@ -523,14 +523,17 @@ const saveExperiment =
     // profinfo.expinfo = experimentInfo;
 
     return pipe(
-      fsTE.lift(fsTE.statOrFail(experimentJSONFile, {})),
-      TE.chain(() =>
-        fsTE.writeFile(
+      fsTE.lift(fsTE.maybeStat(experimentJSONFile)),
+      TE.chain((stat) => {
+        if (stat) {
+          return TE.right(undefined);
+        }
+        return fsTE.writeFile(
           experimentJSONFile,
           JSON.stringify(experimentInfo),
           'utf-8'
-        )
-      ),
+        );
+      }),
       fsTE.lift,
       TE.map(() => experimentInfo)
     );

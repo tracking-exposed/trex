@@ -41,6 +41,7 @@ const writeCSVFile = (p: fs.PathLike, content: any[]): void => {
 };
 const basePath = path.resolve(__dirname, '../../../');
 const profileName = 'test-profile';
+const extensionDir = path.resolve(__dirname, '../../../build/extension');
 
 describe('Guardoni', () => {
   let experimentId: string;
@@ -49,7 +50,7 @@ describe('Guardoni', () => {
     verbose: false,
     basePath,
     profile: profileName,
-    extensionDir: path.resolve(__dirname, '../../../build/extension'),
+    extensionDir,
     backend: 'http://localhost:9009/api',
   });
 
@@ -381,6 +382,8 @@ describe('Guardoni', () => {
       const result = await GetGuardoni({
         headless: false,
         verbose: false,
+        basePath,
+        extensionDir,
         proxy: 'fake://10.0.0.0',
       }).runExperiment('experiment-id')();
 
@@ -404,11 +407,7 @@ describe('Guardoni', () => {
         },
       });
 
-      const result = await GetGuardoni({
-        headless: false,
-        verbose: false,
-        proxy: 'socks5://10.0.0.0',
-      }).runExperiment('experiment-id')();
+      const result = await guardoni.runExperiment('experiment-id')();
 
       expect(result).toMatchObject({
         right: {
@@ -430,10 +429,7 @@ describe('Guardoni', () => {
         },
       });
 
-      const result = await GetGuardoni({
-        headless: false,
-        verbose: false,
-      }).runExperiment('experiment-id')();
+      const result = await guardoni.runExperiment('experiment-id')();
 
       expect(result).toMatchObject({
         right: {
