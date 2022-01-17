@@ -1,6 +1,6 @@
 {
   "name": "guardoni",
-  "version": "1.9.0",
+  "version": "1.9.2",
   "description": "Guardoni is a tool to automate access and coordinate personalization algorithm analysis",
   "scripts": {
     "clean": "rm -rf build/**",
@@ -29,7 +29,7 @@
     "analysis"
   ],
   "author": {
-    "name": "Claudio Agosti and the TRex team",
+    "name": "The Tracking Exposed team https://tracking.exposed",
     "email": "team@tracking.exposed"
   },
   "license": "AGPL-3.0-or-later",
