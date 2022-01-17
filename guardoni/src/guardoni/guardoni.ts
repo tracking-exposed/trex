@@ -22,6 +22,7 @@ import {
 } from '@shared/models/Directive';
 import { APIClient, GetAPI } from '@shared/providers/api.provider';
 import { execSync } from 'child_process';
+import debug from 'debug';
 import { sequenceS } from 'fp-ts/lib/Apply';
 import * as E from 'fp-ts/lib/Either';
 import { pipe } from 'fp-ts/lib/function';
@@ -223,7 +224,7 @@ const operateTab =
 
       const loadFor = (directive as any).loadFor ?? ctx.config.loadFor;
 
-      guardoniLogger.debug(
+      guardoniLogger.info(
         '— Loading %s (for %d ms) %O',
         directive.url,
         loadFor,
@@ -247,7 +248,7 @@ const operateTab =
         );
       }
 
-      guardoniLogger.debug(
+      guardoniLogger.info(
         'Directive to URL %s, Loading delay %d (--load optional)',
         directive.url,
         loadFor
@@ -264,7 +265,7 @@ const operateTab =
           (error as any).stack
         );
       }
-      guardoniLogger.debug('— Completed %O', directive);
+      guardoniLogger.info('— Completed %O \n', directive);
     }, toAppError);
   };
 
@@ -401,11 +402,6 @@ const pullDirectives =
         },
       }),
       TE.map((data) => {
-        guardoniLogger.debug(
-          'Validate first entry as chiaroscuro directive %O',
-          PathReporter.report(ChiaroScuroDirective.decode(data[0]))
-        );
-
         const directiveType = ChiaroScuroDirective.is(data[0])
           ? ChiaroScuroDirectiveType.value
           : ComparisonDirectiveType.value;
@@ -886,6 +882,10 @@ const loadContext = (
 export type GetGuardoni = (config: GuardoniConfig) => Guardoni;
 
 export const GetGuardoni: GetGuardoni = (config) => {
+  debug.enable('guardoni::info,guardoni::error');
+  if (config.verbose) {
+    debug.enable('guardoni*');
+  }
   const cli: GuardoniCLI = (command) => {
     const run = pipe(
       loadContext(config),

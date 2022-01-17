@@ -55,9 +55,6 @@ describe('Guardoni', () => {
   });
 
   beforeAll(() => {
-    fs.rmdirSync(path.resolve(basePath, 'profiles', profileName), {
-      recursive: true,
-    });
     fs.mkdirSync(path.resolve(basePath, 'experiments'), {
       recursive: true,
     });
@@ -71,6 +68,12 @@ describe('Guardoni', () => {
       path.resolve(basePath, 'experiments/experiment-chiaroscuro.csv'),
       tests.fc.sample(ChiaroScuroDirectiveRowArb, 10)
     );
+  });
+
+  afterAll(() => {
+    fs.rmdirSync(path.resolve(basePath, 'profiles', profileName), {
+      recursive: true,
+    });
   });
 
   describe('Register an experiment', () => {
@@ -381,7 +384,7 @@ describe('Guardoni', () => {
 
       const result = await GetGuardoni({
         headless: false,
-        verbose: false,
+        verbose: true,
         basePath,
         extensionDir,
         proxy: 'fake://10.0.0.0',
