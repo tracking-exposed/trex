@@ -11,7 +11,8 @@ import {
 } from '@shared/models/contributor/ContributorPersonalSummary';
 import { SearchQuery } from '@shared/models/http/SearchQuery';
 import { TikTokSearchMetadata } from '@shared/models/http/tiktok/TikTokSearch';
-import { GuardoniExperiment, Metadata } from '@shared/models/Metadata';
+import { Metadata } from '@shared/models/Metadata';
+import { GuardoniExperiment } from '@shared/models/Experiment';
 import { GetAPI } from '@shared/providers/api.provider';
 import { available, queryStrict } from 'avenger';
 import { CachedQuery } from 'avenger/lib/Query';

@@ -1,5 +1,12 @@
 import * as t from 'io-ts';
+import { nonEmptyArray } from 'io-ts-types/lib/nonEmptyArray';
 import { Endpoint } from 'ts-endpoint';
+import {
+  CreateDirectiveBody,
+  Directive,
+  DirectiveType,
+  PostDirectiveResponse,
+} from '../../models/Directive';
 import { HandshakeBody } from '../../models/HandshakeBody';
 import {
   GetRecommendationsParams,
@@ -35,8 +42,48 @@ const GetRecommendations = Endpoint({
   Output: t.array(Recommendation),
 });
 
+const PostDirective = Endpoint({
+  Method: 'POST',
+  getPath: ({ directiveType }) => `/v3/directives/${directiveType}`,
+  Input: {
+    Headers: t.type({
+      'Content-Type': t.string,
+    }),
+    Params: t.type({
+      directiveType: DirectiveType,
+    }),
+    Body: CreateDirectiveBody,
+  },
+  Output: PostDirectiveResponse,
+});
+
+const GetDirective = Endpoint({
+  Method: 'GET',
+  getPath: ({ experimentId }) => `/v3/directives/${experimentId}`,
+  Input: {
+    Params: t.type({
+      experimentId: t.string,
+    }),
+  },
+  Output: nonEmptyArray(Directive),
+});
+
+const ConcludeExperiment = Endpoint({
+  Method: 'DELETE',
+  getPath: ({ testTime }) => `/v3/experiment/${testTime}`,
+  Input: {
+    Params: t.type({ testTime: t.string }),
+  },
+  Output: t.type({
+    acknowledged: t.boolean,
+  }),
+});
+
 export const endpoints = {
   Handshake,
   GetRecommendations,
   VideoRecommendations,
+  GetDirective,
+  PostDirective,
+  ConcludeExperiment,
 };
