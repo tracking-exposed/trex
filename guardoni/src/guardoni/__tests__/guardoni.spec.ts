@@ -13,7 +13,7 @@ import axios from 'axios';
 import * as fs from 'fs';
 import * as path from 'path';
 import * as puppeteer from 'puppeteer-core';
-import { GetGuardoni } from '../guardoniV2';
+import { GetGuardoni } from '../guardoni';
 
 const axiosMock = axios as jest.Mocked<typeof axios>;
 axiosMock.create.mockImplementation(() => axiosMock);

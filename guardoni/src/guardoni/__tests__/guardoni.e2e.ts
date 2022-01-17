@@ -1,5 +1,5 @@
 import * as path from 'path';
-import { GetGuardoni } from '../guardoniV2';
+import { GetGuardoni } from '../guardoni';
 
 describe.skip('Guardoni', () => {
   let experimentId: string;

@@ -12,7 +12,7 @@ import puppeteer from 'puppeteer-core';
 import pie from 'puppeteer-in-electron';
 import { v4 as uuid } from 'uuid';
 import { AppEnv } from '../AppEnv';
-import { GetGuardoni } from '../guardoni/guardoniV2';
+import { GetGuardoni } from '../guardoni/guardoni';
 import { GuardoniConfig } from '../guardoni/types';
 
 dotenv.config();
@@ -201,15 +201,19 @@ export const run = async (): Promise<void> => {
 
                           guardoniApp.window.show();
 
-                          return g.runExperimentForPage(page, experiment, (progress) => {
-                            mainWindow.webContents.postMessage(
-                              'guardoniOutput',
-                              {
-                                id: uuid(),
-                                ...progress,
-                              }
-                            );
-                          });
+                          return g.runExperimentForPage(
+                            page,
+                            experiment,
+                            (progress) => {
+                              mainWindow.webContents.postMessage(
+                                'guardoniOutput',
+                                {
+                                  id: uuid(),
+                                  ...progress,
+                                }
+                              );
+                            }
+                          );
                         }),
                         // eslint-disable-next-line array-callback-return
                         TE.map(() => {

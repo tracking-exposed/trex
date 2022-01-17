@@ -31,7 +31,7 @@ config.plugins.push(
           process.env.NODE_ENV === 'development' ? '.env.development' : '.env'
         ),
         to: path.resolve(__dirname, 'build/desktop/.env'),
-        toType: 'file'
+        toType: 'file',
       },
     ],
   })
@@ -70,7 +70,7 @@ const { buildENV: guardoniBuildEnv, ...guardoniConfig } = getConfig({
   hot: false,
   target: 'node',
   entry: {
-    guardoni: path.resolve(__dirname, 'src/guardoni/guardoniV2.ts'),
+    guardoni: path.resolve(__dirname, 'src/guardoni/guardoni.ts'),
   },
 });
 
