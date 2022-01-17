@@ -34,12 +34,12 @@ function repullCache(subject) {
 function stillValid(subject) {
 
     if(!validSubject(subject))
-        throw new Error("Invalid subject" + subject);
+        throw new Error("Invalid subject " + subject);
 
-    const rv = ( cache[subject] &&
+    const rv = (!!( cache[subject] &&
         cache[subject].content &&
         cache[subject].next &&
-        moment().isAfter(cache[subject].next) );
+        moment().isAfter(cache[subject].next) ));
 
     debug("rv %s for subject %s (info %o)", rv, subject,
         _.pick(cache[subject], ['next', 'seconds']) );
