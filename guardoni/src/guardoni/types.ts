@@ -19,16 +19,16 @@ export type GuardoniCommandConfig =
     };
 
 export interface GuardoniConfig {
-  profile?: string;
-  evidenceTag?: string;
   headless: boolean;
   verbose: boolean;
+  profile?: string;
+  evidenceTag?: string;
   advdump?: string;
   proxy?: string;
   backend?: string;
   basePath?: string;
   extensionDir?: string;
-  excludeURLTag?: string[]
+  excludeURLTag?: string[];
   chromePath?: string;
   loadFor?: number;
 }

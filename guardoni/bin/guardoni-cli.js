@@ -80,9 +80,9 @@ yargs(hideBin(process.argv))
     type: 'string',
     desc: 'Socket proxy for puppeteer.',
   })
-  .options('advdump', {
+  .options('adv-screenshot-dir', {
     type: 'string',
-    desc: 'ADV dump directory path',
+    desc: 'ADV screenshot directory path',
   })
   .option('verbose', {
     alias: 'v',
