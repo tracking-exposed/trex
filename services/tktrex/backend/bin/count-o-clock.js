@@ -6,7 +6,6 @@ const nconf= require('nconf');
 
 const aggregated = require('../lib/aggregated');
 const mongo = require('../lib/mongo3');
-const utils = require('../lib/utils');
 
 nconf.argv().env();
 const defaultConf = nconf.get('config') || 'config/settings.json';

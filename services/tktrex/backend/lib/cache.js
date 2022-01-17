@@ -6,10 +6,8 @@ const moment = require('moment');
 const LAST_CACHE = 600;
 /* all the other cache 'names' have 1800 seconds */
 const STATS_CACHE = 1800;
-const allowedNames = ['supporters', 'active', 'related',
-    'processing', 'metadata', 'usage', 'searches',
-    'labels', 'deeper', 'ads', 'ytvids', 'recommendations', 
-    'leaves', 'creators' ];
+const allowedNames = ['supporters', 'active', 'feeds',
+    'processing', 'search' ];
 
 const cache = {
     'last': {
@@ -36,13 +34,17 @@ function repullCache(subject) {
 function stillValid(subject) {
 
     if(!validSubject(subject))
-        throw new Error("Invalid subject" + subject);
+        throw new Error("Invalid subject " + subject);
 
-    return ( cache[subject] &&
+    const rv = (!!( cache[subject] &&
         cache[subject].content &&
         cache[subject].next &&
-        moment().isAfter(cache[subject].next)
-    );
+        moment().isAfter(cache[subject].next) ));
+
+    debug("rv %s for subject %s (info %o)", rv, subject,
+        _.pick(cache[subject], ['next', 'seconds']) );
+
+    return rv;
 }
 
 function setCache(subject, content) {
@@ -55,7 +57,7 @@ function setCache(subject, content) {
 
     cache[subject].content = content;
     cache[subject].computedAt = moment();
-    cache[subject].next = moment().add(cache.seconds, 'seconds');
+    cache[subject].next = moment().add(cache[subject].seconds, 'seconds');
 
     return cache[subject];
 }
