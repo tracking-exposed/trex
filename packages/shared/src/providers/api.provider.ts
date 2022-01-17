@@ -46,7 +46,7 @@ const liftFetch = <B>(
         E.mapLeft((e): APIError => {
           const details = PathReporter.report(E.left(e));
           apiLogger.error('Validation failed %O', details);
-          return new APIError('ValidationError', 'Validation failed.', details);
+          return new APIError('ValidationError', 'Validation failed', details);
         }),
         TE.fromEither
       );
@@ -120,7 +120,7 @@ export const MakeHTTPClient = (client: AxiosInstance): HTTPClient => {
         TE.mapLeft((e): APIError => {
           const details = PathReporter.report(E.left(e));
           apiLogger.error('Validation failed %O', details);
-          return new APIError('ValidationError', 'Validation failed.', details);
+          return new APIError('ValidationError', 'Validation failed', details);
         }),
         TE.chain((input) => {
           const url = e.getPath(input.params);
@@ -201,14 +201,16 @@ interface GetAPIOptions {
   baseURL: string;
 }
 
+export interface APIClient {
+  v1: API<typeof Endpoints.v1>;
+  v2: API<typeof Endpoints.v2>;
+  v3: API<typeof Endpoints.v3>;
+}
+
 export const GetAPI = (
   opts: GetAPIOptions
 ): {
-  API: {
-    v1: API<typeof Endpoints.v1>;
-    v2: API<typeof Endpoints.v2>;
-    v3: API<typeof Endpoints.v3>;
-  };
+  API: APIClient;
   HTTPClient: HTTPClient;
 } => {
   const HTTPClient = MakeHTTPClient(
