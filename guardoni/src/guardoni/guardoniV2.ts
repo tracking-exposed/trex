@@ -21,12 +21,15 @@ import {
   PostDirectiveSuccessResponse,
 } from '@shared/models/Directive';
 import { APIClient, GetAPI } from '@shared/providers/api.provider';
+import { execSync } from 'child_process';
 import { sequenceS } from 'fp-ts/lib/Apply';
 import * as E from 'fp-ts/lib/Either';
 import { pipe } from 'fp-ts/lib/function';
+import * as IOE from 'fp-ts/lib/IOEither';
 import * as Json from 'fp-ts/lib/Json';
 import { NonEmptyArray } from 'fp-ts/lib/NonEmptyArray';
 import * as TE from 'fp-ts/lib/TaskEither';
+import * as fs from 'fs';
 import * as t from 'io-ts';
 import { NonEmptyString } from 'io-ts-types/lib/NonEmptyString';
 import { PathReporter } from 'io-ts/lib/PathReporter';
@@ -50,8 +53,8 @@ import { csvParseTE, getChromePath } from './utils';
 
 // const COMMANDJSONEXAMPLE =
 //   'https://youtube.tracking.exposed/json/automation-example.json';
-// const EXTENSION_WITH_OPT_IN_ALREADY_CHECKED =
-//   'https://github.com/tracking-exposed/yttrex/releases/download/v1.8.992/extension-1.9.0.99.zip';
+const EXTENSION_WITH_OPT_IN_ALREADY_CHECKED =
+  'https://github.com/tracking-exposed/yttrex/releases/download/v1.8.992/extension-1.9.0.99.zip';
 
 const DEFAULT_BASE_PATH = process.cwd();
 const DEFAULT_SERVER = 'https://youtube.tracking.exposed/api';
@@ -116,6 +119,38 @@ interface GuardoniContext {
 }
 
 // old functions
+
+const downloadExtension = (
+  ctx: GuardoniContext
+): IOE.IOEither<AppError, void> => {
+  return IOE.tryCatch(() => {
+    guardoniLogger.debug(`Checking extension manifest.json...`);
+    const manifestPath = path.resolve(
+      path.join(ctx.config.extensionDir, 'manifest.json')
+    );
+
+    const manifest = fs.existsSync(manifestPath);
+
+    if (manifest) {
+      guardoniLogger.debug(`Manifest found, no need to download the extension`);
+      return;
+    }
+
+    guardoniLogger.debug('Ensure %s dir exists', ctx.config.extensionDir);
+    fs.mkdirSync(ctx.config.extensionDir, { recursive: true });
+
+    guardoniLogger.debug(
+      "Executing curl and unzip (if these binary aren't present in your system please mail support at tracking dot exposed because you might have worst problems)"
+    );
+    const zipFileP = path.resolve(
+      path.join(ctx.config.extensionDir, 'tmpzipf.zip')
+    );
+    execSync(
+      'curl -L ' + EXTENSION_WITH_OPT_IN_ALREADY_CHECKED + ' -o ' + zipFileP
+    );
+    execSync(`unzip ${zipFileP} -d ${ctx.config.extensionDir}`);
+  }, toAppError);
+};
 
 const dispatchBrowser = (
   ctx: GuardoniContext
@@ -816,25 +851,22 @@ const loadContext = (
       guardoniLogger.debug('Default context %O', context);
       return context;
     }),
-    TE.chainFirst((context) =>
-      fsTE.lift(fsTE.mkdir(context.profile.udd, { recursive: true }))
+    TE.chainFirst((ctx) => TE.fromIOEither(downloadExtension(ctx))),
+    TE.chainFirst((ctx) =>
+      fsTE.lift(fsTE.mkdir(ctx.profile.udd, { recursive: true }))
     ),
-    TE.chain((context) =>
+    TE.chain((ctx) =>
       pipe(
-        fsTE.lift(fsTE.maybeStat(context.guardoniConfigFile)),
+        fsTE.lift(fsTE.maybeStat(ctx.guardoniConfigFile)),
         TE.chain((stat) => {
-          guardoniLogger.debug(
-            'Stat for %s: %O',
-            context.guardoniConfigFile,
-            stat
-          );
+          guardoniLogger.debug('Stat for %s: %O', ctx.guardoniConfigFile, stat);
           if (stat) {
-            return readProfile(context.guardoniConfigFile);
+            return readProfile(ctx.guardoniConfigFile);
           }
           return pipe(
             fsTE.lift(
               fsTE.writeFile(
-                context.guardoniConfigFile,
+                ctx.guardoniConfigFile,
                 JSON.stringify(defaultProfile, null, 2),
                 'utf-8'
               )
@@ -843,7 +875,7 @@ const loadContext = (
           );
         }),
         TE.map((c) => ({
-          ...context,
+          ...ctx,
           profile: c,
         }))
       )

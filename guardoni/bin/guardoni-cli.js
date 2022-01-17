@@ -7,7 +7,6 @@ const { hideBin } = require('yargs/helpers');
 const { GetGuardoni } = require('../build/guardoni/guardoni.js');
 
 const runGuardoni = ({ _, $0, v, headless, verbose, basePath, ...command }) => {
-  console.log('run guardoni cli', { headless, verbose, basePath, command });
   return GetGuardoni({
     headless,
     verbose,
@@ -72,6 +71,10 @@ yargs(hideBin(process.argv))
   .option('profile', {
     type: 'string',
     desc: 'The current user profile',
+  })
+  .option('backend', {
+    type: 'string',
+    desc: 'The API endpoint for server requests',
   })
   .option('proxy', {
     type: 'string',
