@@ -69,7 +69,7 @@ export const registerAutomation =
         description,
         label,
         script: steps,
-        // createdAt: new Date(),
+        createdAt: new Date().toISOString() as any,
       };
 
       const { API } = GetAPI({
