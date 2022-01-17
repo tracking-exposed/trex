@@ -6,10 +6,8 @@ const moment = require('moment');
 const LAST_CACHE = 600;
 /* all the other cache 'names' have 1800 seconds */
 const STATS_CACHE = 1800;
-const allowedNames = ['supporters', 'active', 'related',
-    'processing', 'metadata', 'usage', 'searches',
-    'labels', 'deeper', 'ads', 'ytvids', 'recommendations', 
-    'leaves', 'creators' ];
+const allowedNames = ['supporters', 'active', 'feeds',
+    'processing', 'search' ];
 
 const cache = {
     'last': {
