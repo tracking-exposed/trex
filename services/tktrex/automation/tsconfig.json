@@ -7,7 +7,7 @@
     "jsx": "react",
     "module": "esnext",
     "moduleResolution": "node",
-    "noEmit": false,
+    "noEmit": true,
     "noImplicitAny": true,
     "outDir": "./dist",
     "resolveJsonModule": true,

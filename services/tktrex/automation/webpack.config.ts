@@ -11,8 +11,13 @@ export default {
     rules: [
       {
         test: /\.ts$/,
-        use: 'ts-loader',
+        loader: 'ts-loader',
         exclude: /node_modules/,
+        options: {
+          compilerOptions: {
+            noEmit: false,
+          },
+        },
       },
     ],
   },
