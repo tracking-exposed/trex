@@ -55,10 +55,6 @@
         "timevar": "savingTime",
         "variables": [
             {
-                "name": "not-atomic",
-                "selector": { "type": { "$nin": ["creator", "following", "foryou"] } }
-            },
-            {
                 "name": "search",
                 "selector": { "type": "search" }
             },
