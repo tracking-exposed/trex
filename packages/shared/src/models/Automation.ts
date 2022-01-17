@@ -1,6 +1,5 @@
 import * as t from 'io-ts';
 
-// TODO: can't get date to encode / decode properly...
 import { DateFromISOString } from 'io-ts-types/lib/DateFromISOString';
 
 export const VisitStep = t.type(

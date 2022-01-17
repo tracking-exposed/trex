@@ -5,7 +5,7 @@ import { AutomationScenario } from '../../models/Automation';
 
 const CreateScenario = Endpoint({
   Method: 'POST',
-  getPath: () => `automation/v0`,
+  getPath: () => 'v0/automation',
   Input: {
     Body: AutomationScenario,
   },
