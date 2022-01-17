@@ -1,11 +1,12 @@
+const tsConfig = require('./tsconfig.json');
+// jest.config.js
 const { pathsToModuleNameMapper } = require('ts-jest');
+const { jsWithTsESM } = require('ts-jest/presets');
 
 const moduleNameMapper = pathsToModuleNameMapper(
+  tsConfig.compilerOptions.paths,
   {
-    '@shared/*': ['./shared/src/*'],
-  },
-  {
-    prefix: '<rootDir>',
+    prefix: '<rootDir>/src',
   }
 );
 
@@ -13,19 +14,28 @@ const moduleNameMapper = pathsToModuleNameMapper(
 module.exports = {
   preset: 'ts-jest',
   testEnvironment: 'node',
-  roots: ['./', './backend', './guardoni', './YCAI'],
-  projects: ['./backend', './guardoni', './YCAI'],
-  modulePathIgnorePatterns: ['__mocks__'],
+  roots: ['./', '../packages/shared'],
+  projects: ['./', '../packages/shared'],
+  moduleNameMapper,
+  modulePathIgnorePatterns: ['profiles', 'build'],
   globals: {
     'ts-jest': {
       // TS reports strange errors with jest,
       // that it doesn't report when running plain tsc...
       diagnostics: false,
       isolatedModules: true,
+      useESM: true,
     },
   },
-  moduleNameMapper,
+  transform: {
+    ...jsWithTsESM.transform,
+    '\\.js$': 'ts-jest',
+  },
   clearMocks: true,
+  testTimeout: 10000,
+  setupFilesAfterEnv: ['./jest.setup.js'],
+  coverageProvider: 'v8',
+  collectCoverageFrom: ['./src/**'],
   coverageThreshold: {
     global: {
       branches: 30,

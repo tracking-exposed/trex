@@ -3128,7 +3128,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/yargs@npm:^17.0.1, @types/yargs@npm:^17.0.8":
+"@types/yargs@npm:^17, @types/yargs@npm:^17.0.1, @types/yargs@npm:^17.0.8":
   version: 17.0.8
   resolution: "@types/yargs@npm:17.0.8"
   dependencies:
@@ -5718,7 +5718,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"chalk@npm:*":
+"chalk@npm:*, chalk@npm:^5.0.0":
   version: 5.0.0
   resolution: "chalk@npm:5.0.0"
   checksum: 6eba7c518b9aa5fe882ae6d14a1ffa58c418d72a3faa7f72af56641f1bbef51b645fca1d6e05d42357b7d3c846cd504c0b7b64d12309cdd07867e3b4411e0d01
@@ -10914,10 +10914,12 @@ __metadata:
     "@types/react": ^17.0.38
     "@types/react-dom": ^17.0.11
     "@types/webpack-node-externals": ^2.5.3
+    "@types/yargs": ^17
     "@typescript-eslint/eslint-plugin": ^5.9.0
     "@typescript-eslint/parser": ^5.9.0
     axios: ^0.24.0
     bufferutil: ^4.0.6
+    chalk: ^5.0.0
     csv-parse: ^4.16.3
     debug: ^4.3.3
     electron: 16.0.6
@@ -10936,6 +10938,8 @@ __metadata:
     eslint-plugin-promise: ^5.2.0
     fp-ts: ^2.11.6
     io-ts: ^2.2.16
+    io-ts-types: ^0.5.16
+    jest: ^27.4.7
     lodash: ^4.17.21
     moment: ^2.29.1
     nconf: ^0.11.3
@@ -10952,6 +10956,7 @@ __metadata:
     react-dom: ^17.0.2
     rpmbuild: ^0.0.23
     style-loader: ^3.3.1
+    ts-jest: ^27.1.2
     ts-loader: ^9.2.6
     typescript: ^4.5.4
     utf-8-validate: ^5.0.7
@@ -10959,6 +10964,7 @@ __metadata:
     webpack-bundle-analyzer: ^4.5.0
     webpack-cli: ^4.9.1
     webpack-node-externals: ^3.0.0
+    yargs: ^17.3.1
   bin:
     guardoni: ./bin/guardoni-cli.js
   languageName: unknown
