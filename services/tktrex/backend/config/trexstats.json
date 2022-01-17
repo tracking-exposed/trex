@@ -56,7 +56,7 @@
         "variables": [
             {
                 "name": "not-atomic",
-                "selector": { "$nin": ["creator", "following", "foryou"] }
+                "selector": { "type": { "$nin": ["creator", "following", "foryou"] } }
             },
             {
                 "name": "search",
