@@ -30,7 +30,7 @@ NODE_ENV=production yarn build
 
 ## Usage
 
-To include `Taboule` in your project you need to include the `taboule.js` file in `build` in your html:
+To include `Taboule` in your project you need to include the `taboule.js` file in `build` in your html, normally it should be copied in `static/js/generated` folder:
 
 ```html
 <html>
@@ -38,7 +38,7 @@ To include `Taboule` in your project you need to include the `taboule.js` file i
     <h2>Taboule</h2>
     <div id="main"></div>
   </body>
-  <script type="text/javascript" src="./taboule.js"></script>
+  <script type="text/javascript" src="/js/generated/taboule.js"></script>
   <script type="text/javascript">
     var baseURL = 'https://youtube.tracking.exposed/api/';
 

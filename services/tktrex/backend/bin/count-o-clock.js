@@ -6,7 +6,6 @@ const nconf= require('nconf');
 
 const aggregated = require('../lib/aggregated');
 const mongo = require('../lib/mongo3');
-const utils = require('../lib/utils');
 
 nconf.argv().env();
 const defaultConf = nconf.get('config') || 'config/settings.json';
@@ -60,10 +59,14 @@ async function computeCount(mongoc, statinfo, filter) {
     return counting;
 };
 
+function parseIntNconf(name, def) {
+    const value = nconf.get(name) ? nconf.get(name) : def;
+    return _.parseInt(value);
+}
 
 async function start() {
-    const hoursago = utils.parseIntNconf('hoursago', 0);
-    const daysago = utils.parseIntNconf('daysago', 0);
+    const hoursago = parseIntNconf('hoursago', 0);
+    const daysago = parseIntNconf('daysago', 0);
     const statshour = moment().subtract(daysago, 'd').subtract(hoursago, 'h').format();
     const tobedone = name ? _.filter(statsMap, { name }) : statsMap;
 
