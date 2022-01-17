@@ -61,6 +61,10 @@
             {
                 "name": "search",
                 "selector": { "type": "search" }
+            },
+            {
+                "name": "rejected",
+                "selector": { "message": { "$exists": true } }
             }
         ]
     }, {

@@ -36,11 +36,15 @@ function stillValid(subject) {
     if(!validSubject(subject))
         throw new Error("Invalid subject" + subject);
 
-    return ( cache[subject] &&
+    const rv = ( cache[subject] &&
         cache[subject].content &&
         cache[subject].next &&
-        moment().isAfter(cache[subject].next)
-    );
+        moment().isAfter(cache[subject].next) );
+
+    debug("rv %s for subject %s (info %o)", rv, subject,
+        _.pick(cache[subject], ['next', 'seconds']) );
+
+    return rv;
 }
 
 function setCache(subject, content) {
@@ -53,7 +57,7 @@ function setCache(subject, content) {
 
     cache[subject].content = content;
     cache[subject].computedAt = moment();
-    cache[subject].next = moment().add(cache.seconds, 'seconds');
+    cache[subject].next = moment().add(cache[subject].seconds, 'seconds');
 
     return cache[subject];
 }
