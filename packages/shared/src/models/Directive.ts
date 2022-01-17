@@ -50,7 +50,7 @@ export const PostDirectiveSuccessResponse = t.strict(
   {
     status: t.union([t.literal('exist'), t.literal('created')]),
     experimentId: t.string,
-    since: DateFromISOString,
+    since: t.union([DateFromISOString, t.undefined]),
   },
   'PostDirectiveSuccessResponse'
 );
@@ -84,7 +84,7 @@ export const ChiaroScuroDirective = t.strict(
 );
 
 export const Directive = t.union(
-  [ComparisonDirective, ChiaroScuroDirective],
+  [ChiaroScuroDirective, ComparisonDirective],
   'Directive'
 );
 

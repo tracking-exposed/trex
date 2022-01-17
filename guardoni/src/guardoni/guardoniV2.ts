@@ -2,12 +2,17 @@
  *
  * Guardoni V2
  *
+ * TODO:
+ * - check the extension exists, otherwise download it
+ * - filter the directive with "exclude url tag"
+ *
+ *
  */
 import { AppError, toAppError } from '@shared/errors/AppError';
 import { toValidationError } from '@shared/errors/ValidationError';
 import {
+  ChiaroScuroDirective,
   ChiaroScuroDirectiveType,
-  ComparisonDirective,
   ComparisonDirectiveType,
   Directive,
   DirectiveKeysMap,
@@ -160,6 +165,9 @@ const dispatchBrowser = (
   }, toAppError);
 };
 
+/**
+ * automate directive execution for browser page
+ */
 const operateTab =
   (ctx: GuardoniContext) =>
   (
@@ -178,9 +186,12 @@ const operateTab =
         );
       }
 
+      const loadFor = (directive as any).loadFor ?? ctx.config.loadFor;
+
       guardoniLogger.debug(
-        '— Loading %s (for %dms) %O',
-        (directive as any).loadFor ?? ctx.config.loadFor,
+        '— Loading %s (for %d ms) %O',
+        directive.url,
+        loadFor,
         directive
       );
       // Remind you can exclude directive with env/--exclude=urltag
@@ -201,7 +212,6 @@ const operateTab =
         );
       }
 
-      const loadFor = (directive as any).loadFor ?? ctx.config.loadFor;
       guardoniLogger.debug(
         'Directive to URL %s, Loading delay %d (--load optional)',
         directive.url,
@@ -247,13 +257,11 @@ export const guardoniExecution =
   (ctx: GuardoniContext) =>
   (
     experiment: string,
+    directiveType: DirectiveType,
     directives: NonEmptyArray<Directive>,
     page: puppeteer.Page
   ): TE.TaskEither<AppError, { start: moment.Moment; end: moment.Moment }> => {
     const result = { start: moment(), end: null };
-    const directiveType = ComparisonDirective.is(directives[0])
-      ? ComparisonDirectiveType.value
-      : ChiaroScuroDirectiveType.value;
 
     return pipe(
       TE.tryCatch(
@@ -295,7 +303,7 @@ const concludeExperiment =
       TE.chain((body) => {
         if (!body.acknowledged) {
           return TE.left(
-            new AppError('APIError', "Can't conclude experiment ", [])
+            new AppError('APIError', "Can't conclude the experiment", [])
           );
         }
         return TE.right(experimentInfo);
@@ -307,6 +315,7 @@ const runBrowser =
   (ctx: GuardoniContext) =>
   (
     experiment: ExperimentInfo,
+    directiveType: DirectiveType,
     directives: NonEmptyArray<Directive>
   ): TE.TaskEither<AppError, ExperimentInfo> => {
     return pipe(
@@ -324,7 +333,12 @@ const runBrowser =
         }, toAppError);
       }),
       TE.chain((page) =>
-        guardoniExecution(ctx)(experiment.experimentId, directives, page)
+        guardoniExecution(ctx)(
+          experiment.experimentId,
+          directiveType,
+          directives,
+          page
+        )
       ),
       TE.map(({ start, end }) => {
         guardoniLogger.debug(
@@ -341,12 +355,29 @@ const pullDirectives =
   (ctx: GuardoniContext) =>
   (
     experimentId: NonEmptyString
-  ): TE.TaskEither<AppError, NonEmptyArray<Directive>> => {
-    return ctx.API.v3.Public.GetDirective({
-      Params: {
-        experimentId,
-      },
-    });
+  ): TE.TaskEither<
+    AppError,
+    { type: DirectiveType; data: NonEmptyArray<Directive> }
+  > => {
+    return pipe(
+      ctx.API.v3.Public.GetDirective({
+        Params: {
+          experimentId,
+        },
+      }),
+      TE.map((data) => {
+        guardoniLogger.debug(
+          'Validate first entry as chiaroscuro directive %O',
+          PathReporter.report(ChiaroScuroDirective.decode(data[0]))
+        );
+
+        const directiveType = ChiaroScuroDirective.is(data[0])
+          ? ChiaroScuroDirectiveType.value
+          : ComparisonDirectiveType.value;
+
+        return { type: directiveType, data };
+      })
+    );
   };
 
 const createExperimentInAPI =
@@ -365,7 +396,9 @@ const createExperimentInAPI =
       }),
       TE.chain((response) => {
         if (PostDirectiveResponse.types[0].is(response)) {
-          return TE.left(toAppError({ message: response.error.message }));
+          return TE.left(
+            new AppError('PostDirectiveError', response.error.message, [])
+          );
         }
 
         return TE.right(response);
@@ -389,12 +422,12 @@ const registerCSV =
 
     return pipe(
       fsTE.statOrFail(filePath, {}),
-      TE.mapLeft((e) => {
-        return toAppError({
+      TE.mapLeft((e) =>
+        toAppError({
           ...e,
-          message: `Failed to read csv file ${filePath}`,
-        });
-      }),
+          message: `File at path ${filePath} doesn't exist`,
+        })
+      ),
       TE.chain(() => fsTE.readFile(filePath, 'utf-8')),
       TE.mapLeft((e) => {
         return toAppError({
@@ -445,7 +478,10 @@ const registerCSV =
       TE.map((experiment) => {
         guardoniLogger.debug('Experiment received %O', experiment);
         // handle output for existing experiment
-        if (PostDirectiveSuccessResponse.is(experiment)) {
+        if (
+          PostDirectiveSuccessResponse.is(experiment) &&
+          experiment.status === 'exist'
+        ) {
           return {
             type: 'success',
             message: `Experiment already available`,
@@ -495,7 +531,7 @@ const saveExperiment =
           'utf-8'
         )
       ),
-      TE.mapLeft(toAppError),
+      fsTE.lift,
       TE.map(() => experimentInfo)
     );
   };
@@ -571,10 +607,20 @@ const readProfile = (
 ): TE.TaskEither<AppError, GuardoniProfile> => {
   return pipe(
     fsTE.lift(fsTE.readFile(profilePath, 'utf-8')),
-    TE.chainEitherK((data) => Json.parse(data)),
-    TE.mapLeft(toAppError),
-    TE.chain((d) =>
-      pipe(GuardoniProfile.decode(d), E.mapLeft(toAppError), TE.fromEither)
+    TE.chain((data) =>
+      pipe(
+        Json.parse(data),
+        E.mapLeft(
+          () =>
+            new AppError(
+              'ReadProfileError',
+              "Can't decode the content of the profile",
+              []
+            )
+        ),
+        E.chain((d) => pipe(GuardoniProfile.decode(d), E.mapLeft(toAppError))),
+        TE.fromEither
+      )
     )
   );
 };
@@ -653,16 +699,10 @@ const runExperiment =
       TE.chain(({ profile, expId }) =>
         pipe(
           pullDirectives(ctx)(expId),
-          TE.chain((directive) => {
-            // infer directive type from first returned item
-
-            const directiveType = ComparisonDirective.is(directive[0])
-              ? ComparisonDirectiveType.value
-              : ChiaroScuroDirectiveType.value;
-
+          TE.chain(({ type, data }) => {
             return pipe(
-              saveExperiment(ctx)(expId, directiveType, profile),
-              TE.chain((exp) => runBrowser(ctx)(exp, directive))
+              saveExperiment(ctx)(expId, type, profile),
+              TE.chain((exp) => runBrowser(ctx)(exp, type, data))
             );
           })
         )

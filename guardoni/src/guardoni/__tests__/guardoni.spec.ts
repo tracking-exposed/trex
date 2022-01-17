@@ -4,6 +4,7 @@ jest.mock('puppeteer-core');
 import {
   ChiaroScuroDirectiveArb,
   ChiaroScuroDirectiveRowArb,
+  ComparisonDirectiveArb,
   ComparisonDirectiveRowArb,
   PostDirectiveSuccessResponseArb,
 } from '@shared/arbitraries/Directive.arb';
@@ -39,6 +40,7 @@ const writeCSVFile = (p: fs.PathLike, content: any[]): void => {
   fs.writeFileSync(p, commaSeparatedString, 'utf-8');
 };
 const basePath = path.resolve(__dirname, '../../../');
+const profileName = 'test-profile';
 
 describe('Guardoni', () => {
   let experimentId: string;
@@ -46,12 +48,15 @@ describe('Guardoni', () => {
     headless: false,
     verbose: false,
     basePath,
-    profile: 'test-profile',
+    profile: profileName,
     extensionDir: path.resolve(__dirname, '../../../build/extension'),
     backend: 'http://localhost:9009/api',
   });
 
   beforeAll(() => {
+    fs.rmdirSync(path.resolve(basePath, 'profiles', profileName), {
+      recursive: true,
+    });
     fs.mkdirSync(path.resolve(basePath, 'experiments'), {
       recursive: true,
     });
@@ -125,10 +130,9 @@ describe('Guardoni', () => {
       });
     });
 
-    test('success with type comparison and proper csv file', async () => {
-      // return experiment
+    test('fails when server response is an error', async () => {
       axiosMock.request.mockResolvedValueOnce({
-        data: tests.fc.sample(PostDirectiveSuccessResponseArb, 1)[0],
+        data: { error: { message: 'Server Error' } },
       });
 
       const result: any = await guardoni
@@ -136,6 +140,85 @@ describe('Guardoni', () => {
           run: 'register',
           type: 'comparison',
           file: './experiments/experiment-comparison.csv',
+        })
+        .run();
+
+      expect(result).toMatchObject({
+        _tag: 'Left',
+        left: {
+          message: 'Server Error',
+        },
+      });
+    });
+
+    test('succeeds with new experiment with type "comparison" and proper csv file', async () => {
+      // return experiment
+      axiosMock.request.mockResolvedValueOnce({
+        data: {
+          ...tests.fc.sample(PostDirectiveSuccessResponseArb, 1)[0],
+          status: 'created',
+        },
+      });
+
+      const result: any = await guardoni
+        .cli({
+          run: 'register',
+          type: 'comparison',
+          file: './experiments/experiment-comparison.csv',
+        })
+        .run();
+
+      expect(result).toMatchObject({
+        _tag: 'Right',
+        right: {
+          message: 'Experiment created successfully',
+        },
+      });
+
+      experimentId = result.right.values.experimentId;
+    });
+
+    test('success with type comparison and proper csv file', async () => {
+      // return experiment
+      axiosMock.request.mockResolvedValueOnce({
+        data: {
+          ...tests.fc.sample(PostDirectiveSuccessResponseArb, 1)[0],
+          status: 'exist',
+        },
+      });
+
+      const result: any = await guardoni
+        .cli({
+          run: 'register',
+          type: 'comparison',
+          file: './experiments/experiment-comparison.csv',
+        })
+        .run();
+
+      expect(result).toMatchObject({
+        _tag: 'Right',
+        right: {
+          message: 'Experiment already available',
+        },
+      });
+
+      experimentId = result.right.values.experimentId;
+    });
+
+    test('succeeds with type "chiaroscuro" and proper csv file', async () => {
+      // return experiment
+      axiosMock.request.mockResolvedValueOnce({
+        data: {
+          ...tests.fc.sample(PostDirectiveSuccessResponseArb, 1)[0],
+          status: 'exist',
+        },
+      });
+
+      const result: any = await guardoni
+        .cli({
+          run: 'register',
+          type: 'chiaroscuro',
+          file: './experiments/experiment-chiaroscuro.csv',
         })
         .run();
 
@@ -163,10 +246,60 @@ describe('Guardoni', () => {
       });
     });
 
-    test('succeed when experimentId is valid', async () => {
+    test('fails when receive an error during experiment conclusion', async () => {
       // return directive
       axiosMock.request.mockResolvedValueOnce({
         data: tests.fc.sample(ChiaroScuroDirectiveArb, 2),
+      });
+
+      axiosMock.request.mockResolvedValueOnce({
+        data: {
+          acknowledged: false,
+        },
+      });
+
+      const result: any = await guardoni
+        .cli({ run: 'experiment', experiment: experimentId })
+        .run();
+
+      expect(result).toMatchObject({
+        _tag: 'Left',
+        left: {
+          message: "Can't conclude the experiment",
+          details: [],
+        },
+      });
+    });
+
+    test('succeed when experimentId has valid "chiaroscuro" directives', async () => {
+      // return directive
+      axiosMock.request.mockResolvedValueOnce({
+        data: tests.fc.sample(ChiaroScuroDirectiveArb, 2),
+      });
+
+      axiosMock.request.mockResolvedValueOnce({
+        data: {
+          acknowledged: true,
+        },
+      });
+
+      const result: any = await guardoni
+        .cli({ run: 'experiment', experiment: experimentId })
+        .run();
+
+      expect(result).toMatchObject({
+        _tag: 'Right',
+        right: {
+          message: 'Experiment completed',
+          values: {},
+        },
+      });
+    });
+
+    test('succeed when experimentId has valid "comparison" directives', async () => {
+      // return directive
+      axiosMock.request.mockResolvedValueOnce({
+        data: tests.fc.sample(ComparisonDirectiveArb, 2),
       });
 
       axiosMock.request.mockResolvedValueOnce({
@@ -209,6 +342,104 @@ describe('Guardoni', () => {
         right: {
           message: 'Experiment completed',
           values: {},
+        },
+      });
+    });
+
+    test('succeed when value is "2"', async () => {
+      // return directive
+      axiosMock.request.mockResolvedValueOnce({
+        data: tests.fc.sample(ComparisonDirectiveArb, 10),
+      });
+
+      axiosMock.request.mockResolvedValueOnce({
+        data: {
+          acknowledged: true,
+        },
+      });
+
+      const result: any = await guardoni.cli({ run: 'auto', value: '2' }).run();
+
+      expect(result).toMatchObject({
+        _tag: 'Right',
+        right: {
+          message: 'Experiment completed',
+          values: {
+            directiveType: 'comparison',
+          },
+        },
+      });
+    });
+  });
+
+  describe('Public Methods', () => {
+    test('run experiment fails when proxy is wrong', async () => {
+      axiosMock.request.mockResolvedValueOnce({
+        data: tests.fc.sample(ComparisonDirectiveArb, 2),
+      });
+
+      const result = await GetGuardoni({
+        headless: false,
+        verbose: false,
+        proxy: 'fake://10.0.0.0',
+      }).runExperiment('experiment-id')();
+
+      expect(result).toMatchObject({
+        left: {
+          name: 'ProxyError',
+          message: 'Error, --proxy must start with socks5://',
+          details: [],
+        },
+      });
+    });
+
+    test("run experiment succeeds with correct directive 'comparison' type", async () => {
+      axiosMock.request.mockResolvedValueOnce({
+        data: tests.fc.sample(ComparisonDirectiveArb, 2),
+      });
+
+      axiosMock.request.mockResolvedValueOnce({
+        data: {
+          acknowledged: true,
+        },
+      });
+
+      const result = await GetGuardoni({
+        headless: false,
+        verbose: false,
+        proxy: 'socks5://10.0.0.0',
+      }).runExperiment('experiment-id')();
+
+      expect(result).toMatchObject({
+        right: {
+          values: {
+            directiveType: 'comparison',
+          },
+        },
+      });
+    });
+
+    test("run experiment succeeds with correct directive 'chiaroscuro' type", async () => {
+      axiosMock.request.mockResolvedValueOnce({
+        data: tests.fc.sample(ChiaroScuroDirectiveArb, 2),
+      });
+
+      axiosMock.request.mockResolvedValueOnce({
+        data: {
+          acknowledged: true,
+        },
+      });
+
+      const result = await GetGuardoni({
+        headless: false,
+        verbose: false,
+      }).runExperiment('experiment-id')();
+
+      expect(result).toMatchObject({
+        right: {
+          values: {
+            directiveType: 'chiaroscuro',
+          },
         },
       });
     });
