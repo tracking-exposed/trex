@@ -10,7 +10,7 @@
     "test": "jest",
     "build": "webpack",
     "watch": "webpack watch",
-    "dev": "electron ./reload.js",
+    "dev": "NODE_ENV=development electron ./reload.js",
     "start": "electron .",
     "pack": "electron-builder build --dir",
     "dist:win": "electron-builder build -w",

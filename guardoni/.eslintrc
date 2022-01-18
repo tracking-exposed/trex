@@ -1,8 +1,5 @@
 {
-  "extends": [
-    "standard-with-typescript",
-    "prettier"
-  ],
+  "extends": ["standard-with-typescript", "prettier"],
   "parser": "@typescript-eslint/parser",
   "parserOptions": {
     "ecmaVersion": 9,
@@ -36,6 +33,7 @@
     "@typescript-eslint/restrict-plus-operands": ["off"],
     "@typescript-eslint/restrict-template-expressions": ["off"],
     "@typescript-eslint/strict-boolean-expressions": ["off"],
-    "react/jsx-key": "off"
+    "react/jsx-key": "off",
+    "array-callback-return": "off"
   }
 }
