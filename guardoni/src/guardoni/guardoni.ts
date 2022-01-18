@@ -3,7 +3,6 @@
  * Guardoni V2
  *
  * TODO:
- * - check the extension exists, otherwise download it
  * - filter the directive with "exclude url tag"
  *
  *

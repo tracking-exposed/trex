@@ -9028,16 +9028,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"electron@npm:16.0.6":
-  version: 16.0.6
-  resolution: "electron@npm:16.0.6"
+"electron@npm:16.0.7":
+  version: 16.0.7
+  resolution: "electron@npm:16.0.7"
   dependencies:
     "@electron/get": ^1.13.0
     "@types/node": ^14.6.2
     extract-zip: ^1.0.3
   bin:
     electron: cli.js
-  checksum: 0b0c7e109c871ced64493bdf7a39b334b732909228375d4bdb268f97de5a487f5e34fe763f72b9ab5be4ba35de861b3bd76efb1417207729b6146877f644fc81
+  checksum: 9ca82da3739ad737b736c9f5ff9d0e4883f69cb55128d65c39b559ad26b95502d7fb54899e01d744ee4d1d8d1414fe0a77750ed30ed187e90737562b823e1ee1
   languageName: node
   linkType: hard
 

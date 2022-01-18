@@ -76,7 +76,7 @@
     "@typescript-eslint/parser": "^5.9.0",
     "bufferutil": "^4.0.6",
     "chalk": "^5.0.0",
-    "electron": "16.0.6",
+    "electron": "16.0.7",
     "electron-builder": "^22.14.13",
     "electron-reloader": "^1.2.1",
     "eslint": "^8.6.0",

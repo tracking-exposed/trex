@@ -156,33 +156,6 @@ export const run = async (): Promise<void> => {
                       return pipe(
                         TE.right(guardoni),
                         TE.chain((g) => {
-                          // const profileData = await guardoni.profileExecount(
-                          //   profile,
-                          //   evidenceTag
-                          // );
-
-                          // mainWindow.webContents.postMessage('guardoniOutput', {
-                          //   message: 'Guardoni window has been destroyed',
-                          //   details: [profileData.profileName, profileData.udd],
-                          // });
-
-                          // const directivesURL = guardoni.buildAPIurl(
-                          //   'directives',
-                          //   experiment
-                          // );
-
-                          // const directives = await guardoni.pullDirectives(
-                          //   directivesURL
-                          // );
-
-                          // log.info('Directives ', directives);
-
-                          // mainWindow.webContents.postMessage('guardoniOutput', {
-                          //   id: uuid(),
-                          //   message: 'Directives created',
-                          //   details: directives.map((d) => d.name),
-                          // });
-
                           guardoniApp.window.show();
 
                           return g.runExperimentForPage(
@@ -212,7 +185,7 @@ export const run = async (): Promise<void> => {
               E.toError
             ),
             TE.mapLeft((e) => {
-              log.error('An error occured ', e);
+              log.error('An error occurred ', e);
               mainWindow.webContents.postMessage('guardoniError', e);
               return e;
             })
@@ -222,7 +195,7 @@ export const run = async (): Promise<void> => {
     }),
     TE.fold(
       (e) => {
-        log.error('An error occured ', e);
+        log.error('An error occurred ', e);
         return () => Promise.resolve(undefined);
       },
       () => {
