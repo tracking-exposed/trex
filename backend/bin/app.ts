@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/no-misused-promises */
+import { MongoClient } from 'mongodb';
 import { makeBackend } from '@shared/backend/router-enhancers';
 import { GetLogger } from '@shared/logger';
 import bodyParser from 'body-parser';
@@ -76,6 +77,7 @@ const iowrapper =
 interface MakeAppContext {
   config: {
     port: number;
+    mongo?: MongoClient;
   };
 }
 
@@ -94,7 +96,9 @@ setInterval(() => {
   logAPICount.requests = {};
 }, 60 * 1000);
 
-export const makeApp = async(ctx: MakeAppContext): Promise<express.Application> => {
+export const makeApp = async (
+  ctx: MakeAppContext
+): Promise<express.Application> => {
   const app = express();
 
   app.use(cors());
@@ -102,7 +106,7 @@ export const makeApp = async(ctx: MakeAppContext): Promise<express.Application> 
   app.use(bodyParser.json({ limit: '6mb' }));
   app.use(bodyParser.urlencoded({ limit: '6mb', extended: true }));
 
-  const client = await mongo3.clientConnect();
+  const client = ctx.config.mongo ?? (await mongo3.clientConnect());
   if (!client) {
     logger.error('Could not connect to MongoDB');
     process.exit(1);
@@ -112,10 +116,13 @@ export const makeApp = async(ctx: MakeAppContext): Promise<express.Application> 
   const router = express.Router();
 
   // add the new routes to the router
-  const apiRouter = makeBackend({
-    db: { ...mongo3, client },
-    logger,
-  }, router);
+  const apiRouter = makeBackend(
+    {
+      db: { ...mongo3, client },
+      logger,
+    },
+    router
+  );
 
   // add the legacy routes
 
