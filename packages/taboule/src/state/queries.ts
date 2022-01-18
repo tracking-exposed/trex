@@ -41,7 +41,7 @@ export interface TabouleQueries {
   personalVideos: EndpointQuery<VideoMetadata>;
   // tik tok
   tikTokPersonalHTMLSummary: EndpointQuery<SummaryHTMLMetadata>;
-  tikTokPersonalMetadataSummary: EndpointQuery<SummaryMetadata>;
+  tikTokPersonalSearch: EndpointQuery<SummaryMetadata>;
   tikTokSearches: EndpointQuery<TikTokSearchMetadata>;
 }
 
@@ -188,14 +188,14 @@ export const GetTabouleQueries = ({
     available
   );
 
-  const tikTokPersonalMetadataSummary = queryStrict<
+  const tikTokPersonalSearch = queryStrict<
     SearchRequestInput,
     APIError,
     Results<SummaryMetadata>
   >(
     (input) =>
       pipe(
-        API.v1.Public.GetPersonalSummaryByPublicKey(input),
+        API.v1.Public.GetPersonalSearchByPublicKey(input),
         TE.map((content) => ({
           total: content.metadata.length,
           content: content.metadata,
@@ -229,7 +229,7 @@ export const GetTabouleQueries = ({
     personalVideos,
     personalSearches,
     tikTokPersonalHTMLSummary,
-    tikTokPersonalMetadataSummary,
+    tikTokPersonalSearch,
     tikTokSearches,
   };
 };

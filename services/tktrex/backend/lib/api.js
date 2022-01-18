@@ -27,7 +27,9 @@ const apiList = {
     /* work in progress, admin, tag */
     getMonitor:          require('../routes/monitor').getMonitor,
 
-    /* experiment related APIs */
+    /* experiment related APIs -- implemented but not really 
+       integrated with guardoni: don't rely on them, they are a 
+       simple copy, paritally TypeScripted review, from yt */
     getAllExperiments:   require('../routes/experiments').list,
     // experimentCSV:       require('../routes/experiments').csv,
     experimentDOT:       require('../routes/experiments').dot,

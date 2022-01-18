@@ -35,8 +35,19 @@ const GetPersonalSummaryByPublicKey = Endpoint({
   Output: ContributorPersonalSummary,
 });
 
+const GetPersonalSearchByPublicKey = Endpoint({
+  Method: 'GET',
+  getPath: ({ publicKey }) => `/v1/personal/${publicKey}/search/json`,
+  Input: {
+    Query: SearchQuery,
+    Params: PublicKeyParams,
+  },
+  Output: ContributorPersonalSummary,
+});
+
 export const endpoints = {
   GetAuthorStatsByVideoId,
   GetPersonalStatsByPublicKey,
   GetPersonalSummaryByPublicKey,
+  GetPersonalSearchByPublicKey,
 };

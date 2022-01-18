@@ -12,6 +12,7 @@ import log from './logger';
 import { localLookup, serverLookup } from './chrome/background/sendMessage';
 
 import { getNatureByHref } from '@tktrex/lib/nature';
+import { debug } from 'console';
 
 let feedId = '—' + Math.random() + '-' + _.random(0, 0xff) + '—';
 let feedCounter = 0;
@@ -205,6 +206,7 @@ function handleSearch(element: Node): void {
   const truel = document.querySelector('body');
   const truehtml = truel ? truel.innerHTML : null;
 
+  debug('Search managemend: handling html of %d bytes', truel);
   if (!truel || !truehtml) return;
 
   try {

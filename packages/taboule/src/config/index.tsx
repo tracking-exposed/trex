@@ -8,7 +8,7 @@ import {
 } from '@shared/models/contributor/ContributorPersonalStats';
 import {
   SummaryHTMLMetadata,
-  SummaryMetadata,
+  // SummaryMetadata,
 } from '@shared/models/contributor/ContributorPersonalSummary';
 import { TikTokSearchMetadata } from '@shared/models/http/tiktok/TikTokSearch';
 import { Metadata } from '@shared/models/Metadata';
@@ -42,7 +42,7 @@ interface TabouleConfiguration {
   personalSearches: TabouleQueryConfiguration<SearchMetadata>;
   personalVideos: TabouleQueryConfiguration<VideoMetadata>;
   tikTokPersonalHTMLSummary: TabouleQueryConfiguration<SummaryHTMLMetadata>;
-  tikTokPersonalMetadataSummary: TabouleQueryConfiguration<SummaryMetadata>;
+  tikTokPersonalSearch: TabouleQueryConfiguration<TikTokSearchMetadata>;
   tikTokSearches: TabouleQueryConfiguration<TikTokSearchMetadata>;
 }
 
@@ -294,31 +294,7 @@ export const defaultConfiguration = (
         },
       ],
     },
-    tikTokPersonalMetadataSummary: {
-      inputs: inputs.publicKeyInput,
-      columns: [
-        {
-          ...columnDefault,
-          field: 'id',
-        },
-        {
-          ...columnDefault,
-          field: 'timelineId',
-        },
-        {
-          ...columnDefault,
-          field: 'author',
-          renderCell: (props) => {
-            return <Typography>{(props.value as any)?.name ?? ''}</Typography>;
-          },
-        },
-        {
-          ...columnDefault,
-          field: 'relative',
-        },
-      ],
-    },
-    tikTokSearches: {
+    tikTokPersonalSearch: {
       inputs: inputs.publicKeyInput,
       actions: () => {
         return (
@@ -336,6 +312,40 @@ export const defaultConfiguration = (
           </Box>
         );
       },
+      columns: [
+        {
+          ...columnDefault,
+          field: 'id',
+        },
+        {
+          ...columnDefault,
+          field: 'query',
+          renderCell: (params) => {
+            return (
+              <a
+                href={`/search/#${encodeURI(params.formattedValue as string)}`}
+              >
+                {params.formattedValue}
+              </a>
+            );
+          },
+        },
+        {
+          ...columnDefault,
+          field: 'thumbnail',
+          renderCell: cells.avatarCell,
+        },
+        {
+          ...columnDefault,
+          field: 'savingTime',
+          renderCell: cells.distanceFromNowCell,
+        },
+      ],
+    },
+    tikTokSearches: {
+      /* this taboule hasn't the CSV allowed nor supported, because
+      * it got only a portion of all the searches = the many that
+      * have been searched from two users + do not return any rejection */
       columns: [
         {
           ...columnDefault,
