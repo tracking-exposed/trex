@@ -3,13 +3,11 @@ import { readFile } from 'fs/promises';
 import { pipe } from 'fp-ts/lib/function';
 import * as TE from 'fp-ts/lib/TaskEither';
 
+import yargs from 'yargs';
 import parseCSV from 'csv-parse/lib/sync';
 
-import { Command, CommandConfig } from '../models/Command';
-import {
-  AutomationScenario,
-  SearchStep,
-} from '@shared/models/Automation';
+import { CommandCreator, CommandConfig } from '../models/CommandCreator';
+import { AutomationScenario, SearchStep } from '@shared/models/Automation';
 
 import { GetAPI } from '@shared/providers/api.provider';
 
@@ -30,6 +28,51 @@ export const recordToStep = (record: Record<string, string>): SearchStep => {
   };
 };
 
+export const createScenarioFromFile = async({
+  type,
+  file,
+  description,
+  label,
+}: {
+  type: string;
+  file: string;
+  description?: string;
+  label?: string;
+}): Promise<AutomationScenario> => {
+  if (type !== 'tiktok-fr-elections') {
+    throw new Error(`Unsupported automation type: ${type}`);
+  }
+
+  const fileContents = await readFile(file, 'utf8');
+
+  const records = parseCSV(fileContents, {
+    columns: true,
+    skip_empty_lines: true,
+  });
+
+  if (!(records instanceof Array)) {
+    throw new Error('invalid records, expected an array');
+  }
+
+  const steps = records.map(recordToStep);
+
+  const scenario: AutomationScenario = {
+    type,
+    description,
+    label,
+    script: steps,
+    createdAt: new Date().toISOString() as any,
+  };
+
+  return scenario;
+};
+
+export const dryRunAutomation =
+  (config: CommandConfig) =>
+    async(scenario: AutomationScenario): Promise<void> => {
+      config.log.info('Dry-running automation scenario...');
+    };
+
 export const registerAutomation =
   (config: CommandConfig) =>
     async({
@@ -38,39 +81,21 @@ export const registerAutomation =
       description,
       label,
     }: {
-      type: string;
-      file: string;
-      description?: string;
-      label?: string;
-    }): Promise<void> => {
+    type: string;
+    file: string;
+    description?: string;
+    label?: string;
+  }): Promise<void> => {
       config.log.info('Registering automation for "%s"...', type);
 
-      if (type !== 'tiktok-fr-elections') {
-        throw new Error(`Unsupported automation type: ${type}`);
-      }
-
-      const fileContents = await readFile(file, 'utf8');
-
-      const records = parseCSV(fileContents, {
-        columns: true,
-        skip_empty_lines: true,
-      });
-
-      if (!(records instanceof Array)) {
-        throw new Error('invalid records, expected an array');
-      }
-
-      config.log.info('Found %d records', records.length);
-
-      const steps = records.map(recordToStep);
-
-      const scenario: AutomationScenario = {
+      const scenario = await createScenarioFromFile({
         type,
+        file,
         description,
         label,
-        script: steps,
-        createdAt: new Date().toISOString() as any,
-      };
+      });
+
+      config.log.info('Created scenario with %d steps', scenario.script.length);
 
       const { API } = GetAPI({
         baseURL: config.API_BASE_URL,
@@ -94,37 +119,50 @@ export const registerAutomation =
       )();
     };
 
-export const registerAutomationCommand: Command = {
+// eslint-disable-next-line @typescript-eslint/explicit-function-return-type
+const addArguments = (y: yargs.Argv) =>
+  y
+    .positional('file', {
+      demandOption: true,
+      desc: 'File containing one automation step per line',
+      type: 'string',
+    })
+    .option('description', {
+      alias: 'd',
+      desc: 'Save a comment together with this automation',
+      type: 'string',
+    })
+    .option('label', {
+      alias: 'l',
+      desc: 'Save a label together with this automation',
+      type: 'string',
+    })
+    .option('type', {
+      alias: 't',
+      desc: 'Automation type',
+      type: 'string',
+      demandOption: true,
+      choices: ['tiktok-fr-elections'],
+    });
+
+export const registerAutomationCommand: CommandCreator = {
   add: (config) => (yargs) =>
-    yargs.command(
-      'register <file>',
-      'Register an automation file',
-      (y) =>
-        y
-          .positional('file', {
-            demandOption: true,
-            desc: 'File containing one automation step per line',
-            type: 'string',
-          })
-          .option('description', {
-            alias: 'd',
-            desc: 'Save a comment together with this automation',
-            type: 'string',
-          })
-          .option('label', {
-            alias: 'l',
-            desc: 'Save a label together with this automation',
-            type: 'string',
-          })
-          .option('type', {
-            alias: 't',
-            desc: 'Automation type',
-            type: 'string',
-            demandOption: true,
-            choices: ['tiktok-fr-elections'],
-          }),
-      async(argv) => registerAutomation(config)(argv),
-    ),
+    yargs
+      .command(
+        'register <file>',
+        'Register an automation file',
+        addArguments,
+        async(argv) => registerAutomation(config)(argv),
+      )
+      .command(
+        'dry-run <file>',
+        'Try-out an automation file',
+        addArguments,
+        async(argv) => {
+          const scenario = await createScenarioFromFile(argv);
+          await dryRunAutomation(config)(scenario);
+        },
+      ),
 };
 
 export default registerAutomationCommand;

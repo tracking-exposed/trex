@@ -2,7 +2,7 @@ import yargs from 'yargs';
 import { hideBin } from 'yargs/helpers';
 
 import registerAutomationCommand from './commands/register-automation';
-import { CommandConfig } from './models/Command';
+import { CommandConfig } from './models/CommandCreator';
 
 const menu = yargs(hideBin(process.argv)).scriptName('tktrex-automation');
 
