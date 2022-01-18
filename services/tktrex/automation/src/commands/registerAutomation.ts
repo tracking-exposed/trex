@@ -11,6 +11,8 @@ import { AutomationScenario, SearchStep } from '@shared/models/Automation';
 
 import { GetAPI } from '@shared/providers/api.provider';
 
+import { dryRunAutomation } from '../lib/runScenario';
+
 export const recordToStep = (record: Record<string, string>): SearchStep => {
   if (Object.keys(record).length !== 1) {
     throw new Error('invalid record, expected 1 column only');
@@ -40,7 +42,7 @@ export const createScenarioFromFile = async({
   label?: string;
 }): Promise<AutomationScenario> => {
   if (type !== 'tiktok-fr-elections') {
-    throw new Error(`Unsupported automation type: ${type}`);
+    throw new Error(`unsupported automation type: ${type}`);
   }
 
   const fileContents = await readFile(file, 'utf8');
@@ -67,12 +69,6 @@ export const createScenarioFromFile = async({
   return scenario;
 };
 
-export const dryRunAutomation =
-  (config: CommandConfig) =>
-    async(scenario: AutomationScenario): Promise<void> => {
-      config.log.info('Dry-running automation scenario...');
-    };
-
 export const registerAutomation =
   (config: CommandConfig) =>
     async({
@@ -86,7 +82,7 @@ export const registerAutomation =
     description?: string;
     label?: string;
   }): Promise<void> => {
-      config.log.info('Registering automation for "%s"...', type);
+      config.log.info('registering automation for "%s"...', type);
 
       const scenario = await createScenarioFromFile({
         type,
@@ -95,7 +91,7 @@ export const registerAutomation =
         label,
       });
 
-      config.log.info('Created scenario with %d steps', scenario.script.length);
+      config.log.info('created scenario with %d steps', scenario.script.length);
 
       const { API } = GetAPI({
         baseURL: config.API_BASE_URL,
@@ -110,10 +106,10 @@ export const registerAutomation =
         endpoint,
         // eslint-disable-next-line array-callback-return
         TE.map(() => {
-          config.log.info('Automation registered');
+          config.log.info('automation registered');
         }),
         TE.mapLeft((error) => {
-          config.log.error('Automation registration failed');
+          config.log.error('automation registration failed');
           config.log.error('%o', error);
         }),
       )();
