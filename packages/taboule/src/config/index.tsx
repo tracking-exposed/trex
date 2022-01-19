@@ -8,6 +8,7 @@ import {
 } from '@shared/models/contributor/ContributorPersonalStats';
 import {
   SummaryHTMLMetadata,
+  TikTokPSearchMetadata,
   // SummaryMetadata,
 } from '@shared/models/contributor/ContributorPersonalSummary';
 import { TikTokSearchMetadata } from '@shared/models/http/tiktok/TikTokSearch';
@@ -42,7 +43,7 @@ interface TabouleConfiguration {
   personalSearches: TabouleQueryConfiguration<SearchMetadata>;
   personalVideos: TabouleQueryConfiguration<VideoMetadata>;
   tikTokPersonalHTMLSummary: TabouleQueryConfiguration<SummaryHTMLMetadata>;
-  tikTokPersonalSearch: TabouleQueryConfiguration<TikTokSearchMetadata>;
+  tikTokPersonalSearch: TabouleQueryConfiguration<TikTokPSearchMetadata>;
   tikTokSearches: TabouleQueryConfiguration<TikTokSearchMetadata>;
 }
 
@@ -316,6 +317,18 @@ export const defaultConfiguration = (
         {
           ...columnDefault,
           field: 'id',
+          width: 40,
+          renderCell: (params) => {
+            const longId = params.formattedValue;
+            const shortId = (longId as string).substr(0, 7);
+            return (
+              <a
+                href={`/details/#${encodeURI(longId as string)}`}
+              >
+                {shortId}
+              </a>
+            );
+          },
         },
         {
           ...columnDefault,
@@ -332,8 +345,25 @@ export const defaultConfiguration = (
         },
         {
           ...columnDefault,
-          field: 'thumbnail',
-          renderCell: cells.avatarCell,
+          field: 'rejected',
+          headerName: 'was answered?',
+          width: 40,
+          renderCell: (params) => {
+            return (
+              <span>
+                {params.formattedValue === true ? "🚫" : "✔️"}
+              </span>
+            );
+          },
+        },
+        {
+          ...columnDefault,
+          field: 'results',
+          width: 40,
+        },
+        {
+          ...columnDefault,
+          field: 'sources',
         },
         {
           ...columnDefault,

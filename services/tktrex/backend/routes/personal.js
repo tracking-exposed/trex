@@ -28,13 +28,6 @@ async function getPersonal(req) {
   // personal API format is
   // /api/v1/personal/:publicKey/:what/:format
   const k = req.params.publicKey;
-  if (_.size(k) < 26)
-    return {
-      json: {
-        message: 'Invalid publicKey',
-        error: true,
-      },
-    };
 
   const amount = _.parseInt(req.query.amount) || 50;
   const skip = _.parseInt(req.query.skip) || 0;
@@ -54,35 +47,56 @@ async function getPersonal(req) {
 
   debug(
     'Asked to get data kind %s (%d-%d), preparing JSON',
-    what,
-    amount,
-    skip
-  );
-  let retval = null;
+    what, amount, skip);
+
   try {
-    if (what === 'summary') retval = await automo.getSummaryByPublicKey(k);
+    let retval = null;
+
+    if (what === 'summary') {
+      filter = { type: { "$in": [ "following", "foryou" ] }};
+      retval = await automo.getPersonalTableData(k, filter, sync);
+    }
     else if (what === 'search') {
-      const avail = await automo.getMetadataByFilter(
-        { type: 'search', publicKey: k },
-        { amount, skip }
-      );
-      retval = _.map(avail, function (o) {
-        return _.pick(o, SEARCH_FIELDS);
+      /* this function access to 'search' results which is a 
+       * bit different than the other. as in the collection
+       * there is not one entry for video, but one entry for search 
+       * query --> hence, the _.map/_.pick 
+       * note, this data should match
+       * packages/shared/src/models/contributor/ContributorPersonalSummary.ts
+       */
+      const avail = await automo.getPersonalTableData(
+        k, { type: 'search' }, { amount, skip });
+      const metadata = _.map(avail.metadata, function (o) {
+        const smf = _.pick(o, ['id', 'query', 'savingTime']);
+        smf.rejected = !!(o.message?.length);
+        smf.results = o.results?.length || 0;
+        smf.sources = _.uniq(_.map(o.results || [], function(v) {
+          return v.video.authorId;
+        }));
+        return smf;
       });
-    } else if (what === 'foryou')
+      retval = {
+        counters: { metadata: avail.counters?.metadata },
+        metadata
+      };
+    } else if (what === 'foryou') {
+      // TODO review
       retval = await automo.getMetadataByFilter(
         { type: 'foryou', publicKey: k },
         { amount, skip }
       );
+    }
+    else {
+      throw new Error("Invalid and unsupported request type");
+    }
 
-    debug('Personal %s returning %d objects', what, retval.length);
+    return { json: retval };
+
   } catch (error) {
     const message = error instanceof Error ? error.message : 'unknown error';
-    debug('%s', message);
+    debug('getPersonal handled error: %s', message);
     return { json: { error: true, message } };
   }
-
-  return { json: retval };
 }
 
 async function getPersonalCSV(req) {

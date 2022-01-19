@@ -6,8 +6,9 @@ import {
   VideoMetadata,
 } from '@shared/models/contributor/ContributorPersonalStats';
 import {
+  TikTokPSearchMetadata,
   SummaryHTMLMetadata,
-  SummaryMetadata,
+  // SummaryMetadata,
 } from '@shared/models/contributor/ContributorPersonalSummary';
 import { SearchQuery } from '@shared/models/http/SearchQuery';
 import { TikTokSearchMetadata } from '@shared/models/http/tiktok/TikTokSearch';
@@ -41,7 +42,7 @@ export interface TabouleQueries {
   personalVideos: EndpointQuery<VideoMetadata>;
   // tik tok
   tikTokPersonalHTMLSummary: EndpointQuery<SummaryHTMLMetadata>;
-  tikTokPersonalSearch: EndpointQuery<SummaryMetadata>;
+  tikTokPersonalSearch: EndpointQuery<TikTokPSearchMetadata>;
   tikTokSearches: EndpointQuery<TikTokSearchMetadata>;
 }
 
@@ -191,7 +192,7 @@ export const GetTabouleQueries = ({
   const tikTokPersonalSearch = queryStrict<
     SearchRequestInput,
     APIError,
-    Results<SummaryMetadata>
+    Results<TikTokPSearchMetadata>
   >(
     (input) =>
       pipe(
