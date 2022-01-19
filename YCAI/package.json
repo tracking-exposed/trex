@@ -62,7 +62,7 @@
     "jest-chrome": "^0.7.2",
     "prettier": "^2.5.1",
     "react-test-renderer": "^17.0.2",
-    "semantic-release": "^18.0.1",
+    "semantic-release": "^19.0.2",
     "style-loader": "^3.3.1",
     "svgdom": "^0.1.10",
     "ts-jest": "^27.1.2",
