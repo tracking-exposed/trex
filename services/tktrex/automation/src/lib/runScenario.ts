@@ -62,6 +62,29 @@ export const handleCaptcha = async(
   }
 };
 
+export const acceptCookies = async(
+  config: CommandConfig,
+  page: puppeteer.Page,
+): Promise<void> => {
+  const banner = await page.$('[class*="CookieBannerContainer"]');
+
+  if (!banner) {
+    return;
+  }
+
+  const button = await banner.$('button:last-of-type');
+
+  if (!button) {
+    throw new Error('failed to accept cookies');
+  }
+
+  await button.click();
+
+  config.log.info('accepted cookies');
+
+  await sleep(5000);
+};
+
 export const runStep = async(
   config: CommandConfig,
   context: Context,
@@ -74,12 +97,7 @@ export const runStep = async(
     await page.goto(step.platformURL);
 
     await handleCaptcha(config, page);
-
-    /*
-    await page.waitForSelector('#search-input');
-    await page.type('#search-input', step.query);
-    await page.keyboard.press('Enter');
-    */
+    await acceptCookies(config, page);
 
     return context;
   }
