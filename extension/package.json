@@ -11,13 +11,13 @@
     "url": "git+https://github.com/tracking-exposed/yttrex.git"
   },
   "scripts": {
+    "clean": "rm -rf ./build ./dist",
     "lint": "eslint ./ --quiet",
     "start": "npm run build:watch:files",
     "build": "rm -rf ./build && mkdir build && cross-env webpack && cp -r public/* ./build/",
     "build:watch": "rm -rf ./build && mkdir build && cp -r public/* ./build/ && cross-env webpack -w",
     "dist": "sh pack-extension.sh",
     "dist:guardoni": "sh pack-extension-for-guardoni.sh",
-    "clean": "rm -rf ./build ./dist",
     "test": "mocha --compilers js:babel-register --reporter spec",
     "test:watch": "mocha -w --compilers js:babel-register --reporter spec"
   },
