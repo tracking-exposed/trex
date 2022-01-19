@@ -9,7 +9,7 @@
     "format": "prettier -w ./src",
     "test": "jest",
     "build": "webpack",
-    "watch": "webpack watch",
+    "watch": "DEBUG=\"@yttrex*\" NODE_ENV=development webpack watch",
     "dev": "DEBUG=\"guardoni*\" NODE_ENV=development electron ./reload.js",
     "start": "electron .",
     "pack": "electron-builder build --dir",

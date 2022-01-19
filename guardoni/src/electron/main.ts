@@ -12,6 +12,12 @@ import pie from 'puppeteer-in-electron';
 import { AppEnv } from '../AppEnv';
 import { GetEvents } from './events/renderer.events';
 import { createGuardoniWindow } from './windows/GuardoniWindow';
+import * as dotenv from 'dotenv';
+
+// load env from .env file shipped with compiled code
+dotenv.config({
+  path: path.join(__dirname, '.env'),
+});
 
 let mainWindow: BrowserWindow | null = null;
 
@@ -38,7 +44,7 @@ const creatMainWindow = (
 
     await mainWindow.loadURL(mainWindowHTML);
 
-    if (process.env.NODE_ENV === 'development') {
+    if (env.NODE_ENV === 'development') {
       mainWindow.webContents.openDevTools();
     }
 

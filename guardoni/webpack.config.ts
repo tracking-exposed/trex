@@ -28,7 +28,7 @@ config.plugins.push(
       {
         from: path.resolve(
           __dirname,
-          process.env.NODE_ENV === 'development' ? '.env.development' : '.env'
+          config.mode === 'development' ? '.env.development' : '.env'
         ),
         to: path.resolve(__dirname, 'build/electron/.env'),
         toType: 'file',
