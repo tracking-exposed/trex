@@ -28,7 +28,6 @@ module.exports = {
   hooks: {
     'after:init': [],
     'after:bump': [
-      'yarn clean',
       'NODE_ENV=production yarn taboule build',
       'NODE_ENV=production yarn extension dist:guardoni',
       'NODE_ENV=production yarn guardoni build',
