@@ -52,7 +52,7 @@ export const toGuardoniErrorOutput = (o: unknown): GuardoniErrorOutput => {
   };
 };
 
-export const toGuardoniSuccesOutput = (
+export const toGuardoniSuccessOutput = (
   message: string,
   values: Record<string, any>
 ): GuardoniSuccessOutput => {

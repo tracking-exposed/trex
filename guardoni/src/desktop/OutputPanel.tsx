@@ -86,9 +86,15 @@ const OutputPanel: React.FC<OutputPanelProps> = ({ items }) => {
                     <AccordionSummary>Details</AccordionSummary>
 
                     {Array.isArray(item.details) ? (
-                      <AccordionDetails>
+                      <AccordionDetails style={{ display: 'block' }}>
                         {item.details.map((detail) => (
-                          <Typography key={uuid()}>{detail}</Typography>
+                          <Typography
+                            key={uuid()}
+                            display="block"
+                            style={{ marginBottom: 20 }}
+                          >
+                            {detail}
+                          </Typography>
                         ))}
                       </AccordionDetails>
                     ) : (

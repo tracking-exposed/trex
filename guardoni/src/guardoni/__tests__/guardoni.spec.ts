@@ -83,7 +83,7 @@ describe('Guardoni', () => {
       await expect(
         guardoni
           .cli({
-            run: 'register',
+            run: 'register-csv',
             file: './fake-file',
             type: 'chiaroscuro',
           })
@@ -100,8 +100,8 @@ describe('Guardoni', () => {
       await expect(
         guardoni
           .cli({
-            run: 'register',
-            file: './experiments/experiment-comparison.csv',
+            run: 'register-csv',
+            file: './experiments/experiment-comparison.csv' as any,
             type: 'chiaroscuro',
           })
           .run()
@@ -119,8 +119,8 @@ describe('Guardoni', () => {
       await expect(
         guardoni
           .cli({
-            run: 'register',
-            file: './experiments/experiment-chiaroscuro.csv',
+            run: 'register-csv',
+            file: './experiments/experiment-chiaroscuro.csv' as any,
             type: 'comparison',
           })
           .run()
@@ -141,7 +141,7 @@ describe('Guardoni', () => {
 
       const result: any = await guardoni
         .cli({
-          run: 'register',
+          run: 'register-csv',
           type: 'comparison',
           file: './experiments/experiment-comparison.csv',
         })
@@ -166,7 +166,7 @@ describe('Guardoni', () => {
 
       const result: any = await guardoni
         .cli({
-          run: 'register',
+          run: 'register-csv',
           type: 'comparison',
           file: './experiments/experiment-comparison.csv',
         })
@@ -193,7 +193,7 @@ describe('Guardoni', () => {
 
       const result: any = await guardoni
         .cli({
-          run: 'register',
+          run: 'register-csv',
           type: 'comparison',
           file: './experiments/experiment-comparison.csv',
         })
@@ -220,7 +220,7 @@ describe('Guardoni', () => {
 
       const result: any = await guardoni
         .cli({
-          run: 'register',
+          run: 'register-csv',
           type: 'chiaroscuro',
           file: './experiments/experiment-chiaroscuro.csv',
         })
@@ -388,7 +388,7 @@ describe('Guardoni', () => {
         basePath,
         extensionDir,
         proxy: 'fake://10.0.0.0',
-      }).runExperiment('experiment-id')();
+      }).runExperiment('experiment-id' as any)();
 
       expect(result).toMatchObject({
         left: {
@@ -410,7 +410,7 @@ describe('Guardoni', () => {
         },
       });
 
-      const result = await guardoni.runExperiment('experiment-id')();
+      const result = await guardoni.runExperiment('experiment-id' as any)();
 
       expect(result).toMatchObject({
         right: {
@@ -432,7 +432,7 @@ describe('Guardoni', () => {
         },
       });
 
-      const result = await guardoni.runExperiment('experiment-id')();
+      const result = await guardoni.runExperiment('experiment-id' as any)();
 
       expect(result).toMatchObject({
         right: {

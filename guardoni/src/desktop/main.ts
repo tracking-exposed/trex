@@ -1,16 +1,17 @@
-import { app, BrowserWindow, ipcMain } from 'electron';
+import { AppError, toAppError } from '@shared/errors/AppError';
+import { app, BrowserWindow } from 'electron';
 import log from 'electron-log';
 import { sequenceS } from 'fp-ts/lib/Apply';
 import * as E from 'fp-ts/lib/Either';
 import { pipe } from 'fp-ts/lib/function';
 import * as TE from 'fp-ts/lib/TaskEither';
+import { failure } from 'io-ts/lib/PathReporter';
 import os from 'os';
 import * as path from 'path';
-import puppeteer from 'puppeteer-core';
 import pie from 'puppeteer-in-electron';
-import { v4 as uuid } from 'uuid';
-import { GetGuardoni } from '../guardoni/guardoni';
-import { GuardoniConfig } from '../guardoni/types';
+import { AppEnv } from '../AppEnv';
+import { GetEvents } from './events/renderer.events';
+import { createGuardoniWindow } from './windows/GuardoniWindow';
 
 let mainWindow: BrowserWindow | null = null;
 
@@ -19,7 +20,9 @@ const mainWindowHTML = `file://${path.join(
   'renderer/guardoni.html'
 )}`;
 
-const creatMainWindow = (): TE.TaskEither<Error, BrowserWindow> => {
+const creatMainWindow = (
+  env: AppEnv
+): TE.TaskEither<AppError, BrowserWindow> => {
   return TE.tryCatch(async () => {
     mainWindow = new BrowserWindow({
       width: 1000,
@@ -43,26 +46,7 @@ const creatMainWindow = (): TE.TaskEither<Error, BrowserWindow> => {
       mainWindow = null;
     });
     return mainWindow;
-  }, E.toError);
-};
-
-const createGuardoniWindow = (
-  app: Electron.App,
-  parentWindow: BrowserWindow
-): TE.TaskEither<
-  Error,
-  { browser: puppeteer.Browser; window: BrowserWindow }
-> => {
-  return TE.tryCatch(async () => {
-    const browser = await pie.connect(app, puppeteer);
-
-    const window = new BrowserWindow({
-      show: false,
-      parent: parentWindow,
-    });
-
-    return { browser, window };
-  }, E.toError);
+  }, toAppError);
 };
 
 export const run = async (): Promise<void> => {
@@ -71,132 +55,42 @@ export const run = async (): Promise<void> => {
   app.setPath('userData', path.resolve(os.homedir(), `.config/guardoni/data`));
 
   return pipe(
-    TE.tryCatch(() => pie.initialize(app), E.toError),
-    TE.chain(() => TE.tryCatch(() => app.whenReady(), E.toError)),
-    TE.map(() => ({ app })),
-    TE.chain(({ app }) => {
+    AppEnv.decode(process.env),
+    E.mapLeft((e) => {
+      return new AppError('EnvError', 'process.env is malformed', failure(e));
+    }),
+    TE.fromEither,
+    TE.chain((env) =>
+      pipe(
+        TE.tryCatch(() => pie.initialize(app), toAppError),
+        TE.chain(() => TE.tryCatch(() => app.whenReady(), toAppError)),
+        TE.map(() => ({ app, env }))
+      )
+    ),
+    TE.chain(({ app, env }) => {
       return pipe(
-        creatMainWindow(),
-        TE.chain((win) =>
+        creatMainWindow(env),
+        TE.chain((w) =>
           sequenceS(TE.ApplicativePar)({
-            guardoniApp: createGuardoniWindow(app, win),
-            mainWindow: TE.right(win),
+            guardoniApp: createGuardoniWindow(app, w),
+            mainWindow: TE.right(w),
           })
         ),
-        TE.chain(({ guardoniApp, mainWindow }) => {
-          return pipe(
-            TE.tryCatch(
-              () =>
-                new Promise((resolve, reject) => {
-                  ipcMain.on(
-                    'startGuardoni',
-                    // eslint-disable-next-line @typescript-eslint/no-misused-promises
-                    async (event, args: GuardoniConfig): Promise<void> => {
-                      const {
-                        profile,
-                        evidenceTag,
-                        // experiment,
-                      } = args;
-
-                      const experiment = '';
-
-                      // if (guardoniApp.window.isDestroyed()) {
-                      //   mainWindow.webContents.postMessage('guardoniOutput', {
-                      //     message:
-                      //       'Guardoni window has been destroyed, creating it...',
-                      //   });
-
-                      //   const result = await createGuardoniWindow(
-                      //     app,
-                      //     mainWindow
-                      //   )();
-                      //   if (result._tag === 'Left') {
-                      //     return reject(
-                      //       new Error('Cant initialized guardoni window')
-                      //     );
-                      //   }
-                      //   guardoniApp = result.right;
-                      // }
-
-                      const extension =
-                        await guardoniApp.window.webContents.session.loadExtension(
-                          path.join(__dirname, '../extension')
-                        );
-
-                      mainWindow.webContents.postMessage('guardoniOutput', {
-                        message: 'Extension loaded',
-                        details: extension,
-                      });
-
-                      guardoniApp.window.on('close', () => {
-                        const closeError = new Error(
-                          'Guardoni window closed before execution finished'
-                        );
-                        reject(closeError);
-                      });
-
-                      // eslint-disable-next-line no-console
-                      log.info('Starting guardoni with', {
-                        profile,
-                        evidenceTag,
-                      });
-
-                      const page = await pie.getPage(
-                        guardoniApp.browser,
-                        guardoniApp.window
-                      );
-
-                      const guardoni = GetGuardoni({
-                        profile,
-                        evidenceTag,
-                        headless: false,
-                        verbose: true,
-                      });
-
-                      return pipe(
-                        TE.right(guardoni),
-                        TE.chain((g) => {
-                          guardoniApp.window.show();
-
-                          return g.runExperimentForPage(
-                            page,
-                            experiment,
-                            (progress) => {
-                              mainWindow.webContents.postMessage(
-                                'guardoniOutput',
-                                {
-                                  id: uuid(),
-                                  ...progress,
-                                }
-                              );
-                            }
-                          );
-                        }),
-                        // eslint-disable-next-line array-callback-return
-                        TE.map(() => {
-                          guardoniApp.window.close();
-                        })
-                      )()
-                        .then(resolve)
-                        .catch(reject);
-                    }
-                  );
-                }),
-              E.toError
-            ),
-            TE.mapLeft((e) => {
-              log.error('An error occurred ', e);
-              mainWindow.webContents.postMessage('guardoniError', e);
-              return e;
-            })
-          );
+        TE.map(({ guardoniApp, mainWindow }) => {
+          // bind events for main window
+          GetEvents({
+            app,
+            mainWindow,
+            guardoniWindow: guardoniApp.window,
+            guardoniBrowser: guardoniApp.browser,
+          }).register();
         })
       );
     }),
     TE.fold(
       (e) => {
-        log.error('An error occurred ', e);
-        return () => Promise.resolve(undefined);
+        log.error('An error occurred', e);
+        return () => Promise.reject(e);
       },
       () => {
         return () => Promise.resolve(undefined);

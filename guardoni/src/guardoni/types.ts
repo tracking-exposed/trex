@@ -1,11 +1,20 @@
 import { AppError } from '@shared/errors/AppError';
-import { DirectiveType } from '@shared/models/Directive';
+import {
+  ComparisonDirectiveRow,
+  DirectiveType,
+} from '@shared/models/Directive';
 import * as TE from 'fp-ts/lib/TaskEither';
-import * as puppeteer from 'puppeteer-core';
+import { NonEmptyString } from 'io-ts-types';
+import type * as puppeteer from 'puppeteer-core';
 
 export type GuardoniCommandConfig =
   | {
       run: 'register';
+      records: ComparisonDirectiveRow[];
+      type: DirectiveType;
+    }
+  | {
+      run: 'register-csv';
       file: string;
       type: DirectiveType;
     }
@@ -23,7 +32,7 @@ export interface GuardoniConfig {
   verbose: boolean;
   profile?: string;
   evidenceTag?: string;
-  advdump?: string;
+  advScreenshotDir?: string;
   proxy?: string;
   backend?: string;
   basePath?: string;
@@ -32,6 +41,25 @@ export interface GuardoniConfig {
   chromePath?: string;
   loadFor?: number;
 }
+
+export type GuardoniConfigRequired = Omit<
+  GuardoniConfig,
+  | 'basePath'
+  | 'profile'
+  | 'backend'
+  | 'evidenceTag'
+  | 'extensionDir'
+  | 'loadFor'
+  | 'chromePath'
+> & {
+  profile: string;
+  backend: string;
+  basePath: string;
+  evidenceTag: string;
+  extensionDir: string;
+  loadFor: number;
+  chromePath: string;
+};
 
 export interface ProgressDetails {
   message: string;
@@ -58,18 +86,23 @@ export type GuardoniCLI = (command: GuardoniCommandConfig) => {
 };
 
 export interface Guardoni {
+  config: GuardoniConfigRequired;
   cli: GuardoniCLI;
   // register an experiment from the given csv file
+  registerExperimentFromCSV: (
+    file: NonEmptyString,
+    directiveType: DirectiveType
+  ) => TE.TaskEither<AppError, GuardoniSuccessOutput>;
   registerExperiment: (
-    file: string,
+    records: ComparisonDirectiveRow[],
     directiveType: DirectiveType
   ) => TE.TaskEither<AppError, GuardoniSuccessOutput>;
   runExperiment: (
-    experiment: string
+    experiment: NonEmptyString
   ) => TE.TaskEither<AppError, GuardoniSuccessOutput>;
   runExperimentForPage: (
     page: puppeteer.Page,
-    experiment: string,
+    experiment: NonEmptyString,
     onProgress?: (details: ProgressDetails) => void
   ) => TE.TaskEither<AppError, GuardoniSuccessOutput>;
 }

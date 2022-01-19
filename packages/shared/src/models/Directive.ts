@@ -21,6 +21,8 @@ export const ComparisonDirectiveRow = t.type(
   'ComparisonDirectiveRow'
 );
 
+export type ComparisonDirectiveRow = t.TypeOf<typeof ComparisonDirectiveRow>;
+
 export const ChiaroScuroDirectiveRow = t.type(
   {
     videoURL: t.string,
@@ -71,6 +73,7 @@ export const ComparisonDirective = t.strict(
   },
   'ComparisonDirective'
 );
+export type ComparisonDirective = t.TypeOf<typeof ComparisonDirective>;
 
 export const ChiaroScuroDirective = t.strict(
   {

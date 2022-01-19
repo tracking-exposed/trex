@@ -22,7 +22,7 @@ describe.skip('Guardoni', () => {
       await expect(
         guardoni
           .cli({
-            run: 'register',
+            run: 'register-csv',
             file: './fake-file',
             type: 'chiaroscuro',
           })
@@ -39,7 +39,7 @@ describe.skip('Guardoni', () => {
       await expect(
         guardoni
           .cli({
-            run: 'register',
+            run: 'register-csv',
             file: './experiments/experiment-comparison.csv',
             type: 'chiaroscuro',
           })
@@ -58,7 +58,7 @@ describe.skip('Guardoni', () => {
       await expect(
         guardoni
           .cli({
-            run: 'register',
+            run: 'register-csv',
             file: './experiments/experiment-chiaroscuro.csv',
             type: 'comparison',
           })
@@ -76,7 +76,7 @@ describe.skip('Guardoni', () => {
     test('success with type comparison and proper csv file', async () => {
       const result: any = await guardoni
         .cli({
-          run: 'register',
+          run: 'register-csv',
           type: 'comparison',
           file: './experiments/experiment-comparison.csv',
         })
