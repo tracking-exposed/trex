@@ -45,8 +45,11 @@ module.exports = {
     release: true,
     assets: [
       'extension/dist/*.zip',
-      'guardoni/dist/*',
-      'YCAI/build/extension/extension.zip',
+      'guardoni/dist/*.deb',
+      'guardoni/dist/*.exe',
+      'guardoni/dist/*.dmg',
+      'services/tktrex/extension/dist/*.zip',
+      'YCAI/build/extension/*.zip',
     ],
   },
   npm: false,

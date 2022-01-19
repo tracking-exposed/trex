@@ -153,7 +153,7 @@ if (NODE_ENV === 'production') {
           archive: [
             {
               source: './build',
-              destination: `./build/yttrex-webext-${APP_VERSION}.zip`,
+              destination: `./build/yttrex-extension-${APP_VERSION}.zip`,
             },
           ],
         },

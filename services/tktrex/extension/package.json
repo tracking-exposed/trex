@@ -7,7 +7,7 @@
     "build:dev": "DEBUG=\"*\" webpack",
     "watch": "DEBUG=\"*\" webpack --watch",
     "watch:prod": "NODE_ENV=production webpack --watch",
-    "clean": "rm -rf build"
+    "clean": "rm -rf build dist"
   },
   "dependencies": {
     "@material-ui/core": "^4.12.3",

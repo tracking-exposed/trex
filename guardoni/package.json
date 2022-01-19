@@ -3,7 +3,7 @@
   "version": "1.9.2",
   "description": "Guardoni is a tool to automate access and coordinate personalization algorithm analysis",
   "scripts": {
-    "clean": "rm -rf build/**",
+    "clean": "rm -rf build dist",
     "pkg": "pkg ./package.json && sh ./bin/post-compile.sh",
     "lint": "eslint ./src/**",
     "format": "prettier -w ./src",

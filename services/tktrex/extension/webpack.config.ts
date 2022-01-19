@@ -91,7 +91,7 @@ if (config.mode === 'production') {
               source: outputDir,
               destination: path.join(
                 outputDir,
-                `tktrex-webext-${process.env.VERSION}.zip`,
+                `tktrex-extension-${process.env.VERSION}.zip`,
               ),
             },
           ],
