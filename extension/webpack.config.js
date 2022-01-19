@@ -24,7 +24,7 @@ const NODE_ENV = process.env.NODE_ENV || 'development';
 const PRODUCTION = NODE_ENV === 'production';
 const DEVELOPMENT = NODE_ENV === 'development';
 const BUILDISODATE = new Date().toISOString();
-const GUARDONI_TARGET = process.env.BUILD_TARGET === 'guardoni';
+const GUARDONI_TARGET = process.env?.BUILD_TARGET === 'guardoni';
 const APP_VERSION = GUARDONI_TARGET
   ? packageJSON.version
       .split('.')
@@ -146,14 +146,18 @@ PLUGINS.push(
 );
 
 if (NODE_ENV === 'production') {
+  const destinationExt = `./dist/${
+    GUARDONI_TARGET ? 'guardoni-' : ''
+  }yttrex-extension-${APP_VERSION}.zip`;
+
   PLUGINS.push(
     new FileManagerPlugin({
       events: {
         onEnd: {
           archive: [
             {
-              source: './build',
-              destination: `./build/yttrex-extension-${APP_VERSION}.zip`,
+              source: './dist',
+              destination: destinationExt,
             },
           ],
         },

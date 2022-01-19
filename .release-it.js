@@ -38,9 +38,12 @@ module.exports = {
     release: true,
     assets: [
       'extension/dist/*.zip',
+      // ignore extension build for guardoni
+      '!extension/dist/guardoni-*.zip',
       'guardoni/dist/*.deb',
       'guardoni/dist/*.exe',
       'guardoni/dist/*.dmg',
+      'guardoni/dist/guardoni-cli-*',
       'services/tktrex/extension/dist/*.zip',
       'YCAI/build/extension/*.zip',
     ],
