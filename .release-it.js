@@ -41,7 +41,7 @@ module.exports = {
     requireCleanWorkingDir: false,
   },
   github: {
-    release: false,
+    release: true,
     assets: [
       'extension/dist/*.zip',
       'guardoni/dist/*',
