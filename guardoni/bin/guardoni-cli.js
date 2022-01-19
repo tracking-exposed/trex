@@ -6,11 +6,21 @@ const yargs = require('yargs/yargs');
 const { hideBin } = require('yargs/helpers');
 const { GetGuardoni } = require('../build/guardoni/guardoni.js');
 
-const runGuardoni = ({ _, $0, v, headless, verbose, basePath, ...command }) => {
+const runGuardoni = ({
+  _,
+  $0,
+  v,
+  headless,
+  verbose,
+  basePath,
+  profile,
+  ...command
+}) => {
   return GetGuardoni({
     headless,
-    verbose,
     basePath,
+    profile,
+    verbose,
   })
     .cli(command)
     .runOrThrow()
