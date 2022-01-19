@@ -7,7 +7,7 @@ import {
 } from '@material-ui/core';
 import { ipcRenderer } from 'electron';
 import * as React from 'react';
-import { CREATE_EXPERIMENT_EVENT } from '../../desktop/models/events';
+import { CREATE_EXPERIMENT_EVENT } from '../models/events';
 import { GuardoniConfig } from '../../guardoni/types';
 
 interface FromCSVFileTabProps {
@@ -35,7 +35,6 @@ export const FromURLsTab: React.FC<FromCSVFileTabProps> = ({
     });
 
   const handleURLProcess = React.useCallback(() => {
-    console.log('creating experiment with', urls);
     ipcRenderer.send(
       CREATE_EXPERIMENT_EVENT.value,
       config,
@@ -57,6 +56,7 @@ export const FromURLsTab: React.FC<FromCSVFileTabProps> = ({
           labelPlacement="top"
           control={
             <Input
+              value={newURL ?? ''}
               onChange={(e) => {
                 setURLs({
                   urls,
@@ -74,6 +74,7 @@ export const FromURLsTab: React.FC<FromCSVFileTabProps> = ({
           labelPlacement="top"
           control={
             <Input
+              value={newTitle ?? ''}
               onChange={(e) => {
                 setURLs({
                   urls,
@@ -91,6 +92,7 @@ export const FromURLsTab: React.FC<FromCSVFileTabProps> = ({
           labelPlacement="top"
           control={
             <Input
+              value={newURLTag ?? ''}
               onChange={(e) => {
                 setURLs({
                   urls,

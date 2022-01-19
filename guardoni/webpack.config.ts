@@ -10,11 +10,11 @@ process.env.VERSION = packageJson.version;
 const { buildENV, ...config } = getConfig({
   cwd: __dirname,
   target: 'electron-main',
-  outputDir: path.resolve(__dirname, 'build/desktop'),
+  outputDir: path.resolve(__dirname, 'build/electron'),
   env: AppEnv,
   hot: false,
   entry: {
-    main: path.resolve(__dirname, './src/desktop/main.ts'),
+    main: path.resolve(__dirname, './src/electron/main.ts'),
   },
 });
 
@@ -30,7 +30,7 @@ config.plugins.push(
           __dirname,
           process.env.NODE_ENV === 'development' ? '.env.development' : '.env'
         ),
-        to: path.resolve(__dirname, 'build/desktop/.env'),
+        to: path.resolve(__dirname, 'build/electron/.env'),
         toType: 'file',
       },
     ],
@@ -40,12 +40,12 @@ config.plugins.push(
 // renderer config
 const { buildENV: rendererBuildENV, ...rendererConfig } = getConfig({
   cwd: __dirname,
-  outputDir: path.resolve(__dirname, 'build/desktop/renderer'),
+  outputDir: path.resolve(__dirname, 'build/electron/renderer'),
   env: AppEnv,
   hot: false,
   target: 'electron-renderer',
   entry: {
-    renderer: path.resolve(__dirname, 'src/desktop/renderer.tsx'),
+    renderer: path.resolve(__dirname, 'src/electron/renderer.tsx'),
   },
 });
 

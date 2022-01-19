@@ -255,7 +255,6 @@ const operateBrowser =
   ): TE.TaskEither<AppError, void> => {
     return pipe(
       TE.sequenceSeqArray(directives.map((d) => operateTab(ctx)(page, d))),
-      // todo: directive.loadFor
       TE.chain(() =>
         TE.tryCatch(async () => {
           if (ctx.config.loadFor < 20000) {

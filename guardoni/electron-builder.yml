@@ -9,7 +9,7 @@ asar: false
 extends: null
 
 extraMetadata:
-  main: "build/desktop/main.js"
+  main: "build/electron/main.js"
 
 files: [
   "build/**",
@@ -25,4 +25,4 @@ linux:
   target: ["deb"]
 
 win:
-  target: ["portable" ]
+  target: ["portable"]

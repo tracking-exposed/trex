@@ -24,3 +24,5 @@ export const EVENTS = t.union(
   ],
   'EVENTS'
 );
+
+export type EVENTS = t.TypeOf<typeof EVENTS>

@@ -1,6 +1,5 @@
 import { AppError, toAppError } from '@shared/errors/AppError';
 import { ComparisonDirective } from '@shared/models/Directive';
-import { createGuardoniWindow } from 'desktop/windows/GuardoniWindow';
 import { dialog, ipcMain } from 'electron';
 import { pipe } from 'fp-ts/lib/function';
 import * as TE from 'fp-ts/lib/TaskEither';
@@ -13,18 +12,26 @@ import { GuardoniConfigRequired } from '../../guardoni/types';
 import { guardoniLogger } from '../../logger';
 import {
   CREATE_EXPERIMENT_EVENT,
+  EVENTS,
   GET_GUARDONI_CONFIG_EVENT,
   GLOBAL_ERROR_EVENT,
   GUARDONI_OUTPUT_EVENT,
   PICK_CSV_FILE_EVENT,
   RUN_GUARDONI_EVENT,
 } from '../models/events';
+import { OutputItem } from '../OutputPanel';
+import { createGuardoniWindow } from '../windows/GuardoniWindow';
 
 const guardoniEventsLogger = guardoniLogger.extend('events');
 
 export interface Events {
   register: () => void;
 }
+
+const sendMessage =
+  (w: Electron.BrowserWindow) => (channel: EVENTS, event: OutputItem) => {
+    w.webContents.postMessage(channel, event);
+  };
 
 const pickCSVFile = (): TE.TaskEither<
   AppError,
@@ -49,7 +56,7 @@ const pickCSVFile = (): TE.TaskEither<
   );
 };
 
-const liftEventListener =
+const GetEventListenerLifter =
   (
     mainWindow: Electron.BrowserWindow,
     guardoniWindow: Electron.BrowserWindow
@@ -85,9 +92,11 @@ export const GetEvents = ({
   guardoniWindow,
   guardoniBrowser,
 }: GetEventsContext): Events => {
+  const sMessage = sendMessage(mainWindow);
+
   return {
     register: () => {
-      const liftEventTask = liftEventListener(mainWindow, guardoniWindow);
+      const liftEventTask = GetEventListenerLifter(mainWindow, guardoniWindow);
       // pick csv file
       ipcMain.on(PICK_CSV_FILE_EVENT.value, () => {
         void pipe(pickCSVFile(), liftEventTask(PICK_CSV_FILE_EVENT.value));
@@ -100,6 +109,7 @@ export const GetEvents = ({
           GET_GUARDONI_CONFIG_EVENT.value,
           args
         );
+
         void pipe(
           TE.right(GetGuardoni({ verbose: false, headless: true }).config),
           liftEventTask(GET_GUARDONI_CONFIG_EVENT.value)
@@ -113,12 +123,17 @@ export const GetEvents = ({
         const [config, records] = args;
 
         const g = GetGuardoni(config);
+
         void pipe(
           g.registerExperiment(records, 'comparison'),
           TE.map((e) => {
-            mainWindow.webContents.postMessage(GUARDONI_OUTPUT_EVENT.value, {
-              message: '',
+            sMessage(GUARDONI_OUTPUT_EVENT.value, {
+              id: uuid(),
+              level: 'Info',
+              message: e.message,
+              details: e.values,
             });
+
             return e.values.experimentId;
           }),
           liftEventTask(CREATE_EXPERIMENT_EVENT.value)

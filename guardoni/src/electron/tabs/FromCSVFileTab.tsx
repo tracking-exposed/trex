@@ -5,13 +5,10 @@ import {
   FormHelperText,
 } from '@material-ui/core';
 import { ComparisonDirective } from '@shared/models/Directive';
-import {
-  CREATE_EXPERIMENT_EVENT,
-  PICK_CSV_FILE_EVENT,
-} from 'desktop/models/events';
 import { ipcRenderer } from 'electron';
 import * as React from 'react';
 import { GuardoniConfig } from '../../guardoni/types';
+import { CREATE_EXPERIMENT_EVENT, PICK_CSV_FILE_EVENT } from '../models/events';
 
 interface FromCSVFileTabProps {
   config: GuardoniConfig;
