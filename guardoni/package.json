@@ -15,7 +15,8 @@
     "pack": "electron-builder build --dir",
     "dist:win": "electron-builder build -w",
     "dist": "electron-builder build -l",
-    "postinstall": "electron-builder install-app-deps"
+    "postinstall": "electron-builder install-app-deps",
+    "prepack": "yarn build"
   },
   "bin": "./bin/guardoni-cli.js",
   "main": "./build/desktop/main.js",

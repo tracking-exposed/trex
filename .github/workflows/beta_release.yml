@@ -28,4 +28,5 @@ jobs:
       - name: Release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: yarn release-it --preRelease
+        # run: yarn release-it --preRelease
+        run: yarn release-it premajor --preReleaseId=beta

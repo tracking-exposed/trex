@@ -28,11 +28,12 @@ module.exports = {
   hooks: {
     'after:init': [],
     'after:bump': [
-      'yarn taboule build',
-      'yarn extension dist',
-      'yarn guardoni build',
-      'yarn guardoni dist',
-      'yarn ycai build:ext',
+      'yarn clean',
+      'NODE_ENV=production yarn taboule build',
+      'NODE_ENV=production yarn extension dist:guardoni',
+      'NODE_ENV=production yarn guardoni build',
+      'NODE_ENV=production yarn guardoni dist',
+      'NODE_ENV=production yarn ycai build:ext',
     ],
   },
   git: {
