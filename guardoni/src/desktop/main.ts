@@ -1,21 +1,16 @@
-import dotenv from 'dotenv';
 import { app, BrowserWindow, ipcMain } from 'electron';
 import log from 'electron-log';
 import { sequenceS } from 'fp-ts/lib/Apply';
 import * as E from 'fp-ts/lib/Either';
 import { pipe } from 'fp-ts/lib/function';
 import * as TE from 'fp-ts/lib/TaskEither';
-import { PathReporter } from 'io-ts/lib/PathReporter';
 import os from 'os';
 import * as path from 'path';
 import puppeteer from 'puppeteer-core';
 import pie from 'puppeteer-in-electron';
 import { v4 as uuid } from 'uuid';
-import { AppEnv } from '../AppEnv';
 import { GetGuardoni } from '../guardoni/guardoni';
 import { GuardoniConfig } from '../guardoni/types';
-
-dotenv.config();
 
 let mainWindow: BrowserWindow | null = null;
 
@@ -24,7 +19,7 @@ const mainWindowHTML = `file://${path.join(
   'renderer/guardoni.html'
 )}`;
 
-const creatMainWindow = (env: AppEnv): TE.TaskEither<Error, BrowserWindow> => {
+const creatMainWindow = (): TE.TaskEither<Error, BrowserWindow> => {
   return TE.tryCatch(async () => {
     mainWindow = new BrowserWindow({
       width: 1000,
@@ -40,7 +35,7 @@ const creatMainWindow = (env: AppEnv): TE.TaskEither<Error, BrowserWindow> => {
 
     await mainWindow.loadURL(mainWindowHTML);
 
-    if (env.NODE_ENV === 'development') {
+    if (process.env.NODE_ENV === 'development') {
       mainWindow.webContents.openDevTools();
     }
 
@@ -76,23 +71,12 @@ export const run = async (): Promise<void> => {
   app.setPath('userData', path.resolve(os.homedir(), `.config/guardoni/data`));
 
   return pipe(
-    AppEnv.decode(process.env),
-    TE.fromEither,
-    TE.mapLeft((e) => {
-      // eslint-disable-next-line no-console
-      console.log(PathReporter.report(E.left(e)));
-      return new Error('failed to parse process.env');
-    }),
-    TE.chain((env) =>
-      pipe(
-        TE.tryCatch(() => pie.initialize(app), E.toError),
-        TE.chain(() => TE.tryCatch(() => app.whenReady(), E.toError)),
-        TE.map(() => ({ app, env }))
-      )
-    ),
-    TE.chain(({ app, env }) => {
+    TE.tryCatch(() => pie.initialize(app), E.toError),
+    TE.chain(() => TE.tryCatch(() => app.whenReady(), E.toError)),
+    TE.map(() => ({ app })),
+    TE.chain(({ app }) => {
       return pipe(
-        creatMainWindow(env),
+        creatMainWindow(),
         TE.chain((win) =>
           sequenceS(TE.ApplicativePar)({
             guardoniApp: createGuardoniWindow(app, win),
