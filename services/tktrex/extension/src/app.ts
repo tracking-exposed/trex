@@ -194,7 +194,7 @@ function handleSearch(element: Node): void {
     'textContent',
   );
   if (dat.length === 0 && te.indexOf('No results found') === -1) {
-    console.log(
+    log.debug(
       'Matched invalid h2:',
       te,
       '(which got ignored because they are not errors)',
@@ -212,12 +212,12 @@ function handleSearch(element: Node): void {
     if (monocheck === '1') return;
     truel.setAttribute('trex-taken', '1');
   } catch (error) {
-    console.log('Error with attribute tampering, skipping');
+    log.error('Error with attribute tampering, skipping');
     return;
   }
 
   hub.dispatch({
-    type: 'Suggested', // I'm using Suggested only because of TS enforcing
+    type: 'Search',
     payload: {
       html: truehtml,
       href: window.location.href,
@@ -249,7 +249,7 @@ function handleSuggested(elem: Node): void {
 let videoCounter = 0;
 
 function handleVideo(node: HTMLElement): void {
-  /* this is not the right approach, but we shouldn't save 
+  /* this is not the right approach, but we shouldn't save
      video when we're in search or tag condition
    -- I would have
      used getNatureByHref(window.location.href) but I couldn't
