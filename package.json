@@ -31,6 +31,7 @@
     "backend": "yarn workspace yttrex-backend",
     "extension": "yarn workspace yttrex-extension",
     "guardoni": "yarn workspace guardoni",
+    "tk:ext": "yarn workspace tktrex",
     "ycai": "yarn workspace @trex/ycai",
     "lint-staged": "lint-staged",
     "postinstall": "husky install"

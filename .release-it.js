@@ -32,6 +32,7 @@ module.exports = {
       'NODE_ENV=production yarn extension dist:guardoni',
       'NODE_ENV=production yarn guardoni build',
       'NODE_ENV=production yarn guardoni dist',
+      'NODE_ENV=production yarn tk:ext build',
       'NODE_ENV=production yarn ycai build:ext',
     ],
   },

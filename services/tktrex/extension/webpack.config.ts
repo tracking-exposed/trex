@@ -89,7 +89,10 @@ if (config.mode === 'production') {
           archive: [
             {
               source: outputDir,
-              destination: path.join(outputDir, 'extension.zip'),
+              destination: path.join(
+                outputDir,
+                `tktrex-webext-${process.env.VERSION}.zip`,
+              ),
             },
           ],
         },

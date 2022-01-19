@@ -70,7 +70,7 @@ if (config.mode === 'production') {
           archive: [
             {
               source: './build/extension',
-              destination: './build/extension/extension.zip',
+              destination: `./build/extension/ycai-webext-${manifestVersion}.zip`,
             },
           ],
         },
