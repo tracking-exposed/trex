@@ -7,26 +7,6 @@ import * as TE from 'fp-ts/lib/TaskEither';
 import { NonEmptyString } from 'io-ts-types';
 import type * as puppeteer from 'puppeteer-core';
 
-export type GuardoniCommandConfig =
-  | {
-      run: 'register';
-      records: ComparisonDirectiveRow[];
-      type: DirectiveType;
-    }
-  | {
-      run: 'register-csv';
-      file: string;
-      type: DirectiveType;
-    }
-  | {
-      run: 'experiment';
-      experiment: string;
-    }
-  | {
-      run: 'auto';
-      value: '1' | '2';
-    };
-
 export interface GuardoniConfig {
   headless: boolean;
   verbose: boolean;
@@ -80,14 +60,8 @@ export interface GuardoniSuccessOutput {
 
 export type GuardoniOutput = GuardoniErrorOutput | GuardoniSuccessOutput;
 
-export type GuardoniCLI = (command: GuardoniCommandConfig) => {
-  run: TE.TaskEither<AppError, GuardoniOutput>;
-  runOrThrow: () => Promise<void>;
-};
-
 export interface Guardoni {
   config: GuardoniConfigRequired;
-  cli: GuardoniCLI;
   // register an experiment from the given csv file
   registerExperimentFromCSV: (
     file: NonEmptyString,
@@ -100,6 +74,7 @@ export interface Guardoni {
   runExperiment: (
     experiment: NonEmptyString
   ) => TE.TaskEither<AppError, GuardoniSuccessOutput>;
+  runAuto: (value: '1' | '2') => TE.TaskEither<AppError, GuardoniSuccessOutput>;
   runExperimentForPage: (
     page: puppeteer.Page,
     experiment: NonEmptyString,

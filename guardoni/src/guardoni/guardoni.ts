@@ -43,11 +43,8 @@ import { guardoniLogger } from '../logger';
 import { fsTE } from './fs.provider';
 import {
   Guardoni,
-  GuardoniCLI,
-  GuardoniCommandConfig,
   GuardoniConfig,
   GuardoniConfigRequired,
-  GuardoniOutput,
   GuardoniSuccessOutput,
   ProgressDetails,
 } from './types';
@@ -55,11 +52,13 @@ import { csvParseTE, getChromePath } from './utils';
 
 // const COMMANDJSONEXAMPLE =
 //   'https://youtube.tracking.exposed/json/automation-example.json';
-const EXTENSION_WITH_OPT_IN_ALREADY_CHECKED =
+
+const getExtensionWithOptInURL = (v: string): string =>
   'https://github.com/tracking-exposed/yttrex/releases/download/v1.8.992/extension-1.9.0.99.zip';
 
 const DEFAULT_BASE_PATH = process.cwd();
-const DEFAULT_SERVER = 'http://localhost:9000/api'; // 'https://youtube.tracking.exposed/api';
+const DEFAULT_BACKEND =
+  process.env.BACKEND ?? 'https://youtube.tracking.exposed/api';
 const DEFAULT_EXTENSION_DIR = path.resolve(
   DEFAULT_BASE_PATH,
   'build/extension'
@@ -126,7 +125,7 @@ const downloadExtension = (
       path.join(ctx.config.extensionDir, 'tmpzipf.zip')
     );
 
-    execSync(`curl -L ${EXTENSION_WITH_OPT_IN_ALREADY_CHECKED} -o ${zipFileP}`);
+    execSync(`curl -L ${getExtensionWithOptInURL('')} -o ${zipFileP}`);
     execSync(`unzip ${zipFileP} -d ${ctx.config.extensionDir}`);
   }, toAppError);
 };
@@ -593,6 +592,7 @@ const sanityChecks = (
   return pipe(ensureProfileExists(ctx));
 };
 
+// todo: check if a profile already exists in the file system
 const getProfile = (config: GuardoniConfig): string => {
   return (
     config.profile ??
@@ -626,7 +626,7 @@ export const getConfigWithDefaults = (
     ),
     evidenceTag,
     extensionDir: DEFAULT_EXTENSION_DIR,
-    backend: DEFAULT_SERVER,
+    backend: DEFAULT_BACKEND,
     loadFor: DEFAULT_LOAD_FOR,
     profile: getProfile({ ...conf, evidenceTag }),
     basePath: sanitizedConf.basePath
@@ -782,28 +782,6 @@ const runAuto =
     return runExperiment(ctx)(experimentId);
   };
 
-const foldOutput = (
-  command: GuardoniCommandConfig,
-  out: GuardoniOutput
-): string => {
-  const rest =
-    out.type === 'success'
-      ? Object.entries(out.values).map(([key, value]) => `${key}: ${value}`)
-      : out.details;
-
-  return [
-    '\n \n',
-    `${command.run.slice(0, 1).toUpperCase()}${command.run.slice(1)} ${
-      out.type === 'error' ? 'failed' : 'succeeded'
-    }: ${out.message}`,
-    '\n \n',
-    out.type === 'error' ? 'Error Details:' : 'Output values: ',
-    '\n',
-    ...rest,
-    '\n \n',
-  ].join('\n');
-};
-
 const loadContext = (
   config: GuardoniConfigRequired
 ): TE.TaskEither<AppError, GuardoniContext> => {
@@ -896,59 +874,13 @@ export const GetGuardoni: GetGuardoni = (config) => {
 
   const configWithDefaults = getConfigWithDefaults(config);
 
-  const cli: GuardoniCLI = (command) => {
-    const run = pipe(
-      loadContext(configWithDefaults),
-      TE.chain((ctx) => {
-        switch (command.run) {
-          case 'register-csv':
-            return registerCSV(ctx)(command.file, command.type);
-          case 'register':
-            return registerExperiment(ctx)(command.records, command.type);
-          case 'experiment':
-            return runExperiment(ctx)(command.experiment);
-          case 'auto':
-          default:
-            return runAuto(ctx)(command.value);
-        }
-      }),
-      TE.mapLeft((e) => {
-        guardoniLogger.error(`Run error: %O`, e);
-        return e;
-      })
-    );
-
-    const runOrThrow = pipe(
-      run,
-      TE.fold(
-        (e) => () => {
-          // eslint-disable-next-line
-          console.log(
-            foldOutput(command, {
-              type: 'error',
-              message: e.message,
-              details: e.details,
-            })
-          );
-          return Promise.resolve(process.exit(1));
-        },
-        (result) => () => {
-          // eslint-disable-next-line
-          console.log(foldOutput(command, result));
-          return Promise.resolve(process.exit(0));
-        }
-      )
-    );
-
-    return {
-      run,
-      runOrThrow,
-    };
-  };
-
   return {
-    cli,
     config: configWithDefaults,
+    runAuto: (value) =>
+      pipe(
+        loadContext(configWithDefaults),
+        TE.chain((ctx) => runAuto(ctx)(value))
+      ),
     runExperiment: (experimentId) =>
       pipe(
         loadContext(configWithDefaults),
