@@ -27,14 +27,7 @@ const conventionalCommitTypes = [
 module.exports = {
   hooks: {
     'after:init': [],
-    'after:bump': [
-      'NODE_ENV=production yarn taboule build',
-      'NODE_ENV=production yarn extension dist:guardoni',
-      'NODE_ENV=production yarn guardoni build',
-      'NODE_ENV=production yarn guardoni dist',
-      'NODE_ENV=production yarn tk:ext build',
-      'NODE_ENV=production yarn ycai build:ext',
-    ],
+    'after:bump': ['yarn release-it-after-bump'],
   },
   git: {
     requireUpstream: false,

@@ -34,7 +34,8 @@
     "tk:ext": "yarn workspace tktrex",
     "ycai": "yarn workspace @trex/ycai",
     "lint-staged": "lint-staged",
-    "postinstall": "husky install"
+    "postinstall": "husky install",
+    "release-it-after-bump": "./scripts/release-it-after-bump.sh"
   },
   "devDependencies": {
     "@commitlint/cli": "^13.2.1",
