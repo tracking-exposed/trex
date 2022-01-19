@@ -34,6 +34,7 @@ jobs:
       - name: Build dashboard
         run: yarn build
 
+      # this will be replaced by yarn release-it
       # - name: Release
       #   env:
       #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
