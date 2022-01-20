@@ -2,6 +2,7 @@ import * as t from 'io-ts';
 
 export const PICK_CSV_FILE_EVENT = t.literal('pickCSVFile');
 export const GET_GUARDONI_CONFIG_EVENT = t.literal('getGuardoniConfig');
+export const GET_GUARDONI_ENV_EVENT = t.literal('getGuardoniEnvEvent');
 export const OPEN_GUARDONI_DIR = t.literal('openGuardoniDir');
 export const CREATE_EXPERIMENT_EVENT = t.literal('createExperimentEvent');
 export const GET_PUBLIC_DIRECTIVES = t.literal('getPublicDirectives');

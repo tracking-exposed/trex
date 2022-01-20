@@ -41,7 +41,7 @@ const useStyles = makeStyles((theme) => ({
 
 export interface OutputItem {
   id: string;
-  level: 'Error' | 'Info';
+  level: 'Error' | 'Info' | 'Debug';
   message: string;
   details?: string[] | object;
 }

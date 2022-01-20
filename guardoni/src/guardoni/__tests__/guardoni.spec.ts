@@ -2,9 +2,10 @@
 jest.mock('axios');
 jest.mock('puppeteer-core');
 import axios from 'axios';
-import * as path from 'path';
-import { getDefaultProfile, GetGuardoni, getProfileDataDir } from '../guardoni';
 import * as fs from 'fs';
+import * as path from 'path';
+import { guardoniLogger } from '../../logger';
+import { getDefaultProfile, GetGuardoni, getProfileDataDir } from '../guardoni';
 
 const axiosMock = axios as jest.Mocked<typeof axios>;
 axiosMock.create.mockImplementation(() => axiosMock);
@@ -43,9 +44,8 @@ describe('Guardoni', () => {
 
     test('succeeds when no profile name is given but a profile dir exists', async () => {
       const g = await GetGuardoni({
-        headless: false,
-        verbose: false,
-        basePath,
+        config: { headless: false, verbose: false, basePath },
+        logger: guardoniLogger,
       })();
 
       expect(g).toMatchObject({
@@ -61,11 +61,14 @@ describe('Guardoni', () => {
       const profileName = 'profile-test-0';
       const backend = 'http://localhost:9000/api';
       const g = await GetGuardoni({
-        headless: false,
-        verbose: false,
-        basePath,
-        profileName,
-        backend,
+        config: {
+          headless: false,
+          verbose: false,
+          basePath,
+          profileName,
+          backend,
+        },
+        logger: guardoniLogger,
       })();
 
       expect(g).toMatchObject({

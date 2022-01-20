@@ -101,7 +101,6 @@ export const App: React.FC = () => {
 
   React.useEffect(() => {
     // listen for global errors
-
     ipcRenderer.on(GLOBAL_ERROR_EVENT.value, (event, error) => {
       setOutputItems(
         outputItems.concat({
@@ -124,15 +123,11 @@ export const App: React.FC = () => {
 
     // update guardoni output when proper event is received
     ipcRenderer.on(GUARDONI_OUTPUT_EVENT.value, (event, output) => {
-      setOutputItems(
-        outputItems.concat({
-          id: uuid(),
-          level: 'Info',
-          ...output,
-        })
-      );
+      setOutputItems(outputItems.concat(output));
     });
+  }, [outputItems]);
 
+  React.useEffect(() => {
     // update state when guardoni config has been received
     ipcRenderer.on(GET_GUARDONI_CONFIG_EVENT.value, (event, config) => {
       setConfig(config);
@@ -142,11 +137,9 @@ export const App: React.FC = () => {
     ipcRenderer.send(GET_GUARDONI_CONFIG_EVENT.value);
 
     return () => {
-      ipcRenderer.removeAllListeners(GUARDONI_OUTPUT_EVENT.value);
-      ipcRenderer.removeAllListeners(GUARDONI_ERROR_EVENT.value);
       ipcRenderer.removeAllListeners(GET_GUARDONI_CONFIG_EVENT.value);
     };
-  }, [outputItems]);
+  }, []);
 
   if (!config) {
     return <LinearProgress />;
@@ -282,7 +275,11 @@ export const App: React.FC = () => {
                   <FormHelperText>Chrome executable path</FormHelperText>
                 </Box>
               </Grid>
-              <Grid item md={6} direction="column" style={{ display: 'flex' }}>
+              <Grid
+                item
+                md={6}
+                style={{ display: 'flex', flexDirection: 'column' }}
+              >
                 <FormControlLabel
                   className={classes.formControlCheckbox}
                   label={'Headless'}

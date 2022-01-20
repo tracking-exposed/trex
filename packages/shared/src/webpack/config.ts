@@ -129,15 +129,17 @@ const getConfig = <E extends t.Props>(
   // eslint-disable-next-line
   webpackLogger.debug(`Process env %O`, stringifiedAppEnv);
 
-  const plugins: any[] = [
-    new DotenvPlugin({
-      path: DOTENV_CONFIG_PATH,
-      silent: true,
-    }),
-  ];
+  const plugins: any[] = [];
 
   if (opts.target === 'web' || opts.target === 'electron-renderer') {
     plugins.push(new webpack.DefinePlugin(stringifiedAppEnv as any));
+  } else {
+    plugins.push(
+      new DotenvPlugin({
+        path: DOTENV_CONFIG_PATH,
+        silent: true,
+      })
+    );
   }
 
   if (opts.hot && mode === 'development') {

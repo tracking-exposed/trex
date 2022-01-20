@@ -24,7 +24,6 @@ export const AutoRunTab: React.FC<FromCSVFileTabProps> = ({ onSubmit }) => {
   React.useEffect(() => {
     ipcRenderer.on(GET_PUBLIC_DIRECTIVES.value, (event, ...args) => {
       const [directives] = args;
-      console.log({ args, directives });
       setDirectives(directives);
     });
 
@@ -42,12 +41,16 @@ export const AutoRunTab: React.FC<FromCSVFileTabProps> = ({ onSubmit }) => {
         labelPlacement="top"
         control={
           <Select
-            value={directiveId}
+            value={directiveId ?? ''}
             onChange={(e, v) => setDirectiveId(e.target.value as any)}
             fullWidth
           >
             {directives.map((d, i) => (
-              <MenuItem value={d.experimentId} selected={i === 0}>
+              <MenuItem
+                key={d.experimentId}
+                value={d.experimentId}
+                selected={i === 0}
+              >
                 {d.experimentId}
               </MenuItem>
             ))}

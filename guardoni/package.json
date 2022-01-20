@@ -19,7 +19,7 @@
     "prepack": "yarn build"
   },
   "bin": "./bin/guardoni-cli.js",
-  "main": "./build/desktop/main.js",
+  "main": "./build/electron/main.js",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/tracking-exposed/yttrex.git"

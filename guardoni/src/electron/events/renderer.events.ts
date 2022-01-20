@@ -1,28 +1,27 @@
 import { AppError, toAppError } from '@shared/errors/AppError';
+import { Logger } from '@shared/logger';
 import { ComparisonDirective } from '@shared/models/Directive';
 import { APIClient } from '@shared/providers/api.provider';
+import { AppEnv } from 'AppEnv';
 import { dialog, ipcMain } from 'electron';
 import { pipe } from 'fp-ts/lib/function';
 import * as TE from 'fp-ts/lib/TaskEither';
 import { NonEmptyString } from 'io-ts-types';
 import * as puppeteer from 'puppeteer-core';
 import * as pie from 'puppeteer-in-electron';
-import { v4 as uuid } from 'uuid';
 import { GetGuardoni, readCSVAndParse } from '../../guardoni/guardoni';
 import { GuardoniConfigRequired } from '../../guardoni/types';
 import { guardoniLogger } from '../../logger';
 import {
   CREATE_EXPERIMENT_EVENT,
-  EVENTS,
   GET_GUARDONI_CONFIG_EVENT,
   GET_PUBLIC_DIRECTIVES,
   GLOBAL_ERROR_EVENT,
-  GUARDONI_OUTPUT_EVENT,
   PICK_CSV_FILE_EVENT,
   RUN_GUARDONI_EVENT,
 } from '../models/events';
-import { OutputItem } from '../OutputPanel';
 import { createGuardoniWindow } from '../windows/GuardoniWindow';
+import { getEventsLogger } from './event.logger';
 
 const guardoniEventsLogger = guardoniLogger.extend('events');
 
@@ -30,15 +29,9 @@ export interface Events {
   register: () => void;
 }
 
-const sendMessage =
-  (w: Electron.BrowserWindow) => (channel: EVENTS, event: OutputItem) => {
-    w.webContents.postMessage(channel, event);
-  };
-
-const pickCSVFile = (): TE.TaskEither<
-  AppError,
-  { path: string; parsed: ComparisonDirective[] }
-> => {
+const pickCSVFile = (
+  logger: Pick<Logger, 'debug' | 'error' | 'info'>
+): TE.TaskEither<AppError, { path: string; parsed: ComparisonDirective[] }> => {
   return pipe(
     TE.tryCatch(
       () =>
@@ -51,7 +44,7 @@ const pickCSVFile = (): TE.TaskEither<
     ),
     TE.chain((value) => {
       return pipe(
-        readCSVAndParse(value.filePaths[0], 'comparison'),
+        readCSVAndParse(logger)(value.filePaths[0], 'comparison'),
         TE.map((parsed) => ({ path: value.filePaths[0], parsed }))
       );
     })
@@ -83,6 +76,7 @@ const GetEventListenerLifter =
 
 interface GetEventsContext {
   app: Electron.App;
+  env: AppEnv;
   api: APIClient;
   mainWindow: Electron.BrowserWindow;
   guardoniWindow: Electron.BrowserWindow;
@@ -92,30 +86,37 @@ interface GetEventsContext {
 export const GetEvents = ({
   app,
   api,
+  env,
   mainWindow,
   guardoniWindow,
   guardoniBrowser,
 }: GetEventsContext): Events => {
-  const sMessage = sendMessage(mainWindow);
+  const logger = getEventsLogger(mainWindow);
 
   return {
     register: () => {
       const liftEventTask = GetEventListenerLifter(mainWindow, guardoniWindow);
       // pick csv file
       ipcMain.on(PICK_CSV_FILE_EVENT.value, () => {
-        void pipe(pickCSVFile(), liftEventTask(PICK_CSV_FILE_EVENT.value));
+        void pipe(
+          pickCSVFile(logger),
+          liftEventTask(PICK_CSV_FILE_EVENT.value)
+        );
       });
 
       // get guardoni config
       ipcMain.on(GET_GUARDONI_CONFIG_EVENT.value, (event, ...args) => {
-        guardoniEventsLogger.debug(
+        logger.debug(
           `Event %s with payload %O`,
           GET_GUARDONI_CONFIG_EVENT.value,
           args
         );
 
         void pipe(
-          GetGuardoni({ verbose: false, headless: true }),
+          GetGuardoni({
+            config: { verbose: false, headless: true, backend: env.BACKEND },
+            logger,
+          }),
           TE.map((g) => g.config),
           liftEventTask(GET_GUARDONI_CONFIG_EVENT.value)
         );
@@ -128,15 +129,10 @@ export const GetEvents = ({
         const [config, records] = args;
 
         void pipe(
-          GetGuardoni(config),
+          GetGuardoni({ config, logger }),
           TE.chain((g) => g.registerExperiment(records, 'comparison')),
           TE.map((e) => {
-            sMessage(GUARDONI_OUTPUT_EVENT.value, {
-              id: uuid(),
-              level: 'Info',
-              message: e.message,
-              details: e.values,
-            });
+            logger.info(e.message, e.values);
 
             return e.values.experimentId;
           }),
@@ -159,7 +155,7 @@ export const GetEvents = ({
           );
 
           void pipe(
-            GetGuardoni(config),
+            GetGuardoni({ config, logger }),
             TE.chain((g) =>
               pipe(
                 TE.tryCatch(async () => {
@@ -189,10 +185,7 @@ export const GetEvents = ({
                       config.extensionDir
                     );
 
-                  mainWindow.webContents.postMessage('guardoniOutput', {
-                    message: 'Extension loaded',
-                    details: extension,
-                  });
+                  logger.debug('Extension loaded %O', extension);
 
                   return pie.getPage(guardoniBrowser, guardoniWindow);
                 }, toAppError),
@@ -203,15 +196,12 @@ export const GetEvents = ({
                     page,
                     experimentId,
                     (progress) => {
-                      mainWindow.webContents.postMessage(
-                        GUARDONI_OUTPUT_EVENT.value,
-                        {
-                          id: uuid(),
-                          ...progress,
-                        }
-                      );
+                      logger.info(progress.message, ...progress.details);
                     }
                   );
+                }),
+                TE.map(() => {
+                  guardoniWindow.close();
                 })
               )
             ),

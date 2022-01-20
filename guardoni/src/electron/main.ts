@@ -14,6 +14,7 @@ import { GetEvents } from './events/renderer.events';
 import { createGuardoniWindow } from './windows/GuardoniWindow';
 import * as dotenv from 'dotenv';
 import { GetAPI } from '@shared/providers/api.provider';
+import debug from 'debug';
 
 // load env from .env file shipped with compiled code
 dotenv.config({
@@ -57,6 +58,7 @@ const creatMainWindow = (
 };
 
 export const run = async (): Promise<void> => {
+  debug.enable('guardoni*');
   log.info('Guardoni start', process.cwd());
 
   app.setPath('userData', path.resolve(os.homedir(), `.config/guardoni/data`));
@@ -67,6 +69,10 @@ export const run = async (): Promise<void> => {
       return new AppError('EnvError', 'process.env is malformed', failure(e));
     }),
     TE.fromEither,
+    TE.map((env) => {
+      log.debug('Loaded env %O', env);
+      return env;
+    }),
     TE.chain((env) =>
       pipe(
         TE.tryCatch(() => pie.initialize(app), toAppError),
@@ -87,6 +93,7 @@ export const run = async (): Promise<void> => {
           // bind events for main window
           GetEvents({
             app,
+            env,
             api: GetAPI({ baseURL: env.BACKEND }).API,
             mainWindow,
             guardoniWindow: guardoniApp.window,

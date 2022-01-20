@@ -8,6 +8,7 @@
  */
 import { AppError, toAppError } from '@shared/errors/AppError';
 import { toValidationError } from '@shared/errors/ValidationError';
+import { Logger } from '@shared/logger';
 import {
   ChiaroScuroDirective,
   ChiaroScuroDirectiveType,
@@ -21,6 +22,7 @@ import {
 } from '@shared/models/Directive';
 import { APIClient, GetAPI } from '@shared/providers/api.provider';
 import { execSync } from 'child_process';
+import { differenceInSeconds, format } from 'date-fns';
 import debug from 'debug';
 import { sequenceS } from 'fp-ts/lib/Apply';
 import * as E from 'fp-ts/lib/Either';
@@ -34,12 +36,10 @@ import * as t from 'io-ts';
 import { NonEmptyString } from 'io-ts-types/lib/NonEmptyString';
 import { PathReporter } from 'io-ts/lib/PathReporter';
 import _ from 'lodash';
-import moment from 'moment';
 import path from 'path';
 // import pluginStealth from "puppeteer-extra-plugin-stealth";
 import puppeteer from 'puppeteer-core';
 import * as domainSpecific from '../domainSpecific';
-import { guardoniLogger } from '../logger';
 import { fsTE } from './fs.provider';
 import {
   Guardoni,
@@ -95,6 +95,7 @@ interface GuardoniContext {
   config: GuardoniConfigRequired;
   profile: GuardoniProfile;
   guardoniConfigFile: string;
+  logger: Pick<Logger, 'info' | 'error' | 'debug'>;
 }
 
 // old functions
@@ -103,7 +104,7 @@ const downloadExtension = (
   ctx: GuardoniContext
 ): IOE.IOEither<AppError, void> => {
   return IOE.tryCatch(() => {
-    guardoniLogger.debug(`Checking extension manifest.json...`);
+    ctx.logger.debug(`Checking extension manifest.json...`);
     const manifestPath = path.resolve(
       path.join(ctx.config.extensionDir, 'manifest.json')
     );
@@ -111,14 +112,14 @@ const downloadExtension = (
     const manifest = fs.existsSync(manifestPath);
 
     if (manifest) {
-      guardoniLogger.debug(`Manifest found, no need to download the extension`);
+      ctx.logger.debug(`Manifest found, no need to download the extension`);
       return;
     }
 
-    guardoniLogger.debug('Ensure %s dir exists', ctx.config.extensionDir);
+    ctx.logger.debug('Ensure %s dir exists', ctx.config.extensionDir);
     fs.mkdirSync(ctx.config.extensionDir, { recursive: true });
 
-    guardoniLogger.debug(
+    ctx.logger.debug(
       "Executing curl and unzip (if these binary aren't present in your system please mail support at tracking dot exposed because you might have worst problems)"
     );
     const zipFileP = path.resolve(
@@ -154,13 +155,13 @@ const dispatchBrowser = (
       );
     }
     commandLineArg.push('--proxy-server=' + proxy);
-    guardoniLogger.debug(
+    ctx.logger.debug(
       'Dispatching browser: profile usage count %d proxy %s',
       execCount,
       proxy
     );
   } else {
-    guardoniLogger.debug(
+    ctx.logger.debug(
       'Dispatching browser: profile usage count %d, with NO PROXY',
       execCount
     );
@@ -191,7 +192,7 @@ const operateTab =
       try {
         await domainSpecific.beforeLoad(page, directive);
       } catch (error) {
-        guardoniLogger.debug(
+        ctx.logger.debug(
           'error in beforeLoad %s %s directive %o',
           (error as any).message,
           (error as any).stack,
@@ -201,7 +202,7 @@ const operateTab =
 
       const loadFor = (directive as any).loadFor ?? ctx.config.loadFor;
 
-      guardoniLogger.info(
+      ctx.logger.info(
         '— Loading %s (for %d ms) %O',
         directive.url,
         loadFor,
@@ -218,14 +219,14 @@ const operateTab =
       try {
         await domainSpecific.beforeWait(page, directive);
       } catch (error) {
-        guardoniLogger.error(
+        ctx.logger.error(
           'error in beforeWait %s (%s)',
           (error as any).message,
           (error as any).stack
         );
       }
 
-      guardoniLogger.info(
+      ctx.logger.info(
         'Directive to URL %s, Loading delay %d (--load optional)',
         directive.url,
         loadFor
@@ -242,7 +243,7 @@ const operateTab =
           (error as any).stack
         );
       }
-      guardoniLogger.info('— Completed %O \n', directive);
+      ctx.logger.info('— Completed %O \n', directive);
     }, toAppError);
   };
 
@@ -272,8 +273,8 @@ export const guardoniExecution =
     directiveType: DirectiveType,
     directives: NonEmptyArray<Directive>,
     page: puppeteer.Page
-  ): TE.TaskEither<AppError, { start: moment.Moment; end: moment.Moment }> => {
-    const result = { start: moment(), end: null };
+  ): TE.TaskEither<AppError, void> => {
+    const result = { start: new Date(), end: null };
 
     return pipe(
       TE.tryCatch(
@@ -283,19 +284,28 @@ export const guardoniExecution =
       TE.chain(() => operateBrowser(ctx)(page, directives)),
       TE.chain(() => TE.tryCatch(() => domainSpecific.completed(), toAppError)),
       TE.map((publicKey) => {
-        guardoniLogger.debug(
+        ctx.logger.debug(
           `Operations completed: check results at ${ctx.config.backend}/${
             directiveType === 'chiaroscuro' ? 'shadowban' : 'experiments'
           }/render/#${experiment}`
         );
-        guardoniLogger.debug(
+        ctx.logger.debug(
           `Personal log at ${ctx.config.backend}/personal/#${publicKey}`
         );
 
         return {
           ...result,
-          end: moment(),
+          end: new Date(),
         };
+      }),
+      TE.map(({ start, end }) => {
+        const duration = differenceInSeconds(end, start);
+
+        ctx.logger.debug(
+          '— Guardoni execution completed in %d seconds.',
+          duration
+        );
+        return undefined;
       })
     );
   };
@@ -309,7 +319,7 @@ const concludeExperiment =
     return pipe(
       ctx.API.v3.Public.ConcludeExperiment({
         Params: {
-          testTime: moment(experimentInfo.when).toISOString(),
+          testTime: experimentInfo.when.toISOString(),
         },
       }),
       TE.chain((body) => {
@@ -338,7 +348,7 @@ const runBrowser =
 
           // eslint-disable-next-line @typescript-eslint/no-misused-promises
           _.tail(otherPages).forEach(async (p): Promise<void> => {
-            guardoniLogger.debug("Closing a tab that shouldn't be there!");
+            ctx.logger.debug("Closing a tab that shouldn't be there!");
             await p.close();
           });
           return page;
@@ -352,13 +362,6 @@ const runBrowser =
           page
         )
       ),
-      TE.map(({ start, end }) => {
-        guardoniLogger.debug(
-          '— Guardoni execution completed in %d',
-          moment.duration((end as any) - (start as any)).humanize()
-        );
-        return undefined;
-      }),
       TE.chain(() => concludeExperiment(ctx)(experiment))
     );
   };
@@ -378,7 +381,7 @@ const getDirective =
         },
       }),
       TE.map((data) => {
-        guardoniLogger.debug(`Data for experiment (%s) %O`, experimentId, data);
+        ctx.logger.debug(`Data for experiment (%s) %O`, experimentId, data);
         const directiveType = ChiaroScuroDirective.is(data[0])
           ? ChiaroScuroDirectiveType.value
           : ComparisonDirectiveType.value;
@@ -389,7 +392,7 @@ const getDirective =
   };
 
 const createExperimentInAPI =
-  ({ API }: GuardoniContext) =>
+  ({ API, logger }: GuardoniContext) =>
   (
     directiveType: DirectiveType,
     parsedCSV: ComparisonDirectiveRow[]
@@ -403,7 +406,7 @@ const createExperimentInAPI =
         },
       }),
       TE.chain((response) => {
-        guardoniLogger.debug('Create experiment response %O', response);
+        logger.debug('Create experiment response %O', response);
 
         if (PostDirectiveResponse.types[0].is(response)) {
           return TE.left(
@@ -416,66 +419,68 @@ const createExperimentInAPI =
     );
   };
 
-export const readCSVAndParse = (
-  filePath: string,
-  directiveType: DirectiveType
-): TE.TaskEither<AppError, ComparisonDirectiveRow[]> => {
-  guardoniLogger.debug('Registering CSV from path %s', filePath);
+export const readCSVAndParse =
+  (logger: GuardoniContext['logger']) =>
+  (
+    filePath: string,
+    directiveType: DirectiveType
+  ): TE.TaskEither<AppError, ComparisonDirectiveRow[]> => {
+    logger.debug('Registering CSV from path %s', filePath);
 
-  return pipe(
-    fsTE.statOrFail(filePath, {}),
-    TE.mapLeft((e) =>
-      toAppError({
-        ...e,
-        message: `File at path ${filePath} doesn't exist`,
-      })
-    ),
-    TE.chain(() => fsTE.readFile(filePath, 'utf-8')),
-    TE.mapLeft((e) => {
-      return toAppError({
-        ...e,
-        message: `Failed to read csv file ${filePath}`,
-      });
-    }),
-    TE.chain((input) =>
-      pipe(
-        csvParseTE(input, { columns: true, skip_empty_lines: true }),
-        TE.map(({ records, info }) => {
-          guardoniLogger.debug(
-            'Read input from file %s (%d bytes) %d records as %s',
-            filePath,
-            input.length,
-            records.length,
-            directiveType
-          );
-          return { records, info };
-        }),
-        TE.chainFirst(({ records }) =>
-          pipe(
-            records,
-            DirectiveKeysMap.props[directiveType].decode,
-            TE.fromEither,
-            TE.mapLeft((e) => {
-              return new AppError(
-                'CSVParseError',
-                `The given CSV is not compatible with directive "${directiveType}"`,
-                [
-                  ...PathReporter.report(E.left(e)),
-                  '\n',
-                  'You can find examples on https://youtube.tracking.exposed/guardoni',
-                ]
-              );
-            })
-          )
-        ),
-        TE.map((csvContent) => {
-          guardoniLogger.debug('CSV decoded content %J', csvContent);
-          return csvContent.records;
+    return pipe(
+      fsTE.statOrFail(filePath, {}),
+      TE.mapLeft((e) =>
+        toAppError({
+          ...e,
+          message: `File at path ${filePath} doesn't exist`,
         })
+      ),
+      TE.chain(() => fsTE.readFile(filePath, 'utf-8')),
+      TE.mapLeft((e) => {
+        return toAppError({
+          ...e,
+          message: `Failed to read csv file ${filePath}`,
+        });
+      }),
+      TE.chain((input) =>
+        pipe(
+          csvParseTE(input, { columns: true, skip_empty_lines: true }),
+          TE.map(({ records, info }) => {
+            logger.debug(
+              'Read input from file %s (%d bytes) %d records as %s',
+              filePath,
+              input.length,
+              records.length,
+              directiveType
+            );
+            return { records, info };
+          }),
+          TE.chainFirst(({ records }) =>
+            pipe(
+              records,
+              DirectiveKeysMap.props[directiveType].decode,
+              TE.fromEither,
+              TE.mapLeft((e) => {
+                return new AppError(
+                  'CSVParseError',
+                  `The given CSV is not compatible with directive "${directiveType}"`,
+                  [
+                    ...PathReporter.report(E.left(e)),
+                    '\n',
+                    'You can find examples on https://youtube.tracking.exposed/guardoni',
+                  ]
+                );
+              })
+            )
+          ),
+          TE.map((csvContent) => {
+            logger.debug('CSV decoded content %J', csvContent);
+            return csvContent.records;
+          })
+        )
       )
-    )
-  );
-};
+    );
+  };
 
 const registerExperiment =
   (ctx: GuardoniContext) =>
@@ -486,7 +491,7 @@ const registerExperiment =
     return pipe(
       createExperimentInAPI(ctx)(directiveType, records),
       TE.map((experiment) => {
-        guardoniLogger.debug('Experiment received %O', experiment);
+        ctx.logger.debug('Experiment received %O', experiment);
         // handle output for existing experiment
         if (
           PostDirectiveSuccessResponse.is(experiment) &&
@@ -517,7 +522,7 @@ const registerCSV =
     const filePath = path.resolve(ctx.config.basePath, csvFile);
 
     return pipe(
-      readCSVAndParse(filePath, directiveType),
+      readCSVAndParse(ctx.logger)(filePath, directiveType),
       TE.chain((records) => registerExperiment(ctx)(records, directiveType))
     );
   };
@@ -529,7 +534,7 @@ const saveExperiment =
     directiveType: DirectiveType,
     profile: GuardoniProfile
   ): TE.TaskEither<AppError, ExperimentInfo> => {
-    guardoniLogger.debug(
+    ctx.logger.debug(
       'Saving experiment info in extension/experiment.json (would be read by the extension)'
     );
     const experimentJSONFile = path.join(
@@ -589,85 +594,85 @@ const ensureProfileExistsAtPath = (
 };
 
 // todo: check if a profile already exists in the file system
-const checkProfile = (
-  conf: GuardoniConfig
-): TE.TaskEither<AppError, string> => {
-  const basePath = conf.basePath ?? DEFAULT_BASE_PATH;
-  const profilesDir = path.resolve(basePath, 'profiles');
+const checkProfile =
+  (ctx: { logger: GuardoniContext['logger'] }) =>
+  (conf: GuardoniConfig): TE.TaskEither<AppError, string> => {
+    const basePath = conf.basePath ?? DEFAULT_BASE_PATH;
+    const profilesDir = path.resolve(basePath, 'profiles');
 
-  // no profile given, try to retrieve the old one
-  if (!conf.profileName) {
-    guardoniLogger.debug(
-      'Profile not defined, looking for older profiles in %s',
-      profilesDir
-    );
-    // check 'profiles' dir in basePath exists
-    const exists = fs.statSync(profilesDir, { throwIfNoEntry: false });
-    // create 'profiles' dir if doesn't exist
-    if (!exists) {
-      guardoniLogger.debug(
-        'Profile dir not found, creating it...',
+    // no profile given, try to retrieve the old one
+    if (!conf.profileName) {
+      ctx.logger.debug(
+        'Profile not defined, looking for older profiles in %s',
         profilesDir
       );
-      fs.mkdirSync(profilesDir, { recursive: true });
-    }
-
-    const profiles = fs.readdirSync(profilesDir);
-
-    if (profiles.length === 0) {
-      const profileName =
-        conf.evidenceTag ?? `guardoni-${moment().format('YYYY-MM-DD')}`;
-      guardoniLogger.debug('Creating profile %O in %s', profileName, basePath);
-      return ensureProfileExistsAtPath(basePath, profileName);
-    }
-
-    const lastProfile = profiles[profiles.length - 1];
-    guardoniLogger.debug('Last profile found %s', lastProfile);
-    return TE.right(lastProfile);
-  }
-
-  return TE.right(conf.profileName);
-};
-
-export const getConfigWithDefaults = (
-  conf: GuardoniConfig
-): TE.TaskEither<AppError, GuardoniConfigRequired> => {
-  const evidenceTag = conf.evidenceTag ?? 'no-tag-' + _.random(0, 0xffff);
-  guardoniLogger.debug('EvidenceTag %O', evidenceTag);
-
-  const sanitizedConf = Object.entries(conf).reduce<GuardoniConfig>(
-    (acc, [key, value]) => {
-      if (value !== undefined) {
-        return {
-          ...acc,
-          [key]: value,
-        };
+      // check 'profiles' dir in basePath exists
+      const exists = fs.statSync(profilesDir, { throwIfNoEntry: false });
+      // create 'profiles' dir if doesn't exist
+      if (!exists) {
+        ctx.logger.debug('Profile dir not found, creating it...', profilesDir);
+        fs.mkdirSync(profilesDir, { recursive: true });
       }
-      return acc;
-    },
-    // eslint-disable-next-line @typescript-eslint/prefer-reduce-type-parameter
-    {} as any
-  );
 
-  return pipe(
-    sequenceS(TE.ApplicativePar)({
-      profileName: checkProfile(conf),
-      chromePath: pipe(TE.fromEither(getChromePath()), TE.mapLeft(toAppError)),
-    }),
-    TE.map(({ profileName, chromePath }) => ({
-      chromePath,
-      evidenceTag,
-      extensionDir: DEFAULT_EXTENSION_DIR,
-      backend: DEFAULT_BACKEND,
-      loadFor: DEFAULT_LOAD_FOR,
-      profileName,
-      basePath: sanitizedConf.basePath
-        ? path.resolve(process.cwd(), sanitizedConf.basePath)
-        : DEFAULT_BASE_PATH,
-      ...sanitizedConf,
-    }))
-  );
-};
+      const profiles = fs.readdirSync(profilesDir);
+
+      if (profiles.length === 0) {
+        const profileName =
+          conf.evidenceTag ?? `guardoni-${format(new Date(), 'YYYY-MM-DD')}`;
+        ctx.logger.debug('Creating profile %O in %s', profileName, basePath);
+        return ensureProfileExistsAtPath(basePath, profileName);
+      }
+
+      const lastProfile = profiles[profiles.length - 1];
+      ctx.logger.debug('Last profile found %s', lastProfile);
+      return TE.right(lastProfile);
+    }
+
+    return TE.right(conf.profileName);
+  };
+
+export const getConfigWithDefaults =
+  (ctx: { logger: GuardoniContext['logger'] }) =>
+  (conf: GuardoniConfig): TE.TaskEither<AppError, GuardoniConfigRequired> => {
+    const evidenceTag = conf.evidenceTag ?? 'no-tag-' + _.random(0, 0xffff);
+    ctx.logger.debug('EvidenceTag %O', evidenceTag);
+
+    const sanitizedConf = Object.entries(conf).reduce<GuardoniConfig>(
+      (acc, [key, value]) => {
+        if (value !== undefined) {
+          return {
+            ...acc,
+            [key]: value,
+          };
+        }
+        return acc;
+      },
+      // eslint-disable-next-line @typescript-eslint/prefer-reduce-type-parameter
+      {} as any
+    );
+
+    return pipe(
+      sequenceS(TE.ApplicativePar)({
+        profileName: checkProfile(ctx)(conf),
+        chromePath: pipe(
+          TE.fromEither(getChromePath()),
+          TE.mapLeft(toAppError)
+        ),
+      }),
+      TE.map(({ profileName, chromePath }) => ({
+        chromePath,
+        evidenceTag,
+        extensionDir: DEFAULT_EXTENSION_DIR,
+        backend: DEFAULT_BACKEND,
+        loadFor: DEFAULT_LOAD_FOR,
+        profileName,
+        basePath: sanitizedConf.basePath
+          ? path.resolve(process.cwd(), sanitizedConf.basePath)
+          : DEFAULT_BASE_PATH,
+        ...sanitizedConf,
+      }))
+    );
+  };
 
 const readProfile = (
   profilePath: string
@@ -695,14 +700,14 @@ const readProfile = (
 const updateGuardoniProfile =
   (ctx: GuardoniContext) =>
   (evidenceTag: string): TE.TaskEither<AppError, GuardoniProfile> => {
-    guardoniLogger.debug('Updating guardoni config %s', ctx.guardoniConfigFile);
+    ctx.logger.debug('Updating guardoni config %s', ctx.guardoniConfigFile);
 
     return pipe(
       fsTE.lift(fsTE.readFile(ctx.guardoniConfigFile, 'utf-8')),
       TE.chainEitherK((content) => Json.parse(content)),
       TE.mapLeft(toAppError),
       TE.map((content) => {
-        guardoniLogger.debug('File content %O', content);
+        ctx.logger.debug('File content %O', content);
         return content;
       }),
       TE.chainEitherK((content) =>
@@ -717,7 +722,7 @@ const updateGuardoniProfile =
           evidenceTags: guardoniProfile.evidenceTags.concat(evidenceTag),
         };
 
-        guardoniLogger.debug('Writing guardoni config %O', updatedProfile);
+        ctx.logger.debug('Writing guardoni config %O', updatedProfile);
         return pipe(
           fsTE.lift(
             fsTE.writeFile(
@@ -727,7 +732,7 @@ const updateGuardoniProfile =
             )
           ),
           TE.map(() => {
-            guardoniLogger.debug(
+            ctx.logger.debug(
               'profile %s wrote %j',
               ctx.guardoniConfigFile,
               updatedProfile
@@ -755,7 +760,7 @@ const validateNonEmptyString = (
 const runExperiment =
   (ctx: GuardoniContext) =>
   (experimentId: string): TE.TaskEither<AppError, GuardoniSuccessOutput> => {
-    guardoniLogger.info('Running experiment %s', experimentId);
+    ctx.logger.info('Running experiment %s', experimentId);
     return pipe(
       sequenceS(TE.ApplicativePar)({
         profile: updateGuardoniProfile(ctx)(ctx.config.evidenceTag),
@@ -795,7 +800,7 @@ const runExperimentForPage =
       TE.map((result) => ({
         type: 'success',
         message: 'Experiment completed',
-        values: result,
+        values: {},
       }))
     );
 
@@ -807,7 +812,7 @@ const runAuto =
         ? ('d75f9eaf465d2cd555de65eaf61a770c82d59451' as any)
         : ('37384a9b7dff26184cdea226ad5666ca8cbbf456' as any);
 
-    guardoniLogger.debug('Run in auto mode with experiment %s', experimentId);
+    ctx.logger.debug('Run in auto mode with experiment %s', experimentId);
 
     return runExperiment(ctx)(experimentId);
   };
@@ -833,12 +838,13 @@ export const getDefaultProfile = (
 };
 
 const loadContext = (
-  partialConfig: GuardoniConfig
+  partialConfig: GuardoniConfig,
+  logger: GuardoniContext['logger']
 ): TE.TaskEither<AppError, GuardoniContext> => {
-  guardoniLogger.debug('Starting guardoni with config %O', partialConfig);
+  logger.debug('Starting guardoni with config %O', partialConfig);
 
   return pipe(
-    getConfigWithDefaults(partialConfig),
+    getConfigWithDefaults({ logger })(partialConfig),
     TE.map((config): GuardoniContext => {
       const profile = getDefaultProfile(
         config.basePath,
@@ -853,12 +859,13 @@ const loadContext = (
           profileName: profile.profileName,
         },
         profile,
+        logger,
         guardoniConfigFile: path.join(profile.udd, 'guardoni.json'),
       };
     }),
-    TE.map((context) => {
-      guardoniLogger.debug('Context %O', context);
-      return context;
+    TE.map(({ logger, ...context }) => {
+      logger.debug('Context %O', context);
+      return { logger, ...context };
     }),
     TE.chainFirst((ctx) => TE.fromIOEither(downloadExtension(ctx))),
     TE.chainFirst((ctx) =>
@@ -868,7 +875,11 @@ const loadContext = (
       pipe(
         fsTE.lift(fsTE.maybeStat(ctx.guardoniConfigFile)),
         TE.chain((stat) => {
-          guardoniLogger.debug('Stat for %s: %O', ctx.guardoniConfigFile, stat);
+          ctx.logger.debug(
+            'Path %s exists? %O',
+            ctx.guardoniConfigFile,
+            stat !== undefined
+          );
           if (stat) {
             return readProfile(ctx.guardoniConfigFile);
           }
@@ -892,20 +903,25 @@ const loadContext = (
   );
 };
 
-export type GetGuardoni = (
-  config: GuardoniConfig
-) => TE.TaskEither<AppError, Guardoni>;
+export type GetGuardoni = ({
+  config,
+  logger,
+}: {
+  config: GuardoniConfig;
+  logger: GuardoniContext['logger'];
+}) => TE.TaskEither<AppError, Guardoni>;
 
-export const GetGuardoni: GetGuardoni = (
-  config
-): TE.TaskEither<AppError, Guardoni> => {
+export const GetGuardoni: GetGuardoni = ({
+  config,
+  logger,
+}): TE.TaskEither<AppError, Guardoni> => {
   debug.enable('guardoni::info,guardoni::error');
   if (config.verbose) {
     debug.enable('guardoni*');
   }
 
   return pipe(
-    loadContext(config),
+    loadContext(config, logger),
     TE.map((ctx) => {
       return {
         config: ctx.config,

@@ -66,7 +66,7 @@ export const GetGuardoniCLI: GetGuardoniCLI = (config): GuardoniCLI => {
     command: GuardoniCommandConfig
   ): TE.TaskEither<AppError, GuardoniSuccessOutput> =>
     pipe(
-      GetGuardoni(config),
+      GetGuardoni({ config, logger: guardoniLogger }),
       TE.chain((g) => {
         return TE.fromIO<
           TE.TaskEither<AppError, GuardoniSuccessOutput>,
