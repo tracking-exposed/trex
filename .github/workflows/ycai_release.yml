@@ -37,7 +37,7 @@ jobs:
       - name: Release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: yarn ycai semantic-release
+        run: yarn semantic-release
 
       - name: Deploy YCAI dashboard
         uses: burnett01/rsync-deployments@5.1
