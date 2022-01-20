@@ -21,6 +21,7 @@ const apiList = {
     getQueryList:        require('../routes/search').getQueryList,
     getSearchByQuery:    require('../routes/search').getSearchByQuery,
 
+    getResearcherData:   require('../routes/research').getResearcherData,
     /* impact */
     getStatistics:       require('../routes/statistics').statistics,
 

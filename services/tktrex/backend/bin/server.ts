@@ -111,6 +111,9 @@ app.get('/api/v1/mirror/:key', async (req, res) => await iowrapper('getMirror', 
 /* monitor for admin */
 app.get('/api/v2/monitor/:minutes?', async (req, res) => await iowrapper('getMonitor', req, res));
 
+/* special function for researchers */
+app.get('/api/v2/research/:publicKeyList/:what/csv', async (req, res) => await iowrapper('getResearcherData', req, res));
+
 /* experiments API: at the moment not implemented for tiktok, only copied by yttrex */
 app.get(
   "/api/v2/guardoni/list/:directiveType/:key?",
