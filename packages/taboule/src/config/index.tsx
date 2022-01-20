@@ -322,11 +322,7 @@ export const defaultConfiguration = (
             const longId = params.formattedValue;
             const shortId = (longId as string).substr(0, 7);
             return (
-              <a
-                href={`/details/#${encodeURI(longId as string)}`}
-              >
-                {shortId}
-              </a>
+              <a href={`/details/#${encodeURI(longId as string)}`}>{shortId}</a>
             );
           },
         },
@@ -345,15 +341,17 @@ export const defaultConfiguration = (
         },
         {
           ...columnDefault,
+          field: 'savingTime',
+          headerName: 'when',
+          renderCell: cells.distanceFromNowCell,
+        },
+        {
+          ...columnDefault,
           field: 'rejected',
           headerName: 'was answered?',
           width: 40,
           renderCell: (params) => {
-            return (
-              <span>
-                {params.formattedValue === true ? "🚫" : "✔️"}
-              </span>
-            );
+            return <span>{params.formattedValue === true ? '🚫' : '✔️'}</span>;
           },
         },
         {
@@ -365,17 +363,12 @@ export const defaultConfiguration = (
           ...columnDefault,
           field: 'sources',
         },
-        {
-          ...columnDefault,
-          field: 'savingTime',
-          renderCell: cells.distanceFromNowCell,
-        },
       ],
     },
     tikTokSearches: {
       /* this taboule hasn't the CSV allowed nor supported, because
-      * it got only a portion of all the searches = the many that
-      * have been searched from two users + do not return any rejection */
+       * it got only a portion of all the searches = the many that
+       * have been searched from two users + do not return any rejection */
       columns: [
         {
           ...columnDefault,
