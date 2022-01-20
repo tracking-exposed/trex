@@ -13,6 +13,7 @@ import { AppEnv } from '../AppEnv';
 import { GetEvents } from './events/renderer.events';
 import { createGuardoniWindow } from './windows/GuardoniWindow';
 import * as dotenv from 'dotenv';
+import { GetAPI } from '@shared/providers/api.provider';
 
 // load env from .env file shipped with compiled code
 dotenv.config({
@@ -86,6 +87,7 @@ export const run = async (): Promise<void> => {
           // bind events for main window
           GetEvents({
             app,
+            api: GetAPI({ baseURL: env.BACKEND }).API,
             mainWindow,
             guardoniWindow: guardoniApp.window,
             guardoniBrowser: guardoniApp.browser,

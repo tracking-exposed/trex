@@ -5,7 +5,6 @@ const automo = require('../lib/automo');
 const utils = require('../lib/utils');
 const mongo3 = require('../lib/mongo3');
 const nconf = require('nconf');
-const { moveCursor } = require('readline');
 
 function reproducibleTypo(title) {
   const trimmedT = title.replace(/.$/, '').replace(/^./, '');
@@ -161,7 +160,12 @@ async function get(req) {
 }
 
 async function getPublic(req) {
-  const whiteList = ['b3d531eca62b2dc989926e0fe21b54ab988b7f3d'];
+  const whiteList = [
+    // 'b3d531eca62b2dc989926e0fe21b54ab988b7f3d',
+    // prod ids
+    'd75f9eaf465d2cd555de65eaf61a770c82d59451',
+    '37384a9b7dff26184cdea226ad5666ca8cbbf456',
+  ];
 
   const filter = {
     directiveType: 'comparison',

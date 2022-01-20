@@ -1,5 +1,6 @@
 import { AppError, toAppError } from '@shared/errors/AppError';
 import { ComparisonDirective } from '@shared/models/Directive';
+import { APIClient } from '@shared/providers/api.provider';
 import { dialog, ipcMain } from 'electron';
 import { pipe } from 'fp-ts/lib/function';
 import * as TE from 'fp-ts/lib/TaskEither';
@@ -14,6 +15,7 @@ import {
   CREATE_EXPERIMENT_EVENT,
   EVENTS,
   GET_GUARDONI_CONFIG_EVENT,
+  GET_PUBLIC_DIRECTIVES,
   GLOBAL_ERROR_EVENT,
   GUARDONI_OUTPUT_EVENT,
   PICK_CSV_FILE_EVENT,
@@ -81,6 +83,7 @@ const GetEventListenerLifter =
 
 interface GetEventsContext {
   app: Electron.App;
+  api: APIClient;
   mainWindow: Electron.BrowserWindow;
   guardoniWindow: Electron.BrowserWindow;
   guardoniBrowser: puppeteer.Browser;
@@ -88,6 +91,7 @@ interface GetEventsContext {
 
 export const GetEvents = ({
   app,
+  api,
   mainWindow,
   guardoniWindow,
   guardoniBrowser,
@@ -215,6 +219,13 @@ export const GetEvents = ({
           );
         }
       );
+
+      ipcMain.on(GET_PUBLIC_DIRECTIVES.value, () => {
+        void pipe(
+          api.v3.Public.GetPublicDirectives(),
+          liftEventTask(GET_PUBLIC_DIRECTIVES.value)
+        );
+      });
     },
   };
 };

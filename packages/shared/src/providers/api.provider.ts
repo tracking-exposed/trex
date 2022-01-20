@@ -110,10 +110,10 @@ export const MakeHTTPClient = (client: AxiosInstance): HTTPClient => {
     return command<any, APIError, TypeOfEndpointInstance<E>['Output']>((b) =>
       pipe(
         sequenceS(E.Applicative)({
-          params: (e.Input?.Params ?? t.any).decode(b.Params),
-          query: (e.Input?.Query ?? t.any).decode(b.Query),
-          body: (e.Input?.Body ?? t.any).decode(b.Body),
-          headers: (e.Input?.Headers ?? t.any).decode(b.Headers),
+          params: (e.Input?.Params ?? t.any).decode(b?.Params),
+          query: (e.Input?.Query ?? t.any).decode(b?.Query),
+          body: (e.Input?.Body ?? t.any).decode(b?.Body),
+          headers: (e.Input?.Headers ?? t.any).decode(b?.Headers),
           method: E.right<any, E['Method']>(e.Method),
         }),
         TE.fromEither,
@@ -138,7 +138,7 @@ export const MakeHTTPClient = (client: AxiosInstance): HTTPClient => {
                 responseType: 'json',
                 headers: {
                   Accept: 'application/json',
-                  ...b.Headers,
+                  ...input.headers,
                 },
               });
             }, e.Output.decode),

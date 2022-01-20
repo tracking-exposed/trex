@@ -86,10 +86,6 @@ const runGuardoni = (config: GuardoniConfig, experimentId: string): void => {
   ipcRenderer.send(RUN_GUARDONI_EVENT.value, config, experimentId);
 };
 
-const runAutoGuardoni = (config: GuardoniConfig, auto: 1 | 2): void => {
-  ipcRenderer.send(RUN_GUARDONI_EVENT.value, config, auto);
-};
-
 export const App: React.FC = () => {
   const classes = useStyles();
   const [tab, setTab] = React.useState(0);
@@ -360,8 +356,8 @@ export const App: React.FC = () => {
             </TabPanel>
             <TabPanel value={tab} index={2}>
               <AutoRunTab
-                onSubmit={(auto) => {
-                  runAutoGuardoni(config, auto);
+                onSubmit={(experiment) => {
+                  runGuardoni(config, experiment);
                 }}
               />
             </TabPanel>

@@ -4,6 +4,7 @@ export const PICK_CSV_FILE_EVENT = t.literal('pickCSVFile');
 export const GET_GUARDONI_CONFIG_EVENT = t.literal('getGuardoniConfig');
 export const OPEN_GUARDONI_DIR = t.literal('openGuardoniDir');
 export const CREATE_EXPERIMENT_EVENT = t.literal('createExperimentEvent');
+export const GET_PUBLIC_DIRECTIVES = t.literal('getPublicDirectives');
 export const RUN_GUARDONI_EVENT = t.literal('runGuardoni');
 export const RUN_AUTO_GUARDONI_EVENT = t.literal('runAutoGuardoni');
 export const GUARDONI_ERROR_EVENT = t.literal('guardoniError');
@@ -25,4 +26,4 @@ export const EVENTS = t.union(
   'EVENTS'
 );
 
-export type EVENTS = t.TypeOf<typeof EVENTS>
+export type EVENTS = t.TypeOf<typeof EVENTS>;

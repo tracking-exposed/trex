@@ -2,35 +2,73 @@ import {
   Box,
   Button,
   FormControlLabel,
-  Select,
-  MenuItem,
   FormHelperText,
+  MenuItem,
+  Select,
 } from '@material-ui/core';
+import { GuardoniExperiment } from '@shared/models/Experiment';
+import { ipcRenderer } from 'electron';
 import * as React from 'react';
-
-type Auto = 1 | 2;
+import { GET_PUBLIC_DIRECTIVES } from '../models/events';
 
 interface FromCSVFileTabProps {
-  onSubmit: (payload: Auto) => void;
+  onSubmit: (experimentId: string) => void;
 }
 
 export const AutoRunTab: React.FC<FromCSVFileTabProps> = ({ onSubmit }) => {
-  const [auto, setAuto] = React.useState<Auto>(1);
+  const [directiveId, setDirectiveId] = React.useState<string | undefined>(
+    undefined
+  );
+  const [directives, setDirectives] = React.useState<GuardoniExperiment[]>([]);
+
+  React.useEffect(() => {
+    ipcRenderer.on(GET_PUBLIC_DIRECTIVES.value, (event, ...args) => {
+      const [directives] = args;
+      console.log({ args, directives });
+      setDirectives(directives);
+    });
+
+    ipcRenderer.send(GET_PUBLIC_DIRECTIVES.value);
+  }, []);
+
+  const currentDirective = directives.find(
+    (d) => d.experimentId === directiveId
+  );
 
   return (
     <Box display={'flex'} flexDirection={'column'}>
       <FormControlLabel
-        label="Auto"
+        label="Experiment"
+        labelPlacement="top"
         control={
           <Select
-            value={auto}
-            onChange={(e, v) => setAuto(e.target.value as any)}
+            value={directiveId}
+            onChange={(e, v) => setDirectiveId(e.target.value as any)}
+            fullWidth
           >
-            <MenuItem value={1}>1</MenuItem>
-            <MenuItem value={2}>2</MenuItem>
+            {directives.map((d, i) => (
+              <MenuItem value={d.experimentId} selected={i === 0}>
+                {d.experimentId}
+              </MenuItem>
+            ))}
           </Select>
         }
       />
+      {currentDirective ? (
+        <Box>
+          <pre>{JSON.stringify(currentDirective, null, 2)}</pre>
+          <Button
+            color="primary"
+            variant="contained"
+            style={{ marginBottom: 20, marginTop: 20 }}
+            onClick={() => {
+              void onSubmit(currentDirective.experimentId);
+            }}
+          >
+            Start guardoni
+          </Button>
+        </Box>
+      ) : null}
 
       <FormHelperText>
         The value provided here refers to existing experiments:
@@ -39,17 +77,6 @@ export const AutoRunTab: React.FC<FromCSVFileTabProps> = ({ onSubmit }) => {
         <br />
         2. Dunno
       </FormHelperText>
-
-      <Button
-        color="primary"
-        variant="contained"
-        style={{ marginBottom: 20, marginTop: 20 }}
-        onClick={() => {
-          void onSubmit(auto);
-        }}
-      >
-        Start guardoni
-      </Button>
     </Box>
   );
 };
