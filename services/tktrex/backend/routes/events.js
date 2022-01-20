@@ -164,7 +164,6 @@ async function processEvents(req) {
         impressionNumber: body.videoCounter || Math.random(),
       });
       const timelineIdHash = utils.hash({
-        // considering the 'type': Suggested used for full html Search collection
         session: body.feedId
           ? body.feedId
           : body.href + new Date().toISOString(),
@@ -179,6 +178,14 @@ async function processEvents(req) {
         return null;
       }
 
+      const optionalNumbers = [];
+      if (_.isInteger(body.videoCounter))
+        optionalNumbers.push(body.videoCounter);
+      if (_.isInteger(i)) optionalNumbers.push(i);
+      if (_.isInteger(body.incremental)) optionalNumbers.push(body.incremental);
+      if (_.isInteger(body.feedCounter)) optionalNumbers.push(body.feedCounter);
+      optionalNumbers.push(_.size(body.html));
+
       const html = {
         id,
         rect: body.rect,
@@ -187,7 +194,7 @@ async function processEvents(req) {
         publicKey: supporter.publicKey,
         savingTime: new Date(),
         html: body.html,
-        n: [body.videoCounter, i, body.incremental, body.feedCounter],
+        n: optionalNumbers,
       };
       return html;
     })
