@@ -100,7 +100,7 @@ export const App: React.FC = () => {
   const [outputItems, setOutputItems] = React.useState<OutputItem[]>([]);
 
   const handleOpenProfileDir = React.useCallback((config: GuardoniConfig) => {
-    void ipcRenderer.send(OPEN_GUARDONI_DIR.value, config.profile);
+    void ipcRenderer.send(OPEN_GUARDONI_DIR.value, config.profileName);
   }, []);
 
   React.useEffect(() => {
@@ -177,12 +177,12 @@ export const App: React.FC = () => {
                     <Input
                       id="profile-path"
                       aria-describedby="profile-path-text"
-                      value={config.profile}
+                      value={config.profileName}
                       fullWidth
                       onChange={(e) =>
                         setConfig({
                           ...config,
-                          profile: e.target.value,
+                          profileName: e.target.value,
                         })
                       }
                     />
@@ -190,7 +190,7 @@ export const App: React.FC = () => {
                 />
                 <FormHelperText className={classes.formHelperText}>
                   The profile data will be stored in {config.basePath}
-                  /profiles/{config.profile}
+                  /profiles/{config.profileName}
                   <Button
                     size="small"
                     color="primary"

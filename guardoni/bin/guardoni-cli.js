@@ -12,8 +12,11 @@ const runGuardoni = ({
   v,
   headless,
   verbose,
+  backend,
   basePath,
   profile,
+  evidenceTag,
+  proxy,
   ...command
 }) => {
   return GetGuardoniCLI({
@@ -21,6 +24,9 @@ const runGuardoni = ({
     basePath,
     profile,
     verbose,
+    evidenceTag,
+    proxy,
+    backend
   })
     .runOrThrow(command)
     .then(() => process.exit(0));

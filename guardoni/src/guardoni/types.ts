@@ -10,7 +10,7 @@ import type * as puppeteer from 'puppeteer-core';
 export interface GuardoniConfig {
   headless: boolean;
   verbose: boolean;
-  profile?: string;
+  profileName?: string;
   evidenceTag?: string;
   advScreenshotDir?: string;
   proxy?: string;
@@ -24,15 +24,9 @@ export interface GuardoniConfig {
 
 export type GuardoniConfigRequired = Omit<
   GuardoniConfig,
-  | 'basePath'
-  | 'profile'
-  | 'backend'
-  | 'evidenceTag'
-  | 'extensionDir'
-  | 'loadFor'
-  | 'chromePath'
+  'basePath' | 'profile' | 'backend' | 'evidenceTag' | 'extensionDir'
 > & {
-  profile: string;
+  profileName: string;
   backend: string;
   basePath: string;
   evidenceTag: string;

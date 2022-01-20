@@ -8,11 +8,7 @@ import * as TE from 'fp-ts/lib/TaskEither';
 import { NonEmptyString } from 'io-ts-types/lib/NonEmptyString';
 import { guardoniLogger } from '../logger';
 import { GetGuardoni } from './guardoni';
-import {
-  GuardoniConfigRequired,
-  GuardoniOutput,
-  GuardoniSuccessOutput,
-} from './types';
+import { GuardoniConfig, GuardoniOutput, GuardoniSuccessOutput } from './types';
 
 export type GuardoniCommandConfig =
   | {
@@ -41,7 +37,7 @@ export interface GuardoniCLI {
   runOrThrow: (command: GuardoniCommandConfig) => Promise<void>;
 }
 
-export type GetGuardoniCLI = (config: GuardoniConfigRequired) => GuardoniCLI;
+export type GetGuardoniCLI = (config: GuardoniConfig) => GuardoniCLI;
 
 const foldOutput = (
   command: GuardoniCommandConfig,

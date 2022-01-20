@@ -567,38 +567,74 @@ const saveExperiment =
   };
 
 const ensureProfileExistsAtPath = (
-  config: GuardoniConfigRequired
-): TE.TaskEither<AppError, GuardoniConfigRequired> => {
+  basePath: string,
+  profileName: string
+): TE.TaskEither<AppError, string> => {
+  const profileDir = getProfileDataDir(basePath, profileName);
   return pipe(
-    fsTE.maybeStat(config.profile),
+    fsTE.maybeStat(profileDir),
     TE.mapLeft(toAppError),
     TE.chain((stat) => {
       if (!stat) {
         return pipe(
-          fsTE.mkdir(config.profile, { recursive: true }),
+          fsTE.mkdir(profileDir, { recursive: true }),
           TE.mapLeft(toAppError),
           TE.map(() => stat)
         );
       }
       return TE.right(stat);
     }),
-    TE.map(() => config)
+    TE.map(() => profileName)
   );
 };
 
 // todo: check if a profile already exists in the file system
-const getProfile = (config: GuardoniConfig): string => {
-  return (
-    config.profile ??
-    config.evidenceTag ??
-    `guardoni-${moment().format('YYYY-MM-DD')}`
-  );
+const checkProfile = (
+  conf: GuardoniConfig
+): TE.TaskEither<AppError, string> => {
+  const basePath = conf.basePath ?? DEFAULT_BASE_PATH;
+  const profilesDir = path.resolve(basePath, 'profiles');
+
+  // no profile given, try to retrieve the old one
+  if (!conf.profileName) {
+    guardoniLogger.debug(
+      'Profile not defined, looking for older profiles in %s',
+      profilesDir
+    );
+    // check 'profiles' dir in basePath exists
+    const exists = fs.statSync(profilesDir, { throwIfNoEntry: false });
+    // create 'profiles' dir if doesn't exist
+    if (!exists) {
+      guardoniLogger.debug(
+        'Profile dir not found, creating it...',
+        profilesDir
+      );
+      fs.mkdirSync(profilesDir, { recursive: true });
+    }
+
+    const profiles = fs.readdirSync(profilesDir);
+
+    if (profiles.length === 0) {
+      const profileName =
+        conf.evidenceTag ?? `guardoni-${moment().format('YYYY-MM-DD')}`;
+      guardoniLogger.debug('Creating profile %O in %s', profileName, basePath);
+      return ensureProfileExistsAtPath(basePath, profileName);
+    }
+
+    const lastProfile = profiles[profiles.length - 1];
+    guardoniLogger.debug('Last profile found %s', lastProfile);
+    return TE.right(lastProfile);
+  }
+
+  return TE.right(conf.profileName);
 };
 
 export const getConfigWithDefaults = (
   conf: GuardoniConfig
-): GuardoniConfigRequired => {
-  const evidenceTag = 'no-tag-' + _.random(0, 0xffff);
+): TE.TaskEither<AppError, GuardoniConfigRequired> => {
+  const evidenceTag = conf.evidenceTag ?? 'no-tag-' + _.random(0, 0xffff);
+  guardoniLogger.debug('EvidenceTag %O', evidenceTag);
+
   const sanitizedConf = Object.entries(conf).reduce<GuardoniConfig>(
     (acc, [key, value]) => {
       if (value !== undefined) {
@@ -613,21 +649,24 @@ export const getConfigWithDefaults = (
     {} as any
   );
 
-  return {
-    chromePath: pipe(
-      getChromePath(),
-      E.getOrElse(() => 'path-invalid')
-    ),
-    evidenceTag,
-    extensionDir: DEFAULT_EXTENSION_DIR,
-    backend: DEFAULT_BACKEND,
-    loadFor: DEFAULT_LOAD_FOR,
-    profile: getProfile({ ...conf, evidenceTag }),
-    basePath: sanitizedConf.basePath
-      ? path.resolve(process.cwd(), sanitizedConf.basePath)
-      : DEFAULT_BASE_PATH,
-    ...sanitizedConf,
-  };
+  return pipe(
+    sequenceS(TE.ApplicativePar)({
+      profileName: checkProfile(conf),
+      chromePath: pipe(TE.fromEither(getChromePath()), TE.mapLeft(toAppError)),
+    }),
+    TE.map(({ profileName, chromePath }) => ({
+      chromePath,
+      evidenceTag,
+      extensionDir: DEFAULT_EXTENSION_DIR,
+      backend: DEFAULT_BACKEND,
+      loadFor: DEFAULT_LOAD_FOR,
+      profileName,
+      basePath: sanitizedConf.basePath
+        ? path.resolve(process.cwd(), sanitizedConf.basePath)
+        : DEFAULT_BASE_PATH,
+      ...sanitizedConf,
+    }))
+  );
 };
 
 const readProfile = (
@@ -773,67 +812,52 @@ const runAuto =
     return runExperiment(ctx)(experimentId);
   };
 
-const getUserDataDir = (
-  config: GuardoniConfigRequired
-): TE.TaskEither<AppError, string> => {
-  const profileDir = path.join(config.basePath, 'profiles', config.profile);
-  const dirs = fs.readdirSync(profileDir);
-  if (dirs.length === 0) {
-    return pipe(
-      ensureProfileExistsAtPath(config),
-      TE.map((c) => profileDir)
-    );
-  }
-  console.log(dirs);
-  return TE.right(dirs[dirs.length - 1]);
-};
-const loadContext = (
-  config: GuardoniConfigRequired
-): TE.TaskEither<AppError, GuardoniContext> => {
-  guardoniLogger.debug('Loading context with config %O', config);
+export const getProfileDataDir = (
+  basePath: string,
+  profileName: string
+): string => path.join(basePath, 'profiles', profileName);
 
-  // backend client instance
-  const { API } = GetAPI({ baseURL: config.backend });
-
-  // user data dir
-  const userDataDir = path.resolve(config.basePath, 'profiles', config.profile);
-
-  guardoniLogger.debug('User data dir %s', userDataDir);
-
-  // guardoni config
-  const guardoniConfigFile = path.join(userDataDir, 'guardoni.json');
-
-  guardoniLogger.debug('Guardoni profile config file %s', guardoniConfigFile);
-
-  // extension dir
-  const extensionDir = config.extensionDir ?? config.basePath;
-
-  guardoniLogger.debug('Extension dir %s', extensionDir);
-
-  const defaultProfile = {
-    udd: userDataDir,
+export const getDefaultProfile = (
+  basePath: string,
+  profileName: string,
+  extensionDir: string
+): GuardoniProfile => {
+  return {
+    udd: getProfileDataDir(basePath, profileName),
     newProfile: true,
-    profileName: config.profile,
+    profileName,
     extensionDir,
     evidenceTags: [],
     execCount: 0,
   };
+};
+
+const loadContext = (
+  partialConfig: GuardoniConfig
+): TE.TaskEither<AppError, GuardoniContext> => {
+  guardoniLogger.debug('Starting guardoni with config %O', partialConfig);
 
   return pipe(
-    sequenceS(TE.ApplicativePar)({
-      chromePath: pipe(getChromePath(), E.mapLeft(toAppError), TE.fromEither),
-      userDataDir: getUserDataDir(config),
+    getConfigWithDefaults(partialConfig),
+    TE.map((config): GuardoniContext => {
+      const profile = getDefaultProfile(
+        config.basePath,
+        config.profileName,
+        config.extensionDir
+      );
+
+      return {
+        API: GetAPI({ baseURL: config.backend }).API,
+        config: {
+          ...config,
+          profileName: profile.profileName,
+        },
+        profile,
+        guardoniConfigFile: path.join(profile.udd, 'guardoni.json'),
+      };
     }),
-    TE.map(
-      ({ chromePath, userDataDir }): GuardoniContext => ({
-        API,
-        config: { ...config, extensionDir, chromePath },
-        profile: defaultProfile,
-        guardoniConfigFile,
-      })
-    ),
     TE.map((context) => {
-      guardoniLogger.debug('Default context %O', context);
+      guardoniLogger.debug('Context %O', context);
       return context;
     }),
     TE.chainFirst((ctx) => TE.fromIOEither(downloadExtension(ctx))),
@@ -852,11 +876,11 @@ const loadContext = (
             fsTE.lift(
               fsTE.writeFile(
                 ctx.guardoniConfigFile,
-                JSON.stringify(defaultProfile, null, 2),
+                JSON.stringify(ctx.profile, null, 2),
                 'utf-8'
               )
             ),
-            TE.map(() => defaultProfile)
+            TE.map(() => ctx.profile)
           );
         }),
         TE.map((c) => ({
@@ -880,15 +904,11 @@ export const GetGuardoni: GetGuardoni = (
     debug.enable('guardoni*');
   }
 
-  guardoniLogger.debug('Get guardoni with config %O', config);
-
-  const configWithDefaults = getConfigWithDefaults(config);
-
   return pipe(
-    loadContext(configWithDefaults),
+    loadContext(config),
     TE.map((ctx) => {
       return {
-        config: configWithDefaults,
+        config: ctx.config,
         runAuto: runAuto(ctx),
         runExperiment: runExperiment(ctx),
         runExperimentForPage: runExperimentForPage(ctx),

@@ -111,7 +111,8 @@ export const GetEvents = ({
         );
 
         void pipe(
-          TE.right(GetGuardoni({ verbose: false, headless: true }).config),
+          GetGuardoni({ verbose: false, headless: true }),
+          TE.map((g) => g.config),
           liftEventTask(GET_GUARDONI_CONFIG_EVENT.value)
         );
       });
@@ -122,10 +123,9 @@ export const GetEvents = ({
 
         const [config, records] = args;
 
-        const g = GetGuardoni(config);
-
         void pipe(
-          g.registerExperiment(records, 'comparison'),
+          GetGuardoni(config),
+          TE.chain((g) => g.registerExperiment(records, 'comparison')),
           TE.map((e) => {
             sMessage(GUARDONI_OUTPUT_EVENT.value, {
               id: uuid(),
@@ -154,60 +154,63 @@ export const GetEvents = ({
             config
           );
 
-          const guardoni = GetGuardoni(config);
-
           void pipe(
-            TE.tryCatch(async () => {
-              // guardoniWindow.on('close', () => {
-              //   const closeError = new Error(
-              //     'Guardoni window closed before execution finished'
-              //   );
-              //   throw closeError;
-              // });
+            GetGuardoni(config),
+            TE.chain((g) =>
+              pipe(
+                TE.tryCatch(async () => {
+                  // guardoniWindow.on('close', () => {
+                  //   const closeError = new Error(
+                  //     'Guardoni window closed before execution finished'
+                  //   );
+                  //   throw closeError;
+                  // });
 
-              // recreate guardoni window and browser if window has been destroyed
-              if (guardoniWindow.isDestroyed()) {
-                const newGuardoniApp = await pipe(
-                  createGuardoniWindow(app, mainWindow),
-                  TE.fold(
-                    (e) => () => Promise.reject(e),
-                    (result) => () => Promise.resolve(result)
-                  )
-                )();
+                  // recreate guardoni window and browser if window has been destroyed
+                  if (guardoniWindow.isDestroyed()) {
+                    const newGuardoniApp = await pipe(
+                      createGuardoniWindow(app, mainWindow),
+                      TE.fold(
+                        (e) => () => Promise.reject(e),
+                        (result) => () => Promise.resolve(result)
+                      )
+                    )();
 
-                guardoniWindow = newGuardoniApp.window;
-                guardoniBrowser = newGuardoniApp.browser;
-              }
+                    guardoniWindow = newGuardoniApp.window;
+                    guardoniBrowser = newGuardoniApp.browser;
+                  }
 
-              const extension =
-                await guardoniWindow.webContents.session.loadExtension(
-                  config.extensionDir
-                );
+                  const extension =
+                    await guardoniWindow.webContents.session.loadExtension(
+                      config.extensionDir
+                    );
 
-              mainWindow.webContents.postMessage('guardoniOutput', {
-                message: 'Extension loaded',
-                details: extension,
-              });
+                  mainWindow.webContents.postMessage('guardoniOutput', {
+                    message: 'Extension loaded',
+                    details: extension,
+                  });
 
-              return pie.getPage(guardoniBrowser, guardoniWindow);
-            }, toAppError),
-            TE.chain((page) => {
-              guardoniWindow.show();
+                  return pie.getPage(guardoniBrowser, guardoniWindow);
+                }, toAppError),
+                TE.chain((page) => {
+                  guardoniWindow.show();
 
-              return guardoni.runExperimentForPage(
-                page,
-                experimentId,
-                (progress) => {
-                  mainWindow.webContents.postMessage(
-                    GUARDONI_OUTPUT_EVENT.value,
-                    {
-                      id: uuid(),
-                      ...progress,
+                  return g.runExperimentForPage(
+                    page,
+                    experimentId,
+                    (progress) => {
+                      mainWindow.webContents.postMessage(
+                        GUARDONI_OUTPUT_EVENT.value,
+                        {
+                          id: uuid(),
+                          ...progress,
+                        }
+                      );
                     }
                   );
-                }
-              );
-            }),
+                })
+              )
+            ),
             liftEventTask(RUN_GUARDONI_EVENT.value)
           );
         }
