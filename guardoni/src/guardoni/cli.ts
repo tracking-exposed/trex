@@ -1,9 +1,9 @@
 import { AppError } from '@shared/errors/AppError';
 import {
   ComparisonDirectiveRow,
-  DirectiveType
+  DirectiveType,
 } from '@shared/models/Directive';
-import { pipe } from 'fp-ts/lib/pipeable';
+import { pipe } from 'fp-ts/lib/function';
 import * as TE from 'fp-ts/lib/TaskEither';
 import { NonEmptyString } from 'io-ts-types/lib/NonEmptyString';
 import { guardoniLogger } from '../logger';
@@ -11,7 +11,7 @@ import { GetGuardoni } from './guardoni';
 import {
   GuardoniConfigRequired,
   GuardoniOutput,
-  GuardoniSuccessOutput
+  GuardoniSuccessOutput,
 } from './types';
 
 export type GuardoniCommandConfig =
@@ -66,20 +66,19 @@ const foldOutput = (
 };
 
 export const GetGuardoniCLI: GetGuardoniCLI = (config): GuardoniCLI => {
-  const g = GetGuardoni(config);
-
   const run = (
     command: GuardoniCommandConfig
   ): TE.TaskEither<AppError, GuardoniSuccessOutput> =>
     pipe(
-      TE.fromIO<TE.TaskEither<AppError, GuardoniSuccessOutput>, AppError>(
-        () => {
+      GetGuardoni(config),
+      TE.chain((g) => {
+        return TE.fromIO<
+          TE.TaskEither<AppError, GuardoniSuccessOutput>,
+          AppError
+        >(() => {
           switch (command.run) {
             case 'register-csv':
-              return g.registerExperimentFromCSV(
-                command.file,
-                command.type
-              );
+              return g.registerExperimentFromCSV(command.file, command.type);
             case 'register':
               return g.registerExperiment(command.records, command.type);
             case 'experiment':
@@ -88,8 +87,8 @@ export const GetGuardoniCLI: GetGuardoniCLI = (config): GuardoniCLI => {
             default:
               return g.runAuto(command.value);
           }
-        }
-      ),
+        });
+      }),
       TE.flatten,
       TE.mapLeft((e) => {
         guardoniLogger.error(`Run error: %O`, e);

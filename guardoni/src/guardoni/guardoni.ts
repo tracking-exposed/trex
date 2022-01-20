@@ -566,30 +566,24 @@ const saveExperiment =
     );
   };
 
-const ensureProfileExists = (
-  ctx: GuardoniContext
-): TE.TaskEither<AppError, GuardoniContext> => {
+const ensureProfileExistsAtPath = (
+  config: GuardoniConfigRequired
+): TE.TaskEither<AppError, GuardoniConfigRequired> => {
   return pipe(
-    fsTE.maybeStat(ctx.profile.udd),
+    fsTE.maybeStat(config.profile),
     TE.mapLeft(toAppError),
     TE.chain((stat) => {
       if (!stat) {
         return pipe(
-          fsTE.mkdir(ctx.profile.udd, { recursive: true }),
+          fsTE.mkdir(config.profile, { recursive: true }),
           TE.mapLeft(toAppError),
           TE.map(() => stat)
         );
       }
       return TE.right(stat);
     }),
-    TE.map(() => ctx)
+    TE.map(() => config)
   );
-};
-
-const sanityChecks = (
-  ctx: GuardoniContext
-): TE.TaskEither<AppError, GuardoniContext> => {
-  return pipe(ensureProfileExists(ctx));
 };
 
 // todo: check if a profile already exists in the file system
@@ -724,13 +718,10 @@ const runExperiment =
   (experimentId: string): TE.TaskEither<AppError, GuardoniSuccessOutput> => {
     guardoniLogger.info('Running experiment %s', experimentId);
     return pipe(
-      sanityChecks(ctx),
-      TE.chain((ctx) =>
-        sequenceS(TE.ApplicativePar)({
-          profile: updateGuardoniProfile(ctx)(ctx.config.evidenceTag),
-          expId: TE.fromEither(validateNonEmptyString(experimentId)),
-        })
-      ),
+      sequenceS(TE.ApplicativePar)({
+        profile: updateGuardoniProfile(ctx)(ctx.config.evidenceTag),
+        expId: TE.fromEither(validateNonEmptyString(experimentId)),
+      }),
       TE.chain(({ profile, expId }) =>
         pipe(
           getDirective(ctx)(expId),
@@ -782,6 +773,20 @@ const runAuto =
     return runExperiment(ctx)(experimentId);
   };
 
+const getUserDataDir = (
+  config: GuardoniConfigRequired
+): TE.TaskEither<AppError, string> => {
+  const profileDir = path.join(config.basePath, 'profiles', config.profile);
+  const dirs = fs.readdirSync(profileDir);
+  if (dirs.length === 0) {
+    return pipe(
+      ensureProfileExistsAtPath(config),
+      TE.map((c) => profileDir)
+    );
+  }
+  console.log(dirs);
+  return TE.right(dirs[dirs.length - 1]);
+};
 const loadContext = (
   config: GuardoniConfigRequired
 ): TE.TaskEither<AppError, GuardoniContext> => {
@@ -815,11 +820,12 @@ const loadContext = (
   };
 
   return pipe(
-    getChromePath(),
-    E.mapLeft(toAppError),
-    TE.fromEither,
+    sequenceS(TE.ApplicativePar)({
+      chromePath: pipe(getChromePath(), E.mapLeft(toAppError), TE.fromEither),
+      userDataDir: getUserDataDir(config),
+    }),
     TE.map(
-      (chromePath): GuardoniContext => ({
+      ({ chromePath, userDataDir }): GuardoniContext => ({
         API,
         config: { ...config, extensionDir, chromePath },
         profile: defaultProfile,
@@ -862,9 +868,13 @@ const loadContext = (
   );
 };
 
-export type GetGuardoni = (config: GuardoniConfig) => Guardoni;
+export type GetGuardoni = (
+  config: GuardoniConfig
+) => TE.TaskEither<AppError, Guardoni>;
 
-export const GetGuardoni: GetGuardoni = (config) => {
+export const GetGuardoni: GetGuardoni = (
+  config
+): TE.TaskEither<AppError, Guardoni> => {
   debug.enable('guardoni::info,guardoni::error');
   if (config.verbose) {
     debug.enable('guardoni*');
@@ -874,34 +884,17 @@ export const GetGuardoni: GetGuardoni = (config) => {
 
   const configWithDefaults = getConfigWithDefaults(config);
 
-  return {
-    config: configWithDefaults,
-    runAuto: (value) =>
-      pipe(
-        loadContext(configWithDefaults),
-        TE.chain((ctx) => runAuto(ctx)(value))
-      ),
-    runExperiment: (experimentId) =>
-      pipe(
-        loadContext(configWithDefaults),
-        TE.chain((ctx) => runExperiment(ctx)(experimentId))
-      ),
-    runExperimentForPage: (page, experimentId, onProgress) =>
-      pipe(
-        loadContext(configWithDefaults),
-        TE.chain((ctx) =>
-          runExperimentForPage(ctx)(page, experimentId, onProgress)
-        )
-      ),
-    registerExperiment: (experiment, directiveType) =>
-      pipe(
-        loadContext(configWithDefaults),
-        TE.chain((ctx) => registerExperiment(ctx)(experiment, directiveType))
-      ),
-    registerExperimentFromCSV: (file, directiveType) =>
-      pipe(
-        loadContext(configWithDefaults),
-        TE.chain((ctx) => registerCSV(ctx)(file, directiveType))
-      ),
-  };
+  return pipe(
+    loadContext(configWithDefaults),
+    TE.map((ctx) => {
+      return {
+        config: configWithDefaults,
+        runAuto: runAuto(ctx),
+        runExperiment: runExperiment(ctx),
+        runExperimentForPage: runExperimentForPage(ctx),
+        registerExperiment: registerExperiment(ctx),
+        registerExperimentFromCSV: registerCSV(ctx),
+      };
+    })
+  );
 };
