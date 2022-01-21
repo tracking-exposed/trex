@@ -31,7 +31,7 @@ const directives = [
 
 const backend = process.env.BACKEND;
 
-describe('Guardoni', () => {
+describe.skip('Guardoni', () => {
   const basePath = path.resolve(__dirname, '../../../');
   const profile = 'profile-test-99';
   const extensionDir = path.resolve(__dirname, '../../../build/extension');
