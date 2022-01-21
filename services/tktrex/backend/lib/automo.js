@@ -14,9 +14,19 @@ const utils = require('../lib/utils');
 const mongo3 = require('./mongo3');
 
 
-async function getSummaryByPublicKey(publicKey) {
-    /* this function return the basic information necessary to compile the
-       landing personal page, 'options' might specify for specific details */
+async function getPersonalTableData(publicKey, filter, sync) {
+    /* this function wraps all the 'personal' page 
+       connection. It return a structure compatible with Taboule
+       and accept filter+sync information. It also validate
+       the supporter and return profile basic info */
+    if (_.size(publicKey) < 26)
+      return {
+        json: {
+            message: 'Invalid publicKey',
+            error: true,
+        },
+      };
+
     const mongoc = await mongo3.clientConnect({concurrency: 1});
     const supporter = await mongo3.readOne(mongoc,
         nconf.get('schema').supporters, { publicKey });
@@ -27,7 +37,7 @@ async function getSummaryByPublicKey(publicKey) {
     const total = await mongo3.count(mongoc,
         nconf.get('schema').metadata, {
             publicKey: supporter.publicKey,
-            type: { "$in": [ "following", "foryou" ] }
+            ...filter,
         });
 
     const full = await mongo3.count(mongoc,
@@ -40,17 +50,19 @@ async function getSummaryByPublicKey(publicKey) {
             publicKey: supporter.publicKey
         });
 
-    const htmls = await mongo3.readLimit(mongoc,
+    const htmls = []; /* await mongo3.readLimit(mongoc,
         nconf.get('schema').htmls, {
             publicKey: supporter.publicKey,
-        }, { savingTime: -1 }, 10, 0);
+        }, { savingTime: -1 }, 10, 0); */
 
     const metadata = await mongo3.readLimit(mongoc,
         nconf.get('schema').metadata, {
             publicKey: supporter.publicKey,
-            type: { "$in": [ "following", "foryou" ] }
-        }, { savingTime: -1 }, 100, 0);
+            ...filter
+        }, { savingTime: -1 }, sync.amount, sync.skip);
 
+    debug("getPersonalMetadata for type %s: %d elements with sync %o",
+        filter.type, metadata.length, sync)
     await mongoc.close();
 
     return {
@@ -484,7 +496,7 @@ async function getArbitrary(filter, amount, skip) {
 
 module.exports = {
     /* used by routes/personal */
-    getSummaryByPublicKey,
+    getPersonalTableData,
     getMetadataByPublicKey,
     getRelatedByWatcher,
     getVideosByPublicKey,

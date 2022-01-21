@@ -112,3 +112,31 @@ export const ContributorPersonalSummary = t.strict(
 export type ContributorPersonalSummary = t.TypeOf<
   typeof ContributorPersonalSummary
 >;
+
+export const TikTokPSearchMetadata = t.strict(
+  {
+    id: t.string,
+    rejected: t.boolean,
+    query: t.string,
+    savingTime: t.string,
+    results: t.number,
+    sources: t.array(t.string)
+  },
+  'PSearchMetadata'
+);
+
+export type TikTokPSearchMetadata = t.TypeOf<typeof TikTokPSearchMetadata>;
+
+export const ContributorPersonalSearch = t.strict(
+  {
+    metadata: t.array(TikTokPSearchMetadata),
+    counters: t.strict({
+      metadata: t.number,
+    }),
+  },
+  'ContributorPersonalSearch'
+);
+
+export type ContributorPersonalSearch = t.TypeOf<
+  typeof ContributorPersonalSearch
+>;

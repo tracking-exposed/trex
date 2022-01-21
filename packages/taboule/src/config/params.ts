@@ -15,6 +15,6 @@ export const defaultParams: TabouleDefaultParams = {
   personalVideos: {},
   personalAds: {},
   tikTokPersonalHTMLSummary: {},
-  tikTokPersonalMetadataSummary: {},
+  tikTokPersonalSearch: {},
   tikTokSearches: {},
 };
