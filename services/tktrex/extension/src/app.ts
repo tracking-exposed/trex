@@ -112,6 +112,7 @@ function fullSave(): void {
 }
 
 function refreshUUID(): void {
+  log.info('refreshing');
   feedId = feedCounter + '—' + Math.random() + '-' + _.random(0, 0xff);
 }
 
@@ -209,8 +210,9 @@ function handleSearch(element: Node): void {
 
   try {
     const monocheck = truel.getAttribute('trex-taken');
-    if (monocheck === '1') return;
-    truel.setAttribute('trex-taken', '1');
+    // log.debug('Search management: handling html of bytes #', truel, monocheck);
+    if (monocheck === feedId) return;
+    truel.setAttribute('trex-taken', feedId);
   } catch (error) {
     log.error('Error with attribute tampering, skipping');
     return;

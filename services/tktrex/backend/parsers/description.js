@@ -17,7 +17,7 @@ function videoDescriptionGuess(envelop) {
   } else if (due) {
     debug("second condition happened in this 'video'");
     retval = { description: due.textContent };
-  } else if (tre && tre.getAttribute('alt')) {
+  } else if (tre && tre.getAttribute) {
     debug("third condition happened in this 'video'");
     retval = { description: tre.getAttribute('alt') };
   } else {

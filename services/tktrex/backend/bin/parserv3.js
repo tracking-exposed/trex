@@ -140,7 +140,7 @@ async function executeParsingChain(htmlFilter) {
   stats.currentamount = _.size(envelops.sources);
 
   const results = [];
-  for (entry of envelops.sources) {
+  for (const entry of envelops.sources) {
     results.push(await pipeline(entry));
   }
   /* results is a list of objects: [ {
