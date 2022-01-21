@@ -16,6 +16,11 @@ jobs:
     strategy:
       matrix:
         node-version: [16.x]
+    services:
+      mongo-db:
+        image: mongo:4.2
+        ports:
+          - 27017:27017
 
     steps:
       - uses: actions/checkout@v2

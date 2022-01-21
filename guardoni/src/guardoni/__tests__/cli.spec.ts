@@ -31,7 +31,7 @@ const browserMock = {
 puppeteerMock.launch.mockResolvedValue(browserMock as any);
 
 const basePath = path.resolve(__dirname, '../../../');
-const profileName = 'test-profile';
+const profileName = 'profile-test-1';
 const extensionDir = path.resolve(__dirname, '../../../build/extension');
 
 describe('CLI', () => {
