@@ -57,7 +57,7 @@ const getConfig = <E extends t.Props>(
 
   const DOTENV_CONFIG_PATH =
     process.env.DOTENV_CONFIG_PATH ??
-    path.resolve(opts.cwd, mode === 'production' ? '.env.production' : '.env');
+    path.resolve(opts.cwd, mode === 'production' ? '.env' : '.env.development');
 
   // const tsConfigFile = path.resolve(opts.cwd, './tsconfig.json');
 
