@@ -1,11 +1,4 @@
-import { AppError } from '@shared/errors/AppError';
-import {
-  ComparisonDirectiveRow,
-  DirectiveType,
-} from '@shared/models/Directive';
-import * as TE from 'fp-ts/lib/TaskEither';
-import { NonEmptyString } from 'io-ts-types';
-import type * as puppeteer from 'puppeteer-core';
+import * as t from 'io-ts';
 
 export interface GuardoniConfig {
   headless: boolean;
@@ -54,24 +47,16 @@ export interface GuardoniSuccessOutput {
 
 export type GuardoniOutput = GuardoniErrorOutput | GuardoniSuccessOutput;
 
-export interface Guardoni {
-  config: GuardoniConfigRequired;
-  // register an experiment from the given csv file
-  registerExperimentFromCSV: (
-    file: NonEmptyString,
-    directiveType: DirectiveType
-  ) => TE.TaskEither<AppError, GuardoniSuccessOutput>;
-  registerExperiment: (
-    records: ComparisonDirectiveRow[],
-    directiveType: DirectiveType
-  ) => TE.TaskEither<AppError, GuardoniSuccessOutput>;
-  runExperiment: (
-    experiment: NonEmptyString
-  ) => TE.TaskEither<AppError, GuardoniSuccessOutput>;
-  runAuto: (value: '1' | '2') => TE.TaskEither<AppError, GuardoniSuccessOutput>;
-  runExperimentForPage: (
-    page: puppeteer.Page,
-    experiment: NonEmptyString,
-    onProgress?: (details: ProgressDetails) => void
-  ) => TE.TaskEither<AppError, GuardoniSuccessOutput>;
-}
+export const GuardoniProfile = t.strict(
+  {
+    udd: t.string,
+    profileName: t.string,
+    newProfile: t.boolean,
+    extensionDir: t.string,
+    execount: t.number,
+    evidencetag: t.array(t.string),
+  },
+  'Profile'
+);
+
+export type GuardoniProfile = t.TypeOf<typeof GuardoniProfile>;

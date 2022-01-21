@@ -17,6 +17,7 @@ export const ComparisonDirectiveRow = t.type(
     title: t.string,
     url: t.string,
     urltag: t.string,
+    watchFor: t.union([t.number, t.string, t.undefined]),
   },
   'ComparisonDirectiveRow'
 );
@@ -70,6 +71,8 @@ export const ComparisonDirective = t.strict(
   {
     title: t.union([t.string, t.undefined]),
     url: t.string,
+    urltag: t.union([t.string, t.undefined]),
+    watchFor: t.union([t.number, t.string, t.undefined, t.null]),
   },
   'ComparisonDirective'
 );

@@ -32,19 +32,18 @@ import * as Json from 'fp-ts/lib/Json';
 import { NonEmptyArray } from 'fp-ts/lib/NonEmptyArray';
 import * as TE from 'fp-ts/lib/TaskEither';
 import * as fs from 'fs';
-import * as t from 'io-ts';
 import { NonEmptyString } from 'io-ts-types/lib/NonEmptyString';
 import { PathReporter } from 'io-ts/lib/PathReporter';
 import _ from 'lodash';
 import path from 'path';
 // import pluginStealth from "puppeteer-extra-plugin-stealth";
 import puppeteer from 'puppeteer-core';
-import * as domainSpecific from '../domainSpecific';
+import domainSpecific from './domainSpecific';
 import { fsTE } from './fs.provider';
 import {
-  Guardoni,
   GuardoniConfig,
   GuardoniConfigRequired,
+  GuardoniProfile,
   GuardoniSuccessOutput,
   ProgressDetails,
 } from './types';
@@ -65,20 +64,6 @@ const DEFAULT_EXTENSION_DIR = path.resolve(
 );
 
 const DEFAULT_LOAD_FOR = 3000;
-
-const GuardoniProfile = t.strict(
-  {
-    udd: t.string,
-    profileName: t.string,
-    newProfile: t.boolean,
-    extensionDir: t.string,
-    execCount: t.number,
-    evidenceTags: t.array(t.string),
-  },
-  'Profile'
-);
-
-type GuardoniProfile = t.TypeOf<typeof GuardoniProfile>;
 
 interface ExperimentInfo {
   experimentId: string;
@@ -134,7 +119,7 @@ const downloadExtension = (
 const dispatchBrowser = (
   ctx: GuardoniContext
 ): TE.TaskEither<AppError, puppeteer.Browser> => {
-  const execCount = ctx.profile.execCount;
+  const execCount = ctx.profile.execount;
   const proxy = ctx.config.proxy;
 
   const commandLineArg = [
@@ -190,7 +175,7 @@ const operateTab =
   ): TE.TaskEither<AppError, void> => {
     return TE.tryCatch(async () => {
       try {
-        await domainSpecific.beforeLoad(page, directive);
+        await domainSpecific.beforeLoad(page, ctx.profile);
       } catch (error) {
         ctx.logger.debug(
           'error in beforeLoad %s %s directive %o',
@@ -217,7 +202,7 @@ const operateTab =
       });
 
       try {
-        await domainSpecific.beforeWait(page, directive);
+        await domainSpecific.beforeWait(page, ctx.profile);
       } catch (error) {
         ctx.logger.error(
           'error in beforeWait %s (%s)',
@@ -546,7 +531,7 @@ const saveExperiment =
       experimentId,
       evidenceTag: ctx.config.evidenceTag,
       directiveType,
-      execCount: profile.execCount,
+      execCount: profile.execount,
       profileName: profile.profileName,
       newProfile: profile.newProfile,
       when: new Date(),
@@ -714,12 +699,12 @@ const updateGuardoniProfile =
         pipe(GuardoniProfile.decode(content), E.mapLeft(toAppError))
       ),
       TE.chain((guardoniProfile) => {
-        const execCount = guardoniProfile.execCount + 1;
+        const execCount = guardoniProfile.execount + 1;
         const updatedProfile: GuardoniProfile = {
           ...guardoniProfile,
           newProfile: execCount === 0,
-          execCount: guardoniProfile.execCount + 1,
-          evidenceTags: guardoniProfile.evidenceTags.concat(evidenceTag),
+          execount: guardoniProfile.execount + 1,
+          evidencetag: guardoniProfile.evidencetag.concat(evidenceTag),
         };
 
         ctx.logger.debug('Writing guardoni config %O', updatedProfile);
@@ -832,8 +817,8 @@ export const getDefaultProfile = (
     newProfile: true,
     profileName,
     extensionDir,
-    evidenceTags: [],
-    execCount: 0,
+    evidencetag: [],
+    execount: 0,
   };
 };
 
@@ -902,6 +887,28 @@ const loadContext = (
     )
   );
 };
+
+export interface Guardoni {
+  config: GuardoniConfigRequired;
+  // register an experiment from the given csv file
+  registerExperimentFromCSV: (
+    file: NonEmptyString,
+    directiveType: DirectiveType
+  ) => TE.TaskEither<AppError, GuardoniSuccessOutput>;
+  registerExperiment: (
+    records: ComparisonDirectiveRow[],
+    directiveType: DirectiveType
+  ) => TE.TaskEither<AppError, GuardoniSuccessOutput>;
+  runExperiment: (
+    experiment: NonEmptyString
+  ) => TE.TaskEither<AppError, GuardoniSuccessOutput>;
+  runAuto: (value: '1' | '2') => TE.TaskEither<AppError, GuardoniSuccessOutput>;
+  runExperimentForPage: (
+    page: puppeteer.Page,
+    experiment: NonEmptyString,
+    onProgress?: (details: ProgressDetails) => void
+  ) => TE.TaskEither<AppError, GuardoniSuccessOutput>;
+}
 
 export type GetGuardoni = ({
   config,

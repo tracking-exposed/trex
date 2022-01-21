@@ -1,5 +1,6 @@
 import { AppError, toAppError } from '@shared/errors/AppError';
-import csvParse from 'csv-parse/lib';
+import csvParse from 'csv-parse';
+import * as csvStringify from 'csv-stringify';
 import * as E from 'fp-ts/lib/Either';
 import * as TE from 'fp-ts/lib/TaskEither';
 import * as fs from 'fs';
@@ -83,6 +84,25 @@ export const csvParseTE = (
           }
           guardoniLogger.debug('CSV Parse results: %O', records);
           return resolve({ records, info });
+        });
+      }),
+    toAppError
+  );
+
+export const csvStringifyTE = (
+  records: any[],
+  options: csvStringify.Options
+): TE.TaskEither<AppError, string> =>
+  TE.tryCatch(
+    () =>
+      new Promise((resolve, reject) => {
+        csvStringify.stringify(records, options, (error, info) => {
+          if (error) {
+            guardoniLogger.error('CSV Stringify error: %O', error);
+            return reject(error);
+          }
+          guardoniLogger.debug('CSV Stringify results: %O', records);
+          return resolve(info);
         });
       }),
     toAppError

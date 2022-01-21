@@ -14,6 +14,7 @@ import * as fs from 'fs';
 import * as path from 'path';
 import * as puppeteer from 'puppeteer-core';
 import { GetGuardoniCLI } from '../cli';
+import { csvStringifyTE } from '../utils';
 
 const axiosMock = axios as jest.Mocked<typeof axios>;
 axiosMock.create.mockImplementation(() => axiosMock);
@@ -29,16 +30,6 @@ const browserMock = {
 };
 puppeteerMock.launch.mockResolvedValue(browserMock as any);
 
-const writeCSVFile = (p: fs.PathLike, content: any[]): void => {
-  const keys = Object.keys(content[0]);
-  const commaSeparatedString = [
-    keys.join(','),
-    content
-      .map((row) => keys.map((key) => `"${row[key]}"`).join(','))
-      .join('\n'),
-  ].join('\n');
-  fs.writeFileSync(p, commaSeparatedString, 'utf-8');
-};
 const basePath = path.resolve(__dirname, '../../../');
 const profileName = 'test-profile';
 const extensionDir = path.resolve(__dirname, '../../../build/extension');
@@ -57,19 +48,39 @@ describe('CLI', () => {
     chromePath: '/chrome/fake/path',
   });
 
-  beforeAll(() => {
+  beforeAll(async () => {
     fs.mkdirSync(path.resolve(basePath, 'experiments'), {
       recursive: true,
     });
 
-    writeCSVFile(
+    const comparisonCSVContent = await csvStringifyTE(
+      tests.fc.sample(ComparisonDirectiveRowArb, 10),
+      { header: true, encoding: 'utf-8' }
+    )();
+
+    if (comparisonCSVContent._tag === 'Left') {
+      throw comparisonCSVContent.left as any;
+    }
+
+    fs.writeFileSync(
       path.resolve(basePath, 'experiments/experiment-comparison.csv'),
-      tests.fc.sample(ComparisonDirectiveRowArb, 10)
+      comparisonCSVContent.right,
+      'utf-8'
     );
 
-    writeCSVFile(
+    const chiaroscuroCSVContent = await csvStringifyTE(
+      tests.fc.sample(ChiaroScuroDirectiveRowArb, 10),
+      { header: true, encoding: 'utf-8' }
+    )();
+
+    if (chiaroscuroCSVContent._tag === 'Left') {
+      throw chiaroscuroCSVContent.left as any;
+    }
+
+    fs.writeFileSync(
       path.resolve(basePath, 'experiments/experiment-chiaroscuro.csv'),
-      tests.fc.sample(ChiaroScuroDirectiveRowArb, 10)
+      chiaroscuroCSVContent.right,
+      'utf-8'
     );
   });
 

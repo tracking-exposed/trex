@@ -7477,6 +7477,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"csv-stringify@npm:^6.0.5":
+  version: 6.0.5
+  resolution: "csv-stringify@npm:6.0.5"
+  checksum: a51c5af6a610fa7713e63983d440f29acdc60cfe348c8a1d4fcbd72463d9fc2303d979ee5ab0ff2ce772bea09e7f5c2f8394ce10388d3312081e65332b8ae295
+  languageName: node
+  linkType: hard
+
 "cyclist@npm:^1.0.1":
   version: 1.0.1
   resolution: "cyclist@npm:1.0.1"
@@ -11499,6 +11506,7 @@ __metadata:
     bufferutil: ^4.0.6
     chalk: ^5.0.0
     csv-parse: ^4.16.3
+    csv-stringify: ^6.0.5
     debug: ^4.3.3
     electron: 16.0.6
     electron-builder: ^22.14.13
