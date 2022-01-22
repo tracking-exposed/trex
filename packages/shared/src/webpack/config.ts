@@ -133,7 +133,7 @@ const getConfig = <E extends t.Props>(
 
   if (opts.target === 'web' || opts.target === 'electron-renderer') {
     plugins.push(new webpack.DefinePlugin(stringifiedAppEnv as any));
-  } else {
+  } else if (opts.target !== 'node') {
     plugins.push(
       new DotenvPlugin({
         path: DOTENV_CONFIG_PATH,
@@ -142,7 +142,7 @@ const getConfig = <E extends t.Props>(
     );
   }
 
-  if (opts.hot && mode === 'development') {
+  if (opts.hot && opts.target === 'web' && mode === 'development') {
     plugins.push(new ReactRefreshWebpackPlugin());
   }
 

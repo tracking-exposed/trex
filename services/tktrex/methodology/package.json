@@ -21,7 +21,7 @@
   "homepage": "https://tiktok.tracking.exposed",
   "dependencies": {
     "csv-parse": "^4.15.3",
-    "debug": "^4.3.2",
+    "debug": "^4.3.3",
     "eslint": "^8.4.1",
     "lodash": "^4.17.21",
     "moment": "^2.29.1",

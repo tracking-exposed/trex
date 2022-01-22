@@ -58,7 +58,7 @@ const creatMainWindow = (
 };
 
 export const run = async (): Promise<void> => {
-  debug.enable('guardoni*');
+  debug.enable('guardoni:*');
   log.info('Guardoni start', process.cwd());
 
   app.setPath('userData', path.resolve(os.homedir(), `.config/guardoni/data`));

@@ -21890,7 +21890,7 @@ __metadata:
     bs58: ^3.1.0
     cookie: ^0.3.1
     cors: ^2.8.1
-    debug: ^2.2.0
+    debug: ^4.3.3
     express: ^4.17.1
     food-words: ^1.1.0
     jquery: ^3.5.1
@@ -21914,7 +21914,7 @@ __metadata:
   resolution: "tktrex-guardoni@workspace:services/tktrex/methodology"
   dependencies:
     csv-parse: ^4.15.3
-    debug: ^4.3.2
+    debug: ^4.3.3
     eslint: ^8.4.1
     lodash: ^4.17.21
     moment: ^2.29.1
