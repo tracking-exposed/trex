@@ -923,8 +923,13 @@ export const GetGuardoni: GetGuardoni = ({
   logger,
 }): TE.TaskEither<AppError, Guardoni> => {
   const loggerSpaces = config.verbose
-    ? ['guardoni::info', 'guardoni::debug', 'guardoni::error']
-    : ['guardoni::info', 'guardoni::error'];
+    ? [
+        'guardoni::info',
+        'guardoni::debug',
+        'guardoni::error',
+        process.env.DEBUG,
+      ]
+    : ['guardoni::info', 'guardoni::error', process.env.DEBUG];
 
   debug.enable(loggerSpaces.join(','));
 

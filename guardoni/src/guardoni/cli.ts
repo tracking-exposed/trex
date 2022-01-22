@@ -49,15 +49,17 @@ const foldOutput = (
       : out.details;
 
   return [
-    '\n \n',
+    '\n',
     `${command.run.slice(0, 1).toUpperCase()}${command.run.slice(1)} ${
       out.type === 'error' ? 'failed' : 'succeeded'
     }: ${out.message}`,
-    '\n \n',
-    out.type === 'error' ? 'Error Details:' : 'Output values: ',
     '\n',
+    rest.length > 0
+      ? out.type === 'error'
+        ? 'Error Details:\n'
+        : 'Output values:\n'
+      : null,
     ...rest,
-    '\n \n',
   ].join('\n');
 };
 
