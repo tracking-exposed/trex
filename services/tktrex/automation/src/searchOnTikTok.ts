@@ -34,6 +34,7 @@ export interface SearchOnTikTokOptions {
   file: string;
   url: string;
   profile: string;
+  proxy?: string;
 }
 
 export const searchOnTikTok = ({
@@ -41,6 +42,7 @@ export const searchOnTikTok = ({
   extensionSource,
   file,
   profile,
+  proxy,
   url,
 }: SearchOnTikTokOptions): TE.TaskEither<Error, Page> =>
   TE.tryCatch(async() => {
@@ -57,6 +59,7 @@ export const searchOnTikTok = ({
       chromePath,
       extensionSource,
       profile,
+      proxy,
     });
 
     await page.goto(url);

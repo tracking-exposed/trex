@@ -95,17 +95,22 @@ export const setupBrowser = async({
   chromePath,
   extensionSource,
   profile,
+  proxy,
 }: {
   chromePath: string;
   extensionSource: string;
   profile: string;
+  proxy?: string;
 }): Promise<[Page, string | undefined]> => {
   let extPath: string | undefined;
   const extBackupDir = join(profile, 'tx.tt.extension');
   const extBackupDirExists = await fileExists(extBackupDir);
 
-
   const args = ['--no-sandbox', '--disabled-setuid-sandbox'];
+
+  if (proxy) {
+    args.push(`--proxy-server=${proxy}`);
+  }
 
   if (extBackupDirExists) {
     args.push(`--load-extension=${extBackupDir}`);
