@@ -58,4 +58,6 @@ jobs:
         run: yarn guardoni pkg
 
       - name: Dist
-        run: yarn guardoni dist:all
+        run: |
+          yarn docker-build
+          yarn guardoni dist:all
