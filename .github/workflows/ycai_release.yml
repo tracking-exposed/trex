@@ -34,11 +34,10 @@ jobs:
       - name: Build dashboard
         run: yarn build
 
-      # this will be replaced by yarn release-it
-      # - name: Release
-      #   env:
-      #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      #   run: yarn ycai semantic-release
+      - name: Release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: yarn semantic-release
 
       - name: Deploy YCAI dashboard
         uses: burnett01/rsync-deployments@5.1

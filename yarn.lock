@@ -3759,6 +3759,97 @@ __metadata:
   languageName: node
   linkType: hard
 
+"YCAI@workspace:YCAI":
+  version: 0.0.0-use.local
+  resolution: "YCAI@workspace:YCAI"
+  dependencies:
+    "@material-ui/core": ^4.12.3
+    "@material-ui/icons": ^4.11.2
+    "@material-ui/lab": ^4.0.0-alpha.60
+    "@testing-library/jest-dom": ^5.16.1
+    "@testing-library/react": ^12.1.2
+    "@testing-library/user-event": ^13.5.0
+    "@types/bs58": ^4.0.1
+    "@types/c3": ^0.7.8
+    "@types/chrome": 0.0.174
+    "@types/debug": ^4.1.7
+    "@types/jest": ^27.0.3
+    "@types/lodash": ^4.14.178
+    "@types/node": ^17.0.8
+    "@types/react": ^17.0.37
+    "@types/react-dom": ^17.0.11
+    "@types/react-test-renderer": ^17.0.1
+    "@types/swagger-ui": ^3.52.0
+    "@typescript-eslint/eslint-plugin": ^5.9.0
+    "@typescript-eslint/parser": ^5.9.0
+    "@vx/group": 0.0.199
+    "@vx/hierarchy": 0.0.199
+    "@vx/mock-data": 0.0.199
+    "@vx/responsive": 0.0.199
+    "@vx/scale": 0.0.199
+    "@vx/text": 0.0.199
+    "@vx/tooltip": 0.0.199
+    acorn: ^8.7.0
+    avenger: ^7.0.1
+    axios: ^0.24.0
+    bs58: ^4.0.1
+    buffer: ^6.0.3
+    c3: ^0.7.20
+    conventional-changelog-conventionalcommits: ^4.6.3
+    css-loader: ^6.5.1
+    date-fns: ^2.28.0
+    debug: ^4.3.3
+    dotenv: ^10.0.0
+    eslint: ^8.6.0
+    eslint-config-prettier: ^8.3.0
+    eslint-config-standard-with-typescript: ^21.0.1
+    eslint-plugin-import: ^2.25.4
+    eslint-plugin-node: ^11.1.0
+    eslint-plugin-promise: ^5.2.0
+    eslint-plugin-react: ^7.28.0
+    fp-ts: ^2.11.6
+    husky: ^7.0.4
+    i18next: ^21.6.5
+    io-ts: ^2.2.16
+    io-ts-types: ^0.5.16
+    jest: ^27.4.7
+    jest-chrome: ^0.7.2
+    lodash: ^4.17.21
+    marked: ^2.1.3
+    moment: ^2.29.1
+    monocle-ts: ^2.3.11
+    nacl: ^0.1.3
+    newtype-ts: ^0.3.4
+    postcss: ^8.4.5
+    prettier: ^2.5.1
+    react: ^17.0.2
+    react-dnd: ^14.0.4
+    react-dnd-html5-backend: ^14.0.2
+    react-dom: ^17.0.2
+    react-i18next: ^11.15.1
+    react-test-renderer: ^17.0.2
+    react-use-clipboard: ^1.0.7
+    semantic-release: ^19.0.2
+    style-loader: ^3.3.1
+    svgdom: ^0.1.10
+    swagger-ui: ^4.1.3
+    ts-endpoint: ^2.0.0
+    ts-jest: ^27.1.2
+    ts-loader: ^9.2.6
+    ts-node: ^10.4.0
+    tweetnacl: ^1.0.3
+    tweetnacl-util: ^0.13.5
+    typescript: ^4.5.4
+    uuid: ^2.0.3
+    web-vitals: ^2.1.2
+    webpack: ^5.65.0
+    webpack-bundle-analyzer: ^4.5.0
+    webpack-cli: ^4.9.1
+    webpack-dev-server: ^4.7.2
+    zenroom: ^2.2.3
+  languageName: unknown
+  linkType: soft
+
 "abab@npm:^2.0.0, abab@npm:^2.0.3, abab@npm:^2.0.5":
   version: 2.0.5
   resolution: "abab@npm:2.0.5"
@@ -6627,6 +6718,99 @@ __metadata:
     lodash: ^4.17.15
     q: ^1.5.1
   checksum: 7b8e8a21ebb56f9aaa510e12917b7c609202072c3e71089e0a09630c37c2e8146cdb04364809839b0e3eb55f807fe84d03b2079500b37f6186d505848be5c562
+  languageName: node
+  linkType: hard
+
+"conventional-changelog-core@npm:^4.2.1":
+  version: 4.2.4
+  resolution: "conventional-changelog-core@npm:4.2.4"
+  dependencies:
+    add-stream: ^1.0.0
+    conventional-changelog-writer: ^5.0.0
+    conventional-commits-parser: ^3.2.0
+    dateformat: ^3.0.0
+    get-pkg-repo: ^4.0.0
+    git-raw-commits: ^2.0.8
+    git-remote-origin-url: ^2.0.0
+    git-semver-tags: ^4.1.1
+    lodash: ^4.17.15
+    normalize-package-data: ^3.0.0
+    q: ^1.5.1
+    read-pkg: ^3.0.0
+    read-pkg-up: ^3.0.0
+    through2: ^4.0.0
+  checksum: 56d5194040495ea316e53fd64cb3614462c318f0fe54b1bf25aba6fba9b3d51cb9fdf7ac5b766f17e5529a3f90e317257394e00b0a9a5ce42caf3a59f82afb3a
+  languageName: node
+  linkType: hard
+
+"conventional-changelog-ember@npm:^2.0.9":
+  version: 2.0.9
+  resolution: "conventional-changelog-ember@npm:2.0.9"
+  dependencies:
+    q: ^1.5.1
+  checksum: 30c7bd48ce995e39fc91bcd8c719b2bee10cb408c246a6a7de6cec44a3ca12afe5a86f57f55aa1fd2c64beb484c68013d16658047e6273f130c1c80e7dad38e9
+  languageName: node
+  linkType: hard
+
+"conventional-changelog-eslint@npm:^3.0.9":
+  version: 3.0.9
+  resolution: "conventional-changelog-eslint@npm:3.0.9"
+  dependencies:
+    q: ^1.5.1
+  checksum: 402ae73a8c5390405d4f902819f630f56fa7dfa8f6bef77b3b5f2fb7c8bd17f64ad83edbacc030cfef5b84400ab722d4f166dd906296a4d286e66205c1bd8a3f
+  languageName: node
+  linkType: hard
+
+"conventional-changelog-express@npm:^2.0.6":
+  version: 2.0.6
+  resolution: "conventional-changelog-express@npm:2.0.6"
+  dependencies:
+    q: ^1.5.1
+  checksum: c139fa9878971455cce9904a195d92f770679d24a88ef07a016a6954e28f0f237ec59e45f2591b2fc9b8e10fd46c30150ddf0ce50a2cb03be85cae0ee64d4cdd
+  languageName: node
+  linkType: hard
+
+"conventional-changelog-angular@npm:^5.0.0, conventional-changelog-angular@npm:^5.0.11, conventional-changelog-angular@npm:^5.0.12":
+  version: 5.0.13
+  resolution: "conventional-changelog-angular@npm:5.0.13"
+  dependencies:
+    q: ^1.5.1
+  checksum: df1145467c75e8e61f35ed24d7539e8b7dcdc810b86267b0173420c8955590cca139eb51f89ac255d70c632433d996b0ed227cb1acdf59537f3d2f4ad9c770d3
+  languageName: node
+  linkType: hard
+
+"conventional-changelog-atom@npm:^2.0.8":
+  version: 2.0.8
+  resolution: "conventional-changelog-atom@npm:2.0.8"
+  dependencies:
+    q: ^1.5.1
+  checksum: 12ecbd928f8c261f9afaac067fcc0cf10ff6ac8505e4285dc3d9959ee072a8937ac942d505e850dce27c4527046009adb22b498ba0b10802916d2c7d2dc1f7bc
+  languageName: node
+  linkType: hard
+
+"conventional-changelog-codemirror@npm:^2.0.8":
+  version: 2.0.8
+  resolution: "conventional-changelog-codemirror@npm:2.0.8"
+  dependencies:
+    q: ^1.5.1
+  checksum: cf331db40cc54c2353b0189aba26a2b959cb08b059bf2a81245272027371519c9acc90d574295782985829c50f0c52da60c952c70ec6dbd70e9e17affeb61453
+  languageName: node
+  linkType: hard
+
+"conventional-changelog-conventionalcommits@npm:^4.3.1, conventional-changelog-conventionalcommits@npm:^4.5.0, conventional-changelog-conventionalcommits@npm:^4.6.3":
+  version: 4.6.3
+  resolution: "conventional-changelog-conventionalcommits@npm:4.6.3"
+  dependencies:
+    compare-func: ^2.0.0
+    q: ^1.5.1
+  checksum: ec96144b75fdb84c4a6f7db9b671dc258d964cd7aa35f9b00539e42bbe05601a9127c17cf0dcc315ae81a0dd20fe795d9d41dd90373928d24b33f065728eb2e2
+  languageName: node
+  linkType: hard
+
+"conventional-changelog-preset-loader@npm:^2.3.4":
+  version: 2.3.4
+  resolution: "conventional-changelog-preset-loader@npm:2.3.4"
+  checksum: 23a889b7fcf6fe7653e61f32a048877b2f954dcc1e0daa2848c5422eb908e6f24c78372f8d0d2130b5ed941c02e7010c599dccf44b8552602c6c8db9cb227453
   languageName: node
   linkType: hard
 
