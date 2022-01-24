@@ -1,8 +1,4 @@
-import {
-  readFile,
-  writeFile,
-  mkdir,
-} from 'fs/promises';
+import { readFile, writeFile, mkdir } from 'fs/promises';
 
 import { join, dirname } from 'path';
 
@@ -37,7 +33,8 @@ export class ProfileState {
   public async save(): Promise<ProfileState> {
     const json = JSON.stringify(
       ProfileStateStorage.encode(this.storage),
-      null, 2,
+      null,
+      2,
     );
 
     await mkdir(dirname(this.path), { recursive: true });

@@ -1,6 +1,8 @@
 /* eslint-disable no-console */
 import { Page } from 'puppeteer';
 
+import { askConfirmation } from './pageUtil';
+
 import { sleep } from './util';
 
 export const isLoggedIn = async(
@@ -33,12 +35,22 @@ export const isLoggedIn = async(
   }
 };
 
-export const ensureLoggedIn = async(page: Page): Promise<true> => {
-  let loggedIn = await isLoggedIn(page);
+/**
+ * Loop until the function can detect that the provided
+ * page is logged in on TikTok.
+ */
+export const ensureLoggedIn = async(
+  page: Page,
+  userWarned = false,
+): Promise<true> => {
+  const loggedIn = await isLoggedIn(page);
 
-  while (!loggedIn) {
-    console.log('please log in to TikTok');
-    loggedIn = await isLoggedIn(page);
+  if (!loggedIn) {
+    if (!userWarned) {
+      await askConfirmation(page)('Please log in to TikTok!');
+    }
+
+    return ensureLoggedIn(page, true);
   }
 
   return true;
@@ -48,9 +60,7 @@ export const ensureLoggedIn = async(page: Page): Promise<true> => {
  * Checks if a captcha is present on the page, if so,
  * wait until it is not present anymore (and ask user to solve it).
  */
-export const handleCaptcha = async(
-  page: Page,
-): Promise<void> => {
+export const handleCaptcha = async(page: Page): Promise<void> => {
   try {
     await page.waitForSelector('#captcha-verify-image', {
       visible: true,

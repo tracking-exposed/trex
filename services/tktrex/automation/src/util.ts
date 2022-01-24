@@ -2,17 +2,12 @@ import Crypto from 'crypto';
 
 import fs from 'fs';
 
-import { mkdir, stat } from 'fs/promises';
+import { cp, mkdir, stat } from 'fs/promises';
 import { tmpdir } from 'os';
 import { join } from 'path';
 import readline from 'readline';
-import { URL } from 'url';
 
 import * as TE from 'fp-ts/lib/TaskEither';
-
-import fetch from 'node-fetch';
-import puppeteer, { Page } from 'puppeteer';
-import unzip from 'unzipper';
 
 export type TEString = TE.TaskEither<Error, string>;
 
@@ -23,12 +18,26 @@ export const toError = (e: unknown): Error => {
   return new Error('unspecified error');
 };
 
-export const prompt = async(message: string): Promise<string> =>
+export const prompt = async(
+  message: string,
+  a?: AbortSignal,
+): Promise<string> =>
   new Promise((resolve, reject) => {
     const rl = readline.createInterface({
       input: process.stdin,
       output: process.stdout,
     });
+
+    if (a) {
+      const onAbort = (): void => {
+        a.removeEventListener('abort', onAbort);
+        rl.close();
+        reject(new Error('aborted'));
+      };
+
+      a.addEventListener('abort', onAbort);
+    }
+
     rl.question(message, (answer) => {
       rl.close();
       return resolve(answer);
@@ -48,6 +57,41 @@ export const tmpDir = async(prefix?: string): Promise<string> => {
   return path;
 };
 
+/**
+ * Create a function that returns a function accepting a map of
+ * source file names to destination file names that will copy
+ * the source files from {fromDirectory} to {toDirectory}.
+ *
+ * E.g.:
+ *
+ * const from = 'src';
+ * const to = 'dist';
+ *
+ * await makeCopyFromTo(from, to)({
+ *  'foo.js': 'bar.js',
+ *  'baz.js': 'qux.js',
+ * });
+ *
+ * Will copy:
+ * - src/foo.js to dist/bar.js
+ * - src/baz.js to dist/qux.js
+ */
+export const copyFromTo =
+  (fromDirectory: string, toDirectory: string) =>
+    async(map: Record<string, string>): Promise<void> => {
+      await Promise.all(
+        Object.entries(map).map(([from, to]) =>
+          cp(join(fromDirectory, from), join(toDirectory, to)),
+        ),
+      );
+    };
+
+/**
+ * Escape a string for use in a shell command.
+ */
+export const shellEscape = (cmd: string): string =>
+  cmd.replace(/(["'$`\\]|\s+)/g, '\\$1');
+
 export const fileExists = async(path: string): Promise<boolean> => {
   try {
     await stat(path);
@@ -57,114 +101,24 @@ export const fileExists = async(path: string): Promise<boolean> => {
   }
 };
 
-const createExtensionDirectoryFromFile = async(
-  file: string,
-): Promise<string> => {
-  const path = await tmpDir('extension');
-
-  fs.createReadStream(file).pipe(unzip.Extract({ path }));
-
-  return path;
-};
-
-const createExtensionDirectoryFromURL = async(url: URL): Promise<string> => {
-  const path = await tmpDir('extension');
-  const res = await fetch(url.href);
-
-  if (!res.body) {
-    throw new Error('no body in response from node-fetch');
-  }
-
-  res.body.pipe(unzip.Extract({ path }));
-
-  return path;
-};
-
-export const createExtensionDirectory = (
-  extensionSource: string,
-): Promise<string> => {
+export const isEmptyDirectoryOrDoesNotExist = async(
+  path: string,
+): Promise<true | 'not-a-directory' | 'directory-not-empty'> => {
   try {
-    const url = new URL(extensionSource);
-    return createExtensionDirectoryFromURL(url);
+    const stats = await stat(path);
+
+    if (!stats.isDirectory()) {
+      return 'not-a-directory';
+    }
+
+    const entries = await fs.promises.readdir(path);
+
+    if (entries.length > 0) {
+      return 'directory-not-empty';
+    }
+
+    return true;
   } catch (e) {
-    return createExtensionDirectoryFromFile(extensionSource);
+    return true;
   }
-};
-
-export const getExtBackupDir = (profile: string): string =>
-  join(profile, 'tx.tt.extension');
-
-export const setupBrowser = async({
-  chromePath,
-  extensionSource,
-  profile,
-  proxy,
-}: {
-  chromePath: string;
-  extensionSource?: string;
-  profile: string;
-  proxy?: string;
-}): Promise<[Page, string | undefined]> => {
-  let extPath: string | undefined;
-  const extBackupDir = getExtBackupDir(profile);
-  const extBackupDirExists = await fileExists(extBackupDir);
-
-  const args = ['--no-sandbox', '--disabled-setuid-sandbox'];
-
-  if (proxy) {
-    args.push(`--proxy-server=${proxy}`);
-  }
-
-  if (extBackupDirExists) {
-    args.push(`--load-extension=${extBackupDir}`);
-    args.push(`--disable-extensions-except=${extBackupDir}`);
-  } else if (extensionSource) {
-    extPath = await createExtensionDirectory(extensionSource);
-    args.push(`--load-extension=${extPath}`);
-    args.push(`--disable-extensions-except=${extPath}`);
-  }
-
-  const options = {
-    args,
-    defaultViewport: {
-      height: 1080,
-      width: 1920,
-    },
-    executablePath: chromePath,
-    headless: false,
-    ignoreDefaultArgs: ['--disable-extensions'],
-    userDataDir: profile,
-  };
-
-  const browser = await puppeteer.launch(options);
-  const page = await browser.newPage();
-
-  return [page, extPath];
-};
-
-export const typeLikeAHuman = async(page: Page, text: string): Promise<Page> => {
-  const averageWordsPerMinute = 60;
-  const averageCharactersPerWord = 5;
-
-  const humanDurationMs = (text.length / averageCharactersPerWord) / averageWordsPerMinute * 60 * 1000;
-  const letterDurationMs = humanDurationMs / text.length;
-
-  for (const letter of text) {
-    await page.keyboard.type(letter);
-    await sleep(letterDurationMs * (0.6 + Math.random() * 0.8));
-  }
-
-  return page;
-};
-
-export const fillInput = async(page: Page, selector: string, value: string): Promise<Page> => {
-  await page.waitForSelector(selector);
-  await page.focus(selector);
-  await page.keyboard.down('Control');
-  await page.keyboard.press('A');
-  await page.keyboard.up('Control');
-  await page.keyboard.press('Backspace');
-  await typeLikeAHuman(page, value);
-
-  return page;
 };

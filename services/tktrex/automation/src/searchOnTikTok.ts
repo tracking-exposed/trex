@@ -1,105 +1,92 @@
 /* eslint-disable no-console */
 
-import * as TE from 'fp-ts/lib/TaskEither';
-
 import { Page } from 'puppeteer';
-import puppeteer from 'puppeteer-extra';
-import stealth from 'puppeteer-extra-plugin-stealth';
-
-import copy from 'recursive-copy';
 
 import { loadQueriesCSV } from './loadCSV';
 import loadProfileState from './profileState';
 
-import {
-  ensureLoggedIn,
-  handleCaptcha,
-} from './tikTokUtil';
+import { ensureLoggedIn, handleCaptcha } from './tikTokUtil';
 
-import {
-  fileExists,
-  fillInput,
-  getExtBackupDir,
-  prompt,
-  setupBrowser,
-  sleep,
-  toError,
-} from './util';
+import { askConfirmation, fillInput, launchBrowser } from './pageUtil';
 
-puppeteer.use(stealth());
+import { sleep } from './util';
 
 export interface SearchOnTikTokOptions {
   chromePath: string;
-  extensionSource?: string;
   file: string;
+  unpackedExtensionDirectory: string;
   url: string;
   profile: string;
-  proxy?: string;
+  useStealth: boolean;
+  proxy?: string | null;
 }
 
-export const searchOnTikTok = ({
+export const searchOnTikTok = async({
   chromePath,
-  extensionSource,
   file,
   profile,
   proxy,
+  unpackedExtensionDirectory,
   url,
-}: SearchOnTikTokOptions): TE.TaskEither<Error, Page> =>
-  TE.tryCatch(async() => {
-    const extBackupDir = getExtBackupDir(profile);
-    const extPreviouslyInstalled = await fileExists(extBackupDir);
-    const profileState = await loadProfileState(profile);
+  useStealth,
+}: SearchOnTikTokOptions): Promise<Page> => {
+  const profileState = await loadProfileState(profile);
 
+  console.log(
+    `Launching chrome from "${chromePath}" with profile "${profile}", which has been used ${
+      profileState.getNTimesUsed() - 1
+    } times before...\n`,
+  );
+
+  const page = await launchBrowser({
+    chromePath,
+    unpackedExtensionDirectory,
+    profile,
+    proxy,
+    useStealth,
+  });
+
+  console.log('...launched chrome!\n');
+
+  if (profileState.getNTimesUsed() === 1) {
+    console.log('First time using this profile, so:\n');
+    console.log('Please remember to resolve any kind of user interaction');
+    console.log('that is not handled automatically in the browser!\n');
     console.log(
-      `launching chrome from "${chromePath}" with profile "${profile}", which has been used ${
-        profileState.getNTimesUsed() - 1
-      } times before`,
+      'This script will attempt to warn you when it requires interaction.',
     );
+    console.log('\n');
+  }
 
-    const [page, extDir] = await setupBrowser({
-      chromePath,
-      extensionSource,
-      profile,
-      proxy,
-    });
+  const confirm = askConfirmation(page);
 
-    if (!extensionSource && !extPreviouslyInstalled) {
-      await prompt([
-        '',
-        'Please install the TikTok extension and press enter once done,',
-        'or re-run this script providing an option for "extension-source".',
-        '',
-        'If you provide the "extension-source" option,',
-        'you only need to do it once per profile.',
-        '',
-      ].join('\n'));
-      // the other branch of that previous if is handled by the code in setupBrowser
-    }
+  await page.goto(url);
 
-    await page.goto(url);
+  await handleCaptcha(page);
+
+  await ensureLoggedIn(page);
+
+  if (profileState.getNTimesUsed() === 1) {
+    await confirm(
+      'It looks like you\'re running this experiment for the first time.',
+      '',
+      'Please remember to take note of your public key from your personal page.',
+      'This page can be accessed from the extension menu.',
+    );
+  }
+
+  const queries = await loadQueriesCSV(file);
+
+  for (const query of queries) {
+    console.log(`Searching for "${query}"...`);
+
+    await fillInput(page, '[data-e2e="search-user-input"', query);
+    await page.keyboard.press('Enter');
     await handleCaptcha(page);
-    await ensureLoggedIn(page);
+    await sleep(5000);
+  }
 
-    const queries = await loadQueriesCSV(file);
-
-    for (const query of queries) {
-      console.log(`searching for "${query}"...`);
-
-      await fillInput(
-        page,
-        '[data-e2e="search-user-input"',
-        query,
-      );
-      await page.keyboard.press('Enter');
-      await handleCaptcha(page);
-      await sleep(5000);
-    }
-
-    if (extDir) {
-      await copy(extDir, extBackupDir);
-    }
-
-    return page;
-  }, toError);
+  return page;
+};
 
 export default searchOnTikTok;
