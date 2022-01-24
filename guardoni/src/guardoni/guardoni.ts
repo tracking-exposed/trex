@@ -33,13 +33,13 @@ import { NonEmptyArray } from 'fp-ts/lib/NonEmptyArray';
 import * as TE from 'fp-ts/lib/TaskEither';
 import * as fs from 'fs';
 import { NonEmptyString } from 'io-ts-types/lib/NonEmptyString';
-import { PathReporter } from 'io-ts/lib/PathReporter';
+import { failure, PathReporter } from 'io-ts/lib/PathReporter';
 import _ from 'lodash';
 import path from 'path';
 // import pluginStealth from "puppeteer-extra-plugin-stealth";
 import puppeteer from 'puppeteer-core';
 import domainSpecific from './domainSpecific';
-import { fsTE } from './fs.provider';
+
 import {
   GuardoniConfig,
   GuardoniConfigRequired,
@@ -47,7 +47,7 @@ import {
   GuardoniSuccessOutput,
   ProgressDetails,
 } from './types';
-import { csvParseTE, getChromePath } from './utils';
+import { csvParseTE, getChromePath, liftFromIO } from './utils';
 
 // const COMMANDJSONEXAMPLE =
 //   'https://youtube.tracking.exposed/json/automation-example.json';
@@ -264,7 +264,7 @@ export const guardoniExecution =
     return pipe(
       TE.tryCatch(
         () => domainSpecific.beforeDirectives(page, ctx.profile),
-        toAppError
+        (e) => new AppError('BeforeDirectivesError', (e as any).message, [])
       ),
       TE.chain(() => operateBrowser(ctx)(page, directives)),
       TE.chain(() => TE.tryCatch(() => domainSpecific.completed(), toAppError)),
@@ -413,14 +413,14 @@ export const readCSVAndParse =
     logger.debug('Registering CSV from path %s', filePath);
 
     return pipe(
-      fsTE.statOrFail(filePath, {}),
+      liftFromIO(() => fs.statSync(filePath, { throwIfNoEntry: false })),
       TE.mapLeft((e) =>
         toAppError({
           ...e,
           message: `File at path ${filePath} doesn't exist`,
         })
       ),
-      TE.chain(() => fsTE.readFile(filePath, 'utf-8')),
+      TE.chain(() => liftFromIO(() => fs.readFileSync(filePath))),
       TE.mapLeft((e) => {
         return toAppError({
           ...e,
@@ -540,18 +540,22 @@ const saveExperiment =
     // profinfo.expinfo = experimentInfo;
 
     return pipe(
-      fsTE.lift(fsTE.maybeStat(experimentJSONFile)),
+      liftFromIO(() =>
+        fs.statSync(experimentJSONFile, { throwIfNoEntry: false })
+      ),
       TE.chain((stat) => {
         if (stat) {
           return TE.right(undefined);
         }
-        return fsTE.writeFile(
-          experimentJSONFile,
-          JSON.stringify(experimentInfo),
-          'utf-8'
+        return liftFromIO(() =>
+          fs.writeFileSync(
+            experimentJSONFile,
+            JSON.stringify(experimentInfo),
+            'utf-8'
+          )
         );
       }),
-      fsTE.lift,
+      liftFromIO,
       TE.map(() => experimentInfo)
     );
   };
@@ -562,13 +566,11 @@ const ensureProfileExistsAtPath = (
 ): TE.TaskEither<AppError, string> => {
   const profileDir = getProfileDataDir(basePath, profileName);
   return pipe(
-    fsTE.maybeStat(profileDir),
-    TE.mapLeft(toAppError),
+    liftFromIO(() => fs.statSync(profileDir, { throwIfNoEntry: false })),
     TE.chain((stat) => {
       if (!stat) {
         return pipe(
-          fsTE.mkdir(profileDir, { recursive: true }),
-          TE.mapLeft(toAppError),
+          liftFromIO(() => fs.mkdirSync(profileDir, { recursive: true })),
           TE.map(() => stat)
         );
       }
@@ -663,19 +665,31 @@ const readProfile = (
   profilePath: string
 ): TE.TaskEither<AppError, GuardoniProfile> => {
   return pipe(
-    fsTE.lift(fsTE.readFile(profilePath, 'utf-8')),
+    liftFromIO(() => fs.readFileSync(profilePath, 'utf-8')),
     TE.chain((data) =>
       pipe(
         Json.parse(data),
         E.mapLeft(
-          () =>
+          (e) =>
             new AppError(
               'ReadProfileError',
               "Can't decode the content of the profile",
-              []
+              [JSON.stringify(e)]
             )
         ),
-        E.chain((d) => pipe(GuardoniProfile.decode(d), E.mapLeft(toAppError))),
+        E.chain((d) =>
+          pipe(
+            GuardoniProfile.decode(d),
+            E.mapLeft(
+              (e) =>
+                new AppError(
+                  'DecodeProfileError',
+                  "Can't decode guardoni profile",
+                  failure(e)
+                )
+            )
+          )
+        ),
         TE.fromEither
       )
     )
@@ -688,16 +702,7 @@ const updateGuardoniProfile =
     ctx.logger.debug('Updating guardoni config %s', ctx.guardoniConfigFile);
 
     return pipe(
-      fsTE.lift(fsTE.readFile(ctx.guardoniConfigFile, 'utf-8')),
-      TE.chainEitherK((content) => Json.parse(content)),
-      TE.mapLeft(toAppError),
-      TE.map((content) => {
-        ctx.logger.debug('File content %O', content);
-        return content;
-      }),
-      TE.chainEitherK((content) =>
-        pipe(GuardoniProfile.decode(content), E.mapLeft(toAppError))
-      ),
+      readProfile(ctx.guardoniConfigFile),
       TE.chain((guardoniProfile) => {
         const execCount = guardoniProfile.execount + 1;
         const updatedProfile: GuardoniProfile = {
@@ -709,8 +714,8 @@ const updateGuardoniProfile =
 
         ctx.logger.debug('Writing guardoni config %O', updatedProfile);
         return pipe(
-          fsTE.lift(
-            fsTE.writeFile(
+          liftFromIO(() =>
+            fs.writeFileSync(
               ctx.guardoniConfigFile,
               JSON.stringify(updatedProfile, undefined, 2),
               'utf-8'
@@ -854,11 +859,13 @@ const loadContext = (
     }),
     TE.chainFirst((ctx) => TE.fromIOEither(downloadExtension(ctx))),
     TE.chainFirst((ctx) =>
-      fsTE.lift(fsTE.mkdir(ctx.profile.udd, { recursive: true }))
+      liftFromIO(() => fs.mkdirSync(ctx.profile.udd, { recursive: true }))
     ),
     TE.chain((ctx) =>
       pipe(
-        fsTE.lift(fsTE.maybeStat(ctx.guardoniConfigFile)),
+        liftFromIO(() =>
+          fs.statSync(ctx.guardoniConfigFile, { throwIfNoEntry: false })
+        ),
         TE.chain((stat) => {
           ctx.logger.debug(
             'Path %s exists? %O',
@@ -869,8 +876,8 @@ const loadContext = (
             return readProfile(ctx.guardoniConfigFile);
           }
           return pipe(
-            fsTE.lift(
-              fsTE.writeFile(
+            liftFromIO(() =>
+              fs.writeFileSync(
                 ctx.guardoniConfigFile,
                 JSON.stringify(ctx.profile, null, 2),
                 'utf-8'
