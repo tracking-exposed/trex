@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
 
-rm -rf ./dist
-NODE_ENV=production ../node_modules/.bin/webpack
+yarn clean
+
+NODE_ENV=production yarn build
 
 echo "Manually removing 'localhost:9000' from the manifest.json"
 # This is savage.

@@ -1,0 +1,32 @@
+name: TRex - Release
+on:
+  push:
+    branches:
+      - beta
+
+jobs:
+  release:
+    name: Release
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [16.x]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: "yarn"
+          cache-dependency-path: yarn.lock
+
+      - name: Install dependencies
+        run: yarn
+
+      - name: Release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        # run: yarn release-it --ci --preRelease
+        run: yarn release-it premajor --ci --preReleaseId=beta --github.preRelease=true
