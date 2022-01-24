@@ -1,6 +1,10 @@
-import { readFile, writeFile } from 'fs/promises';
+import {
+  readFile,
+  writeFile,
+  mkdir,
+} from 'fs/promises';
 
-import { join } from 'path';
+import { join, dirname } from 'path';
 
 import { isRight } from 'fp-ts/lib/Either';
 import * as t from 'io-ts';
@@ -31,7 +35,12 @@ export class ProfileState {
   }
 
   public async save(): Promise<ProfileState> {
-    const json = JSON.stringify(this.storage, null, 2);
+    const json = JSON.stringify(
+      ProfileStateStorage.encode(this.storage),
+      null, 2,
+    );
+
+    await mkdir(dirname(this.path), { recursive: true });
     await writeFile(this.path, json);
     return this;
   }
