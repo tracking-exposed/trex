@@ -1,9 +1,9 @@
 /* eslint-disable no-console */
 import { Page } from 'puppeteer';
 
-import { askConfirmation } from './pageUtil';
+import { askConfirmation } from '../../util/page';
 
-import { sleep } from './util';
+import { sleep } from '../../util/general';
 
 export const isLoggedIn = async(
   page: Page,

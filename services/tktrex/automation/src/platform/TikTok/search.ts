@@ -2,14 +2,14 @@
 
 import { Page } from 'puppeteer';
 
-import { loadQueriesCSV } from './loadCSV';
-import loadProfileState from './profileState';
+import { loadQueriesCSV } from '../../util/csv';
+import loadProfileState from '../../project/state';
 
-import { ensureLoggedIn, handleCaptcha } from './tikTokUtil';
+import { ensureLoggedIn, handleCaptcha } from './util';
 
-import { askConfirmation, fillInput, launchBrowser } from './pageUtil';
+import { askConfirmation, fillInput, launchBrowser } from '../../util/page';
 
-import { sleep } from './util';
+import { sleep } from '../../util/general';
 
 export interface SearchOnTikTokOptions {
   chromePath: string;

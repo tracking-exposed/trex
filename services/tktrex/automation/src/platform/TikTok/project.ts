@@ -12,10 +12,10 @@ import unzipper from 'unzipper';
 
 import { getChromePath } from '@guardoni/guardoni/utils';
 
-import { ExperimentType } from './initProject';
-import searchOnTikTok from './searchOnTikTok';
+import { ExperimentType } from '../../project/init';
+import searchOnTikTok from './search';
 
-import { copyFromTo } from './util';
+import { copyFromTo } from '../../util/general';
 
 const getAssetPath = (path: string): string =>
   resolve(__dirname, '../assets/TikTok', path);
