@@ -5,7 +5,7 @@
 
   "short_name": "tktrex",
   "description": "A tool for academic researchers. Part of the tracking.exposed project, is meant to analyze the algorithm of a popular video portal.",
-  "version": "0.2.5",
+  "version": "0.2.6",
   "author": "The team of Tracking Exposed",
 
   "icons": {

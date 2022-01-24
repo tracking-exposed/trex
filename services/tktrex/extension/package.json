@@ -1,13 +1,13 @@
 {
   "name": "tktrex",
-  "version": "0.2.5",
+  "version": "0.2.6",
   "packageManager": "yarn@3.1.1",
   "scripts": {
-    "build": "tsc --build && DEBUG=\"*:debug *:error\" NODE_ENV=production webpack",
+    "build": "tsc --build && rm -rf dist && DEBUG=\"*:debug *:error\" NODE_ENV=production webpack",
     "build:dev": "DEBUG=\"*\" webpack",
     "watch": "DEBUG=\"*\" webpack --watch",
     "watch:prod": "NODE_ENV=production webpack --watch",
-    "clean": "rm -rf build"
+    "clean": "rm -rf build dist"
   },
   "dependencies": {
     "@material-ui/core": "^4.12.3",

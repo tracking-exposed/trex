@@ -82,7 +82,7 @@ async function download(filename, url) {
   }
   const data = await x.buffer();
   fs.writeFileSync(filename, data);
-  debug('Written file %s!', filename);
+  // debug('Written file %s!', filename);
   return {
     downloaded: true,
     reason: 200,
