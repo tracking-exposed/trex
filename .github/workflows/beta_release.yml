@@ -31,4 +31,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         # run: yarn release-it --ci --preRelease
-        run: yarn release-it premajor --ci --preReleaseId=beta --github.preRelease=true
+        run: |
+          git config --global user.email "team@tracking.exposed"
+          git config --global user.name "Team - Tracking Exposed"
+          yarn release-it premajor --ci --preReleaseId=beta --github.preRelease=true
