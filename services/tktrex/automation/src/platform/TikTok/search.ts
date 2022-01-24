@@ -1,15 +1,14 @@
-/* eslint-disable no-console */
-
 import { Page } from 'puppeteer';
 
 import { loadQueriesCSV } from '../../util/csv';
 import loadProfileState from '../../project/state';
 
-import { ensureLoggedIn, handleCaptcha } from './util';
+import { ensureLoggedIn, createHandleCaptcha } from './util';
 
-import { askConfirmation, fillInput, launchBrowser } from '../../util/page';
+import { askConfirmation, fillInput, createPage } from '../../util/page';
 
 import { sleep } from '../../util/general';
+import { Logger } from '../../util/logger';
 
 export interface SearchOnTikTokOptions {
   chromePath: string;
@@ -18,6 +17,7 @@ export interface SearchOnTikTokOptions {
   url: string;
   profile: string;
   useStealth: boolean;
+  logger: Logger;
   proxy?: string | null;
 }
 
@@ -29,16 +29,17 @@ export const searchOnTikTok = async({
   unpackedExtensionDirectory,
   url,
   useStealth,
+  logger,
 }: SearchOnTikTokOptions): Promise<Page> => {
   const profileState = await loadProfileState(profile);
 
-  console.log(
+  logger.log(
     `Launching chrome from "${chromePath}" with profile "${profile}", which has been used ${
       profileState.getNTimesUsed() - 1
     } times before...\n`,
   );
 
-  const page = await launchBrowser({
+  const page = await createPage({
     chromePath,
     unpackedExtensionDirectory,
     profile,
@@ -46,24 +47,25 @@ export const searchOnTikTok = async({
     useStealth,
   });
 
-  console.log('...launched chrome!\n');
+  logger.log('...launched chrome!\n');
+
+  const handleCaptcha = createHandleCaptcha(page, logger);
 
   if (profileState.getNTimesUsed() === 1) {
-    console.log('First time using this profile, so:\n');
-    console.log('Please remember to resolve any kind of user interaction');
-    console.log('that is not handled automatically in the browser!\n');
-    console.log(
-      'This script will attempt to warn you when it requires interaction.',
+    logger.log(
+      'First time using this profile, so:',
+      '',
+      '> Please remember to resolve any kind of user interaction',
+      '> that is not handled automatically in the browser!',
+      '',
+      'This script will attempt to warn you when it requires human interaction.',
     );
-    console.log('\n');
   }
 
   const confirm = askConfirmation(page);
 
   await page.goto(url);
-
-  await handleCaptcha(page);
-
+  await handleCaptcha();
   await ensureLoggedIn(page);
 
   if (profileState.getNTimesUsed() === 1) {
@@ -78,11 +80,11 @@ export const searchOnTikTok = async({
   const queries = await loadQueriesCSV(file);
 
   for (const query of queries) {
-    console.log(`Searching for "${query}"...`);
+    logger.log(`Searching for "${query}"...`);
 
     await fillInput(page, '[data-e2e="search-user-input"', query);
     await page.keyboard.press('Enter');
-    await handleCaptcha(page);
+    await handleCaptcha();
     await sleep(5000);
   }
 

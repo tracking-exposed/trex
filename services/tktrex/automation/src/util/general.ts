@@ -18,10 +18,7 @@ export const toError = (e: unknown): Error => {
   return new Error('unspecified error');
 };
 
-export const prompt = async(
-  message: string,
-  a?: AbortSignal,
-): Promise<string> =>
+export const ask = async(message: string, a?: AbortSignal): Promise<string> =>
   new Promise((resolve, reject) => {
     const rl = readline.createInterface({
       input: process.stdin,

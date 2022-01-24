@@ -8,6 +8,7 @@ import * as t from 'io-ts';
 import * as E from 'fp-ts/lib/Either';
 import { PathReporter } from 'io-ts/lib/PathReporter';
 
+import { Page } from 'puppeteer';
 import unzipper from 'unzipper';
 
 import { getChromePath } from '@guardoni/guardoni/utils';
@@ -15,10 +16,11 @@ import { getChromePath } from '@guardoni/guardoni/utils';
 import { ExperimentType } from '../../project/init';
 import searchOnTikTok from './search';
 
+import createLogger, { Logger } from '../../util/logger';
 import { copyFromTo } from '../../util/general';
 
 const getAssetPath = (path: string): string =>
-  resolve(__dirname, '../assets/TikTok', path);
+  resolve(__dirname, '../../../assets/TikTok', path);
 
 const Config = t.type(
   {
@@ -78,7 +80,8 @@ export interface RunOptions {
 export const run = async({
   directory,
   rawConfig,
-}: RunOptions): Promise<void> => {
+}: RunOptions): Promise<Page> => {
+  const logger = createLogger();
   const maybeConfig = Config.decode(rawConfig);
 
   if (E.isLeft(maybeConfig)) {
@@ -88,13 +91,14 @@ export const run = async({
 
   const config = maybeConfig.right;
 
-  return runFrenchElectionsMonitoring(config, directory);
+  return runFrenchElectionsMonitoring(config, logger, directory);
 };
 
-const runFrenchElectionsMonitoring = async(
+const runFrenchElectionsMonitoring = (
   config: Config,
+  logger: Logger,
   directory: string,
-): Promise<void> => {
+): Promise<Page> => {
   const maybeChromePath = getChromePath();
 
   if (E.isLeft(maybeChromePath)) {
@@ -103,7 +107,7 @@ const runFrenchElectionsMonitoring = async(
 
   const chromePath = maybeChromePath.right;
 
-  await searchOnTikTok({
+  return searchOnTikTok({
     chromePath,
     file: join(directory, 'queries.csv'),
     profile: resolve(directory, 'profile'),
@@ -111,6 +115,7 @@ const runFrenchElectionsMonitoring = async(
     proxy: config.proxy,
     url: config.baseURL,
     useStealth: config.useStealth,
+    logger,
   });
 };
 

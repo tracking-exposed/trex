@@ -1,9 +1,9 @@
-/* eslint-disable no-console */
 import { Page } from 'puppeteer';
 
 import { askConfirmation } from '../../util/page';
 
 import { sleep } from '../../util/general';
+import { Logger } from '../../util/logger';
 
 export const isLoggedIn = async(
   page: Page,
@@ -60,14 +60,23 @@ export const ensureLoggedIn = async(
  * Checks if a captcha is present on the page, if so,
  * wait until it is not present anymore (and ask user to solve it).
  */
-export const handleCaptcha = async(page: Page): Promise<void> => {
+export const basicCaptchaHandler = async(
+  page: Page,
+  onCaptchaDetected: () => unknown | Promise<unknown>,
+  onCaptchaSolved?: () => unknown | Promise<unknown>,
+  onCaptchaAttemptFailed?: () => unknown | Promise<unknown>,
+): Promise<void> => {
+  const settlement = (
+    cb?: () => unknown | Promise<unknown>,
+  ): Promise<unknown> => Promise.resolve(cb?.());
+
   try {
     await page.waitForSelector('#captcha-verify-image', {
       visible: true,
       timeout: 5000,
     });
 
-    console.log('captcha detected, please solve it');
+    await settlement(onCaptchaDetected);
 
     for (;;) {
       try {
@@ -76,10 +85,10 @@ export const handleCaptcha = async(page: Page): Promise<void> => {
           timeout: 5000,
         });
 
-        console.log('waiting for captcha to disappear...');
+        await settlement(onCaptchaAttemptFailed);
         await sleep(5000);
       } catch (err) {
-        console.log('thanks for solving the captcha');
+        await settlement(onCaptchaSolved);
         break;
       }
     }
@@ -87,3 +96,18 @@ export const handleCaptcha = async(page: Page): Promise<void> => {
     // ignore
   }
 };
+
+export const createHandleCaptcha = (page: Page, logger: Logger) =>
+  () =>
+    basicCaptchaHandler(
+      page,
+      () => {
+        logger.log('Captcha detected, please solve it!');
+      },
+      () => {
+        logger.log('Captcha solved, thank you!!');
+      },
+      () => {
+        logger.log('Captcha unsolved, please solve it!');
+      },
+    );
