@@ -15,32 +15,47 @@ const lessStandardHref = {
 };
 
 const InfoBox = createReactClass({
-
   render() {
     const about = config.WEB_ROOT + '/about';
     const privacy = config.WEB_ROOT + '/privacy';
     const services = config.WEB_ROOT + '/services';
+    const code = config.WEB_ROOT + '/software';
 
     return (
-      <Card style={{'textAlign':'center'}}>
-        <a target='_blank' href={config.WEB_ROOT} style={lessStandardHref} rel="noreferrer">
-          <img style={imgstyle} src='/tktrex-logo.png' />
+      <Card style={{ textAlign: 'center' }}>
+        <a
+          target="_blank"
+          href={config.WEB_ROOT}
+          style={lessStandardHref}
+          rel="noreferrer"
+        >
+          <img style={imgstyle} src="/tktrex-logo.png" />
         </a>
         <CardActions>
           <Button size="small" color="secondary" href={about} target="_blank">
-                  Project
+            Project
           </Button>
           <Button size="small" color="primary" href={privacy} target="_blank">
-                  Privacy 
+            Privacy
           </Button>
-          <Button size="small" color="secondary" href="https://tracking.exposed/manifesto" target="_blank">
-                  Manifesto
+          <Button
+            size="small"
+            color="secondary"
+            href="https://tracking.exposed/manifesto"
+            target="_blank"
+          >
+            Manifesto
           </Button>
-          <Button size="small" color="primary"  href="https://github.com/tracking-exposed/tktrex/" target="_blank"> 
-                  Software
+          <Button size="small" color="primary" href={code} target="_blank">
+            Software
           </Button>
-          <Button size="small" color="secondary"  href={services} target="_blank"> 
-                  Services
+          <Button
+            size="small"
+            color="secondary"
+            href={services}
+            target="_blank"
+          >
+            Services
           </Button>
         </CardActions>
       </Card>
