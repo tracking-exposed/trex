@@ -5,6 +5,7 @@ set -e -x
 export DEBUG=@yttrex*
 export NODE_ENV=production
 
+yarn shared build
 # yarn taboule build
 yarn extension dist
 yarn extension dist:guardoni
