@@ -11238,7 +11238,6 @@ __metadata:
     node-polyfill-webpack-plugin: ^1.1.4
     pkg: ^5.5.1
     prettier: ^2.5.1
-    puppeteer: ^10.4.0
     puppeteer-core: ^13.0.1
     puppeteer-extra: ^3.2.3
     puppeteer-extra-plugin-stealth: ^2.9.0
