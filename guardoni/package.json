@@ -13,7 +13,8 @@
     "dev": "DEBUG=\"guardoni*\" NODE_ENV=development electron ./reload.js",
     "start": "electron .",
     "pack": "electron-builder build --dir",
-    "dist": "electron-builder build -l",
+    "dist": "electron-builder build -lw",
+    "dist:all": "scripts/electron-builder.sh",
     "postinstall": "electron-builder install-app-deps",
     "prepack": "yarn build"
   },
