@@ -1,7 +1,5 @@
 /* eslint-disable no-console */
 
-import { join } from 'path';
-
 import * as TE from 'fp-ts/lib/TaskEither';
 
 import { Page } from 'puppeteer';
@@ -19,7 +17,9 @@ import {
 } from './tikTokUtil';
 
 import {
+  fileExists,
   fillInput,
+  getExtBackupDir,
   prompt,
   setupBrowser,
   sleep,
@@ -30,7 +30,7 @@ puppeteer.use(stealth());
 
 export interface SearchOnTikTokOptions {
   chromePath: string;
-  extensionSource: string;
+  extensionSource?: string;
   file: string;
   url: string;
   profile: string;
@@ -46,7 +46,8 @@ export const searchOnTikTok = ({
   url,
 }: SearchOnTikTokOptions): TE.TaskEither<Error, Page> =>
   TE.tryCatch(async() => {
-    const extBackupDir = join(profile, 'tx.tt.extension');
+    const extBackupDir = getExtBackupDir(profile);
+    const extPreviouslyInstalled = await fileExists(extBackupDir);
     const profileState = await loadProfileState(profile);
 
     console.log(
@@ -62,16 +63,22 @@ export const searchOnTikTok = ({
       proxy,
     });
 
+    if (!extensionSource && !extPreviouslyInstalled) {
+      await prompt([
+        '',
+        'Please install the TikTok extension and press enter once done,',
+        'or re-run this script providing an option for "extension-source".',
+        '',
+        'If you provide the "extension-source" option,',
+        'you only need to do it once per profile.',
+        '',
+      ].join('\n'));
+      // the other branch of that previous if is handled by the code in setupBrowser
+    }
+
     await page.goto(url);
     await handleCaptcha(page);
     await ensureLoggedIn(page);
-
-    if (extensionSource === 'user-provided') {
-      await prompt(
-        'please install the TikTok extension and press enter once done, or re-run this script',
-      );
-      // the other branch of that previous if is handled by the code in setupBrowser
-    }
 
     const queries = await loadQueriesCSV(file);
 

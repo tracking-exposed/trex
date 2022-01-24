@@ -91,6 +91,9 @@ export const createExtensionDirectory = (
   }
 };
 
+export const getExtBackupDir = (profile: string): string =>
+  join(profile, 'tx.tt.extension');
+
 export const setupBrowser = async({
   chromePath,
   extensionSource,
@@ -98,12 +101,12 @@ export const setupBrowser = async({
   proxy,
 }: {
   chromePath: string;
-  extensionSource: string;
+  extensionSource?: string;
   profile: string;
   proxy?: string;
 }): Promise<[Page, string | undefined]> => {
   let extPath: string | undefined;
-  const extBackupDir = join(profile, 'tx.tt.extension');
+  const extBackupDir = getExtBackupDir(profile);
   const extBackupDirExists = await fileExists(extBackupDir);
 
   const args = ['--no-sandbox', '--disabled-setuid-sandbox'];
@@ -115,7 +118,7 @@ export const setupBrowser = async({
   if (extBackupDirExists) {
     args.push(`--load-extension=${extBackupDir}`);
     args.push(`--disable-extensions-except=${extBackupDir}`);
-  } else if (extensionSource !== 'user-provided') {
+  } else if (extensionSource) {
     extPath = await createExtensionDirectory(extensionSource);
     args.push(`--load-extension=${extPath}`);
     args.push(`--disable-extensions-except=${extPath}`);
