@@ -1,3 +1,7 @@
+## [2.0.0-beta.1](https://github.com/tracking-exposed/yttrex/compare/v2.0.0-beta.0...v2.0.0-beta.1) (2022-01-24)
+
+- produce only a 'prelease' in beta flow ([#315](https://github.com/tracking-exposed/yttrex/issues/315)) ([a727133](https://github.com/tracking-exposed/yttrex/commit/a727133329d03c2b74dedafd9b36f3c23e4d5e9a))
+
 ## [2.0.0-beta.0](https://github.com/tracking-exposed/yttrex/compare/v1.10.2-beta.1...v2.0.0-beta.0) (2022-01-24)
 
 - 1.11.0-beta.1 CHANGELOG [skip ci] ([b361130](https://github.com/tracking-exposed/yttrex/commit/b361130f3b74a8e5fb83c6d497d18c2c6fba1da6))
