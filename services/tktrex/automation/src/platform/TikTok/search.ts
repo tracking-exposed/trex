@@ -1,3 +1,5 @@
+import { join } from 'path';
+
 import { Page } from 'puppeteer';
 
 import { loadQueriesCSV } from '../../util/csv';
@@ -5,50 +7,25 @@ import loadProfileState from '../../project/state';
 
 import { ensureLoggedIn, createHandleCaptcha } from './util';
 
-import { askConfirmation, fillInput, createPage } from '../../util/page';
+import { askConfirmation, fillInput } from '../../util/page';
 
 import { sleep } from '../../util/general';
-import { Logger } from '../../util/logger';
+
+import { RunOptions } from '../../project';
+
+import { Config as ProjectConfig } from './project';
 
 export interface SearchOnTikTokOptions {
-  chromePath: string;
-  file: string;
-  unpackedExtensionDirectory: string;
-  url: string;
-  profile: string;
-  useStealth: boolean;
-  logger: Logger;
-  proxy?: string | null;
+  run: RunOptions;
+  project: ProjectConfig;
 }
 
 export const searchOnTikTok = async({
-  chromePath,
-  file,
-  profile,
-  proxy,
-  unpackedExtensionDirectory,
-  url,
-  useStealth,
-  logger,
+  run: { createPage, logger, profileDirectory, projectDirectory },
+  project: { baseURL },
 }: SearchOnTikTokOptions): Promise<Page> => {
-  const profileState = await loadProfileState(profile);
-
-  logger.log(
-    `Launching chrome from "${chromePath}" with profile "${profile}", which has been used ${
-      profileState.getNTimesUsed() - 1
-    } times before...\n`,
-  );
-
-  const page = await createPage({
-    chromePath,
-    unpackedExtensionDirectory,
-    profile,
-    proxy,
-    useStealth,
-  });
-
-  logger.log('...launched chrome!\n');
-
+  const profileState = await loadProfileState(profileDirectory);
+  const page = await createPage(profileDirectory);
   const handleCaptcha = createHandleCaptcha(page, logger);
 
   if (profileState.getNTimesUsed() === 1) {
@@ -64,7 +41,7 @@ export const searchOnTikTok = async({
 
   const confirm = askConfirmation(page);
 
-  await page.goto(url);
+  await page.goto(baseURL);
   await handleCaptcha();
   await ensureLoggedIn(page);
 
@@ -77,7 +54,8 @@ export const searchOnTikTok = async({
     );
   }
 
-  const queries = await loadQueriesCSV(file);
+  // TODO: how can this be made type safe?
+  const queries = await loadQueriesCSV(join(projectDirectory, 'queries.csv'));
 
   for (const query of queries) {
     logger.log(`Searching for "${query}"...`);

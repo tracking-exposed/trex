@@ -13,16 +13,18 @@ import unzipper from 'unzipper';
 
 import { getChromePath } from '@guardoni/guardoni/utils';
 
+import { RunOptions } from '../../project';
 import { ExperimentType } from '../../project/init';
 import searchOnTikTok from './search';
 
 import createLogger, { Logger } from '../../util/logger';
 import { copyFromTo } from '../../util/general';
+import { createPage as baseCreatePage } from '../../util/page';
 
 const getAssetPath = (path: string): string =>
   resolve(__dirname, '../../../assets/TikTok', path);
 
-const Config = t.type(
+export const Config = t.type(
   {
     experimentType: t.literal('tt-french-elections'),
     proxy: t.union([t.null, t.string]),
@@ -31,20 +33,30 @@ const Config = t.type(
   },
   'Config',
 );
-type Config = t.TypeOf<typeof Config>;
+export type Config = t.TypeOf<typeof Config>;
 
 export interface InitOptions {
   directory: string;
   experimentType: ExperimentType;
 }
 
+export const generateDirectoryStructure = (
+  projectDirectory: string,
+): Record<string, string> => ({
+  profileDirectory: join(projectDirectory, 'profile'),
+  projectDirectory,
+  extensionDirectory: join(projectDirectory, 'profile/tx.extension'),
+});
+
 export const init = async({
   directory,
   experimentType,
 }: InitOptions): Promise<void> => {
-  const profileDirectory = join(directory, 'profile');
-  const extensionDirectory = join(profileDirectory, 'tx.extension');
+  const { extensionDirectory, profileDirectory } =
+    generateDirectoryStructure(directory);
+
   await mkdir(extensionDirectory, { recursive: true });
+  await mkdir(profileDirectory, { recursive: true });
 
   const extZipPath = getAssetPath('tktrex-extension-0.2.6.zip');
 
@@ -72,7 +84,7 @@ export const init = async({
   });
 };
 
-export interface RunOptions {
+interface BasicRunOptions {
   directory: string;
   rawConfig: unknown;
 }
@@ -80,7 +92,7 @@ export interface RunOptions {
 export const run = async({
   directory,
   rawConfig,
-}: RunOptions): Promise<Page> => {
+}: BasicRunOptions): Promise<Page> => {
   const logger = createLogger();
   const maybeConfig = Config.decode(rawConfig);
 
@@ -95,9 +107,9 @@ export const run = async({
 };
 
 const runFrenchElectionsMonitoring = (
-  config: Config,
+  project: Config,
   logger: Logger,
-  directory: string,
+  projectDirectory: string,
 ): Promise<Page> => {
   const maybeChromePath = getChromePath();
 
@@ -107,15 +119,28 @@ const runFrenchElectionsMonitoring = (
 
   const chromePath = maybeChromePath.right;
 
-  return searchOnTikTok({
-    chromePath,
-    file: join(directory, 'queries.csv'),
-    profile: resolve(directory, 'profile'),
-    unpackedExtensionDirectory: resolve(directory, 'profile/tx.extension'),
-    proxy: config.proxy,
-    url: config.baseURL,
-    useStealth: config.useStealth,
+  const { profileDirectory, extensionDirectory } =
+    generateDirectoryStructure(projectDirectory);
+
+  const createPage = (): Promise<Page> =>
+    baseCreatePage({
+      chromePath,
+      profileDirectory,
+      extensionDirectory,
+      useStealth: project.useStealth,
+      proxy: project.proxy,
+    });
+
+  const run: RunOptions = {
     logger,
+    projectDirectory,
+    profileDirectory,
+    createPage,
+  };
+
+  return searchOnTikTok({
+    project,
+    run,
   });
 };
 
