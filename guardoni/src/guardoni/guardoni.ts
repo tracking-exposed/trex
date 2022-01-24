@@ -852,10 +852,6 @@ const loadContext = (
         guardoniConfigFile: path.join(profile.udd, 'guardoni.json'),
       };
     }),
-    TE.map(({ logger, ...context }) => {
-      logger.debug('Context %O', context);
-      return { logger, ...context };
-    }),
     TE.chainFirst((ctx) => TE.fromIOEither(downloadExtension(ctx))),
     TE.chainFirst((ctx) =>
       liftFromIOE(() => fs.mkdirSync(ctx.profile.udd, { recursive: true }))

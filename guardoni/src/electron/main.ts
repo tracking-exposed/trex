@@ -1,4 +1,7 @@
 import { AppError, toAppError } from '@shared/errors/AppError';
+import { GetAPI } from '@shared/providers/api.provider';
+import debug from 'debug';
+import * as dotenv from 'dotenv';
 import { app, BrowserWindow } from 'electron';
 import log from 'electron-log';
 import { sequenceS } from 'fp-ts/lib/Apply';
@@ -12,9 +15,6 @@ import pie from 'puppeteer-in-electron';
 import { AppEnv } from '../AppEnv';
 import { GetEvents } from './events/renderer.events';
 import { createGuardoniWindow } from './windows/GuardoniWindow';
-import * as dotenv from 'dotenv';
-import { GetAPI } from '@shared/providers/api.provider';
-import debug from 'debug';
 
 // load env from .env file shipped with compiled code
 dotenv.config({

@@ -1,6 +1,6 @@
-import DotenvPlugin from 'dotenv-webpack';
-import { pipe } from 'fp-ts/lib/function';
+import ReactRefreshWebpackPlugin from '@pmmmwh/react-refresh-webpack-plugin';
 import dotenv from 'dotenv';
+import { pipe } from 'fp-ts/lib/function';
 import * as R from 'fp-ts/lib/Record';
 import * as S from 'fp-ts/lib/string';
 import * as t from 'io-ts';
@@ -12,7 +12,6 @@ import { TsconfigPathsPlugin } from 'tsconfig-paths-webpack-plugin';
 import webpack from 'webpack';
 import { BundleAnalyzerPlugin } from 'webpack-bundle-analyzer';
 import { GetLogger } from '../logger';
-import ReactRefreshWebpackPlugin from '@pmmmwh/react-refresh-webpack-plugin';
 
 const webpackLogger = GetLogger('webpack');
 
@@ -133,13 +132,6 @@ const getConfig = <E extends t.Props>(
 
   if (opts.target === 'web' || opts.target === 'electron-renderer') {
     plugins.push(new webpack.DefinePlugin(stringifiedAppEnv as any));
-  } else if (opts.target !== 'node') {
-    plugins.push(
-      new DotenvPlugin({
-        path: DOTENV_CONFIG_PATH,
-        silent: true,
-      })
-    );
   }
 
   if (opts.hot && opts.target === 'web' && mode === 'development') {
