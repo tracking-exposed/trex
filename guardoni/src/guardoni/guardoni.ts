@@ -47,7 +47,7 @@ import {
   GuardoniSuccessOutput,
   ProgressDetails,
 } from './types';
-import { csvParseTE, getChromePath, liftFromIO } from './utils';
+import { csvParseTE, getChromePath, liftFromIOE } from './utils';
 
 // const COMMANDJSONEXAMPLE =
 //   'https://youtube.tracking.exposed/json/automation-example.json';
@@ -413,14 +413,14 @@ export const readCSVAndParse =
     logger.debug('Registering CSV from path %s', filePath);
 
     return pipe(
-      liftFromIO(() => fs.statSync(filePath, { throwIfNoEntry: false })),
-      TE.mapLeft((e) =>
-        toAppError({
+      liftFromIOE(() => fs.statSync(filePath)),
+      TE.mapLeft((e) => {
+        return toAppError({
           ...e,
           message: `File at path ${filePath} doesn't exist`,
-        })
-      ),
-      TE.chain(() => liftFromIO(() => fs.readFileSync(filePath))),
+        });
+      }),
+      TE.chain(() => liftFromIOE(() => fs.readFileSync(filePath))),
       TE.mapLeft((e) => {
         return toAppError({
           ...e,
@@ -540,14 +540,14 @@ const saveExperiment =
     // profinfo.expinfo = experimentInfo;
 
     return pipe(
-      liftFromIO(() =>
+      liftFromIOE(() =>
         fs.statSync(experimentJSONFile, { throwIfNoEntry: false })
       ),
       TE.chain((stat) => {
         if (stat) {
           return TE.right(undefined);
         }
-        return liftFromIO(() =>
+        return liftFromIOE(() =>
           fs.writeFileSync(
             experimentJSONFile,
             JSON.stringify(experimentInfo),
@@ -555,7 +555,6 @@ const saveExperiment =
           )
         );
       }),
-      liftFromIO,
       TE.map(() => experimentInfo)
     );
   };
@@ -566,11 +565,11 @@ const ensureProfileExistsAtPath = (
 ): TE.TaskEither<AppError, string> => {
   const profileDir = getProfileDataDir(basePath, profileName);
   return pipe(
-    liftFromIO(() => fs.statSync(profileDir, { throwIfNoEntry: false })),
+    liftFromIOE(() => fs.statSync(profileDir, { throwIfNoEntry: false })),
     TE.chain((stat) => {
       if (!stat) {
         return pipe(
-          liftFromIO(() => fs.mkdirSync(profileDir, { recursive: true })),
+          liftFromIOE(() => fs.mkdirSync(profileDir, { recursive: true })),
           TE.map(() => stat)
         );
       }
@@ -665,7 +664,7 @@ const readProfile = (
   profilePath: string
 ): TE.TaskEither<AppError, GuardoniProfile> => {
   return pipe(
-    liftFromIO(() => fs.readFileSync(profilePath, 'utf-8')),
+    liftFromIOE(() => fs.readFileSync(profilePath, 'utf-8')),
     TE.chain((data) =>
       pipe(
         Json.parse(data),
@@ -714,7 +713,7 @@ const updateGuardoniProfile =
 
         ctx.logger.debug('Writing guardoni config %O', updatedProfile);
         return pipe(
-          liftFromIO(() =>
+          liftFromIOE(() =>
             fs.writeFileSync(
               ctx.guardoniConfigFile,
               JSON.stringify(updatedProfile, undefined, 2),
@@ -859,11 +858,11 @@ const loadContext = (
     }),
     TE.chainFirst((ctx) => TE.fromIOEither(downloadExtension(ctx))),
     TE.chainFirst((ctx) =>
-      liftFromIO(() => fs.mkdirSync(ctx.profile.udd, { recursive: true }))
+      liftFromIOE(() => fs.mkdirSync(ctx.profile.udd, { recursive: true }))
     ),
     TE.chain((ctx) =>
       pipe(
-        liftFromIO(() =>
+        liftFromIOE(() =>
           fs.statSync(ctx.guardoniConfigFile, { throwIfNoEntry: false })
         ),
         TE.chain((stat) => {
@@ -876,7 +875,7 @@ const loadContext = (
             return readProfile(ctx.guardoniConfigFile);
           }
           return pipe(
-            liftFromIO(() =>
+            liftFromIOE(() =>
               fs.writeFileSync(
                 ctx.guardoniConfigFile,
                 JSON.stringify(ctx.profile, null, 2),

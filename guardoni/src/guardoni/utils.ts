@@ -3,6 +3,7 @@ import csvParse from 'csv-parse';
 import * as csvStringify from 'csv-stringify';
 import * as E from 'fp-ts/lib/Either';
 import { pipe } from 'fp-ts/lib/function';
+import * as IOE from 'fp-ts/lib/IOEither';
 import * as TE from 'fp-ts/lib/TaskEither';
 import * as fs from 'fs';
 import { guardoniLogger } from '../logger';
@@ -109,6 +110,6 @@ export const csvStringifyTE = (
     toAppError
   );
 
-export const liftFromIO = <T>(lazyF: () => T): TE.TaskEither<AppError, T> => {
-  return pipe(TE.fromIO(lazyF), TE.mapLeft(toAppError));
+export const liftFromIOE = <T>(lazyF: () => T): TE.TaskEither<AppError, T> => {
+  return pipe(IOE.tryCatch(lazyF, toAppError), TE.fromIOEither);
 };

@@ -107,12 +107,12 @@ export const GetGuardoniCLI: GetGuardoniCLI = (config): GuardoniCLI => {
               details: e.details,
             })
           );
-          return Promise.resolve(process.exit(1));
+          return Promise.reject(e);
         },
         (result) => () => {
           // eslint-disable-next-line
           console.log(foldOutput(command, result));
-          return Promise.resolve(process.exit(0));
+          return Promise.resolve();
         }
       )
     )();
