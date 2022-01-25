@@ -1998,7 +1998,7 @@ __metadata:
     "@types/c3": ^0.7.8
     "@types/chrome": 0.0.174
     "@types/debug": ^4.1.7
-    "@types/jest": ^27.0.3
+    "@types/jest": ^27.4.0
     "@types/lodash": ^4.14.178
     "@types/node": ^16.11.21
     "@types/react": ^17.0.37
@@ -2766,7 +2766,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/jest@npm:*, @types/jest@npm:^27.0.3, @types/jest@npm:^27.4.0":
+"@types/jest@npm:*, @types/jest@npm:^27.4.0":
   version: 27.4.0
   resolution: "@types/jest@npm:27.4.0"
   dependencies:
@@ -13518,7 +13518,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"jest@npm:^27.4.5, jest@npm:^27.4.7":
+"jest@npm:^27.4.7":
   version: 27.4.7
   resolution: "jest@npm:27.4.7"
   dependencies:
@@ -21261,7 +21261,7 @@ __metadata:
     eslint-plugin-react: ^7.28.0
     fp-ts: ^2.11.8
     io-ts: ^2.2.16
-    jest: ^27.4.5
+    jest: ^27.4.7
     linkedom: ^0.13.0
     mongodb: ^4.2.2
     ts-jest: ^27.1.2
