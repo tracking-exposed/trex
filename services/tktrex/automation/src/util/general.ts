@@ -1,22 +1,8 @@
-import Crypto from 'crypto';
-
 import fs from 'fs';
 
-import { cp, mkdir, stat } from 'fs/promises';
-import { tmpdir } from 'os';
+import { cp, stat } from 'fs/promises';
 import { join } from 'path';
 import readline from 'readline';
-
-import * as TE from 'fp-ts/lib/TaskEither';
-
-export type TEString = TE.TaskEither<Error, string>;
-
-export const toError = (e: unknown): Error => {
-  if (e instanceof Error) {
-    return e;
-  }
-  return new Error('unspecified error');
-};
 
 export const ask = async(message: string, a?: AbortSignal): Promise<string> =>
   new Promise((resolve, reject) => {
@@ -43,16 +29,6 @@ export const ask = async(message: string, a?: AbortSignal): Promise<string> =>
 
 export const sleep = async(ms: number): Promise<void> =>
   new Promise((resolve) => setTimeout(resolve, ms));
-
-export const tmpDir = async(prefix?: string): Promise<string> => {
-  const dir = tmpdir();
-  const name = prefix
-    ? `${prefix}-${Crypto.randomBytes(8).toString('hex')}`
-    : '';
-  const path = join(dir, name);
-  await mkdir(path);
-  return path;
-};
 
 /**
  * Create a function that returns a function accepting a map of
