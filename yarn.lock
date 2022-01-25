@@ -3870,7 +3870,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"acorn@npm:^6.0.1, acorn@npm:^6.0.2, acorn@npm:^6.0.4":
+"acorn@npm:^6.0.1, acorn@npm:^6.0.4":
   version: 6.4.2
   resolution: "acorn@npm:6.4.2"
   bin:
@@ -7699,7 +7699,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"data-urls@npm:^1.0.1, data-urls@npm:^1.1.0":
+"data-urls@npm:^1.1.0":
   version: 1.1.0
   resolution: "data-urls@npm:1.1.0"
   dependencies:
@@ -13626,39 +13626,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"jsdom@npm:^12.0.0":
-  version: 12.2.0
-  resolution: "jsdom@npm:12.2.0"
-  dependencies:
-    abab: ^2.0.0
-    acorn: ^6.0.2
-    acorn-globals: ^4.3.0
-    array-equal: ^1.0.0
-    cssom: ^0.3.4
-    cssstyle: ^1.1.1
-    data-urls: ^1.0.1
-    domexception: ^1.0.1
-    escodegen: ^1.11.0
-    html-encoding-sniffer: ^1.0.2
-    nwsapi: ^2.0.9
-    parse5: 5.1.0
-    pn: ^1.1.0
-    request: ^2.88.0
-    request-promise-native: ^1.0.5
-    saxes: ^3.1.3
-    symbol-tree: ^3.2.2
-    tough-cookie: ^2.4.3
-    w3c-hr-time: ^1.0.1
-    webidl-conversions: ^4.0.2
-    whatwg-encoding: ^1.0.5
-    whatwg-mimetype: ^2.2.0
-    whatwg-url: ^7.0.0
-    ws: ^6.1.0
-    xml-name-validator: ^3.0.0
-  checksum: 358c06c4be402570ed13600864aff3d2dc0ad6674f57958cd46d9881d7fc46221822ba629e764ff8c37d4f9f54ec12eaacfdde09cab84d460712f1acb7b5656d
-  languageName: node
-  linkType: hard
-
 "jsdom@npm:^13.2.0":
   version: 13.2.0
   resolution: "jsdom@npm:13.2.0"
@@ -19393,7 +19360,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"saxes@npm:^3.1.3, saxes@npm:^3.1.5":
+"saxes@npm:^3.1.5":
   version: 3.1.11
   resolution: "saxes@npm:3.1.11"
   dependencies:
@@ -21208,7 +21175,7 @@ __metadata:
     express: ^4.17.1
     food-words: ^1.1.0
     jquery: ^3.5.1
-    jsdom: ^12.0.0
+    jsdom: ^13.2.0
     lodash: ^4.17.21
     moment: ^2.29.1
     mongodb: ^4.3.1
@@ -21428,7 +21395,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"tough-cookie@npm:^2.3.3, tough-cookie@npm:^2.4.3, tough-cookie@npm:^2.5.0, tough-cookie@npm:~2.5.0":
+"tough-cookie@npm:^2.3.3, tough-cookie@npm:^2.5.0, tough-cookie@npm:~2.5.0":
   version: 2.5.0
   resolution: "tough-cookie@npm:2.5.0"
   dependencies:
@@ -23132,7 +23099,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"ws@npm:^6.1.0, ws@npm:^6.1.2":
+"ws@npm:^6.1.2":
   version: 6.2.2
   resolution: "ws@npm:6.2.2"
   dependencies:
