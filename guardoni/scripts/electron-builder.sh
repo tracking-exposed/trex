@@ -16,7 +16,7 @@ docker run -d --name $CONTAINER_NAME -i \
  electronuserland/builder:16-wine
 
 docker exec -i $CONTAINER_NAME bash -c "yarn"
-docker exec -i $CONTAINER_NAME bash -c "yarn guardoni dist:linux"
-docker exec -i $CONTAINER_NAME bash -c "yarn guardoni dist:windows"
+docker exec -i $CONTAINER_NAME --user "$(id -u):$(id -g)" bash -c "yarn guardoni dist:linux"
+docker exec -i $CONTAINER_NAME --user "$(id -u):$(id -g)" bash -c "yarn guardoni dist:windows"
 
 docker stop $CONTAINER_NAME
