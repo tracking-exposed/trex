@@ -1,15 +1,15 @@
 import * as bs58 from 'bs58';
-import { pipe } from 'fp-ts/lib/pipeable';
+import { formatISO } from 'date-fns';
 import * as E from 'fp-ts/lib/Either';
+import { pipe } from 'fp-ts/lib/pipeable';
 import * as TE from 'fp-ts/lib/TaskEither';
 import nacl from 'tweetnacl';
 import { Keypair } from '../models/Settings';
-import { GetLogger } from '@shared/logger';
-import { SecurityProvider } from './security.provider.type';
-import { formatISO } from 'date-fns';
+import { logger } from '../utils/logger.utils';
 import { catchRuntimeLastError } from './browser.provider';
+import { SecurityProvider } from './security.provider.type';
 
-const bs58Logger = GetLogger('bs58');
+const bs58Logger = logger.extend('bs58');
 
 function decodeString(s: string): Uint8Array {
   // Credits: https://github.com/dchest/tweetnacl-util-js
@@ -72,6 +72,5 @@ const security: SecurityProvider = {
   makeToken,
   makeSignature,
 };
-
 
 export default security;
