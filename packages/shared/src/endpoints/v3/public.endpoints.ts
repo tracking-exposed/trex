@@ -7,6 +7,7 @@ import {
   DirectiveType,
   PostDirectiveResponse,
 } from '../../models/Directive';
+import { GuardoniExperiment } from '../../models/Experiment';
 import { HandshakeBody } from '../../models/HandshakeBody';
 import {
   GetRecommendationsParams,
@@ -68,6 +69,12 @@ const GetDirective = Endpoint({
   Output: nonEmptyArray(Directive),
 });
 
+const GetPublicDirectives = Endpoint({
+  Method: 'GET',
+  getPath: () => `/v3/directives/public`,
+  Output: t.array(GuardoniExperiment),
+});
+
 const ConcludeExperiment = Endpoint({
   Method: 'DELETE',
   getPath: ({ testTime }) => `/v3/experiment/${testTime}`,
@@ -86,4 +93,5 @@ export const endpoints = {
   GetDirective,
   PostDirective,
   ConcludeExperiment,
+  GetPublicDirectives,
 };

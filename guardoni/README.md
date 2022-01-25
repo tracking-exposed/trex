@@ -3,15 +3,14 @@
 - [Guardoni](#guardoni)
   - [Getting started](#getting-started)
   - [CLI](#cli)
-    - [Effectively executing guardoni](#effectively-executing-guardoni)
-      - ["--comparison" kind of CSV](#--comparison-kind-of-csv)
-        - [CSV format details](#csv-format-details)
-      - ["--shadowban" kind of CSV (chiaroscuro test)](#--shadowban-kind-of-csv-chiaroscuro-test)
-        - [ChiaroScuro design](#chiaroscuro-design)
+    - [CLI commands](#cli-commands)
+      - [Register CSV](#register-csv)
+      - [Running an experiment by id](#running-an-experiment-by-id)
+      - [Running a default experiment](#running-a-default-experiment)
+  - [Build](#build)
     - [Package](#package)
-  - [Electron](#electron)
+    - [Electron](#electron)
     - [Development](#development)
-    - [Making a release](#making-a-release)
   - [FAQs](#faqs)
     - [Guardoni folder, what's about?](#guardoni-folder-whats-about)
 
@@ -22,21 +21,21 @@
 
 ## Getting started
 
-By default guardoni downloads an extension version `.99` with default opt-in (meant for automation) already built and places it in `extension` folder in the current directory.
+By default guardoni downloads an extension version `.99` with default opt-in (meant for automation) already built and places it in `$basePath/extension` folder.
 By default this extension sends the results to the server.
 
-To get an extension which sends the results to the local server you have to build it yourself - as explained in details in the [extension project README](../extension/README.md):
+To get an extension which sends the results to the local server you have to build it yourself - as explained in details in the [extension project](../extension/README.md):
 
 ```bash
 # from the project's root
-yarn extension build
+cd ../extension
+yarn build
 ```
 
 Once you build the extension you need to compile `guardoni` code too:
 
 ```bash
-# from the project's root
-yarn guardoni build
+yarn build
 ```
 
 Then you'll be able to execute both [cli](#cli) and [electron](#electron) programs.
@@ -46,73 +45,54 @@ Then you'll be able to execute both [cli](#cli) and [electron](#electron) progra
 This package also provide a `bin` executable that can be accessed with:
 
 ```bash
-yarn guardoni --args
+guardoni-cli --help
 ```
 
 or, if you downloaded the executable, the output would be an help message like this:
 
 ```bash
 
-.:*~*:._.:*~*:._.:*~*:._.:*~*:._.:*~*:._.:*~*:._.:*~*:._.:*~*:._.:*~*:.
-Options can be set via: env , --longopts, and static\settings.json file
-Three modes exists to launch Guardoni:
+guardoni-cli [index]
 
+Run guardoni in auto mode cli.
 
-To quickly test the tool:
-   --auto:              You can specify 1 (is the default) or 2.
+Commands:
+  guardoni-cli experiment <experiment>  Run guardoni from a given experiment
+  guardoni-cli register <file>          Register an experiment from a CSV
+  guardoni-cli [index]                  Run guardoni in auto mode cli. [default]
 
-To register an experiment:
-   --csv FILENAME.csv   default is --comparison, optional --shadowban
+Options:
+      --help                Show help                                  [boolean]
+      --version             Show version number                        [boolean]
+      --headless            Run guardoni in headless mode.
+                                                      [boolean] [default: false]
+      --evidenceTag         The evidence related tag.                   [string]
+      --profile             The current user profile                    [string]
+      --backend             The API endpoint for server requests        [string]
+      --proxy               Socket proxy for puppeteer.                 [string]
+      --adv-screenshot-dir  ADV screenshot directory path               [string]
+  -v, --verbose             Produce tons of logs      [boolean] [default: false]
+      --index                            [string] [required] [choices: "1", "2"]
 
-To execute a known experiment:
-   --experiment <experimentId>
-
-https://youtube.tracking.exposed/guardoni for full documentation.
- [--evidencetag, --profile, are special option], and --config <file>
-You need a reliable internet connection to ensure a flawless collection
-~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~
+Examples:
+  guardoni-cli --type comparison
 ```
 
-Three fundamental arguments exists, and at least one is required. How do they works?
+### CLI commands
+
+Three fundamental commands exist: `register`, `experiment` and "auto mode".
+
+How do they works?
+
+#### Register CSV
+
+By giving a relative path to a csv file is possible to register the "experiment".
 
 ```bash
-$ yarn guardoni --csv examples/climateChange/greta-v2.csv
-CSV mode: mandatory --comparison or --shadowban; --profile, --evidencetag OPTIONAL
+guardoni-cli register examples/climateChange/greta-v2.csv
 ```
 
-When you use the --csv command you are **sending your CSV to the server**, which will answer with an experimentId. Every guardoni execution with `--experiment <experimentId>` would repeat the same configuration of your uploaded CSV.
-
-After the upload, it
-
-```bash
-$ yarn guardoni --csv examples/climateChange/greta-v2.csv --comparison
-CSV mode: mandatory --comparison or --shadowban; Guardoni exit after upload
-  guardoni:yt-cli Getting ready for directive type [comparison] +0ms
-  guardoni:yt-cli Registering CSV examples/climateChange/greta-v2.csv as comparison +2ms
-  guardoni:yt-cli Read input from file examples/climateChange/greta-v2.csv (407 bytes) 6 records +8ms
-  guardoni:yt-cli CSV validated in [comparison] format specifications +3ms
-CSV exist, experimentId d75f9eaf465d2cd555de65eaf61a770c82d59451 exists since 2021-09-27T21:30:28.903Z
-```
-
-as you can see, it tell you if the CSV registered already exists or since how long it is there.
-
-### Effectively executing guardoni
-
-Once you've an experimentId, you can run, for example:
-
-```bash
-yarn guardoni --experiment d75f9eaf465d2cd555de65eaf61a770c82d59451
-```
-
-#### "--comparison" kind of CSV
-
-Comparison is the technique you use when a bunch of profiles should perform the exact same actions so they results might be easily compared.
-
-##### CSV format details
-
-you need a CSV with this format:
-
-videoURL,title
+The file should contain these keys for each row: `url`, `urltag` and optionally provide `title` and `watchFor`, i.e.:
 
 the videoURL should start with http and must be a valid youtube video Id
 the title should be the title of that video (hint: they might be translated)
@@ -129,18 +109,33 @@ climate change,6s,https://www.youtube.com/results?search_query=climate+change
 climate alarmism,6s,https://www.youtube.com/results?search_query=climate+alarmism
 ```
 
-watchFor might be a number of seconds (s), minutes (m), or _end_ to specify the video should play till the end.
+`watchFor` might be a number of seconds (s), minutes (m), or `end` to specify the video should play till the end.
 
-#### "--shadowban" kind of CSV (chiaroscuro test)
+Once you have uploaded your "experiment" you can run the command `experiment` with the returned id.
 
-ChiaroScuro is one of the techniques used to test shadowban or what's alike. Other techniques exists beside ChiaroScuro.
+#### Running an experiment by id
 
-##### ChiaroScuro design
+With an experiment id you can run guardoni quite easily:
 
-1. from the CSV + the nickname guardoni defines the local paths, names, IDs. Same people with same csv = same experiment
-2. guardoni invokes an API (POST to /api/v3/chiaroscuro) that upload the CSV and the hash. the server save the list of video and title, and thanks to this would produce a guardoni directive. this API avoid duplication of the same experiments. in the backend, is the collection 'chiaroscuro' containing these entries.
-3. guardoni uses the same experiment API to mark contribution with 'nickname'
-4. it would then access to the directive API, and by using the experimentId, will then perform the searches as instructed.
+```bash
+guardoni-cli experiment 123456
+```
+
+#### Running a default experiment
+
+Guardoni provides also an `auto` method to run pre-configured experiment. At the moment there are only 2 experiments available that can be run:
+
+```bash
+guardoni-cli 1
+```
+
+**NB:** if you need to enable the debug output while running guardoni you can use `DEBUG=@yytrex* guardon-cli ...`
+
+## Build
+
+In this project there are two different package that you can build: the `cli` package and the executable `electron` app.
+
+Before running the proper script to build the package for your needs be sure you also run `yarn build`
 
 ### Package
 
@@ -150,14 +145,18 @@ To produce a valid executable just run:
 yarn pkg
 ```
 
-## Electron
+### Electron
 
-A portable version of guardoni with a simple UI that provides configuration for the cli command is provided with Electron.
+A portable version of guardoni with a simple UI that provides configuration for the cli command is provided by Electron.
+It uses `docker` and `electron-builder` to produce the distributable packages for the community:
 
-It uses `electron-builder` to produce the distributable packages for community and relies of some electron plugins:
-
-- electron-log
-- electron-reloader
+```sh
+# preliminary step that build electron-builder docker image compatible with node 16
+cd ../
+yarn docker-build
+cd guardoni
+yarn dist
+```
 
 ### Development
 
@@ -169,7 +168,7 @@ Two handy commands are already in place:
 yarn watch
 ```
 
-and in another terminal pane:
+then, in another terminal pane:
 
 ```sh
 # runs electron in reload mode
@@ -178,16 +177,11 @@ yarn reload
 
 **Debug**: A debug task is defined for VSCode inside `.vscode/launch.json` named "Debug Guardoni Electron Main".
 
-### Making a release
-
-- `yarn build` to compile source code with webpack
-- `yarn dist` to package the build source for different targets (linux, macos, win)
-
 ## FAQs
 
 ### Guardoni folder, what's about?
 
-If you pose the Question: _How to run your own algoritmh accountability experiment?_...
+_How to run your own algorithm accountability experiment?_
 
 ... the answer would be: _by controlling a methodology_
 

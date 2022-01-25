@@ -224,6 +224,7 @@ export const makeApp = (ctx: MakeAppContext): express.Application => {
     iowrapper('getAllExperiments')
   );
   app.post('/api/v3/directives/:directiveType', iowrapper('postDirective'));
+  app.get('/api/v3/directives/public', iowrapper('getPublicDirectives'));
   app.get('/api/v3/directives/:experimentId', iowrapper('fetchDirective'));
   app.post('/api/v2/handshake', iowrapper('experimentChannel3'));
   app.delete('/api/v3/experiment/:testTime', iowrapper('concludeExperiment3'));

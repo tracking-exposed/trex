@@ -1,29 +1,11 @@
-import { AppError } from '@shared/errors/AppError';
-import { DirectiveType } from '@shared/models/Directive';
-import * as TE from 'fp-ts/lib/TaskEither';
-import * as puppeteer from 'puppeteer-core';
-
-export type GuardoniCommandConfig =
-  | {
-      run: 'register';
-      file: string;
-      type: DirectiveType;
-    }
-  | {
-      run: 'experiment';
-      experiment: string;
-    }
-  | {
-      run: 'auto';
-      value: '1' | '2';
-    };
+import * as t from 'io-ts';
 
 export interface GuardoniConfig {
   headless: boolean;
   verbose: boolean;
-  profile?: string;
+  profileName?: string;
   evidenceTag?: string;
-  advdump?: string;
+  advScreenshotDir?: string;
   proxy?: string;
   backend?: string;
   basePath?: string;
@@ -32,6 +14,19 @@ export interface GuardoniConfig {
   chromePath?: string;
   loadFor?: number;
 }
+
+export type GuardoniConfigRequired = Omit<
+  GuardoniConfig,
+  'basePath' | 'profile' | 'backend' | 'evidenceTag' | 'extensionDir'
+> & {
+  profileName: string;
+  backend: string;
+  basePath: string;
+  evidenceTag: string;
+  extensionDir: string;
+  loadFor: number;
+  chromePath: string;
+};
 
 export interface ProgressDetails {
   message: string;
@@ -52,24 +47,16 @@ export interface GuardoniSuccessOutput {
 
 export type GuardoniOutput = GuardoniErrorOutput | GuardoniSuccessOutput;
 
-export type GuardoniCLI = (command: GuardoniCommandConfig) => {
-  run: TE.TaskEither<AppError, GuardoniOutput>;
-  runOrThrow: () => Promise<void>;
-};
+export const GuardoniProfile = t.strict(
+  {
+    udd: t.string,
+    profileName: t.string,
+    newProfile: t.boolean,
+    extensionDir: t.string,
+    execount: t.number,
+    evidencetag: t.array(t.string),
+  },
+  'Profile'
+);
 
-export interface Guardoni {
-  cli: GuardoniCLI;
-  // register an experiment from the given csv file
-  registerExperiment: (
-    file: string,
-    directiveType: DirectiveType
-  ) => TE.TaskEither<AppError, GuardoniSuccessOutput>;
-  runExperiment: (
-    experiment: string
-  ) => TE.TaskEither<AppError, GuardoniSuccessOutput>;
-  runExperimentForPage: (
-    page: puppeteer.Page,
-    experiment: string,
-    onProgress?: (details: ProgressDetails) => void
-  ) => TE.TaskEither<AppError, GuardoniSuccessOutput>;
-}
+export type GuardoniProfile = t.TypeOf<typeof GuardoniProfile>;

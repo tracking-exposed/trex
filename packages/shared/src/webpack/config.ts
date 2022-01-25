@@ -1,6 +1,6 @@
-import DotenvPlugin from 'dotenv-webpack';
-import { pipe } from 'fp-ts/lib/function';
+import ReactRefreshWebpackPlugin from '@pmmmwh/react-refresh-webpack-plugin';
 import dotenv from 'dotenv';
+import { pipe } from 'fp-ts/lib/function';
 import * as R from 'fp-ts/lib/Record';
 import * as S from 'fp-ts/lib/string';
 import * as t from 'io-ts';
@@ -12,7 +12,6 @@ import { TsconfigPathsPlugin } from 'tsconfig-paths-webpack-plugin';
 import webpack from 'webpack';
 import { BundleAnalyzerPlugin } from 'webpack-bundle-analyzer';
 import { GetLogger } from '../logger';
-import ReactRefreshWebpackPlugin from '@pmmmwh/react-refresh-webpack-plugin';
 
 const webpackLogger = GetLogger('webpack');
 
@@ -57,7 +56,7 @@ const getConfig = <E extends t.Props>(
 
   const DOTENV_CONFIG_PATH =
     process.env.DOTENV_CONFIG_PATH ??
-    path.resolve(opts.cwd, mode === 'production' ? '.env.production' : '.env');
+    path.resolve(opts.cwd, mode === 'production' ? '.env' : '.env.development');
 
   // const tsConfigFile = path.resolve(opts.cwd, './tsconfig.json');
 
@@ -129,18 +128,13 @@ const getConfig = <E extends t.Props>(
   // eslint-disable-next-line
   webpackLogger.debug(`Process env %O`, stringifiedAppEnv);
 
-  const plugins: any[] = [
-    new DotenvPlugin({
-      path: DOTENV_CONFIG_PATH,
-      silent: true,
-    }),
-  ];
+  const plugins: any[] = [];
 
   if (opts.target === 'web' || opts.target === 'electron-renderer') {
     plugins.push(new webpack.DefinePlugin(stringifiedAppEnv as any));
   }
 
-  if (opts.hot && mode === 'development') {
+  if (opts.hot && opts.target === 'web' && mode === 'development') {
     plugins.push(new ReactRefreshWebpackPlugin());
   }
 

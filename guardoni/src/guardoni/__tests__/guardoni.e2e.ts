@@ -1,121 +1,153 @@
+/* eslint-disable import/first */
+import * as fs from 'fs';
 import * as path from 'path';
-import { GetGuardoni } from '../guardoni';
+import { pipe } from 'fp-ts/lib/function';
+import { guardoniLogger } from '../../logger';
+import { getDefaultProfile, GetGuardoni, getProfileDataDir } from '../guardoni';
+import * as TE from 'fp-ts/lib/TaskEither';
+import { csvStringifyTE } from '../utils';
+
+const directives = [
+  {
+    title: 'YouChoose: Customize your Recommendations',
+    url: 'https://www.youtube.com/watch?v=3laqegktOuQ',
+    urltag: 'youchoose-recommendations',
+    watchFor: '3s',
+  },
+  {
+    title: 'YouChoose.ai | Gain Control on your Recommendations!',
+    url: 'https://www.youtube.com/watch?v=ReVMTcRA-E4',
+    urltag: 'youchose-gain-Control',
+    watchFor: '3s',
+  },
+  {
+    title:
+      'with Tracking Exposed: knowledge is freedom — algorithm analysis is for anybody!',
+    url: 'https://www.youtube.com/watch?v=SmYuYEhT81c',
+    urltag: 'trex-algorithm',
+    watchFor: '5s',
+  },
+];
+
+const backend = process.env.BACKEND;
 
 describe.skip('Guardoni', () => {
-  let experimentId: string;
-  const guardoni = GetGuardoni({
-    headless: false,
-    verbose: false,
-    basePath: path.resolve(__dirname, '../../../'),
-    profile: 'test-profile',
-    extensionDir: path.resolve(__dirname, '../../../build/extension'),
+  const basePath = path.resolve(__dirname, '../../../');
+  const profile = 'profile-test-99';
+  const extensionDir = path.resolve(__dirname, '../../../build/extension');
+  const csvTestFileName = 'trex-yt-videos.csv';
+
+  beforeAll(async () => {
+    const csvContent = await csvStringifyTE(directives, {
+      header: true,
+      encoding: 'utf-8',
+    })();
+    if (csvContent._tag === 'Left') {
+      throw csvContent.left as any;
+    }
+    fs.writeFileSync(
+      path.resolve(basePath, 'experiments', csvTestFileName),
+      csvContent.right,
+      'utf-8'
+    );
+
+    const profileUDD = getProfileDataDir(basePath, profile);
+    const profileExists = fs.statSync(profileUDD, {
+      throwIfNoEntry: false,
+    });
+
+    if (!profileExists) {
+      fs.mkdirSync(profileUDD, {
+        recursive: true,
+      });
+    }
+    fs.writeFileSync(
+      path.join(profileUDD, 'guardoni.json'),
+      JSON.stringify(
+        getDefaultProfile(basePath, profile, extensionDir),
+        null,
+        2
+      ),
+      'utf-8'
+    );
   });
 
-  describe('Register an experiment', () => {
-    test('fails when the file path is wrong', async () => {
-      // mocks
-      // read csv from filesystem
-      // fsMock.readFile.mockImplementationOnce((path, _opts, cb) => {
-      //   cb(new Error('Can\'t find the file'), null);
-      // });
+  afterAll(() => {
+    fs.rmdirSync(getProfileDataDir(basePath, profile), { recursive: true });
+  });
 
-      await expect(
-        guardoni
-          .cli({
-            run: 'register',
-            file: './fake-file',
-            type: 'chiaroscuro',
-          })
-          .run()
-      ).resolves.toMatchObject({
-        _tag: 'Left',
-        left: {
-          message: 'Failed to read csv file ./fake-file',
-        },
-      });
-    });
+  describe('config', () => {
+    test('succeeds when no profile name is given but a profile dir exists', async () => {
+      const g = await GetGuardoni({
+        config: { headless: false, verbose: false, basePath, backend },
+        logger: guardoniLogger,
+      })();
 
-    test('fails when csv file is incompatible with type "chiaroscuro"', async () => {
-      await expect(
-        guardoni
-          .cli({
-            run: 'register',
-            file: './experiments/experiment-comparison.csv',
-            type: 'chiaroscuro',
-          })
-          .run()
-      ).resolves.toMatchObject({
-        _tag: 'Left',
-        left: {
-          name: 'CSVParseError',
-          message:
-            'The given CSV is not compatible with directive "chiaroscuro"',
-        },
-      });
-    });
-
-    test('fails when csv file is incompatible with type "comparison"', async () => {
-      await expect(
-        guardoni
-          .cli({
-            run: 'register',
-            file: './experiments/experiment-chiaroscuro.csv',
-            type: 'comparison',
-          })
-          .run()
-      ).resolves.toMatchObject({
-        _tag: 'Left',
-        left: {
-          name: 'CSVParseError',
-          message:
-            'The given CSV is not compatible with directive "comparison"',
-        },
-      });
-    });
-
-    test('success with type comparison and proper csv file', async () => {
-      const result: any = await guardoni
-        .cli({
-          run: 'register',
-          type: 'comparison',
-          file: './experiments/experiment-comparison.csv',
-        })
-        .run();
-
-      expect(result).toMatchObject({
-        _tag: 'Right',
+      expect(g).toMatchObject({
         right: {
-          message: 'Experiment already available',
+          config: {
+            profileName: profile,
+          },
         },
       });
+    });
 
-      experimentId = result.right.values.experimentId;
+    test('succeeds with correct defaults', async () => {
+      const profileName = 'profile-test-0';
+      const g = await GetGuardoni({
+        config: {
+          headless: false,
+          verbose: false,
+          basePath,
+          profileName,
+          backend,
+        },
+        logger: guardoniLogger,
+      })();
+
+      expect(g).toMatchObject({
+        right: {
+          config: {
+            headless: false,
+            verbose: false,
+            backend,
+            profileName,
+            extensionDir: path.join(basePath, 'build/extension'),
+          },
+        },
+      });
     });
   });
 
   describe('experiment', () => {
-    test('fails when experiment id is empty', async () => {
-      await expect(
-        guardoni.cli({ run: 'experiment', experiment: '' }).run()
-      ).resolves.toMatchObject({
-        _tag: 'Left',
-        left: {
-          message: 'Run experiment validation',
-          details: ['Invalid value "" supplied to : NonEmptyString'],
+    test('succeeds when run an experiment from an already existing directive', async () => {
+      // one minute
+      jest.setTimeout(60 * 1000);
+
+      const guardoni = GetGuardoni({
+        config: {
+          verbose: true,
+          headless: true,
         },
+        logger: guardoniLogger,
       });
-    });
 
-    test('succeed when experimentId is valid', async () => {
-      const result: any = await guardoni
-        .cli({ run: 'experiment', experiment: experimentId })
-        .run();
+      const experiment = await pipe(
+        guardoni,
+        TE.chain((g) =>
+          pipe(
+            g.registerExperimentFromCSV(
+              path.resolve(basePath, 'experiments', csvTestFileName) as any,
+              'comparison'
+            ),
+            TE.chain((output) => g.runExperiment(output.values.experimentId))
+          )
+        )
+      )();
 
-      expect(result).toMatchObject({
-        _tag: 'Right',
+      expect(experiment).toMatchObject({
         right: {
           message: 'Experiment completed',
-          values: {},
         },
       });
     });

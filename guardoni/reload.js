@@ -1,6 +1,6 @@
 /* eslint-disable no-console */
 const electronReloader = require('electron-reloader');
-require('./build/desktop/main');
+require('./build/electron/main');
 
 const env = process.env.NODE_ENV ?? 'development';
 

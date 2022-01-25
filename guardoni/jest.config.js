@@ -34,6 +34,8 @@ module.exports = {
   clearMocks: true,
   testTimeout: 10000,
   setupFilesAfterEnv: ['./jest.setup.js'],
+  globalSetup: './global-setup.js',
+  globalTeardown: './global-teardown.js',
   coverageProvider: 'v8',
   collectCoverageFrom: ['./src/**'],
   coverageThreshold: {
