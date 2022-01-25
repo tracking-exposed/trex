@@ -18040,6 +18040,34 @@ __metadata:
   languageName: node
   linkType: hard
 
+"pouchdb@npm:^7.2.2":
+  version: 7.2.2
+  resolution: "pouchdb@npm:7.2.2"
+  dependencies:
+    abort-controller: 3.0.0
+    argsarray: 0.0.1
+    buffer-from: 1.1.1
+    clone-buffer: 1.0.0
+    double-ended-queue: 2.1.0-0
+    fetch-cookie: 0.10.1
+    immediate: 3.3.0
+    inherits: 2.0.4
+    level: 6.0.1
+    level-codec: 9.0.2
+    level-write-stream: 1.0.0
+    leveldown: 5.6.0
+    levelup: 4.4.0
+    ltgt: 2.2.1
+    node-fetch: 2.6.0
+    readable-stream: 1.1.14
+    spark-md5: 3.0.1
+    through2: 3.0.2
+    uuid: 8.1.0
+    vuvuzela: 1.0.3
+  checksum: 340ccb785721d6e5cbb4ed15fe31a7b871870abf82f4e23b6cf69d0487a203ad51bd4c4144520efa67cd11db45af6acb94661962792304655574a0f7e79e18e6
+  languageName: node
+  linkType: hard
+
 "prebuild-install@npm:6.1.4":
   version: 6.1.4
   resolution: "prebuild-install@npm:6.1.4"
