@@ -11236,7 +11236,7 @@ __metadata:
     nconf: ^0.11.3
     node-fetch: ^2.6.6
     node-polyfill-webpack-plugin: ^1.1.4
-    pkg: ^5.5.1
+    pkg: ^5.5.2
     prettier: ^2.5.1
     puppeteer-core: ^13.0.1
     puppeteer-extra: ^3.2.3
@@ -17374,7 +17374,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"pkg@npm:^5.4.1, pkg@npm:^5.5.1":
+"pkg@npm:^5.5.2":
   version: 5.5.2
   resolution: "pkg@npm:5.5.2"
   dependencies:
@@ -21289,7 +21289,7 @@ __metadata:
     moment: ^2.29.1
     nconf: ^0.11.3
     node-fetch: ^2.6.6
-    pkg: ^5.4.1
+    pkg: ^5.5.2
     puppeteer: ^10.4.0
     puppeteer-extra: ^3.2.3
     puppeteer-extra-plugin-stealth: ^2.9.0

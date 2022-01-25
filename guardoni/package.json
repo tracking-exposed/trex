@@ -4,7 +4,7 @@
   "description": "Guardoni is a tool to automate access and coordinate personalization algorithm analysis",
   "scripts": {
     "clean": "rm -rf build dist",
-    "pkg": "pkg ./package.json && sh ./bin/post-compile.sh",
+    "pkg": "pkg ./package.json && sh ./scripts/post-compile.sh",
     "lint": "eslint ./src/**",
     "format": "prettier -w ./src",
     "test": "jest",
@@ -87,7 +87,7 @@
     "eslint-plugin-promise": "^5.2.0",
     "jest": "^27.4.7",
     "node-polyfill-webpack-plugin": "^1.1.4",
-    "pkg": "^5.5.1",
+    "pkg": "^5.5.2",
     "prettier": "^2.5.1",
     "rpmbuild": "^0.0.23",
     "style-loader": "^3.3.1",
@@ -114,9 +114,9 @@
       "profiles/.keep"
     ],
     "targets": [
-      "node14-linux-x64",
-      "node14-win-x64",
-      "node14-macos-x64"
+      "node16-linux-x64",
+      "node16-win-x64",
+      "node16-macos-x64"
     ],
     "outputPath": "dist"
   }
