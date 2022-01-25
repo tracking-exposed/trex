@@ -18862,7 +18862,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"release-it@npm:^14.12.1":
+"release-it@npm:^14.12.4":
   version: 14.12.4
   resolution: "release-it@npm:14.12.4"
   dependencies:
@@ -19309,7 +19309,7 @@ __metadata:
     jest-dev-server: ^6.0.3
     lint-staged: ^12.1.5
     prettier: ^2.5.1
-    release-it: ^14.12.1
+    release-it: ^14.12.4
     release-it-yarn-workspaces: ^2.0.1
     ts-jest: ^27.1.2
     typescript: ^4.5.4
