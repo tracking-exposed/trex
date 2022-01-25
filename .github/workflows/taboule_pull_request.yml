@@ -38,6 +38,3 @@ jobs:
 
       - name: Build Taboule
         run: yarn build
-
-      - name: Release-it after dump
-        run: yarn release-it-after-dump

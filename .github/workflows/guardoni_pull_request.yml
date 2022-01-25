@@ -57,7 +57,5 @@ jobs:
       - name: Package
         run: yarn guardoni pkg
 
-      - name: Dist
-        run: |
-          yarn docker-build
-          yarn guardoni dist:all
+      - name: Release-it after dump
+        run: yarn release-it-after-dump
