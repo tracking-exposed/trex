@@ -32,7 +32,6 @@ module.exports = {
   git: {
     requireUpstream: false,
     commitMessage: 'release: ${version} CHANGELOG [skip ci]',
-    requireCleanWorkingDir: false,
   },
   github: {
     release: true,
