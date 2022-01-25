@@ -75,12 +75,9 @@ interface LinkAccountProps {
 export const LinkAccount: React.FC<LinkAccountProps> = ({ auth }) => {
   const { t } = useTranslation();
 
-  const [isCopied, setCopied] = useCopyClipboard(
-    auth?.tokenString ?? '',
-    {
-      successDuration: 2000,
-    }
-  );
+  const [isCopied, setCopied] = useCopyClipboard(auth?.tokenString ?? '', {
+    successDuration: 2000,
+  });
 
   const [channel, setChannel] = React.useState<string>(auth?.channelId ?? '');
   const [submitChannelFailed, setSubmitChannelFailed] = React.useState(false);
@@ -111,7 +108,9 @@ export const LinkAccount: React.FC<LinkAccountProps> = ({ auth }) => {
     setSubmitChannelFailed(isLeft(resp));
   };
 
-  const onChannelKeyDown: React.KeyboardEventHandler<HTMLInputElement> = (e) => {
+  const onChannelKeyDown: React.KeyboardEventHandler<HTMLInputElement> = (
+    e
+  ) => {
     if (e.key === 'Enter') {
       void handleChannelSubmit();
     }
@@ -138,8 +137,8 @@ export const LinkAccount: React.FC<LinkAccountProps> = ({ auth }) => {
         .finally(() => {
           setVerifying(false);
           void doUpdateCurrentView({
-            view: 'lab'
-          })()
+            view: 'lab',
+          })();
         });
     }
   };
@@ -245,7 +244,7 @@ export const LinkAccount: React.FC<LinkAccountProps> = ({ auth }) => {
               <Link
                 target="_blank"
                 rel="noreferrer"
-                href={`https://studio.youtube.com/channel/${channel}/editing/details`}
+                href={`/channel/${channel}/editing/details`}
               >
                 here to access to your YouTube Studio
               </Link>
