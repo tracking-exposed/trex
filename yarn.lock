@@ -1896,7 +1896,7 @@ __metadata:
     "@types/copy-webpack-plugin": ^8.0.1
     "@types/debug": ^4.1.7
     "@types/dotenv-webpack": ^7.0.3
-    "@types/node": ^16.11.19
+    "@types/node": ^16.11.21
     "@types/react": ^17.0.38
     "@types/react-dom": ^17.0.11
     "@types/webpack-bundle-analyzer": ^4.4.1
@@ -1949,7 +1949,7 @@ __metadata:
     "@material-ui/data-grid": ^4.0.0-alpha.37
     "@material-ui/icons": ^4.11.2
     "@material-ui/styles": ^4.11.4
-    "@types/node": ^16.11.19
+    "@types/node": ^16.11.21
     "@types/prettier": ^2.4.2
     "@types/react": ^17.0.38
     "@types/react-dom": ^17.0.11
@@ -2001,7 +2001,7 @@ __metadata:
     "@types/debug": ^4.1.7
     "@types/jest": ^27.0.3
     "@types/lodash": ^4.14.178
-    "@types/node": ^17.0.8
+    "@types/node": ^16.11.21
     "@types/react": ^17.0.37
     "@types/react-dom": ^17.0.11
     "@types/react-test-renderer": ^17.0.1
@@ -2879,7 +2879,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/node@npm:*, @types/node@npm:^17.0.5, @types/node@npm:^17.0.6, @types/node@npm:^17.0.8":
+"@types/node@npm:*":
   version: 17.0.10
   resolution: "@types/node@npm:17.0.10"
   checksum: 979e83d642a2b4f18fa1a4233f884822c05abc7acd0836024aa964187f8446432b21f7913e72fe2b3927c4a811c27a0b6cd60ac7c4ac6a6762cfbab70782aa6a
@@ -2893,7 +2893,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/node@npm:^16.11.19":
+"@types/node@npm:^16.11.21":
   version: 16.11.21
   resolution: "@types/node@npm:16.11.21"
   checksum: 75b679dc6375cf09bc14a2d1b344be6f3fd8ea50f212b0d60970dc9e175cef45e44c284c716eb9e766ffa52d0c83b689adb3d1911b6dd8649c560b8f77442a22
@@ -19301,7 +19301,7 @@ __metadata:
     "@commitlint/cli": ^13.2.1
     "@commitlint/config-conventional": ^13.2.0
     "@release-it/conventional-changelog": ^4.1.0
-    "@types/node": ^16.11.19
+    "@types/node": ^16.11.21
     "@types/prettier": ^2.4.2
     eslint: ^8.7.0
     husky: ^7.0.4
@@ -21254,7 +21254,7 @@ __metadata:
   dependencies:
     "@types/express": ^4.17.13
     "@types/lodash": ^4.14.178
-    "@types/node": ^17.0.8
+    "@types/node": ^16.11.21
     body-parser: ^1.19.0
     bs58: ^3.1.0
     cookie: ^0.3.1
@@ -21302,10 +21302,9 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "tktrex-shared@workspace:services/tktrex/shared"
   dependencies:
-    "@types/eslint": ^8
     "@types/jest": ^27.4.0
     "@types/mongodb": ^4.0.7
-    "@types/node": ^17.0.6
+    "@types/node": ^16.11.21
     "@types/yargs": ^17.0.8
     "@typescript-eslint/eslint-plugin": ^5.10.1
     "@typescript-eslint/parser": ^5.10.1
@@ -21337,7 +21336,7 @@ __metadata:
     "@types/debug": ^4.1.7
     "@types/jquery": ^3
     "@types/lodash": ^4.14.178
-    "@types/node": ^17.0.5
+    "@types/node": ^16.11.21
     "@types/react": ^17.0.37
     "@types/react-dom": ^17.0.11
     "@typescript-eslint/eslint-plugin": ^5.10.1
@@ -23503,7 +23502,7 @@ __metadata:
     "@types/cors": ^2.8.12
     "@types/jest": ^27.4.0
     "@types/nconf": ^0.10.1
-    "@types/node": ^16.11.19
+    "@types/node": ^16.11.21
     "@types/supertest": ^2.0.11
     "@types/uuid": ^8.3.4
     "@typescript-eslint/eslint-plugin": ^5.10.1
