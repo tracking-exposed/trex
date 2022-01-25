@@ -1917,7 +1917,7 @@ __metadata:
     fast-check: ^2.20.0
     fast-check-io-ts: ^0.5.0
     filemanager-webpack-plugin: ^6.1.7
-    fp-ts: ^2.11.6
+    fp-ts: ^2.11.8
     io-ts: ^2.2.16
     io-ts-types: ^0.5.16
     mini-css-extract-plugin: ^2.4.6
@@ -1966,7 +1966,7 @@ __metadata:
     eslint-plugin-node: ^11.1.0
     eslint-plugin-promise: ^5.2.0
     eslint-plugin-react: ^7.28.0
-    fp-ts: ^2.11.6
+    fp-ts: ^2.11.8
     io-ts: ^2.2.16
     io-ts-types: ^0.5.16
     prettier: ^2.5.1
@@ -2032,7 +2032,7 @@ __metadata:
     eslint-plugin-node: ^11.1.0
     eslint-plugin-promise: ^5.2.0
     eslint-plugin-react: ^7.28.0
-    fp-ts: ^2.11.6
+    fp-ts: ^2.11.8
     husky: ^7.0.4
     i18next: ^21.6.5
     io-ts: ^2.2.16
@@ -10373,7 +10373,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"fp-ts@npm:^2.0.0, fp-ts@npm:^2.11.5, fp-ts@npm:^2.11.6, fp-ts@npm:^2.6.6":
+"fp-ts@npm:^2.0.0, fp-ts@npm:^2.11.8, fp-ts@npm:^2.6.6":
   version: 2.11.8
   resolution: "fp-ts@npm:2.11.8"
   checksum: 481b824797ba59f3f5549810e8f6688b27554790d11a470ccdf4fc086a1cb4993ffb9060131b054abccca703f2776993e12f649865143e178e9b7c9e5b295ea7
@@ -11214,7 +11214,7 @@ __metadata:
     eslint-plugin-import: ^2.25.4
     eslint-plugin-node: ^11.1.0
     eslint-plugin-promise: ^5.2.0
-    fp-ts: ^2.11.6
+    fp-ts: ^2.11.8
     io-ts: ^2.2.16
     io-ts-types: ^0.5.16
     jest: ^27.4.7
@@ -21259,7 +21259,7 @@ __metadata:
     eslint-plugin-node: ^11.1.0
     eslint-plugin-promise: ^5.2.0
     eslint-plugin-react: ^7.28.0
-    fp-ts: ^2.11.5
+    fp-ts: ^2.11.8
     io-ts: ^2.2.16
     jest: ^27.4.5
     linkedom: ^0.13.0
@@ -21295,7 +21295,7 @@ __metadata:
     eslint-plugin-node: ^11.1.0
     eslint-plugin-promise: ^5.2.0
     eslint-plugin-react: ^7.28.0
-    fp-ts: ^2.11.5
+    fp-ts: ^2.11.8
     io-ts: ^2.2.16
     jquery: ^3.6.0
     lodash: ^4.17.21
@@ -23444,7 +23444,7 @@ __metadata:
     express: ^4.17.2
     fetch-opengraph: ^1.0.35
     food-words: ^1.1.0
-    fp-ts: ^2.11.6
+    fp-ts: ^2.11.8
     io-ts: ^2.2.16
     io-ts-types: ^0.5.16
     jest: ^27.4.7

@@ -26,7 +26,7 @@
   },
   "dependencies": {
     "@types/mongodb": "^4.0.7",
-    "fp-ts": "^2.11.5",
+    "fp-ts": "^2.11.8",
     "io-ts": "^2.2.16",
     "linkedom": "^0.13.0",
     "mongodb": "^4.2.2"

@@ -30,7 +30,7 @@
     "express": "^4.17.2",
     "fetch-opengraph": "^1.0.35",
     "food-words": "^1.1.0",
-    "fp-ts": "^2.11.6",
+    "fp-ts": "^2.11.8",
     "io-ts": "^2.2.16",
     "io-ts-types": "^0.5.16",
     "jsdom": "^13.2.0",

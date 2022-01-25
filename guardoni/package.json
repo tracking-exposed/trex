@@ -48,7 +48,7 @@
     "electron-log": "^4.4.5",
     "electron-squirrel-startup": "^1.0.0",
     "electron-store": "^8.0.1",
-    "fp-ts": "^2.11.6",
+    "fp-ts": "^2.11.8",
     "io-ts": "^2.2.16",
     "io-ts-types": "^0.5.16",
     "lodash": "^4.17.21",
