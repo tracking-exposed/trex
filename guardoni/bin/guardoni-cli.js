@@ -4,16 +4,31 @@
 
 const yargs = require('yargs/yargs');
 const { hideBin } = require('yargs/helpers');
-const { GetGuardoni } = require('../build/guardoni/guardoni.js');
+const { GetGuardoniCLI } = require('../build/guardoni/cli.js');
 
-const runGuardoni = ({ _, $0, v, headless, verbose, basePath, ...command }) => {
-  return GetGuardoni({
+const runGuardoni = ({
+  _,
+  $0,
+  v,
+  headless,
+  verbose,
+  backend,
+  basePath,
+  profile,
+  evidenceTag,
+  proxy,
+  ...command
+}) => {
+  return GetGuardoniCLI({
     headless,
-    verbose,
     basePath,
+    profile,
+    verbose,
+    evidenceTag,
+    proxy,
+    backend,
   })
-    .cli(command)
-    .runOrThrow()
+    .runOrThrow(command)
     .then(() => process.exit(0));
 };
 
@@ -44,7 +59,7 @@ yargs(hideBin(process.argv))
         })
         .example('$0 csv ./path/to/file.csv');
     },
-    (argv) => runGuardoni({ ...argv, run: 'register' })
+    (argv) => runGuardoni({ ...argv, run: 'register-csv' })
   )
   .usage(
     '$0 [index]',

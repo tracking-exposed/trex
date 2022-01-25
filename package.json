@@ -34,8 +34,9 @@
     "tk:ext": "yarn workspace tktrex",
     "ycai": "yarn workspace @trex/ycai",
     "lint-staged": "lint-staged",
+    "docker-build": "scripts/docker-build.sh",
     "postinstall": "husky install",
-    "release-it-after-bump": "sh ./scripts/release-it-after-bump.sh"
+    "release-it-after-bump": "scripts/release-it-after-bump.sh"
   },
   "devDependencies": {
     "@commitlint/cli": "^13.2.1",
@@ -46,6 +47,7 @@
     "eslint": "^8.6.0",
     "husky": "^7.0.4",
     "jest": "^27.4.7",
+    "jest-dev-server": "^6.0.3",
     "lint-staged": "^12.1.5",
     "prettier": "^2.5.1",
     "release-it": "^14.12.1",

@@ -3,6 +3,8 @@ const debug = require('debug')('routes:directives');
 
 const automo = require('../lib/automo');
 const utils = require('../lib/utils');
+const mongo3 = require('../lib/mongo3');
+const nconf = require('nconf');
 
 function reproducibleTypo(title) {
   const trimmedT = title.replace(/.$/, '').replace(/^./, '');
@@ -25,27 +27,26 @@ function chiaroScuro(videoinfo, counter) {
   // this produces three conversion of the video under test
   // and it guarantee the conversion is reproducible
 
-  const { videoId }= utils.getNatureFromURL(videoinfo.videoURL);
-  if(!videoId) {
-    const m = "Invalid URL in shadowban experiment " +
-      videoinfo.videoURL + " (expected a video URL)";
+  const { videoId } = utils.getNatureFromURL(videoinfo.videoURL);
+  if (!videoId) {
+    const m =
+      'Invalid URL in shadowban experiment ' +
+      videoinfo.videoURL +
+      ' (expected a video URL)';
     throw new Error(m);
   }
 
-  return _.times(3, function(mutation) {
-
+  return _.times(3, function (mutation) {
     let sq = null;
-    let mutationStr = "";
-    if(mutation === 0) {
-      mutationStr = "trimming";
-      sq = encodeURIComponent(reproducibleTypo(videoinfo.title))
-    }
-    else if(mutation === 1)  {
-      mutationStr = "exact-title";
+    let mutationStr = '';
+    if (mutation === 0) {
+      mutationStr = 'trimming';
+      sq = encodeURIComponent(reproducibleTypo(videoinfo.title));
+    } else if (mutation === 1) {
+      mutationStr = 'exact-title';
       sq = encodeURIComponent(videoinfo.title);
-    }
-    else if(mutation === 2) {
-      mutationStr = "videoId";
+    } else if (mutation === 2) {
+      mutationStr = 'videoId';
       sq = videoId;
     }
 
@@ -56,34 +57,39 @@ function chiaroScuro(videoinfo, counter) {
       loadFor: 15000,
       name: `${mutationStr}-video-${counter}`,
       targetVideoId: videoId,
-    }
+    };
   });
 }
 
 function acquireChiaroscuro(parsedCSV) {
-  if(_.filter(parsedCSV, function(validityCheck) {
-    return (!_.startsWith(validityCheck.videoURL, "http") || 
-       !validityCheck.videoURL.match(/watch/) ||
-       validityCheck.title.length < 5
-    )
-  }).length)
-    throw new Error("Invalid parsedCSV content");
+  if (
+    _.filter(parsedCSV, function (validityCheck) {
+      return (
+        !_.startsWith(validityCheck.videoURL, 'http') ||
+        !validityCheck.videoURL.match(/watch/) ||
+        validityCheck.title.length < 5
+      );
+    }).length
+  )
+    throw new Error('Invalid parsedCSV content');
 
   return parsedCSV;
 }
 
 function timeconv(maybestr, defaultMs) {
-  if(_.isInteger(maybestr) && maybestr > 100) {
+  if (_.isInteger(maybestr) && maybestr > 100) {
     /* it is already ms */
     return maybestr;
-  } else if(_.isInteger(maybestr) && maybestr < 100) {
+  } else if (_.isInteger(maybestr) && maybestr < 100) {
     /* throw an error as it is unclear if you forgot the unit */
-    throw new Error("Did you forget unit? " + maybestr + " milliseconds is too little!");
-  } else if(_.isString(maybestr) && _.endsWith(maybestr, 's')) {
+    throw new Error(
+      'Did you forget unit? ' + maybestr + ' milliseconds is too little!'
+    );
+  } else if (_.isString(maybestr) && _.endsWith(maybestr, 's')) {
     return _.parseInt(maybestr) * 1000;
-  } else if(_.isString(maybestr) && _.endsWith(maybestr, 'm')) {
+  } else if (_.isString(maybestr) && _.endsWith(maybestr, 'm')) {
     return _.parseInt(maybestr) * 1000 * 60;
-  } else if(_.isString(maybestr) && maybestr === 'end') {
+  } else if (_.isString(maybestr) && maybestr === 'end') {
     return 'end';
   } else {
     return null;
@@ -98,66 +104,98 @@ function comparison(videoinfo, counter) {
 }
 
 function acquireComparison(parsedCSV) {
-  return _.map(parsedCSV, function(o) { 
+  return _.map(parsedCSV, function (o) {
     o.watchFor = timeconv(o.watchFor, 20123);
     return o;
   });
 }
 
 async function post(req) {
-  const directiveType = _.get(req.params, 'directiveType', "");
-  const directiveTypes = [
-    "chiaroscuro", "comparison"
-  ];
+  const directiveType = _.get(req.params, 'directiveType', '');
+  const directiveTypes = ['chiaroscuro', 'comparison'];
 
-  if(directiveTypes.indexOf(directiveType) === -1) {
-    debug("Invalid directive type (%s), supported %j)",
-      directiveType, directiveTypes);
-    return { json: { error: true, message: "Invalid directive type"}};
+  if (directiveTypes.indexOf(directiveType) === -1) {
+    debug(
+      'Invalid directive type (%s), supported %j)',
+      directiveType,
+      directiveTypes
+    );
+    return { json: { error: true, message: 'Invalid directive type' } };
   }
 
   const parsedCSV = _.get(req.body, 'parsedCSV', []);
 
   let links = [];
-  if(directiveType === directiveTypes[0])
+  if (directiveType === directiveTypes[0])
     links = acquireChiaroscuro(parsedCSV);
-  if(directiveType === directiveTypes[1])
-    links = acquireComparison(parsedCSV);
+  if (directiveType === directiveTypes[1]) links = acquireComparison(parsedCSV);
 
-  debug("Registering directive %s (%d urls)",
-    directiveType, _.size(links));
+  debug('Registering directive %s (%d urls)', directiveType, _.size(links));
 
-  const feedback = await automo
-    .registerDirective(links, directiveType);
+  const feedback = await automo.registerDirective(links, directiveType);
   // this feedback is printed at terminal when --csv is used
   return { json: feedback };
-};
+}
 
 async function get(req) {
   const experimentId = req.params.experimentId;
 
-  debug("GET: should return directives for %s", experimentId);
+  debug('GET: should return directives for %s', experimentId);
   const expinfo = await automo.pickDirective(experimentId);
 
-  if(expinfo.directiveType === 'chiaroscuro') {
-    const directives = _.flatten(_.map(expinfo.links, function(vidblock, counter) {
-      return chiaroScuro(vidblock, counter);
-    } ));
-    debug("ChiaroScuro %s produced %d", experimentId, directives.length);
+  if (expinfo.directiveType === 'chiaroscuro') {
+    const directives = _.flatten(
+      _.map(expinfo.links, function (vidblock, counter) {
+        return chiaroScuro(vidblock, counter);
+      })
+    );
+    debug('ChiaroScuro %s produced %d', experimentId, directives.length);
     return { json: directives };
   } else {
     // expinfo.directiveType === 'comparison'
     const directives = _.map(expinfo.links, comparison);
-    debug("Comparison %s produced %d", experimentId, directives.length);
+    debug('Comparison %s produced %d', experimentId, directives.length);
     return { json: directives };
   }
 }
 
+async function getPublic(req) {
+  const whiteList = [
+    // 'b3d531eca62b2dc989926e0fe21b54ab988b7f3d',
+    // prod ids
+    'd75f9eaf465d2cd555de65eaf61a770c82d59451',
+    '37384a9b7dff26184cdea226ad5666ca8cbbf456',
+  ];
 
+  const filter = {
+    directiveType: 'comparison',
+    experimentId: {
+      $in: whiteList,
+    },
+  };
+
+  const mongoc = await mongo3.clientConnect({ concurrency: 1 });
+
+  const publicDirectives = await mongo3.readLimit(
+    mongoc,
+    nconf.get('schema').directives,
+    filter,
+    { when: -1 },
+    20,
+    0
+  );
+
+  await mongoc.close();
+
+  return {
+    json: publicDirectives,
+  };
+}
 
 module.exports = {
   chiaroScuro,
   comparison,
   post,
   get,
+  getPublic,
 };
