@@ -40,8 +40,8 @@
     "release-it-after-bump": "scripts/release-it-after-bump.sh"
   },
   "devDependencies": {
-    "@commitlint/cli": "^13.2.1",
-    "@commitlint/config-conventional": "^13.2.0",
+    "@commitlint/cli": "^16.1.0",
+    "@commitlint/config-conventional": "^16.0.0",
     "@release-it/conventional-changelog": "^4.1.0",
     "@types/node": "^16.11.21",
     "@types/prettier": "^2.4.2",
