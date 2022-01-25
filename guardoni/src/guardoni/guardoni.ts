@@ -39,7 +39,6 @@ import path from 'path';
 // import pluginStealth from "puppeteer-extra-plugin-stealth";
 import puppeteer from 'puppeteer-core';
 import domainSpecific from './domainSpecific';
-
 import {
   GuardoniConfig,
   GuardoniConfigRequired,
@@ -258,8 +257,8 @@ export const guardoniExecution =
     directiveType: DirectiveType,
     directives: NonEmptyArray<Directive>,
     page: puppeteer.Page
-  ): TE.TaskEither<AppError, void> => {
-    const result = { start: new Date(), end: null };
+  ): TE.TaskEither<AppError, string | null> => {
+    const start = new Date();
 
     return pipe(
       TE.tryCatch(
@@ -269,8 +268,12 @@ export const guardoniExecution =
       TE.chain(() => operateBrowser(ctx)(page, directives)),
       TE.chain(() => TE.tryCatch(() => domainSpecific.completed(), toAppError)),
       TE.map((publicKey) => {
+        const duration = differenceInSeconds(new Date(), start);
+
         ctx.logger.debug(
-          `Operations completed: check results at ${ctx.config.backend}/${
+          `Operations completed in %ds: check results at `,
+          duration,
+          `${ctx.config.backend}/${
             directiveType === 'chiaroscuro' ? 'shadowban' : 'experiments'
           }/render/#${experiment}`
         );
@@ -278,19 +281,7 @@ export const guardoniExecution =
           `Personal log at ${ctx.config.backend}/personal/#${publicKey}`
         );
 
-        return {
-          ...result,
-          end: new Date(),
-        };
-      }),
-      TE.map(({ start, end }) => {
-        const duration = differenceInSeconds(end, start);
-
-        ctx.logger.debug(
-          '— Guardoni execution completed in %d seconds.',
-          duration
-        );
-        return undefined;
+        return publicKey;
       })
     );
   };
@@ -324,7 +315,7 @@ const runBrowser =
     experiment: ExperimentInfo,
     directiveType: DirectiveType,
     directives: NonEmptyArray<Directive>
-  ): TE.TaskEither<AppError, ExperimentInfo> => {
+  ): TE.TaskEither<AppError, ExperimentInfo & { publicKey: string | null }> => {
     return pipe(
       dispatchBrowser(ctx),
       TE.chain((browser) => {
@@ -347,7 +338,12 @@ const runBrowser =
           page
         )
       ),
-      TE.chain(() => concludeExperiment(ctx)(experiment))
+      TE.chain((publicKey) =>
+        pipe(
+          concludeExperiment(ctx)(experiment),
+          TE.map((exp) => ({ ...exp, publicKey }))
+        )
+      )
     );
   };
 
@@ -459,7 +455,7 @@ export const readCSVAndParse =
             )
           ),
           TE.map((csvContent) => {
-            logger.debug('CSV decoded content %J', csvContent);
+            logger.debug('CSV decoded content %O', csvContent.records);
             return csvContent.records;
           })
         )
@@ -473,6 +469,7 @@ const registerExperiment =
     records: ComparisonDirectiveRow[],
     directiveType: DirectiveType
   ): TE.TaskEither<AppError, GuardoniSuccessOutput> => {
+    ctx.logger.debug('Creating experiment %O', { records, directiveType });
     return pipe(
       createExperimentInAPI(ctx)(directiveType, records),
       TE.map((experiment) => {
@@ -505,6 +502,8 @@ const registerCSV =
     directiveType: DirectiveType
   ): TE.TaskEither<AppError, GuardoniSuccessOutput> => {
     const filePath = path.resolve(ctx.config.basePath, csvFile);
+
+    ctx.logger.debug(`Register CSV from %s`, filePath);
 
     return pipe(
       readCSVAndParse(ctx.logger)(filePath, directiveType),
@@ -566,14 +565,11 @@ const ensureProfileExistsAtPath = (
   const profileDir = getProfileDataDir(basePath, profileName);
   return pipe(
     liftFromIOE(() => fs.statSync(profileDir, { throwIfNoEntry: false })),
-    TE.chain((stat) => {
+    TE.chainFirst((stat) => {
       if (!stat) {
-        return pipe(
-          liftFromIOE(() => fs.mkdirSync(profileDir, { recursive: true })),
-          TE.map(() => stat)
-        );
+        return liftFromIOE(() => fs.mkdirSync(profileDir, { recursive: true }));
       }
-      return TE.right(stat);
+      return TE.right(undefined);
     }),
     TE.map(() => profileName)
   );
@@ -660,40 +656,42 @@ export const getConfigWithDefaults =
     );
   };
 
-const readProfile = (
-  profilePath: string
-): TE.TaskEither<AppError, GuardoniProfile> => {
-  return pipe(
-    liftFromIOE(() => fs.readFileSync(profilePath, 'utf-8')),
-    TE.chain((data) =>
-      pipe(
-        Json.parse(data),
-        E.mapLeft(
-          (e) =>
-            new AppError(
-              'ReadProfileError',
-              "Can't decode the content of the profile",
-              [JSON.stringify(e)]
+const readProfile =
+  (ctx: GuardoniContext) =>
+  (profilePath: string): TE.TaskEither<AppError, GuardoniProfile> => {
+    ctx.logger.debug('Reading profile from %s', profilePath);
+
+    return pipe(
+      liftFromIOE(() => fs.readFileSync(profilePath, 'utf-8')),
+      TE.chain((data) =>
+        pipe(
+          Json.parse(data),
+          E.mapLeft(
+            (e) =>
+              new AppError(
+                'ReadProfileError',
+                "Can't decode the content of the profile",
+                [JSON.stringify(e)]
+              )
+          ),
+          E.chain((d) =>
+            pipe(
+              GuardoniProfile.decode(d),
+              E.mapLeft(
+                (e) =>
+                  new AppError(
+                    'DecodeProfileError',
+                    "Can't decode guardoni profile",
+                    failure(e)
+                  )
+              )
             )
-        ),
-        E.chain((d) =>
-          pipe(
-            GuardoniProfile.decode(d),
-            E.mapLeft(
-              (e) =>
-                new AppError(
-                  'DecodeProfileError',
-                  "Can't decode guardoni profile",
-                  failure(e)
-                )
-            )
-          )
-        ),
-        TE.fromEither
+          ),
+          TE.fromEither
+        )
       )
-    )
-  );
-};
+    );
+  };
 
 const updateGuardoniProfile =
   (ctx: GuardoniContext) =>
@@ -701,7 +699,7 @@ const updateGuardoniProfile =
     ctx.logger.debug('Updating guardoni config %s', ctx.guardoniConfigFile);
 
     return pipe(
-      readProfile(ctx.guardoniConfigFile),
+      readProfile(ctx)(ctx.guardoniConfigFile),
       TE.chain((guardoniProfile) => {
         const execCount = guardoniProfile.execount + 1;
         const updatedProfile: GuardoniProfile = {
@@ -786,10 +784,13 @@ const runExperimentForPage =
       TE.chain(({ type, data }) =>
         guardoniExecution(ctx)(experimentId, type, data, page)
       ),
-      TE.map((result) => ({
+      TE.map((publicKey) => ({
         type: 'success',
         message: 'Experiment completed',
-        values: {},
+        values: {
+          experimentId,
+          publicKey,
+        },
       }))
     );
 
@@ -868,7 +869,7 @@ const loadContext = (
             stat !== undefined
           );
           if (stat) {
-            return readProfile(ctx.guardoniConfigFile);
+            return readProfile(ctx)(ctx.guardoniConfigFile);
           }
           return pipe(
             liftFromIOE(() =>

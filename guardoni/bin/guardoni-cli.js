@@ -26,7 +26,7 @@ const runGuardoni = ({
     verbose,
     evidenceTag,
     proxy,
-    backend
+    backend,
   })
     .runOrThrow(command)
     .then(() => process.exit(0));
@@ -59,7 +59,7 @@ yargs(hideBin(process.argv))
         })
         .example('$0 csv ./path/to/file.csv');
     },
-    (argv) => runGuardoni({ ...argv, run: 'register' })
+    (argv) => runGuardoni({ ...argv, run: 'register-csv' })
   )
   .usage(
     '$0 [index]',
