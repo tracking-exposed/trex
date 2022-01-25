@@ -35,7 +35,7 @@
     "io-ts-types": "^0.5.16",
     "jsdom": "^13.2.0",
     "moment": "^2.29.1",
-    "mongodb": "^4.3.0",
+    "mongodb": "^4.3.1",
     "nacl-signature": "^1.0.0",
     "nconf": "^0.8.5",
     "node-fetch": "^2.6.6",

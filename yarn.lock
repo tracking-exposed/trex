@@ -15564,7 +15564,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"mongodb@npm:*, mongodb@npm:^4.1.4, mongodb@npm:^4.2.2, mongodb@npm:^4.3.0":
+"mongodb@npm:*, mongodb@npm:^4.3.1":
   version: 4.3.1
   resolution: "mongodb@npm:4.3.1"
   dependencies:
@@ -21211,7 +21211,7 @@ __metadata:
     jsdom: ^12.0.0
     lodash: ^4.17.21
     moment: ^2.29.1
-    mongodb: ^4.1.4
+    mongodb: ^4.3.1
     nacl-signature: ^1.0.0
     nconf: ^0.8.4
     node-fetch: ^2.6.1
@@ -21263,7 +21263,7 @@ __metadata:
     io-ts: ^2.2.16
     jest: ^27.4.7
     linkedom: ^0.13.0
-    mongodb: ^4.2.2
+    mongodb: ^4.3.1
     ts-jest: ^27.1.2
     ts-node: ^10.4.0
     typescript: ^4.5.4
@@ -23450,7 +23450,7 @@ __metadata:
     jest: ^27.4.7
     jsdom: ^13.2.0
     moment: ^2.29.1
-    mongodb: ^4.3.0
+    mongodb: ^4.3.1
     nacl-signature: ^1.0.0
     nconf: ^0.8.5
     node-fetch: ^2.6.6
