@@ -11,9 +11,9 @@ import ReactRefreshTypescript from 'react-refresh-typescript';
 import { TsconfigPathsPlugin } from 'tsconfig-paths-webpack-plugin';
 import webpack from 'webpack';
 import { BundleAnalyzerPlugin } from 'webpack-bundle-analyzer';
-import { GetLogger } from '../logger';
+import { trexLogger } from '../logger';
 
-const webpackLogger = GetLogger('webpack');
+const webpackLogger = trexLogger.extend('webpack');
 
 // TODO: browserlist, auto-prefixing, ...?
 
@@ -27,6 +27,7 @@ const BUILD_ENV = t.strict(
     NODE_ENV,
     BUNDLE_TARGET: t.union([t.literal('firefox'), t.literal('chrome')]),
     BUNDLE_STATS: BooleanFromString,
+    TREX_DEBUG: t.union([t.undefined, t.string]),
   },
   'processENV'
 );

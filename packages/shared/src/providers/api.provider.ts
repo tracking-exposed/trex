@@ -1,7 +1,6 @@
-import * as Endpoints from '../endpoints';
-import { GetLogger } from '../logger';
 import { command } from 'avenger';
-import axios, { AxiosRequestConfig, AxiosResponse, AxiosInstance } from 'axios';
+import axios, { AxiosInstance, AxiosRequestConfig, AxiosResponse } from 'axios';
+import { sequenceS } from 'fp-ts/lib/Apply';
 import * as A from 'fp-ts/lib/Array';
 import * as E from 'fp-ts/lib/Either';
 import { pipe } from 'fp-ts/lib/function';
@@ -10,10 +9,11 @@ import * as TE from 'fp-ts/lib/TaskEither';
 import * as t from 'io-ts';
 import { PathReporter } from 'io-ts/lib/PathReporter';
 import { MinimalEndpointInstance, TypeOfEndpointInstance } from 'ts-endpoint';
+import * as Endpoints from '../endpoints';
 import { APIError } from '../errors/APIError';
-import { sequenceS } from 'fp-ts/lib/Apply';
+import { trexLogger } from '../logger';
 
-export const apiLogger = GetLogger('API');
+export const apiLogger = trexLogger.extend('API');
 
 export const toAPIError = (e: unknown): APIError => {
   // eslint-disable-next-line
