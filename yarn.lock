@@ -2024,7 +2024,7 @@ __metadata:
     css-loader: ^6.5.1
     date-fns: ^2.28.0
     debug: ^4.3.3
-    dotenv: ^10.0.0
+    dotenv: ^14.3.0
     eslint: ^8.7.0
     eslint-config-prettier: ^8.3.0
     eslint-config-standard-with-typescript: ^21.0.1
@@ -8491,17 +8491,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"dotenv@npm:^10.0.0":
-  version: 10.0.0
-  resolution: "dotenv@npm:10.0.0"
-  checksum: f412c5fe8c24fbe313d302d2500e247ba8a1946492db405a4de4d30dd0eb186a88a43f13c958c5a7de303938949c4231c56994f97d05c4bc1f22478d631b4005
-  languageName: node
-  linkType: hard
-
-"dotenv@npm:^2.0.0":
-  version: 2.0.0
-  resolution: "dotenv@npm:2.0.0"
-  checksum: ccbb672b661fcf07fa826c632d4554fa387db77f2885bb94c71357970255f844ea34f76a202b328405144beb4d7140948e6205b321bbe3268368511b11733876
+"dotenv@npm:^14.3.0":
+  version: 14.3.0
+  resolution: "dotenv@npm:14.3.0"
+  checksum: 0591a1aa6d2acaf31d4d5e7b79c1bce744fc8e06c6d38a066d70fe77d36cc7c67df6c04be70c9fdf637f421e84512ce83b4f8f8abe6f455b8ba970065f7a2fd6
   languageName: node
   linkType: hard
 
@@ -23493,7 +23486,7 @@ __metadata:
     create-react-class: ^15.7.0
     cross-env: ^2.0.1
     css-loader: ^6.5.1
-    dotenv: ^2.0.0
+    dotenv: ^14.3.0
     eslint: ^8.7.0
     eslint-config-standard-with-typescript: ^21.0.1
     eslint-plugin-import: ^2.25.4

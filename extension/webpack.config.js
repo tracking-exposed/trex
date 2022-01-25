@@ -16,7 +16,7 @@ const {
   FileManagerPlugin,
 } = require('../packages/shared/build/webpack/plugins');
 
-require('dotenv').load({ silent: true });
+require('dotenv').config({ silent: true });
 
 const LAST_VERSION = 2;
 const packageJSON = require('./package.json');
