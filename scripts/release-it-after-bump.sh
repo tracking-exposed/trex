@@ -5,6 +5,9 @@ set -e -x
 export DEBUG=@yttrex*
 export NODE_ENV=production
 
+# build needed docker images
+yarn docker-build
+
 yarn shared build
 yarn taboule build
 yarn extension dist

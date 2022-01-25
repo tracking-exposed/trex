@@ -15,4 +15,5 @@ docker run -d --name electron-builder-node-16 -i \
  electronuserland/builder:16-wine
 
 docker exec -i electron-builder-node-16 bash -c "yarn"
-docker exec -i electron-builder-node-16 bash -c "yarn guardoni dist"
+docker exec -i electron-builder-node-16 bash -c "yarn guardoni dist:linux"
+docker exec -i electron-builder-node-16 bash -c "yarn guardoni dist:windows"
