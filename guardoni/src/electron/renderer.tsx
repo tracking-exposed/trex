@@ -6,7 +6,7 @@ import { theme } from './theme';
 import debug from 'debug';
 
 const main = (): void => {
-  debug.enable('@yttrex*');
+  debug.enable('@trex*');
 
   ReactDOM.render(
     <React.StrictMode>

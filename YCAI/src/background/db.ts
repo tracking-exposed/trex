@@ -1,12 +1,12 @@
 import * as E from 'fp-ts/lib/Either';
-import * as TE from 'fp-ts/lib/TaskEither';
-import { bo } from '../utils/browser.utils';
 import { pipe } from 'fp-ts/lib/function';
 import { getAssignSemigroup } from 'fp-ts/lib/struct';
+import * as TE from 'fp-ts/lib/TaskEither';
 import { catchRuntimeLastError } from '../providers/browser.provider';
-import { GetLogger } from '@shared/logger';
+import { bo } from '../utils/browser.utils';
+import { logger } from '../utils/logger.utils';
 
-const dbLogger = GetLogger('db');
+const dbLogger = logger.extend('db');
 const backend = bo.storage.local;
 
 const backendGet = (

@@ -2,7 +2,7 @@
 
 set -e -x
 
-export DEBUG=@yttrex*
+export DEBUG=@trex*
 export NODE_ENV=production
 
 # build needed docker images

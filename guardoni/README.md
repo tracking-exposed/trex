@@ -129,7 +129,7 @@ Guardoni provides also an `auto` method to run pre-configured experiment. At the
 guardoni-cli 1
 ```
 
-**NB:** if you need to enable the debug output while running guardoni you can use `DEBUG=@yytrex* guardon-cli ...`
+**NB:** if you need to enable the debug output while running guardoni you can use `DEBUG=@trex* guardoni-cli ...`
 
 ## Build
 
