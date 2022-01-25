@@ -2,9 +2,14 @@
 FROM electronuserland/builder:base
 
 ARG NODE_VERSION 16.10.0
+ARG USER_ID
+ARG GROUP_ID
 
-# avoid produce build as root user
-RUN chown -R 1000:1000 /project
+
+RUN addgroup --gid $GROUP_ID user
+RUN adduser --disabled-password --gecos '' --uid $USER_ID --gid $GROUP_ID user
+
+USER user
 
 # this package is used for snapcraft and we should not clear apt list - to avoid apt-get update during snap build
 RUN curl -L https://nodejs.org/dist/v$NODE_VERSION/node-v$NODE_VERSION-linux-x64.tar.gz | tar xz -C /usr/local --strip-components=1 && \
