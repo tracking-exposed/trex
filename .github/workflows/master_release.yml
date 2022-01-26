@@ -33,7 +33,7 @@ jobs:
         run: |
           git config --global user.email "team@tracking.exposed"
           git config --global user.name "Team - Tracking Exposed"
-          yarn release-it --ci
+          yarn release-it major --ci
 
       - name: Build Dashboard
         env:
