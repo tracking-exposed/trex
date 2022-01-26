@@ -43,6 +43,13 @@ config.plugins.push(
         transform: (content: Buffer) => {
           const manifest = JSON.parse(content.toString());
 
+          if (config.mode === 'development') {
+            manifest.permissions = [
+              'http://localhost:9000/',
+              ...manifest.permissions,
+            ];
+          }
+
           if (buildENV.BUNDLE_TARGET === 'chrome') {
             manifest.cross_origin_embedder_policy = {
               value: 'require-corp',
