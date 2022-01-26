@@ -1,8 +1,8 @@
-name: TRex - Release
+name: TRex - Release "daily"
 on:
-  push:
+  pull_request:
     branches:
-      - beta
+      - daily
 
 jobs:
   release:
@@ -27,25 +27,20 @@ jobs:
       - name: Install dependencies
         run: yarn
 
-      - name: Release
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          git config --global user.email "team@tracking.exposed"
-          git config --global user.name "Team - Tracking Exposed"
-          yarn release-it --ci --preRelease
-
       - name: Build Dashboard
         env:
           DOTENV_CONFIG_PATH: .env.beta
         run: yarn ycai build
+
+      # - name: Next Release
+      #   run: yarn release-it --preReleaseId=beta --dry-run
 
       - name: Deploy YCAI Dashboard
         uses: burnett01/rsync-deployments@5.1
         with:
           switches: -avzr --delete
           path: ./YCAI/build/dashboard/
-          remote_path: ~/beta-studio/
-          remote_host: ${{ secrets.YCAI_BETA_DEPLOY_HOST }}
-          remote_user: ${{ secrets.YCAI_BETA_DEPLOY_USER }}
-          remote_key: ${{ secrets.YCAI_BETA_DEPLOY_KEY }}
+          remote_path: ~/staging-studio/
+          remote_host: ${{ secrets.YCAI_DAILY_DEPLOY_HOST }}
+          remote_user: ${{ secrets.YCAI_DEPLOY_USER }}
+          remote_key: ${{ secrets.YCAI_DEPLOY_KEY }}
