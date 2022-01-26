@@ -1,3 +1,21 @@
+## [2.0.0-beta.2](https://github.com/tracking-exposed/yttrex/compare/v2.0.0-beta.1...v2.0.0-beta.2) (2022-01-26)
+
+- add localhost to manifest permissions only for development ([#326](https://github.com/tracking-exposed/yttrex/issues/326)) ([634fb86](https://github.com/tracking-exposed/yttrex/commit/634fb86fd3992d5733341c5284d0d4aacb5903f3))
+- added 'clear' button on login account flow ([9a1fb9f](https://github.com/tracking-exposed/yttrex/commit/9a1fb9fce84e301cf18c39bed9bdb9c46982df0f))
+- changed daily workflow trigger ([987bae5](https://github.com/tracking-exposed/yttrex/commit/987bae5c6aeeee491323c89a1512bfed4340dc8b))
+- changed default YCAI url ([#320](https://github.com/tracking-exposed/yttrex/issues/320)) ([db56e1c](https://github.com/tracking-exposed/yttrex/commit/db56e1c73ab0f6969de29a9a5602dff373134862))
+- defined workflow for deploying ycai production dashboard ([d1eb70c](https://github.com/tracking-exposed/yttrex/commit/d1eb70c812b19dc253dd92efeaf5d8b50b72e615))
+- electron-builder dockerfile user permissions ([cba569f](https://github.com/tracking-exposed/yttrex/commit/cba569f8ebcf62904646d30f4148b9c5c254eb6a))
+- fix guardoni dist commands in release-it after bump hook ([4450a9b](https://github.com/tracking-exposed/yttrex/commit/4450a9b02b77f625d355140d6000e36fb85024ed))
+- guardoni electron & cli ([#307](https://github.com/tracking-exposed/yttrex/issues/307)) ([9c7b7f1](https://github.com/tracking-exposed/yttrex/commit/9c7b7f1643927f7b11b7d7c4ba672e341c1e6cbd))
+- only print version for daily workflowrelease-it ([197facb](https://github.com/tracking-exposed/yttrex/commit/197facb37980a4a6b7090dece92ed81ca631a730))
+- preserve yttrex dist folder ([cad6319](https://github.com/tracking-exposed/yttrex/commit/cad63197b17b9624748b2a6faa700f3008a14625))
+- release-it after bump ([#319](https://github.com/tracking-exposed/yttrex/issues/319)) ([5b68c90](https://github.com/tracking-exposed/yttrex/commit/5b68c903aa35551516a23b80cd54a08c205560b6))
+- remove interactive flag from docker exec in electron builder [skip ci] ([f191fb5](https://github.com/tracking-exposed/yttrex/commit/f191fb50693599f7792f1a9c2d009245e658c714))
+- secrets for ycai beta dashboard deploy ([2f3d470](https://github.com/tracking-exposed/yttrex/commit/2f3d4701543ecbcae3362d165c17311489eebbdb))
+- updated yarn.lock ([f520dd5](https://github.com/tracking-exposed/yttrex/commit/f520dd5cd8f3e3f3819a60e85a2aaa75fa1cff96))
+- ycai deploy for staging (daily) env ([#321](https://github.com/tracking-exposed/yttrex/issues/321)) ([7224ebe](https://github.com/tracking-exposed/yttrex/commit/7224ebe71882777c9dea80edbefd5680c0127287))
+
 ## [2.0.0-beta.1](https://github.com/tracking-exposed/yttrex/compare/v2.0.0-beta.0...v2.0.0-beta.1) (2022-01-24)
 
 - produce only a 'prelease' in beta flow ([#315](https://github.com/tracking-exposed/yttrex/issues/315)) ([a727133](https://github.com/tracking-exposed/yttrex/commit/a727133329d03c2b74dedafd9b36f3c23e4d5e9a))
