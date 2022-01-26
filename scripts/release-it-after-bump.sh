@@ -7,6 +7,7 @@ export NODE_ENV=production
 
 # build needed docker images
 yarn docker-build
+yarn docker-run
 
 yarn shared build
 yarn taboule build

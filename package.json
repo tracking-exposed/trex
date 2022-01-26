@@ -35,6 +35,7 @@
     "ycai": "yarn workspace @trex/ycai",
     "lint-staged": "lint-staged",
     "docker-build": "scripts/docker-build.sh",
+    "docker-run": "scripts/docker-run.sh",
     "postinstall": "husky install",
     "release-it-after-bump": "scripts/release-it-after-bump.sh"
   },
