@@ -1,3 +1,5 @@
+## [2.0.0-beta.3](https://github.com/tracking-exposed/yttrex/compare/v2.0.0-beta.2...v2.0.0-beta.3) (2022-01-26)
+
 ## [2.0.0-beta.2](https://github.com/tracking-exposed/yttrex/compare/v2.0.0-beta.1...v2.0.0-beta.2) (2022-01-26)
 
 - add localhost to manifest permissions only for development ([#326](https://github.com/tracking-exposed/yttrex/issues/326)) ([634fb86](https://github.com/tracking-exposed/yttrex/commit/634fb86fd3992d5733341c5284d0d4aacb5903f3))
