@@ -45,6 +45,8 @@ jobs:
         run: yarn build:ext
 
       - name: Build dashboard
+        env:
+          PUBLIC_URL: https://staging.studio.youchoose.ai
         run: yarn build
 
       - name: Test
