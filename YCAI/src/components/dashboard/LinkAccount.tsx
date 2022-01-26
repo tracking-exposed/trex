@@ -265,6 +265,15 @@ export const LinkAccount: React.FC<LinkAccountProps> = ({ auth }) => {
           >
             {t('actions:verify_channel')}
           </Button>
+          <Button
+            disabled={verifying}
+            variant="contained"
+            color="default"
+            size="large"
+            onClick={handleGoBackToStepOneClicked}
+          >
+            {t('actions:clear')}
+          </Button>
           {verificationFailed && (
             <Box className={classes.errorBox}>
               <Typography>{t('link_account:verification_failed')}</Typography>
