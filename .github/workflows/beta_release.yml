@@ -47,5 +47,5 @@ jobs:
           path: ./YCAI/build/dashboard/
           remote_path: ~/beta-studio/
           remote_host: ${{ secrets.YCAI_BETA_DEPLOY_HOST }}
-          remote_user: ${{ secrets.YCAI_BETA_DEPLOY_USER }}
-          remote_key: ${{ secrets.YCAI_BETA_DEPLOY_KEY }}
+          remote_user: ${{ secrets.YCAI_DEPLOY_USER }}
+          remote_key: ${{ secrets.YCAI_DEPLOY_KEY }}
