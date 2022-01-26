@@ -244,7 +244,7 @@ export const LinkAccount: React.FC<LinkAccountProps> = ({ auth }) => {
               <Link
                 target="_blank"
                 rel="noreferrer"
-                href={`/channel/${channel}/editing/details`}
+                href={`https://studio.youtube.com/channel/${channel}/editing/details`}
               >
                 here to access to your YouTube Studio
               </Link>
