@@ -21,7 +21,6 @@
   "permissions": [
     "storage",
     "alarms",
-    "http://localhost:9000/",
     "https://*.youtube.com/",
     "https://youchoose.ai/",
     "https://yt3.ggpht.com/"
@@ -34,9 +33,7 @@
 
   "content_scripts": [
     {
-      "matches": [
-        "https://*.youtube.com/*"
-      ],
+      "matches": ["https://*.youtube.com/*"],
       "js": ["./ext.js"]
     }
   ],
