@@ -1,7 +1,7 @@
 {
   "name": "@trex/taboule",
   "description": "Table component to display TrEx data",
-  "version": "1.11.0",
+  "version": "2.0.0",
   "scripts": {
     "clean": "rm -rf ./build",
     "type-check": "tsc -b",

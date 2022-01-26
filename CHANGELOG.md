@@ -1,3 +1,7 @@
+## [2.0.0](https://github.com/tracking-exposed/yttrex/compare/v1.11.0...v2.0.0) (2022-01-26)
+
+- fix guardoni dist script ([6aff174](https://github.com/tracking-exposed/yttrex/commit/6aff174d8483599ebb95f1adf8fc3d7dc6e1d3a7))
+
 ## [1.11.0](https://github.com/tracking-exposed/yttrex/compare/v1.10.3...v1.11.0) (2022-01-26)
 
 - 1.11.0-beta.1 CHANGELOG [skip ci] ([cc848cd](https://github.com/tracking-exposed/yttrex/commit/cc848cd02d3d828f2fb1db8e97aad51c37f884b4))
