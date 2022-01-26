@@ -1,0 +1,46 @@
+name: TRex - Release "daily"
+on:
+  pull_request:
+    branches:
+      - daily
+
+jobs:
+  release:
+    name: Release
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [16.x]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: "yarn"
+          cache-dependency-path: yarn.lock
+
+      - name: Install dependencies
+        run: yarn
+
+      - name: Build Dashboard
+        env:
+          DOTENV_CONFIG_PATH: .env.beta
+        run: yarn ycai build
+
+      # - name: Next Release
+      #   run: yarn release-it --preReleaseId=beta --dry-run
+
+      - name: Deploy YCAI Dashboard
+        uses: burnett01/rsync-deployments@5.1
+        with:
+          switches: -avzr --delete
+          path: ./YCAI/build/dashboard/
+          remote_path: ~/staging-studio/
+          remote_host: ${{ secrets.YCAI_DAILY_DEPLOY_HOST }}
+          remote_user: ${{ secrets.YCAI_DEPLOY_USER }}
+          remote_key: ${{ secrets.YCAI_DEPLOY_KEY }}
