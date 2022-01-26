@@ -1,3 +1,7 @@
+### [2.0.1](https://github.com/tracking-exposed/yttrex/compare/v2.0.0...v2.0.1) (2022-01-26)
+
+- fix release-it script for master [skip ci] ([abcac65](https://github.com/tracking-exposed/yttrex/commit/abcac6581f29ab42db3f4041a973f42bb9888b97))
+
 ## [2.0.0](https://github.com/tracking-exposed/yttrex/compare/v1.11.0...v2.0.0) (2022-01-26)
 
 - fix guardoni dist script ([6aff174](https://github.com/tracking-exposed/yttrex/commit/6aff174d8483599ebb95f1adf8fc3d7dc6e1d3a7))
