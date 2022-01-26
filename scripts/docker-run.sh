@@ -11,7 +11,7 @@ docker run -d --name $CONTAINER_NAME -i \
  --env ELECTRON_CACHE="/root/.cache/electron" \
  --env ELECTRON_BUILDER_CACHE="/root/.cache/electron-builder" \
  -v ${CWD}:/project \
- -v ${PROJECT_NAME}-node-modules:/project/node_modules:ro \
+ -v ${PROJECT_NAME}-node-modules:/project/node_modules:rw \
  -v ~/.cache/electron:/root/.cache/electron \
  -v ~/.cache/electron-builder:/root/.cache/electron-builder \
  electronuserland/builder:16-wine
