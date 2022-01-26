@@ -32,8 +32,9 @@ jobs:
           DOTENV_CONFIG_PATH: .env.beta
         run: yarn ycai build
 
-      # - name: Next Release
-      #   run: yarn release-it --preReleaseId=beta --dry-run
+      - name: Next Release
+        run: yarn release-it --only-version --preRelease --ci --preReleaseId=beta --dry-run
+
 
       - name: Deploy YCAI Dashboard
         uses: burnett01/rsync-deployments@5.1
