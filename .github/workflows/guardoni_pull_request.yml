@@ -56,6 +56,3 @@ jobs:
 
       - name: Package
         run: yarn guardoni pkg
-
-      - name: Release-it after bump
-        run: yarn release-it-after-bump
