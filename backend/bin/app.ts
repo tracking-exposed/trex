@@ -233,6 +233,10 @@ export const makeApp = (ctx: MakeAppContext): express.Application => {
     '/api/v2/experiment/:experimentId/csv/:type',
     iowrapper('experimentCSV')
   );
+  app.get(
+    '/api/v2/experiment/:experimentId/emergency/:type',
+    iowrapper('experimentEmergencyCSV')
+  );
   app.get('/api/v2/experiment/:experimentId/dot', iowrapper('experimentDOT'));
 
   app.get('*', async (req, res) => {
