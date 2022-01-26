@@ -15,6 +15,6 @@ yarn extension dist
 yarn extension dist:guardoni
 yarn guardoni build
 yarn guardoni pkg
-yarn guardoni dist:all
+# yarn guardoni dist:all
 # yarn tk:ext build
 yarn ycai build:ext
