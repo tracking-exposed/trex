@@ -1,6 +1,6 @@
 name: TRex - Release "daily"
 on:
-  pull_request:
+  push:
     branches:
       - daily
 
