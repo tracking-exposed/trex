@@ -25,8 +25,3 @@ export const GetLogger = (name: string | D.Debugger): Logger => {
 };
 
 export const trexLogger = GetLogger(D('@trex'));
-
-// enable @trex logger
-if (process.env.TREX_DEBUG) {
-  D.enable(process.env.TREX_DEBUG);
-}

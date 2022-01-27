@@ -27,7 +27,7 @@ const BUILD_ENV = t.strict(
     NODE_ENV,
     BUNDLE_TARGET: t.union([t.literal('firefox'), t.literal('chrome')]),
     BUNDLE_STATS: BooleanFromString,
-    TREX_DEBUG: t.union([t.undefined, t.string]),
+    DEBUG: t.union([t.undefined, t.string]),
   },
   'processENV'
 );

@@ -2,7 +2,7 @@
 
 set -e -x
 
-export DEBUG=@trex*
+export DEBUG=@trex:*
 export NODE_ENV=production
 
 # build needed docker images

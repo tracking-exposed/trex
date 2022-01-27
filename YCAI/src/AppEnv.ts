@@ -13,7 +13,7 @@ const AppEnv = t.strict(
     DATA_DONATION_FLUSH_INTERVAL: t.string,
     VERSION: t.string,
     BUILD_DATE: t.string,
-    YCAI_DEBUG: t.string,
+    DEBUG: t.string,
   },
   'AppEnv'
 );
