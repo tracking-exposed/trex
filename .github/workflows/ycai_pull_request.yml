@@ -9,10 +9,6 @@ on:
       - "packages/**"
       - "YCAI/**"
 
-defaults:
-  run:
-    working-directory: YCAI
-
 jobs:
   pull_request:
     runs-on: ubuntu-latest
@@ -31,23 +27,19 @@ jobs:
           cache-dependency-path: yarn.lock
 
       - name: Install modules
-        working-directory: ./
         run: yarn
 
       - name: Lint code
-        run: yarn lint
+        run: yarn ycai lint
 
       - name: Build shared
-        working-directory: ./packages/shared
-        run: yarn build
+        run: yarn shared build
 
       - name: Build extension
-        run: yarn build:ext
+        run: yarn ycai build:ext
 
       - name: Build dashboard
-        env:
-          PUBLIC_URL: https://staging.studio.youchoose.ai
-        run: yarn build
+        run: yarn ycai build
 
       - name: Test
-        run: yarn test
+        run: yarn ycai test
