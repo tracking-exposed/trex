@@ -18,10 +18,8 @@ const AppEnv = t.strict(
   'AppEnv'
 );
 
-type AppEnv = t.TypeOf<typeof AppEnv>
+type AppEnv = t.TypeOf<typeof AppEnv>;
 
-export {
-  AppEnv
-}
+export { AppEnv };
 
-export {}
+export {};

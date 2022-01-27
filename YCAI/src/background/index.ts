@@ -1,13 +1,16 @@
+import * as sharedConst from '@shared/constants';
+import { APIError } from '@shared/errors/APIError';
 import { ContentCreator } from '@shared/models/ContentCreator';
 import { sequenceS } from 'fp-ts/lib/Apply';
 import * as E from 'fp-ts/lib/Either';
-import * as O from 'fp-ts/lib/Option';
 import { pipe } from 'fp-ts/lib/function';
+import * as O from 'fp-ts/lib/Option';
 import * as TE from 'fp-ts/lib/TaskEither';
+import { HTTPClient } from '../api';
 import { config } from '../config';
+import * as constants from '../constants';
 import * as Messages from '../models/Messages';
 import { getDefaultSettings, Keypair, Settings } from '../models/Settings';
-import { APIError } from '@shared/errors/APIError';
 import {
   catchRuntimeLastError,
   sendTabMessage,
@@ -16,15 +19,12 @@ import {
 } from '../providers/browser.provider';
 import { bo } from '../utils/browser.utils';
 import { fromStaticPath } from '../utils/endpoint.utils';
-import { GetLogger } from '@shared/logger';
-import * as sharedConst from '@shared/constants';
+import { logger } from '../utils/logger.utils';
 import db from './db';
 import * as development from './reloadExtension';
 import * as settings from './settings';
-import * as constants from '../constants';
-import { HTTPClient } from '../api';
 
-const bkgLogger = GetLogger('bkg');
+const bkgLogger = logger.extend('bkg');
 
 export const getStorageKey = (type: string): string => {
   switch (type) {

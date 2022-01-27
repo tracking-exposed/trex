@@ -1,13 +1,18 @@
-import './i18n';
-import './resources/global.css';
 import { ThemeProvider } from '@material-ui/styles';
+import debug from 'debug';
 import React from 'react';
-import ReactDOM from 'react-dom';
-import { Dashboard } from './components/dashboard/Dashboard';
-import reportWebVitals from './reportWebVitals';
-import { YCAITheme } from './theme';
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
+import ReactDOM from 'react-dom';
+import { Dashboard } from './components/dashboard/Dashboard';
+import { config } from './config';
+import './i18n';
+import reportWebVitals from './reportWebVitals';
+import { YCAITheme } from './theme';
+
+import './resources/global.css';
+
+debug.enable(config.DEBUG);
 
 ReactDOM.render(
   <React.StrictMode>

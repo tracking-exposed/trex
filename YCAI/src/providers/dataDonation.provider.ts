@@ -1,21 +1,21 @@
+import { debounce } from '@material-ui/core';
 import * as Endpoints from '@shared/endpoints';
 import {
   ADVContributionEvent,
   VideoContributionEvent,
 } from '@shared/models/ContributionEvent';
-import { debounce } from '@material-ui/core';
 import { differenceInSeconds } from 'date-fns';
 import { pipe } from 'fp-ts/lib/function';
 import * as TE from 'fp-ts/lib/TaskEither';
 import _ from 'lodash';
-import { getTimeISO8601 } from '../utils/date.utils';
 import { config } from '../config';
 import { Keypair, Settings } from '../models/Settings';
-import { GetLogger } from '@shared/logger';
+import { getTimeISO8601 } from '../utils/date.utils';
+import { logger } from '../utils/logger.utils';
 import { sendAPIMessage } from './browser.provider';
 import security from './bs58.provider';
 
-const ddLogger = GetLogger('data-donation');
+const ddLogger = logger.extend('data-donation');
 
 const FLUSH_INTERVAL = parseInt(config.DATA_DONATION_FLUSH_INTERVAL, 10);
 

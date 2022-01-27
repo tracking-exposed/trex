@@ -1,15 +1,15 @@
 import * as E from 'fp-ts/lib/Either';
 import { pipe } from 'fp-ts/lib/pipeable';
 import * as TE from 'fp-ts/lib/TaskEither';
-import { Keypair } from '../models/Settings';
-import { GetLogger } from '@shared/logger';
-import { toBrowserError } from './browser.provider';
 import { zencode_exec } from 'zenroom';
+import { Keypair } from '../models/Settings';
+import { logger } from '../utils/logger.utils';
+import { toBrowserError } from './browser.provider';
 import { SecurityProvider } from './security.provider.type';
 
 const conf = 'memmanager=lw';
 
-const zrLogger = GetLogger('zenroom')
+const zrLogger = logger.extend('zenroom');
 
 export const makeKeypair = (
   knownAs: string
@@ -51,5 +51,5 @@ const makeToken = (
 export const security: SecurityProvider = {
   makeKeypair,
   makeToken,
-  makeSignature: () => E.left({ message: 'Not implemented '})
+  makeSignature: () => E.left({ message: 'Not implemented ' }),
 };
