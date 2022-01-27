@@ -12,7 +12,7 @@ import { generateDirectoryStructure } from '@project/index';
 PouchDB.plugin(pouchFind);
 
 export interface Db {
-  save: (snapshot: Snapshot) => Promise<void>;
+  save: (snapshot: Snapshot) => Promise<Snapshot>;
   findAllSnapshots: () => Promise<Snapshot[]>;
 }
 
@@ -54,13 +54,16 @@ export const init = async(projectDirectory: string): Promise<Db> => {
     return snapshots;
   };
 
-  const save = async(snapshot: Snapshot): Promise<void> => {
+  const save = async(snapshot: Snapshot): Promise<Snapshot> => {
     const _id = crypto
       .createHash('sha256')
       .update(JSON.stringify(snapshot))
       .digest('hex');
 
-    await pouch.put({ ...snapshot, _id });
+    const snap = { ...snapshot, _id };
+    await pouch.put(snap);
+
+    return snap;
   };
 
   return {

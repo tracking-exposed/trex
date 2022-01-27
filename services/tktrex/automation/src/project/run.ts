@@ -66,7 +66,10 @@ export const run = async({ projectDirectory }: RunOptions): Promise<void> => {
         logger,
       });
 
-      const saveSnapshot = async(metaData: unknown): Promise<void> => {
+      const saveSnapshot = async(
+        metaData: unknown,
+        parser: (html: string) => unknown[] | Promise<unknown[]>,
+      ): Promise<void> => {
         const snap: Snapshot = {
           type: 'Snapshot',
           experimentType: rawConfig.experimentType,
@@ -77,7 +80,22 @@ export const run = async({ projectDirectory }: RunOptions): Promise<void> => {
           _id: undefined,
         };
 
-        await db.save(snap);
+        const s = await db.save(snap);
+
+        const parsed = (await parser(snap.html)).map((p) => {
+          if (!p || typeof p !== 'object') {
+            throw new Error(
+              `parser returned invalid object: ${JSON.stringify(p)}`,
+            );
+          }
+
+          return {
+            ...p,
+            snapshotId: s._id,
+          };
+        });
+
+        logger.log(parsed);
       };
 
       await experiment.run({

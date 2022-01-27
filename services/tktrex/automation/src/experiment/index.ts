@@ -11,7 +11,10 @@ export interface InitOptions {
 export type RunOptions = InitOptions & {
   page: Page;
   project: MinimalProjectConfig;
-  saveSnapshot: (metaData?: unknown) => Promise<void>;
+  saveSnapshot: (
+    metaData: unknown,
+    parser: (html: string) => unknown[] | Promise<unknown[]>,
+  ) => Promise<void>;
 };
 
 export interface ExperimentDescriptor {

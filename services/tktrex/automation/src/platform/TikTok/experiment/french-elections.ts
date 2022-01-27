@@ -6,6 +6,7 @@ import { ExperimentDescriptor } from '@experiment';
 import { decodeOrThrow } from '@util/fp';
 import { sleep } from '@util/misc';
 import { createHandleCaptcha, ensureLoggedIn } from '@TikTok/util/page';
+import { parseSearchTop } from '@TikTok/parser/index';
 import { loadQueriesCSV } from '@util/csv';
 import { fillInput } from '@util/page';
 import { loadProfileState } from '@project/state';
@@ -77,7 +78,7 @@ export const FrenchElections: ExperimentDescriptor = {
       await saveSnapshot({
         baseURL: project.baseURL,
         query,
-      });
+      }, parseSearchTop);
     }
 
     return page;
