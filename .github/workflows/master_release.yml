@@ -37,7 +37,7 @@ jobs:
 
       - name: Build Dashboard
         env:
-          DOTENV_CONFIG_PATH: .env.beta
+          DOTENV_CONFIG_PATH: .env
         run: yarn ycai build
 
       - name: Deploy YCAI Dashboard

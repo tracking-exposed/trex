@@ -30,6 +30,7 @@ jobs:
       - name: Build Dashboard
         env:
           DOTENV_CONFIG_PATH: .env.beta
+          DEBUG: "@trex*,@YCAI*"
         run: yarn ycai build
 
       - name: Next Release
