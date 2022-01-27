@@ -2,6 +2,7 @@
   "extends": "../tsconfig.json",
   "compilerOptions": {
     "allowJs": true,
+    "composite": true,
     "strict": true,
     "noEmit": false,
     "target": "ES3",

@@ -1,0 +1,40 @@
+{
+  "extends": "../../../tsconfig.json",
+  "compilerOptions": {
+    "allowJs": true,
+    "baseUrl": "./src",
+    "esModuleInterop": true,
+    "jsx": "react",
+    "module": "CommonJS",
+    "moduleResolution": "node",
+    "noEmit": true,
+    "noImplicitAny": true,
+    "outDir": "./dist",
+    "resolveJsonModule": true,
+    "strict": true,
+    "strictNullChecks": true,
+    "target": "es2015",
+    "paths": {
+      "@shared/*": ["../../../../packages/shared/src/*"],
+      "@tktrex/*": ["../../shared/src/*"],
+      "@guardoni/*": ["../../../../guardoni/src/*"],
+      "@experiment/*": ["./experiment/*"],
+      "@experiment": ["./experiment/index"],
+      "@project/*": ["./project/*"],
+      "@project": ["./project/index"],
+      "@scraper/*": ["./scraper/*"],
+      "@scraper": ["./scraper/index"],
+      "@util/*": ["./util/*"],
+      "@TikTok/*": ["./platform/TikTok/*"]
+    }
+  },
+  "references": [
+    { "path": "../../../packages/shared" },
+    { "path": "../shared" },
+    { "path": "../../../guardoni" }
+  ],
+  "ts-node": {
+    "require": ["tsconfig-paths/register"]
+  },
+  "exclude": ["node_modules", "dist"]
+}

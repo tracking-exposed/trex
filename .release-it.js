@@ -32,11 +32,14 @@ module.exports = {
   git: {
     requireUpstream: false,
     commitMessage: 'release: ${version} CHANGELOG [skip ci]',
+    requireCleanWorkingDir: false,
   },
   github: {
     release: true,
     assets: [
       'extension/dist/*.zip',
+      // ignore extension build for guardoni
+      '!extension/dist/guardoni-*.zip',
       'guardoni/dist/*.deb',
       'guardoni/dist/*.exe',
       'guardoni/dist/*.dmg',

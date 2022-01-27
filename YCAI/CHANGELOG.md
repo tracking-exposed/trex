@@ -1,35 +1,4 @@
 # [1.11.0-beta.1](https://github.com/tracking-exposed/yttrex/compare/v1.10.2-beta.1...v1.11.0-beta.1) (2022-01-20)
- (release: 1.11.0-beta.1 CHANGELOG [skip ci])
-
-### Bug Fixes
-
-- a consistency bug in CSV generation: not always the music is present ([18a5139](https://github.com/tracking-exposed/yttrex/commit/18a51396293717fdac9d6d841ec4d63915b1b7e1))
-- added sentence to injected hide all ([#261](https://github.com/tracking-exposed/yttrex/issues/261)) ([9a7ed93](https://github.com/tracking-exposed/yttrex/commit/9a7ed93272b797a77236d33bcd395d866c4e73a3))
-- additional improvement to search reliability. fixed public search API ([a28309e](https://github.com/tracking-exposed/yttrex/commit/a28309eccb94ef8552a0769314980703352cbc0e))
-- column default width ([#290](https://github.com/tracking-exposed/yttrex/issues/290)) ([6138efa](https://github.com/tracking-exposed/yttrex/commit/6138efa9c54e3fe195232531c3bc05d54d2a6a07))
-- defined summary queries for tik tok ([#281](https://github.com/tracking-exposed/yttrex/issues/281)) ([4168759](https://github.com/tracking-exposed/yttrex/commit/4168759e0fa360642d2451133cf58ed08b00136d))
-- dev build command ([#284](https://github.com/tracking-exposed/yttrex/issues/284)) ([216bc8c](https://github.com/tracking-exposed/yttrex/commit/216bc8cae9f8b5d9323f12792156377b7bf38650))
-- extension build ([#275](https://github.com/tracking-exposed/yttrex/issues/275)) ([845feeb](https://github.com/tracking-exposed/yttrex/commit/845feebee7358a233e669d8dda34981d2ff0cd9f))
-- guardoni electron form ui ([#274](https://github.com/tracking-exposed/yttrex/issues/274)) ([954680f](https://github.com/tracking-exposed/yttrex/commit/954680f7dca8045be2ec8d141d811951ab4099b9))
-- guardoni link update for new extension version the produce publicKey ([#267](https://github.com/tracking-exposed/yttrex/issues/267)) ([d9e136e](https://github.com/tracking-exposed/yttrex/commit/d9e136e4cf87c059d1bf3886d3dda5dfc0ae3513))
-- handle tiktok /v2/searches query ([#286](https://github.com/tracking-exposed/yttrex/issues/286)) ([6a7616a](https://github.com/tracking-exposed/yttrex/commit/6a7616a07d2241fcd49bf529bb4eb5f5df74a897))
-- imported a library call in count-o-clock [#299](https://github.com/tracking-exposed/yttrex/issues/299) ([ff1ece6](https://github.com/tracking-exposed/yttrex/commit/ff1ece6f50e672057338682ef53a5ff120592e56))
-- released extension 0.2.5 and link produces search personal CSV ([#288](https://github.com/tracking-exposed/yttrex/issues/288)) ([e68797d](https://github.com/tracking-exposed/yttrex/commit/e68797d4ee9bf91f637f212462198cae2d9ce13f))
-- taboule tik tok personal api compatibility ([1aa8dd8](https://github.com/tracking-exposed/yttrex/commit/1aa8dd8bee8c80a35851558d3f6d230739654a45))
-- use current domain for YCAI api ([#303](https://github.com/tracking-exposed/yttrex/issues/303)) ([4a04722](https://github.com/tracking-exposed/yttrex/commit/4a04722570dc1480d76e9854a8818adf5fae3454))
-- **ycai:** decrease logging verbosity ([8e6bc0f](https://github.com/tracking-exposed/yttrex/commit/8e6bc0fa759fda06fdad24ac8d216a69b5db18d4))
-
-### Features
-
-- add external source in recommendations ([#260](https://github.com/tracking-exposed/yttrex/issues/260)) ([c749369](https://github.com/tracking-exposed/yttrex/commit/c749369fec812f0912df85706159965dad37a9e8))
-- enforce node engine 16 ([#262](https://github.com/tracking-exposed/yttrex/issues/262)) ([79b838e](https://github.com/tracking-exposed/yttrex/commit/79b838e0ad7a3fe2845779ab789d2f9fd23918cd))
-- guardoni in electron ([#265](https://github.com/tracking-exposed/yttrex/issues/265)) ([89a8a9e](https://github.com/tracking-exposed/yttrex/commit/89a8a9e606850a8992e73bfdc88f662d4e8f62e0))
-- other three 1280x800 pictures for store [@spaghettinucleari](https://github.com/spaghettinucleari) ([#287](https://github.com/tracking-exposed/yttrex/issues/287)) ([8fd401c](https://github.com/tracking-exposed/yttrex/commit/8fd401ccb3cfad41b35d667289c77feb91c42ffd))
-- support ytkids, thumbnail. enhance experiment, review personalRelated; guardoni new options ([367ceb6](https://github.com/tracking-exposed/yttrex/commit/367ceb6b1df9ee0d116aae94550ed7a904916ab8))
-- supported search collection, parsing and error matching. not very clean pattern ([7e3600d](https://github.com/tracking-exposed/yttrex/commit/7e3600d161ae49cc4e0766c3ce4afd9a03522408))
-- taboule component ([#268](https://github.com/tracking-exposed/yttrex/issues/268)) ([f7dad08](https://github.com/tracking-exposed/yttrex/commit/f7dad08ac64860f381f92ec388b71614d64bbeb9))
-
-# [1.11.0-beta.1](https://github.com/tracking-exposed/yttrex/compare/v1.10.2-beta.1...v1.11.0-beta.1) (2022-01-20)
 
 ### Bug Fixes
 
@@ -57,16 +26,6 @@
 - support ytkids, thumbnail. enhance experiment, review personalRelated; guardoni new options ([367ceb6](https://github.com/tracking-exposed/yttrex/commit/367ceb6b1df9ee0d116aae94550ed7a904916ab8))
 - supported search collection, parsing and error matching. not very clean pattern ([7e3600d](https://github.com/tracking-exposed/yttrex/commit/7e3600d161ae49cc4e0766c3ce4afd9a03522408))
 - taboule component ([#268](https://github.com/tracking-exposed/yttrex/issues/268)) ([f7dad08](https://github.com/tracking-exposed/yttrex/commit/f7dad08ac64860f381f92ec388b71614d64bbeb9))
-
-## [1.10.3](https://github.com/tracking-exposed/yttrex/compare/v1.10.2...v1.10.3) (2022-01-21)
-
-## [1.10.2](https://github.com/tracking-exposed/yttrex/compare/v1.10.1...v1.10.2) (2022-01-21)
-
-### Bug Fixes
-
-* removed the alarm permission ([#255](https://github.com/tracking-exposed/yttrex/issues/255)) ([885129e](https://github.com/tracking-exposed/yttrex/commit/885129e1a074cf2468bb8819e85145231602dcea))
-* show related channels with percentage in analytics ([#258](https://github.com/tracking-exposed/yttrex/issues/258)) ([0f18baa](https://github.com/tracking-exposed/yttrex/commit/0f18baa97cff400b4500c74b90a1a724e00f4cab))
-* various small things ([#257](https://github.com/tracking-exposed/yttrex/issues/257)) ([1c1e6a7](https://github.com/tracking-exposed/yttrex/commit/1c1e6a7204f6222b7e6ad5bec2570e9582d6ba0d))
 
 ## [1.10.2-beta.1](https://github.com/tracking-exposed/yttrex/compare/v1.10.1...v1.10.2-beta.1) (2021-12-14)
 
