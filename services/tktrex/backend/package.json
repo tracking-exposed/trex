@@ -20,10 +20,10 @@
     "express": "^4.17.1",
     "food-words": "^1.1.0",
     "jquery": "^3.5.1",
-    "jsdom": "^12.0.0",
+    "jsdom": "^13.2.0",
     "lodash": "^4.17.21",
     "moment": "^2.29.1",
-    "mongodb": "^4.1.4",
+    "mongodb": "^4.3.1",
     "nacl-signature": "^1.0.0",
     "nconf": "^0.8.4",
     "node-fetch": "^2.6.1",
@@ -33,7 +33,7 @@
   "devDependencies": {
     "@types/express": "^4.17.13",
     "@types/lodash": "^4.14.178",
-    "@types/node": "^17.0.8",
+    "@types/node": "^16.11.21",
     "ts-node": "^10.4.0",
     "ts-node-dev": "^1.1.8",
     "typescript": "^4.5.4"
