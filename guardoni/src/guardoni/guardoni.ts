@@ -600,7 +600,7 @@ const checkProfile =
 
       if (profiles.length === 0) {
         const profileName =
-          conf.evidenceTag ?? `guardoni-${format(new Date(), 'YYYY-MM-DD')}`;
+          conf.evidenceTag ?? `guardoni-${format(new Date(), 'yyyy-MM-dd')}`;
         ctx.logger.debug('Creating profile %O in %s', profileName, basePath);
         return ensureProfileExistsAtPath(basePath, profileName);
       }
@@ -926,13 +926,8 @@ export const GetGuardoni: GetGuardoni = ({
   logger,
 }): TE.TaskEither<AppError, Guardoni> => {
   const loggerSpaces = config.verbose
-    ? [
-        'guardoni::info',
-        'guardoni::debug',
-        'guardoni::error',
-        process.env.DEBUG,
-      ]
-    : ['guardoni::info', 'guardoni::error', process.env.DEBUG];
+    ? ['guardoni:info', 'guardoni:debug', 'guardoni:error', process.env.DEBUG]
+    : ['guardoni:info', 'guardoni:error', process.env.DEBUG];
 
   debug.enable(loggerSpaces.join(','));
 
