@@ -13,9 +13,7 @@ import {
 
 import { useTranslation } from 'react-i18next';
 
-import {
-  getYTMaxResThumbnailById,
-} from '../../../utils/yt.utils';
+import { getYTMaxResThumbnailById } from '../../../utils/yt.utils';
 
 import { YCAITheme } from '../../../theme';
 
@@ -38,7 +36,7 @@ const useStyles = makeStyles<YCAITheme>((theme) => ({
     '& img:hover': {
       cursor: 'pointer',
     },
-    boxShadow: "none",
+    boxShadow: 'none',
   },
   link: {
     '&:hover': {
@@ -50,16 +48,16 @@ const useStyles = makeStyles<YCAITheme>((theme) => ({
     boxOrient: 'vertical',
     lineClamp: 2,
     wordBreak: 'keep-all',
-    overflow: 'hidden'
+    overflow: 'hidden',
   },
   manage: {
     paddingTop: '6px',
     lineHeight: 1,
     minWidth: 0,
     '&:hover': {
-      background: 'inherit'
-    }
-  }
+      background: 'inherit',
+    },
+  },
 }));
 
 export const VideoCard: React.FC<VideoCardProps> = ({
@@ -79,8 +77,12 @@ export const VideoCard: React.FC<VideoCardProps> = ({
         title={title}
         height={120}
         onClick={openRecommendations}
+        referrerPolicy="no-referrer"
       />
-      <CardContent style={{ paddingBottom: theme.spacing(0.3) }} classes={{root: classes.customBox}}>
+      <CardContent
+        style={{ paddingBottom: theme.spacing(0.3) }}
+        classes={{ root: classes.customBox }}
+      >
         <Link
           color="textSecondary"
           className={classes.link}
@@ -93,7 +95,12 @@ export const VideoCard: React.FC<VideoCardProps> = ({
           {title}
         </Link>
       </CardContent>
-      <CardActions style={{ paddingLeft: theme.spacing(1.5), paddingTop: theme.spacing(0)}}>
+      <CardActions
+        style={{
+          paddingLeft: theme.spacing(1.5),
+          paddingTop: theme.spacing(0),
+        }}
+      >
         <Button
           color="primary"
           variant="text"
