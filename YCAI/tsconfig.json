@@ -27,12 +27,16 @@
     "moduleResolution": "Node",
     "isolatedModules": true,
     "paths": {
-      "@shared/*": ["../../packages/shared/src/*"]
+      "@shared/*": ["../../packages/shared/src/*"],
+      "@taboule/*": ["../../packages/taboule/src/*"]
     }
   },
   "references": [
     {
       "path": "../packages/shared"
+    },
+    {
+      "path": "../packages/taboule"
     }
   ],
   "include": [

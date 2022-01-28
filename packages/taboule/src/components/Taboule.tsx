@@ -45,11 +45,13 @@ export interface TabouleProps<Q extends keyof TabouleQueries>
   pageSize?: number;
   initialParams?: any;
   columns?: GridColTypeDef[];
+  height?: number | string;
 }
 
-export const Taboule = <Q extends keyof TabouleQueries>(
-  props: TabouleProps<Q>
-): JSX.Element => {
+export const Taboule = <Q extends keyof TabouleQueries>({
+  height = 600,
+  ...props
+}: TabouleProps<Q>): JSX.Element => {
   const propsValidation = validateProps(props);
 
   if (propsValidation._tag === 'Left') {
@@ -148,7 +150,7 @@ export const Taboule = <Q extends keyof TabouleQueries>(
   log.debug(`Query %s (%O) with params %O`, queryKey, query, params);
 
   return (
-    <Box>
+    <Box height={height}>
       {paramsInputs}
       <WithQueries
         queries={{ query }}

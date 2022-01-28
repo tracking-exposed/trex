@@ -1,10 +1,12 @@
 {
   "extends": "../../tsconfig.json",
   "compilerOptions": {
+    "composite": true,
     "module": "esnext",
+    "outDir": "build",
     "target": "es5",
     "jsx": "react",
-    "noEmit": true,
+    "noEmit": false,
     "allowJs": true,
     "strict": true,
     "esModuleInterop": true,

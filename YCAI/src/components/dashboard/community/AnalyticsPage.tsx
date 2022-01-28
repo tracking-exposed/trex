@@ -1,22 +1,23 @@
 import { Card, CardContent, CardHeader, useTheme } from '@material-ui/core';
 import Grid from '@material-ui/core/Grid';
+import { ErrorBox } from '@shared/components/Error/ErrorBox';
 import { ContentCreator } from '@shared/models/ContentCreator';
+import { Taboule } from '@taboule/components/Taboule';
 import * as QR from 'avenger/lib/QueryResult';
 import { declareQueries, WithQueries } from 'avenger/lib/react';
 import { pipe } from 'fp-ts/lib/function';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
+import { config } from '../../../config';
 import {
   ccRelatedUsers,
   profile,
 } from '../../../state/dashboard/creator.queries';
 import { makeStyles } from '../../../theme';
-import { ErrorBox } from '@shared/components/Error/ErrorBox';
 import { LazyFullSizeLoader } from '../../common/FullSizeLoader';
 import { LinkAccountButton } from '../../common/LinkAccountButton';
 import { StatsCard } from '../../common/StatsCard';
 import { ADVChannelStatsBox } from './ADVChannelStatsBox';
-import { CCRelatedUserList } from './CCRelatedUserList';
 import { DonutChart } from './DonutChart';
 
 const useStyles = makeStyles((theme) => ({
@@ -140,11 +141,18 @@ const CreatorAnalyticsPage: React.FC<CreatorAnalyticsPageProps> = ({
                       })}
                     />
                     <CardContent style={{ paddingTop: 0 }}>
-                      <CCRelatedUserList channels={stats.content} />
+                      <Taboule
+                        height={500}
+                        showInput={false}
+                        query="ccRelatedUsers"
+                        baseURL={config.API_URL}
+                        initialParams={{
+                          channelId: profile.channelId,
+                        }}
+                      />
                     </CardContent>
                   </Card>
                 </Grid>
-
                 <Grid item md={12}>
                   <ADVChannelStatsBox />
                 </Grid>
