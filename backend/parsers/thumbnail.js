@@ -3,6 +3,7 @@ const debug = require('debug')('parsers:thumbnail');
 const fs = require('fs');
 const path = require('path');
 const fetch = require('node-fetch');
+const nconf = require('nconf');
 
 /* if(!nconf.get('thumbnails')) {
      console.log("WRONG CONFIGURATION SETTINGS!! missing 'downloads' from", cwd);
@@ -65,6 +66,11 @@ async function downloadFromVideoId(videoIds) {
 }
 
 async function conditionalDownload(analysis) {
+  if (nconf.get('NO_DOWNLOAD')) {
+    debug('Thumbnail disabled by nconf variable!');
+    return null;
+  }
+
   const retval = [];
   for (const entry of analysis) {
     if (entry?.length > 0 && entry[1]?.experiment?.experimentId) {
