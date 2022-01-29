@@ -31,16 +31,31 @@ function dissectVideoAndParents(video, i) {
   const position = i + 1;
   const thuhref = video.querySelector('a#thumbnail');
   const href = thuhref.getAttribute('href');
-  if (href.length !== 20)
-    debuge('Not a standard direct link? %s in position %d', href, position);
 
-  const videoId = href.substr(9);
+  const urlo = _.startsWith(href, 'http')
+    ? new URL(href)
+    : new URL('https://www.youtube.com' + href);
+
+  const linkedInfo = {
+    videoId: urlo.searchParams.get('v'),
+  };
+
+  if (href.length !== 20) {
+    if (!urlo.searchParams.get('t').length)
+      debuge('this params is not a time offset? %s', href);
+    else linkedInfo.offset = urlo.searchParams.get('t');
+  }
+
   const authorInfo = _.reduce(
     video.querySelectorAll('a'),
     function (memo, aele) {
       const linkto = aele.getAttribute('href');
       if (!linkto || !linkto.length || !aele.textContent.length) return memo;
-      if (linkto.match(/^\/channel/) || linkto.match(/^\/user/)) {
+      if (
+        linkto.match(/^\/channel\//) ||
+        linkto.match(/^\/user\//) ||
+        linkto.match(/^\/c\//)
+      ) {
         memo.authorName = aele.textContent;
         memo.authorSource = linkto;
       }
@@ -73,7 +88,7 @@ function dissectVideoAndParents(video, i) {
       ...authorInfo,
       sectionName,
       href,
-      videoId,
+      ...linkedInfo,
       views: arinfo.views,
       arialabel,
       isLive,
@@ -111,9 +126,10 @@ function process(envelop) {
   const results = _.compact(dissected);
   if (dissected.length !== results.length) {
     debuge(
-      'From %d potential vidoes only %d were extracted: rejecting',
+      'From %d potential vidoes only %d were extracted: rejecting (lang %o)',
       dissected.length,
-      results.length
+      results.length,
+      envelop.impression.blang
     );
     return null;
   }
