@@ -69,9 +69,11 @@ const toMenuItem = (
   return (
     <ListItem
       key={d.views[0]}
-      className={
-        `${d.views.includes(currentView.view) ? d.selectedClassName : d.notSelectedClassName} ${d.className}`
-      }
+      className={`${
+        d.views.includes(currentView.view)
+          ? d.selectedClassName
+          : d.notSelectedClassName
+      } ${d.className}`}
       button={true}
       onClick={doUpdateCurrentView({ view: d.views[0] as any })}
     >
@@ -86,8 +88,9 @@ const toMenuItem = (
         style={{
           lineHeight: 1,
           margin: 0,
-          textTransform: 'uppercase'
-      }}>
+          textTransform: 'uppercase',
+        }}
+      >
         {d.title}
       </Typography>
     </ListItem>
@@ -126,7 +129,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ currentView, profile }) => {
         <>
           <UserProfileBox />
 
-          <Divider light className={classes.divider}/>
+          <Divider light className={classes.divider} />
 
           <List className={classes.routesList} disablePadding={true}>
             {[
@@ -134,6 +137,11 @@ export const Sidebar: React.FC<SidebarProps> = ({ currentView, profile }) => {
                 title: t('routes:lab_title_short'),
                 icon: LabIcon,
                 views: ['lab', 'labEdit'] as Array<CurrentView['view']>,
+              },
+              {
+                title: t('routes:recommendations_library_title_short'),
+                icon: LabIcon,
+                views: ['recommendationsLibrary'] as Array<CurrentView['view']>,
               },
               {
                 title: t('routes:analytics'),

@@ -22,6 +22,7 @@ import { Lab } from './lab/Lab';
 import { LabVideoEdit } from './lab/LabVideoEdit';
 import { ContentCreator } from '@shared/models/ContentCreator';
 import { AuthResponse } from '@shared/models/Auth';
+import RecommendationsLibrary from './lab/RecommendationsLibrary';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -78,6 +79,13 @@ const DashboardContent: React.FC<DashboardContentProps> = ({
           }
 
           switch (currentView.view) {
+            case 'recommendationsLibrary':
+              return [
+                t('routes:recommendations_library_title'),
+                t('routes:recommendations_library_subtitle'),
+                // eslint-disable-next-line react/jsx-key
+                <RecommendationsLibrary />,
+              ];
             case 'labEdit':
               return [
                 t('routes:lab_title'),

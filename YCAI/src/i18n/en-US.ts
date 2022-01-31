@@ -66,6 +66,10 @@ const resources: CustomTypeOptions['resources'] = {
       'Click on a video to pick its recommendations.\nYour content, your choice!',
     lab_edit_subtitle:
       'Paste a link in the grey box below to add it to the recommendations of this video.\nYou can add recommendations towards any website!',
+    recommendations_library_title_short: 'Recommendations',
+    recommendations_library_subtitle: 'Recommendations Library',
+    recommendations_library_title:
+      'All the recommendations added by you will be linked to your videos',
     analytics: 'Analytics',
     settings: 'Settings',
     link_account:

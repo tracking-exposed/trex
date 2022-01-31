@@ -9,19 +9,15 @@ import {
   Button,
   TextField,
   Typography,
-  Divider,
 } from '@material-ui/core';
-
 import { makeStyles } from '@material-ui/styles';
-
-import { addRecommendationForVideo } from '../../../state/dashboard/creator.commands';
 import { YCAITheme } from '../../../theme';
 
 interface AddRecommendationBoxProps {
-  videoId: string;
+  onAddClick: (recommendationURL: string) => void;
 }
 
-const useStyles = makeStyles<YCAITheme>(theme => ({
+const useStyles = makeStyles<YCAITheme>((theme) => ({
   root: {
     backgroundColor: 'transparent',
     boxShadow: 'none',
@@ -35,7 +31,7 @@ const useStyles = makeStyles<YCAITheme>(theme => ({
     },
     '& textarea': {
       color: theme.palette.text.secondary,
-    }
+    },
   },
   title: {
     marginBottom: theme.spacing(1),
@@ -47,55 +43,52 @@ const useStyles = makeStyles<YCAITheme>(theme => ({
   },
 }));
 
-const AddRecommendationBox: React.FC<AddRecommendationBoxProps> = ({ videoId }) => {
+const AddRecommendationBox: React.FC<AddRecommendationBoxProps> = ({
+  onAddClick,
+}) => {
   const { t } = useTranslation();
   const [recommendationURL, setRecommendationURL] = React.useState('');
   const classes = useStyles();
 
-  const onAddClick = async (): Promise<void> => {
-    void addRecommendationForVideo({
-      videoId, recommendationURL,
-    }, {
-      videoRecommendations: { videoId },
-    })();
+  const handleClick = async (): Promise<void> => {
+    onAddClick(recommendationURL);
     setRecommendationURL('');
   };
 
   return (
-      <Card className={classes.root} >
-        <CardContent style={{paddingLeft: '0px', paddingTop: '0px'}}>
-        <Divider light style={{marginBottom: '24px' }}/>
-          <Typography
-            className={classes.title}
+    <Card className={classes.root}>
+      <CardContent style={{ paddingLeft: '0px', paddingTop: '0px' }}>
+        <Typography
+          className={classes.title}
+          color="primary"
+          component="h2"
+          variant="h5"
+        >
+          {t('recommendations:add_to_video')}
+        </Typography>
+        <Box display="flex" alignItems="center">
+          <TextField
+            className={classes.textField}
+            label={t('recommendations:url')}
+            placeholder={t('recommendations:url_placeholder')}
+            multiline
+            value={recommendationURL}
+            onChange={(v) => setRecommendationURL(v.target.value)}
+            variant="filled"
             color="primary"
-            component="h2"
-            variant="h5"
+            focused
+          />
+          <Button
+            className={classes.addButton}
+            variant="contained"
+            color="primary"
+            onClick={handleClick}
           >
-            {t('recommendations:add_to_video')}
-          </Typography>
-          <Box display="flex" alignItems="center">
-            <TextField
-              className={classes.textField}
-              label={t('recommendations:url')}
-              placeholder={t('recommendations:url_placeholder')}
-              multiline
-              value={recommendationURL}
-              onChange={(v) => setRecommendationURL(v.target.value)}
-              variant="filled"
-              color="primary"
-              focused
-            />
-            <Button
-              className={classes.addButton}
-              variant="contained"
-              color="primary"
-              onClick={onAddClick}
-            >
-              {t('actions:add')}
-            </Button>
-          </Box>
-        </CardContent>
-      </Card>
+            {t('actions:add')}
+          </Button>
+        </Box>
+      </CardContent>
+    </Card>
   );
 };
 
