@@ -1,6 +1,7 @@
 import { Grid } from '@material-ui/core';
-import { YTVideo } from '../../common/YTVideo';
 import * as React from 'react';
+import { addRecommendationForVideo } from 'state/dashboard/creator.commands';
+import { YTVideo } from '../../common/YTVideo';
 import AddRecommendationBox from './AddRecommendationBox';
 import { VideoRecommendations } from './VideoRecommendations';
 
@@ -8,9 +9,18 @@ interface LabVideoEditProps {
   videoId: string;
 }
 
-export const LabVideoEdit: React.FC<LabVideoEditProps> = ({
-  videoId,
-}) => {
+export const LabVideoEdit: React.FC<LabVideoEditProps> = ({ videoId }) => {
+  const onRecommendationAdd = React.useCallback((recommendationURL: string) => {
+    void addRecommendationForVideo(
+      {
+        videoId,
+        recommendationURL,
+      },
+      {
+        videoRecommendations: { videoId },
+      }
+    )();
+  }, []);
 
   return (
     <Grid container spacing={4} alignItems="flex-start">
@@ -19,7 +29,7 @@ export const LabVideoEdit: React.FC<LabVideoEditProps> = ({
           <YTVideo videoId={videoId} />
         </Grid>
         <Grid item xs={12}>
-          <AddRecommendationBox videoId={videoId} />
+          <AddRecommendationBox onAddClick={onRecommendationAdd} />
         </Grid>
       </Grid>
       <Grid item lg={5} md={5} xs={12}>
