@@ -29,11 +29,11 @@ module.exports = {
   },
   transform: {
     ...jsWithTsESM.transform,
-    '\\.js$': 'ts-jest',
+    // '\\.js$': 'ts-jest',
   },
-  transformIgnorePatterns: [
-    'node_modules/(?!(node-fetch|data-uri-to-buffer|fetch-blob|formdata-polyfill)/)',
-  ],
+  // transformIgnorePatterns: [
+  //   'node_modules/(?!(node-fetch|data-uri-to-buffer|fetch-blob|formdata-polyfill)/)',
+  // ],
   clearMocks: true,
   testTimeout: 10000,
   setupFilesAfterEnv: ['./jest.setup.js'],
