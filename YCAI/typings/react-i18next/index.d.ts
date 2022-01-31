@@ -163,6 +163,9 @@ declare module 'react-i18next' {
         lab_title_short: string;
         lab_subtitle: string;
         lab_edit_subtitle: string;
+        recommendations_library_title: string;
+        recommendations_library_title_short: string;
+        recommendations_library_subtitle: string;
         analytics: string;
         settings: string;
         link_account: string;
