@@ -41,9 +41,9 @@ function dissectVideoAndParents(video, i) {
   };
 
   if (href.length !== 20) {
-    if (!urlo.searchParams.get('t').length)
-      debuge('this params is not a time offset? %s', href);
-    else linkedInfo.offset = urlo.searchParams.get('t');
+    if (urlo.searchParams.get('t') && urlo.searchParams.get('t').length)
+      linkedInfo.offset = urlo.searchParams.get('t');
+    else debuge('this params is not a time offset? %s', href);
   }
 
   const authorInfo = _.reduce(

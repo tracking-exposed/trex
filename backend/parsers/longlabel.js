@@ -578,7 +578,6 @@ function parser(l, source, isLive) {
 
   if (!langi) {
     debuge("Not seen any known 'sostantivo' in %s", l);
-    process.exit(1);
     throw new Error('1> locale not found! [' + viewssost + ']');
   }
 
