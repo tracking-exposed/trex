@@ -21,6 +21,7 @@ const relativeConMapping = [
       'segundos',
       'másodperc',
       'sekund',
+      '秒钟',
     ],
   },
   {
@@ -41,6 +42,7 @@ const relativeConMapping = [
       'perc',
       'minut',
       'minuta',
+      '分钟',
     ],
   },
   {
@@ -67,6 +69,7 @@ const relativeConMapping = [
       'órája',
       'godzina',
       'godzin',
+      '小时', // unsure
     ],
   },
   {
@@ -176,6 +179,40 @@ const relativeConMapping = [
     ],
   },
 ];
+
+function chinesecomma(label, sosta, isLive) {
+  // call as { views, liveStatus } = langi.viewcount(l, langi.sostantivo, isLive);
+  const regmap = {
+    variation: new RegExp(`\\d{4}${sosta}$`),
+    hundred: new RegExp(`\\d{1,3}${sosta}$`),
+    thousand: new RegExp(`\\d{1,3},\\d{3}${sosta}$`),
+    million: new RegExp(`\\d{1,3},\\d{3},\\d{3}${sosta}$`),
+    gangamstyle: new RegExp(`\\d{1,2},\\d{3},\\d{3},\\d{3}${sosta}$`),
+    // some language (only chinese at the moment) don't need the space
+    // between the number and the sostantivo 'views'
+  };
+  const unexpected = '：';
+  const splitted = label.split(unexpected);
+  const lastChunk = splitted.pop();
+  const reducedLabel = splitted.join(unexpected);
+  // console.log(label, "\n", reducedLabel, "\n", lastChunk);
+  label.split(unexpected).pop();
+  const views = _.reduce(
+    regmap,
+    function (memo, rge, name) {
+      const match = rge.exec(lastChunk);
+      if (match) {
+        memo = _.parseInt(match[0].replace(sosta, '').replace(/,/g, '').trim());
+        // debug("comma,match <%s> %s memo %s reduced %s", name, match, memo, label.substr(0, match.index));
+      }
+      return memo;
+    },
+    -1
+  );
+  if (views < 0) throw new Error('failure in regexp parsing (chinesecomma)');
+  // console.log("reduced: ",reducedLabel);
+  return { views, isLive, reducedLabel };
+}
 
 function comma(label, sosta, isLive) {
   // call as { views, liveStatus } = langi.viewcount(l, langi.sostantivo, isLive);
@@ -315,6 +352,13 @@ const langopts = [
     locale: 'nn',
     viewcount: dots,
   }, // norvegian
+  {
+    sostantivo: '次',
+    separator: '上傳者',
+    locale: 'cn',
+    viewcount: chinesecomma,
+  },
+  // { sostantivo: '次', separator: '上上傳傳者者', locale: 'cn', viewcount: chinesecomma },
   { sostantivo: 'vues', separator: 'de', locale: 'fr', viewcount: empty },
   { sostantivo: 'vue', separator: 'de', locale: 'fr', viewcount: empty },
   { sostantivo: 'ganger', separator: 'av', locale: 'nn', viewcount: empty }, // it is "times" not visualization in norwegian
@@ -516,9 +560,14 @@ function parser(l, source, isLive) {
   if (!_.size(source)) throw new Error('No source');
 
   sanityCheck(l);
+  // this works for latin words
   const viewssost = _.last(l.split(' '));
+  // and this for chinese
+  const chinasost = l.split('').pop();
 
   let langi = _.find(langopts, { sostantivo: viewssost });
+  if (!langi) langi = _.find(langopts, { sostantivo: chinasost });
+
   if (!langi) {
     const specialfinal = viewssost.substr(_.size(viewssost) - 4, 4);
     langi = _.find(langopts, { sostantivo: specialfinal });
@@ -528,7 +577,8 @@ function parser(l, source, isLive) {
   // if(!langi) debugger;
 
   if (!langi) {
-    // debuge("Not seen any known 'sostantivo' in %s", l);
+    debuge("Not seen any known 'sostantivo' in %s", l);
+    process.exit(1);
     throw new Error('1> locale not found! [' + viewssost + ']');
   }
 
