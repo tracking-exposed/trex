@@ -63,7 +63,7 @@ const resources: CustomTypeOptions['resources'] = {
     lab_title: 'LAB - Choose the Recommendations on Your Videos',
     lab_title_short: 'LAB',
     lab_subtitle:
-      'Click on one video below to pick and order the recommendations \nyou want to display in the side bar. Your content, your choice!',
+      'Click on a video to pick its recommendations.\nYour content, your choice!',
     lab_edit_subtitle:
       'Paste a link in the grey box below to add it to the recommendations of this video.\nYou can add recommendations towards any website!',
     analytics: 'Analytics',
@@ -83,19 +83,18 @@ const resources: CustomTypeOptions['resources'] = {
   link_account: {
     title: 'Authenticate your YouTube channel.',
     subtitle:
-      'Authenticate the channel you own with this 1 min procedure to start choosing the recommendations on your videos.',
-    label:
-      'Authenticate your YouTube channel to start choosing your recommendations',
+      'Follow these 2 steps in 1 min to start choosing recommendations on your videos:',
+    label: 'Authenticate your YouTube channel',
     copy_verification_key:
-      "Copy and paste this unique key in your channel's description",
+      'Copy paste this unique code in your channel description',
     verification_code_hint:
-      "Click <1>here to access to your YouTube Studio</1> and edit your channel description.\nJust paste the link anywhere in it and click the Publish button on the top right.\nYou can remove the code from your channel's description after the verification is finished.",
-    paste_channel_url: "Paste your YouTube Channel's URL or ID:",
+      "<1>Click here to edit your channel description</1> from YouTube Studio.\n\nPaste the code anywhere in the description and click 'publish' on the top right.\n\nYou can remove this code after the verification is finished.",
+    paste_channel_url: '- Paste the URL or ID of your YouTube Channel:',
     verification_failed: 'Oops, the channel authentication failed!',
     verification_failed_hint:
-      "Please double-check that you have published the code\nin your channel's description and try again.",
+      'Please check that you have published the code\nin your channel description and try again.',
     go_back_to_step_one_hint:
-      'If the verification keeps failing, <1>go back to step one</1> and make sure\nyou have pasted the correct URL of your YouTube channel.',
+      'If the verification keeps failing, <1>click CLEAR</1> and make sure\nyou have pasted the correct URL of your YouTube channel.',
     channel_not_found:
       "We couldn't find a channel with the ID you provided.\nPlease make sure the URL or ID you pasted is correct.",
     already_have_token:
@@ -127,21 +126,20 @@ const resources: CustomTypeOptions['resources'] = {
   dashboard: { title: 'Youchoose Creator Studio' },
   popup: { version: 'version {{version}} build {{date}}' },
   analytics: {
-    subtitle: 'Statistics computed with resources from other users',
+    subtitle: 'Statistics computed thanks to user data donations',
     recommendability_score_title: 'Recommendability Score',
     recommendability_score_subtitle:
-      'Where your videos appears as recommended?',
+      'How much does YouTube promote your content?',
     recommendations_title: 'Recommendations Analyzed',
     recommendations_for_other_channels: 'From other channels',
     total_recommendations: 'Total recommendations',
     total_metadata: 'Total metadata',
     notifications_title: 'Notifications',
     top_n_cc_related_to_your_channel:
-      'Top {{count}} CC related to your channel',
+      'Most recommended channels on your videos:',
     advertising_connected_to_your_videos_title: 'Advertising',
-    advertising_connected_to_your_videos_subtitle:
-      'Advertising connected to your video',
-    advertising_empty_data: 'No advertising data collected yet',
+    advertising_connected_to_your_videos_subtitle: 'Ads ran on your videos',
+    advertising_empty_data: 'No advertising data collected yet on your channel',
   },
   videos: {
     no_results: 'No videos found.',
