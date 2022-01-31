@@ -39,9 +39,14 @@ export const settings = queryShallow(() => {
 }, available);
 
 export const videoRecommendations = queryShallow(
-  ({ videoId }: { videoId: string }) =>
+  ({ channelId, videoId }: { channelId?: string; videoId: string }) =>
     sendAPIMessage(Endpoints.v3.Public.VideoRecommendations)({
-      Params: { videoId },
+      Params: {
+        videoId,
+      },
+      Query: {
+        channelId,
+      },
     }),
   available
 );
@@ -49,4 +54,3 @@ export const videoRecommendations = queryShallow(
 export const keypair = queryStrict(() => {
   return sendMessage(Messages.GetKeypair)();
 }, refetch);
-
