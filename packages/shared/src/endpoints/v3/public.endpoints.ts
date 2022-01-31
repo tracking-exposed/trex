@@ -26,9 +26,15 @@ const Handshake = Endpoint({
 
 const VideoRecommendations = Endpoint({
   Method: 'GET',
-  getPath: ({ videoId }) => `/v3/video/${videoId}/recommendations`,
+  getPath: ({ videoId }) =>
+    `/v3/videos/${videoId}/recommendations`,
   Input: {
-    Params: t.type({ videoId: t.string }),
+    Params: t.type({
+      videoId: t.string,
+    }),
+    Query: t.type({
+      channelId: t.union([t.string, t.undefined]),
+    })
   },
   Output: t.array(Recommendation),
 });

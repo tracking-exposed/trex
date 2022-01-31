@@ -65,7 +65,7 @@ const toMessageHandlerError = (
       response: {
         name: e.name,
         message: e.message,
-        details: [],
+        details: e.details,
       },
     };
   }
