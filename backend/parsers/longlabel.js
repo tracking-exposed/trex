@@ -70,7 +70,7 @@ const relativeConMapping = [
       'órája',
       'godzina',
       'godzin',
-      '小时', // unsure
+      '小时',
     ],
   },
   {
@@ -147,7 +147,7 @@ const relativeConMapping = [
       'months',
       'miesięcy',
       'miesiąc',
-      'miesiące', // both polish
+      'miesiące',
       'måned',
       'måneder',
       'Monaten',
@@ -169,7 +169,7 @@ const relativeConMapping = [
       'Jahr',
       'lat',
       'lata',
-      'rok', // both polish
+      'rok',
       'anni',
       'anno',
       'años',
