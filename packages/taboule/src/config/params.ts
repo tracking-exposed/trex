@@ -1,4 +1,4 @@
-import { TabouleQueryKey } from 'state/types';
+import { TabouleQueryKey } from '../state/types';
 
 type TabouleDefaultParams = { [K in TabouleQueryKey]: any };
 
