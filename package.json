@@ -21,6 +21,7 @@
   ],
   "packageManager": "yarn@3.1.1",
   "scripts": {
+    "commit": "commit",
     "clean": "yarn workspaces foreach run clean",
     "lint": "yarn workspaces foreach run lint",
     "type-check": "yarn workspaces foreach run tsc --noEmit",
@@ -42,6 +43,7 @@
   "devDependencies": {
     "@commitlint/cli": "^16.1.0",
     "@commitlint/config-conventional": "^16.0.0",
+    "@commitlint/prompt-cli": "^16.1.0",
     "@release-it/conventional-changelog": "^4.1.0",
     "@types/node": "^16.11.21",
     "@types/prettier": "^2.4.2",
