@@ -9,7 +9,6 @@ import {
   Button,
   TextField,
   Typography,
-  Divider,
 } from '@material-ui/core';
 import { makeStyles } from '@material-ui/styles';
 import { YCAITheme } from '../../../theme';
@@ -59,7 +58,6 @@ const AddRecommendationBox: React.FC<AddRecommendationBoxProps> = ({
   return (
     <Card className={classes.root}>
       <CardContent style={{ paddingLeft: '0px', paddingTop: '0px' }}>
-        <Divider light style={{ marginBottom: '24px' }} />
         <Typography
           className={classes.title}
           color="primary"
