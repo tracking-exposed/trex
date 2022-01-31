@@ -7,11 +7,13 @@ import {
 export type CurrentView =
   | { view: 'labEdit'; videoId: string }
   | { view: 'lab' }
+  | { view: 'recommendationsLibrary' }
   | { view: 'analytics' }
   | { view: 'settings' }
   | { view: 'linkAccount' }
   | { view: 'index' };
 
+const recommendationsLibraryRegex = /^\/lab\/recommendations$/;
 const labEditRegex = /^\/lab\/([^/]+)$/;
 const labRegex = /^\/lab\/$/;
 const analyticsRegex = /^\/analytics\/$/;
@@ -20,6 +22,14 @@ const linkAccountRegex = /^\/link-account\/$/;
 
 export function locationToView(location: HistoryLocation): CurrentView {
   const { path: currentPath = '', ...search } = location.search;
+
+  const recommendationsLibraryMatch = currentPath.match(
+    recommendationsLibraryRegex
+  );
+  if (recommendationsLibraryMatch !== null) {
+    return { view: 'recommendationsLibrary', ...search };
+  }
+
   const labEditViewMatch = currentPath.match(labEditRegex);
 
   if (labEditViewMatch !== null) {
@@ -52,6 +62,13 @@ export function locationToView(location: HistoryLocation): CurrentView {
 
 export function viewToLocation(view: CurrentView): HistoryLocation {
   switch (view.view) {
+    case 'recommendationsLibrary':
+      return {
+        pathname: `index.html`,
+        search: {
+          path: `/lab/recommendations`,
+        },
+      };
     case 'labEdit':
       return {
         pathname: `index.html`,
@@ -92,8 +109,7 @@ export function viewToLocation(view: CurrentView): HistoryLocation {
   }
 }
 
-export const getHostFromURL = (url: string): string =>
-  new URL(url).host;
+export const getHostFromURL = (url: string): string => new URL(url).host;
 
 export const currentView = getCurrentView(locationToView); // ObservableQuery
 export const doUpdateCurrentView = getDoUpdateCurrentView(viewToLocation); // Command
