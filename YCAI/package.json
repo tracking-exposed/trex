@@ -21,7 +21,7 @@
     "build:dev": "tsc --build && webpack",
     "watch:ext": "webpack -c webpack.extension.config.ts -w",
     "watch:ext:prod": "DOTENV_CONFIG_PATH=.env yarn watch:ext",
-    "watch": "webpack serve",
+    "watch": "DEBUG=\"@trex*,@YCAI*\" webpack serve",
     "watch:prod": "DOTENV_CONFIG_PATH=.env yarn watch",
     "test": "jest",
     "stats": "webpack-bundle-analyzer build/stats.json",

@@ -69,6 +69,7 @@ export const defaultConfiguration = (
           ...columnDefault,
           field: 'percentage',
           minWidth: 160,
+          valueFormatter: (p) => `${p.value}%`,
         },
         {
           ...columnDefault,

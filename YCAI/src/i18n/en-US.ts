@@ -118,7 +118,7 @@ const resources: CustomTypeOptions['resources'] = {
     yours: 'Your recommendations',
     no_items: 'Recommendations will appear here once added!',
     add_to_video: 'Add a recommendation to this video',
-    url_placeholder: 'https://youtube.com/watch?v=xxxxx',
+    url_placeholder: 'http://...',
     url_helper_text: 'Insert a link',
     title: 'Recommendation title',
     description: 'Recommendation description',
@@ -174,18 +174,19 @@ const resources: CustomTypeOptions['resources'] = {
       'This access token allows this browser to access your profile on YouChoose.\nYou can share it with team-members to give them access to the YouChoose dashboard.',
     access_token: 'Access Token',
     data_donation_learn_more: 'Learn more',
-    nudge_donation_opt_in: 'Please consider donating anonymous data to help us understand the YouTube algorithm.',
+    nudge_donation_opt_in:
+      'Please consider donating anonymous data to help us understand the YouTube algorithm.',
     nudge_learn_more: 'Learn more.',
     nudge_not_now: 'Not now',
     nudge_agree: 'I agree',
-
   },
   ytVideoPage: {
     firstTab: 'Creator Recommendations',
     secondTab: 'Community Recommendations',
     thirdTab: 'Youtube Recommendations',
     distractionFree: 'Enjoy a distraction-free experience',
-    noCCRecommendations: 'This creator has not uploaded customized recommendations yet. If you own this channel, you can do it <1>here</1>.',
+    noCCRecommendations:
+      'This creator has not uploaded customized recommendations yet. If you own this channel, you can do it <1>here</1>.',
   },
   swagger: {
     title: 'The YouChoose AI API workbench',
