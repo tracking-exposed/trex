@@ -2,7 +2,7 @@ import { Box, Grid } from '@material-ui/core';
 import { ErrorBox } from '@shared/components/Error/ErrorBox';
 import * as QR from 'avenger/lib/QueryResult';
 import { WithQueries } from 'avenger/lib/react';
-import { LazyFullSizeLoader } from 'components/common/FullSizeLoader';
+import { LazyFullSizeLoader } from '../../../common/FullSizeLoader';
 import * as React from 'react';
 import { addRecommendation } from '../../../../state/dashboard/creator.commands';
 import * as queries from '../../../../state/dashboard/creator.queries';
