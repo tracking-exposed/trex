@@ -39,6 +39,7 @@ const relativeConMapping = [
       'minutter',
       'minute',
       'minuto',
+      'minuty',
       'perc',
       'minut',
       'minuta',
@@ -144,6 +145,9 @@ const relativeConMapping = [
       'meses',
       'month',
       'months',
+      'miesięcy',
+      'miesiąc',
+      'miesiące', // both polish
       'måned',
       'måneder',
       'Monaten',
@@ -163,6 +167,9 @@ const relativeConMapping = [
       'año',
       'Jahren',
       'Jahr',
+      'lat',
+      'lata',
+      'rok', // both polish
       'anni',
       'anno',
       'años',

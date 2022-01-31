@@ -1,5 +1,6 @@
 const _ = require('lodash');
 const debuge = require('debug')('parser:searches:error');
+const debugn = require('debug')('parser:searches:note');
 
 const longlabel = require('./longlabel');
 
@@ -125,13 +126,22 @@ function process(envelop) {
   const dissected = _.map(videos, dissectVideoAndParents);
   const results = _.compact(dissected);
   if (dissected.length !== results.length) {
-    debuge(
-      'From %d potential vidoes only %d were extracted: rejecting (lang %o)',
-      dissected.length,
-      results.length,
-      envelop.impression.blang
-    );
-    return null;
+    if (dissected.length < results.length / 2) {
+      debuge(
+        'From %d potential vidoes only %d were extracted: rejecting (lang %o)',
+        dissected.length,
+        results.length,
+        envelop.impression.blang
+      );
+      return null;
+    } else {
+      debugn(
+        'From %d potential vidoes only %d were extracted: keeping it! (lang %o)',
+        dissected.length,
+        results.length,
+        envelop.impression.blang
+      );
+    }
   }
   const correction = envelop.jsdom.querySelector('yt-search-query-correction');
 
