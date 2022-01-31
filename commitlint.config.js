@@ -3,6 +3,13 @@ module.exports = {
   rules: {
     // experiment with the max length a bit. tried 100, seems to be a little short.
     'header-max-length': [2, 'always', 144],
+    'scope-case': [2, 'always', 'lowerCase'],
+    'scope-empty': [2, 'never'],
+    'scope-enum': [
+      2,
+      'always',
+      ['workspace', 'guardoni', 'ycai', 'taboule', 'tktrex', 'yttrex'],
+    ],
     'type-enum': [
       2,
       'always',
