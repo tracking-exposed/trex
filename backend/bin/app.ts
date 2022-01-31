@@ -5,6 +5,7 @@ import bodyParser from 'body-parser';
 import cors from 'cors';
 import express from 'express';
 import * as _ from 'lodash';
+import { MongoClient } from 'mongodb';
 import { apiList } from '../lib/api';
 import mongo3 from '../lib/mongo3';
 
@@ -77,6 +78,7 @@ interface MakeAppContext {
   config: {
     port: number;
   };
+  mongo: MongoClient;
 }
 
 /* one log entry per minute about the amount of API absolved */
@@ -94,7 +96,9 @@ setInterval(() => {
   logAPICount.requests = {};
 }, 60 * 1000);
 
-export const makeApp = (ctx: MakeAppContext): express.Application => {
+export const makeApp = async (
+  ctx: MakeAppContext
+): Promise<express.Application> => {
   const app = express();
 
   app.use(cors());
@@ -104,7 +108,12 @@ export const makeApp = (ctx: MakeAppContext): express.Application => {
 
   // get a router instance from express
   const router = express.Router();
-  const apiRouter = makeBackend({ db: mongo3, logger }, express.Router());
+
+  const db = {
+    ...mongo3,
+    mongo: ctx.mongo,
+  };
+  const apiRouter = makeBackend({ db, logger }, express.Router());
 
   /* this API is v0 as it is platform neutral. it might be shared among
    * all the trex backends, and should return info on system health, echo OK

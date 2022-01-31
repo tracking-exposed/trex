@@ -63,11 +63,21 @@ async function updateOne(mongoc: any, cName: any, selector: any, updated: any) {
   return mongoc.db().collection(cName).updateOne(selector, { $set: updated });
 }
 
-async function updateMany(mongoc: any, cName: string, selector: any, updated: any) {
+async function updateMany(
+  mongoc: any,
+  cName: string,
+  selector: any,
+  updated: any
+) {
   return mongoc.db().collection(cName).updateMany(selector, { $set: updated });
 }
 
-async function upsertOne(mongoc: any, cName: string, selector: any, updated: any) {
+async function upsertOne(
+  mongoc: any,
+  cName: string,
+  selector: any,
+  updated: any
+) {
   return mongoc
     .db()
     .collection(cName)
@@ -98,7 +108,14 @@ async function deleteMany(mongoc: any, cName: any, selector: any) {
   return mongoc.db().collection(cName).deleteMany(selector);
 }
 
-async function readLimit(mongoc: any, cName: any, selector: any, sorter: any, limitN: any, past: any) {
+async function readLimit(
+  mongoc: any,
+  cName: any,
+  selector: any,
+  sorter: any,
+  limitN: any,
+  past: any
+) {
   if (!limitN)
     throw new Error('Not specified the amount of documents expected');
   return mongoc
@@ -146,5 +163,8 @@ const DBClient = {
   aggregate,
 };
 
-type DBClient = typeof DBClient;
+type DBClient = typeof DBClient & {
+  mongo: MongoClient;
+};
+
 export default DBClient;
