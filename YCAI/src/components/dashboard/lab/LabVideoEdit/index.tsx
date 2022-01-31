@@ -1,6 +1,6 @@
 import { Grid } from '@material-ui/core';
 import * as React from 'react';
-import { addRecommendationForVideo } from 'state/dashboard/creator.commands';
+import { addRecommendationForVideo } from '../../../../state/dashboard/creator.commands';
 import { YTVideo } from '../../../common/YTVideo';
 import AddRecommendationBox from '../AddRecommendationBox';
 import { VideoRecommendations } from './VideoRecommendations';
