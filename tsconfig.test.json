@@ -1,0 +1,13 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "strict": true,
+    "strictNullChecks": true,
+    "allowUnusedLabels": false,
+    "isolatedModules": true,
+    "rootDir": "./",
+    "outDir": "./build"
+  },
+  "include": ["backend/src/**", "guardoni/src/**", "YCAI/src/**"],
+  "exclude": ["node_modules", "build", "lib"]
+}

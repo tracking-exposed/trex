@@ -1,50 +1,40 @@
+const jestBaseConfig = require('../jest.config.base');
 const tsConfig = require('./tsconfig.json');
-// jest.config.js
 const { pathsToModuleNameMapper } = require('ts-jest');
-const { jsWithTsESM } = require('ts-jest/presets');
 
-const moduleNameMapper = pathsToModuleNameMapper(
-  tsConfig.compilerOptions.paths,
-  {
-    prefix: '<rootDir>/src',
-  }
-);
+const tsPaths = pathsToModuleNameMapper(tsConfig.compilerOptions.paths, {
+  prefix: '<rootDir>/src/',
+});
+
+const moduleNameMapper = {
+  ...tsPaths,
+};
 
 /** @type {import('ts-jest/dist/types').InitialOptionsTsJest} */
 module.exports = {
-  preset: 'ts-jest',
-  testEnvironment: 'node',
-  roots: ['./', '../packages/shared'],
-  projects: ['./', '../packages/shared'],
+  ...jestBaseConfig,
+  rootDir: __dirname,
+  displayName: 'guardoni',
   moduleNameMapper,
-  modulePathIgnorePatterns: ['profiles', 'build'],
+  modulePathIgnorePatterns: [
+    ...jestBaseConfig.modulePathIgnorePatterns,
+    'profiles',
+    'build',
+  ],
   globals: {
     'ts-jest': {
       // TS reports strange errors with jest,
       // that it doesn't report when running plain tsc...
-      diagnostics: false,
+      diagnostics: true,
       isolatedModules: true,
       useESM: true,
+      tsconfig: '<rootDir>/tsconfig.json',
     },
   },
-  transform: {
-    ...jsWithTsESM.transform,
-    '\\.js$': 'ts-jest',
-  },
-  clearMocks: true,
   testTimeout: 10000,
-  setupFilesAfterEnv: ['./jest.setup.js'],
-  globalSetup: './global-setup.js',
-  globalTeardown: './global-teardown.js',
+  setupFilesAfterEnv: ['<rootDir>/jest.setup.js'],
+  globalSetup: '<rootDir>/global-setup.js',
+  globalTeardown: '<rootDir>/global-teardown.js',
   coverageProvider: 'v8',
-  collectCoverageFrom: ['./src/**'],
-  coverageThreshold: {
-    global: {
-      branches: 30,
-      functions: 60,
-      lines: 60,
-      statements: 60,
-    },
-  },
-  coveragePathIgnorePatterns: ['node_modules'],
+  collectCoverageFrom: ['<rootDir>/src/**'],
 };

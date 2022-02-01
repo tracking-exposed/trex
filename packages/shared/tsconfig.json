@@ -1,6 +1,7 @@
 {
   "extends": "../../tsconfig.json",
   "compilerOptions": {
+    "noEmit": false,
     "composite": true,
     "lib": ["ESNext", "DOM"],
     "typeRoots": ["../../node_modules/@types", "./node_modules/@types"],

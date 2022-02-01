@@ -27,6 +27,9 @@ jobs:
       - name: Install dependencies
         run: yarn
 
+      - name: Test project
+        run: yarn test
+
       - name: Release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
