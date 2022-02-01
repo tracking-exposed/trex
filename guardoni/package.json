@@ -1,6 +1,6 @@
 {
   "name": "guardoni",
-  "version": "2.1.0",
+  "version": "2.2.0",
   "description": "Guardoni is a tool to automate access and coordinate personalization algorithm analysis",
   "scripts": {
     "clean": "rm -rf build dist",

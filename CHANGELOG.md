@@ -1,3 +1,7 @@
+## [2.2.0](https://github.com/tracking-exposed/yttrex/compare/v2.1.0...v2.2.0) (2022-02-01)
+
+- **yttrex:** added --type filtering option for parserv2 ([9dd3772](https://github.com/tracking-exposed/yttrex/commit/9dd3772a554cd467cd96174f7de00c8f937ba589))
+
 ## [2.1.0](https://github.com/tracking-exposed/yttrex/compare/v2.0.1...v2.1.0) (2022-02-01)
 
 - commitlint scopes and prompt ([#349](https://github.com/tracking-exposed/yttrex/issues/349)) ([196ff63](https://github.com/tracking-exposed/yttrex/commit/196ff6363cdaed4289281d5d279d30e10b6598bc))
