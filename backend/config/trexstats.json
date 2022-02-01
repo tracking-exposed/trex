@@ -27,29 +27,6 @@
       ]
     },
     {
-      "name": "videos",
-      "column": "metadata",
-      "timevar": "savingTime",
-      "variables": [
-        {
-          "name": "total",
-          "selector": { "type": "video" }
-        },
-        {
-          "name": "related-20",
-          "selector": { "related": { "$size": 20 } }
-        },
-        {
-          "name": "more-than-20",
-          "selector": { "related.20": { "$exists": true } }
-        },
-        {
-          "name": "forKids",
-          "selector": { "forKids": true }
-        }
-      ]
-    },
-    {
       "name": "processing",
       "column": "htmls",
       "timevar": "savingTime",
@@ -73,29 +50,48 @@
       ]
     },
     {
-      "name": "metadata",
+      "name": "videos-related",
       "column": "metadata",
       "timevar": "savingTime",
       "variables": [
-        {
-          "name": "hasTitle",
-          "selector": { "title": { "$exists": true } }
-        },
-        {
-          "name": "hasAuthor",
-          "selector": { "authorName": { "$exists": true } }
-        },
-        {
-          "name": "viewWorks",
-          "selector": { "viewInfo.viewNumber": { "$gt": 0 } }
-        },
         {
           "name": "total",
           "selector": { "type": "video" }
         },
         {
+          "name": "related-20",
+          "selector": { "type": "video", "related": { "$size": 20 } }
+        },
+        {
+          "name": "more-than-20",
+          "selector": { "type": "video", "related.20": { "$exists": true } }
+        }
+      ]
+    },
+    {
+      "name": "videos-metadata",
+      "column": "metadata",
+      "timevar": "savingTime",
+      "variables": [
+        {
+          "name": "hasTitle",
+          "selector": { "type": "video", "title": { "$exists": true } }
+        },
+        {
+          "name": "hasAuthor",
+          "selector": { "type": "video", "authorName": { "$exists": true } }
+        },
+        {
+          "name": "viewWorks",
+          "selector": { "type": "video", "viewInfo.viewNumber": { "$gt": 0 } }
+        },
+        {
+          "name": "forKids",
+          "selector": { "type": "video", "forKids": true }
+        },
+        {
           "name": "experiment",
-          "selector": { "experiment": { "$exists": true }, "type": "video" }
+          "selector": { "type": "video", "experiment": { "$exists": true } }
         }
       ]
     },
@@ -123,7 +119,7 @@
       ]
     },
     {
-      "name": "searches",
+      "name": "searches-metadata",
       "column": "metadata",
       "timevar": "savingTime",
       "variables": [
@@ -143,7 +139,14 @@
       "timevar": "savingTime",
       "variables": [
         { "name": "total", "selector": {} },
-        { "name": "selector", "selector": { "selectorName": "selectorName" } }
+        { "name": "channel", "selector": { "nature.type": "channel" } },
+        { "name": "search", "selector": { "nature.type": "search" } },
+        { "name": "video", "selector": { "nature.type": "video" } },
+        { "name": "home", "selector": { "nature.type": "home" } },
+        {
+          "name": "experiment",
+          "selector": { "experiment": { "$exists": true } }
+        }
       ]
     },
     {
