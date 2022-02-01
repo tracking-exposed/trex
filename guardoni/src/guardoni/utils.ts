@@ -57,7 +57,7 @@ export const toGuardoniErrorOutput = (o: unknown): GuardoniErrorOutput => {
 
 export const toGuardoniSuccessOutput = (
   message: string,
-  values: Record<string, any>
+  values: Array<Record<string, any>>
 ): GuardoniSuccessOutput => {
   return {
     type: 'success',

@@ -210,9 +210,9 @@ export const GetTabouleQueries = ({
     APIError,
     Results<TikTokSearchMetadata>
   >(
-    (input) =>
+    ({ Params, ...input }) =>
       pipe(
-        API.v2.Public.TikTokSearches(input),
+        API.v2.Public.TikTokSearches({ ...input }),
         TE.map((content) => ({
           total: content.length,
           content: content,

@@ -5,6 +5,7 @@
 node_modules
 build
 dist
+tsconfig.tsbuildinfo
 
 # experiments related folders, the first keep .jpeg(s), the second .csv(s)
 backend/thumbnails/*

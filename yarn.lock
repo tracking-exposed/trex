@@ -1938,7 +1938,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@trex/shared@workspace:^, @trex/shared@workspace:packages/shared":
+"@trex/shared@workspace:packages/shared":
   version: 0.0.0-use.local
   resolution: "@trex/shared@workspace:packages/shared"
   dependencies:
@@ -2002,7 +2002,6 @@ __metadata:
     "@material-ui/data-grid": ^4.0.0-alpha.37
     "@material-ui/icons": ^4.11.2
     "@material-ui/styles": ^4.11.4
-    "@trex/shared": "workspace:^"
     "@types/node": ^16.11.22
     "@types/prettier": ^2.4.3
     "@types/react": 17.0.38
@@ -2049,7 +2048,6 @@ __metadata:
     "@testing-library/jest-dom": ^5.16.2
     "@testing-library/react": ^12.1.2
     "@testing-library/user-event": ^13.5.0
-    "@trex/shared": "workspace:packages/shared"
     "@types/bs58": ^4.0.1
     "@types/c3": ^0.7.8
     "@types/chrome": 0.0.177
@@ -11012,7 +11010,6 @@ __metadata:
     "@material-ui/icons": ^4.11.2
     "@material-ui/lab": ^4.0.0-alpha.60
     "@pmmmwh/react-refresh-webpack-plugin": ^0.5.4
-    "@trex/shared": "workspace:^"
     "@types/lodash": ^4.14.178
     "@types/nconf": ^0.10.1
     "@types/prettier": ^2.4.3

@@ -9,7 +9,7 @@ import { ipcRenderer } from 'electron';
 import * as React from 'react';
 import { CREATE_EXPERIMENT_EVENT } from '../models/events';
 import { GuardoniConfig } from '../../guardoni/types';
-import { ExperimentLink } from '@shared/models/Experiment';
+import { ExperimentLink } from '@trex/shared/models/Experiment';
 
 interface FromCSVFileTabProps {
   config: GuardoniConfig;

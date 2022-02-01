@@ -22,9 +22,9 @@
   "packageManager": "yarn@3.1.1",
   "scripts": {
     "commit": "commit",
-    "clean": "yarn workspaces foreach run clean",
+    "clean": "rm -rf build && yarn workspaces foreach run clean",
     "lint": "yarn workspaces foreach run lint",
-    "type-check": "yarn workspaces foreach run tsc --noEmit",
+    "type-check": "yarn tsc --noEmit",
     "build": "yarn workspaces foreach -vt run build",
     "test": "jest",
     "taboule": "yarn workspace @trex/taboule",

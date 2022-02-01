@@ -17,27 +17,28 @@
     "lib": ["dom", "ESNext"],
     "typeRoots": [
       "../node_modules/@types",
-      "../shared/node_modules/@types",
+      "../packages/shared/node_modules/@types",
       "./node_modules/@types",
       "./typings"
     ],
-    "baseUrl": "./src",
+    "baseUrl": "../",
+    "rootDir": "../",
+    "outDir": "../build/ts",
     "allowSyntheticDefaultImports": true,
     "noFallthroughCasesInSwitch": true,
     "moduleResolution": "Node",
-    "isolatedModules": true,
-    "paths": {
-      "@trex/shared/*": ["../../packages/shared/src/*"],
-      "@trex/taboule/*": ["../../packages/taboule/src/*"]
-    }
+    "isolatedModules": true
   },
   "references": [
     {
       "path": "../packages/shared"
+    }, {
+      "path": "../packages/taboule"
     }
   ],
   "include": [
     "./src",
+    "./package.json",
     "./typings",
     "./webpack.config.ts",
     "./webpack.extension.config.ts"

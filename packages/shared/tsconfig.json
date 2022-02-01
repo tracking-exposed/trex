@@ -1,5 +1,5 @@
 {
-  "extends": "../../tsconfig.json",
+  "extends": "../../config/typescript/tsconfig.base.json",
   "compilerOptions": {
     "noEmit": false,
     "composite": true,
@@ -9,7 +9,6 @@
     "baseUrl": "../../",
     "rootDir": "../../",
     "allowJs": true,
-    "tsBuildInfoFile": "./build/.tsbuildinfo",
     "esModuleInterop": true,
     "jsx": "react"
   },

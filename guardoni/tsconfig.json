@@ -1,5 +1,5 @@
 {
-  "extends": "../tsconfig.json",
+  "extends": "../config/typescript/tsconfig.base.json",
   "compilerOptions": {
     "allowJs": true,
     "strict": true,
@@ -7,18 +7,24 @@
     "target": "ES3",
     "lib": ["ESNext", "DOM"],
     "jsx": "react",
-    "outDir": "./build/ts",
-    "baseUrl": "./src",
+    "outDir": "../build/ts",
+    "baseUrl": "../",
+    "rootDir": "../",
     "esModuleInterop": true,
     "skipLibCheck": true,
     "resolveJsonModule": true,
-    "typeRoots": ["../node_modules/@types", "node_modules/@types"],
-    "paths": {
-      "@trex/shared/*": ["../../packages/shared/src/*"]
-    }
+    "typeRoots": ["../node_modules/@types", "node_modules/@types"]
   },
-  "include": ["./src"],
-  "exclude": ["node_modules", "build", "dist"],
+  "include": [".", "./package.json"],
+  "exclude": [
+    "reload.js",
+    "node_modules",
+    "bin",
+    "build",
+    "dist",
+    "jest.config.js",
+    "webpack.config.ts"
+  ],
   "watchOptions": {
     "watchFile": "useFsEvents",
     "watchDirectory": "useFsEvents",

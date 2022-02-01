@@ -2,13 +2,13 @@ import { AppError, toAppError } from '@trex/shared/errors/AppError';
 import { Logger } from '@trex/shared/logger';
 import { ComparisonDirective } from '@trex/shared/models/Directive';
 import { APIClient } from '@trex/shared/providers/api.provider';
-import { AppEnv } from 'AppEnv';
 import { dialog, ipcMain } from 'electron';
 import { pipe } from 'fp-ts/lib/function';
 import * as TE from 'fp-ts/lib/TaskEither';
 import { NonEmptyString } from 'io-ts-types';
 import * as puppeteer from 'puppeteer-core';
 import * as pie from 'puppeteer-in-electron';
+import { AppEnv } from '../../AppEnv';
 import { GetGuardoni, readCSVAndParse } from '../../guardoni/guardoni';
 import { GuardoniConfig, GuardoniConfigRequired } from '../../guardoni/types';
 import { guardoniLogger } from '../../logger';
@@ -18,7 +18,7 @@ import {
   GET_PUBLIC_DIRECTIVES,
   GLOBAL_ERROR_EVENT,
   PICK_CSV_FILE_EVENT,
-  RUN_GUARDONI_EVENT,
+  RUN_GUARDONI_EVENT
 } from '../models/events';
 import { createGuardoniWindow } from '../windows/GuardoniWindow';
 import { getEventsLogger } from './event.logger';
