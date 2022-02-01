@@ -186,9 +186,8 @@ export const makeApp = async (
   apiRouter.get('/v1/mirror/:key', iowrapper('getMirror'));
 
   /* below, youchoose v3 */
-  apiRouter.post('/v3/handshake', iowrapper('youChooseByVideoId'));
   apiRouter.get(
-    '/v3/video/:videoId/recommendations',
+    '/v3/videos/:videoId/recommendations',
     iowrapper('youChooseByVideoId')
   );
   apiRouter.get('/v3/recommendations/:ids', iowrapper('recommendationById'));

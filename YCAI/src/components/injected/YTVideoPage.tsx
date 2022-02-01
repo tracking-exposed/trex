@@ -59,7 +59,9 @@ export const YTVideoPage: React.FC<{
   const classes = useStyles();
 
   const patchYTRecommendations = (tab: number): void => {
-    const ytNode: HTMLElement | null = document.querySelector(ytRecommendationsSelector);
+    const ytNode: HTMLElement | null = document.querySelector(
+      ytRecommendationsSelector
+    );
 
     if (ytNode) {
       if (tab === YT_TAB_INDEX) {
@@ -70,7 +72,8 @@ export const YTVideoPage: React.FC<{
       } else {
         const { display } = window.getComputedStyle(ytNode);
         if (display !== 'none') {
-          ytNode.dataset.previousDisplayStyle = window.getComputedStyle(ytNode).display;
+          ytNode.dataset.previousDisplayStyle =
+            window.getComputedStyle(ytNode).display;
           ytNode.style.display = 'none';
         }
       }
@@ -84,9 +87,24 @@ export const YTVideoPage: React.FC<{
 
   React.useEffect(() => {
     if (currentVideoId) {
+      let channelId: string | undefined;
+
+      const channelLink = document.querySelector('#channel-name a');
+      if (channelLink) {
+        const m = channelLink
+          .getAttribute('href')
+          ?.match(/\/channel\/([^/]+)\/?/);
+        if (m) {
+          channelId = m[1];
+        }
+      }
+
       setRecommendationsLoading(true);
       void pipe(
-        videoRecommendations.run({ videoId: currentVideoId }),
+        videoRecommendations.run({
+          channelId,
+          videoId: currentVideoId,
+        }),
         // eslint-disable-next-line array-callback-return
         TE.map((recs) => {
           setRecommendationsLoading(false);
@@ -135,7 +153,7 @@ export const YTVideoPage: React.FC<{
   }, [currentTab, settings]);
 
   return (
-    <Box mb={4} style={{borderRadius: '8px'}}>
+    <Box mb={4} style={{ borderRadius: '8px' }}>
       <AppBar className={classes.appBar} position="static">
         <Tabs
           value={currentTab}
@@ -149,7 +167,7 @@ export const YTVideoPage: React.FC<{
         >
           <Tab
             className={classes.tab}
-            icon={<img src={ccIconSrc} style={{width:17}}/>}
+            icon={<img src={ccIconSrc} style={{ width: 17 }} />}
             wrapped={true}
             label={t('creator:title')}
             index={CC_TAB_INDEX}
