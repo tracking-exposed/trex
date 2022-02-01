@@ -1,3 +1,19 @@
+## [2.1.0](https://github.com/tracking-exposed/yttrex/compare/v2.0.1...v2.1.0) (2022-02-01)
+
+- commitlint scopes and prompt ([#349](https://github.com/tracking-exposed/yttrex/issues/349)) ([196ff63](https://github.com/tracking-exposed/yttrex/commit/196ff6363cdaed4289281d5d279d30e10b6598bc))
+- defined refer policy for video card image ([#331](https://github.com/tracking-exposed/yttrex/issues/331)) ([9f1af00](https://github.com/tracking-exposed/yttrex/commit/9f1af00f9c9f8f9c4e041446fc0479d876bb695b))
+- deps upgrade ([#318](https://github.com/tracking-exposed/yttrex/issues/318)) ([9ea9082](https://github.com/tracking-exposed/yttrex/commit/9ea908231b30eeeb4c2714e0077b6c59a5f5cfa0))
+- fix root execution ([#350](https://github.com/tracking-exposed/yttrex/issues/350)) ([d2a05e9](https://github.com/tracking-exposed/yttrex/commit/d2a05e9098f048ee05695671660211ced818cd2b))
+- guardoni cli execution ([#337](https://github.com/tracking-exposed/yttrex/issues/337)) ([1539ea6](https://github.com/tracking-exposed/yttrex/commit/1539ea6ca1da62b2cddbe40ca50b9b7c0350bde1))
+- moved health route in shared backend ([#294](https://github.com/tracking-exposed/yttrex/issues/294)) ([410827a](https://github.com/tracking-exposed/yttrex/commit/410827a70d178759e377e04224ba4ddad4a7f0a7)), closes [#336](https://github.com/tracking-exposed/yttrex/issues/336)
+- optional scope in the commit message ([2476c7f](https://github.com/tracking-exposed/yttrex/commit/2476c7f0b6cc0cd80b2db28e990d529c8909c288))
+- some wording on the studio ([#335](https://github.com/tracking-exposed/yttrex/issues/335)) ([96bfdb7](https://github.com/tracking-exposed/yttrex/commit/96bfdb72b60e4fe803d3555f37446f3eda6945b7))
+- trex logging ([#325](https://github.com/tracking-exposed/yttrex/issues/325)) ([99c1719](https://github.com/tracking-exposed/yttrex/commit/99c17192b611e14bb496f601e3d323439a5b4ef8))
+- **workspace:** added mongo service to daily and beta flows ([ad974a7](https://github.com/tracking-exposed/yttrex/commit/ad974a7c17705d1422f27fe723b5179ec268b57b))
+- **workspace:** disable global tests for daily and beta flows ([ad82030](https://github.com/tracking-exposed/yttrex/commit/ad82030d1af1c034c5fdccc9d7c07c9aab3076ae))
+- ycai minor bugs ([#336](https://github.com/tracking-exposed/yttrex/issues/336)) ([5bdaa9d](https://github.com/tracking-exposed/yttrex/commit/5bdaa9da7392e04fa6885d44ad9e2a1f9fba51a0))
+- **yttrex:** redesigned trexstats ([6041dee](https://github.com/tracking-exposed/yttrex/commit/6041dee265bcdf294883c74fb05b005052f2bc7b))
+
 ### [2.0.1](https://github.com/tracking-exposed/yttrex/compare/v2.0.0...v2.0.1) (2022-01-26)
 
 - fix release-it script for master [skip ci] ([abcac65](https://github.com/tracking-exposed/yttrex/commit/abcac6581f29ab42db3f4041a973f42bb9888b97))
