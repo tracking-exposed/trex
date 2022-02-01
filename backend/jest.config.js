@@ -1,40 +1,41 @@
-const tsConfig = require("./tsconfig.json");
+const jestBaseConfig = require('../jest.config.base');
+const tsConfig = require('./tsconfig.json');
 // jest.config.js
-const { pathsToModuleNameMapper } = require("ts-jest");
-const { jsWithTsESM } = require("ts-jest/presets");
+const { pathsToModuleNameMapper } = require('ts-jest');
 
-const moduleNameMapper = pathsToModuleNameMapper(
-  tsConfig.compilerOptions.paths,
-  {
-    prefix: "<rootDir>",
-  }
-);
+const paths = pathsToModuleNameMapper(tsConfig.compilerOptions.paths, {
+  prefix: '<rootDir>',
+});
+
+const moduleNameMapper = {
+  ...paths,
+  ...jestBaseConfig.moduleNameMapper,
+};
 
 /** @type {import('ts-jest/dist/types').InitialOptionsTsJest} */
 module.exports = {
-  preset: "ts-jest",
-  testEnvironment: "node",
-  roots: ["./", "../packages/shared"],
-  projects: ['./', '../packages/shared'],
+  ...jestBaseConfig,
+  displayName: 'backend',
   moduleNameMapper,
   globals: {
-    "ts-jest": {
+    'ts-jest': {
       // TS reports strange errors with jest,
       // that it doesn't report when running plain tsc...
       diagnostics: false,
       isolatedModules: true,
-      useESM: true
+      useESM: true,
+      tsconfig: '<rootDir>/tsconfig.json',
     },
   },
-  transform: {
-    ...jsWithTsESM.transform,
-    '\\.js$': 'ts-jest'
-  },
-  clearMocks: true,
   testTimeout: 10000,
-  setupFilesAfterEnv: ["./jest.setup.js"],
-  coverageProvider:"v8",
-  collectCoverageFrom: ["./bin/**", "./lib/**", "./routes/**", "./parsers/**"],
+  setupFilesAfterEnv: ['<rootDir>/jest.setup.js'],
+  coverageProvider: 'v8',
+  collectCoverageFrom: [
+    '<rootDir>/bin/**',
+    '<rootDir>/lib/**',
+    '<rootDir>/routes/**',
+    '<rootDir>/parsers/**',
+  ],
   coverageThreshold: {
     global: {
       branches: 30,
@@ -43,5 +44,4 @@ module.exports = {
       statements: 60,
     },
   },
-  coveragePathIgnorePatterns: ["node_modules"],
 };

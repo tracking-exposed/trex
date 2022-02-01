@@ -1,38 +1,7 @@
-const { pathsToModuleNameMapper } = require('ts-jest');
-
-const moduleNameMapper = pathsToModuleNameMapper(
-  {
-    '@shared/*': ['./shared/src/*'],
-  },
-  {
-    prefix: '<rootDir>',
-  }
-);
+const jestBaseConfig = require('./jest.config.base');
 
 /** @type {import('ts-jest/dist/types').InitialOptionsTsJest} */
 module.exports = {
-  preset: 'ts-jest',
-  testEnvironment: 'node',
-  roots: ['./', './backend', './guardoni', './YCAI'],
-  projects: ['./backend', './guardoni', './YCAI'],
-  modulePathIgnorePatterns: ['__mocks__'],
-  globals: {
-    'ts-jest': {
-      // TS reports strange errors with jest,
-      // that it doesn't report when running plain tsc...
-      diagnostics: false,
-      isolatedModules: true,
-    },
-  },
-  moduleNameMapper,
-  clearMocks: true,
-  coverageThreshold: {
-    global: {
-      branches: 30,
-      functions: 60,
-      lines: 60,
-      statements: 60,
-    },
-  },
-  coveragePathIgnorePatterns: ['node_modules'],
+  ...jestBaseConfig,
+  projects: ['<rootDir>/backend', '<rootDir>/guardoni', '<rootDir>/YCAI'],
 };

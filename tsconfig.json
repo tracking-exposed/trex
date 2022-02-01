@@ -1,9 +1,12 @@
 {
   "compilerOptions": {
+    "allowJs": true,
     "strict": true,
+    "noEmit": true,
     "strictNullChecks": true,
     "allowUnusedLabels": false,
     "isolatedModules": true,
+    "esModuleInterop": true,
     "rootDir": "./"
   },
   "exclude": ["**/node_modules/*", "**/build/*"]

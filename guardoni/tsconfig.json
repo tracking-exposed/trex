@@ -3,21 +3,22 @@
   "compilerOptions": {
     "allowJs": true,
     "strict": true,
-    "noEmit": true,
+    "noEmit": false,
     "target": "ES3",
     "lib": ["ESNext", "DOM"],
     "jsx": "react",
-    "rootDir": "./",
+    "outDir": "./build/ts",
     "baseUrl": "./src",
     "esModuleInterop": true,
     "skipLibCheck": true,
     "resolveJsonModule": true,
-    "sourceMap": true,
     "typeRoots": ["../node_modules/@types", "node_modules/@types"],
     "paths": {
       "@shared/*": ["../../packages/shared/src/*"]
     }
   },
+  "include": ["./src"],
+  "exclude": ["node_modules", "build", "dist"],
   "watchOptions": {
     "watchFile": "useFsEvents",
     "watchDirectory": "useFsEvents",
