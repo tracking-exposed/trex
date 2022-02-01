@@ -29,7 +29,7 @@ const RecommendationList: React.FC<RecommendationListProps> = ({
               key={r.urlId}
               data={r}
               videoId={''}
-              onDeleteClick={() => {}}
+              onDeleteClick={onDeleteClick}
               onMoveDownClick={undefined}
               onMoveUpClick={undefined}
             />
