@@ -1,187 +1,174 @@
 {
-    "mongoHost": "localhost",
-    "mongoPort": "27017",
-    "mongoDb": "yttrex",
+  "mongoHost": "localhost",
+  "mongoPort": "27017",
+  "mongoDb": "yttrex",
 
-    "stats": [
+  "stats": [
     {
-        "name": "supporters",
-        "column": "supporters",
-        "timevar": "creationTime",
-        "variables": [
-            {
-                "name": "newcomers",
-                "selector": {}
-            }
-        ]
+      "name": "supporters",
+      "column": "supporters",
+      "timevar": "creationTime",
+      "variables": [
+        {
+          "name": "newcomers",
+          "selector": {}
+        }
+      ]
     },
     {
-        "name": "active",
-        "column": "supporters",
-        "timevar": "lastActivity",
-        "variables": [
-            {
-                "name": "active",
-                "selector": {}
-            }
-        ]
+      "name": "active",
+      "column": "supporters",
+      "timevar": "lastActivity",
+      "variables": [
+        {
+          "name": "active",
+          "selector": {}
+        }
+      ]
     },
     {
-        "name": "related",
-        "column": "metadata",
-        "timevar": "savingTime",
-        "variables": [
-            {
-                "name": "total",
-                "selector": { }
-            },
-            {
-                "name": "related-20",
-                "selector": { "related": { "$size": 20 }}
-            },
-            {
-                "name": "others",
-                "selector": { "related.19": { "$exists": false }}
-            },
-            {
-                "name": "more-than-20",
-                "selector": { "related.20": { "$exists": true }}
-            }
-        ]
+      "name": "videos",
+      "column": "metadata",
+      "timevar": "savingTime",
+      "variables": [
+        {
+          "name": "total",
+          "selector": { "type": "video" }
+        },
+        {
+          "name": "related-20",
+          "selector": { "related": { "$size": 20 } }
+        },
+        {
+          "name": "more-than-20",
+          "selector": { "related.20": { "$exists": true } }
+        },
+        {
+          "name": "forKids",
+          "selector": { "forKids": true }
+        }
+      ]
     },
     {
-        "name": "processing",
-        "column": "htmls",
-        "timevar": "savingTime",
-        "variables": [
-            {
-                "name": "successful",
-                "selector": { "processed": true }
-            },
-            {
-                "name": "failure",
-                "selector": { "processed": false }
-            },
-            {
-                "name": "unprocessed",
-                "selector": { "processed": { "$exists": false } }
-            },
-            {
-                "name": "hasMetadata",
-                "selector": { "metadataId": { "$exists": true } }
-            },
-            {
-                "name": "total",
-                "selector": { }
-            }
-        ]
+      "name": "processing",
+      "column": "htmls",
+      "timevar": "savingTime",
+      "variables": [
+        {
+          "name": "successful",
+          "selector": { "processed": true }
+        },
+        {
+          "name": "failure",
+          "selector": { "processed": false }
+        },
+        {
+          "name": "unprocessed",
+          "selector": { "processed": { "$exists": false } }
+        },
+        {
+          "name": "total",
+          "selector": {}
+        }
+      ]
     },
     {
-        "name": "metadata",
-        "column": "metadata",
-        "timevar": "savingTime",
-        "variables": [
-            {
-                "name": "hasTitle",
-                "selector": { "title": { "$exists": true }}
-            },
-            {
-                "name": "hasAuthor",
-                "selector": { "authorName": { "$exists": true }}
-            },
-            {
-                "name": "hasRelated",
-                "selector": { "related.0": { "$exists": true }}
-            },
-            {
-                "name": "viewWorks",
-                "selector": { "viewInfo.viewNumber": { "$gt": 0 }}
-            },
-            {
-                "name": "total",
-                "selector": { }
-            },
-            {
-                "name": "videos",
-                "selector": { "videoId": { "$exists": true } }
-            }
-        ]
+      "name": "metadata",
+      "column": "metadata",
+      "timevar": "savingTime",
+      "variables": [
+        {
+          "name": "hasTitle",
+          "selector": { "title": { "$exists": true } }
+        },
+        {
+          "name": "hasAuthor",
+          "selector": { "authorName": { "$exists": true } }
+        },
+        {
+          "name": "viewWorks",
+          "selector": { "viewInfo.viewNumber": { "$gt": 0 } }
+        },
+        {
+          "name": "total",
+          "selector": { "type": "video" }
+        },
+        {
+          "name": "experiment",
+          "selector": { "experiment": { "$exists": true }, "type": "video" }
+        }
+      ]
     },
     {
-        "name": "usage",
-        "column": "metadata",
-        "timevar": "savingTime",
-        "variables": [
-            {
-                "name": "logged",
-                "selector": { "login": true }
-            },
-            {
-                "name": "unlogged",
-                "selector": { "login": false }
-            },
-            {
-                "name": "total",
-                "selector": { }
-            },
-            {
-                "name": "homepages",
-                "selector": { "type": "home" }
-            },
-            {
-                "name": "videos",
-                "selector": { "type": "video" }
-            },
-            {
-                "name": "searches",
-                "selector": { "type": "search" }
-            }
-        ]
-    }, {
-        "name": "active",
-        "column": "supporters",
-        "timevar": "lastActivity",
-        "variables": [
-            {
-                "name": "active",
-                "selector": {}
-            }
-        ]
-    }, {
-        "name": "leaves",
-        "column": "leaves",
-        "timevar": "savingTime",
-        "variables": [
-            {   "name": "total",    "selector": { }                                     },
-            {   "name": "selector", "selector": { "selectorName":"selectorName"}        }
-        ]
-    }, {
-        "name": "creators",
-        "column": "creators",
-        "timevar": "registeredOn",
-        "variables": [
-            {   "name": "total",    "selector": { }                                     }
-        ]
-    }, {
-        "name": "ads",
-        "column": "ads",
-        "timevar": "savingTime",
-        "variables": [
-            {   "name": "total",    "selector": { }                                     }
-        ]
-    }, {
-        "name": "recommendations",
-        "column": "recommendations",
-        "timevar": "when",
-        "variables": [
-            {   "name": "total",    "selector": { }                                     }
-        ]
-    }, {
-        "name": "ytvids",
-        "column": "ytvids",
-        "timevar": "when",
-        "variables": [
-            {   "name": "total",    "selector": { }                                     }
-        ]
-    }]
+      "name": "nature",
+      "column": "metadata",
+      "timevar": "savingTime",
+      "variables": [
+        {
+          "name": "total",
+          "selector": {}
+        },
+        {
+          "name": "homepages",
+          "selector": { "type": "home" }
+        },
+        {
+          "name": "videos",
+          "selector": { "type": "video" }
+        },
+        {
+          "name": "searches",
+          "selector": { "type": "search" }
+        }
+      ]
+    },
+    {
+      "name": "searches",
+      "column": "metadata",
+      "timevar": "savingTime",
+      "variables": [
+        {
+          "name": "searches",
+          "selector": { "type": "search" }
+        },
+        {
+          "name": "experiment",
+          "selector": { "experiment": { "$exists": true }, "type": "search" }
+        }
+      ]
+    },
+    {
+      "name": "leaves",
+      "column": "leaves",
+      "timevar": "savingTime",
+      "variables": [
+        { "name": "total", "selector": {} },
+        { "name": "selector", "selector": { "selectorName": "selectorName" } }
+      ]
+    },
+    {
+      "name": "creators",
+      "column": "creators",
+      "timevar": "registeredOn",
+      "variables": [{ "name": "total", "selector": {} }]
+    },
+    {
+      "name": "ads",
+      "column": "ads",
+      "timevar": "savingTime",
+      "variables": [{ "name": "total", "selector": {} }]
+    },
+    {
+      "name": "recommendations",
+      "column": "recommendations",
+      "timevar": "when",
+      "variables": [{ "name": "total", "selector": {} }]
+    },
+    {
+      "name": "ytvids",
+      "column": "ytvids",
+      "timevar": "when",
+      "variables": [{ "name": "total", "selector": {} }]
+    }
+  ]
 }

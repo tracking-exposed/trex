@@ -590,9 +590,9 @@ async function updateMetadata(html, newsection, repeat) {
   if (!exists) {
     await createMetadataEntry(mongoc, html, newsection);
     debug(
-      'Created metadata %s [%s] from %s',
+      'Created metadata %s [%o] — %s',
       html.metadataId,
-      newsection.title ? newsection.title : '+' + newsection.type + '+',
+      html.nature,
       html.href
     );
     return await markHTMLandClose(mongoc, html, { what: 'created' });
@@ -631,9 +631,9 @@ async function updateMetadata(html, newsection, repeat) {
 
   if (updates)
     debug(
-      'Metadata UPDATE: %s (%s) %d -> new %j, overwritten: %j',
+      'Metadata UPDATE: %s (%o) %d -> new %j, overwritten: %j',
       html.metadataId,
-      html.selector,
+      html.nature,
       updates,
       newkeys,
       updatedkeys

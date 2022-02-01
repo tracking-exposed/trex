@@ -33,7 +33,8 @@ ret = db.htmls.createIndex({ processed: 1 });
 checkret('htmls processed', ret);
 ret = db.htmls.createIndex({ metadataId: 1 });
 checkret('htmls metadataId', ret);
-ret = db.htmls.createIndex({ type: 1 });
+ret = db.htmls.createIndex({ href: 1 }); /* DONE IN PROD */
+ret = db.htmls.createIndex({ 'type.nature': 1 }); /* TODO */
 checkret('htmls type', ret);
 
 ret = db.leaves.createIndex({ metadataId: 1 });
