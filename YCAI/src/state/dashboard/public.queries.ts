@@ -58,6 +58,9 @@ export const videoRecommendations = queryShallow(
   ({ videoId }: { videoId: string }) =>
     API.v3.Public.VideoRecommendations({
       Params: { videoId },
+      Query: {
+        channelId: undefined,
+      },
     }),
   available
 );
