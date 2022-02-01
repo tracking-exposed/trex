@@ -35,7 +35,7 @@
     "tk:ext": "yarn workspace tktrex",
     "ycai": "yarn workspace @trex/ycai",
     "lint-staged": "lint-staged",
-    "project-deps-check": "workspaces-to-typescript-project-references",
+    "check-ts-references": "workspaces-to-typescript-project-references",
     "docker-build": "scripts/docker-build.sh",
     "docker-run": "scripts/docker-run.sh",
     "postinstall": "husky install",

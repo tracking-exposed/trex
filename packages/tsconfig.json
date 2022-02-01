@@ -1,0 +1,6 @@
+{
+  "extends": "../config/typescript/tsconfig.base.json",
+  "files": [],
+  "include": [],
+  "references": [{ "path": "./shared" }, { "path": "./taboule" }]
+}

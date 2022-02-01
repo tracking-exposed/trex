@@ -1,0 +1,10 @@
+{
+  "compilerOptions": {
+    "composite": true,
+    "noEmit": false,
+    "paths": {
+      "@trex/shared": ["packages/shared"],
+      "@trex/taboule": ["packages/taboule"]
+    }
+  }
+}

@@ -1,5 +1,5 @@
 {
-  "extends": "../../tsconfig.json",
+  "extends": "../../config/typescript/tsconfig.base.json",
   "compilerOptions": {
     "composite": true,
     "module": "esnext",
@@ -32,7 +32,9 @@
       "@trex/shared/*": ["../../shared/src/*"]
     }
   },
+
   "include": ["./src", "./typings"],
+  "exclude": ["build", "node_modules"],
   "ts-node": {
     "compilerOptions": {
       "module": "CommonJS"

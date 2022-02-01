@@ -1,18 +1,10 @@
 {
-  "compilerOptions": {
-    "allowJs": true,
-    "strict": true,
-    "noEmit": true,
-    "strictNullChecks": true,
-    "allowUnusedLabels": false,
-    "isolatedModules": true,
-    "esModuleInterop": true,
-    "rootDir": "./"
-  },
-  "references": [
-    {
-      "path": "packages/shared"
-    }
+  "extends": "./config/typescript/project-references.tsconfig.json",
+  "include": [
+    "./config/typescript/**/*",
+    "./packages/**/**/src/*",
+    "./backend/**/*",
+    "./guardoni/src/*",
   ],
   "exclude": ["**/node_modules/*", "**/build/*"]
 }
