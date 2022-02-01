@@ -27,6 +27,9 @@ jobs:
       - name: Install dependencies
         run: yarn
 
+      - name: Test project
+        run: yarn test
+
       - name: Build Dashboard
         env:
           DOTENV_CONFIG_PATH: .env.beta
