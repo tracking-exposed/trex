@@ -1,22 +1,9 @@
 const jestBaseConfig = require('../jest.config.base');
-const tsConfig = require('./tsconfig.json');
-// jest.config.js
-const { pathsToModuleNameMapper } = require('ts-jest');
-
-const paths = pathsToModuleNameMapper(tsConfig.compilerOptions.paths, {
-  prefix: '<rootDir>',
-});
-
-const moduleNameMapper = {
-  ...paths,
-  ...jestBaseConfig.moduleNameMapper,
-};
 
 /** @type {import('ts-jest/dist/types').InitialOptionsTsJest} */
 module.exports = {
   ...jestBaseConfig,
   displayName: 'backend',
-  moduleNameMapper,
   globals: {
     'ts-jest': {
       // TS reports strange errors with jest,
