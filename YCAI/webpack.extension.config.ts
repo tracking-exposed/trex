@@ -1,9 +1,9 @@
 import { AppEnv } from './src/AppEnv';
-import { getConfig } from '../packages/shared/src/webpack/config';
+import { getConfig } from '../build/ts/packages/shared/src/webpack/config';
 import {
   CopyWebpackPlugin,
   FileManagerPlugin,
-} from '../packages/shared/src/webpack/plugins';
+} from '../build/ts/packages/shared/src/webpack/plugins';
 import * as path from 'path';
 import pkgJson from './package.json';
 

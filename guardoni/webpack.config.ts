@@ -1,7 +1,7 @@
 import * as t from 'io-ts';
 import * as path from 'path';
-import { getConfig } from '../packages/shared/src/webpack/config';
-import { CopyWebpackPlugin } from '../packages/shared/src/webpack/plugins';
+import { getConfig } from '../build/ts/packages/shared/src/webpack/config';
+import { CopyWebpackPlugin } from '../build/ts/packages/shared/src/webpack/plugins';
 import { AppEnv } from './src/AppEnv';
 import packageJson from './package.json';
 
