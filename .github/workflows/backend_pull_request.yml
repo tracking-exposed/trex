@@ -30,9 +30,6 @@ jobs:
       - name: Install node_modules
         run: yarn
 
-      - name: Check TS references
-        run: yarn check-ts-references --check
-
       - name: Lint code
         run: yarn backend lint
 
