@@ -50,7 +50,7 @@ const makeToken = (
   const payload = pipe(
     [{ date: formatISO(date, { representation: 'date' }) }],
     Array.from,
-    Uint8Array.from
+    (items) => Uint8Array.from(items as number[])
   );
 
   return TE.right(nacl.sign(payload, bs58.decode(secretKey)).toString());

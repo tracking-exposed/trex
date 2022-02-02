@@ -27,12 +27,12 @@
     "moduleResolution": "Node",
     "isolatedModules": true,
     "paths": {
-      "@shared/*": ["../../shared/src/*"]
+      "@shared/*": ["../../packages/shared/src/*"]
     }
   },
   "references": [
     {
-      "path": "../shared"
+      "path": "../packages/shared"
     }
   ],
   "include": [
