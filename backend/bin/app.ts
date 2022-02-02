@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-misused-promises */
 import { makeBackend } from '@shared/backend';
+import { RouteContext } from '@shared/backend/types';
 import { GetLogger } from '@shared/logger';
 import bodyParser from 'body-parser';
 import cors from 'cors';
@@ -8,6 +9,7 @@ import * as _ from 'lodash';
 import { MongoClient } from 'mongodb';
 import { apiList } from '../lib/api';
 import mongo3 from '../lib/mongo3';
+import { DeleteRecommendationRoute } from '../routes/youchoose/deleteRecommendation.route';
 
 const logger = GetLogger('api');
 const logAPICount = { requests: {}, responses: {}, errors: {} };
@@ -109,11 +111,16 @@ export const makeApp = async (
   // get a router instance from express
   const router = express.Router();
 
-  const db = {
-    ...mongo3,
-    mongo: ctx.mongo,
+  const routeCtx: RouteContext = {
+    logger,
+    db: {
+      ...mongo3,
+      mongo: ctx.mongo,
+    },
   };
-  const apiRouter = makeBackend({ db, logger }, express.Router());
+  const apiRouter = makeBackend(routeCtx, express.Router());
+
+  DeleteRecommendationRoute(apiRouter, routeCtx);
 
   /* this API is v0 as it is platform neutral. it might be shared among
    * all the trex backends, and should return info on system health, echo OK

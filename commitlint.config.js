@@ -13,8 +13,9 @@ module.exports = {
         'taboule',
         'backend',
         'guardoni',
-        'ycai',
         'tktrex',
+        'ycai',
+        'yttrex',
       ],
     ],
     'type-enum': [

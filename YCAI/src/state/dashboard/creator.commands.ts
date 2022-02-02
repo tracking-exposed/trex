@@ -1,14 +1,14 @@
+import * as sharedConst from '@shared/constants';
+import { AppError } from '@shared/errors/AppError';
+import { AuthResponse } from '@shared/models/Auth';
+import { ContentCreator } from '@shared/models/ContentCreator';
+import { PartialRecommendation } from '@shared/models/Recommendation';
+import { setItem } from '@shared/providers/localStorage.provider';
 import { command } from 'avenger';
 import { sequenceS } from 'fp-ts/lib/Apply';
 import { pipe } from 'fp-ts/lib/function';
 import * as TE from 'fp-ts/lib/TaskEither';
-import { AppError } from '@shared/errors/AppError';
-import * as sharedConst from '@shared/constants';
 import { API } from '../../api';
-import { setItem } from '@shared/providers/localStorage.provider';
-import { AuthResponse } from '@shared/models/Auth';
-import { ContentCreator } from '@shared/models/ContentCreator';
-import { PartialRecommendation } from '@shared/models/Recommendation';
 import {
   auth,
   ccRelatedUsers,
@@ -173,6 +173,24 @@ export const patchRecommendation = command(
       })
     ),
   { videoRecommendations }
+);
+
+export const deleteRecommendation = command(
+  ({ urlId }: { urlId: string }) =>
+    pipe(
+      profile.run(),
+      TE.chain((p) => {
+        return API.v3.Creator.DeleteRecommendation({
+          Headers: {
+            'x-authorization': p.accessToken,
+          },
+          Params: { urlId },
+        });
+      })
+    ),
+  {
+    creatorRecommendations,
+  }
 );
 
 export const updateAuth = command(
