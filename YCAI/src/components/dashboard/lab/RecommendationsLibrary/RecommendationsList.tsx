@@ -6,10 +6,12 @@ import { RecommendationCard } from '../RecommendationCard';
 
 interface RecommendationListProps {
   recommendations: Recommendation[];
+  onDeleteClick: (r: Recommendation) => void;
 }
 
 const RecommendationList: React.FC<RecommendationListProps> = ({
   recommendations,
+  onDeleteClick,
 }) => {
   const { t } = useTranslation();
 
@@ -24,7 +26,7 @@ const RecommendationList: React.FC<RecommendationListProps> = ({
             key={r.urlId}
             data={r}
             videoId={''}
-            onDeleteClick={() => {}}
+            onDeleteClick={onDeleteClick}
             onMoveDownClick={() => {}}
             onMoveUpClick={() => {}}
           />
