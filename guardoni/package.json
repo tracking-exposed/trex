@@ -15,7 +15,7 @@
     "pack": "electron-builder build --dir",
     "dist:linux": "electron-builder build -l",
     "dist:windows": "electron-builder build -w",
-    "dist:all": "scripts/electron-builder.sh",
+    "dist:all": "scripts/dist-all.sh",
     "postinstall": "electron-builder install-app-deps",
     "prepack": "yarn build"
   },

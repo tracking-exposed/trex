@@ -23,6 +23,7 @@ icon: ./static/yttrex-128.png
 
 linux:
   target: ["deb"]
+  category: Network
 
 win:
   target: ["portable"]

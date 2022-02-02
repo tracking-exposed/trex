@@ -2,8 +2,6 @@
 FROM electronuserland/builder:base
 
 ARG NODE_VERSION 16.10.0
-ARG USER_ID
-ARG GROUP_ID
 
 # this package is used for snapcraft and we should not clear apt list - to avoid apt-get update during snap build
 RUN curl -L https://nodejs.org/dist/v$NODE_VERSION/node-v$NODE_VERSION-linux-x64.tar.gz | tar xz -C /usr/local --strip-components=1 && \
@@ -21,10 +19,6 @@ RUN dpkg --add-architecture i386 && \
   apt-get clean && rm -rf /var/lib/apt/lists/*
 
 RUN curl -L https://github.com/electron-userland/electron-builder-binaries/releases/download/wine-2.0.3-mac-10.13/wine-home.zip > /tmp/wine-home.zip && unzip /tmp/wine-home.zip -d /root/.wine && unlink /tmp/wine-home.zip
-
-RUN addgroup --gid $GROUP_ID user
-RUN adduser --disabled-password --gecos '' --uid $USER_ID --gid $GROUP_ID user
-USER user
 
 ENV WINEDEBUG -all,err+all
 ENV WINEDLLOVERRIDES winemenubuilder.exe=d
