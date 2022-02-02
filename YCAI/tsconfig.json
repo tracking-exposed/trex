@@ -29,7 +29,7 @@
     "moduleResolution": "Node",
     "isolatedModules": true
   },
-  "include": ["."],
+  "include": [".", "../typings"],
   "exclude": [
     "jest.config.js",
     "webpack.config.ts",
