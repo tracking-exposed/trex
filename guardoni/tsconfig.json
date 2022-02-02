@@ -15,15 +15,15 @@
     "resolveJsonModule": true,
     "typeRoots": ["../node_modules/@types", "node_modules/@types"]
   },
-  "include": [".", "./package.json"],
+  "include": ["."],
   "exclude": [
-    "reload.js",
     "node_modules",
-    "bin",
     "build",
     "dist",
     "jest.config.js",
-    "webpack.config.ts"
+    "package.json",
+    "webpack.config.ts",
+    "reload.js"
   ],
   "watchOptions": {
     "watchFile": "useFsEvents",

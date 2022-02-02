@@ -3,8 +3,14 @@
   "compilerOptions": {
     "baseUrl": "./",
     "noEmit": true,
+    "module": "esnext",
     "jsx": "react",
     "skipLibCheck": true,
+    "lib": ["dom", "ESNext"],
+    "esModuleInterop": true,
+    "resolveJsonModule": true,
+    "moduleResolution": "node",
+    "target": "es5",
     "typeRoots": [
       "./node_modules/@types",
       "./packages/shared/node_modules/@types",
@@ -13,6 +19,7 @@
     ]
   },
   "include": [
+    "./typings",
     "./config/typescript/**/*",
     "./packages/shared/**/*",
     "./packages/taboule/**/*",
