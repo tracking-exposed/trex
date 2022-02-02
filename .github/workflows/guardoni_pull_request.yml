@@ -58,7 +58,4 @@ jobs:
         run: yarn guardoni pkg
 
       - name: Release-it after bump
-        run: |
-          git config --global user.email "team@tracking.exposed"
-          git config --global user.name "Team - Tracking Exposed"
-          yarn release-it --preRelease --ci --preReleaseId=alpha --github.preRelease=true
+        run: yarn release-it-after-bump
