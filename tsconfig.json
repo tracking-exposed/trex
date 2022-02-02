@@ -8,7 +8,8 @@
     "typeRoots": [
       "./node_modules/@types",
       "./packages/shared/node_modules/@types",
-      "./backend/node_modules/@types"
+      "./backend/node_modules/@types",
+      "./typings"
     ]
   },
   "include": [
@@ -20,5 +21,11 @@
     "./guardoni/src/**/*",
     "./YCAI/src/**/*"
   ],
-  "exclude": ["**/node_modules/*", "**/jest.config.js", "**/webpack.config.ts"]
+  "exclude": [
+    "**/node_modules/*",
+    "**/build/*",
+    "**/jest.config.js",
+    "**/webpack*.ts",
+    "**/webpack*.js"
+  ]
 }

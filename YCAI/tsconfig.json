@@ -1,5 +1,5 @@
 {
-  "extends": "../tsconfig.json",
+  "extends": "../config/typescript/tsconfig.base.json",
   "compilerOptions": {
     "module": "esnext",
     "target": "es5",
@@ -18,8 +18,8 @@
     "typeRoots": [
       "../node_modules/@types",
       "../packages/shared/node_modules/@types",
-      "./node_modules/@types",
-      "./typings"
+      "../typings",
+      "./node_modules/@types"
     ],
     "baseUrl": "../",
     "rootDir": "../",
@@ -29,19 +29,19 @@
     "moduleResolution": "Node",
     "isolatedModules": true
   },
+  "include": ["."],
+  "exclude": [
+    "jest.config.js",
+    "webpack.config.ts",
+    "webpack.extension.config.ts"
+  ],
   "references": [
     {
       "path": "../packages/shared"
-    }, {
+    },
+    {
       "path": "../packages/taboule"
     }
-  ],
-  "include": [
-    "./src",
-    "./package.json",
-    "./typings",
-    "./webpack.config.ts",
-    "./webpack.extension.config.ts"
   ],
   "ts-node": {
     "compilerOptions": {

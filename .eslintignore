@@ -1,0 +1,6 @@
+build/*
+coverage/*
+docker/*
+qa/*
+scripts/*
+typings/*
