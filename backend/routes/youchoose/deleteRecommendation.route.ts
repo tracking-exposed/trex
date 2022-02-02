@@ -19,13 +19,10 @@ export const DeleteRecommendationRoute: Route = (r, { db, logger }) => {
 
       return pipe(
         // connect to db
-        TE.tryCatch(async () => {
-          const check = await ycai.getCreatorByToken(
-            headers['x-authorization']
-          );
-          console.log(check);
-          return check;
-        }, toBackendError),
+        TE.tryCatch(
+          () => ycai.getCreatorByToken(headers['x-authorization']),
+          toBackendError
+        ),
         TE.chain((user) =>
           pipe(
             TE.tryCatch(
