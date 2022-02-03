@@ -82,16 +82,38 @@ async function fetchRecommendations(videoId, kind) {
   return result;
 }
 
-async function fetchChannelRecommendations(channelId, limit = 20) {
+async function fetchChannelRecommendations(
+  channelId,
+  limit = 20,
+  random = true
+) {
   const mongoc = await mongo3.clientConnect({ concurrency: 1 });
-  const res = await mongo3.readLimit(
-    mongoc,
-    nconf.get('schema').recommendations,
-    { channelId },
-    {},
-    limit,
-    0
-  );
+
+  const aggregate = [
+    {
+      $match: { channelId },
+    },
+  ];
+
+  if (random) {
+    aggregate.push({
+      $sample: { size: limit },
+    });
+  } else {
+    aggregate.push({
+      $sort: { createdAt: -1 },
+    });
+    aggregate.push({
+      $limit: limit,
+    });
+  }
+
+  const res = await mongoc
+    .db(nconf.get('mongoDb'))
+    .collection(nconf.get('schema').recommendations)
+    .aggregate(aggregate)
+    .toArray();
+
   await mongoc.close();
   return res;
 }
