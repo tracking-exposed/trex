@@ -5,11 +5,11 @@ Identifiers:     407614
 Symbols:         363240
 Types:            52626
 Instantiations:  693156
-Memory used:    487084K
-I/O read:         0.10s
+Memory used:    486442K
+I/O read:         0.08s
 I/O write:        0.00s
-Parse time:       3.70s
-Bind time:        1.20s
-Check time:       6.04s
+Parse time:       3.34s
+Bind time:        0.92s
+Check time:       4.74s
 Emit time:        0.00s
-Total time:      10.94s
+Total time:       9.00s

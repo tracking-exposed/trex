@@ -1,1 +1,45 @@
-error TS5072: Unknown build option '-p'.
+Files:             1199
+Lines:           387500
+Nodes:          1103764
+Identifiers:     391304
+Symbols:         482244
+Types:           200783
+Instantiations:  810017
+Memory used:    692981K
+I/O read:         0.07s
+I/O write:        0.01s
+Parse time:       2.85s
+Bind time:        0.78s
+Check time:       8.65s
+Emit time:        0.58s
+Total time:      12.85s
+Files:              862
+Lines:           376193
+Nodes:          1041130
+Identifiers:     355508
+Symbols:         277203
+Types:            28072
+Instantiations:  468226
+Memory used:    708665K
+I/O read:         0.00s
+I/O write:        0.00s
+Parse time:       0.37s
+Bind time:        0.07s
+Check time:       2.75s
+Emit time:        0.11s
+Total time:       3.30s
+Files:             1125
+Lines:           404499
+Nodes:          1180820
+Identifiers:     400976
+Symbols:         358098
+Types:            51682
+Instantiations:  690992
+Memory used:    900904K
+I/O read:         0.02s
+I/O write:        0.00s
+Parse time:       0.43s
+Bind time:        0.15s
+Check time:       4.05s
+Emit time:        0.00s
+Total time:       4.63s
