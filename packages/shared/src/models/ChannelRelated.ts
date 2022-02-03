@@ -18,6 +18,7 @@ export const GetRelatedChannelsOutput = t.strict(
     authorName: t.union([t.null, t.string]),
     score: t.number,
     totalRecommendations: t.number,
+    totalContributions: t.number,
     pagination: t.strict({
       amount: t.number,
     }),

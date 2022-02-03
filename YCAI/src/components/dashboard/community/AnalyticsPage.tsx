@@ -70,7 +70,7 @@ const CreatorAnalyticsPage: React.FC<CreatorAnalyticsPageProps> = ({
   const theme = useTheme();
   const { t } = useTranslation();
 
-  const amount = 20;
+  const amount = 25;
   return (
     <Grid item md={12}>
       {profile === undefined ? (
@@ -80,11 +80,6 @@ const CreatorAnalyticsPage: React.FC<CreatorAnalyticsPageProps> = ({
           queries={{ stats: ccRelatedUsers }}
           params={{ stats: { params: { amount, skip: 0 } } }}
           render={QR.fold(LazyFullSizeLoader, ErrorBox, ({ stats }) => {
-            const recommendationsAnalyzed = stats.content.reduce(
-              (acc, c) => acc + c.recommendedChannelCount,
-              0
-            );
-
             return (
               <Grid container spacing={2}>
                 <Grid item md={3} sm={6}>
@@ -100,13 +95,13 @@ const CreatorAnalyticsPage: React.FC<CreatorAnalyticsPageProps> = ({
                         <Grid item sm={12}>
                           <StatsCard
                             header={t('analytics:total_recommendations')}
-                            count={recommendationsAnalyzed}
+                            count={stats.totalRecommendations}
                           />
                         </Grid>
                         <Grid item sm={12}>
                           <StatsCard
                             header={t('analytics:total_metadata')}
-                            count={stats.totalRecommendations}
+                            count={stats.totalContributions}
                             color={theme.palette.primary.main}
                           />
                         </Grid>
