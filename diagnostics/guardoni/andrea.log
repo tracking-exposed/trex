@@ -1,0 +1,15 @@
+Files:              990
+Lines:           406024
+Nodes:          1095738
+Identifiers:     374312
+Symbols:         318557
+Types:            34027
+Instantiations:  503536
+Memory used:    423934K
+I/O read:         0.06s
+I/O write:        0.00s
+Parse time:       2.03s
+Bind time:        0.66s
+Check time:       1.93s
+Emit time:        0.19s
+Total time:       4.81s

@@ -38,7 +38,8 @@
     "docker-build": "scripts/docker-build.sh",
     "docker-run": "scripts/docker-run.sh",
     "postinstall": "husky install",
-    "release-it-after-bump": "scripts/release-it-after-bump.sh"
+    "release-it-after-bump": "scripts/release-it-after-bump.sh",
+    "tsc-diagnostics": "scripts/tsc-diagnostics.sh"
   },
   "devDependencies": {
     "@commitlint/cli": "^16.1.0",
