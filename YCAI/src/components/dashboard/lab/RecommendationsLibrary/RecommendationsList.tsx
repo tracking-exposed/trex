@@ -1,4 +1,4 @@
-import { List, Typography } from '@material-ui/core';
+import { Box, Grid, Typography } from '@material-ui/core';
 import { Recommendation } from '@shared/models/Recommendation';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
@@ -16,23 +16,27 @@ const RecommendationList: React.FC<RecommendationListProps> = ({
   const { t } = useTranslation();
 
   return (
-    <List>
-      <Typography>
-        {t('recommendations:total')} {recommendations.length}
-      </Typography>
-      {recommendations.map((r, index) => {
-        return (
-          <RecommendationCard
-            key={r.urlId}
-            data={r}
-            videoId={''}
-            onDeleteClick={onDeleteClick}
-            onMoveDownClick={() => {}}
-            onMoveUpClick={() => {}}
-          />
-        );
-      })}
-    </List>
+    <>
+      <Box mb={2}>
+        <Typography>
+          {t('recommendations:total')} {recommendations.length}
+        </Typography>
+      </Box>
+      <Grid container spacing={2}>
+        {recommendations.map((r) => (
+          <Grid item xs={12} sm={6} lg={4} key={r.urlId}>
+            <RecommendationCard
+              key={r.urlId}
+              data={r}
+              videoId={''}
+              onDeleteClick={onDeleteClick}
+              onMoveDownClick={undefined}
+              onMoveUpClick={undefined}
+            />
+          </Grid>
+        ))}
+      </Grid>
+    </>
   );
 };
 

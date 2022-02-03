@@ -58,15 +58,17 @@ async function byVideoId(req) {
     ? await ycai.fetchChannelRecommendations(channelId)
     : [];
 
+  const fromChannel = channelRecommendations
+    .filter(({ urlId }) => !avail.find(({ urlId: id }) => id === urlId))
+    .map((rec) => ({
+      ...rec,
+      fromChannel: true,
+    }));
+
+  fromChannel.sort(() => Math.random() - 0.5);
+
   return {
-    json: avail.concat(
-      channelRecommendations
-        .filter(({ urlId }) => !avail.find(({ urlId: id }) => id === urlId))
-        .map((rec) => ({
-          ...rec,
-          fromChannel: true,
-        }))
-    ),
+    json: avail.concat(fromChannel),
   };
 }
 
