@@ -17,7 +17,7 @@ import {
 } from '@shared/models/Recommendation';
 
 import { makeStyles } from '../../theme';
-import { isYTURL } from '../../utils/yt.utils';
+import { isYTURL } from '@shared/utils/yt.utils';
 import CharLimitedTypography from '../common/CharLimitedTypography';
 import { getHostFromURL } from '../../utils/location.utils';
 import { GEM_PLACEHOLDER_BLACK } from '../common/Image';

@@ -1,10 +1,13 @@
 import { Card, CardContent, Divider, Link } from '@material-ui/core';
+import { ErrorBox } from '@shared/components/Error/ErrorBox';
+import {
+  getYTEmbeddingURLById,
+  getYTVideoURLById,
+} from '@shared/utils/yt.utils';
 import * as QR from 'avenger/lib/QueryResult';
 import { WithQueries } from 'avenger/lib/react';
 import React from 'react';
 import { oneCreatorVideo } from '../../state/dashboard/creator.queries';
-import { getYTVideoURLById, getYTEmbeddingURLById } from '../../utils/yt.utils';
-import { ErrorBox } from '@shared/components/Error/ErrorBox';
 import { LazyFullSizeLoader } from './FullSizeLoader';
 
 interface YTVideoProps {

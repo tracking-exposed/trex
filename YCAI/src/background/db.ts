@@ -1,10 +1,10 @@
+import { catchRuntimeLastError } from '@shared/providers/browser.provider';
+import { bo } from '@shared/utils/browser.utils';
 import * as E from 'fp-ts/lib/Either';
 import { pipe } from 'fp-ts/lib/function';
 import { getAssignSemigroup } from 'fp-ts/lib/struct';
 import * as TE from 'fp-ts/lib/TaskEither';
-import { catchRuntimeLastError } from '../providers/browser.provider';
-import { bo } from '../utils/browser.utils';
-import { logger } from '../utils/logger.utils';
+import { logger } from 'utils/logger.utils';
 
 const dbLogger = logger.extend('db');
 const backend = bo.storage.local;

@@ -1,12 +1,13 @@
-import React from 'react';
 import { Box, Typography } from '@material-ui/core';
+import { ErrorBox } from '@shared/components/Error/ErrorBox';
+import { Keypair } from '@shared/models/extension/Keypair';
+import { ContributionState } from '@shared/providers/dataDonation.provider';
 import * as QR from 'avenger/lib/QueryResult';
 import { WithQueries } from 'avenger/lib/react';
-
-import { ErrorBox } from '@shared/components/Error/ErrorBox';
+import React from 'react';
 import { LazyFullSizeLoader } from '../../components/common/FullSizeLoader';
-import { Keypair, Settings } from '../../models/Settings';
-import * as dataDonation from '../../providers/dataDonation.provider';
+import { Settings } from '../../models/Settings';
+import { dataDonation } from '../../providers/dataDonation.provider';
 import { keypair } from '../../state/popup.queries';
 import { makeStyles } from '../../theme';
 
@@ -33,12 +34,12 @@ const YTContributionInfoBoxComponent: React.FC<{
   settings: Settings;
 }> = ({ keypair, settings }) => {
   const classes = useStyles();
-  const [state, setState] = React.useState<dataDonation.ContributionState>({
+  const [state, setState] = React.useState<ContributionState>({
     type: 'idle',
   });
 
   React.useEffect(() => {
-    dataDonation.boot(settings, keypair, setState);
+    dataDonation.boot(keypair, setState);
     return () => {
       dataDonation.clear(keypair);
     };
