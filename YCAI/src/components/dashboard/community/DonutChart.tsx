@@ -1,6 +1,6 @@
 import { makeStyles } from '@material-ui/core';
 import * as React from 'react';
-import { YCAITheme } from 'theme';
+import { YCAITheme } from '../../../theme';
 
 import c3 from 'c3';
 

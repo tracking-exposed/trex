@@ -1,13 +1,43 @@
 {
   "extends": "./tsconfig.json",
   "compilerOptions": {
-    "strict": true,
+    "strict": false,
     "strictNullChecks": true,
     "allowUnusedLabels": false,
     "isolatedModules": true,
+    "moduleResolution": "node",
+    "esModuleInterop": true,
+    "skipDefaultLibCheck": true,
+    "skipLibCheck": true,
+    "jsx": "react",
+    "module": "esnext",
+    "target": "es5",
     "rootDir": "./",
-    "outDir": "./build"
+    "outDir": "./build",
+    "typeRoots": [
+      "./node_modules/@types",
+      "./packages/shared/typings",
+      "./YCAI/node_modules/@types",
+      "./YCAI/typings"
+    ],
+    "paths": {
+      "@shared/*": ["./packages/shared/src/*"],
+      "@taboule/*": ["./packages/taboule/src/*"],
+    }
   },
-  "include": ["backend/src/**", "guardoni/src/**", "YCAI/src/**"],
-  "exclude": ["node_modules", "build", "lib"]
+  "include": [
+    "shared/src/*",
+    "taboule/src/*",
+    "backend/src/*",
+    "extension/src/*",
+    "guardoni/src/*",
+    "YCAI/src/*",
+    "YCAI/typings/*"
+  ],
+  "exclude": ["**/node_modules", "**/build", "lib"],
+  "references": [{
+    "path": "./packages/shared"
+  }, {
+    "path": "./packages/taboule"
+  }]
 }
