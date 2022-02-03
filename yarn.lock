@@ -11821,15 +11821,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"immutability-helper@npm:^2.9.1":
-  version: 2.9.1
-  resolution: "immutability-helper@npm:2.9.1"
-  dependencies:
-    invariant: ^2.2.0
-  checksum: 8b66d20c22d517d4bff861616adec67294f1cf40bc1aedf68a5ebd5ae42c56593dc6c9bfb507f18705048bdecec03ef01f2b7817d6864fd7b06cbcc5e1f3f855
-  languageName: node
-  linkType: hard
-
 "immutable@npm:^3.x.x":
   version: 3.8.2
   resolution: "immutable@npm:3.8.2"
@@ -12050,7 +12041,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"invariant@npm:^2.2.0, invariant@npm:^2.2.2":
+"invariant@npm:^2.2.2":
   version: 2.2.4
   resolution: "invariant@npm:2.2.4"
   dependencies:
@@ -23213,7 +23204,6 @@ __metadata:
     eslint-plugin-react: ^7.28.0
     glob: ^7.2.0
     html2canvas: ^1.4.1
-    immutability-helper: ^2.9.1
     jquery: ^3.6.0
     lodash: ^4.17.21
     marked: ^0.8.2
