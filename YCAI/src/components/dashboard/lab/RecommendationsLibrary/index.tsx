@@ -31,9 +31,11 @@ const RecommendationsLibrary: React.FC = () => {
       queries={{ recommendations: queries.creatorRecommendations }}
       render={QR.fold(LazyFullSizeLoader, ErrorBox, ({ recommendations }) => {
         return (
-          <Grid container>
-            <Grid item md={6}>
+          <Grid container spacing={2}>
+            <Grid item xs={12} lg={6}>
               <AddRecommendationBox onAddClick={handleRecommendationAdd} />
+            </Grid>
+            <Grid item xs={12}>
               <Box>
                 <RecommendationList
                   recommendations={recommendations}
