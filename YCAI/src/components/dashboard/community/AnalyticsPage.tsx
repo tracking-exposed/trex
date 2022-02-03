@@ -100,7 +100,7 @@ const CreatorAnalyticsPage: React.FC<CreatorAnalyticsPageProps> = ({
                         </Grid>
                         <Grid item sm={12}>
                           <StatsCard
-                            header={t('analytics:total_metadata')}
+                            header={t('analytics:total_contributions')}
                             count={stats.totalContributions}
                             color={theme.palette.primary.main}
                           />
