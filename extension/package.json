@@ -18,8 +18,7 @@
     "build:watch": "rm -rf ./build && mkdir build && cp -r public/* ./build/ && cross-env webpack -w",
     "dist": "sh pack-extension.sh",
     "dist:guardoni": "sh pack-extension-for-guardoni.sh",
-    "test": "mocha --compilers js:babel-register --reporter spec",
-    "test:watch": "mocha -w --compilers js:babel-register --reporter spec"
+    "test": "jest"
   },
   "devDependencies": {
     "@types/mini-css-extract-plugin": "^2.5.1",
@@ -36,7 +35,6 @@
     "eslint-plugin-react": "^7.28.0",
     "glob": "^7.2.0",
     "mini-css-extract-plugin": "^2.5.3",
-    "mocha": "^7.2.0",
     "postcss-loader": "^0.10.1",
     "react-transform-hmr": "^1.0.4",
     "style-loader": "^3.3.1",
