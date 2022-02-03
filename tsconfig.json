@@ -24,9 +24,9 @@
     "./packages/shared/**/*",
     "./packages/taboule/**/*",
     "./backend/**/*",
-    "./extension/src/**/*",
-    "./guardoni/src/**/*",
-    "./YCAI/src/**/*"
+    "./extension/**/*",
+    "./guardoni/*",
+    "./YCAI/**/*"
   ],
   "exclude": [
     "**/node_modules/*",

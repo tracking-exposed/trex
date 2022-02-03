@@ -15,13 +15,12 @@
     "resolveJsonModule": true,
     "typeRoots": ["../node_modules/@types", "node_modules/@types"]
   },
-  "include": ["."],
+  "include": [".", "package.json"],
   "exclude": [
     "node_modules",
     "build",
     "dist",
     "jest.config.js",
-    "package.json",
     "webpack.config.ts",
     "reload.js"
   ],
