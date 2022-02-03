@@ -11,3 +11,4 @@ src/extractor.js
 src/longlabel.js
 src/panel.js
 webpack.config.js
+jest.config.js
