@@ -252,7 +252,7 @@ async function getMetadataFromAuthorChannelId(channelId, options) {
     cappedResultsOpts
   );
 
-  const totalRelatedCount = [
+  const totalRelatedCountFilters = [
     {
       $match: filter,
     },
@@ -263,7 +263,7 @@ async function getMetadataFromAuthorChannelId(channelId, options) {
   const [relatedTotal] = await mongo3.aggregate(
     mongoc,
     nconf.get('schema').metadata,
-    totalRelatedCount
+    totalRelatedCountFilters
   );
 
   const [totalRecommendedSource] = await mongo3.aggregate(
@@ -287,6 +287,7 @@ async function getMetadataFromAuthorChannelId(channelId, options) {
       channelId,
       authorName: null,
       totalRecommendations: totalRecommendedSource?.total ?? 0,
+      totalContributions: relatedTotal?.total ?? 0,
       score: 0,
       pagination: options,
       content: [],
@@ -311,6 +312,7 @@ async function getMetadataFromAuthorChannelId(channelId, options) {
     channelId,
     authorName,
     totalRecommendations: totalRecommendedSource.total,
+    totalContributions: relatedTotal.total,
     score,
     pagination: options,
     content,

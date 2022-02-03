@@ -133,7 +133,7 @@ const resources: CustomTypeOptions['resources'] = {
     recommendations_title: 'Recommendations Analyzed',
     recommendations_for_other_channels: 'From other channels',
     total_recommendations: 'Total recommendations',
-    total_metadata: 'Total metadata',
+    total_contributions: 'Total Contributions',
     notifications_title: 'Notifications',
     top_n_cc_related_to_your_channel:
       'Most recommended channels on your videos:',
