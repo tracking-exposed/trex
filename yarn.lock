@@ -11269,7 +11269,6 @@ __metadata:
     io-ts-types: ^0.5.16
     jest: ^27.4.7
     lodash: ^4.17.21
-    moment: ^2.29.1
     nconf: ^0.11.3
     node-fetch: ^2.6.6
     node-polyfill-webpack-plugin: ^1.1.4

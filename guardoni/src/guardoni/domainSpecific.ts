@@ -1,12 +1,14 @@
 import D from 'debug';
 import * as fs from 'fs';
 import _ from 'lodash';
-import moment from 'moment';
 import nconf from 'nconf';
 import path from 'path';
 import * as puppeteer from 'puppeteer-core';
 import url from 'url';
 import { GuardoniProfile } from './types';
+import subSeconds from 'date-fns/subSeconds';
+import differenceInSeconds from 'date-fns/differenceInSeconds';
+import format from 'date-fns/format';
 
 const debug = D('guardoni:youtube');
 const logreqst = D('guardoni:requests');
@@ -19,7 +21,7 @@ const SCREENSHOT_MARKER = 'SCREENSHOTMARKER';
 const scrnshtrgxp = new RegExp(SCREENSHOT_MARKER);
 
 interface GlobalConfig {
-  lastScreenTime: moment.Moment;
+  lastScreenTime: Date;
   currentURLlabel: string | null;
   screenshotPrefix: string | null;
   interval: NodeJS.Timer | null;
@@ -27,31 +29,30 @@ interface GlobalConfig {
 }
 
 const globalConfig: GlobalConfig = {
-  lastScreenTime: moment().subtract(4, 'seconds'),
+  lastScreenTime: subSeconds(new Date(), 4),
   currentURLlabel: null,
   screenshotPrefix: null,
   interval: null,
   publicKeySpot: null,
 };
 
-function getScreenshotFilename(): string | null {
+export function getScreenshotName(prefix: string): string {
+  return `${prefix}-${format(new Date(), 'yyyy-MM-dd-KK:mm')}.png`;
+}
+
+export function getMaybeScreenshotFilename(
+  lastScreenTime: Date
+): string | null {
   /* this function return null if no screenshot has to be taken,
    * and the criteria is to take max one screen every 5 seconds */
-  const now = moment();
-  if (
-    moment
-      .duration((now as any) - (globalConfig.lastScreenTime as any))
-      .asSeconds() < 5
-  )
-    return null;
+  const now = new Date();
+  if (differenceInSeconds(now, lastScreenTime) < 5) return null;
 
   globalConfig.lastScreenTime = now;
   /* screenshotPrefix would exist as a directory */
   return path.join(
-    globalConfig.screenshotPrefix as any,
-    `${
-      globalConfig.currentURLlabel
-    }-${globalConfig.lastScreenTime.toISOString()}.jpeg`
+    globalConfig.screenshotPrefix ?? '',
+    getScreenshotName(globalConfig.currentURLlabel as any)
   );
 }
 
@@ -68,7 +69,7 @@ async function consoleLogParser(
     globalConfig.publicKeySpot = material.response.publicKey;
   }
   if (consoleline.match(scrnshtrgxp)) {
-    const fdestname = getScreenshotFilename();
+    const fdestname = getMaybeScreenshotFilename(globalConfig.lastScreenTime);
     // if the screenshot are less than 5 seconds close, the function
     // above would return null, so we don't take it.
     if (fdestname) {
@@ -236,8 +237,7 @@ async function afterWait(page: puppeteer.Page, directive: any): Promise<void> {
   }
 
   if (directive.screenshot) {
-    const screendumpf =
-      moment().format('YYYYMMDD-HHmm') + '-' + directive.name + '.png';
+    const screendumpf = getScreenshotName(directive.name);
     const fullpath = path.join(directive.profile, screendumpf);
     debug('afterWait: collecting screenshot in %s', fullpath);
 
