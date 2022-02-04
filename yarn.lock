@@ -23568,7 +23568,6 @@ __metadata:
     cheerio: ^0.22.0
     classnames: ^2.3.1
     copy-webpack-plugin: ^9.1.0
-    create-react-class: ^15.7.0
     cross-env: ^2.0.1
     css-loader: ^6.5.1
     dotenv: ^14.3.0
