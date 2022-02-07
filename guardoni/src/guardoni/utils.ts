@@ -19,6 +19,7 @@ export function getChromePath(): E.Either<Error, string> {
     '/Program Files (x86)/Google/Chrome/Application/chrome.exe',
     'C:\\Program Files (x86)\\Google\\Chrome\\Application\\chrome.exe',
     '/Applications/Chromium.app/Contents/MacOS/Chromium',
+    '~/Library/Application Support/Google/Chrome',
   ];
 
   const chromePath = knownPaths.find((p) => fs.existsSync(p));
