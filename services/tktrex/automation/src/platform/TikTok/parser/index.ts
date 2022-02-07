@@ -10,7 +10,7 @@ export const SearchTopMetaData = t.type(
     description: t.string,
     hashtags: t.array(t.string),
   },
-  'SearchTopMetaData',
+  'SearchTopMetaData'
 );
 export type SearchTopMetaData = t.TypeOf<typeof SearchTopMetaData>;
 
@@ -25,7 +25,7 @@ export const parseSearchTop = (html: string): SearchTopMetaData[] => {
   return Array.from(document.querySelectorAll(selectors.searchTopItem)).map(
     (el, position) => {
       const descriptionEl = el.parentElement?.querySelector(
-        selectors.description,
+        selectors.description
       );
 
       if (!descriptionEl) {
@@ -35,7 +35,7 @@ export const parseSearchTop = (html: string): SearchTopMetaData[] => {
 
       const hashtags = Array.from(descriptionEl.querySelectorAll('a'))
         .filter((el) => (el as any).href.startsWith('/tag'))
-        .map((el) => (el as any).textContent);
+        .map((el) => (el as any).textContent.trim());
 
       return {
         _id: undefined,
@@ -45,6 +45,6 @@ export const parseSearchTop = (html: string): SearchTopMetaData[] => {
         description,
         hashtags,
       };
-    },
+    }
   );
 };
