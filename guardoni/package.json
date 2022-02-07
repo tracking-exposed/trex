@@ -14,6 +14,7 @@
     "start": "electron .",
     "pack": "electron-builder build --dir",
     "dist:linux": "electron-builder build -l",
+    "dist:mac": "electron-builder build -m",
     "dist:windows": "electron-builder build -w",
     "dist:all": "scripts/dist-all.sh",
     "postinstall": "electron-builder install-app-deps",
