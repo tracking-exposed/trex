@@ -1,11 +1,12 @@
 {
   "extends": "../../../tsconfig.json",
   "compilerOptions": {
+    "allowSyntheticDefaultImports": true,
     "allowJs": true,
     "baseUrl": "./src",
     "esModuleInterop": true,
     "jsx": "react",
-    "module": "CommonJS",
+    "module": "ES2020",
     "moduleResolution": "node",
     "noEmit": true,
     "noImplicitAny": true,
@@ -13,7 +14,8 @@
     "resolveJsonModule": true,
     "strict": true,
     "strictNullChecks": true,
-    "target": "es2015",
+    "target": "ES2021",
+    "lib": ["ES2021"],
     "paths": {
       "@shared/*": ["../../../../packages/shared/src/*"],
       "@tktrex/*": ["../../shared/src/*"],
@@ -26,7 +28,8 @@
       "@scraper": ["./scraper/index"],
       "@util/*": ["./util/*"],
       "@TikTok/*": ["./platform/TikTok/*"]
-    }
+    },
+    "sourceMap": true
   },
   "references": [
     { "path": "../../../packages/shared" },
@@ -34,7 +37,10 @@
     { "path": "../../../guardoni" }
   ],
   "ts-node": {
-    "require": ["tsconfig-paths/register"]
+    "require": ["tsconfig-paths/register"],
+    "compilerOptions": {
+      "module": "COMMONJS"
+    }
   },
   "exclude": ["node_modules", "dist"]
 }

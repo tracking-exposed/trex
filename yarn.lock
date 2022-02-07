@@ -1087,6 +1087,25 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@mapbox/node-pre-gyp@npm:^1.0.0":
+  version: 1.0.8
+  resolution: "@mapbox/node-pre-gyp@npm:1.0.8"
+  dependencies:
+    detect-libc: ^1.0.3
+    https-proxy-agent: ^5.0.0
+    make-dir: ^3.1.0
+    node-fetch: ^2.6.5
+    nopt: ^5.0.0
+    npmlog: ^5.0.1
+    rimraf: ^3.0.2
+    semver: ^7.3.5
+    tar: ^6.1.11
+  bin:
+    node-pre-gyp: bin/node-pre-gyp
+  checksum: 29a38f39575107fa1665edf14defcfdf62e12bb38e9c27f7457ba42be84060125015171d12b8de3065155a465992f1854a363e2985f071fcbea9ff0701362b05
+  languageName: node
+  linkType: hard
+
 "@material-ui/core@npm:^4.12.3":
   version: 4.12.3
   resolution: "@material-ui/core@npm:4.12.3"
@@ -2130,7 +2149,7 @@ __metadata:
   dependencies:
     "@types/jest": ^27.4.0
     "@types/node": ^17.0.8
-    "@types/pouchdb": ^6.4.0
+    "@types/pouchdb-node": ^6.1.4
     "@types/puppeteer": ^5.4.4
     "@types/unzipper": ^0
     "@types/webpack": ^5.28.0
@@ -2138,6 +2157,7 @@ __metadata:
     "@types/yargs": ^17.0.8
     "@typescript-eslint/eslint-plugin": ^5.7.0
     "@typescript-eslint/parser": ^5.7.0
+    canvas: ^2.9.0
     csv: ^6.0.5
     eslint: ^8.4.1
     eslint-config-prettier: ^8.3.0
@@ -2148,20 +2168,25 @@ __metadata:
     fp-ts: ^2.11.7
     io-ts: ^2.2.16
     jest: ^27.4.7
+    leveldown: ^6.1.0
     linkedom: ^0.13.2
     node-fetch: ^2.6.5
-    pouchdb: ^7.2.2
+    node-loader: ^2.0.0
+    pouchdb-node: ^7.2.2
     puppeteer: ^13.1.1
     puppeteer-extra: ^3.2.3
     puppeteer-extra-plugin-stealth: ^2.9.0
+    string-replace-loader: ^3.1.0
     ts-jest: ^27.1.3
     ts-loader: ^9.2.6
     ts-node: ^10.4.0
     tsconfig-paths: ^3.12.0
     tsconfig-paths-webpack-plugin: ^3.5.2
     typescript: ^4.5.4
+    unlazy-loader: ^0.1.3
     unzipper: ^0.10.11
-    webpack: ^5.66.0
+    webpack: ^5.68.0
+    webpack-ci: ^1.0.0
     webpack-cli: ^4.9.1
     yaml: ^1.10.2
     yargs: ^17.3.1
@@ -3112,24 +3137,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/pouchdb-adapter-cordova-sqlite@npm:*":
-  version: 1.0.1
-  resolution: "@types/pouchdb-adapter-cordova-sqlite@npm:1.0.1"
-  dependencies:
-    "@types/pouchdb-core": "*"
-  checksum: e8332b0fc8b66db449f9ab7042236d95c3f3577e0e03d1c73a024f819076c9eabd85235855926a60c6595f82494031e76c9c66836443785be65bbd957ddf1e15
-  languageName: node
-  linkType: hard
-
-"@types/pouchdb-adapter-fruitdown@npm:*":
-  version: 6.1.3
-  resolution: "@types/pouchdb-adapter-fruitdown@npm:6.1.3"
-  dependencies:
-    "@types/pouchdb-core": "*"
-  checksum: 533bade1eaed86e7b8a1f8941009eed2f4c5a4e99ef26820814846a792765f6735b19585ccb9167fdaf90b1e68e70cd0dbc9b5996174cf222a8e088da6117a9d
-  languageName: node
-  linkType: hard
-
 "@types/pouchdb-adapter-http@npm:*":
   version: 6.1.3
   resolution: "@types/pouchdb-adapter-http@npm:6.1.3"
@@ -3139,72 +3146,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/pouchdb-adapter-idb@npm:*":
-  version: 6.1.4
-  resolution: "@types/pouchdb-adapter-idb@npm:6.1.4"
-  dependencies:
-    "@types/pouchdb-core": "*"
-  checksum: 5c559f99d09e1fd1280a03817b0351bb475864b008a03e3605e88c59038a5179ba06ea1716282571122defc2c3feda4675bf6dffff3da0451319b71548029fea
-  languageName: node
-  linkType: hard
-
 "@types/pouchdb-adapter-leveldb@npm:*":
   version: 6.1.3
   resolution: "@types/pouchdb-adapter-leveldb@npm:6.1.3"
   dependencies:
     "@types/pouchdb-core": "*"
   checksum: ebd3b6b643a32456275866dc5d2418d6979d48cd3efade2fdf59387e8bb86df104fcea693daf374d34795f328aa3974a0101fb08a9807506c6f706443f589667
-  languageName: node
-  linkType: hard
-
-"@types/pouchdb-adapter-localstorage@npm:*":
-  version: 6.1.3
-  resolution: "@types/pouchdb-adapter-localstorage@npm:6.1.3"
-  dependencies:
-    "@types/pouchdb-core": "*"
-  checksum: d848a712e353f56c05bdfd8978100dda74c5754d63b3c198eaca7b680308490aeb802ace6228b4718894f8a3a6adc0150d5c4dec680de95dbe4eef25d01ac4bc
-  languageName: node
-  linkType: hard
-
-"@types/pouchdb-adapter-memory@npm:*":
-  version: 6.1.3
-  resolution: "@types/pouchdb-adapter-memory@npm:6.1.3"
-  dependencies:
-    "@types/pouchdb-core": "*"
-  checksum: 655e93f3789df31c7642753186b2bb9679fa5280788477225bd65d7fb063177039fabf78a41c97f79e16cde08478c567e73b9a68c885d990f8852f63abe06da6
-  languageName: node
-  linkType: hard
-
-"@types/pouchdb-adapter-node-websql@npm:*":
-  version: 6.1.3
-  resolution: "@types/pouchdb-adapter-node-websql@npm:6.1.3"
-  dependencies:
-    "@types/pouchdb-adapter-websql": "*"
-    "@types/pouchdb-core": "*"
-  checksum: d786387adff4920b18ba2ed1e92a1a7506a57c83f9d5beb45f166c0001e1e4c7b6a203d15d060a4f628b26e384179b41f6b9e585e6c0bb91302aed6fe3535337
-  languageName: node
-  linkType: hard
-
-"@types/pouchdb-adapter-websql@npm:*":
-  version: 6.1.4
-  resolution: "@types/pouchdb-adapter-websql@npm:6.1.4"
-  dependencies:
-    "@types/pouchdb-core": "*"
-  checksum: 820eb7eb7e19f2a13a7ed55c2cb8aa64d788ce0cf6f956527688c63d9ad8cdfa71dfb7173344f2c31dd613e07a20a8a2f34b03d2a3f075019c5c76428d26e9b2
-  languageName: node
-  linkType: hard
-
-"@types/pouchdb-browser@npm:*":
-  version: 6.1.3
-  resolution: "@types/pouchdb-browser@npm:6.1.3"
-  dependencies:
-    "@types/pouchdb-adapter-http": "*"
-    "@types/pouchdb-adapter-idb": "*"
-    "@types/pouchdb-adapter-websql": "*"
-    "@types/pouchdb-core": "*"
-    "@types/pouchdb-mapreduce": "*"
-    "@types/pouchdb-replication": "*"
-  checksum: 4d3a1d8fcaf60c7d1bab14e9ec0d09d905e5ca1b4c7dc21d58a25fcb78b98cfd75b7d79353d32419785272f90b4d9e569686b2a17f7a83bb3abb7c45aca3c17c
   languageName: node
   linkType: hard
 
@@ -3227,16 +3174,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/pouchdb-http@npm:*":
-  version: 6.1.3
-  resolution: "@types/pouchdb-http@npm:6.1.3"
-  dependencies:
-    "@types/pouchdb-adapter-http": "*"
-    "@types/pouchdb-core": "*"
-  checksum: 659d7b244afa840950308e3df2c3a3b8f942e6c1aff46bc912859a9f97262b6eb518d7b04ce305fb4dea431c137ba488eb65964bcc70c27465431d47aa56bc24
-  languageName: node
-  linkType: hard
-
 "@types/pouchdb-mapreduce@npm:*":
   version: 6.1.6
   resolution: "@types/pouchdb-mapreduce@npm:6.1.6"
@@ -3246,7 +3183,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/pouchdb-node@npm:*":
+"@types/pouchdb-node@npm:^6.1.4":
   version: 6.1.4
   resolution: "@types/pouchdb-node@npm:6.1.4"
   dependencies:
@@ -4209,6 +4146,20 @@ __metadata:
     level-supports: ~1.0.0
     xtend: ~4.0.0
   checksum: 121a8509d8c6a540e656c2a69e5b8d853d4df71072011afefc868b98076991bb00120550e90643de9dc18889c675f62413409eeb4c8c204663124c7d215e4ec3
+  languageName: node
+  linkType: hard
+
+"abstract-leveldown@npm:^7.2.0":
+  version: 7.2.0
+  resolution: "abstract-leveldown@npm:7.2.0"
+  dependencies:
+    buffer: ^6.0.3
+    catering: ^2.0.0
+    is-buffer: ^2.0.5
+    level-concat-iterator: ^3.0.0
+    level-supports: ^2.0.1
+    queue-microtask: ^1.2.3
+  checksum: d558111f2d123da95ac80b8ba3b9b0a5bc8cd87296e64b05dca693f5f4839aa0e2fc97bad56a101766f499824e2962611750f8a76bbac4a5db35801968fbbe02
   languageName: node
   linkType: hard
 
@@ -6167,6 +6118,18 @@ __metadata:
   version: 1.0.30001312
   resolution: "caniuse-lite@npm:1.0.30001312"
   checksum: 753fb9ea1e02e999430b323a71b5acab5120f3b5fc0161b01669f54a3ef5c5296240b6ae9b79b12a3742e3aed216aa9ee3d5398a23c16d08625ccd376b79545d
+  languageName: node
+  linkType: hard
+
+"canvas@npm:^2.9.0":
+  version: 2.9.0
+  resolution: "canvas@npm:2.9.0"
+  dependencies:
+    "@mapbox/node-pre-gyp": ^1.0.0
+    nan: ^2.15.0
+    node-gyp: latest
+    simple-get: ^3.0.3
+  checksum: 376ccd47340a46c04d5cabafd6feb1b7ae82c92dc3ae6db68c9cbac17ec1c43d2bf6aab60019690e9d49bf40b41bee3e4e0a8901f39b53e993789698e77e2699
   languageName: node
   linkType: hard
 
@@ -11002,6 +10965,23 @@ __metadata:
   languageName: node
   linkType: hard
 
+"gauge@npm:^3.0.0":
+  version: 3.0.2
+  resolution: "gauge@npm:3.0.2"
+  dependencies:
+    aproba: ^1.0.3 || ^2.0.0
+    color-support: ^1.1.2
+    console-control-strings: ^1.0.0
+    has-unicode: ^2.0.1
+    object-assign: ^4.1.1
+    signal-exit: ^3.0.0
+    string-width: ^4.2.3
+    strip-ansi: ^6.0.1
+    wide-align: ^1.1.2
+  checksum: 81296c00c7410cdd48f997800155fbead4f32e4f82109be0719c63edc8560e6579946cc8abd04205297640691ec26d21b578837fd13a4e96288ab4b40b1dc3e9
+  languageName: node
+  linkType: hard
+
 "gauge@npm:^4.0.0":
   version: 4.0.0
   resolution: "gauge@npm:4.0.0"
@@ -14420,6 +14400,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"large-number@npm:^1.0.1":
+  version: 1.0.1
+  resolution: "large-number@npm:1.0.1"
+  checksum: 179da4b5cc701b36d6b7438b1b9d298d739080c984a66a62bf171915e6a5ba2c015f8d9ab58327d01a20af9091c77bfae34fe282d620917086a18eee5bc9830f
+  languageName: node
+  linkType: hard
+
 "latest-version@npm:^3.0.0":
   version: 3.1.0
   resolution: "latest-version@npm:3.1.0"
@@ -14486,6 +14473,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"level-concat-iterator@npm:^3.0.0":
+  version: 3.1.0
+  resolution: "level-concat-iterator@npm:3.1.0"
+  dependencies:
+    catering: ^2.1.0
+  checksum: a15bc4c5fbbb30c1efa7fad06b72feaac84d90990b356b461593c198a833336f31f6daff8f40c3908fabd14cfd8856d1c5ecae9e1cb0575037b65fa607e760e9
+  languageName: node
+  linkType: hard
+
 "level-concat-iterator@npm:~2.0.0":
   version: 2.0.1
   resolution: "level-concat-iterator@npm:2.0.1"
@@ -14535,6 +14531,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"level-supports@npm:^2.0.1":
+  version: 2.1.0
+  resolution: "level-supports@npm:2.1.0"
+  checksum: f7b16aea7ddd13326ee4fbc2c1099bcaf8a74dc95346af9ebedea4e02518c6f7a438e829b79b7890d67489b59f615a9428369a0a065021797aa7cb6b6bd84d75
+  languageName: node
+  linkType: hard
+
 "level-supports@npm:~1.0.0":
   version: 1.0.1
   resolution: "level-supports@npm:1.0.1"
@@ -14576,6 +14579,18 @@ __metadata:
   languageName: node
   linkType: hard
 
+"leveldown@npm:^6.1.0":
+  version: 6.1.0
+  resolution: "leveldown@npm:6.1.0"
+  dependencies:
+    abstract-leveldown: ^7.2.0
+    napi-macros: ~2.0.0
+    node-gyp: latest
+    node-gyp-build: ^4.3.0
+  checksum: e984b61e9fbe057cfd5c81ac0afe5d7e35d695ff130a95991e0ecb66390e4c4ff6aa3980a65b6c53edaba80527a47790bb26e3cfbd52a054957b3546d9941fe4
+  languageName: node
+  linkType: hard
+
 "levelup@npm:4.4.0, levelup@npm:^4.3.2":
   version: 4.4.0
   resolution: "levelup@npm:4.4.0"
@@ -14613,6 +14628,13 @@ __metadata:
     prelude-ls: ~1.1.2
     type-check: ~0.3.2
   checksum: 0d084a524231a8246bb10fec48cdbb35282099f6954838604f3c7fc66f2e16fa66fd9cc2f3f20a541a113c4dafdf181e822c887c8a319c9195444e6c64ac395e
+  languageName: node
+  linkType: hard
+
+"lib-flexible@npm:^0.3.2":
+  version: 0.3.2
+  resolution: "lib-flexible@npm:0.3.2"
+  checksum: 64af77add565bc44bd1ca490d8c6de4086adf9706173a7f34c0a88e18fb1a7332d3954975f70e586b2ba6d3da64aaa3b0e06e04faebfc9b5104304a0b3b764e6
   languageName: node
   linkType: hard
 
@@ -15246,7 +15268,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"make-dir@npm:^3.0.0":
+"make-dir@npm:^3.0.0, make-dir@npm:^3.1.0":
   version: 3.1.0
   resolution: "make-dir@npm:3.1.0"
   dependencies:
@@ -16036,7 +16058,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"nan@npm:^2.12.1":
+"nan@npm:^2.12.1, nan@npm:^2.15.0":
   version: 2.15.0
   resolution: "nan@npm:2.15.0"
   dependencies:
@@ -16289,6 +16311,17 @@ __metadata:
   version: 0.4.0
   resolution: "node-int64@npm:0.4.0"
   checksum: d0b30b1ee6d961851c60d5eaa745d30b5c95d94bc0e74b81e5292f7c42a49e3af87f1eb9e89f59456f80645d679202537de751b7d72e9e40ceea40c5e449057e
+  languageName: node
+  linkType: hard
+
+"node-loader@npm:^2.0.0":
+  version: 2.0.0
+  resolution: "node-loader@npm:2.0.0"
+  dependencies:
+    loader-utils: ^2.0.0
+  peerDependencies:
+    webpack: ^5.0.0
+  checksum: 9252a92b226c0e6fdd29fef92d9853d6c389a4c65119a32306dc12cee7886f2ab4dde333dda5e37df92283c34bd0267e98c384be6d548dbe69676e3343f549ea
   languageName: node
   linkType: hard
 
@@ -16721,6 +16754,18 @@ __metadata:
     gauge: ~2.7.3
     set-blocking: ~2.0.0
   checksum: edbda9f95ec20957a892de1839afc6fb735054c3accf6fbefe767bac9a639fd5cea2baeac6bd2bcd50a85cb54924d57d9886c81c7fbc2332c2ddd19227504192
+  languageName: node
+  linkType: hard
+
+"npmlog@npm:^5.0.1":
+  version: 5.0.1
+  resolution: "npmlog@npm:5.0.1"
+  dependencies:
+    are-we-there-yet: ^2.0.0
+    console-control-strings: ^1.1.0
+    gauge: ^3.0.0
+    set-blocking: ^2.0.0
+  checksum: 516b2663028761f062d13e8beb3f00069c5664925871a9b57989642ebe09f23ab02145bf3ab88da7866c4e112cafff72401f61a672c7c8a20edc585a7016ef5f
   languageName: node
   linkType: hard
 
@@ -18137,6 +18182,32 @@ __metadata:
   languageName: node
   linkType: hard
 
+"pouchdb-node@npm:^7.2.2":
+  version: 7.2.2
+  resolution: "pouchdb-node@npm:7.2.2"
+  dependencies:
+    abort-controller: 3.0.0
+    argsarray: 0.0.1
+    buffer-from: 1.1.1
+    clone-buffer: 1.0.0
+    double-ended-queue: 2.1.0-0
+    fetch-cookie: 0.10.1
+    inherits: 2.0.4
+    level: 6.0.1
+    level-codec: 9.0.2
+    level-write-stream: 1.0.0
+    leveldown: 5.6.0
+    levelup: 4.4.0
+    ltgt: 2.2.1
+    node-fetch: 2.6.0
+    readable-stream: 1.1.14
+    through2: 3.0.2
+    uuid: 8.1.0
+    vuvuzela: 1.0.3
+  checksum: f045bccdc89cab3c9fa8e98f04084cf4ccc7715f358efba68235389af2ee4612e071b04f9731d79066451920e1636895ed5642f979c35468a028662990fe2268
+  languageName: node
+  linkType: hard
+
 "pouchdb-selector-core@npm:7.2.2":
   version: 7.2.2
   resolution: "pouchdb-selector-core@npm:7.2.2"
@@ -18160,34 +18231,6 @@ __metadata:
     pouchdb-md5: 7.2.2
     uuid: 8.1.0
   checksum: 2364dbe578503fd6bf7fbc932b02c43c5905c39cb44e307aaa65c32c0dc63cff0d9ce5ca281b0c672d0dc5fe28d2992cb45e0770a4d768349506ab55419534b7
-  languageName: node
-  linkType: hard
-
-"pouchdb@npm:^7.2.2":
-  version: 7.2.2
-  resolution: "pouchdb@npm:7.2.2"
-  dependencies:
-    abort-controller: 3.0.0
-    argsarray: 0.0.1
-    buffer-from: 1.1.1
-    clone-buffer: 1.0.0
-    double-ended-queue: 2.1.0-0
-    fetch-cookie: 0.10.1
-    immediate: 3.3.0
-    inherits: 2.0.4
-    level: 6.0.1
-    level-codec: 9.0.2
-    level-write-stream: 1.0.0
-    leveldown: 5.6.0
-    levelup: 4.4.0
-    ltgt: 2.2.1
-    node-fetch: 2.6.0
-    readable-stream: 1.1.14
-    spark-md5: 3.0.1
-    through2: 3.0.2
-    uuid: 8.1.0
-    vuvuzela: 1.0.3
-  checksum: 340ccb785721d6e5cbb4ed15fe31a7b871870abf82f4e23b6cf69d0487a203ad51bd4c4144520efa67cd11db45af6acb94661962792304655574a0f7e79e18e6
   languageName: node
   linkType: hard
 
@@ -18748,7 +18791,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"queue-microtask@npm:^1.2.2":
+"queue-microtask@npm:^1.2.2, queue-microtask@npm:^1.2.3":
   version: 1.2.3
   resolution: "queue-microtask@npm:1.2.3"
   checksum: b676f8c040cdc5b12723ad2f91414d267605b26419d5c821ff03befa817ddd10e238d22b25d604920340fd73efd8ba795465a0377c4adf45a4a41e4234e42dc4
@@ -19676,6 +19719,13 @@ __metadata:
   version: 1.0.0
   resolution: "requires-port@npm:1.0.0"
   checksum: eee0e303adffb69be55d1a214e415cf42b7441ae858c76dfc5353148644f6fd6e698926fc4643f510d5c126d12a705e7c8ed7e38061113bdf37547ab356797ff
+  languageName: node
+  linkType: hard
+
+"requires-regex@npm:^0.3.3":
+  version: 0.3.3
+  resolution: "requires-regex@npm:0.3.3"
+  checksum: 7ed7012c624c39f0fae8e3fd99c1f04016fbfd833cdf3f228021741ff06db820d70f89eac26f7872ccd6d2b2963da6c17a23f336f349bc2fddb9af29ed612c0f
   languageName: node
   linkType: hard
 
@@ -21202,6 +21252,18 @@ __metadata:
     char-regex: ^1.0.2
     strip-ansi: ^6.0.0
   checksum: ce85533ef5113fcb7e522bcf9e62cb33871aa99b3729cec5595f4447f660b0cefd542ca6df4150c97a677d58b0cb727a3fe09ac1de94071d05526c73579bf505
+  languageName: node
+  linkType: hard
+
+"string-replace-loader@npm:^3.1.0":
+  version: 3.1.0
+  resolution: "string-replace-loader@npm:3.1.0"
+  dependencies:
+    loader-utils: ^2.0.0
+    schema-utils: ^3.0.0
+  peerDependencies:
+    webpack: ^5
+  checksum: 15fec37e2ddfc83819ad6b8005b5518e4314de69b9332077d8f032292b02106000ccc5ac52ceb1285efe30a5286620aef1e51c7d3c00d08fa4571d648b32cfa9
   languageName: node
   linkType: hard
 
@@ -22786,6 +22848,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"unlazy-loader@npm:^0.1.3":
+  version: 0.1.3
+  resolution: "unlazy-loader@npm:0.1.3"
+  dependencies:
+    requires-regex: ^0.3.3
+  checksum: e8351680dcc609b3ea22dcb56129c95d6bda4df57da29e74b4fec5fa538df374f4d685a900114db172b7a392ced63031091ce84c03cae1c7434541dad0256bb3
+  languageName: node
+  linkType: hard
+
 "unpipe@npm:1.0.0, unpipe@npm:~1.0.0":
   version: 1.0.0
   resolution: "unpipe@npm:1.0.0"
@@ -23471,6 +23542,43 @@ __metadata:
   linkType: hard
 
 "webpack@npm:^5, webpack@npm:^5.1.0, webpack@npm:^5.66.0, webpack@npm:^5.68.0":
+  version: 5.68.0
+  resolution: "webpack@npm:5.68.0"
+  dependencies:
+    "@types/eslint-scope": ^3.7.0
+    "@types/estree": ^0.0.50
+    "@webassemblyjs/ast": 1.11.1
+    "@webassemblyjs/wasm-edit": 1.11.1
+    "@webassemblyjs/wasm-parser": 1.11.1
+    acorn: ^8.4.1
+    acorn-import-assertions: ^1.7.6
+    browserslist: ^4.14.5
+    chrome-trace-event: ^1.0.2
+    enhanced-resolve: ^5.8.3
+    es-module-lexer: ^0.9.0
+    eslint-scope: 5.1.1
+    events: ^3.2.0
+    glob-to-regexp: ^0.4.1
+    graceful-fs: ^4.2.9
+    json-parse-better-errors: ^1.0.2
+    loader-runner: ^4.2.0
+    mime-types: ^2.1.27
+    neo-async: ^2.6.2
+    schema-utils: ^3.1.0
+    tapable: ^2.1.1
+    terser-webpack-plugin: ^5.1.3
+    watchpack: ^2.3.1
+    webpack-sources: ^3.2.3
+  peerDependenciesMeta:
+    webpack-cli:
+      optional: true
+  bin:
+    webpack: bin/webpack.js
+  checksum: ac6efd861a0bfb35d8a467fba0d87f905ef6e1a9a9f7e3db42ea459cf191268094cedd025d3eb36a1464e2208a0c193f3f4a92531ba58850246f3c6b8f210b03
+  languageName: node
+  linkType: hard
+
+"webpack@npm:^5.68.0":
   version: 5.68.0
   resolution: "webpack@npm:5.68.0"
   dependencies:

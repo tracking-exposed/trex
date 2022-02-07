@@ -1,3 +1,5 @@
 {
-  "jest.jestCommandLine": "yarn test"
+  "jest.jestCommandLine": "yarn test",
+  "cSpell.ignoreWords": ["unlazy"],
+  "cSpell.words": ["linkedom"]
 }

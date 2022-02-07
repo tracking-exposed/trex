@@ -1,14 +1,17 @@
 import * as t from 'io-ts';
-import DOM from 'linkedom';
+import { parseHTML } from 'linkedom';
 
-export const SearchTopMetaData = t.type({
-  _id: t.union([t.string, t.undefined]),
-  type: t.literal('SearchTopMetaData'),
-  snapshotId: t.union([t.string, t.undefined]),
-  position: t.number,
-  description: t.string,
-  hashtags: t.array(t.string),
-}, 'SearchTopMetaData');
+export const SearchTopMetaData = t.type(
+  {
+    _id: t.union([t.string, t.undefined]),
+    type: t.literal('SearchTopMetaData'),
+    snapshotId: t.union([t.string, t.undefined]),
+    position: t.number,
+    description: t.string,
+    hashtags: t.array(t.string),
+  },
+  'SearchTopMetaData'
+);
 export type SearchTopMetaData = t.TypeOf<typeof SearchTopMetaData>;
 
 export const parseSearchTop = (html: string): SearchTopMetaData[] => {
@@ -17,33 +20,31 @@ export const parseSearchTop = (html: string): SearchTopMetaData[] => {
     description: '[data-e2e="search-card-video-caption"]',
   };
 
-  const { document } = DOM.parseHTML(html);
+  const { document } = parseHTML(html);
 
-  return Array.from(
-    document.querySelectorAll(selectors.searchTopItem),
-  ).map((el, position) => {
-    const descriptionEl = el.parentElement?.querySelector(selectors.description);
+  return Array.from(document.querySelectorAll(selectors.searchTopItem)).map(
+    (el, position) => {
+      const descriptionEl = el.parentElement?.querySelector(
+        selectors.description
+      );
 
-    if (!descriptionEl) {
-      throw new Error('could not find description element');
+      if (!descriptionEl) {
+        throw new Error('could not find description element');
+      }
+      const description = descriptionEl.textContent ?? '';
+
+      const hashtags = Array.from(descriptionEl.querySelectorAll('a'))
+        .filter((el) => (el as any).href.startsWith('/tag'))
+        .map((el) => (el as any).textContent);
+
+      return {
+        _id: undefined,
+        type: 'SearchTopMetaData',
+        snapshotId: undefined,
+        position,
+        description,
+        hashtags,
+      };
     }
-    const description = descriptionEl.textContent ?? '';
-
-    const hashtags = Array.from(
-      descriptionEl.querySelectorAll('a'),
-    ).filter(
-      (el) => (el as any).href.startsWith('/tag'),
-    ).map(
-      (el) => (el as any).textContent,
-    );
-
-    return {
-      _id: undefined,
-      type: 'SearchTopMetaData',
-      snapshotId: undefined,
-      position,
-      description,
-      hashtags,
-    };
-  });
+  );
 };

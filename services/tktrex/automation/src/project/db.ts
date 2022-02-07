@@ -3,7 +3,7 @@ import crypto from 'crypto';
 import { isLeft } from 'fp-ts/lib/Either';
 import { PathReporter } from 'io-ts/lib/PathReporter';
 
-import PouchDB from 'pouchdb';
+import PouchDB from 'pouchdb-node';
 import pouchFind from 'pouchdb-find';
 
 import { Snapshot } from '../scraper';
@@ -16,7 +16,7 @@ export interface Db {
   findAllSnapshots: () => Promise<Snapshot[]>;
 }
 
-export const init = async(projectDirectory: string): Promise<Db> => {
+export const init = async (projectDirectory: string): Promise<Db> => {
   const { databaseDirectory } = generateDirectoryStructure(projectDirectory);
   const pouch = new PouchDB(databaseDirectory);
 
@@ -26,7 +26,7 @@ export const init = async(projectDirectory: string): Promise<Db> => {
     },
   });
 
-  const findAllSnapshots = async(): Promise<Snapshot[]> => {
+  const findAllSnapshots = async (): Promise<Snapshot[]> => {
     const results = await pouch.find({
       selector: {
         type: 'Snapshot',
@@ -44,7 +44,7 @@ export const init = async(projectDirectory: string): Promise<Db> => {
           [
             'Database seems to be corrupted:',
             ...PathReporter.report(validation),
-          ].join('\n'),
+          ].join('\n')
         );
       }
 
@@ -54,7 +54,7 @@ export const init = async(projectDirectory: string): Promise<Db> => {
     return snapshots;
   };
 
-  const save = async(snapshot: Snapshot): Promise<Snapshot> => {
+  const save = async (snapshot: Snapshot): Promise<Snapshot> => {
     const _id = crypto
       .createHash('sha256')
       .update(JSON.stringify(snapshot))
