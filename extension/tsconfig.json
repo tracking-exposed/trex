@@ -35,12 +35,8 @@
       "path": "../packages/shared"
     }
   ],
-  "include": [
-    "./src",
-    "./typings",
-    "./webpack.config.ts",
-    "./webpack.extension.config.ts"
-  ],
+  "include": ["./src", "./typings", "./webpack.config.ts"],
+  "exclude": ["./jest.config.js", "./webpack.config.ts"],
   "ts-node": {
     "compilerOptions": {
       "module": "CommonJS"
