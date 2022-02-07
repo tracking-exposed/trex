@@ -133,13 +133,17 @@ export const App: React.FC = () => {
       setConfig(config);
     });
 
-    // request guardoni config
-    ipcRenderer.send(GET_GUARDONI_CONFIG_EVENT.value);
+    if (config === undefined) {
+      setTimeout(() => {
+        // request guardoni config
+        ipcRenderer.send(GET_GUARDONI_CONFIG_EVENT.value);
+      }, 200);
+    }
 
     return () => {
       ipcRenderer.removeAllListeners(GET_GUARDONI_CONFIG_EVENT.value);
     };
-  }, []);
+  }, [config]);
 
   if (!config) {
     return <LinearProgress />;

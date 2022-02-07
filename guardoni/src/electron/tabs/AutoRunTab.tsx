@@ -87,7 +87,7 @@ export const AutoRunTab: React.FC<FromCSVFileTabProps> = ({ onSubmit }) => {
           }
         }}
       >
-        Start guardoni ({directiveId})
+        Start guardoni {directiveId !== undefined ? `(${directiveId})` : ''}
       </Button>
 
       <FormHelperText>

@@ -57,6 +57,9 @@ const creatMainWindow = (
   }, toAppError);
 };
 
+// default extension path
+const EXTENSION_DIR_PATH = path.resolve(__dirname, '../extension');
+
 export const run = async (): Promise<void> => {
   debug.enable('guardoni:*');
   log.info('Guardoni start', process.cwd());
@@ -91,13 +94,19 @@ export const run = async (): Promise<void> => {
         ),
         TE.map(({ guardoniApp, mainWindow }) => {
           // bind events for main window
-          GetEvents({
+          return GetEvents({
             app,
             env,
             api: GetAPI({ baseURL: env.BACKEND }).API,
             mainWindow,
             guardoniWindow: guardoniApp.window,
             guardoniBrowser: guardoniApp.browser,
+            guardoniConfig: {
+              extensionDir: EXTENSION_DIR_PATH,
+              headless: true,
+              verbose: false,
+              backend: env.BACKEND,
+            },
           }).register();
         })
       );

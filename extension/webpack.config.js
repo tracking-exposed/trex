@@ -25,13 +25,7 @@ const PRODUCTION = NODE_ENV === 'production';
 const DEVELOPMENT = NODE_ENV === 'development';
 const BUILDISODATE = new Date().toISOString();
 const GUARDONI_TARGET = process.env?.BUILD_TARGET === 'guardoni';
-const APP_VERSION = GUARDONI_TARGET
-  ? packageJSON.version
-      .split('.')
-      .filter((v, i) => i !== 2)
-      .concat('99')
-      .join('.')
-  : packageJSON.version;
+const APP_VERSION = packageJSON.version;
 
 console.log(
   'NODE_ENV [' + process.env.NODE_ENV + '] Prod:',

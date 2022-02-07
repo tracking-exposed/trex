@@ -38,6 +38,7 @@ import _ from 'lodash';
 import path from 'path';
 // import pluginStealth from "puppeteer-extra-plugin-stealth";
 import puppeteer from 'puppeteer-core';
+import packageJson from '../../package.json';
 import domainSpecific from './domainSpecific';
 import {
   GuardoniConfig,
@@ -51,8 +52,14 @@ import { csvParseTE, getChromePath, liftFromIOE } from './utils';
 // const COMMANDJSONEXAMPLE =
 //   'https://youtube.tracking.exposed/json/automation-example.json';
 
-const getExtensionWithOptInURL = (v: string): string =>
-  'https://github.com/tracking-exposed/yttrex/releases/download/v1.8.992/extension-1.9.0.99.zip';
+const getExtensionWithOptInURL = (v: string): string => {
+  // const ninetyNineV = v
+  //   .split('.')
+  //   .filter((v, i) => i !== 2)
+  //   .concat('99')
+  //   .join('.');
+  return `https://github.com/tracking-exposed/yttrex/releases/download/v${v}/guardoni-yttrex-extension-${v}.zip`;
+};
 
 const DEFAULT_BASE_PATH = process.cwd();
 const DEFAULT_BACKEND =
@@ -80,39 +87,75 @@ interface GuardoniContext {
   profile: GuardoniProfile;
   guardoniConfigFile: string;
   logger: Pick<Logger, 'info' | 'error' | 'debug'>;
+  version: string;
 }
 
 // old functions
 
 const downloadExtension = (
   ctx: GuardoniContext
-): IOE.IOEither<AppError, void> => {
-  return IOE.tryCatch(() => {
-    ctx.logger.debug(`Checking extension manifest.json...`);
-    const manifestPath = path.resolve(
-      path.join(ctx.config.extensionDir, 'manifest.json')
-    );
+): TE.TaskEither<AppError, void> => {
+  return pipe(
+    IOE.tryCatch(() => {
+      ctx.logger.debug(`Checking extension manifest.json...`);
+      const manifestPath = path.resolve(
+        path.join(ctx.config.extensionDir, 'manifest.json')
+      );
 
-    const manifest = fs.existsSync(manifestPath);
+      const manifest = fs.existsSync(manifestPath);
 
-    if (manifest) {
-      ctx.logger.debug(`Manifest found, no need to download the extension`);
-      return;
-    }
+      if (manifest) {
+        ctx.logger.debug(`Manifest found, no need to download the extension`);
+        return undefined;
+      }
 
-    ctx.logger.debug('Ensure %s dir exists', ctx.config.extensionDir);
-    fs.mkdirSync(ctx.config.extensionDir, { recursive: true });
+      ctx.logger.debug('Ensure %s dir exists', ctx.config.extensionDir);
+      fs.mkdirSync(ctx.config.extensionDir, { recursive: true });
 
-    ctx.logger.debug(
-      "Executing curl and unzip (if these binary aren't present in your system please mail support at tracking dot exposed because you might have worst problems)"
-    );
-    const zipFileP = path.resolve(
-      path.join(ctx.config.extensionDir, 'tmpzipf.zip')
-    );
+      ctx.logger.debug(
+        "Executing curl and unzip (if these binary aren't present in your system please mail support at tracking dot exposed because you might have worst problems)"
+      );
+      const extensionZipFilePath = path.resolve(
+        path.join(
+          ctx.config.extensionDir,
+          `guardoni-yttrex-extension-v${ctx.version}.zip`
+        )
+      );
 
-    execSync(`curl -L ${getExtensionWithOptInURL('')} -o ${zipFileP}`);
-    execSync(`unzip ${zipFileP} -d ${ctx.config.extensionDir}`);
-  }, toAppError);
+      const extensionZipUrl = getExtensionWithOptInURL(ctx.version);
+
+      ctx.logger.debug(
+        'Downloading extension from %s and save it to %s',
+        extensionZipUrl,
+        extensionZipFilePath
+      );
+
+      return { extensionZipUrl, extensionZipFilePath };
+    }, toAppError),
+    IOE.chain((downloadDetails) => {
+      if (!downloadDetails) {
+        return IOE.right(undefined);
+      }
+
+      return pipe(
+        IOE.tryCatch(
+          () =>
+            execSync(
+              `curl -L ${downloadDetails.extensionZipUrl} -o ${downloadDetails.extensionZipFilePath}`
+            ),
+          toAppError
+        ),
+        IOE.chain(() =>
+          IOE.tryCatch(() => {
+            execSync(
+              `unzip ${downloadDetails.extensionZipFilePath} -d ${ctx.config.extensionDir}`
+            );
+          }, toAppError)
+        )
+      );
+    }),
+    TE.fromIOEither
+  );
 };
 
 const dispatchBrowser = (
@@ -870,9 +913,10 @@ const loadContext = (
         profile,
         logger,
         guardoniConfigFile: path.join(profile.udd, 'guardoni.json'),
+        version: packageJson.version,
       };
     }),
-    TE.chainFirst((ctx) => TE.fromIOEither(downloadExtension(ctx))),
+    TE.chainFirst(downloadExtension),
     TE.chainFirst((ctx) =>
       liftFromIOE(() => fs.mkdirSync(ctx.profile.udd, { recursive: true }))
     ),
