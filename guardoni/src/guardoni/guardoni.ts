@@ -482,14 +482,14 @@ const registerExperiment =
           return {
             type: 'success',
             message: `Experiment already available`,
-            values: experiment,
+            values: [experiment],
           };
         }
 
         return {
           type: 'success',
           message: `Experiment created successfully`,
-          values: experiment,
+          values: [experiment],
         };
       })
     );
@@ -555,6 +555,23 @@ const saveExperiment =
         );
       }),
       TE.map(() => experimentInfo)
+    );
+  };
+
+const listExperiments =
+  (ctx: GuardoniContext) =>
+  (): TE.TaskEither<AppError, GuardoniSuccessOutput> => {
+    return pipe(
+      ctx.API.v3.Public.GetPublicDirectives(),
+      TE.map(
+        (experiments): GuardoniSuccessOutput => ({
+          message: 'Experiments List',
+          type: 'success',
+          values: experiments.map((e) => ({
+            [e.experimentId]: e,
+          })),
+        })
+      )
     );
   };
 
@@ -767,7 +784,7 @@ const runExperiment =
       TE.map((result) => ({
         type: 'success',
         message: 'Experiment completed',
-        values: result,
+        values: [result],
       }))
     );
   };
@@ -787,10 +804,12 @@ const runExperimentForPage =
       TE.map((publicKey) => ({
         type: 'success',
         message: 'Experiment completed',
-        values: {
-          experimentId,
-          publicKey,
-        },
+        values: [
+          {
+            experimentId,
+            publicKey,
+          },
+        ],
       }))
     );
 
@@ -902,6 +921,7 @@ export interface Guardoni {
     records: ComparisonDirectiveRow[],
     directiveType: DirectiveType
   ) => TE.TaskEither<AppError, GuardoniSuccessOutput>;
+  listExperiments: () => TE.TaskEither<AppError, GuardoniSuccessOutput>;
   runExperiment: (
     experiment: NonEmptyString
   ) => TE.TaskEither<AppError, GuardoniSuccessOutput>;
@@ -941,6 +961,7 @@ export const GetGuardoni: GetGuardoni = ({
         runExperimentForPage: runExperimentForPage(ctx),
         registerExperiment: registerExperiment(ctx),
         registerExperimentFromCSV: registerCSV(ctx),
+        listExperiments: listExperiments(ctx),
       };
     })
   );

@@ -57,9 +57,17 @@ yargs(hideBin(process.argv))
           type: 'string',
           demandOption: 'Provide a valid path to a csv file',
         })
-        .example('$0 csv ./path/to/file.csv');
+        .example('$0 register ./path/to/file.csv');
     },
     (argv) => runGuardoni({ ...argv, run: 'register-csv' })
+  )
+  .command(
+    'list',
+    'List available experiments',
+    (yargs) => {
+      return yargs.example('$0 list');
+    },
+    (argv) => runGuardoni({ ...argv, run: 'list' })
   )
   .usage(
     '$0 [index]',

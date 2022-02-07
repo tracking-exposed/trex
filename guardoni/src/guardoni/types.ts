@@ -42,7 +42,7 @@ export interface GuardoniErrorOutput {
 export interface GuardoniSuccessOutput {
   type: 'success';
   message: string;
-  values: Record<string, any>;
+  values: Array<Record<string, any>>;
 }
 
 export type GuardoniOutput = GuardoniErrorOutput | GuardoniSuccessOutput;

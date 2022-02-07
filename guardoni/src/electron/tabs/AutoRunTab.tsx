@@ -1,21 +1,35 @@
 import {
   Box,
   Button,
-  FormControlLabel,
   FormHelperText,
-  MenuItem,
-  Select,
+  List,
+  ListItem,
+  makeStyles,
+  Typography,
 } from '@material-ui/core';
 import { GuardoniExperiment } from '@shared/models/Experiment';
+import { formatDate } from '@shared/utils/date.utils';
 import { ipcRenderer } from 'electron';
 import * as React from 'react';
 import { GET_PUBLIC_DIRECTIVES } from '../models/events';
 
+const useStyle = makeStyles((theme) => ({
+  directiveRow: {
+    cursor: 'pointer',
+  },
+  directiveRowSelected: {
+    boxShadow: theme.shadows[3],
+  },
+  directiveLinkList: {
+    marginBottom: 30,
+  },
+}));
 interface FromCSVFileTabProps {
   onSubmit: (experimentId: string) => void;
 }
 
 export const AutoRunTab: React.FC<FromCSVFileTabProps> = ({ onSubmit }) => {
+  const classes = useStyle();
   const [directiveId, setDirectiveId] = React.useState<string | undefined>(
     undefined
   );
@@ -30,48 +44,51 @@ export const AutoRunTab: React.FC<FromCSVFileTabProps> = ({ onSubmit }) => {
     ipcRenderer.send(GET_PUBLIC_DIRECTIVES.value);
   }, []);
 
-  const currentDirective = directives.find(
-    (d) => d.experimentId === directiveId
-  );
-
   return (
     <Box display={'flex'} flexDirection={'column'}>
-      <FormControlLabel
-        label="Experiment"
-        labelPlacement="top"
-        control={
-          <Select
-            value={directiveId ?? ''}
-            onChange={(e, v) => setDirectiveId(e.target.value as any)}
-            fullWidth
+      {directives.map((d, i) => {
+        const isSelected = d.experimentId === directiveId;
+        return (
+          <Box
+            key={d.experimentId}
+            className={`${classes.directiveRow} ${
+              isSelected ? classes.directiveRowSelected : ''
+            }`}
+            onClick={() => setDirectiveId(d.experimentId)}
           >
-            {directives.map((d, i) => (
-              <MenuItem
-                key={d.experimentId}
-                value={d.experimentId}
-                selected={i === 0}
-              >
-                {d.experimentId}
-              </MenuItem>
-            ))}
-          </Select>
-        }
-      />
-      {currentDirective ? (
-        <Box>
-          <pre>{JSON.stringify(currentDirective, null, 2)}</pre>
-          <Button
-            color="primary"
-            variant="contained"
-            style={{ marginBottom: 20, marginTop: 20 }}
-            onClick={() => {
-              void onSubmit(currentDirective.experimentId);
-            }}
-          >
-            Start guardoni
-          </Button>
-        </Box>
-      ) : null}
+            <Typography variant="h6">{d.experimentId}</Typography>
+            <Typography variant="caption">
+              {formatDate(new Date(d.when))}
+            </Typography>
+            <Box>
+              <List className={classes.directiveLinkList}>
+                {d.links.map((l) => (
+                  <ListItem key={l.url}>
+                    <Typography variant="subtitle1" color="primary">
+                      {l.urltag} ({l.watchFor ?? 'end'}):
+                    </Typography>{' '}
+                    <Typography variant="body2">{l.url}</Typography>
+                  </ListItem>
+                ))}
+              </List>
+            </Box>
+          </Box>
+        );
+      })}
+
+      <Button
+        color="primary"
+        variant="contained"
+        disabled={directiveId === undefined}
+        style={{ marginBottom: 20, marginTop: 20 }}
+        onClick={() => {
+          if (directiveId) {
+            void onSubmit(directiveId);
+          }
+        }}
+      >
+        Start guardoni ({directiveId})
+      </Button>
 
       <FormHelperText>
         The value provided here refers to existing experiments:

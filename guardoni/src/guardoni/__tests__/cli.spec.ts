@@ -35,6 +35,7 @@ const profileName = 'profile-test-1';
 const extensionDir = path.resolve(__dirname, '../../../build/extension');
 
 describe('CLI', () => {
+  const evidenceTag = 'test-tag';
   let experimentId: string;
   const guardoni = GetGuardoniCLI({
     headless: false,
@@ -44,7 +45,7 @@ describe('CLI', () => {
     extensionDir,
     backend: 'http://localhost:9009/api',
     loadFor: 3000,
-    evidenceTag: 'test-tag',
+    evidenceTag,
     chromePath: '/chrome/fake/path',
   });
 
@@ -183,7 +184,7 @@ describe('CLI', () => {
         },
       });
 
-      experimentId = result.right.values.experimentId;
+      experimentId = result.right.values[0].experimentId;
     });
 
     test('success with type comparison and proper csv file', async () => {
@@ -208,7 +209,7 @@ describe('CLI', () => {
         },
       });
 
-      experimentId = result.right.values.experimentId;
+      experimentId = result.right.values[0].experimentId;
     });
 
     test('succeeds with type "chiaroscuro" and proper csv file', async () => {
@@ -233,7 +234,7 @@ describe('CLI', () => {
         },
       });
 
-      experimentId = result.right.values.experimentId;
+      experimentId = result.right.values[0].experimentId;
     });
   });
 
@@ -297,7 +298,11 @@ describe('CLI', () => {
         _tag: 'Right',
         right: {
           message: 'Experiment completed',
-          values: {},
+          values: [
+            {
+              directiveType: 'chiaroscuro',
+            },
+          ],
         },
       });
     });
@@ -323,7 +328,11 @@ describe('CLI', () => {
         _tag: 'Right',
         right: {
           message: 'Experiment completed',
-          values: {},
+          values: [
+            {
+              directiveType: 'comparison',
+            },
+          ],
         },
       });
     });
@@ -348,7 +357,12 @@ describe('CLI', () => {
         _tag: 'Right',
         right: {
           message: 'Experiment completed',
-          values: {},
+          values: [
+            {
+              directiveType: 'chiaroscuro',
+              evidenceTag: evidenceTag,
+            },
+          ],
         },
       });
     });
@@ -371,9 +385,11 @@ describe('CLI', () => {
         _tag: 'Right',
         right: {
           message: 'Experiment completed',
-          values: {
-            directiveType: 'comparison',
-          },
+          values: [
+            {
+              directiveType: 'comparison',
+            },
+          ],
         },
       });
     });

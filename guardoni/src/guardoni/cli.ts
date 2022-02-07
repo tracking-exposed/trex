@@ -3,6 +3,7 @@ import {
   ComparisonDirectiveRow,
   DirectiveType,
 } from '@shared/models/Directive';
+import * as A from 'fp-ts/lib/Array';
 import { pipe } from 'fp-ts/lib/function';
 import * as TE from 'fp-ts/lib/TaskEither';
 import { NonEmptyString } from 'io-ts-types/lib/NonEmptyString';
@@ -28,6 +29,9 @@ export type GuardoniCommandConfig =
   | {
       run: 'auto';
       value: '1' | '2';
+    }
+  | {
+      run: 'list';
     };
 
 export interface GuardoniCLI {
@@ -45,7 +49,18 @@ const foldOutput = (
 ): string => {
   const rest =
     out.type === 'success'
-      ? Object.entries(out.values).map(([key, value]) => `${key}: ${value}`)
+      ? pipe(
+          out.values,
+          A.map((v) => {
+            return Object.entries(v).map(([key, value]) => {
+              if (typeof value === 'string') {
+                return `${key}: ${value}`;
+              }
+
+              return `${key}: ${JSON.stringify(value, null, 2)}\n`;
+            });
+          })
+        )
       : out.details;
 
   return [
@@ -75,6 +90,8 @@ export const GetGuardoniCLI: GetGuardoniCLI = (config): GuardoniCLI => {
           AppError
         >(() => {
           switch (command.run) {
+            case 'list':
+              return g.listExperiments();
             case 'register-csv':
               return g.registerExperimentFromCSV(command.file, command.type);
             case 'register':
