@@ -15,6 +15,7 @@ import pie from 'puppeteer-in-electron';
 import { AppEnv } from '../AppEnv';
 import { GetEvents } from './events/renderer.events';
 import { createGuardoniWindow } from './windows/GuardoniWindow';
+import packageJson from '../../package.json';
 
 // load env from .env file shipped with compiled code
 dotenv.config({
@@ -67,7 +68,7 @@ export const run = async (): Promise<void> => {
   app.setPath('userData', path.resolve(os.homedir(), `.config/guardoni/data`));
 
   return pipe(
-    AppEnv.decode(process.env),
+    AppEnv.decode({ VERSION: packageJson.version, ...process.env }),
     E.mapLeft((e) => {
       return new AppError('EnvError', 'process.env is malformed', failure(e));
     }),

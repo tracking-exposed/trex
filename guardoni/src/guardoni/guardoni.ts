@@ -48,6 +48,7 @@ import {
   ProgressDetails,
 } from './types';
 import { csvParseTE, getChromePath, liftFromIOE } from './utils';
+import * as os from 'os';
 
 // const COMMANDJSONEXAMPLE =
 //   'https://youtube.tracking.exposed/json/automation-example.json';
@@ -61,12 +62,12 @@ const getExtensionWithOptInURL = (v: string): string => {
   return `https://github.com/tracking-exposed/yttrex/releases/download/v${v}/guardoni-yttrex-extension-${v}.zip`;
 };
 
-const DEFAULT_BASE_PATH = process.cwd();
+const DEFAULT_BASE_PATH = path.resolve(os.homedir(), '.config/guardoni');
 const DEFAULT_BACKEND =
   process.env.BACKEND ?? 'https://youtube.tracking.exposed/api';
 const DEFAULT_EXTENSION_DIR = path.resolve(
-  DEFAULT_BASE_PATH,
-  'build/extension'
+  os.homedir(),
+  '.config/guardoni/extension'
 );
 
 const DEFAULT_LOAD_FOR = 3000;
@@ -610,9 +611,16 @@ const listExperiments =
         (experiments): GuardoniSuccessOutput => ({
           message: 'Experiments List',
           type: 'success',
-          values: experiments.map((e) => ({
-            [e.experimentId]: e,
-          })),
+          values:
+            experiments.length > 0
+              ? experiments.map((e) => ({
+                  [e.experimentId]: e,
+                }))
+              : [
+                  {
+                    experiments: [],
+                  },
+                ],
         })
       )
     );

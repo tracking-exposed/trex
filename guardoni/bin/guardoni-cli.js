@@ -38,26 +38,22 @@ yargs(hideBin(process.argv))
     'experiment <experiment>',
     'Run guardoni from a given experiment',
     (yargs) =>
-      yargs
-        .positional('experiment', {
-          desc: 'Experiment id',
-          demandOption: 'Provide the experiment id',
-          type: 'string',
-        })
-        .example('$0 experiment 1234'),
+      yargs.positional('experiment', {
+        desc: 'Experiment id',
+        demandOption: 'Provide the experiment id',
+        type: 'string',
+      }),
     (argv) => runGuardoni({ ...argv, run: 'experiment' })
   )
   .command(
     'register <file>',
     'Register an experiment from a CSV',
     (yargs) => {
-      return yargs
-        .positional('file', {
-          desc: 'CSV file to register an experiment',
-          type: 'string',
-          demandOption: 'Provide a valid path to a csv file',
-        })
-        .example('$0 register ./path/to/file.csv');
+      return yargs.positional('file', {
+        desc: 'CSV file to register an experiment',
+        type: 'string',
+        demandOption: 'Provide a valid path to a csv file',
+      });
     },
     (argv) => runGuardoni({ ...argv, run: 'register-csv' })
   )

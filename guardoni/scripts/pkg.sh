@@ -5,13 +5,12 @@ set -ex
 
 pkg ./package.json
 
-version=`grep version package.json | cut -b 15- | sed -es/\".*//`
-# 1.8.2
+version=$(grep version package.json | cut -b 15- | sed -es/\".*//)
 
 cd dist
 mv guardoni-win.exe guardoni-cli-$version.exe
 mv guardoni-macos guardoni-cli-$version-macos
 mv guardoni-linux guardoni-cli-$version-linux
-chmod +x *
+chmod +x *-cli-*
 ls -l
 cd ..
