@@ -30,8 +30,6 @@ const RecommendationList: React.FC<RecommendationListProps> = ({
               data={r}
               videoId={''}
               onDeleteClick={onDeleteClick}
-              onMoveDownClick={undefined}
-              onMoveUpClick={undefined}
             />
           </Grid>
         ))}

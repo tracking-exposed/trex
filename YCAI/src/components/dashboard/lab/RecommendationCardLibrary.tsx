@@ -34,8 +34,6 @@ interface RecommendationCardProps {
   videoId: string;
   data: Recommendation;
   onDeleteClick: (r: Recommendation) => void;
-  onMoveUpClick: (() => void) | false;
-  onMoveDownClick: (() => void) | false;
 }
 
 const cardHeight = 150;
@@ -119,8 +117,6 @@ export const RecommendationCard: React.FC<RecommendationCardProps> = ({
   data,
   videoId,
   onDeleteClick,
-  onMoveUpClick,
-  onMoveDownClick,
 }) => {
   const { t } = useTranslation();
   const classes = useStyles();
@@ -192,11 +188,10 @@ export const RecommendationCard: React.FC<RecommendationCardProps> = ({
             aria-label={t('actions:move_recommendation_up')}
             color="primary"
             className={classes.arrowButton}
-            disabled={onMoveUpClick === false}
             // there seems to be an eslint bug,
             // there is no way to get rid of all the warnings whatever I do
             // eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
-            onClick={onMoveUpClick || undefined}
+            onClick={() => onDeleteClick(data)}
             size="small"
           >
             <DeleteIcon />
@@ -205,9 +200,7 @@ export const RecommendationCard: React.FC<RecommendationCardProps> = ({
             aria-label={t('actions:move_recommendation_down')}
             color="primary"
             className={classes.arrowButton}
-            disabled={onMoveDownClick === false}
             // eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
-            onClick={onMoveDownClick || undefined}
             size="small"
           >
             <EditIcon />
