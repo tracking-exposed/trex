@@ -67,9 +67,9 @@ const resources: CustomTypeOptions['resources'] = {
     lab_edit_subtitle:
       'Paste a link in the grey box below to add it to the recommendations of this video.\nYou can add recommendations towards any website!',
     recommendations_library_title_short: 'Recommendations',
-    recommendations_library_subtitle: 'Recommendations Library',
-    recommendations_library_title:
-      'All the recommendations added by you will be linked to your videos',
+    recommendations_library_subtitle:
+      'Add a series of recommendations from anywhere on the Internet to be shown besides your videos',
+    recommendations_library_title: 'Your Internet Gems Library',
     analytics: 'Analytics',
     settings: 'Settings',
     link_account:
@@ -120,7 +120,7 @@ const resources: CustomTypeOptions['resources'] = {
     url: 'Recommendation URL',
     yours: 'Your recommendations',
     no_items: 'Recommendations will appear here once added!',
-    add_to_video: 'Add a recommendation to this video',
+    add_to_video: 'Add a gem',
     url_placeholder: 'http://...',
     url_helper_text: 'Insert a link',
     title: 'Recommendation title',

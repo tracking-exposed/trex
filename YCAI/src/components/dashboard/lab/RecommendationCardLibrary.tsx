@@ -3,11 +3,11 @@ import { useTranslation } from 'react-i18next';
 
 import {
   Box,
-  Button,
+  // Button,
   IconButton,
   Card,
   Grid,
-  Typography,
+  Link,
 } from '@material-ui/core';
 
 import {
@@ -26,7 +26,7 @@ import {
 import { YCAITheme } from '../../../theme';
 import CharLimitedTypography from '../../common/CharLimitedTypography';
 import Image from '../../common/Image';
-import EditRecommendation from './EditRecommendation';
+// import EditRecommendation from './EditRecommendation';
 import { isYTURL } from '../../../utils/yt.utils';
 import { getHostFromURL } from '../../../utils/location.utils';
 
@@ -36,14 +36,16 @@ interface RecommendationCardProps {
   onDeleteClick: (r: Recommendation) => void;
 }
 
-const cardHeight = 150;
+const cardHeight = 140;
 
 const useStyles = makeStyles<YCAITheme>((theme) => ({
   root: {
     height: cardHeight,
     overflow: 'hidden',
-    marginBottom: '30px',
-    backgroundColor: theme.palette.background.default,
+    marginBottom: '10px',
+    boxShadow: 'none',
+    borderRadius: '8px',
+    backgroundColor: theme.palette.background.paper,
     '& a:hover': {
       cursor: 'pointer',
     },
@@ -60,23 +62,24 @@ const useStyles = makeStyles<YCAITheme>((theme) => ({
     overflow: 'hidden',
   },
   right: {
-    paddingLeft: theme.spacing(0.7),
+    paddingLeft: theme.spacing(2),
     padding: theme.spacing(2),
     height: `calc(100% - ${theme.spacing(2)}px)`,
   },
   title: {
     fontWeight: 'bold',
-    fontSize: '1rem',
-    lineHeight: 1,
+    fontSize: '0.9rem',
+    lineHeight: 1.2,
     lineClamp: 3,
   },
   iconsContainer: {
     display: 'flex',
-    flexDirection: 'column',
-    justifyContent: 'space-evenly',
-    alignItems: 'flex-end',
+    flexDirection: 'column-reverse',
+    justifyContent: 'flex-end',
+    // alignItems: 'flex-start',
     '& > *': {
       marginRight: theme.spacing(1),
+      marginTop: theme.spacing(1),
     },
   },
   arrowButton: {
@@ -97,8 +100,11 @@ const useStyles = makeStyles<YCAITheme>((theme) => ({
     display: 'flex',
     fontSize: '0.8rem',
     '& svg': {
-      marginTop: -1,
+      marginTop: 0,
       marginRight: theme.spacing(0.5),
+    },
+    '&:hover': {
+      color: theme.palette.secondary.main,
     },
   },
   clamped: {
@@ -133,7 +139,7 @@ export const RecommendationCard: React.FC<RecommendationCardProps> = ({
           </div>
         </Grid>
 
-        <Grid item xs={5} className={classes.body}>
+        <Grid item xs={8} className={classes.body}>
           <Box className={classes.right} display="flex" flexDirection="column">
             <CharLimitedTypography
               className={`${classes.title} ${classes.clamped}`}
@@ -146,10 +152,10 @@ export const RecommendationCard: React.FC<RecommendationCardProps> = ({
               {data.title}
             </CharLimitedTypography>
             {isExternal && (
-              <Typography className={classes.source}>
+              <Link href={data.url} target="_blank" className={classes.source}>
                 <LinkIcon />
                 {getHostFromURL(data.url)}
-              </Typography>
+              </Link>
             )}
 
             <Box flexGrow={8} display="flex" alignItems="center">
@@ -161,24 +167,6 @@ export const RecommendationCard: React.FC<RecommendationCardProps> = ({
               >
                 {data.description ?? t('recommendations:missing_description')}
               </CharLimitedTypography>
-            </Box>
-            <Box>
-              <Button
-                className={classes.button}
-                onClick={() => onDeleteClick(data)}
-                size="small"
-                variant="text"
-              >
-                {t('actions:delete_recommendation_button')}
-              </Button>
-              <EditRecommendation
-                className={classes.button}
-                color="primary"
-                variant="text"
-                size="small"
-                data={data}
-                videoId={videoId}
-              />
             </Box>
           </Box>
         </Grid>
