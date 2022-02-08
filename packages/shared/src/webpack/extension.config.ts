@@ -65,7 +65,7 @@ const getExtensionConfig = <E extends t.Props>(
                 source: path.resolve(c.cwd, './build/extension'),
                 destination: path.resolve(
                   c.cwd,
-                  `./build/extension/${extensionName}-extension-${manifestVersion}.zip`
+                  `./build/extension/${extensionName}-extension-${c.manifestVersion}.zip`
                 ),
               },
             ],
