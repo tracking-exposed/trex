@@ -3,11 +3,12 @@
   "compilerOptions": {
     "allowJs": true,
     "baseUrl": "./src",
+    "outDir": "./build/ts",
     "esModuleInterop": true,
     "jsx": "react",
     "module": "esnext",
     "moduleResolution": "node",
-    "noEmit": true,
+    "noEmit": false,
     "noImplicitAny": true,
     "resolveJsonModule": true,
     "strict": true,

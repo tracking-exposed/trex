@@ -241,7 +241,7 @@ const getOffsetTop = (element: HTMLElement | null): number => {
   return offsetTop;
 };
 
-function sizeCheck(nodeHTML: string): boolean {
+export function sizeCheck(nodeHTML: string): boolean {
   // this function look at the LENGTH of the proposed element.
   // this is used in video because the full html body page would be too big.
   const s = _.size(nodeHTML);

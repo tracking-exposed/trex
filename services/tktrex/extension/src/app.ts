@@ -12,6 +12,7 @@ import log from './logger';
 import { localLookup, serverLookup } from './chrome/background/sendMessage';
 
 import { getNatureByHref } from '@tktrex/lib/nature';
+import { sizeCheck } from '@shared/providers/dataDonation.provider';
 
 let feedId = '—' + Math.random() + '-' + _.random(0, 0xff) + '—';
 let feedCounter = 0;
@@ -194,7 +195,7 @@ function handleSearch(element: Node): void {
     document.querySelectorAll(selectors.error.selector),
     'textContent',
   );
-  if (dat.length === 0 && te.indexOf('No results found') === -1) {
+  if (dat.length === 0 && !te.includes('No results found')) {
     log.debug(
       'Matched invalid h2:',
       te,
@@ -208,12 +209,8 @@ function handleSearch(element: Node): void {
 
   if (!truel || !truehtml) return;
 
-  try {
-    const monocheck = truel.getAttribute('trex-taken');
-    // log.debug('Search management: handling html of bytes #', truel, monocheck);
-    if (monocheck === feedId) return;
-    truel.setAttribute('trex-taken', feedId);
-  } catch (error) {
+  const hasNewElements = sizeCheck(truel.innerHTML);
+  if (hasNewElements) {
     log.error('Error with attribute tampering, skipping');
     return;
   }
