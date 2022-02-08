@@ -17,6 +17,9 @@ import { GetEvents } from './events/renderer.events';
 import { createGuardoniWindow } from './windows/GuardoniWindow';
 import packageJson from '../../package.json';
 
+app.setAppLogsPath(path.resolve(os.homedir(), `.config/guardoni/logs`));
+app.setPath('userData', path.resolve(os.homedir(), `.config/guardoni/data`));
+
 // load env from .env file shipped with compiled code
 dotenv.config({
   path: path.join(__dirname, '.env'),
@@ -63,9 +66,8 @@ const EXTENSION_DIR_PATH = path.resolve(__dirname, '../extension');
 
 export const run = async (): Promise<void> => {
   debug.enable('guardoni:*');
-  log.info('Guardoni start', process.cwd());
 
-  app.setPath('userData', path.resolve(os.homedir(), `.config/guardoni/data`));
+  log.info('Guardoni start', process.cwd());
 
   return pipe(
     AppEnv.decode({ VERSION: packageJson.version, ...process.env }),
