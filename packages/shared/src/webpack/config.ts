@@ -1,4 +1,5 @@
 import ReactRefreshWebpackPlugin from '@pmmmwh/react-refresh-webpack-plugin';
+import D from 'debug';
 import dotenv from 'dotenv';
 import { pipe } from 'fp-ts/lib/function';
 import * as R from 'fp-ts/lib/Record';
@@ -52,18 +53,27 @@ interface GetConfigParams<E extends t.Props> {
 const getConfig = <E extends t.Props>(
   opts: GetConfigParams<E>
 ): WebpackConfig => {
-  const mode =
-    process.env.NODE_ENV === 'production' ? 'production' : 'development';
-
   const DOTENV_CONFIG_PATH =
     process.env.DOTENV_CONFIG_PATH ??
-    path.resolve(opts.cwd, mode === 'production' ? '.env' : '.env.development');
+    path.resolve(
+      opts.cwd,
+      process.env.NODE_ENV === 'production' ? '.env' : '.env.development'
+    );
 
-  // const tsConfigFile = path.resolve(opts.cwd, './tsconfig.json');
-
-  webpackLogger.debug(`DOTENV_CONFIG_PATH %s`, DOTENV_CONFIG_PATH);
+  // eslint-disable-next-line
+  console.log(
+    `Reading process.env from %s for %s (%s)`,
+    DOTENV_CONFIG_PATH,
+    path.basename(opts.cwd),
+    Object.keys(opts.entry).join(', ')
+  );
 
   dotenv.config({ path: DOTENV_CONFIG_PATH });
+
+  D.enable(process.env.DEBUG ?? '');
+
+  const mode =
+    process.env.NODE_ENV === 'production' ? 'production' : 'development';
 
   const buildENV = pipe(
     {
