@@ -22,9 +22,9 @@ const RecommendationList: React.FC<RecommendationListProps> = ({
           {t('recommendations:total')} {recommendations.length}
         </Typography>
       </Box>
-      <Grid container spacing={2}>
+      <Grid container spacing={2} style={{ paddingRight: '200px' }}>
         {recommendations.map((r) => (
-          <Grid item xs={12} sm={6} lg={4} key={r.urlId}>
+          <Grid item xs={10} sm={6} lg={5} key={r.urlId}>
             <RecommendationCard
               key={r.urlId}
               data={r}
