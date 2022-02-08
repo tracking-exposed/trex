@@ -1,34 +1,25 @@
 /* eslint-disable import/first */
 jest.mock('axios');
-jest.mock('puppeteer-core');
+
 import {
   ChiaroScuroDirectiveArb,
   ChiaroScuroDirectiveRowArb,
   ComparisonDirectiveArb,
   ComparisonDirectiveRowArb,
+  GuardoniExperimentArb,
   PostDirectiveSuccessResponseArb,
 } from '@shared/arbitraries/Directive.arb';
 import * as tests from '@shared/test';
 import axios from 'axios';
 import * as fs from 'fs';
 import * as path from 'path';
-import * as puppeteer from 'puppeteer-core';
 import { GetGuardoniCLI } from '../cli';
 import { csvStringifyTE } from '../utils';
+import { puppeteerMock } from '../__mocks__/puppeteer.mock';
+import differenceInMilliseconds from 'date-fns/differenceInMilliseconds';
 
 const axiosMock = axios as jest.Mocked<typeof axios>;
 axiosMock.create.mockImplementation(() => axiosMock);
-
-const puppeteerMock = puppeteer as jest.Mocked<typeof puppeteer>;
-const pageMock = {
-  on: jest.fn(),
-  goto: jest.fn(),
-  waitForTimeout: jest.fn(),
-};
-const browserMock = {
-  pages: jest.fn().mockResolvedValue([pageMock] as any),
-};
-puppeteerMock.launch.mockResolvedValue(browserMock as any);
 
 const basePath = path.resolve(__dirname, '../../../');
 const profileName = 'profile-test-1';
@@ -37,17 +28,22 @@ const extensionDir = path.resolve(__dirname, '../../../build/extension');
 describe('CLI', () => {
   const evidenceTag = 'test-tag';
   let experimentId: string;
-  const guardoni = GetGuardoniCLI({
-    headless: false,
-    verbose: false,
-    basePath,
-    profileName: profileName,
-    extensionDir,
-    backend: 'http://localhost:9009/api',
-    loadFor: 3000,
-    evidenceTag,
-    chromePath: '/chrome/fake/path',
-  });
+  const guardoni = GetGuardoniCLI(
+    {
+      headless: false,
+      verbose: false,
+      basePath,
+      profileName: profileName,
+      extensionDir,
+      backend: 'http://localhost:9009/api',
+      loadFor: 3000,
+      evidenceTag,
+      chromePath: '/chrome/fake/path',
+    },
+    puppeteerMock
+  );
+
+  jest.setTimeout(60 * 1000);
 
   beforeAll(async () => {
     fs.mkdirSync(path.resolve(basePath, 'experiments'), {
@@ -55,7 +51,7 @@ describe('CLI', () => {
     });
 
     const comparisonCSVContent = await csvStringifyTE(
-      tests.fc.sample(ComparisonDirectiveRowArb, 10),
+      tests.fc.sample(ComparisonDirectiveRowArb, 5),
       { header: true, encoding: 'utf-8' }
     )();
 
@@ -91,7 +87,7 @@ describe('CLI', () => {
     });
   });
 
-  describe('Register an experiment', () => {
+  describe('Register an experiment from a CSV', () => {
     test('fails when the file path is wrong', async () => {
       // mocks
 
@@ -238,6 +234,51 @@ describe('CLI', () => {
     });
   });
 
+  describe('List public experiments', () => {
+    test('succeeds with empty list', async () => {
+      // return directives
+      axiosMock.request.mockResolvedValueOnce({
+        data: [],
+      });
+
+      const result: any = await guardoni.run({
+        run: 'list',
+      })();
+
+      expect(result).toMatchObject({
+        _tag: 'Right',
+        right: {
+          message: 'Experiments List',
+          values: [
+            {
+              experiments: [],
+            },
+          ],
+        },
+      });
+    });
+
+    test('succeeds with some results', async () => {
+      const directives = tests.fc.sample(GuardoniExperimentArb, 2);
+      // return directives
+      axiosMock.request.mockResolvedValueOnce({
+        data: directives,
+      });
+
+      const result: any = await guardoni.run({
+        run: 'list',
+      })();
+
+      expect(result).toMatchObject({
+        _tag: 'Right',
+        right: {
+          message: 'Experiments List',
+          values: directives.map((d) => ({ [d.experimentId]: d })),
+        },
+      });
+    });
+  });
+
   describe('experiment', () => {
     test('fails when experiment id is empty', async () => {
       await expect(
@@ -252,9 +293,15 @@ describe('CLI', () => {
     });
 
     test('fails when receive an error during experiment conclusion', async () => {
+      const data = tests.fc.sample(ChiaroScuroDirectiveArb, 2).map((d) => ({
+        ...d,
+        loadFor: 1000,
+        watchFor: '2s',
+      }));
+
       // return directive
       axiosMock.request.mockResolvedValueOnce({
-        data: tests.fc.sample(ChiaroScuroDirectiveArb, 2),
+        data,
       });
 
       axiosMock.request.mockResolvedValueOnce({
@@ -263,10 +310,12 @@ describe('CLI', () => {
         },
       });
 
+      const start = new Date();
       const result: any = await guardoni.run({
         run: 'experiment',
         experiment: experimentId as any,
       })();
+      const end = new Date();
 
       expect(result).toMatchObject({
         _tag: 'Left',
@@ -275,12 +324,20 @@ describe('CLI', () => {
           details: [],
         },
       });
+
+      expect(differenceInMilliseconds(end, start)).toBeGreaterThan(
+        (2 + 3) * 2 * 100
+      );
     });
 
     test('succeed when experimentId has valid "chiaroscuro" directives', async () => {
       // return directive
       axiosMock.request.mockResolvedValueOnce({
-        data: tests.fc.sample(ChiaroScuroDirectiveArb, 2),
+        data: tests.fc.sample(ChiaroScuroDirectiveArb, 2).map((d) => ({
+          ...d,
+          loadFor: 1500,
+          watchFor: '1s',
+        })),
       });
 
       axiosMock.request.mockResolvedValueOnce({
@@ -289,10 +346,12 @@ describe('CLI', () => {
         },
       });
 
+      const start = new Date();
       const result: any = await guardoni.run({
         run: 'experiment',
         experiment: experimentId as any,
       })();
+      const end = new Date();
 
       expect(result).toMatchObject({
         _tag: 'Right',
@@ -305,12 +364,20 @@ describe('CLI', () => {
           ],
         },
       });
+
+      expect(differenceInMilliseconds(end, start)).toBeGreaterThan(
+        (1.5 + 1) * 2 * 100
+      );
     });
 
     test('succeed when experimentId has valid "comparison" directives', async () => {
       // return directive
       axiosMock.request.mockResolvedValueOnce({
-        data: tests.fc.sample(ComparisonDirectiveArb, 2),
+        data: tests.fc.sample(ComparisonDirectiveArb, 2).map((d) => ({
+          ...d,
+          loadFor: 1000,
+          watchFor: '1s',
+        })),
       });
 
       axiosMock.request.mockResolvedValueOnce({
@@ -342,7 +409,11 @@ describe('CLI', () => {
     test('succeed when value is "1"', async () => {
       // return directive
       axiosMock.request.mockResolvedValueOnce({
-        data: tests.fc.sample(ChiaroScuroDirectiveArb, 2),
+        data: tests.fc.sample(ChiaroScuroDirectiveArb, 2).map((d) => ({
+          ...d,
+          loadFor: 1000,
+          watchFor: '1s',
+        })),
       });
 
       axiosMock.request.mockResolvedValueOnce({
@@ -370,7 +441,10 @@ describe('CLI', () => {
     test('succeed when value is "2"', async () => {
       // return directive
       axiosMock.request.mockResolvedValueOnce({
-        data: tests.fc.sample(ComparisonDirectiveArb, 10),
+        data: tests.fc.sample(ComparisonDirectiveArb, 10).map((d) => ({
+          ...d,
+          watchFor: '1s',
+        })),
       });
 
       axiosMock.request.mockResolvedValueOnce({

@@ -5,6 +5,7 @@
 const yargs = require('yargs/yargs');
 const { hideBin } = require('yargs/helpers');
 const { GetGuardoniCLI } = require('../build/guardoni/cli.js');
+const puppeteer = require('puppeteer');
 
 const runGuardoni = ({
   _,
@@ -19,15 +20,18 @@ const runGuardoni = ({
   proxy,
   ...command
 }) => {
-  return GetGuardoniCLI({
-    headless,
-    basePath,
-    profile,
-    verbose,
-    evidenceTag,
-    proxy,
-    backend,
-  })
+  return GetGuardoniCLI(
+    {
+      headless,
+      basePath,
+      profile,
+      verbose,
+      evidenceTag,
+      proxy,
+      backend,
+    },
+    puppeteer
+  )
     .runOrThrow(command)
     .then(() => process.exit(0));
 };

@@ -1,13 +1,14 @@
 /* eslint-disable import/first */
+import { pipe } from 'fp-ts/lib/function';
+import * as TE from 'fp-ts/lib/TaskEither';
 import * as fs from 'fs';
 import * as path from 'path';
-import { pipe } from 'fp-ts/lib/function';
 import { guardoniLogger } from '../../logger';
 import { getDefaultProfile, GetGuardoni, getProfileDataDir } from '../guardoni';
-import * as TE from 'fp-ts/lib/TaskEither';
 import { csvStringifyTE } from '../utils';
+import { puppeteerMock } from '../__mocks__/puppeteer.mock';
 
-const directives = [
+const directiveLinks = [
   {
     title: 'YouChoose: Customize your Recommendations',
     url: 'https://www.youtube.com/watch?v=3laqegktOuQ',
@@ -31,14 +32,14 @@ const directives = [
 
 const backend = process.env.BACKEND;
 
-describe.skip('Guardoni', () => {
+describe('Guardoni', () => {
   const basePath = path.resolve(__dirname, '../../../');
   const profile = 'profile-test-99';
   const extensionDir = path.resolve(__dirname, '../../../build/extension');
   const csvTestFileName = 'trex-yt-videos.csv';
 
   beforeAll(async () => {
-    const csvContent = await csvStringifyTE(directives, {
+    const csvContent = await csvStringifyTE(directiveLinks, {
       header: true,
       encoding: 'utf-8',
     })();
@@ -81,6 +82,7 @@ describe.skip('Guardoni', () => {
       const g = await GetGuardoni({
         config: { headless: false, verbose: false, basePath, backend },
         logger: guardoniLogger,
+        puppeteer: puppeteerMock,
       })();
 
       expect(g).toMatchObject({
@@ -101,8 +103,10 @@ describe.skip('Guardoni', () => {
           basePath,
           profileName,
           backend,
+          extensionDir,
         },
         logger: guardoniLogger,
+        puppeteer: puppeteerMock,
       })();
 
       expect(g).toMatchObject({
@@ -130,6 +134,7 @@ describe.skip('Guardoni', () => {
           headless: true,
         },
         logger: guardoniLogger,
+        puppeteer: puppeteerMock,
       });
 
       const experiment = await pipe(
@@ -140,7 +145,7 @@ describe.skip('Guardoni', () => {
               path.resolve(basePath, 'experiments', csvTestFileName) as any,
               'comparison'
             ),
-            TE.chain((output) => g.runExperiment(output.values.experimentId))
+            TE.chain((output) => g.runExperiment(output.values[0].experimentId))
           )
         )
       )();

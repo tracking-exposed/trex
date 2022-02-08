@@ -37,7 +37,7 @@ import { failure, PathReporter } from 'io-ts/lib/PathReporter';
 import _ from 'lodash';
 import path from 'path';
 // import pluginStealth from "puppeteer-extra-plugin-stealth";
-import puppeteer from 'puppeteer-core';
+import type puppeteer from 'puppeteer-core';
 import packageJson from '../../package.json';
 import domainSpecific from './domainSpecific';
 import {
@@ -83,6 +83,7 @@ interface ExperimentInfo {
 }
 
 interface GuardoniContext {
+  puppeteer: typeof puppeteer;
   API: APIClient;
   config: GuardoniConfigRequired;
   profile: GuardoniProfile;
@@ -125,12 +126,6 @@ const downloadExtension = (
 
       const extensionZipUrl = getExtensionWithOptInURL(ctx.version);
 
-      ctx.logger.debug(
-        'Downloading extension from %s and save it to %s',
-        extensionZipUrl,
-        extensionZipFilePath
-      );
-
       return { extensionZipUrl, extensionZipFilePath };
     }, toAppError),
     IOE.chain((downloadDetails) => {
@@ -139,15 +134,23 @@ const downloadExtension = (
       }
 
       return pipe(
-        IOE.tryCatch(
-          () =>
-            execSync(
-              `curl -L ${downloadDetails.extensionZipUrl} -o ${downloadDetails.extensionZipFilePath}`
-            ),
-          toAppError
-        ),
+        IOE.tryCatch(() => {
+          ctx.logger.debug(
+            'Downloading extension from %s and save it to %s',
+            downloadDetails.extensionZipUrl,
+            downloadDetails.extensionZipFilePath
+          );
+          execSync(
+            `curl -L ${downloadDetails.extensionZipUrl} -o ${downloadDetails.extensionZipFilePath}`
+          );
+        }, toAppError),
         IOE.chain(() =>
           IOE.tryCatch(() => {
+            ctx.logger.debug(
+              'Unzipping the extension from %s to folder %s',
+              downloadDetails.extensionZipUrl,
+              downloadDetails.extensionZipFilePath
+            );
             execSync(
               `unzip ${downloadDetails.extensionZipFilePath} -d ${ctx.config.extensionDir}`
             );
@@ -196,7 +199,7 @@ const dispatchBrowser = (
   }
   return TE.tryCatch(async () => {
     // puppeteer.use(pluginStealth());
-    const browser = await puppeteer.launch({
+    const browser = await ctx.puppeteer.launch({
       headless: ctx.config.headless,
       userDataDir: ctx.profile.udd,
       executablePath: ctx.config.chromePath,
@@ -898,6 +901,7 @@ export const getDefaultProfile = (
 };
 
 const loadContext = (
+  p: typeof puppeteer,
   partialConfig: GuardoniConfig,
   logger: GuardoniContext['logger']
 ): TE.TaskEither<AppError, GuardoniContext> => {
@@ -913,6 +917,7 @@ const loadContext = (
       );
 
       return {
+        puppeteer: p,
         API: GetAPI({ baseURL: config.backend }).API,
         config: {
           ...config,
@@ -991,11 +996,13 @@ export type GetGuardoni = ({
 }: {
   config: GuardoniConfig;
   logger: GuardoniContext['logger'];
+  puppeteer: typeof puppeteer;
 }) => TE.TaskEither<AppError, Guardoni>;
 
 export const GetGuardoni: GetGuardoni = ({
   config,
   logger,
+  puppeteer,
 }): TE.TaskEither<AppError, Guardoni> => {
   const loggerSpaces = config.verbose
     ? ['guardoni:info', 'guardoni:debug', 'guardoni:error', process.env.DEBUG]
@@ -1004,7 +1011,7 @@ export const GetGuardoni: GetGuardoni = ({
   debug.enable(loggerSpaces.join(','));
 
   return pipe(
-    loadContext(config, logger),
+    loadContext(puppeteer, config, logger),
     TE.map((ctx) => {
       return {
         config: ctx.config,
