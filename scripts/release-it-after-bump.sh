@@ -2,7 +2,7 @@
 
 set -e -x
 
-export DEBUG=@trex:*
+export DEBUG="@trex:*"
 export NODE_ENV=production
 
 yarn shared build
@@ -13,5 +13,5 @@ yarn guardoni build
 yarn guardoni pkg
 yarn guardoni dist:all
 
-# yarn tk:ext build
+yarn tk:ext build
 yarn ycai build:ext
