@@ -7,7 +7,15 @@ module.exports = {
     'scope-enum': [
       2,
       'always',
-      ['workspace', 'guardoni', 'ycai', 'taboule', 'tktrex', 'yttrex'],
+      [
+        'workspace',
+        'shared',
+        'taboule',
+        'backend',
+        'guardoni',
+        'ycai',
+        'tktrex',
+      ],
     ],
     'type-enum': [
       2,
