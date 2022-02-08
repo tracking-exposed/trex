@@ -9,11 +9,13 @@ import { GetGuardoni } from './guardoni';
 import { GuardoniConfig, GuardoniOutput, GuardoniSuccessOutput } from './types';
 import type puppeteer from 'puppeteer-core';
 
+export const cliLogger = guardoniLogger.extend('cli');
+
 export type GuardoniCommandConfig =
   | {
       run: 'register-csv';
       file: NonEmptyString;
-      type: DirectiveType;
+      type?: DirectiveType;
     }
   | {
       run: 'experiment';
@@ -50,12 +52,17 @@ const foldOutput = (
           A.map((v) => {
             return Object.entries(v).map(([key, value]) => {
               if (typeof value === 'string') {
-                return `${key}: ${value}`;
+                return [`${key}: ${value}`];
               }
 
-              return `${key}: ${JSON.stringify(value, null, 2)}\n`;
+              const valuesChunk = Object.entries(value).map(
+                ([key, value]) => `${key}: ${JSON.stringify(value)}`
+              );
+
+              return [`${key}: \n\t`, ...valuesChunk];
             });
-          })
+          }),
+          A.flatten
         )
       : out.details;
 
@@ -75,7 +82,8 @@ const foldOutput = (
 };
 
 export const GetGuardoniCLI: GetGuardoniCLI = (config, p): GuardoniCLI => {
-  console.log(p);
+  cliLogger.debug('Initialized with config %O', config);
+
   const run = (
     command: GuardoniCommandConfig
   ): TE.TaskEither<AppError, GuardoniSuccessOutput> =>
@@ -86,11 +94,15 @@ export const GetGuardoniCLI: GetGuardoniCLI = (config, p): GuardoniCLI => {
           TE.TaskEither<AppError, GuardoniSuccessOutput>,
           AppError
         >(() => {
+          cliLogger.debug('Running command %O', command);
           switch (command.run) {
             case 'list':
               return g.listExperiments();
             case 'register-csv':
-              return g.registerExperimentFromCSV(command.file, command.type);
+              return g.registerExperimentFromCSV(
+                command.file,
+                command.type ?? 'comparison'
+              );
             case 'experiment':
               return g.runExperiment(command.experiment);
             case 'auto':

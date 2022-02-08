@@ -117,6 +117,7 @@ export const GetEvents = ({
           GetGuardoni({
             config: guardoniConfig,
             logger,
+            puppeteer,
           }),
           TE.map((g) => g.config),
           liftEventTask(GET_GUARDONI_CONFIG_EVENT.value)
@@ -136,6 +137,7 @@ export const GetEvents = ({
               ...config,
             },
             logger,
+            puppeteer,
           }),
           TE.chain((g) => g.registerExperiment(records, 'comparison')),
           TE.map((e) => {
@@ -168,6 +170,7 @@ export const GetEvents = ({
                 ...config,
               },
               logger,
+              puppeteer,
             }),
             TE.chain((g) =>
               pipe(

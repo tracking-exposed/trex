@@ -548,7 +548,7 @@ const registerCSV =
     csvFile: string,
     directiveType: DirectiveType
   ): TE.TaskEither<AppError, GuardoniSuccessOutput> => {
-    const filePath = path.resolve(ctx.config.basePath, csvFile);
+    const filePath = path.resolve(process.cwd(), csvFile);
 
     ctx.logger.debug(`Register CSV from %s`, filePath);
 
@@ -818,7 +818,11 @@ const validateNonEmptyString = (
 const runExperiment =
   (ctx: GuardoniContext) =>
   (experimentId: string): TE.TaskEither<AppError, GuardoniSuccessOutput> => {
-    ctx.logger.info('Running experiment %s', experimentId);
+    ctx.logger.info(
+      'Running experiment %s with config %O',
+      experimentId,
+      ctx.config
+    );
     return pipe(
       sequenceS(TE.ApplicativePar)({
         profile: updateGuardoniProfile(ctx)(ctx.config.evidenceTag),

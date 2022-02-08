@@ -20,7 +20,7 @@ export const GetLogger = (name: string | D.Debugger): Logger => {
     info,
     error,
     debug,
-    extend: (name) => GetLogger(l.extend(name)),
+    extend: (extName) => GetLogger(l.extend(extName)),
   };
 };
 
