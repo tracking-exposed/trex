@@ -3,9 +3,7 @@ import { parseHTML } from 'linkedom';
 
 export const SearchTopMetaData = t.type(
   {
-    _id: t.union([t.string, t.undefined]),
     type: t.literal('SearchTopMetaData'),
-    snapshotId: t.union([t.string, t.undefined]),
     position: t.number,
     description: t.string,
     hashtags: t.array(t.string),
@@ -38,7 +36,6 @@ export const parseSearchTop = (html: string): SearchTopMetaData[] => {
         .map((el) => (el as any).textContent.trim());
 
       return {
-        _id: undefined,
         type: 'SearchTopMetaData',
         snapshotId: undefined,
         position,

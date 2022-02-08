@@ -1,12 +1,12 @@
 import { writeFile, mkdir } from 'fs/promises';
 import { join } from 'path';
 
-import { generateDirectoryStructure } from '.';
+import { generateDirectoryStructure } from '@project/init';
 
 import { fileExists } from '@util/fs';
 import createLogger from '@util/logger';
 import { shellEscape } from '@util/misc';
-import initDb from '@project/db';
+import initDb from '@storage/db';
 
 interface RunOptions {
   projectDirectory: string;
@@ -27,15 +27,23 @@ export const dumpMetaData = async({
 
   const { metaDataDirectory } = generateDirectoryStructure(projectDirectory);
 
+  const dumpCollection = async(type: string): Promise<void> => {
+    const models = await db.findMany(type);
+    return writeFile(
+      join(metaDataDirectory, `${type}.json`),
+      JSON.stringify(models, null, 2),
+    );
+  };
+
   await mkdir(metaDataDirectory, { recursive: true });
 
-  const snapshots = await db.findAllSnapshots();
-  await writeFile(
-    join(metaDataDirectory, 'snapshots.json'),
-    JSON.stringify(snapshots, null, 2),
-  );
+  const collections = ['Snapshot', 'SearchTopMetaData'];
+  await Promise.all(collections.map(dumpCollection));
 
-  logger.log('Dumped the meta data to:', shellEscape(metaDataDirectory));
+  logger.log(
+    `Dumped collections "${collections.join(', ')}" to:`,
+    shellEscape(metaDataDirectory),
+  );
 };
 
 export default dumpMetaData;

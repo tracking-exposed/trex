@@ -5,7 +5,7 @@ import { mkdir } from 'fs/promises';
 import { Page } from 'puppeteer';
 import unzipper from 'unzipper';
 
-import { generateDirectoryStructure } from '@project';
+import { generateDirectoryStructure } from '@project/init';
 import { flatCopyFiles } from '@util/fs';
 import { Logger } from '@util/logger';
 import { askConfirmation } from '@util/page';

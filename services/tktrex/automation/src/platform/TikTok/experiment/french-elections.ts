@@ -17,7 +17,7 @@ import {
   confirmPublicKeyNoted,
 } from '@TikTok/util/project';
 
-import { MinimalProjectConfig } from '@project';
+import { MinimalProjectConfig } from '@project/init';
 
 const Config = t.intersection(
   [
@@ -75,10 +75,13 @@ export const FrenchElections: ExperimentDescriptor = {
       await handleCaptcha();
       await sleep(5000);
 
-      await saveSnapshot({
-        baseURL: project.baseURL,
-        query,
-      }, parseSearchTop);
+      await saveSnapshot(
+        {
+          baseURL: project.baseURL,
+          query,
+        },
+        parseSearchTop,
+      );
     }
 
     return page;

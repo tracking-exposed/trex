@@ -1,11 +1,29 @@
+import { join } from 'path';
 import { mkdir } from 'fs/promises';
+
+import * as t from 'io-ts';
 
 import { isEmptyDirectoryOrDoesNotExist } from '@util/fs';
 import { shellEscape } from '@util/misc';
 import { createLogger } from '@util/logger';
 import experimentDescriptors from '@experiment/descriptors';
 
-const logger = createLogger();
+export const MinimalProjectConfig = t.type({
+  experimentType: t.string,
+  useStealth: t.boolean,
+  proxy: t.union([t.null, t.string]),
+});
+export type MinimalProjectConfig = t.TypeOf<typeof MinimalProjectConfig>;
+
+export const generateDirectoryStructure = (
+  projectDirectory: string,
+): Record<string, string> => ({
+  profileDirectory: join(projectDirectory, 'profile'),
+  projectDirectory,
+  extensionDirectory: join(projectDirectory, 'profile/tx.extension'),
+  databaseDirectory: join(projectDirectory, 'database'),
+  metaDataDirectory: join(projectDirectory, 'metaData'),
+});
 
 interface InitOptions {
   projectDirectory: string;
@@ -21,6 +39,8 @@ export const init = async({
   projectDirectory,
   experimentType,
 }: InitOptions): Promise<void> => {
+  const logger = createLogger();
+
   logger.log(
     `Initializing "${experimentType}" experiment in "${projectDirectory}"...`,
   );

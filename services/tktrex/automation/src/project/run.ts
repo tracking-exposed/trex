@@ -5,14 +5,16 @@ import yaml from 'yaml';
 
 import { getChromePath } from '@guardoni/guardoni/utils';
 
-import { generateDirectoryStructure, MinimalProjectConfig } from '.';
+import {
+  generateDirectoryStructure,
+  MinimalProjectConfig,
+} from '@project/init';
 
 import { decodeOrThrow, rightOrThrow } from '@util/fp';
 import { fileExists } from '@util/fs';
 import createLogger from '@util/logger';
 import { createPage } from '@util/page';
-import { Snapshot } from '@scraper';
-import initDb from '@project/db';
+import initDb, { BaseModel, StorableValue } from '@storage/db';
 
 import experimentDescriptors, {
   experimentTypes,
@@ -24,6 +26,7 @@ interface RunOptions {
 
 export const run = async({ projectDirectory }: RunOptions): Promise<void> => {
   const db = await initDb(projectDirectory);
+
   const logger = createLogger();
   const configPath = join(projectDirectory, 'config.yaml');
 
@@ -67,35 +70,35 @@ export const run = async({ projectDirectory }: RunOptions): Promise<void> => {
       });
 
       const saveSnapshot = async(
-        metaData: unknown,
-        parser: (html: string) => unknown[] | Promise<unknown[]>,
+        metaData: StorableValue,
+        parser: (html: string) => BaseModel[] | Promise<BaseModel[]>,
       ): Promise<void> => {
-        const snap: Snapshot = {
+        const snap = {
           type: 'Snapshot',
           experimentType: rawConfig.experimentType,
           url: page.url(),
           html: await page.content(),
-          scrapedOn: new Date(),
           metaData,
-          _id: undefined,
         };
 
         const s = await db.save(snap);
 
-        const parsed = (await parser(snap.html)).map((p) => {
+        const scrapedItems = (await parser(snap.html)).map((p) => {
           if (!p || typeof p !== 'object') {
             throw new Error(
               `parser returned invalid object: ${JSON.stringify(p)}`,
             );
           }
 
-          return {
+          const item = {
             ...p,
             snapshotId: s._id,
           };
+
+          return item;
         });
 
-        logger.log(parsed);
+        await db.saveMany(scrapedItems);
       };
 
       await experiment.run({

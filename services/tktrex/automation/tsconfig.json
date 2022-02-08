@@ -16,6 +16,7 @@
     "strictNullChecks": true,
     "target": "ES2021",
     "lib": ["ES2021"],
+    "skipLibCheck": true,
     "paths": {
       "@shared/*": ["../../../../packages/shared/src/*"],
       "@tktrex/*": ["../../shared/src/*"],
@@ -24,8 +25,7 @@
       "@experiment": ["./experiment/index"],
       "@project/*": ["./project/*"],
       "@project": ["./project/index"],
-      "@scraper/*": ["./scraper/*"],
-      "@scraper": ["./scraper/index"],
+      "@storage/*": ["./storage/*"],
       "@util/*": ["./util/*"],
       "@TikTok/*": ["./platform/TikTok/*"]
     },

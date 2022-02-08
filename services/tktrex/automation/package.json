@@ -7,6 +7,7 @@
   },
   "scripts": {
     "build": "webpack",
+    "watch": "webpack --watch",
     "clean": "rm -Rf dist",
     "automate:dev": "ts-node ./src/index.ts",
     "automate": "node dist/index.js",

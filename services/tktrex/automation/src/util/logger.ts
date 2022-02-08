@@ -36,6 +36,9 @@ export const createLogger = (
     }
   };
 
+  const capRight = (str: string, limit = 50): string =>
+    str.length > limit ? str.slice(0, limit - 3) + '...' : str;
+
   const log = (...args: unknown[]): void => {
     const lines: string[] = [];
 
@@ -46,7 +49,7 @@ export const createLogger = (
         lines.push(
           ...JSON.stringify(arg, null, 2)
             .split('\n')
-            .map((line) => `|> ${line}`),
+            .map((line) => `|> ${capRight(line)}`),
         );
       }
     }

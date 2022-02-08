@@ -1,7 +1,8 @@
 import { Page } from 'puppeteer';
 
 import { Logger } from '@util/logger';
-import { MinimalProjectConfig } from '@project/index';
+import { MinimalProjectConfig } from '@project/init';
+import { BaseModel, StorableObject } from '@storage/db';
 
 export interface InitOptions {
   projectDirectory: string;
@@ -12,8 +13,8 @@ export type RunOptions = InitOptions & {
   page: Page;
   project: MinimalProjectConfig;
   saveSnapshot: (
-    metaData: unknown,
-    parser: (html: string) => unknown[] | Promise<unknown[]>,
+    metaData: StorableObject,
+    parser: (html: string) => BaseModel[] | Promise<BaseModel[]>
   ) => Promise<void>;
 };
 
