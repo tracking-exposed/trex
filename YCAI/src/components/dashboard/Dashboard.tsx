@@ -6,7 +6,11 @@ import * as QR from 'avenger/lib/QueryResult';
 import { declareQueries } from 'avenger/lib/react';
 import { pipe } from 'fp-ts/lib/function';
 import { useTranslation } from 'react-i18next';
-import { auth, localProfile } from '../../state/dashboard/creator.queries';
+import {
+  accountLinkCompleted,
+  auth,
+  localProfile,
+} from '../../state/dashboard/creator.queries';
 import {
   CurrentView,
   currentView,
@@ -23,6 +27,7 @@ import { LabVideoEdit } from './lab/LabVideoEdit';
 import { ContentCreator } from '@shared/models/ContentCreator';
 import { AuthResponse } from '@shared/models/Auth';
 import RecommendationsLibrary from './lab/RecommendationsLibrary';
+import Congrats from './account/congrats';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -45,18 +50,38 @@ const useStyles = makeStyles((theme) => ({
       },
     },
   },
+  congratsTitle: {
+    whiteSpace: 'pre-line',
+    paddingTop: theme.spacing(10),
+    fontSize: theme.spacing(5),
+    fontWeight: theme.typography.h1.fontWeight,
+    lineHeight: 1.4,
+    display: 'flex',
+    alignItems: 'center',
+    marginBottom: theme.spacing(3),
+    '& a': {
+      color: theme.palette.common.black,
+      marginTop: 3,
+      marginRight: theme.spacing(1),
+      '&:hover': {
+        cursor: 'pointer',
+      },
+    },
+  },
 }));
 
 interface DashboardContentProps {
   currentView: CurrentView;
   profile: ContentCreator | null;
   auth: AuthResponse | null;
+  accountLinkCompleted: boolean;
 }
 
 const DashboardContent: React.FC<DashboardContentProps> = ({
   currentView,
   profile,
   auth,
+  accountLinkCompleted,
 }) => {
   const { t } = useTranslation();
   const theme = useTheme();
@@ -75,6 +100,14 @@ const DashboardContent: React.FC<DashboardContentProps> = ({
               t('link_account:subtitle'),
               // eslint-disable-next-line react/jsx-key
               <LinkAccount auth={auth} />,
+            ];
+          }
+
+          if (!accountLinkCompleted) {
+            return [
+              t('routes:congrats'),
+              t('congrats:subtitle'),
+              <Congrats profile={profile} />,
             ];
           }
 
@@ -140,6 +173,14 @@ const DashboardContent: React.FC<DashboardContentProps> = ({
             </Link>
             {currentViewLabel}
           </Typography>
+        ) : !accountLinkCompleted ? (
+          <Typography
+            component="h1"
+            color="primary"
+            className={classes.congratsTitle}
+          >
+            {currentViewLabel}
+          </Typography>
         ) : (
           <Typography
             variant="h3"
@@ -177,28 +218,36 @@ const withQueries = declareQueries({
   currentView,
   profile: localProfile,
   auth,
+  accountLinkCompleted,
 });
 
 export const Dashboard = withQueries(({ queries }): React.ReactElement => {
   return pipe(
     queries,
-    QR.fold(LazyFullSizeLoader, ErrorBox, ({ currentView, profile, auth }) => {
-      const classes = useStyles();
+    QR.fold(
+      LazyFullSizeLoader,
+      ErrorBox,
+      ({ currentView, profile, auth, accountLinkCompleted }) => {
+        const classes = useStyles();
 
-      return (
-        <Grid container className={classes.root} spacing={4}>
-          <Grid item sm={12} md={3} lg={2}>
-            <Sidebar currentView={currentView} profile={profile} />
+        return (
+          <Grid container className={classes.root} spacing={4}>
+            <Grid item sm={12} md={3} lg={2}>
+              {accountLinkCompleted && (
+                <Sidebar currentView={currentView} profile={profile} />
+              )}
+            </Grid>
+            <Grid item sm={12} md={9} lg={10}>
+              <DashboardContent
+                currentView={currentView}
+                profile={profile}
+                auth={auth}
+                accountLinkCompleted={accountLinkCompleted}
+              />
+            </Grid>
           </Grid>
-          <Grid item sm={12} md={9} lg={10}>
-            <DashboardContent
-              currentView={currentView}
-              profile={profile}
-              auth={auth}
-            />
-          </Grid>
-        </Grid>
-      );
-    })
+        );
+      }
+    )
   );
 });
