@@ -10,7 +10,7 @@ import * as TE from 'fp-ts/lib/TaskEither';
 import _ from 'lodash';
 import { config } from '../config';
 import { Keypair, Settings } from '../models/Settings';
-import { getTimeISO8601 } from '../utils/date.utils';
+import { getTimeISO8601 } from '@shared/utils/date.utils';
 import { logger } from '../utils/logger.utils';
 import { sendAPIMessage } from './browser.provider';
 import security from './bs58.provider';

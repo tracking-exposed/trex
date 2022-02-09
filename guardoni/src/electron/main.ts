@@ -15,6 +15,10 @@ import pie from 'puppeteer-in-electron';
 import { AppEnv } from '../AppEnv';
 import { GetEvents } from './events/renderer.events';
 import { createGuardoniWindow } from './windows/GuardoniWindow';
+import packageJson from '../../package.json';
+
+app.setAppLogsPath(path.resolve(os.homedir(), `.config/guardoni/logs`));
+app.setPath('userData', path.resolve(os.homedir(), `.config/guardoni/data`));
 
 // load env from .env file shipped with compiled code
 dotenv.config({
@@ -57,14 +61,16 @@ const creatMainWindow = (
   }, toAppError);
 };
 
+// default extension path
+const EXTENSION_DIR_PATH = path.resolve(__dirname, '../extension');
+
 export const run = async (): Promise<void> => {
   debug.enable('guardoni:*');
+
   log.info('Guardoni start', process.cwd());
 
-  app.setPath('userData', path.resolve(os.homedir(), `.config/guardoni/data`));
-
   return pipe(
-    AppEnv.decode(process.env),
+    AppEnv.decode({ VERSION: packageJson.version, ...process.env }),
     E.mapLeft((e) => {
       return new AppError('EnvError', 'process.env is malformed', failure(e));
     }),
@@ -91,13 +97,19 @@ export const run = async (): Promise<void> => {
         ),
         TE.map(({ guardoniApp, mainWindow }) => {
           // bind events for main window
-          GetEvents({
+          return GetEvents({
             app,
             env,
             api: GetAPI({ baseURL: env.BACKEND }).API,
             mainWindow,
             guardoniWindow: guardoniApp.window,
             guardoniBrowser: guardoniApp.browser,
+            guardoniConfig: {
+              extensionDir: EXTENSION_DIR_PATH,
+              headless: true,
+              verbose: false,
+              backend: env.BACKEND,
+            },
           }).register();
         })
       );

@@ -4,62 +4,66 @@
 
 const yargs = require('yargs/yargs');
 const { hideBin } = require('yargs/helpers');
-const { GetGuardoniCLI } = require('../build/guardoni/cli.js');
+const { GetGuardoniCLI, cliLogger } = require('../build/guardoni/cli.js');
+const puppeteer = require('puppeteer');
+const D = require('debug');
 
 const runGuardoni = ({
   _,
   $0,
   v,
-  headless,
   verbose,
-  backend,
-  basePath,
-  profile,
-  evidenceTag,
-  proxy,
-  ...command
+  c,
+  config,
+  command,
+  ...guardoniConf
 }) => {
-  return GetGuardoniCLI({
-    headless,
-    basePath,
-    profile,
-    verbose,
-    evidenceTag,
-    proxy,
-    backend,
-  })
+  if (verbose) {
+    if (config) {
+      console.log(`Configuration loaded from ${config}`, guardoniConf);
+    }
+  }
+
+  return GetGuardoniCLI({ ...guardoniConf, verbose }, puppeteer)
     .runOrThrow(command)
     .then(() => process.exit(0));
 };
 
 yargs(hideBin(process.argv))
   .scriptName('guardoni-cli')
+  .example('$0 --type comparison')
   .command(
     'experiment <experiment>',
     'Run guardoni from a given experiment',
     (yargs) =>
-      yargs
-        .positional('experiment', {
-          desc: 'Experiment id',
-          demandOption: 'Provide the experiment id',
-          type: 'string',
-        })
-        .example('$0 experiment 1234'),
-    (argv) => runGuardoni({ ...argv, run: 'experiment' })
+      yargs.positional('experiment', {
+        desc: 'Experiment id',
+        demandOption: 'Provide the experiment id',
+        type: 'string',
+      }),
+    ({ experiment, ...argv }) =>
+      runGuardoni({ ...argv, command: { run: 'experiment', experiment } })
   )
   .command(
     'register <file>',
     'Register an experiment from a CSV',
     (yargs) => {
-      return yargs
-        .positional('file', {
-          desc: 'CSV file to register an experiment',
-          type: 'string',
-          demandOption: 'Provide a valid path to a csv file',
-        })
-        .example('$0 csv ./path/to/file.csv');
+      return yargs.positional('file', {
+        desc: 'CSV file to register an experiment',
+        type: 'string',
+        demandOption: 'Provide a valid path to a csv file',
+      });
     },
-    (argv) => runGuardoni({ ...argv, run: 'register-csv' })
+    ({ file, ...argv }) =>
+      runGuardoni({ ...argv, command: { run: 'register-csv', file } })
+  )
+  .command(
+    'list',
+    'List available experiments',
+    (yargs) => {
+      return yargs.example('$0 list');
+    },
+    (argv) => runGuardoni({ ...argv, command: { run: 'list' } })
   )
   .usage(
     '$0 [index]',
@@ -71,9 +75,17 @@ yargs(hideBin(process.argv))
         demandOption: 'Run comparison or shadow ban experiment run',
       });
     },
-    (args) => runGuardoni({ ...args, run: 'auto' })
+    ({ index, ...args }) =>
+      runGuardoni({ ...args, command: { run: 'auto', index: index } })
   )
-  .example('$0 --type comparison')
+  .option('c', {
+    type: 'string',
+    alias: 'config',
+    desc: 'Guardoni configuration',
+    default: 'guardoni.config.json',
+    config: true,
+  })
+  .config()
   .option('headless', {
     type: 'boolean',
     desc: 'Run guardoni in headless mode.',
@@ -105,5 +117,4 @@ yargs(hideBin(process.argv))
     desc: 'Produce tons of logs',
     default: false,
   })
-  .strictCommands()
-  .parse();
+  .strictCommands().argv;

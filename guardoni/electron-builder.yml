@@ -4,26 +4,28 @@ appId: guardoni.tracking.exposed
 
 productName: Guardoni
 
-asar: false
+asar: true
+asarUnpack: ['node_modules']
 
 extends: null
 
 extraMetadata:
-  main: "build/electron/main.js"
+  main: 'build/electron/main.js'
 
-files: [
-  "build/**",
-  "!profiles/**",
-  "!src/**",
-  "!screenshots/**",
-  "!static/**"
-]
-
-icon: ./static/yttrex-128.png
+files:
+  [
+    'build/**',
+    '!node_modules/**',
+    '!src/**',
+    '!profiles/**',
+    '!screenshots/**',
+    '!static/**',
+  ]
 
 linux:
-  target: ["deb"]
+  icon: ./static/linux/icons
+  target: ['deb']
   category: Network
 
 win:
-  target: ["portable"]
+  target: ['portable']
