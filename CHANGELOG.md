@@ -1,3 +1,16 @@
+### [2.2.1-0](https://github.com/tracking-exposed/yttrex/compare/v2.2.0...v2.2.1-0) (2022-02-09)
+
+- guardoni cli and electron build ([#371](https://github.com/tracking-exposed/yttrex/issues/371)) ([8bd6339](https://github.com/tracking-exposed/yttrex/commit/8bd6339b4be2a665018e7029a87f5434c116a6ca))
+- **guardoni:** dist-all shell script ([#324](https://github.com/tracking-exposed/yttrex/issues/324)) ([fcf88f2](https://github.com/tracking-exposed/yttrex/commit/fcf88f217b805a4a3f1ee88adb1eb4b34b40554a))
+- **guardoni:** removed moment dep ([#355](https://github.com/tracking-exposed/yttrex/issues/355)) ([777f2c0](https://github.com/tracking-exposed/yttrex/commit/777f2c047c94c7309dd0feaa89bff99ef7854880))
+- **guardoni:** removed unused imports from cli file ([e2319b1](https://github.com/tracking-exposed/yttrex/commit/e2319b148e61888f23b90e7157ef6d2ae929dd73))
+- **shared:** fix DOTENV_CONFIG_PATH resolution in webpack config ([#359](https://github.com/tracking-exposed/yttrex/issues/359)) ([39b5162](https://github.com/tracking-exposed/yttrex/commit/39b5162f1f0ee7392b507773da8f485bb30419d3))
+- **workspace:** deps upgrade and "chai", "mocha", "immutability-helper", "cherio" and "marked" removal ([#365](https://github.com/tracking-exposed/yttrex/issues/365)) ([a1c1f22](https://github.com/tracking-exposed/yttrex/commit/a1c1f221ea4effd7864f683719cec7f66678d8db))
+- **workspace:** tsc diagnostics report ([#357](https://github.com/tracking-exposed/yttrex/issues/357)) ([217e2e8](https://github.com/tracking-exposed/yttrex/commit/217e2e84c9e073f86b8062df64b887b9b92eb90b))
+- **ycai:** remove 'moment' dep ([#356](https://github.com/tracking-exposed/yttrex/issues/356)) ([2c88003](https://github.com/tracking-exposed/yttrex/commit/2c88003817292bda5c4fa569fa48b0d5b21b5109))
+- **ycai:** return total contributions in get creator stats api ([#358](https://github.com/tracking-exposed/yttrex/issues/358)) ([6457302](https://github.com/tracking-exposed/yttrex/commit/64573028c28ba536adf8aa404940c54a690f738a))
+- **yttrex:** removed outdated create-react-class dep ([#360](https://github.com/tracking-exposed/yttrex/issues/360)) ([70df1fd](https://github.com/tracking-exposed/yttrex/commit/70df1fd67e0530be533af8e1bff68fe19a425c36))
+
 ## [2.2.0](https://github.com/tracking-exposed/yttrex/compare/v2.1.0...v2.2.0) (2022-02-01)
 
 - **yttrex:** added --type filtering option for parserv2 ([9dd3772](https://github.com/tracking-exposed/yttrex/commit/9dd3772a554cd467cd96174f7de00c8f937ba589))
