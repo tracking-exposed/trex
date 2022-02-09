@@ -165,6 +165,7 @@ declare module 'react-i18next' {
       routes: {
         link_account: string;
         congrats: string;
+        lab_videos_title: string;
         recommendations_library_title: string;
         recommendations_library_title_short: string;
         recommendations_library_subtitle: string;
