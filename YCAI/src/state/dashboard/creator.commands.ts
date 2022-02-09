@@ -11,9 +11,10 @@ import * as TE from 'fp-ts/lib/TaskEither';
 import { API } from '../../api';
 import {
   auth,
-  ccRelatedUsers,
   creatorRecommendations,
   creatorVideos,
+  accountLinkCompleted,
+  ACCOUNT_LINK_COMPLETED,
   localProfile,
   profile,
   requiredLocalProfile,
@@ -32,8 +33,6 @@ export const registerCreatorChannel = command(
       )
     ),
   {
-    creatorVideos,
-    ccRelatedUsers,
     auth,
   }
 );
@@ -198,6 +197,14 @@ export const updateAuth = command(
     TE.fromIO<any, AppError>(setItem(sharedConst.AUTH_KEY, payload)),
   {
     auth,
+  }
+);
+
+export const updateAccountLinkCompleted = command(
+  ({ completed }: { completed: true }) =>
+    TE.fromIO<any, AppError>(setItem(ACCOUNT_LINK_COMPLETED, completed)),
+  {
+    accountLinkCompleted,
   }
 );
 

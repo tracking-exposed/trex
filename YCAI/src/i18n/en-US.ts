@@ -60,6 +60,7 @@ const resources: CustomTypeOptions['resources'] = {
     an_error_occurred: 'An error occurred',
   },
   routes: {
+    congrats: 'Congrats! \n Channel linked successfully :)',
     lab_title: 'LAB - Choose the Recommendations on Your Videos',
     lab_title_short: 'LAB',
     lab_subtitle:
@@ -83,6 +84,11 @@ const resources: CustomTypeOptions['resources'] = {
   },
   hide_all: {
     title: 'Hide All',
+  },
+  congrats: {
+    subtitle: "You can now delete the token from your YT channel's description",
+    message:
+      "Add a few gems to your library, they will be rolled by default on your channel's videos",
   },
   link_account: {
     title: 'Authenticate your YouTube channel.',
