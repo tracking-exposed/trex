@@ -4,9 +4,8 @@
 
 const yargs = require('yargs/yargs');
 const { hideBin } = require('yargs/helpers');
-const { GetGuardoniCLI, cliLogger } = require('../build/guardoni/cli.js');
+const { GetGuardoniCLI } = require('../build/guardoni/cli.js');
 const puppeteer = require('puppeteer');
-const D = require('debug');
 
 const runGuardoni = ({
   _,
