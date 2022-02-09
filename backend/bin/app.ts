@@ -260,8 +260,8 @@ export const makeApp = async (
     '/v2/guardoni/list/:directiveType/:key?',
     iowrapper('getAllExperiments')
   );
+  apiRouter.get('/v3/directives/public', iowrapper('getPublicDirectives'));
   apiRouter.post('/v3/directives/:directiveType', iowrapper('postDirective'));
-  apiRouter.get('/api/v3/directives/public', iowrapper('getPublicDirectives'));
   apiRouter.get('/v3/directives/:experimentId', iowrapper('fetchDirective'));
   apiRouter.post('/v2/handshake', iowrapper('experimentChannel3'));
   apiRouter.delete(

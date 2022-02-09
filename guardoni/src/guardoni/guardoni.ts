@@ -37,7 +37,8 @@ import { failure, PathReporter } from 'io-ts/lib/PathReporter';
 import _ from 'lodash';
 import path from 'path';
 // import pluginStealth from "puppeteer-extra-plugin-stealth";
-import puppeteer from 'puppeteer-core';
+import type puppeteer from 'puppeteer-core';
+import packageJson from '../../package.json';
 import domainSpecific from './domainSpecific';
 import {
   GuardoniConfig,
@@ -47,19 +48,26 @@ import {
   ProgressDetails,
 } from './types';
 import { csvParseTE, getChromePath, liftFromIOE } from './utils';
+import * as os from 'os';
 
 // const COMMANDJSONEXAMPLE =
 //   'https://youtube.tracking.exposed/json/automation-example.json';
 
-const getExtensionWithOptInURL = (v: string): string =>
-  'https://github.com/tracking-exposed/yttrex/releases/download/v1.8.992/extension-1.9.0.99.zip';
+const getExtensionWithOptInURL = (v: string): string => {
+  // const ninetyNineV = v
+  //   .split('.')
+  //   .filter((v, i) => i !== 2)
+  //   .concat('99')
+  //   .join('.');
+  return `https://github.com/tracking-exposed/yttrex/releases/download/v${v}/guardoni-yttrex-extension-${v}.zip`;
+};
 
-const DEFAULT_BASE_PATH = process.cwd();
+const DEFAULT_BASE_PATH = path.resolve(os.homedir(), '.config/guardoni');
 const DEFAULT_BACKEND =
   process.env.BACKEND ?? 'https://youtube.tracking.exposed/api';
 const DEFAULT_EXTENSION_DIR = path.resolve(
-  DEFAULT_BASE_PATH,
-  'build/extension'
+  os.homedir(),
+  '.config/guardoni/extension'
 );
 
 const DEFAULT_LOAD_FOR = 3000;
@@ -75,44 +83,83 @@ interface ExperimentInfo {
 }
 
 interface GuardoniContext {
+  puppeteer: typeof puppeteer;
   API: APIClient;
   config: GuardoniConfigRequired;
   profile: GuardoniProfile;
   guardoniConfigFile: string;
   logger: Pick<Logger, 'info' | 'error' | 'debug'>;
+  version: string;
 }
 
 // old functions
 
 const downloadExtension = (
   ctx: GuardoniContext
-): IOE.IOEither<AppError, void> => {
-  return IOE.tryCatch(() => {
-    ctx.logger.debug(`Checking extension manifest.json...`);
-    const manifestPath = path.resolve(
-      path.join(ctx.config.extensionDir, 'manifest.json')
-    );
+): TE.TaskEither<AppError, void> => {
+  return pipe(
+    IOE.tryCatch(() => {
+      ctx.logger.debug(`Checking extension manifest.json...`);
+      const manifestPath = path.resolve(
+        path.join(ctx.config.extensionDir, 'manifest.json')
+      );
 
-    const manifest = fs.existsSync(manifestPath);
+      const manifest = fs.existsSync(manifestPath);
 
-    if (manifest) {
-      ctx.logger.debug(`Manifest found, no need to download the extension`);
-      return;
-    }
+      if (manifest) {
+        ctx.logger.debug(`Manifest found, no need to download the extension`);
+        return undefined;
+      }
 
-    ctx.logger.debug('Ensure %s dir exists', ctx.config.extensionDir);
-    fs.mkdirSync(ctx.config.extensionDir, { recursive: true });
+      ctx.logger.debug('Ensure %s dir exists', ctx.config.extensionDir);
+      fs.mkdirSync(ctx.config.extensionDir, { recursive: true });
 
-    ctx.logger.debug(
-      "Executing curl and unzip (if these binary aren't present in your system please mail support at tracking dot exposed because you might have worst problems)"
-    );
-    const zipFileP = path.resolve(
-      path.join(ctx.config.extensionDir, 'tmpzipf.zip')
-    );
+      ctx.logger.debug(
+        "Executing curl and unzip (if these binary aren't present in your system please mail support at tracking dot exposed because you might have worst problems)"
+      );
+      const extensionZipFilePath = path.resolve(
+        path.join(
+          ctx.config.extensionDir,
+          `guardoni-yttrex-extension-v${ctx.version}.zip`
+        )
+      );
 
-    execSync(`curl -L ${getExtensionWithOptInURL('')} -o ${zipFileP}`);
-    execSync(`unzip ${zipFileP} -d ${ctx.config.extensionDir}`);
-  }, toAppError);
+      const extensionZipUrl = getExtensionWithOptInURL(ctx.version);
+
+      return { extensionZipUrl, extensionZipFilePath };
+    }, toAppError),
+    IOE.chain((downloadDetails) => {
+      if (!downloadDetails) {
+        return IOE.right(undefined);
+      }
+
+      return pipe(
+        IOE.tryCatch(() => {
+          ctx.logger.debug(
+            'Downloading extension from %s and save it to %s',
+            downloadDetails.extensionZipUrl,
+            downloadDetails.extensionZipFilePath
+          );
+          execSync(
+            `curl -L ${downloadDetails.extensionZipUrl} -o ${downloadDetails.extensionZipFilePath}`
+          );
+        }, toAppError),
+        IOE.chain(() =>
+          IOE.tryCatch(() => {
+            ctx.logger.debug(
+              'Unzipping the extension from %s to folder %s',
+              downloadDetails.extensionZipUrl,
+              downloadDetails.extensionZipFilePath
+            );
+            execSync(
+              `unzip ${downloadDetails.extensionZipFilePath} -d ${ctx.config.extensionDir}`
+            );
+          }, toAppError)
+        )
+      );
+    }),
+    TE.fromIOEither
+  );
 };
 
 const dispatchBrowser = (
@@ -152,7 +199,7 @@ const dispatchBrowser = (
   }
   return TE.tryCatch(async () => {
     // puppeteer.use(pluginStealth());
-    const browser = await puppeteer.launch({
+    const browser = await ctx.puppeteer.launch({
       headless: ctx.config.headless,
       userDataDir: ctx.profile.udd,
       executablePath: ctx.config.chromePath,
@@ -482,14 +529,14 @@ const registerExperiment =
           return {
             type: 'success',
             message: `Experiment already available`,
-            values: experiment,
+            values: [experiment],
           };
         }
 
         return {
           type: 'success',
           message: `Experiment created successfully`,
-          values: experiment,
+          values: [experiment],
         };
       })
     );
@@ -501,7 +548,7 @@ const registerCSV =
     csvFile: string,
     directiveType: DirectiveType
   ): TE.TaskEither<AppError, GuardoniSuccessOutput> => {
-    const filePath = path.resolve(ctx.config.basePath, csvFile);
+    const filePath = path.resolve(process.cwd(), csvFile);
 
     ctx.logger.debug(`Register CSV from %s`, filePath);
 
@@ -555,6 +602,30 @@ const saveExperiment =
         );
       }),
       TE.map(() => experimentInfo)
+    );
+  };
+
+const listExperiments =
+  (ctx: GuardoniContext) =>
+  (): TE.TaskEither<AppError, GuardoniSuccessOutput> => {
+    return pipe(
+      ctx.API.v3.Public.GetPublicDirectives(),
+      TE.map(
+        (experiments): GuardoniSuccessOutput => ({
+          message: 'Experiments List',
+          type: 'success',
+          values:
+            experiments.length > 0
+              ? experiments.map((e) => ({
+                  [e.experimentId]: e,
+                }))
+              : [
+                  {
+                    experiments: [],
+                  },
+                ],
+        })
+      )
     );
   };
 
@@ -747,7 +818,11 @@ const validateNonEmptyString = (
 const runExperiment =
   (ctx: GuardoniContext) =>
   (experimentId: string): TE.TaskEither<AppError, GuardoniSuccessOutput> => {
-    ctx.logger.info('Running experiment %s', experimentId);
+    ctx.logger.info(
+      'Running experiment %s with config %O',
+      experimentId,
+      ctx.config
+    );
     return pipe(
       sequenceS(TE.ApplicativePar)({
         profile: updateGuardoniProfile(ctx)(ctx.config.evidenceTag),
@@ -767,7 +842,7 @@ const runExperiment =
       TE.map((result) => ({
         type: 'success',
         message: 'Experiment completed',
-        values: result,
+        values: [result],
       }))
     );
   };
@@ -787,10 +862,12 @@ const runExperimentForPage =
       TE.map((publicKey) => ({
         type: 'success',
         message: 'Experiment completed',
-        values: {
-          experimentId,
-          publicKey,
-        },
+        values: [
+          {
+            experimentId,
+            publicKey,
+          },
+        ],
       }))
     );
 
@@ -828,6 +905,7 @@ export const getDefaultProfile = (
 };
 
 const loadContext = (
+  p: typeof puppeteer,
   partialConfig: GuardoniConfig,
   logger: GuardoniContext['logger']
 ): TE.TaskEither<AppError, GuardoniContext> => {
@@ -843,6 +921,7 @@ const loadContext = (
       );
 
       return {
+        puppeteer: p,
         API: GetAPI({ baseURL: config.backend }).API,
         config: {
           ...config,
@@ -851,9 +930,10 @@ const loadContext = (
         profile,
         logger,
         guardoniConfigFile: path.join(profile.udd, 'guardoni.json'),
+        version: packageJson.version,
       };
     }),
-    TE.chainFirst((ctx) => TE.fromIOEither(downloadExtension(ctx))),
+    TE.chainFirst(downloadExtension),
     TE.chainFirst((ctx) =>
       liftFromIOE(() => fs.mkdirSync(ctx.profile.udd, { recursive: true }))
     ),
@@ -902,6 +982,7 @@ export interface Guardoni {
     records: ComparisonDirectiveRow[],
     directiveType: DirectiveType
   ) => TE.TaskEither<AppError, GuardoniSuccessOutput>;
+  listExperiments: () => TE.TaskEither<AppError, GuardoniSuccessOutput>;
   runExperiment: (
     experiment: NonEmptyString
   ) => TE.TaskEither<AppError, GuardoniSuccessOutput>;
@@ -919,11 +1000,13 @@ export type GetGuardoni = ({
 }: {
   config: GuardoniConfig;
   logger: GuardoniContext['logger'];
+  puppeteer: typeof puppeteer;
 }) => TE.TaskEither<AppError, Guardoni>;
 
 export const GetGuardoni: GetGuardoni = ({
   config,
   logger,
+  puppeteer,
 }): TE.TaskEither<AppError, Guardoni> => {
   const loggerSpaces = config.verbose
     ? ['guardoni:info', 'guardoni:debug', 'guardoni:error', process.env.DEBUG]
@@ -932,7 +1015,7 @@ export const GetGuardoni: GetGuardoni = ({
   debug.enable(loggerSpaces.join(','));
 
   return pipe(
-    loadContext(config, logger),
+    loadContext(puppeteer, config, logger),
     TE.map((ctx) => {
       return {
         config: ctx.config,
@@ -941,6 +1024,7 @@ export const GetGuardoni: GetGuardoni = ({
         runExperimentForPage: runExperimentForPage(ctx),
         registerExperiment: registerExperiment(ctx),
         registerExperimentFromCSV: registerCSV(ctx),
+        listExperiments: listExperiments(ctx),
       };
     })
   );

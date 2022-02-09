@@ -6,6 +6,7 @@
     - [CLI commands](#cli-commands)
       - [Register CSV](#register-csv)
       - [Running an experiment by id](#running-an-experiment-by-id)
+      - [List public directives](#list-public-directives)
       - [Running a default experiment](#running-a-default-experiment)
   - [Build](#build)
     - [Package](#package)
@@ -80,7 +81,7 @@ Examples:
 
 ### CLI commands
 
-Three fundamental commands exist: `register`, `experiment` and "auto mode".
+Three fundamental commands exist: `register`, `experiment`, `list` and "auto mode".
 
 How do they works?
 
@@ -119,6 +120,14 @@ With an experiment id you can run guardoni quite easily:
 
 ```bash
 guardoni-cli experiment 123456
+```
+
+#### List public directives
+
+With this command you can list the public directives available to run.
+
+```bash
+guardoni-cli list
 ```
 
 #### Running a default experiment

@@ -10,7 +10,7 @@ import { NonEmptyString } from 'io-ts-types';
 import * as puppeteer from 'puppeteer-core';
 import * as pie from 'puppeteer-in-electron';
 import { GetGuardoni, readCSVAndParse } from '../../guardoni/guardoni';
-import { GuardoniConfigRequired } from '../../guardoni/types';
+import { GuardoniConfig, GuardoniConfigRequired } from '../../guardoni/types';
 import { guardoniLogger } from '../../logger';
 import {
   CREATE_EXPERIMENT_EVENT,
@@ -81,15 +81,16 @@ interface GetEventsContext {
   mainWindow: Electron.BrowserWindow;
   guardoniWindow: Electron.BrowserWindow;
   guardoniBrowser: puppeteer.Browser;
+  guardoniConfig: GuardoniConfig;
 }
 
 export const GetEvents = ({
   app,
   api,
-  env,
   mainWindow,
   guardoniWindow,
   guardoniBrowser,
+  guardoniConfig,
 }: GetEventsContext): Events => {
   const logger = getEventsLogger(mainWindow);
 
@@ -114,8 +115,9 @@ export const GetEvents = ({
 
         void pipe(
           GetGuardoni({
-            config: { verbose: false, headless: true, backend: env.BACKEND },
+            config: guardoniConfig,
             logger,
+            puppeteer,
           }),
           TE.map((g) => g.config),
           liftEventTask(GET_GUARDONI_CONFIG_EVENT.value)
@@ -129,12 +131,19 @@ export const GetEvents = ({
         const [config, records] = args;
 
         void pipe(
-          GetGuardoni({ config, logger }),
+          GetGuardoni({
+            config: {
+              ...guardoniConfig,
+              ...config,
+            },
+            logger,
+            puppeteer,
+          }),
           TE.chain((g) => g.registerExperiment(records, 'comparison')),
           TE.map((e) => {
             logger.info(e.message, e.values);
 
-            return e.values.experimentId;
+            return e.values[0].experimentId;
           }),
           liftEventTask(CREATE_EXPERIMENT_EVENT.value)
         );
@@ -155,7 +164,14 @@ export const GetEvents = ({
           );
 
           void pipe(
-            GetGuardoni({ config, logger }),
+            GetGuardoni({
+              config: {
+                ...guardoniConfig,
+                ...config,
+              },
+              logger,
+              puppeteer,
+            }),
             TE.chain((g) =>
               pipe(
                 TE.tryCatch(async () => {
@@ -185,7 +201,7 @@ export const GetEvents = ({
                       config.extensionDir
                     );
 
-                  logger.debug('Extension loaded %O', extension);
+                  logger.info('Extension loaded %O', extension);
 
                   return pie.getPage(guardoniBrowser, guardoniWindow);
                 }, toAppError),

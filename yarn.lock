@@ -8513,10 +8513,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"electron-log@npm:^4.4.5":
-  version: 4.4.5
-  resolution: "electron-log@npm:4.4.5"
-  checksum: 2d19e24783c68a379f2461fdc507b00ce9df4d814eaec8dc804fc8685c72ce9090001c604b1000cfc7337c56ddd9ef5637b31a35a3dfb049e208e3f7790c837e
+"electron-log@npm:^4.4.6":
+  version: 4.4.6
+  resolution: "electron-log@npm:4.4.6"
+  checksum: cb385a3d220eaf13ff5a7d7ae2f6421ee6b4a3cf9c4026ae66dad37fc005c04ef224a511a01731c489c82a8ed78202dd6ead99e93d0fe951bdc215684df0b3b5
   languageName: node
   linkType: hard
 
@@ -8552,16 +8552,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"electron-reloader@npm:^1.2.1":
-  version: 1.2.1
-  resolution: "electron-reloader@npm:1.2.1"
+"electron-reloader@npm:^1.2.2":
+  version: 1.2.2
+  resolution: "electron-reloader@npm:1.2.2"
   dependencies:
     chalk: ^4.1.0
     chokidar: ^3.5.0
     date-time: ^3.1.0
     electron-is-dev: ^1.2.0
     find-up: ^5.0.0
-  checksum: 78537cf092bd62134caf57c9f7a9e0df6fda16b1686e95c268094a795dcf99bc019be75ff06d7ed99cff3cfcc0b552f08fc616343b19b24f95ed83a122d4110c
+  checksum: 2185c17b19224f579ea62a9e525dbc1bc6f5752baffb924b73f8df6ddb685aca9e7d55bd1bb42034a9e653ee8a4b4d2444d6000942cdb919257afd920ae3349d
   languageName: node
   linkType: hard
 
@@ -10990,8 +10990,8 @@ __metadata:
     electron: 16.0.8
     electron-builder: ^22.14.13
     electron-debug: ^3.2.0
-    electron-log: ^4.4.5
-    electron-reloader: ^1.2.1
+    electron-log: ^4.4.6
+    electron-reloader: ^1.2.2
     electron-squirrel-startup: ^1.0.0
     electron-store: ^8.0.1
     eslint: ^8.8.0

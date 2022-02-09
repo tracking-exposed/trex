@@ -9,6 +9,7 @@ import { ipcRenderer } from 'electron';
 import * as React from 'react';
 import { CREATE_EXPERIMENT_EVENT } from '../models/events';
 import { GuardoniConfig } from '../../guardoni/types';
+import { ExperimentLink } from '@shared/models/Experiment';
 
 interface FromCSVFileTabProps {
   config: GuardoniConfig;
@@ -19,18 +20,20 @@ interface URLState {
   newURL: string | undefined;
   newTitle: string | undefined;
   newURLTag: string | undefined;
-  urls: Array<{ url: string; title: string; urltag: string }>;
+  newWatchFor: string | number | null;
+  urls: ExperimentLink[];
 }
 
 export const FromURLsTab: React.FC<FromCSVFileTabProps> = ({
   config,
   onSubmit,
 }) => {
-  const [{ newURL, newTitle, newURLTag, urls }, setURLs] =
+  const [{ newURL, newTitle, newURLTag, newWatchFor, urls }, setURLs] =
     React.useState<URLState>({
       newURL: undefined,
       newTitle: undefined,
       newURLTag: undefined,
+      newWatchFor: null,
       urls: [],
     });
 
@@ -62,6 +65,7 @@ export const FromURLsTab: React.FC<FromCSVFileTabProps> = ({
                   urls,
                   newTitle,
                   newURLTag,
+                  newWatchFor,
                   newURL: e.target.value,
                 });
               }}
@@ -80,6 +84,7 @@ export const FromURLsTab: React.FC<FromCSVFileTabProps> = ({
                   urls,
                   newURL,
                   newURLTag,
+                  newWatchFor,
                   newTitle: e.target.value,
                 });
               }}
@@ -98,7 +103,26 @@ export const FromURLsTab: React.FC<FromCSVFileTabProps> = ({
                   urls,
                   newURL,
                   newTitle,
+                  newWatchFor,
                   newURLTag: e.target.value,
+                });
+              }}
+            />
+          }
+        />
+        <FormControlLabel
+          label="Watch For"
+          labelPlacement="top"
+          control={
+            <Input
+              value={newWatchFor ?? ''}
+              onChange={(e) => {
+                setURLs({
+                  urls,
+                  newURL,
+                  newTitle,
+                  newURLTag,
+                  newWatchFor: e.target.value,
                 });
               }}
             />
@@ -112,10 +136,12 @@ export const FromURLsTab: React.FC<FromCSVFileTabProps> = ({
                 newURL: undefined,
                 newTitle: undefined,
                 newURLTag: undefined,
+                newWatchFor: null,
                 urls: urls.concat({
                   url: newURL,
                   title: newTitle,
                   urltag: newURLTag,
+                  watchFor: newWatchFor,
                 }),
               });
             }

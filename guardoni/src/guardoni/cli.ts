@@ -1,25 +1,21 @@
 import { AppError } from '@shared/errors/AppError';
-import {
-  ComparisonDirectiveRow,
-  DirectiveType,
-} from '@shared/models/Directive';
+import { DirectiveType } from '@shared/models/Directive';
+import * as A from 'fp-ts/lib/Array';
 import { pipe } from 'fp-ts/lib/function';
 import * as TE from 'fp-ts/lib/TaskEither';
 import { NonEmptyString } from 'io-ts-types/lib/NonEmptyString';
 import { guardoniLogger } from '../logger';
 import { GetGuardoni } from './guardoni';
 import { GuardoniConfig, GuardoniOutput, GuardoniSuccessOutput } from './types';
+import type puppeteer from 'puppeteer-core';
+
+export const cliLogger = guardoniLogger.extend('cli');
 
 export type GuardoniCommandConfig =
   | {
-      run: 'register';
-      records: ComparisonDirectiveRow[];
-      type: DirectiveType;
-    }
-  | {
       run: 'register-csv';
       file: NonEmptyString;
-      type: DirectiveType;
+      type?: DirectiveType;
     }
   | {
       run: 'experiment';
@@ -28,6 +24,9 @@ export type GuardoniCommandConfig =
   | {
       run: 'auto';
       value: '1' | '2';
+    }
+  | {
+      run: 'list';
     };
 
 export interface GuardoniCLI {
@@ -37,7 +36,10 @@ export interface GuardoniCLI {
   runOrThrow: (command: GuardoniCommandConfig) => Promise<void>;
 }
 
-export type GetGuardoniCLI = (config: GuardoniConfig) => GuardoniCLI;
+export type GetGuardoniCLI = (
+  config: GuardoniConfig,
+  p: typeof puppeteer
+) => GuardoniCLI;
 
 const foldOutput = (
   command: GuardoniCommandConfig,
@@ -45,7 +47,23 @@ const foldOutput = (
 ): string => {
   const rest =
     out.type === 'success'
-      ? Object.entries(out.values).map(([key, value]) => `${key}: ${value}`)
+      ? pipe(
+          out.values,
+          A.map((v) => {
+            return Object.entries(v).map(([key, value]) => {
+              if (typeof value === 'string') {
+                return [`${key}: ${value}`];
+              }
+
+              const valuesChunk = Object.entries(value).map(
+                ([key, value]) => `${key}: ${JSON.stringify(value)}`
+              );
+
+              return [`${key}: \n\t`, ...valuesChunk];
+            });
+          }),
+          A.flatten
+        )
       : out.details;
 
   return [
@@ -63,22 +81,28 @@ const foldOutput = (
   ].join('\n');
 };
 
-export const GetGuardoniCLI: GetGuardoniCLI = (config): GuardoniCLI => {
+export const GetGuardoniCLI: GetGuardoniCLI = (config, p): GuardoniCLI => {
+  cliLogger.debug('Initialized with config %O', config);
+
   const run = (
     command: GuardoniCommandConfig
   ): TE.TaskEither<AppError, GuardoniSuccessOutput> =>
     pipe(
-      GetGuardoni({ config, logger: guardoniLogger }),
+      GetGuardoni({ config, logger: guardoniLogger, puppeteer: p }),
       TE.chain((g) => {
         return TE.fromIO<
           TE.TaskEither<AppError, GuardoniSuccessOutput>,
           AppError
         >(() => {
+          cliLogger.debug('Running command %O', command);
           switch (command.run) {
+            case 'list':
+              return g.listExperiments();
             case 'register-csv':
-              return g.registerExperimentFromCSV(command.file, command.type);
-            case 'register':
-              return g.registerExperiment(command.records, command.type);
+              return g.registerExperimentFromCSV(
+                command.file,
+                command.type ?? 'comparison'
+              );
             case 'experiment':
               return g.runExperiment(command.experiment);
             case 'auto':

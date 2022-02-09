@@ -1,3 +1,5 @@
+import differenceInSeconds from 'date-fns/differenceInSeconds';
+import subSeconds from 'date-fns/subSeconds';
 import D from 'debug';
 import * as fs from 'fs';
 import _ from 'lodash';
@@ -6,9 +8,7 @@ import path from 'path';
 import * as puppeteer from 'puppeteer-core';
 import url from 'url';
 import { GuardoniProfile } from './types';
-import subSeconds from 'date-fns/subSeconds';
-import differenceInSeconds from 'date-fns/differenceInSeconds';
-import format from 'date-fns/format';
+import { formatDateTime } from '@shared/utils/date.utils';
 
 const debug = D('guardoni:youtube');
 const logreqst = D('guardoni:requests');
@@ -37,7 +37,7 @@ const globalConfig: GlobalConfig = {
 };
 
 export function getScreenshotName(prefix: string): string {
-  return `${prefix}-${format(new Date(), 'yyyy-MM-dd-KK:mm')}.png`;
+  return `${prefix}-${formatDateTime(new Date())}.png`;
 }
 
 export function getMaybeScreenshotFilename(

@@ -1,3 +1,5 @@
+import format from 'date-fns/format';
+
 export function getTimeISO8601(date?: Date): string {
   // Thanks to http://stackoverflow.com/a/17415677/597097
   const now = date ?? new Date();
@@ -25,3 +27,7 @@ export function getTimeISO8601(date?: Date): string {
     pad(tzo % 60),
   ].join('');
 }
+
+export const formatDateTime = (d: Date): string =>
+  format(d, 'yyyy-MM-dd-KK:mm');
+export const formatDate = (d: Date): string => format(d, 'yyyy-MM-dd');
