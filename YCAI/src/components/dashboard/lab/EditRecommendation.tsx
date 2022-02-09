@@ -1,5 +1,3 @@
-import React, { useState } from 'react';
-
 import {
   Button,
   ButtonProps,
@@ -11,17 +9,17 @@ import {
   Typography,
 } from '@material-ui/core';
 import { makeStyles } from '@material-ui/styles';
-
-import { useTranslation } from 'react-i18next';
 import {
-  titleMaxLength,
   descriptionMaxLength,
   Recommendation,
+  titleMaxLength,
 } from '@shared/models/Recommendation';
-import Image from '../../common/Image';
-import { YCAITheme } from '../../../theme';
+import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { patchRecommendation } from '../../../state/dashboard/creator.commands';
+import { YCAITheme } from '../../../theme';
 import CharLimitedInput from '../../common/CharLimitedInput';
+import { ImageWithGemPlaceholder } from '../../common/Image';
 
 interface EditRecommendationProps extends ButtonProps {
   data: Recommendation;
@@ -42,10 +40,14 @@ const useClasses = makeStyles<YCAITheme>((theme) => ({
     '& textarea': {
       color: theme.palette.common.black,
     },
-  }
+  },
 }));
 
-const EditRecommendation: React.FC<EditRecommendationProps> = ({ data, videoId, ...props }) => {
+const EditRecommendation: React.FC<EditRecommendationProps> = ({
+  data,
+  videoId,
+  ...props
+}) => {
   const { t } = useTranslation();
   const [formIsOpen, setFormIsOpen] = useState(false);
   const [title, setTitle] = useState(data.title);
@@ -53,36 +55,47 @@ const EditRecommendation: React.FC<EditRecommendationProps> = ({ data, videoId, 
   const classes = useClasses();
 
   const handleSubmit = (): void => {
-    void patchRecommendation({
-      urlId: data.urlId,
-      data: {
-        title,
-        description,
+    void patchRecommendation(
+      {
+        urlId: data.urlId,
+        data: {
+          title,
+          description,
+        },
+      },
+      {
+        videoRecommendations: { videoId },
       }
-    }, {
-      videoRecommendations: { videoId }
-    })();
-    setFormIsOpen(false)
+    )();
+    setFormIsOpen(false);
   };
 
-  const dirty = title !== data.title
-    || (
-      description !== data.description
-        &&  !(description === '' && data.description === undefined)
-    );
+  const dirty =
+    title !== data.title ||
+    (description !== data.description &&
+      !(description === '' && data.description === undefined));
 
   return (
     <>
-      <Button {...props} variant="text" onClick={() => { setFormIsOpen(true); }}>
+      <Button
+        {...props}
+        variant="text"
+        onClick={() => {
+          setFormIsOpen(true);
+        }}
+      >
         {t('actions:edit_recommendation_button')}
       </Button>
       {formIsOpen && (
-        <Dialog
-          open={formIsOpen}
-          onClose={() => setFormIsOpen(false)}
-        >
-          <DialogTitle>{t('actions:edit_recommendation_form_title')}</DialogTitle>
-          <Image src={data.image} alt={data.title} className={classes.image} />
+        <Dialog open={formIsOpen} onClose={() => setFormIsOpen(false)}>
+          <DialogTitle>
+            {t('actions:edit_recommendation_form_title')}
+          </DialogTitle>
+          <ImageWithGemPlaceholder
+            src={data.image}
+            alt={data.title}
+            className={classes.image}
+          />
           <DialogContent>
             <DialogContentText>
               <Typography variant="h6">
@@ -94,9 +107,7 @@ const EditRecommendation: React.FC<EditRecommendationProps> = ({ data, videoId, 
               fullWidth
               label={t('recommendations:title')}
               limit={titleMaxLength}
-              onChange={
-                (str) => setTitle(str)
-              }
+              onChange={(str) => setTitle(str)}
               value={title}
             />
             <CharLimitedInput
@@ -105,9 +116,7 @@ const EditRecommendation: React.FC<EditRecommendationProps> = ({ data, videoId, 
               multiline
               label={t('recommendations:description')}
               limit={descriptionMaxLength}
-              onChange={
-                (str) => setDescription(str)
-              }
+              onChange={(str) => setDescription(str)}
               value={description}
             />
           </DialogContent>
@@ -115,11 +124,7 @@ const EditRecommendation: React.FC<EditRecommendationProps> = ({ data, videoId, 
             <Button onClick={() => setFormIsOpen(false)}>
               {t('actions:cancel')}
             </Button>
-            <Button
-              color="primary"
-              disabled={!dirty}
-              onClick={handleSubmit}
-            >
+            <Button color="primary" disabled={!dirty} onClick={handleSubmit}>
               {t('actions:save')}
             </Button>
           </DialogActions>
