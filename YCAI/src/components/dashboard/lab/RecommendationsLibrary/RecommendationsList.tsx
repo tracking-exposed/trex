@@ -24,7 +24,7 @@ const RecommendationList: React.FC<RecommendationListProps> = ({
       </Box>
       <Grid container spacing={2} style={{ paddingRight: '200px' }}>
         {recommendations.map((r) => (
-          <Grid item xs={10} sm={6} lg={5} key={r.urlId}>
+          <Grid item xs={10} sm={10} md={10} lg={6} key={r.urlId}>
             <RecommendationCard
               key={r.urlId}
               data={r}
