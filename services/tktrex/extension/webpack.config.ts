@@ -4,6 +4,8 @@ import { getExtensionConfig } from '../../../packages/shared/src/webpack/extensi
 import packageJSON from './package.json';
 import { AppEnv } from './src/AppEnv';
 
+process.env.DEBUG = '@trex*';
+
 const NODE_ENV =
   process.env.NODE_ENV === 'production' ? 'production' : 'development';
 const PRODUCTION = NODE_ENV === 'production';

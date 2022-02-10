@@ -96,7 +96,7 @@ function fullSave(): void {
         return;
       }
 
-      log.info.strong('sending fullSave!', nature);
+      log.info('sending fullSave!', nature);
       hub.dispatch({
         type: 'FullSave',
         payload: {
@@ -186,6 +186,7 @@ function setupObserver(): void {
 }
 
 function handleSearch(element: Node): void {
+  log.info('Handle search for path %O', window.location.search);
   if (!_.startsWith(window.location.pathname, '/search')) return;
 
   // it is lame to do a double check only because they are both searches,
@@ -204,12 +205,13 @@ function handleSearch(element: Node): void {
     return;
   }
 
-  const truel = document.querySelector('body');
-  const truehtml = truel ? truel.innerHTML : null;
+  const contentNode = document.querySelector('body');
+  const contentHTML = contentNode ? contentNode.innerHTML : null;
 
-  if (!truel || !truehtml) return;
+  if (!contentNode || !contentHTML) return;
 
-  const hasNewElements = sizeCheck(truel.innerHTML);
+  const hasNewElements = sizeCheck(contentNode.innerHTML);
+
   if (hasNewElements) {
     log.error('Error with attribute tampering, skipping');
     return;
@@ -218,7 +220,7 @@ function handleSearch(element: Node): void {
   hub.dispatch({
     type: 'Search',
     payload: {
-      html: truehtml,
+      html: contentHTML,
       href: window.location.href,
     },
   });
