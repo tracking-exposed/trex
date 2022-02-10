@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-misused-promises */
-import { makeBackend } from '@shared/backend';
-import { GetLogger } from '@shared/logger';
+import { makeBackend } from '@trex/shared/backend';
+import { GetLogger } from '@trex/shared/logger';
 import bodyParser from 'body-parser';
 import cors from 'cors';
 import express from 'express';

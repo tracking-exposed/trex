@@ -5,7 +5,7 @@ import { pipe } from 'fp-ts/lib/function';
 import React from 'react';
 import { localProfile } from '../../state/dashboard/creator.queries';
 import { keypair, settings } from '../../state/dashboard/public.queries';
-import { ErrorBox } from '@shared/components/Error/ErrorBox';
+import { ErrorBox } from '@trex/shared/components/Error/ErrorBox';
 import { LazyFullSizeLoader } from '../common/FullSizeLoader';
 import { AccessTokenBox } from './settings/AccessTokenBox';
 import { KeypairBox } from './settings/KeypairBox';

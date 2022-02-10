@@ -1,4 +1,4 @@
-import { ContentCreator } from '@shared/models/ContentCreator';
+import { ContentCreator } from '@trex/shared/models/ContentCreator';
 import {
   Box,
   Button,
@@ -17,7 +17,7 @@ import CloudDownload from '@material-ui/icons/CloudDownload';
 import VisibilityIcon from '@material-ui/icons/Visibility';
 import VisibilityOffIcon from '@material-ui/icons/VisibilityOff';
 import * as E from 'fp-ts/lib/Either';
-import { APIError } from '@shared/errors/APIError';
+import { APIError } from '@trex/shared/errors/APIError';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
 import { assignAccessToken } from '../../../state/dashboard/creator.commands';

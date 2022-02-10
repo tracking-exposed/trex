@@ -9,5 +9,10 @@
     "esModuleInterop": true,
     "rootDir": "./"
   },
+  "references": [
+    {
+      "path": "packages/shared"
+    }
+  ],
   "exclude": ["**/node_modules/*", "**/build/*"]
 }

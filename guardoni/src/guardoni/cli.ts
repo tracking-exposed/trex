@@ -1,5 +1,5 @@
-import { AppError } from '@shared/errors/AppError';
-import { DirectiveType } from '@shared/models/Directive';
+import { AppError } from '@trex/shared/errors/AppError';
+import { DirectiveType } from '@trex/shared/models/Directive';
 import * as A from 'fp-ts/lib/Array';
 import { pipe } from 'fp-ts/lib/function';
 import * as TE from 'fp-ts/lib/TaskEither';

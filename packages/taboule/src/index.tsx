@@ -1,5 +1,5 @@
 import { createTheme, ThemeProvider } from '@material-ui/core';
-import { ErrorBoundary } from '@shared/components/Error/ErrorBoundary';
+import { ErrorBoundary } from '@trex/shared/components/Error/ErrorBoundary';
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import { Taboule, TabouleProps } from './components/Taboule';

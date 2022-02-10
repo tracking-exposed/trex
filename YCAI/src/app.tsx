@@ -4,7 +4,7 @@ import { ThemeProvider } from '@material-ui/styles';
 import { pipe } from 'fp-ts/lib/function';
 import * as TE from 'fp-ts/lib/TaskEither';
 
-import { GetLogger } from '@shared/logger';
+import { GetLogger } from '@trex/shared/logger';
 import debug from 'debug';
 
 import { config } from './config';
@@ -14,7 +14,7 @@ import { settingsRefetch } from './state/popup.queries';
 import { Settings } from './models/Settings';
 import { YTContributionInfoBox } from './components/injected/YTContributionInfoBox';
 import { YTVideoPage } from './components/injected/YTVideoPage';
-import { ErrorBoundary } from '@shared/components/Error/ErrorBoundary';
+import { ErrorBoundary } from '@trex/shared/components/Error/ErrorBoundary';
 import { YCAITheme } from './theme';
 import './i18n';
 

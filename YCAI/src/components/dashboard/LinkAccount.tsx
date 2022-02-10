@@ -15,7 +15,7 @@ import useCopyClipboard from 'react-use-clipboard';
 import { isLeft } from 'fp-ts/lib/Either';
 import { Trans, useTranslation } from 'react-i18next';
 
-import { AuthResponse } from '@shared/models/Auth';
+import { AuthResponse } from '@trex/shared/models/Auth';
 import {
   registerCreatorChannel,
   updateAuth,

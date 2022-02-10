@@ -1,7 +1,7 @@
-import { AppError, toAppError } from '@shared/errors/AppError';
-import { Logger } from '@shared/logger';
-import { ComparisonDirective } from '@shared/models/Directive';
-import { APIClient } from '@shared/providers/api.provider';
+import { AppError, toAppError } from '@trex/shared/errors/AppError';
+import { Logger } from '@trex/shared/logger';
+import { ComparisonDirective } from '@trex/shared/models/Directive';
+import { APIClient } from '@trex/shared/providers/api.provider';
 import { AppEnv } from 'AppEnv';
 import { dialog, ipcMain } from 'electron';
 import { pipe } from 'fp-ts/lib/function';

@@ -1,4 +1,4 @@
-import { GetAPI } from '@shared/providers/api.provider';
+import { GetAPI } from '@trex/shared/providers/api.provider';
 import { config } from './config';
 
 const { API, HTTPClient } = GetAPI({

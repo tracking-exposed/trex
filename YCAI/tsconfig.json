@@ -27,16 +27,13 @@
     "moduleResolution": "Node",
     "isolatedModules": true,
     "paths": {
-      "@shared/*": ["../../packages/shared/src/*"],
-      "@taboule/*": ["../../packages/taboule/src/*"]
+      "@trex/shared/*": ["../../packages/shared/src/*"],
+      "@trex/taboule/*": ["../../packages/taboule/src/*"]
     }
   },
   "references": [
     {
       "path": "../packages/shared"
-    },
-    {
-      "path": "../packages/taboule"
     }
   ],
   "include": [

@@ -7,7 +7,7 @@ import {
   Typography,
   useTheme,
 } from '@material-ui/core';
-import { ChannelRelated } from '@shared/models/ChannelRelated';
+import { ChannelRelated } from '@trex/shared/models/ChannelRelated';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
 import { makeStyles } from '../../../theme';

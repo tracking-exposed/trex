@@ -1,5 +1,5 @@
-import { ContentCreator } from '@shared/models/ContentCreator';
-import { Video } from '@shared/models/Video';
+import { ContentCreator } from '@trex/shared/models/ContentCreator';
+import { Video } from '@trex/shared/models/Video';
 import {
   available,
   compose,
@@ -11,12 +11,12 @@ import {
 import { formatISO, subMonths } from 'date-fns';
 import { pipe } from 'fp-ts/lib/function';
 import * as TE from 'fp-ts/lib/TaskEither';
-import { AppError } from '@shared/errors/AppError';
-import { getItem } from '@shared/providers/localStorage.provider';
+import { AppError } from '@trex/shared/errors/AppError';
+import { getItem } from '@trex/shared/providers/localStorage.provider';
 import { API } from '../../api';
-import { APIError } from '@shared/errors/APIError';
-import { GetRelatedChannelsOutput } from '@shared/models/ChannelRelated';
-import * as sharedConst from '@shared/constants';
+import { APIError } from '@trex/shared/errors/APIError';
+import { GetRelatedChannelsOutput } from '@trex/shared/models/ChannelRelated';
+import * as sharedConst from '@trex/shared/constants';
 
 export const CREATOR_CHANNEL_KEY = 'creator-channel';
 export const CURRENT_VIDEO_ON_EDIT = 'current-video-on-edit';

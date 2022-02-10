@@ -4,10 +4,10 @@ jest.mock('../../lib/curly');
 jest.mock('fetch-opengraph');
 
 // import test utils
-import { ContentCreator } from '@shared/models/ContentCreator';
-import { Recommendation } from '@shared/models/Recommendation';
-import { Video } from '@shared/models/Video';
-import { fc } from '@shared/test';
+import { ContentCreator } from '@trex/shared/models/ContentCreator';
+import { Recommendation } from '@trex/shared/models/Recommendation';
+import { Video } from '@trex/shared/models/Video';
+import { fc } from '@trex/shared/test';
 import _ from 'lodash';
 import { v4 as uuid } from 'uuid';
 import {

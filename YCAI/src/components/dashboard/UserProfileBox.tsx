@@ -1,11 +1,11 @@
 import { Box, makeStyles, Typography } from '@material-ui/core';
-import { ContentCreator } from '@shared/models/ContentCreator';
+import { ContentCreator } from '@trex/shared/models/ContentCreator';
 import * as QR from 'avenger/lib/QueryResult';
 import { declareQueries } from 'avenger/lib/react';
 import { sequenceS } from 'fp-ts/lib/Apply';
 import { pipe } from 'fp-ts/lib/function';
 import * as TE from 'fp-ts/lib/TaskEither';
-import { toAppError } from '@shared/errors/AppError';
+import { toAppError } from '@trex/shared/errors/AppError';
 import React from 'react';
 import {
   updateAuth,
@@ -13,7 +13,7 @@ import {
 } from '../../state/dashboard/creator.commands';
 import { localProfile } from '../../state/dashboard/creator.queries';
 import { doUpdateCurrentView } from '../../utils/location.utils';
-import { ErrorBox } from '@shared/components/Error/ErrorBox';
+import { ErrorBox } from '@trex/shared/components/Error/ErrorBox';
 import { LazyFullSizeLoader } from '../common/FullSizeLoader';
 import UnlinkProfileButton from '../common/UnlinkProfileButton';
 import Avatar from '../external/Avatar';

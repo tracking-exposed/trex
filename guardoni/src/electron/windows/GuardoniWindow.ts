@@ -2,7 +2,7 @@ import { BrowserWindow } from 'electron';
 import puppeteer from 'puppeteer-core';
 import pie from 'puppeteer-in-electron';
 import * as TE from 'fp-ts/lib/TaskEither';
-import { AppError, toAppError } from '@shared/errors/AppError';
+import { AppError, toAppError } from '@trex/shared/errors/AppError';
 
 /**
  * Create guardoni window as child of main electron window

@@ -1,6 +1,6 @@
-import * as sharedConst from '@shared/constants';
-import { APIError } from '@shared/errors/APIError';
-import { ContentCreator } from '@shared/models/ContentCreator';
+import * as sharedConst from '@trex/shared/constants';
+import { APIError } from '@trex/shared/errors/APIError';
+import { ContentCreator } from '@trex/shared/models/ContentCreator';
 import { sequenceS } from 'fp-ts/lib/Apply';
 import * as E from 'fp-ts/lib/Either';
 import { pipe } from 'fp-ts/lib/function';

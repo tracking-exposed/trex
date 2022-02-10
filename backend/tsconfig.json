@@ -8,7 +8,7 @@
     "noEmit": true,
     "esModuleInterop": true,
     "paths": {
-      "@shared/*": ["../packages/shared/src/*"]
+      "@trex/shared/*": ["../packages/shared/src/*"]
     }
   },
   "include": [

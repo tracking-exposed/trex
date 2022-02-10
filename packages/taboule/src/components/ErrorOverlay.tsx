@@ -1,5 +1,5 @@
 import { Box } from '@material-ui/core';
-import { ErrorBox } from '@shared/components/Error/ErrorBox';
+import { ErrorBox } from '@trex/shared/components/Error/ErrorBox';
 import * as React from 'react';
 
 export const ErrorOverlay: React.FC<Error> = (error) => {

@@ -14,7 +14,7 @@
     "resolveJsonModule": true,
     "typeRoots": ["../node_modules/@types", "node_modules/@types"],
     "paths": {
-      "@shared/*": ["../../packages/shared/src/*"]
+      "@trex/shared/*": ["../../packages/shared/src/*"]
     }
   },
   "include": ["./src"],

@@ -1,6 +1,6 @@
-import { fc } from "@shared/test";
-import { getArbitrary } from "fast-check-io-ts";
-import { Ad } from "../../models/Ad";
+import { fc } from '@trex/shared/test';
+import { getArbitrary } from 'fast-check-io-ts';
+import { Ad } from '../../models/Ad';
 
 /**
  * Ad arbitrary

@@ -21,8 +21,8 @@ import { makeStyles } from '@material-ui/styles';
 import {
   titleMaxLength,
   descriptionMaxLength,
-  Recommendation
-} from '@shared/models/Recommendation';
+  Recommendation,
+} from '@trex/shared/models/Recommendation';
 import { YCAITheme } from '../../../theme';
 import CharLimitedTypography from '../../common/CharLimitedTypography';
 import Image from '../../common/Image';
@@ -54,7 +54,7 @@ const useStyles = makeStyles<YCAITheme>((theme) => ({
       height: cardHeight,
       width: '100%',
       objectFit: 'cover',
-    }
+    },
   },
   body: {
     height: cardHeight,
@@ -99,19 +99,19 @@ const useStyles = makeStyles<YCAITheme>((theme) => ({
     fontSize: '0.8rem',
     '& svg': {
       marginTop: -1,
-      marginRight: theme.spacing(.5),
+      marginRight: theme.spacing(0.5),
     },
   },
   clamped: {
     display: '-webkit-box',
     boxOrient: 'vertical',
     wordBreak: 'keep-all',
-    overflow: 'hidden'
+    overflow: 'hidden',
   },
   description: {
     color: theme.palette.grey[500],
     lineClamp: 3,
-  }
+  },
 }));
 
 export const RecommendationCard: React.FC<RecommendationCardProps> = ({
@@ -132,22 +132,12 @@ export const RecommendationCard: React.FC<RecommendationCardProps> = ({
       <Grid container spacing={1}>
         <Grid item xs={5}>
           <div className={classes.imageContainer}>
-            <Image
-              src={data.image}
-              title={data.title}
-            />
+            <Image src={data.image} title={data.title} />
           </div>
         </Grid>
 
-        <Grid
-          item xs={6}
-          className={classes.body}
-        >
-          <Box
-            className={classes.right}
-            display="flex"
-            flexDirection="column"
-          >
+        <Grid item xs={6} className={classes.body}>
+          <Box className={classes.right} display="flex" flexDirection="column">
             <CharLimitedTypography
               className={`${classes.title} ${classes.clamped}`}
               color="textSecondary"
@@ -158,10 +148,12 @@ export const RecommendationCard: React.FC<RecommendationCardProps> = ({
             >
               {data.title}
             </CharLimitedTypography>
-            {isExternal && (<Typography className={classes.source}>
-              <LinkIcon />
-              {getHostFromURL(data.url)}
-            </Typography>)}
+            {isExternal && (
+              <Typography className={classes.source}>
+                <LinkIcon />
+                {getHostFromURL(data.url)}
+              </Typography>
+            )}
 
             <Box flexGrow={1} display="flex" alignItems="center">
               <CharLimitedTypography
@@ -194,34 +186,30 @@ export const RecommendationCard: React.FC<RecommendationCardProps> = ({
           </Box>
         </Grid>
 
-        <Grid
-          item
-          xs={1}
-          className={classes.iconsContainer}
-        >
+        <Grid item xs={1} className={classes.iconsContainer}>
           <IconButton
-              aria-label={t('actions:move_recommendation_up')}
-              color="primary"
-              className={classes.arrowButton}
-              disabled={onMoveUpClick === false}
-              // there seems to be an eslint bug,
-              // there is no way to get rid of all the warnings whatever I do
-              // eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
-              onClick={onMoveUpClick || undefined}
-              size="small"
-              >
-              <ArrowUpwardIcon />
+            aria-label={t('actions:move_recommendation_up')}
+            color="primary"
+            className={classes.arrowButton}
+            disabled={onMoveUpClick === false}
+            // there seems to be an eslint bug,
+            // there is no way to get rid of all the warnings whatever I do
+            // eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
+            onClick={onMoveUpClick || undefined}
+            size="small"
+          >
+            <ArrowUpwardIcon />
           </IconButton>
           <IconButton
-              aria-label={t('actions:move_recommendation_down')}
-              color="primary"
-              className={classes.arrowButton}
-              disabled={onMoveDownClick === false}
-              // eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
-              onClick={onMoveDownClick || undefined}
-              size="small"
-              >
-              <ArrowDownwardIcon />
+            aria-label={t('actions:move_recommendation_down')}
+            color="primary"
+            className={classes.arrowButton}
+            disabled={onMoveDownClick === false}
+            // eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
+            onClick={onMoveDownClick || undefined}
+            size="small"
+          >
+            <ArrowDownwardIcon />
           </IconButton>
         </Grid>
       </Grid>

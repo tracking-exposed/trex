@@ -1,5 +1,5 @@
-import * as endpoints from '@shared/endpoints';
-import models from '@shared/models';
+import * as endpoints from '@trex/shared/endpoints';
+import models from '@trex/shared/models';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
 import SwaggerUI from 'swagger-ui';

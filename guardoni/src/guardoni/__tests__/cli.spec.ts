@@ -8,8 +8,8 @@ import {
   ComparisonDirectiveRowArb,
   GuardoniExperimentArb,
   PostDirectiveSuccessResponseArb,
-} from '@shared/arbitraries/Directive.arb';
-import * as tests from '@shared/test';
+} from '@trex/shared/arbitraries/Directive.arb';
+import * as tests from '@trex/shared/test';
 import axios from 'axios';
 import * as fs from 'fs';
 import * as path from 'path';

@@ -3,7 +3,7 @@ import { Box, Typography } from '@material-ui/core';
 import * as QR from 'avenger/lib/QueryResult';
 import { WithQueries } from 'avenger/lib/react';
 
-import { ErrorBox } from '@shared/components/Error/ErrorBox';
+import { ErrorBox } from '@trex/shared/components/Error/ErrorBox';
 import { LazyFullSizeLoader } from '../../components/common/FullSizeLoader';
 import { Keypair, Settings } from '../../models/Settings';
 import * as dataDonation from '../../providers/dataDonation.provider';

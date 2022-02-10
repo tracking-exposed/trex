@@ -1,4 +1,4 @@
-import * as Endpoints from '@shared/endpoints';
+import * as Endpoints from '@trex/shared/endpoints';
 import { available, queryShallow, queryStrict, refetch } from 'avenger';
 import { pipe } from 'fp-ts/lib/function';
 import * as TE from 'fp-ts/lib/TaskEither';
@@ -49,4 +49,3 @@ export const videoRecommendations = queryShallow(
 export const keypair = queryStrict(() => {
   return sendMessage(Messages.GetKeypair)();
 }, refetch);
-

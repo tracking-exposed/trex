@@ -1,20 +1,20 @@
-import { APIError } from '@shared/errors/APIError';
-import { ChannelRelated } from '@shared/models/ChannelRelated';
+import { APIError } from '@trex/shared/errors/APIError';
+import { ChannelRelated } from '@trex/shared/models/ChannelRelated';
 import {
   HomeMetadata,
   SearchMetadata,
   VideoMetadata,
-} from '@shared/models/contributor/ContributorPersonalStats';
+} from '@trex/shared/models/contributor/ContributorPersonalStats';
 import {
   TikTokPSearchMetadata,
   SummaryHTMLMetadata,
   // SummaryMetadata,
-} from '@shared/models/contributor/ContributorPersonalSummary';
-import { SearchQuery } from '@shared/models/http/SearchQuery';
-import { TikTokSearchMetadata } from '@shared/models/http/tiktok/TikTokSearch';
-import { Metadata } from '@shared/models/Metadata';
-import { GuardoniExperiment } from '@shared/models/Experiment';
-import { GetAPI } from '@shared/providers/api.provider';
+} from '@trex/shared/models/contributor/ContributorPersonalSummary';
+import { SearchQuery } from '@trex/shared/models/http/SearchQuery';
+import { TikTokSearchMetadata } from '@trex/shared/models/http/tiktok/TikTokSearch';
+import { Metadata } from '@trex/shared/models/Metadata';
+import { GuardoniExperiment } from '@trex/shared/models/Experiment';
+import { GetAPI } from '@trex/shared/providers/api.provider';
 import { available, queryStrict } from 'avenger';
 import { CachedQuery } from 'avenger/lib/Query';
 import { pipe } from 'fp-ts/lib/function';

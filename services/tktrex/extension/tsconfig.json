@@ -14,14 +14,11 @@
     "strictNullChecks": true,
     "target": "es2015",
     "paths": {
-      "@shared/*": ["../../../../packages/shared/src/*"],
+      "@trex/shared/*": ["../../../../packages/shared/src/*"],
       "@tktrex/*": ["../../shared/src/*"]
     }
   },
-  "references": [
-    { "path": "../../../packages/shared" },
-    { "path": "../shared" }
-  ],
+  "references": [],
   "ts-node": {
     "compilerOptions": {
       "module": "CommonJS"

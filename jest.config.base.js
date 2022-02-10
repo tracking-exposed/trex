@@ -17,8 +17,8 @@ module.exports = {
     },
   },
   moduleNameMapper: {
-    '^@shared/(.*)$': '<rootDir>/../packages/shared/src/$1',
-    '^@taboule/(.*)$': '<rootDir>/../packages/taboule/src/$1',
+    '^@trex/shared/(.*)$': '<rootDir>/../packages/shared/src/$1',
+    '^@trex/taboule/(.*)$': '<rootDir>/../packages/taboule/src/$1',
   },
   testMatch: [
     '**/__tests__/**/*.[jt]s?(x)',

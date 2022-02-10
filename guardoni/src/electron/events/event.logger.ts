@@ -1,4 +1,4 @@
-import { Logger } from '@shared/logger';
+import { Logger } from '@trex/shared/logger';
 import { v4 as uuid } from 'uuid';
 import { GUARDONI_ERROR_EVENT, GUARDONI_OUTPUT_EVENT } from '../models/events';
 import log from 'electron-log';

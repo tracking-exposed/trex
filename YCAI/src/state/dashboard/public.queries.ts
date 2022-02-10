@@ -1,11 +1,11 @@
 import { available, queryShallow, queryStrict, refetch } from 'avenger';
 import { pipe } from 'fp-ts/lib/function';
 import * as TE from 'fp-ts/lib/TaskEither';
-import { AppError } from '@shared/errors/AppError';
+import { AppError } from '@trex/shared/errors/AppError';
 import { getDefaultSettings, Keypair } from '../../models/Settings';
 import { API } from '../../api';
-import * as localStorage from '@shared/providers/localStorage.provider';
-import * as sharedConstants from '@shared/constants';
+import * as localStorage from '@trex/shared/providers/localStorage.provider';
+import * as sharedConstants from '@trex/shared/constants';
 
 export const settingsRefetch = queryShallow(() => {
   return pipe(

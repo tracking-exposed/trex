@@ -1,5 +1,5 @@
 import { Card, CardContent, Typography } from '@material-ui/core';
-import * as NumberUtils from '@shared/utils/number.utils';
+import * as NumberUtils from '@trex/shared/utils/number.utils';
 import * as React from 'react';
 import { makeStyles, useTheme } from '../../theme';
 

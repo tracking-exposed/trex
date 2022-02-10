@@ -6,7 +6,7 @@ const fetchOpengraph = require('fetch-opengraph');
 const ycai = require('../lib/ycai');
 const curly = require('../lib/curly');
 const endpoints = require('../lib/endpoint');
-const { v3 } = require('@shared/endpoints');
+const { v3 } = require('@trex/shared/endpoints');
 const structured = require('../lib/structured');
 
 const PUBLIC_AMOUNT_ELEMS = 100;
@@ -17,19 +17,24 @@ async function verifyAuthorization(req, model) {
 
   const decodedReq = endpoints.decodeRequest(model, req);
   if (decodedReq.type === 'error') {
-    debug("Failed input validation [%o] [%o]", decodedReq.result, {
-      params: req.params, body: req.body, headers: req.headers })
-    return { creator: {
-      error: true,
-      details: decodedReq.result,
-    } };
+    debug('Failed input validation [%o] [%o]', decodedReq.result, {
+      params: req.params,
+      body: req.body,
+      headers: req.headers,
+    });
+    return {
+      creator: {
+        error: true,
+        details: decodedReq.result,
+      },
+    };
   }
   const verificationToken = decodedReq.result.headers['x-authorization'];
 
   debug('verifiyAuthorization by token %s', verificationToken);
   const check = await ycai.getCreatorByToken(verificationToken);
 
-  if(check.error) {
+  if (check.error) {
     /* the 'check' contains an error and would be returned by handler */
     debug('Invalid token: %s, authorization fail', check);
   }
@@ -57,19 +62,22 @@ async function byProfile(req) {
     return {
       json: {
         error: true,
-        details: decodedReq.result
-      }
-    }
+        details: decodedReq.result,
+      },
+    };
   }
   const token = decodedReq.result.headers['x-authorization'];
   const recommendations = await ycai.fetchRecommendationsByProfile(token);
 
   debug(
     'creator is fetching their %d recommendations (cleaned %d)',
-    recommendations.length, recommendations.length
+    recommendations.length,
+    recommendations.length
   );
   const valid = endpoints.decodeResponse(
-    v3.Creator.CreatorRecommendations, recommendations);
+    v3.Creator.CreatorRecommendations,
+    recommendations
+  );
 
   if (valid.type === 'error') {
     debug('Invalid generated output for creator Recommendations %O', valid);
@@ -88,18 +96,14 @@ async function patchRecommendation(req) {
     v3.Creator.PatchRecommendation
   );
 
-  if(creator.error) {
-    return {json: creator };
+  if (creator.error) {
+    return { json: creator };
   }
 
   const { urlId } = req.params;
   const patch = decodedReq.result.body;
 
-  const result = await ycai.patchRecommendation(
-    creator,
-    urlId,
-    patch
-  );
+  const result = await ycai.patchRecommendation(creator, urlId, patch);
 
   if (result.error) {
     debug('Error patching recommendation %O', result);
@@ -116,10 +120,11 @@ async function patchRecommendation(req) {
 }
 
 async function ogpProxy(req) {
-
-  const { creator, decodedReq } = await verifyAuthorization(req, v3.Creator.CreateRecommendation);
-  if(creator.error)
-    return { json: creator };
+  const { creator, decodedReq } = await verifyAuthorization(
+    req,
+    v3.Creator.CreateRecommendation
+  );
+  if (creator.error) return { json: creator };
 
   const url = decodedReq.result.body.url;
   const exists = await ycai.getRecommendationByURL(url, creator);
@@ -132,15 +137,14 @@ async function ogpProxy(req) {
   let ogresult = null;
   try {
     ogresult = await fetchOpengraph.fetch(url);
-  } catch(error) {
-    debug("Error with open graph protocol (%s): %s",
-      url, error.message);
+  } catch (error) {
+    debug('Error with open graph protocol (%s): %s', url, error.message);
     return {
       json: {
         error: true,
-        message: error.message
-      }
-    }
+        message: error.message,
+      },
+    };
   }
   const review = await ycai.saveRecommendationOGP(ogresult, creator);
   if (review.error) {
@@ -160,17 +164,12 @@ const cleanVideoForAPIOutput = (video) => {
 };
 
 async function videoByCreator(req) {
-
   const { creator } = await verifyAuthorization(req, v3.Creator.CreatorVideos);
-  if(creator.error)
-    return {json: creator };
+  if (creator.error) return { json: creator };
 
   debug('Querying DB.ytvids for profile [%s]', creator.username);
   const MAXVIDOEL = 100;
-  const videos = await ycai.getVideoFromYTprofiles(
-    creator,
-    MAXVIDOEL
-  );
+  const videos = await ycai.getVideoFromYTprofiles(creator, MAXVIDOEL);
 
   const ready = _.map(videos, cleanVideoForAPIOutput);
 
@@ -180,8 +179,7 @@ async function videoByCreator(req) {
     ready.length
   );
 
-  const valid = endpoints.decodeResponse(
-    v3.Creator.CreatorVideos, ready);
+  const valid = endpoints.decodeResponse(v3.Creator.CreatorVideos, ready);
 
   if (valid.type === 'error') {
     debug('Invalid generated output for videoByCreator %O', valid);
@@ -195,20 +193,21 @@ async function videoByCreator(req) {
 }
 
 async function oneVideoByCreator(req) {
-
-  const { creator, decodedReq } = await verifyAuthorization(req, v3.Creator.OneCreatorVideo);
-  if(creator.error)
-    return { json: creator };
+  const { creator, decodedReq } = await verifyAuthorization(
+    req,
+    v3.Creator.OneCreatorVideo
+  );
+  if (creator.error) return { json: creator };
 
   const videoId = decodedReq.result.params.videoId;
 
   debug(
     'Querying DB.ytvids to get video with id [%s] for profile [%s]',
-    videoId, creator.username);
-
-  const video = await ycai.getOneVideoFromYTprofile(
-    creator, videoId
+    videoId,
+    creator.username
   );
+
+  const video = await ycai.getOneVideoFromYTprofile(creator, videoId);
 
   if (video === undefined) {
     const message = `Video with id [${videoId}] not found`;
@@ -228,16 +227,15 @@ async function oneVideoByCreator(req) {
 }
 
 async function repullByCreator(req) {
-
-  const { creator } = await verifyAuthorization(req, v3.Creator.PullCreatorVideos);
-  if(creator.error)
-    return { json: creator };
+  const { creator } = await verifyAuthorization(
+    req,
+    v3.Creator.PullCreatorVideos
+  );
+  if (creator.error) return { json: creator };
 
   const titlesandId = await curly.recentVideoFetch(creator.channelId);
-  debug('Repull caused retrival of %d new videos',
-    titlesandId.length);
-  await ycai
-    .registerVideos(titlesandId, creator.channelId);
+  debug('Repull caused retrival of %d new videos', titlesandId.length);
+  await ycai.registerVideos(titlesandId, creator.channelId);
   return { json: titlesandId };
 }
 
@@ -263,10 +261,8 @@ async function getRecommendationById(req) {
 }
 
 async function updateVideoRec(req) {
-
- const { creator } = await verifyAuthorization(req, v3.Creator.UpdateVideo);
-  if(creator.error)
-    return {json: creator };
+  const { creator } = await verifyAuthorization(req, v3.Creator.UpdateVideo);
+  if (creator.error) return { json: creator };
 
   const update = req.body;
   if (!update.videoId)
@@ -294,8 +290,8 @@ async function updateVideoRec(req) {
     update.videoId,
     update.recommendations
   );
-  if(updated.error)
-    debug("Error in updateRecommendations: %s", updated.message);
+  if (updated.error)
+    debug('Error in updateRecommendations: %s', updated.message);
 
   return { json: updated };
 }
@@ -320,18 +316,15 @@ async function creatorRegister(req) {
     };
 
   const consistency = await curly.verifyChannel(channelId);
-  if(consistency !== true) {
-    debug("Impossible validate the channel: %s", consistency.message);
+  if (consistency !== true) {
+    debug('Impossible validate the channel: %s', consistency.message);
     return {
-      json: consistency
-    }
+      json: consistency,
+    };
   }
 
   const expireAt = moment().add(1, 'week').toISOString();
-  const verificationToken = await ycai.generateToken(
-    channelId,
-    expireAt
-  );
+  const verificationToken = await ycai.generateToken(channelId, expireAt);
 
   // remind self:
   // if you change these hardcoded strings update lib/curly.js too
@@ -354,17 +347,17 @@ async function creatorVerify(req) {
     channelId,
   });
 
-  if(!tokeno || !tokeno.verificationToken) {
+  if (!tokeno || !tokeno.verificationToken) {
     return {
       json: {
         error: true,
-        message: "token not found",
-      }
-    }
+        message: 'token not found',
+      },
+    };
   }
-  debug("Fetching youtube.com while looking for the token string!");
+  debug('Fetching youtube.com while looking for the token string!');
   const pageData = await curly.tokenFetch(channelId);
-  debug("Code retrieved %s", pageData.code);
+  debug('Code retrieved %s', pageData.code);
 
   if (tokeno.verificationToken !== pageData.code) {
     debug('Validation fail: %s != %s', tokeno.verificationToken, pageData.code);
@@ -390,7 +383,7 @@ async function creatorVerify(req) {
       json: creator,
     };
   } catch (error) {
-    debug("Error in confirmCreator: %s", error.message);
+    debug('Error in confirmCreator: %s', error.message);
     return {
       json: {
         error: true,
@@ -404,9 +397,8 @@ async function creatorGet(req) {
   // this is the /v3/creator/me query, it looks into
   // 'creators' mongodb collection.
 
-  const { creator }= await verifyAuthorization(req, v3.Creator.GetCreator);
-  if(creator.error)
-    return { json: creator };
+  const { creator } = await verifyAuthorization(req, v3.Creator.GetCreator);
+  if (creator.error) return { json: creator };
 
   const validatedc = endpoints.decodeResponse(v3.Creator.GetCreator, {
     ...creator,
@@ -428,11 +420,14 @@ async function creatorDelete(req) {
   // this function is invoked when a content creator wants to
   // delete every data on their belong,
   const { creator } = await verifyAuthorization(req, v3.Creator.GetCreator);
-  if(creator.error)
-    return { json: creator };
+  if (creator.error) return { json: creator };
 
-  const result = await ycai
-    .deleteMaterial(creator, ['recommendations', 'creators', 'tokens', 'ytvids']);
+  const result = await ycai.deleteMaterial(creator, [
+    'recommendations',
+    'creators',
+    'tokens',
+    'ytvids',
+  ]);
 
   return { json: result };
 }
@@ -441,17 +436,12 @@ async function getCreatorStats(req) {
   const amount = PUBLIC_AMOUNT_ELEMS;
   const skip = 0;
 
-  const decodedReq = endpoints.decodeRequest(
-    v3.Creator.GetCreatorStats,
-    req
-  );
+  const decodedReq = endpoints.decodeRequest(v3.Creator.GetCreatorStats, req);
   const channelId = decodedReq.result.params.channelId;
   const creator = await structured.getChannel(channelId);
-  if(!creator) {
-    debug("Creator not found by channelId %s", channelId);
-    return { json: { error: true,
-      message: "Creator not found" }
-    }
+  if (!creator) {
+    debug('Creator not found by channelId %s', channelId);
+    return { json: { error: true, message: 'Creator not found' } };
   }
 
   let authorStruct = null;
@@ -460,15 +450,12 @@ async function getCreatorStats(req) {
       { authorName: creator.username },
       { amount, skip }
     );
-  } catch(error) {
-    debug("Error in structured.getMetadata: %s %s",
-      error.message, error.stack);
+  } catch (error) {
+    debug('Error in structured.getMetadata: %s %s', error.message, error.stack);
   }
 
-  if(!authorStruct)
-    return { json: { error: true,
-      message: "Unable to fetch CreatorStats"}
-    };
+  if (!authorStruct)
+    return { json: { error: true, message: 'Unable to fetch CreatorStats' } };
 
   authorStruct = _.merge(authorStruct, {
     authorSource: creator.channelId,
@@ -483,17 +470,14 @@ async function getCreatorStats(req) {
     _.size(ready)
   );
 
-  const retval = endpoints.decodeResponse(
-    v3.Creator.GetCreatorStats,
-    {
-      authorName: authorStruct.authorName,
-      authorSource: authorStruct.authorSource,
-      paging: authorStruct.paging,
-      overflow: authorStruct.overflow,
-      ...units,
-      content: ready,
-    }
-  );
+  const retval = endpoints.decodeResponse(v3.Creator.GetCreatorStats, {
+    authorName: authorStruct.authorName,
+    authorSource: authorStruct.authorSource,
+    paging: authorStruct.paging,
+    overflow: authorStruct.overflow,
+    ...units,
+    content: ready,
+  });
 
   if (retval.type === 'error') {
     debug('Invalid generated byAuthor stats! %O', retval);

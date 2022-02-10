@@ -1225,6 +1225,32 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@monorepo-utils/package-utils@npm:^2.7.0":
+  version: 2.7.0
+  resolution: "@monorepo-utils/package-utils@npm:2.7.0"
+  dependencies:
+    globby: ^11.0.1
+    load-json-file: ^6.2.0
+    upath: ^2.0.1
+  checksum: 11266366885c0bd4bd25a6fb84af4d7aebffbc2a65fc85b17c7e129db6fd212ce3e3fe9a803ac5bb13e58dd4f4cfbec69445e19ccc6e34c52b78b35205aff489
+  languageName: node
+  linkType: hard
+
+"@monorepo-utils/workspaces-to-typescript-project-references@npm:^2.7.4":
+  version: 2.7.4
+  resolution: "@monorepo-utils/workspaces-to-typescript-project-references@npm:2.7.4"
+  dependencies:
+    "@monorepo-utils/package-utils": ^2.7.0
+    comment-json: ^3.0.3
+    meow: ^7.1.1
+    semver-match: 0.1.1
+    upath: ^2.0.1
+  bin:
+    workspaces-to-typescript-project-references: bin/cmd.js
+  checksum: adfe7263fb108a57f1a2f3261b1bffa2538704900b0db882a52ddff139c94f0aee244736e7e97ec8416c82699881c795885002e5cc4caaae2693f2cf693ff150
+  languageName: node
+  linkType: hard
+
 "@mrmlnc/readdir-enhanced@npm:^2.2.1":
   version: 2.2.1
   resolution: "@mrmlnc/readdir-enhanced@npm:2.2.1"
@@ -1912,7 +1938,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@trex/shared@workspace:packages/shared":
+"@trex/shared@workspace:^, @trex/shared@workspace:packages/shared":
   version: 0.0.0-use.local
   resolution: "@trex/shared@workspace:packages/shared"
   dependencies:
@@ -1976,6 +2002,7 @@ __metadata:
     "@material-ui/data-grid": ^4.0.0-alpha.37
     "@material-ui/icons": ^4.11.2
     "@material-ui/styles": ^4.11.4
+    "@trex/shared": "workspace:^"
     "@types/node": ^16.11.22
     "@types/prettier": ^2.4.3
     "@types/react": 17.0.38
@@ -2022,6 +2049,7 @@ __metadata:
     "@testing-library/jest-dom": ^5.16.2
     "@testing-library/react": ^12.1.2
     "@testing-library/user-event": ^13.5.0
+    "@trex/shared": "workspace:packages/shared"
     "@types/bs58": ^4.0.1
     "@types/c3": ^0.7.8
     "@types/chrome": 0.0.177
@@ -5672,7 +5700,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"camelcase@npm:^5.3.1":
+"camelcase@npm:^5.0.0, camelcase@npm:^5.3.1":
   version: 5.3.1
   resolution: "camelcase@npm:5.3.1"
   checksum: e6effce26b9404e3c0f301498184f243811c30dfe6d0b9051863bd8e4034d09c8c2923794f280d6827e5aa055f6c434115ff97864a16a963366fb35fd673024b
@@ -6292,6 +6320,18 @@ __metadata:
   languageName: node
   linkType: hard
 
+"comment-json@npm:^3.0.3":
+  version: 3.0.3
+  resolution: "comment-json@npm:3.0.3"
+  dependencies:
+    core-util-is: ^1.0.2
+    esprima: ^4.0.1
+    has-own-prop: ^2.0.0
+    repeat-string: ^1.6.1
+  checksum: c8e92e820b73e7bd83890e38680617b21028eca9a7e83a2af72750eae8c7e2570dd40e5848148b1e1d34d58ce62a0cb4e2b5836df0f8daa1d6bceca8666936cd
+  languageName: node
+  linkType: hard
+
 "common-ancestor-path@npm:^1.0.1":
   version: 1.0.1
   resolution: "common-ancestor-path@npm:1.0.1"
@@ -6804,7 +6844,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"core-util-is@npm:~1.0.0":
+"core-util-is@npm:^1.0.2, core-util-is@npm:~1.0.0":
   version: 1.0.3
   resolution: "core-util-is@npm:1.0.3"
   checksum: 9de8597363a8e9b9952491ebe18167e3b36e7707569eed0ebf14f8bba773611376466ae34575bca8cfe3c767890c859c74056084738f09d4e4a6f902b2ad7d99
@@ -7763,7 +7803,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"decamelize@npm:^1.1.0, decamelize@npm:^1.1.1":
+"decamelize@npm:^1.1.0, decamelize@npm:^1.1.1, decamelize@npm:^1.2.0":
   version: 1.2.0
   resolution: "decamelize@npm:1.2.0"
   checksum: ad8c51a7e7e0720c70ec2eeb1163b66da03e7616d7b98c9ef43cce2416395e84c1e9548dd94f5f6ffecfee9f8b94251fc57121a8b021f2ff2469b2bae247b8aa
@@ -10972,6 +11012,7 @@ __metadata:
     "@material-ui/icons": ^4.11.2
     "@material-ui/lab": ^4.0.0-alpha.60
     "@pmmmwh/react-refresh-webpack-plugin": ^0.5.4
+    "@trex/shared": "workspace:^"
     "@types/lodash": ^4.14.178
     "@types/nconf": ^0.10.1
     "@types/prettier": ^2.4.3
@@ -11133,6 +11174,13 @@ __metadata:
   dependencies:
     is-glob: ^3.0.0
   checksum: cafad93e599f49f676a9ab444ec90210fcda35ac14ad6c9bb96c08057ad18a1318f1116b053aa6bdc744f19252537006872d3fc76785e842bbe8cc4312447fc8
+  languageName: node
+  linkType: hard
+
+"has-own-prop@npm:^2.0.0":
+  version: 2.0.0
+  resolution: "has-own-prop@npm:2.0.0"
+  checksum: ca6336e85ead2295c9603880cbc199e2d3ff7eaea0e9035d68fbc79892e9cf681abc62c0909520f112c671dad9961be2173b21dff951358cc98425c560e789e0
   languageName: node
   linkType: hard
 
@@ -14112,6 +14160,18 @@ __metadata:
   languageName: node
   linkType: hard
 
+"load-json-file@npm:^6.2.0":
+  version: 6.2.0
+  resolution: "load-json-file@npm:6.2.0"
+  dependencies:
+    graceful-fs: ^4.1.15
+    parse-json: ^5.0.0
+    strip-bom: ^4.0.0
+    type-fest: ^0.6.0
+  checksum: 4429e430ebb99375fc7cd936348e4f7ba729486080ced4272091c1e386a7f5f738ea3337d8ffd4b01c2f5bc3ddde92f2c780045b66838fe98bdb79f901884643
+  languageName: node
+  linkType: hard
+
 "loader-runner@npm:^4.2.0":
   version: 4.2.0
   resolution: "loader-runner@npm:4.2.0"
@@ -14674,6 +14734,25 @@ __metadata:
   version: 1.5.0
   resolution: "memory-pager@npm:1.5.0"
   checksum: d1a2e684583ef55c61cd3a49101da645b11ad57014dfc565e0b43baa9004b743f7e4ab81493d8fff2ab24e9950987cc3209c94bcc4fc8d7e30a475489a1f15e9
+  languageName: node
+  linkType: hard
+
+"meow@npm:^7.1.1":
+  version: 7.1.1
+  resolution: "meow@npm:7.1.1"
+  dependencies:
+    "@types/minimist": ^1.2.0
+    camelcase-keys: ^6.2.2
+    decamelize-keys: ^1.1.0
+    hard-rejection: ^2.1.0
+    minimist-options: 4.1.0
+    normalize-package-data: ^2.5.0
+    read-pkg-up: ^7.0.1
+    redent: ^3.0.0
+    trim-newlines: ^3.0.0
+    type-fest: ^0.13.1
+    yargs-parser: ^18.1.3
+  checksum: 87bba177ab858a9b606ee52220e6bf395277beebafefe8ab5dbdf178f5825274a24ca16dca7e0ddd41e5ac3533164ee52e3d0eec87b66d78aae796d24a817842
   languageName: node
   linkType: hard
 
@@ -18806,6 +18885,7 @@ __metadata:
     "@commitlint/cli": ^16.1.0
     "@commitlint/config-conventional": ^16.0.0
     "@commitlint/prompt-cli": ^16.1.0
+    "@monorepo-utils/workspaces-to-typescript-project-references": ^2.7.4
     "@release-it/conventional-changelog": ^4.1.0
     "@types/node": ^16.11.22
     "@types/prettier": ^2.4.3
@@ -19112,6 +19192,15 @@ __metadata:
   dependencies:
     semver: ^6.3.0
   checksum: 8bbe5a5d7add2d5e51b72314a9215cd294d71f41cdc2bf6bd59ee76411f3610b576172896f1d191d0d7294cb9f2f847438d2ee158adacc0c224dca79052812fe
+  languageName: node
+  linkType: hard
+
+"semver-match@npm:0.1.1":
+  version: 0.1.1
+  resolution: "semver-match@npm:0.1.1"
+  dependencies:
+    semver: ^5.1.0
+  checksum: 624968a1d0b665fb08d3e7a4d28b62332ae1695c19f4b7f7cddb34c07bf8e5b6f19d393249bb1b96b09746651bd20d754fc2d64318fd7f959f6bec6abfa883dd
   languageName: node
   linkType: hard
 
@@ -21686,6 +21775,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"upath@npm:^2.0.1":
+  version: 2.0.1
+  resolution: "upath@npm:2.0.1"
+  checksum: 2db04f24a03ef72204c7b969d6991abec9e2cb06fb4c13a1fd1c59bc33b46526b16c3325e55930a11ff86a77a8cbbcda8f6399bf914087028c5beae21ecdb33c
+  languageName: node
+  linkType: hard
+
 "update-notifier@npm:5.1.0, update-notifier@npm:^5.1.0":
   version: 5.1.0
   resolution: "update-notifier@npm:5.1.0"
@@ -22825,6 +22921,16 @@ __metadata:
   version: 20.2.9
   resolution: "yargs-parser@npm:20.2.9"
   checksum: 8bb69015f2b0ff9e17b2c8e6bfe224ab463dd00ca211eece72a4cd8a906224d2703fb8a326d36fdd0e68701e201b2a60ed7cf81ce0fd9b3799f9fe7745977ae3
+  languageName: node
+  linkType: hard
+
+"yargs-parser@npm:^18.1.3":
+  version: 18.1.3
+  resolution: "yargs-parser@npm:18.1.3"
+  dependencies:
+    camelcase: ^5.0.0
+    decamelize: ^1.2.0
+  checksum: 60e8c7d1b85814594d3719300ecad4e6ae3796748b0926137bfec1f3042581b8646d67e83c6fc80a692ef08b8390f21ddcacb9464476c39bbdf52e34961dd4d9
   languageName: node
   linkType: hard
 

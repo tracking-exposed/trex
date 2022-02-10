@@ -2,13 +2,13 @@ import { command } from 'avenger';
 import { sequenceS } from 'fp-ts/lib/Apply';
 import { pipe } from 'fp-ts/lib/function';
 import * as TE from 'fp-ts/lib/TaskEither';
-import { AppError } from '@shared/errors/AppError';
-import * as sharedConst from '@shared/constants';
+import { AppError } from '@trex/shared/errors/AppError';
+import * as sharedConst from '@trex/shared/constants';
 import { API } from '../../api';
-import { setItem } from '@shared/providers/localStorage.provider';
-import { AuthResponse } from '@shared/models/Auth';
-import { ContentCreator } from '@shared/models/ContentCreator';
-import { PartialRecommendation } from '@shared/models/Recommendation';
+import { setItem } from '@trex/shared/providers/localStorage.provider';
+import { AuthResponse } from '@trex/shared/models/Auth';
+import { ContentCreator } from '@trex/shared/models/ContentCreator';
+import { PartialRecommendation } from '@trex/shared/models/Recommendation';
 import {
   auth,
   ccRelatedUsers,

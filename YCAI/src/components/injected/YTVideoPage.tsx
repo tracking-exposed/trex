@@ -10,8 +10,8 @@ import { useTranslation } from 'react-i18next';
 import { getVideoId } from '../../utils/yt.utils';
 import { videoRecommendations } from '../../state/popup.queries';
 import { FullSizeLoader } from '../common/FullSizeLoader';
-import { GetLogger } from '@shared/logger';
-import { Recommendation } from '@shared/models/Recommendation';
+import { GetLogger } from '@trex/shared/logger';
+import { Recommendation } from '@trex/shared/models/Recommendation';
 import { Settings } from '../../models/Settings';
 import { TabPanel } from '../common/TabPanel';
 import { Tab } from '../common/Tab';
@@ -59,7 +59,9 @@ export const YTVideoPage: React.FC<{
   const classes = useStyles();
 
   const patchYTRecommendations = (tab: number): void => {
-    const ytNode: HTMLElement | null = document.querySelector(ytRecommendationsSelector);
+    const ytNode: HTMLElement | null = document.querySelector(
+      ytRecommendationsSelector
+    );
 
     if (ytNode) {
       if (tab === YT_TAB_INDEX) {
@@ -70,7 +72,8 @@ export const YTVideoPage: React.FC<{
       } else {
         const { display } = window.getComputedStyle(ytNode);
         if (display !== 'none') {
-          ytNode.dataset.previousDisplayStyle = window.getComputedStyle(ytNode).display;
+          ytNode.dataset.previousDisplayStyle =
+            window.getComputedStyle(ytNode).display;
           ytNode.style.display = 'none';
         }
       }
@@ -135,7 +138,7 @@ export const YTVideoPage: React.FC<{
   }, [currentTab, settings]);
 
   return (
-    <Box mb={4} style={{borderRadius: '8px'}}>
+    <Box mb={4} style={{ borderRadius: '8px' }}>
       <AppBar className={classes.appBar} position="static">
         <Tabs
           value={currentTab}
@@ -149,7 +152,7 @@ export const YTVideoPage: React.FC<{
         >
           <Tab
             className={classes.tab}
-            icon={<img src={ccIconSrc} style={{width:17}}/>}
+            icon={<img src={ccIconSrc} style={{ width: 17 }} />}
             wrapped={true}
             label={t('creator:title')}
             index={CC_TAB_INDEX}

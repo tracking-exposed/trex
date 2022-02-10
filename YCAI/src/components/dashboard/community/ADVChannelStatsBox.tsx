@@ -5,7 +5,7 @@ import * as React from 'react';
 import { useTranslation } from 'react-i18next';
 import { creatorADVStats } from '../../../state/dashboard/creator.queries';
 import { makeStyles } from '../../../theme';
-import { ErrorBox } from '@shared/components/Error/ErrorBox';
+import { ErrorBox } from '@trex/shared/components/Error/ErrorBox';
 import { LazyFullSizeLoader } from '../../common/FullSizeLoader';
 import TreeMapGraph from '../../common/graphs/TreeMapGraph';
 
