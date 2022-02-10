@@ -29,7 +29,7 @@ linux:
 
 mac:
   target: ['dmg']
-  category: 'Network'
+  category: 'public.app-category.utilities'
 
 win:
   target: ['portable']
