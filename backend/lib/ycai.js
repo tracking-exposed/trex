@@ -7,8 +7,7 @@ const utils = require('../lib/utils');
 const mongo3 = require('./mongo3');
 
 function ensureRecommendationsDefault(recc) {
-  const DEFAULT_IMAGE_URL =
-    'https://youchoose.tracking.exposed/images/creators.png';
+  const DEFAULT_IMAGE_URL = null;
   return _.reduce(
     ['urlId', 'url', 'title', 'description', 'image'],
     function (memo, field) {

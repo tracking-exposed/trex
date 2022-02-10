@@ -25,7 +25,7 @@ import {
 } from '@shared/models/Recommendation';
 import { YCAITheme } from '../../../theme';
 import CharLimitedTypography from '../../common/CharLimitedTypography';
-import Image from '../../common/Image';
+import { ImageWithGemPlaceholder } from '../../common/Image';
 // import EditRecommendation from './EditRecommendation';
 import { isYTURL } from '../../../utils/yt.utils';
 import { getHostFromURL } from '../../../utils/location.utils';
@@ -135,7 +135,7 @@ export const RecommendationCard: React.FC<RecommendationCardProps> = ({
       <Grid container spacing={1}>
         <Grid item xs={3}>
           <div className={classes.imageContainer}>
-            <Image src={data.image} title={data.title} />
+            <ImageWithGemPlaceholder src={data.image} title={data.title} />
           </div>
         </Grid>
 
