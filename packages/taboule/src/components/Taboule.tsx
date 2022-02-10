@@ -4,9 +4,9 @@ import {
   DataGridProps,
   GridColTypeDef,
 } from '@material-ui/data-grid';
-import { APIError } from '@shared/errors/APIError';
-import { AppError } from '@shared/errors/AppError';
-import { GetLogger } from '@shared/logger';
+import { APIError } from '@trex/shared/errors/APIError';
+import { AppError } from '@trex/shared/errors/AppError';
+import { GetLogger } from '@trex/shared/logger';
 import { ObservableQuery } from 'avenger/lib/Query';
 import * as QR from 'avenger/lib/QueryResult';
 import { WithQueries } from 'avenger/lib/react';

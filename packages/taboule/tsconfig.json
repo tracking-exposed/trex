@@ -1,16 +1,14 @@
 {
-  "extends": "../../tsconfig.json",
+  "extends": "../../config/typescript/tsconfig.base.json",
   "compilerOptions": {
     "composite": true,
     "module": "esnext",
-    "outDir": "build",
+    "rootDir": "../../",
+    "baseUrl": "../../",
+    "outDir": "../../build/ts",
     "target": "es5",
     "jsx": "react",
     "noEmit": false,
-    "allowJs": true,
-    "strict": true,
-    "esModuleInterop": true,
-    "noUnusedLocals": true,
     "resolveJsonModule": true,
     "forceConsistentCasingInFileNames": true,
     "strictNullChecks": true,
@@ -19,24 +17,24 @@
     "lib": ["dom", "ESNext"],
     "typeRoots": [
       "../../node_modules/@types",
-      "../../shared/node_modules/@types",
+      "../shared/node_modules/@types",
       "./node_modules/@types",
       "./typings"
     ],
-    "baseUrl": "./src",
     "allowSyntheticDefaultImports": true,
     "noFallthroughCasesInSwitch": true,
     "moduleResolution": "Node",
-    "isolatedModules": true,
-    "paths": {
-      "@shared/*": ["../../shared/src/*"]
-    }
+    "isolatedModules": true
   },
-  "include": ["./src", "./typings"],
+
+  "include": ["./src"],
+  "exclude": ["build", "node_modules"],
   "ts-node": {
     "compilerOptions": {
       "module": "CommonJS"
     }
   },
-  "references": [{ "path": "../shared" }]
+  "references": [{
+    "path": "../shared"
+  }]
 }

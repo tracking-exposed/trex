@@ -3,7 +3,7 @@ import React from 'react';
 import { Trans } from 'react-i18next';
 import { LazyFullSizeLoader } from '../common/FullSizeLoader';
 import { InjectedRecommendationCard } from './InjectedRecommendationCard';
-import { Recommendation } from '@shared/models/Recommendation';
+import { Recommendation } from '@trex/shared/models/Recommendation';
 import { config } from '../../config';
 
 interface VideoRecommendationsProps {

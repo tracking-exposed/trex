@@ -1,5 +1,5 @@
-import { AppError, toAppError } from '@shared/errors/AppError';
-import { GetAPI } from '@shared/providers/api.provider';
+import { AppError, toAppError } from '@trex/shared/errors/AppError';
+import { GetAPI } from '@trex/shared/providers/api.provider';
 import debug from 'debug';
 import * as dotenv from 'dotenv';
 import { app, BrowserWindow } from 'electron';

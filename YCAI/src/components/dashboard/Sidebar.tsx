@@ -10,7 +10,7 @@ import {
 } from '@material-ui/core';
 import { useTranslation } from 'react-i18next';
 
-import { ContentCreator } from '@shared/models/ContentCreator';
+import { ContentCreator } from '@trex/shared/models/ContentCreator';
 import { CurrentView, doUpdateCurrentView } from '../../utils/location.utils';
 import { UserProfileBox } from './UserProfileBox';
 import LabIcon from '../common/icons/LabIcon';
@@ -69,9 +69,11 @@ const toMenuItem = (
   return (
     <ListItem
       key={d.views[0]}
-      className={
-        `${d.views.includes(currentView.view) ? d.selectedClassName : d.notSelectedClassName} ${d.className}`
-      }
+      className={`${
+        d.views.includes(currentView.view)
+          ? d.selectedClassName
+          : d.notSelectedClassName
+      } ${d.className}`}
       button={true}
       onClick={doUpdateCurrentView({ view: d.views[0] as any })}
     >
@@ -86,8 +88,9 @@ const toMenuItem = (
         style={{
           lineHeight: 1,
           margin: 0,
-          textTransform: 'uppercase'
-      }}>
+          textTransform: 'uppercase',
+        }}
+      >
         {d.title}
       </Typography>
     </ListItem>
@@ -126,7 +129,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ currentView, profile }) => {
         <>
           <UserProfileBox />
 
-          <Divider light className={classes.divider}/>
+          <Divider light className={classes.divider} />
 
           <List className={classes.routesList} disablePadding={true}>
             {[

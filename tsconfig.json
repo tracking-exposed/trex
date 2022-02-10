@@ -1,13 +1,39 @@
 {
+  "extends": "./config/typescript/tsconfig.base.json",
   "compilerOptions": {
-    "allowJs": true,
-    "strict": true,
+    "baseUrl": "./",
     "noEmit": true,
-    "strictNullChecks": true,
-    "allowUnusedLabels": false,
-    "isolatedModules": true,
+    "module": "esnext",
+    "jsx": "react",
+    "skipLibCheck": true,
+    "lib": ["dom", "ESNext"],
     "esModuleInterop": true,
-    "rootDir": "./"
+    "resolveJsonModule": true,
+    "moduleResolution": "node",
+    "target": "es5",
+    "typeRoots": [
+      "./node_modules/@types",
+      "./packages/shared/node_modules/@types",
+      "./backend/node_modules/@types",
+      "./typings"
+    ]
   },
-  "exclude": ["**/node_modules/*", "**/build/*"]
+  "include": [
+    "./typings",
+    "./config/typescript/**/*",
+    "./packages/shared/**/*",
+    "./packages/taboule/**/*",
+    "./backend/**/*",
+    "./extension/**/*",
+    "./guardoni/*",
+    "./YCAI/**/*"
+  ],
+  "exclude": [
+    "**/node_modules/*",
+    "**/build/*",
+    "**/jest.base.config.js",
+    "**/jest.config.js",
+    "**/webpack*.ts",
+    "**/webpack*.js"
+  ]
 }

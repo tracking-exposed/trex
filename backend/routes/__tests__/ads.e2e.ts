@@ -1,17 +1,17 @@
 /* eslint-disable import/first */
 // mock curly module
-jest.mock("../../lib/curly");
-jest.mock("fetch-opengraph");
+jest.mock('../../lib/curly');
+jest.mock('fetch-opengraph');
 
-import { VideoArb } from "@shared/arbitraries/Video.arb";
-import { AdArb } from "../../tests/arbitraries/Ad.arb";
-import { VideoMetadataArb } from "../../tests/arbitraries/Metadata.arb";
-import { fc } from "@shared/test";
-import { v4 as uuid } from "uuid";
-import { GetTest, Test } from "../../tests/Test";
-import { sub } from "date-fns";
+import { VideoArb } from '@trex/shared/arbitraries/Video.arb';
+import { AdArb } from '../../tests/arbitraries/Ad.arb';
+import { VideoMetadataArb } from '../../tests/arbitraries/Metadata.arb';
+import { fc } from '@trex/shared/test';
+import { v4 as uuid } from 'uuid';
+import { GetTest, Test } from '../../tests/Test';
+import { sub } from 'date-fns';
 
-describe("The ADS API", () => {
+describe('The ADS API', () => {
   const channelId = uuid();
   let test: Test;
 
@@ -23,8 +23,8 @@ describe("The ADS API", () => {
     await test.mongo.close();
   });
 
-  describe("Get by channel", () => {
-    it("fails using channelId without date range", async () => {
+  describe('Get by channel', () => {
+    it('fails using channelId without date range', async () => {
       const { body } = await test.app
         .get(`/api/v2/ad/channel/${channelId}`)
         .query({})
@@ -41,7 +41,7 @@ describe("The ADS API", () => {
       const { body } = await test.app
         .get(`/api/v2/ad/channel/${channelId}`)
         .query({
-          till: "2022-01-01",
+          till: '2022-01-01',
         })
         .expect(500);
 
@@ -56,7 +56,7 @@ describe("The ADS API", () => {
       const { body } = await test.app
         .get(`/api/v2/ad/channel/${channelId}`)
         .query({
-          since: "2022-01-01",
+          since: '2022-01-01',
         })
         .expect(500);
 
@@ -67,12 +67,12 @@ describe("The ADS API", () => {
       });
     });
 
-    it("succeeds using channelId", async () => {
+    it('succeeds using channelId', async () => {
       const { body } = await test.app
         .get(`/api/v2/ad/channel/${channelId}`)
         .query({
-          since: "2020-01-01",
-          till: "2021-01-01",
+          since: '2020-01-01',
+          till: '2021-01-01',
         })
         .expect(200);
 
@@ -80,34 +80,34 @@ describe("The ADS API", () => {
     });
   });
 
-  describe("Get by video", () => {
+  describe('Get by video', () => {
     const video = fc.sample(VideoArb, 1)[0];
 
-    it("fails using wrong videoId", async () => {
+    it('fails using wrong videoId', async () => {
       const { body } = await test.app
         .get(`/api/v2/ad/video/fake-id`)
         .query({
-          since: "2020-01-01",
-          till: "2021-01-01",
+          since: '2020-01-01',
+          till: '2021-01-01',
         })
         .expect(502);
 
       expect(body).toEqual({});
     });
 
-    it("fails using videoId", async () => {
+    it('fails using videoId', async () => {
       const { body } = await test.app
         .get(`/api/v2/ad/video/${video.videoId}`)
         .query({
-          since: "2020-01-01",
-          till: "2021-01-01",
+          since: '2020-01-01',
+          till: '2021-01-01',
         })
         .expect(200);
 
       expect(body).toEqual([]);
     });
 
-    it("succeeds using videoId", async () => {
+    it('succeeds using videoId', async () => {
       const videoId = fc.sample(fc.uuid(), 1)[0];
       const [metadata] = fc.sample(VideoMetadataArb, 1).map((meta) => ({
         ...meta,
@@ -124,7 +124,7 @@ describe("The ADS API", () => {
             : ad.sponsoredSite.concat(`/`),
         metadataId: metadata.id,
         nature: {
-          type: "video",
+          type: 'video',
           videoId,
         },
         savingTime: sub(new Date(), { weeks: 3 }),
@@ -133,13 +133,13 @@ describe("The ADS API", () => {
       // insert video
       await test.mongo3.insertMany(
         test.mongo,
-        test.config.get("schema").metadata,
+        test.config.get('schema').metadata,
         [metadata]
       );
       // insert ads
       await test.mongo3.insertMany(
         test.mongo,
-        test.config.get("schema").ads,
+        test.config.get('schema').ads,
         ads
       );
 

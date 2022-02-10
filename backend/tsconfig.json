@@ -1,26 +1,25 @@
 {
-  "extends": "../tsconfig.json",
+  "extends": "../config/typescript/tsconfig.base.json",
   "compilerOptions": {
     "allowJs": true,
     "strict": false,
-    "rootDir": "./",
-    "baseUrl": "./",
-    "noEmit": true,
-    "esModuleInterop": true,
-    "paths": {
-      "@shared/*": ["../packages/shared/src/*"]
-    }
+    "rootDir": "../",
+    "baseUrl": "../",
+    "outDir": "../build/ts",
+    "noEmit": false,
+    "esModuleInterop": true
   },
   "include": [
-    "./bin",
-    "./lib",
-    "./models",
-    "./parsers",
-    "./routes",
-    "./utils",
-    "./tests"
+    "."
   ],
-  "exclude": ["./tests"],
+  "exclude": [
+    "config",
+    "dump",
+    "node_modules",
+    "thumbnails",
+    "jest.config.js",
+    "jest.setup.js"
+  ],
   "watchOptions": {
     "watchFile": "useFsEvents",
     "watchDirectory": "useFsEvents",

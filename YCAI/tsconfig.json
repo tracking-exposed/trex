@@ -1,5 +1,5 @@
 {
-  "extends": "../tsconfig.json",
+  "extends": "../config/typescript/tsconfig.base.json",
   "compilerOptions": {
     "module": "esnext",
     "target": "es5",
@@ -17,20 +17,24 @@
     "lib": ["dom", "ESNext"],
     "typeRoots": [
       "../node_modules/@types",
-      "../shared/node_modules/@types",
-      "./node_modules/@types",
-      "./typings"
+      "../packages/shared/node_modules/@types",
+      "../typings",
+      "./node_modules/@types"
     ],
-    "baseUrl": "./src",
+    "baseUrl": "../",
+    "rootDir": "../",
+    "outDir": "../build/ts",
     "allowSyntheticDefaultImports": true,
     "noFallthroughCasesInSwitch": true,
     "moduleResolution": "Node",
-    "isolatedModules": true,
-    "paths": {
-      "@shared/*": ["../../packages/shared/src/*"],
-      "@taboule/*": ["../../packages/taboule/src/*"]
-    }
+    "isolatedModules": true
   },
+  "include": [".", "../typings"],
+  "exclude": [
+    "jest.config.js",
+    "webpack.config.ts",
+    "webpack.extension.config.ts"
+  ],
   "references": [
     {
       "path": "../packages/shared"
@@ -38,12 +42,6 @@
     {
       "path": "../packages/taboule"
     }
-  ],
-  "include": [
-    "./src",
-    "./typings",
-    "./webpack.config.ts",
-    "./webpack.extension.config.ts"
   ],
   "ts-node": {
     "compilerOptions": {

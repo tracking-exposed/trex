@@ -1,4 +1,4 @@
-import { fc } from '@shared/test';
+import { fc } from '@trex/shared/test';
 import { getArbitrary } from 'fast-check-io-ts';
 import { Metadata, ParsedInfo } from '../../models/Metadata';
 import * as t from 'io-ts';

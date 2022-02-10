@@ -1,19 +1,18 @@
 import { Box, Typography } from '@material-ui/core';
 import { DataGridProps, GridColTypeDef } from '@material-ui/data-grid';
-import { ChannelRelated } from '@shared/models/ChannelRelated';
+import { ChannelRelated } from '@trex/shared/models/ChannelRelated';
 import {
   HomeMetadata,
   SearchMetadata,
   VideoMetadata,
-} from '@shared/models/contributor/ContributorPersonalStats';
+} from '@trex/shared/models/contributor/ContributorPersonalStats';
 import {
   SummaryHTMLMetadata,
   TikTokPSearchMetadata,
-  // SummaryMetadata,
-} from '@shared/models/contributor/ContributorPersonalSummary';
-import { TikTokSearchMetadata } from '@shared/models/http/tiktok/TikTokSearch';
-import { Metadata } from '@shared/models/Metadata';
-import { GuardoniExperiment } from '@shared/models/Experiment';
+} from '@trex/shared/models/contributor/ContributorPersonalSummary';
+import { GuardoniExperiment } from '@trex/shared/models/Experiment';
+import { TikTokSearchMetadata } from '@trex/shared/models/http/tiktok/TikTokSearch';
+import { Metadata } from '@trex/shared/models/Metadata';
 import * as React from 'react';
 import CSVDownloadButton from '../components/buttons/CSVDownloadButton';
 import DeleteButton from '../components/buttons/DeleteButton';

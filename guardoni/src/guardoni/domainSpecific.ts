@@ -8,7 +8,7 @@ import path from 'path';
 import * as puppeteer from 'puppeteer-core';
 import url from 'url';
 import { GuardoniProfile } from './types';
-import { formatDateTime } from '@shared/utils/date.utils';
+import { formatDateTime } from '@trex/shared/utils/date.utils';
 
 const debug = D('guardoni:youtube');
 const logreqst = D('guardoni:requests');

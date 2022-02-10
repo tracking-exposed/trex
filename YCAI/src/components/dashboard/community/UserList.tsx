@@ -1,6 +1,12 @@
-import { Avatar, List, ListItem, makeStyles, Typography } from '@material-ui/core';
+import {
+  Avatar,
+  List,
+  ListItem,
+  makeStyles,
+  Typography,
+} from '@material-ui/core';
 import { deepOrange } from '@material-ui/core/colors';
-import { ContentCreator } from '@shared/models/ContentCreator';
+import { ContentCreator } from '@trex/shared/models/ContentCreator';
 import * as React from 'react';
 
 interface UserListProps {
@@ -15,15 +21,15 @@ const useStyles = makeStyles((theme) => ({
     },
   },
   channelLink: {
-    fontSize: "1.1rem",
-    textDecoration: "none",
-    marginLeft: "0.3rem",
-    color: "black"
+    fontSize: '1.1rem',
+    textDecoration: 'none',
+    marginLeft: '0.3rem',
+    color: 'black',
   },
   orange: {
     color: theme.palette.getContrastText(deepOrange[500]),
     backgroundColor: deepOrange[500],
-  }
+  },
 }));
 
 export const UserList: React.FC<UserListProps> = ({ users }) => {
@@ -33,14 +39,17 @@ export const UserList: React.FC<UserListProps> = ({ users }) => {
     <List className={classes.root}>
       {users.map((u, i) => (
         <ListItem key={u.username}>
-          <Avatar className={classes.orange}>
-            {u.channelId}
-          </Avatar>
+          <Avatar className={classes.orange}>{u.channelId}</Avatar>
           <Typography variant="h6">
             <a
               className={classes.channelLink}
-              href={"https://www.youtube.com/results?search_query=" + u.username}
-              target="_blank" rel="noreferrer">{u.username}
+              href={
+                'https://www.youtube.com/results?search_query=' + u.username
+              }
+              target="_blank"
+              rel="noreferrer"
+            >
+              {u.username}
             </a>
           </Typography>
         </ListItem>

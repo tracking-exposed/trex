@@ -1,8 +1,8 @@
 import { Card, CardContent, CardHeader, useTheme } from '@material-ui/core';
 import Grid from '@material-ui/core/Grid';
-import { ErrorBox } from '@shared/components/Error/ErrorBox';
-import { ContentCreator } from '@shared/models/ContentCreator';
-import { Taboule } from '@taboule/components/Taboule';
+import { ErrorBox } from '@trex/shared/components/Error/ErrorBox';
+import { ContentCreator } from '@trex/shared/models/ContentCreator';
+import { Taboule } from '@trex/taboule/components/Taboule';
 import * as QR from 'avenger/lib/QueryResult';
 import { declareQueries, WithQueries } from 'avenger/lib/react';
 import { pipe } from 'fp-ts/lib/function';

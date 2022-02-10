@@ -1,4 +1,4 @@
-import { AppError, toAppError } from '@shared/errors/AppError';
+import { AppError, toAppError } from '@trex/shared/errors/AppError';
 import csvParse from 'csv-parse';
 import * as csvStringify from 'csv-stringify';
 import * as E from 'fp-ts/lib/Either';
@@ -57,7 +57,7 @@ export const toGuardoniErrorOutput = (o: unknown): GuardoniErrorOutput => {
 
 export const toGuardoniSuccessOutput = (
   message: string,
-  values: Record<string, any>
+  values: Array<Record<string, any>>
 ): GuardoniSuccessOutput => {
   return {
     type: 'success',

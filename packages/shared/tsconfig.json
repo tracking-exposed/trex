@@ -1,17 +1,17 @@
 {
-  "extends": "../../tsconfig.json",
+  "extends": "../../config/typescript/tsconfig.base.json",
   "compilerOptions": {
     "noEmit": false,
     "composite": true,
     "lib": ["ESNext", "DOM"],
     "typeRoots": ["../../node_modules/@types", "./node_modules/@types"],
-    "outDir": "./build",
-    "baseUrl": "./",
-    "rootDir": "./src",
+    "outDir": "../../build/ts",
+    "baseUrl": "../../",
+    "rootDir": "../../",
     "allowJs": true,
-    "tsBuildInfoFile": "./build/.tsbuildinfo",
     "esModuleInterop": true,
     "jsx": "react"
   },
-  "include": ["./src"]
+  "include": ["./src"],
+  "references": []
 }

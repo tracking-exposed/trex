@@ -8,7 +8,7 @@ const utils = require('../lib/utils');
 const CSV = require('../lib/CSV');
 const cache = require('../lib/cache');
 const endpoints = require('../lib/endpoint');
-const { v1 } = require('@shared/endpoints');
+const { v1 } = require('@trex/shared/endpoints');
 const structured = require('../lib/structured');
 
 // This variables is used as cap in every readLimit below

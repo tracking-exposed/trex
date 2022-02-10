@@ -1,8 +1,8 @@
-import { HandshakeBody } from '@shared/models/HandshakeBody';
+import { HandshakeBody } from '@trex/shared/models/HandshakeBody';
 import { command } from 'avenger';
 import * as TE from 'fp-ts/lib/TaskEither';
-import { setItem } from '@shared/providers/localStorage.provider';
-import * as sharedConst from '@shared/constants';
+import { setItem } from '@trex/shared/providers/localStorage.provider';
+import * as sharedConst from '@trex/shared/constants';
 import { Settings } from '../../models/Settings';
 import { API } from '../../api';
 import { profile } from './creator.queries';

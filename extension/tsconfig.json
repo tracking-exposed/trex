@@ -1,5 +1,5 @@
 {
-  "extends": "../tsconfig.json",
+  "extends": "../config/typescript/tsconfig.base.json",
   "compilerOptions": {
     "module": "esnext",
     "target": "es5",
@@ -17,26 +17,25 @@
     "lib": ["dom", "ESNext"],
     "typeRoots": [
       "../node_modules/@types",
-      "../shared/node_modules/@types",
+      "../packages/shared/node_modules/@types",
       "./node_modules/@types",
       "./typings"
     ],
-    "baseUrl": "./src",
+    "rootDir": "../",
+    "baseUrl": "../",
+    "outDir": "../build/ts",
     "allowSyntheticDefaultImports": true,
     "noFallthroughCasesInSwitch": true,
     "moduleResolution": "Node",
-    "isolatedModules": true,
-    "paths": {
-      "@shared/*": ["../../packages/shared/src/*"]
-    }
+    "isolatedModules": true
   },
   "references": [
     {
       "path": "../packages/shared"
     }
   ],
-  "include": ["./src", "./typings", "./webpack.config.ts"],
-  "exclude": ["./jest.config.js", "./webpack.config.ts"],
+  "include": ["."],
+  "exclude": ["jest.config.js", "webpack.config.js"],
   "ts-node": {
     "compilerOptions": {
       "module": "CommonJS"

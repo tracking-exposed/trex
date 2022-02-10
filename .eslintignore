@@ -1,0 +1,8 @@
+build/*
+coverage/*
+docker/*
+qa/*
+scripts/*
+typings/*
+webpack.*.ts
+webpack.*.js

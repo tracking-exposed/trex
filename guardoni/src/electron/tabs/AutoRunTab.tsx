@@ -7,8 +7,8 @@ import {
   makeStyles,
   Typography,
 } from '@material-ui/core';
-import { GuardoniExperiment } from '@shared/models/Experiment';
-import { formatDate } from '@shared/utils/date.utils';
+import { GuardoniExperiment } from '@trex/shared/models/Experiment';
+import { formatDate } from '@trex/shared/utils/date.utils';
 import { ipcRenderer } from 'electron';
 import * as React from 'react';
 import { GET_PUBLIC_DIRECTIVES } from '../models/events';

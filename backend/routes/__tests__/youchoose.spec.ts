@@ -2,10 +2,9 @@
 jest.mock('../../lib/curly');
 jest.mock('../../lib/ycai');
 
-import { GetTest, Test } from '../../tests/Test';
-import youchoose from '../youchoose';
 import * as curly from '../../lib/curly';
 import * as ycai from '../../lib/ycai';
+import youchoose from '../youchoose';
 
 const curlyMock = curly as jest.Mocked<typeof curly>;
 const ycaiMock = ycai as jest.Mocked<typeof ycai>;
@@ -25,10 +24,9 @@ describe('Testing the token request', () => {
       channelId: TMPRWRKR,
     },
   };
-  let verificationToken, tests: Test;
 
   beforeAll(async () => {
-    tests = await GetTest();
+    // tests = await GetTest();
   });
   afterAll(async () => {
     jest.clearAllMocks();
@@ -49,7 +47,7 @@ describe('Testing the token request', () => {
     expect(typeof json.verificationToken).toEqual('string');
     expect(json.verificationToken?.length).toBe(40);
     expect(typeof json.tokenString).toEqual('string');
-    verificationToken = json.verificationToken;
+    // verificationToken = json.verificationToken;
 
     /* this should happen */
     if (json.token) {

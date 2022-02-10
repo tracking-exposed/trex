@@ -1,7 +1,7 @@
 import { auth, localProfile } from '../../state/dashboard/creator.queries';
 import * as QR from 'avenger/lib/QueryResult';
 import { WithQueries } from 'avenger/lib/react';
-import { ErrorBox } from '@shared/components/Error/ErrorBox';
+import { ErrorBox } from '@trex/shared/components/Error/ErrorBox';
 import { LazyFullSizeLoader } from '../../components/common/FullSizeLoader';
 import React from 'react';
 import { LinkAccount } from './LinkAccount';

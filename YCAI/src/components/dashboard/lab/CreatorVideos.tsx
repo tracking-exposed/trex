@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { Video } from '@shared/models/Video';
+import { Video } from '@trex/shared/models/Video';
 import { Grid, Typography } from '@material-ui/core';
 import * as Q from 'avenger/lib/Query';
 import * as QR from 'avenger/lib/QueryResult';
@@ -8,7 +8,7 @@ import { pipe } from 'fp-ts/lib/function';
 import { useTranslation } from 'react-i18next';
 import { pullContentCreatorVideos } from '../../../state/dashboard/creator.commands';
 import { creatorVideos } from '../../../state/dashboard/creator.queries';
-import { ErrorBox } from '@shared/components/Error/ErrorBox';
+import { ErrorBox } from '@trex/shared/components/Error/ErrorBox';
 import { LazyFullSizeLoader } from '../../common/FullSizeLoader';
 import { VideoCard } from './VideoCard';
 

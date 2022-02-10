@@ -4,7 +4,7 @@ import { WithQueries } from 'avenger/lib/react';
 import React from 'react';
 import { oneCreatorVideo } from '../../state/dashboard/creator.queries';
 import { getYTVideoURLById, getYTEmbeddingURLById } from '../../utils/yt.utils';
-import { ErrorBox } from '@shared/components/Error/ErrorBox';
+import { ErrorBox } from '@trex/shared/components/Error/ErrorBox';
 import { LazyFullSizeLoader } from './FullSizeLoader';
 
 interface YTVideoProps {

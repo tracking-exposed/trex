@@ -14,4 +14,4 @@ yarn guardoni tsc -b --diagnostics > diagnostics/guardoni/$dev.log
 yarn ycai tsc -b --diagnostics > diagnostics/ycai/$dev.log
 
 yarn clean
-yarn tsc -b tsconfig.test.json --diagnostics > diagnostics/$dev-all.log
+yarn tsc -b --diagnostics > diagnostics/$dev-all.log

@@ -1,7 +1,7 @@
 import { AppEnv } from './src/AppEnv';
 import path from 'path';
-import { getConfig } from '../packages/shared/src/webpack/config';
-import { CopyWebpackPlugin } from '../packages/shared/src/webpack/plugins';
+import { getConfig } from '../build/ts/packages/shared/src/webpack/config';
+import { CopyWebpackPlugin } from '../build/ts/packages/shared/src/webpack/plugins';
 import packageJson from './package.json';
 
 process.env.VERSION = packageJson.version;

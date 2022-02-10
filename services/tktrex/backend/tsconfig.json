@@ -15,14 +15,10 @@
     "skipLibCheck": true,
     "target": "es2015",
     "paths": {
-      "@shared/*": ["../../../shared/src/*"]
+      "@trex/shared/*": ["../../../shared/src/*"]
     }
   },
-  "references": [
-    {
-      "path": "../../../shared"
-    }
-  ],
+  "references": [],
   "ts-node": {
     "compilerOptions": {
       "module": "CommonJS"

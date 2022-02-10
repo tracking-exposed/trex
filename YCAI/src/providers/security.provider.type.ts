@@ -1,6 +1,6 @@
+import * as E from 'fp-ts/lib/Either';
 import * as TE from 'fp-ts/lib/TaskEither';
 import { Keypair } from '../models/Settings';
-import * as E from 'fp-ts/lib/Either';
 
 export interface SecurityProvider {
   makeKeypair: (

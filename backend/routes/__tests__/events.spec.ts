@@ -1,7 +1,5 @@
-import { string } from "fp-ts";
 import fs from "fs";
 import moment from "moment";
-import nconf from "nconf";
 import path from "path";
 // import events from '../events';
 // const tags = require('../tags');
@@ -12,12 +10,12 @@ import { GetTest, Test } from "../../tests/Test";
 /* This first check the capacity of load data and verify they are avail */
 describe.skip("Testing the video submission", function () {
   const dummyKey = "ABCDEF789012345678901234567890";
-  const dummyVideoId = "MOCKUPID";
-  const mockUpVideoCapture = {
-    href: `https://www.youtube.com/watch?v=${dummyVideoId}`,
-    clientTime: new Date().toISOString(),
-    element: "asdasdasd",
-  };
+  // const dummyVideoId = "MOCKUPID";
+  // const mockUpVideoCapture = {
+  //   href: `https://www.youtube.com/watch?v=${dummyVideoId}`,
+  //   clientTime: new Date().toISOString(),
+  //   element: "asdasdasd",
+  // };
 
   let test: Test, storageDir;
 

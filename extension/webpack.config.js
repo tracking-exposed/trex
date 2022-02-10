@@ -14,7 +14,7 @@ const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const {
   CopyWebpackPlugin,
   FileManagerPlugin,
-} = require('../packages/shared/build/webpack/plugins');
+} = require('../build/ts/packages/shared/src/webpack/plugins');
 
 require('dotenv').config({ silent: true });
 

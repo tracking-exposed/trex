@@ -12,7 +12,7 @@ import {
   currentView,
   doUpdateCurrentView,
 } from '../../utils/location.utils';
-import { ErrorBox } from '@shared/components/Error/ErrorBox';
+import { ErrorBox } from '@trex/shared/components/Error/ErrorBox';
 import { LazyFullSizeLoader } from '../common/FullSizeLoader';
 import Settings from './Settings';
 import { AnalyticsPage } from './community/AnalyticsPage';
@@ -20,8 +20,8 @@ import { LinkAccount } from './LinkAccount';
 import { Sidebar } from './Sidebar';
 import { Lab } from './lab/Lab';
 import { LabVideoEdit } from './lab/LabVideoEdit';
-import { ContentCreator } from '@shared/models/ContentCreator';
-import { AuthResponse } from '@shared/models/Auth';
+import { ContentCreator } from '@trex/shared/models/ContentCreator';
+import { AuthResponse } from '@trex/shared/models/Auth';
 
 const useStyles = makeStyles((theme) => ({
   root: {

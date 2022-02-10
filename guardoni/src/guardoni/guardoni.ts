@@ -6,9 +6,9 @@
  * - filter the directive with "exclude url tag"
  *
  */
-import { AppError, toAppError } from '@shared/errors/AppError';
-import { toValidationError } from '@shared/errors/ValidationError';
-import { Logger } from '@shared/logger';
+import { AppError, toAppError } from '@trex/shared/errors/AppError';
+import { toValidationError } from '@trex/shared/errors/ValidationError';
+import { Logger } from '@trex/shared/logger';
 import {
   ChiaroScuroDirective,
   ChiaroScuroDirectiveType,
@@ -19,8 +19,8 @@ import {
   DirectiveType,
   PostDirectiveResponse,
   PostDirectiveSuccessResponse,
-} from '@shared/models/Directive';
-import { APIClient, GetAPI } from '@shared/providers/api.provider';
+} from '@trex/shared/models/Directive';
+import { APIClient, GetAPI } from '@trex/shared/providers/api.provider';
 import { execSync } from 'child_process';
 import { differenceInSeconds, format } from 'date-fns';
 import debug from 'debug';

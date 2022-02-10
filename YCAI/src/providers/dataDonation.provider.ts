@@ -1,16 +1,16 @@
 import { debounce } from '@material-ui/core';
-import * as Endpoints from '@shared/endpoints';
+import * as Endpoints from '@trex/shared/endpoints';
 import {
   ADVContributionEvent,
   VideoContributionEvent,
-} from '@shared/models/ContributionEvent';
+} from '@trex/shared/models/ContributionEvent';
 import { differenceInSeconds } from 'date-fns';
 import { pipe } from 'fp-ts/lib/function';
 import * as TE from 'fp-ts/lib/TaskEither';
 import _ from 'lodash';
 import { config } from '../config';
 import { Keypair, Settings } from '../models/Settings';
-import { getTimeISO8601 } from '@shared/utils/date.utils';
+import { getTimeISO8601 } from '@trex/shared/utils/date.utils';
 import { logger } from '../utils/logger.utils';
 import { sendAPIMessage } from './browser.provider';
 import security from './bs58.provider';

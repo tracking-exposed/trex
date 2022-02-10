@@ -1,6 +1,6 @@
-import { GetAPI, TERequest } from '@shared/providers/api.provider';
+import { GetAPI, TERequest } from '@trex/shared/providers/api.provider';
 import { command } from 'avenger';
-import * as Endpoints from '@shared/endpoints';
+import * as Endpoints from '@trex/shared/endpoints';
 import { TabouleQueries } from './queries';
 import { pipe } from 'fp-ts/lib/function';
 import * as TE from 'fp-ts/lib/TaskEither';

@@ -1,13 +1,7 @@
-const { pathsToModuleNameMapper } = require('ts-jest');
 const jestConfigBase = require('../jest.config.base');
-const tsConfig = require('./tsconfig.json');
-
-const tsPaths = pathsToModuleNameMapper(tsConfig.compilerOptions.paths, {
-  prefix: '<rootDir>/src/',
-});
 
 const moduleNameMapper = {
-  ...tsPaths,
+  ...jestConfigBase.moduleNameMapper,
   '\\.(svg|ttf)$': '<rootDir>/__mocks__/fileMock.js',
   '\\.(css)$': '<rootDir>/__mocks__/styleMock.js',
 };

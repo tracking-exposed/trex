@@ -1,0 +1,16 @@
+{
+  "compilerOptions": {
+    "allowJs": true,
+    "noEmit": false,
+    "composite": true,
+    "strict": false,
+    "esModuleInterop": true,
+    "noUnusedLocals": true,
+    "resolveJsonModule": true,
+    "lib": ["ESNext", "DOM"],
+    "paths": {
+      "@trex/shared/*": ["packages/shared/src/*"],
+      "@trex/taboule/*": ["packages/taboule/src/*"]
+    }
+  }
+}

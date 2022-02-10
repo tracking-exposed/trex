@@ -4,9 +4,9 @@ import moment from 'moment';
 import {
   CopyWebpackPlugin,
   FileManagerPlugin,
-} from '../../../packages/shared/src/webpack/plugins';
+} from '../../../build/ts/packages/shared/src/webpack/plugins';
 
-import { getConfig } from '../../../packages/shared/src/webpack/config';
+import { getConfig } from '../../../build/ts/packages/shared/src/webpack/config';
 
 import { AppEnv } from './src/AppEnv';
 import packageJSON from './package.json';
@@ -78,7 +78,7 @@ config.plugins.push(
         from: 'icons',
       },
     ],
-  }),
+  })
 );
 
 if (config.mode === 'production') {
@@ -91,13 +91,13 @@ if (config.mode === 'production') {
               source: outputDir,
               destination: path.join(
                 outputDir,
-                `tktrex-extension-${process.env.VERSION}.zip`,
+                `tktrex-extension-${process.env.VERSION}.zip`
               ),
             },
           ],
         },
       },
-    }),
+    })
   );
 }
 
