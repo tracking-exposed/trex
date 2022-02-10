@@ -21,7 +21,7 @@ export const Recommendation = t.strict(
     title: t.string,
     description: t.union([t.string, t.undefined]),
     fromChannel: t.union([t.boolean, t.undefined]),
-    image: t.string,
+    image: t.union([t.string, t.null]),
   },
   'Recommendation'
 );

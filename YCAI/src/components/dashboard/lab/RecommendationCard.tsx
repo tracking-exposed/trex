@@ -1,34 +1,30 @@
-import React from 'react';
-import { useTranslation } from 'react-i18next';
-
 import {
   Box,
   Button,
-  IconButton,
   Card,
   Grid,
+  IconButton,
   Typography,
 } from '@material-ui/core';
-
 import {
-  ArrowUpward as ArrowUpwardIcon,
   ArrowDownward as ArrowDownwardIcon,
+  ArrowUpward as ArrowUpwardIcon,
   Link as LinkIcon,
 } from '@material-ui/icons';
-
 import { makeStyles } from '@material-ui/styles';
-
 import {
-  titleMaxLength,
   descriptionMaxLength,
   Recommendation,
+  titleMaxLength,
 } from '@shared/models/Recommendation';
+import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { YCAITheme } from '../../../theme';
-import CharLimitedTypography from '../../common/CharLimitedTypography';
-import Image from '../../common/Image';
-import EditRecommendation from './EditRecommendation';
-import { isYTURL } from '../../../utils/yt.utils';
 import { getHostFromURL } from '../../../utils/location.utils';
+import { isYTURL } from '../../../utils/yt.utils';
+import CharLimitedTypography from '../../common/CharLimitedTypography';
+import { ImageWithGemPlaceholder } from '../../common/Image';
+import EditRecommendation from './EditRecommendation';
 
 interface RecommendationCardProps {
   videoId: string;
@@ -132,7 +128,7 @@ export const RecommendationCard: React.FC<RecommendationCardProps> = ({
       <Grid container spacing={1}>
         <Grid item xs={5}>
           <div className={classes.imageContainer}>
-            <Image src={data.image} title={data.title} />
+            <ImageWithGemPlaceholder src={data.image} title={data.title} />
           </div>
         </Grid>
 
