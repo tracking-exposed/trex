@@ -13,13 +13,24 @@ async function sharedDataPull(filter) {
   /* this function is invoked by the various API below */
   const MAX = 3000;
   const mongoc = await mongo3.clientConnect({ concurrency: 1 });
-  const metadata = await mongo3.readLimit(
+
+  const metadata = await mongo3.aggregate(
     mongoc,
     nconf.get('schema').metadata,
-    filter,
-    { savingTime: -1 },
-    MAX,
-    0
+    [
+      { $match: filter },
+      {
+        $lookup: {
+          from: 'htmls',
+          localField: 'id',
+          foreignField: 'metadataId',
+          as: 'html',
+        },
+      },
+      { $sort: { savingTime: -1 } },
+      { $skip: 0 },
+      { $limit: MAX },
+    ]
   );
   await mongoc.close();
 
@@ -30,7 +41,11 @@ async function sharedDataPull(filter) {
     MAX,
     _.countBy(metadata, 'type')
   );
-  return metadata;
+  return _.map(metadata, function (e) {
+    e.originalHref = e.html[0].href;
+    _.unset(e, 'html');
+    return e;
+  });
 }
 
 // function dotify(data) {
@@ -87,14 +102,25 @@ async function csv(req) {
   const type = req.params.type;
   if (CSV.allowedTypes.indexOf(type) === -1) {
     debug('Invalid requested data type? %s', type);
-    return { text: 'Error, invalid URL composed' };
+    return {
+      text: 'Error, invalid URL composed. allowed types: ' + CSV.allowedTypes,
+    };
   }
 
   const experimentId = params.getString(req, 'experimentId', true);
-  const metadata = await sharedDataPull({
+  const filter = {
     'experiment.experimentId': experimentId,
     type,
-  });
+  };
+  const metadata = await sharedDataPull(filter);
+
+  if (!metadata.length) {
+    debug(
+      'Zero entry matching this filter, returning a text error! filter %j',
+      filter
+    );
+    return { text: 'zero entries matching this filter!' };
+  }
 
   const transformed = CSV.unrollNested(metadata, {
     type,
