@@ -3,7 +3,7 @@ import { differenceInSeconds } from 'date-fns';
 import { pipe } from 'fp-ts/lib/function';
 import * as TE from 'fp-ts/lib/TaskEither';
 import _ from 'lodash';
-import { Keypair } from 'src/models/extension/Keypair';
+import { Keypair } from '../models/extension/Keypair';
 import * as Endpoints from '../endpoints';
 import {
   ADVContributionEvent,
@@ -50,72 +50,6 @@ interface Command {
 }
 
 const observers: MutationObserver[] = [];
-
-const watchedPaths = {
-  banner: {
-    selector: '.video-ads.ytp-ad-module',
-    parents: 4,
-    color: 'blue',
-  },
-  ad: {
-    selector: '.ytp-ad-player-overlay',
-    parents: 4,
-    color: 'darkblue',
-  },
-  overlay: {
-    selector: '.ytp-ad-player-overlay-instream-info',
-    parents: 4,
-    color: 'lightblue',
-  },
-  toprightad: {
-    selector: 'ytd-promoted-sparkles-web-renderer',
-    parents: 3,
-    color: 'aliceblue',
-  },
-  toprightpict: {
-    selector: '.ytd-action-companion-ad-renderer',
-    parents: 2,
-    color: 'azure',
-  },
-  toprightcta: {
-    selector: '.sparkles-light-cta',
-    parents: 1,
-    color: 'violetblue',
-  },
-  toprightattr: {
-    selector: '[data-google-av-cxn]',
-    color: 'deeppink',
-  },
-  adbadge: {
-    selector: '#ad-badge',
-    parents: 4,
-    color: 'deepskyblue',
-  },
-  frontad: {
-    selector: 'ytd-banner-promo-renderer',
-  },
-  channel1: {
-    selector: '[href^="/channel"]',
-    color: 'yellow',
-    parents: 1,
-  },
-  channel2: {
-    selector: '[href^="/c"]',
-    color: 'yellow',
-    parents: 1,
-  },
-  channel3: {
-    selector: '[href^="/user"]',
-    color: 'yellow',
-    parents: 1,
-  },
-  searchcard: { selector: '.ytd-search-refinement-card-renderer' },
-  channellink: { selector: '.channel-link' },
-  searchAds: {
-    selector: '.ytd-promoted-sparkles-text-search-renderer',
-    parents: 2,
-  },
-};
 
 const state: CollectedState = {
   incremental: 0,
@@ -208,16 +142,19 @@ function addContribution(
   state.incremental++;
 }
 
-function leavesWatcher(setState: SetState, showDebugUI: boolean): void {
+function leavesWatcher(
+  setState: SetState,
+  ctx: DataDonationProviderContext
+): void {
   // initialized MutationObserver with the selectors and
   // then a list of functions would handle it
-  _.each(watchedPaths, function (command, selectorName) {
+  _.each(ctx.watchedPaths, function (command, selectorName) {
     const cb = _.partial(
       manageNodes,
       command,
       selectorName,
       debounce(setState, 1000),
-      showDebugUI
+      ctx.debug
     );
     watch(document, command.selector, cb);
   });
@@ -248,12 +185,12 @@ export function sizeCheck(nodeHTML: string): boolean {
 
   // check if the increment is more than 4%, otherwise is not interesting
   const percentile = 100 / s;
-  const percentage = _.round(percentile * lastObservedSize, 2);
+  const percentage = 100 - _.round(percentile * lastObservedSize, 2);
 
-  if (percentage > 95) {
-    // console.log(`Skipping update as ${percentage}% of the page is already sent (size ${s}, lastObservedSize ${lastObservedSize}) ${window.location.pathname}`);
-    return false;
-  }
+  ddLogger.info(
+    `HTML size (%s) difference since last observed size +${percentage} %`,
+    s
+  );
 
   // this is the minimum size worthy of reporting
   if (s < 100000) {
@@ -261,9 +198,16 @@ export function sizeCheck(nodeHTML: string): boolean {
     return false;
   }
 
-  ddLogger.debug(
+  if (percentage < 5) {
+    ddLogger.debug(
+      `Skipping update as ${percentage}% of the page is already sent (size ${s}, lastObservedSize ${lastObservedSize}) ${window.location.pathname}`
+    );
+    return false;
+  }
+
+  ddLogger.info(
     `Valid update as a new %d% of the page have been received (size %d, lastObservedSize %d) %s`,
-    _.round(100 - percentage, 2),
+    percentage,
     s,
     lastObservedSize,
     window.location.pathname
@@ -382,6 +326,14 @@ interface DataDonationProviderContext {
   version: string;
   debug: boolean;
   flushInterval?: number;
+  watchedPaths: Record<
+    string,
+    {
+      selector: string;
+      color?: string;
+      parents?: number;
+    }
+  >;
 }
 
 export const GetDataDonationProvider = (
@@ -456,7 +408,7 @@ export const GetDataDonationProvider = (
       setState({ type: 'video-sent' });
     }, videoPeriodicTimeout);
 
-    leavesWatcher(setState, ctx.debug);
+    leavesWatcher(setState, ctx);
   };
 
   const videoPeriodicTimeout = 5000;
