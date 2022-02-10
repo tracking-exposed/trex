@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom';
 
 import { createTheme, ThemeProvider } from '@material-ui/core/styles';
 
-import '../../../public/popup/font.css';
+import '../../../public/font.css';
 import Popup from './components/popup';
 
 const theme = createTheme({
