@@ -50,6 +50,8 @@ const resources: CustomTypeOptions['resources'] = {
     edit_recommendation_button: 'Edit',
     edit_recommendation_description:
       'Explain briefly why you found this content relevant for your audience',
+    delete_gem_confirm_message:
+      "This gem will disappear from all your videos and the action can't be undone. Are you sure?",
     cancel: 'Cancel',
     save: 'Save',
     manage_tokens: 'Manage tokens',

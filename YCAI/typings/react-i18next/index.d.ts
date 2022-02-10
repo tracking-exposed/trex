@@ -49,6 +49,7 @@ declare module 'react-i18next' {
         edit_recommendation_form_title: string;
         edit_recommendation_button: string;
         edit_recommendation_description: string;
+        delete_gem_confirm_message: string;
         cancel: string;
         save: string;
         manage_tokens: string;

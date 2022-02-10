@@ -1,37 +1,24 @@
-import React from 'react';
-import { useTranslation } from 'react-i18next';
-
-import {
-  Box,
-  // Button,
-  IconButton,
-  Card,
-  Grid,
-  Link,
-} from '@material-ui/core';
-
-import {
-  Delete as DeleteIcon,
-  Edit as EditIcon,
-  Link as LinkIcon,
-} from '@material-ui/icons';
-
+import { Box, Card, Grid, Link } from '@material-ui/core';
+import LinkIcon from '@material-ui/icons/Link';
 import { makeStyles } from '@material-ui/styles';
-
 import {
-  titleMaxLength,
   descriptionMaxLength,
   Recommendation,
+  titleMaxLength
 } from '@shared/models/Recommendation';
-import { YCAITheme } from '../../../theme';
-import CharLimitedTypography from '../../common/CharLimitedTypography';
-import { ImageWithGemPlaceholder } from '../../common/Image';
-// import EditRecommendation from './EditRecommendation';
-import { isYTURL } from '../../../utils/yt.utils';
-import { getHostFromURL } from '../../../utils/location.utils';
+import React from 'react';
+import { useTranslation } from 'react-i18next';
+import { patchRecommendation } from '../../../../state/dashboard/creator.commands';
+import { creatorRecommendations } from '../../../../state/dashboard/creator.queries';
+import { YCAITheme } from '../../../../theme';
+import { getHostFromURL } from '../../../../utils/location.utils';
+import { isYTURL } from '../../../../utils/yt.utils';
+import DeleteGemButton from '../../../buttons/DeleteGemButton';
+import CharLimitedTypography from '../../../common/CharLimitedTypography';
+import { ImageWithGemPlaceholder } from '../../../common/Image';
+import EditRecommendation from '../EditRecommendation';
 
-interface RecommendationCardProps {
-  videoId: string;
+interface GemCard {
   data: Recommendation;
   onDeleteClick: (r: Recommendation) => void;
 }
@@ -119,16 +106,19 @@ const useStyles = makeStyles<YCAITheme>((theme) => ({
   },
 }));
 
-export const RecommendationCard: React.FC<RecommendationCardProps> = ({
-  data,
-  videoId,
-  onDeleteClick,
-}) => {
+const GemCard: React.FC<GemCard> = ({ data, onDeleteClick }) => {
   const { t } = useTranslation();
   const classes = useStyles();
 
   const isYT = isYTURL(data.url);
   const isExternal = !isYT;
+
+  const handleGemEditCompleted = (r: Recommendation): void => {
+    void patchRecommendation({
+      urlId: r.urlId,
+      data: r,
+    })().then(() => creatorRecommendations.invalidate()());
+  };
 
   return (
     <Card className={classes.root}>
@@ -172,29 +162,20 @@ export const RecommendationCard: React.FC<RecommendationCardProps> = ({
         </Grid>
 
         <Grid item xs={1} className={classes.iconsContainer}>
-          <IconButton
-            aria-label={t('actions:move_recommendation_up')}
-            color="primary"
-            className={classes.arrowButton}
-            // there seems to be an eslint bug,
-            // there is no way to get rid of all the warnings whatever I do
-            // eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
-            onClick={() => onDeleteClick(data)}
-            size="small"
-          >
-            <DeleteIcon />
-          </IconButton>
-          <IconButton
-            aria-label={t('actions:move_recommendation_down')}
-            color="primary"
-            className={classes.arrowButton}
-            // eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
-            size="small"
-          >
-            <EditIcon />
-          </IconButton>
+          <DeleteGemButton
+            variant="icon"
+            data={data}
+            onDeleteClick={onDeleteClick}
+          />
+          <EditRecommendation
+            variant="icon"
+            data={data}
+            onEditCompleted={handleGemEditCompleted}
+          />
         </Grid>
       </Grid>
     </Card>
   );
 };
+
+export default GemCard;

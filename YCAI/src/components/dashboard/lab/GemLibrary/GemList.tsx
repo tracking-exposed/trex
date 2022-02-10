@@ -2,14 +2,14 @@ import { Box, Grid, Typography } from '@material-ui/core';
 import { Recommendation } from '@shared/models/Recommendation';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { RecommendationCard } from '../RecommendationCardLibrary';
+import GemCard from './GemCard';
 
-interface RecommendationListProps {
+interface GemListProps {
   recommendations: Recommendation[];
   onDeleteClick: (r: Recommendation) => void;
 }
 
-const RecommendationList: React.FC<RecommendationListProps> = ({
+const RecommendationList: React.FC<GemListProps> = ({
   recommendations,
   onDeleteClick,
 }) => {
@@ -25,12 +25,7 @@ const RecommendationList: React.FC<RecommendationListProps> = ({
       <Grid container spacing={2} style={{ paddingRight: '200px' }}>
         {recommendations.map((r) => (
           <Grid item xs={10} sm={10} md={10} lg={6} key={r.urlId}>
-            <RecommendationCard
-              key={r.urlId}
-              data={r}
-              videoId={''}
-              onDeleteClick={onDeleteClick}
-            />
+            <GemCard key={r.urlId} data={r} onDeleteClick={onDeleteClick} />
           </Grid>
         ))}
       </Grid>

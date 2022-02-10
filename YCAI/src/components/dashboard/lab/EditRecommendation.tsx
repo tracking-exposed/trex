@@ -6,6 +6,7 @@ import {
   DialogContent,
   DialogContentText,
   DialogTitle,
+  IconButton,
   Typography,
 } from '@material-ui/core';
 import { makeStyles } from '@material-ui/styles';
@@ -16,14 +17,15 @@ import {
 } from '@shared/models/Recommendation';
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { patchRecommendation } from '../../../state/dashboard/creator.commands';
 import { YCAITheme } from '../../../theme';
 import CharLimitedInput from '../../common/CharLimitedInput';
 import { ImageWithGemPlaceholder } from '../../common/Image';
+import EditIcon from '@material-ui/icons/Edit';
 
-interface EditRecommendationProps extends ButtonProps {
+interface EditRecommendationProps extends Omit<ButtonProps, 'variant'> {
+  variant: 'icon' | 'text';
   data: Recommendation;
-  videoId: string;
+  onEditCompleted: (r: Recommendation) => void;
 }
 
 const useClasses = makeStyles<YCAITheme>((theme) => ({
@@ -44,8 +46,9 @@ const useClasses = makeStyles<YCAITheme>((theme) => ({
 }));
 
 const EditRecommendation: React.FC<EditRecommendationProps> = ({
+  variant,
   data,
-  videoId,
+  onEditCompleted,
   ...props
 }) => {
   const { t } = useTranslation();
@@ -55,18 +58,7 @@ const EditRecommendation: React.FC<EditRecommendationProps> = ({
   const classes = useClasses();
 
   const handleSubmit = (): void => {
-    void patchRecommendation(
-      {
-        urlId: data.urlId,
-        data: {
-          title,
-          description,
-        },
-      },
-      {
-        videoRecommendations: { videoId },
-      }
-    )();
+    onEditCompleted({ ...data, title, description });
     setFormIsOpen(false);
   };
 
@@ -75,8 +67,22 @@ const EditRecommendation: React.FC<EditRecommendationProps> = ({
     (description !== data.description &&
       !(description === '' && data.description === undefined));
 
-  return (
-    <>
+  const button =
+    variant === 'icon' ? (
+      <IconButton
+        {...props}
+        aria-label={t('actions:edit_recommendation_form_title')}
+        color="primary"
+        className={classes.arrowButton}
+        // eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
+        size="small"
+        onClick={() => {
+          setFormIsOpen(true);
+        }}
+      >
+        <EditIcon />
+      </IconButton>
+    ) : (
       <Button
         {...props}
         variant="text"
@@ -86,6 +92,10 @@ const EditRecommendation: React.FC<EditRecommendationProps> = ({
       >
         {t('actions:edit_recommendation_button')}
       </Button>
+    );
+  return (
+    <>
+      {button}
       {formIsOpen && (
         <Dialog open={formIsOpen} onClose={() => setFormIsOpen(false)}>
           <DialogTitle>

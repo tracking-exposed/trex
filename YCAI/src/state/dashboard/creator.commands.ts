@@ -170,8 +170,7 @@ export const patchRecommendation = command(
           Body: data,
         });
       })
-    ),
-  { videoRecommendations }
+    )
 );
 
 export const deleteRecommendation = command(
