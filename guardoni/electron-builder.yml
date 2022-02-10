@@ -27,5 +27,9 @@ linux:
   target: ['deb']
   category: Network
 
+mac:
+  target: ['dmg']
+  category: 'Network'
+
 win:
   target: ['portable']
