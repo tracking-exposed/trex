@@ -13,7 +13,7 @@ import { LazyFullSizeLoader } from '../../../common/FullSizeLoader';
 import AddRecommendationBox from '../AddRecommendationBox';
 import GemList from './GemList';
 
-const GemLibrary: React.FC = () => {
+const GemCollection: React.FC = () => {
   const handleRecommendationAdd = React.useCallback((url: string) => {
     void addRecommendation({
       url,
@@ -50,4 +50,4 @@ const GemLibrary: React.FC = () => {
   );
 };
 
-export default GemLibrary;
+export default GemCollection;

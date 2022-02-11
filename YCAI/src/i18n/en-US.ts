@@ -70,10 +70,10 @@ const resources: CustomTypeOptions['resources'] = {
     lab_edit_subtitle:
       'Paste a link in the grey box below to add it to the recommendations of this video.\nYou can add recommendations towards any website!',
     lab_videos_title: 'Videos',
-    recommendations_library_title_short: 'Gem Library',
-    recommendations_library_subtitle:
+    gem_collection_title_short: 'Gem Collection',
+    gem_collection_subtitle:
       'Add a series of recommendations from anywhere on the Internet to be shown besides your videos',
-    recommendations_library_title: 'Your Internet Gems Library',
+    gem_collection_title: 'Your Internet Gems Collection',
     analytics: 'Analytics',
     settings: 'Settings',
     link_account:
@@ -91,7 +91,8 @@ const resources: CustomTypeOptions['resources'] = {
   congrats: {
     subtitle: "You can now delete the token from your YT channel's description",
     message:
-      "Add a few gems to your library, they will be rolled by default on your channel's videos",
+      "Add a few gems to your collection, they will be rolled by default on your channel's videos",
+    call_to_action_button_message: 'Go to Gem collection',
   },
   link_account: {
     title: 'Authenticate your YouTube channel.',

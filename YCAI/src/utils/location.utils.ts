@@ -7,14 +7,14 @@ import {
 export type CurrentView =
   | { view: 'labEdit'; videoId: string }
   | { view: 'lab' }
-  | { view: 'recommendationsLibrary' }
+  | { view: 'gemCollection' }
   | { view: 'analytics' }
   | { view: 'settings' }
   | { view: 'linkAccount' }
   | { view: 'index' };
 
-const recommendationsLibraryRegex = /^\/lab\/recommendations$/;
-const labEditRegex = /^\/lab\/([^/]+)$/;
+const gemCollectionRegex = /^\/lab\/gems$/;
+const labEditRegex = /^\/lab\/video\/([^/]+)$/;
 const labRegex = /^\/lab\/$/;
 const analyticsRegex = /^\/analytics\/$/;
 const settingsRegex = /^\/settings\/$/;
@@ -23,11 +23,9 @@ const linkAccountRegex = /^\/link-account\/$/;
 export function locationToView(location: HistoryLocation): CurrentView {
   const { path: currentPath = '', ...search } = location.search;
 
-  const recommendationsLibraryMatch = currentPath.match(
-    recommendationsLibraryRegex
-  );
-  if (recommendationsLibraryMatch !== null) {
-    return { view: 'recommendationsLibrary', ...search };
+  const gemCollectionMatch = currentPath.match(gemCollectionRegex);
+  if (gemCollectionMatch !== null) {
+    return { view: 'gemCollection', ...search };
   }
 
   const labEditViewMatch = currentPath.match(labEditRegex);
@@ -62,18 +60,18 @@ export function locationToView(location: HistoryLocation): CurrentView {
 
 export function viewToLocation(view: CurrentView): HistoryLocation {
   switch (view.view) {
-    case 'recommendationsLibrary':
+    case 'gemCollection':
       return {
         pathname: `index.html`,
         search: {
-          path: `/lab/recommendations`,
+          path: `/lab/gems`,
         },
       };
     case 'labEdit':
       return {
         pathname: `index.html`,
         search: {
-          path: `/lab/${view.videoId}`,
+          path: `/lab/video/${view.videoId}`,
         },
       };
     case 'lab':

@@ -90,13 +90,13 @@ const MenuBox: React.FC<{ currentView: CurrentView }> = ({ currentView }) => {
       {
         title: t('routes:lab_title_short'),
         icon: LabIcon,
-        views: ['lab', 'labEdit', 'recommendationsLibrary'] as Array<
+        views: ['lab', 'labEdit', 'gemCollection'] as Array<
           CurrentView['view']
         >,
         subItems: [
           {
-            title: t('routes:recommendations_library_title_short'),
-            views: ['recommendationsLibrary'],
+            title: t('routes:gem_collection_title_short'),
+            views: ['gemCollection'],
           },
           {
             title: t('routes:lab_videos_title'),

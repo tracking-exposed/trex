@@ -4,7 +4,7 @@ import { makeStyles } from '@material-ui/styles';
 import {
   descriptionMaxLength,
   Recommendation,
-  titleMaxLength
+  titleMaxLength,
 } from '@shared/models/Recommendation';
 import React from 'react';
 import { useTranslation } from 'react-i18next';

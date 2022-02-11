@@ -28,7 +28,7 @@ const Congrats: React.FC<CongratsProps> = ({ profile }) => {
 
   const handleNextClick = (): void => {
     void updateAccountLinkCompleted({ completed: true })().then(() =>
-      doUpdateCurrentView({ view: 'recommendationsLibrary' })()
+      doUpdateCurrentView({ view: 'gemCollection' })()
     );
   };
 
@@ -44,7 +44,7 @@ const Congrats: React.FC<CongratsProps> = ({ profile }) => {
           color="primary"
           onClick={handleNextClick}
         >
-          Go to gem library
+          {t('congrats:call_to_action_button_message')}
         </Button>
       </Grid>
     </Grid>

@@ -65,6 +65,7 @@ declare module 'react-i18next' {
       congrats: {
         subtitle: string;
         message: string;
+        call_to_action_button_message: string;
       };
       link_account: {
         copy_verification_key: string;
@@ -167,9 +168,9 @@ declare module 'react-i18next' {
         link_account: string;
         congrats: string;
         lab_videos_title: string;
-        recommendations_library_title: string;
-        recommendations_library_title_short: string;
-        recommendations_library_subtitle: string;
+        gem_collection_title: string;
+        gem_collection_title_short: string;
+        gem_collection_subtitle: string;
         lab_title: string;
         lab_title_short: string;
         lab_subtitle: string;
