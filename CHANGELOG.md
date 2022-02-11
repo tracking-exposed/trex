@@ -1,3 +1,7 @@
+### [2.2.1-1](https://github.com/tracking-exposed/yttrex/compare/v2.2.1-0...v2.2.1-1) (2022-02-11)
+
+- **workspace:** fix last version bump ([0efb0ca](https://github.com/tracking-exposed/yttrex/commit/0efb0caba31ef0230aada0f07ad2a49c571f7d57))
+
 ### [2.2.1](https://github.com/tracking-exposed/yttrex/compare/v2.2.0...v2.2.1) (2022-02-09)
 
 - guardoni cli and electron build ([#371](https://github.com/tracking-exposed/yttrex/issues/371)) ([8bd6339](https://github.com/tracking-exposed/yttrex/commit/8bd6339b4be2a665018e7029a87f5434c116a6ca))
