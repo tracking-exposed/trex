@@ -16,9 +16,10 @@ import { AppEnv } from '../AppEnv';
 import { GetEvents } from './events/renderer.events';
 import { createGuardoniWindow } from './windows/GuardoniWindow';
 import packageJson from '../../package.json';
+import { DEFAULT_BASE_PATH } from './config';
 
-app.setAppLogsPath(path.resolve(os.homedir(), `.config/guardoni/logs`));
-app.setPath('userData', path.resolve(os.homedir(), `.config/guardoni/data`));
+app.setPath('userData', path.resolve(os.homedir(), `.guardoni/electron/data`));
+app.setAppLogsPath(path.resolve(os.homedir(), `.guardoni/electron/logs`));
 
 // load env from .env file shipped with compiled code
 dotenv.config({
@@ -109,6 +110,7 @@ export const run = async (): Promise<void> => {
               headless: true,
               verbose: false,
               backend: env.BACKEND,
+              basePath: DEFAULT_BASE_PATH,
             },
           }).register();
         })
