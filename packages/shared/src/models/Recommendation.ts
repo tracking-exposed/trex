@@ -20,7 +20,8 @@ export const Recommendation = t.strict(
     url: t.string,
     title: t.string,
     description: t.union([t.string, t.undefined]),
-    image: t.string,
+    fromChannel: t.union([t.boolean, t.undefined]),
+    image: t.union([t.string, t.null]),
   },
   'Recommendation'
 );

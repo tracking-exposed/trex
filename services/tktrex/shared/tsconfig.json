@@ -2,6 +2,7 @@
   "extends": "../../../tsconfig.json",
   "compilerOptions": {
     "allowJs": true,
+    "noEmit": false,
     "baseUrl": "./src",
     "composite": true,
     "esModuleInterop": true,

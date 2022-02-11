@@ -49,6 +49,7 @@ declare module 'react-i18next' {
         edit_recommendation_form_title: string;
         edit_recommendation_button: string;
         edit_recommendation_description: string;
+        delete_gem_confirm_message: string;
         cancel: string;
         save: string;
         manage_tokens: string;
@@ -60,6 +61,11 @@ declare module 'react-i18next' {
       };
       account: {
         channel: string;
+      };
+      congrats: {
+        subtitle: string;
+        message: string;
+        call_to_action_button_message: string;
       };
       link_account: {
         copy_verification_key: string;
@@ -159,13 +165,18 @@ declare module 'react-i18next' {
         noCCRecommendations: string;
       };
       routes: {
+        link_account: string;
+        congrats: string;
+        lab_videos_title: string;
+        gem_collection_title: string;
+        gem_collection_title_short: string;
+        gem_collection_subtitle: string;
         lab_title: string;
         lab_title_short: string;
         lab_subtitle: string;
         lab_edit_subtitle: string;
         analytics: string;
         settings: string;
-        link_account: string;
       };
       swagger: {
         title: string;

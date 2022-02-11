@@ -7,12 +7,14 @@ import {
 export type CurrentView =
   | { view: 'labEdit'; videoId: string }
   | { view: 'lab' }
+  | { view: 'gemCollection' }
   | { view: 'analytics' }
   | { view: 'settings' }
   | { view: 'linkAccount' }
   | { view: 'index' };
 
-const labEditRegex = /^\/lab\/([^/]+)$/;
+const gemCollectionRegex = /^\/lab\/gems$/;
+const labEditRegex = /^\/lab\/video\/([^/]+)$/;
 const labRegex = /^\/lab\/$/;
 const analyticsRegex = /^\/analytics\/$/;
 const settingsRegex = /^\/settings\/$/;
@@ -20,6 +22,12 @@ const linkAccountRegex = /^\/link-account\/$/;
 
 export function locationToView(location: HistoryLocation): CurrentView {
   const { path: currentPath = '', ...search } = location.search;
+
+  const gemCollectionMatch = currentPath.match(gemCollectionRegex);
+  if (gemCollectionMatch !== null) {
+    return { view: 'gemCollection', ...search };
+  }
+
   const labEditViewMatch = currentPath.match(labEditRegex);
 
   if (labEditViewMatch !== null) {
@@ -52,11 +60,18 @@ export function locationToView(location: HistoryLocation): CurrentView {
 
 export function viewToLocation(view: CurrentView): HistoryLocation {
   switch (view.view) {
+    case 'gemCollection':
+      return {
+        pathname: `index.html`,
+        search: {
+          path: `/lab/gems`,
+        },
+      };
     case 'labEdit':
       return {
         pathname: `index.html`,
         search: {
-          path: `/lab/${view.videoId}`,
+          path: `/lab/video/${view.videoId}`,
         },
       };
     case 'lab':
@@ -92,8 +107,7 @@ export function viewToLocation(view: CurrentView): HistoryLocation {
   }
 }
 
-export const getHostFromURL = (url: string): string =>
-  new URL(url).host;
+export const getHostFromURL = (url: string): string => new URL(url).host;
 
 export const currentView = getCurrentView(locationToView); // ObservableQuery
 export const doUpdateCurrentView = getDoUpdateCurrentView(viewToLocation); // Command

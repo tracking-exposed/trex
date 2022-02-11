@@ -1,22 +1,21 @@
-import React, {
-  useState,
-} from 'react';
+import React, { useState } from 'react';
 
 type PropsObject = Record<string, number | string>;
 
-export interface ImageProps {
+interface ImageBaseProps {
   alt?: string;
   className?: string;
   extraImgProps?: PropsObject;
-  src: string;
+  src: string | null;
   style?: PropsObject;
   title?: string;
-};
+}
 
-type ImageState =
-  'loading-default' |
-  'loading-anonymous' |
-  'failed';
+export interface ImageProps extends Omit<ImageBaseProps, 'src'> {
+  src: string;
+}
+
+type ImageState = 'loading-default' | 'loading-anonymous' | 'failed';
 
 /**
  * A component that behaves exactly like the HTML img tag,
@@ -45,7 +44,7 @@ type ImageState =
 const Image: React.FC<ImageProps> = (props) => {
   const [state, setState] = useState<ImageState>('loading-default');
 
-  const {extraImgProps, ...imgProps} = props;
+  const { extraImgProps, ...imgProps } = props;
 
   const onError: () => void = () => {
     if (state === 'loading-default') {
@@ -62,8 +61,7 @@ const Image: React.FC<ImageProps> = (props) => {
   };
 
   // the crossOrigin prop depending on the state
-  const crossOrigin = state === 'loading-anonymous'
-    ? 'anonymous' : undefined;
+  const crossOrigin = state === 'loading-anonymous' ? 'anonymous' : undefined;
 
   return (
     <img
@@ -71,6 +69,25 @@ const Image: React.FC<ImageProps> = (props) => {
       {...(extraImgProps ?? {})}
       onError={onError}
       crossOrigin={crossOrigin}
+    />
+  );
+};
+
+export const GEM_PLACEHOLDER_BLACK = '/placeholder_black.png';
+export const GEM_PLACEHOLDER_WHITE = '/placeholder_white.png';
+
+export const ImageWithGemPlaceholder: React.FC<
+  ImageBaseProps & {
+    variant?: 'white' | 'black';
+  }
+> = ({ variant = 'black', ...props }) => {
+  return (
+    <Image
+      {...props}
+      src={
+        props.src ??
+        (variant === 'black' ? GEM_PLACEHOLDER_BLACK : GEM_PLACEHOLDER_WHITE)
+      }
     />
   );
 };

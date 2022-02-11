@@ -1,22 +1,22 @@
-import React from 'react';
-import { useTranslation } from 'react-i18next';
-
 import { Box, Typography } from '@material-ui/core';
-
+import { ErrorBox } from '@shared/components/Error/ErrorBox';
 import * as QR from 'avenger/lib/QueryResult';
 import { declareQueries } from 'avenger/lib/react';
 import { pipe } from 'fp-ts/lib/function';
-
-import { updateRecommendationsForVideo } from '../../../state/dashboard/creator.commands';
-import * as queries from '../../../state/dashboard/public.queries';
-import { ErrorBox } from '@shared/components/Error/ErrorBox';
-import { LazyFullSizeLoader } from '../../common/FullSizeLoader';
-import { RecommendationCard } from './RecommendationCard';
-import { ReorderList } from '../../common/ReorderList';
+import React from 'react';
+import { useTranslation } from 'react-i18next';
+import {
+  patchRecommendation,
+  updateRecommendationsForVideo,
+} from '../../../../state/dashboard/creator.commands';
+import * as publicQueries from '../../../../state/dashboard/public.queries';
+import { LazyFullSizeLoader } from '../../../common/FullSizeLoader';
+import { ReorderList } from '../../../common/ReorderList';
+import RecommendationCard from './RecommendationCard';
 
 const withQueries = declareQueries({
-  settings: queries.settings,
-  videoRecommendations: queries.videoRecommendations,
+  settings: publicQueries.settings,
+  videoRecommendations: publicQueries.videoRecommendations,
 });
 
 type Queries = typeof withQueries['Props'];
@@ -62,9 +62,22 @@ export const VideoRecommendations = withQueries<VideoRecommendationsProps>(
                 }}
                 renderItem={(item, i) => (
                   <RecommendationCard
-                    videoId={videoId}
+                    edit={{ videoId }}
                     key={item.urlId}
                     data={item}
+                    onEditCompleted={(r) => {
+                      void patchRecommendation({
+                        urlId: item.urlId,
+                        data: {
+                          title: r.title,
+                          description: r.description,
+                        },
+                      })().then(() =>
+                        publicQueries.videoRecommendations.invalidate({
+                          videoId,
+                        })()
+                      );
+                    }}
                     onDeleteClick={() => {
                       void updateRecommendationsForVideo(
                         {

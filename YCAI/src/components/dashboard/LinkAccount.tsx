@@ -102,9 +102,7 @@ export const LinkAccount: React.FC<LinkAccountProps> = ({ auth }) => {
   };
 
   const handleChannelSubmit = async (): Promise<void> => {
-    const resp = await registerCreatorChannel(channel, {
-      ccRelatedUsers: { params: { skip: 0, amount: 5 } },
-    })();
+    const resp = await registerCreatorChannel(channel)();
     setSubmitChannelFailed(isLeft(resp));
   };
 

@@ -50,6 +50,8 @@ const resources: CustomTypeOptions['resources'] = {
     edit_recommendation_button: 'Edit',
     edit_recommendation_description:
       'Explain briefly why you found this content relevant for your audience',
+    delete_gem_confirm_message:
+      "This gem will disappear from all your videos and the action can't be undone. Are you sure?",
     cancel: 'Cancel',
     save: 'Save',
     manage_tokens: 'Manage tokens',
@@ -60,12 +62,18 @@ const resources: CustomTypeOptions['resources'] = {
     an_error_occurred: 'An error occurred',
   },
   routes: {
+    congrats: 'Congrats! \n Channel linked successfully :)',
     lab_title: 'LAB - Choose the Recommendations on Your Videos',
     lab_title_short: 'LAB',
     lab_subtitle:
       'Click on a video to pick its recommendations.\nYour content, your choice!',
     lab_edit_subtitle:
       'Paste a link in the grey box below to add it to the recommendations of this video.\nYou can add recommendations towards any website!',
+    lab_videos_title: 'Videos',
+    gem_collection_title_short: 'Gem Collection',
+    gem_collection_subtitle:
+      'Add a series of recommendations from anywhere on the Internet to be shown besides your videos',
+    gem_collection_title: 'Your Internet Gems Collection',
     analytics: 'Analytics',
     settings: 'Settings',
     link_account:
@@ -79,6 +87,12 @@ const resources: CustomTypeOptions['resources'] = {
   },
   hide_all: {
     title: 'Hide All',
+  },
+  congrats: {
+    subtitle: "You can now delete the token from your YT channel's description",
+    message:
+      "Add a few gems to your collection, they will be rolled by default on your channel's videos",
+    call_to_action_button_message: 'Go to Gem collection',
   },
   link_account: {
     title: 'Authenticate your YouTube channel.',
@@ -116,7 +130,7 @@ const resources: CustomTypeOptions['resources'] = {
     url: 'Recommendation URL',
     yours: 'Your recommendations',
     no_items: 'Recommendations will appear here once added!',
-    add_to_video: 'Add a recommendation to this video',
+    add_to_video: 'Add a gem',
     url_placeholder: 'http://...',
     url_helper_text: 'Insert a link',
     title: 'Recommendation title',
