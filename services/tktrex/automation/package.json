@@ -12,8 +12,7 @@
     "automate:dev": "ts-node ./src/index.ts",
     "automate": "node dist/index.js",
     "test": "jest --verbose",
-    "tdd": "jest --watch --verbose",
-    "tmp": "yarn automate run /home/djfm/work/French\\ Elections/automation-test"
+    "tdd": "jest --watch --verbose"
   },
   "main": "./dist/index.js",
   "devDependencies": {
