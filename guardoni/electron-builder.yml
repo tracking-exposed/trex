@@ -27,5 +27,9 @@ linux:
   target: ['deb']
   category: Network
 
+mac:
+  target: ['dmg']
+  category: 'public.app-category.utilities'
+
 win:
   target: ['portable']
