@@ -65,6 +65,17 @@ describe('the default logger', () => {
     );
   });
 
+  it('jumps one line after a JSON group', () => {
+    testLogger(
+      ({ log }) => {
+        log('a');
+        log('b', { a: 1, b: 2 });
+        log('d');
+      },
+      ['a', '', 'b', '|> {', '|>   "a": 1,', '|>   "b": 2', '|> }', '', 'd'],
+    );
+  });
+
   it('serializes stuff that is not string', () => {
     testLogger(
       ({ log }) => {
