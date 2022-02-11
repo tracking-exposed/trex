@@ -1,4 +1,4 @@
-import { Card, CardContent, Link } from '@material-ui/core';
+import { Card, CardContent, Divider, Link } from '@material-ui/core';
 import * as QR from 'avenger/lib/QueryResult';
 import { WithQueries } from 'avenger/lib/react';
 import React from 'react';
@@ -46,6 +46,7 @@ export const YTVideo: React.FC<YTVideoProps> = ({ videoId }) => (
             >
               {video.title}
             </Link>
+            <Divider light style={{ marginTop: '24px' }} />
           </CardContent>
         </Card>
       )

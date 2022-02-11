@@ -20,6 +20,7 @@ import * as sharedConst from '@shared/constants';
 
 export const CREATOR_CHANNEL_KEY = 'creator-channel';
 export const CURRENT_VIDEO_ON_EDIT = 'current-video-on-edit';
+export const ACCOUNT_LINK_COMPLETED = 'account-link-completed';
 
 type AuthorizedContentCreator = Omit<ContentCreator, 'accessToken'> & {
   accessToken: string;
@@ -39,6 +40,11 @@ const throwOnMissingProfile = (
 
 export const auth = queryStrict(
   () => TE.fromIO<any, AppError>(getItem(sharedConst.AUTH_KEY)),
+  available
+);
+
+export const accountLinkCompleted = queryStrict(
+  () => TE.fromIO<any, APIError>(getItem(ACCOUNT_LINK_COMPLETED)),
   available
 );
 
