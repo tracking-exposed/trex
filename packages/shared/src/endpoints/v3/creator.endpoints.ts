@@ -126,6 +126,16 @@ const PatchRecommendation = Endpoint({
   Output: Recommendation,
 });
 
+const DeleteRecommendation = Endpoint({
+  Method: 'DELETE',
+  getPath: ({ urlId }) => `/v3/creator/recommendations/${urlId}`,
+  Input: {
+    Headers: AuthorizationHeader,
+    Params: t.type({ urlId: t.string }),
+  },
+  Output: t.boolean,
+});
+
 const GetCreatorStats = Endpoint({
   Method: 'GET',
   getPath: ({ channelId }) => `/v3/creator/${channelId}/stats`,
@@ -142,10 +152,11 @@ export const endpoints = {
   CreatorVideos,
   OneCreatorVideo,
   CreatorRecommendations,
+  CreateRecommendation,
   PatchRecommendation,
+  DeleteRecommendation,
   CreatorRelatedChannels,
   UpdateVideo,
-  CreateRecommendation,
   PullCreatorVideos,
   GetCreatorStats,
 };

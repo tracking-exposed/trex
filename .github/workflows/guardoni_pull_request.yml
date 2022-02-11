@@ -5,6 +5,7 @@ on:
     branches:
       - daily
       - beta
+      - feat/**
     paths:
       - "packages/shared/**"
       - "extension/**"

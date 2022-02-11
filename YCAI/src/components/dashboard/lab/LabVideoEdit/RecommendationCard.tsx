@@ -1,41 +1,32 @@
-import React from 'react';
-import { useTranslation } from 'react-i18next';
-
+import { Box, Card, Grid, IconButton, Typography } from '@material-ui/core';
 import {
-  Box,
-  Button,
-  IconButton,
-  Card,
-  Grid,
-  Typography,
-} from '@material-ui/core';
-
-import {
-  ArrowUpward as ArrowUpwardIcon,
   ArrowDownward as ArrowDownwardIcon,
+  ArrowUpward as ArrowUpwardIcon,
   Link as LinkIcon,
 } from '@material-ui/icons';
-
 import { makeStyles } from '@material-ui/styles';
-
 import {
-  titleMaxLength,
   descriptionMaxLength,
-  Recommendation
+  Recommendation,
+  titleMaxLength,
 } from '@shared/models/Recommendation';
-import { YCAITheme } from '../../../theme';
-import CharLimitedTypography from '../../common/CharLimitedTypography';
-import Image from '../../common/Image';
-import EditRecommendation from './EditRecommendation';
-import { isYTURL } from '../../../utils/yt.utils';
-import { getHostFromURL } from '../../../utils/location.utils';
+import React from 'react';
+import { useTranslation } from 'react-i18next';
+import { YCAITheme } from '../../../../theme';
+import { getHostFromURL } from '../../../../utils/location.utils';
+import { isYTURL } from '../../../../utils/yt.utils';
+import DeleteGemButton from '../../../buttons/DeleteGemButton';
+import CharLimitedTypography from '../../../common/CharLimitedTypography';
+import { ImageWithGemPlaceholder } from '../../../common/Image';
+import EditRecommendation from '../EditRecommendation';
 
 interface RecommendationCardProps {
-  videoId: string;
+  edit?: { videoId: string };
   data: Recommendation;
-  onDeleteClick: () => void;
-  onMoveUpClick: (() => void) | false;
-  onMoveDownClick: (() => void) | false;
+  onDeleteClick: (r: Recommendation) => void;
+  onMoveUpClick?: (() => void) | false;
+  onMoveDownClick?: (() => void) | false;
+  onEditCompleted: (d: Recommendation) => void;
 }
 
 const cardHeight = 140;
@@ -54,7 +45,7 @@ const useStyles = makeStyles<YCAITheme>((theme) => ({
       height: cardHeight,
       width: '100%',
       objectFit: 'cover',
-    }
+    },
   },
   body: {
     height: cardHeight,
@@ -99,24 +90,25 @@ const useStyles = makeStyles<YCAITheme>((theme) => ({
     fontSize: '0.8rem',
     '& svg': {
       marginTop: -1,
-      marginRight: theme.spacing(.5),
+      marginRight: theme.spacing(0.5),
     },
   },
   clamped: {
     display: '-webkit-box',
     boxOrient: 'vertical',
     wordBreak: 'keep-all',
-    overflow: 'hidden'
+    overflow: 'hidden',
   },
   description: {
     color: theme.palette.grey[500],
     lineClamp: 3,
-  }
+  },
 }));
 
-export const RecommendationCard: React.FC<RecommendationCardProps> = ({
+const RecommendationCard: React.FC<RecommendationCardProps> = ({
   data,
-  videoId,
+  edit,
+  onEditCompleted,
   onDeleteClick,
   onMoveUpClick,
   onMoveDownClick,
@@ -132,22 +124,12 @@ export const RecommendationCard: React.FC<RecommendationCardProps> = ({
       <Grid container spacing={1}>
         <Grid item xs={5}>
           <div className={classes.imageContainer}>
-            <Image
-              src={data.image}
-              title={data.title}
-            />
+            <ImageWithGemPlaceholder src={data.image} title={data.title} />
           </div>
         </Grid>
 
-        <Grid
-          item xs={6}
-          className={classes.body}
-        >
-          <Box
-            className={classes.right}
-            display="flex"
-            flexDirection="column"
-          >
+        <Grid item xs={6} className={classes.body}>
+          <Box className={classes.right} display="flex" flexDirection="column">
             <CharLimitedTypography
               className={`${classes.title} ${classes.clamped}`}
               color="textSecondary"
@@ -158,10 +140,12 @@ export const RecommendationCard: React.FC<RecommendationCardProps> = ({
             >
               {data.title}
             </CharLimitedTypography>
-            {isExternal && (<Typography className={classes.source}>
-              <LinkIcon />
-              {getHostFromURL(data.url)}
-            </Typography>)}
+            {isExternal && (
+              <Typography className={classes.source}>
+                <LinkIcon />
+                {getHostFromURL(data.url)}
+              </Typography>
+            )}
 
             <Box flexGrow={1} display="flex" alignItems="center">
               <CharLimitedTypography
@@ -174,32 +158,22 @@ export const RecommendationCard: React.FC<RecommendationCardProps> = ({
               </CharLimitedTypography>
             </Box>
             <Box>
-              <Button
-                className={classes.button}
-                onClick={onDeleteClick}
-                size="small"
-                variant="text"
-              >
-                {t('actions:delete_recommendation_button')}
-              </Button>
+              <DeleteGemButton data={data} onDeleteClick={onDeleteClick} />
               <EditRecommendation
                 className={classes.button}
                 color="primary"
                 variant="text"
                 size="small"
                 data={data}
-                videoId={videoId}
+                onEditCompleted={onEditCompleted}
               />
             </Box>
           </Box>
         </Grid>
 
-        <Grid
-          item
-          xs={1}
-          className={classes.iconsContainer}
-        >
-          <IconButton
+        <Grid item xs={1} className={classes.iconsContainer}>
+          {onMoveUpClick !== undefined && (
+            <IconButton
               aria-label={t('actions:move_recommendation_up')}
               color="primary"
               className={classes.arrowButton}
@@ -209,10 +183,12 @@ export const RecommendationCard: React.FC<RecommendationCardProps> = ({
               // eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
               onClick={onMoveUpClick || undefined}
               size="small"
-              >
+            >
               <ArrowUpwardIcon />
-          </IconButton>
-          <IconButton
+            </IconButton>
+          )}
+          {onMoveDownClick !== undefined && (
+            <IconButton
               aria-label={t('actions:move_recommendation_down')}
               color="primary"
               className={classes.arrowButton}
@@ -220,11 +196,14 @@ export const RecommendationCard: React.FC<RecommendationCardProps> = ({
               // eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
               onClick={onMoveDownClick || undefined}
               size="small"
-              >
+            >
               <ArrowDownwardIcon />
-          </IconButton>
+            </IconButton>
+          )}
         </Grid>
       </Grid>
     </Card>
   );
 };
+
+export default RecommendationCard;
