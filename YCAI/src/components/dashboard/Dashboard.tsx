@@ -26,7 +26,7 @@ import { Lab } from './lab/Lab';
 import { LabVideoEdit } from './lab/LabVideoEdit';
 import { ContentCreator } from '@shared/models/ContentCreator';
 import { AuthResponse } from '@shared/models/Auth';
-import RecommendationsLibrary from './lab/RecommendationsLibrary';
+import GemLibrary from './lab/GemLibrary';
 import Congrats from './account/congrats';
 
 const useStyles = makeStyles((theme) => ({
@@ -117,7 +117,7 @@ const DashboardContent: React.FC<DashboardContentProps> = ({
                 t('routes:recommendations_library_title'),
                 t('routes:recommendations_library_subtitle'),
                 // eslint-disable-next-line react/jsx-key
-                <RecommendationsLibrary />,
+                <GemLibrary />,
               ];
             case 'labEdit':
               return [

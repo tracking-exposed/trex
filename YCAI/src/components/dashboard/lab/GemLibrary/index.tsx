@@ -11,9 +11,9 @@ import {
 import * as queries from '../../../../state/dashboard/creator.queries';
 import { LazyFullSizeLoader } from '../../../common/FullSizeLoader';
 import AddRecommendationBox from '../AddRecommendationBox';
-import RecommendationList from './RecommendationsList';
+import GemList from './GemList';
 
-const RecommendationsLibrary: React.FC = () => {
+const GemLibrary: React.FC = () => {
   const handleRecommendationAdd = React.useCallback((url: string) => {
     void addRecommendation({
       url,
@@ -37,7 +37,7 @@ const RecommendationsLibrary: React.FC = () => {
             </Grid>
             <Grid item xs={12}>
               <Box>
-                <RecommendationList
+                <GemList
                   recommendations={recommendations}
                   onDeleteClick={handleRecommendationDelete}
                 />
@@ -50,4 +50,4 @@ const RecommendationsLibrary: React.FC = () => {
   );
 };
 
-export default RecommendationsLibrary;
+export default GemLibrary;

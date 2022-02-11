@@ -1,11 +1,4 @@
-import {
-  Box,
-  Button,
-  Card,
-  Grid,
-  IconButton,
-  Typography,
-} from '@material-ui/core';
+import { Box, Card, Grid, IconButton, Typography } from '@material-ui/core';
 import {
   ArrowDownward as ArrowDownwardIcon,
   ArrowUpward as ArrowUpwardIcon,
@@ -19,19 +12,21 @@ import {
 } from '@shared/models/Recommendation';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { YCAITheme } from '../../../theme';
-import { getHostFromURL } from '../../../utils/location.utils';
-import { isYTURL } from '../../../utils/yt.utils';
-import CharLimitedTypography from '../../common/CharLimitedTypography';
-import { ImageWithGemPlaceholder } from '../../common/Image';
-import EditRecommendation from './EditRecommendation';
+import { YCAITheme } from '../../../../theme';
+import { getHostFromURL } from '../../../../utils/location.utils';
+import { isYTURL } from '../../../../utils/yt.utils';
+import DeleteGemButton from '../../../buttons/DeleteGemButton';
+import CharLimitedTypography from '../../../common/CharLimitedTypography';
+import { ImageWithGemPlaceholder } from '../../../common/Image';
+import EditRecommendation from '../EditRecommendation';
 
 interface RecommendationCardProps {
-  videoId: string;
+  edit?: { videoId: string };
   data: Recommendation;
   onDeleteClick: (r: Recommendation) => void;
-  onMoveUpClick: (() => void) | false | undefined;
-  onMoveDownClick: (() => void) | false | undefined;
+  onMoveUpClick?: (() => void) | false;
+  onMoveDownClick?: (() => void) | false;
+  onEditCompleted: (d: Recommendation) => void;
 }
 
 const cardHeight = 140;
@@ -110,9 +105,10 @@ const useStyles = makeStyles<YCAITheme>((theme) => ({
   },
 }));
 
-export const RecommendationCard: React.FC<RecommendationCardProps> = ({
+const RecommendationCard: React.FC<RecommendationCardProps> = ({
   data,
-  videoId,
+  edit,
+  onEditCompleted,
   onDeleteClick,
   onMoveUpClick,
   onMoveDownClick,
@@ -162,21 +158,14 @@ export const RecommendationCard: React.FC<RecommendationCardProps> = ({
               </CharLimitedTypography>
             </Box>
             <Box>
-              <Button
-                className={classes.button}
-                onClick={() => onDeleteClick(data)}
-                size="small"
-                variant="text"
-              >
-                {t('actions:delete_recommendation_button')}
-              </Button>
+              <DeleteGemButton data={data} onDeleteClick={onDeleteClick} />
               <EditRecommendation
                 className={classes.button}
                 color="primary"
                 variant="text"
                 size="small"
                 data={data}
-                videoId={videoId}
+                onEditCompleted={onEditCompleted}
               />
             </Box>
           </Box>
@@ -216,3 +205,5 @@ export const RecommendationCard: React.FC<RecommendationCardProps> = ({
     </Card>
   );
 };
+
+export default RecommendationCard;

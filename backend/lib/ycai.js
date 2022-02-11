@@ -275,24 +275,13 @@ async function updateRecommendations(videoId, recommendations) {
 async function patchRecommendation(creator, urlId, partialRecommendation) {
   const mongoc = await mongo3.clientConnect({ concurrency: 1 });
 
-  // check that the recommendation is associated with a video belonging
-  // to the creator, because recommendations do not have ownership data
-  const video = await mongo3.readOne(mongoc, nconf.get('schema').ytvids, {
-    recommendations: urlId,
-    creatorId: creator.channelId,
-  });
-  if (!video) {
-    return {
-      error: true,
-      message: 'are you sure you own that recommendation?',
-    };
-  }
-
+  // check that the recommendation is associated with the creator's channelId
   const rec = await mongo3.readOne(
     mongoc,
     nconf.get('schema').recommendations,
     {
       urlId,
+      channelId: creator.channelId,
     }
   );
   if (!rec) {
