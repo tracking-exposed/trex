@@ -1,96 +1,198 @@
-import React from 'react';
 import {
   Box,
+  Divider,
   List,
   ListItem,
   makeStyles,
   Typography,
   useTheme,
-  Divider,
 } from '@material-ui/core';
-import { useTranslation } from 'react-i18next';
-
 import { ContentCreator } from '@shared/models/ContentCreator';
+import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { CurrentView, doUpdateCurrentView } from '../../utils/location.utils';
-import { UserProfileBox } from './UserProfileBox';
-import LabIcon from '../common/icons/LabIcon';
 import AnalyticsIcon from '../common/icons/AnalyticsIcon';
+import LabIcon from '../common/icons/LabIcon';
 import SettingsIcon from '../common/icons/SettingsIcon';
 import YCAILogo from '../common/YCAILogo';
+import { UserProfileBox } from './UserProfileBox';
 
 const useStyles = makeStyles((theme) => ({
   routesList: {
     marginLeft: -theme.spacing(2),
     flexGrow: 1,
   },
+  divider: {
+    marginTop: theme.spacing(8),
+    marginBottom: theme.spacing(8),
+  },
+  listItem: {
+    padding: 0,
+  },
   listItemNotSelected: {
     color: theme.palette.primary.main,
+    paddingTop: theme.spacing(2),
+    paddingBottom: theme.spacing(2),
   },
   listItemSelected: {
+    paddingTop: theme.spacing(2),
+    paddingBottom: theme.spacing(2),
     color: theme.palette.violet.contrastText,
+    borderTopRightRadius: theme.shape.borderRadius,
+    borderBottomRightRadius: theme.shape.borderRadius,
     backgroundColor: `${theme.palette.grey[500]}`,
     '&:hover': {
       backgroundColor: `${theme.palette.grey[500]}`,
       opacity: 0.8,
     },
   },
-  listItem: {
-    paddingTop: theme.spacing(2),
-    paddingBottom: theme.spacing(2),
-    borderTopRightRadius: theme.shape.borderRadius,
-    borderBottomRightRadius: theme.shape.borderRadius,
-  },
   listItemIcon: {
     marginLeft: theme.spacing(1),
     marginRight: theme.spacing(2),
   },
-  divider: {
-    marginTop: theme.spacing(8),
-    marginBottom: theme.spacing(8),
+  listItemText: {
+    paddingTop: theme.spacing(2),
+    paddingBottom: theme.spacing(2),
+  },
+  subItems: {
+    marginTop: theme.spacing(2),
+    marginBottom: theme.spacing(3),
+    marginLeft: theme.spacing(8),
+    marginRight: theme.spacing(2),
+    width: `calc(100% - ${theme.spacing(8) + theme.spacing(2)}px)`,
+  },
+  subListItem: {
+    color: theme.palette.grey[400],
+    marginTop: theme.spacing(3),
+  },
+  subListItemSelected: {
+    color: theme.palette.violet.main,
+  },
+  subItemsDivider: {
+    marginTop: theme.spacing(2),
   },
 }));
 
 interface MenuItem {
   title: string;
   icon: React.FC<{ className?: string; color: string }>;
-  iconClassName: string;
-  iconColor: string;
-  iconSelectedColor: string;
   views: Array<CurrentView['view']>;
-  notSelectedClassName: string;
-  selectedClassName: string;
-  className: string;
+  subItems: Array<Omit<MenuItem, 'icon' | 'subItems'>>;
 }
 
-const toMenuItem = (
-  d: MenuItem,
-  currentView: CurrentView
-): React.ReactElement => {
+const MenuBox: React.FC<{ currentView: CurrentView }> = ({ currentView }) => {
+  const { t } = useTranslation();
+  const classes = useStyles();
+  const theme = useTheme();
+
+  const menuItems = React.useMemo((): MenuItem[] => {
+    return [
+      {
+        title: t('routes:lab_title_short'),
+        icon: LabIcon,
+        views: ['lab', 'labEdit', 'gemCollection'] as Array<
+          CurrentView['view']
+        >,
+        subItems: [
+          {
+            title: t('routes:gem_collection_title_short'),
+            views: ['gemCollection'],
+          },
+          {
+            title: t('routes:lab_videos_title'),
+            views: ['lab', 'labEdit'],
+          },
+        ],
+      },
+      {
+        title: t('routes:analytics'),
+        icon: AnalyticsIcon,
+        views: ['analytics'] as Array<CurrentView['view']>,
+        subItems: [],
+      },
+      {
+        title: t('routes:settings'),
+        icon: SettingsIcon,
+        views: ['settings'] as Array<CurrentView['view']>,
+        subItems: [],
+      },
+    ];
+  }, []);
+
   return (
-    <ListItem
-      key={d.views[0]}
-      className={
-        `${d.views.includes(currentView.view) ? d.selectedClassName : d.notSelectedClassName} ${d.className}`
-      }
-      button={true}
-      onClick={doUpdateCurrentView({ view: d.views[0] as any })}
-    >
-      <d.icon
-        className={d.iconClassName}
-        color={
-          d.views.includes(currentView.view) ? d.iconSelectedColor : d.iconColor
-        }
-      />
-      <Typography
-        variant="subtitle2"
-        style={{
-          lineHeight: 1,
-          margin: 0,
-          textTransform: 'uppercase'
-      }}>
-        {d.title}
-      </Typography>
-    </ListItem>
+    <List className={classes.routesList} disablePadding={true}>
+      {menuItems.map((menuItem) => {
+        return (
+          <ListItem
+            key={menuItem.views[0]}
+            className={classes.listItem}
+            button={true}
+            style={{ display: 'flex', flexDirection: 'column' }}
+          >
+            <Box
+              display={'flex'}
+              flexDirection="row"
+              alignItems={'center'}
+              width={'100%'}
+              className={
+                menuItem.views.includes(currentView.view)
+                  ? classes.listItemSelected
+                  : classes.listItemNotSelected
+              }
+              onClick={doUpdateCurrentView({ view: menuItem.views[0] as any })}
+            >
+              <menuItem.icon
+                className={classes.listItemIcon}
+                color={
+                  menuItem.views.includes(currentView.view)
+                    ? theme.palette.common.white
+                    : theme.palette.primary.main
+                }
+              />
+              <Typography
+                variant="subtitle2"
+                style={{
+                  lineHeight: 1,
+                  margin: 10,
+                  textTransform: 'uppercase',
+                }}
+              >
+                {menuItem.title}
+              </Typography>
+            </Box>
+
+            {menuItem.subItems.length > 0 ? (
+              <Box className={classes.subItems}>
+                {menuItem.subItems.map((si) => (
+                  <Box
+                    key={si.title}
+                    className={`${
+                      si.views.includes(currentView.view)
+                        ? classes.subListItemSelected
+                        : classes.subListItem
+                    } ${classes.subListItem}`}
+                    onClick={() => {
+                      void doUpdateCurrentView({ view: si.views[0] as any })();
+                    }}
+                  >
+                    <Typography
+                      variant="subtitle2"
+                      style={{
+                        lineHeight: 1,
+                        margin: 0,
+                      }}
+                    >
+                      {si.title}
+                    </Typography>
+                  </Box>
+                ))}
+                <Divider className={classes.subItemsDivider} />
+              </Box>
+            ) : null}
+          </ListItem>
+        );
+      })}
+    </List>
   );
 };
 
@@ -100,9 +202,9 @@ interface SidebarProps {
 }
 
 export const Sidebar: React.FC<SidebarProps> = ({ currentView, profile }) => {
-  const { t } = useTranslation();
   const classes = useStyles();
   const theme = useTheme();
+
   return (
     <Box
       style={{
@@ -126,40 +228,9 @@ export const Sidebar: React.FC<SidebarProps> = ({ currentView, profile }) => {
         <>
           <UserProfileBox />
 
-          <Divider light className={classes.divider}/>
+          <Divider light className={classes.divider} />
 
-          <List className={classes.routesList} disablePadding={true}>
-            {[
-              {
-                title: t('routes:lab_title_short'),
-                icon: LabIcon,
-                views: ['lab', 'labEdit'] as Array<CurrentView['view']>,
-              },
-              {
-                title: t('routes:analytics'),
-                icon: AnalyticsIcon,
-                views: ['analytics'] as Array<CurrentView['view']>,
-              },
-              {
-                title: t('routes:settings'),
-                icon: SettingsIcon,
-                views: ['settings'] as Array<CurrentView['view']>,
-              },
-            ].map((opts) =>
-              toMenuItem(
-                {
-                  ...opts,
-                  iconClassName: classes.listItemIcon,
-                  iconColor: theme.palette.primary.main,
-                  iconSelectedColor: theme.palette.common.white,
-                  className: classes.listItem,
-                  notSelectedClassName: classes.listItemNotSelected,
-                  selectedClassName: classes.listItemSelected,
-                },
-                currentView
-              )
-            )}
-          </List>
+          <MenuBox currentView={currentView} />
         </>
       )}
     </Box>

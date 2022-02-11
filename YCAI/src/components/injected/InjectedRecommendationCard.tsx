@@ -7,7 +7,7 @@ import {
   Grid,
   Link,
   Typography,
-}from '@material-ui/core';
+} from '@material-ui/core';
 import { Link as LinkIcon } from '@material-ui/icons';
 
 import {
@@ -20,6 +20,7 @@ import { makeStyles } from '../../theme';
 import { isYTURL } from '../../utils/yt.utils';
 import CharLimitedTypography from '../common/CharLimitedTypography';
 import { getHostFromURL } from '../../utils/location.utils';
+import { GEM_PLACEHOLDER_BLACK } from '../common/Image';
 
 const imgHeight = 120;
 
@@ -65,7 +66,7 @@ const useStyles = makeStyles((theme) => ({
     fontSize: '1.2rem',
     '& svg': {
       marginTop: -1,
-      marginRight: theme.spacing(.5),
+      marginRight: theme.spacing(0.5),
     },
     marginBottom: theme.spacing(0.5),
   },
@@ -73,7 +74,7 @@ const useStyles = makeStyles((theme) => ({
     display: '-webkit-box',
     boxOrient: 'vertical',
     wordBreak: 'keep-all',
-    overflow: 'hidden'
+    overflow: 'hidden',
   },
 }));
 
@@ -96,7 +97,11 @@ export const InjectedRecommendationCard: React.FC<Recommendation> = ({
       <Card className={classes.card}>
         <Grid container>
           <Grid item xs={5}>
-            <CardMedia component="img" src={image} title={title} />
+            <CardMedia
+              component="img"
+              src={image ?? GEM_PLACEHOLDER_BLACK}
+              title={title}
+            />
           </Grid>
           <Grid item xs={7}>
             <Box

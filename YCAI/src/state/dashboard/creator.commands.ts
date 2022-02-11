@@ -1,19 +1,20 @@
+import * as sharedConst from '@shared/constants';
+import { AppError } from '@shared/errors/AppError';
+import { AuthResponse } from '@shared/models/Auth';
+import { ContentCreator } from '@shared/models/ContentCreator';
+import { PartialRecommendation } from '@shared/models/Recommendation';
+import { setItem } from '@shared/providers/localStorage.provider';
 import { command } from 'avenger';
 import { sequenceS } from 'fp-ts/lib/Apply';
 import { pipe } from 'fp-ts/lib/function';
 import * as TE from 'fp-ts/lib/TaskEither';
-import { AppError } from '@shared/errors/AppError';
-import * as sharedConst from '@shared/constants';
 import { API } from '../../api';
-import { setItem } from '@shared/providers/localStorage.provider';
-import { AuthResponse } from '@shared/models/Auth';
-import { ContentCreator } from '@shared/models/ContentCreator';
-import { PartialRecommendation } from '@shared/models/Recommendation';
 import {
   auth,
-  ccRelatedUsers,
   creatorRecommendations,
   creatorVideos,
+  accountLinkCompleted,
+  ACCOUNT_LINK_COMPLETED,
   localProfile,
   profile,
   requiredLocalProfile,
@@ -32,8 +33,6 @@ export const registerCreatorChannel = command(
       )
     ),
   {
-    creatorVideos,
-    ccRelatedUsers,
     auth,
   }
 );
@@ -171,8 +170,25 @@ export const patchRecommendation = command(
           Body: data,
         });
       })
+    )
+);
+
+export const deleteRecommendation = command(
+  ({ urlId }: { urlId: string }) =>
+    pipe(
+      profile.run(),
+      TE.chain((p) => {
+        return API.v3.Creator.DeleteRecommendation({
+          Headers: {
+            'x-authorization': p.accessToken,
+          },
+          Params: { urlId },
+        });
+      })
     ),
-  { videoRecommendations }
+  {
+    creatorRecommendations,
+  }
 );
 
 export const updateAuth = command(
@@ -180,6 +196,14 @@ export const updateAuth = command(
     TE.fromIO<any, AppError>(setItem(sharedConst.AUTH_KEY, payload)),
   {
     auth,
+  }
+);
+
+export const updateAccountLinkCompleted = command(
+  ({ completed }: { completed: true }) =>
+    TE.fromIO<any, AppError>(setItem(ACCOUNT_LINK_COMPLETED, completed)),
+  {
+    accountLinkCompleted,
   }
 );
 
