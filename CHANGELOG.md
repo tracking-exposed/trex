@@ -1,4 +1,4 @@
-### [2.2.1-1](https://github.com/tracking-exposed/yttrex/compare/v2.2.1-0...v2.2.1-1) (2022-02-11)
+### [2.2.2](https://github.com/tracking-exposed/yttrex/compare/v2.2.1...v2.2.2) (2022-02-11)
 
 - **workspace:** fix last version bump ([0efb0ca](https://github.com/tracking-exposed/yttrex/commit/0efb0caba31ef0230aada0f07ad2a49c571f7d57))
 
