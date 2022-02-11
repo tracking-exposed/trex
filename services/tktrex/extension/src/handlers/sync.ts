@@ -29,12 +29,22 @@ const state = {
 };
 
 function handleVideo(e: NewVideoEvent): void {
-  state.content.push({
+  const videoEvent = {
     ...e.payload,
     clientTime: now(),
-    type: 'video',
+    type: 'video' as const,
     incremental: state.incremental,
-  });
+  };
+
+  const videoIndex = state.content.findIndex(
+    (ee) => e.payload.href === ee.href,
+  );
+
+  if (videoIndex < 0) {
+    state.content.push(videoEvent);
+  } else {
+    state.content[videoIndex] = videoEvent;
+  }
   state.incremental++;
 }
 

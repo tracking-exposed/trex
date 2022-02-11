@@ -185,7 +185,7 @@ function setupObserver(): void {
   }
 }
 
-function handleSearch(element: Node): void {
+const handleSearch = _.debounce((element: Node): void => {
   log.info('Handle search for path %O', window.location.search);
   if (!_.startsWith(window.location.pathname, '/search')) return;
 
@@ -224,9 +224,9 @@ function handleSearch(element: Node): void {
       href: window.location.href,
     },
   });
-}
+}, 300);
 
-function handleSuggested(elem: Node): void {
+const handleSuggested = _.debounce((elem: Node): void => {
   log.info('handleSuggested', elem, 'should go to parentNode');
   const { parentNode } = elem;
   const parent = parentNode as Element;
@@ -243,13 +243,13 @@ function handleSuggested(elem: Node): void {
       href: window.location.href,
     },
   });
-}
+}, 300);
 
 /* function below manages every new video sample
  * that got display in 'following' 'foryou' or 'creator' page */
 let videoCounter = 0;
 
-function handleVideo(node: HTMLElement): void {
+const handleVideo = _.debounce((node: HTMLElement): void => {
   /* this is not the right approach, but we shouldn't save
      video when we're in search or tag condition
    -- I would have
@@ -309,7 +309,7 @@ function handleVideo(node: HTMLElement): void {
   if (config.ux) {
     videoRoot.style.border = '1px solid green';
   }
-}
+}, 300);
 
 function flush(): void {
   window.addEventListener('beforeunload', () => {
