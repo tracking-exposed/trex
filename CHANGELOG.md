@@ -1,4 +1,4 @@
-### [2.2.1-0](https://github.com/tracking-exposed/yttrex/compare/v2.2.0...v2.2.1-0) (2022-02-09)
+### [2.2.1](https://github.com/tracking-exposed/yttrex/compare/v2.2.0...v2.2.1) (2022-02-09)
 
 - guardoni cli and electron build ([#371](https://github.com/tracking-exposed/yttrex/issues/371)) ([8bd6339](https://github.com/tracking-exposed/yttrex/commit/8bd6339b4be2a665018e7029a87f5434c116a6ca))
 - **guardoni:** dist-all shell script ([#324](https://github.com/tracking-exposed/yttrex/issues/324)) ([fcf88f2](https://github.com/tracking-exposed/yttrex/commit/fcf88f217b805a4a3f1ee88adb1eb4b34b40554a))
