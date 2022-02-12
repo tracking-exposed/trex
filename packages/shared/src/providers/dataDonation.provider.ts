@@ -183,20 +183,19 @@ export function sizeCheck(nodeHTML: string): boolean {
   // this is used in video because the full html body page would be too big.
   const s = _.size(nodeHTML);
 
-  // check if the increment is more than 4%, otherwise is not interesting
-  const percentile = 100 / s;
-  const percentage = 100 - _.round(percentile * lastObservedSize, 2);
-
-  ddLogger.info(
-    `HTML size (%s) difference since last observed size +${percentage} %`,
-    s
-  );
-
   // this is the minimum size worthy of reporting
   if (s < 100000) {
     ddLogger.debug('HTML too small to consider!', s);
     return false;
   }
+
+  // check if the increment is more than 4%, otherwise is not interesting
+  const percentile = 100 / s;
+  const percentage = _.round(100 - percentile * lastObservedSize, 2);
+
+  ddLogger.info(
+    `HTML size (${s}) difference since last observed size +${percentage}%`
+  );
 
   if (percentage < 5) {
     ddLogger.debug(

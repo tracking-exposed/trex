@@ -207,15 +207,10 @@ const handleSearch = _.debounce((element: Node): void => {
 
   const contentNode = document.querySelector('body');
   const contentHTML = contentNode ? contentNode.innerHTML : null;
-
   if (!contentNode || !contentHTML) return;
 
   const hasNewElements = sizeCheck(contentNode.innerHTML);
-
-  if (hasNewElements) {
-    log.error('Error with attribute tampering, skipping');
-    return;
-  }
+  if (!hasNewElements) return;
 
   hub.dispatch({
     type: 'Search',
