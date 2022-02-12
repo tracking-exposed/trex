@@ -69,10 +69,10 @@ let collectDataTimer: any;
 let flushInterval: any;
 let isRunning = false;
 
-const clearCache = (): void => {
+export function clearCache(): void {
   leavesCache = {};
   lastObservedSize = 1;
-};
+}
 
 function watch(
   root: Document,

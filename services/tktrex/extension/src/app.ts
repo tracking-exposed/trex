@@ -12,7 +12,7 @@ import log from './logger';
 import { localLookup, serverLookup } from './chrome/background/sendMessage';
 
 import { getNatureByHref } from '@tktrex/lib/nature';
-import { sizeCheck } from '@shared/providers/dataDonation.provider';
+import { sizeCheck, clearCache } from '@shared/providers/dataDonation.provider';
 
 let feedId = '—' + Math.random() + '-' + _.random(0, 0xff) + '—';
 let feedCounter = 0;
@@ -49,6 +49,8 @@ function boot(): void {
     // can report the problem and we can handle it.
     initializeEmergencyButton();
 
+    // because the URL has been for sure reloaded, be sure to also
+    clearCache();
     serverLookup(
       {
         feedId,
@@ -113,7 +115,9 @@ function fullSave(): void {
 }
 
 function refreshUUID(): void {
-  log.info('refreshing');
+  log.info('refreshing feedId and cleaning size Cache');
+  // mandatory clear the cache otherwise sizeCheck would fail
+  clearCache();
   feedId = feedCounter + '—' + Math.random() + '-' + _.random(0, 0xff);
 }
 
