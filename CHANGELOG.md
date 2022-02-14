@@ -1,3 +1,7 @@
+### [2.2.3-beta.0](https://github.com/tracking-exposed/yttrex/compare/v2.2.3-0...v2.2.3-beta.0) (2022-02-14)
+
+- added 'preReleaseId' option to beta release ([d46f758](https://github.com/tracking-exposed/yttrex/commit/d46f7589c243c5b6e6693f09f740ac647333177b))
+
 ### [2.2.3-0](https://github.com/tracking-exposed/yttrex/compare/v2.2.2...v2.2.3-0) (2022-02-11)
 
 - **workspace:** fix last version bump 2.2.2 ([350654c](https://github.com/tracking-exposed/yttrex/commit/350654cb79d8165ca6415544bda31daa84633a87))
