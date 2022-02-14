@@ -48,7 +48,7 @@ jobs:
         run: |
           yarn extension build
           yarn extension dist:guardoni
-          mkdir -r ~/.guardoni/extension
+          mkdir -p ~/.guardoni/extension
           cp ./extension/dist/*.zip ~/.guardoni/extension
 
       - name: Build
