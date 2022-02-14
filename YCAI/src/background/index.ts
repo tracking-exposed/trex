@@ -1,6 +1,15 @@
 import * as sharedConst from '@shared/constants';
 import { APIError } from '@shared/errors/APIError';
 import { ContentCreator } from '@shared/models/ContentCreator';
+import { Keypair } from '@shared/models/extension/Keypair';
+import {
+  catchRuntimeLastError,
+  MessageType,
+  tabsQuery,
+  toBrowserError,
+} from '@shared/providers/browser.provider';
+import { bo } from '@shared/utils/browser.utils';
+import { fromStaticPath } from '@shared/utils/endpoint.utils';
 import { sequenceS } from 'fp-ts/lib/Apply';
 import * as E from 'fp-ts/lib/Either';
 import { pipe } from 'fp-ts/lib/function';
@@ -9,16 +18,8 @@ import * as TE from 'fp-ts/lib/TaskEither';
 import { HTTPClient } from '../api';
 import { config } from '../config';
 import * as constants from '../constants';
-import * as Messages from '../models/Messages';
-import { getDefaultSettings, Keypair, Settings } from '../models/Settings';
-import {
-  catchRuntimeLastError,
-  sendTabMessage,
-  tabsQuery,
-  toBrowserError,
-} from '../providers/browser.provider';
-import { bo } from '../utils/browser.utils';
-import { fromStaticPath } from '../utils/endpoint.utils';
+import { getDefaultSettings, Settings } from '../models/Settings';
+import * as Messages from '../providers/browser.provider';
 import { logger } from '../utils/logger.utils';
 import db from './db';
 import * as development from './reloadExtension';
@@ -145,10 +146,9 @@ const getMessageHandler = <
             tabsQuery(),
             TE.chain((tabs) => {
               if (tabs?.[0]?.id !== undefined) {
-                return sendTabMessage(Messages.Messages.UpdateSettings)(
-                  tabs[0].id,
-                  response
-                );
+                return Messages.browser.sendTabMessage(
+                  Messages.Messages.UpdateSettings
+                )(tabs[0].id, response);
               }
               return TE.right(response);
             }),
@@ -205,7 +205,7 @@ const getMessageHandler = <
 };
 
 bo.runtime.onMessage.addListener(
-  (request: Messages.MessageType<any, any, any>, sender, sendResponse) => {
+  (request: MessageType<any, any, any>, sender, sendResponse) => {
     // eslint-disable-next-line no-console
     bkgLogger.debug('message received %O %O', request, sender);
 

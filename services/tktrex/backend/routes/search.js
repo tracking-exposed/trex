@@ -2,10 +2,8 @@ import _ from 'lodash';
 import moment from 'moment';
 import nconf from 'nconf';
 
-import * as params from '../lib/params';
 import automo from '../lib/automo';
 import CSV from '../lib/CSV';
-import cache from '../lib/cache';
 import mongo from '../lib/mongo3';
 
 import D from 'debug';
@@ -16,7 +14,10 @@ export function flattenSearch(memo, metasearch) {
   // to produce CSV.
 
   _.each(metasearch.results || [], function (result, order) {
-    const thumbfile = metasearch.thumbnails[order]?.filename;
+    const thumbfile =
+      metasearch.thumbnails && metasearch.thumbnails.length
+        ? metasearch.thumbnails[order]?.filename
+        : null;
     const readyo = {
       ...result.video,
       // @ts-ignore
@@ -41,7 +42,7 @@ export function flattenSearch(memo, metasearch) {
       // @ts-ignore
       textdesc: result.textdesc,
       // @ts-ignore
-      thumbfile: thumbfile.replace(/(.*\/)|(.*\\)/, ''),
+      thumbfile: thumbfile ? thumbfile.replace(/(.*\/)|(.*\\)/, '') : null,
     };
     readyo.videoId = '' + readyo.videoId;
     // @ts-ignore

@@ -2,14 +2,14 @@ import * as E from 'fp-ts/lib/Either';
 import { pipe } from 'fp-ts/lib/pipeable';
 import * as TE from 'fp-ts/lib/TaskEither';
 import { zencode_exec } from 'zenroom';
-import { Keypair } from '../models/Settings';
-import { logger } from '../utils/logger.utils';
+import { Keypair } from '../models/extension/Keypair';
+import { trexLogger } from '../logger';
 import { toBrowserError } from './browser.provider';
 import { SecurityProvider } from './security.provider.type';
 
 const conf = 'memmanager=lw';
 
-const zrLogger = logger.extend('zenroom');
+const zrLogger = trexLogger.extend('zenroom');
 
 export const makeKeypair = (
   knownAs: string

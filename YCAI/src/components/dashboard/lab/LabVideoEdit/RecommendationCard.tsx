@@ -2,19 +2,19 @@ import { Box, Card, Grid, IconButton, Typography } from '@material-ui/core';
 import {
   ArrowDownward as ArrowDownwardIcon,
   ArrowUpward as ArrowUpwardIcon,
-  Link as LinkIcon,
+  Link as LinkIcon
 } from '@material-ui/icons';
 import { makeStyles } from '@material-ui/styles';
 import {
   descriptionMaxLength,
   Recommendation,
-  titleMaxLength,
+  titleMaxLength
 } from '@shared/models/Recommendation';
+import { isYTURL } from '@shared/utils/yt.utils';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { YCAITheme } from '../../../../theme';
 import { getHostFromURL } from '../../../../utils/location.utils';
-import { isYTURL } from '../../../../utils/yt.utils';
 import DeleteGemButton from '../../../buttons/DeleteGemButton';
 import CharLimitedTypography from '../../../common/CharLimitedTypography';
 import { ImageWithGemPlaceholder } from '../../../common/Image';

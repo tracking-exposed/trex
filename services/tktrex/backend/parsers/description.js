@@ -2,14 +2,15 @@ const _ = require('lodash');
 const debug = require('debug')('parsers:description');
 
 function videoDescriptionGuess(envelop) {
+  /* uno, due and tre are three different attempt to find a description */
   const uno = envelop.jsdom.querySelector('[data-e2e="browse-video-desc"]');
   const due = envelop.jsdom.querySelector('[data-e2e="video-desc"]');
   const tre = envelop.jsdom.querySelectorAll('img');
-  const tops = _.sortBy(tre, function (i) {
+  /* and this is to sort by the longest available */
+  const treTopSize = _.sortBy(tre, function (i) {
     const alt = i.getAttribute('alt');
     return alt?.length;
   });
-  console.log(tops);
   let retval = null;
   if (uno) {
     debug("first condition happened in this 'video'");
@@ -17,15 +18,20 @@ function videoDescriptionGuess(envelop) {
   } else if (due) {
     debug("second condition happened in this 'video'");
     retval = { description: due.textContent };
-  } else if (tre && tre.getAttribute) {
-    debug("third condition happened in this 'video'");
-    retval = { description: tre.getAttribute('alt') };
+  } else if (tre && treTopSize.length) {
+    debug(
+      "third condition happened in this 'video', picking the first of %j",
+      _.compact(
+        _.map(treTopSize, function (o) {
+          return o.getAttribute('alt');
+        })
+      )
+    );
+    retval = { description: treTopSize[0].getAttribute('alt') };
   } else {
-    debug("only failure condition in this 'video' %s %s %s", uno, due, tre);
-    console.log(envelop.jsdom.querySelector('body').outerHTML);
+    debug("Failure condition in this 'video'!");
     return null;
   }
-  debug('Retval is %o', retval);
   return retval;
 }
 

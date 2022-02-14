@@ -1,10 +1,9 @@
 import { HandshakeBody } from '@shared/models/HandshakeBody';
 import { command } from 'avenger';
 import * as TE from 'fp-ts/lib/TaskEither';
-import { Messages } from '../models/Messages';
+import { Messages, browser } from '../providers/browser.provider';
 import { Settings } from '../models/Settings';
 import { API } from '../api';
-import { sendMessage } from '../providers/browser.provider';
 import { settings, settingsRefetch, keypair } from './popup.queries';
 
 export const handshake = command((handshake: HandshakeBody) =>
@@ -12,7 +11,7 @@ export const handshake = command((handshake: HandshakeBody) =>
 );
 
 export const updateSettings = command(
-  (payload: Settings) => sendMessage(Messages.UpdateSettings)(payload),
+  (payload: Settings) => browser.sendMessage(Messages.UpdateSettings)(payload),
   { settings, settingsRefetch }
 );
 
@@ -21,7 +20,7 @@ export const refreshSettings = command(() => TE.right(undefined), {
 });
 
 export const generateKeypair = command(
-  () => sendMessage(Messages.GenerateKeypair)(),
+  () => browser.sendMessage(Messages.GenerateKeypair)(),
   {
     keypair,
   }

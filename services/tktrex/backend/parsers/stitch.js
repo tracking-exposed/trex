@@ -7,7 +7,7 @@ function stitch(envelop, previous) {
   const availin = ['foryou', 'following'];
 
   if (previous.nature && availin.indexOf(previous.nature.type) === -1) {
-    debug('No stitch for previous.nature %o', previous.nature);
+    // debug('No stitch for previous.nature %o', previous.nature);
     return null;
   }
 

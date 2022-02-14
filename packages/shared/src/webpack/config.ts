@@ -34,12 +34,12 @@ const BUILD_ENV = t.strict(
 );
 
 type BUILD_ENV = t.TypeOf<typeof BUILD_ENV>;
-interface WebpackConfig extends webpack.Configuration {
+export interface WebpackConfig extends webpack.Configuration {
   buildENV: BUILD_ENV;
   plugins: any[]; // webpack.WebpackPluginInstance[]
 }
 
-interface GetConfigParams<E extends t.Props> {
+export interface GetConfigParams<E extends t.Props> {
   cwd: string;
   outputDir: string;
   env: t.ExactC<t.TypeC<E>>;

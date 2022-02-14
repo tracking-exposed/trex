@@ -1,156 +1,113 @@
-import * as E from 'fp-ts/lib/Either';
-import { pipe } from 'fp-ts/lib/function';
-import * as TE from 'fp-ts/lib/TaskEither';
-import { MinimalEndpointInstance, TypeOfEndpointInstance } from 'ts-endpoint';
-import { APIRequest, ErrorOccurred, Messages } from '../models/Messages';
-import { bo } from '../utils/browser.utils';
-import { getStaticPath } from '../utils/endpoint.utils';
-import { logger } from '../utils/logger.utils';
+import {
+  GetBrowserProvider,
+  APIRequest,
+  ErrorOccurred,
+  MessagesAPI,
+} from '@shared/providers/browser.provider';
+import { AuthResponse } from '@shared/models/Auth';
+import { ContentCreator } from '@shared/models/ContentCreator';
+import { Keypair } from '@shared/models/extension/Keypair';
+import * as t from 'io-ts';
+import { OptInNudgeStatus, Settings } from '../models/Settings';
 
-const log = logger.extend('browser');
+export { APIRequest, ErrorOccurred };
 
-export const toBrowserError = (e: unknown): chrome.runtime.LastError => {
-  // eslint-disable-next-line
-  log.error('An error occurred %O', e);
-  if (e instanceof Error) {
-    return { message: e.message };
-  }
+// keypair
+export const GetKeypair = t.literal('GetKeypair');
+export const GenerateKeypair = t.literal('GenerateKeypair');
+export const DeleteKeypair = t.literal('DeleteKeypair');
+// settings
+export const GetSettings = t.literal('GetSettings');
+export const UpdateSettings = t.literal('UpdateSettings');
 
-  if (e !== undefined) {
-    if ((e as any).message !== undefined) {
-      return { message: (e as any).message };
-    }
-  }
-  return { message: 'Unknown error' };
-};
+// content creator
+export const GetAuth = t.literal('GetAuth');
+export const UpdateAuth = t.literal('UpdateAuth');
+export const GetContentCreator = t.literal('GetContentCreator');
+export const UpdateContentCreator = t.literal('UpdateContentCreator');
 
-export const catchRuntimeLastError = <A>(
-  v: A
-): E.Either<chrome.runtime.LastError, A> => {
-  if (bo.runtime.lastError !== null && bo.runtime.lastError !== undefined) {
-    // eslint-disable-next-line
-    log.error('Runtime error caught %O', bo.runtime.lastError);
-    return E.left(bo.runtime.lastError);
-  }
-  return E.right(v);
-};
+// unused
+export const ReloadExtension = t.literal('ReloadExtension');
+export const Update = t.literal('update');
+export const RecommendationsFetch = t.literal('recommendationsFetch');
+export const ServerLookup = t.literal('serverLookup');
 
-export const sendMessage =
-  <M extends Messages[keyof Messages]>(r: M) =>
-  (
-    p?: M['Request']['payload']
-  ): TE.TaskEither<chrome.runtime.LastError, M['Response']['response']> =>
-    pipe(
-      TE.tryCatch(
-        () =>
-          new Promise<M['Response']>((resolve) => {
-            log.debug('Sending message %s with payload %O', r.Request.type, p);
-            bo.runtime.sendMessage<M['Request'], M['Response']>(
-              { type: r.Request.type, payload: p },
-              resolve
-            );
-          }),
-        E.toError
-      ),
-      TE.chain((v) => TE.fromEither(catchRuntimeLastError(v))),
-      TE.chain((result) => {
-        if (result.type === ErrorOccurred.value) {
-          return TE.left(toBrowserError(result.response));
-        }
-        return TE.right(result.response);
-      })
-    );
+export const GetDonationOptInNudgeStatus = t.literal(
+  'GetDonationOptInNudgeStatus'
+);
+export const SetDonationOptInNudgeStatus = t.literal(
+  'SetDonationOptInNudgeStatus'
+);
 
-export const sendAPIMessage =
-  <E extends MinimalEndpointInstance>(endpoint: E) =>
-  (
-    Input: TypeOfEndpointInstance<E>['Input']
-  ): TE.TaskEither<
-    chrome.runtime.LastError,
-    TypeOfEndpointInstance<E>['Output']
-  > => {
-    const staticPath = getStaticPath(endpoint, Input);
-    log.debug(
-      'Sending API message for endpoint %s with payload %O',
-      staticPath,
-      Input
-    );
-    return pipe(
-      TE.tryCatch(
-        () =>
-          new Promise<TypeOfEndpointInstance<E>['Output']>((resolve) => {
-            bo.runtime.sendMessage<
-              {
-                type: typeof APIRequest.value;
-                payload: {
-                  staticPath: string;
-                  Input: TypeOfEndpointInstance<E>['Input'];
-                };
-              },
-              TypeOfEndpointInstance<E>['Output']
-            >(
-              {
-                type: APIRequest.value,
-                payload: {
-                  staticPath,
-                  Input,
-                },
-              },
-              resolve
-            );
-          }),
-        E.toError
-      ),
-      TE.chain((v) => TE.fromEither(catchRuntimeLastError(v))),
-      TE.chain((result) => {
-        log.debug('Response for %s received %O', staticPath, result);
-        if (result.type === ErrorOccurred.value) {
-          return TE.left(toBrowserError(result.response));
-        }
-        return TE.right(result.response);
-      })
-    );
-  };
+export const MessageType = t.union(
+  [
+    APIRequest,
+    ErrorOccurred,
+    GetSettings,
+    UpdateSettings,
+    GetKeypair,
+    GenerateKeypair,
+    DeleteKeypair,
+    ServerLookup,
+    ReloadExtension,
+    GetContentCreator,
+    UpdateContentCreator,
+    GetDonationOptInNudgeStatus,
+    SetDonationOptInNudgeStatus,
+  ],
+  'MessageType'
+);
 
-export const tabsQuery = (): TE.TaskEither<
-  chrome.runtime.LastError,
-  chrome.tabs.Tab[] | undefined
-> => {
-  return pipe(
-    TE.tryCatch(() => {
-      return new Promise<chrome.tabs.Tab[] | undefined>((resolve) => {
-        bo.tabs.query(
-          { active: true, currentWindow: true, url: 'https://*.youtube.com/*' },
-          resolve
-        );
-      });
-    }, E.toError),
-    TE.chain((v) => TE.fromEither(catchRuntimeLastError(v)))
-  );
-};
+export const Messages = MessagesAPI({
+  // keypair
+  [GenerateKeypair.value]: { payload: t.void, response: Keypair },
+  [GetKeypair.value]: { payload: t.void, response: Keypair },
+  [DeleteKeypair.value]: { payload: t.void, response: t.undefined },
+  // settings
+  [GetSettings.value]: {
+    payload: t.void,
+    response: t.union([Settings, t.null]),
+  },
+  [UpdateSettings.value]: {
+    payload: t.union([Settings, t.null]),
+    response: t.union([Settings, t.null]),
+  },
+  // content creator auth
+  [GetAuth.value]: {
+    payload: t.void,
+    response: t.union([AuthResponse, t.null]),
+  },
+  [UpdateAuth.value]: {
+    payload: t.union([AuthResponse, t.null]),
+    response: t.union([AuthResponse, t.null]),
+  },
+  [GetContentCreator.value]: {
+    payload: t.void,
+    response: t.union([ContentCreator, t.null]),
+  },
+  [UpdateContentCreator.value]: {
+    payload: t.union([ContentCreator, t.null]),
+    response: t.union([ContentCreator, t.null]),
+  },
+  [RecommendationsFetch.value]: { payload: t.any, response: t.any },
+  // API Request
+  [APIRequest.value]: {
+    payload: t.type({ staticPath: t.string, Input: t.any }),
+    response: t.any,
+  },
+  [ReloadExtension.value]: { payload: t.any, response: t.undefined },
+  [ServerLookup.value]: { payload: t.any, response: t.undefined },
+  [ErrorOccurred.value]: { payload: t.any, response: t.any },
+  [GetDonationOptInNudgeStatus.value]: {
+    payload: t.void,
+    response: OptInNudgeStatus,
+  },
+  [SetDonationOptInNudgeStatus.value]: {
+    payload: OptInNudgeStatus,
+    response: OptInNudgeStatus,
+  },
+});
 
-export const sendTabMessage =
-  <M extends Messages[keyof Messages]>(r: M) =>
-  (
-    tabId: number,
-    p?: M['Request']['payload']
-  ): TE.TaskEither<chrome.runtime.LastError, M['Response']['response']> => {
-    return pipe(
-      TE.tryCatch(() => {
-        return new Promise<any>((resolve, reject) => {
-          log.debug(
-            'Sending message to tab %s %s with payload %O',
-            tabId,
-            r.Request.type,
-            p
-          );
-          return bo.tabs.sendMessage<M['Request'], M['Response']>(
-            tabId,
-            { type: r.Request.type, payload: p },
-            resolve
-          );
-        });
-      }, E.toError),
-      TE.chain((e) => TE.fromEither(catchRuntimeLastError(e)))
-    );
-  };
+export type Messages = typeof Messages;
+
+export const browser = GetBrowserProvider(Messages);
