@@ -14,9 +14,10 @@ import {
 import CloudDownload from '@material-ui/icons/CloudDownload';
 import VisibilityIcon from '@material-ui/icons/Visibility';
 import VisibilityOffIcon from '@material-ui/icons/VisibilityOff';
+import { Keypair } from '@shared/models/extension/Keypair';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
-import { Keypair, Settings } from '../../../models/Settings';
+import { Settings } from '../../../models/Settings';
 import {
   deleteKeypair,
   downloadTXTFile,
@@ -113,7 +114,7 @@ export const KeypairBox: React.FC<KeypairBoxProps> = ({
                 />
               </FormControl>
             </Grid>
-            <Grid item xs={3} style={{textAlign: 'right'}}>
+            <Grid item xs={3} style={{ textAlign: 'right' }}>
               <Button
                 color="secondary"
                 variant="outlined"
@@ -126,7 +127,7 @@ export const KeypairBox: React.FC<KeypairBoxProps> = ({
                   })();
                 }}
               >
-                  {t('actions:download')}
+                {t('actions:download')}
               </Button>
             </Grid>
             <Grid item xs={9}>

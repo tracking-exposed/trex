@@ -4,12 +4,12 @@ import * as E from 'fp-ts/lib/Either';
 import { pipe } from 'fp-ts/lib/pipeable';
 import * as TE from 'fp-ts/lib/TaskEither';
 import nacl from 'tweetnacl';
-import { Keypair } from '../models/Settings';
-import { logger } from '../utils/logger.utils';
+import { Keypair } from '../models/extension/Keypair';
 import { catchRuntimeLastError } from './browser.provider';
 import { SecurityProvider } from './security.provider.type';
+import { trexLogger } from '../logger';
 
-const bs58Logger = logger.extend('bs58');
+const bs58Logger = trexLogger.extend('bs58');
 
 function decodeString(s: string): Uint8Array {
   // Credits: https://github.com/dchest/tweetnacl-util-js
@@ -50,7 +50,7 @@ const makeToken = (
   const payload = pipe(
     [{ date: formatISO(date, { representation: 'date' }) }],
     Array.from,
-    (items) => Uint8Array.from(items as number[])
+    (mm) => Uint8Array.from(mm as number[])
   );
 
   return TE.right(nacl.sign(payload, bs58.decode(secretKey)).toString());

@@ -29,12 +29,22 @@ const state = {
 };
 
 function handleVideo(e: NewVideoEvent): void {
-  state.content.push({
+  const videoEvent = {
     ...e.payload,
     clientTime: now(),
-    type: 'video',
+    type: 'video' as const,
     incremental: state.incremental,
-  });
+  };
+
+  const videoIndex = state.content.findIndex(
+    (ee) => e.payload.href === ee.href,
+  );
+
+  if (videoIndex < 0) {
+    state.content.push(videoEvent);
+  } else {
+    state.content[videoIndex] = videoEvent;
+  }
   state.incremental++;
 }
 
@@ -60,7 +70,7 @@ function handleSearch(e: SearchEvent): void {
 
 function sync(hub: Hub): void {
   if (state.content.length) {
-    log.info.strong(
+    log.info(
       `synchronizing ${state.content.length} new items (total since beginning of session: ${state.incremental})`,
       countBy(state.content, 'type'),
     );

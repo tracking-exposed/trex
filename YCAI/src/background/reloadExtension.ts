@@ -1,4 +1,4 @@
-import { bo } from '../utils/browser.utils';
+import { bo } from '@shared/utils/browser.utils';
 
 export const reloadExtension = (): void => {
   bo.runtime.reload();

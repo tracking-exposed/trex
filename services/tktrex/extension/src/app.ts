@@ -12,6 +12,7 @@ import log from './logger';
 import { localLookup, serverLookup } from './chrome/background/sendMessage';
 
 import { getNatureByHref } from '@tktrex/lib/nature';
+import { sizeCheck, clearCache } from '@shared/providers/dataDonation.provider';
 
 let feedId = '—' + Math.random() + '-' + _.random(0, 0xff) + '—';
 let feedCounter = 0;
@@ -48,6 +49,8 @@ function boot(): void {
     // can report the problem and we can handle it.
     initializeEmergencyButton();
 
+    // because the URL has been for sure reloaded, be sure to also
+    clearCache();
     serverLookup(
       {
         feedId,
@@ -95,7 +98,7 @@ function fullSave(): void {
         return;
       }
 
-      log.info.strong('sending fullSave!', nature);
+      log.info('sending fullSave!', nature);
       hub.dispatch({
         type: 'FullSave',
         payload: {
@@ -112,7 +115,9 @@ function fullSave(): void {
 }
 
 function refreshUUID(): void {
-  log.info('refreshing');
+  log.info('refreshing feedId and cleaning size Cache');
+  // mandatory clear the cache otherwise sizeCheck would fail
+  clearCache();
   feedId = feedCounter + '—' + Math.random() + '-' + _.random(0, 0xff);
 }
 
@@ -184,7 +189,8 @@ function setupObserver(): void {
   }
 }
 
-function handleSearch(element: Node): void {
+const handleSearch = _.debounce((element: Node): void => {
+  log.info('Handle search for path %O', window.location.search);
   if (!_.startsWith(window.location.pathname, '/search')) return;
 
   // it is lame to do a double check only because they are both searches,
@@ -194,7 +200,7 @@ function handleSearch(element: Node): void {
     document.querySelectorAll(selectors.error.selector),
     'textContent',
   );
-  if (dat.length === 0 && te.indexOf('No results found') === -1) {
+  if (dat.length === 0 && !te.includes('No results found')) {
     log.debug(
       'Matched invalid h2:',
       te,
@@ -203,31 +209,23 @@ function handleSearch(element: Node): void {
     return;
   }
 
-  const truel = document.querySelector('body');
-  const truehtml = truel ? truel.innerHTML : null;
+  const contentNode = document.querySelector('body');
+  const contentHTML = contentNode ? contentNode.innerHTML : null;
+  if (!contentNode || !contentHTML) return;
 
-  if (!truel || !truehtml) return;
-
-  try {
-    const monocheck = truel.getAttribute('trex-taken');
-    // log.debug('Search management: handling html of bytes #', truel, monocheck);
-    if (monocheck === feedId) return;
-    truel.setAttribute('trex-taken', feedId);
-  } catch (error) {
-    log.error('Error with attribute tampering, skipping');
-    return;
-  }
+  const hasNewElements = sizeCheck(contentNode.innerHTML);
+  if (!hasNewElements) return;
 
   hub.dispatch({
     type: 'Search',
     payload: {
-      html: truehtml,
+      html: contentHTML,
       href: window.location.href,
     },
   });
-}
+}, 300);
 
-function handleSuggested(elem: Node): void {
+const handleSuggested = _.debounce((elem: Node): void => {
   log.info('handleSuggested', elem, 'should go to parentNode');
   const { parentNode } = elem;
   const parent = parentNode as Element;
@@ -244,13 +242,13 @@ function handleSuggested(elem: Node): void {
       href: window.location.href,
     },
   });
-}
+}, 300);
 
 /* function below manages every new video sample
  * that got display in 'following' 'foryou' or 'creator' page */
 let videoCounter = 0;
 
-function handleVideo(node: HTMLElement): void {
+const handleVideo = _.debounce((node: HTMLElement): void => {
   /* this is not the right approach, but we shouldn't save
      video when we're in search or tag condition
    -- I would have
@@ -310,7 +308,7 @@ function handleVideo(node: HTMLElement): void {
   if (config.ux) {
     videoRoot.style.border = '1px solid green';
   }
-}
+}, 300);
 
 function flush(): void {
   window.addEventListener('beforeunload', () => {

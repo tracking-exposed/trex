@@ -7,7 +7,7 @@ function metrics(envelop, previous) {
   const availin = ['foryou', 'following'];
 
   if (previous.nature && availin.indexOf(previous.nature.type) === -1) {
-    debug('No numbers in previous.nature %o', previous.nature);
+    // debug('No numbers in previous.nature %o', previous.nature);
     return null;
   }
 

@@ -81,7 +81,7 @@ async function saveInDB(experinfo, objects, dbcollection) {
       'Saved %d [%s] timelineId %j',
       objects.length,
       dbcollection,
-      _.uniq(_.map(objects, 'timelineId'))
+      _.countBy(objects, 'timelineId')
     );
 
     return {
@@ -200,7 +200,12 @@ async function processEvents(req) {
     })
   );
 
-  debug('[+] %s %s', supporter.p, JSON.stringify(_.map(htmls, 'n')));
+  debug(
+    '[+] (p %s) from %s saving %s',
+    supporter.p,
+    JSON.stringify(_.map(req.body, 'type')),
+    JSON.stringify(_.map(htmls, 'n'))
+  );
 
   /* after having prepared the objects, the functions below would:
       1) extend with experiment if is not null

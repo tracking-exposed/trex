@@ -3,13 +3,12 @@ import ReactDOM from 'react-dom';
 import { ThemeProvider } from '@material-ui/styles';
 import { pipe } from 'fp-ts/lib/function';
 import * as TE from 'fp-ts/lib/TaskEither';
-
 import { GetLogger } from '@shared/logger';
 import debug from 'debug';
-
 import { config } from './config';
-import * as Messages from './models/Messages';
-import { bo } from './utils/browser.utils';
+import * as BrowserP from './providers/browser.provider';
+import { MessageType } from '@shared/providers/browser.provider';
+import { bo } from '@shared/utils/browser.utils';
 import { settingsRefetch } from './state/popup.queries';
 import { Settings } from './models/Settings';
 import { YTContributionInfoBox } from './components/injected/YTContributionInfoBox';
@@ -30,9 +29,9 @@ const InjectedApp: React.FC = () => {
   const [settings, setSettings] = useState<Settings | null>(null);
 
   const handleMessage = React.useCallback(
-    <M extends Messages.MessageType<any, any, any>>(msg: M): void => {
+    <M extends MessageType<any, any, any>>(msg: M): void => {
       switch (msg.type) {
-        case Messages.UpdateSettings.value: {
+        case BrowserP.UpdateSettings.value: {
           return setSettings(msg.payload);
         }
         default:
@@ -51,7 +50,7 @@ const InjectedApp: React.FC = () => {
     }
 
     bo.runtime.onMessage.addListener(
-      <M extends Messages.MessageType<any, any, any>>(
+      <M extends MessageType<any, any, any>>(
         msg: M,
         sender: any,
         sendResponse: any

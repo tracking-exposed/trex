@@ -10,11 +10,8 @@ import {
   useTheme,
   makeStyles,
 } from '@material-ui/core';
-
 import { useTranslation } from 'react-i18next';
-
-import { getYTMaxResThumbnailById } from '../../../utils/yt.utils';
-
+import { getYTMaxResThumbnailById } from '@shared/utils/yt.utils';
 import { YCAITheme } from '../../../theme';
 
 interface VideoCardProps {

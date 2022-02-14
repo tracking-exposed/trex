@@ -6,13 +6,13 @@ import {
   Recommendation,
   titleMaxLength,
 } from '@shared/models/Recommendation';
+import { isYTURL } from '@shared/utils/yt.utils';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { patchRecommendation } from '../../../../state/dashboard/creator.commands';
 import { creatorRecommendations } from '../../../../state/dashboard/creator.queries';
 import { YCAITheme } from '../../../../theme';
 import { getHostFromURL } from '../../../../utils/location.utils';
-import { isYTURL } from '../../../../utils/yt.utils';
 import DeleteGemButton from '../../../buttons/DeleteGemButton';
 import CharLimitedTypography from '../../../common/CharLimitedTypography';
 import { ImageWithGemPlaceholder } from '../../../common/Image';

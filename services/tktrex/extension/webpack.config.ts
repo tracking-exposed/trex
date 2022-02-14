@@ -1,15 +1,10 @@
-import path from 'path';
 import moment from 'moment';
-
-import {
-  CopyWebpackPlugin,
-  FileManagerPlugin,
-} from '../../../packages/shared/src/webpack/plugins';
-
-import { getConfig } from '../../../packages/shared/src/webpack/config';
-
-import { AppEnv } from './src/AppEnv';
+import path from 'path';
+import { getExtensionConfig } from '../../../packages/shared/src/webpack/extension.config';
 import packageJSON from './package.json';
+import { AppEnv } from './src/AppEnv';
+
+process.env.DEBUG = '@trex*';
 
 const NODE_ENV =
   process.env.NODE_ENV === 'production' ? 'production' : 'development';
@@ -46,64 +41,22 @@ process.env.FLUSH_INTERVAL = DEVELOPMENT ? '4500' : '9000';
 process.env.DEVELOPMENT = DEVELOPMENT ? 'development' : 'production';
 
 const outputDir = PRODUCTION ? PATHS.DIST : PATHS.BUILD;
+const manifestVersion = (
+  process.env.MANIFEST_VERSION ?? packageJSON.version
+).replace('-beta', '');
 
-const { buildENV, ...config } = getConfig({
+const { buildENV, ...config } = getExtensionConfig('tktrex', {
   cwd: __dirname,
-  outputDir,
-  entry: PATHS.ENTRY,
   env: AppEnv,
-  hot: false,
-  target: 'web',
-});
-
-config.plugins.push(
-  new CopyWebpackPlugin({
-    patterns: [
-      {
-        from: 'src/popup',
-      },
-      {
-        from: 'manifest.json',
-        transform: (content: Buffer) => {
-          const manifest = JSON.parse(content.toString());
-
-          if (NODE_ENV === 'development') {
-            manifest.permissions.push('http://localhost:14000/');
-          }
-
-          return JSON.stringify(manifest, null, 2);
-        },
-      },
-      {
-        from: 'icons',
-      },
-    ],
-  }),
-);
-
-if (config.mode === 'production') {
-  config.plugins.push(
-    new FileManagerPlugin({
-      events: {
-        onEnd: {
-          archive: [
-            {
-              source: outputDir,
-              destination: path.join(
-                outputDir,
-                `tktrex-extension-${process.env.VERSION}.zip`,
-              ),
-            },
-          ],
-        },
-      },
-    }),
-  );
-}
-
-// eslint-disable-next-line no-console
-console.log({
-  buildENV,
+  outputDir,
+  manifestVersion,
+  transformManifest: (m) => {
+    if (NODE_ENV === 'development') {
+      m.permissions.push('http://localhost:14000/');
+    }
+    return m;
+  },
+  entry: PATHS.ENTRY,
 });
 
 export default config;

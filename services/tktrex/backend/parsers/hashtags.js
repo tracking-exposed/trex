@@ -7,7 +7,7 @@ function hashtags(envelop, previous) {
   const availin = ['foryou', 'following'];
 
   if (previous.nature && availin.indexOf(previous.nature.type) === -1) {
-    debug('No hashtags for previous.nature %o', previous.nature);
+    // debug('No hashtags for previous.nature %o', previous.nature);
     return null;
   }
 

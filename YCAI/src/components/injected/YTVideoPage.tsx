@@ -6,13 +6,13 @@ import { makeStyles } from '@material-ui/styles';
 import * as TE from 'fp-ts/lib/TaskEither';
 import { pipe } from 'fp-ts/lib/function';
 import { useTranslation } from 'react-i18next';
+import { getVideoId } from '@shared/utils/yt.utils';
 
-import { getVideoId } from '../../utils/yt.utils';
 import { videoRecommendations } from '../../state/popup.queries';
 import { FullSizeLoader } from '../common/FullSizeLoader';
 import { GetLogger } from '@shared/logger';
 import { Recommendation } from '@shared/models/Recommendation';
-import { Settings } from '../../models/Settings';
+import { Settings } from '../../models';
 import { TabPanel } from '../common/TabPanel';
 import { Tab } from '../common/Tab';
 import { VideoRecommendations } from './VideoRecommendations';
@@ -43,7 +43,7 @@ const HIDE_ALL_TAB_INDEX = 2;
 
 export const YTVideoPage: React.FC<{
   ytRecommendationsSelector: string;
-  settings: Settings;
+  settings: Settings.Settings;
 }> = ({ ytRecommendationsSelector, settings }) => {
   const { t } = useTranslation();
   const [currentTab, setCurrentTab] = React.useState(0);
