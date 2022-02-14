@@ -1,21 +1,20 @@
-name: TRex - Release
+name: TRex - Release Beta
+
 on:
   push:
     branches:
-      - beta
+      # - beta
+      - fix/release-flow
+    # tags:
+    #   - 'v*'
 
 jobs:
-  release:
-    name: Release
+  create_release:
+    name: Create release
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        node-version: [16.x]
-    services:
-      mongo-db:
-        image: mongo:4.2
-        ports:
-          - 27017:27017
+    # Note this. We are going to use that in further jobs.
+    outputs:
+      upload_url: ${{ steps.create_release.outputs.upload_url }}
     steps:
       - name: Checkout
         uses: actions/checkout@v2
@@ -26,35 +25,108 @@ jobs:
         uses: actions/setup-node@v2
         with:
           node-version: ${{ matrix.node-version }}
-          cache: "yarn"
+          cache: 'yarn'
           cache-dependency-path: yarn.lock
 
       - name: Install dependencies
         run: yarn
 
-      # - name: Test project
-      #   run: yarn test
-
-      - name: Release
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          YCAI_DOTENV_CONFIG_PATH: .env.beta
+      - name: Get version
+        id: version
         run: |
-          git config --global user.email "team@tracking.exposed"
-          git config --global user.name "Team - Tracking Exposed"
-          yarn release-it --ci --preRelease --preReleaseId=beta
+          echo "::set-output name=version::v$(npm pkg get version | sed 's/"//g')"
 
-      - name: Build Dashboard
+      - name: YCAI dist
+        env:
+          NODE_ENV: production
+          VERSION: ${{ steps.version.outputs.name }}
+        run: |
+          yarn shared build
+          yarn taboule build
+          yarn extension dist
+          yarn extension dist:guardoni
+          yarn guardoni build
+          yarn guardoni pkg
+          yarn tk:ext build
+          DOTENV_CONFIG_PATH=.env.beta yarn ycai build:ext
+
+      - name: Upload YCAI extension
+        id: create_release
+        uses: softprops/action-gh-release@v1
+        with:
+          draft: true
+          prerelease: true
+          fail_on_unmatched_files: true
+          files: |
+            ./extension/dist/yttrex-*.zip
+            ./extension/dist/guardoni-yttrex-*.zip
+            ./guardoni/dist/guardoni-cli*
+            ./services/tktrex/extension/build/extension/*.zip
+            ./YCAI/build/extension/*.zip
+
+      - uses: actions/cache@v2
+        with:
+          key: build
+          path: |
+            ./packages/shared/build
+            ./packages/taboule/build
+            ./extension/build
+            ./guardoni/build
+            ./services/tktrex/extension/build
+            ./YCAI/build
+
+  release_per_platform:
+    name: Release
+    needs: create_release
+    runs-on: ${{ matrix.config.os }}
+    strategy:
+      # just an example matrix
+      matrix:
+        node-version: [16.x]
+        config:
+          - os: ubuntu-latest
+            command: "dist:linux"
+          - os: macos-latest
+            command: "dist:mac"
+          - os: windows-latest
+            command: "dist:windows"
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'yarn'
+          cache-dependency-path: yarn.lock
+
+      - name: Install dependencies
+        run: yarn
+
+      - uses: actions/cache@v2
+        with:
+          key: build
+          path: |
+            ./packages/shared/build
+            ./packages/taboule/build
+            ./extension/build
+            ./guardoni/build
+            ./services/tktrex/extension/build
+            ./YCAI/build
+
+      - name: Build Guardoni for ${{ matrix.config.os }}
         env:
           DOTENV_CONFIG_PATH: .env.beta
-        run: yarn ycai build
+        run: yarn guardoni ${{ matrix.config.command }}
 
-      - name: Deploy YCAI Dashboard
-        uses: burnett01/rsync-deployments@5.1
+      - name: Upload release assets
+        uses: softprops/action-gh-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          switches: -avzr --delete
-          path: ./YCAI/build/dashboard/
-          remote_path: ~/beta-studio/
-          remote_host: ${{ secrets.YCAI_BETA_DEPLOY_HOST }}
-          remote_user: ${{ secrets.YCAI_DEPLOY_USER }}
-          remote_key: ${{ secrets.YCAI_DEPLOY_KEY }}
+          fail_on_unmatched_files: true
+          files: |
+            ./guardonid/dist/guardoni_*

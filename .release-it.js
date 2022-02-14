@@ -27,14 +27,14 @@ const conventionalCommitTypes = [
 module.exports = {
   hooks: {
     'after:init': [],
-    'after:bump': ['yarn release-it-after-bump'],
+    'after:bump': [],
   },
   git: {
     requireUpstream: false,
     commitMessage: 'release: ${version} CHANGELOG [skip ci]',
   },
   github: {
-    release: true,
+    release: false,
     assets: [
       'extension/dist/*.zip',
       'guardoni/dist/*.deb',

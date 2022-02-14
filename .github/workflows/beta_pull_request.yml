@@ -1,0 +1,59 @@
+name: TRex - Beta Pull request
+on:
+  push:
+    branches:
+      - beta
+
+jobs:
+  release:
+    name: Release
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [16.x]
+    services:
+      mongo-db:
+        image: mongo:4.2
+        ports:
+          - 27017:27017
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: "yarn"
+          cache-dependency-path: yarn.lock
+
+      - name: Install dependencies
+        run: yarn
+
+      # - name: Test project
+      #   run: yarn test
+
+      - name: Release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          git config --global user.email "team@tracking.exposed"
+          git config --global user.name "Team - Tracking Exposed"
+          yarn release-it --ci --preRelease --preReleaseId=beta
+
+      - name: Build Dashboard
+        env:
+          DOTENV_CONFIG_PATH: .env.beta
+        run: yarn ycai build
+
+      - name: Deploy YCAI Dashboard
+        uses: burnett01/rsync-deployments@5.1
+        with:
+          switches: -avzr --delete
+          path: ./YCAI/build/dashboard/
+          remote_path: ~/beta-studio/
+          remote_host: ${{ secrets.YCAI_BETA_DEPLOY_HOST }}
+          remote_user: ${{ secrets.YCAI_DEPLOY_USER }}
+          remote_key: ${{ secrets.YCAI_DEPLOY_KEY }}
