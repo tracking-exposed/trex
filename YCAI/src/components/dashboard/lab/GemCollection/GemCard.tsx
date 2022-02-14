@@ -63,7 +63,7 @@ const useStyles = makeStyles<YCAITheme>((theme) => ({
     display: 'flex',
     flexDirection: 'column-reverse',
     justifyContent: 'flex-end',
-    // alignItems: 'flex-start',
+    alignItems: 'center',
     '& > *': {
       marginRight: theme.spacing(1),
       marginTop: theme.spacing(1),
