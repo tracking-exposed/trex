@@ -21,7 +21,7 @@ function getFullSearchMetadata(renod, order) {
       desc: l.textContent,
     };
   });
-  const img = renod.querySelector('img');
+  const img = renod.querySelector('img[alt]');
   const thumbnail = img.getAttribute('src');
 
   const publishingDate = _.reduce(
@@ -29,10 +29,20 @@ function getFullSearchMetadata(renod, order) {
     function (memo, n) {
       if (!memo && n.textContent.trim().match(/(\d{4})-(\d{1,2})-(\d{1,2})/))
         memo = n.textContent;
+      if (!memo && n.textContent.trim().match(/(\d{1,2})-(\d{1,2})/))
+        memo = new Date().getFullYear() + '-' + n.textContent;
       return memo;
     },
     null
   );
+
+  /* investigation why sometime the publishingDate is null,
+     seems sometime tiktok returns M-DD format ? */
+  if (!publishingDate)
+    debug(
+      'failed parsing: %s',
+      JSON.stringify(_.map(img.parentNode.parentNode.childNodes, 'textContent'))
+    );
 
   return {
     order,

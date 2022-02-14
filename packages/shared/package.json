@@ -30,6 +30,7 @@
   },
   "devDependencies": {
     "@pmmmwh/react-refresh-webpack-plugin": "^0.5.4",
+    "@types/chrome": "^0.0.177",
     "@types/copy-webpack-plugin": "^8.0.1",
     "@types/debug": "^4.1.7",
     "@types/dotenv-webpack": "^7.0.3",

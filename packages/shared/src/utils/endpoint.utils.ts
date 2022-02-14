@@ -4,7 +4,7 @@ import {
 } from 'ts-endpoint/lib/helpers';
 import * as R from 'fp-ts/lib/Record';
 import { pipe } from 'fp-ts/lib/function';
-import * as Endpoints from '@shared/endpoints';
+import * as Endpoints from '../endpoints';
 import * as S from 'fp-ts/lib/string';
 import * as A from 'fp-ts/lib/Array';
 

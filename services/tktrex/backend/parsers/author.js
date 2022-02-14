@@ -7,7 +7,7 @@ function author(envelop, previous) {
   const availin = ['foryou', 'following', 'search'];
 
   if (previous.nature && availin.indexOf(previous.nature.type) === -1) {
-    debug('No hashtag for previous.nature %o', previous.nature);
+    // debug('No hashtag for previous.nature %o', previous.nature);
     return null;
   }
 

@@ -25,7 +25,9 @@ const PRODUCTION = NODE_ENV === 'production';
 const DEVELOPMENT = NODE_ENV === 'development';
 const BUILDISODATE = new Date().toISOString();
 const GUARDONI_TARGET = process.env?.BUILD_TARGET === 'guardoni';
-const APP_VERSION = packageJSON.version;
+const APP_VERSION = packageJSON.version
+  .replace(/\-(beta|\d)/, '')
+  .concat(DEVELOPMENT ? '-dev' : '');
 
 console.log(
   'NODE_ENV [' + process.env.NODE_ENV + '] Prod:',
@@ -61,7 +63,7 @@ const DEFINITIONS = {
     NODE_ENV: JSON.stringify(NODE_ENV),
     API_ROOT: JSON.stringify(ENV_DEP_SERVER + '/api/v' + LAST_VERSION),
     WEB_ROOT: JSON.stringify(ENV_DEP_WEB),
-    VERSION: JSON.stringify(APP_VERSION + (DEVELOPMENT ? '-dev' : '')),
+    VERSION: JSON.stringify(APP_VERSION),
     BUILD: JSON.stringify(`On the ${moment().format('DD of MMMM at HH:mm')}.`),
     BUILDISODATE: JSON.stringify(BUILDISODATE),
     FLUSH_INTERVAL: JSON.stringify(DEVELOPMENT ? 10000 : 20000),
