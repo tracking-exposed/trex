@@ -35,7 +35,7 @@ const backend = process.env.BACKEND;
 describe('Guardoni', () => {
   const basePath = path.resolve(__dirname, '../../../');
   const profile = 'profile-test-99';
-  const extensionDir = path.resolve(__dirname, '../../../build/extension');
+  const extensionDir = path.resolve(basePath, 'build/extension');
   const csvTestFileName = 'trex-yt-videos.csv';
 
   beforeAll(async () => {
@@ -80,7 +80,13 @@ describe('Guardoni', () => {
   describe('config', () => {
     test('succeeds when no profile name is given but a profile dir exists', async () => {
       const g = await GetGuardoni({
-        config: { headless: false, verbose: false, basePath, backend },
+        config: {
+          headless: false,
+          verbose: false,
+          basePath,
+          backend,
+          extensionDir,
+        },
         logger: guardoniLogger,
         puppeteer: puppeteerMock,
       })();
@@ -132,6 +138,8 @@ describe('Guardoni', () => {
         config: {
           verbose: true,
           headless: true,
+          basePath,
+          extensionDir,
         },
         logger: guardoniLogger,
         puppeteer: puppeteerMock,

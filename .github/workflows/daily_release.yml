@@ -1,4 +1,5 @@
 name: TRex - Release "daily"
+
 on:
   push:
     branches:
