@@ -11,41 +11,52 @@ const security = require('../lib/security');
 
 async function sharedDataPull(filter) {
   /* this function is invoked by the various API below */
-  const MAX = 3000;
-  const mongoc = await mongo3.clientConnect({ concurrency: 1 });
+  const mongoc = await mongo3.clientConnect({ concurrency: 5 });
+  /* these values are used to fetch max of 3000 metadata */
+  const SLOT = 500;
+  let keepfe = true;
+  /* this choice is due to the a memory error due to looking up htmls */
+  const metadata = [];
 
-  const metadata = await mongo3.aggregate(
-    mongoc,
-    nconf.get('schema').metadata,
-    [
-      { $match: filter },
-      {
-        $lookup: {
-          from: 'htmls',
-          localField: 'id',
-          foreignField: 'metadataId',
-          as: 'html',
-        },
-      },
-      { $sort: { savingTime: -1 } },
-      { $skip: 0 },
-      { $limit: MAX },
-    ]
-  );
+  const match = { $match: filter };
+  const sort = { $sort: { savingTime: -1 } };
+  const lookup = {
+    $lookup: {
+      from: 'htmls',
+      localField: 'id',
+      foreignField: 'metadataId',
+      as: 'html',
+    },
+  };
+
+  for (const counter of [0, 1, 2, 3, 4, 5]) {
+    const skipAmount = counter * SLOT;
+
+    if (keepfe) {
+      const data = await mongo3.aggregate(
+        mongoc,
+        nconf.get('schema').metadata,
+        [match, sort, { $skip: skipAmount }, { $limit: SLOT }, lookup]
+      );
+      _.each(data, function (e) {
+        e.originalHref = e.html[0].href;
+        _.unset(e, 'html');
+        metadata.push(e);
+      });
+      /* if the amount of data is less than SLOT, stop looping */
+      if (data.length < SLOT) keepfe = false;
+    }
+  }
   await mongoc.close();
 
   debug(
-    'Found %d available data by filter %o (max %d) %j',
+    'Found %d available data by filter %o (slot of %d) %j',
     metadata.length,
     filter,
-    MAX,
+    SLOT,
     _.countBy(metadata, 'type')
   );
-  return _.map(metadata, function (e) {
-    e.originalHref = e.html[0].href;
-    _.unset(e, 'html');
-    return e;
-  });
+  return metadata;
 }
 
 // function dotify(data) {
