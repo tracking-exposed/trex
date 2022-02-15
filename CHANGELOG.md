@@ -1,3 +1,12 @@
+### [2.2.3-beta.1](https://github.com/tracking-exposed/yttrex/compare/v2.2.3-beta.0...v2.2.3-beta.1) (2022-02-15)
+
+- **backend:** implemented originalHref into experiment CSV [#384](https://github.com/tracking-exposed/yttrex/issues/384) ([#385](https://github.com/tracking-exposed/yttrex/issues/385)) ([ca633bf](https://github.com/tracking-exposed/yttrex/commit/ca633bf751aeb94e6fd03b70242f345ba6e8e7e6))
+- **backend:** memory safer function for experiment extension ([#393](https://github.com/tracking-exposed/yttrex/issues/393)) ([41a84fb](https://github.com/tracking-exposed/yttrex/commit/41a84fba72b2892790a36bf2d9ae7e5a3537fbbf))
+- guardoni electron dmg build and default paths ([#387](https://github.com/tracking-exposed/yttrex/issues/387)) ([d12d354](https://github.com/tracking-exposed/yttrex/commit/d12d354603667f030aa47cfb79b8d2bf1c5211ec))
+- **tktrex:** tktrex extension data-donation size check ([#373](https://github.com/tracking-exposed/yttrex/issues/373)) ([9147f5c](https://github.com/tracking-exposed/yttrex/commit/9147f5c071e2385acc3c077c782d3ac6ecafdcef))
+- **ycai:** gem card icons center alignment ([3f63e28](https://github.com/tracking-exposed/yttrex/commit/3f63e2852084a96f54b5e5e4f74fa4f6cd4398e4))
+- **ycai:** gem collection ([#345](https://github.com/tracking-exposed/yttrex/issues/345)) ([4e9bb71](https://github.com/tracking-exposed/yttrex/commit/4e9bb71ed9d9053235cf76d4ea24f1f57d09723b))
+
 ### [2.2.3-beta.0](https://github.com/tracking-exposed/yttrex/compare/v2.2.3-0...v2.2.3-beta.0) (2022-02-14)
 
 - added 'preReleaseId' option to beta release ([d46f758](https://github.com/tracking-exposed/yttrex/commit/d46f7589c243c5b6e6693f09f740ac647333177b))
