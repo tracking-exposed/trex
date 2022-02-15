@@ -67,9 +67,5 @@
     "*.{json,md,html,js,jsx,ts,tsx}": [
       "prettier --write"
     ]
-  },
-  "dependencies": {
-    "@types/pouchdb-find": "^6.3.7",
-    "pouchdb-find": "^7.2.2"
   }
 }

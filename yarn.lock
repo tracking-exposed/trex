@@ -2149,6 +2149,7 @@ __metadata:
   dependencies:
     "@types/jest": ^27.4.0
     "@types/node": ^17.0.8
+    "@types/pouchdb-find": ^6.3.7
     "@types/pouchdb-node": ^6.1.4
     "@types/puppeteer": ^5.4.4
     "@types/unzipper": ^0
@@ -2172,6 +2173,7 @@ __metadata:
     linkedom: ^0.13.2
     node-fetch: ^2.6.5
     node-loader: ^2.0.0
+    pouchdb-find: ^7.2.2
     pouchdb-node: ^7.2.2
     puppeteer: ^13.1.1
     puppeteer-extra: ^3.2.3
@@ -3203,29 +3205,6 @@ __metadata:
     "@types/pouchdb-core": "*"
     "@types/pouchdb-find": "*"
   checksum: 5cda9d072758404c5aa10171b5672f8dcecf52ae1c7cf353a72d81da66f76bcef8ed07de23c8fbfcb3b0162098dd42544cd8b13c8bd01209d56e553fa3a87093
-  languageName: node
-  linkType: hard
-
-"@types/pouchdb@npm:^6.4.0":
-  version: 6.4.0
-  resolution: "@types/pouchdb@npm:6.4.0"
-  dependencies:
-    "@types/pouchdb-adapter-cordova-sqlite": "*"
-    "@types/pouchdb-adapter-fruitdown": "*"
-    "@types/pouchdb-adapter-http": "*"
-    "@types/pouchdb-adapter-idb": "*"
-    "@types/pouchdb-adapter-leveldb": "*"
-    "@types/pouchdb-adapter-localstorage": "*"
-    "@types/pouchdb-adapter-memory": "*"
-    "@types/pouchdb-adapter-node-websql": "*"
-    "@types/pouchdb-adapter-websql": "*"
-    "@types/pouchdb-browser": "*"
-    "@types/pouchdb-core": "*"
-    "@types/pouchdb-http": "*"
-    "@types/pouchdb-mapreduce": "*"
-    "@types/pouchdb-node": "*"
-    "@types/pouchdb-replication": "*"
-  checksum: 442dd5c0a74c4cf95ea48b182d518edc681a4e49a76fc5c42027cc404ea4f99b8d982a311c48f010f78087b7d60abfe8f9231b9d8bc2c59ff2e38796c196a623
   languageName: node
   linkType: hard
 
@@ -4645,6 +4624,16 @@ __metadata:
   version: 1.0.0
   resolution: "archy@npm:1.0.0"
   checksum: 504ae7af655130bab9f471343cfdb054feaec7d8e300e13348bc9fe9e660f83d422e473069584f73233c701ae37d1c8452ff2522f2a20c38849e0f406f1732ac
+  languageName: node
+  linkType: hard
+
+"are-we-there-yet@npm:^2.0.0":
+  version: 2.0.0
+  resolution: "are-we-there-yet@npm:2.0.0"
+  dependencies:
+    delegates: ^1.0.0
+    readable-stream: ^3.6.0
+  checksum: 6c80b4fd04ecee6ba6e737e0b72a4b41bdc64b7d279edfc998678567ff583c8df27e27523bc789f2c99be603ffa9eaa612803da1d886962d2086e7ff6fa90c7c
   languageName: node
   linkType: hard
 
@@ -6156,6 +6145,13 @@ __metadata:
   version: 0.12.0
   resolution: "caseless@npm:0.12.0"
   checksum: b43bd4c440aa1e8ee6baefee8063b4850fd0d7b378f6aabc796c9ec8cb26d27fb30b46885350777d9bd079c5256c0e1329ad0dc7c2817e0bb466810ebb353751
+  languageName: node
+  linkType: hard
+
+"catering@npm:^2.0.0, catering@npm:^2.1.0":
+  version: 2.1.1
+  resolution: "catering@npm:2.1.1"
+  checksum: 205daefa69c935b0c19f3d8f2e0a520dd69aebe9bda55902958003f7c9cff8f967dfb90071b421bd6eb618576f657a89d2bc0986872c9bc04bbd66655e9d4bd6
   languageName: node
   linkType: hard
 
@@ -12656,6 +12652,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"is-buffer@npm:^2.0.5":
+  version: 2.0.5
+  resolution: "is-buffer@npm:2.0.5"
+  checksum: 764c9ad8b523a9f5a32af29bdf772b08eb48c04d2ad0a7240916ac2688c983bf5f8504bf25b35e66240edeb9d9085461f9b5dae1f3d2861c6b06a65fe983de42
+  languageName: node
+  linkType: hard
+
 "is-callable@npm:^1.1.4, is-callable@npm:^1.2.4":
   version: 1.2.4
   resolution: "is-callable@npm:1.2.4"
@@ -18032,156 +18035,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"pouchdb-selector-core@npm:7.2.2":
-  version: 7.2.2
-  resolution: "pouchdb-selector-core@npm:7.2.2"
-  dependencies:
-    pouchdb-collate: 7.2.2
-    pouchdb-utils: 7.2.2
-  checksum: efc39101a6e0fab529fb9feade97835a43a578047440c43d101dc5cf856d43c1f0eb76408d0d917a7dd162172971e4197ebf59b7aa74b54b1e1be0f6d9460092
-  languageName: node
-  linkType: hard
-
-"pouchdb-utils@npm:7.2.2":
-  version: 7.2.2
-  resolution: "pouchdb-utils@npm:7.2.2"
-  dependencies:
-    argsarray: 0.0.1
-    clone-buffer: 1.0.0
-    immediate: 3.3.0
-    inherits: 2.0.4
-    pouchdb-collections: 7.2.2
-    pouchdb-errors: 7.2.2
-    pouchdb-md5: 7.2.2
-    uuid: 8.1.0
-  checksum: 2364dbe578503fd6bf7fbc932b02c43c5905c39cb44e307aaa65c32c0dc63cff0d9ce5ca281b0c672d0dc5fe28d2992cb45e0770a4d768349506ab55419534b7
-  languageName: node
-  linkType: hard
-
-"pouchdb@npm:^7.2.2":
-  version: 7.2.2
-  resolution: "pouchdb@npm:7.2.2"
-  dependencies:
-    abort-controller: 3.0.0
-    argsarray: 0.0.1
-    buffer-from: 1.1.1
-    clone-buffer: 1.0.0
-    double-ended-queue: 2.1.0-0
-    fetch-cookie: 0.10.1
-    immediate: 3.3.0
-    inherits: 2.0.4
-    level: 6.0.1
-    level-codec: 9.0.2
-    level-write-stream: 1.0.0
-    leveldown: 5.6.0
-    levelup: 4.4.0
-    ltgt: 2.2.1
-    node-fetch: 2.6.0
-    readable-stream: 1.1.14
-    spark-md5: 3.0.1
-    through2: 3.0.2
-    uuid: 8.1.0
-    vuvuzela: 1.0.3
-  checksum: 340ccb785721d6e5cbb4ed15fe31a7b871870abf82f4e23b6cf69d0487a203ad51bd4c4144520efa67cd11db45af6acb94661962792304655574a0f7e79e18e6
-  languageName: node
-  linkType: hard
-
-"pouchdb-abstract-mapreduce@npm:7.2.2":
-  version: 7.2.2
-  resolution: "pouchdb-abstract-mapreduce@npm:7.2.2"
-  dependencies:
-    pouchdb-binary-utils: 7.2.2
-    pouchdb-collate: 7.2.2
-    pouchdb-collections: 7.2.2
-    pouchdb-errors: 7.2.2
-    pouchdb-fetch: 7.2.2
-    pouchdb-mapreduce-utils: 7.2.2
-    pouchdb-md5: 7.2.2
-    pouchdb-utils: 7.2.2
-  checksum: 926d170d9f116c4c354e39df91118d68a27100677519e0e31f4850f72adbd8c79c772172ae43564fcc92dc305528ecb15a707cb89c628dea986a94a69d1acf5b
-  languageName: node
-  linkType: hard
-
-"pouchdb-binary-utils@npm:7.2.2":
-  version: 7.2.2
-  resolution: "pouchdb-binary-utils@npm:7.2.2"
-  dependencies:
-    buffer-from: 1.1.1
-  checksum: 51539326ce622f1bdd945126db6a748a3f04622d0c77c6481efe8d290a32c56eb7d0f0f1b6877d3ffa500e93a2475a8306f5902c9c8850bc0c87c38302918627
-  languageName: node
-  linkType: hard
-
-"pouchdb-collate@npm:7.2.2":
-  version: 7.2.2
-  resolution: "pouchdb-collate@npm:7.2.2"
-  checksum: 7479e251d646abcc276e1abf70aff96235d6e06740fac11db6c6d4e0ffbe7e905a35673b465829d55718db93a56cbaab94f8501aa68e9c18f68f6e51f2082f1a
-  languageName: node
-  linkType: hard
-
-"pouchdb-collections@npm:7.2.2":
-  version: 7.2.2
-  resolution: "pouchdb-collections@npm:7.2.2"
-  checksum: 9d5e9dc2fc97c5b29b93105f400bf62f852db5591040745538d5456d0d6ed82cfa61deed105d739804628958473b0609164355121c5839bac2c3de72049c4a59
-  languageName: node
-  linkType: hard
-
-"pouchdb-errors@npm:7.2.2":
-  version: 7.2.2
-  resolution: "pouchdb-errors@npm:7.2.2"
-  dependencies:
-    inherits: 2.0.4
-  checksum: 3b3e4d57485866ab21d9503dc5a9ed3dcf629cd72c4d714cb9e226890bfe1450814e84c4cb668925413903edecb8b3659cccba16c33dc780e7aceb04cff757ee
-  languageName: node
-  linkType: hard
-
-"pouchdb-fetch@npm:7.2.2":
-  version: 7.2.2
-  resolution: "pouchdb-fetch@npm:7.2.2"
-  dependencies:
-    abort-controller: 3.0.0
-    fetch-cookie: 0.10.1
-    node-fetch: 2.6.0
-  checksum: 7cb49c2cdb00f280b782677c885840440bc4120de4cfc31291ca22a2252dd572b65e46ff751295c834a689b1f3f990047ed213141d94b15624a3ad4152e92a2e
-  languageName: node
-  linkType: hard
-
-"pouchdb-find@npm:^7.2.2":
-  version: 7.2.2
-  resolution: "pouchdb-find@npm:7.2.2"
-  dependencies:
-    pouchdb-abstract-mapreduce: 7.2.2
-    pouchdb-collate: 7.2.2
-    pouchdb-errors: 7.2.2
-    pouchdb-fetch: 7.2.2
-    pouchdb-md5: 7.2.2
-    pouchdb-selector-core: 7.2.2
-    pouchdb-utils: 7.2.2
-  checksum: 49b526b2ac0e0f816d19eaa57f0c53fb103330872c6b944b03a8e866ed85fcaa6e7a5a57b026261f8966f1fd0ffa24c847b486b99070905918be50153634b265
-  languageName: node
-  linkType: hard
-
-"pouchdb-mapreduce-utils@npm:7.2.2":
-  version: 7.2.2
-  resolution: "pouchdb-mapreduce-utils@npm:7.2.2"
-  dependencies:
-    argsarray: 0.0.1
-    inherits: 2.0.4
-    pouchdb-collections: 7.2.2
-    pouchdb-utils: 7.2.2
-  checksum: bcfe2a4a410ce192a4688012cf1d8e62d757fe244a621c5673dbc9422299dc0335061728b93c71026d164d7ebd01173a225ae94aec50895e4fbbb760bbe21419
-  languageName: node
-  linkType: hard
-
-"pouchdb-md5@npm:7.2.2":
-  version: 7.2.2
-  resolution: "pouchdb-md5@npm:7.2.2"
-  dependencies:
-    pouchdb-binary-utils: 7.2.2
-    spark-md5: 3.0.1
-  checksum: 0711e585b7f432e8efc95a8d0f74b11a3e78a48177d83981c21acf85cd5b59be64bc154b57fd5502b6daaa89c865f89ff7f0e417bd834a00e5e3940e99af5231
-  languageName: node
-  linkType: hard
-
 "pouchdb-node@npm:^7.2.2":
   version: 7.2.2
   resolution: "pouchdb-node@npm:7.2.2"
@@ -20029,14 +19882,12 @@ __metadata:
     "@commitlint/prompt-cli": ^16.1.0
     "@release-it/conventional-changelog": ^4.1.0
     "@types/node": ^16.11.22
-    "@types/pouchdb-find": ^6.3.7
     "@types/prettier": ^2.4.3
     eslint: ^8.8.0
     husky: ^7.0.4
     jest: ^27.4.7
     jest-dev-server: ^6.0.3
     lint-staged: ^12.3.3
-    pouchdb-find: ^7.2.2
     prettier: ^2.5.1
     release-it: ^14.12.4
     release-it-yarn-workspaces: ^2.0.1
@@ -23390,6 +23241,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"webpack-ci@npm:^1.0.0":
+  version: 1.0.0
+  resolution: "webpack-ci@npm:1.0.0"
+  dependencies:
+    large-number: ^1.0.1
+    lib-flexible: ^0.3.2
+  checksum: 4719aad01d414dcf1cdcdd215c4a831a36fedd5e842caa004830e6244e6303d4fbeaa7aca7c989f31b2d0c018f2c27ca39006e41ef9822037b2b709193586b16
+  languageName: node
+  linkType: hard
+
 "webpack-cli@npm:^4.9.1, webpack-cli@npm:^4.9.2":
   version: 4.9.2
   resolution: "webpack-cli@npm:4.9.2"
@@ -23541,44 +23402,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"webpack@npm:^5, webpack@npm:^5.1.0, webpack@npm:^5.66.0, webpack@npm:^5.68.0":
-  version: 5.68.0
-  resolution: "webpack@npm:5.68.0"
-  dependencies:
-    "@types/eslint-scope": ^3.7.0
-    "@types/estree": ^0.0.50
-    "@webassemblyjs/ast": 1.11.1
-    "@webassemblyjs/wasm-edit": 1.11.1
-    "@webassemblyjs/wasm-parser": 1.11.1
-    acorn: ^8.4.1
-    acorn-import-assertions: ^1.7.6
-    browserslist: ^4.14.5
-    chrome-trace-event: ^1.0.2
-    enhanced-resolve: ^5.8.3
-    es-module-lexer: ^0.9.0
-    eslint-scope: 5.1.1
-    events: ^3.2.0
-    glob-to-regexp: ^0.4.1
-    graceful-fs: ^4.2.9
-    json-parse-better-errors: ^1.0.2
-    loader-runner: ^4.2.0
-    mime-types: ^2.1.27
-    neo-async: ^2.6.2
-    schema-utils: ^3.1.0
-    tapable: ^2.1.1
-    terser-webpack-plugin: ^5.1.3
-    watchpack: ^2.3.1
-    webpack-sources: ^3.2.3
-  peerDependenciesMeta:
-    webpack-cli:
-      optional: true
-  bin:
-    webpack: bin/webpack.js
-  checksum: ac6efd861a0bfb35d8a467fba0d87f905ef6e1a9a9f7e3db42ea459cf191268094cedd025d3eb36a1464e2208a0c193f3f4a92531ba58850246f3c6b8f210b03
-  languageName: node
-  linkType: hard
-
-"webpack@npm:^5.68.0":
+"webpack@npm:^5, webpack@npm:^5.1.0, webpack@npm:^5.68.0":
   version: 5.68.0
   resolution: "webpack@npm:5.68.0"
   dependencies:
