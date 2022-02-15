@@ -1,5 +1,6 @@
 # [1.11.0-beta.1](https://github.com/tracking-exposed/yttrex/compare/v1.10.2-beta.1...v1.11.0-beta.1) (2022-01-20)
- (release: 1.11.0-beta.1 CHANGELOG [skip ci])
+
+(release: 1.11.0-beta.1 CHANGELOG [skip ci])
 
 ### Bug Fixes
 
@@ -64,9 +65,9 @@
 
 ### Bug Fixes
 
-* removed the alarm permission ([#255](https://github.com/tracking-exposed/yttrex/issues/255)) ([885129e](https://github.com/tracking-exposed/yttrex/commit/885129e1a074cf2468bb8819e85145231602dcea))
-* show related channels with percentage in analytics ([#258](https://github.com/tracking-exposed/yttrex/issues/258)) ([0f18baa](https://github.com/tracking-exposed/yttrex/commit/0f18baa97cff400b4500c74b90a1a724e00f4cab))
-* various small things ([#257](https://github.com/tracking-exposed/yttrex/issues/257)) ([1c1e6a7](https://github.com/tracking-exposed/yttrex/commit/1c1e6a7204f6222b7e6ad5bec2570e9582d6ba0d))
+- removed the alarm permission ([#255](https://github.com/tracking-exposed/yttrex/issues/255)) ([885129e](https://github.com/tracking-exposed/yttrex/commit/885129e1a074cf2468bb8819e85145231602dcea))
+- show related channels with percentage in analytics ([#258](https://github.com/tracking-exposed/yttrex/issues/258)) ([0f18baa](https://github.com/tracking-exposed/yttrex/commit/0f18baa97cff400b4500c74b90a1a724e00f4cab))
+- various small things ([#257](https://github.com/tracking-exposed/yttrex/issues/257)) ([1c1e6a7](https://github.com/tracking-exposed/yttrex/commit/1c1e6a7204f6222b7e6ad5bec2570e9582d6ba0d))
 
 ## [1.10.2-beta.1](https://github.com/tracking-exposed/yttrex/compare/v1.10.1...v1.10.2-beta.1) (2021-12-14)
 

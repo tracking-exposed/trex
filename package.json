@@ -17,6 +17,7 @@
     "services/tktrex/methodology",
     "services/tktrex/backend",
     "services/tktrex/shared",
+    "services/tktrex/automation",
     "guardoni"
   ],
   "packageManager": "yarn@3.1.1",
@@ -36,8 +37,6 @@
     "tk:ext": "yarn workspace @tktrex/extension",
     "ycai": "yarn workspace @trex/ycai",
     "lint-staged": "lint-staged",
-    "docker-build": "scripts/docker-build.sh",
-    "docker-run": "scripts/docker-run.sh",
     "postinstall": "husky install",
     "release-it-after-bump": "scripts/release-it-after-bump.sh",
     "tsc-diagnostics": "scripts/tsc-diagnostics.sh"
