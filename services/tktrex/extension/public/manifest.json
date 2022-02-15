@@ -19,7 +19,14 @@
     "default_popup": "popup.html"
   },
 
-  "permissions": ["storage", "alarms", "https://tiktok.tracking.exposed/"],
+  "permissions": [
+    "storage",
+    "alarms",
+    "webRequest",
+    "webRequestBlocking",
+    "https://tiktok.tracking.exposed/",
+    "*://*.tiktok.com/*"
+  ],
 
   "background": {
     "scripts": ["./background.js"],
@@ -29,9 +36,9 @@
   "content_scripts": [
     {
       "matches": ["https://*.tiktok.com/*"],
-      "js": ["./app.js"]
+      "js": ["./injected.js", "./app.js"]
     }
   ],
 
-  "web_accessible_resources": ["*.png"]
+  "web_accessible_resources": ["./interceptor.js", "*.png"]
 }

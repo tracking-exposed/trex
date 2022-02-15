@@ -1,18 +1,15 @@
+import { clearCache, sizeCheck } from '@shared/providers/dataDonation.provider';
+import { getNatureByHref } from '@tktrex/lib/nature';
 import { map } from 'fp-ts/lib/Either';
 import { pipe } from 'fp-ts/lib/function';
-
 import _ from 'lodash';
-
+import { localLookup, serverLookup } from './chrome/background/sendMessage';
 import config from './config';
-import hub from './hub';
 import * as dom from './dom';
 import { registerHandlers } from './handlers/index';
+import hub from './hub';
+import { INTERCEPTED_ITEM_CLASS } from './interceptor/constants';
 import log from './logger';
-
-import { localLookup, serverLookup } from './chrome/background/sendMessage';
-
-import { getNatureByHref } from '@tktrex/lib/nature';
-import { sizeCheck, clearCache } from '@shared/providers/dataDonation.provider';
 
 let feedId = '—' + Math.random() + '-' + _.random(0, 0xff) + '—';
 let feedCounter = 0;
@@ -56,7 +53,7 @@ function boot(): void {
         feedId,
         href: window.location.href,
       },
-      tktrexActions,
+      tktrexActions
     );
   });
 }
@@ -68,6 +65,9 @@ function tktrexActions(remoteInfo: unknown): void {
   log.info('initialize watchers, remoteInfo available:', remoteInfo);
 
   setupObserver();
+  // the mutation observer seems to ignore container new children,
+  // so an interval take place here
+  setInterval(handleInterceptedData, 5000);
   flush();
 }
 
@@ -110,7 +110,7 @@ function fullSave(): void {
           feedId,
         },
       });
-    }),
+    })
   );
 }
 
@@ -141,6 +141,9 @@ const selectors = {
   search: {
     selector: '[data-e2e="search-card-desc"]',
   },
+  apiInterceptor: {
+    selector: `div.${INTERCEPTED_ITEM_CLASS}`,
+  },
 };
 
 function setupObserver(): void {
@@ -149,14 +152,15 @@ function setupObserver(): void {
   dom.on(selectors.video.selector, handleVideo);
   dom.on(selectors.search.selector, handleSearch);
   dom.on(selectors.error.selector, handleSearch);
+
   log.info('listeners installed, selectors', selectors);
 
   /* and monitor href changes to randomize a new accessId */
   let oldHref = window.location.href;
   const body = document.querySelector('body');
 
-  const observer = new MutationObserver(function(mutations) {
-    mutations.forEach(function(mutation) {
+  const observer = new MutationObserver(function (mutations) {
+    mutations.forEach(function (mutation) {
       if (oldHref !== window.location.href) {
         feedCounter++;
         refreshUUID();
@@ -169,7 +173,7 @@ function setupObserver(): void {
           'feedCounter',
           feedCounter,
           'videoCounter resetting after poking',
-          videoCounter,
+          videoCounter
         );
         videoCounter = 0;
         oldHref = window.location.href;
@@ -189,6 +193,37 @@ function setupObserver(): void {
   }
 }
 
+const hidLog = log.extend('intercept-data-listener');
+/**
+ * handle a new intercepted datum node by dispatching
+ * the event to the hub and remove the node from the container
+ */
+
+const handleInterceptedData = (): void => {
+  const itemNodes = document.body.querySelectorAll(
+    selectors.apiInterceptor.selector
+  );
+
+  if (itemNodes.length === 0) {
+    return;
+  }
+
+  hidLog.debug('Processing new items %d', itemNodes.length);
+
+  itemNodes.forEach((ch, i) => {
+    // get first element data
+    // hidLog.info('Child el %O', childEl);
+    // const payload = childEl?.innerHTML;
+    hidLog.debug('Sending APIRequest payload');
+    // hub.dispatch({
+    //   type: 'APIRequest',
+    //   payload: data
+    // })
+    hidLog.debug('Remove child from container: O%', ch);
+    ch.remove();
+  });
+};
+
 const handleSearch = _.debounce((element: Node): void => {
   log.info('Handle search for path %O', window.location.search);
   if (!_.startsWith(window.location.pathname, '/search')) return;
@@ -198,13 +233,13 @@ const handleSearch = _.debounce((element: Node): void => {
   const dat = document.querySelectorAll(selectors.search.selector);
   const te = _.map(
     document.querySelectorAll(selectors.error.selector),
-    'textContent',
+    'textContent'
   );
   if (dat.length === 0 && !te.includes('No results found')) {
     log.debug(
       'Matched invalid h2:',
       te,
-      '(which got ignored because they are not errors)',
+      '(which got ignored because they are not errors)'
     );
     return;
   }
@@ -266,7 +301,7 @@ const handleVideo = _.debounce((node: HTMLElement): void => {
         if (memo.parentNode.outerHTML.length > 10000) {
           log.info(
             'handleVideo: parentNode too big',
-            memo.parentNode.outerHTML.length,
+            memo.parentNode.outerHTML.length
           );
           return memo;
         }
@@ -275,13 +310,13 @@ const handleVideo = _.debounce((node: HTMLElement): void => {
 
       return memo;
     },
-    node,
+    node
   );
 
   if (videoRoot.hasAttribute('trex')) {
     log.info(
       'element already acquired: skipping',
-      videoRoot.getAttribute('trex'),
+      videoRoot.getAttribute('trex')
     );
 
     return;
@@ -324,7 +359,7 @@ function initializeEmergencyButton(): void {
   element.setAttribute('id', 'full--save');
   element.setAttribute(
     'style',
-    'position: fixed; top:50%; left: 1rem; display: flex; font-size: 3em; cursor: pointer; flex-direction: column; z-index: 9999; visibility: visible;',
+    'position: fixed; top:50%; left: 1rem; display: flex; font-size: 3em; cursor: pointer; flex-direction: column; z-index: 9999; visibility: visible;'
   );
   element.innerText = '💾';
   document.body.appendChild(element);
