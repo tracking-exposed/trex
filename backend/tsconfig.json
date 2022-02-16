@@ -7,6 +7,7 @@
     "baseUrl": "./",
     "noEmit": true,
     "esModuleInterop": true,
+    "skipLibCheck": true,
     "paths": {
       "@shared/*": ["../packages/shared/src/*"]
     }

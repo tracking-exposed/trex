@@ -13,6 +13,7 @@
     "resolveJsonModule": true,
     "strict": true,
     "strictNullChecks": true,
+    "skipLibCheck": true,
     "target": "es2015",
     "paths": {
       "@shared/*": ["../../../../packages/shared/src/*"],

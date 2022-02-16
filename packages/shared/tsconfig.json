@@ -11,6 +11,7 @@
     "allowJs": true,
     "tsBuildInfoFile": "./build/.tsbuildinfo",
     "esModuleInterop": true,
+    "skipLibCheck": true,
     "jsx": "react"
   },
   "include": ["./src"]
