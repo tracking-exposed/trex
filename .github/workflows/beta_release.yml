@@ -38,6 +38,7 @@ jobs:
       - name: Release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          YCAI_DOTENV_CONFIG_PATH: .env.beta
         run: |
           git config --global user.email "team@tracking.exposed"
           git config --global user.name "Team - Tracking Exposed"
