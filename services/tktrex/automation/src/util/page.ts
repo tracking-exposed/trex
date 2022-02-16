@@ -1,6 +1,6 @@
 import os from 'os';
 
-import puppeteerVanilla, { Page, Dialog } from 'puppeteer';
+import puppeteerVanilla, { Page, Dialog } from 'puppeteer-core';
 import puppeteer from 'puppeteer-extra';
 import stealth from 'puppeteer-extra-plugin-stealth';
 
@@ -61,7 +61,7 @@ export const createPage = async({
   const browser = await p.launch(options);
   const page = await browser.newPage();
 
-  return page;
+  return page as Page;
 };
 
 export const askBrowserConfirmation =

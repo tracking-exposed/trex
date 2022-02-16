@@ -1,4 +1,4 @@
-import { Page } from 'puppeteer';
+import { Page } from 'puppeteer-core';
 
 import { Logger } from '@util/logger';
 import { MinimalProjectConfig } from '@project/init';

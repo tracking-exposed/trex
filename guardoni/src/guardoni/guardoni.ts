@@ -59,7 +59,7 @@ const getExtensionWithOptInURL = (v: string): string => {
   //   .filter((v, i) => i !== 2)
   //   .concat('99')
   //   .join('.');
-  return `https://github.com/tracking-exposed/yttrex/releases/download/v${v}/guardoni-yttrex-extension-${v}.zip`;
+  return `https://github.com/tracking-exposed/yttrex/releases/download/v${v}/guardoni-yttrex-extension-${v.replace('-beta', '')}.zip`;
 };
 
 const DEFAULT_BASE_PATH = path.resolve(os.homedir(), '.guardoni/config');
@@ -195,7 +195,7 @@ const dispatchBrowser = (
     );
   }
   return TE.tryCatch(async () => {
-    // puppeteer.use(pluginStealth());
+    // ctx.puppeteer.use(pluginStealth());
     const browser = await ctx.puppeteer.launch({
       headless: ctx.config.headless,
       userDataDir: ctx.profile.udd,
