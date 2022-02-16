@@ -1,3 +1,7 @@
+### [2.2.3-beta.3](https://github.com/tracking-exposed/yttrex/compare/v2.2.3-beta.2...v2.2.3-beta.3) (2022-02-16)
+
+- webpack extension outdir path ([75675ec](https://github.com/tracking-exposed/yttrex/commit/75675ec6c59c4f2e732b5a542205a831d6cecfe9))
+
 ### [2.2.3-beta.2](https://github.com/tracking-exposed/yttrex/compare/v2.2.3-beta.1...v2.2.3-beta.2) (2022-02-16)
 
 - pass env vars to ycai build on after release bump hook ([907aa65](https://github.com/tracking-exposed/yttrex/commit/907aa65e37534d6d3160a73de667977d442f0aed))
