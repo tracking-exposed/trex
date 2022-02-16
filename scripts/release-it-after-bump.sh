@@ -14,4 +14,6 @@ yarn guardoni pkg
 yarn guardoni dist:all
 
 yarn tk:ext build
+
+export DOTENV_CONFIG_PATH=$YCAI_DOTENV_CONFIG_PATH
 yarn ycai build:ext
