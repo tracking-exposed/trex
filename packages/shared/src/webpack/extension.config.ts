@@ -16,12 +16,11 @@ const getExtensionConfig = <E extends t.Props>(
   extensionName: string,
   c: GetExtensionConfigParams<E>
 ): WebpackConfig => {
-
   process.env.VERSION = c.manifestVersion;
 
   const { buildENV, ...config } = getConfig({
     target: 'web',
-    outputDir: path.resolve(__dirname, 'build/extension'),
+    outputDir: path.resolve(c.cwd, 'build/extension'),
     hot: false,
     entry: {
       ext: path.resolve(c.cwd, 'src/app.tsx'),

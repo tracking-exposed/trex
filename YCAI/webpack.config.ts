@@ -21,7 +21,7 @@ config.plugins.push(
   new CopyWebpackPlugin({
     patterns: [
       {
-        from: 'public',
+        from: path.resolve(__dirname, 'public'),
         filter: (file: string) => {
           const { base } = path.parse(file);
           return !['manifest.json', 'popup.html'].includes(base);
