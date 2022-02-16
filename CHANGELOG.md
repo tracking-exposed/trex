@@ -1,3 +1,7 @@
+### [2.2.3-beta.2](https://github.com/tracking-exposed/yttrex/compare/v2.2.3-beta.1...v2.2.3-beta.2) (2022-02-16)
+
+- pass env vars to ycai build on after release bump hook ([907aa65](https://github.com/tracking-exposed/yttrex/commit/907aa65e37534d6d3160a73de667977d442f0aed))
+
 ### [2.2.3-beta.1](https://github.com/tracking-exposed/yttrex/compare/v2.2.3-beta.0...v2.2.3-beta.1) (2022-02-15)
 
 - **backend:** implemented originalHref into experiment CSV [#384](https://github.com/tracking-exposed/yttrex/issues/384) ([#385](https://github.com/tracking-exposed/yttrex/issues/385)) ([ca633bf](https://github.com/tracking-exposed/yttrex/commit/ca633bf751aeb94e6fd03b70242f345ba6e8e7e6))
