@@ -1,4 +1,5 @@
-name: TRex - Release
+name: TRex - Release Master
+
 on:
   push:
     branches:
