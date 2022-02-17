@@ -128,6 +128,8 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
+          name: v${{ steps.version.outputs.version }}
+          draft: false
           fail_on_unmatched_files: true
           files: |
             ./guardonid/dist/guardoni_*
