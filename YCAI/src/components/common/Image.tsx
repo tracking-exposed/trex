@@ -6,7 +6,7 @@ interface ImageBaseProps {
   alt?: string;
   className?: string;
   extraImgProps?: PropsObject;
-  src: string | null;
+  src?: string | null;
   style?: PropsObject;
   title?: string;
 }
