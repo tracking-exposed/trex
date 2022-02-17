@@ -4,8 +4,8 @@ appId: guardoni.tracking.exposed
 
 productName: Guardoni
 
-asar: true
-asarUnpack: ['node_modules']
+# asar: true
+# asarUnpack: ['node_modules']
 
 extends: null
 
@@ -30,6 +30,7 @@ linux:
 mac:
   target: ['dmg']
   category: 'public.app-category.utilities'
+  strictVerify: false
 
 win:
   target: ['portable']
