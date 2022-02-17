@@ -1,4 +1,4 @@
-name: TRex - Release Beta
+name: TRex - Github Release
 
 on:
   push:
@@ -6,7 +6,7 @@ on:
       # - beta
       - fix/release-flow
     # tags:
-    #   - 'v*'
+    #   - 'v*.*.*'
 
 jobs:
   create_release:
@@ -54,6 +54,7 @@ jobs:
         id: create_release
         uses: softprops/action-gh-release@v1
         with:
+          name: v${{ steps.version.outputs.name }}
           draft: true
           prerelease: true
           fail_on_unmatched_files: true
