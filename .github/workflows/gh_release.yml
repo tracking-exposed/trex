@@ -34,7 +34,7 @@ jobs:
       - name: Get version
         id: version
         run: |
-          echo "::set-output name=version::v$(npm pkg get version | sed 's/"//g')"
+          echo "::set-output name=version::$(npm pkg get version | sed 's/"//g')"
 
       - name: YCAI dist
         env:
