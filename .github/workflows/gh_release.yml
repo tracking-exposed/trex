@@ -118,6 +118,11 @@ jobs:
             ./services/tktrex/extension/build
             ./YCAI/build
 
+      - name: Get version
+        id: version
+        run: |
+          echo "::set-output name=version::$(npm pkg get version | sed 's/"//g')"
+
       - name: Build Guardoni for ${{ matrix.config.os }}
         env:
           DOTENV_CONFIG_PATH: .env.beta
