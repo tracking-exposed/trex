@@ -125,8 +125,6 @@ jobs:
 
       - name: Upload release assets
         uses: softprops/action-gh-release@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           name: v${{ steps.version.outputs.version }}
           draft: false
