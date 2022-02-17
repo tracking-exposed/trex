@@ -89,8 +89,8 @@ jobs:
             command: "dist:linux"
           - os: macos-latest
             command: "dist:mac"
-          - os: windows-latest
-            command: "dist:windows"
+          # - os: windows-latest
+          #   command: "dist:windows"
     steps:
       - name: Checkout
         uses: actions/checkout@v2
