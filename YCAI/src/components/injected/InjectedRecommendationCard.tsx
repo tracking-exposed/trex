@@ -1,26 +1,25 @@
-import React from 'react';
-
 import {
   Box,
   Card,
   CardMedia,
   Grid,
   Link,
-  Typography,
+  Typography
 } from '@material-ui/core';
 import { Link as LinkIcon } from '@material-ui/icons';
-
 import {
   descriptionMaxLength,
   Recommendation,
-  titleMaxLength,
+  titleMaxLength
 } from '@shared/models/Recommendation';
-
-import { makeStyles } from '../../theme';
 import { isYTURL } from '@shared/utils/yt.utils';
-import CharLimitedTypography from '../common/CharLimitedTypography';
+import React from 'react';
+import { config } from '../../config';
+import { makeStyles } from '../../theme';
 import { getHostFromURL } from '../../utils/location.utils';
+import CharLimitedTypography from '../common/CharLimitedTypography';
 import { GEM_PLACEHOLDER_BLACK } from '../common/Image';
+
 
 const imgHeight = 120;
 
@@ -99,7 +98,7 @@ export const InjectedRecommendationCard: React.FC<Recommendation> = ({
           <Grid item xs={5}>
             <CardMedia
               component="img"
-              src={image ?? GEM_PLACEHOLDER_BLACK}
+              src={image ?? `${config.PUBLIC_URL}${GEM_PLACEHOLDER_BLACK}`}
               title={title}
             />
           </Grid>
