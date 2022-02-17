@@ -199,9 +199,14 @@ const MenuBox: React.FC<{ currentView: CurrentView }> = ({ currentView }) => {
 interface SidebarProps {
   currentView: CurrentView;
   profile?: ContentCreator;
+  accountLinkCompleted: boolean;
 }
 
-export const Sidebar: React.FC<SidebarProps> = ({ currentView, profile }) => {
+export const Sidebar: React.FC<SidebarProps> = ({
+  currentView,
+  accountLinkCompleted,
+  profile,
+}) => {
   const classes = useStyles();
   const theme = useTheme();
 
@@ -224,7 +229,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ currentView, profile }) => {
         <YCAILogo height={24} />
       </Box>
 
-      {profile && (
+      {profile && accountLinkCompleted && (
         <>
           <UserProfileBox />
 
