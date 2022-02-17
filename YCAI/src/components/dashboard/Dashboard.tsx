@@ -143,7 +143,7 @@ const DashboardContent: React.FC<DashboardContentProps> = ({
           }
         }
       }
-    }, [currentView, auth]);
+    }, [currentView, profile, accountLinkCompleted, auth]);
 
   return (
     <Grid
@@ -230,12 +230,15 @@ export const Dashboard = withQueries(({ queries }): React.ReactElement => {
       ({ currentView, profile, auth, accountLinkCompleted }) => {
         const classes = useStyles();
 
+        console.log({ currentView, accountLinkCompleted });
         return (
           <Grid container className={classes.root} spacing={4}>
             <Grid item sm={12} md={3} lg={2}>
-              {accountLinkCompleted && (
-                <Sidebar currentView={currentView} profile={profile} />
-              )}
+              <Sidebar
+                currentView={currentView}
+                accountLinkCompleted={accountLinkCompleted}
+                profile={profile}
+              />
             </Grid>
             <Grid item sm={12} md={9} lg={10}>
               <DashboardContent
