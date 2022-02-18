@@ -8,6 +8,7 @@ productName: Guardoni
 # asarUnpack: ['node_modules']
 
 extends: null
+publish: false
 
 extraMetadata:
   main: 'build/electron/main.js'
