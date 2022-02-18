@@ -25,6 +25,17 @@ jobs:
           cache: 'yarn'
           cache-dependency-path: yarn.lock
 
+      - uses: actions/cache@v2
+        with:
+          key: build-${{ github.ref }}
+          path: |
+            packages/shared/build
+            packages/taboule/build
+            extension/build
+            guardoni/build
+            services/tktrex/extension/build
+            YCAI/build
+
       - name: Install dependencies
         run: yarn
 
@@ -41,17 +52,7 @@ jobs:
           yarn tk:ext build
           DOTENV_CONFIG_PATH=.env.beta yarn ycai build:ext
 
-      - uses: actions/cache@v2
-        with:
-          key: build-${{ github.ref }}
-          path: |
-            ./packages/shared/build
-            ./packages/taboule/build
-            ./extension/build
-            ./guardoni/build
-            ./services/tktrex/extension/build
-            ./YCAI/build
-
+      
   guardoni_release:
     name: Release
     needs: build
@@ -88,13 +89,13 @@ jobs:
           key: build-${{ github.ref }}
           restore-keys: build-
           path: |
-            ./packages/shared/build
-            ./packages/taboule/build
-            ./extension/build
-            ./guardoni/build
-            ./guardoni/dist
-            ./services/tktrex/extension/build
-            ./YCAI/build
+            packages/shared/build
+            packages/taboule/build
+            extension/build
+            guardoni/build
+            guardoni/dist
+            services/tktrex/extension/build
+            YCAI/build
 
       - name: Build Guardoni for ${{ matrix.config.os }}
         env:
@@ -126,12 +127,12 @@ jobs:
           key: build-${{ github.ref }}
           restore-keys: build-
           path: |
-            ./extension/build
-            ./extension/dist
-            ./guardoni/build
-            ./guardoni/dist
-            ./services/tktrex/extension/build
-            ./YCAI/build
+            extension/build
+            extension/dist
+            guardoni/build
+            guardoni/dist
+            services/tktrex/extension/build
+            YCAI/build
 
       - name: Get version
         id: version
@@ -147,9 +148,9 @@ jobs:
           prerelease: true
           fail_on_unmatched_files: true
           files: |
-            ./extension/dist/yttrex-*.zip
-            ./extension/dist/guardoni-yttrex-*.zip
-            ./guardoni/dist/guardoni-cli*
-            ./guardonid/dist/guardoni_*
-            ./services/tktrex/extension/build/extension/*.zip
-            ./YCAI/build/extension/*.zip
+            extension/dist/yttrex-*.zip
+            extension/dist/guardoni-yttrex-*.zip
+            guardoni/dist/guardoni-cli*
+            guardonid/dist/guardoni_*
+            services/tktrex/extension/build/extension/*.zip
+            YCAI/build/extension/*.zip
