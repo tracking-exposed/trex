@@ -18,6 +18,17 @@ jobs:
         with:
           fetch-depth: 0
 
+      - uses: actions/cache@v2
+        with:
+          key: build
+          path: |
+            ./packages/shared/build
+            ./packages/taboule/build
+            ./extension/build
+            ./guardoni/build
+            ./services/tktrex/extension/build
+            ./YCAI/build
+
       - name: Setup Node.js
         uses: actions/setup-node@v2
         with:
@@ -40,17 +51,6 @@ jobs:
           yarn guardoni pkg
           yarn tk:ext build
           DOTENV_CONFIG_PATH=.env.beta yarn ycai build:ext
-
-      - uses: actions/cache@v2
-        with:
-          key: build
-          path: |
-            ./packages/shared/build
-            ./packages/taboule/build
-            ./extension/build
-            ./guardoni/build
-            ./services/tktrex/extension/build
-            ./YCAI/build
 
   guardoni_release:
     name: Release
