@@ -43,7 +43,7 @@ jobs:
 
       - uses: actions/cache@v2
         with:
-          key: build
+          key: build-${{ github.ref }}
           path: |
             ./packages/shared/build
             ./packages/taboule/build
@@ -123,8 +123,8 @@ jobs:
 
       - uses: actions/cache@v2
         with:
-          key: build
-          restore-keys: build
+          key: build-${{ github.ref }}
+          restore-keys: build-
           path: |
             ./extension/build
             ./extension/dist
