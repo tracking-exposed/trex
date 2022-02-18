@@ -85,8 +85,8 @@ jobs:
 
       - uses: actions/cache@v2
         with:
-          key: build
-          restore-keys: build
+          key: build-${{ github.ref }}
+          restore-keys: build-
           path: |
             ./packages/shared/build
             ./packages/taboule/build
