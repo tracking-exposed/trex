@@ -43,6 +43,8 @@ jobs:
         run: yarn ycai build
 
       - name: Next Release
+        env:
+          YCAI_DOTENV_CONFIG_PATH: .env
         run: yarn release-it --only-version --preRelease --ci --preReleaseId=beta --dry-run
 
 
