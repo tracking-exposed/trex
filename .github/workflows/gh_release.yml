@@ -70,7 +70,7 @@ jobs:
             command: "dist:windows"
     steps:
       - name: 'Use GNU tar instead BSD tar'
-        if: matrix.os == 'windows-latest'
+        if: matrix.config.os == 'windows-latest'
         shell: cmd
         run: echo C:\Program Files\Git\usr\bin>>"%GITHUB_PATH%"
 
