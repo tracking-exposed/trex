@@ -146,6 +146,7 @@ const getConfig = <E extends t.Props>(
   }
 
   if (opts.hot && opts.target === 'web' && mode === 'development') {
+    plugins.push(new webpack.HotModuleReplacementPlugin());
     plugins.push(new ReactRefreshWebpackPlugin());
   }
 
@@ -170,7 +171,6 @@ const getConfig = <E extends t.Props>(
       path: opts.outputDir,
       filename: '[name].js',
     },
-
     module: {
       rules: [
         {

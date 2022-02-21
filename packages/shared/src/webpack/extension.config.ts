@@ -21,13 +21,13 @@ const getExtensionConfig = <E extends t.Props>(
   const { buildENV, ...config } = getConfig({
     target: 'web',
     outputDir: path.resolve(c.cwd, 'build/extension'),
-    hot: false,
     entry: {
       ext: path.resolve(c.cwd, 'src/app.tsx'),
       popup: path.resolve(c.cwd, 'src/popup.tsx'),
       background: path.resolve(c.cwd, 'src/background/index.ts'),
     },
     ...c,
+    hot: false,
   });
 
   config.devtool = config.mode === 'development' ? 'inline-source-map' : false;
