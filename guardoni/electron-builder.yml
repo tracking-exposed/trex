@@ -4,7 +4,7 @@ appId: guardoni.tracking.exposed
 
 productName: Guardoni
 
-# asar: true
+asar: false
 # asarUnpack: ['node_modules']
 
 extends: null
