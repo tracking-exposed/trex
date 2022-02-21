@@ -51,7 +51,7 @@ jobs:
           yarn guardoni build
           yarn guardoni pkg
           yarn tk:ext build
-          DOTENV_CONFIG_PATH=.env.beta yarn ycai build:ext
+          DOTENV_CONFIG_PATH=.env.beta yarn ycai build
 
   guardoni_build:
     name: Release
