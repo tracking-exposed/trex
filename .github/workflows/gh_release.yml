@@ -52,8 +52,7 @@ jobs:
           yarn tk:ext build
           DOTENV_CONFIG_PATH=.env.beta yarn ycai build:ext
 
-      
-  guardoni_release:
+  guardoni_build:
     name: Release
     needs: build
     runs-on: ${{ matrix.config.os }}
@@ -105,7 +104,7 @@ jobs:
   gh_release:
     name: Release on GH
     runs-on: ubuntu-latest
-    needs: [guardoni_release]
+    needs: [guardoni_build]
     steps:
       - name: Checkout
         uses: actions/checkout@v2
@@ -125,7 +124,7 @@ jobs:
       - uses: actions/cache@v2
         with:
           key: build-${{ github.ref }}
-          restore-keys: build-
+          restore-keys: build-${{ github.ref }}
           path: |
             extension/build
             extension/dist
