@@ -1,4 +1,7 @@
 #!/usr/bin/env node
+
+/* eslint-disable */
+
 const _ = require('lodash');
 const moment = require('moment');
 const debug = require('debug')('tktrex:parserv3');
