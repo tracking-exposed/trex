@@ -37,9 +37,6 @@ jobs:
         run: yarn shared build
 
       - name: Build extension
-        run: yarn ycai build:ext
-
-      - name: Build dashboard
         run: yarn ycai build
 
       - name: Test
