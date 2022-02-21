@@ -27,7 +27,7 @@ jobs:
 
       - uses: actions/cache@v2
         with:
-          key: build-${{ github.run_id }}
+          key: build-workspace-${{ github.run_id }}
           path: |
             packages/shared/build
             packages/taboule/build
@@ -81,7 +81,9 @@ jobs:
 
       - uses: actions/cache@v2
         with:
-          key: build-${{ github.run_id }}
+          key: build-guardoni-${{ github.run_id }}
+          restore-keys: |
+            build-workspace-${{ github.run_id }}
           path: |
             packages/shared/build
             packages/taboule/build
@@ -119,9 +121,13 @@ jobs:
       - uses: actions/cache@v2
         with:
           key: build-${{ github.run_id }}
+          restore-keys: |
+            build-workspace-${{ github.run_id }}
+            build-guardoni-${{ github.run_id }}
           path: |
             packages/shared/build
             packages/taboule/build
+            extension/dist
             guardoni/build
             guardoni/dist
             YCAI/build
