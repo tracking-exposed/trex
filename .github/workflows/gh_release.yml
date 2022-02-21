@@ -29,12 +29,8 @@ jobs:
         with:
           key: build-${{ github.run_id }}
           path: |
-            packages/shared/build
-            packages/taboule/build
-            extension/build
-            guardoni/build
-            services/tktrex/extension/build
-            YCAI/build
+            "**/build"
+            "**/dist"
 
       - name: Install dependencies
         run: yarn
@@ -82,13 +78,8 @@ jobs:
         with:
           key: build-${{ github.run_id }}
           path: |
-            packages/shared/build
-            packages/taboule/build
-            extension/build
-            guardoni/build
-            guardoni/dist
-            services/tktrex/extension/build
-            YCAI/build
+            "**/build"
+            "**/dist"
 
       - name: Setup Node.js
         uses: actions/setup-node@v2
@@ -128,14 +119,10 @@ jobs:
       - uses: actions/cache@v2
         with:
           key: build-${{ github.run_id }}
-          restore-keys: build-
+          restore-keys: build-${{ github.run_id }}
           path: |
-            extension/build
-            extension/dist
-            guardoni/build
-            guardoni/dist
-            services/tktrex/extension/build
-            YCAI/build
+            "**/build"
+            "**/dist"
 
       - name: Get version
         id: version
