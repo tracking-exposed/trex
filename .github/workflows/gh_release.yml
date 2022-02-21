@@ -27,7 +27,7 @@ jobs:
 
       - uses: actions/cache@v2
         with:
-          key: build-${{ github.ref }}
+          key: build-${{ github.run_id }}
           path: |
             packages/shared/build
             packages/taboule/build
@@ -68,10 +68,27 @@ jobs:
           # - os: windows-latest
           #   command: "dist:windows"
     steps:
+      - name: 'Use GNU tar instead BSD tar'
+        if: matrix.os == 'windows-latest'
+        shell: cmd
+        run: echo C:\Program Files\Git\usr\bin>>"%GITHUB_PATH%"
+
       - name: Checkout
         uses: actions/checkout@v2
         with:
           fetch-depth: 0
+
+      - uses: actions/cache@v2
+        with:
+          key: build-${{ github.run_id }}
+          path: |
+            packages/shared/build
+            packages/taboule/build
+            extension/build
+            guardoni/build
+            guardoni/dist
+            services/tktrex/extension/build
+            YCAI/build
 
       - name: Setup Node.js
         uses: actions/setup-node@v2
@@ -82,19 +99,6 @@ jobs:
 
       - name: Install dependencies
         run: yarn
-
-      - uses: actions/cache@v2
-        with:
-          key: build-${{ github.ref }}
-          restore-keys: build-${{ github.ref }}
-          path: |
-            packages/shared/build
-            packages/taboule/build
-            extension/build
-            guardoni/build
-            guardoni/dist
-            services/tktrex/extension/build
-            YCAI/build
 
       - name: Build Guardoni for ${{ matrix.config.os }}
         env:
@@ -123,8 +127,8 @@ jobs:
 
       - uses: actions/cache@v2
         with:
-          key: build-${{ github.ref }}
-          restore-keys: build-${{ github.ref }}
+          key: build-${{ github.run_id }}
+          restore-keys: build-
           path: |
             extension/build
             extension/dist
@@ -138,7 +142,7 @@ jobs:
         run: |
           echo "::set-output name=version::$(npm pkg get version | sed 's/"//g')"
 
-      - name: Upload YCAI extension
+      - name: Upload assets to release
         id: create_release
         uses: softprops/action-gh-release@v1
         with:
