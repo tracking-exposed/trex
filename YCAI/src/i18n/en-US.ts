@@ -63,17 +63,16 @@ const resources: CustomTypeOptions['resources'] = {
   },
   routes: {
     congrats: 'Congrats! \n Channel linked successfully :)',
-    lab_title: 'LAB - Choose the Recommendations on Your Videos',
+    lab_title: 'Customisation',
     lab_title_short: 'LAB',
-    lab_subtitle:
-      'Click on a video to pick its recommendations.\nYour content, your choice!',
+    lab_subtitle: 'Select specific gems for each of your videos',
     lab_edit_subtitle:
       'Paste a link in the grey box below to add it to the recommendations of this video.\nYou can add recommendations towards any website!',
-    lab_videos_title: 'Videos',
-    gem_collection_title_short: 'Gem Collection',
+    lab_edit_title: 'Customisation',
+    gem_collection_title_short: 'Collection',
     gem_collection_subtitle:
-      'Add a series of recommendations from anywhere on the Internet to be shown besides your videos',
-    gem_collection_title: 'Your Internet Gems Collection',
+      'Shuffle your gems collection on all your Youtube Channel videos',
+    gem_collection_title: 'Collection',
     analytics: 'Analytics',
     settings: 'Settings',
     link_account:

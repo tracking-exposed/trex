@@ -99,7 +99,7 @@ const MenuBox: React.FC<{ currentView: CurrentView }> = ({ currentView }) => {
             views: ['gemCollection'],
           },
           {
-            title: t('routes:lab_videos_title'),
+            title: t('routes:lab_edit_title'),
             views: ['lab', 'labEdit'],
           },
         ],
