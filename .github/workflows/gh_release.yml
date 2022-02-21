@@ -66,8 +66,8 @@ jobs:
             command: 'dist:linux'
           - os: macos-latest
             command: 'dist:mac'
-          # - os: windows-latest
-          #   command: "dist:windows"
+          - os: windows-latest
+            command: "dist:windows"
     steps:
       - name: 'Use GNU tar instead BSD tar'
         if: matrix.os == 'windows-latest'
@@ -116,6 +116,18 @@ jobs:
         with:
           fetch-depth: 0
 
+      - uses: actions/cache@v2
+        with:
+          key: build-${{ github.run_id }}
+          path: |
+            packages/shared/build
+            packages/taboule/build
+            guardoni/build
+            guardoni/dist
+            YCAI/build
+            services/tktrex/extension/build
+
+
       - name: Setup Node.js
         uses: actions/setup-node@v2
         with:
@@ -126,17 +138,6 @@ jobs:
       - name: Install dependencies
         run: yarn
 
-      - uses: actions/cache@v2
-        with:
-          key: build-${{ github.run_id }}
-          restore-keys: build-${{ github.run_id }}
-          path: |
-            packages/shared/build
-            packages/taboule/build
-            guardoni/build
-            guardoni/dist
-            YCAI/build
-            services/tktrex/extension/build
 
       - name: Get version
         id: version
