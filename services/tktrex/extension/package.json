@@ -3,6 +3,7 @@
   "version": "2.3.0",
   "packageManager": "yarn@3.1.1",
   "scripts": {
+    "lint": "eslint ./src --quiet",
     "build": "tsc --build && rm -rf dist && DEBUG=\"*:debug *:error\" NODE_ENV=production webpack",
     "build:dev": "DEBUG=\"*\" webpack",
     "watch": "DEBUG=\"*\" webpack --watch",
