@@ -53,7 +53,7 @@ function boot(): void {
         feedId,
         href: window.location.href,
       },
-      tktrexActions
+      tktrexActions,
     );
   });
 }
@@ -110,7 +110,7 @@ function fullSave(): void {
           feedId,
         },
       });
-    })
+    }),
   );
 }
 
@@ -159,8 +159,8 @@ function setupObserver(): void {
   let oldHref = window.location.href;
   const body = document.querySelector('body');
 
-  const observer = new MutationObserver(function (mutations) {
-    mutations.forEach(function (mutation) {
+  const observer = new MutationObserver(function(mutations) {
+    mutations.forEach(function(mutation) {
       if (oldHref !== window.location.href) {
         feedCounter++;
         refreshUUID();
@@ -173,7 +173,7 @@ function setupObserver(): void {
           'feedCounter',
           feedCounter,
           'videoCounter resetting after poking',
-          videoCounter
+          videoCounter,
         );
         videoCounter = 0;
         oldHref = window.location.href;
@@ -201,7 +201,7 @@ const hidLog = log.extend('intercept-data-listener');
 
 const handleInterceptedData = (): void => {
   const itemNodes = document.body.querySelectorAll(
-    selectors.apiInterceptor.selector
+    selectors.apiInterceptor.selector,
   );
 
   if (itemNodes.length === 0) {
@@ -211,15 +211,20 @@ const handleInterceptedData = (): void => {
   hidLog.debug('Processing new items %d', itemNodes.length);
 
   itemNodes.forEach((ch, i) => {
-    // get first element data
     // hidLog.info('Child el %O', childEl);
-    // const payload = childEl?.innerHTML;
-    hidLog.debug('Sending APIRequest payload');
-    // hub.dispatch({
-    //   type: 'APIRequest',
-    //   payload: data
-    // })
+    const html = ch.innerHTML;
+    try {
+      const data = JSON.parse(html);
+      hidLog.debug('Sending APIRequest payload');
+      hub.dispatch({
+        type: 'APIEvent',
+        payload: data,
+      });
+    } catch (e) {
+      hidLog.error('Error %O', e);
+    }
     hidLog.debug('Remove child from container: O%', ch);
+
     ch.remove();
   });
 };
@@ -233,13 +238,13 @@ const handleSearch = _.debounce((element: Node): void => {
   const dat = document.querySelectorAll(selectors.search.selector);
   const te = _.map(
     document.querySelectorAll(selectors.error.selector),
-    'textContent'
+    'textContent',
   );
   if (dat.length === 0 && !te.includes('No results found')) {
     log.debug(
       'Matched invalid h2:',
       te,
-      '(which got ignored because they are not errors)'
+      '(which got ignored because they are not errors)',
     );
     return;
   }
@@ -301,7 +306,7 @@ const handleVideo = _.debounce((node: HTMLElement): void => {
         if (memo.parentNode.outerHTML.length > 10000) {
           log.info(
             'handleVideo: parentNode too big',
-            memo.parentNode.outerHTML.length
+            memo.parentNode.outerHTML.length,
           );
           return memo;
         }
@@ -310,13 +315,13 @@ const handleVideo = _.debounce((node: HTMLElement): void => {
 
       return memo;
     },
-    node
+    node,
   );
 
   if (videoRoot.hasAttribute('trex')) {
     log.info(
       'element already acquired: skipping',
-      videoRoot.getAttribute('trex')
+      videoRoot.getAttribute('trex'),
     );
 
     return;
@@ -359,7 +364,7 @@ function initializeEmergencyButton(): void {
   element.setAttribute('id', 'full--save');
   element.setAttribute(
     'style',
-    'position: fixed; top:50%; left: 1rem; display: flex; font-size: 3em; cursor: pointer; flex-direction: column; z-index: 9999; visibility: visible;'
+    'position: fixed; top:50%; left: 1rem; display: flex; font-size: 3em; cursor: pointer; flex-direction: column; z-index: 9999; visibility: visible;',
   );
   element.innerText = '💾';
   document.body.appendChild(element);

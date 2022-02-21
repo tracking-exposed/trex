@@ -5,49 +5,66 @@ import { APIHandler, listHandler, recommendedListHandler } from './handlers';
 
 const iLog = log.extend('intercept');
 
+interface TrExXMLHttpPRequest extends XMLHttpRequest {
+  _method: string;
+  _startTime: Date;
+  _requestHeaders: any;
+  _endTime?: Date;
+}
+
 interface Datum {
   id: string;
   url: string;
-  params: any;
-  body?: Json;
-  response: Json;
+  request: {
+    method: string;
+    query?: any;
+    params?: any;
+    headers: any;
+    body?: Json;
+  };
+
+  response: {
+    headers: any;
+    status: number;
+    body: Json;
+  };
 }
 
 /**
  * parse xhr response to a consistent data type
  */
 const parseData = (
-  xhr: any,
-  { api, postData }: { api: APIHandler; postData: any }
+  xhr: TrExXMLHttpPRequest,
+  { api, postData }: { api: APIHandler; postData: any },
 ): Datum => {
   iLog.debug('API handler %O', api);
   iLog.debug('XHR %O', xhr);
   iLog.debug('Post Data %O', JSON.parse(postData));
   const id = `${xhr._startTime}_${xhr._endTime}`;
   // handle POST requests
-  if (xhr._method === 'POST') {
-    iLog.debug('POST request: %O', xhr);
-    return {
-      id,
-      url: api.urls[0],
-      params: undefined,
-      body: JSON.parse(postData),
-      response: JSON.parse(xhr.responseText),
-    };
-  }
 
-  iLog.debug('Get request: %O', xhr);
+  iLog.debug('POST request: %O', xhr);
   return {
     id,
     url: api.urls[0],
-    params: undefined,
-    response: JSON.parse(xhr.responseText),
+    request: {
+      method: api.method,
+      query: undefined,
+      params: undefined,
+      headers: xhr._requestHeaders,
+      body: xhr._method === 'POST' ? JSON.parse(postData) : undefined,
+    },
+    response: {
+      headers: xhr.getAllResponseHeaders(),
+      status: xhr.status,
+      body: JSON.parse(xhr.responseText),
+    },
   };
 };
 
 export const getOrCreateInterceptorContainer = (): HTMLDivElement => {
   const existingContainer = document.body.querySelector(
-    `#${INTERCEPTOR_CONTAINER_ID}`
+    `#${INTERCEPTOR_CONTAINER_ID}`,
   );
   if (existingContainer) {
     return existingContainer as HTMLDivElement;
@@ -62,7 +79,7 @@ export const getOrCreateInterceptorContainer = (): HTMLDivElement => {
   return interceptorContainer;
 };
 
-export default (function (xhr) {
+export default (function(xhr) {
   const XHR = XMLHttpRequest.prototype;
 
   const open = XHR.open;
@@ -74,7 +91,7 @@ export default (function (xhr) {
   document.body.appendChild(interceptorContainer);
   iLog.debug('Interceptor container: %O', interceptorContainer);
 
-  XHR.open = function (method, url) {
+  XHR.open = function(method, url) {
     (this as any)._method = method;
     (this as any)._url = url;
     (this as any)._requestHeaders = {};
@@ -83,19 +100,19 @@ export default (function (xhr) {
     return open.apply(this, arguments as any);
   };
 
-  XHR.setRequestHeader = function (header, value) {
+  XHR.setRequestHeader = function(header, value) {
     (this as any)._requestHeaders[header] = value;
     return setRequestHeader.apply(this, arguments as any);
   };
 
-  XHR.send = function (postData) {
-    this.addEventListener('load', function () {
+  XHR.send = function(postData) {
+    this.addEventListener('load', function() {
       (this as any)._endTime = new Date().toISOString();
 
       iLog.debug(
         'Loading request %s: %s',
         (this as any)._method,
-        (this as any)._url
+        (this as any)._url,
       );
 
       // get array of data to convert to DOM nodes
@@ -107,11 +124,13 @@ export default (function (xhr) {
             (this as any)._method === h.method;
 
           if (urlMatch) {
-            return acc.concat(parseData(this, { api: h, postData }));
+            return acc.concat(
+              parseData(this as TrExXMLHttpPRequest, { api: h, postData }),
+            );
           }
           return acc;
         },
-        []
+        [],
       );
 
       iLog.debug('Nodes with results %O', caughtData);

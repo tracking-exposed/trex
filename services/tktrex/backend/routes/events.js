@@ -232,8 +232,22 @@ async function handshake(req) {
   };
 }
 
+async function processAPIEvents(req) {
+  req.body.forEach((b) => {
+    const { request, response, url, id } = b.payload;
+    debug('received api events %s for %s', id, url);
+    debug('caught request %O', request);
+    debug('caught response %O', response);
+  });
+
+  return {
+    json: true,
+  };
+}
+
 module.exports = {
   processEvents,
+  processAPIEvents,
   getMirror,
   mandatoryHeaders,
   processHeaders,
