@@ -33,9 +33,7 @@ jobs:
         run: yarn
 
       - name: Lint code
-        run: |
-          yarn tk:backend lint
-          yarn tk:ext lint
+        run: yarn tk:ext lint
 
       - name: Build shared
         run: yarn shared build
