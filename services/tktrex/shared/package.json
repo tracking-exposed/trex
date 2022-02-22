@@ -4,7 +4,8 @@
   "scripts": {
     "test": "jest --maxWorkers=8",
     "tdd": "jest --watch --maxWorkers=8",
-    "dump-parsed-data": "ts-node bin/dump-parsed-data.ts"
+    "dump-parsed-data": "ts-node bin/dump-parsed-data.ts",
+    "make-swagger-config": "ts-node bin/make-swagger-config.ts"
   },
   "devDependencies": {
     "@types/jest": "^27.4.0",

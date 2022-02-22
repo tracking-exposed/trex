@@ -4,7 +4,7 @@
  * imply the same keyname has the same description
  */
 
-const swagger = require('../../../../YCAI/src/providers/swagger/swagger.provider');
+import * as swagger from '../../../../packages/shared/src/swagger/swagger.provider';
 
 console.log(swagger);
 

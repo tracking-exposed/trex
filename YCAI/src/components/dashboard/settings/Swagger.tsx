@@ -1,12 +1,12 @@
 import * as endpoints from '@shared/endpoints';
 import models from '@shared/models';
+import * as swagger from '@shared/providers/swagger/swagger.provider';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
 import SwaggerUI from 'swagger-ui';
 import 'swagger-ui/dist/swagger-ui.css';
-import '../../../resources/swagger-ui-material.css';
 import { config } from '../../../config';
-import * as swagger from '../../../providers/swagger/swagger.provider';
+import '../../../resources/swagger-ui-material.css';
 
 export const Swagger: React.FC = () => {
   const { t } = useTranslation();
