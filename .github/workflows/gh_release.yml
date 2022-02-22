@@ -122,8 +122,6 @@ jobs:
         with:
           key: build-${{ github.run_id }}
           restore-keys: |
-            build-workspace-${{ github.run_id }}
-            build-guardoni-${{ github.run_id }}
             build-guardoni-ubuntu-latest-${{ github.run_id }}
             build-guardoni-macos-latest-${{ github.run_id }}
             build-guardoni-windows-latest-${{ github.run_id }}
