@@ -1,3 +1,12 @@
+## [2.4.0](https://github.com/tracking-exposed/yttrex/compare/v2.3.0...v2.4.0) (2022-02-22)
+
+- simple auto script for tiktok fr elections ([#311](https://github.com/tracking-exposed/yttrex/issues/311)) ([7cb971f](https://github.com/tracking-exposed/yttrex/commit/7cb971ff67a9a00fde9e76b6bc9855517923c9c4)), closes [#312](https://github.com/tracking-exposed/yttrex/issues/312) [#304](https://github.com/tracking-exposed/yttrex/issues/304) [#291](https://github.com/tracking-exposed/yttrex/issues/291) [#305](https://github.com/tracking-exposed/yttrex/issues/305) [#301](https://github.com/tracking-exposed/yttrex/issues/301) [#301](https://github.com/tracking-exposed/yttrex/issues/301) [#301](https://github.com/tracking-exposed/yttrex/issues/301) [#301](https://github.com/tracking-exposed/yttrex/issues/301) [#301](https://github.com/tracking-exposed/yttrex/issues/301)
+- **workspace:** build with no lib check ([92e3784](https://github.com/tracking-exposed/yttrex/commit/92e37849547f200631d3ca6b5a6f794700925df3))
+- **ycai:** collection and customisation wording for dashboard ([8062ed7](https://github.com/tracking-exposed/yttrex/commit/8062ed7a452cf9ec4159127813f41dc3e18fdd71))
+- **ycai:** empty gem collection message in yt video page ([#407](https://github.com/tracking-exposed/yttrex/issues/407)) ([8024a90](https://github.com/tracking-exposed/yttrex/commit/8024a9066d33ca015abc0ad4a9fcdd58c3210366))
+- **ycai:** logo in every page and redirect to gem library, closes [#399](https://github.com/tracking-exposed/yttrex/issues/399) ([43a85dd](https://github.com/tracking-exposed/yttrex/commit/43a85ddf68557f3c35743b7fb7b823797f21e023))
+- **ycai:** recommendation model to be less strict on image prop, closes [#389](https://github.com/tracking-exposed/yttrex/issues/389), [#401](https://github.com/tracking-exposed/yttrex/issues/401) ([7983391](https://github.com/tracking-exposed/yttrex/commit/7983391c36ed12897b8a70d258224fbd03048bc7))
+
 ## [2.3.0](https://github.com/tracking-exposed/yttrex/compare/v2.2.0...v2.3.0) (2022-02-16)
 
 - 2.2.1-0 CHANGELOG [skip ci] ([85c2219](https://github.com/tracking-exposed/yttrex/commit/85c2219f84e68bc8d7d719a41fb787baf452cdb1))
