@@ -208,7 +208,7 @@ const handleInterceptedData = (): void => {
     return;
   }
 
-  hidLog.debug('Processing new items %d', itemNodes.length);
+  hidLog.debug('Intercepted %d items', itemNodes.length);
 
   itemNodes.forEach((ch, i) => {
     // hidLog.info('Child el %O', childEl);
@@ -304,8 +304,8 @@ const handleVideo = _.debounce((node: HTMLElement): void => {
     (memo: HTMLElement, iteration: number): HTMLElement => {
       if (memo.parentNode instanceof HTMLElement) {
         if (memo.parentNode.outerHTML.length > 10000) {
-          log.info(
-            'handleVideo: parentNode too big',
+          log.debug(
+            'handleVideo: parentNode > 10000',
             memo.parentNode.outerHTML.length,
           );
           return memo;

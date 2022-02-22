@@ -236,8 +236,8 @@ async function processAPIEvents(req) {
   req.body.forEach((b) => {
     const { request, response, url, id } = b.payload;
     debug('received api events %s for %s', id, url);
-    debug('caught request %O', request);
-    debug('caught response %O', response);
+    debug('caught request %O', JSON.stringify(request.body, undefined, 2));
+    debug('caught response %O', JSON.stringify(response.body, undefined, 2));
   });
 
   return {

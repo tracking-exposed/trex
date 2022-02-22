@@ -37,7 +37,7 @@ function handleAPIEvent(e: APIEvent): void {
 function apiSync(hub: Hub): void {
   if (state.content.length) {
     log.info(
-      `synchronizing ${state.content.length} new items (total since beginning of session: ${state.incremental})`,
+      `APIsync — ${state.content.length} items (total since beginning: ${state.incremental})`,
       countBy(state.content, 'type'),
     );
     // Send timelines to the page handling the communication with the API.
