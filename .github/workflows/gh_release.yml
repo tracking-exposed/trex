@@ -81,8 +81,10 @@ jobs:
 
       - uses: actions/cache@v2
         with:
-          key: build-guardoni-${{ github.run_id }}
+          key: build-guardoni-${{ github.run_id }}-${{ matrix.config.os }}
           restore-keys: |
+            build-guardoni-${{ github.run_id }}-macos-latest
+            build-guardoni-${{ github.run_id }}-ubuntu-latest
             build-workspace-${{ github.run_id }}
           path: |
             packages/shared/build
@@ -122,8 +124,7 @@ jobs:
         with:
           key: build-${{ github.run_id }}
           restore-keys: |
-            build-guardoni-${{ github.run_id }}
-
+            build-guardoni-${{ github.run_id }}-windows-latest
           path: |
             packages/shared/build
             packages/taboule/build
