@@ -4,9 +4,41 @@
  * imply the same keyname has the same description
  */
 
-import * as swagger from '../../../../packages/shared/src/swagger/swagger.provider';
+import * as endpoints from '../src/endpoints';
+import * as apiModels from '../src/models/api';
+import * as swagger from '../../../../packages/shared/src/providers/swagger/swagger.provider';
 
-console.log(swagger);
+const openDocAPI = swagger.generateDoc({
+  title: 'Tktrex API Docs',
+  description: 'Tracking exposed API documentation for tiktok platform',
+  server: {
+    host: 'tiktok.tracking.exposed',
+    port: 443,
+    protocol: 'https',
+    basePath: 'api',
+  },
+  endpoints: {
+    v1: endpoints,
+  },
+  version: '1',
+  models: apiModels,
+  components: {
+    security: {
+      ACTToken: {
+        type: 'apiKey',
+        in: 'header',
+        name: 'X-Authorization',
+      },
+    },
+  },
+  security: [
+    {
+      ACTToken: [],
+    },
+  ],
+});
+
+console.log(openDocAPI);
 
 /*
 import * as endpoints from '@shared/endpoints';

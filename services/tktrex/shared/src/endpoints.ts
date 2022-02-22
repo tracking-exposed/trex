@@ -1,32 +1,29 @@
 import * as t from 'io-ts';
 import { Endpoint } from 'ts-endpoint';
-import * as model from './modelsAll';
-
+import * as apiModel from './models/api';
 
 const GetPersonalJSON = Endpoint({
-  // '/api/v2/personal/:publicKey/:what/json',
   Method: 'GET',
   getPath: ({ publicKey, what }) => `/v2/personal/${publicKey}/${what}/json`,
   Input: {
     Params: t.type({
       publicKey: t.string,
-      what: t.string // might be enum "foryou|following|..."
+      what: apiModel.What, // might be enum "foryou|following|..."
     }),
   },
-  Output: PersonalVideoList
+  Output: apiModel.PersonalVideoList,
 });
 
 const GetPersonalCSV = Endpoint({
-  // '/api/v2/personal/:publicKey/:what/csv',
   Method: 'GET',
   getPath: ({ publicKey, what }) => `/v2/personal/${publicKey}/${what}/csv`,
   Input: {
     Params: t.type({
       publicKey: t.string,
-      what: t.string // might be enum "foryou|following|search|..."
+      what: apiModel.What,
     }),
   },
-  Output: model.CSVtext // in this case should just be a long string?
+  Output: t.string,
 });
 
 // ****
@@ -34,29 +31,33 @@ const GetPersonalCSV = Endpoint({
 // ****
 
 const GetSearches = Endpoint({
-  // '/api/v2/public/searches',
   Method: 'GET',
-  getPath: () => `/v2/public/searches`,
-  Output: model.PublicSearchList,
+  getPath: () => '/v2/public/searches',
+  Output: apiModel.PublicSearchList,
 });
 
 const GetSearchByQuery = Endpoint({
-  // '/api/v2/public/query/:string/:format',
   Method: 'GET',
-
+  getPath: ({ query, format }) => `/api/v2/public/query/${query}/${format}`,
+  Input: {
+    Params: t.type({
+      query: apiModel.What,
+      format: apiModel.Format,
+    }),
+  },
+  Output: t.union([t.string, t.array(t.any)]),
 });
 
 const GetQueryList = Endpoint({
-  // '/api/v2/public/queries/list',
   Method: 'GET',
-
+  getPath: () => '/api/v2/public/queries/list',
+  Output: t.any,
 });
 
-export const endpoints = {
+export default {
   GetPersonalJSON,
   GetPersonalCSV,
   GetSearches,
   GetSearchByQuery,
-  GetQueryList
-}
-
+  GetQueryList,
+};
