@@ -58,7 +58,7 @@ jobs:
     needs: build
     runs-on: ${{ matrix.config.os }}
     strategy:
-      # just an example matrix
+      max-parallel: 1
       matrix:
         node-version: [16.x]
         config:
@@ -81,7 +81,7 @@ jobs:
 
       - uses: actions/cache@v2
         with:
-          key: build-guardoni-${{ matrix.config.os }}-${{ github.run_id }}
+          key: build-guardoni-${{ github.run_id }}
           restore-keys: |
             build-workspace-${{ github.run_id }}
           path: |
@@ -122,7 +122,7 @@ jobs:
         with:
           key: build-${{ github.run_id }}
           restore-keys: |
-            build-guardoni-
+            build-guardoni-${{ github.run_id }}
 
           path: |
             packages/shared/build
