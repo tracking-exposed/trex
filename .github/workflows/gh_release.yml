@@ -122,9 +122,7 @@ jobs:
         with:
           key: build-${{ github.run_id }}
           restore-keys: |
-            build-guardoni-ubuntu-latest-${{ github.run_id }}
-            build-guardoni-macos-latest-${{ github.run_id }}
-            build-guardoni-windows-latest-${{ github.run_id }}
+            build-guardoni-
 
           path: |
             packages/shared/build
@@ -154,7 +152,7 @@ jobs:
         id: create_release
         uses: softprops/action-gh-release@v1
         with:
-          name: v${{ steps.version.outputs.name }}
+          name: v${{ steps.version.outputs.version }}
           draft: true
           prerelease: true
           fail_on_unmatched_files: true
