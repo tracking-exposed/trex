@@ -4,9 +4,7 @@ import * as TE from 'fp-ts/lib/TaskEither';
 import { setItem } from '@shared/providers/localStorage.provider';
 import * as sharedConst from '@shared/constants';
 import { Settings } from '../../models/Settings';
-import { API } from '../../api';
-import { profile } from './creator.queries';
-import { keypair, settings, settingsRefetch } from './public.queries';
+import { keypair, settings, settingsRefetch, API } from './public.queries';
 
 export const handshake = command((handshake: HandshakeBody) =>
   API.v3.Public.Handshake({ Body: handshake })
@@ -24,11 +22,6 @@ export const deleteKeypair = command(() => TE.right({}), {
 export const updateSettings = command(
   (payload: Settings) => TE.fromIO(setItem(sharedConst.SETTINGS_KEY, payload)),
   { keypair, settings, settingsRefetch }
-);
-
-export const deleteProfile = command(
-  () => TE.fromIO(setItem(sharedConst.CONTENT_CREATOR, null)),
-  { profile }
 );
 
 export const downloadTXTFile = command(

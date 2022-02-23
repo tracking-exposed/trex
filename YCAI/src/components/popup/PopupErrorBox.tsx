@@ -3,7 +3,7 @@ import { Box, Button, ButtonGroup } from '@material-ui/core';
 import { ErrorBox } from '@shared/components/Error/ErrorBox';
 import { getDefaultSettings } from '../../models/Settings';
 import { useTranslation } from 'react-i18next';
-import { updateSettings } from '../../state/popup.commands';
+import { updateSettings } from '../../state/popup/popup.commands';
 
 export const PopupErrorBox = (e: any): React.ReactElement => {
   const { t } = useTranslation();

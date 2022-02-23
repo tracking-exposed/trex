@@ -198,7 +198,7 @@ const MenuBox: React.FC<{ currentView: CurrentView }> = ({ currentView }) => {
 
 interface SidebarProps {
   currentView: CurrentView;
-  profile?: ContentCreator;
+  profile: ContentCreator | null;
   accountLinkCompleted: boolean;
 }
 
