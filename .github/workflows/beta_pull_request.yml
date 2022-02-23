@@ -1,4 +1,4 @@
-name: TRex - Release
+name: TRex - Beta Pull request
 on:
   push:
     branches:
@@ -34,15 +34,6 @@ jobs:
 
       # - name: Test project
       #   run: yarn test
-
-      - name: Release
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          YCAI_DOTENV_CONFIG_PATH: .env.beta
-        run: |
-          git config --global user.email "team@tracking.exposed"
-          git config --global user.name "Team - Tracking Exposed"
-          yarn release-it --ci --preRelease --preReleaseId=beta
 
       - name: Build Dashboard
         env:

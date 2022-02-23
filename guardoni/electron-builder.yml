@@ -8,6 +8,7 @@ asar: true
 asarUnpack: ['node_modules']
 
 extends: null
+publish: false
 
 extraMetadata:
   main: 'build/electron/main.js'
@@ -30,6 +31,7 @@ linux:
 mac:
   target: ['dmg']
   category: 'public.app-category.utilities'
+  strictVerify: false
 
 win:
   target: ['portable']
