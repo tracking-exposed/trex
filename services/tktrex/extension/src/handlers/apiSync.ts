@@ -24,7 +24,7 @@ const state = {
 
 function handleAPIEvent(e: APIEvent): void {
   const apiEvent = {
-    payload: e.payload,
+    payload: JSON.stringify(e.payload),
     clientTime: now(),
     incremental: state.incremental,
   };
