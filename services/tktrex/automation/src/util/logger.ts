@@ -36,7 +36,7 @@ export const createLogger = (
     }
   };
 
-  const capRight = (str: string, limit = 50): string =>
+  const capRight = (str: string, limit = 80): string =>
     str.length > limit ? str.slice(0, limit - 3) + '...' : str;
 
   const log = (...args: unknown[]): void => {

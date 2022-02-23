@@ -14,7 +14,8 @@ export interface CreatePageOptions {
   profileDirectory: string;
   extensionDirectory: string | false;
   useStealth: boolean;
-  proxy: string | null;
+  proxy: string | null | undefined;
+  proxyUser: string | null | undefined;
   logger: Logger;
 }
 
@@ -23,6 +24,7 @@ export const createPage = async({
   extensionDirectory,
   profileDirectory,
   proxy,
+  proxyUser,
   useStealth,
   logger,
 }: CreatePageOptions): Promise<Page> => {
@@ -35,8 +37,12 @@ export const createPage = async({
     );
   }
 
-  if (proxy) {
+  if (typeof proxy === 'string') {
     args.push(`--proxy-server=${proxy}`);
+  }
+
+  if (proxyUser) {
+    // args.push(`--proxy-user=${proxyUser}`);
   }
 
   const options = {

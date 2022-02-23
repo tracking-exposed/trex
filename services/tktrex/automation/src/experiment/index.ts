@@ -12,10 +12,12 @@ export interface InitOptions {
 export type RunOptions = InitOptions & {
   createPage: ({
     requiresExtension,
-    proxy,
+    proxyOverride,
+    proxyUserOverride,
   }: {
     requiresExtension: boolean;
-    proxy?: string;
+    proxyOverride?: string;
+    proxyUserOverride?: string;
   }) => Promise<Page>;
   project: MinimalProjectConfig;
   saveSnapshot: (

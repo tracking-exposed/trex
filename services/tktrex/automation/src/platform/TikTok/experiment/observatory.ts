@@ -1,47 +1,80 @@
 import * as t from 'io-ts';
 
+import { Page } from 'puppeteer';
+import { join } from 'path';
+import { writeFile } from 'fs/promises';
+
 import { ExperimentDescriptor } from '@experiment';
 import { decodeOrThrow } from '@util/fp';
-
-import { init } from '@TikTok/util/project';
+import { countriesAsCSV } from '@util/l10n';
 
 import { MinimalProjectConfig } from '@project/init';
 import { getAssetPath } from '../util/project';
 import { flatCopyFiles } from '../../../util/fs';
-import { sleep } from '@util/misc';
+import { loadCountriesCSV } from '@util/csv';
 
-const Config = MinimalProjectConfig;
+const Config = t.intersection(
+  [
+    MinimalProjectConfig,
+    t.type(
+      {
+        baseURL: t.string,
+      },
+      'baseURL',
+    ),
+  ],
+  'Config',
+);
 type Config = t.TypeOf<typeof Config>;
 
 const experimentType = 'tt-observatory';
 
 export const FrenchElections: ExperimentDescriptor = {
   experimentType,
+
   init: async({ projectDirectory }) => {
-    await init({
-      projectDirectory,
-      experimentType,
-    });
+    const fromDir = getAssetPath(experimentType);
+    const toDir = projectDirectory;
+    await flatCopyFiles(fromDir, toDir);
+    await writeFile(join(toDir, 'countries.csv'), countriesAsCSV);
   },
+
   run: async({
     createPage,
     logger,
     projectDirectory,
     project: minimalConfig,
     saveSnapshot,
-  }) => {
+  }): Promise<Page> => {
+    const countries = await loadCountriesCSV(
+      join(projectDirectory, 'countries.csv'),
+    );
+
     const project = decodeOrThrow(Config)(minimalConfig);
-    const page = await createPage({
-      requiresExtension: false,
-    });
 
-    const fromDir = getAssetPath(project.experimentType);
-    const toDir = projectDirectory;
-    await flatCopyFiles(fromDir, toDir);
+    let page: Page | undefined;
 
-    await page.goto('https://www.tiktok.com');
+    for (const { countryCode } of countries) {
+      if (page) {
+        await page.close();
+      }
 
-    await sleep(1000);
+      const proxyUser = project.proxyUser?.replace(
+        '[2_CHAR_COUNTRY_CODE]',
+        countryCode.toLowerCase(),
+      );
+
+      page = await createPage({
+        requiresExtension: false,
+        proxyOverride: `${proxyUser}@${project.proxy}`,
+      });
+
+      await page.goto(project.baseURL);
+    }
+
+    if (!page) {
+      throw new Error('no page');
+    }
 
     return page;
   },

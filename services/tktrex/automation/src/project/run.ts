@@ -64,14 +64,19 @@ export const run = async({ projectDirectory }: RunOptions): Promise<void> => {
 
       const doCreatePage = ({
         requiresExtension = true,
+        proxyOverride = undefined,
+        proxyUserOverride = undefined,
       }: {
         requiresExtension: boolean;
+        proxyOverride?: string;
+        proxyUserOverride?: string;
       }): Promise<Page> => {
         page = createPage({
           chromePath,
           profileDirectory,
           extensionDirectory: requiresExtension ? extensionDirectory : false,
-          proxy: project.proxy,
+          proxy: proxyOverride ?? project.proxy,
+          proxyUser: proxyUserOverride ?? project.proxyUser,
           useStealth: project.useStealth,
           logger,
         });

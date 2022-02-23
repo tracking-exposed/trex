@@ -11,7 +11,8 @@ import experimentDescriptors from '@experiment/descriptors';
 export const MinimalProjectConfig = t.type({
   experimentType: t.string,
   useStealth: t.boolean,
-  proxy: t.union([t.null, t.string]),
+  proxy: t.union([t.null, t.string, t.undefined]),
+  proxyUser: t.union([t.null, t.string, t.undefined]),
 });
 export type MinimalProjectConfig = t.TypeOf<typeof MinimalProjectConfig>;
 

@@ -11,7 +11,8 @@ experimentType: tt-observatory
 #
 # Note: this is YAML, not JSON, so you do not need
 # to wrap the string in quotes.
-proxy:
+proxy: some://url
+proxyUser: some_user_[2_CHAR_COUNTRY_CODE]:some_password
 
 # The URL to browse at the beginning of the script,
 # before starting to type the queries.
