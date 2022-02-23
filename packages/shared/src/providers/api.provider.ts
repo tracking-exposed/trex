@@ -1,5 +1,10 @@
 import { command } from 'avenger';
-import axios, { AxiosInstance, AxiosRequestConfig, AxiosResponse } from 'axios';
+import axios, {
+  AxiosError,
+  AxiosInstance,
+  AxiosRequestConfig,
+  AxiosResponse,
+} from 'axios';
 import { sequenceS } from 'fp-ts/lib/Apply';
 import * as A from 'fp-ts/lib/Array';
 import * as E from 'fp-ts/lib/Either';
@@ -199,6 +204,8 @@ const makeAPI =
 
 interface GetAPIOptions {
   baseURL: string;
+  getAuth: (req: AxiosRequestConfig) => Promise<AxiosRequestConfig>;
+  onUnauthorized: (res: AxiosResponse) => Promise<AxiosResponse>;
 }
 
 export interface APIClient {
@@ -213,23 +220,43 @@ export const GetAPI = (
   API: APIClient;
   HTTPClient: HTTPClient;
 } => {
-  const HTTPClient = MakeHTTPClient(
-    axios.create({
-      baseURL: opts.baseURL,
-      // transformRequest: (req) => {
-      //   // req.headers('X-YTtrex-Version', config.VERSION);
-      //   // req.headers('X-YTtrex-Build', config.BUILD);
-      //   // const signature = nacl.sign.detached(
-      //   //   decodeString(payload),
-      //   //   decodeKey(keypair.secretKey)
-      //   // );
-      //   // xhr.setRequestHeader('X-YTtrex-NonAuthCookieId', cookieId);
-      //   // xhr.setRequestHeader('X-YTtrex-PublicKey', keypair.publicKey);
-      //   // xhr.setRequestHeader('X-YTtrex-Signature', bs58.encode(signature));
-      //   return req;
-      // },
-    })
+  const axiosClient = axios.create({
+    baseURL: opts.baseURL,
+    // transformRequest: (req) => {
+    //   // req.headers('X-YTtrex-Version', config.VERSION);
+    //   // req.headers('X-YTtrex-Build', config.BUILD);
+    //   // const signature = nacl.sign.detached(
+    //   //   decodeString(payload),
+    //   //   decodeKey(keypair.secretKey)
+    //   // );
+    //   // xhr.setRequestHeader('X-YTtrex-NonAuthCookieId', cookieId);
+    //   // xhr.setRequestHeader('X-YTtrex-PublicKey', keypair.publicKey);
+    //   // xhr.setRequestHeader('X-YTtrex-Signature', bs58.encode(signature));
+    //   return req;
+    // },
+  });
+
+  axiosClient.interceptors.request.use(opts.getAuth);
+
+  axiosClient.interceptors.response.use(
+    (res) => {
+      console.log('nothing to report', res);
+      // nothing to do here
+      return res;
+    },
+    async (err) => {
+      console.dir(err);
+      const axiosError = err as AxiosError;
+      // use provided handler if error is unauthorized
+      if (axiosError.response?.status === 401) {
+        await opts.onUnauthorized(axiosError.response);
+      }
+
+      throw err;
+    }
   );
+
+  const HTTPClient = MakeHTTPClient(axiosClient);
 
   const toAPI = makeAPI(HTTPClient);
 

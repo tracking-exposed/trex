@@ -2,8 +2,8 @@ import { pipe } from 'fp-ts/lib/function';
 import { chain, map, right } from 'fp-ts/lib/TaskEither';
 import { available, queryShallow } from 'avenger';
 
-import { getInitialOptInNudgeStatus } from '../models/Settings';
-import { browser, Messages } from '../providers/browser.provider';
+import { getInitialOptInNudgeStatus } from '../../models/Settings';
+import { browser, Messages } from '../../providers/browser.provider';
 
 export const donationOptInNudgeStatus = queryShallow(
   () =>

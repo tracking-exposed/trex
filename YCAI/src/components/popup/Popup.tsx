@@ -15,7 +15,7 @@ import parseISO from 'date-fns/parseISO';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { config } from '../../config';
-import { settings } from '../../state/popup.queries';
+import { settings } from '../../state/popup/popup.queries';
 import { PopupErrorBox } from './PopupErrorBox';
 import Settings from './Settings';
 
@@ -32,7 +32,7 @@ const useStyles = makeStyles((theme) => ({
     marginTop: theme.spacing(2),
     marginBottom: theme.spacing(0),
   },
-  version:{
+  version: {
     marginBottom: theme.spacing(7),
   },
   img: {
@@ -77,21 +77,13 @@ export const Popup: React.FC = () => {
   const classes = useStyles();
 
   const version = config.VERSION;
-  const timeAgo = formatDistance(
-    parseISO(config.BUILD_DATE),
-    new Date(),
-    {
-      addSuffix: true,
-    }
-  );
+  const timeAgo = formatDistance(parseISO(config.BUILD_DATE), new Date(), {
+    addSuffix: true,
+  });
 
   return (
     <Card className={classes.container}>
-      <Box
-        className={classes.header}
-        display="flex"
-        justifyContent="center"
-      >
+      <Box className={classes.header} display="flex" justifyContent="center">
         <a
           className={classes.link}
           href={config.WEB_URL}
