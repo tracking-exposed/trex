@@ -161,6 +161,8 @@ jobs:
             extension/dist/yttrex-*.zip
             extension/dist/guardoni-yttrex-*.zip
             guardoni/dist/guardoni-cli*
-            guardoni/dist/guardoni_*
+            guardoni/dist/*.deb
+            guardoni/dist/*.dmg
+            guardoni/dist/*.exe
             services/tktrex/extension/build/extension/*.zip
             YCAI/build/extension/*.zip
