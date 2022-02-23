@@ -3,6 +3,7 @@
 
 const lightCodeTheme = require('prism-react-renderer/themes/github');
 const darkCodeTheme = require('prism-react-renderer/themes/dracula');
+const path = require('path/posix');
 
 /** @type {import('@docusaurus/types').Config} */
 const config = {
@@ -12,29 +13,34 @@ const config = {
   baseUrl: '/',
   onBrokenLinks: 'throw',
   onBrokenMarkdownLinks: 'warn',
-  favicon: 'img/favicon.ico',
+  favicon: 'img/yttrex128.png',
   organizationName: 'tracking-exposed', // Usually your GitHub org/user name.
   projectName: 'trex', // Usually your repo name.
 
   plugins: [
-    // [
-    //   'docusaurus-plugin-openapi',
-    //   {
-    //     id: 'tktrex-api',
-    //     routeBasePath: 'tktrex-api',
-    //   },
-    // ],
+    [
+      'docusaurus-plugin-openapi',
+      {
+        id: 'tktrex',
+        path: '../services/tktrex/shared/build/openapi-tktrex.json',
+        routeBasePath: 'tktrex',
+      },
+    ],
+    [
+      '@docusaurus/plugin-content-docs',
+      {
+        id: 'guardoni-docs',
+        path: path.resolve(__dirname, '../guardoni/docs'),
+        routeBasePath: 'guardoni',
+        sidebarPath: require.resolve('../guardoni/sidebars.js'),
+      },
+    ],
   ],
   presets: [
     [
-      'docusaurus-preset-openapi',
+      '@docusaurus/preset-classic',
       /** @type {import('docusaurus-preset-openapi').Options} */
       ({
-        api: {
-          id: 'tktrex',
-          path: '../services/tktrex/shared/build/openapi-tktrex.json',
-          routeBasePath: 'tktrex',
-        },
         docs: {
           sidebarPath: require.resolve('./sidebars.js'),
           // Please change this to your repo.
@@ -59,10 +65,21 @@ const config = {
         },
         items: [
           {
-            type: 'doc',
-            docId: 'intro',
-            position: 'left',
+            type: 'dropdown',
             label: 'Docs',
+            items: [
+              {
+                type: 'doc',
+                docId: 'intro',
+                label: 'Docs',
+              },
+              {
+                type: 'doc',
+                docId: 'intro',
+                docsPluginId: 'guardoni-docs',
+                label: 'Guardoni',
+              },
+            ],
           },
           { to: '/tktrex', label: 'API', position: 'left' },
           { to: '/blog', label: 'Blog', position: 'left' },
