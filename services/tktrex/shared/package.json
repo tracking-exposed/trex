@@ -1,5 +1,5 @@
 {
-  "name": "tktrex-shared",
+  "name": "@tktrex/shared",
   "packageManager": "yarn@3.1.1",
   "scripts": {
     "test": "jest --maxWorkers=8",

@@ -45,13 +45,13 @@ const GetSearchByQuery = Endpoint({
       format: apiModel.Format,
     }),
   },
-  Output: t.union([t.string, t.array(t.any)]),
+  Output: apiModel.GetSearchByQueryOutput,
 });
 
 const GetQueryList = Endpoint({
   Method: 'GET',
   getPath: () => '/api/v2/public/queries/list',
-  Output: t.any,
+  Output: apiModel.GetQueryListOutput,
 });
 
 export default {

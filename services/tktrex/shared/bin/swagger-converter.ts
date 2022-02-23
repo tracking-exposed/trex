@@ -7,6 +7,8 @@
 import * as endpoints from '../src/endpoints';
 import * as apiModels from '../src/models/api';
 import * as swagger from '../../../../packages/shared/src/providers/swagger/swagger.provider';
+import * as fs from 'fs';
+import * as path from 'path';
 
 const openDocAPI = swagger.generateDoc({
   title: 'Tktrex API Docs',
@@ -38,7 +40,10 @@ const openDocAPI = swagger.generateDoc({
   ],
 });
 
-console.log(openDocAPI);
+fs.writeFileSync(
+  path.resolve(process.cwd(), 'build/spec.json'),
+  JSON.stringify(openDocAPI),
+);
 
 /*
 import * as endpoints from '@shared/endpoints';
