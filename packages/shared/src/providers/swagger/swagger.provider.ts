@@ -13,7 +13,7 @@ import * as R from 'fp-ts/lib/Record';
 import * as S from 'fp-ts/lib/string';
 import {
   MinimalEndpoint,
-  MinimalEndpointInstance
+  MinimalEndpointInstance,
 } from 'ts-endpoint/lib/helpers';
 import { getOpenAPISchema, HasOpenAPISchema } from './IOTSToOpenAPISchema';
 
@@ -306,7 +306,7 @@ export const generateDoc = (config: DocConfig): any => {
       securitySchemes: config.components.security,
       schemas: {
         ...schemas,
-        ...modelSchema
+        ...modelSchema,
       },
     },
     paths: paths,
