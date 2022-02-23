@@ -65,7 +65,7 @@
     "webpack": "^5.69.1"
   },
   "lint-staged": {
-    "*.{ts,tsx}": [
+    "*.{js,jsx,ts,tsx}": [
       "eslint --ext .tsx --ext .ts --fix"
     ],
     "*.{json,md,html,js,jsx,ts,tsx}": [
