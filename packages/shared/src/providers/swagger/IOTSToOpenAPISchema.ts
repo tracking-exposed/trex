@@ -54,7 +54,7 @@ export const getOpenAPISchema = <T extends HasOpenAPISchema>(codec: T): any => {
   // console.log('type', type._tag);
   switch (type._tag) {
     case 'UnknownType':
-      return { type: 'object', description: type.name };
+      return { type: 'object', description: type.name, };
     case 'UndefinedType':
     case 'VoidType':
       return { type: 'undefined', description: type.name };
@@ -80,7 +80,10 @@ export const getOpenAPISchema = <T extends HasOpenAPISchema>(codec: T): any => {
     case 'ArrayType':
       return {
         type: 'array',
-        description: type.name,
+        description: type.name
+          .replace('Array<', '')
+          .replace('>', '')
+          .concat('[]'),
         items: getOpenAPISchema(type.type),
       };
     case 'DictionaryType':

@@ -9,13 +9,14 @@ import * as apiModels from '../src/models/api';
 import * as swagger from '../../../../packages/shared/src/providers/swagger/swagger.provider';
 import * as fs from 'fs';
 import * as path from 'path';
+const { validate } = require('@apidevtools/swagger-cli');
 
 const openDocAPI = swagger.generateDoc({
   title: 'Tktrex API Docs',
   description: 'Tracking exposed API documentation for tiktok platform',
   server: {
     host: 'tiktok.tracking.exposed',
-    port: 443,
+    port: '443' as any,
     protocol: 'https',
     basePath: 'api',
   },
@@ -40,67 +41,20 @@ const openDocAPI = swagger.generateDoc({
   ],
 });
 
-fs.writeFileSync(
-  path.resolve(process.cwd(), 'build/spec.json'),
-  JSON.stringify(openDocAPI),
-);
+// print unvalidated open doc api
+// fs.writeFileSync(
+//   path.resolve(process.cwd(), 'build/openapi-tktrex.json'),
+//   JSON.stringify(openDocAPI, null, 2)
+// );
 
-/*
-import * as endpoints from '@shared/endpoints';
-import models from '@shared/models';
-import * as React from 'react';
-import { useTranslation } from 'react-i18next';
-import SwaggerUI from 'swagger-ui';
-import 'swagger-ui/dist/swagger-ui.css';
-import '../../../resources/swagger-ui-material.css';
-import { config } from '../../../config';
-import * as swagger from '../../../providers/swagger/swagger.provider';
-
-export const Swagger: React.FC = () => {
-  const { t } = useTranslation();
-  const ref = React.createRef<HTMLDivElement>();
-
-  React.useEffect(() => {
-    const apiURL = new URL(config.API_URL);
-
-    const swaggerConfig = swagger.generateDoc({
-      title: t('swagger:title'),
-      description: t('swagger:description'),
-      version: config.VERSION,
-      server: {
-        protocol: apiURL.protocol === 'http:' ? 'http' : 'https',
-        host: apiURL.hostname,
-        port: parseInt(apiURL.port, 10),
-        basePath: apiURL.pathname.slice(1),
-      },
-      components: {
-        security: {
-          ACTToken: {
-            type: 'apiKey',
-            in: 'header',
-            name: 'X-Authorization',
-          },
-        },
-      },
-      security: [
-        {
-          ACTToken: [],
-        },
-      ],
-      endpoints: {
-        v1: endpoints.v1,
-        v2: endpoints.v2,
-        v3: endpoints.v3,
-      },
-      models: models,
-    });
-
-    SwaggerUI({
-      domNode: ref.current,
-      spec: swaggerConfig,
-    });
-  }, []);
-
-  return <div ref={ref} />;
-};
-*/
+validate(openDocAPI, {}, (err: any, api: any) => {
+  if (err) {
+    // eslint-disable-next-line
+    console.log(JSON.stringify(err.details, null, 2));
+    throw err;
+  }
+  fs.writeFileSync(
+    path.resolve(process.cwd(), 'build/openapi-tktrex-validated.json'),
+    JSON.stringify(api, null, 2)
+  );
+});

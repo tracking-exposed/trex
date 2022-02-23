@@ -124,16 +124,15 @@ const apiSchemaFromEndpoint = (
   // derive path parameters from io-ts definition of e.Input.Params
   const pathParameters =
     Params !== undefined
-      ? R.keys(Params.props).reduce<any[]>(
-          (acc, k) =>
-            acc.concat({
-              name: k,
-              in: 'path',
-              required: true,
-              schema: getOpenAPISchema((Params?.props)[k]),
-            }),
-          []
-        )
+      ? R.keys(Params.props).reduce<any[]>((acc, k) => {
+          const { required, ...schema } = getOpenAPISchema((Params?.props)[k]);
+          return acc.concat({
+            name: k,
+            in: 'path',
+            required: true,
+            schema,
+          });
+        }, [])
       : [];
 
   // combine all parameters
@@ -147,10 +146,12 @@ const apiSchemaFromEndpoint = (
   // add definition of request body, if needed
   const requestBody = hasRequestBody(e)
     ? {
-        content: {
-          'application/json': {
-            schema: {
-              $ref: `#/components/schemas/${(input as any).Body.name}`,
+        requestBody: {
+          content: {
+            'application/json': {
+              schema: {
+                $ref: `#/components/schemas/${(input as any).Body.name}`,
+              },
             },
           },
         },
@@ -179,7 +180,7 @@ const apiSchemaFromEndpoint = (
     tags: tags,
     parameters,
     security,
-    requestBody,
+    ...requestBody,
     responses: {
       ...successResponse,
     },
@@ -273,10 +274,24 @@ export const generateDoc = (config: DocConfig): any => {
 
   const modelSchema = pipe(
     config.models,
-    R.reduceWithIndex(S.Ord)({}, (key, acc, model) => ({
-      ...acc,
-      [model.name]: getOpenAPISchema(model),
-    }))
+    R.reduceWithIndex(S.Ord)({}, (key, acc, model) => {
+      const { required, ...modelSchema } = getOpenAPISchema(model);
+      return {
+        ...acc,
+        [model.name]: modelSchema,
+      };
+    }),
+    (schema) => ({
+      ...schema,
+      any: {
+        type: 'object',
+        description: 'any value',
+      },
+      string: {
+        type: 'string',
+        description: 'A string value',
+      },
+    })
   );
   return {
     openapi: '3.0.3',

@@ -56,7 +56,7 @@
     "node-fetch": "^2.6.5",
     "pouchdb-find": "^7.2.2",
     "pouchdb-node": "^7.2.2",
-    "puppeteer": "^13.1.1",
+    "puppeteer": "^13.4.0",
     "puppeteer-extra": "^3.2.3",
     "puppeteer-extra-plugin-stealth": "^2.9.0",
     "ts-jest": "^27.1.3",
