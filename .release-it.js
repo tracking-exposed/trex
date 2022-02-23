@@ -34,16 +34,8 @@ module.exports = {
     commitMessage: 'release: ${version} CHANGELOG [skip ci]',
   },
   github: {
-    release: false,
-    assets: [
-      'extension/dist/*.zip',
-      'guardoni/dist/*.deb',
-      'guardoni/dist/*.exe',
-      'guardoni/dist/*.dmg',
-      'guardoni/dist/guardoni-cli-*',
-      'services/tktrex/extension/dist/*.zip',
-      'YCAI/build/extension/*.zip',
-    ],
+    release: true,
+    assets: [],
   },
   npm: false,
   plugins: {
