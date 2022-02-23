@@ -30,7 +30,7 @@ export const init = async({
   await mkdir(extensionDirectory, { recursive: true });
   await mkdir(profileDirectory, { recursive: true });
 
-  const extZipPath = getAssetPath('tktrex-extension-0.2.6.zip');
+  const extZipPath = getAssetPath('tktrex-extension-2.3.0.zip');
 
   const stream = createReadStream(extZipPath).pipe(
     unzipper.Extract({
