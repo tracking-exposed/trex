@@ -4,9 +4,9 @@ on:
   push:
     branches:
       # - beta
-      - fix/release-flow
-    # tags:
-    #   - 'v*.*.*'
+      # - fix/release-flow
+    tags:
+      - 'v*.*.*'
 
 jobs:
   build:
@@ -40,13 +40,13 @@ jobs:
       - name: Install dependencies
         run: yarn
 
-      - name: Release
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          git config --global user.email "team@tracking.exposed"
-          git config --global user.name "Team - Tracking Exposed"
-          yarn release-it --ci
+      # - name: Release
+      #   env:
+      #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      #   run: |
+      #     git config --global user.email "team@tracking.exposed"
+      #     git config --global user.name "Team - Tracking Exposed"
+      #     yarn release-it --ci
 
       - name: YCAI dist
         env:
