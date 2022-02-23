@@ -10,7 +10,13 @@ export interface InitOptions {
 }
 
 export type RunOptions = InitOptions & {
-  page: Page;
+  createPage: ({
+    requiresExtension,
+    proxy,
+  }: {
+    requiresExtension: boolean;
+    proxy?: string;
+  }) => Promise<Page>;
   project: MinimalProjectConfig;
   saveSnapshot: (
     metaData: StorableObject,

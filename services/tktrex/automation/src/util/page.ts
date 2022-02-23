@@ -12,7 +12,7 @@ puppeteer.use(stealth());
 export interface CreatePageOptions {
   chromePath: string;
   profileDirectory: string;
-  extensionDirectory: string;
+  extensionDirectory: string | false;
   useStealth: boolean;
   proxy: string | null;
   logger: Logger;
@@ -26,12 +26,14 @@ export const createPage = async({
   useStealth,
   logger,
 }: CreatePageOptions): Promise<Page> => {
-  const args = [
-    '--no-sandbox',
-    '--disabled-setuid-sandbox',
-    `--load-extension=${extensionDirectory}`,
-    `--disable-extensions-except=${extensionDirectory}`,
-  ];
+  const args = ['--no-sandbox', '--disabled-setuid-sandbox'];
+
+  if (extensionDirectory !== false) {
+    args.push(
+      `--load-extension=${extensionDirectory}`,
+      `--disable-extensions-except=${extensionDirectory}`,
+    );
+  }
 
   if (proxy) {
     args.push(`--proxy-server=${proxy}`);

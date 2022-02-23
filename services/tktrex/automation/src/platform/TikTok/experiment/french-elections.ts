@@ -44,12 +44,15 @@ export const FrenchElections: ExperimentDescriptor = {
     });
   },
   run: async({
-    page,
+    createPage,
     logger,
     projectDirectory,
     project: minimalConfig,
     saveSnapshot,
   }) => {
+    const page = await createPage({
+      requiresExtension: true,
+    });
     const project = decodeOrThrow(Config)(minimalConfig);
 
     // TODO: how can this be made type safe?

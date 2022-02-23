@@ -23,7 +23,6 @@ const menu = yargs(hideBin(process.argv))
           demandOption: true,
           desc: 'Type of experiment to initialize (e.g. "search-on-tiktok")',
           type: 'string',
-          default: experimentTypes[0],
           choices: experimentTypes,
         }),
     (args) => init(args),

@@ -2,6 +2,7 @@ import { readFile } from 'fs/promises';
 import { join } from 'path';
 
 import yaml from 'yaml';
+import { Page } from 'puppeteer';
 
 import { getChromePath } from '@guardoni/guardoni/utils';
 
@@ -59,25 +60,35 @@ export const run = async({ projectDirectory }: RunOptions): Promise<void> => {
   for (const experiment of experimentDescriptors) {
     if (experiment.experimentType === rawConfig.experimentType) {
       foundExperiment = true;
+      let page: Promise<Page>;
 
-      const page = await createPage({
-        chromePath,
-        profileDirectory,
-        extensionDirectory,
-        proxy: project.proxy,
-        useStealth: project.useStealth,
-        logger,
-      });
+      const doCreatePage = ({
+        requiresExtension = true,
+      }: {
+        requiresExtension: boolean;
+      }): Promise<Page> => {
+        page = createPage({
+          chromePath,
+          profileDirectory,
+          extensionDirectory: requiresExtension ? extensionDirectory : false,
+          proxy: project.proxy,
+          useStealth: project.useStealth,
+          logger,
+        });
+
+        return page;
+      };
 
       const saveSnapshot = async(
         metaData: StorableValue,
         parser: (html: string) => BaseModel[] | Promise<BaseModel[]>,
       ): Promise<void> => {
+        const p = await page;
         const snap = {
           type: 'Snapshot',
           experimentType: rawConfig.experimentType,
-          url: page.url(),
-          html: await page.content(),
+          url: p.url(),
+          html: await p.content(),
           metaData,
         };
 
@@ -101,15 +112,15 @@ export const run = async({ projectDirectory }: RunOptions): Promise<void> => {
         await db.saveMany(scrapedItems);
       };
 
-      await experiment.run({
+      const p = await experiment.run({
         projectDirectory,
         logger,
-        page,
+        createPage: doCreatePage,
         project,
         saveSnapshot,
       });
 
-      await page.browser().close();
+      await p.browser().close();
 
       logger.log('', '...done running experiment, with success!');
     }
