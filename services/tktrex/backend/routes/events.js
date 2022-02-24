@@ -234,7 +234,7 @@ async function handshake(req) {
 
 async function processAPIEvents(req) {
   for (const data of req.body) {
-    const { request, response, url, id } = JSON.parse(data.payload);
+    const { request, response, url, id } = data.payload;
 
     debug('received api events %s for %s', id, url);
 

@@ -153,6 +153,9 @@ function setupObserver(): void {
   dom.on(selectors.search.selector, handleSearch);
   dom.on(selectors.error.selector, handleSearch);
 
+  // experiment
+  dom.on('#sigi-persisted-data', handleSigi);
+
   log.info('listeners installed, selectors', selectors);
 
   /* and monitor href changes to randomize a new accessId */
@@ -228,6 +231,11 @@ const handleInterceptedData = (): void => {
     ch.remove();
   });
 };
+
+// experiment in progress
+const handleSigi = _.debounce((element: Node): void => {
+  console.log('Sigi', element);
+});
 
 const handleSearch = _.debounce((element: Node): void => {
   log.info('Handle search for path %O', window.location.search);
