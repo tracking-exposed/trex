@@ -9,6 +9,7 @@ import * as apiModels from '../src/models/api';
 import * as swagger from '../../../../packages/shared/src/providers/swagger/swagger.provider';
 import * as fs from 'fs';
 import * as path from 'path';
+// eslint-disable-next-line @typescript-eslint/no-var-requires
 const { validate } = require('@apidevtools/swagger-cli');
 
 const openDocAPI = swagger.generateDoc({
@@ -55,6 +56,6 @@ validate(openDocAPI, {}, (err: any, api: any) => {
   }
   fs.writeFileSync(
     path.resolve(process.cwd(), 'build/openapi-tktrex-validated.json'),
-    JSON.stringify(api, null, 2)
+    JSON.stringify(api, null, 2),
   );
 });

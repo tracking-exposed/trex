@@ -14,6 +14,12 @@ export const GetRecommendationsParams = t.type(
 );
 export type GetRecommendationParams = t.TypeOf<typeof GetRecommendationsParams>;
 
+export const CreateRecommendation = t.type(
+  { url: t.string },
+  'CreateRecommendation'
+);
+export type CreateRecommendation = t.TypeOf<typeof CreateRecommendation>;
+
 export const Recommendation = t.strict(
   {
     urlId: t.string,
@@ -37,3 +43,6 @@ export const titleMaxLength = 80;
 export const descriptionMaxLength = 200;
 
 export type Recommendation = t.TypeOf<typeof Recommendation>;
+
+export const RecommendationList = t.array(Recommendation, 'RecommendationList');
+export type RecommendationList = t.TypeOf<typeof RecommendationList>;

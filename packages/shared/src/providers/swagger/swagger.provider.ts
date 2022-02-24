@@ -15,7 +15,7 @@ import {
   MinimalEndpoint,
   MinimalEndpointInstance,
 } from 'ts-endpoint/lib/helpers';
-import { getOpenAPISchema, HasOpenAPISchema } from './IOTSToOpenAPISchema';
+import { getOpenAPISchema, IOTOpenDocSchema } from './IOTSToOpenAPISchema';
 
 interface ServerConfig {
   protocol: 'http' | 'https';
@@ -39,7 +39,7 @@ interface DocConfig {
     };
   };
   models: {
-    [key: string]: HasOpenAPISchema;
+    [key: string]: IOTOpenDocSchema;
   };
   server: ServerConfig;
   components: {
@@ -65,6 +65,17 @@ const hasRequestBody = <E extends MinimalEndpoint>(e: E): boolean => {
     (e.Method === 'POST' || e.Method === 'PUT' || e.Method === 'PATCH') &&
     (e.Input as any)?.Body !== undefined
   );
+};
+
+const getInnerSchemaName = (tt: string): string => {
+  if (tt.startsWith('Array<')) {
+    // console.log(tt);
+    const innerName = tt.replace('Array<', '').replace('>', '');
+    // console.log('inner name', innerName);
+    return innerName;
+  }
+
+  return tt;
 };
 
 /**
@@ -150,7 +161,9 @@ const apiSchemaFromEndpoint = (
           content: {
             'application/json': {
               schema: {
-                $ref: `#/components/schemas/${(input as any).Body.name}`,
+                $ref: `#/components/schemas/${getInnerSchemaName(
+                  (e.Input?.Body as any)?.name
+                )}`,
               },
             },
           },
@@ -158,14 +171,16 @@ const apiSchemaFromEndpoint = (
       }
     : {};
 
+  const schemaName = getInnerSchemaName((e.Output as any).name);
+
   // define success response
   const successResponse = {
     [responseStatusCode]: {
-      description: (e.Output as any).name,
+      description: schemaName,
       content: {
         'application/json': {
           schema: {
-            $ref: `#/components/schemas/${(e.Output as any).name}`,
+            $ref: `#/components/schemas/${schemaName}`,
           },
         },
       },
@@ -274,24 +289,33 @@ export const generateDoc = (config: DocConfig): any => {
 
   const modelSchema = pipe(
     config.models,
-    R.reduceWithIndex(S.Ord)({}, (key, acc, model) => {
-      const { required, ...modelSchema } = getOpenAPISchema(model);
-      return {
-        ...acc,
-        [model.name]: modelSchema,
-      };
-    }),
-    (schema) => ({
-      ...schema,
-      any: {
-        type: 'object',
-        description: 'any value',
+    R.reduceWithIndex(S.Ord)(
+      {
+        any: {
+          type: 'object',
+          description: 'any value',
+        },
+        string: {
+          type: 'string',
+          description: 'A string value',
+        },
+        url: {
+          type: 'string',
+          description: 'A valid URL',
+        },
+        boolean: {
+          type: 'boolean',
+          description: 'A `true | false` value',
+        },
       },
-      string: {
-        type: 'string',
-        description: 'A string value',
-      },
-    })
+      (key, acc, model) => {
+        const { required, ...modelSchema } = getOpenAPISchema(model);
+        return {
+          ...acc,
+          [getInnerSchemaName(model.name)]: modelSchema,
+        };
+      }
+    )
   );
   return {
     openapi: '3.0.3',

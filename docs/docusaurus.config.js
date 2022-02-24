@@ -18,6 +18,7 @@ const config = {
   projectName: 'trex', // Usually your repo name.
 
   plugins: [
+    // @tktrex open api
     [
       'docusaurus-plugin-openapi',
       {
@@ -26,13 +27,31 @@ const config = {
         routeBasePath: 'tktrex',
       },
     ],
+    // @tktrex open api
+    [
+      'docusaurus-plugin-openapi',
+      {
+        id: 'ycai-api',
+        path: '../YCAI/docs/openapi-validated.json',
+        routeBasePath: 'ycai/api',
+      },
+    ],
     [
       '@docusaurus/plugin-content-docs',
       {
         id: 'guardoni-docs',
         path: path.resolve(__dirname, '../guardoni/docs'),
         routeBasePath: 'guardoni',
-        sidebarPath: require.resolve('../guardoni/sidebars.js'),
+        sidebarPath: require.resolve('./sidebars.js'),
+      },
+    ],
+    [
+      '@docusaurus/plugin-content-docs',
+      {
+        id: 'ycai-docs',
+        path: path.resolve(__dirname, '../YCAI/docs'),
+        routeBasePath: 'ycai/docs',
+        sidebarPath: require.resolve('../YCAI/sidebars.js'),
       },
     ],
   ],
@@ -54,6 +73,7 @@ const config = {
       }),
     ],
   ],
+  themes: ['docusaurus-theme-openapi'],
   themeConfig:
     /** @type {import('docusaurus-theme-openapi').ThemeConfig} */
     ({
@@ -66,19 +86,28 @@ const config = {
         items: [
           {
             type: 'dropdown',
-            label: 'Docs',
+            label: 'Services',
             items: [
-              {
-                type: 'doc',
-                docId: 'intro',
-                label: 'Docs',
-              },
               {
                 type: 'doc',
                 docId: 'intro',
                 docsPluginId: 'guardoni-docs',
                 label: 'Guardoni',
               },
+              {
+                type: 'doc',
+                docId: 'intro',
+                docsPluginId: 'ycai-docs',
+                label: 'YCAI',
+              },
+            ],
+          },
+          {
+            type: 'dropdown',
+            label: 'API',
+            items: [
+              { to: '/tktrex/api', label: '@tktrex' },
+              { to: '/ycai/api', label: '@ycai' },
             ],
           },
           { to: '/tktrex', label: 'API', position: 'left' },

@@ -1,5 +1,18 @@
 import * as t from 'io-ts';
 import { DateFromISOString } from 'io-ts-types/lib/DateFromISOString';
+import { Video } from './Video';
+
+const ChannelType = t.literal('channel');
+
+export const RegisterContentCreatorBody = t.type(
+  {
+    type: ChannelType,
+  },
+  'RegisterContentCreatorBody'
+);
+export type RegisterContentCreatorBody = t.TypeOf<
+  typeof RegisterContentCreatorBody
+>;
 
 export const ContentCreator = t.strict(
   {
@@ -26,4 +39,12 @@ export const AuthorizedContentCreator = t.strict(
 
 export type AuthorizedContentCreator = t.TypeOf<
   typeof AuthorizedContentCreator
+>;
+
+export const ContentCreatorVideosOutput = t.array(
+  Video,
+  'ContentCreatorVideos'
+);
+export type ContentCreatorVideosOutput = t.TypeOf<
+  typeof ContentCreatorVideosOutput
 >;

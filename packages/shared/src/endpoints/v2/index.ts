@@ -1,10 +1,10 @@
 import * as t from 'io-ts';
-import { GuardoniExperiment } from '../../models/Experiment';
 import { Endpoint } from 'ts-endpoint';
 import {
   ADVContributionEvent,
   VideoContributionEvent,
 } from '../../models/ContributionEvent';
+import { GetExperimentListOutput } from '../../models/Experiment';
 import { PublicKeyParams } from '../../models/http/params/PublicKey';
 import { SearchQuery } from '../../models/http/SearchQuery';
 import { TikTokSearch } from '../../models/http/tiktok/TikTokSearch';
@@ -121,11 +121,7 @@ const GetExperimentList = Endpoint({
       ...PublicKeyParams.props,
     }),
   },
-  Output: t.strict({
-    content: t.array(GuardoniExperiment),
-    total: t.number,
-    pagination: t.any,
-  }),
+  Output: GetExperimentListOutput,
 });
 
 const GetExperimentById = Endpoint({
