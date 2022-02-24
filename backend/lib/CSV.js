@@ -109,9 +109,12 @@ function unrollRecommended(evidence, shared) {
 }
 
 function reconnectAdvertising(evidence, shared) {
-  throw new Error(
-    'Not working ATM! special condition to handle -- test with experiments especially'
-  );
+  return {
+    ...shared,
+    selectorName: evidence.selectorName,
+    sponsoredSite: evidence.sponsoredSite,
+    sponsoredName: evidence.sponsoredName,
+  };
 }
 
 function unwindSections(evidence, shared) {
@@ -162,8 +165,8 @@ function unrollNested(metadata, options) {
   return _.flatten(
     _.compact(
       _.map(metadata, function (evidence) {
-        if (options.type !== 'adv' && evidence.type !== options.type)
-          return null;
+        // this set of filtering guarantee only the specific 'kind' is processed
+        if (evidence.type !== options.type) return null;
 
         const shared = {
           pseudo: utils.string2Food(evidence.publicKey),
