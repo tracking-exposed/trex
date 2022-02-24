@@ -18,7 +18,7 @@ function HomepageHeader(): JSX.Element {
             className="button button--secondary button--lg"
             to="/docs/intro"
           >
-            Try TrEx toolkit
+            Docusaurus Tutorial - 5min ⏱️
           </Link>
         </div>
       </div>

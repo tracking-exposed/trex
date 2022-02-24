@@ -2237,6 +2237,19 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@docusaurus/module-type-aliases@npm:2.0.0-beta.15":
+  version: 2.0.0-beta.15
+  resolution: "@docusaurus/module-type-aliases@npm:2.0.0-beta.15"
+  dependencies:
+    "@docusaurus/types": 2.0.0-beta.15
+    "@types/react": "*"
+    "@types/react-helmet": "*"
+    "@types/react-router-config": "*"
+    "@types/react-router-dom": "*"
+  checksum: dd7d3de46a6886d3e367b31d0107eef7a5ffc54acae557625e6fb937619152ddbabafd774ffa6beb7783e039b09a3b916655393ca1a09d3d8e36a75c12e2c569
+  languageName: node
+  linkType: hard
+
 "@docusaurus/plugin-content-blog@npm:2.0.0-beta.14":
   version: 2.0.0-beta.14
   resolution: "@docusaurus/plugin-content-blog@npm:2.0.0-beta.14"
@@ -4122,6 +4135,23 @@ __metadata:
     ts-node-dev: ^1.1.8
     tweetnacl: ^0.14.5
     typescript: ^4.5.5
+  languageName: unknown
+  linkType: soft
+
+"@tktrex/docs@workspace:services/tktrex/docs":
+  version: 0.0.0-use.local
+  resolution: "@tktrex/docs@workspace:services/tktrex/docs"
+  dependencies:
+    "@docusaurus/core": 2.0.0-beta.15
+    "@docusaurus/module-type-aliases": 2.0.0-beta.15
+    "@docusaurus/preset-classic": 2.0.0-beta.15
+    "@mdx-js/react": ^1.6.21
+    "@tsconfig/docusaurus": ^1.0.4
+    clsx: ^1.1.1
+    prism-react-renderer: ^1.2.1
+    react: ^17.0.1
+    react-dom: ^17.0.1
+    typescript: ^4.5.2
   languageName: unknown
   linkType: soft
 
@@ -23455,7 +23485,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-dom@npm:=17.0.2, react-dom@npm:^17.0.2":
+"react-dom@npm:=17.0.2, react-dom@npm:^17.0.1, react-dom@npm:^17.0.2":
   version: 17.0.2
   resolution: "react-dom@npm:17.0.2"
   dependencies:
@@ -23821,7 +23851,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react@npm:=17.0.2, react@npm:^17.0.2":
+"react@npm:=17.0.2, react@npm:^17.0.1, react@npm:^17.0.2":
   version: 17.0.2
   resolution: "react@npm:17.0.2"
   dependencies:

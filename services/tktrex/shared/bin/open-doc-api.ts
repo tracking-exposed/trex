@@ -43,10 +43,10 @@ const openDocAPI = swagger.generateDoc({
 });
 
 // print unvalidated open doc api
-// fs.writeFileSync(
-//   path.resolve(process.cwd(), 'build/openapi-tktrex.json'),
-//   JSON.stringify(openDocAPI, null, 2)
-// );
+fs.writeFileSync(
+  path.resolve(process.cwd(), 'build/openapi-tktrex.json'),
+  JSON.stringify(openDocAPI, null, 2),
+);
 
 validate(openDocAPI, {}, (err: any, api: any) => {
   if (err) {

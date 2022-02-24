@@ -21,7 +21,7 @@ const openDocAPI = swagger.generateDoc({
     protocol: 'https',
     host: 'api.youchoose.ai',
     port: '443' as any,
-    basePath: '/',
+    basePath: '',
   },
   components: {
     security: {

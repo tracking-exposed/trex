@@ -32,7 +32,7 @@ const GetPersonalCSV = Endpoint({
 
 const GetSearches = Endpoint({
   Method: 'GET',
-  getPath: () => '/v2/public/searches',
+  getPath: () => '/v2/searches',
   Output: apiModel.PublicSearchList,
 });
 

@@ -7,7 +7,7 @@
   },
   "servers": [
     {
-      "url": "{protocol}://{host}:{port}/{basePath}",
+      "url": "{protocol}://{host}{port}{basePath}",
       "description": "Node Server",
       "variables": {
         "protocol": {
@@ -17,10 +17,11 @@
           "default": "api.youchoose.ai"
         },
         "port": {
-          "default": "443"
+          "default": "443",
+          "enum": ["443", "443"]
         },
         "basePath": {
-          "default": "/"
+          "default": ""
         }
       }
     }

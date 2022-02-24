@@ -1,22 +1,25 @@
 // @ts-check
 // Note: type annotations allow type checking and IDEs autocompletion
 
-// const lightCodeTheme = require('prism-react-renderer/themes/github');
+const lightCodeTheme = require('prism-react-renderer/themes/github');
 const darkCodeTheme = require('prism-react-renderer/themes/dracula');
-const path = require('path/posix');
-const { default: theme } = require('./theme');
+const packageJson = require('./package.json');
+
+
+const GITHUB_REPO = "https://github.com/tracking-exposed/yttrex";
+
 
 /** @type {import('@docusaurus/types').Config} */
 const config = {
-  title: '@trex',
-  tagline: 'Dinosaurs are cool',
-  url: 'https://docs.tracking.exposed',
-  baseUrl: '/',
+  title: '@tktrex',
+  tagline: 'Tiktok service from tracking.exposed',
+  url: 'https://tiktok.tracking.exposed/',
+  baseUrl: '/docs/',
   onBrokenLinks: 'throw',
   onBrokenMarkdownLinks: 'warn',
   favicon: 'img/yttrex128.png',
   organizationName: 'tracking-exposed', // Usually your GitHub org/user name.
-  projectName: 'trex', // Usually your repo name.
+  projectName: 'tktrex', // Usually your repo name.
 
   plugins: [
     // @tktrex open api
@@ -24,35 +27,8 @@ const config = {
       'docusaurus-plugin-openapi',
       {
         id: 'tktrex',
-        path: '../services/tktrex/shared/build/openapi-tktrex.json',
+        path: '../shared/build/openapi-tktrex.json',
         routeBasePath: 'tktrex/api',
-      },
-    ],
-    // @tktrex open api
-    [
-      'docusaurus-plugin-openapi',
-      {
-        id: 'ycai-api',
-        path: '../YCAI/docs/openapi-validated.json',
-        routeBasePath: 'ycai/api',
-      },
-    ],
-    [
-      '@docusaurus/plugin-content-docs',
-      {
-        id: 'guardoni-docs',
-        path: path.resolve(__dirname, '../guardoni/docs'),
-        routeBasePath: 'guardoni',
-        sidebarPath: require.resolve('./sidebars.js'),
-      },
-    ],
-    [
-      '@docusaurus/plugin-content-docs',
-      {
-        id: 'ycai-docs',
-        path: path.resolve(__dirname, '../YCAI/docs'),
-        routeBasePath: 'ycai/docs',
-        sidebarPath: require.resolve('../YCAI/sidebars.js'),
       },
     ],
   ],
@@ -79,43 +55,27 @@ const config = {
     /** @type {import('docusaurus-theme-openapi').ThemeConfig} */
     ({
       navbar: {
-        title: '@trex',
+        title: `@tktrex v${packageJson.version}`,
         logo: {
-          alt: '@trex Logo',
+          alt: '@tktrex Logo',
           src: 'img/yttrex128.png',
         },
         items: [
           {
-            type: 'dropdown',
-            label: 'Services',
-            items: [
-              {
-                type: 'doc',
-                docId: 'intro',
-                docsPluginId: 'guardoni-docs',
-                label: 'Guardoni',
-              },
-              {
-                type: 'doc',
-                docId: 'intro',
-                docsPluginId: 'ycai-docs',
-                label: 'YCAI',
-              },
-            ],
+            type: 'doc',
+            docId: 'intro',
+            label: 'Docs',
           },
           {
-            type: 'dropdown',
             label: 'API',
-            items: [
-              { to: '/tktrex/api', label: '@tktrex' },
-              { to: '/ycai/api', label: '@ycai' },
-            ],
+            to: '/tktrex/api',
           },
           { to: '/blog', label: 'Blog', position: 'left' },
           {
-            href: 'https://github.com/facebook/docusaurus',
-            label: 'GitHub',
+            href: GITHUB_REPO,
+            className: 'header-github-link',
             position: 'right',
+            'aria-label': '@tktrex repo',
           },
         ],
       },
@@ -138,12 +98,12 @@ const config = {
                 href: 'https://stackoverflow.com/questions/tagged/docusaurus',
               },
               {
-                label: 'Discord',
-                href: 'https://discordapp.com/invite/docusaurus',
+                label: 'Slack',
+                href: 'https://tracking.exposed.slack.com/invite/tktrex',
               },
               {
                 label: 'Twitter',
-                href: 'https://twitter.com/docusaurus',
+                href: 'https://twitter.com/tracking.exposed',
               },
             ],
           },
@@ -155,8 +115,7 @@ const config = {
                 to: '/blog',
               },
               {
-                label: 'GitHub',
-                href: 'https://github.com/facebook/docusaurus',
+                html: `<a class="header-github-link" href="${GITHUB_REPO}" target="_blank" rel="noreferrer"></a>`
               },
             ],
           },
@@ -164,7 +123,7 @@ const config = {
         copyright: `Copyright © ${new Date().getFullYear()} Tracking Exposed Team. Built with Docusaurus.`,
       },
       prism: {
-        theme: theme,
+        theme: lightCodeTheme,
         darkTheme: darkCodeTheme,
       },
     }),

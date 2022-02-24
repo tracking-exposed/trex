@@ -14,6 +14,7 @@
     "packages/*",
     "backend",
     "YCAI",
+    "services/tktrex/docs",
     "services/tktrex/extension",
     "services/tktrex/methodology",
     "services/tktrex/backend",

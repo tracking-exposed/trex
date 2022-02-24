@@ -236,7 +236,10 @@ const getPaths = (
                     const currentEndpointSchema = apiSchemaFromEndpoint(
                       key,
                       endpoint,
-                      [`${versionKey} - ${scopeKey}`]
+                      [
+                        'basic-api',
+                        // `${versionKey} - ${scopeKey}`
+                      ]
                     );
 
                     const currentSchema = {
@@ -326,13 +329,14 @@ export const generateDoc = (config: DocConfig): any => {
     },
     servers: [
       {
-        url: `{protocol}://{host}:{port}/{basePath}`,
+        url: `{protocol}://{host}{port}{basePath}`,
         description: 'Node Server',
         variables: {
           protocol: { default: config.server.protocol },
           host: { default: config.server.host },
           port: {
             default: config.server.port,
+            enum: [config.server.port, '443'],
           },
           basePath: {
             default: config.server.basePath,
