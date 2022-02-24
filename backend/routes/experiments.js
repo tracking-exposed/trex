@@ -33,7 +33,7 @@ async function sharedDataPull(filter) {
         $lookup: {
           from: 'metadata',
           localField: 'metadataId',
-          foreignField: 'metadataId',
+          foreignField: 'id',
           as: 'metadata',
         },
       },
@@ -177,6 +177,7 @@ async function csv(req) {
     'experiment.experimentId': experimentId,
     type,
   };
+  debug("Fetching from DB the experiments' evidence %j", filter);
   const metadata = await sharedDataPull(filter);
 
   if (!metadata.length) {
