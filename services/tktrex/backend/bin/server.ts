@@ -20,6 +20,7 @@ const cfgFile = 'config/settings.json';
 
 nconf.argv().env().file({ file: cfgFile });
 
+// eslint-disable-next-line
 console.log('ઉ nconf loaded, using ', cfgFile);
 
 if (!nconf.get('interface') || !nconf.get('port'))
@@ -27,7 +28,7 @@ if (!nconf.get('interface') || !nconf.get('port'))
     "check your config/settings.json, config of 'interface' and 'post' missing"
   );
 
-async function iowrapper(fname, req, res) {
+async function iowrapper(fname, req, res): Promise<void> {
   try {
     const funct = apiList[fname];
     const httpresult = await funct(req, res);
@@ -42,7 +43,7 @@ async function iowrapper(fname, req, res) {
       debug("API (%s) didn't return anything!?", fname);
       res.send('Fatal error: Invalid output');
       res.status(501);
-    } else if (httpresult.json && httpresult.json.error) {
+    } else if (httpresult.json?.error) {
       debug('API (%s) failure, returning 500', fname);
       res.status(500);
       res.json(httpresult.json);
@@ -93,6 +94,7 @@ async function iowrapper(fname, req, res) {
 
 /* everything starts here, welcome */
 server.listen(nconf.get('port'), nconf.get('interface'));
+// eslint-disable-next-line
 console.log(
   ' Listening on http://' + nconf.get('interface') + ':' + nconf.get('port')
 );
@@ -121,6 +123,10 @@ app.post(
   async (req, res) => await iowrapper('processEvents', req, res)
 );
 app.post(
+  '/api/v2/apiEvents',
+  async (req, res) => await iowrapper('processAPIEvents', req, res)
+);
+app.post(
   '/api/v2/handshake',
   async (req, res) => await iowrapper('handshake', req, res)
 );
@@ -128,6 +134,17 @@ app.post(
 app.get(
   '/api/v2/recent',
   async (req, res) => await iowrapper('getRecent', req, res)
+);
+
+/* note this is kept v1 because initially personal page was pulling here; but TODO should be v2 */
+app.get(
+  '/api/v1/personal/:publicKey/:what/json',
+  async (req, res) => await iowrapper('getPersonal', req, res)
+);
+/* download your CSV (only search is supported at the moment) */
+app.get(
+  '/api/v2/personal/:publicKey/:what/csv',
+  async (req, res) => await iowrapper('getPersonalCSV', req, res)
 );
 
 app.get(
@@ -239,7 +256,7 @@ app.get('*', async (req, res) => {
   res.send('URL not found');
 });
 
-async function initialSanityChecks() {
+async function initialSanityChecks(): Promise<void> {
   /* security checks = is the password set and is not the default? (more checks might come) */
   security.checkKeyIsSet();
   await dbUtils.checkMongoWorks(true /* if true means that failure is fatal */);

@@ -1,18 +1,15 @@
+import { clearCache, sizeCheck } from '@shared/providers/dataDonation.provider';
+import { getNatureByHref } from '@tktrex/lib/nature';
 import { map } from 'fp-ts/lib/Either';
 import { pipe } from 'fp-ts/lib/function';
-
 import _ from 'lodash';
-
+import { localLookup, serverLookup } from './chrome/background/sendMessage';
 import config from './config';
-import hub from './hub';
 import * as dom from './dom';
 import { registerHandlers } from './handlers/index';
+import hub from './hub';
+import { INTERCEPTED_ITEM_CLASS } from './interceptor/constants';
 import log from './logger';
-
-import { localLookup, serverLookup } from './chrome/background/sendMessage';
-
-import { getNatureByHref } from '@tktrex/lib/nature';
-import { sizeCheck, clearCache } from '@shared/providers/dataDonation.provider';
 
 let feedId = '—' + Math.random() + '-' + _.random(0, 0xff) + '—';
 let feedCounter = 0;
@@ -68,6 +65,9 @@ function tktrexActions(remoteInfo: unknown): void {
   log.info('initialize watchers, remoteInfo available:', remoteInfo);
 
   setupObserver();
+  // the mutation observer seems to ignore container new children,
+  // so an interval take place here
+  setInterval(handleInterceptedData, 5000);
   flush();
 }
 
@@ -141,6 +141,9 @@ const selectors = {
   search: {
     selector: '[data-e2e="search-card-desc"]',
   },
+  apiInterceptor: {
+    selector: `div.${INTERCEPTED_ITEM_CLASS}`,
+  },
 };
 
 function setupObserver(): void {
@@ -149,6 +152,10 @@ function setupObserver(): void {
   dom.on(selectors.video.selector, handleVideo);
   dom.on(selectors.search.selector, handleSearch);
   dom.on(selectors.error.selector, handleSearch);
+
+  // experiment
+  dom.on('#sigi-persisted-data', handleSigi);
+
   log.info('listeners installed, selectors', selectors);
 
   /* and monitor href changes to randomize a new accessId */
@@ -188,6 +195,47 @@ function setupObserver(): void {
     log.error('setupObserver: body not found');
   }
 }
+
+const hidLog = log.extend('intercept-data-listener');
+/**
+ * handle a new intercepted datum node by dispatching
+ * the event to the hub and remove the node from the container
+ */
+
+const handleInterceptedData = (): void => {
+  const itemNodes = document.body.querySelectorAll(
+    selectors.apiInterceptor.selector,
+  );
+
+  if (itemNodes.length === 0) {
+    return;
+  }
+
+  hidLog.debug('Intercepted %d items', itemNodes.length);
+
+  itemNodes.forEach((ch, i) => {
+    // hidLog.info('Child el %O', childEl);
+    const html = ch.innerHTML;
+    try {
+      const data = JSON.parse(html);
+      hidLog.debug('Sending APIRequest payload');
+      hub.dispatch({
+        type: 'APIEvent',
+        payload: data,
+      });
+    } catch (e) {
+      hidLog.error('Error %O', e);
+    }
+    hidLog.debug('Remove child from container: O%', ch);
+
+    ch.remove();
+  });
+};
+
+// experiment in progress
+const handleSigi = _.debounce((element: Node): void => {
+  console.log('Sigi', element);
+});
 
 const handleSearch = _.debounce((element: Node): void => {
   log.info('Handle search for path %O', window.location.search);
@@ -264,8 +312,8 @@ const handleVideo = _.debounce((node: HTMLElement): void => {
     (memo: HTMLElement, iteration: number): HTMLElement => {
       if (memo.parentNode instanceof HTMLElement) {
         if (memo.parentNode.outerHTML.length > 10000) {
-          log.info(
-            'handleVideo: parentNode too big',
+          log.debug(
+            'handleVideo: parentNode > 10000',
             memo.parentNode.outerHTML.length,
           );
           return memo;

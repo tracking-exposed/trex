@@ -36,7 +36,7 @@ function getMirror(req) {
   if (!security.checkPassword(req)) return security.authError;
 
   if (last) {
-    let retval = Object(last);
+    const retval = Object(last);
     last = null;
     debug(
       'getMirror: authentication successfull, %d elements in volatile memory',
@@ -232,8 +232,35 @@ async function handshake(req) {
   };
 }
 
+async function processAPIEvents(req) {
+  for (const data of req.body) {
+    const { request, response, url, id } = data.payload;
+
+    debug('received api events %s for %s', id, url);
+
+    // request has always body: [{events:[]}]
+    const events = _.get(request.body[0], 'events');
+    // debug('request.events %s', JSON.stringify(events, null, 3));
+    // and each event has 'event' (name) and 'params' JSON String
+    const converted = _.map(events, function (o) {
+      return _.set({}, o.event, JSON.parse(o.params));
+    });
+    debug('request.events %s', JSON.stringify(converted, null, 1));
+    // converted is just simpler to read when plotted
+
+    // response is kind of useless anytime?
+    if (response.headers['content-length'] > 7)
+      debug('UNUSUAL response %O', response);
+  }
+
+  return {
+    json: true,
+  };
+}
+
 module.exports = {
   processEvents,
+  processAPIEvents,
   getMirror,
   mandatoryHeaders,
   processHeaders,

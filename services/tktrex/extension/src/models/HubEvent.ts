@@ -17,6 +17,16 @@ export interface NewVideoEvent extends HubEventBase {
   };
 }
 
+export interface APIEvent extends HubEventBase {
+  type: 'APIEvent';
+  payload: {
+    headers: any;
+    data: any;
+    url: any;
+    response: any;
+  };
+}
+
 export interface FullSaveEvent extends HubEventBase {
   type: 'FullSave';
   payload: {
@@ -58,6 +68,19 @@ export interface SyncResponseEvent extends HubEventBase {
       };
 }
 
+export interface APISyncResponseEvent extends HubEventBase {
+  type: 'APISyncResponse';
+  payload:
+    | {
+        type: 'Success';
+        response: unknown;
+      }
+    | {
+        type: 'Error';
+        error: unknown;
+      };
+}
+
 export interface WindowUnloadEvent extends HubEventBase {
   type: 'WindowUnload';
 }
@@ -68,6 +91,8 @@ export type HubEvent =
   | SearchEvent
   | SuggestedEvent
   | FullSaveEvent
-  | SyncResponseEvent;
+  | SyncResponseEvent
+  | APISyncResponseEvent
+  | APIEvent;
 
 export default HubEvent;

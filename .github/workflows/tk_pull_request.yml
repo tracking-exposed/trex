@@ -1,0 +1,45 @@
+name: TkTrEx - Pull Request
+
+on:
+  pull_request:
+    branches:
+      - daily
+      - beta
+      - feat/**
+    paths:
+      - "packages/**"
+      - "services/tktrex/**"
+
+jobs:
+  pull_request:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [16.x]
+
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v2
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: "yarn"
+          cache-dependency-path: yarn.lock
+
+      - name: Install modules
+        run: yarn
+
+      - name: Lint code
+        run: |
+          yarn tk:backend lint
+          yarn tk:ext lint
+
+      - name: Build shared
+        run: yarn shared build
+
+      - name: Build
+        run: |
+          yarn tk:ext build
