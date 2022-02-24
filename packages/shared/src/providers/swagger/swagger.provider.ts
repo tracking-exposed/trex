@@ -24,7 +24,7 @@ interface ServerConfig {
   basePath: string;
 }
 
-interface DocConfig {
+export interface DocConfig {
   title: string;
   description: string;
   version: string;
@@ -189,9 +189,17 @@ const apiSchemaFromEndpoint = (
 
   // TODO: define error response
 
+  const hasDocumentationMethod = (e as any).getDocumentation !== undefined;
+  const description = hasDocumentationMethod
+    ? (e as any).getDocumentation()
+    : `${e.Method}: ${path}`;
+
+  // eslint-disable-next-line
+  // console.log(schemaName, { hasDocumentationMethod, description });
+
   return {
     summary: key,
-    description: `${e.Method} ${path}`,
+    description,
     tags: tags,
     parameters,
     security,
@@ -242,11 +250,12 @@ const getPaths = (
                       ]
                     );
 
-                    const currentSchema = {
-                      [(endpoint.Output as any).name]: getOpenAPISchema(
-                        endpoint.Output as any
-                      ),
-                    };
+                    const currentSchema = (endpoint.Output as any)?.name
+                      ? {
+                          [getInnerSchemaName((endpoint.Output as any).name)]:
+                            getOpenAPISchema(endpoint.Output as any),
+                        }
+                      : {};
 
                     return {
                       schemas: {
@@ -313,10 +322,14 @@ export const generateDoc = (config: DocConfig): any => {
       },
       (key, acc, model) => {
         const { required, ...modelSchema } = getOpenAPISchema(model);
-        return {
-          ...acc,
-          [getInnerSchemaName(model.name)]: modelSchema,
-        };
+        if (model.name) {
+          return {
+            ...acc,
+            [getInnerSchemaName(model.name)]: modelSchema,
+          };
+        }
+
+        return acc;
       }
     )
   );
@@ -329,7 +342,7 @@ export const generateDoc = (config: DocConfig): any => {
     },
     servers: [
       {
-        url: `{protocol}://{host}{port}{basePath}`,
+        url: `{protocol}://{host}{port}/{basePath}`,
         description: 'Node Server',
         variables: {
           protocol: { default: config.server.protocol },

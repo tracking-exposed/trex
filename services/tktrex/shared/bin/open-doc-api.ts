@@ -1,61 +1,39 @@
-/* this script is inspired by
- * $ cp ../../../YCAI/src/components/dashboard/settings/Swagger.tsx bin/swagger-converter.js
- * and extend the API description based on a static list
- * imply the same keyname has the same description
- */
-
 import * as endpoints from '../src/endpoints';
 import * as apiModels from '../src/models/api';
-import * as swagger from '../../../../packages/shared/src/providers/swagger/swagger.provider';
-import * as fs from 'fs';
+import * as sharedModels from '../../../../packages/shared/src/models';
+import * as swagger from '../../../../packages/shared/src/providers/swagger/swagger.provider.node';
 import * as path from 'path';
-// eslint-disable-next-line @typescript-eslint/no-var-requires
-const { validate } = require('@apidevtools/swagger-cli');
+import packageJson from '../package.json';
 
-const openDocAPI = swagger.generateDoc({
-  title: 'Tktrex API Docs',
-  description: 'Tracking exposed API documentation for tiktok platform',
-  server: {
-    host: 'tiktok.tracking.exposed',
-    port: '443' as any,
-    protocol: 'https',
-    basePath: 'api',
-  },
-  endpoints: {
-    v1: endpoints,
-  },
-  version: '1',
-  models: apiModels,
-  components: {
-    security: {
-      ACTToken: {
-        type: 'apiKey',
-        in: 'header',
-        name: 'X-Authorization',
+swagger.writeOpenDocTo(
+  {
+    title: 'Tktrex API Docs',
+    description: 'Tracking exposed API documentation for tiktok platform',
+    server: {
+      host: 'tiktok.tracking.exposed',
+      port: '' as any,
+      protocol: 'https',
+      basePath: 'api',
+    },
+    endpoints: {
+      v1: endpoints,
+    },
+    version: packageJson.version,
+    models: { ...apiModels, ...(sharedModels as any) },
+    components: {
+      security: {
+        ACTToken: {
+          type: 'apiKey',
+          in: 'header',
+          name: 'X-Authorization',
+        },
       },
     },
+    security: [
+      {
+        ACTToken: [],
+      },
+    ],
   },
-  security: [
-    {
-      ACTToken: [],
-    },
-  ],
-});
-
-// print unvalidated open doc api
-fs.writeFileSync(
-  path.resolve(process.cwd(), 'build/openapi-tktrex.json'),
-  JSON.stringify(openDocAPI, null, 2),
+  path.resolve(process.cwd(), './build'),
 );
-
-validate(openDocAPI, {}, (err: any, api: any) => {
-  if (err) {
-    // eslint-disable-next-line
-    console.log(JSON.stringify(err.details, null, 2));
-    throw err;
-  }
-  fs.writeFileSync(
-    path.resolve(process.cwd(), 'build/openapi-tktrex-validated.json'),
-    JSON.stringify(api, null, 2),
-  );
-});

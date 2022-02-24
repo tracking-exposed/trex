@@ -13,9 +13,9 @@
 :root {
   --black: #1b1b1b;
   --white: #f1f1f1;
-  --ifm-font-family-base: "Trex-Regular";
+  /* --ifm-font-family-base: "Trex-Regular"; */
   --ifm-heading-font-family: "Trex-Regular";
-  --ifm-font-size-base: 120%;
+  /* --ifm-font-size-base: 120%; */
   --ifm-line-height-base: 2;
   --ifm-color-primary: #53c1b6;
   --ifm-color-primary-dark: #42b7ab;

@@ -1,4 +1,5 @@
 import * as t from 'io-ts';
+import * as path from 'path';
 import { Endpoint } from 'ts-endpoint';
 import {
   ADVContributionEvent,
@@ -10,6 +11,7 @@ import { SearchQuery } from '../../models/http/SearchQuery';
 import { TikTokSearch } from '../../models/http/tiktok/TikTokSearch';
 import { Metadata } from '../../models/Metadata';
 import { ChannelADVStats } from '../../models/stats/ChannelADV';
+import { DocumentedEndpoint } from '../utils';
 
 const CompareVideo = Endpoint({
   Method: 'GET',
@@ -38,14 +40,17 @@ const VideoAuthor = Endpoint({
   Output: t.any,
 });
 
-const Searches = Endpoint({
-  Method: 'GET',
-  getPath: ({ queryString }) => `/v2/searches/${queryString}`,
-  Input: {
-    Params: t.type({ queryString: t.string }),
+const Searches = DocumentedEndpoint(
+  {
+    Method: 'GET',
+    getPath: ({ queryString }) => `/v2/searches/${queryString}`,
+    Input: {
+      Params: t.type({ queryString: t.string }),
+    },
+    Output: t.any,
   },
-  Output: t.any,
-});
+  path.resolve(__dirname, 'tik-tok-searches.md')
+);
 
 const SearchesAsCSV = Endpoint({
   Method: 'GET',

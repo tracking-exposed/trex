@@ -1,6 +1,8 @@
 import * as t from 'io-ts';
 import { Endpoint } from 'ts-endpoint';
 import * as apiModel from './models/api';
+import { DocumentedEndpoint } from '@shared/endpoints/utils';
+import * as path from 'path';
 
 const GetPersonalJSON = Endpoint({
   Method: 'GET',
@@ -30,11 +32,14 @@ const GetPersonalCSV = Endpoint({
 // TODO: the personal searches should become a different endpoint because the output format differs
 // ****
 
-const GetSearches = Endpoint({
-  Method: 'GET',
-  getPath: () => '/v2/searches',
-  Output: apiModel.PublicSearchList,
-});
+const GetSearches = DocumentedEndpoint(
+  {
+    Method: 'GET',
+    getPath: () => '/v2/searches',
+    Output: apiModel.PublicSearchList,
+  },
+  path.resolve(__dirname, './tik-tok-searches.md'),
+);
 
 const GetSearchByQuery = Endpoint({
   Method: 'GET',

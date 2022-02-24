@@ -5,9 +5,7 @@ const lightCodeTheme = require('prism-react-renderer/themes/github');
 const darkCodeTheme = require('prism-react-renderer/themes/dracula');
 const packageJson = require('./package.json');
 
-
-const GITHUB_REPO = "https://github.com/tracking-exposed/yttrex";
-
+const GITHUB_REPO = 'https://github.com/tracking-exposed/yttrex';
 
 /** @type {import('@docusaurus/types').Config} */
 const config = {
@@ -27,7 +25,7 @@ const config = {
       'docusaurus-plugin-openapi',
       {
         id: 'tktrex',
-        path: '../shared/build/openapi-tktrex.json',
+        path: '../shared/build/open-api.json',
         routeBasePath: 'tktrex/api',
       },
     ],
@@ -58,7 +56,7 @@ const config = {
         title: `@tktrex v${packageJson.version}`,
         logo: {
           alt: '@tktrex Logo',
-          src: 'img/yttrex128.png',
+          src: '/img/yttrex128.png',
         },
         items: [
           {
@@ -115,7 +113,7 @@ const config = {
                 to: '/blog',
               },
               {
-                html: `<a class="header-github-link" href="${GITHUB_REPO}" target="_blank" rel="noreferrer"></a>`
+                html: `<a class="header-github-link" href="${GITHUB_REPO}" target="_blank" rel="noreferrer"></a>`,
               },
             ],
           },
