@@ -32,5 +32,5 @@
     "linkedom": "^0.13.2",
     "mongodb": "^4.3.1"
   },
-  "version": "2.4.0"
+  "version": "2.4.1"
 }

@@ -1,3 +1,5 @@
+### [2.4.1](https://github.com/tracking-exposed/yttrex/compare/v2.4.0...v2.4.1) (2022-02-24)
+
 ## [2.4.0](https://github.com/tracking-exposed/yttrex/compare/v2.3.0...v2.4.0) (2022-02-22)
 
 - simple auto script for tiktok fr elections ([#311](https://github.com/tracking-exposed/yttrex/issues/311)) ([7cb971f](https://github.com/tracking-exposed/yttrex/commit/7cb971ff67a9a00fde9e76b6bc9855517923c9c4)), closes [#312](https://github.com/tracking-exposed/yttrex/issues/312) [#304](https://github.com/tracking-exposed/yttrex/issues/304) [#291](https://github.com/tracking-exposed/yttrex/issues/291) [#305](https://github.com/tracking-exposed/yttrex/issues/305) [#301](https://github.com/tracking-exposed/yttrex/issues/301) [#301](https://github.com/tracking-exposed/yttrex/issues/301) [#301](https://github.com/tracking-exposed/yttrex/issues/301) [#301](https://github.com/tracking-exposed/yttrex/issues/301) [#301](https://github.com/tracking-exposed/yttrex/issues/301)
