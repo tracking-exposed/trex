@@ -12,15 +12,53 @@ import { formatISO, subMonths } from 'date-fns';
 import { pipe } from 'fp-ts/lib/function';
 import * as TE from 'fp-ts/lib/TaskEither';
 import { AppError } from '@shared/errors/AppError';
-import { getItem } from '@shared/providers/localStorage.provider';
-import { API } from '../../api';
+import { getItem, setItem } from '@shared/providers/localStorage.provider';
 import { APIError } from '@shared/errors/APIError';
 import { GetRelatedChannelsOutput } from '@shared/models/ChannelRelated';
 import * as sharedConst from '@shared/constants';
+import { GetAPI } from '@shared/providers/api.provider';
+import { config } from '../../config';
+import { AuthResponse } from '@shared/models/Auth';
 
 export const CREATOR_CHANNEL_KEY = 'creator-channel';
 export const CURRENT_VIDEO_ON_EDIT = 'current-video-on-edit';
 export const ACCOUNT_LINK_COMPLETED = 'account-link-completed';
+
+const logout = async (): Promise<void> => {
+  setItem(sharedConst.CONTENT_CREATOR, null)();
+
+  await profile.invalidate()();
+  await localProfile.invalidate()();
+};
+
+export const { API, HTTPClient } = GetAPI({
+  baseURL: config.API_URL,
+  getAuth: (req) => {
+    return pipe(
+      localProfile.run(),
+      TE.filterOrElse(
+        (s): s is AuthorizedContentCreator => s !== null,
+        () => new Error('Auth is null')
+      ),
+      TE.fold(
+        (e) => async () => {
+          return Promise.reject(e);
+        },
+        (a) => async () => {
+          req.headers = {
+            ...req.headers,
+            'x-authorization': a.accessToken,
+          };
+          return req;
+        }
+      )
+    )();
+  },
+  onUnauthorized: async (res) => {
+    await logout();
+    return res;
+  },
+});
 
 type AuthorizedContentCreator = Omit<ContentCreator, 'accessToken'> & {
   accessToken: string;
@@ -39,7 +77,7 @@ const throwOnMissingProfile = (
   );
 
 export const auth = queryStrict(
-  () => TE.fromIO<any, AppError>(getItem(sharedConst.AUTH_KEY)),
+  () => TE.fromIO<AuthResponse | null, AppError>(getItem(sharedConst.AUTH_KEY)),
   available
 );
 
@@ -51,7 +89,7 @@ export const accountLinkCompleted = queryStrict(
 // content creator
 
 export const localProfile = queryStrict(
-  () => TE.fromIO<any, APIError>(getItem(sharedConst.CONTENT_CREATOR)),
+  () => TE.fromIO<AuthorizedContentCreator | null, APIError>(getItem(sharedConst.CONTENT_CREATOR)),
   available
 );
 

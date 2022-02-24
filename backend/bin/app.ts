@@ -40,9 +40,10 @@ const iowrapper =
         res.send('Fatal error: Invalid output');
         res.status(501);
       } else if (httpresult.json?.error) {
-        logger.debug('API (%s) failure, returning 500', fname);
+        const statusCode = httpresult.json.status ?? 500;
+        logger.debug('API (%s) failure, returning %d', fname, statusCode);
         loginc('errors', fname);
-        res.status(500);
+        res.status(statusCode);
         res.json(httpresult.json);
       } else if (httpresult.json) {
         // logger("API (%s) success, returning %d bytes JSON", fname, _.size(JSON.stringify(httpresult.json)));

@@ -38,7 +38,11 @@ export const GetTabouleCommands = (
   },
   queries: TabouleQueries
 ): TabouleCommands => {
-  const API = GetAPI({ baseURL });
+  const API = GetAPI({
+    baseURL,
+    getAuth: async (req) => req,
+    onUnauthorized: async (res) => res,
+  });
   const deleteContribution = command(
     (input: { Params: { publicKey: string; selector: string | undefined } }) =>
       API.API.v2.Public.DeletePersonalContributionByPublicKey({

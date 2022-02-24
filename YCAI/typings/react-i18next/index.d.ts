@@ -167,13 +167,13 @@ declare module 'react-i18next' {
       routes: {
         link_account: string;
         congrats: string;
-        lab_videos_title: string;
-        gem_collection_title: string;
-        gem_collection_title_short: string;
-        gem_collection_subtitle: string;
         lab_title: string;
         lab_title_short: string;
         lab_subtitle: string;
+        gem_collection_title: string;
+        gem_collection_title_short: string;
+        gem_collection_subtitle: string;
+        lab_edit_title: string;
         lab_edit_subtitle: string;
         analytics: string;
         settings: string;

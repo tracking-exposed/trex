@@ -8,8 +8,10 @@ import {
   useTheme,
 } from '@material-ui/core';
 import { ContentCreator } from '@shared/models/ContentCreator';
+import { formatDistance, parseISO } from 'date-fns';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
+import { config } from '../../config';
 import { CurrentView, doUpdateCurrentView } from '../../utils/location.utils';
 import AnalyticsIcon from '../common/icons/AnalyticsIcon';
 import LabIcon from '../common/icons/LabIcon';
@@ -99,7 +101,7 @@ const MenuBox: React.FC<{ currentView: CurrentView }> = ({ currentView }) => {
             views: ['gemCollection'],
           },
           {
-            title: t('routes:lab_videos_title'),
+            title: t('routes:lab_edit_title'),
             views: ['lab', 'labEdit'],
           },
         ],
@@ -198,7 +200,7 @@ const MenuBox: React.FC<{ currentView: CurrentView }> = ({ currentView }) => {
 
 interface SidebarProps {
   currentView: CurrentView;
-  profile?: ContentCreator;
+  profile: ContentCreator | null;
   accountLinkCompleted: boolean;
 }
 
@@ -209,6 +211,11 @@ export const Sidebar: React.FC<SidebarProps> = ({
 }) => {
   const classes = useStyles();
   const theme = useTheme();
+  const { t } = useTranslation();
+
+  const timeAgo = formatDistance(parseISO(config.BUILD_DATE), new Date(), {
+    addSuffix: true,
+  });
 
   return (
     <Box
@@ -227,6 +234,11 @@ export const Sidebar: React.FC<SidebarProps> = ({
         }}
       >
         <YCAILogo height={24} />
+        <Box style={{ marginTop: 10 }}>
+          <Typography variant="caption">
+            {t('popup:version', { version: config.VERSION, date: timeAgo })}
+          </Typography>
+        </Box>
       </Box>
 
       {profile && accountLinkCompleted && (

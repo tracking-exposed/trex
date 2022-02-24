@@ -12,7 +12,10 @@ import {
 import { Folder as FolderIcon } from '@material-ui/icons';
 import { useTranslation } from 'react-i18next';
 import * as models from '../../models';
-import { generateKeypair, updateSettings } from '../../state/popup.commands';
+import {
+  generateKeypair,
+  updateSettings,
+} from '../../state/popup/popup.commands';
 import { DATA_DONATION_LEARN_MORE_URL } from '../../constants';
 
 const useStyles = makeStyles((theme) => ({
@@ -41,8 +44,8 @@ const useStyles = makeStyles((theme) => ({
     marginLeft: -6,
     '& svg': {
       height: 16,
-    }
-  }
+    },
+  },
 }));
 
 interface SettingsProps {
@@ -64,7 +67,10 @@ const Settings: React.FC<SettingsProps> = ({ settings }) => {
             color="primary"
             checked={settings.enhanceYouTubeExperience}
             onChange={(e, checked) =>
-              updateSettings({ ...settings, enhanceYouTubeExperience: checked })()
+              updateSettings({
+                ...settings,
+                enhanceYouTubeExperience: checked,
+              })()
             }
           />
         }

@@ -1,10 +1,9 @@
 import { HandshakeBody } from '@shared/models/HandshakeBody';
 import { command } from 'avenger';
 import * as TE from 'fp-ts/lib/TaskEither';
-import { Messages, browser } from '../providers/browser.provider';
-import { Settings } from '../models/Settings';
-import { API } from '../api';
-import { settings, settingsRefetch, keypair } from './popup.queries';
+import { Messages, browser } from '../../providers/browser.provider';
+import { Settings } from '../../models/Settings';
+import { settings, settingsRefetch, keypair, API } from './popup.queries';
 
 export const handshake = command((handshake: HandshakeBody) =>
   API.v3.Public.Handshake({ Body: handshake })

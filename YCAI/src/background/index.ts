@@ -15,7 +15,7 @@ import * as E from 'fp-ts/lib/Either';
 import { pipe } from 'fp-ts/lib/function';
 import * as O from 'fp-ts/lib/Option';
 import * as TE from 'fp-ts/lib/TaskEither';
-import { HTTPClient } from '../api';
+import { HTTPClient } from '../state/dashboard/public.queries';
 import { config } from '../config';
 import * as constants from '../constants';
 import { getDefaultSettings, Settings } from '../models/Settings';

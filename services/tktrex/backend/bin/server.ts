@@ -208,20 +208,33 @@ app.get(
   async (req, res) => await iowrapper('experimentDOT', req, res)
 );
 
-/* implemented right before DMI winter school */
+/* ============== Documented only the API below ============== */
+
+/* TODO the JSON was v1 and should be fixed in site, the what should be a query string, should be timed params */
 app.get(
-  '/api/v2/searches',
+  '/api/v2/personal/:publicKey/:what/json',
+  async (req, res) => await iowrapper('getPersonal', req, res)
+);
+app.get(
+  '/api/v2/personal/:publicKey/:what/csv',
+  async (req, res) => await iowrapper('getPersonalCSV', req, res)
+);
+
+/* implemented for DMI winter school, supported in Taboule, trimming in progress */
+app.get(
+  '/api/v2/public/searches',
   async (req, res) => await iowrapper('getSearches', req, res)
 );
-/* used in /search page for comparison of specific queries */
 app.get(
-  '/api/v2/query/:string/:format',
+  '/api/v2/public/query/:string/:format',
   async (req, res) => await iowrapper('getSearchByQuery', req, res)
 );
 app.get(
-  '/api/v2/queries/list',
+  '/api/v2/public/queries/list',
   async (req, res) => await iowrapper('getQueryList', req, res)
 );
+
+/* --------------- end of documented APIs -------------------- */
 
 /* quick experiment to return static images: nginx might do a better job */
 app.get('/api/v0/images/:subd/:fname', (req, res) => {

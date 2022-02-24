@@ -8,8 +8,8 @@ import { command } from 'avenger';
 import { sequenceS } from 'fp-ts/lib/Apply';
 import { pipe } from 'fp-ts/lib/function';
 import * as TE from 'fp-ts/lib/TaskEither';
-import { API } from '../../api';
 import {
+  API as AuthAPI,
   auth,
   creatorRecommendations,
   creatorVideos,
@@ -19,12 +19,16 @@ import {
   profile,
   requiredLocalProfile,
 } from './creator.queries';
-import { settings, videoRecommendations } from './public.queries';
+import {
+  settings,
+  videoRecommendations,
+  API as PublicAPI,
+} from './public.queries';
 
 export const registerCreatorChannel = command(
   (channelId: string) =>
     pipe(
-      API.v3.Creator.RegisterCreator({
+      PublicAPI.v3.Creator.RegisterCreator({
         Params: { channelId },
         Body: { type: 'channel' },
       }),
@@ -40,12 +44,13 @@ export const registerCreatorChannel = command(
 export const verifyChannel = command(
   ({ channelId }: { channelId: string }) =>
     pipe(
-      API.v3.Creator.VerifyCreator({ Params: { channelId } }),
+      PublicAPI.v3.Creator.VerifyCreator({ Params: { channelId } }),
       TE.chain((cc) => TE.fromIO(setItem(sharedConst.CONTENT_CREATOR, cc)))
     ),
   {
     localProfile,
     auth,
+    requiredLocalProfile
   }
 );
 
@@ -54,7 +59,7 @@ export const pullContentCreatorVideos = command(
     pipe(
       requiredLocalProfile.run(),
       TE.chain((p) =>
-        API.v3.Creator.PullCreatorVideos({
+        AuthAPI.v3.Creator.PullCreatorVideos({
           Headers: {
             'x-authorization': p.accessToken,
           },
@@ -71,7 +76,7 @@ export const addRecommendation = command(
     pipe(
       profile.run(),
       TE.chain((p) =>
-        API.v3.Creator.CreateRecommendation({
+        AuthAPI.v3.Creator.CreateRecommendation({
           Headers: {
             'x-authorization': p.accessToken,
           },
@@ -89,7 +94,7 @@ export const updateRecommendationsForVideo = command(
     return pipe(
       requiredLocalProfile.run(),
       TE.chain((p) =>
-        API.v3.Creator.UpdateVideo({
+        AuthAPI.v3.Creator.UpdateVideo({
           Headers: {
             'x-authorization': p.accessToken,
           },
@@ -119,13 +124,13 @@ export const addRecommendationForVideo = command(
       profile.run(),
       TE.chain((p) =>
         sequenceS(TE.ApplicativePar)({
-          video: API.v3.Creator.OneCreatorVideo({
+          video: AuthAPI.v3.Creator.OneCreatorVideo({
             Headers: {
               'x-authorization': p.accessToken,
             },
             Params: { videoId },
           }),
-          recommendation: API.v3.Creator.CreateRecommendation({
+          recommendation: AuthAPI.v3.Creator.CreateRecommendation({
             Headers: {
               'x-authorization': p.accessToken,
             },
@@ -162,7 +167,7 @@ export const patchRecommendation = command(
     pipe(
       profile.run(),
       TE.chain((p) => {
-        return API.v3.Creator.PatchRecommendation({
+        return AuthAPI.v3.Creator.PatchRecommendation({
           Headers: {
             'x-authorization': p.accessToken,
           },
@@ -178,7 +183,7 @@ export const deleteRecommendation = command(
     pipe(
       profile.run(),
       TE.chain((p) => {
-        return API.v3.Creator.DeleteRecommendation({
+        return AuthAPI.v3.Creator.DeleteRecommendation({
           Headers: {
             'x-authorization': p.accessToken,
           },
@@ -216,10 +221,15 @@ export const updateProfile = command(
   }
 );
 
+export const deleteProfile = command(
+  () => TE.fromIO(setItem(sharedConst.CONTENT_CREATOR, null)),
+  { profile }
+);
+
 export const assignAccessToken = command(
   ({ token }: { token: string }) => {
     return pipe(
-      API.v3.Creator.GetCreator({
+      PublicAPI.v3.Creator.GetCreator({
         Headers: {
           'x-authorization': token,
         },

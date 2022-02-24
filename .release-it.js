@@ -27,7 +27,7 @@ const conventionalCommitTypes = [
 module.exports = {
   hooks: {
     'after:init': [],
-    'after:bump': ['yarn release-it-after-bump'],
+    'after:bump': [],
   },
   git: {
     requireUpstream: false,
@@ -35,15 +35,7 @@ module.exports = {
   },
   github: {
     release: true,
-    assets: [
-      'extension/dist/*.zip',
-      'guardoni/dist/*.deb',
-      'guardoni/dist/*.exe',
-      'guardoni/dist/*.dmg',
-      'guardoni/dist/guardoni-cli-*',
-      'services/tktrex/extension/dist/*.zip',
-      'YCAI/build/extension/*.zip',
-    ],
+    assets: [],
   },
   npm: false,
   plugins: {

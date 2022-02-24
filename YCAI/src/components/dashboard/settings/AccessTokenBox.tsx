@@ -1,4 +1,3 @@
-import { ContentCreator } from '@shared/models/ContentCreator';
 import {
   Box,
   Button,
@@ -11,23 +10,23 @@ import {
   InputAdornment,
   InputLabel,
   makeStyles,
-  Typography,
+  Typography
 } from '@material-ui/core';
 import CloudDownload from '@material-ui/icons/CloudDownload';
 import VisibilityIcon from '@material-ui/icons/Visibility';
 import VisibilityOffIcon from '@material-ui/icons/VisibilityOff';
-import * as E from 'fp-ts/lib/Either';
 import { APIError } from '@shared/errors/APIError';
+import { ContentCreator } from '@shared/models/ContentCreator';
+import * as E from 'fp-ts/lib/Either';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
-import { assignAccessToken } from '../../../state/dashboard/creator.commands';
+import { assignAccessToken, deleteProfile } from '../../../state/dashboard/creator.commands';
 import {
-  deleteProfile,
-  downloadTXTFile,
+  downloadTXTFile
 } from '../../../state/dashboard/public.commands';
 import { YCAITheme } from '../../../theme';
-import UnlinkProfileButton from '../../common/UnlinkProfileButton';
 import { doUpdateCurrentView } from '../../../utils/location.utils';
+import UnlinkProfileButton from '../../common/UnlinkProfileButton';
 
 interface AccessTokenBoxProps {
   profile: ContentCreator | null;
