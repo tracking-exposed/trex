@@ -5,7 +5,7 @@
 
   "short_name": "tktrex",
   "description": "A tool for academic researchers. Part of the tracking.exposed project, is meant to analyze the algorithm of a popular video portal.",
-  "version": "2.2.0",
+  "version": "__THIS_IS_IGNORED__PACKAGE.JSON_VERSION_IS_USED_AT_BUILD_TIME__",
   "author": "The team of Tracking Exposed",
 
   "icons": {
@@ -29,9 +29,9 @@
   "content_scripts": [
     {
       "matches": ["https://*.tiktok.com/*"],
-      "js": ["./app.js"]
+      "js": ["./injected.js", "./app.js"]
     }
   ],
 
-  "web_accessible_resources": ["*.png"]
+  "web_accessible_resources": ["interceptor.js", "*.png"]
 }

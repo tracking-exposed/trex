@@ -8,7 +8,7 @@ import React from 'react';
 import { LazyFullSizeLoader } from '../../components/common/FullSizeLoader';
 import { Settings } from '../../models/Settings';
 import { dataDonation } from '../../providers/dataDonation.provider';
-import { keypair } from '../../state/popup.queries';
+import { keypair } from '../../state/popup/popup.queries';
 import { makeStyles } from '../../theme';
 
 const useStyles = makeStyles((props) => ({

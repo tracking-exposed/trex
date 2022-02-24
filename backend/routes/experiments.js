@@ -10,14 +10,65 @@ const mongo3 = require('../lib/mongo3');
 const security = require('../lib/security');
 
 async function sharedDataPull(filter) {
-  /* this function is invoked by the various API below */
+  // this function is invoked by the various API below,
+  // and it might proxy a mongodb query to 'metadata' or to 'ads'
+
   const mongoc = await mongo3.clientConnect({ concurrency: 5 });
   /* these values are used to fetch max of 3000 metadata */
   const SLOT = 500;
   let keepfe = true;
-  /* this choice is due to the a memory error due to looking up htmls */
-  const metadata = [];
 
+  if (filter.type === 'adv') {
+    // this condition is different from the standard code, so it is handled
+    // and resolved in this code branch.
+    const ads = await mongo3.aggregate(mongoc, nconf.get('schema').ads, [
+      {
+        $match: {
+          'experiment.experimentId': filter['experiment.experimentId'],
+        },
+      },
+      { $limit: SLOT * 6 },
+      { $skip: 0 },
+      {
+        $lookup: {
+          from: 'metadata',
+          localField: 'metadataId',
+          foreignField: 'metadataId',
+          as: 'metadata',
+        },
+      },
+    ]);
+
+    debug(
+      'Found %d available advertising matching experimentId %s',
+      ads.length,
+      filter['experiment.experimentId']
+    );
+    await mongoc.close();
+    return _.map(ads, function (a) {
+      // this format is basically fixed to help CSV generation, but works well also as mixed
+      return {
+        ...a.nature,
+        ..._.pick(a, [
+          'metadataId',
+          'id',
+          'savingTime',
+          'publicKey',
+          'href',
+          'selectorName',
+          'sponsoredSite',
+          'sponsoredName',
+        ]),
+        experiment: a.experiment,
+        ..._.pick(a.metadata[0], ['clientTime', 'login', 'uxLang']),
+        type: 'adv',
+      };
+    });
+  }
+
+  // accumulate data with 5 parallel queries and a reduction, it is a design
+  // choice because keeping html in memory might lead to OOM
+  const metadata = [];
   const match = { $match: filter };
   const sort = { $sort: { savingTime: -1 } };
   const lookup = {
@@ -114,7 +165,10 @@ async function csv(req) {
   if (CSV.allowedTypes.indexOf(type) === -1) {
     debug('Invalid requested data type? %s', type);
     return {
-      text: 'Error, invalid URL composed. allowed types: ' + CSV.allowedTypes,
+      // video, search, home, adv
+      text: `Error, invalid URL — Allowed types: ${CSV.allowedTypes.join(
+        ', '
+      )}.`,
     };
   }
 

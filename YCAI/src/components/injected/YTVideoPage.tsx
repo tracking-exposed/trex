@@ -8,7 +8,7 @@ import { pipe } from 'fp-ts/lib/function';
 import { useTranslation } from 'react-i18next';
 import { getVideoId } from '@shared/utils/yt.utils';
 
-import { videoRecommendations } from '../../state/popup.queries';
+import { videoRecommendations } from '../../state/popup/popup.queries';
 import { FullSizeLoader } from '../common/FullSizeLoader';
 import { GetLogger } from '@shared/logger';
 import { Recommendation } from '@shared/models/Recommendation';

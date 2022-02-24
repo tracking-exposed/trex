@@ -25,6 +25,7 @@ async function verifyAuthorization(req, model) {
     return {
       creator: {
         error: true,
+        status: 400,
         details: decodedReq.result,
       },
     };
@@ -39,7 +40,7 @@ async function verifyAuthorization(req, model) {
     debug('Invalid token: %s, authorization fail', check);
   }
   /* else, the 'check' contains the creator object for the route */
-  return { creator: check, decodedReq };
+  return { creator: { ...check, status: 401 }, decodedReq };
 }
 
 async function byVideoId(req) {

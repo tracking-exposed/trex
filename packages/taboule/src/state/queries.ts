@@ -55,7 +55,11 @@ export const GetTabouleQueries = ({
   baseURL,
   accessToken,
 }: GetTabouleQueriesProps): TabouleQueries => {
-  const { API } = GetAPI({ baseURL });
+  const { API } = GetAPI({
+    baseURL,
+    getAuth: async (req) => req,
+    onUnauthorized: async (res) => res,
+  });
 
   const ccRelatedUsers = queryStrict<
     SearchRequestInput,

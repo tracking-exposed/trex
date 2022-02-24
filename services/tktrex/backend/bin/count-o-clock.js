@@ -110,6 +110,7 @@ async function start() {
   }
 
   if (nconf.get('dayonly')) {
+    // eslint-disable-next-line no-console
     console.log('--dayonly is present! quitting');
     await mongoc.close();
     return;

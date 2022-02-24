@@ -124,7 +124,7 @@ describe('The YouChoose API', () => {
         .get(`/api/v3/creator/me`)
         .send({ type: 'channel' })
         .set('X-Authorization', 'wrong-token')
-        .expect(500);
+        .expect(401);
     });
 
     it('succeeds with access token', async () => {
@@ -141,7 +141,7 @@ describe('The YouChoose API', () => {
     it('fails for missing header', async () => {
       const { body } = await test.app
         .post(`/api/v3/creator/videos/repull`)
-        .expect(500);
+        .expect(400);
 
       expect(body).toMatchObject({ error: true });
     });
@@ -168,7 +168,7 @@ describe('The YouChoose API', () => {
 
   describe('Get Content Creator videos', () => {
     it('fails for missing header', async () => {
-      const { body } = await test.app.get(`/api/v3/creator/videos`).expect(500);
+      const { body } = await test.app.get(`/api/v3/creator/videos`).expect(400);
 
       expect(body).toMatchObject({ error: true });
     });
@@ -213,7 +213,7 @@ describe('The YouChoose API', () => {
     it('fails for missing token', async () => {
       const { body } = await test.app
         .get(`/api/v3/creator/videos/${videos[0].videoId}`)
-        .expect(500);
+        .expect(400);
 
       expect(body).toMatchObject({ error: true });
     });
@@ -240,7 +240,7 @@ describe('The YouChoose API', () => {
       const { body } = await test.app
         .post(`/api/v3/creator/ogp`)
         .send({ videoId: videos[0].videoId, url: `http://fake-url/${uuid()}` })
-        .expect(500);
+        .expect(400);
 
       expect(body).toMatchObject({ error: true });
     });
@@ -324,7 +324,7 @@ describe('The YouChoose API', () => {
           videoId: videos[0].videoId,
           recommendations: recommendationURLIds,
         })
-        .expect(500);
+        .expect(400);
 
       expect(body).toMatchObject({ error: true });
     });
@@ -336,7 +336,7 @@ describe('The YouChoose API', () => {
         .send({
           recommendations: [],
         })
-        .expect(500);
+        .expect(400);
 
       expect(body).toMatchObject({
         error: true,
@@ -350,7 +350,7 @@ describe('The YouChoose API', () => {
         .send({
           videoId: videos[0].videoId,
         })
-        .expect(500);
+        .expect(400);
 
       expect(body).toMatchObject({
         error: true,
@@ -364,7 +364,7 @@ describe('The YouChoose API', () => {
         .send({
           recommendations: ['fake-id'],
         })
-        .expect(500);
+        .expect(400);
 
       expect(body).toMatchObject({
         error: true,

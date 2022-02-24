@@ -3,10 +3,18 @@ import { pipe } from 'fp-ts/lib/function';
 import * as TE from 'fp-ts/lib/TaskEither';
 import { AppError } from '@shared/errors/AppError';
 import { getDefaultSettings } from '../../models/Settings';
-import { API } from '../../api';
 import * as localStorage from '@shared/providers/localStorage.provider';
 import * as sharedConstants from '@shared/constants';
 import { Keypair } from '@shared/models/extension/Keypair';
+import { GetAPI } from '@shared/providers/api.provider';
+import { config } from '../../config';
+
+export const { API, HTTPClient } = GetAPI({
+  baseURL: config.API_URL,
+  getAuth: async (req) => req,
+  onUnauthorized: async (res) => res,
+});
+
 
 export const settingsRefetch = queryShallow(() => {
   return pipe(

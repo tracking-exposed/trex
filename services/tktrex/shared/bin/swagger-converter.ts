@@ -1,12 +1,55 @@
+/* this script is inspired by
+ * $ cp ../../../YCAI/src/components/dashboard/settings/Swagger.tsx bin/swagger-converter.js
+ * and extend the API description based on a static list
+ * imply the same keyname has the same description
+ */
+
+import * as endpoints from '../src/endpoints';
+import * as apiModels from '../src/models/api';
+import * as swagger from '../../../../packages/shared/src/providers/swagger/swagger.provider';
+
+const openDocAPI = swagger.generateDoc({
+  title: 'Tktrex API Docs',
+  description: 'Tracking exposed API documentation for tiktok platform',
+  server: {
+    host: 'tiktok.tracking.exposed',
+    port: 443,
+    protocol: 'https',
+    basePath: 'api',
+  },
+  endpoints: {
+    v1: endpoints,
+  },
+  version: '1',
+  models: apiModels,
+  components: {
+    security: {
+      ACTToken: {
+        type: 'apiKey',
+        in: 'header',
+        name: 'X-Authorization',
+      },
+    },
+  },
+  security: [
+    {
+      ACTToken: [],
+    },
+  ],
+});
+
+console.log(openDocAPI);
+
+/*
 import * as endpoints from '@shared/endpoints';
 import models from '@shared/models';
-import * as swagger from '@shared/providers/swagger/swagger.provider';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
 import SwaggerUI from 'swagger-ui';
 import 'swagger-ui/dist/swagger-ui.css';
-import { config } from '../../../config';
 import '../../../resources/swagger-ui-material.css';
+import { config } from '../../../config';
+import * as swagger from '../../../providers/swagger/swagger.provider';
 
 export const Swagger: React.FC = () => {
   const { t } = useTranslation();
@@ -55,3 +98,4 @@ export const Swagger: React.FC = () => {
 
   return <div ref={ref} />;
 };
+*/
