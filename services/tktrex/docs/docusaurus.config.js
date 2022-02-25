@@ -40,7 +40,7 @@ const config = {
           sidebarPath: require.resolve('./sidebars.js'),
           // Please change this to your repo.
           editUrl:
-            'https://github.com/cloud-annotations/docusaurus-openapi/edit/main/demo/',
+            'https://github.com/tracking-exposed/yttrex/edit/master/services/tktrex/docs/',
         },
         blog: false,
         theme: {

@@ -17,6 +17,8 @@ const { validate } = require('@apidevtools/swagger-cli');
 export const writeOpenDocTo = (config: DocConfig, to: string): void => {
   const openDocAPI = generateDoc(config);
 
+  // this file is unused, but is needed to see what
+  // comes from generateDoc
   fs.writeFileSync(
     path.resolve(to, 'open-api-unchecked.json'),
     JSON.stringify(openDocAPI, null, 2)
