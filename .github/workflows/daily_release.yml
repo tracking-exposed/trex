@@ -45,7 +45,7 @@ jobs:
       - name: Next Release
         env:
           YCAI_DOTENV_CONFIG_PATH: .env
-        run: yarn release-it --only-version --preRelease --ci --preReleaseId=beta --dry-run
+        run: yarn release-it --only-version --ci --dry-run
 
 
       - name: Deploy YCAI Dashboard

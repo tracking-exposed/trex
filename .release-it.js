@@ -35,7 +35,6 @@ module.exports = {
   },
   github: {
     release: true,
-    assets: [],
   },
   npm: false,
   plugins: {
