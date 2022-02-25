@@ -8,7 +8,7 @@
     "open-doc-api": "ts-node bin/open-doc-api.ts"
   },
   "devDependencies": {
-    "@types/jest": "^27.4.0",
+    "@types/jest": "^27.4.1",
     "@types/node": "^16.11.22",
     "@types/yargs": "^17.0.8",
     "@typescript-eslint/eslint-plugin": "^5.10.2",
@@ -19,7 +19,7 @@
     "eslint-plugin-node": "^11.1.0",
     "eslint-plugin-promise": "^5.2.0",
     "eslint-plugin-react": "^7.28.0",
-    "jest": "^27.4.7",
+    "jest": "^27.5.1",
     "ts-jest": "^27.1.3",
     "ts-node": "^10.4.0",
     "typescript": "^4.5.5",
