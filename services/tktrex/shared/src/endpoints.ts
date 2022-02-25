@@ -43,7 +43,7 @@ const GetSearches = DocumentedEndpoint(
 
 const GetSearchByQuery = Endpoint({
   Method: 'GET',
-  getPath: ({ query, format }) => `/api/v2/public/query/${query}/${format}`,
+  getPath: ({ query, format }) => `/v2/public/query/${query}/${format}`,
   Input: {
     Params: t.type({
       query: apiModel.What,
@@ -55,7 +55,7 @@ const GetSearchByQuery = Endpoint({
 
 const GetQueryList = Endpoint({
   Method: 'GET',
-  getPath: () => '/api/v2/public/queries/list',
+  getPath: () => '/v2/public/queries/list',
   Output: apiModel.GetQueryListOutput,
 });
 
