@@ -36,7 +36,7 @@ const config = {
       /** @type {import('docusaurus-preset-openapi').Options} */
       ({
         docs: {
-          routeBasePath: 'docs',
+          routeBasePath: '/',
           sidebarPath: require.resolve('./sidebars.js'),
           // Please change this to your repo.
           editUrl:
@@ -84,7 +84,7 @@ const config = {
             items: [
               {
                 label: 'Getting started',
-                to: '/docs/docs/intro',
+                to: '/docs/intro',
               },
             ],
           },
