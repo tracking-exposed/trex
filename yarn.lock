@@ -1816,7 +1816,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@commitlint/cli@npm:^16.1.0":
+"@commitlint/cli@npm:^16.2.1":
   version: 16.2.1
   resolution: "@commitlint/cli@npm:16.2.1"
   dependencies:
@@ -1835,7 +1835,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@commitlint/config-conventional@npm:^16.0.0":
+"@commitlint/config-conventional@npm:^16.2.1":
   version: 16.2.1
   resolution: "@commitlint/config-conventional@npm:16.2.1"
   dependencies:
@@ -1940,7 +1940,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@commitlint/prompt-cli@npm:^16.1.0":
+"@commitlint/prompt-cli@npm:^16.2.1":
   version: 16.2.1
   resolution: "@commitlint/prompt-cli@npm:16.2.1"
   dependencies:
