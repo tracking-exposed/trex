@@ -1,4 +1,3 @@
-import useBaseUrl from '@docusaurus/useBaseUrl';
 import React from 'react';
 import clsx from 'clsx';
 import styles from './HomepageFeatures.module.css';
@@ -7,55 +6,70 @@ interface FeatureItem {
   title: string;
   image: string;
   description: JSX.Element;
+  buttons?: JSX.Element;
 }
 
 const FeatureList: FeatureItem[] = [
   {
-    title: 'Easy to Use',
+    title: 'Collect the data',
     image: '/img/undraw_docusaurus_mountain.svg',
-    description: (
-      <>
-        Docusaurus was designed from the ground up to be easily installed and
-        used to get your website up and running quickly.
-      </>
+    description: <>Use the browser extension to collect data from TikTok.</>,
+    buttons: (
+      <div style={{ display: 'flex', justifyContent: 'center' }}>
+        <a
+          className="button button--secondary button--sm"
+          style={{ marginRight: 10 }}
+          href="https://chrome.google.com/webstore/detail/triktroktrex/bigbeiocbgkhndacjnkklogbilfchijf?hl=it&authuser=0"
+        >
+          Chrome
+        </a>
+        <a
+          className="button button--secondary button--sm"
+          href="https://addons.mozilla.org/en-US/firefox/addon/triktroktrex/"
+        >
+          firefox
+        </a>
+      </div>
     ),
   },
   {
-    title: 'Focus on What Matters',
+    title: 'Run experiments',
     image: '/img/undraw_docusaurus_tree.svg',
     description: (
       <>
-        Docusaurus lets you focus on your docs, and we&apos;ll do the chores. Go
-        ahead and move your docs into the <code>docs</code> directory.
+        Use our tool <b>guardoni</b> to run experiments with the data collected.
       </>
     ),
   },
   {
-    title: 'Powered by React',
+    title: 'Explore collected data',
     image: '/img/undraw_docusaurus_react.svg',
     description: (
-      <>
-        Extend or customize your website layout by reusing React. Docusaurus can
-        be extended while reusing the same header and footer.
-      </>
+      <>Collected data are transparent, anonymous and accessible to everyone.</>
     ),
   },
 ];
 
-function Feature({ title, image, description }: FeatureItem): JSX.Element {
+function Feature({
+  title,
+  image,
+  buttons,
+  description,
+}: FeatureItem): JSX.Element {
   return (
     <div className={clsx('col col--4')}>
       <div className="text--center">
-        <img
+        {/* <img
           className={styles.featureSvg}
           alt={title}
           src={useBaseUrl(image)}
-        />
+        /> */}
       </div>
       <div className="text--center padding-horiz--md">
         <h3>{title}</h3>
         <p>{description}</p>
       </div>
+      {buttons ? <div className="text--center">{buttons}</div> : null}
     </div>
   );
 }

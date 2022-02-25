@@ -36,6 +36,7 @@ const config = {
       /** @type {import('docusaurus-preset-openapi').Options} */
       ({
         docs: {
+          routeBasePath: 'docs',
           sidebarPath: require.resolve('./sidebars.js'),
           // Please change this to your repo.
           editUrl:
@@ -66,9 +67,8 @@ const config = {
           },
           {
             label: 'API',
-            to: '/tktrex/api',
+            to: '/docs/tktrex/api',
           },
-          { to: '/blog', label: 'Blog', position: 'left' },
           {
             href: GITHUB_REPO,
             className: 'header-github-link',
@@ -83,8 +83,8 @@ const config = {
             title: 'Docs',
             items: [
               {
-                label: 'Tutorial',
-                to: '/docs/intro',
+                label: 'Getting started',
+                to: '/docs/docs/intro',
               },
             ],
           },
@@ -92,16 +92,12 @@ const config = {
             title: 'Community',
             items: [
               {
-                label: 'Stack Overflow',
-                href: 'https://stackoverflow.com/questions/tagged/docusaurus',
-              },
-              {
                 label: 'Slack',
-                href: 'https://tracking.exposed.slack.com/invite/tktrex',
+                href: 'https://trackingexposed.slack.com/invite/trex-tk',
               },
               {
                 label: 'Twitter',
-                href: 'https://twitter.com/tracking.exposed',
+                href: 'https://twitter.com/trackingexposed',
               },
             ],
           },
@@ -109,9 +105,35 @@ const config = {
             title: 'More',
             items: [
               {
-                label: 'Blog',
-                to: '/blog',
+                label: 'Youchoose',
+                to: 'https://youchoose.ai',
               },
+              {
+                label: '@trex/facebook',
+                to: 'https://facebook.tracking.exposed',
+              },
+              {
+                label: '@trex/youtube',
+                to: 'https://youtube.tracking.exposed',
+              },
+              {
+                label: '@trex/pornhub',
+                to: 'https://pornhub.tracking.exposed',
+              },
+              {
+                label: '@trex/amazon',
+                to: 'https://amazon.tracking.exposed',
+              },
+              // no blog at the moment
+              // {
+              //   label: 'Blog',
+              //   to: '/blog',
+              // },
+            ],
+          },
+          {
+            title: 'Dev',
+            items: [
               {
                 html: `<a class="header-github-link" href="${GITHUB_REPO}" target="_blank" rel="noreferrer"></a>`,
               },

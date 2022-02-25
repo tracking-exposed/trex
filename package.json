@@ -36,6 +36,7 @@
     "backend": "yarn workspace yttrex-backend",
     "extension": "yarn workspace yttrex-extension",
     "guardoni": "yarn workspace guardoni",
+    "tk:docs": "yarn workspace @tktrex/docs",
     "tk:shared": "yarn workspace @tktrex/shared",
     "tk:backend": "yarn workspace @tktrex/backend",
     "tk:ext": "yarn workspace @tktrex/extension",
