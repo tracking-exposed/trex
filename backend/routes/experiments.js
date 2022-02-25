@@ -48,17 +48,17 @@ async function sharedDataPull(filter) {
     return _.map(ads, function (a) {
       // this format is basically fixed to help CSV generation, but works well also as mixed
       return {
-        ...a.nature,
         ..._.pick(a, [
           'metadataId',
+          'nature',
           'id',
           'savingTime',
           'publicKey',
-          'href',
           'selectorName',
           'sponsoredSite',
           'sponsoredName',
         ]),
+        originalHref: a.href,
         experiment: a.experiment,
         ..._.pick(a.metadata[0], ['clientTime', 'login', 'uxLang']),
         type: 'adv',
@@ -177,7 +177,6 @@ async function csv(req) {
     'experiment.experimentId': experimentId,
     type,
   };
-  debug("Fetching from DB the experiments' evidence %j", filter);
   const metadata = await sharedDataPull(filter);
 
   if (!metadata.length) {

@@ -110,7 +110,8 @@ function unrollRecommended(evidence, shared) {
 
 function reconnectAdvertising(evidence, shared) {
   return {
-    ...shared,
+    ..._.omit(shared, ['nature']),
+    ...shared.nature,
     selectorName: evidence.selectorName,
     sponsoredSite: evidence.sponsoredSite,
     sponsoredName: evidence.sponsoredName,
