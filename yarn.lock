@@ -1816,7 +1816,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@commitlint/cli@npm:^16.1.0":
+"@commitlint/cli@npm:^16.2.1":
   version: 16.2.1
   resolution: "@commitlint/cli@npm:16.2.1"
   dependencies:
@@ -1835,7 +1835,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@commitlint/config-conventional@npm:^16.0.0":
+"@commitlint/config-conventional@npm:^16.2.1":
   version: 16.2.1
   resolution: "@commitlint/config-conventional@npm:16.2.1"
   dependencies:
@@ -1940,7 +1940,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@commitlint/prompt-cli@npm:^16.1.0":
+"@commitlint/prompt-cli@npm:^16.2.1":
   version: 16.2.1
   resolution: "@commitlint/prompt-cli@npm:16.2.1"
   dependencies:
@@ -3697,9 +3697,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@release-it/conventional-changelog@npm:^4.1.0":
-  version: 4.1.0
-  resolution: "@release-it/conventional-changelog@npm:4.1.0"
+"@release-it/conventional-changelog@npm:^4.2.0":
+  version: 4.2.0
+  resolution: "@release-it/conventional-changelog@npm:4.2.0"
   dependencies:
     concat-stream: ^2.0.0
     conventional-changelog: ^3.1.25
@@ -3707,7 +3707,7 @@ __metadata:
     prepend-file: ^2.0.0
   peerDependencies:
     release-it: ^14.12.1
-  checksum: 7168a9eb60f0f8eeec5ce96f6c5d4de18aaf9047fdd1fe5e6c9a422e11e8b9ae72efe9e8847146c3f3f025eadc5259952510f24f594abccc10f7340d62b8171e
+  checksum: 24fe6050852c44c1da17edc104ac85988dc9c5af97f0628878061550dc046fa64df2f12f21a7c78b68976ab2ede41543451799161ebce2d29048dc3ed7614074
   languageName: node
   linkType: hard
 
@@ -24409,9 +24409,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"release-it@npm:^14.12.4":
-  version: 14.12.4
-  resolution: "release-it@npm:14.12.4"
+"release-it@npm:^14.12.5":
+  version: 14.12.5
+  resolution: "release-it@npm:14.12.5"
   dependencies:
     "@iarna/toml": 2.2.5
     "@octokit/rest": 18.12.0
@@ -24443,7 +24443,7 @@ __metadata:
     yargs-parser: 20.2.9
   bin:
     release-it: bin/release-it.js
-  checksum: 79b91a6059f5592827559150c920c92efa12e2ce91c4ca868795e62704fe70d2fade3fd855f5f6c66ad1f24789d3783536b84fb23907e752d87efa0938210806
+  checksum: cb3a08f242e1c0bd28c9607b3b30fea81d590674c815f9c04eafd7e3138ab6f043220ef52be5a79eb48c9321a5222718190c7c0d155ba726ec6f02a3cc13b726
   languageName: node
   linkType: hard
 
@@ -24979,10 +24979,10 @@ __metadata:
   resolution: "root-workspace-0b6124@workspace:."
   dependencies:
     "@apidevtools/swagger-cli": ^4.0.4
-    "@commitlint/cli": ^16.1.0
-    "@commitlint/config-conventional": ^16.0.0
-    "@commitlint/prompt-cli": ^16.1.0
-    "@release-it/conventional-changelog": ^4.1.0
+    "@commitlint/cli": ^16.2.1
+    "@commitlint/config-conventional": ^16.2.1
+    "@commitlint/prompt-cli": ^16.2.1
+    "@release-it/conventional-changelog": ^4.2.0
     "@types/node": ^16.11.22
     "@types/prettier": ^2.4.3
     eslint: ^8.10.0
@@ -24991,7 +24991,7 @@ __metadata:
     jest-dev-server: ^6.0.3
     lint-staged: ^12.3.3
     prettier: ^2.5.1
-    release-it: ^14.12.4
+    release-it: ^14.12.5
     release-it-yarn-workspaces: ^2.0.1
     ts-jest: ^27.1.3
     typescript: ^4.5.5
