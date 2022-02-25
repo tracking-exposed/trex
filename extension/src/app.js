@@ -1,3 +1,4 @@
+/* eslint-disable */
 // # Welcome to the extension docs!
 // Here you can learn how the extension works and, if this is what you aim for,
 // where to put your hands to hack the code.
@@ -112,10 +113,10 @@ function processableURL(validURLs, location) {
   );
 }
 
-let lastMeaningfulURL,
-  urlkind = null;
+let lastMeaningfulURL;
+  let urlkind = null;
 function hrefAndPageWatcher() {
-  let diff = window.location.href !== lastMeaningfulURL;
+  const diff = window.location.href !== lastMeaningfulURL;
 
   if (diff) {
     // Considering the extension only runs on *.youtube.com
@@ -271,7 +272,7 @@ function manageNodes(command, selectorName, selected) {
 
   const offsetTop = getOffsetTop(selected);
   const offsetLeft = getOffsetLeft(selected);
-  let isVisible = offsetTop + offsetLeft > 0;
+  const isVisible = offsetTop + offsetLeft > 0;
   if (command.preserveInvisible != true) {
     if (!isVisible) {
       // console.log("Ignoring invisible node:", selectorName);

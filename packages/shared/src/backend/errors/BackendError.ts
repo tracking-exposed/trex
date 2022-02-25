@@ -29,6 +29,7 @@ export const NotFoundError = (resource: string): BackendError => {
 };
 
 export const toBackendError = (e: unknown): BackendError => {
+  // eslint-disable-next-line
   console.error(e);
   if (e instanceof Error) {
     return new BackendError(e.message, {

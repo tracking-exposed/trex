@@ -1,3 +1,5 @@
+/* eslint-disable */
+
 import moment from 'moment';
 import React from 'react';
 
@@ -55,7 +57,7 @@ class Popup extends React.Component {
               Extension isn't initialized yet —{' '}
               <strong>
                 Access{' '}
-                <a href="https://www.youtube.com" target="_blank">
+                <a href="https://www.youtube.com" target="_blank" rel="noreferrer">
                   yutube.com
                 </a>
                 .

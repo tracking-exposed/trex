@@ -1,14 +1,16 @@
+/* eslint-disable */
+
 import _ from 'lodash';
 
 import longlabel from './longlabel';
 
 function labelsOpportunisticParsing(memo, n, i) {
     // console.log(i);
-    let isNext = n.closest("a.ytp-next-button");
-    let isVideo = n.closest("#video-title");
-    let videoBlock = n.closest("a.ytd-compact-video-renderer");
-    let hasSVG = n.querySelectorAll('svg');
-    let label = n.getAttribute('aria-label');
+    const isNext = n.closest("a.ytp-next-button");
+    const isVideo = n.closest("#video-title");
+    const videoBlock = n.closest("a.ytd-compact-video-renderer");
+    const hasSVG = n.querySelectorAll('svg');
+    const label = n.getAttribute('aria-label');
 
     if ( !!isNext && isNext.length ) {
         console.log(i, "trovato next!", n.getAttribute('data-tooltip-text'));
@@ -30,10 +32,10 @@ function labelsOpportunisticParsing(memo, n, i) {
     }
     if( !!isVideo && isVideo.length ) {
         try {
-            let texts = _.compact(_.map(_.first(videoBlock.innerText.split('\n')), function(t) {
+            const texts = _.compact(_.map(_.first(videoBlock.innerText.split('\n')), function(t) {
                 return _.size(_.trim(t)) ? _.trim(t) : null;
             })); // check che hai cambiato forse per sbaglio messi troppi sanity checks
-            let mined = longlabel.parser(label, texts[1], false);
+            const mined = longlabel.parser(label, texts[1], false);
             console.log("[llp] -->", texts[1], "++", mined, mined.timeago.humanize());
             memo.push(_.extend(mined, {
                 type: 'label',
@@ -71,7 +73,7 @@ function mineExtraMetadata(selectorName, matches) {
                     extra.push({
                         type: 'banner',
                         url: _.first(_.compact(_.map(n.querySelectorAll('img'), function(i) {
-                            let url = i.getAttribute('src');
+                            const url = i.getAttribute('src');
                             if(!url.match(/^http/)) throw new Error()
                             return url;
                         }))),

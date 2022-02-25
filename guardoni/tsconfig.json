@@ -18,7 +18,7 @@
       "@shared/*": ["../../packages/shared/src/*"]
     }
   },
-  "include": ["./src"],
+  "include": ["./src", "__mocks__", "__tests__"],
   "exclude": ["node_modules", "build", "dist"],
   "watchOptions": {
     "watchFile": "useFsEvents",

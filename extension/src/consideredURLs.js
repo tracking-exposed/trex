@@ -1,3 +1,5 @@
+/* eslint-disable */
+
 // Considering the extension only runs on *.youtube.com
 // we want to make sure the main code is executed only in
 // website portion actually processed by us. If not, the

@@ -240,12 +240,10 @@ export const GetAPI = (
 
   axiosClient.interceptors.response.use(
     (res) => {
-      console.log('nothing to report', res);
       // nothing to do here
       return res;
     },
     async (err) => {
-      console.dir(err);
       const axiosError = err as AxiosError;
       // use provided handler if error is unauthorized
       if (axiosError.response?.status === 401) {

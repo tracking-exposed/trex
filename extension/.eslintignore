@@ -1,6 +1,6 @@
-build/*
-dist/*
-node_modules/*
+build
+dist
+node_modules
 src/chrome
 src/handlers
 src/app.js
