@@ -3,15 +3,14 @@ import { SearchQuery } from '../../models/http/SearchQuery';
 import { Endpoint } from 'ts-endpoint';
 import { AuthorizationHeader, AuthResponse } from '../../models/Auth';
 import { GetRelatedChannelsOutput } from '../../models/ChannelRelated';
-import { ContentCreator } from '../../models/ContentCreator';
-import { CreatorStats } from '../../models/CreatorStats';
 import {
-  PartialRecommendation,
-  Recommendation,
-} from '../../models/Recommendation';
-import { Video } from '../../models/Video';
-
-const ChannelType = t.literal('channel');
+  ContentCreator,
+  ContentCreatorVideosOutput,
+  RegisterContentCreatorBody,
+} from '../../models/ContentCreator';
+import { CreatorStats } from '../../models/CreatorStats';
+import * as Recommendation from '../../models/Recommendation';
+import * as Video from '../../models/Video';
 
 const GetCreator = Endpoint({
   Method: 'GET',
@@ -27,9 +26,7 @@ const RegisterCreator = Endpoint({
   getPath: ({ channelId }) => `/v3/creator/${channelId}/register`,
   Input: {
     Params: t.type({ channelId: t.string }),
-    Body: t.type({
-      type: ChannelType,
-    }),
+    Body: RegisterContentCreatorBody,
   },
   Output: AuthResponse,
 });
@@ -49,7 +46,7 @@ const CreatorVideos = Endpoint({
   Input: {
     Headers: AuthorizationHeader,
   },
-  Output: t.array(Video),
+  Output: ContentCreatorVideosOutput,
 });
 
 const OneCreatorVideo = Endpoint({
@@ -59,7 +56,7 @@ const OneCreatorVideo = Endpoint({
     Headers: AuthorizationHeader,
     Params: t.type({ videoId: t.string }),
   },
-  Output: Video,
+  Output: Video.Video,
 });
 
 const PullCreatorVideos = Endpoint({
@@ -68,7 +65,7 @@ const PullCreatorVideos = Endpoint({
   Input: {
     Headers: AuthorizationHeader,
   },
-  Output: t.array(Video),
+  Output: ContentCreatorVideosOutput,
 });
 
 const CreatorRecommendations = Endpoint({
@@ -77,7 +74,7 @@ const CreatorRecommendations = Endpoint({
   Input: {
     Headers: AuthorizationHeader,
   },
-  Output: t.array(Recommendation),
+  Output: Recommendation.RecommendationList,
 });
 
 const CreatorRelatedChannels = Endpoint({
@@ -96,12 +93,9 @@ const UpdateVideo = Endpoint({
   getPath: () => `/v3/creator/updateVideo`,
   Input: {
     Headers: AuthorizationHeader,
-    Body: t.type({
-      videoId: t.string,
-      recommendations: t.array(t.string),
-    }),
+    Body: Video.UpdateVideoBody,
   },
-  Output: Video,
+  Output: Video.Video,
 });
 
 const CreateRecommendation = Endpoint({
@@ -109,9 +103,9 @@ const CreateRecommendation = Endpoint({
   getPath: () => `/v3/creator/ogp`,
   Input: {
     Headers: AuthorizationHeader,
-    Body: t.type({ url: t.string }),
+    Body: Recommendation.CreateRecommendation,
   },
-  Output: Recommendation,
+  Output: Recommendation.Recommendation,
 });
 
 // TODO: Swagger
@@ -121,9 +115,9 @@ const PatchRecommendation = Endpoint({
   Input: {
     Params: t.type({ urlId: t.string }),
     Headers: AuthorizationHeader,
-    Body: PartialRecommendation,
+    Body: Recommendation.PartialRecommendation,
   },
-  Output: Recommendation,
+  Output: Recommendation.Recommendation,
 });
 
 const DeleteRecommendation = Endpoint({

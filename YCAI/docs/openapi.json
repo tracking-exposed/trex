@@ -1,0 +1,1764 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "youchoose ai",
+    "description": "youchoose api description",
+    "version": "2.3.0"
+  },
+  "servers": [
+    {
+      "url": "{protocol}://{host}{port}{basePath}",
+      "description": "Node Server",
+      "variables": {
+        "protocol": {
+          "default": "https"
+        },
+        "host": {
+          "default": "api.youchoose.ai"
+        },
+        "port": {
+          "default": "443",
+          "enum": ["443", "443"]
+        },
+        "basePath": {
+          "default": ""
+        }
+      }
+    }
+  ],
+  "security": [
+    {
+      "ACTToken": []
+    }
+  ],
+  "components": {
+    "securitySchemes": {
+      "ACTToken": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "X-Authorization"
+      }
+    },
+    "schemas": {
+      "ContentCreator": {
+        "type": "object",
+        "description": "ContentCreator",
+        "properties": {
+          "channelId": {
+            "type": "string",
+            "description": "string"
+          },
+          "username": {
+            "type": "string",
+            "description": "string",
+            "required": false
+          },
+          "avatar": {
+            "type": "string",
+            "description": "string",
+            "required": false
+          },
+          "accessToken": {
+            "type": "string",
+            "description": "string",
+            "required": false
+          },
+          "url": {
+            "type": "string",
+            "description": "string",
+            "required": false
+          },
+          "registeredOn": {
+            "type": "object",
+            "description": "(undefined | DateFromISOString)",
+            "oneOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              }
+            ],
+            "required": false
+          }
+        }
+      },
+      "RecommendationList": {
+        "type": "array",
+        "description": "RecommendationList[]",
+        "items": [
+          {
+            "$ref": "#/components/schemas/Recommendation"
+          }
+        ]
+      },
+      "any": {
+        "type": "object",
+        "description": "any value"
+      },
+      "string": {
+        "type": "string",
+        "description": "A string value"
+      },
+      "url": {
+        "type": "string",
+        "description": "A valid URL"
+      },
+      "boolean": {
+        "type": "boolean",
+        "description": "A `true | false` value"
+      },
+      "AuthResponse": {
+        "type": "object",
+        "description": "AuthResponse",
+        "properties": {
+          "verificationToken": {
+            "type": "string",
+            "description": "string"
+          },
+          "tokenString": {
+            "type": "string",
+            "description": "string"
+          },
+          "channelId": {
+            "type": "string",
+            "description": "string"
+          },
+          "verified": {
+            "type": "boolean",
+            "description": "A valid boolean type"
+          }
+        }
+      },
+      "AuthorizedContentCreator": {
+        "type": "object",
+        "description": "AuthorizedContentCreator",
+        "properties": {
+          "channelId": {
+            "type": "string",
+            "description": "string"
+          },
+          "username": {
+            "type": "string",
+            "description": "string",
+            "required": false
+          },
+          "avatar": {
+            "type": "string",
+            "description": "string",
+            "required": false
+          },
+          "accessToken": {
+            "type": "string",
+            "description": "string"
+          },
+          "url": {
+            "type": "string",
+            "description": "string",
+            "required": false
+          },
+          "registeredOn": {
+            "type": "object",
+            "description": "(undefined | DateFromISOString)",
+            "oneOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              }
+            ],
+            "required": false
+          }
+        }
+      },
+      "ChannelADV": {
+        "type": "object",
+        "description": "ChannelADV",
+        "properties": {
+          "href": {
+            "type": "string",
+            "description": "string"
+          },
+          "selectorName": {
+            "type": "string",
+            "description": "string"
+          },
+          "sponsoredName": {
+            "type": "string",
+            "description": "string"
+          },
+          "sponsoredSite": {
+            "type": "string",
+            "description": "string"
+          },
+          "authorName": {
+            "type": "string",
+            "description": "string"
+          },
+          "authorSource": {
+            "type": "string",
+            "description": "string"
+          },
+          "title": {
+            "type": "string",
+            "description": "string"
+          },
+          "savingTime": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "ChannelRelated": {
+        "type": "object",
+        "description": "ChannelRelated",
+        "properties": {
+          "recommendedSource": {
+            "type": "string",
+            "description": "string"
+          },
+          "recommendedChannelCount": {
+            "type": "number",
+            "format": "integer32"
+          },
+          "percentage": {
+            "type": "number",
+            "format": "integer32"
+          }
+        }
+      },
+      "ChiaroScuroDirective": {
+        "type": "object",
+        "description": "ChiaroScuroDirective",
+        "properties": {
+          "loadFor": {
+            "type": "number",
+            "format": "integer32"
+          },
+          "url": {
+            "type": "string",
+            "description": "string"
+          },
+          "watchFor": {
+            "type": "object",
+            "description": "(number | string | undefined)",
+            "oneOf": [
+              {
+                "type": "number",
+                "format": "integer32"
+              },
+              {
+                "type": "string",
+                "description": "string"
+              }
+            ],
+            "required": false
+          },
+          "name": {
+            "type": "string",
+            "description": "string"
+          },
+          "targetVideoId": {
+            "type": "string",
+            "description": "string"
+          }
+        }
+      },
+      "ChiaroScuroDirectiveRow": {
+        "type": "object",
+        "description": "ChiaroScuroDirectiveRow",
+        "properties": {
+          "videoURL": {
+            "type": "string",
+            "description": "string"
+          },
+          "title": {
+            "type": "string",
+            "description": "string"
+          }
+        }
+      },
+      "\"chiaroscuro\"": {
+        "type": "string",
+        "default": "chiaroscuro"
+      },
+      "ComparisonDirective": {
+        "type": "object",
+        "description": "ComparisonDirective",
+        "properties": {
+          "title": {
+            "type": "string",
+            "description": "string",
+            "required": false
+          },
+          "url": {
+            "type": "string",
+            "description": "string"
+          },
+          "urltag": {
+            "type": "string",
+            "description": "string",
+            "required": false
+          },
+          "watchFor": {
+            "type": "object",
+            "description": "(number | string | undefined | null)",
+            "oneOf": [
+              {
+                "type": "number",
+                "format": "integer32"
+              },
+              {
+                "type": "string",
+                "description": "string"
+              }
+            ],
+            "required": false
+          }
+        }
+      },
+      "ComparisonDirectiveRow": {
+        "type": "object",
+        "description": "ComparisonDirectiveRow",
+        "properties": {
+          "title": {
+            "type": "string",
+            "description": "string"
+          },
+          "url": {
+            "type": "string",
+            "description": "string"
+          },
+          "urltag": {
+            "type": "string",
+            "description": "string"
+          },
+          "watchFor": {
+            "type": "object",
+            "description": "(number | string | undefined)",
+            "oneOf": [
+              {
+                "type": "number",
+                "format": "integer32"
+              },
+              {
+                "type": "string",
+                "description": "string"
+              }
+            ],
+            "required": false
+          }
+        }
+      },
+      "\"comparison\"": {
+        "type": "string",
+        "default": "comparison"
+      },
+      "ConcludeGuardoniExperimentOutput": {
+        "type": "object",
+        "description": "ConcludeGuardoniExperimentOutput",
+        "properties": {
+          "acknowledged": {
+            "type": "boolean",
+            "description": "A valid boolean type"
+          }
+        }
+      },
+      "ContentCreatorVideos": {
+        "type": "array",
+        "description": "ContentCreatorVideos[]",
+        "items": [
+          {
+            "$ref": "#/components/schemas/Video"
+          }
+        ]
+      },
+      "CreateDirectiveBody": {
+        "type": "object",
+        "description": "CreateDirectiveBody",
+        "properties": {
+          "parsedCSV": {
+            "type": "object",
+            "description": "DirectiveRow",
+            "oneOf": [
+              {
+                "type": "array",
+                "description": "ComparisonDirectiveRow[]",
+                "items": [
+                  {
+                    "$ref": "#/components/schemas/ComparisonDirectiveRow"
+                  }
+                ]
+              },
+              {
+                "type": "array",
+                "description": "ChiaroScuroDirectiveRow[]",
+                "items": [
+                  {
+                    "$ref": "#/components/schemas/ChiaroScuroDirectiveRow"
+                  }
+                ]
+              }
+            ],
+            "required": true
+          }
+        }
+      },
+      "CreateRecommendation": {
+        "type": "object",
+        "description": "CreateRecommendation",
+        "properties": {
+          "url": {
+            "type": "string",
+            "description": "string"
+          }
+        }
+      },
+      "CreatorStatContent": {
+        "type": "object",
+        "description": "CreatorStatContent",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "string"
+          },
+          "watchedTitle": {
+            "type": "string",
+            "description": "string"
+          },
+          "watchedVideoId": {
+            "type": "string",
+            "description": "string"
+          },
+          "savingTime": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "recommendedVideoId": {
+            "type": "string",
+            "description": "string"
+          },
+          "recommendedViews": {
+            "type": "number",
+            "format": "integer32"
+          },
+          "recommendedTitle": {
+            "type": "string",
+            "description": "string"
+          },
+          "recommendedChannel": {
+            "type": "string",
+            "description": "string"
+          }
+        }
+      },
+      "CreatorStats": {
+        "type": "object",
+        "description": "CreatorStats",
+        "properties": {
+          "authorName": {
+            "type": "string",
+            "description": "string"
+          },
+          "authorSource": {
+            "type": "string",
+            "description": "string"
+          },
+          "overflow": {
+            "type": "boolean",
+            "description": "A valid boolean type"
+          },
+          "total": {
+            "type": "number",
+            "format": "integer32"
+          },
+          "stripped": {
+            "type": "number",
+            "format": "integer32"
+          },
+          "content": {
+            "type": "array",
+            "description": "CreatorStatContent[]",
+            "items": [
+              {
+                "$ref": "#/components/schemas/CreatorStatContent"
+              }
+            ]
+          }
+        }
+      },
+      "Directive": {
+        "type": "object",
+        "description": "Directive",
+        "oneOf": [
+          {
+            "type": "object",
+            "description": "ChiaroScuroDirective",
+            "properties": {
+              "loadFor": {
+                "type": "number",
+                "format": "integer32"
+              },
+              "url": {
+                "type": "string",
+                "description": "string"
+              },
+              "watchFor": {
+                "type": "object",
+                "description": "(number | string | undefined)",
+                "oneOf": [
+                  {
+                    "type": "number",
+                    "format": "integer32"
+                  },
+                  {
+                    "type": "string",
+                    "description": "string"
+                  }
+                ],
+                "required": false
+              },
+              "name": {
+                "type": "string",
+                "description": "string"
+              },
+              "targetVideoId": {
+                "type": "string",
+                "description": "string"
+              }
+            }
+          },
+          {
+            "type": "object",
+            "description": "ComparisonDirective",
+            "properties": {
+              "title": {
+                "type": "string",
+                "description": "string",
+                "required": false
+              },
+              "url": {
+                "type": "string",
+                "description": "string"
+              },
+              "urltag": {
+                "type": "string",
+                "description": "string",
+                "required": false
+              },
+              "watchFor": {
+                "type": "object",
+                "description": "(number | string | undefined | null)",
+                "oneOf": [
+                  {
+                    "type": "number",
+                    "format": "integer32"
+                  },
+                  {
+                    "type": "string",
+                    "description": "string"
+                  }
+                ],
+                "required": false
+              }
+            }
+          }
+        ]
+      },
+      "DirectiveType": {
+        "type": "string",
+        "description": "DirectiveType",
+        "enum": ["comparison", "chiaroscuro"]
+      },
+      "ExperimentLink": {
+        "type": "object",
+        "description": "ExperimentLink",
+        "properties": {
+          "title": {
+            "type": "string",
+            "description": "string",
+            "required": false
+          },
+          "urltag": {
+            "type": "string",
+            "description": "string"
+          },
+          "watchFor": {
+            "type": "object",
+            "description": "(string | number | null)",
+            "oneOf": [
+              {
+                "type": "string",
+                "description": "string"
+              },
+              {
+                "type": "number",
+                "format": "integer32"
+              }
+            ],
+            "required": false
+          },
+          "url": {
+            "type": "string",
+            "description": "string"
+          }
+        }
+      },
+      "GetDirectiveOutput": {
+        "type": "array",
+        "items": [
+          {
+            "$ref": "#/components/schemas/ChiaroScuroDirective"
+          },
+          {
+            "$ref": "#/components/schemas/ComparisonDirective"
+          }
+        ]
+      },
+      "GetExperimentListOutput": {
+        "type": "object",
+        "description": "GetExperimentListOutput",
+        "properties": {
+          "content": {
+            "type": "array",
+            "description": "GuardoniExperiment[]",
+            "items": [
+              {
+                "$ref": "#/components/schemas/GuardoniExperiment"
+              }
+            ]
+          },
+          "total": {
+            "type": "number",
+            "format": "integer32"
+          }
+        }
+      },
+      "GetPublicDirectivesOutput": {
+        "type": "array",
+        "description": "GetPublicDirectivesOutput[]",
+        "items": [
+          {
+            "$ref": "#/components/schemas/GuardoniExperiment"
+          }
+        ]
+      },
+      "GetRelatedChannelsOutput": {
+        "type": "object",
+        "description": "GetRelatedChannelsOutput",
+        "properties": {
+          "content": {
+            "type": "array",
+            "description": "ChannelRelated[]",
+            "items": [
+              {
+                "$ref": "#/components/schemas/ChannelRelated"
+              }
+            ]
+          },
+          "channelId": {
+            "type": "string",
+            "description": "string"
+          },
+          "authorName": {
+            "type": "string",
+            "description": "string",
+            "required": false
+          },
+          "score": {
+            "type": "number",
+            "format": "integer32"
+          },
+          "totalRecommendations": {
+            "type": "number",
+            "format": "integer32"
+          },
+          "totalContributions": {
+            "type": "number",
+            "format": "integer32"
+          },
+          "pagination": {
+            "type": "object",
+            "description": "{| amount: number |}",
+            "properties": {
+              "amount": {
+                "type": "number",
+                "format": "integer32"
+              }
+            }
+          }
+        }
+      },
+      "GuardoniExperiment": {
+        "type": "object",
+        "description": "GuardoniExperiment",
+        "properties": {
+          "experimentId": {
+            "type": "string",
+            "description": "string"
+          },
+          "when": {
+            "type": "string",
+            "description": "string"
+          },
+          "directiveType": {
+            "type": "string",
+            "description": "DirectiveType",
+            "enum": ["comparison", "chiaroscuro"],
+            "required": true
+          },
+          "links": {
+            "type": "array",
+            "description": "ExperimentLink[]",
+            "items": [
+              {
+                "$ref": "#/components/schemas/ExperimentLink"
+              }
+            ]
+          }
+        }
+      },
+      "HandshakeBody": {
+        "type": "object",
+        "description": "HandshakeBody",
+        "properties": {
+          "config": {
+            "type": "object",
+            "description": "{| publicKey: string |}",
+            "properties": {
+              "publicKey": {
+                "type": "string",
+                "description": "string"
+              }
+            }
+          },
+          "href": {
+            "type": "string",
+            "description": "string"
+          },
+          "experimentId": {
+            "type": "string",
+            "description": "string"
+          },
+          "evidencetag": {
+            "type": "string",
+            "description": "string"
+          },
+          "execount": {
+            "type": "string",
+            "description": "string"
+          },
+          "newProfile": {
+            "type": "string",
+            "description": "string"
+          },
+          "testTime": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "directiveType": {
+            "type": "string",
+            "description": "string"
+          }
+        }
+      },
+      "PartialRecommendation": {
+        "type": "object",
+        "description": "PartialRecommendation",
+        "properties": {
+          "urlId": {
+            "type": "string",
+            "description": "string"
+          },
+          "url": {
+            "type": "string",
+            "description": "string"
+          },
+          "title": {
+            "type": "string",
+            "description": "string"
+          },
+          "description": {
+            "type": "string",
+            "description": "string",
+            "required": false
+          },
+          "fromChannel": {
+            "type": "boolean",
+            "description": "A valid boolean type",
+            "required": false
+          },
+          "image": {
+            "type": "string",
+            "description": "string",
+            "required": false
+          }
+        }
+      },
+      "PostDirectiveResponse": {
+        "type": "object",
+        "description": "PostDirectiveResponse",
+        "oneOf": [
+          {
+            "type": "object",
+            "description": "{ error: { message: string } }",
+            "properties": {
+              "error": {
+                "type": "object",
+                "description": "{ message: string }",
+                "properties": {
+                  "message": {
+                    "type": "string",
+                    "description": "string"
+                  }
+                }
+              }
+            }
+          },
+          {
+            "type": "object",
+            "description": "PostDirectiveSuccessResponse",
+            "properties": {
+              "status": {
+                "type": "string",
+                "description": "(\"exist\" | \"created\")",
+                "enum": ["exist", "created"],
+                "required": true
+              },
+              "experimentId": {
+                "type": "string",
+                "description": "string"
+              },
+              "since": {
+                "type": "object",
+                "description": "(DateFromISOString | undefined)",
+                "oneOf": [
+                  {
+                    "type": "string",
+                    "format": "date-time"
+                  }
+                ],
+                "required": false
+              }
+            }
+          }
+        ]
+      },
+      "Recommendation": {
+        "type": "object",
+        "description": "Recommendation",
+        "properties": {
+          "urlId": {
+            "type": "string",
+            "description": "string"
+          },
+          "url": {
+            "type": "string",
+            "description": "string"
+          },
+          "title": {
+            "type": "string",
+            "description": "string"
+          },
+          "description": {
+            "type": "string",
+            "description": "string",
+            "required": false
+          },
+          "fromChannel": {
+            "type": "boolean",
+            "description": "A valid boolean type",
+            "required": false
+          },
+          "image": {
+            "type": "string",
+            "description": "string",
+            "required": false
+          }
+        }
+      },
+      "RegisterContentCreatorBody": {
+        "type": "object",
+        "description": "RegisterContentCreatorBody",
+        "properties": {
+          "type": {
+            "type": "string",
+            "default": "channel"
+          }
+        }
+      },
+      "UpdateVideoBody": {
+        "type": "object",
+        "description": "UpdateVideoBody",
+        "properties": {
+          "videoId": {
+            "type": "string",
+            "description": "string"
+          },
+          "recommendations": {
+            "type": "array",
+            "items": [
+              {
+                "type": "string"
+              }
+            ],
+            "required": false
+          }
+        }
+      },
+      "Video": {
+        "type": "object",
+        "description": "Video",
+        "properties": {
+          "description": {
+            "type": "string",
+            "description": "string",
+            "required": false
+          },
+          "recommendations": {
+            "type": "array",
+            "items": [
+              {
+                "type": "string"
+              }
+            ],
+            "required": false
+          },
+          "title": {
+            "type": "string",
+            "description": "string"
+          },
+          "videoId": {
+            "type": "string",
+            "description": "string"
+          }
+        }
+      },
+      "VideoContributionEvent": {
+        "type": "object",
+        "description": "VideoContributionEvent",
+        "properties": {
+          "type": {
+            "type": "string",
+            "description": "string"
+          },
+          "element": {
+            "type": "string",
+            "description": "string"
+          },
+          "size": {
+            "type": "number",
+            "format": "integer32"
+          },
+          "href": {
+            "type": "string",
+            "description": "string"
+          },
+          "randomUUID": {
+            "type": "string",
+            "description": "string"
+          },
+          "incremental": {
+            "type": "number",
+            "format": "integer32"
+          },
+          "clientTime": {
+            "type": "string",
+            "description": "string"
+          }
+        }
+      }
+    }
+  },
+  "paths": {
+    "/v3/creator/ogp": {
+      "post": {
+        "summary": "CreateRecommendation",
+        "description": "POST /v3/creator/ogp",
+        "tags": ["v3 - Creator"],
+        "parameters": [
+          {
+            "name": "x-authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "description": "string"
+            }
+          }
+        ],
+        "security": [
+          {
+            "ACTToken": []
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateRecommendation"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Recommendation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Recommendation"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v3/creator/recommendations": {
+      "get": {
+        "summary": "CreatorRecommendations",
+        "description": "GET /v3/creator/recommendations",
+        "tags": ["v3 - Creator"],
+        "parameters": [
+          {
+            "name": "x-authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "description": "string"
+            }
+          }
+        ],
+        "security": [
+          {
+            "ACTToken": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "RecommendationList",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RecommendationList"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v3/creator/{channelId}/related": {
+      "get": {
+        "summary": "CreatorRelatedChannels",
+        "description": "GET /v3/creator/:channelId/related",
+        "tags": ["v3 - Creator"],
+        "parameters": [
+          {
+            "name": "x-authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "description": "string"
+            }
+          },
+          {
+            "name": "amount",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "number",
+              "format": "integer32"
+            }
+          },
+          {
+            "name": "date",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          },
+          {
+            "name": "endDate",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          },
+          {
+            "name": "skip",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "number",
+              "format": "integer32"
+            }
+          },
+          {
+            "name": "channelId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "description": "string"
+            }
+          }
+        ],
+        "security": [
+          {
+            "ACTToken": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "GetRelatedChannelsOutput",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetRelatedChannelsOutput"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v3/creator/videos": {
+      "get": {
+        "summary": "CreatorVideos",
+        "description": "GET /v3/creator/videos",
+        "tags": ["v3 - Creator"],
+        "parameters": [
+          {
+            "name": "x-authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "description": "string"
+            }
+          }
+        ],
+        "security": [
+          {
+            "ACTToken": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "ContentCreatorVideos",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ContentCreatorVideos"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v3/creator/recommendations/{urlId}": {
+      "delete": {
+        "summary": "DeleteRecommendation",
+        "description": "DELETE /v3/creator/recommendations/:urlId",
+        "tags": ["v3 - Creator"],
+        "parameters": [
+          {
+            "name": "x-authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "description": "string"
+            }
+          },
+          {
+            "name": "urlId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "description": "string"
+            }
+          }
+        ],
+        "security": [
+          {
+            "ACTToken": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "boolean",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/boolean"
+                }
+              }
+            }
+          }
+        }
+      },
+      "patch": {
+        "summary": "PatchRecommendation",
+        "description": "PATCH /v3/creator/recommendations/:urlId",
+        "tags": ["v3 - Creator"],
+        "parameters": [
+          {
+            "name": "x-authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "description": "string"
+            }
+          },
+          {
+            "name": "urlId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "description": "string"
+            }
+          }
+        ],
+        "security": [
+          {
+            "ACTToken": []
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PartialRecommendation"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Recommendation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Recommendation"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v3/creator/me": {
+      "get": {
+        "summary": "GetCreator",
+        "description": "GET /v3/creator/me",
+        "tags": ["v3 - Creator"],
+        "parameters": [
+          {
+            "name": "x-authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "description": "string"
+            }
+          }
+        ],
+        "security": [
+          {
+            "ACTToken": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "ContentCreator",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ContentCreator"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v3/creator/{channelId}/stats": {
+      "get": {
+        "summary": "GetCreatorStats",
+        "description": "GET /v3/creator/:channelId/stats",
+        "tags": ["v3 - Creator"],
+        "parameters": [
+          {
+            "name": "channelId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "description": "string"
+            }
+          }
+        ],
+        "security": [],
+        "responses": {
+          "200": {
+            "description": "CreatorStats",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CreatorStats"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v3/creator/videos/{videoId}": {
+      "get": {
+        "summary": "OneCreatorVideo",
+        "description": "GET /v3/creator/videos/:videoId",
+        "tags": ["v3 - Creator"],
+        "parameters": [
+          {
+            "name": "x-authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "description": "string"
+            }
+          },
+          {
+            "name": "videoId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "description": "string"
+            }
+          }
+        ],
+        "security": [
+          {
+            "ACTToken": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Video",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Video"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v3/creator/videos/repull": {
+      "post": {
+        "summary": "PullCreatorVideos",
+        "description": "POST /v3/creator/videos/repull",
+        "tags": ["v3 - Creator"],
+        "parameters": [
+          {
+            "name": "x-authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "description": "string"
+            }
+          }
+        ],
+        "security": [
+          {
+            "ACTToken": []
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "ContentCreatorVideos",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ContentCreatorVideos"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v3/creator/{channelId}/register": {
+      "post": {
+        "summary": "RegisterCreator",
+        "description": "POST /v3/creator/:channelId/register",
+        "tags": ["v3 - Creator"],
+        "parameters": [
+          {
+            "name": "channelId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "description": "string"
+            }
+          }
+        ],
+        "security": [],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RegisterContentCreatorBody"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "AuthResponse",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v3/creator/updateVideo": {
+      "post": {
+        "summary": "UpdateVideo",
+        "description": "POST /v3/creator/updateVideo",
+        "tags": ["v3 - Creator"],
+        "parameters": [
+          {
+            "name": "x-authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "description": "string"
+            }
+          }
+        ],
+        "security": [
+          {
+            "ACTToken": []
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateVideoBody"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Video",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Video"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v3/creator/{channelId}/verify": {
+      "post": {
+        "summary": "VerifyCreator",
+        "description": "POST /v3/creator/:channelId/verify",
+        "tags": ["v3 - Creator"],
+        "parameters": [
+          {
+            "name": "channelId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "description": "string"
+            }
+          }
+        ],
+        "security": [],
+        "responses": {
+          "201": {
+            "description": "ContentCreator",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ContentCreator"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v3/experiment/{testTime}": {
+      "delete": {
+        "summary": "ConcludeExperiment",
+        "description": "DELETE /v3/experiment/:testTime",
+        "tags": ["v3 - Public"],
+        "parameters": [
+          {
+            "name": "testTime",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "description": "string"
+            }
+          }
+        ],
+        "security": [],
+        "responses": {
+          "200": {
+            "description": "ConcludeGuardoniExperimentOutput",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ConcludeGuardoniExperimentOutput"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v3/directives/{experimentId}": {
+      "get": {
+        "summary": "GetDirective",
+        "description": "GET /v3/directives/:experimentId",
+        "tags": ["v3 - Public"],
+        "parameters": [
+          {
+            "name": "experimentId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "description": "string"
+            }
+          }
+        ],
+        "security": [],
+        "responses": {
+          "200": {
+            "description": "GetDirectiveOutput",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetDirectiveOutput"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v3/directives/public": {
+      "get": {
+        "summary": "GetPublicDirectives",
+        "description": "GET /v3/directives/public",
+        "tags": ["v3 - Public"],
+        "parameters": [],
+        "security": [],
+        "responses": {
+          "200": {
+            "description": "GetPublicDirectivesOutput",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetPublicDirectivesOutput"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v3/recommendations/{ids}": {
+      "get": {
+        "summary": "GetRecommendations",
+        "description": "GET /v3/recommendations/:ids",
+        "tags": ["v3 - Public"],
+        "parameters": [
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "ids",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "description": "string"
+            }
+          }
+        ],
+        "security": [],
+        "responses": {
+          "200": {
+            "description": "RecommendationList",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RecommendationList"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v3/handshake": {
+      "post": {
+        "summary": "Handshake",
+        "description": "POST /v3/handshake",
+        "tags": ["v3 - Public"],
+        "parameters": [],
+        "security": [],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/HandshakeBody"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "any",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/any"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v3/directives/{directiveType}": {
+      "post": {
+        "summary": "PostDirective",
+        "description": "POST /v3/directives/:directiveType",
+        "tags": ["v3 - Public"],
+        "parameters": [
+          {
+            "name": "Content-Type",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "description": "string"
+            }
+          },
+          {
+            "name": "directiveType",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "description": "DirectiveType",
+              "enum": ["comparison", "chiaroscuro"]
+            }
+          }
+        ],
+        "security": [],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateDirectiveBody"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "PostDirectiveResponse",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PostDirectiveResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v3/videos/{videoId}/recommendations": {
+      "get": {
+        "summary": "VideoRecommendations",
+        "description": "GET /v3/videos/:videoId/recommendations",
+        "tags": ["v3 - Public"],
+        "parameters": [
+          {
+            "name": "channelId",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "description": "string",
+              "required": false
+            }
+          },
+          {
+            "name": "videoId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "description": "string"
+            }
+          }
+        ],
+        "security": [],
+        "responses": {
+          "200": {
+            "description": "RecommendationList",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RecommendationList"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

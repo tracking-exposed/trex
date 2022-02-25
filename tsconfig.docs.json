@@ -1,0 +1,37 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "strict": true,
+    "strictNullChecks": true,
+    "allowUnusedLabels": false,
+    "isolatedModules": true,
+    "esModuleInterop": true,
+    "jsx": "react",
+    "rootDir": "./",
+    "resolveJsonModule": true,
+    "skipDefaultLibCheck": true,
+    "skipLibCheck": true
+  },
+  "files": [],
+  "exclude": ["**/node_modules/*", "**/build/*"],
+  "references": [
+    {
+      "path": "./packages/shared"
+    },
+    {
+      "path": "./packages/taboule"
+    },
+    {
+      "path": "./extension"
+    },
+    {
+      "path": "./backend"
+    },
+    {
+      "path": "./guardoni"
+    },
+    {
+      "path": "./YCAI"
+    }
+  ]
+}

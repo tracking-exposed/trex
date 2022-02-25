@@ -1,15 +1,17 @@
 import * as t from 'io-ts';
-import { GuardoniExperiment } from '../../models/Experiment';
+import * as path from 'path';
 import { Endpoint } from 'ts-endpoint';
 import {
   ADVContributionEvent,
   VideoContributionEvent,
 } from '../../models/ContributionEvent';
+import { GetExperimentListOutput } from '../../models/Experiment';
 import { PublicKeyParams } from '../../models/http/params/PublicKey';
 import { SearchQuery } from '../../models/http/SearchQuery';
 import { TikTokSearch } from '../../models/http/tiktok/TikTokSearch';
 import { Metadata } from '../../models/Metadata';
 import { ChannelADVStats } from '../../models/stats/ChannelADV';
+import { DocumentedEndpoint } from '../utils';
 
 const CompareVideo = Endpoint({
   Method: 'GET',
@@ -38,7 +40,10 @@ const VideoAuthor = Endpoint({
   Output: t.any,
 });
 
-const Searches = Endpoint({
+const Searches = DocumentedEndpoint({
+  title: 'Search by type',
+  description: { path: path.resolve(__dirname, 'tik-tok-searches.md') },
+  tags: ['searches'],
   Method: 'GET',
   getPath: ({ queryString }) => `/v2/searches/${queryString}`,
   Input: {
@@ -121,11 +126,7 @@ const GetExperimentList = Endpoint({
       ...PublicKeyParams.props,
     }),
   },
-  Output: t.strict({
-    content: t.array(GuardoniExperiment),
-    total: t.number,
-    pagination: t.any,
-  }),
+  Output: GetExperimentListOutput,
 });
 
 const GetExperimentById = Endpoint({

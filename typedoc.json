@@ -1,0 +1,26 @@
+{
+  "name": "TRex",
+  "tsconfig": "./tsconfig.docs.json",
+  "entryPointStrategy": "expand",
+  "entryPoints": [
+    "./packages/shared/src",
+    "./packages/taboule/src",
+    "./backend",
+    "./extension/src",
+    "./guardoni/src",
+    "./YCAI/src"
+  ],
+  "external-modulemap": [
+    ".*/packages/([\\w\\-_]+)/",
+    ".*/yttrex/([\\w\\-_]+)/"
+  ],
+  "exclude": [
+    "**/*+(index|.spec|.e2e).ts",
+    "**/build/**",
+    "**/node_modules/**"
+  ],
+  "out": "docs",
+  "theme": "default",
+  "excludeExternals": false,
+  "logLevel": "Verbose"
+}

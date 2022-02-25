@@ -1,6 +1,7 @@
-import { Box, Card, CardContent, Typography } from '@material-ui/core';
+import { Card, CardContent, Typography } from '@material-ui/core';
 import { Alert, AlertTitle } from '@material-ui/lab';
 import * as React from 'react';
+import { isAPIError } from '../../errors/APIError';
 
 // todo: add NODE_ENV as parameter
 export const ErrorBox = (e: unknown): React.ReactElement<any, string> => {
@@ -10,12 +11,10 @@ export const ErrorBox = (e: unknown): React.ReactElement<any, string> => {
     <Card>
       <Alert severity="error">
         <AlertTitle>{e instanceof Error ? e.name : 'Error'}</AlertTitle>
-        <Typography variant="subtitle1">
-          {e instanceof Error ? e.message : 'Unknown error'}
-        </Typography>
-        {Array.isArray((e as any).details) ? (
+        <p>{e instanceof Error ? e.message : 'Unknown error'}</p>
+        {isAPIError(e) ? (
           <ul>
-            {((e as any).details as string[]).map((d) => (
+            {(e.details ?? []).map((d) => (
               <li key={d}>{d}</li>
             ))}
           </ul>
@@ -23,14 +22,10 @@ export const ErrorBox = (e: unknown): React.ReactElement<any, string> => {
       </Alert>
 
       <CardContent>
-        {process.env.NODE_ENV === 'development' ? (
-          <Box>
-            <Typography variant="h6">Debug</Typography>
-            <pre style={{ backgroundColor: 'white' }}>
-              <code>{JSON.stringify(e, null, 2)}</code>
-            </pre>
-          </Box>
-        ) : null}
+        <Typography variant="h6">Debug</Typography>
+        <pre style={{ backgroundColor: 'white' }}>
+          <code>{JSON.stringify(e, null, 2)}</code>
+        </pre>
       </CardContent>
     </Card>
   );

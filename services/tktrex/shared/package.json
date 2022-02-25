@@ -1,11 +1,11 @@
 {
-  "name": "tktrex-shared",
+  "name": "@tktrex/shared",
   "packageManager": "yarn@3.1.1",
   "scripts": {
     "test": "jest --maxWorkers=8",
     "tdd": "jest --watch --maxWorkers=8",
     "dump-parsed-data": "ts-node bin/dump-parsed-data.ts",
-    "make-swagger-config": "ts-node bin/swagger-converter.ts"
+    "open-doc-api": "ts-node bin/open-doc-api.ts"
   },
   "devDependencies": {
     "@types/jest": "^27.4.0",

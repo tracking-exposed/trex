@@ -13,9 +13,9 @@ import * as R from 'fp-ts/lib/Record';
 import * as S from 'fp-ts/lib/string';
 import {
   MinimalEndpoint,
-  MinimalEndpointInstance,
+  MinimalEndpointInstance
 } from 'ts-endpoint/lib/helpers';
-import { getOpenAPISchema, HasOpenAPISchema } from './IOTSToOpenAPISchema';
+import { getOpenAPISchema, IOTOpenDocSchema } from './IOTSToOpenAPISchema';
 
 interface ServerConfig {
   protocol: 'http' | 'https';
@@ -24,7 +24,7 @@ interface ServerConfig {
   basePath: string;
 }
 
-interface DocConfig {
+export interface DocConfig {
   title: string;
   description: string;
   version: string;
@@ -39,7 +39,7 @@ interface DocConfig {
     };
   };
   models: {
-    [key: string]: HasOpenAPISchema;
+    [key: string]: IOTOpenDocSchema;
   };
   server: ServerConfig;
   components: {
@@ -67,15 +67,26 @@ const hasRequestBody = <E extends MinimalEndpoint>(e: E): boolean => {
   );
 };
 
+const getInnerSchemaName = (tt: string): string => {
+  if (tt.startsWith('Array<')) {
+    // console.log(tt);
+    const innerName = tt.replace('Array<', '').replace('>', '');
+    // console.log('inner name', innerName);
+    return innerName;
+  }
+
+  return tt;
+};
+
 /**
  * generate the Open API schema from endpoint
  */
 const apiSchemaFromEndpoint = (
   key: string,
   e: MinimalEndpointInstance,
-  tags: string[]
+  tags: string[],
+  getDocumentation: (e: MinimalEndpointInstance) => string
 ): any => {
-  const path = e.getStaticPath((param: any) => `:${param}`);
   const responseStatusCode = e.Method === 'POST' ? 201 : 200;
 
   const input = e.Input;
@@ -124,16 +135,15 @@ const apiSchemaFromEndpoint = (
   // derive path parameters from io-ts definition of e.Input.Params
   const pathParameters =
     Params !== undefined
-      ? R.keys(Params.props).reduce<any[]>(
-          (acc, k) =>
-            acc.concat({
-              name: k,
-              in: 'path',
-              required: true,
-              schema: getOpenAPISchema((Params?.props)[k]),
-            }),
-          []
-        )
+      ? R.keys(Params.props).reduce<any[]>((acc, k) => {
+          const { required, ...schema } = getOpenAPISchema((Params?.props)[k]);
+          return acc.concat({
+            name: k,
+            in: 'path',
+            required: true,
+            schema,
+          });
+        }, [])
       : [];
 
   // combine all parameters
@@ -147,24 +157,30 @@ const apiSchemaFromEndpoint = (
   // add definition of request body, if needed
   const requestBody = hasRequestBody(e)
     ? {
-        content: {
-          'application/json': {
-            schema: {
-              $ref: `#/components/schemas/${(input as any).Body.name}`,
+        requestBody: {
+          content: {
+            'application/json': {
+              schema: {
+                $ref: `#/components/schemas/${getInnerSchemaName(
+                  (e.Input?.Body as any)?.name
+                )}`,
+              },
             },
           },
         },
       }
     : {};
 
+  const schemaName = getInnerSchemaName((e.Output as any).name);
+
   // define success response
   const successResponse = {
     [responseStatusCode]: {
-      description: (e.Output as any).name,
+      description: schemaName,
       content: {
         'application/json': {
           schema: {
-            $ref: `#/components/schemas/${(e.Output as any).name}`,
+            $ref: `#/components/schemas/${schemaName}`,
           },
         },
       },
@@ -173,13 +189,16 @@ const apiSchemaFromEndpoint = (
 
   // TODO: define error response
 
+  // eslint-disable-next-line
+  // console.log(schemaName, { hasDocumentationMethod, description });
+
   return {
-    summary: key,
-    description: `${e.Method} ${path}`,
+    summary: (e as any).title ?? key,
+    description: getDocumentation(e),
     tags: tags,
     parameters,
     security,
-    requestBody,
+    ...requestBody,
     responses: {
       ...successResponse,
     },
@@ -187,7 +206,8 @@ const apiSchemaFromEndpoint = (
 };
 
 const getPaths = (
-  endpoints: DocConfig['endpoints']
+  endpoints: DocConfig['endpoints'],
+  getDocumentation: (path: MinimalEndpointInstance) => string
 ): {
   paths: any;
   schemas: any;
@@ -220,14 +240,19 @@ const getPaths = (
                     const currentEndpointSchema = apiSchemaFromEndpoint(
                       key,
                       endpoint,
-                      [`${versionKey} - ${scopeKey}`]
+                      (endpoint as any).tags ?? [
+                        'all',
+                        // `${versionKey} - ${scopeKey}`
+                      ],
+                      getDocumentation
                     );
 
-                    const currentSchema = {
-                      [(endpoint.Output as any).name]: getOpenAPISchema(
-                        endpoint.Output as any
-                      ),
-                    };
+                    const currentSchema = (endpoint.Output as any)?.name
+                      ? {
+                          [getInnerSchemaName((endpoint.Output as any).name)]:
+                            getOpenAPISchema(endpoint.Output as any),
+                        }
+                      : {};
 
                     return {
                       schemas: {
@@ -268,15 +293,45 @@ const getPaths = (
   );
 };
 
-export const generateDoc = (config: DocConfig): any => {
-  const { paths, schemas } = getPaths(config.endpoints);
+export const generateDoc = (
+  config: DocConfig,
+  getDocumentation: (path: MinimalEndpointInstance) => string
+): any => {
+  const { paths, schemas } = getPaths(config.endpoints, getDocumentation);
 
   const modelSchema = pipe(
     config.models,
-    R.reduceWithIndex(S.Ord)({}, (key, acc, model) => ({
-      ...acc,
-      [model.name]: getOpenAPISchema(model),
-    }))
+    R.reduceWithIndex(S.Ord)(
+      {
+        any: {
+          type: 'object',
+          description: 'any value',
+        },
+        string: {
+          type: 'string',
+          description: 'A string value',
+        },
+        url: {
+          type: 'string',
+          description: 'A valid URL',
+        },
+        boolean: {
+          type: 'boolean',
+          description: 'A `true | false` value',
+        },
+      },
+      (key, acc, model) => {
+        const { required, ...modelSchema } = getOpenAPISchema(model);
+        if (model.name) {
+          return {
+            ...acc,
+            [getInnerSchemaName(model.name)]: modelSchema,
+          };
+        }
+
+        return acc;
+      }
+    )
   );
   return {
     openapi: '3.0.3',
@@ -287,13 +342,14 @@ export const generateDoc = (config: DocConfig): any => {
     },
     servers: [
       {
-        url: `{protocol}://{host}:{port}/{basePath}`,
+        url: `{protocol}://{host}{port}/{basePath}`,
         description: 'Node Server',
         variables: {
           protocol: { default: config.server.protocol },
           host: { default: config.server.host },
           port: {
             default: config.server.port,
+            enum: [config.server.port, '443'],
           },
           basePath: {
             default: config.server.basePath,
