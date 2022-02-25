@@ -2,9 +2,6 @@ name: TRex - Github Release
 
 on:
   push:
-    branches:
-      # - beta
-      # - fix/release-flow
     tags:
       - 'v*.*.*'
 
