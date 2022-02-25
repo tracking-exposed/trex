@@ -4114,7 +4114,7 @@ __metadata:
   dependencies:
     "@types/express": ^4.17.13
     "@types/lodash": ^4.14.178
-    "@types/node": ^16.11.22
+    "@types/node": ^16.11.26
     body-parser: ^1.19.1
     bs58: ^3.1.0
     cookie: ^0.3.1
@@ -4165,7 +4165,7 @@ __metadata:
     "@types/debug": ^4.1.7
     "@types/jquery": ^3.5.13
     "@types/lodash": ^4.14.178
-    "@types/node": ^16.11.22
+    "@types/node": ^16.11.26
     "@types/react": 17.0.38
     "@types/react-dom": ^17.0.11
     "@typescript-eslint/eslint-plugin": ^5.12.1
@@ -4198,7 +4198,7 @@ __metadata:
   dependencies:
     "@types/jest": ^27.4.1
     "@types/mongodb": ^4.0.7
-    "@types/node": ^16.11.22
+    "@types/node": ^16.11.26
     "@types/yargs": ^17.0.8
     "@typescript-eslint/eslint-plugin": ^5.12.1
     "@typescript-eslint/parser": ^5.12.1
@@ -4262,7 +4262,7 @@ __metadata:
     "@types/copy-webpack-plugin": ^8.0.1
     "@types/debug": ^4.1.7
     "@types/dotenv-webpack": ^7.0.3
-    "@types/node": ^16.11.22
+    "@types/node": ^16.11.26
     "@types/react": 17.0.38
     "@types/react-dom": ^17.0.11
     "@types/webpack-bundle-analyzer": ^4.4.1
@@ -4316,7 +4316,7 @@ __metadata:
     "@material-ui/data-grid": ^4.0.0-alpha.37
     "@material-ui/icons": ^4.11.2
     "@material-ui/styles": ^4.11.4
-    "@types/node": ^16.11.22
+    "@types/node": ^16.11.26
     "@types/prettier": ^2.4.3
     "@types/react": 17.0.38
     "@types/react-dom": ^17.0.11
@@ -4357,10 +4357,10 @@ __metadata:
   resolution: "@trex/tt-automation@workspace:services/tktrex/automation"
   dependencies:
     "@types/jest": ^27.4.1
-    "@types/node": ^17.0.8
+    "@types/node": ^16.11.26
     "@types/pouchdb-find": ^6.3.7
     "@types/pouchdb-node": ^6.1.4
-    "@types/unzipper": ^0
+    "@types/unzipper": ^0.10.5
     "@types/webpack": ^5.28.0
     "@types/yaml": ^1.9.7
     "@types/yargs": ^17.0.8
@@ -4379,7 +4379,7 @@ __metadata:
     jest: ^27.5.1
     leveldown: ^6.1.0
     linkedom: ^0.13.2
-    node-fetch: ^2.6.5
+    node-fetch: ^2.6.7
     node-loader: ^2.0.0
     pouchdb-find: ^7.2.2
     pouchdb-node: ^7.2.2
@@ -4419,7 +4419,7 @@ __metadata:
     "@types/debug": ^4.1.7
     "@types/jest": ^27.4.1
     "@types/lodash": ^4.14.178
-    "@types/node": ^16.11.22
+    "@types/node": ^16.11.26
     "@types/react": 17.0.38
     "@types/react-dom": ^17.0.11
     "@types/react-test-renderer": ^17.0.1
@@ -5350,9 +5350,9 @@ __metadata:
   linkType: hard
 
 "@types/node@npm:>=16":
-  version: 17.0.19
-  resolution: "@types/node@npm:17.0.19"
-  checksum: 6bbd35bfc23dd50d1aefd4ae49c31f7fd632be209dba67c0322bb4fe8b555f4bb6e894018963146ad7758ae596857d5cbecc2d46ddf90a54f6a4424811cf4351
+  version: 17.0.21
+  resolution: "@types/node@npm:17.0.21"
+  checksum: 89dcd2fe82f21d3634266f8384e9c865cf8af49685639fbdbd799bdd1040480fb1e8eeda2d3b9fce41edbe704d2a4be9f427118c4ae872e8d9bb7cbeb3c41a94
   languageName: node
   linkType: hard
 
@@ -24983,7 +24983,7 @@ __metadata:
     "@commitlint/config-conventional": ^16.2.1
     "@commitlint/prompt-cli": ^16.2.1
     "@release-it/conventional-changelog": ^4.2.0
-    "@types/node": ^16.11.22
+    "@types/node": ^16.11.26
     "@types/prettier": ^2.4.3
     eslint: ^8.10.0
     husky: ^7.0.4
@@ -29734,7 +29734,7 @@ __metadata:
     "@types/cors": ^2.8.12
     "@types/jest": ^27.4.1
     "@types/nconf": ^0.10.1
-    "@types/node": ^16.11.22
+    "@types/node": ^16.11.26
     "@types/supertest": ^2.0.11
     "@types/uuid": ^8.3.4
     "@typescript-eslint/eslint-plugin": ^5.12.1

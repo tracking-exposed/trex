@@ -32,7 +32,7 @@
     "@types/chrome": "0.0.177",
     "@types/debug": "^4.1.7",
     "@types/jest": "^27.4.1",
-    "@types/node": "^16.11.22",
+    "@types/node": "^16.11.26",
     "@types/react": "17.0.38",
     "@types/react-dom": "^17.0.11",
     "@types/react-test-renderer": "^17.0.1",
