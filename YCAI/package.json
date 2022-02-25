@@ -21,6 +21,7 @@
     "watch:prod": "DOTENV_CONFIG_PATH=.env yarn watch",
     "test": "jest",
     "stats": "webpack-bundle-analyzer build/stats.json",
+    "open-doc-api": "ts-node bin/open-doc-api.ts",
     "prepack": "yarn build"
   },
   "devDependencies": {

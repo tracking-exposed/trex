@@ -1,8 +1,9 @@
 import * as t from 'io-ts';
-import { Endpoint } from 'ts-endpoint';
 import * as apiModel from './models/api';
+import { DocumentedEndpoint } from '@shared/endpoints/utils';
+import * as path from 'path';
 
-const GetPersonalJSON = Endpoint({
+const GetPersonalJSON = DocumentedEndpoint({
   Method: 'GET',
   getPath: ({ publicKey, what }) => `/v2/personal/${publicKey}/${what}/json`,
   Input: {
@@ -12,9 +13,12 @@ const GetPersonalJSON = Endpoint({
     }),
   },
   Output: apiModel.PersonalVideoList,
+  title: 'Personal data (json)',
+  description: 'Get your personal data as JSON.',
+  tags: ['personal'],
 });
 
-const GetPersonalCSV = Endpoint({
+const GetPersonalCSV = DocumentedEndpoint({
   Method: 'GET',
   getPath: ({ publicKey, what }) => `/v2/personal/${publicKey}/${what}/csv`,
   Input: {
@@ -24,34 +28,46 @@ const GetPersonalCSV = Endpoint({
     }),
   },
   Output: t.string,
+  title: 'Personal data (csv)',
+  description: 'Download your personal data as CSV.',
+  tags: ['personal'],
 });
 
 // ****
 // TODO: the personal searches should become a different endpoint because the output format differs
 // ****
 
-const GetSearches = Endpoint({
+const GetSearches = DocumentedEndpoint({
   Method: 'GET',
-  getPath: () => '/v2/public/searches',
+  getPath: () => '/v2/searches',
   Output: apiModel.PublicSearchList,
+  title: 'All searches',
+  description: { path: path.resolve(__dirname, './tik-tok-searches.md') },
+  tags: ['searches'],
 });
 
-const GetSearchByQuery = Endpoint({
+const GetSearchByQuery = DocumentedEndpoint({
   Method: 'GET',
-  getPath: ({ query, format }) => `/api/v2/public/query/${query}/${format}`,
+  getPath: ({ query, format }) => `/v2/public/query/${query}/${format}`,
   Input: {
     Params: t.type({
       query: apiModel.What,
       format: apiModel.Format,
     }),
   },
-  Output: t.union([t.string, t.array(t.any)]),
+  Output: apiModel.GetSearchByQueryOutput,
+  title: 'Search by query',
+  tags: ['searches'],
+  description: 'Use a `query` of type `What` to filter searches',
 });
 
-const GetQueryList = Endpoint({
+const GetQueryList = DocumentedEndpoint({
   Method: 'GET',
-  getPath: () => '/api/v2/public/queries/list',
-  Output: t.any,
+  getPath: () => '/v2/public/queries/list',
+  Output: apiModel.GetQueryListOutput,
+  title: 'List queries',
+  description: 'List public queries',
+  tags: ['searches'],
 });
 
 export default {

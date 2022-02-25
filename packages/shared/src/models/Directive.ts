@@ -34,10 +34,10 @@ export const ChiaroScuroDirectiveRow = t.type(
 // todo: this should be named CreateExperimentBody
 export const CreateDirectiveBody = t.type(
   {
-    parsedCSV: t.union([
-      t.array(ComparisonDirectiveRow),
-      t.array(ChiaroScuroDirectiveRow),
-    ]),
+    parsedCSV: t.union(
+      [t.array(ComparisonDirectiveRow), t.array(ChiaroScuroDirectiveRow)],
+      'DirectiveRow'
+    ),
   },
   'CreateDirectiveBody'
 );
@@ -62,10 +62,13 @@ export type PostDirectiveSuccessResponse = t.TypeOf<
   typeof PostDirectiveResponse
 >;
 
-export const PostDirectiveResponse = t.union([
-  t.type({ error: t.type({ message: t.string }) }),
-  PostDirectiveSuccessResponse,
-]);
+export const PostDirectiveResponse = t.union(
+  [
+    t.type({ error: t.type({ message: t.string }) }),
+    PostDirectiveSuccessResponse,
+  ],
+  'PostDirectiveResponse'
+);
 
 export const ComparisonDirective = t.strict(
   {

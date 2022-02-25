@@ -1,18 +1,20 @@
 import * as t from 'io-ts';
-import { nonEmptyArray } from 'io-ts-types/lib/nonEmptyArray';
 import { Endpoint } from 'ts-endpoint';
 import {
   CreateDirectiveBody,
-  Directive,
   DirectiveType,
   PostDirectiveResponse,
 } from '../../models/Directive';
-import { GuardoniExperiment } from '../../models/Experiment';
+import {
+  ConcludeGuardoniExperimentOutput,
+  GetDirectiveOutput,
+  GetPublicDirectivesOutput,
+} from '../../models/Experiment';
 import { HandshakeBody } from '../../models/HandshakeBody';
 import {
   GetRecommendationsParams,
   GetRecommendationsQuery,
-  Recommendation,
+  RecommendationList,
 } from '../../models/Recommendation';
 
 const Handshake = Endpoint({
@@ -26,17 +28,16 @@ const Handshake = Endpoint({
 
 const VideoRecommendations = Endpoint({
   Method: 'GET',
-  getPath: ({ videoId }) =>
-    `/v3/videos/${videoId}/recommendations`,
+  getPath: ({ videoId }) => `/v3/videos/${videoId}/recommendations`,
   Input: {
     Params: t.type({
       videoId: t.string,
     }),
     Query: t.type({
       channelId: t.union([t.string, t.undefined]),
-    })
+    }),
   },
-  Output: t.array(Recommendation),
+  Output: RecommendationList,
 });
 
 const GetRecommendations = Endpoint({
@@ -46,7 +47,7 @@ const GetRecommendations = Endpoint({
     Query: GetRecommendationsQuery,
     Params: GetRecommendationsParams,
   },
-  Output: t.array(Recommendation),
+  Output: RecommendationList,
 });
 
 const PostDirective = Endpoint({
@@ -72,13 +73,13 @@ const GetDirective = Endpoint({
       experimentId: t.string,
     }),
   },
-  Output: nonEmptyArray(Directive),
+  Output: GetDirectiveOutput,
 });
 
 const GetPublicDirectives = Endpoint({
   Method: 'GET',
   getPath: () => `/v3/directives/public`,
-  Output: t.array(GuardoniExperiment),
+  Output: GetPublicDirectivesOutput,
 });
 
 const ConcludeExperiment = Endpoint({
@@ -87,9 +88,7 @@ const ConcludeExperiment = Endpoint({
   Input: {
     Params: t.type({ testTime: t.string }),
   },
-  Output: t.type({
-    acknowledged: t.boolean,
-  }),
+  Output: ConcludeGuardoniExperimentOutput,
 });
 
 export const endpoints = {

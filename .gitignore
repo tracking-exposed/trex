@@ -30,3 +30,4 @@ coverage
 !.yarn/releases
 !.yarn/sdks
 !.yarn/versions
+.ssh-keys

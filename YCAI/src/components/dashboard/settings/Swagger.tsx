@@ -15,37 +15,45 @@ export const Swagger: React.FC = () => {
   React.useEffect(() => {
     const apiURL = new URL(config.API_URL);
 
-    const swaggerConfig = swagger.generateDoc({
-      title: t('swagger:title'),
-      description: t('swagger:description'),
-      version: config.VERSION,
-      server: {
-        protocol: apiURL.protocol === 'http:' ? 'http' : 'https',
-        host: apiURL.hostname,
-        port: parseInt(apiURL.port, 10),
-        basePath: apiURL.pathname.slice(1),
-      },
-      components: {
-        security: {
-          ACTToken: {
-            type: 'apiKey',
-            in: 'header',
-            name: 'X-Authorization',
+    const swaggerConfig = swagger.generateDoc(
+      {
+        title: t('swagger:title'),
+        description: t('swagger:description'),
+        version: config.VERSION,
+        server: {
+          protocol: apiURL.protocol === 'http:' ? 'http' : 'https',
+          host: apiURL.hostname,
+          port: parseInt(apiURL.port, 10),
+          basePath: apiURL.pathname.slice(1),
+        },
+        components: {
+          security: {
+            ACTToken: {
+              type: 'apiKey',
+              in: 'header',
+              name: 'X-Authorization',
+            },
           },
         },
-      },
-      security: [
-        {
-          ACTToken: [],
+        security: [
+          {
+            ACTToken: [],
+          },
+        ],
+        endpoints: {
+          v1: endpoints.v1,
+          v2: endpoints.v2,
+          v3: endpoints.v3,
         },
-      ],
-      endpoints: {
-        v1: endpoints.v1,
-        v2: endpoints.v2,
-        v3: endpoints.v3,
+        models: models as any,
       },
-      models: models,
-    });
+      (e: any): string => {
+        if (typeof e.description === 'string') {
+          return e.description;
+        }
+        return `${e.Method}: ${e.getStaticPath((a: any) => `:${a}`)}`;
+      }
+    );
 
     SwaggerUI({
       domNode: ref.current,

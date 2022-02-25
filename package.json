@@ -9,10 +9,12 @@
   },
   "private": true,
   "workspaces": [
+    "docs",
     "extension",
     "packages/*",
     "backend",
     "YCAI",
+    "services/tktrex/docs",
     "services/tktrex/extension",
     "services/tktrex/methodology",
     "services/tktrex/backend",
@@ -28,11 +30,14 @@
     "type-check": "yarn workspaces foreach run tsc --noEmit",
     "build": "yarn workspaces foreach run build",
     "test": "jest",
+    "docs": "yarn workspace @trex/docs",
     "taboule": "yarn workspace @trex/taboule",
     "shared": "yarn workspace @trex/shared",
     "backend": "yarn workspace yttrex-backend",
     "extension": "yarn workspace yttrex-extension",
     "guardoni": "yarn workspace guardoni",
+    "tk:docs": "yarn workspace @tktrex/docs",
+    "tk:shared": "yarn workspace @tktrex/shared",
     "tk:backend": "yarn workspace @tktrex/backend",
     "tk:ext": "yarn workspace @tktrex/extension",
     "ycai": "yarn workspace @trex/ycai",
@@ -42,6 +47,7 @@
     "tsc-diagnostics": "scripts/tsc-diagnostics.sh"
   },
   "devDependencies": {
+    "@apidevtools/swagger-cli": "^4.0.4",
     "@commitlint/cli": "^16.1.0",
     "@commitlint/config-conventional": "^16.0.0",
     "@commitlint/prompt-cli": "^16.1.0",
@@ -61,11 +67,21 @@
     "webpack": "^5.69.1"
   },
   "lint-staged": {
-    "*.{ts,tsx}": [
+    "*.{js,jsx,ts,tsx}": [
       "eslint --ext .tsx --ext .ts --fix"
     ],
     "*.{json,md,html,js,jsx,ts,tsx}": [
       "prettier --write"
     ]
+  },
+  "resolutions": {
+    "@docusaurus/core": "2.0.0-beta.14",
+    "@docusaurus/preset-classic": "2.0.0-beta.14",
+    "@docusaurus/mdx-loader": "2.0.0-beta.14",
+    "@docusaurus/plugin-content-docs": "2.0.0-beta.14",
+    "@docusaurus/types": "2.0.0-beta.14",
+    "@docusaurus/utils-validation": "2.0.0-beta.14",
+    "@docusaurus/utils": "2.0.0-beta.14",
+    "@types/node": ">=16"
   }
 }
