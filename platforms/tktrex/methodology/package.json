@@ -24,7 +24,6 @@
     "debug": "^4.3.4",
     "eslint": "^8.16.0",
     "lodash": "^4.17.21",
-    "moment": "^2.29.2",
     "nconf": "^0.11.3",
     "node-fetch": "^2.6.7",
     "puppeteer": "^13.7.0",

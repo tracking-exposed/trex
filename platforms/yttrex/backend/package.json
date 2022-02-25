@@ -35,7 +35,6 @@
     "io-ts": "^2.2.16",
     "io-ts-types": "^0.5.16",
     "jsdom": "^16.7.0",
-    "moment": "^2.29.2",
     "mongodb": "^4.3.1",
     "nacl-signature": "^1.0.0",
     "nconf": "^0.8.5",

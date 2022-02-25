@@ -1,22 +1,17 @@
-import { string } from "fp-ts";
-import fs from "fs";
-import moment from "moment";
-import nconf from "nconf";
-import path from "path";
-// import events from '../events';
-// const tags = require('../tags');
-import supporters from "../../lib/supporters";
-// import personal from '../personal';
-import { GetTest, Test } from "../../tests/Test";
+import fs from 'fs';
+import path from 'path';
+import supporters from '../../lib/supporters';
+import { GetTest, Test } from '../../tests/Test';
+import format from 'date-fns/format';
 
 /* This first check the capacity of load data and verify they are avail */
-describe.skip("Testing the video submission", function () {
-  const dummyKey = "ABCDEF789012345678901234567890";
-  const dummyVideoId = "MOCKUPID";
+describe.skip('Testing the video submission', function () {
+  const dummyKey = 'ABCDEF789012345678901234567890';
+  const dummyVideoId = 'MOCKUPID';
   const mockUpVideoCapture = {
     href: `https://www.youtube.com/watch?v=${dummyVideoId}`,
     clientTime: new Date().toISOString(),
-    element: "asdasdasd",
+    element: 'asdasdasd',
   };
 
   let test: Test, storageDir;
@@ -24,21 +19,21 @@ describe.skip("Testing the video submission", function () {
   beforeAll(async () => {
     test = await GetTest();
     storageDir = path.join(
-      test.config.get("storage"),
-      moment().format("YYYY-MM-DD")
+      test.config.get('storage'),
+      format(new Date(), 'YYYY-MM-DD')
     );
   });
 
-  it("delete if exists the dummy supporter", async function () {
+  it('delete if exists the dummy supporter', async function () {
     const result = await supporters.remove(dummyKey);
     expect(result.result.ok).toBe(1);
   });
 
-  it("creates the dummy directory", function () {
+  it('creates the dummy directory', function () {
     try {
       fs.mkdirSync(storageDir);
     } catch (error) {
-      expect(error.code).toBe("EEXIST");
+      expect(error.code).toBe('EEXIST');
     }
 
     const check = fs.existsSync(storageDir);
