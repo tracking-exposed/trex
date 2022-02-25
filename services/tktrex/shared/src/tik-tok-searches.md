@@ -1,4 +1,4 @@
-This api let you list the searches collected with the extension.
+This api let you list the searches data collected with the extension.
 
 ```js
 const a = 0;

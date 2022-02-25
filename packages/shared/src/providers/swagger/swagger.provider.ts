@@ -198,7 +198,7 @@ const apiSchemaFromEndpoint = (
   // console.log(schemaName, { hasDocumentationMethod, description });
 
   return {
-    summary: key,
+    summary: (e as any).title ?? key,
     description,
     tags: tags,
     parameters,
@@ -244,8 +244,8 @@ const getPaths = (
                     const currentEndpointSchema = apiSchemaFromEndpoint(
                       key,
                       endpoint,
-                      [
-                        'basic-api',
+                      (endpoint as any).tags ?? [
+                        'all',
                         // `${versionKey} - ${scopeKey}`
                       ]
                     );
