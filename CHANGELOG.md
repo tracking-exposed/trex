@@ -1,3 +1,7 @@
+### [2.4.2](https://github.com/tracking-exposed/yttrex/compare/v2.4.1...v2.4.2) (2022-02-25)
+
+- gh release branch filter removed ([f4fd5eb](https://github.com/tracking-exposed/yttrex/commit/f4fd5eb1ccb6556747aca65332e6184d0b09bea0))
+
 ### [2.4.1](https://github.com/tracking-exposed/yttrex/compare/v2.4.0...v2.4.1) (2022-02-24)
 
 ## [2.4.0](https://github.com/tracking-exposed/yttrex/compare/v2.3.0...v2.4.0) (2022-02-22)
