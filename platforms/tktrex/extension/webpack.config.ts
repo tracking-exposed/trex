@@ -1,4 +1,4 @@
-import moment from 'moment';
+import format from 'date-fns/format';
 import path from 'path';
 import { getExtensionConfig } from '../../../packages/shared/src/webpack/extension.config';
 import packageJSON from './package.json';
@@ -37,7 +37,7 @@ const BUILD_DATE = new Date().toISOString();
 process.env.API_ROOT = `${ENV_DEP_SERVER}/api`;
 process.env.WEB_ROOT = ENV_DEP_WEB;
 process.env.VERSION = `${packageJSON.version}${DEVELOPMENT ? '-dev' : ''}`;
-process.env.BUILD = `On the ${moment().format('DD of MMMM at HH:mm')}.`;
+process.env.BUILD = `On the ${format(new Date(), 'DD of MMMM at HH:mm')}.`;
 process.env.BUILD_DATE = BUILD_DATE;
 process.env.FLUSH_INTERVAL = DEVELOPMENT ? '4500' : '9000';
 process.env.DEVELOPMENT = DEVELOPMENT ? 'development' : 'production';
