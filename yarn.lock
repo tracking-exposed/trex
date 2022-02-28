@@ -4113,7 +4113,7 @@ __metadata:
   resolution: "@tktrex/backend@workspace:services/tktrex/backend"
   dependencies:
     "@types/express": ^4.17.13
-    "@types/lodash": ^4.14.178
+    "@types/lodash": ^4.14.179
     "@types/node": ^16.11.26
     body-parser: ^1.19.1
     bs58: ^3.1.0
@@ -4163,10 +4163,10 @@ __metadata:
     "@material-ui/icons": ^4.11.2
     "@types/create-react-class": ^15.6.3
     "@types/debug": ^4.1.7
-    "@types/jquery": ^3.5.13
-    "@types/lodash": ^4.14.178
+    "@types/jquery": ^3.5.14
+    "@types/lodash": ^4.14.179
     "@types/node": ^16.11.26
-    "@types/react": 17.0.38
+    "@types/react": 17.0.39
     "@types/react-dom": ^17.0.11
     "@typescript-eslint/eslint-plugin": ^5.12.1
     "@typescript-eslint/parser": ^5.12.1
@@ -4258,12 +4258,12 @@ __metadata:
     "@material-ui/core": ^4.12.3
     "@material-ui/lab": ^4.0.0-alpha.60
     "@pmmmwh/react-refresh-webpack-plugin": ^0.5.4
-    "@types/chrome": ^0.0.177
+    "@types/chrome": ^0.0.179
     "@types/copy-webpack-plugin": ^8.0.1
     "@types/debug": ^4.1.7
     "@types/dotenv-webpack": ^7.0.3
     "@types/node": ^16.11.26
-    "@types/react": 17.0.38
+    "@types/react": 17.0.39
     "@types/react-dom": ^17.0.11
     "@types/webpack-bundle-analyzer": ^4.4.1
     "@typescript-eslint/eslint-plugin": ^5.12.1
@@ -4317,8 +4317,8 @@ __metadata:
     "@material-ui/icons": ^4.11.2
     "@material-ui/styles": ^4.11.4
     "@types/node": ^16.11.26
-    "@types/prettier": ^2.4.3
-    "@types/react": 17.0.38
+    "@types/prettier": ^2.4.4
+    "@types/react": 17.0.39
     "@types/react-dom": ^17.0.11
     "@types/webpack-bundle-analyzer": ^4.4.1
     "@typescript-eslint/eslint-plugin": ^5.12.1
@@ -4415,12 +4415,12 @@ __metadata:
     "@testing-library/user-event": ^13.5.0
     "@types/bs58": ^4.0.1
     "@types/c3": ^0.7.8
-    "@types/chrome": 0.0.177
+    "@types/chrome": ^0.0.179
     "@types/debug": ^4.1.7
     "@types/jest": ^27.4.1
-    "@types/lodash": ^4.14.178
+    "@types/lodash": ^4.14.179
     "@types/node": ^16.11.26
-    "@types/react": 17.0.38
+    "@types/react": 17.0.39
     "@types/react-dom": ^17.0.11
     "@types/react-test-renderer": ^17.0.1
     "@types/swagger-ui": ^3.52.0
@@ -4649,16 +4649,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/chrome@npm:0.0.177, @types/chrome@npm:^0.0.177":
-  version: 0.0.177
-  resolution: "@types/chrome@npm:0.0.177"
-  dependencies:
-    "@types/filesystem": "*"
-    "@types/har-format": "*"
-  checksum: 02c070e07572439cad918c76ef760eaf43358ef110b49f76a6eecea76e40b272b48048e2a335a19a2591ae7adb2a87548a40e38fcc2dca66b130bc4a0775724f
-  languageName: node
-  linkType: hard
-
 "@types/chrome@npm:^0.0.114":
   version: 0.0.114
   resolution: "@types/chrome@npm:0.0.114"
@@ -4666,6 +4656,16 @@ __metadata:
     "@types/filesystem": "*"
     "@types/har-format": "*"
   checksum: 7b7c7d7ae72e54011328709b23f6bb2b15e8626af01e7577deae34fd1a0ec52f3f911f9eb9eeb49110a6816ee993450119eb889a286e077c5ce194878415d63f
+  languageName: node
+  linkType: hard
+
+"@types/chrome@npm:^0.0.179":
+  version: 0.0.179
+  resolution: "@types/chrome@npm:0.0.179"
+  dependencies:
+    "@types/filesystem": "*"
+    "@types/har-format": "*"
+  checksum: 2a50cd71c522e16137d05ab1ed8d5f9e94e5e296e9b5f4044d3cc1a51c62fa462d0d3cff62810e9396324d41ddf84fdfbc2919b17727b72523b5893470d7a239
   languageName: node
   linkType: hard
 
@@ -5238,12 +5238,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/jquery@npm:^3.5.13":
-  version: 3.5.13
-  resolution: "@types/jquery@npm:3.5.13"
+"@types/jquery@npm:^3.5.14":
+  version: 3.5.14
+  resolution: "@types/jquery@npm:3.5.14"
   dependencies:
     "@types/sizzle": "*"
-  checksum: cb4e6aacaf36905049d5ac93da1fabed17da285fafe38c88feba89d7c9912e108c934ea05c908b87ae199f2830e5e002a72d0cc8aaef4a33539581d0a7a6abe8
+  checksum: 159d6f804ed1a204b3f79f2d591a271d82e866bd45bd49fb6ef40561a25dbe0f47ec7815681b44cc2db5598425f72811e7e80ab0e983d980470998ac56feb375
   languageName: node
   linkType: hard
 
@@ -5270,10 +5270,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/lodash@npm:^4.14.146, @types/lodash@npm:^4.14.160, @types/lodash@npm:^4.14.178":
+"@types/lodash@npm:^4.14.146, @types/lodash@npm:^4.14.160":
   version: 4.14.178
   resolution: "@types/lodash@npm:4.14.178"
   checksum: a69a04a60bfc5257c3130a554b4efa0c383f0141b7b3db8ab7cf07ad2a46ea085fce66d0242da41da7e5647b133d5dfb2c15add9cbed8d7fef955e4a1e5b3128
+  languageName: node
+  linkType: hard
+
+"@types/lodash@npm:^4.14.179":
+  version: 4.14.179
+  resolution: "@types/lodash@npm:4.14.179"
+  checksum: 71faa0c8071732c2b7f0bd092850d3cea96fc7912055d57d819cf2ab399a64150e4190d8a4ea35a0905662ddc118be9d2abd55891d8047c085acf98608156149
   languageName: node
   linkType: hard
 
@@ -5456,7 +5463,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/prettier@npm:^2.1.5, @types/prettier@npm:^2.4.3":
+"@types/prettier@npm:^2.1.5, @types/prettier@npm:^2.4.4":
   version: 2.4.4
   resolution: "@types/prettier@npm:2.4.4"
   checksum: 2c2cc57efd49c7d8907415a72f96c84a6dd8696dd3bf8aa4ca3a667427bebf71cbfbc912673624bdfc935d272d1c008c639cf155f6449315990a4dc110f0d216
@@ -5600,7 +5607,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/react@npm:*":
+"@types/react@npm:*, @types/react@npm:17.0.39":
   version: 17.0.39
   resolution: "@types/react@npm:17.0.39"
   dependencies:
@@ -5608,17 +5615,6 @@ __metadata:
     "@types/scheduler": "*"
     csstype: ^3.0.2
   checksum: bf04d3c2894559012710d595553e12b422d3b91cd8f4f7e122d8cb044ba9c2ba17f6e8a4e09581359cc5509ddc59cd8c8fabd6774f3505a40a45393f074d6e6e
-  languageName: node
-  linkType: hard
-
-"@types/react@npm:17.0.38":
-  version: 17.0.38
-  resolution: "@types/react@npm:17.0.38"
-  dependencies:
-    "@types/prop-types": "*"
-    "@types/scheduler": "*"
-    csstype: ^3.0.2
-  checksum: 4079f4f959cd4a4bfaeda8b89fe8a1b1f8bdc9d87acfdc5f74a0b39cec9ec6a470724357c62778c0f063180b360c250e920c5a142f1dbcda67d9cc25a6d43a85
   languageName: node
   linkType: hard
 
@@ -5752,7 +5748,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/unzipper@npm:^0":
+"@types/unzipper@npm:^0.10.5":
   version: 0.10.5
   resolution: "@types/unzipper@npm:0.10.5"
   dependencies:
@@ -14824,10 +14820,10 @@ __metadata:
     "@material-ui/icons": ^4.11.2
     "@material-ui/lab": ^4.0.0-alpha.60
     "@pmmmwh/react-refresh-webpack-plugin": ^0.5.4
-    "@types/lodash": ^4.14.178
+    "@types/lodash": ^4.14.179
     "@types/nconf": ^0.10.1
-    "@types/prettier": ^2.4.3
-    "@types/react": 17.0.38
+    "@types/prettier": ^2.4.4
+    "@types/react": 17.0.39
     "@types/react-dom": ^17.0.11
     "@types/webpack-node-externals": ^2.5.3
     "@types/yargs": ^17.0.8
@@ -24984,7 +24980,7 @@ __metadata:
     "@commitlint/prompt-cli": ^16.2.1
     "@release-it/conventional-changelog": ^4.2.0
     "@types/node": ^16.11.26
-    "@types/prettier": ^2.4.3
+    "@types/prettier": ^2.4.4
     eslint: ^8.10.0
     husky: ^7.0.4
     jest: ^27.5.1
