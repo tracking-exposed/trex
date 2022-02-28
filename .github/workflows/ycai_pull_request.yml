@@ -8,7 +8,7 @@ on:
       - feat/**
     paths:
       - "packages/**"
-      - "YCAI/**"
+      - "services/ycai/**"
 
 jobs:
   pull_request:

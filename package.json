@@ -13,7 +13,7 @@
     "extension",
     "packages/*",
     "backend",
-    "YCAI",
+    "services/ycai/studio",
     "services/tktrex/docs",
     "services/tktrex/extension",
     "services/tktrex/methodology",
