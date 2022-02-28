@@ -22,7 +22,7 @@ jobs:
         uses: actions/setup-node@v2
         with:
           node-version: ${{ matrix.node-version }}
-          cache: "yarn"
+          cache: 'yarn'
           cache-dependency-path: yarn.lock
 
       - name: Install dependencies
@@ -30,7 +30,7 @@ jobs:
 
       - name: Release
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.RELEASE_TOKEN }}
         run: |
           git config --global user.email "team@tracking.exposed"
           git config --global user.name "Team - Tracking Exposed"
@@ -50,3 +50,162 @@ jobs:
           remote_host: ${{ secrets.YCAI_DEPLOY_HOST }}
           remote_user: ${{ secrets.YCAI_DEPLOY_USER }}
           remote_key: ${{ secrets.YCAI_DEPLOY_KEY }}
+
+  build:
+    name: Build
+    needs: [release]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'yarn'
+          cache-dependency-path: yarn.lock
+
+      - uses: actions/cache@v2
+        with:
+          key: build-workspace-${{ github.run_id }}
+          path: |
+            packages/shared/build
+            packages/taboule/build
+            extension/dist
+            guardoni/build
+            guardoni/dist
+            YCAI/build
+            services/tktrex/extension/build
+
+      - name: Install dependencies
+        run: yarn
+
+      - name: YCAI dist
+        env:
+          NODE_ENV: production
+        run: |
+          yarn shared build
+          yarn taboule build
+          yarn extension dist
+          yarn extension dist:guardoni
+          yarn guardoni build
+          yarn guardoni pkg
+          yarn tk:ext build
+          yarn ycai build
+
+  guardoni_build:
+    name: Guardoni build
+    needs: build
+    runs-on: ${{ matrix.config.os }}
+    strategy:
+      max-parallel: 1
+      matrix:
+        node-version: [16.x]
+        config:
+          - os: ubuntu-latest
+            command: 'dist:linux'
+          - os: macos-latest
+            command: 'dist:mac'
+          - os: windows-latest
+            command: 'dist:windows'
+    steps:
+      - name: 'Use GNU tar instead BSD tar'
+        if: matrix.config.os == 'windows-latest'
+        shell: cmd
+        run: echo C:\Program Files\Git\usr\bin>>"%GITHUB_PATH%"
+
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+
+      - uses: actions/cache@v2
+        with:
+          key: build-guardoni-${{ github.run_id }}-${{ matrix.config.os }}
+          restore-keys: |
+            build-guardoni-${{ github.run_id }}-macos-latest
+            build-guardoni-${{ github.run_id }}-ubuntu-latest
+            build-workspace-${{ github.run_id }}
+          path: |
+            packages/shared/build
+            packages/taboule/build
+            extension/dist
+            guardoni/build
+            guardoni/dist
+            YCAI/build
+            services/tktrex/extension/build
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'yarn'
+          cache-dependency-path: yarn.lock
+
+      - name: Install dependencies
+        run: yarn
+
+      - name: Build Guardoni for ${{ matrix.config.os }}
+        env:
+          DOTENV_CONFIG_PATH: .env.beta
+        run: yarn guardoni ${{ matrix.config.command }}
+
+  gh_release:
+    name: Release on GH
+    runs-on: ubuntu-latest
+    needs: [build, guardoni_build]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+
+      - uses: actions/cache@v2
+        with:
+          key: build-${{ github.run_id }}
+          restore-keys: |
+            build-guardoni-${{ github.run_id }}-windows-latest
+          path: |
+            packages/shared/build
+            packages/taboule/build
+            extension/dist
+            guardoni/build
+            guardoni/dist
+            YCAI/build
+            services/tktrex/extension/build
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'yarn'
+          cache-dependency-path: yarn.lock
+
+      - name: Install dependencies
+        run: yarn
+
+      - name: Get version
+        id: version
+        run: |
+          echo "::set-output name=version::$(npm pkg get version | sed 's/"//g')"
+
+      - name: Upload assets to release
+        id: create_release
+        uses: softprops/action-gh-release@v1
+        with:
+          name: v${{ steps.version.outputs.version }}
+          draft: true
+          prerelease: true
+          fail_on_unmatched_files: true
+          files: |
+            extension/dist/yttrex-*.zip
+            extension/dist/guardoni-yttrex-*.zip
+            guardoni/dist/guardoni-cli*
+            guardoni/dist/*.deb
+            guardoni/dist/*.dmg
+            guardoni/dist/Guardoni*.exe
+            services/tktrex/extension/build/extension/*.zip
+            YCAI/build/extension/*.zip
