@@ -1,6 +1,19 @@
-### [2.4.2](https://github.com/tracking-exposed/yttrex/compare/v2.4.1...v2.4.2) (2022-02-25)
+undefined
 
+### [2.4.1](https://github.com/tracking-exposed/yttrex/compare/v2.4.0...v2.4.1) (2022-03-01)
+
+- 2.4.1 CHANGELOG [skip ci] ([d43e9a9](https://github.com/tracking-exposed/yttrex/commit/d43e9a9981581d4da2c80f8a07b7b17d32623136))
+- 2.4.2 CHANGELOG [skip ci] ([90f6a2c](https://github.com/tracking-exposed/yttrex/commit/90f6a2c620c5ec6d155667cb58c6309e544d35ec))
+- **backend:** improved CSV format for experiment adv download [skip ci] ([944cd2d](https://github.com/tracking-exposed/yttrex/commit/944cd2d5af1c7c1c5678e94960e48d783b099720))
+- deps upgrade ([#421](https://github.com/tracking-exposed/yttrex/issues/421)) ([59bc589](https://github.com/tracking-exposed/yttrex/commit/59bc589d5b2a0ed148a38bd80424fbe90d78a174))
 - gh release branch filter removed ([f4fd5eb](https://github.com/tracking-exposed/yttrex/commit/f4fd5eb1ccb6556747aca65332e6184d0b09bea0))
+- **guardoni:** multiplatform release ([#394](https://github.com/tracking-exposed/yttrex/issues/394)) ([efe7edc](https://github.com/tracking-exposed/yttrex/commit/efe7edc7e41218df3d93fcdd7fb2ad71ef15d7d6))
+- include gh release in master relase flow [skip ci] ([#419](https://github.com/tracking-exposed/yttrex/issues/419)) ([f83dcda](https://github.com/tracking-exposed/yttrex/commit/f83dcdac66658cba45d22308b639699b59514705))
+- **tktrex:** created documentation project for packages with open api ([#278](https://github.com/tracking-exposed/yttrex/issues/278)) ([2d9d876](https://github.com/tracking-exposed/yttrex/commit/2d9d87640b5543ea6e5f521f7a617808a28a012e)), closes [#411](https://github.com/tracking-exposed/yttrex/issues/411)
+- **tktrex:** patch xhr at runtime to intercept requests ([#395](https://github.com/tracking-exposed/yttrex/issues/395)) ([c8dd043](https://github.com/tracking-exposed/yttrex/commit/c8dd0430a5e4b79c1ba62d5e5e676c910a274756))
+- **tktrex:** tktrex open docs api for swagger ([#406](https://github.com/tracking-exposed/yttrex/issues/406)) ([f0f0812](https://github.com/tracking-exposed/yttrex/commit/f0f0812655a3619ea5848f65559ac888ad952766))### [2.4.2](https://github.com/tracking-exposed/yttrex/compare/v2.4.1...v2.4.2) (2022-02-25)
+
+* gh release branch filter removed ([f4fd5eb](https://github.com/tracking-exposed/yttrex/commit/f4fd5eb1ccb6556747aca65332e6184d0b09bea0))
 
 ### [2.4.1](https://github.com/tracking-exposed/yttrex/compare/v2.4.0...v2.4.1) (2022-02-24)
 
