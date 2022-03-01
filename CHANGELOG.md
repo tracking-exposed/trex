@@ -1,5 +1,9 @@
 undefined
 
+### [2.4.2](https://github.com/tracking-exposed/yttrex/compare/v2.4.1...v2.4.2) (2022-03-01)
+
+- update packages version ([cbc08e3](https://github.com/tracking-exposed/yttrex/commit/cbc08e364fedef452ea77ccdfc4bcb2d05c17ca4))undefined
+
 ### [2.4.1](https://github.com/tracking-exposed/yttrex/compare/v2.4.0...v2.4.1) (2022-03-01)
 
 - 2.4.1 CHANGELOG [skip ci] ([d43e9a9](https://github.com/tracking-exposed/yttrex/commit/d43e9a9981581d4da2c80f8a07b7b17d32623136))
