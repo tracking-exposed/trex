@@ -6,6 +6,8 @@ on:
       - daily
       - beta
       - feat/**
+      - fix/**
+      - refactor/**
     paths:
       - "packages/**"
 
