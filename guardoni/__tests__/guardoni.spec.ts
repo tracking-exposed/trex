@@ -3,9 +3,13 @@ import { pipe } from 'fp-ts/lib/function';
 import * as TE from 'fp-ts/lib/TaskEither';
 import * as fs from 'fs';
 import * as path from 'path';
-import { guardoniLogger } from '../../logger';
-import { getDefaultProfile, GetGuardoni, getProfileDataDir } from '../guardoni';
-import { csvStringifyTE } from '../utils';
+import { guardoniLogger } from '../src/logger';
+import {
+  getDefaultProfile,
+  GetGuardoni,
+  getProfileDataDir,
+} from '../src/guardoni/guardoni';
+import { csvStringifyTE } from '../src/guardoni/utils';
 import { puppeteerMock } from '../__mocks__/puppeteer.mock';
 
 const directiveLinks = [
@@ -33,7 +37,7 @@ const directiveLinks = [
 const backend = process.env.BACKEND;
 
 describe('Guardoni', () => {
-  const basePath = path.resolve(__dirname, '../../../');
+  const basePath = path.resolve(__dirname, '../');
   const profile = 'profile-test-99';
   const extensionDir = path.resolve(basePath, 'build/extension');
   const csvTestFileName = 'trex-yt-videos.csv';

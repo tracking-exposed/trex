@@ -1,3 +1,5 @@
+/* eslint-disable */
+
 import nacl from 'tweetnacl';
 import bs58 from 'bs58';
 

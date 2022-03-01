@@ -230,7 +230,6 @@ export const Dashboard = withQueries(({ queries }): React.ReactElement => {
       ({ currentView, profile, auth, accountLinkCompleted }) => {
         const classes = useStyles();
 
-        console.log({ currentView, accountLinkCompleted });
         return (
           <Grid container className={classes.root} spacing={4}>
             <Grid item sm={12} md={3} lg={2}>

@@ -1,3 +1,5 @@
+/* eslint-disable */
+
 import nacl from 'tweetnacl';
 import bs58 from 'bs58';
 import _ from 'lodash';
@@ -127,7 +129,7 @@ function configUpdate(payload, sendResponse) {
   const userId = FIXED_USER_NAME;
   db.get(userId)
     .then((val) => {
-      let update = _.merge(val, payload);
+      const update = _.merge(val, payload);
       return db.set(userId, update);
     })
     .then((val) => {

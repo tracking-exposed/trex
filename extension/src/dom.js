@@ -1,3 +1,5 @@
+/* eslint-disable */
+
 // # Watch stuff change in the DOM
 //
 // This module takes care of triggering events when the DOM changes.

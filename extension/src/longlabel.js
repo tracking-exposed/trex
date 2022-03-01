@@ -1,3 +1,4 @@
+/* eslint-disable */
 const _ = require('lodash');
 const moment = require('moment');
 
@@ -35,8 +36,8 @@ function NoViewsReplacer(l, sosta) {
         should return 0 views */
     const x = [ 'No', 'Nessuna', 'Ingen', 'Keine', 'Nenhuma', 'Aucune' ];
     return _.reduce(x, function(memo, wordThatMeansNothing) {
-        let parseable = ` 0 ${sosta}`;
-        let r = new RegExp(`\\s${wordThatMeansNothing}\\s${sosta}\\.?$`);
+        const parseable = ` 0 ${sosta}`;
+        const r = new RegExp(`\\s${wordThatMeansNothing}\\s${sosta}\\.?$`);
         return _.replace(memo, r, parseable);
     }, l);
 }
@@ -188,8 +189,8 @@ function relativeTimeMap(word) {
 function getPublicationTime(timeinfo) {
 
     const timeago = _.reduce(timeRegExpList, function(memo, rge) {
-        let m = timeinfo.match(rge);
-        return memo ? memo: m; 
+        const m = timeinfo.match(rge);
+        return memo || m; 
         // this priority on existing 'memo' matter, because the 3rd regexp (longer)
         // might otherwise overwrite the first success and include dirty data.
     }, null);
@@ -199,7 +200,7 @@ function getPublicationTime(timeinfo) {
 
     const convertedNumber = _.parseInt(timeago[0]);
     const duration = _.reduce(timeago[0].split(' '), function(memo, word) {
-        let momentinfo = relativeTimeMap(word);
+        const momentinfo = relativeTimeMap(word);
         if(_.isNull(momentinfo))
             return memo;
 
@@ -262,7 +263,7 @@ function empty(label, sosta, isLive) {
     const fixedlabel = _.reduce(_.times(_.size(label) * 2), function(memo, number) {
         /* the +10 above is due to labels apparently returning smaller than source, it is
          * fully dependent from the number of unicode chars. .charAt($toolong) return '' */
-        let val = label.charCodeAt(number);
+        const val = label.charCodeAt(number);
         if(val == 8239 || val == 160) 
             memo += " ";
         else 
