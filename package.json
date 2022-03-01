@@ -13,6 +13,7 @@
     "extension",
     "packages/*",
     "backend",
+    "services/guardoni",
     "services/ycai/studio",
     "services/yttrex/*",
     "services/tktrex/docs",
@@ -20,8 +21,7 @@
     "services/tktrex/methodology",
     "services/tktrex/backend",
     "services/tktrex/shared",
-    "services/tktrex/automation",
-    "guardoni"
+    "services/tktrex/automation"
   ],
   "packageManager": "yarn@3.1.1",
   "scripts": {

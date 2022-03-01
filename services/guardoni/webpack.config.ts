@@ -1,7 +1,7 @@
 import * as t from 'io-ts';
 import * as path from 'path';
-import { getConfig } from '../packages/shared/src/webpack/config';
-import { CopyWebpackPlugin } from '../packages/shared/src/webpack/plugins';
+import { getConfig } from '../../packages/shared/src/webpack/config';
+import { CopyWebpackPlugin } from '../../packages/shared/src/webpack/plugins';
 import { AppEnv } from './src/AppEnv';
 import packageJson from './package.json';
 
@@ -22,7 +22,7 @@ config.plugins.push(
   new CopyWebpackPlugin({
     patterns: [
       {
-        from: path.resolve(__dirname, '../services/yttrex/extension/dist'),
+        from: path.resolve(__dirname, '../yttrex/extension/dist'),
         to: path.resolve(__dirname, 'build/extension'),
       },
       {
