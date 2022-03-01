@@ -1,0 +1,3 @@
+$ time for i in `seq 1 160`; do DEBUG=* bin/count-o-clock.js --hoursago $i; done
+
+the option --onlyday and --daysago can combo together.

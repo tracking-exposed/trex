@@ -24,7 +24,7 @@ const config = {
       'docusaurus-plugin-openapi',
       {
         id: 'tktrex',
-        path: '../services/tktrex/shared/build/openapi-tktrex.json',
+        path: '../platforms/tktrex/shared/build/openapi-tktrex.json',
         routeBasePath: 'tktrex/api',
       },
     ],
@@ -41,7 +41,7 @@ const config = {
       '@docusaurus/plugin-content-docs',
       {
         id: 'guardoni-docs',
-        path: path.resolve(__dirname, '../guardoni/docs'),
+        path: path.resolve(__dirname, '../platforms/guardoni/docs'),
         routeBasePath: 'guardoni',
         sidebarPath: require.resolve('./sidebars.js'),
       },

@@ -139,7 +139,13 @@ const getConfig = <E extends t.Props>(
   // eslint-disable-next-line
   webpackLogger.debug(`Process env %O`, stringifiedAppEnv);
 
-  const plugins: any[] = [];
+  const plugins: any[] = [
+    new webpack.ProgressPlugin({
+      entries: true,
+      dependencies: false,
+      percentBy: "entries",
+    })
+  ];
 
   if (opts.target === 'web' || opts.target === 'electron-renderer') {
     plugins.push(new webpack.DefinePlugin(stringifiedAppEnv as any));

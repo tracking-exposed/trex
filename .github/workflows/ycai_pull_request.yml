@@ -11,7 +11,7 @@ on:
       - refactor/**
     paths:
       - "packages/**"
-      - "services/ycai/**"
+      - "platforms/ycai/**"
 
 jobs:
   pull_request:

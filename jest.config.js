@@ -4,8 +4,8 @@ const jestBaseConfig = require('./jest.config.base');
 module.exports = {
   ...jestBaseConfig,
   projects: [
-    '<rootDir>/services/guardoni',
-    '<rootDir>/services/ycai/studio',
-    '<rootDir>/services/yttrex/backend',
+    '<rootDir>/platforms/guardoni',
+    '<rootDir>/platforms/ycai/studio',
+    '<rootDir>/platforms/yttrex/backend',
   ],
 };
