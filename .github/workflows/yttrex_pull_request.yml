@@ -1,14 +1,16 @@
-name: Backend - Pull Request
+name: YTTrEx - Pull Request
 
 on:
   pull_request:
     branches:
-      - beta
       - daily
+      - beta
       - feat/**
+      - fix/**
+      - refactor/**
     paths:
-      - "packages/shared/**"
-      - "backend/**"
+      - "shared/**"
+      - "services/yttrex/**"
 
 jobs:
   pull_request:
@@ -17,6 +19,7 @@ jobs:
       matrix:
         node-version: [16.x]
         mongodb-version: ['4.2']
+
     steps:
       - uses: actions/checkout@v2
 
@@ -27,14 +30,26 @@ jobs:
           cache: "yarn"
           cache-dependency-path: yarn.lock
 
-      - name: Install node_modules
+      - name: Install modules
+        working-directory: ./
         run: yarn
 
       - name: Lint code
-        run: yarn backend lint
+        run: yarn yt:ext lint
+
+      - name: Build
+        run: |
+          yarn shared build
+          yarn yt:ext build
+
+      - name: Pack
+        run: yarn yt:ext pack
+
+      - name: Lint code
+        run: yarn yt:backend lint
 
       - name: Build backend
-        run: yarn backend build
+        run: yarn yt:backend build
 
       - name: Start MongoDB
         uses: supercharge/mongodb-github-action@1.7.0
@@ -43,4 +58,5 @@ jobs:
           mongodb-version: ${{ matrix.mongodb-version }}
 
       - name: Test
-        run: yarn backend test --runInBand --forceExit --ci
+        run: yarn yt:backend test --runInBand --forceExit --ci
+

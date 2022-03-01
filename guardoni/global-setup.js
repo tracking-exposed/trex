@@ -6,7 +6,7 @@ module.exports = async function globalSetup() {
   const currentDir = basename(process.cwd());
   const currentDirCommand = currentDir === 'guardoni' ? '../' : './';
   await setupDevServer({
-    command: `cd ${currentDirCommand} && yarn backend watch`,
+    command: `cd ${currentDirCommand} && yarn yt:backend watch`,
     launchTimeout: 50000,
     port: 9000,
   });
