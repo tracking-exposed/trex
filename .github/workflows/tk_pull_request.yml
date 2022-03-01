@@ -10,7 +10,7 @@ on:
       - refactor/**
     paths:
       - "packages/**"
-      - "services/tktrex/**"
+      - "platforms/tktrex/**"
 
 jobs:
   pull_request:

@@ -10,7 +10,7 @@ on:
       - refactor/**
     paths:
       - "shared/**"
-      - "services/yttrex/**"
+      - "platforms/yttrex/**"
 
 jobs:
   pull_request:
