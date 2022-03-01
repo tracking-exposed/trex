@@ -1,5 +1,5 @@
 {
-  "extends": "../tsconfig.json",
+  "extends": "../../tsconfig.json",
   "compilerOptions": {
     "allowJs": true,
     "composite": true,
@@ -13,9 +13,9 @@
     "esModuleInterop": true,
     "skipLibCheck": true,
     "resolveJsonModule": true,
-    "typeRoots": ["../node_modules/@types", "node_modules/@types"],
+    "typeRoots": ["../../node_modules/@types", "node_modules/@types"],
     "paths": {
-      "@shared/*": ["../../packages/shared/src/*"]
+      "@shared/*": ["../../../packages/shared/src/*"]
     }
   },
   "include": ["./src", "__mocks__", "__tests__"],
@@ -32,7 +32,7 @@
   },
   "references": [
     {
-      "path": "../packages/shared"
+      "path": "../../packages/shared"
     }
   ]
 }
