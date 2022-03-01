@@ -61,7 +61,7 @@ export const createPage = async({
   const browser = await p.launch(options);
   const page = await browser.newPage();
 
-  return page;
+  return page as Page;
 };
 
 export const askBrowserConfirmation =

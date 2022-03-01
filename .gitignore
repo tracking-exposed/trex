@@ -6,16 +6,6 @@ node_modules
 build
 dist
 
-# experiments related folders, the first keep .jpeg(s), the second .csv(s)
-backend/thumbnails/*
-backend/experiments/*
-# this it is overriden by 'key' environment variable or --key option
-backend/config/secrets.json
-
-# this is necessary because lib/fetcher keeps a cache of public YT html
-backend/logs/*
-!backend/logs/.keep
-
 # not really maintain ATM
 qa/*.pyc
 

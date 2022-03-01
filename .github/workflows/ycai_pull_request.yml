@@ -7,6 +7,8 @@ on:
       - beta
       - master
       - feat/**
+      - fix/**
+      - refactor/**
     paths:
       - "packages/**"
       - "services/ycai/**"

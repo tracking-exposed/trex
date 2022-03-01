@@ -7,6 +7,8 @@ on:
       - daily
       - beta
       - feat/**
+      - fix/**
+      - refactor/**
     paths:
       - "packages/shared/**"
       - "extension/**"
@@ -47,10 +49,10 @@ jobs:
 
       - name: Build extension for guardoni
         run: |
-          yarn extension build
-          yarn extension dist:guardoni
+          yarn yt:ext build
+          yarn yt:ext dist:guardoni
           mkdir -p ~/.guardoni/extension
-          cp ./extension/dist/*.zip ~/.guardoni/extension
+          cp ./services/yttrex/extension/dist/*.zip ~/.guardoni/extension
 
       - name: Build
         run: yarn guardoni build

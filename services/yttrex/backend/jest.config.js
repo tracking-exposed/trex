@@ -1,4 +1,4 @@
-const jestBaseConfig = require('../jest.config.base');
+const jestBaseConfig = require('../../../jest.config.base');
 const tsConfig = require('./tsconfig.json');
 // jest.config.js
 const { pathsToModuleNameMapper } = require('ts-jest');
@@ -8,8 +8,8 @@ const paths = pathsToModuleNameMapper(tsConfig.compilerOptions.paths, {
 });
 
 const moduleNameMapper = {
-  ...paths,
   ...jestBaseConfig.moduleNameMapper,
+  ...paths,
 };
 
 /** @type {import('ts-jest/dist/types').InitialOptionsTsJest} */
