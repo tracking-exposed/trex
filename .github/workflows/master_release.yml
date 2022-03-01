@@ -5,6 +5,9 @@ on:
     branches:
       - master
 
+permissions:
+  contents: write
+
 jobs:
   release:
     name: Release
@@ -156,7 +159,7 @@ jobs:
   gh_release:
     name: Release on GH
     runs-on: ubuntu-latest
-    needs: [build, guardoni_build]
+    needs: [release, build, guardoni_build]
     steps:
       - name: Checkout
         uses: actions/checkout@v2
@@ -196,10 +199,11 @@ jobs:
         id: create_release
         uses: softprops/action-gh-release@v1
         with:
-          name: v${{ steps.version.outputs.version }}
-          draft: true
-          prerelease: true
+          name: Release v${{ steps.version.outputs.version }}
+          draft: false
+          prerelease: false
           fail_on_unmatched_files: true
+          tag_name: v${{ steps.version.outputs.version }}
           files: |
             extension/dist/yttrex-*.zip
             extension/dist/guardoni-yttrex-*.zip
