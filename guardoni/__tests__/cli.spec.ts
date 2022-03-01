@@ -13,17 +13,17 @@ import * as tests from '@shared/test';
 import axios from 'axios';
 import * as fs from 'fs';
 import * as path from 'path';
-import { GetGuardoniCLI } from '../cli';
-import { csvStringifyTE } from '../utils';
+import { GetGuardoniCLI } from '../src/guardoni/cli';
+import { csvStringifyTE } from '../src/guardoni/utils';
 import { puppeteerMock } from '../__mocks__/puppeteer.mock';
 import differenceInMilliseconds from 'date-fns/differenceInMilliseconds';
 
 const axiosMock = axios as jest.Mocked<typeof axios>;
 axiosMock.create.mockImplementation(() => axiosMock);
 
-const basePath = path.resolve(__dirname, '../../../');
+const basePath = path.resolve(__dirname, '../');
 const profileName = 'profile-test-1';
-const extensionDir = path.resolve(__dirname, '../../../build/extension');
+const extensionDir = path.resolve(__dirname, '../build/extension');
 
 describe('CLI', () => {
   const evidenceTag = 'test-tag';
