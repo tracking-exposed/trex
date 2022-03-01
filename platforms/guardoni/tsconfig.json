@@ -1,0 +1,38 @@
+{
+  "extends": "../../tsconfig.json",
+  "compilerOptions": {
+    "allowJs": true,
+    "composite": true,
+    "strict": true,
+    "noEmit": false,
+    "target": "ES3",
+    "lib": ["ESNext", "DOM"],
+    "jsx": "react",
+    "outDir": "./build/ts",
+    "baseUrl": "./src",
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "resolveJsonModule": true,
+    "typeRoots": ["../../node_modules/@types", "node_modules/@types"],
+    "paths": {
+      "@shared/*": ["../../../packages/shared/src/*"]
+    }
+  },
+  "include": ["./src", "__mocks__", "__tests__"],
+  "exclude": ["node_modules", "build", "dist"],
+  "watchOptions": {
+    "watchFile": "useFsEvents",
+    "watchDirectory": "useFsEvents",
+    "synchronousWatchDirectory": true
+  },
+  "ts-node": {
+    "compilerOptions": {
+      "module": "CommonJS"
+    }
+  },
+  "references": [
+    {
+      "path": "../../packages/shared"
+    }
+  ]
+}

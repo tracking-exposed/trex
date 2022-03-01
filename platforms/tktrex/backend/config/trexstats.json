@@ -1,0 +1,85 @@
+{
+    "mongoHost": "localhost",
+    "mongoPort": "27017",
+    "mongoDb": "tktrex",
+
+    "stats": [ {
+        "name": "supporters",
+        "column": "supporters",
+        "timevar": "creationTime",
+        "variables": [
+            {
+                "name": "newcomers",
+                "selector": {}
+            }
+        ]
+    },{
+        "name": "active",
+        "column": "supporters",
+        "timevar": "lastActivity",
+        "variables": [
+            {
+                "name": "active",
+                "selector": {}
+            }
+        ]
+    }, {
+        "name": "feeds",
+        "column": "metadata",
+        "timevar": "savingTime",
+        "variables": [
+            {
+                "name": "total",
+                "selector": { }
+            },
+            {
+                "name": "foryou",
+                "selector": { "type": "foryou" }
+            },
+            {
+                "name": "following",
+                "selector": { "type": "following" }
+            },
+            {
+                "name": "creator",
+                "selector": { "type": "creator" }
+            },
+            {
+                "name": "leftover",
+                "selector": { "type" : { "$nin": ["creator", "following", "foryou"] } }
+            }
+        ]
+    }, {
+        "name": "search",
+        "column": "metadata",
+        "timevar": "savingTime",
+        "variables": [
+            {
+                "name": "search",
+                "selector": { "type": "search" }
+            },
+            {
+                "name": "rejected",
+                "selector": { "message": { "$exists": true } }
+            }
+        ]
+    }, {
+        "name": "processing",
+        "column": "htmls",
+        "timevar": "savingTime",
+        "variables": [
+            {
+                "name": "successful",
+                "selector": { "processed": true }
+            },
+            {
+                "name": "failure",
+                "selector": { "processed": false }
+            },
+            {
+                "name": "total",
+                "selector": { }
+            }
+        ]
+    }]
+}
