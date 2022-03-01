@@ -4,6 +4,7 @@ scripts/*
 tests/*
 node_modules/*
 coverage/*
+logs/*
 
 jest.config.js
 jest.setup.js

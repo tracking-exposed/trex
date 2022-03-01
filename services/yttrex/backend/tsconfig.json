@@ -1,5 +1,5 @@
 {
-  "extends": "../tsconfig.json",
+  "extends": "../../../tsconfig.json",
   "compilerOptions": {
     "allowJs": true,
     "strict": false,
@@ -9,7 +9,7 @@
     "esModuleInterop": true,
     "skipLibCheck": true,
     "paths": {
-      "@shared/*": ["../packages/shared/src/*"]
+      "@shared/*": ["../../../packages/shared/src/*"]
     }
   },
   "include": [
@@ -29,7 +29,7 @@
   },
   "references": [
     {
-      "path": "../packages/shared"
+      "path": "../../../packages/shared"
     }
   ]
 }
