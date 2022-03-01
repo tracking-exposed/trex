@@ -48,7 +48,7 @@ jobs:
         uses: burnett01/rsync-deployments@5.1
         with:
           switches: -avzr --delete
-          path: ./services/ycai/studio/build/dashboard/
+          path: ./platforms/ycai/studio/build/dashboard/
           remote_path: ~/studio-website/
           remote_host: ${{ secrets.YCAI_DEPLOY_HOST }}
           remote_user: ${{ secrets.YCAI_DEPLOY_USER }}
@@ -81,7 +81,7 @@ jobs:
             guardoni/build
             guardoni/dist
             YCAI/build
-            services/tktrex/extension/build
+            platforms/tktrex/extension/build
 
       - name: Install dependencies
         run: yarn
@@ -137,9 +137,9 @@ jobs:
             packages/taboule/build
             guardoni/build
             guardoni/dist
-            services/tktrex/extension/build
-            services/ycai/studio/build
-            services/yttrex/extension/dist
+            platforms/tktrex/extension/build
+            platforms/ycai/studio/build
+            platforms/yttrex/extension/dist
 
       - name: Setup Node.js
         uses: actions/setup-node@v2
@@ -177,9 +177,9 @@ jobs:
             extension/dist
             guardoni/build
             guardoni/dist
-            services/tktrex/extension/build
-            services/ycai/studio/build
-            services/yttrex/extension/dist
+            platforms/tktrex/extension/build
+            platforms/ycai/studio/build
+            platforms/yttrex/extension/dist
 
       - name: Setup Node.js
         uses: actions/setup-node@v2
@@ -210,7 +210,7 @@ jobs:
             guardoni/dist/*.deb
             guardoni/dist/*.dmg
             guardoni/dist/Guardoni*.exe
-            services/tktrex/extension/build/extension/*.zip
-            services/ycai/studio/build/extension/*.zip
-            services/yttrex/extension/dist/yttrex-*.zip
-            services/yttrex/extension/dist/guardoni-yttrex-*.zip
+            platforms/tktrex/extension/build/extension/*.zip
+            platforms/ycai/studio/build/extension/*.zip
+            platforms/yttrex/extension/dist/yttrex-*.zip
+            platforms/yttrex/extension/dist/guardoni-yttrex-*.zip

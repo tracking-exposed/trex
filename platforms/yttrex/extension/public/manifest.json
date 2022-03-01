@@ -1,0 +1,46 @@
+{
+  "manifest_version": 2,
+
+  "name": "ytTREX",
+
+  "short_name": "ytTREX",
+  "description": "A tool for academic researchers. Part of the tracking.exposed project, is meant to analyze the algorithm of a popular video portal.",
+  "version": "1.8.8",
+  "author": "The team of Tracking Exposed",
+
+  "icons": {
+    "16": "yttrex16.png",
+    "48": "yttrex48.png",
+    "128": "yttrex128.png"
+  },
+
+  "browser_action": {
+    "default_icon": "yttrex16.png",
+    "default_popup": "popup.html"
+  },
+
+  "permissions": [
+    "storage",
+    "http://localhost:9000/",
+    "https://*.youtube.com/",
+    "https://youtube.tracking.exposed/"
+  ],
+
+  "background": {
+    "scripts": ["./background.js"],
+    "persistent": false
+  },
+
+  "content_scripts": [
+    {
+      "matches": ["https://*.youtube.com/*"],
+      "js": ["./app.js"]
+    }
+  ],
+
+  "web_accessible_resources": [
+    "*.png",
+    "experiment/name.json",
+    "experiment/*.csv"
+  ]
+}

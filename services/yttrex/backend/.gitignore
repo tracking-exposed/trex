@@ -1,9 +1,0 @@
-# experiments related folders, the first keep .jpeg(s), the second .csv(s)
-thumbnails/*
-experiments/*
-# this it is overriden by 'key' environment variable or --key option
-config/secrets.json
-
-# this is necessary because lib/fetcher keeps a cache of public YT html
-logs/*
-!logs/.keep

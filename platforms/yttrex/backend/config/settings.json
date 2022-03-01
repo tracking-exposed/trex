@@ -1,0 +1,26 @@
+{
+  "schema": {
+      "supporters": "supporters",
+      "htmls": "htmls",
+      "metadata": "metadata",
+      "stats": "trexstats",
+      "leaves": "leaves",
+      "errors": "errors",
+      "answers": "answers",
+      "recommendations": "recommendations",
+      "ytvids": "ytvids",
+      "experiments": "experiments",
+      "directives": "directives",
+      "emails": "emails",
+      "tokens": "tokens",
+      "creators": "creators",
+      "ads": "ads"
+  },
+  "mongoHost": "localhost",
+  "mongoPort": 27017,
+  "mongoDb": "yttrex",
+  "port": 9000,
+  "storage": "htmls",
+  "interface": "0.0.0.0",
+  "key": "invalid_default"
+}

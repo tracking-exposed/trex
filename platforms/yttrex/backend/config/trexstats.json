@@ -1,0 +1,177 @@
+{
+  "mongoHost": "localhost",
+  "mongoPort": "27017",
+  "mongoDb": "yttrex",
+
+  "stats": [
+    {
+      "name": "supporters",
+      "column": "supporters",
+      "timevar": "creationTime",
+      "variables": [
+        {
+          "name": "newcomers",
+          "selector": {}
+        }
+      ]
+    },
+    {
+      "name": "active",
+      "column": "supporters",
+      "timevar": "lastActivity",
+      "variables": [
+        {
+          "name": "active",
+          "selector": {}
+        }
+      ]
+    },
+    {
+      "name": "processing",
+      "column": "htmls",
+      "timevar": "savingTime",
+      "variables": [
+        {
+          "name": "successful",
+          "selector": { "processed": true }
+        },
+        {
+          "name": "failure",
+          "selector": { "processed": false }
+        },
+        {
+          "name": "unprocessed",
+          "selector": { "processed": { "$exists": false } }
+        },
+        {
+          "name": "total",
+          "selector": {}
+        }
+      ]
+    },
+    {
+      "name": "videos-related",
+      "column": "metadata",
+      "timevar": "savingTime",
+      "variables": [
+        {
+          "name": "total",
+          "selector": { "type": "video" }
+        },
+        {
+          "name": "related-20",
+          "selector": { "type": "video", "related": { "$size": 20 } }
+        },
+        {
+          "name": "more-than-20",
+          "selector": { "type": "video", "related.20": { "$exists": true } }
+        }
+      ]
+    },
+    {
+      "name": "videos-metadata",
+      "column": "metadata",
+      "timevar": "savingTime",
+      "variables": [
+        {
+          "name": "hasTitle",
+          "selector": { "type": "video", "title": { "$exists": true } }
+        },
+        {
+          "name": "hasAuthor",
+          "selector": { "type": "video", "authorName": { "$exists": true } }
+        },
+        {
+          "name": "viewWorks",
+          "selector": { "type": "video", "viewInfo.viewNumber": { "$gt": 0 } }
+        },
+        {
+          "name": "forKids",
+          "selector": { "type": "video", "forKids": true }
+        },
+        {
+          "name": "experiment",
+          "selector": { "type": "video", "experiment": { "$exists": true } }
+        }
+      ]
+    },
+    {
+      "name": "nature",
+      "column": "metadata",
+      "timevar": "savingTime",
+      "variables": [
+        {
+          "name": "total",
+          "selector": {}
+        },
+        {
+          "name": "homepages",
+          "selector": { "type": "home" }
+        },
+        {
+          "name": "videos",
+          "selector": { "type": "video" }
+        },
+        {
+          "name": "searches",
+          "selector": { "type": "search" }
+        }
+      ]
+    },
+    {
+      "name": "searches-metadata",
+      "column": "metadata",
+      "timevar": "savingTime",
+      "variables": [
+        {
+          "name": "searches",
+          "selector": { "type": "search" }
+        },
+        {
+          "name": "experiment",
+          "selector": { "experiment": { "$exists": true }, "type": "search" }
+        }
+      ]
+    },
+    {
+      "name": "leaves",
+      "column": "leaves",
+      "timevar": "savingTime",
+      "variables": [
+        { "name": "total", "selector": {} },
+        { "name": "channel", "selector": { "nature.type": "channel" } },
+        { "name": "search", "selector": { "nature.type": "search" } },
+        { "name": "video", "selector": { "nature.type": "video" } },
+        { "name": "home", "selector": { "nature.type": "home" } },
+        {
+          "name": "experiment",
+          "selector": { "experiment": { "$exists": true } }
+        }
+      ]
+    },
+    {
+      "name": "creators",
+      "column": "creators",
+      "timevar": "registeredOn",
+      "variables": [{ "name": "total", "selector": {} }]
+    },
+    {
+      "name": "ads",
+      "column": "ads",
+      "timevar": "savingTime",
+      "variables": [{ "name": "total", "selector": {} }]
+    },
+    {
+      "name": "recommendations",
+      "column": "recommendations",
+      "timevar": "when",
+      "variables": [{ "name": "total", "selector": {} }]
+    },
+    {
+      "name": "ytvids",
+      "column": "ytvids",
+      "timevar": "when",
+      "variables": [{ "name": "total", "selector": {} }]
+    }
+  ]
+}
