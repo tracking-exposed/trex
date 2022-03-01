@@ -1,0 +1,42 @@
+{
+  "extends": [
+    "standard-with-typescript",
+    "prettier"
+  ],
+  "parser": "@typescript-eslint/parser",
+  "parserOptions": {
+    "ecmaVersion": 9,
+    "ecmaFeatures": {
+      "jsx": true
+    },
+    "sourceType": "module",
+    "project": ["./tsconfig.json"]
+  },
+  "plugins": ["@typescript-eslint", "node"],
+  "env": {
+    "es6": true,
+    "node": true,
+    "jest": true
+  },
+  "globals": {
+    "_": true
+  },
+  "settings": {
+    "node": {
+      "version": "14"
+    }
+  },
+  "ignorePatterns": ["__tests__"],
+  "rules": {
+    "no-console": 1,
+    "no-use-before-define": "off",
+    "@typescript-eslint/no-use-before-define": ["error"],
+    "@typescript-eslint/return-await": ["off"],
+    "@typescript-eslint/promise-function-async": ["off"],
+    "@typescript-eslint/no-redeclare": ["off"],
+    "@typescript-eslint/restrict-plus-operands": ["off"],
+    "@typescript-eslint/restrict-template-expressions": ["off"],
+    "@typescript-eslint/strict-boolean-expressions": ["off"],
+    "react/jsx-key": "off"
+  }
+}

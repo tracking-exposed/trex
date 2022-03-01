@@ -1,0 +1,35 @@
+@font-face {
+  font-family: 'Trex';
+  src: url('./font/Trex-Regular.ttf');
+  font-weight: 400;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Trex';
+  src: url('./font/Trex-Medium.ttf');
+  font-weight: 600;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Trex';
+  src: url('./font/Trex-Bold.ttf');
+  font-weight: 800;
+  font-style: normal;
+}
+
+html#ycai-dashboard,
+html#ycai-dashboard body,
+#ycai-dashboard body #ycai {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  overflow: auto;
+}
+
+html#ycai-popup,
+html#ycai-popup body {
+  margin: 0;
+  padding: 0;
+}
