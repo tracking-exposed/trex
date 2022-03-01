@@ -8,8 +8,8 @@ const paths = pathsToModuleNameMapper(tsConfig.compilerOptions.paths, {
 });
 
 const moduleNameMapper = {
-  ...paths,
   ...jestBaseConfig.moduleNameMapper,
+  ...paths,
 };
 
 /** @type {import('ts-jest/dist/types').InitialOptionsTsJest} */
