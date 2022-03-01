@@ -14927,9 +14927,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"guardoni@workspace:guardoni":
+"guardoni@workspace:services/guardoni":
   version: 0.0.0-use.local
-  resolution: "guardoni@workspace:guardoni"
+  resolution: "guardoni@workspace:services/guardoni"
   dependencies:
     "@material-ui/core": ^4.12.3
     "@material-ui/icons": ^4.11.2
