@@ -1,4 +1,4 @@
-const jestBaseConfig = require('../jest.config.base');
+const jestBaseConfig = require('../../../jest.config.base');
 const tsConfig = require('./tsconfig.json');
 // jest.config.js
 const { pathsToModuleNameMapper } = require('ts-jest');

@@ -6,8 +6,8 @@ export DEBUG="@trex:*"
 
 yarn shared build
 yarn taboule build
-yarn extension dist
-yarn extension dist:guardoni
+yarn yt:ext dist
+yarn yt:ext dist:guardoni
 yarn guardoni build
 yarn guardoni pkg
 yarn tk:ext build

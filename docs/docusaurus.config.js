@@ -29,14 +29,14 @@ const config = {
       },
     ],
     // @tktrex open api
-    [
-      'docusaurus-plugin-openapi',
-      {
-        id: 'ycai-api',
-        path: '../YCAI/docs/openapi-validated.json',
-        routeBasePath: 'ycai/api',
-      },
-    ],
+    // [
+    //   'docusaurus-plugin-openapi',
+    //   {
+    //     id: 'ycai-api',
+    //     path: '../sercices/ycai/studio/docs/openapi-validated.json',
+    //     routeBasePath: 'ycai/api',
+    //   },
+    // ],
     [
       '@docusaurus/plugin-content-docs',
       {
@@ -46,15 +46,15 @@ const config = {
         sidebarPath: require.resolve('./sidebars.js'),
       },
     ],
-    [
-      '@docusaurus/plugin-content-docs',
-      {
-        id: 'ycai-docs',
-        path: path.resolve(__dirname, '../YCAI/docs'),
-        routeBasePath: 'ycai/docs',
-        sidebarPath: require.resolve('../YCAI/sidebars.js'),
-      },
-    ],
+    // [
+    //   '@docusaurus/plugin-content-docs',
+    //   {
+    //     id: 'ycai-docs',
+    //     path: path.resolve(__dirname, '../YCAI/docs'),
+    //     routeBasePath: 'ycai/docs',
+    //     sidebarPath: require.resolve('../YCAI/sidebars.js'),
+    //   },
+    // ],
   ],
   presets: [
     [
