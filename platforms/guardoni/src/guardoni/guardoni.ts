@@ -38,7 +38,6 @@ import _ from 'lodash';
 import path from 'path';
 // import pluginStealth from "puppeteer-extra-plugin-stealth";
 import type puppeteer from 'puppeteer-core';
-import packageJson from '../../package.json';
 import domainSpecific from './domainSpecific';
 import {
   GuardoniConfig,
@@ -49,6 +48,7 @@ import {
 } from './types';
 import { csvParseTE, getChromePath, liftFromIOE } from './utils';
 import * as os from 'os';
+import { getPackageVersion } from '../utils';
 
 // const COMMANDJSONEXAMPLE =
 //   'https://youtube.tracking.exposed/json/automation-example.json';
@@ -919,7 +919,11 @@ const loadContext = (
 
       return {
         puppeteer: p,
-        API: GetAPI({ baseURL: config.backend }).API,
+        API: GetAPI({
+          baseURL: config.backend,
+          getAuth: async (req) => req,
+          onUnauthorized: async (res) => res,
+        }).API,
         config: {
           ...config,
           profileName: profile.profileName,
@@ -927,7 +931,7 @@ const loadContext = (
         profile,
         logger,
         guardoniConfigFile: path.join(profile.udd, 'guardoni.json'),
-        version: packageJson.version,
+        version: getPackageVersion(),
       };
     }),
     TE.chainFirst(downloadExtension),
