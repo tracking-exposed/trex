@@ -1,5 +1,9 @@
 undefined
 
+### [2.4.3](https://github.com/tracking-exposed/yttrex/compare/v2.4.2...v2.4.3) (2022-03-02)
+
+- **ycai:** removed 'path' module usage from module used in web ([#432](https://github.com/tracking-exposed/yttrex/issues/432)) ([d3774f2](https://github.com/tracking-exposed/yttrex/commit/d3774f21745e3169363a80339ed488e90d0a9e29))undefined
+
 ### [2.4.2](https://github.com/tracking-exposed/yttrex/compare/v2.4.1...v2.4.2) (2022-03-01)
 
 - update packages version ([cbc08e3](https://github.com/tracking-exposed/yttrex/commit/cbc08e364fedef452ea77ccdfc4bcb2d05c17ca4))undefined
