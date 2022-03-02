@@ -1,5 +1,4 @@
 import * as t from 'io-ts';
-import * as path from 'path';
 import { Endpoint } from 'ts-endpoint';
 import {
   ADVContributionEvent,
@@ -42,7 +41,7 @@ const VideoAuthor = Endpoint({
 
 const Searches = DocumentedEndpoint({
   title: 'Search by type',
-  description: { path: path.resolve(__dirname, 'tik-tok-searches.md') },
+  description: 'Search description',
   tags: ['searches'],
   Method: 'GET',
   getPath: ({ queryString }) => `/v2/searches/${queryString}`,
