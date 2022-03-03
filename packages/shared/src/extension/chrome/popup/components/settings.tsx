@@ -1,6 +1,4 @@
-import React, {
-  useState,
-} from 'react';
+import React, { useState } from 'react';
 
 import {
   Switch,
@@ -22,13 +20,13 @@ interface SettingsState extends Partial<UserSettings> {
   active: boolean;
 }
 
-export const Settings: React.FC<SettingsState> = ({
-  ux, active,
-}) => {
+export const Settings: React.FC<SettingsState> = ({ ux, active }) => {
   const [uxOn, setUX] = useState(ux);
   const [activeOn, setActive] = useState(active);
 
-  const toggleActivation = (event: React.ChangeEvent<HTMLInputElement>): any => {
+  const toggleActivation = (
+    event: React.ChangeEvent<HTMLInputElement>
+  ): any => {
     setActive(event.target.checked);
     configUpdate({ active: event.target.checked }, () => null);
   };
@@ -68,7 +66,8 @@ export const Settings: React.FC<SettingsState> = ({
           />
         </ListItemSecondaryAction>
       </ListItem>
-    </List>);
+    </List>
+  );
 };
 
 export default Settings;

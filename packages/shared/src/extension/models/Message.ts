@@ -7,7 +7,7 @@ interface MessageBase {
 export interface LocalLookup extends MessageBase {
   type: 'LocalLookup';
   payload: {
-    userId: string
+    userId: string;
   };
 }
 
@@ -29,4 +29,7 @@ export interface ReloadExtension extends MessageBase {
 }
 
 export type Message =
-  LocalLookup | ServerLookup | ConfigUpdate | ReloadExtension;
+  | LocalLookup
+  | ServerLookup
+  | ConfigUpdate
+  | ReloadExtension;

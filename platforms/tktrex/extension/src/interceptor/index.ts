@@ -1,5 +1,5 @@
 import { Json } from 'fp-ts/lib/Json';
-import log from '../logger';
+import log from '@shared/extension/logger';
 import { INTERCEPTED_ITEM_CLASS, INTERCEPTOR_CONTAINER_ID } from './constants';
 import { APIHandler, listHandler, recommendedListHandler } from './handlers';
 
