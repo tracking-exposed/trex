@@ -15,8 +15,8 @@ import pie from 'puppeteer-in-electron';
 import { AppEnv } from '../AppEnv';
 import { GetEvents } from './events/renderer.events';
 import { createGuardoniWindow } from './windows/GuardoniWindow';
-import packageJson from '../../package.json';
 import { DEFAULT_BASE_PATH } from './config';
+import { getPackageVersion } from '../utils';
 
 app.setPath('userData', path.resolve(os.homedir(), `.guardoni/electron/data`));
 app.setAppLogsPath(path.resolve(os.homedir(), `.guardoni/electron/logs`));
@@ -71,7 +71,7 @@ export const run = async (): Promise<void> => {
   log.info('Guardoni start', process.cwd());
 
   return pipe(
-    AppEnv.decode({ VERSION: packageJson.version, ...process.env }),
+    AppEnv.decode({ VERSION: getPackageVersion(), ...process.env }),
     E.mapLeft((e) => {
       return new AppError('EnvError', 'process.env is malformed', failure(e));
     }),
