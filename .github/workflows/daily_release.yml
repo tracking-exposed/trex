@@ -52,7 +52,7 @@ jobs:
         uses: burnett01/rsync-deployments@5.1
         with:
           switches: -avzr --delete
-          path: ./YCAI/build/dashboard/
+          path: ./platforms/ycai/studio/build/dashboard/
           remote_path: ~/staging-studio/
           remote_host: ${{ secrets.YCAI_DAILY_DEPLOY_HOST }}
           remote_user: ${{ secrets.YCAI_DEPLOY_USER }}
