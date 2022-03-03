@@ -112,13 +112,6 @@ const DashboardContent: React.FC<DashboardContentProps> = ({
           }
 
           switch (currentView.view) {
-            case 'gemCollection':
-              return [
-                t('routes:gem_collection_title'),
-                t('routes:gem_collection_subtitle'),
-                // eslint-disable-next-line react/jsx-key
-                <GemCollection />,
-              ];
             case 'labEdit':
               return [
                 t('routes:lab_edit_title'),
@@ -133,12 +126,20 @@ const DashboardContent: React.FC<DashboardContentProps> = ({
                 // eslint-disable-next-line react/jsx-key
                 <Lab />,
               ];
-            default:
+            case 'analytics':
               return [
                 t('routes:analytics'),
                 t('analytics:subtitle'),
                 // eslint-disable-next-line react/jsx-key
                 <AnalyticsPage />,
+              ];
+            case 'gemCollection':
+            default:
+              return [
+                t('routes:gem_collection_title'),
+                t('routes:gem_collection_subtitle'),
+                // eslint-disable-next-line react/jsx-key
+                <GemCollection />,
               ];
           }
         }
