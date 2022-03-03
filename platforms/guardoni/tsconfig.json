@@ -5,17 +5,25 @@
     "composite": true,
     "strict": true,
     "noEmit": false,
-    "target": "ES3",
+    "target": "EsNext",
+    "module": "es2020",
     "lib": ["ESNext", "DOM"],
     "jsx": "react",
     "outDir": "./build/ts",
     "baseUrl": "./src",
+    "moduleResolution": "node",
     "esModuleInterop": true,
     "skipLibCheck": true,
     "resolveJsonModule": true,
+    "sourceMap": true,
     "typeRoots": ["../../node_modules/@types", "node_modules/@types"],
     "paths": {
-      "@shared/*": ["../../../packages/shared/src/*"]
+      "@shared/*": ["../../../packages/shared/src/*"],
+      "@experiment/*": ["./guardoni/tx-automate/experiment/*"],
+      "@project/*": ["./guardoni/tx-automate/project/*"],
+      "@platform/*": ["./guardoni/tx-automate/platform/*"],
+      "@storage/*": ["./guardoni/tx-automate/storage/*"],
+      "@util/*": ["./guardoni/tx-automate/util/*"]
     }
   },
   "include": ["./src", "__mocks__", "__tests__"],
@@ -26,6 +34,7 @@
     "synchronousWatchDirectory": true
   },
   "ts-node": {
+    "require": ["tsconfig-paths/register"],
     "compilerOptions": {
       "module": "CommonJS"
     }

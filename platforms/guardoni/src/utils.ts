@@ -1,5 +1,7 @@
 import * as fs from 'fs';
 import _ from 'lodash';
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const packageJson = require('../package.json');
 
 export function getChromePath(): string {
   // this function check for standard chrome executable path and
@@ -26,3 +28,7 @@ export function getChromePath(): string {
   }
   return chromePath;
 }
+
+export const getPackageVersion = (): string => {
+  return packageJson.version;
+};
