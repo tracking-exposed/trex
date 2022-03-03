@@ -173,6 +173,7 @@ declare module 'react-i18next' {
         gem_collection_title: string;
         gem_collection_title_short: string;
         gem_collection_subtitle: string;
+        gem_collection_helper_text: string;
         lab_edit_title: string;
         lab_edit_subtitle: string;
         analytics: string;

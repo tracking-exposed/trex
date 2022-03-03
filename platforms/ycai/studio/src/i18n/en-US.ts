@@ -73,6 +73,7 @@ const resources: CustomTypeOptions['resources'] = {
     gem_collection_subtitle:
       'Shuffle your gems collection on all your Youtube Channel videos',
     gem_collection_title: 'Collection',
+    gem_collection_helper_text: 'This is the text appearing in the popover',
     analytics: 'Analytics',
     settings: 'Settings',
     link_account:
