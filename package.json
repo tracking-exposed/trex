@@ -20,8 +20,7 @@
     "platforms/tktrex/extension",
     "platforms/tktrex/methodology",
     "platforms/tktrex/backend",
-    "platforms/tktrex/shared",
-    "platforms/tktrex/automation"
+    "platforms/tktrex/shared"
   ],
   "packageManager": "yarn@3.1.1",
   "scripts": {

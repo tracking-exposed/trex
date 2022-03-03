@@ -7,7 +7,15 @@ import { NonEmptyString } from 'io-ts-types/lib/NonEmptyString';
 import { guardoniLogger } from '../logger';
 import { GetGuardoni } from './guardoni';
 import { GuardoniConfig, GuardoniOutput, GuardoniSuccessOutput } from './types';
-import type puppeteer from 'puppeteer-core';
+import puppeteer from 'puppeteer-core';
+import { run } from './tx-automate/project/run';
+import { init } from './tx-automate/project/init';
+import { dumpMetaData } from './tx-automate/project/dump';
+import yargs from 'yargs';
+import { hideBin } from 'yargs/helpers';
+import { experimentTypes } from './tx-automate/experiment/descriptors';
+
+export const tkAutomate = { run, init, dumpMetaData };
 
 export const cliLogger = guardoniLogger.extend('cli');
 
@@ -146,3 +154,155 @@ export const GetGuardoniCLI: GetGuardoniCLI = (config, p): GuardoniCLI => {
     runOrThrow,
   };
 };
+
+const runGuardoni = ({
+  _,
+  $0,
+  v,
+  verbose,
+  c,
+  config,
+  command,
+  ...guardoniConf
+}: any): Promise<void> => {
+  if (verbose) {
+    if (config) {
+      console.log(`Configuration loaded from ${config}`, guardoniConf);
+    }
+  }
+
+  return GetGuardoniCLI({ ...guardoniConf, verbose }, puppeteer)
+    .runOrThrow(command)
+    .then(() => process.exit(0));
+};
+
+const program = yargs(hideBin(process.argv))
+  .scriptName('guardoni-cli')
+  .command(
+    'yt-experiment <experiment>',
+    'Run guardoni from a given experiment',
+    (yargs) =>
+      yargs.positional('experiment', {
+        desc: 'Experiment id',
+        demandOption: 'Provide the experiment id',
+        type: 'string',
+      }),
+    ({ experiment, ...argv }) =>
+      runGuardoni({ ...argv, command: { run: 'experiment', experiment } })
+  )
+  .command(
+    'yt-register <file>',
+    'Register an experiment from a CSV',
+    (yargs) => {
+      return yargs.positional('file', {
+        desc: 'CSV file to register an experiment',
+        type: 'string',
+        demandOption: 'Provide a valid path to a csv file',
+      });
+    },
+    ({ file, ...argv }) =>
+      runGuardoni({ ...argv, command: { run: 'register-csv', file } })
+  )
+  .command(
+    'yt-list',
+    'List available experiments',
+    (yargs) => {
+      return yargs;
+    },
+    (argv) => runGuardoni({ ...argv, command: { run: 'list' } })
+  )
+  .command(
+    'yt-auto <index>',
+    'YT automatic mode',
+    (yargs) =>
+      yargs.positional('index', {
+        type: 'string',
+        choices: ['1', '2'],
+        demandOption: 'Run comparison or shadow ban experiment run',
+      }),
+    ({ index, ...argv }) =>
+      runGuardoni({ ...argv, command: { run: 'auto', index } })
+  )
+  .command(
+    'tk-init [projectDirectory]',
+    'TK: Initialize an experiment directory',
+    (y) =>
+      y
+        .positional('projectDirectory', {
+          default: '.',
+          desc: 'Directory to initialize, current directory if empty',
+          type: 'string',
+        })
+        .option('experiment-type', {
+          alias: 't',
+          demandOption: true,
+          desc: 'Type of experiment to initialize (e.g. "search-on-tiktok")',
+          type: 'string',
+          default: experimentTypes[0],
+          choices: experimentTypes,
+        }),
+    (args) => init(args)
+  )
+  .command(
+    'tk-run [projectDirectory]',
+    'Run an experiment from a directory previously initialized',
+    (y) =>
+      y.positional('projectDirectory', {
+        default: '.',
+        desc: 'Directory containing the initialized experiment to run, current directory if empty',
+        type: 'string',
+      }),
+    (args) => run(args)
+  )
+  .command(
+    'tk-dump [projectDirectory]',
+    'TK: Dump meta data from an experiment directory',
+    (y) =>
+      y.positional('projectDirectory', {
+        default: '.',
+        desc: 'Directory containing the experiment from which to dump the meta data',
+        type: 'string',
+      }),
+    (args) => dumpMetaData(args)
+  )
+  .option('c', {
+    type: 'string',
+    alias: 'config',
+    desc: 'Guardoni configuration',
+    default: 'guardoni.config.json',
+    config: true,
+  })
+  .config()
+  .option('headless', {
+    type: 'boolean',
+    desc: 'Run guardoni in headless mode.',
+    default: false,
+  })
+  .option('evidenceTag', {
+    type: 'string',
+    desc: 'The evidence related tag.',
+  })
+  .option('profile', {
+    type: 'string',
+    desc: 'The current user profile',
+  })
+  .option('backend', {
+    type: 'string',
+    desc: 'The API endpoint for server requests',
+  })
+  .option('proxy', {
+    type: 'string',
+    desc: 'Socket proxy for puppeteer.',
+  })
+  .options('adv-screenshot-dir', {
+    type: 'string',
+    desc: 'ADV screenshot directory path',
+  })
+  .option('verbose', {
+    alias: 'v',
+    type: 'boolean',
+    desc: 'Produce tons of logs',
+    default: false,
+  });
+
+export const cli = program.strictCommands().demandCommand(1);
