@@ -32,11 +32,15 @@ export function flattenSearch(memo, metasearch) {
           return link.link.type === 'tag';
         }),
         'link.hashtag'
-      ).join(','),
+      ).join(', '),
       // @ts-ignore
       metadataId: metasearch.id,
       // @ts-ignore
-      savingTime: metasearch.savingTime,
+      savingTime: moment(metasearch.savingTime).format(),
+      // @ts-ignore
+      timeago: moment
+        .duration(moment(metasearch.savingTime) - moment())
+        .humanize(true),
       // @ts-ignore
       publicKey: metasearch.publicKey,
       // @ts-ignore
@@ -109,7 +113,7 @@ export async function getSearchByQuery(req) {
     };
   } else {
     return {
-      json: ready
+      json: ready,
     };
   }
 }

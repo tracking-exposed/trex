@@ -15,7 +15,7 @@ function pickFeedFields(metae) {
     order: metae.order,
     refreshId: metae.timelineId,
     description: metae.description,
-    tags: metae.hashtags?.join(',') || '',
+    tags: metae.hashtags?.join(', ') || '',
     ...metae.metrics,
     musicURL: metae?.music?.url || null,
     musicTitle: metae?.music?.name || null,
