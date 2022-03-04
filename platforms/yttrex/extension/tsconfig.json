@@ -27,12 +27,12 @@
     "moduleResolution": "Node",
     "isolatedModules": true,
     "paths": {
-      "@shared/*": ["../../packages/shared/src/*"]
+      "@shared/*": ["../../../../packages/shared/src/*"]
     }
   },
   "references": [
     {
-      "path": "../packages/shared"
+      "path": "../../../packages/shared"
     }
   ],
   "include": ["./src", "./typings", "./webpack.config.ts"],
