@@ -2,9 +2,11 @@ import _ from 'lodash';
 import moment from 'moment';
 import nconf from 'nconf';
 
+import utils from '../lib/utils';
 import automo from '../lib/automo';
 import CSV from '../lib/CSV';
 import mongo from '../lib/mongo3';
+import { SEARCH_FIELDS } from './public';
 
 import D from 'debug';
 const debug = D('routes:search');
@@ -65,21 +67,32 @@ export async function getSearchByQuery(req) {
   const found = await automo.getMetadataByFilter({ query }, { amount, skip });
   const unrolledData = _.reduce(found, flattenSearch, []);
 
+  /* XXX TMP FIXME (not if we pick the pseudo via mongodb) 
+     sanitization & enhancement:
+    1) we add here the pseudonym
+    2) if a string appears in a metric, it is 0 -- this is a parser bug */
+  const ready = _.map(unrolledData, function (e) {
+    e.pseudo = utils.string2Food(e.publicKey);
+    _.unset(e, 'publicKey');
+    if (_.isString(e.sharen)) e.sharen = 0;
+    return e;
+  });
+
   debug(
     'found for query %s: %d entries from %d metadata. returning %s',
     query,
-    unrolledData.length,
+    ready.length,
     found.length,
     format
   );
 
   if (format === 'csv') {
-    const csv = CSV.produceCSVv1(unrolledData);
+    const csv = CSV.produceCSVv1(ready);
     const filename =
       'query-' +
       query +
       '-' +
-      unrolledData.length +
+      ready.length +
       '--' +
       moment().format('YY-MM-DD') +
       '.csv';
@@ -96,7 +109,7 @@ export async function getSearchByQuery(req) {
     };
   } else {
     return {
-      json: unrolledData,
+      json: ready
     };
   }
 }

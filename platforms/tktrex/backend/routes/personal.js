@@ -133,9 +133,10 @@ async function getPersonalCSV(req) {
     return { text: 'Data not found: are you sure any search worked?' };
   }
 
-  /* Temporary sanitization + enhancement:
-     1) we add here the pseudonym
-     2) if a string appears in a metric, it is 0 */
+  /* XXX TMP FIXME (not if we pick the pseudo via mongodb) 
+     sanitization & enhancement:
+    1) we add here the pseudonym
+    2) if a string appears in a metric, it is 0 -- this is a parser bug */
   const pseudo = utils.string2Food(unrolledData[0].publicKey);
   const ready = _.map(unrolledData, function (e) {
     e.pseudo = pseudo;
