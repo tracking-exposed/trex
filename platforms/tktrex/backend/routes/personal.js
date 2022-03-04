@@ -11,16 +11,17 @@ function pickFeedFields(metae) {
   return {
     authorName: metae.author?.name,
     authorUser: metae.author?.username,
-    id: metae.id,
+    savingTime: metae.savingTime,
+    order: metae.order,
+    timeline: metae.timeline,
     description: metae.description,
     tags: metae.hashtags?.join(',') || '',
     ...metae.metrics,
     musicURL: metae?.music?.url || null,
     musicTitle: metae?.music?.name || null,
-    pseudo: utils.string2Food(metae.publicKey),
-    publicKey: metae.publicKey,
-    savingTime: metae.savingTime,
     hasStitch: !!_.get(metae, 'stitch', false),
+    publicKey: metae.publicKey,
+    id: metae.id,
   };
 }
 
@@ -54,7 +55,7 @@ async function getPersonal(req) {
 
   try {
     let filter;
-      let retval = null;
+    let retval = null;
 
     if (what === 'summary') {
       filter = { type: { $in: ['following', 'foryou'] } };
@@ -127,19 +128,32 @@ async function getPersonalCSV(req) {
   if (type === 'search') unrolledData = _.reduce(data, flattenSearch, []);
   else unrolledData = _.map(data, pickFeedFields);
 
-  // console.table(unrolledData);
-  const csv = CSV.produceCSVv1(unrolledData);
+  if (!unrolledData.length) {
+    debug('getPersonalCSV return empty data');
+    return { text: 'Data not found: are you sure any search worked?' };
+  }
+
+  /* Temporary sanitization + enhancement:
+     1) we add here the pseudonym
+     2) if a string appears in a metric, it is 0 */
+  const pseudo = utils.string2Food(unrolledData[0].publicKey);
+  const ready = _.map(unrolledData, function (e) {
+    e.pseudo = pseudo;
+    if (_.isString(e.sharen)) e.sharen = 0;
+    return e;
+  });
+
+  // console.table(ready);
+  const csv = CSV.produceCSVv1(ready);
 
   debug(
     'getPersonalCSV produced %d entries from %d metadata (type %s), %d bytes (max %d)',
-    unrolledData.length,
+    ready.length,
     data.length,
     csv.length,
     type,
     CSV_MAX_SIZE
   );
-  if (!unrolledData.length)
-    return { text: 'Data not found: are you sure any search worked?' };
 
   const filename =
     'tk-' +
@@ -147,7 +161,7 @@ async function getPersonalCSV(req) {
     '-' +
     moment().format('YY-MM-DD') +
     '--' +
-    unrolledData.length +
+    ready.length +
     '.csv';
 
   return {
