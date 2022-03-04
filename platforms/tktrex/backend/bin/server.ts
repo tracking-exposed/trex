@@ -136,17 +136,6 @@ app.get(
   async (req, res) => await iowrapper('getRecent', req, res)
 );
 
-/* note this is kept v1 because initially personal page was pulling here; but TODO should be v2 */
-app.get(
-  '/api/v1/personal/:publicKey/:what/json',
-  async (req, res) => await iowrapper('getPersonal', req, res)
-);
-/* download your CSV (only search is supported at the moment) */
-app.get(
-  '/api/v2/personal/:publicKey/:what/csv',
-  async (req, res) => await iowrapper('getPersonalCSV', req, res)
-);
-
 app.get(
   '/api/v2/statistics/:name/:unit/:amount',
   async (req, res) => await iowrapper('getStatistics', req, res)
