@@ -10,7 +10,15 @@ const useStyles = makeStyles((theme: Theme) =>
       pointerEvents: 'none',
     },
     paper: {
-      padding: theme.spacing(1),
+      padding: theme.spacing(2),
+      border: 'solid',
+      borderWidth: '0px',
+      borderColor: theme.palette.secondary.main,
+      boxShadow: 'none',
+    },
+    icon: {
+      marginRight: theme.spacing(1),
+      marginBottom: theme.spacing(2),
     },
   })
 );
@@ -45,7 +53,7 @@ export default function HelperPopover({
         onMouseEnter={handlePopoverOpen}
         onMouseLeave={handlePopoverClose}
       >
-        <HelperIcon color="primary" />
+        <HelperIcon className={classes.icon} color="primary" />
       </Typography>
       <Popover
         id="mouse-over-popover"
@@ -60,7 +68,7 @@ export default function HelperPopover({
           horizontal: 'right',
         }}
         transformOrigin={{
-          vertical: 'bottom',
+          vertical: 'top',
           horizontal: 'left',
         }}
         onClose={handlePopoverClose}

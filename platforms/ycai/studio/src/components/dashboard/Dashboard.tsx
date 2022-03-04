@@ -138,7 +138,7 @@ const DashboardContent: React.FC<DashboardContentProps> = ({
             return [
               t('routes:lab_title'),
               t('routes:lab_subtitle'),
-              null,
+              t('routes:lab_helper'),
               // eslint-disable-next-line react/jsx-key
               <Lab />,
             ];
@@ -146,7 +146,7 @@ const DashboardContent: React.FC<DashboardContentProps> = ({
             return [
               t('routes:analytics'),
               t('analytics:subtitle'),
-              null,
+              t('analytics:helpertext'),
               // eslint-disable-next-line react/jsx-key
               <AnalyticsPage />,
             ];
@@ -221,6 +221,7 @@ const DashboardContent: React.FC<DashboardContentProps> = ({
             gutterBottom={true}
             style={{
               marginRight: theme.spacing(1),
+              marginBottom: theme.spacing(2),
             }}
           >
             {currentViewSubtitle}

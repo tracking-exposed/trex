@@ -19,7 +19,7 @@ const resources: CustomTypeOptions['resources'] = {
     link_channel: 'Link channel',
     unlink_channel: 'Unlink Channel',
     unlink_channel_confirm_text:
-      'Are you sure you want to unlink your channel from the YouChoose extension?\nYour recommendations will remain visible on the YouChoose platform.',
+      'Are you sure you want to unlink your channel from YouChoose extension?\nYour recommendations will still be visible on YouChoose platform.',
     unlink_channel_confirm_no: 'No, stay signed-in',
     unlink_channel_confirm_yes: 'Yes, unlink my channel',
     delete: 'Delete',
@@ -63,21 +63,24 @@ const resources: CustomTypeOptions['resources'] = {
   },
   routes: {
     congrats: 'Congrats! \n Channel linked successfully :)',
-    lab_title: 'Customisation',
+    lab_title: 'LAB - Customisation',
     lab_title_short: 'LAB',
     lab_subtitle: 'Select specific gems for each of your videos',
     lab_edit_subtitle:
       'Paste a link in the grey box below to add it to the recommendations of this video.\nYou can add recommendations towards any website!',
     lab_edit_title: 'Customisation',
-    gem_collection_title_short: 'Collection',
+    gem_collection_title_short: 'Internet Gem Collection',
     gem_collection_subtitle:
-      'Shuffle your gems collection on all your Youtube Channel videos',
-    gem_collection_title: 'Collection',
-    gem_collection_helper_text: 'This is the text appearing in the popover',
+      'Shuffle your gem collection on all your Youtube Channel videos',
+    gem_collection_title: 'LAB - Internet Gem Collection',
+    gem_collection_helper_text:
+      'Copy paste a link you want \nto recommend on your channel.\n\nThis link will be part \nof your gem collection.\n\nIt will appear randomly \nnext to all your videos.',
     analytics: 'Analytics',
     settings: 'Settings',
     link_account:
       'Authenticate your Channel \n to start recommending on your videos',
+    lab_helper:
+      'Here are all your channel videos.\n\nClick on one video to customize it \nand assign it some hidden gems \nto inspire your viewers. \n\nEach video will have its own \nprecious gems recommended. ',
   },
   account: {
     channel: 'Your channel URL or ID',
@@ -154,6 +157,8 @@ const resources: CustomTypeOptions['resources'] = {
     advertising_connected_to_your_videos_title: 'Advertising',
     advertising_connected_to_your_videos_subtitle: 'Ads ran on your videos',
     advertising_empty_data: 'No advertising data collected yet on your channel',
+    helpertext:
+      'The Analytics page gives you insights \nabout how YouTube algorithm \ntreats your content. \n\nThese statistics are not available \non the YouTube studio. \n\nThey are computed thanks to data donations\n from the YouChoose user community.',
   },
   videos: {
     no_results: 'No videos found.',
