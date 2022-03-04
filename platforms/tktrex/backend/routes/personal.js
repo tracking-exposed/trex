@@ -13,7 +13,7 @@ function pickFeedFields(metae) {
     authorUser: metae.author?.username,
     savingTime: metae.savingTime,
     order: metae.order,
-    timeline: metae.timeline,
+    refreshId: metae.timelineId,
     description: metae.description,
     tags: metae.hashtags?.join(',') || '',
     ...metae.metrics,
@@ -150,8 +150,8 @@ async function getPersonalCSV(req) {
     'getPersonalCSV produced %d entries from %d metadata (type %s), %d bytes (max %d)',
     ready.length,
     data.length,
-    csv.length,
     type,
+    csv.length,
     CSV_MAX_SIZE
   );
 
