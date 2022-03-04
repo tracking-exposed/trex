@@ -1,5 +1,12 @@
 import React from 'react';
-import { Grid, Link, Typography, useTheme, Divider } from '@material-ui/core';
+import {
+  Grid,
+  Link,
+  Typography,
+  useTheme,
+  Divider,
+  Box,
+} from '@material-ui/core';
 import { ArrowBack as ArrowBackIcon } from '@material-ui/icons';
 import { makeStyles } from '@material-ui/core/styles';
 import * as QR from 'avenger/lib/QueryResult';
@@ -28,6 +35,7 @@ import { ContentCreator } from '@shared/models/ContentCreator';
 import { AuthResponse } from '@shared/models/Auth';
 import GemCollection from './lab/GemCollection';
 import Congrats from './account/congrats';
+import HelperPopover from '../common/HelperPopover';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -87,63 +95,74 @@ const DashboardContent: React.FC<DashboardContentProps> = ({
   const theme = useTheme();
   const classes = useStyles();
 
-  const [currentViewLabel, currentViewSubtitle, currentViewContent] =
-    React.useMemo(() => {
-      switch (currentView.view) {
-        case 'settings':
-          // eslint-disable-next-line react/jsx-key
-          return [t('routes:settings'), '', <Settings />];
-        default: {
-          if (profile === null) {
+  const [
+    currentViewLabel,
+    currentViewSubtitle,
+    helperText,
+    currentViewContent,
+  ] = React.useMemo(() => {
+    switch (currentView.view) {
+      case 'settings':
+        // eslint-disable-next-line react/jsx-key
+        return [t('routes:settings'), '', null, <Settings />];
+      default: {
+        if (profile === null) {
+          return [
+            t('routes:link_account'),
+            t('link_account:subtitle'),
+            null,
+            // eslint-disable-next-line react/jsx-key
+            <LinkAccount auth={auth} />,
+          ];
+        }
+
+        if (!accountLinkCompleted) {
+          return [
+            t('routes:congrats'),
+            t('congrats:subtitle'),
+            null,
+            <Congrats profile={profile} />,
+          ];
+        }
+
+        switch (currentView.view) {
+          case 'labEdit':
             return [
-              t('routes:link_account'),
-              t('link_account:subtitle'),
+              t('routes:lab_edit_title'),
+              t('routes:lab_edit_subtitle'),
+              null,
               // eslint-disable-next-line react/jsx-key
-              <LinkAccount auth={auth} />,
+              <LabVideoEdit videoId={currentView.videoId} />,
             ];
-          }
-
-          if (!accountLinkCompleted) {
+          case 'lab':
             return [
-              t('routes:congrats'),
-              t('congrats:subtitle'),
-              <Congrats profile={profile} />,
+              t('routes:lab_title'),
+              t('routes:lab_subtitle'),
+              t('routes:lab_helper'),
+              // eslint-disable-next-line react/jsx-key
+              <Lab />,
             ];
-          }
-
-          switch (currentView.view) {
-            case 'gemCollection':
-              return [
-                t('routes:gem_collection_title'),
-                t('routes:gem_collection_subtitle'),
-                // eslint-disable-next-line react/jsx-key
-                <GemCollection />,
-              ];
-            case 'labEdit':
-              return [
-                t('routes:lab_edit_title'),
-                t('routes:lab_edit_subtitle'),
-                // eslint-disable-next-line react/jsx-key
-                <LabVideoEdit videoId={currentView.videoId} />,
-              ];
-            case 'lab':
-              return [
-                t('routes:lab_title'),
-                t('routes:lab_subtitle'),
-                // eslint-disable-next-line react/jsx-key
-                <Lab />,
-              ];
-            default:
-              return [
-                t('routes:analytics'),
-                t('analytics:subtitle'),
-                // eslint-disable-next-line react/jsx-key
-                <AnalyticsPage />,
-              ];
-          }
+          case 'analytics':
+            return [
+              t('routes:analytics_title'),
+              t('routes:analytics_subtitle'),
+              t('routes:analytics_helper_text'),
+              // eslint-disable-next-line react/jsx-key
+              <AnalyticsPage />,
+            ];
+          case 'gemCollection':
+          default:
+            return [
+              t('routes:gem_collection_title'),
+              t('routes:gem_collection_subtitle'),
+              t('routes:gem_collection_helper_text'),
+              // eslint-disable-next-line react/jsx-key
+              <GemCollection />,
+            ];
         }
       }
-    }, [currentView, profile, accountLinkCompleted, auth]);
+    }
+  }, [currentView, profile, accountLinkCompleted, auth]);
 
   return (
     <Grid
@@ -194,10 +213,22 @@ const DashboardContent: React.FC<DashboardContentProps> = ({
             {currentViewLabel}
           </Typography>
         )}
+        <Box display="flex" alignItems="center">
+          <Typography
+            display="inline"
+            variant="subtitle1"
+            color="textPrimary"
+            gutterBottom={true}
+            style={{
+              marginRight: theme.spacing(1),
+              marginBottom: theme.spacing(2),
+            }}
+          >
+            {currentViewSubtitle}
+          </Typography>
+          {helperText ? <HelperPopover text={helperText} /> : null}
+        </Box>
 
-        <Typography variant="subtitle1" color="textPrimary">
-          {currentViewSubtitle}
-        </Typography>
         <Divider light />
       </Grid>
 
