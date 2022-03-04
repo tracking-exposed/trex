@@ -201,7 +201,7 @@ app.get(
 
 /* TODO the JSON was v1 and should be fixed in site, the what should be a query string, should be timed params */
 app.get(
-  '/api/v2/personal/:publicKey/:what/json',
+  '/api/v[1-2]/personal/:publicKey/:what/json',
   async (req, res) => await iowrapper('getPersonal', req, res)
 );
 app.get(
