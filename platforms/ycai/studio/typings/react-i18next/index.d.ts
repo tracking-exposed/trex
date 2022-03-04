@@ -125,6 +125,7 @@ declare module 'react-i18next' {
         advertising_connected_to_your_videos_title: string;
         advertising_connected_to_your_videos_subtitle: string;
         advertising_empty_data: string;
+        helpertext: string;
       };
       settings: {
         contentCreatorRecommendationLabel: string;
