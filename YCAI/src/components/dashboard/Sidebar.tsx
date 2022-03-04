@@ -107,7 +107,7 @@ const MenuBox: React.FC<{ currentView: CurrentView }> = ({ currentView }) => {
         ],
       },
       {
-        title: t('routes:analytics'),
+        title: t('routes:analytics_title'),
         icon: AnalyticsIcon,
         views: ['analytics'] as Array<CurrentView['view']>,
         subItems: [],
