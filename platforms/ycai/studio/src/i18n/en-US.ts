@@ -75,7 +75,10 @@ const resources: CustomTypeOptions['resources'] = {
     gem_collection_title: 'LAB - Internet Gem Collection',
     gem_collection_helper_text:
       'Copy paste a link you want \nto recommend on your channel.\n\nThis link will be part \nof your gem collection.\n\nIt will appear randomly \nnext to all your videos.',
-    analytics: 'Analytics',
+    analytics_title: 'Analytics',
+    analytics_subtitle: 'Statistics computed thanks to user data donations',
+    analytics_helper_text:
+      'The Analytics page gives you insights \nabout how YouTube algorithm \ntreats your content. \n\nThese statistics are not available \non the YouTube studio. \n\nThey are computed thanks to data donations\n from the YouChoose user community.',
     settings: 'Settings',
     link_account:
       'Authenticate your Channel \n to start recommending on your videos',
@@ -143,7 +146,6 @@ const resources: CustomTypeOptions['resources'] = {
   dashboard: { title: 'Youchoose Creator Studio' },
   popup: { version: 'version {{version}} build {{date}}' },
   analytics: {
-    subtitle: 'Statistics computed thanks to user data donations',
     recommendability_score_title: 'Recommendability Score',
     recommendability_score_subtitle:
       'How much does YouTube promote your content?',
@@ -157,8 +159,6 @@ const resources: CustomTypeOptions['resources'] = {
     advertising_connected_to_your_videos_title: 'Advertising',
     advertising_connected_to_your_videos_subtitle: 'Ads ran on your videos',
     advertising_empty_data: 'No advertising data collected yet on your channel',
-    helpertext:
-      'The Analytics page gives you insights \nabout how YouTube algorithm \ntreats your content. \n\nThese statistics are not available \non the YouTube studio. \n\nThey are computed thanks to data donations\n from the YouChoose user community.',
   },
   videos: {
     no_results: 'No videos found.',

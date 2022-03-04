@@ -144,9 +144,9 @@ const DashboardContent: React.FC<DashboardContentProps> = ({
             ];
           case 'analytics':
             return [
-              t('routes:analytics'),
-              t('analytics:subtitle'),
-              t('analytics:helpertext'),
+              t('routes:analytics_title'),
+              t('routes:analytics_subtitle'),
+              t('routes:analytics_helper_text'),
               // eslint-disable-next-line react/jsx-key
               <AnalyticsPage />,
             ];
