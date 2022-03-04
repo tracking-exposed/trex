@@ -36,7 +36,7 @@ export function flattenSearch(memo, metasearch) {
       // @ts-ignore
       metadataId: metasearch.id,
       // @ts-ignore
-      savingTime: moment(metasearch.savingTime).format(),
+      savingTime: moment(metasearch.savingTime).format('YYYY-MM-DD HH:mm'),
       // @ts-ignore
       timeago: moment
         .duration(moment(metasearch.savingTime) - moment())
