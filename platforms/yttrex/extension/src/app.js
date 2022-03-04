@@ -50,38 +50,38 @@ let leavesCache = {};
 
 // Boot the user script. This is the first function called.
 // Everything starts from here.
-function boot() {
-  // this get executed only on youtube.com
-  console.log(`yttrex version ${JSON.stringify(config)}`);
+// function oldBoot() {
+//   // this get executed only on youtube.com
+//   console.log(`yttrex version ${JSON.stringify(config)}`);
 
-  // Register all the event handlers.
-  // An event handler is a piece of code responsible for a specific task.
-  // You can learn more in the [`./handlers`](./handlers/index.html) directory.
-  registerHandlers(hub);
+//   // Register all the event handlers.
+//   // An event handler is a piece of code responsible for a specific task.
+//   // You can learn more in the [`./handlers`](./handlers/index.html) directory.
+//   registerHandlers(hub);
 
-  // Lookup the current user and decide what to do.
-  localLookup((response) => {
-    // `response` contains the user's public key, and this format is
-    console.log(
-      `${JSON.stringify({
-        response,
-        ...{ localLookup: 'for guardoni!' },
-      })}`
-    );
-    // SHOULD NOT CHANGE because Guardoni parse it.
+//   // Lookup the current user and decide what to do.
+//   localLookup((response) => {
+//     // `response` contains the user's public key, and this format is
+//     console.log(
+//       `${JSON.stringify({
+//         response,
+//         ...{ localLookup: 'for guardoni!' },
+//       })}`
+//     );
+//     // SHOULD NOT CHANGE because Guardoni parse it.
 
-    /* these parameters are loaded from localstorage */
-    config.publicKey = response.publicKey;
-    config.active = response.active;
-    config.ux = response.ux;
+//     /* these parameters are loaded from localstorage */
+//     config.publicKey = response.publicKey;
+//     config.active = response.active;
+//     config.ux = response.ux;
 
-    if (config.active !== true) {
-      console.log('ytTREX disabled!'); // TODO some UX change
-      return null;
-    }
-    return remoteLookup(ytTrexActions);
-  });
-}
+//     if (config.active !== true) {
+//       console.log('ytTREX disabled!'); // TODO some UX change
+//       return null;
+//     }
+//     return remoteLookup(ytTrexActions);
+//   });
+// }
 
 const hrefPERIODICmsCHECK = 2000;
 let hrefWatcher = null;
@@ -91,9 +91,9 @@ function ytTrexActions(remoteInfo) {
        after remoteLookup */
   console.log('initialize watchers, remoteInfo available:', remoteInfo);
 
-  if (hrefWatcher) clearInterval(hrefWatcher);
+  // if (hrefWatcher) clearInterval(hrefWatcher);
 
-  hrefWatcher = window.setInterval(hrefAndPageWatcher, hrefPERIODICmsCHECK);
+  // hrefWatcher = window.setInterval(hrefAndPageWatcher, hrefPERIODICmsCHECK);
   initializeBlinks();
   leavesWatcher();
   flush();
@@ -114,7 +114,7 @@ function processableURL(validURLs, location) {
 }
 
 let lastMeaningfulURL;
-  let urlkind = null;
+let urlkind = null;
 function hrefAndPageWatcher() {
   const diff = window.location.href !== lastMeaningfulURL;
 
@@ -387,36 +387,21 @@ function refreshUUID() {
   lastCheck = moment(); // TODO understand and verify, should this be in the block above?
 }
 
-// The function `localLookup` communicates with the **action pages**
-// to get information about the current user from the browser storage
-// (the browser storage is unreachable from a **content script**).
-function localLookup(callback) {
-  bo.runtime.sendMessage(
-    {
-      type: 'localLookup',
-      payload: {
-        userId: 'local', // at the moment is fixed to 'local'
-      },
-    },
-    callback
-  );
-}
-
 // The function `remoteLookup` communicate the intention
 // to the server of performing a certain test, and retrive
 // the userPseudonym from the server - this is not used in ytTREX
-function remoteLookup(callback) {
-  bo.runtime.sendMessage(
-    {
-      type: 'remoteLookup',
-      payload: {
-        config,
-        href: window.location.href,
-      },
-    },
-    callback
-  );
-}
+// function remoteLookup(callback) {
+//   bo.runtime.sendMessage(
+//     {
+//       type: 'remoteLookup',
+//       payload: {
+//         config,
+//         href: window.location.href,
+//       },
+//     },
+//     callback
+//   );
+// }
 
 function flush() {
   window.addEventListener('beforeunload', (e) => {
@@ -429,4 +414,17 @@ function flush() {
 bo.runtime.sendMessage({ type: 'chromeConfig' }, (response) => {
   Object.assign(config, response);
   boot();
+});
+
+import { boot } from '@shared/extension/app';
+
+boot({
+  payload: {
+    config,
+    href: window.location.href,
+  },
+  observe: {
+    handlers: {},
+  },
+  onAuthenticated: ytTrexActions,
 });
