@@ -2,11 +2,10 @@ const _ = require('lodash');
 const moment = require('moment');
 const debug = require('debug')('routes:personal');
 
+const utils = require('../lib/utils');
 const automo = require('../lib/automo');
 const CSV = require('../lib/CSV');
 const flattenSearch = require('./search').flattenSearch;
-
-const SEARCH_FIELDS = require('./public').SEARCH_FIELDS;
 
 function pickFeedFields(metae) {
   return {
@@ -18,6 +17,7 @@ function pickFeedFields(metae) {
     ...metae.metrics,
     musicURL: metae?.music?.url || null,
     musicTitle: metae?.music?.name || null,
+    pseudo: utils.string2Food(metae.publicKey),
     publicKey: metae.publicKey,
     savingTime: metae.savingTime,
     hasStitch: !!_.get(metae, 'stitch', false),
@@ -32,7 +32,7 @@ async function getPersonal(req) {
   const amount = _.parseInt(req.query.amount) || 50;
   const skip = _.parseInt(req.query.skip) || 0;
   const what = req.params.what;
-  const allowed = ['summary', 'search', 'foryou'];
+  const allowed = ['summary', 'search', 'foryou', 'following'];
 
   if (allowed.indexOf(what) === -1) {
     return {
@@ -47,51 +47,61 @@ async function getPersonal(req) {
 
   debug(
     'Asked to get data kind %s (%d-%d), preparing JSON',
-    what, amount, skip);
+    what,
+    amount,
+    skip
+  );
 
   try {
-    let retval = null;
+    let filter;
+      let retval = null;
 
     if (what === 'summary') {
-      filter = { type: { "$in": [ "following", "foryou" ] }};
-      retval = await automo.getPersonalTableData(k, filter, sync);
-    }
-    else if (what === 'search') {
-      /* this function access to 'search' results which is a 
+      filter = { type: { $in: ['following', 'foryou'] } };
+      retval = await automo.getPersonalTableData(k, filter, { amount, skip });
+    } else if (what === 'search') {
+      /* this function access to 'search' results which is a
        * bit different than the other. as in the collection
-       * there is not one entry for video, but one entry for search 
-       * query --> hence, the _.map/_.pick 
+       * there is not one entry for video, but one entry for search
+       * query --> hence, the _.map/_.pick
        * note, this data should match
        * packages/shared/src/models/contributor/ContributorPersonalSummary.ts
        */
       const avail = await automo.getPersonalTableData(
-        k, { type: 'search' }, { amount, skip });
+        k,
+        { type: 'search' },
+        { amount, skip }
+      );
       const metadata = _.map(avail.metadata, function (o) {
         const smf = _.pick(o, ['id', 'query', 'savingTime']);
-        smf.rejected = !!(o.message?.length);
+        smf.rejected = !!o.message?.length;
         smf.results = o.results?.length || 0;
-        smf.sources = _.uniq(_.map(o.results || [], function(v) {
-          return v.video.authorId;
-        }));
+        smf.sources = _.uniq(
+          _.map(o.results || [], function (v) {
+            return v.video.authorId;
+          })
+        );
         return smf;
       });
       retval = {
         counters: { metadata: avail.counters?.metadata },
-        metadata
+        metadata,
       };
-    } else if (what === 'foryou') {
-      // TODO review
+    } else if (what === 'foryou' || what === 'following') {
       retval = await automo.getMetadataByFilter(
-        { type: 'foryou', publicKey: k },
+        { type: what, publicKey: k },
         { amount, skip }
       );
-    }
-    else {
-      throw new Error("Invalid and unsupported request type");
+      retval = _.map(retval, function (e) {
+        e.pseudo = utils.string2Food(e.publicKey);
+        _.unset(e, 'publicKey');
+        return e;
+      });
+    } else {
+      throw new Error('Invalid and unsupported request type');
     }
 
     return { json: retval };
-
   } catch (error) {
     const message = error instanceof Error ? error.message : 'unknown error';
     debug('getPersonal handled error: %s', message);
