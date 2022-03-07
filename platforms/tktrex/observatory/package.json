@@ -6,7 +6,8 @@
   "scripts": {
     "test": "jest",
     "tdd": "jest --watchAll",
-    "watch": "ts-node src/watcher.ts"
+    "watch": "ts-node src/watcher.ts",
+    "collect": "ts-node src/collector.ts"
   },
   "author": "",
   "license": "ISC",
