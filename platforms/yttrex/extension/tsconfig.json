@@ -16,8 +16,8 @@
     "skipLibCheck": true,
     "lib": ["dom", "ESNext"],
     "typeRoots": [
-      "../node_modules/@types",
-      "../shared/node_modules/@types",
+      "../../../node_modules/@types",
+      "../../../shared/node_modules/@types",
       "./node_modules/@types",
       "./typings"
     ],
@@ -38,6 +38,7 @@
   "include": ["./src", "./typings", "./webpack.config.ts"],
   "exclude": ["./jest.config.js", "./webpack.config.ts"],
   "ts-node": {
+    "require": ["tsconfig-paths/register"],
     "compilerOptions": {
       "module": "CommonJS"
     }
