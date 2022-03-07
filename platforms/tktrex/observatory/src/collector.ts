@@ -13,15 +13,15 @@ const testableCountries = countries.twocc; // todo in the future would be the DB
 
 // console.log(testableCountries);
 
-function connector(cindex: number): void {
-  const cc = _.toLower(_.nth(testableCountries, cindex));
+function connector(cIndex: number): void {
+  const cc = _.toLower(_.nth(testableCountries, cIndex));
   const time = new Date().getTime() + '';
-  const destpath = path.join('mass', cc, time);
-  const destdir = path.join('mass', cc);
+  const destPath = path.join('mass', cc, time);
+  const destDir = path.join('mass', cc);
 
-  debug('Connecting to %s', countries.namecc[cindex]);
+  debug('Connecting to %s', countries.namecc[cIndex]);
   try {
-    fs.mkdirSync(destdir);
+    fs.mkdirSync(destDir);
   } catch (error) {
     if ((error as any).code !== 'EEXIST') console.log(error);
   }
@@ -40,15 +40,15 @@ function connector(cindex: number): void {
     '-kis',
     'https://www.tiktok.com/foryou',
     '-o',
-    destpath,
+    destPath,
   ]);
 
-  const stats = fs.statSync(destpath);
+  const stats = fs.statSync(destPath);
 
   debug(
     '%d> Completed %s (%s %d)',
-    cindex,
-    countries.namecc[cindex],
+    cIndex,
+    countries.namecc[cIndex],
     cc,
     stats.size,
   );
@@ -56,7 +56,10 @@ function connector(cindex: number): void {
 
 function main(): void {
   console.log('Starting...');
-  _.times(207, connector);
-  console.log('Completed!');
+  testableCountries.forEach((_, cIndex) => {
+    connector(cIndex);
+  });
+  console.log('Done.');
 }
+
 main();
