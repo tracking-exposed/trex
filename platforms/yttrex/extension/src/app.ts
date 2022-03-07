@@ -26,14 +26,13 @@
 
 // Import other utils to handle the DOM and scrape data.
 import _ from 'lodash';
-import moment from 'moment';
-
 import config from './config';
 import hub from './hub';
 import { registerHandlers } from './handlers/index';
 import dom from './dom';
 import { phase, initializeBlinks } from './blink';
 import consideredURLs from './consideredURLs';
+import { boot } from '@shared/extension/app';
 
 // bo is the browser object, in chrome is named 'chrome', in firefox is 'browser'
 const bo = chrome || browser;
@@ -99,7 +98,7 @@ function ytTrexActions(remoteInfo) {
   flush();
 }
 
-function processableURL(validURLs, location) {
+function processableURL(validURLs: string[], location: Location) {
   return _.reduce(
     validURLs,
     function (memo, matcher, name) {
@@ -411,20 +410,17 @@ function flush() {
 
 // Before booting the app, we need to update the current configuration
 // with some values we can retrieve only from the `chrome`space.
-bo.runtime.sendMessage({ type: 'chromeConfig' }, (response) => {
+bo.runtime.sendMessage({ type: 'chromeConfig' }, (response: any) => {
   Object.assign(config, response);
-  boot();
-});
-
-import { boot } from '@shared/extension/app';
-
-boot({
-  payload: {
-    config,
-    href: window.location.href,
-  },
-  observe: {
-    handlers: {},
-  },
-  onAuthenticated: ytTrexActions,
+  boot({
+    payload: {
+      config,
+      href: window.location.href,
+    },
+    observe: {
+      handlers: {},
+      onLocationChange: () => {},
+    },
+    onAuthenticated: ytTrexActions,
+  });
 });
