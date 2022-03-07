@@ -27816,6 +27816,7 @@ __metadata:
   dependencies:
     "@types/chokidar": ^2.1.3
     "@types/jest": ^27.4.0
+    "@types/lodash": ^4.14.179
     "@types/node": ^16.11.22
     "@typescript-eslint/eslint-plugin": ^5.10.2
     "@typescript-eslint/parser": ^5.10.2
@@ -27828,6 +27829,7 @@ __metadata:
     eslint-plugin-react: ^7.28.0
     jest: ^27.4.7
     linkedom: ^0.14.3
+    lodash: ^4.17.21
     mongodb: ^4.4.1
     safer-eval: ^1.3.6
     ts-jest: ^27.1.3
