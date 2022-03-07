@@ -25,17 +25,17 @@
 //   - comparativePage is the place where users accept to reproduce a videoSequence
 
 // Import other utils to handle the DOM and scrape data.
-import _ from 'lodash';
+import _, { isDate } from 'lodash';
 import config from './config';
 import hub from './hub';
-import { registerHandlers } from './handlers/index';
-import dom from './dom';
-import { phase, initializeBlinks } from './blink';
+import { updateUI, initializeBlinks } from './blink';
 import consideredURLs from './consideredURLs';
 import { boot } from '@shared/extension/app';
+import differenceInSeconds from 'date-fns/differenceInSeconds';
+import { ObserverHandler } from '@shared/extension/app';
 
 // bo is the browser object, in chrome is named 'chrome', in firefox is 'browser'
-const bo = chrome || browser;
+// const bo = chrome || browser;
 
 // variable used to spot differences due to refresh and url change
 let randomUUID =
@@ -45,77 +45,42 @@ let randomUUID =
 
 // to optimize the amount of reported data, we used a local cache
 let lastObservedSize = 1;
-let leavesCache = {};
+let leavesCache: Record<string, any> = {};
 
-// Boot the user script. This is the first function called.
-// Everything starts from here.
-// function oldBoot() {
-//   // this get executed only on youtube.com
-//   console.log(`yttrex version ${JSON.stringify(config)}`);
-
-//   // Register all the event handlers.
-//   // An event handler is a piece of code responsible for a specific task.
-//   // You can learn more in the [`./handlers`](./handlers/index.html) directory.
-//   registerHandlers(hub);
-
-//   // Lookup the current user and decide what to do.
-//   localLookup((response) => {
-//     // `response` contains the user's public key, and this format is
-//     console.log(
-//       `${JSON.stringify({
-//         response,
-//         ...{ localLookup: 'for guardoni!' },
-//       })}`
-//     );
-//     // SHOULD NOT CHANGE because Guardoni parse it.
-
-//     /* these parameters are loaded from localstorage */
-//     config.publicKey = response.publicKey;
-//     config.active = response.active;
-//     config.ux = response.ux;
-
-//     if (config.active !== true) {
-//       console.log('ytTREX disabled!'); // TODO some UX change
-//       return null;
-//     }
-//     return remoteLookup(ytTrexActions);
-//   });
-// }
-
-const hrefPERIODICmsCHECK = 2000;
-let hrefWatcher = null;
-function ytTrexActions(remoteInfo) {
+function ytTrexActions(remoteInfo: any): void {
   /* these functions are the main activity made in 
        content_script, and ytTrexActions is a callback
        after remoteLookup */
-  console.log('initialize watchers, remoteInfo available:', remoteInfo);
+  console.log('remoteInfo available:', remoteInfo);
 
-  // if (hrefWatcher) clearInterval(hrefWatcher);
-
-  // hrefWatcher = window.setInterval(hrefAndPageWatcher, hrefPERIODICmsCHECK);
   initializeBlinks();
-  leavesWatcher();
+
   flush();
 }
 
-function processableURL(validURLs: string[], location: Location) {
+function processableURL(
+  validURLs: Record<string, RegExp>,
+  location: Location
+): undefined | number {
   return _.reduce(
-    validURLs,
+    Object.values(validURLs),
     function (memo, matcher, name) {
       if (memo) return memo;
 
-      if (location.pathname.match(matcher)) memo = name;
+      if (location.pathname.match(matcher)) {
+        return name;
+      }
 
       return memo;
     },
-    null
+    undefined as any
   );
 }
 
-let lastMeaningfulURL;
-let urlkind = null;
-function hrefAndPageWatcher() {
-  const diff = window.location.href !== lastMeaningfulURL;
+let lastMeaningfulURL: string;
+let urlkind: number | undefined;
+function onLocationChange(oldLocation: string, newLocation: string): void {
+  const diff = newLocation !== lastMeaningfulURL;
 
   if (diff) {
     // Considering the extension only runs on *.youtube.com
@@ -127,8 +92,8 @@ function hrefAndPageWatcher() {
     urlkind = processableURL(consideredURLs, window.location);
 
     if (!urlkind) {
-      phase('video.wait');
-      return null;
+      updateUI('video.wait');
+      return;
     }
 
     // client might duplicate the sending of the same
@@ -136,27 +101,14 @@ function hrefAndPageWatcher() {
     // using a random identifier (randomUUID), we spot the
     // clones and drop them server side.
     // also, here is cleaned the cache declared below
-    phase('video.seen');
+    updateUI('video.seen');
     lastMeaningfulURL = window.location.href;
     cleanCache();
     refreshUUID();
   }
-
-  const sendableNode = document.querySelector('ytd-app');
-
-  if (!sizeCheck(sendableNode.outerHTML)) return;
-
-  hub.event('newVideo', {
-    type: urlkind,
-    element: sendableNode.outerHTML,
-    size: sendableNode.outerHTML.length,
-    href: window.location.href,
-    randomUUID,
-  });
-  phase('video.send');
 }
 
-function sizeCheck(nodeHTML) {
+function sizeCheck(nodeHTML: string): boolean {
   // this function look at the LENGTH of the proposed element.
   // this is used in video because the full html body page would be too big.
   const s = _.size(nodeHTML);
@@ -181,197 +133,213 @@ function sizeCheck(nodeHTML) {
   return true;
 }
 
+const handleAd = _.debounce(
+  (node: HTMLElement, opts: Omit<ObserverHandler, 'handle'>): void => {
+    // command has .selector .parents .preserveInvisible (this might be undefined)
+
+    const offsetTop = getOffsetTop(node);
+    const offsetLeft = getOffsetLeft(node);
+
+    // this to highlight what is collected as fragments
+    if (config.ux) {
+      node.style.border = '1px solid ' + (opts.color ? opts.color : 'red');
+      node.setAttribute(opts.selector, 'true');
+      node.setAttribute('yttrex', '1');
+    }
+
+    // if escalation to parents, highlight with different color
+    // if (command.parents) {
+    //   selected = _.reduce(
+    //     _.times(command.parents),
+    //     function (memo) {
+    //       // console.log("collecting parent", selectorName, memo.tagName, memo.parentNode.tagName);
+    //       return memo.parentNode;
+    //     },
+    //     selected
+    //   );
+
+    //   if (config.ux) selected.style.border = '3px dotted green';
+    // }
+
+    // if (command.screen) {
+    // no screencapture capability in the extension
+    // }
+
+    const html = node.outerHTML;
+    const hash = html.split('').reduce((a, b) => {
+      a = (a << 5) - a + b.charCodeAt(0);
+      return a & a;
+    }, 0);
+
+    if (leavesCache[hash]) {
+      leavesCache[hash]++;
+      return;
+      console.log(
+        'ignoring because of cache',
+        hash,
+        leavesCache[hash],
+        opts.selector
+      );
+    }
+    // most of the time this doesn't happens: duplication are many!
+    // is debug-worthy remove the 'return' and send cache counter.
+
+    leavesCache[hash] = 1;
+    // as it is the first observation, take infos and send it
+    const acquired = {
+      html,
+      hash,
+      offsetTop,
+      offsetLeft,
+      href: window.location.href,
+      selectorName: opts.selector,
+      randomUUID,
+    };
+
+    // helpful only at development time:
+    // const extra = extractor.mineExtraMetadata(selectorName, acquired);
+    // console.table(extra);
+
+    hub.event('newInfo', acquired);
+    updateUI('adv.seen');
+  },
+  300
+);
+
+const handleVideo = _.debounce((node: HTMLElement): void => {
+  const sendableNode = document.querySelector('ytd-app');
+  if (!sendableNode) {
+    return;
+  }
+
+  if (!sizeCheck(sendableNode.outerHTML)) return;
+
+  hub.event('newVideo', {
+    type: urlkind,
+    element: sendableNode.outerHTML,
+    size: sendableNode.outerHTML.length,
+    href: window.location.href,
+    randomUUID,
+  });
+  updateUI('video.send');
+}, 1000);
+
 const watchedPaths = {
+  video: {
+    selector: 'h1.title',
+    handle: handleVideo,
+  },
   banner: {
     selector: '.video-ads.ytp-ad-module',
     parents: 4,
     color: 'blue',
+    handle: handleAd,
   },
   ad: {
     selector: '.ytp-ad-player-overlay',
     parents: 4,
     color: 'darkblue',
+    handle: handleAd,
   },
   overlay: {
     selector: '.ytp-ad-player-overlay-instream-info',
     parents: 4,
     color: 'lightblue',
+    handle: handleAd,
   },
   toprightad: {
     selector: 'ytd-promoted-sparkles-web-renderer',
     parents: 3,
     color: 'aliceblue',
+    handle: handleAd,
   },
   toprightpict: {
     selector: '.ytd-action-companion-ad-renderer',
     parents: 2,
     color: 'azure',
+    handle: handleAd,
   },
   toprightcta: {
     selector: '.sparkles-light-cta',
     parents: 1,
     color: 'violetblue',
+    handle: handleAd,
   },
   toprightattr: {
     selector: '[data-google-av-cxn]',
     color: 'deeppink',
+    handle: handleAd,
   },
   adbadge: {
     selector: '#ad-badge',
     parents: 4,
     color: 'deepskyblue',
+    handle: handleAd,
   },
   frontad: {
     selector: 'ytd-banner-promo-renderer',
+    handle: handleAd,
   },
   // video-ad-overlay-slot
   channel1: {
     selector: '[href^="/channel"]',
     color: 'yellow',
     parents: 1,
+    handle: handleAd,
   },
   channel2: {
     selector: '[href^="/c"]',
     color: 'yellow',
     parents: 1,
+    handle: handleAd,
   },
   channel3: {
     selector: '[href^="/user"]',
     color: 'yellow',
     parents: 1,
+    handle: () => {},
   },
-  searchcard: { selector: '.ytd-search-refinement-card-renderer' },
-  channellink: { selector: '.channel-link' },
+  searchcard: {
+    selector: '.ytd-search-refinement-card-renderer',
+    handle: () => {},
+  },
+  channellink: { selector: '.channel-link', handle: () => {} },
   searchAds: {
     selector: '.ytd-promoted-sparkles-text-search-renderer',
     parents: 2,
+    handle: handleAd,
   },
 };
 
-const getOffsetLeft = (element) => {
+const getOffsetLeft = (element: HTMLElement): number => {
   let offsetLeft = 0;
   while (element) {
     offsetLeft += element.offsetLeft;
-    element = element.offsetParent;
+    element = element.offsetParent as any;
   }
   return offsetLeft;
 };
 
-const getOffsetTop = (element) => {
+const getOffsetTop = (element: HTMLElement): number => {
   let offsetTop = 0;
   while (element) {
     offsetTop += element.offsetTop;
-    element = element.offsetParent;
+    element = element.offsetParent as any;
   }
   return offsetTop;
 };
-
-function manageNodes(command, selectorName, selected) {
-  // command has .selector .parents .preserveInvisible (this might be undefined)
-
-  const offsetTop = getOffsetTop(selected);
-  const offsetLeft = getOffsetLeft(selected);
-  const isVisible = offsetTop + offsetLeft > 0;
-  if (command.preserveInvisible != true) {
-    if (!isVisible) {
-      // console.log("Ignoring invisible node:", selectorName);
-      return;
-    }
-  }
-
-  // this to highlight what is collected as fragments
-  if (config.ux) {
-    selected.style.border =
-      '1px solid ' + (command.color ? command.color : 'red');
-    selected.setAttribute(selectorName, true);
-    selected.setAttribute('yttrex', 1);
-  }
-
-  // if escalation to parents, highlight with different color
-  if (command.parents) {
-    selected = _.reduce(
-      _.times(command.parents),
-      function (memo) {
-        // console.log("collecting parent", selectorName, memo.tagName, memo.parentNode.tagName);
-        return memo.parentNode;
-      },
-      selected
-    );
-
-    if (config.ux) selected.style.border = '3px dotted green';
-  }
-
-  if (command.screen) {
-    // no screencapture capability in the extension
-  }
-  const html = selected.outerHTML;
-  const hash = html.split('').reduce((a, b) => {
-    a = (a << 5) - a + b.charCodeAt(0);
-    return a & a;
-  }, 0);
-
-  if (leavesCache[hash]) {
-    leavesCache[hash]++;
-    return;
-    console.log(
-      'ignoring because of cache',
-      hash,
-      leavesCache[hash],
-      selectorName
-    );
-  }
-  // most of the time this doesn't happens: duplication are many!
-  // is debug-worthy remove the 'return' and send cache counter.
-
-  leavesCache[hash] = 1;
-  // as it is the first observation, take infos and send it
-  const acquired = {
-    html,
-    hash,
-    offsetTop,
-    offsetLeft,
-    href: window.location.href,
-    selectorName,
-    randomUUID,
-  };
-
-  // helpful only at development time:
-  // const extra = extractor.mineExtraMetadata(selectorName, acquired);
-  // console.table(extra);
-
-  hub.event('newInfo', acquired);
-  phase('adv.seen');
-}
-
-function leavesWatcher() {
-  // inizialized MutationObserver with the selectors and
-  // then a list of functions would handle it
-  _.each(watchedPaths, function (command, selectorName) {
-    dom.on(command.selector, _.partial(manageNodes, command, selectorName));
-  });
-  // the one below fetch the selectors that might be already
-  // present on page, that's why is put after
-  _.each(watchedPaths, function (command, selectorName) {
-    const ispres = document.querySelectorAll(command.selector);
-    if (ispres) {
-      _.each(Array(...ispres), function (nod) {
-        manageNodes(command, selectorName, nod);
-      });
-    }
-  });
-}
 
 function cleanCache() {
   leavesCache = {};
   lastObservedSize = 1;
 }
 
-var lastCheck = null;
+var lastCheck: Date;
 function refreshUUID() {
   const REFERENCE = 3;
-  if (lastCheck && lastCheck.isValid && lastCheck.isValid()) {
-    var timed = moment.duration(moment() - lastCheck);
-    if (timed.asSeconds() > REFERENCE) {
+  if (lastCheck && isDate(lastCheck)) {
+    var timed = differenceInSeconds(new Date(), lastCheck);
+    if (timed > REFERENCE) {
       randomUUID =
         Math.random().toString(36).substring(2, 15) +
         Math.random().toString(36).substring(2, 15); /*
@@ -383,24 +351,8 @@ function refreshUUID() {
             console.log("-> It is less then", REFERENCE, timed.asSeconds()); */
     }
   }
-  lastCheck = moment(); // TODO understand and verify, should this be in the block above?
+  lastCheck = new Date();
 }
-
-// The function `remoteLookup` communicate the intention
-// to the server of performing a certain test, and retrive
-// the userPseudonym from the server - this is not used in ytTREX
-// function remoteLookup(callback) {
-//   bo.runtime.sendMessage(
-//     {
-//       type: 'remoteLookup',
-//       payload: {
-//         config,
-//         href: window.location.href,
-//       },
-//     },
-//     callback
-//   );
-// }
 
 function flush() {
   window.addEventListener('beforeunload', (e) => {
@@ -410,17 +362,17 @@ function flush() {
 
 // Before booting the app, we need to update the current configuration
 // with some values we can retrieve only from the `chrome`space.
-bo.runtime.sendMessage({ type: 'chromeConfig' }, (response: any) => {
-  Object.assign(config, response);
-  boot({
-    payload: {
-      config,
-      href: window.location.href,
-    },
-    observe: {
-      handlers: {},
-      onLocationChange: () => {},
-    },
-    onAuthenticated: ytTrexActions,
-  });
+
+console.log('hereeeee');
+
+boot({
+  payload: {
+    config,
+    href: window.location.href,
+  } as any,
+  observe: {
+    handlers: watchedPaths,
+    onLocationChange,
+  },
+  onAuthenticated: ytTrexActions,
 });

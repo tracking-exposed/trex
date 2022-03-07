@@ -11,12 +11,15 @@ import _ from 'lodash';
 // instantiate a proper logger
 const appLog = log.extend('app');
 
+export interface ObserverHandler {
+  selector: string;
+  color?: string;
+  handle: (n: HTMLElement, opts: Omit<ObserverHandler, 'handle'>) => void;
+}
+
 interface SetupObserverOpts {
   handlers: {
-    [key: string]: {
-      selector: string;
-      handle: (n: HTMLElement) => void;
-    };
+    [key: string]: ObserverHandler;
   };
   onLocationChange: (oldLocation: string, newLocation: string) => void;
 }
@@ -46,8 +49,8 @@ function setupObserver({
   onLocationChange,
 }: SetupObserverOpts): void {
   Object.keys(handlers).forEach((h) => {
-    const handler = handlers[h];
-    dom.on(handler.selector, handler.handle);
+    const { handle, ...handler } = handlers[h];
+    dom.on(handler.selector, (node) => handle(node, handler));
   });
 
   appLog.info('listeners installed, selectors', handlers);
