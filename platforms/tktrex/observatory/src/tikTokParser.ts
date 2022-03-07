@@ -18,6 +18,7 @@ interface ForYouVideo {
     sharen: number;
     commentn: number;
   };
+  countryCode?: string;
 }
 
 const isDictionary = (obj: unknown): obj is Record<string, unknown> =>

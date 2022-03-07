@@ -1,4 +1,4 @@
-import { join, dirname } from 'path';
+import { join, dirname, basename } from 'path';
 import { mkdir, readFile, writeFile, rename } from 'fs/promises';
 import { MongoClient, Collection } from 'mongodb';
 
@@ -44,14 +44,20 @@ const spawnWorker = async(collection: Collection): Promise<void> => {
     const parsed = parser.parseForYouFeed(mass);
     await mkdir(dirname(item.targetPath), { recursive: true });
     await rename(item.sourcePath, item.targetPath);
+    const countryCode = basename(dirname(item.sourcePath));
+
+    const result = parsed.map((data) => ({
+      ...data,
+      countryCode,
+    }));
 
     if (parsed.length > 0) {
       await writeFile(
         `${item.targetPath}.parsed.json`,
-        JSON.stringify(parsed, null, 2),
+        JSON.stringify(result, null, 2),
       );
 
-      await collection.insertMany(parsed);
+      await collection.insertMany(result);
     }
 
     void dispatchWorkers(collection);
