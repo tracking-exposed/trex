@@ -37,7 +37,6 @@ export const InfoBox: React.FC<InfoBoxProps> = ({ publicKey }) => {
           Download Your Searches (CSV)
         </Link>
       </ListItem>
-
     </List>
   );
 };

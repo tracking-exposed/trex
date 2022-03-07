@@ -13,7 +13,7 @@ const htmlElement = (cb: Callback) => (node: Node) => {
 export function watch(
   root: HTMLElement | Document,
   selector: string,
-  callback: Callback,
+  callback: Callback
 ): MutationObserver {
   // ## `watch(root, selector, callback)`
   //
@@ -33,20 +33,18 @@ export function watch(
   // intended).
 
   // debugger;
-  const mutationObserver = new MutationObserver(mutations =>
+  const mutationObserver = new MutationObserver((mutations) =>
     // Each `mutation` in the `mutations` array contains an...
-    mutations.forEach(mutation =>
+    mutations.forEach((mutation) =>
       // ...array of added nodes. We need to iterate all of the nodes.
       mutation.addedNodes.forEach(
-        node =>
+        (node) =>
           // We analyze each `node`, if it is an `HTMLElement` then it implements the `querySelectorAll` interface, that we use to match our `selector`.
           // For each HTMLElement matching the selector, we finally trigger `callback` with the matching HTMLElement.
           node instanceof HTMLElement &&
-          node.querySelectorAll(selector).forEach(
-            htmlElement(callback),
-          ),
-      ),
-    ),
+          node.querySelectorAll(selector).forEach(htmlElement(callback))
+      )
+    )
   );
 
   // We want this function to trigger `callback` on HTMLElements that are already in
@@ -81,12 +79,10 @@ export function on(selector: string, callback: Callback): MutationObserver {
 }
 
 export function one(selector: string, callback: Callback): MutationObserver {
-  const observer = on(
-    selector, (node: HTMLElement) => {
-      observer.disconnect();
-      callback(node);
-    },
-  );
+  const observer = on(selector, (node: HTMLElement) => {
+    observer.disconnect();
+    callback(node);
+  });
 
   return observer;
 }
