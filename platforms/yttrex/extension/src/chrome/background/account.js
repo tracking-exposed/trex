@@ -7,13 +7,14 @@ import _ from 'lodash';
 import api from '../api';
 import { isEmpty } from '../../utils';
 import db from '../db';
+import config from '../../config'
 
 const bo = chrome || browser;
 const FIXED_USER_NAME = 'local';
 
 // defaults of the settings stored in 'config' and controlled by popup
 const DEFAULT_SETTINGS = {
-  active: process.env.DATA_CONTRIBUTION_ENABLED,
+  active: config.DATA_CONTRIBUTION_ENABLED,
   ux: false,
 };
 
