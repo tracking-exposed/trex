@@ -49,9 +49,14 @@ export const createParser = (): TikTokParser => {
       return [];
     }
 
-    // TODO: replace eval with something safer!
-    // eslint-disable-next-line no-eval
-    eval(script);
+    try {
+      // eslint-disable-next-line no-eval
+      eval(script);
+    } catch (err) {
+      console.log('failed to evaluate SIGI script');
+      return [];
+    }
+
     const data = (window as any).SIGI_STATE;
 
     if (!data) {
