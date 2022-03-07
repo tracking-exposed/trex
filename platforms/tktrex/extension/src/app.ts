@@ -1,73 +1,50 @@
-import { clearCache, sizeCheck } from '@shared/providers/dataDonation.provider';
+import { boot, refreshUUID } from '@shared/extension/app';
+import config from '@shared/extension/config';
+import hub from '@shared/extension/hub';
+import log from '@shared/extension/logger';
+import { sizeCheck } from '@shared/providers/dataDonation.provider';
 import { getNatureByHref } from '@tktrex/lib/nature';
 import { map } from 'fp-ts/lib/Either';
 import { pipe } from 'fp-ts/lib/function';
 import _ from 'lodash';
-import { localLookup, serverLookup } from './chrome/background/sendMessage';
-import config from './config';
-import * as dom from './dom';
-import { registerHandlers } from './handlers/index';
-import hub from './hub';
 import { INTERCEPTED_ITEM_CLASS } from './interceptor/constants';
-import log from './logger';
+
+const appLog = log.extend('app');
 
 let feedId = '—' + Math.random() + '-' + _.random(0, 0xff) + '—';
 let feedCounter = 0;
 let lastMeaningfulURL: string;
 
-// Boot the user script. This is the first function called.
-// Everything starts from here.
-function boot(): void {
-  log.info('booting with config', config);
-
-  // Register all the event handlers.
-  // An event handler is a piece of code responsible for a specific task.
-  // You can learn more in the [`./handlers`](./handlers/index.html) directory.
-  registerHandlers(hub);
-
-  // Lookup the current user and decide what to do.
-  localLookup((settings) => {
-    // `response` contains the user's public key, we save it global for the blinks
-    log.info('retrieved locally stored user settings', settings);
-    // this output is interpreted and read by guardoni
-
-    /* these parameters are loaded from localStorage */
-    config.publicKey = settings.publicKey;
-    config.active = settings.active;
-    config.ux = settings.ux;
-
-    if (!config.active) {
-      log.info('tktrex disabled!');
-      return null;
-    }
-
-    // emergency button should be used when a supported with
-    // UX hack in place didn't see any UX change, so they
-    // can report the problem and we can handle it.
-    initializeEmergencyButton();
-
-    // because the URL has been for sure reloaded, be sure to also
-    clearCache();
-    serverLookup(
-      {
-        feedId,
-        href: window.location.href,
-      },
-      tktrexActions,
-    );
-  });
+/**
+ * Additional UI needed mostly for debugging
+ */
+function initializeEmergencyButton(): void {
+  const element = document.createElement('h1');
+  element.onclick = fullSave;
+  element.setAttribute('id', 'full--save');
+  element.setAttribute(
+    'style',
+    'position: fixed; top:50%; left: 1rem; display: flex; font-size: 3em; cursor: pointer; flex-direction: column; z-index: 9999; visibility: visible;',
+  );
+  element.innerText = '💾';
+  document.body.appendChild(element);
 }
 
 function tktrexActions(remoteInfo: unknown): void {
   /* these functions are the main activity made in
      content_script, and tktrexActions is a callback
      after remoteLookup */
-  log.info('initialize watchers, remoteInfo available:', remoteInfo);
+  appLog.info('initialize watchers, remoteInfo available:', remoteInfo);
 
-  setupObserver();
+  // initialize ui
+  initializeEmergencyButton();
+
   // the mutation observer seems to ignore container new children,
   // so an interval take place here
-  setInterval(handleInterceptedData, 5000);
+  setInterval(
+    () => _.debounce(handleInterceptedData, 5000, { trailing: true }),
+    5000,
+  );
   flush();
 }
 
@@ -88,17 +65,17 @@ function fullSave(): void {
         lastMeaningfulURL = window.location.href;
         // UUID is used server-side
         // to eliminate potential duplicates
-        refreshUUID();
+        feedId = refreshUUID(feedCounter);
       }
 
       const body = document.querySelector('body');
 
       if (!body) {
-        log.error('no body found, skipping fullSave');
+        appLog.error('no body found, skipping fullSave');
         return;
       }
 
-      log.info('sending fullSave!', nature);
+      appLog.info('sending fullSave!', nature);
       hub.dispatch({
         type: 'FullSave',
         payload: {
@@ -114,89 +91,6 @@ function fullSave(): void {
   );
 }
 
-function refreshUUID(): void {
-  log.info('refreshing feedId and cleaning size Cache');
-  // mandatory clear the cache otherwise sizeCheck would fail
-  clearCache();
-  feedId = feedCounter + '—' + Math.random() + '-' + _.random(0, 0xff);
-}
-
-const selectors = {
-  video: {
-    selector: 'video',
-  },
-  suggested: {
-    selector: 'div[class$="DivUserContainer"]',
-  },
-  title: {
-    selector: 'h1',
-  },
-  error: {
-    selector: 'h2',
-  },
-  /* not currently used 'creator' */
-  creator: {
-    selector: 'a[href^="/@"]',
-  },
-  search: {
-    selector: '[data-e2e="search-card-desc"]',
-  },
-  apiInterceptor: {
-    selector: `div.${INTERCEPTED_ITEM_CLASS}`,
-  },
-};
-
-function setupObserver(): void {
-  /* this initizalise dom listened by mutation observer */
-  dom.on(selectors.suggested.selector, handleSuggested);
-  dom.on(selectors.video.selector, handleVideo);
-  dom.on(selectors.search.selector, handleSearch);
-  dom.on(selectors.error.selector, handleSearch);
-
-  // experiment
-  dom.on('#sigi-persisted-data', handleSigi);
-
-  log.info('listeners installed, selectors', selectors);
-
-  /* and monitor href changes to randomize a new accessId */
-  let oldHref = window.location.href;
-  const body = document.querySelector('body');
-
-  const observer = new MutationObserver(function(mutations) {
-    mutations.forEach(function(mutation) {
-      if (oldHref !== window.location.href) {
-        feedCounter++;
-        refreshUUID();
-        log.info(
-          oldHref,
-          'changed to',
-          window.location.href,
-          'new feedId',
-          feedId,
-          'feedCounter',
-          feedCounter,
-          'videoCounter resetting after poking',
-          videoCounter,
-        );
-        videoCounter = 0;
-        oldHref = window.location.href;
-      }
-    });
-  });
-
-  const config = {
-    childList: true,
-    subtree: true,
-  };
-
-  if (body) {
-    observer.observe(body, config);
-  } else {
-    log.error('setupObserver: body not found');
-  }
-}
-
-const hidLog = log.extend('intercept-data-listener');
 /**
  * handle a new intercepted datum node by dispatching
  * the event to the hub and remove the node from the container
@@ -204,52 +98,51 @@ const hidLog = log.extend('intercept-data-listener');
 
 const handleInterceptedData = (): void => {
   const itemNodes = document.body.querySelectorAll(
-    selectors.apiInterceptor.selector,
+    tkHandlers.apiInterceptor.selector,
   );
 
   if (itemNodes.length === 0) {
     return;
   }
 
-  hidLog.debug('Intercepted %d items', itemNodes.length);
+  appLog.debug('Intercepted %d items', itemNodes.length);
 
   itemNodes.forEach((ch, i) => {
     // hidLog.info('Child el %O', childEl);
     const html = ch.innerHTML;
     try {
       const data = JSON.parse(html);
-      hidLog.debug('Sending APIRequest payload');
       hub.dispatch({
         type: 'APIEvent',
         payload: data,
       });
     } catch (e) {
-      hidLog.error('Error %O', e);
+      appLog.error('Error %O', e);
     }
-    hidLog.debug('Remove child from container: O%', ch);
+    appLog.debug('Remove child from container: O%', ch);
 
     ch.remove();
   });
 };
 
-// experiment in progress
+// experiment in progress;
 const handleSigi = _.debounce((element: Node): void => {
   console.log('Sigi', element);
 });
 
 const handleSearch = _.debounce((element: Node): void => {
-  log.info('Handle search for path %O', window.location.search);
+  appLog.info('Handle search for path %O', window.location.search);
   if (!_.startsWith(window.location.pathname, '/search')) return;
 
   // it is lame to do a double check only because they are both searches,
   // but somehow now it is seems the best solution
-  const dat = document.querySelectorAll(selectors.search.selector);
+  const dat = document.querySelectorAll(tkHandlers.search.selector);
   const te = _.map(
-    document.querySelectorAll(selectors.error.selector),
+    document.querySelectorAll(tkHandlers.error.selector),
     'textContent',
   );
   if (dat.length === 0 && !te.includes('No results found')) {
-    log.debug(
+    appLog.debug(
       'Matched invalid h2:',
       te,
       '(which got ignored because they are not errors)',
@@ -274,12 +167,12 @@ const handleSearch = _.debounce((element: Node): void => {
 }, 300);
 
 const handleSuggested = _.debounce((elem: Node): void => {
-  log.info('handleSuggested', elem, 'should go to parentNode');
+  appLog.info('handleSuggested', elem, 'should go to parentNode');
   const { parentNode } = elem;
   const parent = parentNode as Element;
 
   if (!parent || !parent.outerHTML) {
-    log.info('handleSuggested: no parent');
+    appLog.info('handleSuggested: no parent');
     return;
   }
 
@@ -312,7 +205,7 @@ const handleVideo = _.debounce((node: HTMLElement): void => {
     (memo: HTMLElement, iteration: number): HTMLElement => {
       if (memo.parentNode instanceof HTMLElement) {
         if (memo.parentNode.outerHTML.length > 10000) {
-          log.debug(
+          appLog.debug(
             'handleVideo: parentNode > 10000',
             memo.parentNode.outerHTML.length,
           );
@@ -327,7 +220,7 @@ const handleVideo = _.debounce((node: HTMLElement): void => {
   );
 
   if (videoRoot.hasAttribute('trex')) {
-    log.info(
+    appLog.info(
       'element already acquired: skipping',
       videoRoot.getAttribute('trex'),
     );
@@ -337,7 +230,7 @@ const handleVideo = _.debounce((node: HTMLElement): void => {
 
   videoCounter++;
 
-  log.info('+video', videoRoot, ' acquired, now', videoCounter, 'in total');
+  appLog.info('+video', videoRoot, ' acquired, now', videoCounter, 'in total');
 
   videoRoot.setAttribute('trex', `${videoCounter}`);
 
@@ -366,16 +259,65 @@ function flush(): void {
   });
 }
 
-function initializeEmergencyButton(): void {
-  const element = document.createElement('h1');
-  element.onclick = fullSave;
-  element.setAttribute('id', 'full--save');
-  element.setAttribute(
-    'style',
-    'position: fixed; top:50%; left: 1rem; display: flex; font-size: 3em; cursor: pointer; flex-direction: column; z-index: 9999; visibility: visible;',
-  );
-  element.innerText = '💾';
-  document.body.appendChild(element);
-}
+/**
+ * selector with relative handler
+ * configuration
+ */
+const tkHandlers = {
+  video: {
+    selector: 'video',
+    handle: handleVideo,
+  },
+  suggested: {
+    selector: 'div[class$="DivUserContainer"]',
+    handle: handleSuggested,
+  },
+  title: {
+    selector: 'h1',
+    handle: () => undefined,
+  },
+  error: {
+    selector: 'h2',
+    handle: handleSearch,
+  },
+  /* not currently used 'creator' */
+  creator: {
+    selector: 'a[href^="/@"]',
+    handle: () => undefined,
+  },
+  search: {
+    selector: '[data-e2e="search-card-desc"]',
+    handle: handleSearch,
+  },
+  apiInterceptor: {
+    selector: `div.${INTERCEPTED_ITEM_CLASS}`,
+    handle: handleInterceptedData,
+  },
+  sigiExperiment: {
+    selector: '#sigi-persisted-data',
+    handle: handleSigi,
+  },
+};
 
-boot();
+// Boot the app script. This is the first function called.
+boot({
+  payload: {
+    feedId,
+    href: window.location.href,
+  },
+  observe: {
+    handlers: tkHandlers,
+    onLocationChange: () => {
+      feedCounter++;
+      feedId = refreshUUID(feedCounter);
+      appLog.info(
+        'new feedId (%s), feed counter (%d) and video counter resetting after poking (%d)',
+        feedId,
+        feedCounter,
+        videoCounter,
+      );
+      videoCounter = 0;
+    },
+  },
+  onAuthenticated: tktrexActions,
+});

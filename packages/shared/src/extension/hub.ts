@@ -16,15 +16,13 @@ export class Hub {
 
   on<ET extends HubEvent['type']>(
     type: ET,
-    handler: (event: HubEvent & { type: ET }) => void,
+    handler: (event: HubEvent & { type: ET }) => void
   ): Hub {
     if (!this.specificHandlers[type]) {
       this.specificHandlers[type] = [];
     }
 
-    (this.specificHandlers[type] as Handler[]).push(
-      handler as Handler,
-    );
+    (this.specificHandlers[type] as Handler[]).push(handler as Handler);
 
     return this;
   }
@@ -38,10 +36,10 @@ export class Hub {
     const specificHandlers = this.specificHandlers[e.type];
 
     if (specificHandlers) {
-      specificHandlers.forEach(func => func(e));
+      specificHandlers.forEach((func) => func(e));
     }
 
-    this.genericHandlers.forEach(func => func(e));
+    this.genericHandlers.forEach((func) => func(e));
 
     return this;
   }

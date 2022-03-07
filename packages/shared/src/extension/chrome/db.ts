@@ -22,14 +22,17 @@ const getP = (key: string): Promise<unknown> =>
 
 const setP = <T>(key: string, value: T): Promise<T> =>
   new Promise((resolve, reject) => {
-    storage.set({
-      [key]: value,
-    }, () => {
-      if (bo.runtime.lastError) {
-        return reject(bo.runtime.lastError);
+    storage.set(
+      {
+        [key]: value,
+      },
+      () => {
+        if (bo.runtime.lastError) {
+          return reject(bo.runtime.lastError);
+        }
+        resolve(value);
       }
-      resolve(value);
-    });
+    );
   });
 
 const init = <T>(key: string, initializer: T | ((str: string) => T)): T => {
@@ -39,7 +42,10 @@ const init = <T>(key: string, initializer: T | ((str: string) => T)): T => {
   return initializer;
 };
 
-export const get = async(key: string, initializer?: unknown): Promise<unknown> => {
+export const get = async (
+  key: string,
+  initializer?: unknown
+): Promise<unknown> => {
   const value = await getP(key);
   if (isEmpty(value) && !isEmpty(initializer)) {
     const newValue = init(key, initializer);
@@ -51,8 +57,9 @@ export const get = async(key: string, initializer?: unknown): Promise<unknown> =
   return value;
 };
 
-export const getValid = <C extends t.Any>(codec: C) =>
-  async(key: string, initializer?: unknown): Promise<t.TypeOf<C>> => {
+export const getValid =
+  <C extends t.Any>(codec: C) =>
+  async (key: string, initializer?: unknown): Promise<t.TypeOf<C>> => {
     const validation = codec.decode(await get(key, initializer));
 
     if (isLeft(validation)) {
@@ -71,7 +78,10 @@ export const set = <T>(key: string, value: T): Promise<T> => {
   return setP(key, newValue);
 };
 
-export const update = async <T>(key: string, updater: (T | ((x: unknown) => T))): Promise<T> => {
+export const update = async <T>(
+  key: string,
+  updater: T | ((x: unknown) => T)
+): Promise<T> => {
   log.info(`updating "${key}" in storage`);
   const oldValue = await getP(key);
 
@@ -89,6 +99,9 @@ export const remove = (key: string): Promise<unknown> => {
 };
 
 export default {
-  get, getValid, set,
-  update, remove,
+  get,
+  getValid,
+  set,
+  update,
+  remove,
 };

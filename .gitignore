@@ -20,4 +20,6 @@ coverage
 !.yarn/releases
 !.yarn/sdks
 !.yarn/versions
-.ssh-keys
+
+# let everyone use their own workspace config
+*.code-workspace

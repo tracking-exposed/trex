@@ -4265,6 +4265,7 @@ __metadata:
     fp-ts: ^2.11.8
     io-ts: ^2.2.16
     io-ts-types: ^0.5.16
+    jest: ^27.5.1
     mini-css-extract-plugin: ^2.5.3
     prettier: ^2.5.1
     react: ^17.0.2
