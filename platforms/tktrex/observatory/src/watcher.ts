@@ -1,13 +1,17 @@
 import { join, dirname } from 'path';
 import { mkdir, readFile, writeFile, rename } from 'fs/promises';
+import { MongoClient, Collection } from 'mongodb';
 
 import chokidar from 'chokidar';
 
 import createParser from './tikTokParser';
 
-const massPath = join(__dirname, '../mass');
-const parsedPath = join(__dirname, '../parsed');
-const maxWorkers = 10;
+import {
+  massPath,
+  parsedPath,
+  maxParallelWorkers,
+  MONGO_URL,
+} from '../config/config';
 
 interface QueueItem {
   sourcePath: string;
@@ -17,42 +21,56 @@ interface QueueItem {
 const queue: QueueItem[] = [];
 let nWorkers = 0;
 
-const spawnWorker = async(): Promise<void> => {
-  while (nWorkers < maxWorkers && queue.length > 0) {
-    const parser = createParser();
+const dispatchWorkers = async(collection: Collection): Promise<void> => {
+  // eslint-disable-next-line no-unmodified-loop-condition
+  while (nWorkers < maxParallelWorkers && queue.length > 0) {
+    spawnWorker(collection).finally(() => {
+      void dispatchWorkers(collection);
+    });
+  }
+};
 
-    const worker = async(item?: QueueItem): Promise<void> => {
-      if (!item) {
-        return Promise.resolve();
-      }
+const spawnWorker = async(collection: Collection): Promise<void> => {
+  const parser = createParser();
 
-      console.log(`[${nWorkers}] parsing: ${item.sourcePath}`);
+  const worker = async(item?: QueueItem): Promise<void> => {
+    if (!item) {
+      return Promise.resolve();
+    }
 
-      const mass = await readFile(item.sourcePath, 'utf8');
-      const parsed = parser.parseForYouFeed(mass);
-      await mkdir(dirname(item.targetPath), { recursive: true });
-      await rename(item.sourcePath, item.targetPath);
+    console.log(`[${nWorkers} workers] parsing: ${item.sourcePath}`);
+
+    const mass = await readFile(item.sourcePath, 'utf8');
+    const parsed = parser.parseForYouFeed(mass);
+    await mkdir(dirname(item.targetPath), { recursive: true });
+    await rename(item.sourcePath, item.targetPath);
+
+    if (parsed.length > 0) {
       await writeFile(
         `${item.targetPath}.parsed.json`,
         JSON.stringify(parsed, null, 2),
       );
-    };
 
-    nWorkers += 1;
-    worker(queue.shift())
-      .then(() => {
-        nWorkers -= 1;
-        return spawnWorker();
-      })
-      .catch((err) => {
-        console.error(err);
-      });
-  }
+      await collection.insertMany(parsed);
+    }
+
+    void dispatchWorkers(collection);
+  };
+
+  nWorkers += 1;
+  worker(queue.shift()).finally(() => {
+    nWorkers -= 1;
+    void dispatchWorkers(collection);
+  });
 };
 
 const main = async(): Promise<void> => {
   await mkdir(massPath, { recursive: true });
   await mkdir(parsedPath, { recursive: true });
+
+  const dbClient = await MongoClient.connect(MONGO_URL);
+  const db = dbClient.db('observatory');
+  const collection = db.collection('metadata');
 
   chokidar.watch(massPath).on('add', (path, entry) => {
     if (entry?.isFile()) {
@@ -61,11 +79,7 @@ const main = async(): Promise<void> => {
         targetPath: join(parsedPath, path.slice(massPath.length + 1)),
       });
 
-      if (nWorkers < maxWorkers) {
-        spawnWorker().catch((err) => {
-          console.error(err);
-        });
-      }
+      void dispatchWorkers(collection);
     }
   });
 };
