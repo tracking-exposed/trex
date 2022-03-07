@@ -1,9 +1,8 @@
+import '../../../../public/font.css';
 import React from 'react';
 import ReactDOM from 'react-dom';
-
 import { createTheme, ThemeProvider } from '@material-ui/core/styles';
-
-import Tooltip from './components/tooltip';
+import Popup from './components/popup';
 
 const theme = createTheme({
   typography: {
@@ -11,13 +10,11 @@ const theme = createTheme({
   },
 });
 
-function main(): void {
+export function main(): void {
   ReactDOM.render(
     <ThemeProvider theme={theme}>
-      <Tooltip />
+      <Popup />
     </ThemeProvider>,
-    document.getElementById('yttrex--tooltip'),
+    document.getElementById('main')
   );
 }
-
-main();

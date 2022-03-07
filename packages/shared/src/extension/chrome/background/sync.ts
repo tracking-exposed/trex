@@ -9,13 +9,13 @@ bo.runtime.onMessage.addListener((request, sender, sendResponse) => {
         sendResponse({
           type: 'Success',
           response,
-        }),
+        })
       )
       .catch((error) =>
         sendResponse({
           type: 'Error',
           error,
-        }),
+        })
       );
     return true;
   }
@@ -27,13 +27,13 @@ bo.runtime.onMessage.addListener((request, sender, sendResponse) => {
         sendResponse({
           type: 'Success',
           response,
-        }),
+        })
       )
       .catch((error) =>
         sendResponse({
           type: 'Error',
           error,
-        }),
+        })
       );
 
     return true;

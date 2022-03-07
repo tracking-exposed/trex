@@ -1,7 +1,4 @@
-import React, {
-  useState,
-  useEffect,
-} from 'react';
+import React, { useState, useEffect } from 'react';
 
 import moment from 'moment';
 
@@ -76,7 +73,9 @@ const Popup: React.FC = () => {
         <FormHelperText>About</FormHelperText>
         <InfoBox />
       </Card>
-      <small>version {config.VERSION}, released {timeAgo} ago</small>
+      <small>
+        version {config.VERSION}, released {timeAgo} ago
+      </small>
     </div>
   );
 };

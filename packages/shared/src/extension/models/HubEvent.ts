@@ -1,5 +1,3 @@
-import Nature from '../../../shared/src/models/Nature';
-
 export interface HubEventBase {
   type: HubEvent['type'];
   payload?: unknown;
@@ -27,10 +25,10 @@ export interface APIEvent extends HubEventBase {
   };
 }
 
-export interface FullSaveEvent extends HubEventBase {
+export interface FullSaveEvent<N> extends HubEventBase {
   type: 'FullSave';
   payload: {
-    type: Nature;
+    type: N;
     element: string;
     feedId: string;
     href: string;
@@ -90,7 +88,7 @@ export type HubEvent =
   | WindowUnloadEvent
   | SearchEvent
   | SuggestedEvent
-  | FullSaveEvent
+  | FullSaveEvent<any>
   | SyncResponseEvent
   | APISyncResponseEvent
   | APIEvent;

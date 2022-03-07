@@ -38,7 +38,7 @@ function apiSync(hub: Hub): void {
   if (state.content.length) {
     log.info(
       `APIsync — ${state.content.length} items (total since beginning: ${state.incremental})`,
-      countBy(state.content, 'type'),
+      countBy(state.content, 'type')
     );
     // Send timelines to the page handling the communication with the API.
     // This might be refactored using something compatible to the HUB architecture.
@@ -54,7 +54,7 @@ function apiSync(hub: Hub): void {
           payload: response,
         });
         state.content = [];
-      },
+      }
     );
   }
 }
