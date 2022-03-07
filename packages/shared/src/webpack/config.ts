@@ -148,7 +148,8 @@ const getConfig = <E extends t.Props>(
 
   if (opts.target === 'web' || opts.target === 'electron-renderer') {
     plugins.push(
-      new webpack.DefinePlugin({ 'process.env': stringifiedAppEnv })
+      new webpack.DefinePlugin({ 'process.env': stringifiedAppEnv }),
+      new MiniCssExtractPlugin()
     );
   }
 
@@ -215,17 +216,19 @@ const getConfig = <E extends t.Props>(
                 },
 
             {
-              loader: 'css',
+              loader: 'css-loader',
             },
-            { loader: 'postcss' },
-            // {
-            //   loader: 'sass',
-            //   query: {
-            //     precision: '8', // If you use bootstrap, must be >= 8. See https://github.com/twbs/bootstrap-sass#sass-number-precision
-            //     outputStyle: 'expanded',
-            //     sourceMap: true,
-            //   },
-            // },
+            // { loader: 'postcss-loader' },
+            {
+              loader: 'sass-loader',
+              options: {
+                sassOptions: {
+                  precision: '8', // If you use bootstrap, must be >= 8. See https://github.com/twbs/bootstrap-sass#sass-number-precision
+                  outputStyle: 'expanded',
+                  sourceMap: true,
+                },
+              },
+            },
           ],
         },
       ],
