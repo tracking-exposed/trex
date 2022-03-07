@@ -6507,6 +6507,7 @@ __metadata:
     eslint-plugin-react: ^7.29.2
     glob: ^7.2.0
     html2canvas: ^1.4.1
+    io-ts-types: ^0.5.16
     jquery: ^3.6.0
     lodash: ^4.17.21
     mini-css-extract-plugin: ^2.5.3

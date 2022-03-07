@@ -20,7 +20,12 @@ const InfoBox = () => {
 
   return (
     <Card style={{ textAlign: 'center' }}>
-      <a target="_blank" href={config.WEB_ROOT} style={lessStandardHref}>
+      <a
+        target="_blank"
+        href={config.WEB_ROOT}
+        style={lessStandardHref}
+        rel="noreferrer"
+      >
         <img style={imgstyle} src="/yttrex-logo.png" />
       </a>
       <CardActions>
