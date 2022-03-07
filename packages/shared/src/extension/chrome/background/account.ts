@@ -18,24 +18,22 @@ const FIXED_USER_NAME = 'local';
 // defaults of the settings stored in 'config' and controlled by popup
 const DEFAULT_SETTINGS = { active: true, ux: false };
 
-bo.runtime.onMessage.addListener(
-  (request: Message, sender, sendResponse) => {
-    if (request.type === 'LocalLookup') {
-      void handleLocalLookup(request.payload, sendResponse);
-      return true;
-    }
+bo.runtime.onMessage.addListener((request: Message, sender, sendResponse) => {
+  if (request.type === 'LocalLookup') {
+    void handleLocalLookup(request.payload, sendResponse);
+    return true;
+  }
 
-    if (request.type === 'ServerLookup') {
-      void handleServerLookup(request.payload, sendResponse);
-      return true;
-    }
+  if (request.type === 'ServerLookup') {
+    void handleServerLookup(request.payload, sendResponse);
+    return true;
+  }
 
-    if (request.type === 'ConfigUpdate') {
-      void handleConfigUpdate(request.payload, sendResponse);
-      return true;
-    }
-  },
-);
+  if (request.type === 'ConfigUpdate') {
+    void handleConfigUpdate(request.payload, sendResponse);
+    return true;
+  }
+});
 
 function initializeKey(): KeyPair {
   const newKeypair = nacl.sign.keyPair();
@@ -49,11 +47,11 @@ function initializeKey(): KeyPair {
 
 interface WithUserId {
   userId: string;
-};
+}
 
 async function handleLocalLookup(
   { userId }: WithUserId,
-  sendResponse: (response: unknown) => void,
+  sendResponse: (response: unknown) => void
 ): Promise<void> {
   try {
     sendResponse(await db.getValid(UserSettings)(userId));
@@ -65,7 +63,7 @@ async function handleLocalLookup(
     const newSettings = await db.set(userId, initialSettings);
     sendResponse(newSettings);
   }
-};
+}
 
 /**
  * handleServerLookup will be used to fetch settings from the server
@@ -75,14 +73,14 @@ async function handleLocalLookup(
  */
 async function handleServerLookup(
   payload: ServerLookup['payload'],
-  sendResponse: (response: ServerLookupResponse) => void,
+  sendResponse: (response: ServerLookupResponse) => void
 ): Promise<void> {
   sendResponse(null);
-};
+}
 
 async function handleConfigUpdate(
   payload: Partial<UserSettings>,
-  sendResponse: (response: Partial<UserSettings>) => void,
+  sendResponse: (response: Partial<UserSettings>) => void
 ): Promise<void> {
   const userId = FIXED_USER_NAME;
   const settings = await db.update(userId, payload);

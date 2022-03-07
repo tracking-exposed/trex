@@ -4,9 +4,8 @@ import log from '../logger';
 const bo = chrome;
 
 function handleReload(): void {
-  bo.runtime.sendMessage(
-    { type: 'ReloadExtension' },
-    () => log.info('reloading extension'),
+  bo.runtime.sendMessage({ type: 'ReloadExtension' }, () =>
+    log.info('reloading extension')
   );
 }
 

@@ -9,5 +9,4 @@ injected in the page. An event page, for example, can do cross-origin
 [Chrome Platform APIs](https://developer.chrome.com/extensions/api_index)).
 
 For now, we will just use
-[`XMLHttpRequest`](https://developer.chrome.com/extensions/xhr) and [`chrome
-alarms`](https://developer.chrome.com/extensions/alarms).
+[`XMLHttpRequest`](https://developer.chrome.com/extensions/xhr) and [`chrome alarms`](https://developer.chrome.com/extensions/alarms).
