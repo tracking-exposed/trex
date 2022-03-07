@@ -125,3 +125,5 @@ export const createParser = (): TikTokParser => {
     parseForYouFeed,
   };
 };
+
+export default createParser;
