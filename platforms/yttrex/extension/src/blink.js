@@ -19,7 +19,7 @@ import config from './config';
  * phases are all the div which can appears on the right bottom.
  * the function below is called in the code, when the condition is
  * met, and make append the proper span */
-function phase(path) {
+function updateUI(path) {
   const phases = {
     adv: { seen: advSeen },
     video: { seen: videoSeen, wait: videoWait, send: videoSend },
@@ -112,7 +112,7 @@ function advSeen(path) {
 }
 
 export {
-  phase,
+  updateUI,
   initializeBlinks,
   videoSeen,
   videoWait,

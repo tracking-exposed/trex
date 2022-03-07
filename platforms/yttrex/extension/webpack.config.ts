@@ -1,4 +1,4 @@
-import { getExtensionConfig } from '@shared/webpack/extension.config';
+import { getExtensionConfig } from '../../../packages/shared/src/webpack/extension.config';
 import dotenv from 'dotenv';
 import * as t from 'io-ts';
 import * as path from 'path';
@@ -19,10 +19,11 @@ const { buildENV, ...extensionConfig } = getExtensionConfig(
   {
     cwd: __dirname,
     entry: {
-      ext: path.resolve(__dirname, 'src/app.ts'),
+      app: path.resolve(__dirname, 'src/app.ts'),
       popup: path.resolve(__dirname, 'src/chrome/popup/index.js'),
       background: path.resolve(__dirname, 'src/chrome/background/index.js'),
     },
+    outputDir: path.resolve(__dirname, 'build'),
     env: t.strict(
       {
         NODE_ENV: t.union([t.literal('development'), t.literal('production')]),
