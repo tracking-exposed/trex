@@ -12,6 +12,7 @@ import {
   maxParallelWorkers,
   MONGO_URL,
 } from '../config/config';
+import { fstat } from 'fs';
 
 interface QueueItem {
   sourcePath: string;
@@ -45,10 +46,13 @@ const spawnWorker = async(collection: Collection): Promise<void> => {
     await mkdir(dirname(item.targetPath), { recursive: true });
     await rename(item.sourcePath, item.targetPath);
     const countryCode = basename(dirname(item.sourcePath));
+    const creationTime = parseInt(basename(item.sourcePath));
 
-    const result = parsed.map((data) => ({
+    const result = parsed.map((data, videoOrder) => ({
       ...data,
       countryCode,
+      creationTime: new Date(creationTime),
+      order: videoOrder + 1,
     }));
 
     if (parsed.length > 0) {
@@ -78,6 +82,9 @@ const main = async(): Promise<void> => {
   const db = dbClient.db('observatory');
   const collection = db.collection('metadata');
 
+  // this console print is helpful in the case someone start this script without
+  // knowing/remember what the script does. it would remind the main goal.
+  console.log("Waiting for new files in", massPath);
   chokidar.watch(massPath).on('add', (path, entry) => {
     if (entry?.isFile()) {
       queue.push({
