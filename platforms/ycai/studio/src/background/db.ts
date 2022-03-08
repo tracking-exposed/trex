@@ -1,5 +1,5 @@
 import { catchRuntimeLastError } from '@shared/providers/browser.provider';
-import { bo } from '@shared/utils/browser.utils';
+import { bo } from '@shared/extension/utils/browser.utils';
 import * as E from 'fp-ts/lib/Either';
 import { pipe } from 'fp-ts/lib/function';
 import { getAssignSemigroup } from 'fp-ts/lib/struct';

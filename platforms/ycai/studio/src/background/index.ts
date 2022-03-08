@@ -8,7 +8,7 @@ import {
   tabsQuery,
   toBrowserError,
 } from '@shared/providers/browser.provider';
-import { bo } from '@shared/utils/browser.utils';
+import { bo } from '@shared/extension/utils/browser.utils';
 import { fromStaticPath } from '@shared/utils/endpoint.utils';
 import { sequenceS } from 'fp-ts/lib/Apply';
 import * as E from 'fp-ts/lib/Either';

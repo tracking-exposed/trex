@@ -39,7 +39,7 @@ class Settings extends React.Component{
 
         function saveUpdate(payload) {
             bo.runtime.sendMessage({
-                type: 'configUpdate',
+                type: 'ConfigUpdate',
                 payload,
             }, (status) => {
                 console.log("status confirmed", status);

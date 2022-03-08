@@ -2,8 +2,8 @@ import { countBy } from 'lodash';
 import config from '../config';
 import { Hub } from '../hub';
 import log from '../logger';
-import { APIEvent } from '../models/HubEvent';
-import { getTimeISO8601 } from '../utils';
+import HubEvent, { APIEvent } from '../models/HubEvent';
+import { getTimeISO8601 } from '../utils/common.utils';
 
 interface Evidence {
   payload: APIEvent['payload'];
@@ -34,7 +34,7 @@ function handleAPIEvent(e: APIEvent): void {
   state.incremental++;
 }
 
-function apiSync(hub: Hub): void {
+function apiSync(hub: Hub<HubEvent>): void {
   if (state.content.length) {
     log.info(
       `APIsync — ${state.content.length} items (total since beginning: ${state.incremental})`,
@@ -59,8 +59,10 @@ function apiSync(hub: Hub): void {
   }
 }
 
-export function register(hub: Hub): void {
-  hub.on('APIEvent', handleAPIEvent).on('WindowUnload', () => apiSync(hub));
+export function register(hub: Hub<HubEvent>): void {
+  hub
+    .on<APIEvent>('APIEvent', handleAPIEvent)
+    .on('WindowUnload', () => apiSync(hub));
 
   window.setInterval(() => apiSync(hub), INTERVAL);
 }

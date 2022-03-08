@@ -1,10 +1,8 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import { createMuiTheme, ThemeProvider } from '@material-ui/core/styles';
-
+import { createTheme, ThemeProvider } from '@material-ui/core/styles';
 import Popup from './components/popup';
-
-const bo = chrome || browser;
+import { bo } from '@shared/extension/utils/browser.utils';
 
 const Zimplon = {
   fontFamily: 'Trex-Regular',
@@ -19,7 +17,7 @@ const Zimplon = {
     'U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF',
 };
 
-const theme = createMuiTheme({
+const theme = createTheme({
   typography: {
     fontFamily: 'Trex-Regular',
   },
@@ -41,16 +39,19 @@ if (config.NODE_ENV == 'development') {
 function main() {
   bo.runtime.sendMessage(
     {
-      type: 'localLookup',
+      type: 'LocalLookup',
       payload: {
         userId: 'local',
       },
     },
     (ucfg) => {
+      console.log(ucfg);
+
       const publicKey =
         ucfg && _.isString(ucfg.publicKey)
           ? ucfg.publicKey
           : 'missingPublicKey';
+
       ReactDOM.render(
         <ThemeProvider theme={theme}>
           <Popup publicKey={publicKey} />
