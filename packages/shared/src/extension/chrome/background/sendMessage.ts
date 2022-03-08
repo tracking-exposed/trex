@@ -1,13 +1,11 @@
+import { isLeft } from 'fp-ts/lib/Either';
 import * as t from 'io-ts';
 import { PathReporter } from 'io-ts/lib/PathReporter';
-import { isLeft } from 'fp-ts/lib/Either';
-
 import log from '../../logger';
 import { Message, ServerLookup } from '../../models/Message';
-import { UserSettings } from '../../models/UserSettings';
 import { ServerLookupResponse } from '../../models/ServerLookupResponse';
-
-const bo = chrome;
+import { UserSettings } from '../../models/UserSettings';
+import { bo } from '../../utils/browser.utils';
 
 const ifValid =
   <C extends t.Any>(codec: C) =>

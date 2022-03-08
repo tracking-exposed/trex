@@ -1,31 +1,20 @@
 {
   "extends": "../../../tsconfig.json",
   "compilerOptions": {
-    "module": "esnext",
-    "target": "es5",
-    "jsx": "react",
-    "noEmit": true,
     "allowJs": true,
-    "strict": true,
-    "esModuleInterop": true,
-    "noUnusedLocals": true,
-    "resolveJsonModule": true,
-    "forceConsistentCasingInFileNames": true,
-    "strictNullChecks": true,
-    "skipDefaultLibCheck": true,
-    "skipLibCheck": true,
-    "lib": ["dom", "ESNext"],
-    "typeRoots": [
-      "../../../node_modules/@types",
-      "../../../packages/shared/node_modules/@types",
-      "./node_modules/@types",
-      "./typings"
-    ],
     "baseUrl": "./src",
-    "allowSyntheticDefaultImports": true,
-    "noFallthroughCasesInSwitch": true,
-    "moduleResolution": "Node",
-    "isolatedModules": true,
+    "outDir": "./build/ts",
+    "esModuleInterop": true,
+    "jsx": "react",
+    "module": "esnext",
+    "moduleResolution": "node",
+    "noEmit": false,
+    "noImplicitAny": true,
+    "resolveJsonModule": true,
+    "strict": true,
+    "strictNullChecks": true,
+    "skipLibCheck": true,
+    "target": "es2015",
     "paths": {
       "@shared/*": ["../../../../packages/shared/src/*"]
     }
@@ -35,10 +24,9 @@
       "path": "../../../packages/shared"
     }
   ],
-  "include": ["./src", "./typings", "./webpack.config.ts"],
+  "include": ["./src"],
   "exclude": ["./jest.config.js", "./webpack.config.ts"],
   "ts-node": {
-    "require": ["tsconfig-paths/register"],
     "compilerOptions": {
       "module": "CommonJS"
     }

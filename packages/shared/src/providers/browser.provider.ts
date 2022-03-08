@@ -4,7 +4,7 @@ import * as R from 'fp-ts/lib/Record';
 import * as TE from 'fp-ts/lib/TaskEither';
 import * as t from 'io-ts';
 import { MinimalEndpointInstance, TypeOfEndpointInstance } from 'ts-endpoint';
-import { bo } from '../utils/browser.utils';
+import { bo } from '../extension/utils/browser.utils';
 import { getStaticPath } from '../utils/endpoint.utils';
 import { trexLogger } from '../logger';
 

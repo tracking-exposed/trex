@@ -5,6 +5,7 @@ import * as path from 'path';
 import { BooleanFromString } from 'io-ts-types/lib/BooleanFromString';
 import { NumberFromString } from 'io-ts-types/lib/NumberFromString';
 import packageJSON from './package.json';
+import format from 'date-fns/format'
 
 dotenv.config({
   path: path.resolve(__dirname, process.env.DOTENV_CONFIG_PATH ?? '.env'),
@@ -26,10 +27,12 @@ const { buildENV, ...extensionConfig } = getExtensionConfig(
     outputDir: path.resolve(__dirname, 'build'),
     env: t.strict(
       {
+        DEBUG: t.string,
         NODE_ENV: t.union([t.literal('development'), t.literal('production')]),
         API_ROOT: t.string,
         WEB_ROOT: t.string,
         VERSION: t.string,
+        BUILD: t.string,
         BUILD_DATE: t.string,
         FLUSH_INTERVAL: NumberFromString,
         DATA_CONTRIBUTION_ENABLED: BooleanFromString,
@@ -44,8 +47,7 @@ const { buildENV, ...extensionConfig } = getExtensionConfig(
         manifest.permissions = manifest.permissions.filter(
           (p: string) => !p.includes('localhost')
         );
-      }
-      if (extensionConfig.mode === 'development') {
+      } else if (extensionConfig.mode === 'development') {
         manifest.permissions = [
           'http://localhost:9000/',
           ...manifest.permissions,

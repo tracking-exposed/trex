@@ -1,5 +1,5 @@
 import api from '../api';
-const bo = chrome;
+import { bo } from '../../utils/browser.utils';
 
 bo.runtime.onMessage.addListener((request, sender, sendResponse) => {
   if (request.type === 'apiSync') {
