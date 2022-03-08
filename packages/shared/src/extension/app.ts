@@ -1,12 +1,13 @@
 import { localLookup, serverLookup } from './chrome/background/sendMessage';
 import config from './config';
 import { registerHandlers } from './handlers/index';
-import hub from './hub';
+import hub, { Hub } from './hub';
 import log from './logger';
 import { clearCache } from '../providers/dataDonation.provider';
 import { ServerLookup } from './models/Message';
 import * as dom from './dom';
 import _ from 'lodash';
+import HubEvent from './models/HubEvent';
 
 // instantiate a proper logger
 const appLog = log.extend('app');
@@ -14,6 +15,7 @@ const appLog = log.extend('app');
 export interface ObserverHandler {
   selector: string;
   color?: string;
+  parents?: number;
   handle: (n: HTMLElement, opts: Omit<ObserverHandler, 'handle'>) => void;
 }
 
@@ -27,6 +29,7 @@ interface SetupObserverOpts {
 interface BootOpts {
   payload: ServerLookup['payload'];
   observe: SetupObserverOpts;
+  hub: { onRegister: (h: Hub<HubEvent>) => void };
   onAuthenticated: (res: any) => void;
 }
 
@@ -87,10 +90,13 @@ function setupObserver({
 export function boot(opts: BootOpts): void {
   appLog.info('booting with config', config);
 
-  // Register all the event handlers.
+  // Register all common event handlers.
   // An event handler is a piece of code responsible for a specific task.
   // You can learn more in the [`./handlers`](./handlers/index.html) directory.
   registerHandlers(hub);
+
+  // register platform specific event handlers
+  opts.hub.onRegister(hub);
 
   // Lookup the current user and decide what to do.
   localLookup((settings) => {

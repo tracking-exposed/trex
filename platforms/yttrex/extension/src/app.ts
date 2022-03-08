@@ -25,40 +25,59 @@
 //   - comparativePage is the place where users accept to reproduce a videoSequence
 
 // Import other utils to handle the DOM and scrape data.
-import _, { isDate } from 'lodash';
-import config from './config';
-import hub from './hub';
-import { updateUI, initializeBlinks } from './blink';
-import consideredURLs from './consideredURLs';
-import { boot } from '@shared/extension/app';
+
+import { boot, ObserverHandler, refreshUUID } from '@shared/extension/app';
+import logger from '@shared/extension/logger';
+import config from '@shared/extension/config';
+import hub from './handlers/hub';
+import { sizeCheck } from '@shared/providers/dataDonation.provider';
 import differenceInSeconds from 'date-fns/differenceInSeconds';
-import { ObserverHandler } from '@shared/extension/app';
+import _, { isDate } from 'lodash';
+import { initializeBlinks, updateUI } from './blink';
+import consideredURLs from './consideredURLs';
+import * as ytHub from './handlers/events';
+import { bo } from '@shared/extension/utils/browser.utils';
 
-// bo is the browser object, in chrome is named 'chrome', in firefox is 'browser'
-// const bo = chrome || browser;
+const ytLogger = logger.extend('yt');
 
-// variable used to spot differences due to refresh and url change
-let randomUUID =
-  'INIT' +
-  Math.random().toString(36).substring(2, 13) +
-  Math.random().toString(36).substring(2, 13);
+// // variable used to spot differences due to refresh and url change
+let feedId = refreshUUID(0);
+let feedCounter = 0;
+let leavesCounter = 0;
 
 // to optimize the amount of reported data, we used a local cache
-let lastObservedSize = 1;
 let leavesCache: Record<string, any> = {};
 
+const getOffsetLeft = (element: HTMLElement): number => {
+  let offsetLeft = 0;
+  while (element) {
+    offsetLeft += element.offsetLeft;
+    element = element.offsetParent as any;
+  }
+  return offsetLeft;
+};
+
+const getOffsetTop = (element: HTMLElement): number => {
+  let offsetTop = 0;
+  while (element) {
+    offsetTop += element.offsetTop;
+    element = element.offsetParent as any;
+  }
+  return offsetTop;
+};
+
 function ytTrexActions(remoteInfo: any): void {
-  /* these functions are the main activity made in 
+  /* these functions are the main activity made in
        content_script, and ytTrexActions is a callback
        after remoteLookup */
-  console.log('remoteInfo available:', remoteInfo);
+  ytLogger.info('remoteInfo available:', remoteInfo);
 
   initializeBlinks();
 
   flush();
 }
 
-function processableURL(
+function isValidURL(
   validURLs: Record<string, RegExp>,
   location: Location
 ): undefined | number {
@@ -80,22 +99,29 @@ function processableURL(
 let lastMeaningfulURL: string;
 let urlkind: number | undefined;
 function onLocationChange(oldLocation: string, newLocation: string): void {
+  ytLogger.debug('Location changed: %s - %s', oldLocation, newLocation);
   const diff = newLocation !== lastMeaningfulURL;
 
+  // Considering the extension only runs on *.youtube.com
+  // we want to make sure the main code is executed only in
+  // website portion actually processed by us. If not, the
+  // blink maker would blink in BLUE.
+  // This code is executed by a window.setInterval because
+  // the location might change
+  urlkind = isValidURL(consideredURLs, window.location);
+
+  if (!urlkind) {
+    updateUI('video.wait');
+    return;
+  }
+
+  ytLogger.debug(
+    'Diff from last meaningful url (%s)?',
+    lastMeaningfulURL,
+    diff
+  );
+
   if (diff) {
-    // Considering the extension only runs on *.youtube.com
-    // we want to make sure the main code is executed only in
-    // website portion actually processed by us. If not, the
-    // blink maker would blink in BLUE.
-    // This code is executed by a window.setInterval because
-    // the location might change
-    urlkind = processableURL(consideredURLs, window.location);
-
-    if (!urlkind) {
-      updateUI('video.wait');
-      return;
-    }
-
     // client might duplicate the sending of the same
     // content, that's 'versionsSent' counter
     // using a random identifier (randomUUID), we spot the
@@ -103,110 +129,103 @@ function onLocationChange(oldLocation: string, newLocation: string): void {
     // also, here is cleaned the cache declared below
     updateUI('video.seen');
     lastMeaningfulURL = window.location.href;
-    cleanCache();
-    refreshUUID();
+    feedCounter++;
+    feedId = refreshUUID(feedCounter);
+    ytLogger.info(
+      'new feedId (%s), feed counter (%d) and video counter resetting after poking (%d)',
+      feedId,
+      feedCounter,
+      leavesCounter
+    );
+    leavesCounter = 0;
   }
 }
 
-function sizeCheck(nodeHTML: string): boolean {
-  // this function look at the LENGTH of the proposed element.
-  // this is used in video because the full html body page would be too big.
-  const s = _.size(nodeHTML);
+const handleLeaf = (
+  node: HTMLElement,
+  opts: Omit<ObserverHandler, 'handle'>
+): void => {
+  // command has .selector .parents .preserveInvisible (this might be undefined)
+  ytLogger.debug('handle leaf node %o with %o', node, opts);
+  const offsetTop = getOffsetTop(node);
+  const offsetLeft = getOffsetLeft(node);
 
-  // check if the increment is more than 4%, otherwise is not interesting
-  const percentile = 100 / s;
-  const percentage = _.round(percentile * lastObservedSize, 2);
-
-  if (percentage > 95) {
-    // console.log(`Skipping update as ${percentage}% of the page is already sent (size ${s}, lastObservedSize ${lastObservedSize}) ${window.location.pathname}`);
-    return false;
+  // this to highlight what is collected as fragments
+  if (config.ux) {
+    const style = {
+      border: `1px solid ${opts.color ? opts.color : 'red'}`,
+    };
+    ytLogger.debug('use custom style for development %O', style);
+    node.style.border = style.border;
+    // node.setAttribute(opts.selector, 'true');
+    // node.setAttribute('yttrex', '1');
   }
 
-  // this is the minimum size worthy of reporting
-  if (s < 100000) {
-    console.log('Too small to consider!', s);
-    return false;
+  let parentNode: Node | undefined;
+  // if escalation to parents, highlight with different color
+  if (opts.parents) {
+    parentNode = _.reduce<number, Node | undefined>(
+      _.times(opts.parents),
+      (acc) => {
+        ytLogger.debug('collecting parent', opts.selector, acc);
+        return acc?.parentNode ?? undefined;
+      },
+      node
+    );
   }
 
-  // console.log(`Valid update as a new ${_.round(100-percentage, 2)}% of the page have been received (size ${s}, lastObservedSize ${lastObservedSize}) ${window.location.pathname}`);
-  lastObservedSize = s;
-  return true;
-}
+  if (config.ux) {
+    (parentNode as any).style.border = `2px dotted ${
+      opts.color ? opts.color : 'red'
+    }`;
+  }
 
-const handleAd = _.debounce(
-  (node: HTMLElement, opts: Omit<ObserverHandler, 'handle'>): void => {
-    // command has .selector .parents .preserveInvisible (this might be undefined)
+  ytLogger.debug('Parent node', parentNode);
 
-    const offsetTop = getOffsetTop(node);
-    const offsetLeft = getOffsetLeft(node);
+  const html = (parentNode as any)?.outerHTML as string;
+  const hash = html.split('').reduce((a, b) => {
+    a = (a << 5) - a + b.charCodeAt(0);
+    return a & a;
+  }, 0);
 
-    // this to highlight what is collected as fragments
-    if (config.ux) {
-      node.style.border = '1px solid ' + (opts.color ? opts.color : 'red');
-      node.setAttribute(opts.selector, 'true');
-      node.setAttribute('yttrex', '1');
-    }
+  if (leavesCache[hash]) {
+    leavesCache[hash]++;
+    return;
+    console.log(
+      'ignoring because of cache',
+      hash,
+      leavesCache[hash],
+      opts.selector
+    );
+  }
 
-    // if escalation to parents, highlight with different color
-    // if (command.parents) {
-    //   selected = _.reduce(
-    //     _.times(command.parents),
-    //     function (memo) {
-    //       // console.log("collecting parent", selectorName, memo.tagName, memo.parentNode.tagName);
-    //       return memo.parentNode;
-    //     },
-    //     selected
-    //   );
+  // most of the time this doesn't happens: duplication are many!
+  // is debug-worthy remove the 'return' and send cache counter.
+  leavesCache[hash] = 1;
 
-    //   if (config.ux) selected.style.border = '3px dotted green';
-    // }
+  // helpful only at development time:
+  // const extra = extractor.mineExtraMetadata(selectorName, acquired);
+  // console.table(extra);
 
-    // if (command.screen) {
-    // no screencapture capability in the extension
-    // }
-
-    const html = node.outerHTML;
-    const hash = html.split('').reduce((a, b) => {
-      a = (a << 5) - a + b.charCodeAt(0);
-      return a & a;
-    }, 0);
-
-    if (leavesCache[hash]) {
-      leavesCache[hash]++;
-      return;
-      console.log(
-        'ignoring because of cache',
-        hash,
-        leavesCache[hash],
-        opts.selector
-      );
-    }
-    // most of the time this doesn't happens: duplication are many!
-    // is debug-worthy remove the 'return' and send cache counter.
-
-    leavesCache[hash] = 1;
-    // as it is the first observation, take infos and send it
-    const acquired = {
+  hub.dispatch({
+    type: 'leaf',
+    payload: {
       html,
       hash,
       offsetTop,
       offsetLeft,
       href: window.location.href,
       selectorName: opts.selector,
-      randomUUID,
-    };
+      randomUUID: feedId,
+    },
+  });
 
-    // helpful only at development time:
-    // const extra = extractor.mineExtraMetadata(selectorName, acquired);
-    // console.table(extra);
-
-    hub.event('newInfo', acquired);
-    updateUI('adv.seen');
-  },
-  300
-);
+  updateUI('adv.seen');
+};
 
 const handleVideo = _.debounce((node: HTMLElement): void => {
+  ytLogger.info('Handling video node %o', node);
+
   const sendableNode = document.querySelector('ytd-app');
   if (!sendableNode) {
     return;
@@ -214,15 +233,18 @@ const handleVideo = _.debounce((node: HTMLElement): void => {
 
   if (!sizeCheck(sendableNode.outerHTML)) return;
 
-  hub.event('newVideo', {
-    type: urlkind,
-    element: sendableNode.outerHTML,
-    size: sendableNode.outerHTML.length,
-    href: window.location.href,
-    randomUUID,
+  hub.dispatch({
+    type: 'NewVideo',
+    payload: {
+      type: urlkind,
+      element: sendableNode.outerHTML,
+      size: sendableNode.outerHTML.length,
+      href: window.location.href,
+      randomUUID: feedId,
+    },
   });
   updateUI('video.send');
-}, 1000);
+}, 2000);
 
 const watchedPaths = {
   video: {
@@ -233,146 +255,121 @@ const watchedPaths = {
     selector: '.video-ads.ytp-ad-module',
     parents: 4,
     color: 'blue',
-    handle: handleAd,
+    handle: handleLeaf,
   },
-  ad: {
+  videoPlayerAd: {
     selector: '.ytp-ad-player-overlay',
     parents: 4,
     color: 'darkblue',
-    handle: handleAd,
+    handle: handleLeaf,
   },
   overlay: {
     selector: '.ytp-ad-player-overlay-instream-info',
     parents: 4,
     color: 'lightblue',
-    handle: handleAd,
+    handle: handleLeaf,
   },
   toprightad: {
     selector: 'ytd-promoted-sparkles-web-renderer',
     parents: 3,
     color: 'aliceblue',
-    handle: handleAd,
+    handle: handleLeaf,
   },
   toprightpict: {
     selector: '.ytd-action-companion-ad-renderer',
     parents: 2,
     color: 'azure',
-    handle: handleAd,
+    handle: handleLeaf,
   },
-  toprightcta: {
-    selector: '.sparkles-light-cta',
-    parents: 1,
-    color: 'violetblue',
-    handle: handleAd,
-  },
-  toprightattr: {
-    selector: '[data-google-av-cxn]',
-    color: 'deeppink',
-    handle: handleAd,
-  },
-  adbadge: {
-    selector: '#ad-badge',
-    parents: 4,
-    color: 'deepskyblue',
-    handle: handleAd,
-  },
-  frontad: {
-    selector: 'ytd-banner-promo-renderer',
-    handle: handleAd,
-  },
+  // toprightcta: {
+  //   selector: '.sparkles-light-cta',
+  //   parents: 1,
+  //   color: 'violetblue',
+  //   handle: handleLeaf,
+  // },
+  // toprightattr: {
+  //   selector: '[data-google-av-cxn]',
+  //   color: 'deeppink',
+  //   handle: handleLeaf,
+  // },
+  // adbadge: {
+  //   selector: '#ad-badge',
+  //   parents: 4,
+  //   color: 'deepskyblue',
+  //   handle: handleLeaf,
+  // },
+  // frontad: {
+  //   selector: 'ytd-banner-promo-renderer',
+  //   handle: handleLeaf,
+  // },
   // video-ad-overlay-slot
-  channel1: {
-    selector: '[href^="/channel"]',
-    color: 'yellow',
-    parents: 1,
-    handle: handleAd,
-  },
-  channel2: {
-    selector: '[href^="/c"]',
-    color: 'yellow',
-    parents: 1,
-    handle: handleAd,
-  },
-  channel3: {
-    selector: '[href^="/user"]',
-    color: 'yellow',
-    parents: 1,
-    handle: () => {},
-  },
-  searchcard: {
-    selector: '.ytd-search-refinement-card-renderer',
-    handle: () => {},
-  },
-  channellink: { selector: '.channel-link', handle: () => {} },
-  searchAds: {
-    selector: '.ytd-promoted-sparkles-text-search-renderer',
-    parents: 2,
-    handle: handleAd,
-  },
-};
-
-const getOffsetLeft = (element: HTMLElement): number => {
-  let offsetLeft = 0;
-  while (element) {
-    offsetLeft += element.offsetLeft;
-    element = element.offsetParent as any;
-  }
-  return offsetLeft;
-};
-
-const getOffsetTop = (element: HTMLElement): number => {
-  let offsetTop = 0;
-  while (element) {
-    offsetTop += element.offsetTop;
-    element = element.offsetParent as any;
-  }
-  return offsetTop;
+  // channel1: {
+  //   selector: '[href^="/channel"]',
+  //   color: 'yellow',
+  //   parents: 1,
+  //   handle: handleLeaf,
+  // },
+  // channel2: {
+  //   selector: '[href^="/c"]',
+  //   color: 'yellow',
+  //   parents: 1,
+  //   handle: handleLeaf,
+  // },
+  // channel3: {
+  //   selector: '[href^="/user"]',
+  //   color: 'yellow',
+  //   parents: 1,
+  //   handle: () => {},
+  // },
+  // searchcard: {
+  //   selector: '.ytd-search-refinement-card-renderer',
+  //   handle: () => {},
+  // },
+  // channellink: { selector: '.channel-link', handle: () => {} },
+  // searchAds: {
+  //   selector: '.ytd-promoted-sparkles-text-search-renderer',
+  //   parents: 2,
+  //   handle: handleLeaf,
+  // },
 };
 
 function cleanCache() {
   leavesCache = {};
-  lastObservedSize = 1;
 }
 
 var lastCheck: Date;
-function refreshUUID() {
-  const REFERENCE = 3;
-  if (lastCheck && isDate(lastCheck)) {
-    var timed = differenceInSeconds(new Date(), lastCheck);
-    if (timed > REFERENCE) {
-      randomUUID =
-        Math.random().toString(36).substring(2, 15) +
-        Math.random().toString(36).substring(2, 15); /*
-            console.log(
-                "-> It is more than", REFERENCE, timed.asSeconds(),
-                "Refreshed randomUUID", randomUUID); */
-    } else {
-      /*
-            console.log("-> It is less then", REFERENCE, timed.asSeconds()); */
-    }
-  }
-  lastCheck = new Date();
-}
 
 function flush() {
   window.addEventListener('beforeunload', (e) => {
-    hub.event('windowUnload');
+    hub.dispatch({ type: 'WindowUnload' });
   });
 }
 
 // Before booting the app, we need to update the current configuration
-// with some values we can retrieve only from the `chrome`space.
+// with some values we can retrieve only from the `chrome` space.
 
-console.log('hereeeee');
-
-boot({
-  payload: {
-    config,
-    href: window.location.href,
-  } as any,
-  observe: {
-    handlers: watchedPaths,
-    onLocationChange,
-  },
-  onAuthenticated: ytTrexActions,
+bo.runtime.sendMessage({ type: 'chromeConfig' }, (config) => {
+  ytLogger.info('Booting app with config %O', config);
+  try {
+    boot({
+      payload: {
+        config,
+        href: window.location.href,
+      } as any,
+      observe: {
+        handlers: watchedPaths,
+        onLocationChange,
+      },
+      hub: {
+        onRegister: (hub) => {
+          ytLogger.debug('Registering handlers to hub');
+          // register platform handler
+          ytHub.register(hub);
+        },
+      },
+      onAuthenticated: ytTrexActions,
+    });
+  } catch (e) {
+    console.error(e);
+  }
 });

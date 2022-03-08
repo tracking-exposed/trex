@@ -14,6 +14,7 @@ import webpack from 'webpack';
 import { BundleAnalyzerPlugin } from 'webpack-bundle-analyzer';
 import { trexLogger } from '../logger';
 import MiniCssExtractPlugin from 'mini-css-extract-plugin';
+import format from 'date-fns/format';
 
 const webpackLogger = trexLogger.extend('webpack');
 
@@ -98,11 +99,13 @@ const getConfig = <E extends t.Props>(
 
   webpackLogger.debug('Build ENV %O', buildENV);
 
+  const buildDate = new Date();
   const appEnv = pipe(
     {
       ...process.env,
       NODE_ENV: mode,
-      BUILD_DATE: new Date().toISOString(),
+      BUILD_DATE: buildDate.toISOString(),
+      BUILD: `On ${format(buildDate, 'PPPPpppp')}`,
     },
     opts.env.decode,
     (validation) => {
@@ -235,7 +238,7 @@ const getConfig = <E extends t.Props>(
     },
 
     resolve: {
-      extensions: ['.ts', '.tsx', '.js', '.jsx'],
+      extensions: ['.js', '.jsx', '.ts', '.tsx'],
       plugins: [
         new TsconfigPathsPlugin({
           // configFile: tsConfigFile,

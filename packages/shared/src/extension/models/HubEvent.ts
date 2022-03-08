@@ -1,18 +1,6 @@
 export interface HubEventBase {
-  type: HubEvent['type'];
+  type: string;
   payload?: unknown;
-}
-
-export interface NewVideoEvent extends HubEventBase {
-  type: 'NewVideo';
-  payload: {
-    feedCounter: number;
-    feedId: string;
-    href: string;
-    html: string;
-    rect: DOMRect;
-    videoCounter: number;
-  };
 }
 
 export interface APIEvent extends HubEventBase {
@@ -34,22 +22,6 @@ export interface FullSaveEvent<N> extends HubEventBase {
     href: string;
     reason: string;
     size: number;
-  };
-}
-
-export interface SearchEvent extends HubEventBase {
-  type: 'Search';
-  payload: {
-    html: string;
-    href: string;
-  };
-}
-
-export interface SuggestedEvent extends HubEventBase {
-  type: 'Suggested';
-  payload: {
-    html: string;
-    href: string;
   };
 }
 
@@ -84,10 +56,7 @@ export interface WindowUnloadEvent extends HubEventBase {
 }
 
 export type HubEvent =
-  | NewVideoEvent
   | WindowUnloadEvent
-  | SearchEvent
-  | SuggestedEvent
   | FullSaveEvent<any>
   | SyncResponseEvent
   | APISyncResponseEvent
