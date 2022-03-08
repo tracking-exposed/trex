@@ -10,11 +10,8 @@ import FormHelperText from '@material-ui/core/FormHelperText';
 import InfoBox from './InfoBox';
 import Settings from './settings';
 import GetCSV from './getCSV';
-
+import { bo } from '@shared/extension/utils/browser.utils';
 import config from '../../../config';
-
-// bo is the browser object, in chrome is named 'chrome', in firefox is 'browser'
-const bo = chrome || browser;
 
 const styles = {
   width: '400px',
@@ -24,13 +21,17 @@ class Popup extends React.Component {
   constructor(props) {
     super(props);
     this.state = { status: 'fetching' };
+    // this is redundant
     try {
-      bo.runtime.sendMessage({ type: 'localLookup' }, (userSettings) => {
-        console.log('here got', userSettings);
-        if (userSettings && userSettings.publicKey)
-          this.setState({ status: 'done', data: userSettings });
-        else this.setState({ status: 'error', data: userSettings });
-      });
+      bo.runtime.sendMessage(
+        { type: 'LocalLookup', payload: { userId: 'local' } },
+        (userSettings) => {
+          console.log('here got', userSettings);
+          if (userSettings && userSettings.publicKey)
+            this.setState({ status: 'done', data: userSettings });
+          else this.setState({ status: 'error', data: userSettings });
+        }
+      );
     } catch (e) {
       console.log('catch error', e.message, runtime.lastError);
       this.state = { status: 'error', data: '' };
@@ -57,7 +58,11 @@ class Popup extends React.Component {
               Extension isn't initialized yet —{' '}
               <strong>
                 Access{' '}
-                <a href="https://www.youtube.com" target="_blank" rel="noreferrer">
+                <a
+                  href="https://www.youtube.com"
+                  target="_blank"
+                  rel="noreferrer"
+                >
                   yutube.com
                 </a>
                 .

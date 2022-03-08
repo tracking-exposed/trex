@@ -4,7 +4,7 @@ import { isLeft } from 'fp-ts/lib/Either';
 
 import $ from 'jquery';
 
-import { isEmpty } from '../utils';
+import { isEmpty } from '../utils/common.utils';
 import log from '../logger';
 
 const bo = chrome;
