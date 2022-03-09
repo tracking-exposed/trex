@@ -122,7 +122,7 @@ export async function getQueryList(req) {
   // /api/v2/queries/list
   // TODO support the queries that returned only errors?
 
-  const lastWeek = moment().subtract(1, 'week').startOf('day').toISOString();
+  const lastWeek = moment().subtract(3, 'week').startOf('day').toISOString();
   const mongoc = await mongo.clientConnect({ concurrency: 1 });
   const toomanyqueries = await mongo.aggregate(
     mongoc,
