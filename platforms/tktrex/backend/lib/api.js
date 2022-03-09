@@ -40,6 +40,9 @@ const apiList = {
   concludeExperiment3: require('../routes/experiments').conclude3,
   postDirective: require('../routes/directives').post,
   fetchDirective: require('../routes/directives').get,
+
+  /* and specificly for the email, opt-in, and who wants to be get updated */
+  registerEmail: require('../routes/emails').registerEmail,
 };
 
 export default apiList;
