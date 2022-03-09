@@ -197,6 +197,13 @@ app.get(
   async (req, res) => await iowrapper('experimentDOT', req, res)
 );
 
+/* subscription email */
+// from ycai is:
+// apiRouter.post('/v3/registerEmail', iowrapper('registerEmail'));
+app.post(
+  '/api/v1/registerEmail',
+  async (req, res) => await iowrapper('registerEmail', req, res)
+);
 /* ============== Documented only the API below ============== */
 
 /* TODO the JSON was v1 and should be fixed in site, the what should be a query string, should be timed params */
