@@ -1,12 +1,13 @@
 {
-  "schema": { 
-      "supporters": "supporters",
-      "stats": "trexstats",
-      "htmls": "htmls",
-      "metadata": "metadata",
-      "full": "full",
-      "directives": "directives",
-      "experiments": "experiments"
+  "schema": {
+    "supporters": "supporters",
+    "stats": "trexstats",
+    "htmls": "htmls",
+    "metadata": "metadata",
+    "full": "full",
+    "directives": "directives",
+    "emails": "emails",
+    "experiments": "experiments"
   },
 
   "mongoHost": "localhost",
