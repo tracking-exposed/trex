@@ -1,11 +1,12 @@
 import config from '../../config';
+import { bo } from '../../utils/browser.utils';
 
-const bo = chrome;
-
-if (config.DEVELOPMENT) {
-  bo.runtime.onMessage.addListener((request, sender, sendResponse) => {
-    if (request.type === 'ReloadExtension') {
-      bo.runtime.reload();
-    }
-  });
+export const load = (): void => {
+  if (config.DEVELOPMENT) {
+    bo.runtime.onMessage.addListener((request, sender, sendResponse) => {
+      if (request.type === 'ReloadExtension') {
+        bo.runtime.reload();
+      }
+    });
+  }
 }

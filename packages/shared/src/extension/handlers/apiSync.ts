@@ -61,7 +61,7 @@ function apiSync(hub: Hub<HubEvent>): void {
 
 export function register(hub: Hub<HubEvent>): void {
   hub
-    .on<APIEvent>('APIEvent', handleAPIEvent)
+    .on('APIEvent', handleAPIEvent)
     .on('WindowUnload', () => apiSync(hub));
 
   window.setInterval(() => apiSync(hub), INTERVAL);

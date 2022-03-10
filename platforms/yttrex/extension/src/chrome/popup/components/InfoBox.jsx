@@ -1,6 +1,5 @@
 import React from 'react';
-import config from '../../../config';
-
+import config from '@shared/extension/config';
 import { Card } from '@material-ui/core';
 import CardActions from '@material-ui/core/CardActions';
 import Button from '@material-ui/core/Button';

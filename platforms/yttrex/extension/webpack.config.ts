@@ -5,7 +5,6 @@ import * as path from 'path';
 import { BooleanFromString } from 'io-ts-types/lib/BooleanFromString';
 import { NumberFromString } from 'io-ts-types/lib/NumberFromString';
 import packageJSON from './package.json';
-import format from 'date-fns/format'
 
 dotenv.config({
   path: path.resolve(__dirname, process.env.DOTENV_CONFIG_PATH ?? '.env'),
@@ -22,7 +21,7 @@ const { buildENV, ...extensionConfig } = getExtensionConfig(
     entry: {
       app: path.resolve(__dirname, 'src/app.ts'),
       popup: path.resolve(__dirname, 'src/chrome/popup/index.js'),
-      background: path.resolve(__dirname, 'src/chrome/background/index.js'),
+      background: path.resolve(__dirname, 'src/chrome/background/index.ts'),
     },
     outputDir: path.resolve(__dirname, 'build'),
     env: t.strict(

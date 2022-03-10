@@ -27,16 +27,15 @@
 // Import other utils to handle the DOM and scrape data.
 
 import { boot, ObserverHandler, refreshUUID } from '@shared/extension/app';
-import logger from '@shared/extension/logger';
 import config from '@shared/extension/config';
-import hub from './handlers/hub';
+import logger from '@shared/extension/logger';
+import { bo } from '@shared/extension/utils/browser.utils';
 import { sizeCheck } from '@shared/providers/dataDonation.provider';
-import differenceInSeconds from 'date-fns/differenceInSeconds';
-import _, { isDate } from 'lodash';
+import _ from 'lodash';
 import { initializeBlinks, updateUI } from './blink';
 import consideredURLs from './consideredURLs';
 import * as ytHub from './handlers/events';
-import { bo } from '@shared/extension/utils/browser.utils';
+import hub from './handlers/hub';
 
 const ytLogger = logger.extend('yt');
 
@@ -231,7 +230,10 @@ const handleVideo = _.debounce((node: HTMLElement): void => {
     return;
   }
 
-  if (!sizeCheck(sendableNode.outerHTML)) return;
+  if (!sizeCheck(sendableNode.outerHTML)) {
+    ytLogger.debug('Page did not change much, returning...');
+    return;
+  }
 
   hub.dispatch({
     type: 'NewVideo',
@@ -281,56 +283,56 @@ const watchedPaths = {
     color: 'azure',
     handle: handleLeaf,
   },
-  // toprightcta: {
-  //   selector: '.sparkles-light-cta',
-  //   parents: 1,
-  //   color: 'violetblue',
-  //   handle: handleLeaf,
-  // },
-  // toprightattr: {
-  //   selector: '[data-google-av-cxn]',
-  //   color: 'deeppink',
-  //   handle: handleLeaf,
-  // },
-  // adbadge: {
-  //   selector: '#ad-badge',
-  //   parents: 4,
-  //   color: 'deepskyblue',
-  //   handle: handleLeaf,
-  // },
-  // frontad: {
-  //   selector: 'ytd-banner-promo-renderer',
-  //   handle: handleLeaf,
-  // },
+  toprightcta: {
+    selector: '.sparkles-light-cta',
+    parents: 1,
+    color: 'violetblue',
+    handle: handleLeaf,
+  },
+  toprightattr: {
+    selector: '[data-google-av-cxn]',
+    color: 'deeppink',
+    handle: handleLeaf,
+  },
+  adbadge: {
+    selector: '#ad-badge',
+    parents: 4,
+    color: 'deepskyblue',
+    handle: handleLeaf,
+  },
+  frontad: {
+    selector: 'ytd-banner-promo-renderer',
+    handle: handleLeaf,
+  },
   // video-ad-overlay-slot
-  // channel1: {
-  //   selector: '[href^="/channel"]',
-  //   color: 'yellow',
-  //   parents: 1,
-  //   handle: handleLeaf,
-  // },
-  // channel2: {
-  //   selector: '[href^="/c"]',
-  //   color: 'yellow',
-  //   parents: 1,
-  //   handle: handleLeaf,
-  // },
-  // channel3: {
-  //   selector: '[href^="/user"]',
-  //   color: 'yellow',
-  //   parents: 1,
-  //   handle: () => {},
-  // },
-  // searchcard: {
-  //   selector: '.ytd-search-refinement-card-renderer',
-  //   handle: () => {},
-  // },
-  // channellink: { selector: '.channel-link', handle: () => {} },
-  // searchAds: {
-  //   selector: '.ytd-promoted-sparkles-text-search-renderer',
-  //   parents: 2,
-  //   handle: handleLeaf,
-  // },
+  channel1: {
+    selector: '[href^="/channel"]',
+    color: 'yellow',
+    parents: 1,
+    handle: handleLeaf,
+  },
+  channel2: {
+    selector: '[href^="/c"]',
+    color: 'yellow',
+    parents: 1,
+    handle: handleLeaf,
+  },
+  channel3: {
+    selector: '[href^="/user"]',
+    color: 'yellow',
+    parents: 1,
+    handle: () => {},
+  },
+  searchcard: {
+    selector: '.ytd-search-refinement-card-renderer',
+    handle: () => {},
+  },
+  channellink: { selector: '.channel-link', handle: () => {} },
+  searchAds: {
+    selector: '.ytd-promoted-sparkles-text-search-renderer',
+    parents: 2,
+    handle: handleLeaf,
+  },
 };
 
 function cleanCache() {
