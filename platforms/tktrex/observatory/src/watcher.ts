@@ -12,7 +12,6 @@ import {
   maxParallelWorkers,
   MONGO_URL,
 } from '../config/config';
-import { fstat } from 'fs';
 
 interface QueueItem {
   sourcePath: string;
