@@ -47,7 +47,6 @@
     "@types/jest": "^27.5.1",
     "@types/pouchdb-find": "^6.3.7",
     "@types/pouchdb-node": "^6.1.4",
-    "@types/yaml": "^1.9.7",
     "canvas": "^2.9.1",
     "csv": "^6.0.5",
     "fp-ts": "^2.11.7",
