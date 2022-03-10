@@ -319,7 +319,7 @@ boot({
         'new feedId (%s), feed counter (%d) and video counter resetting after poking (%d)',
         feedId,
         feedCounter,
-        videoCounter
+        videoCounter,
       );
       videoCounter = 0;
     },

@@ -11,7 +11,7 @@ import InfoBox from './InfoBox';
 import Settings from './settings';
 import GetCSV from './getCSV';
 import { bo } from '@shared/extension/utils/browser.utils';
-import config from '../../../config';
+import config from '@shared/extension/config';
 
 const styles = {
   width: '400px',

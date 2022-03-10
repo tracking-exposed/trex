@@ -95,6 +95,24 @@ const AddEvents = Endpoint({
       'X-YTtrex-PublicKey': t.string,
       'X-YTtrex-Signature': t.string,
     }),
+    Body: t.array(
+      t.union([VideoContributionEvent, ADVContributionEvent]),
+      'AddEventsBody'
+    ),
+  },
+  Output: t.any,
+});
+
+const AddAPIEvents = Endpoint({
+  Method: 'POST',
+  getPath: () => `/v2/apiEvents`,
+  Input: {
+    Headers: t.type({
+      'X-TrEx-Version': t.string,
+      'X-TrEx-Build': t.string,
+      'X-TrEx-PublicKey': t.string,
+      'X-TrEx-Signature': t.string,
+    }),
     Body: t.array(t.union([VideoContributionEvent, ADVContributionEvent])),
   },
   Output: t.any,
@@ -170,6 +188,7 @@ export default {
     SearchesAsCSV,
     TikTokSearches,
     AddEvents,
+    AddAPIEvents,
     GetChannelADVStats,
     GetExperimentList,
     GetExperimentById,
