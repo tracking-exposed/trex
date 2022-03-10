@@ -20,7 +20,7 @@ nconf.argv().env().file({ file: 'config/settings.json' });
 
 const FREQUENCY = 15; // seconds
 const AMOUNT_DEFAULT = 20;
-const BACKINTIMEDEFAULT = 1; // minutes 
+const BACKINTIMEDEFAULT = 1; // minutes
 
 let skipCount = _.parseInt(nconf.get('skip')) ? _.parseInt(nconf.get('skip')) : 0;
 let htmlAmount = _.parseInt(nconf.get('amount')) ? _.parseInt(nconf.get('amount')) : AMOUNT_DEFAULT;

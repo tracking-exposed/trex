@@ -18,23 +18,6 @@ const FIXED_USER_NAME = 'local';
 // defaults of the settings stored in 'config' and controlled by popup
 const DEFAULT_SETTINGS = { active: true, ux: false };
 
-bo.runtime.onMessage.addListener((request: Message, sender, sendResponse) => {
-  if (request.type === 'LocalLookup') {
-    void handleLocalLookup(request.payload, sendResponse);
-    return true;
-  }
-
-  if (request.type === 'ServerLookup') {
-    void handleServerLookup(request.payload, sendResponse);
-    return true;
-  }
-
-  if (request.type === 'ConfigUpdate') {
-    void handleConfigUpdate(request.payload, sendResponse);
-    return true;
-  }
-});
-
 function initializeKey(): KeyPair {
   const newKeypair = nacl.sign.keyPair();
   const publicKey = bs58.encode(newKeypair.publicKey);
@@ -87,3 +70,22 @@ async function handleConfigUpdate(
   log.info('completed ConfigUpdate, user settings now', settings);
   sendResponse(settings);
 }
+
+export const load = (): void => {
+  bo.runtime.onMessage.addListener((request: Message, sender, sendResponse) => {
+    if (request.type === 'LocalLookup') {
+      void handleLocalLookup(request.payload, sendResponse);
+      return true;
+    }
+
+    if (request.type === 'ServerLookup') {
+      void handleServerLookup(request.payload, sendResponse);
+      return true;
+    }
+
+    if (request.type === 'ConfigUpdate') {
+      void handleConfigUpdate(request.payload, sendResponse);
+      return true;
+    }
+  });
+};
