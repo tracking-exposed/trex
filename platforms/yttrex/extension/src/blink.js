@@ -1,9 +1,8 @@
 /* eslint-disable */
 
 import _ from 'lodash';
-
 import { createPanel } from './panel';
-import config from './config';
+import config from '@shared/extension/config';
 
 /*
 .########..##.......####.##....##.##....##..######.

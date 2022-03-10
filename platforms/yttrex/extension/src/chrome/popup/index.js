@@ -45,8 +45,6 @@ function main() {
       },
     },
     (ucfg) => {
-      console.log(ucfg);
-
       const publicKey =
         ucfg && _.isString(ucfg.publicKey)
           ? ucfg.publicKey

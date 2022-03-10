@@ -65,7 +65,7 @@ function setupObserver({
   const observer = new MutationObserver(function (mutations) {
     mutations.forEach(function (mutation) {
       if (oldHref !== window.location.href) {
-        appLog.debug(`%s changed to %s, calling onLocationChange`);
+        appLog.debug(`%s changed to %s, calling onLocationChange`, oldHref, window.location.href);
         onLocationChange(oldHref, window.location.href);
         oldHref = window.location.href;
       }
@@ -110,7 +110,7 @@ export function boot(opts: BootOpts): void {
     config.ux = settings.ux;
 
     if (!config.active) {
-      appLog.info('tktrex disabled!');
+      appLog.info('trex disabled!');
       return null;
     }
 
