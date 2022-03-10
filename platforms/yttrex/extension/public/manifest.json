@@ -21,14 +21,13 @@
 
   "permissions": [
     "storage",
-    "http://localhost:9000/",
     "https://*.youtube.com/",
     "https://youtube.tracking.exposed/"
   ],
 
   "background": {
     "scripts": ["./background.js"],
-    "persistent": false
+    "persistent": true
   },
 
   "content_scripts": [
