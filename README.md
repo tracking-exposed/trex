@@ -21,7 +21,7 @@ For now, these are the following projects included:
 
 ### YCAI
 
-- Sponsored by the European Commission Ledger project in 2021, Develope by the technical team of [YouChoose AI](https://youchoose.ai) a project by Tracking Exposed. It is listed separately as we **consider YouChoose should develop its own governance**, reach out to us if you want to know more.
+- Sponsored by the [European Commission Ledger project in 2021](https://ledgerproject.eu), developed by the technical team of [YouChoose AI](https://youchoose.ai) a project by Tracking Exposed. It is listed separately as we **consider YouChoose should develop its own governance**, reach out to us if you want to know more.
 
 ### Extension package
 
