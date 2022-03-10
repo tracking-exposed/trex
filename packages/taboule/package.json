@@ -47,7 +47,7 @@
     "eslint-plugin-promise": "^5.2.0",
     "eslint-plugin-react": "^7.29.2",
     "prettier": "^2.5.1",
-    "ts-loader": "^9.2.6",
+    "ts-loader": "^9.2.7",
     "typelevel-ts": "^0.4.0",
     "webpack": "^5.69.1",
     "webpack-bundle-analyzer": "^4.5.0",
