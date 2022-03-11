@@ -12,12 +12,38 @@ import HubEvent from './models/HubEvent';
 // instantiate a proper logger
 const appLog = log.extend('app');
 
-export interface ObserverHandler {
-  selector: string;
+export interface BaseObserverHandler {
   color?: string;
-  parents?: number;
   handle: (n: HTMLElement, opts: Omit<ObserverHandler, 'handle'>) => void;
 }
+
+export interface SelectorObserverHandler extends BaseObserverHandler {
+  match: {
+    type: 'selector';
+    selector: string;
+  };
+}
+
+export interface SelectorWithParentsObserverHandler
+  extends BaseObserverHandler {
+  match: {
+    type: 'selector-with-parents';
+    selector: string;
+    parents: number;
+  };
+}
+
+export interface RouteObserverHandler extends BaseObserverHandler {
+  match: {
+    type: 'route';
+    location: RegExp;
+  };
+}
+
+export type ObserverHandler =
+  | SelectorObserverHandler
+  | SelectorWithParentsObserverHandler
+  | RouteObserverHandler;
 
 interface SetupObserverOpts {
   handlers: {
@@ -53,7 +79,12 @@ function setupObserver({
 }: SetupObserverOpts): void {
   Object.keys(handlers).forEach((h) => {
     const { handle, ...handler } = handlers[h];
-    dom.on(handler.selector, (node) => handle(node, handler));
+    if (
+      handler.match.type === 'selector' ||
+      handler.match.type === 'selector-with-parents'
+    ) {
+      dom.on(handler.match.selector, (node) => handle(node, handler));
+    }
   });
 
   appLog.info('listeners installed, selectors', handlers);
@@ -65,7 +96,11 @@ function setupObserver({
   const observer = new MutationObserver(function (mutations) {
     mutations.forEach(function (mutation) {
       if (oldHref !== window.location.href) {
-        appLog.debug(`%s changed to %s, calling onLocationChange`, oldHref, window.location.href);
+        appLog.debug(
+          `%s changed to %s, calling onLocationChange`,
+          oldHref,
+          window.location.href
+        );
         onLocationChange(oldHref, window.location.href);
         oldHref = window.location.href;
       }
