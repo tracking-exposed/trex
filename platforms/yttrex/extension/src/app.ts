@@ -26,7 +26,12 @@
 
 // Import other utils to handle the DOM and scrape data.
 
-import { boot, ObserverHandler, refreshUUID } from '@shared/extension/app';
+import {
+  boot,
+  BaseObserverHandler,
+  refreshUUID,
+  ObserverHandler,
+} from '@shared/extension/app';
 import config from '@shared/extension/config';
 import logger from '@shared/extension/logger';
 import { bo } from '@shared/extension/utils/browser.utils';
@@ -160,66 +165,66 @@ const handleLeaf = (
     // node.setAttribute('yttrex', '1');
   }
 
-  let parentNode: Node | undefined;
-  // if escalation to parents, highlight with different color
-  if (opts.parents) {
+  if (opts.match.type === 'selector-with-parents') {
+    let parentNode: Node | undefined;
+    // if escalation to parents, highlight with different color
+
     parentNode = _.reduce<number, Node | undefined>(
-      _.times(opts.parents),
+      _.times(opts.match.parents),
       (acc) => {
-        ytLogger.debug('collecting parent', opts.selector, acc);
+        ytLogger.debug('collecting parent', (opts.match as any).selector, acc);
         return acc?.parentNode ?? undefined;
       },
       node
     );
+
+    if (config.ux) {
+      (parentNode as any).style.border = `2px dotted ${
+        opts.color ? opts.color : 'red'
+      }`;
+    }
+
+    ytLogger.debug('Parent node', parentNode);
+
+    const html = (parentNode as any)?.outerHTML as string;
+    const hash = html.split('').reduce((a, b) => {
+      a = (a << 5) - a + b.charCodeAt(0);
+      return a & a;
+    }, 0);
+
+    if (leavesCache[hash]) {
+      leavesCache[hash]++;
+      return;
+      console.log(
+        'ignoring because of cache',
+        hash,
+        leavesCache[hash],
+        opts.match
+      );
+    }
+
+    // most of the time this doesn't happens: duplication are many!
+    // is debug-worthy remove the 'return' and send cache counter.
+    leavesCache[hash] = 1;
+
+    // helpful only at development time:
+    // const extra = extractor.mineExtraMetadata(selectorName, acquired);
+    // console.table(extra);
+
+    hub.dispatch({
+      type: 'leaf',
+      payload: {
+        html,
+        hash,
+        offsetTop,
+        offsetLeft,
+        href: window.location.href,
+        selectorName: opts.match.selector,
+        randomUUID: feedId,
+      },
+    });
+    updateUI('adv.seen');
   }
-
-  if (config.ux) {
-    (parentNode as any).style.border = `2px dotted ${
-      opts.color ? opts.color : 'red'
-    }`;
-  }
-
-  ytLogger.debug('Parent node', parentNode);
-
-  const html = (parentNode as any)?.outerHTML as string;
-  const hash = html.split('').reduce((a, b) => {
-    a = (a << 5) - a + b.charCodeAt(0);
-    return a & a;
-  }, 0);
-
-  if (leavesCache[hash]) {
-    leavesCache[hash]++;
-    return;
-    console.log(
-      'ignoring because of cache',
-      hash,
-      leavesCache[hash],
-      opts.selector
-    );
-  }
-
-  // most of the time this doesn't happens: duplication are many!
-  // is debug-worthy remove the 'return' and send cache counter.
-  leavesCache[hash] = 1;
-
-  // helpful only at development time:
-  // const extra = extractor.mineExtraMetadata(selectorName, acquired);
-  // console.table(extra);
-
-  hub.dispatch({
-    type: 'leaf',
-    payload: {
-      html,
-      hash,
-      offsetTop,
-      offsetLeft,
-      href: window.location.href,
-      selectorName: opts.selector,
-      randomUUID: feedId,
-    },
-  });
-
-  updateUI('adv.seen');
 };
 
 const handleVideo = _.debounce((node: HTMLElement): void => {
@@ -248,89 +253,141 @@ const handleVideo = _.debounce((node: HTMLElement): void => {
   updateUI('video.send');
 }, 2000);
 
-const watchedPaths = {
+const watchedPaths: { [key: string]: ObserverHandler } = {
   video: {
-    selector: 'h1.title',
+    match: {
+      type: 'route',
+      location: consideredURLs.home,
+    },
     handle: handleVideo,
   },
   banner: {
-    selector: '.video-ads.ytp-ad-module',
-    parents: 4,
+    match: {
+      type: 'selector-with-parents',
+      parents: 4,
+      selector: '.video-ads.ytp-ad-module',
+    },
     color: 'blue',
     handle: handleLeaf,
   },
   videoPlayerAd: {
-    selector: '.ytp-ad-player-overlay',
-    parents: 4,
+    match: {
+      type: 'selector-with-parents',
+      selector: '.ytp-ad-player-overlay',
+      parents: 4,
+    },
     color: 'darkblue',
     handle: handleLeaf,
   },
   overlay: {
-    selector: '.ytp-ad-player-overlay-instream-info',
-    parents: 4,
+    match: {
+      type: 'selector-with-parents',
+      selector: '.ytp-ad-player-overlay-instream-info',
+      parents: 4,
+    },
     color: 'lightblue',
     handle: handleLeaf,
   },
   toprightad: {
-    selector: 'ytd-promoted-sparkles-web-renderer',
-    parents: 3,
+    match: {
+      type: 'selector-with-parents',
+      selector: 'ytd-promoted-sparkles-web-renderer',
+      parents: 3,
+    },
     color: 'aliceblue',
     handle: handleLeaf,
   },
   toprightpict: {
-    selector: '.ytd-action-companion-ad-renderer',
-    parents: 2,
+    match: {
+      type: 'selector-with-parents',
+      selector: '.ytd-action-companion-ad-renderer',
+      parents: 2,
+    },
     color: 'azure',
     handle: handleLeaf,
   },
   toprightcta: {
-    selector: '.sparkles-light-cta',
-    parents: 1,
+    match: {
+      type: 'selector-with-parents',
+      selector: '.sparkles-light-cta',
+      parents: 1,
+    },
     color: 'violetblue',
     handle: handleLeaf,
   },
   toprightattr: {
-    selector: '[data-google-av-cxn]',
+    match: {
+      type: 'selector',
+      selector: '[data-google-av-cxn]',
+    },
     color: 'deeppink',
     handle: handleLeaf,
   },
   adbadge: {
-    selector: '#ad-badge',
-    parents: 4,
+    match: {
+      type: 'selector-with-parents',
+      selector: '#ad-badge',
+      parents: 4,
+    },
     color: 'deepskyblue',
     handle: handleLeaf,
   },
   frontad: {
-    selector: 'ytd-banner-promo-renderer',
+    match: {
+      type: 'selector',
+      selector: 'ytd-banner-promo-renderer',
+    },
     handle: handleLeaf,
   },
   // video-ad-overlay-slot
   channel1: {
-    selector: '[href^="/channel"]',
+    match: {
+      type: 'selector-with-parents',
+      selector: '[href^="/channel"]',
+      parents: 1,
+    },
     color: 'yellow',
-    parents: 1,
     handle: handleLeaf,
   },
   channel2: {
-    selector: '[href^="/c"]',
+    match: {
+      type: 'selector-with-parents',
+      selector: '[href^="/c"]',
+      parents: 1,
+    },
     color: 'yellow',
-    parents: 1,
     handle: handleLeaf,
   },
   channel3: {
-    selector: '[href^="/user"]',
+    match: {
+      type: 'selector-with-parents',
+      selector: '[href^="/user"]',
+      parents: 1,
+    },
     color: 'yellow',
-    parents: 1,
+
     handle: () => {},
   },
   searchcard: {
-    selector: '.ytd-search-refinement-card-renderer',
+    match: {
+      type: 'selector',
+      selector: '.ytd-search-refinement-card-renderer',
+    },
     handle: () => {},
   },
-  channellink: { selector: '.channel-link', handle: () => {} },
+  channellink: {
+    match: {
+      type: 'selector',
+      selector: '.channel-link',
+    },
+    handle: () => {},
+  },
   searchAds: {
-    selector: '.ytd-promoted-sparkles-text-search-renderer',
-    parents: 2,
+    match: {
+      type: 'selector-with-parents',
+      selector: '.ytd-promoted-sparkles-text-search-renderer',
+      parents: 2,
+    },
     handle: handleLeaf,
   },
 };
