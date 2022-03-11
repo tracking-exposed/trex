@@ -24,7 +24,7 @@ function initializeEmergencyButton(): void {
   element.setAttribute('id', 'full--save');
   element.setAttribute(
     'style',
-    'position: fixed; top:50%; left: 1rem; display: flex; font-size: 3em; cursor: pointer; flex-direction: column; z-index: 9999; visibility: visible;'
+    'position: fixed; top:50%; left: 1rem; display: flex; font-size: 3em; cursor: pointer; flex-direction: column; z-index: 9999; visibility: visible;',
   );
   element.innerText = '💾';
   document.body.appendChild(element);
@@ -43,7 +43,7 @@ function tktrexActions(remoteInfo: unknown): void {
   // so an interval take place here
   setInterval(
     () => _.debounce(handleInterceptedData, 5000, { trailing: true }),
-    5000
+    5000,
   );
   flush();
 }
@@ -87,7 +87,7 @@ function fullSave(): void {
           feedId,
         },
       });
-    })
+    }),
   );
 }
 
@@ -98,7 +98,7 @@ function fullSave(): void {
 
 const handleInterceptedData = (): void => {
   const itemNodes = document.body.querySelectorAll(
-    tkHandlers.apiInterceptor.selector
+    tkHandlers.apiInterceptor.selector,
   );
 
   if (itemNodes.length === 0) {
@@ -139,13 +139,13 @@ const handleSearch = _.debounce((element: Node): void => {
   const dat = document.querySelectorAll(tkHandlers.search.selector);
   const te = _.map(
     document.querySelectorAll(tkHandlers.error.selector),
-    'textContent'
+    'textContent',
   );
   if (dat.length === 0 && !te.includes('No results found')) {
     appLog.debug(
       'Matched invalid h2:',
       te,
-      '(which got ignored because they are not errors)'
+      '(which got ignored because they are not errors)',
     );
     return;
   }
@@ -207,7 +207,7 @@ const handleVideo = _.debounce((node: HTMLElement): void => {
         if (memo.parentNode.outerHTML.length > 10000) {
           appLog.debug(
             'handleVideo: parentNode > 10000',
-            memo.parentNode.outerHTML.length
+            memo.parentNode.outerHTML.length,
           );
           return memo;
         }
@@ -216,13 +216,13 @@ const handleVideo = _.debounce((node: HTMLElement): void => {
 
       return memo;
     },
-    node
+    node,
   );
 
   if (videoRoot.hasAttribute('trex')) {
     appLog.info(
       'element already acquired: skipping',
-      videoRoot.getAttribute('trex')
+      videoRoot.getAttribute('trex'),
     );
 
     return;
