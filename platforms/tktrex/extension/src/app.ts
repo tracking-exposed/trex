@@ -1,4 +1,9 @@
-import { boot, refreshUUID } from '@shared/extension/app';
+import {
+  boot,
+  ObserverHandler,
+  refreshUUID,
+  SelectorObserverHandler,
+} from '@shared/extension/app';
 import config from '@shared/extension/config';
 import log from '@shared/extension/logger';
 import { sizeCheck } from '@shared/providers/dataDonation.provider';
@@ -98,7 +103,7 @@ function fullSave(): void {
 
 const handleInterceptedData = (): void => {
   const itemNodes = document.body.querySelectorAll(
-    tkHandlers.apiInterceptor.selector,
+    (tkHandlers.apiInterceptor.match as any).selector,
   );
 
   if (itemNodes.length === 0) {
@@ -136,9 +141,9 @@ const handleSearch = _.debounce((element: Node): void => {
 
   // it is lame to do a double check only because they are both searches,
   // but somehow now it is seems the best solution
-  const dat = document.querySelectorAll(tkHandlers.search.selector);
+  const dat = document.querySelectorAll(searchHandler.match.selector);
   const te = _.map(
-    document.querySelectorAll(tkHandlers.error.selector),
+    document.querySelectorAll(errorHandler.match.selector),
     'textContent',
   );
   if (dat.length === 0 && !te.includes('No results found')) {
@@ -259,42 +264,69 @@ function flush(): void {
   });
 }
 
+const searchHandler: SelectorObserverHandler = {
+  match: {
+    type: 'selector',
+    selector: '[data-e2e="search-card-desc"]',
+  },
+  handle: handleSearch,
+};
+
+const errorHandler: SelectorObserverHandler = {
+  match: {
+    type: 'selector',
+    selector: 'h2',
+  },
+  handle: handleSearch,
+};
 /**
  * selector with relative handler
  * configuration
  */
-const tkHandlers = {
+const tkHandlers: { [key: string]: ObserverHandler } = {
   video: {
-    selector: 'video',
+    match: {
+      type: 'selector',
+      selector: 'video',
+    },
     handle: handleVideo,
   },
   suggested: {
-    selector: 'div[class$="DivUserContainer"]',
+    match: {
+      type: 'selector',
+      selector: 'div[class$="DivUserContainer"]',
+    },
     handle: handleSuggested,
   },
   title: {
-    selector: 'h1',
+    match: {
+      type: 'selector',
+      selector: 'h1',
+    },
     handle: () => undefined,
   },
-  error: {
-    selector: 'h2',
-    handle: handleSearch,
-  },
+  error: errorHandler,
   /* not currently used 'creator' */
   creator: {
-    selector: 'a[href^="/@"]',
+    match: {
+      type: 'selector',
+      selector: 'a[href^="/@"]',
+    },
     handle: () => undefined,
   },
-  search: {
-    selector: '[data-e2e="search-card-desc"]',
-    handle: handleSearch,
-  },
+  search: searchHandler,
   apiInterceptor: {
-    selector: `div.${INTERCEPTED_ITEM_CLASS}`,
+    match: {
+      type: 'selector',
+      selector: `div.${INTERCEPTED_ITEM_CLASS}`,
+    },
     handle: handleInterceptedData,
   },
   sigiExperiment: {
-    selector: '#sigi-persisted-data',
+    match: {
+      type: 'selector',
+      selector: '#sigi-persisted-data',
+    },
     handle: handleSigi,
   },
 };
