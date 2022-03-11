@@ -1,4 +1,5 @@
 import { trexLogger } from '@shared/logger';
+import { VideoMetadata } from '../models/Metadata';
 import { addSeconds, differenceInSeconds } from 'date-fns';
 import * as t from 'io-ts';
 import { date } from 'io-ts-types/lib/date';
@@ -6,41 +7,55 @@ import _ from 'lodash';
 import moment from 'moment';
 import querystring from 'querystring';
 import url from 'url';
-import { HTMLSource } from '../lib/parser/types';
+import { HTMLSource } from '../lib/parser/html';
 import utils from '../lib/utils'; // this because parseLikes is an utils to be used also with version of the DB without the converted like. but should be a parsing related-only library once the issue with DB version is solved
 import longlabel from './longlabel';
 import * as shared from './shared';
 import uxlang from './uxlang';
+import { ParsedInfo } from 'models/Metadata';
 
 const videoLog = trexLogger.extend('video');
 
-export const VideoResult = t.strict(
-  {
-    index: t.number,
-    verified: t.boolean,
-    videoId: t.string,
-    parameter: t.union([t.string, t.null]),
-    sectionName: t.union([t.string, t.null]),
-    recommendedSource: t.union([t.string, t.null]),
+// export const VideoResult = t.strict(
+//   {
+//     index: t.number,
+//     textTitle: t.string,
+//     error: t.union([t.any, t.undefined]),
+//     verified: t.boolean,
+//     videoId: t.string,
+//     parameter: t.union([t.string, t.null]),
+//     sectionName: t.union([t.string, t.null]),
+//     recommendedSource: t.union([t.string, t.null]),
+//     recommendedHref: t.union([t.string, t.null]),
+//     recommendedTitle: t.union([t.string, t.null]),
+//     recommendedLength: t.number,
+//     recommendedDisplayL: t.union([t.string, t.null]),
+//     recommendedLengthText: t.union([t.string, t.null]),
+//     recommendedPubTime: t.union([date, t.null]),
+//     /* ^^^^  is deleted in makeAbsolutePublicationTime, when clientTime is available,
+//      * this field produces -> recommendedPubtime and ptPrecison */
+//     recommendedRelativeSeconds: t.union([t.number, t.null]),
+//     recommendedViews: t.union([t.number, t.null]),
+//     isLive: t.boolean,
+//     label: t.union([t.string, t.null]),
+//     elems: t.number,
+//     // additional props
+//     href: t.union([t.string, t.undefined]),
+//     source: t.union([t.string, t.undefined]),
+//     authorName: t.union([t.string, t.undefined]),
+//     authorSource: t.union([t.string, t.undefined]),
+//     authorHref: t.union([t.string, t.null]),
+//     thumbnailHref: t.union([t.string, t.null]),
+//     link: t.union([t.string, t.undefined]),
+//     displayTime: t.union([t.string, t.null]),
+//     expandedTime: t.union([t.string, t.null]),
+//     liveBadge: t.union([t.boolean, t.null]),
+//     aria: t.union([t.string, t.null]),
+//   },
+//   'VideoResult'
+// );
 
-    recommendedHref: t.union([t.string, t.null]),
-    recommendedTitle: t.union([t.string, t.null]),
-    recommendedLength: t.number,
-    recommendedDisplayL: t.union([t.string, t.null]),
-    recommendedLengthText: t.union([t.string, t.null]),
-    recommendedPubTime: t.union([date, t.null]),
-    /* ^^^^  is deleted in makeAbsolutePublicationTime, when clientTime is available,
-     * this field produces -> recommendedPubtime and ptPrecison */
-    recommendedRelativeSeconds: t.union([t.number, t.null]),
-    recommendedViews: t.union([t.number, t.null]),
-    isLive: t.boolean,
-    label: t.union([t.string, t.null]),
-    elems: t.number,
-  },
-  'VideoResult'
-);
-
-export type VideoResult = t.TypeOf<typeof VideoResult>;
+// export type VideoResult = t.TypeOf<typeof VideoResult>;
 
 export const VideoProcessResult = t.strict(
   {
@@ -63,21 +78,35 @@ export type VideoProcessResult = t.TypeOf<typeof VideoProcessResult>;
 
 const stats = { skipped: 0, error: 0, suberror: 0, success: 0 };
 
-function parseViews(D: Document): any {
+interface Views {
+  viewStr: string | undefined;
+  viewNumber: number;
+}
+
+function parseViews(D: Document): Views {
   const node = _.first(D.getElementsByClassName('view-count'));
   const viewStr = node?.innerHTML;
   const tmp = _.first(viewStr?.split(' '));
   const viewNumber = _.parseInt(tmp?.replace(/[.,]/g, '') ?? '');
-  return { viewStr: viewStr, viewNumber: viewNumber };
+  const views = { viewStr, viewNumber };
+  videoLog.debug('Views: %O', views);
+  return views;
 }
 
-function parseLikes(D: Document): any {
+interface Likes {
+  likes: string;
+  dislikes: string;
+}
+
+function parseLikes(D: Document): Likes {
   const nodes = D.querySelectorAll(
     '.ytd-toggle-button-renderer > yt-formatted-string'
   );
   const likes = nodes[0].getAttribute('aria-label');
   const dislikes = nodes[1].getAttribute('aria-label');
-  return { likes: likes, dislikes: dislikes };
+  const likeInfo = { likes: likes ?? '', dislikes: dislikes ?? '' };
+  videoLog.debug('Like info: %O', likeInfo);
+  return likeInfo;
 }
 
 export function closestForTime(
@@ -152,7 +181,7 @@ export function checkUpDebug(r): void {
   if (_.size(debstr)) videoLog.debug('%s\n\t%d\t%s', debstr, r.index, r.label);
 }
 
-function relatedMetadata(e: any, i: number): VideoResult | null {
+function relatedMetadata(e: any, i: number): ParsedInfo | null {
   videoLog.debug('event %O at index %d', e, i);
   // here we find metadata inside the preview snippet on the right column
   let foryou, mined;
@@ -231,20 +260,20 @@ function relatedMetadata(e: any, i: number): VideoResult | null {
 }
 
 export interface VideoResultAbsolutePubTime
-  extends Omit<VideoResult, 'recommendedPubTime'> {
+  extends Omit<ParsedInfo, 'recommendedPubTime'> {
   publicationTime: Date | null;
   timePrecision: string;
 }
 
 export function makeAbsolutePublicationTime(
-  list: VideoResult[],
+  list: Array<Omit<ParsedInfo, 'publicationTime' | 'timePrecision'>>,
   clientTime: Date
 ): VideoResultAbsolutePubTime[] {
   /* this function is call before video.js and home.js return their 
        metadata. clientTime isn't visibile in parsing function so the relative
        transformation of '1 month ago', is now a moment.duration() object 
        and now is saved the estimated ISODate format. */
-  return _.map(list, function (r): VideoResultAbsolutePubTime {
+  return _.map(list, function (r, i): VideoResultAbsolutePubTime {
     // console.log({ clientTime, recommendedPubTime: r?.recommendedPubTime });
     if (!clientTime || !r?.recommendedPubTime) {
       return {
@@ -298,7 +327,7 @@ export function parseSingleTry(D, memo, spec): any {
 
 function manyTries(D: Document, opportunities): any {
   const r = _.reduce(opportunities, _.partial(parseSingleTry, D), null);
-  // debug("manyTries: %j: %s", _.map(opportunities, 'name'), r);
+  videoLog.debug('manyTries: %j: %s', _.map(opportunities, 'name'), r);
   return r;
 }
 
@@ -343,7 +372,7 @@ export function mineAuthorInfo(D: Document): AuthorInfo | null {
 }
 
 export function simpleTitlePicker(D: Document): string | null {
-  return _.reduce(
+  const title = _.reduce(
     D.querySelectorAll('h1'),
     function (memo, ne) {
       if (memo) return memo;
@@ -352,6 +381,20 @@ export function simpleTitlePicker(D: Document): string | null {
     },
     null as string | null
   );
+
+  if (title) {
+    return title;
+  }
+
+  const videoLabel =
+    D.querySelector('#video-title')?.getAttribute('aria-label');
+
+  if (videoLabel) {
+    const titleFromAriaLabel = longlabel.parser(videoLabel, '', '');
+    videoLog.debug('Title from aria label %s', titleFromAriaLabel);
+    return titleFromAriaLabel.title;
+  }
+  return null;
 }
 
 export function processVideo(
@@ -359,7 +402,7 @@ export function processVideo(
   blang: string,
   clientTime: Date,
   urlinfo: url.UrlWithStringQuery
-): VideoProcessResult {
+): VideoMetadata {
   /* this method to extract title was a nice experiment
    * and/but should be refactored and upgraded */
   let title = manyTries(D, [
@@ -378,6 +421,7 @@ export function processVideo(
       func: 'textContent',
     },
   ]);
+
   if (!title) title = simpleTitlePicker(D);
 
   if (!title) {
@@ -428,17 +472,20 @@ export function processVideo(
   let likeInfo: {
     watchedLikes: number | null;
     watchedDislikes: number | null;
-  } | null = null;
+  } = {
+    watchedLikes: null,
+    watchedDislikes: null,
+  };
   try {
     viewInfo = parseViews(D);
-    likeInfo = parseLikes(D);
-    const numeredInteractions = utils.parseLikes(likeInfo);
+    const likes = parseLikes(D);
+    const numeredInteractions = utils.parseLikes(likes);
     likeInfo = {
       watchedLikes: numeredInteractions.watchedLikes,
       watchedDislikes: numeredInteractions.watchedDislikes,
     };
   } catch (error) {
-    videoLog.error('viewInfo and linkInfo not available');
+    videoLog.error('viewInfo and linkInfo not available: %O', error);
   }
 
   let login: boolean | null = null;
@@ -455,7 +502,7 @@ export function processVideo(
   return {
     title,
     type: 'video',
-    params,
+    params: params as any,
     videoId,
     login,
     publicationString,
@@ -465,11 +512,11 @@ export function processVideo(
     related,
     viewInfo,
     likeInfo,
-  };
+  } as any;
 }
 
-export function process(envelop: HTMLSource): VideoProcessResult | null {
-  let extracted: VideoProcessResult;
+export function process(envelop: HTMLSource): VideoMetadata | null {
+  let extracted: VideoMetadata;
 
   try {
     extracted = processVideo(
@@ -482,8 +529,8 @@ export function process(envelop: HTMLSource): VideoProcessResult | null {
   } catch (e) {
     videoLog.error(
       'Error in video.process %s (%j): %s\n\t-> %s',
-      envelop.impression?.href ?? '',
-      envelop.impression?.nature,
+      envelop.html?.href ?? '',
+      envelop.html?.nature,
       e.message,
       e.stack.split('\n')[1]
     );
@@ -492,9 +539,9 @@ export function process(envelop: HTMLSource): VideoProcessResult | null {
 
   const re = _.filter(extracted.related, { error: true });
   stats.suberror += _.size(re);
-  const ve = _.filter(extracted.viewInfo, { error: true });
+  const ve = _.filter(extracted.viewInfo, { error: true } as any);
   stats.suberror += _.size(ve);
-  const le = _.filter(extracted.likeInfo, { error: true });
+  const le = _.filter(extracted.likeInfo, { error: true } as any);
   stats.suberror += _.size(le);
 
   if (_.size(re))

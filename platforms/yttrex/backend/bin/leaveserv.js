@@ -20,7 +20,7 @@ nconf.argv().env().file({ file: 'config/settings.json' });
 
 const FREQUENCY = 15; // seconds
 const AMOUNT_DEFAULT = 20;
-const BACKINTIMEDEFAULT = 1; // minutes
+const BACKINTIMEDEFAULT = 1; // minutes 
 
 let skipCount = _.parseInt(nconf.get('skip')) ? _.parseInt(nconf.get('skip')) : 0;
 let htmlAmount = _.parseInt(nconf.get('amount')) ? _.parseInt(nconf.get('amount')) : AMOUNT_DEFAULT;
@@ -38,7 +38,9 @@ const allowedSelectors = [ "banner", "ad", "overlay", "toprightad",
 
 if(selector) {
     if(allowedSelectors.indexOf(selector) === -1) {
-        throw new Error(`Error ${selector} should be one of ${allowedSelectors}`)
+        // eslint-disable-next-line no-console
+        return console
+            .log(`Error ${selector} should be one of ${allowedSelectors}`);
     }
 }
 
@@ -272,7 +274,7 @@ async function fetchAndAnalyze(filter) {
         computedFrequency = FREQUENCY;
         return;
     } else {
-        computedFrequency = 0.1;
+        computedFrequency = 0.01;
         nodatacounter = 0;
     }
 
@@ -373,12 +375,14 @@ async function wrapperLoop() {
 
 try {
     if(filter && id) {
-        throw new Error("Invalid combo, you can't use --filter and --id");
+        // eslint-disable-next-line no-console
+        return console.log("Invalid combo, you can't use --filter and --id");
     }
 
     if(selector) {
         if(id) {
-            throw new Error("Invalid combo, you can't use --selector and --id");
+            // eslint-disable-next-line no-console
+            return console.log("Invalid combo, you can't use --selector and --id");
         }
         debug("Targeting selectorName %s", selector);
     }

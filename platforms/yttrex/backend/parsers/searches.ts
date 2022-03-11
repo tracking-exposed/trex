@@ -1,5 +1,5 @@
 import { differenceInSeconds, formatDistanceToNow } from 'date-fns';
-import { HTMLSource } from 'lib/parser/types';
+import { HTMLSource } from 'lib/parser/html';
 import { SearchMetadata } from 'models/Metadata';
 import D from 'debug';
 import _ from 'lodash';
@@ -101,7 +101,7 @@ function dissectVideoAndParents(video, i: number): any {
       order: i,
       published: arinfo.timeago
         ? formatDistanceToNow(arinfo.timeago, {
-            includeSeconds: false
+            includeSeconds: false,
           }).replace(/about\s/gi, '')
         : null,
       secondsAgo: arinfo.timeago
@@ -130,7 +130,7 @@ export function process(envelop: HTMLSource): SearchMetadata | null {
   if (!videos.length) {
     debuge(
       "Search result of %s doesn't seem having any video!",
-      envelop.impression?.nature?.query
+      (envelop.html?.nature as any)?.query
     );
     return null;
   }
@@ -157,13 +157,13 @@ export function process(envelop: HTMLSource): SearchMetadata | null {
   const correction = envelop.jsdom.querySelector('yt-search-query-correction');
 
   const retval: SearchMetadata = {
-    ...envelop.html.nature,
+    ...(envelop.html.nature as any),
     href: envelop.html.href,
     clientTime: envelop.html.clientTime,
     blang: envelop.html.blang,
     results,
     correction: [],
-  } as any;
+  };
   /* this is the only optional field, and might have two or four elements in the list */
   if (correction) retval.correction = unpackCorrection(correction);
 

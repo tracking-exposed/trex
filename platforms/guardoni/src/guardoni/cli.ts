@@ -167,6 +167,7 @@ const runGuardoni = ({
 }: any): Promise<void> => {
   if (verbose) {
     if (config) {
+      // eslint-disable-next-line
       console.log(`Configuration loaded from ${config}`, guardoniConf);
     }
   }
