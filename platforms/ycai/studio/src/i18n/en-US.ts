@@ -159,6 +159,8 @@ const resources: CustomTypeOptions['resources'] = {
     advertising_connected_to_your_videos_title: 'Advertising',
     advertising_connected_to_your_videos_subtitle: 'Ads ran on your videos',
     advertising_empty_data: 'No advertising data collected yet on your channel',
+    helpertext:
+      'The Analytics page gives you insights \nabout how YouTube algorithm \ntreats your content. \n\nThese statistics are not available \non the YouTube studio. \n\nThey are computed thanks to data donations\n from the YouChoose user community.',
   },
   videos: {
     no_results: 'No videos found.',
