@@ -33,7 +33,7 @@ const state = {
 
 export const hub = new Hub<TKHubEvent>();
 
-function handleVideo(e: NewVideoEvent): void {
+export function handleVideo(e: NewVideoEvent): void {
   const videoEvent = {
     ...e.payload,
     clientTime: now(),
@@ -42,7 +42,7 @@ function handleVideo(e: NewVideoEvent): void {
   };
 
   const videoIndex = state.content.findIndex(
-    (ee) => e.payload.href === ee.href,
+    (ee) => e.payload.href === ee.href
   );
 
   if (videoIndex < 0) {
@@ -77,7 +77,7 @@ function sync(hub: Hub<TKHubEvent>): void {
   if (state.content.length) {
     log.info(
       `data sync — ${state.content.length} items (total since beginning: ${state.incremental})`,
-      countBy(state.content, 'type'),
+      countBy(state.content, 'type')
     );
     // Send timelines to the page handling the communication with the API.
     // This might be refactored using something compatible to the HUB architecture.
@@ -87,11 +87,12 @@ function sync(hub: Hub<TKHubEvent>): void {
         payload: state.content,
         userId: 'local',
       },
-      (response) =>
+      (response) => {
         hub.dispatch({
           type: 'SyncResponse',
           payload: response,
-        }),
+        });
+      }
     );
     state.content = [];
   }

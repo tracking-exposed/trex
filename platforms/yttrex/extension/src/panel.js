@@ -142,6 +142,9 @@ export function createPanel (events, helpBody = '') {
 
 function checkTheatreMode () {
   const container = document.getElementById('panel')
+  if (!container) {
+    return;
+  }
   const videoElements = [...document.querySelectorAll('video')];
 
   // NOTE: is there a YouTube state where there more then one video in the page?
