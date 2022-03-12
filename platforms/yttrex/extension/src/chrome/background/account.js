@@ -9,7 +9,7 @@ import config from '../../config';
 import api from '../api';
 import db from '../db';
 
-const FIXED_USER_NAME = 'local';
+export const FIXED_USER_NAME = 'local';
 
 // defaults of the settings stored in 'config' and controlled by popup
 const DEFAULT_SETTINGS = {

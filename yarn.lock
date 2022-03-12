@@ -4196,7 +4196,7 @@ __metadata:
     "@types/jest": ^27.4.1
     "@types/mongodb": ^4.0.7
     "@types/node": ^16.11.26
-    "@types/yargs": ^17.0.8
+    "@types/yargs": ^17.0.9
     "@typescript-eslint/eslint-plugin": ^5.12.1
     "@typescript-eslint/parser": ^5.12.1
     eslint: ^8.10.0
@@ -5186,7 +5186,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/jest@npm:*, @types/jest@npm:^27.4.0, @types/jest@npm:^27.4.1":
+"@types/jest@npm:*, @types/jest@npm:^27.4.1":
   version: 27.4.1
   resolution: "@types/jest@npm:27.4.1"
   dependencies:
@@ -5290,10 +5290,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/nconf@npm:^0.10.1":
-  version: 0.10.1
-  resolution: "@types/nconf@npm:0.10.1"
-  checksum: fd3581a4ca0683abfdf05170a29eaccb8354c162d6d82b823b203a3208cf3897aa7af7b475b0721c17993bdff87b266d153dcd322ca0194fceb8cf55b1fb3b0c
+"@types/nconf@npm:^0.10.2":
+  version: 0.10.2
+  resolution: "@types/nconf@npm:0.10.2"
+  checksum: 5b5f33d2dfebc6d07b6ae5b8d75afa7b02963a1cada19534fc0ba0aa09a077ebb14e602a68244acc2363bbae6c7d2cfa97571ef26ebce1e96c37aae2c184225e
   languageName: node
   linkType: hard
 
@@ -5699,7 +5699,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/unzipper@npm:^0":
+"@types/unzipper@npm:^0.10.5":
   version: 0.10.5
   resolution: "@types/unzipper@npm:0.10.5"
   dependencies:
@@ -5776,12 +5776,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/yaml@npm:^1":
-  version: 1.9.6
-  resolution: "@types/yaml@npm:1.9.6"
+"@types/yaml@npm:^1.9.7":
+  version: 1.9.7
+  resolution: "@types/yaml@npm:1.9.7"
   dependencies:
     yaml: "*"
-  checksum: 3df74c9d4028641e2ed710b627ac533e97707713ac17c665df5cc477602f77925a3ceeaf5db76c7400ea42be114609bba990079907e89219ffd905a539997469
+  checksum: 0cdbf1857d89ade9b7d00aa09f2e0a2a56b707870b1dc1387f5be5398cd60c3f92bb32a543471147d2eaf38919f921391e0ade34fc9e1e022c7d67fb1a0da73c
   languageName: node
   linkType: hard
 
@@ -5801,12 +5801,21 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/yargs@npm:^17.0.1, @types/yargs@npm:^17.0.8":
+"@types/yargs@npm:^17.0.1":
   version: 17.0.8
   resolution: "@types/yargs@npm:17.0.8"
   dependencies:
     "@types/yargs-parser": "*"
   checksum: 63d06700ffbed745f00d7994eb92416649c8a3ead22f26446979d383f3af52fa9400bb185268f3a44a2348749098ffe33a8185ca676b77bc3206c63b8b73fd01
+  languageName: node
+  linkType: hard
+
+"@types/yargs@npm:^17.0.9":
+  version: 17.0.9
+  resolution: "@types/yargs@npm:17.0.9"
+  dependencies:
+    "@types/yargs-parser": "*"
+  checksum: 333621b33785622974bd10269201d999d48729d5ffa619930fcf1f85e2d0b4785cff3f7b08c8e0ee2e8f75b2ead846bb0acc90ec4d5a652f1a95388e51f84037
   languageName: node
   linkType: hard
 
@@ -6438,7 +6447,7 @@ __metadata:
     "@types/body-parser": ^1.19.2
     "@types/cors": ^2.8.12
     "@types/jest": ^27.4.1
-    "@types/nconf": ^0.10.1
+    "@types/nconf": ^0.10.2
     "@types/node": ^16.11.26
     "@types/supertest": ^2.0.11
     "@types/uuid": ^8.3.4
@@ -8854,7 +8863,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"canvas@npm:^2.9.1":
+"canvas@npm:^2.9.0, canvas@npm:^2.9.1":
   version: 2.9.1
   resolution: "canvas@npm:2.9.1"
   dependencies:
@@ -15063,20 +15072,21 @@ __metadata:
     "@material-ui/lab": ^4.0.0-alpha.60
     "@pmmmwh/react-refresh-webpack-plugin": ^0.5.4
     "@types/lodash": ^4.14.179
-    "@types/nconf": ^0.10.1
+    "@types/nconf": ^0.10.2
     "@types/pouchdb-find": ^6.3.7
     "@types/pouchdb-node": ^6.1.4
     "@types/prettier": ^2.4.4
     "@types/react": 17.0.39
     "@types/react-dom": ^17.0.11
-    "@types/unzipper": ^0
+    "@types/unzipper": ^0.10.5
     "@types/webpack-node-externals": ^2.5.3
-    "@types/yaml": ^1
-    "@types/yargs": ^17.0.8
+    "@types/yaml": ^1.9.7
+    "@types/yargs": ^17.0.9
     "@typescript-eslint/eslint-plugin": ^5.12.1
     "@typescript-eslint/parser": ^5.12.1
     axios: ^0.24.0
     bufferutil: ^4.0.6
+    canvas: ^2.9.0
     chalk: ^5.0.0
     csv-parse: ^4.16.3
     csv-stringify: ^6.0.5
@@ -15103,6 +15113,7 @@ __metadata:
     lodash: ^4.17.21
     nconf: ^0.11.3
     node-fetch: ^2.6.7
+    node-loader: ^2.0.0
     node-polyfill-webpack-plugin: ^1.1.4
     pkg: ^5.5.2
     pouchdb-find: ^7.2.2
@@ -28072,9 +28083,9 @@ __metadata:
   resolution: "tt-observatory@workspace:platforms/tktrex/observatory"
   dependencies:
     "@types/chokidar": ^2.1.3
-    "@types/jest": ^27.4.0
+    "@types/jest": ^27.4.1
     "@types/lodash": ^4.14.179
-    "@types/node": ^16.11.22
+    "@types/node": ^16.11.26
     "@typescript-eslint/eslint-plugin": ^5.10.2
     "@typescript-eslint/parser": ^5.10.2
     chokidar: ^3.5.3
