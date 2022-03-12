@@ -139,7 +139,7 @@ jobs:
             guardoni/dist
             platforms/tktrex/extension/build
             platforms/ycai/studio/build
-            platforms/yttrex/extension/dist
+            platforms/yttrex/extension/build
 
       - name: Setup Node.js
         uses: actions/setup-node@v2
@@ -179,7 +179,7 @@ jobs:
             guardoni/dist
             platforms/tktrex/extension/build
             platforms/ycai/studio/build
-            platforms/yttrex/extension/dist
+            platforms/yttrex/extension/build
 
       - name: Setup Node.js
         uses: actions/setup-node@v2
@@ -212,5 +212,5 @@ jobs:
             guardoni/dist/Guardoni*.exe
             platforms/tktrex/extension/dist/*.zip
             platforms/ycai/studio/build/extension/*.zip
-            platforms/yttrex/extension/dist/yttrex-*.zip
-            platforms/yttrex/extension/dist/guardoni-yttrex-*.zip
+            platforms/yttrex/extension/build/extension/yttrex-*.zip
+            platforms/yttrex/extension/build/extension/guardoni-yttrex-*.zip
