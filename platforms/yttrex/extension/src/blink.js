@@ -57,7 +57,8 @@ function initializeBlinks() {
 <div>
     <h2>
         <a href="https://youtube.tracking.exposed" target=_blank>youtube</a>.<a href="https://tracking.exposed" target=_blank>tracking.exposed</a> is currently enabled!
-    </h2><hr />
+    </h2>
+    <hr />
     <p style="font-size: 1.2rem">This is a browser extention you installed. Data is processed for academic and digital activism purposes, we can use your evidence by clicking on the extension icon.</p>
     <p style="font-size: 1.2rem">You can see the nearby icons <span>${logo(
       '10px',

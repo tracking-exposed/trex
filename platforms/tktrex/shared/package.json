@@ -10,7 +10,7 @@
   "devDependencies": {
     "@types/jest": "^27.4.1",
     "@types/node": "^16.11.26",
-    "@types/yargs": "^17.0.8",
+    "@types/yargs": "^17.0.9",
     "@typescript-eslint/eslint-plugin": "^5.12.1",
     "@typescript-eslint/parser": "^5.12.1",
     "eslint": "^8.10.0",
@@ -29,7 +29,7 @@
     "@types/mongodb": "^4.0.7",
     "fp-ts": "^2.11.8",
     "io-ts": "^2.2.16",
-    "linkedom": "^0.13.2",
+    "linkedom": "^0.14.4",
     "mongodb": "^4.3.1"
   },
   "version": "2.4.5"
