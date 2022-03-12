@@ -4177,7 +4177,7 @@ __metadata:
     "@types/jest": ^27.4.1
     "@types/mongodb": ^4.0.7
     "@types/node": ^16.11.26
-    "@types/yargs": ^17.0.8
+    "@types/yargs": ^17.0.9
     "@typescript-eslint/eslint-plugin": ^5.12.1
     "@typescript-eslint/parser": ^5.12.1
     eslint: ^8.10.0
@@ -4189,7 +4189,7 @@ __metadata:
     fp-ts: ^2.11.8
     io-ts: ^2.2.16
     jest: ^27.5.1
-    linkedom: ^0.13.2
+    linkedom: ^0.14.4
     mongodb: ^4.3.1
     ts-jest: ^27.1.3
     ts-node: ^10.7.0
@@ -5156,7 +5156,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/jest@npm:*, @types/jest@npm:^27.4.0, @types/jest@npm:^27.4.1":
+"@types/jest@npm:*, @types/jest@npm:^27.4.1":
   version: 27.4.1
   resolution: "@types/jest@npm:27.4.1"
   dependencies:
@@ -5260,10 +5260,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/nconf@npm:^0.10.1":
-  version: 0.10.1
-  resolution: "@types/nconf@npm:0.10.1"
-  checksum: fd3581a4ca0683abfdf05170a29eaccb8354c162d6d82b823b203a3208cf3897aa7af7b475b0721c17993bdff87b266d153dcd322ca0194fceb8cf55b1fb3b0c
+"@types/nconf@npm:^0.10.2":
+  version: 0.10.2
+  resolution: "@types/nconf@npm:0.10.2"
+  checksum: 5b5f33d2dfebc6d07b6ae5b8d75afa7b02963a1cada19534fc0ba0aa09a077ebb14e602a68244acc2363bbae6c7d2cfa97571ef26ebce1e96c37aae2c184225e
   languageName: node
   linkType: hard
 
@@ -5669,7 +5669,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/unzipper@npm:^0":
+"@types/unzipper@npm:^0.10.5":
   version: 0.10.5
   resolution: "@types/unzipper@npm:0.10.5"
   dependencies:
@@ -5746,12 +5746,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/yaml@npm:^1":
-  version: 1.9.6
-  resolution: "@types/yaml@npm:1.9.6"
+"@types/yaml@npm:^1.9.7":
+  version: 1.9.7
+  resolution: "@types/yaml@npm:1.9.7"
   dependencies:
     yaml: "*"
-  checksum: 3df74c9d4028641e2ed710b627ac533e97707713ac17c665df5cc477602f77925a3ceeaf5db76c7400ea42be114609bba990079907e89219ffd905a539997469
+  checksum: 0cdbf1857d89ade9b7d00aa09f2e0a2a56b707870b1dc1387f5be5398cd60c3f92bb32a543471147d2eaf38919f921391e0ade34fc9e1e022c7d67fb1a0da73c
   languageName: node
   linkType: hard
 
@@ -5771,12 +5771,21 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/yargs@npm:^17.0.1, @types/yargs@npm:^17.0.8":
+"@types/yargs@npm:^17.0.1":
   version: 17.0.8
   resolution: "@types/yargs@npm:17.0.8"
   dependencies:
     "@types/yargs-parser": "*"
   checksum: 63d06700ffbed745f00d7994eb92416649c8a3ead22f26446979d383f3af52fa9400bb185268f3a44a2348749098ffe33a8185ca676b77bc3206c63b8b73fd01
+  languageName: node
+  linkType: hard
+
+"@types/yargs@npm:^17.0.9":
+  version: 17.0.9
+  resolution: "@types/yargs@npm:17.0.9"
+  dependencies:
+    "@types/yargs-parser": "*"
+  checksum: 333621b33785622974bd10269201d999d48729d5ffa619930fcf1f85e2d0b4785cff3f7b08c8e0ee2e8f75b2ead846bb0acc90ec4d5a652f1a95388e51f84037
   languageName: node
   linkType: hard
 
@@ -6408,7 +6417,7 @@ __metadata:
     "@types/body-parser": ^1.19.2
     "@types/cors": ^2.8.12
     "@types/jest": ^27.4.1
-    "@types/nconf": ^0.10.1
+    "@types/nconf": ^0.10.2
     "@types/node": ^16.11.26
     "@types/supertest": ^2.0.11
     "@types/uuid": ^8.3.4
@@ -14985,16 +14994,16 @@ __metadata:
     "@material-ui/lab": ^4.0.0-alpha.60
     "@pmmmwh/react-refresh-webpack-plugin": ^0.5.4
     "@types/lodash": ^4.14.179
-    "@types/nconf": ^0.10.1
+    "@types/nconf": ^0.10.2
     "@types/pouchdb-find": ^6.3.7
     "@types/pouchdb-node": ^6.1.4
     "@types/prettier": ^2.4.4
     "@types/react": 17.0.39
     "@types/react-dom": ^17.0.11
-    "@types/unzipper": ^0
+    "@types/unzipper": ^0.10.5
     "@types/webpack-node-externals": ^2.5.3
-    "@types/yaml": ^1
-    "@types/yargs": ^17.0.8
+    "@types/yaml": ^1.9.7
+    "@types/yargs": ^17.0.9
     "@typescript-eslint/eslint-plugin": ^5.12.1
     "@typescript-eslint/parser": ^5.12.1
     axios: ^0.24.0
@@ -15020,7 +15029,7 @@ __metadata:
     io-ts: ^2.2.16
     io-ts-types: ^0.5.16
     jest: ^27.5.1
-    linkedom: ^0.14.2
+    linkedom: ^0.14.4
     lodash: ^4.17.21
     nconf: ^0.11.3
     node-fetch: ^2.6.7
@@ -18485,42 +18494,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"linkedom@npm:^0.13.2":
-  version: 0.13.7
-  resolution: "linkedom@npm:0.13.7"
+"linkedom@npm:^0.14.4":
+  version: 0.14.4
+  resolution: "linkedom@npm:0.14.4"
   dependencies:
     css-select: ^4.2.1
     cssom: ^0.5.0
     html-escaper: ^3.0.3
     htmlparser2: ^7.2.0
     uhyphen: ^0.1.0
-  checksum: 3e5c10b042c9b2c63720199821ceae5a9edc13b17aa62b0a4ab92d754f860fd7ffa831158ca74f34d11b751cc4d33b67f5f50eb7db13d8ac866a754a7df2fb34
-  languageName: node
-  linkType: hard
-
-"linkedom@npm:^0.14.2":
-  version: 0.14.2
-  resolution: "linkedom@npm:0.14.2"
-  dependencies:
-    css-select: ^4.2.1
-    cssom: ^0.5.0
-    html-escaper: ^3.0.3
-    htmlparser2: ^7.2.0
-    uhyphen: ^0.1.0
-  checksum: 8d4e65a52fbcebac09f48e58074c77da16f307aaf6a05d699f1c08b8246b317f09b3958a73b13d9e4307601ee9a0aa273022de3b43e19528962c43a947181aa6
-  languageName: node
-  linkType: hard
-
-"linkedom@npm:^0.14.3":
-  version: 0.14.3
-  resolution: "linkedom@npm:0.14.3"
-  dependencies:
-    css-select: ^4.2.1
-    cssom: ^0.5.0
-    html-escaper: ^3.0.3
-    htmlparser2: ^7.2.0
-    uhyphen: ^0.1.0
-  checksum: c71ea7287a14be018502bfc4ee53835b3014629b7c1cbc8a468984456d95863b01bba1a0ffb18e8ce851209e317125ead7d078d974c7c1c65567e0852a1127a2
+  checksum: ae41520873322e9ae1a88dfe9ea469d9e62bd8cd2afd3828bb57b930bc451a582d2632d04b2975e861c25b52166e009536de4c3ddc755d204cc6941d663487a4
   languageName: node
   linkType: hard
 
@@ -27953,9 +27936,9 @@ __metadata:
   resolution: "tt-observatory@workspace:platforms/tktrex/observatory"
   dependencies:
     "@types/chokidar": ^2.1.3
-    "@types/jest": ^27.4.0
+    "@types/jest": ^27.4.1
     "@types/lodash": ^4.14.179
-    "@types/node": ^16.11.22
+    "@types/node": ^16.11.26
     "@typescript-eslint/eslint-plugin": ^5.10.2
     "@typescript-eslint/parser": ^5.10.2
     chokidar: ^3.5.3
@@ -27966,7 +27949,7 @@ __metadata:
     eslint-plugin-promise: ^5.2.0
     eslint-plugin-react: ^7.28.0
     jest: ^27.4.7
-    linkedom: ^0.14.3
+    linkedom: ^0.14.4
     lodash: ^4.17.21
     mongodb: ^4.4.1
     safer-eval: ^1.3.6
