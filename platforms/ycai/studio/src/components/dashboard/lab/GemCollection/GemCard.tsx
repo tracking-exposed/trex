@@ -123,13 +123,13 @@ const GemCard: React.FC<GemCard> = ({ data, onDeleteClick }) => {
   return (
     <Card className={classes.root}>
       <Grid container spacing={1}>
-        <Grid item xs={3}>
+        <Grid item xs={5}>
           <div className={classes.imageContainer}>
             <ImageWithGemPlaceholder src={data.image} title={data.title} />
           </div>
         </Grid>
 
-        <Grid item xs={8} className={classes.body}>
+        <Grid item xs={6} className={classes.body}>
           <Box className={classes.right} display="flex" flexDirection="column">
             <CharLimitedTypography
               className={`${classes.title} ${classes.clamped}`}
