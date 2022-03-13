@@ -5,6 +5,7 @@
     "noEmit": true,
     "strictNullChecks": true,
     "allowUnusedLabels": false,
+    "downlevelIteration": true,
     "isolatedModules": true,
     "esModuleInterop": true,
     "rootDir": "./"
