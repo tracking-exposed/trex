@@ -1,0 +1,10 @@
+HTTP/1.1 200 OK
+x-luminati-ip: r60f615b652d6fd9d43bb6849438d2db7
+x-luminati-timeline: z8344-init:0,auth:0,dns_resolve:1,p2p_init:166,a2a_reuse:0,p2p_conn:262
+x-luminati-tun-timeline: init:0,connect:118
+
+HTTP/1.1 307 Temporary Redirect
+Connection: close
+Content-Length: 0
+Location: https://10.1.1.1:8090/ips/block/webcat?cat=67&pl=0&url=aHR0cHM6Ly93d3cudGlrdG9rLmNvbQ~~
+

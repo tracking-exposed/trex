@@ -7,12 +7,12 @@ describe('Parsing a foryou feed', () => {
   describe('it parses the first item', () => {
     it('parses the first result of the collected feed', () => {
       const html = readFileSync(
-        join(__dirname, '/fixtures/tt-foryou-basic/tt-foryou.html'),
+        join(__dirname, '/fixtures/tto-foryou-basic/tt-foryou.html'),
         'utf8',
       );
       const expected = JSON.parse(
         readFileSync(
-          join(__dirname, '/fixtures/tt-foryou-basic/expected.json'),
+          join(__dirname, '/fixtures/tto-foryou-basic/expected.json'),
           'utf8',
         ),
       );

@@ -1,0 +1,36 @@
+HTTP/1.1 200 OK
+x-luminati-ip: rc40077ac1ee16284636a541b5dba91b4
+x-luminati-timeline: z8331-init:0,auth:87,dns_resolve:1,p2p_init:102,a2a_reuse:1,p2p_conn:241
+x-luminati-tun-timeline: init:0,connect:41
+
+HTTP/2 302 
+server: nginx
+content-type: text/html; charset=utf-8
+content-length: 99
+x-tt-logid: 202202230442390102450400692605A636
+location: https://www.tiktok.com/hk/notfound
+x-xss-protection: 1; mode=block
+x-frame-options: SAMEORIGIN
+x-content-type-options: nosniff
+x-download-options: noopen
+strict-transport-security: max-age=31536000
+x-ms-token: 3CyKafOSnBmCGg_F3r3_BFZOq2PMBxYsJPwJKO7T86UVenEpwGvfknb08ZkTDaNdOV1DsHW2-8dcD3KxBkH-AKm0mUuvafmPXF42jOwSTToPj9eSWaZw2WiBHC0=
+server-timing: inner; dur=52
+x-tt-trace-host: 01a1d66c79f6d0757c08bbc325017f8a65c1e29888226255e6a7aec44c74e7d741e6cd6f4eddd676e556229e9deea3f82adad56c8ed264d7cdfd1dec25e9936e63500df5d1ddb598bb6744163d8ff0dd0c0774cd7ed1c6973caff142c0c853cd4b
+expires: Wed, 23 Feb 2022 04:42:39 GMT
+cache-control: max-age=0, no-cache, no-store
+pragma: no-cache
+date: Wed, 23 Feb 2022 04:42:39 GMT
+x-cache: TCP_MISS from a23-5-165-107.deploy.akamaitechnologies.com (AkamaiGHost/10.7.2-39280538) (-)
+set-cookie: tt_csrf_token=4Iu8G45Z49VvJqr5BYwpvUtq; path=/; domain=.tiktok.com; samesite=lax; httponly
+set-cookie: ttwid=1%7CFnnsU-0a1xBTH-BdUFR9pTM-mCvAUECOK7sALV-migg%7C1645591359%7C33845a6ef75e3fe3b90efb5753b8749e3caa24ccaa9173641f460f9397287f3e; Domain=.tiktok.com; Path=/; Expires=Thu, 23 Feb 2023 04:42:39 GMT; HttpOnly
+set-cookie: msToken=3CyKafOSnBmCGg_F3r3_BFZOq2PMBxYsJPwJKO7T86UVenEpwGvfknb08ZkTDaNdOV1DsHW2-8dcD3KxBkH-AKm0mUuvafmPXF42jOwSTToPj9eSWaZw2WiBHC0=; Path=/; Domain=tiktok.com; Expires=Sat, 05 Mar 2022 04:42:39 GMT; Secure; SameSite=None
+x-tt-trace-tag: id=16;cdn-cache=miss;type=dyn
+server-timing: cdn-cache; desc=MISS, edge; dur=2, origin; dur=55
+x-origin-response-time: 57,23.5.165.107
+x-akamai-request-id: 21312656
+set-cookie: _abck=FF4E113CC471AC1C2BC78B7F9E54444C~-1~YAAQa6UFFxy/gw1/AQAAqm7jJAdP7IcDtviMIwXsBfgQaYSK6PoRcUT8UWZuC4JoDIcbRVkdBzbyd0ADa9AbWUjLT83meX8Omqs4GbiOSkTncDL4KrbsTRfOSLAhysGLg6+nsTqcAuPQtEnHn8rbtEYwgcyjTkOW9D9psDeavS6eZzR27Lo74XBRiyQwm3sk5dQbYC9KM6vkjDppJGDaLcVL8l2fl1t4JCIfwdJbp4pfCIWD8ZrKiE1j1iL1ZiZLoX/+kxZnC91milTVAYlXhhLZNB7FQ7Dit/d44I+lx7ESagpPfhhvKRKskxjfGeUoDcy2dkB42UgIFGNBDJ2iS1iA4JWnKL1/NMvsjy2fw9qCd2tj4ugBWkCUTn0=~-1~-1~-1; Domain=.tiktok.com; Path=/; Expires=Thu, 23 Feb 2023 04:42:39 GMT; Max-Age=31536000; Secure
+set-cookie: ak_bmsc=2590016256C2D286FD95A61166317FCA~000000000000000000000000000000~YAAQa6UFFx2/gw1/AQAAqm7jJA6BVDcjrQmRLy1P8REODZwETeYvr6dGBbgjY8CkpEU/Ujiy2rsv2DgR55AApERpxSYcLd0doUtY8159riI6RX/6C6WgHWxdHYP06soQPMgiNE6CV8moPokEvpzf0QU0TC7iNHLGSXTwTddKpxShfAboHHZlbnxKs6q8Y9mCnwO4qqHqNfVJbBZ84rq0FsTsRpSVaI73O2ypAoec0kD4CLXnBqk6vCVmB6Wp3TTLWmXDHKUpZTM2i9i+zKbuH9pPipkKt3ztfpTorOKC+PM4YICzVeIEPVUUzNwb/6ALKGblrQCQB4iwoheH2dJ4+Hs+3cDE1Yj6NqqiTuYmr5Z/4t/PjUSMUF/2LGu0zR4yYX2ls+tRfcoV; Domain=.tiktok.com; Path=/; Expires=Wed, 23 Feb 2022 06:42:39 GMT; Max-Age=7200; HttpOnly
+set-cookie: bm_sz=44A2754F4971D3C5791503E84F2111BB~YAAQa6UFFx6/gw1/AQAAq27jJA5BDTRrj2g1afTsslBlMe+tw6bBl72rHyvXcDYq+ycFxS1ZXWa3eJXNFYfxcV7A+DvqHjYbutCBYzkHUXwDX9SlJW2NJFAyITYZGTRC+b2dS2J8OKUbaudZg1LChFO6eoCN1e0/P5cGBEsqEpcQE2oidr6jU7PAuwEH1AxgIECDfwUFEARB+qttKxXafbGwwCQgn1/wikO3Ex0anB6wXY1ZcuH5vRZdhUEwvkg+OsrfL5nHddP8ZiGjvxOEKMFo9p/xKhEt64qYo3eulaUFbAs=~3618356~4403252; Domain=.tiktok.com; Path=/; Expires=Wed, 23 Feb 2022 08:42:39 GMT; Max-Age=14400
+
+Redirecting to <a href="https://www.tiktok.com/hk/notfound">https://www.tiktok.com/hk/notfound</a>.
