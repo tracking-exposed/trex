@@ -1,0 +1,16 @@
+HTTP/1.1 200 OK
+x-luminati-ip: r1fb640bf3645c6344b37d43eb98a3bd8
+x-luminati-timeline: z8305-init:0,auth:1,dns_resolve:0,p2p_init:119,a2a_reuse:1,p2p_conn:197
+x-luminati-tun-timeline: init:0,connect:16
+
+HTTP/1.1 403 Forbidden
+Date: Thu, 03 Mar 2022 08:55:57 GMT
+Cache-Control: no-cache
+Pragma: no-cache
+Content-Type: text/html; charset="UTF-8"
+Content-Length: 840
+Via: HTTPS/1.1 forward.http.proxy:3128
+Connection: keep-alive
+
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" /><meta http-equiv="refresh" content="0; url=http://www.gmail.com/" />
+<b><BR><font class=accessdeniedtextfont >This is a message from the IT Department. <BR><BR>The web site you are trying to access: <BR></font><font class=accessdeniedcategoryfont  >https://www.tiktok.com/foryou</font><BR><font class=accessdeniedtextfont >is listed as a site within the category </font><font class=accessdeniedcategoryfont>Social Networking</font><BR><BR><font class=accessdeniedtextfont > Current Internet Access Configuration for you does not allow visiting sites within this category at this time.<BR><BR>If the website has been erroneously blocked,  please <a href="#" class="accessdeniedcategoryfont" onclick="callReevaluationFunction()">submit</a> it for re-evaluation.</font></b>

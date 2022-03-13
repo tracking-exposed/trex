@@ -1,0 +1,5 @@
+HTTP/1.1 401 Auth Failed ip_blacklisted: 141.94.104.0/24
+X-Luminati-Error: Auth Failed ip_blacklisted: 141.94.104.0/24. Check brightdata.com/faq#remove-blacklist_ips to resolve
+Proxy-Authenticate: Basic realm="Luminati"
+Proxy-Connection: close
+
