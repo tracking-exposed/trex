@@ -1,8 +1,10 @@
 /* eslint-disable no-console */
 
 import { parseHTML } from 'linkedom';
+import { parseCurlResponse } from './util';
 
 interface ForYouVideo {
+  videoId: string;
   author: {
     name: string;
     username: string;
@@ -20,6 +22,12 @@ interface ForYouVideo {
   };
   countryCode?: string;
 }
+
+export type CurlError =
+'proxy error' |
+'network error' |
+'redirect to login'|
+false
 
 const isDictionary = (obj: unknown): obj is Record<string, unknown> =>
   typeof obj === 'object' && obj !== null && !Array.isArray(obj);
@@ -78,7 +86,7 @@ export const createParser = (): TikTokParser => {
       return [];
     }
 
-    for (const post of Object.values(forYouData)) {
+    for (const [videoId, post] of Object.entries(forYouData)) {
       if (!isDictionary(post)) {
         console.log('post is not a dictionary');
         continue;
@@ -104,6 +112,7 @@ export const createParser = (): TikTokParser => {
       }`.replace(/-+/g, '-');
 
       const forYouEntry = {
+        videoId,
         author: {
           name: (post.nickname as string) ?? '',
           username: (post.author as string) ?? '',
@@ -125,6 +134,10 @@ export const createParser = (): TikTokParser => {
     }
 
     return results;
+  };
+
+  const checkCurlError = (res: string): CurlError => {
+    const responses = parseCurlResponse(res);
   };
 
   return {
