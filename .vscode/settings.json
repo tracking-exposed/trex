@@ -4,6 +4,7 @@
   "eslint.workingDirectories": ["./shared", "./backend", "./YCAI"],
   "cSpell.words": [
     "guardoni",
+    "luminati",
     "SIGI_STATE"
   ]
 }
