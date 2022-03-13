@@ -136,9 +136,11 @@ export const createParser = (): TikTokParser => {
     return results;
   };
 
+  /*
   const checkCurlError = (res: string): CurlError => {
     const responses = parseCurlResponse(res);
   };
+  */
 
   return {
     parseForYouFeed,
