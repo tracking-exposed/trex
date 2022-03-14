@@ -1,9 +1,10 @@
 /* eslint-disable no-console */
 
 import { parseHTML } from 'linkedom';
-import { parseCurlResponse } from './util';
+import { parseCurlResponse, responseStatus } from './util';
 
 interface ForYouVideo {
+  type: 'ForYouVideo';
   videoId: string;
   author: {
     name: string;
@@ -23,11 +24,13 @@ interface ForYouVideo {
   countryCode?: string;
 }
 
-export type CurlError =
+export type CurlStatus =
+'country not found' |
+'unavailable for legal reasons' |
 'proxy error' |
 'network error' |
 'redirect to login'|
-false
+'success';
 
 const isDictionary = (obj: unknown): obj is Record<string, unknown> =>
   typeof obj === 'object' && obj !== null && !Array.isArray(obj);
@@ -39,6 +42,7 @@ const sanitizeURL = (url: string): string => {
 
 interface TikTokParser {
   parseForYouFeed: (html: string) => ForYouVideo[];
+  parseCurlStatus: (html: string) => CurlStatus;
 }
 
 export const createParser = (): TikTokParser => {
@@ -111,7 +115,8 @@ export const createParser = (): TikTokParser => {
         post.music.id
       }`.replace(/-+/g, '-');
 
-      const forYouEntry = {
+      const forYouEntry: ForYouVideo = {
+        type: 'ForYouVideo',
         videoId,
         author: {
           name: (post.nickname as string) ?? '',
@@ -136,13 +141,16 @@ export const createParser = (): TikTokParser => {
     return results;
   };
 
-  /*
-  const checkCurlError = (res: string): CurlError => {
-    const responses = parseCurlResponse(res);
+  const parseCurlStatus = (html: string): CurlStatus => {
+    const maybeChunks = parseCurlResponse(html);
+    if (maybeChunks instanceof Error) {
+      throw maybeChunks;
+    }
+    return responseStatus(maybeChunks);
   };
-  */
 
   return {
+    parseCurlStatus,
     parseForYouFeed,
   };
 };

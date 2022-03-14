@@ -41,26 +41,42 @@ const spawnWorker = async(collection: Collection): Promise<void> => {
     console.log(`[${nWorkers} workers] parsing: ${item.sourcePath}`);
 
     const mass = await readFile(item.sourcePath, 'utf8');
-    const parsed = parser.parseForYouFeed(mass);
-    await mkdir(dirname(item.targetPath), { recursive: true });
-    await rename(item.sourcePath, item.targetPath);
-    const countryCode = basename(dirname(item.sourcePath));
-    const creationTime = parseInt(basename(item.sourcePath));
+    const status = parser.parseCurlStatus(mass);
 
-    const result = parsed.map((data, videoOrder) => ({
-      ...data,
-      countryCode,
-      creationTime: new Date(creationTime),
-      order: videoOrder + 1,
-    }));
+    if (status === 'success') {
+      const parsed = parser.parseForYouFeed(mass);
+      await mkdir(dirname(item.targetPath), { recursive: true });
+      await rename(item.sourcePath, item.targetPath);
+      const countryCode = basename(dirname(item.sourcePath));
+      const creationTime = parseInt(basename(item.sourcePath));
 
-    if (parsed.length > 0) {
-      await writeFile(
-        `${item.targetPath}.parsed.json`,
-        JSON.stringify(result, null, 2),
-      );
+      const result = parsed.map((data, videoOrder) => ({
+        ...data,
+        countryCode,
+        creationTime: new Date(creationTime),
+        order: videoOrder + 1,
+      }));
 
-      await collection.insertMany(result);
+      if (parsed.length > 0) {
+        await writeFile(
+          `${item.targetPath}.parsed.json`,
+          JSON.stringify(result, null, 2),
+        );
+
+        await collection.insertMany(result);
+      }
+    } else {
+      const countryCode = basename(dirname(item.sourcePath));
+      const creationTime = parseInt(basename(item.sourcePath));
+
+      const error = {
+        type: 'Error',
+        status,
+        countryCode,
+        creationTime,
+      }
+
+      await collection.insertOne(error);
     }
 
     void dispatchWorkers(collection);
