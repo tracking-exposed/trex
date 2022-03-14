@@ -1,23 +1,24 @@
 // global-setup.js
 import { setup as setupDevServer } from 'jest-dev-server';
+// import * as path from 'path';
 
 export default async function globalSetup(): Promise<void> {
+  // const currentDirCommand = path.resolve(`${__dirname}`, '../../../');
+
   await setupDevServer([
     {
-      command: `yarn yt:backend watch --port=9001`,
+      command: `yarn tk:backend watch --port 14001`,
       launchTimeout: 10000,
-      port: 9001,
+      port: 14001,
       usedPortAction: 'kill',
     },
     {
-      command: `yarn yt:backend parserv`,
+      command: `yarn tk:backend parserv`,
       launchTimeout: 5000,
     },
-    {
-      command: `yarn yt:backend leaveserv`,
-      launchTimeout: 1000,
-    },
-  ]);
+  ]).catch((e) => {
+    console.error(e);
+  });
 
   // Your global setup
 }

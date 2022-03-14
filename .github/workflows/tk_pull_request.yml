@@ -42,6 +42,11 @@ jobs:
       - name: Build shared
         run: yarn shared build
 
+      - name: Test platform
+        run: |
+          # yarn tk:backend test --runInBand --ci
+          yarn tk:ext test --runInBand --ci
+
       - name: Build
         run: |
           yarn tk:ext build

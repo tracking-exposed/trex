@@ -1,5 +1,4 @@
 import {
-  boot,
   ObserverHandler,
   refreshUUID,
   SelectorObserverHandler,
@@ -11,13 +10,13 @@ import { getNatureByHref } from '@tktrex/lib/nature';
 import { map } from 'fp-ts/lib/Either';
 import { pipe } from 'fp-ts/lib/function';
 import _ from 'lodash';
-import { INTERCEPTED_ITEM_CLASS } from './interceptor/constants';
-import { hub, registerTkHandlers } from './handlers';
+import { INTERCEPTED_ITEM_CLASS } from '../interceptor/constants';
+import { hub } from '../handlers';
 
 const appLog = log.extend('app');
 
-let feedId = refreshUUID(0);
-let feedCounter = 0;
+export let feedId = refreshUUID(0);
+export let feedCounter = 0;
 let lastMeaningfulURL: string;
 
 /**
@@ -35,7 +34,7 @@ function initializeEmergencyButton(): void {
   document.body.appendChild(element);
 }
 
-function tktrexActions(remoteInfo: unknown): void {
+export function tkTrexActions(remoteInfo: unknown): void {
   /* these functions are the main activity made in
      content_script, and tktrexActions is a callback
      after remoteLookup */
@@ -95,6 +94,18 @@ function fullSave(): void {
     }),
   );
 }
+
+export const onLocationChange = (): void => {
+  feedCounter++;
+  feedId = refreshUUID(feedCounter);
+  appLog.info(
+    'new feedId (%s), feed counter (%d) and video counter resetting after poking (%d)',
+    feedId,
+    feedCounter,
+    videoCounter,
+  );
+  videoCounter = 0;
+};
 
 /**
  * handle a new intercepted datum node by dispatching
@@ -283,7 +294,7 @@ const errorHandler: SelectorObserverHandler = {
  * selector with relative handler
  * configuration
  */
-const tkHandlers: { [key: string]: ObserverHandler } = {
+export const tkHandlers: { [key: string]: ObserverHandler } = {
   video: {
     match: {
       type: 'selector',
@@ -330,31 +341,3 @@ const tkHandlers: { [key: string]: ObserverHandler } = {
     handle: handleSigi,
   },
 };
-
-// Boot the app script. This is the first function called.
-boot({
-  payload: {
-    feedId,
-    href: window.location.href,
-  },
-  hub: {
-    onRegister: (hub) => {
-      registerTkHandlers(hub);
-    },
-  },
-  observe: {
-    handlers: tkHandlers,
-    onLocationChange: () => {
-      feedCounter++;
-      feedId = refreshUUID(feedCounter);
-      appLog.info(
-        'new feedId (%s), feed counter (%d) and video counter resetting after poking (%d)',
-        feedId,
-        feedCounter,
-        videoCounter,
-      );
-      videoCounter = 0;
-    },
-  },
-  onAuthenticated: tktrexActions,
-});

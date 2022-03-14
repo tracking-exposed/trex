@@ -24,7 +24,7 @@
       "path": "../../../packages/shared"
     }
   ],
-  "include": ["./src"],
+  "include": ["./"],
   "exclude": ["./jest.config.js", "./webpack.config.ts"],
   "ts-node": {
     "compilerOptions": {

@@ -13,9 +13,9 @@ const DEVELOPMENT = !PRODUCTION;
 
 const PATHS = {
   ENTRY: {
-    app: path.resolve(__dirname, 'src/app.ts'),
+    app: path.resolve(__dirname, 'src/app/index.ts'),
     popup: path.resolve(__dirname, 'src/popup.ts'),
-    background: path.resolve(__dirname, 'src/background.ts'),
+    background: path.resolve(__dirname, 'src/background/index.ts'),
     injected: path.resolve(__dirname, 'src/injected.ts'),
     interceptor: path.resolve(__dirname, 'src/interceptor/index.ts'),
   },

@@ -4158,6 +4158,7 @@ __metadata:
     eslint-plugin-react: ^7.29.2
     fp-ts: ^2.11.8
     io-ts: ^2.2.16
+    jest-environment-jsdom-global: ^3.0.0
     jquery: ^3.6.0
     lodash: ^4.17.21
     moment: ^2.29.1

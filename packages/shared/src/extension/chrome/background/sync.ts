@@ -49,7 +49,7 @@ export const handleSyncMessage =
         })();
       })
       .then((response) => {
-        log.info('Sync response %O', response);
+        log.debug('Sync response %O', response);
 
         if (response._tag === 'Left') {
           sendResponse({

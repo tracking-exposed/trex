@@ -1,9 +1,9 @@
-import { countBy } from 'lodash';
-import config from '../config';
-import { Hub } from '../hub';
-import log from '../logger';
-import HubEvent, { APIEvent } from '../models/HubEvent';
-import { getTimeISO8601 } from '../utils/common.utils';
+import { countBy as handlers } from 'lodash';
+import config from '@shared/extension/config';
+import { Hub } from '@shared/extension/hub';
+import {tkLog} from '../logger';
+import { getTimeISO8601 } from '@shared/extension/utils/common.utils';
+import { APIEvent } from '@shared/extension/models/HubEvent';
 
 interface Evidence {
   payload: APIEvent['payload'];
@@ -34,11 +34,11 @@ function handleAPIEvent(e: APIEvent): void {
   state.incremental++;
 }
 
-function apiSync(hub: Hub<HubEvent>): void {
+function apiSync(hub: Hub<any>): void {
   if (state.content.length) {
-    log.info(
+    tkLog.info(
       `APIsync — ${state.content.length} items (total since beginning: ${state.incremental})`,
-      countBy(state.content, 'type')
+      handlers(state.content, 'type'),
     );
     // Send timelines to the page handling the communication with the API.
     // This might be refactored using something compatible to the HUB architecture.
@@ -54,12 +54,12 @@ function apiSync(hub: Hub<HubEvent>): void {
           payload: response,
         });
         state.content = [];
-      }
+      },
     );
   }
 }
 
-export function register(hub: Hub<HubEvent>): void {
+export function register(hub: Hub<any>): void {
 
   hub
     .on('APIEvent', handleAPIEvent)
