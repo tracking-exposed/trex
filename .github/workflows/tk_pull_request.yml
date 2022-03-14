@@ -18,6 +18,7 @@ jobs:
     strategy:
       matrix:
         node-version: [16.x]
+        mongodb-version: ['4.2']
 
     steps:
       - uses: actions/checkout@v2
@@ -41,6 +42,12 @@ jobs:
 
       - name: Build shared
         run: yarn shared build
+
+      - name: Start MongoDB
+        uses: supercharge/mongodb-github-action@1.7.0
+        with:
+          mongodb-port: 27017
+          mongodb-version: ${{ matrix.mongodb-version }}
 
       - name: Test platform
         run: |
