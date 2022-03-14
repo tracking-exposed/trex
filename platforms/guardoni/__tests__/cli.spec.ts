@@ -21,7 +21,7 @@ import differenceInMilliseconds from 'date-fns/differenceInMilliseconds';
 const axiosMock = axios as jest.Mocked<typeof axios>;
 axiosMock.create.mockImplementation(() => axiosMock);
 
-const basePath = path.resolve(__dirname, '../');
+const basePath = path.resolve(process.cwd(), './');
 const profileName = 'profile-test-1';
 const extensionDir = path.resolve(__dirname, '../build/extension');
 

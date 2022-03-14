@@ -37,10 +37,10 @@ const backgroundOpts = {
 
 const keys = initializeKey();
 
-describe('App', () => {
+describe('TK App', () => {
   jest.setTimeout(20 * 1000);
 
-  it('Booting', async () => {
+  it('Page "foryou"', async () => {
     // jest.useRealTimers();
 
     let supporterId;

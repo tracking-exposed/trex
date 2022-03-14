@@ -37,7 +37,7 @@ const directiveLinks = [
 const backend = process.env.BACKEND;
 
 describe('Guardoni', () => {
-  const basePath = path.resolve(process.cwd(), './');
+  const basePath = path.resolve(process.cwd(), './platforms/guardoni');
   const profile = 'profile-test-99';
   const extensionDir = path.resolve(basePath, 'build/extension');
   const csvTestFileName = 'trex-yt-videos.csv';
