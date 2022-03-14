@@ -42,7 +42,8 @@ const apiList = {
   fetchDirective: require('../routes/directives').get,
 
   /* and specificly for the email, opt-in, and who wants to be get updated */
-  registerEmail: require('../routes/emails').registerEmail,
+  registerEmail2: require('../routes/emails').registerEmail2,
+  listEmails: require('../routes/emails').listEmails,
 };
 
 export default apiList;
