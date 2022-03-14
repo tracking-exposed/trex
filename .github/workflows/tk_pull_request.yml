@@ -45,7 +45,7 @@ jobs:
       - name: Test platform
         run: |
           # yarn tk:backend test --runInBand --ci
-          yarn tk:ext test --runInBand --ci
+          yarn test tktrex/extension --runInBand --ci
 
       - name: Build
         run: |
