@@ -198,11 +198,15 @@ app.get(
 );
 
 /* subscription email */
-// from ycai is:
-// apiRouter.post('/v3/registerEmail', iowrapper('registerEmail'));
+// Improved from the version initially used in ycai, same payload, different behvior:
+// apiRouter.post('/v3/registerEmail', iowrapper('registerEmail2'));
 app.post(
-  '/api/v1/registerEmail',
-  async (req, res) => await iowrapper('registerEmail', req, res)
+  '/api/v1/registerEmail2',
+  async (req, res) => await iowrapper('registerEmail2', req, res)
+);
+app.get(
+  '/api/v1/listEmails/:key',
+  async (req, res) => await iowrapper('listEmails', req, res)
 );
 /* ============== Documented only the API below ============== */
 
