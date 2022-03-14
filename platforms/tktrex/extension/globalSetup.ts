@@ -7,13 +7,13 @@ export default async function globalSetup(): Promise<void> {
 
   await setupDevServer([
     {
-      command: `yarn tk:backend watch --port 14001`,
+      command: 'yarn tk:backend start --key test --port 14001',
       launchTimeout: 10000,
       port: 14001,
       usedPortAction: 'kill',
     },
     {
-      command: `yarn tk:backend parserv`,
+      command: 'yarn tk:backend parserv',
       launchTimeout: 5000,
     },
   ]).catch((e) => {
