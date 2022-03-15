@@ -132,6 +132,7 @@ async function saveInDB(experinfo, objects, dbcollection) {
 
 async function processEvents2(req) {
 
+    debug('New event %O', req.body);
     const headers = processHeaders(req.headers, EXPECTED_HDRS);
     if(headers.error)
         return headerError(headers);

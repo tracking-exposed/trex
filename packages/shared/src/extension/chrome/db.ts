@@ -6,8 +6,8 @@ import $ from 'jquery';
 
 import { isEmpty } from '../utils/common.utils';
 import log from '../logger';
+import { bo } from '../utils/browser.utils';
 
-const bo = chrome;
 const storage = bo.storage.local;
 
 const getP = (key: string): Promise<unknown> =>

@@ -58,5 +58,7 @@ jobs:
           mongodb-version: ${{ matrix.mongodb-version }}
 
       - name: Test
-        run: yarn yt:backend test --runInBand --forceExit --ci
+        run:
+          yarn yt:backend test --runInBand --forceExit --ci
+          yarn yt:ext test --runInBand --ci
 

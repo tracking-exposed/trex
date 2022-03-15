@@ -4,6 +4,7 @@ import HubEvent from '../models/HubEvent';
 
 export function register(hub: Hub<HubEvent>): void {
   hub.onAnyEvent(({ type, payload }) => {
-    log.debug(`event "${type}" triggered on hub with payload %O`, payload);
+    log.info(`event "${type}" triggered`);
+    log.debug(`payload for %s event: %O`, type, payload);
   });
 }

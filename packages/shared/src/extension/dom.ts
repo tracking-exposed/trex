@@ -35,7 +35,7 @@ export function watch(
   // debugger;
   const mutationObserver = new MutationObserver((mutations) =>
     // Each `mutation` in the `mutations` array contains an...
-    mutations.forEach((mutation) =>
+    mutations.forEach((mutation) => {
       // ...array of added nodes. We need to iterate all of the nodes.
       mutation.addedNodes.forEach(
         (node) =>
@@ -43,8 +43,8 @@ export function watch(
           // For each HTMLElement matching the selector, we finally trigger `callback` with the matching HTMLElement.
           node instanceof HTMLElement &&
           node.querySelectorAll(selector).forEach(htmlElement(callback))
-      )
-    )
+      );
+    })
   );
 
   // We want this function to trigger `callback` on HTMLElements that are already in
@@ -75,7 +75,7 @@ export function watch(
 }
 
 export function on(selector: string, callback: Callback): MutationObserver {
-  return watch(document, selector, callback);
+  return watch(window.document, selector, callback);
 }
 
 export function one(selector: string, callback: Callback): MutationObserver {
