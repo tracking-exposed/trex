@@ -1,4 +1,4 @@
-import HubEvent, { HubEventBase } from './models/HubEvent';
+import { HubEventBase } from './models/HubEvent';
 
 export type HubHandler = <E extends HubEventBase>(event: E) => void;
 
@@ -44,4 +44,4 @@ export class Hub<HE extends HubEventBase> {
   }
 }
 
-export default new Hub<HubEvent>();
+// export default new Hub<HubEvent>();

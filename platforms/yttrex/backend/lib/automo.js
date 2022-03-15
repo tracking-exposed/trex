@@ -809,7 +809,7 @@ async function pullExperimentInfo(publicKey) {
     },
   ]);
   await mongoc.close();
-  if (exp && exp[0]?.directive[0].directiveType) return _.first(exp);
+  if (exp && exp[0]?.directive[0]?.directiveType) return _.first(exp);
   return null;
 }
 

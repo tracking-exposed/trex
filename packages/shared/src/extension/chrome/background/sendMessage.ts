@@ -11,6 +11,7 @@ const ifValid =
   <C extends t.Any>(codec: C) =>
   (cb: (x: t.TypeOf<C>) => void) =>
   (x: unknown): void => {
+    log.debug('Check response is valid %O', x);
     const v = codec.decode(x);
 
     if (isLeft(v)) {

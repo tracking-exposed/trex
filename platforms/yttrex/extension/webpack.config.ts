@@ -19,7 +19,7 @@ const { buildENV, ...extensionConfig } = getExtensionConfig(
   {
     cwd: __dirname,
     entry: {
-      app: path.resolve(__dirname, 'src/app.ts'),
+      app: path.resolve(__dirname, 'src/app/index.ts'),
       popup: path.resolve(__dirname, 'src/chrome/popup/index.js'),
       background: path.resolve(__dirname, 'src/chrome/background/index.ts'),
     },

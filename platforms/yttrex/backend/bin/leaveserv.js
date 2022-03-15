@@ -274,7 +274,7 @@ async function fetchAndAnalyze(filter) {
         computedFrequency = FREQUENCY;
         return;
     } else {
-        computedFrequency = 0.01;
+        computedFrequency = 0.1;
         nodatacounter = 0;
     }
 

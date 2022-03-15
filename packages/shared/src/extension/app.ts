@@ -1,7 +1,7 @@
 import { localLookup, serverLookup } from './chrome/background/sendMessage';
-import config from './config';
+// import config from './config';
 import { registerHandlers } from './handlers/index';
-import hub, { Hub } from './hub';
+import { Hub } from './hub';
 import log from './logger';
 import { clearCache } from '../providers/dataDonation.provider';
 import { ServerLookup } from './models/Message';
@@ -55,7 +55,7 @@ interface SetupObserverOpts {
 interface BootOpts {
   payload: ServerLookup['payload'];
   observe: SetupObserverOpts;
-  hub: { onRegister: (h: Hub<HubEvent>) => void };
+  hub: { hub: Hub<any>; onRegister: (h: Hub<HubEvent>) => void };
   onAuthenticated: (res: any) => void;
 }
 
@@ -69,6 +69,7 @@ export function refreshUUID(counter: number): string {
   return counter + '—' + Math.random() + '-' + _.random(0, 0xff);
 }
 
+let oldHref: string;
 /**
  * setup the mutation observer with
  * given callbacks for selectors
@@ -77,7 +78,9 @@ function setupObserver({
   handlers,
   onLocationChange,
 }: SetupObserverOpts): void {
-  Object.keys(handlers).forEach((h) => {
+  const handlersList = Object.keys(handlers);
+  // register selector and 'selector-with-parents' handlers
+  handlersList.forEach((h) => {
     const { handle, ...handler } = handlers[h];
     if (
       handler.match.type === 'selector' ||
@@ -87,22 +90,44 @@ function setupObserver({
     }
   });
 
-  appLog.info('listeners installed, selectors', handlers);
+  // appLog.debug('handlers installed %O', handlers);
 
   /* and monitor href changes to randomize a new accessId */
-  let oldHref = window.location.href;
-  const body = document.querySelector('body');
+  const body = window.document.querySelector('body');
 
   const observer = new MutationObserver(function (mutations) {
     mutations.forEach(function (mutation) {
-      if (oldHref !== window.location.href) {
-        appLog.debug(
-          `%s changed to %s, calling onLocationChange`,
-          oldHref,
-          window.location.href
-        );
-        onLocationChange(oldHref, window.location.href);
-        oldHref = window.location.href;
+      // appLog.debug('mutation (%s) %O', mutation.type, mutation.target);
+
+      if (window?.document) {
+        if (oldHref !== window.location.href) {
+          const newHref = window.location.href;
+
+          appLog.debug(
+            `%s changed to %s, calling onLocationChange`,
+            oldHref,
+            newHref
+          );
+
+          const routeHandlerKey = handlersList.find((h) => {
+            const handler = handlers[h];
+
+            if (handler.match.type === 'route') {
+              return window.location.pathname.match(handler.match.location);
+            }
+            return false;
+          });
+
+          if (routeHandlerKey) {
+            appLog.debug('Route handler key %s', routeHandlerKey);
+            const { handle, ...routeHandlerOpts } = handlers[routeHandlerKey];
+            handle(null as any, routeHandlerOpts);
+          }
+
+          // onLocationChange(oldHref, newHref);
+
+          oldHref = newHref;
+        }
       }
     });
   });
@@ -111,6 +136,15 @@ function setupObserver({
     childList: true,
     subtree: true,
   };
+
+  window.addEventListener('unload', () => {
+    appLog.debug('Window unloading, disconnect the observer...');
+    observer.disconnect();
+  });
+
+  // window.addEventListener('unhandledrejection', (e) => {
+  //   console.error(e);
+  // })
 
   if (body) {
     observer.observe(body, config);
@@ -122,29 +156,33 @@ function setupObserver({
 /* Boot the application by giving a callback that
  * will be invoked after the handshake with API server.
  */
+let config: any;
 export function boot(opts: BootOpts): void {
-  appLog.info('booting with config', config);
+  appLog.info('booting with config', opts.payload);
+
+  config = opts.payload;
 
   // Register all common event handlers.
   // An event handler is a piece of code responsible for a specific task.
   // You can learn more in the [`./handlers`](./handlers/index.html) directory.
-  registerHandlers(hub);
+  registerHandlers(opts.hub.hub);
 
   // register platform specific event handlers
-  opts.hub.onRegister(hub);
+  opts.hub.onRegister(opts.hub.hub);
 
   // Lookup the current user and decide what to do.
   localLookup((settings) => {
     // `response` contains the user's public key, we save it global for the blinks
-    appLog.info('retrieved locally stored user settings', settings);
+    appLog.info('retrieved locally stored user settings %O', settings);
     // this output is interpreted and read by guardoni
 
     /* these parameters are loaded from localStorage */
-    config.publicKey = settings.publicKey;
-    config.active = settings.active;
-    config.ux = settings.ux;
+    config = {
+      ...config,
+      ...settings
+    };
 
-    if (!config.active) {
+    if (!config.ux) {
       appLog.info('trex disabled!');
       return null;
     }
@@ -156,7 +194,9 @@ export function boot(opts: BootOpts): void {
 
     // because the URL has been for sure reloaded, be sure to also
     clearCache();
-    serverLookup(opts.payload, (res) => {
+    appLog.debug('Server lookup with %O', opts.payload);
+
+    serverLookup(config, (res) => {
       setupObserver(opts.observe);
       opts.onAuthenticated(res);
     });
