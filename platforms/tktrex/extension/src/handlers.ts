@@ -33,7 +33,7 @@ const state = {
 
 export const hub = new Hub<TKHubEvent>();
 
-function handleVideo(e: NewVideoEvent): void {
+export function handleVideo(e: NewVideoEvent): void {
   const videoEvent = {
     ...e.payload,
     clientTime: now(),
@@ -87,11 +87,12 @@ function sync(hub: Hub<TKHubEvent>): void {
         payload: state.content,
         userId: 'local',
       },
-      (response) =>
+      (response) => {
         hub.dispatch({
           type: 'SyncResponse',
           payload: response,
-        }),
+        });
+      },
     );
     state.content = [];
   }

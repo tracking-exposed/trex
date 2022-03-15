@@ -410,6 +410,8 @@ async function channel3(req) {
   experimentInfo.testName = new Date(req.body.when);
   experimentInfo.publicKey = _.get(req.body, 'config.publicKey');
 
+  debug('Experiment info %O', experimentInfo);
+
   const retval = await automo.saveExperiment(experimentInfo);
   /* this is the default answer, as normally there is not an
    * experiment running */

@@ -57,13 +57,13 @@ jobs:
           yarn yt:ext build
           yarn yt:ext dist:guardoni
           mkdir -p ~/.guardoni/extension
-          cp ./platforms/yttrex/extension/build/extension/*.zip ~/.guardoni/extension
+          cp ./platforms/yttrex/extension/dist/extension/*.zip ~/.guardoni/extension
 
       - name: Build
         run: yarn guardoni build
 
       - name: Test
-        run: yarn guardoni test --ci
+        run: yarn test guardoni --ci
 
       - name: Package
         run: yarn guardoni pkg

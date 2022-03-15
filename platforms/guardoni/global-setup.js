@@ -5,9 +5,11 @@ const { basename } = require('path');
 module.exports = async function globalSetup() {
   const currentDir = basename(process.cwd());
   const currentDirCommand = currentDir === 'guardoni' ? '../../' : './';
+  console.log({ currentDir, currentDirCommand });
+
   await setupDevServer({
     command: `cd ${currentDirCommand} && yarn yt:backend watch`,
-    launchTimeout: 50000,
+    launchTimeout: 10000,
     port: 9000,
   });
 

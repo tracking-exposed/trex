@@ -15,8 +15,8 @@ const moduleNameMapper = {
 /** @type {import('ts-jest/dist/types').InitialOptionsTsJest} */
 module.exports = {
   ...jestConfigBase,
-  testEnvironment: 'jsdom',
-  displayName: 'YCAI',
+  testEnvironment: 'jest-environment-jsdom-global',
+  displayName: 'yt:ext',
   moduleNameMapper,
   globals: {
     'ts-jest': {
@@ -28,6 +28,8 @@ module.exports = {
       tsconfig: '<rootDir>/tsconfig.json',
     },
   },
-  setupFilesAfterEnv: ['<rootDir>/jest.setup.js'],
+  setupFilesAfterEnv: ['<rootDir>/jest.setup.ts'],
+  globalSetup: './globalSetup.ts',
+  globalTeardown: './globalTeardown.ts',
   collectCoverageFrom: ['<rootDir>src/**'],
 };
