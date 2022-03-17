@@ -29,7 +29,7 @@ export function flattenSearch(memo, metasearch) {
       // @ts-ignore
       tags: _.map(
         _.filter(result.linked, function (link) {
-          return link.link.type === 'tag';
+          return link?.link?.type === 'tag';
         }),
         'link.hashtag'
       ).join(', '),
