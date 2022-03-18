@@ -108,7 +108,7 @@ function unpackCorrection(corelem) {
   return _.compact(_.flatten(_.map(corelem.children, unpackCorrection)));
 }
 
-function process(envelop) {
+export default function process(envelop) {
   /* this function process a page like: 
     https://www.youtube.com/results?search_query=fingerprinting
        and the logic here is: look for any video, and then move above 
@@ -119,7 +119,7 @@ function process(envelop) {
   if (!videos.length) {
     debuge(
       "Search result of %s doesn't seem having any video!",
-      envelop.impression.nature.query
+      envelop.impression?.nature?.query
     );
     return null;
   }
@@ -172,6 +172,3 @@ function process(envelop) {
         debug("Saved %d query and %d search results", queriesWritten, unCheckedRetVal);
  */
 
-module.exports = {
-  process,
-};
