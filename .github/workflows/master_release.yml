@@ -210,7 +210,7 @@ jobs:
             guardoni/dist/*.deb
             guardoni/dist/*.dmg
             guardoni/dist/Guardoni*.exe
-            platforms/tktrex/extension/build/extension/*.zip
+            platforms/tktrex/extension/dist/*.zip
             platforms/ycai/studio/build/extension/*.zip
             platforms/yttrex/extension/dist/yttrex-*.zip
             platforms/yttrex/extension/dist/guardoni-yttrex-*.zip
