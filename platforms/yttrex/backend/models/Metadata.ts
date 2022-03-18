@@ -34,8 +34,24 @@ export const ParsedInfo = t.intersection(
 
 export type ParsedInfo = t.TypeOf<typeof ParsedInfo>;
 
+const MetadataBase = t.strict(
+  {
+    id: t.string,
+    publicKey: t.string,
+    savingTime: date,
+    clientTime: date,
+    href: t.string,
+    params: t.string,
+    blang: t.string,
+    login: t.boolean,
+    metadataId: t.string,
+  },
+  'MetadataBase'
+);
+
 const VideoMetadata = t.strict(
   {
+    ...MetadataBase.type.props,
     type: VideoType,
     videoId: t.string,
     authorName: t.string,
@@ -62,8 +78,11 @@ const VideoMetadata = t.strict(
   'VideoMetadata'
 );
 
+export type VideoMetadata = t.TypeOf<typeof VideoMetadata>;
+
 const HomeMetadata = t.strict(
   {
+    ...MetadataBase.type.props,
     type: HomeType,
     query: t.string,
     selected: t.array(ParsedInfo),
@@ -76,29 +95,19 @@ const HomeMetadata = t.strict(
   },
   'HomeMetadata'
 );
+export type HomeMetadata = t.TypeOf<typeof HomeMetadata>;
 
 const SearchMetadata = t.strict(
   {
+    ...MetadataBase.type.props,
     type: SearchType,
   },
   'SearchMetadata'
 );
+export type SearchMetadata = t.TypeOf<typeof SearchMetadata>;
 
-export const Metadata = t.intersection(
-  [
-    t.strict({
-      id: t.string,
-      publicKey: t.string,
-      savingTime: date,
-      clientTime: date,
-      href: t.string,
-      params: t.record(t.string, t.string),
-      blang: t.string,
-      login: t.boolean,
-      metadataId: t.string,
-    }),
-    t.union([VideoMetadata, HomeMetadata, SearchMetadata]),
-  ],
+export const Metadata = t.union(
+  [VideoMetadata, HomeMetadata, SearchMetadata],
   'MetadataDB'
 );
 

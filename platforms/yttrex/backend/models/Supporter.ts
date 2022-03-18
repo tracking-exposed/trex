@@ -1,7 +1,15 @@
 import * as t from 'io-ts';
+import { date } from 'io-ts-types/lib/date';
 
-export const Supporter = t.strict({
+export const Supporter = t.strict(
+  {
+    publicKey: t.string,
+    version: t.string,
+    creationTime: date,
+    lastActivity: date,
+    p: t.string,
+  },
+  'SupporterDB'
+);
 
-}, 'SupporterDB');
-
-export type Supporter = t.TypeOf<typeof Supporter>
+export type Supporter = t.TypeOf<typeof Supporter>;
