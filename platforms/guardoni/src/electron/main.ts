@@ -63,7 +63,7 @@ const creatMainWindow = (
 };
 
 // default extension path
-const EXTENSION_DIR_PATH = path.resolve(__dirname, '../extension');
+const EXTENSION_DIR_PATH = path.resolve(DEFAULT_BASE_PATH, '../extension');
 
 export const run = async (): Promise<void> => {
   debug.enable('guardoni:*');
@@ -110,9 +110,9 @@ export const run = async (): Promise<void> => {
             guardoniWindow: guardoniApp.window,
             guardoniBrowser: guardoniApp.browser,
             guardoniConfig: {
-              extensionDir: EXTENSION_DIR_PATH,
               headless: true,
               verbose: false,
+              extensionDir: EXTENSION_DIR_PATH,
               backend: env.BACKEND,
               basePath: DEFAULT_BASE_PATH,
             },
