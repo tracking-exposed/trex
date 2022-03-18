@@ -18,9 +18,11 @@ const getExtensionConfig = <E extends t.Props>(
 ): WebpackConfig => {
   process.env.VERSION = c.manifestVersion;
 
+  const outputDir = c.outputDir ?? path.resolve(c.cwd, 'build/extension');
+
   const { buildENV, ...config } = getConfig({
     target: 'web',
-    outputDir: path.resolve(c.cwd, 'build/extension'),
+    outputDir,
     entry: {
       ext: path.resolve(c.cwd, 'src/app.tsx'),
       popup: path.resolve(c.cwd, 'src/popup.tsx'),
@@ -61,10 +63,10 @@ const getExtensionConfig = <E extends t.Props>(
           onEnd: {
             archive: [
               {
-                source: path.resolve(c.cwd, './build/extension'),
+                source: outputDir,
                 destination: path.resolve(
-                  c.cwd,
-                  `./build/extension/${extensionName}-extension-${c.manifestVersion}.zip`
+                  outputDir,
+                  `./${extensionName}-extension-${c.manifestVersion}.zip`
                 ),
               },
             ],
