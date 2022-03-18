@@ -110,7 +110,7 @@ export const run = async (): Promise<void> => {
             guardoniWindow: guardoniApp.window,
             guardoniBrowser: guardoniApp.browser,
             guardoniConfig: {
-              headless: true,
+              headless: false,
               verbose: false,
               extensionDir: EXTENSION_DIR_PATH,
               backend: env.BACKEND,
