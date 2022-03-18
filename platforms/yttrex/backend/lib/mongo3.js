@@ -83,7 +83,7 @@ async function upsertOne(mongoc, cName, selector, updated) {
     return mongoc
         .db()
         .collection(cName)
-        .updateOne(selector, { $set: updated }, { upsert: true});
+        .updateOne(selector, { $set: updated }, { upsert: true });
 };
 
 async function read(mongoc, cName, selector, sorter) {

@@ -27,6 +27,9 @@
     "watchDirectory": "useFsEvents",
     "synchronousWatchDirectory": true
   },
+  "ts-node": {
+    "require": ["tsconfig-paths/register"]
+  },
   "references": [
     {
       "path": "../../../packages/shared"
