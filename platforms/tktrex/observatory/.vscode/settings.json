@@ -1,6 +1,7 @@
 {
   "jest.jestCommandLine": "yarn test",
   "cSpell.words": [
+    "luminati",
     "superproxy",
     "zproxy"
   ]

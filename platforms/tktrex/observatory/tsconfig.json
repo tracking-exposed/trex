@@ -2,6 +2,7 @@
   "extends": "../../../tsconfig.json",
   "compilerOptions": {
     "allowJs": true,
+    "downlevelIteration": true,
     "noEmit": true,
     "baseUrl": "./src",
     "composite": true,
