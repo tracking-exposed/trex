@@ -42,7 +42,7 @@ const sanitizeURL = (url: string): string => {
 
 interface TikTokParser {
   parseForYouFeed: (html: string) => ForYouVideo[];
-  parseCurlStatus: (html: string) => CurlStatus;
+  parseCurlStatus: (kisResponse: string) => CurlStatus;
 }
 
 export const createParser = (): TikTokParser => {
@@ -141,8 +141,8 @@ export const createParser = (): TikTokParser => {
     return results;
   };
 
-  const parseCurlStatus = (html: string): CurlStatus => {
-    const maybeChunks = parseCurlResponse(html);
+  const parseCurlStatus = (kisResponse: string): CurlStatus => {
+    const maybeChunks = parseCurlResponse(kisResponse);
     if (maybeChunks instanceof Error) {
       throw maybeChunks;
     }
