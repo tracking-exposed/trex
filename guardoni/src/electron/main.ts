@@ -101,7 +101,11 @@ export const run = async (): Promise<void> => {
           return GetEvents({
             app,
             env,
-            api: GetAPI({ baseURL: env.BACKEND }).API,
+            api: GetAPI({
+              baseURL: env.BACKEND,
+              getAuth: async (req) => req,
+              onUnauthorized: async (res) => res,
+            }).API,
             mainWindow,
             guardoniWindow: guardoniApp.window,
             guardoniBrowser: guardoniApp.browser,
