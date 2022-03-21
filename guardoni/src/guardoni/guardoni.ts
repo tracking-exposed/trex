@@ -919,7 +919,11 @@ const loadContext = (
 
       return {
         puppeteer: p,
-        API: GetAPI({ baseURL: config.backend }).API,
+        API: GetAPI({
+          baseURL: config.backend,
+          getAuth: async (req) => req,
+          onUnauthorized: async (res) => res,
+        }).API,
         config: {
           ...config,
           profileName: profile.profileName,
