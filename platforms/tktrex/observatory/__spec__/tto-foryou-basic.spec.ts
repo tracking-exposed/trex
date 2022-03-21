@@ -1,7 +1,8 @@
-import { readFileSync } from 'fs';
+import { readdirSync, readFileSync } from 'fs';
 import { join } from 'path';
 
 import { createParser } from '../src/tikTokParser';
+import { parseCurlResponse } from '../src/util';
 
 describe('Parsing a foryou feed', () => {
   describe('it parses the first item', () => {
