@@ -8,6 +8,7 @@ export function getChromePath(): string {
     '/usr/bin/google-chrome',
     '/Program Files (x86)/Google/Chrome/Application/chrome.exe',
     'C:\\Program Files (x86)\\Google\\Chrome\\Application\\chrome.exe',
+    'C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe',
     '/Applications/Chromium.app/Contents/MacOS/Chromium',
   ];
 
