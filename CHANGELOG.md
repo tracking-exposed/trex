@@ -1,5 +1,9 @@
 undefined
 
+### [2.4.5](https://github.com/tracking-exposed/yttrex/compare/v2.4.4...v2.4.5) (2022-03-21)
+
+- **guardoni:** removed unused utils, added windows known chrome path ([#470](https://github.com/tracking-exposed/yttrex/issues/470)) ([e1bb350](https://github.com/tracking-exposed/yttrex/commit/e1bb3509ab8c6d6155420aa75e5669f938079391))undefined
+
 ### [2.4.4](https://github.com/tracking-exposed/yttrex/compare/v2.4.3...v2.4.4) (2022-03-21)
 
 - **guardoni:** added known windows chrome path ([#468](https://github.com/tracking-exposed/yttrex/issues/468)) ([6504074](https://github.com/tracking-exposed/yttrex/commit/6504074df8b1a101aca001e03b95116f9823ec1e))
