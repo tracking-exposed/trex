@@ -1,5 +1,11 @@
 undefined
 
+### [2.4.4](https://github.com/tracking-exposed/yttrex/compare/v2.4.3...v2.4.4) (2022-03-21)
+
+- **guardoni:** added known windows chrome path ([#468](https://github.com/tracking-exposed/yttrex/issues/468)) ([6504074](https://github.com/tracking-exposed/yttrex/commit/6504074df8b1a101aca001e03b95116f9823ec1e))
+- **workspace:** change workflow_call to workflow_dispatch [skip ci] ([fc71b5b](https://github.com/tracking-exposed/yttrex/commit/fc71b5bd566c9e313e0c0f1a414e213e15f50fb4))
+- **workspace:** gh release callable workflow [skip ci] ([#434](https://github.com/tracking-exposed/yttrex/issues/434)) ([063bb87](https://github.com/tracking-exposed/yttrex/commit/063bb870a67e72beaca1f08e4a42d85cbed95e08))undefined
+
 ### [2.4.3](https://github.com/tracking-exposed/yttrex/compare/v2.4.2...v2.4.3) (2022-03-02)
 
 - **ycai:** removed 'path' module usage from module used in web ([#432](https://github.com/tracking-exposed/yttrex/issues/432)) ([d3774f2](https://github.com/tracking-exposed/yttrex/commit/d3774f21745e3169363a80339ed488e90d0a9e29))undefined
