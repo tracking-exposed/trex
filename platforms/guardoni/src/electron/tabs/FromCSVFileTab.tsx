@@ -39,9 +39,21 @@ export const FromCSVFileTab: React.FC<FromCSVFileTabProps> = ({
       setCSVFile(output);
     });
 
-    ipcRenderer.on(CREATE_EXPERIMENT_EVENT.value, (event, ...args) => {
+    const createExperimentHandler = (
+      event: Electron.Event,
+      ...args: any[]
+    ): void => {
       onSubmit(args[0]);
-    });
+    };
+
+    ipcRenderer.on(CREATE_EXPERIMENT_EVENT.value, createExperimentHandler);
+
+    return () => {
+      ipcRenderer.removeListener(
+        CREATE_EXPERIMENT_EVENT.value,
+        createExperimentHandler
+      );
+    };
   }, []);
 
   return (
