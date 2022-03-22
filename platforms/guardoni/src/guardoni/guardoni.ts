@@ -304,6 +304,13 @@ export const guardoniExecution =
   ): TE.TaskEither<AppError, string | null> => {
     const start = new Date();
 
+    ctx.logger.debug(
+      `Running experiment %s for directive %s`,
+      experiment,
+      directiveType
+    );
+    ctx.logger.debug('Experiment data %O', directives);
+
     return pipe(
       TE.tryCatch(
         () => domainSpecific.beforeDirectives(page, ctx.profile),

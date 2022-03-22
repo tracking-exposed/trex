@@ -46,9 +46,23 @@ export const FromURLsTab: React.FC<FromCSVFileTabProps> = ({
   }, [config, urls]);
 
   React.useEffect(() => {
-    ipcRenderer.on(CREATE_EXPERIMENT_EVENT.value, (event, ...args) => {
+    // subscribe for CREATE_EXPERIMENT_EVENT
+    const createExperimentHandler = (
+      _ev: Electron.Event,
+      ...args: any[]
+    ): void => {
       onSubmit(args[0]);
-    });
+    };
+
+    ipcRenderer.on(CREATE_EXPERIMENT_EVENT.value, createExperimentHandler);
+
+    return () => {
+      // remove the listener when component is unmount
+      ipcRenderer.removeListener(
+        CREATE_EXPERIMENT_EVENT.value,
+        createExperimentHandler
+      );
+    };
   }, []);
 
   return (
@@ -79,6 +93,7 @@ export const FromURLsTab: React.FC<FromCSVFileTabProps> = ({
           control={
             <Input
               value={newTitle ?? ''}
+              required
               onChange={(e) => {
                 setURLs({
                   urls,
@@ -98,6 +113,7 @@ export const FromURLsTab: React.FC<FromCSVFileTabProps> = ({
           control={
             <Input
               value={newURLTag ?? ''}
+              required
               onChange={(e) => {
                 setURLs({
                   urls,
