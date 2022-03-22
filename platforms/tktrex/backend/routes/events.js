@@ -5,6 +5,14 @@ const nconf = require('nconf');
 const automo = require('../lib/automo');
 const utils = require('../lib/utils');
 const security = require('../lib/security');
+const geoip = require('geoip-lite');
+
+const geo = (ip) => {
+  const maybeLookup = geoip.lookup(ip);
+  if (!maybeLookup) return null;
+  const { country, city } = maybeLookup;
+  return { country, city };
+};
 
 const mandatoryHeaders = {
   'content-length': 'length',
@@ -126,6 +134,7 @@ function handleFullSave(body, headers) {
     version: headers.version,
     savingTime: new Date(),
     html: body.html,
+    geoip: geo(headers['x-forwarded-for']),
   };
 }
 
@@ -185,7 +194,6 @@ async function processEvents(req) {
       if (_.isInteger(body.incremental)) optionalNumbers.push(body.incremental);
       if (_.isInteger(body.feedCounter)) optionalNumbers.push(body.feedCounter);
       optionalNumbers.push(_.size(body.html));
-
       const html = {
         id,
         rect: body.rect,
@@ -195,6 +203,7 @@ async function processEvents(req) {
         savingTime: new Date(),
         html: body.html,
         n: optionalNumbers,
+        geoip: geo(req.headers['x-forwarded-for'] || req.socket.remoteAddress),
       };
       return html;
     })

@@ -4091,6 +4091,7 @@ __metadata:
   resolution: "@tktrex/backend@workspace:platforms/tktrex/backend"
   dependencies:
     "@types/express": ^4.17.13
+    "@types/geoip-lite": ^1.4.1
     "@types/lodash": ^4.14.179
     "@types/node": ^16.11.26
     body-parser: ^1.19.1
@@ -4100,6 +4101,7 @@ __metadata:
     debug: ^4.3.3
     express: ^4.17.2
     food-words: ^1.1.0
+    geoip-lite: ^1.4.4
     jquery: ^3.6.0
     jsdom: ^13.2.0
     lodash: ^4.17.21
@@ -5045,6 +5047,13 @@ __metadata:
   dependencies:
     "@types/node": "*"
   checksum: add79e212acd5ac76b97b9045834e03a7996aef60a814185e0459088fd290519a3c1620865d588fa36c4498bf614210d2a703af5cf80aa1dbc125db78f6edac3
+  languageName: node
+  linkType: hard
+
+"@types/geoip-lite@npm:^1.4.1":
+  version: 1.4.1
+  resolution: "@types/geoip-lite@npm:1.4.1"
+  checksum: fe6807d61d3f6b6abcd28641b35a0b4bcca02440ba9613e31765b3a874616cfd537e415ed8405126fd6a03eca27727f168b28d22bec1e82b197c1266423a66c9
   languageName: node
   linkType: hard
 
@@ -7443,7 +7452,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"async@npm:2.6.3, async@npm:^2.6.2":
+"async@npm:2.1 - 2.6.3, async@npm:2.6.3, async@npm:^2.6.2":
   version: 2.6.3
   resolution: "async@npm:2.6.3"
   dependencies:
@@ -8856,7 +8865,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"chalk@npm:4.1.2, chalk@npm:^4.0.0, chalk@npm:^4.1.0, chalk@npm:^4.1.1, chalk@npm:^4.1.2":
+"chalk@npm:4.1 - 4.1.2, chalk@npm:4.1.2, chalk@npm:^4.0.0, chalk@npm:^4.1.0, chalk@npm:^4.1.1, chalk@npm:^4.1.2":
   version: 4.1.2
   resolution: "chalk@npm:4.1.2"
   dependencies:
@@ -14384,6 +14393,21 @@ __metadata:
   languageName: node
   linkType: hard
 
+"geoip-lite@npm:^1.4.4":
+  version: 1.4.4
+  resolution: "geoip-lite@npm:1.4.4"
+  dependencies:
+    async: 2.1 - 2.6.3
+    chalk: 4.1 - 4.1.2
+    iconv-lite: 0.4.13 - 0.6.3
+    ip-address: 5.8.9 - 5.9.4
+    lazy: 1.0.11
+    rimraf: 2.5.2 - 2.7.1
+    yauzl: 2.9.2 - 2.10.0
+  checksum: ebae45b29ad94e18fd3239d1d56fccb528ecceec43176313a8f046f53bcf15c468161a205c48e9fec1934f4daf7dda8a19bee126d7b56faaec4f222d4c8b02dd
+  languageName: node
+  linkType: hard
+
 "get-assigned-identifiers@npm:^1.1.0":
   version: 1.2.0
   resolution: "get-assigned-identifiers@npm:1.2.0"
@@ -15815,21 +15839,21 @@ __metadata:
   languageName: node
   linkType: hard
 
+"iconv-lite@npm:0.4.13 - 0.6.3, iconv-lite@npm:0.6.3, iconv-lite@npm:^0.6.2":
+  version: 0.6.3
+  resolution: "iconv-lite@npm:0.6.3"
+  dependencies:
+    safer-buffer: ">= 2.1.2 < 3.0.0"
+  checksum: 3f60d47a5c8fc3313317edfd29a00a692cc87a19cac0159e2ce711d0ebc9019064108323b5e493625e25594f11c6236647d8e256fbe7a58f4a3b33b89e6d30bf
+  languageName: node
+  linkType: hard
+
 "iconv-lite@npm:0.6.2":
   version: 0.6.2
   resolution: "iconv-lite@npm:0.6.2"
   dependencies:
     safer-buffer: ">= 2.1.2 < 3.0.0"
   checksum: 03e03eb9fc003bc94f7956849f747258e57c162760259d76d1e67483058cad854a4b681b635e21e3ec41f4bd15ceed1b4a350f890565d680343442c5b139fa8a
-  languageName: node
-  linkType: hard
-
-"iconv-lite@npm:0.6.3, iconv-lite@npm:^0.6.2":
-  version: 0.6.3
-  resolution: "iconv-lite@npm:0.6.3"
-  dependencies:
-    safer-buffer: ">= 2.1.2 < 3.0.0"
-  checksum: 3f60d47a5c8fc3313317edfd29a00a692cc87a19cac0159e2ce711d0ebc9019064108323b5e493625e25594f11c6236647d8e256fbe7a58f4a3b33b89e6d30bf
   languageName: node
   linkType: hard
 
@@ -16179,6 +16203,17 @@ __metadata:
   peerDependencies:
     fp-ts: ^2.5.0
   checksum: 1b5855682e413cc92cfb5c51d0bdb24c99e407ab4e67821a53078f5d8dedbc387840c5b240cb19dd5d542bbdd2e2317ece17674a674f3de561ca0f00ae765bba
+  languageName: node
+  linkType: hard
+
+"ip-address@npm:5.8.9 - 5.9.4":
+  version: 5.9.4
+  resolution: "ip-address@npm:5.9.4"
+  dependencies:
+    jsbn: 1.1.0
+    lodash: ^4.17.15
+    sprintf-js: 1.1.2
+  checksum: 2822dfefe6ff160ba6846bc03954ecc3d74d99db92431c7808e2eeb6f4c201caa9b44b4d5ee8b7164888bb1f40a74f0b6269c03c654cf065264dc973f62e4fa9
   languageName: node
   linkType: hard
 
@@ -17658,6 +17693,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"jsbn@npm:1.1.0":
+  version: 1.1.0
+  resolution: "jsbn@npm:1.1.0"
+  checksum: 944f924f2bd67ad533b3850eee47603eed0f6ae425fd1ee8c760f477e8c34a05f144c1bd4f5a5dd1963141dc79a2c55f89ccc5ab77d039e7077f3ad196b64965
+  languageName: node
+  linkType: hard
+
 "jsbn@npm:~0.1.0":
   version: 0.1.1
   resolution: "jsbn@npm:0.1.1"
@@ -18174,6 +18216,13 @@ __metadata:
   version: 1.0.5
   resolution: "lazy-val@npm:1.0.5"
   checksum: 31e12e0b118826dfae74f8f3ff8ebcddfe4200ff88d0d448db175c7265ee537e0ba55488d411728246337f3ed3c9ec68416f10889f632a2ce28fb7a970909fb5
+  languageName: node
+  linkType: hard
+
+"lazy@npm:1.0.11":
+  version: 1.0.11
+  resolution: "lazy@npm:1.0.11"
+  checksum: fa1ae5fccb7c72c9c0b56c271dd21e2e0caf95da9e5fbf8a230a12d5c132c6a2b09236250cb73ab2b29ecfaec7cb2208745c290272f3bb82761accef3566b3a7
   languageName: node
   linkType: hard
 
@@ -25044,7 +25093,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"rimraf@npm:2, rimraf@npm:^2.5.4, rimraf@npm:^2.6.1, rimraf@npm:^2.6.3":
+"rimraf@npm:2, rimraf@npm:2.5.2 - 2.7.1, rimraf@npm:^2.5.4, rimraf@npm:^2.6.1, rimraf@npm:^2.6.3":
   version: 2.7.1
   resolution: "rimraf@npm:2.7.1"
   dependencies:
@@ -26238,7 +26287,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"sprintf-js@npm:^1.1.2":
+"sprintf-js@npm:1.1.2, sprintf-js@npm:^1.1.2":
   version: 1.1.2
   resolution: "sprintf-js@npm:1.1.2"
   checksum: d4bb46464632b335e5faed381bd331157e0af64915a98ede833452663bc672823db49d7531c32d58798e85236581fb7342fd0270531ffc8f914e186187bf1c90
@@ -29845,7 +29894,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"yauzl@npm:^2.10.0":
+"yauzl@npm:2.9.2 - 2.10.0, yauzl@npm:^2.10.0":
   version: 2.10.0
   resolution: "yauzl@npm:2.10.0"
   dependencies:
