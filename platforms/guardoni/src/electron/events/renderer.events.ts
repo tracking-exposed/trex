@@ -17,7 +17,6 @@ import {
   GET_GUARDONI_CONFIG_EVENT,
   GET_PUBLIC_DIRECTIVES,
   GLOBAL_ERROR_EVENT,
-  OPEN_GUARDONI_DIR,
   PICK_CSV_FILE_EVENT,
   RUN_GUARDONI_EVENT,
 } from '../models/events';
@@ -55,8 +54,7 @@ const pickCSVFile = (
 const GetEventListenerLifter =
   (
     mainWindow: Electron.BrowserWindow,
-    guardoniWindow: Electron.BrowserWindow,
-    logger: Omit<Logger, 'extend'>
+    guardoniWindow: Electron.BrowserWindow
   ) =>
   <T>(name: string) =>
   (te: TE.TaskEither<AppError, T>): Promise<void> => {
@@ -64,13 +62,11 @@ const GetEventListenerLifter =
       te,
       TE.fold(
         (e) => () => {
-          logger.error('Error trigger for %s \n %O', name, e);
           guardoniWindow.close();
           mainWindow.webContents.postMessage(GLOBAL_ERROR_EVENT.value, e);
           return Promise.resolve();
         },
         (result) => () => {
-          logger.debug('Dispatching event %s with payload %O', name, result);
           mainWindow.webContents.postMessage(name, result);
           return Promise.resolve();
         }
@@ -100,11 +96,7 @@ export const GetEvents = ({
 
   return {
     register: () => {
-      const liftEventTask = GetEventListenerLifter(
-        mainWindow,
-        guardoniWindow,
-        logger
-      );
+      const liftEventTask = GetEventListenerLifter(mainWindow, guardoniWindow);
       // pick csv file
       ipcMain.on(PICK_CSV_FILE_EVENT.value, () => {
         void pipe(
@@ -192,7 +184,6 @@ export const GetEvents = ({
 
                   // recreate guardoni window and browser if window has been destroyed
                   if (guardoniWindow.isDestroyed()) {
-                    logger.debug('Guardoni window destroyed, recreating it...');
                     const newGuardoniApp = await pipe(
                       createGuardoniWindow(app, mainWindow),
                       TE.fold(
@@ -210,13 +201,9 @@ export const GetEvents = ({
                       config.extensionDir
                     );
 
-                  logger.debug('Extension loaded %O', extension);
-                  // logger.debug('Guardoni browser %O', guardoniBrowser);
-                  // logger.debug('Guardoni window %O', guardoniWindow);
+                  logger.info('Extension loaded %O', extension);
 
-                  await guardoniWindow.loadURL('https://tracking.exposed');
-
-                  return pie.getPage(guardoniBrowser, guardoniWindow, true);
+                  return pie.getPage(guardoniBrowser, guardoniWindow);
                 }, toAppError),
                 TE.chain((page) => {
                   guardoniWindow.show();
@@ -231,7 +218,6 @@ export const GetEvents = ({
                 }),
                 TE.map(() => {
                   guardoniWindow.close();
-                  parent.focus();
                 })
               )
             ),
@@ -244,20 +230,6 @@ export const GetEvents = ({
         void pipe(
           api.v3.Public.GetPublicDirectives(),
           liftEventTask(GET_PUBLIC_DIRECTIVES.value)
-        );
-      });
-
-      ipcMain.on(OPEN_GUARDONI_DIR.value, (event, config: string) => {
-        void pipe(
-          TE.tryCatch(
-            () =>
-              dialog.showOpenDialog({
-                properties: ['openDirectory'],
-                defaultPath: config,
-              }),
-            toAppError
-          ),
-          liftEventTask(OPEN_GUARDONI_DIR.value)
         );
       });
     },
