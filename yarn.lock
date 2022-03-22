@@ -4091,7 +4091,6 @@ __metadata:
   resolution: "@tktrex/backend@workspace:platforms/tktrex/backend"
   dependencies:
     "@types/express": ^4.17.13
-    "@types/geoip-lite": ^1.4.1
     "@types/lodash": ^4.14.179
     "@types/node": ^16.11.26
     body-parser: ^1.19.1
@@ -4101,7 +4100,6 @@ __metadata:
     debug: ^4.3.3
     express: ^4.17.2
     food-words: ^1.1.0
-    geoip-lite: ^1.4.4
     jquery: ^3.6.0
     jsdom: ^13.2.0
     lodash: ^4.17.21
@@ -4242,6 +4240,7 @@ __metadata:
     "@types/copy-webpack-plugin": ^8.0.1
     "@types/debug": ^4.1.7
     "@types/dotenv-webpack": ^7.0.3
+    "@types/geoip-lite": ^1.4.1
     "@types/node": ^16.11.26
     "@types/react": 17.0.39
     "@types/react-dom": ^17.0.11
@@ -4265,6 +4264,7 @@ __metadata:
     fast-check-io-ts: ^0.5.0
     filemanager-webpack-plugin: ^6.1.7
     fp-ts: ^2.11.8
+    geoip-lite: ^1.4.4
     io-ts: ^2.2.16
     io-ts-types: ^0.5.16
     jest: ^27.5.1

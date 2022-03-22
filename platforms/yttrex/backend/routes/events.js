@@ -1,3 +1,5 @@
+import { geo } from '@shared/utils/ip.utils';
+
 const _ = require('lodash');
 const debug = require('debug')('routes:events');
 const nconf = require('nconf');
@@ -46,7 +48,7 @@ function appendLast(req) {
      * used by developers with password */
     const MAX_STORED_CONTENT = 13;
     if(!last) last = [];
-    if(_.size(last) > MAX_STORED_CONTENT) 
+    if(_.size(last) > MAX_STORED_CONTENT)
         last = _.tail(last);
 
     last.push(_.pick(req, ['headers', 'body']));
@@ -81,9 +83,9 @@ function extendIfExperiment(expinfo, listOf) {
 
     return _.map(listOf, function(o) {
         /* this function link the experiment object to the
-           element found, and then rebuild the directives to 
+           element found, and then rebuild the directives to
            check if the URL belong or not to the plans.
-           If is does, it save it, otherwise, is activity 
+           If is does, it save it, otherwise, is activity
            made by the browser outside the directives is causes
            o.belonginn = false; */
         o.experiment = _.omit(expinfo, nothelpf);
@@ -146,17 +148,17 @@ async function processEvents2(req) {
     // this is necessary for the mirror functionality
     appendLast(req);
 
-    // this information would be merged in htmls and leafs if exist 
+    // this information would be merged in htmls and leafs if exist
     const experinfo = await automo.pullExperimentInfo(supporter.publicKey);
-    // experinfo is an aggregation from collection 'experiments' and 
+    // experinfo is an aggregation from collection 'experiments' and
     // collection 'directives'
 
     const blang = headers.language.replace(/;.*/, '').replace(/,.*/, '');
     // debug("CHECK: %s <%s>", blang, headers.language );
     const htmls = _.map(
         _.reject(_.reject(req.body, { type: 'leaf'}), { type: 'info'}),
-        /* once the version 1.8.x would be in production we might gradually 
-         * get rid of these filters, the issue was the presence of 'info' entry 
+        /* once the version 1.8.x would be in production we might gradually
+         * get rid of these filters, the issue was the presence of 'info' entry
          * fail in extracting a size and more likely a collision was happening */
         function(body, i) {
 
@@ -182,6 +184,7 @@ async function processEvents2(req) {
             html: body.element,
             counters: [body.incremental, i],
             nature,
+            geoip: geo(headers['x-forwarded-for'] || req.socket.remoteAddress),
         }
         return html;
     });
