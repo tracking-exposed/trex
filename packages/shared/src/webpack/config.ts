@@ -143,8 +143,8 @@ const getConfig = <E extends t.Props>(
     new webpack.ProgressPlugin({
       entries: true,
       dependencies: false,
-      percentBy: "entries",
-    })
+      percentBy: 'entries',
+    }),
   ];
 
   if (opts.target === 'web' || opts.target === 'electron-renderer') {

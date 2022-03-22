@@ -23,7 +23,10 @@
     "automate": "node dist/index.js",
     "tdd": "jest --watch --verbose"
   },
-  "bin": "./bin/guardoni-cli.js",
+  "bin": {
+    "cli": "./bin/guardoni-cli.js",
+    "tk-cli": "./bin/guardoni-tk-cli.js"
+  },
   "main": "./build/electron/main.js",
   "repository": {
     "type": "git",
@@ -55,6 +58,7 @@
     "fp-ts": "^2.11.8",
     "io-ts": "^2.2.16",
     "io-ts-types": "^0.5.16",
+    "leveldown": "^6.1.0",
     "linkedom": "^0.14.4",
     "lodash": "^4.17.21",
     "nconf": "^0.11.3",
@@ -117,10 +121,6 @@
     "webpack-node-externals": "^3.0.0"
   },
   "pkg": {
-    "scripts": [
-      "./bin/guardoni-cli.js",
-      "./build/guardoni/**/*.js"
-    ],
     "assets": [
       "extension/.keep",
       "screenshots/.keep",
