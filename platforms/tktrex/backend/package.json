@@ -13,7 +13,6 @@
   "author": "https://github.com/tracking-exposed/tktrex/graphs/contributors",
   "license": "AGPL-3.0",
   "dependencies": {
-    "@types/geoip-lite": "^1.4.1",
     "body-parser": "^1.19.1",
     "bs58": "^3.1.0",
     "cookie": "^0.3.1",
@@ -21,7 +20,6 @@
     "debug": "^4.3.3",
     "express": "^4.17.2",
     "food-words": "^1.1.0",
-    "geoip-lite": "^1.4.4",
     "jquery": "^3.6.0",
     "jsdom": "^13.2.0",
     "lodash": "^4.17.21",

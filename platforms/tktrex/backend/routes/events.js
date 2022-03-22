@@ -1,3 +1,5 @@
+import { geo } from '@shared/utils/ip.utils';
+
 const _ = require('lodash');
 const debug = require('debug')('routes:events');
 const nconf = require('nconf');
@@ -5,14 +7,7 @@ const nconf = require('nconf');
 const automo = require('../lib/automo');
 const utils = require('../lib/utils');
 const security = require('../lib/security');
-const geoip = require('geoip-lite');
 
-const geo = (ip) => {
-  const maybeLookup = geoip.lookup(ip);
-  if (!maybeLookup) return null;
-  const { country, city } = maybeLookup;
-  return { country, city };
-};
 
 const mandatoryHeaders = {
   'content-length': 'length',
