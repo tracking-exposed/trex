@@ -1,7 +1,4 @@
 import {
-  Accordion,
-  AccordionDetails,
-  AccordionSummary,
   Box,
   Button,
   Checkbox,
@@ -99,10 +96,7 @@ export const App: React.FC = () => {
   const [outputItems, setOutputItems] = React.useState<OutputItem[]>([]);
 
   const handleOpenProfileDir = React.useCallback((config: GuardoniConfig) => {
-    void ipcRenderer.send(
-      OPEN_GUARDONI_DIR.value,
-      `${config.basePath}/profiles/${config.profileName}`
-    );
+    void ipcRenderer.send(OPEN_GUARDONI_DIR.value, config.profileName);
   }, []);
 
   React.useEffect(() => {
@@ -167,138 +161,128 @@ export const App: React.FC = () => {
         <Grid item lg={8} md={8} sm={6}>
           <FormGroup className={classes.formGroup}>
             <Grid container style={{ marginBottom: 40 }}>
-              <Grid item md={12}>
-                <Accordion>
-                  <AccordionSummary>
-                    <Box display="flex" flexDirection="column" width="100%">
-                      <FormControlLabel
-                        label="Profile"
-                        className={classes.formControl}
-                        labelPlacement="top"
-                        control={
-                          <Input
-                            id="profile-path"
-                            aria-describedby="profile-path-text"
-                            value={config.profileName}
-                            fullWidth
-                            onChange={(e) =>
-                              setConfig({
-                                ...config,
-                                profileName: e.target.value,
-                              })
-                            }
-                          />
-                        }
-                      />
-                      <FormHelperText className={classes.formHelperText}>
-                        The profile data will be stored in {config.basePath}
-                        /profiles/{config.profileName}
-                        <Button
-                          size="small"
-                          color="primary"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            handleOpenProfileDir(config);
-                          }}
-                        >
-                          Open Profile Folder
-                        </Button>
-                      </FormHelperText>
-                    </Box>
-                  </AccordionSummary>
-                  <AccordionDetails>
-                    <Box display="flex" flexDirection="column" width="100%">
-                      <FormControlLabel
-                        label="Evidence Tag"
-                        className={`${classes.formControl} ${classes.formControlWithMarginBottom}`}
-                        labelPlacement="top"
-                        control={
-                          <Input
-                            id="evidence-tag-input"
-                            value={config.evidenceTag}
-                            fullWidth
-                            onChange={(e) =>
-                              setConfig({
-                                ...config,
-                                evidenceTag: e.target.value,
-                              })
-                            }
-                          />
-                        }
-                      />
-                      <FormControlLabel
-                        label="Base Path"
-                        className={classes.formControl}
-                        labelPlacement="top"
-                        control={
-                          <Input
-                            id="profile-path"
-                            aria-describedby="profile-path-text"
-                            value={config.basePath}
-                            fullWidth
-                            onChange={(e) =>
-                              setConfig({
-                                ...config,
-                                basePath: e.target.value,
-                              })
-                            }
-                          />
-                        }
-                      />
-                      <FormHelperText>
-                        The base path used to compute all the others
-                      </FormHelperText>
-                      <FormControlLabel
-                        label="Backend"
-                        className={classes.formControl}
-                        labelPlacement="top"
-                        control={
-                          <Input
-                            id="backend"
-                            aria-describedby="backend-text"
-                            value={config.backend}
-                            fullWidth
-                            onChange={(e) =>
-                              setConfig({
-                                ...config,
-                                backend: e.target.value,
-                              })
-                            }
-                          />
-                        }
-                      />
-                      <FormHelperText>
-                        The backend url used by guardoni
-                      </FormHelperText>
+              <Grid item md={6}>
+                <FormControlLabel
+                  label="Profile"
+                  className={classes.formControl}
+                  labelPlacement="top"
+                  control={
+                    <Input
+                      id="profile-path"
+                      aria-describedby="profile-path-text"
+                      value={config.profileName}
+                      fullWidth
+                      onChange={(e) =>
+                        setConfig({
+                          ...config,
+                          profileName: e.target.value,
+                        })
+                      }
+                    />
+                  }
+                />
+                <FormHelperText className={classes.formHelperText}>
+                  The profile data will be stored in {config.basePath}
+                  /profiles/{config.profileName}
+                  <Button
+                    size="small"
+                    color="primary"
+                    onClick={() => handleOpenProfileDir(config)}
+                  >
+                    Open Profile Folder
+                  </Button>
+                </FormHelperText>
+                <FormControlLabel
+                  label="Evidence Tag"
+                  className={`${classes.formControl} ${classes.formControlWithMarginBottom}`}
+                  labelPlacement="top"
+                  control={
+                    <Input
+                      id="evidence-tag-input"
+                      value={config.evidenceTag}
+                      fullWidth
+                      onChange={(e) =>
+                        setConfig({
+                          ...config,
+                          evidenceTag: e.target.value,
+                        })
+                      }
+                    />
+                  }
+                />
 
-                      <FormControlLabel
-                        label="Chrome Path"
-                        className={classes.formControl}
-                        labelPlacement="top"
-                        control={
-                          <Input
-                            id="backend"
-                            aria-describedby="backend-text"
-                            value={config.chromePath}
-                            fullWidth
-                            onChange={(e) =>
-                              setConfig({
-                                ...config,
-                                chromePath: e.target.value,
-                              })
-                            }
-                          />
+                <Box display="flex" flexDirection="column">
+                  <FormControlLabel
+                    label="Base Path"
+                    className={classes.formControl}
+                    labelPlacement="top"
+                    control={
+                      <Input
+                        id="profile-path"
+                        aria-describedby="profile-path-text"
+                        value={config.basePath}
+                        fullWidth
+                        onChange={(e) =>
+                          setConfig({
+                            ...config,
+                            basePath: e.target.value,
+                          })
                         }
                       />
-                      <FormHelperText>Chrome executable path</FormHelperText>
-                    </Box>
-                  </AccordionDetails>
-                </Accordion>
+                    }
+                  />
+                  <FormHelperText>
+                    The base path used to compute all the others
+                  </FormHelperText>
+                  <FormControlLabel
+                    label="Backend"
+                    className={classes.formControl}
+                    labelPlacement="top"
+                    control={
+                      <Input
+                        id="backend"
+                        aria-describedby="backend-text"
+                        value={config.backend}
+                        fullWidth
+                        onChange={(e) =>
+                          setConfig({
+                            ...config,
+                            backend: e.target.value,
+                          })
+                        }
+                      />
+                    }
+                  />
+                  <FormHelperText>
+                    The backend url used by guardoni
+                  </FormHelperText>
+
+                  <FormControlLabel
+                    label="Chrome Path"
+                    className={classes.formControl}
+                    labelPlacement="top"
+                    control={
+                      <Input
+                        id="backend"
+                        aria-describedby="backend-text"
+                        value={config.chromePath}
+                        fullWidth
+                        onChange={(e) =>
+                          setConfig({
+                            ...config,
+                            chromePath: e.target.value,
+                          })
+                        }
+                      />
+                    }
+                  />
+                  <FormHelperText>Chrome executable path</FormHelperText>
+                </Box>
               </Grid>
               <Grid
                 item
-                md={12}
-                style={{ display: 'flex', flexDirection: 'row' }}
+                md={6}
+                style={{ display: 'flex', flexDirection: 'column' }}
               >
                 <FormControlLabel
                   className={classes.formControlCheckbox}

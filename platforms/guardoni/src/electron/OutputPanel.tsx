@@ -62,7 +62,7 @@ const OutputPanel: React.FC<OutputPanelProps> = ({ items }) => {
             Guardoni output will appear here
           </Typography>
         ) : (
-          items.reverse().map((item) => (
+          items.map((item) => (
             <Box
               key={item.id}
               style={{
