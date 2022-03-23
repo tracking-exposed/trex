@@ -14,6 +14,3 @@ mv guardoni-win.exe guardoni-cli-$version.exe
 mv guardoni-macos guardoni-cli-$version-macos
 mv guardoni-linux guardoni-cli-$version-linux
 chmod +x *-cli-*
-
-export DEBUG_PKG=0
-./guardoni-cli-${version}-linux yt-list
