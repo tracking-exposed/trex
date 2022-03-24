@@ -14,8 +14,17 @@ const APP_VERSION = packageJSON.version
   .replace(/-(beta|\d)/, '')
   .concat(process.env.NODE_ENV === 'development' ? '-dev' : '');
 
+// enable data contribution setting when building for "guardoni"
+process.env.DATA_CONTRIBUTION_ENABLED = 'false';
+if (process.env.BUILD_TARGET === 'guardoni') {
+  console.log(
+    'Building extension for guardoni, setting data contribution enabled by default'
+  );
+  process.env.DATA_CONTRIBUTION_ENABLED = 'true';
+}
+
 const { buildENV, ...extensionConfig } = getExtensionConfig(
-  process.env.GUARDONI_TARGET ? 'yttrex-guardoni' : 'yttrex',
+  process.env.BUILD_TARGET === 'guardoni' ? 'yttrex-guardoni' : 'yttrex',
   {
     cwd: __dirname,
     entry: {
@@ -24,6 +33,7 @@ const { buildENV, ...extensionConfig } = getExtensionConfig(
       background: path.resolve(__dirname, 'src/chrome/background/index.ts'),
     },
     outputDir: path.resolve(__dirname, 'build'),
+    distDir: path.resolve(__dirname, 'dist'),
     env: t.strict(
       {
         DEBUG: t.string,

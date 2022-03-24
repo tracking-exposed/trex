@@ -52,15 +52,15 @@ jobs:
       - name: Build shared
         run: yarn shared build
 
-      - name: Build extension for guardoni
+      - name: Build guardoni
+        env:
+          NODE_ENV: production
         run: |
           yarn yt:ext build
           yarn yt:ext dist:guardoni
           mkdir -p ~/.guardoni/extension
-          cp ./platforms/yttrex/extension/dist/extension/*.zip ~/.guardoni/extension
-
-      - name: Build
-        run: yarn guardoni build
+          cp ./platforms/yttrex/extension/dist/*.zip ~/.guardoni/extension
+          yarn guardoni build
 
       - name: Test
         run: yarn test guardoni --ci

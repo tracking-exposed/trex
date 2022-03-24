@@ -22,7 +22,7 @@ config.plugins.push(
   new CopyWebpackPlugin({
     patterns: [
       {
-        from: path.resolve(__dirname, '../yttrex/extension/build'),
+        from: path.resolve(__dirname, '../yttrex/extension/dist'),
         to: path.resolve(__dirname, 'build/extension'),
       },
       {
