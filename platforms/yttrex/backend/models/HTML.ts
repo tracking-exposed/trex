@@ -15,7 +15,9 @@ export const HTML = t.strict(
     savingTime: date,
     html: t.string,
     counters: t.array(t.number),
-    processed: t.boolean
+    processed: t.boolean,
+    timelineId: t.union([t.string, t.undefined]),
+    n: t.union([t.array(t.any), t.undefined]),
   },
   'HTML'
 );

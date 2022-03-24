@@ -1,10 +1,12 @@
 import { trexLogger } from '@shared/logger';
+import { addSeconds, differenceInSeconds } from 'date-fns';
 import * as t from 'io-ts';
 import { date } from 'io-ts-types/lib/date';
 import _ from 'lodash';
 import moment from 'moment';
 import querystring from 'querystring';
 import url from 'url';
+import { HTMLSource } from '../lib/parser/types';
 import utils from '../lib/utils'; // this because parseLikes is an utils to be used also with version of the DB without the converted like. but should be a parsing related-only library once the issue with DB version is solved
 import longlabel from './longlabel';
 import * as shared from './shared';
@@ -26,7 +28,7 @@ export const VideoResult = t.strict(
     recommendedLength: t.number,
     recommendedDisplayL: t.union([t.string, t.null]),
     recommendedLengthText: t.union([t.string, t.null]),
-    recommendedPubTime: t.union([t.any, t.null]),
+    recommendedPubTime: t.union([date, t.null]),
     /* ^^^^  is deleted in makeAbsolutePublicationTime, when clientTime is available,
      * this field produces -> recommendedPubtime and ptPrecison */
     recommendedRelativeSeconds: t.union([t.number, t.null]),
@@ -198,6 +200,12 @@ function relatedMetadata(e: any, i: number): VideoResult | null {
     return !!(!displayTime && !expandedTime && !recommendedLength);
   })();
 
+  const recommendedRelativeSeconds = estimatedLive
+    ? null
+    : mined
+    ? differenceInSeconds(new Date(), mined.timeago)
+    : null;
+
   const r = {
     index: i + 1,
     verified,
@@ -212,11 +220,7 @@ function relatedMetadata(e: any, i: number): VideoResult | null {
     recommendedPubTime: estimatedLive ? null : mined ? mined.timeago : null,
     /* ^^^^  is deleted in makeAbsolutePublicationTime, when clientTime is available,
      * this field produces -> recommendedPubtime and ptPrecison */
-    recommendedRelativeSeconds: estimatedLive
-      ? null
-      : mined
-      ? mined.timeago.asSeconds()
-      : null,
+    recommendedRelativeSeconds,
     recommendedViews: mined ? mined.views : null,
     recommendedThumbnail: thumbnailHref,
     isLive: estimatedLive || liveBadge,
@@ -240,27 +244,30 @@ export function makeAbsolutePublicationTime(
        metadata. clientTime isn't visibile in parsing function so the relative
        transformation of '1 month ago', is now a moment.duration() object 
        and now is saved the estimated ISODate format. */
-  return _.map(
-    list,
-    function ({ recommendedPubTime, ...r }): VideoResultAbsolutePubTime {
-      if (!clientTime || !recommendedPubTime) {
-        return {
-          ...r,
-          publicationTime: null,
-          timePrecision: 'error',
-        };
-      } else {
-        const when = moment(clientTime).subtract(recommendedPubTime);
-        return {
-          ...r,
-          publicationTime: new Date(when.toISOString()),
-          timePrecision: 'estimated',
-        };
-      }
-      /* we are keeping 'label' so it can be fetch in mongodb but filtered in JSON/CSV */
-      // return r;
+  return _.map(list, function (r): VideoResultAbsolutePubTime {
+    // console.log({ clientTime, recommendedPubTime: r?.recommendedPubTime });
+    if (!clientTime || !r?.recommendedPubTime) {
+      return {
+        ...r,
+        publicationTime: null,
+        timePrecision: 'error',
+      };
+    } else {
+      const deltaS = differenceInSeconds(
+        clientTime,
+        r.recommendedPubTime ? r.recommendedPubTime : new Date()
+      );
+
+      const when = addSeconds(clientTime, deltaS);
+      return {
+        ...r,
+        publicationTime: when,
+        timePrecision: 'estimated',
+      };
     }
-  );
+    /* we are keeping 'label' so it can be fetch in mongodb but filtered in JSON/CSV */
+    // return r;
+  });
 }
 
 export function parseSingleTry(D, memo, spec): any {
@@ -461,8 +468,9 @@ export function processVideo(
   };
 }
 
-export default function process(envelop): VideoProcessResult | null {
+export function process(envelop: HTMLSource): VideoProcessResult | null {
   let extracted: VideoProcessResult;
+
   try {
     extracted = processVideo(
       envelop.jsdom,
@@ -497,3 +505,5 @@ export default function process(envelop): VideoProcessResult | null {
     videoLog.debug('likes error %s', JSON.stringify(re, undefined));
   return extracted;
 }
+
+export default process;

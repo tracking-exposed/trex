@@ -117,7 +117,7 @@ const downloadExtension = (
       const extensionZipFilePath = path.resolve(
         path.join(
           ctx.config.extensionDir,
-          `guardoni-yttrex-extension-v${ctx.version}.zip`
+          `yttrex-extension-v${ctx.version}.zip`
         )
       );
 
@@ -130,6 +130,20 @@ const downloadExtension = (
         return IOE.right(undefined);
       }
 
+      const extensionExists = fs.existsSync(
+        downloadDetails.extensionZipFilePath
+      );
+
+      ctx.logger.debug(
+        'Extension exists at path %s? %d',
+        downloadDetails.extensionZipFilePath,
+        extensionExists
+      );
+
+      if (extensionExists) {
+        return IOE.right(undefined);
+      }
+
       return pipe(
         IOE.tryCatch(() => {
           ctx.logger.debug(
@@ -137,6 +151,7 @@ const downloadExtension = (
             downloadDetails.extensionZipUrl,
             downloadDetails.extensionZipFilePath
           );
+
           execSync(
             `curl -L ${downloadDetails.extensionZipUrl} -o ${downloadDetails.extensionZipFilePath}`
           );
@@ -148,8 +163,9 @@ const downloadExtension = (
               downloadDetails.extensionZipUrl,
               downloadDetails.extensionZipFilePath
             );
+
             execSync(
-              `unzip ${downloadDetails.extensionZipFilePath} -d ${ctx.config.extensionDir}`
+              `unzip -f ${downloadDetails.extensionZipFilePath} -d ${ctx.config.extensionDir}`
             );
           }, toAppError)
         )

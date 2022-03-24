@@ -31,10 +31,7 @@ module.exports = {
   setupFilesAfterEnv: ['<rootDir>/jest.setup.js'],
   coverageProvider: 'v8',
   collectCoverageFrom: [
-    '<rootDir>/bin/**',
-    '<rootDir>/lib/**',
-    '<rootDir>/routes/**',
-    '<rootDir>/parsers/**',
+    '<rootDir>/*'
   ],
   coverageThreshold: {
     global: {
