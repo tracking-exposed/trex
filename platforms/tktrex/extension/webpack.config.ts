@@ -51,6 +51,7 @@ const { buildENV, ...config } = getExtensionConfig('tktrex', {
   cwd: __dirname,
   env: AppEnv,
   outputDir,
+  distDir: PATHS.DIST,
   manifestVersion,
   transformManifest: (m) => {
     if (NODE_ENV === 'development') {
