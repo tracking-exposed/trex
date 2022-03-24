@@ -9,7 +9,6 @@ const automo = require('../lib/automo');
 const utils = require('../lib/utils');
 const security = require('../lib/security');
 
-
 const mandatoryHeaders = {
   'content-length': 'length',
   'x-tktrex-version': 'version',
@@ -131,6 +130,7 @@ function handleFullSave(body, headers) {
     savingTime: new Date(),
     html: body.html,
     geoip: geo(headers['x-forwarded-for']),
+    researchTag: body.researchTag,
   };
 }
 
@@ -200,6 +200,7 @@ async function processEvents(req) {
         html: body.html,
         n: optionalNumbers,
         geoip: geo(req.headers['x-forwarded-for'] || req.socket.remoteAddress),
+        researchTag: req.body.researchTag,
       };
       return html;
     })
