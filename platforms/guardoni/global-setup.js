@@ -9,7 +9,7 @@ module.exports = async function globalSetup() {
 
   await setupDevServer({
     command: `cd ${currentDirCommand} && yarn yt:backend start --key test`,
-    launchTimeout: 10000,
+    launchTimeout: 20000,
     port: 9000,
   });
 
