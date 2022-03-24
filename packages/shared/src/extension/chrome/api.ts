@@ -12,8 +12,6 @@ const post =
     return new Promise((resolve, reject) => {
       db.getValid(UserSettings)('local')
         .then((settings) => {
-          console.log('SYNC:', settings);
-          console.log('DATA:', data);
           const xhr = new XMLHttpRequest();
           const payload = JSON.stringify({
             ...data,
