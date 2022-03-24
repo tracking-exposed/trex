@@ -1,6 +1,7 @@
 import { geo } from '@shared/utils/ip.utils';
 
 const _ = require('lodash');
+
 const debug = require('debug')('routes:events');
 const nconf = require('nconf');
 
