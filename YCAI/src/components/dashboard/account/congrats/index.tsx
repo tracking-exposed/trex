@@ -12,7 +12,7 @@ const useStyles = makeStyles((theme) => ({
     marginBottom: theme.spacing(2),
   },
   message: {
-    fontSize: theme.spacing(5),
+    fontSize: theme.spacing(4),
     fontWeight: theme.typography.caption.fontWeight,
     marginBottom: 60,
   },
