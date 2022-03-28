@@ -26,8 +26,8 @@ const DEVELOPMENT = NODE_ENV === 'development';
 const BUILDISODATE = new Date().toISOString();
 const GUARDONI_TARGET = process.env?.BUILD_TARGET === 'guardoni';
 const APP_VERSION = packageJSON.version
-  .replace(/\-(beta|\d)/, '')
-  .concat(DEVELOPMENT ? '-dev' : '');
+  .replace(/-(beta|\d)/, '')
+  .concat(DEVELOPMENT ? '.99' : '');
 
 console.log(
   'NODE_ENV [' + process.env.NODE_ENV + '] Prod:',

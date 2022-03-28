@@ -185,6 +185,7 @@ async function processEvents2(req) {
             counters: [body.incremental, i],
             nature,
             geoip: geo(headers['x-forwarded-for'] || req.socket.remoteAddress),
+            researchTag: body.researchTag,
         }
         return html;
     });
