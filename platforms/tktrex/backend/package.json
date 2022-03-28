@@ -5,6 +5,8 @@
   "description": "tiktok.tracking.exposed → backend data collector, to investigate personalization algorithms",
   "scripts": {
     "lint": "eslint ./",
+    "tto:watch": "key=fuffa DEBUG=\"*,-express:*,-body-parser:*,-send\" ts-node-dev bin/observatory",
+    "tto:start": "DEBUG=\"*,-express:*,-body-parser:*,-send\" ts-node bin/observatory",
     "watch": "key=fuffa DEBUG=\"*,-express:*,-body-parser:*,-send\" ts-node-dev bin/server",
     "start": "DEBUG=\"*,-body-parser:*,-express:*,-lib:cache,-send\" ts-node bin/server",
     "parserv": "DEBUG=\"*\" ts-node bin/parserv3",
