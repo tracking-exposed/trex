@@ -9,9 +9,13 @@ import db from './db';
 
 function post (apiUrl, data, cookieId) {
     return new Promise((resolve, reject) => {
-        db.get('local').then(keypair => {
+        db.get('local').then(settings => {
             const xhr = new XMLHttpRequest();
-            const payload = JSON.stringify(data);
+            const newData = data.map((item) => ({
+              ...item,
+              researchTag: settings.researchTag,
+            }))
+            const payload = JSON.stringify(newData);
             const url = config.API_ROOT + "/" + apiUrl;
 
             xhr.open('POST', url, true);
@@ -20,16 +24,16 @@ function post (apiUrl, data, cookieId) {
             xhr.setRequestHeader('X-YTtrex-Version', config.VERSION);
             xhr.setRequestHeader('X-YTtrex-Build', config.BUILD);
 
-            if (!keypair) {
+            if (!settings) {
                 reject('Cannot sign payload, no keypair found!');
                 return;
             }
 
             const signature = nacl.sign.detached(decodeString(payload),
-                                                 decodeKey(keypair.secretKey));
+                                                 decodeKey(settings.secretKey));
 
             xhr.setRequestHeader('X-YTtrex-NonAuthCookieId', cookieId);
-            xhr.setRequestHeader('X-YTtrex-PublicKey', keypair.publicKey);
+            xhr.setRequestHeader('X-YTtrex-PublicKey', settings.publicKey);
             xhr.setRequestHeader('X-YTtrex-Signature', bs58.encode(signature));
 
             xhr.send(payload);

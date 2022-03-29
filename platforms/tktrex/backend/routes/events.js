@@ -1,4 +1,7 @@
+import { geo } from '@shared/utils/ip.utils';
+
 const _ = require('lodash');
+
 const debug = require('debug')('routes:events');
 const nconf = require('nconf');
 
@@ -126,6 +129,8 @@ function handleFullSave(body, headers) {
     version: headers.version,
     savingTime: new Date(),
     html: body.html,
+    geoip: geo(headers['x-forwarded-for']),
+    researchTag: body.researchTag,
   };
 }
 
@@ -185,7 +190,6 @@ async function processEvents(req) {
       if (_.isInteger(body.incremental)) optionalNumbers.push(body.incremental);
       if (_.isInteger(body.feedCounter)) optionalNumbers.push(body.feedCounter);
       optionalNumbers.push(_.size(body.html));
-
       const html = {
         id,
         rect: body.rect,
@@ -195,6 +199,8 @@ async function processEvents(req) {
         savingTime: new Date(),
         html: body.html,
         n: optionalNumbers,
+        geoip: geo(req.headers['x-forwarded-for'] || req.socket.remoteAddress),
+        researchTag: req.body.researchTag,
       };
       return html;
     })
