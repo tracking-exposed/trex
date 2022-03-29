@@ -46,6 +46,9 @@ describe('CLI', () => {
   jest.setTimeout(60 * 1000);
 
   beforeAll(async () => {
+    // make extension path
+    fs.mkdirSync(extensionDir, { recursive: true })
+
     fs.mkdirSync(path.resolve(basePath, 'experiments'), {
       recursive: true,
     });

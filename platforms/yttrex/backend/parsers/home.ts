@@ -6,12 +6,17 @@ import _ from 'lodash';
 import moment from 'moment';
 import { trexLogger } from '@shared/logger';
 import * as t from 'io-ts';
+import { formatDistance } from 'date-fns';
+import { HTMLSource } from '../lib/parser/types';
+import { date } from 'io-ts-types';
 
 const homeLog = trexLogger.extend('home');
 
 export const HomeProcessResult = t.strict(
   {
     type: t.literal('home'),
+    clientTime: date,
+    // savingTime: t.union([date, t.undefined]),
     selected: t.array(videoparser.VideoResult),
     sections: t.number,
     blang: t.union([t.string, t.undefined]),
@@ -20,16 +25,16 @@ export const HomeProcessResult = t.strict(
   'HomeProcessResult'
 );
 
-export type HomeProcessResult = t.TypeOf<typeof HomeProcessResult>
+export type HomeProcessResult = t.TypeOf<typeof HomeProcessResult>;
 
 interface VideoInfo {
   source: undefined;
   verified: boolean;
-  textTitle: undefined;
-  href: undefined;
-  authorName: undefined;
-  authorSource: undefined;
-  authorHref: undefined;
+  textTitle: string | undefined;
+  href: string | undefined;
+  authorName: string | undefined;
+  authorSource: string | undefined;
+  authorHref: string | undefined;
   thumbnailHref: string | null;
   error: boolean;
   displayTime: string | null;
@@ -43,7 +48,7 @@ interface VideoInfo {
   mined: {
     views: number;
     title: string;
-    timeago: moment.Duration | null;
+    timeago: Date | null;
     isLive: boolean;
     locale: string;
   } | null;
@@ -52,7 +57,7 @@ interface VideoInfo {
 }
 
 function dissectSelectedVideo(
-  e: any,
+  ee: Element,
   i: number,
   sections: any[],
   offset: any
@@ -80,6 +85,9 @@ function dissectSelectedVideo(
     mined: null,
   };
   const errorLog: string[] = [];
+
+  // to keep the previous behaviour we cast the element to any
+  const e = ee as any;
 
   try {
     infos.textTitle = e.querySelector('#video-title-link').textContent;
@@ -216,11 +224,13 @@ function dissectSelectedVideo(
     recommendedLength: infos.recommendedLength,
     recommendedDisplayL: infos.displayTime ? infos.displayTime : null,
     recommendedLengthText: infos.expandedTime ? infos.expandedTime : null,
-    recommendedPubTime: infos.mined ? infos.mined.timeago : null,
+    recommendedPubTime: infos.mined ? infos.mined.timeago?.toISOString() : null,
     /* ^^^^  is deleted in makeAbsolutePublicationTime, when clientTime is available,
      * this field produces -> recommendedPubtime and ptPrecison */
-    recommendedRelativeSeconds: infos.mined
-      ? infos.mined.timeago?.asSeconds()
+    recommendedRelativeSeconds: infos.mined?.timeago
+      ? formatDistance(new Date(), infos.mined.timeago, {
+          includeSeconds: true,
+        })
       : null,
     recommendedViews: infos.mined ? infos.mined.views : null,
     isLive: !!infos.liveBadge,
@@ -317,7 +327,7 @@ function actualHomeProcess(D: Document): HomeProcess {
       if (videoInfo) {
         videoInfo.thumbnailHref = thumbnailHref;
       }
-      return videoInfo;
+      throw new Error('No error info');
     } catch (error) {
       const f = e.querySelector('#video-title-link');
       const s = f ? f.getAttribute('aria-label') : null;
@@ -352,9 +362,10 @@ function guessUXlanguage(D: Document): string | null {
   return uxlang.findLanguage('video', localizedStrings);
 }
 
-export default function process(envelop): HomeProcessResult | null {
+export function process(envelop: HTMLSource): HomeProcessResult | null {
   const retval: HomeProcessResult = {
     type: 'home',
+    clientTime: envelop.impression?.clientTime ?? envelop.html.clientTime,
     selected: [],
     sections: 0,
     blang: undefined,
@@ -388,7 +399,7 @@ export default function process(envelop): HomeProcessResult | null {
   try {
     retval.selected = videoparser.makeAbsolutePublicationTime(
       retval.selected,
-      envelop.impression?.clientTime
+      envelop.impression?.clientTime ?? envelop.html.clientTime
     ) as any[];
   } catch (error) {
     homeLog.error(
@@ -399,3 +410,5 @@ export default function process(envelop): HomeProcessResult | null {
   }
   return retval;
 }
+
+export default process;

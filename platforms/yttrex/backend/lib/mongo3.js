@@ -145,11 +145,11 @@ async function distinct(mongoc, cName, field, query) {
         .distinct(field, query);
 };
 
-async function aggregate(mongoc, cName, pipeline) {
+async function aggregate(mongoc, cName, pipeline, explain) {
     return mongoc
         .db()
         .collection(cName)
-        .aggregate(pipeline)
+        .aggregate(pipeline, explain)
         .toArray();
 };
 

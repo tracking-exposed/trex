@@ -1,3 +1,4 @@
+const { subMilliseconds } = require('date-fns');
 const _ = require('lodash');
 const debug = require('debug')('parser:longlabel');
 const debuge = require('debug')('parser:longlabel:error');
@@ -490,6 +491,7 @@ function relativeTimeMap(word) {
 }
 
 function getPublicationTime(timeinfo) {
+
   const timeago = _.reduce(
     timeRegExpList,
     function (memo, rge) {
@@ -500,6 +502,7 @@ function getPublicationTime(timeinfo) {
     },
     null
   );
+
   if (!timeago) {
     debuge(
       "Can't regexp timeago [%s] --might be due to lang separator?",
@@ -554,8 +557,11 @@ function getPublicationTime(timeinfo) {
   if (!duration.isValid())
     throw new Error(`Invalid duration! from ${timeago} to ${timeinfo}`);
 
-  // debug("getPublicationTime: %s from |%s|", duration.humanize(), timeinfo);
-  return duration;
+  const d = subMilliseconds(new Date(), duration.as('milliseconds'))
+
+  // debug("getPublicationTime: %s from |%s|", duration.as('milliseconds'), timeinfo);
+
+  return d;
 }
 
 function parser(l, source, isLive) {

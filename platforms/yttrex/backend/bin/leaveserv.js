@@ -38,9 +38,7 @@ const allowedSelectors = [ "banner", "ad", "overlay", "toprightad",
 
 if(selector) {
     if(allowedSelectors.indexOf(selector) === -1) {
-        // eslint-disable-next-line no-console
-        return console
-            .log(`Error ${selector} should be one of ${allowedSelectors}`);
+        throw new Error(`Error ${selector} should be one of ${allowedSelectors}`)
     }
 }
 
@@ -375,14 +373,12 @@ async function wrapperLoop() {
 
 try {
     if(filter && id) {
-        // eslint-disable-next-line no-console
-        return console.log("Invalid combo, you can't use --filter and --id");
+        throw new Error("Invalid combo, you can't use --filter and --id");
     }
 
     if(selector) {
         if(id) {
-            // eslint-disable-next-line no-console
-            return console.log("Invalid combo, you can't use --selector and --id");
+            throw new Error("Invalid combo, you can't use --selector and --id");
         }
         debug("Targeting selectorName %s", selector);
     }

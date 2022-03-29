@@ -114,7 +114,7 @@ function processEachHTML(htmlentry) {
   if (typeof htmlentry.html !== 'string') return null;
 
   const envelop = {
-    impression: _.omit(htmlentry, ['html', '_id']),
+    html: _.omit(htmlentry, ['html', '_id']),
     jsdom: new JSDOM(htmlentry.html.replace(/\n +/g, '')).window.document,
   };
 
@@ -158,8 +158,8 @@ function processEachHTML(htmlentry) {
            copy it. remind: the experiments are ephemerals, 
            therefore this element should by copied fully and not only
            the experimentId */
-    if (envelop.impression.experiment)
-      metadata.experiment = envelop.impression.experiment;
+    if (envelop.html.experiment)
+      metadata.experiment = envelop.html.experiment;
   } catch (error) {
     debuge(
       '#%d\t selector (%s) error: %s',
@@ -171,7 +171,7 @@ function processEachHTML(htmlentry) {
     return null;
   }
 
-  return [envelop.impression, metadata];
+  return [envelop.html, metadata];
 }
 
 async function newLoop(htmlFilter) {

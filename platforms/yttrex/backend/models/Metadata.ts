@@ -7,24 +7,27 @@ export const ParsedInfo = t.intersection(
     t.strict(
       {
         index: t.number,
-        label: t.string,
-        elems: t.number,
-        verified: t.boolean,
-        foryou: t.union([t.string, t.null]),
+        label: t.union([t.string, t.undefined]),
+        elems: t.union([t.number, t.undefined]),
         videoId: t.string,
-        isLive: t.boolean,
-        params: t.record(t.string, t.string),
-        recommendedSource: t.string,
-        recommendedTitle: t.string,
+
         timePrecision: t.string,
-        thumbnailHref: t.string,
+        thumbnailHref: t.union([t.string, t.null, t.undefined]),
       },
       'Common'
     ),
     t.partial(
       {
+        isLive: t.boolean,
+        verified: t.union([t.boolean, t.null]),
+        foryou: t.union([t.string, t.null]),
+        params: t.union([t.record(t.string, t.string), t.null]),
+        recommendedSource: t.string,
+        recommendedTitle: t.string,
         recommendedLength: t.number,
         recommendedDisplayL: t.string,
+        recommendedPubTime: t.union([date, t.null]),
+        publicationTime: t.union([date, t.null])
       },
       'Partial'
     ),
@@ -39,29 +42,28 @@ const MetadataBase = t.strict(
     id: t.string,
     publicKey: t.string,
     savingTime: date,
-    clientTime: date,
+    clientTime: t.union([date, t.undefined]),
     href: t.string,
-    params: t.string,
-    blang: t.string,
-    login: t.boolean,
-    metadataId: t.string,
+    blang: t.union([t.string, t.undefined])
   },
   'MetadataBase'
 );
 
-const VideoMetadata = t.strict(
+export const VideoMetadata = t.strict(
   {
     ...MetadataBase.type.props,
+    params: t.record(t.string, t.string),
     type: VideoType,
+    login: t.union([t.boolean, t.null]),
     videoId: t.string,
     authorName: t.string,
     authorSource: t.string,
     title: t.string,
-    publicationString: t.number,
+    publicationString: t.string,
     publicationTime: date,
     likeInfo: t.strict(
       {
-        likes: t.string,
+        likes: t.union([t.string, t.null]),
         dislikes: t.union([t.string, t.null]),
       },
       'LikeInfo'
@@ -73,6 +75,7 @@ const VideoMetadata = t.strict(
       },
       'ViewInfo'
     ),
+    forKids: t.boolean,
     related: t.array(ParsedInfo),
   },
   'VideoMetadata'
@@ -80,27 +83,28 @@ const VideoMetadata = t.strict(
 
 export type VideoMetadata = t.TypeOf<typeof VideoMetadata>;
 
-const HomeMetadata = t.strict(
+export const HomeMetadata = t.strict(
   {
     ...MetadataBase.type.props,
     type: HomeType,
-    query: t.string,
     selected: t.array(ParsedInfo),
+  },
+  'HomeMetadata'
+);
+export type HomeMetadata = t.TypeOf<typeof HomeMetadata>;
+
+export const SearchMetadata = t.strict(
+  {
+    ...MetadataBase.type.props,
+    type: SearchType,
+    query: t.string,
+    correction: t.union([t.array(t.string), t.undefined]),
     results: t.array(
       t.strict({
         position: t.number,
         title: t.string,
       })
     ),
-  },
-  'HomeMetadata'
-);
-export type HomeMetadata = t.TypeOf<typeof HomeMetadata>;
-
-const SearchMetadata = t.strict(
-  {
-    ...MetadataBase.type.props,
-    type: SearchType,
   },
   'SearchMetadata'
 );
