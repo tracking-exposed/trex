@@ -35,7 +35,7 @@ export function logged(D) {
     if(logilen && !avalen)
         return false;
     if(avalen && !logilen)
-        return true; 
+        return true;
 
     debug("Inconsistent condition avatar %d login %d", avalen, logilen);
     return null;

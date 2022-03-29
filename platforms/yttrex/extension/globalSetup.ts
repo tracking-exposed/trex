@@ -15,7 +15,7 @@ export default async function globalSetup(): Promise<void> {
     },
     {
       command: `yarn yt:backend leaveserv`,
-      launchTimeout: 1000,
+      launchTimeout: 5000,
     },
   ]);
 
