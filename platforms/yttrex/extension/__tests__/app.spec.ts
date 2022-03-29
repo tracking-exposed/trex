@@ -1,11 +1,12 @@
 import { boot } from '@shared/extension/app';
 import {
   handleServerLookup,
-  initializeKey,
+  initializeKey
 } from '@shared/extension/chrome/background/account';
 import { load } from '@shared/extension/chrome/background/index';
 import { handleSyncMessage } from '@shared/extension/chrome/background/sync';
 import config from '@shared/extension/config';
+import { sleep } from '@shared/utils/promise.utils';
 import axios from 'axios';
 import * as fs from 'fs';
 import { chrome } from 'jest-chrome';
@@ -14,12 +15,6 @@ import * as app from '../src/app/app';
 import api, { getHeadersForDataDonation } from '../src/chrome/background/api';
 import * as events from '../src/handlers/events';
 import ytHub from '../src/handlers/hub';
-
-const sleep = (ms: number): Promise<void> => {
-  return new Promise((resolve) => {
-    setTimeout(resolve, ms);
-  });
-};
 
 const chromeListener = jest.fn();
 
@@ -149,7 +144,7 @@ describe('YT App', () => {
     // yt callback should be called after server response
     expect(ytTrexActionsSpy).toHaveBeenCalledWith(null);
 
-    await sleep(7000);
+    await sleep(12000);
 
     // video handler should be invoked as the url includes `watch`
 
@@ -163,8 +158,6 @@ describe('YT App', () => {
         console.error(e);
         return e.response.data;
       });
-
-    console.log(response.data);
 
     expect(response.status).toBe(200);
     expect(response.data).toMatchObject({

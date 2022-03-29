@@ -5,7 +5,6 @@ const { basename } = require('path');
 module.exports = async function globalSetup() {
   const currentDir = basename(process.cwd());
   const currentDirCommand = currentDir === 'guardoni' ? '../../' : './';
-  console.log({ currentDir, currentDirCommand });
 
   await setupDevServer({
     command: `cd ${currentDirCommand} && yarn yt:backend start --key test`,
