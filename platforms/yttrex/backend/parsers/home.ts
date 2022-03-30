@@ -356,15 +356,19 @@ function guessUXlanguage(D: Document): string | null {
   return uxlang.findLanguage('video', localizedStrings);
 }
 
-export function process(envelop: HTMLSource): HomeMetadata | null {
-  const retval: HomeMetadata = {
+export function process(envelop: HTMLSource): Omit<HomeMetadata, 'id'> | null {
+  const retval: Omit<HomeMetadata, 'id'> = {
     type: 'home',
     clientTime: envelop.html.clientTime,
     selected: [],
     sections: [],
     blang: null,
     login: false,
+    publicKey: envelop.html.publicKey,
+    href: envelop.html.href,
+    savingTime: new Date(),
   };
+
   try {
     const { selected, sections } = actualHomeProcess(envelop.jsdom);
     retval.selected = selected;

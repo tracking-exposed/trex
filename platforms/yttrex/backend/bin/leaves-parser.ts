@@ -3,14 +3,14 @@
 import fs from 'fs';
 import {
   getLastLeaves,
-  processLeaf,
   updateAdvertisingAndMetadata,
-} from 'lib/parser/leaf';
+} from '../lib/parser/leaf';
 import _ from 'lodash';
 import nconf from 'nconf';
 import mongo3 from '../lib/mongo3';
 import { GetParserProvider } from '../lib/parser/parser';
 import { Leaf } from '../models/Leaf';
+import { processLeaf } from '../parsers/leaf';
 
 nconf.argv().env().file({ file: 'config/settings.json' });
 
@@ -75,7 +75,12 @@ const run = async (): Promise<void> => {
         if (r) {
           const ad = processLeaf(r.source);
           if (ad) {
-            await updateAdvertisingAndMetadata({ db })(ad);
+            await updateAdvertisingAndMetadata({ db })({
+              source: ad,
+              failures: {},
+              log: {},
+              findings: {},
+            });
           }
         }
         return null;

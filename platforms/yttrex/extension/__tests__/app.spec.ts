@@ -33,7 +33,7 @@ const backgroundOpts = {
 
 const keys = initializeKey();
 
-describe('YT App', () => {
+describe.skip('YT App', () => {
   jest.setTimeout(20 * 1000);
 
   it('Collect evidence from video page', async () => {
@@ -136,7 +136,7 @@ describe('YT App', () => {
       'utf-8'
     );
 
-    await sleep(2000);
+    await sleep(4000);
 
     // custom events should be registered on booting
     expect(eventsRegisterSpy).toHaveBeenCalled();

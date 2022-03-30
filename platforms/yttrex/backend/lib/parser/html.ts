@@ -14,7 +14,6 @@ export interface HTMLSource {
   html: HTML;
   jsdom: Document;
   supporter: Supporter;
-  impression: any;
 }
 
 export const getLastHTMLs =
@@ -90,9 +89,7 @@ export function toMetadata(
       ...entry.findings.search,
       ...metadata,
     };
-    metadata.savingTime = new Date(entry.source.html.savingTime);
-    metadata.id = entry.source.html.id;
-    metadata.publicKey = entry.source.html.publicKey;
+
     return metadata;
   }
 
@@ -118,7 +115,7 @@ export function toMetadata(
 }
 
 export const updateMetadataAndMarkHTML =
-  <T>({ db }: Pick<ParserProviderContext<T>, 'db'>) =>
+  ({ db }: Pick<ParserProviderContext<HTMLSource>, 'db'>) =>
   async (
     e: PipelineResults<HTMLSource> | null
   ): Promise<{
@@ -136,8 +133,8 @@ export const updateMetadataAndMarkHTML =
     const r = await db.api.upsertOne(
       db.write,
       nconf.get('schema').metadata,
-      { id: e.source.html.id },
-      e
+      { id: metadata.id },
+      metadata
     );
 
     // parserLog.debug('Upsert metadata by %O: %O', { id: e.id }, r);
