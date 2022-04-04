@@ -6,6 +6,7 @@ export const UserSettings = t.type(
     publicKey: t.string,
     secretKey: t.string,
     ux: t.boolean,
+    researchTag: t.string,
   },
   'UserSettings'
 );
