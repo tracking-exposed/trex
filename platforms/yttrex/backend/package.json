@@ -15,7 +15,8 @@
     "test": "jest",
     "campaigns": "node bin/campaignUpdater.js --dest https://youtube.tracking.exposed",
     "type-check": "tsc",
-    "lint": "eslint ./bin ./lib ./models ./parsers ./routes"
+    "lint": "eslint ./bin ./lib ./models ./parsers ./routes",
+    "pm2": "pm2"
   },
   "author": "Claudio Agosti <claudio@tracking.exposed> and https://github.com/tracking-exposed/yttrex/graphs/contributors",
   "license": "AGPL-3.0",
@@ -41,6 +42,7 @@
     "nconf": "^0.8.5",
     "node-fetch": "^2.6.7",
     "numeral": "^2.0.6",
+    "pm2": "^5.2.0",
     "ts-endpoint": "^2.0.0",
     "ts-io-error": "^2.0.0",
     "ts-node": "^10.7.0",

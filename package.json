@@ -45,7 +45,8 @@
     "lint-staged": "lint-staged",
     "postinstall": "husky install",
     "release-it-after-bump": "scripts/release-it-after-bump.sh",
-    "tsc-diagnostics": "scripts/tsc-diagnostics.sh"
+    "tsc-diagnostics": "scripts/tsc-diagnostics.sh",
+    "pm2": "pm2"
   },
   "devDependencies": {
     "@apidevtools/swagger-cli": "^4.0.4",
@@ -84,5 +85,8 @@
     "@docusaurus/utils-validation": "2.0.0-beta.14",
     "@docusaurus/utils": "2.0.0-beta.14",
     "@types/node": ">=16"
+  },
+  "dependencies": {
+    "pm2": "^5.2.0"
   }
 }
