@@ -10,7 +10,6 @@ import nconf from 'nconf';
 import mongo3 from '../lib/mongo3';
 import { GetParserProvider } from '../lib/parser/parser';
 import { Leaf } from '../models/Leaf';
-import { processLeaf } from '../parsers/leaf';
 import { leafParsers } from '../parsers';
 
 nconf.argv().env().file({ file: 'config/settings.json' });
@@ -34,7 +33,9 @@ const run = async (): Promise<void> => {
     ? JSON.parse(fs.readFileSync(nconf.get('filter'), 'utf-8'))
     : null;
 
-  const repeat = nconf.get('repeat') === 'true';
+  const repeat = nconf.get('repeat')
+    ? nconf.get('repeat') === 'true'
+    : undefined;
 
   /* application starts here */
   try {
@@ -62,7 +63,7 @@ const run = async (): Promise<void> => {
     };
 
     /* call the async infinite loop function */
-    void GetParserProvider<Leaf>({
+    void GetParserProvider<Leaf>('leaves', {
       db,
       parsers: leafParsers,
       getContributions: getLastLeaves({ db }),
@@ -70,15 +71,7 @@ const run = async (): Promise<void> => {
       getEntryNatureType: (e) => e.nature.type,
       saveResults: async (r) => {
         if (r) {
-          const ad = processLeaf(r.source);
-          if (ad) {
-            await updateAdvertisingAndMetadata({ db })({
-              source: ad,
-              failures: {},
-              log: {},
-              findings: {},
-            });
-          }
+          await updateAdvertisingAndMetadata({ db })(r as any);
         }
         return null;
       },

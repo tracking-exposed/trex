@@ -11,7 +11,7 @@
     "parserv": "DEBUG=\"*,-pubtimeAPI\" ts-node bin/parser.ts",
     "parserv:watch": "DEBUG=\"*,-pubtimeAPI\" ts-node-dev -r tsconfig-paths/register --respawn --transpile-only bin/parser.ts",
     "leaveserv": "DEBUG=\"*\" ts-node bin/leaves-parser.ts",
-    "leaveserv:watch": "DEBUG=\"*\" ts-node-dev --respawn --transpile-only bin/leaveserv.js",
+    "leaveserv:watch": "DEBUG=\"*\" ts-node-dev -r tsconfig-paths/register --respawn --transpile-only bin/leaves-parser.ts",
     "test": "jest",
     "campaigns": "node bin/campaignUpdater.js --dest https://youtube.tracking.exposed",
     "type-check": "tsc",

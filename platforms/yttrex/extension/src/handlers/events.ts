@@ -1,6 +1,6 @@
 import { Hub } from '@shared/extension/hub';
 import _ from 'lodash';
-import config, { Config } from '@shared/extension/config';
+import config from '@shared/extension/config';
 import { getTimeISO8601 } from '@shared/extension/utils/common.utils';
 import { bo } from '@shared/extension/utils/browser.utils';
 import { NewLeafEvent, NewVideoEvent, YTHubEvent } from '../models/HubEvent';
@@ -51,8 +51,8 @@ export function sync(hub: Hub<YTHubEvent>): void {
   }
 }
 
-export function register(hub: Hub<YTHubEvent>, config: Config): void {
-  if (config.active) {
+export function register(hub: Hub<YTHubEvent>, config: any): void {
+  if (config.config.active) {
     hub.on('NewVideo', handleEvent);
     hub.on('leaf', handleEvent);
     hub.on('WindowUnload', () => sync(hub));

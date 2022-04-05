@@ -36,11 +36,12 @@ export const getLastLeaves =
 
 export const updateAdvertisingAndMetadata =
   ({ db }: Pick<ParserProviderContext<Ad>, 'db'>) =>
-  async (ad: PipelineResults<Ad> | null): Promise<{
+  async (
+    ad: PipelineResults<Ad> | null
+  ): Promise<{
     metadata: Ad;
     count: { [key: string]: number };
   } | null> => {
-
     if (!ad) return null;
 
     const result = await db.api.upsertOne(
@@ -50,5 +51,15 @@ export const updateAdvertisingAndMetadata =
       ad
     );
 
-    return { metadata: ad.source, count: { ad: result.modifiedCount } };
+    const leafResult = await db.api.updateOne(
+      db.write,
+      nconf.get('schema').leaves,
+      { id: ad.source.id },
+      { processed: true }
+    );
+
+    return {
+      metadata: ad.source,
+      count: { ads: result.modifiedCount, leaves: leafResult.modifiedCount },
+    };
   };

@@ -27,7 +27,7 @@ export interface ParsingChainResults {
 export interface ExecuteParams {
   filter?: string[];
   stop: number;
-  repeat: boolean;
+  repeat?: boolean;
   // exit after first run
   singleUse?: boolean | string;
   htmlAmount: number;

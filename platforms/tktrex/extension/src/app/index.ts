@@ -8,6 +8,7 @@ boot({
     feedId,
     href: window.location.href,
   },
+  mapLocalConfig: (c, p) => ({ ...c, ...p }),
   hub: {
     hub: hub,
     onRegister: (hub) => {

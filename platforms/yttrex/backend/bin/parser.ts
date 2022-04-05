@@ -65,7 +65,7 @@ const run = async (): Promise<void> => {
     };
 
     /* call the async infinite loop function */
-    void GetParserProvider<HTMLSource>({
+    void GetParserProvider<HTMLSource>('htmls', {
       db,
       parsers,
       getContributions: getLastHTMLs({ db }),

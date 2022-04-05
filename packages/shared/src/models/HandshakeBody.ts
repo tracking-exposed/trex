@@ -6,10 +6,10 @@ export const HandshakeBody = t.type(
     config: t.strict(
       {
         publicKey: t.string,
-        experimentId: t.string,
+        experimentId: t.union([t.string, t.undefined]),
         execount: t.number,
         newProfile: t.boolean,
-        evidencetag: t.string,
+        evidencetag: t.union([t.string, t.undefined]),
         directiveType: t.string,
         testTime: DateFromISOString,
       },

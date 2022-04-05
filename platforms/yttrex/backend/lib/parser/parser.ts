@@ -1,4 +1,4 @@
-import { trexLogger } from '@shared/logger';
+import { Logger, trexLogger } from '@shared/logger';
 import { sleep } from '@shared/utils/promise.utils';
 import { formatDistance } from 'date-fns';
 import differenceInMinutes from 'date-fns/differenceInMinutes';
@@ -17,8 +17,9 @@ import {
   PipelineResults,
 } from './types';
 
-const parserLog = trexLogger.extend('parser');
-const overflowLog = parserLog.extend('overflow');
+interface ParserContext<T> extends ParserProviderContext<T> {
+  log: Logger;
+}
 
 const FREQUENCY = 2;
 const AMOUNT_DEFAULT = 20;
@@ -54,7 +55,8 @@ export async function wrapDissector<T>(
 
     return retval;
   } catch (error) {
-    parserLog.error(
+    // eslint-disable-next-line
+    console.error(
       'Error in %s: %s %s',
       dissectorName,
       error.message,
@@ -66,7 +68,7 @@ export async function wrapDissector<T>(
 }
 
 const pipeline =
-  <T>(ctx: ParserProviderContext<T>) =>
+  <T>(ctx: ParserContext<T>) =>
   async (e: T, parser: ParserFn<T>): Promise<PipelineResults<T> | null> => {
     try {
       processedCounter++;
@@ -80,17 +82,17 @@ const pipeline =
       const nature = ctx.getEntryNatureType(e);
 
       try {
-        parserLog.debug('Processing element with nature %s', nature);
+        ctx.log.debug('Processing element with nature %s', nature);
         const mined = await wrapDissector(parser, nature, e, results);
         _.set(results.findings, 'nature', mined);
       } catch (error) {
-        parserLog.error('Parser error %O', error);
+        ctx.log.error('Parser error %O', error);
         _.set(results.failures, nature, error.message);
       }
 
       return results;
     } catch (error) {
-      parserLog.error(
+      ctx.log.error(
         '#%d\t pipeline general failure error: %s',
         processedCounter,
         error.message
@@ -100,7 +102,7 @@ const pipeline =
   };
 
 export const parseContributions =
-  <T>(ctx: ParserProviderContext<T>) =>
+  <T>(ctx: ParserContext<T>) =>
   async (
     envelops: LastContributions<T>
   ): Promise<ParsingChainResults | undefined> => {
@@ -109,11 +111,11 @@ export const parseContributions =
     computedFrequency = 0.1;
 
     if (!envelops.overflow)
-      overflowLog.info('<NOT>\t\t%d documents', _.size(envelops.sources));
+      ctx.log.info('<NOT>\t\t%d documents', _.size(envelops.sources));
     else {
       const last = _.last(envelops.sources);
       const first = _.first(envelops.sources);
-      overflowLog.info(
+      ctx.log.info(
         'first html %s (on %d) <last +minutes %d> next filter set to %s',
         first ? ctx.getEntryDate(first) : undefined,
         _.size(envelops.sources),
@@ -126,7 +128,7 @@ export const parseContributions =
     }
 
     if (stats.currentamount)
-      parserLog.info(
+      ctx.log.info(
         '[+] %d htmls in new parsing sequences. (previous %d took: %s) and now process %d htmls',
         processedCounter,
         stats.currentamount,
@@ -162,12 +164,12 @@ export const parseContributions =
           newmetas.push(m?.metadata);
         }
       } catch (error) {
-        parserLog.error(
+        ctx.log.error(
           'Error in pchain.buildMetadata [%s] id %O',
           error.message,
           entry?.source
         );
-        parserLog.error('%s', error.stack);
+        ctx.log.error('%s', error.stack);
       }
     }
 
@@ -183,7 +185,7 @@ export const parseContributions =
   };
 
 const actualExecution =
-  <T>(ctx: ParserProviderContext<T>) =>
+  <T>(ctx: ParserContext<T>) =>
   async ({
     repeat,
     stop,
@@ -191,6 +193,13 @@ const actualExecution =
     filter,
     htmlAmount,
   }: ExecuteParams): Promise<ExecutionOutput> => {
+    ctx.log.info('Starting parser with params %O', {
+      repeat,
+      stop,
+      singleUse,
+      filter,
+      htmlAmount,
+    });
     try {
       // pretty lamest, but I need an infinite loop on an async function -> IDFC!
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -200,19 +209,20 @@ const actualExecution =
             $gt: new Date(lastExecution),
           },
         };
+
         if (!repeat) htmlFilter.processed = { $exists: false };
 
         if (filter) {
-          parserLog.error('Focus filter on %d IDs', _.size(filter));
+          ctx.log.error('Focus filter on %d IDs', _.size(filter));
           htmlFilter.id = { $in: filter };
         }
         if (typeof singleUse === 'string') {
-          parserLog.error('Targeting a specific htmls.id');
+          ctx.log.error('Targeting a specific htmls.id');
           htmlFilter = { id: singleUse };
         }
 
         if (stop && stop <= processedCounter) {
-          parserLog.debug(
+          ctx.log.debug(
             'Reached configured limit of %d ( processed: %d)',
             stop,
             processedCounter
@@ -223,13 +233,21 @@ const actualExecution =
           };
         }
 
+        ctx.log.debug(
+          'Fetching (%d) contributions with filter %O',
+          htmlAmount,
+          htmlFilter
+        );
+
         const envelops = await ctx.getContributions(htmlFilter, 0, htmlAmount);
+
+        ctx.log.debug('Data to process %d', envelops.sources.length);
 
         let results: ParsingChainResults | undefined;
         if (!_.size(envelops.sources)) {
           nodatacounter++;
           if (nodatacounter % 10 === 1) {
-            parserLog.error(
+            ctx.log.error(
               '(data %d/ processed %d) no data at the last query: %O',
               nodatacounter,
               processedCounter,
@@ -243,9 +261,8 @@ const actualExecution =
         }
 
         // eslint-disable-next-line
-        // const tableOutput = _.map(results, function (r) {
+        // const tableOutput = _.map(results ?? [], function (r: ParsingChainResults) {
         //   if (r) {
-        //     r.log.id = r.source.html.id;
         //     if (r.findings) {
         //       const findingsOutput = Object.entries(r.findings).reduce(
         //         (acc, [k, v]) => {
@@ -273,22 +290,22 @@ const actualExecution =
         // });
 
         if (typeof singleUse === 'boolean' && singleUse) {
-          parserLog.info('Single execution done!');
+          ctx.log.info('Single execution done!');
           return {
             type: 'Success',
             payload: results,
           };
         }
         const sleepTime = computedFrequency * 1000;
-        parserLog.debug('Sleeping for %d', sleepTime);
+        ctx.log.debug('Sleeping for %d', sleepTime);
         await sleep(sleepTime);
       }
-      parserLog.info(
+      ctx.log.info(
         "Please note what wasn't supposed to never happen, just happen: restart the software ASAP."
       );
       return { type: 'Success', payload: {} };
     } catch (e) {
-      parserLog.error('Error in filterChecker', e.message, e.stack);
+      ctx.log.error('Error in filterChecker', e.message, e.stack);
       return {
         type: 'Error',
         payload: e,
@@ -300,8 +317,10 @@ let lastExecution: Date;
 let computedFrequency = 10;
 
 export const GetParserProvider = <T>(
+  name: string,
   ctx: ParserProviderContext<T>
 ): ParserProvider => {
+  const log = trexLogger.extend(name);
   return {
     run: async ({
       singleUse,
@@ -315,23 +334,28 @@ export const GetParserProvider = <T>(
         throw new Error("Invalid combo, you can't use --filter and --id");
 
       if (typeof singleUse === 'string' && htmlAmount !== AMOUNT_DEFAULT)
-        parserLog.error('Ignoring --amount because of --id');
+        log.error('Ignoring --amount because of --id');
 
       if (stop && htmlAmount > stop) {
         htmlAmount = stop;
-        parserLog.error('--stop %d imply --amount %d', stop, htmlAmount);
+        log.error('--stop %d imply --amount %d', stop, htmlAmount);
       }
 
       const repeat =
-        _repeat ||
-        typeof singleUse === 'undefined' ||
-        !!filter ||
-        backInTime !== BACKINTIMEDEFAULT;
-      if (repeat !== _repeat) parserLog.error('--repeat it is implicit!');
+        typeof _repeat === 'undefined'
+          ? typeof singleUse === 'undefined' ||
+            !!filter ||
+            backInTime !== BACKINTIMEDEFAULT
+          : _repeat;
+
+      if (repeat !== _repeat) log.error('--repeat it is implicit!');
 
       lastExecution = subMinutes(new Date(), backInTime);
 
-      const output = await actualExecution(ctx)({
+      const output = await actualExecution({
+        ...ctx,
+        log,
+      })({
         filter,
         repeat,
         stop,

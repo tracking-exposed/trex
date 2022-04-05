@@ -55,6 +55,7 @@ interface SetupObserverOpts {
 
 interface BootOpts {
   payload: ServerLookup['payload'];
+  mapLocalConfig: (c: Config, payload: ServerLookup['payload']) => Config;
   observe: SetupObserverOpts;
   hub: {
     hub: Hub<any>;
@@ -164,8 +165,6 @@ let config: any;
 export function boot(opts: BootOpts): void {
   appLog.info('booting with config', opts.payload);
 
-  config = opts.payload;
-
   // Register all common event handlers.
   // An event handler is a piece of code responsible for a specific task.
   // You can learn more in the [`./handlers`](./handlers/index.html) directory.
@@ -182,12 +181,9 @@ export function boot(opts: BootOpts): void {
     }
 
     /* these parameters are loaded from localStorage */
-    config = {
-      ...config,
-      config: settings,
-    };
+    config = opts.mapLocalConfig(settings as any, opts.payload);
 
-    appLog.info('Config %O', config);
+    appLog.info('Updated config %O', config);
 
     // register platform specific event handlers
     opts.hub.onRegister(opts.hub.hub, config);
@@ -199,7 +195,6 @@ export function boot(opts: BootOpts): void {
 
     // because the URL has been for sure reloaded, be sure to also
     clearCache();
-    appLog.debug('Server lookup with %O', opts.payload);
 
     serverLookup(config, (res) => {
       setupObserver(opts.observe);

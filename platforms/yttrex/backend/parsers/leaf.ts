@@ -196,7 +196,12 @@ export function processLeaf(e: Leaf): Ad | null {
     else if (e.selectorName === 'banner') mined = mineBanner(D, e);
     else if (e.selectorName === 'overlay') mined = mineOverlay(D, e);
     else if (e.selectorName === 'toprightpict') mined = mineTRP(D, e);
-    else if (e.selectorName === 'channel' || e.selectorName === 'channel2')
+    else if (
+      e.selectorName === 'channel' ||
+      e.selectorName === 'channel1' ||
+      e.selectorName === 'channel2' ||
+      e.selectorName === '[href^="/channel"]'
+    )
       mined = mineChannel(D, e);
     else if (e.selectorName === 'adbadge') mined = mineAdBadge(D, e);
     else leafLogger('Selector not handled %s', e.selectorName);
