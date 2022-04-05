@@ -1,7 +1,7 @@
 import { boot } from '@shared/extension/app';
 import {
   handleServerLookup,
-  initializeKey
+  initializeKey,
 } from '@shared/extension/chrome/background/account';
 import { load } from '@shared/extension/chrome/background/index';
 import { handleSyncMessage } from '@shared/extension/chrome/background/sync';
@@ -116,6 +116,13 @@ describe.skip('YT App', () => {
         config: keys,
         href: window.location.href,
       } as any,
+      mapLocalConfig: (c, { href, config }: any): any => ({
+        config: {
+          ...config,
+          ...c,
+        },
+        href,
+      }),
       observe: {
         handlers: app.watchedPaths,
         onLocationChange: () => {},

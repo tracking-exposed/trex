@@ -82,6 +82,7 @@ describe('Parser: Search', () => {
       }));
 
       await runParserTest({
+        log: appTest.logger,
         parsers: { search: process },
         codec: SearchMetadata,
         mapSource: (h: any) => ({

@@ -62,6 +62,7 @@ describe('Parserv', () => {
         }));
 
         await runParserTest({
+          log: appTest.logger,
           sourceSchema: appTest.config.get('schema').htmls,
           parsers: { home: process },
           mapSource: (h: any) => ({

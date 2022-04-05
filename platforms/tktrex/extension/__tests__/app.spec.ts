@@ -120,6 +120,7 @@ describe('TK App', () => {
         config: keys,
         href: window.location.href,
       } as any,
+      mapLocalConfig: (c, p) => ({ ...c, ...p }),
       observe: {
         handlers: app.tkHandlers,
         onLocationChange: () => {},

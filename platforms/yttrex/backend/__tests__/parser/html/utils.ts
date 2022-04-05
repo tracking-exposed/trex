@@ -1,20 +1,12 @@
-import { parseISO, subMinutes } from 'date-fns';
-import { string } from 'fp-ts';
+import { Logger } from '@shared/logger';
 import * as E from 'fp-ts/lib/Either';
 import * as fs from 'fs';
 import * as t from 'io-ts';
 import { failure } from 'io-ts/lib/PathReporter';
-import { JSDOM } from 'jsdom';
 import * as path from 'path';
-import {
-  getLastHTMLs,
-  HTMLSource,
-  updateMetadataAndMarkHTML,
-} from '../../../lib/parser/html';
 import { parseContributions } from '../../../lib/parser/parser';
 import { ParserFn, ParserProviderContext } from '../../../lib/parser/types';
 import { HTML } from '../../../models/HTML';
-import { Test } from '../../../tests/Test';
 
 /**
  * Read the parsed metadata history from '../fixtures/${nature}'
@@ -55,6 +47,7 @@ export const runParserTest =
     sourceSchema,
     ...opts
   }: {
+    log: Logger;
     parsers: Record<string, ParserFn<S>>;
     mapSource: (s: S) => any;
     sourceSchema: string;
@@ -66,13 +59,10 @@ export const runParserTest =
     expectSources: (s: S[]) => void;
   } & ParserProviderContext<S>) =>
   async ({ sources, metadata }: any) => {
-
     // insert the sources in the db
     await opts.db.api.insertMany(opts.db.write, sourceSchema, sources);
 
-    const result = await parseContributions<S>({
-      ...opts,
-    })({
+    const result = await parseContributions<S>(opts)({
       overflow: false,
       errors: 0,
       sources: sources.map(mapSource),

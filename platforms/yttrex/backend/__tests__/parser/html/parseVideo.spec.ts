@@ -61,11 +61,7 @@ describe('Parser: Video', () => {
    * historyData[7] has missing related items
    * historyData[8] has missing related items
    */
-  test.each([
-    historyData[0],
-    historyData[3],
-    historyData[9],
-  ])(
+  test.each([historyData[0], historyData[3], historyData[9]])(
     'Should correctly parse video contributions',
     async ({ sources: _sources, metadata }) => {
       const sources = _sources.map((h: any) => ({
@@ -76,6 +72,7 @@ describe('Parser: Video', () => {
       }));
 
       await runParserTest({
+        log: appTest.logger,
         db,
         sourceSchema: appTest.config.get('schema').htmls,
         mapSource: (h: any) => ({
