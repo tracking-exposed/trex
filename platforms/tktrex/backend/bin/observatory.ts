@@ -92,7 +92,7 @@ app.use(
 
 /* tiktok global observatory */
 app.get(
-  '/api/v3/observatory/:country',
+  '/api/v3/observatory/:country/:amount?',
   async (req, res) => await iowrapper(getCountryFeed, req, res)
 );
 

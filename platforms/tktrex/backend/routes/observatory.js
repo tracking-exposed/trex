@@ -5,9 +5,9 @@ const nconf = require('nconf');
 const mongo3 = require('../lib/mongo3');
 
 async function getCountryFeed(req) {
-  debug('requested %s', req.params.country);
-
-  const MAX = 9 * 4;
+  const amount = req.params.amount || 4;
+  debug('requested %s sample amount %d', req.params.country, amount);
+  const samplesAmount = 9 * amount;
   const filter = { countryCode: req.params.country };
   const mongoc = await mongo3.clientConnect({ concurrency: 1 });
   const metadata = await mongo3.readLimit(
@@ -15,11 +15,16 @@ async function getCountryFeed(req) {
     nconf.get('schema').metadata,
     filter,
     { creationTime: -1 },
-    MAX,
+    samplesAmount,
     0
   );
   await mongoc.close();
-  debug('fetched %d videos from %s', _.size(metadata), filter.countryCode);
+  debug(
+    'fetched %d videos from %s (samplesAmount %d)',
+    _.size(metadata),
+    filter.countryCode,
+    samplesAmount
+  );
 
   return {
     json: metadata,
