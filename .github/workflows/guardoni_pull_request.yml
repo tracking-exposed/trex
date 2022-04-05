@@ -41,6 +41,11 @@ jobs:
       - name: Install modules
         run: yarn
 
+      - name: Get version
+        id: version
+        run: |
+          echo "::set-output name=version::$(npm pkg get version | sed 's/"//g')"
+
       - name: Lint code
         run: yarn guardoni lint
 
@@ -62,6 +67,9 @@ jobs:
 
       - name: Package
         run: yarn guardoni pkg
+
+      - name: Test package
+        run: ./guardoni-cli-${{ step.version.outputs.version }}-linux yt-list
 
       - name: Release-it after bump
         env:
