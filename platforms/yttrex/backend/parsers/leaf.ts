@@ -200,6 +200,7 @@ export function processLeaf(e: Leaf): Ad | null {
       e.selectorName === 'channel' ||
       e.selectorName === 'channel1' ||
       e.selectorName === 'channel2' ||
+      e.selectorName === 'channel3' ||
       e.selectorName === '[href^="/channel"]'
     )
       mined = mineChannel(D, e);

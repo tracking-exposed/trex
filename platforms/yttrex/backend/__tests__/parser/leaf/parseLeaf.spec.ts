@@ -103,6 +103,8 @@ describe('Leaves parser', () => {
             expect({
               ...receivedM,
             }).toMatchObject(expectedM);
+
+            // expect(sectionsRec?.length).toBe(sectionsExp?.length);
           },
         })({ sources, metadata });
       }
