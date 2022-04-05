@@ -8,7 +8,7 @@ export default async function globalSetup(): Promise<void> {
   await setupDevServer([
     {
       command: 'yarn tk:backend start --key test --port 14001',
-      launchTimeout: 10000,
+      launchTimeout: 20000,
       port: 14001,
       usedPortAction: 'ignore',
     },
