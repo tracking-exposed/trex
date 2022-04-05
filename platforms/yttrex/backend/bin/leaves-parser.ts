@@ -11,6 +11,7 @@ import mongo3 from '../lib/mongo3';
 import { GetParserProvider } from '../lib/parser/parser';
 import { Leaf } from '../models/Leaf';
 import { processLeaf } from '../parsers/leaf';
+import { leafParsers } from '../parsers';
 
 nconf.argv().env().file({ file: 'config/settings.json' });
 
@@ -63,11 +64,7 @@ const run = async (): Promise<void> => {
     /* call the async infinite loop function */
     void GetParserProvider<Leaf>({
       db,
-      parsers: {
-        channel: () => {
-          return {};
-        },
-      },
+      parsers: leafParsers,
       getContributions: getLastLeaves({ db }),
       getEntryDate: (e) => e.savingTime,
       getEntryNatureType: (e) => e.nature.type,
