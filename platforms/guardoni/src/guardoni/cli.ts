@@ -8,14 +8,8 @@ import { guardoniLogger } from '../logger';
 import { GetGuardoni } from './guardoni';
 import { GuardoniConfig, GuardoniOutput, GuardoniSuccessOutput } from './types';
 import puppeteer from 'puppeteer-core';
-import { run } from './tx-automate/project/run';
-import { init } from './tx-automate/project/init';
-import { dumpMetaData } from './tx-automate/project/dump';
 import yargs from 'yargs';
 import { hideBin } from 'yargs/helpers';
-import { experimentTypes } from './tx-automate/experiment/descriptors';
-
-export const tkAutomate = { run, init, dumpMetaData };
 
 export const cliLogger = guardoniLogger.extend('cli');
 
@@ -167,6 +161,7 @@ const runGuardoni = ({
 }: any): Promise<void> => {
   if (verbose) {
     if (config) {
+      // eslint-disable-next-line
       console.log(`Configuration loaded from ${config}`, guardoniConf);
     }
   }
@@ -238,10 +233,10 @@ const program = yargs(hideBin(process.argv))
           demandOption: true,
           desc: 'Type of experiment to initialize (e.g. "search-on-tiktok")',
           type: 'string',
-          default: experimentTypes[0],
-          choices: experimentTypes,
+          default: '',
+          choices: [],
         }),
-    (args) => init(args)
+    (args) => Promise.reject(new Error('Not implemented'))
   )
   .command(
     'tk-run [projectDirectory]',
@@ -252,7 +247,7 @@ const program = yargs(hideBin(process.argv))
         desc: 'Directory containing the initialized experiment to run, current directory if empty',
         type: 'string',
       }),
-    (args) => run(args)
+    (args) => Promise.reject(new Error('Not implemented'))
   )
   .command(
     'tk-dump [projectDirectory]',
@@ -263,7 +258,7 @@ const program = yargs(hideBin(process.argv))
         desc: 'Directory containing the experiment from which to dump the meta data',
         type: 'string',
       }),
-    (args) => dumpMetaData(args)
+    (args) => Promise.reject(new Error('Not implemented'))
   )
   .option('c', {
     type: 'string',

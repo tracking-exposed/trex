@@ -2,6 +2,6 @@
 
 /* eslint-disable no-console */
 
-const { cli } = require('../build/guardoni/cli.js');
+const { cli } = require('../build/guardoni/tk-cli.js');
 
 cli.parse();
