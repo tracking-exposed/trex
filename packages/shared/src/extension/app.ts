@@ -8,6 +8,7 @@ import { ServerLookup } from './models/Message';
 import * as dom from './dom';
 import _ from 'lodash';
 import HubEvent from './models/HubEvent';
+import { Config } from './config';
 
 // instantiate a proper logger
 const appLog = log.extend('app');
@@ -55,7 +56,10 @@ interface SetupObserverOpts {
 interface BootOpts {
   payload: ServerLookup['payload'];
   observe: SetupObserverOpts;
-  hub: { hub: Hub<any>; onRegister: (h: Hub<HubEvent>) => void };
+  hub: {
+    hub: Hub<any>;
+    onRegister: (h: Hub<HubEvent>, config: Config) => void;
+  };
   onAuthenticated: (res: any) => void;
 }
 
@@ -167,25 +171,26 @@ export function boot(opts: BootOpts): void {
   // You can learn more in the [`./handlers`](./handlers/index.html) directory.
   registerHandlers(opts.hub.hub);
 
-  // register platform specific event handlers
-  opts.hub.onRegister(opts.hub.hub);
-
   // Lookup the current user and decide what to do.
   localLookup((settings) => {
     // `response` contains the user's public key, we save it global for the blinks
     appLog.info('retrieved locally stored user settings %O', settings);
-    // this output is interpreted and read by guardoni
+
+    if (!settings.active) {
+      appLog.info('extension disabled!');
+      return null;
+    }
 
     /* these parameters are loaded from localStorage */
     config = {
       ...config,
-      ...settings
+      config: settings,
     };
 
-    if (!config.ux) {
-      appLog.info('trex disabled!');
-      return null;
-    }
+    appLog.info('Config %O', config);
+
+    // register platform specific event handlers
+    opts.hub.onRegister(opts.hub.hub, config);
 
     // emergency button should be used when a supported with
     // UX hack in place didn't see any UX change, so they

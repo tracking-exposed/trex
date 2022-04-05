@@ -10,10 +10,12 @@ import { onLocationChange, watchedPaths, ytLogger, ytTrexActions } from './app';
 bo.runtime.sendMessage({ type: 'chromeConfig' }, (config) => {
   ytLogger.info('Booting app with config %O', config);
   try {
+    const { ui, ...settings } = config;
     boot({
       payload: {
-        config,
+        newProfile: settings.isNew,
         href: window.location.href,
+        execount: settings.execount ?? 0,
       } as any,
       observe: {
         handlers: watchedPaths,
@@ -21,10 +23,10 @@ bo.runtime.sendMessage({ type: 'chromeConfig' }, (config) => {
       },
       hub: {
         hub: ytHub,
-        onRegister: (hub) => {
+        onRegister: (hub, config) => {
           ytLogger.debug('Registering handlers to hub');
           // register platform handler
-          hubHandlers.register(hub);
+          hubHandlers.register(hub, config);
         },
       },
       onAuthenticated: ytTrexActions,
