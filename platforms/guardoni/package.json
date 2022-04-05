@@ -23,7 +23,10 @@
     "automate": "node dist/index.js",
     "tdd": "jest --watch --verbose"
   },
-  "bin": "./bin/guardoni-cli.js",
+  "bin": {
+    "cli": "./bin/guardoni-cli.js",
+    "tk-cli": "./bin/guardoni-tk-cli.js"
+  },
   "main": "./build/electron/main.js",
   "repository": {
     "type": "git",
@@ -55,7 +58,8 @@
     "fp-ts": "^2.11.8",
     "io-ts": "^2.2.16",
     "io-ts-types": "^0.5.16",
-    "linkedom": "^0.14.2",
+    "leveldown": "^6.1.0",
+    "linkedom": "^0.14.4",
     "lodash": "^4.17.21",
     "nconf": "^0.11.3",
     "node-fetch": "^2.6.7",
@@ -88,9 +92,9 @@
     "@typescript-eslint/parser": "^5.12.1",
     "bufferutil": "^4.0.6",
     "chalk": "^5.0.0",
-    "electron": "16.0.8",
+    "electron": "16.1.0",
     "electron-builder": "^22.14.13",
-    "electron-reloader": "^1.2.2",
+    "electron-reloader": "^1.2.3",
     "eslint": "^8.10.0",
     "eslint-config-prettier": "^8.4.0",
     "eslint-config-standard-with-typescript": "^21.0.1",
@@ -117,10 +121,6 @@
     "webpack-node-externals": "^3.0.0"
   },
   "pkg": {
-    "scripts": [
-      "./bin/guardoni-cli.js",
-      "./build/guardoni/**/*.js"
-    ],
     "assets": [
       "extension/.keep",
       "screenshots/.keep",

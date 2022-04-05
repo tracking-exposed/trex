@@ -1,6 +1,5 @@
 import crypto from 'crypto';
 import os from 'os';
-
 import PouchDB from 'pouchdb-node';
 import pouchFind from 'pouchdb-find';
 

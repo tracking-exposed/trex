@@ -1,8 +1,7 @@
 import { Page } from 'puppeteer';
-
 import { Logger } from '@util/logger';
-import { MinimalProjectConfig } from '@project/init';
 import { BaseModel, StorableObject } from '@storage/db';
+import { MinimalProjectConfig } from '../config';
 
 export interface InitOptions {
   projectDirectory: string;
