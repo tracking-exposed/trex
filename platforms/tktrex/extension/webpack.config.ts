@@ -32,13 +32,13 @@ const ENV_DEP_WEB = DEVELOPMENT
   ? 'http://' + DEV_SERVER + ':1313'
   : 'https://tiktok.tracking.exposed';
 const LAST_VERSION = 2;
-const BUILDISODATE = new Date().toISOString();
+const BUILD_DATE = new Date().toISOString();
 
 process.env.API_ROOT = `${ENV_DEP_SERVER}/api/v${LAST_VERSION}`;
 process.env.WEB_ROOT = ENV_DEP_WEB;
 process.env.VERSION = `${packageJSON.version}${DEVELOPMENT ? '-dev' : ''}`;
 process.env.BUILD = `On the ${moment().format('DD of MMMM at HH:mm')}.`;
-process.env.BUILDISODATE = BUILDISODATE;
+process.env.BUILD_DATE = BUILD_DATE;
 process.env.FLUSH_INTERVAL = DEVELOPMENT ? '4500' : '9000';
 process.env.DEVELOPMENT = DEVELOPMENT ? 'development' : 'production';
 
