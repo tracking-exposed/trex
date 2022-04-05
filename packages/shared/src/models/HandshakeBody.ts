@@ -7,11 +7,11 @@ export const HandshakeBody = t.type(
       {
         publicKey: t.string,
         experimentId: t.union([t.string, t.undefined]),
-        execount: t.number,
-        newProfile: t.boolean,
+        execount: t.union([t.number, t.undefined]),
+        newProfile: t.union([t.boolean, t.undefined]),
         evidencetag: t.union([t.string, t.undefined]),
-        directiveType: t.string,
-        testTime: DateFromISOString,
+        directiveType: t.union([t.string, t.undefined]),
+        testTime: t.union([DateFromISOString, t.undefined]),
       },
       'Config'
     ),
@@ -23,16 +23,20 @@ export const HandshakeBody = t.type(
 
 export type HandshakeBody = t.TypeOf<typeof HandshakeBody>;
 
-export const HandshakeResponse = t.strict(
-  {
-    _id: t.string,
-    href: t.string,
-    execount: t.union([t.number, t.undefined]),
-    newProfile: t.union([t.boolean, t.undefined]),
-    testName: t.union([t.string, t.null]),
-    publicKey: t.string,
-    status: t.literal('active'),
-  },
+export const HandshakeResponse = t.union(
+  [
+    t.strict({
+      _id: t.string,
+      href: t.string,
+      execount: t.union([t.number, t.undefined]),
+      newProfile: t.union([t.boolean, t.undefined]),
+      testName: t.union([t.string, t.null]),
+      publicKey: t.string,
+      status: t.literal('active'),
+    }),
+    t.type({ ignored: t.boolean }),
+    t.null,
+  ],
   'HandshakeResponse'
 );
 

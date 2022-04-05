@@ -1,7 +1,7 @@
 import { countBy as handlers } from 'lodash';
 import config from '@shared/extension/config';
 import { Hub } from '@shared/extension/hub';
-import {tkLog} from '../logger';
+import { tkLog } from '../logger';
 import { getTimeISO8601 } from '@shared/extension/utils/common.utils';
 import { APIEvent } from '@shared/extension/models/HubEvent';
 
@@ -59,11 +59,10 @@ function apiSync(hub: Hub<any>): void {
   }
 }
 
-export function register(hub: Hub<any>): void {
+export function register(hub: Hub<any>, config: any): void {
+  hub.on('APIEvent', handleAPIEvent).on('WindowUnload', () => apiSync(hub));
 
-  hub
-    .on('APIEvent', handleAPIEvent)
-    .on('WindowUnload', () => apiSync(hub));
-
-  window.setInterval(() => apiSync(hub), INTERVAL);
+  if (config.active) {
+    window.setInterval(() => apiSync(hub), INTERVAL);
+  }
 }

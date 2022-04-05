@@ -66,7 +66,7 @@ export const handleServerLookup =
     })().then((response) => {
       log.info('handshake response %O', response);
       if (response._tag === 'Right') {
-        sendResponse(response.right as any);
+        sendResponse(response.right);
       } else {
         // TODO: handle error here
         sendResponse(response.left as any);
