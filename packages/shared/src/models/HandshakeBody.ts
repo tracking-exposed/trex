@@ -1,32 +1,23 @@
 import * as t from 'io-ts';
 import { DateFromISOString } from 'io-ts-types/lib/DateFromISOString';
 
-export const HandshakeBody = t.intersection(
-  [
-    t.type(
+export const HandshakeBody = t.type(
+  {
+    config: t.strict(
       {
-        config: t.strict(
-          {
-            publicKey: t.string,
-          },
-          'Config'
-        ),
-        href: t.string,
+        publicKey: t.string,
+        experimentId: t.string,
         execount: t.number,
         newProfile: t.boolean,
-      },
-      'Required'
-    ),
-    t.partial(
-      {
-        experimentId: t.string,
         evidencetag: t.string,
         directiveType: t.string,
         testTime: DateFromISOString,
       },
-      'Partial'
+      'Config'
     ),
-  ],
+    href: t.string,
+  },
+
   'HandshakeBody'
 );
 
@@ -36,8 +27,8 @@ export const HandshakeResponse = t.strict(
   {
     _id: t.string,
     href: t.string,
-    execount: t.number,
-    newProfile: t.boolean,
+    execount: t.union([t.number, t.undefined]),
+    newProfile: t.union([t.boolean, t.undefined]),
     testName: t.union([t.string, t.null]),
     publicKey: t.string,
     status: t.literal('active'),

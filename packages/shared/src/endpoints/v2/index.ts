@@ -19,7 +19,7 @@ export const Handshake = Endpoint({
   Input: {
     Body: HandshakeBody,
   },
-  Output: HandshakeResponse,
+  Output: t.union([HandshakeResponse, t.type({ ignored: t.boolean })]),
 });
 
 const CompareVideo = Endpoint({

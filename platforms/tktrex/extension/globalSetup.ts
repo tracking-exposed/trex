@@ -10,7 +10,7 @@ export default async function globalSetup(): Promise<void> {
       command: 'yarn tk:backend start --key test --port 14001',
       launchTimeout: 10000,
       port: 14001,
-      usedPortAction: 'kill',
+      usedPortAction: 'ignore',
     },
     {
       command: 'yarn tk:backend parserv',
