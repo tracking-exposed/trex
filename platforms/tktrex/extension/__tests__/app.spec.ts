@@ -65,6 +65,7 @@ describe('TK App', () => {
           ux: true,
           href: tkURL,
           evidencetag: 'fake-tag',
+          researchTag: '',
           experimentId: '1',
           execount: 1,
           newProfile: false,
