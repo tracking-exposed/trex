@@ -264,6 +264,13 @@ export function handleVideo(node: HTMLElement): void {
 }
 
 export const watchedPaths: { [key: string]: ObserverHandler } = {
+  home: {
+    match: {
+      type: 'route',
+      location: consideredURLs.home,
+    },
+    handle: handleVideo,
+  },
   video: {
     match: {
       type: 'route',
@@ -408,8 +415,6 @@ export const watchedPaths: { [key: string]: ObserverHandler } = {
     handle: handleLeaf,
   },
 };
-
-var lastCheck: Date;
 
 function flush() {
   window.addEventListener('beforeunload', (e) => {
