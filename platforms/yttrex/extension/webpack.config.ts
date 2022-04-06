@@ -12,7 +12,7 @@ dotenv.config({
 
 const APP_VERSION = packageJSON.version
   .replace(/-(beta|\d)/, '')
-  .concat(process.env.NODE_ENV === 'development' ? '99' : '');
+  .concat(process.env.NODE_ENV === 'development' ? '.99' : '');
 
 // enable data contribution setting when building for "guardoni"
 process.env.DATA_CONTRIBUTION_ENABLED = 'false';

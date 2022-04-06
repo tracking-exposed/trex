@@ -1,4 +1,5 @@
 {
+  "profileName": "default",
   "backend": "http://localhost:9000/api",
   "extensionDir": "../yttrex/extension/build"
 }
