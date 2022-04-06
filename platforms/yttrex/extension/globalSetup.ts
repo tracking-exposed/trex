@@ -5,7 +5,7 @@ export default async function globalSetup(): Promise<void> {
   await setupDevServer([
     {
       command: `yarn yt:backend watch --port=9001`,
-      launchTimeout: 10000,
+      launchTimeout: 20000,
       port: 9001,
       usedPortAction: 'ignore',
     },
