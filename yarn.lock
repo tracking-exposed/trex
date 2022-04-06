@@ -11451,16 +11451,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"debug@npm:^3.1.0, debug@npm:^3.1.1, debug@npm:^3.2.6, debug@npm:^3.2.7":
-  version: 3.2.7
-  resolution: "debug@npm:3.2.7"
-  dependencies:
-    ms: ^2.1.1
-  checksum: b3d8c5940799914d30314b7c3304a43305fd0715581a919dacb8b3176d024a782062368405b47491516d2091d6462d4d11f2f4974a405048094f8bfebfa3071c
-  languageName: node
-  linkType: hard
-
-"debug@npm:~4.3.1":
+"debug@npm:4.3.4, debug@npm:~4.3.1":
   version: 4.3.4
   resolution: "debug@npm:4.3.4"
   dependencies:
@@ -11469,6 +11460,15 @@ __metadata:
     supports-color:
       optional: true
   checksum: 3dbad3f94ea64f34431a9cbf0bafb61853eda57bff2880036153438f50fb5a84f27683ba0d8e5426bf41a8c6ff03879488120cf5b3a761e77953169c0600a708
+  languageName: node
+  linkType: hard
+
+"debug@npm:^3.1.0, debug@npm:^3.1.1, debug@npm:^3.2.6, debug@npm:^3.2.7":
+  version: 3.2.7
+  resolution: "debug@npm:3.2.7"
+  dependencies:
+    ms: ^2.1.1
+  checksum: b3d8c5940799914d30314b7c3304a43305fd0715581a919dacb8b3176d024a782062368405b47491516d2091d6462d4d11f2f4974a405048094f8bfebfa3071c
   languageName: node
   linkType: hard
 
@@ -11817,10 +11817,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"devtools-protocol@npm:0.0.960912":
-  version: 0.0.960912
-  resolution: "devtools-protocol@npm:0.0.960912"
-  checksum: e14bb94e2d64a4279b53789f6526e7ae1f03e2a0f5650450d97735b91f12aa501bed185b9b97c902063ac9b74e78df25ed973c12c7968ed8163f438d2dec9944
+"devtools-protocol@npm:0.0.969999":
+  version: 0.0.969999
+  resolution: "devtools-protocol@npm:0.0.969999"
+  checksum: c67e2a40864edfbdc892eb6db2b6edf82a277af5bcc070741a6b39ffe052955a3c1fb99a0bb029631b326d290861a79deea423634d5a441b9faeab2884208396
   languageName: node
   linkType: hard
 
@@ -15449,7 +15449,7 @@ __metadata:
     pouchdb-find: ^7.2.2
     pouchdb-node: ^7.2.2
     prettier: ^2.5.1
-    puppeteer-core: ^13.4.0
+    puppeteer-core: ^13.5.2
     puppeteer-extra: ^3.2.3
     puppeteer-extra-plugin-stealth: ^2.9.0
     puppeteer-in-electron: ^3.0.5
@@ -23869,13 +23869,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"puppeteer-core@npm:^13.4.0":
-  version: 13.4.1
-  resolution: "puppeteer-core@npm:13.4.1"
+"puppeteer-core@npm:^13.5.2":
+  version: 13.5.2
+  resolution: "puppeteer-core@npm:13.5.2"
   dependencies:
     cross-fetch: 3.1.5
-    debug: 4.3.3
-    devtools-protocol: 0.0.960912
+    debug: 4.3.4
+    devtools-protocol: 0.0.969999
     extract-zip: 2.0.1
     https-proxy-agent: 5.0.0
     pkg-dir: 4.2.0
@@ -23885,7 +23885,7 @@ __metadata:
     tar-fs: 2.1.1
     unbzip2-stream: 1.4.3
     ws: 8.5.0
-  checksum: 8fda94a3537fa6b8841955c902324d55943951ab9832950b3dd7025325b84ed3a07ccd9fff3ad189ef64e27f3bbd64cf25775c4cadd77eabd568cb849dd0e22b
+  checksum: 592b0b11abd6388806e7008406ebeb3f6a7464d001dbe25c29faa2988cb09b4391cccc5346857f73b09f6d9ee151521adb0e6c7d12ce1c2e2f79446bb72b4297
   languageName: node
   linkType: hard
 
@@ -23965,13 +23965,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"puppeteer@npm:^13.4.0":
-  version: 13.4.1
-  resolution: "puppeteer@npm:13.4.1"
+"puppeteer@npm:^13.5.2":
+  version: 13.5.2
+  resolution: "puppeteer@npm:13.5.2"
   dependencies:
     cross-fetch: 3.1.5
-    debug: 4.3.3
-    devtools-protocol: 0.0.960912
+    debug: 4.3.4
+    devtools-protocol: 0.0.969999
     extract-zip: 2.0.1
     https-proxy-agent: 5.0.0
     pkg-dir: 4.2.0
@@ -23981,7 +23981,7 @@ __metadata:
     tar-fs: 2.1.1
     unbzip2-stream: 1.4.3
     ws: 8.5.0
-  checksum: ab6fa2f78d59ba13ff1100e97dd5cc59137b249727efef87193c057ff76ddeb91d5a748ef2775488fa19360c7368fe09cc229e7a28bbb7d63f5037931dd003c9
+  checksum: 5f03c8a606067ae114ea646d9773b76b3e2c8f0654ef4453c5f813686a218481d934708fefc607822b75673c6e82b812755892f57d02e42a0dadeaabe3c56138
   languageName: node
   linkType: hard
 
@@ -28101,7 +28101,7 @@ __metadata:
     nconf: ^0.11.3
     node-fetch: ^2.6.7
     pkg: ^5.5.2
-    puppeteer: ^13.4.0
+    puppeteer: ^13.5.2
     puppeteer-extra: ^3.2.3
     puppeteer-extra-plugin-stealth: ^2.9.0
   bin:

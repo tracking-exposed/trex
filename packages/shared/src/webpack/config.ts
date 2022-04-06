@@ -70,7 +70,7 @@ const getConfig = <E extends t.Props>(
     Object.keys(opts.entry).join(', ')
   );
 
-  dotenv.config({ path: DOTENV_CONFIG_PATH });
+  dotenv.config({ path: DOTENV_CONFIG_PATH, override: true });
 
   D.enable(process.env.DEBUG ?? '');
 
