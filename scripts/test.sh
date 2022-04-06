@@ -6,8 +6,10 @@ export DEBUG="@trex*"
 export NODE_ENV=development
 export DOTENV_CONFIG_PATH=.env.development
 
+# build shared
 yarn shared build
 
+# build yt backend
 yarn yt:backend build
 
 # bootstrap yttrex backend processes
