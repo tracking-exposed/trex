@@ -180,6 +180,10 @@ export function boot(opts: BootOpts): void {
       return null;
     }
 
+    // this is needed by guardoni to retrieve the current publicKey
+    // eslint-disable-next-line
+    console.log(JSON.stringify({ response: settings }));
+
     /* these parameters are loaded from localStorage */
     config = opts.mapLocalConfig(settings as any, opts.payload);
 

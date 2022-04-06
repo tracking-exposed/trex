@@ -48,7 +48,7 @@ export const updateAdvertisingAndMetadata =
       db.write,
       nconf.get('schema').ads,
       { id: ad.source.id },
-      ad
+      ad.source
     );
 
     const leafResult = await db.api.updateOne(

@@ -21,7 +21,7 @@ interface ParserContext<T> extends ParserProviderContext<T> {
   log: Logger;
 }
 
-const FREQUENCY = 2;
+const FREQUENCY = 5;
 const AMOUNT_DEFAULT = 20;
 // By default the pipeline will start from "1 minute ago"
 const BACKINTIMEDEFAULT = 1;

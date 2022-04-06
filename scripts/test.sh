@@ -12,7 +12,7 @@ yarn yt:backend build
 
 # bootstrap yttrex backend processes
 cd ./platforms/yttrex/backend
-yarn pm2 start ecosystem.test.config.js
+yarn pm2 restart ecosystem.test.config.js
 cd ../../../
 
 # test backend
