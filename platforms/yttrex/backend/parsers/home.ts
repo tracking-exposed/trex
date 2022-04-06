@@ -1,68 +1,52 @@
-import * as shared from './shared';
-import longlabel from './longlabel';
-import uxlang from './uxlang';
-import * as videoparser from './video';
+import { trexLogger } from '@shared/logger';
+import { formatDistance } from 'date-fns';
 import _ from 'lodash';
 import moment from 'moment';
-import { trexLogger } from '@shared/logger';
-import * as t from 'io-ts';
-import { formatDistance } from 'date-fns';
-import { HTMLSource } from '../lib/parser/types';
-import { date } from 'io-ts-types';
+import { HTMLSource } from '../lib/parser/html';
+import { HomeMetadata, ParsedInfo } from '../models/Metadata';
+import longlabel from './longlabel';
+import * as shared from './shared';
+import uxlang from './uxlang';
+import * as videoparser from './video';
 
 const homeLog = trexLogger.extend('home');
 
-export const HomeProcessResult = t.strict(
-  {
-    type: t.literal('home'),
-    clientTime: date,
-    // savingTime: t.union([date, t.undefined]),
-    selected: t.array(videoparser.VideoResult),
-    sections: t.number,
-    blang: t.union([t.string, t.undefined]),
-    login: t.union([t.boolean, t.null]),
-  },
-  'HomeProcessResult'
-);
-
-export type HomeProcessResult = t.TypeOf<typeof HomeProcessResult>;
-
-interface VideoInfo {
-  source: undefined;
-  verified: boolean;
-  textTitle: string | undefined;
-  href: string | undefined;
-  authorName: string | undefined;
-  authorSource: string | undefined;
-  authorHref: string | undefined;
-  thumbnailHref: string | null;
-  error: boolean;
-  displayTime: string | null;
-  expandedTime: string | null;
-  recommendedLength: number;
-  link: any;
-  videoId?: string;
-  liveBadge: boolean;
-  sectionNumber?: number;
-  section: any;
-  mined: {
-    views: number;
-    title: string;
-    timeago: Date | null;
-    isLive: boolean;
-    locale: string;
-  } | null;
-  aria: string | null;
-  parameter: string | null;
-}
+// interface VideoInfo {
+//   source: undefined;
+//   verified: boolean;
+//   textTitle: string | undefined;
+//   href: string | undefined;
+//   authorName: string | undefined;
+//   authorSource: string | undefined;
+//   authorHref: string | undefined;
+//   thumbnailHref: string | null;
+//   error: boolean;
+//   displayTime: string | null;
+//   expandedTime: string | null;
+//   recommendedLength: number;
+//   link: any;
+//   videoId?: string;
+//   liveBadge: boolean;
+//   sectionNumber?: number;
+//   section: any;
+//   mined: {
+//     views: number;
+//     title: string;
+//     timeago: Date | null;
+//     isLive: boolean;
+//     locale: string;
+//   } | null;
+//   aria: string | null;
+//   parameter: string | null;
+// }
 
 function dissectSelectedVideo(
   ee: Element,
   i: number,
   sections: any[],
   offset: any
-): VideoInfo | null {
-  const infos: VideoInfo = {
+): Omit<ParsedInfo, 'timePrecision' | 'thumbnailHref'> | null {
+  const infos = {
     link: undefined,
     videoId: undefined,
     source: undefined,
@@ -76,13 +60,10 @@ function dissectSelectedVideo(
     expandedTime: null,
     displayTime: null,
     recommendedLength: 0,
-    section: undefined,
-    sectionNumber: undefined,
     thumbnailHref: null,
     parameter: null,
     liveBadge: false,
     aria: null,
-    mined: null,
   };
   const errorLog: string[] = [];
 
@@ -145,8 +126,8 @@ function dissectSelectedVideo(
       e,
       '.ytd-thumbnail-overlay-time-status-renderer'
     );
-    infos.displayTime = displayTime;
-    infos.expandedTime = expandedTime;
+    infos.displayTime = displayTime as any;
+    infos.expandedTime = expandedTime as any;
     infos.recommendedLength = displayTime
       ? moment.duration(shared.fixHumanizedTime(displayTime)).asSeconds()
       : -1;
@@ -154,33 +135,40 @@ function dissectSelectedVideo(
     errorLog.push('Failure in displayTime|expandedTime: ' + error.message);
     infos.error = true;
   }
+
   try {
-    infos.link = e.querySelector('a')
+    const link = e.querySelector('a')
       ? e.querySelector('a').getAttribute('href')
       : null;
-    infos.videoId = infos.link.replace(/.*v=/, '');
-    infos.parameter = infos.videoId?.match(/&.*/)
-      ? infos.videoId.replace(/.*&/, '&')
+    infos.videoId = link?.replace(/.*v=/, '');
+    infos.parameter = (infos.videoId as any)?.match(/&.*/)
+      ? (infos.videoId as any).replace(/.*&/, '&')
       : null;
+
     infos.liveBadge = !!e.querySelector('.badge-style-type-live-now');
   } catch (e) {
     errorLog.push(`simple metadata parser error: ${e.message}`);
   }
+
+  let videoTileLinkParsed;
   try {
     infos.aria = e
       .querySelector('#video-title-link')
       .getAttribute('aria-label');
-    infos.mined = infos.aria
+    videoTileLinkParsed = infos.aria
       ? longlabel.parser(infos.aria, infos.authorName, infos.liveBadge)
       : null;
+
+    homeLog.debug('Video title parsed %O', videoTileLinkParsed);
+
     if (
-      infos.mined?.title &&
+      videoTileLinkParsed?.title &&
       infos.textTitle &&
-      infos.mined.title !== infos.textTitle
+      videoTileLinkParsed.title !== infos.textTitle
     )
       homeLog.warn(
         'To be investigated anomaly n.2 [%s]!=[%s]',
-        infos.mined.title,
+        videoTileLinkParsed.title,
         infos.textTitle
       );
   } catch (e) {
@@ -189,13 +177,15 @@ function dissectSelectedVideo(
     errorLog.push(`longlabel parser error: ${aria} ${e.message} `);
   }
 
+  let section: string | null = null;
+
   try {
-    infos.sectionNumber = _.size(
+    const sectionNumber = _.size(
       _.filter(_.map(sections, 'offset'), function (o) {
         return _.gt(o, offset);
       })
     );
-    infos.section = _.get(sections, infos.sectionNumber, { title: null }).title;
+    section = _.get(sections, sectionNumber, { title: null }).title;
   } catch (e) {
     errorLog.push(
       'Section calculation fail: ' +
@@ -215,31 +205,33 @@ function dissectSelectedVideo(
   const s = {
     index: i + 1,
     verified: infos.verified,
-    videoId: infos.videoId as string,
+    videoId: infos.videoId as any,
     parameter: infos.parameter ? infos.parameter : null,
-    sectionName: infos.section ? infos.section : null,
+    sectionName: section,
     recommendedSource: infos.authorName ? infos.authorName : null,
     recommendedHref: infos.authorHref ? infos.authorHref : null,
-    recommendedTitle: infos.mined ? infos.mined.title : null,
+    recommendedTitle: videoTileLinkParsed ? videoTileLinkParsed.title : null,
     recommendedLength: infos.recommendedLength,
     recommendedDisplayL: infos.displayTime ? infos.displayTime : null,
     recommendedLengthText: infos.expandedTime ? infos.expandedTime : null,
-    recommendedPubTime: infos.mined ? infos.mined.timeago?.toISOString() : null,
+    recommendedPubTime: videoTileLinkParsed
+      ? videoTileLinkParsed.timeago?.toISOString()
+      : null,
     /* ^^^^  is deleted in makeAbsolutePublicationTime, when clientTime is available,
      * this field produces -> recommendedPubtime and ptPrecison */
-    recommendedRelativeSeconds: infos.mined?.timeago
-      ? formatDistance(new Date(), infos.mined.timeago, {
+    recommendedRelativeSeconds: videoTileLinkParsed?.timeago
+      ? formatDistance(new Date(), videoTileLinkParsed.timeago, {
           includeSeconds: true,
         })
       : null,
-    recommendedViews: infos.mined ? infos.mined.views : null,
+    recommendedViews: videoTileLinkParsed ? videoTileLinkParsed.views : null,
     isLive: !!infos.liveBadge,
     label: infos.aria ? infos.aria : null,
     elems: _.size(e.outerHTML),
   };
   videoparser.checkUpDebug(s);
 
-  return s as any;
+  return s;
 }
 
 /* Size tree special debug method. This is quite CPU intensive therefore should be
@@ -289,8 +281,8 @@ function debugSizes(selected): void {
 /* ********* end of 'size' related code ********* */
 
 interface HomeProcess {
-  selected: any;
-  sections: any;
+  selected: HomeMetadata['selected'];
+  sections: HomeMetadata['sections'];
 }
 
 function actualHomeProcess(D: Document): HomeProcess {
@@ -308,7 +300,8 @@ function actualHomeProcess(D: Document): HomeProcess {
       };
     })
   );
-  homeLog.error('sections %j', titles);
+
+  homeLog.debug('sections %j', titles);
 
   const videoElemSelector = 'ytd-rich-item-renderer';
   const ve = D.querySelectorAll(videoElemSelector);
@@ -319,13 +312,14 @@ function actualHomeProcess(D: Document): HomeProcess {
   const selected = _.map(ve, function (e, i) {
     /* this research is interesting but not yet used */
     sizeTreeResearch(e, i);
+
     const thumbnailHref = shared.getThumbNailHref(e);
     try {
       const ubication = D.querySelector('body')?.outerHTML.indexOf(e.outerHTML);
       selectorOffsetMap.push({ i, offset: ubication });
       const videoInfo = dissectSelectedVideo(e, i, titles, ubication);
       if (videoInfo) {
-        videoInfo.thumbnailHref = thumbnailHref;
+        (videoInfo as any).thumbnailHref = thumbnailHref;
       }
       throw new Error('No error info');
     } catch (error) {
@@ -341,13 +335,13 @@ function actualHomeProcess(D: Document): HomeProcess {
     }
   });
   const effective = _.reject(selected, { error: true });
-  homeLog.warn(
+  homeLog.info(
     'Parsing completed. Analyzed %d, effective %d',
     _.size(selected),
     _.size(effective)
   );
   debugSizes(effective);
-  return { selected: effective, sections: selectorOffsetMap };
+  return { selected: effective as any[], sections: selectorOffsetMap };
   /* sections would be removed before being saved in mongodb */
 }
 
@@ -362,31 +356,30 @@ function guessUXlanguage(D: Document): string | null {
   return uxlang.findLanguage('video', localizedStrings);
 }
 
-export function process(envelop: HTMLSource): HomeProcessResult | null {
-  const retval: HomeProcessResult = {
+export function process(envelop: HTMLSource): Omit<HomeMetadata, 'id'> | null {
+  const retval: Omit<HomeMetadata, 'id'> = {
     type: 'home',
-    clientTime: envelop.impression?.clientTime ?? envelop.html.clientTime,
+    clientTime: envelop.html.clientTime,
     selected: [],
-    sections: 0,
-    blang: undefined,
+    sections: [],
+    blang: null,
     login: false,
+    publicKey: envelop.html.publicKey,
+    href: envelop.html.href,
+    savingTime: new Date(),
   };
+
   try {
     const { selected, sections } = actualHomeProcess(envelop.jsdom);
     retval.selected = selected;
     retval.sections = sections;
   } catch (e) {
-    homeLog.error(
-      'Error in processing %s (%d): %s',
-      envelop.impression.href,
-      envelop.impression.size,
-      e.message
-    );
+    homeLog.error('Error in processing %s: %s', envelop.html.href, e.message);
     return null;
   }
 
   retval.type = 'home';
-  retval.blang = guessUXlanguage(envelop.jsdom) ?? undefined;
+  retval.blang = guessUXlanguage(envelop.jsdom) ?? null;
 
   try {
     retval.login = shared.logged(envelop.jsdom);
@@ -399,7 +392,7 @@ export function process(envelop: HTMLSource): HomeProcessResult | null {
   try {
     retval.selected = videoparser.makeAbsolutePublicationTime(
       retval.selected,
-      envelop.impression?.clientTime ?? envelop.html.clientTime
+      envelop.html.clientTime
     ) as any[];
   } catch (error) {
     homeLog.error(
@@ -408,6 +401,7 @@ export function process(envelop: HTMLSource): HomeProcessResult | null {
       error.stack
     );
   }
+
   return retval;
 }
 

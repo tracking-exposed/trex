@@ -23,4 +23,12 @@ export const VideoN = t.strict(
   'VideoNature'
 );
 
-export const Nature = t.union([SearchN, VideoN], 'Nature');
+export const ChannelN = t.strict(
+  {
+    type: t.literal('channel'),
+    authorSource: t.string,
+  },
+  'ChannelN'
+);
+
+export const Nature = t.union([SearchN, VideoN, ChannelN], 'Nature');

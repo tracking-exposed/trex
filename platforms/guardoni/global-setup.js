@@ -10,6 +10,7 @@ module.exports = async function globalSetup() {
     command: `cd ${currentDirCommand} && yarn yt:backend start --key test`,
     launchTimeout: 20000,
     port: 9000,
+    usedPortAction: 'ignore',
   });
 
   // Your global setup

@@ -27,7 +27,7 @@ const chromeListener = jest.fn();
 const videoMatcher = app.tkHandlers.video;
 
 const eventsRegisterSpy = jest.spyOn(handlers, 'register');
-const ytTrexActionsSpy = jest.spyOn(app, 'tkTrexActions');
+const tkTrexActionsSpy = jest.spyOn(app, 'tkTrexActions');
 const handleVideoSpy = jest.spyOn(videoMatcher, 'handle');
 
 const backgroundOpts = {
@@ -120,6 +120,7 @@ describe('TK App', () => {
         config: keys,
         href: window.location.href,
       } as any,
+      mapLocalConfig: (c, p) => ({ ...c, ...p }),
       observe: {
         handlers: app.tkHandlers,
         onLocationChange: () => {},
@@ -146,7 +147,7 @@ describe('TK App', () => {
     expect(eventsRegisterSpy).toHaveBeenCalled();
 
     // yt callback should be called after server response
-    expect(ytTrexActionsSpy).toHaveBeenCalledWith(null);
+    expect(tkTrexActionsSpy).toHaveBeenCalledWith(null);
 
     await sleep(7000);
 

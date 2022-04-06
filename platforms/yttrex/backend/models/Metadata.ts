@@ -7,10 +7,10 @@ export const ParsedInfo = t.intersection(
     t.strict(
       {
         index: t.number,
-        label: t.union([t.string, t.undefined]),
+        label: t.union([t.string, t.null]),
+        recommendedSource: t.union([t.string, t.null]),
         elems: t.union([t.number, t.undefined]),
         videoId: t.string,
-
         timePrecision: t.string,
         thumbnailHref: t.union([t.string, t.null, t.undefined]),
       },
@@ -22,12 +22,12 @@ export const ParsedInfo = t.intersection(
         verified: t.union([t.boolean, t.null]),
         foryou: t.union([t.string, t.null]),
         params: t.union([t.record(t.string, t.string), t.null]),
-        recommendedSource: t.string,
+
         recommendedTitle: t.string,
         recommendedLength: t.number,
-        recommendedDisplayL: t.string,
+        recommendedDisplayL: t.union([t.string, t.null]),
         recommendedPubTime: t.union([date, t.null]),
-        publicationTime: t.union([date, t.null])
+        publicationTime: t.union([date, t.null]),
       },
       'Partial'
     ),
@@ -44,7 +44,7 @@ const MetadataBase = t.strict(
     savingTime: date,
     clientTime: t.union([date, t.undefined]),
     href: t.string,
-    blang: t.union([t.string, t.undefined])
+    blang: t.union([t.string, t.null]),
   },
   'MetadataBase'
 );
@@ -60,11 +60,11 @@ export const VideoMetadata = t.strict(
     authorSource: t.string,
     title: t.string,
     publicationString: t.string,
-    publicationTime: date,
+    publicationTime: t.union([date, t.null]),
     likeInfo: t.strict(
       {
-        likes: t.union([t.string, t.null]),
-        dislikes: t.union([t.string, t.null]),
+        watchedLikes: t.union([t.number, t.null]),
+        watchedDislikes: t.union([t.number, t.null]),
       },
       'LikeInfo'
     ),
@@ -88,6 +88,13 @@ export const HomeMetadata = t.strict(
     ...MetadataBase.type.props,
     type: HomeType,
     selected: t.array(ParsedInfo),
+    sections: t.array(
+      t.type({
+        i: t.number,
+        offset: t.number,
+      })
+    ),
+    login: t.union([t.boolean, t.null]),
   },
   'HomeMetadata'
 );

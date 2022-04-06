@@ -156,7 +156,8 @@ export const handleLeaf = (
   opts: Omit<ObserverHandler, 'handle'>
 ): void => {
   // command has .selector .parents .preserveInvisible (this might be undefined)
-  ytLogger.debug('handle leaf node %o with %o', node, opts);
+  ytLogger.info('Handle leaf! %O', config);
+  ytLogger.debug('node %o with %o', node, opts);
   const offsetTop = getOffsetTop(node);
   const offsetLeft = getOffsetLeft(node);
 

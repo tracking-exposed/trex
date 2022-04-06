@@ -1,22 +1,24 @@
 #!/usr/bin/env ts-node
 
-/* eslint-disable */
-
+import fs from 'fs';
+import {
+  getLastLeaves,
+  updateAdvertisingAndMetadata,
+} from '../lib/parser/leaf';
 import _ from 'lodash';
 import nconf from 'nconf';
-import fs from 'fs';
-import { GetParserProvider } from '../lib/parser/parser';
 import mongo3 from '../lib/mongo3';
-import { parsers, toMetadata } from '../parsers';
+import { GetParserProvider } from '../lib/parser/parser';
+import { Leaf } from '../models/Leaf';
+import { leafParsers } from '../parsers';
 
 nconf.argv().env().file({ file: 'config/settings.json' });
 
-const FREQUENCY = 10;
 const AMOUNT_DEFAULT = 20;
-const BACKINTIMEDEFAULT = 1;
+const BACKINTIMEDEFAULT = 1; // minutes
 
-const run = async () => {
-  let htmlAmount = _.parseInt(nconf.get('amount'))
+const run = async (): Promise<void> => {
+  const htmlAmount = _.parseInt(nconf.get('amount'))
     ? _.parseInt(nconf.get('amount'))
     : AMOUNT_DEFAULT;
 
@@ -31,7 +33,9 @@ const run = async () => {
     ? JSON.parse(fs.readFileSync(nconf.get('filter'), 'utf-8'))
     : null;
 
-  const repeat = nconf.get('repeat') === 'true';
+  const repeat = nconf.get('repeat')
+    ? nconf.get('repeat') === 'true'
+    : undefined;
 
   /* application starts here */
   try {
@@ -52,15 +56,25 @@ const run = async () => {
       throw new Error('Failed to connect to mongo!');
     }
 
+    const db = {
+      api: mongo3,
+      read: mongoR,
+      write: mongoW,
+    };
+
     /* call the async infinite loop function */
-    void GetParserProvider({
-      db: {
-        api: mongo3,
-        read: mongoR,
-        write: mongoW,
+    void GetParserProvider<Leaf>('leaves', {
+      db,
+      parsers: leafParsers,
+      getContributions: getLastLeaves({ db }),
+      getEntryDate: (e) => e.savingTime,
+      getEntryNatureType: (e) => e.nature.type,
+      saveResults: async (r) => {
+        if (r) {
+          await updateAdvertisingAndMetadata({ db })(r as any);
+        }
+        return null;
       },
-      parsers,
-      toMetadata,
     }).run({
       singleUse: typeof id === 'string' ? id : false,
       filter,
@@ -70,7 +84,8 @@ const run = async () => {
       htmlAmount,
     });
   } catch (e) {
-    console.log('Error in wrapperLoop', e.message);
+    // eslint-disable-next-line
+    console.log('Error in running the parser', e.message);
     process.exit(1);
   }
 };

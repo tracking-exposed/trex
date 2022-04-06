@@ -2,10 +2,10 @@ import * as t from 'io-ts';
 import { Endpoint } from 'ts-endpoint';
 import {
   ADVContributionEvent,
-  VideoContributionEvent
+  VideoContributionEvent,
 } from '../../models/ContributionEvent';
 import { GetExperimentListOutput } from '../../models/Experiment';
-import { HandshakeBody } from '../../models/HandshakeBody';
+import { HandshakeBody, HandshakeResponse } from '../../models/HandshakeBody';
 import { PublicKeyParams } from '../../models/http/params/PublicKey';
 import { SearchQuery } from '../../models/http/SearchQuery';
 import { TikTokSearch } from '../../models/http/tiktok/TikTokSearch';
@@ -19,7 +19,7 @@ export const Handshake = Endpoint({
   Input: {
     Body: HandshakeBody,
   },
-  Output: t.any,
+  Output: HandshakeResponse,
 });
 
 const CompareVideo = Endpoint({
