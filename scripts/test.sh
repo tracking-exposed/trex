@@ -22,6 +22,8 @@ cd ../../../
 
 # build yttrex extension
 yarn yt:ext build
+rm -rf ./platforms/yttrex/extension/dist
+cp -r ./platforms/yttrex/extension/build/ ./platforms/yttrex/extension/dist
 
 # build the extension for production for guardoni
 # yarn yt:ext dist
