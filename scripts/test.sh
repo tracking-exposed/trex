@@ -4,6 +4,7 @@ set -e -x
 
 export DEBUG="@trex*"
 export NODE_ENV=development
+export DOTENV_CONFIG_PATH=.env.development
 
 yarn shared build
 
@@ -19,7 +20,9 @@ cd ../../../
 
 # build yttrex extension
 yarn yt:ext build
-yarn yt:ext pack
+
+# build the extension for production for guardoni
+yarn yt:ext dist
 # yarn yt:ext test
 
 # build guardoni

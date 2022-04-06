@@ -16,10 +16,10 @@
     "lint": "eslint ./ --quiet",
     "watch": "DOTENV_CONFIG_PATH=.env.development webpack -w",
     "watch:prod": "webpack -w",
-    "build": "rm -rf ./build && mkdir build && webpack",
-    "build:watch": "rm -rf ./build && mkdir build && webpack -w",
-    "dist": "sh pack-extension.sh",
-    "dist:guardoni": "sh pack-extension-for-guardoni.sh",
+    "build": "webpack",
+    "build:watch": "webpack -w",
+    "dist": "NODE_ENV=production yarn build",
+    "dist:guardoni": "NODE_ENV=production BUILD_TARGET=guardoni yarn build",
     "test": "jest"
   },
   "devDependencies": {

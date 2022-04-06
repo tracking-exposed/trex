@@ -18,7 +18,7 @@ import {
   DirectiveKeysMap,
   DirectiveType,
   PostDirectiveResponse,
-  PostDirectiveSuccessResponse,
+  PostDirectiveSuccessResponse
 } from '@shared/models/Directive';
 import { APIClient, GetAPI } from '@shared/providers/api.provider';
 import { execSync } from 'child_process';
@@ -35,20 +35,20 @@ import * as fs from 'fs';
 import { NonEmptyString } from 'io-ts-types/lib/NonEmptyString';
 import { failure, PathReporter } from 'io-ts/lib/PathReporter';
 import _ from 'lodash';
+import * as os from 'os';
 import path from 'path';
 // import pluginStealth from "puppeteer-extra-plugin-stealth";
 import type puppeteer from 'puppeteer-core';
+import { getPackageVersion } from '../utils';
 import domainSpecific from './domainSpecific';
 import {
   GuardoniConfig,
   GuardoniConfigRequired,
   GuardoniProfile,
   GuardoniSuccessOutput,
-  ProgressDetails,
+  ProgressDetails
 } from './types';
 import { csvParseTE, getChromePath, liftFromIOE } from './utils';
-import * as os from 'os';
-import { getPackageVersion } from '../utils';
 
 // const COMMANDJSONEXAMPLE =
 //   'https://youtube.tracking.exposed/json/automation-example.json';
