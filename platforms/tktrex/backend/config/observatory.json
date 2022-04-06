@@ -1,0 +1,14 @@
+{
+  "schema": {
+    "metadata": "metadata"
+  },
+
+  "mongoHost": "localhost",
+  "mongoPort": 27017,
+  "mongoDb": "observatory",
+
+  "port": 14100,
+  "interface": "0.0.0.0",
+
+  "key": "invalid_default"
+}
