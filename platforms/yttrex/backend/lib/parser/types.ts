@@ -1,22 +1,18 @@
-import { HTML } from '../../models/HTML';
 import { Metadata } from '../../models/Metadata';
 import { MongoClient } from 'mongodb';
 import mongo3 from '../../lib/mongo3';
-import { Supporter } from 'models/Supporter';
 
-export interface HTMLSource {
-  html: HTML;
-  jsdom: Document;
-  supporter: Supporter;
-  impression: any;
+export type ParserFn<T> = (entry: T, findings?: any) => any | null;
+
+export interface LastContributions<T> {
+  errors: number;
+  overflow: boolean;
+  sources: T[];
 }
 
-export type ParserFn = (html: HTMLSource, findings?: any) => any | null;
-
-
-export interface PipelineResults {
+export interface PipelineResults<T> {
   failures: Record<string, any>;
-  source: HTMLSource;
+  source: T;
   log: Record<string, any>;
   findings: Record<string, any>;
 }
@@ -24,14 +20,14 @@ export interface PipelineResults {
 export interface ParsingChainResults {
   findings: number[];
   failures: number[];
-  logof: Array<[number, number] | null>;
+  // logof: Array<[number, number] | null>;
   metadata: Metadata[];
 }
 
 export interface ExecuteParams {
   filter?: string[];
   stop: number;
-  repeat: boolean;
+  repeat?: boolean;
   // exit after first run
   singleUse?: boolean | string;
   htmlAmount: number;
@@ -56,12 +52,22 @@ export interface ParserProvider {
   run: (opts: ParserProviderOpts) => Promise<any>;
 }
 
-export interface ParserProviderContext {
+export interface ParserProviderContext<T> {
   db: {
     api: typeof mongo3;
     read: MongoClient;
     write: MongoClient;
   };
-  parsers: Record<string, ParserFn>;
-  toMetadata: (e: PipelineResults | null) => any;
+  parsers: Record<string, ParserFn<T>>;
+  getContributions: (
+    filter: any,
+    skip: number,
+    limit: number
+  ) => Promise<LastContributions<T>>;
+  getEntryNatureType: (e: T) => string;
+  getEntryDate: (e: T) => Date;
+  saveResults: (e: PipelineResults<T> | null) => Promise<{
+    metadata: any;
+    count: { [key: string]: number };
+  } | null>;
 }

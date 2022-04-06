@@ -8,6 +8,7 @@ import { ServerLookup } from './models/Message';
 import * as dom from './dom';
 import _ from 'lodash';
 import HubEvent from './models/HubEvent';
+import { Config } from './config';
 
 // instantiate a proper logger
 const appLog = log.extend('app');
@@ -54,8 +55,12 @@ interface SetupObserverOpts {
 
 interface BootOpts {
   payload: ServerLookup['payload'];
+  mapLocalConfig: (c: Config, payload: ServerLookup['payload']) => Config;
   observe: SetupObserverOpts;
-  hub: { hub: Hub<any>; onRegister: (h: Hub<HubEvent>) => void };
+  hub: {
+    hub: Hub<any>;
+    onRegister: (h: Hub<HubEvent>, config: Config) => void;
+  };
   onAuthenticated: (res: any) => void;
 }
 
@@ -160,32 +165,28 @@ let config: any;
 export function boot(opts: BootOpts): void {
   appLog.info('booting with config', opts.payload);
 
-  config = opts.payload;
-
   // Register all common event handlers.
   // An event handler is a piece of code responsible for a specific task.
   // You can learn more in the [`./handlers`](./handlers/index.html) directory.
   registerHandlers(opts.hub.hub);
 
-  // register platform specific event handlers
-  opts.hub.onRegister(opts.hub.hub);
-
   // Lookup the current user and decide what to do.
   localLookup((settings) => {
     // `response` contains the user's public key, we save it global for the blinks
     appLog.info('retrieved locally stored user settings %O', settings);
-    // this output is interpreted and read by guardoni
 
-    /* these parameters are loaded from localStorage */
-    config = {
-      ...config,
-      ...settings
-    };
-
-    if (!config.ux) {
-      appLog.info('trex disabled!');
+    if (!settings.active) {
+      appLog.info('extension disabled!');
       return null;
     }
+
+    /* these parameters are loaded from localStorage */
+    config = opts.mapLocalConfig(settings as any, opts.payload);
+
+    appLog.info('Updated config %O', config);
+
+    // register platform specific event handlers
+    opts.hub.onRegister(opts.hub.hub, config);
 
     // emergency button should be used when a supported with
     // UX hack in place didn't see any UX change, so they
@@ -194,7 +195,6 @@ export function boot(opts: BootOpts): void {
 
     // because the URL has been for sure reloaded, be sure to also
     clearCache();
-    appLog.debug('Server lookup with %O', opts.payload);
 
     serverLookup(config, (res) => {
       setupObserver(opts.observe);

@@ -51,13 +51,15 @@ export function sync(hub: Hub<YTHubEvent>): void {
   }
 }
 
-export function register(hub: Hub<YTHubEvent>): void {
-  hub.on('NewVideo', handleEvent);
-  hub.on('leaf', handleEvent);
-  hub.on('WindowUnload', () => sync(hub));
+export function register(hub: Hub<YTHubEvent>, config: any): void {
+  if (config.config.active) {
+    hub.on('NewVideo', handleEvent);
+    hub.on('leaf', handleEvent);
+    hub.on('WindowUnload', () => sync(hub));
 
-  window.setInterval(() => {
-    ytLog.debug('Sync at interval %s', INTERVAL);
-    sync(hub);
-  }, INTERVAL);
+    window.setInterval(() => {
+      ytLog.debug('Sync at interval %s', INTERVAL);
+      sync(hub);
+    }, INTERVAL);
+  }
 }

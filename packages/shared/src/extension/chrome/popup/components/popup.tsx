@@ -35,8 +35,8 @@ const Popup: React.FC = () => {
     });
   }, []);
 
-  const deltaMs = config.BUILDISODATE
-    ? Date.now() - new Date(config.BUILDISODATE).getTime()
+  const deltaMs = config.BUILD_DATE
+    ? Date.now() - new Date(config.BUILD_DATE).getTime()
     : 0;
 
   const timeAgo = moment.duration(deltaMs).humanize();

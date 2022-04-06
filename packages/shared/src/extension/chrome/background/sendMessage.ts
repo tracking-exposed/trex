@@ -1,9 +1,9 @@
 import { isLeft } from 'fp-ts/lib/Either';
 import * as t from 'io-ts';
 import { PathReporter } from 'io-ts/lib/PathReporter';
+import { HandshakeResponse } from '../../../models/HandshakeBody';
 import log from '../../logger';
 import { Message, ServerLookup } from '../../models/Message';
-import { ServerLookupResponse } from '../../models/ServerLookupResponse';
 import { UserSettings } from '../../models/UserSettings';
 import { bo } from '../../utils/browser.utils';
 
@@ -43,14 +43,14 @@ export const localLookup = (cb: (userSettings: UserSettings) => void): void =>
 
 export const serverLookup = (
   payload: ServerLookup['payload'],
-  cb: (response: ServerLookupResponse) => void
+  cb: (response: HandshakeResponse) => void
 ): void =>
   sendMessage(
     {
       type: 'ServerLookup',
       payload,
     },
-    ifValid(ServerLookupResponse)(cb)
+    ifValid(HandshakeResponse)(cb)
   );
 
 export const configUpdate = (

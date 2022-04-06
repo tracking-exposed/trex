@@ -1,8 +1,8 @@
 import bs58 from 'bs58';
+import { HandshakeResponse } from '../../../models/HandshakeBody';
 import nacl from 'tweetnacl';
 import log from '../../logger';
 import { Message, ServerLookup } from '../../models/Message';
-import { ServerLookupResponse } from '../../models/ServerLookupResponse';
 import UserSettings from '../../models/UserSettings';
 import { bo } from '../../utils/browser.utils';
 import db from '../db';
@@ -58,7 +58,7 @@ export const handleServerLookup =
   (opts: LoadOpts) =>
   async (
     payload: ServerLookup['payload'],
-    sendResponse: (response: ServerLookupResponse) => void
+    sendResponse: (response: HandshakeResponse) => void
   ): Promise<void> => {
     log.info('handshake body %O', payload);
     void opts.api.v2.Public.Handshake({
@@ -66,10 +66,10 @@ export const handleServerLookup =
     })().then((response) => {
       log.info('handshake response %O', response);
       if (response._tag === 'Right') {
-        sendResponse(response as any);
+        sendResponse(response.right);
       } else {
         // TODO: handle error here
-        sendResponse(response as any);
+        sendResponse(response.left as any);
       }
     });
   };

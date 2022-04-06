@@ -41,8 +41,7 @@ class Popup extends React.Component {
   render() {
     const version = config.VERSION;
     const timeago =
-      moment.duration(moment() - moment(config.BUILDISODATE)).humanize() +
-      ' ago';
+      moment.duration(moment() - moment(config.BUILD_DATE)).humanize() + ' ago';
 
     if (!this.state) return <div>Loading...</div>;
 
