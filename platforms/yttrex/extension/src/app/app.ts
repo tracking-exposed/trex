@@ -237,7 +237,7 @@ export const handleLeaf = (
 };
 
 export function handleVideo(node: HTMLElement): void {
-  ytLogger.info('Handling video node %o', node);
+  ytLogger.info('Handle "NewVideo"!');
 
   const sendableNode = document.querySelector('ytd-app');
   if (!sendableNode) {

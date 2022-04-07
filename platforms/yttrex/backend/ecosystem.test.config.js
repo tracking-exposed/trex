@@ -10,7 +10,10 @@ module.exports = {
     {
       name: 'yt-backend-test',
       ...apps[0],
-      env,
+      env: {
+        ...env,
+        port: 9001,
+      },
     },
     {
       name: 'yt-parser-test',
