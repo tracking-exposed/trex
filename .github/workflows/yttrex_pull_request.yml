@@ -58,7 +58,7 @@ jobs:
           mongodb-version: ${{ matrix.mongodb-version }}
 
       - name: Test
-        run:
+        run: |
           yarn pm2 start --env test platforms/yttrex/backend/ecosystem.config.js
           yarn yt:backend test --runInBand --forceExit --ci
           yarn yt:ext test --runInBand --ci
