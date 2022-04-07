@@ -149,7 +149,7 @@ describe('TK App', () => {
     // yt callback should be called after server response
     expect(tkTrexActionsSpy).toHaveBeenCalledWith(null);
 
-    await sleep(12000);
+    await sleep(8000);
 
     // video handler should be invoked as the url includes `watch`
 
