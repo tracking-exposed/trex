@@ -11,7 +11,7 @@ const yt = {
     script: 'yarn watch',
     watch: false,
     env_test: {
-      ...testEnv.yt,
+      ...testEnv,
       port: 9001,
     },
   },
