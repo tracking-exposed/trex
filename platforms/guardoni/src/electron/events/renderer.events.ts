@@ -13,13 +13,7 @@ import { GetGuardoni, readCSVAndParse } from '../../guardoni/guardoni';
 import { GuardoniConfig, GuardoniConfigRequired } from '../../guardoni/types';
 import { guardoniLogger } from '../../logger';
 import {
-  CREATE_EXPERIMENT_EVENT,
-  GET_GUARDONI_CONFIG_EVENT,
-  GET_PUBLIC_DIRECTIVES,
-  GLOBAL_ERROR_EVENT,
-  OPEN_GUARDONI_DIR,
-  PICK_CSV_FILE_EVENT,
-  RUN_GUARDONI_EVENT,
+  EVENTS
 } from '../models/events';
 import { createGuardoniWindow } from '../windows/GuardoniWindow';
 import { getEventsLogger } from './event.logger';
@@ -66,7 +60,7 @@ const GetEventListenerLifter =
         (e) => () => {
           logger.error('Error trigger for %s \n %O', name, e);
           guardoniWindow.close();
-          mainWindow.webContents.postMessage(GLOBAL_ERROR_EVENT.value, e);
+          mainWindow.webContents.postMessage(EVENTS.GLOBAL_ERROR_EVENT.value, e);
           return Promise.resolve();
         },
         (result) => () => {
@@ -106,18 +100,18 @@ export const GetEvents = ({
         logger
       );
       // pick csv file
-      ipcMain.on(PICK_CSV_FILE_EVENT.value, () => {
+      ipcMain.on(EVENTS.PICK_CSV_FILE_EVENT.value, () => {
         void pipe(
           pickCSVFile(logger),
-          liftEventTask(PICK_CSV_FILE_EVENT.value)
+          liftEventTask(EVENTS.PICK_CSV_FILE_EVENT.value)
         );
       });
 
       // get guardoni config
-      ipcMain.on(GET_GUARDONI_CONFIG_EVENT.value, (event, ...args) => {
+      ipcMain.on(EVENTS.GET_GUARDONI_CONFIG_EVENT.value, (event, ...args) => {
         logger.debug(
           `Event %s with payload %O`,
-          GET_GUARDONI_CONFIG_EVENT.value,
+          EVENTS.GET_GUARDONI_CONFIG_EVENT.value,
           args
         );
 
@@ -128,12 +122,12 @@ export const GetEvents = ({
             puppeteer,
           }),
           TE.map((g) => g.config),
-          liftEventTask(GET_GUARDONI_CONFIG_EVENT.value)
+          liftEventTask(EVENTS.GET_GUARDONI_CONFIG_EVENT.value)
         );
       });
 
       // create guardoni experiment
-      ipcMain.on(CREATE_EXPERIMENT_EVENT.value, (event, ...args) => {
+      ipcMain.on(EVENTS.CREATE_EXPERIMENT_EVENT.value, (event, ...args) => {
         guardoniEventsLogger.debug('Create experiment with payload %O', args);
 
         const [config, records] = args;
@@ -153,12 +147,12 @@ export const GetEvents = ({
 
             return e.values[0].experimentId;
           }),
-          liftEventTask(CREATE_EXPERIMENT_EVENT.value)
+          liftEventTask(EVENTS.CREATE_EXPERIMENT_EVENT.value)
         );
       });
 
       ipcMain.on(
-        RUN_GUARDONI_EVENT.value,
+        EVENTS.RUN_GUARDONI_EVENT.value,
         (
           event,
           config: GuardoniConfigRequired,
@@ -235,19 +229,19 @@ export const GetEvents = ({
                 })
               )
             ),
-            liftEventTask(RUN_GUARDONI_EVENT.value)
+            liftEventTask(EVENTS.RUN_GUARDONI_EVENT.value)
           );
         }
       );
 
-      ipcMain.on(GET_PUBLIC_DIRECTIVES.value, () => {
+      ipcMain.on(EVENTS.GET_PUBLIC_DIRECTIVES.value, () => {
         void pipe(
           api.v3.Public.GetPublicDirectives(),
-          liftEventTask(GET_PUBLIC_DIRECTIVES.value)
+          liftEventTask(EVENTS.GET_PUBLIC_DIRECTIVES.value)
         );
       });
 
-      ipcMain.on(OPEN_GUARDONI_DIR.value, (event, config: string) => {
+      ipcMain.on(EVENTS.OPEN_GUARDONI_DIR.value, (event, config: string) => {
         void pipe(
           TE.tryCatch(
             () =>
@@ -257,7 +251,7 @@ export const GetEvents = ({
               }),
             toAppError
           ),
-          liftEventTask(OPEN_GUARDONI_DIR.value)
+          liftEventTask(EVENTS.OPEN_GUARDONI_DIR.value)
         );
       });
     },

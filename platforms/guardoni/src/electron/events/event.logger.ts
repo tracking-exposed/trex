@@ -6,7 +6,7 @@ import * as util from 'util';
 
 export const getEventsLogger = (
   w: Electron.BrowserWindow
-): Pick<Logger, 'error' | 'info' | 'debug'> => {
+): Pick<Logger, 'error' | 'info' | 'debug' | 'warn'> => {
   return {
     error: (m, ...args) => {
       log.error(m, ...args);
@@ -25,6 +25,15 @@ export const getEventsLogger = (
         message: util.format(m, ...args),
         details: args.map((a) => JSON.stringify(a)),
       });
+    },
+    warn: (m, ...args) => {
+      log.warn(m, ...args);
+      // w.webContents.postMessage(GUARDONI_OUTPUT_EVENT.value, {
+      //   id: uuid(),
+      //   level: 'Debug',
+      //   message: util.format(m, ...args),
+      //   details: args.map((a) => JSON.stringify(a)),
+      // });
     },
     debug: (m, ...args) => {
       log.debug(m, ...args);

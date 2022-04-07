@@ -4163,8 +4163,8 @@ __metadata:
     "@tsconfig/docusaurus": ^1.0.4
     clsx: ^1.1.1
     prism-react-renderer: ^1.2.1
-    react: ^17.0.1
-    react-dom: ^17.0.1
+    react: ^17.0.2
+    react-dom: ^17.0.2
     typescript: ^4.5.2
   languageName: unknown
   linkType: soft
@@ -15140,6 +15140,8 @@ __metadata:
     puppeteer-in-electron: ^3.0.5
     react: ^17.0.2
     react-dom: ^17.0.2
+    react-router: ^5.2.1
+    react-router-dom: ^5.3.0
     rpmbuild: ^0.0.23
     string-replace-loader: ^3.1.0
     style-loader: ^3.3.1
@@ -23968,7 +23970,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-dom@npm:=17.0.2, react-dom@npm:^17.0.1, react-dom@npm:^17.0.2":
+"react-dom@npm:=17.0.2, react-dom@npm:^17.0.2":
   version: 17.0.2
   resolution: "react-dom@npm:17.0.2"
   dependencies:
@@ -24175,7 +24177,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-router-dom@npm:^5.2.0":
+"react-router-dom@npm:^5.2.0, react-router-dom@npm:^5.3.0":
   version: 5.3.0
   resolution: "react-router-dom@npm:5.3.0"
   dependencies:
@@ -24192,7 +24194,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-router@npm:5.2.1, react-router@npm:^5.2.0":
+"react-router@npm:5.2.1, react-router@npm:^5.2.0, react-router@npm:^5.2.1":
   version: 5.2.1
   resolution: "react-router@npm:5.2.1"
   dependencies:
@@ -24314,7 +24316,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react@npm:=17.0.2, react@npm:^17.0.1, react@npm:^17.0.2":
+"react@npm:=17.0.2, react@npm:^17.0.2":
   version: 17.0.2
   resolution: "react@npm:17.0.2"
   dependencies:
