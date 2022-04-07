@@ -13,7 +13,7 @@ import { chrome } from 'jest-chrome';
 import * as path from 'path';
 import * as app from '../src/app/app';
 import api, { getHeadersForDataDonation } from '../src/chrome/background/api';
-import events from '../src/handlers/events';
+import * as events from '../src/handlers/events';
 import ytHub from '../src/handlers/hub';
 
 const chromeListener = jest.fn();
