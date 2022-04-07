@@ -1,5 +1,6 @@
 build
 dist
+__tests__/htmls
 node_modules
 src/chrome
 src/handlers

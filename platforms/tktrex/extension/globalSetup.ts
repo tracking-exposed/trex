@@ -12,10 +12,6 @@ export default async function globalSetup(): Promise<void> {
       port: 14001,
       usedPortAction: 'ignore',
     },
-    {
-      command: 'yarn tk:backend parserv',
-      launchTimeout: 5000,
-    },
   ]).catch((e) => {
     console.error(e);
   });
