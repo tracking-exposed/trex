@@ -1,4 +1,3 @@
-
 const testEnv = {
   mongoDb: 'tktrex-test',
   mongoPort: 27019,
@@ -12,7 +11,7 @@ const tk = {
     script: 'yarn watch',
     watch: false,
     env_test: {
-      ...testEnv.tk,
+      ...testEnv,
       port: 14001,
     },
   },
@@ -23,7 +22,7 @@ const tk = {
     script: 'yarn parserv:watch',
     watch: false,
     env_test: {
-      ...testEnv.tk,
+      ...testEnv,
     },
   },
 };

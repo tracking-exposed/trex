@@ -23,8 +23,7 @@ const yt = {
     script: 'yarn leaveserv:watch',
     watch: false,
     env_test: {
-      ...testEnv.yt,
-      port: 9001,
+      ...testEnv,
     },
   },
   parser: {
@@ -34,8 +33,7 @@ const yt = {
     script: 'yarn parserv:watch',
     watch: false,
     env_test: {
-      ...testEnv.yt,
-      port: 9001,
+      ...testEnv,
     },
   },
 };

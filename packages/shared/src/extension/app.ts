@@ -165,7 +165,7 @@ let config: any;
 export async function boot(opts: BootOpts): Promise<void> {
   appLog.info('booting with config', opts.payload);
 
-  return new Promise((resolve, reject) => {
+  return new Promise((resolve) => {
     // Register all common event handlers.
     // An event handler is a piece of code responsible for a specific task.
     // You can learn more in the [`./handlers`](./handlers/index.html) directory.
