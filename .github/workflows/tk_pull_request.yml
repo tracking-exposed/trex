@@ -51,8 +51,10 @@ jobs:
 
       - name: Test platform
         run: |
+          yarn start --env test platforms/tktrex/backend/ecosystem.config.js
           # yarn tk:backend test --runInBand --ci
           yarn test tktrex/extension --runInBand --ci
+          yarn stop all
 
       - name: Build
         run: |

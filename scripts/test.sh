@@ -13,9 +13,7 @@ yarn shared build
 yarn yt:backend build
 
 # bootstrap yttrex backend processes
-cd ./platforms/yttrex/backend
-yarn pm2 restart ecosystem.test.config.js
-cd ../../../
+yarn pm2 start ./platforms/yttrex/backend/ecosystem.config.js
 
 # test backend
 # yarn yt:backend test
@@ -58,4 +56,4 @@ echo $video_experiment_public_key
 
 curl "http://localhost:9000/api/v1/personal/$video_experiment_public_key"
 
-# yarn pm2 stop all
+yarn pm2 stop all

@@ -59,6 +59,8 @@ jobs:
 
       - name: Test
         run:
+          yarn start --env test platforms/yttrex/backend/ecosystem.config.js
           yarn yt:backend test --runInBand --forceExit --ci
           yarn yt:ext test --runInBand --ci
+          yarn stop all
 
