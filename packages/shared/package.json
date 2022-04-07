@@ -52,7 +52,7 @@
     "eslint-plugin-node": "^11.1.0",
     "eslint-plugin-promise": "^5.2.0",
     "eslint-plugin-react": "^7.29.2",
-    "fast-check": "^2.22.0",
+    "fast-check": "^2.24.0",
     "fast-check-io-ts": "^0.5.0",
     "filemanager-webpack-plugin": "^6.1.7",
     "jest": "^27.5.1",
