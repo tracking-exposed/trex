@@ -15,7 +15,7 @@ import {
 } from '@material-ui/core';
 import { ipcRenderer } from 'electron';
 import { EVENTS } from '../../models/events';
-import { GuardoniConfig } from '../../../guardoni/types';
+import { GuardoniConfigRequired } from '../../../guardoni/types';
 import * as React from 'react';
 
 const useStyles = makeStyles((theme) => ({
@@ -45,14 +45,14 @@ const useStyles = makeStyles((theme) => ({
 
 const AdvancedSettingModal: React.FC<{
   open: boolean;
-  config: GuardoniConfig;
-  onConfigChange: (c: GuardoniConfig) => void;
+  config: GuardoniConfigRequired;
+  onConfigChange: (c: GuardoniConfigRequired) => void;
   onSubmit: () => void;
   onCancel: () => void;
 }> = ({ open, config, onConfigChange, onCancel }) => {
   const classes = useStyles();
 
-  const handleOpenProfileDir = React.useCallback((config: GuardoniConfig) => {
+  const handleOpenProfileDir = React.useCallback((config: GuardoniConfigRequired) => {
     void ipcRenderer.send(
       EVENTS.OPEN_GUARDONI_DIR.value,
       `${config.basePath}/profiles/${config.profileName}`

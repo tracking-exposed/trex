@@ -13,13 +13,20 @@ export interface GuardoniConfig {
   excludeURLTag?: string[];
   chromePath?: string;
   loadFor?: number;
+  publicKey?: string;
 }
 
 export type GuardoniConfigRequired = Omit<
   GuardoniConfig,
-  'basePath' | 'profile' | 'backend' | 'evidenceTag' | 'extensionDir'
+  | 'basePath'
+  | 'profile'
+  | 'backend'
+  | 'evidenceTag'
+  | 'extensionDir'
+  | 'publicKey'
 > & {
   profileName: string;
+  publicKey: string;
   backend: string;
   basePath: string;
   evidenceTag: string;

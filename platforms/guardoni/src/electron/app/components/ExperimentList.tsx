@@ -16,7 +16,7 @@ import { GuardoniExperiment } from '@shared/models/Experiment';
 import { formatDistanceToNow, parseISO } from 'date-fns';
 import { ipcRenderer } from 'electron';
 import * as React from 'react';
-import { RouteProps } from 'react-router';
+import { RouteProps, useHistory } from 'react-router';
 import { GuardoniConfig } from '../../../guardoni/types';
 import { EVENTS } from '../../models/events';
 
@@ -57,7 +57,7 @@ interface ExperimentListProps {
 
 export const ExperimentList: React.FC<ExperimentListProps> = ({
   experiments,
-  onExperimentRunClick
+  onExperimentRunClick,
 }) => {
   const [directiveId, setDirectiveId] = React.useState<string | undefined>(
     undefined
@@ -133,8 +133,10 @@ const ExperimentListRoute: React.FC<
   const theme = useTheme();
   const [experiments, setDirectives] = React.useState<GuardoniExperiment[]>([]);
 
+  const history = useHistory();
+
   const runGuardoni = React.useCallback((experimentId: string) => {
-    ipcRenderer.send(EVENTS.RUN_GUARDONI_EVENT.value, config, experimentId);
+    history.push(`/run/${experimentId}`);
   }, []);
 
   React.useEffect(() => {
@@ -165,7 +167,7 @@ const ExperimentListRoute: React.FC<
         }
       );
 
-      return acc.concat({ ...e, tags, time } as any);
+      return acc.concat({ ...e, tags, time } );
     },
     []
   );

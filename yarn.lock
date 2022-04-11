@@ -2508,6 +2508,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@electron/remote@npm:^2.0.8":
+  version: 2.0.8
+  resolution: "@electron/remote@npm:2.0.8"
+  peerDependencies:
+    electron: ">= 13.0.0"
+  checksum: d0ef11b3f09d789baf4330c2c021cfc1a997fc5ffdb56e8810ed7fe2fd76cda1a168c0589d2a10284a907fd3829bae14002a58b35c4881473cdd0049f07fbd63
+  languageName: node
+  linkType: hard
+
 "@electron/universal@npm:1.0.5":
   version: 1.0.5
   resolution: "@electron/universal@npm:1.0.5"
@@ -9103,7 +9112,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"clean-stack@npm:^2.0.0":
+"clean-stack@npm:^2.0.0, clean-stack@npm:^2.1.0":
   version: 2.2.0
   resolution: "clean-stack@npm:2.2.0"
   checksum: 2ac8cd2b2f5ec986a3c743935ec85b07bc174d5421a5efc8017e1f146a1cf5f781ae962618f416352103b32c9cd7e203276e8c28241bbe946160cab16149fb68
@@ -12162,6 +12171,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"electron-is-dev@npm:^2.0.0":
+  version: 2.0.0
+  resolution: "electron-is-dev@npm:2.0.0"
+  checksum: 7393f46f06153d70a427ea904c60a092e50fbf1015c26c342cebb8324ada8c9e0c0f1f02867af56d9cc76f47be17da8cb311ea6bdc83343e7ebd2323ec4014c8
+  languageName: node
+  linkType: hard
+
 "electron-localshortcut@npm:^3.1.0":
   version: 3.2.1
   resolution: "electron-localshortcut@npm:3.2.1"
@@ -12249,6 +12265,19 @@ __metadata:
   version: 1.4.75
   resolution: "electron-to-chromium@npm:1.4.75"
   checksum: 38ae5e197a100b9f9931a6112b0791659f736ad88ab3cd5534ed07dcc6001964a99de6757cbb708007bc59b0cd1b7cc36aeb5ea2efbfff6bd36ab53e49decb69
+  languageName: node
+  linkType: hard
+
+"electron-unhandled@npm:^4.0.1":
+  version: 4.0.1
+  resolution: "electron-unhandled@npm:4.0.1"
+  dependencies:
+    clean-stack: ^2.1.0
+    electron-is-dev: ^2.0.0
+    ensure-error: ^2.0.0
+    lodash.debounce: ^4.0.8
+    serialize-error: ^8.1.0
+  checksum: 64874ef2f2a681a7a4c2f98be7bf0365c02d31ebf0adaef03f5a68a22bff6db3a22be66aef7a21b85c949f8c05647dd31b15d92fb73c0ff22e2e845c5a2a9db9
   languageName: node
   linkType: hard
 
@@ -12396,6 +12425,13 @@ __metadata:
   dependencies:
     ansi-colors: ^4.1.1
   checksum: 1c0911e14a6f8d26721c91e01db06092a5f7675159f0261d69c403396a385afd13dd76825e7678f66daffa930cfaa8d45f506fb35f818a2788463d022af1b884
+  languageName: node
+  linkType: hard
+
+"ensure-error@npm:^2.0.0":
+  version: 2.1.0
+  resolution: "ensure-error@npm:2.1.0"
+  checksum: a24852103e9f39cb20ccd5b014d2657425fb786356da3ddc19a4842354430002847f1efeafd14c798e9ee62f644be1986b2b60c9eb1c73f335d1a6dea5bda71a
   languageName: node
   linkType: hard
 
@@ -15081,6 +15117,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "guardoni@workspace:platforms/guardoni"
   dependencies:
+    "@electron/remote": ^2.0.8
     "@material-ui/core": ^4.12.3
     "@material-ui/icons": ^4.11.2
     "@material-ui/lab": ^4.0.0-alpha.60
@@ -15113,6 +15150,7 @@ __metadata:
     electron-reloader: ^1.2.3
     electron-squirrel-startup: ^1.0.0
     electron-store: ^8.0.1
+    electron-unhandled: ^4.0.1
     eslint: ^8.10.0
     eslint-config-prettier: ^8.4.0
     eslint-config-standard-with-typescript: ^21.0.1

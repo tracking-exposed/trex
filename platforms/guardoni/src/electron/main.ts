@@ -1,9 +1,11 @@
+import * as remote from '@electron/remote/main';
 import { AppError, toAppError } from '@shared/errors/AppError';
 import { GetAPI } from '@shared/providers/api.provider';
 import debug from 'debug';
 import * as dotenv from 'dotenv';
 import { app, BrowserWindow } from 'electron';
 import log from 'electron-log';
+import unhandled from 'electron-unhandled';
 import { sequenceS } from 'fp-ts/lib/Apply';
 import * as E from 'fp-ts/lib/Either';
 import { pipe } from 'fp-ts/lib/function';
@@ -13,10 +15,13 @@ import os from 'os';
 import * as path from 'path';
 import pie from 'puppeteer-in-electron';
 import { AppEnv } from '../AppEnv';
+import { getPackageVersion } from '../utils';
+import { DEFAULT_BASE_PATH } from './config';
 import { GetEvents } from './events/renderer.events';
 import { createGuardoniWindow } from './windows/GuardoniWindow';
-import { DEFAULT_BASE_PATH } from './config';
-import { getPackageVersion } from '../utils';
+
+// In the main process:
+remote.initialize();
 
 app.setPath('userData', path.resolve(os.homedir(), `.guardoni/electron/data`));
 app.setAppLogsPath(path.resolve(os.homedir(), `.guardoni/electron/logs`));
@@ -33,6 +38,8 @@ const mainWindowHTML = `file://${path.join(
   'renderer/guardoni.html'
 )}`;
 
+unhandled();
+
 const creatMainWindow = (
   env: AppEnv
 ): TE.TaskEither<AppError, BrowserWindow> => {
@@ -48,6 +55,8 @@ const creatMainWindow = (
         contextIsolation: false,
       },
     });
+
+    remote.enable(mainWindow.webContents);
 
     await mainWindow.loadURL(mainWindowHTML);
 
@@ -98,6 +107,8 @@ export const run = async (): Promise<void> => {
         ),
         TE.map(({ guardoniApp, mainWindow }) => {
           // bind events for main window
+          // removeViews();
+
           return GetEvents({
             app,
             env,
@@ -107,9 +118,8 @@ export const run = async (): Promise<void> => {
               onUnauthorized: async (res) => res,
             }).API,
             mainWindow,
-            guardoniWindow: guardoniApp.window,
-            guardoniBrowser: guardoniApp.browser,
-            guardoniConfig: {
+            browser: guardoniApp.browser,
+            config: {
               headless: false,
               verbose: false,
               extensionDir: EXTENSION_DIR_PATH,

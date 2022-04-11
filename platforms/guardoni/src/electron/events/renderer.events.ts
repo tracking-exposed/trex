@@ -3,7 +3,7 @@ import { Logger } from '@shared/logger';
 import { ComparisonDirective } from '@shared/models/Directive';
 import { APIClient } from '@shared/providers/api.provider';
 import { AppEnv } from 'AppEnv';
-import { dialog, ipcMain } from 'electron';
+import { BrowserView, dialog, ipcMain } from 'electron';
 import { pipe } from 'fp-ts/lib/function';
 import * as TE from 'fp-ts/lib/TaskEither';
 import { NonEmptyString } from 'io-ts-types';
@@ -12,10 +12,8 @@ import * as pie from 'puppeteer-in-electron';
 import { GetGuardoni, readCSVAndParse } from '../../guardoni/guardoni';
 import { GuardoniConfig, GuardoniConfigRequired } from '../../guardoni/types';
 import { guardoniLogger } from '../../logger';
-import {
-  EVENTS
-} from '../models/events';
-import { createGuardoniWindow } from '../windows/GuardoniWindow';
+import { EVENTS } from '../models/events';
+// import { createGuardoniWindow } from '../windows/GuardoniWindow';
 import { getEventsLogger } from './event.logger';
 
 const guardoniEventsLogger = guardoniLogger.extend('events');
@@ -47,11 +45,7 @@ const pickCSVFile = (
 };
 
 const GetEventListenerLifter =
-  (
-    mainWindow: Electron.BrowserWindow,
-    guardoniWindow: Electron.BrowserWindow,
-    logger: Omit<Logger, 'extend'>
-  ) =>
+  (mainWindow: Electron.BrowserWindow, logger: Omit<Logger, 'extend'>) =>
   <T>(name: string) =>
   (te: TE.TaskEither<AppError, T>): Promise<void> => {
     return pipe(
@@ -59,8 +53,10 @@ const GetEventListenerLifter =
       TE.fold(
         (e) => () => {
           logger.error('Error trigger for %s \n %O', name, e);
-          guardoniWindow.close();
-          mainWindow.webContents.postMessage(EVENTS.GLOBAL_ERROR_EVENT.value, e);
+          mainWindow.webContents.postMessage(
+            EVENTS.GLOBAL_ERROR_EVENT.value,
+            e
+          );
           return Promise.resolve();
         },
         (result) => () => {
@@ -77,28 +73,22 @@ interface GetEventsContext {
   env: AppEnv;
   api: APIClient;
   mainWindow: Electron.BrowserWindow;
-  guardoniWindow: Electron.BrowserWindow;
-  guardoniBrowser: puppeteer.Browser;
-  guardoniConfig: GuardoniConfig;
+  browser: puppeteer.Browser;
+  config: GuardoniConfig;
 }
 
 export const GetEvents = ({
   app,
   api,
   mainWindow,
-  guardoniWindow,
-  guardoniBrowser,
-  guardoniConfig,
+  browser,
+  config,
 }: GetEventsContext): Events => {
   const logger = getEventsLogger(mainWindow);
 
   return {
     register: () => {
-      const liftEventTask = GetEventListenerLifter(
-        mainWindow,
-        guardoniWindow,
-        logger
-      );
+      const liftEventTask = GetEventListenerLifter(mainWindow, logger);
       // pick csv file
       ipcMain.on(EVENTS.PICK_CSV_FILE_EVENT.value, () => {
         void pipe(
@@ -117,7 +107,7 @@ export const GetEvents = ({
 
         void pipe(
           GetGuardoni({
-            config: guardoniConfig,
+            config,
             logger,
             puppeteer,
           }),
@@ -130,13 +120,13 @@ export const GetEvents = ({
       ipcMain.on(EVENTS.CREATE_EXPERIMENT_EVENT.value, (event, ...args) => {
         guardoniEventsLogger.debug('Create experiment with payload %O', args);
 
-        const [config, records] = args;
+        const [configOverride, records] = args;
 
         void pipe(
           GetGuardoni({
             config: {
-              ...guardoniConfig,
               ...config,
+              ...configOverride,
             },
             logger,
             puppeteer,
@@ -155,7 +145,7 @@ export const GetEvents = ({
         EVENTS.RUN_GUARDONI_EVENT.value,
         (
           event,
-          config: GuardoniConfigRequired,
+          configOverride: GuardoniConfigRequired,
           experimentId: NonEmptyString
         ) => {
           // eslint-disable-next-line no-console
@@ -168,8 +158,8 @@ export const GetEvents = ({
           void pipe(
             GetGuardoni({
               config: {
-                ...guardoniConfig,
                 ...config,
+                ...configOverride,
               },
               logger,
               puppeteer,
@@ -184,37 +174,35 @@ export const GetEvents = ({
                   //   throw closeError;
                   // });
 
-                  // recreate guardoni window and browser if window has been destroyed
-                  if (guardoniWindow.isDestroyed()) {
-                    logger.debug('Guardoni window destroyed, recreating it...');
-                    const newGuardoniApp = await pipe(
-                      createGuardoniWindow(app, mainWindow),
-                      TE.fold(
-                        (e) => () => Promise.reject(e),
-                        (result) => () => Promise.resolve(result)
-                      )
-                    )();
+                  const view = mainWindow.getBrowserView() as BrowserView;
+                  // mainWindow.setBrowserView(view);
+                  // view.setBounds({ x: 200, y: 100, width: 1000, height: 300 });
 
-                    guardoniWindow = newGuardoniApp.window;
-                    guardoniBrowser = newGuardoniApp.browser;
-                  }
+                  // recreate guardoni window and browser if window has been destroyed
+                  // if (guardoniWindow.isDestroyed()) {
+                  //   logger.debug('Guardoni window destroyed, recreating it...');
+                  //   const newGuardoniApp = await pipe(
+                  //     createGuardoniWindow(app, mainWindow),
+                  //     TE.fold(
+                  //       (e) => () => Promise.reject(e),
+                  //       (result) => () => Promise.resolve(result)
+                  //     )
+                  //   )();
+
+                  //   guardoniView = newGuardoniApp.view;
+                  //   guardoniBrowser = newGuardoniApp.browser;
+                  // }
 
                   const extension =
-                    await guardoniWindow.webContents.session.loadExtension(
-                      config.extensionDir
+                    await view.webContents.session.loadExtension(
+                      g.config.extensionDir
                     );
 
                   logger.debug('Extension loaded %O', extension);
-                  // logger.debug('Guardoni browser %O', guardoniBrowser);
-                  // logger.debug('Guardoni window %O', guardoniWindow);
 
-                  await guardoniWindow.loadURL('https://tracking.exposed');
-
-                  return pie.getPage(guardoniBrowser, guardoniWindow, true);
+                  return pie.getPage(browser, view, true);
                 }, toAppError),
                 TE.chain((page) => {
-                  guardoniWindow.show();
-
                   return g.runExperimentForPage(
                     page,
                     experimentId,
@@ -222,10 +210,6 @@ export const GetEvents = ({
                       logger.info(progress.message, ...progress.details);
                     }
                   );
-                }),
-                TE.map(() => {
-                  guardoniWindow.close();
-                  parent.focus();
                 })
               )
             ),

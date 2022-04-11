@@ -54,7 +54,7 @@ const OutputPanel: React.FC<OutputPanelProps> = ({ items }) => {
   const classes = useStyles();
 
   return (
-    <Box>
+    <Box style={{ maxWidth: '100%' }}>
       <Typography variant="h5">Output</Typography>
       <Box>
         {items.length === 0 ? (

@@ -1,9 +1,9 @@
 import { Box, LinearProgress } from '@material-ui/core';
 import { ipcRenderer } from 'electron';
 import * as React from 'react';
-import { Route, Switch } from 'react-router';
+import { Redirect, Route, Switch } from 'react-router';
 import { v4 as uuid } from 'uuid';
-import { GuardoniConfig } from '../../guardoni/types';
+import { GuardoniConfigRequired } from '../../guardoni/types';
 import { EVENTS } from '../models/events';
 import { OutputItem } from './components/OutputPanel';
 import ExperimentExecutionRoute from './components/ExperimentExecution';
@@ -34,13 +34,11 @@ export const TabPanel: React.FC<any> = (props) => {
 };
 
 export const App: React.FC = () => {
-  const [config, setConfig] = React.useState<GuardoniConfig | undefined>(
+  const [config, setConfig] = React.useState<GuardoniConfigRequired | undefined>(
     undefined
   );
 
   const [outputItems, setOutputItems] = React.useState<OutputItem[]>([]);
-
-  
 
   React.useEffect(() => {
     // listen for global errors
@@ -53,6 +51,7 @@ export const App: React.FC = () => {
         })
       );
     });
+
     // listen for guardoni error
     ipcRenderer.on(EVENTS.GUARDONI_ERROR_EVENT.value, (event, error) => {
       setOutputItems(
@@ -62,11 +61,6 @@ export const App: React.FC = () => {
           ...error,
         })
       );
-    });
-
-    // update guardoni output when proper event is received
-    ipcRenderer.on(EVENTS.GUARDONI_OUTPUT_EVENT.value, (event, output) => {
-      setOutputItems(outputItems.concat(output));
     });
   }, [outputItems]);
 
@@ -96,15 +90,16 @@ export const App: React.FC = () => {
     <Layout config={config} onConfigChange={setConfig}>
       <Switch>
         <Route
-          path="*"
-          render={(props) => <ExperimentList {...props} config={config} />}
-        />
-        <Route
           path="/run/:experimentId"
           render={(props) => (
             <ExperimentExecutionRoute {...props} config={config} />
           )}
         />
+        <Route
+          path="/experiments"
+          render={(props) => <ExperimentList {...props} config={config} />}
+        />
+        <Redirect from="*" to="/experiments" />
       </Switch>
     </Layout>
   );
