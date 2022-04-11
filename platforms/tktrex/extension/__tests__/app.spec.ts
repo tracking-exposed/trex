@@ -5,7 +5,6 @@ import {
 } from '@shared/extension/chrome/background/account';
 import { load } from '@shared/extension/chrome/background/index';
 import { handleSyncMessage } from '@shared/extension/chrome/background/sync';
-import config from '@shared/extension/config';
 import axios from 'axios';
 import * as fs from 'fs';
 import { chrome } from 'jest-chrome';
@@ -116,7 +115,7 @@ describe('TK App', () => {
 
     load(backgroundOpts);
 
-    boot({
+    await boot({
       payload: {
         config: keys,
         href: window.location.href,
@@ -150,7 +149,7 @@ describe('TK App', () => {
     // yt callback should be called after server response
     expect(tkTrexActionsSpy).toHaveBeenCalledWith(null);
 
-    await sleep(7000);
+    await sleep(8000);
 
     // video handler should be invoked as the url includes `watch`
 

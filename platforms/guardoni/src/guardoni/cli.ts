@@ -50,18 +50,18 @@ const foldOutput = (
   const rest =
     out.type === 'success'
       ? pipe(
-          out.values,
+          Array.isArray(out.values) ? out.values : [],
           A.map((v) => {
             return Object.entries(v).map(([key, value]) => {
-              if (typeof value === 'string') {
-                return [`${key}: ${value}`];
+              if (Array.isArray(value)) {
+                const valuesChunk = Object.entries(value).map(
+                  ([key, value]) => `${key}: ${JSON.stringify(value)}`
+                );
+
+                return [`${key}: \n\t`, ...valuesChunk];
               }
 
-              const valuesChunk = Object.entries(value).map(
-                ([key, value]) => `${key}: ${JSON.stringify(value)}`
-              );
-
-              return [`${key}: \n\t`, ...valuesChunk];
+              return [`${key}: ${value}`];
             });
           }),
           A.flatten

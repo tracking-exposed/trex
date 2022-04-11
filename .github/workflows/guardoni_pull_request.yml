@@ -63,7 +63,10 @@ jobs:
           yarn guardoni build
 
       - name: Test
-        run: yarn test guardoni --ci
+        run: |
+          yarn pm2 start --env test platforms/yttrex/backend/ecosystem.config.js
+          yarn test guardoni --ci
+          yarn pm2 stop all
 
       - name: Package
         run: yarn guardoni pkg

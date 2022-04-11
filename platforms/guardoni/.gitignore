@@ -9,5 +9,4 @@ config/*
 profiles/*
 extension/*
 executions/*
-experiments/*
 screenshots/*

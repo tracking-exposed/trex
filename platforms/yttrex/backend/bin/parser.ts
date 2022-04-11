@@ -37,7 +37,9 @@ const run = async (): Promise<void> => {
     ? JSON.parse(fs.readFileSync(nconf.get('filter'), 'utf-8'))
     : null;
 
-  const repeat = nconf.get('repeat') === 'true';
+  const repeat = nconf.get('repeat')
+    ? nconf.get('repeat') === 'true'
+    : undefined;
 
   /* application starts here */
   try {

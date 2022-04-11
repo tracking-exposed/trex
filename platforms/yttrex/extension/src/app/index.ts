@@ -11,7 +11,7 @@ bo.runtime.sendMessage({ type: 'chromeConfig' }, (config) => {
   ytLogger.info('Booting app with config %O', config);
   try {
     const { ui, ...settings } = config;
-    boot({
+    void boot({
       payload: {
         newProfile: settings.isNew,
         href: window.location.href,

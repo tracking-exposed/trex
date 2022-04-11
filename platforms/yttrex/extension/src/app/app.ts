@@ -156,8 +156,8 @@ export const handleLeaf = (
   opts: Omit<ObserverHandler, 'handle'>
 ): void => {
   // command has .selector .parents .preserveInvisible (this might be undefined)
-  ytLogger.info('Handle leaf! %O', config);
-  ytLogger.debug('node %o with %o', node, opts);
+  ytLogger.info('Handle "leaf"! %O', config);
+  // ytLogger.debug('node %o with %o', node, opts);
   const offsetTop = getOffsetTop(node);
   const offsetLeft = getOffsetLeft(node);
 
@@ -179,7 +179,7 @@ export const handleLeaf = (
     parentNode = _.reduce<number, Node | undefined>(
       _.times(opts.match.parents),
       (acc) => {
-        ytLogger.debug('collecting parent', (opts.match as any).selector, acc);
+        // ytLogger.debug('collecting parent', (opts.match as any).selector, acc);
         return acc?.parentNode ?? undefined;
       },
       node
@@ -191,7 +191,7 @@ export const handleLeaf = (
       }`;
     }
 
-    ytLogger.debug('Parent node', parentNode);
+    // ytLogger.debug('Parent node', parentNode);
 
     const html = (parentNode as any)?.outerHTML as string;
     const hash = html.split('').reduce((a, b) => {
@@ -237,7 +237,7 @@ export const handleLeaf = (
 };
 
 export function handleVideo(node: HTMLElement): void {
-  ytLogger.info('Handling video node %o', node);
+  ytLogger.info('Handle "NewVideo"!');
 
   const sendableNode = document.querySelector('ytd-app');
   if (!sendableNode) {
@@ -264,6 +264,13 @@ export function handleVideo(node: HTMLElement): void {
 }
 
 export const watchedPaths: { [key: string]: ObserverHandler } = {
+  home: {
+    match: {
+      type: 'route',
+      location: consideredURLs.home,
+    },
+    handle: handleVideo,
+  },
   video: {
     match: {
       type: 'route',
@@ -408,8 +415,6 @@ export const watchedPaths: { [key: string]: ObserverHandler } = {
     handle: handleLeaf,
   },
 };
-
-var lastCheck: Date;
 
 function flush() {
   window.addEventListener('beforeunload', (e) => {

@@ -407,7 +407,7 @@ async function channel3(req) {
   ];
   const experimentInfo = _.pick(req.body, fields);
 
-  experimentInfo.testName = new Date(req.body.when);
+  experimentInfo.testName = req.body.testTime ?? new Date().toISOString();
   experimentInfo.publicKey = _.get(req.body, 'config.publicKey');
 
   debug('Experiment info %O', experimentInfo);

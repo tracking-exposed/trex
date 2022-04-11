@@ -114,6 +114,8 @@ function setupObserver({
             newHref
           );
 
+          onLocationChange(oldHref, newHref);
+
           const routeHandlerKey = handlersList.find((h) => {
             const handler = handlers[h];
 
@@ -126,10 +128,8 @@ function setupObserver({
           if (routeHandlerKey) {
             appLog.debug('Route handler key %s', routeHandlerKey);
             const { handle, ...routeHandlerOpts } = handlers[routeHandlerKey];
-            handle(null as any, routeHandlerOpts);
+            handle(window.document.body, routeHandlerOpts);
           }
-
-          // onLocationChange(oldHref, newHref);
 
           oldHref = newHref;
         }
@@ -162,43 +162,50 @@ function setupObserver({
  * will be invoked after the handshake with API server.
  */
 let config: any;
-export function boot(opts: BootOpts): void {
+export async function boot(opts: BootOpts): Promise<void> {
   appLog.info('booting with config', opts.payload);
 
-  // Register all common event handlers.
-  // An event handler is a piece of code responsible for a specific task.
-  // You can learn more in the [`./handlers`](./handlers/index.html) directory.
-  registerHandlers(opts.hub.hub);
+  return new Promise((resolve) => {
+    // Register all common event handlers.
+    // An event handler is a piece of code responsible for a specific task.
+    // You can learn more in the [`./handlers`](./handlers/index.html) directory.
+    registerHandlers(opts.hub.hub);
 
-  // Lookup the current user and decide what to do.
-  localLookup((settings) => {
-    // `response` contains the user's public key, we save it global for the blinks
-    appLog.info('retrieved locally stored user settings %O', settings);
+    // Lookup the current user and decide what to do.
+    localLookup((settings) => {
+      // `response` contains the user's public key, we save it global for the blinks
+      appLog.info('retrieved locally stored user settings %O', settings);
 
-    if (!settings.active) {
-      appLog.info('extension disabled!');
-      return null;
-    }
+      if (!settings.active) {
+        appLog.info('extension disabled!');
+        return resolve();
+      }
 
-    /* these parameters are loaded from localStorage */
-    config = opts.mapLocalConfig(settings as any, opts.payload);
+      // this is needed by guardoni to retrieve the current publicKey
+      // eslint-disable-next-line
+      console.log(JSON.stringify({ response: settings }));
 
-    appLog.info('Updated config %O', config);
+      /* these parameters are loaded from localStorage */
+      config = opts.mapLocalConfig(settings as any, opts.payload);
 
-    // register platform specific event handlers
-    opts.hub.onRegister(opts.hub.hub, config);
+      appLog.info('Updated config %O', config);
 
-    // emergency button should be used when a supported with
-    // UX hack in place didn't see any UX change, so they
-    // can report the problem and we can handle it.
-    // initializeEmergencyButton();
+      // register platform specific event handlers
+      opts.hub.onRegister(opts.hub.hub, config);
 
-    // because the URL has been for sure reloaded, be sure to also
-    clearCache();
+      // emergency button should be used when a supported with
+      // UX hack in place didn't see any UX change, so they
+      // can report the problem and we can handle it.
+      // initializeEmergencyButton();
 
-    serverLookup(config, (res) => {
-      setupObserver(opts.observe);
-      opts.onAuthenticated(res);
+      // because the URL has been for sure reloaded, be sure to also
+      clearCache();
+
+      serverLookup(config, (res) => {
+        setupObserver(opts.observe);
+        opts.onAuthenticated(res);
+        resolve(undefined);
+      });
     });
   });
 }

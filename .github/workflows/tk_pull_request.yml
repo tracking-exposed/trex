@@ -46,13 +46,15 @@ jobs:
       - name: Start MongoDB
         uses: supercharge/mongodb-github-action@1.7.0
         with:
-          mongodb-port: 27017
+          mongodb-port: 27019
           mongodb-version: ${{ matrix.mongodb-version }}
 
       - name: Test platform
         run: |
+          yarn pm2 start platforms/tktrex/backend/ecosystem.config.js  --env test
           # yarn tk:backend test --runInBand --ci
           yarn test tktrex/extension --runInBand --ci
+          yarn pm2 stop all
 
       - name: Build
         run: |
