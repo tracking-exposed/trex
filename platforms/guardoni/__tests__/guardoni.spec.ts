@@ -40,7 +40,7 @@ describe('Guardoni', () => {
   const basePath = path.resolve(process.cwd(), './');
   const profile = 'profile-test-99';
   const extensionDir = path.resolve(basePath, 'build/extension');
-  const csvTestFileName = 'trex-yt-videos.csv';
+  const csvTestFileName = 'trex-yt-videos-test.csv';
 
   beforeAll(async () => {
     const csvContent = await csvStringifyTE(directiveLinks, {
