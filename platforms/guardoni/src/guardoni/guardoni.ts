@@ -18,10 +18,9 @@ import {
   DirectiveKeysMap,
   DirectiveType,
   PostDirectiveResponse,
-  PostDirectiveSuccessResponse
+  PostDirectiveSuccessResponse,
 } from '@shared/models/Directive';
 import { APIClient, GetAPI } from '@shared/providers/api.provider';
-import { execSync } from 'child_process';
 import { differenceInSeconds, format } from 'date-fns';
 import debug from 'debug';
 import { sequenceS } from 'fp-ts/lib/Apply';
@@ -46,9 +45,11 @@ import {
   GuardoniConfigRequired,
   GuardoniProfile,
   GuardoniSuccessOutput,
-  ProgressDetails
+  ProgressDetails,
 } from './types';
 import { csvParseTE, getChromePath, liftFromIOE } from './utils';
+import axios from 'axios';
+import extractZip from 'extract-zip';
 
 // const COMMANDJSONEXAMPLE =
 //   'https://youtube.tracking.exposed/json/automation-example.json';
@@ -125,9 +126,10 @@ const downloadExtension = (
 
       return { extensionZipUrl, extensionZipFilePath };
     }, toAppError),
-    IOE.chain((downloadDetails) => {
+    TE.fromIOEither,
+    TE.chain((downloadDetails) => {
       if (!downloadDetails) {
-        return IOE.right(undefined);
+        return TE.right(undefined);
       }
 
       const extensionExists = fs.existsSync(
@@ -140,38 +142,50 @@ const downloadExtension = (
         extensionExists
       );
 
-      if (extensionExists) {
-        return IOE.right(undefined);
-      }
-
-      return pipe(
-        IOE.tryCatch(() => {
+      const downloadAndSaveTE = pipe(
+        TE.tryCatch(() => {
           ctx.logger.debug(
-            'Downloading extension from %s and save it to %s',
-            downloadDetails.extensionZipUrl,
-            downloadDetails.extensionZipFilePath
+            'Download extension from remote %s',
+            downloadDetails.extensionZipUrl
           );
-
-          execSync(
-            `curl -L ${downloadDetails.extensionZipUrl} -o ${downloadDetails.extensionZipFilePath}`
-          );
+          return axios
+            .request({
+              url: downloadDetails.extensionZipUrl,
+              responseType: 'arraybuffer',
+            })
+            .then((r) => r.data);
         }, toAppError),
-        IOE.chain(() =>
+        TE.chainIOEitherK((buf) =>
           IOE.tryCatch(() => {
             ctx.logger.debug(
-              'Unzipping the extension from %s to folder %s',
-              downloadDetails.extensionZipUrl,
+              'Saving extension to %s',
               downloadDetails.extensionZipFilePath
             );
-
-            execSync(
-              `unzip -f ${downloadDetails.extensionZipFilePath} -d ${ctx.config.extensionDir}`
+            fs.writeFileSync(
+              downloadDetails.extensionZipFilePath,
+              buf,
+              'utf-8'
             );
           }, toAppError)
         )
       );
-    }),
-    TE.fromIOEither
+
+      return pipe(
+        extensionExists ? TE.right(undefined) : downloadAndSaveTE,
+        TE.chain(() =>
+          TE.tryCatch(() => {
+            ctx.logger.debug(
+              'Extracting extension from %s and save it to %s',
+              downloadDetails.extensionZipFilePath,
+              ctx.config.extensionDir
+            );
+            return extractZip(downloadDetails.extensionZipFilePath, {
+              dir: ctx.config.extensionDir,
+            });
+          }, toAppError)
+        )
+      );
+    })
   );
 };
 
@@ -724,6 +738,17 @@ export const getConfigWithDefaults =
       {} as any
     );
 
+    const extensionDir = sanitizedConf.extensionDir
+      ? path.isAbsolute(sanitizedConf.extensionDir)
+        ? sanitizedConf.extensionDir
+        : path.resolve(process.cwd(), sanitizedConf.extensionDir)
+      : DEFAULT_EXTENSION_DIR;
+
+    ctx.logger.debug('Sanitized config: %O', {
+      ...sanitizedConf,
+      extensionDir,
+    });
+
     return pipe(
       sequenceS(TE.ApplicativePar)({
         profileName: checkProfile(ctx)(conf),
@@ -735,7 +760,6 @@ export const getConfigWithDefaults =
       TE.map(({ profileName, chromePath }) => ({
         chromePath,
         evidenceTag,
-        extensionDir: DEFAULT_EXTENSION_DIR,
         backend: DEFAULT_BACKEND,
         loadFor: DEFAULT_LOAD_FOR,
         profileName,
@@ -743,6 +767,7 @@ export const getConfigWithDefaults =
           ? path.resolve(process.cwd(), sanitizedConf.basePath)
           : DEFAULT_BASE_PATH,
         ...sanitizedConf,
+        extensionDir,
       }))
     );
   };
@@ -929,7 +954,7 @@ const loadContext = (
   partialConfig: GuardoniConfig,
   logger: GuardoniContext['logger']
 ): TE.TaskEither<AppError, GuardoniContext> => {
-  logger.debug('Starting guardoni with config %O', partialConfig);
+  logger.debug('Loading context with config %O', partialConfig);
 
   return pipe(
     getConfigWithDefaults({ logger })(partialConfig),

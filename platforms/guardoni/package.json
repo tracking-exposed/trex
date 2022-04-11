@@ -55,6 +55,7 @@
     "electron-log": "^4.4.6",
     "electron-squirrel-startup": "^1.0.0",
     "electron-store": "^8.0.1",
+    "extract-zip": "^2.0.1",
     "fp-ts": "^2.11.8",
     "io-ts": "^2.2.16",
     "io-ts-types": "^0.5.16",
