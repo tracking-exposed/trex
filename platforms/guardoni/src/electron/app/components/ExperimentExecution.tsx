@@ -2,7 +2,7 @@ import { Box, Button, Grid, Typography, useTheme } from '@material-ui/core';
 import { BrowserView, ipcRenderer } from 'electron';
 import * as React from 'react';
 import { RouteComponentProps } from 'react-router';
-import { GuardoniConfig } from '../../../guardoni/types';
+import { GuardoniConfigRequired } from '../../../guardoni/types';
 import { EVENTS } from '../../models/events';
 import ElectronBrowserView from './browser-view/ElectronBrowserView';
 import OutputPanel from './OutputPanel';
@@ -166,7 +166,9 @@ const ExperimentExecution: React.FC<ExperimentExecutionProps> = ({
 };
 
 const ExperimentExecutionRoute: React.FC<
-  RouteComponentProps<{ experimentId: string }> & { config: GuardoniConfig }
+  RouteComponentProps<{ experimentId: string }> & {
+    config: GuardoniConfigRequired;
+  }
 > = ({ config, match }) => {
   const onRun = React.useCallback(
     (experimentId: string): void => {
@@ -176,7 +178,10 @@ const ExperimentExecutionRoute: React.FC<
   );
 
   const onOpenResults = React.useCallback((publicKey: string): void => {
-    window.open(`${config.backend}/api/v1/personal/${publicKey}`, '_blank');
+    window.open(
+      `${config.platform.backend}/api/v1/personal/${publicKey}`,
+      '_blank'
+    );
   }, []);
 
   return (

@@ -1,4 +1,12 @@
 import * as t from 'io-ts';
+import { Platform } from '../electron/app/Header';
+
+export interface PlatformConfig {
+  name: Platform;
+  backend?: string;
+  extensionDir?: string;
+  proxy?: string;
+}
 
 export interface GuardoniConfig {
   headless: boolean;
@@ -6,14 +14,13 @@ export interface GuardoniConfig {
   profileName?: string;
   evidenceTag?: string;
   advScreenshotDir?: string;
-  proxy?: string;
-  backend?: string;
   basePath?: string;
-  extensionDir?: string;
   excludeURLTag?: string[];
   chromePath?: string;
   loadFor?: number;
   publicKey?: string;
+  yt?: PlatformConfig;
+  tk?: PlatformConfig;
 }
 
 export type GuardoniConfigRequired = Omit<
@@ -24,13 +31,14 @@ export type GuardoniConfigRequired = Omit<
   | 'evidenceTag'
   | 'extensionDir'
   | 'publicKey'
+  | 'tk'
+  | 'yt'
 > & {
   profileName: string;
   publicKey: string;
-  backend: string;
   basePath: string;
   evidenceTag: string;
-  extensionDir: string;
+  platform: Omit<Required<PlatformConfig>, 'proxy'> & { proxy?: string };
   loadFor: number;
   chromePath: string;
 };
@@ -59,7 +67,6 @@ export const GuardoniProfile = t.strict(
     udd: t.string,
     profileName: t.string,
     newProfile: t.boolean,
-    extensionDir: t.string,
     execount: t.number,
     evidencetag: t.array(t.string),
   },

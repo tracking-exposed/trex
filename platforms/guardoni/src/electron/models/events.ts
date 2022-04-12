@@ -11,6 +11,7 @@ const RUN_AUTO_GUARDONI_EVENT = t.literal('runAutoGuardoni');
 const GUARDONI_ERROR_EVENT = t.literal('guardoniError');
 const GUARDONI_OUTPUT_EVENT = t.literal('guardoniOutput');
 const GLOBAL_ERROR_EVENT = t.literal('globalError');
+const CHANGE_PLATFORM_EVENT = t.literal('changePlatform');
 
 export const EVENTS = {
   PICK_CSV_FILE_EVENT,
@@ -24,6 +25,7 @@ export const EVENTS = {
   GUARDONI_ERROR_EVENT,
   GUARDONI_OUTPUT_EVENT,
   GLOBAL_ERROR_EVENT,
+  CHANGE_PLATFORM_EVENT,
 };
 
 export const EVENT = t.union(
@@ -38,6 +40,7 @@ export const EVENT = t.union(
     GUARDONI_ERROR_EVENT,
     GUARDONI_OUTPUT_EVENT,
     GLOBAL_ERROR_EVENT,
+    CHANGE_PLATFORM_EVENT,
   ],
   'EVENTS'
 );

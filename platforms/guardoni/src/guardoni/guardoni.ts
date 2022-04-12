@@ -21,8 +21,10 @@ import {
   PostDirectiveSuccessResponse,
 } from '@shared/models/Directive';
 import { APIClient, GetAPI } from '@shared/providers/api.provider';
+import axios from 'axios';
 import { differenceInSeconds, format } from 'date-fns';
 import debug from 'debug';
+import extractZip from 'extract-zip';
 import { sequenceS } from 'fp-ts/lib/Apply';
 import * as E from 'fp-ts/lib/Either';
 import { pipe } from 'fp-ts/lib/function';
@@ -34,11 +36,19 @@ import * as fs from 'fs';
 import { NonEmptyString } from 'io-ts-types/lib/NonEmptyString';
 import { failure, PathReporter } from 'io-ts/lib/PathReporter';
 import _ from 'lodash';
-import * as os from 'os';
 import path from 'path';
 // import pluginStealth from "puppeteer-extra-plugin-stealth";
 import type puppeteer from 'puppeteer-core';
+import { Platform } from '../electron/app/Header';
 import { getPackageVersion } from '../utils';
+import {
+  DEFAULT_BASE_PATH,
+  DEFAULT_LOAD_FOR,
+  DEFAULT_TK_BACKEND,
+  DEFAULT_TK_EXTENSION_DIR,
+  DEFAULT_YT_BACKEND,
+  DEFAULT_YT_EXTENSION_DIR,
+} from './constants';
 import domainSpecific from './domainSpecific';
 import {
   GuardoniConfig,
@@ -48,27 +58,14 @@ import {
   ProgressDetails,
 } from './types';
 import { csvParseTE, getChromePath, liftFromIOE } from './utils';
-import axios from 'axios';
-import extractZip from 'extract-zip';
 
 // const COMMANDJSONEXAMPLE =
 //   'https://youtube.tracking.exposed/json/automation-example.json';
 
-const getExtensionWithOptInURL = (v: string): string => {
-  // const ninetyNineV = v
-  //   .split('.')
-  //   .filter((v, i) => i !== 2)
-  //   .concat('99')
-  //   .join('.');
-  return `https://github.com/tracking-exposed/yttrex/releases/download/v${v}/guardoni-yttrex-extension-${v}.zip`;
+const getExtensionWithOptInURL = (platform: Platform, v: string): string => {
+  const platformChunk = platform === 'youtube' ? 'yttrex' : 'tktrex';
+  return `https://github.com/tracking-exposed/yttrex/releases/download/v${v}/guardoni-${platformChunk}-extension-${v}.zip`;
 };
-
-const DEFAULT_BASE_PATH = path.resolve(os.homedir(), '.guardoni/config');
-const DEFAULT_BACKEND =
-  process.env.BACKEND ?? 'https://youtube.tracking.exposed/api';
-const DEFAULT_EXTENSION_DIR = path.resolve(os.homedir(), '.guardoni/extension');
-
-const DEFAULT_LOAD_FOR = 3000;
 
 interface ExperimentInfo {
   experimentId: string;
@@ -90,16 +87,28 @@ interface GuardoniContext {
   version: string;
 }
 
+const getConfigPlatformKey = (
+  p: Platform
+): keyof Pick<GuardoniConfig, 'yt' | 'tk'> => {
+  if (p === 'tiktok') {
+    return 'tk';
+  }
+  return 'yt';
+};
+
 // old functions
 
 const downloadExtension = (
   ctx: GuardoniContext
 ): TE.TaskEither<AppError, void> => {
+  const extensionDir = ctx.config.platform.extensionDir;
+
   return pipe(
     IOE.tryCatch(() => {
-      ctx.logger.debug(`Checking extension manifest.json...`);
+      ctx.logger.debug(`Checking extension manifest.json at %s`, extensionDir);
+
       const manifestPath = path.resolve(
-        path.join(ctx.config.extensionDir, 'manifest.json')
+        path.join(extensionDir, 'manifest.json')
       );
 
       const manifest = fs.existsSync(manifestPath);
@@ -109,20 +118,23 @@ const downloadExtension = (
         return undefined;
       }
 
-      ctx.logger.debug('Ensure %s dir exists', ctx.config.extensionDir);
-      fs.mkdirSync(ctx.config.extensionDir, { recursive: true });
+      ctx.logger.debug('Ensure %s dir exists', extensionDir);
+      fs.mkdirSync(extensionDir, { recursive: true });
 
       ctx.logger.debug(
         "Executing curl and unzip (if these binary aren't present in your system please mail support at tracking dot exposed because you might have worst problems)"
       );
       const extensionZipFilePath = path.resolve(
         path.join(
-          ctx.config.extensionDir,
-          `yttrex-extension-v${ctx.version}.zip`
+          extensionDir,
+          `${ctx.config.platform.name}-trex-extension-v${ctx.version}.zip`
         )
       );
 
-      const extensionZipUrl = getExtensionWithOptInURL(ctx.version);
+      const extensionZipUrl = getExtensionWithOptInURL(
+        ctx.config.platform.name,
+        ctx.version
+      );
 
       return { extensionZipUrl, extensionZipFilePath };
     }, toAppError),
@@ -177,10 +189,10 @@ const downloadExtension = (
             ctx.logger.debug(
               'Extracting extension from %s and save it to %s',
               downloadDetails.extensionZipFilePath,
-              ctx.config.extensionDir
+              extensionDir
             );
             return extractZip(downloadDetails.extensionZipFilePath, {
-              dir: ctx.config.extensionDir,
+              dir: extensionDir,
             });
           }, toAppError)
         )
@@ -193,13 +205,13 @@ const dispatchBrowser = (
   ctx: GuardoniContext
 ): TE.TaskEither<AppError, puppeteer.Browser> => {
   const execCount = ctx.profile.execount;
-  const proxy = ctx.config.proxy;
+  const proxy = ctx.config.platform.proxy;
 
   const commandLineArg = [
     '--no-sandbox',
     '--disabled-setuid-sandbox',
-    '--load-extension=' + ctx.config.extensionDir,
-    '--disable-extensions-except=' + ctx.config.extensionDir,
+    '--load-extension=' + ctx.config.platform.extensionDir,
+    '--disable-extensions-except=' + ctx.config.platform.extensionDir,
   ];
 
   if (proxy) {
@@ -354,12 +366,12 @@ export const guardoniExecution =
         ctx.logger.debug(
           `Operations completed in %ds: check results at `,
           duration,
-          `${ctx.config.backend}/${
+          `${ctx.config.platform.backend}/${
             directiveType === 'chiaroscuro' ? 'shadowban' : 'experiments'
           }/render/#${experiment}`
         );
         ctx.logger.debug(
-          `Personal log at ${ctx.config.backend}/personal/#${publicKey}`
+          `Personal log at ${ctx.config.platform.backend}/personal/#${publicKey}`
         );
 
         return publicKey;
@@ -603,7 +615,7 @@ const saveExperiment =
       'Saving experiment info in extension/experiment.json (would be read by the extension)'
     );
     const experimentJSONFile = path.join(
-      ctx.config.extensionDir,
+      ctx.config.platform.extensionDir,
       'experiment.json'
     );
 
@@ -663,22 +675,19 @@ const listExperiments =
     );
   };
 
-const ensureProfileExistsAtPath = (
-  basePath: string,
-  profileName: string
-): TE.TaskEither<AppError, string> => {
-  const profileDir = getProfileDataDir(basePath, profileName);
-  return pipe(
-    liftFromIOE(() => fs.statSync(profileDir, { throwIfNoEntry: false })),
-    TE.chainFirst((stat) => {
-      if (!stat) {
-        return liftFromIOE(() => fs.mkdirSync(profileDir, { recursive: true }));
-      }
-      return TE.right(undefined);
-    }),
-    TE.map(() => profileName)
-  );
-};
+// const ensureProfileExistsAtPath = (
+//   basePath: string,
+//   profileName: string
+// ): TE.TaskEither<AppError, string> => {
+//   const profileDir = getProfileDataDir(basePath, profileName);
+
+//   const stats = fs.existsSync(profileDir);
+
+//   if (!stats) {
+//     fs.mkdirSync(profileDir, { recursive: true });
+//   }
+//   return TE.right(profileName);
+// };
 
 // todo: check if a profile already exists in the file system
 const checkProfile =
@@ -687,40 +696,78 @@ const checkProfile =
     const basePath = conf.basePath ?? DEFAULT_BASE_PATH;
     const profilesDir = path.resolve(basePath, 'profiles');
 
-    // no profile given, try to retrieve the old one
-    if (!conf.profileName) {
-      ctx.logger.debug(
-        'Profile not defined, looking for older profiles in %s',
-        profilesDir
-      );
-      // check 'profiles' dir in basePath exists
-      const exists = fs.statSync(profilesDir, { throwIfNoEntry: false });
-      // create 'profiles' dir if doesn't exist
-      if (!exists) {
-        ctx.logger.debug('Profile dir not found, creating it...', profilesDir);
-        fs.mkdirSync(profilesDir, { recursive: true });
-      }
+    ctx.logger.debug('Check profile at %s', profilesDir);
 
-      const profiles = fs.readdirSync(profilesDir);
+    const exists = fs.existsSync(profilesDir);
 
-      if (profiles.length === 0) {
-        const profileName =
-          conf.evidenceTag ?? `guardoni-${format(new Date(), 'yyyy-MM-dd')}`;
-        ctx.logger.debug('Creating profile %O in %s', profileName, basePath);
-        return ensureProfileExistsAtPath(basePath, profileName);
-      }
+    ctx.logger.debug('Profile dir exists? %s (%s)', profilesDir, exists);
 
-      const lastProfile = profiles[profiles.length - 1];
-      ctx.logger.debug('Last profile found %s', lastProfile);
-      return TE.right(lastProfile);
+    if (!exists) {
+      ctx.logger.debug('Creating dir %s', profilesDir);
+      fs.mkdirSync(profilesDir, { recursive: true });
     }
 
-    return TE.right(conf.profileName);
+    const profiles = fs.readdirSync(profilesDir);
+
+    // no profile given, try to retrieve the old one
+
+    ctx.logger.debug('Profiles %O', profiles);
+
+    const lastProfile =
+      profiles !== undefined ? profiles[profiles.length - 1] : undefined;
+
+    const profileName =
+      conf.profileName ??
+      lastProfile ??
+      conf.evidenceTag ??
+      `guardoni-${format(new Date(), 'yyyy-MM-dd')}`;
+
+    const profileDir = getProfileDataDir(basePath, profileName);
+
+    const profileDirExists = fs.existsSync(profileDir);
+    ctx.logger.debug('Profile dir %s exists?', profileDir, profileDirExists);
+
+    if (!profileDirExists) {
+      ctx.logger.debug('Creating profile %O in %s', profileDir);
+      fs.mkdirSync(profileDir, { recursive: true });
+    }
+
+    ctx.logger.debug('Returning profile %s', profileName);
+
+    return TE.right(profileName);
   };
 
 export const getConfigWithDefaults =
   (ctx: { logger: GuardoniContext['logger'] }) =>
-  (conf: GuardoniConfig): TE.TaskEither<AppError, GuardoniConfigRequired> => {
+  (
+    { yt, tk, ...conf }: GuardoniConfig,
+    platform: Platform
+  ): TE.TaskEither<AppError, GuardoniConfigRequired> => {
+    ctx.logger.debug(
+      'Get config with defaults %O for platform %s',
+      { ...conf, yt, tk },
+      platform
+    );
+    const platformConfigKey = getConfigPlatformKey(platform);
+
+    // get platform specific config
+    const platformConf =
+      platformConfigKey === 'tk'
+        ? {
+            name: 'tiktok' as const,
+            backend: DEFAULT_TK_BACKEND,
+            extensionDir: DEFAULT_TK_EXTENSION_DIR,
+            proxy: undefined,
+            ...tk,
+          }
+        : {
+            name: 'youtube' as const,
+            backend: DEFAULT_YT_BACKEND,
+            extensionDir: DEFAULT_YT_EXTENSION_DIR,
+            proxy: undefined,
+            ...yt,
+          };
+
     const evidenceTag = conf.evidenceTag ?? 'no-tag-' + _.random(0, 0xffff);
     ctx.logger.debug('EvidenceTag %O', evidenceTag);
 
@@ -738,41 +785,56 @@ export const getConfigWithDefaults =
       {} as any
     );
 
-    const extensionDir = sanitizedConf.extensionDir
-      ? path.isAbsolute(sanitizedConf.extensionDir)
-        ? sanitizedConf.extensionDir
-        : path.resolve(process.cwd(), sanitizedConf.extensionDir)
-      : DEFAULT_EXTENSION_DIR;
+    const extensionDir = platformConf.extensionDir
+      ? path.isAbsolute(platformConf.extensionDir)
+        ? platformConf.extensionDir
+        : path.resolve(process.cwd(), platformConf.extensionDir)
+      : platformConfigKey === 'tk'
+      ? DEFAULT_TK_EXTENSION_DIR
+      : DEFAULT_YT_EXTENSION_DIR;
 
-    ctx.logger.debug('Sanitized config: %O', {
+    ctx.logger.debug('Config: %O', {
       ...sanitizedConf,
-      extensionDir,
+      platform: {
+        ...platformConf,
+        extensionDir,
+      },
     });
 
     return pipe(
-      sequenceS(TE.ApplicativePar)({
-        profileName: checkProfile(ctx)(conf),
+      sequenceS(TE.ApplySeq)({
         chromePath: pipe(
           TE.fromEither(getChromePath()),
           TE.mapLeft(toAppError)
         ),
+        profileName: checkProfile(ctx)(sanitizedConf),
       }),
-      TE.map(({ profileName, chromePath }) => ({
-        chromePath,
-        evidenceTag,
-        backend: DEFAULT_BACKEND,
-        loadFor: DEFAULT_LOAD_FOR,
-        profileName,
-        basePath: sanitizedConf.basePath
+      TE.map(({ profileName, chromePath }) => {
+        const basePath = sanitizedConf.basePath
           ? path.resolve(process.cwd(), sanitizedConf.basePath)
-          : DEFAULT_BASE_PATH,
-        ...sanitizedConf,
-        extensionDir,
-      }))
+          : DEFAULT_BASE_PATH;
+
+        return {
+          chromePath,
+          evidenceTag,
+          loadFor: DEFAULT_LOAD_FOR,
+          profileName,
+          basePath,
+          ...sanitizedConf,
+          publicKey: sanitizedConf.publicKey ?? '',
+          platform: {
+            ...platformConf,
+            extensionDir,
+          },
+        };
+      })
     );
   };
 
-const readProfile =
+/**
+ * Read and validate the profile from file path
+ */
+export const readProfile =
   (ctx: GuardoniContext) =>
   (profilePath: string): TE.TaskEither<AppError, GuardoniProfile> => {
     ctx.logger.debug('Reading profile from %s', profilePath);
@@ -936,14 +998,12 @@ export const getProfileDataDir = (
 
 export const getDefaultProfile = (
   basePath: string,
-  profileName: string,
-  extensionDir: string
+  profileName: string
 ): GuardoniProfile => {
   return {
     udd: getProfileDataDir(basePath, profileName),
     newProfile: true,
     profileName,
-    extensionDir,
     evidencetag: [],
     execount: 0,
   };
@@ -952,23 +1012,22 @@ export const getDefaultProfile = (
 const loadContext = (
   p: typeof puppeteer,
   partialConfig: GuardoniConfig,
+  platform: Platform,
   logger: GuardoniContext['logger']
 ): TE.TaskEither<AppError, GuardoniContext> => {
-  logger.debug('Loading context with config %O', partialConfig);
+  logger.debug('Loading context for platform %s', platform);
 
   return pipe(
-    getConfigWithDefaults({ logger })(partialConfig),
+    getConfigWithDefaults({ logger })(partialConfig, platform),
     TE.map((config): GuardoniContext => {
-      const profile = getDefaultProfile(
-        config.basePath,
-        config.profileName,
-        config.extensionDir
-      );
+      const profile = getDefaultProfile(config.basePath, config.profileName);
+
+      logger.debug('profile %O', profile);
 
       return {
         puppeteer: p,
         API: GetAPI({
-          baseURL: config.backend,
+          baseURL: config.platform.backend,
           getAuth: async (req) => req,
           onUnauthorized: async (res) => res,
         }).API,
@@ -1022,6 +1081,7 @@ const loadContext = (
 
 export interface Guardoni {
   config: GuardoniConfigRequired;
+  API: APIClient;
   // register an experiment from the given csv file
   registerExperimentFromCSV: (
     file: NonEmptyString,
@@ -1048,12 +1108,14 @@ export type GetGuardoni = ({
   logger,
 }: {
   config: GuardoniConfig;
+  platform: Platform;
   logger: GuardoniContext['logger'];
   puppeteer: typeof puppeteer;
 }) => TE.TaskEither<AppError, Guardoni>;
 
 export const GetGuardoni: GetGuardoni = ({
   config,
+  platform,
   logger,
   puppeteer,
 }): TE.TaskEither<AppError, Guardoni> => {
@@ -1064,10 +1126,11 @@ export const GetGuardoni: GetGuardoni = ({
   debug.enable(loggerSpaces.join(','));
 
   return pipe(
-    loadContext(puppeteer, config, logger),
+    loadContext(puppeteer, config, platform, logger),
     TE.map((ctx) => {
       return {
         config: ctx.config,
+        API: ctx.API,
         runAuto: runAuto(ctx),
         runExperiment: runExperiment(ctx),
         runExperimentForPage: runExperimentForPage(ctx),

@@ -1,9 +1,10 @@
 const _ = require('lodash');
 const debug = require('debug')('routes:directives');
-
+const nconf = require('nconf');
 const automo = require('../lib/automo');
 const utils = require('../lib/utils');
 const experlib = require('../lib/experiments');
+const mongo3 = require('../lib/mongo3');
 
 function reproducibleTypo(title) {
   const trimmedT = title.replace(/.$/, '').replace(/^./, '');
@@ -75,8 +76,42 @@ async function get(req) {
   return { json: directives };
 }
 
+async function getPublic(req) {
+  const blackList = [
+    // 'b3d531eca62b2dc989926e0fe21b54ab988b7f3d',
+    // prod ids
+    'd75f9eaf465d2cd555de65eaf61a770c82d59451',
+    '37384a9b7dff26184cdea226ad5666ca8cbbf456',
+  ];
+
+  const filter = {
+    directiveType: 'comparison',
+    experimentId: {
+      $nin: blackList,
+    },
+  };
+
+  const mongoc = await mongo3.clientConnect({ concurrency: 1 });
+
+  const publicDirectives = await mongo3.readLimit(
+    mongoc,
+    nconf.get('schema').directives,
+    filter,
+    { when: -1 },
+    20,
+    0
+  );
+
+  await mongoc.close();
+
+  return {
+    json: publicDirectives,
+  };
+}
+
 module.exports = {
   searchesDirectory,
   post,
   get,
+  getPublic,
 };

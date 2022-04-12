@@ -34,7 +34,7 @@ const directiveLinks = [
   },
 ];
 
-const backend = process.env.BACKEND;
+const backend = process.env.YT_BACKEND as string;
 
 describe('Guardoni', () => {
   const basePath = path.resolve(process.cwd(), './');
@@ -57,9 +57,7 @@ describe('Guardoni', () => {
     );
 
     const profileUDD = getProfileDataDir(basePath, profile);
-    const profileExists = fs.statSync(profileUDD, {
-      throwIfNoEntry: false,
-    });
+    const profileExists = fs.existsSync(profileUDD);
 
     if (!profileExists) {
       fs.mkdirSync(profileUDD, {
@@ -68,17 +66,14 @@ describe('Guardoni', () => {
     }
     fs.writeFileSync(
       path.join(profileUDD, 'guardoni.json'),
-      JSON.stringify(
-        getDefaultProfile(basePath, profile, extensionDir),
-        null,
-        2
-      ),
+      JSON.stringify(getDefaultProfile(basePath, profile), null, 2),
       'utf-8'
     );
   });
 
   afterAll(() => {
     fs.rmdirSync(getProfileDataDir(basePath, profile), { recursive: true });
+    fs.rmSync(path.resolve(basePath, 'experiments', csvTestFileName));
   });
 
   describe('config', () => {
@@ -88,9 +83,13 @@ describe('Guardoni', () => {
           headless: false,
           verbose: false,
           basePath,
-          backend,
-          extensionDir,
+          yt: {
+            name: 'youtube',
+            backend,
+            extensionDir,
+          },
         },
+        platform: 'youtube',
         logger: guardoniLogger,
         puppeteer: puppeteerMock,
       })();
@@ -112,9 +111,13 @@ describe('Guardoni', () => {
           verbose: false,
           basePath,
           profileName,
-          backend,
-          extensionDir,
+          yt: {
+            name: 'youtube',
+            backend,
+            extensionDir,
+          },
         },
+        platform: 'youtube',
         logger: guardoniLogger,
         puppeteer: puppeteerMock,
       })();
@@ -124,9 +127,11 @@ describe('Guardoni', () => {
           config: {
             headless: false,
             verbose: false,
-            backend,
+            platform: {
+              backend,
+              extensionDir: path.join(basePath, 'build/extension'),
+            },
             profileName,
-            extensionDir: path.join(basePath, 'build/extension'),
           },
         },
       });
@@ -143,8 +148,12 @@ describe('Guardoni', () => {
           verbose: true,
           headless: true,
           basePath,
-          extensionDir,
+          yt: {
+            name: 'youtube',
+            extensionDir,
+          },
         },
+        platform: 'youtube',
         logger: guardoniLogger,
         puppeteer: puppeteerMock,
       });

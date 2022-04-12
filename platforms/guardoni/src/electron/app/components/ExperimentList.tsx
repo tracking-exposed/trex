@@ -8,7 +8,7 @@ import {
   ListItem,
   makeStyles,
   Typography,
-  useTheme,
+  useTheme
 } from '@material-ui/core';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import LinkIcon from '@material-ui/icons/LinkOutlined';
@@ -17,7 +17,7 @@ import { formatDistanceToNow, parseISO } from 'date-fns';
 import { ipcRenderer } from 'electron';
 import * as React from 'react';
 import { RouteProps, useHistory } from 'react-router';
-import { GuardoniConfig } from '../../../guardoni/types';
+import { GuardoniConfigRequired } from '../../../guardoni/types';
 import { EVENTS } from '../../models/events';
 
 const useStyle = makeStyles((theme) => ({
@@ -83,16 +83,24 @@ export const ExperimentList: React.FC<ExperimentListProps> = ({
                 content: classes.listItemSummary,
               }}
             >
-              <LinkIcon />
-              <Typography variant="subtitle2" style={{ marginRight: 10 }}>
-                {d.links.length}
-              </Typography>
               <Typography variant="subtitle1">{d.tags.join(', ')}</Typography>
+              <Box
+                style={{
+                  display: 'flex',
+                  flexGrow: 1,
+                  justifyContent: 'flex-end',
+                  marginRight: 10,
+                  alignItems: 'center',
+                }}
+              >
+                <LinkIcon />
+                <Typography variant="subtitle2">{d.links.length}</Typography>
+              </Box>
+
               <Typography
                 variant="caption"
                 style={{
                   display: 'flex',
-                  flexGrow: 1,
                   justifyContent: 'flex-end',
                 }}
               >
@@ -128,7 +136,7 @@ export const ExperimentList: React.FC<ExperimentListProps> = ({
 };
 
 const ExperimentListRoute: React.FC<
-  RouteProps & { config: GuardoniConfig }
+  RouteProps & { config: GuardoniConfigRequired }
 > = ({ config }) => {
   const theme = useTheme();
   const [experiments, setDirectives] = React.useState<GuardoniExperiment[]>([]);
@@ -140,37 +148,43 @@ const ExperimentListRoute: React.FC<
   }, []);
 
   React.useEffect(() => {
-    ipcRenderer.on(EVENTS.GET_PUBLIC_DIRECTIVES.value, (event, ...args) => {
+    ipcRenderer.once(EVENTS.GET_PUBLIC_DIRECTIVES.value, (event, ...args) => {
+      console.log(EVENTS.GET_PUBLIC_DIRECTIVES.value, args);
       const [directives] = args;
       setDirectives(directives);
     });
 
     ipcRenderer.send(EVENTS.GET_PUBLIC_DIRECTIVES.value);
+
+    return () => {
+      ipcRenderer.removeAllListeners(EVENTS.GET_PUBLIC_DIRECTIVES.value);
+    };
   }, []);
 
-  if (experiments.length === 0) {
+  const experimentsWithTags = React.useMemo(
+    () =>
+      experiments.reduce<GuardoniExperimentWithTags[]>((acc, e) => {
+        const { tags, time } = e.links.reduce(
+          (accL, l) => {
+            return {
+              tags: accL.tags.concat(l.urltag),
+              time: l.watchFor ? accL.time.concat(l.watchFor + '') : accL.time,
+            };
+          },
+          {
+            tags: [] as string[],
+            time: '',
+          }
+        );
+
+        return acc.concat({ ...e, tags, time });
+      }, []),
+    [experiments]
+  );
+
+  if (experimentsWithTags.length === 0) {
     return <Typography>No experiment available</Typography>;
   }
-
-  const experimentsWithTags = experiments.reduce<GuardoniExperimentWithTags[]>(
-    (acc, e) => {
-      const { tags, time } = e.links.reduce(
-        (accL, l) => {
-          return {
-            tags: accL.tags.concat(l.urltag),
-            time: l.watchFor ? accL.time.concat(l.watchFor + '') : accL.time,
-          };
-        },
-        {
-          tags: [] as string[],
-          time: '',
-        }
-      );
-
-      return acc.concat({ ...e, tags, time } );
-    },
-    []
-  );
 
   return (
     <Box

@@ -113,5 +113,8 @@ export const csvStringifyTE = (
   );
 
 export const liftFromIOE = <T>(lazyF: () => T): TE.TaskEither<AppError, T> => {
-  return pipe(IOE.tryCatch(lazyF, toAppError), TE.fromIOEither);
+  return pipe(
+    IOE.tryCatch(lazyF, toAppError),
+    TE.fromIOEither
+  );
 };

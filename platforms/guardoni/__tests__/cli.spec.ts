@@ -34,8 +34,11 @@ describe('CLI', () => {
       verbose: false,
       basePath,
       profileName: profileName,
-      extensionDir,
-      backend: 'http://localhost:9009/api',
+      yt: {
+        name: 'youtube',
+        backend: 'http://localhost:9009/api',
+        extensionDir,
+      },
       loadFor: 3000,
       evidenceTag,
       chromePath: '/chrome/fake/path',
@@ -47,7 +50,7 @@ describe('CLI', () => {
 
   beforeAll(async () => {
     // make extension path
-    fs.mkdirSync(extensionDir, { recursive: true })
+    fs.mkdirSync(extensionDir, { recursive: true });
 
     fs.mkdirSync(path.resolve(basePath, 'experiments'), {
       recursive: true,

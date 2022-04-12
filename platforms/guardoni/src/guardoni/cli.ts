@@ -90,7 +90,12 @@ export const GetGuardoniCLI: GetGuardoniCLI = (config, p): GuardoniCLI => {
     command: GuardoniCommandConfig
   ): TE.TaskEither<AppError, GuardoniSuccessOutput> =>
     pipe(
-      GetGuardoni({ config, logger: guardoniLogger, puppeteer: p }),
+      GetGuardoni({
+        config,
+        logger: guardoniLogger,
+        platform: 'youtube',
+        puppeteer: p,
+      }),
       TE.chain((g) => {
         return TE.fromIO<
           TE.TaskEither<AppError, GuardoniSuccessOutput>,

@@ -1,7 +1,7 @@
 import { Box, LinearProgress } from '@material-ui/core';
 import { ipcRenderer } from 'electron';
 import * as React from 'react';
-import { Redirect, Route, Switch } from 'react-router';
+import { Redirect, Route, Switch, useHistory } from 'react-router';
 import { v4 as uuid } from 'uuid';
 import { GuardoniConfigRequired } from '../../guardoni/types';
 import { EVENTS } from '../models/events';
@@ -9,6 +9,7 @@ import { OutputItem } from './components/OutputPanel';
 import ExperimentExecutionRoute from './components/ExperimentExecution';
 import ExperimentList from './components/ExperimentList';
 import Layout from './Layout';
+import { Platform } from './Header';
 
 export function a11yProps(index: number): any {
   return {
@@ -34,11 +35,19 @@ export const TabPanel: React.FC<any> = (props) => {
 };
 
 export const App: React.FC = () => {
-  const [config, setConfig] = React.useState<GuardoniConfigRequired | undefined>(
-    undefined
-  );
+  const history = useHistory();
+
+  const [config, setConfig] = React.useState<
+    GuardoniConfigRequired | undefined
+  >(undefined);
 
   const [outputItems, setOutputItems] = React.useState<OutputItem[]>([]);
+
+  const handlePlatformChange = React.useCallback((p: Platform) => {
+    setConfig(undefined);
+    history.replace({ pathname: '/experiments/list' });
+    ipcRenderer.send(EVENTS.CHANGE_PLATFORM_EVENT.value, p);
+  }, []);
 
   React.useEffect(() => {
     // listen for global errors
@@ -71,23 +80,24 @@ export const App: React.FC = () => {
     });
 
     if (config === undefined) {
-      setTimeout(() => {
-        // request guardoni config
-        ipcRenderer.send(EVENTS.GET_GUARDONI_CONFIG_EVENT.value);
-      }, 200);
+      ipcRenderer.send(EVENTS.GET_GUARDONI_CONFIG_EVENT.value);
     }
 
     return () => {
       ipcRenderer.removeAllListeners(EVENTS.GET_GUARDONI_CONFIG_EVENT.value);
     };
-  }, [config]);
+  }, []);
 
   if (!config) {
     return <LinearProgress />;
   }
 
   return (
-    <Layout config={config} onConfigChange={setConfig}>
+    <Layout
+      config={config}
+      onConfigChange={setConfig}
+      onPlatformChange={handlePlatformChange}
+    >
       <Switch>
         <Route
           path="/run/:experimentId"

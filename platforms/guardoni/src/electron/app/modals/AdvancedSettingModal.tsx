@@ -52,12 +52,15 @@ const AdvancedSettingModal: React.FC<{
 }> = ({ open, config, onConfigChange, onCancel }) => {
   const classes = useStyles();
 
-  const handleOpenProfileDir = React.useCallback((config: GuardoniConfigRequired) => {
-    void ipcRenderer.send(
-      EVENTS.OPEN_GUARDONI_DIR.value,
-      `${config.basePath}/profiles/${config.profileName}`
-    );
-  }, []);
+  const handleOpenProfileDir = React.useCallback(
+    (config: GuardoniConfigRequired) => {
+      ipcRenderer.send(
+        EVENTS.OPEN_GUARDONI_DIR.value,
+        `${config.basePath}/profiles/${config.profileName}`
+      );
+    },
+    [config]
+  );
 
   return (
     <Dialog open={open}>
@@ -151,12 +154,15 @@ const AdvancedSettingModal: React.FC<{
                     <Input
                       id="backend"
                       aria-describedby="backend-text"
-                      value={config.backend}
+                      value={config.platform.backend}
                       fullWidth
                       onChange={(e) =>
                         onConfigChange({
                           ...config,
-                          backend: e.target.value,
+                          platform: {
+                            ...config.platform,
+                            backend: e.target.value,
+                          },
                         })
                       }
                     />

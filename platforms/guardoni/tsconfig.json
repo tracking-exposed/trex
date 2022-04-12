@@ -16,7 +16,11 @@
     "skipLibCheck": true,
     "resolveJsonModule": true,
     "sourceMap": true,
-    "typeRoots": ["../../node_modules/@types", "node_modules/@types"],
+    "typeRoots": [
+      "../../node_modules/@types",
+      "node_modules/@types",
+      "./typings"
+    ],
     "paths": {
       "@shared/*": ["../../../packages/shared/src/*"],
       "@experiment/*": ["./guardoni/tx-automate/experiment/*"],
