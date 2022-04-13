@@ -4143,7 +4143,7 @@ __metadata:
     bs58: ^3.1.0
     cookie: ^0.3.1
     cors: ^2.8.5
-    debug: ^4.3.3
+    debug: ^4.3.4
     express: ^4.17.2
     food-words: ^1.1.0
     jquery: ^3.6.0
@@ -4194,7 +4194,7 @@ __metadata:
     "@typescript-eslint/eslint-plugin": ^5.12.1
     "@typescript-eslint/parser": ^5.12.1
     create-react-class: ^15.7.0
-    debug: ^4.3.3
+    debug: ^4.3.4
     eslint: ^8.10.0
     eslint-config-prettier: ^8.4.0
     eslint-config-standard-with-typescript: ^21.0.1
@@ -4202,7 +4202,7 @@ __metadata:
     eslint-plugin-node: ^11.1.0
     eslint-plugin-promise: ^5.2.0
     eslint-plugin-react: ^7.29.2
-    fp-ts: ^2.11.8
+    fp-ts: ^2.11.9
     io-ts: ^2.2.16
     jest-environment-jsdom-global: ^3.0.0
     jquery: ^3.6.0
@@ -4223,7 +4223,7 @@ __metadata:
     "@types/jest": ^27.4.1
     "@types/mongodb": ^4.0.7
     "@types/node": ^16.11.26
-    "@types/yargs": ^17.0.9
+    "@types/yargs": ^17.0.10
     "@typescript-eslint/eslint-plugin": ^5.12.1
     "@typescript-eslint/parser": ^5.12.1
     eslint: ^8.10.0
@@ -4232,7 +4232,7 @@ __metadata:
     eslint-plugin-node: ^11.1.0
     eslint-plugin-promise: ^5.2.0
     eslint-plugin-react: ^7.29.2
-    fp-ts: ^2.11.8
+    fp-ts: ^2.11.9
     io-ts: ^2.2.16
     jest: ^27.5.1
     linkedom: ^0.14.4
@@ -4240,7 +4240,7 @@ __metadata:
     ts-jest: ^27.1.4
     ts-node: ^10.7.0
     typescript: ^4.5.5
-    yargs: ^17.3.1
+    yargs: ^17.4.1
   languageName: unknown
   linkType: soft
 
@@ -4297,7 +4297,7 @@ __metadata:
     axios: ^0.24.0
     canvas: ^2.9.1
     copy-webpack-plugin: ^9.1.0
-    debug: ^4.3.3
+    debug: ^4.3.4
     dotenv-webpack: ^7.1.0
     eslint: ^8.10.0
     eslint-config-prettier: ^8.4.0
@@ -4309,7 +4309,7 @@ __metadata:
     fast-check: ^2.24.0
     fast-check-io-ts: ^0.5.0
     filemanager-webpack-plugin: ^6.1.7
-    fp-ts: ^2.11.8
+    fp-ts: ^2.11.9
     geoip-lite: ^1.4.4
     io-ts: ^2.2.16
     io-ts-types: ^0.5.16
@@ -4321,8 +4321,8 @@ __metadata:
     react: ^17.0.2
     react-dom: ^17.0.2
     react-i18next: ^11.15.3
-    react-refresh: ^0.11.0
-    react-refresh-typescript: ^2.0.3
+    react-refresh: ^0.12.0
+    react-refresh-typescript: ^2.0.4
     sass-loader: ^12.6.0
     style-loader: ^3.3.1
     ts-endpoint: ^2.0.0
@@ -4356,7 +4356,7 @@ __metadata:
     avenger: ^7.0.1
     axios: ^0.24.0
     date-fns: ^2.28.0
-    debug: ^4.3.3
+    debug: ^4.3.4
     eslint: ^8.10.0
     eslint-config-prettier: ^8.4.0
     eslint-config-standard-with-typescript: ^21.0.1
@@ -4364,7 +4364,7 @@ __metadata:
     eslint-plugin-node: ^11.1.0
     eslint-plugin-promise: ^5.2.0
     eslint-plugin-react: ^7.29.2
-    fp-ts: ^2.11.8
+    fp-ts: ^2.11.9
     io-ts: ^2.2.16
     io-ts-types: ^0.5.16
     prettier: ^2.5.1
@@ -4421,7 +4421,7 @@ __metadata:
     conventional-changelog-conventionalcommits: ^4.6.3
     css-loader: ^5.1.1
     date-fns: ^2.28.0
-    debug: ^4.3.3
+    debug: ^4.3.4
     dotenv: ^14.3.2
     eslint: ^8.10.0
     eslint-config-prettier: ^8.4.0
@@ -4430,7 +4430,7 @@ __metadata:
     eslint-plugin-node: ^11.1.0
     eslint-plugin-promise: ^5.2.0
     eslint-plugin-react: ^7.29.2
-    fp-ts: ^2.11.8
+    fp-ts: ^2.11.9
     husky: ^7.0.4
     i18next: ^21.6.10
     io-ts: ^2.2.16
@@ -5846,12 +5846,21 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/yargs@npm:^17.0.1, @types/yargs@npm:^17.0.9":
+"@types/yargs@npm:^17.0.1":
   version: 17.0.9
   resolution: "@types/yargs@npm:17.0.9"
   dependencies:
     "@types/yargs-parser": "*"
   checksum: 333621b33785622974bd10269201d999d48729d5ffa619930fcf1f85e2d0b4785cff3f7b08c8e0ee2e8f75b2ead846bb0acc90ec4d5a652f1a95388e51f84037
+  languageName: node
+  linkType: hard
+
+"@types/yargs@npm:^17.0.10":
+  version: 17.0.10
+  resolution: "@types/yargs@npm:17.0.10"
+  dependencies:
+    "@types/yargs-parser": "*"
+  checksum: f0673cbfc08e17239dc58952a88350d6c4db04a027a28a06fbad27d87b670e909f9cd9e66f9c64cebdd5071d1096261e33454a55868395f125297e5c50992ca8
   languageName: node
   linkType: hard
 
@@ -6380,7 +6389,7 @@ __metadata:
     cookie: ^0.3.1
     cors: ^2.8.5
     date-fns: ^2.28.0
-    debug: ^4.3.3
+    debug: ^4.3.4
     eslint: ^8.10.0
     eslint-config-prettier: ^8.4.0
     eslint-config-standard-with-typescript: ^21.0.1
@@ -6390,7 +6399,7 @@ __metadata:
     express: ^4.17.2
     fetch-opengraph: ^1.0.35
     food-words: ^1.1.0
-    fp-ts: ^2.11.8
+    fp-ts: ^2.11.9
     io-ts: ^2.2.16
     io-ts-types: ^0.5.16
     jest: ^27.5.1
@@ -6435,7 +6444,7 @@ __metadata:
     eslint-plugin-import: ^2.25.4
     eslint-plugin-promise: ^5.2.0
     eslint-plugin-react: ^7.29.2
-    fp-ts: ^2.11.8
+    fp-ts: ^2.11.9
     glob: ^7.2.0
     html2canvas: ^1.4.1
     io-ts: ^2.2.16
@@ -11168,7 +11177,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"debug@npm:4, debug@npm:4.3.4, debug@npm:^4.0.0, debug@npm:^4.0.1, debug@npm:^4.1.0, debug@npm:^4.1.1, debug@npm:^4.3.1, debug@npm:^4.3.2, debug@npm:^4.3.3, debug@npm:~4.3.1":
+"debug@npm:4, debug@npm:4.3.4, debug@npm:^4.0.0, debug@npm:^4.0.1, debug@npm:^4.1.0, debug@npm:^4.1.1, debug@npm:^4.3.1, debug@npm:^4.3.2, debug@npm:^4.3.3, debug@npm:^4.3.4, debug@npm:~4.3.1":
   version: 4.3.4
   resolution: "debug@npm:4.3.4"
   dependencies:
@@ -14173,10 +14182,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"fp-ts@npm:^2.0.0, fp-ts@npm:^2.11.8, fp-ts@npm:^2.6.6":
+"fp-ts@npm:^2.0.0, fp-ts@npm:^2.6.6":
   version: 2.11.8
   resolution: "fp-ts@npm:2.11.8"
   checksum: 481b824797ba59f3f5549810e8f6688b27554790d11a470ccdf4fc086a1cb4993ffb9060131b054abccca703f2776993e12f649865143e178e9b7c9e5b295ea7
+  languageName: node
+  linkType: hard
+
+"fp-ts@npm:^2.11.9":
+  version: 2.11.9
+  resolution: "fp-ts@npm:2.11.9"
+  checksum: bcab4b9d97f9b77fa7283d5834fd847e58955067d5560eb0a9316900d6c92e959d8109038caf78ffb8ba93015ba8044a7a922c5acae8ca2fda4067f7e4e24bab
   languageName: node
   linkType: hard
 
@@ -15133,7 +15149,7 @@ __metadata:
     "@types/webpack-node-externals": ^2.5.3
     "@types/ws": ^8.5.3
     "@types/yaml": ^1.9.7
-    "@types/yargs": ^17.0.9
+    "@types/yargs": ^17.0.10
     "@typescript-eslint/eslint-plugin": ^5.12.1
     "@typescript-eslint/parser": ^5.12.1
     axios: ^0.24.0
@@ -15142,7 +15158,7 @@ __metadata:
     chalk: ^5.0.0
     csv-parse: ^4.16.3
     csv-stringify: ^6.0.5
-    debug: ^4.3.3
+    debug: ^4.3.4
     electron: 16.2.2
     electron-builder: ^22.14.13
     electron-debug: ^3.2.0
@@ -15158,7 +15174,7 @@ __metadata:
     eslint-plugin-node: ^11.1.0
     eslint-plugin-promise: ^5.2.0
     extract-zip: ^2.0.1
-    fp-ts: ^2.11.8
+    fp-ts: ^2.11.9
     io-ts: ^2.2.16
     io-ts-types: ^0.5.16
     jest: ^27.5.1
@@ -15198,7 +15214,7 @@ __metadata:
     webpack-node-externals: ^3.0.0
     ws: ^8.5.0
     yaml: ^1.10.2
-    yargs: ^17.3.1
+    yargs: ^17.4.1
   bin:
     cli: ./bin/guardoni-cli.js
     tk-cli: ./bin/guardoni-tk-cli.js
@@ -24187,20 +24203,20 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-refresh-typescript@npm:^2.0.3":
-  version: 2.0.3
-  resolution: "react-refresh-typescript@npm:2.0.3"
+"react-refresh-typescript@npm:^2.0.4":
+  version: 2.0.4
+  resolution: "react-refresh-typescript@npm:2.0.4"
   peerDependencies:
-    react-refresh: 0.10.x || 0.11.x
+    react-refresh: 0.10.x || 0.11.x || 0.12.x
     typescript: ^4
-  checksum: 344fa0a3126a2703057465793af8fa286a9393a04f5e60c54c9de4f9c607991dd920f16a3b04ee0b474322a5c79e5994696b23e5667a12beab30abe38faa004b
+  checksum: f415d306fe22ed55b674367456e1824f760c1a2a8389a8a3dbadd6209e2da27736a04c72c836fe3843a6bacfd5b4f110cb6a85341da02a52aabb4d86938530ba
   languageName: node
   linkType: hard
 
-"react-refresh@npm:^0.11.0":
-  version: 0.11.0
-  resolution: "react-refresh@npm:0.11.0"
-  checksum: 112178a05b1e0ffeaf5d9fb4e56b4410a34a73adeb04dbf13abdc50d9ac9df2ada83e81485156cca0b3fa296aa3612751b3d6cd13be4464642a43679b819cbc7
+"react-refresh@npm:^0.12.0":
+  version: 0.12.0
+  resolution: "react-refresh@npm:0.12.0"
+  checksum: 046522ed9e26c2846afb734303d9461a825a96f863ea373b9296a90e7112e1602bdf5954d8b48193e763f3ff0108f2e4c00e42f0e3d45382bb9d38dc87348867
   languageName: node
   linkType: hard
 
@@ -27781,7 +27797,7 @@ __metadata:
   resolution: "tktrex-guardoni@workspace:platforms/tktrex/methodology"
   dependencies:
     csv-parse: ^4.16.3
-    debug: ^4.3.3
+    debug: ^4.3.4
     eslint: ^8.10.0
     lodash: ^4.17.21
     moment: ^2.29.2
@@ -30367,7 +30383,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"yargs@npm:^17.0.0, yargs@npm:^17.0.1, yargs@npm:^17.2.1, yargs@npm:^17.3.1":
+"yargs@npm:^17.0.0, yargs@npm:^17.0.1, yargs@npm:^17.2.1":
   version: 17.3.1
   resolution: "yargs@npm:17.3.1"
   dependencies:
@@ -30379,6 +30395,21 @@ __metadata:
     y18n: ^5.0.5
     yargs-parser: ^21.0.0
   checksum: 64fc2e32c56739f1d14d2d24acd17a6944c3c8e3e3558f09fc1953ac112e868cc16013d282886b9d5be22187f8b9ed4f60741a6b1011f595ce2718805a656852
+  languageName: node
+  linkType: hard
+
+"yargs@npm:^17.4.1":
+  version: 17.4.1
+  resolution: "yargs@npm:17.4.1"
+  dependencies:
+    cliui: ^7.0.2
+    escalade: ^3.1.1
+    get-caller-file: ^2.0.5
+    require-directory: ^2.1.1
+    string-width: ^4.2.3
+    y18n: ^5.0.5
+    yargs-parser: ^21.0.0
+  checksum: e9012322870d7e4e912a6ae1f63b203e365f911c0cf158be92c36edefddfb3bd38ce17eb9ef0d18858a4777f047c50589ea22dacb44bd949169ba37dc6d34bee
   languageName: node
   linkType: hard
 

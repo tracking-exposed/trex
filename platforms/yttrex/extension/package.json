@@ -58,7 +58,7 @@
     "@material-ui/lab": "^4.0.0-alpha.61",
     "bs58": "^3.1.0",
     "classnames": "^2.3.1",
-    "fp-ts": "^2.11.8",
+    "fp-ts": "^2.11.9",
     "html2canvas": "^1.4.1",
     "io-ts": "^2.2.16",
     "io-ts-types": "^0.5.16",
