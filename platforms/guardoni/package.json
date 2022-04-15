@@ -82,7 +82,7 @@
     "yargs": "^17.4.1"
   },
   "devDependencies": {
-    "@pmmmwh/react-refresh-webpack-plugin": "^0.5.4",
+    "@pmmmwh/react-refresh-webpack-plugin": "^0.5.5",
     "@types/lodash": "^4.14.179",
     "@types/nconf": "^0.10.2",
     "@types/pouchdb-find": "^6.3.7",
