@@ -1,7 +1,7 @@
 import { Box, Button, Grid, Typography, useTheme } from '@material-ui/core';
-import { BrowserView, ipcRenderer } from 'electron';
+import { BrowserView, ipcRenderer, shell } from 'electron';
 import * as React from 'react';
-import { RouteComponentProps } from 'react-router';
+import { RouteComponentProps, useHistory } from 'react-router';
 import { GuardoniConfigRequired } from '../../../guardoni/types';
 import { EVENTS } from '../../models/events';
 import ElectronBrowserView from './browser-view/ElectronBrowserView';
@@ -9,7 +9,9 @@ import OutputPanel from './OutputPanel';
 
 interface ExperimentExecutionProps {
   experimentId: string;
+  onClose: () => void;
   onRun: (experimentId: string) => void;
+  onOpenExperimentResults: (experimentId: string) => void;
   onOpenResults: (publicKey: string) => void;
 }
 
@@ -32,7 +34,9 @@ type ExperimentExecutionStatePhase =
 
 const ExperimentExecution: React.FC<ExperimentExecutionProps> = ({
   experimentId,
+  onClose,
   onRun,
+  onOpenExperimentResults,
   onOpenResults,
 }) => {
   const theme = useTheme();
@@ -106,9 +110,7 @@ const ExperimentExecution: React.FC<ExperimentExecutionProps> = ({
               variant="contained"
               color="secondary"
               onClick={() => {
-                setPhase({
-                  step: 'Ready',
-                });
+                onClose();
               }}
             >
               Close
@@ -145,13 +147,24 @@ const ExperimentExecution: React.FC<ExperimentExecutionProps> = ({
                   <Typography>
                     Public Key: {phase.payload.values.publicKey}
                   </Typography>
-                  <Button
-                    onClick={() => {
-                      onOpenResults(phase.payload.values.publicKey);
-                    }}
-                  >
-                    Open result page
-                  </Button>
+                  <Box>
+                    <Button
+                      onClick={() => {
+                        onOpenExperimentResults(
+                          phase.payload.values.experimentId
+                        );
+                      }}
+                    >
+                      Open experiment results page
+                    </Button>
+                    <Button
+                      onClick={() => {
+                        onOpenResults(phase.payload.values.publicKey);
+                      }}
+                    >
+                      Open your result page
+                    </Button>
+                  </Box>
                 </Box>
               </Box>
             )}
@@ -170,6 +183,12 @@ const ExperimentExecutionRoute: React.FC<
     config: GuardoniConfigRequired;
   }
 > = ({ config, match }) => {
+  const history = useHistory();
+
+  const onClose = React.useCallback(() => {
+    history.goBack();
+  }, []);
+
   const onRun = React.useCallback(
     (experimentId: string): void => {
       ipcRenderer.send(EVENTS.RUN_GUARDONI_EVENT.value, config, experimentId);
@@ -177,17 +196,24 @@ const ExperimentExecutionRoute: React.FC<
     [match.params.experimentId]
   );
 
+  const onOpenExperimentResults = React.useCallback((experimentId: string) => {
+    void shell.openExternal(
+      `${config.platform.backend}/v2/experiment/${experimentId}/json`
+    );
+  }, []);
+
   const onOpenResults = React.useCallback((publicKey: string): void => {
-    window.open(
-      `${config.platform.backend}/api/v1/personal/${publicKey}`,
-      '_blank'
+    void shell.openExternal(
+      `${config.platform.backend}/v1/personal/${publicKey}`
     );
   }, []);
 
   return (
     <ExperimentExecution
       experimentId={match.params.experimentId}
+      onClose={onClose}
       onRun={onRun}
+      onOpenExperimentResults={onOpenExperimentResults}
       onOpenResults={onOpenResults}
     />
   );
