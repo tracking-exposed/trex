@@ -19,9 +19,8 @@ import {
   DEFAULT_TK_EXTENSION_DIR,
   DEFAULT_YT_EXTENSION_DIR,
 } from '../guardoni/constants';
-import { GuardoniConfig } from '../guardoni/types';
-import { getPackageVersion } from '../utils';
-import { Platform } from './app/Header';
+import { getConfig } from '../guardoni/guardoni';
+import { getPackageVersion } from '../guardoni/utils';
 import { GetEvents } from './events/renderer.events';
 import store from './store/index';
 import { createGuardoniWindow } from './windows/GuardoniWindow';
@@ -118,22 +117,21 @@ export const run = async (): Promise<void> => {
           })
         ),
         TE.chain(({ guardoniApp, mainWindow }) => {
-          // bind events for main window
-          // removeViews();
-
           const rendererEvents = GetEvents({
             env,
             mainWindow,
             browser: guardoniApp.browser,
           });
 
-          const getConfig = (
-            p: Platform
-          ): TE.TaskEither<Error, GuardoniConfig> =>
-            TE.right({
+          const platform = store.get('platform', 'youtube');
+          const basePath = store.get('basePath', DEFAULT_BASE_PATH);
+
+          log.debug('Last platform %s', platform);
+
+          return pipe(
+            getConfig(basePath, platform, {
               headless: false,
               verbose: false,
-              basePath: DEFAULT_BASE_PATH,
               yt: {
                 name: 'youtube',
                 backend: env.YT_BACKEND,
@@ -144,14 +142,7 @@ export const run = async (): Promise<void> => {
                 backend: env.TK_BACKEND,
                 extensionDir: DEFAULT_TK_EXTENSION_DIR,
               },
-            });
-
-          const platform = store.get('platform');
-
-          log.debug('Last platform %s', platform);
-
-          return pipe(
-            getConfig(platform),
+            }),
             TE.chain((config) => {
               return rendererEvents.register(config, platform);
             })

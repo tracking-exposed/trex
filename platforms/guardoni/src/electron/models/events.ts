@@ -2,6 +2,7 @@ import * as t from 'io-ts';
 
 const PICK_CSV_FILE_EVENT = t.literal('pickCSVFile');
 const GET_GUARDONI_CONFIG_EVENT = t.literal('getGuardoniConfig');
+const SET_GUARDONI_CONFIG_EVENT = t.literal('setGuardoniConfig');
 const GET_GUARDONI_ENV_EVENT = t.literal('getGuardoniEnvEvent');
 const OPEN_GUARDONI_DIR = t.literal('openGuardoniDir');
 const CREATE_EXPERIMENT_EVENT = t.literal('createExperimentEvent');
@@ -16,6 +17,7 @@ const CHANGE_PLATFORM_EVENT = t.literal('changePlatform');
 export const EVENTS = {
   PICK_CSV_FILE_EVENT,
   GET_GUARDONI_CONFIG_EVENT,
+  SET_GUARDONI_CONFIG_EVENT,
   GET_GUARDONI_ENV_EVENT,
   OPEN_GUARDONI_DIR,
   CREATE_EXPERIMENT_EVENT,
@@ -32,6 +34,7 @@ export const EVENT = t.union(
   [
     PICK_CSV_FILE_EVENT,
     GET_GUARDONI_CONFIG_EVENT,
+    SET_GUARDONI_CONFIG_EVENT,
     OPEN_GUARDONI_DIR,
     CREATE_EXPERIMENT_EVENT,
     GET_PUBLIC_DIRECTIVES,

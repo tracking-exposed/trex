@@ -40,7 +40,7 @@ import path from 'path';
 // import pluginStealth from "puppeteer-extra-plugin-stealth";
 import type puppeteer from 'puppeteer-core';
 import { Platform } from '../electron/app/Header';
-import { getPackageVersion } from '../utils';
+// import { getPackageVersion } from '../utils';
 import {
   DEFAULT_BASE_PATH,
   DEFAULT_LOAD_FOR,
@@ -57,7 +57,12 @@ import {
   GuardoniSuccessOutput,
   ProgressDetails,
 } from './types';
-import { csvParseTE, getChromePath, liftFromIOE } from './utils';
+import {
+  csvParseTE,
+  getChromePath,
+  getPackageVersion,
+  liftFromIOE,
+} from './utils';
 
 // const COMMANDJSONEXAMPLE =
 //   'https://youtube.tracking.exposed/json/automation-example.json';
@@ -736,6 +741,52 @@ const checkProfile =
 
     return TE.right(profileName);
   };
+
+export const getConfigPath = (basePath: string): string =>
+  path.resolve(basePath, 'guardoni.config.json');
+
+export const getConfig = (
+  basePath: string,
+  p: Platform,
+  defaultConf: GuardoniConfig
+): TE.TaskEither<AppError, GuardoniConfig> => {
+  const configFilePath = getConfigPath(basePath);
+
+  if (fs.existsSync(configFilePath)) {
+    return pipe(
+      IOE.tryCatch(() => {
+        return fs.readFileSync(configFilePath, 'utf-8');
+      }, toAppError),
+      TE.fromIOEither,
+      TE.map((content) => JSON.parse(content))
+    );
+  }
+
+  return pipe(
+    getChromePath(),
+    TE.fromEither,
+    TE.mapLeft(toAppError),
+    TE.map((chromePath) => ({ ...defaultConf, chromePath }))
+  );
+};
+
+export const setConfig = (
+  basePath: string,
+  c: GuardoniConfig
+): TE.TaskEither<AppError, GuardoniConfig> => {
+  const configFilePath = getConfigPath(basePath);
+  return pipe(
+    IOE.tryCatch(() => {
+      return fs.writeFileSync(
+        configFilePath,
+        JSON.stringify(configFilePath),
+        'utf-8'
+      );
+    }, toAppError),
+    IOE.map(() => c),
+    TE.fromIOEither
+  );
+};
 
 export const getConfigWithDefaults =
   (ctx: { logger: GuardoniContext['logger'] }) =>

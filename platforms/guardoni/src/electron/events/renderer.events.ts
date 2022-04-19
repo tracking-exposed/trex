@@ -9,7 +9,11 @@ import * as TE from 'fp-ts/lib/TaskEither';
 import { NonEmptyString } from 'io-ts-types';
 import * as puppeteer from 'puppeteer-core';
 import * as pie from 'puppeteer-in-electron';
-import { GetGuardoni, readCSVAndParse } from '../../guardoni/guardoni';
+import {
+  GetGuardoni,
+  readCSVAndParse,
+  setConfig,
+} from '../../guardoni/guardoni';
 import { GuardoniConfig, GuardoniConfigRequired } from '../../guardoni/types';
 import { guardoniLogger } from '../../logger';
 import { Platform } from '../app/Header';
@@ -146,6 +150,15 @@ export const GetEvents = ({
             liftEventTask(EVENTS.GET_GUARDONI_CONFIG_EVENT.value)
           );
         });
+        // set guardoni config
+        ipcMain.on(EVENTS.SET_GUARDONI_CONFIG_EVENT.value, (event, ...args) => {
+          logger.debug(`Update guardoni config %O`, args);
+
+          void pipe(
+            setConfig(guardoni.config.basePath, guardoni.config),
+            liftEventTask(EVENTS.GET_GUARDONI_CONFIG_EVENT.value)
+          );
+        });
 
         // create guardoni experiment
         ipcMain.on(EVENTS.CREATE_EXPERIMENT_EVENT.value, (event, ...args) => {
@@ -187,6 +200,8 @@ export const GetEvents = ({
               config
             );
 
+            const view = mainWindow.getBrowserView() as BrowserView;
+
             void pipe(
               GetGuardoni({
                 config: {
@@ -200,8 +215,6 @@ export const GetEvents = ({
               TE.chain((g) =>
                 pipe(
                   TE.tryCatch(async () => {
-                    const view = mainWindow.getBrowserView() as BrowserView;
-
                     const extension =
                       await view.webContents.session.loadExtension(
                         g.config.platform.extensionDir
@@ -219,6 +232,10 @@ export const GetEvents = ({
                         logger.info(progress.message, ...progress.details);
                       }
                     );
+                  }),
+                  TE.map((output) => {
+                    mainWindow.removeBrowserView(view);
+                    return output;
                   })
                 )
               ),

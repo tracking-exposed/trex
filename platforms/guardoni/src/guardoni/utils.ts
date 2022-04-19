@@ -113,8 +113,10 @@ export const csvStringifyTE = (
   );
 
 export const liftFromIOE = <T>(lazyF: () => T): TE.TaskEither<AppError, T> => {
-  return pipe(
-    IOE.tryCatch(lazyF, toAppError),
-    TE.fromIOEither
-  );
+  return pipe(IOE.tryCatch(lazyF, toAppError), TE.fromIOEither);
+};
+
+export const getPackageVersion = (): string => {
+  // eslint-disable-next-line @typescript-eslint/no-var-requires
+  return require('../../package.json').version;
 };

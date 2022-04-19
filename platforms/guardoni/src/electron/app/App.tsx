@@ -43,6 +43,11 @@ export const App: React.FC = () => {
 
   const [outputItems, setOutputItems] = React.useState<OutputItem[]>([]);
 
+  const handleConfigChange = React.useCallback((c: GuardoniConfigRequired) => {
+    setConfig(c);
+    ipcRenderer.send(EVENTS.SET_GUARDONI_CONFIG_EVENT.value, c);
+  }, []);
+
   const handlePlatformChange = React.useCallback((p: Platform) => {
     setConfig(undefined);
     history.replace({ pathname: '/experiments/list' });
@@ -95,7 +100,7 @@ export const App: React.FC = () => {
   return (
     <Layout
       config={config}
-      onConfigChange={setConfig}
+      onConfigChange={handleConfigChange}
       onPlatformChange={handlePlatformChange}
     >
       <Switch>
