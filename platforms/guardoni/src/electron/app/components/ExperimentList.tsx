@@ -8,8 +8,9 @@ import {
   ListItem,
   makeStyles,
   Typography,
-  useTheme
+  useTheme,
 } from '@material-ui/core';
+import * as t from 'io-ts';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import LinkIcon from '@material-ui/icons/LinkOutlined';
 import { GuardoniExperiment } from '@shared/models/Experiment';
@@ -39,6 +40,11 @@ const useStyle = makeStyles((theme) => ({
   },
   directiveLinkList: {
     marginBottom: 30,
+  },
+  directiveLinkListItem: {
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'flex-start',
   },
   detailsActions: {
     display: 'flex',
@@ -110,7 +116,10 @@ export const ExperimentList: React.FC<ExperimentListProps> = ({
             <AccordionDetails className={classes.details}>
               <List className={classes.directiveLinkList}>
                 {d.links.map((l) => (
-                  <ListItem key={l.url}>
+                  <ListItem
+                    className={classes.directiveLinkListItem}
+                    key={l.url}
+                  >
                     <Typography variant="subtitle1" color="primary">
                       {l.urltag} ({l.watchFor ?? 'end'}):
                     </Typography>{' '}
@@ -118,6 +127,7 @@ export const ExperimentList: React.FC<ExperimentListProps> = ({
                   </ListItem>
                 ))}
               </List>
+              <Box>Experiment estimated run time: {d.time / 1000}s</Box>
               <Box className={classes.detailsActions}>
                 <Button
                   color="primary"
@@ -149,7 +159,6 @@ const ExperimentListRoute: React.FC<
 
   React.useEffect(() => {
     ipcRenderer.once(EVENTS.GET_PUBLIC_DIRECTIVES.value, (event, ...args) => {
-      console.log(EVENTS.GET_PUBLIC_DIRECTIVES.value, args);
       const [directives] = args;
       setDirectives(directives);
     });
@@ -166,14 +175,19 @@ const ExperimentListRoute: React.FC<
       experiments.reduce<GuardoniExperimentWithTags[]>((acc, e) => {
         const { tags, time } = e.links.reduce(
           (accL, l) => {
+            const time = t.number.is(l.watchFor)
+              ? l.watchFor
+              : l.watchFor === 'end'
+              ? 60000
+              : 0;
             return {
               tags: accL.tags.concat(l.urltag),
-              time: l.watchFor ? accL.time.concat(l.watchFor + '') : accL.time,
+              time: accL.time + time,
             };
           },
           {
             tags: [] as string[],
-            time: '',
+            time: 0,
           }
         );
 
