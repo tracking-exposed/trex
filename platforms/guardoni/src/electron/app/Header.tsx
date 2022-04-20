@@ -14,7 +14,7 @@ import AddIcon from '@material-ui/icons/AddCircleOutline';
 import SettingsIcon from '@material-ui/icons/Settings';
 import PolicyIcon from '@material-ui/icons/Policy';
 import * as React from 'react';
-import { GuardoniConfigRequired } from '../../guardoni/types';
+import { GuardoniPlatformConfig, Platform } from '../../guardoni/types';
 import TKLogo from './icons/TKLogo';
 import YTLogo from './icons/YTLogo';
 import AdvancedSettingModal from './modals/AdvancedSettingModal';
@@ -40,11 +40,9 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export type Platform = 'youtube' | 'tiktok';
-
 export interface HeaderProps {
-  config: GuardoniConfigRequired;
-  onConfigChange: (c: GuardoniConfigRequired) => void;
+  config: GuardoniPlatformConfig;
+  onConfigChange: (c: GuardoniPlatformConfig) => void;
   onPlatformChange: (p: Platform) => void;
 }
 

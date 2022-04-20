@@ -16,10 +16,10 @@ import pie from 'puppeteer-in-electron';
 import { AppEnv } from '../AppEnv';
 import {
   DEFAULT_BASE_PATH,
+  DEFAULT_LOAD_FOR,
   DEFAULT_TK_EXTENSION_DIR,
   DEFAULT_YT_EXTENSION_DIR,
 } from '../guardoni/constants';
-import { getConfig } from '../guardoni/guardoni';
 import { getPackageVersion } from '../guardoni/utils';
 import { GetEvents } from './events/renderer.events';
 import store from './store/index';
@@ -125,27 +125,34 @@ export const run = async (): Promise<void> => {
 
           const platform = store.get('platform', 'youtube');
           const basePath = store.get('basePath', DEFAULT_BASE_PATH);
+          const profileName = store.get('profile', 'default');
 
           log.debug('Last platform %s', platform);
 
-          return pipe(
-            getConfig(basePath, platform, {
+          return rendererEvents.register(
+            basePath,
+            {
+              profileName,
+              evidenceTag: undefined,
               headless: false,
               verbose: false,
+              loadFor: DEFAULT_LOAD_FOR,
+              advScreenshotDir: undefined,
+              excludeURLTag: undefined,
               yt: {
                 name: 'youtube',
                 backend: env.YT_BACKEND,
                 extensionDir: DEFAULT_YT_EXTENSION_DIR,
+                proxy: undefined,
               },
               tk: {
                 name: 'tiktok',
                 backend: env.TK_BACKEND,
                 extensionDir: DEFAULT_TK_EXTENSION_DIR,
+                proxy: undefined,
               },
-            }),
-            TE.chain((config) => {
-              return rendererEvents.register(config, platform);
-            })
+            },
+            platform
           );
         })
       );

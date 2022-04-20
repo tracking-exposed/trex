@@ -9,14 +9,14 @@ import * as TE from 'fp-ts/lib/TaskEither';
 import { NonEmptyString } from 'io-ts-types';
 import * as puppeteer from 'puppeteer-core';
 import * as pie from 'puppeteer-in-electron';
+import { getConfigPlatformKey, setConfig } from '../../guardoni/config';
+import { GetGuardoni, readCSVAndParse } from '../../guardoni/guardoni';
 import {
-  GetGuardoni,
-  readCSVAndParse,
-  setConfig,
-} from '../../guardoni/guardoni';
-import { GuardoniConfig, GuardoniConfigRequired } from '../../guardoni/types';
+  GuardoniConfig,
+  GuardoniPlatformConfig,
+  Platform,
+} from '../../guardoni/types';
 import { guardoniLogger } from '../../logger';
-import { Platform } from '../app/Header';
 import { EVENTS } from '../models/events';
 import store from '../store/index';
 import { getEventsLogger } from './event.logger';
@@ -29,6 +29,7 @@ export interface Events {
   ) => (te: TE.TaskEither<AppError, T>) => Promise<void>;
   unregister: () => void;
   register: (
+    basePath: string,
     conf: GuardoniConfig,
     platform: Platform
   ) => TE.TaskEither<Error, void>;
@@ -106,6 +107,7 @@ export const GetEvents = ({
 
   // register all events triggered by the UI to ipcMain
   const register = (
+    basePath: string,
     config: GuardoniConfig,
     platform: Platform
   ): TE.TaskEither<Error, void> => {
@@ -115,6 +117,7 @@ export const GetEvents = ({
 
     return pipe(
       GetGuardoni({
+        basePath,
         config,
         logger,
         puppeteer,
@@ -152,10 +155,26 @@ export const GetEvents = ({
         });
         // set guardoni config
         ipcMain.on(EVENTS.SET_GUARDONI_CONFIG_EVENT.value, (event, ...args) => {
-          logger.debug(`Update guardoni config %O`, args);
+          const [{ platform, ...platformConfig }] = args;
+          logger.debug(`Update guardoni platform config %O`, platformConfig);
+
+          const platformKey = getConfigPlatformKey(platform);
+          const c = {
+            ...config,
+            ...platformConfig,
+            [platformKey]: {
+              ...config[platformKey],
+              ...platform,
+            },
+          };
+
+          logger.debug(`Update guardoni config %O`, c);
+
+          store.set('basePath', platformConfig.basePath);
 
           void pipe(
-            setConfig(guardoni.config.basePath, guardoni.config),
+            setConfig(guardoni.config.basePath, c),
+            TE.map(() => ({ ...platformConfig, platform })),
             liftEventTask(EVENTS.GET_GUARDONI_CONFIG_EVENT.value)
           );
         });
@@ -168,6 +187,7 @@ export const GetEvents = ({
 
           void pipe(
             GetGuardoni({
+              basePath,
               config: {
                 ...config,
                 ...configOverride,
@@ -190,7 +210,7 @@ export const GetEvents = ({
           EVENTS.RUN_GUARDONI_EVENT.value,
           (
             event,
-            configOverride: GuardoniConfigRequired,
+            configOverride: GuardoniPlatformConfig,
             experimentId: NonEmptyString
           ) => {
             // eslint-disable-next-line no-console
@@ -204,6 +224,7 @@ export const GetEvents = ({
 
             void pipe(
               GetGuardoni({
+                basePath,
                 config: {
                   ...config,
                   ...configOverride,
@@ -285,6 +306,7 @@ export const GetEvents = ({
           // call register with new params
           void pipe(
             GetGuardoni({
+              basePath,
               config,
               platform,
               logger,

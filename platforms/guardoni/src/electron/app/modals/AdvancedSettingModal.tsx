@@ -15,7 +15,7 @@ import {
 } from '@material-ui/core';
 import { ipcRenderer } from 'electron';
 import { EVENTS } from '../../models/events';
-import { GuardoniConfigRequired } from '../../../guardoni/types';
+import { GuardoniPlatformConfig } from '../../../guardoni/types';
 import * as React from 'react';
 
 const useStyles = makeStyles((theme) => ({
@@ -45,15 +45,16 @@ const useStyles = makeStyles((theme) => ({
 
 const AdvancedSettingModal: React.FC<{
   open: boolean;
-  config: GuardoniConfigRequired;
-  onConfigChange: (c: GuardoniConfigRequired) => void;
-  onSubmit: () => void;
+  config: GuardoniPlatformConfig;
+  onConfigChange: (c: GuardoniPlatformConfig) => void;
   onCancel: () => void;
-}> = ({ open, config, onConfigChange, onCancel }) => {
+}> = ({ open, config: _config, onConfigChange, onCancel }) => {
   const classes = useStyles();
 
+  const [config, setConfig] = React.useState<GuardoniPlatformConfig>(_config);
+
   const handleOpenProfileDir = React.useCallback(
-    (config: GuardoniConfigRequired) => {
+    (config: GuardoniPlatformConfig) => {
       ipcRenderer.send(
         EVENTS.OPEN_GUARDONI_DIR.value,
         `${config.basePath}/profiles/${config.profileName}`
@@ -80,7 +81,7 @@ const AdvancedSettingModal: React.FC<{
                       value={config.profileName}
                       fullWidth
                       onChange={(e) =>
-                        onConfigChange({
+                        setConfig({
                           ...config,
                           profileName: e.target.value,
                         })
@@ -106,7 +107,7 @@ const AdvancedSettingModal: React.FC<{
             </AccordionSummary>
             <AccordionDetails>
               <Box display="flex" flexDirection="column" width="100%">
-                <FormControlLabel
+                {/* <FormControlLabel
                   label="Evidence Tag"
                   className={`${classes.formControl} ${classes.formControlWithMarginBottom}`}
                   labelPlacement="top"
@@ -123,7 +124,7 @@ const AdvancedSettingModal: React.FC<{
                       }
                     />
                   }
-                />
+                /> */}
                 <FormControlLabel
                   label="Base Path"
                   className={classes.formControl}
@@ -135,7 +136,7 @@ const AdvancedSettingModal: React.FC<{
                       value={config.basePath}
                       fullWidth
                       onChange={(e) =>
-                        onConfigChange({
+                        setConfig({
                           ...config,
                           basePath: e.target.value,
                         })
@@ -157,7 +158,7 @@ const AdvancedSettingModal: React.FC<{
                       value={config.platform.backend}
                       fullWidth
                       onChange={(e) =>
-                        onConfigChange({
+                        setConfig({
                           ...config,
                           platform: {
                             ...config.platform,
@@ -183,7 +184,7 @@ const AdvancedSettingModal: React.FC<{
                       value={config.chromePath}
                       fullWidth
                       onChange={(e) =>
-                        onConfigChange({
+                        setConfig({
                           ...config,
                           chromePath: e.target.value,
                         })
@@ -205,7 +206,7 @@ const AdvancedSettingModal: React.FC<{
               <Checkbox
                 checked={config.headless}
                 onChange={(e) =>
-                  onConfigChange({
+                  setConfig({
                     ...config,
                     headless: e.target.checked,
                   })
@@ -222,7 +223,7 @@ const AdvancedSettingModal: React.FC<{
               <Checkbox
                 checked={config.verbose}
                 onChange={(e) =>
-                  onConfigChange({
+                  setConfig({
                     ...config,
                     verbose: e.target.checked,
                   })
@@ -234,6 +235,15 @@ const AdvancedSettingModal: React.FC<{
       </Grid>
       <DialogActions>
         <Button onClick={() => onCancel()}>Cancel</Button>
+        <Button
+          variant="contained"
+          color="primary"
+          onClick={() => {
+            onConfigChange(config);
+          }}
+        >
+          Save
+        </Button>
       </DialogActions>
     </Dialog>
   );

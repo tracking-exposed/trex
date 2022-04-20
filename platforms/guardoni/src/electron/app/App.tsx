@@ -3,13 +3,12 @@ import { ipcRenderer } from 'electron';
 import * as React from 'react';
 import { Redirect, Route, Switch, useHistory } from 'react-router';
 import { v4 as uuid } from 'uuid';
-import { GuardoniConfigRequired } from '../../guardoni/types';
+import { GuardoniPlatformConfig, Platform } from '../../guardoni/types';
 import { EVENTS } from '../models/events';
 import { OutputItem } from './components/OutputPanel';
 import ExperimentExecutionRoute from './components/ExperimentExecution';
 import ExperimentList from './components/ExperimentList';
 import Layout from './Layout';
-import { Platform } from './Header';
 
 export function a11yProps(index: number): any {
   return {
@@ -38,12 +37,12 @@ export const App: React.FC = () => {
   const history = useHistory();
 
   const [config, setConfig] = React.useState<
-    GuardoniConfigRequired | undefined
+    GuardoniPlatformConfig | undefined
   >(undefined);
 
   const [outputItems, setOutputItems] = React.useState<OutputItem[]>([]);
 
-  const handleConfigChange = React.useCallback((c: GuardoniConfigRequired) => {
+  const handleConfigChange = React.useCallback((c: GuardoniPlatformConfig) => {
     setConfig(c);
     ipcRenderer.send(EVENTS.SET_GUARDONI_CONFIG_EVENT.value, c);
   }, []);

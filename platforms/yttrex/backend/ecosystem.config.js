@@ -10,10 +10,7 @@ const yt = {
     cwd: __dirname,
     script: 'yarn watch',
     watch: false,
-    env_test: {
-      ...testEnv,
-      port: 9001,
-    },
+    env_test: testEnv,
   },
 
   leavesParser: {

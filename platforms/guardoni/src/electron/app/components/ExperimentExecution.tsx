@@ -2,7 +2,7 @@ import { Box, Button, Grid, Typography, useTheme } from '@material-ui/core';
 import { BrowserView, ipcRenderer, shell } from 'electron';
 import * as React from 'react';
 import { RouteComponentProps, useHistory } from 'react-router';
-import { GuardoniConfigRequired } from '../../../guardoni/types';
+import { GuardoniPlatformConfig } from '../../../guardoni/types';
 import { EVENTS } from '../../models/events';
 import ElectronBrowserView from './browser-view/ElectronBrowserView';
 import OutputPanel from './OutputPanel';
@@ -180,7 +180,7 @@ const ExperimentExecution: React.FC<ExperimentExecutionProps> = ({
 
 const ExperimentExecutionRoute: React.FC<
   RouteComponentProps<{ experimentId: string }> & {
-    config: GuardoniConfigRequired;
+    config: GuardoniPlatformConfig;
   }
 > = ({ config, match }) => {
   const history = useHistory();
