@@ -2508,6 +2508,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@electron/remote@npm:^2.0.8":
+  version: 2.0.8
+  resolution: "@electron/remote@npm:2.0.8"
+  peerDependencies:
+    electron: ">= 13.0.0"
+  checksum: d0ef11b3f09d789baf4330c2c021cfc1a997fc5ffdb56e8810ed7fe2fd76cda1a168c0589d2a10284a907fd3829bae14002a58b35c4881473cdd0049f07fbd63
+  languageName: node
+  linkType: hard
+
 "@electron/universal@npm:1.0.5":
   version: 1.0.5
   resolution: "@electron/universal@npm:1.0.5"
@@ -2906,15 +2915,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@material-ui/core@npm:^4.12.3":
-  version: 4.12.3
-  resolution: "@material-ui/core@npm:4.12.3"
+"@material-ui/core@npm:^4.12.4":
+  version: 4.12.4
+  resolution: "@material-ui/core@npm:4.12.4"
   dependencies:
     "@babel/runtime": ^7.4.4
-    "@material-ui/styles": ^4.11.4
-    "@material-ui/system": ^4.12.1
+    "@material-ui/styles": ^4.11.5
+    "@material-ui/system": ^4.12.2
     "@material-ui/types": 5.1.0
-    "@material-ui/utils": ^4.11.2
+    "@material-ui/utils": ^4.11.3
     "@types/react-transition-group": ^4.2.0
     clsx: ^1.0.4
     hoist-non-react-statics: ^3.3.2
@@ -2929,7 +2938,7 @@ __metadata:
   peerDependenciesMeta:
     "@types/react":
       optional: true
-  checksum: f0032b8c04883fa4aed66a949cde21f1df35c622fbab30b91cfe8fae9508729a4847db3843cba9b1c491466dd2100fddb9e691ffc6b86052a7986215dbb4f94c
+  checksum: 96b48deccda87ced841b1db45bed2be6d2b6d1b4eae72cd5c9b931201cb72026330688e0fead54e715bcead40b267ea88bde781c9f1563b1a71a5c51bf187289
   languageName: node
   linkType: hard
 
@@ -2949,9 +2958,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@material-ui/icons@npm:^4.11.2":
-  version: 4.11.2
-  resolution: "@material-ui/icons@npm:4.11.2"
+"@material-ui/icons@npm:^4.11.3":
+  version: 4.11.3
+  resolution: "@material-ui/icons@npm:4.11.3"
   dependencies:
     "@babel/runtime": ^7.4.4
   peerDependencies:
@@ -2962,16 +2971,16 @@ __metadata:
   peerDependenciesMeta:
     "@types/react":
       optional: true
-  checksum: 0cd1d54b25a4237bd0cefd383d287911f721d4c4ac4fd7980370566b9927f3a9725e7a715042f7c65c87fa554173fbef5328de1d08e60eb996038f375ddf583a
+  checksum: f849a8c4fecddc112cfa94105a2c72e763ff76b9f8da74135b7bbadfd294ed6685897cbea6a2128099be0ce37843784893d8c64da6bde37d020956ab9067206c
   languageName: node
   linkType: hard
 
-"@material-ui/lab@npm:^4.0.0-alpha.60":
-  version: 4.0.0-alpha.60
-  resolution: "@material-ui/lab@npm:4.0.0-alpha.60"
+"@material-ui/lab@npm:^4.0.0-alpha.61":
+  version: 4.0.0-alpha.61
+  resolution: "@material-ui/lab@npm:4.0.0-alpha.61"
   dependencies:
     "@babel/runtime": ^7.4.4
-    "@material-ui/utils": ^4.11.2
+    "@material-ui/utils": ^4.11.3
     clsx: ^1.0.4
     prop-types: ^15.7.2
     react-is: ^16.8.0 || ^17.0.0
@@ -2983,18 +2992,18 @@ __metadata:
   peerDependenciesMeta:
     "@types/react":
       optional: true
-  checksum: 8da8bcd63621f0ee1bc3a2013a1b54c89259cc17833ab4728bb0b95d08535dfee884779a76d6fec8597f2dd1748b3ce008e114bcd18ce26c6f4abd223cfeaebb
+  checksum: 8774a07d72615301e0099415580f87ea8f3d1d106f79e0b014738e302dd3e21959abf01d6c0a629e2e9afb8cb91abd8e9686c2886cddff06c27e6a8a8e063ea0
   languageName: node
   linkType: hard
 
-"@material-ui/styles@npm:^4.11.4":
-  version: 4.11.4
-  resolution: "@material-ui/styles@npm:4.11.4"
+"@material-ui/styles@npm:^4.11.5":
+  version: 4.11.5
+  resolution: "@material-ui/styles@npm:4.11.5"
   dependencies:
     "@babel/runtime": ^7.4.4
     "@emotion/hash": ^0.8.0
     "@material-ui/types": 5.1.0
-    "@material-ui/utils": ^4.11.2
+    "@material-ui/utils": ^4.11.3
     clsx: ^1.0.4
     csstype: ^2.5.2
     hoist-non-react-statics: ^3.3.2
@@ -3014,16 +3023,16 @@ __metadata:
   peerDependenciesMeta:
     "@types/react":
       optional: true
-  checksum: ef9abc486c74943df28a69d095ee07d752b17e27e70d6adede6cc368f0811529260bc509c664dff995763f02b5324594c98cf71f5d8981ea98dd25c0e2c1dd39
+  checksum: dbf3985ef57c1b7dae3fd916d5bfd61f2097afb93c9e1f64832cfcb8fc9bbf38a504c9632ed7b76eb5d235670083d9e66d35942bc976b7cd148c71d75b808e82
   languageName: node
   linkType: hard
 
-"@material-ui/system@npm:^4.12.1":
-  version: 4.12.1
-  resolution: "@material-ui/system@npm:4.12.1"
+"@material-ui/system@npm:^4.12.2":
+  version: 4.12.2
+  resolution: "@material-ui/system@npm:4.12.2"
   dependencies:
     "@babel/runtime": ^7.4.4
-    "@material-ui/utils": ^4.11.2
+    "@material-ui/utils": ^4.11.3
     csstype: ^2.5.2
     prop-types: ^15.7.2
   peerDependencies:
@@ -3033,7 +3042,7 @@ __metadata:
   peerDependenciesMeta:
     "@types/react":
       optional: true
-  checksum: 2acf20b43090c381530899e2fa85b0a774fc4dfe08aa97a55c8fd58f833175fd1cb17374ecc403f722c2db3b3caffd1fadd5dffe146a08d036bc6031d676659b
+  checksum: ebe6b3cc5f111034eacd763014f3260f7647b5e0cd132870f2ee18855cf3d51a996b4633035fe6f5f8965489944db4ac0cb3b71b84a765faa35a6861532ac9f6
   languageName: node
   linkType: hard
 
@@ -3049,9 +3058,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@material-ui/utils@npm:^4.11.2":
-  version: 4.11.2
-  resolution: "@material-ui/utils@npm:4.11.2"
+"@material-ui/utils@npm:^4.11.3":
+  version: 4.11.3
+  resolution: "@material-ui/utils@npm:4.11.3"
   dependencies:
     "@babel/runtime": ^7.4.4
     prop-types: ^15.7.2
@@ -3059,7 +3068,7 @@ __metadata:
   peerDependencies:
     react: ^16.8.0 || ^17.0.0
     react-dom: ^16.8.0 || ^17.0.0
-  checksum: 30e15b197c52bb607ba2f00293acbda66388427560e30f5dd82714dee69f565cf0896baa98f869b191a881e14e0df08155fd9d598b356ac2262b8e60e43a5499
+  checksum: 05ff67c982b33d3b4260cfaeaf566f3ccaecaebb231907ed626bcc30322d89d705bfe79b8805c0dda2f1dc2cfa98ca9d731ec8ae12868da7a98568a41c7dc231
   languageName: node
   linkType: hard
 
@@ -3624,9 +3633,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@pmmmwh/react-refresh-webpack-plugin@npm:^0.5.4":
-  version: 0.5.4
-  resolution: "@pmmmwh/react-refresh-webpack-plugin@npm:0.5.4"
+"@pmmmwh/react-refresh-webpack-plugin@npm:^0.5.5":
+  version: 0.5.5
+  resolution: "@pmmmwh/react-refresh-webpack-plugin@npm:0.5.5"
   dependencies:
     ansi-html-community: ^0.0.8
     common-path-prefix: ^3.0.0
@@ -3659,7 +3668,7 @@ __metadata:
       optional: true
     webpack-plugin-serve:
       optional: true
-  checksum: 66deb75fe06c0d93f9f6f87c57349013cdc82d4cc536b3aff919fd417df1c6603d14a96448d4088f1a680ec22a75f994b30c374a0042c524dfecd96a942ff674
+  checksum: 9914430fc3c5bb6a907cc94faaf6232ee7fdcc8b631a33d3541ae1273f46cdd719eca87932755abf8433c9297666484ed6707c568a131a7a0f55bb442b0e6243
   languageName: node
   linkType: hard
 
@@ -4134,7 +4143,7 @@ __metadata:
     bs58: ^3.1.0
     cookie: ^0.3.1
     cors: ^2.8.5
-    debug: ^4.3.3
+    debug: ^4.3.4
     express: ^4.17.2
     food-words: ^1.1.0
     jquery: ^3.6.0
@@ -4163,8 +4172,8 @@ __metadata:
     "@tsconfig/docusaurus": ^1.0.4
     clsx: ^1.1.1
     prism-react-renderer: ^1.2.1
-    react: ^17.0.1
-    react-dom: ^17.0.1
+    react: ^17.0.2
+    react-dom: ^17.0.2
     typescript: ^4.5.2
   languageName: unknown
   linkType: soft
@@ -4173,8 +4182,8 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@tktrex/extension@workspace:platforms/tktrex/extension"
   dependencies:
-    "@material-ui/core": ^4.12.3
-    "@material-ui/icons": ^4.11.2
+    "@material-ui/core": ^4.12.4
+    "@material-ui/icons": ^4.11.3
     "@types/create-react-class": ^15.6.3
     "@types/debug": ^4.1.7
     "@types/jquery": ^3.5.14
@@ -4185,7 +4194,7 @@ __metadata:
     "@typescript-eslint/eslint-plugin": ^5.12.1
     "@typescript-eslint/parser": ^5.12.1
     create-react-class: ^15.7.0
-    debug: ^4.3.3
+    debug: ^4.3.4
     eslint: ^8.10.0
     eslint-config-prettier: ^8.4.0
     eslint-config-standard-with-typescript: ^21.0.1
@@ -4193,7 +4202,7 @@ __metadata:
     eslint-plugin-node: ^11.1.0
     eslint-plugin-promise: ^5.2.0
     eslint-plugin-react: ^7.29.2
-    fp-ts: ^2.11.8
+    fp-ts: ^2.11.9
     io-ts: ^2.2.16
     jest-environment-jsdom-global: ^3.0.0
     jquery: ^3.6.0
@@ -4203,7 +4212,7 @@ __metadata:
     react: ^17.0.2
     react-dom: ^17.0.2
     typescript: ^4.5.5
-    webpack: ^5.71.0
+    webpack: ^5.72.0
   languageName: unknown
   linkType: soft
 
@@ -4214,7 +4223,7 @@ __metadata:
     "@types/jest": ^27.4.1
     "@types/mongodb": ^4.0.7
     "@types/node": ^16.11.26
-    "@types/yargs": ^17.0.9
+    "@types/yargs": ^17.0.10
     "@typescript-eslint/eslint-plugin": ^5.12.1
     "@typescript-eslint/parser": ^5.12.1
     eslint: ^8.10.0
@@ -4223,7 +4232,7 @@ __metadata:
     eslint-plugin-node: ^11.1.0
     eslint-plugin-promise: ^5.2.0
     eslint-plugin-react: ^7.29.2
-    fp-ts: ^2.11.8
+    fp-ts: ^2.11.9
     io-ts: ^2.2.16
     jest: ^27.5.1
     linkedom: ^0.14.4
@@ -4231,7 +4240,7 @@ __metadata:
     ts-jest: ^27.1.4
     ts-node: ^10.7.0
     typescript: ^4.5.5
-    yargs: ^17.3.1
+    yargs: ^17.4.1
   languageName: unknown
   linkType: soft
 
@@ -4270,9 +4279,9 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@trex/shared@workspace:packages/shared"
   dependencies:
-    "@material-ui/core": ^4.12.3
-    "@material-ui/lab": ^4.0.0-alpha.60
-    "@pmmmwh/react-refresh-webpack-plugin": ^0.5.4
+    "@material-ui/core": ^4.12.4
+    "@material-ui/lab": ^4.0.0-alpha.61
+    "@pmmmwh/react-refresh-webpack-plugin": ^0.5.5
     "@types/chrome": ^0.0.179
     "@types/copy-webpack-plugin": ^8.0.1
     "@types/debug": ^4.1.7
@@ -4288,7 +4297,7 @@ __metadata:
     axios: ^0.24.0
     canvas: ^2.9.1
     copy-webpack-plugin: ^9.1.0
-    debug: ^4.3.3
+    debug: ^4.3.4
     dotenv-webpack: ^7.1.0
     eslint: ^8.10.0
     eslint-config-prettier: ^8.4.0
@@ -4300,7 +4309,7 @@ __metadata:
     fast-check: ^2.24.0
     fast-check-io-ts: ^0.5.0
     filemanager-webpack-plugin: ^6.1.7
-    fp-ts: ^2.11.8
+    fp-ts: ^2.11.9
     geoip-lite: ^1.4.4
     io-ts: ^2.2.16
     io-ts-types: ^0.5.16
@@ -4312,8 +4321,8 @@ __metadata:
     react: ^17.0.2
     react-dom: ^17.0.2
     react-i18next: ^11.15.3
-    react-refresh: ^0.11.0
-    react-refresh-typescript: ^2.0.3
+    react-refresh: ^0.12.0
+    react-refresh-typescript: ^2.0.4
     sass-loader: ^12.6.0
     style-loader: ^3.3.1
     ts-endpoint: ^2.0.0
@@ -4323,7 +4332,7 @@ __metadata:
     type-fest: ^2.11.1
     typelevel-ts: ^0.4.0
     typescript: ^4.5.5
-    webpack: ^5.71.0
+    webpack: ^5.72.0
     webpack-bundle-analyzer: ^4.5.0
     webpack-cli: ^4.9.2
   languageName: unknown
@@ -4333,10 +4342,10 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@trex/taboule@workspace:packages/taboule"
   dependencies:
-    "@material-ui/core": ^4.12.3
+    "@material-ui/core": ^4.12.4
     "@material-ui/data-grid": ^4.0.0-alpha.37
-    "@material-ui/icons": ^4.11.2
-    "@material-ui/styles": ^4.11.4
+    "@material-ui/icons": ^4.11.3
+    "@material-ui/styles": ^4.11.5
     "@types/node": ^16.11.26
     "@types/prettier": ^2.4.4
     "@types/react": 17.0.39
@@ -4347,7 +4356,7 @@ __metadata:
     avenger: ^7.0.1
     axios: ^0.24.0
     date-fns: ^2.28.0
-    debug: ^4.3.3
+    debug: ^4.3.4
     eslint: ^8.10.0
     eslint-config-prettier: ^8.4.0
     eslint-config-standard-with-typescript: ^21.0.1
@@ -4355,7 +4364,7 @@ __metadata:
     eslint-plugin-node: ^11.1.0
     eslint-plugin-promise: ^5.2.0
     eslint-plugin-react: ^7.29.2
-    fp-ts: ^2.11.8
+    fp-ts: ^2.11.9
     io-ts: ^2.2.16
     io-ts-types: ^0.5.16
     prettier: ^2.5.1
@@ -4366,10 +4375,10 @@ __metadata:
     ts-loader: ^9.2.8
     typelevel-ts: ^0.4.0
     typescript: ^4.5.5
-    webpack: ^5.71.0
+    webpack: ^5.72.0
     webpack-bundle-analyzer: ^4.5.0
     webpack-cli: ^4.9.2
-    webpack-dev-server: ^4.8.0
+    webpack-dev-server: ^4.8.1
   languageName: unknown
   linkType: soft
 
@@ -4377,9 +4386,9 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@trex/ycai@workspace:platforms/ycai/studio"
   dependencies:
-    "@material-ui/core": ^4.12.3
-    "@material-ui/icons": ^4.11.2
-    "@material-ui/lab": ^4.0.0-alpha.60
+    "@material-ui/core": ^4.12.4
+    "@material-ui/icons": ^4.11.3
+    "@material-ui/lab": ^4.0.0-alpha.61
     "@testing-library/jest-dom": ^5.16.2
     "@testing-library/react": ^12.1.3
     "@testing-library/user-event": ^13.5.0
@@ -4412,7 +4421,7 @@ __metadata:
     conventional-changelog-conventionalcommits: ^4.6.3
     css-loader: ^5.1.1
     date-fns: ^2.28.0
-    debug: ^4.3.3
+    debug: ^4.3.4
     dotenv: ^14.3.2
     eslint: ^8.10.0
     eslint-config-prettier: ^8.4.0
@@ -4421,7 +4430,7 @@ __metadata:
     eslint-plugin-node: ^11.1.0
     eslint-plugin-promise: ^5.2.0
     eslint-plugin-react: ^7.29.2
-    fp-ts: ^2.11.8
+    fp-ts: ^2.11.9
     husky: ^7.0.4
     i18next: ^21.6.10
     io-ts: ^2.2.16
@@ -4454,10 +4463,10 @@ __metadata:
     typescript: ^4.5.5
     uuid: ^2.0.3
     web-vitals: ^2.1.4
-    webpack: ^5.71.0
+    webpack: ^5.72.0
     webpack-bundle-analyzer: ^4.5.0
     webpack-cli: ^4.9.2
-    webpack-dev-server: ^4.8.0
+    webpack-dev-server: ^4.8.1
     zenroom: ^2.2.3
   languageName: unknown
   linkType: soft
@@ -5837,12 +5846,21 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/yargs@npm:^17.0.1, @types/yargs@npm:^17.0.9":
+"@types/yargs@npm:^17.0.1":
   version: 17.0.9
   resolution: "@types/yargs@npm:17.0.9"
   dependencies:
     "@types/yargs-parser": "*"
   checksum: 333621b33785622974bd10269201d999d48729d5ffa619930fcf1f85e2d0b4785cff3f7b08c8e0ee2e8f75b2ead846bb0acc90ec4d5a652f1a95388e51f84037
+  languageName: node
+  linkType: hard
+
+"@types/yargs@npm:^17.0.10":
+  version: 17.0.10
+  resolution: "@types/yargs@npm:17.0.10"
+  dependencies:
+    "@types/yargs-parser": "*"
+  checksum: f0673cbfc08e17239dc58952a88350d6c4db04a027a28a06fbad27d87b670e909f9cd9e66f9c64cebdd5071d1096261e33454a55868395f125297e5c50992ca8
   languageName: node
   linkType: hard
 
@@ -6371,7 +6389,7 @@ __metadata:
     cookie: ^0.3.1
     cors: ^2.8.5
     date-fns: ^2.28.0
-    debug: ^4.3.3
+    debug: ^4.3.4
     eslint: ^8.10.0
     eslint-config-prettier: ^8.4.0
     eslint-config-standard-with-typescript: ^21.0.1
@@ -6381,7 +6399,7 @@ __metadata:
     express: ^4.17.2
     fetch-opengraph: ^1.0.35
     food-words: ^1.1.0
-    fp-ts: ^2.11.8
+    fp-ts: ^2.11.9
     io-ts: ^2.2.16
     io-ts-types: ^0.5.16
     jest: ^27.5.1
@@ -6409,9 +6427,9 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@yttrex/extension@workspace:platforms/yttrex/extension"
   dependencies:
-    "@material-ui/core": ^4.12.3
-    "@material-ui/icons": ^4.11.2
-    "@material-ui/lab": ^4.0.0-alpha.60
+    "@material-ui/core": ^4.12.4
+    "@material-ui/icons": ^4.11.3
+    "@material-ui/lab": ^4.0.0-alpha.61
     "@types/mini-css-extract-plugin": ^2.5.1
     "@typescript-eslint/eslint-plugin": ^5.12.1
     autoprefixer: ^6.7.7
@@ -6426,7 +6444,7 @@ __metadata:
     eslint-plugin-import: ^2.25.4
     eslint-plugin-promise: ^5.2.0
     eslint-plugin-react: ^7.29.2
-    fp-ts: ^2.11.8
+    fp-ts: ^2.11.9
     glob: ^7.2.0
     html2canvas: ^1.4.1
     io-ts: ^2.2.16
@@ -6449,9 +6467,9 @@ __metadata:
     typescript: ^4.5.5
     uglifyjs-webpack-plugin: ^2.2.0
     uuid: ^2.0.3
-    webpack: ^5.71.0
+    webpack: ^5.72.0
     webpack-combine-loaders: ^2.0.4
-    webpack-dev-server: ^4.8.0
+    webpack-dev-server: ^4.8.1
     webpack-notifier: ^1.15.0
   languageName: unknown
   linkType: soft
@@ -9103,7 +9121,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"clean-stack@npm:^2.0.0":
+"clean-stack@npm:^2.0.0, clean-stack@npm:^2.1.0":
   version: 2.2.0
   resolution: "clean-stack@npm:2.2.0"
   checksum: 2ac8cd2b2f5ec986a3c743935ec85b07bc174d5421a5efc8017e1f146a1cf5f781ae962618f416352103b32c9cd7e203276e8c28241bbe946160cab16149fb68
@@ -11159,7 +11177,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"debug@npm:4, debug@npm:4.3.4, debug@npm:^4.0.0, debug@npm:^4.0.1, debug@npm:^4.1.0, debug@npm:^4.1.1, debug@npm:^4.3.1, debug@npm:^4.3.2, debug@npm:^4.3.3, debug@npm:~4.3.1":
+"debug@npm:4, debug@npm:4.3.4, debug@npm:^4.0.0, debug@npm:^4.0.1, debug@npm:^4.1.0, debug@npm:^4.1.1, debug@npm:^4.3.1, debug@npm:^4.3.2, debug@npm:^4.3.3, debug@npm:^4.3.4, debug@npm:~4.3.1":
   version: 4.3.4
   resolution: "debug@npm:4.3.4"
   dependencies:
@@ -12162,6 +12180,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"electron-is-dev@npm:^2.0.0":
+  version: 2.0.0
+  resolution: "electron-is-dev@npm:2.0.0"
+  checksum: 7393f46f06153d70a427ea904c60a092e50fbf1015c26c342cebb8324ada8c9e0c0f1f02867af56d9cc76f47be17da8cb311ea6bdc83343e7ebd2323ec4014c8
+  languageName: node
+  linkType: hard
+
 "electron-localshortcut@npm:^3.1.0":
   version: 3.2.1
   resolution: "electron-localshortcut@npm:3.2.1"
@@ -12252,16 +12277,29 @@ __metadata:
   languageName: node
   linkType: hard
 
-"electron@npm:16.1.0":
-  version: 16.1.0
-  resolution: "electron@npm:16.1.0"
+"electron-unhandled@npm:^4.0.1":
+  version: 4.0.1
+  resolution: "electron-unhandled@npm:4.0.1"
+  dependencies:
+    clean-stack: ^2.1.0
+    electron-is-dev: ^2.0.0
+    ensure-error: ^2.0.0
+    lodash.debounce: ^4.0.8
+    serialize-error: ^8.1.0
+  checksum: 64874ef2f2a681a7a4c2f98be7bf0365c02d31ebf0adaef03f5a68a22bff6db3a22be66aef7a21b85c949f8c05647dd31b15d92fb73c0ff22e2e845c5a2a9db9
+  languageName: node
+  linkType: hard
+
+"electron@npm:16.2.2":
+  version: 16.2.2
+  resolution: "electron@npm:16.2.2"
   dependencies:
     "@electron/get": ^1.13.0
     "@types/node": ^14.6.2
     extract-zip: ^1.0.3
   bin:
     electron: cli.js
-  checksum: 7ca71ff4775afc1d1fb9c7f5b5b40d455e5e569fcad77897d59b572148411499d412d34b7122b47a1a1c296c8cfa65e56213e2a99c733bec2b77a5d45b43c298
+  checksum: c2ad84ea268233d76dbcc0ad987627bd4d9004ca5779565e831d4aa5b0580c1df2fc12646aaceee724299622f1cebd33bfb803d4170000ca35a02956e9761c3d
   languageName: node
   linkType: hard
 
@@ -12396,6 +12434,13 @@ __metadata:
   dependencies:
     ansi-colors: ^4.1.1
   checksum: 1c0911e14a6f8d26721c91e01db06092a5f7675159f0261d69c403396a385afd13dd76825e7678f66daffa930cfaa8d45f506fb35f818a2788463d022af1b884
+  languageName: node
+  linkType: hard
+
+"ensure-error@npm:^2.0.0":
+  version: 2.1.0
+  resolution: "ensure-error@npm:2.1.0"
+  checksum: a24852103e9f39cb20ccd5b014d2657425fb786356da3ddc19a4842354430002847f1efeafd14c798e9ee62f644be1986b2b60c9eb1c73f335d1a6dea5bda71a
   languageName: node
   linkType: hard
 
@@ -13365,7 +13410,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"extract-zip@npm:2.0.1":
+"extract-zip@npm:2.0.1, extract-zip@npm:^2.0.1":
   version: 2.0.1
   resolution: "extract-zip@npm:2.0.1"
   dependencies:
@@ -14137,10 +14182,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"fp-ts@npm:^2.0.0, fp-ts@npm:^2.11.8, fp-ts@npm:^2.6.6":
+"fp-ts@npm:^2.0.0, fp-ts@npm:^2.6.6":
   version: 2.11.8
   resolution: "fp-ts@npm:2.11.8"
   checksum: 481b824797ba59f3f5549810e8f6688b27554790d11a470ccdf4fc086a1cb4993ffb9060131b054abccca703f2776993e12f649865143e178e9b7c9e5b295ea7
+  languageName: node
+  linkType: hard
+
+"fp-ts@npm:^2.11.9":
+  version: 2.11.9
+  resolution: "fp-ts@npm:2.11.9"
+  checksum: bcab4b9d97f9b77fa7283d5834fd847e58955067d5560eb0a9316900d6c92e959d8109038caf78ffb8ba93015ba8044a7a922c5acae8ca2fda4067f7e4e24bab
   languageName: node
   linkType: hard
 
@@ -15081,10 +15133,11 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "guardoni@workspace:platforms/guardoni"
   dependencies:
-    "@material-ui/core": ^4.12.3
-    "@material-ui/icons": ^4.11.2
-    "@material-ui/lab": ^4.0.0-alpha.60
-    "@pmmmwh/react-refresh-webpack-plugin": ^0.5.4
+    "@electron/remote": ^2.0.8
+    "@material-ui/core": ^4.12.4
+    "@material-ui/icons": ^4.11.3
+    "@material-ui/lab": ^4.0.0-alpha.61
+    "@pmmmwh/react-refresh-webpack-plugin": ^0.5.5
     "@types/lodash": ^4.14.179
     "@types/nconf": ^0.10.2
     "@types/pouchdb-find": ^6.3.7
@@ -15096,7 +15149,7 @@ __metadata:
     "@types/webpack-node-externals": ^2.5.3
     "@types/ws": ^8.5.3
     "@types/yaml": ^1.9.7
-    "@types/yargs": ^17.0.9
+    "@types/yargs": ^17.0.10
     "@typescript-eslint/eslint-plugin": ^5.12.1
     "@typescript-eslint/parser": ^5.12.1
     axios: ^0.24.0
@@ -15105,21 +15158,23 @@ __metadata:
     chalk: ^5.0.0
     csv-parse: ^4.16.3
     csv-stringify: ^6.0.5
-    debug: ^4.3.3
-    electron: 16.1.0
+    debug: ^4.3.4
+    electron: 16.2.2
     electron-builder: ^22.14.13
     electron-debug: ^3.2.0
     electron-log: ^4.4.6
     electron-reloader: ^1.2.3
     electron-squirrel-startup: ^1.0.0
     electron-store: ^8.0.1
+    electron-unhandled: ^4.0.1
     eslint: ^8.10.0
     eslint-config-prettier: ^8.4.0
     eslint-config-standard-with-typescript: ^21.0.1
     eslint-plugin-import: ^2.25.4
     eslint-plugin-node: ^11.1.0
     eslint-plugin-promise: ^5.2.0
-    fp-ts: ^2.11.8
+    extract-zip: ^2.0.1
+    fp-ts: ^2.11.9
     io-ts: ^2.2.16
     io-ts-types: ^0.5.16
     jest: ^27.5.1
@@ -15140,6 +15195,8 @@ __metadata:
     puppeteer-in-electron: ^3.0.5
     react: ^17.0.2
     react-dom: ^17.0.2
+    react-router: ^5.2.1
+    react-router-dom: ^5.3.0
     rpmbuild: ^0.0.23
     string-replace-loader: ^3.1.0
     style-loader: ^3.3.1
@@ -15151,13 +15208,13 @@ __metadata:
     unlazy-loader: ^0.1.3
     unzipper: ^0.10.11
     utf-8-validate: ^5.0.9
-    webpack: ^5.71.0
+    webpack: ^5.72.0
     webpack-bundle-analyzer: ^4.5.0
     webpack-cli: ^4.9.2
     webpack-node-externals: ^3.0.0
     ws: ^8.5.0
     yaml: ^1.10.2
-    yargs: ^17.3.1
+    yargs: ^17.4.1
   bin:
     cli: ./bin/guardoni-cli.js
     tk-cli: ./bin/guardoni-tk-cli.js
@@ -23968,7 +24025,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-dom@npm:=17.0.2, react-dom@npm:^17.0.1, react-dom@npm:^17.0.2":
+"react-dom@npm:=17.0.2, react-dom@npm:^17.0.2":
   version: 17.0.2
   resolution: "react-dom@npm:17.0.2"
   dependencies:
@@ -24146,20 +24203,20 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-refresh-typescript@npm:^2.0.3":
-  version: 2.0.3
-  resolution: "react-refresh-typescript@npm:2.0.3"
+"react-refresh-typescript@npm:^2.0.4":
+  version: 2.0.4
+  resolution: "react-refresh-typescript@npm:2.0.4"
   peerDependencies:
-    react-refresh: 0.10.x || 0.11.x
+    react-refresh: 0.10.x || 0.11.x || 0.12.x
     typescript: ^4
-  checksum: 344fa0a3126a2703057465793af8fa286a9393a04f5e60c54c9de4f9c607991dd920f16a3b04ee0b474322a5c79e5994696b23e5667a12beab30abe38faa004b
+  checksum: f415d306fe22ed55b674367456e1824f760c1a2a8389a8a3dbadd6209e2da27736a04c72c836fe3843a6bacfd5b4f110cb6a85341da02a52aabb4d86938530ba
   languageName: node
   linkType: hard
 
-"react-refresh@npm:^0.11.0":
-  version: 0.11.0
-  resolution: "react-refresh@npm:0.11.0"
-  checksum: 112178a05b1e0ffeaf5d9fb4e56b4410a34a73adeb04dbf13abdc50d9ac9df2ada83e81485156cca0b3fa296aa3612751b3d6cd13be4464642a43679b819cbc7
+"react-refresh@npm:^0.12.0":
+  version: 0.12.0
+  resolution: "react-refresh@npm:0.12.0"
+  checksum: 046522ed9e26c2846afb734303d9461a825a96f863ea373b9296a90e7112e1602bdf5954d8b48193e763f3ff0108f2e4c00e42f0e3d45382bb9d38dc87348867
   languageName: node
   linkType: hard
 
@@ -24175,7 +24232,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-router-dom@npm:^5.2.0":
+"react-router-dom@npm:^5.2.0, react-router-dom@npm:^5.3.0":
   version: 5.3.0
   resolution: "react-router-dom@npm:5.3.0"
   dependencies:
@@ -24192,7 +24249,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-router@npm:5.2.1, react-router@npm:^5.2.0":
+"react-router@npm:5.2.1, react-router@npm:^5.2.0, react-router@npm:^5.2.1":
   version: 5.2.1
   resolution: "react-router@npm:5.2.1"
   dependencies:
@@ -24314,7 +24371,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react@npm:=17.0.2, react@npm:^17.0.1, react@npm:^17.0.2":
+"react@npm:=17.0.2, react@npm:^17.0.2":
   version: 17.0.2
   resolution: "react@npm:17.0.2"
   dependencies:
@@ -25429,7 +25486,7 @@ __metadata:
     release-it-yarn-workspaces: ^2.0.1
     ts-jest: ^27.1.4
     typescript: ^4.5.5
-    webpack: ^5.71.0
+    webpack: ^5.72.0
   languageName: unknown
   linkType: soft
 
@@ -27740,7 +27797,7 @@ __metadata:
   resolution: "tktrex-guardoni@workspace:platforms/tktrex/methodology"
   dependencies:
     csv-parse: ^4.16.3
-    debug: ^4.3.3
+    debug: ^4.3.4
     eslint: ^8.10.0
     lodash: ^4.17.21
     moment: ^2.29.2
@@ -29597,9 +29654,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"webpack-dev-server@npm:^4.8.0":
-  version: 4.8.0
-  resolution: "webpack-dev-server@npm:4.8.0"
+"webpack-dev-server@npm:^4.8.1":
+  version: 4.8.1
+  resolution: "webpack-dev-server@npm:4.8.1"
   dependencies:
     "@types/bonjour": ^3.5.9
     "@types/connect-history-api-fallback": ^1.3.5
@@ -29637,7 +29694,7 @@ __metadata:
       optional: true
   bin:
     webpack-dev-server: bin/webpack-dev-server.js
-  checksum: c8a4dbfcc3f5e88cb2b5f6fac5747f9a6af161ed9742ac508e13fbe365d2df37a5dbfd7661a1bec28f220bf62bedf2e2618edb17f5668a0b1afebacfef1bf584
+  checksum: 6f827068353cb024f04edd275ae2828b6d47a3316c1a8677066d1500b1d1038b516399777792bb464ec40bc6f963abe9b24a5fd93b9b39487a3574b38ae45fd6
   languageName: node
   linkType: hard
 
@@ -29727,9 +29784,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"webpack@npm:^5.71.0":
-  version: 5.71.0
-  resolution: "webpack@npm:5.71.0"
+"webpack@npm:^5.72.0":
+  version: 5.72.0
+  resolution: "webpack@npm:5.72.0"
   dependencies:
     "@types/eslint-scope": ^3.7.3
     "@types/estree": ^0.0.51
@@ -29760,7 +29817,7 @@ __metadata:
       optional: true
   bin:
     webpack: bin/webpack.js
-  checksum: 84b273a15180d45dafe4fc4a3ccccba2f72210f327a1af39713b3ef78148768afb0e18fa0cddaea4af5dd54ace199fbbdfcef9aec8da7e9c248f8b1b7cc413e1
+  checksum: 8365f1466d0f7adbf80ebc9b780f263a28eeeabcd5fb515249bfd9a56ab7fe8d29ea53df3d9364d0732ab39ae774445eb28abce694ed375b13882a6b2fe93ffc
   languageName: node
   linkType: hard
 
@@ -30326,7 +30383,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"yargs@npm:^17.0.0, yargs@npm:^17.0.1, yargs@npm:^17.2.1, yargs@npm:^17.3.1":
+"yargs@npm:^17.0.0, yargs@npm:^17.0.1, yargs@npm:^17.2.1":
   version: 17.3.1
   resolution: "yargs@npm:17.3.1"
   dependencies:
@@ -30338,6 +30395,21 @@ __metadata:
     y18n: ^5.0.5
     yargs-parser: ^21.0.0
   checksum: 64fc2e32c56739f1d14d2d24acd17a6944c3c8e3e3558f09fc1953ac112e868cc16013d282886b9d5be22187f8b9ed4f60741a6b1011f595ce2718805a656852
+  languageName: node
+  linkType: hard
+
+"yargs@npm:^17.4.1":
+  version: 17.4.1
+  resolution: "yargs@npm:17.4.1"
+  dependencies:
+    cliui: ^7.0.2
+    escalade: ^3.1.1
+    get-caller-file: ^2.0.5
+    require-directory: ^2.1.1
+    string-width: ^4.2.3
+    y18n: ^5.0.5
+    yargs-parser: ^21.0.0
+  checksum: e9012322870d7e4e912a6ae1f63b203e365f911c0cf158be92c36edefddfb3bd38ce17eb9ef0d18858a4777f047c50589ea22dacb44bd949169ba37dc6d34bee
   languageName: node
   linkType: hard
 

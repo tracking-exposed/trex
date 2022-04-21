@@ -1,9 +1,10 @@
+import * as remote from '@electron/remote/main';
 import { AppError, toAppError } from '@shared/errors/AppError';
-import { GetAPI } from '@shared/providers/api.provider';
 import debug from 'debug';
 import * as dotenv from 'dotenv';
 import { app, BrowserWindow } from 'electron';
 import log from 'electron-log';
+import unhandled from 'electron-unhandled';
 import { sequenceS } from 'fp-ts/lib/Apply';
 import * as E from 'fp-ts/lib/Either';
 import { pipe } from 'fp-ts/lib/function';
@@ -13,17 +14,28 @@ import os from 'os';
 import * as path from 'path';
 import pie from 'puppeteer-in-electron';
 import { AppEnv } from '../AppEnv';
+import {
+  DEFAULT_BASE_PATH,
+  DEFAULT_LOAD_FOR,
+  DEFAULT_TK_EXTENSION_DIR,
+  DEFAULT_YT_EXTENSION_DIR,
+} from '../guardoni/constants';
+import { getPackageVersion } from '../guardoni/utils';
 import { GetEvents } from './events/renderer.events';
+import store from './store/index';
 import { createGuardoniWindow } from './windows/GuardoniWindow';
-import { DEFAULT_BASE_PATH } from './config';
-import { getPackageVersion } from '../utils';
 
 app.setPath('userData', path.resolve(os.homedir(), `.guardoni/electron/data`));
 app.setAppLogsPath(path.resolve(os.homedir(), `.guardoni/electron/logs`));
 
 // load env from .env file shipped with compiled code
+const dotenvPath = path.join(
+  __dirname,
+  process.env.DOTENV_CONFIG_PATH ?? '.env'
+);
+
 dotenv.config({
-  path: path.join(__dirname, '.env'),
+  path: dotenvPath,
 });
 
 let mainWindow: BrowserWindow | null = null;
@@ -32,6 +44,8 @@ const mainWindowHTML = `file://${path.join(
   __dirname,
   'renderer/guardoni.html'
 )}`;
+
+unhandled();
 
 const creatMainWindow = (
   env: AppEnv
@@ -49,6 +63,8 @@ const creatMainWindow = (
       },
     });
 
+    remote.enable(mainWindow.webContents);
+
     await mainWindow.loadURL(mainWindowHTML);
 
     if (env.NODE_ENV === 'development') {
@@ -62,13 +78,14 @@ const creatMainWindow = (
   }, toAppError);
 };
 
-// default extension path
-const EXTENSION_DIR_PATH = path.resolve(DEFAULT_BASE_PATH, '../extension');
-
 export const run = async (): Promise<void> => {
-  debug.enable('guardoni:*');
+  debug.enable('@trex:*,guardoni:*');
 
   log.info('Guardoni start', process.cwd());
+
+  // In the main process:
+  remote.initialize();
+  // unhandled();
 
   return pipe(
     AppEnv.decode({ VERSION: getPackageVersion(), ...process.env }),
@@ -84,7 +101,10 @@ export const run = async (): Promise<void> => {
       pipe(
         TE.tryCatch(() => pie.initialize(app), toAppError),
         TE.chain(() => TE.tryCatch(() => app.whenReady(), toAppError)),
-        TE.map(() => ({ app, env }))
+        TE.map(() => ({
+          app,
+          env,
+        }))
       )
     ),
     TE.chain(({ app, env }) => {
@@ -96,27 +116,44 @@ export const run = async (): Promise<void> => {
             mainWindow: TE.right(w),
           })
         ),
-        TE.map(({ guardoniApp, mainWindow }) => {
-          // bind events for main window
-          return GetEvents({
-            app,
+        TE.chain(({ guardoniApp, mainWindow }) => {
+          const rendererEvents = GetEvents({
             env,
-            api: GetAPI({
-              baseURL: env.BACKEND,
-              getAuth: async (req) => req,
-              onUnauthorized: async (res) => res,
-            }).API,
             mainWindow,
-            guardoniWindow: guardoniApp.window,
-            guardoniBrowser: guardoniApp.browser,
-            guardoniConfig: {
+            browser: guardoniApp.browser,
+          });
+
+          const platform = store.get('platform', 'youtube');
+          const basePath = store.get('basePath', DEFAULT_BASE_PATH);
+          const profileName = store.get('profile', 'default');
+
+          log.debug('Last platform %s', platform);
+
+          return rendererEvents.register(
+            basePath,
+            {
+              profileName,
+              evidenceTag: undefined,
               headless: false,
               verbose: false,
-              extensionDir: EXTENSION_DIR_PATH,
-              backend: env.BACKEND,
-              basePath: DEFAULT_BASE_PATH,
+              loadFor: DEFAULT_LOAD_FOR,
+              advScreenshotDir: undefined,
+              excludeURLTag: undefined,
+              yt: {
+                name: 'youtube',
+                backend: env.YT_BACKEND,
+                extensionDir: DEFAULT_YT_EXTENSION_DIR,
+                proxy: undefined,
+              },
+              tk: {
+                name: 'tiktok',
+                backend: env.TK_BACKEND,
+                extensionDir: DEFAULT_TK_EXTENSION_DIR,
+                proxy: undefined,
+              },
             },
-          }).register();
+            platform
+          );
         })
       );
     }),
@@ -126,7 +163,10 @@ export const run = async (): Promise<void> => {
         return () => Promise.reject(e);
       },
       () => {
-        return () => Promise.resolve(undefined);
+        return () => {
+          log.info('Main bootstrapped!');
+          return Promise.resolve(undefined);
+        };
       }
     )
   )();
