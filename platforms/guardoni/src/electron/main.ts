@@ -22,7 +22,7 @@ import {
 } from '../guardoni/constants';
 import { getPackageVersion } from '../guardoni/utils';
 import { GetEvents } from './events/renderer.events';
-import store from './store/index';
+import store from './store';
 import { createGuardoniWindow } from './windows/GuardoniWindow';
 
 app.setPath('userData', path.resolve(os.homedir(), `.guardoni/electron/data`));

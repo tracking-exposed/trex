@@ -1,5 +1,5 @@
 import Store from 'electron-store';
-import { Platform } from '../app/Header';
+import { Platform } from '../../guardoni/types';
 
 interface Conf {
   platform: Platform;
