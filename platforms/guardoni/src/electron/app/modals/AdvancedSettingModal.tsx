@@ -240,6 +240,7 @@ const AdvancedSettingModal: React.FC<{
           color="primary"
           onClick={() => {
             onConfigChange(config);
+            onCancel();
           }}
         >
           Save
