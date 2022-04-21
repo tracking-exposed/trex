@@ -277,7 +277,7 @@ const registerCSV =
     csvFile: string,
     directiveType: DirectiveType
   ): TE.TaskEither<AppError, GuardoniSuccessOutput> => {
-    const filePath = path.resolve(ctx.config.basePath, csvFile);
+    const filePath = path.resolve(process.cwd(), csvFile);
 
     ctx.logger.debug(`Register CSV from %s`, filePath);
 

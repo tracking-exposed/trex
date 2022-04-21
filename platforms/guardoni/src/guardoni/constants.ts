@@ -1,7 +1,7 @@
 import * as path from 'path';
 import * as os from 'os';
 
-export const DEFAULT_BASE_PATH = path.resolve(os.homedir(), '.guardoni/config');
+export const DEFAULT_BASE_PATH = path.resolve(os.homedir(), '.guardoni');
 export const DEFAULT_EXTENSION_DIR = path.resolve(
   os.homedir(),
   '.guardoni/extension'

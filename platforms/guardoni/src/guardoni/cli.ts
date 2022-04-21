@@ -4,13 +4,13 @@ import * as A from 'fp-ts/lib/Array';
 import { pipe } from 'fp-ts/lib/function';
 import * as TE from 'fp-ts/lib/TaskEither';
 import { NonEmptyString } from 'io-ts-types/lib/NonEmptyString';
-import { guardoniLogger } from '../logger';
-import { GetGuardoni } from './guardoni';
-import { GuardoniConfig, GuardoniOutput, GuardoniSuccessOutput } from './types';
 import puppeteer from 'puppeteer-core';
 import yargs from 'yargs';
 import { hideBin } from 'yargs/helpers';
+import { guardoniLogger } from '../logger';
 import { DEFAULT_BASE_PATH } from './constants';
+import { GetGuardoni } from './guardoni';
+import { GuardoniConfig, GuardoniOutput, GuardoniSuccessOutput } from './types';
 
 export const cliLogger = guardoniLogger.extend('cli');
 
@@ -45,31 +45,42 @@ export type GetGuardoniCLI = (
   p: typeof puppeteer
 ) => GuardoniCLI;
 
-const foldOutput = (
+const foldOutput = (values: GuardoniSuccessOutput['values']): string[] => {
+  return pipe(
+    values,
+    A.map((v) => {
+      return Object.entries(v).map(([key, value]) => {
+        // console.log({ key, value });
+        if (Array.isArray(value)) {
+          // console.log('value is array', value);
+          const valuesChunk = value.map((v) => {
+            return foldOutput([v]).map((o) => `\t ${o}`);
+          });
+
+          return [`${key}:\t`, ...A.flatten(valuesChunk)];
+        }
+
+        if (typeof value === 'object') {
+          // console.log('value is object');
+
+          return [`${key}: \n\t`, ...foldOutput([value])];
+        }
+
+        return [`${key}: \t ${value}`];
+      });
+    }),
+    A.flatten,
+    A.flatten
+  );
+};
+
+const printOutput = (
   command: GuardoniCommandConfig,
   out: GuardoniOutput
 ): string => {
-  const rest =
-    out.type === 'success'
-      ? pipe(
-          Array.isArray(out.values) ? out.values : [],
-          A.map((v) => {
-            return Object.entries(v).map(([key, value]) => {
-              if (Array.isArray(value)) {
-                const valuesChunk = Object.entries(value).map(
-                  ([key, value]) => `${key}: ${JSON.stringify(value)}`
-                );
+  const rest = out.type === 'success' ? foldOutput(out.values) : out.details;
 
-                return [`${key}: \n\t`, ...valuesChunk];
-              }
-
-              return [`${key}: \n ${JSON.stringify(value, null, 2)}`];
-            });
-          }),
-          A.flatten
-        )
-      : out.details;
-
+  // console.log('rest', rest);
   return [
     '\n',
     `${command.run.slice(0, 1).toUpperCase()}${command.run.slice(1)} ${
@@ -139,7 +150,7 @@ export const GetGuardoniCLI: GetGuardoniCLI = (
         (e) => () => {
           // eslint-disable-next-line
           console.log(
-            foldOutput(command, {
+            printOutput(command, {
               type: 'error',
               message: e.message,
               details: e.details,
@@ -148,8 +159,9 @@ export const GetGuardoniCLI: GetGuardoniCLI = (
           return Promise.reject(e);
         },
         (result) => () => {
+          const output = printOutput(command, result);
           // eslint-disable-next-line
-          console.log(foldOutput(command, result));
+          console.log(output);
           return Promise.resolve();
         }
       )
