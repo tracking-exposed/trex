@@ -49,7 +49,7 @@ describe('CLI', () => {
       loadFor: 3000,
       evidenceTag,
       advScreenshotDir: undefined,
-      excludeURLTag: undefined
+      excludeURLTag: undefined,
     },
     basePath,
     puppeteerMock
@@ -58,7 +58,6 @@ describe('CLI', () => {
   jest.setTimeout(60 * 1000);
 
   beforeAll(async () => {
-
     fs.mkdirSync(path.resolve(basePath, 'experiments'), {
       recursive: true,
     });
@@ -107,7 +106,7 @@ describe('CLI', () => {
       await expect(
         guardoni.run({
           run: 'register-csv',
-          file: './fake-file' as any,
+          file: path.resolve(__dirname, '../fake-file') as any,
           type: 'chiaroscuro',
         })()
       ).resolves.toMatchObject({
@@ -122,7 +121,10 @@ describe('CLI', () => {
       await expect(
         guardoni.run({
           run: 'register-csv',
-          file: './experiments/experiment-comparison.csv' as any,
+          file: path.resolve(
+            __dirname,
+            '../experiments/experiment-comparison.csv'
+          ) as any,
           type: 'chiaroscuro',
         })()
       ).resolves.toMatchObject({
@@ -139,7 +141,10 @@ describe('CLI', () => {
       await expect(
         guardoni.run({
           run: 'register-csv',
-          file: './experiments/experiment-chiaroscuro.csv' as any,
+          file: path.resolve(
+            __dirname,
+            '../experiments/experiment-chiaroscuro.csv'
+          ) as any,
           type: 'comparison',
         })()
       ).resolves.toMatchObject({
@@ -160,7 +165,10 @@ describe('CLI', () => {
       const result: any = await guardoni.run({
         run: 'register-csv',
         type: 'comparison',
-        file: './experiments/experiment-comparison.csv' as any,
+        file: path.resolve(
+          __dirname,
+          '../experiments/experiment-comparison.csv'
+        ) as any,
       })();
 
       expect(result).toMatchObject({
@@ -183,7 +191,10 @@ describe('CLI', () => {
       const result: any = await guardoni.run({
         run: 'register-csv',
         type: 'comparison',
-        file: './experiments/experiment-comparison.csv' as any,
+        file: path.resolve(
+          __dirname,
+          '../experiments/experiment-comparison.csv'
+        ) as any,
       })();
 
       expect(result).toMatchObject({
@@ -208,7 +219,10 @@ describe('CLI', () => {
       const result: any = await guardoni.run({
         run: 'register-csv',
         type: 'comparison',
-        file: './experiments/experiment-comparison.csv' as any,
+        file: path.resolve(
+          __dirname,
+          '../experiments/experiment-comparison.csv'
+        ) as any,
       })();
 
       expect(result).toMatchObject({
@@ -233,7 +247,10 @@ describe('CLI', () => {
       const result: any = await guardoni.run({
         run: 'register-csv',
         type: 'chiaroscuro',
-        file: './experiments/experiment-chiaroscuro.csv' as any,
+        file: path.resolve(
+          __dirname,
+          '../experiments/experiment-chiaroscuro.csv'
+        ) as any,
       })();
 
       expect(result).toMatchObject({
