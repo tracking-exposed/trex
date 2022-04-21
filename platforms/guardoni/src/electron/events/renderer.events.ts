@@ -132,6 +132,41 @@ export const GetEvents = ({
           onUnauthorized: async (res) => res,
         }).API;
 
+        const initGuardoni = (
+          basePath: string,
+          config: GuardoniConfig,
+          platform: Platform
+        ): Promise<void> => {
+          return pipe(
+            GetGuardoni({
+              basePath,
+              config,
+              platform,
+              logger,
+              puppeteer,
+            })
+          )().then((result) => {
+            if (result._tag === 'Right') {
+              guardoni = result.right;
+              api = GetAPI({
+                baseURL: guardoni.config.platform.backend,
+                getAuth: async (req) => req,
+                onUnauthorized: async (res) => res,
+              }).API;
+              return pipe(
+                TE.right(guardoni.config),
+                liftEventTask(EVENTS.GET_GUARDONI_CONFIG_EVENT.value)
+              );
+            } else {
+              logger.error("Can't start guardoni %O", result.left);
+              return pipe(
+                TE.right(result.left),
+                liftEventTask(EVENTS.GUARDONI_ERROR_EVENT.value)
+              );
+            }
+          });
+        };
+
         // pick csv file
         ipcMain.on(EVENTS.PICK_CSV_FILE_EVENT.value, () => {
           void pipe(
@@ -175,8 +210,13 @@ export const GetEvents = ({
           void pipe(
             setConfig(guardoni.config.basePath, c),
             TE.map(() => ({ ...platformConfig, platform })),
-            liftEventTask(EVENTS.GET_GUARDONI_CONFIG_EVENT.value)
-          );
+            TE.chain((config) =>
+              TE.tryCatch(
+                () => initGuardoni(basePath, config, platform),
+                toAppError
+              )
+            )
+          )();
         });
 
         // create guardoni experiment
@@ -304,34 +344,7 @@ export const GetEvents = ({
           // update platform in store
           store.set('platform', platform);
           // call register with new params
-          void pipe(
-            GetGuardoni({
-              basePath,
-              config,
-              platform,
-              logger,
-              puppeteer,
-            })
-          )().then((result) => {
-            if (result._tag === 'Right') {
-              guardoni = result.right;
-              api = GetAPI({
-                baseURL: guardoni.config.platform.backend,
-                getAuth: async (req) => req,
-                onUnauthorized: async (res) => res,
-              }).API;
-              return pipe(
-                TE.right(guardoni.config),
-                liftEventTask(EVENTS.GET_GUARDONI_CONFIG_EVENT.value)
-              );
-            } else {
-              logger.error("Can't start guardoni %O", result.left);
-              return pipe(
-                TE.right(result.left),
-                liftEventTask(EVENTS.GUARDONI_ERROR_EVENT.value)
-              );
-            }
-          });
+          void initGuardoni(basePath, config, platform);
         });
 
         return TE.tryCatch(
