@@ -277,7 +277,10 @@ const registerCSV =
     csvFile: string,
     directiveType: DirectiveType
   ): TE.TaskEither<AppError, GuardoniSuccessOutput> => {
-    const filePath = path.resolve(process.cwd(), csvFile);
+    // resolve csv file path from current working direction when is not absolute
+    const filePath = path.isAbsolute(csvFile)
+      ? csvFile
+      : path.resolve(process.cwd(), csvFile);
 
     ctx.logger.debug(`Register CSV from %s`, filePath);
 
