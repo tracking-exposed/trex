@@ -25,9 +25,7 @@ export interface Test {
 }
 
 export const GetTest = async (): Promise<Test> => {
-  config.set('mongoPort', 27019);
   config.set('mongoHost', '0.0.0.0');
-  config.set('mongoDb', 'test');
   config.set('key', 'test-key');
   config.set('storage', '_test_htmls');
 

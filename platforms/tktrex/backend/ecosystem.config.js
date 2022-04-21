@@ -1,6 +1,5 @@
 const testEnv = {
   mongoDb: 'tktrex-test',
-  mongoPort: 27019,
 };
 
 const tk = {
