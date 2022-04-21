@@ -158,7 +158,7 @@ const ExperimentListRoute: React.FC<
   }, []);
 
   React.useEffect(() => {
-    ipcRenderer.once(EVENTS.GET_PUBLIC_DIRECTIVES.value, (event, ...args) => {
+    ipcRenderer.on(EVENTS.GET_PUBLIC_DIRECTIVES.value, (event, ...args) => {
       const [directives] = args;
       setDirectives(directives);
     });
@@ -168,7 +168,7 @@ const ExperimentListRoute: React.FC<
     return () => {
       ipcRenderer.removeAllListeners(EVENTS.GET_PUBLIC_DIRECTIVES.value);
     };
-  }, []);
+  }, [config]);
 
   const experimentsWithTags = React.useMemo(
     () =>
