@@ -18,7 +18,7 @@ import {
 } from '../../guardoni/types';
 import { guardoniLogger } from '../../logger';
 import { EVENTS } from '../models/events';
-import store from '../store/index';
+import store from '../store';
 import { getEventsLogger } from './event.logger';
 
 const guardoniEventsLogger = guardoniLogger.extend('events');
@@ -132,19 +132,22 @@ export const GetEvents = ({
           onUnauthorized: async (res) => res,
         }).API;
 
-        const initGuardoni = (
+        const initGuardoni = async (
           basePath: string,
           config: GuardoniConfig,
           platform: Platform
         ): Promise<void> => {
           return pipe(
-            GetGuardoni({
-              basePath,
-              config,
-              platform,
-              logger,
-              puppeteer,
-            })
+            setConfig(guardoni.config.basePath, config),
+            TE.chain(() =>
+              GetGuardoni({
+                basePath,
+                config,
+                platform,
+                logger,
+                puppeteer,
+              })
+            )
           )().then((result) => {
             if (result._tag === 'Right') {
               guardoni = result.right;
@@ -207,15 +210,10 @@ export const GetEvents = ({
 
           store.set('basePath', platformConfig.basePath);
 
-          void pipe(
-            setConfig(guardoni.config.basePath, c),
-            TE.map(() => ({ ...platformConfig, platform })),
-            TE.chain((config) =>
-              TE.tryCatch(
-                () => initGuardoni(basePath, config, platform),
-                toAppError
-              )
-            )
+          void TE.tryCatch(
+            () =>
+              initGuardoni(basePath, { ...platformConfig, platform }, platform),
+            toAppError
           )();
         });
 
@@ -262,17 +260,11 @@ export const GetEvents = ({
 
             const view = mainWindow.getBrowserView() as BrowserView;
 
+            // we may need to update the guardoni config right before the execution
+            // guardoni.config = configOverride;
+
             void pipe(
-              GetGuardoni({
-                basePath,
-                config: {
-                  ...config,
-                  ...configOverride,
-                },
-                platform: configOverride.platform.name,
-                logger,
-                puppeteer,
-              }),
+              TE.right(guardoni),
               TE.chain((g) =>
                 pipe(
                   TE.tryCatch(async () => {
@@ -281,7 +273,11 @@ export const GetEvents = ({
                         g.config.platform.extensionDir
                       );
 
-                    logger.debug('Extension loaded %O', extension);
+                    logger.debug(
+                      'Extension loaded %O from %s',
+                      extension,
+                      g.config.platform.extensionDir
+                    );
 
                     return pie.getPage(browser, view, true);
                   }, toAppError),

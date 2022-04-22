@@ -1,37 +1,14 @@
-import { Box, LinearProgress } from '@material-ui/core';
+import { LinearProgress } from '@material-ui/core';
 import { ipcRenderer } from 'electron';
 import * as React from 'react';
 import { Redirect, Route, Switch, useHistory } from 'react-router';
 import { v4 as uuid } from 'uuid';
 import { GuardoniPlatformConfig, Platform } from '../../guardoni/types';
 import { EVENTS } from '../models/events';
-import { OutputItem } from './components/OutputPanel';
 import ExperimentExecutionRoute from './components/ExperimentExecution';
 import ExperimentList from './components/ExperimentList';
+import { OutputItem } from './components/OutputPanel';
 import Layout from './Layout';
-
-export function a11yProps(index: number): any {
-  return {
-    id: `simple-tab-${index}`,
-    'aria-controls': `simple-tabpanel-${index}`,
-  };
-}
-
-export const TabPanel: React.FC<any> = (props) => {
-  const { children, value, index, ...other } = props;
-
-  return (
-    <div
-      role="tabpanel"
-      hidden={value !== index}
-      id={`simple-tabpanel-${index}`}
-      aria-labelledby={`simple-tab-${index}`}
-      {...other}
-    >
-      {value === index && <Box p={3}>{children}</Box>}
-    </div>
-  );
-};
 
 export const App: React.FC = () => {
   const history = useHistory();

@@ -177,7 +177,6 @@ export const Header: React.FC<HeaderProps> = ({
         open={advancedSettingDialogOpen}
         config={config}
         onConfigChange={onConfigChange}
-        onSubmit={() => {}}
         onCancel={() => {
           setAdvancedSettingDialogOpen(false);
         }}

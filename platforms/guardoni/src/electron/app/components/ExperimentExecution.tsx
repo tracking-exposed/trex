@@ -99,6 +99,9 @@ const ExperimentExecution: React.FC<ExperimentExecutionProps> = ({
             flexDirection: 'column',
           }}
         >
+          <Box>
+            <Typography>{experimentId}</Typography>
+          </Box>
           <Box
             style={{
               display: 'flex',
@@ -109,6 +112,7 @@ const ExperimentExecution: React.FC<ExperimentExecutionProps> = ({
             <Button
               variant="contained"
               color="secondary"
+              style={{ marginRight: theme.spacing(2) }}
               onClick={() => {
                 onClose();
               }}
