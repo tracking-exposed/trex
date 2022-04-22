@@ -174,6 +174,29 @@ const AdvancedSettingModal: React.FC<{
                 </FormHelperText>
 
                 <FormControlLabel
+                  label="Extension"
+                  className={classes.formControl}
+                  labelPlacement="top"
+                  control={
+                    <Input
+                      id="extension"
+                      aria-describedby="extension-text"
+                      value={config.platform.extensionDir}
+                      fullWidth
+                      onChange={(e) =>
+                        setConfig({
+                          ...config,
+                          platform: {
+                            ...config.platform,
+                            extensionDir: e.target.value,
+                          },
+                        })
+                      }
+                    />
+                  }
+                />
+                <FormHelperText>The unpacked extension dir</FormHelperText>
+                <FormControlLabel
                   label="Chrome Path"
                   className={classes.formControl}
                   labelPlacement="top"

@@ -30,8 +30,8 @@ export interface Events {
   unregister: () => void;
   register: (
     basePath: string,
-    conf: GuardoniConfig,
-    platform: Platform
+    platform: Platform,
+    conf: GuardoniConfig
   ) => TE.TaskEither<Error, void>;
 }
 
@@ -108,8 +108,8 @@ export const GetEvents = ({
   // register all events triggered by the UI to ipcMain
   const register = (
     basePath: string,
-    config: GuardoniConfig,
-    platform: Platform
+    platform: Platform,
+    config: GuardoniConfig
   ): TE.TaskEither<Error, void> => {
     unregister();
 
@@ -211,8 +211,7 @@ export const GetEvents = ({
           store.set('basePath', platformConfig.basePath);
 
           void TE.tryCatch(
-            () =>
-              initGuardoni(basePath, { ...platformConfig, platform }, platform),
+            () => initGuardoni(basePath, c, platform),
             toAppError
           )();
         });

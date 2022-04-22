@@ -129,31 +129,27 @@ export const run = async (): Promise<void> => {
 
           log.debug('Last platform %s', platform);
 
-          return rendererEvents.register(
-            basePath,
-            {
-              profileName,
-              evidenceTag: undefined,
-              headless: false,
-              verbose: false,
-              loadFor: DEFAULT_LOAD_FOR,
-              advScreenshotDir: undefined,
-              excludeURLTag: undefined,
-              yt: {
-                name: 'youtube',
-                backend: env.YT_BACKEND,
-                extensionDir: DEFAULT_YT_EXTENSION_DIR,
-                proxy: undefined,
-              },
-              tk: {
-                name: 'tiktok',
-                backend: env.TK_BACKEND,
-                extensionDir: DEFAULT_TK_EXTENSION_DIR,
-                proxy: undefined,
-              },
+          return rendererEvents.register(basePath, platform, {
+            profileName,
+            evidenceTag: undefined,
+            headless: false,
+            verbose: false,
+            loadFor: DEFAULT_LOAD_FOR,
+            advScreenshotDir: undefined,
+            excludeURLTag: undefined,
+            yt: {
+              name: 'youtube',
+              backend: env.YT_BACKEND,
+              extensionDir: DEFAULT_YT_EXTENSION_DIR,
+              proxy: undefined,
             },
-            platform
-          );
+            tk: {
+              name: 'tiktok',
+              backend: env.TK_BACKEND,
+              extensionDir: DEFAULT_TK_EXTENSION_DIR,
+              proxy: undefined,
+            },
+          });
         })
       );
     }),
