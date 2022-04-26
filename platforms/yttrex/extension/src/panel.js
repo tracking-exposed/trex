@@ -16,7 +16,12 @@ const trexIconSVG = (color) => `
 </svg>
 `;
 
-export function createElement (tag, cssProp = {}, parent = document.body, id = null) {
+export function createElement(
+  tag,
+  cssProp = {},
+  parent = document.body,
+  id = null
+) {
   const element = document.createElement(tag);
   Object.entries(cssProp).forEach(([key, value]) => {
     element.style[key] = value;
@@ -35,13 +40,13 @@ const containerCSS = {
   left: '0rem',
   display: 'flex',
   flexDirection: 'column',
-  zIndex: 9999
+  zIndex: 9999,
 };
 
 const circleCSS = {
   width: '1.4rem',
   height: '1.4rem',
-  padding: '0.6rem'
+  padding: '0.6rem',
 };
 
 const helpCSS = {
@@ -54,8 +59,7 @@ const helpCSS = {
   border: '1px solid #eee',
   boxShadow: '2px 2px 8px 0 rgba(0, 0, 0, 0.2)',
   fontFamily: 'Roboto, Arial, sans-serif;',
-
-  visibility: 'hidden'
+  visibility: 'hidden',
 };
 
 let visibilityTimerId = null;
@@ -63,7 +67,7 @@ let visibilityTimerId = null;
 /**
  * Check if the page is in full screen
  */
-function getIsFullScreen () {
+function getIsFullScreen() {
   return window.innerHeight === screen.height;
 }
 
@@ -71,11 +75,13 @@ function getIsFullScreen () {
  * Create the panel
  * @param {object} Object like: {[EVENT_NAME]: {color: string}}
  */
-export function createPanel (events, helpBody = '') {
-  const alreadyInitializedPanel = [...document.querySelectorAll('#panel')]
+export function createPanel(events, helpBody = '') {
+  const alreadyInitializedPanel = [...document.querySelectorAll('#panel')];
   if (alreadyInitializedPanel.length > 0) {
-    console.warn('YTTREX > panel ===}> panel is already initialized, maybe extension reloaded twice?');
-    alreadyInitializedPanel.forEach(p => document.body.removeChild(p));
+    console.warn(
+      'YTTREX > panel ===}> panel is already initialized, maybe extension reloaded twice?'
+    );
+    alreadyInitializedPanel.forEach((p) => document.body.removeChild(p));
   }
 
   if (visibilityTimerId) {
@@ -87,19 +93,29 @@ export function createPanel (events, helpBody = '') {
   const container = createElement('div', containerCSS, document.body, 'panel');
 
   const blinkingIcons = Object.entries(events).map(([eventName, val]) => {
-    const eventIcon = createElement('div', {
-      ...circleCSS,
-      transition: 'all 0.3s ease'
-    }, container, eventName);
+    const eventIcon = createElement(
+      'div',
+      {
+        ...circleCSS,
+        transition: 'all 0.3s ease',
+      },
+      container,
+      eventName
+    );
     eventIcon.innerHTML = trexIconSVG(gray);
     return [eventName, eventIcon, val];
   });
 
-  const infoIcon = createElement('div', {
-    ...circleCSS,
-    cursor: 'pointer',
-    position: 'relative'
-  }, container, 'info-icon');
+  const infoIcon = createElement(
+    'div',
+    {
+      ...circleCSS,
+      cursor: 'pointer',
+      position: 'relative',
+    },
+    container,
+    'info-icon'
+  );
 
   infoIcon.innerHTML = infoIconSVG;
 
@@ -107,23 +123,21 @@ export function createPanel (events, helpBody = '') {
   help.innerHTML = helpBody;
 
   infoIcon.addEventListener('click', () => {
-    help.style.visibility = help.style.visibility === 'hidden'
-      ? 'visible'
-      : 'hidden';
+    help.style.visibility =
+      help.style.visibility === 'hidden' ? 'visible' : 'hidden';
   });
 
-  const nameBlink = blinkingIcons
-  .map(([eventName, eventIcon, val]) => {
+  const nameBlink = blinkingIcons.map(([eventName, eventIcon, val]) => {
     const blink = (time = 1000) => {
       const paths = [...eventIcon.querySelectorAll('path')];
-      paths.forEach(path => {
+      paths.forEach((path) => {
         path.setAttribute('style', `fill: ${val.color}`);
       });
       setTimeout(() => {
-        paths.forEach(path => {
-            path.setAttribute('style', `fill: ${gray}`);
-          });
-        }, time);
+        paths.forEach((path) => {
+          path.setAttribute('style', `fill: ${gray}`);
+        });
+      }, time);
     };
     return [eventName, blink];
   });
@@ -140,8 +154,8 @@ export function createPanel (events, helpBody = '') {
   return Object.fromEntries(nameBlink);
 }
 
-function checkTheatreMode () {
-  const container = document.getElementById('panel')
+function checkTheatreMode() {
+  const container = document.getElementById('panel');
   if (!container) {
     return;
   }
@@ -154,7 +168,7 @@ function checkTheatreMode () {
     const videoWidth = Number(video.style.width.slice(0, -2));
     const isTheatreMode = videoWidth === window.innerWidth;
     container.style.paddingTop = isTheatreMode
-      ? (Number(video.style.height.slice(0, -2)) + 73) + 'px'
+      ? Number(video.style.height.slice(0, -2)) + 73 + 'px'
       : 0;
   }
 }

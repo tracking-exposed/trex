@@ -3,6 +3,7 @@ import ReactDOM from 'react-dom';
 import { createTheme, ThemeProvider } from '@material-ui/core/styles';
 import Popup from './components/popup';
 import { bo } from '@shared/extension/utils/browser.utils';
+import { CssBaseline } from '@material-ui/core';
 
 const Zimplon = {
   fontFamily: 'Trex-Regular',
@@ -52,6 +53,7 @@ function main() {
 
       ReactDOM.render(
         <ThemeProvider theme={theme}>
+          <CssBaseline />
           <Popup publicKey={publicKey} />
         </ThemeProvider>,
         document.getElementById('main')

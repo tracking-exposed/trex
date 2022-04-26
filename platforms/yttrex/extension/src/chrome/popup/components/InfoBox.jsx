@@ -5,14 +5,15 @@ import CardActions from '@material-ui/core/CardActions';
 import Button from '@material-ui/core/Button';
 
 const imgstyle = {
-  width: '100%',
+  width: 'auto',
+  height: 80,
 };
 const lessStandardHref = {
   color: 'black',
   textDecoration: 'none',
 };
 
-const InfoBox = () => {
+const InfoBox = ({ version, timeago }) => {
   const about = config.WEB_ROOT + '/about';
   const privacy = config.WEB_ROOT + '/privacy';
   const guardonihref = config.WEB_ROOT + '/guardoni';
@@ -59,6 +60,9 @@ const InfoBox = () => {
           Guardoni
         </Button>
       </CardActions>
+      <small>
+        version {version}, released {timeago}
+      </small>
     </Card>
   );
 };
