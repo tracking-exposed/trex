@@ -844,7 +844,7 @@ async function registerDirective(links, directiveType) {
   });
   await mongoc.close();
   debug('Registered directive %s|%s', directiveType, experimentId);
-  return { status: 'created', experimentId };
+  return { status: 'created', experimentId, since: new Date() };
 }
 
 async function pickDirective(experimentId) {
