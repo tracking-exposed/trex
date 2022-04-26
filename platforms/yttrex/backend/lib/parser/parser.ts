@@ -55,13 +55,6 @@ export async function wrapDissector<T>(
 
     return retval;
   } catch (error) {
-    // eslint-disable-next-line
-    console.error(
-      'Error in %s: %s %s',
-      dissectorName,
-      error.message,
-      error.stack
-    );
     _.set(envelope.log, dissectorName, '!E');
     throw error;
   }
@@ -93,7 +86,7 @@ const pipeline =
         const mined = await wrapDissector(parser, nature, e, results);
         _.set(results.findings, 'nature', mined);
       } catch (error) {
-        ctx.log.error('Parser error %O', error);
+        ctx.log.error('Parser not implemented for nature [%s]', nature);
         _.set(results.failures, nature, error.message);
       }
 
