@@ -37,7 +37,8 @@ const backend = process.env.YT_BACKEND as string;
 describe('Guardoni', () => {
   const basePath = path.resolve(__dirname, '../');
   const profile = 'profile-test-99';
-  const csvTestFileName = 'trex-yt-videos-test.csv';
+  const emptyCSVTestFileName = 'yt-videos-test-empty.csv';
+  const csvTestFileName = 'trex-yt-videos.csv';
   const defaultConfig = {
     headless: false,
     verbose: false,
@@ -164,6 +165,43 @@ describe('Guardoni', () => {
             },
             profileName: defaultConfig.profileName,
           },
+        },
+      });
+    });
+  });
+
+  describe('register experiment', () => {
+    test('fails when the experiment has no links', async () => {
+      // one minute
+      jest.setTimeout(60 * 1000);
+
+      const guardoni = GetGuardoni({
+        basePath,
+        config: defaultConfig,
+        platform: 'youtube',
+        logger: guardoniLogger,
+        puppeteer: puppeteerMock,
+      });
+
+      const experiment = await pipe(
+        guardoni,
+        TE.chain((g) =>
+          pipe(
+            g.registerExperimentFromCSV(
+              path.resolve(
+                basePath,
+                'experiments',
+                emptyCSVTestFileName
+              ) as any,
+              'comparison'
+            )
+          )
+        )
+      )();
+
+      expect(experiment).toMatchObject({
+        left: {
+          message: "Can't create an experiment with no links",
         },
       });
     });

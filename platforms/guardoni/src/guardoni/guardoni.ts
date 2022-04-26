@@ -234,7 +234,7 @@ export const readCSVAndParse =
       TE.chain((input) =>
         pipe(
           csvParseTE(input, { columns: true, skip_empty_lines: true }),
-          TE.map(({ records, info }) => {
+          TE.chain(({ records, info }) => {
             logger.debug(
               'Read input from file %s (%d bytes) %d records as %s',
               filePath,
@@ -242,7 +242,16 @@ export const readCSVAndParse =
               records.length,
               directiveType
             );
-            return { records, info };
+
+            if (records.length === 0) {
+              return TE.left(
+                toAppError({
+                  message: "Can't create an experiment with no links",
+                })
+              );
+            }
+
+            return TE.right({ records, info });
           }),
           TE.chainFirst(({ records }) =>
             pipe(
