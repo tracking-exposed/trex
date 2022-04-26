@@ -293,28 +293,28 @@ const registerCSV =
 const loadContext = (
   p: typeof puppeteer,
   basePath: string,
-  c: GuardoniConfig,
+  config: GuardoniConfig,
   platform: Platform,
   logger: GuardoniContext['logger']
 ): TE.TaskEither<AppError, GuardoniContext> => {
   logger.debug('Loading context for platform %s', platform);
 
   return pipe(
-    getConfig({ logger })(basePath, platform, c),
-    TE.map((config): GuardoniContext => {
-      const profile = getDefaultProfile(basePath, config.profileName);
+    getConfig({ logger })(basePath, platform, config),
+    TE.map((cnf): GuardoniContext => {
+      const profile = getDefaultProfile(basePath, cnf.profileName);
 
       logger.debug('profile %O', profile);
 
       return {
         puppeteer: p,
         API: GetAPI({
-          baseURL: config.platform.backend,
+          baseURL: cnf.platform.backend,
           getAuth: async (req) => req,
           onUnauthorized: async (res) => res,
         }).API,
         config: {
-          ...config,
+          ...cnf,
           basePath,
           profileName: profile.profileName,
         },

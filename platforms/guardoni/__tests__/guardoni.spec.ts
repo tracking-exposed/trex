@@ -4,9 +4,7 @@ import * as TE from 'fp-ts/lib/TaskEither';
 import * as fs from 'fs';
 import * as path from 'path';
 import { readConfigFromPath } from '../src/guardoni/config';
-import {
-  GetGuardoni
-} from '../src/guardoni/guardoni';
+import { GetGuardoni } from '../src/guardoni/guardoni';
 import { getDefaultProfile, getProfileDataDir } from '../src/guardoni/profile';
 import { csvStringifyTE } from '../src/guardoni/utils';
 import { guardoniLogger } from '../src/logger';
@@ -100,7 +98,10 @@ describe('Guardoni', () => {
 
   describe('config', () => {
     test('succeeds when config is correctly formed', async () => {
-      const config = await readConfigFromPath({ logger: guardoniLogger })(basePath, defaultConfig)();
+      const config = await readConfigFromPath({ logger: guardoniLogger })(
+        basePath,
+        defaultConfig
+      )();
 
       expect(config).toMatchObject({
         right: {
@@ -146,8 +147,6 @@ describe('Guardoni', () => {
         config: {
           ...defaultConfig,
           profileName,
-          headless: false,
-          verbose: false,
         },
         platform: 'youtube',
         logger: guardoniLogger,
@@ -157,13 +156,13 @@ describe('Guardoni', () => {
       expect(g).toMatchObject({
         right: {
           config: {
-            headless: false,
-            verbose: false,
+            headless: true,
+            verbose: true,
             platform: {
               backend: defaultConfig.yt.backend,
               extensionDir: defaultConfig.yt.extensionDir,
             },
-            profileName,
+            profileName: defaultConfig.profileName,
           },
         },
       });
