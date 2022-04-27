@@ -13,7 +13,7 @@ import {
   GuardoniPlatformConfig,
   Platform,
 } from './types';
-import { getChromePath } from './utils';
+import { CHROME_PATHS, getChromePath } from './utils';
 import * as Json from 'fp-ts/lib/Json';
 import {
   DEFAULT_LOAD_FOR,
@@ -43,28 +43,55 @@ export const readConfigFromPath =
   ): TE.TaskEither<AppError, GuardoniConfig> => {
     const configFilePath = getConfigPath(basePath);
 
+    const sanitizedConf = Object.entries(confOverride).reduce<
+      Partial<GuardoniConfig>
+    >(
+      (acc, [key, value]) => {
+        if (value !== undefined) {
+          return {
+            ...acc,
+            [key]: value,
+          };
+        }
+        return acc;
+      },
+      // eslint-disable-next-line @typescript-eslint/prefer-reduce-type-parameter
+      {} as any
+    );
+
     const readExistingConfigT = pipe(
       IOE.tryCatch(() => {
         return fs.readFileSync(configFilePath, 'utf-8');
       }, toAppError),
       TE.fromIOEither,
-      TE.chainEitherK((content) => Json.parse(content))
+      TE.chainEitherK((content) => Json.parse(content)),
+      TE.map((json) => json as any)
     );
 
-    const defaultConfigT = TE.right<GuardoniConfig, unknown>({
+    const defaultConfigT = TE.right<unknown, GuardoniConfig>({
+      chromePath: CHROME_PATHS[0],
       headless: true,
       verbose: false,
       loadFor: DEFAULT_LOAD_FOR,
-      ...confOverride,
+      basePath,
+      profileName: 'default',
+      evidenceTag: '',
+      advScreenshotDir: undefined,
+      excludeURLTag: undefined,
+      ...sanitizedConf,
       yt: {
         name: 'youtube',
         backend: DEFAULT_YT_BACKEND,
         extensionDir: confOverride.yt?.extensionDir ?? DEFAULT_YT_EXTENSION_DIR,
+        proxy: undefined,
+        ...sanitizedConf.yt,
       },
       tk: {
         name: 'tiktok',
         backend: DEFAULT_TK_BACKEND,
         extensionDir: confOverride.tk?.extensionDir ?? DEFAULT_TK_EXTENSION_DIR,
+        proxy: undefined,
+        ...sanitizedConf.tk,
       },
     });
 
@@ -79,6 +106,27 @@ export const readConfigFromPath =
 
     return pipe(
       readConfigT,
+      TE.map((config) => {
+        return {
+          chromePath: CHROME_PATHS[0],
+          ...config,
+          ...sanitizedConf,
+          yt: {
+            ...config.yt,
+            ...sanitizedConf.yt,
+            extensionDir: path.isAbsolute(config.yt.extensionDir)
+              ? config.yt.extensionDir
+              : path.resolve(basePath, config.yt.extensionDir),
+          },
+          tk: {
+            ...config.tk,
+            ...sanitizedConf.tk,
+            extensionDir: path.isAbsolute(config.tk.extensionDir)
+              ? config.tk.extensionDir
+              : path.resolve(basePath, config.tk.extensionDir),
+          },
+        };
+      }),
       TE.mapLeft(toAppError),
       TE.chainEitherK((json) =>
         pipe(
@@ -92,24 +140,7 @@ export const readConfigFromPath =
               )
           )
         )
-      ),
-      TE.map((config) => {
-        return {
-          ...config,
-          yt: {
-            ...config.yt,
-            extensionDir: path.isAbsolute(config.yt.extensionDir)
-              ? config.yt.extensionDir
-              : path.resolve(basePath, config.yt.extensionDir),
-          },
-          tk: {
-            ...config.tk,
-            extensionDir: path.isAbsolute(config.tk.extensionDir)
-              ? config.tk.extensionDir
-              : path.resolve(basePath, config.tk.extensionDir),
-          },
-        };
-      })
+      )
     );
   };
 
@@ -121,30 +152,13 @@ export const getPlatformConfig = (
 
   const platformConf = platformConfigKey === 'tk' ? tk : yt;
 
-  const sanitizedConf = Object.entries(config).reduce<GuardoniConfig>(
-    (acc, [key, value]) => {
-      if (value !== undefined) {
-        return {
-          ...acc,
-          [key]: value,
-        };
-      }
-      return acc;
-    },
-    // eslint-disable-next-line @typescript-eslint/prefer-reduce-type-parameter
-    {} as any
-  );
-
   const extensionDir = path.isAbsolute(platformConf.extensionDir)
     ? platformConf.extensionDir
-    : path.resolve(process.cwd(), platformConf.extensionDir);
+    : path.resolve(config.basePath, platformConf.extensionDir);
 
   return {
-    ...sanitizedConf,
-    platform: {
-      ...platformConf,
-      extensionDir,
-    },
+    ...platformConf,
+    extensionDir,
   };
 };
 
@@ -154,7 +168,11 @@ export const setConfig = (
 ): TE.TaskEither<AppError, GuardoniConfig> => {
   const configFilePath = getConfigPath(basePath);
   return pipe(
-    IOE.fromEither(GuardoniConfig.decode(c)),
+    IOE.fromEither(
+      GuardoniConfig.decode({
+        ...c,
+      })
+    ),
     IOE.mapLeft((e) => toAppError(failure(e))),
     IOE.chain((config) =>
       IOE.tryCatch(() => {
@@ -175,8 +193,8 @@ export const getConfig =
   (
     _basePath: string,
     platform: Platform,
-    { yt, tk, ...confOverride }: GuardoniConfig
-  ): TE.TaskEither<AppError, GuardoniPlatformConfig> => {
+    { yt, tk, ...confOverride }: Partial<GuardoniConfig>
+  ): TE.TaskEither<AppError, GuardoniConfig> => {
     ctx.logger.debug(
       'Get config with defaults %O for platform %s',
       { ...confOverride, yt, tk },
@@ -195,6 +213,8 @@ export const getConfig =
     return pipe(
       readConfigFromPath(ctx)(basePath, {
         ...confOverride,
+        basePath,
+        evidenceTag,
         yt,
         tk,
       }),
@@ -204,8 +224,8 @@ export const getConfig =
           TE.fromEither,
           TE.mapLeft(toAppError),
           TE.map((chromePath) => ({
-            chromePath,
             ...config,
+            chromePath,
             ...confOverride,
             yt: {
               ...config.yt,
@@ -220,7 +240,7 @@ export const getConfig =
       ),
       TE.map((config) => {
         const c = {
-          ...getPlatformConfig(platform, config),
+          ...config,
           chromePath: config.chromePath,
           basePath,
           evidenceTag,

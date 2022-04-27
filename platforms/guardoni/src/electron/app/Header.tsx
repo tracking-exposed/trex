@@ -14,7 +14,11 @@ import AddIcon from '@material-ui/icons/AddCircleOutline';
 import SettingsIcon from '@material-ui/icons/Settings';
 import PolicyIcon from '@material-ui/icons/Policy';
 import * as React from 'react';
-import { GuardoniPlatformConfig, Platform } from '../../guardoni/types';
+import {
+  GuardoniConfig,
+  GuardoniPlatformConfig,
+  Platform,
+} from '../../guardoni/types';
 import TKLogo from './icons/TKLogo';
 import YTLogo from './icons/YTLogo';
 import AdvancedSettingModal from './modals/AdvancedSettingModal';
@@ -41,13 +45,15 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export interface HeaderProps {
-  config: GuardoniPlatformConfig;
-  onConfigChange: (c: GuardoniPlatformConfig) => void;
+  config: GuardoniConfig;
+  platform: GuardoniPlatformConfig;
+  onConfigChange: (c: GuardoniConfig) => void;
   onPlatformChange: (p: Platform) => void;
 }
 
 export const Header: React.FC<HeaderProps> = ({
   config,
+  platform,
   onConfigChange,
   onPlatformChange,
 }) => {
@@ -94,8 +100,7 @@ export const Header: React.FC<HeaderProps> = ({
         <Box className={classes.platformLogoBox}>
           <div
             className={cx(classes.platformLogo, {
-              [classes.platformLogoSelected]:
-                config.platform.name === 'youtube',
+              [classes.platformLogoSelected]: platform.name === 'youtube',
             })}
             onClick={() => onPlatformChange('youtube')}
           >
@@ -103,7 +108,7 @@ export const Header: React.FC<HeaderProps> = ({
           </div>
           <div
             className={cx(classes.platformLogo, {
-              [classes.platformLogoSelected]: config.platform.name === 'tiktok',
+              [classes.platformLogoSelected]: platform.name === 'tiktok',
             })}
             onClick={() => onPlatformChange('tiktok')}
           >
@@ -212,6 +217,7 @@ export const Header: React.FC<HeaderProps> = ({
       <AdvancedSettingModal
         open={advancedSettingDialogOpen}
         config={config}
+        platform={platform}
         onConfigChange={onConfigChange}
         onCancel={() => {
           setAdvancedSettingDialogOpen(false);

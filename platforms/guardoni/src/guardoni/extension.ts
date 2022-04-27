@@ -24,7 +24,7 @@ const getExtensionWithOptInURL = (platform: Platform, v: string): string => {
 export const downloadExtension = (
   ctx: GuardoniContext
 ): TE.TaskEither<AppError, void> => {
-  const extensionDir = ctx.config.platform.extensionDir;
+  const extensionDir = ctx.platform.extensionDir;
 
   return pipe(
     IOE.tryCatch(() => {
@@ -50,12 +50,12 @@ export const downloadExtension = (
       const extensionZipFilePath = path.resolve(
         path.join(
           extensionDir,
-          `${ctx.config.platform.name}-trex-extension-v${ctx.version}.zip`
+          `${ctx.platform.name}-trex-extension-v${ctx.version}.zip`
         )
       );
 
       const extensionZipUrl = getExtensionWithOptInURL(
-        ctx.config.platform.name,
+        ctx.platform.name,
         ctx.version
       );
 
