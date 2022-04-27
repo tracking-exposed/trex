@@ -41,13 +41,13 @@ export function sync(hub: Hub<YTHubEvent>): void {
     bo.runtime.sendMessage(
       { type: 'sync', payload: state.content, userId: 'local' },
       (response) => {
-        ytLog.info('Sync response %O', response);
+        ytLog.info('Sync response %j', response);
         hub.dispatch({ type: 'SyncResponse', payload: response });
       }
     );
     state.content = [];
   } else {
-    ytLog.debug('No metadata to sync...');
+    // ytLog.debug('No metadata to sync...');
   }
 }
 
@@ -58,7 +58,7 @@ export function register(hub: Hub<YTHubEvent>, config: any): void {
     hub.on('WindowUnload', () => sync(hub));
 
     window.setInterval(() => {
-      ytLog.debug('Sync at interval %s', INTERVAL);
+      // ytLog.debug('Sync at interval %s', INTERVAL);
       sync(hub);
     }, INTERVAL);
   }

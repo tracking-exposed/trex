@@ -490,6 +490,14 @@ function relativeTimeMap(word) {
   );
 }
 
+const recoChannelEndings = [{
+  matchable: 'channel',
+  sostantivo: 'views',
+  full: 'viewers also watch this channel'
+}, {
+  matchable: 'canale',
+}]
+
 function getPublicationTime(timeinfo) {
 
   const timeago = _.reduce(
@@ -582,12 +590,37 @@ function parser(l, source, isLive) {
   if (!langi) langi = _.find(langopts, { sostantivo: chinasost });
 
   if (!langi) {
+    /* investigated when this happen and document it */
     const specialfinal = viewssost.substr(_.size(viewssost) - 4, 4);
     langi = _.find(langopts, { sostantivo: specialfinal });
   }
 
   // debug("<sostantivo> %s, <langi> %j", viewssost, langi);
   // if(!langi) debugger;
+
+  const recoinfo = {};
+  if(!langi) {
+    /* the recommendation by channels ---
+      'Italy has FINALLY been Fixed In Hearts Of Iron 4 by iSorrowproductions 
+      49 minutes ago 14 minutes, 39 seconds 26,167 views 
+      Bokoen1 viewers also watch this channel'
+    */
+    const recdet = _.find(recoChannelEndings, { 'matchable': viewssost });
+    if(recdet) {
+      debug("found %j", recdet);
+      const reg = new RegExp(`${recdet.sostantivo}\\ (.*)\\ ${recdet.full}`);
+      const result = reg.exec(l);
+      debug(result);
+      if(result && result.index) {
+        recoinfo.channelLinked = result[1];
+        // 'Bokoen1'
+        // l.substr(0, 116)
+        l = l.substr(0, result.index) + `${recdet.sostantivo}`;
+        // 'Italy has FINALLY been Fixed In Hearts Of Iron 4 by iSorrowproductions 49 minutes ago 14 minutes, 39 seconds 26,167 '
+        langi = _.find(langopts, { sostantivo: recdet.sostantivo});
+      }
+    }
+  }
 
   if (!langi) {
     debuge("Not seen any known 'sostantivo' in %s", l);
@@ -635,6 +668,7 @@ function parser(l, source, isLive) {
   /*  5) to simplify this, duration of the video is take somewhere else */
   // debug("Completed %s with %d %s %s", title, views, timeago.humanize(), langi.locale);
   return {
+    ...recoinfo,
     views,
     title,
     timeago, // it is a moment.duration() object

@@ -61,6 +61,7 @@ function chiaroScuro(videoinfo, counter) {
   });
 }
 
+/*
 function acquireChiaroscuro(parsedCSV) {
   if (
     _.filter(parsedCSV, function (validityCheck) {
@@ -74,7 +75,7 @@ function acquireChiaroscuro(parsedCSV) {
     throw new Error('Invalid parsedCSV content');
 
   return parsedCSV;
-}
+} */
 
 function timeconv(maybestr, defaultMs) {
   if (_.isInteger(maybestr) && maybestr > 100) {
@@ -111,9 +112,8 @@ function acquireComparison(parsedCSV) {
 }
 
 async function post(req) {
-  const directiveType = _.get(req.params, 'directiveType', '');
-  const directiveTypes = ['chiaroscuro', 'comparison'];
 
+  /* const directiveTypes = ['chiaroscuro', 'comparison'];
   if (directiveTypes.indexOf(directiveType) === -1) {
     debug(
       'Invalid directive type (%s), supported %j)',
@@ -121,14 +121,16 @@ async function post(req) {
       directiveTypes
     );
     return { json: { error: true, message: 'Invalid directive type' } };
-  }
+  } */
 
+  const directiveType = 'comparison';
   const parsedCSV = _.get(req.body, 'parsedCSV', []);
 
+  /* if (directiveType === "chiaroscuro")
+    links = acquireChiaroscuro(parsedCSV); */
+
   let links = [];
-  if (directiveType === directiveTypes[0])
-    links = acquireChiaroscuro(parsedCSV);
-  if (directiveType === directiveTypes[1]) links = acquireComparison(parsedCSV);
+  links = acquireComparison(parsedCSV);
 
   debug('Registering directive %s (%d urls)', directiveType, _.size(links));
 
@@ -143,7 +145,7 @@ async function get(req) {
   debug('GET: should return directives for %s', experimentId);
   const expinfo = await automo.pickDirective(experimentId);
 
-  if (expinfo.directiveType === 'chiaroscuro') {
+  /* if (expinfo.directiveType === 'chiaroscuro') {
     const directives = _.flatten(
       _.map(expinfo.links, function (vidblock, counter) {
         return chiaroScuro(vidblock, counter);
@@ -151,12 +153,13 @@ async function get(req) {
     );
     debug('ChiaroScuro %s produced %d', experimentId, directives.length);
     return { json: directives };
-  } else {
-    // expinfo.directiveType === 'comparison'
-    const directives = _.map(expinfo.links, comparison);
-    debug('Comparison %s produced %d', experimentId, directives.length);
-    return { json: directives };
-  }
+  } */
+
+  // expinfo.directiveType === 'comparison'
+  const directives = _.map(expinfo.links, comparison);
+  debug('Comparison %s produced %d', experimentId, directives.length);
+  return { json: directives };
+
 }
 
 async function getPublic(req) {

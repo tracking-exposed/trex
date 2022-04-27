@@ -410,6 +410,9 @@ async function channel3(req) {
   experimentInfo.testName = req.body.testTime ?? new Date().toISOString();
   experimentInfo.publicKey = _.get(req.body, 'config.publicKey');
 
+  if(!experimentInfo.experimentId)
+    return { json: { ignored: true }};
+
   debug('Experiment info %O', experimentInfo);
 
   const retval = await automo.saveExperiment(experimentInfo);

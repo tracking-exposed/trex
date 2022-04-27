@@ -21,7 +21,7 @@ interface ParserContext<T> extends ParserProviderContext<T> {
   log: Logger;
 }
 
-const FREQUENCY = 5;
+const FREQUENCY = 4;
 const AMOUNT_DEFAULT = 20;
 // By default the pipeline will start from "1 minute ago"
 const BACKINTIMEDEFAULT = 1;
@@ -82,7 +82,14 @@ const pipeline =
       const nature = ctx.getEntryNatureType(e);
 
       try {
-        ctx.log.debug('Processing element with nature %s', nature);
+        type ObjectKey = keyof typeof e;
+        const html = 'html' as ObjectKey;
+        type sok = keyof typeof html;
+        const id = 'id' as sok;
+        const metadataId = 'metadataId' as sok;
+
+        ctx.log.debug('Processing element with nature [%s] id %s metadata %s',
+          nature, e[html][id], e[html][metadataId]);
         const mined = await wrapDissector(parser, nature, e, results);
         _.set(results.findings, 'nature', mined);
       } catch (error) {
@@ -233,11 +240,11 @@ const actualExecution =
           };
         }
 
-        ctx.log.debug(
+        /* ctx.log.debug(
           'Fetching (%d) contributions with filter %O',
           htmlAmount,
           htmlFilter
-        );
+        ); */
 
         const envelops = await ctx.getContributions(htmlFilter, 0, htmlAmount);
 
@@ -248,7 +255,7 @@ const actualExecution =
           nodatacounter++;
           if (nodatacounter % 10 === 1) {
             ctx.log.error(
-              '(data %d/ processed %d) no data at the last query: %O',
+              '(data %d/ processed %d) no data at the last query: %j',
               nodatacounter,
               processedCounter,
               htmlFilter
@@ -296,8 +303,8 @@ const actualExecution =
             payload: results,
           };
         }
+        ctx.log.debug('Sleeping for %f seconds', computedFrequency);
         const sleepTime = computedFrequency * 1000;
-        ctx.log.debug('Sleeping for %d', sleepTime);
         await sleep(sleepTime);
       }
       ctx.log.info(
