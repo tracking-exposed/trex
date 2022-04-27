@@ -15,6 +15,13 @@ import {
 } from './types';
 import { getChromePath } from './utils';
 import * as Json from 'fp-ts/lib/Json';
+import {
+  DEFAULT_LOAD_FOR,
+  DEFAULT_TK_BACKEND,
+  DEFAULT_TK_EXTENSION_DIR,
+  DEFAULT_YT_BACKEND,
+  DEFAULT_YT_EXTENSION_DIR,
+} from './constants';
 
 export const getConfigPath = (basePath: string): string =>
   path.resolve(basePath, 'guardoni.config.json');
@@ -32,7 +39,7 @@ export const readConfigFromPath =
   (ctx: { logger: GuardoniContext['logger'] }) =>
   (
     basePath: string,
-    defaultConf: GuardoniConfig
+    confOverride: Partial<GuardoniConfig>
   ): TE.TaskEither<AppError, GuardoniConfig> => {
     const configFilePath = getConfigPath(basePath);
 
@@ -44,7 +51,22 @@ export const readConfigFromPath =
       TE.chainEitherK((content) => Json.parse(content))
     );
 
-    const defaultConfigT = TE.right<GuardoniConfig, unknown>(defaultConf);
+    const defaultConfigT = TE.right<GuardoniConfig, unknown>({
+      headless: true,
+      verbose: false,
+      loadFor: DEFAULT_LOAD_FOR,
+      ...confOverride,
+      yt: {
+        name: 'youtube',
+        backend: DEFAULT_YT_BACKEND,
+        extensionDir: confOverride.yt?.extensionDir ?? DEFAULT_YT_EXTENSION_DIR,
+      },
+      tk: {
+        name: 'tiktok',
+        backend: DEFAULT_TK_BACKEND,
+        extensionDir: confOverride.tk?.extensionDir ?? DEFAULT_TK_EXTENSION_DIR,
+      },
+    });
 
     const configExists = fs.existsSync(configFilePath);
     ctx.logger.debug(
@@ -92,8 +114,8 @@ export const readConfigFromPath =
   };
 
 export const getPlatformConfig = (
-  { tk, yt, ...config }: GuardoniConfig,
-  p: Platform
+  p: Platform,
+  { tk, yt, ...config }: GuardoniConfig
 ): Omit<GuardoniPlatformConfig, 'basePath' | 'chromePath' | 'evidenceTag'> => {
   const platformConfigKey = getConfigPlatformKey(p);
 
@@ -138,7 +160,7 @@ export const setConfig = (
       IOE.tryCatch(() => {
         return fs.writeFileSync(
           configFilePath,
-          JSON.stringify(config),
+          JSON.stringify(config, null, 2),
           'utf-8'
         );
       }, toAppError)
@@ -153,17 +175,17 @@ export const getConfig =
   (
     _basePath: string,
     platform: Platform,
-    { yt, tk, ...confDefaults }: GuardoniConfig
+    { yt, tk, ...confOverride }: GuardoniConfig
   ): TE.TaskEither<AppError, GuardoniPlatformConfig> => {
     ctx.logger.debug(
       'Get config with defaults %O for platform %s',
-      { ...confDefaults, yt, tk },
+      { ...confOverride, yt, tk },
       platform
     );
 
     // get platform specific config
     const evidenceTag =
-      confDefaults.evidenceTag ?? 'no-tag-' + _.random(0, 0xffff);
+      confOverride.evidenceTag ?? 'no-tag-' + _.random(0, 0xffff);
     ctx.logger.debug('EvidenceTag %O', evidenceTag);
 
     const basePath = path.isAbsolute(_basePath)
@@ -172,7 +194,7 @@ export const getConfig =
 
     return pipe(
       readConfigFromPath(ctx)(basePath, {
-        ...confDefaults,
+        ...confOverride,
         yt,
         tk,
       }),
@@ -183,18 +205,30 @@ export const getConfig =
           TE.mapLeft(toAppError),
           TE.map((chromePath) => ({
             chromePath,
-            ...confDefaults,
             ...config,
+            ...confOverride,
+            yt: {
+              ...config.yt,
+              ...yt,
+            },
+            tk: {
+              ...config.tk,
+              ...tk,
+            },
           }))
         )
       ),
       TE.map((config) => {
-        return {
-          ...getPlatformConfig(config, platform),
+        const c = {
+          ...getPlatformConfig(platform, config),
           chromePath: config.chromePath,
           basePath,
           evidenceTag,
         };
+
+        ctx.logger.debug('Config %O', c);
+
+        return c;
       })
     );
   };

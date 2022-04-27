@@ -106,9 +106,9 @@ describe('Guardoni', () => {
 
       expect(config).toMatchObject({
         right: {
-          profileName: profile,
-          verbose: true,
-          headless: true,
+          profileName: defaultConfig.profileName,
+          verbose: defaultConfig.verbose,
+          headless: defaultConfig.headless,
           yt: {
             name: 'youtube',
             backend: 'http://localhost:9000/api',
@@ -141,12 +141,14 @@ describe('Guardoni', () => {
       });
     });
 
-    test('succeeds with correct defaults', async () => {
+    test('succeeds with profile option', async () => {
       const profileName = 'profile-test-0';
       const g = await GetGuardoni({
         basePath,
         config: {
           ...defaultConfig,
+          headless: true,
+          verbose: true,
           profileName,
         },
         platform: 'youtube',
@@ -163,7 +165,7 @@ describe('Guardoni', () => {
               backend: defaultConfig.yt.backend,
               extensionDir: defaultConfig.yt.extensionDir,
             },
-            profileName: defaultConfig.profileName,
+            profileName,
           },
         },
       });

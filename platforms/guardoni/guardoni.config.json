@@ -1,7 +1,7 @@
 {
   "profileName": "profile-test-99",
-  "verbose": true,
-  "headless": true,
+  "headless": false,
+  "verbose": false,
   "loadFor": 3000,
   "yt": {
     "name": "youtube",

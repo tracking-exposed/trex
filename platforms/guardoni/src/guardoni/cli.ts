@@ -181,10 +181,12 @@ const runGuardoni = ({
   c,
   config,
   profile,
+  backend: _backend,
   command,
   ...guardoniConf
 }: any): Promise<void> => {
   const basePath = guardoniConf.basePath ?? DEFAULT_BASE_PATH;
+
   if (verbose) {
     // eslint-disable-next-line
     console.log('Running guardoni', { config, basePath, guardoniConf });
@@ -194,8 +196,18 @@ const runGuardoni = ({
     }
   }
 
+  const backend = _backend;
+
   return GetGuardoniCLI(
-    { ...guardoniConf, profileName: profile ?? 'default', verbose },
+    {
+      ...guardoniConf,
+      yt: {
+        name: 'youtube',
+        backend,
+      },
+      profileName: profile ?? 'default',
+      verbose,
+    },
     basePath,
     puppeteer
   )

@@ -31,7 +31,7 @@ export interface Events {
   register: (
     basePath: string,
     platform: Platform,
-    conf: GuardoniConfig
+    confOverride: Partial<GuardoniConfig>
   ) => TE.TaskEither<Error, void>;
 }
 
@@ -109,7 +109,7 @@ export const GetEvents = ({
   const register = (
     basePath: string,
     platform: Platform,
-    config: GuardoniConfig
+    config: Partial<GuardoniConfig>
   ): TE.TaskEither<Error, void> => {
     unregister();
 
@@ -138,7 +138,10 @@ export const GetEvents = ({
           platform: Platform
         ): Promise<void> => {
           return pipe(
-            setConfig(guardoni.config.basePath, config),
+            setConfig(guardoni.config.basePath, {
+              ...guardoni.config,
+              ...config,
+            }),
             TE.chain(() =>
               GetGuardoni({
                 basePath,
@@ -339,7 +342,7 @@ export const GetEvents = ({
           // update platform in store
           store.set('platform', platform);
           // call register with new params
-          void initGuardoni(basePath, config, platform);
+          void initGuardoni(basePath, config as any, platform);
         });
 
         return TE.tryCatch(

@@ -403,8 +403,8 @@ export type GetGuardoni = ({
   logger,
 }: {
   basePath: string;
-  config: GuardoniConfig;
   platform: Platform;
+  config: Partial<GuardoniConfig>;
   logger: GuardoniContext['logger'];
   puppeteer: typeof puppeteer;
 }) => TE.TaskEither<AppError, Guardoni>;
