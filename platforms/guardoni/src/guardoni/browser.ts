@@ -75,7 +75,10 @@ const operateTab =
         );
       }
 
-      const loadFor = (directive as any).loadFor ?? ctx.config.loadFor;
+      const loadFor = (directive as any).loadFor ??
+        ctx.config.loadFor ??
+        _.parseInt(nconf.get('load')) ??
+        6000 ;
 
       ctx.logger.info(
         '— Loading %s (for %d ms) %O',

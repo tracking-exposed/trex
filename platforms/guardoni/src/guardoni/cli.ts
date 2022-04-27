@@ -240,7 +240,7 @@ const program = yargs(hideBin(process.argv))
   )
   .command(
     'tk-init [projectDirectory]',
-    'TK: Initialize an experiment directory',
+    'Initialize an experiment directory',
     (y) =>
       y
         .positional('projectDirectory', {
@@ -271,7 +271,7 @@ const program = yargs(hideBin(process.argv))
   )
   .command(
     'tk-dump [projectDirectory]',
-    'TK: Dump meta data from an experiment directory',
+    'Dump meta data from an experiment directory',
     (y) =>
       y.positional('projectDirectory', {
         default: '.',
