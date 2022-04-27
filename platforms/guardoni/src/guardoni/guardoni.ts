@@ -244,7 +244,7 @@ const operateTab =
         );
       }
 
-      const loadFor = (directive as any).loadFor ?? ctx.config.loadFor;
+      const loadFor = (directive as any).loadFor ?? ctx.config.loadFor ?? 10000;
 
       ctx.logger.info(
         '— Loading %s (for %d ms) %O',
@@ -301,9 +301,9 @@ const operateBrowser =
       TE.sequenceSeqArray(directives.map((d) => operateTab(ctx)(page, d))),
       TE.chain(() =>
         TE.tryCatch(async () => {
-          if (ctx.config.loadFor < 20000) {
-            await page.waitForTimeout(15000);
-          }
+          // TODO what does it mean this? should be used loadFor variable?
+          debug(`loadFor ${ctx.config.loadFor}`);
+          await page.waitForTimeout(ctx.config.loadFor);
           return undefined;
         }, toAppError)
       )

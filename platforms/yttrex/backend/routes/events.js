@@ -82,6 +82,13 @@ function extendIfExperiment(expinfo, listOf) {
 
   const nothelpf = ['_id', 'publicKey', 'directive', 'href', 'status'];
 
+  if(!expinfo.directive)
+    console.trace("debug this %j", expinfo);
+
+  if(!expinfo.directive)
+    return listOf;
+
+  debug("Valid expinfo received %j", expinfo);
   return _.map(listOf, function (o) {
     /* this function link the experiment object to the
            element found, and then rebuild the directives to
