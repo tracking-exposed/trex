@@ -437,7 +437,6 @@ function NoViewsReplacer(l, sosta) {
 }
 
 function guessLanguageByViews(candidates) {
-  debugger;
   if (!_.size(candidates))
     throw new Error('guessLanguageByViews E1 has not candidates!');
   /* 'views', 'vues' or what else? here is guessed a language */

@@ -83,6 +83,7 @@ function extendIfExperiment(expinfo, listOf) {
   const nothelpf = ['_id', 'publicKey', 'directive', 'href', 'status'];
 
   if(!expinfo.directive)
+    // eslint-disable-next-line no-console
     console.trace("debug this %j", expinfo);
 
   if(!expinfo.directive)

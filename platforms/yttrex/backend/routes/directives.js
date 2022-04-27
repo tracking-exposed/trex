@@ -61,6 +61,7 @@ function chiaroScuro(videoinfo, counter) {
   });
 }
 
+/*
 function acquireChiaroscuro(parsedCSV) {
   if (
     _.filter(parsedCSV, function (validityCheck) {
@@ -74,7 +75,7 @@ function acquireChiaroscuro(parsedCSV) {
     throw new Error('Invalid parsedCSV content');
 
   return parsedCSV;
-}
+} */
 
 function timeconv(maybestr, defaultMs) {
   if (_.isInteger(maybestr) && maybestr > 100) {

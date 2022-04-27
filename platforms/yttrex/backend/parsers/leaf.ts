@@ -75,7 +75,7 @@ function mineAdBadge(D: Document, e): Partial<BaseAd> | null {
   else return null;
 }
 
-function mineChannel(D: Document, e: any): any {
+/* function mineChannel(D: Document, e: any): any {
   const a = D.querySelector('a');
   const channelLink = a?.getAttribute('href');
   const ct = D.querySelector('#text');
@@ -93,7 +93,7 @@ function mineChannel(D: Document, e: any): any {
       channelId: channelLink,
     };
   }
-}
+} */
 
 function mineBanner(D: Document, e: any): any {
   /* exclude the 'Ads in 2' label, among others */
