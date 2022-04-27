@@ -156,7 +156,8 @@ export const handleLeaf = (
   opts: Omit<ObserverHandler, 'handle'>
 ): void => {
   // command has .selector .parents .preserveInvisible (this might be undefined)
-  ytLogger.info('Handle "leaf"! %O', config);
+  ytLogger.info('Handle "leaf" type: %j', opts.match);
+  console.log(node);
   // ytLogger.debug('node %o with %o', node, opts);
   const offsetTop = getOffsetTop(node);
   const offsetLeft = getOffsetLeft(node);
@@ -166,7 +167,7 @@ export const handleLeaf = (
     const style = {
       border: `1px solid ${opts.color ? opts.color : 'red'}`,
     };
-    ytLogger.debug('use custom style for development %O', style);
+    ytLogger.debug('use custom style for %s development %O', opts.match.type, style);
     node.style.border = style.border;
     // node.setAttribute(opts.selector, 'true');
     // node.setAttribute('yttrex', '1');
@@ -364,6 +365,7 @@ export const watchedPaths: { [key: string]: ObserverHandler } = {
     handle: handleLeaf,
   },
   // video-ad-overlay-slot
+  /*
   channel1: {
     match: {
       type: 'selector-with-parents',
@@ -391,7 +393,7 @@ export const watchedPaths: { [key: string]: ObserverHandler } = {
     color: 'yellow',
 
     handle: handleLeaf,
-  },
+  }, */
   searchcard: {
     match: {
       type: 'selector',
