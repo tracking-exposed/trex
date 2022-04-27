@@ -232,7 +232,7 @@ function relatedMetadata(e: any, i: number): ParsedInfo | null {
   const recommendedRelativeSeconds = estimatedLive
     ? null
     : mined
-    ? differenceInSeconds(new Date(), mined.timeago)
+    ? differenceInSeconds(mined.timeago, new Date())
     : null;
 
   const r = {
@@ -283,11 +283,12 @@ export function makeAbsolutePublicationTime(
       };
     } else {
       const deltaS = differenceInSeconds(
-        clientTime,
-        r.recommendedPubTime ? r.recommendedPubTime : new Date()
+        r.recommendedPubTime ? r.recommendedPubTime : new Date(),
+        clientTime
       );
 
       const when = addSeconds(clientTime, deltaS);
+
       return {
         ...r,
         publicationTime: when,

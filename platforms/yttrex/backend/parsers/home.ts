@@ -215,7 +215,7 @@ function dissectSelectedVideo(
     recommendedDisplayL: infos.displayTime ? infos.displayTime : null,
     recommendedLengthText: infos.expandedTime ? infos.expandedTime : null,
     recommendedPubTime: videoTileLinkParsed
-      ? videoTileLinkParsed.timeago?.toISOString()
+      ? videoTileLinkParsed.timeago
       : null,
     /* ^^^^  is deleted in makeAbsolutePublicationTime, when clientTime is available,
      * this field produces -> recommendedPubtime and ptPrecison */
@@ -307,23 +307,26 @@ function actualHomeProcess(D: Document): HomeProcess {
   const ve = D.querySelectorAll(videoElemSelector);
 
   homeLog.debug("From this homepage we'll process %d video entry", _.size(ve));
-  const selectorOffsetMap: Array<{ i: number; offset: any }> = [];
+  const sections: Array<{ i: number; offset: any }> = [];
   /* this collection is only useful to study the page, and it is saved in the DB */
   const selected = _.map(ve, function (e, i) {
     /* this research is interesting but not yet used */
     sizeTreeResearch(e, i);
 
     const thumbnailHref = shared.getThumbNailHref(e);
+
     try {
       const ubication = D.querySelector('body')?.outerHTML.indexOf(e.outerHTML);
-      selectorOffsetMap.push({ i, offset: ubication });
+      sections.push({ i, offset: ubication });
+      homeLog.debug('Section %s', i, thumbnailHref);
       const videoInfo = dissectSelectedVideo(e, i, titles, ubication);
       if (videoInfo) {
         (videoInfo as any).thumbnailHref = thumbnailHref;
         return videoInfo;
       }
-      throw new Error("No video Info");
+      throw new Error('No video Info');
     } catch (error) {
+      homeLog.debug('Error during video dissect %O', error);
       const f = e.querySelector('#video-title-link');
       const s = f ? f.getAttribute('aria-label') : null;
       return {
@@ -337,12 +340,13 @@ function actualHomeProcess(D: Document): HomeProcess {
   });
   const effective = _.reject(selected, { error: true });
   homeLog.info(
-    'Parsing completed. Analyzed %d, effective %d',
-    _.size(selected),
-    _.size(effective)
+    'Parsing completed. Analyzed %d, effective %d, sections %d',
+    selected.length,
+    effective.length,
+    sections.length
   );
   debugSizes(effective);
-  return { selected: effective as any[], sections: selectorOffsetMap };
+  return { selected: effective as any[], sections: sections };
   /* sections would be removed before being saved in mongodb */
 }
 

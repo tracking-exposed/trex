@@ -53,8 +53,8 @@ export const runParserTest =
     sourceSchema: string;
     codec: T;
     expectMetadata: (
-      storedM: t.TypeOf<T> & { _id: string },
-      newM: t.TypeOf<T> & { _id: string }
+      received: t.TypeOf<T> & { _id: string },
+      expected: t.TypeOf<T> & { _id: string }
     ) => void;
     expectSources: (s: S[]) => void;
   } & ParserProviderContext<S>) =>
@@ -92,6 +92,6 @@ export const runParserTest =
 
       expect(E.isRight(decodeResult)).toBe(true);
 
-      expectMetadata(metadata, m as any);
+      expectMetadata(m as any, metadata);
     });
   };

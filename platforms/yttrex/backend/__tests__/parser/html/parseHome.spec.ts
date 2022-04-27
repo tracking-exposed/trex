@@ -82,14 +82,14 @@ describe('Parserv', () => {
               expect(r.processed).toBe(true);
             });
           },
-          expectMetadata: (oldM, newM) => {
+          expectMetadata: (newM, oldM) => {
             const {
               _id: expected_Id,
               id: expectedId,
               clientTime: _expectedClientTime,
               savingTime: _expectedSavingTime,
-              selected: _expectedSelected,
-              sections: _expectedSections,
+              selected: expectedSelected,
+              sections: expectedSections,
               ...expectedM
             } = oldM as any;
             const {
@@ -97,11 +97,21 @@ describe('Parserv', () => {
               id: _receivedId,
               clientTime: _receivedClientTime,
               savingTime: _receivedSavingTime,
-              selected: _receivedSelected,
-              sections: _receivedSections,
+              selected: receivedSelected,
+              sections: receivedSections,
               ...receivedM
             } = newM as any;
 
+            expect(receivedSections.length).toEqual(expectedSections.length);
+            expect(receivedSelected.length).toBeGreaterThanOrEqual(
+              expectedSelected.length
+            );
+            expect(
+              receivedSelected.map((s) => ({
+                ...s,
+                publicationTime: s.publicationTime?.toISOString() ?? null,
+              }))
+            ).toMatchObject(expectedSelected);
             expect(receivedM).toMatchObject(expectedM);
           },
         })({ sources, metadata });
