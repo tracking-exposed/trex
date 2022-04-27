@@ -46,12 +46,10 @@ const ExperimentExecution: React.FC<ExperimentExecutionProps> = ({
   const [view, setView] = React.useState<BrowserView | null>(null);
   const [outputItems, setOutputItems] = React.useState([]);
 
-  const handleRun = React.useCallback(
-    (v: any) => {
-      onRun(experimentId);
-    },
-    [view, experimentId]
-  );
+  const handleRun = React.useCallback(() => {
+    onRun(experimentId);
+    setPhase({ step: 'Run' });
+  }, [view, experimentId]);
 
   // update guardoni output when proper event is received
 
@@ -123,7 +121,7 @@ const ExperimentExecution: React.FC<ExperimentExecutionProps> = ({
               variant="contained"
               color="primary"
               onClick={() => {
-                handleRun(view);
+                handleRun();
               }}
             >
               Run
@@ -202,14 +200,12 @@ const ExperimentExecutionRoute: React.FC<
 
   const onOpenExperimentResults = React.useCallback((experimentId: string) => {
     void shell.openExternal(
-      `${config.platform.backend}/v2/experiment/${experimentId}/json`
+      `${config.backend}/v2/experiment/${experimentId}/json`
     );
   }, []);
 
   const onOpenResults = React.useCallback((publicKey: string): void => {
-    void shell.openExternal(
-      `${config.platform.backend}/v1/personal/${publicKey}`
-    );
+    void shell.openExternal(`${config.backend}/v1/personal/${publicKey}`);
   }, []);
 
   return (
