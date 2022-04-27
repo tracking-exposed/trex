@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 
-set -e -x
+# set -e -x
+set -e
 
 export DEBUG="@trex*"
 export NODE_ENV=development
@@ -54,6 +55,10 @@ video_experiment_run_out=$(yarn guardoni cli yt-experiment -c guardoni.config.js
 video_experiment_public_key=${video_experiment_run_out/'publicKey: '/''}
 echo $video_experiment_public_key
 
+echo "Sleeping 30 seconds to let the parser process the data"
+# otherwise I was getting only the first 'home' as processed
+sleep 30;
 curl "http://localhost:9000/api/v1/personal/$video_experiment_public_key"
+
 
 yarn pm2 stop all
