@@ -178,7 +178,8 @@ export const allowedSelectors = [
 ];
 
 export function processLeaf(e: Leaf): Ad | null {
-  leafLogD('Process leaf %O', e);
+  /* leafLogD('Process leaf %O', e); */
+
   // e is the 'element', it comes from the DB, and we'll look the
   // e.html mostly. different e.selecotrName causes different sub-functions
   if (allowedSelectors.includes(e.selectorName)) {
@@ -192,11 +193,13 @@ export function processLeaf(e: Leaf): Ad | null {
     // eslint-disable-next-line no-console
     // console.log(e.nature, e.selectorName);
 
+    leafLogD('selector %s', e.selectorName);
     if (e.selectorName === 'ad') mined = mineAd(D, e);
     else if (e.selectorName === 'banner') mined = mineBanner(D, e);
     else if (e.selectorName === 'overlay') mined = mineOverlay(D, e);
     else if (e.selectorName === 'toprightpict') mined = mineTRP(D, e);
-    else if (
+    /* channel is temporarly disabled */
+    /* else if (
       e.selectorName === 'channel' ||
       e.selectorName === 'channel1' ||
       e.selectorName === 'channel2' ||
@@ -204,6 +207,7 @@ export function processLeaf(e: Leaf): Ad | null {
       e.selectorName === '[href^="/channel"]'
     )
       mined = mineChannel(D, e);
+    */
     else if (e.selectorName === 'adbadge') mined = mineAdBadge(D, e);
     else leafLogger('Selector not handled %s', e.selectorName);
 

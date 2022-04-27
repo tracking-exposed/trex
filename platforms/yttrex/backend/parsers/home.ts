@@ -320,8 +320,9 @@ function actualHomeProcess(D: Document): HomeProcess {
       const videoInfo = dissectSelectedVideo(e, i, titles, ubication);
       if (videoInfo) {
         (videoInfo as any).thumbnailHref = thumbnailHref;
+        return videoInfo;
       }
-      throw new Error('No error info');
+      throw new Error("No video Info");
     } catch (error) {
       const f = e.querySelector('#video-title-link');
       const s = f ? f.getAttribute('aria-label') : null;

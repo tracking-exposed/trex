@@ -182,7 +182,7 @@ export function checkUpDebug(r): void {
 }
 
 function relatedMetadata(e: any, i: number): ParsedInfo | null {
-  videoLog.debug('event %O at index %d', e, i);
+  videoLog.debug('event %O at index %d', e.tagName, i);
   // here we find metadata inside the preview snippet on the right column
   let foryou, mined;
   const title = e.querySelector('#video-title').textContent;
