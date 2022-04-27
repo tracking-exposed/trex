@@ -24,7 +24,7 @@ jobs:
       mongo-db:
         image: mongo:4.2
         ports:
-          - 27017:27017
+          - 27019:27017
 
     steps:
       - uses: actions/checkout@v2
@@ -72,9 +72,4 @@ jobs:
         run: yarn guardoni pkg
 
       - name: Test package
-        run: ./guardoni-cli-${{ step.version.outputs.version }}-linux yt-list
-
-      - name: Release-it after bump
-        env:
-          YCAI_DOTENV_CONFIG_PATH: .env.beta
-        run: yarn release-it-after-bump
+        run: ./platforms/guardoni/dist/guardoni-cli-${{ steps.version.outputs.version }}-linux yt-list

@@ -211,6 +211,7 @@ function print3rdParties(): void {
 
 async function beforeLoad(page: puppeteer.Page, directive: any): Promise<void> {
   globalConfig.currentURLlabel = directive.urltag;
+  return Promise.resolve();
 }
 
 async function completed(): Promise<string | null> {
@@ -219,6 +220,7 @@ async function completed(): Promise<string | null> {
 
 async function beforeWait(page: puppeteer.Page, directive: any): Promise<void> {
   // debug("Nothing in beforeWait but might be screencapture or ad checking");
+  return Promise.resolve();
 }
 
 async function afterWait(page: puppeteer.Page, directive: any): Promise<void> {

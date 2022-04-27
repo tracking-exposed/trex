@@ -21,9 +21,10 @@ import differenceInMilliseconds from 'date-fns/differenceInMilliseconds';
 const axiosMock = axios as jest.Mocked<typeof axios>;
 axiosMock.create.mockImplementation(() => axiosMock);
 
-const basePath = path.resolve(process.cwd(), './');
-const profileName = 'profile-test-1';
-const extensionDir = path.resolve(__dirname, '../build/extension');
+const basePath = path.resolve(__dirname, '../');
+const profileName = 'profile-test-99';
+const ytExtensionDir = path.resolve(__dirname, '../../yttrex/extension/build');
+const tkExtensionDir = path.resolve(__dirname, '../../tktrex/extension/build');
 
 describe('CLI', () => {
   const evidenceTag = 'test-tag';
@@ -32,22 +33,31 @@ describe('CLI', () => {
     {
       headless: false,
       verbose: false,
-      basePath,
       profileName: profileName,
-      extensionDir,
-      backend: 'http://localhost:9009/api',
+      yt: {
+        name: 'youtube',
+        backend: process.env.YT_BACKEND as string,
+        extensionDir: ytExtensionDir,
+        proxy: undefined,
+      },
+      tk: {
+        name: 'tiktok',
+        backend: process.env.TK_BACKEND as string,
+        extensionDir: tkExtensionDir,
+        proxy: undefined,
+      },
       loadFor: 3000,
       evidenceTag,
-      chromePath: '/chrome/fake/path',
+      advScreenshotDir: undefined,
+      excludeURLTag: undefined
     },
+    basePath,
     puppeteerMock
   );
 
   jest.setTimeout(60 * 1000);
 
   beforeAll(async () => {
-    // make extension path
-    fs.mkdirSync(extensionDir, { recursive: true })
 
     fs.mkdirSync(path.resolve(basePath, 'experiments'), {
       recursive: true,
@@ -85,7 +95,7 @@ describe('CLI', () => {
   });
 
   afterAll(() => {
-    fs.rmdirSync(path.resolve(basePath, 'profiles', profileName), {
+    fs.rmSync(path.resolve(basePath, 'profiles', profileName), {
       recursive: true,
     });
   });
@@ -289,7 +299,7 @@ describe('CLI', () => {
       ).resolves.toMatchObject({
         _tag: 'Left',
         left: {
-          message: 'Run experiment validation',
+          message: 'Empty experiment id',
           details: ['Invalid value "" supplied to : NonEmptyString'],
         },
       });

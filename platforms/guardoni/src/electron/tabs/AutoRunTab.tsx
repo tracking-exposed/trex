@@ -11,7 +11,7 @@ import { GuardoniExperiment } from '@shared/models/Experiment';
 import { formatDate } from '@shared/utils/date.utils';
 import { ipcRenderer } from 'electron';
 import * as React from 'react';
-import { GET_PUBLIC_DIRECTIVES } from '../models/events';
+import { EVENTS } from '../models/events';
 
 const useStyle = makeStyles((theme) => ({
   directiveRow: {
@@ -36,12 +36,12 @@ export const AutoRunTab: React.FC<FromCSVFileTabProps> = ({ onSubmit }) => {
   const [directives, setDirectives] = React.useState<GuardoniExperiment[]>([]);
 
   React.useEffect(() => {
-    ipcRenderer.on(GET_PUBLIC_DIRECTIVES.value, (event, ...args) => {
+    ipcRenderer.on(EVENTS.GET_PUBLIC_DIRECTIVES.value, (event, ...args) => {
       const [directives] = args;
       setDirectives(directives);
     });
 
-    ipcRenderer.send(GET_PUBLIC_DIRECTIVES.value);
+    ipcRenderer.send(EVENTS.GET_PUBLIC_DIRECTIVES.value);
   }, []);
 
   return (

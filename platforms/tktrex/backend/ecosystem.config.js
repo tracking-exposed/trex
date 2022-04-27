@@ -10,10 +10,7 @@ const tk = {
     cwd: __dirname,
     script: 'yarn watch',
     watch: false,
-    env_test: {
-      ...testEnv,
-      port: 14001,
-    },
+    env_test: testEnv,
   },
   parser: {
     name: 'tk-parser',

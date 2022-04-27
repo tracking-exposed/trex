@@ -162,7 +162,7 @@ async function get(req) {
 }
 
 async function getPublic(req) {
-  const whiteList = [
+  const blackList = [
     // 'b3d531eca62b2dc989926e0fe21b54ab988b7f3d',
     // prod ids
     'd75f9eaf465d2cd555de65eaf61a770c82d59451',
@@ -172,7 +172,7 @@ async function getPublic(req) {
   const filter = {
     directiveType: 'comparison',
     experimentId: {
-      $in: whiteList,
+      $nin: blackList,
     },
   };
 

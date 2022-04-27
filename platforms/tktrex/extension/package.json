@@ -12,12 +12,12 @@
     "test": "jest"
   },
   "dependencies": {
-    "@material-ui/core": "^4.12.3",
-    "@material-ui/icons": "^4.11.2",
+    "@material-ui/core": "^4.12.4",
+    "@material-ui/icons": "^4.11.3",
     "@types/lodash": "^4.14.179",
     "create-react-class": "^15.7.0",
-    "debug": "^4.3.3",
-    "fp-ts": "^2.11.8",
+    "debug": "^4.3.4",
+    "fp-ts": "^2.11.9",
     "jquery": "^3.6.0",
     "lodash": "^4.17.21",
     "moment": "^2.29.2",
@@ -44,6 +44,6 @@
     "io-ts": "^2.2.16",
     "jest-environment-jsdom-global": "^3.0.0",
     "typescript": "^4.5.5",
-    "webpack": "^5.71.0"
+    "webpack": "^5.72.0"
   }
 }

@@ -3,13 +3,13 @@ import { pipe } from 'fp-ts/lib/function';
 import * as TE from 'fp-ts/lib/TaskEither';
 import * as fs from 'fs';
 import * as path from 'path';
-import { guardoniLogger } from '../src/logger';
+import { readConfigFromPath } from '../src/guardoni/config';
 import {
-  getDefaultProfile,
-  GetGuardoni,
-  getProfileDataDir,
+  GetGuardoni
 } from '../src/guardoni/guardoni';
+import { getDefaultProfile, getProfileDataDir } from '../src/guardoni/profile';
 import { csvStringifyTE } from '../src/guardoni/utils';
+import { guardoniLogger } from '../src/logger';
 import { puppeteerMock } from '../__mocks__/puppeteer.mock';
 
 const directiveLinks = [
@@ -34,19 +34,41 @@ const directiveLinks = [
   },
 ];
 
-const backend = process.env.BACKEND;
+const backend = process.env.YT_BACKEND as string;
 
 describe('Guardoni', () => {
-  const basePath = path.resolve(process.cwd(), './');
+  const basePath = path.resolve(__dirname, '../');
   const profile = 'profile-test-99';
-  const extensionDir = path.resolve(basePath, 'build/extension');
   const csvTestFileName = 'trex-yt-videos-test.csv';
+  const defaultConfig = {
+    headless: false,
+    verbose: false,
+    profileName: profile,
+    evidenceTag: '',
+    advScreenshotDir: undefined,
+    excludeURLTag: undefined,
+    loadFor: 3000,
+    basePath,
+    yt: {
+      name: 'youtube' as const,
+      backend: process.env.YT_BACKEND as string,
+      extensionDir: path.resolve(__dirname, '../../yttrex/extension/build'),
+      proxy: undefined,
+    },
+    tk: {
+      name: 'tiktok' as const,
+      backend: process.env.TK_BACKEND as string,
+      extensionDir: path.resolve(__dirname, '../../tktrex/extension/build'),
+      proxy: undefined,
+    },
+  };
 
   beforeAll(async () => {
     const csvContent = await csvStringifyTE(directiveLinks, {
       header: true,
       encoding: 'utf-8',
     })();
+
     if (csvContent._tag === 'Left') {
       throw csvContent.left as any;
     }
@@ -57,9 +79,7 @@ describe('Guardoni', () => {
     );
 
     const profileUDD = getProfileDataDir(basePath, profile);
-    const profileExists = fs.statSync(profileUDD, {
-      throwIfNoEntry: false,
-    });
+    const profileExists = fs.existsSync(profileUDD);
 
     if (!profileExists) {
       fs.mkdirSync(profileUDD, {
@@ -68,29 +88,44 @@ describe('Guardoni', () => {
     }
     fs.writeFileSync(
       path.join(profileUDD, 'guardoni.json'),
-      JSON.stringify(
-        getDefaultProfile(basePath, profile, extensionDir),
-        null,
-        2
-      ),
+      JSON.stringify(getDefaultProfile(basePath, profile), null, 2),
       'utf-8'
     );
   });
 
   afterAll(() => {
     fs.rmdirSync(getProfileDataDir(basePath, profile), { recursive: true });
+    fs.rmSync(path.resolve(basePath, 'experiments', csvTestFileName));
   });
 
   describe('config', () => {
+    test('succeeds when config is correctly formed', async () => {
+      const config = await readConfigFromPath({ logger: guardoniLogger })(basePath, defaultConfig)();
+
+      expect(config).toMatchObject({
+        right: {
+          profileName: profile,
+          verbose: true,
+          headless: true,
+          yt: {
+            name: 'youtube',
+            backend: 'http://localhost:9000/api',
+            extensionDir: path.resolve(basePath, '../yttrex/extension/build'),
+          },
+          tk: {
+            name: 'tiktok',
+            backend: 'http://localhost:14000/api',
+            extensionDir: path.resolve(basePath, '../tktrex/extension/build'),
+          },
+        },
+      });
+    });
+
     test('succeeds when no profile name is given but a profile dir exists', async () => {
       const g = await GetGuardoni({
-        config: {
-          headless: false,
-          verbose: false,
-          basePath,
-          backend,
-          extensionDir,
-        },
+        basePath,
+        config: defaultConfig,
+        platform: 'youtube',
         logger: guardoniLogger,
         puppeteer: puppeteerMock,
       })();
@@ -107,14 +142,14 @@ describe('Guardoni', () => {
     test('succeeds with correct defaults', async () => {
       const profileName = 'profile-test-0';
       const g = await GetGuardoni({
+        basePath,
         config: {
+          ...defaultConfig,
+          profileName,
           headless: false,
           verbose: false,
-          basePath,
-          profileName,
-          backend,
-          extensionDir,
         },
+        platform: 'youtube',
         logger: guardoniLogger,
         puppeteer: puppeteerMock,
       })();
@@ -124,9 +159,11 @@ describe('Guardoni', () => {
           config: {
             headless: false,
             verbose: false,
-            backend,
+            platform: {
+              backend: defaultConfig.yt.backend,
+              extensionDir: defaultConfig.yt.extensionDir,
+            },
             profileName,
-            extensionDir: path.join(basePath, 'build/extension'),
           },
         },
       });
@@ -139,12 +176,9 @@ describe('Guardoni', () => {
       jest.setTimeout(60 * 1000);
 
       const guardoni = GetGuardoni({
-        config: {
-          verbose: true,
-          headless: true,
-          basePath,
-          extensionDir,
-        },
+        basePath,
+        config: defaultConfig,
+        platform: 'youtube',
         logger: guardoniLogger,
         puppeteer: puppeteerMock,
       });

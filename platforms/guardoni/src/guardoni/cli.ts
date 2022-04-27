@@ -10,6 +10,7 @@ import { GuardoniConfig, GuardoniOutput, GuardoniSuccessOutput } from './types';
 import puppeteer from 'puppeteer-core';
 import yargs from 'yargs';
 import { hideBin } from 'yargs/helpers';
+import { DEFAULT_BASE_PATH } from './constants';
 
 export const cliLogger = guardoniLogger.extend('cli');
 
@@ -40,6 +41,7 @@ export interface GuardoniCLI {
 
 export type GetGuardoniCLI = (
   config: GuardoniConfig,
+  basePath: string,
   p: typeof puppeteer
 ) => GuardoniCLI;
 
@@ -61,7 +63,7 @@ const foldOutput = (
                 return [`${key}: \n\t`, ...valuesChunk];
               }
 
-              return [`${key}: ${value}`];
+              return [`${key}: \n ${JSON.stringify(value, null, 2)}`];
             });
           }),
           A.flatten
@@ -83,14 +85,24 @@ const foldOutput = (
   ].join('\n');
 };
 
-export const GetGuardoniCLI: GetGuardoniCLI = (config, p): GuardoniCLI => {
+export const GetGuardoniCLI: GetGuardoniCLI = (
+  config,
+  basePath,
+  p
+): GuardoniCLI => {
   cliLogger.debug('Initialized with config %O', config);
 
   const run = (
     command: GuardoniCommandConfig
   ): TE.TaskEither<AppError, GuardoniSuccessOutput> =>
     pipe(
-      GetGuardoni({ config, logger: guardoniLogger, puppeteer: p }),
+      GetGuardoni({
+        basePath,
+        config,
+        logger: guardoniLogger,
+        platform: 'youtube',
+        puppeteer: p,
+      }),
       TE.chain((g) => {
         return TE.fromIO<
           TE.TaskEither<AppError, GuardoniSuccessOutput>,
@@ -156,17 +168,25 @@ const runGuardoni = ({
   verbose,
   c,
   config,
+  profile,
   command,
   ...guardoniConf
 }: any): Promise<void> => {
+  const basePath = guardoniConf.basePath ?? DEFAULT_BASE_PATH;
   if (verbose) {
+    // eslint-disable-next-line
+    console.log('Running guardoni', { config, basePath, guardoniConf });
     if (config) {
       // eslint-disable-next-line
       console.log(`Configuration loaded from ${config}`, guardoniConf);
     }
   }
 
-  return GetGuardoniCLI({ ...guardoniConf, verbose }, puppeteer)
+  return GetGuardoniCLI(
+    { ...guardoniConf, profileName: profile ?? 'default', verbose },
+    basePath,
+    puppeteer
+  )
     .runOrThrow(command)
     .then(() => process.exit(0));
 };

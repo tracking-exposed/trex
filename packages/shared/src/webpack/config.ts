@@ -206,6 +206,10 @@ const getConfig = <E extends t.Props>(
           ],
         },
         {
+          test: /\.(png)$/,
+          use: [{ loader: 'file-loader' }],
+        },
+        {
           test: /\.(ttf|svg)$/,
           type: 'asset/inline',
         },
