@@ -243,12 +243,9 @@ async function afterWait(page: puppeteer.Page, directive: any): Promise<void> {
     const fullpath = path.join(directive.profile, screendumpf);
     debug('afterWait: collecting screenshot in %s', fullpath);
 
-    if (hasPlayer) await state.player.screenshot({ path: fullpath });
-    else
-      await page.screenshot({
-        path: fullpath,
-        fullPage: true,
-      });
+    // if (hasPlayer) await state.player.screenshot({ path: fullpath });
+    // else
+    await page.screenshot({ path: fullpath, fullPage: true });
   }
 }
 const condition = {

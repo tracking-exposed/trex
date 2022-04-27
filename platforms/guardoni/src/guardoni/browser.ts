@@ -77,7 +77,6 @@ const operateTab =
 
       const loadFor = (directive as any).loadFor ??
         ctx.config.loadFor ??
-        _.parseInt(nconf.get('load')) ??
         6000 ;
 
       ctx.logger.info(
@@ -112,6 +111,7 @@ const operateTab =
       await page.waitForTimeout(loadFor);
 
       try {
+        debugger;
         await domainSpecific.afterWait(page, directive);
       } catch (error) {
         // eslint-disable-next-line no-console
