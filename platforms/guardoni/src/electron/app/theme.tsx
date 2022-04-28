@@ -36,9 +36,10 @@ export const theme = createTheme({
       fontSize: '1.3rem',
     },
     h6: {
-      fontWeight: 400,
+      fontWeight: 600,
       fontSize: '1.1rem',
       marginBottom: 4,
+      letterSpacing: 0.3,
     },
     subtitle1: {
       fontSize: '1rem',
@@ -53,9 +54,10 @@ export const theme = createTheme({
     },
     body1: {
       fontWeight: 400,
-      fontSize: '1rem',
+      fontSize: '1.1rem',
       lineHeight: 1.1,
       color: black,
+      letterSpacing: 0.3,
     },
     body2: {
       fontWeight: 400,
@@ -63,13 +65,24 @@ export const theme = createTheme({
       lineHeight: 1.2,
     },
     caption: {
-      fontSize: '0.7rem',
+      fontSize: '0.8rem',
       lineHeight: 1.3,
+      letterSpacing: 0.3,
+      fontWeight: 600,
     },
   },
   palette: {
     primary: {
       main: primaryColor,
+    },
+  },
+
+  overrides: {
+    MuiButton: {
+      contained: {
+        border: 'solid black 2px',
+        borderRadius: '0',
+      },
     },
   },
 });
