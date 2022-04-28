@@ -195,25 +195,13 @@ export const GetEvents = ({
         });
         // set guardoni config
         ipcMain.on(EVENTS.SET_GUARDONI_CONFIG_EVENT.value, (event, ...args) => {
-          const [{ platform, ...configUpdate }] = args;
-          logger.debug(`Update guardoni platform config %O`, configUpdate);
+          const [config] = args;
+          logger.debug(`Update guardoni config %O`, config);
 
-          const platformKey = getConfigPlatformKey(platform);
-          const c = {
-            ...guardoni.config,
-            ...configUpdate,
-            [platformKey]: {
-              ...guardoni.config[platformKey],
-              ...platform,
-            },
-          };
-
-          logger.debug(`Update guardoni config %O`, c);
-
-          store.set('basePath', configUpdate.basePath);
+          store.set('basePath', config.basePath);
 
           void TE.tryCatch(
-            () => initGuardoni(basePath, c, platform),
+            () => initGuardoni(basePath, config, platform),
             toAppError
           )();
         });
@@ -338,7 +326,7 @@ export const GetEvents = ({
             platform
           );
 
-          guardoniEventsLogger.info('Change platform event %O', config);
+          guardoniEventsLogger.info('Change platform event %O', platform);
           // clear config in renderer
 
           // update platform in store
