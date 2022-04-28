@@ -39,8 +39,9 @@ const useStyles = makeStyles((theme) => ({
     opacity: 1,
   },
   settingButton: {
-    ...theme.typography.subtitle1,
-    marginBottom: theme.spacing(2),
+    ...theme.typography.body1,
+    margin: theme.spacing(1),
+    fontSize: '18px',
   },
 }));
 
@@ -156,7 +157,7 @@ export const Header: React.FC<HeaderProps> = ({
                 alignItems: 'center',
                 minWidth: 400,
                 border: 'solid #23aa9a 2px',
-                borderTop: 'none',
+                borderTop: 'solid black 2px',
               }}
             >
               <Box style={{ marginBottom: theme.spacing(2) }}>
@@ -173,14 +174,14 @@ export const Header: React.FC<HeaderProps> = ({
               </Box>
 
               <Typography
-                variant="subtitle2"
+                variant="h5"
                 style={{
                   marginBottom: theme.spacing(2),
                 }}
               >
                 Profile Name
               </Typography>
-              <Typography>{config.profileName}</Typography>
+              <Typography variant="body1">{config.profileName}</Typography>
               <Divider
                 style={{
                   width: '50%',
