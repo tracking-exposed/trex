@@ -1,18 +1,15 @@
 import { trexLogger } from '@shared/logger';
-import { VideoMetadata } from '../models/Metadata';
-import { addSeconds, differenceInSeconds } from 'date-fns';
+import { differenceInSeconds, subSeconds } from 'date-fns';
 import * as t from 'io-ts';
 import { date } from 'io-ts-types/lib/date';
 import _ from 'lodash';
 import moment from 'moment';
-import querystring from 'querystring';
-import url from 'url';
 import { HTMLSource } from '../lib/parser/html';
 import utils from '../lib/utils'; // this because parseLikes is an utils to be used also with version of the DB without the converted like. but should be a parsing related-only library once the issue with DB version is solved
+import { ParsedInfo, VideoMetadata } from '../models/Metadata';
 import longlabel from './longlabel';
 import * as shared from './shared';
 import uxlang from './uxlang';
-import { ParsedInfo } from 'models/Metadata';
 
 const videoLog = trexLogger.extend('video');
 
@@ -195,9 +192,9 @@ function relatedMetadata(e: any, i: number): ParsedInfo | null {
     ? e.querySelector('a').getAttribute('href')
     : null;
   // eslint-disable-next-line node/no-deprecated-api
-  const urlinfo = url.parse(link);
-  const p = querystring.parse(urlinfo.query ?? '');
-  const videoId = p.v;
+  const urlinfo = new URL(link);
+  const p = urlinfo.searchParams;
+  const videoId = p.get('v');
   const liveBadge = !!e.querySelector('.badge-style-type-live-now');
   const thumbnailHref = shared.getThumbNailHref(e);
 
@@ -273,31 +270,30 @@ export function makeAbsolutePublicationTime(
        metadata. clientTime isn't visibile in parsing function so the relative
        transformation of '1 month ago', is now a moment.duration() object 
        and now is saved the estimated ISODate format. */
-  return _.map(list, function (r, i): VideoResultAbsolutePubTime {
-    // console.log({ clientTime, recommendedPubTime: r?.recommendedPubTime });
-    if (!clientTime || !r?.recommendedPubTime) {
-      return {
-        ...r,
-        publicationTime: null,
-        timePrecision: 'error',
-      };
-    } else {
-      const deltaS = differenceInSeconds(
-        r.recommendedPubTime ? r.recommendedPubTime : new Date(),
-        clientTime
-      );
+  return _.map(
+    list,
+    function ({ recommendedPubTime, ...r }, i): VideoResultAbsolutePubTime {
+      if (!clientTime || !recommendedPubTime) {
+        return {
+          ...r,
+          publicationTime: null,
+          timePrecision: 'error',
+        };
+      } else {
+        const when = r.recommendedRelativeSeconds
+          ? subSeconds(clientTime, r.recommendedRelativeSeconds ?? 0)
+          : clientTime;
 
-      const when = addSeconds(clientTime, deltaS);
-
-      return {
-        ...r,
-        publicationTime: when,
-        timePrecision: 'estimated',
-      };
+        return {
+          ...r,
+          publicationTime: new Date(when.toISOString()),
+          timePrecision: 'estimated',
+        };
+      }
+      /* we are keeping 'label' so it can be fetch in mongodb but filtered in JSON/CSV */
+      // return r;
     }
-    /* we are keeping 'label' so it can be fetch in mongodb but filtered in JSON/CSV */
-    // return r;
-  });
+  );
 }
 
 export function parseSingleTry(D, memo, spec): any {
@@ -402,7 +398,7 @@ export function processVideo(
   D: Document,
   blang: string,
   clientTime: Date,
-  urlinfo: url.UrlWithStringQuery
+  urlinfo: URL
 ): VideoMetadata {
   /* this method to extract title was a nice experiment
    * and/but should be refactored and upgraded */
@@ -497,8 +493,8 @@ export function processVideo(
     videoLog.error('Failure in logged(): %s', error.message);
   }
 
-  const params = urlinfo.query ? querystring.parse(urlinfo.query) : {};
-  const videoId = params.v as string;
+  const params = urlinfo.searchParams;
+  const videoId = params.get('v');
 
   return {
     title,
@@ -525,7 +521,7 @@ export function process(envelop: HTMLSource): VideoMetadata | null {
       envelop.html?.blang,
       envelop.html?.clientTime,
       // eslint-disable-next-line node/no-deprecated-api
-      url.parse(envelop.html?.href ?? '')
+      new URL(envelop.html?.href ?? '')
     );
   } catch (e) {
     videoLog.error(

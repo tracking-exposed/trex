@@ -102,16 +102,24 @@ describe('Parserv', () => {
               ...receivedM
             } = newM as any;
 
-            expect(receivedSections.length).toEqual(expectedSections.length);
+            expect(receivedSections.length).toBeGreaterThanOrEqual(
+              expectedSections.length
+            );
             expect(receivedSelected.length).toBeGreaterThanOrEqual(
               expectedSelected.length
             );
             expect(
-              receivedSelected.map((s) => ({
+              receivedSelected.map(({ thumbnailHref, ...s }) => ({
                 ...s,
-                publicationTime: s.publicationTime?.toISOString() ?? null,
+                publicationTime: s.publicationTime
+                  ? s.publicationTime.toISOString()
+                  : null,
               }))
-            ).toMatchObject(expectedSelected);
+            ).toMatchObject(
+              expectedSelected.map(({ thumbnailHref, ...s }) => ({
+                ...s,
+              }))
+            );
             expect(receivedM).toMatchObject(expectedM);
           },
         })({ sources, metadata });

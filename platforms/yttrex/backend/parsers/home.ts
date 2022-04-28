@@ -1,5 +1,5 @@
 import { trexLogger } from '@shared/logger';
-import { formatDistance } from 'date-fns';
+import { differenceInSeconds } from 'date-fns';
 import _ from 'lodash';
 import moment from 'moment';
 import { HTMLSource } from '../lib/parser/html';
@@ -202,6 +202,12 @@ function dissectSelectedVideo(
 
   if (!infos.aria) return null;
 
+  const recommendedRelativeSeconds = videoTileLinkParsed?.timeago
+    ? differenceInSeconds(new Date(), videoTileLinkParsed.timeago)
+    : null;
+
+  // homeLog.debug('relative seconds %O', videoTileLinkParsed);
+
   const s = {
     index: i + 1,
     verified: infos.verified,
@@ -214,16 +220,12 @@ function dissectSelectedVideo(
     recommendedLength: infos.recommendedLength,
     recommendedDisplayL: infos.displayTime ? infos.displayTime : null,
     recommendedLengthText: infos.expandedTime ? infos.expandedTime : null,
-    recommendedPubTime: videoTileLinkParsed
+    recommendedPubTime: videoTileLinkParsed?.timeago
       ? videoTileLinkParsed.timeago
       : null,
     /* ^^^^  is deleted in makeAbsolutePublicationTime, when clientTime is available,
      * this field produces -> recommendedPubtime and ptPrecison */
-    recommendedRelativeSeconds: videoTileLinkParsed?.timeago
-      ? formatDistance(new Date(), videoTileLinkParsed.timeago, {
-          includeSeconds: true,
-        })
-      : null,
+    recommendedRelativeSeconds,
     recommendedViews: videoTileLinkParsed ? videoTileLinkParsed.views : null,
     isLive: !!infos.liveBadge,
     label: infos.aria ? infos.aria : null,
@@ -287,7 +289,7 @@ interface HomeProcess {
 
 function actualHomeProcess(D: Document): HomeProcess {
   /* selection findings */
-  const titles = _.compact(
+  const sectionsWithTitle = _.compact(
     _.map(D.querySelectorAll('#title'), function (e) {
       if (!_.size(e.textContent) || !_.size(_.trim(e.textContent ?? undefined)))
         return null;
@@ -301,7 +303,7 @@ function actualHomeProcess(D: Document): HomeProcess {
     })
   );
 
-  homeLog.debug('sections %j', titles);
+  homeLog.debug('sections %j', sectionsWithTitle);
 
   const videoElemSelector = 'ytd-rich-item-renderer';
   const ve = D.querySelectorAll(videoElemSelector);
@@ -319,7 +321,12 @@ function actualHomeProcess(D: Document): HomeProcess {
       const ubication = D.querySelector('body')?.outerHTML.indexOf(e.outerHTML);
       sections.push({ i, offset: ubication });
       homeLog.debug('Section %s', i, thumbnailHref);
-      const videoInfo = dissectSelectedVideo(e, i, titles, ubication);
+      const videoInfo = dissectSelectedVideo(
+        e,
+        i,
+        sectionsWithTitle,
+        ubication
+      );
       if (videoInfo) {
         (videoInfo as any).thumbnailHref = thumbnailHref;
         return videoInfo;

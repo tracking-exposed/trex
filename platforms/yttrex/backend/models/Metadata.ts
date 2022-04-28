@@ -22,11 +22,11 @@ export const ParsedInfo = t.intersection(
         verified: t.union([t.boolean, t.null]),
         foryou: t.union([t.string, t.null]),
         params: t.union([t.record(t.string, t.string), t.null]),
-
         recommendedTitle: t.string,
         recommendedLength: t.number,
         recommendedDisplayL: t.union([t.string, t.null]),
         recommendedPubTime: t.union([date, t.null]),
+        recommendedRelativeSeconds: t.union([t.number, t.null]),
         publicationTime: t.union([date, t.null]),
       },
       'Partial'

@@ -78,7 +78,7 @@ export function toMetadata(
 
   let metadata: any = {};
   metadata.savingTime = new Date(entry.source.html.savingTime);
-  metadata.id = entry.source.html.id;
+  metadata.id = entry.source.html.metadataId;
   metadata.publicKey = entry.source.html.publicKey;
   metadata.timelineId = entry.source.html.timelineId;
 
@@ -142,7 +142,7 @@ export const updateMetadataAndMarkHTML =
     const u = await db.api.updateOne(
       db.write,
       nconf.get('schema').htmls,
-      { id: metadata.id },
+      { id: e.source.html.id },
       { processed: true }
     );
     // parserLog.debug('Upsert html by %O: %O', { id: e.id }, u);

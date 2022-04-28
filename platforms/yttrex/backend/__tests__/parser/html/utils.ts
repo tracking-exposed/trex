@@ -81,9 +81,20 @@ export const runParserTest =
 
     expectSources(updatedSources);
 
-    expect(result?.metadata[0]).toBeTruthy();
+    // check stored metadata from db
+    const metadataResults = await opts.db.api.aggregate(
+      opts.db.read,
+      'metadata',
+      [
+        {
+          $match: { id: { $in: result.metadata.map((m) => m.id) } },
+        },
+      ]
+    );
 
-    result?.metadata.forEach((m) => {
+    expect(metadataResults[0]).toBeTruthy();
+
+    metadataResults.forEach((m) => {
       const decodeResult = codec.decode(m);
 
       if (decodeResult._tag === 'Left') {
