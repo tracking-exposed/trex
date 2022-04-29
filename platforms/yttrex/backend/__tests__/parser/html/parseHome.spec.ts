@@ -109,16 +109,17 @@ describe('Parserv', () => {
               expectedSelected.length
             );
             expect(
-              receivedSelected.map(({ thumbnailHref, ...s }) => ({
-                ...s,
-                publicationTime: s.publicationTime
-                  ? s.publicationTime.toISOString()
-                  : null,
-              }))
+              receivedSelected.map(
+                ({ thumbnailHref, publicationTime, ...s }) => ({
+                  ...s,
+                })
+              )
             ).toMatchObject(
-              expectedSelected.map(({ thumbnailHref, ...s }) => ({
-                ...s,
-              }))
+              expectedSelected.map(
+                ({ thumbnailHref, publicationTime, ...s }) => ({
+                  ...s,
+                })
+              )
             );
             expect(receivedM).toMatchObject(expectedM);
           },
