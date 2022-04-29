@@ -1,6 +1,5 @@
 import home from './home';
 import { processLeaf } from './leaf';
-import * as longlabel from './longlabel';
 import searches from './searches';
 import * as shared from './shared';
 import thumbnail from './thumbnail';
@@ -15,7 +14,6 @@ export const parsers = {
   home,
   searches,
   shared: shared.getThumbNailHref,
-  longlabel: longlabel.parser,
   thumbnail,
   video,
   search: searches,
