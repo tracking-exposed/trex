@@ -54,11 +54,11 @@ const OutputPanel: React.FC<OutputPanelProps> = ({ items }) => {
   const classes = useStyles();
 
   return (
-    <Box style={{ maxWidth: '100%' }}>
-      <Typography variant="h5">Output</Typography>
-      <Box>
+    <Box pt={1} style={{ maxWidth: '100%' }}>
+      <Typography variant="h4">Output</Typography>
+      <Box pt={2} pb={2}>
         {items.length === 0 ? (
-          <Typography variant="subtitle1">
+          <Typography variant="body1">
             Guardoni output will appear here
           </Typography>
         ) : (
