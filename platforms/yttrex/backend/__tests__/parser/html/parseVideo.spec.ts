@@ -75,6 +75,7 @@ describe('Parser: Video', () => {
         log: appTest.logger,
         db,
         sourceSchema: appTest.config.get('schema').htmls,
+        metadataSchema: appTest.config.get('schema').metadata,
         mapSource: (h: any) => ({
           html: h,
           jsdom: new JSDOM(h.html.replace(/\n +/g, '')).window.document,

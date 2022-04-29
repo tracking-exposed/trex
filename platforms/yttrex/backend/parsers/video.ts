@@ -1,5 +1,5 @@
 import { trexLogger } from '@shared/logger';
-import { differenceInSeconds, subSeconds } from 'date-fns';
+import { differenceInSeconds, parseISO } from 'date-fns';
 import * as t from 'io-ts';
 import { date } from 'io-ts-types/lib/date';
 import _ from 'lodash';
@@ -7,7 +7,7 @@ import moment from 'moment';
 import { HTMLSource } from '../lib/parser/html';
 import utils from '../lib/utils'; // this because parseLikes is an utils to be used also with version of the DB without the converted like. but should be a parsing related-only library once the issue with DB version is solved
 import { ParsedInfo, VideoMetadata } from '../models/Metadata';
-import longlabel from './longlabel';
+import * as longlabel from './longlabel';
 import * as shared from './shared';
 import uxlang from './uxlang';
 
@@ -128,9 +128,10 @@ export function closestForTime(
     })
   );
 
-  if (_.first(combo)) {
-    const expandedTime = _.first(combo)?.label.trim(); // '3:02'
-    const displayTime = _.first(combo)?.text.trim(); // '3 minutes, 2 seconds'
+  const match = _.first(combo);
+  if (match) {
+    const expandedTime = match.label.trim(); // '3:02'
+    const displayTime = match.text.trim(); // '3 minutes, 2 seconds'
     return { displayTime, expandedTime };
   }
 
@@ -280,13 +281,11 @@ export function makeAbsolutePublicationTime(
           timePrecision: 'error',
         };
       } else {
-        const when = r.recommendedRelativeSeconds
-          ? subSeconds(clientTime, r.recommendedRelativeSeconds ?? 0)
-          : clientTime;
+        const when = moment(clientTime).subtract(recommendedPubTime);
 
         return {
           ...r,
-          publicationTime: new Date(when.toISOString()),
+          publicationTime: parseISO(when.toISOString()),
           timePrecision: 'estimated',
         };
       }
@@ -387,9 +386,9 @@ export function simpleTitlePicker(D: Document): string | null {
     D.querySelector('#video-title')?.getAttribute('aria-label');
 
   if (videoLabel) {
-    const titleFromAriaLabel = longlabel.parser(videoLabel, '', '');
+    const titleFromAriaLabel = longlabel.parser(videoLabel, '', false);
     videoLog.debug('Title from aria label %s', titleFromAriaLabel);
-    return titleFromAriaLabel.title;
+    return titleFromAriaLabel.title ?? null;
   }
   return null;
 }

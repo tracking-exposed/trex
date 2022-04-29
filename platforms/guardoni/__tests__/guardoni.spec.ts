@@ -161,7 +161,7 @@ describe('Guardoni', () => {
           config: {
             headless: true,
             verbose: true,
-            platform: {
+            yt: {
               backend: defaultConfig.yt.backend,
               extensionDir: defaultConfig.yt.extensionDir,
             },

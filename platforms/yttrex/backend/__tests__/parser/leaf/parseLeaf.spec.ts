@@ -63,7 +63,8 @@ describe('Leaves parser', () => {
 
         await runParserTest({
           log: appTest.logger,
-          sourceSchema: appTest.config.get('schema').ads,
+          sourceSchema: appTest.config.get('schema').leaves,
+          metadataSchema: appTest.config.get('schema').ads,
           parsers: { home: processLeaf },
           codec: Ad,
           db,

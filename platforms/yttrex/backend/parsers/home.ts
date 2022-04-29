@@ -1,50 +1,21 @@
 import { trexLogger } from '@shared/logger';
-import { differenceInSeconds } from 'date-fns';
 import _ from 'lodash';
 import moment from 'moment';
 import { HTMLSource } from '../lib/parser/html';
 import { HomeMetadata, ParsedInfo } from '../models/Metadata';
-import longlabel from './longlabel';
+import * as longlabel from './longlabel';
 import * as shared from './shared';
 import uxlang from './uxlang';
 import * as videoparser from './video';
 
 const homeLog = trexLogger.extend('home');
 
-// interface VideoInfo {
-//   source: undefined;
-//   verified: boolean;
-//   textTitle: string | undefined;
-//   href: string | undefined;
-//   authorName: string | undefined;
-//   authorSource: string | undefined;
-//   authorHref: string | undefined;
-//   thumbnailHref: string | null;
-//   error: boolean;
-//   displayTime: string | null;
-//   expandedTime: string | null;
-//   recommendedLength: number;
-//   link: any;
-//   videoId?: string;
-//   liveBadge: boolean;
-//   sectionNumber?: number;
-//   section: any;
-//   mined: {
-//     views: number;
-//     title: string;
-//     timeago: Date | null;
-//     isLive: boolean;
-//     locale: string;
-//   } | null;
-//   aria: string | null;
-//   parameter: string | null;
-// }
-
 function dissectSelectedVideo(
   ee: Element,
   i: number,
   sections: any[],
-  offset: any
+  offset: any,
+  clientTime: Date
 ): Omit<ParsedInfo, 'timePrecision' | 'thumbnailHref'> | null {
   const infos = {
     link: undefined,
@@ -90,6 +61,7 @@ function dissectSelectedVideo(
     errorLog.push('Failure in authorName: ' + error.message);
     infos.error = true;
   }
+
   try {
     infos.authorHref = e
       .querySelector('#text-container.ytd-channel-name')
@@ -126,6 +98,7 @@ function dissectSelectedVideo(
       e,
       '.ytd-thumbnail-overlay-time-status-renderer'
     );
+
     infos.displayTime = displayTime as any;
     infos.expandedTime = expandedTime as any;
     infos.recommendedLength = displayTime
@@ -155,8 +128,9 @@ function dissectSelectedVideo(
     infos.aria = e
       .querySelector('#video-title-link')
       .getAttribute('aria-label');
+
     videoTileLinkParsed = infos.aria
-      ? longlabel.parser(infos.aria, infos.authorName, infos.liveBadge)
+      ? longlabel.parser(infos.aria, infos.authorName as any, infos.liveBadge)
       : null;
 
     homeLog.debug('Video title parsed %O', videoTileLinkParsed);
@@ -202,9 +176,11 @@ function dissectSelectedVideo(
 
   if (!infos.aria) return null;
 
-  const recommendedRelativeSeconds = videoTileLinkParsed?.timeago
-    ? differenceInSeconds(new Date(), videoTileLinkParsed.timeago)
-    : null;
+  // const recommendedRelativeSeconds = videoTileLinkParsed?.timeago
+  //   ? differenceInSeconds(videoTileLinkParsed.timeago, clientTime) > 0
+  //     ? differenceInSeconds(videoTileLinkParsed.timeago, clientTime)
+  //     : differenceInSeconds(clientTime, videoTileLinkParsed.timeago)
+  //   : null;
 
   // homeLog.debug('relative seconds %O', videoTileLinkParsed);
 
@@ -225,7 +201,9 @@ function dissectSelectedVideo(
       : null,
     /* ^^^^  is deleted in makeAbsolutePublicationTime, when clientTime is available,
      * this field produces -> recommendedPubtime and ptPrecison */
-    recommendedRelativeSeconds,
+    recommendedRelativeSeconds: videoTileLinkParsed?.timeago
+      ? videoTileLinkParsed.timeago.asSeconds()
+      : null,
     recommendedViews: videoTileLinkParsed ? videoTileLinkParsed.views : null,
     isLive: !!infos.liveBadge,
     label: infos.aria ? infos.aria : null,
@@ -287,7 +265,7 @@ interface HomeProcess {
   sections: HomeMetadata['sections'];
 }
 
-function actualHomeProcess(D: Document): HomeProcess {
+function actualHomeProcess(D: Document, clientTime: Date): HomeProcess {
   /* selection findings */
   const sectionsWithTitle = _.compact(
     _.map(D.querySelectorAll('#title'), function (e) {
@@ -325,7 +303,8 @@ function actualHomeProcess(D: Document): HomeProcess {
         e,
         i,
         sectionsWithTitle,
-        ubication
+        ubication,
+        clientTime
       );
       if (videoInfo) {
         (videoInfo as any).thumbnailHref = thumbnailHref;
@@ -357,7 +336,7 @@ function actualHomeProcess(D: Document): HomeProcess {
   /* sections would be removed before being saved in mongodb */
 }
 
-function guessUXlanguage(D: Document): string | null {
+function guessUXLanguage(D: Document): string | null {
   const buttons = D.querySelectorAll('button');
   const localizedStrings = _.compact(
     _.map(buttons, function (e) {
@@ -382,7 +361,10 @@ export function process(envelop: HTMLSource): Omit<HomeMetadata, 'id'> | null {
   };
 
   try {
-    const { selected, sections } = actualHomeProcess(envelop.jsdom);
+    const { selected, sections } = actualHomeProcess(
+      envelop.jsdom,
+      envelop.html.clientTime
+    );
     retval.selected = selected;
     retval.sections = sections;
   } catch (e) {
@@ -391,7 +373,7 @@ export function process(envelop: HTMLSource): Omit<HomeMetadata, 'id'> | null {
   }
 
   retval.type = 'home';
-  retval.blang = guessUXlanguage(envelop.jsdom) ?? null;
+  retval.blang = guessUXLanguage(envelop.jsdom) ?? null;
 
   try {
     retval.login = shared.logged(envelop.jsdom);

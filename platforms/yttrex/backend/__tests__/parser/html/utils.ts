@@ -45,12 +45,14 @@ export const runParserTest =
     expectMetadata,
     expectSources,
     sourceSchema,
+    metadataSchema,
     ...opts
   }: {
     log: Logger;
     parsers: Record<string, ParserFn<S>>;
     mapSource: (s: S) => any;
     sourceSchema: string;
+    metadataSchema: string;
     codec: T;
     expectMetadata: (
       received: t.TypeOf<T> & { _id: string },
@@ -84,7 +86,7 @@ export const runParserTest =
     // check stored metadata from db
     const metadataResults = await opts.db.api.aggregate(
       opts.db.read,
-      'metadata',
+      metadataSchema,
       [
         {
           $match: { id: { $in: result.metadata.map((m) => m.id) } },

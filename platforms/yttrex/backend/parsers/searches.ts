@@ -1,8 +1,8 @@
-import { differenceInSeconds, formatDistanceToNow } from 'date-fns';
-import { HTMLSource } from 'lib/parser/html';
-import { SearchMetadata } from 'models/Metadata';
+import { formatDistanceToNow, subSeconds } from 'date-fns';
 import D from 'debug';
 import _ from 'lodash';
+import { HTMLSource } from '../lib/parser/html';
+import { SearchMetadata } from '../models/Metadata';
 import * as longlabel from './longlabel';
 
 const debuge = D('parser:searches:error');
@@ -100,13 +100,14 @@ function dissectVideoAndParents(video, i: number): any {
       isLive,
       order: i,
       published: arinfo.timeago
-        ? formatDistanceToNow(arinfo.timeago, {
-            includeSeconds: false,
-          }).replace(/about\s/gi, '')
+        ? formatDistanceToNow(
+            subSeconds(new Date(), arinfo.timeago.asSeconds()),
+            {
+              includeSeconds: false,
+            }
+          ).replace(/about\s/gi, '')
         : null,
-      secondsAgo: arinfo.timeago
-        ? differenceInSeconds(new Date(), arinfo.timeago)
-        : NaN,
+      secondsAgo: arinfo.timeago ? arinfo.timeago.asSeconds() : NaN,
     };
   } catch (error) {
     debuge('Failed video #%d: %s', i, error.message);

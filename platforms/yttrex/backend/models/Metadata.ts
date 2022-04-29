@@ -25,8 +25,9 @@ export const ParsedInfo = t.intersection(
         recommendedTitle: t.string,
         recommendedLength: t.number,
         recommendedDisplayL: t.union([t.string, t.null]),
-        recommendedPubTime: t.union([date, t.null]),
-        recommendedRelativeSeconds: t.union([t.number, t.null]),
+        // moment duration as string
+        recommendedPubTime: t.union([t.any, t.null]),
+        // recommendedRelativeSeconds: t.union([t.number, t.null]),
         publicationTime: t.union([date, t.null]),
       },
       'Partial'

@@ -64,6 +64,7 @@ describe('Parserv', () => {
         await runParserTest({
           log: appTest.logger,
           sourceSchema: appTest.config.get('schema').htmls,
+          metadataSchema: appTest.config.get('schema').metadata,
           parsers: { home: process },
           mapSource: (h: any) => ({
             html: h,
@@ -110,13 +111,19 @@ describe('Parserv', () => {
             );
             expect(
               receivedSelected.map(
-                ({ thumbnailHref, publicationTime, ...s }) => ({
+                ({
+                  thumbnailHref,
+                  publicationTime,
+                  recommendedRelativeSeconds,
+                  ...s
+                }) => ({
                   ...s,
+                  publicationTime: publicationTime?.toISOString() ?? null,
                 })
               )
             ).toMatchObject(
               expectedSelected.map(
-                ({ thumbnailHref, publicationTime, ...s }) => ({
+                ({ thumbnailHref, recommendedRelativeSeconds, ...s }) => ({
                   ...s,
                 })
               )

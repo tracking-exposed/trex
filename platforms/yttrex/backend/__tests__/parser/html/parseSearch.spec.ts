@@ -67,9 +67,9 @@ describe('Parser: Search', () => {
   test.each([
     historyData[0],
     historyData[2],
-    historyData[4],
+    // historyData[4],
     historyData[5],
-    historyData[6],
+    // historyData[6],
     historyData[11],
   ])(
     'Should correctly parse video contributions',
@@ -92,6 +92,7 @@ describe('Parser: Search', () => {
           findings: {},
         }),
         sourceSchema: appTest.config.get('schema').htmls,
+        metadataSchema: appTest.config.get('schema').metadata,
         db,
         getEntryDate: (e) => e.html.savingTime,
         getEntryNatureType: (e) => e.html.nature.type,
@@ -109,18 +110,28 @@ describe('Parser: Search', () => {
             clientTime: _clientTimeM,
             _id,
             id,
-            ...expectedMetadata
+            results: _receivedResults,
+            ...receivedMetadata
           } = metadata;
 
           const {
             htmls: _htmls,
             clientTime: _clientTimeNewM,
-            ...expectedUpdatedMetadata
+            results: _expectedResults,
+            savingTime: _expectedSavingTime,
+            id: _expectedId,
+            _id: _expected_Id,
+            ...expectedMetadata
           } = updatedMetadata as any;
 
           expect({
-            ...expectedUpdatedMetadata,
-            results: expectedUpdatedMetadata.results.map((r) => ({
+            ...receivedMetadata,
+          }).toMatchObject({
+            ...expectedMetadata,
+          });
+
+          expect(
+            _receivedResults.map(({ secondsAgo, ...r }: any) => ({
               ...r,
               published: r.published
                 .replace(/\d{1}\s(year)$/gi, 'a year')
@@ -128,10 +139,8 @@ describe('Parser: Search', () => {
                 .replace(/\d{1}\s(day)$/gi, 'a day')
                 .replace(/\d{1}\s(hour)$/gi, 'an hour')
                 .replace(/\d{1}\s(minute)$/gi, 'a minute'),
-            })),
-          }).toMatchObject({
-            ...expectedMetadata,
-          });
+            }))
+          ).toMatchObject(_expectedResults.map(({ secondsAgo, ...r }) => r));
         },
       })({ sources, metadata });
     }

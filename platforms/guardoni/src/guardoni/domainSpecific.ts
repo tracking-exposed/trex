@@ -226,7 +226,7 @@ async function beforeWait(page: puppeteer.Page, directive: any): Promise<void> {
 async function afterWait(page: puppeteer.Page, directive: any): Promise<void> {
   // const innerWidth = await page.evaluate(_ => { return window.innerWidth });
   // const innerHeight = await page.evaluate(_ => { return window.innerHeight });
-  let hasPlayer = false;
+  // let hasPlayer = false;
   let state: { player: any; name: string | undefined } = {
     player: undefined,
     name: undefined,
@@ -235,7 +235,7 @@ async function afterWait(page: puppeteer.Page, directive: any): Promise<void> {
     state = await getYTstatus(page);
     debug('afterWait status found to be: %s', state.name);
     await interactWithYT(page, directive, 'playing');
-    hasPlayer = true;
+    // hasPlayer = true;
   }
 
   if (directive.screenshot) {
