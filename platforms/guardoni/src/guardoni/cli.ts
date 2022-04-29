@@ -8,7 +8,7 @@ import puppeteer from 'puppeteer-core';
 import yargs from 'yargs';
 import { hideBin } from 'yargs/helpers';
 import { guardoniLogger } from '../logger';
-import { DEFAULT_BASE_PATH } from './constants';
+import { DEFAULT_BASE_PATH, DEFAULT_YT_BACKEND } from './constants';
 import { GetGuardoni } from './guardoni';
 import { GuardoniConfig, GuardoniOutput, GuardoniSuccessOutput } from './types';
 
@@ -196,7 +196,7 @@ const runGuardoni = ({
     }
   }
 
-  const backend = _backend;
+  const backend = _backend ?? DEFAULT_YT_BACKEND;
 
   return GetGuardoniCLI(
     {
