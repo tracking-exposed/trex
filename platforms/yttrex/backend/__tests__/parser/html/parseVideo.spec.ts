@@ -61,7 +61,7 @@ describe('Parser: Video', () => {
    * historyData[7] has missing related items
    * historyData[8] has missing related items
    */
-  test.each([historyData[0], historyData[3], historyData[9]])(
+  test.each(historyData)(
     'Should correctly parse video contributions',
     async ({ sources: _sources, metadata }) => {
       const sources = _sources.map((h: any) => ({
@@ -93,7 +93,14 @@ describe('Parser: Video', () => {
             expect(r.processed).toBe(true);
           });
         },
-        expectMetadata: (expectedM, receivedM) => {
+        expectMetadata: (receivedM, expectedM) => {
+          const {
+            related: receivedRelated,
+            // login: receivedLogin,
+            likeInfo,
+            ...receivedMetadata
+          } = receivedM;
+
           const {
             savingTime: _savingTime,
             clientTime: _clientTime,
@@ -101,20 +108,14 @@ describe('Parser: Video', () => {
             id,
             // login: expectedLogin,
             related: expectedRelated,
-            publicationTime: expectedPublicationTime,
             likeInfo: expectedLikeInfo,
             ...expectedMetadata
           } = expectedM;
 
-          const {
-            related: receivedRelated,
-            // login: receivedLogin,
-            publicationTime: receivedPublicationTime,
-            likeInfo,
-            ...expectedUpdatedMetadata
-          } = receivedM;
-
-          expect(expectedUpdatedMetadata).toMatchObject({
+          expect({
+            ...receivedMetadata,
+            publicationTime: receivedMetadata.publicationTime.toISOString(),
+          }).toMatchObject({
             ...expectedMetadata,
           });
 
@@ -124,11 +125,10 @@ describe('Parser: Video', () => {
               ({ recommendedPubTime, publicationTime, ...rr }) => ({
                 ...rr,
                 foryou: rr.foryou ?? null,
+                publicationTime: publicationTime?.toISOString() ?? null,
               })
             )
-          ).toMatchObject(
-            expectedRelated.map(({ publicationTime, ...rr }) => rr)
-          );
+          ).toMatchObject(expectedRelated.map(({ ...rr }) => rr));
         },
       })({ metadata, sources });
     }

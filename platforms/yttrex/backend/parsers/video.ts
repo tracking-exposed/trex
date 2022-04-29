@@ -1,5 +1,5 @@
 import { trexLogger } from '@shared/logger';
-import { differenceInSeconds, parseISO } from 'date-fns';
+import { parseISO } from 'date-fns';
 import * as t from 'io-ts';
 import { date } from 'io-ts-types/lib/date';
 import _ from 'lodash';
@@ -193,9 +193,14 @@ function relatedMetadata(e: any, i: number): ParsedInfo | null {
     ? e.querySelector('a').getAttribute('href')
     : null;
   // eslint-disable-next-line node/no-deprecated-api
-  const urlinfo = new URL(link);
-  const p = urlinfo.searchParams;
-  const videoId = p.get('v');
+  const urlinfo = link ? new URL(`https://www.youtube.com${link}`) : undefined;
+  const params = {};
+  const videoId = urlinfo?.searchParams?.get('v');
+
+  urlinfo?.searchParams.forEach((value, key) => {
+    params[key] = value;
+  });
+
   const liveBadge = !!e.querySelector('.badge-style-type-live-now');
   const thumbnailHref = shared.getThumbNailHref(e);
 
@@ -230,7 +235,7 @@ function relatedMetadata(e: any, i: number): ParsedInfo | null {
   const recommendedRelativeSeconds = estimatedLive
     ? null
     : mined
-    ? differenceInSeconds(mined.timeago, new Date())
+    ? mined.timeago.asSeconds()
     : null;
 
   const r = {
@@ -238,7 +243,7 @@ function relatedMetadata(e: any, i: number): ParsedInfo | null {
     verified,
     foryou,
     videoId,
-    params: p,
+    params: params,
     recommendedSource: source,
     recommendedTitle: mined ? mined.title : title || null,
     recommendedLength,
@@ -397,7 +402,7 @@ export function processVideo(
   D: Document,
   blang: string,
   clientTime: Date,
-  urlinfo: URL
+  urlinfo?: URL
 ): VideoMetadata {
   /* this method to extract title was a nice experiment
    * and/but should be refactored and upgraded */
@@ -492,13 +497,17 @@ export function processVideo(
     videoLog.error('Failure in logged(): %s', error.message);
   }
 
-  const params = urlinfo.searchParams;
-  const videoId = params.get('v');
+  const params = {};
+  urlinfo?.searchParams.forEach((value, key) => {
+    params[key] = value;
+  });
+
+  const videoId = urlinfo?.searchParams.get('v');
 
   return {
     title,
     type: 'video',
-    params: params as any,
+    params: params,
     videoId,
     login,
     publicationString,
