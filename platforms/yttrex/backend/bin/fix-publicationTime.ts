@@ -21,7 +21,7 @@ async function main(): Promise<void> {
 
   const fixturePath = path.resolve(__dirname, `../__tests__/fixtures`);
 
-  const fixturesP = [
+  [
     'home',
     //  'video', 'search'
   ].map((n) => {
@@ -45,6 +45,7 @@ async function main(): Promise<void> {
             sel.isLive
           );
         } catch (e) {
+          // eslint-disable-next-line no-console
           console.error(e);
         }
 
@@ -79,38 +80,8 @@ async function main(): Promise<void> {
 
       return undefined;
     });
-
-    // logger(
-    //   'HTML metadata %O',
-    //   metadataWithHTMLS.flatMap((m) => ({
-    //     metadataId: m.htmls.flatMap((h) => h.metadataId),
-    //     nature: m.htmls.flatMap((h) => h.nature),
-    //   }))
-    // );
-
-    // logger(
-    //   'Metadata first html %O',
-    //   metadataWithHTMLS?.flatMap((m) => m.htmls[0])
-    // );
-
-    // metadataWithHTMLS.forEach(({ htmls, ...metadata }) => {
-    //   // logger('HTML metadata %O', metadata);
-    //   const basePath = path.resolve(fixturePath, n);
-    //   if (!fs.existsSync(basePath)) {
-    //     fs.mkdirSync(basePath, { recursive: true });
-    //   }
-
-    //   fs.writeFileSync(
-    //     path.resolve(basePath, `${metadata.id}.json`),
-    //     JSON.stringify({
-    //       htmls,
-    //       metadata: metadata,
-    //     })
-    //   );
-    // });
   });
 
-  console.log(fixturesP);
   process.exit(0);
 }
 
