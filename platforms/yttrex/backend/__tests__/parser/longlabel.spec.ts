@@ -40,4 +40,16 @@ describe('Parser: Long Label', () => {
       });
     });
   });
+
+  describe('recommended channels', () => {
+    const longlabel = require('../fixtures/longlabels.json');
+    console.log(longlabel);
+    longlabel.forEach( ([label, source, isLive ]) => {
+      console.log(label);
+      const parseResult = parser(label, source, isLive);
+      console.log(parseResult);
+      expect(1).toBe(1);
+    });
+  });
+
 });
