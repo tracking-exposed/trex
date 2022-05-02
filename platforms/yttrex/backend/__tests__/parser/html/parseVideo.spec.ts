@@ -61,12 +61,17 @@ describe('Parser: Video', () => {
    * historyData[7] has missing related items
    * historyData[8] has missing related items
    */
-  test.each(historyData)(
+  test.each([
+    historyData[0],
+    historyData[1],
+    // historyData[2],
+    historyData[3],
+  ])(
     'Should correctly parse video contributions',
     async ({ sources: _sources, metadata }) => {
       const sources = _sources.map((h: any) => ({
         ...h,
-        clientTime: parseISO(h.clientTime ?? new Date()),
+        clientTime: parseISO(h.clientTime ?? new Date().toISOString()),
         savingTime: subMinutes(new Date(), 1),
         processed: null,
       }));
@@ -76,12 +81,29 @@ describe('Parser: Video', () => {
         db,
         sourceSchema: appTest.config.get('schema').htmls,
         metadataSchema: appTest.config.get('schema').metadata,
-        mapSource: (h: any) => ({
-          html: h,
-          jsdom: new JSDOM(h.html.replace(/\n +/g, '')).window.document,
-          supporter: undefined,
-          findings: {},
-        }),
+        mapSource: (h: any) => {
+          // console.log('plain html', h.html);
+          const sanitizedHTML = h.html.replace(/(\n|\t) +/g, '');
+          // console.log('sanitized html', sanitizedHTML);
+          const sourceDOM = new JSDOM(sanitizedHTML, {
+            beforeParse: (w) => {
+              w.onload = (e) => {
+                console.log('load', e);
+              };
+              w.onerror = (e) => {
+                console.error('error', e);
+              };
+            },
+          });
+          // console.log('source dom text content', sourceDOM.window);
+
+          return {
+            html: h,
+            jsdom: sourceDOM.window.document,
+            supporter: undefined,
+            findings: {},
+          };
+        },
         parsers: { video: process },
         codec: VideoMetadata,
         getEntryDate: (e) => e.html.savingTime,

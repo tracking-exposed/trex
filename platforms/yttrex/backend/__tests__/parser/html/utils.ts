@@ -69,7 +69,7 @@ export const runParserTest =
       errors: 0,
       sources: sources.map(mapSource),
     });
-    // appTest.debug('Result %O', result);
+    // opts.log.debug('Result %O', result);
 
     // check data in db has changed
     const updatedSources = await opts.db.api.aggregate(
@@ -89,7 +89,13 @@ export const runParserTest =
       metadataSchema,
       [
         {
-          $match: { id: { $in: result.metadata.map((m) => m.id) } },
+          $match: {
+            id: {
+              $in: result.metadata
+                .filter((m) => m !== undefined)
+                .map((m) => m.id),
+            },
+          },
         },
       ]
     );

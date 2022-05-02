@@ -395,6 +395,7 @@ export function simpleTitlePicker(D: Document): string | null {
     videoLog.debug('Title from aria label %s', titleFromAriaLabel);
     return titleFromAriaLabel.title ?? null;
   }
+
   return null;
 }
 
