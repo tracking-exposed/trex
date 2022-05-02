@@ -7,7 +7,7 @@
  */
 import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
-import { camelCase } from 'lodash';
+import _ from 'lodash';
 import * as remote from '@electron/remote';
 import {
   changableProps,
@@ -103,7 +103,7 @@ export default class ElectronBrowserView extends Component<ElectronBrowserViewPr
     events.forEach((event) => {
       if (!this.view?.webContents.isDestroyed()) {
         this.view?.webContents.on(event as any, (...eventArgs: any[]) => {
-          const propName = camelCase(`on-${event}`);
+          const propName = _.camelCase(`on-${event}`);
 
           // Proxy events to listeners we got as props
           if ((this.props as any)[propName]) {

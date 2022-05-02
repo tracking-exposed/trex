@@ -14,9 +14,7 @@ import os from 'os';
 import * as path from 'path';
 import pie from 'puppeteer-in-electron';
 import { AppEnv } from '../AppEnv';
-import {
-  DEFAULT_BASE_PATH
-} from '../guardoni/constants';
+import { DEFAULT_BASE_PATH } from '../guardoni/constants';
 import { getPackageVersion } from '../guardoni/utils';
 import { GetEvents } from './events/renderer.events';
 import store from './store';
@@ -64,7 +62,7 @@ const creatMainWindow = (
 
     await mainWindow.loadURL(mainWindowHTML);
 
-    if (env.NODE_ENV === 'development') {
+    if (env.NODE_ENV !== 'production') {
       mainWindow.webContents.openDevTools();
     }
 

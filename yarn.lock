@@ -12290,16 +12290,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"electron@npm:16.2.2":
-  version: 16.2.2
-  resolution: "electron@npm:16.2.2"
+"electron@npm:16.2.4":
+  version: 16.2.4
+  resolution: "electron@npm:16.2.4"
   dependencies:
     "@electron/get": ^1.13.0
     "@types/node": ^14.6.2
     extract-zip: ^1.0.3
   bin:
     electron: cli.js
-  checksum: c2ad84ea268233d76dbcc0ad987627bd4d9004ca5779565e831d4aa5b0580c1df2fc12646aaceee724299622f1cebd33bfb803d4170000ca35a02956e9761c3d
+  checksum: f3944f75d476e27e5544d20ceaeefe534475ece2019bb420cafadbf8d9f42fc1bce753b3625e7ff33dcb6aaf2271d2d513f643d019ab4cfa70e1fa6062c3cba2
   languageName: node
   linkType: hard
 
@@ -15159,7 +15159,7 @@ __metadata:
     csv-parse: ^4.16.3
     csv-stringify: ^6.0.5
     debug: ^4.3.4
-    electron: 16.2.2
+    electron: 16.2.4
     electron-builder: ^22.14.13
     electron-debug: ^3.2.0
     electron-log: ^4.4.6
@@ -18512,14 +18512,14 @@ __metadata:
   linkType: hard
 
 "leveldown@npm:^6.1.0":
-  version: 6.1.0
-  resolution: "leveldown@npm:6.1.0"
+  version: 6.1.1
+  resolution: "leveldown@npm:6.1.1"
   dependencies:
     abstract-leveldown: ^7.2.0
     napi-macros: ~2.0.0
     node-gyp: latest
     node-gyp-build: ^4.3.0
-  checksum: e984b61e9fbe057cfd5c81ac0afe5d7e35d695ff130a95991e0ecb66390e4c4ff6aa3980a65b6c53edaba80527a47790bb26e3cfbd52a054957b3546d9941fe4
+  checksum: 00ba086f83c930683271aae35c89ce684bd31afcc4ba15912a071865f21d86000c48eb83b55ae554b6d328e0ba82a08868dd3b64abed750db89f38b8718c84af
   languageName: node
   linkType: hard
 
