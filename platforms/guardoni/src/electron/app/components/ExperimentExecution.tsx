@@ -81,7 +81,7 @@ const ExperimentExecution: React.FC<ExperimentExecutionProps> = ({
   });
 
   return (
-    <Grid container spacing={2} style={{ height: '100%', margin: 0 }}>
+    <Grid container style={{ height: '100%' }}>
       <Grid
         item
         lg={4}
@@ -89,6 +89,7 @@ const ExperimentExecution: React.FC<ExperimentExecutionProps> = ({
         style={{
           height: '100%',
           flexShrink: 0,
+          padding: theme.spacing(2),
         }}
       >
         <Box
@@ -149,7 +150,12 @@ const ExperimentExecution: React.FC<ExperimentExecutionProps> = ({
           <OutputPanel items={outputItems} />
         </Box>
       </Grid>
-      <Grid item lg={8} sm={7} style={{ display: 'flex', flexShrink: 0 }}>
+      <Grid
+        item
+        lg={8}
+        sm={7}
+        style={{ display: 'flex', padding: theme.spacing(2), flexShrink: 0 }}
+      >
         {phase.step === 'Ready' || phase.step === 'Run' ? (
           <ElectronBrowserView
             ref={(view: any) => {
@@ -158,7 +164,6 @@ const ExperimentExecution: React.FC<ExperimentExecutionProps> = ({
             style={{
               width: '100%',
               height: '100%',
-              padding: 10,
             }}
           />
         ) : (

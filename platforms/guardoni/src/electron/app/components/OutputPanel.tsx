@@ -54,9 +54,27 @@ const OutputPanel: React.FC<OutputPanelProps> = ({ items }) => {
   const classes = useStyles();
 
   return (
-    <Box pt={1} style={{ maxWidth: '100%' }}>
+    <Box
+      pt={1}
+      style={{
+        display: 'flex',
+        flexDirection: 'column',
+        maxWidth: '100%',
+        flexGrow: 1,
+      }}
+    >
       <Typography variant="h4">Output</Typography>
-      <Box pt={2} pb={2}>
+      <Box
+        pt={2}
+        pb={2}
+        style={{
+          display: 'flex',
+          flexDirection: 'column',
+          flexGrow: 1,
+          overflowX: 'visible',
+          overflowY: 'scroll',
+        }}
+      >
         {items.length === 0 ? (
           <Typography variant="body1">
             Guardoni output will appear here
