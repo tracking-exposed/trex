@@ -1,0 +1,15 @@
+import CodeBlock from '@theme/CodeBlock';
+
+## Build
+
+To produce a `production` extension run the following command in your terminal:
+
+<CodeBlock className="language-bash">
+  yarn {props.platformPrefix}:ext build
+</CodeBlock>
+
+Or, if you need a version with `NODE_ENV=development` run:
+
+<CodeBlock className="language-bash">
+  NODE_ENV=development yarn {props.platformPrefix}:ext build
+</CodeBlock>

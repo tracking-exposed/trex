@@ -1,0 +1,11 @@
+import ExtensionDevelopmentPartial from './_development.mdx';
+import ExtensionBuildPartial from './_build.mdx'
+
+<p>
+  This browser extension allows you to contribute to our researches and tracking
+  algorithm analyses on <b>{props.platformName}</b>.
+</p>
+
+<ExtensionDevelopmentPartial platformName={props.platformName} platformPrefix={props.platformPrefix} />
+
+<ExtensionBuildPartial platformName={props.platformName} platformPrefix={props.platformPrefix} />

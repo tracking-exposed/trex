@@ -6379,6 +6379,23 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@yttrex/docs@workspace:platforms/yttrex/docs":
+  version: 0.0.0-use.local
+  resolution: "@yttrex/docs@workspace:platforms/yttrex/docs"
+  dependencies:
+    "@docusaurus/core": 2.0.0-beta.15
+    "@docusaurus/module-type-aliases": 2.0.0-beta.15
+    "@docusaurus/preset-classic": 2.0.0-beta.15
+    "@mdx-js/react": ^1.6.21
+    "@tsconfig/docusaurus": ^1.0.4
+    clsx: ^1.1.1
+    prism-react-renderer: ^1.2.1
+    react: ^17.0.2
+    react-dom: ^17.0.2
+    typescript: ^4.5.2
+  languageName: unknown
+  linkType: soft
+
 "@yttrex/extension@workspace:platforms/yttrex/extension":
   version: 0.0.0-use.local
   resolution: "@yttrex/extension@workspace:platforms/yttrex/extension"

@@ -4,6 +4,7 @@
   "description": "youtube.tracking.exposed - shared",
   "private": true,
   "scripts": {
+    "clean": "rm -rf ./build",
     "build": "tsc -b",
     "test": "jest",
     "type-check": "tsc",

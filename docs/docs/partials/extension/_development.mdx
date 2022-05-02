@@ -1,0 +1,24 @@
+import CodeBlock from '@theme/CodeBlock';
+
+
+## Development
+
+### Prerequisites
+
+<ul>
+  <li>
+    <a href="backend">
+      @{props.platformPrefix}trex/backend
+    </a>{" "}up and running
+  </li>
+</ul>
+
+### Run "watch" mode
+
+To start developing the extension you need to compile the source code with `webpack` by running the following command:
+
+<CodeBlock className="language-bash">
+  yarn {props.platformPrefix}:ext watch
+</CodeBlock>
+
+<p>then, you can open your browser's development panel and load the extension from the output folder <i>{props.platformPrefix}</i>.</p>

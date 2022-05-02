@@ -1,14 +1,11 @@
 import * as t from 'io-ts';
 import { Endpoint } from 'ts-endpoint';
-import {
-  ADVContributionEvent,
-  VideoContributionEvent,
-} from '../../models/ContributionEvent';
+import { AddEventsBody } from '../../models/ContributionEvent';
+import { ContributorPublicKeyResponse } from '../../models/contributor/ContributorPublicKey';
 import { GetExperimentListOutput } from '../../models/Experiment';
 import { HandshakeBody, HandshakeResponse } from '../../models/HandshakeBody';
 import { PublicKeyParams } from '../../models/http/params/PublicKey';
 import { SearchQuery } from '../../models/http/SearchQuery';
-import { TikTokSearch } from '../../models/http/tiktok/TikTokSearch';
 import { Metadata } from '../../models/Metadata';
 import { ChannelADVStats } from '../../models/stats/ChannelADV';
 import { DocumentedEndpoint } from '../utils';
@@ -70,15 +67,6 @@ const SearchesAsCSV = Endpoint({
   Output: t.any,
 });
 
-const TikTokSearches = Endpoint({
-  Method: 'GET',
-  getPath: () => `/v2/searches`,
-  Input: {
-    Query: SearchQuery,
-  },
-  Output: TikTokSearch,
-});
-
 const GetPersonalCSV = Endpoint({
   Method: 'GET',
   getPath: ({ publicKey, type }) => `/v2/personal/${publicKey}/${type}/csv`,
@@ -105,10 +93,7 @@ const AddEvents = Endpoint({
       'X-YTtrex-PublicKey': t.string,
       'X-YTtrex-Signature': t.string,
     }),
-    Body: t.array(
-      t.union([VideoContributionEvent, ADVContributionEvent]),
-      'AddEventsBody'
-    ),
+    Body: AddEventsBody,
   },
   Output: t.any,
 });
@@ -123,7 +108,7 @@ const AddAPIEvents = Endpoint({
       'X-TrEx-PublicKey': t.string,
       'X-TrEx-Signature': t.string,
     }),
-    Body: t.array(t.union([VideoContributionEvent, ADVContributionEvent])),
+    Body: AddEventsBody,
   },
   Output: t.any,
 });
@@ -178,15 +163,7 @@ const DeletePersonalContributionByPublicKey = Endpoint({
       selector: t.union([t.string, t.undefined]),
     }),
   },
-  Output: t.strict({
-    success: t.boolean,
-    result: t.strict({
-      metadata: t.strict({
-        acknowledged: t.boolean,
-        deletedCount: t.number,
-      }),
-    }),
-  }),
+  Output: ContributorPublicKeyResponse,
 });
 
 export default {
@@ -197,7 +174,6 @@ export default {
     VideoAuthor,
     Searches,
     SearchesAsCSV,
-    TikTokSearches,
     AddEvents,
     AddAPIEvents,
     GetChannelADVStats,

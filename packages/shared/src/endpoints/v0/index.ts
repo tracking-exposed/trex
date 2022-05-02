@@ -1,7 +1,10 @@
 import * as t from 'io-ts';
-import { Endpoint } from 'ts-endpoint';
+import { DocumentedEndpoint } from '../utils';
 
-const GetHealth = Endpoint({
+const GetHealth = DocumentedEndpoint({
+  title: 'GET health',
+  description: 'Check server health',
+  tags: ['health'],
   Method: 'GET',
   getPath: () => `/v0/health`,
   Output: t.any,

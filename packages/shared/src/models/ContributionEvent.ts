@@ -32,3 +32,14 @@ export const ADVContributionEvent = t.strict(
 );
 
 export type ADVContributionEvent = t.TypeOf<typeof ADVContributionEvent>;
+
+export const ContributionEvent = t.union(
+  [VideoContributionEvent, ADVContributionEvent],
+  'ContributionEvent'
+);
+
+export type ContributionEvent = t.TypeOf<typeof ContributionEvent>;
+
+export const AddEventsBody = t.array(ContributionEvent, 'AddEventsBody');
+
+export type AddEventsBody = t.TypeOf<typeof AddEventsBody>;

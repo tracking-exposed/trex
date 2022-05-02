@@ -1,10 +1,11 @@
 import * as t from 'io-ts';
+import { StringOrNull } from '../common/StringOrNull';
 
 export const HomeMetadata = t.strict(
   {
     id: t.string,
     savingTime: t.string,
-    selected: t.array(t.union([t.string, t.null])),
+    selected: t.array(StringOrNull, 'Selected'),
   },
   'HomeMetadata'
 );

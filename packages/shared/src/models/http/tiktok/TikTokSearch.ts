@@ -1,4 +1,5 @@
 import * as t from 'io-ts';
+import { StringOrNull } from '../../common/StringOrNull';
 
 export const TikTokSearchMetadata = t.strict(
   {
@@ -13,9 +14,9 @@ export const TikTokSearchMetadata = t.strict(
     query: t.string,
     thumbnail: t.string,
     savingTime: t.string,
-    publishingDate: t.union([t.string, t.null]),
+    publishingDate: StringOrNull,
   },
-  'TikTokSearchResult'
+  'TikTokSearchMetadata'
 );
 
 export type TikTokSearchMetadata = t.TypeOf<typeof TikTokSearchMetadata>;
