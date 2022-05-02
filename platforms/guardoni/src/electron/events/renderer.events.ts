@@ -23,6 +23,7 @@ import { guardoniLogger } from '../../logger';
 import { EVENTS } from '../models/events';
 import store from '../store';
 import { getEventsLogger } from './event.logger';
+import * as path from 'path';
 
 const guardoniEventsLogger = guardoniLogger.extend('events');
 
@@ -308,7 +309,7 @@ export const GetEvents = ({
             TE.tryCatch(
               () =>
                 Promise.resolve(
-                  shell.showItemInFolder(`${config}/guardoni.json`)
+                  shell.showItemInFolder(path.join(config, 'guardoni.json'))
                 ),
               toAppError
             ),
