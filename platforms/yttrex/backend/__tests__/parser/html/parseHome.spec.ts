@@ -46,6 +46,8 @@ describe('Parserv', () => {
     );
   });
 
+  jest.useRealTimers();
+
   describe('Home', () => {
     jest.setTimeout(20 * 1000);
 

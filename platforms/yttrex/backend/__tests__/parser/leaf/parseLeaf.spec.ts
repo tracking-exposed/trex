@@ -46,12 +46,16 @@ describe('Leaves parser', () => {
     );
   });
 
-  describe('Leaves', () => {
+  describe.skip('Leaves', () => {
     jest.setTimeout(20 * 1000);
 
     const history = readHistoryResults('leaves/home', publicKey);
 
-    test.each([history[0]])(
+    test.each([
+      // history[0],
+      // history[1],
+      history[2],
+    ])(
       'Should correctly parse leaf contribution',
       async ({ sources: _sources, metadata }) => {
         const sources = _sources.map((s) => ({
