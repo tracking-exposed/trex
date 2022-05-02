@@ -6,6 +6,7 @@ import { GuardoniPlatformConfig } from '../../../guardoni/types';
 import { EVENTS } from '../../models/events';
 import ElectronBrowserView from './browser-view/ElectronBrowserView';
 import OutputPanel from './OutputPanel';
+import LinkIcon from '@material-ui/icons/LinkOutlined';
 
 interface ExperimentExecutionProps {
   experimentId: string;
@@ -83,13 +84,15 @@ const ExperimentExecution: React.FC<ExperimentExecutionProps> = ({
     <Grid container spacing={2} style={{ height: '100%', margin: 0 }}>
       <Grid
         item
-        lg={9}
-        sm={8}
+        lg={4}
+        sm={5}
         style={{
           height: '100%',
+          flexShrink: 0,
         }}
       >
         <Box
+          pl={2}
           style={{
             display: 'flex',
             width: '100%',
@@ -97,14 +100,30 @@ const ExperimentExecution: React.FC<ExperimentExecutionProps> = ({
             flexDirection: 'column',
           }}
         >
+          <Box pt={3} pb={2}>
+            <Typography variant="h4">Experiment</Typography>
+          </Box>
           <Box>
             <Typography>{experimentId}</Typography>
+            <Box
+              style={{
+                display: 'flex',
+                flexGrow: 1,
+                marginRight: 20,
+                alignItems: 'center',
+              }}
+            >
+              <LinkIcon />
+              <Typography variant="subtitle2">- links lenght TODO</Typography>
+            </Box>
           </Box>
           <Box
             style={{
               display: 'flex',
+              justifyContent: 'flex-start',
               width: '100%',
-              padding: theme.spacing(2),
+              paddingTop: theme.spacing(2),
+              paddingBottom: theme.spacing(4),
             }}
           >
             <Button
@@ -127,54 +146,71 @@ const ExperimentExecution: React.FC<ExperimentExecutionProps> = ({
               Run
             </Button>
           </Box>
-          <Box style={{ display: 'flex', flexGrow: 2, width: '100%' }}>
-            {phase.step === 'Ready' || phase.step === 'Run' ? (
-              <ElectronBrowserView
-                ref={(view: any) => {
-                  setView(view);
-                }}
-                style={{
-                  width: '100%',
-                  height: '100%',
-                  padding: 10,
-                }}
-              />
-            ) : (
-              <Box>
-                Finished
-                <Box>
-                  <Typography>
-                    Experiment id: {phase.payload.values.experimentId}
-                  </Typography>
-                  <Typography>
-                    Public Key: {phase.payload.values.publicKey}
-                  </Typography>
-                  <Box>
-                    <Button
-                      onClick={() => {
-                        onOpenExperimentResults(
-                          phase.payload.values.experimentId
-                        );
-                      }}
-                    >
-                      Open experiment results page
-                    </Button>
-                    <Button
-                      onClick={() => {
-                        onOpenResults(phase.payload.values.publicKey);
-                      }}
-                    >
-                      Open your result page
-                    </Button>
-                  </Box>
-                </Box>
-              </Box>
-            )}
-          </Box>
+          <OutputPanel items={outputItems} />
         </Box>
       </Grid>
-      <Grid item lg={3} sm={4} style={{ display: 'flex', flexShrink: 0 }}>
-        <OutputPanel items={outputItems} />
+      <Grid item lg={8} sm={7} style={{ display: 'flex', flexShrink: 0 }}>
+        {phase.step === 'Ready' || phase.step === 'Run' ? (
+          <ElectronBrowserView
+            ref={(view: any) => {
+              setView(view);
+            }}
+            style={{
+              width: '100%',
+              height: '100%',
+              padding: 10,
+            }}
+          />
+        ) : (
+          <Box
+            style={{
+              display: 'flex',
+              alignItems: 'flex-start',
+              justifyContent: 'center',
+            }}
+          >
+            <Box pt={3} pl={4}>
+              <Box pb={2}>
+                <Typography variant="h4" style={{ color: '#23AA9A' }}>
+                  {' '}
+                  Finished!{' '}
+                </Typography>
+              </Box>
+              <Typography variant="body1">
+                <b>Experiment id:</b> {phase.payload.values.experimentId}
+              </Typography>
+              <Typography variant="body1">
+                <b>Public Key:</b> {phase.payload.values.publicKey}
+              </Typography>
+              <Box pt={4}>
+                <Button
+                  variant="contained"
+                  style={{
+                    marginRight: theme.spacing(2),
+                    backgroundColor: 'white',
+                  }}
+                  onClick={() => {
+                    onOpenExperimentResults(phase.payload.values.experimentId);
+                  }}
+                >
+                  Open experiment results page
+                </Button>
+                <Button
+                  variant="contained"
+                  style={{
+                    color: '#23AA9A',
+                    backgroundColor: 'white',
+                  }}
+                  onClick={() => {
+                    onOpenResults(phase.payload.values.publicKey);
+                  }}
+                >
+                  Open your result page
+                </Button>
+              </Box>
+            </Box>
+          </Box>
+        )}
       </Grid>
     </Grid>
   );

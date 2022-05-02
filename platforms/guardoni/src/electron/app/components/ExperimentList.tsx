@@ -147,7 +147,7 @@ export const ExperimentList: React.FC<ExperimentListProps> = ({
                   variant="contained"
                   onClick={() => onExperimentRunClick(d)}
                 >
-                  Run
+                  LOAD
                 </Button>
               </Box>
             </AccordionDetails>
