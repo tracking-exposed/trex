@@ -84,5 +84,18 @@ export const theme = createTheme({
         borderRadius: '0',
       },
     },
+    MuiFormHelperText: {
+      root: {
+        marginLeft: 16,
+      },
+    },
+    MuiFormControlLabel: {
+      label: {},
+    },
+    MuiDialog: {
+      paperWidthSm: {
+        padding: 10,
+      },
+    },
   },
 });
