@@ -1,5 +1,5 @@
 import base58 from 'bs58';
-import { parseISO, subMinutes } from 'date-fns';
+import { addMinutes, parseISO, subMinutes } from 'date-fns';
 import { JSDOM } from 'jsdom';
 import nacl from 'tweetnacl';
 import {
@@ -53,7 +53,6 @@ describe('Parser: Video', () => {
 
   /**
    * TODO:
-   * historyData[1] mismatch the related
    * historyData[2] has missing related items
    * historyData[4] has missing related items
    * historyData[5] has missing related items
@@ -66,13 +65,18 @@ describe('Parser: Video', () => {
     historyData[1],
     // historyData[2],
     historyData[3],
+    historyData[4],
+    // historyData[5]
+    // historyData[6]
+    // historyData[7]
+    historyData[8],
   ])(
     'Should correctly parse video contributions',
     async ({ sources: _sources, metadata }) => {
       const sources = _sources.map((h: any) => ({
         ...h,
         clientTime: parseISO(h.clientTime ?? new Date().toISOString()),
-        savingTime: subMinutes(new Date(), 1),
+        savingTime: addMinutes(new Date(), 1),
         processed: null,
       }));
 
@@ -95,7 +99,8 @@ describe('Parser: Video', () => {
               };
             },
           });
-          // console.log('source dom text content', sourceDOM.window);
+
+          // console.log('source dom text content', sourceDOM.window.document);
 
           return {
             html: h,

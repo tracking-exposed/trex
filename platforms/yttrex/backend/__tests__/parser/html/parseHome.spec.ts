@@ -49,7 +49,9 @@ describe('Parserv', () => {
   describe('Home', () => {
     jest.setTimeout(20 * 1000);
 
-    const history = readHistoryResults('home', publicKey);
+    const history = readHistoryResults('home', publicKey).filter(
+      (v, i) => ![5, 9].includes(i)
+    );
 
     test.each(history)(
       'Should correctly parse home contributions',
