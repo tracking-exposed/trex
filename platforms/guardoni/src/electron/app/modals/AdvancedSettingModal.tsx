@@ -1,7 +1,4 @@
 import {
-  Accordion,
-  AccordionDetails,
-  AccordionSummary,
   Box,
   Button,
   Checkbox,
@@ -26,26 +23,21 @@ import {
 import { EVENTS } from '../../models/events';
 
 const useStyles = makeStyles((theme) => ({
-  formGroup: {
-    margin: theme.spacing(2),
-  },
   formControl: {
     alignItems: 'flex-start',
     justifyContent: 'flex-start',
-    margin: 0,
+    marginTop: theme.spacing(3),
+    '& > .MuiFormControlLabel-label': { fontWeight: 600 },
   },
   formControlCheckbox: {
     alignItems: 'center',
     justifyContent: 'flex-start',
-    margin: 0,
+    margin: 5,
   },
   formControlWithMarginBottom: {
     alignItems: 'flex-start',
     justifyContent: 'flex-start',
     margin: 0,
-    marginBottom: theme.spacing(4),
-  },
-  formHelperText: {
     marginBottom: theme.spacing(4),
   },
 }));
@@ -81,49 +73,48 @@ const AdvancedSettingModal: React.FC<{
 
   return (
     <Dialog open={open}>
-      <Grid container style={{ marginBottom: 40 }}>
+      <Grid container style={{ marginBottom: 20 }}>
         <Grid item md={12}>
-          <Accordion>
-            <AccordionSummary>
-              <Box display="flex" flexDirection="column" width="100%">
-                <FormControlLabel
-                  label="Profile"
-                  className={classes.formControl}
-                  labelPlacement="top"
-                  control={
-                    <Input
-                      id="profile-path"
-                      aria-describedby="profile-path-text"
-                      value={config.profileName}
-                      fullWidth
-                      onChange={(e) =>
-                        setConfig({
-                          ...config,
-                          profileName: e.target.value,
-                        })
-                      }
-                    />
+          <Box display="flex" flexDirection="column" width="100%">
+            <FormControlLabel
+              label="Profile"
+              className={classes.formControl}
+              labelPlacement="top"
+              control={
+                <Input
+                  id="profile-path"
+                  aria-describedby="profile-path-text"
+                  value={config.profileName}
+                  fullWidth
+                  onChange={(e) =>
+                    setConfig({
+                      ...config,
+                      profileName: e.target.value,
+                    })
                   }
                 />
-                <FormHelperText className={classes.formHelperText}>
-                  The profile data will be stored in {config.basePath}
-                  /profiles/{config.profileName}
-                  <Button
-                    size="small"
-                    color="primary"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      handleOpenProfileDir(config);
-                    }}
-                  >
-                    Open Profile Folder
-                  </Button>
-                </FormHelperText>
-              </Box>
-            </AccordionSummary>
-            <AccordionDetails>
-              <Box display="flex" flexDirection="column" width="100%">
-                {/* <FormControlLabel
+              }
+            />
+            <FormHelperText>
+              The profile data will be stored in {config.basePath}
+              /profiles/{config.profileName}
+            </FormHelperText>
+            <Box display="flex" flexDirection="row">
+              <Button
+                size="small"
+                color="primary"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleOpenProfileDir(config);
+                }}
+                style={{ marginLeft: 12 }}
+              >
+                Open Profile Folder
+              </Button>
+            </Box>
+          </Box>
+          <Box display="flex" flexDirection="column" width="100%">
+            {/* <FormControlLabel
                   label="Evidence Tag"
                   className={`${classes.formControl} ${classes.formControlWithMarginBottom}`}
                   labelPlacement="top"
@@ -141,100 +132,98 @@ const AdvancedSettingModal: React.FC<{
                     />
                   }
                 /> */}
-                <FormControlLabel
-                  label="Base Path"
-                  className={classes.formControl}
-                  labelPlacement="top"
-                  control={
-                    <Input
-                      id="profile-path"
-                      aria-describedby="profile-path-text"
-                      value={config.basePath}
-                      fullWidth
-                      onChange={(e) =>
-                        setConfig({
-                          ...config,
-                          basePath: e.target.value,
-                        })
-                      }
-                    />
+            <FormControlLabel
+              label="Backend"
+              className={classes.formControl}
+              labelPlacement="top"
+              control={
+                <Input
+                  id="backend"
+                  aria-describedby="backend-text"
+                  value={platform.backend}
+                  fullWidth
+                  onChange={(e) =>
+                    setConfig({
+                      ...config,
+                      [platformKey]: {
+                        ...platform,
+                        backend: e.target.value,
+                      },
+                    })
                   }
                 />
-                <FormHelperText>
-                  The base path used to compute all the others
-                </FormHelperText>
-                <FormControlLabel
-                  label="Backend"
-                  className={classes.formControl}
-                  labelPlacement="top"
-                  control={
-                    <Input
-                      id="backend"
-                      aria-describedby="backend-text"
-                      value={platform.backend}
-                      fullWidth
-                      onChange={(e) =>
-                        setConfig({
-                          ...config,
-                          [platformKey]: {
-                            ...platform,
-                            backend: e.target.value,
-                          },
-                        })
-                      }
-                    />
+              }
+            />
+            <FormHelperText>The backend url used by guardoni</FormHelperText>
+            <FormControlLabel
+              label="Base Path"
+              className={classes.formControl}
+              labelPlacement="top"
+              control={
+                <Input
+                  id="profile-path"
+                  aria-describedby="profile-path-text"
+                  value={config.basePath}
+                  fullWidth
+                  onChange={(e) =>
+                    setConfig({
+                      ...config,
+                      basePath: e.target.value,
+                    })
                   }
                 />
-                <FormHelperText>
-                  The backend url used by guardoni
-                </FormHelperText>
+              }
+            />
+            <FormHelperText>
+              The base path used to compute all the others
+            </FormHelperText>
 
-                <FormControlLabel
-                  label="Extension"
-                  className={classes.formControl}
-                  labelPlacement="top"
-                  control={
-                    <Input
-                      id="extension"
-                      aria-describedby="extension-text"
-                      value={platform.extensionDir}
-                      fullWidth
-                      onChange={(e) =>
-                        setConfig({
-                          ...config,
-                          [platformKey]: {
-                            ...platform,
-                            extensionDir: e.target.value,
-                          },
-                        })
-                      }
-                    />
+            <FormControlLabel
+              label="Extension"
+              className={classes.formControl}
+              labelPlacement="top"
+              control={
+                <Input
+                  id="extension"
+                  aria-describedby="extension-text"
+                  value={platform.extensionDir}
+                  fullWidth
+                  onChange={(e) =>
+                    setConfig({
+                      ...config,
+                      [platformKey]: {
+                        ...platform,
+                        extensionDir: e.target.value,
+                      },
+                    })
                   }
                 />
-                <FormHelperText>The unpacked extension dir</FormHelperText>
-                <FormControlLabel
-                  label="Chrome Path"
-                  className={classes.formControl}
-                  labelPlacement="top"
-                  control={
-                    <Input
-                      id="backend"
-                      aria-describedby="backend-text"
-                      value={config.chromePath}
-                      fullWidth
-                      onChange={(e) =>
-                        setConfig({
-                          ...config,
-                          chromePath: e.target.value,
-                        })
-                      }
-                    />
+              }
+            />
+            <FormHelperText>The unpacked extension dir</FormHelperText>
+            <FormControlLabel
+              label="Chrome Path"
+              className={classes.formControl}
+              labelPlacement="top"
+              control={
+                <Input
+                  id="backend"
+                  aria-describedby="backend-text"
+                  value={config.chromePath}
+                  fullWidth
+                  onChange={(e) =>
+                    setConfig({
+                      ...config,
+                      chromePath: e.target.value,
+                    })
                   }
                 />
-                <FormHelperText>Chrome executable path</FormHelperText>
-              </Box>
-            </AccordionDetails>
-          </Accordion>
+              }
+            />
+            <FormHelperText style={{ marginBottom: 40 }}>
+              Chrome executable path
+            </FormHelperText>
+          </Box>
         </Grid>
         <Grid item md={12} style={{ display: 'flex', flexDirection: 'row' }}>
           <FormControlLabel
