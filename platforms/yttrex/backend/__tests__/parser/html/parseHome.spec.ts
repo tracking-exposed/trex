@@ -46,10 +46,14 @@ describe('Parserv', () => {
     );
   });
 
+  jest.useRealTimers();
+
   describe('Home', () => {
     jest.setTimeout(20 * 1000);
 
-    const history = readHistoryResults('home', publicKey);
+    const history = readHistoryResults('home', publicKey).filter(
+      (v, i) => ![5, 9].includes(i)
+    );
 
     test.each(history)(
       'Should correctly parse home contributions',
@@ -64,6 +68,7 @@ describe('Parserv', () => {
         await runParserTest({
           log: appTest.logger,
           sourceSchema: appTest.config.get('schema').htmls,
+          metadataSchema: appTest.config.get('schema').metadata,
           parsers: { home: process },
           mapSource: (h: any) => ({
             html: h,
@@ -82,14 +87,14 @@ describe('Parserv', () => {
               expect(r.processed).toBe(true);
             });
           },
-          expectMetadata: (oldM, newM) => {
+          expectMetadata: (newM, oldM) => {
             const {
               _id: expected_Id,
               id: expectedId,
               clientTime: _expectedClientTime,
               savingTime: _expectedSavingTime,
-              selected: _expectedSelected,
-              sections: _expectedSections,
+              selected: expectedSelected,
+              sections: expectedSections,
               ...expectedM
             } = oldM as any;
             const {
@@ -97,11 +102,36 @@ describe('Parserv', () => {
               id: _receivedId,
               clientTime: _receivedClientTime,
               savingTime: _receivedSavingTime,
-              selected: _receivedSelected,
-              sections: _receivedSections,
+              selected: receivedSelected,
+              sections: receivedSections,
               ...receivedM
             } = newM as any;
 
+            expect(receivedSections.length).toBeGreaterThanOrEqual(
+              expectedSections.length
+            );
+            expect(receivedSelected.length).toBeGreaterThanOrEqual(
+              expectedSelected.length
+            );
+            expect(
+              receivedSelected.map(
+                ({
+                  thumbnailHref,
+                  publicationTime,
+                  recommendedRelativeSeconds,
+                  ...s
+                }) => ({
+                  ...s,
+                  publicationTime: publicationTime?.toISOString() ?? null,
+                })
+              )
+            ).toMatchObject(
+              expectedSelected.map(
+                ({ thumbnailHref, recommendedRelativeSeconds, ...s }) => ({
+                  ...s,
+                })
+              )
+            );
             expect(receivedM).toMatchObject(expectedM);
           },
         })({ sources, metadata });

@@ -45,16 +45,18 @@ export const runParserTest =
     expectMetadata,
     expectSources,
     sourceSchema,
+    metadataSchema,
     ...opts
   }: {
     log: Logger;
     parsers: Record<string, ParserFn<S>>;
     mapSource: (s: S) => any;
     sourceSchema: string;
+    metadataSchema: string;
     codec: T;
     expectMetadata: (
-      storedM: t.TypeOf<T> & { _id: string },
-      newM: t.TypeOf<T> & { _id: string }
+      received: t.TypeOf<T> & { _id: string },
+      expected: t.TypeOf<T> & { _id: string }
     ) => void;
     expectSources: (s: S[]) => void;
   } & ParserProviderContext<S>) =>
@@ -67,7 +69,7 @@ export const runParserTest =
       errors: 0,
       sources: sources.map(mapSource),
     });
-    // appTest.debug('Result %O', result);
+    // opts.log.debug('Result %O', result);
 
     // check data in db has changed
     const updatedSources = await opts.db.api.aggregate(
@@ -81,9 +83,26 @@ export const runParserTest =
 
     expectSources(updatedSources);
 
-    expect(result?.metadata[0]).toBeTruthy();
+    // check stored metadata from db
+    const metadataResults = await opts.db.api.aggregate(
+      opts.db.read,
+      metadataSchema,
+      [
+        {
+          $match: {
+            id: {
+              $in: result.metadata
+                .filter((m) => m !== undefined)
+                .map((m) => m.id),
+            },
+          },
+        },
+      ]
+    );
 
-    result?.metadata.forEach((m) => {
+    expect(metadataResults[0]).toBeTruthy();
+
+    metadataResults.forEach((m) => {
       const decodeResult = codec.decode(m);
 
       if (decodeResult._tag === 'Left') {
@@ -92,6 +111,6 @@ export const runParserTest =
 
       expect(E.isRight(decodeResult)).toBe(true);
 
-      expectMetadata(metadata, m as any);
+      expectMetadata(m as any, metadata);
     });
   };

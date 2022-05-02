@@ -28,7 +28,7 @@ import path from 'path';
 // import pluginStealth from "puppeteer-extra-plugin-stealth";
 import type puppeteer from 'puppeteer-core';
 import { dispatchBrowser, operateBrowser } from './browser';
-import { getConfig } from './config';
+import { getConfig, getPlatformConfig } from './config';
 import domainSpecific from './domainSpecific';
 import {
   concludeExperiment,
@@ -48,9 +48,9 @@ import {
   ExperimentInfo,
   GuardoniConfig,
   GuardoniContext,
-  GuardoniPlatformConfig,
   GuardoniSuccessOutput,
   Platform,
+  PlatformConfig,
   ProgressDetails,
 } from './types';
 import { csvParseTE, getPackageVersion, liftFromIOE } from './utils';
@@ -195,12 +195,12 @@ export const guardoniExecution =
         ctx.logger.debug(
           `Operations completed in %ds: check results at `,
           duration,
-          `${ctx.config.platform.backend}/${
+          `${ctx.platform.backend}/${
             directiveType === 'chiaroscuro' ? 'shadowban' : 'experiments'
           }/render/#${experiment}`
         );
         ctx.logger.debug(
-          `Personal log at ${ctx.config.platform.backend}/personal/#${publicKey}`
+          `Personal log at ${ctx.platform.backend}/personal/#${publicKey}`
         );
 
         return publicKey;
@@ -213,7 +213,7 @@ export const readCSVAndParse =
   (
     filePath: string,
     directiveType: DirectiveType
-  ): TE.TaskEither<AppError, ComparisonDirectiveRow[]> => {
+  ): TE.TaskEither<AppError, NonEmptyArray<ComparisonDirectiveRow>> => {
     logger.debug('Registering CSV from path %s', filePath);
 
     return pipe(
@@ -234,7 +234,7 @@ export const readCSVAndParse =
       TE.chain((input) =>
         pipe(
           csvParseTE(input, { columns: true, skip_empty_lines: true }),
-          TE.map(({ records, info }) => {
+          TE.chain(({ records, info }) => {
             logger.debug(
               'Read input from file %s (%d bytes) %d records as %s',
               filePath,
@@ -242,7 +242,16 @@ export const readCSVAndParse =
               records.length,
               directiveType
             );
-            return { records, info };
+
+            if (records.length === 0) {
+              return TE.left(
+                toAppError({
+                  message: "Can't create an experiment with no links",
+                })
+              );
+            }
+
+            return TE.right({ records, info });
           }),
           TE.chainFirst(({ records }) =>
             pipe(
@@ -264,7 +273,7 @@ export const readCSVAndParse =
           ),
           TE.map((csvContent) => {
             logger.debug('CSV decoded content %O', csvContent.records);
-            return csvContent.records;
+            return csvContent.records as NonEmptyArray<ComparisonDirectiveRow>;
           })
         )
       )
@@ -277,7 +286,10 @@ const registerCSV =
     csvFile: string,
     directiveType: DirectiveType
   ): TE.TaskEither<AppError, GuardoniSuccessOutput> => {
-    const filePath = path.resolve(ctx.config.basePath, csvFile);
+    // resolve csv file path from current working direction when is not absolute
+    const filePath = path.isAbsolute(csvFile)
+      ? csvFile
+      : path.resolve(process.cwd(), csvFile);
 
     ctx.logger.debug(`Register CSV from %s`, filePath);
 
@@ -290,28 +302,29 @@ const registerCSV =
 const loadContext = (
   p: typeof puppeteer,
   basePath: string,
-  c: GuardoniConfig,
+  config: Partial<GuardoniConfig>,
   platform: Platform,
   logger: GuardoniContext['logger']
 ): TE.TaskEither<AppError, GuardoniContext> => {
   logger.debug('Loading context for platform %s', platform);
 
   return pipe(
-    getConfig({ logger })(basePath, platform, c),
-    TE.map((config): GuardoniContext => {
-      const profile = getDefaultProfile(basePath, config.profileName);
+    getConfig({ logger })(basePath, platform, config),
+    TE.map((cnf): GuardoniContext => {
+      const profile = getDefaultProfile(basePath, cnf.profileName);
 
       logger.debug('profile %O', profile);
+      const platformConf = getPlatformConfig(platform, cnf);
 
       return {
         puppeteer: p,
         API: GetAPI({
-          baseURL: config.platform.backend,
+          baseURL: platformConf.backend,
           getAuth: async (req) => req,
           onUnauthorized: async (res) => res,
         }).API,
         config: {
-          ...config,
+          ...cnf,
           basePath,
           profileName: profile.profileName,
         },
@@ -319,6 +332,7 @@ const loadContext = (
         logger,
         guardoniConfigFile: path.join(profile.udd, 'guardoni.json'),
         version: getPackageVersion(),
+        platform: platformConf,
       };
     }),
     TE.chainFirst(downloadExtension),
@@ -362,7 +376,8 @@ const loadContext = (
 };
 
 export interface Guardoni {
-  config: GuardoniPlatformConfig;
+  config: GuardoniConfig;
+  platform: PlatformConfig;
   API: APIClient;
   // register an experiment from the given csv file
   registerExperimentFromCSV: (
@@ -370,7 +385,7 @@ export interface Guardoni {
     directiveType: DirectiveType
   ) => TE.TaskEither<AppError, GuardoniSuccessOutput>;
   registerExperiment: (
-    records: ComparisonDirectiveRow[],
+    records: NonEmptyArray<ComparisonDirectiveRow>,
     directiveType: DirectiveType
   ) => TE.TaskEither<AppError, GuardoniSuccessOutput>;
   listExperiments: () => TE.TaskEither<AppError, GuardoniSuccessOutput>;
@@ -391,8 +406,8 @@ export type GetGuardoni = ({
   logger,
 }: {
   basePath: string;
-  config: GuardoniConfig;
   platform: Platform;
+  config: Partial<GuardoniConfig>;
   logger: GuardoniContext['logger'];
   puppeteer: typeof puppeteer;
 }) => TE.TaskEither<AppError, Guardoni>;
@@ -415,6 +430,7 @@ export const GetGuardoni: GetGuardoni = ({
     TE.map((ctx) => {
       return {
         config: ctx.config,
+        platform: ctx.platform,
         API: ctx.API,
         runAuto: runAuto(ctx),
         runExperiment: runExperiment(ctx),

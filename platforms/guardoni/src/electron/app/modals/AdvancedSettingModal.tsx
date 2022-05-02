@@ -1,22 +1,29 @@
 import {
-  Dialog,
-  Grid,
   Accordion,
+  AccordionDetails,
   AccordionSummary,
   Box,
+  Button,
+  Checkbox,
+  Dialog,
+  DialogActions,
   FormControlLabel,
+  FormHelperText,
+  Grid,
   Input,
   makeStyles,
-  FormHelperText,
-  Button,
-  AccordionDetails,
-  Checkbox,
-  DialogActions,
 } from '@material-ui/core';
 import { ipcRenderer } from 'electron';
-import { EVENTS } from '../../models/events';
-import { GuardoniPlatformConfig } from '../../../guardoni/types';
 import * as React from 'react';
+import {
+  getConfigPlatformKey,
+  getPlatformConfig,
+} from '../../../guardoni/config';
+import {
+  GuardoniConfig,
+  GuardoniPlatformConfig,
+} from '../../../guardoni/types';
+import { EVENTS } from '../../models/events';
 
 const useStyles = makeStyles((theme) => ({
   formGroup: {
@@ -45,19 +52,28 @@ const useStyles = makeStyles((theme) => ({
 
 const AdvancedSettingModal: React.FC<{
   open: boolean;
-  config: GuardoniPlatformConfig;
-  onConfigChange: (c: GuardoniPlatformConfig) => void;
+  config: GuardoniConfig;
+  platform: GuardoniPlatformConfig;
+  onConfigChange: (c: GuardoniConfig) => void;
   onCancel: () => void;
-}> = ({ open, config: _config, onConfigChange, onCancel }) => {
+}> = ({
+  open,
+  config: _config,
+  platform: _platform,
+  onConfigChange,
+  onCancel,
+}) => {
   const classes = useStyles();
 
-  const [config, setConfig] = React.useState<GuardoniPlatformConfig>(_config);
+  const [config, setConfig] = React.useState<GuardoniConfig>(_config);
+  const platformKey = getConfigPlatformKey(_platform.name);
+  const platform = getPlatformConfig(_platform.name, config);
 
   const handleOpenProfileDir = React.useCallback(
-    (config: GuardoniPlatformConfig) => {
+    (c: GuardoniConfig) => {
       ipcRenderer.send(
         EVENTS.OPEN_GUARDONI_DIR.value,
-        `${config.basePath}/profiles/${config.profileName}`
+        `${c.basePath}/profiles/${c.profileName}`
       );
     },
     [config]
@@ -155,13 +171,13 @@ const AdvancedSettingModal: React.FC<{
                     <Input
                       id="backend"
                       aria-describedby="backend-text"
-                      value={config.platform.backend}
+                      value={platform.backend}
                       fullWidth
                       onChange={(e) =>
                         setConfig({
                           ...config,
-                          platform: {
-                            ...config.platform,
+                          [platformKey]: {
+                            ...platform,
                             backend: e.target.value,
                           },
                         })
@@ -173,6 +189,29 @@ const AdvancedSettingModal: React.FC<{
                   The backend url used by guardoni
                 </FormHelperText>
 
+                <FormControlLabel
+                  label="Extension"
+                  className={classes.formControl}
+                  labelPlacement="top"
+                  control={
+                    <Input
+                      id="extension"
+                      aria-describedby="extension-text"
+                      value={platform.extensionDir}
+                      fullWidth
+                      onChange={(e) =>
+                        setConfig({
+                          ...config,
+                          [platformKey]: {
+                            ...platform,
+                            extensionDir: e.target.value,
+                          },
+                        })
+                      }
+                    />
+                  }
+                />
+                <FormHelperText>The unpacked extension dir</FormHelperText>
                 <FormControlLabel
                   label="Chrome Path"
                   className={classes.formControl}
@@ -240,6 +279,7 @@ const AdvancedSettingModal: React.FC<{
           color="primary"
           onClick={() => {
             onConfigChange(config);
+            onCancel();
           }}
         >
           Save

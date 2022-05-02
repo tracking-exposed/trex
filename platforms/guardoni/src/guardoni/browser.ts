@@ -10,13 +10,13 @@ export const dispatchBrowser = (
   ctx: GuardoniContext
 ): TE.TaskEither<AppError, puppeteer.Browser> => {
   const execCount = ctx.profile.execount;
-  const proxy = ctx.config.platform.proxy;
+  const proxy = ctx.platform.proxy;
 
   const commandLineArg = [
     '--no-sandbox',
     '--disabled-setuid-sandbox',
-    '--load-extension=' + ctx.config.platform.extensionDir,
-    '--disable-extensions-except=' + ctx.config.platform.extensionDir,
+    '--load-extension=' + ctx.platform.extensionDir,
+    '--disable-extensions-except=' + ctx.platform.extensionDir,
   ];
 
   if (proxy) {
@@ -75,9 +75,7 @@ const operateTab =
         );
       }
 
-      const loadFor = (directive as any).loadFor ??
-        ctx.config.loadFor ??
-        6000 ;
+      const loadFor = (directive as any).loadFor ?? ctx.config.loadFor ?? 6000;
 
       ctx.logger.info(
         '— Loading %s (for %d ms) %O',
@@ -111,7 +109,7 @@ const operateTab =
       await page.waitForTimeout(loadFor);
 
       try {
-        debugger;
+        // debugger;
         await domainSpecific.afterWait(page, directive);
       } catch (error) {
         // eslint-disable-next-line no-console

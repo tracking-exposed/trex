@@ -7,7 +7,7 @@ const Layout: React.FC<LayoutProps> = ({ children, ...headerProps }) => {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
       <Header {...headerProps} />
-      <div style={{ height: '100%' }}>{children}</div>
+      <div style={{ height: '100%', width: '100%' }}>{children}</div>
     </div>
   );
 };

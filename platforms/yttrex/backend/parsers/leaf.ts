@@ -75,25 +75,26 @@ function mineAdBadge(D: Document, e): Partial<BaseAd> | null {
   else return null;
 }
 
-/* function mineChannel(D: Document, e: any): any {
-  const a = D.querySelector('a');
-  const channelLink = a?.getAttribute('href');
-  const ct = D.querySelector('#text');
-  const channelName = ct ? ct.textContent?.trim() : a?.textContent?.trim();
+// function mineChannel(D: Document, e: any): any {
+//   const a = D.querySelector('a');
+//   const channelLink = a?.getAttribute('href');
+//   const ct = D.querySelector('#text');
+//   const channelName = ct ? ct.textContent?.trim() : a?.textContent?.trim();
 
-  if (channelName && channelLink?.split('/')[1] === 'channel') {
-    return {
-      channelName,
-      channelId: channelLink.split('/')[2],
-    };
-  }
-  if (channelName && channelLink?.startsWith('/c/')) {
-    return {
-      channelName,
-      channelId: channelLink,
-    };
-  }
-} */
+//   // console.log({ channelName, channelLink });
+//   if (channelName && channelLink?.split('/')[1] === 'channel') {
+//     return {
+//       channelName,
+//       channelId: channelLink.split('/')[2],
+//     };
+//   }
+//   if (channelName && channelLink?.startsWith('/c/')) {
+//     return {
+//       channelName,
+//       channelId: channelLink,
+//     };
+//   }
+// }
 
 function mineBanner(D: Document, e: any): any {
   /* exclude the 'Ads in 2' label, among others */
@@ -199,15 +200,14 @@ export function processLeaf(e: Leaf): Ad | null {
     else if (e.selectorName === 'overlay') mined = mineOverlay(D, e);
     else if (e.selectorName === 'toprightpict') mined = mineTRP(D, e);
     /* channel is temporarly disabled */
-    /* else if (
-      e.selectorName === 'channel' ||
-      e.selectorName === 'channel1' ||
-      e.selectorName === 'channel2' ||
-      e.selectorName === 'channel3' ||
-      e.selectorName === '[href^="/channel"]'
-    )
-      mined = mineChannel(D, e);
-    */
+    // else if (
+    //   e.selectorName === 'channel' ||
+    //   e.selectorName === 'channel1' ||
+    //   e.selectorName === 'channel2' ||
+    //   e.selectorName === 'channel3' ||
+    //   e.selectorName === '[href^="/channel"]'
+    // )
+    //   mined = mineChannel(D, e);
     else if (e.selectorName === 'adbadge') mined = mineAdBadge(D, e);
     else leafLogger('Selector not handled %s', e.selectorName);
 

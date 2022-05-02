@@ -1,18 +1,15 @@
 import { trexLogger } from '@shared/logger';
-import { VideoMetadata } from '../models/Metadata';
-import { addSeconds, differenceInSeconds } from 'date-fns';
+import { parseISO } from 'date-fns';
 import * as t from 'io-ts';
 import { date } from 'io-ts-types/lib/date';
 import _ from 'lodash';
 import moment from 'moment';
-import querystring from 'querystring';
-import url from 'url';
 import { HTMLSource } from '../lib/parser/html';
 import utils from '../lib/utils'; // this because parseLikes is an utils to be used also with version of the DB without the converted like. but should be a parsing related-only library once the issue with DB version is solved
-import longlabel from './longlabel';
+import { ParsedInfo, VideoMetadata } from '../models/Metadata';
+import * as longlabel from './longlabel';
 import * as shared from './shared';
 import uxlang from './uxlang';
-import { ParsedInfo } from 'models/Metadata';
 
 const videoLog = trexLogger.extend('video');
 
@@ -131,9 +128,10 @@ export function closestForTime(
     })
   );
 
-  if (_.first(combo)) {
-    const expandedTime = _.first(combo)?.label.trim(); // '3:02'
-    const displayTime = _.first(combo)?.text.trim(); // '3 minutes, 2 seconds'
+  const match = _.first(combo);
+  if (match) {
+    const expandedTime = match.label.trim(); // '3:02'
+    const displayTime = match.text.trim(); // '3 minutes, 2 seconds'
     return { displayTime, expandedTime };
   }
 
@@ -195,9 +193,14 @@ function relatedMetadata(e: any, i: number): ParsedInfo | null {
     ? e.querySelector('a').getAttribute('href')
     : null;
   // eslint-disable-next-line node/no-deprecated-api
-  const urlinfo = url.parse(link);
-  const p = querystring.parse(urlinfo.query ?? '');
-  const videoId = p.v;
+  const urlinfo = link ? new URL(`https://www.youtube.com${link}`) : undefined;
+  const params = {};
+  const videoId = urlinfo?.searchParams?.get('v');
+
+  urlinfo?.searchParams.forEach((value, key) => {
+    params[key] = value;
+  });
+
   const liveBadge = !!e.querySelector('.badge-style-type-live-now');
   const thumbnailHref = shared.getThumbNailHref(e);
 
@@ -232,7 +235,7 @@ function relatedMetadata(e: any, i: number): ParsedInfo | null {
   const recommendedRelativeSeconds = estimatedLive
     ? null
     : mined
-    ? differenceInSeconds(new Date(), mined.timeago)
+    ? mined.timeago.asSeconds()
     : null;
 
   const r = {
@@ -240,7 +243,7 @@ function relatedMetadata(e: any, i: number): ParsedInfo | null {
     verified,
     foryou,
     videoId,
-    params: p,
+    params: params,
     recommendedSource: source,
     recommendedTitle: mined ? mined.title : title || null,
     recommendedLength,
@@ -273,30 +276,28 @@ export function makeAbsolutePublicationTime(
        metadata. clientTime isn't visibile in parsing function so the relative
        transformation of '1 month ago', is now a moment.duration() object 
        and now is saved the estimated ISODate format. */
-  return _.map(list, function (r, i): VideoResultAbsolutePubTime {
-    // console.log({ clientTime, recommendedPubTime: r?.recommendedPubTime });
-    if (!clientTime || !r?.recommendedPubTime) {
-      return {
-        ...r,
-        publicationTime: null,
-        timePrecision: 'error',
-      };
-    } else {
-      const deltaS = differenceInSeconds(
-        clientTime,
-        r.recommendedPubTime ? r.recommendedPubTime : new Date()
-      );
+  return _.map(
+    list,
+    function ({ recommendedPubTime, ...r }, i): VideoResultAbsolutePubTime {
+      if (!clientTime || !recommendedPubTime) {
+        return {
+          ...r,
+          publicationTime: null,
+          timePrecision: 'error',
+        };
+      } else {
+        const when = moment(clientTime).subtract(recommendedPubTime);
 
-      const when = addSeconds(clientTime, deltaS);
-      return {
-        ...r,
-        publicationTime: when,
-        timePrecision: 'estimated',
-      };
+        return {
+          ...r,
+          publicationTime: parseISO(when.toISOString()),
+          timePrecision: 'estimated',
+        };
+      }
+      /* we are keeping 'label' so it can be fetch in mongodb but filtered in JSON/CSV */
+      // return r;
     }
-    /* we are keeping 'label' so it can be fetch in mongodb but filtered in JSON/CSV */
-    // return r;
-  });
+  );
 }
 
 export function parseSingleTry(D, memo, spec): any {
@@ -390,10 +391,11 @@ export function simpleTitlePicker(D: Document): string | null {
     D.querySelector('#video-title')?.getAttribute('aria-label');
 
   if (videoLabel) {
-    const titleFromAriaLabel = longlabel.parser(videoLabel, '', '');
+    const titleFromAriaLabel = longlabel.parser(videoLabel, '', false);
     videoLog.debug('Title from aria label %s', titleFromAriaLabel);
-    return titleFromAriaLabel.title;
+    return titleFromAriaLabel.title ?? null;
   }
+
   return null;
 }
 
@@ -401,7 +403,7 @@ export function processVideo(
   D: Document,
   blang: string,
   clientTime: Date,
-  urlinfo: url.UrlWithStringQuery
+  urlinfo?: URL
 ): VideoMetadata {
   /* this method to extract title was a nice experiment
    * and/but should be refactored and upgraded */
@@ -496,13 +498,17 @@ export function processVideo(
     videoLog.error('Failure in logged(): %s', error.message);
   }
 
-  const params = urlinfo.query ? querystring.parse(urlinfo.query) : {};
-  const videoId = params.v as string;
+  const params = {};
+  urlinfo?.searchParams.forEach((value, key) => {
+    params[key] = value;
+  });
+
+  const videoId = urlinfo?.searchParams.get('v');
 
   return {
     title,
     type: 'video',
-    params: params as any,
+    params: params,
     videoId,
     login,
     publicationString,
@@ -524,7 +530,7 @@ export function process(envelop: HTMLSource): VideoMetadata | null {
       envelop.html?.blang,
       envelop.html?.clientTime,
       // eslint-disable-next-line node/no-deprecated-api
-      url.parse(envelop.html?.href ?? '')
+      new URL(envelop.html?.href ?? '')
     );
   } catch (e) {
     videoLog.error(

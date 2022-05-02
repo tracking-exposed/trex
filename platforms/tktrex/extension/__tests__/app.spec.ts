@@ -160,10 +160,8 @@ describe('TK App', () => {
       .get(`${process.env.API_ROOT}/v1/personal/${keys.publicKey}/foryou/json`)
       .catch((e) => {
         console.error(e);
-        return e.response.data;
+        return e.response?.data;
       });
-
-    console.log(response.data);
 
     expect(response.status).toBe(200);
     expect(response.data).toMatchObject([]);

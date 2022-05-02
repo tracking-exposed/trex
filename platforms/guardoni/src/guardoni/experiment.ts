@@ -64,7 +64,7 @@ export const createExperimentInAPI =
   ({ API, logger }: GuardoniContext) =>
   (
     directiveType: DirectiveType,
-    parsedCSV: ComparisonDirectiveRow[]
+    parsedCSV: NonEmptyArray<ComparisonDirectiveRow>
   ): TE.TaskEither<AppError, PostDirectiveSuccessResponse> => {
     return pipe(
       API.v3.Public.PostDirective({
@@ -91,7 +91,7 @@ export const createExperimentInAPI =
 export const registerExperiment =
   (ctx: GuardoniContext) =>
   (
-    records: ComparisonDirectiveRow[],
+    records: NonEmptyArray<ComparisonDirectiveRow>,
     directiveType: DirectiveType
   ): TE.TaskEither<AppError, GuardoniSuccessOutput> => {
     ctx.logger.debug('Creating experiment %O', { records, directiveType });
@@ -130,8 +130,9 @@ export const saveExperiment =
     ctx.logger.debug(
       'Saving experiment info in extension/experiment.json (would be read by the extension)'
     );
+
     const experimentJSONFile = path.join(
-      ctx.config.platform.extensionDir,
+      ctx.platform.extensionDir,
       'experiment.json'
     );
 

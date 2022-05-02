@@ -11,19 +11,19 @@ import { GuardoniErrorOutput, GuardoniSuccessOutput } from './types';
 
 const utilsLogger = guardoniLogger.extend('utils');
 
+export const CHROME_PATHS = [
+  '/usr/bin/google-chrome',
+  '/Program Files (x86)/Google/Chrome/Application/chrome.exe',
+  '/Program Files/Google/Chrome/Application/chrome.exe',
+  'C:\\Program Files (x86)\\Google\\Chrome\\Application\\chrome.exe',
+  'C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe',
+  '/Applications/Chromium.app/Contents/MacOS/Chromium',
+];
+
 // this function check for standard chrome executable path and
 // return it. If not found, raise an error
 export function getChromePath(): E.Either<Error, string> {
-  const knownPaths = [
-    '/usr/bin/google-chrome',
-    '/Program Files (x86)/Google/Chrome/Application/chrome.exe',
-    '/Program Files/Google/Chrome/Application/chrome.exe',
-    'C:\\Program Files (x86)\\Google\\Chrome\\Application\\chrome.exe',
-    'C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe',
-    '/Applications/Chromium.app/Contents/MacOS/Chromium',
-  ];
-
-  const chromePath = knownPaths.find((p) => fs.existsSync(p));
+  const chromePath = CHROME_PATHS.find((p) => fs.existsSync(p));
 
   utilsLogger.debug('Chrome path %s', chromePath);
 

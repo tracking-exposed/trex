@@ -1,7 +1,6 @@
 import base58 from 'bs58';
 import nacl from 'tweetnacl';
 import { Ad } from '../../../models/Ad';
-import { HomeMetadata } from '../../../models/Metadata';
 import { processLeaf } from '../../../parsers/leaf';
 import {
   getLastLeaves,
@@ -47,23 +46,28 @@ describe('Leaves parser', () => {
     );
   });
 
-  describe('Leaves', () => {
+  describe.skip('Leaves', () => {
     jest.setTimeout(20 * 1000);
 
     const history = readHistoryResults('leaves/home', publicKey);
 
-    test.each(history)(
+    test.each([
+      // history[0],
+      // history[1],
+      history[2],
+    ])(
       'Should correctly parse leaf contribution',
       async ({ sources: _sources, metadata }) => {
         const sources = _sources.map((s) => ({
           ...s,
-          clientTime: new Date(),
+          clientTime: parseISO(s.clientTime ?? new Date().toISOString()),
           savingTime: subMinutes(new Date(), 2),
         }));
 
         await runParserTest({
           log: appTest.logger,
-          sourceSchema: appTest.config.get('schema').ads,
+          sourceSchema: appTest.config.get('schema').leaves,
+          metadataSchema: appTest.config.get('schema').ads,
           parsers: { home: processLeaf },
           codec: Ad,
           db,

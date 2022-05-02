@@ -1,7 +1,6 @@
 import { AppError, toAppError } from '@shared/errors/AppError';
 import { Logger } from '@shared/logger';
 import { ComparisonDirective } from '@shared/models/Directive';
-import { GetAPI } from '@shared/providers/api.provider';
 import { AppEnv } from 'AppEnv';
 import { BrowserView, dialog, ipcMain, shell } from 'electron';
 import { pipe } from 'fp-ts/lib/function';
@@ -9,7 +8,11 @@ import * as TE from 'fp-ts/lib/TaskEither';
 import { NonEmptyString } from 'io-ts-types';
 import * as puppeteer from 'puppeteer-core';
 import * as pie from 'puppeteer-in-electron';
-import { getConfigPlatformKey, setConfig } from '../../guardoni/config';
+import {
+  getConfigPlatformKey,
+  getPlatformConfig,
+  setConfig,
+} from '../../guardoni/config';
 import { GetGuardoni, readCSVAndParse } from '../../guardoni/guardoni';
 import {
   GuardoniConfig,
@@ -18,8 +21,9 @@ import {
 } from '../../guardoni/types';
 import { guardoniLogger } from '../../logger';
 import { EVENTS } from '../models/events';
-import store from '../store/index';
+import store from '../store';
 import { getEventsLogger } from './event.logger';
+import * as path from 'path';
 
 const guardoniEventsLogger = guardoniLogger.extend('events');
 
@@ -30,8 +34,8 @@ export interface Events {
   unregister: () => void;
   register: (
     basePath: string,
-    conf: GuardoniConfig,
-    platform: Platform
+    platform: Platform,
+    confOverride: Partial<GuardoniConfig>
   ) => TE.TaskEither<Error, void>;
 }
 
@@ -108,8 +112,8 @@ export const GetEvents = ({
   // register all events triggered by the UI to ipcMain
   const register = (
     basePath: string,
-    config: GuardoniConfig,
-    platform: Platform
+    platform: Platform,
+    config: Partial<GuardoniConfig>
   ): TE.TaskEither<Error, void> => {
     unregister();
 
@@ -126,11 +130,48 @@ export const GetEvents = ({
       TE.chain((guardoni) => {
         logger.info('Started guardoni %O', guardoni.config);
 
-        let api = GetAPI({
-          baseURL: guardoni.config.platform.backend,
-          getAuth: async (req) => req,
-          onUnauthorized: async (res) => res,
-        }).API;
+        const initGuardoni = async (
+          basePath: string,
+          config: GuardoniConfig,
+          platform: Platform
+        ): Promise<void> => {
+          guardoniEventsLogger.info(
+            'Init guardoni with config %O for platform %s',
+            config,
+            platform
+          );
+
+          return pipe(
+            setConfig(guardoni.config.basePath, config),
+            TE.chain((config) =>
+              GetGuardoni({
+                basePath,
+                config,
+                platform,
+                logger,
+                puppeteer,
+              })
+            )
+          )().then((result) => {
+            if (result._tag === 'Right') {
+              guardoni = result.right;
+              // api = result.right.API;
+              return pipe(
+                TE.right({
+                  config: guardoni.config,
+                  platform: guardoni.platform,
+                }),
+                liftEventTask(EVENTS.GET_GUARDONI_CONFIG_EVENT.value)
+              );
+            } else {
+              logger.error("Can't start guardoni %O", result.left);
+              return pipe(
+                TE.right(result.left),
+                liftEventTask(EVENTS.GUARDONI_ERROR_EVENT.value)
+              );
+            }
+          });
+        };
 
         // pick csv file
         ipcMain.on(EVENTS.PICK_CSV_FILE_EVENT.value, () => {
@@ -149,34 +190,21 @@ export const GetEvents = ({
           );
 
           void pipe(
-            TE.right(guardoni.config),
+            TE.right({ config: guardoni.config, platform: guardoni.platform }),
             liftEventTask(EVENTS.GET_GUARDONI_CONFIG_EVENT.value)
           );
         });
         // set guardoni config
         ipcMain.on(EVENTS.SET_GUARDONI_CONFIG_EVENT.value, (event, ...args) => {
-          const [{ platform, ...platformConfig }] = args;
-          logger.debug(`Update guardoni platform config %O`, platformConfig);
+          const [config] = args;
+          logger.debug(`Update guardoni config %O`, config);
 
-          const platformKey = getConfigPlatformKey(platform);
-          const c = {
-            ...config,
-            ...platformConfig,
-            [platformKey]: {
-              ...config[platformKey],
-              ...platform,
-            },
-          };
+          store.set('basePath', config.basePath);
 
-          logger.debug(`Update guardoni config %O`, c);
-
-          store.set('basePath', platformConfig.basePath);
-
-          void pipe(
-            setConfig(guardoni.config.basePath, c),
-            TE.map(() => ({ ...platformConfig, platform })),
-            liftEventTask(EVENTS.GET_GUARDONI_CONFIG_EVENT.value)
-          );
+          void TE.tryCatch(
+            () => initGuardoni(basePath, config, platform),
+            toAppError
+          )();
         });
 
         // create guardoni experiment
@@ -222,26 +250,24 @@ export const GetEvents = ({
 
             const view = mainWindow.getBrowserView() as BrowserView;
 
+            // we may need to update the guardoni config right before the execution
+            // guardoni.config = configOverride;
+
             void pipe(
-              GetGuardoni({
-                basePath,
-                config: {
-                  ...config,
-                  ...configOverride,
-                },
-                platform: configOverride.platform.name,
-                logger,
-                puppeteer,
-              }),
+              TE.right(guardoni),
               TE.chain((g) =>
                 pipe(
                   TE.tryCatch(async () => {
                     const extension =
                       await view.webContents.session.loadExtension(
-                        g.config.platform.extensionDir
+                        g.platform.extensionDir
                       );
 
-                    logger.debug('Extension loaded %O', extension);
+                    logger.debug(
+                      'Extension loaded %O from %s',
+                      extension,
+                      g.platform.extensionDir
+                    );
 
                     return pie.getPage(browser, view, true);
                   }, toAppError),
@@ -270,7 +296,7 @@ export const GetEvents = ({
           logger.debug(EVENTS.GET_PUBLIC_DIRECTIVES.value);
           if (!event.sender.isDestroyed()) {
             void pipe(
-              api.v3.Public.GetPublicDirectives(),
+              guardoni.API.v3.Public.GetPublicDirectives(),
               liftEventTask(EVENTS.GET_PUBLIC_DIRECTIVES.value)
             );
           }
@@ -283,7 +309,7 @@ export const GetEvents = ({
             TE.tryCatch(
               () =>
                 Promise.resolve(
-                  shell.showItemInFolder(`${config}/guardoni.json`)
+                  shell.showItemInFolder(path.join(config, 'guardoni.json'))
                 ),
               toAppError
             ),
@@ -295,49 +321,35 @@ export const GetEvents = ({
          * When the platform changes the guardoni instance needs to be
          * relaunched with new configuration
          */
-        ipcMain.on(EVENTS.CHANGE_PLATFORM_EVENT.value, (event, ...args) => {
-          guardoniEventsLogger.info(EVENTS.CHANGE_PLATFORM_EVENT.value, args);
-          const [platform] = args;
+        ipcMain.on(EVENTS.CHANGE_PLATFORM_EVENT.value, (event, platform) => {
+          guardoniEventsLogger.info(
+            EVENTS.CHANGE_PLATFORM_EVENT.value,
+            platform
+          );
 
+          guardoniEventsLogger.info('Change platform event %O', platform);
           // clear config in renderer
 
           // update platform in store
           store.set('platform', platform);
           // call register with new params
-          void pipe(
-            GetGuardoni({
-              basePath,
-              config,
-              platform,
-              logger,
-              puppeteer,
-            })
-          )().then((result) => {
-            if (result._tag === 'Right') {
-              guardoni = result.right;
-              api = GetAPI({
-                baseURL: guardoni.config.platform.backend,
-                getAuth: async (req) => req,
-                onUnauthorized: async (res) => res,
-              }).API;
-              return pipe(
-                TE.right(guardoni.config),
-                liftEventTask(EVENTS.GET_GUARDONI_CONFIG_EVENT.value)
-              );
-            } else {
-              logger.error("Can't start guardoni %O", result.left);
-              return pipe(
-                TE.right(result.left),
-                liftEventTask(EVENTS.GUARDONI_ERROR_EVENT.value)
-              );
-            }
-          });
+          const platformKey = getConfigPlatformKey(platform);
+          const platformConfig = getPlatformConfig(platform, guardoni.config);
+
+          const c = {
+            ...guardoni.config,
+            [platformKey]: {
+              ...platformConfig,
+            },
+          };
+
+          void initGuardoni(basePath, c, platform);
         });
 
         return TE.tryCatch(
           () =>
             liftEventTask(EVENTS.GET_GUARDONI_CONFIG_EVENT.value)(
-              TE.right(guardoni.config)
+              TE.right({ config: guardoni.config, platform: guardoni.platform })
             ),
           toAppError
         );

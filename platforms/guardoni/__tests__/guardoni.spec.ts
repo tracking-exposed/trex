@@ -4,9 +4,7 @@ import * as TE from 'fp-ts/lib/TaskEither';
 import * as fs from 'fs';
 import * as path from 'path';
 import { readConfigFromPath } from '../src/guardoni/config';
-import {
-  GetGuardoni
-} from '../src/guardoni/guardoni';
+import { GetGuardoni } from '../src/guardoni/guardoni';
 import { getDefaultProfile, getProfileDataDir } from '../src/guardoni/profile';
 import { csvStringifyTE } from '../src/guardoni/utils';
 import { guardoniLogger } from '../src/logger';
@@ -39,7 +37,8 @@ const backend = process.env.YT_BACKEND as string;
 describe('Guardoni', () => {
   const basePath = path.resolve(__dirname, '../');
   const profile = 'profile-test-99';
-  const csvTestFileName = 'trex-yt-videos-test.csv';
+  const emptyCSVTestFileName = 'yt-videos-test-empty.csv';
+  const csvTestFileName = 'trex-yt-videos.csv';
   const defaultConfig = {
     headless: false,
     verbose: false,
@@ -100,13 +99,16 @@ describe('Guardoni', () => {
 
   describe('config', () => {
     test('succeeds when config is correctly formed', async () => {
-      const config = await readConfigFromPath({ logger: guardoniLogger })(basePath, defaultConfig)();
+      const config = await readConfigFromPath({ logger: guardoniLogger })(
+        basePath,
+        defaultConfig
+      )();
 
       expect(config).toMatchObject({
         right: {
-          profileName: profile,
-          verbose: true,
-          headless: true,
+          profileName: defaultConfig.profileName,
+          verbose: defaultConfig.verbose,
+          headless: defaultConfig.headless,
           yt: {
             name: 'youtube',
             backend: 'http://localhost:9000/api',
@@ -139,15 +141,15 @@ describe('Guardoni', () => {
       });
     });
 
-    test('succeeds with correct defaults', async () => {
+    test('succeeds with profile option', async () => {
       const profileName = 'profile-test-0';
       const g = await GetGuardoni({
         basePath,
         config: {
           ...defaultConfig,
+          headless: true,
+          verbose: true,
           profileName,
-          headless: false,
-          verbose: false,
         },
         platform: 'youtube',
         logger: guardoniLogger,
@@ -157,14 +159,51 @@ describe('Guardoni', () => {
       expect(g).toMatchObject({
         right: {
           config: {
-            headless: false,
-            verbose: false,
-            platform: {
+            headless: true,
+            verbose: true,
+            yt: {
               backend: defaultConfig.yt.backend,
               extensionDir: defaultConfig.yt.extensionDir,
             },
             profileName,
           },
+        },
+      });
+    });
+  });
+
+  describe('register experiment', () => {
+    test('fails when the experiment has no links', async () => {
+      // one minute
+      jest.setTimeout(60 * 1000);
+
+      const guardoni = GetGuardoni({
+        basePath,
+        config: defaultConfig,
+        platform: 'youtube',
+        logger: guardoniLogger,
+        puppeteer: puppeteerMock,
+      });
+
+      const experiment = await pipe(
+        guardoni,
+        TE.chain((g) =>
+          pipe(
+            g.registerExperimentFromCSV(
+              path.resolve(
+                basePath,
+                'experiments',
+                emptyCSVTestFileName
+              ) as any,
+              'comparison'
+            )
+          )
+        )
+      )();
+
+      expect(experiment).toMatchObject({
+        left: {
+          message: "Can't create an experiment with no links",
         },
       });
     });

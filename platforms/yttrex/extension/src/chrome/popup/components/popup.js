@@ -14,7 +14,7 @@ import { bo } from '@shared/extension/utils/browser.utils';
 import config from '@shared/extension/config';
 
 const styles = {
-  width: '400px',
+  width: '100%',
 };
 
 class Popup extends React.Component {
@@ -76,16 +76,12 @@ class Popup extends React.Component {
     return (
       <div style={styles}>
         <Card>
-          <FormHelperText>ytTREX main switch</FormHelperText>
           <Settings {...this.state.data} />
           <FormHelperText>Access to your data</FormHelperText>
           <GetCSV publicKey={this.state.data.publicKey} />
           <FormHelperText>About</FormHelperText>
-          <InfoBox />
+          <InfoBox version={version} timeago={timeago} />
         </Card>
-        <small>
-          version {version}, released {timeago}
-        </small>
       </div>
     );
   }

@@ -15,14 +15,11 @@ import * as path from 'path';
 import pie from 'puppeteer-in-electron';
 import { AppEnv } from '../AppEnv';
 import {
-  DEFAULT_BASE_PATH,
-  DEFAULT_LOAD_FOR,
-  DEFAULT_TK_EXTENSION_DIR,
-  DEFAULT_YT_EXTENSION_DIR,
+  DEFAULT_BASE_PATH
 } from '../guardoni/constants';
 import { getPackageVersion } from '../guardoni/utils';
 import { GetEvents } from './events/renderer.events';
-import store from './store/index';
+import store from './store';
 import { createGuardoniWindow } from './windows/GuardoniWindow';
 
 app.setPath('userData', path.resolve(os.homedir(), `.guardoni/electron/data`));
@@ -129,31 +126,23 @@ export const run = async (): Promise<void> => {
 
           log.debug('Last platform %s', platform);
 
-          return rendererEvents.register(
-            basePath,
-            {
-              profileName,
-              evidenceTag: undefined,
-              headless: false,
-              verbose: false,
-              loadFor: DEFAULT_LOAD_FOR,
-              advScreenshotDir: undefined,
-              excludeURLTag: undefined,
-              yt: {
-                name: 'youtube',
-                backend: env.YT_BACKEND,
-                extensionDir: DEFAULT_YT_EXTENSION_DIR,
-                proxy: undefined,
-              },
-              tk: {
-                name: 'tiktok',
-                backend: env.TK_BACKEND,
-                extensionDir: DEFAULT_TK_EXTENSION_DIR,
-                proxy: undefined,
-              },
-            },
-            platform
-          );
+          return rendererEvents.register(basePath, platform, {
+            profileName,
+            headless: false,
+            verbose: false,
+            // yt: {
+            //   name: 'youtube',
+            //   backend: env.YT_BACKEND,
+            //   extensionDir: DEFAULT_YT_EXTENSION_DIR,
+            //   proxy: undefined,
+            // },
+            // tk: {
+            //   name: 'tiktok',
+            //   backend: env.TK_BACKEND,
+            //   extensionDir: DEFAULT_TK_EXTENSION_DIR,
+            //   proxy: undefined,
+            // },
+          });
         })
       );
     }),

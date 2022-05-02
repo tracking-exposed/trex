@@ -66,7 +66,7 @@ export interface ParserProviderContext<T> {
   ) => Promise<LastContributions<T>>;
   getEntryNatureType: (e: T) => string;
   getEntryDate: (e: T) => Date;
-  saveResults: (e: PipelineResults<T> | null) => Promise<{
+  saveResults: (e: PipelineResults<any> | null) => Promise<{
     metadata: any;
     count: { [key: string]: number };
   } | null>;

@@ -4,6 +4,7 @@ import {
   AccordionSummary,
   Box,
   Button,
+  Grid,
   List,
   ListItem,
   makeStyles,
@@ -24,6 +25,8 @@ import { EVENTS } from '../../models/events';
 const useStyle = makeStyles((theme) => ({
   directiveRow: {
     cursor: 'pointer',
+    border: 'solid #23AA9A 2px',
+    marginBottom: 10,
   },
   directiveRowSelected: {
     boxShadow: theme.shadows[3],
@@ -39,7 +42,7 @@ const useStyle = makeStyles((theme) => ({
     flexDirection: 'column',
   },
   directiveLinkList: {
-    marginBottom: 30,
+    marginBottom: 20,
   },
   directiveLinkListItem: {
     display: 'flex',
@@ -49,6 +52,7 @@ const useStyle = makeStyles((theme) => ({
   detailsActions: {
     display: 'flex',
     justifyContent: 'flex-end',
+    alignItems: 'center',
   },
 }));
 
@@ -77,6 +81,7 @@ export const ExperimentList: React.FC<ExperimentListProps> = ({
         const isSelected = d.experimentId === directiveId;
         return (
           <Accordion
+            elevation={0}
             key={d.experimentId}
             className={`${classes.directiveRow} ${
               isSelected ? classes.directiveRowSelected : ''
@@ -89,18 +94,18 @@ export const ExperimentList: React.FC<ExperimentListProps> = ({
                 content: classes.listItemSummary,
               }}
             >
-              <Typography variant="subtitle1">{d.tags.join(', ')}</Typography>
+              <Typography variant="body1">{d.tags.join(', ')}</Typography>
               <Box
                 style={{
                   display: 'flex',
                   flexGrow: 1,
                   justifyContent: 'flex-end',
-                  marginRight: 10,
+                  marginRight: 20,
                   alignItems: 'center',
                 }}
               >
                 <LinkIcon />
-                <Typography variant="subtitle2">{d.links.length}</Typography>
+                <Typography variant="subtitle2">- {d.links.length}</Typography>
               </Box>
 
               <Typography
@@ -109,32 +114,40 @@ export const ExperimentList: React.FC<ExperimentListProps> = ({
                   display: 'flex',
                   justifyContent: 'flex-end',
                 }}
+                color="primary"
               >
                 {formatDistanceToNow(parseISO(d.when))}
               </Typography>
             </AccordionSummary>
             <AccordionDetails className={classes.details}>
+              <Typography variant="h5" style={{ marginLeft: 14.5 }}>
+                URLs
+              </Typography>
               <List className={classes.directiveLinkList}>
                 {d.links.map((l) => (
                   <ListItem
                     className={classes.directiveLinkListItem}
                     key={l.url}
                   >
-                    <Typography variant="subtitle1" color="primary">
+                    <Typography variant="h6" color="primary">
                       {l.urltag} ({l.watchFor ?? 'end'}):
                     </Typography>{' '}
                     <Typography variant="body2">{l.url}</Typography>
                   </ListItem>
                 ))}
               </List>
-              <Box>Experiment estimated run time: {d.time / 1000}s</Box>
               <Box className={classes.detailsActions}>
+                <Box style={{ marginRight: 30 }}>
+                  <Typography color="primary" variant="h6">
+                    Estimated Runtime: {d.time / 1000} s
+                  </Typography>
+                </Box>
                 <Button
                   color="primary"
                   variant="contained"
                   onClick={() => onExperimentRunClick(d)}
                 >
-                  Run
+                  LOAD
                 </Button>
               </Box>
             </AccordionDetails>
@@ -158,7 +171,7 @@ const ExperimentListRoute: React.FC<
   }, []);
 
   React.useEffect(() => {
-    ipcRenderer.once(EVENTS.GET_PUBLIC_DIRECTIVES.value, (event, ...args) => {
+    ipcRenderer.on(EVENTS.GET_PUBLIC_DIRECTIVES.value, (event, ...args) => {
       const [directives] = args;
       setDirectives(directives);
     });
@@ -168,7 +181,7 @@ const ExperimentListRoute: React.FC<
     return () => {
       ipcRenderer.removeAllListeners(EVENTS.GET_PUBLIC_DIRECTIVES.value);
     };
-  }, []);
+  }, [config]);
 
   const experimentsWithTags = React.useMemo(
     () =>
@@ -197,7 +210,15 @@ const ExperimentListRoute: React.FC<
   );
 
   if (experimentsWithTags.length === 0) {
-    return <Typography>No experiment available</Typography>;
+    return (
+      <Grid container style={{ justifyContent: 'center' }}>
+        <Grid item md={8}>
+          <Box pt={3} pb={2}>
+            <Typography variant="h4">No Available Experiments</Typography>
+          </Box>
+        </Grid>
+      </Grid>
+    );
   }
 
   return (
@@ -206,10 +227,17 @@ const ExperimentListRoute: React.FC<
         padding: theme.spacing(2),
       }}
     >
-      <ExperimentList
-        experiments={experimentsWithTags}
-        onExperimentRunClick={(e) => runGuardoni(e.experimentId)}
-      />
+      <Grid container style={{ justifyContent: 'center' }}>
+        <Grid item md={8}>
+          <Box pt={3} pb={2}>
+            <Typography variant="h4">Available Experiments</Typography>
+          </Box>
+          <ExperimentList
+            experiments={experimentsWithTags}
+            onExperimentRunClick={(e) => runGuardoni(e.experimentId)}
+          />
+        </Grid>
+      </Grid>
     </Box>
   );
 };

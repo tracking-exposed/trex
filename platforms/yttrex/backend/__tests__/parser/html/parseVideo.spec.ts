@@ -1,5 +1,5 @@
 import base58 from 'bs58';
-import { parseISO, subMinutes } from 'date-fns';
+import { addMinutes, parseISO, subMinutes } from 'date-fns';
 import { JSDOM } from 'jsdom';
 import nacl from 'tweetnacl';
 import {
@@ -53,7 +53,6 @@ describe('Parser: Video', () => {
 
   /**
    * TODO:
-   * historyData[1] mismatch the related
    * historyData[2] has missing related items
    * historyData[4] has missing related items
    * historyData[5] has missing related items
@@ -61,13 +60,23 @@ describe('Parser: Video', () => {
    * historyData[7] has missing related items
    * historyData[8] has missing related items
    */
-  test.each([historyData[0], historyData[3], historyData[9]])(
+  test.each([
+    historyData[0],
+    historyData[1],
+    // historyData[2],
+    historyData[3],
+    historyData[4],
+    // historyData[5]
+    // historyData[6]
+    // historyData[7]
+    historyData[8],
+  ])(
     'Should correctly parse video contributions',
     async ({ sources: _sources, metadata }) => {
       const sources = _sources.map((h: any) => ({
         ...h,
-        clientTime: parseISO(h.clientTime ?? new Date()),
-        savingTime: subMinutes(new Date(), 1),
+        clientTime: parseISO(h.clientTime ?? new Date().toISOString()),
+        savingTime: addMinutes(new Date(), 1),
         processed: null,
       }));
 
@@ -75,12 +84,31 @@ describe('Parser: Video', () => {
         log: appTest.logger,
         db,
         sourceSchema: appTest.config.get('schema').htmls,
-        mapSource: (h: any) => ({
-          html: h,
-          jsdom: new JSDOM(h.html.replace(/\n +/g, '')).window.document,
-          supporter: undefined,
-          findings: {},
-        }),
+        metadataSchema: appTest.config.get('schema').metadata,
+        mapSource: (h: any) => {
+          // console.log('plain html', h.html);
+          const sanitizedHTML = h.html.replace(/(\n|\t) +/g, '');
+          // console.log('sanitized html', sanitizedHTML);
+          const sourceDOM = new JSDOM(sanitizedHTML, {
+            beforeParse: (w) => {
+              w.onload = (e) => {
+                console.log('load', e);
+              };
+              w.onerror = (e) => {
+                console.error('error', e);
+              };
+            },
+          });
+
+          // console.log('source dom text content', sourceDOM.window.document);
+
+          return {
+            html: h,
+            jsdom: sourceDOM.window.document,
+            supporter: undefined,
+            findings: {},
+          };
+        },
         parsers: { video: process },
         codec: VideoMetadata,
         getEntryDate: (e) => e.html.savingTime,
@@ -92,7 +120,14 @@ describe('Parser: Video', () => {
             expect(r.processed).toBe(true);
           });
         },
-        expectMetadata: (expectedM, receivedM) => {
+        expectMetadata: (receivedM, expectedM) => {
+          const {
+            related: receivedRelated,
+            // login: receivedLogin,
+            likeInfo,
+            ...receivedMetadata
+          } = receivedM;
+
           const {
             savingTime: _savingTime,
             clientTime: _clientTime,
@@ -100,20 +135,14 @@ describe('Parser: Video', () => {
             id,
             // login: expectedLogin,
             related: expectedRelated,
-            publicationTime: expectedPublicationTime,
             likeInfo: expectedLikeInfo,
             ...expectedMetadata
           } = expectedM;
 
-          const {
-            related: receivedRelated,
-            // login: receivedLogin,
-            publicationTime: receivedPublicationTime,
-            likeInfo,
-            ...expectedUpdatedMetadata
-          } = receivedM;
-
-          expect(expectedUpdatedMetadata).toMatchObject({
+          expect({
+            ...receivedMetadata,
+            publicationTime: receivedMetadata.publicationTime.toISOString(),
+          }).toMatchObject({
             ...expectedMetadata,
           });
 
@@ -123,11 +152,10 @@ describe('Parser: Video', () => {
               ({ recommendedPubTime, publicationTime, ...rr }) => ({
                 ...rr,
                 foryou: rr.foryou ?? null,
+                publicationTime: publicationTime?.toISOString() ?? null,
               })
             )
-          ).toMatchObject(
-            expectedRelated.map(({ publicationTime, ...rr }) => rr)
-          );
+          ).toMatchObject(expectedRelated.map(({ ...rr }) => rr));
         },
       })({ metadata, sources });
     }

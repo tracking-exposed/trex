@@ -24,10 +24,12 @@ export type PlatformConfig = t.TypeOf<typeof PlatformConfig>;
 
 export const GuardoniConfig = t.strict(
   {
+    chromePath: t.string,
+    basePath: t.string,
     headless: t.boolean,
     verbose: t.boolean,
     profileName: t.string,
-    evidenceTag: t.union([t.string, t.undefined]),
+    evidenceTag: t.string,
     loadFor: t.number,
     advScreenshotDir: t.union([t.string, t.undefined]),
     excludeURLTag: t.union([t.string, t.undefined]),
@@ -41,19 +43,10 @@ export type GuardoniConfig = t.TypeOf<typeof GuardoniConfig>;
 
 export const GuardoniPlatformConfig = t.strict(
   {
-    headless: t.boolean,
-    verbose: t.boolean,
-    profileName: t.string,
-    evidenceTag: t.string,
-    basePath: t.string,
-    loadFor: t.number,
-    chromePath: t.string,
-    platform: t.strict({
-      name: t.union([t.literal('tiktok'), t.literal('youtube')]),
-      backend: t.string,
-      extensionDir: t.string,
-      proxy: t.union([t.string, t.undefined]),
-    }),
+    name: t.union([t.literal('tiktok'), t.literal('youtube')]),
+    backend: t.string,
+    extensionDir: t.string,
+    proxy: t.union([t.string, t.undefined]),
   },
   'GuardoniPlatformConfig'
 );
@@ -95,7 +88,8 @@ export type GuardoniProfile = t.TypeOf<typeof GuardoniProfile>;
 export interface GuardoniContext {
   puppeteer: typeof puppeteer;
   API: APIClient;
-  config: GuardoniPlatformConfig;
+  config: GuardoniConfig;
+  platform: PlatformConfig;
   profile: GuardoniProfile;
   guardoniConfigFile: string;
   logger: Pick<Logger, 'info' | 'error' | 'debug'>;

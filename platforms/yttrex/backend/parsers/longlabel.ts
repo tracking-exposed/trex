@@ -1,13 +1,15 @@
-const { subMilliseconds } = require('date-fns');
-const _ = require('lodash');
-const debug = require('debug')('parser:longlabel');
-const debuge = require('debug')('parser:longlabel:error');
-const moment = require('moment');
+import D from 'debug';
+import _ from 'lodash';
+import moment from 'moment';
 
-const unrecognizedWordList = [];
+// logger
+const debug = D('parser:longlabel');
+const debuge = debug.extend('error');
+
+const unrecognizedWordList: string[] = [];
 
 /* ****************************** * functions included above * ******************************** */
-const relativeConMapping = [
+export const relativeConMapping = [
   {
     amount: 1,
     unit: 'seconds',
@@ -188,7 +190,22 @@ const relativeConMapping = [
   },
 ];
 
-function chinesecomma(label, sosta, isLive) {
+interface LongLabelLanguage {
+  separator: string;
+  locale: string;
+}
+
+interface LongLabelResult {
+  views: number;
+  isLive: boolean;
+  reducedLabel: string;
+}
+
+function chinesecomma(
+  label: string,
+  sosta: string,
+  isLive: boolean
+): LongLabelResult {
   // call as { views, liveStatus } = langi.viewcount(l, langi.sostantivo, isLive);
   const regmap = {
     variation: new RegExp(`\\d{4}${sosta}$`),
@@ -201,7 +218,7 @@ function chinesecomma(label, sosta, isLive) {
   };
   const unexpected = '：';
   const splitted = label.split(unexpected);
-  const lastChunk = splitted.pop();
+  const lastChunk = splitted.pop() as string;
   const reducedLabel = splitted.join(unexpected);
   // console.log(label, "\n", reducedLabel, "\n", lastChunk);
   label.split(unexpected).pop();
@@ -222,7 +239,7 @@ function chinesecomma(label, sosta, isLive) {
   return { views, isLive, reducedLabel };
 }
 
-function comma(label, sosta, isLive) {
+function comma(label: string, sosta: string, isLive: boolean): LongLabelResult {
   // call as { views, liveStatus } = langi.viewcount(l, langi.sostantivo, isLive);
   const regmap = {
     variation: new RegExp(` \\d{4} ${sosta}$`),
@@ -231,7 +248,7 @@ function comma(label, sosta, isLive) {
     million: new RegExp(` \\d{1,3},\\d{3},\\d{3} ${sosta}$`),
     gangamstyle: new RegExp(` \\d{1,2},\\d{3},\\d{3},\\d{3} ${sosta}$`),
   };
-  let reducedLabel = null;
+  let reducedLabel: string | null = null;
   const views = _.reduce(
     regmap,
     function (memo, rge, name) {
@@ -246,9 +263,9 @@ function comma(label, sosta, isLive) {
     -1
   );
   if (views < 0) throw new Error('failure in regexp parsing (comma)');
-  return { views, isLive, reducedLabel };
+  return { views, isLive, reducedLabel: reducedLabel as any as string };
 }
-function empty(label, sosta, isLive) {
+function empty(label: string, sosta: string, isLive: boolean): LongLabelResult {
   /* because of the strange charCodeAt = 8239 or 160 
        which are space (like 0x20) but some kind of unicode alphabe ?
      * we should transform it */
@@ -272,7 +289,7 @@ function empty(label, sosta, isLive) {
     million: new RegExp(` \\d{1,3} \\d{3} \\d{3} ${sosta}$`),
     gangamstyle: new RegExp(` \\d{1,2} \\d{3} \\d{3} \\d{3} ${sosta}$`),
   };
-  let reducedLabel = null;
+  let reducedLabel: string | null = null;
   const views = _.reduce(
     regmap,
     function (memo, rge, name) {
@@ -289,16 +306,17 @@ function empty(label, sosta, isLive) {
     -1
   );
   if (views < 0) throw new Error('failure in regexp parsing (empty)');
-  return { views, isLive, reducedLabel };
+  return { views, isLive, reducedLabel: reducedLabel as any as string };
 }
-function dots(label, sosta, isLive) {
+
+function dots(label: string, sosta: string, isLive: boolean): LongLabelResult {
   const regmap = {
     hundred: new RegExp(` \\d{1,4} ${sosta}$`),
     thousand: new RegExp(` \\d{1,3}\\.\\d{3} ${sosta}$`),
     million: new RegExp(` \\d{1,3}\\.\\d{3}\\.\\d{3} ${sosta}$`),
     gangamstyle: new RegExp(` \\d{1,2}\\.\\d{3}\\.\\d{3}\\.\\d{3} ${sosta}$`),
   };
-  let reducedLabel = null;
+  let reducedLabel: string | null = null;
   const views = _.reduce(
     regmap,
     function (memo, rge, name) {
@@ -314,7 +332,7 @@ function dots(label, sosta, isLive) {
     -1
   );
   if (views < 0) throw new Error('failure in regexp parsing (dots)');
-  return { views, isLive, reducedLabel };
+  return { views, isLive, reducedLabel: reducedLabel as any as string };
 }
 
 const langopts = [
@@ -417,11 +435,11 @@ const langopts = [
   }, // Slovak
 ];
 
-function sanityCheck(l) {
-  if (_.size(l) < 20) throw new Error(2);
+function sanityCheck(l: string): void {
+  if (_.size(l) < 20) throw new Error(`Given ${l.toString()} has length < 20`);
 }
 
-function NoViewsReplacer(l, sosta) {
+function NoViewsReplacer(l: string, sosta: string): string {
   /* i.e.:| Write Time at 9 is BACK! by The Goulet Pen Company 9 minutes ago No views |
        should return 0 views */
   const x = ['No', 'Nessuna', 'Ingen', 'Keine', 'Nenhuma', 'Aucune'];
@@ -436,7 +454,7 @@ function NoViewsReplacer(l, sosta) {
   );
 }
 
-function guessLanguageByViews(candidates) {
+export function guessLanguageByViews(candidates): LongLabelLanguage {
   if (!_.size(candidates))
     throw new Error('guessLanguageByViews E1 has not candidates!');
   /* 'views', 'vues' or what else? here is guessed a language */
@@ -455,7 +473,8 @@ function guessLanguageByViews(candidates) {
     throw new Error('guessLanguageByViews E2 has no probable choices');
   if (!_.size(ordered))
     throw new Error('guessLanguageByViews E3 has no ordered');
-  const isReliable = _.size(candidates) / 10 < _.first(ordered).amount;
+
+  const isReliable = _.size(candidates) / 10 < (_.first(ordered)?.amount ?? 0);
   if (!isReliable)
     debuge(
       'With this list of candidates %j, we pick %j probable match and is less than 10%',
@@ -463,12 +482,43 @@ function guessLanguageByViews(candidates) {
       _.first(ordered)
     );
 
-  const foundLocale = _.first(probable).locale;
+  const foundLocale = _.first(probable)?.locale;
   return {
-    separator: _.find(langopts, { locale: foundLocale }).separator,
-    locale: foundLocale,
+    separator: _.find(langopts, { locale: foundLocale })?.separator as string,
+    locale: foundLocale as string,
   };
 }
+
+// const timeRegExpList = [
+//   /\s?(\d+)\s(\D+)\s?/,
+//   /\s?(\d+)\s(\D+)\s\D+?/,
+//   /\s?\D+\s(\d+)\s(\D+)\s?/,
+//   /\s?\D+\s(\d+)\s(\D+)\s?/,
+// ];
+
+function relativeTimeMap(word: string): [number, string] | null {
+  return relativeConMapping.reduce((memo: null | [number, string], e) => {
+    if (memo) return memo;
+
+    if (e.words.includes(word)) {
+      // debug('Word %s match! unit %s', word, e.unit);
+      memo = [e.amount, e.unit];
+    }
+
+    return memo;
+  }, null);
+}
+
+const recoChannelEndings = [
+  {
+    matchable: 'channel',
+    sostantivo: 'views',
+    full: 'viewers also watch this channel',
+  },
+  {
+    matchable: 'canale',
+  },
+];
 
 const timeRegExpList = [
   /\s?(\d+)\s(\D+)\s?/,
@@ -476,41 +526,17 @@ const timeRegExpList = [
   /\s?\D+\s(\d+)\s(\D+)\s?/,
 ];
 
-function relativeTimeMap(word) {
-  return _.reduce(
-    relativeConMapping,
-    function (memo, e) {
-      if (memo) return memo;
-
-      if (e.words.indexOf(word) !== -1) memo = [e.amount, e.unit];
-
-      return memo;
-    },
-    null
-  );
-}
-
-const recoChannelEndings = [{
-  matchable: 'channel',
-  sostantivo: 'views',
-  full: 'viewers also watch this channel'
-}, {
-  matchable: 'canale',
-}]
-
-function getPublicationTime(timeinfo) {
-
+export function getPublicationTime(timeinfo: string): moment.Duration {
   const timeago = _.reduce(
     timeRegExpList,
     function (memo, rge) {
       const m = timeinfo.match(rge);
-      return memo || m;
+      return memo ?? m;
       // this priority on existing 'memo' matter, because the 3rd regexp (longer)
       // might otherwise overwrite the first success and include dirty data.
     },
     null
   );
-
   if (!timeago) {
     debuge(
       "Can't regexp timeago [%s] --might be due to lang separator?",
@@ -530,7 +556,7 @@ function getPublicationTime(timeinfo) {
       if (_.isNull(momentinfo)) return memo;
 
       const total = convertedNumber * momentinfo[0];
-      const mabbe = moment.duration(total, momentinfo[1]); /*
+      const mabbe = moment.duration(total, momentinfo[1] as any); /*
         debug("(OK getPublicationTime) |%s| to be [%j]  parsed %d total %d",
             word, momentinfo, convertedNumber, total); */
       return mabbe;
@@ -543,13 +569,12 @@ function getPublicationTime(timeinfo) {
     const fullwordlist = _.flatten(_.map(relativeConMapping, 'words'));
     const missing = _.filter(timeago[0].split(' '), function (labelword) {
       if (!_.isNaN(_.parseInt(labelword))) return false;
-      return fullwordlist.indexOf(labelword) === -1;
+      return !fullwordlist.includes(labelword);
     });
     const updated = _.uniq(_.concat(unrecognizedWordList, missing));
     if (_.size(updated) > _.size(unrecognizedWordList)) {
       _.each(missing, function (mw) {
-        if (unrecognizedWordList.indexOf(mw) === -1)
-          unrecognizedWordList.push(mw);
+        if (!unrecognizedWordList.includes(mw)) unrecognizedWordList.push(mw);
       });
       debug(
         'Found %d unrecognized words, now extended the list of %j',
@@ -565,14 +590,21 @@ function getPublicationTime(timeinfo) {
   if (!duration.isValid())
     throw new Error(`Invalid duration! from ${timeago} to ${timeinfo}`);
 
-  const d = subMilliseconds(new Date(), duration.as('milliseconds'))
-
-  // debug("getPublicationTime: %s from |%s|", duration.as('milliseconds'), timeinfo);
-
-  return d;
+  // debug("getPublicationTime: %s from |%s|", duration.humanize(), timeinfo);
+  return duration;
 }
 
-function parser(l, source, isLive) {
+export function parser(
+  l: string,
+  source: any,
+  isLive: boolean
+): {
+  views: number;
+  locale: string;
+  title?: string;
+  timeago: moment.Duration | null;
+  isLive: boolean;
+} {
   /* logic:
         1) find which language is the locale, by pattern matching 'sostantivo' and 'separator'
             - found? proceeed
@@ -582,7 +614,7 @@ function parser(l, source, isLive) {
 
   sanityCheck(l);
   // this works for latin words
-  const viewssost = _.last(l.split(' '));
+  const viewssost = _.last(l.split(' ')) as string;
   // and this for chinese
   const chinasost = l.split('').pop();
 
@@ -598,26 +630,30 @@ function parser(l, source, isLive) {
   // debug("<sostantivo> %s, <langi> %j", viewssost, langi);
   // if(!langi) debugger;
 
-  const recoinfo = {};
-  if(!langi) {
+  const recoinfo: {
+    channelLinked?: string;
+  } = {
+    channelLinked: undefined,
+  };
+  if (!langi) {
     /* the recommendation by channels ---
       'Italy has FINALLY been Fixed In Hearts Of Iron 4 by iSorrowproductions 
       49 minutes ago 14 minutes, 39 seconds 26,167 views 
       Bokoen1 viewers also watch this channel'
     */
-    const recdet = _.find(recoChannelEndings, { 'matchable': viewssost });
-    if(recdet) {
-      debug("found %j", recdet);
+    const recdet = recoChannelEndings.find((c) => c.matchable === viewssost);
+    if (recdet) {
+      debug('found %j', recdet);
       const reg = new RegExp(`${recdet.sostantivo}\\ (.*)\\ ${recdet.full}`);
       const result = reg.exec(l);
       debug(result);
-      if(result && result.index) {
+      if (result?.index) {
         recoinfo.channelLinked = result[1];
         // 'Bokoen1'
         // l.substr(0, 116)
         l = l.substr(0, result.index) + `${recdet.sostantivo}`;
         // 'Italy has FINALLY been Fixed In Hearts Of Iron 4 by iSorrowproductions 49 minutes ago 14 minutes, 39 seconds 26,167 '
-        langi = _.find(langopts, { sostantivo: recdet.sostantivo});
+        langi = _.find(langopts, { sostantivo: recdet.sostantivo });
       }
     }
   }
@@ -642,6 +678,7 @@ function parser(l, source, isLive) {
   } ${source}`;
   const separatorCheck = _.size(reducedLabel.split(halfsep));
   const timeinfo = _.last(reducedLabel.split(halfsep));
+  // debug('Time info %O', timeinfo);
   const title = _.first(reducedLabel.split(halfsep));
   // moment.locale(langi.locale);
   // parsing do not depends on this
@@ -651,7 +688,7 @@ function parser(l, source, isLive) {
     throw new Error('Separator Error locale: ' + langi.locale);
   }
 
-  let timeago = null;
+  let timeago: moment.Duration | null = null;
   // let liveVideo = isLive;
 
   if (!timeinfo || !timeinfo.length) {
@@ -677,9 +714,4 @@ function parser(l, source, isLive) {
   };
 }
 
-module.exports = {
-  parser,
-  guessLanguageByViews,
-  relativeConMapping,
-  unrecognized: unrecognizedWordList,
-};
+export const unrecognized = unrecognizedWordList;
