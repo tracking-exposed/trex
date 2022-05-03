@@ -229,6 +229,13 @@ export const handleLeaf = (
         offsetTop,
         offsetLeft,
         href: window.location.href,
+        // TODO: this Selector Observed need to have an additional
+        // feature, which is 'name' and should be the value in
+        // selectorName. 
+        // this is important because the selector might change, but 
+        // the name, represent the information we were looking for
+        // and this was present before (e.g. channel4, ads)
+        // this is why there is this log line:
         selectorName: opts.match.selector,
         randomUUID: feedId,
       },
