@@ -46,16 +46,12 @@ describe('Leaves parser', () => {
     );
   });
 
-  describe.skip('Leaves', () => {
+  describe('Leaves', () => {
     jest.setTimeout(20 * 1000);
 
     const history = readHistoryResults('leaves/home', publicKey);
 
-    test.each([
-      // history[0],
-      // history[1],
-      history[2],
-    ])(
+    test.each(history)(
       'Should correctly parse leaf contribution',
       async ({ sources: _sources, metadata }) => {
         const sources = _sources.map((s) => ({
@@ -76,39 +72,44 @@ describe('Leaves parser', () => {
           getEntryNatureType: (e) => e.nature?.type,
           getContributions: getLastLeaves({ db }),
           saveResults: updateAdvertisingAndMetadata({ db }),
-          expectSources: (sources) => {},
-          expectMetadata: (oldM, newM) => {
+          expectSources: (sources) => {
+            sources.forEach((s) => {
+              expect((s as any).processed).toBe(true);
+            });
+          },
+          expectMetadata: (receivedMetadata, expectedMetadata) => {
             const {
-              _id: expected_Id,
-              id: expectedId,
-              sections: sectionsExp,
-              selected: selectedExp,
-              clientTime: clientTimeExp,
-              savingTime: savingTimeExp,
-              login: loginExp,
-              type: typeExp,
-              blang: blangExp,
-              ...expectedM
-            } = oldM as any;
+              _id: received_Id,
+              id: receivedId,
+              sections: sectionsR,
+              selected: selectedR,
+              clientTime: clientTimeR,
+              savingTime: savingTimeR,
+              type: typeR,
+              login: loginR,
+              blang: blangR,
+              ...receivedM
+            } = receivedMetadata as any;
 
             const {
               _id: _received_Id,
               id: _receivedId,
-              sections: sectionsRec,
-              selected: selectedRec,
-              clientTime: clientTimeRec,
-              savingTime: savingTimeRec,
-              login: loginRec,
-              type: typeRec,
-              blang: blangRec,
-              ...receivedM
-            } = newM as any;
+              selected: selectedExp,
+              sections: sectionsExp,
+              clientTime: clientTimeExp,
+              savingTime: savingTimeExp,
+              type: typeExp,
+              login: loginExp,
+              blang: blangExp,
+              ...expectedM
+            } = expectedMetadata as any;
 
             expect({
               ...receivedM,
             }).toMatchObject(expectedM);
 
-            // expect(sectionsRec?.length).toBe(sectionsExp?.length);
+            expect(selectedR?.length).toBe(selectedR?.length);
+            // expect(sectionsR?.length).toBe(sectionsExp?.length);
           },
         })({ sources, metadata });
       }
