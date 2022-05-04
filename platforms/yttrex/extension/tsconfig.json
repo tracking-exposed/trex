@@ -25,7 +25,14 @@
     }
   ],
   "include": ["./"],
-  "exclude": ["./jest.config.js", "./webpack.config.ts"],
+  "exclude": [
+    "./jest.config.js",
+    "./jest.setup.ts",
+    "./globalSetup.ts",
+    "./globalTeardown.ts",
+    "./__tests__/",
+    "./webpack.config.ts"
+  ],
   "ts-node": {
     "compilerOptions": {
       "module": "CommonJS"

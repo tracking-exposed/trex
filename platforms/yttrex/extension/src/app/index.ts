@@ -20,15 +20,13 @@ bo.runtime.sendMessage({ type: 'chromeConfig' }, (config) => {
       } as any,
       mapLocalConfig: (c, { href, ...p }) => {
         return {
-          config: {
-            experimentId: '',
-            evidencetag: '',
-            directiveType: 'comparison',
-            ...c,
-            ...p,
-          },
+          experimentId: '',
+          evidencetag: '',
+          directiveType: 'comparison',
+          ...c,
+          ...p,
           href,
-        } as any;
+        } ;
       },
       observe: {
         handlers: watchedPaths,

@@ -52,7 +52,7 @@ export function sync(hub: Hub<YTHubEvent>): void {
 }
 
 export function register(hub: Hub<YTHubEvent>, config: any): void {
-  if (config.config.active) {
+  if (config.active) {
     hub.on('NewVideo', handleEvent);
     hub.on('leaf', handleEvent);
     hub.on('WindowUnload', () => sync(hub));
