@@ -72,6 +72,7 @@ export const ExperimentList: React.FC<ExperimentListProps> = ({
   const [directiveId, setDirectiveId] = React.useState<string | undefined>(
     undefined
   );
+  const theme = useTheme();
 
   const classes = useStyle();
 
@@ -94,11 +95,17 @@ export const ExperimentList: React.FC<ExperimentListProps> = ({
                 content: classes.listItemSummary,
               }}
             >
-              <Typography variant="body1">{d.tags.join(', ')}</Typography>
+              <Typography
+                variant="body1"
+                style={{ marginLeft: theme.spacing(1) }}
+              >
+                {d.tags.join(', ')}
+              </Typography>
               <Box
                 style={{
                   display: 'flex',
                   flexGrow: 1,
+                  flexShrink: 0,
                   justifyContent: 'flex-end',
                   marginRight: 20,
                   alignItems: 'center',
@@ -112,6 +119,7 @@ export const ExperimentList: React.FC<ExperimentListProps> = ({
                 variant="caption"
                 style={{
                   display: 'flex',
+                  flexShrink: 0,
                   justifyContent: 'flex-end',
                 }}
                 color="primary"

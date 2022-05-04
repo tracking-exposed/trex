@@ -1971,6 +1971,35 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@dicebear/avatars-avataaars-sprites@npm:^4.10.2":
+  version: 4.10.2
+  resolution: "@dicebear/avatars-avataaars-sprites@npm:4.10.2"
+  peerDependencies:
+    "@dicebear/avatars": ^4.6.0
+  checksum: 689ba05e6ccde2974529e0e5c64f7f77816397b1ecafe8222dcf882202ef15a5f80d29b7e8bed31d68c03ebc44868b8c7455b302221384141518568596a2442d
+  languageName: node
+  linkType: hard
+
+"@dicebear/avatars-bottts-sprites@npm:^4.10.2":
+  version: 4.10.2
+  resolution: "@dicebear/avatars-bottts-sprites@npm:4.10.2"
+  peerDependencies:
+    "@dicebear/avatars": ^4.6.0
+  checksum: 4bf61862b9c914f2f6da3c9bcc3305ea7ca8585244d40150406bad7bf3996b2746734c3e7ff4f2b6a5477d6927ebf4466297c9151d709c2b9ef4a3882e27bf73
+  languageName: node
+  linkType: hard
+
+"@dicebear/avatars@npm:^4.10.2":
+  version: 4.10.2
+  resolution: "@dicebear/avatars@npm:4.10.2"
+  dependencies:
+    "@types/json-schema": ^7.0.7
+    pure-color: ^1.3.0
+    svgson: ^5.2.1
+  checksum: 1c3a2de0b02176065ee202f4eb3358658f970ec3d5c67daf87fc3a042be62463a41acf73caec62e2c539b0b48db13314078d0b348d2026f9e3602c9c9892b2c8
+  languageName: node
+  linkType: hard
+
 "@discoveryjs/json-ext@npm:^0.5.0":
   version: 0.5.6
   resolution: "@discoveryjs/json-ext@npm:0.5.6"
@@ -5240,6 +5269,13 @@ __metadata:
   version: 7.0.9
   resolution: "@types/json-schema@npm:7.0.9"
   checksum: 259d0e25f11a21ba5c708f7ea47196bd396e379fddb79c76f9f4f62c945879dc21657904914313ec2754e443c5018ea8372362f323f30e0792897fdb2098a705
+  languageName: node
+  linkType: hard
+
+"@types/json-schema@npm:^7.0.7":
+  version: 7.0.11
+  resolution: "@types/json-schema@npm:7.0.11"
+  checksum: 527bddfe62db9012fccd7627794bd4c71beb77601861055d87e3ee464f2217c85fca7a4b56ae677478367bbd248dbde13553312b7d4dbc702a2f2bbf60c4018d
   languageName: node
   linkType: hard
 
@@ -11310,6 +11346,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"deep-rename-keys@npm:^0.2.1":
+  version: 0.2.1
+  resolution: "deep-rename-keys@npm:0.2.1"
+  dependencies:
+    kind-of: ^3.0.2
+    rename-keys: ^1.1.2
+  checksum: 34c838a7ee375e9579be2ba1de59a5ec5aef46bee96bb08cffdd8b6b3887d941bbfce0caccf3ecd7c5a74e6f3a70c7df0b469e732a97e5849a5149ddc1e2a062
+  languageName: node
+  linkType: hard
+
 "deepmerge@npm:^4.2.2, deepmerge@npm:~4.2.2":
   version: 4.2.2
   resolution: "deepmerge@npm:4.2.2"
@@ -13176,6 +13222,13 @@ __metadata:
   version: 0.4.14
   resolution: "eventemitter2@npm:0.4.14"
   checksum: 214603a32aba5f49c0d7a68202a0d5e01e89b3c872c7c32172e80b513aaa06ee74d54de212705483a01c03dda7b396874b3576cbe9bc96d92bae0912dad89eb2
+  languageName: node
+  linkType: hard
+
+"eventemitter3@npm:^2.0.0":
+  version: 2.0.3
+  resolution: "eventemitter3@npm:2.0.3"
+  checksum: dfbf4a07144afea0712d8e6a7f30ae91beb7c12c36c3d480818488aafa437d9a331327461f82c12dfd60a4fbad502efc97f684089cda02809988b84a23630752
   languageName: node
   linkType: hard
 
@@ -15133,6 +15186,9 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "guardoni@workspace:platforms/guardoni"
   dependencies:
+    "@dicebear/avatars": ^4.10.2
+    "@dicebear/avatars-avataaars-sprites": ^4.10.2
+    "@dicebear/avatars-bottts-sprites": ^4.10.2
     "@electron/remote": ^2.0.8
     "@material-ui/core": ^4.12.4
     "@material-ui/icons": ^4.11.3
@@ -21360,6 +21416,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"omit-deep@npm:0.3.0":
+  version: 0.3.0
+  resolution: "omit-deep@npm:0.3.0"
+  dependencies:
+    is-plain-object: ^2.0.1
+    unset-value: ^0.1.1
+  checksum: ca603591af98f717ee4e4ae199778d386304f80072164fc1fb9c27abb011845faa27ffb32e7fa4a240698a4d54822526059af74f12f4f73315ecd7f03825d590
+  languageName: node
+  linkType: hard
+
 "on-finished@npm:~2.3.0":
   version: 2.3.0
   resolution: "on-finished@npm:2.3.0"
@@ -23716,7 +23782,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"pure-color@npm:^1.2.0":
+"pure-color@npm:^1.2.0, pure-color@npm:^1.3.0":
   version: 1.3.0
   resolution: "pure-color@npm:1.3.0"
   checksum: 646d8bed6e6eab89affdd5e2c11f607a85b631a7fb03c061dfa658eb4dc4806881a15feed2ac5fd8c0bad8c00c632c640d5b1cb8b9a972e6e947393a1329371b
@@ -25062,6 +25128,13 @@ __metadata:
   version: 1.1.0
   resolution: "remove-trailing-separator@npm:1.1.0"
   checksum: d3c20b5a2d987db13e1cca9385d56ecfa1641bae143b620835ac02a6b70ab88f68f117a0021838db826c57b31373d609d52e4f31aca75fc490c862732d595419
+  languageName: node
+  linkType: hard
+
+"rename-keys@npm:^1.1.2":
+  version: 1.2.0
+  resolution: "rename-keys@npm:1.2.0"
+  checksum: 9d8e5ca3d1ae3fe6c0d7319a3fd80ded6ca34651e85bff27604982dcc750aed28d1a621374224a9c9072083769f5eab1fd86d1d5a53f54f96c7705c18267227b
   languageName: node
   linkType: hard
 
@@ -27402,6 +27475,17 @@ __metadata:
   languageName: node
   linkType: hard
 
+"svgson@npm:^5.2.1":
+  version: 5.2.1
+  resolution: "svgson@npm:5.2.1"
+  dependencies:
+    deep-rename-keys: ^0.2.1
+    omit-deep: 0.3.0
+    xml-reader: 2.4.3
+  checksum: aa5d80d6240f5cac5ad72fe305350af9d925b5e854aa60c234110f60b69a33f03ea8b69915dc1a12c08c0b2eb332a22504b75f0889e0c4939d6c34562c1833e8
+  languageName: node
+  linkType: hard
+
 "swagger-client@npm:^3.18.4":
   version: 3.18.4
   resolution: "swagger-client@npm:3.18.4"
@@ -28902,6 +28986,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"unset-value@npm:^0.1.1":
+  version: 0.1.2
+  resolution: "unset-value@npm:0.1.2"
+  dependencies:
+    has-value: ^0.3.1
+    isobject: ^3.0.0
+  checksum: 56c7de1ee6b726002cc67b82954ec31b795836c2312d4d3d114a500eab5f632e1d3d6f5a164aff1ed90d7ffa94a009c452f6357f1f7d23bc444d489f622aeb9d
+  languageName: node
+  linkType: hard
+
 "unset-value@npm:^1.0.0":
   version: 1.0.0
   resolution: "unset-value@npm:1.0.0"
@@ -30205,10 +30299,29 @@ __metadata:
   languageName: node
   linkType: hard
 
+"xml-lexer@npm:^0.2.2":
+  version: 0.2.2
+  resolution: "xml-lexer@npm:0.2.2"
+  dependencies:
+    eventemitter3: ^2.0.0
+  checksum: ec9d3f8cbc61ed93b7fc1052d05b23cfe5bfe0064a1146f89bc3a9cfbb0c80c6c40d795cc253b745cdbba0607271d14fa57d496a7754fe350a06a8fceae23359
+  languageName: node
+  linkType: hard
+
 "xml-name-validator@npm:^3.0.0":
   version: 3.0.0
   resolution: "xml-name-validator@npm:3.0.0"
   checksum: b3ac459afed783c285bb98e4960bd1f3ba12754fd4f2320efa0f9181ca28928c53cc75ca660d15d205e81f92304419afe94c531c7cfb3e0649aa6d140d53ecb0
+  languageName: node
+  linkType: hard
+
+"xml-reader@npm:2.4.3":
+  version: 2.4.3
+  resolution: "xml-reader@npm:2.4.3"
+  dependencies:
+    eventemitter3: ^2.0.0
+    xml-lexer: ^0.2.2
+  checksum: d4b4ca6eb2d61c17d2df2be73dd82a393ae88a4cd10c5152f9908bf3e3bafa5562ce4b63df31ef198bc9a7c8447d4c277c98622438da5b32abf55c2f15984bfa
   languageName: node
   linkType: hard
 

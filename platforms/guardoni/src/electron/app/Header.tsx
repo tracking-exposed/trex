@@ -23,6 +23,10 @@ import TKLogo from './icons/TKLogo';
 import YTLogo from './icons/YTLogo';
 import AdvancedSettingModal from './modals/AdvancedSettingModal';
 import cx from 'classnames';
+import botttsSprites from '@dicebear/avatars-bottts-sprites';
+import Avatars from '@dicebear/avatars';
+
+const botAvatars = new Avatars(botttsSprites, { r: 50, base64: true });
 
 const useStyles = makeStyles((theme) => ({
   platformLogoBox: {
@@ -65,6 +69,16 @@ export const Header: React.FC<HeaderProps> = ({
   const [popoverOpen, setPopoverOpen] = React.useState(false);
   const [advancedSettingDialogOpen, setAdvancedSettingDialogOpen] =
     React.useState(false);
+
+  const [avatar, setAvatar] = React.useState(
+    botAvatars.create(config.profileName)
+  );
+
+  React.useEffect(() => {
+    setAvatar(
+      botAvatars.create(`${config.profileName}-${Math.random() * 1000}`)
+    );
+  }, []);
 
   return (
     <AppBar
@@ -118,7 +132,7 @@ export const Header: React.FC<HeaderProps> = ({
         </Box>
         <Box>
           <Avatar
-            src="GG"
+            src={avatar}
             aria-describedby={popoverId}
             onClick={() => setPopoverOpen(true)}
             style={{
@@ -126,9 +140,7 @@ export const Header: React.FC<HeaderProps> = ({
               backgroundColor: 'transparent',
               color: 'black',
             }}
-          >
-            GC
-          </Avatar>
+          />
           <Popover
             elevation={0}
             id={popoverId}
@@ -162,15 +174,14 @@ export const Header: React.FC<HeaderProps> = ({
             >
               <Box style={{ marginBottom: theme.spacing(2) }}>
                 <Avatar
-                  alt="GG"
+                  src={avatar}
+                  alt={config.profileName}
                   style={{
                     border: 'solid black 2px',
                     backgroundColor: 'transparent',
                     color: 'black',
                   }}
-                >
-                  GC
-                </Avatar>
+                />
               </Box>
 
               <Typography

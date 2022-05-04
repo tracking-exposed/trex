@@ -302,6 +302,20 @@ export const GetEvents = ({
           }
         });
 
+        // get experiment
+        ipcMain.on(EVENTS.GET_PUBLIC_DIRECTIVE.value, (event, experimentId) => {
+          logger.debug(EVENTS.GET_PUBLIC_DIRECTIVE.value);
+          if (!event.sender.isDestroyed()) {
+            void pipe(
+              guardoni.API.v3.Public.GetPublicDirectives(),
+              TE.map((directives) =>
+                directives.find((d) => d.experimentId === experimentId)
+              ),
+              liftEventTask(EVENTS.GET_PUBLIC_DIRECTIVE.value)
+            );
+          }
+        });
+
         // open guardoni dir
         ipcMain.on(EVENTS.OPEN_GUARDONI_DIR.value, (event, config: string) => {
           guardoniEventsLogger.debug(EVENTS.OPEN_GUARDONI_DIR.value, config);

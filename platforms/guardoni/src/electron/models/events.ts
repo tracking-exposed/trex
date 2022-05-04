@@ -7,6 +7,7 @@ const GET_GUARDONI_ENV_EVENT = t.literal('getGuardoniEnvEvent');
 const OPEN_GUARDONI_DIR = t.literal('openGuardoniDir');
 const CREATE_EXPERIMENT_EVENT = t.literal('createExperimentEvent');
 const GET_PUBLIC_DIRECTIVES = t.literal('getPublicDirectives');
+const GET_PUBLIC_DIRECTIVE = t.literal('getPublicDirective');
 const RUN_GUARDONI_EVENT = t.literal('runGuardoni');
 const RUN_AUTO_GUARDONI_EVENT = t.literal('runAutoGuardoni');
 const GUARDONI_ERROR_EVENT = t.literal('guardoniError');
@@ -22,6 +23,7 @@ export const EVENTS = {
   OPEN_GUARDONI_DIR,
   CREATE_EXPERIMENT_EVENT,
   GET_PUBLIC_DIRECTIVES,
+  GET_PUBLIC_DIRECTIVE,
   RUN_GUARDONI_EVENT,
   RUN_AUTO_GUARDONI_EVENT,
   GUARDONI_ERROR_EVENT,
@@ -38,6 +40,7 @@ export const EVENT = t.union(
     OPEN_GUARDONI_DIR,
     CREATE_EXPERIMENT_EVENT,
     GET_PUBLIC_DIRECTIVES,
+    GET_PUBLIC_DIRECTIVE,
     RUN_GUARDONI_EVENT,
     RUN_AUTO_GUARDONI_EVENT,
     GUARDONI_ERROR_EVENT,

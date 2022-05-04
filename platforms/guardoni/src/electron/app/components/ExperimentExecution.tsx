@@ -7,9 +7,10 @@ import { EVENTS } from '../../models/events';
 import ElectronBrowserView from './browser-view/ElectronBrowserView';
 import OutputPanel from './OutputPanel';
 import LinkIcon from '@material-ui/icons/LinkOutlined';
+import { GuardoniExperiment } from '@shared/models/Experiment';
 
 interface ExperimentExecutionProps {
-  experimentId: string;
+  experiment: GuardoniExperiment;
   onClose: () => void;
   onRun: (experimentId: string) => void;
   onOpenExperimentResults: (experimentId: string) => void;
@@ -34,7 +35,7 @@ type ExperimentExecutionStatePhase =
     };
 
 const ExperimentExecution: React.FC<ExperimentExecutionProps> = ({
-  experimentId,
+  experiment,
   onClose,
   onRun,
   onOpenExperimentResults,
@@ -48,9 +49,9 @@ const ExperimentExecution: React.FC<ExperimentExecutionProps> = ({
   const [outputItems, setOutputItems] = React.useState([]);
 
   const handleRun = React.useCallback(() => {
-    onRun(experimentId);
+    onRun(experiment.experimentId);
     setPhase({ step: 'Run' });
-  }, [view, experimentId]);
+  }, [view, experiment]);
 
   // update guardoni output when proper event is received
 
@@ -105,7 +106,7 @@ const ExperimentExecution: React.FC<ExperimentExecutionProps> = ({
             <Typography variant="h4">Experiment</Typography>
           </Box>
           <Box>
-            <Typography>{experimentId}</Typography>
+            <Typography>{experiment.experimentId}</Typography>
             <Box
               style={{
                 display: 'flex',
@@ -115,7 +116,9 @@ const ExperimentExecution: React.FC<ExperimentExecutionProps> = ({
               }}
             >
               <LinkIcon />
-              <Typography variant="subtitle2">- links lenght TODO</Typography>
+              <Typography variant="subtitle2">
+                - {experiment.links.length}
+              </Typography>
             </Box>
           </Box>
           <Box
@@ -228,6 +231,8 @@ const ExperimentExecutionRoute: React.FC<
 > = ({ config, match }) => {
   const history = useHistory();
 
+  const [experiment, setExperiment] = React.useState(undefined);
+
   const onClose = React.useCallback(() => {
     history.goBack();
   }, []);
@@ -249,9 +254,33 @@ const ExperimentExecutionRoute: React.FC<
     void shell.openExternal(`${config.backend}/v1/personal/${publicKey}`);
   }, []);
 
+  React.useEffect(() => {
+    ipcRenderer.on(EVENTS.GET_PUBLIC_DIRECTIVE.value, (event, experiment) => {
+      console.log('experiment recieved', experiment);
+      setExperiment(experiment);
+    });
+
+    ipcRenderer.send(
+      EVENTS.GET_PUBLIC_DIRECTIVE.value,
+      match.params.experimentId
+    );
+  }, []);
+
+  if (!experiment) {
+    return (
+      <Grid container style={{ justifyContent: 'center' }}>
+        <Grid item md={8}>
+          <Box pt={3} pb={2}>
+            <Typography variant="h4">No Available Experiments</Typography>
+          </Box>
+        </Grid>
+      </Grid>
+    );
+  }
+
   return (
     <ExperimentExecution
-      experimentId={match.params.experimentId}
+      experiment={experiment}
       onClose={onClose}
       onRun={onRun}
       onOpenExperimentResults={onOpenExperimentResults}
