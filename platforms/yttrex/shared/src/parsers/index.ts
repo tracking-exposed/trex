@@ -41,7 +41,7 @@ const routeSelectors: Selectors = {
   },
 };
 
-const leafSelectors: Selectors = {
+export const leafSelectors: Selectors = {
   banner: {
     match: {
       type: 'selector-with-parents',

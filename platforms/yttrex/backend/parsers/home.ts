@@ -133,7 +133,10 @@ function dissectSelectedVideo(
       ? longlabel.parser(infos.aria, infos.authorName as any, infos.liveBadge)
       : null;
 
-    homeLog.debug('Video title parsed %O', videoTileLinkParsed);
+    homeLog.debug('Video title parsed %O', {
+      ...videoTileLinkParsed,
+      timeago: videoTileLinkParsed.timeago?.toString(),
+    });
 
     if (
       videoTileLinkParsed?.title &&

@@ -9,7 +9,8 @@
     "esModuleInterop": true,
     "skipLibCheck": true,
     "paths": {
-      "@shared/*": ["../../../packages/shared/src/*"]
+      "@shared/*": ["../../../packages/shared/src/*"],
+      "@yttrex/shared/*": ["../shared/src/*"]
     }
   },
   "include": [

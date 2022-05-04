@@ -17,7 +17,7 @@
     "target": "es2015",
     "paths": {
       "@shared/*": ["../../../../packages/shared/src/*"],
-      "@yttrex/shared/*": ["../shared/src/*"]
+      "@yttrex/shared/*": ["../../shared/src/*"]
     }
   },
   "references": [

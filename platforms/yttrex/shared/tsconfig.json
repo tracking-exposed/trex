@@ -11,6 +11,7 @@
     "esModuleInterop": true,
     "skipLibCheck": true,
     "isolatedModules": true,
+    "tsBuildInfoFile": "build/.tsbuildinfo",
     "paths": {
       "@shared/*": ["../../../packages/shared/src/*"]
     }

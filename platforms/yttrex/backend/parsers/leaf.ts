@@ -1,3 +1,4 @@
+import { leafSelectors } from '@yttrex/shared/parsers/index';
 import D from 'debug';
 import { JSDOM } from 'jsdom';
 import _ from 'lodash';
@@ -165,20 +166,21 @@ function mineBanner(D: Document, e: any): any {
   };
 }
 
-export const allowedSelectors = [
-  'banner',
-  'ad',
-  'overlay',
-  'toprightad',
-  'toprightpict',
-  'toprightcta',
-  'toprightattr',
-  'adbadge',
-  'channel',
-  'searchcard',
-  'channellink',
-  'searchAds',
-];
+export const allowedSelectors = Object.keys(leafSelectors);
+// [
+//   'banner',
+//   'ad',
+//   'overlay',
+//   'toprightad',
+//   'toprightpict',
+//   'toprightcta',
+//   'toprightattr',
+//   'adbadge',
+//   'channel',
+//   'searchcard',
+//   'channellink',
+//   'searchAds',
+// ];
 
 export function processLeaf(e: Leaf): Ad | null {
   leafLogD('Process leaf %O', e);
@@ -197,6 +199,7 @@ export function processLeaf(e: Leaf): Ad | null {
     // console.log(e.nature, e.selectorName);
 
     leafLogD('selector %s', e.selectorName);
+
     if (e.selectorName === 'ad') mined = mineAd(D, e);
     else if (e.selectorName === 'banner') mined = mineBanner(D, e);
     else if (e.selectorName === 'overlay') mined = mineOverlay(D, e);
