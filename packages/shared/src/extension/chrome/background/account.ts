@@ -57,12 +57,12 @@ async function handleLocalLookup(
 export const handleServerLookup =
   (opts: LoadOpts) =>
   async (
-    payload: ServerLookup['payload'],
+    { href, ...config }: ServerLookup['payload'],
     sendResponse: (response: HandshakeResponse) => void
   ): Promise<void> => {
-    log.info('handshake body %O', payload);
+    log.info('handshake body %O', config);
     void opts.api.v2.Public.Handshake({
-      Body: payload as any,
+      Body: { config: config as any, href },
     })().then((response) => {
       log.info('handshake response %O', response);
       if (response._tag === 'Right') {
