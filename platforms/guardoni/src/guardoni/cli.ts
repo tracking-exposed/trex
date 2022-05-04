@@ -202,6 +202,7 @@ const runGuardoni = ({
     {
       ...guardoniConf,
       yt: {
+        ...guardoniConf.yt,
         name: 'youtube',
         backend,
       },

@@ -210,6 +210,25 @@ export const getConfig =
       ? _basePath
       : path.resolve(process.cwd(), _basePath);
 
+    // const yt = {
+    //   ..._yt,
+    //   extensionDir: _yt?.extensionDir
+    //     ? path.isAbsolute(_yt?.extensionDir)
+    //       ? _yt?.extensionDir
+    //       : path.resolve(basePath, _yt?.extensionDir)
+    //     : undefined,
+    // };
+
+    // const tk = {
+    //   name: 'youtube',
+    //   ..._tk,
+    //   extensionDir: _tk?.extensionDir
+    //     ? path.isAbsolute(_tk?.extensionDir)
+    //       ? _tk?.extensionDir
+    //       : path.resolve(basePath, _tk?.extensionDir)
+    //     : undefined,
+    // };
+
     return pipe(
       readConfigFromPath(ctx)(basePath, {
         ...confOverride,
