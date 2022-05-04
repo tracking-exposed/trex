@@ -7,12 +7,12 @@ import * as fs from 'fs';
 import * as Json from 'fp-ts/lib/Json';
 import { failure } from 'io-ts/lib/PathReporter';
 import * as path from 'path';
-import {
-  GuardoniContext,
-  GuardoniPlatformConfig,
-  GuardoniProfile,
-} from './types';
+import { GuardoniConfig, GuardoniContext, GuardoniProfile } from './types';
 import { liftFromIOE } from './utils';
+
+export const getProfileJsonPath = (p: GuardoniProfile): string => {
+  return path.join(p.udd, 'guardoni.json');
+};
 
 export const getProfileDataDir = (
   basePath: string,
@@ -37,8 +37,8 @@ export const checkProfile =
   (ctx: { logger: GuardoniContext['logger'] }) =>
   (
     basePath: string,
-    conf: GuardoniPlatformConfig
-  ): TE.TaskEither<AppError, string> => {
+    conf: GuardoniConfig
+  ): TE.TaskEither<AppError, GuardoniProfile> => {
     const profilesDir = path.resolve(basePath, 'profiles');
 
     ctx.logger.debug('Check profile at %s', profilesDir);
@@ -77,16 +77,30 @@ export const checkProfile =
       fs.mkdirSync(profileDir, { recursive: true });
     }
 
+    const profileFile = path.resolve(profileDir, 'guardoni.json');
+    const profileFileExists = fs.existsSync(profileFile);
+    if (!profileFileExists) {
+      const profileContent = JSON.stringify(
+        getDefaultProfile(basePath, profileName),
+        null,
+        2
+      );
+      ctx.logger.debug('Writing default profile %j', profileContent);
+      fs.writeFileSync(profileFile, profileContent, 'utf-8');
+    }
+
+    const profile = JSON.parse(fs.readFileSync(profileFile, 'utf-8'));
+
     ctx.logger.debug('Returning profile %s', profileName);
 
-    return TE.right(profileName);
+    return TE.right(profile);
   };
 
 /**
  * Read and validate the profile from file path
  */
 export const readProfile =
-  (ctx: GuardoniContext) =>
+  (ctx: { logger: GuardoniContext['logger'] }) =>
   (profilePath: string): TE.TaskEither<AppError, GuardoniProfile> => {
     ctx.logger.debug('Reading profile from %s', profilePath);
 
