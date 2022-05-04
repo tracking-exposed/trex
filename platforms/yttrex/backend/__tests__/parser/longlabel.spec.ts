@@ -1,8 +1,5 @@
-import base58 from 'bs58';
 import moment, { duration } from 'moment';
-import nacl from 'tweetnacl';
 import { getPublicationTime, parser } from '../../parsers/longlabel';
-import { GetTest, Test } from '../../tests/Test';
 
 describe('Parser: Long Label', () => {
   jest.setTimeout(20 * 1000);
@@ -43,12 +40,10 @@ describe('Parser: Long Label', () => {
 
   describe('recommended channels', () => {
     const longlabel = require('../fixtures/longlabels.json');
-    console.log(longlabel);
-    longlabel.forEach( ([label, source, isLive ]) => {
+    longlabel.forEach( ([label, source, isLive, testViews]) => {
       console.log(label);
       const parseResult = parser(label, source, isLive);
-      console.log(parseResult);
-      expect(1).toBe(1);
+      expect(testViews).toBe(parseResult.views);
     });
   });
 

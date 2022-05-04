@@ -516,7 +516,9 @@ const recoChannelEndings = [
     full: 'viewers also watch this channel',
   },
   {
-    matchable: 'canale',
+    matchable: 'chaîne',
+    sostantivo: 'vues',
+    full: 'regarde aussi cette chaîne',
   },
 ];
 
