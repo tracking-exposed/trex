@@ -31,6 +31,8 @@ describe('CLI', () => {
   let experimentId: string;
   const guardoni = GetGuardoniCLI(
     {
+      chromePath: '/usr/bin/chrome',
+      basePath: './',
       headless: false,
       verbose: false,
       profileName: profileName,
