@@ -113,10 +113,8 @@ describe('YT App', () => {
         href: window.location.href,
       } as any,
       mapLocalConfig: (c, { href, config }: any): any => ({
-        config: {
-          ...config,
-          ...c,
-        },
+        ...config,
+        ...c,
         href,
       }),
       observe: {
@@ -213,7 +211,8 @@ describe('YT App', () => {
     const { handle: _handle, ...videoOpts } = videoMatcher;
     expect(handleVideoSpy).toHaveBeenCalledWith(
       window.document.body,
-      videoOpts
+      videoOpts,
+      'video'
     );
     // expect(handleLeafChannel2Spy).toBeCalledTimes(102);
 
