@@ -34,6 +34,7 @@ import _ from 'lodash';
 import { initializeBlinks, updateUI } from '../blink';
 import consideredURLs from '../consideredURLs';
 import hub from '../handlers/hub';
+import { selectors } from '@yttrex/shared/parsers/index';
 
 export const ytLogger = logger.extend('yt');
 
@@ -277,10 +278,7 @@ export function handleVideo(node: HTMLElement): void {
 
 export const watchedPaths: { [key: string]: ObserverHandler } = {
   home: {
-    match: {
-      type: 'route',
-      location: consideredURLs.home,
-    },
+    ...selectors.home,
     handle: handleVideo,
   },
   video: {
