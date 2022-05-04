@@ -1,4 +1,8 @@
-import { ObserverHandler } from '@shared/extension/app';
+import {
+  RouteObserverHandler,
+  SelectorObserverHandler,
+  SelectorWithParentsObserverHandler,
+} from '@shared/extension/app';
 
 // Considering the extension only runs on *.youtube.com
 // we want to make sure the main code is executed only in
@@ -16,11 +20,11 @@ export const consideredURLs = {
   channel: /^\/channel/,
 };
 
-interface Selectors {
-  [key: string]: Omit<ObserverHandler, 'handle'>;
+interface RouteSelectors {
+  [key: string]: Omit<RouteObserverHandler, 'handle'>;
 }
 
-const routeSelectors: Selectors = {
+export const routeSelectors: RouteSelectors = {
   home: {
     match: {
       type: 'route',
@@ -41,7 +45,14 @@ const routeSelectors: Selectors = {
   },
 };
 
-export const leafSelectors: Selectors = {
+interface MatchSelectors {
+  [key: string]: Omit<
+    SelectorObserverHandler | SelectorWithParentsObserverHandler,
+    'handle'
+  >;
+}
+
+export const leafSelectors: MatchSelectors = {
   banner: {
     match: {
       type: 'selector-with-parents',
@@ -157,7 +168,7 @@ export const leafSelectors: Selectors = {
   },
 };
 
-export const selectors: Selectors = {
+export const selectors = {
   ...routeSelectors,
   ...leafSelectors,
 };

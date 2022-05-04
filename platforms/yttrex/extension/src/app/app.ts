@@ -26,15 +26,18 @@
 
 // Import other utils to handle the DOM and scrape data.
 
-import { refreshUUID, ObserverHandler } from '@shared/extension/app';
+import { ObserverHandler, refreshUUID } from '@shared/extension/app';
 import config from '@shared/extension/config';
 import logger from '@shared/extension/logger';
 import { sizeCheck } from '@shared/providers/dataDonation.provider';
+import {
+  consideredURLs,
+  leafSelectors,
+  routeSelectors,
+} from '@yttrex/shared/parsers/index';
 import _ from 'lodash';
 import { initializeBlinks, updateUI } from '../blink';
-import consideredURLs from '../consideredURLs';
 import hub from '../handlers/hub';
-import { selectors } from '@yttrex/shared/parsers/index';
 
 export const ytLogger = logger.extend('yt');
 
@@ -276,152 +279,78 @@ export function handleVideo(node: HTMLElement): void {
   updateUI('video.send');
 }
 
-export const watchedPaths: { [key: string]: ObserverHandler } = {
+export const watchedPaths = {
   home: {
-    ...selectors.home,
+    ...routeSelectors.home,
     handle: handleVideo,
   },
   video: {
-    match: {
-      type: 'route',
-      location: consideredURLs.video,
-    },
+    ...routeSelectors.video,
     handle: handleVideo,
   },
   search: {
-    match: {
-      type: 'route',
-      location: consideredURLs.search,
-    },
+    ...routeSelectors.search,
     handle: handleVideo,
   },
   banner: {
-    match: {
-      type: 'selector-with-parents',
-      parents: 4,
-      selector: '.video-ads.ytp-ad-module',
-    },
-    color: 'blue',
+    ...leafSelectors.banner,
     handle: handleLeaf,
   },
   videoPlayerAd: {
-    match: {
-      type: 'selector-with-parents',
-      selector: '.ytp-ad-player-overlay',
-      parents: 4,
-    },
-    color: 'darkblue',
+    ...leafSelectors.videoPlayerAd,
     handle: handleLeaf,
   },
   overlay: {
-    match: {
-      type: 'selector-with-parents',
-      selector: '.ytp-ad-player-overlay-instream-info',
-      parents: 4,
-    },
-    color: 'lightblue',
+    ...leafSelectors.overlay,
     handle: handleLeaf,
   },
   toprightad: {
-    match: {
-      type: 'selector-with-parents',
-      selector: 'ytd-promoted-sparkles-web-renderer',
-      parents: 3,
-    },
-    color: 'aliceblue',
+    ...leafSelectors.toprightad,
     handle: handleLeaf,
   },
   toprightpict: {
-    match: {
-      type: 'selector-with-parents',
-      selector: '.ytd-action-companion-ad-renderer',
-      parents: 2,
-    },
-    color: 'azure',
+    ...leafSelectors.toprightpict,
     handle: handleLeaf,
   },
   toprightcta: {
-    match: {
-      type: 'selector-with-parents',
-      selector: '.sparkles-light-cta',
-      parents: 1,
-    },
-    color: 'violetblue',
+    ...leafSelectors.toprightcta,
     handle: handleLeaf,
   },
   toprightattr: {
-    match: {
-      type: 'selector',
-      selector: '[data-google-av-cxn]',
-    },
-    color: 'deeppink',
+    ...leafSelectors.toprightattr,
     handle: handleLeaf,
   },
   adbadge: {
-    match: {
-      type: 'selector-with-parents',
-      selector: '#ad-badge',
-      parents: 4,
-    },
-    color: 'deepskyblue',
+    ...leafSelectors.adbadge,
     handle: handleLeaf,
   },
   frontad: {
-    match: {
-      type: 'selector',
-      selector: 'ytd-banner-promo-renderer',
-    },
+    ...leafSelectors.frontad,
     handle: handleLeaf,
   },
   // video-ad-overlay-slot
   channel1: {
-    match: {
-      type: 'selector-with-parents',
-      selector: '[href^="/channel"]',
-      parents: 1,
-    },
-    color: 'yellow',
+    ...leafSelectors.channel1,
     handle: handleLeaf,
   },
   channel2: {
-    match: {
-      type: 'selector-with-parents',
-      selector: '[href^="/c"]',
-      parents: 1,
-    },
-    color: 'yellow',
+    ...leafSelectors.channel2,
     handle: handleLeaf,
   },
   channel3: {
-    match: {
-      type: 'selector-with-parents',
-      selector: '[href^="/user"]',
-      parents: 1,
-    },
-    color: 'yellow',
-
+    ...leafSelectors.channel3,
     handle: handleLeaf,
   },
   searchcard: {
-    match: {
-      type: 'selector',
-      selector: '.ytd-search-refinement-card-renderer',
-    },
+    ...leafSelectors.searchcard,
     handle: handleLeaf,
   },
   channellink: {
-    match: {
-      type: 'selector',
-      selector: '.channel-link',
-    },
+    ...leafSelectors.channellink,
     handle: handleLeaf,
   },
   searchAds: {
-    match: {
-      type: 'selector-with-parents',
-      selector: '.ytd-promoted-sparkles-text-search-renderer',
-      parents: 2,
-    },
+    ...leafSelectors.searchAds,
     handle: handleLeaf,
   },
 };
