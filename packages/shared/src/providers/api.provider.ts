@@ -50,7 +50,7 @@ const liftFetch = <B>(
         decode(content),
         E.mapLeft((e): APIError => {
           const details = PathReporter.report(E.left(e));
-          apiLogger.error('Validation failed %O', details);
+          apiLogger.error('toAPIError Validation failed %O', details);
           return new APIError('ValidationError', 'Validation failed', details);
         }),
         TE.fromEither
@@ -124,7 +124,7 @@ export const MakeHTTPClient = (client: AxiosInstance): HTTPClient => {
         TE.fromEither,
         TE.mapLeft((e): APIError => {
           const details = PathReporter.report(E.left(e));
-          apiLogger.error('Validation failed %O', details);
+          apiLogger.error('MakeHTTPClient Validation failed %O', details);
           return new APIError('ValidationError', 'Validation failed', details);
         }),
         TE.chain((input) => {

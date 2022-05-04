@@ -161,6 +161,8 @@ async function processEvents(req) {
       //  "videoCounter","rect","clientTime","type","incremental"]
       // 'type' can be ignored as it is always 'video' and doesn't reflect nature
 
+      console.log("--- feedId %s randomUUID",
+        body.feedId ?? 'x', body.randomUUID ?? 'x')
       const id = utils.hash({
         clientRGN: body.feedId
           ? body.feedId
@@ -175,13 +177,12 @@ async function processEvents(req) {
       });
       const timelineWord = utils.pickFoodWord(timelineIdHash);
 
-      // optionally there is 'reason':"fullsave" and it should
-      // be collected as a different thing. it returns null
-      // and append to fullsaves as side effect
+      /* there was 'reason':"fullsave"
+       https://github.com/tracking-exposed/yttrex/issues/444
       if (body.reason === 'fullsave') {
         fullsaves.push(handleFullSave(body, timelineIdHash));
         return null;
-      }
+      } */
 
       const optionalNumbers = [];
       if (_.isInteger(body.videoCounter))
@@ -232,7 +233,7 @@ async function processEvents(req) {
 }
 
 async function handshake(req) {
-  debug('Ignored handshake API %j', _.keys(req.body));
+  debug('Not implemented protocol (yet) [handshake API %j]', req.body);
   return {
     json: { ignored: true },
   };
