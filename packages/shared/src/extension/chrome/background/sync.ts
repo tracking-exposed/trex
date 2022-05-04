@@ -40,6 +40,7 @@ export const handleAPISyncMessage =
 export const handleSyncMessage =
   ({ api, getHeadersForDataDonation }: LoadOpts) =>
   (request: any, sender: any, sendResponse: any): void => {
+    log.debug('Sync request %O', request.payload);
     void getHeadersForDataDonation(request)
       .then((headers) => {
         log.info('Headers %O', headers);

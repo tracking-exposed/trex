@@ -153,7 +153,8 @@ export function onLocationChange(
 
 export const handleLeaf = (
   node: HTMLElement,
-  opts: Omit<ObserverHandler, 'handle'>
+  opts: Omit<ObserverHandler, 'handle'>,
+  selectorName: string
 ): void => {
   // command has .selector .parents .preserveInvisible (this might be undefined)
   ytLogger.info('Handle "leaf" type: %j', opts.match);
@@ -167,7 +168,11 @@ export const handleLeaf = (
     const style = {
       border: `1px solid ${opts.color ? opts.color : 'red'}`,
     };
-    ytLogger.debug('use custom style for %s development %O', opts.match.type, style);
+    ytLogger.debug(
+      'use custom style for %s development %O',
+      opts.match.type,
+      style
+    );
     node.style.border = style.border;
     // node.setAttribute(opts.selector, 'true');
     // node.setAttribute('yttrex', '1');
@@ -231,12 +236,12 @@ export const handleLeaf = (
         href: window.location.href,
         // TODO: this Selector Observed need to have an additional
         // feature, which is 'name' and should be the value in
-        // selectorName. 
-        // this is important because the selector might change, but 
+        // selectorName.
+        // this is important because the selector might change, but
         // the name, represent the information we were looking for
         // and this was present before (e.g. channel4, ads)
         // this is why there is this log line:
-        selectorName: opts.match.selector,
+        selectorName,
         randomUUID: feedId,
       },
     });
@@ -372,7 +377,6 @@ export const watchedPaths: { [key: string]: ObserverHandler } = {
     handle: handleLeaf,
   },
   // video-ad-overlay-slot
-  /*
   channel1: {
     match: {
       type: 'selector-with-parents',
@@ -400,7 +404,7 @@ export const watchedPaths: { [key: string]: ObserverHandler } = {
     color: 'yellow',
 
     handle: handleLeaf,
-  }, */
+  },
   searchcard: {
     match: {
       type: 'selector',

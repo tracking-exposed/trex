@@ -15,7 +15,11 @@ const appLog = log.extend('app');
 
 export interface BaseObserverHandler {
   color?: string;
-  handle: (n: HTMLElement, opts: Omit<ObserverHandler, 'handle'>) => void;
+  handle: (
+    n: HTMLElement,
+    opts: Omit<ObserverHandler, 'handle'>,
+    selectorName: string
+  ) => void;
 }
 
 export interface SelectorObserverHandler extends BaseObserverHandler {
@@ -91,7 +95,7 @@ function setupObserver({
       handler.match.type === 'selector' ||
       handler.match.type === 'selector-with-parents'
     ) {
-      dom.on(handler.match.selector, (node) => handle(node, handler));
+      dom.on(handler.match.selector, (node) => handle(node, handler, h));
     }
   });
 
@@ -128,7 +132,7 @@ function setupObserver({
           if (routeHandlerKey) {
             appLog.debug('Route handler key %s', routeHandlerKey);
             const { handle, ...routeHandlerOpts } = handlers[routeHandlerKey];
-            handle(window.document.body, routeHandlerOpts);
+            handle(window.document.body, routeHandlerOpts, routeHandlerKey);
           }
 
           oldHref = newHref;
