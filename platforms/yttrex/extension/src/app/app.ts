@@ -157,8 +157,7 @@ export const handleLeaf = (
   selectorName: string
 ): void => {
   // command has .selector .parents .preserveInvisible (this might be undefined)
-  ytLogger.info('Handle "leaf" type: %j', opts.match);
-  console.log(node);
+  ytLogger.info('Handle "leaf" type: %s', selectorName);
   // ytLogger.debug('node %o with %o', node, opts);
   const offsetTop = getOffsetTop(node);
   const offsetLeft = getOffsetLeft(node);
@@ -168,14 +167,14 @@ export const handleLeaf = (
     const style = {
       border: `1px solid ${opts.color ? opts.color : 'red'}`,
     };
-    ytLogger.debug(
-      'use custom style for %s development %O',
-      opts.match.type,
-      style
-    );
+    // ytLogger.debug(
+    //   'use custom style for %s development %O',
+    //   opts.match.type,
+    //   style
+    // );
     node.style.border = style.border;
-    // node.setAttribute(opts.selector, 'true');
-    // node.setAttribute('yttrex', '1');
+    node.setAttribute(selectorName, 'true');
+    node.setAttribute('yttrex', '1');
   }
 
   if (opts.match.type === 'selector-with-parents') {
