@@ -16,10 +16,14 @@
     "skipLibCheck": true,
     "target": "es2015",
     "paths": {
-      "@shared/*": ["../../../../packages/shared/src/*"]
+      "@shared/*": ["../../../../packages/shared/src/*"],
+      "@yttrex/shared/*": ["../shared/src/*"]
     }
   },
   "references": [
+    {
+      "path": "../shared"
+    },
     {
       "path": "../../../packages/shared"
     }

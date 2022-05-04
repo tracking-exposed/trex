@@ -51,7 +51,7 @@ describe('Leaves parser', () => {
 
     const history = readHistoryResults('leaves/home', publicKey);
 
-    test.each(history)(
+    test.each([history[0]])(
       'Should correctly parse leaf contribution',
       async ({ sources: _sources, metadata }) => {
         const sources = _sources.map((s) => ({
@@ -82,25 +82,24 @@ describe('Leaves parser', () => {
               _id: received_Id,
               id: receivedId,
               sections: sectionsR,
-              selected: selectedR,
               clientTime: clientTimeR,
               savingTime: savingTimeR,
-              type: typeR,
-              login: loginR,
-              blang: blangR,
+              // type: typeR,
+              // login: loginR,
+              // blang: blangR,
               ...receivedM
-            } = receivedMetadata as any;
+            } = receivedMetadata;
 
             const {
               _id: _received_Id,
               id: _receivedId,
-              selected: selectedExp,
               sections: sectionsExp,
+              selected: selectedExp,
               clientTime: clientTimeExp,
               savingTime: savingTimeExp,
-              type: typeExp,
-              login: loginExp,
-              blang: blangExp,
+              // type: typeExp,
+              // login: loginExp,
+              // blang: blangExp,
               ...expectedM
             } = expectedMetadata as any;
 
@@ -108,7 +107,6 @@ describe('Leaves parser', () => {
               ...receivedM,
             }).toMatchObject(expectedM);
 
-            expect(selectedR?.length).toBe(selectedR?.length);
             // expect(sectionsR?.length).toBe(sectionsExp?.length);
           },
         })({ sources, metadata });

@@ -16,12 +16,7 @@
     "platforms/guardoni",
     "platforms/ycai/studio",
     "platforms/yttrex/*",
-    "platforms/tktrex/docs",
-    "platforms/tktrex/extension",
-    "platforms/tktrex/methodology",
-    "platforms/tktrex/backend",
-    "platforms/tktrex/shared",
-    "platforms/tktrex/observatory"
+    "platforms/tktrex/*"
   ],
   "packageManager": "yarn@3.1.1",
   "scripts": {
@@ -39,6 +34,7 @@
     "tk:shared": "yarn workspace @tktrex/shared",
     "tk:backend": "yarn workspace @tktrex/backend",
     "tk:ext": "yarn workspace @tktrex/extension",
+    "yt:shared": "yarn workspace @yttrex/shared",
     "yt:backend": "yarn workspace @yttrex/backend",
     "yt:ext": "yarn workspace @yttrex/extension",
     "ycai": "yarn workspace @trex/ycai",
