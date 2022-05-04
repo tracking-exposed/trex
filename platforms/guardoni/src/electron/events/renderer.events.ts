@@ -258,6 +258,10 @@ export const GetEvents = ({
               TE.chain((g) =>
                 pipe(
                   TE.tryCatch(async () => {
+                    // todo:
+                    // patch the extension manifest permissions
+                    // to allow the custom backend before loading the extension
+
                     const extension =
                       await view.webContents.session.loadExtension(
                         g.platform.extensionDir
