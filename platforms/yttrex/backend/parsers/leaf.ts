@@ -1,3 +1,4 @@
+import { leafSelectors } from '@yttrex/shared/parsers/index';
 import D from 'debug';
 import { JSDOM } from 'jsdom';
 import _ from 'lodash';
@@ -75,26 +76,28 @@ function mineAdBadge(D: Document, e): Partial<BaseAd> | null {
   else return null;
 }
 
-// function mineChannel(D: Document, e: any): any {
-//   const a = D.querySelector('a');
-//   const channelLink = a?.getAttribute('href');
-//   const ct = D.querySelector('#text');
-//   const channelName = ct ? ct.textContent?.trim() : a?.textContent?.trim();
+function mineChannel(D: Document, e: any): any {
+  const a = D.querySelector('a');
+  const channelLink = a?.getAttribute('href');
+  const ct = D.querySelector('#text');
+  const channelName = ct ? ct.textContent?.trim() : a?.textContent?.trim();
 
-//   // console.log({ channelName, channelLink });
-//   if (channelName && channelLink?.split('/')[1] === 'channel') {
-//     return {
-//       channelName,
-//       channelId: channelLink.split('/')[2],
-//     };
-//   }
-//   if (channelName && channelLink?.startsWith('/c/')) {
-//     return {
-//       channelName,
-//       channelId: channelLink,
-//     };
-//   }
-// }
+  // console.log({ channelName, channelLink });
+  leafLogD('channel name %s with link (%s)', channelName, channelLink);
+  if (channelName && channelLink?.split('/')[1] === 'channel') {
+    return {
+      channelName,
+      channelId: channelLink.split('/')[2],
+    };
+  }
+
+  if (channelName && channelLink?.startsWith('/c/')) {
+    return {
+      channelName,
+      channelId: channelLink,
+    };
+  }
+}
 
 function mineBanner(D: Document, e: any): any {
   /* exclude the 'Ads in 2' label, among others */
@@ -163,23 +166,24 @@ function mineBanner(D: Document, e: any): any {
   };
 }
 
-export const allowedSelectors = [
-  'banner',
-  'ad',
-  'overlay',
-  'toprightad',
-  'toprightpict',
-  'toprightcta',
-  'toprightattr',
-  'adbadge',
-  'channel',
-  'searchcard',
-  'channellink',
-  'searchAds',
-];
+export const allowedSelectors = Object.keys(leafSelectors);
+// [
+//   'banner',
+//   'ad',
+//   'overlay',
+//   'toprightad',
+//   'toprightpict',
+//   'toprightcta',
+//   'toprightattr',
+//   'adbadge',
+//   'channel',
+//   'searchcard',
+//   'channellink',
+//   'searchAds',
+// ];
 
 export function processLeaf(e: Leaf): Ad | null {
-  /* leafLogD('Process leaf %O', e); */
+  leafLogD('Process leaf %O', e);
 
   // e is the 'element', it comes from the DB, and we'll look the
   // e.html mostly. different e.selecotrName causes different sub-functions
@@ -195,24 +199,23 @@ export function processLeaf(e: Leaf): Ad | null {
     // console.log(e.nature, e.selectorName);
 
     leafLogD('selector %s', e.selectorName);
+
     if (e.selectorName === 'ad') mined = mineAd(D, e);
     else if (e.selectorName === 'banner') mined = mineBanner(D, e);
     else if (e.selectorName === 'overlay') mined = mineOverlay(D, e);
     else if (e.selectorName === 'toprightpict') mined = mineTRP(D, e);
-    /* channel is temporarly disabled */
-    // else if (
-    //   e.selectorName === 'channel' ||
-    //   e.selectorName === 'channel1' ||
-    //   e.selectorName === 'channel2' ||
-    //   e.selectorName === 'channel3' ||
-    //   e.selectorName === '[href^="/channel"]'
-    // )
-    //   mined = mineChannel(D, e);
+    /* channel is temporarly disabled */ else if (
+      e.selectorName === 'channel' ||
+      e.selectorName === 'channel1' ||
+      e.selectorName === 'channel2' ||
+      e.selectorName === 'channel3'
+    )
+      mined = mineChannel(D, e);
     else if (e.selectorName === 'adbadge') mined = mineAdBadge(D, e);
     else leafLogger('Selector not handled %s', e.selectorName);
 
     // eslint-disable-next-line no-console
-    // console.log(mined);
+    leafLogD('Mined %O', mined);
   } catch (error) {
     leafLogger(
       'Error in content mining (%s %s): %s',
@@ -225,9 +228,11 @@ export function processLeaf(e: Leaf): Ad | null {
 
   if (_.isNull(mined)) return null;
 
-  const retval = _.pick(e, [
+  const { nature, ...retval } = _.pick(e, [
     'nature',
     'selectorName',
+    'channelName',
+    'channelLink',
     'offsetTop',
     'offsetLeft',
     'href',
@@ -245,8 +250,11 @@ export function processLeaf(e: Leaf): Ad | null {
       Remind: the experiments are ephemerals (18 hours TTL)      */
   if (e.experiment) (retval as any).experiment = e.experiment;
 
-  return {
+  const result = {
+    ...nature,
     ...retval,
     ...mined,
   };
+  leafLogD('leaf result %O', result);
+  return result;
 }
