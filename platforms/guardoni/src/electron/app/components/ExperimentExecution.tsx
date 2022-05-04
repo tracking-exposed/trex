@@ -256,7 +256,6 @@ const ExperimentExecutionRoute: React.FC<
 
   React.useEffect(() => {
     ipcRenderer.on(EVENTS.GET_PUBLIC_DIRECTIVE.value, (event, experiment) => {
-      console.log('experiment recieved', experiment);
       setExperiment(experiment);
     });
 
