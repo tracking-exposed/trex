@@ -122,11 +122,9 @@ export const GetEvents = ({
     return pipe(
       GetGuardoni({
         basePath,
-        config,
         logger,
         puppeteer,
-        platform,
-      }),
+      }).launch(config, platform),
       TE.chain((guardoni) => {
         logger.info('Started guardoni %O', guardoni.config);
 
@@ -146,16 +144,13 @@ export const GetEvents = ({
             TE.chain((config) =>
               GetGuardoni({
                 basePath,
-                config,
-                platform,
                 logger,
                 puppeteer,
-              })
+              }).launch(config, platform)
             )
           )().then((result) => {
             if (result._tag === 'Right') {
               guardoni = result.right;
-              // api = result.right.API;
               return pipe(
                 TE.right({
                   config: guardoni.config,
@@ -216,14 +211,15 @@ export const GetEvents = ({
           void pipe(
             GetGuardoni({
               basePath,
-              config: {
+              logger,
+              puppeteer,
+            }).run(
+              {
                 ...config,
                 ...configOverride,
               },
-              platform: configOverride.platform.name,
-              logger,
-              puppeteer,
-            }),
+              configOverride.platform.name
+            ),
             TE.chain((g) => g.registerExperiment(records, 'comparison')),
             TE.map((e) => {
               logger.info(e.message, e.values);
@@ -258,6 +254,10 @@ export const GetEvents = ({
               TE.chain((g) =>
                 pipe(
                   TE.tryCatch(async () => {
+                    // todo:
+                    // patch the extension manifest permissions
+                    // to allow the custom backend before loading the extension
+
                     const extension =
                       await view.webContents.session.loadExtension(
                         g.platform.extensionDir

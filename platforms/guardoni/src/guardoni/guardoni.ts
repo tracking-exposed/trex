@@ -41,8 +41,10 @@ import {
 import { downloadExtension } from './extension';
 import {
   getDefaultProfile,
+  checkProfile,
   readProfile,
   updateGuardoniProfile,
+  getProfileJsonPath,
 } from './profile';
 import {
   ExperimentInfo,
@@ -302,76 +304,78 @@ const registerCSV =
 const loadContext = (
   p: typeof puppeteer,
   basePath: string,
-  config: Partial<GuardoniConfig>,
+  cnf: GuardoniConfig,
   platform: Platform,
   logger: GuardoniContext['logger']
 ): TE.TaskEither<AppError, GuardoniContext> => {
-  logger.debug('Loading context for platform %s', platform);
+  logger.debug('Loading context for platform %s with config %O', platform, cnf);
+
+  const profile = getDefaultProfile(basePath, cnf.profileName);
+
+  logger.debug('profile %O', profile);
+  const platformConf = getPlatformConfig(platform, {
+    basePath,
+    ...(cnf as any),
+  });
 
   return pipe(
-    getConfig({ logger })(basePath, platform, config),
-    TE.map((cnf): GuardoniContext => {
-      const profile = getDefaultProfile(basePath, cnf.profileName);
+    checkProfile({ logger })(basePath, cnf),
+    TE.chain((p) => readProfile({ logger })(getProfileJsonPath(p))),
+    TE.map((profile) => ({
+      puppeteer: p,
+      API: GetAPI({
+        baseURL: platformConf.backend,
+        getAuth: async (req) => req,
+        onUnauthorized: async (res) => res,
+      }).API,
+      config: {
+        ...cnf,
+        basePath,
+        profileName: profile.profileName,
+      },
+      profile,
+      logger,
+      guardoniConfigFile: path.join(profile.udd, 'guardoni.json'),
+      version: getPackageVersion(),
+      platform: platformConf,
+    })),
+    TE.chainFirst(downloadExtension)
+    // TE.chainFirst((ctx) =>
+    //   liftFromIOE(() => fs.mkdirSync(ctx.profile.udd, { recursive: true }))
+    // ),
+    // TE.chain((ctx) =>
+    //   pipe(
+    //     liftFromIOE(() =>
+    //       fs.statSync(ctx.guardoniConfigFile, { throwIfNoEntry: false })
+    //     ),
+    //     TE.chain((stat) => {
+    //       ctx.logger.debug(
+    //         'Path %s exists? %O',
+    //         ctx.guardoniConfigFile,
+    //         stat !== undefined
+    //       );
 
-      logger.debug('profile %O', profile);
-      const platformConf = getPlatformConfig(platform, cnf);
+    //       if (stat) {
+    //         return readProfile(ctx)(ctx.guardoniConfigFile);
+    //       }
 
-      return {
-        puppeteer: p,
-        API: GetAPI({
-          baseURL: platformConf.backend,
-          getAuth: async (req) => req,
-          onUnauthorized: async (res) => res,
-        }).API,
-        config: {
-          ...cnf,
-          basePath,
-          profileName: profile.profileName,
-        },
-        profile,
-        logger,
-        guardoniConfigFile: path.join(profile.udd, 'guardoni.json'),
-        version: getPackageVersion(),
-        platform: platformConf,
-      };
-    }),
-    TE.chainFirst(downloadExtension),
-    TE.chainFirst((ctx) =>
-      liftFromIOE(() => fs.mkdirSync(ctx.profile.udd, { recursive: true }))
-    ),
-    TE.chain((ctx) =>
-      pipe(
-        liftFromIOE(() =>
-          fs.statSync(ctx.guardoniConfigFile, { throwIfNoEntry: false })
-        ),
-        TE.chain((stat) => {
-          ctx.logger.debug(
-            'Path %s exists? %O',
-            ctx.guardoniConfigFile,
-            stat !== undefined
-          );
-
-          if (stat) {
-            return readProfile(ctx)(ctx.guardoniConfigFile);
-          }
-
-          return pipe(
-            liftFromIOE(() =>
-              fs.writeFileSync(
-                ctx.guardoniConfigFile,
-                JSON.stringify(ctx.profile, null, 2),
-                'utf-8'
-              )
-            ),
-            TE.map(() => ctx.profile)
-          );
-        }),
-        TE.map((c) => ({
-          ...ctx,
-          profile: c,
-        }))
-      )
-    )
+    //       return pipe(
+    //         liftFromIOE(() =>
+    //           fs.writeFileSync(
+    //             ctx.guardoniConfigFile,
+    //             JSON.stringify(ctx.profile, null, 2),
+    //             'utf-8'
+    //           )
+    //         ),
+    //         TE.map(() => ctx.profile)
+    //       );
+    //     }),
+    //     TE.map((c) => ({
+    //       ...ctx,
+    //       profile: c,
+    //     }))
+    //   )
+    // )
   );
 };
 
@@ -400,45 +404,78 @@ export interface Guardoni {
   ) => TE.TaskEither<AppError, GuardoniSuccessOutput>;
 }
 
+interface GuardoniLauncher {
+  launch: (
+    config: Partial<GuardoniConfig>,
+    platform: Platform
+  ) => TE.TaskEither<AppError, Guardoni>;
+  run: (
+    config: GuardoniConfig,
+    platform: Platform
+  ) => TE.TaskEither<AppError, Guardoni>;
+}
+
 export type GetGuardoni = ({
   basePath,
-  config,
   logger,
 }: {
   basePath: string;
-  platform: Platform;
-  config: Partial<GuardoniConfig>;
   logger: GuardoniContext['logger'];
   puppeteer: typeof puppeteer;
-}) => TE.TaskEither<AppError, Guardoni>;
+  verbose?: boolean;
+}) => GuardoniLauncher;
 
 export const GetGuardoni: GetGuardoni = ({
   basePath,
-  config,
-  platform,
   logger,
   puppeteer,
-}): TE.TaskEither<AppError, Guardoni> => {
-  const loggerSpaces = config.verbose
+  verbose,
+}) => {
+  const loggerSpaces = verbose
     ? ['guardoni:info', 'guardoni:debug', 'guardoni:error', process.env.DEBUG]
     : ['guardoni:info', 'guardoni:error', process.env.DEBUG];
 
   debug.enable(loggerSpaces.join(','));
 
-  return pipe(
-    loadContext(puppeteer, basePath, config, platform, logger),
-    TE.map((ctx) => {
-      return {
-        config: ctx.config,
-        platform: ctx.platform,
-        API: ctx.API,
-        runAuto: runAuto(ctx),
-        runExperiment: runExperiment(ctx),
-        runExperimentForPage: runExperimentForPage(ctx),
-        registerExperiment: registerExperiment(ctx),
-        registerExperimentFromCSV: registerCSV(ctx),
-        listExperiments: listExperiments(ctx),
-      };
-    })
-  );
+  return {
+    launch: (config, platform) => {
+      return pipe(
+        getConfig({ logger })(basePath, platform, config),
+        TE.chain((cnf) =>
+          loadContext(puppeteer, basePath, cnf, platform, logger)
+        ),
+        TE.map((ctx) => {
+          return {
+            config: ctx.config,
+            platform: ctx.platform,
+            API: ctx.API,
+            runAuto: runAuto(ctx),
+            runExperiment: runExperiment(ctx),
+            runExperimentForPage: runExperimentForPage(ctx),
+            registerExperiment: registerExperiment(ctx),
+            registerExperimentFromCSV: registerCSV(ctx),
+            listExperiments: listExperiments(ctx),
+          };
+        })
+      );
+    },
+    run: (conf, platform) => {
+      return pipe(
+        loadContext(puppeteer, basePath, conf, platform, logger),
+        TE.map((ctx) => {
+          return {
+            config: ctx.config,
+            platform: ctx.platform,
+            API: ctx.API,
+            runAuto: runAuto(ctx),
+            runExperiment: runExperiment(ctx),
+            runExperimentForPage: runExperimentForPage(ctx),
+            registerExperiment: registerExperiment(ctx),
+            registerExperimentFromCSV: registerCSV(ctx),
+            listExperiments: listExperiments(ctx),
+          };
+        })
+      );
+    },
+  };
 };

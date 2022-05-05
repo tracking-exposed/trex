@@ -210,13 +210,44 @@ export const getConfig =
       ? _basePath
       : path.resolve(process.cwd(), _basePath);
 
+    // const yt = {
+    //   ..._yt,
+    //   extensionDir: _yt?.extensionDir
+    //     ? path.isAbsolute(_yt?.extensionDir)
+    //       ? _yt?.extensionDir
+    //       : path.resolve(basePath, _yt?.extensionDir)
+    //     : undefined,
+    // };
+
+    const ytExtensionDir = yt?.extensionDir
+      ? path.isAbsolute(yt.extensionDir)
+        ? yt.extensionDir
+        : path.resolve(basePath, yt.extensionDir)
+      : undefined;
+
+    const tkExtensionDir = tk?.extensionDir
+      ? path.isAbsolute(tk.extensionDir)
+        ? tk.extensionDir
+        : path.resolve(basePath, tk.extensionDir)
+      : undefined;
+
     return pipe(
       readConfigFromPath(ctx)(basePath, {
         ...confOverride,
         basePath,
         evidenceTag,
-        yt,
-        tk,
+        yt: yt
+          ? {
+              ...yt,
+              extensionDir: ytExtensionDir ?? yt.extensionDir,
+            }
+          : undefined,
+        tk: tk
+          ? {
+              ...tk,
+              extensionDir: tkExtensionDir ?? tk.extensionDir,
+            }
+          : undefined,
       }),
       TE.chain((config) =>
         pipe(
@@ -224,17 +255,17 @@ export const getConfig =
           TE.fromEither,
           TE.mapLeft(toAppError),
           TE.map((chromePath) => ({
+            ...confOverride,
             ...config,
             chromePath,
-            ...confOverride,
-            yt: {
-              ...config.yt,
-              ...yt,
-            },
-            tk: {
-              ...config.tk,
-              ...tk,
-            },
+            // yt: {
+            //   ...config.yt,
+            //   ...yt,
+            // },
+            // tk: {
+            //   ...config.tk,
+            //   ...tk,
+            // },
           }))
         )
       ),

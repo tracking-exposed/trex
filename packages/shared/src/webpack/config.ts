@@ -216,7 +216,7 @@ const getConfig = <E extends t.Props>(
         {
           test: /\.css$/,
           use: [
-            mode === 'production'
+            mode === 'production' && opts.target !== 'electron-renderer'
               ? MiniCssExtractPlugin.loader
               : {
                   loader: 'style-loader',

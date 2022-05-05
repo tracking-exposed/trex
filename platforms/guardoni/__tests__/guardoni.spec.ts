@@ -126,11 +126,9 @@ describe('Guardoni', () => {
     test('succeeds when no profile name is given but a profile dir exists', async () => {
       const g = await GetGuardoni({
         basePath,
-        config: defaultConfig,
-        platform: 'youtube',
         logger: guardoniLogger,
         puppeteer: puppeteerMock,
-      })();
+      }).launch(defaultConfig, 'youtube')();
 
       expect(g).toMatchObject({
         right: {
@@ -145,16 +143,17 @@ describe('Guardoni', () => {
       const profileName = 'profile-test-0';
       const g = await GetGuardoni({
         basePath,
-        config: {
+        logger: guardoniLogger,
+        puppeteer: puppeteerMock,
+      }).launch(
+        {
           ...defaultConfig,
           headless: true,
           verbose: true,
           profileName,
         },
-        platform: 'youtube',
-        logger: guardoniLogger,
-        puppeteer: puppeteerMock,
-      })();
+        'youtube'
+      )();
 
       expect(g).toMatchObject({
         right: {
@@ -179,11 +178,9 @@ describe('Guardoni', () => {
 
       const guardoni = GetGuardoni({
         basePath,
-        config: defaultConfig,
-        platform: 'youtube',
         logger: guardoniLogger,
         puppeteer: puppeteerMock,
-      });
+      }).launch(defaultConfig, 'youtube');
 
       const experiment = await pipe(
         guardoni,
@@ -216,11 +213,9 @@ describe('Guardoni', () => {
 
       const guardoni = GetGuardoni({
         basePath,
-        config: defaultConfig,
-        platform: 'youtube',
         logger: guardoniLogger,
         puppeteer: puppeteerMock,
-      });
+      }).launch(defaultConfig, 'youtube');
 
       const experiment = await pipe(
         guardoni,
