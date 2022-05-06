@@ -25,6 +25,7 @@ import AdvancedSettingModal from './modals/AdvancedSettingModal';
 import cx from 'classnames';
 import botttsSprites from '@dicebear/avatars-bottts-sprites';
 import Avatars from '@dicebear/avatars';
+import { useHistory } from 'react-router';
 
 const botAvatars = new Avatars(botttsSprites, { r: 50, base64: true });
 
@@ -66,6 +67,7 @@ export const Header: React.FC<HeaderProps> = ({
 
   const theme = useTheme();
   const classes = useStyles();
+  const history = useHistory();
   const [popoverOpen, setPopoverOpen] = React.useState(false);
   const [advancedSettingDialogOpen, setAdvancedSettingDialogOpen] =
     React.useState(false);
@@ -96,6 +98,10 @@ export const Header: React.FC<HeaderProps> = ({
               fontSize: theme.spacing(5),
               paddingTop: theme.spacing(1.5),
               marginBottom: -5,
+              cursor: 'pointer',
+            }}
+            onClick={() => {
+              history.replace('/');
             }}
           >
             Guardoni
