@@ -57,8 +57,8 @@ export default class ElectronBrowserView extends Component<ElectronBrowserViewPr
     });
 
     const view =
-      win.getBrowserView() !== null
-        ? win.getBrowserView()
+      win.getBrowserViews().length > 0
+        ? win.getBrowserViews()[0]
         : new remote.BrowserView(options);
     this.view = view as any as BrowserView;
     win.addBrowserView(this.view);

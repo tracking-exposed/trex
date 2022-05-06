@@ -53,6 +53,12 @@ const ExperimentExecution: React.FC<ExperimentExecutionProps> = ({
     setPhase({ step: 'Run' });
   }, [view, experiment]);
 
+  const handleMute = React.useCallback(() => {
+    const v = view as any;
+    const isMuted = v.view.webContents.isAudioMuted();
+    (view as any)?.view?.webContents?.setAudioMuted(!isMuted);
+  }, [view]);
+
   // update guardoni output when proper event is received
 
   const handleOutputItems = React.useCallback(
@@ -160,15 +166,32 @@ const ExperimentExecution: React.FC<ExperimentExecutionProps> = ({
         style={{ display: 'flex', padding: theme.spacing(2), flexShrink: 0 }}
       >
         {phase.step === 'Ready' || phase.step === 'Run' ? (
-          <ElectronBrowserView
-            ref={(view: any) => {
-              setView(view);
-            }}
-            style={{
-              width: '100%',
-              height: '100%',
-            }}
-          />
+          <Box style={{ width: '100%' }}>
+            {phase.step === 'Run' ? (
+              <Box style={{ marginBottom: 10 }}>
+                <Button
+                  variant="contained"
+                  size="small"
+                  onClick={() => {
+                    handleMute();
+                  }}
+                >
+                  {(view as any).view?.webContents?.isAudioMuted()
+                    ? 'Unmute'
+                    : 'Mute'}
+                </Button>
+              </Box>
+            ) : null}
+            <ElectronBrowserView
+              ref={(view: any) => {
+                setView(view);
+              }}
+              style={{
+                width: '100%',
+                height: '100%',
+              }}
+            />
+          </Box>
         ) : (
           <Box
             style={{

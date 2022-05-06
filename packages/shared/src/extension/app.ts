@@ -185,12 +185,12 @@ export async function boot(opts: BootOpts): Promise<void> {
         return resolve();
       }
 
-      // this is needed by guardoni to retrieve the current publicKey
-      // eslint-disable-next-line
-      console.log(JSON.stringify({ response: settings }));
-
       /* these parameters are loaded from localStorage */
       config = opts.mapLocalConfig(settings as any, opts.payload);
+
+      // this is needed by guardoni to retrieve the current publicKey
+      // eslint-disable-next-line
+      console.log(JSON.stringify({ response: config }));
 
       appLog.info('Updated config %O', config);
 
