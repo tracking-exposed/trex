@@ -14,7 +14,7 @@ function dissectSelectedVideo(
   ee: Element,
   i: number,
   sections: any[],
-  offset: any,
+  offset: number | undefined,
   clientTime: Date
 ): Omit<ParsedInfo, 'timePrecision' | 'thumbnailHref'> | null {
   const infos = {
@@ -135,7 +135,7 @@ function dissectSelectedVideo(
 
     homeLog.debug('Video title parsed %O', {
       ...videoTileLinkParsed,
-      timeago: videoTileLinkParsed.timeago?.toString(),
+      timeago: videoTileLinkParsed?.timeago?.toString(),
     });
 
     if (
@@ -172,10 +172,15 @@ function dissectSelectedVideo(
     );
   }
 
-  /* if(_.size(_.compact(errorLog)))
-        debuge("Video order %d got %d errors [elemSize %d]: %j",
-            i, _.size(_.compact(errorLog)), _.size(e.outerHTML), _.compact(errorLog ));
-     */
+  if (errorLog.length > 0) {
+    homeLog.error(
+      'Video order %d got %d errors [elemSize %d]: %j',
+      i,
+      errorLog.length,
+      e.outerHTML.length,
+      errorLog
+    );
+  }
 
   if (!infos.aria) return null;
 

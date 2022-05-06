@@ -14,6 +14,7 @@ import api, { getHeadersForDataDonation } from '../src/background/api';
 import * as handlers from '../src/handlers/apiSync';
 import tkHub from '../src/handlers/hub';
 import { tkLog } from '../src/logger';
+import { tiktokDomainRegExp } from '@tktrex/parser/constant';
 
 const sleep = (ms: number): Promise<void> => {
   return new Promise((resolve) => {
@@ -34,10 +35,13 @@ const backgroundOpts = {
   getHeadersForDataDonation,
 };
 
-const keys = initializeKey();
-
 describe('TK App', () => {
   jest.setTimeout(20 * 1000);
+  let keys;
+
+  beforeAll(() => {
+    keys = initializeKey();
+  });
 
   it('Page "foryou"', async () => {
     // jest.useRealTimers();
@@ -75,12 +79,7 @@ describe('TK App', () => {
       // mock 'ServerLookup' message handler
       .mockImplementationOnce((msg: any, cb: any) => {
         tkLog.info('server lookup msg', msg);
-        handleServerLookup(backgroundOpts)(msg.payload, (response: any) => {
-          if (response._tag === 'Right') {
-            supporterId = response.right._id;
-          }
-          cb(null);
-        });
+        handleServerLookup(backgroundOpts)(msg.payload, cb);
       })
       // mock 'sync' message handler
       .mockImplementationOnce((msg: any, cb: any) => {
@@ -115,7 +114,7 @@ describe('TK App', () => {
 
     load(backgroundOpts);
 
-    await boot({
+    const appContext = await boot({
       payload: {
         config: keys,
         href: window.location.href,
@@ -123,6 +122,7 @@ describe('TK App', () => {
       mapLocalConfig: (c, p) => ({ ...c, ...p }),
       observe: {
         handlers: app.tkHandlers,
+        platformMatch: tiktokDomainRegExp,
         onLocationChange: () => {},
       },
       hub: {
@@ -165,5 +165,7 @@ describe('TK App', () => {
 
     expect(response.status).toBe(200);
     expect(response.data).toMatchObject([]);
+
+    appContext.destroy();
   });
 });

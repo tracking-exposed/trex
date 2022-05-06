@@ -51,6 +51,7 @@ export type ObserverHandler =
   | RouteObserverHandler;
 
 interface SetupObserverOpts {
+  platformMatch: RegExp;
   handlers: {
     [key: string]: ObserverHandler;
   };
@@ -85,8 +86,9 @@ let oldHref: string;
  */
 function setupObserver({
   handlers,
+  platformMatch,
   onLocationChange,
-}: SetupObserverOpts): void {
+}: SetupObserverOpts): MutationObserver {
   const handlersList = Object.keys(handlers);
   // register selector and 'selector-with-parents' handlers
   handlersList.forEach((h) => {
@@ -109,7 +111,10 @@ function setupObserver({
       // appLog.debug('mutation (%s) %O', mutation.type, mutation.target);
 
       if (window?.document) {
-        if (oldHref !== window.location.href) {
+        if (
+          oldHref !== window.location.href &&
+          platformMatch.test(window.location.href)
+        ) {
           const newHref = window.location.href;
 
           appLog.debug(
@@ -151,22 +156,25 @@ function setupObserver({
     observer.disconnect();
   });
 
-  // window.addEventListener('unhandledrejection', (e) => {
-  //   console.error(e);
-  // })
-
   if (body) {
     observer.observe(body, config);
   } else {
     appLog.error('setupObserver: body not found');
   }
+
+  return observer;
 }
 
 /* Boot the application by giving a callback that
  * will be invoked after the handshake with API server.
  */
+
+interface App {
+  destroy: () => void;
+}
+
 let config: any;
-export async function boot(opts: BootOpts): Promise<void> {
+export async function boot(opts: BootOpts): Promise<App> {
   appLog.info('booting with config', opts.payload);
 
   return new Promise((resolve) => {
@@ -176,13 +184,22 @@ export async function boot(opts: BootOpts): Promise<void> {
     registerHandlers(opts.hub.hub);
 
     // Lookup the current user and decide what to do.
-    localLookup((settings) => {
+    localLookup((response) => {
+      if (response.type === 'Error') {
+        throw response.error;
+      }
+
+      const settings = response.result;
       // `response` contains the user's public key, we save it global for the blinks
       appLog.info('retrieved locally stored user settings %O', settings);
 
       if (!settings.active) {
         appLog.info('extension disabled!');
-        return resolve();
+        return resolve({
+          destroy: () => {
+            opts.hub.hub.clear();
+          },
+        });
       }
 
       /* these parameters are loaded from localStorage */
@@ -205,10 +222,22 @@ export async function boot(opts: BootOpts): Promise<void> {
       // because the URL has been for sure reloaded, be sure to also
       clearCache();
 
-      serverLookup(config, (res) => {
-        setupObserver(opts.observe);
-        opts.onAuthenticated(res);
-        resolve(undefined);
+      serverLookup(config, (response) => {
+        appLog.info('Server lookup cb %O', response);
+        if (response.type === 'Error') {
+          throw response.error;
+        }
+        const observer = setupObserver(opts.observe);
+        opts.onAuthenticated(response.result);
+
+        const context = {
+          destroy: () => {
+            opts.hub.hub.clear();
+            observer.disconnect();
+          },
+        };
+
+        resolve(context);
       });
     });
   });

@@ -166,7 +166,9 @@ function mineBanner(D: Document, e: any): any {
   };
 }
 
-export const allowedSelectors = Object.keys(leafSelectors);
+export const allowedSelectors = Object.keys(leafSelectors).filter(
+  (sel) => !['channel1'].includes(sel)
+);
 // [
 //   'banner',
 //   'ad',
@@ -187,8 +189,13 @@ export function processLeaf(e: Leaf): Ad | null {
 
   // e is the 'element', it comes from the DB, and we'll look the
   // e.html mostly. different e.selecotrName causes different sub-functions
-  if (allowedSelectors.includes(e.selectorName)) {
-    // leafLogD("Invalid/Unexpected selector received: %s", e.metadataId);
+  if (!allowedSelectors.includes(e.selectorName)) {
+    leafLogD(
+      'Invalid/Unexpected selector %s received: %s, (keys \n %O)',
+      e.selectorName,
+      e.metadataId,
+      allowedSelectors
+    );
     return null;
   }
 

@@ -3,6 +3,7 @@
 
 import { boot } from '@shared/extension/app';
 import { bo } from '@shared/extension/utils/browser.utils';
+import { youtubeDomainRegExp } from '@yttrex/shared/parsers/index';
 import * as hubHandlers from '../handlers/events';
 import ytHub from '../handlers/hub';
 import { onLocationChange, watchedPaths, ytLogger, ytTrexActions } from './app';
@@ -29,7 +30,8 @@ bo.runtime.sendMessage({ type: 'chromeConfig' }, (config) => {
         } ;
       },
       observe: {
-        handlers: watchedPaths,
+        handlers: watchedPaths as any,
+        platformMatch: youtubeDomainRegExp,
         onLocationChange,
       },
       hub: {

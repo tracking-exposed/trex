@@ -18,10 +18,20 @@ export const state: State = {
   content: [],
 };
 
-export function handleEvent(e: NewVideoEvent | NewLeafEvent): void {
+export function handleVideo(e: NewVideoEvent): void {
   state.content.push({
     ...e.payload,
-    type: e.type,
+    type: 'video',
+    incremental: state.incremental,
+    clientTime: getTimeISO8601(),
+  });
+  state.incremental++;
+}
+
+export function handleLeaf(e: NewLeafEvent): void {
+  state.content.push({
+    ...e.payload,
+    type: 'leaf',
     incremental: state.incremental,
     clientTime: getTimeISO8601(),
   });
@@ -53,8 +63,8 @@ export function sync(hub: Hub<YTHubEvent>): void {
 
 export function register(hub: Hub<YTHubEvent>, config: any): void {
   if (config.active) {
-    hub.on('NewVideo', handleEvent);
-    hub.on('leaf', handleEvent);
+    hub.on('NewVideo', handleVideo);
+    hub.on('leaf', handleLeaf);
     hub.on('WindowUnload', () => sync(hub));
 
     window.setInterval(() => {

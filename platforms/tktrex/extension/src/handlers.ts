@@ -1,5 +1,4 @@
 import { countBy } from 'lodash';
-
 import config from '@shared/extension/config';
 import { getTimeISO8601 } from '@shared/extension/utils/common.utils';
 import { Hub } from '@shared/extension/hub';

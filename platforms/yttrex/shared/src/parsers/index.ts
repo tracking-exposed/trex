@@ -11,6 +11,9 @@ import {
 // This code is executed by a window.setInterval because
 // the location might change
 
+// youtube domain reg exp
+export const youtubeDomainRegExp = /http(?:s?):\/\/(?:www\.)?youtube\.com/;
+
 export const consideredURLs = {
   home: /^\/$/,
   video: /^\/watch$/,

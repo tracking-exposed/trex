@@ -51,6 +51,7 @@ export const updateAdvertisingAndMetadata =
       ad.source
     );
 
+    // mark all related leaves as "processed"
     const leafResult = await db.api.updateOne(
       db.write,
       nconf.get('schema').leaves,

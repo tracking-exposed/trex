@@ -7,6 +7,7 @@ import { load } from '@shared/extension/chrome/background/index';
 import { handleSyncMessage } from '@shared/extension/chrome/background/sync';
 import config from '@shared/extension/config';
 import { sleep } from '@shared/utils/promise.utils';
+import { youtubeDomainRegExp } from '@yttrex/shared/parsers/index';
 import axios from 'axios';
 import * as fs from 'fs';
 import { chrome } from 'jest-chrome';
@@ -20,7 +21,20 @@ const chromeListener = jest.fn();
 
 const homeMatcher = app.watchedPaths.home;
 const videoMatcher = app.watchedPaths.video;
-// const leafMatcherChannel2 = app.watchedPaths.channel2;
+const leafMatcherChannel1 = app.watchedPaths.channel1;
+const leafMatcherChannel2 = app.watchedPaths.channel2;
+const leafMatcherChannel3 = app.watchedPaths.channel3;
+const leafMatcherBanner = app.watchedPaths.banner;
+const ytTrexActionsSpy = jest.spyOn(app, 'ytTrexActions');
+const handleHomeSpy = jest.spyOn(homeMatcher, 'handle');
+const handleVideoSpy = jest.spyOn(videoMatcher, 'handle');
+const handleLeafChannel1Spy = jest.spyOn(leafMatcherChannel1, 'handle');
+const handleLeafChannel2Spy = jest.spyOn(leafMatcherChannel2, 'handle');
+const handleLeafChannel3Spy = jest.spyOn(leafMatcherChannel3, 'handle');
+const handleLeafBannerSpy = jest.spyOn(leafMatcherBanner, 'handle');
+const eventsRegisterSpy = jest.spyOn(events, 'register');
+
+const { ytTrexActions } = app;
 
 const backgroundOpts = {
   api: api.API,
@@ -58,27 +72,13 @@ chrome.runtime.sendMessage
       return cb(getConfig());
       // mock 'ServerLookup' message handler
     } else if (msg.type === 'ServerLookup') {
-      return handleServerLookup(backgroundOpts)(
-        msg.payload,
-        (response: any) => {
-          if (response._tag === 'Right') {
-            supporterId = response.right._id;
-            return cb(response.right);
-          }
-          cb(null);
-        }
-      );
+      return handleServerLookup(backgroundOpts)(msg.payload, cb);
       // mock 'sync' message handler
     } else if (msg.type === 'sync') {
-      try {
-        return handleSyncMessage(backgroundOpts)(msg, null, cb);
-      } catch (e) {
-        console.error(e);
-        cb(e);
-      }
+      return handleSyncMessage(backgroundOpts)(msg, null, cb);
     }
     app.ytLogger.info('unhandled msg %s', msg.type);
-    cb(null);
+    cb(new Error(`Unhandled msg ${msg} in chrome mock`), null);
   });
 
 chrome.storage.local.get.mockImplementation((key: any, cb: any) => {
@@ -95,43 +95,50 @@ chrome.storage.local.set.mockImplementation((obj, cb: any) => {
 
 chrome.runtime.onMessage.addListener(chromeListener);
 
-const eventsRegisterSpy = jest.spyOn(events, 'register');
-const ytTrexActionsSpy = jest.spyOn(app, 'ytTrexActions');
-const handleHomeSpy = jest.spyOn(homeMatcher, 'handle');
-const handleVideoSpy = jest.spyOn(videoMatcher, 'handle');
-// const handleLeafChannel2Spy = jest.spyOn(leafMatcherChannel2, 'handle');
+const bootConfig = () => ({
+  payload: {
+    config: keys,
+    href: window.location.href,
+  } as any,
+  mapLocalConfig: (c, { href, config }: any): any => ({
+    ...config,
+    ...c,
+    href,
+  }),
+  observe: {
+    handlers: app.watchedPaths,
+    platformMatch: youtubeDomainRegExp,
+    onLocationChange: app.onLocationChange,
+  },
+  hub: {
+    hub: ytHub,
+    onRegister: (h, c) => {
+      events.register(h, c);
+    },
+  },
+  onAuthenticated: ytTrexActions,
+});
 
 describe('YT App', () => {
-  jest.setTimeout(30 * 1000);
+  jest.setTimeout(60 * 1000);
 
   beforeAll(async () => {
     load(backgroundOpts);
+  });
 
-    await boot({
-      payload: {
-        config: keys,
-        href: window.location.href,
-      } as any,
-      mapLocalConfig: (c, { href, config }: any): any => ({
-        ...config,
-        ...c,
-        href,
-      }),
-      observe: {
-        handlers: app.watchedPaths,
-        onLocationChange: () => {},
-      },
-      hub: {
-        hub: ytHub,
-        onRegister: (h, c) => {
-          events.register(h, c);
-        },
-      },
-      onAuthenticated: app.ytTrexActions,
-    });
+  afterEach(() => {
+    ytTrexActionsSpy.mockClear();
+    handleHomeSpy.mockClear();
+    handleVideoSpy.mockClear();
+    handleLeafBannerSpy.mockClear();
+    handleLeafChannel1Spy.mockClear();
+    handleLeafChannel2Spy.mockClear();
+    handleLeafChannel3Spy.mockClear();
   });
 
   test('Collect evidence from home page', async () => {
+    const appContext = await boot(bootConfig());
+
     ytURL = 'https://www.youtube.com/';
 
     // navigate to youtube home
@@ -148,18 +155,58 @@ describe('YT App', () => {
     await sleep(4000);
 
     // custom events should be registered on booting
-    // expect(eventsRegisterSpy).toHaveBeenCalled();
+    expect(eventsRegisterSpy).toHaveBeenCalled();
 
     // yt callback should be called after server response
-    // expect(ytTrexActionsSpy).toHaveBeenCalledWith(null);
+    expect(ytTrexActionsSpy).toHaveBeenCalled();
 
     await sleep(12000);
 
     // video handler should be invoked as the url includes `watch`
 
-    const { handle: _handle, ...videoOpts } = videoMatcher;
-    // expect(handleLeafChannel2Spy).toBeCalledTimes(67);
+    const { handle: _handle, ..._videoOpts } = videoMatcher;
     expect(handleHomeSpy).toHaveBeenCalledTimes(1);
+
+    // banner match
+    // const { handle: _bannerHandle, ...bannerOpts } = leafMatcherBanner;
+    expect(handleLeafBannerSpy).not.toHaveBeenCalled();
+
+    // channel3 match
+    const { handle: _channel1Handle, ...channel1Opts } = leafMatcherChannel1;
+    expect(handleLeafChannel1Spy).toHaveBeenCalledTimes(30);
+    Array.from({ length: 30 }).map((n, i) => {
+      expect(handleLeafChannel1Spy).toHaveBeenNthCalledWith(
+        i + 1,
+        expect.any(HTMLElement),
+        channel1Opts,
+        'channel1'
+      );
+    });
+
+    // channel2 match
+    const { handle: _channel2Handle, ...channel2Opts } = leafMatcherChannel2;
+    expect(handleLeafChannel2Spy).toHaveBeenCalledTimes(67);
+
+    Array.from({ length: 67 }).map((n, i) => {
+      expect(handleLeafChannel2Spy).toHaveBeenNthCalledWith(
+        i + 1,
+        expect.any(HTMLElement),
+        channel2Opts,
+        'channel2'
+      );
+    });
+
+    // channel3 match
+    const { handle: _channel3Handle, ...channel3Opts } = leafMatcherChannel3;
+    expect(handleLeafChannel3Spy).toHaveBeenCalledTimes(4);
+    Array.from({ length: 4 }).map((n, i) => {
+      expect(handleLeafChannel3Spy).toHaveBeenNthCalledWith(
+        i + 1,
+        expect.any(HTMLElement),
+        channel3Opts,
+        'channel3'
+      );
+    });
 
     const response = await axios
       .get(`${process.env.API_ROOT}/v1/personal/${keys.publicKey}`)
@@ -169,21 +216,25 @@ describe('YT App', () => {
       });
 
     expect(response.status).toBe(200);
-    expect(response.data.ads.length).toBeGreaterThanOrEqual(0);
-    // expect(response.data.ads.length).toBeGreaterThanOrEqual(65);
+    expect(response.data.ads.length).toBe(71);
+
     expect(response.data).toMatchObject({
       supporter: {
         publicKey: keys.publicKey,
         version: config.VERSION,
         hereSince: 'a few seconds',
       },
-      videos: [],
-      stats: {},
+      stats: {
+        home: 1,
+      },
     });
+
+    appContext.destroy();
   });
 
   test('Collect evidence from video page', async () => {
-    // jest.useRealTimers();
+    handleLeafBannerSpy.mockClear();
+    const appContext = await boot(bootConfig());
 
     ytURL = 'https://www.youtube.com/watch?v=55ud4_Cdbrc';
 
@@ -199,10 +250,10 @@ describe('YT App', () => {
     await sleep(4000);
 
     // custom events should be registered on booting
-    // expect(eventsRegisterSpy).toHaveBeenCalled();
+    expect(eventsRegisterSpy).toHaveBeenCalled();
 
     // yt callback should be called after server response
-    // expect(ytTrexActionsSpy).toHaveBeenCalledWith(null);
+    expect(ytTrexActionsSpy).toHaveBeenCalledWith({ ignored: true });
 
     await sleep(12000);
 
@@ -214,7 +265,54 @@ describe('YT App', () => {
       videoOpts,
       'video'
     );
-    // expect(handleLeafChannel2Spy).toBeCalledTimes(102);
+    expect(handleVideoSpy).toBeCalledTimes(1);
+
+    // banner match
+    const { handle: _bannerHandle, ...bannerOpts } = leafMatcherBanner;
+    expect(handleLeafBannerSpy).toHaveBeenNthCalledWith(
+      1,
+      expect.any(HTMLElement),
+      bannerOpts,
+      'banner'
+    );
+    expect(handleLeafBannerSpy).toHaveBeenCalledTimes(2);
+
+    // channel3 match
+    const { handle: _channel1Handle, ...channel1Opts } = leafMatcherChannel1;
+    expect(handleLeafChannel1Spy).toHaveBeenCalledTimes(132);
+    Array.from({ length: 132 }).map((n, i) => {
+      expect(handleLeafChannel1Spy).toHaveBeenNthCalledWith(
+        i + 1,
+        expect.any(HTMLElement),
+        channel1Opts,
+        'channel1'
+      );
+    });
+
+    // channel2 match
+    const { handle: _channel2Handle, ...channel2Opts } = leafMatcherChannel2;
+    expect(handleLeafChannel2Spy).toHaveBeenCalledTimes(204);
+
+    Array.from({ length: 204 }).map((n, i) => {
+      expect(handleLeafChannel2Spy).toHaveBeenNthCalledWith(
+        i + 1,
+        expect.any(HTMLElement),
+        channel2Opts,
+        'channel2'
+      );
+    });
+
+    // channel3 match
+    const { handle: _channel3Handle, ...channel3Opts } = leafMatcherChannel3;
+    expect(handleLeafChannel3Spy).toHaveBeenCalledTimes(22);
+    Array.from({ length: 22 }).map((n, i) => {
+      expect(handleLeafChannel3Spy).toHaveBeenNthCalledWith(
+        i + 1,
+        expect.any(HTMLElement),
+        channel3Opts,
+        'channel3'
+      );
+    });
 
     const response = await axios
       .get(`${process.env.API_ROOT}/v1/personal/${keys.publicKey}`)
@@ -224,6 +322,7 @@ describe('YT App', () => {
       });
 
     expect(response.status).toBe(200);
+    expect(response.data.ads.length).toBe(100);
     expect(response.data).toMatchObject({
       supporter: {
         publicKey: keys.publicKey,
@@ -241,7 +340,10 @@ describe('YT App', () => {
       ],
       stats: {
         video: 1,
+        home: 1,
       },
     });
+
+    appContext.destroy();
   });
 });

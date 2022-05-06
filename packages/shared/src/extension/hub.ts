@@ -6,8 +6,8 @@ export type HubHandler = <E extends HubEventBase>(event: E) => void;
 type HandlerMap<K extends string> = { [key in K]?: HubHandler[] };
 
 export class Hub<HE extends HubEventBase> {
-  private readonly specificHandlers: HandlerMap<HE['type']>;
-  private readonly genericHandlers: HubHandler[];
+  private specificHandlers: HandlerMap<HE['type']>;
+  private genericHandlers: HubHandler[];
 
   constructor() {
     this.specificHandlers = {};
@@ -40,6 +40,12 @@ export class Hub<HE extends HubEventBase> {
 
     this.genericHandlers.forEach((func) => func(e));
 
+    return this;
+  }
+
+  clear(): Hub<HE> {
+    this.specificHandlers = {};
+    this.genericHandlers = [];
     return this;
   }
 }

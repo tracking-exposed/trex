@@ -34,10 +34,11 @@ interface WithUserId {
 
 async function handleLocalLookup(
   { userId }: WithUserId,
-  sendResponse: (response: unknown) => void
+  sendResponse: (response: UserSettings) => void
 ): Promise<void> {
   try {
-    sendResponse(await db.getValid(UserSettings)(userId));
+    const settings = await db.getValid(UserSettings)(userId);
+    sendResponse(settings);
   } catch (err) {
     const initialSettings: UserSettings = {
       ...initializeKey(),
