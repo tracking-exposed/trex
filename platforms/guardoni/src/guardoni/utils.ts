@@ -23,6 +23,7 @@ export const CHROME_PATHS = [
 // this function check for standard chrome executable path and
 // return it. If not found, raise an error
 export function getChromePath(): E.Either<Error, string> {
+  utilsLogger.debug('Chrome possible paths %j', CHROME_PATHS);
   const chromePath = CHROME_PATHS.find((p) => fs.existsSync(p));
 
   utilsLogger.debug('Chrome path %s', chromePath);

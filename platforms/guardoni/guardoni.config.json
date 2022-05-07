@@ -12,5 +12,6 @@
     "name": "tiktok",
     "backend": "http://localhost:14000/api",
     "extensionDir": "../tktrex/extension/build"
-  }
+  },
+  "chromePath": "/usr/bin/google-chrome"
 }
