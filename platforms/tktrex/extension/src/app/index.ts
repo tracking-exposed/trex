@@ -1,4 +1,5 @@
 import { boot } from '@shared/extension/app';
+import { tiktokDomainRegExp } from '@tktrex/parser/constant';
 import { hub, registerTkHandlers } from '../handlers';
 import { feedId, onLocationChange, tkHandlers, tkTrexActions } from './app';
 
@@ -17,6 +18,7 @@ void boot({
   },
   observe: {
     handlers: tkHandlers,
+    platformMatch: tiktokDomainRegExp,
     onLocationChange,
   },
   onAuthenticated: tkTrexActions,
