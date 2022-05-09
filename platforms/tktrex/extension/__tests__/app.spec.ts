@@ -147,7 +147,7 @@ describe('TK App', () => {
     expect(eventsRegisterSpy).toHaveBeenCalled();
 
     // yt callback should be called after server response
-    expect(tkTrexActionsSpy).toHaveBeenCalledWith(null);
+    expect(tkTrexActionsSpy).toHaveBeenCalledWith({ ignored: true });
 
     await sleep(8000);
 
