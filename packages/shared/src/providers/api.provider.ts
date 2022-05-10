@@ -10,6 +10,7 @@ import * as A from 'fp-ts/lib/Array';
 import * as E from 'fp-ts/lib/Either';
 import { pipe } from 'fp-ts/lib/function';
 import * as R from 'fp-ts/lib/Record';
+import * as S from 'fp-ts/lib/string';
 import * as TE from 'fp-ts/lib/TaskEither';
 import * as t from 'io-ts';
 import { PathReporter } from 'io-ts/lib/PathReporter';
@@ -165,11 +166,14 @@ export type TERequest<E extends MinimalEndpointInstance> = (
   ia?: any
 ) => TE.TaskEither<APIError, TypeOfEndpointInstance<E>['Output']>;
 
-type API<
-  ES extends {
-    [typeKey: string]: { [apiKey: string]: MinimalEndpointInstance };
-  }
-> = {
+export interface ResourceEndpointsRecord {
+  [apiKey: string]: MinimalEndpointInstance;
+}
+export interface EndpointsConfig {
+  [typeKey: string]: ResourceEndpointsRecord;
+}
+
+type API<ES extends EndpointsConfig> = {
   [K in keyof ES]: ES[K] extends {
     [key: string]: MinimalEndpointInstance;
   }
@@ -181,9 +185,7 @@ type API<
 
 const makeAPI =
   (client: HTTPClient) =>
-  <ES extends { [key: string]: Record<string, MinimalEndpointInstance> }>(
-    es: ES
-  ): API<ES> => {
+  <ES extends { [key: string]: ResourceEndpointsRecord }>(es: ES): API<ES> => {
     const APIInit: API<ES> = {} as any;
 
     return pipe(
@@ -208,18 +210,15 @@ interface GetAPIOptions {
   onUnauthorized: (res: AxiosResponse) => Promise<AxiosResponse>;
 }
 
-export interface APIClient {
-  v1: API<typeof Endpoints.v1>;
-  v2: API<typeof Endpoints.v2>;
-  v3: API<typeof Endpoints.v3>;
-}
+export type APIClient<EV extends { [v: string]: EndpointsConfig }> = {
+  [K in keyof EV]: API<EV[K]>;
+};
 
-export const GetAPI = (
-  opts: GetAPIOptions
-): {
-  API: APIClient;
-  HTTPClient: HTTPClient;
-} => {
+export const MakeAPIClient = <EE extends { [v: string]: EndpointsConfig }>(
+  opts: GetAPIOptions,
+  endpoints: EE
+): { API: APIClient<EE>; HTTPClient: HTTPClient } => {
+  apiLogger.debug('Initialize api client with options %O', opts);
   const axiosClient = axios.create({
     baseURL: opts.baseURL,
     // transformRequest: (req) => {
@@ -258,15 +257,28 @@ export const GetAPI = (
 
   const toAPI = makeAPI(HTTPClient);
 
-  const v1 = toAPI(Endpoints.v1);
-  const v2 = toAPI(Endpoints.v2);
-  const v3 = toAPI(Endpoints.v3);
-
-  const API = {
-    v1,
-    v2,
-    v3,
-  };
+  const API = pipe(
+    endpoints,
+    R.reduceWithIndex(S.Ord)({} as any as APIClient<EE>, (key, acc, ee) => ({
+      ...acc,
+      [key]: toAPI(ee),
+    }))
+  );
 
   return { API, HTTPClient };
+};
+
+export interface YTAPIClient {
+  v1: API<typeof Endpoints.v1>;
+  v2: API<typeof Endpoints.v2>;
+  v3: API<typeof Endpoints.v3>;
+}
+
+export const GetAPI = (
+  opts: GetAPIOptions
+): {
+  API: APIClient<typeof Endpoints>;
+  HTTPClient: HTTPClient;
+} => {
+  return MakeAPIClient(opts, Endpoints);
 };

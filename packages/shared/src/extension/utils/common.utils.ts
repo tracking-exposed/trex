@@ -1,4 +1,3 @@
-import bs58 from 'bs58';
 
 export function getLogoDataURI(): Document {
   return new DOMParser().parseFromString(
@@ -46,19 +45,4 @@ export function isEmpty(object: unknown): boolean {
 
 export function isFunction(value: unknown): value is Function {
   return value instanceof Function;
-}
-
-export function decodeString(s: string): Uint8Array {
-  // Credits: https://github.com/dchest/tweetnacl-util-js
-  const d = unescape(encodeURIComponent(s));
-  const b = new Uint8Array(d.length);
-
-  for (let i = 0; i < d.length; i++) {
-    b[i] = d.charCodeAt(i);
-  }
-  return b;
-}
-
-export function decodeKey(key: string): Uint8Array {
-  return new Uint8Array(bs58.decode(key));
 }

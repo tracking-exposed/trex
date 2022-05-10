@@ -1,5 +1,5 @@
 import { countBy } from 'lodash';
-import config from '@shared/extension/config';
+import config, { Config } from '@shared/extension/config';
 import { getTimeISO8601 } from '@shared/extension/utils/common.utils';
 import { Hub } from '@shared/extension/hub';
 import {
@@ -7,7 +7,7 @@ import {
   SuggestedEvent,
   SearchEvent,
   TKHubEvent,
-} from './models/HubEvent';
+} from '../models/HubEvent';
 import log from '@shared/extension/logger';
 import { bo } from '@shared/extension/utils/browser.utils';
 
@@ -29,8 +29,6 @@ const state = {
   incremental: 0,
   content: [] as Evidence[],
 };
-
-export const hub = new Hub<TKHubEvent>();
 
 export function handleVideo(e: NewVideoEvent): void {
   const videoEvent = {
@@ -87,6 +85,7 @@ function sync(hub: Hub<TKHubEvent>): void {
         userId: 'local',
       },
       (response) => {
+        log.debug('Sync runtime response %O', response);
         hub.dispatch({
           type: 'SyncResponse',
           payload: response,
@@ -97,12 +96,16 @@ function sync(hub: Hub<TKHubEvent>): void {
   }
 }
 
-export function registerTkHandlers(hub: Hub<TKHubEvent>): void {
-  hub
-    .on('NewVideo', handleVideo)
-    .on('Suggested', handleSuggested)
-    .on('Search', handleSearch)
-    .on('WindowUnload', () => sync(hub));
+export function registerTkHandlers(hub: Hub<TKHubEvent>, config: Config): void {
+  if (config.active) {
+    hub
+      .on('NewVideo', handleVideo)
+      .on('Suggested', handleSuggested)
+      .on('Search', handleSearch)
+      .on('WindowUnload', () => sync(hub));
 
-  window.setInterval(() => sync(hub), INTERVAL);
+    window.setInterval(() => {
+      sync(hub);
+    }, INTERVAL);
+  }
 }

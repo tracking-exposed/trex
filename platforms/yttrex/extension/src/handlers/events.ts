@@ -50,7 +50,7 @@ export function sync(hub: Hub<YTHubEvent>): void {
     // This might be refactored using something compatible to the HUB architecture.
     bo.runtime.sendMessage(
       { type: 'sync', payload: state.content, userId: 'local' },
-      (response) => {
+      (response: any) => {
         ytLog.info('Sync response %j', response);
         hub.dispatch({ type: 'SyncResponse', payload: response });
       }

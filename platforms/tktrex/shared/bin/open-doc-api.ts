@@ -1,5 +1,5 @@
 import * as endpoints from '../src/endpoints';
-import * as apiModels from '../src/models/api';
+import * as apiModels from '../src/models';
 import * as sharedModels from '../../../../packages/shared/src/models';
 import * as swagger from '../../../../packages/shared/src/providers/swagger/swagger.provider.node';
 import * as path from 'path';
@@ -15,11 +15,15 @@ swagger.writeOpenDocTo(
       protocol: 'https',
       basePath: 'api',
     },
-    endpoints: {
-      v1: endpoints,
-    },
+    endpoints,
     version: packageJson.version,
-    models: { ...apiModels, ...(sharedModels as any) },
+    models: {
+      ...apiModels.Common,
+      ...apiModels.Events,
+      ...apiModels.Personal,
+      ...apiModels.Public,
+      ...(sharedModels as any),
+    },
     components: {
       security: {
         ACTToken: {
@@ -35,5 +39,5 @@ swagger.writeOpenDocTo(
       },
     ],
   },
-  path.resolve(process.cwd(), './build'),
+  path.resolve(process.cwd(), './build')
 );

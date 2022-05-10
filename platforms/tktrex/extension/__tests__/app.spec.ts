@@ -5,16 +5,17 @@ import {
 } from '@shared/extension/chrome/background/account';
 import { load } from '@shared/extension/chrome/background/index';
 import { handleSyncMessage } from '@shared/extension/chrome/background/sync';
+import { tiktokDomainRegExp } from '@tktrex/parser/constant';
 import axios from 'axios';
 import * as fs from 'fs';
 import { chrome } from 'jest-chrome';
 import * as path from 'path';
 import * as app from '../src/app/app';
+import * as handlers from '../src/app/handlers';
 import api, { getHeadersForDataDonation } from '../src/background/api';
-import * as handlers from '../src/handlers/apiSync';
 import tkHub from '../src/handlers/hub';
 import { tkLog } from '../src/logger';
-import { tiktokDomainRegExp } from '@tktrex/parser/constant';
+import * as jsdom from 'jsdom';
 
 const sleep = (ms: number): Promise<void> => {
   return new Promise((resolve) => {
@@ -25,10 +26,84 @@ const sleep = (ms: number): Promise<void> => {
 const chromeListener = jest.fn();
 
 const videoMatcher = app.tkHandlers.video;
-
-const eventsRegisterSpy = jest.spyOn(handlers, 'register');
+const searchMatcher = app.searchHandler;
+const eventsRegisterSpy = jest.spyOn(handlers, 'registerTkHandlers');
 const tkTrexActionsSpy = jest.spyOn(app, 'tkTrexActions');
+const hubDispatchSpy = jest.spyOn(tkHub, 'dispatch');
 const handleVideoSpy = jest.spyOn(videoMatcher, 'handle');
+const handleSearchSpy = jest.spyOn(searchMatcher, 'handle');
+
+let keys = initializeKey();
+let supporterId;
+const tkURL = 'https://tiktok.com/foryou';
+const bootOptions = {
+  payload: {
+    config: keys,
+    href: window.location.href,
+  } as any,
+  mapLocalConfig: (c, p) => ({ ...c, ...p }),
+  observe: {
+    handlers: app.tkHandlers,
+    platformMatch: tiktokDomainRegExp,
+    onLocationChange: () => {},
+  },
+  hub: {
+    hub: tkHub,
+    onRegister: handlers.registerTkHandlers,
+  },
+  onAuthenticated: app.tkTrexActions,
+};
+
+chromeListener.mockImplementation((request, sender, sendResponse) => {
+  tkLog.info('on listener %O', { request, sender });
+  sendResponse({ type: 'Success', response: null });
+  return true;
+});
+
+chrome.runtime.sendMessage
+  // mock first 'chromeConfig' message handler
+  // .mockImplementationOnce((msg, cb: any) => {
+  //   return cb({ ux: true, active: true });
+  // })
+  // mock 'LocalLookup' message handler
+  .mockImplementation((msg: any, cb: any) => {
+    tkLog.info('msg received', msg.type);
+    if (msg.type === 'LocalLookup') {
+      return cb({
+        ...keys,
+        active: true,
+        ux: true,
+        href: tkURL,
+        evidencetag: 'fake-tag',
+        researchTag: 'test-tag',
+        execount: 1,
+        newProfile: true,
+        testTime: new Date().toISOString(),
+      });
+    } else if (msg.type === 'ServerLookup') {
+      return handleServerLookup(backgroundOpts)(msg.payload, cb);
+    } else if (msg.type === 'sync') {
+      return handleSyncMessage(backgroundOpts)(msg, null, cb);
+    }
+    return cb({
+      type: 'Error',
+      error: new Error(`Message type ${msg.type} not handled`),
+    });
+  });
+
+chrome.storage.local.get.mockImplementation((key: any, cb: any) => {
+  tkLog.info('Get Storage key %s', keys);
+  tkLog.info('Callback %O', cb);
+  return cb({ [key]: keys });
+});
+
+chrome.storage.local.set.mockImplementation((obj, cb: any) => {
+  tkLog.info('Set Storage key %s', obj);
+  tkLog.info('Callback %O', cb);
+  return cb(obj);
+});
+
+chrome.runtime.onMessage.addListener(chromeListener);
 
 const backgroundOpts = {
   api: api.API,
@@ -37,135 +112,145 @@ const backgroundOpts = {
 
 describe('TK App', () => {
   jest.setTimeout(20 * 1000);
-  let keys;
 
   beforeAll(() => {
-    keys = initializeKey();
+    load(backgroundOpts);
   });
 
-  it('Page "foryou"', async () => {
-    // jest.useRealTimers();
+  afterEach(() => {
+    eventsRegisterSpy.mockClear();
+    tkTrexActionsSpy.mockClear();
+    hubDispatchSpy.mockClear();
+    handleVideoSpy.mockClear();
+    handleSearchSpy.mockClear();
+  });
 
-    let supporterId;
-    const tkURL = 'https://tiktok.com/foryou';
+  describe('"foryou" page scraping', () => {
+    test('succeeds with all elements', async () => {
+      // jest.useRealTimers();
 
-    chromeListener.mockImplementation((request, sender, sendResponse) => {
-      tkLog.info('on listener %O', { request, sender });
-      sendResponse({ type: 'Success', response: null });
-      return true;
-    });
+      const appContext = await boot(bootOptions);
 
-    chrome.runtime.sendMessage
-      // mock first 'chromeConfig' message handler
-      // .mockImplementationOnce((msg, cb: any) => {
-      //   return cb({ ux: true, active: true });
-      // })
-      // mock 'LocalLookup' message handler
-      .mockImplementationOnce((msg, cb: any) => {
-        return cb({
-          ...keys,
-          active: true,
-          ux: true,
-          href: tkURL,
-          evidencetag: 'fake-tag',
-          researchTag: '',
-          experimentId: '1',
-          execount: 1,
-          newProfile: false,
-          testTime: new Date().toISOString(),
-          directiveType: 'comparison',
-        });
-      })
-      // mock 'ServerLookup' message handler
-      .mockImplementationOnce((msg: any, cb: any) => {
-        tkLog.info('server lookup msg', msg);
-        handleServerLookup(backgroundOpts)(msg.payload, cb);
-      })
-      // mock 'sync' message handler
-      .mockImplementationOnce((msg: any, cb: any) => {
-        tkLog.info('sync handler mock %O', msg);
-        // tkLog.debug('Chrome last error %O', chrome.runtime.lastError);
-        try {
-          handleSyncMessage(backgroundOpts)(msg, null, cb);
-        } catch (e) {
+      global.jsdom.reconfigure({
+        url: tkURL,
+      });
+
+      window.document.body.innerHTML = fs.readFileSync(
+        path.resolve(__dirname, 'htmls/tk-foryou.html'),
+        'utf-8'
+      );
+
+      await sleep(1000);
+
+      // custom events should be registered on booting
+      expect(eventsRegisterSpy).toHaveBeenCalled();
+
+      // yt callback should be called after server response
+      expect(tkTrexActionsSpy).toHaveBeenCalledWith({ ignored: true });
+
+      await sleep(12000);
+
+      // video handler should be invoked as the url includes `watch`
+
+      const { handle: _handle, ...videoOpts } = videoMatcher;
+      expect(handleVideoSpy).toHaveBeenCalledTimes(1);
+      expect(handleSearchSpy).not.toHaveBeenCalled();
+      // one for the contribution 'video' event and one for "sync" event
+      expect(hubDispatchSpy).toHaveBeenCalledTimes(2);
+
+      const response = await axios
+        .get(
+          `${process.env.API_ROOT}/v1/personal/${keys.publicKey}/foryou/json`
+        )
+        .catch((e) => {
           console.error(e);
-          cb(e);
-        }
-      })
-      .mockImplementation((msg, cb: any) => {
-        tkLog.info('unhandled msg %O', msg);
-        tkLog.debug('Chrome last error %O', chrome.runtime.lastError);
+          return e.response?.data;
+        });
 
-        return cb(null);
+      expect(response.status).toBe(200);
+      expect(response.data).toMatchObject({
+        counters: { metadata: 1 },
       });
 
-    chrome.storage.local.get.mockImplementation((key: any, cb: any) => {
-      tkLog.info('Get Storage key %s', keys);
-      tkLog.info('Callback %O', cb);
-      return cb({ [key]: keys });
+      appContext.destroy();
     });
+  });
 
-    chrome.storage.local.set.mockImplementation((obj, cb: any) => {
-      tkLog.info('Set Storage key %s', obj);
-      tkLog.info('Callback %O', cb);
-      return cb(obj);
-    });
-    chrome.runtime.onMessage.addListener(chromeListener);
+  describe('"search" page scraping', () => {
+    test('succeeds with all elements', async () => {
+      const appContext = await boot(bootOptions);
 
-    load(backgroundOpts);
-
-    const appContext = await boot({
-      payload: {
-        config: keys,
-        href: window.location.href,
-      } as any,
-      mapLocalConfig: (c, p) => ({ ...c, ...p }),
-      observe: {
-        handlers: app.tkHandlers,
-        platformMatch: tiktokDomainRegExp,
-        onLocationChange: () => {},
-      },
-      hub: {
-        hub: tkHub,
-        onRegister: handlers.register,
-      },
-      onAuthenticated: app.tkTrexActions,
-    });
-
-    global.jsdom.reconfigure({
-      url: tkURL,
-    });
-
-    window.document.body.innerHTML = fs.readFileSync(
-      path.resolve(__dirname, 'htmls/tk-foryou.html'),
-      'utf-8'
-    );
-
-    await sleep(2000);
-
-    // custom events should be registered on booting
-    expect(eventsRegisterSpy).toHaveBeenCalled();
-
-    // yt callback should be called after server response
-    expect(tkTrexActionsSpy).toHaveBeenCalledWith({ ignored: true });
-
-    await sleep(8000);
-
-    // video handler should be invoked as the url includes `watch`
-
-    const { handle: _handle, ...videoOpts } = videoMatcher;
-    expect(handleVideoSpy).toHaveBeenCalledTimes(1);
-
-    const response = await axios
-      .get(`${process.env.API_ROOT}/v1/personal/${keys.publicKey}/foryou/json`)
-      .catch((e) => {
-        console.error(e);
-        return e.response?.data;
+      const tkSearchUrl = 'https://www.tiktok.com/search?q=tartaria';
+      global.jsdom.reconfigure({
+        url: tkSearchUrl,
       });
 
-    expect(response.status).toBe(200);
-    expect(response.data).toMatchObject([]);
+      window.document.body.innerHTML = fs.readFileSync(
+        path.resolve(__dirname, 'htmls/tk-search-tartaria.html'),
+        'utf-8'
+      );
 
-    appContext.destroy();
+      await sleep(1000);
+
+      // custom events should be registered on booting
+      expect(eventsRegisterSpy).toHaveBeenCalled();
+
+      // yt callback should be called after server response
+      expect(tkTrexActionsSpy).toHaveBeenCalledWith({ ignored: true });
+
+      await sleep(12000);
+
+      // window.close();
+
+      // video handler should be invoked as the url includes `watch`
+
+      const { handle: _handle, ...videoOpts } = videoMatcher;
+      expect(handleVideoSpy).toHaveBeenCalledTimes(2);
+      expect(handleSearchSpy).toHaveBeenCalledTimes(48);
+      expect(hubDispatchSpy).toHaveBeenCalledTimes(2);
+
+      const response = await axios
+        .get(
+          `${process.env.API_ROOT}/v1/personal/${keys.publicKey}/search/json`
+        )
+        .catch((e) => {
+          console.error(e);
+          return e.response?.data;
+        });
+
+      expect(response.status).toBe(200);
+      expect(response.data).toMatchObject({
+        counters: { metadata: 1 },
+        metadata: [
+          {
+            query: 'tartaria',
+            rejected: false,
+            results: 24,
+            sources: [
+              '@trutherwarrior111',
+              '@manifestation1776',
+              '@t.a.r.t.a.r.i.a',
+              '@anonymouslightworker',
+              '@thedoctorregenerated',
+              '@ancientartist333',
+              '@gabyzacara333',
+              '@iamfitzy',
+              '@two_dollar_trey',
+              '@dantok_',
+              '@alphatalkz_98',
+              '@onefoulwow2',
+              '@sometr0ll',
+              '@kiril.romanov',
+              '@lessandro2021',
+              '@goddessmamma',
+              '@caesarthegrape',
+              '@tartaria_reset_secret',
+            ],
+          },
+        ],
+      });
+
+      appContext.destroy();
+    });
   });
 });

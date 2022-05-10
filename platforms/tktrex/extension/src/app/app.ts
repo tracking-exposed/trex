@@ -11,7 +11,7 @@ import { map } from 'fp-ts/lib/Either';
 import { pipe } from 'fp-ts/lib/function';
 import _ from 'lodash';
 import { INTERCEPTED_ITEM_CLASS } from '../interceptor/constants';
-import { hub } from '../handlers';
+import tkHub from '../handlers/hub';
 
 const appLog = log.extend('app');
 
@@ -80,7 +80,7 @@ function fullSave(): void {
       }
 
       appLog.info('sending fullSave!', nature);
-      hub.dispatch({
+      tkHub.dispatch({
         type: 'FullSave',
         payload: {
           type: nature,
@@ -128,7 +128,7 @@ const handleInterceptedData = (): void => {
     const html = ch.innerHTML;
     try {
       const data = JSON.parse(html);
-      hub.dispatch({
+      tkHub.dispatch({
         type: 'APIEvent',
         payload: data,
       });
@@ -173,7 +173,7 @@ const handleSearch = _.debounce((element: Node): void => {
   const hasNewElements = sizeCheck(contentNode.innerHTML);
   if (!hasNewElements) return;
 
-  hub.dispatch({
+  tkHub.dispatch({
     type: 'Search',
     payload: {
       html: contentHTML,
@@ -192,7 +192,7 @@ const handleSuggested = _.debounce((elem: Node): void => {
     return;
   }
 
-  hub.dispatch({
+  tkHub.dispatch({
     type: 'Suggested',
     payload: {
       html: parent.outerHTML,
@@ -250,7 +250,7 @@ const handleVideo = _.debounce((node: HTMLElement): void => {
 
   videoRoot.setAttribute('trex', `${videoCounter}`);
 
-  hub.dispatch({
+  tkHub.dispatch({
     type: 'NewVideo',
     payload: {
       html: videoRoot.outerHTML,
@@ -269,13 +269,13 @@ const handleVideo = _.debounce((node: HTMLElement): void => {
 
 function flush(): void {
   window.addEventListener('beforeunload', () => {
-    hub.dispatch({
+    tkHub.dispatch({
       type: 'WindowUnload',
     });
   });
 }
 
-const searchHandler: SelectorObserverHandler = {
+export const searchHandler: SelectorObserverHandler = {
   match: {
     type: 'selector',
     selector: '[data-e2e="search-card-desc"]',
@@ -283,7 +283,7 @@ const searchHandler: SelectorObserverHandler = {
   handle: handleSearch,
 };
 
-const errorHandler: SelectorObserverHandler = {
+export const errorHandler: SelectorObserverHandler = {
   match: {
     type: 'selector',
     selector: 'h2',

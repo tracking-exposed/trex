@@ -1,9 +1,9 @@
 import { SyncReq } from '@shared/extension/chrome/background/sync';
 import db from '@shared/extension/chrome/db';
 import config from '@shared/extension/config';
-import { decodeKey, decodeString } from '@shared/extension/utils/common.utils';
-import { GetAPI } from '@shared/providers/api.provider';
-import bs58 from 'bs58';
+import { MakeAPIClient } from '@shared/providers/api.provider';
+import { decodeFromBase58, decodeString, encodeToBase58 } from '@shared/utils/decode.utils';
+import * as endpoints from '@tktrex/endpoints';
 import nacl from 'tweetnacl';
 import { tkLog } from '../logger';
 
@@ -21,9 +21,11 @@ export const getHeadersForDataDonation = async (req: SyncReq): Promise<any> => {
     throw new Error('Cannot sign payload, no keypair found!');
   }
 
+  tkLog.debug('Signing payload %O', payload);
+
   const signature = nacl.sign.detached(
     decodeString(JSON.stringify(payload)),
-    decodeKey(keypair.secretKey),
+    decodeFromBase58(keypair.secretKey)
   );
 
   tkLog.info('Signature %s', signature);
@@ -34,15 +36,18 @@ export const getHeadersForDataDonation = async (req: SyncReq): Promise<any> => {
     'X-Tktrex-Build': config.BUILD,
     'X-Tktrex-NonAuthCookieId': cookieId,
     'X-Tktrex-PublicKey': keypair.publicKey,
-    'X-Tktrex-Signature': bs58.encode(signature),
+    'X-Tktrex-Signature': encodeToBase58(signature),
   };
 
   return headers;
 };
 
 // export an instance of the API client with proper endpoint
-export default GetAPI({
-  baseURL: config.API_ROOT,
-  getAuth: async (req) => req,
-  onUnauthorized: async (res) => res,
-});
+export default MakeAPIClient(
+  {
+    baseURL: config.API_ROOT,
+    getAuth: async (req) => req,
+    onUnauthorized: async (res) => res,
+  },
+  endpoints
+);
