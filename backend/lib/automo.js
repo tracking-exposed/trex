@@ -229,6 +229,7 @@ async function getMetadataFromAuthorChannelId(channelId, options) {
   const filter = {
     authorSource: { $in: [`/channel/${channelId}`, `/c/${channelId}`] },
     authorName: { $ne: null },
+    "related.0": { $exists: true },
   };
 
   const cappedResultsOpts = [
