@@ -176,6 +176,9 @@ export const parseContributions =
     };
   };
 
+/* yes a better way might exist */
+let previousFrequency = 0;
+
 const actualExecution =
   <T>(ctx: ParserContext<T>) =>
   async ({
@@ -233,7 +236,8 @@ const actualExecution =
 
         const envelops = await ctx.getContributions(htmlFilter, 0, htmlAmount);
 
-        ctx.log.debug('Data to process %d', envelops.sources.length);
+        if(envelops.sources.length)
+          ctx.log.debug('Data to process %d', envelops.sources.length);
 
         let results: ParsingChainResults | undefined;
         if (!_.size(envelops.sources)) {
@@ -288,7 +292,10 @@ const actualExecution =
             payload: results,
           };
         }
-        ctx.log.debug('Sleeping for %f seconds', computedFrequency);
+        if(computedFrequency !== previousFrequency) {
+          ctx.log.debug('Sleeping for %f seconds', computedFrequency);
+          previousFrequency = computedFrequency;
+        }
         const sleepTime = computedFrequency * 1000;
         await sleep(sleepTime);
       }
