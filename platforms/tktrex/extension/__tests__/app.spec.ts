@@ -15,7 +15,6 @@ import * as handlers from '../src/app/handlers';
 import api, { getHeadersForDataDonation } from '../src/background/api';
 import tkHub from '../src/handlers/hub';
 import { tkLog } from '../src/logger';
-import * as jsdom from 'jsdom';
 
 const sleep = (ms: number): Promise<void> => {
   return new Promise((resolve) => {

@@ -15,7 +15,6 @@ import * as TE from 'fp-ts/lib/TaskEither';
 import * as t from 'io-ts';
 import { PathReporter } from 'io-ts/lib/PathReporter';
 import { MinimalEndpointInstance, TypeOfEndpointInstance } from 'ts-endpoint';
-import * as Endpoints from '../endpoints';
 import { APIError } from '../errors/APIError';
 import { trexLogger } from '../logger';
 
@@ -60,7 +59,7 @@ const liftFetch = <B>(
   );
 };
 
-interface HTTPClient {
+export interface HTTPClient {
   apiFromEndpoint: <E extends MinimalEndpointInstance>(e: E) => TERequest<E>;
 
   request: <T, R>(
@@ -204,7 +203,7 @@ const makeAPI =
     );
   };
 
-interface GetAPIOptions {
+export interface GetAPIOptions {
   baseURL: string;
   getAuth: (req: AxiosRequestConfig) => Promise<AxiosRequestConfig>;
   onUnauthorized: (res: AxiosResponse) => Promise<AxiosResponse>;
@@ -266,19 +265,4 @@ export const MakeAPIClient = <EE extends { [v: string]: EndpointsConfig }>(
   );
 
   return { API, HTTPClient };
-};
-
-export interface YTAPIClient {
-  v1: API<typeof Endpoints.v1>;
-  v2: API<typeof Endpoints.v2>;
-  v3: API<typeof Endpoints.v3>;
-}
-
-export const GetAPI = (
-  opts: GetAPIOptions
-): {
-  API: APIClient<typeof Endpoints>;
-  HTTPClient: HTTPClient;
-} => {
-  return MakeAPIClient(opts, Endpoints);
 };

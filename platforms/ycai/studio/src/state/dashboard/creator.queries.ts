@@ -16,7 +16,8 @@ import { getItem, setItem } from '@shared/providers/localStorage.provider';
 import { APIError } from '@shared/errors/APIError';
 import { GetRelatedChannelsOutput } from '@shared/models/ChannelRelated';
 import * as sharedConst from '@shared/constants';
-import { GetAPI } from '@shared/providers/api.provider';
+import { MakeAPIClient } from '@shared/providers/api.provider';
+import * as endpoints from '@shared/endpoints';
 import { config } from '../../config';
 import { AuthResponse } from '@shared/models/Auth';
 
@@ -31,7 +32,7 @@ const logout = async (): Promise<void> => {
   await localProfile.invalidate()();
 };
 
-export const { API, HTTPClient } = GetAPI({
+export const { API, HTTPClient } = MakeAPIClient({
   baseURL: config.API_URL,
   getAuth: (req) => {
     return pipe(
@@ -58,7 +59,7 @@ export const { API, HTTPClient } = GetAPI({
     await logout();
     return res;
   },
-});
+}, endpoints);
 
 type AuthorizedContentCreator = Omit<ContentCreator, 'accessToken'> & {
   accessToken: string;

@@ -6,14 +6,15 @@ import { getDefaultSettings } from '../../models/Settings';
 import * as localStorage from '@shared/providers/localStorage.provider';
 import * as sharedConstants from '@shared/constants';
 import { Keypair } from '@shared/models/extension/Keypair';
-import { GetAPI } from '@shared/providers/api.provider';
+import { MakeAPIClient } from '@shared/providers/api.provider';
 import { config } from '../../config';
+import * as endpoints from '@shared/endpoints';
 
-export const { API, HTTPClient } = GetAPI({
+export const { API, HTTPClient } = MakeAPIClient({
   baseURL: config.API_URL,
   getAuth: async (req) => req,
   onUnauthorized: async (res) => res,
-});
+}, endpoints);
 
 
 export const settingsRefetch = queryShallow(() => {

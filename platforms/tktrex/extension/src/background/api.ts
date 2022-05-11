@@ -25,7 +25,7 @@ export const getHeadersForDataDonation = async (req: SyncReq): Promise<any> => {
 
   const signature = nacl.sign.detached(
     decodeString(JSON.stringify(payload)),
-    decodeFromBase58(keypair.secretKey)
+    decodeFromBase58(keypair.secretKey),
   );
 
   tkLog.info('Signature %s', signature);
@@ -49,5 +49,5 @@ export default MakeAPIClient(
     getAuth: async (req) => req,
     onUnauthorized: async (res) => res,
   },
-  endpoints
+  endpoints,
 );
