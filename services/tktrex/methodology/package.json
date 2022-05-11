@@ -1,6 +1,6 @@
 {
   "name": "tktrex-guardoni",
-  "version": "2.4.7",
+  "version": "2.4.8",
   "packageManager": "yarn@3.1.1",
   "description": "Guardoni is a tool to automate access and coordinate personalization algorithm analysis",
   "scripts": {
