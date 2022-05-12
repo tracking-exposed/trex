@@ -1,5 +1,6 @@
 import * as constants from '@shared/constants';
-import security from '@shared/providers/bs58.provider';
+import { toBrowserError } from '@shared/providers/browser.provider';
+import bs58Provider from '@shared/providers/bs58.provider';
 import { pipe } from 'fp-ts/lib/function';
 import * as TE from 'fp-ts/lib/TaskEither';
 import { Messages } from '../providers/browser.provider';
@@ -12,7 +13,8 @@ export function generatePublicKeypair(
   Messages['GenerateKeypair']['Response']
 > {
   return pipe(
-    security.makeKeypair(passphrase),
+    bs58Provider.makeKeypair(passphrase),
+    TE.mapLeft(toBrowserError),
     TE.chain((keypair) => db.set(constants.PUBLIC_KEYPAIR, keypair)),
     TE.map((response) => ({
       type: Messages.GenerateKeypair.Response.type,

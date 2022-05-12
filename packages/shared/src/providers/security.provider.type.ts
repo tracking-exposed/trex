@@ -1,17 +1,16 @@
-import * as TE from 'fp-ts/lib/TaskEither';
 import { Keypair } from '../models/extension/Keypair';
-import * as E from 'fp-ts/lib/Either';
+import * as TE from 'fp-ts/lib/TaskEither';
 
 export interface SecurityProvider {
-  makeKeypair: (
-    passphrase: string
-  ) => TE.TaskEither<chrome.runtime.LastError, Keypair>;
-  makeToken: (
-    date: Date,
-    secretKey: string
-  ) => TE.TaskEither<chrome.runtime.LastError, string>;
+  makeKeypair: (passphrase: string) => TE.TaskEither<Error, Keypair>;
+  makeToken: (date: Date, secretKey: string) => TE.TaskEither<Error, string>;
   makeSignature: (
     payload: any,
     secretKey: string
-  ) => E.Either<chrome.runtime.LastError, string>;
+  ) => TE.TaskEither<Error, string>;
+  verifySignature: (
+    message: string,
+    publicKey: string,
+    signature: string
+  ) => TE.TaskEither<Error, boolean>;
 }

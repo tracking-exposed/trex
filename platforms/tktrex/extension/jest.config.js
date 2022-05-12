@@ -29,7 +29,7 @@ module.exports = {
     },
   },
   setupFilesAfterEnv: ['<rootDir>/jest.setup.ts'],
-  globalSetup: './globalSetup.ts',
-  globalTeardown: './globalTeardown.ts',
-  collectCoverageFrom: ['<rootDir>src/**'],
+  globalSetup: '<rootDir>/globalSetup.ts',
+  globalTeardown: '<rootDir>/globalTeardown.ts',
+  collectCoverageFrom: ['<rootDir>/src/*'],
 };

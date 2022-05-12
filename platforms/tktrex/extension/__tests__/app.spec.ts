@@ -149,6 +149,8 @@ describe('TK App', () => {
 
       await sleep(12000);
 
+      appContext.destroy();
+
       // video handler should be invoked as the url includes `watch`
 
       const { handle: _handle, ...videoOpts } = videoMatcher;
@@ -170,8 +172,6 @@ describe('TK App', () => {
       expect(response.data).toMatchObject({
         counters: { metadata: 1 },
       });
-
-      appContext.destroy();
     });
   });
 
@@ -179,7 +179,7 @@ describe('TK App', () => {
     test('succeeds with all elements', async () => {
       const appContext = await boot(bootOptions);
 
-      const tkSearchUrl = 'https://www.tiktok.com/search?q=tartaria';
+      const tkSearchUrl = 'https://www.tiktok.com/search?q=tartariá';
       global.jsdom.reconfigure({
         url: tkSearchUrl,
       });
@@ -198,8 +198,7 @@ describe('TK App', () => {
       expect(tkTrexActionsSpy).toHaveBeenCalledWith({ ignored: true });
 
       await sleep(12000);
-
-      // window.close();
+      appContext.destroy();
 
       // video handler should be invoked as the url includes `watch`
 
@@ -222,7 +221,7 @@ describe('TK App', () => {
         counters: { metadata: 1 },
         metadata: [
           {
-            query: 'tartaria',
+            query: 'tartariá',
             rejected: false,
             results: 24,
             sources: [
@@ -248,8 +247,6 @@ describe('TK App', () => {
           },
         ],
       });
-
-      appContext.destroy();
     });
   });
 });
