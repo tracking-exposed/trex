@@ -9,6 +9,7 @@ module.exports = {
     '<rootDir>/platforms/ycai/studio',
     '<rootDir>/platforms/yttrex/backend',
     '<rootDir>/platforms/yttrex/extension',
+    '<rootDir>/platforms/tktrex/backend',
     '<rootDir>/platforms/tktrex/extension',
   ],
 };

@@ -66,7 +66,6 @@ chrome.runtime.sendMessage
   // })
   // mock 'LocalLookup' message handler
   .mockImplementation((msg: any, cb: any) => {
-    tkLog.info('msg received', msg.type);
     if (msg.type === 'LocalLookup') {
       return cb({
         ...keys,
@@ -91,14 +90,12 @@ chrome.runtime.sendMessage
   });
 
 chrome.storage.local.get.mockImplementation((key: any, cb: any) => {
-  tkLog.info('Get Storage key %s', keys);
-  tkLog.info('Callback %O', cb);
+  tkLog.info('Get Storage key %s from %O', key, keys);
   return cb({ [key]: keys });
 });
 
 chrome.storage.local.set.mockImplementation((obj, cb: any) => {
   tkLog.info('Set Storage key %s', obj);
-  tkLog.info('Callback %O', cb);
   return cb(obj);
 });
 

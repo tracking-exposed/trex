@@ -2,12 +2,16 @@ import { SyncReq } from '@shared/extension/chrome/background/sync';
 import db from '@shared/extension/chrome/db';
 import config from '@shared/extension/config';
 import { MakeAPIClient } from '@shared/providers/api.provider';
-import { decodeFromBase58, decodeString, encodeToBase58 } from '@shared/utils/decode.utils';
+import {
+  decodeFromBase58,
+  decodeString,
+  encodeToBase58,
+} from '@shared/utils/decode.utils';
 import * as endpoints from '@tktrex/endpoints';
 import nacl from 'tweetnacl';
 import { tkLog } from '../logger';
 
-export const getHeadersForDataDonation = async (req: SyncReq): Promise<any> => {
+export const getHeadersForDataDonation = async(req: SyncReq): Promise<any> => {
   // ytLog.info('Request %O', req);
 
   const { payload } = req;
@@ -23,11 +27,12 @@ export const getHeadersForDataDonation = async (req: SyncReq): Promise<any> => {
 
   tkLog.debug('Signing payload %O', payload);
 
-  const signature = nacl.sign.detached(
+  const signatureUint = nacl.sign.detached(
     decodeString(JSON.stringify(payload)),
     decodeFromBase58(keypair.secretKey),
   );
 
+  const signature = encodeToBase58(signatureUint);
   tkLog.info('Signature %s', signature);
 
   const headers = {
@@ -36,7 +41,7 @@ export const getHeadersForDataDonation = async (req: SyncReq): Promise<any> => {
     'X-Tktrex-Build': config.BUILD,
     'X-Tktrex-NonAuthCookieId': cookieId,
     'X-Tktrex-PublicKey': keypair.publicKey,
-    'X-Tktrex-Signature': encodeToBase58(signature),
+    'X-Tktrex-Signature': signature,
   };
 
   return headers;
@@ -46,8 +51,8 @@ export const getHeadersForDataDonation = async (req: SyncReq): Promise<any> => {
 export default MakeAPIClient(
   {
     baseURL: config.API_ROOT,
-    getAuth: async (req) => req,
-    onUnauthorized: async (res) => res,
+    getAuth: async(req) => req,
+    onUnauthorized: async(res) => res,
   },
   endpoints,
 );

@@ -85,7 +85,6 @@ function sync(hub: Hub<TKHubEvent>): void {
         userId: 'local',
       },
       (response) => {
-        log.debug('Sync runtime response %O', response);
         hub.dispatch({
           type: 'SyncResponse',
           payload: response,
