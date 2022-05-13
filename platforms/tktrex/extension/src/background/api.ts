@@ -33,7 +33,8 @@ export const getHeadersForDataDonation = async(req: SyncReq): Promise<any> => {
   );
 
   const signature = encodeToBase58(signatureUint);
-  tkLog.info('Signature %s', signature);
+
+  tkLog.debug('Signature %s', signature);
 
   const headers = {
     'Content-Type': 'application/json',

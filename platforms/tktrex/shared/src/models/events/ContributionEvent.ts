@@ -1,5 +1,4 @@
 import * as t from 'io-ts';
-import { DateFromISOString } from 'io-ts-types/lib/DateFromISOString';
 
 export const ContributionEvent = t.strict(
   {
@@ -9,7 +8,7 @@ export const ContributionEvent = t.strict(
     feedCounter: t.number,
     videoCounter: t.number,
     rect: t.any,
-    clientTime: DateFromISOString,
+    clientTime: t.string,
     type: t.literal('video'),
     incremental: t.number,
   },

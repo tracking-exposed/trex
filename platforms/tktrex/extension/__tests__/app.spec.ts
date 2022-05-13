@@ -166,9 +166,25 @@ describe('TK App', () => {
         });
 
       expect(response.status).toBe(200);
-      expect(response.data).toMatchObject({
-        counters: { metadata: 1 },
-      });
+      expect(response.data).toMatchObject([
+        {
+          author: {
+            link: '/@yuuna_1210',
+            name: '悠那🌹🌕',
+            username: 'yuuna_1210',
+          },
+          baretext: '🌹🌕',
+          description: '🌹🌕#おすすめ #コスプレ #制服',
+          hashtags: ['#おすすめ', '#コスプレ', '#制服'],
+          metrics: { commentn: '236', liken: '10K', sharen: '167' },
+          music: {
+            name: 'TJR Eat God See Acid Noslek Milkshake Edit - ДабаДамбиев',
+            url: '/music/TJR-Eat-God-See-Acid-Noslek-Milkshake-Edit-7036689888661506817',
+          },
+          order: 1,
+          type: 'foryou',
+        },
+      ]);
     });
   });
 
