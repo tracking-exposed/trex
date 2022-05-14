@@ -83,7 +83,7 @@ async function upsertOne(mongoc, cName, selector, updated) {
     return mongoc
         .db()
         .collection(cName)
-        .updateOne(selector, { $set: updated }, { upsert: true});
+        .updateOne(selector, { $set: updated }, { upsert: true });
 };
 
 async function read(mongoc, cName, selector, sorter) {
@@ -145,11 +145,11 @@ async function distinct(mongoc, cName, field, query) {
         .distinct(field, query);
 };
 
-async function aggregate(mongoc, cName, pipeline) {
+async function aggregate(mongoc, cName, pipeline, explain) {
     return mongoc
         .db()
         .collection(cName)
-        .aggregate(pipeline)
+        .aggregate(pipeline, explain)
         .toArray();
 };
 

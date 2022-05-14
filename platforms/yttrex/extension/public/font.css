@@ -2,3 +2,10 @@
   font-family: Trex-Regular;
   src: url('/Trex-Regular.ttf');
 }
+
+html {
+  margin: 0;
+  padding: 0;
+  max-height: 800px;
+  height: 100%;
+}

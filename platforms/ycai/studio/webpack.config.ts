@@ -39,6 +39,7 @@ const { buildENV: extensionBuildEnv, ...extensionConfig } = getExtensionConfig(
     env: AppEnv,
     manifestVersion: process.env.VERSION,
     outputDir: path.resolve(__dirname, 'build/extension'),
+    distDir: path.resolve(__dirname, 'build/extension'),
     transformManifest: (manifest) => {
       if (config.mode === 'development') {
         manifest.permissions = [

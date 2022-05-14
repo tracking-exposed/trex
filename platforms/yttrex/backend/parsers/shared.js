@@ -4,7 +4,7 @@ const url = require('url');
 
 /* shared functions used from video and home */
 
-function getThumbNailHref(e) {
+export function getThumbNailHref(e) {
     // e is an 'element' from .querySelectorAll('ytd-compact-video-renderer')
     let thumbnailHref = null;
     try {
@@ -25,7 +25,7 @@ function getThumbNailHref(e) {
     return thumbnailHref;
 }
 
-function logged(D) {
+export function logged(D) {
     const avatarN = D.querySelectorAll('button#avatar-btn');
     const loginN = D.querySelectorAll('[href^="https://accounts.google.com/ServiceLogin"]');
     const avalen = avatarN ? avatarN.length : 0;
@@ -35,13 +35,13 @@ function logged(D) {
     if(logilen && !avalen)
         return false;
     if(avalen && !logilen)
-        return true; 
+        return true;
 
     debug("Inconsistent condition avatar %d login %d", avalen, logilen);
     return null;
 }
 
-function fixHumanizedTime(inputstr) {
+export function fixHumanizedTime(inputstr) {
     // this function fix the time 0:10, 10:10,  in HH:MM:SS
     if(inputstr.length === 4)
         return '0:0' + inputstr;
@@ -51,9 +51,3 @@ function fixHumanizedTime(inputstr) {
         debug("Warning this is weird in fixHumanizedTime: [%s]", inputstr);
     return inputstr;
 }
-
-module.exports = {
-    getThumbNailHref,
-    logged,
-    fixHumanizedTime,
-};

@@ -3,7 +3,7 @@ import bs58 from 'bs58';
 
 import config from '../config';
 import UserSettings from '../models/UserSettings';
-import { decodeString, decodeKey } from '../utils';
+import { decodeString, decodeKey } from '../utils/common.utils';
 import db from './db';
 
 const post =

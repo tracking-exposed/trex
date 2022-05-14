@@ -24,19 +24,19 @@ const Popup: React.FC = () => {
   const [userSettings, setUserSettings] = useState<any>(undefined);
 
   useEffect(() => {
-    localLookup((userSettings) => {
-      if (!userSettings || !userSettings.publicKey) {
+    localLookup((response) => {
+      if (response.type === 'Error') {
         setStatus('error');
         log.error('could not get user settings', bo.runtime.lastError);
         return;
       }
-      setUserSettings(userSettings);
+      setUserSettings(response.result);
       setStatus('done');
     });
   }, []);
 
-  const deltaMs = config.BUILDISODATE
-    ? Date.now() - new Date(config.BUILDISODATE).getTime()
+  const deltaMs = config.BUILD_DATE
+    ? Date.now() - new Date(config.BUILD_DATE).getTime()
     : 0;
 
   const timeAgo = moment.duration(deltaMs).humanize();

@@ -2,7 +2,7 @@ import * as t from 'io-ts';
 
 export const VideoContributionEvent = t.strict(
   {
-    type: t.string,
+    type: t.union([t.literal('video'), t.literal('NewVideo')]),
     element: t.string,
     size: t.number,
     href: t.string,

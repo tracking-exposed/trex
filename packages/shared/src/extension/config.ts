@@ -6,7 +6,7 @@ export interface Config {
   DEVELOPMENT: boolean;
   FLUSH_INTERVAL: number;
   VERSION: string;
-  BUILDISODATE?: string;
+  BUILD_DATE?: string;
   publicKey?: string;
   WEB_ROOT?: string;
 }
@@ -28,10 +28,10 @@ if (!process.env.BUILD) {
 }
 
 const config: Config = {
-  active: true,
+  active: process.env.DATA_CONTRIBUTION_ENABLED === 'true',
   ux: false,
   BUILD: process.env.BUILD,
-  BUILDISODATE: process.env.BUILDISODATE,
+  BUILD_DATE: process.env.BUILD_DATE,
   DEVELOPMENT: process.env.NODE_ENV === 'development',
   FLUSH_INTERVAL: parseInt(process.env.FLUSH_INTERVAL, 10),
   API_ROOT: process.env.API_ROOT,

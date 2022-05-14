@@ -5,6 +5,7 @@ import debug from 'debug';
 import * as path from 'path';
 import { MongoClient } from 'mongodb';
 import mongo3 from '../lib/mongo3';
+import { GetLogger, Logger } from '@shared/logger';
 
 debug.enable(process.env.DEBUG ?? '');
 
@@ -13,20 +14,18 @@ const config = nconf
   .file({ file: path.resolve(__dirname, '../config/settings.json') })
   .env();
 
-const logger = debug('yttrex').extend('test');
+const logger = GetLogger('yttrex').extend('test');
 
 export interface Test {
   app: supertest.SuperTest<supertest.Test>;
+  logger: Logger;
   mongo3: typeof mongo3;
   mongo: MongoClient;
-  debug: debug.Debugger;
   config: nconf.Provider;
 }
 
 export const GetTest = async (): Promise<Test> => {
-  config.set('mongoPort', 27019);
   config.set('mongoHost', '0.0.0.0');
-  config.set('mongoDb', 'test');
   config.set('key', 'test-key');
   config.set('storage', '_test_htmls');
 
@@ -40,7 +39,7 @@ export const GetTest = async (): Promise<Test> => {
 
   return {
     app: supertest(app),
-    debug: logger,
+    logger,
     config,
     mongo: mongo as any,
     mongo3,

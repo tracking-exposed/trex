@@ -1,18 +1,29 @@
+/* eslint-disable node/no-callback-literal */
+import { isLeft } from 'fp-ts/lib/Either';
 import * as t from 'io-ts';
 import { PathReporter } from 'io-ts/lib/PathReporter';
-import { isLeft } from 'fp-ts/lib/Either';
-
+import { HandshakeResponse } from '../../../models/HandshakeBody';
 import log from '../../logger';
 import { Message, ServerLookup } from '../../models/Message';
 import { UserSettings } from '../../models/UserSettings';
-import { ServerLookupResponse } from '../../models/ServerLookupResponse';
+import { bo } from '../../utils/browser.utils';
 
-const bo = chrome;
+interface ErrorResponse {
+  type: 'Error';
+  error: Error;
+}
+interface SuccessResponse<T> {
+  type: 'Success';
+  result: T;
+}
+
+export type SendResponse<T> = (r: ErrorResponse | SuccessResponse<T>) => void;
 
 const ifValid =
   <C extends t.Any>(codec: C) =>
-  (cb: (x: t.TypeOf<C>) => void) =>
+  (m: Message['type'], cb: SendResponse<t.TypeOf<C>>) =>
   (x: unknown): void => {
+    log.debug('Check response is valid %O', x);
     const v = codec.decode(x);
 
     if (isLeft(v)) {
@@ -20,8 +31,14 @@ const ifValid =
         v
       ).join('\n')}`;
       log.error(msg);
+      cb({
+        type: 'Error',
+        error: new Error(
+          `Error during '${m}' on codec ${codec.name} validation`
+        ),
+      });
     } else {
-      cb(v.right);
+      cb({ type: 'Success', result: v.right });
     }
   };
 
@@ -31,7 +48,7 @@ const ifValid =
 const sendMessage = (message: Message, cb: (response: unknown) => void): void =>
   bo.runtime.sendMessage(message, cb);
 
-export const localLookup = (cb: (userSettings: UserSettings) => void): void =>
+export const localLookup = (cb: SendResponse<UserSettings>): void =>
   sendMessage(
     {
       type: 'LocalLookup',
@@ -39,29 +56,29 @@ export const localLookup = (cb: (userSettings: UserSettings) => void): void =>
         userId: 'local',
       },
     },
-    ifValid(UserSettings)(cb)
+    ifValid(UserSettings)('LocalLookup', cb)
   );
 
 export const serverLookup = (
   payload: ServerLookup['payload'],
-  cb: (response: ServerLookupResponse) => void
+  cb:  SendResponse< HandshakeResponse>
 ): void =>
   sendMessage(
     {
       type: 'ServerLookup',
       payload,
     },
-    ifValid(ServerLookupResponse)(cb)
+    ifValid(HandshakeResponse)('ServerLookup', cb)
   );
 
 export const configUpdate = (
   payload: Partial<UserSettings>,
-  cb: (response: UserSettings) => void
+  cb: SendResponse< UserSettings>
 ): void =>
   sendMessage(
     {
       type: 'ConfigUpdate',
       payload,
     },
-    ifValid(UserSettings)(cb)
+    ifValid(UserSettings)('ConfigUpdate', cb)
   );

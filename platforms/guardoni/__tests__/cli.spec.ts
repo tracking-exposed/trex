@@ -22,24 +22,38 @@ const axiosMock = axios as jest.Mocked<typeof axios>;
 axiosMock.create.mockImplementation(() => axiosMock);
 
 const basePath = path.resolve(__dirname, '../');
-const profileName = 'profile-test-1';
-const extensionDir = path.resolve(__dirname, '../build/extension');
+const profileName = 'profile-test-99';
+const ytExtensionDir = path.resolve(__dirname, '../../yttrex/extension/build');
+const tkExtensionDir = path.resolve(__dirname, '../../tktrex/extension/build');
 
 describe('CLI', () => {
   const evidenceTag = 'test-tag';
   let experimentId: string;
   const guardoni = GetGuardoniCLI(
     {
+      chromePath: '/usr/bin/chrome',
+      basePath: './',
       headless: false,
       verbose: false,
-      basePath,
       profileName: profileName,
-      extensionDir,
-      backend: 'http://localhost:9009/api',
+      yt: {
+        name: 'youtube',
+        backend: process.env.YT_BACKEND as string,
+        extensionDir: ytExtensionDir,
+        proxy: undefined,
+      },
+      tk: {
+        name: 'tiktok',
+        backend: process.env.TK_BACKEND as string,
+        extensionDir: tkExtensionDir,
+        proxy: undefined,
+      },
       loadFor: 3000,
       evidenceTag,
-      chromePath: '/chrome/fake/path',
+      advScreenshotDir: undefined,
+      excludeURLTag: undefined,
     },
+    basePath,
     puppeteerMock
   );
 
@@ -82,7 +96,7 @@ describe('CLI', () => {
   });
 
   afterAll(() => {
-    fs.rmdirSync(path.resolve(basePath, 'profiles', profileName), {
+    fs.rmSync(path.resolve(basePath, 'profiles', profileName), {
       recursive: true,
     });
   });
@@ -94,7 +108,7 @@ describe('CLI', () => {
       await expect(
         guardoni.run({
           run: 'register-csv',
-          file: './fake-file' as any,
+          file: path.resolve(__dirname, '../fake-file') as any,
           type: 'chiaroscuro',
         })()
       ).resolves.toMatchObject({
@@ -109,7 +123,10 @@ describe('CLI', () => {
       await expect(
         guardoni.run({
           run: 'register-csv',
-          file: './experiments/experiment-comparison.csv' as any,
+          file: path.resolve(
+            __dirname,
+            '../experiments/experiment-comparison.csv'
+          ) as any,
           type: 'chiaroscuro',
         })()
       ).resolves.toMatchObject({
@@ -126,7 +143,10 @@ describe('CLI', () => {
       await expect(
         guardoni.run({
           run: 'register-csv',
-          file: './experiments/experiment-chiaroscuro.csv' as any,
+          file: path.resolve(
+            __dirname,
+            '../experiments/experiment-chiaroscuro.csv'
+          ) as any,
           type: 'comparison',
         })()
       ).resolves.toMatchObject({
@@ -147,7 +167,10 @@ describe('CLI', () => {
       const result: any = await guardoni.run({
         run: 'register-csv',
         type: 'comparison',
-        file: './experiments/experiment-comparison.csv' as any,
+        file: path.resolve(
+          __dirname,
+          '../experiments/experiment-comparison.csv'
+        ) as any,
       })();
 
       expect(result).toMatchObject({
@@ -170,7 +193,10 @@ describe('CLI', () => {
       const result: any = await guardoni.run({
         run: 'register-csv',
         type: 'comparison',
-        file: './experiments/experiment-comparison.csv' as any,
+        file: path.resolve(
+          __dirname,
+          '../experiments/experiment-comparison.csv'
+        ) as any,
       })();
 
       expect(result).toMatchObject({
@@ -195,7 +221,10 @@ describe('CLI', () => {
       const result: any = await guardoni.run({
         run: 'register-csv',
         type: 'comparison',
-        file: './experiments/experiment-comparison.csv' as any,
+        file: path.resolve(
+          __dirname,
+          '../experiments/experiment-comparison.csv'
+        ) as any,
       })();
 
       expect(result).toMatchObject({
@@ -220,7 +249,10 @@ describe('CLI', () => {
       const result: any = await guardoni.run({
         run: 'register-csv',
         type: 'chiaroscuro',
-        file: './experiments/experiment-chiaroscuro.csv' as any,
+        file: path.resolve(
+          __dirname,
+          '../experiments/experiment-chiaroscuro.csv'
+        ) as any,
       })();
 
       expect(result).toMatchObject({
@@ -286,7 +318,7 @@ describe('CLI', () => {
       ).resolves.toMatchObject({
         _tag: 'Left',
         left: {
-          message: 'Run experiment validation',
+          message: 'Empty experiment id',
           details: ['Invalid value "" supplied to : NonEmptyString'],
         },
       });

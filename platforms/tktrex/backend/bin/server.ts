@@ -164,9 +164,13 @@ app.get(
 );
 
 /* experiments API: at the moment not implemented for tiktok, only copied by yttrex */
+
 app.get(
   '/api/v2/guardoni/list/:directiveType/:key?',
   async (req, res) => await iowrapper('getAllExperiments', req, res)
+);
+app.get('/api/v3/directives/public', async (req, res) =>
+  iowrapper('getPublicDirectives', req, res)
 );
 app.post(
   '/api/v3/directives/:directiveType',

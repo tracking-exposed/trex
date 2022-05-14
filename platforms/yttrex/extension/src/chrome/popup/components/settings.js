@@ -22,7 +22,11 @@ class Settings extends React.Component {
   constructor(props) {
     console.log('Props in Settings constructor', props);
     super(props);
-    this.state = { active: props.active, ux: props.ux, researchTag: props.researchTag };
+    this.state = {
+      active: props.active,
+      ux: props.ux,
+      researchTag: props.researchTag,
+    };
   }
 
   render() {
@@ -41,7 +45,7 @@ class Settings extends React.Component {
     function saveUpdate(payload) {
       bo.runtime.sendMessage(
         {
-          type: 'configUpdate',
+          type: 'ConfigUpdate',
           payload,
         },
         (status) => {

@@ -36,5 +36,10 @@ module.exports = {
   globalSetup: '<rootDir>/global-setup.js',
   globalTeardown: '<rootDir>/global-teardown.js',
   coverageProvider: 'v8',
-  collectCoverageFrom: ['<rootDir>/src/**'],
+  collectCoverageFrom: ['<rootDir>/src/**/*'],
+  coveragePathIgnorePatterns: [
+    'node_modules',
+    'build',
+    '<rootDir>/src/guardoni/tx-automate',
+  ],
 };
