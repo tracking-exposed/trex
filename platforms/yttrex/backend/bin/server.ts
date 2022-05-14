@@ -38,6 +38,7 @@ const start = async (): Promise<void> => {
     d(` Listening on http://${nconf.get('interface')}:${nconf.get('port')}`);
   });
 
+  // eslint-disable-next-line @typescript-eslint/no-misused-promises
   const initialSanityChecks: () => void = async () => {
     /* security checks = is the password set and is not the default? (more checks might come) */
     security.checkKeyIsSet();

@@ -8,7 +8,7 @@ import { ComparisonDirective } from '@shared/models/Directive';
 import { ipcRenderer } from 'electron';
 import * as React from 'react';
 import { GuardoniConfig } from '../../guardoni/types';
-import { CREATE_EXPERIMENT_EVENT, PICK_CSV_FILE_EVENT } from '../models/events';
+import { EVENTS } from '../models/events';
 
 interface FromCSVFileTabProps {
   config: GuardoniConfig;
@@ -27,15 +27,15 @@ export const FromCSVFileTab: React.FC<FromCSVFileTabProps> = ({
   const [csvFile, setCSVFile] = React.useState<CSVFile | undefined>(undefined);
 
   const handleCSVPick = React.useCallback(() => {
-    void ipcRenderer.send(PICK_CSV_FILE_EVENT.value);
+    void ipcRenderer.send(EVENTS.PICK_CSV_FILE_EVENT.value);
   }, []);
 
   const handleRunExperiment = React.useCallback(() => {
-    ipcRenderer.send(CREATE_EXPERIMENT_EVENT.value, config, csvFile?.parsed);
+    ipcRenderer.send(EVENTS.CREATE_EXPERIMENT_EVENT.value, config, csvFile?.parsed);
   }, [config, csvFile?.parsed]);
 
   React.useEffect(() => {
-    ipcRenderer.on(PICK_CSV_FILE_EVENT.value, (event, output: CSVFile) => {
+    ipcRenderer.on(EVENTS.PICK_CSV_FILE_EVENT.value, (event, output: CSVFile) => {
       setCSVFile(output);
     });
 
@@ -46,11 +46,11 @@ export const FromCSVFileTab: React.FC<FromCSVFileTabProps> = ({
       onSubmit(args[0]);
     };
 
-    ipcRenderer.on(CREATE_EXPERIMENT_EVENT.value, createExperimentHandler);
+    ipcRenderer.on(EVENTS.CREATE_EXPERIMENT_EVENT.value, createExperimentHandler);
 
     return () => {
       ipcRenderer.removeListener(
-        CREATE_EXPERIMENT_EVENT.value,
+        EVENTS.CREATE_EXPERIMENT_EVENT.value,
         createExperimentHandler
       );
     };

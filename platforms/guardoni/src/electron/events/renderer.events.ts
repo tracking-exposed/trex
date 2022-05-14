@@ -1,33 +1,42 @@
 import { AppError, toAppError } from '@shared/errors/AppError';
 import { Logger } from '@shared/logger';
 import { ComparisonDirective } from '@shared/models/Directive';
-import { APIClient } from '@shared/providers/api.provider';
 import { AppEnv } from 'AppEnv';
-import { dialog, ipcMain } from 'electron';
+import { BrowserView, dialog, ipcMain, shell } from 'electron';
 import { pipe } from 'fp-ts/lib/function';
 import * as TE from 'fp-ts/lib/TaskEither';
 import { NonEmptyString } from 'io-ts-types';
 import * as puppeteer from 'puppeteer-core';
 import * as pie from 'puppeteer-in-electron';
-import { GetGuardoni, readCSVAndParse } from '../../guardoni/guardoni';
-import { GuardoniConfig, GuardoniConfigRequired } from '../../guardoni/types';
-import { guardoniLogger } from '../../logger';
 import {
-  CREATE_EXPERIMENT_EVENT,
-  GET_GUARDONI_CONFIG_EVENT,
-  GET_PUBLIC_DIRECTIVES,
-  GLOBAL_ERROR_EVENT,
-  OPEN_GUARDONI_DIR,
-  PICK_CSV_FILE_EVENT,
-  RUN_GUARDONI_EVENT,
-} from '../models/events';
-import { createGuardoniWindow } from '../windows/GuardoniWindow';
+  getConfigPlatformKey,
+  getPlatformConfig,
+  setConfig,
+} from '../../guardoni/config';
+import { GetGuardoni, readCSVAndParse } from '../../guardoni/guardoni';
+import {
+  GuardoniConfig,
+  GuardoniPlatformConfig,
+  Platform,
+} from '../../guardoni/types';
+import { guardoniLogger } from '../../logger';
+import { EVENTS } from '../models/events';
+import store from '../store';
 import { getEventsLogger } from './event.logger';
+import * as path from 'path';
 
 const guardoniEventsLogger = guardoniLogger.extend('events');
 
 export interface Events {
-  register: () => void;
+  postMessageL: <T>(
+    name: string
+  ) => (te: TE.TaskEither<AppError, T>) => Promise<void>;
+  unregister: () => void;
+  register: (
+    basePath: string,
+    platform: Platform,
+    confOverride: Partial<GuardoniConfig>
+  ) => TE.TaskEither<Error, void>;
 }
 
 const pickCSVFile = (
@@ -53,11 +62,7 @@ const pickCSVFile = (
 };
 
 const GetEventListenerLifter =
-  (
-    mainWindow: Electron.BrowserWindow,
-    guardoniWindow: Electron.BrowserWindow,
-    logger: Omit<Logger, 'extend'>
-  ) =>
+  (mainWindow: Electron.BrowserWindow, logger: Omit<Logger, 'extend'>) =>
   <T>(name: string) =>
   (te: TE.TaskEither<AppError, T>): Promise<void> => {
     return pipe(
@@ -65,8 +70,10 @@ const GetEventListenerLifter =
       TE.fold(
         (e) => () => {
           logger.error('Error trigger for %s \n %O', name, e);
-          guardoniWindow.close();
-          mainWindow.webContents.postMessage(GLOBAL_ERROR_EVENT.value, e);
+          mainWindow.webContents.postMessage(
+            EVENTS.GLOBAL_ERROR_EVENT.value,
+            e
+          );
           return Promise.resolve();
         },
         (result) => () => {
@@ -79,187 +86,294 @@ const GetEventListenerLifter =
   };
 
 interface GetEventsContext {
-  app: Electron.App;
   env: AppEnv;
-  api: APIClient;
   mainWindow: Electron.BrowserWindow;
-  guardoniWindow: Electron.BrowserWindow;
-  guardoniBrowser: puppeteer.Browser;
-  guardoniConfig: GuardoniConfig;
+  browser: puppeteer.Browser;
 }
 
 export const GetEvents = ({
-  app,
-  api,
   mainWindow,
-  guardoniWindow,
-  guardoniBrowser,
-  guardoniConfig,
+  browser,
 }: GetEventsContext): Events => {
   const logger = getEventsLogger(mainWindow);
 
-  return {
-    register: () => {
-      const liftEventTask = GetEventListenerLifter(
-        mainWindow,
-        guardoniWindow,
-        logger
-      );
-      // pick csv file
-      ipcMain.on(PICK_CSV_FILE_EVENT.value, () => {
-        void pipe(
-          pickCSVFile(logger),
-          liftEventTask(PICK_CSV_FILE_EVENT.value)
-        );
-      });
+  // unregister all event handlers bound on 'register' invocation
+  const unregister = (): void => {
+    const allEvents = Object.keys(EVENTS);
+    logger.debug('Unregister all events %O', allEvents);
+    allEvents.forEach((k) => {
+      ipcMain.removeHandler(k);
+      ipcMain.removeAllListeners(k);
+    });
+  };
 
-      // get guardoni config
-      ipcMain.on(GET_GUARDONI_CONFIG_EVENT.value, (event, ...args) => {
-        logger.debug(
-          `Event %s with payload %O`,
-          GET_GUARDONI_CONFIG_EVENT.value,
-          args
-        );
+  const liftEventTask = GetEventListenerLifter(mainWindow, logger);
 
-        void pipe(
-          GetGuardoni({
-            config: guardoniConfig,
-            logger,
-            puppeteer,
-          }),
-          TE.map((g) => g.config),
-          liftEventTask(GET_GUARDONI_CONFIG_EVENT.value)
-        );
-      });
+  // register all events triggered by the UI to ipcMain
+  const register = (
+    basePath: string,
+    platform: Platform,
+    config: Partial<GuardoniConfig>
+  ): TE.TaskEither<Error, void> => {
+    unregister();
 
-      // create guardoni experiment
-      ipcMain.on(CREATE_EXPERIMENT_EVENT.value, (event, ...args) => {
-        guardoniEventsLogger.debug('Create experiment with payload %O', args);
+    logger.info('Register events on ipcMain');
 
-        const [config, records] = args;
+    return pipe(
+      GetGuardoni({
+        basePath,
+        logger,
+        puppeteer,
+      }).launch(config, platform),
+      TE.chain((guardoni) => {
+        logger.info('Started guardoni %O', guardoni.config);
 
-        void pipe(
-          GetGuardoni({
-            config: {
-              ...guardoniConfig,
-              ...config,
-            },
-            logger,
-            puppeteer,
-          }),
-          TE.chain((g) => g.registerExperiment(records, 'comparison')),
-          TE.map((e) => {
-            logger.info(e.message, e.values);
-
-            return e.values[0].experimentId;
-          }),
-          liftEventTask(CREATE_EXPERIMENT_EVENT.value)
-        );
-      });
-
-      ipcMain.on(
-        RUN_GUARDONI_EVENT.value,
-        (
-          event,
-          config: GuardoniConfigRequired,
-          experimentId: NonEmptyString
-        ) => {
-          // eslint-disable-next-line no-console
+        const initGuardoni = async (
+          basePath: string,
+          config: GuardoniConfig,
+          platform: Platform
+        ): Promise<void> => {
           guardoniEventsLogger.info(
-            'Running experiment %s with config %O',
-            experimentId,
-            config
+            'Init guardoni with config %O for platform %s',
+            config,
+            platform
+          );
+
+          return pipe(
+            setConfig(guardoni.config.basePath, config),
+            TE.chain((config) =>
+              GetGuardoni({
+                basePath,
+                logger,
+                puppeteer,
+              }).launch(config, platform)
+            )
+          )().then((result) => {
+            if (result._tag === 'Right') {
+              guardoni = result.right;
+              return pipe(
+                TE.right({
+                  config: guardoni.config,
+                  platform: guardoni.platform,
+                }),
+                liftEventTask(EVENTS.GET_GUARDONI_CONFIG_EVENT.value)
+              );
+            } else {
+              logger.error("Can't start guardoni %O", result.left);
+              return pipe(
+                TE.right(result.left),
+                liftEventTask(EVENTS.GUARDONI_ERROR_EVENT.value)
+              );
+            }
+          });
+        };
+
+        // pick csv file
+        ipcMain.on(EVENTS.PICK_CSV_FILE_EVENT.value, () => {
+          void pipe(
+            pickCSVFile(logger),
+            liftEventTask(EVENTS.PICK_CSV_FILE_EVENT.value)
+          );
+        });
+
+        // get guardoni config
+        ipcMain.on(EVENTS.GET_GUARDONI_CONFIG_EVENT.value, (event, ...args) => {
+          logger.debug(
+            `Event %s with payload %O`,
+            EVENTS.GET_GUARDONI_CONFIG_EVENT.value,
+            args
           );
 
           void pipe(
+            TE.right({ config: guardoni.config, platform: guardoni.platform }),
+            liftEventTask(EVENTS.GET_GUARDONI_CONFIG_EVENT.value)
+          );
+        });
+        // set guardoni config
+        ipcMain.on(EVENTS.SET_GUARDONI_CONFIG_EVENT.value, (event, ...args) => {
+          const [config] = args;
+          logger.debug(`Update guardoni config %O`, config);
+
+          store.set('basePath', config.basePath);
+
+          void TE.tryCatch(
+            () => initGuardoni(basePath, config, platform),
+            toAppError
+          )();
+        });
+
+        // create guardoni experiment
+        ipcMain.on(EVENTS.CREATE_EXPERIMENT_EVENT.value, (event, ...args) => {
+          guardoniEventsLogger.debug('Create experiment with payload %O', args);
+
+          const [configOverride, records] = args;
+
+          void pipe(
             GetGuardoni({
-              config: {
-                ...guardoniConfig,
-                ...config,
-              },
+              basePath,
               logger,
               puppeteer,
+            }).run(
+              {
+                ...config,
+                ...configOverride,
+              },
+              configOverride.platform.name
+            ),
+            TE.chain((g) => g.registerExperiment(records, 'comparison')),
+            TE.map((e) => {
+              logger.info(e.message, e.values);
+
+              return e.values[0].experimentId;
             }),
-            TE.chain((g) =>
-              pipe(
-                TE.tryCatch(async () => {
-                  // guardoniWindow.on('close', () => {
-                  //   const closeError = new Error(
-                  //     'Guardoni window closed before execution finished'
-                  //   );
-                  //   throw closeError;
-                  // });
+            liftEventTask(EVENTS.CREATE_EXPERIMENT_EVENT.value)
+          );
+        });
 
-                  // recreate guardoni window and browser if window has been destroyed
-                  if (guardoniWindow.isDestroyed()) {
-                    logger.debug('Guardoni window destroyed, recreating it...');
-                    const newGuardoniApp = await pipe(
-                      createGuardoniWindow(app, mainWindow),
-                      TE.fold(
-                        (e) => () => Promise.reject(e),
-                        (result) => () => Promise.resolve(result)
-                      )
-                    )();
+        ipcMain.on(
+          EVENTS.RUN_GUARDONI_EVENT.value,
+          (
+            event,
+            configOverride: GuardoniPlatformConfig,
+            experimentId: NonEmptyString
+          ) => {
+            // eslint-disable-next-line no-console
+            guardoniEventsLogger.info(
+              'Running experiment %s with config %O',
+              experimentId,
+              config
+            );
 
-                    guardoniWindow = newGuardoniApp.window;
-                    guardoniBrowser = newGuardoniApp.browser;
-                  }
+            const view = mainWindow.getBrowserView() as BrowserView;
 
-                  const extension =
-                    await guardoniWindow.webContents.session.loadExtension(
-                      config.extensionDir
+            // we may need to update the guardoni config right before the execution
+            // guardoni.config = configOverride;
+
+            void pipe(
+              TE.right(guardoni),
+              TE.chain((g) =>
+                pipe(
+                  TE.tryCatch(async () => {
+                    // todo:
+                    // patch the extension manifest permissions
+                    // to allow the custom backend before loading the extension
+
+                    const extension =
+                      await view.webContents.session.loadExtension(
+                        g.platform.extensionDir
+                      );
+
+                    logger.debug(
+                      'Extension loaded %O from %s',
+                      extension,
+                      g.platform.extensionDir
                     );
 
-                  logger.debug('Extension loaded %O', extension);
-                  // logger.debug('Guardoni browser %O', guardoniBrowser);
-                  // logger.debug('Guardoni window %O', guardoniWindow);
+                    return pie.getPage(browser, view, true);
+                  }, toAppError),
+                  TE.chain((page) => {
+                    return g.runExperimentForPage(
+                      page,
+                      experimentId,
+                      (progress) => {
+                        logger.info(progress.message, ...progress.details);
+                      }
+                    );
+                  }),
+                  TE.map((output) => {
+                    mainWindow.removeBrowserView(view);
+                    return output;
+                  })
+                )
+              ),
+              liftEventTask(EVENTS.RUN_GUARDONI_EVENT.value)
+            );
+          }
+        );
 
-                  await guardoniWindow.loadURL('https://tracking.exposed');
+        // list experiments
+        ipcMain.on(EVENTS.GET_PUBLIC_DIRECTIVES.value, (event) => {
+          logger.debug(EVENTS.GET_PUBLIC_DIRECTIVES.value);
+          if (!event.sender.isDestroyed()) {
+            void pipe(
+              guardoni.API.v3.Public.GetPublicDirectives(),
+              liftEventTask(EVENTS.GET_PUBLIC_DIRECTIVES.value)
+            );
+          }
+        });
 
-                  return pie.getPage(guardoniBrowser, guardoniWindow, true);
-                }, toAppError),
-                TE.chain((page) => {
-                  guardoniWindow.show();
+        // get experiment
+        ipcMain.on(EVENTS.GET_PUBLIC_DIRECTIVE.value, (event, experimentId) => {
+          logger.debug(EVENTS.GET_PUBLIC_DIRECTIVE.value);
+          if (!event.sender.isDestroyed()) {
+            void pipe(
+              guardoni.API.v3.Public.GetPublicDirectives(),
+              TE.map((directives) =>
+                directives.find((d) => d.experimentId === experimentId)
+              ),
+              liftEventTask(EVENTS.GET_PUBLIC_DIRECTIVE.value)
+            );
+          }
+        });
 
-                  return g.runExperimentForPage(
-                    page,
-                    experimentId,
-                    (progress) => {
-                      logger.info(progress.message, ...progress.details);
-                    }
-                  );
-                }),
-                TE.map(() => {
-                  guardoniWindow.close();
-                  parent.focus();
-                })
-              )
+        // open guardoni dir
+        ipcMain.on(EVENTS.OPEN_GUARDONI_DIR.value, (event, config: string) => {
+          guardoniEventsLogger.debug(EVENTS.OPEN_GUARDONI_DIR.value, config);
+          void pipe(
+            TE.tryCatch(
+              () =>
+                Promise.resolve(
+                  shell.showItemInFolder(path.join(config, 'guardoni.json'))
+                ),
+              toAppError
             ),
-            liftEventTask(RUN_GUARDONI_EVENT.value)
+            liftEventTask(EVENTS.OPEN_GUARDONI_DIR.value)
           );
-        }
-      );
+        });
 
-      ipcMain.on(GET_PUBLIC_DIRECTIVES.value, () => {
-        void pipe(
-          api.v3.Public.GetPublicDirectives(),
-          liftEventTask(GET_PUBLIC_DIRECTIVES.value)
-        );
-      });
+        /**
+         * When the platform changes the guardoni instance needs to be
+         * relaunched with new configuration
+         */
+        ipcMain.on(EVENTS.CHANGE_PLATFORM_EVENT.value, (event, platform) => {
+          guardoniEventsLogger.info(
+            EVENTS.CHANGE_PLATFORM_EVENT.value,
+            platform
+          );
 
-      ipcMain.on(OPEN_GUARDONI_DIR.value, (event, config: string) => {
-        void pipe(
-          TE.tryCatch(
-            () =>
-              dialog.showOpenDialog({
-                properties: ['openDirectory'],
-                defaultPath: config,
-              }),
-            toAppError
-          ),
-          liftEventTask(OPEN_GUARDONI_DIR.value)
+          guardoniEventsLogger.info('Change platform event %O', platform);
+          // clear config in renderer
+
+          // update platform in store
+          store.set('platform', platform);
+          // call register with new params
+          const platformKey = getConfigPlatformKey(platform);
+          const platformConfig = getPlatformConfig(platform, guardoni.config);
+
+          const c = {
+            ...guardoni.config,
+            [platformKey]: {
+              ...platformConfig,
+            },
+          };
+
+          void initGuardoni(basePath, c, platform);
+        });
+
+        return TE.tryCatch(
+          () =>
+            liftEventTask(EVENTS.GET_GUARDONI_CONFIG_EVENT.value)(
+              TE.right({ config: guardoni.config, platform: guardoni.platform })
+            ),
+          toAppError
         );
-      });
-    },
+      })
+    );
+  };
+
+  return {
+    postMessageL: liftEventTask,
+    register,
+    unregister,
   };
 };

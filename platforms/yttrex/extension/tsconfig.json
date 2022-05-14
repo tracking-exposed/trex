@@ -1,42 +1,42 @@
 {
   "extends": "../../../tsconfig.json",
   "compilerOptions": {
-    "module": "esnext",
-    "target": "es5",
-    "jsx": "react",
-    "noEmit": true,
     "allowJs": true,
-    "strict": true,
-    "esModuleInterop": true,
-    "noUnusedLocals": true,
-    "resolveJsonModule": true,
-    "forceConsistentCasingInFileNames": true,
-    "strictNullChecks": true,
-    "skipDefaultLibCheck": true,
-    "skipLibCheck": true,
-    "lib": ["dom", "ESNext"],
-    "typeRoots": [
-      "../node_modules/@types",
-      "../shared/node_modules/@types",
-      "./node_modules/@types",
-      "./typings"
-    ],
     "baseUrl": "./src",
-    "allowSyntheticDefaultImports": true,
-    "noFallthroughCasesInSwitch": true,
-    "moduleResolution": "Node",
-    "isolatedModules": true,
+    "outDir": "./build/ts",
+    "esModuleInterop": true,
+    "jsx": "react",
+    "module": "esnext",
+    "moduleResolution": "node",
+    "noEmit": false,
+    "noImplicitAny": true,
+    "resolveJsonModule": true,
+    "strict": true,
+    "strictNullChecks": true,
+    "skipLibCheck": true,
+    "target": "es2015",
     "paths": {
-      "@shared/*": ["../../../../packages/shared/src/*"]
+      "@shared/*": ["../../../../packages/shared/src/*"],
+      "@yttrex/shared/*": ["../../shared/src/*"]
     }
   },
   "references": [
     {
+      "path": "../shared"
+    },
+    {
       "path": "../../../packages/shared"
     }
   ],
-  "include": ["./src", "./typings", "./webpack.config.ts"],
-  "exclude": ["./jest.config.js", "./webpack.config.ts"],
+  "include": ["./"],
+  "exclude": [
+    "./jest.config.js",
+    "./jest.setup.ts",
+    "./globalSetup.ts",
+    "./globalTeardown.ts",
+    "./__tests__/",
+    "./webpack.config.ts"
+  ],
   "ts-node": {
     "compilerOptions": {
       "module": "CommonJS"

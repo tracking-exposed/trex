@@ -13,6 +13,8 @@ import { TsconfigPathsPlugin } from 'tsconfig-paths-webpack-plugin';
 import webpack from 'webpack';
 import { BundleAnalyzerPlugin } from 'webpack-bundle-analyzer';
 import { trexLogger } from '../logger';
+import MiniCssExtractPlugin from 'mini-css-extract-plugin';
+import format from 'date-fns/format';
 
 const webpackLogger = trexLogger.extend('webpack');
 
@@ -68,7 +70,7 @@ const getConfig = <E extends t.Props>(
     Object.keys(opts.entry).join(', ')
   );
 
-  dotenv.config({ path: DOTENV_CONFIG_PATH });
+  dotenv.config({ path: DOTENV_CONFIG_PATH, override: true });
 
   D.enable(process.env.DEBUG ?? '');
 
@@ -86,7 +88,7 @@ const getConfig = <E extends t.Props>(
     (validation) => {
       if (validation._tag === 'Left') {
         // eslint-disable-next-line
-        console.error(PathReporter.report(validation).join('\n'));
+        console.log(PathReporter.report(validation).join('\n'));
         // eslint-disable-next-line
         console.log('\n');
         throw new Error('process.env decoding failed.');
@@ -97,19 +99,19 @@ const getConfig = <E extends t.Props>(
 
   webpackLogger.debug('Build ENV %O', buildENV);
 
+  const buildDate = new Date();
   const appEnv = pipe(
     {
       ...process.env,
       NODE_ENV: mode,
-      BUILD_DATE: new Date().toISOString(),
+      BUILD_DATE: buildDate.toISOString(),
+      BUILD: `On ${format(buildDate, 'PPPPpppp')}`,
     },
     opts.env.decode,
     (validation) => {
       if (validation._tag === 'Left') {
-        webpackLogger.error(
-          `Validation error for build end: %O`,
-          PathReporter.report(validation).join('\n')
-        );
+        // eslint-disable-next-line
+        console.error(PathReporter.report(validation).join('\n'));
         throw new Error(`${opts.env.name} decoding failed.`);
       }
       return validation.right;
@@ -122,7 +124,7 @@ const getConfig = <E extends t.Props>(
     appEnv as any,
     R.reduceWithIndex(S.Ord)(
       {
-        'process.env.NODE_ENV': JSON.stringify(mode),
+        NODE_ENV: JSON.stringify(mode),
       },
       (key, acc, v) => {
         // this is cause DefinePlugin to complain when we override
@@ -130,7 +132,7 @@ const getConfig = <E extends t.Props>(
         // (process.env as any)[key] = v;
         return {
           ...acc,
-          [`process.env.${key}`]: JSON.stringify(v),
+          [key]: JSON.stringify(v),
         };
       }
     )
@@ -148,7 +150,10 @@ const getConfig = <E extends t.Props>(
   ];
 
   if (opts.target === 'web' || opts.target === 'electron-renderer') {
-    plugins.push(new webpack.DefinePlugin(stringifiedAppEnv as any));
+    plugins.push(
+      new webpack.DefinePlugin({ 'process.env': stringifiedAppEnv }),
+      new MiniCssExtractPlugin()
+    );
   }
 
   if (opts.hot && opts.target === 'web' && mode === 'development') {
@@ -201,17 +206,35 @@ const getConfig = <E extends t.Props>(
           ],
         },
         {
+          test: /\.(png)$/,
+          use: [{ loader: 'file-loader' }],
+        },
+        {
           test: /\.(ttf|svg)$/,
           type: 'asset/inline',
         },
         {
           test: /\.css$/,
           use: [
-            {
-              loader: 'style-loader',
-            },
+            mode === 'production' && opts.target !== 'electron-renderer'
+              ? MiniCssExtractPlugin.loader
+              : {
+                  loader: 'style-loader',
+                },
+
             {
               loader: 'css-loader',
+            },
+            // { loader: 'postcss-loader' },
+            {
+              loader: 'sass-loader',
+              options: {
+                sassOptions: {
+                  precision: '8', // If you use bootstrap, must be >= 8. See https://github.com/twbs/bootstrap-sass#sass-number-precision
+                  outputStyle: 'expanded',
+                  sourceMap: true,
+                },
+              },
             },
           ],
         },
@@ -219,7 +242,7 @@ const getConfig = <E extends t.Props>(
     },
 
     resolve: {
-      extensions: ['.ts', '.tsx', '.js', '.jsx'],
+      extensions: ['.js', '.jsx', '.ts', '.tsx'],
       plugins: [
         new TsconfigPathsPlugin({
           // configFile: tsConfigFile,

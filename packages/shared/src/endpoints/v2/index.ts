@@ -5,12 +5,22 @@ import {
   VideoContributionEvent,
 } from '../../models/ContributionEvent';
 import { GetExperimentListOutput } from '../../models/Experiment';
+import { HandshakeBody, HandshakeResponse } from '../../models/HandshakeBody';
 import { PublicKeyParams } from '../../models/http/params/PublicKey';
 import { SearchQuery } from '../../models/http/SearchQuery';
 import { TikTokSearch } from '../../models/http/tiktok/TikTokSearch';
 import { Metadata } from '../../models/Metadata';
 import { ChannelADVStats } from '../../models/stats/ChannelADV';
 import { DocumentedEndpoint } from '../utils';
+
+export const Handshake = Endpoint({
+  Method: 'POST',
+  getPath: () => `/v2/handshake`,
+  Input: {
+    Body: HandshakeBody,
+  },
+  Output: HandshakeResponse,
+});
 
 const CompareVideo = Endpoint({
   Method: 'GET',
@@ -95,6 +105,24 @@ const AddEvents = Endpoint({
       'X-YTtrex-PublicKey': t.string,
       'X-YTtrex-Signature': t.string,
     }),
+    Body: t.array(
+      t.union([VideoContributionEvent, ADVContributionEvent]),
+      'AddEventsBody'
+    ),
+  },
+  Output: t.any,
+});
+
+const AddAPIEvents = Endpoint({
+  Method: 'POST',
+  getPath: () => `/v2/apiEvents`,
+  Input: {
+    Headers: t.type({
+      'X-TrEx-Version': t.string,
+      'X-TrEx-Build': t.string,
+      'X-TrEx-PublicKey': t.string,
+      'X-TrEx-Signature': t.string,
+    }),
     Body: t.array(t.union([VideoContributionEvent, ADVContributionEvent])),
   },
   Output: t.any,
@@ -163,6 +191,7 @@ const DeletePersonalContributionByPublicKey = Endpoint({
 
 export default {
   Public: {
+    Handshake,
     CompareVideo,
     VideoRelated,
     VideoAuthor,
@@ -170,6 +199,7 @@ export default {
     SearchesAsCSV,
     TikTokSearches,
     AddEvents,
+    AddAPIEvents,
     GetChannelADVStats,
     GetExperimentList,
     GetExperimentById,

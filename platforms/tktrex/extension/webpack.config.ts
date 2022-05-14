@@ -13,9 +13,9 @@ const DEVELOPMENT = !PRODUCTION;
 
 const PATHS = {
   ENTRY: {
-    app: path.resolve(__dirname, 'src/app.ts'),
+    app: path.resolve(__dirname, 'src/app/index.ts'),
     popup: path.resolve(__dirname, 'src/popup.ts'),
-    background: path.resolve(__dirname, 'src/background.ts'),
+    background: path.resolve(__dirname, 'src/background/index.ts'),
     injected: path.resolve(__dirname, 'src/injected.ts'),
     interceptor: path.resolve(__dirname, 'src/interceptor/index.ts'),
   },
@@ -31,14 +31,14 @@ const ENV_DEP_SERVER = DEVELOPMENT
 const ENV_DEP_WEB = DEVELOPMENT
   ? 'http://' + DEV_SERVER + ':1313'
   : 'https://tiktok.tracking.exposed';
-const LAST_VERSION = 2;
-const BUILDISODATE = new Date().toISOString();
+// const LAST_VERSION = 2;
+const BUILD_DATE = new Date().toISOString();
 
-process.env.API_ROOT = `${ENV_DEP_SERVER}/api/v${LAST_VERSION}`;
+process.env.API_ROOT = `${ENV_DEP_SERVER}/api`;
 process.env.WEB_ROOT = ENV_DEP_WEB;
 process.env.VERSION = `${packageJSON.version}${DEVELOPMENT ? '-dev' : ''}`;
 process.env.BUILD = `On the ${moment().format('DD of MMMM at HH:mm')}.`;
-process.env.BUILDISODATE = BUILDISODATE;
+process.env.BUILD_DATE = BUILD_DATE;
 process.env.FLUSH_INTERVAL = DEVELOPMENT ? '4500' : '9000';
 process.env.DEVELOPMENT = DEVELOPMENT ? 'development' : 'production';
 
@@ -51,6 +51,7 @@ const { buildENV, ...config } = getExtensionConfig('tktrex', {
   cwd: __dirname,
   env: AppEnv,
   outputDir,
+  distDir: PATHS.DIST,
   manifestVersion,
   transformManifest: (m) => {
     if (NODE_ENV === 'development') {

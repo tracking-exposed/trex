@@ -828,7 +828,7 @@ async function registerDirective(links, directiveType) {
   });
 
   if (exist && exist.experimentId) {
-    debug('Directive already found in the DB!');
+    debug('Directive (experimentId %s) already found in the DB!', experimentId);
     await mongoc.close();
     return {
       status: 'exist',
@@ -846,7 +846,7 @@ async function registerDirective(links, directiveType) {
   });
   await mongoc.close();
   debug('Registered directive %s|%s', directiveType, experimentId);
-  return { status: 'created', experimentId };
+  return { status: 'created', experimentId, since: new Date() };
 }
 
 async function pickDirective(experimentId) {

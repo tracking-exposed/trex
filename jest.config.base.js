@@ -21,7 +21,7 @@ module.exports = {
     '^@taboule/(.*)$': '<rootDir>/../packages/taboule/src/$1',
   },
   testMatch: [
-    '**/__tests__/**/*.[jt]s?(x)',
+    '**/__tests__/**/?(*.)+(spec|test|e2e).[tj]s?(x)',
     '**/?(*.)+(spec|test|e2e).[tj]s?(x)',
   ],
   moduleDirectories: ['node_modules'],
@@ -35,5 +35,5 @@ module.exports = {
       statements: 60,
     },
   },
-  coveragePathIgnorePatterns: ['node_modules'],
+  coveragePathIgnorePatterns: ['node_modules', 'build'],
 };

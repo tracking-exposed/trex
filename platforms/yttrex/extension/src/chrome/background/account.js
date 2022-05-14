@@ -1,19 +1,19 @@
 /* eslint-disable */
 
-import nacl from 'tweetnacl';
+import { bo } from '@shared/extension/utils/browser.utils';
+import { isEmpty } from '@shared/extension/utils/common.utils';
 import bs58 from 'bs58';
 import _ from 'lodash';
-
+import nacl from 'tweetnacl';
+import config from '../../config';
 import api from '../api';
-import { isEmpty } from '../../utils';
 import db from '../db';
 
-const bo = chrome || browser;
-const FIXED_USER_NAME = 'local';
+export const FIXED_USER_NAME = 'local';
 
 // defaults of the settings stored in 'config' and controlled by popup
 const DEFAULT_SETTINGS = {
-  active: process.env.DATA_CONTRIBUTION_ENABLED,
+  active: config.DATA_CONTRIBUTION_ENABLED,
   ux: false,
 };
 
@@ -68,7 +68,7 @@ function userLookup({ userId }, sendResponse) {
 
 function getExperiment(payload, sendResponse) {
   /* remoteLookup might be call as first function after the extension has been
-   * installed, and the keys not be yet instanciated */
+   * installed, and the keys not be yet instantiated */
 
   return new Promise((resolve, reject) => {
     const xhttp = new XMLHttpRequest();
