@@ -1,26 +1,31 @@
 import React from 'react';
-import config from '../../../config';
-
+import config from '@shared/extension/config';
 import { Card } from '@material-ui/core';
 import CardActions from '@material-ui/core/CardActions';
 import Button from '@material-ui/core/Button';
 
 const imgstyle = {
-  width: '100%',
+  width: 'auto',
+  height: 80,
 };
 const lessStandardHref = {
   color: 'black',
   textDecoration: 'none',
 };
 
-const InfoBox = () => {
+const InfoBox = ({ version, timeago }) => {
   const about = config.WEB_ROOT + '/about';
   const privacy = config.WEB_ROOT + '/privacy';
   const guardonihref = config.WEB_ROOT + '/guardoni';
 
   return (
     <Card style={{ textAlign: 'center' }}>
-      <a target="_blank" href={config.WEB_ROOT} style={lessStandardHref}>
+      <a
+        target="_blank"
+        href={config.WEB_ROOT}
+        style={lessStandardHref}
+        rel="noreferrer"
+      >
         <img style={imgstyle} src="/yttrex-logo.png" />
       </a>
       <CardActions>
@@ -55,6 +60,9 @@ const InfoBox = () => {
           Guardoni
         </Button>
       </CardActions>
+      <small>
+        version {version}, released {timeago}
+      </small>
     </Card>
   );
 };

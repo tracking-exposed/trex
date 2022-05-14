@@ -396,7 +396,7 @@ export const GetDataDonationProvider = (
       if (sendableNode === null || !sizeCheck(sendableNode.outerHTML)) return;
 
       addContribution({
-        type: lastVideoURL,
+        type: 'video',
         element: sendableNode.outerHTML,
         size: sendableNode.outerHTML.length,
         href: window.location.href,

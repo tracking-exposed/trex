@@ -7,5 +7,7 @@ module.exports = {
     '<rootDir>/platforms/guardoni',
     '<rootDir>/platforms/ycai/studio',
     '<rootDir>/platforms/yttrex/backend',
+    '<rootDir>/platforms/yttrex/extension',
+    '<rootDir>/platforms/tktrex/extension',
   ],
 };

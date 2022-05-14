@@ -1,5 +1,6 @@
 /* eslint-disable */
 
+import { ytLogger } from 'app/app';
 import _ from 'lodash';
 
 import longlabel from './longlabel';
@@ -60,6 +61,9 @@ function extendLabels(matches) {
 
 function mineExtraMetadata(selectorName, matches) {
 
+    ytLogger("Ignored function because %s hasn't the right content", selectorName);
+    return null;
+
     let extra = [];
     if(selectorName == 'label') {
         console.log("selector Label, mineExtraMetadata calls extendLabel over", _.size(matches));
@@ -88,12 +92,12 @@ function mineExtraMetadata(selectorName, matches) {
                 type: 'ad',
                 site: _.last(matches[0].textContent.split('\n')),
             });
-        } catch(e) { console.log(e.message, "ad")}
+        } catch(e) { console.error(e.message, "ad")}
     }
     else if(selectorName == "channel") {
+        console.log("This shouldn't exist anymore");
         if(_.size(_.compact(_.map(matches, 'textContent')).join('')) > 0) {
             console.log("channel", JSON.stringify(_.compact(_.map(matches, 'textContent'))));
-            debugger;
         }
     }
     else if(selectorName == "title") {
@@ -105,13 +109,16 @@ function mineExtraMetadata(selectorName, matches) {
         } catch(e) { }
     }
     else if(selectorName == "over") {
-        console.log("over", JSON.stringify(_.compact(_.map(matches, 'textContent'))));
+        ytLogger('selectorName: %s -> %s', selectorName,
+            JSON.stringify(_.compact(_.map(matches, 'textContent'))));
     }
     else {
-        console.log("This is ia weird problem", selectorName);
+        ytLogger('Not handled this selectorName: %s', selectorName);
+        return null;
     }
 
-    console.log(selectorName, extra, "extra metadata found:", _.size(extra), JSON.stringify(_.countBy(extra, 'type')));
+    if(extra.length)
+        ytLogger('selectorName %s produced , extra, "extra metadata found:', _.size(extra), JSON.stringify(_.countBy(extra, 'type')));
     return extra;
 }
 

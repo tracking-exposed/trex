@@ -10,27 +10,28 @@ import FormHelperText from '@material-ui/core/FormHelperText';
 import InfoBox from './InfoBox';
 import Settings from './settings';
 import GetCSV from './getCSV';
-
-import config from '../../../config';
-
-// bo is the browser object, in chrome is named 'chrome', in firefox is 'browser'
-const bo = chrome || browser;
+import { bo } from '@shared/extension/utils/browser.utils';
+import config from '@shared/extension/config';
 
 const styles = {
-  width: '400px',
+  width: '100%',
 };
 
 class Popup extends React.Component {
   constructor(props) {
     super(props);
     this.state = { status: 'fetching' };
+    // this is redundant
     try {
-      bo.runtime.sendMessage({ type: 'localLookup' }, (userSettings) => {
-        console.log('here got', userSettings);
-        if (userSettings && userSettings.publicKey)
-          this.setState({ status: 'done', data: userSettings });
-        else this.setState({ status: 'error', data: userSettings });
-      });
+      bo.runtime.sendMessage(
+        { type: 'LocalLookup', payload: { userId: 'local' } },
+        (userSettings) => {
+          console.log('here got', userSettings);
+          if (userSettings && userSettings.publicKey)
+            this.setState({ status: 'done', data: userSettings });
+          else this.setState({ status: 'error', data: userSettings });
+        }
+      );
     } catch (e) {
       console.log('catch error', e.message, runtime.lastError);
       this.state = { status: 'error', data: '' };
@@ -40,8 +41,7 @@ class Popup extends React.Component {
   render() {
     const version = config.VERSION;
     const timeago =
-      moment.duration(moment() - moment(config.BUILDISODATE)).humanize() +
-      ' ago';
+      moment.duration(moment() - moment(config.BUILD_DATE)).humanize() + ' ago';
 
     if (!this.state) return <div>Loading...</div>;
 
@@ -57,7 +57,11 @@ class Popup extends React.Component {
               Extension isn't initialized yet —{' '}
               <strong>
                 Access{' '}
-                <a href="https://www.youtube.com" target="_blank" rel="noreferrer">
+                <a
+                  href="https://www.youtube.com"
+                  target="_blank"
+                  rel="noreferrer"
+                >
                   yutube.com
                 </a>
                 .
@@ -72,16 +76,12 @@ class Popup extends React.Component {
     return (
       <div style={styles}>
         <Card>
-          <FormHelperText>ytTREX main switch</FormHelperText>
           <Settings {...this.state.data} />
           <FormHelperText>Access to your data</FormHelperText>
           <GetCSV publicKey={this.state.data.publicKey} />
           <FormHelperText>About</FormHelperText>
-          <InfoBox />
+          <InfoBox version={version} timeago={timeago} />
         </Card>
-        <small>
-          version {version}, released {timeago}
-        </small>
       </div>
     );
   }

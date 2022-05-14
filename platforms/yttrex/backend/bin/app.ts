@@ -268,7 +268,7 @@ export const makeApp = async (
     iowrapper('getAllExperiments')
   );
   apiRouter.get('/v3/directives/public', iowrapper('getPublicDirectives'));
-  apiRouter.post('/v3/directives/:directiveType', iowrapper('postDirective'));
+  apiRouter.post('/v3/directives/:ignored?', iowrapper('postDirective'));
   apiRouter.get('/v3/directives/:experimentId', iowrapper('fetchDirective'));
   apiRouter.post('/v2/handshake', iowrapper('experimentChannel3'));
   apiRouter.delete(
@@ -288,7 +288,7 @@ export const makeApp = async (
   router.use('/api/', apiRouter);
 
   router.get('*', async (req, res) => {
-    logger.debug('URL not handled: %s', req.url);
+    logger.debug('URL not handled: %s (%s)', req.url, req.method);
     res.status(404);
     res.send('URL not found');
   });

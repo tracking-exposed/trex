@@ -1,3 +1,17 @@
 {
-  "backend": "http://localhost:9000/api"
+  "profileName": "profile-test-99",
+  "headless": false,
+  "verbose": false,
+  "loadFor": 3000,
+  "yt": {
+    "name": "youtube",
+    "backend": "http://localhost:9000/api",
+    "extensionDir": "../yttrex/extension/build"
+  },
+  "tk": {
+    "name": "tiktok",
+    "backend": "http://localhost:14000/api",
+    "extensionDir": "../tktrex/extension/build"
+  },
+  "chromePath": "/usr/bin/google-chrome"
 }

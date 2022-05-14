@@ -10,19 +10,11 @@ import { AppError, toAppError } from '@shared/errors/AppError';
  */
 export const createGuardoniWindow = (
   app: Electron.App,
-  parentWindow: BrowserWindow
-): TE.TaskEither<
-  AppError,
-  { browser: puppeteer.Browser; window: BrowserWindow }
-> => {
+  window: BrowserWindow
+): TE.TaskEither<AppError, { browser: puppeteer.Browser }> => {
   return TE.tryCatch(async () => {
     const browser = await pie.connect(app, puppeteer);
 
-    const window = new BrowserWindow({
-      show: false,
-      parent: parentWindow,
-    });
-
-    return { browser, window };
+    return { browser };
   }, toAppError);
 };

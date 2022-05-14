@@ -5,6 +5,7 @@ import * as t from 'io-ts';
 
 interface GetExtensionConfigParams<E extends t.Props>
   extends Omit<GetConfigParams<E>, 'target' | 'hot' | 'outputDir' | 'entry'> {
+  distDir: string;
   target?: WebpackConfig['target'];
   entry?: Record<string, string>;
   outputDir?: string;
@@ -19,6 +20,7 @@ const getExtensionConfig = <E extends t.Props>(
   process.env.VERSION = c.manifestVersion;
 
   const outputDir = c.outputDir ?? path.resolve(c.cwd, 'build/extension');
+  const distDir = c.distDir ?? path.resolve(c.cwd, 'dist/extension');
 
   const { buildENV, ...config } = getConfig({
     target: 'web',
@@ -56,25 +58,23 @@ const getExtensionConfig = <E extends t.Props>(
     })
   );
 
-  if (config.mode === 'production') {
-    config.plugins.push(
-      new FileManagerPlugin({
-        events: {
-          onEnd: {
-            archive: [
-              {
-                source: outputDir,
-                destination: path.resolve(
-                  outputDir,
-                  `./${extensionName}-extension-${c.manifestVersion}.zip`
-                ),
-              },
-            ],
-          },
+  config.plugins.push(
+    new FileManagerPlugin({
+      events: {
+        onEnd: {
+          archive: [
+            {
+              source: outputDir,
+              destination: path.resolve(
+                config.mode === 'production' ? distDir : outputDir,
+                `./${extensionName}-extension-${c.manifestVersion}.zip`
+              ),
+            },
+          ],
         },
-      })
-    );
-  }
+      },
+    })
+  );
 
   return { buildENV, ...config };
 };

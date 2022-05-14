@@ -7,7 +7,7 @@ import {
 } from '@material-ui/core';
 import { ipcRenderer } from 'electron';
 import * as React from 'react';
-import { CREATE_EXPERIMENT_EVENT } from '../models/events';
+import { EVENTS } from '../models/events';
 import { GuardoniConfig } from '../../guardoni/types';
 import { ExperimentLink } from '@shared/models/Experiment';
 
@@ -39,7 +39,7 @@ export const FromURLsTab: React.FC<FromCSVFileTabProps> = ({
 
   const handleURLProcess = React.useCallback(() => {
     ipcRenderer.send(
-      CREATE_EXPERIMENT_EVENT.value,
+      EVENTS.CREATE_EXPERIMENT_EVENT.value,
       config,
       urls.map((u) => ({ ...u, videoURL: u.url }))
     );
@@ -54,12 +54,12 @@ export const FromURLsTab: React.FC<FromCSVFileTabProps> = ({
       onSubmit(args[0]);
     };
 
-    ipcRenderer.on(CREATE_EXPERIMENT_EVENT.value, createExperimentHandler);
+    ipcRenderer.on(EVENTS.CREATE_EXPERIMENT_EVENT.value, createExperimentHandler);
 
     return () => {
       // remove the listener when component is unmount
       ipcRenderer.removeListener(
-        CREATE_EXPERIMENT_EVENT.value,
+        EVENTS.CREATE_EXPERIMENT_EVENT.value,
         createExperimentHandler
       );
     };

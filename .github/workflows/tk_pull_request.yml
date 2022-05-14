@@ -18,6 +18,12 @@ jobs:
     strategy:
       matrix:
         node-version: [16.x]
+        mongodb-version: ['4.2']
+    services:
+      mongo-db:
+        image: mongo:4.2
+        ports:
+          - 27017:27017
 
     steps:
       - uses: actions/checkout@v2
@@ -41,6 +47,13 @@ jobs:
 
       - name: Build shared
         run: yarn shared build
+
+      - name: Test platform
+        run: |
+          yarn pm2 start platforms/tktrex/backend/ecosystem.config.js  --env test
+          # yarn tk:backend test --runInBand --ci
+          yarn test tktrex/extension --runInBand --ci
+          yarn pm2 stop all
 
       - name: Build
         run: |
