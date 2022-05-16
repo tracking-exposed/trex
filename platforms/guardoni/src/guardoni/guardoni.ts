@@ -433,7 +433,7 @@ export const GetGuardoni: GetGuardoni = ({
   verbose,
 }) => {
   const loggerSpaces = verbose
-    ? ['guardoni:info', 'guardoni:debug', 'guardoni:error', process.env.DEBUG]
+    ? ['guardoni*', '@trex*', process.env.DEBUG]
     : ['guardoni:info', 'guardoni:error', process.env.DEBUG];
 
   debug.enable(loggerSpaces.join(','));
