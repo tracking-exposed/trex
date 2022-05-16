@@ -47,6 +47,7 @@ describe('Parser: Video', () => {
     );
   });
 
+  jest.useRealTimers();
   jest.setTimeout(20 * 1000);
 
   const historyData = readHistoryResults('video', publicKey);
@@ -89,16 +90,7 @@ describe('Parser: Video', () => {
           // console.log('plain html', h.html);
           const sanitizedHTML = h.html.replace(/(\n|\t) +/g, '');
           // console.log('sanitized html', sanitizedHTML);
-          const sourceDOM = new JSDOM(sanitizedHTML, {
-            beforeParse: (w) => {
-              w.onload = (e) => {
-                console.log('load', e);
-              };
-              w.onerror = (e) => {
-                console.error('error', e);
-              };
-            },
-          });
+          const sourceDOM = new JSDOM(sanitizedHTML);
 
           // console.log('source dom text content', sourceDOM.window.document);
 
