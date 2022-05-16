@@ -25,31 +25,31 @@ describe('Parserv', () => {
     };
   });
 
-  afterEach(async () => {
-    await appTest.mongo3.deleteMany(
-      appTest.mongo,
-      appTest.config.get('schema').htmls,
-      {
-        publicKey: {
-          $eq: publicKey,
-        },
-      }
-    );
-    await appTest.mongo3.deleteMany(
-      appTest.mongo,
-      appTest.config.get('schema').metadata,
-      {
-        publicKey: {
-          $eq: publicKey,
-        },
-      }
-    );
-  });
-
   jest.useRealTimers();
 
   describe('Home', () => {
     jest.setTimeout(20 * 1000);
+
+    afterEach(async () => {
+      await appTest.mongo3.deleteMany(
+        appTest.mongo,
+        appTest.config.get('schema').htmls,
+        {
+          publicKey: {
+            $eq: publicKey,
+          },
+        }
+      );
+      await appTest.mongo3.deleteMany(
+        appTest.mongo,
+        appTest.config.get('schema').metadata,
+        {
+          publicKey: {
+            $eq: publicKey,
+          },
+        }
+      );
+    });
 
     const history = readHistoryResults('home', publicKey).filter(
       (v, i) => ![5, 9].includes(i)
