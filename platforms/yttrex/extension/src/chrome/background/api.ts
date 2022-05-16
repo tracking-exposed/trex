@@ -1,14 +1,14 @@
+import * as endpoints from '@shared/endpoints';
 import { SyncReq } from '@shared/extension/chrome/background/sync';
 import db from '@shared/extension/chrome/db';
 import config from '@shared/extension/config';
-import { decodeKey, decodeString } from '@shared/extension/utils/common.utils';
-import { GetAPI } from '@shared/providers/api.provider';
+import { MakeAPIClient } from '@shared/providers/api.provider';
+import { decodeFromBase58, decodeString } from '@shared/utils/decode.utils';
 import bs58 from 'bs58';
 import nacl from 'tweetnacl';
 import ytLog from '../../logger';
 
-
-export const getHeadersForDataDonation = async (req: SyncReq): Promise<any>  => {
+export const getHeadersForDataDonation = async (req: SyncReq): Promise<any> => {
   // ytLog.info('Request %O', req);
 
   const { payload } = req;
@@ -24,7 +24,7 @@ export const getHeadersForDataDonation = async (req: SyncReq): Promise<any>  => 
 
   const signature = nacl.sign.detached(
     decodeString(JSON.stringify(payload)),
-    decodeKey(keypair.secretKey)
+    decodeFromBase58(keypair.secretKey)
   );
 
   ytLog.info('Signature %s', signature);
@@ -39,11 +39,14 @@ export const getHeadersForDataDonation = async (req: SyncReq): Promise<any>  => 
   };
 
   return headers;
-}
+};
 
 // export an instance of the API client with proper endpoint
-export default GetAPI({
-  baseURL: config.API_ROOT,
-  getAuth: async (req) => req,
-  onUnauthorized: async (res) => res,
-});
+export default MakeAPIClient(
+  {
+    baseURL: config.API_ROOT,
+    getAuth: async (req) => req,
+    onUnauthorized: async (res) => res,
+  },
+  endpoints
+);

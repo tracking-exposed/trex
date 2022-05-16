@@ -1,7 +1,8 @@
 import { boot } from '@shared/extension/app';
 import { tiktokDomainRegExp } from '@tktrex/parser/constant';
-import { hub, registerTkHandlers } from '../handlers';
+import { registerTkHandlers } from './handlers';
 import { feedId, onLocationChange, tkHandlers, tkTrexActions } from './app';
+import tkHub from '../handlers/hub';
 
 // Boot the app script. This is the first function called.
 void boot({
@@ -11,9 +12,9 @@ void boot({
   },
   mapLocalConfig: (c, p) => ({ ...c, ...p }),
   hub: {
-    hub: hub,
-    onRegister: (hub) => {
-      registerTkHandlers(hub);
+    hub: tkHub,
+    onRegister: (hub, config) => {
+      registerTkHandlers(hub, config);
     },
   },
   observe: {

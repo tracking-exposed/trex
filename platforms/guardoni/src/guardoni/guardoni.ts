@@ -13,7 +13,7 @@ import {
   DirectiveKeysMap,
   DirectiveType,
 } from '@shared/models/Directive';
-import { APIClient, GetAPI } from '@shared/providers/api.provider';
+import { APIClient, MakeAPIClient } from '@shared/providers/api.provider';
 import { differenceInSeconds } from 'date-fns';
 import debug from 'debug';
 import { sequenceS } from 'fp-ts/lib/Apply';
@@ -56,6 +56,7 @@ import {
   ProgressDetails,
 } from './types';
 import { csvParseTE, getPackageVersion, liftFromIOE } from './utils';
+import * as Endpoints from '@shared/endpoints'
 
 export const runBrowser =
   (ctx: GuardoniContext) =>
@@ -323,11 +324,11 @@ const loadContext = (
     TE.chain((p) => readProfile({ logger })(getProfileJsonPath(p))),
     TE.map((profile) => ({
       puppeteer: p,
-      API: GetAPI({
+      API: MakeAPIClient({
         baseURL: platformConf.backend,
         getAuth: async (req) => req,
         onUnauthorized: async (res) => res,
-      }).API,
+      }, Endpoints ).API,
       config: {
         ...cnf,
         basePath,
@@ -382,7 +383,7 @@ const loadContext = (
 export interface Guardoni {
   config: GuardoniConfig;
   platform: PlatformConfig;
-  API: APIClient;
+  API: APIClient<typeof Endpoints>;
   // register an experiment from the given csv file
   registerExperimentFromCSV: (
     file: NonEmptyString,
