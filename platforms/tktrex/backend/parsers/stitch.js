@@ -2,8 +2,7 @@ const _ = require('lodash');
 const debug = require('debug')('parsers:stitch');
 
 function stitch(envelop, previous) {
-  /* only feedId on 'foryou' and 'following' have a description,
-     not really because also if you scroll on an user timeline */
+  /* 2.4.x only feed 'foryou' and 'following' are considered */
   const availin = ['foryou', 'following'];
 
   if (previous.nature && availin.indexOf(previous.nature.type) === -1) {

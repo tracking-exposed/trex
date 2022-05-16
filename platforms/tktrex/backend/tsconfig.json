@@ -15,12 +15,16 @@
     "skipLibCheck": true,
     "target": "es2015",
     "paths": {
-      "@shared/*": ["../../../packages/shared/src/*"]
+      "@shared/*": ["../../../packages/shared/src/*"],
+      "@tktrex/shared/*": ["../shared/src/*"]
     }
   },
   "references": [
     {
       "path": "../../../packages/shared"
+    },
+    {
+      "path": "../shared"
     }
   ],
   "ts-node": {

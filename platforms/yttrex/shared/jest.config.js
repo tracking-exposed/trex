@@ -30,7 +30,7 @@ module.exports = {
   testTimeout: 10000,
   setupFilesAfterEnv: ['<rootDir>/jest.setup.js'],
   coverageProvider: 'v8',
-  collectCoverageFrom: ['<rootDir>/*'],
+  collectCoverageFrom: ['<rootDir>/src/*'],
   coverageThreshold: {
     global: {
       branches: 30,

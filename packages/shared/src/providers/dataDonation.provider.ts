@@ -12,7 +12,7 @@ import {
 import { getTimeISO8601 } from '../utils/date.utils';
 import { trexLogger } from '../logger';
 import { BrowserProvider, MessagesAPI } from './browser.provider';
-import security from './bs58.provider';
+import bs58Provider from './bs58.provider';
 
 const ddLogger = trexLogger.extend('data-donation');
 
@@ -448,8 +448,7 @@ export const GetDataDonationProvider = (
       );
 
       void pipe(
-        security.makeSignature(state.content, keypair.secretKey),
-        TE.fromEither,
+        bs58Provider.makeSignature(state.content, keypair.secretKey),
         TE.chain((signature) =>
           ctx.browser.sendAPIMessage(Endpoints.v2.Public.AddEvents)({
             Headers: {

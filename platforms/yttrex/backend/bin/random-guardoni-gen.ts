@@ -1,5 +1,7 @@
 #!/usr/bin/env ts-node
 
+/* eslint-disable */
+
 import * as _ from 'lodash';
 import D from 'debug';
 import nconf from 'nconf';

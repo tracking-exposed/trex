@@ -6,22 +6,17 @@ import {
 import config from '@shared/extension/config';
 import log from '@shared/extension/logger';
 import { sizeCheck } from '@shared/providers/dataDonation.provider';
-import { getNatureByHref } from '@tktrex/lib/nature';
-import { map } from 'fp-ts/lib/Either';
-import { pipe } from 'fp-ts/lib/function';
 import _ from 'lodash';
 import { INTERCEPTED_ITEM_CLASS } from '../interceptor/constants';
-import { hub } from '../handlers';
+import tkHub from '../handlers/hub';
 
 const appLog = log.extend('app');
 
 export let feedId = refreshUUID(0);
 export let feedCounter = 0;
-let lastMeaningfulURL: string;
 
 /**
  * Additional UI needed mostly for debugging
- */
 function initializeEmergencyButton(): void {
   const element = document.createElement('h1');
   element.onclick = fullSave;
@@ -34,6 +29,9 @@ function initializeEmergencyButton(): void {
   document.body.appendChild(element);
 }
 
+ISSUE #444 explain why of this disabled section.
+ */
+
 export function tkTrexActions(remoteInfo: unknown): void {
   /* these functions are the main activity made in
      content_script, and tktrexActions is a callback
@@ -41,7 +39,7 @@ export function tkTrexActions(remoteInfo: unknown): void {
   appLog.info('initialize watchers, remoteInfo available:', remoteInfo);
 
   // initialize ui
-  initializeEmergencyButton();
+  // initializeEmergencyButton();
 
   // the mutation observer seems to ignore container new children,
   // so an interval take place here
@@ -57,7 +55,7 @@ export function tkTrexActions(remoteInfo: unknown): void {
  * Happens either manually when clicking on the emergency button,
  * and should happen automatically or through a setInterval
  * when the URL of the page changes.
- */
+ 
 function fullSave(): void {
   const { href } = window.location;
   pipe(
@@ -80,7 +78,7 @@ function fullSave(): void {
       }
 
       appLog.info('sending fullSave!', nature);
-      hub.dispatch({
+      tkHub.dispatch({
         type: 'FullSave',
         payload: {
           type: nature,
@@ -94,6 +92,7 @@ function fullSave(): void {
     }),
   );
 }
+ */
 
 export const onLocationChange = (): void => {
   feedCounter++;
@@ -128,7 +127,7 @@ const handleInterceptedData = (): void => {
     const html = ch.innerHTML;
     try {
       const data = JSON.parse(html);
-      hub.dispatch({
+      tkHub.dispatch({
         type: 'APIEvent',
         payload: data,
       });
@@ -150,8 +149,11 @@ const handleSearch = _.debounce((element: Node): void => {
   appLog.info('Handle search for path %O', window.location.search);
   if (!_.startsWith(window.location.pathname, '/search')) return;
 
-  // it is lame to do a double check only because they are both searches,
-  // but somehow now it is seems the best solution
+  // This double check it is due because the Search might 
+  // return an error and in both of the cases they should be
+  // considered a result.
+  // This is a logic problem in this extension, we should 
+  // use URL or selector to trigger the right function.
   const dat = document.querySelectorAll(searchHandler.match.selector);
   const te = _.map(
     document.querySelectorAll(errorHandler.match.selector),
@@ -173,7 +175,7 @@ const handleSearch = _.debounce((element: Node): void => {
   const hasNewElements = sizeCheck(contentNode.innerHTML);
   if (!hasNewElements) return;
 
-  hub.dispatch({
+  tkHub.dispatch({
     type: 'Search',
     payload: {
       html: contentHTML,
@@ -192,7 +194,7 @@ const handleSuggested = _.debounce((elem: Node): void => {
     return;
   }
 
-  hub.dispatch({
+  tkHub.dispatch({
     type: 'Suggested',
     payload: {
       html: parent.outerHTML,
@@ -250,7 +252,7 @@ const handleVideo = _.debounce((node: HTMLElement): void => {
 
   videoRoot.setAttribute('trex', `${videoCounter}`);
 
-  hub.dispatch({
+  tkHub.dispatch({
     type: 'NewVideo',
     payload: {
       html: videoRoot.outerHTML,
@@ -269,13 +271,13 @@ const handleVideo = _.debounce((node: HTMLElement): void => {
 
 function flush(): void {
   window.addEventListener('beforeunload', () => {
-    hub.dispatch({
+    tkHub.dispatch({
       type: 'WindowUnload',
     });
   });
 }
 
-const searchHandler: SelectorObserverHandler = {
+export const searchHandler: SelectorObserverHandler = {
   match: {
     type: 'selector',
     selector: '[data-e2e="search-card-desc"]',
@@ -283,7 +285,7 @@ const searchHandler: SelectorObserverHandler = {
   handle: handleSearch,
 };
 
-const errorHandler: SelectorObserverHandler = {
+export const errorHandler: SelectorObserverHandler = {
   match: {
     type: 'selector',
     selector: 'h2',

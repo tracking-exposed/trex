@@ -1,4 +1,4 @@
-import { GetAPI, TERequest } from '@shared/providers/api.provider';
+import { MakeAPIClient, TERequest } from '@shared/providers/api.provider';
 import { command } from 'avenger';
 import * as Endpoints from '@shared/endpoints';
 import { TabouleQueries } from './queries';
@@ -38,11 +38,14 @@ export const GetTabouleCommands = (
   },
   queries: TabouleQueries
 ): TabouleCommands => {
-  const API = GetAPI({
-    baseURL,
-    getAuth: async (req) => req,
-    onUnauthorized: async (res) => res,
-  });
+  const API = MakeAPIClient(
+    {
+      baseURL,
+      getAuth: async (req) => req,
+      onUnauthorized: async (res) => res,
+    },
+    Endpoints
+  );
   const deleteContribution = command(
     (input: { Params: { publicKey: string; selector: string | undefined } }) =>
       API.API.v2.Public.DeletePersonalContributionByPublicKey({

@@ -1,12 +1,12 @@
 /* eslint-disable @typescript-eslint/no-misused-promises */
 import { makeBackend } from '@shared/backend';
+import { MakeAppContext } from '@shared/backend/app';
 import { RouteContext } from '@shared/backend/types';
 import { GetLogger } from '@shared/logger';
 import bodyParser from 'body-parser';
 import cors from 'cors';
 import express from 'express';
-import * as _ from 'lodash';
-import { MongoClient } from 'mongodb';
+import _ from 'lodash';
 import { apiList } from '../lib/api';
 import mongo3 from '../lib/mongo3';
 import { DeleteRecommendationRoute } from '../routes/youchoose/deleteRecommendation.route';
@@ -76,13 +76,6 @@ const iowrapper =
     }
     res.end();
   };
-
-interface MakeAppContext {
-  config: {
-    port: number;
-  };
-  mongo: MongoClient;
-}
 
 /* one log entry per minute about the amount of API absolved */
 setInterval(() => {

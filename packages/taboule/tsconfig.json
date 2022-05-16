@@ -23,7 +23,9 @@
       "./node_modules/@types",
       "./typings"
     ],
+    "rootDir": "./src",
     "baseUrl": "./src",
+    "tsBuildInfoFile": "build/.tsbuildinfo",
     "allowSyntheticDefaultImports": true,
     "noFallthroughCasesInSwitch": true,
     "moduleResolution": "Node",

@@ -1,6 +1,7 @@
 import { APIClient } from '../../../providers/api.provider';
-import { bo } from '../../utils/browser.utils';
 import log from '../../logger';
+import { bo } from '../../utils/browser.utils';
+
 export interface SyncReq {
   userId: string;
   payload: any;
@@ -8,7 +9,7 @@ export interface SyncReq {
 }
 
 export interface LoadOpts {
-  api: APIClient;
+  api: APIClient<{}>;
   getHeadersForDataDonation: (req: SyncReq) => Promise<any>;
 }
 
@@ -17,7 +18,7 @@ export const handleAPISyncMessage =
   (request: any, sender: any, sendResponse: any): void => {
     void getHeadersForDataDonation(request)
       .then((headers) =>
-        api.v2.Public.AddAPIEvents({
+        (api as any).v2.Public.AddAPIEvents({
           Headers: headers,
           Body: request.payload,
         })()
@@ -43,16 +44,14 @@ export const handleSyncMessage =
     // log.debug('Sync request %O', request.payload);
     void getHeadersForDataDonation(request)
       .then((headers) => {
-        log.info('Headers %O', headers);
-        return api.v2.Public.AddEvents({
+        return (api as any).v2.Public.AddEvents({
           Headers: headers,
           Body: request.payload,
         })();
       })
       .then((response) => {
-        log.debug('Sync response %O', response);
-
-        if (response._tag === 'Left') {
+        log.info('Sync response %O', response);
+        if (response._tag === 'Left' || response.right.status === 'error') {
           sendResponse({
             type: 'Error',
             error: response.left,
