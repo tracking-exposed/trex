@@ -1,5 +1,6 @@
 import { join, dirname, basename } from 'path';
-import { mkdir, readFile, writeFile, rename } from 'fs/promises';
+import { mkdir, readFile, writeFile, rename, rm } from 'fs/promises';
+import crypto from 'crypto';
 import { MongoClient, Collection } from 'mongodb';
 
 import chokidar from 'chokidar';
@@ -41,6 +42,8 @@ const spawnWorker = async(collection: Collection): Promise<void> => {
     console.log(`[${nWorkers} workers] parsing: ${item.sourcePath}`);
 
     const mass = await readFile(item.sourcePath, 'utf8');
+    const HTMLHash = crypto.createHash('sha256').update(mass).digest('hex');
+
     const status = parser.parseCurlStatus(mass);
 
     if (status === 'success') {
@@ -52,22 +55,25 @@ const spawnWorker = async(collection: Collection): Promise<void> => {
 
       const result = parsed.map((data, videoOrder) => ({
         ...data,
+        HTMLHash,
         countryCode,
         creationTime: new Date(creationTime),
         order: videoOrder + 1,
       }));
 
-      if (parsed.length > 0) {
+      if (await collection.findOne({ HTMLHash }) === null) {
+        console.log(`File with hash ${HTMLHash} already in database.`);
+      } else if (parsed.length > 0) {
         await writeFile(
           `${item.targetPath}.parsed.json`,
           JSON.stringify(result, null, 2),
         );
-
         await collection.insertMany(result);
       }
     } else {
       const countryCode = basename(dirname(item.sourcePath));
       const creationTime = parseInt(basename(item.sourcePath));
+      await rm(item.sourcePath);
 
       const error = {
         type: 'Error',
@@ -97,7 +103,7 @@ const main = async(): Promise<void> => {
   const db = dbClient.db('observatory');
   const collection = db.collection('metadata');
 
-  // this console print is helpful in the case someone start this script without
+  // This console print is helpful in the case someone start this script without
   // knowing/remember what the script does. it would remind the main goal.
   console.log("Waiting for new files in", massPath);
   chokidar.watch(massPath).on('add', (path, entry) => {
