@@ -1,5 +1,5 @@
 import * as Endpoints from '@shared/endpoints';
-import { GetAPI } from '@shared/providers/api.provider';
+import { MakeAPIClient } from '@shared/providers/api.provider';
 import { available, queryShallow, queryStrict, refetch } from 'avenger';
 import { pipe } from 'fp-ts/lib/function';
 import * as TE from 'fp-ts/lib/TaskEither';
@@ -10,7 +10,7 @@ import { browser, Messages } from '../../providers/browser.provider';
 /**
  * The popup api client doesn't need any specific authorization
  */
-export const { API } = GetAPI({
+export const { API } = MakeAPIClient({
   baseURL: config.API_URL,
   getAuth: (req) =>
     pipe(
@@ -36,7 +36,7 @@ export const { API } = GetAPI({
       )
     )(),
   onUnauthorized: async (res) => res,
-});
+}, Endpoints);
 
 export const settingsRefetch = queryShallow(() => {
   return pipe(

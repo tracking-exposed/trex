@@ -1,20 +1,19 @@
+import * as endpoints from '@shared/endpoints';
 import { APIError } from '@shared/errors/APIError';
 import { ChannelRelated } from '@shared/models/ChannelRelated';
 import {
   HomeMetadata,
   SearchMetadata,
-  VideoMetadata,
+  VideoMetadata
 } from '@shared/models/contributor/ContributorPersonalStats';
 import {
-  TikTokPSearchMetadata,
-  SummaryHTMLMetadata,
-  // SummaryMetadata,
+  SummaryHTMLMetadata, TikTokPSearchMetadata
 } from '@shared/models/contributor/ContributorPersonalSummary';
+import { GuardoniExperiment } from '@shared/models/Experiment';
 import { SearchQuery } from '@shared/models/http/SearchQuery';
 import { TikTokSearchMetadata } from '@shared/models/http/tiktok/TikTokSearch';
 import { Metadata } from '@shared/models/Metadata';
-import { GuardoniExperiment } from '@shared/models/Experiment';
-import { GetAPI } from '@shared/providers/api.provider';
+import { MakeAPIClient } from '@shared/providers/api.provider';
 import { available, queryStrict } from 'avenger';
 import { CachedQuery } from 'avenger/lib/Query';
 import { pipe } from 'fp-ts/lib/function';
@@ -55,11 +54,11 @@ export const GetTabouleQueries = ({
   baseURL,
   accessToken,
 }: GetTabouleQueriesProps): TabouleQueries => {
-  const { API } = GetAPI({
+  const { API } = MakeAPIClient({
     baseURL,
     getAuth: async (req) => req,
     onUnauthorized: async (res) => res,
-  });
+  }, endpoints);
 
   const ccRelatedUsers = queryStrict<
     SearchRequestInput,

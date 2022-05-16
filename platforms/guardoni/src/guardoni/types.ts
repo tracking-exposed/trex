@@ -1,3 +1,4 @@
+import * as endpoints  from '@shared/endpoints';
 import { Logger } from '@shared/logger';
 import { DirectiveType } from '@shared/models/Directive';
 import { APIClient } from '@shared/providers/api.provider';
@@ -87,7 +88,7 @@ export type GuardoniProfile = t.TypeOf<typeof GuardoniProfile>;
 
 export interface GuardoniContext {
   puppeteer: typeof puppeteer;
-  API: APIClient;
+  API: APIClient<typeof endpoints>;
   config: GuardoniConfig;
   platform: PlatformConfig;
   profile: GuardoniProfile;

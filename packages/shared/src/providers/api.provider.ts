@@ -10,11 +10,11 @@ import * as A from 'fp-ts/lib/Array';
 import * as E from 'fp-ts/lib/Either';
 import { pipe } from 'fp-ts/lib/function';
 import * as R from 'fp-ts/lib/Record';
+import * as S from 'fp-ts/lib/string';
 import * as TE from 'fp-ts/lib/TaskEither';
 import * as t from 'io-ts';
 import { PathReporter } from 'io-ts/lib/PathReporter';
 import { MinimalEndpointInstance, TypeOfEndpointInstance } from 'ts-endpoint';
-import * as Endpoints from '../endpoints';
 import { APIError } from '../errors/APIError';
 import { trexLogger } from '../logger';
 
@@ -50,7 +50,7 @@ const liftFetch = <B>(
         decode(content),
         E.mapLeft((e): APIError => {
           const details = PathReporter.report(E.left(e));
-          apiLogger.error('Validation failed %O', details);
+          apiLogger.error('toAPIError Validation failed %O', details);
           return new APIError('ValidationError', 'Validation failed', details);
         }),
         TE.fromEither
@@ -59,7 +59,7 @@ const liftFetch = <B>(
   );
 };
 
-interface HTTPClient {
+export interface HTTPClient {
   apiFromEndpoint: <E extends MinimalEndpointInstance>(e: E) => TERequest<E>;
 
   request: <T, R>(
@@ -124,7 +124,7 @@ export const MakeHTTPClient = (client: AxiosInstance): HTTPClient => {
         TE.fromEither,
         TE.mapLeft((e): APIError => {
           const details = PathReporter.report(E.left(e));
-          apiLogger.error('Validation failed %O', details);
+          apiLogger.error('MakeHTTPClient Validation failed %O', details);
           return new APIError('ValidationError', 'Validation failed', details);
         }),
         TE.chain((input) => {
@@ -165,11 +165,14 @@ export type TERequest<E extends MinimalEndpointInstance> = (
   ia?: any
 ) => TE.TaskEither<APIError, TypeOfEndpointInstance<E>['Output']>;
 
-type API<
-  ES extends {
-    [typeKey: string]: { [apiKey: string]: MinimalEndpointInstance };
-  }
-> = {
+export interface ResourceEndpointsRecord {
+  [apiKey: string]: MinimalEndpointInstance;
+}
+export interface EndpointsConfig {
+  [typeKey: string]: ResourceEndpointsRecord;
+}
+
+type API<ES extends EndpointsConfig> = {
   [K in keyof ES]: ES[K] extends {
     [key: string]: MinimalEndpointInstance;
   }
@@ -181,9 +184,7 @@ type API<
 
 const makeAPI =
   (client: HTTPClient) =>
-  <ES extends { [key: string]: Record<string, MinimalEndpointInstance> }>(
-    es: ES
-  ): API<ES> => {
+  <ES extends { [key: string]: ResourceEndpointsRecord }>(es: ES): API<ES> => {
     const APIInit: API<ES> = {} as any;
 
     return pipe(
@@ -202,24 +203,21 @@ const makeAPI =
     );
   };
 
-interface GetAPIOptions {
+export interface GetAPIOptions {
   baseURL: string;
   getAuth: (req: AxiosRequestConfig) => Promise<AxiosRequestConfig>;
   onUnauthorized: (res: AxiosResponse) => Promise<AxiosResponse>;
 }
 
-export interface APIClient {
-  v1: API<typeof Endpoints.v1>;
-  v2: API<typeof Endpoints.v2>;
-  v3: API<typeof Endpoints.v3>;
-}
+export type APIClient<EV extends { [v: string]: EndpointsConfig }> = {
+  [K in keyof EV]: API<EV[K]>;
+};
 
-export const GetAPI = (
-  opts: GetAPIOptions
-): {
-  API: APIClient;
-  HTTPClient: HTTPClient;
-} => {
+export const MakeAPIClient = <EE extends { [v: string]: EndpointsConfig }>(
+  opts: GetAPIOptions,
+  endpoints: EE
+): { API: APIClient<EE>; HTTPClient: HTTPClient } => {
+  apiLogger.debug('Initialize api client with options %O', opts);
   const axiosClient = axios.create({
     baseURL: opts.baseURL,
     // transformRequest: (req) => {
@@ -258,15 +256,13 @@ export const GetAPI = (
 
   const toAPI = makeAPI(HTTPClient);
 
-  const v1 = toAPI(Endpoints.v1);
-  const v2 = toAPI(Endpoints.v2);
-  const v3 = toAPI(Endpoints.v3);
-
-  const API = {
-    v1,
-    v2,
-    v3,
-  };
+  const API = pipe(
+    endpoints,
+    R.reduceWithIndex(S.Ord)({} as any as APIClient<EE>, (key, acc, ee) => ({
+      ...acc,
+      [key]: toAPI(ee),
+    }))
+  );
 
   return { API, HTTPClient };
 };

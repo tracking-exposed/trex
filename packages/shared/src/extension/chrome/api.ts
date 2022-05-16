@@ -3,7 +3,7 @@ import bs58 from 'bs58';
 
 import config from '../config';
 import UserSettings from '../models/UserSettings';
-import { decodeString, decodeKey } from '../utils/common.utils';
+import { decodeString, decodeFromBase58 } from '../../utils/decode.utils';
 import db from './db';
 
 const post =
@@ -27,7 +27,7 @@ const post =
 
           const signature = nacl.sign.detached(
             decodeString(payload),
-            decodeKey(settings.secretKey)
+            decodeFromBase58(settings.secretKey)
           );
 
           xhr.setRequestHeader('X-tktrex-NonAuthCookieId', cookieId);

@@ -62,15 +62,15 @@ export const handleServerLookup =
     sendResponse: (response: HandshakeResponse) => void
   ): Promise<void> => {
     log.info('handshake body %O', config);
-    void opts.api.v2.Public.Handshake({
+    void (opts.api as any).v2.Public.Handshake({
       Body: { config: config as any, href },
-    })().then((response) => {
+    })().then((response: any) => {
       log.info('handshake response %O', response);
       if (response._tag === 'Right') {
         sendResponse(response.right);
       } else {
         // TODO: handle error here
-        sendResponse(response.left as any);
+        sendResponse(response.left);
       }
     });
   };

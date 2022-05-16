@@ -37,13 +37,12 @@ const parseData = (
   xhr: TrExXMLHttpPRequest,
   { api, postData }: { api: APIHandler; postData: any },
 ): Datum => {
-  iLog.debug('API handler %O', api);
-  iLog.debug('XHR %O', xhr);
-  iLog.debug('Post Data %O', JSON.parse(postData));
+  iLog.debug('Parsing tkAPI answers from %O POST %s',
+    JSON.stringify(api.urls), JSON.parse(postData));
   const id = `${xhr._startTime}_${xhr._endTime}`;
   // handle POST requests
 
-  iLog.debug('POST request: %O', xhr);
+  // iLog.debug('POST request: %O', xhr);
   return {
     id,
     url: api.urls[0],
@@ -89,7 +88,7 @@ export default (function(xhr) {
   const interceptorContainer = getOrCreateInterceptorContainer();
 
   document.body.appendChild(interceptorContainer);
-  iLog.debug('Interceptor container: %O', interceptorContainer);
+  // iLog.debug('Interceptor container: %O', interceptorContainer);
 
   XHR.open = function(method, url) {
     (this as any)._method = method;
@@ -109,11 +108,11 @@ export default (function(xhr) {
     this.addEventListener('load', function() {
       (this as any)._endTime = new Date().toISOString();
 
-      iLog.debug(
+      /* iLog.debug(
         'Loading request %s: %s',
         (this as any)._method,
         (this as any)._url,
-      );
+      ); */
 
       // get array of data to convert to DOM nodes
       const caughtData = [listHandler, recommendedListHandler].reduce<Datum[]>(
@@ -133,7 +132,8 @@ export default (function(xhr) {
         [],
       );
 
-      iLog.debug('Nodes with results %O', caughtData);
+      if (caughtData.length)
+        iLog.debug('Nodes with results %O', caughtData);
 
       caughtData
         .map((d) => {

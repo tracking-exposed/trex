@@ -13,6 +13,7 @@ export interface APIEvent extends HubEventBase {
   };
 }
 
+/*
 export interface FullSaveEvent<N> extends HubEventBase {
   type: 'FullSave';
   payload: {
@@ -23,7 +24,7 @@ export interface FullSaveEvent<N> extends HubEventBase {
     reason: string;
     size: number;
   };
-}
+} */
 
 export interface SyncResponseEvent extends HubEventBase {
   type: 'SyncResponse';
@@ -57,7 +58,7 @@ export interface WindowUnloadEvent extends HubEventBase {
 
 export type HubEvent =
   | WindowUnloadEvent
-  | FullSaveEvent<any>
+/*  | FullSaveEvent<any>  -- issue #444 */
   | SyncResponseEvent
   | APISyncResponseEvent
   | APIEvent;

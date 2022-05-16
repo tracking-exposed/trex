@@ -1,5 +1,5 @@
 const testEnv = {
-  mongoDb: 'tktrex-test',
+  mongoDb: 'tktrex',
 };
 
 const tk = {

@@ -60,9 +60,15 @@ function apiSync(hub: Hub<any>): void {
 }
 
 export function register(hub: Hub<any>, config: any): void {
-  hub.on('APIEvent', handleAPIEvent).on('WindowUnload', () => apiSync(hub));
-
   if (config.active) {
-    window.setInterval(() => apiSync(hub), INTERVAL);
+    hub.on('APIEvent', handleAPIEvent);
+    hub.on('WindowUnload', () => {
+      apiSync(hub);
+    });
+
+    window.setInterval(() => {
+      // ytLog.debug('Sync at interval %s', INTERVAL);
+      apiSync(hub);
+    }, INTERVAL);
   }
 }

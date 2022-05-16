@@ -1,9 +1,13 @@
 const _ = require('lodash');
 const debug = require('debug')('lib:utils');
 const crypto = require('crypto');
-const bs58 = require('bs58');
 const nacl = require('tweetnacl');
 const foodWords = require('food-words');
+const {
+  decodeFromBase58,
+  decodeString,
+  encodeToBase58,
+} = require('@shared/utils/decode.utils');
 
 function hash(obj, fields) {
   if (_.isUndefined(fields)) fields = _.keys(obj);
@@ -15,25 +19,6 @@ function hash(obj, fields) {
   const sha1sum = crypto.createHash('sha1');
   sha1sum.update(plaincnt);
   return sha1sum.digest('hex');
-}
-
-function stringToArray(s) {
-  // Credits: https://github.com/dchest/tweetnacl-util-js
-  var d = unescape(encodeURIComponent(s));
-  var b = new Uint8Array(d.length);
-
-  for (var i = 0; i < d.length; i++) {
-    b[i] = d.charCodeAt(i);
-  }
-  return b;
-}
-
-function encodeToBase58(s) {
-  return bs58.encode(s);
-}
-
-function decodeFromBase58(s) {
-  return new Uint8Array(bs58.decode(s));
 }
 
 function verifyRequestSignature(req) {
@@ -52,12 +37,13 @@ function verifyRequestSignature(req) {
   //   This works good when the client sending the data is in JavaScript
   //   as well, since key order is given by the insertion order.
 
+
   if (req.headers['content-type'] === 'application/json')
     message = JSON.stringify(req.body);
   // this should always be the case as we use the express JSON-body middleware
 
   return nacl.sign.detached.verify(
-    stringToArray(message),
+    decodeString(message),
     decodeFromBase58(signature),
     decodeFromBase58(publicKey)
   );
@@ -70,7 +56,7 @@ function string2Food(piistr) {
       i + piistr,
       function (memo, acharacter) {
         /* charCodeAt never return 0 as number */
-        let x = memo * acharacter.charCodeAt(0);
+        const x = memo * acharacter.charCodeAt(0);
         memo += x / 23;
         return memo;
       },
@@ -125,7 +111,7 @@ function getString(req, what) {
 
 module.exports = {
   hash,
-  stringToArray,
+  stringToArray: decodeString,
   encodeToBase58,
   decodeFromBase58,
   verifyRequestSignature,

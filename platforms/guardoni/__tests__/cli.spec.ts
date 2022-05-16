@@ -54,7 +54,8 @@ describe('CLI', () => {
       excludeURLTag: undefined,
     },
     basePath,
-    puppeteerMock
+    puppeteerMock,
+    'youtube'
   );
 
   jest.setTimeout(60 * 1000);
