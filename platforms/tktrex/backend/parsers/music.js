@@ -2,8 +2,7 @@ const _ = require('lodash');
 const debug = require('debug')('parsers:music');
 
 function music(envelop, previous) {
-  /* feedId on 'foryou' 'following' and 'music' equally
-     share the same pattern to link the music */
+  /* 'foryou' 'following' and 'video' shares same pattern */
   const availin = ['foryou', 'following', 'video'];
 
   if (previous.nature && availin.indexOf(previous.nature.type) === -1) {

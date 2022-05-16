@@ -1,7 +1,7 @@
 import { pipe } from 'fp-ts/lib/function';
 import * as R from 'fp-ts/lib/Record';
 import * as t from 'io-ts';
-import { DateFromISOString } from 'io-ts-types';
+import { DateFromISOString, nonEmptyArray } from 'io-ts-types';
 
 export const ComparisonDirectiveType = t.literal('comparison');
 export const ChiaroScuroDirectiveType = t.literal('chiaroscuro');
@@ -35,7 +35,10 @@ export const ChiaroScuroDirectiveRow = t.type(
 export const CreateDirectiveBody = t.type(
   {
     parsedCSV: t.union(
-      [t.array(ComparisonDirectiveRow), t.array(ChiaroScuroDirectiveRow)],
+      [
+        nonEmptyArray(ComparisonDirectiveRow),
+        nonEmptyArray(ChiaroScuroDirectiveRow),
+      ],
       'DirectiveRow'
     ),
   },
@@ -44,7 +47,7 @@ export const CreateDirectiveBody = t.type(
 
 const directiveKeysMap = pipe(
   { chiaroscuro: ChiaroScuroDirectiveRow, comparison: ComparisonDirectiveRow },
-  R.map((type) => t.array(type))
+  R.map((type) => nonEmptyArray(type))
 );
 
 export const DirectiveKeysMap = t.type(directiveKeysMap, 'DirectiveKeysMap');

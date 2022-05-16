@@ -8,7 +8,7 @@ import debug from 'debug';
 import { config } from './config';
 import * as BrowserP from './providers/browser.provider';
 import { MessageType } from '@shared/providers/browser.provider';
-import { bo } from '@shared/utils/browser.utils';
+import { bo } from '@shared/extension/utils/browser.utils';
 import { settingsRefetch } from './state/popup/popup.queries';
 import { Settings } from './models/Settings';
 import { YTContributionInfoBox } from './components/injected/YTContributionInfoBox';

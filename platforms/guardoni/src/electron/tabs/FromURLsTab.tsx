@@ -7,7 +7,7 @@ import {
 } from '@material-ui/core';
 import { ipcRenderer } from 'electron';
 import * as React from 'react';
-import { CREATE_EXPERIMENT_EVENT } from '../models/events';
+import { EVENTS } from '../models/events';
 import { GuardoniConfig } from '../../guardoni/types';
 import { ExperimentLink } from '@shared/models/Experiment';
 
@@ -39,16 +39,30 @@ export const FromURLsTab: React.FC<FromCSVFileTabProps> = ({
 
   const handleURLProcess = React.useCallback(() => {
     ipcRenderer.send(
-      CREATE_EXPERIMENT_EVENT.value,
+      EVENTS.CREATE_EXPERIMENT_EVENT.value,
       config,
       urls.map((u) => ({ ...u, videoURL: u.url }))
     );
   }, [config, urls]);
 
   React.useEffect(() => {
-    ipcRenderer.on(CREATE_EXPERIMENT_EVENT.value, (event, ...args) => {
+    // subscribe for CREATE_EXPERIMENT_EVENT
+    const createExperimentHandler = (
+      _ev: Electron.Event,
+      ...args: any[]
+    ): void => {
       onSubmit(args[0]);
-    });
+    };
+
+    ipcRenderer.on(EVENTS.CREATE_EXPERIMENT_EVENT.value, createExperimentHandler);
+
+    return () => {
+      // remove the listener when component is unmount
+      ipcRenderer.removeListener(
+        EVENTS.CREATE_EXPERIMENT_EVENT.value,
+        createExperimentHandler
+      );
+    };
   }, []);
 
   return (
@@ -79,6 +93,7 @@ export const FromURLsTab: React.FC<FromCSVFileTabProps> = ({
           control={
             <Input
               value={newTitle ?? ''}
+              required
               onChange={(e) => {
                 setURLs({
                   urls,
@@ -98,6 +113,7 @@ export const FromURLsTab: React.FC<FromCSVFileTabProps> = ({
           control={
             <Input
               value={newURLTag ?? ''}
+              required
               onChange={(e) => {
                 setURLs({
                   urls,

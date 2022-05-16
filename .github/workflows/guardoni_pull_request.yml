@@ -3,6 +3,7 @@ name: Guardoni - Pull Request
 on:
   pull_request:
     branches:
+      - master
       - daily
       - beta
       - feat/**
@@ -40,29 +41,35 @@ jobs:
       - name: Install modules
         run: yarn
 
+      - name: Get version
+        id: version
+        run: |
+          echo "::set-output name=version::$(npm pkg get version | sed 's/"//g')"
+
       - name: Lint code
         run: yarn guardoni lint
 
       - name: Build shared
         run: yarn shared build
 
-      - name: Build extension for guardoni
+      - name: Build guardoni
+        env:
+          NODE_ENV: production
         run: |
           yarn yt:ext build
           yarn yt:ext dist:guardoni
           mkdir -p ~/.guardoni/extension
           cp ./platforms/yttrex/extension/dist/*.zip ~/.guardoni/extension
-
-      - name: Build
-        run: yarn guardoni build
+          yarn guardoni build
 
       - name: Test
-        run: yarn guardoni test --ci
+        run: |
+          yarn pm2 start --env test platforms/yttrex/backend/ecosystem.config.js
+          yarn test guardoni --ci
+          yarn pm2 stop all
 
       - name: Package
         run: yarn guardoni pkg
 
-      - name: Release-it after bump
-        env:
-          YCAI_DOTENV_CONFIG_PATH: .env.beta
-        run: yarn release-it-after-bump
+      - name: Test package
+        run: ./platforms/guardoni/dist/guardoni-cli-${{ steps.version.outputs.version }}-linux yt-list

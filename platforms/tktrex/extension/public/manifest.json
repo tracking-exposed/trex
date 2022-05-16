@@ -19,7 +19,7 @@
     "default_popup": "popup.html"
   },
 
-  "permissions": ["storage", "alarms", "https://tiktok.tracking.exposed/"],
+  "permissions": ["storage", "alarms", "https://*.tiktok.com/"],
 
   "background": {
     "scripts": ["./background.js"],

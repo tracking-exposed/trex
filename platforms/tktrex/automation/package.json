@@ -1,6 +1,6 @@
 {
   "name": "@trex/tt-automation",
-  "version": "2.4.4",
+  "version": "2.4.6",
   "packageManager": "yarn@3.1.1",
   "engines": {
     "node": ">=16.0.0"
@@ -50,7 +50,7 @@
     "fp-ts": "^2.11.7",
     "io-ts": "^2.2.16",
     "jest": "^27.5.1",
-    "leveldown": "^6.1.0",
+    "leveldown": "^5.6.0",
     "linkedom": "^0.13.2",
     "node-fetch": "^2.6.7",
     "pouchdb-find": "^7.2.2",

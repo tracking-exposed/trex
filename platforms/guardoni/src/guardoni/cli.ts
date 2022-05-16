@@ -4,18 +4,25 @@ import * as A from 'fp-ts/lib/Array';
 import { pipe } from 'fp-ts/lib/function';
 import * as TE from 'fp-ts/lib/TaskEither';
 import { NonEmptyString } from 'io-ts-types/lib/NonEmptyString';
-import { guardoniLogger } from '../logger';
-import { GetGuardoni } from './guardoni';
-import { GuardoniConfig, GuardoniOutput, GuardoniSuccessOutput } from './types';
 import puppeteer from 'puppeteer-core';
-import { run } from './tx-automate/project/run';
-import { init } from './tx-automate/project/init';
-import { dumpMetaData } from './tx-automate/project/dump';
 import yargs from 'yargs';
 import { hideBin } from 'yargs/helpers';
-import { experimentTypes } from './tx-automate/experiment/descriptors';
-
-export const tkAutomate = { run, init, dumpMetaData };
+import { guardoniLogger } from '../logger';
+import {
+  DEFAULT_BASE_PATH,
+  DEFAULT_TK_BACKEND,
+  DEFAULT_TK_EXTENSION_DIR,
+  DEFAULT_YT_BACKEND,
+  DEFAULT_YT_EXTENSION_DIR,
+} from './constants';
+import { GetGuardoni } from './guardoni';
+import {
+  GuardoniConfig,
+  GuardoniOutput,
+  GuardoniSuccessOutput,
+  Platform,
+} from './types';
+import D from 'debug';
 
 export const cliLogger = guardoniLogger.extend('cli');
 
@@ -46,34 +53,47 @@ export interface GuardoniCLI {
 
 export type GetGuardoniCLI = (
   config: GuardoniConfig,
-  p: typeof puppeteer
+  basePath: string,
+  p: typeof puppeteer,
+  platform: Platform
 ) => GuardoniCLI;
 
-const foldOutput = (
+const foldOutput = (values: GuardoniSuccessOutput['values']): string[] => {
+  return pipe(
+    values,
+    A.map((v) => {
+      return Object.entries(v).map(([key, value]) => {
+        // console.log({ key, value });
+        if (Array.isArray(value)) {
+          // console.log('value is array', value);
+          const valuesChunk = value.map((v) => {
+            return foldOutput([v]).map((o) => `\t ${o}`);
+          });
+
+          return [`${key}:\t`, ...A.flatten(valuesChunk)];
+        }
+
+        if (typeof value === 'object') {
+          // console.log('value is object');
+
+          return [`${key}: \n\t`, ...foldOutput([value])];
+        }
+
+        return [`${key}: \t ${value}`];
+      });
+    }),
+    A.flatten,
+    A.flatten
+  );
+};
+
+const printOutput = (
   command: GuardoniCommandConfig,
   out: GuardoniOutput
 ): string => {
-  const rest =
-    out.type === 'success'
-      ? pipe(
-          out.values,
-          A.map((v) => {
-            return Object.entries(v).map(([key, value]) => {
-              if (typeof value === 'string') {
-                return [`${key}: ${value}`];
-              }
+  const rest = out.type === 'success' ? foldOutput(out.values) : out.details;
 
-              const valuesChunk = Object.entries(value).map(
-                ([key, value]) => `${key}: ${JSON.stringify(value)}`
-              );
-
-              return [`${key}: \n\t`, ...valuesChunk];
-            });
-          }),
-          A.flatten
-        )
-      : out.details;
-
+  // console.log('rest', rest);
   return [
     '\n',
     `${command.run.slice(0, 1).toUpperCase()}${command.run.slice(1)} ${
@@ -89,14 +109,23 @@ const foldOutput = (
   ].join('\n');
 };
 
-export const GetGuardoniCLI: GetGuardoniCLI = (config, p): GuardoniCLI => {
+export const GetGuardoniCLI: GetGuardoniCLI = (
+  config,
+  basePath,
+  p,
+  platform
+): GuardoniCLI => {
   cliLogger.debug('Initialized with config %O', config);
 
   const run = (
     command: GuardoniCommandConfig
   ): TE.TaskEither<AppError, GuardoniSuccessOutput> =>
     pipe(
-      GetGuardoni({ config, logger: guardoniLogger, puppeteer: p }),
+      GetGuardoni({
+        basePath,
+        logger: guardoniLogger,
+        puppeteer: p,
+      }).run(config, platform),
       TE.chain((g) => {
         return TE.fromIO<
           TE.TaskEither<AppError, GuardoniSuccessOutput>,
@@ -133,7 +162,7 @@ export const GetGuardoniCLI: GetGuardoniCLI = (config, p): GuardoniCLI => {
         (e) => () => {
           // eslint-disable-next-line
           console.log(
-            foldOutput(command, {
+            printOutput(command, {
               type: 'error',
               message: e.message,
               details: e.details,
@@ -142,8 +171,9 @@ export const GetGuardoniCLI: GetGuardoniCLI = (config, p): GuardoniCLI => {
           return Promise.reject(e);
         },
         (result) => () => {
+          const output = printOutput(command, result);
           // eslint-disable-next-line
-          console.log(foldOutput(command, result));
+          console.log(output);
           return Promise.resolve();
         }
       )
@@ -162,16 +192,55 @@ const runGuardoni = ({
   verbose,
   c,
   config,
+  profile,
+  backend: _backend,
+  platform,
   command,
+  extensionDir,
   ...guardoniConf
 }: any): Promise<void> => {
+  
+  const basePath = guardoniConf.basePath ?? DEFAULT_BASE_PATH;
+
   if (verbose) {
+    // eslint-disable-next-line
+    console.log('Running guardoni', { config, basePath, guardoniConf });
+    D.enable('guardoni*');
     if (config) {
+      // eslint-disable-next-line
       console.log(`Configuration loaded from ${config}`, guardoniConf);
     }
   }
 
-  return GetGuardoniCLI({ ...guardoniConf, verbose }, puppeteer)
+  return GetGuardoniCLI(
+    {
+      ...guardoniConf,
+      basePath,
+      yt: {
+        ...guardoniConf.yt,
+        name: 'youtube',
+        backend: _backend ?? guardoniConf.yt?.backend ?? DEFAULT_YT_BACKEND,
+        extensionDir:
+          extensionDir ??
+          guardoniConf.yt?.extensionDir ??
+          DEFAULT_YT_EXTENSION_DIR,
+      },
+      tk: {
+        ...guardoniConf.tk,
+        name: 'tiktok',
+        backend: _backend ?? guardoniConf.tk?.backend ?? DEFAULT_TK_BACKEND,
+        extensionDir:
+          extensionDir ??
+          guardoniConf.tk?.extensionDir ??
+          DEFAULT_TK_EXTENSION_DIR,
+      },
+      profileName: profile ?? 'default',
+      verbose,
+    },
+    basePath,
+    puppeteer,
+    platform
+  )
     .runOrThrow(command)
     .then(() => process.exit(0));
 };
@@ -188,7 +257,11 @@ const program = yargs(hideBin(process.argv))
         type: 'string',
       }),
     ({ experiment, ...argv }) =>
-      runGuardoni({ ...argv, command: { run: 'experiment', experiment } })
+      runGuardoni({
+        ...argv,
+        platform: 'youtube',
+        command: { run: 'experiment', experiment },
+      })
   )
   .command(
     'yt-register <file>',
@@ -201,7 +274,11 @@ const program = yargs(hideBin(process.argv))
       });
     },
     ({ file, ...argv }) =>
-      runGuardoni({ ...argv, command: { run: 'register-csv', file } })
+      runGuardoni({
+        ...argv,
+        platform: 'youtube',
+        command: { run: 'register-csv', file },
+      })
   )
   .command(
     'yt-list',
@@ -209,7 +286,8 @@ const program = yargs(hideBin(process.argv))
     (yargs) => {
       return yargs;
     },
-    (argv) => runGuardoni({ ...argv, command: { run: 'list' } })
+    (argv) =>
+      runGuardoni({ ...argv, platform: 'youtube', command: { run: 'list' } })
   )
   .command(
     'yt-auto <index>',
@@ -221,11 +299,57 @@ const program = yargs(hideBin(process.argv))
         demandOption: 'Run comparison or shadow ban experiment run',
       }),
     ({ index, ...argv }) =>
-      runGuardoni({ ...argv, command: { run: 'auto', index } })
+      runGuardoni({
+        ...argv,
+        platform: 'youtube',
+        command: { run: 'auto', index },
+      })
+  )
+  .command(
+    'tk-experiment <experiment>',
+    'Run guardoni from a given experiment',
+    (yargs) =>
+      yargs.positional('experiment', {
+        desc: 'Experiment id',
+        demandOption: 'Provide the experiment id',
+        type: 'string',
+      }),
+    ({ experiment, ...argv }) =>
+      runGuardoni({
+        ...argv,
+        platform: 'tiktok',
+        command: { run: 'experiment', experiment },
+      })
+  )
+  .command(
+    'tk-register <file>',
+    'Register an experiment from a CSV',
+    (yargs) => {
+      return yargs.positional('file', {
+        desc: 'CSV file to register an experiment',
+        type: 'string',
+        demandOption: 'Provide a valid path to a csv file',
+      });
+    },
+    ({ file, ...argv }) =>
+      runGuardoni({
+        ...argv,
+        platform: 'tiktok',
+        command: { run: 'register-csv', file },
+      })
+  )
+  .command(
+    'tk-list',
+    'List available experiments',
+    (yargs) => {
+      return yargs;
+    },
+    (argv) =>
+      runGuardoni({ ...argv, platform: 'tiktok', command: { run: 'list' } })
   )
   .command(
     'tk-init [projectDirectory]',
-    'TK: Initialize an experiment directory',
+    'Initialize an experiment directory',
     (y) =>
       y
         .positional('projectDirectory', {
@@ -238,10 +362,10 @@ const program = yargs(hideBin(process.argv))
           demandOption: true,
           desc: 'Type of experiment to initialize (e.g. "search-on-tiktok")',
           type: 'string',
-          default: experimentTypes[0],
-          choices: experimentTypes,
+          default: '',
+          choices: [],
         }),
-    (args) => init(args)
+    (args) => Promise.reject(new Error('Not implemented'))
   )
   .command(
     'tk-run [projectDirectory]',
@@ -252,18 +376,18 @@ const program = yargs(hideBin(process.argv))
         desc: 'Directory containing the initialized experiment to run, current directory if empty',
         type: 'string',
       }),
-    (args) => run(args)
+    (args) => Promise.reject(new Error('Not implemented'))
   )
   .command(
     'tk-dump [projectDirectory]',
-    'TK: Dump meta data from an experiment directory',
+    'Dump meta data from an experiment directory',
     (y) =>
       y.positional('projectDirectory', {
         default: '.',
         desc: 'Directory containing the experiment from which to dump the meta data',
         type: 'string',
       }),
-    (args) => dumpMetaData(args)
+    (args) => Promise.reject(new Error('Not implemented'))
   )
   .option('c', {
     type: 'string',

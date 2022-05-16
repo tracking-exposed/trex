@@ -1,41 +1,24 @@
-import nacl from 'tweetnacl';
 import bs58 from 'bs58';
-
-import { Message, ServerLookup } from '../../models/Message';
-import { ServerLookupResponse } from '../../models/ServerLookupResponse';
-import UserSettings from '../../models/UserSettings';
+import { HandshakeResponse } from '../../../models/HandshakeBody';
+import nacl from 'tweetnacl';
 import log from '../../logger';
+import { Message, ServerLookup } from '../../models/Message';
+import UserSettings from '../../models/UserSettings';
+import { bo } from '../../utils/browser.utils';
 import db from '../db';
+import { LoadOpts } from './sync';
 
 export interface KeyPair {
   publicKey: string;
   secretKey: string;
 }
 
-const bo = chrome;
 const FIXED_USER_NAME = 'local';
 
 // defaults of the settings stored in 'config' and controlled by popup
-const DEFAULT_SETTINGS = { active: true, ux: false };
+const DEFAULT_SETTINGS = { active: true, ux: false, researchTag: '' };
 
-bo.runtime.onMessage.addListener((request: Message, sender, sendResponse) => {
-  if (request.type === 'LocalLookup') {
-    void handleLocalLookup(request.payload, sendResponse);
-    return true;
-  }
-
-  if (request.type === 'ServerLookup') {
-    void handleServerLookup(request.payload, sendResponse);
-    return true;
-  }
-
-  if (request.type === 'ConfigUpdate') {
-    void handleConfigUpdate(request.payload, sendResponse);
-    return true;
-  }
-});
-
-function initializeKey(): KeyPair {
+export function initializeKey(): KeyPair {
   const newKeypair = nacl.sign.keyPair();
   const publicKey = bs58.encode(newKeypair.publicKey);
   log.info('initializing new key pair:', publicKey);
@@ -51,10 +34,11 @@ interface WithUserId {
 
 async function handleLocalLookup(
   { userId }: WithUserId,
-  sendResponse: (response: unknown) => void
+  sendResponse: (response: UserSettings) => void
 ): Promise<void> {
   try {
-    sendResponse(await db.getValid(UserSettings)(userId));
+    const settings = await db.getValid(UserSettings)(userId);
+    sendResponse(settings);
   } catch (err) {
     const initialSettings: UserSettings = {
       ...initializeKey(),
@@ -71,12 +55,25 @@ async function handleLocalLookup(
  *
  * TODO: implement
  */
-async function handleServerLookup(
-  payload: ServerLookup['payload'],
-  sendResponse: (response: ServerLookupResponse) => void
-): Promise<void> {
-  sendResponse(null);
-}
+export const handleServerLookup =
+  (opts: LoadOpts) =>
+  async (
+    { href, ...config }: ServerLookup['payload'],
+    sendResponse: (response: HandshakeResponse) => void
+  ): Promise<void> => {
+    log.info('handshake body %O', config);
+    void (opts.api as any).v2.Public.Handshake({
+      Body: { config: config as any, href },
+    })().then((response: any) => {
+      log.info('handshake response %O', response);
+      if (response._tag === 'Right') {
+        sendResponse(response.right);
+      } else {
+        // TODO: handle error here
+        sendResponse(response.left);
+      }
+    });
+  };
 
 async function handleConfigUpdate(
   payload: Partial<UserSettings>,
@@ -87,3 +84,22 @@ async function handleConfigUpdate(
   log.info('completed ConfigUpdate, user settings now', settings);
   sendResponse(settings);
 }
+
+export const load = (opts: LoadOpts): void => {
+  bo.runtime.onMessage.addListener((request: Message, sender, sendResponse) => {
+    if (request.type === 'LocalLookup') {
+      void handleLocalLookup(request.payload, sendResponse);
+      return true;
+    }
+
+    if (request.type === 'ServerLookup') {
+      void handleServerLookup(opts)(request.payload, sendResponse);
+      return true;
+    }
+
+    if (request.type === 'ConfigUpdate') {
+      void handleConfigUpdate(request.payload, sendResponse);
+      return true;
+    }
+  });
+};

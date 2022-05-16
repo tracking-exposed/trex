@@ -1,6 +1,6 @@
 {
   "name": "@trex/docs",
-  "version": "2.4.4",
+  "version": "2.4.6",
   "private": true,
   "scripts": {
     "docusaurus": "docusaurus",

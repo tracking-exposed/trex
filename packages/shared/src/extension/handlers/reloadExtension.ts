@@ -1,5 +1,6 @@
 import { Hub } from '../hub';
 import log from '../logger';
+import HubEvent from '../models/HubEvent';
 
 const bo = chrome;
 
@@ -9,6 +10,6 @@ function handleReload(): void {
   );
 }
 
-export function register(hub: Hub): void {
+export function register(hub: Hub<HubEvent>): void {
   hub.on('WindowUnload', handleReload);
 }

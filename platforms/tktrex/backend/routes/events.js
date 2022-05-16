@@ -1,4 +1,7 @@
+import { geo } from '@shared/utils/ip.utils';
+
 const _ = require('lodash');
+
 const debug = require('debug')('routes:events');
 const nconf = require('nconf');
 
@@ -126,6 +129,8 @@ function handleFullSave(body, headers) {
     version: headers.version,
     savingTime: new Date(),
     html: body.html,
+    geoip: geo(headers['x-forwarded-for']),
+    researchTag: body.researchTag,
   };
 }
 
@@ -156,6 +161,8 @@ async function processEvents(req) {
       //  "videoCounter","rect","clientTime","type","incremental"]
       // 'type' can be ignored as it is always 'video' and doesn't reflect nature
 
+      console.log("--- feedId %s randomUUID",
+        body.feedId ?? 'x', body.randomUUID ?? 'x')
       const id = utils.hash({
         clientRGN: body.feedId
           ? body.feedId
@@ -170,13 +177,12 @@ async function processEvents(req) {
       });
       const timelineWord = utils.pickFoodWord(timelineIdHash);
 
-      // optionally there is 'reason':"fullsave" and it should
-      // be collected as a different thing. it returns null
-      // and append to fullsaves as side effect
+      /* there was 'reason':"fullsave"
+       https://github.com/tracking-exposed/yttrex/issues/444
       if (body.reason === 'fullsave') {
         fullsaves.push(handleFullSave(body, timelineIdHash));
         return null;
-      }
+      } */
 
       const optionalNumbers = [];
       if (_.isInteger(body.videoCounter))
@@ -185,7 +191,6 @@ async function processEvents(req) {
       if (_.isInteger(body.incremental)) optionalNumbers.push(body.incremental);
       if (_.isInteger(body.feedCounter)) optionalNumbers.push(body.feedCounter);
       optionalNumbers.push(_.size(body.html));
-
       const html = {
         id,
         rect: body.rect,
@@ -195,6 +200,8 @@ async function processEvents(req) {
         savingTime: new Date(),
         html: body.html,
         n: optionalNumbers,
+        geoip: geo(req.headers['x-forwarded-for'] || req.socket.remoteAddress),
+        researchTag: req.body.researchTag,
       };
       return html;
     })
@@ -226,7 +233,7 @@ async function processEvents(req) {
 }
 
 async function handshake(req) {
-  debug('Ignored handshake API %j', _.keys(req.body));
+  debug('Not implemented protocol (yet) [handshake API %j]', req.body);
   return {
     json: { ignored: true },
   };

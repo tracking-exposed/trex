@@ -1,13 +1,11 @@
 import * as bs58 from 'bs58';
 import { formatISO } from 'date-fns';
-import * as E from 'fp-ts/lib/Either';
 import { pipe } from 'fp-ts/lib/pipeable';
-import * as TE from 'fp-ts/lib/TaskEither';
 import nacl from 'tweetnacl';
-import { Keypair } from '../models/extension/Keypair';
-import { catchRuntimeLastError } from './browser.provider';
-import { SecurityProvider } from './security.provider.type';
 import { trexLogger } from '../logger';
+import { Keypair } from '../models/extension/Keypair';
+import { SecurityProvider } from './security.provider.type';
+import * as TE from 'fp-ts/lib/TaskEither';
 
 const bs58Logger = trexLogger.extend('bs58');
 
@@ -26,15 +24,8 @@ function decodeKey(key: string): Uint8Array {
   return new Uint8Array(bs58.decode(key));
 }
 
-const makeKeypair = (
-  passphrase: string
-): TE.TaskEither<chrome.runtime.LastError, Keypair> => {
+const makeKeypair = (passphrase: string): TE.TaskEither<Error, Keypair> => {
   const newKeypair = nacl.sign.keyPair();
-  bs58Logger.debug(
-    'Keypair created %O with passphrase %s',
-    newKeypair,
-    passphrase
-  );
   const keypair = {
     publicKey: bs58.encode(newKeypair.publicKey),
     secretKey: bs58.encode(newKeypair.secretKey),
@@ -46,7 +37,7 @@ const makeKeypair = (
 const makeToken = (
   date: Date,
   secretKey: string
-): TE.TaskEither<chrome.runtime.LastError, string> => {
+): TE.TaskEither<Error, string> => {
   const payload = pipe(
     [{ date: formatISO(date, { representation: 'date' }) }],
     Array.from,
@@ -57,20 +48,35 @@ const makeToken = (
 };
 
 const makeSignature = (
-  payload: any,
+  json: string,
   secretKey: string
-): E.Either<chrome.runtime.LastError, string> => {
+): TE.TaskEither<Error, string> => {
   const signature = nacl.sign.detached(
-    decodeString(JSON.stringify(payload)),
+    decodeString(json),
     decodeKey(secretKey)
   );
-  return catchRuntimeLastError(bs58.encode(signature));
+  return TE.right(bs58.encode(signature));
 };
 
-const security: SecurityProvider = {
+const verifySignature = (
+  message: string,
+  publicKey: string,
+  signatureKey: string
+): TE.TaskEither<Error, boolean> => {
+  const verify = nacl.sign.detached.verify(
+    decodeString(message),
+    decodeKey(signatureKey),
+    decodeKey(publicKey)
+  );
+
+  return TE.right(verify);
+};
+
+const bs58Provider: SecurityProvider = {
   makeKeypair,
   makeToken,
   makeSignature,
+  verifySignature,
 };
 
-export default security;
+export default bs58Provider;

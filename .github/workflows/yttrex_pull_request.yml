@@ -19,6 +19,11 @@ jobs:
       matrix:
         node-version: [16.x]
         mongodb-version: ['4.2']
+    services:
+      mongo-db:
+        image: mongo:4.2
+        ports:
+          - 27017:27017
 
     steps:
       - uses: actions/checkout@v2
@@ -51,12 +56,10 @@ jobs:
       - name: Build backend
         run: yarn yt:backend build
 
-      - name: Start MongoDB
-        uses: supercharge/mongodb-github-action@1.7.0
-        with:
-          mongodb-port: 27019
-          mongodb-version: ${{ matrix.mongodb-version }}
-
       - name: Test
-        run: yarn yt:backend test --runInBand --forceExit --ci
+        run: |
+          yarn pm2 start platforms/yttrex/backend/ecosystem.config.js  --env test
+          yarn yt:backend test --runInBand --forceExit --ci
+          yarn yt:ext test --runInBand --ci
+          yarn pm2 stop all
 

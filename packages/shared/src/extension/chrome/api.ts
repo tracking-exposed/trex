@@ -3,17 +3,20 @@ import bs58 from 'bs58';
 
 import config from '../config';
 import UserSettings from '../models/UserSettings';
-import { decodeString, decodeKey } from '../utils';
+import { decodeString, decodeFromBase58 } from '../../utils/decode.utils';
 import db from './db';
 
 const post =
   (path: string) =>
-  (data: unknown, cookieId: string): Promise<unknown> => {
+  (data: Record<string, unknown>, cookieId: string): Promise<unknown> => {
     return new Promise((resolve, reject) => {
       db.getValid(UserSettings)('local')
-        .then((keypair) => {
+        .then((settings) => {
           const xhr = new XMLHttpRequest();
-          const payload = JSON.stringify(data);
+          const payload = JSON.stringify({
+            ...data,
+            researchTag: settings.researchTag,
+          });
           const url = `${config.API_ROOT}/${path}`;
 
           xhr.open('POST', url, true);
@@ -24,11 +27,11 @@ const post =
 
           const signature = nacl.sign.detached(
             decodeString(payload),
-            decodeKey(keypair.secretKey)
+            decodeFromBase58(settings.secretKey)
           );
 
           xhr.setRequestHeader('X-tktrex-NonAuthCookieId', cookieId);
-          xhr.setRequestHeader('X-tktrex-PublicKey', keypair.publicKey);
+          xhr.setRequestHeader('X-tktrex-PublicKey', settings.publicKey);
           xhr.setRequestHeader('X-tktrex-Signature', bs58.encode(signature));
 
           xhr.send(payload);
