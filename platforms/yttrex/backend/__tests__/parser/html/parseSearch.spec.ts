@@ -7,6 +7,7 @@ import {
   updateMetadataAndMarkHTML,
 } from '../../../lib/parser/html';
 import { SearchMetadata } from '@yttrex/shared/models/Metadata';
+import { sanitizeHTML } from '@shared/utils/html.utils';
 import process from '../../../parsers/searches';
 import { GetTest, Test } from '../../../tests/Test';
 import { readHistoryResults, runParserTest } from './utils';
@@ -87,7 +88,7 @@ describe('Parser: Search', () => {
         codec: SearchMetadata,
         mapSource: (h: any) => ({
           html: h,
-          jsdom: new JSDOM(h.html.replace(/\n +/g, '')).window.document,
+          jsdom: new JSDOM(sanitizeHTML(h.html)).window.document,
           supporter: undefined,
           findings: {},
         }),

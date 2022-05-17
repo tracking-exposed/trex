@@ -6,6 +6,7 @@ import { JSDOM } from 'jsdom';
 import nconf from 'nconf';
 import * as path from 'path';
 import mongo3 from '../lib/mongo3';
+import { sanitizeHTML } from '../../../../packages/shared/src/utils/html.utils';
 
 const cfgFile = 'config/settings.json';
 
@@ -22,44 +23,54 @@ async function main(): Promise<void> {
 
   logger('Mongo connected');
 
-  const longlabPath = path.resolve(__dirname,
-        path.join('..', '__tests__', 'fixtures', 'longlabels.json') );
+  const longlabPath = path.resolve(
+    __dirname,
+    path.join('..', '__tests__', 'fixtures', 'longlabels.json')
+  );
 
   const aaa = [] as object[];
   for (const nature of ['home', 'video', 'search']) {
-    const htmlobs = await mongo3.aggregate(
-      mongoc,
-      nconf.get('schema').htmls,
-      [
-        { $match: { 'nature.type': nature } },
-        { $sort: { savingTime: -1 } },
-        { $limit: maxAmount },
-        { $skip: skipAmount }
-      ]
-    );
+    const htmlobs = await mongo3.aggregate(mongoc, nconf.get('schema').htmls, [
+      { $match: { 'nature.type': nature } },
+      { $sort: { savingTime: -1 } },
+      { $limit: maxAmount },
+      { $skip: skipAmount },
+    ]);
 
-    logger('htmls available for nature "%s" is %d',
-      nature, htmlobs.length);
+    logger('htmls available for nature "%s" is %d', nature, htmlobs.length);
 
     htmlobs.forEach((html) => {
-      const jsdom =  new JSDOM(html.html.replace(/\n +/g, '')).window.document;
+      const jsdom = new JSDOM(sanitizeHTML(html.html)).window.document;
       const labels = jsdom.querySelectorAll('[aria-label]');
-      const worthy = _.uniq(_.reduce(labels, function(memo, l) {
-        const ll = l.getAttribute('aria-label');
-        if(!ll) return memo;
-        // TODO source name should not provided by hand
-        if(ll.length > 90) memo.push([ ll, "source", false ] );
-        return memo;
-      }, [] as object[]));
+      const worthy = _.uniq(
+        _.reduce(
+          labels,
+          function (memo, l) {
+            const ll = l.getAttribute('aria-label');
+            if (!ll) return memo;
+            // TODO source name should not provided by hand
+            if (ll.length > 90) memo.push([ll, 'source', false]);
+            return memo;
+          },
+          [] as object[]
+        )
+      );
 
-      aaa.push(worthy)
-      logger('writing %d longlabels on %s (accumulator is %d)',
-        worthy.length, longlabPath, aaa.length);
+      aaa.push(worthy);
+      logger(
+        'writing %d longlabels on %s (accumulator is %d)',
+        worthy.length,
+        longlabPath,
+        aaa.length
+      );
     });
   }
   const flattened = _.flatten(aaa);
-  fs.appendFileSync(longlabPath,
-    JSON.stringify(flattened, undefined, 1), 'utf-8');
+  fs.appendFileSync(
+    longlabPath,
+    JSON.stringify(flattened, undefined, 1),
+    'utf-8'
+  );
 
   process.exit(1);
 }

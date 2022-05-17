@@ -1,4 +1,5 @@
 import { HomeMetadata } from '@yttrex/shared/models/Metadata';
+import { sanitizeHTML } from '@shared/utils/html.utils';
 import base58 from 'bs58';
 import { parseISO, subMinutes } from 'date-fns';
 import { JSDOM } from 'jsdom';
@@ -72,7 +73,7 @@ describe('Parserv', () => {
           parsers: { home: process },
           mapSource: (h: any) => ({
             html: h,
-            jsdom: new JSDOM(h.html.replace(/\n +/g, '')).window.document,
+            jsdom: new JSDOM(sanitizeHTML(h.html)).window.document,
             supporter: undefined,
             findings: {},
           }),
@@ -127,7 +128,12 @@ describe('Parserv', () => {
               )
             ).toMatchObject(
               expectedSelected.map(
-                ({ thumbnailHref, recommendedRelativeSeconds, publicationTime, ...s }) => ({
+                ({
+                  thumbnailHref,
+                  recommendedRelativeSeconds,
+                  publicationTime,
+                  ...s
+                }) => ({
                   ...s,
                 })
               )
