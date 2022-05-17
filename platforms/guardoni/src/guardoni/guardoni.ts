@@ -209,7 +209,7 @@ export const guardoniExecution =
           `Operations completed in %ds: check results at `,
           duration,
           `${ctx.platform.backend}/${
-            directiveType === 'chiaroscuro' ? 'shadowban' : 'experiments'
+            directiveType === 'search' ? 'shadowban' : 'experiments'
           }/render/#${experiment}`
         );
         ctx.logger.debug(

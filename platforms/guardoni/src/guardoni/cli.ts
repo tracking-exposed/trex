@@ -134,11 +134,15 @@ export const GetGuardoniCLI: GetGuardoniCLI = (
           switch (command.run) {
             case 'list':
               return g.listExperiments();
-            case 'register-csv':
-              return g.registerExperimentFromCSV(
-                command.file,
-                command.type ?? 'comparison'
-              );
+            case 'register-csv': {
+              const type = command.type
+                ? command.type
+                : g.platform.name === 'youtube'
+                ? 'comparison'
+                : 'search';
+
+              return g.registerExperimentFromCSV(command.file, type);
+            }
             case 'experiment':
               return g.runExperiment(command.experiment);
             case 'auto':

@@ -1,8 +1,8 @@
 import { AppError } from '@shared/errors/AppError';
 import { toValidationError } from '@shared/errors/ValidationError';
 import {
-  ChiaroScuroDirective,
-  ChiaroScuroDirectiveType,
+  SearchDirective,
+  SearchDirectiveType,
   ComparisonDirectiveRow,
   ComparisonDirectiveType,
   Directive,
@@ -51,8 +51,8 @@ export const getDirective =
       }),
       TE.map((data) => {
         ctx.logger.debug(`Data for experiment (%s) %O`, experimentId, data);
-        const directiveType = ChiaroScuroDirective.is(data[0])
-          ? ChiaroScuroDirectiveType.value
+        const directiveType = SearchDirective.is(data[0])
+          ? SearchDirectiveType.value
           : ComparisonDirectiveType.value;
 
         return { type: directiveType, data };

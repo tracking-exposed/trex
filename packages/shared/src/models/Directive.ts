@@ -4,10 +4,10 @@ import * as t from 'io-ts';
 import { DateFromISOString, nonEmptyArray } from 'io-ts-types';
 
 export const ComparisonDirectiveType = t.literal('comparison');
-export const ChiaroScuroDirectiveType = t.literal('chiaroscuro');
+export const SearchDirectiveType = t.literal('search');
 
 export const DirectiveType = t.union(
-  [ComparisonDirectiveType, ChiaroScuroDirectiveType],
+  [ComparisonDirectiveType, SearchDirectiveType],
   'DirectiveType'
 );
 export type DirectiveType = t.TypeOf<typeof DirectiveType>;
@@ -24,12 +24,12 @@ export const ComparisonDirectiveRow = t.type(
 
 export type ComparisonDirectiveRow = t.TypeOf<typeof ComparisonDirectiveRow>;
 
-export const ChiaroScuroDirectiveRow = t.type(
+export const SearchDirectiveRow = t.type(
   {
     videoURL: t.string,
     title: t.string,
   },
-  'ChiaroScuroDirectiveRow'
+  'SearchRow'
 );
 // todo: this should be named CreateExperimentBody
 export const CreateDirectiveBody = t.type(
@@ -37,7 +37,7 @@ export const CreateDirectiveBody = t.type(
     parsedCSV: t.union(
       [
         nonEmptyArray(ComparisonDirectiveRow),
-        nonEmptyArray(ChiaroScuroDirectiveRow),
+        nonEmptyArray(SearchDirectiveRow),
       ],
       'DirectiveRow'
     ),
@@ -46,7 +46,7 @@ export const CreateDirectiveBody = t.type(
 );
 
 const directiveKeysMap = pipe(
-  { chiaroscuro: ChiaroScuroDirectiveRow, comparison: ComparisonDirectiveRow },
+  { search: SearchDirectiveRow, comparison: ComparisonDirectiveRow },
   R.map((type) => nonEmptyArray(type))
 );
 
@@ -84,7 +84,7 @@ export const ComparisonDirective = t.strict(
 );
 export type ComparisonDirective = t.TypeOf<typeof ComparisonDirective>;
 
-export const ChiaroScuroDirective = t.strict(
+export const SearchDirective = t.strict(
   {
     loadFor: t.number,
     url: t.string,
@@ -92,11 +92,11 @@ export const ChiaroScuroDirective = t.strict(
     name: t.string,
     targetVideoId: t.string,
   },
-  'ChiaroScuroDirective'
+  'SearchDirective'
 );
 
 export const Directive = t.union(
-  [ChiaroScuroDirective, ComparisonDirective],
+  [SearchDirective, ComparisonDirective],
   'Directive'
 );
 

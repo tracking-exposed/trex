@@ -2,9 +2,9 @@ import * as t from 'io-ts';
 import fc from 'fast-check';
 import { getArbitrary } from 'fast-check-io-ts';
 import {
-  ChiaroScuroDirectiveRow,
+  SearchDirectiveRow,
   ComparisonDirectiveRow,
-  ChiaroScuroDirective,
+  SearchDirective,
   ComparisonDirective,
   PostDirectiveSuccessResponse,
 } from '../models/Directive';
@@ -20,13 +20,21 @@ const WatchForArb = fc.oneof(
 
 const LoadForArb = fc.integer({ min: 1000, max: 10000 });
 
-export const ChiaroScuroDirectiveRowArb = getArbitrary(
-  ChiaroScuroDirectiveRow
-).map((r) => ({
+export const SearchDirectiveRowArb = getArbitrary(SearchDirectiveRow).map(
+  (r) => ({
+    ...r,
+    title: fc.sample(HumanReadableStringArb())[0],
+    url: fc.sample(URLArb, 1)[0],
+    videoURL: fc.sample(URLArb, 1)[0],
+  })
+);
+
+export const SearchDirectiveArb = getArbitrary(SearchDirective).map((r) => ({
   ...r,
-  title: fc.sample(HumanReadableStringArb())[0],
   url: fc.sample(URLArb, 1)[0],
-  videoURL: fc.sample(URLArb, 1)[0],
+  loadFor: fc.sample(LoadForArb, 1)[0],
+  targetVideoId: fc.sample(fc.uuid())[0],
+  watchFor: fc.sample(WatchForArb, 1)[0],
 }));
 
 export const ComparisonDirectiveRowArb = getArbitrary(
@@ -37,16 +45,6 @@ export const ComparisonDirectiveRowArb = getArbitrary(
   urltag: fc.sample(HumanReadableStringArb(), 1)[0],
   watchFor: fc.sample(WatchForArb, 1)[0],
 }));
-
-export const ChiaroScuroDirectiveArb = getArbitrary(ChiaroScuroDirective).map(
-  (r) => ({
-    ...r,
-    url: fc.sample(URLArb, 1)[0],
-    loadFor: fc.sample(LoadForArb, 1)[0],
-    targetVideoId: fc.sample(fc.uuid())[0],
-    watchFor: fc.sample(WatchForArb, 1)[0],
-  })
-);
 
 export const ComparisonDirectiveArb = getArbitrary(ComparisonDirective).map(
   (r) => ({
