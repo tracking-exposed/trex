@@ -2,7 +2,7 @@ import { JSDOM } from 'jsdom';
 import _ from 'lodash';
 import nconf from 'nconf';
 import { HTML } from '../../models/HTML';
-import { Metadata } from '../../models/Metadata';
+import { Metadata } from '@yttrex/shared/models/Metadata';
 import { Supporter } from '../../models/Supporter';
 import {
   LastContributions,

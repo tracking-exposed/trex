@@ -2,7 +2,7 @@ import { formatDistanceToNow, subSeconds } from 'date-fns';
 import D from 'debug';
 import _ from 'lodash';
 import { HTMLSource } from '../lib/parser/html';
-import { SearchMetadata } from '../models/Metadata';
+import { SearchMetadata } from '@yttrex/shared/models/Metadata';
 import * as longlabel from './longlabel';
 
 const debuge = D('parser:searches:error');
