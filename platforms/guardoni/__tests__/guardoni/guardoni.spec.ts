@@ -3,12 +3,16 @@ import { pipe } from 'fp-ts/lib/function';
 import * as TE from 'fp-ts/lib/TaskEither';
 import * as fs from 'fs';
 import * as path from 'path';
-import { readConfigFromPath } from '../src/guardoni/config';
-import { GetGuardoni } from '../src/guardoni/guardoni';
-import { getDefaultProfile, getProfileDataDir } from '../src/guardoni/profile';
-import { csvStringifyTE } from '../src/guardoni/utils';
-import { guardoniLogger } from '../src/logger';
-import { puppeteerMock } from '../__mocks__/puppeteer.mock';
+import { readConfigFromPath } from '../../src/guardoni/config';
+import { GetGuardoni } from '../../src/guardoni/guardoni';
+import {
+  getDefaultProfile,
+  getProfileDataDir,
+} from '../../src/guardoni/profile';
+import { csvStringifyTE } from '../../src/guardoni/utils';
+import { guardoniLogger } from '../../src/logger';
+import { puppeteerMock } from '../../__mocks__/puppeteer.mock';
+import * as profile from '../../src/guardoni/profile';
 
 const directiveLinks = [
   {
@@ -35,7 +39,7 @@ const directiveLinks = [
 const backend = process.env.YT_BACKEND as string;
 
 describe('Guardoni', () => {
-  const basePath = path.resolve(__dirname, '../');
+  const basePath = path.resolve(__dirname, '../../');
   const profile = 'profile-test-99';
   const emptyCSVTestFileName = 'yt-videos-test-empty.csv';
   const csvTestFileName = 'trex-yt-videos.csv';
@@ -48,16 +52,17 @@ describe('Guardoni', () => {
     excludeURLTag: undefined,
     loadFor: 3000,
     basePath,
+    chromePath: '/chrome/path',
     yt: {
       name: 'youtube' as const,
       backend: process.env.YT_BACKEND as string,
-      extensionDir: path.resolve(__dirname, '../../yttrex/extension/build'),
+      extensionDir: path.resolve(__dirname, '../../../yttrex/extension/build'),
       proxy: undefined,
     },
     tk: {
       name: 'tiktok' as const,
       backend: process.env.TK_BACKEND as string,
-      extensionDir: path.resolve(__dirname, '../../tktrex/extension/build'),
+      extensionDir: path.resolve(__dirname, '../../../tktrex/extension/build'),
       proxy: undefined,
     },
   };
@@ -145,7 +150,7 @@ describe('Guardoni', () => {
         basePath,
         logger: guardoniLogger,
         puppeteer: puppeteerMock,
-      }).launch(
+      }).run(
         {
           ...defaultConfig,
           headless: true,

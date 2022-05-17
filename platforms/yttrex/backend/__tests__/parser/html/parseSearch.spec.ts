@@ -6,7 +6,7 @@ import {
   getLastHTMLs,
   updateMetadataAndMarkHTML,
 } from '../../../lib/parser/html';
-import { SearchMetadata } from '../../../models/Metadata';
+import { SearchMetadata } from '@yttrex/shared/models/Metadata';
 import process from '../../../parsers/searches';
 import { GetTest, Test } from '../../../tests/Test';
 import { readHistoryResults, runParserTest } from './utils';

@@ -2,19 +2,13 @@ import { AppError, toAppError } from '@shared/errors/AppError';
 import * as E from 'fp-ts/lib/Either';
 import { pipe } from 'fp-ts/lib/function';
 import * as IOE from 'fp-ts/lib/IOEither';
+import * as Json from 'fp-ts/lib/Json';
+import * as R from 'fp-ts/lib/Record';
 import * as TE from 'fp-ts/lib/TaskEither';
 import * as fs from 'fs';
 import { failure } from 'io-ts/lib/PathReporter';
 import _ from 'lodash';
 import * as path from 'path';
-import {
-  GuardoniConfig,
-  GuardoniContext,
-  GuardoniPlatformConfig,
-  Platform,
-} from './types';
-import { CHROME_PATHS, getChromePath } from './utils';
-import * as Json from 'fp-ts/lib/Json';
 import {
   DEFAULT_LOAD_FOR,
   DEFAULT_TK_BACKEND,
@@ -22,6 +16,13 @@ import {
   DEFAULT_YT_BACKEND,
   DEFAULT_YT_EXTENSION_DIR,
 } from './constants';
+import {
+  GuardoniConfig,
+  GuardoniContext,
+  GuardoniPlatformConfig,
+  Platform,
+} from './types';
+import { CHROME_PATHS, getChromePath } from './utils';
 
 export const getConfigPath = (basePath: string): string =>
   path.resolve(basePath, 'guardoni.config.json');
@@ -35,6 +36,15 @@ export const getConfigPlatformKey = (
   return 'yt';
 };
 
+const removeUndefined = (
+  conf: Partial<GuardoniConfig>
+): Partial<GuardoniConfig> => {
+  return pipe(
+    conf,
+    R.filter((p) => p !== undefined)
+  );
+};
+
 export const readConfigFromPath =
   (ctx: { logger: GuardoniContext['logger'] }) =>
   (
@@ -42,22 +52,11 @@ export const readConfigFromPath =
     confOverride: Partial<GuardoniConfig>
   ): TE.TaskEither<AppError, GuardoniConfig> => {
     const configFilePath = getConfigPath(basePath);
+    ctx.logger.debug('Reading config from path %s', configFilePath);
 
-    const sanitizedConf = Object.entries(confOverride).reduce<
-      Partial<GuardoniConfig>
-    >(
-      (acc, [key, value]) => {
-        if (value !== undefined) {
-          return {
-            ...acc,
-            [key]: value,
-          };
-        }
-        return acc;
-      },
-      // eslint-disable-next-line @typescript-eslint/prefer-reduce-type-parameter
-      {} as any
-    );
+    const sanitizedConf = removeUndefined(confOverride);
+
+    ctx.logger.debug('Override conf sanitized %O', sanitizedConf);
 
     const readExistingConfigT = pipe(
       IOE.tryCatch(() => {
@@ -204,6 +203,7 @@ export const getConfig =
     // get platform specific config
     const evidenceTag =
       confOverride.evidenceTag ?? 'no-tag-' + _.random(0, 0xffff);
+
     ctx.logger.debug('EvidenceTag %O', evidenceTag);
 
     const basePath = path.isAbsolute(_basePath)
@@ -231,9 +231,10 @@ export const getConfig =
         : path.resolve(basePath, tk.extensionDir)
       : undefined;
 
+    const sanitizedOverrideConf = removeUndefined(confOverride);
     return pipe(
       readConfigFromPath(ctx)(basePath, {
-        ...confOverride,
+        ...sanitizedOverrideConf,
         basePath,
         evidenceTag,
         yt: yt
@@ -255,17 +256,8 @@ export const getConfig =
           TE.fromEither,
           TE.mapLeft(toAppError),
           TE.map((chromePath) => ({
-            ...confOverride,
             ...config,
             chromePath,
-            // yt: {
-            //   ...config.yt,
-            //   ...yt,
-            // },
-            // tk: {
-            //   ...config.tk,
-            //   ...tk,
-            // },
           }))
         )
       ),

@@ -6,7 +6,7 @@ import _ from 'lodash';
 import moment from 'moment';
 import { HTMLSource } from '../lib/parser/html';
 import utils from '../lib/utils'; // this because parseLikes is an utils to be used also with version of the DB without the converted like. but should be a parsing related-only library once the issue with DB version is solved
-import { ParsedInfo, VideoMetadata } from '../models/Metadata';
+import { ParsedInfo, VideoMetadata } from '@yttrex/shared/models/Metadata';
 import * as longlabel from './longlabel';
 import * as shared from './shared';
 import uxlang from './uxlang';

@@ -1,8 +1,12 @@
 import { fc } from '@shared/test';
 import { propsOmit } from '@shared/utils/arbitrary.utils';
+import {
+  HomeMetadata,
+  ParsedInfo,
+  VideoMetadata,
+} from '@yttrex/shared/models/Metadata';
 import { getArbitrary } from 'fast-check-io-ts';
 import * as t from 'io-ts';
-import { HomeMetadata, ParsedInfo, VideoMetadata } from '../../models/Metadata';
 
 export const ParsedInfoArb = getArbitrary(
   t.strict({
@@ -33,7 +37,7 @@ const videoMetadataProps = propsOmit(VideoMetadata, [
   'savingTime',
   'publicationTime',
   'params',
-  'related'
+  'related',
 ]);
 export const VideoMetadataArb = getArbitrary(
   t.strict({
@@ -42,7 +46,7 @@ export const VideoMetadataArb = getArbitrary(
     savingTime: t.unknown,
     publicationTime: t.unknown,
     params: t.unknown,
-    related: t.array(t.unknown)
+    related: t.array(t.unknown),
   })
 ).map((ad) => ({
   ...ad,
@@ -51,7 +55,7 @@ export const VideoMetadataArb = getArbitrary(
   clientTime: fc.sample(fc.date(), 1)[0],
   publicationTime: fc.sample(fc.date(), 1)[0],
   params: fc.sample(fc.dictionary(fc.string(), fc.string()), 1)[0],
-  related: fc.sample(ParsedInfoArb)
+  related: fc.sample(ParsedInfoArb),
 }));
 
 const homeMetadataProps = propsOmit(HomeMetadata, [
@@ -74,5 +78,5 @@ export const HomeMetadataArb = getArbitrary(
   metadataId: fc.sample(fc.uuid(), 1)[0],
   clientTime: fc.sample(fc.date(), 1)[0],
   savingTime: fc.sample(fc.date(), 1)[0],
-  selected: fc.sample(ParsedInfoArb)
+  selected: fc.sample(ParsedInfoArb),
 }));

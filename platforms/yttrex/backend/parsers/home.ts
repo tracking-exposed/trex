@@ -2,7 +2,7 @@ import { trexLogger } from '@shared/logger';
 import _ from 'lodash';
 import moment from 'moment';
 import { HTMLSource } from '../lib/parser/html';
-import { HomeMetadata, ParsedInfo } from '../models/Metadata';
+import { HomeMetadata, ParsedInfo } from '@yttrex/shared/models/Metadata';
 import * as longlabel from './longlabel';
 import * as shared from './shared';
 import uxlang from './uxlang';
