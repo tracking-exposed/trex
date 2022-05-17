@@ -283,7 +283,7 @@ describe('CLI', () => {
       });
 
       test('fails when receive an error during experiment conclusion', async () => {
-        const data = tests.fc.sample(SearchDirectiveArb, 2).map((d) => ({
+        const data = tests.fc.sample(ComparisonDirectiveArb, 2).map((d) => ({
           ...d,
           loadFor: 1000,
           watchFor: '2s',
@@ -317,46 +317,6 @@ describe('CLI', () => {
 
         expect(differenceInMilliseconds(end, start)).toBeGreaterThan(
           (2 + 3) * 2 * 100
-        );
-      });
-
-      test('succeed when experimentId has valid "search" directive', async () => {
-        // return directive
-        axiosMock.request.mockResolvedValueOnce({
-          data: tests.fc.sample(SearchDirectiveArb, 2).map((d) => ({
-            ...d,
-            loadFor: 1500,
-            watchFor: '1s',
-          })),
-        });
-
-        axiosMock.request.mockResolvedValueOnce({
-          data: {
-            acknowledged: true,
-          },
-        });
-
-        const start = new Date();
-        const result: any = await guardoni.run({
-          run: 'experiment',
-          experiment: experimentId as any,
-        })();
-        const end = new Date();
-
-        expect(result).toMatchObject({
-          _tag: 'Right',
-          right: {
-            message: 'Experiment completed',
-            values: [
-              {
-                directiveType: 'search',
-              },
-            ],
-          },
-        });
-
-        expect(differenceInMilliseconds(end, start)).toBeGreaterThan(
-          (1.5 + 1) * 2 * 100
         );
       });
 
@@ -399,7 +359,7 @@ describe('CLI', () => {
       test('succeeds when value is "1"', async () => {
         // return directive
         axiosMock.request.mockResolvedValueOnce({
-          data: tests.fc.sample(SearchDirectiveArb, 2).map((d) => ({
+          data: tests.fc.sample(ComparisonDirectiveArb, 2).map((d) => ({
             ...d,
             loadFor: 1000,
             watchFor: '1s',
@@ -420,7 +380,7 @@ describe('CLI', () => {
             message: 'Experiment completed',
             values: [
               {
-                directiveType: 'search',
+                directiveType: 'comparison',
                 evidenceTag: evidenceTag,
               },
             ],
@@ -490,7 +450,7 @@ describe('CLI', () => {
       'tiktok'
     );
 
-    describe('Register an experiment from a CSV', () => {
+    describe.skip('Register an experiment from a CSV', () => {
       test('fails when the file path is wrong', async () => {
         // mocks
 

@@ -81,7 +81,7 @@ export type ComparisonDirective = t.TypeOf<typeof ComparisonDirective>;
 
 export const SearchDirective = t.strict(
   {
-    title: t.number,
+    title: t.string,
     videoURL: t.string,
   },
   'SearchDirective'
