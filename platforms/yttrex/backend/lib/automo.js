@@ -228,6 +228,8 @@ async function getMetadataFromAuthorChannelId(channelId, options) {
   const mongoc = await mongo3.clientConnect({ concurrency: 1 });
   const filter = {
     authorSource: { $in: [`/channel/${channelId}`, `/c/${channelId}`] },
+    authorName: { $ne: null },
+    'related.0': { $exists: true },
   };
 
   const cappedResultsOpts = [

@@ -1,5 +1,11 @@
 undefined
 
+### [2.4.8](https://github.com/tracking-exposed/yttrex/compare/v2.4.7...v2.4.8) (2022-05-11)undefined
+
+### [2.4.7](https://github.com/tracking-exposed/yttrex/compare/v2.4.6...v2.4.7) (2022-05-11)
+
+- **ycai:** exclude from content creator related channels if 'authorName' is nullable, closes [#506](https://github.com/tracking-exposed/yttrex/issues/506) ([#507](https://github.com/tracking-exposed/yttrex/issues/507)) ([6590439](https://github.com/tracking-exposed/yttrex/commit/65904393c1437398dce3ab25732fac5f751f958b))undefined
+
 ### [2.4.6](https://github.com/tracking-exposed/yttrex/compare/v2.4.5...v2.4.6) (2022-03-28)undefined
 
 ### [2.4.5](https://github.com/tracking-exposed/yttrex/compare/v2.4.4...v2.4.5) (2022-03-21)
