@@ -1,7 +1,6 @@
 import { AppError } from '@shared/errors/AppError';
 import { toValidationError } from '@shared/errors/ValidationError';
 import {
-  ComparisonDirective,
   ComparisonDirectiveType,
   Directive,
   DirectiveType,
@@ -81,9 +80,7 @@ export const createExperimentInAPI =
     return pipe(
       API.v3.Public.PostDirective({
         Params: { directiveType },
-        Body: ComparisonDirective.is(parsedCSV)
-          ? { parsedCSV }
-          : (parsedCSV as any),
+        Body: { parsedCSV: parsedCSV as any },
         Headers: {
           'Content-Type': 'application/json; charset=utf-8',
         },

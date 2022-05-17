@@ -6,7 +6,7 @@ import { bo } from '@shared/extension/utils/browser.utils';
 import { NewLeafEvent, NewVideoEvent, YTHubEvent } from '../models/HubEvent';
 import ytLog from '../logger';
 
-const INTERVAL = config.FLUSH_INTERVAL;
+const INTERVAL = parseInt(config.FLUSH_INTERVAL as any as string, 10);
 
 interface State {
   incremental: number;

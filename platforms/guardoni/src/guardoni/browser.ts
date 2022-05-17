@@ -79,7 +79,7 @@ const operateTab =
 
       ctx.logger.info(
         '— Loading %s (for %d ms) %O',
-        directive.url,
+        (directive as any).url,
         loadFor,
         directive
       );
@@ -87,7 +87,7 @@ const operateTab =
 
       // TODO the 'timeout' would allow to repeat this operation with
       // different parameters. https://stackoverflow.com/questions/60051954/puppeteer-timeouterror-navigation-timeout-of-30000-ms-exceeded
-      await page.goto(directive.url, {
+      await page.goto((directive as any).url, {
         waitUntil: 'networkidle0',
       });
 
@@ -103,7 +103,7 @@ const operateTab =
 
       ctx.logger.info(
         'Directive to URL %s, Loading delay %d (--load optional)',
-        directive.url,
+        (directive as any).url,
         loadFor
       );
       await page.waitForTimeout(loadFor);
