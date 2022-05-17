@@ -68,6 +68,51 @@ import {
   liftFromIOE,
 } from './utils';
 
+const runNavigate = (ctx: GuardoniContext): TE.TaskEither<AppError, void> => {
+  const home =
+    ctx.platform.name === 'tiktok'
+      ? 'https://www.tiktok.com'
+      : 'https://www.youtube.com';
+
+  return pipe(
+    dispatchBrowser({
+      ...ctx,
+      config: {
+        ...ctx.config,
+        headless: false,
+      },
+    }),
+    TE.chain((b) => {
+      return TE.tryCatch(async () => {
+        const [page] = await b.pages();
+
+        await page.goto(home, {
+          waitUntil: 'networkidle0',
+        });
+
+        return b;
+      }, toAppError);
+    }),
+    TE.chain((b) => {
+      return TE.tryCatch(
+        () =>
+          new Promise((resolve, reject) => {
+            ctx.logger.info('Browser is ready at %s', home);
+            b.on('error', (e) => {
+              ctx.logger.error('Error occurred during browsing %O', e);
+              reject(e);
+            });
+            b.on('close', () => {
+              ctx.logger.info('browser closing...');
+              resolve();
+            });
+          }),
+        toAppError
+      );
+    })
+  );
+};
+
 export const runBrowser =
   (ctx: GuardoniContext) =>
   (
@@ -406,6 +451,7 @@ export interface Guardoni {
     experiment: NonEmptyString,
     onProgress?: (details: ProgressDetails) => void
   ) => TE.TaskEither<AppError, GuardoniSuccessOutput>;
+  runBrowser: () => TE.TaskEither<AppError, void>;
 }
 
 interface GuardoniLauncher {
@@ -459,6 +505,7 @@ export const GetGuardoni: GetGuardoni = ({
             registerExperiment: registerExperiment(ctx),
             registerExperimentFromCSV: registerCSV(ctx),
             listExperiments: listExperiments(ctx),
+            runBrowser: () => runNavigate(ctx),
           };
         })
       );
@@ -477,6 +524,7 @@ export const GetGuardoni: GetGuardoni = ({
             registerExperiment: registerExperiment(ctx),
             registerExperimentFromCSV: registerCSV(ctx),
             listExperiments: listExperiments(ctx),
+            runBrowser: () => runNavigate(ctx),
           };
         })
       );

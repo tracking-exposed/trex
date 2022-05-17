@@ -141,7 +141,7 @@ export const readConfigFromPath =
     );
 
     const defaultConfigT = TE.right<unknown, GuardoniConfig>(
-      getDefaultConfig()
+      getDefaultConfig(basePath)
     );
 
     const configExists = fs.existsSync(configFilePath);

@@ -42,6 +42,9 @@ export type GuardoniCommandConfig =
     }
   | {
       run: 'list';
+    }
+  | {
+      run: 'navigate';
     };
 
 export interface GuardoniCLI {
@@ -145,6 +148,13 @@ export const GetGuardoniCLI: GetGuardoniCLI = (
             }
             case 'experiment':
               return g.runExperiment(command.experiment);
+            case 'navigate': {
+              console.log(g.config);
+              return pipe(
+                g.runBrowser(),
+                TE.map(() => ({ type: 'success', values: [], message: '' }))
+              );
+            }
             case 'auto':
             default:
               return g.runAuto(command.value);
@@ -251,6 +261,16 @@ const runGuardoni = ({
 const program = yargs(hideBin(process.argv))
   .scriptName('guardoni-cli')
   .command(
+    'yt-navigate',
+    'Use guardoni browser with loaded yt extension',
+    ({ argv }) =>
+      runGuardoni({
+        ...argv,
+        platform: 'youtube',
+        command: { run: 'navigate' },
+      })
+  )
+  .command(
     'yt-experiment <experiment>',
     'Run guardoni from a given experiment',
     (yargs) =>
@@ -306,6 +326,16 @@ const program = yargs(hideBin(process.argv))
         ...argv,
         platform: 'youtube',
         command: { run: 'auto', index },
+      })
+  )
+  .command(
+    'tk-navigate',
+    'Use guardoni browser with loaded tk extension',
+    ({ argv }) =>
+      runGuardoni({
+        ...argv,
+        platform: 'tiktok',
+        command: { run: 'navigate' },
       })
   )
   .command(
