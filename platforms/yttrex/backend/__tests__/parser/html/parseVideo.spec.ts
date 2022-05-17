@@ -1,12 +1,12 @@
+import { VideoMetadata } from '@yttrex/shared/models/Metadata';
 import base58 from 'bs58';
-import { addMinutes, parseISO, subMinutes } from 'date-fns';
+import { addMinutes, parseISO } from 'date-fns';
 import { JSDOM } from 'jsdom';
 import nacl from 'tweetnacl';
 import {
   getLastHTMLs,
   updateMetadataAndMarkHTML,
 } from '../../../lib/parser/html';
-import { VideoMetadata } from '../../../models/Metadata';
 import process from '../../../parsers/video';
 import { GetTest, Test } from '../../../tests/Test';
 import { readHistoryResults, runParserTest } from './utils';

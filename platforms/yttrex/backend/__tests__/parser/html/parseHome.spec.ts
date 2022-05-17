@@ -1,3 +1,4 @@
+import { HomeMetadata } from '@yttrex/shared/models/Metadata';
 import base58 from 'bs58';
 import { parseISO, subMinutes } from 'date-fns';
 import { JSDOM } from 'jsdom';
@@ -6,7 +7,6 @@ import {
   getLastHTMLs,
   updateMetadataAndMarkHTML,
 } from '../../../lib/parser/html';
-import { HomeMetadata } from '../../../models/Metadata';
 import process from '../../../parsers/home';
 import { GetTest, Test } from '../../../tests/Test';
 import { readHistoryResults, runParserTest } from './utils';

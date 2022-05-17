@@ -1,4 +1,4 @@
-import { Metadata } from '../../models/Metadata';
+import { Metadata } from '@yttrex/shared/models/Metadata';
 import { MongoClient } from 'mongodb';
 import mongo3 from '../../lib/mongo3';
 
