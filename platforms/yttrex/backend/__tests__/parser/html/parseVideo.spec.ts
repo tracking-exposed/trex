@@ -1,12 +1,12 @@
+import { VideoMetadata } from '@yttrex/shared/models/Metadata';
 import base58 from 'bs58';
-import { addMinutes, parseISO, subMinutes } from 'date-fns';
+import { addMinutes, parseISO } from 'date-fns';
 import { JSDOM } from 'jsdom';
 import nacl from 'tweetnacl';
 import {
   getLastHTMLs,
   updateMetadataAndMarkHTML,
 } from '../../../lib/parser/html';
-import { VideoMetadata } from '../../../models/Metadata';
 import process from '../../../parsers/video';
 import { GetTest, Test } from '../../../tests/Test';
 import { readHistoryResults, runParserTest } from './utils';
@@ -47,6 +47,7 @@ describe('Parser: Video', () => {
     );
   });
 
+  jest.useRealTimers();
   jest.setTimeout(20 * 1000);
 
   const historyData = readHistoryResults('video', publicKey);
@@ -89,16 +90,7 @@ describe('Parser: Video', () => {
           // console.log('plain html', h.html);
           const sanitizedHTML = h.html.replace(/(\n|\t) +/g, '');
           // console.log('sanitized html', sanitizedHTML);
-          const sourceDOM = new JSDOM(sanitizedHTML, {
-            beforeParse: (w) => {
-              w.onload = (e) => {
-                console.log('load', e);
-              };
-              w.onerror = (e) => {
-                console.error('error', e);
-              };
-            },
-          });
+          const sourceDOM = new JSDOM(sanitizedHTML);
 
           // console.log('source dom text content', sourceDOM.window.document);
 
@@ -152,10 +144,11 @@ describe('Parser: Video', () => {
               ({ recommendedPubTime, publicationTime, ...rr }) => ({
                 ...rr,
                 foryou: rr.foryou ?? null,
-                publicationTime: publicationTime?.toISOString() ?? null,
               })
             )
-          ).toMatchObject(expectedRelated.map(({ ...rr }) => rr));
+          ).toMatchObject(
+            expectedRelated.map(({ publicationTime, ...rr }) => rr)
+          );
         },
       })({ metadata, sources });
     }

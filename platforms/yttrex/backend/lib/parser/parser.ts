@@ -4,7 +4,7 @@ import { formatDistance } from 'date-fns';
 import differenceInMinutes from 'date-fns/differenceInMinutes';
 import subMinutes from 'date-fns/subMinutes';
 import _ from 'lodash';
-import { Metadata } from '../../models/Metadata';
+import { Metadata } from '@yttrex/shared/models/Metadata';
 import {
   ExecuteParams,
   ExecutionOutput,
@@ -236,7 +236,7 @@ const actualExecution =
 
         const envelops = await ctx.getContributions(htmlFilter, 0, htmlAmount);
 
-        if(envelops.sources.length)
+        if (envelops.sources.length)
           ctx.log.debug('Data to process %d', envelops.sources.length);
 
         let results: ParsingChainResults | undefined;
@@ -292,7 +292,7 @@ const actualExecution =
             payload: results,
           };
         }
-        if(computedFrequency !== previousFrequency) {
+        if (computedFrequency !== previousFrequency) {
           ctx.log.debug('Sleeping for %f seconds', computedFrequency);
           previousFrequency = computedFrequency;
         }

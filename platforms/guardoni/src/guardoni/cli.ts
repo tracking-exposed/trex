@@ -115,8 +115,6 @@ export const GetGuardoniCLI: GetGuardoniCLI = (
   p,
   platform
 ): GuardoniCLI => {
-  cliLogger.debug('Initialized with config %O', config);
-
   const run = (
     command: GuardoniCommandConfig
   ): TE.TaskEither<AppError, GuardoniSuccessOutput> =>
@@ -125,6 +123,7 @@ export const GetGuardoniCLI: GetGuardoniCLI = (
         basePath,
         logger: guardoniLogger,
         puppeteer: p,
+        verbose: config.verbose,
       }).run(config, platform),
       TE.chain((g) => {
         return TE.fromIO<
@@ -199,16 +198,16 @@ const runGuardoni = ({
   extensionDir,
   ...guardoniConf
 }: any): Promise<void> => {
-  
   const basePath = guardoniConf.basePath ?? DEFAULT_BASE_PATH;
 
   if (verbose) {
-    // eslint-disable-next-line
-    console.log('Running guardoni', { config, basePath, guardoniConf });
-    D.enable('guardoni*');
+    D.enable('guardoni:cli*');
+
+    cliLogger.debug('Running guardoni', { config, basePath, guardoniConf });
+    // D.enable('guardoni*');
     if (config) {
       // eslint-disable-next-line
-      console.log(`Configuration loaded from ${config}`, guardoniConf);
+      cliLogger.debug(`Configuration loaded from ${config}`, guardoniConf);
     }
   }
 
@@ -234,7 +233,7 @@ const runGuardoni = ({
           guardoniConf.tk?.extensionDir ??
           DEFAULT_TK_EXTENSION_DIR,
       },
-      profileName: profile ?? 'default',
+      profileName: profile ?? guardoniConf.profileName ?? 'default',
       verbose,
     },
     basePath,
