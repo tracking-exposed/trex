@@ -18,8 +18,6 @@ const WatchForArb = fc.oneof(
   fc.integer({ min: 1, max: 30 }).map((n) => `${n}s`)
 );
 
-const LoadForArb = fc.integer({ min: 1000, max: 10000 });
-
 export const SearchDirectiveRowArb = getArbitrary(SearchDirectiveRow).map(
   (r) => ({
     ...r,
@@ -30,11 +28,8 @@ export const SearchDirectiveRowArb = getArbitrary(SearchDirectiveRow).map(
 );
 
 export const SearchDirectiveArb = getArbitrary(SearchDirective).map((r) => ({
-  ...r,
-  url: fc.sample(URLArb, 1)[0],
-  loadFor: fc.sample(LoadForArb, 1)[0],
-  targetVideoId: fc.sample(fc.uuid())[0],
-  watchFor: fc.sample(WatchForArb, 1)[0],
+  title: fc.sample(HumanReadableStringArb())[0],
+  videoURL: fc.sample(URLArb, 1)[0],
 }));
 
 export const ComparisonDirectiveRowArb = getArbitrary(

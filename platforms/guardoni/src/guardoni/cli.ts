@@ -149,7 +149,6 @@ export const GetGuardoniCLI: GetGuardoniCLI = (
             case 'experiment':
               return g.runExperiment(command.experiment);
             case 'navigate': {
-              console.log(g.config);
               return pipe(
                 g.runBrowser(),
                 TE.map(() => ({ type: 'success', values: [], message: '' }))

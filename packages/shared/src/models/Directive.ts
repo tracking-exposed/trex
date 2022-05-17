@@ -32,16 +32,11 @@ export const SearchDirectiveRow = t.type(
   'SearchRow'
 );
 // todo: this should be named CreateExperimentBody
-export const CreateDirectiveBody = t.type(
-  {
-    parsedCSV: t.union(
-      [
-        nonEmptyArray(ComparisonDirectiveRow),
-        nonEmptyArray(SearchDirectiveRow),
-      ],
-      'DirectiveRow'
-    ),
-  },
+export const CreateDirectiveBody = t.union(
+  [
+    t.type({ parsedCSV: nonEmptyArray(ComparisonDirectiveRow) }),
+    nonEmptyArray(SearchDirectiveRow),
+  ],
   'CreateDirectiveBody'
 );
 
@@ -86,11 +81,8 @@ export type ComparisonDirective = t.TypeOf<typeof ComparisonDirective>;
 
 export const SearchDirective = t.strict(
   {
-    loadFor: t.number,
-    url: t.string,
-    watchFor: t.union([t.number, t.string, t.undefined]),
-    name: t.string,
-    targetVideoId: t.string,
+    title: t.number,
+    videoURL: t.string,
   },
   'SearchDirective'
 );

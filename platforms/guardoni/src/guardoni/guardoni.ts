@@ -271,7 +271,7 @@ export const readCSVAndParse =
   (
     filePath: string,
     directiveType: DirectiveType
-  ): TE.TaskEither<AppError, NonEmptyArray<ComparisonDirectiveRow>> => {
+  ): TE.TaskEither<AppError, NonEmptyArray<Directive>> => {
     logger.debug('Registering CSV from path %s', filePath);
 
     return pipe(
@@ -331,7 +331,7 @@ export const readCSVAndParse =
           ),
           TE.map((csvContent) => {
             logger.debug('CSV decoded content %O', csvContent.records);
-            return csvContent.records as NonEmptyArray<ComparisonDirectiveRow>;
+            return csvContent.records as NonEmptyArray<Directive>;
           })
         )
       )
