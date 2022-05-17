@@ -122,12 +122,12 @@ describe('Parserv', () => {
                   ...s
                 }) => ({
                   ...s,
-                  publicationTime: publicationTime?.toISOString() ?? null,
+                  // publicationTime: publicationTime?.toISOString() ?? null,
                 })
               )
             ).toMatchObject(
               expectedSelected.map(
-                ({ thumbnailHref, recommendedRelativeSeconds, ...s }) => ({
+                ({ thumbnailHref, recommendedRelativeSeconds, publicationTime, ...s }) => ({
                   ...s,
                 })
               )

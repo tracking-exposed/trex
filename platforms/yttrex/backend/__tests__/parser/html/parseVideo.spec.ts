@@ -144,10 +144,11 @@ describe('Parser: Video', () => {
               ({ recommendedPubTime, publicationTime, ...rr }) => ({
                 ...rr,
                 foryou: rr.foryou ?? null,
-                publicationTime: publicationTime?.toISOString() ?? null,
               })
             )
-          ).toMatchObject(expectedRelated.map(({ ...rr }) => rr));
+          ).toMatchObject(
+            expectedRelated.map(({ publicationTime, ...rr }) => rr)
+          );
         },
       })({ metadata, sources });
     }
