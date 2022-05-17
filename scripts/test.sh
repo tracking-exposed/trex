@@ -7,61 +7,68 @@ export DEBUG="@trex*"
 export NODE_ENV=development
 export DOTENV_CONFIG_PATH=.env.development
 
-yarn workspaces foreach run clean
-
-# build shared
-yarn shared build
-
-# build yt backend
-yarn yt:backend build
-
-# bootstrap yttrex backend processes
-yarn pm2 start ./platforms/yttrex/backend/ecosystem.config.js
-yarn pm2 save
-
-# test backend
-# yarn yt:backend test
-
-# build yttrex extension
-yarn yt:ext build
-cp -r ./platforms/yttrex/extension/build/ ./platforms/yttrex/extension/dist
-
-# build the extension for production for guardoni
-# yarn yt:ext test
-
-# build guardoni
-yarn guardoni build
-# yarn guardoni pkg
+# YT
 
 # register an experiment for home
-home_experiment_register_out="$(yarn guardoni cli --verbose --backend http://localhost:9000/api yt-register ./experiments/yt-home.csv | grep 'experimentId:')"
-home_experiment_id=${home_experiment_register_out/'experimentId: '/''}
-echo $home_experiment_id
+yt_home_experiment_register_out="$(yarn guardoni cli --verbose --basePath ./ yt-register ./experiments/yt-home.csv | grep 'experimentId:')"
+yt_home_experiment_id=${yt_home_experiment_register_out/'experimentId: '/''}
+echo $yt_home_experiment_id
 
 # # exec the experiment
-home_experiment_run_out=$(yarn guardoni cli --verbose --backend http://localhost:9000/api yt-experiment -c guardoni.config.json $home_experiment_id |  grep 'publicKey:')
-home_experiment_public_key=${home_experiment_run_out/'publicKey: '/''}
-echo $home_experiment_public_key
-echo "http://localhost:9000/api/v1/personal/$home_experiment_public_key"
+yt_home_experiment_run_out=$(yarn guardoni cli --verbose --backend http://localhost:9000/api --basePath ./ yt-experiment $yt_home_experiment_id |  grep 'publicKey:')
+yt_home_experiment_public_key=${yt_home_experiment_run_out/'publicKey: '/''}
+echo $yt_home_experiment_public_key
+echo "http://localhost:14000/api/v1/personal/$yt_home_experiment_public_key"
 
-curl "http://localhost:9000/api/v1/personal/$home_experiment_public_key"
-
+# curl "http://localhost:9000/api/v1/personal/$yt_home_experiment_public_key"
 
 # register an experiment for videos
-video_experiment_register_out="$(yarn guardoni cli --verbose --backend http://localhost:9000/api yt-register ./experiments/trex-yt-videos.csv | grep 'experimentId:')"
-video_experiment_id=${video_experiment_register_out/'experimentId: '/''}
+yt_video_experiment_register_out="$(yarn guardoni cli --verbose yt-register ./experiments/yt-videos.csv | grep 'experimentId:')"
+yt_video_experiment_id=${yt_video_experiment_register_out/'experimentId: '/''}
 
-echo $video_experiment_id
+echo $yt_video_experiment_id
 
 # exec the experiment
-video_experiment_run_out=$(yarn guardoni cli --verbose --backend http://localhost:9000/api yt-experiment -c guardoni.config.json $video_experiment_id |  grep 'publicKey:')
-video_experiment_public_key=${video_experiment_run_out/'publicKey: '/''}
-echo $video_experiment_public_key
+yt_video_experiment_run_out=$(yarn guardoni cli --verbose tk-experiment $yt_video_experiment_id |  grep 'publicKey:')
+yt_video_experiment_public_key=${yt_video_experiment_run_out/'publicKey: '/''}
+echo $yt_video_experiment_public_key
 
 echo "Sleeping 30 seconds to let the parser process the data"
 # otherwise I was getting only the first 'home' as processed
 sleep 30;
-curl "http://localhost:9000/api/v1/personal/$video_experiment_public_key"
+# curl "http://localhost:9000/api/v1/personal/$video_experiment_public_key"
+
+# TK
+
+# register an experiment for home
+search_experiment_register_out="$(yarn guardoni cli --verbose --basePath ./ -c guardoni.config.json tk-register ./experiments/tk-search.csv | grep 'experimentId:')"
+search_experiment_id=${search_experiment_register_out/'experimentId: '/''}
+echo $search_experiment_id
+
+# # exec the experiment
+search_experiment_run_out=$(yarn guardoni cli --verbose --basePath ./ tk-experiment $search_experiment_id |  grep 'publicKey:')
+search_experiment_public_key=${search_experiment_run_out/'publicKey: '/''}
+echo $search_experiment_public_key
+echo "http://localhost:9000/api/v1/personal/$search_experiment_public_key"
+
+# curl "http://localhost:9000/api/v1/personal/$home_experiment_public_key"
+
+
+# # register an experiment for videos
+# video_experiment_register_out="$(yarn guardoni cli --verbose --backend http://localhost:9000/api yt-register ./experiments/tk-videos.csv | grep 'experimentId:')"
+# video_experiment_id=${video_experiment_register_out/'experimentId: '/''}
+
+# echo $video_experiment_id
+
+# # exec the experiment
+# video_experiment_run_out=$(yarn guardoni cli --verbose --backend http://localhost:9000/api yt-experiment -c guardoni.config.json $video_experiment_id |  grep 'publicKey:')
+# video_experiment_public_key=${video_experiment_run_out/'publicKey: '/''}
+# echo $video_experiment_public_key
+
+# echo "Sleeping 30 seconds to let the parser process the data"
+# # otherwise I was getting only the first 'home' as processed
+# sleep 30;
+# # curl "http://localhost:9000/api/v1/personal/$video_experiment_public_key"
 
 
 yarn pm2 stop all
