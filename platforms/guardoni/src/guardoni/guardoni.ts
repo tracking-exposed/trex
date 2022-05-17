@@ -6,6 +6,7 @@
  * - filter the directive with "exclude url tag"
  *
  */
+import * as Endpoints from '@shared/endpoints';
 import { AppError, toAppError } from '@shared/errors/AppError';
 import {
   ComparisonDirectiveRow,
@@ -28,7 +29,12 @@ import path from 'path';
 // import pluginStealth from "puppeteer-extra-plugin-stealth";
 import type puppeteer from 'puppeteer-core';
 import { dispatchBrowser, operateBrowser } from './browser';
-import { getConfig, getPlatformConfig } from './config';
+import {
+  checkConfig,
+  getConfig,
+  getDefaultConfig,
+  getPlatformConfig,
+} from './config';
 import domainSpecific from './domainSpecific';
 import {
   concludeExperiment,
@@ -40,11 +46,11 @@ import {
 } from './experiment';
 import { downloadExtension } from './extension';
 import {
-  getDefaultProfile,
   checkProfile,
+  getDefaultProfile,
+  getProfileJsonPath,
   readProfile,
   updateGuardoniProfile,
-  getProfileJsonPath,
 } from './profile';
 import {
   ExperimentInfo,
@@ -55,8 +61,12 @@ import {
   PlatformConfig,
   ProgressDetails,
 } from './types';
-import { csvParseTE, getPackageVersion, liftFromIOE } from './utils';
-import * as Endpoints from '@shared/endpoints'
+import {
+  csvParseTE,
+  getChromePath,
+  getPackageVersion,
+  liftFromIOE,
+} from './utils';
 
 export const runBrowser =
   (ctx: GuardoniContext) =>
@@ -311,72 +321,65 @@ const loadContext = (
 ): TE.TaskEither<AppError, GuardoniContext> => {
   logger.debug('Loading context for platform %s with config %O', platform, cnf);
 
+  const defaultConfig = getDefaultConfig(basePath);
+  const config = checkConfig({ logger })(basePath, {
+    ...defaultConfig,
+    ...cnf,
+
+    yt: {
+      ...defaultConfig.yt,
+      ...cnf.yt,
+    },
+    tk: {
+      ...defaultConfig.tk,
+      ...cnf.tk,
+    },
+  }) as GuardoniConfig;
   const profile = getDefaultProfile(basePath, cnf.profileName);
 
   logger.debug('profile %O', profile);
+
   const platformConf = getPlatformConfig(platform, {
     basePath,
-    ...(cnf as any),
+    ...(config as any),
   });
 
   return pipe(
     checkProfile({ logger })(basePath, cnf),
     TE.chain((p) => readProfile({ logger })(getProfileJsonPath(p))),
-    TE.map((profile) => ({
-      puppeteer: p,
-      API: MakeAPIClient({
-        baseURL: platformConf.backend,
-        getAuth: async (req) => req,
-        onUnauthorized: async (res) => res,
-      }, Endpoints ).API,
-      config: {
-        ...cnf,
-        basePath,
-        profileName: profile.profileName,
-      },
-      profile,
-      logger,
-      guardoniConfigFile: path.join(profile.udd, 'guardoni.json'),
-      version: getPackageVersion(),
-      platform: platformConf,
-    })),
+    TE.chain((profile) =>
+      pipe(
+        getChromePath(),
+        E.map((chromePath) => ({
+          ...config,
+          chromePath,
+        })),
+        E.map((c) => ({
+          puppeteer: p,
+          API: MakeAPIClient(
+            {
+              baseURL: platformConf.backend,
+              getAuth: async (req) => req,
+              onUnauthorized: async (res) => res,
+            },
+            Endpoints
+          ).API,
+          config: {
+            ...c,
+            basePath,
+            profileName: profile.profileName,
+          },
+          profile,
+          logger,
+          guardoniConfigFile: path.join(profile.udd, 'guardoni.json'),
+          version: getPackageVersion(),
+          platform: platformConf,
+        })),
+        E.mapLeft(toAppError),
+        TE.fromEither
+      )
+    ),
     TE.chainFirst(downloadExtension)
-    // TE.chainFirst((ctx) =>
-    //   liftFromIOE(() => fs.mkdirSync(ctx.profile.udd, { recursive: true }))
-    // ),
-    // TE.chain((ctx) =>
-    //   pipe(
-    //     liftFromIOE(() =>
-    //       fs.statSync(ctx.guardoniConfigFile, { throwIfNoEntry: false })
-    //     ),
-    //     TE.chain((stat) => {
-    //       ctx.logger.debug(
-    //         'Path %s exists? %O',
-    //         ctx.guardoniConfigFile,
-    //         stat !== undefined
-    //       );
-
-    //       if (stat) {
-    //         return readProfile(ctx)(ctx.guardoniConfigFile);
-    //       }
-
-    //       return pipe(
-    //         liftFromIOE(() =>
-    //           fs.writeFileSync(
-    //             ctx.guardoniConfigFile,
-    //             JSON.stringify(ctx.profile, null, 2),
-    //             'utf-8'
-    //           )
-    //         ),
-    //         TE.map(() => ctx.profile)
-    //       );
-    //     }),
-    //     TE.map((c) => ({
-    //       ...ctx,
-    //       profile: c,
-    //     }))
-    //   )
-    // )
   );
 };
 
