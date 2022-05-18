@@ -39,6 +39,7 @@ export const getDefaultConfig = (basePath: string): GuardoniConfig => {
     evidenceTag: randomTag(),
     advScreenshotDir: undefined,
     excludeURLTag: undefined,
+    tosAccepted: undefined,
     yt: {
       name: 'youtube',
       backend: DEFAULT_YT_BACKEND,

@@ -7,6 +7,7 @@ import { GuardoniConfig, PlatformConfig, Platform } from '../../guardoni/types';
 import { EVENTS } from '../models/events';
 import ExperimentExecutionRoute from './components/ExperimentExecution';
 import ExperimentList from './components/ExperimentList';
+import { IntroCarousel } from './components/IntroCarousel';
 import { OutputItem } from './components/OutputPanel';
 import Layout from './Layout';
 
@@ -84,19 +85,31 @@ export const App: React.FC = () => {
       onConfigChange={handleConfigChange}
       onPlatformChange={handlePlatformChange}
     >
-      <Switch>
-        <Route
-          path="/run/:experimentId"
-          render={(props) => (
-            <ExperimentExecutionRoute {...props} config={platform} />
-          )}
-        />
-        <Route
-          path="/experiments"
-          render={(props) => <ExperimentList {...props} config={platform} />}
-        />
-        <Redirect from="*" to="/experiments" />
-      </Switch>
+      {config.tosAccepted ? (
+        <Switch>
+          <Route
+            path="/run/:experimentId"
+            render={(props) => (
+              <ExperimentExecutionRoute {...props} config={platform} />
+            )}
+          />
+          <Route
+            path="/experiments"
+            render={(props) => <ExperimentList {...props} config={platform} />}
+          />
+          <Redirect from="*" to="/experiments" />
+        </Switch>
+      ) : null}
+
+      <IntroCarousel
+        open={!config.tosAccepted}
+        onCTAClick={() => {
+          handleConfigChange({
+            ...config,
+            tosAccepted: true,
+          });
+        }}
+      />
     </Layout>
   );
 };
