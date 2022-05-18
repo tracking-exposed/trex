@@ -53,23 +53,22 @@ jobs:
         run: yarn shared build
 
       - name: Build guardoni
-        env:
-          NODE_ENV: production
         run: |
-          yarn yt:ext build
-          yarn yt:ext dist:guardoni
-          mkdir -p ~/.guardoni/extension
-          cp ./platforms/yttrex/extension/dist/*.zip ~/.guardoni/extension
           yarn guardoni build
 
       - name: Test
         run: |
           yarn pm2 start --env test platforms/yttrex/backend/ecosystem.config.js
+          yarn pm2 start --env test platforms/tktrex/backend/ecosystem.config.js
+          yarn yt:ext build:guardoni
+          yarn tk:ext build:guardoni
           yarn test guardoni --ci
-          yarn pm2 stop all
 
       - name: Package
         run: yarn guardoni pkg
 
       - name: Test package
-        run: ./platforms/guardoni/dist/guardoni-cli-${{ steps.version.outputs.version }}-linux yt-list
+        run: |
+          ./platforms/guardoni/dist/guardoni-cli-${{ steps.version.outputs.version }}-linux --verbose --basePath "$(pwd)/platforms/guardoni" -c "$(pwd)/platforms/guardoni/guardoni.config.json" yt-list
+          ./platforms/guardoni/dist/guardoni-cli-${{ steps.version.outputs.version }}-linux --verbose --basePath "$(pwd)/platforms/guardoni" -c "$(pwd)/platforms/guardoni/guardoni.config.json" tk-list
+          yarn pm2 stop all

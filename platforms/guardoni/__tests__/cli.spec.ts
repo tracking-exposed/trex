@@ -23,8 +23,8 @@ axiosMock.create.mockImplementation(() => axiosMock);
 
 const basePath = path.resolve(__dirname, '../');
 const profileName = 'profile-test-99';
-const ytExtensionDir = path.resolve(__dirname, '../../yttrex/extension/build');
-const tkExtensionDir = path.resolve(__dirname, '../../tktrex/extension/build');
+const ytExtensionDir = path.resolve(basePath, '../yttrex/extension/build');
+const tkExtensionDir = path.resolve(basePath, '../tktrex/extension/build');
 
 describe('CLI', () => {
   const evidenceTag = 'test-tag';
@@ -37,6 +37,9 @@ describe('CLI', () => {
     fs.mkdirSync(path.resolve(basePath, 'experiments'), {
       recursive: true,
     });
+
+    fs.statSync(ytExtensionDir, { throwIfNoEntry: true })
+    fs.statSync(tkExtensionDir, { throwIfNoEntry: true })
 
     const comparisonCSVContent = await csvStringifyTE(
       tests.fc.sample(ComparisonDirectiveRowArb, 5),
@@ -81,7 +84,7 @@ describe('CLI', () => {
     guardoni = GetGuardoniCLI(
       {
         chromePath: '/usr/bin/chrome',
-        basePath: './',
+        basePath,
         headless: false,
         verbose: false,
         profileName: profileName,
