@@ -77,11 +77,11 @@ jobs:
           path: |
             packages/shared/build
             packages/taboule/build
-            extension/dist
-            guardoni/build
-            guardoni/dist
-            YCAI/build
-            platforms/tktrex/extension/build
+            platforms/yttrex/extension/dist
+            platforms/tktrex/extension/dist
+            platforms/guardoni/build
+            platforms/guardoni/dist
+            platforms/ycai/studio/build
 
       - name: Install dependencies
         run: yarn
@@ -94,9 +94,10 @@ jobs:
           yarn taboule build
           yarn yt:ext dist
           yarn yt:ext dist:guardoni
+          yarn tk:ext dist
+          yarn tk:ext dist:guardoni
           yarn guardoni build
           yarn guardoni pkg
-          yarn tk:ext build
           yarn ycai build
 
   guardoni_build:
@@ -135,11 +136,11 @@ jobs:
           path: |
             packages/shared/build
             packages/taboule/build
-            guardoni/build
-            guardoni/dist
-            platforms/tktrex/extension/build
+            platforms/guardoni/build
+            platforms/guardoni/dist
+            platforms/yttrex/extension/dist
+            platforms/tktrex/extension/dist
             platforms/ycai/studio/build
-            platforms/yttrex/extension/build
 
       - name: Setup Node.js
         uses: actions/setup-node@v2
@@ -174,12 +175,11 @@ jobs:
           path: |
             packages/shared/build
             packages/taboule/build
-            extension/dist
-            guardoni/build
-            guardoni/dist
-            platforms/tktrex/extension/build
+            platforms/yttrex/extension/dist
+            platforms/tktrex/extension/dist
+            platforms/guardoni/build
+            platforms/guardoni/dist
             platforms/ycai/studio/build
-            platforms/yttrex/extension/build
 
       - name: Setup Node.js
         uses: actions/setup-node@v2
