@@ -3,7 +3,9 @@
 # set -e -x
 set -e
 
+
 # TK
+yarn pm2 start ./platforms/tktrex/backend/ecosystem.config.js
 
 # register an experiment for home
 search_experiment_register_out="$(yarn guardoni cli --verbose --basePath ./ -c guardoni.config.json tk-register ./experiments/tk-search.csv | grep 'experimentId:')"
@@ -36,4 +38,4 @@ echo "http://localhost:9000/api/v1/personal/$search_experiment_public_key"
 # # curl "http://localhost:9000/api/v1/personal/$video_experiment_public_key"
 
 
-yarn pm2 stop all
+yarn pm2 stop tk-trex
