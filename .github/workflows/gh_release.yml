@@ -30,11 +30,11 @@ jobs:
           path: |
             packages/shared/build
             packages/taboule/build
-            extension/dist
-            guardoni/build
-            guardoni/dist
-            YCAI/build
-            services/tktrex/extension/build
+            platforms/yttrex/extension/dist
+            platforms/tktrex/extension/build
+            platforms/guardoni/build
+            platforms/guardoni/dist
+            platforms/ycai/studio/build
 
       - name: Install dependencies
         run: yarn
@@ -45,11 +45,12 @@ jobs:
         run: |
           yarn shared build
           yarn taboule build
-          yarn extension dist
-          yarn extension dist:guardoni
+          yarn yt:ext dist
+          yarn yt:ext dist:guardoni
+          yarn tk:ext dist
+          yarn tk:ext dist:guardoni
           yarn guardoni build
           yarn guardoni pkg
-          yarn tk:ext build
           yarn ycai build
 
   guardoni_build:
@@ -88,11 +89,11 @@ jobs:
           path: |
             packages/shared/build
             packages/taboule/build
-            extension/dist
-            guardoni/build
-            guardoni/dist
-            YCAI/build
-            services/tktrex/extension/build
+            platforms/yttrex/extension/dist
+            platforms/tktrex/extension/dist
+            platforms/guardoni/build
+            platforms/guardoni/dist
+            platforms/ycai/studio/build
 
       - name: Setup Node.js
         uses: actions/setup-node@v2
@@ -127,11 +128,11 @@ jobs:
           path: |
             packages/shared/build
             packages/taboule/build
-            extension/dist
-            guardoni/build
-            guardoni/dist
-            YCAI/build
-            services/tktrex/extension/build
+            platforms/yttrex/extension/dist
+            platforms/tktrex/extension/dist
+            platforms/guardoni/build
+            platforms/guardoni/dist
+            platforms/ycai/studio/build
 
       - name: Setup Node.js
         uses: actions/setup-node@v2
@@ -158,11 +159,12 @@ jobs:
           fail_on_unmatched_files: true
           tag_name: v${{ steps.version.outputs.version }}
           files: |
-            extension/dist/yttrex-*.zip
-            extension/dist/guardoni-yttrex-*.zip
-            guardoni/dist/guardoni-cli*
-            guardoni/dist/*.deb
-            guardoni/dist/*.dmg
-            guardoni/dist/Guardoni*.exe
-            services/tktrex/extension/build/extension/*.zip
-            YCAI/build/extension/*.zip
+            platforms/yttrex/extension/dist/yttrex-*.zip
+            platforms/yttrex/extension/dist/guardoni-yttrex-*.zip
+            platforms/tktrex/extension/dist/tktrex-*.zip
+            platforms/tktrex/extension/dist/guardoni-tktrex-*.zip
+            platforms/guardoni/dist/guardoni-cli*
+            platforms/guardoni/dist/*.deb
+            platforms/guardoni/dist/*.dmg
+            platforms/guardoni/dist/Guardoni*.exe
+            platforms/ycai/studio/build/extension/*.zip

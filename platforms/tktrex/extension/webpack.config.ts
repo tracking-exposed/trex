@@ -47,19 +47,22 @@ const manifestVersion = (
   process.env.MANIFEST_VERSION ?? packageJSON.version
 ).replace('-beta', '');
 
-const { buildENV, ...config } = getExtensionConfig('tktrex', {
-  cwd: __dirname,
-  env: AppEnv,
-  outputDir,
-  distDir: PATHS.DIST,
-  manifestVersion,
-  transformManifest: (m) => {
-    if (NODE_ENV === 'development') {
-      m.permissions.push('http://localhost:14000/');
-    }
-    return m;
+const { buildENV, ...config } = getExtensionConfig(
+  process.env.BUILD_TARGET === 'guardoni' ? 'tktrex-guardoni' : 'tktrex',
+  {
+    cwd: __dirname,
+    env: AppEnv,
+    outputDir,
+    distDir: PATHS.DIST,
+    manifestVersion,
+    transformManifest: (m) => {
+      if (NODE_ENV === 'development') {
+        m.permissions.push('http://localhost:14000/');
+      }
+      return m;
+    },
+    entry: PATHS.ENTRY,
   },
-  entry: PATHS.ENTRY,
-});
+);
 
 export default config;
