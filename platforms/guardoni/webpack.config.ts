@@ -22,10 +22,6 @@ config.plugins.push(
   new CopyWebpackPlugin({
     patterns: [
       {
-        from: path.resolve(__dirname, '../yttrex/extension/build'),
-        to: path.resolve(__dirname, 'build/extension'),
-      },
-      {
         from: path.resolve(
           __dirname,
           config.mode === 'development' ? '.env.development' : '.env'

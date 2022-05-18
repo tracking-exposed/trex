@@ -24,6 +24,79 @@ import {
 } from './types';
 import { CHROME_PATHS, getChromePath } from './utils';
 
+const randomTag = (): string => 'no-tag-' + _.random(0, 0xffff);
+
+export const getDefaultConfig = (basePath: string): GuardoniConfig => {
+  return {
+    chromePath: CHROME_PATHS[0],
+    headless: true,
+    verbose: false,
+    loadFor: DEFAULT_LOAD_FOR,
+    basePath,
+    profileName: 'default',
+    evidenceTag: randomTag(),
+    advScreenshotDir: undefined,
+    excludeURLTag: undefined,
+    yt: {
+      name: 'youtube',
+      backend: DEFAULT_YT_BACKEND,
+      extensionDir: DEFAULT_YT_EXTENSION_DIR,
+      proxy: undefined,
+    },
+    tk: {
+      name: 'tiktok',
+      backend: DEFAULT_TK_BACKEND,
+      extensionDir: DEFAULT_TK_EXTENSION_DIR,
+      proxy: undefined,
+    },
+  };
+};
+
+export const checkConfig =
+  (ctx: { logger: GuardoniContext['logger'] }) =>
+  (
+    basePath: string,
+    { yt, tk, ...conf }: Partial<GuardoniConfig>
+  ): Partial<Omit<GuardoniConfig, 'basePath'>> & { basePath: string } => {
+    const evidenceTag = conf.evidenceTag ?? randomTag();
+
+    ctx.logger.debug('EvidenceTag %O', evidenceTag);
+
+    const absoluteBasePath = path.isAbsolute(basePath)
+      ? basePath
+      : path.resolve(process.cwd(), basePath);
+
+    const ytExtensionDir = yt?.extensionDir
+      ? path.isAbsolute(yt.extensionDir)
+        ? yt.extensionDir
+        : path.resolve(basePath, yt.extensionDir)
+      : undefined;
+
+    const tkExtensionDir = tk?.extensionDir
+      ? path.isAbsolute(tk.extensionDir)
+        ? tk.extensionDir
+        : path.resolve(basePath, tk.extensionDir)
+      : undefined;
+
+    return {
+      ...conf,
+      evidenceTag,
+      basePath: absoluteBasePath,
+      yt: yt
+        ? {
+            ...yt,
+            extensionDir: ytExtensionDir ?? yt.extensionDir,
+          }
+        : undefined,
+      tk: tk
+        ? {
+            ...tk,
+            extensionDir: tkExtensionDir ?? tk.extensionDir,
+          }
+        : undefined,
+    };
+  };
+
 export const getConfigPath = (basePath: string): string =>
   path.resolve(basePath, 'guardoni.config.json');
 
@@ -67,32 +140,9 @@ export const readConfigFromPath =
       TE.map((json) => json as any)
     );
 
-    const defaultConfigT = TE.right<unknown, GuardoniConfig>({
-      chromePath: CHROME_PATHS[0],
-      headless: true,
-      verbose: false,
-      loadFor: DEFAULT_LOAD_FOR,
-      basePath,
-      profileName: 'default',
-      evidenceTag: '',
-      advScreenshotDir: undefined,
-      excludeURLTag: undefined,
-      ...sanitizedConf,
-      yt: {
-        name: 'youtube',
-        backend: DEFAULT_YT_BACKEND,
-        extensionDir: confOverride.yt?.extensionDir ?? DEFAULT_YT_EXTENSION_DIR,
-        proxy: undefined,
-        ...sanitizedConf.yt,
-      },
-      tk: {
-        name: 'tiktok',
-        backend: DEFAULT_TK_BACKEND,
-        extensionDir: confOverride.tk?.extensionDir ?? DEFAULT_TK_EXTENSION_DIR,
-        proxy: undefined,
-        ...sanitizedConf.tk,
-      },
-    });
+    const defaultConfigT = TE.right<unknown, GuardoniConfig>(
+      getDefaultConfig(basePath)
+    );
 
     const configExists = fs.existsSync(configFilePath);
     ctx.logger.debug(
@@ -201,55 +251,11 @@ export const getConfig =
     );
 
     // get platform specific config
-    const evidenceTag =
-      confOverride.evidenceTag ?? 'no-tag-' + _.random(0, 0xffff);
 
-    ctx.logger.debug('EvidenceTag %O', evidenceTag);
+    const config = checkConfig(ctx)(_basePath, { yt, tk, ...confOverride });
 
-    const basePath = path.isAbsolute(_basePath)
-      ? _basePath
-      : path.resolve(process.cwd(), _basePath);
-
-    // const yt = {
-    //   ..._yt,
-    //   extensionDir: _yt?.extensionDir
-    //     ? path.isAbsolute(_yt?.extensionDir)
-    //       ? _yt?.extensionDir
-    //       : path.resolve(basePath, _yt?.extensionDir)
-    //     : undefined,
-    // };
-
-    const ytExtensionDir = yt?.extensionDir
-      ? path.isAbsolute(yt.extensionDir)
-        ? yt.extensionDir
-        : path.resolve(basePath, yt.extensionDir)
-      : undefined;
-
-    const tkExtensionDir = tk?.extensionDir
-      ? path.isAbsolute(tk.extensionDir)
-        ? tk.extensionDir
-        : path.resolve(basePath, tk.extensionDir)
-      : undefined;
-
-    const sanitizedOverrideConf = removeUndefined(confOverride);
     return pipe(
-      readConfigFromPath(ctx)(basePath, {
-        ...sanitizedOverrideConf,
-        basePath,
-        evidenceTag,
-        yt: yt
-          ? {
-              ...yt,
-              extensionDir: ytExtensionDir ?? yt.extensionDir,
-            }
-          : undefined,
-        tk: tk
-          ? {
-              ...tk,
-              extensionDir: tkExtensionDir ?? tk.extensionDir,
-            }
-          : undefined,
-      }),
+      readConfigFromPath(ctx)(config.basePath, config),
       TE.chain((config) =>
         pipe(
           getChromePath(),
@@ -265,8 +271,6 @@ export const getConfig =
         const c = {
           ...config,
           chromePath: config.chromePath,
-          basePath,
-          evidenceTag,
         };
 
         ctx.logger.debug('Config %O', c);

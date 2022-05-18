@@ -35,5 +35,5 @@ module.exports = {
       statements: 60,
     },
   },
-  coveragePathIgnorePatterns: ['node_modules', 'build'],
+  coveragePathIgnorePatterns: ['node_modules', 'build', 'bin'],
 };

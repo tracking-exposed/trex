@@ -51,7 +51,12 @@ const getExtensionConfig = <E extends t.Props>(
           transform: (content: Buffer) => {
             const manifest = JSON.parse(content.toString());
             manifest.version = c.manifestVersion;
-            return JSON.stringify(c.transformManifest(manifest), null, 2);
+            const manifestJSON = JSON.stringify(
+              c.transformManifest(manifest),
+              null,
+              2
+            );
+            return manifestJSON;
           },
         },
       ],

@@ -26,7 +26,11 @@
 
 // Import other utils to handle the DOM and scrape data.
 
-import { ObserverHandler, refreshUUID, RouteObserverHandler } from '@shared/extension/app';
+import {
+  ObserverHandler,
+  refreshUUID,
+  RouteObserverHandler,
+} from '@shared/extension/app';
 import config from '@shared/extension/config';
 import logger from '@shared/extension/logger';
 import { sizeCheck } from '@shared/providers/dataDonation.provider';
@@ -252,7 +256,11 @@ export const handleLeaf = (
   }
 };
 
-export function handleRoute(node: HTMLElement, selector: RouteObserverHandler, route: string): void {
+export function handleRoute(
+  node: HTMLElement,
+  selector: RouteObserverHandler,
+  route: string
+): void {
   ytLogger.info(`Handle route ${route}`, selector);
 
   const sendableNode = document.querySelector('ytd-app');

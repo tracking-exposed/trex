@@ -1,4 +1,5 @@
 import { VideoMetadata } from '@yttrex/shared/models/Metadata';
+import { sanitizeHTML } from '@shared/utils/html.utils';
 import base58 from 'bs58';
 import { addMinutes, parseISO } from 'date-fns';
 import { JSDOM } from 'jsdom';
@@ -87,10 +88,8 @@ describe('Parser: Video', () => {
         sourceSchema: appTest.config.get('schema').htmls,
         metadataSchema: appTest.config.get('schema').metadata,
         mapSource: (h: any) => {
-          // console.log('plain html', h.html);
-          const sanitizedHTML = h.html.replace(/(\n|\t) +/g, '');
           // console.log('sanitized html', sanitizedHTML);
-          const sourceDOM = new JSDOM(sanitizedHTML);
+          const sourceDOM = new JSDOM(sanitizeHTML(h.html));
 
           // console.log('source dom text content', sourceDOM.window.document);
 

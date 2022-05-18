@@ -37,7 +37,15 @@ export const downloadExtension = (
       const manifest = fs.existsSync(manifestPath);
 
       if (manifest) {
-        ctx.logger.debug(`Manifest found, no need to download the extension`);
+        const m = JSON.parse(fs.readFileSync(manifestPath, 'utf-8'));
+        const httpPerms = m.permissions.filter((p: string) =>
+          p.startsWith('http')
+        );
+        ctx.logger.info(
+          `Manifest found, no need to download the extension: %s (%O)`,
+          m.version,
+          httpPerms
+        );
         return undefined;
       }
 

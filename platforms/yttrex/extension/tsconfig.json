@@ -2,6 +2,7 @@
   "extends": "../../../tsconfig.json",
   "compilerOptions": {
     "allowJs": true,
+    "rootDir": "./",
     "baseUrl": "./src",
     "outDir": "./build/ts",
     "esModuleInterop": true,

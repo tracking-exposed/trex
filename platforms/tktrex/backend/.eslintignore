@@ -2,3 +2,4 @@ lib
 parsers
 routes
 scripts
+jest.config.js

@@ -57,10 +57,9 @@ const { buildENV, ...extensionConfig } = getExtensionConfig(
           (p: string) => !p.includes('localhost')
         );
       } else if (extensionConfig.mode === 'development') {
-        manifest.permissions = [
-          'http://localhost:9000/',
-          ...manifest.permissions,
-        ];
+        manifest.permissions = manifest.permissions
+          .filter((p: string) => !p.includes('youtube.tracking.exposed'))
+          .concat(['http://localhost:9000']);
       }
 
       if (buildENV.BUNDLE_TARGET === 'chrome') {
