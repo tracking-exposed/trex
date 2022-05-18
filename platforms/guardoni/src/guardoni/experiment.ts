@@ -1,14 +1,13 @@
 import { AppError } from '@shared/errors/AppError';
 import { toValidationError } from '@shared/errors/ValidationError';
 import {
-  ChiaroScuroDirective,
-  ChiaroScuroDirectiveType,
-  ComparisonDirectiveRow,
   ComparisonDirectiveType,
   Directive,
   DirectiveType,
   PostDirectiveResponse,
   PostDirectiveSuccessResponse,
+  SearchDirective,
+  SearchDirectiveType,
 } from '@shared/models/Directive';
 import * as E from 'fp-ts/lib/Either';
 import { pipe } from 'fp-ts/lib/function';
@@ -49,11 +48,23 @@ export const getDirective =
           experimentId,
         },
       }),
-      TE.map((data) => {
-        ctx.logger.debug(`Data for experiment (%s) %O`, experimentId, data);
-        const directiveType = ChiaroScuroDirective.is(data[0])
-          ? ChiaroScuroDirectiveType.value
+      TE.map((response) => {
+        const directiveType = SearchDirective.is(response[0])
+          ? SearchDirectiveType.value
           : ComparisonDirectiveType.value;
+
+        const data = response.map((d) => {
+          if (SearchDirective.is(d)) {
+            const { videoURL, title } = d;
+            return {
+              title,
+              url: videoURL,
+            };
+          }
+          return d;
+        }) as NonEmptyArray<Directive>;
+
+        ctx.logger.debug(`Data for experiment (%s) %O`, experimentId, data);
 
         return { type: directiveType, data };
       })
@@ -64,12 +75,12 @@ export const createExperimentInAPI =
   ({ API, logger }: GuardoniContext) =>
   (
     directiveType: DirectiveType,
-    parsedCSV: NonEmptyArray<ComparisonDirectiveRow>
+    parsedCSV: NonEmptyArray<Directive>
   ): TE.TaskEither<AppError, PostDirectiveSuccessResponse> => {
     return pipe(
       API.v3.Public.PostDirective({
         Params: { directiveType },
-        Body: { parsedCSV },
+        Body: { parsedCSV: parsedCSV as any },
         Headers: {
           'Content-Type': 'application/json; charset=utf-8',
         },
@@ -91,7 +102,7 @@ export const createExperimentInAPI =
 export const registerExperiment =
   (ctx: GuardoniContext) =>
   (
-    records: NonEmptyArray<ComparisonDirectiveRow>,
+    records: NonEmptyArray<Directive>,
     directiveType: DirectiveType
   ): TE.TaskEither<AppError, GuardoniSuccessOutput> => {
     ctx.logger.debug('Creating experiment %O', { records, directiveType });
@@ -145,8 +156,6 @@ export const saveExperiment =
       newProfile: profile.newProfile,
       when: new Date(),
     };
-
-    // profinfo.expinfo = experimentInfo;
 
     return pipe(
       liftFromIOE(() =>

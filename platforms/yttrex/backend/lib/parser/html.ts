@@ -9,6 +9,7 @@ import {
   ParserProviderContext,
   PipelineResults,
 } from './types';
+import { sanitizeHTML } from '@shared/utils/html.utils';
 
 export interface HTMLSource {
   html: HTML;
@@ -47,7 +48,7 @@ export const getLastHTMLs =
       try {
         return {
           supporter: _.first(supporter),
-          jsdom: new JSDOM(h.html.replace(/\n +/g, '')).window.document,
+          jsdom: new JSDOM(sanitizeHTML(h.html)).window.document,
           html: h,
         };
       } catch (error) {

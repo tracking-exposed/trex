@@ -42,6 +42,9 @@ export type GuardoniCommandConfig =
     }
   | {
       run: 'list';
+    }
+  | {
+      run: 'navigate';
     };
 
 export interface GuardoniCLI {
@@ -134,13 +137,23 @@ export const GetGuardoniCLI: GetGuardoniCLI = (
           switch (command.run) {
             case 'list':
               return g.listExperiments();
-            case 'register-csv':
-              return g.registerExperimentFromCSV(
-                command.file,
-                command.type ?? 'comparison'
-              );
+            case 'register-csv': {
+              const type = command.type
+                ? command.type
+                : g.platform.name === 'youtube'
+                ? 'comparison'
+                : 'search';
+
+              return g.registerExperimentFromCSV(command.file, type);
+            }
             case 'experiment':
               return g.runExperiment(command.experiment);
+            case 'navigate': {
+              return pipe(
+                g.runBrowser(),
+                TE.map(() => ({ type: 'success', values: [], message: '' }))
+              );
+            }
             case 'auto':
             default:
               return g.runAuto(command.value);
@@ -247,6 +260,16 @@ const runGuardoni = ({
 const program = yargs(hideBin(process.argv))
   .scriptName('guardoni-cli')
   .command(
+    'yt-navigate',
+    'Use guardoni browser with loaded yt extension',
+    ({ argv }) =>
+      runGuardoni({
+        ...argv,
+        platform: 'youtube',
+        command: { run: 'navigate' },
+      })
+  )
+  .command(
     'yt-experiment <experiment>',
     'Run guardoni from a given experiment',
     (yargs) =>
@@ -302,6 +325,16 @@ const program = yargs(hideBin(process.argv))
         ...argv,
         platform: 'youtube',
         command: { run: 'auto', index },
+      })
+  )
+  .command(
+    'tk-navigate',
+    'Use guardoni browser with loaded tk extension',
+    ({ argv }) =>
+      runGuardoni({
+        ...argv,
+        platform: 'tiktok',
+        command: { run: 'navigate' },
       })
   )
   .command(

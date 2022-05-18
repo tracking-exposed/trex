@@ -34,5 +34,5 @@
     }
   },
   "include": ["**/*.ts", "**/*.js", "**/*.json"],
-  "exclude": ["node_modules", "build"]
+  "exclude": ["node_modules", "build", "jest.config.js"]
 }

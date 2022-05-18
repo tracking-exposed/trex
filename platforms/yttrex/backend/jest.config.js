@@ -36,6 +36,9 @@ module.exports = {
     '<rootDir>/parsers/**',
     '<rootDir>/routes/**',
   ],
+  coveragePathIgnorePatterns: [
+    '<rootDir>/__tests__'
+  ],
   coverageThreshold: {
     global: {
       branches: 30,

@@ -17,6 +17,7 @@
     "watch": "DOTENV_CONFIG_PATH=.env.development webpack -w",
     "watch:prod": "webpack -w",
     "build": "webpack",
+    "build:guardoni": "BUILD_TARGET=guardoni webpack",
     "build:watch": "webpack -w",
     "dist": "NODE_ENV=production yarn build",
     "dist:guardoni": "NODE_ENV=production BUILD_TARGET=guardoni yarn build",

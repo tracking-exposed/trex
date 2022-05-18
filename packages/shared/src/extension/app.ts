@@ -1,14 +1,14 @@
+import { debounce } from '@material-ui/core';
+import _ from 'lodash';
+import { clearCache } from '../providers/dataDonation.provider';
 import { localLookup, serverLookup } from './chrome/background/sendMessage';
-// import config from './config';
+import { Config } from './config';
+import * as dom from './dom';
 import { registerHandlers } from './handlers/index';
 import { Hub } from './hub';
 import log from './logger';
-import { clearCache } from '../providers/dataDonation.provider';
-import { ServerLookup } from './models/Message';
-import * as dom from './dom';
-import _ from 'lodash';
 import HubEvent from './models/HubEvent';
-import { Config } from './config';
+import { ServerLookup } from './models/Message';
 
 // instantiate a proper logger
 const appLog = log.extend('app');
@@ -106,45 +106,47 @@ function setupObserver({
   /* and monitor href changes to randomize a new accessId */
   const body = window.document.querySelector('body');
 
-  const observer = new MutationObserver(function (mutations) {
-    mutations.forEach(function (mutation) {
-      // appLog.debug('mutation (%s) %O', mutation.type, mutation.target);
+  const observer = new MutationObserver(
+    debounce((mutations) => {
+      mutations.forEach(function (mutation) {
+        // appLog.debug('mutation (%s) %O', mutation.type, mutation.target);
 
-      if (window?.document) {
-        if (
-          oldHref !== window.location.href &&
-          platformMatch.test(window.location.href)
-        ) {
-          const newHref = window.location.href;
+        if (window?.document) {
+          if (
+            oldHref !== window.location.href &&
+            platformMatch.test(window.location.href)
+          ) {
+            const newHref = window.location.href;
 
-          appLog.debug(
-            `%s changed to %s, calling onLocationChange`,
-            oldHref,
-            newHref
-          );
+            appLog.debug(
+              `%s changed to %s, calling onLocationChange`,
+              oldHref,
+              newHref
+            );
 
-          onLocationChange(oldHref, newHref);
+            onLocationChange(oldHref, newHref);
 
-          const routeHandlerKey = handlersList.find((h) => {
-            const handler = handlers[h];
+            const routeHandlerKey = handlersList.find((h) => {
+              const handler = handlers[h];
 
-            if (handler.match.type === 'route') {
-              return window.location.pathname.match(handler.match.location);
+              if (handler.match.type === 'route') {
+                return window.location.pathname.match(handler.match.location);
+              }
+              return false;
+            });
+
+            if (routeHandlerKey) {
+              appLog.debug('Route handler key %s', routeHandlerKey);
+              const { handle, ...routeHandlerOpts } = handlers[routeHandlerKey];
+              handle(window.document.body, routeHandlerOpts, routeHandlerKey);
             }
-            return false;
-          });
 
-          if (routeHandlerKey) {
-            appLog.debug('Route handler key %s', routeHandlerKey);
-            const { handle, ...routeHandlerOpts } = handlers[routeHandlerKey];
-            handle(window.document.body, routeHandlerOpts, routeHandlerKey);
+            oldHref = newHref;
           }
-
-          oldHref = newHref;
         }
-      }
-    });
-  });
+      });
+    }, 300)
+  );
 
   const config = {
     childList: true,
