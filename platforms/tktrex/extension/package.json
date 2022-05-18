@@ -6,9 +6,10 @@
     "clean": "rm -rf build dist",
     "lint": "eslint ./src --quiet",
     "build": "DEBUG=\"*\" webpack",
-    "build:prod": " DEBUG=\"*:debug *:error\" NODE_ENV=production webpack",
     "build:guardoni": "BUILD_TARGET=guardoni DEBUG=\"*\" webpack",
-    "watch": "DEBUG=\"*\" webpack --watch",
+    "dist": " DEBUG=\"*:info,*:error\" NODE_ENV=production webpack",
+    "dist:guardoni": "DEBUG NODE_ENV=production BUILD_TARGET=guardoni yarn build",
+    "watch": "DEBUG=\"*:info,*:error\" webpack --watch",
     "watch:prod": "NODE_ENV=production webpack --watch",
     "test": "jest"
   },
