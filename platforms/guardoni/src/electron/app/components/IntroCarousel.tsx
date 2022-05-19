@@ -97,7 +97,7 @@ export const IntroCarousel: React.FC<IntroCarouselProps> = ({
         mediaBackgroundStyle={{ backgroundColor: green[300] }}
         style={{ backgroundColor: green[600], border: 'solid black 2px' }}
         title="Privacy by design"
-        subtitle="Be sure to read our Terms of Service and Privacy Policy."
+        subtitle="Read our Terms of Service and Privacy Policy."
       >
         <Box>
           <Button
