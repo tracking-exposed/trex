@@ -39,7 +39,7 @@ jobs:
       - name: Install dependencies
         run: yarn
 
-      - name: YCAI dist
+      - name: Build
         env:
           NODE_ENV: production
         run: |
@@ -55,7 +55,7 @@ jobs:
 
   guardoni_build:
     name: Guardoni build
-    needs: build
+    needs: [build]
     runs-on: ${{ matrix.config.os }}
     strategy:
       max-parallel: 1

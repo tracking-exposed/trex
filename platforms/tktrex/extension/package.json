@@ -8,7 +8,7 @@
     "build": "DEBUG=\"*\" webpack",
     "build:guardoni": "BUILD_TARGET=guardoni DEBUG=\"*\" webpack",
     "dist": " DEBUG=\"*:info,*:error\" NODE_ENV=production webpack",
-    "dist:guardoni": "DEBUG NODE_ENV=production BUILD_TARGET=guardoni yarn build",
+    "dist:guardoni": "DEBUG=\"*:info,*:error\" NODE_ENV=production BUILD_TARGET=guardoni yarn build",
     "watch": "DEBUG=\"*:info,*:error\" webpack --watch",
     "watch:prod": "NODE_ENV=production webpack --watch",
     "test": "jest"

@@ -86,7 +86,7 @@ jobs:
       - name: Install dependencies
         run: yarn
 
-      - name: YCAI dist
+      - name: Build
         env:
           NODE_ENV: production
         run: |
@@ -210,7 +210,7 @@ jobs:
             guardoni/dist/*.deb
             guardoni/dist/*.dmg
             guardoni/dist/Guardoni*.exe
-            platforms/tktrex/extension/dist/*.zip
-            platforms/ycai/studio/build/extension/*.zip
+            platforms/tktrex/extension/dist/tktrex-*.zip
+            platforms/ycai/studio/build/extension/guardoni-tktrex-*.zip
             platforms/yttrex/extension/dist/yttrex-*.zip
             platforms/yttrex/extension/dist/guardoni-yttrex-*.zip
