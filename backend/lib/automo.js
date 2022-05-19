@@ -229,7 +229,7 @@ async function getMetadataFromAuthorChannelId(channelId, options) {
   const filter = {
     authorSource: { $in: [`/channel/${channelId}`, `/c/${channelId}`] },
     authorName: { $ne: null },
-    "related.0": { $exists: true },
+    'related.0': { $exists: true },
   };
 
   const cappedResultsOpts = [
@@ -811,7 +811,7 @@ async function pullExperimentInfo(publicKey) {
     },
   ]);
   await mongoc.close();
-  if (exp && exp[0]?.directive[0].directiveType) return _.first(exp);
+  if (exp && exp[0]?.directive[0]?.directiveType) return _.first(exp);
   return null;
 }
 
