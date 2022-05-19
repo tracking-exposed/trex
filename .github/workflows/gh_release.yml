@@ -31,7 +31,7 @@ jobs:
             packages/shared/build
             packages/taboule/build
             platforms/yttrex/extension/dist
-            platforms/tktrex/extension/build
+            platforms/tktrex/extension/dist
             platforms/guardoni/build
             platforms/guardoni/dist
             platforms/ycai/studio/build
@@ -79,6 +79,13 @@ jobs:
         with:
           ref: ${{ inputs.ref }}
 
+      - name: Setup Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'yarn'
+          cache-dependency-path: yarn.lock
+
       - uses: actions/cache@v2
         with:
           key: build-guardoni-${{ github.run_id }}-${{ matrix.config.os }}
@@ -95,19 +102,12 @@ jobs:
             platforms/guardoni/dist
             platforms/ycai/studio/build
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v2
-        with:
-          node-version: ${{ matrix.node-version }}
-          cache: 'yarn'
-          cache-dependency-path: yarn.lock
-
       - name: Install dependencies
         run: yarn
 
       - name: Build Guardoni for ${{ matrix.config.os }}
         env:
-          DOTENV_CONFIG_PATH: .env.beta
+          DOTENV_CONFIG_PATH: .env
         run: yarn guardoni ${{ matrix.config.command }}
 
   gh_release:
@@ -160,9 +160,7 @@ jobs:
           tag_name: v${{ steps.version.outputs.version }}
           files: |
             platforms/yttrex/extension/dist/yttrex-*.zip
-            platforms/yttrex/extension/dist/guardoni-yttrex-*.zip
             platforms/tktrex/extension/dist/tktrex-*.zip
-            platforms/tktrex/extension/dist/guardoni-tktrex-*.zip
             platforms/guardoni/dist/guardoni-cli*
             platforms/guardoni/dist/*.deb
             platforms/guardoni/dist/*.dmg

@@ -126,6 +126,13 @@ jobs:
         with:
           fetch-depth: 0
 
+      - name: Setup Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'yarn'
+          cache-dependency-path: yarn.lock
+
       - uses: actions/cache@v2
         with:
           key: build-guardoni-${{ github.run_id }}-${{ matrix.config.os }}
@@ -142,19 +149,12 @@ jobs:
             platforms/tktrex/extension/dist
             platforms/ycai/studio/build
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v2
-        with:
-          node-version: ${{ matrix.node-version }}
-          cache: 'yarn'
-          cache-dependency-path: yarn.lock
-
       - name: Install dependencies
         run: yarn
 
       - name: Build Guardoni for ${{ matrix.config.os }}
         env:
-          DOTENV_CONFIG_PATH: .env.beta
+          DOTENV_CONFIG_PATH: .env
         run: yarn guardoni ${{ matrix.config.command }}
 
   gh_release:
@@ -166,6 +166,13 @@ jobs:
         uses: actions/checkout@v2
         with:
           fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'yarn'
+          cache-dependency-path: yarn.lock
 
       - uses: actions/cache@v2
         with:
@@ -180,13 +187,6 @@ jobs:
             platforms/guardoni/build
             platforms/guardoni/dist
             platforms/ycai/studio/build
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v2
-        with:
-          node-version: ${{ matrix.node-version }}
-          cache: 'yarn'
-          cache-dependency-path: yarn.lock
 
       - name: Install dependencies
         run: yarn
@@ -211,6 +211,4 @@ jobs:
             guardoni/dist/*.dmg
             guardoni/dist/Guardoni*.exe
             platforms/tktrex/extension/dist/tktrex-*.zip
-            platforms/ycai/studio/build/extension/guardoni-tktrex-*.zip
             platforms/yttrex/extension/dist/yttrex-*.zip
-            platforms/yttrex/extension/dist/guardoni-yttrex-*.zip
