@@ -17,6 +17,7 @@ const APP_VERSION = packageJSON.version
 // enable data contribution setting when building for "guardoni"
 process.env.DATA_CONTRIBUTION_ENABLED = 'false';
 if (process.env.BUILD_TARGET === 'guardoni') {
+  // eslint-disable-next-line no-console
   console.log(
     'Building extension for guardoni, setting data contribution enabled by default'
   );

@@ -74,6 +74,11 @@ const getExtensionConfig = <E extends t.Props>(
                 config.mode === 'production' ? distDir : outputDir,
                 `./${extensionName}-extension-${c.manifestVersion}.zip`
               ),
+              options: {
+                globOptions: {
+                  ignore: ['*.zip'],
+                },
+              },
             },
           ],
         },
