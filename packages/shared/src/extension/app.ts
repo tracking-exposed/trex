@@ -13,13 +13,13 @@ import { ServerLookup } from './models/Message';
 // instantiate a proper logger
 const appLog = log.extend('app');
 
+export interface HandlerOpts extends Omit<ObserverHandler, 'handle'> {
+  href: string;
+}
+
 export interface BaseObserverHandler {
   color?: string;
-  handle: (
-    n: HTMLElement,
-    opts: Omit<ObserverHandler, 'handle'>,
-    selectorName: string
-  ) => void;
+  handle: (n: HTMLElement, opts: HandlerOpts, selectorName: string) => void;
 }
 
 export interface SelectorObserverHandler extends BaseObserverHandler {
@@ -92,12 +92,14 @@ function setupObserver({
   const handlersList = Object.keys(handlers);
   // register selector and 'selector-with-parents' handlers
   handlersList.forEach((h) => {
-    const { handle, ...handler } = handlers[h];
+    const { handle, ...opts } = handlers[h];
     if (
-      handler.match.type === 'selector' ||
-      handler.match.type === 'selector-with-parents'
+      opts.match.type === 'selector' ||
+      opts.match.type === 'selector-with-parents'
     ) {
-      dom.on(handler.match.selector, (node) => handle(node, handler, h));
+      dom.on(opts.match.selector, (node) =>
+        handle(node, { href: window.location.href, ...opts }, h)
+      );
     }
   });
 
@@ -137,8 +139,12 @@ function setupObserver({
 
             if (routeHandlerKey) {
               appLog.debug('Route handler key %s', routeHandlerKey);
-              const { handle, ...routeHandlerOpts } = handlers[routeHandlerKey];
-              handle(window.document.body, routeHandlerOpts, routeHandlerKey);
+              const { handle, ...opts } = handlers[routeHandlerKey];
+              handle(
+                window.document.body,
+                { href: window.location.href, ...opts },
+                routeHandlerKey
+              );
             }
 
             oldHref = newHref;

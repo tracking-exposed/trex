@@ -1,7 +1,7 @@
 import HubEvent, { HubEventBase } from '@shared/extension/models/HubEvent';
 
 export interface NewVideoEvent extends HubEventBase {
-  type: 'NewVideo';
+  type: 'Video';
   payload: {
     feedCounter: number;
     feedId: string;
@@ -28,8 +28,17 @@ export interface SuggestedEvent extends HubEventBase {
   };
 }
 
+export interface ProfileEvent extends HubEventBase {
+  type: 'Profile';
+  payload: {
+    html: string;
+    href: string;
+  };
+}
+
 export type TKHubEvent =
   | HubEvent
   | NewVideoEvent
   | SearchEvent
-  | SuggestedEvent;
+  | SuggestedEvent
+  | ProfileEvent;

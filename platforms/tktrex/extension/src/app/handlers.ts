@@ -7,12 +7,13 @@ import {
   SuggestedEvent,
   SearchEvent,
   TKHubEvent,
+  ProfileEvent,
 } from '../models/HubEvent';
 import log from '@shared/extension/logger';
 import { bo } from '@shared/extension/utils/browser.utils';
 
 interface EvidenceMetaData {
-  type: 'video' | 'suggested' | 'search';
+  type: Lowercase<TKHubEvent['type']>;
   clientTime: string;
   incremental: number;
 }
@@ -70,6 +71,16 @@ function handleSearch(e: SearchEvent): void {
   state.incremental++;
 }
 
+function handleProfile(e: ProfileEvent): void {
+  state.content.push({
+    ...e.payload,
+    incremental: state.incremental,
+    clientTime: now(),
+    type: 'profile',
+  });
+  state.incremental++;
+}
+
 function sync(hub: Hub<TKHubEvent>): void {
   if (state.content.length) {
     log.info(
@@ -98,10 +109,11 @@ function sync(hub: Hub<TKHubEvent>): void {
 export function registerTkHandlers(hub: Hub<TKHubEvent>, config: Config): void {
   if (config.active) {
     hub
-      .on('NewVideo', handleVideo)
+      .on('Video', handleVideo)
       .on('Suggested', handleSuggested)
       .on('Search', handleSearch)
-      .on('WindowUnload', () => sync(hub));
+      .on('WindowUnload', () => sync(hub))
+      .on('Profile', handleProfile);
 
     window.setInterval(() => {
       sync(hub);

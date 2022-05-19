@@ -2,6 +2,7 @@ import {
   ObserverHandler,
   refreshUUID,
   SelectorObserverHandler,
+  HandlerOpts,
 } from '@shared/extension/app';
 import config from '@shared/extension/config';
 import log from '@shared/extension/logger';
@@ -55,7 +56,7 @@ export function tkTrexActions(remoteInfo: unknown): void {
  * Happens either manually when clicking on the emergency button,
  * and should happen automatically or through a setInterval
  * when the URL of the page changes.
- 
+
 function fullSave(): void {
   const { href } = window.location;
   pipe(
@@ -149,10 +150,10 @@ const handleSearch = _.debounce((element: Node): void => {
   appLog.info('Handle search for path %O', window.location.search);
   if (!_.startsWith(window.location.pathname, '/search')) return;
 
-  // This double check it is due because the Search might 
+  // This double check it is due because the Search might
   // return an error and in both of the cases they should be
   // considered a result.
-  // This is a logic problem in this extension, we should 
+  // This is a logic problem in this extension, we should
   // use URL or selector to trigger the right function.
   const dat = document.querySelectorAll(searchHandler.match.selector);
   const te = _.map(
@@ -253,7 +254,7 @@ const handleVideo = _.debounce((node: HTMLElement): void => {
   videoRoot.setAttribute('trex', `${videoCounter}`);
 
   tkHub.dispatch({
-    type: 'NewVideo',
+    type: 'Video',
     payload: {
       html: videoRoot.outerHTML,
       href: window.location.href,
@@ -268,6 +269,19 @@ const handleVideo = _.debounce((node: HTMLElement): void => {
     videoRoot.style.border = '1px solid green';
   }
 }, 300);
+
+const handleProfile = _.debounce(
+  (node: HTMLElement, opts: HandlerOpts): void => {
+    tkHub.dispatch({
+      type: 'Profile',
+      payload: {
+        html: node.outerHTML,
+        href: opts.href,
+      },
+    });
+  },
+  300,
+);
 
 function flush(): void {
   window.addEventListener('beforeunload', () => {
@@ -292,6 +306,7 @@ export const errorHandler: SelectorObserverHandler = {
   },
   handle: handleSearch,
 };
+
 /**
  * selector with relative handler
  * configuration
@@ -341,5 +356,12 @@ export const tkHandlers: { [key: string]: ObserverHandler } = {
       selector: '#sigi-persisted-data',
     },
     handle: handleSigi,
+  },
+  profile: {
+    match: {
+      type: 'route',
+      location: /\/@\w+$/,
+    },
+    handle: handleProfile,
   },
 };
