@@ -22,6 +22,7 @@ const useStyles = makeStyles((theme) => ({
     '& > *': {
       maxHeight: '100%',
     },
+    borderBottom: 'solid black 2px',
   },
   mediaMobile: {
     position: 'relative',
@@ -64,7 +65,7 @@ const useStyles = makeStyles((theme) => ({
     margin: 0,
   },
   title: {
-    fontSize: '24px',
+    fontSize: '34px',
     fontWeight: 700,
     lineHeight: '32px',
     marginBottom: 12,
@@ -74,10 +75,11 @@ const useStyles = makeStyles((theme) => ({
     color: '#fff',
   },
   subtitle: {
-    fontSize: '15px',
-    fontWeight: 400,
-    lineHeight: '18px',
-    margin: 0,
+    fontSize: '22px',
+    fontWeight: 500,
+    lineHeight: '30px',
+    letterSpacing: '0.03em',
+    marginTop: 20,
     color: '#fff',
   },
 }));

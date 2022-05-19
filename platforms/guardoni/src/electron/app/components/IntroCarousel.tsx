@@ -2,7 +2,7 @@ import * as React from 'react';
 import { AutoRotatingCarousel } from 'material-auto-rotating-carousel';
 import Slide from './carousel/Slide';
 import { Box, Button, makeStyles } from '@material-ui/core';
-import { red, green, blue } from '@material-ui/core/colors';
+import { deepPurple, green } from '@material-ui/core/colors';
 
 const useStyles = makeStyles(() => ({
   root: {
@@ -12,17 +12,29 @@ const useStyles = makeStyles(() => ({
   contentMobile: {
     '& > $carouselWrapper': {},
   },
-  arrow: {},
+  arrow: {
+    boxShadow: 'none',
+    backgroundColor: 'transparent',
+    '&:hover': {
+      background: 'transparent',
+      border: 'solid black 2.5px',
+      transition: 'none',
+    },
+  },
   arrowLeft: {},
   arrowRight: {},
-  arrowIcon: {},
+  arrowIcon: {
+    color: '#fff',
+  },
   carouselWrapper: {
     borderRadius: 0,
   },
   dots: {},
   dotsMobile: {},
   dotsMobileLandscape: {},
-  footer: {},
+  footer: {
+    marginTop: 0,
+  },
   footerMobile: {},
   footerMobileLandscape: {},
   slide: {
@@ -62,34 +74,35 @@ export const IntroCarousel: React.FC<IntroCarouselProps> = ({
     >
       <Slide
         media={
-          <img src="http://www.icons101.com/icon_png/size_256/id_79394/youtube.png" />
+          <img src="https://www.icons101.com/icon_png/size_256/id_67379/Clone.png" />
         }
-        mediaBackgroundStyle={{ backgroundColor: red[400] }}
-        style={{ backgroundColor: red[600] }}
-        title="This is a very cool feature"
-        subtitle="Just using this will blow your mind."
+        mediaBackgroundStyle={{ backgroundColor: '#23AA9A' }}
+        style={{ backgroundColor: '#1b8074', border: 'solid black 2px' }}
+        title="Welcome on Guardoni"
+        subtitle="With this tool you can run experiments on web platforms and collect data about their behaviour."
       />
       <Slide
         media={
-          <img src="http://www.icons101.com/icon_png/size_256/id_80975/GoogleInbox.png" />
+          <img src="https://www.icons101.com/icon_png/size_256/id_84012/json.png" />
         }
-        mediaBackgroundStyle={{ backgroundColor: blue[400] }}
-        style={{ backgroundColor: blue[600] }}
-        title="Ever wanted to be popular?"
-        subtitle="Well just mix two colors and your are good to go!"
+        mediaBackgroundStyle={{ backgroundColor: deepPurple[300] }}
+        style={{ backgroundColor: deepPurple[600], border: 'solid black 2px' }}
+        title="Anonymous tokens"
+        subtitle="A private token will be generated. Experiments need some time to run, when finished you'll get JSON results."
       />
       <Slide
         media={
-          <img src="http://www.icons101.com/icon_png/size_256/id_76704/Google_Settings.png" />
+          <img src="https://www.icons101.com/icon_png/size_256/id_67377/C3po.png" />
         }
-        mediaBackgroundStyle={{ backgroundColor: green[400] }}
-        style={{ backgroundColor: green[600] }}
-        title="May the force be with you"
-        subtitle="The Force is a metaphysical and ubiquitous power in the Star Wars fictional universe."
+        mediaBackgroundStyle={{ backgroundColor: green[300] }}
+        style={{ backgroundColor: green[600], border: 'solid black 2px' }}
+        title="Privacy by design"
+        subtitle="Be sure to read our Terms of Service and Privacy Policy."
       >
         <Box>
           <Button
             variant="contained"
+            style={{ marginTop: '2em' }}
             onClick={() => {
               onCTAClick();
             }}
