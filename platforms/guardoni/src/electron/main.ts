@@ -21,7 +21,6 @@ import { GetEvents } from './events/renderer.events';
 import store from './store';
 import { createGuardoniWindow } from './windows/GuardoniWindow';
 
-app.setPath('userData', path.resolve(os.homedir(), `.guardoni/electron/data`));
 app.setAppLogsPath(path.resolve(os.homedir(), `.guardoni/electron/logs`));
 
 // load env from .env file shipped with compiled code
@@ -126,10 +125,7 @@ export const run = async (): Promise<void> => {
             browser: guardoniApp.browser,
           });
 
-          return rendererEvents.register(basePath, platform, {
-            headless: false,
-            verbose: false,
-          });
+          return rendererEvents.register(basePath, platform, {});
         })
       );
     }),

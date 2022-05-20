@@ -32,13 +32,9 @@ export const getDefaultProfile = (
   };
 };
 
-// todo: check if a profile already exists in the file system
-export const checkProfile =
+export const getExistingProfiles =
   (ctx: { logger: GuardoniContext['logger'] }) =>
-  (
-    basePath: string,
-    conf: GuardoniConfig
-  ): TE.TaskEither<AppError, GuardoniProfile> => {
+  (basePath: string): string[] => {
     const profilesDir = path.resolve(basePath, 'profiles');
 
     ctx.logger.debug('Check profile at %s', profilesDir);
@@ -52,8 +48,17 @@ export const checkProfile =
       fs.mkdirSync(profilesDir, { recursive: true });
     }
 
-    const profiles = fs.readdirSync(profilesDir);
+    return fs.readdirSync(profilesDir);
+  };
 
+// todo: check if a profile already exists in the file system
+export const checkProfile =
+  (ctx: { logger: GuardoniContext['logger'] }) =>
+  (
+    basePath: string,
+    conf: GuardoniConfig
+  ): TE.TaskEither<AppError, GuardoniProfile> => {
+    const profiles = getExistingProfiles(ctx)(basePath);
     // no profile given, try to retrieve the old one
 
     ctx.logger.debug('Profiles %O', profiles);

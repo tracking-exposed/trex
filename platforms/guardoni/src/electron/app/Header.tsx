@@ -5,7 +5,9 @@ import {
   Button,
   Divider,
   makeStyles,
+  MenuItem,
   Popover,
+  Select,
   Toolbar,
   Typography,
   useTheme,
@@ -26,6 +28,7 @@ import cx from 'classnames';
 import botttsSprites from '@dicebear/avatars-bottts-sprites';
 import Avatars from '@dicebear/avatars';
 import { useHistory } from 'react-router';
+import AddProfileModal from './modals/AddProfileModal';
 
 const botAvatars = new Avatars(botttsSprites, { r: 50, base64: true });
 
@@ -43,6 +46,9 @@ const useStyles = makeStyles((theme) => ({
   platformLogoSelected: {
     opacity: 1,
   },
+  profileSelect: {
+    minWidth: '50%',
+  },
   settingButton: {
     ...theme.typography.body1,
     margin: theme.spacing(1),
@@ -53,6 +59,7 @@ const useStyles = makeStyles((theme) => ({
 export interface HeaderProps {
   config: GuardoniConfig;
   platform: GuardoniPlatformConfig;
+  profiles: string[];
   onConfigChange: (c: GuardoniConfig) => void;
   onPlatformChange: (p: Platform) => void;
 }
@@ -60,6 +67,7 @@ export interface HeaderProps {
 export const Header: React.FC<HeaderProps> = ({
   config,
   platform,
+  profiles,
   onConfigChange,
   onPlatformChange,
 }) => {
@@ -69,6 +77,7 @@ export const Header: React.FC<HeaderProps> = ({
   const classes = useStyles();
   const history = useHistory();
   const [popoverOpen, setPopoverOpen] = React.useState(false);
+  const [addProfileDialogOpen, setAddProfileDialogOpen] = React.useState(false);
   const [advancedSettingDialogOpen, setAdvancedSettingDialogOpen] =
     React.useState(false);
 
@@ -193,7 +202,23 @@ export const Header: React.FC<HeaderProps> = ({
               >
                 Profile Name
               </Typography>
-              <Typography variant="body1">{config.profileName}</Typography>
+              <Select
+                id="profileName"
+                className={classes.profileSelect}
+                value={config.profileName}
+                onChange={(e) => {
+                  onConfigChange({
+                    ...config,
+                    profileName: e.target.value as string,
+                  });
+                }}
+              >
+                {profiles.map((p) => (
+                  <MenuItem key={p} value={p}>
+                    {p}
+                  </MenuItem>
+                ))}
+              </Select>
               <Divider
                 style={{
                   width: '50%',
@@ -205,6 +230,9 @@ export const Header: React.FC<HeaderProps> = ({
               <Button
                 className={classes.settingButton}
                 startIcon={<AddIcon color="primary" />}
+                onClick={() => {
+                  setAddProfileDialogOpen(true);
+                }}
               >
                 Add profile
               </Button>
@@ -234,6 +262,14 @@ export const Header: React.FC<HeaderProps> = ({
         onConfigChange={onConfigChange}
         onCancel={() => {
           setAdvancedSettingDialogOpen(false);
+        }}
+      />
+      <AddProfileModal
+        open={addProfileDialogOpen}
+        config={config}
+        onConfigChange={onConfigChange}
+        onCancel={() => {
+          setAddProfileDialogOpen(false);
         }}
       />
     </AppBar>
