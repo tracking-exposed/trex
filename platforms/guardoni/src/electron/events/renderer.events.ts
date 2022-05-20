@@ -2,18 +2,23 @@ import { AppError, toAppError } from '@shared/errors/AppError';
 import { Logger } from '@shared/logger';
 import { ComparisonDirective } from '@shared/models/Directive';
 import { AppEnv } from 'AppEnv';
-import { BrowserView, dialog, ipcMain, shell } from 'electron';
+import { app, BrowserView, dialog, ipcMain, shell } from 'electron';
 import { pipe } from 'fp-ts/lib/function';
 import * as TE from 'fp-ts/lib/TaskEither';
 import { NonEmptyString } from 'io-ts-types';
 import * as puppeteer from 'puppeteer-core';
 import * as pie from 'puppeteer-in-electron';
 import {
+  getConfig,
   getConfigPlatformKey,
   getPlatformConfig,
   setConfig,
 } from '../../guardoni/config';
-import { GetGuardoni, readCSVAndParse } from '../../guardoni/guardoni';
+import {
+  GetGuardoni,
+  Guardoni,
+  readCSVAndParse,
+} from '../../guardoni/guardoni';
 import {
   GuardoniConfig,
   GuardoniPlatformConfig,
@@ -24,6 +29,7 @@ import { EVENTS } from '../models/events';
 import store from '../store';
 import { getEventsLogger } from './event.logger';
 import * as path from 'path';
+import { getProfileDataDir } from '../../guardoni/profile';
 
 const guardoniEventsLogger = guardoniLogger.extend('events');
 
@@ -95,6 +101,7 @@ export const GetEvents = ({
   mainWindow,
   browser,
 }: GetEventsContext): Events => {
+  let guardoni: Guardoni;
   const logger = getEventsLogger(mainWindow);
 
   // unregister all event handlers bound on 'register' invocation
@@ -119,54 +126,43 @@ export const GetEvents = ({
 
     logger.info('Register events on ipcMain');
 
-    return pipe(
-      GetGuardoni({
-        basePath,
-        logger,
-        puppeteer,
-      }).launch(config, platform),
-      TE.chain((guardoni) => {
-        logger.info('Started guardoni %O', guardoni.config);
+    const initGuardoni = (
+      basePath: string,
+      config: GuardoniConfig,
+      platform: Platform
+    ): TE.TaskEither<AppError, Guardoni> => {
+      guardoniEventsLogger.info(
+        'Init guardoni with config %O for platform %s',
+        config,
+        platform
+      );
 
-        const initGuardoni = async (
-          basePath: string,
-          config: GuardoniConfig,
-          platform: Platform
-        ): Promise<void> => {
-          guardoniEventsLogger.info(
-            'Init guardoni with config %O for platform %s',
-            config,
-            platform
+      return pipe(
+        GetGuardoni({
+          basePath,
+          logger,
+          puppeteer,
+        }).launch(config, platform),
+        TE.chain((g) => {
+          guardoni = g;
+          app.setPath(
+            'userData',
+            getProfileDataDir(
+              guardoni.config.basePath,
+              guardoni.config.profileName
+            )
           );
 
-          return pipe(
-            setConfig(guardoni.config.basePath, config),
-            TE.chain((config) =>
-              GetGuardoni({
-                basePath,
-                logger,
-                puppeteer,
-              }).launch(config, platform)
-            )
-          )().then((result) => {
-            if (result._tag === 'Right') {
-              guardoni = result.right;
-              return pipe(
-                TE.right({
-                  config: guardoni.config,
-                  platform: guardoni.platform,
-                }),
-                liftEventTask(EVENTS.GET_GUARDONI_CONFIG_EVENT.value)
-              );
-            } else {
-              logger.error("Can't start guardoni %O", result.left);
-              return pipe(
-                TE.right(result.left),
-                liftEventTask(EVENTS.GUARDONI_ERROR_EVENT.value)
-              );
-            }
-          });
-        };
+          return TE.right(guardoni);
+        })
+      );
+    };
+
+    return pipe(
+      getConfig({ logger })(basePath, platform, config),
+      TE.chain((c) => initGuardoni(basePath, c, platform)),
+      TE.chain((guardoni) => {
+        logger.info('Started guardoni %O', guardoni.config);
 
         // pick csv file
         ipcMain.on(EVENTS.PICK_CSV_FILE_EVENT.value, () => {
@@ -195,10 +191,18 @@ export const GetEvents = ({
           logger.debug(`Update guardoni config %O`, config);
 
           store.set('basePath', config.basePath);
+          const oldProfile = store.get('profile');
 
-          void TE.tryCatch(
-            () => initGuardoni(basePath, config, platform),
-            toAppError
+          void pipe(
+            setConfig(config.basePath, config),
+            TE.chain(() => initGuardoni(basePath, config, platform)),
+            TE.map((g) => {
+              if (oldProfile !== g.config.profileName) {
+                store.set('profileName', g.config.profileName);
+                app.relaunch();
+                app.quit();
+              }
+            })
           )();
         });
 
@@ -241,7 +245,7 @@ export const GetEvents = ({
             guardoniEventsLogger.info(
               'Running experiment %s with config %O',
               experimentId,
-              config
+              { ...guardoni.config, ...configOverride }
             );
 
             const view = mainWindow.getBrowserView() as BrowserView;
@@ -272,6 +276,11 @@ export const GetEvents = ({
                     return pie.getPage(browser, view, true);
                   }, toAppError),
                   TE.chain((page) => {
+                    logger.info(
+                      'Profile loaded from %s',
+                      app.getPath('userData')
+                    );
+                    logger.info('Run experiment with config %O', g.config);
                     return g.runExperimentForPage(
                       page,
                       experimentId,
