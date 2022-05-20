@@ -73,7 +73,7 @@ export const checkProfile =
     ctx.logger.debug('Profile dir %s exists?', profileDir, profileDirExists);
 
     if (!profileDirExists) {
-      ctx.logger.debug('Creating profile %O in %s', profileDir);
+      ctx.logger.debug('Creating profile in %s', profileDir);
       fs.mkdirSync(profileDir, { recursive: true });
     }
 

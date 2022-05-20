@@ -42,13 +42,15 @@ export const dispatchBrowser = (
     );
   }
   return TE.tryCatch(async () => {
-    // puppeteer.use(pluginStealth());
-    const browser = await ctx.puppeteer.launch({
+    // ctx.puppeteer.use(pluginStealth());
+    const opts = {
       headless: ctx.config.headless,
       userDataDir: ctx.profile.udd,
       executablePath: ctx.config.chromePath,
       args: commandLineArg,
-    });
+    };
+    ctx.logger.info('Launch puppeteer %O', opts);
+    const browser = await ctx.puppeteer.launch(opts);
 
     return browser;
   }, toAppError);

@@ -72,15 +72,10 @@ export const Header: React.FC<HeaderProps> = ({
   const [advancedSettingDialogOpen, setAdvancedSettingDialogOpen] =
     React.useState(false);
 
-  const [avatar, setAvatar] = React.useState(
-    botAvatars.create(config.profileName)
+  const avatar = React.useMemo(
+    () => botAvatars.create(config.profileName),
+    [config.profileName]
   );
-
-  React.useEffect(() => {
-    setAvatar(
-      botAvatars.create(`${config.profileName}-${Math.random() * 1000}`)
-    );
-  }, []);
 
   return (
     <AppBar
