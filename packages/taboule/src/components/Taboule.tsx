@@ -1,9 +1,5 @@
 import { Box, Typography } from '@material-ui/core';
-import {
-  DataGrid,
-  DataGridProps,
-  GridColTypeDef,
-} from '@material-ui/data-grid';
+import { DataGrid, DataGridProps, GridColTypeDef } from '@mui/x-data-grid';
 import { APIError } from '@shared/errors/APIError';
 import { AppError } from '@shared/errors/AppError';
 import { GetLogger } from '@shared/logger';

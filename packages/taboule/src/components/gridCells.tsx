@@ -1,12 +1,12 @@
 import * as React from 'react';
 import { Avatar } from '@material-ui/core';
-import { GridCellParams } from '@material-ui/data-grid';
+import { GridCellParams } from '@mui/x-data-grid';
 import { formatDistanceToNow } from 'date-fns';
 
 type CellRenderer = (params: GridCellParams) => React.ReactNode;
 
 export const distanceFromNowCell: CellRenderer = (params) => {
-  return formatDistanceToNow(new Date(params.formattedValue as any));
+  return formatDistanceToNow(new Date(params.formattedValue));
 };
 
 export const avatarCell: CellRenderer = (params) => {
