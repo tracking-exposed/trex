@@ -17,10 +17,11 @@ import Layout from './Layout';
 export const App: React.FC = () => {
   const history = useHistory();
 
-  const [{ config, platform }, setConfig] = React.useState<{
+  const [{ config, platform, profiles }, setConfig] = React.useState<{
     config: GuardoniConfig | undefined;
     platform: GuardoniPlatformConfig | undefined;
-  }>({ config: undefined, platform: undefined });
+    profiles: string[];
+  }>({ config: undefined, platform: undefined, profiles: [] });
 
   const [outputItems, setOutputItems] = React.useState<OutputItem[]>([]);
 
@@ -61,8 +62,8 @@ export const App: React.FC = () => {
     // update state when guardoni config has been received
     ipcRenderer.on(
       EVENTS.GET_GUARDONI_CONFIG_EVENT.value,
-      (event, { config, platform }) => {
-        setConfig({ config, platform });
+      (event, { config, platform, profiles }) => {
+        setConfig({ config, platform, profiles });
       }
     );
 
@@ -83,6 +84,7 @@ export const App: React.FC = () => {
     <Layout
       config={config}
       platform={platform}
+      profiles={profiles}
       onConfigChange={handleConfigChange}
       onPlatformChange={handlePlatformChange}
     >

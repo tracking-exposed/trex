@@ -29,7 +29,7 @@ import { EVENTS } from '../models/events';
 import store from '../store';
 import { getEventsLogger } from './event.logger';
 import * as path from 'path';
-import { getProfileDataDir } from '../../guardoni/profile';
+import { getExistingProfiles, getProfileDataDir } from '../../guardoni/profile';
 
 const guardoniEventsLogger = guardoniLogger.extend('events');
 
@@ -181,7 +181,13 @@ export const GetEvents = ({
           );
 
           void pipe(
-            TE.right({ config: guardoni.config, platform: guardoni.platform }),
+            TE.right({
+              config: guardoni.config,
+              platform: guardoni.platform,
+              profiles: getExistingProfiles({ logger })(
+                guardoni.config.basePath
+              ),
+            }),
             liftEventTask(EVENTS.GET_GUARDONI_CONFIG_EVENT.value)
           );
         });
@@ -372,7 +378,13 @@ export const GetEvents = ({
         return TE.tryCatch(
           () =>
             liftEventTask(EVENTS.GET_GUARDONI_CONFIG_EVENT.value)(
-              TE.right({ config: guardoni.config, platform: guardoni.platform })
+              TE.right({
+                config: guardoni.config,
+                platform: guardoni.platform,
+                profiles: getExistingProfiles({ logger })(
+                  guardoni.config.basePath
+                ),
+              })
             ),
           toAppError
         );
