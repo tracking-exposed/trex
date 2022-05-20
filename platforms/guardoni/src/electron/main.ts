@@ -9,6 +9,7 @@ import { sequenceS } from 'fp-ts/lib/Apply';
 import * as E from 'fp-ts/lib/Either';
 import { pipe } from 'fp-ts/lib/function';
 import * as TE from 'fp-ts/lib/TaskEither';
+import { getProfileDataDir } from '../guardoni/profile';
 import { failure } from 'io-ts/lib/PathReporter';
 import os from 'os';
 import * as path from 'path';
@@ -92,17 +93,24 @@ export const run = async (): Promise<void> => {
       log.debug('Loaded env %O', env);
       return env;
     }),
-    TE.chain((env) =>
-      pipe(
+    TE.chain((env) => {
+      const platform = store.get('platform', 'youtube');
+      const basePath = store.get('basePath', DEFAULT_BASE_PATH);
+      const profileName = store.get('profileName', 'default');
+      app.setPath('userData', getProfileDataDir(basePath, profileName));
+      return pipe(
         TE.tryCatch(() => pie.initialize(app), toAppError),
         TE.chain(() => TE.tryCatch(() => app.whenReady(), toAppError)),
         TE.map(() => ({
           app,
           env,
+          platform,
+          basePath,
+          profileName,
         }))
-      )
-    ),
-    TE.chain(({ app, env }) => {
+      );
+    }),
+    TE.chain(({ app, env, platform, basePath }) => {
       return pipe(
         creatMainWindow(env),
         TE.chain((w) =>
@@ -118,28 +126,9 @@ export const run = async (): Promise<void> => {
             browser: guardoniApp.browser,
           });
 
-          const platform = store.get('platform', 'youtube');
-          const basePath = store.get('basePath', DEFAULT_BASE_PATH);
-          const profileName = store.get('profile', 'default');
-
-          log.debug('Last platform %s', platform);
-
           return rendererEvents.register(basePath, platform, {
-            profileName,
             headless: false,
             verbose: false,
-            // yt: {
-            //   name: 'youtube',
-            //   backend: env.YT_BACKEND,
-            //   extensionDir: DEFAULT_YT_EXTENSION_DIR,
-            //   proxy: undefined,
-            // },
-            // tk: {
-            //   name: 'tiktok',
-            //   backend: env.TK_BACKEND,
-            //   extensionDir: DEFAULT_TK_EXTENSION_DIR,
-            //   proxy: undefined,
-            // },
           });
         })
       );

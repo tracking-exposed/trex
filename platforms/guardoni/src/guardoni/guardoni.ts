@@ -238,7 +238,9 @@ export const guardoniExecution =
       experiment,
       directiveType
     );
+
     ctx.logger.debug('Experiment data %O', directives);
+    ctx.logger.debug('Config %O', ctx.config);
 
     return pipe(
       TE.tryCatch(
