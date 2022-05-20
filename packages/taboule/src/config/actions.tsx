@@ -1,5 +1,5 @@
 import { Box, IconButton, Tooltip } from '@material-ui/core';
-import { GridCellParams } from '@material-ui/data-grid';
+import { GridCellParams } from '@mui/x-data-grid';
 import CompareIcon from '@material-ui/icons/CompareOutlined';
 import RelatedIcon from '@material-ui/icons/Replay30Outlined';
 import * as React from 'react';
@@ -46,10 +46,7 @@ export const personalMetadataActions =
             void commands.downloadSearchesAsCSV(
               {
                 Params: {
-                  queryString: cellParams.getValue(
-                    cellParams.row.id,
-                    'query'
-                  ) as any,
+                  queryString: cellParams.row.query,
                 },
               },
               {

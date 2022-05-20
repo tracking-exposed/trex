@@ -1,5 +1,5 @@
 import { Box, Typography } from '@material-ui/core';
-import { DataGridProps, GridColTypeDef } from '@material-ui/data-grid';
+import { DataGridProps, GridColTypeDef } from '@mui/x-data-grid';
 import { ChannelRelated } from '@shared/models/ChannelRelated';
 import {
   HomeMetadata,
