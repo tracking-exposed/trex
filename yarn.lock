@@ -4243,7 +4243,7 @@ __metadata:
     react: ^17.0.2
     react-dom: ^17.0.2
     typescript: ^4.5.5
-    webpack: ^5.72.0
+    webpack: ^5.72.1
   languageName: unknown
   linkType: soft
 
@@ -4363,7 +4363,7 @@ __metadata:
     type-fest: ^2.11.1
     typelevel-ts: ^0.4.0
     typescript: ^4.5.5
-    webpack: ^5.72.0
+    webpack: ^5.72.1
     webpack-bundle-analyzer: ^4.5.0
     webpack-cli: ^4.9.2
   languageName: unknown
@@ -4403,13 +4403,13 @@ __metadata:
     react-dom: ^17.0.2
     ts-endpoint: ^2.0.0
     ts-io-error: ^2.0.0
-    ts-loader: ^9.2.8
+    ts-loader: ^9.3.0
     typelevel-ts: ^0.4.0
     typescript: ^4.5.5
-    webpack: ^5.72.0
+    webpack: ^5.72.1
     webpack-bundle-analyzer: ^4.5.0
     webpack-cli: ^4.9.2
-    webpack-dev-server: ^4.8.1
+    webpack-dev-server: ^4.9.0
   languageName: unknown
   linkType: soft
 
@@ -4427,7 +4427,7 @@ __metadata:
     "@types/yargs": ^17.0.8
     "@typescript-eslint/eslint-plugin": ^5.12.1
     "@typescript-eslint/parser": ^5.12.1
-    canvas: ^2.9.0
+    canvas: ^2.9.1
     csv: ^6.0.5
     eslint: ^8.10.0
     eslint-config-prettier: ^8.4.0
@@ -4449,14 +4449,14 @@ __metadata:
     puppeteer-extra-plugin-stealth: ^2.9.0
     string-replace-loader: ^3.1.0
     ts-jest: ^27.1.3
-    ts-loader: ^9.2.6
+    ts-loader: ^9.3.0
     ts-node: ^10.4.0
     tsconfig-paths: ^3.12.0
     tsconfig-paths-webpack-plugin: ^3.5.2
     typescript: ^4.5.4
     unlazy-loader: ^0.1.3
     unzipper: ^0.10.11
-    webpack: ^5.69.1
+    webpack: ^5.72.1
     webpack-ci: ^1.0.0
     webpack-cli: ^4.9.2
     yaml: ^1.10.2
@@ -4523,7 +4523,7 @@ __metadata:
     monocle-ts: ^2.3.12
     nacl: ^0.1.3
     newtype-ts: ^0.3.5
-    postcss: ^8.4.6
+    postcss: ^8.4.14
     prettier: ^2.5.1
     react: ^17.0.2
     react-dnd: ^14.0.5
@@ -4538,17 +4538,17 @@ __metadata:
     swagger-ui: ^4.4.1
     ts-endpoint: ^2.0.0
     ts-jest: ^27.1.4
-    ts-loader: ^9.2.8
+    ts-loader: ^9.3.0
     ts-node: ^10.7.0
     tweetnacl: ^1.0.3
     tweetnacl-util: ^0.13.5
     typescript: ^4.5.5
     uuid: ^2.0.3
     web-vitals: ^2.1.4
-    webpack: ^5.72.0
+    webpack: ^5.72.1
     webpack-bundle-analyzer: ^4.5.0
     webpack-cli: ^4.9.2
-    webpack-dev-server: ^4.8.1
+    webpack-dev-server: ^4.9.0
     zenroom: ^2.2.3
   languageName: unknown
   linkType: soft
@@ -6560,16 +6560,16 @@ __metadata:
     react-dom: ^17.0.2
     sass-loader: ^12.6.0
     style-loader: ^3.3.1
-    ts-loader: ^9.2.8
+    ts-loader: ^9.3.0
     ts-node: ^10.7.0
     tweetnacl: ^0.14.5
     tweetnacl-util: ^0.13.5
     typescript: ^4.5.5
     uglifyjs-webpack-plugin: ^2.2.0
     uuid: ^2.0.3
-    webpack: ^5.72.0
+    webpack: ^5.72.1
     webpack-combine-loaders: ^2.0.4
-    webpack-dev-server: ^4.8.1
+    webpack-dev-server: ^4.9.0
     webpack-notifier: ^1.15.0
   languageName: unknown
   linkType: soft
@@ -8895,7 +8895,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"canvas@npm:^2.9.0, canvas@npm:^2.9.1":
+"canvas@npm:^2.9.1":
   version: 2.9.1
   resolution: "canvas@npm:2.9.1"
   dependencies:
@@ -12565,13 +12565,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"enhanced-resolve@npm:^5.9.2":
-  version: 5.9.2
-  resolution: "enhanced-resolve@npm:5.9.2"
+"enhanced-resolve@npm:^5.9.3":
+  version: 5.9.3
+  resolution: "enhanced-resolve@npm:5.9.3"
   dependencies:
     graceful-fs: ^4.2.4
     tapable: ^2.2.0
-  checksum: 792b7a01abb4ee4433b658c71f92d5948675938e0c03cad1732abe843b87395f15cb880ace4f819f78ead94163278283afc79b8be63c0eddca8ab45f7d8c515d
+  checksum: 64c2dbbdd608d1a4df93b6e60786c603a1faf3b2e66dfd051d62cf4cfaeeb5e800166183685587208d62e9f7afff3f78f3d5978e32cd80125ba0c83b59a79d78
   languageName: node
   linkType: hard
 
@@ -15329,7 +15329,7 @@ __metadata:
     "@typescript-eslint/parser": ^5.12.1
     axios: ^0.24.0
     bufferutil: ^4.0.6
-    canvas: ^2.9.0
+    canvas: ^2.9.1
     chalk: ^5.0.0
     csv-parse: ^4.16.3
     csv-stringify: ^6.0.5
@@ -15376,14 +15376,14 @@ __metadata:
     string-replace-loader: ^3.1.0
     style-loader: ^3.3.1
     ts-jest: ^27.1.4
-    ts-loader: ^9.2.8
+    ts-loader: ^9.3.0
     ts-node: ^10.7.0
     tsconfig-paths: ^3.14.1
     typescript: ^4.5.5
     unlazy-loader: ^0.1.3
     unzipper: ^0.10.11
     utf-8-validate: ^5.0.9
-    webpack: ^5.72.0
+    webpack: ^5.72.1
     webpack-bundle-analyzer: ^4.5.0
     webpack-cli: ^4.9.2
     webpack-node-externals: ^3.0.0
@@ -20573,6 +20573,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"nanoid@npm:^3.3.4":
+  version: 3.3.4
+  resolution: "nanoid@npm:3.3.4"
+  bin:
+    nanoid: bin/nanoid.cjs
+  checksum: 2fddd6dee994b7676f008d3ffa4ab16035a754f4bb586c61df5a22cf8c8c94017aadd360368f47d653829e0569a92b129979152ff97af23a558331e47e37cd9c
+  languageName: node
+  linkType: hard
+
 "nanomatch@npm:^1.2.9":
   version: 1.2.13
   resolution: "nanomatch@npm:1.2.13"
@@ -23113,7 +23122,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"postcss@npm:^8.2.15, postcss@npm:^8.3.11, postcss@npm:^8.3.5, postcss@npm:^8.3.7, postcss@npm:^8.4.6":
+"postcss@npm:^8.2.15, postcss@npm:^8.3.11, postcss@npm:^8.3.5, postcss@npm:^8.3.7":
   version: 8.4.7
   resolution: "postcss@npm:8.4.7"
   dependencies:
@@ -23121,6 +23130,17 @@ __metadata:
     picocolors: ^1.0.0
     source-map-js: ^1.0.2
   checksum: a515ed36622edbee1d3ba153298d3b62ae9826dfa6de19204c2a6f975c8d3ad36808423b5119a9d82b78efd486de3ce35a1faf882a36ac8aa09492be4fbb7fe1
+  languageName: node
+  linkType: hard
+
+"postcss@npm:^8.4.14":
+  version: 8.4.14
+  resolution: "postcss@npm:8.4.14"
+  dependencies:
+    nanoid: ^3.3.4
+    picocolors: ^1.0.0
+    source-map-js: ^1.0.2
+  checksum: fe58766ff32e4becf65a7d57678995cfd239df6deed2fe0557f038b47c94e4132e7e5f68b5aa820c13adfec32e523b693efaeb65798efb995ce49ccd83953816
   languageName: node
   linkType: hard
 
@@ -25707,7 +25727,7 @@ __metadata:
     release-it-yarn-workspaces: ^2.0.1
     ts-jest: ^27.1.4
     typescript: ^4.5.5
-    webpack: ^5.72.0
+    webpack: ^5.72.1
   languageName: unknown
   linkType: soft
 
@@ -28369,7 +28389,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"ts-loader@npm:^9.2.6":
+"ts-loader@npm:^9.3.0":
   version: 9.3.0
   resolution: "ts-loader@npm:9.3.0"
   dependencies:
@@ -28381,21 +28401,6 @@ __metadata:
     typescript: "*"
     webpack: ^5.0.0
   checksum: 90755ac5850890ff433f2f8c7186d57ae4e172d389342d874b50ab233675f06c47c69043c517e2a2eeaf2251637ecfac607ac6190c89340f246ceff8c7f4af7a
-  languageName: node
-  linkType: hard
-
-"ts-loader@npm:^9.2.8":
-  version: 9.2.8
-  resolution: "ts-loader@npm:9.2.8"
-  dependencies:
-    chalk: ^4.1.0
-    enhanced-resolve: ^5.0.0
-    micromatch: ^4.0.0
-    semver: ^7.3.4
-  peerDependencies:
-    typescript: "*"
-    webpack: ^5.0.0
-  checksum: 3afd9a4cc1d46738ac3f2decc7dfa655e0183d4d2d48c7a113ea9f3ac313304f54be59252cde2ef04757c791e28cfcfc63323d3dd1f2f949485242c1ea4835e5
   languageName: node
   linkType: hard
 
@@ -29959,9 +29964,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"webpack-dev-server@npm:^4.8.1":
-  version: 4.8.1
-  resolution: "webpack-dev-server@npm:4.8.1"
+"webpack-dev-server@npm:^4.9.0":
+  version: 4.9.0
+  resolution: "webpack-dev-server@npm:4.9.0"
   dependencies:
     "@types/bonjour": ^3.5.9
     "@types/connect-history-api-fallback": ^1.3.5
@@ -29983,7 +29988,6 @@ __metadata:
     ipaddr.js: ^2.0.1
     open: ^8.0.9
     p-retry: ^4.5.0
-    portfinder: ^1.0.28
     rimraf: ^3.0.2
     schema-utils: ^4.0.0
     selfsigned: ^2.0.1
@@ -29999,7 +30003,7 @@ __metadata:
       optional: true
   bin:
     webpack-dev-server: bin/webpack-dev-server.js
-  checksum: 6f827068353cb024f04edd275ae2828b6d47a3316c1a8677066d1500b1d1038b516399777792bb464ec40bc6f963abe9b24a5fd93b9b39487a3574b38ae45fd6
+  checksum: 3ee3fc9650ede7be37440d404fea2420310f3fb6dfdcfdb71b1d9e4675b04f05843832c9be68ecd4bd4e8e2c960e5d9da299990bd29d05702edfd013fef9e8c8
   languageName: node
   linkType: hard
 
@@ -30089,9 +30093,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"webpack@npm:^5.69.1, webpack@npm:^5.72.0":
-  version: 5.72.0
-  resolution: "webpack@npm:5.72.0"
+"webpack@npm:^5.72.1":
+  version: 5.72.1
+  resolution: "webpack@npm:5.72.1"
   dependencies:
     "@types/eslint-scope": ^3.7.3
     "@types/estree": ^0.0.51
@@ -30102,13 +30106,13 @@ __metadata:
     acorn-import-assertions: ^1.7.6
     browserslist: ^4.14.5
     chrome-trace-event: ^1.0.2
-    enhanced-resolve: ^5.9.2
+    enhanced-resolve: ^5.9.3
     es-module-lexer: ^0.9.0
     eslint-scope: 5.1.1
     events: ^3.2.0
     glob-to-regexp: ^0.4.1
     graceful-fs: ^4.2.9
-    json-parse-better-errors: ^1.0.2
+    json-parse-even-better-errors: ^2.3.1
     loader-runner: ^4.2.0
     mime-types: ^2.1.27
     neo-async: ^2.6.2
@@ -30122,7 +30126,7 @@ __metadata:
       optional: true
   bin:
     webpack: bin/webpack.js
-  checksum: 8365f1466d0f7adbf80ebc9b780f263a28eeeabcd5fb515249bfd9a56ab7fe8d29ea53df3d9364d0732ab39ae774445eb28abce694ed375b13882a6b2fe93ffc
+  checksum: d1eff085eee1c67a68f7bf1d077ea202c1e68a0de0e0866274984769838c3f224fbc64e847e1a1bbc6eba9fb6a9965098809cc0be9292b573767bb5d8d2df96e
   languageName: node
   linkType: hard
 
