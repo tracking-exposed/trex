@@ -1,7 +1,10 @@
 import path from 'path';
 import { getConfig } from '../../../packages/shared/src/webpack/config';
 import { getExtensionConfig } from '../../../packages/shared/src/webpack/extension.config';
-import { CopyWebpackPlugin } from '../../../packages/shared/src/webpack/plugins';
+import {
+  CopyWebpackPlugin,
+  HTMLWebpackPlugin,
+} from '../../../packages/shared/src/webpack/plugins';
 import packageJson from './package.json';
 import { AppEnv } from './src/AppEnv';
 
@@ -19,13 +22,17 @@ const { buildENV, ...config } = getConfig({
 });
 
 config.plugins.push(
+  new HTMLWebpackPlugin({
+    inject: 'head',
+    template: path.resolve('./public/index.html'),
+  }),
   new CopyWebpackPlugin({
     patterns: [
       {
         from: path.resolve(__dirname, 'public'),
         filter: (file: string) => {
           const { base } = path.parse(file);
-          return !['manifest.json', 'popup.html'].includes(base);
+          return !['manifest.json', 'popup.html', 'index.html'].includes(base);
         },
       },
     ],

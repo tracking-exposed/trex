@@ -1,4 +1,4 @@
-import { ThemeProvider } from '@material-ui/styles';
+import './resources/global.css';
 import debug from 'debug';
 import React from 'react';
 import { DndProvider } from 'react-dnd';
@@ -9,14 +9,14 @@ import { config } from './config';
 import './i18n';
 import reportWebVitals from './reportWebVitals';
 import { YCAITheme } from './theme';
-
-import './resources/global.css';
+import { CssBaseline, ThemeProvider } from '@material-ui/core';
 
 debug.enable(config.DEBUG);
 
 ReactDOM.render(
   <React.StrictMode>
     <ThemeProvider theme={YCAITheme}>
+      <CssBaseline />
       <DndProvider backend={HTML5Backend}>
         <Dashboard />
       </DndProvider>

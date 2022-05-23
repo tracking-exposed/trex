@@ -225,7 +225,6 @@ const getConfig = <E extends t.Props>(
             {
               loader: 'css-loader',
             },
-            // { loader: 'postcss-loader' },
             {
               loader: 'sass-loader',
               options: {
