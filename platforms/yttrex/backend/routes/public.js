@@ -312,7 +312,15 @@ async function getCreatorRelated(req) {
       req.params.channelId,
       { amount, skip }
     );
-    return { json: authorStruct };
+    return {
+      json: {
+        ...authorStruct,
+        content: authorStruct.content.map(({ _id, ...c }) => ({
+          ...c,
+          id: _id,
+        })),
+      },
+    };
   } catch (e) {
     debug('getCreatorRelated error: %s, %s', e.message, e.stack);
     return {

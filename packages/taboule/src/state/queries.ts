@@ -4,10 +4,11 @@ import { ChannelRelated } from '@shared/models/ChannelRelated';
 import {
   HomeMetadata,
   SearchMetadata,
-  VideoMetadata
+  VideoMetadata,
 } from '@shared/models/contributor/ContributorPersonalStats';
 import {
-  SummaryHTMLMetadata, TikTokPSearchMetadata
+  SummaryHTMLMetadata,
+  TikTokPSearchMetadata,
 } from '@shared/models/contributor/ContributorPersonalSummary';
 import { GuardoniExperiment } from '@shared/models/Experiment';
 import { SearchQuery } from '@shared/models/http/SearchQuery';
@@ -54,11 +55,14 @@ export const GetTabouleQueries = ({
   baseURL,
   accessToken,
 }: GetTabouleQueriesProps): TabouleQueries => {
-  const { API } = MakeAPIClient({
-    baseURL,
-    getAuth: async (req) => req,
-    onUnauthorized: async (res) => res,
-  }, endpoints);
+  const { API } = MakeAPIClient(
+    {
+      baseURL,
+      getAuth: async (req) => req,
+      onUnauthorized: async (res) => res,
+    },
+    endpoints
+  );
 
   const ccRelatedUsers = queryStrict<
     SearchRequestInput,
@@ -75,8 +79,7 @@ export const GetTabouleQueries = ({
         }),
         TE.map(({ totalRecommendations, ...r }) => ({
           ...r,
-          total: totalRecommendations,
-          content: r.content.map((r) => ({ ...r, id: r.recommendedSource })),
+          total: totalRecommendations
         }))
       ),
     available
