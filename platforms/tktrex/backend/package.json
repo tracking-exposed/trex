@@ -1,6 +1,6 @@
 {
   "name": "@tktrex/backend",
-  "version": "2.5.1",
+  "version": "2.5.2",
   "packageManager": "yarn@3.1.1",
   "description": "tiktok.tracking.exposed → backend data collector, to investigate personalization algorithms",
   "scripts": {

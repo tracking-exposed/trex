@@ -1,6 +1,6 @@
 {
   "name": "tt-observatory",
-  "version": "2.5.1",
+  "version": "2.5.2",
   "description": "",
   "main": "importer.js",
   "scripts": {
