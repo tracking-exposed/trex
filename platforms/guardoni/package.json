@@ -19,6 +19,7 @@
     "dist:all": "scripts/dist-all.sh",
     "postinstall": "electron-builder install-app-deps",
     "prepack": "yarn build",
+    "check-stealth": "ts-node ./bin/check-stealth.ts",
     "automate:dev": "ts-node ./src/tx-automate/index.ts",
     "automate": "node dist/index.js",
     "tdd": "jest --watch --verbose"
