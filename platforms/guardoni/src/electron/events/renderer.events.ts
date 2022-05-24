@@ -6,7 +6,8 @@ import { app, BrowserView, dialog, ipcMain, shell } from 'electron';
 import { pipe } from 'fp-ts/lib/function';
 import * as TE from 'fp-ts/lib/TaskEither';
 import { NonEmptyString } from 'io-ts-types';
-import * as puppeteer from 'puppeteer-core';
+import type Puppeteer from 'puppeteer-core';
+import puppeteer from 'puppeteer-extra';
 import * as pie from 'puppeteer-in-electron';
 import {
   getConfig,
@@ -93,7 +94,7 @@ const GetEventListenerLifter =
 interface GetEventsContext {
   env: AppEnv;
   mainWindow: Electron.BrowserWindow;
-  browser: puppeteer.Browser;
+  browser: Puppeteer.Browser;
 }
 
 export const GetEvents = ({
