@@ -13,13 +13,15 @@ import {
   DEFAULT_LOAD_FOR,
   DEFAULT_TK_BACKEND,
   DEFAULT_TK_EXTENSION_DIR,
+  DEFAULT_TK_FRONTEND,
   DEFAULT_YT_BACKEND,
   DEFAULT_YT_EXTENSION_DIR,
+  DEFAULT_YT_FRONTEND,
 } from './constants';
 import {
   GuardoniConfig,
   GuardoniContext,
-  GuardoniPlatformConfig,
+  PlatformConfig,
   Platform,
 } from './types';
 import { CHROME_PATHS, getChromePath } from './utils';
@@ -40,12 +42,14 @@ export const getDefaultConfig = (basePath: string): GuardoniConfig => {
     yt: {
       name: 'youtube',
       backend: DEFAULT_YT_BACKEND,
+      frontend: DEFAULT_YT_FRONTEND,
       extensionDir: DEFAULT_YT_EXTENSION_DIR,
       proxy: undefined,
     },
     tk: {
       name: 'tiktok',
       backend: DEFAULT_TK_BACKEND,
+      frontend: DEFAULT_TK_FRONTEND,
       extensionDir: DEFAULT_TK_EXTENSION_DIR,
       proxy: undefined,
     },
@@ -196,7 +200,7 @@ export const readConfigFromPath =
 export const getPlatformConfig = (
   p: Platform,
   { tk, yt, ...config }: GuardoniConfig
-): Omit<GuardoniPlatformConfig, 'basePath' | 'chromePath' | 'evidenceTag'> => {
+): PlatformConfig => {
   const platformConfigKey = getConfigPlatformKey(p);
 
   const platformConf = platformConfigKey === 'tk' ? tk : yt;
@@ -205,9 +209,16 @@ export const getPlatformConfig = (
     ? platformConf.extensionDir
     : path.resolve(config.basePath, platformConf.extensionDir);
 
+  // ensure frontend always exists
+  const frontend =
+    platformConf.frontend ?? platformConfigKey === 'tk'
+      ? DEFAULT_TK_FRONTEND
+      : DEFAULT_YT_FRONTEND;
+
   return {
     ...platformConf,
     extensionDir,
+    frontend,
   };
 };
 

@@ -1,4 +1,4 @@
-import * as endpoints  from '@shared/endpoints';
+import * as endpoints from '@shared/endpoints';
 import { Logger } from '@shared/logger';
 import { DirectiveType } from '@shared/models/Directive';
 import { APIClient } from '@shared/providers/api.provider';
@@ -15,6 +15,7 @@ export const PlatformConfig = t.strict(
   {
     name: Platform,
     backend: t.string,
+    frontend: t.union([t.string, t.undefined]),
     extensionDir: t.string,
     proxy: t.union([t.string, t.undefined]),
   },
@@ -41,18 +42,6 @@ export const GuardoniConfig = t.strict(
 );
 
 export type GuardoniConfig = t.TypeOf<typeof GuardoniConfig>;
-
-export const GuardoniPlatformConfig = t.strict(
-  {
-    name: t.union([t.literal('tiktok'), t.literal('youtube')]),
-    backend: t.string,
-    extensionDir: t.string,
-    proxy: t.union([t.string, t.undefined]),
-  },
-  'GuardoniPlatformConfig'
-);
-
-export type GuardoniPlatformConfig = t.TypeOf<typeof GuardoniPlatformConfig>;
 
 export interface ProgressDetails {
   message: string;

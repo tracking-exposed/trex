@@ -3,11 +3,7 @@ import { ipcRenderer } from 'electron';
 import * as React from 'react';
 import { Redirect, Route, Switch, useHistory } from 'react-router';
 import { v4 as uuid } from 'uuid';
-import {
-  GuardoniConfig,
-  GuardoniPlatformConfig,
-  Platform,
-} from '../../guardoni/types';
+import { GuardoniConfig, PlatformConfig, Platform } from '../../guardoni/types';
 import { EVENTS } from '../models/events';
 import ExperimentExecutionRoute from './components/ExperimentExecution';
 import ExperimentList from './components/ExperimentList';
@@ -19,7 +15,7 @@ export const App: React.FC = () => {
 
   const [{ config, platform, profiles }, setConfig] = React.useState<{
     config: GuardoniConfig | undefined;
-    platform: GuardoniPlatformConfig | undefined;
+    platform: PlatformConfig | undefined;
     profiles: string[];
   }>({ config: undefined, platform: undefined, profiles: [] });
 

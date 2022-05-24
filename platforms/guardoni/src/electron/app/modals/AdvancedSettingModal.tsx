@@ -15,10 +15,7 @@ import {
   getConfigPlatformKey,
   getPlatformConfig,
 } from '../../../guardoni/config';
-import {
-  GuardoniConfig,
-  GuardoniPlatformConfig,
-} from '../../../guardoni/types';
+import { GuardoniConfig, PlatformConfig } from '../../../guardoni/types';
 
 const useStyles = makeStyles((theme) => ({
   formControl: {
@@ -43,7 +40,7 @@ const useStyles = makeStyles((theme) => ({
 const AdvancedSettingModal: React.FC<{
   open: boolean;
   config: GuardoniConfig;
-  platform: GuardoniPlatformConfig;
+  platform: PlatformConfig;
   onConfigChange: (c: GuardoniConfig) => void;
   onCancel: () => void;
 }> = ({
