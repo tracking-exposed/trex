@@ -38,8 +38,8 @@ describe('CLI', () => {
       recursive: true,
     });
 
-    fs.statSync(ytExtensionDir, { throwIfNoEntry: true })
-    fs.statSync(tkExtensionDir, { throwIfNoEntry: true })
+    fs.statSync(ytExtensionDir, { throwIfNoEntry: true });
+    fs.statSync(tkExtensionDir, { throwIfNoEntry: true });
 
     const comparisonCSVContent = await csvStringifyTE(
       tests.fc.sample(ComparisonDirectiveRowArb, 5),
@@ -91,12 +91,14 @@ describe('CLI', () => {
         yt: {
           name: 'youtube',
           backend: process.env.YT_BACKEND as string,
+          frontend: undefined,
           extensionDir: ytExtensionDir,
           proxy: undefined,
         },
         tk: {
           name: 'tiktok',
           backend: process.env.TK_BACKEND as string,
+          frontend: undefined,
           extensionDir: tkExtensionDir,
           proxy: undefined,
         },
@@ -434,12 +436,14 @@ describe('CLI', () => {
         yt: {
           name: 'youtube',
           backend: process.env.YT_BACKEND as string,
+          frontend: undefined,
           extensionDir: ytExtensionDir,
           proxy: undefined,
         },
         tk: {
           name: 'tiktok',
           backend: process.env.TK_BACKEND as string,
+          frontend: undefined,
           extensionDir: tkExtensionDir,
           proxy: undefined,
         },

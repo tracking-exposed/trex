@@ -16,11 +16,7 @@ import AddIcon from '@material-ui/icons/AddCircleOutline';
 import SettingsIcon from '@material-ui/icons/Settings';
 import PolicyIcon from '@material-ui/icons/Policy';
 import * as React from 'react';
-import {
-  GuardoniConfig,
-  GuardoniPlatformConfig,
-  Platform,
-} from '../../guardoni/types';
+import { GuardoniConfig, PlatformConfig, Platform } from '../../guardoni/types';
 import TKLogo from './icons/TKLogo';
 import YTLogo from './icons/YTLogo';
 import AdvancedSettingModal from './modals/AdvancedSettingModal';
@@ -58,7 +54,7 @@ const useStyles = makeStyles((theme) => ({
 
 export interface HeaderProps {
   config: GuardoniConfig;
-  platform: GuardoniPlatformConfig;
+  platform: PlatformConfig;
   profiles: string[];
   onConfigChange: (c: GuardoniConfig) => void;
   onPlatformChange: (p: Platform) => void;

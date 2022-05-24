@@ -1,18 +1,20 @@
 import { Box, Button, Grid, Typography, useTheme } from '@material-ui/core';
+import LinkIcon from '@material-ui/icons/LinkOutlined';
+import { GuardoniExperiment } from '@shared/models/Experiment';
 import { BrowserView, ipcRenderer, shell } from 'electron';
 import * as React from 'react';
 import { RouteComponentProps, useHistory } from 'react-router';
-import { GuardoniPlatformConfig } from '../../../guardoni/types';
+import { PlatformConfig } from '../../../guardoni/types';
 import { EVENTS } from '../../models/events';
 import ElectronBrowserView from './browser-view/ElectronBrowserView';
 import OutputPanel from './OutputPanel';
-import LinkIcon from '@material-ui/icons/LinkOutlined';
-import { GuardoniExperiment } from '@shared/models/Experiment';
 
 interface ExperimentExecutionProps {
+  platformConfig: PlatformConfig;
   experiment: GuardoniExperiment;
   onClose: () => void;
   onRun: (experimentId: string) => void;
+  onOpenExperiment: (experimentId: string) => void;
   onOpenExperimentResults: (experimentId: string) => void;
   onOpenResults: (publicKey: string) => void;
 }
@@ -35,9 +37,11 @@ type ExperimentExecutionStatePhase =
     };
 
 const ExperimentExecution: React.FC<ExperimentExecutionProps> = ({
+  platformConfig,
   experiment,
   onClose,
   onRun,
+  onOpenExperiment,
   onOpenExperimentResults,
   onOpenResults,
 }) => {
@@ -112,7 +116,14 @@ const ExperimentExecution: React.FC<ExperimentExecutionProps> = ({
             <Typography variant="h4">Experiment</Typography>
           </Box>
           <Box>
-            <Typography>{experiment.experimentId}</Typography>
+            <Typography
+              onClick={() => onOpenExperiment(experiment.experimentId)}
+              style={{
+                cursor: 'pointer',
+              }}
+            >
+              {experiment.experimentId}
+            </Typography>
             <Box
               style={{
                 display: 'flex',
@@ -208,7 +219,14 @@ const ExperimentExecution: React.FC<ExperimentExecutionProps> = ({
                 </Typography>
               </Box>
               <Typography variant="body1">
-                <b>Experiment id:</b> {phase.payload.values.experimentId}
+                <b>Experiment id:</b>{' '}
+                <span
+                  onClick={() => {
+                    onOpenExperiment(phase.payload.values.experimentId);
+                  }}
+                >
+                  {phase.payload.values.experimentId}
+                </span>
               </Typography>
               <Typography variant="body1">
                 <b>Public Key:</b> {phase.payload.values.publicKey}
@@ -249,7 +267,7 @@ const ExperimentExecution: React.FC<ExperimentExecutionProps> = ({
 
 const ExperimentExecutionRoute: React.FC<
   RouteComponentProps<{ experimentId: string }> & {
-    config: GuardoniPlatformConfig;
+    config: PlatformConfig;
   }
 > = ({ config, match }) => {
   const history = useHistory();
@@ -266,6 +284,12 @@ const ExperimentExecutionRoute: React.FC<
     },
     [match.params.experimentId]
   );
+
+  const onOpenExperiment = React.useCallback((experimentId: string) => {
+    void shell.openExternal(
+      `${config.frontend}/experiments/render/#${experimentId}`
+    );
+  }, []);
 
   const onOpenExperimentResults = React.useCallback((experimentId: string) => {
     void shell.openExternal(
@@ -303,8 +327,10 @@ const ExperimentExecutionRoute: React.FC<
   return (
     <ExperimentExecution
       experiment={experiment}
+      platformConfig={config}
       onClose={onClose}
       onRun={onRun}
+      onOpenExperiment={onOpenExperiment}
       onOpenExperimentResults={onOpenExperimentResults}
       onOpenResults={onOpenResults}
     />
