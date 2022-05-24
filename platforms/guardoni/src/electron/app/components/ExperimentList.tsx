@@ -19,7 +19,7 @@ import { formatDistanceToNow, parseISO } from 'date-fns';
 import { ipcRenderer } from 'electron';
 import * as React from 'react';
 import { RouteProps, useHistory } from 'react-router';
-import { GuardoniPlatformConfig } from '../../../guardoni/types';
+import { PlatformConfig } from '../../../guardoni/types';
 import { EVENTS } from '../../models/events';
 
 const useStyle = makeStyles((theme) => ({
@@ -167,7 +167,7 @@ export const ExperimentList: React.FC<ExperimentListProps> = ({
 };
 
 const ExperimentListRoute: React.FC<
-  RouteProps & { config: GuardoniPlatformConfig }
+  RouteProps & { config: PlatformConfig }
 > = ({ config }) => {
   const theme = useTheme();
   const [experiments, setDirectives] = React.useState<GuardoniExperiment[]>([]);

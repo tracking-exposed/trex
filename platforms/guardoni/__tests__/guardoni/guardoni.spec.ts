@@ -56,12 +56,14 @@ describe('Guardoni', () => {
     yt: {
       name: 'youtube' as const,
       backend: process.env.YT_BACKEND as string,
+      frontend: process.env.YT_FRONTEND as string,
       extensionDir: path.resolve(__dirname, '../../../yttrex/extension/build'),
       proxy: undefined,
     },
     tk: {
       name: 'tiktok' as const,
       backend: process.env.TK_BACKEND as string,
+      frontend: process.env.TK_FRONTEND as string,
       extensionDir: path.resolve(__dirname, '../../../tktrex/extension/build'),
       proxy: undefined,
     },

@@ -19,11 +19,7 @@ import {
   Guardoni,
   readCSVAndParse,
 } from '../../guardoni/guardoni';
-import {
-  GuardoniConfig,
-  GuardoniPlatformConfig,
-  Platform,
-} from '../../guardoni/types';
+import { GuardoniConfig, PlatformConfig, Platform } from '../../guardoni/types';
 import { guardoniLogger } from '../../logger';
 import { EVENTS } from '../models/events';
 import store from '../store';
@@ -61,7 +57,10 @@ const pickCSVFile = (
     TE.chain((value) => {
       return pipe(
         readCSVAndParse(logger)(value.filePaths[0], 'comparison'),
-        TE.map((parsed) => ({ path: value.filePaths[0], parsed }))
+        TE.map((parsed) => ({
+          path: value.filePaths[0],
+          parsed: parsed as any,
+        }))
       );
     })
   );
@@ -244,7 +243,7 @@ export const GetEvents = ({
           EVENTS.RUN_GUARDONI_EVENT.value,
           (
             event,
-            configOverride: GuardoniPlatformConfig,
+            configOverride: PlatformConfig,
             experimentId: NonEmptyString
           ) => {
             // eslint-disable-next-line no-console
