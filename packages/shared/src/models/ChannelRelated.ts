@@ -2,7 +2,7 @@ import * as t from 'io-ts';
 
 export const ChannelRelated = t.strict(
   {
-    id: t.string,
+    id: t.union([t.string, t.undefined]),
     recommendedSource: t.union([t.string, t.null]),
     recommendedChannelCount: t.number,
     percentage: t.number,

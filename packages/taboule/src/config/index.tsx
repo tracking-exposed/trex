@@ -57,6 +57,7 @@ export const defaultConfiguration = (
 ): TabouleConfiguration => {
   return {
     ccRelatedUsers: {
+      getRowId: (d) => d.id ?? d.recommendedSource ?? d.percentage,
       inputs: inputs.channelIdInput,
       columns: [
         {
