@@ -3,7 +3,7 @@ import { Logger } from '@shared/logger';
 import { DirectiveType } from '@shared/models/Directive';
 import { APIClient } from '@shared/providers/api.provider';
 import * as t from 'io-ts';
-import type puppeteer from 'puppeteer-core';
+import { PuppeteerExtra } from 'puppeteer-extra';
 
 export const Platform = t.union(
   [t.literal('youtube'), t.literal('tiktok')],
@@ -76,7 +76,7 @@ export const GuardoniProfile = t.strict(
 export type GuardoniProfile = t.TypeOf<typeof GuardoniProfile>;
 
 export interface GuardoniContext {
-  puppeteer: typeof puppeteer;
+  puppeteer: PuppeteerExtra;
   API: APIClient<typeof endpoints>;
   config: GuardoniConfig;
   platform: PlatformConfig;

@@ -3,6 +3,7 @@ import { Directive } from '@shared/models/Directive';
 import { pipe } from 'fp-ts/lib/function';
 import * as TE from 'fp-ts/lib/TaskEither';
 import type * as puppeteer from 'puppeteer-core';
+import StealthPlugin from 'puppeteer-extra-plugin-stealth';
 import domainSpecific from './domainSpecific';
 import { GuardoniContext } from './types';
 
@@ -50,9 +51,10 @@ export const dispatchBrowser = (
       args: commandLineArg,
     };
     ctx.logger.info('Launch puppeteer %O', opts);
+    ctx.puppeteer.use(StealthPlugin());
     const browser = await ctx.puppeteer.launch(opts);
 
-    return browser;
+    return browser as any;
   }, toAppError);
 };
 

@@ -26,8 +26,8 @@ import * as fs from 'fs';
 import { NonEmptyString } from 'io-ts-types/lib/NonEmptyString';
 import { PathReporter } from 'io-ts/lib/PathReporter';
 import path from 'path';
-// import pluginStealth from "puppeteer-extra-plugin-stealth";
 import type puppeteer from 'puppeteer-core';
+import { PuppeteerExtra } from 'puppeteer-extra';
 import { dispatchBrowser, operateBrowser } from './browser';
 import {
   checkConfig,
@@ -360,7 +360,7 @@ const registerCSV =
   };
 
 const loadContext = (
-  p: typeof puppeteer,
+  p: PuppeteerExtra,
   basePath: string,
   cnf: GuardoniConfig,
   platform: Platform,
@@ -473,7 +473,7 @@ export type GetGuardoni = ({
 }: {
   basePath: string;
   logger: GuardoniContext['logger'];
-  puppeteer: typeof puppeteer;
+  puppeteer: PuppeteerExtra;
   verbose?: boolean;
 }) => GuardoniLauncher;
 
