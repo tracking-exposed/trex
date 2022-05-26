@@ -11,7 +11,7 @@ module.exports = {
         'workspace',
         'shared',
         'taboule',
-        'backend',
+        'docs',
         'guardoni',
         'tktrex',
         'ycai',
