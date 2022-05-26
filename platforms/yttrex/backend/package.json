@@ -50,7 +50,7 @@
   "devDependencies": {
     "@types/body-parser": "^1.19.2",
     "@types/cors": "^2.8.12",
-    "@types/jest": "^27.4.1",
+    "@types/jest": "^27.5.1",
     "@types/jsdom": "^16.2.14",
     "@types/nconf": "^0.10.2",
     "@types/node": "^16.11.26",
@@ -67,7 +67,7 @@
     "jest": "^27.5.1",
     "prettier": "^2.5.1",
     "supertest": "^6.2.2",
-    "ts-jest": "^27.1.4",
+    "ts-jest": "^27.1.5",
     "tsconfig-paths": "^3.14.1",
     "typescript": "^4.5.5"
   }
