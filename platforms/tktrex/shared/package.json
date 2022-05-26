@@ -4,6 +4,7 @@
   "scripts": {
     "clean": "rm -rf ./build",
     "lint": "eslint ./src",
+    "build": "tsc -b",
     "test": "jest --maxWorkers=8",
     "tdd": "jest --watch --maxWorkers=8",
     "dump-parsed-data": "ts-node bin/dump-parsed-data.ts",
@@ -32,7 +33,8 @@
     "fp-ts": "^2.11.9",
     "io-ts": "^2.2.16",
     "linkedom": "^0.14.4",
-    "mongodb": "^4.3.1"
+    "mongodb": "^4.3.1",
+    "ts-endpoint": "^2.0.0"
   },
   "version": "2.6.0"
 }
