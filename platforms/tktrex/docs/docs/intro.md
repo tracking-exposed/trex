@@ -1,7 +1,7 @@
 ---
 sidebar_position: 1
 title: Tk Trex
-id: intro
+id: tktrex-intro
 ---
 
 # Introduction
@@ -16,5 +16,5 @@ Documentation relative to the extension can be found [here](/tktrex/docs/extensi
 
 ## Packages
 
-- [@tktrex/shared](./shared/intro)
-- [@tktrex/automation](./automation/intro)
+<!-- - [@tktrex/shared](./shared/intro)
+- [@tktrex/automation](./automation/intro) -->

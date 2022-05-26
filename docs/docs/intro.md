@@ -6,5 +6,5 @@ sidebar_position: 1
 
 ## Platforms
 
-- [@tktrex](/tktrex/docs)
-- [@yttrex](/yttrex/docs)
+- [@tktrex](/tktrex/docs/tktrex-intro)
+- [@yttrex](/yttrex/docs/yttrex-intro)

@@ -38,7 +38,7 @@ const config = {
     [
       '@docusaurus/plugin-content-docs',
       {
-        id: 'tk-docs',
+        id: 'tktrex-docs',
         path: path.resolve(__dirname, '../platforms/tktrex/docs/docs'),
         routeBasePath: 'tktrex/docs',
         sidebarPath: require.resolve('./sidebars.js'),
@@ -50,7 +50,7 @@ const config = {
       'docusaurus-plugin-openapi',
       {
         id: 'yttrex-api',
-        path: '../platforms/yttrex/backend/build/open-api.json',
+        path: '../platforms/yttrex/shared/build/open-api.json',
         routeBasePath: 'yttrex/api',
       },
     ],
@@ -62,6 +62,16 @@ const config = {
         path: path.resolve(__dirname, '../platforms/yttrex/docs/docs'),
         routeBasePath: 'yttrex/docs',
         sidebarPath: require.resolve('./sidebars.js'),
+      },
+    ],
+    // @ycai
+    // API
+    [
+      'docusaurus-plugin-openapi',
+      {
+        id: 'ycai-api',
+        path: '../platforms/ycai/studio/build/open-api.json',
+        routeBasePath: 'ycai/api',
       },
     ],
 
@@ -110,12 +120,12 @@ const config = {
             type: 'doc',
             label: 'Guardoni',
             docId: 'guardoni-intro',
-            docsPluginId: 'guardoni-docs'
+            docsPluginId: 'guardoni-docs',
           },
           {
             type: 'doc',
-            docId: 'intro',
-            docsPluginId: 'tk-docs',
+            docId: 'tktrex-intro',
+            docsPluginId: 'tktrex-docs',
             label: 'TikTok Scraper',
           },
           {

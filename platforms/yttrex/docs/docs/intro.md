@@ -5,9 +5,3 @@ id: yttrex-intro
 ---
 
 # Introduction
-
-## Packages
-
-- [@tktrex/shared](./shared/intro)
-- [@tktrex/extension](./extension/intro)
-- [@tktrex/automation](./automation/intro)
