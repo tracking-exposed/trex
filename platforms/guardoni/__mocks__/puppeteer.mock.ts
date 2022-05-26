@@ -1,8 +1,8 @@
 /* eslint-disable import/first */
-jest.mock('puppeteer-core');
-import * as puppeteer from 'puppeteer-core';
+jest.mock('puppeteer-extra');
+import puppeteer, { PuppeteerExtra } from 'puppeteer-extra';
 
-const puppeteerMock = puppeteer as jest.Mocked<typeof puppeteer>;
+const puppeteerMock = puppeteer as jest.Mocked<PuppeteerExtra>;
 
 const pageMock = {
   on: jest.fn(),

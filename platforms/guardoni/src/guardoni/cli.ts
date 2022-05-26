@@ -4,7 +4,6 @@ import * as A from 'fp-ts/lib/Array';
 import { pipe } from 'fp-ts/lib/function';
 import * as TE from 'fp-ts/lib/TaskEither';
 import { NonEmptyString } from 'io-ts-types/lib/NonEmptyString';
-import puppeteer from 'puppeteer-core';
 import yargs from 'yargs';
 import { hideBin } from 'yargs/helpers';
 import { guardoniLogger } from '../logger';
@@ -23,6 +22,7 @@ import {
   Platform,
 } from './types';
 import D from 'debug';
+import puppeteer, { PuppeteerExtra } from 'puppeteer-extra';
 
 export const cliLogger = guardoniLogger.extend('cli');
 
@@ -57,7 +57,7 @@ export interface GuardoniCLI {
 export type GetGuardoniCLI = (
   config: GuardoniConfig,
   basePath: string,
-  p: typeof puppeteer,
+  p: PuppeteerExtra,
   platform: Platform
 ) => GuardoniCLI;
 
