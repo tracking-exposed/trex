@@ -22,7 +22,7 @@
     "ts-io-error": "^2.0.0"
   },
   "devDependencies": {
-    "@types/jest": "^27.4.1",
+    "@types/jest": "^27.5.1",
     "@types/node": "^16.11.26",
     "@types/uuid": "^8.3.4",
     "@typescript-eslint/eslint-plugin": "^5.12.1",
@@ -35,7 +35,7 @@
     "eslint-plugin-promise": "^5.2.0",
     "jest": "^27.5.1",
     "prettier": "^2.5.1",
-    "ts-jest": "^27.1.4",
+    "ts-jest": "^27.1.5",
     "tsconfig-paths": "^3.14.1",
     "typescript": "^4.5.5"
   }
