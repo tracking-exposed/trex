@@ -1,14 +1,14 @@
 declare module '*.css' {
-  const src: string;
-  export default src;
+  const css: string;
+  export default css;
 }
 
 declare module '*.png' {
-  const src: string;
-  export default src;
+  const png: string;
+  export default png;
 }
 
 declare module '*.svg' {
-  const src: string;
-  export default src;
+  const svg: string;
+  export default svg;
 }

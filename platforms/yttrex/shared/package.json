@@ -8,7 +8,8 @@
     "build": "tsc -b",
     "test": "jest",
     "type-check": "tsc",
-    "lint": "eslint ./src"
+    "lint": "eslint ./src",
+    "open-doc-api": "ts-node ./bin/open-doc-api.ts"
   },
   "author": "Claudio Agosti <claudio@tracking.exposed> and https://github.com/tracking-exposed/yttrex/graphs/contributors",
   "license": "AGPL-3.0",

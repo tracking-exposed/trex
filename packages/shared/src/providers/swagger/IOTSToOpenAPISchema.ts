@@ -23,6 +23,7 @@ interface IntersectionType extends t.IntersectionType<HasOpenAPISchema[]> {}
 interface BrandedType extends t.RefinementType<HasOpenAPISchema> {}
 
 export type HasOpenAPISchema =
+  | t.UnionC<any>
   | t.UnknownType
   | t.UndefinedType
   | t.NullType
@@ -149,10 +150,10 @@ export const getOpenAPISchema = <T extends IOTOpenDocSchema>(codec: T): any => {
       return { type: 'array', items: type.types.map(getOpenAPISchema) };
     case 'UnionType':
       const nonNullableTypes = type.types.filter(
-        (t) => t._tag !== 'UndefinedType' && t._tag !== 'NullType'
+        (tt: any) => tt._tag !== 'UndefinedType' && tt._tag !== 'NullType'
       );
       const isRequired = type.types.length === nonNullableTypes.length;
-      if (nonNullableTypes.every((v) => v._tag === 'LiteralType')) {
+      if (nonNullableTypes.every((v: any) => v._tag === 'LiteralType')) {
         return {
           type: 'string',
           description: type.name,

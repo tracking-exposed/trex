@@ -1,11 +1,11 @@
-import * as endpoints from '../../../../packages/shared/src/endpoints';
-import * as contributorModels from '../../../../packages/shared/src/models/contributor/ContributorPersonalSummary';
-import * as contributorPersonalStats from '../../../../packages/shared/src/models/contributor/ContributorPersonalStats';
-import * as contributorPublicKey from '../../../../packages/shared/src/models/contributor/ContributorPublicKey';
-import sharedModels from '../../../../packages/shared/src/models';
-import * as apiModels from '../models';
-import * as swagger from '../../../../packages/shared/src/providers/swagger/swagger.provider.node';
+import sharedModels from '@shared/models';
+import * as contributorPersonalStats from '@shared/models/contributor/ContributorPersonalStats';
+import * as contributorModels from '@shared/models/contributor/ContributorPersonalSummary';
+import * as contributorPublicKey from '@shared/models/contributor/ContributorPublicKey';
+import * as swagger from '@shared/providers/swagger/swagger.provider.node';
 import * as path from 'path';
+import * as endpoints from '../src/endpoints';
+import * as apiModels from '../src/models';
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const packageJson = require('../package.json');
 

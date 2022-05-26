@@ -1,9 +1,9 @@
-import { pipe } from 'fp-ts/lib/pipeable';
+import { toBackendError } from '@shared/backend/errors/BackendError';
+import { Route } from '@shared/backend/types';
+import { AddEndpoint } from '@shared/backend/utils/endpoint';
+import * as Endpoints from '@yttrex/shared/endpoints';
+import { pipe } from 'fp-ts/lib/function';
 import * as TE from 'fp-ts/lib/TaskEither';
-import { toBackendError } from '../../errors/BackendError';
-import * as Endpoints from '../../../endpoints';
-import { Route } from '../../types';
-import { AddEndpoint } from '../../utils/endpoint';
 
 export const MakeHealthRoute: Route = (r, { db, logger }) => {
   AddEndpoint(r)(Endpoints.v0.Public.GetHealth, () => {
@@ -13,7 +13,9 @@ export const MakeHealthRoute: Route = (r, { db, logger }) => {
       // connect to db
       TE.tryCatch(() => db.clientConnect({ concurrency: 1 }), toBackendError),
       // count docs in a collection
-      TE.chain((c) => TE.tryCatch(() => db.count(c, 'ytvids', {}), toBackendError)),
+      TE.chain((c) =>
+        TE.tryCatch(() => db.count(c, 'ytvids', {}), toBackendError)
+      ),
       // comment this out to see this fails
       // TE.chain((c) =>
       //   TE.tryCatch(
@@ -24,7 +26,7 @@ export const MakeHealthRoute: Route = (r, { db, logger }) => {
       TE.map((result) => ({
         body: {
           data: 'OK',
-          result
+          result,
         },
         statusCode: 201,
       }))

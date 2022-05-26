@@ -1,10 +1,13 @@
+import { ContributorPersonalStats } from '@shared/models/contributor/ContributorPersonalStats';
+import {
+  ContributorPersonalSearch,
+  ContributorPersonalSummary,
+} from '@shared/models/contributor/ContributorPersonalSummary';
+import { CreatorStats } from '@shared/models/CreatorStats';
+import { PublicKeyParams } from '@shared/models/http/params/PublicKey';
+import { SearchQuery } from '@shared/models/http/SearchQuery';
 import * as t from 'io-ts';
 import { Endpoint } from 'ts-endpoint';
-import { ContributorPersonalStats } from '../../models/contributor/ContributorPersonalStats';
-import { ContributorPersonalSearch, ContributorPersonalSummary } from '../../models/contributor/ContributorPersonalSummary';
-import { CreatorStats } from '../../models/CreatorStats';
-import { PublicKeyParams } from '../../models/http/params/PublicKey';
-import { SearchQuery } from '../../models/http/SearchQuery';
 
 const GetAuthorStatsByVideoId = Endpoint({
   Method: 'GET',

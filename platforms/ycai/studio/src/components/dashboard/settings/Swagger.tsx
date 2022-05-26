@@ -1,4 +1,4 @@
-import * as endpoints from '@shared/endpoints';
+import * as endpoints from '@yttrex/shared/endpoints';
 import models from '@shared/models';
 import * as swagger from '@shared/providers/swagger/swagger.provider';
 import * as React from 'react';

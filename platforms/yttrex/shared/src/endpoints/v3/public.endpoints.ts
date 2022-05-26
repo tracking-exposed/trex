@@ -5,17 +5,17 @@ import {
   Directive,
   DirectiveType,
   PostDirectiveResponse,
-} from '../../models/Directive';
+} from '@shared/models/Directive';
 import {
   ConcludeGuardoniExperimentOutput,
   GetPublicDirectivesOutput,
-} from '../../models/Experiment';
-import { HandshakeBody } from '../../models/HandshakeBody';
+} from '@shared/models/Experiment';
+import { HandshakeBody } from '@shared/models/HandshakeBody';
 import {
   GetRecommendationsParams,
   GetRecommendationsQuery,
   RecommendationList,
-} from '../../models/Recommendation';
+} from '@shared/models/Recommendation';
 
 const Handshake = Endpoint({
   Method: 'POST',

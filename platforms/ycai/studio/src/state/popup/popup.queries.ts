@@ -1,4 +1,4 @@
-import * as Endpoints from '@shared/endpoints';
+import * as Endpoints from '@yttrex/shared/endpoints';
 import { MakeAPIClient } from '@shared/providers/api.provider';
 import { available, queryShallow, queryStrict, refetch } from 'avenger';
 import { pipe } from 'fp-ts/lib/function';
@@ -10,33 +10,36 @@ import { browser, Messages } from '../../providers/browser.provider';
 /**
  * The popup api client doesn't need any specific authorization
  */
-export const { API } = MakeAPIClient({
-  baseURL: config.API_URL,
-  getAuth: (req) =>
-    pipe(
-      browser.sendMessage(Messages.GetKeypair)(),
-      TE.fold(
-        (e) => () => Promise.resolve(req),
-        (k) => async () => {
-          // req.headers('X-YTtrex-Version', config.VERSION);
-          // req.headers('X-YTtrex-Build', config.BUILD);
-          // const signature = nacl.sign.detached(
-          //   decodeString(payload),
-          //   decodeKey(keypair.secretKey)
-          // );
-          // xhr.setRequestHeader('X-YTtrex-NonAuthCookieId', cookieId);
-          // xhr.setRequestHeader('X-YTtrex-PublicKey', keypair.publicKey);
-          // xhr.setRequestHeader('X-YTtrex-Signature', bs58.encode(signature));
-          // req.headers = {
-          //   ...req.headers,
-          //   Authorization: `Bearer ${k.publicKey}`,
-          // };
-          return Promise.resolve(req);
-        }
-      )
-    )(),
-  onUnauthorized: async (res) => res,
-}, Endpoints);
+export const { API } = MakeAPIClient(
+  {
+    baseURL: config.API_URL,
+    getAuth: (req) =>
+      pipe(
+        browser.sendMessage(Messages.GetKeypair)(),
+        TE.fold(
+          (e) => () => Promise.resolve(req),
+          (k) => async () => {
+            // req.headers('X-YTtrex-Version', config.VERSION);
+            // req.headers('X-YTtrex-Build', config.BUILD);
+            // const signature = nacl.sign.detached(
+            //   decodeString(payload),
+            //   decodeKey(keypair.secretKey)
+            // );
+            // xhr.setRequestHeader('X-YTtrex-NonAuthCookieId', cookieId);
+            // xhr.setRequestHeader('X-YTtrex-PublicKey', keypair.publicKey);
+            // xhr.setRequestHeader('X-YTtrex-Signature', bs58.encode(signature));
+            // req.headers = {
+            //   ...req.headers,
+            //   Authorization: `Bearer ${k.publicKey}`,
+            // };
+            return Promise.resolve(req);
+          }
+        )
+      )(),
+    onUnauthorized: async (res) => res,
+  },
+  Endpoints
+);
 
 export const settingsRefetch = queryShallow(() => {
   return pipe(

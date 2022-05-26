@@ -10,7 +10,7 @@
 
 import * as fs from 'fs';
 import * as path from 'path';
-import { MinimalEndpointInstance } from 'ts-endpoint';
+import { MinimalEndpointInstance } from '../../endpoints';
 import { generateDoc, DocConfig } from './swagger.provider';
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const { validate } = require('@apidevtools/swagger-cli');

@@ -28,7 +28,8 @@
     "isolatedModules": true,
     "paths": {
       "@shared/*": ["../../../../packages/shared/src/*"],
-      "@taboule/*": ["../../../../packages/taboule/src/*"]
+      "@taboule/*": ["../../../../packages/taboule/src/*"],
+      "@yttrex/shared/*": ["../../../yttrex/shared/src/*"]
     }
   },
   "references": [
@@ -37,15 +38,20 @@
     },
     {
       "path": "../../../packages/taboule"
+    },
+    {
+      "path": "../../yttrex/shared"
     }
   ],
   "include": [
+    "./bin",
     "./src",
     "./typings",
     "./webpack.config.ts",
     "./webpack.extension.config.ts"
   ],
   "ts-node": {
+    "require": ["tsconfig-paths/register"],
     "compilerOptions": {
       "module": "CommonJS"
     }

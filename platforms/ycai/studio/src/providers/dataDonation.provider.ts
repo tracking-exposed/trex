@@ -1,4 +1,5 @@
 import { GetDataDonationProvider } from '@shared/providers/dataDonation.provider';
+import * as Endpoints from '@yttrex/shared/endpoints';
 import { config } from '../config';
 import { browser } from './browser.provider';
 
@@ -73,6 +74,7 @@ export const dataDonation = GetDataDonationProvider({
   debug: config.NODE_ENV === 'development',
   version: config.VERSION,
   watchedPaths,
+  addEvent: Endpoints.v2.Public.AddEvents as any,
 });
 
 export { GetDataDonationProvider };

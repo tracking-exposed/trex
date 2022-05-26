@@ -1,4 +1,4 @@
-import { DocumentedEndpoint } from '@shared/endpoints/utils';
+import { DocumentedEndpoint } from '@shared/endpoints';
 import * as t from 'io-ts';
 import * as apiModel from '../../models';
 

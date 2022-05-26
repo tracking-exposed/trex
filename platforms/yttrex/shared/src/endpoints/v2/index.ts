@@ -1,14 +1,14 @@
 import * as t from 'io-ts';
 import { Endpoint } from 'ts-endpoint';
-import { AddEventsBody } from '../../models/ContributionEvent';
-import { ContributorPublicKeyResponse } from '../../models/contributor/ContributorPublicKey';
-import { GetExperimentListOutput } from '../../models/Experiment';
-import { HandshakeBody, HandshakeResponse } from '../../models/HandshakeBody';
-import { PublicKeyParams } from '../../models/http/params/PublicKey';
-import { SearchQuery } from '../../models/http/SearchQuery';
-import { Metadata } from '../../models/Metadata';
-import { ChannelADVStats } from '../../models/stats/ChannelADV';
-import { DocumentedEndpoint } from '../utils';
+import { AddEventsBody } from '@shared/models/ContributionEvent';
+import { ContributorPublicKeyResponse } from '@shared/models/contributor/ContributorPublicKey';
+import { GetExperimentListOutput } from '@shared/models/Experiment';
+import { HandshakeBody, HandshakeResponse } from '@shared/models/HandshakeBody';
+import { PublicKeyParams } from '@shared/models/http/params/PublicKey';
+import { SearchQuery } from '@shared/models/http/SearchQuery';
+import { Metadata } from '@shared/models/Metadata';
+import { ChannelADVStats } from '@shared/models/stats/ChannelADV';
+import { DocumentedEndpoint } from '@shared/endpoints';
 
 export const Handshake = Endpoint({
   Method: 'POST',

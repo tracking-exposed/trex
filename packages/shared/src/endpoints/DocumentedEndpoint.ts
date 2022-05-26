@@ -12,8 +12,18 @@ export interface DocsOpts {
   tags: string[];
 }
 
+export type DocumentedEndpoint<
+  M extends HTTPMethod,
+  O extends Codec<any, any, any>,
+  H extends RecordCodec<any, any> | undefined = undefined,
+  Q extends RecordCodec<any, any> | undefined = undefined,
+  B extends Codec<any, any, any> | undefined = undefined,
+  P extends RecordCodec<any, any> | undefined = undefined,
+  E extends EndpointErrors<never, Codec<any, any, any>> | undefined = undefined
+> = Endpoint<M, O, H, Q, B, P, E> & DocsOpts;
+
 // export declare function Endpoint<M extends HTTPMethod, O extends Codec<any, any, any>, H extends RecordCodec<any, any> | undefined = undefined, Q extends RecordCodec<any, any> | undefined = undefined, B extends Codec<any, any, any> | undefined = undefined, P extends RecordCodec<any, any> | undefined = undefined, E extends EndpointErrors<never, Codec<any, any, any>> | undefined = undefined>(e: Endpoint<M, O, H, Q, B, P, E>): EndpointInstance<Endpoint<M, O, H, Q, B, P, E>>;
-type DocumentedEndpointInstance<
+export type DocumentedEndpointInstance<
   M extends HTTPMethod,
   O extends Codec<any, any, any>,
   H extends RecordCodec<any, any> | undefined = undefined,
@@ -36,7 +46,7 @@ export const DocumentedEndpoint = <
   description,
   tags,
   ...opts
-}: Endpoint<M, O, H, Q, B, P, E> & DocsOpts): DocumentedEndpointInstance<
+}: DocumentedEndpoint<M, O, H, Q, B, P, E>): DocumentedEndpointInstance<
   M,
   O,
   H,

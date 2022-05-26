@@ -14,7 +14,7 @@ import * as S from 'fp-ts/lib/string';
 import * as TE from 'fp-ts/lib/TaskEither';
 import * as t from 'io-ts';
 import { PathReporter } from 'io-ts/lib/PathReporter';
-import { MinimalEndpointInstance, TypeOfEndpointInstance } from 'ts-endpoint';
+import { MinimalEndpointInstance, TypeOfEndpointInstance } from '../endpoints';
 import { APIError } from '../errors/APIError';
 import { trexLogger } from '../logger';
 
@@ -160,10 +160,16 @@ export const MakeHTTPClient = (client: AxiosInstance): HTTPClient => {
   return { apiFromEndpoint, request, get, post, put };
 };
 
-export type TERequest<E extends MinimalEndpointInstance> = (
-  input: TypeOfEndpointInstance<E>['Input'],
-  ia?: any
-) => TE.TaskEither<APIError, TypeOfEndpointInstance<E>['Output']>;
+export type TERequest<E extends MinimalEndpointInstance> =
+  TypeOfEndpointInstance<E>['Input'] extends never
+    ? (
+        input?: TypeOfEndpointInstance<E>['Input'],
+        ia?: any
+      ) => TE.TaskEither<APIError, TypeOfEndpointInstance<E>['Output']>
+    : (
+        input: TypeOfEndpointInstance<E>['Input'],
+        ia?: any
+      ) => TE.TaskEither<APIError, TypeOfEndpointInstance<E>['Output']>;
 
 export interface ResourceEndpointsRecord {
   [apiKey: string]: MinimalEndpointInstance;

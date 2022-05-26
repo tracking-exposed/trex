@@ -1,5 +1,5 @@
 import * as t from 'io-ts';
-import { DocumentedEndpoint } from '../utils';
+import { DocumentedEndpoint } from '@shared/endpoints/DocumentedEndpoint';
 
 const GetHealth = DocumentedEndpoint({
   title: 'GET health',

@@ -1,16 +1,16 @@
 import * as t from 'io-ts';
-import { SearchQuery } from '../../models/http/SearchQuery';
+import { SearchQuery } from '@shared/models/http/SearchQuery';
 import { Endpoint } from 'ts-endpoint';
-import { AuthorizationHeader, AuthResponse } from '../../models/Auth';
-import { GetRelatedChannelsOutput } from '../../models/ChannelRelated';
+import { AuthorizationHeader, AuthResponse } from '@shared/models/Auth';
+import { GetRelatedChannelsOutput } from '@shared/models/ChannelRelated';
 import {
   ContentCreator,
   ContentCreatorVideosOutput,
   RegisterContentCreatorBody,
-} from '../../models/ContentCreator';
-import { CreatorStats } from '../../models/CreatorStats';
-import * as Recommendation from '../../models/Recommendation';
-import * as Video from '../../models/Video';
+} from '@shared/models/ContentCreator';
+import { CreatorStats } from '@shared/models/CreatorStats';
+import * as Recommendation from '@shared/models/Recommendation';
+import * as Video from '@shared/models/Video';
 
 const GetCreator = Endpoint({
   Method: 'GET',

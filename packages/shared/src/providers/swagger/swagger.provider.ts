@@ -11,10 +11,7 @@
 import { pipe } from 'fp-ts/lib/function';
 import * as R from 'fp-ts/lib/Record';
 import * as S from 'fp-ts/lib/string';
-import {
-  MinimalEndpoint,
-  MinimalEndpointInstance
-} from 'ts-endpoint/lib/helpers';
+import { MinimalEndpoint, MinimalEndpointInstance } from '../../endpoints';
 import { getOpenAPISchema, IOTOpenDocSchema } from './IOTSToOpenAPISchema';
 
 interface ServerConfig {
