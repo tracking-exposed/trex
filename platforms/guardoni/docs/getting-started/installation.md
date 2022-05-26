@@ -1,24 +1,7 @@
 ---
 title: Installation
+sidebar_position: 1
 ---
 
-## Getting started
+Guardoni can be used from the [CLI](../cli/getting-started#install) or with the electron [app](../electron-app/getting-started#install).
 
-By default guardoni downloads an extension version `.99` with default opt-in (meant for automation) already built and places it in `$basePath/extension` folder.
-By default this extension sends the results to the server.
-
-To get an extension which sends the results to the local server you have to build it yourself - as explained in details in the extension project:
-
-```bash
-# from the project's root
-cd ../extension
-yarn build
-```
-
-Once you build the extension you need to compile `guardoni` code too:
-
-```bash
-yarn build
-```
-
-Then you'll be able to execute both [cli](#cli) and [electron](#electron) programs.
