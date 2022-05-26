@@ -5,7 +5,11 @@ import * as ReactDOM from 'react-dom';
 import { Taboule, TabouleProps } from './components/Taboule';
 import { TabouleQueries } from './state/queries';
 
-interface DataTableProps<Q extends keyof TabouleQueries>
+/**
+ * Table data props
+ * @typeParam Q - key of {@link TabouleQueries}
+ */
+export interface DataTableProps<Q extends keyof TabouleQueries>
   extends TabouleProps<Q> {
   node: HTMLDivElement;
 }

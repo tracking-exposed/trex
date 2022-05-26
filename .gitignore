@@ -24,3 +24,6 @@ coverage
 
 # let everyone use their own workspace config
 *.code-workspace
+
+# auto generated docs
+typedoc

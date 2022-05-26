@@ -1,3 +1,6 @@
+/**
+ * @module state!types
+ */
 import * as t from 'io-ts';
 
 export const TabouleQueryKey = t.union(
