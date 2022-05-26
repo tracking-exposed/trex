@@ -1,6 +1,7 @@
 {
   "name": "@tktrex/shared",
-  "packageManager": "yarn@3.1.1",
+  "version": "2.8.1",
+  "packageManager": "yarn@3.2.3",
   "scripts": {
     "clean": "rm -rf ./build",
     "lint": "eslint ./src",
@@ -35,5 +36,10 @@
     "mongodb": "^4.12.1",
     "ts-endpoint": "^2.0.0"
   },
-  "version": "2.8.1"
+  "typedoc": {
+    "entryPoint": "./src/index.ts",
+    "readmeFile": "./README.md",
+    "displayName": "TK TrEx - Shared",
+    "tsconfig": "./tsconfig.json"
+  }
 }

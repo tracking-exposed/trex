@@ -153,8 +153,6 @@ export const downloadExtension = (
 /**
  * Clean extension directory
  *
- * @param ctx
- * @returns
  */
 
 export const cleanExtension =

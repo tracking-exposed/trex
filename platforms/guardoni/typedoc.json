@@ -1,0 +1,19 @@
+{
+  "$schema": "https://typedoc.org/schema.json",
+  "entryPoints": [
+    "./src/guardoni/cli.ts",
+    "../../packages/shared/src/endpoints/*"
+  ],
+  "out": "docs/api",
+  "exclude": ["build", "**/build"],
+  "plugin": [
+    "typedoc-plugin-missing-exports",
+    "typedoc-plugin-resolve-crossmodule-references",
+    "typedoc-plugin-markdown"
+  ],
+  "validation": {
+    "notExported": true,
+    "invalidLink": true,
+    "notDocumented": false
+  }
+}

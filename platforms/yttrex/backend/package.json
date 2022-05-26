@@ -88,5 +88,11 @@
   "_moduleAliases": {
     "@shared": "../../../packages/shared/build",
     "@yttrex/shared": "../shared/build"
+  },
+  "typedoc": {
+    "entryPoint": "./bin/server.ts",
+    "readmeFile": "./README.md",
+    "displayName": "YT TrEx - Backend",
+    "tsconfig": "./tsconfig.json"
   }
 }

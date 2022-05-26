@@ -1,10 +1,8 @@
-import { GetTabouleCommands, TabouleCommands } from './commands';
-import { GetTabouleQueries, TabouleQueries } from './queries';
+/**
+ * @module state
+ */
 
-export const TabouleDataProvider = (
-  baseURL: string
-): { queries: TabouleQueries; commands: TabouleCommands } => {
-  const queries = GetTabouleQueries({ baseURL });
-  const commands = GetTabouleCommands({ baseURL }, queries);
-  return { queries, commands };
-};
+export * from './types';
+export * from './queries';
+export * from './commands';
+export { TabouleDataProvider } from './state.provider';

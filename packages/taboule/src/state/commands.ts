@@ -1,3 +1,6 @@
+/**
+ * @module state!commands
+ */
 import { MakeAPIClient, TERequest } from '@shared/providers/api.provider';
 import { command } from 'avenger';
 import * as Endpoints from '@yttrex/shared/endpoints';
