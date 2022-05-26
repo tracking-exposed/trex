@@ -3,6 +3,9 @@ import { AutoRotatingCarousel } from 'material-auto-rotating-carousel';
 import Slide from './carousel/Slide';
 import { Box, Button, makeStyles } from '@material-ui/core';
 import { deepPurple, green } from '@material-ui/core/colors';
+import browserImage from 'assets/browser.png';
+import privacyImage from 'assets/privacy.png';
+import dataImage from 'assets/data.png';
 
 const useStyles = makeStyles(() => ({
   root: {
@@ -73,31 +76,25 @@ export const IntroCarousel: React.FC<IntroCarouselProps> = ({
       containerStyle={{ borderRadius: 0 }}
     >
       <Slide
-        media={
-          <img src="https://www.icons101.com/icon_png/size_256/id_67379/Clone.png" />
-        }
+        media={<img src={browserImage} />}
         mediaBackgroundStyle={{ backgroundColor: '#23AA9A' }}
         style={{ backgroundColor: '#1b8074', border: 'solid black 2px' }}
         title="Welcome on Guardoni"
-        subtitle="With this tool you can run experiments on web platforms and collect data about their behaviour."
+        subtitle="A tool for algorithmic bias detection. Run experiments on web platforms, collect data about their behaviour."
       />
       <Slide
-        media={
-          <img src="https://www.icons101.com/icon_png/size_256/id_84012/json.png" />
-        }
+        media={<img src={dataImage} />}
         mediaBackgroundStyle={{ backgroundColor: deepPurple[300] }}
         style={{ backgroundColor: deepPurple[600], border: 'solid black 2px' }}
-        title="Anonymous tokens"
-        subtitle="A private token will be generated. Experiments need some time to run, when finished you'll get JSON results."
+        title="Get some data about them"
+        subtitle="Once completed the experiment you'll get anonymized JSON results, ready to be analyzed and evaluated."
       />
       <Slide
-        media={
-          <img src="https://www.icons101.com/icon_png/size_256/id_67377/C3po.png" />
-        }
+        media={<img src={privacyImage} />}
         mediaBackgroundStyle={{ backgroundColor: green[300] }}
         style={{ backgroundColor: green[600], border: 'solid black 2px' }}
         title="Privacy by design"
-        subtitle="Read our Terms of Service and Privacy Policy."
+        subtitle="Read our Terms of Service and Privacy Policy." /** to be added when ready */
       >
         <Box>
           <Button
