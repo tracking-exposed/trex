@@ -116,7 +116,7 @@
     "jest": "^27.5.1",
     "node-loader": "^2.0.0",
     "node-polyfill-webpack-plugin": "^1.1.4",
-    "pkg": "^5.6.0",
+    "pkg": "^5.7.0",
     "prettier": "^2.5.1",
     "rpmbuild": "^0.0.23",
     "string-replace-loader": "^3.1.0",
@@ -134,13 +134,14 @@
     "webpack-node-externals": "^3.0.0"
   },
   "pkg": {
+    "scripts": [
+      "bin/guardoni-cli.js",
+      "../../node_modules/puppeteer/lib/*.js",
+      "../../node_modules/puppeteer-extra-plugin-stealth/**/*.js"
+    ],
     "assets": [
-      "extension/.keep",
-      "screenshots/.keep",
-      "experiments/.keep",
       "static/index.html",
       "config/default.json",
-      "profiles/.keep",
       "package.json"
     ],
     "targets": [
