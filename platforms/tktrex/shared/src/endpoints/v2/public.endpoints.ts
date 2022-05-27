@@ -1,6 +1,5 @@
 import { DocumentedEndpoint } from '@shared/endpoints/utils';
 import * as t from 'io-ts';
-import * as path from 'path';
 import * as apiModel from '../../models';
 
 export const Handshake = DocumentedEndpoint({
@@ -38,7 +37,7 @@ const GetSearches = DocumentedEndpoint({
   getPath: () => '/v2/searches',
   Output: apiModel.Public.PublicSearchList,
   title: 'All searches',
-  description: { path: path.resolve(__dirname, './tik-tok-searches.md') },
+  description: 'Get tiktok searches',
   tags: ['searches'],
 });
 
