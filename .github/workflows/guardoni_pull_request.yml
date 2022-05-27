@@ -58,8 +58,7 @@ jobs:
 
       - name: Test
         run: |
-          yarn pm2 start --env test platforms/yttrex/backend/ecosystem.config.js
-          yarn pm2 start --env test platforms/tktrex/backend/ecosystem.config.js
+          yarn pm2 start --env test ./platforms/ecosystem.config.js
           yarn yt:ext build:guardoni
           yarn tk:ext build:guardoni
           yarn test guardoni --ci
@@ -67,8 +66,9 @@ jobs:
       - name: Package
         run: yarn guardoni pkg
 
-      - name: Test package
-        run: |
-          ./platforms/guardoni/dist/guardoni-cli-${{ steps.version.outputs.version }}-linux --verbose --basePath "$(pwd)/platforms/guardoni" -c "$(pwd)/platforms/guardoni/guardoni.config.json" yt-list
-          ./platforms/guardoni/dist/guardoni-cli-${{ steps.version.outputs.version }}-linux --verbose --basePath "$(pwd)/platforms/guardoni" -c "$(pwd)/platforms/guardoni/guardoni.config.json" tk-list
-          yarn pm2 stop all
+      - name: Test cli
+        working-directory: ./platforms/guardoni
+        run: ./scripts/cli-test.sh
+
+      - name: Stop pm2 ecosystem
+        run: yarn pm2 stop all
