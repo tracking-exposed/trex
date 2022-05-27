@@ -65,7 +65,7 @@ const foldOutput = (values: GuardoniSuccessOutput['values']): string[] => {
   return pipe(
     values,
     A.map((v) => {
-      return Object.entries(v).map(([key, value]) => {
+      return Object.entries(v ?? []).map(([key, value]) => {
         // console.log({ key, value });
         if (Array.isArray(value)) {
           // console.log('value is array', value);
