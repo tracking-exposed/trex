@@ -57,6 +57,45 @@ export function flattenSearch(memo, metasearch) {
   return memo;
 }
 
+export function flattenProfile(memo, metaprofile) {
+  // function invoked to depack and flatten metadata {type: search}
+  // to produce CSV.
+
+  _.each(metaprofile.results || [], function (result, order) {
+    /* TODO 
+    const thumbfile =
+      metaprofile.thumbnails && metaprofile.thumbnails.length
+        ? metaprofile.thumbnails[order]?.filename
+        : null; */
+    const readyo = {
+      ...result.video,
+      // @ts-ignore
+      profileName: metaprofile.creatorName,
+      // @ts-ignore
+      views: result.views,
+      // @ts-ignore
+      title: result.title,
+      // @ts-ignore
+      order: order + 1,
+      // @ts-ignore
+      metadataId: metaprofile.id,
+      // @ts-ignore
+      savingTime: moment(metaprofile.savingTime).format('YYYY-MM-DD HH:mm'),
+      // @ts-ignore
+      publicKey: metaprofile.publicKey,
+      // @ts-ignore
+      href: 'https://www.tiktok.com/@' + metaprofile.creatorName + '/video/' + result.video.videoId,
+      // @ts-ignore
+      /* thumbfile: thumbfile ? thumbfile.replace(/(.*\/)|(.*\\)/, '') : null, */
+    };
+    _.unset(readyo, 'authorId')
+    readyo.videoId = ' ' + readyo.videoId;
+    // @ts-ignore
+    memo.push(readyo);
+  });
+  return memo;
+}
+
 export async function getSearchByQuery(req) {
   // /api/v2/query/<param>/<json|csv>
 
@@ -183,4 +222,5 @@ module.exports = {
   getSearchByQuery,
   getQueryList,
   flattenSearch,
+  flattenProfile,
 };

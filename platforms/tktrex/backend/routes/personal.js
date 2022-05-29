@@ -6,6 +6,7 @@ const utils = require('../lib/utils');
 const automo = require('../lib/automo');
 const CSV = require('../lib/CSV');
 const flattenSearch = require('./search').flattenSearch;
+const flattenProfile = require('./search').flattenProfile;
 
 function pickFeedFields(metae) {
   return {
@@ -33,7 +34,7 @@ async function getPersonal(req) {
   const amount = _.parseInt(req.query.amount) || 50;
   const skip = _.parseInt(req.query.skip) || 0;
   const what = req.params.what;
-  const allowed = ['summary', 'search', 'foryou', 'following'];
+  const allowed = ['summary', 'search', 'foryou', 'following', 'profile'];
 
   if (allowed.indexOf(what) === -1) {
     return {
@@ -47,7 +48,7 @@ async function getPersonal(req) {
   }
 
   debug(
-    'Asked to get data kind %s (%d-%d), preparing JSON',
+    'Requested data [nature %s] (%d-%d), preparing JSON',
     what,
     amount,
     skip
@@ -111,26 +112,39 @@ async function getPersonal(req) {
 }
 
 async function getPersonalCSV(req) {
-  const CSV_MAX_SIZE = 1000;
+  const CSV_MAX_SIZE = 9000;
   const k = req.params.publicKey;
   const type = req.params.what;
-  if (['foryou', 'search', 'following'].indexOf(type) === -1)
-    return { text: 'Error, only foryou and search is supported ' };
+
+  if (['foryou', 'search', 'following', 'profile'].indexOf(type) === -1)
+    return { text: 'Error, nature not supported ' };
 
   const data = await automo.getMetadataByFilter(
     { publicKey: k, type },
     { amount: CSV_MAX_SIZE, skip: 0 }
   );
 
-  /* remind self, search has a different logic than for you,
+  if(!data.length) {
+    debug('getPersonalCSV didn\'t found DB entry matching %o', { publicKey: k, type});
+    return { text: 'No data not found in the DB' };
+  }
+
+  debug('type [%s] return %d with amount %d skip-zero', type, data.length, CSV_MAX_SIZE);
+
+  /* remind: search and profile have a different logic than
+     foryou and following.
      this is why is a reduce instead of map */
   let unrolledData = [];
-  if (type === 'search') unrolledData = _.reduce(data, flattenSearch, []);
-  else unrolledData = _.map(data, pickFeedFields);
+  if (type === 'search')
+    unrolledData = _.reduce(data, flattenSearch, []);
+  else if(type === 'profile')
+    unrolledData = _.reduce(data, flattenProfile, []);
+  else
+    unrolledData = _.map(data, pickFeedFields);
 
   if (!unrolledData.length) {
-    debug('getPersonalCSV return empty data');
-    return { text: 'Data not found: are you sure any search worked?' };
+    debug('getPersonalCSV produced empty data during transformation: investigate parsers and pipeline!');
+    return { text: ('Data not found, from metadata: ' + data.length) };
   }
 
   /* XXX TMP FIXME (not if we pick the pseudo via mongodb) 
