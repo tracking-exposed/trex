@@ -37,8 +37,11 @@ const parseData = (
   xhr: TrExXMLHttpPRequest,
   { api, postData }: { api: APIHandler; postData: any },
 ): Datum => {
-  iLog.debug('Parsing tkAPI answers from %O POST %s',
-    JSON.stringify(api.urls), JSON.parse(postData));
+  iLog.debug(
+    'Parsing tkAPI answers from %s POST %O',
+    JSON.stringify(api.urls),
+    JSON.parse(postData),
+  );
   const id = `${xhr._startTime}_${xhr._endTime}`;
   // handle POST requests
 
@@ -132,8 +135,7 @@ export default (function(xhr) {
         [],
       );
 
-      if (caughtData.length)
-        iLog.debug('Nodes with results %O', caughtData);
+      if (caughtData.length) iLog.debug('Nodes with results %O', caughtData);
 
       caughtData
         .map((d) => {

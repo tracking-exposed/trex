@@ -112,6 +112,7 @@ async function saveInDB(experinfo, objects, dbcollection) {
   }
 }
 
+/*
 function handleFullSave(body, headers) {
   // ["html","href","feedId","feedCounter", "reason",
   //  "videoCounter","rect","clientTime","type","incremental"]
@@ -132,7 +133,7 @@ function handleFullSave(body, headers) {
     geoip: geo(headers['x-forwarded-for']),
     researchTag: body.researchTag,
   };
-}
+} */
 
 async function processEvents(req) {
   const headers = processHeaders(_.get(req, 'headers'), mandatoryHeaders);
@@ -161,8 +162,6 @@ async function processEvents(req) {
       //  "videoCounter","rect","clientTime","type","incremental"]
       // 'type' can be ignored as it is always 'video' and doesn't reflect nature
 
-      console.log("--- feedId %s randomUUID",
-        body.feedId ?? 'x', body.randomUUID ?? 'x')
       const id = utils.hash({
         clientRGN: body.feedId
           ? body.feedId
@@ -193,6 +192,7 @@ async function processEvents(req) {
       optionalNumbers.push(_.size(body.html));
       const html = {
         id,
+        type: body.type,
         rect: body.rect,
         href: body.href,
         timelineId: timelineWord + '-' + timelineIdHash.substr(0, 10),

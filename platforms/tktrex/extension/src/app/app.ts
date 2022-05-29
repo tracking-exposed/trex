@@ -14,6 +14,7 @@ const appLog = log.extend('app');
 
 export let feedId = refreshUUID(0);
 export let feedCounter = 0;
+export let locationType = '';
 
 /**
  * Additional UI needed mostly for debugging
@@ -98,12 +99,33 @@ export const onLocationChange = (): void => {
   feedCounter++;
   feedId = refreshUUID(feedCounter);
   appLog.info(
-    'new feedId (%s), feed counter (%d) and video counter resetting after poking (%d)',
+    'new feedId (%s), feed counter (%d) and video counter resetting after reaching (%d) -> %s',
     feedId,
     feedCounter,
     videoCounter,
+    window.location.href,
   );
   videoCounter = 0;
+
+  /* onLocationChange check if this condition is OK to handle a page,
+   * after this function return, the normal handler/observer are
+   * considered for CSS selector and such */
+
+  /* this should be replaced with getNatureByHref, and proceed
+     only if the page spotted. In this case is set the variable
+     'locationType', so the handleVideo can manage this condition */
+  const psplit = window.location.pathname.split('/');
+  if (
+    window.location.pathname[0] === '/' &&
+    window.location.pathname[1] === '@' &&
+    /* Please note psplit.lenght === 2 necessary because videos can be:
+    https://www.tiktok.com/@nysha_tina2/video/7103184468713819397?is_copy_url=1&is_from_webapp=v1 */
+    psplit.length === 2
+  ) {
+    const profileName = psplit[1];
+    appLog.info('Spotted profile %s', profileName);
+    locationType = 'profile';
+  } else locationType = '';
 };
 
 /**
@@ -149,10 +171,10 @@ const handleSearch = _.debounce((element: Node): void => {
   appLog.info('Handle search for path %O', window.location.search);
   if (!_.startsWith(window.location.pathname, '/search')) return;
 
-  // This double check it is due because the Search might 
+  // This double check it is due because the Search might
   // return an error and in both of the cases they should be
   // considered a result.
-  // This is a logic problem in this extension, we should 
+  // This is a logic problem in this extension, we should
   // use URL or selector to trigger the right function.
   const dat = document.querySelectorAll(searchHandler.match.selector);
   const te = _.map(
@@ -208,11 +230,34 @@ const handleSuggested = _.debounce((elem: Node): void => {
 let videoCounter = 0;
 
 const handleVideo = _.debounce((node: HTMLElement): void => {
-  /* this is not the right approach, but we shouldn't save
-     video when we're in search or tag condition
-   -- I would have
-     used getNatureByHref(window.location.href) but I couldn't
-     manage the TS */
+  if (locationType === 'profile') {
+    /* this condition is managed here because when a 'profile' is loaded
+     * in the href, and the event location change starts, we don't have
+     * yet an html. but, also with profile
+     * */
+    appLog.info('Handling this video as a profile');
+    const contentNode = document.querySelector('body');
+    const contentHTML = contentNode ? contentNode.innerHTML : null;
+    if (!contentNode || !contentHTML) {
+      appLog.info('Spotted profile but body still empty?');
+      return;
+    }
+
+    tkHub.dispatch({
+      type: 'Profile',
+      payload: {
+        html: contentHTML,
+        href: window.location.href,
+        feedId,
+        feedCounter,
+        videoCounter,
+      },
+    });
+    return;
+  }
+
+  /* we should check nature for good, the 'video' handles are triggered also in
+   * other pages, afterall! */
   if (_.startsWith(window.location.pathname, '/search')) return;
 
   /* this function return a node element that has a size

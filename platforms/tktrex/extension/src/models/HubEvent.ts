@@ -12,6 +12,17 @@ export interface NewVideoEvent extends HubEventBase {
   };
 }
 
+export interface ProfileEvent extends HubEventBase {
+  type: 'Profile';
+  payload: {
+    feedCounter: number;
+    feedId: string;
+    html: string;
+    href: string;
+    videoCounter: number;
+  };
+}
+
 export interface SearchEvent extends HubEventBase {
   type: 'Search';
   payload: {
@@ -32,4 +43,5 @@ export type TKHubEvent =
   | HubEvent
   | NewVideoEvent
   | SearchEvent
+  | ProfileEvent
   | SuggestedEvent;
