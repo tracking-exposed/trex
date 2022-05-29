@@ -14,6 +14,7 @@ const parserList = {
   stitch: require('../parsers/stitch'),
   author: require('../parsers/author'),
   search: require('../parsers/search'),
+  profile: require('../parsers/profile'),
   downloader: require('../parsers/downloader'),
 };
 
@@ -40,6 +41,18 @@ function buildMetadata(entry) {
       ...entry.findings.nature,
       ...entry.findings.downloader,
       ...entry.findings.search,
+    };
+    metadata.savingTime = new Date(entry.source.html.savingTime);
+    metadata.id = entry.source.html.id;
+    metadata.publicKey = entry.source.html.publicKey;
+    return metadata;
+  }
+
+  if (entry.findings.nature.type === 'profile') {
+    const metadata = {
+      ...entry.findings.nature,
+      // ...entry.findings.downloader,
+      ...entry.findings.profile,
     };
     metadata.savingTime = new Date(entry.source.html.savingTime);
     metadata.id = entry.source.html.id;

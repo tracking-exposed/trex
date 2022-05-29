@@ -22,9 +22,9 @@ function getNatureByHref(href) {
       retval.type = 'video';
       retval.videoId = chunks[3];
       retval.authorId = chunks[1];
-    } else if (_.startsWith(urlO.pathname, '/@')) {
-      retval.type = 'creator';
-      retval.creatorName = urlO.pathname.substr(1);
+    } else if (_.startsWith(urlO.pathname, '/@') && chunks.length === 2) {
+      retval.type = 'profile';
+      retval.creatorName = chunks[1].substring(1);
     } else if (urlO.pathname === '/search') {
       retval.type = 'search';
       retval.query = urlO.searchParams.get('q');
@@ -51,6 +51,7 @@ function getUUID(url, type) {
   const fullname = type === 'video' ? `${fname}.mp4` : `${fname}.jpeg`;
   const cwd = process.cwd();
   if (!nconf.get('downloads')) {
+    /* eslint-disable no-console */
     console.log("WRONG CONFIGURATION SETTINGS!! missing 'downloads' from", cwd);
     process.exit(1);
   }
