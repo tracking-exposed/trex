@@ -2,6 +2,7 @@ import {
   ObserverHandler,
   refreshUUID,
   SelectorObserverHandler,
+  RouteObserverHandler,
 } from '@shared/extension/app';
 import config from '@shared/extension/config';
 import log from '@shared/extension/logger';
@@ -14,7 +15,6 @@ const appLog = log.extend('app');
 
 export let feedId = refreshUUID(0);
 export let feedCounter = 0;
-export let locationType = '';
 
 /**
  * Additional UI needed mostly for debugging
@@ -106,26 +106,6 @@ export const onLocationChange = (): void => {
     window.location.href,
   );
   videoCounter = 0;
-
-  /* onLocationChange check if this condition is OK to handle a page,
-   * after this function return, the normal handler/observer are
-   * considered for CSS selector and such */
-
-  /* this should be replaced with getNatureByHref, and proceed
-     only if the page spotted. In this case is set the variable
-     'locationType', so the handleVideo can manage this condition */
-  const psplit = window.location.pathname.split('/');
-  if (
-    window.location.pathname[0] === '/' &&
-    window.location.pathname[1] === '@' &&
-    /* Please note psplit.lenght === 2 necessary because videos can be:
-    https://www.tiktok.com/@nysha_tina2/video/7103184468713819397?is_copy_url=1&is_from_webapp=v1 */
-    psplit.length === 2
-  ) {
-    const profileName = psplit[1];
-    appLog.info('Spotted profile %s', profileName);
-    locationType = 'profile';
-  } else locationType = '';
 };
 
 /**
@@ -230,32 +210,6 @@ const handleSuggested = _.debounce((elem: Node): void => {
 let videoCounter = 0;
 
 const handleVideo = _.debounce((node: HTMLElement): void => {
-  if (locationType === 'profile') {
-    /* this condition is managed here because when a 'profile' is loaded
-     * in the href, and the event location change starts, we don't have
-     * yet an html. but, also with profile
-     * */
-    appLog.info('Handling this video as a profile');
-    const contentNode = document.querySelector('body');
-    const contentHTML = contentNode ? contentNode.innerHTML : null;
-    if (!contentNode || !contentHTML) {
-      appLog.info('Spotted profile but body still empty?');
-      return;
-    }
-
-    tkHub.dispatch({
-      type: 'Profile',
-      payload: {
-        html: contentHTML,
-        href: window.location.href,
-        feedId,
-        feedCounter,
-        videoCounter,
-      },
-    });
-    return;
-  }
-
   /* we should check nature for good, the 'video' handles are triggered also in
    * other pages, afterall! */
   if (_.startsWith(window.location.pathname, '/search')) return;
@@ -314,6 +268,42 @@ const handleVideo = _.debounce((node: HTMLElement): void => {
   }
 }, 300);
 
+const handleProfile = _.debounce(
+  (node: HTMLElement, route: RouteObserverHandler): void => {
+    const profileName = window.location.pathname.match(
+      route.match.location,
+    )?.[1];
+    if (!profileName) {
+      appLog.info('Error in getting profile name %s', window.location.pathname);
+      return;
+    }
+    appLog.info('Spotted profile %s', profileName);
+    /* this condition is managed here because when a 'profile' is loaded
+     * in the href, and the event location change starts, we don't have
+     * yet an html. but, also with profile
+     * */
+    appLog.info('Handling this video as a profile');
+    const contentNode = document.querySelector('body');
+    const contentHTML = contentNode ? contentNode.innerHTML : null;
+    if (!contentNode || !contentHTML) {
+      appLog.info('Spotted profile but body still empty?');
+      return;
+    }
+
+    tkHub.dispatch({
+      type: 'Profile',
+      payload: {
+        html: contentHTML,
+        href: window.location.href,
+        feedId,
+        feedCounter,
+        videoCounter,
+      },
+    });
+  },
+  300,
+);
+
 function flush(): void {
   window.addEventListener('beforeunload', () => {
     tkHub.dispatch({
@@ -337,11 +327,20 @@ export const errorHandler: SelectorObserverHandler = {
   },
   handle: handleSearch,
 };
+
+export const profileHandler: RouteObserverHandler = {
+  match: {
+    type: 'route',
+    location: /@([\w\-_]*)$/i,
+  },
+  handle: handleProfile,
+};
 /**
  * selector with relative handler
  * configuration
  */
 export const tkHandlers: { [key: string]: ObserverHandler } = {
+  profile: profileHandler,
   video: {
     match: {
       type: 'selector',
