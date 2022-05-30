@@ -18,7 +18,17 @@ const FIXED_USER_NAME = 'local';
 // defaults of the settings stored in 'config' and controlled by popup
 const DEFAULT_SETTINGS = { active: true, ux: false, researchTag: '' };
 
+/**
+ * Create publicKey and secretKey
+ */
 export function initializeKey(): KeyPair {
+  // use publicKey and secretKey from process.env when available
+  if (process.env.PUBLIC_KEY && process.env.SECRET_KEY) {
+    return {
+      publicKey: process.env.PUBLIC_KEY,
+      secretKey: process.env.SECRET_KEY,
+    };
+  }
   const newKeypair = nacl.sign.keyPair();
   const publicKey = bs58.encode(newKeypair.publicKey);
   log.info('initializing new key pair:', publicKey);
