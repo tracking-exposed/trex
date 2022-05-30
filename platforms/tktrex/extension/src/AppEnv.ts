@@ -10,6 +10,8 @@ export const AppEnv = t.strict(
     BUILD_DATE: t.string,
     FLUSH_INTERVAL: t.string,
     DEBUG: t.string,
+    PUBLIC_KEY: t.union([t.string, t.undefined]),
+    SECRET_KEY: t.union([t.string, t.undefined]),
   },
   'TkTrexAppEnv',
 );
