@@ -1,6 +1,15 @@
 import { parseHTML } from 'linkedom';
 import child_process from 'child_process';
 
+export interface Profile {
+  name: string;
+  followerCount: number;
+  followingCount: number;
+  heartCount: number;
+  videoCount: number;
+  videos: ProfileVideo[];
+}
+
 export interface ProfileVideo {
   id: string;
   desc: string;
@@ -26,14 +35,15 @@ export const fetchPage = (url: string): string => {
 };
 
 
-export const parsePage = (html: string): ProfileVideo[] => {
+export const parsePage = (html: string): Profile => {
   const { document } = parseHTML(html);
   const script = document.getElementById('SIGI_STATE')?.innerText;
   if (!script) {
     throw new Error('No SIGI_STATE found');
   }
   const data = JSON.parse(script);
-  return Object.values(data.ItemModule).map((item: any) => ({
+
+  const videos = Object.values(data.ItemModule).map((item: any) => ({
     id: item.id,
     desc: item.desc,
     createTime: item.createTime,
@@ -42,4 +52,15 @@ export const parsePage = (html: string): ProfileVideo[] => {
     comments: item.stats.commentCount,
     playCount: item.stats.playCount,
   }));
+
+  const [user, stats]: [string, any] = Object.entries(data.UserModule.stats)[0];
+
+  return {
+    name: user,
+    followerCount: stats.followerCount,
+    followingCount: stats.followingCount,
+    heartCount: stats.heartCount,
+    videoCount: stats.videoCount,
+    videos,
+  }
 };

@@ -16,7 +16,6 @@ const main = async (): Promise<void> => {
   const html = fetchPage(url);
   const parsed = parsePage(html);
   console.log(parsed);
-  console.log('%d videos found', parsed.length);
 };
 
 main().catch(err => {
