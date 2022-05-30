@@ -1,6 +1,5 @@
 import { AppError, toAppError } from '@shared/errors/AppError';
 import { Logger } from '@shared/logger';
-import { ComparisonDirective } from '@shared/models/Directive';
 import { AppEnv } from 'AppEnv';
 import { app, BrowserView, dialog, ipcMain, shell } from 'electron';
 import { pipe } from 'fp-ts/lib/function';
@@ -15,12 +14,14 @@ import {
   getPlatformConfig,
   setConfig,
 } from '../../guardoni/config';
+import { GetGuardoni, Guardoni } from '../../guardoni/guardoni';
+import { readCSVAndParse } from '../../guardoni/experiment';
 import {
-  GetGuardoni,
-  Guardoni,
-  readCSVAndParse,
-} from '../../guardoni/guardoni';
-import { GuardoniConfig, PlatformConfig, Platform } from '../../guardoni/types';
+  GuardoniConfig,
+  PlatformConfig,
+  Platform,
+  Directive,
+} from '../../guardoni/types';
 import { guardoniLogger } from '../../logger';
 import { EVENTS } from '../models/events';
 import store from '../store';
@@ -44,7 +45,7 @@ export interface Events {
 
 const pickCSVFile = (
   logger: Pick<Logger, 'debug' | 'error' | 'info'>
-): TE.TaskEither<AppError, { path: string; parsed: ComparisonDirective[] }> => {
+): TE.TaskEither<AppError, { path: string; parsed: Directive[] }> => {
   return pipe(
     TE.tryCatch(
       () =>

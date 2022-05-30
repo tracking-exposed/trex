@@ -8,12 +8,6 @@
  */
 import * as Endpoints from '@shared/endpoints';
 import { AppError, toAppError } from '@shared/errors/AppError';
-import {
-  ComparisonDirectiveRow,
-  Directive,
-  DirectiveKeysMap,
-  DirectiveType,
-} from '@shared/models/Directive';
 import { APIClient, MakeAPIClient } from '@shared/providers/api.provider';
 import { differenceInSeconds } from 'date-fns';
 import debug from 'debug';
@@ -22,9 +16,7 @@ import * as E from 'fp-ts/lib/Either';
 import { pipe } from 'fp-ts/lib/function';
 import { NonEmptyArray } from 'fp-ts/lib/NonEmptyArray';
 import * as TE from 'fp-ts/lib/TaskEither';
-import * as fs from 'fs';
 import { NonEmptyString } from 'io-ts-types/lib/NonEmptyString';
-import { PathReporter } from 'io-ts/lib/PathReporter';
 import path from 'path';
 import type puppeteer from 'puppeteer-core';
 import { PuppeteerExtra } from 'puppeteer-extra';
@@ -40,6 +32,7 @@ import {
   concludeExperiment,
   getDirective,
   listExperiments,
+  registerCSV,
   registerExperiment,
   saveExperiment,
   validateNonEmptyString,
@@ -60,13 +53,10 @@ import {
   Platform,
   PlatformConfig,
   ProgressDetails,
+  Directive,
+  DirectiveType,
 } from './types';
-import {
-  csvParseTE,
-  getChromePath,
-  getPackageVersion,
-  liftFromIOE,
-} from './utils';
+import { getChromePath, getPackageVersion } from './utils';
 
 const runNavigate = (ctx: GuardoniContext): TE.TaskEither<AppError, void> => {
   const home =
@@ -100,7 +90,11 @@ const runNavigate = (ctx: GuardoniContext): TE.TaskEither<AppError, void> => {
             ctx.logger.info('Browser is ready at %s', home);
             b.on('error', (e) => {
               ctx.logger.error('Error occurred during browsing %O', e);
-              reject(e);
+              resolve();
+            });
+            b.on('disconnected', () => {
+              ctx.logger.debug('Browser disconnected');
+              resolve();
             });
             b.on('close', () => {
               ctx.logger.info('browser closing...');
@@ -268,97 +262,6 @@ export const guardoniExecution =
     );
   };
 
-export const readCSVAndParse =
-  (logger: GuardoniContext['logger']) =>
-  (
-    filePath: string,
-    directiveType: DirectiveType
-  ): TE.TaskEither<AppError, NonEmptyArray<Directive>> => {
-    logger.debug('Registering CSV from path %s', filePath);
-
-    return pipe(
-      liftFromIOE(() => fs.statSync(filePath)),
-      TE.mapLeft((e) => {
-        return toAppError({
-          ...e,
-          message: `File at path ${filePath} doesn't exist`,
-        });
-      }),
-      TE.chain(() => liftFromIOE(() => fs.readFileSync(filePath))),
-      TE.mapLeft((e) => {
-        return toAppError({
-          ...e,
-          message: `Failed to read csv file ${filePath}`,
-        });
-      }),
-      TE.chain((input) =>
-        pipe(
-          csvParseTE(input, { columns: true, skip_empty_lines: true }),
-          TE.chain(({ records, info }) => {
-            logger.debug(
-              'Read input from file %s (%d bytes) %d records as %s',
-              filePath,
-              input.length,
-              records.length,
-              directiveType
-            );
-
-            if (records.length === 0) {
-              return TE.left(
-                toAppError({
-                  message: "Can't create an experiment with no links",
-                })
-              );
-            }
-
-            return TE.right({ records, info });
-          }),
-          TE.chainFirst(({ records }) =>
-            pipe(
-              records,
-              DirectiveKeysMap.props[directiveType].decode,
-              TE.fromEither,
-              TE.mapLeft((e) => {
-                return new AppError(
-                  'CSVParseError',
-                  `The given CSV is not compatible with directive "${directiveType}"`,
-                  [
-                    ...PathReporter.report(E.left(e)),
-                    '\n',
-                    'You can find examples on https://youtube.tracking.exposed/guardoni',
-                  ]
-                );
-              })
-            )
-          ),
-          TE.map((csvContent) => {
-            logger.debug('CSV decoded content %O', csvContent.records);
-            return csvContent.records as NonEmptyArray<Directive>;
-          })
-        )
-      )
-    );
-  };
-
-const registerCSV =
-  (ctx: GuardoniContext) =>
-  (
-    csvFile: string,
-    directiveType: DirectiveType
-  ): TE.TaskEither<AppError, GuardoniSuccessOutput> => {
-    // resolve csv file path from current working direction when is not absolute
-    const filePath = path.isAbsolute(csvFile)
-      ? csvFile
-      : path.resolve(process.cwd(), csvFile);
-
-    ctx.logger.debug(`Register CSV from %s`, filePath);
-
-    return pipe(
-      readCSVAndParse(ctx.logger)(filePath, directiveType),
-      TE.chain((records) => registerExperiment(ctx)(records, directiveType))
-    );
-  };
-
 const loadContext = (
   p: PuppeteerExtra,
   basePath: string,
@@ -440,7 +343,7 @@ export interface Guardoni {
     directiveType: DirectiveType
   ) => TE.TaskEither<AppError, GuardoniSuccessOutput>;
   registerExperiment: (
-    records: NonEmptyArray<ComparisonDirectiveRow>,
+    records: NonEmptyArray<Directive>,
     directiveType: DirectiveType
   ) => TE.TaskEither<AppError, GuardoniSuccessOutput>;
   listExperiments: () => TE.TaskEither<AppError, GuardoniSuccessOutput>;

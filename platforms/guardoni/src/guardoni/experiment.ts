@@ -1,30 +1,33 @@
-import { AppError } from '@shared/errors/AppError';
+import { AppError, toAppError } from '@shared/errors/AppError';
 import { toValidationError } from '@shared/errors/ValidationError';
 import {
-  ComparisonDirectiveType,
-  Directive,
-  DirectiveType,
   PostDirectiveResponse,
   PostDirectiveSuccessResponse,
+} from '@shared/models/Directive';
+import { ComparisonDirectiveType } from '@yttrex/shared/models/Directive';
+import {
   SearchDirective,
   SearchDirectiveType,
-} from '@shared/models/Directive';
+} from '@tktrex/shared/models/directive/SearchDirective';
 import * as E from 'fp-ts/lib/Either';
 import { pipe } from 'fp-ts/lib/function';
 import { NonEmptyArray } from 'fp-ts/lib/NonEmptyArray';
 import * as TE from 'fp-ts/lib/TaskEither';
 import * as fs from 'fs';
 import { NonEmptyString } from 'io-ts-types/lib/NonEmptyString';
-import { failure } from 'io-ts/lib/PathReporter';
+import { failure, PathReporter } from 'io-ts/lib/PathReporter';
 import path from 'path';
 // import pluginStealth from "puppeteer-extra-plugin-stealth";
 import {
+  Directive,
+  DirectiveKeysMap,
+  DirectiveType,
   ExperimentInfo,
   GuardoniContext,
   GuardoniProfile,
   GuardoniSuccessOutput,
 } from './types';
-import { liftFromIOE } from './utils';
+import { csvParseTE, liftFromIOE } from './utils';
 
 export const validateNonEmptyString = (
   s: string
@@ -33,6 +36,97 @@ export const validateNonEmptyString = (
     NonEmptyString.decode(s),
     E.mapLeft((e) => toValidationError('Empty experiment id', failure(e)))
   );
+
+export const readCSVAndParse =
+  (logger: GuardoniContext['logger']) =>
+  (
+    filePath: string,
+    directiveType: DirectiveType
+  ): TE.TaskEither<AppError, NonEmptyArray<Directive>> => {
+    logger.debug('Registering CSV from path %s', filePath);
+
+    return pipe(
+      liftFromIOE(() => fs.statSync(filePath)),
+      TE.mapLeft((e) => {
+        return toAppError({
+          ...e,
+          message: `File at path ${filePath} doesn't exist`,
+        });
+      }),
+      TE.chain(() => liftFromIOE(() => fs.readFileSync(filePath))),
+      TE.mapLeft((e) => {
+        return toAppError({
+          ...e,
+          message: `Failed to read csv file ${filePath}`,
+        });
+      }),
+      TE.chain((input) =>
+        pipe(
+          csvParseTE(input, { columns: true, skip_empty_lines: true }),
+          TE.chain(({ records, info }) => {
+            logger.debug(
+              'Read input from file %s (%d bytes) %d records as %s',
+              filePath,
+              input.length,
+              records.length,
+              directiveType
+            );
+
+            if (records.length === 0) {
+              return TE.left(
+                toAppError({
+                  message: "Can't create an experiment with no links",
+                })
+              );
+            }
+
+            return TE.right({ records, info });
+          }),
+          TE.chainFirst(({ records }) =>
+            pipe(
+              records,
+              DirectiveKeysMap.props[directiveType].decode,
+              TE.fromEither,
+              TE.mapLeft((e) => {
+                return new AppError(
+                  'CSVParseError',
+                  `The given CSV is not compatible with directive "${directiveType}"`,
+                  [
+                    ...PathReporter.report(E.left(e)),
+                    '\n',
+                    'You can find examples on https://youtube.tracking.exposed/guardoni',
+                  ]
+                );
+              })
+            )
+          ),
+          TE.map((csvContent) => {
+            logger.debug('CSV decoded content %O', csvContent.records);
+            return csvContent.records as NonEmptyArray<Directive>;
+          })
+        )
+      )
+    );
+  };
+
+export const registerCSV =
+  (ctx: GuardoniContext) =>
+  (
+    csvFile: string,
+    directiveType: DirectiveType
+  ): TE.TaskEither<AppError, GuardoniSuccessOutput> => {
+    // resolve csv file path from current working direction when is not absolute
+    const filePath = path.isAbsolute(csvFile)
+      ? csvFile
+      : path.resolve(process.cwd(), csvFile);
+
+    ctx.logger.debug(`Register CSV from %s`, filePath);
+
+    return pipe(
+      readCSVAndParse(ctx.logger)(filePath, directiveType),
+      TE.chain((records) => registerExperiment(ctx)(records, directiveType))
+    );
+  };
 
 export const getDirective =
   (ctx: GuardoniContext) =>
@@ -80,7 +174,10 @@ export const createExperimentInAPI =
     return pipe(
       API.v3.Public.PostDirective({
         Params: { directiveType },
-        Body: { parsedCSV: parsedCSV as any },
+        Body:
+          directiveType === 'comparison'
+            ? { parsedCSV: parsedCSV as any }
+            : parsedCSV,
         Headers: {
           'Content-Type': 'application/json; charset=utf-8',
         },

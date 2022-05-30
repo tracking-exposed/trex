@@ -1,8 +1,18 @@
 import * as endpoints from '@shared/endpoints';
 import { Logger } from '@shared/logger';
-import { DirectiveType } from '@shared/models/Directive';
+import {
+  SearchDirective,
+  SearchDirectiveType,
+} from '@tktrex/shared/models/directive/SearchDirective';
+import {
+  ComparisonDirectiveRow,
+  ComparisonDirectiveType,
+} from '@yttrex/shared/models/Directive';
 import { APIClient } from '@shared/providers/api.provider';
+import { pipe } from 'fp-ts/lib/function';
+import * as R from 'fp-ts/lib/Record';
 import * as t from 'io-ts';
+import { nonEmptyArray } from 'io-ts-types';
 import { PuppeteerExtra } from 'puppeteer-extra';
 
 export const Platform = t.union(
@@ -95,3 +105,30 @@ export interface ExperimentInfo {
   newProfile: boolean;
   when: Date;
 }
+
+export const Directive = t.union(
+  [ComparisonDirectiveRow, SearchDirective],
+  'DirectiveRow'
+);
+export type Directive = t.TypeOf<typeof Directive>;
+
+export const CreateDirectiveBody = t.union(
+  [
+    t.type({ parsedCSV: nonEmptyArray(Directive) }),
+    nonEmptyArray(SearchDirective),
+  ],
+  'CreateDirectiveBody'
+);
+
+const directiveKeysMap = pipe(
+  { search: SearchDirective, comparison: ComparisonDirectiveRow },
+  R.map((type) => nonEmptyArray(type))
+);
+
+export const DirectiveKeysMap = t.type(directiveKeysMap, 'DirectiveKeysMap');
+
+export const DirectiveType = t.union(
+  [ComparisonDirectiveType, SearchDirectiveType],
+  'DirectiveType'
+);
+export type DirectiveType = t.TypeOf<typeof DirectiveType>;
