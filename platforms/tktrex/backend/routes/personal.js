@@ -89,6 +89,24 @@ async function getPersonal(req) {
         counters: { metadata: avail.counters?.metadata },
         metadata,
       };
+    } else if (what === 'profile') {
+      /* this function access to 'search' results which is a
+       * bit different than the other. as in the collection
+       * there is not one entry for video, but one entry for search
+       * query --> hence, the _.map/_.pick
+       * note, this data should match
+       * packages/shared/src/models/contributor/ContributorPersonalSummary.ts
+       */
+      const avail = await automo.getPersonalTableData(
+        k,
+        { type: 'profile' },
+        { amount, skip }
+      );
+
+      retval = {
+        counters: { metadata: avail.counters?.metadata },
+        metadata: avail.metadata,
+      };
     } else if (what === 'foryou' || what === 'following') {
       retval = await automo.getMetadataByFilter(
         { type: what, publicKey: k },
@@ -124,27 +142,35 @@ async function getPersonalCSV(req) {
     { amount: CSV_MAX_SIZE, skip: 0 }
   );
 
-  if(!data.length) {
-    debug('getPersonalCSV didn\'t found DB entry matching %o', { publicKey: k, type});
+  if (!data.length) {
+    debug("getPersonalCSV didn't found DB entry matching %o", {
+      publicKey: k,
+      type,
+    });
     return { text: 'No data not found in the DB' };
   }
 
-  debug('type [%s] return %d with amount %d skip-zero', type, data.length, CSV_MAX_SIZE);
+  debug(
+    'type [%s] return %d with amount %d skip-zero',
+    type,
+    data.length,
+    CSV_MAX_SIZE
+  );
 
   /* remind: search and profile have a different logic than
      foryou and following.
      this is why is a reduce instead of map */
   let unrolledData = [];
-  if (type === 'search')
-    unrolledData = _.reduce(data, flattenSearch, []);
-  else if(type === 'profile')
+  if (type === 'search') unrolledData = _.reduce(data, flattenSearch, []);
+  else if (type === 'profile')
     unrolledData = _.reduce(data, flattenProfile, []);
-  else
-    unrolledData = _.map(data, pickFeedFields);
+  else unrolledData = _.map(data, pickFeedFields);
 
   if (!unrolledData.length) {
-    debug('getPersonalCSV produced empty data during transformation: investigate parsers and pipeline!');
-    return { text: ('Data not found, from metadata: ' + data.length) };
+    debug(
+      'getPersonalCSV produced empty data during transformation: investigate parsers and pipeline!'
+    );
+    return { text: 'Data not found, from metadata: ' + data.length };
   }
 
   /* XXX TMP FIXME (not if we pick the pseudo via mongodb) 

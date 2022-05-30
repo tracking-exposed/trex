@@ -213,6 +213,7 @@ const handleVideo = _.debounce((node: HTMLElement): void => {
   /* we should check nature for good, the 'video' handles are triggered also in
    * other pages, afterall! */
   if (_.startsWith(window.location.pathname, '/search')) return;
+  if (profileHandler.match.location.test(window.location.pathname)) return;
 
   /* this function return a node element that has a size
    * lesser than 10k, and stop when find out the parent
@@ -269,7 +270,7 @@ const handleVideo = _.debounce((node: HTMLElement): void => {
 }, 300);
 
 const handleProfile = _.debounce(
-  (node: HTMLElement, route: RouteObserverHandler): void => {
+  (node: HTMLElement, route: any, _selectorName: string): void => {
     const profileName = window.location.pathname.match(
       route.match.location,
     )?.[1];
