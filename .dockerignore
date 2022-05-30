@@ -1,6 +1,6 @@
 __mocks__
 .husky
 **/build
-**/docker
+**/docker/electron-builder
 **/coverage
 **/node_modules
