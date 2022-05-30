@@ -4,8 +4,5 @@
   "devDependencies": {
     "linkedom": "^0.14.9",
     "ts-node": "^10.8.0"
-  },
-  "dependencies": {
-    "node-fetch": "^2.6.7"
   }
 }

@@ -28734,7 +28734,6 @@ __metadata:
   resolution: "ua-observatory@workspace:platforms/tktrex/ua-observatory"
   dependencies:
     linkedom: ^0.14.9
-    node-fetch: ^2.6.7
     ts-node: ^10.8.0
   languageName: unknown
   linkType: soft
