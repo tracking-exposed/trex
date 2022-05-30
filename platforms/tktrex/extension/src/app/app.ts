@@ -332,7 +332,7 @@ export const errorHandler: SelectorObserverHandler = {
 export const profileHandler: RouteObserverHandler = {
   match: {
     type: 'route',
-    location: /@([\w\-_]*)$/i,
+    location: /@([\w\-._]*)$/i,
   },
   handle: handleProfile,
 };
