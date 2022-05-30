@@ -46,6 +46,8 @@ const { buildENV, ...extensionConfig } = getExtensionConfig(
         BUILD_DATE: t.string,
         FLUSH_INTERVAL: NumberFromString,
         DATA_CONTRIBUTION_ENABLED: BooleanFromString,
+        PUBLIC_KEY: t.union([t.string, t.undefined]),
+        SECRET_KEY: t.union([t.string, t.undefined]),
       },
       'YTTrExAppEnv'
     ),
