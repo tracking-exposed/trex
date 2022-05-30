@@ -13,7 +13,11 @@ export interface Profile {
 export interface ProfileVideo {
   id: string;
   desc: string;
+
+  // Note: this appears to be a number of
+  // seconds since the epoch.
   createTime: number;
+
   likes: number;
   shares: number;
   comments: number;
@@ -46,7 +50,7 @@ export const parsePage = (html: string): Profile => {
   const videos = Object.values(data.ItemModule).map((item: any) => ({
     id: item.id,
     desc: item.desc,
-    createTime: item.createTime,
+    createTime: +item.createTime,
     likes: item.stats.diggCount,
     shares: item.stats.shareCount,
     comments: item.stats.commentCount,
