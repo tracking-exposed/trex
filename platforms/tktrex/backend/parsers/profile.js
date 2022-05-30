@@ -9,6 +9,8 @@ function getFullProfileMetadata(renod, order) {
   const vidnat = getNatureByHref(vhref);
 
   const titleel = renod.querySelector('a[title]');
+  if(!titleel)
+    return null;
   const title = titleel.getAttribute('title');
   const viewsel = renod.querySelector('[data-e2e="video-views"]');
   const views = viewsel.textContent;
@@ -31,13 +33,12 @@ function profile(envelop, previous) {
 
   if (previous.nature.type !== 'profile') return false;
 
-  debug("Profile spot! %s", JSON.stringify(previous, undefined, 2));
   /* this piece of code return a list of videos, because
        the search selector is not per video, but per 'body' */
   const descs = envelop.jsdom.querySelectorAll('[data-e2e="user-post-item"]');
-  const results = _.map(descs, function (elem, i) {
+  const results = _.compact(_.map(descs, function (elem, i) {
     return getFullProfileMetadata(elem.parentNode, i + 1);
-  });
+  }));
 
   const retval = {};
 

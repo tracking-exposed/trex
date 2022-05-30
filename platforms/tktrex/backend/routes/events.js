@@ -167,7 +167,8 @@ async function processEvents(req) {
           ? body.feedId
           : body.href + new Date().toISOString(),
         serverPRGN: supporter.publicKey,
-        impressionNumber: body.videoCounter || Math.random(),
+        type: body.type,
+        impressionNumber: body.videoCounter,
       });
       const timelineIdHash = utils.hash({
         session: body.feedId
@@ -208,9 +209,10 @@ async function processEvents(req) {
   );
 
   debug(
-    '[+] (p %s) from %s saving %s',
+    '[+] (p %s) from %s -- %s -- %s',
     supporter.p,
     JSON.stringify(_.map(req.body, 'type')),
+    JSON.stringify(_.map(req.body, 'href')),
     JSON.stringify(_.map(htmls, 'n'))
   );
 
@@ -233,7 +235,7 @@ async function processEvents(req) {
 }
 
 async function handshake(req) {
-  debug('Not implemented protocol (yet) [handshake API %j]', req.body);
+  // debug('Not implemented protocol (yet) [handshake API %j]', req.body);
   return {
     json: { ignored: true },
   };
