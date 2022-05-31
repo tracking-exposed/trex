@@ -4,3 +4,4 @@ __mocks__
 **/docker/electron-builder
 **/coverage
 **/node_modules
+docker
