@@ -52,7 +52,7 @@
     "eslint-plugin-node": "^11.1.0",
     "eslint-plugin-promise": "^5.2.0",
     "eslint-plugin-react": "^7.30.0",
-    "prettier": "^2.5.1",
+    "prettier": "^2.6.2",
     "ts-loader": "^9.3.0",
     "typelevel-ts": "^0.4.0",
     "webpack": "^5.72.1",
