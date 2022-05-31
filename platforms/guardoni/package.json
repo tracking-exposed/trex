@@ -117,7 +117,7 @@
     "node-loader": "^2.0.0",
     "node-polyfill-webpack-plugin": "^1.1.4",
     "pkg": "^5.7.0",
-    "prettier": "^2.5.1",
+    "prettier": "^2.6.2",
     "rpmbuild": "^0.0.23",
     "string-replace-loader": "^3.1.0",
     "style-loader": "^3.3.1",
