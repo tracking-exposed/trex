@@ -52,7 +52,7 @@
     "@release-it/conventional-changelog": "^4.2.2",
     "@types/node": "^16.11.36",
     "@types/prettier": "^2.6.3",
-    "eslint": "^8.10.0",
+    "eslint": "^8.16.0",
     "husky": "^7.0.4",
     "jest": "^27.5.1",
     "jest-dev-server": "^6.0.3",
