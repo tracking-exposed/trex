@@ -16,10 +16,10 @@
   },
   "main": "./dist/index.js",
   "devDependencies": {
-    "@types/node": "^16.11.26",
+    "@types/node": "^16.11.36",
     "@types/unzipper": "^0.10.5",
     "@types/webpack": "^5.28.0",
-    "@types/yargs": "^17.0.8",
+    "@types/yargs": "^17.0.10",
     "@typescript-eslint/eslint-plugin": "^5.12.1",
     "@typescript-eslint/parser": "^5.12.1",
     "eslint": "^8.10.0",

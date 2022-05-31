@@ -13,8 +13,8 @@
   "license": "ISC",
   "devDependencies": {
     "@types/jest": "^27.5.1",
-    "@types/lodash": "^4.14.179",
-    "@types/node": "^16.11.26",
+    "@types/lodash": "^4.14.182",
+    "@types/node": "^16.11.36",
     "@typescript-eslint/eslint-plugin": "^5.10.2",
     "@typescript-eslint/parser": "^5.10.2",
     "eslint": "^8.8.0",
