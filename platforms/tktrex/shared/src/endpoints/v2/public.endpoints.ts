@@ -1,4 +1,5 @@
 import { DocumentedEndpoint } from '@shared/endpoints';
+import { SearchQuery } from '@shared/models/http/SearchQuery';
 import * as t from 'io-ts';
 import * as apiModel from '../../models';
 
@@ -49,6 +50,7 @@ const GetSearchByQuery = DocumentedEndpoint({
       query: apiModel.Common.What,
       format: apiModel.Common.Format,
     }),
+    Query: SearchQuery,
   },
   Output: apiModel.Public.GetSearchByQueryOutput,
   title: 'Search by query',
