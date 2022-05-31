@@ -83,7 +83,7 @@
     "unzipper": "^0.10.11",
     "ws": "^8.5.0",
     "yaml": "^1.10.2",
-    "yargs": "^17.4.1"
+    "yargs": "^17.5.1"
   },
   "devDependencies": {
     "@pmmmwh/react-refresh-webpack-plugin": "^0.5.7",
