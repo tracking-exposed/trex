@@ -4537,7 +4537,7 @@ __metadata:
     ts-node: ^10.7.0
     ts-node-dev: ^1.1.8
     tweetnacl: ^0.14.5
-    typescript: ^4.5.5
+    typescript: ^4.7.2
   languageName: unknown
   linkType: soft
 
@@ -4554,7 +4554,7 @@ __metadata:
     prism-react-renderer: ^1.2.1
     react: ^17.0.2
     react-dom: ^17.0.2
-    typescript: ^4.5.2
+    typescript: ^4.7.2
   languageName: unknown
   linkType: soft
 
@@ -4591,7 +4591,7 @@ __metadata:
     nacl: ^0.1.3
     react: ^17.0.2
     react-dom: ^17.0.2
-    typescript: ^4.5.5
+    typescript: ^4.7.2
     webpack: ^5.72.1
   languageName: unknown
   linkType: soft
@@ -4619,7 +4619,7 @@ __metadata:
     mongodb: ^4.3.1
     ts-jest: ^27.1.5
     ts-node: ^10.7.0
-    typescript: ^4.5.5
+    typescript: ^4.7.2
     yargs: ^17.5.1
   languageName: unknown
   linkType: soft
@@ -4651,7 +4651,7 @@ __metadata:
     prism-react-renderer: ^1.2.1
     react: ^17.0.2
     react-dom: ^17.0.2
-    typescript: ^4.5.2
+    typescript: ^4.7.2
   languageName: unknown
   linkType: soft
 
@@ -4711,7 +4711,7 @@ __metadata:
     tsconfig-paths-webpack-plugin: ^3.5.2
     type-fest: ^2.11.1
     typelevel-ts: ^0.4.0
-    typescript: ^4.5.5
+    typescript: ^4.7.2
     webpack: ^5.72.1
     webpack-bundle-analyzer: ^4.5.0
     webpack-cli: ^4.9.2
@@ -4760,7 +4760,7 @@ __metadata:
     ts-io-error: ^2.0.0
     ts-loader: ^9.3.0
     typelevel-ts: ^0.4.0
-    typescript: ^4.5.5
+    typescript: ^4.7.2
     webpack: ^5.72.1
     webpack-bundle-analyzer: ^4.5.0
     webpack-cli: ^4.9.2
@@ -4806,9 +4806,9 @@ __metadata:
     ts-jest: ^27.1.5
     ts-loader: ^9.3.0
     ts-node: ^10.4.0
-    tsconfig-paths: ^3.12.0
+    tsconfig-paths: ^3.14.1
     tsconfig-paths-webpack-plugin: ^3.5.2
-    typescript: ^4.5.4
+    typescript: ^4.7.2
     unlazy-loader: ^0.1.3
     unzipper: ^0.10.11
     webpack: ^5.72.1
@@ -4897,7 +4897,7 @@ __metadata:
     ts-node: ^10.7.0
     tweetnacl: ^1.0.3
     tweetnacl-util: ^0.13.5
-    typescript: ^4.5.5
+    typescript: ^4.7.2
     uuid: ^2.0.3
     web-vitals: ^2.1.4
     webpack: ^5.72.1
@@ -6889,7 +6889,7 @@ __metadata:
     ts-node-dev: ^1.1.8
     tsconfig-paths: ^3.14.1
     tweetnacl: ^0.14.5
-    typescript: ^4.5.5
+    typescript: ^4.7.2
   languageName: unknown
   linkType: soft
 
@@ -6934,7 +6934,7 @@ __metadata:
     ts-node: ^10.7.0
     tweetnacl: ^0.14.5
     tweetnacl-util: ^0.13.5
-    typescript: ^4.5.5
+    typescript: ^4.7.2
     uglifyjs-webpack-plugin: ^2.2.0
     uuid: ^2.0.3
     webpack: ^5.72.1
@@ -6971,7 +6971,7 @@ __metadata:
     ts-io-error: ^2.0.0
     ts-jest: ^27.1.5
     tsconfig-paths: ^3.14.1
-    typescript: ^4.5.5
+    typescript: ^4.7.2
   languageName: unknown
   linkType: soft
 
@@ -15821,7 +15821,7 @@ __metadata:
     ts-loader: ^9.3.0
     ts-node: ^10.7.0
     tsconfig-paths: ^3.14.1
-    typescript: ^4.5.5
+    typescript: ^4.7.2
     unlazy-loader: ^0.1.3
     unzipper: ^0.10.11
     utf-8-validate: ^5.0.9
@@ -26156,7 +26156,7 @@ __metadata:
     release-it: ^14.13.1
     release-it-yarn-workspaces: ^2.0.1
     ts-jest: ^27.1.5
-    typescript: ^4.5.5
+    typescript: ^4.7.2
     webpack: ^5.72.1
   languageName: unknown
   linkType: soft
@@ -29037,7 +29037,7 @@ __metadata:
     safer-eval: ^1.3.6
     ts-jest: ^27.1.5
     ts-node: ^10.7.0
-    typescript: ^4.5.5
+    typescript: ^4.7.2
   languageName: unknown
   linkType: soft
 
@@ -29250,7 +29250,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"typescript@npm:^4.4.3, typescript@npm:^4.5.2, typescript@npm:^4.5.5":
+"typescript@npm:^4.4.3":
   version: 4.5.5
   resolution: "typescript@npm:4.5.5"
   bin:
@@ -29260,17 +29260,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"typescript@npm:^4.5.4":
-  version: 4.6.4
-  resolution: "typescript@npm:4.6.4"
+"typescript@npm:^4.7.2":
+  version: 4.7.2
+  resolution: "typescript@npm:4.7.2"
   bin:
     tsc: bin/tsc
     tsserver: bin/tsserver
-  checksum: e7bfcc39cd4571a63a54e5ea21f16b8445268b9900bf55aee0e02ad981be576acc140eba24f1af5e3c1457767c96cea6d12861768fb386cf3ffb34013718631a
+  checksum: 5163585e6b56410f77d5483b698d9489bbee8902c99029eb70cf6d21525a186530ce19a00951af84eefd4a131cc51d0959f5118e25e70ab61f45ac4057dbd1ef
   languageName: node
   linkType: hard
 
-"typescript@patch:typescript@^4.4.3#~builtin<compat/typescript>, typescript@patch:typescript@^4.5.2#~builtin<compat/typescript>, typescript@patch:typescript@^4.5.5#~builtin<compat/typescript>":
+"typescript@patch:typescript@^4.4.3#~builtin<compat/typescript>":
   version: 4.5.5
   resolution: "typescript@patch:typescript@npm%3A4.5.5#~builtin<compat/typescript>::version=4.5.5&hash=493e53"
   bin:
@@ -29280,13 +29280,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"typescript@patch:typescript@^4.5.4#~builtin<compat/typescript>":
-  version: 4.6.4
-  resolution: "typescript@patch:typescript@npm%3A4.6.4#~builtin<compat/typescript>::version=4.6.4&hash=493e53"
+"typescript@patch:typescript@^4.7.2#~builtin<compat/typescript>":
+  version: 4.7.2
+  resolution: "typescript@patch:typescript@npm%3A4.7.2#~builtin<compat/typescript>::version=4.7.2&hash=493e53"
   bin:
     tsc: bin/tsc
     tsserver: bin/tsserver
-  checksum: 8cff08bf66d9ecfbf9fcc5edde04a5a7923e6cac3b21d99b4e9a06973bf5bd7f9a83ec7eed24129c1b9e13fd861de8c1070110d4b9ce9f18ab57c6999e9c9a6f
+  checksum: 09d93fc0983d38eadd9b0427f790b49b4437f45002a87d447be3fbe53120880e87a91dd03e1d900498f99205d6e0b7c9784fe41fca11d56f4bbce371f74bb160
   languageName: node
   linkType: hard
 

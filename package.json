@@ -61,7 +61,7 @@
     "release-it": "^14.13.1",
     "release-it-yarn-workspaces": "^2.0.1",
     "ts-jest": "^27.1.5",
-    "typescript": "^4.5.5",
+    "typescript": "^4.7.2",
     "webpack": "^5.72.1"
   },
   "lint-staged": {
