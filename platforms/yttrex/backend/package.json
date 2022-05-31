@@ -43,7 +43,7 @@
     "numeral": "^2.0.6",
     "ts-endpoint": "^2.0.0",
     "ts-io-error": "^2.0.0",
-    "ts-node": "^10.7.0",
+    "ts-node": "^10.8.0",
     "ts-node-dev": "^1.1.8",
     "tweetnacl": "^0.14.5"
   },
