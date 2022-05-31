@@ -50,8 +50,8 @@
     "@commitlint/config-conventional": "^16.2.4",
     "@commitlint/prompt-cli": "^16.3.0",
     "@release-it/conventional-changelog": "^4.2.2",
-    "@types/node": "^16.11.26",
-    "@types/prettier": "^2.4.4",
+    "@types/node": "^16.11.36",
+    "@types/prettier": "^2.6.3",
     "eslint": "^8.10.0",
     "husky": "^7.0.4",
     "jest": "^27.5.1",
@@ -80,7 +80,8 @@
     "@docusaurus/types": "2.0.0-beta.14",
     "@docusaurus/utils-validation": "2.0.0-beta.14",
     "@docusaurus/utils": "2.0.0-beta.14",
-    "@types/node": ">=16"
+    "@types/node": ">=16",
+    "@types/react": "^17"
   },
   "dependencies": {
     "pm2": "^5.2.0"
