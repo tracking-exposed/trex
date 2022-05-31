@@ -264,7 +264,7 @@ const program = yargs(hideBin(process.argv))
     'Use guardoni browser with loaded yt extension',
     ({ argv }) =>
       runGuardoni({
-        ...argv,
+        ...(argv as any),
         platform: 'youtube',
         command: { run: 'navigate' },
       })
@@ -332,7 +332,7 @@ const program = yargs(hideBin(process.argv))
     'Use guardoni browser with loaded tk extension',
     ({ argv }) =>
       runGuardoni({
-        ...argv,
+        ...(argv as any),
         platform: 'tiktok',
         command: { run: 'navigate' },
       })
