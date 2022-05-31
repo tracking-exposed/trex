@@ -14,5 +14,10 @@ RUN yarn guardoni build
 RUN yarn guardoni pkg
 
 FROM selenium/standalone-chrome:102.0
+WORKDIR /guardoni
 COPY --from=0 /guardoni/node_modules/guardoni/dist/guardoni-cli-2.5.4-linux guardoni-cli
+COPY --from=0 "/guardoni/node_modules/@tktrex/extension/build" tktrex
+COPY --from=0 "/guardoni/node_modules/@yttrex/extension/build" yttrex
+COPY --from=0 /guardoni/docker/guardoni/guardoni.config.json .
+
 

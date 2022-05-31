@@ -5,3 +5,4 @@ __mocks__
 **/coverage
 **/node_modules
 docker
+!docker/guardoni/guardoni.config.json
