@@ -19,7 +19,7 @@ const config = {
   baseUrl: '/',
   onBrokenLinks: 'throw',
   onBrokenMarkdownLinks: 'warn',
-  favicon: 'img/yttrex128.png',
+  favicon: 'img/trex128.png',
   organizationName: 'tracking-exposed', // Usually your GitHub org/user name.
   projectName: 'trex', // Usually your repo name.
 
