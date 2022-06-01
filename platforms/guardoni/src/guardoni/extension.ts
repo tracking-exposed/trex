@@ -18,7 +18,7 @@ import { GuardoniContext, Platform } from './types';
 
 const getExtensionWithOptInURL = (platform: Platform, v: string): string => {
   const platformChunk = platform === 'youtube' ? 'yttrex' : 'tktrex';
-  return `https://github.com/tracking-exposed/yttrex/releases/download/v${v}/guardoni-${platformChunk}-extension-${v}.zip`;
+  return `https://github.com/tracking-exposed/yttrex/releases/download/v${v}/${platformChunk}-guardoni-extension-${v}.zip`;
 };
 
 export const downloadExtension = (
