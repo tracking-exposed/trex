@@ -1,0 +1,48 @@
+name: TRex - Release "daily"
+
+on:
+  push:
+    branches:
+      - daily
+    paths:
+    - "docs/**"
+    - "platforms/guardoni/docs/**"
+    - "platforms/tktrex/docs/**"
+    - "platforms/yttrex/docs/**"
+    - "platforms/ycai/docs/**"
+
+jobs:
+  release:
+    name: Docs
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [16.x]
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: "yarn"
+          cache-dependency-path: yarn.lock
+
+      - name: Install dependencies
+        run: yarn
+
+      # - name: Test project
+      #   run: yarn test
+
+      - name: Build Docs
+        env:
+          DEBUG: "@trex*,@YCAI*"
+        run: |
+          yarn tk:shared open-doc-api
+          yarn yt:shared open-doc-api
+          yarn ycai open-doc-api
+          yarn docs build
