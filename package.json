@@ -49,6 +49,7 @@
     "@commitlint/cli": "^16.3.0",
     "@commitlint/config-conventional": "^16.2.4",
     "@commitlint/prompt-cli": "^16.3.0",
+    "@release-it/bumper": "^3",
     "@release-it/conventional-changelog": "^4.3.0",
     "@types/node": "^16.11.36",
     "@types/prettier": "^2.6.3",
