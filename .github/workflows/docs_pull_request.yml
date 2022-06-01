@@ -4,6 +4,9 @@ on:
   push:
     branches:
       - daily
+      - docs/**
+      - fix/**
+      - refactor/**
     paths:
     - "docs/**"
     - "platforms/guardoni/docs/**"

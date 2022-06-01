@@ -46,7 +46,9 @@ jobs:
         run: yarn yt:ext tsc -b
 
       - name: Build
-        run: yarn yt:ext build
+        run: |
+          yarn yt:ext clean
+          yarn yt:ext build
 
       - name: Pack
         run: yarn yt:ext pack
