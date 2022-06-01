@@ -31,4 +31,3 @@ Open Guardoni and then select an experiment from the list:
 
 Click on **"Run"** button in experiment page
 ![Run experiment](assets/guardoni-run-experiment.png)
-
