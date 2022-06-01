@@ -1,4 +1,4 @@
-name: TRex - Release "daily"
+name: TrEx - Release "daily"
 
 on:
   push:
@@ -42,10 +42,8 @@ jobs:
           DEBUG: "@trex*,@YCAI*"
         run: yarn ycai build
 
-      - name: Next Release
-        env:
-          YCAI_DOTENV_CONFIG_PATH: .env
-        run: yarn release-it --only-version --ci --dry-run
+      - name: Release Version
+        run: yarn release-it --no-github.release --release-version
 
 
       - name: Deploy YCAI Dashboard

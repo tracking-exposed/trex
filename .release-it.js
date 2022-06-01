@@ -50,5 +50,8 @@ module.exports = {
       publish: false,
       skipChecks: true,
     },
+    '@release-it/bumper': {
+      out: 'VERSION',
+    },
   },
 };
