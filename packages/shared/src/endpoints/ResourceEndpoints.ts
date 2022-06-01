@@ -1,4 +1,4 @@
-import { MinimalEndpoint } from './MinimalEndpoint';
+import { MinimalEndpoint } from './DocumentedEndpoint';
 
 export interface ResourceEndpoints<
   G extends MinimalEndpoint,

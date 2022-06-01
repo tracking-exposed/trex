@@ -25,7 +25,7 @@ export const MakeHealthRoute: Route = (r, { db, logger }) => {
       // ),
       TE.map((result) => ({
         body: {
-          data: 'OK',
+          data: 'OK' as const,
           result,
         },
         statusCode: 201,

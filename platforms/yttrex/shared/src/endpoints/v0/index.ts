@@ -7,7 +7,7 @@ const GetHealth = DocumentedEndpoint({
   tags: ['health'],
   Method: 'GET',
   getPath: () => `/v0/health`,
-  Output: t.any,
+  Output: t.strict({ data: t.literal('OK') }),
 });
 
 export default {

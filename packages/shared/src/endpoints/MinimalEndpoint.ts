@@ -1,37 +1,6 @@
-import { Endpoint, EndpointErrors, HTTPMethod } from 'ts-endpoint';
-import { Codec, RecordCodec, runtimeType } from 'ts-io-error/Codec';
+import { Codec, runtimeType } from 'ts-io-error/Codec';
 import { RequiredKeys } from 'typelevel-ts';
-import { DocumentedEndpoint } from './DocumentedEndpoint';
-
-export type MinimalEndpoint =
-  | (Omit<
-      Endpoint<
-        HTTPMethod,
-        Codec<any, any, any>,
-        RecordCodec<any, any>,
-        RecordCodec<any, any>,
-        Codec<any, any, any>,
-        RecordCodec<any, any>,
-        EndpointErrors<never, Codec<any, any, any>>
-      >,
-      'getPath'
-    > & {
-      getPath: (i?: any) => string;
-    })
-  | (Omit<
-      DocumentedEndpoint<
-        HTTPMethod,
-        Codec<any, any, any>,
-        RecordCodec<any, any>,
-        RecordCodec<any, any>,
-        Codec<any, any, any>,
-        RecordCodec<any, any>,
-        EndpointErrors<never, Codec<any, any, any>>
-      >,
-      'getPath'
-    > & {
-      getPath: (i?: any) => string;
-    });
+import { MinimalEndpoint } from './DocumentedEndpoint';
 
 export type MinimalEndpointInstance = MinimalEndpoint & {
   getStaticPath: (f: (i?: any) => string) => string;
@@ -50,8 +19,8 @@ export interface TypeOfEndpointInstance<E extends MinimalEndpointInstance> {
       : never;
   };
   Input: [RequiredKeys<E['Input']>] extends [never]
-    // eslint-disable-next-line @typescript-eslint/no-invalid-void-type
-    ? void
+    ? // eslint-disable-next-line @typescript-eslint/no-invalid-void-type
+      void
     : {
         [k in keyof NonNullable<E['Input']>]: NonNullable<
           E['Input']
