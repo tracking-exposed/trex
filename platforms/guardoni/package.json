@@ -137,7 +137,8 @@
     "scripts": [
       "bin/guardoni-cli.js",
       "../../node_modules/puppeteer/lib/*.js",
-      "../../node_modules/puppeteer-extra-plugin-stealth/**/*.js"
+      "../../node_modules/puppeteer-extra-plugin-stealth/**/*.js",
+      "../../node_modules/puppeteer-extra-plugin-stealth/evasions/*.*/*.js"
     ],
     "assets": [
       "static/index.html",
