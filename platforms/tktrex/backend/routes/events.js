@@ -112,6 +112,7 @@ async function saveInDB(experinfo, objects, dbcollection) {
   }
 }
 
+/*
 function handleFullSave(body, headers) {
   // ["html","href","feedId","feedCounter", "reason",
   //  "videoCounter","rect","clientTime","type","incremental"]
@@ -132,7 +133,7 @@ function handleFullSave(body, headers) {
     geoip: geo(headers['x-forwarded-for']),
     researchTag: body.researchTag,
   };
-}
+} */
 
 async function processEvents(req) {
   const headers = processHeaders(_.get(req, 'headers'), mandatoryHeaders);
@@ -161,14 +162,13 @@ async function processEvents(req) {
       //  "videoCounter","rect","clientTime","type","incremental"]
       // 'type' can be ignored as it is always 'video' and doesn't reflect nature
 
-      console.log("--- feedId %s randomUUID",
-        body.feedId ?? 'x', body.randomUUID ?? 'x')
       const id = utils.hash({
         clientRGN: body.feedId
           ? body.feedId
           : body.href + new Date().toISOString(),
         serverPRGN: supporter.publicKey,
-        impressionNumber: body.videoCounter || Math.random(),
+        type: body.type,
+        impressionNumber: body.videoCounter,
       });
       const timelineIdHash = utils.hash({
         session: body.feedId
@@ -193,6 +193,7 @@ async function processEvents(req) {
       optionalNumbers.push(_.size(body.html));
       const html = {
         id,
+        type: body.type,
         rect: body.rect,
         href: body.href,
         timelineId: timelineWord + '-' + timelineIdHash.substr(0, 10),
@@ -208,9 +209,10 @@ async function processEvents(req) {
   );
 
   debug(
-    '[+] (p %s) from %s saving %s',
+    '[+] (p %s) from %s -- %s -- %s',
     supporter.p,
     JSON.stringify(_.map(req.body, 'type')),
+    JSON.stringify(_.map(req.body, 'href')),
     JSON.stringify(_.map(htmls, 'n'))
   );
 
@@ -233,7 +235,7 @@ async function processEvents(req) {
 }
 
 async function handshake(req) {
-  debug('Not implemented protocol (yet) [handshake API %j]', req.body);
+  // debug('Not implemented protocol (yet) [handshake API %j]', req.body);
   return {
     json: { ignored: true },
   };

@@ -2,6 +2,7 @@ import {
   ObserverHandler,
   refreshUUID,
   SelectorObserverHandler,
+  RouteObserverHandler,
 } from '@shared/extension/app';
 import config from '@shared/extension/config';
 import log from '@shared/extension/logger';
@@ -98,10 +99,11 @@ export const onLocationChange = (): void => {
   feedCounter++;
   feedId = refreshUUID(feedCounter);
   appLog.info(
-    'new feedId (%s), feed counter (%d) and video counter resetting after poking (%d)',
+    'new feedId (%s), feed counter (%d) and video counter resetting after reaching (%d) -> %s',
     feedId,
     feedCounter,
     videoCounter,
+    window.location.href,
   );
   videoCounter = 0;
 };
@@ -149,10 +151,10 @@ const handleSearch = _.debounce((element: Node): void => {
   appLog.info('Handle search for path %O', window.location.search);
   if (!_.startsWith(window.location.pathname, '/search')) return;
 
-  // This double check it is due because the Search might 
+  // This double check it is due because the Search might
   // return an error and in both of the cases they should be
   // considered a result.
-  // This is a logic problem in this extension, we should 
+  // This is a logic problem in this extension, we should
   // use URL or selector to trigger the right function.
   const dat = document.querySelectorAll(searchHandler.match.selector);
   const te = _.map(
@@ -208,12 +210,10 @@ const handleSuggested = _.debounce((elem: Node): void => {
 let videoCounter = 0;
 
 const handleVideo = _.debounce((node: HTMLElement): void => {
-  /* this is not the right approach, but we shouldn't save
-     video when we're in search or tag condition
-   -- I would have
-     used getNatureByHref(window.location.href) but I couldn't
-     manage the TS */
+  /* we should check nature for good, the 'video' handles are triggered also in
+   * other pages, afterall! */
   if (_.startsWith(window.location.pathname, '/search')) return;
+  if (profileHandler.match.location.test(window.location.pathname)) return;
 
   /* this function return a node element that has a size
    * lesser than 10k, and stop when find out the parent
@@ -269,6 +269,42 @@ const handleVideo = _.debounce((node: HTMLElement): void => {
   }
 }, 300);
 
+const handleProfile = _.debounce(
+  (node: HTMLElement, route: any, _selectorName: string): void => {
+    const profileName = window.location.pathname.match(
+      route.match.location,
+    )?.[1];
+    if (!profileName) {
+      appLog.info('Error in getting profile name %s', window.location.pathname);
+      return;
+    }
+    appLog.info('Spotted profile %s', profileName);
+    /* this condition is managed here because when a 'profile' is loaded
+     * in the href, and the event location change starts, we don't have
+     * yet an html. but, also with profile
+     * */
+    appLog.info('Handling this video as a profile');
+    const contentNode = document.querySelector('body');
+    const contentHTML = contentNode ? contentNode.innerHTML : null;
+    if (!contentNode || !contentHTML) {
+      appLog.info('Spotted profile but body still empty?');
+      return;
+    }
+
+    tkHub.dispatch({
+      type: 'Profile',
+      payload: {
+        html: contentHTML,
+        href: window.location.href,
+        feedId,
+        feedCounter,
+        videoCounter,
+      },
+    });
+  },
+  300,
+);
+
 function flush(): void {
   window.addEventListener('beforeunload', () => {
     tkHub.dispatch({
@@ -292,11 +328,20 @@ export const errorHandler: SelectorObserverHandler = {
   },
   handle: handleSearch,
 };
+
+export const profileHandler: RouteObserverHandler = {
+  match: {
+    type: 'route',
+    location: /@([\w\-._]*)$/i,
+  },
+  handle: handleProfile,
+};
 /**
  * selector with relative handler
  * configuration
  */
 export const tkHandlers: { [key: string]: ObserverHandler } = {
+  profile: profileHandler,
   video: {
     match: {
       type: 'selector',

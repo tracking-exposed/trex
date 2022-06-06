@@ -15,10 +15,11 @@ function hash(obj, fields) {
     memo += fname + '∴' + JSON.stringify(_.get(obj, fname, '…miss!')) + ',';
     return memo;
   }, '');
-  // debug("(note) hashing of %s", plaincnt);
   const sha1sum = crypto.createHash('sha1');
   sha1sum.update(plaincnt);
-  return sha1sum.digest('hex');
+  const retval = sha1sum.digest('hex');
+  // debug('(note) hashing of %s\n%s', plaincnt, retval);
+  return retval;
 }
 
 function verifyRequestSignature(req) {
