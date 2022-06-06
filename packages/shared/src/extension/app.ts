@@ -108,14 +108,11 @@ function setupObserver({
 
   const observer = new MutationObserver(
     debounce((mutations) => {
-      mutations.forEach(function (mutation) {
-        // appLog.debug('mutation (%s) %O', mutation.type, mutation.target);
+      // appLog.debug('mutation (%s) %O', mutation.type, mutation.target);
 
-        if (window?.document) {
-          if (
-            oldHref !== window.location.href &&
-            platformMatch.test(window.location.href)
-          ) {
+      if (window?.document) {
+        if (platformMatch.test(window.location.href)) {
+          if (oldHref !== window.location.href) {
             const newHref = window.location.href;
 
             appLog.debug(
@@ -126,25 +123,25 @@ function setupObserver({
 
             onLocationChange(oldHref, newHref);
 
-            const routeHandlerKey = handlersList.find((h) => {
-              const handler = handlers[h];
-
-              if (handler.match.type === 'route') {
-                return window.location.pathname.match(handler.match.location);
-              }
-              return false;
-            });
-
-            if (routeHandlerKey) {
-              appLog.debug('Route handler key %s', routeHandlerKey);
-              const { handle, ...routeHandlerOpts } = handlers[routeHandlerKey];
-              handle(window.document.body, routeHandlerOpts, routeHandlerKey);
-            }
-
             oldHref = newHref;
           }
+
+          const routeHandlerKey = handlersList.find((h) => {
+            const handler = handlers[h];
+
+            if (handler.match.type === 'route') {
+              return window.location.pathname.match(handler.match.location);
+            }
+            return false;
+          });
+
+          if (routeHandlerKey) {
+            appLog.debug('Route handler key %s', routeHandlerKey);
+            const { handle, ...routeHandlerOpts } = handlers[routeHandlerKey];
+            handle(window.document.body, routeHandlerOpts, routeHandlerKey);
+          }
         }
-      });
+      }
     }, 300)
   );
 
