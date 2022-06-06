@@ -25,18 +25,7 @@ import {
   GetExperimentListOutput,
   ExperimentLink,
 } from './Experiment';
-import {
-  ComparisonDirective,
-  ComparisonDirectiveRow,
-  ComparisonDirectiveType,
-  SearchDirective,
-  SearchDirectiveRow,
-  SearchDirectiveType,
-  CreateDirectiveBody,
-  Directive,
-  DirectiveType,
-  PostDirectiveResponse,
-} from './Directive';
+import { PostDirectiveResponse } from './Directive';
 
 export default {
   // common
@@ -44,16 +33,7 @@ export default {
   VideoContributionEvent,
   // guardoni
   // guardoni experiments (to be moved)
-  ComparisonDirective,
-  ComparisonDirectiveRow,
-  ComparisonDirectiveType,
-  SearchDirective,
-  SearchDirectiveRow,
-  SearchDirectiveType,
-  CreateDirectiveBody,
   PostDirectiveResponse,
-  Directive,
-  DirectiveType,
   GuardoniExperiment,
   ConcludeGuardoniExperimentOutput,
   GetDirectiveOutput,

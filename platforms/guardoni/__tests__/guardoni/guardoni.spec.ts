@@ -12,7 +12,6 @@ import {
 import { csvStringifyTE } from '../../src/guardoni/utils';
 import { guardoniLogger } from '../../src/logger';
 import { puppeteerMock } from '../../__mocks__/puppeteer.mock';
-import * as profile from '../../src/guardoni/profile';
 
 const directiveLinks = [
   {

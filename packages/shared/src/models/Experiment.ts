@@ -1,6 +1,5 @@
 import * as t from 'io-ts';
 import { nonEmptyArray } from 'io-ts-types';
-import { Directive, DirectiveType } from './Directive';
 
 export const ExperimentLink = t.strict(
   {
@@ -13,17 +12,14 @@ export const ExperimentLink = t.strict(
 );
 export type ExperimentLink = t.TypeOf<typeof ExperimentLink>;
 
-export const GetDirectiveOutput = nonEmptyArray(
-  Directive,
-  'GetDirectiveOutput'
-);
+export const GetDirectiveOutput = nonEmptyArray(t.any, 'GetDirectiveOutput');
 export type GetDirectiveOutput = t.TypeOf<typeof GetDirectiveOutput>;
 
 export const GuardoniExperiment = t.strict(
   {
     experimentId: t.string,
     when: t.string,
-    directiveType: DirectiveType,
+    directiveType: t.string,
     links: t.array(ExperimentLink),
   },
   'GuardoniExperiment'
