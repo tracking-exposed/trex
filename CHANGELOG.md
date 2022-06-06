@@ -1,3 +1,20 @@
+## [2.6.0](https://github.com/tracking-exposed/yttrex/compare/v2.5.4...v2.6.0) (2022-06-06)
+
+- eslint errors in guardoni ([664e318](https://github.com/tracking-exposed/yttrex/commit/664e318304d2af2603ccdb3a598d822187d28e92))
+- guardoni tiktok csv ([#535](https://github.com/tracking-exposed/yttrex/issues/535)) ([53097a9](https://github.com/tracking-exposed/yttrex/commit/53097a95663b8ee24ce99ac83a661d163298bf1b))
+- **guardoni:** extension url template aligned with extension zip file names ([643a754](https://github.com/tracking-exposed/yttrex/commit/643a7546d50f4e3eab28e857c4906d9763f2dcdd))
+- move tt-automation to platforms folder ([#544](https://github.com/tracking-exposed/yttrex/issues/544)) ([e0477ee](https://github.com/tracking-exposed/yttrex/commit/e0477ee001210474e56dee2cff5a93b10455100d))
+- tiktok profile scraper ([#531](https://github.com/tracking-exposed/yttrex/issues/531)) ([99e5777](https://github.com/tracking-exposed/yttrex/commit/99e5777d8b3dde0f456fcaa33ad726806c203ad4))
+- update PR's title when is a new release ([d8d9d85](https://github.com/tracking-exposed/yttrex/commit/d8d9d8549f7d1b063c17880e7742fa0e41804929))
+- upgrade [@types](https://github.com/types) ([767247a](https://github.com/tracking-exposed/yttrex/commit/767247af56195a5b5df3a615820c1b88fa0fff35))
+- upgrade [@typescript-eslint](https://github.com/typescript-eslint) and eslint@8.10.0 ([78af3e3](https://github.com/tracking-exposed/yttrex/commit/78af3e31dc2cae03c24abb3fe5b9bac0011a6794))
+- upgrade prettier@2.6.2 and [@release-it](https://github.com/release-it)@14.13.1 ([b197e1c](https://github.com/tracking-exposed/yttrex/commit/b197e1c7d35b2feceeff3691f3d176ad2f67f421))
+- upgrade ts-node-dev@^2 ([d0c2e03](https://github.com/tracking-exposed/yttrex/commit/d0c2e033151ac6965cdea02e8216fdff30606248))
+- upgrade ts-node@10.8.0 ([756c156](https://github.com/tracking-exposed/yttrex/commit/756c15668ff4346a057711e8c2139ad1d72db518))
+- upgrade typescript@4.7.2, tsconfig-paths@3.14.1 ([b300380](https://github.com/tracking-exposed/yttrex/commit/b3003805b684d48971f72b6591b303f4aad1a5fd))
+- upgrade yargs@17.5.1 ([d8c124c](https://github.com/tracking-exposed/yttrex/commit/d8c124c2c6d56aac15789e2a42bd1b53042eed67))
+- use publicKey and secretKey from process.env in extension ([3ad5aa7](https://github.com/tracking-exposed/yttrex/commit/3ad5aa77ae6249bce1040a724fc3e77c600aa388))
+
 ### [2.5.4](https://github.com/tracking-exposed/yttrex/compare/v2.5.3...v2.5.4) (2022-05-27)
 
 - **guardoni:** add 'puppeteer-extra-plugin-stealth' to pkg included scripts ([ffe03c1](https://github.com/tracking-exposed/yttrex/commit/ffe03c1c7110f0b06286d91132cf52f9d9573559))
