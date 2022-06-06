@@ -30,6 +30,7 @@
     "taboule": "yarn workspace @trex/taboule",
     "shared": "yarn workspace @trex/shared",
     "guardoni": "yarn workspace guardoni",
+    "tt-automate": "yarn workspace tt-automate",
     "tk:docs": "yarn workspace @tktrex/docs",
     "tk:shared": "yarn workspace @tktrex/shared",
     "tk:backend": "yarn workspace @tktrex/backend",
