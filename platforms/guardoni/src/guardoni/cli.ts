@@ -1,5 +1,4 @@
 import { AppError } from '@shared/errors/AppError';
-import { DirectiveType } from '@shared/models/Directive';
 import * as A from 'fp-ts/lib/Array';
 import { pipe } from 'fp-ts/lib/function';
 import * as TE from 'fp-ts/lib/TaskEither';
@@ -20,6 +19,7 @@ import {
   GuardoniOutput,
   GuardoniSuccessOutput,
   Platform,
+  DirectiveType,
 } from './types';
 import D from 'debug';
 import puppeteer, { PuppeteerExtra } from 'puppeteer-extra';

@@ -31,13 +31,13 @@ echo $yt_home_experiment_public_key
 # echo "http://localhost:14000/api/v1/personal/$yt_home_experiment_public_key"
 # curl "http://localhost:9000/api/v1/personal/$yt_home_experiment_public_key"
 
-# register an experiment for videos
-# yt_video_experiment_register_out="$(./dist/guardoni-cli-$version-linux --verbose --basePath ./ yt-register ./experiments/yt-videos.csv | grep 'experimentId:')"
-# yt_video_experiment_id=${yt_video_experiment_register_out/'experimentId: '/''}
+#register an experiment for videos
+yt_video_experiment_register_out="$(./dist/guardoni-cli-$version-linux --verbose --basePath ./ yt-register ./experiments/yt-videos.csv | grep 'experimentId:')"
+yt_video_experiment_id=${yt_video_experiment_register_out/'experimentId: '/''}
 
 # echo $yt_video_experiment_id
 
 # exec the experiment
-# yt_video_experiment_run_out=$(./dist/guardoni-cli-$version-linux --verbose --headless --basePath ./ yt-experiment $yt_video_experiment_id |  grep 'publicKey:')
-# yt_video_experiment_public_key=${yt_video_experiment_run_out/'publicKey: '/''}
-# echo $yt_video_experiment_public_key
+yt_video_experiment_run_out=$(./dist/guardoni-cli-$version-linux --verbose --headless --basePath ./ yt-experiment $yt_video_experiment_id |  grep 'publicKey:')
+yt_video_experiment_public_key=${yt_video_experiment_run_out/'publicKey: '/''}
+echo $yt_video_experiment_public_key

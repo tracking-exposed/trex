@@ -1,11 +1,10 @@
 import { AppError, toAppError } from '@shared/errors/AppError';
-import { Directive } from '@shared/models/Directive';
 import { pipe } from 'fp-ts/lib/function';
 import * as TE from 'fp-ts/lib/TaskEither';
 import type * as puppeteer from 'puppeteer-core';
 import StealthPlugin from 'puppeteer-extra-plugin-stealth';
 import domainSpecific from './domainSpecific';
-import { GuardoniContext } from './types';
+import { GuardoniContext, Directive } from './types';
 
 export const dispatchBrowser = (
   ctx: GuardoniContext
@@ -79,11 +78,12 @@ const operateTab =
         );
       }
 
+      // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
       const loadFor = (directive as any).loadFor ?? ctx.config.loadFor ?? 6000;
 
       ctx.logger.info(
         '— Loading %s (for %d ms) %O',
-        (directive as any).url,
+        (directive)?.url,
         loadFor,
         directive
       );
@@ -91,7 +91,7 @@ const operateTab =
 
       // TODO the 'timeout' would allow to repeat this operation with
       // different parameters. https://stackoverflow.com/questions/60051954/puppeteer-timeouterror-navigation-timeout-of-30000-ms-exceeded
-      await page.goto((directive as any).url, {
+      await page.goto(directive.url, {
         waitUntil: 'networkidle0',
       });
 
@@ -107,9 +107,10 @@ const operateTab =
 
       ctx.logger.info(
         'Directive to URL %s, Loading delay %d (--load optional)',
-        (directive as any).url,
+        directive.url,
         loadFor
       );
+
       await page.waitForTimeout(loadFor);
 
       try {

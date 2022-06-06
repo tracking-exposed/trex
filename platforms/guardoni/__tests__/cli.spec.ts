@@ -2,13 +2,14 @@
 jest.mock('axios');
 
 import {
-  ComparisonDirectiveArb,
-  ComparisonDirectiveRowArb,
   GuardoniExperimentArb,
   PostDirectiveSuccessResponseArb,
-  SearchDirectiveArb,
-  SearchDirectiveRowArb,
 } from '@shared/arbitraries/Directive.arb';
+import {
+  ComparisonDirectiveRowArb,
+  ComparisonDirectiveArb,
+} from '@yttrex/shared/arbitraries/ComparisonDirective.arb';
+import { SearchDirectiveArb } from '@tktrex/shared/arbitraries/SearchDirective.arb';
 import * as tests from '@shared/test';
 import axios from 'axios';
 import differenceInMilliseconds from 'date-fns/differenceInMilliseconds';
@@ -57,7 +58,7 @@ describe('CLI', () => {
     );
 
     const searchCSVContent = await csvStringifyTE(
-      tests.fc.sample(SearchDirectiveRowArb, 10),
+      tests.fc.sample(SearchDirectiveArb, 10),
       { header: true, encoding: 'utf-8' }
     )();
 
@@ -457,7 +458,7 @@ describe('CLI', () => {
       'tiktok'
     );
 
-    describe.skip('Register an experiment from a CSV', () => {
+    describe('Register an experiment from a CSV', () => {
       test('fails when the file path is wrong', async () => {
         // mocks
 

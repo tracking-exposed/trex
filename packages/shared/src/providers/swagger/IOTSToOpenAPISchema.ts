@@ -3,7 +3,6 @@
 import { keys, record } from 'fp-ts/lib/Record';
 import * as t from 'io-ts';
 import * as NEA from 'io-ts-types/lib/nonEmptyArray';
-import { Directive } from '../../models/Directive';
 
 // interface NonEmptyArrayTypeT<C extends t.Mixed>
 //   extends t.Type<
@@ -228,15 +227,15 @@ export const getOpenAPISchema = <T extends IOTOpenDocSchema>(codec: T): any => {
         };
       }
 
-      if (codec.name === 'GetDirectiveOutput') {
-        return {
-          type: 'array',
-          items: Directive.types.map((tt) => ({
-            $ref: `#/components/schemas/${tt.name}`,
-          })),
-          required: true,
-        };
-      }
+      // if (codec.name === 'GetDirectiveOutput') {
+      //   return {
+      //     type: 'array',
+      //     items: Directive.types.map((tt: any) => ({
+      //       $ref: `#/components/schemas/${tt.name}`,
+      //     })),
+      //     required: true,
+      //   };
+      // }
 
       if (codec.name === undefined) {
         return {
