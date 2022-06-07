@@ -1,26 +1,19 @@
 /* eslint-disable import/first */
 jest.mock('axios');
-
 import {
+  CommonDirectiveArb,
   GuardoniExperimentArb,
   PostDirectiveSuccessResponseArb,
 } from '@shared/arbitraries/Directive.arb';
-import {
-  ComparisonDirectiveRowArb,
-  ComparisonDirectiveArb,
-} from '@yttrex/shared/arbitraries/ComparisonDirective.arb';
-import { SearchDirectiveArb } from '@tktrex/shared/arbitraries/SearchDirective.arb';
 import * as tests from '@shared/test';
-import axios from 'axios';
+import { SearchDirectiveArb } from '@tktrex/shared/arbitraries/SearchDirective.arb';
 import differenceInMilliseconds from 'date-fns/differenceInMilliseconds';
 import * as fs from 'fs';
 import * as path from 'path';
 import { GetGuardoniCLI, GuardoniCLI } from '../src/guardoni/cli';
 import { csvStringifyTE } from '../src/guardoni/utils';
+import axiosMock from '../__mocks__/axios.mock';
 import { puppeteerMock } from '../__mocks__/puppeteer.mock';
-
-const axiosMock = axios as jest.Mocked<typeof axios>;
-axiosMock.create.mockImplementation(() => axiosMock);
 
 const basePath = path.resolve(__dirname, '../');
 const profileName = 'profile-test-99';

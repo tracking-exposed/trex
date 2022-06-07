@@ -1,3 +1,5 @@
+import axiosMock from '../../__mocks__/axios.mock';
+import { puppeteerMock } from '../../__mocks__/puppeteer.mock';
 /* eslint-disable import/first */
 import { pipe } from 'fp-ts/lib/function';
 import * as TE from 'fp-ts/lib/TaskEither';
@@ -11,7 +13,6 @@ import {
 } from '../../src/guardoni/profile';
 import { csvStringifyTE } from '../../src/guardoni/utils';
 import { guardoniLogger } from '../../src/logger';
-import { puppeteerMock } from '../../__mocks__/puppeteer.mock';
 
 const directiveLinks = [
   {
@@ -32,6 +33,17 @@ const directiveLinks = [
     url: 'https://www.youtube.com/watch?v=SmYuYEhT81c',
     urltag: 'trex-algorithm',
     watchFor: '5s',
+    hooks: {
+      beforeWait: [
+        {
+          type: 'SCROLL_FOR',
+          options: {
+            deltaY: 400,
+            total: 1000,
+          },
+        },
+      ],
+    },
   },
 ];
 
@@ -216,6 +228,21 @@ describe('Guardoni', () => {
     test('succeeds when run an experiment from an already existing directive', async () => {
       // one minute
       jest.setTimeout(60 * 1000);
+
+      axiosMock.request.mockResolvedValueOnce({
+        data: {
+          status: 'exist',
+          experimentId: '1',
+        },
+      });
+      axiosMock.request.mockResolvedValueOnce({
+        data: directiveLinks,
+      });
+      axiosMock.request.mockResolvedValueOnce({
+        data: {
+          acknowledged: true,
+        },
+      });
 
       const guardoni = GetGuardoni({
         basePath,
