@@ -4,9 +4,7 @@ import { EVENTS } from '../models/events';
 import log from 'electron-log';
 import * as util from 'util';
 
-export const getEventsLogger = (
-  w: Electron.BrowserWindow
-): Pick<Logger, 'error' | 'info' | 'debug' | 'warn'> => {
+export const getEventsLogger = (w: Electron.BrowserWindow): Logger => {
   return {
     error: (m, ...args) => {
       log.error(m, ...args);
@@ -43,6 +41,9 @@ export const getEventsLogger = (
       //   message: util.format(m, ...args),
       //   details: args.map((a) => JSON.stringify(a)),
       // });
+    },
+    extend: (n: string) => {
+      return log as any;
     },
   };
 };

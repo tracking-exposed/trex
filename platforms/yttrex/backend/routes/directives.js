@@ -112,7 +112,6 @@ function acquireComparison(parsedCSV) {
 }
 
 async function post(req) {
-
   /* const directiveTypes = ['chiaroscuro', 'comparison'];
   if (directiveTypes.indexOf(directiveType) === -1) {
     debug(
@@ -124,7 +123,7 @@ async function post(req) {
   } */
 
   const directiveType = 'comparison';
-  const parsedCSV = _.get(req.body, 'parsedCSV', []);
+  const parsedCSV = req.body ?? [];
 
   /* if (directiveType === "chiaroscuro")
     links = acquireChiaroscuro(parsedCSV); */
@@ -133,6 +132,10 @@ async function post(req) {
   links = acquireComparison(parsedCSV);
 
   debug('Registering directive %s (%d urls)', directiveType, _.size(links));
+
+  if (_.size(links) === 0) {
+    throw new Error("Can't register csv without 'links'");
+  }
 
   const feedback = await automo.registerDirective(links, directiveType);
   // this feedback is printed at terminal when --csv is used
@@ -159,7 +162,6 @@ async function get(req) {
   const directives = _.map(expinfo.links, comparison);
   debug('Comparison %s produced %d', experimentId, directives.length);
   return { json: directives };
-
 }
 
 async function getPublic(req) {

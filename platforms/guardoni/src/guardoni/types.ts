@@ -1,19 +1,10 @@
 import * as endpoints from '@shared/endpoints';
 import { Logger } from '@shared/logger';
-import {
-  SearchDirective,
-  SearchDirectiveType,
-} from '@tktrex/shared/models/directive/SearchDirective';
-import {
-  ComparisonDirectiveRow,
-  ComparisonDirectiveType,
-} from '@yttrex/shared/models/Directive';
+import { Directive, DirectiveType } from '@shared/models/Directive';
 import { APIClient } from '@shared/providers/api.provider';
-import { pipe } from 'fp-ts/lib/function';
-import * as R from 'fp-ts/lib/Record';
+import { PuppeteerProvider } from '@shared/providers/puppeteer/puppeteer.provider';
 import * as t from 'io-ts';
 import { nonEmptyArray } from 'io-ts-types';
-import { PuppeteerExtra } from 'puppeteer-extra';
 
 export const Platform = t.union(
   [t.literal('youtube'), t.literal('tiktok')],
@@ -86,13 +77,13 @@ export const GuardoniProfile = t.strict(
 export type GuardoniProfile = t.TypeOf<typeof GuardoniProfile>;
 
 export interface GuardoniContext {
-  puppeteer: PuppeteerExtra;
+  puppeteer: PuppeteerProvider;
   API: APIClient<typeof endpoints>;
   config: GuardoniConfig;
   platform: PlatformConfig;
   profile: GuardoniProfile;
   guardoniConfigFile: string;
-  logger: Pick<Logger, 'info' | 'error' | 'debug'>;
+  logger: Logger;
   version: string;
 }
 
@@ -106,29 +97,21 @@ export interface ExperimentInfo {
   when: Date;
 }
 
-export const Directive = t.union(
-  [ComparisonDirectiveRow, SearchDirective],
-  'DirectiveRow'
-);
-export type Directive = t.TypeOf<typeof Directive>;
+export const CreateDirectiveBody = nonEmptyArray(Directive);
 
-export const CreateDirectiveBody = t.union(
-  [
-    t.type({ parsedCSV: nonEmptyArray(Directive) }),
-    nonEmptyArray(SearchDirective),
-  ],
-  'CreateDirectiveBody'
-);
+// const directiveKeysMap = pipe(
+//   {
+//     search: SearchDirective,
+//     comparison: ComparisonDirectiveRow,
+//     common: CommonDirective,
+//   },
+//   R.map((type) => nonEmptyArray(type))
+// );
 
-const directiveKeysMap = pipe(
-  { search: SearchDirective, comparison: ComparisonDirectiveRow },
-  R.map((type) => nonEmptyArray(type))
-);
+// export const DirectiveKeysMap = t.type(directiveKeysMap, 'DirectiveKeysMap');
 
-export const DirectiveKeysMap = t.type(directiveKeysMap, 'DirectiveKeysMap');
-
-export const DirectiveType = t.union(
-  [ComparisonDirectiveType, SearchDirectiveType],
-  'DirectiveType'
-);
-export type DirectiveType = t.TypeOf<typeof DirectiveType>;
+// export const DirectiveType = t.union(
+//   [ComparisonDirectiveType, SearchDirectiveType],
+//   'DirectiveType'
+// );
+// export type DirectiveType = t.TypeOf<typeof DirectiveType>;

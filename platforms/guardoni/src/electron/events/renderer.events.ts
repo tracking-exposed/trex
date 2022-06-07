@@ -1,10 +1,12 @@
 import { AppError, toAppError } from '@shared/errors/AppError';
 import { Logger } from '@shared/logger';
+import { Directive } from '@shared/models/Directive';
 import { AppEnv } from 'AppEnv';
 import { app, BrowserView, dialog, ipcMain, shell } from 'electron';
 import { pipe } from 'fp-ts/lib/function';
 import * as TE from 'fp-ts/lib/TaskEither';
 import { NonEmptyString } from 'io-ts-types';
+import * as path from 'path';
 import type Puppeteer from 'puppeteer-core';
 import puppeteer from 'puppeteer-extra';
 import * as pie from 'puppeteer-in-electron';
@@ -14,20 +16,14 @@ import {
   getPlatformConfig,
   setConfig,
 } from '../../guardoni/config';
-import { GetGuardoni, Guardoni } from '../../guardoni/guardoni';
 import { readCSVAndParse } from '../../guardoni/experiment';
-import {
-  GuardoniConfig,
-  PlatformConfig,
-  Platform,
-  Directive,
-} from '../../guardoni/types';
+import { GetGuardoni, Guardoni } from '../../guardoni/guardoni';
+import { getExistingProfiles, getProfileDataDir } from '../../guardoni/profile';
+import { GuardoniConfig, Platform, PlatformConfig } from '../../guardoni/types';
 import { guardoniLogger } from '../../logger';
 import { EVENTS } from '../models/events';
 import store from '../store';
 import { getEventsLogger } from './event.logger';
-import * as path from 'path';
-import { getExistingProfiles, getProfileDataDir } from '../../guardoni/profile';
 
 const guardoniEventsLogger = guardoniLogger.extend('events');
 
@@ -44,7 +40,7 @@ export interface Events {
 }
 
 const pickCSVFile = (
-  logger: Pick<Logger, 'debug' | 'error' | 'info'>
+  logger: Logger
 ): TE.TaskEither<AppError, { path: string; parsed: Directive[] }> => {
   return pipe(
     TE.tryCatch(
