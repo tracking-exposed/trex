@@ -8,7 +8,9 @@
  */
 import * as Endpoints from '@shared/endpoints';
 import { AppError, toAppError } from '@shared/errors/AppError';
+import { Directive, DirectiveType } from '@shared/models/Directive';
 import { APIClient, MakeAPIClient } from '@shared/providers/api.provider';
+import { GetPuppeteer } from '@shared/providers/puppeteer/puppeteer.provider';
 import { differenceInSeconds } from 'date-fns';
 import debug from 'debug';
 import { sequenceS } from 'fp-ts/lib/Apply';
@@ -20,14 +22,15 @@ import { NonEmptyString } from 'io-ts-types/lib/NonEmptyString';
 import path from 'path';
 import type puppeteer from 'puppeteer-core';
 import { PuppeteerExtra } from 'puppeteer-extra';
-import { dispatchBrowser, operateBrowser } from './browser';
+import { dispatchBrowser } from './browser';
 import {
   checkConfig,
   getConfig,
   getDefaultConfig,
   getPlatformConfig,
 } from './config';
-import domainSpecific from './domainSpecific';
+import { GetTKHooks } from './directives/tk.directives';
+import { GetYTHooks } from './directives/yt.directives';
 import {
   concludeExperiment,
   getDirective,
@@ -53,8 +56,6 @@ import {
   Platform,
   PlatformConfig,
   ProgressDetails,
-  Directive,
-  DirectiveType,
 } from './types';
 import { getChromePath, getPackageVersion } from './utils';
 
@@ -65,12 +66,8 @@ const runNavigate = (ctx: GuardoniContext): TE.TaskEither<AppError, void> => {
       : 'https://www.youtube.com';
 
   return pipe(
-    dispatchBrowser({
-      ...ctx,
-      config: {
-        ...ctx.config,
-        headless: false,
-      },
+    dispatchBrowser(ctx)({
+      headless: false,
     }),
     TE.chain((b) => {
       return TE.tryCatch(async () => {
@@ -115,7 +112,7 @@ export const runBrowser =
     directives: NonEmptyArray<Directive>
   ): TE.TaskEither<AppError, ExperimentInfo & { publicKey: string | null }> => {
     return pipe(
-      dispatchBrowser(ctx),
+      dispatchBrowser(ctx)({}),
       TE.chain((browser) => {
         return TE.tryCatch(async () => {
           const [page, ...otherPages] = await browser.pages();
@@ -237,12 +234,7 @@ export const guardoniExecution =
     ctx.logger.debug('Config %O', ctx.config);
 
     return pipe(
-      TE.tryCatch(
-        () => domainSpecific.beforeDirectives(page, ctx.profile),
-        (e) => new AppError('BeforeDirectivesError', (e as any).message, [])
-      ),
-      TE.chain(() => operateBrowser(ctx)(page, directives)),
-      TE.chain(() => TE.tryCatch(() => domainSpecific.completed(), toAppError)),
+      ctx.puppeteer.operateBrowser(page, directives),
       TE.map((publicKey) => {
         const duration = differenceInSeconds(new Date(), start);
 
@@ -305,7 +297,21 @@ const loadContext = (
           chromePath,
         })),
         E.map((c) => ({
-          puppeteer: p,
+          puppeteer: GetPuppeteer({
+            logger: logger,
+            puppeteer: p,
+            config: {
+              loadFor: config.loadFor,
+            },
+            hooks:
+              platform === 'youtube'
+                ? GetYTHooks({
+                    profile,
+                  })
+                : GetTKHooks({
+                    profile,
+                  }),
+          }),
           API: MakeAPIClient(
             {
               baseURL: platformConf.backend,

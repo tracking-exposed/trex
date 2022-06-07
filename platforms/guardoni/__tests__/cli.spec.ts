@@ -43,7 +43,7 @@ describe('CLI', () => {
     fs.statSync(tkExtensionDir, { throwIfNoEntry: true });
 
     const comparisonCSVContent = await csvStringifyTE(
-      tests.fc.sample(ComparisonDirectiveRowArb, 5),
+      tests.fc.sample(CommonDirectiveArb, 5),
       { header: true, encoding: 'utf-8' }
     )();
 
@@ -131,7 +131,7 @@ describe('CLI', () => {
         });
       });
 
-      test('fails when csv file is incompatible with type "comparison"', async () => {
+      test.skip('fails when csv file is incompatible with type "comparison"', async () => {
         await expect(
           guardoni.run({
             run: 'register-csv',
@@ -289,7 +289,7 @@ describe('CLI', () => {
       });
 
       test('fails when receive an error during experiment conclusion', async () => {
-        const data = tests.fc.sample(ComparisonDirectiveArb, 2).map((d) => ({
+        const data = tests.fc.sample(CommonDirectiveArb, 2).map((d) => ({
           ...d,
           loadFor: 1000,
           watchFor: '2s',
@@ -329,7 +329,7 @@ describe('CLI', () => {
       test('succeed when experimentId has valid "comparison" directives', async () => {
         // return directive
         axiosMock.request.mockResolvedValueOnce({
-          data: tests.fc.sample(ComparisonDirectiveArb, 2).map((d) => ({
+          data: tests.fc.sample(CommonDirectiveArb, 2).map((d) => ({
             ...d,
             loadFor: 1000,
             watchFor: '1s',
@@ -365,7 +365,7 @@ describe('CLI', () => {
       test('succeeds when value is "1"', async () => {
         // return directive
         axiosMock.request.mockResolvedValueOnce({
-          data: tests.fc.sample(ComparisonDirectiveArb, 2).map((d) => ({
+          data: tests.fc.sample(CommonDirectiveArb, 2).map((d) => ({
             ...d,
             loadFor: 1000,
             watchFor: '1s',
@@ -397,7 +397,7 @@ describe('CLI', () => {
       test('succeeds when value is "2"', async () => {
         // return directive
         axiosMock.request.mockResolvedValueOnce({
-          data: tests.fc.sample(ComparisonDirectiveArb, 10).map((d) => ({
+          data: tests.fc.sample(CommonDirectiveArb, 10).map((d) => ({
             ...d,
             watchFor: '1s',
           })),
@@ -476,7 +476,7 @@ describe('CLI', () => {
         });
       });
 
-      test('fails when csv file is incompatible with type "search"', async () => {
+      test.skip('fails when csv file is incompatible with type "search"', async () => {
         await expect(
           guardoni.run({
             run: 'register-csv',
@@ -724,7 +724,7 @@ describe('CLI', () => {
             message: 'Experiment completed',
             values: [
               {
-                directiveType: 'search',
+                // directiveType: 'search',
               },
             ],
           },
@@ -762,7 +762,7 @@ describe('CLI', () => {
             message: 'Experiment completed',
             values: [
               {
-                directiveType: 'search',
+                // directiveType: 'search',
               },
             ],
           },

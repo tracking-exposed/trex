@@ -1,13 +1,14 @@
 import * as t from 'io-ts';
+import { nonEmptyArray } from 'io-ts-types';
 import { Endpoint } from 'ts-endpoint';
 import {
   CreateDirectiveBody,
+  Directive,
   DirectiveType,
   PostDirectiveResponse,
 } from '../../models/Directive';
 import {
   ConcludeGuardoniExperimentOutput,
-  GetDirectiveOutput,
   GetPublicDirectivesOutput,
 } from '../../models/Experiment';
 import { HandshakeBody } from '../../models/HandshakeBody';
@@ -73,7 +74,7 @@ const GetDirective = Endpoint({
       experimentId: t.string,
     }),
   },
-  Output: GetDirectiveOutput,
+  Output: nonEmptyArray(Directive),
 });
 
 const GetPublicDirectives = Endpoint({

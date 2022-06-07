@@ -19,10 +19,10 @@ import {
   GuardoniOutput,
   GuardoniSuccessOutput,
   Platform,
-  DirectiveType,
 } from './types';
 import D from 'debug';
 import puppeteer, { PuppeteerExtra } from 'puppeteer-extra';
+import { DirectiveType } from '@shared/models/Directive';
 
 export const cliLogger = guardoniLogger.extend('cli');
 

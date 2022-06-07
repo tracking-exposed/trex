@@ -23,7 +23,6 @@ import {
   GetDirectiveOutput,
   GetPublicDirectivesOutput,
   GetExperimentListOutput,
-  ExperimentLink,
 } from './Experiment';
 import { PostDirectiveResponse } from './Directive';
 
@@ -39,7 +38,6 @@ export default {
   GetDirectiveOutput,
   GetExperimentListOutput,
   GetPublicDirectivesOutput,
-  ExperimentLink,
   // ycai
   // content creator
   RegisterContentCreatorBody,

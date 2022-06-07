@@ -4,9 +4,10 @@ import {
   FormControlLabel,
   FormHelperText,
 } from '@material-ui/core';
+import { Directive } from '@shared/models/Directive';
 import { ipcRenderer } from 'electron';
 import * as React from 'react';
-import { GuardoniConfig, Directive } from '../../guardoni/types';
+import { GuardoniConfig } from '../../guardoni/types';
 import { EVENTS } from '../models/events';
 
 interface FromCSVFileTabProps {

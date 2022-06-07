@@ -3,6 +3,7 @@
   "headless": false,
   "verbose": false,
   "loadFor": 3000,
+  "basePath": "./",
   "yt": {
     "name": "youtube",
     "backend": "http://localhost:9000/api",

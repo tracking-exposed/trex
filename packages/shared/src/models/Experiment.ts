@@ -1,30 +1,23 @@
 import * as t from 'io-ts';
 import { nonEmptyArray } from 'io-ts-types';
-
-export const ExperimentLink = t.strict(
-  {
-    title: t.union([t.string, t.undefined]),
-    urltag: t.string,
-    watchFor: t.union([t.string, t.number, t.null]),
-    url: t.string,
-  },
-  'ExperimentLink'
-);
-export type ExperimentLink = t.TypeOf<typeof ExperimentLink>;
-
-export const GetDirectiveOutput = nonEmptyArray(t.any, 'GetDirectiveOutput');
-export type GetDirectiveOutput = t.TypeOf<typeof GetDirectiveOutput>;
+import { Directive } from './Directive';
 
 export const GuardoniExperiment = t.strict(
   {
     experimentId: t.string,
     when: t.string,
     directiveType: t.string,
-    links: t.array(ExperimentLink),
+    links: t.array(Directive),
   },
   'GuardoniExperiment'
 );
 export type GuardoniExperiment = t.TypeOf<typeof GuardoniExperiment>;
+
+export const GetDirectiveOutput = nonEmptyArray(
+  GuardoniExperiment,
+  'GetDirectiveOutput'
+);
+export type GetDirectiveOutput = t.TypeOf<typeof GetDirectiveOutput>;
 
 export const ConcludeGuardoniExperimentOutput = t.type(
   {
