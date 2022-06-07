@@ -21,6 +21,7 @@ import * as React from 'react';
 import { RouteProps, useHistory } from 'react-router';
 import { PlatformConfig } from '../../../guardoni/types';
 import { EVENTS } from '../../models/events';
+import { OpenURLDirective } from '@shared/models/Directive';
 
 const useStyle = makeStyles((theme) => ({
   directiveRow: {
@@ -132,7 +133,7 @@ export const ExperimentList: React.FC<ExperimentListProps> = ({
                 URLs
               </Typography>
               <List className={classes.directiveLinkList}>
-                {d.links.map((l) => (
+                {d.links.filter(OpenURLDirective.is).map((l) => (
                   <ListItem
                     className={classes.directiveLinkListItem}
                     key={l.url}
@@ -194,7 +195,7 @@ const ExperimentListRoute: React.FC<
   const experimentsWithTags = React.useMemo(
     () =>
       experiments.reduce<GuardoniExperimentWithTags[]>((acc, e) => {
-        const { tags, time } = e.links.reduce(
+        const { tags, time } = e.links.filter(OpenURLDirective.is).reduce(
           (accL, l) => {
             const time = t.number.is(l.watchFor)
               ? l.watchFor

@@ -9,7 +9,7 @@ import { ipcRenderer } from 'electron';
 import * as React from 'react';
 import { EVENTS } from '../models/events';
 import { GuardoniConfig } from '../../guardoni/types';
-import { ExperimentLink } from '@shared/models/Experiment';
+import { OpenURLDirective } from '@shared/models/Directive';
 
 interface FromCSVFileTabProps {
   config: GuardoniConfig;
@@ -20,8 +20,8 @@ interface URLState {
   newURL: string | undefined;
   newTitle: string | undefined;
   newURLTag: string | undefined;
-  newWatchFor: string | number | null;
-  urls: ExperimentLink[];
+  newWatchFor: string | number | undefined;
+  urls: OpenURLDirective[];
 }
 
 export const FromURLsTab: React.FC<FromCSVFileTabProps> = ({
@@ -33,7 +33,7 @@ export const FromURLsTab: React.FC<FromCSVFileTabProps> = ({
       newURL: undefined,
       newTitle: undefined,
       newURLTag: undefined,
-      newWatchFor: null,
+      newWatchFor: undefined,
       urls: [],
     });
 
@@ -54,7 +54,10 @@ export const FromURLsTab: React.FC<FromCSVFileTabProps> = ({
       onSubmit(args[0]);
     };
 
-    ipcRenderer.on(EVENTS.CREATE_EXPERIMENT_EVENT.value, createExperimentHandler);
+    ipcRenderer.on(
+      EVENTS.CREATE_EXPERIMENT_EVENT.value,
+      createExperimentHandler
+    );
 
     return () => {
       // remove the listener when component is unmount
@@ -152,12 +155,14 @@ export const FromURLsTab: React.FC<FromCSVFileTabProps> = ({
                 newURL: undefined,
                 newTitle: undefined,
                 newURLTag: undefined,
-                newWatchFor: null,
+                newWatchFor: undefined,
                 urls: urls.concat({
+                  type: 'openURL',
                   url: newURL,
                   title: newTitle,
                   urltag: newURLTag,
                   watchFor: newWatchFor,
+                  loadFor: undefined,
                 }),
               });
             }

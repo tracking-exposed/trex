@@ -1,3 +1,6 @@
+import { OpenURLDirective } from '@shared/models/Directive';
+import { DirectiveHooks } from '@shared/providers/puppeteer/DirectiveHook';
+import { formatDateTime } from '@shared/utils/date.utils';
 import differenceInSeconds from 'date-fns/differenceInSeconds';
 import subSeconds from 'date-fns/subSeconds';
 import D from 'debug';
@@ -7,8 +10,7 @@ import nconf from 'nconf';
 import path from 'path';
 import * as puppeteer from 'puppeteer-core';
 import url from 'url';
-import { GuardoniProfile } from './types';
-import { formatDateTime } from '@shared/utils/date.utils';
+import { GuardoniProfile } from '../types';
 
 const debug = D('guardoni:youtube');
 const logreqst = D('guardoni:requests');
@@ -277,9 +279,9 @@ async function getYTstatus(page: puppeteer.Page): Promise<{
 
 async function interactWithYT(
   page: puppeteer.Page,
-  directive: any,
+  directive: OpenURLDirective,
   wantedState: string
-): Promise<void> {
+): Promise<any> {
   const DEFAULT_MAX_TIME = 1000 * 60 * 10; // 10 minutes
   // const DEFAULT_WATCH_TIME = 9000;
   const PERIODIC_CHECK_MS = 3000;
@@ -357,7 +359,8 @@ async function interactWithYT(
       specialwatch,
       'milliseconds'
     );
-    await page.waitForTimeout(specialwatch);
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
+    await page.waitForTimeout(specialwatch as any);
     debug('Finished special watchining time of:', specialwatch, 'milliseconds');
   } else {
     // eslint-disable-next-line no-console
@@ -366,33 +369,39 @@ async function interactWithYT(
   }
 }
 
-interface DomainSpecific {
-  beforeLoad: (page: puppeteer.Page, profile: GuardoniProfile) => Promise<void>;
-  beforeWait: (page: puppeteer.Page, profile: GuardoniProfile) => Promise<void>;
-  afterWait: (page: puppeteer.Page, directive: any) => Promise<void>;
-  beforeDirectives: (
-    page: puppeteer.Page,
-    profile: GuardoniProfile
-  ) => Promise<void>;
-  completed: () => Promise<string | null>;
-  interactWithYT: (
-    page: puppeteer.Page,
-    directive: any,
-    wantedState: string
-  ) => Promise<void>;
-  getYTstatus: (page: puppeteer.Page) => Promise<{ name: string; player: any }>;
-  DOMAIN_NAME: 'youtube.com';
+type YTHooks = DirectiveHooks<
+  'youtube.com',
+  {
+    interactWithYT: (
+      page: puppeteer.Page,
+      directive: OpenURLDirective,
+      opts: string
+    ) => Promise<any>;
+    getYTstatus: (
+      page: puppeteer.Page,
+      directive: OpenURLDirective
+    ) => Promise<{ name: string; player: any }>;
+  }
+>;
+
+interface YTHooksContext {
+  profile: GuardoniProfile;
 }
 
-const domainSpecific: DomainSpecific = {
-  beforeDirectives,
-  beforeLoad,
-  beforeWait,
-  afterWait,
-  completed,
-  getYTstatus,
-  interactWithYT,
-  DOMAIN_NAME: 'youtube.com',
+export type GetYTHooks = (ctx: YTHooksContext) => YTHooks;
+export const GetYTHooks: GetYTHooks = (ctx) => {
+  return {
+    openURL: {
+      beforeDirectives: (p) => beforeDirectives(p, ctx.profile),
+      beforeLoad,
+      beforeWait,
+      afterWait,
+      completed,
+    },
+    customs: {
+      getYTstatus,
+      interactWithYT,
+    },
+    DOMAIN_NAME: 'youtube.com' as const,
+  };
 };
-
-export default domainSpecific;

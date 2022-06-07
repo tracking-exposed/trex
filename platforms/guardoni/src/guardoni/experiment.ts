@@ -1,27 +1,25 @@
 import { AppError, toAppError } from '@shared/errors/AppError';
 import { toValidationError } from '@shared/errors/ValidationError';
 import {
+  ComparisonDirectiveType,
+  Directive,
+  DirectiveType,
+  OpenURLDirectiveType,
   PostDirectiveResponse,
   PostDirectiveSuccessResponse,
+  ScrollForDirectiveType,
 } from '@shared/models/Directive';
-import { ComparisonDirectiveType } from '@yttrex/shared/models/Directive';
-import {
-  SearchDirective,
-  SearchDirectiveType,
-} from '@tktrex/shared/models/directive/SearchDirective';
 import * as E from 'fp-ts/lib/Either';
 import { pipe } from 'fp-ts/lib/function';
+import * as NEA from 'fp-ts/lib/NonEmptyArray';
 import { NonEmptyArray } from 'fp-ts/lib/NonEmptyArray';
 import * as TE from 'fp-ts/lib/TaskEither';
 import * as fs from 'fs';
+import * as t from 'io-ts';
 import { NonEmptyString } from 'io-ts-types/lib/NonEmptyString';
 import { failure, PathReporter } from 'io-ts/lib/PathReporter';
 import path from 'path';
-// import pluginStealth from "puppeteer-extra-plugin-stealth";
 import {
-  Directive,
-  DirectiveKeysMap,
-  DirectiveType,
   ExperimentInfo,
   GuardoniContext,
   GuardoniProfile,
@@ -82,10 +80,24 @@ export const readCSVAndParse =
 
             return TE.right({ records, info });
           }),
-          TE.chainFirst(({ records }) =>
+          TE.chain(({ records }) =>
             pipe(
-              records,
-              DirectiveKeysMap.props[directiveType].decode,
+              t.array(Directive).decode(
+                records.map((r: any) => {
+                  if (r.type) {
+                    if (r.type === ScrollForDirectiveType.value) {
+                      return {
+                        ...r,
+                        deltaY: +r.deltaY,
+                        total: +r.total,
+                        interval: r.interval ? +r.interval : undefined,
+                      };
+                    }
+                  }
+
+                  return { ...r, type: OpenURLDirectiveType.value };
+                })
+              ),
               TE.fromEither,
               TE.mapLeft((e) => {
                 return new AppError(
@@ -100,9 +112,9 @@ export const readCSVAndParse =
               })
             )
           ),
-          TE.map((csvContent) => {
-            logger.debug('CSV decoded content %O', csvContent.records);
-            return csvContent.records as NonEmptyArray<Directive>;
+          TE.map((records) => {
+            logger.debug('CSV decoded content %O', records);
+            return records as NonEmptyArray<Directive>;
           })
         )
       )
@@ -143,20 +155,27 @@ export const getDirective =
         },
       }),
       TE.map((response) => {
-        const directiveType = SearchDirective.is(response[0])
-          ? SearchDirectiveType.value
-          : ComparisonDirectiveType.value;
+        ctx.logger.warn('Response %O', response);
+        const directiveType = ComparisonDirectiveType.value;
 
-        const data = response.map((d) => {
-          if (SearchDirective.is(d)) {
-            const { videoURL, title } = d;
-            return {
-              title,
-              url: videoURL,
-            };
-          }
-          return d;
-        }) as NonEmptyArray<Directive>;
+        const data = pipe(
+          response,
+          NEA.map((d): Directive => {
+            // if (CommonDirectiveTK.is(d)) {
+            //   const { videoURL, title, ...rest } = d;
+            //   const dd: CommonDirective = {
+            //     ...rest,
+            //     title,
+            //     url: videoURL,
+            //     watchFor: 'end',
+            //     urltag: undefined,
+            //     loadFor: undefined,
+            //   };
+            //   return dd;
+            // }
+            return d;
+          })
+        ) as NonEmptyArray<Directive>;
 
         ctx.logger.debug(`Data for experiment (%s) %O`, experimentId, data);
 
@@ -174,10 +193,7 @@ export const createExperimentInAPI =
     return pipe(
       API.v3.Public.PostDirective({
         Params: { directiveType },
-        Body:
-          directiveType === 'comparison'
-            ? { parsedCSV: parsedCSV as any }
-            : parsedCSV,
+        Body: parsedCSV,
         Headers: {
           'Content-Type': 'application/json; charset=utf-8',
         },

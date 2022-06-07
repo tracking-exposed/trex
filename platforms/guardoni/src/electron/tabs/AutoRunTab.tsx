@@ -7,6 +7,7 @@ import {
   makeStyles,
   Typography,
 } from '@material-ui/core';
+import { OpenURLDirective } from '@shared/models/Directive';
 import { GuardoniExperiment } from '@shared/models/Experiment';
 import { formatDate } from '@shared/utils/date.utils';
 import { ipcRenderer } from 'electron';
@@ -62,12 +63,15 @@ export const AutoRunTab: React.FC<FromCSVFileTabProps> = ({ onSubmit }) => {
             </Typography>
             <Box>
               <List className={classes.directiveLinkList}>
-                {d.links.map((l) => (
-                  <ListItem key={l.url}>
+                {d.links.map((l, i) => (
+                  <ListItem key={i}>
                     <Typography variant="subtitle1" color="primary">
-                      {l.urltag} ({l.watchFor ?? 'end'}):
+                      {OpenURLDirective.is(l)
+                        ? `${l.urltag} ({l.watchFor ?? 'end'})`
+                        : l.type}
+                      :
                     </Typography>{' '}
-                    <Typography variant="body2">{l.url}</Typography>
+                    {/* <Typography variant="body2">{l.url}</Typography> */}
                   </ListItem>
                 ))}
               </List>
