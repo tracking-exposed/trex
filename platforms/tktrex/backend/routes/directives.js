@@ -109,6 +109,8 @@ async function getPublic(req) {
 
   return {
     json: publicDirectives,
+    total: publicDirectives.length,
+    content: publicDirectives,
   };
 }
 
