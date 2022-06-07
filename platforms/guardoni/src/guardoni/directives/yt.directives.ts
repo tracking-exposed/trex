@@ -12,6 +12,7 @@ import * as puppeteer from 'puppeteer-core';
 import url from 'url';
 import { GuardoniProfile } from '../types';
 
+
 const debug = D('guardoni:youtube');
 const logreqst = D('guardoni:requests');
 const screendebug = D('guardoni:screenshots');
@@ -359,8 +360,10 @@ async function interactWithYT(
       specialwatch,
       'milliseconds'
     );
+
     // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
     await page.waitForTimeout(specialwatch as any);
+
     debug('Finished special watchining time of:', specialwatch, 'milliseconds');
   } else {
     // eslint-disable-next-line no-console
@@ -369,14 +372,17 @@ async function interactWithYT(
   }
 }
 
+
 type YTHooks = DirectiveHooks<
   'youtube.com',
   {
     interactWithYT: (
+
       page: puppeteer.Page,
       directive: OpenURLDirective,
       opts: string
     ) => Promise<any>;
+
     getYTstatus: (
       page: puppeteer.Page,
       directive: OpenURLDirective
@@ -403,5 +409,6 @@ export const GetYTHooks: GetYTHooks = (ctx) => {
       interactWithYT,
     },
     DOMAIN_NAME: 'youtube.com' as const,
+
   };
 };
