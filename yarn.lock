@@ -15380,6 +15380,7 @@ __metadata:
     node-polyfill-webpack-plugin: ^1.1.4
     pkg: ^5.7.0
     prettier: ^2.6.2
+    puppeteer: ^13.7.0
     puppeteer-core: ^13.7.0
     puppeteer-extra: ^3.2.3
     puppeteer-extra-plugin-stealth: ^2.9.0
@@ -27678,26 +27679,6 @@ __metadata:
   checksum: da62c4acac565902f0624b123eed6dd3509bc9a8d30c06e017104bedcf5d35810da8ff72864400ad19c5c7806fc0a8323c68baf3e326af7cb7d969f846100d71
   languageName: node
   linkType: hard
-
-"tktrex-guardoni@workspace:platforms/tktrex/methodology":
-  version: 0.0.0-use.local
-  resolution: "tktrex-guardoni@workspace:platforms/tktrex/methodology"
-  dependencies:
-    csv-parse: ^4.16.3
-    debug: ^4.3.4
-    eslint: ^8.16.0
-    lodash: ^4.17.21
-    moment: ^2.29.2
-    nconf: ^0.11.3
-    node-fetch: ^2.6.7
-    pkg: ^5.7.0
-    puppeteer: ^13.7.0
-    puppeteer-extra: ^3.2.3
-    puppeteer-extra-plugin-stealth: ^2.9.0
-  bin:
-    tktrex-guardoni: ./bin/guardoni0-base.js
-  languageName: unknown
-  linkType: soft
 
 "tmp-promise@npm:^3.0.2":
   version: 3.0.3
