@@ -7,7 +7,7 @@
     "build": "tsc -b",
     "test": "jest",
     "type-check": "tsc",
-    "lint": "eslint ./bin ./lib ./models ./parsers ./routes"
+    "lint": "eslint ./src"
   },
   "author": "Claudio Agosti <claudio@tracking.exposed> and https://github.com/tracking-exposed/yttrex/graphs/contributors",
   "license": "AGPL-3.0",
