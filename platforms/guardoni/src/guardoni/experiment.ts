@@ -11,7 +11,7 @@ import {
 } from '@shared/models/Directive';
 import * as E from 'fp-ts/lib/Either';
 import { pipe } from 'fp-ts/lib/function';
-import * as NEA from 'fp-ts/lib/NonEmptyArray';
+// import * as NEA from 'fp-ts/lib/NonEmptyArray';
 import { NonEmptyArray } from 'fp-ts/lib/NonEmptyArray';
 import * as TE from 'fp-ts/lib/TaskEither';
 import * as fs from 'fs';
@@ -85,17 +85,30 @@ export const readCSVAndParse =
               t.array(Directive).decode(
                 records.map((r: any) => {
                   if (r.type) {
-                    if (r.type === ScrollForDirectiveType.value) {
-                      return {
-                        ...r,
-                        deltaY: +r.deltaY,
-                        total: +r.total,
-                        interval: r.interval ? +r.interval : undefined,
-                      };
+                    switch (r.type) {
+                      case ScrollForDirectiveType.value: {
+                        return {
+                          ...r,
+                          incrementScrollByPX: +r.incrementScrollByPX,
+                          totalScroll: +r.totalScroll,
+                          interval: r.interval ? +r.interval : undefined,
+                        };
+                      }
                     }
                   }
 
-                  return { ...r, type: OpenURLDirectiveType.value };
+                  return {
+                    ...r,
+                    loadFor:
+                      r.loadFor === ''
+                        ? undefined
+                        : r.loadFor,
+                    watchFor:
+                      r.watchFor === ''
+                        ? undefined
+                        : r.watchFor,
+                    type: OpenURLDirectiveType.value,
+                  };
                 })
               ),
               TE.fromEither,
@@ -158,26 +171,28 @@ export const getDirective =
         ctx.logger.warn('Response %O', response);
         const directiveType = ComparisonDirectiveType.value;
 
-        const data = pipe(
-          response,
-          NEA.map((d): Directive => {
-            // if (CommonDirectiveTK.is(d)) {
-            //   const { videoURL, title, ...rest } = d;
-            //   const dd: CommonDirective = {
-            //     ...rest,
-            //     title,
-            //     url: videoURL,
-            //     watchFor: 'end',
-            //     urltag: undefined,
-            //     loadFor: undefined,
-            //   };
-            //   return dd;
-            // }
-            return d;
-          })
-        ) as NonEmptyArray<Directive>;
+        // const data = pipe(
+        //   NEA.fromArray(response),
+        //   NEA.map((d): Directive => {
+        //     // if (CommonDirectiveTK.is(d)) {
+        //     //   const { videoURL, title, ...rest } = d;
+        //     //   const dd: CommonDirective = {
+        //     //     ...rest,
+        //     //     title,
+        //     //     url: videoURL,
+        //     //     watchFor: 'end',
+        //     //     urltag: undefined,
+        //     //     loadFor: undefined,
+        //     //   };
+        //     //   return dd;
+        //     // }
+        //     return d;
+        //   })
+        // ) as NonEmptyArray<Directive>;
 
-        ctx.logger.debug(`Data for experiment (%s) %O`, experimentId, data);
+        ctx.logger.debug(`Data for experiment (%s) %O`, experimentId, response);
+
+        const data = response as any[] as NonEmptyArray<Directive>;
 
         return { type: directiveType, data };
       })

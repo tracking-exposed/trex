@@ -63,7 +63,7 @@ export const AutoRunTab: React.FC<FromCSVFileTabProps> = ({ onSubmit }) => {
             </Typography>
             <Box>
               <List className={classes.directiveLinkList}>
-                {d.links.map((l, i) => (
+                {d.directives.map((l, i) => (
                   <ListItem key={i}>
                     <Typography variant="subtitle1" color="primary">
                       {OpenURLDirective.is(l)

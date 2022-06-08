@@ -10,7 +10,7 @@ export const SearchDirective = t.strict(
   {
     title: t.string,
     videoURL: t.string,
-    url: t.string
+    url: t.string,
   },
   'SearchDirective',
 );

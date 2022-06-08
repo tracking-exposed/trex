@@ -19,13 +19,13 @@ async function pickDirective(experimentId) {
 }
 
                                                                         
-async function registerDirective(links, directiveType) {                
-    debug("registering directived %j %s", links, directiveType);
+async function registerDirective(directives, directiveType) {                
+    debug("registering directived %j %s", directives, directiveType);
     /* this API is called by guardoni when --csv is used,               
        the API is POST localhost:9000/api/v3/directives/comparison */   
     const experimentId = utils.hash({                                   
         type: directiveType,                                            
-        links,                                                          
+        directives,                                                          
     });                                                                 
     const mongoc = await mongo3.clientConnect({concurrency: 1});        
     const exist = await mongo3.readOne(mongoc,                          
@@ -49,7 +49,7 @@ async function registerDirective(links, directiveType) {
         nconf.get('schema').directives, {                               
         when: new Date(),                                               
         directiveType,                                                  
-        links,                                                          
+        directives,                                                          
         experimentId,                                                   
     })                                                                  
     await mongoc.close();                                               

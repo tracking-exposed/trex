@@ -85,7 +85,7 @@ export const operateBrowser =
   (
     page: puppeteer.Page,
     directives: Directive[]
-  ): TE.TaskEither<AppError, string | null> => {
+  ): TE.TaskEither<AppError, string> => {
     return pipe(
       TE.tryCatch(
         () => ctx.hooks.openURL.beforeDirectives(page),
@@ -109,7 +109,10 @@ export const operateBrowser =
           return undefined;
         }, toAppError)
       ),
-      TE.map((results) => results[0])
+      TE.map((results) => {
+        ctx.logger.debug(`Operate browser results %O`, results);
+        return results[0];
+      })
     );
   };
 
@@ -122,7 +125,7 @@ export interface PuppeteerProvider {
   operateBrowser: (
     page: puppeteer.Page,
     directive: Directive[]
-  ) => TE.TaskEither<AppError, any>;
+  ) => TE.TaskEither<AppError, string>;
 }
 
 export type GetPuppeteer = (ctx: PuppeteerProviderContext) => PuppeteerProvider;

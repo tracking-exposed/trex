@@ -38,7 +38,7 @@ export const ScrollForDirectiveType = t.literal('scroll');
 export const ScrollForDirective = t.strict(
   {
     type: ScrollForDirectiveType,
-    incrementScrollBy: t.number,
+    incrementScrollByPX: t.number,
     totalScroll: t.number,
     interval: t.union([t.number, t.undefined]),
   },
@@ -47,6 +47,7 @@ export const ScrollForDirective = t.strict(
 export type ScrollForDirective = t.TypeOf<typeof ScrollForDirective>;
 
 export const CustomDirectiveType = t.literal('custom');
+export type CustomDirectiveType = t.TypeOf<typeof CustomDirectiveType>;
 
 export const CustomDirective = t.strict(
   {
@@ -56,7 +57,7 @@ export const CustomDirective = t.strict(
   'CustomDirective'
 );
 export interface CustomDirective {
-  type: 'CUSTOM';
+  type: CustomDirectiveType;
   handler: (page: puppeteer.Page, directive: CustomDirective) => Promise<any>;
 }
 
@@ -83,12 +84,12 @@ export const OpenURLDirective = t.strict(
     type: t.union([OpenURLDirectiveType, t.undefined]),
     title: t.union([t.string, t.undefined]),
     url: t.string,
-    watchFor: t.union([t.string, t.number, t.undefined]),
     urltag: t.union([t.string, t.undefined]),
-    loadFor: t.union([t.number, t.undefined]),
+    watchFor: t.union([ t.number, t.string, t.undefined]),
+    loadFor: t.union([t.number, t.string, t.undefined]),
   },
 
-  'CommonDirective'
+  'OpenURLDirective'
 );
 
 export type OpenURLDirective = t.TypeOf<typeof OpenURLDirective>;

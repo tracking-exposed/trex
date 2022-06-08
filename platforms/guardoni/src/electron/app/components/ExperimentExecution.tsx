@@ -134,7 +134,7 @@ const ExperimentExecution: React.FC<ExperimentExecutionProps> = ({
             >
               <LinkIcon />
               <Typography variant="subtitle2">
-                - {experiment.links.length}
+                - {experiment.directives.length}
               </Typography>
             </Box>
           </Box>
