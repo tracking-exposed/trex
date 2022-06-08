@@ -12,7 +12,6 @@
     "docs",
     "extension",
     "packages/*",
-    "backend",
     "platforms/guardoni",
     "platforms/ycai/studio",
     "platforms/yttrex/*",
@@ -22,7 +21,7 @@
   "scripts": {
     "commit": "commit",
     "clean": "yarn workspaces foreach run clean",
-    "lint": "yarn workspaces foreach run lint",
+    "lint": "yarn workspaces foreach -v run lint",
     "type-check": "yarn workspaces foreach run tsc --noEmit",
     "build": "yarn workspaces foreach run build",
     "test": "jest",
