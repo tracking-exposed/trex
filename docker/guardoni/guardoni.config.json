@@ -5,12 +5,12 @@
   "loadFor": 3000,
   "yt": {
     "name": "youtube",
-    "backend": "http://localhost:9000/api",
+    "backend": "https://youtube.tracking.exposed/api",
     "extensionDir": "/guardoni/yttrex"
   },
   "tk": {
     "name": "tiktok",
-    "backend": "http://localhost:14000/api",
+    "backend": "https://tiktok.tracking.exposed/api",
     "extensionDir": "/guardoni/tktrex"
   },
   "chromePath": "/usr/bin/google-chrome"
