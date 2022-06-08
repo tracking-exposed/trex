@@ -64,7 +64,7 @@ jobs:
 
       - name: Test YT cli
         working-directory: ./platforms/guardoni
-        run: ./scripts/cli-yt-test.sh
+        run: ./scripts/cli-yt-test.mjs
 
       - name: Stop pm2 ecosystem
         run: yarn pm2 stop all

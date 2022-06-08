@@ -12,4 +12,4 @@ cd ./dist
 mv guardoni-win.exe guardoni-cli-$version.exe
 mv guardoni-macos guardoni-cli-$version-macos
 mv guardoni-linux guardoni-cli-$version-linux
-chmod +x *-cli-*
+chmod +x ./*-cli-*
