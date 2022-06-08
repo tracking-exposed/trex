@@ -221,7 +221,7 @@ export const guardoniExecution =
     directiveType: DirectiveType,
     directives: NonEmptyArray<Directive>,
     page: puppeteer.Page
-  ): TE.TaskEither<AppError, string | null> => {
+  ): TE.TaskEither<AppError, string> => {
     const start = new Date();
 
     ctx.logger.debug(

@@ -1,5 +1,4 @@
 import * as t from 'io-ts';
-import { nonEmptyArray } from 'io-ts-types';
 import { Endpoint } from 'ts-endpoint';
 import {
   CreateDirectiveBody,
@@ -74,7 +73,7 @@ const GetDirective = Endpoint({
       experimentId: t.string,
     }),
   },
-  Output: nonEmptyArray(Directive),
+  Output: t.array(Directive),
 });
 
 const GetPublicDirectives = Endpoint({

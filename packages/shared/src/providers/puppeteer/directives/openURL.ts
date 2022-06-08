@@ -14,6 +14,14 @@ interface OpenURLOptions {
   loadFor: number;
 }
 
+/**
+ * Directive with type `openURL`
+ *
+ * This is the default directive, which navigates to the given url and
+ * performs some domain specific hooks.
+ *
+ */
+
 export const openURL =
   (ctx: OpenURLContext) =>
   (
@@ -50,14 +58,20 @@ export const openURL =
       try {
         await page.goto(directive.url, {
           waitUntil: 'networkidle0',
-          timeout: 5000,
+          timeout: 10000,
         });
       } catch (e) {
-        ctx.logger.error('Error during goto %O', e);
-        await page.goto(directive.url, {
-          waitUntil: ['domcontentloaded'],
-          timeout: 5000,
-        });
+        ctx.logger.error('Error during goto %O (networkidle0)', e);
+
+        try {
+          await page.goto(directive.url, {
+            waitUntil: ['domcontentloaded'],
+            timeout: 5000,
+          });
+        } catch (e) {
+          ctx.logger.error('Error during goto %O (docontentloaded)', e);
+          throw e;
+        }
       }
 
       try {
@@ -76,7 +90,7 @@ export const openURL =
         loadFor
       );
 
-      await page.waitForTimeout(loadFor);
+      await page.waitForTimeout(typeof loadFor === 'string' ? parseInt(loadFor) : loadFor);
 
       try {
         // debugger;

@@ -50,13 +50,15 @@ async function post(req) {
   /* warning, this is different from YOUTUBE, it uses a list of
    * queries instead of a CSV format parsed. */
 
-  const data = req.body; // parsedCSV was the name from guardoni fmt
+  const directives = req.body; // parsedCSV was the name from guardoni fmt
 
-  const links = data;
+  debug(
+    'Registering directive %s (%d urls)',
+    directiveType,
+    _.size(directives)
+  );
 
-  debug('Registering directive %s (%d urls)', directiveType, _.size(links));
-
-  const feedback = await experlib.registerDirective(links, directiveType);
+  const feedback = await experlib.registerDirective(directives, directiveType);
   // this feedback is printed at terminal when --csv is used
   return { json: feedback };
 }
@@ -69,7 +71,7 @@ async function get(req) {
 
   debug('Directive %O', expinfo);
   // if(expinfo.directiveType === 'search')
-  const directives = expinfo.links;
+  const directives = expinfo.directives;
   debug(
     'search directive type %s produced %d',
     experimentId,
@@ -87,7 +89,6 @@ async function getPublic(req) {
   ];
 
   const filter = {
-    directiveType: 'comparison',
     experimentId: {
       $nin: blackList,
     },
