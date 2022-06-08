@@ -113,7 +113,9 @@ export const ExperimentList: React.FC<ExperimentListProps> = ({
                 }}
               >
                 <LinkIcon />
-                <Typography variant="subtitle2">- {d.links.length}</Typography>
+                <Typography variant="subtitle2">
+                  - {d.directives.length}
+                </Typography>
               </Box>
 
               <Typography
@@ -133,7 +135,7 @@ export const ExperimentList: React.FC<ExperimentListProps> = ({
                 URLs
               </Typography>
               <List className={classes.directiveLinkList}>
-                {d.links.filter(OpenURLDirective.is).map((l) => (
+                {d.directives.filter(OpenURLDirective.is).map((l) => (
                   <ListItem
                     className={classes.directiveLinkListItem}
                     key={l.url}
@@ -195,7 +197,7 @@ const ExperimentListRoute: React.FC<
   const experimentsWithTags = React.useMemo(
     () =>
       experiments.reduce<GuardoniExperimentWithTags[]>((acc, e) => {
-        const { tags, time } = e.links.filter(OpenURLDirective.is).reduce(
+        const { tags, time } = e.directives.filter(OpenURLDirective.is).reduce(
           (accL, l) => {
             const time = t.number.is(l.watchFor)
               ? l.watchFor

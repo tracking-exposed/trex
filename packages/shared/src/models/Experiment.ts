@@ -6,8 +6,7 @@ export const GuardoniExperiment = t.strict(
   {
     experimentId: t.string,
     when: t.string,
-    directiveType: t.string,
-    links: t.array(Directive),
+    directives: t.array(Directive),
   },
   'GuardoniExperiment'
 );

@@ -22,6 +22,13 @@ async function autoScroll(
   }, opts as any);
 }
 
+/**
+ * Directive with type `scroll`
+ *
+ * Scroll page with an increment of `incrementScrollBy` until it reaches `totalScroll`
+ *
+ */
+
 export const GetScrollFor =
   (ctx: DirectiveContext) =>
   (
@@ -39,7 +46,7 @@ export const GetScrollFor =
             void autoScroll(page, directive).then(() => {
               ctx.logger.debug(
                 'Scrolled by %d',
-                i * directive.incrementScrollBy
+                i * directive.incrementScrollByPX
               );
 
               if (directive.totalScroll < i * directive.incrementScrollByPX) {
