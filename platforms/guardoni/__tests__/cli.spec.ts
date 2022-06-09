@@ -6,7 +6,6 @@ import {
   PostDirectiveSuccessResponseArb,
 } from '@shared/arbitraries/Directive.arb';
 import * as tests from '@shared/test';
-import { SearchDirectiveArb } from '@tktrex/shared/arbitraries/SearchDirective.arb';
 import differenceInMilliseconds from 'date-fns/differenceInMilliseconds';
 import * as fs from 'fs';
 import * as path from 'path';
@@ -51,7 +50,7 @@ describe('CLI', () => {
     );
 
     const searchCSVContent = await csvStringifyTE(
-      tests.fc.sample(SearchDirectiveArb, 10),
+      tests.fc.sample(CommonDirectiveArb, 10),
       { header: true, encoding: 'utf-8' }
     )();
 
@@ -651,7 +650,7 @@ describe('CLI', () => {
       });
 
       test('fails when receive an error during experiment conclusion', async () => {
-        const data = tests.fc.sample(SearchDirectiveArb, 2).map((d) => ({
+        const data = tests.fc.sample(CommonDirectiveArb, 2).map((d) => ({
           ...d,
           loadFor: 1000,
           watchFor: '2s',
@@ -691,7 +690,7 @@ describe('CLI', () => {
       test('succeed when experimentId has valid "search" directive', async () => {
         // return directive
         axiosMock.request.mockResolvedValueOnce({
-          data: tests.fc.sample(SearchDirectiveArb, 2).map((d) => ({
+          data: tests.fc.sample(CommonDirectiveArb, 2).map((d) => ({
             ...d,
             loadFor: 1500,
             watchFor: '1s',
@@ -731,7 +730,7 @@ describe('CLI', () => {
       test('succeed when experimentId has valid "search" directives', async () => {
         // return directive
         axiosMock.request.mockResolvedValueOnce({
-          data: tests.fc.sample(SearchDirectiveArb, 2).map((d) => ({
+          data: tests.fc.sample(CommonDirectiveArb, 2).map((d) => ({
             ...d,
             loadFor: 1000,
             watchFor: '1s',

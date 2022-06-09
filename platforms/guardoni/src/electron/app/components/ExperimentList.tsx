@@ -205,7 +205,7 @@ const ExperimentListRoute: React.FC<
               ? 60000
               : 0;
             return {
-              tags: accL.tags.concat(l.urltag),
+              tags: accL.tags.concat(l.urltag ? [l.urltag] : []),
               time: accL.time + time,
             };
           },
