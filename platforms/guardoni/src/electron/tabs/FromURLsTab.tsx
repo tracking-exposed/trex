@@ -38,11 +38,7 @@ export const FromURLsTab: React.FC<FromCSVFileTabProps> = ({
     });
 
   const handleURLProcess = React.useCallback(() => {
-    ipcRenderer.send(
-      EVENTS.CREATE_EXPERIMENT_EVENT.value,
-      config,
-      urls.map((u) => ({ ...u, videoURL: u.url }))
-    );
+    ipcRenderer.send(EVENTS.CREATE_EXPERIMENT_EVENT.value, config, urls);
   }, [config, urls]);
 
   React.useEffect(() => {
