@@ -8,5 +8,5 @@ yarn clean
 yarn yt:ext build:guardoni
 yarn tk:ext build:guardoni
 
-yarn build
+yarn build:cli
 yarn pkg
