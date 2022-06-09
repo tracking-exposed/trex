@@ -83,33 +83,32 @@ export const readCSVAndParse =
           TE.chain(({ records }) =>
             pipe(
               t.array(Directive).decode(
-                records.map((r: any) => {
-                  if (r.type) {
-                    switch (r.type) {
-                      case ScrollForDirectiveType.value: {
-                        return {
-                          ...r,
-                          incrementScrollByPX: +r.incrementScrollByPX,
-                          totalScroll: +r.totalScroll,
-                          interval: r.interval ? +r.interval : undefined,
-                        };
-                      }
-                    }
+                records.reduce((acc: any[], r: any) => {
+                  if (r.incrementScrollByPX && r.totalScroll) {
+                    const {
+                      incrementScrollByPX,
+                      totalScroll,
+                      interval,
+                      ...rest
+                    } = r;
+                    return acc.concat([
+                      rest,
+                      {
+                        type: ScrollForDirectiveType.value,
+                        incrementScrollByPX: +incrementScrollByPX,
+                        totalScroll: +totalScroll,
+                        interval: interval ? +r.interval : undefined,
+                      },
+                    ]);
                   }
 
-                  return {
+                  return acc.concat({
                     ...r,
-                    loadFor:
-                      r.loadFor === ''
-                        ? undefined
-                        : r.loadFor,
-                    watchFor:
-                      r.watchFor === ''
-                        ? undefined
-                        : r.watchFor,
+                    loadFor: r.loadFor === '' ? undefined : r.loadFor,
+                    watchFor: r.watchFor === '' ? undefined : r.watchFor,
                     type: OpenURLDirectiveType.value,
-                  };
-                })
+                  });
+                }, [] as any[])
               ),
               TE.fromEither,
               TE.mapLeft((e) => {
