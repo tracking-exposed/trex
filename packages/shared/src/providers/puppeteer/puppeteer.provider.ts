@@ -94,7 +94,7 @@ export const operateBrowser =
       TE.chain(() =>
         TE.sequenceSeqArray(directives.map((d) => operateTab(ctx)(page, d)))
       ),
-      TE.chainFirst(() =>
+      TE.chain(() =>
         TE.tryCatch(
           () => ctx.hooks.openURL.completed(),
           (e) => new AppError('Completed', (e as any).message, [])
@@ -108,11 +108,7 @@ export const operateBrowser =
           }
           return undefined;
         }, toAppError)
-      ),
-      TE.map((results) => {
-        ctx.logger.debug(`Operate browser results %O`, results);
-        return results[0];
-      })
+      )
     );
   };
 
