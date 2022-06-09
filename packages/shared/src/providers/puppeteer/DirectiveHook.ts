@@ -25,7 +25,7 @@ export interface DirectiveHooks<
       page: puppeteer.Page,
       directive: OpenURLDirective
     ) => Promise<void>;
-    completed: () => Promise<string | null>;
+    completed: () => Promise<string>;
   };
   customs?: CS;
   DOMAIN_NAME: DO;
