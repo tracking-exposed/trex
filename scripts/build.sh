@@ -19,5 +19,5 @@ yarn yt:ext build
 yarn tk:ext build
 
 # build guardoni
-yarn guardoni build
+yarn guardoni build:cli
 # yarn guardoni pkg
