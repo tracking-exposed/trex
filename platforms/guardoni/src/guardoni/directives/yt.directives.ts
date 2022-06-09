@@ -216,8 +216,8 @@ async function beforeLoad(page: puppeteer.Page, directive: any): Promise<void> {
   return Promise.resolve();
 }
 
-async function completed(): Promise<string | null> {
-  return globalConfig.publicKeySpot;
+async function completed(): Promise<string> {
+  return globalConfig.publicKeySpot as string;
 }
 
 async function beforeWait(page: puppeteer.Page, directive: any): Promise<void> {
