@@ -49,8 +49,9 @@ jobs:
           yarn yt:ext dist:guardoni
           yarn tk:ext dist
           yarn tk:ext dist:guardoni
-          yarn guardoni build
+          yarn guardoni build:cli
           yarn guardoni pkg
+          yarn guardoni build:app
           yarn ycai build
 
   guardoni_build:
