@@ -110,10 +110,11 @@ const config = {
     /** @type {import('docusaurus-theme-openapi').ThemeConfig} */
     ({
       navbar: {
-        title: `@tktrex v${packageJson.version}`,
+        // title: `@docs v${packageJson.version}`,
         logo: {
           alt: '@trex Logo',
-          src: 'img/yttrex128.png',
+          src: 'img/trexlogo_black.svg',
+          srcDark: 'img/trexlogo.svg',
         },
         items: [
           {
@@ -148,6 +149,12 @@ const config = {
             href: 'https://github.com/facebook/docusaurus',
             label: 'GitHub',
             position: 'right',
+          },
+          {
+            type: 'docsVersion',
+            position: 'right',
+            to: '/docs',
+            label: `v${packageJson.version}`,
           },
         ],
       },
