@@ -25,7 +25,7 @@ const AddEvents = DocumentedEndpoint({
       'X-Tktrex-PublicKey': t.string,
       'X-Tktrex-Signature': t.string,
     }),
-    Body: t.array(t.union([apiModel.Events.ContributionEvent, t.any])),
+    Body: t.array(apiModel.Events.ContributionEvent),
   },
   Output: t.any,
   title: 'Add contribution events',

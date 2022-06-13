@@ -14,6 +14,7 @@ import * as S from 'fp-ts/lib/string';
 import { MinimalEndpoint, MinimalEndpointInstance } from '../../endpoints';
 import { getOpenAPISchema, IOTOpenDocSchema } from './IOTSToOpenAPISchema';
 import { swaggerLogger } from './utils';
+import * as t from 'io-ts';
 
 interface ServerConfig {
   protocol: 'http' | 'https';
@@ -298,9 +299,16 @@ export const generateDoc = (
   const { paths, schemas } = getPaths(config.endpoints, getDocumentation);
 
   const modelSchema = pipe(
-    config.models,
+    {
+      any: t.any,
+      ...config.models,
+    },
     R.reduceWithIndex(S.Ord)(
       {
+        any: {
+          type: 'any',
+          description: 'Any value',
+        },
         string: {
           type: 'string',
           description: 'A string value',

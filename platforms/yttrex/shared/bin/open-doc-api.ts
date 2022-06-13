@@ -2,7 +2,6 @@ import sharedModels from '@shared/models';
 import * as contributorPersonalStats from '@shared/models/contributor/ContributorPersonalStats';
 import * as contributorModels from '@shared/models/contributor/ContributorPersonalSummary';
 import * as contributorPublicKey from '@shared/models/contributor/ContributorPublicKey';
-import * as directiveModels from '@shared/models/Directive';
 import * as swagger from '@shared/providers/swagger/swagger.provider.node';
 import * as path from 'path';
 import * as endpoints from '../src/endpoints';
@@ -15,7 +14,6 @@ const models = {
   ...contributorModels,
   ...contributorPersonalStats,
   ...sharedModels,
-  ...directiveModels,
   ...apiModels,
 };
 

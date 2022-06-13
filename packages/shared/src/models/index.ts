@@ -29,7 +29,7 @@ import {
   GetPublicDirectivesOutput,
   GetExperimentListOutput,
 } from './Experiment';
-import { PostDirectiveResponse } from './Directive';
+import * as Directive from './Directive';
 
 export default {
   // common
@@ -42,7 +42,6 @@ export default {
   AddEventsBody,
   // guardoni
   // guardoni experiments (to be moved)
-  PostDirectiveResponse,
   GuardoniExperiment,
   ConcludeGuardoniExperimentOutput,
   GetDirectiveOutput,
@@ -70,4 +69,5 @@ export default {
   CreatorStatContent,
   ChannelRelated,
   GetRelatedChannelsOutput,
+  ...Directive
 };
