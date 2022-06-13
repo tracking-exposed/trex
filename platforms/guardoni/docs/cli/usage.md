@@ -47,7 +47,7 @@ Not enough non-option arguments: got 0, need at least 1
 
 By default, the CLI loads the content of `guardoni.config.json` when is present, but the specific keys can be overridden by arguments.
 
-```sh
+```bash
 ./guardoni-cli --basePath ~/.guardoni2 --verbose yt-list
 ```
 
@@ -78,8 +78,6 @@ since:
 ```
 
 ### List an experiment
-
-
 
 ```bash
 ./guardoni-cli yt-list
@@ -122,7 +120,7 @@ directiveType:   comparison
 execCount:       3
 profileName:     profile-test-99
 newProfile:      false
-when: 
+when:
 
 publicKey:       XXX-your-public-key-XXX
 

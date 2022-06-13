@@ -4,7 +4,7 @@ title: Packaging
 
 The `guardoni` tool can be packaged easily after has been properly [`built`](./build.md), by runnung:
 
-```sh
+```bash
 NODE_ENV=development yarn guardoni pkg
 ```
 

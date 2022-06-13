@@ -9,7 +9,7 @@ Download the proper executable from the [latest release](https://github.com/trac
 
 Then check the executable is properly working by running the command that opens the tool for free browsing:
 
-```sh
+```bash
 ./guardoni-cli yt-navigate
 ```
 

@@ -6,19 +6,20 @@ title: Build
 
 Building `guardoni` for development requires to build the extensions first. This can be done by running:
 
-```sh
-NODE_ENV=development yarn yt:ext build
-NODE_ENV=development yarn yt:ext build
+```bash
+export NODE_ENV=development
+yarn yt:ext build
+yarn tk:ext build
 ```
 
 Then guardoni can be built with:
 
-```sh
-NODE_ENV=development yarn guardoni build
+```bash
+yarn guardoni build
 ```
 
 When the build process is finished, the `CLI` can be run with `-c` option pointing to the `guardoni.config.json` located as `platforms/guardoni`:
 
-```sh
+```bash
 yarn guardoni cli --basePath ./ -c guardoni.config.json yt-navigate
 ```

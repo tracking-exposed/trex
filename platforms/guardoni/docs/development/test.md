@@ -10,7 +10,7 @@ We ensure the stability and the compatibility of `guardoni` with different strat
 
 To run tests only for guardoni:
 
-```sh
+```bash
 yarn guardoni test
 ```
 
@@ -20,7 +20,7 @@ Sometimes, during the development, we need to mimic a flow using the _CLI_ previ
 
 For this purpose there are two different scripts located at `platforms/guardoni/scripts` that performs the above flow for a specific platform:
 
-```sh
+```bash
 cd ./platforms/guardoni
 # run test for youtube platform
 ./scripts/cli-yt-test.sh

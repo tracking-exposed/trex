@@ -153,7 +153,7 @@ const config = {
           {
             type: 'docsVersion',
             position: 'right',
-            to: '/docs',
+            docsPluginId: 'guardoni-docs',
             label: `v${packageJson.version}`,
           },
         ],
