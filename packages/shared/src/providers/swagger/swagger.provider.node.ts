@@ -12,10 +12,12 @@ import * as fs from 'fs';
 import * as path from 'path';
 import { MinimalEndpointInstance } from '../../endpoints';
 import { generateDoc, DocConfig } from './swagger.provider';
+import { swaggerLogger } from './utils';
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const { validate } = require('@apidevtools/swagger-cli');
 
 const getDocumentation = (e: MinimalEndpointInstance): string => {
+  swaggerLogger.debug('Getting documentation for endpoint %O', e);
   const hasDocumentationMethod = (e as any).description !== undefined;
   if (hasDocumentationMethod) {
     if ((e as any).description.path) {
@@ -32,6 +34,8 @@ export const writeOpenDocTo = (
 ): void => {
   const openDocAPI = generateDoc(config, getDocumentation);
 
+  // swaggerLogger.debug('Open doc api %O', openDocAPI)
+
   fs.mkdirSync(to, { recursive: true });
   // this file is unused, but is needed to see what
   // comes from generateDoc
@@ -46,14 +50,14 @@ export const writeOpenDocTo = (
       { schema: false, spec: true },
       (err: any, api: any) => {
         if (err) {
-          // eslint-disable-next-line
-          console.log(JSON.stringify(err.details, null, 2));
+          const jsonError = err.toJSON();
+          swaggerLogger.error(`Error %s: %O`, jsonError.name, jsonError);
           throw err;
         }
-        fs.writeFileSync(
-          path.resolve(to, 'open-api.json'),
-          JSON.stringify(api, null, 2)
-        );
+
+        const openDocAPIJson = JSON.stringify(api, null, 2);
+        swaggerLogger.debug('Open doc api %O', openDocAPIJson);
+        fs.writeFileSync(path.resolve(to, 'open-api.json'), openDocAPIJson);
       }
     );
   } else {
