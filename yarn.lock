@@ -25739,7 +25739,7 @@ __metadata:
     ts-jest: ^27.1.5
     typescript: ^4.7.2
     webpack: ^5.73.0
-    zx: ^6.2.4
+    zx: ^6.2.5
   languageName: unknown
   linkType: soft
 
@@ -30559,9 +30559,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"zx@npm:^6.2.4":
-  version: 6.2.4
-  resolution: "zx@npm:6.2.4"
+"zx@npm:^6.2.5":
+  version: 6.2.5
+  resolution: "zx@npm:6.2.5"
   dependencies:
     "@types/fs-extra": ^9.0.13
     "@types/minimist": ^1.2.2
@@ -30579,6 +30579,6 @@ __metadata:
     yaml: ^2.1.1
   bin:
     zx: build/cli.js
-  checksum: 8c571ea452369e453057695f4f9c4e53d33653e6ccdf10c4af7c908340383ceae661cdf01cf7b12f106cdc7310cccb6d1983a84a293b74f364df26278b2ade94
+  checksum: 03374884ca4fb68fd80a1a692063e9d08d81208b4a3a8974106bd8090058c5800747fbd22ae96be58c8a98f40ef0642a3925de8d696b93b0fb5b8ece7d6f93e6
   languageName: node
   linkType: hard
