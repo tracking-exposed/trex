@@ -3,7 +3,13 @@
 set -ex
 # this script is invoked by npm run pkg, and simply should rename the executabled with the proper version name.
 
-pkg -c ./package.json --public -C GZip \
+# the `--public` option enables correct transpyling
+# of the function given to puppeteer's `page.evaluate`
+
+pkg -c ./package.json \
+  --debug \
+  --public \
+  -C GZip \
   ./bin/guardoni-cli.js
 
 version=$(grep version package.json | cut -b 15- | sed -es/\".*//)

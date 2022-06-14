@@ -1,7 +1,7 @@
 import { pipe } from 'fp-ts/lib/function';
 import * as TE from 'fp-ts/lib/TaskEither';
 import type * as puppeteer from 'puppeteer-core';
-import { PuppeteerExtra } from 'puppeteer-extra';
+import type { PuppeteerExtra } from 'puppeteer-extra';
 import { AppError, toAppError } from '../../errors/AppError';
 import { Logger } from '../../logger';
 import {
@@ -15,25 +15,6 @@ import {
 import { DirectiveHooks } from './DirectiveHook';
 import { openURL } from './directives/openURL';
 import { GetScrollFor } from './directives/scroll';
-
-require('puppeteer-extra-plugin-stealth/evasions/chrome.app');
-require('puppeteer-extra-plugin-stealth/evasions/chrome.csi');
-require('puppeteer-extra-plugin-stealth/evasions/chrome.loadTimes');
-require('puppeteer-extra-plugin-stealth/evasions/chrome.runtime');
-require('puppeteer-extra-plugin-stealth/evasions/defaultArgs');
-require('puppeteer-extra-plugin-stealth/evasions/iframe.contentWindow');
-require('puppeteer-extra-plugin-stealth/evasions/media.codecs');
-require('puppeteer-extra-plugin-stealth/evasions/navigator.hardwareConcurrency');
-require('puppeteer-extra-plugin-stealth/evasions/navigator.languages');
-require('puppeteer-extra-plugin-stealth/evasions/navigator.permissions');
-require('puppeteer-extra-plugin-stealth/evasions/navigator.plugins');
-require('puppeteer-extra-plugin-stealth/evasions/navigator.vendor');
-require('puppeteer-extra-plugin-stealth/evasions/navigator.webdriver');
-require('puppeteer-extra-plugin-stealth/evasions/sourceurl');
-require('puppeteer-extra-plugin-stealth/evasions/user-agent-override');
-require('puppeteer-extra-plugin-stealth/evasions/webgl.vendor');
-require('puppeteer-extra-plugin-stealth/evasions/window.outerdimensions');
-
 import StealthPlugin from 'puppeteer-extra-plugin-stealth';
 
 export type LaunchOptions = puppeteer.LaunchOptions &
@@ -57,6 +38,7 @@ export const launch =
   (opts: LaunchOptions): TE.TaskEither<AppError, puppeteer.Browser> => {
     return TE.tryCatch(async () => {
       ctx.logger.info('Launch puppeteer %O', opts);
+
       ctx.puppeteer.use(StealthPlugin());
       const browser = await ctx.puppeteer.launch(opts as any);
 

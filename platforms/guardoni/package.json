@@ -133,13 +133,12 @@
     "scripts": [
       "bin/guardoni-cli.js",
       "../../node_modules/puppeteer/lib/*.js",
-      "../../node_modules/puppeteer-extra-plugin-stealth/**/*.*"
+      "../../node_modules/puppeteer-extra-plugin-stealth/**/*"
     ],
     "assets": [
       "static/index.html",
       "config/default.json",
-      "package.json",
-      "../../node_modules/puppeteer-extra-plugin-stealth/**/*.*"
+      "package.json"
     ],
     "targets": [
       "node16-linux-x64",

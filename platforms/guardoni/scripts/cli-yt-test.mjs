@@ -4,7 +4,7 @@ import { $, os } from 'zx';
 import { normalizePlatform, getGuardoniCliPkgName } from  './utils.mjs';
 
 void (async function () {
-  
+
   const version = await $`node -p -e "require('./package.json').version"`;
   const platform = normalizePlatform(os.type());
   const cli = `./dist/${getGuardoniCliPkgName(
