@@ -9,7 +9,6 @@ const debuge = require('debug')('tktrex:parserv3:error');
 const overflowReport = require('debug')('tktrex:OVERFLOW');
 const nconf = require('nconf');
 const fs = require('fs');
-const { sleep } = require('@shared/utils/promise.utils');
 /* pchain is the utility modeuly for the parser chain */
 const pchain = require('./parserchain');
 
@@ -30,6 +29,13 @@ let nodatacounter = 0,
 let lastExecution = moment().subtract(backInTime, 'minutes').toISOString();
 let computedFrequency = 10;
 const stats = { currentamount: 0, current: null };
+
+async function sleep(ms) {
+  return new Promise((resolve) => {
+    setTimeout(resolve, ms);
+  });
+}
+
 
 async function pipeline(e) {
   try {

@@ -1,14 +1,15 @@
-const _ = require('lodash');
-const moment = require('moment');
+import { PersonalData } from '@tktrex/shared/models/personal';
+import _ from 'lodash';
+import moment from 'moment';
+import automo from '../lib/automo';
+import CSV from '../lib/CSV';
+import utils from '../lib/utils';
+import { flattenProfile, flattenSearch } from './search';
 const debug = require('debug')('routes:personal');
 
-const utils = require('../lib/utils');
-const automo = require('../lib/automo');
-const CSV = require('../lib/CSV');
-const flattenSearch = require('./search').flattenSearch;
-const flattenProfile = require('./search').flattenProfile;
+const CSV_MAX_SIZE = 9000;
 
-function pickFeedFields(metae) {
+function pickFeedFields(metae): any {
   return {
     authorName: metae.author?.name,
     authorUser: metae.author?.username,
@@ -26,7 +27,7 @@ function pickFeedFields(metae) {
   };
 }
 
-async function getPersonal(req) {
+async function getPersonal(req): Promise<any> {
   // personal API format is
   // /api/v1/personal/:publicKey/:what/:format
   const k = req.params.publicKey;
@@ -56,7 +57,7 @@ async function getPersonal(req) {
 
   try {
     let filter;
-    let retval = null;
+    let retval: any = null;
 
     if (what === 'summary') {
       filter = { type: { $in: ['following', 'foryou'] } };
@@ -75,7 +76,7 @@ async function getPersonal(req) {
         { amount, skip }
       );
       const metadata = _.map(avail.metadata, function (o) {
-        const smf = _.pick(o, ['id', 'query', 'savingTime']);
+        const smf: any = _.pick(o, ['id', 'query', 'savingTime']);
         smf.rejected = !!o.message?.length;
         smf.results = o.results?.length || 0;
         smf.sources = _.uniq(
@@ -129,7 +130,7 @@ async function getPersonal(req) {
   }
 }
 
-async function getPersonalCSV(req) {
+async function getPersonalCSV(req): Promise<any> {
   const CSV_MAX_SIZE = 9000;
   const k = req.params.publicKey;
   const type = req.params.what;
@@ -160,7 +161,7 @@ async function getPersonalCSV(req) {
   /* remind: search and profile have a different logic than
      foryou and following.
      this is why is a reduce instead of map */
-  let unrolledData = [];
+  let unrolledData: any[] = [];
   if (type === 'search') unrolledData = _.reduce(data, flattenSearch, []);
   else if (type === 'profile')
     unrolledData = _.reduce(data, flattenProfile, []);
@@ -228,8 +229,73 @@ async function removeEvidence(req) {
 };
 */
 
-module.exports = {
+const getPersonalByExperimentId = async (
+  req
+): Promise<{ json: PersonalData } | { headers: any; text: string }> => {
+  const experimentId = req.params.experimentId;
+  const publicKey = req.params.publicKey;
+  const format = req.params.format;
+
+  const supporter = await automo.getSupporterByPublicKey(publicKey);
+
+  const opts = { amount: 100, skip: 0 };
+  const htmls = await automo.getLastHTMLs(
+    {
+      publicKey: {
+        $eq: publicKey,
+      },
+      experimentId: {
+        $eq: experimentId,
+      },
+    },
+    opts.skip,
+    opts.amount
+  );
+
+  const htmlIds = htmls.content.map((h) => h.id);
+
+  // debug('Html ids %O', htmlIds);
+
+  const metadata = await automo.getMetadataByFilter(
+    {
+      id: {
+        $in: htmlIds,
+      },
+      publicKey: {
+        $eq: publicKey,
+      },
+    },
+    opts
+  );
+
+  if (format === 'csv') {
+    const csv = CSV.produceCSVv1(metadata);
+
+    debug('getPersonalCSV (%d)', metadata.length, csv.length, CSV_MAX_SIZE);
+
+    const filename =
+      'tk-' + experimentId + '-' + moment().format('YY-MM-DD') + '.csv';
+
+    return {
+      headers: {
+        'Content-Type': 'csv/text',
+        'Content-Disposition': 'attachment; filename=' + filename,
+      },
+      text: csv,
+    };
+  }
+
+  return {
+    json: {
+      supporter,
+      metadata,
+    },
+  };
+};
+
+export {
   pickFeedFields,
   getPersonal,
   getPersonalCSV,
+  getPersonalByExperimentId,
 };

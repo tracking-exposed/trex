@@ -14,6 +14,7 @@
     "strict": true,
     "skipLibCheck": true,
     "target": "es2015",
+    "tsBuildInfoFile": "build/tsconfig.tsbuildinfo",
     "paths": {
       "@shared/*": ["../../../packages/shared/src/*"],
       "@tktrex/shared/*": ["../shared/src/*"]

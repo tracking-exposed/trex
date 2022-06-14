@@ -30,6 +30,7 @@ import {
   GetExperimentListOutput,
 } from './Experiment';
 import * as Directive from './Directive';
+import { Supporter } from './Supporter';
 
 export default {
   // common
@@ -40,6 +41,8 @@ export default {
   ContributionEvent,
   VideoContributionEvent,
   AddEventsBody,
+  // supporter
+  Supporter,
   // guardoni
   // guardoni experiments (to be moved)
   GuardoniExperiment,
