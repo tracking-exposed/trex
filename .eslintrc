@@ -26,7 +26,7 @@
       "version": "14"
     }
   },
-  "ignorePatterns": ["__tests__"],
+  "ignorePatterns": ["**/__tests__/**"],
   "rules": {
     "no-console": 1,
     "no-use-before-define": "off",

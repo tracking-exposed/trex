@@ -1,10 +1,11 @@
 import { boot } from '@shared/extension/app';
 import {
   handleServerLookup,
-  initializeKey,
+  initializeKey
 } from '@shared/extension/chrome/background/account';
 import { load } from '@shared/extension/chrome/background/index';
 import { handleSyncMessage } from '@shared/extension/chrome/background/sync';
+import { sleep } from '@shared/utils/promise.utils';
 import { tiktokDomainRegExp } from '@tktrex/parser/constant';
 import axios from 'axios';
 import * as fs from 'fs';
@@ -16,11 +17,7 @@ import api, { getHeadersForDataDonation } from '../src/background/api';
 import tkHub from '../src/handlers/hub';
 import { tkLog } from '../src/logger';
 
-const sleep = (ms: number): Promise<void> => {
-  return new Promise((resolve) => {
-    setTimeout(resolve, ms);
-  });
-};
+
 
 const chromeListener = jest.fn();
 

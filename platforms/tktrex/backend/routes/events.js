@@ -203,6 +203,7 @@ async function processEvents(req) {
         n: optionalNumbers,
         geoip: geo(req.headers['x-forwarded-for'] || req.socket.remoteAddress),
         researchTag: req.body.researchTag,
+        experimentId: body.experimentId
       };
       return html;
     })
