@@ -1,0 +1,18 @@
+{
+  "schema": {
+    "urls": "urls",
+    "stats": "trexstats",
+    "results": "results",
+    "runs": "runs",
+    "emails": "emails"
+  },
+
+  "mongoHost": "localhost",
+  "mongoPort": 27017,
+  "mongoDb": "makhno",
+
+  "port": 15000,
+  "interface": "0.0.0.0",
+
+  "key": "invalid_default"
+}
