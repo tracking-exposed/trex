@@ -5,7 +5,6 @@
     "clean": "rm -rf ./build",
     "lint": "eslint ./src",
     "build": "tsc -b",
-    "lint": "eslint ./src",
     "test": "jest --maxWorkers=8",
     "tdd": "jest --watch --maxWorkers=8",
     "dump-parsed-data": "ts-node bin/dump-parsed-data.ts",

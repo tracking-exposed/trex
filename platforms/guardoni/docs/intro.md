@@ -18,7 +18,7 @@ Having trouble? We’d like to help!
 
 - Check the **[Github](https://github.com/tracking-exposed)** repo, report bugs or contribute. ❤️
 
-- Join the community in Tracking Exposed **[Slack](trackingexposed.slack.com)**.
+- Join the community in Tracking Exposed **[Slack](https://trackingexposed.slack.com)**.
 
 - Send a **[Tweet](https://twitter.com/trackingexposed)**
 
