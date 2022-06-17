@@ -43,6 +43,7 @@ export const GuardoniExperimentArb = getArbitrary(
   t.strict(propsOmit(GuardoniExperiment, ['when', 'directives']))
 ).map((exp) => ({
   ...exp,
+  experimentId: fc.sample(fc.uuid(), 1)[0],
   when: new Date().toISOString(),
   directives: [],
 }));

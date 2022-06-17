@@ -82,14 +82,13 @@ function extendIfExperiment(expinfo, listOf) {
 
   const nothelpf = ['_id', 'publicKey', 'directive', 'href', 'status'];
 
-  if(!expinfo.directive)
+  if (!expinfo.directive)
     // eslint-disable-next-line no-console
-    console.trace("debug this %j", expinfo);
+    console.trace('debug this %j', expinfo);
 
-  if(!expinfo.directive)
-    return listOf;
+  if (!expinfo.directive) return listOf;
 
-  debug("Valid expinfo received %j", expinfo);
+  debug('Valid expinfo received %j', expinfo);
   return _.map(listOf, function (o) {
     /* this function link the experiment object to the
            element found, and then rebuild the directives to
@@ -207,6 +206,7 @@ async function processEvents2(req) {
         nature,
         geoip: geo(headers['x-forwarded-for'] || req.socket.remoteAddress),
         researchTag: body.researchTag,
+        experimentId: body.experimentId,
       };
       return html;
     }
