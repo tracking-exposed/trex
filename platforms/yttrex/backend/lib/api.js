@@ -28,6 +28,8 @@ const apiList = {
   getPersonal: require('../routes/personal').getPersonal,
   getPersonalTimeline: require('../routes/personal').getPersonalTimeline,
   getPersonalRelated: require('../routes/personal').getPersonalRelated,
+  getPersonalByExperimentId:
+    require('../routes/personal').getPersonalByExperimentId,
 
   /* personal right of removing your data, and full details on one */
   removeEvidence: require('../routes/personal').removeEvidence,

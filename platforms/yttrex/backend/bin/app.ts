@@ -149,6 +149,12 @@ export const makeApp = async (
     iowrapper('getPersonalRelated')
   );
 
+  /** List personal metadata by experiment id */
+  apiRouter.get(
+    '/v2/personal/:publicKey/experiments/:experimentId/:format',
+    iowrapper('getPersonalByExperimentId')
+  );
+
   apiRouter.post('/v3/registerEmail', iowrapper('registerEmail'));
 
   /* record answers from surveys */
