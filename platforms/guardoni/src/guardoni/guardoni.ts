@@ -6,7 +6,7 @@
  * - filter the directive with "exclude url tag"
  *
  */
-import * as Endpoints from '@shared/endpoints';
+import * as Endpoints from '@yttrex/shared/endpoints';
 import { AppError, toAppError } from '@shared/errors/AppError';
 import { Directive, DirectiveType } from '@shared/models/Directive';
 import { APIClient, MakeAPIClient } from '@shared/providers/api.provider';
@@ -376,15 +376,17 @@ interface GuardoniLauncher {
   ) => TE.TaskEither<AppError, Guardoni>;
 }
 
-export type GetGuardoni = ({
-  basePath,
-  logger,
-}: {
+export interface GuardoniOptions {
   basePath: string;
   logger: GuardoniContext['logger'];
   puppeteer: PuppeteerExtra;
   verbose?: boolean;
-}) => GuardoniLauncher;
+}
+
+export type GetGuardoni = ({
+  basePath,
+  logger,
+}: GuardoniOptions) => GuardoniLauncher;
 
 export const GetGuardoni: GetGuardoni = ({
   basePath,

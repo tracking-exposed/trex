@@ -1,11 +1,13 @@
 ---
 sidebar_position: 1
+title: Getting started
+id: tktrex-intro
 ---
 
-# Introduction
+## API
 
-## Packages
+Check out latest api [here](/tktrex/api)
 
-- [@tktrex/shared](./shared/intro)
-- [@tktrex/extension](./extension/intro)
-- [@tktrex/automation](./automation/intro)
+## Extension
+
+Documentation relative to the extension can be found [here](./extension)

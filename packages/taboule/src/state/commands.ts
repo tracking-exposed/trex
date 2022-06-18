@@ -1,6 +1,6 @@
 import { MakeAPIClient, TERequest } from '@shared/providers/api.provider';
 import { command } from 'avenger';
-import * as Endpoints from '@shared/endpoints';
+import * as Endpoints from '@yttrex/shared/endpoints';
 import { TabouleQueries } from './queries';
 import { pipe } from 'fp-ts/lib/function';
 import * as TE from 'fp-ts/lib/TaskEither';

@@ -4,7 +4,7 @@ import {
   MakeAPIClient,
   HTTPClient,
 } from '@shared/providers/api.provider';
-import * as Endpoints from '@shared/endpoints';
+import * as Endpoints from '../endpoints';
 
 type YTAPIClient = APIClient<typeof Endpoints>;
 

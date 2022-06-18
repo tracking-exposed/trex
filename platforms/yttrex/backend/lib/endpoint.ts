@@ -1,18 +1,21 @@
-import { sequenceS } from "fp-ts/lib/Apply";
-import * as E from "fp-ts/lib/Either";
-import { pipe } from "fp-ts/lib/function";
-import * as t from "io-ts";
-import { PathReporter } from "io-ts/lib/PathReporter";
-import { InferEndpointInstanceParams, MinimalEndpointInstance } from "ts-endpoint";
-import { serializedType } from "ts-io-error/lib/Codec";
+import { sequenceS } from 'fp-ts/lib/Apply';
+import * as E from 'fp-ts/lib/Either';
+import { pipe } from 'fp-ts/lib/function';
+import * as t from 'io-ts';
+import { PathReporter } from 'io-ts/lib/PathReporter';
+import {
+  InferEndpointInstanceParams,
+  MinimalEndpointInstance,
+} from '@shared/endpoints';
+import { serializedType } from 'ts-io-error/lib/Codec';
 
 type DecodeRequestResult<E extends MinimalEndpointInstance> =
   | {
-      type: "error";
+      type: 'error';
       result: string[];
     }
   | {
-      type: "success";
+      type: 'success';
       result: {
         params: InferEndpointInstanceParams<E>['params'];
         query: InferEndpointInstanceParams<E>['query'];
@@ -34,22 +37,22 @@ const decodeRequest = <E extends MinimalEndpointInstance>(
     }),
     E.fold(
       (e): DecodeRequestResult<E> => ({
-        type: "error",
+        type: 'error',
         result: PathReporter.report(E.left(e)),
       }),
-      (result): DecodeRequestResult<E> => ({ type: "success", result })
+      (result): DecodeRequestResult<E> => ({ type: 'success', result })
     )
   );
 };
 
 type DecodeResponseResult<E extends MinimalEndpointInstance> =
   | {
-      type: "error";
+      type: 'error';
       result: string[];
     }
   | {
-      type: "success";
-      result: serializedType<E["Output"]>;
+      type: 'success';
+      result: serializedType<E['Output']>;
     };
 
 const decodeResponse = <E extends MinimalEndpointInstance>(
@@ -60,10 +63,10 @@ const decodeResponse = <E extends MinimalEndpointInstance>(
     e.Output.decode(result),
     E.fold(
       (e): DecodeResponseResult<E> => ({
-        type: "error",
+        type: 'error',
         result: PathReporter.report(E.left(e)),
       }),
-      (result): DecodeResponseResult<E> => ({ type: "success", result })
+      (result): DecodeResponseResult<E> => ({ type: 'success', result })
     )
   );
 };

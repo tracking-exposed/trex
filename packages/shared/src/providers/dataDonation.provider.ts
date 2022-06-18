@@ -3,14 +3,15 @@ import { differenceInSeconds } from 'date-fns';
 import { pipe } from 'fp-ts/lib/function';
 import * as TE from 'fp-ts/lib/TaskEither';
 import _ from 'lodash';
-import { Keypair } from '../models/extension/Keypair';
-import * as Endpoints from '../endpoints';
+import { Endpoint, EndpointInstance } from '../endpoints';
+import { Codec, RecordCodec } from 'ts-io-error/Codec';
+import { trexLogger } from '../logger';
 import {
   ADVContributionEvent,
   VideoContributionEvent,
 } from '../models/ContributionEvent';
+import { Keypair } from '../models/extension/Keypair';
 import { getTimeISO8601 } from '../utils/date.utils';
-import { trexLogger } from '../logger';
 import { BrowserProvider, MessagesAPI } from './browser.provider';
 import bs58Provider from './bs58.provider';
 
@@ -333,6 +334,16 @@ interface DataDonationProviderContext {
       parents?: number;
     }
   >;
+  addEvent: EndpointInstance<
+    Endpoint<
+      'POST',
+      Codec<any, any, any>,
+      RecordCodec<any, any, any>,
+      undefined,
+      Codec<any, any, any>,
+      undefined
+    >
+  >;
 }
 
 export const GetDataDonationProvider = (
@@ -450,7 +461,7 @@ export const GetDataDonationProvider = (
       void pipe(
         bs58Provider.makeSignature(state.content, keypair.secretKey),
         TE.chain((signature) =>
-          ctx.browser.sendAPIMessage(Endpoints.v2.Public.AddEvents)({
+          ctx.browser.sendAPIMessage(ctx.addEvent)({
             Headers: {
               'X-YTtrex-Build': ctx.version,
               'X-YTtrex-Version': ctx.version,

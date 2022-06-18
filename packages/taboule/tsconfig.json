@@ -31,7 +31,9 @@
     "moduleResolution": "Node",
     "isolatedModules": true,
     "paths": {
-      "@shared/*": ["../../shared/src/*"]
+      "@shared/*": ["../../shared/src/*"],
+      "@yttrex/shared/*": ["../../../platforms/yttrex/shared/src/*"],
+      "@tktrex/shared/*": ["../../../platforms/tktrex/shared/src/*"]
     }
   },
   "include": ["./src", "./typings"],
@@ -40,5 +42,13 @@
       "module": "CommonJS"
     }
   },
-  "references": [{ "path": "../shared" }]
+  "references": [
+    { "path": "../shared" },
+    {
+      "path": "../../platforms/yttrex/shared"
+    },
+    {
+      "path": "../../platforms/tktrex/shared"
+    }
+  ]
 }

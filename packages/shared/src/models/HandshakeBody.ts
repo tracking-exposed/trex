@@ -1,5 +1,6 @@
 import * as t from 'io-ts';
 import { DateFromISOString } from 'io-ts-types/lib/DateFromISOString';
+import { StringOrNull } from './common/StringOrNull';
 
 export const HandshakeBody = t.type(
   {
@@ -30,7 +31,7 @@ export const HandshakeResponse = t.union(
       href: t.string,
       execount: t.union([t.number, t.undefined]),
       newProfile: t.union([t.boolean, t.undefined]),
-      testName: t.union([t.string, t.null]),
+      testName: StringOrNull,
       publicKey: t.string,
       status: t.literal('active'),
     }),

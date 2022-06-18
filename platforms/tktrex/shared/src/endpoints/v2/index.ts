@@ -1,7 +1,7 @@
 import Public from './public.endpoints';
-import personal from './personal.endpoints';
+import Personal from './personal.endpoints';
 
 export default {
   Public,
-  personal,
+  Personal,
 };

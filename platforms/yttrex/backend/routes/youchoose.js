@@ -6,7 +6,7 @@ const fetchOpengraph = require('fetch-opengraph');
 const ycai = require('../lib/ycai');
 const curly = require('../lib/curly');
 const endpoints = require('../lib/endpoint');
-const { v3 } = require('@shared/endpoints');
+const { v3 } = require('@yttrex/shared/endpoints');
 const structured = require('../lib/structured');
 
 const PUBLIC_AMOUNT_ELEMS = 100;

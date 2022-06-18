@@ -4,6 +4,7 @@
   "description": "youtube.tracking.exposed - backend data collector",
   "private": true,
   "scripts": {
+    "clean": "rm -rf ./build",
     "build": "tsc -b",
     "watch": "key=fuffa DEBUG=\"*,-express:*,-body-parser:*,-follow-redirects\" ts-node-dev -r tsconfig-paths/register --respawn --transpile-only bin/server",
     "old_start_old": "log=$(bash -c 'git log -30 --stat --oneline --decorate --graph') DEBUG=\"*,-body-parser:*,-express:*,-lib:*,-follow-redirects\" ts-node -r tsconfig-paths/register bin/server",
@@ -15,7 +16,8 @@
     "test": "jest",
     "campaigns": "node bin/campaignUpdater.js --dest https://youtube.tracking.exposed",
     "type-check": "tsc",
-    "lint": "eslint ./bin ./lib ./models ./parsers ./routes"
+    "lint": "eslint ./bin ./lib ./models ./parsers ./routes",
+    "open-doc-api": "ts-node bin/open-doc-api.ts"
   },
   "author": "Claudio Agosti <claudio@tracking.exposed> and https://github.com/tracking-exposed/yttrex/graphs/contributors",
   "license": "AGPL-3.0",

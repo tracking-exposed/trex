@@ -2,6 +2,7 @@ import * as sharedConst from '@shared/constants';
 import { APIError } from '@shared/errors/APIError';
 import { ContentCreator } from '@shared/models/ContentCreator';
 import { Keypair } from '@shared/models/extension/Keypair';
+import * as Endpoints from '@yttrex/shared/endpoints';
 import {
   catchRuntimeLastError,
   MessageType,
@@ -171,7 +172,12 @@ const getMessageHandler = <
       );
     case Messages.APIRequest.value:
       return pipe(
-        fromStaticPath(r.payload?.staticPath, r.payload?.Input),
+        fromStaticPath([
+          Endpoints.v1.Public,
+          Endpoints.v2.Public,
+          Endpoints.v3.Public,
+          Endpoints.v3.Creator,
+        ])(r.payload?.staticPath, r.payload?.Input),
         O.fromNullable,
         TE.fromOption(() =>
           toMessageHandlerError(

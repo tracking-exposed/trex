@@ -2,10 +2,10 @@ import { fc } from '@shared/test';
 import { propsOmit } from '@shared/utils/arbitrary.utils';
 import { getArbitrary } from 'fast-check-io-ts';
 import * as t from 'io-ts';
-import { HomeProcessResult } from '../../../parsers/home';
+import { HomeMetadata } from '../../../models/Metadata';
 import { VideoResultArb } from './Video.arb';
 
-const htmlMetadataProps = propsOmit(HomeProcessResult, ['id', 'selected']);
+const htmlMetadataProps = propsOmit(HomeMetadata, ['id', 'selected']);
 export const HTMLMetadataResult = getArbitrary(
   t.strict({
     ...htmlMetadataProps,

@@ -11,11 +11,10 @@
 import { pipe } from 'fp-ts/lib/function';
 import * as R from 'fp-ts/lib/Record';
 import * as S from 'fp-ts/lib/string';
-import {
-  MinimalEndpoint,
-  MinimalEndpointInstance
-} from 'ts-endpoint/lib/helpers';
+import { MinimalEndpoint, MinimalEndpointInstance } from '../../endpoints';
 import { getOpenAPISchema, IOTOpenDocSchema } from './IOTSToOpenAPISchema';
+import { swaggerLogger } from './utils';
+import * as t from 'io-ts';
 
 interface ServerConfig {
   protocol: 'http' | 'https';
@@ -129,7 +128,7 @@ const apiSchemaFromEndpoint = (
         )
       : [];
 
-  // console.log('endpoint query', e.Input.Params);
+  swaggerLogger.debug('endpoint query', e.Input?.Params);
 
   const Params = (input as any).Params;
   // derive path parameters from io-ts definition of e.Input.Params
@@ -162,7 +161,7 @@ const apiSchemaFromEndpoint = (
             'application/json': {
               schema: {
                 $ref: `#/components/schemas/${getInnerSchemaName(
-                  (e.Input?.Body as any)?.name
+                  (e.Input?.Body as any).name
                 )}`,
               },
             },
@@ -300,12 +299,15 @@ export const generateDoc = (
   const { paths, schemas } = getPaths(config.endpoints, getDocumentation);
 
   const modelSchema = pipe(
-    config.models,
+    {
+      any: t.any,
+      ...config.models,
+    },
     R.reduceWithIndex(S.Ord)(
       {
         any: {
-          type: 'object',
-          description: 'any value',
+          type: 'any',
+          description: 'Any value',
         },
         string: {
           type: 'string',
@@ -321,7 +323,9 @@ export const generateDoc = (
         },
       },
       (key, acc, model) => {
-        const { required, ...modelSchema } = getOpenAPISchema(model);
+        swaggerLogger.debug('Model %O', model);
+        const modelSchema = getOpenAPISchema(model);
+        swaggerLogger.debug('Model schema %O', modelSchema);
         if (model.name) {
           return {
             ...acc,
@@ -333,6 +337,9 @@ export const generateDoc = (
       }
     )
   );
+
+  swaggerLogger.debug('Model schema %O', modelSchema);
+
   return {
     openapi: '3.0.3',
     info: {

@@ -42,9 +42,12 @@ jobs:
       - name: Lint code
         run: yarn yt:ext lint
 
+      - name: Type Check
+        run: yarn yt:ext tsc -b
+
       - name: Build
         run: |
-          yarn shared build
+          yarn yt:ext clean
           yarn yt:ext build
 
       - name: Pack
@@ -56,10 +59,14 @@ jobs:
       - name: Build backend
         run: yarn yt:backend build
 
-      - name: Test
+      - name: Test backend
         run: |
           yarn pm2 start platforms/yttrex/backend/ecosystem.config.js  --env test
           yarn yt:backend test --runInBand --forceExit --ci
-          yarn yt:ext test --runInBand --ci
-          yarn pm2 stop all
+
+      - name: Test Extension
+        run: yarn yt:ext test --runInBand --ci
+
+      - name: Stop PM2 ecosystem
+        run: yarn pm2 stop all
 

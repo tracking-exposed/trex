@@ -1,3 +1,4 @@
+import { StringOrNull } from './common/StringOrNull';
 import { AuthResponse } from './Auth';
 import {
   AuthorizedContentCreator,
@@ -5,9 +6,9 @@ import {
   ContentCreatorVideosOutput,
   RegisterContentCreatorBody,
 } from './ContentCreator';
-import { ChannelADV } from './stats/ChannelADV';
+import { ChannelADV, ChannelADVStats } from './stats/ChannelADV';
 import { CreatorStats, CreatorStatContent } from './CreatorStats';
-import { HandshakeBody } from './HandshakeBody';
+import { HandshakeBody, HandshakeResponse } from './HandshakeBody';
 import {
   Recommendation,
   PartialRecommendation,
@@ -16,7 +17,11 @@ import {
 } from './Recommendation';
 import { GetRelatedChannelsOutput, ChannelRelated } from './ChannelRelated';
 import { Video, UpdateVideoBody } from './Video';
-import { VideoContributionEvent } from './ContributionEvent';
+import {
+  AddEventsBody,
+  ContributionEvent,
+  VideoContributionEvent,
+} from './ContributionEvent';
 import {
   GuardoniExperiment,
   ConcludeGuardoniExperimentOutput,
@@ -24,15 +29,19 @@ import {
   GetPublicDirectivesOutput,
   GetExperimentListOutput,
 } from './Experiment';
-import { PostDirectiveResponse } from './Directive';
+import * as Directive from './Directive';
 
 export default {
   // common
+  StringOrNull,
+  // handshake
   HandshakeBody,
+  HandshakeResponse,
+  ContributionEvent,
   VideoContributionEvent,
+  AddEventsBody,
   // guardoni
   // guardoni experiments (to be moved)
-  PostDirectiveResponse,
   GuardoniExperiment,
   ConcludeGuardoniExperimentOutput,
   GetDirectiveOutput,
@@ -55,8 +64,10 @@ export default {
   ContentCreatorVideosOutput,
   // cc stats
   ChannelADV,
+  ChannelADVStats,
   CreatorStats,
   CreatorStatContent,
   ChannelRelated,
   GetRelatedChannelsOutput,
+  ...Directive
 };

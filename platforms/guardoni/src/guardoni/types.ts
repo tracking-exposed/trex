@@ -1,4 +1,4 @@
-import * as endpoints from '@shared/endpoints';
+import * as endpoints from '@yttrex/shared/endpoints';
 import { Logger } from '@shared/logger';
 import { Directive, DirectiveType } from '@shared/models/Directive';
 import { APIClient } from '@shared/providers/api.provider';
