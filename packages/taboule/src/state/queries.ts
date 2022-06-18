@@ -1,4 +1,5 @@
-import * as endpoints from '@shared/endpoints';
+import * as endpoints from '@yttrex/shared/endpoints';
+import * as tkEndpoints from '@tktrex/shared/endpoints';
 import { APIError } from '@shared/errors/APIError';
 import { ChannelRelated } from '@shared/models/ChannelRelated';
 import {
@@ -12,7 +13,7 @@ import {
 } from '@shared/models/contributor/ContributorPersonalSummary';
 import { GuardoniExperiment } from '@shared/models/Experiment';
 import { SearchQuery } from '@shared/models/http/SearchQuery';
-import { TikTokSearchMetadata } from '@shared/models/http/tiktok/TikTokSearch';
+import { SearchMetaData as TKSearchMetadata } from '@tktrex/shared/models/MetaData';
 import { Metadata } from '@shared/models/Metadata';
 import { MakeAPIClient } from '@shared/providers/api.provider';
 import { available, queryStrict } from 'avenger';
@@ -43,7 +44,7 @@ export interface TabouleQueries {
   // tik tok
   tikTokPersonalHTMLSummary: EndpointQuery<SummaryHTMLMetadata>;
   tikTokPersonalSearch: EndpointQuery<TikTokPSearchMetadata>;
-  tikTokSearches: EndpointQuery<TikTokSearchMetadata>;
+  tikTokSearches: EndpointQuery<TKSearchMetadata>;
 }
 
 interface GetTabouleQueriesProps {
@@ -55,13 +56,21 @@ export const GetTabouleQueries = ({
   baseURL,
   accessToken,
 }: GetTabouleQueriesProps): TabouleQueries => {
-  const { API } = MakeAPIClient(
+  const { API: YTAPI } = MakeAPIClient(
     {
       baseURL,
       getAuth: async (req) => req,
       onUnauthorized: async (res) => res,
     },
     endpoints
+  );
+  const { API: TK_API } = MakeAPIClient(
+    {
+      baseURL,
+      getAuth: async (req) => req,
+      onUnauthorized: async (res) => res,
+    },
+    tkEndpoints
   );
 
   const ccRelatedUsers = queryStrict<
@@ -71,7 +80,7 @@ export const GetTabouleQueries = ({
   >(
     (input) =>
       pipe(
-        API.v3.Creator.CreatorRelatedChannels({
+        YTAPI.v3.Creator.CreatorRelatedChannels({
           ...input,
           Headers: {
             'x-authorization': accessToken ?? '',
@@ -79,7 +88,7 @@ export const GetTabouleQueries = ({
         }),
         TE.map(({ totalRecommendations, ...r }) => ({
           ...r,
-          total: totalRecommendations
+          total: totalRecommendations,
         }))
       ),
     available
@@ -92,7 +101,7 @@ export const GetTabouleQueries = ({
   >(
     (input) =>
       pipe(
-        API.v2.Public.GetExperimentById(input),
+        YTAPI.v2.Public.GetExperimentById(input),
         TE.map((content) => ({ total: content.length, content }))
       ),
     available
@@ -105,7 +114,7 @@ export const GetTabouleQueries = ({
   >(
     (input) =>
       pipe(
-        API.v2.Public.GetExperimentList(input),
+        YTAPI.v2.Public.GetExperimentList(input),
         TE.map((content) => {
           return {
             total: content.total,
@@ -126,7 +135,7 @@ export const GetTabouleQueries = ({
   >(
     (input) =>
       pipe(
-        API.v1.Public.GetPersonalStatsByPublicKey(input),
+        YTAPI.v1.Public.GetPersonalStatsByPublicKey(input),
         TE.map((content) => ({
           total: content.stats.home,
           content: content.homes,
@@ -138,7 +147,7 @@ export const GetTabouleQueries = ({
   const personalAds = queryStrict<SearchRequestInput, APIError, Results<any>>(
     (input) =>
       pipe(
-        API.v1.Public.GetPersonalStatsByPublicKey(input),
+        YTAPI.v1.Public.GetPersonalStatsByPublicKey(input),
         TE.map((content) => ({
           total: content.ads.length,
           content: content.ads,
@@ -154,7 +163,7 @@ export const GetTabouleQueries = ({
   >(
     (input) =>
       pipe(
-        API.v1.Public.GetPersonalStatsByPublicKey(input),
+        YTAPI.v1.Public.GetPersonalStatsByPublicKey(input),
         TE.map((content) => ({
           total: content.stats.video,
           content: content.videos,
@@ -170,7 +179,7 @@ export const GetTabouleQueries = ({
   >(
     (input) =>
       pipe(
-        API.v1.Public.GetPersonalStatsByPublicKey(input),
+        YTAPI.v1.Public.GetPersonalStatsByPublicKey(input),
         TE.map((content) => ({
           total: content.stats.search,
           content: content.searches,
@@ -186,7 +195,7 @@ export const GetTabouleQueries = ({
   >(
     (input) =>
       pipe(
-        API.v1.Public.GetPersonalSummaryByPublicKey(input),
+        YTAPI.v1.Public.GetPersonalSummaryByPublicKey(input),
         TE.map((content) => ({
           total: content.htmls.length,
           content: content.htmls,
@@ -202,7 +211,7 @@ export const GetTabouleQueries = ({
   >(
     (input) =>
       pipe(
-        API.v1.Public.GetPersonalSearchByPublicKey(input),
+        YTAPI.v1.Public.GetPersonalSearchByPublicKey(input),
         TE.map((content) => ({
           total: content.metadata.length,
           content: content.metadata,
@@ -214,11 +223,11 @@ export const GetTabouleQueries = ({
   const tikTokSearches = queryStrict<
     SearchRequestInput,
     APIError,
-    Results<TikTokSearchMetadata>
+    Results<TKSearchMetadata>
   >(
     (input) =>
       pipe(
-        API.v2.Public.TikTokSearches(input),
+        TK_API.v2.Public.GetSearchByQuery(input),
         TE.map((content) => ({
           total: content.length,
           content: content,

@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
-# set -e -x
-set -e
+set -e -x
+# set -e
 
 export DEBUG="@trex*"
 export NODE_ENV=development
@@ -11,6 +11,8 @@ yarn workspaces foreach run clean
 
 # build shared
 yarn shared build
+./docs/scripts/build.sh
+
 
 # build yttrex extension
 yarn yt:ext build

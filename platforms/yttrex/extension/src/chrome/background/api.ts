@@ -1,4 +1,4 @@
-import * as endpoints from '@shared/endpoints';
+import * as endpoints from '@yttrex/shared/endpoints';
 import { SyncReq } from '@shared/extension/chrome/background/sync';
 import db from '@shared/extension/chrome/db';
 import config from '@shared/extension/config';

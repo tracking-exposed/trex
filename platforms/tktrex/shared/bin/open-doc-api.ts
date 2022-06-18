@@ -1,7 +1,7 @@
 import * as endpoints from '../src/endpoints';
 import * as apiModels from '../src/models';
-import * as sharedModels from '../../../../packages/shared/src/models';
-import * as swagger from '../../../../packages/shared/src/providers/swagger/swagger.provider.node';
+import * as sharedModels from '@shared/models';
+import * as swagger from '@shared/providers/swagger/swagger.provider.node';
 import * as path from 'path';
 import packageJson from '../package.json';
 

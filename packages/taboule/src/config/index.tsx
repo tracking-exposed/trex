@@ -11,7 +11,7 @@ import {
   TikTokPSearchMetadata,
   // SummaryMetadata,
 } from '@shared/models/contributor/ContributorPersonalSummary';
-import { TikTokSearchMetadata } from '@shared/models/http/tiktok/TikTokSearch';
+import { SearchMetaData as TikTokSearchMetadata } from '@tktrex/shared/models/MetaData';
 import { Metadata } from '@shared/models/Metadata';
 import { GuardoniExperiment } from '@shared/models/Experiment';
 import * as React from 'react';
@@ -389,11 +389,11 @@ export const defaultConfiguration = (
             );
           },
         },
-        {
-          ...columnDefault,
-          field: 'thumbnail',
-          renderCell: cells.avatarCell,
-        },
+        // {
+        //   ...columnDefault,
+        //   field: 'thumbnails',
+        //   renderCell: cells.avatarCell,
+        // },
         {
           ...columnDefault,
           field: 'savingTime',

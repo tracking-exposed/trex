@@ -52,8 +52,14 @@ export const PublicSearchList = t.strict(
 
 export type PublicSearchList = t.TypeOf<typeof PublicSearchList>;
 
-export const GetSearchByQueryOutput = t.type({}, 'GetSearchByQueryOutput');
+export const GetSearchByQueryOutput = t.array(t.any, 'GetSearchByQueryOutput');
 export type GetSearchByQueryOutput = t.TypeOf<typeof GetSearchByQueryOutput>;
 
-export const GetQueryListOutput = t.type({}, 'GetQueryListOutput');
+export const GetQueryListOutput = t.type(
+  {
+    total: t.number,
+    content: t.array(t.any),
+  },
+  'GetQueryListOutput',
+);
 export type GetQueryListOutput = t.TypeOf<typeof GetQueryListOutput>;

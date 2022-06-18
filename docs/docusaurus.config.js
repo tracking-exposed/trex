@@ -3,40 +3,80 @@
 
 // const lightCodeTheme = require('prism-react-renderer/themes/github');
 const darkCodeTheme = require('prism-react-renderer/themes/dracula');
-const path = require('path/posix');
-const { default: theme } = require('./theme');
+const lightCodeTheme = require('prism-react-renderer/themes/github');
+const packageJson = require('../package.json');
+const path = require('path');
+// const { default: theme } = require('./theme');
+
+const GITHUB_REPO = 'https://github.com/tracking-exposed/yttrex';
 
 /** @type {import('@docusaurus/types').Config} */
 const config = {
   title: '@trex',
-  tagline: 'Dinosaurs are cool',
+  tagline:
+    'We develop tools to uncover how tracking and profiling have an impact on society',
   url: 'https://docs.tracking.exposed',
   baseUrl: '/',
   onBrokenLinks: 'throw',
   onBrokenMarkdownLinks: 'warn',
-  favicon: 'img/yttrex128.png',
+  favicon: 'img/trex128.png',
   organizationName: 'tracking-exposed', // Usually your GitHub org/user name.
   projectName: 'trex', // Usually your repo name.
 
   plugins: [
-    // @tktrex open api
+    // @tktrex
+    // api
     [
       'docusaurus-plugin-openapi',
       {
         id: 'tktrex',
-        path: '../platforms/tktrex/shared/build/openapi-tktrex.json',
+        path: '../platforms/tktrex/shared/build/open-api.json',
         routeBasePath: 'tktrex/api',
       },
     ],
-    // @tktrex open api
-    // [
-    //   'docusaurus-plugin-openapi',
-    //   {
-    //     id: 'ycai-api',
-    //     path: '../sercices/ycai/studio/docs/openapi-validated.json',
-    //     routeBasePath: 'ycai/api',
-    //   },
-    // ],
+    // docs
+    [
+      '@docusaurus/plugin-content-docs',
+      {
+        id: 'tktrex-docs',
+        path: path.resolve(__dirname, '../platforms/tktrex/docs/docs'),
+        routeBasePath: 'tktrex/docs',
+        sidebarPath: require.resolve('./sidebars.js'),
+      },
+    ],
+    // @yttrex
+    // API
+    [
+      'docusaurus-plugin-openapi',
+      {
+        id: 'yttrex-api',
+        path: '../platforms/yttrex/shared/build/open-api.json',
+        routeBasePath: 'yttrex/api',
+      },
+    ],
+    // docs
+    [
+      '@docusaurus/plugin-content-docs',
+      {
+        id: 'yttrex-docs',
+        path: path.resolve(__dirname, '../platforms/yttrex/docs/docs'),
+        routeBasePath: 'yttrex/docs',
+        sidebarPath: require.resolve('./sidebars.js'),
+      },
+    ],
+    // @ycai
+    // API
+    [
+      'docusaurus-plugin-openapi',
+      {
+        id: 'ycai-api',
+        path: '../platforms/ycai/studio/build/open-api.json',
+        routeBasePath: 'ycai/api',
+      },
+    ],
+
+    // tools
+    // guardoni
     [
       '@docusaurus/plugin-content-docs',
       {
@@ -46,15 +86,6 @@ const config = {
         sidebarPath: require.resolve('./sidebars.js'),
       },
     ],
-    // [
-    //   '@docusaurus/plugin-content-docs',
-    //   {
-    //     id: 'ycai-docs',
-    //     path: path.resolve(__dirname, '../YCAI/docs'),
-    //     routeBasePath: 'ycai/docs',
-    //     sidebarPath: require.resolve('../YCAI/sidebars.js'),
-    //   },
-    // ],
   ],
   presets: [
     [
@@ -79,43 +110,51 @@ const config = {
     /** @type {import('docusaurus-theme-openapi').ThemeConfig} */
     ({
       navbar: {
-        title: '@trex',
+        // title: `@docs v${packageJson.version}`,
         logo: {
           alt: '@trex Logo',
-          src: 'img/yttrex128.png',
+          src: 'img/trexlogo_black.svg',
+          srcDark: 'img/trexlogo.svg',
         },
         items: [
           {
-            type: 'dropdown',
-            label: 'Services',
-            items: [
-              {
-                type: 'doc',
-                docId: 'intro',
-                docsPluginId: 'guardoni-docs',
-                label: 'Guardoni',
-              },
-              {
-                type: 'doc',
-                docId: 'intro',
-                docsPluginId: 'ycai-docs',
-                label: 'YCAI',
-              },
-            ],
+            type: 'doc',
+            label: 'Guardoni',
+            docId: 'guardoni-intro',
+            docsPluginId: 'guardoni-docs',
+          },
+          {
+            type: 'doc',
+            docId: 'tktrex-intro',
+            docsPluginId: 'tktrex-docs',
+            label: 'TikTok Scraper',
+          },
+          {
+            type: 'doc',
+            docId: 'yttrex-intro',
+            docsPluginId: 'yttrex-docs',
+            label: 'Youtube Scraper',
           },
           {
             type: 'dropdown',
             label: 'API',
             items: [
               { to: '/tktrex/api', label: '@tktrex' },
+              { to: '/yttrex/api', label: '@yttrex' },
               { to: '/ycai/api', label: '@ycai' },
             ],
           },
-          { to: '/blog', label: 'Blog', position: 'left' },
+          // { to: '/blog', label: 'Blog', position: 'left' },
           {
             href: 'https://github.com/facebook/docusaurus',
             label: 'GitHub',
             position: 'right',
+          },
+          {
+            type: 'docsVersion',
+            position: 'right',
+            docsPluginId: 'guardoni-docs',
+            label: `v${packageJson.version}`,
           },
         ],
       },
@@ -125,7 +164,7 @@ const config = {
             title: 'Docs',
             items: [
               {
-                label: 'Tutorial',
+                label: 'Getting started',
                 to: '/docs/intro',
               },
             ],
@@ -134,16 +173,12 @@ const config = {
             title: 'Community',
             items: [
               {
-                label: 'Stack Overflow',
-                href: 'https://stackoverflow.com/questions/tagged/docusaurus',
-              },
-              {
-                label: 'Discord',
-                href: 'https://discordapp.com/invite/docusaurus',
+                label: 'Slack',
+                href: 'https://trackingexposed.slack.com/invite/trex-tk',
               },
               {
                 label: 'Twitter',
-                href: 'https://twitter.com/docusaurus',
+                href: 'https://twitter.com/trackingexposed',
               },
             ],
           },
@@ -151,12 +186,37 @@ const config = {
             title: 'More',
             items: [
               {
-                label: 'Blog',
-                to: '/blog',
+                label: 'Youchoose',
+                to: 'https://youchoose.ai',
               },
               {
-                label: 'GitHub',
-                href: 'https://github.com/facebook/docusaurus',
+                label: '@trex/facebook',
+                to: 'https://facebook.tracking.exposed',
+              },
+              {
+                label: '@trex/youtube',
+                to: 'https://youtube.tracking.exposed',
+              },
+              {
+                label: '@trex/pornhub',
+                to: 'https://pornhub.tracking.exposed',
+              },
+              {
+                label: '@trex/amazon',
+                to: 'https://amazon.tracking.exposed',
+              },
+              // no blog at the moment
+              // {
+              //   label: 'Blog',
+              //   to: '/blog',
+              // },
+            ],
+          },
+          {
+            title: 'Dev',
+            items: [
+              {
+                html: `<a class="header-github-link" href="${GITHUB_REPO}" target="_blank" rel="noreferrer"></a>`,
               },
             ],
           },
@@ -164,7 +224,7 @@ const config = {
         copyright: `Copyright © ${new Date().getFullYear()} Tracking Exposed Team. Built with Docusaurus.`,
       },
       prism: {
-        theme: theme,
+        theme: lightCodeTheme,
         darkTheme: darkCodeTheme,
       },
     }),

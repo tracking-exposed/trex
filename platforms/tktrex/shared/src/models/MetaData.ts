@@ -1,103 +1,138 @@
 import * as t from 'io-ts';
 
-const Music = t.type({
-  url: t.string,
-  name: t.string,
-}, 'Music');
+const Music = t.type(
+  {
+    url: t.string,
+    name: t.string,
+  },
+  'Music',
+);
 
 type Music = t.TypeOf<typeof Music>;
 
-const Author = t.type({
-  link: t.string,
-  username: t.string,
-}, 'Author');
+const Author = t.type(
+  {
+    link: t.string,
+    username: t.string,
+  },
+  'Author',
+);
 
 type Author = t.TypeOf<typeof Author>;
 
-const AuthorWithName = t.intersection([
-  Author,
-  t.type({
-    name: t.string,
-  }, 'name'),
-], 'AuthorWithName');
+const AuthorWithName = t.intersection(
+  [
+    Author,
+    t.type(
+      {
+        name: t.string,
+      },
+      'name',
+    ),
+  ],
+  'AuthorWithName',
+);
 
 type AuthorWithName = t.TypeOf<typeof AuthorWithName>;
 
-const Metrics = t.type({
-  liken: t.string,
-  commentn: t.string,
-  sharen: t.string,
-}, 'Metrics');
+const Metrics = t.type(
+  {
+    liken: t.string,
+    commentn: t.string,
+    sharen: t.string,
+  },
+  'Metrics',
+);
 
 type Metrics = t.TypeOf<typeof Metrics>;
 
-export const VideoMetaDataBase = t.type({
-  type: t.union([
-    t.literal('foryou'),
-    t.literal('search'),
-    t.literal('following'),
-  ]),
+export const MetaDataBase = t.type(
+  {
+    id: t.string,
+    savingTime: t.string,
+    publicKey: t.string,
+  },
+  'VideoMetaDataBase',
+);
 
-  // baretext is the smallest part of the description,
-  // not including the tags
-  baretext: t.string,
+export type MetaDataBase = t.TypeOf<typeof MetaDataBase>;
 
-  // description is the whole text written below the video,
-  // including the tags
-  description: t.string,
+export const ForYouVideoMetaData = t.intersection(
+  [
+    MetaDataBase,
+    t.type(
+      {
+        type: t.literal('foryou'),
 
-  // the hashtags, with their leading #
-  // note: they do not seem to be cleaned at the moment,
-  // some have trailing whitespace
-  hashtags: t.array(t.string),
+        // baretext is the smallest part of the description,
+        // not including the tags
+        baretext: t.string,
 
-  metrics: Metrics,
-}, 'VideoMetaDataBase');
+        // description is the whole text written below the video,
+        // including the tags
+        description: t.string,
 
-export type VideoMetaDataBase = t.TypeOf<typeof VideoMetaDataBase>;
-
-export const ForYouVideoMetaData = t.intersection([
-  VideoMetaDataBase,
-  t.type({
-    type: t.literal('foryou'),
-    author: AuthorWithName,
-    music: Music,
-  }, 'foryou'),
-], 'ForYouVideoMetaData');
+        author: AuthorWithName,
+        music: Music,
+        // the hashtags, with their leading #
+        // note: they do not seem to be cleaned at the moment,
+        // some have trailing whitespace
+        hashtags: t.array(t.string),
+        metrics: Metrics,
+      },
+      'foryou',
+    ),
+  ],
+  'ForYouVideoMetaData',
+);
 
 export type ForYouVideoMetaData = t.TypeOf<typeof ForYouVideoMetaData>;
 
-export const FollowingVideoMetaData = t.intersection([
-  VideoMetaDataBase,
-  t.type({
-    type: t.literal('following'),
-    author: AuthorWithName,
-    music: Music,
-  }, 'following'),
-], 'FollowingVideoMetaData');
+export const FollowingVideoMetaData = t.intersection(
+  [
+    MetaDataBase,
+    t.type(
+      {
+        type: t.literal('following'),
+        author: AuthorWithName,
+        music: Music,
+      },
+      'following',
+    ),
+  ],
+  'FollowingVideoMetaData',
+);
 
 export type FollowingVideoMetaData = t.TypeOf<typeof FollowingVideoMetaData>;
 
-export const SearchVideoMetaData = t.intersection([
-  VideoMetaDataBase,
-  t.type({
-    type: t.literal('search'),
-    author: Author,
-    music: Music,
-  }, 'search'),
-], 'SearchVideoMetaData');
+export const SearchMetaData = t.intersection(
+  [
+    MetaDataBase,
+    t.type(
+      {
+        type: t.literal('search'),
+        results: t.array(t.any),
+        query: t.string,
+        thumbnails: t.array(
+          t.type({
+            downloaded: t.boolean,
+            filename: t.string,
+            reason: t.number,
+          }),
+        ),
+      },
+      'search',
+    ),
+  ],
+  'SearchVideoMetaData',
+);
 
-export type SearchVideoMetaData = t.TypeOf<typeof SearchVideoMetaData>;
+export type SearchMetaData = t.TypeOf<typeof SearchMetaData>;
 
-export const VideoMetaData = t.union([
-  ForYouVideoMetaData,
-  FollowingVideoMetaData,
-  SearchVideoMetaData,
-], 'VideoMetaData');
-
-export type VideoMetaData = t.TypeOf<typeof VideoMetaData>;
-
-export const MetaData = VideoMetaData;
+export const MetaData = t.union(
+  [ForYouVideoMetaData, FollowingVideoMetaData, SearchMetaData],
+  'VideoMetaData',
+);
 
 export type MetaData = t.TypeOf<typeof MetaData>;
 

@@ -1,6 +1,6 @@
 import * as t from 'io-ts';
 import * as apiModel from '../../models';
-import { DocumentedEndpoint } from '@shared/endpoints/utils';
+import { DocumentedEndpoint } from '@shared/endpoints';
 
 const GetPersonalJSON = DocumentedEndpoint({
   Method: 'GET',

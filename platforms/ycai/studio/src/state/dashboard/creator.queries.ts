@@ -17,7 +17,7 @@ import { APIError } from '@shared/errors/APIError';
 import { GetRelatedChannelsOutput } from '@shared/models/ChannelRelated';
 import * as sharedConst from '@shared/constants';
 import { MakeAPIClient } from '@shared/providers/api.provider';
-import * as endpoints from '@shared/endpoints';
+import * as endpoints from '@yttrex/shared/endpoints';
 import { config } from '../../config';
 import { AuthResponse } from '@shared/models/Auth';
 
@@ -32,34 +32,37 @@ const logout = async (): Promise<void> => {
   await localProfile.invalidate()();
 };
 
-export const { API, HTTPClient } = MakeAPIClient({
-  baseURL: config.API_URL,
-  getAuth: (req) => {
-    return pipe(
-      localProfile.run(),
-      TE.filterOrElse(
-        (s): s is AuthorizedContentCreator => s !== null,
-        () => new Error('Auth is null')
-      ),
-      TE.fold(
-        (e) => async () => {
-          return Promise.reject(e);
-        },
-        (a) => async () => {
-          req.headers = {
-            ...req.headers,
-            'x-authorization': a.accessToken,
-          };
-          return req;
-        }
-      )
-    )();
+export const { API, HTTPClient } = MakeAPIClient(
+  {
+    baseURL: config.API_URL,
+    getAuth: (req) => {
+      return pipe(
+        localProfile.run(),
+        TE.filterOrElse(
+          (s): s is AuthorizedContentCreator => s !== null,
+          () => new Error('Auth is null')
+        ),
+        TE.fold(
+          (e) => async () => {
+            return Promise.reject(e);
+          },
+          (a) => async () => {
+            req.headers = {
+              ...req.headers,
+              'x-authorization': a.accessToken,
+            };
+            return req;
+          }
+        )
+      )();
+    },
+    onUnauthorized: async (res) => {
+      await logout();
+      return res;
+    },
   },
-  onUnauthorized: async (res) => {
-    await logout();
-    return res;
-  },
-}, endpoints);
+  endpoints
+);
 
 type AuthorizedContentCreator = Omit<ContentCreator, 'accessToken'> & {
   accessToken: string;
@@ -90,7 +93,10 @@ export const accountLinkCompleted = queryStrict(
 // content creator
 
 export const localProfile = queryStrict(
-  () => TE.fromIO<AuthorizedContentCreator | null, APIError>(getItem(sharedConst.CONTENT_CREATOR)),
+  () =>
+    TE.fromIO<AuthorizedContentCreator | null, APIError>(
+      getItem(sharedConst.CONTENT_CREATOR)
+    ),
   available
 );
 

@@ -1,24 +1,26 @@
 ---
 title: Installation
+sidebar_position: 1
 ---
 
-## Getting started
+The app is packaged with [electron-builder](https://www.electron.build/) and can be downloaded from github [releases](https://github.com/tracking-exposed/yttrex/releases/latest).
 
-By default guardoni downloads an extension version `.99` with default opt-in (meant for automation) already built and places it in `$basePath/extension` folder.
-By default this extension sends the results to the server.
+## Linux (Debian)
 
-To get an extension which sends the results to the local server you have to build it yourself - as explained in details in the [extension project](../extension/README.md):
-
-```bash
-# from the project's root
-cd ../extension
-yarn build
-```
-
-Once you build the extension you need to compile `guardoni` code too:
+Download the executable from the [latest release](https://github.com/tracking-exposed/yttrex/releases/latest), then run the following command from your downloads folder:
 
 ```bash
-yarn build
+dpkg -i ./guardoni_VERSION_amd64.deb
 ```
 
-Then you'll be able to execute both [cli](#cli) and [electron](#electron) programs.
+## Windows
+
+Download the latest version from [here](https://github.com/tracking-exposed/yttrex/releases/latest), then double click on the `.exe` downloaded.
+
+## MacOS
+
+Download the latest version from [here](https://github.com/tracking-exposed/yttrex/releases/latest), then double click on the `.dmg` file.
+
+## Logs
+
+The application uses [`electron-log`](https://github.com/megahertz/electron-log) and all log files are stored at `~/.guardoni/electron/logs`.

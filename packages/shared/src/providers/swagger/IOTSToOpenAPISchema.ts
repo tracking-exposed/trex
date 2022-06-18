@@ -3,7 +3,12 @@
 import { keys, record } from 'fp-ts/lib/Record';
 import * as t from 'io-ts';
 import * as NEA from 'io-ts-types/lib/nonEmptyArray';
+import { Directive } from '../../models/Directive';
+import { swaggerLogger } from './utils';
 
+interface AnyType extends t.Type<any, any, any> {
+  _tag: 'AnyType';
+}
 // interface NonEmptyArrayTypeT<C extends t.Mixed>
 //   extends t.Type<
 //     NonEmptyArray<t.TypeOf<C>>,
@@ -23,6 +28,7 @@ interface IntersectionType extends t.IntersectionType<HasOpenAPISchema[]> {}
 interface BrandedType extends t.RefinementType<HasOpenAPISchema> {}
 
 export type HasOpenAPISchema =
+  | t.UnionC<any>
   | t.UnknownType
   | t.UndefinedType
   | t.NullType
@@ -33,6 +39,7 @@ export type HasOpenAPISchema =
   | t.KeyofType<any>
   | t.LiteralType<any>
   | t.PartialType<any>
+  | AnyType
   | ArrayType
   | RecordType
   | StructType
@@ -64,6 +71,7 @@ export const getInnerSchemaName = (tt: string): string => {
 
   return tt;
 };
+
 // const isNEA = (type: unknown): type is NEA.NonEmptyArrayC<any> => {
 //   console.log('is NEA', type);
 //   return type !== undefined && (type as any).name.startsWith('NonEmptyArray<');
@@ -88,6 +96,8 @@ export const getOpenAPISchema = <T extends IOTOpenDocSchema>(codec: T): any => {
   }
 
   switch (type._tag) {
+    case 'AnyType':
+      return { type: 'object', description: 'any value' };
     case 'UnknownType':
       return { type: 'object', description: type.name };
     case 'UndefinedType':
@@ -149,10 +159,10 @@ export const getOpenAPISchema = <T extends IOTOpenDocSchema>(codec: T): any => {
       return { type: 'array', items: type.types.map(getOpenAPISchema) };
     case 'UnionType':
       const nonNullableTypes = type.types.filter(
-        (t) => t._tag !== 'UndefinedType' && t._tag !== 'NullType'
+        (tt: any) => tt._tag !== 'UndefinedType' && tt._tag !== 'NullType'
       );
       const isRequired = type.types.length === nonNullableTypes.length;
-      if (nonNullableTypes.every((v) => v._tag === 'LiteralType')) {
+      if (nonNullableTypes.every((v: any) => v._tag === 'LiteralType')) {
         return {
           type: 'string',
           description: type.name,
@@ -227,15 +237,15 @@ export const getOpenAPISchema = <T extends IOTOpenDocSchema>(codec: T): any => {
         };
       }
 
-      // if (codec.name === 'GetDirectiveOutput') {
-      //   return {
-      //     type: 'array',
-      //     items: Directive.types.map((tt: any) => ({
-      //       $ref: `#/components/schemas/${tt.name}`,
-      //     })),
-      //     required: true,
-      //   };
-      // }
+      if (codec.name === 'GetDirectiveOutput') {
+        return {
+          type: 'array',
+          items: Directive.types.map((tt: any) => ({
+            $ref: `#/components/schemas/${tt.name}`,
+          })),
+          required: true,
+        };
+      }
 
       if (codec.name === undefined) {
         return {
@@ -244,7 +254,7 @@ export const getOpenAPISchema = <T extends IOTOpenDocSchema>(codec: T): any => {
           required: false,
         };
       }
-      // console.log('unhandled codec', codec.name);
+      swaggerLogger.warn('unhandled codec %O', codec);
     }
   }
 };
