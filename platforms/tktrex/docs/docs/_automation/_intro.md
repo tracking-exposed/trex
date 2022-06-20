@@ -29,7 +29,7 @@ from there. A `project` is simply materialized as a directory.
 ## Installation
 
 ```bash
-git clone git@github.com:tracking-exposed/yttrex.git
+git clone git@github.com:tracking-exposed/trex.git
 git checkout <the appropriate branch, ask @djfm>
 cd yttrex
 yarn

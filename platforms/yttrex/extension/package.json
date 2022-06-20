@@ -9,7 +9,7 @@
   "author": "Claudio Agosti, Alberto Granzotto, and the tracking exposed team",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/tracking-exposed/yttrex.git"
+    "url": "git+https://github.com/tracking-exposed/trex.git"
   },
   "scripts": {
     "clean": "rm -rf ./build ./dist",

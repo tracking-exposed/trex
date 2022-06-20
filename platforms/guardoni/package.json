@@ -30,7 +30,7 @@
   "main": "./build/electron/main.js",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/tracking-exposed/yttrex.git"
+    "url": "git+https://github.com/tracking-exposed/trex.git"
   },
   "keywords": [
     "youtube",
