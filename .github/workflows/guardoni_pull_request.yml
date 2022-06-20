@@ -11,8 +11,7 @@ on:
       - refactor/**
     paths:
       - "packages/shared/**"
-      - "platforms/**/extension/**"
-      - "platforms/guardoni/**"
+      - "platforms/**"
 
 jobs:
   pull_request:
