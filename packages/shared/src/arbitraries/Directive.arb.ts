@@ -40,10 +40,10 @@ export const PostDirectiveSuccessResponseArb = getArbitrary(
 }));
 
 export const GuardoniExperimentArb = getArbitrary(
-  t.strict(propsOmit(GuardoniExperiment, ['when', 'directives']))
+  t.strict(propsOmit(GuardoniExperiment, ['when', 'links']))
 ).map((exp) => ({
   ...exp,
   experimentId: fc.sample(fc.uuid(), 1)[0],
   when: new Date().toISOString(),
-  directives: [],
+  links: [],
 }));
