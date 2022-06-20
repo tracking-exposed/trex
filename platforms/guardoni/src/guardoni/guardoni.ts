@@ -73,9 +73,7 @@ const runNavigate = (ctx: GuardoniContext): TE.TaskEither<AppError, void> => {
       return TE.tryCatch(async () => {
         const [page] = await b.pages();
 
-        await page.goto(home, {
-          waitUntil: 'networkidle0',
-        });
+        await page.goto(home);
 
         return b;
       }, toAppError);
