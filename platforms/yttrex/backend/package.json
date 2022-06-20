@@ -21,6 +21,10 @@
   },
   "author": "Claudio Agosti <claudio@tracking.exposed> and https://github.com/tracking-exposed/yttrex/graphs/contributors",
   "license": "AGPL-3.0",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/tracking-exposed/trex.git"
+  },
   "dependencies": {
     "abort-controller": "^3.0.0",
     "body-parser": "^1.19.1",
