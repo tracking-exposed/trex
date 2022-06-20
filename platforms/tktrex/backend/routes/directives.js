@@ -69,15 +69,14 @@ async function get(req) {
   debug('GET: should return directives for %s', experimentId);
   const expinfo = await experlib.pickDirective(experimentId);
 
+  if (!expinfo) {
+    throw new Error(`Experiment ${experimentId} not found`);
+  }
   debug('Directive %O', expinfo);
   // if(expinfo.directiveType === 'search')
-  const directives = expinfo.directives;
-  debug(
-    'search directive type %s produced %d',
-    experimentId,
-    directives.length
-  );
-  return { json: directives };
+  const links = expinfo.directives ?? expinfo.links ?? [];
+  debug('search directive type %s produced %d', experimentId, links.length);
+  return { json: links };
 }
 
 async function getPublic(req) {
