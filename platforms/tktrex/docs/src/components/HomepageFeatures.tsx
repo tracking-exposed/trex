@@ -19,7 +19,7 @@ const FeatureList: FeatureItem[] = [
         <a
           className="button button--secondary button--sm"
           style={{ marginRight: 10 }}
-          href="https://chrome.google.com/webstore/detail/triktroktrex/bigbeiocbgkhndacjnkklogbilfchijf?hl=it&authuser=0"
+          href="https://chrome.google.com/webstore/detail/triktroktrex/bigbeiocbgkhndacjnkklogbilfchijf"
         >
           Chrome
         </a>
