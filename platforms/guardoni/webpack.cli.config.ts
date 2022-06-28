@@ -18,6 +18,11 @@ const { buildENV: guardoniBuildEnv, ...guardoniConfig } = getConfig({
 
 guardoniConfig.module?.rules?.push(
   {
+    // also part of the puppeteer-extra hack
+    test: /\.js$/,
+    use: 'unlazy-loader',
+  },
+  {
     // this is a hack to get webpack to be able to bundle
     // puppeteer-extra, found here:
     // https://github.com/berstend/puppeteer-extra/issues/93
@@ -36,16 +41,17 @@ guardoniConfig.module?.rules?.push(
     },
   },
   {
-    // also part of the puppeteer-extra hack
-    test: /\.js$/,
-    use: 'unlazy-loader',
-  },
-  {
     // this is required by canvas, part of linkedom
     test: /\.node$/,
     use: 'node-loader',
   }
 );
+
+// guardoniConfig.externals = {
+//   puppeteer: "require('puppeteer')",
+//   'puppeteer-extra': "require('puppeteer-extra')",
+//   'puppeteer-extra-stealth-plugin': 'require("puppeteer-extra-stealth-plugin")',
+// };
 
 export default [
   // guardoni cli
