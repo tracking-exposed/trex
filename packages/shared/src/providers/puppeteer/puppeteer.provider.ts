@@ -1,8 +1,7 @@
 import { pipe } from 'fp-ts/lib/function';
 import * as TE from 'fp-ts/lib/TaskEither';
 import type * as puppeteer from 'puppeteer-core';
-import { PuppeteerExtra } from 'puppeteer-extra';
-import StealthPlugin from 'puppeteer-extra-plugin-stealth';
+import type { PuppeteerExtra } from 'puppeteer-extra';
 import { AppError, toAppError } from '../../errors/AppError';
 import { Logger } from '../../logger';
 import {
@@ -16,6 +15,7 @@ import {
 import { DirectiveHooks } from './DirectiveHook';
 import { openURL } from './directives/openURL';
 import { GetScrollFor } from './directives/scroll';
+import StealthPlugin from 'puppeteer-extra-plugin-stealth';
 
 export type LaunchOptions = puppeteer.LaunchOptions &
   puppeteer.BrowserLaunchArgumentOptions &
@@ -38,6 +38,7 @@ export const launch =
   (opts: LaunchOptions): TE.TaskEither<AppError, puppeteer.Browser> => {
     return TE.tryCatch(async () => {
       ctx.logger.info('Launch puppeteer %O', opts);
+
       ctx.puppeteer.use(StealthPlugin());
       const browser = await ctx.puppeteer.launch(opts as any);
 
