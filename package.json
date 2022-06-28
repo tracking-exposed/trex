@@ -15,7 +15,10 @@
     "platforms/guardoni",
     "platforms/ycai/studio",
     "platforms/yttrex/*",
-    "platforms/tktrex/*"
+    "platforms/tktrex/backend",
+    "platforms/tktrex/docs",
+    "platforms/tktrex/extension",
+    "platforms/tktrex/shared"
   ],
   "packageManager": "yarn@3.1.1",
   "scripts": {
