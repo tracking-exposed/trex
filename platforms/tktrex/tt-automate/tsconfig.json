@@ -32,9 +32,9 @@
     "sourceMap": true
   },
   "references": [
-    { "path": "../../packages/shared" },
-    { "path": "../tktrex/shared" },
-    { "path": "../guardoni" }
+    { "path": "../../guardoni" },
+    { "path": "../../../packages/shared" },
+    { "path": "../shared" }
   ],
   "ts-node": {
     "require": ["tsconfig-paths/register"],
