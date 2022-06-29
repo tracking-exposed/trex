@@ -36,6 +36,7 @@ export const GuardoniConfig = t.strict(
     loadFor: t.number,
     advScreenshotDir: t.union([t.string, t.undefined]),
     excludeURLTag: t.union([t.string, t.undefined]),
+    tosAccepted: t.union([t.boolean, t.undefined]),
     yt: PlatformConfig,
     tk: PlatformConfig,
   },
