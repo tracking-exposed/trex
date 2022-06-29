@@ -207,9 +207,10 @@ jobs:
           fail_on_unmatched_files: true
           tag_name: v${{ steps.version.outputs.version }}
           files: |
-            guardoni/dist/guardoni-cli*
-            guardoni/dist/*.deb
-            guardoni/dist/*.dmg
-            guardoni/dist/Guardoni*.exe
-            platforms/tktrex/extension/dist/tktrex-*.zip
             platforms/yttrex/extension/dist/yttrex-*.zip
+            platforms/tktrex/extension/dist/tktrex-*.zip
+            platforms/guardoni/dist/guardoni-cli*
+            platforms/guardoni/dist/*.deb
+            platforms/guardoni/dist/*.dmg
+            platforms/guardoni/dist/Guardoni*.exe
+            platforms/ycai/studio/build/extension/*.zip
