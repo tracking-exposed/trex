@@ -1,6 +1,6 @@
 import os from 'os';
 
-import puppeteerVanilla, { Page, Dialog } from 'puppeteer';
+import puppeteerVanilla, { Page, Dialog } from 'puppeteer-core';
 import puppeteer from 'puppeteer-extra';
 import stealth from 'puppeteer-extra-plugin-stealth';
 
