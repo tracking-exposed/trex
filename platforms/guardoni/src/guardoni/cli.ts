@@ -26,6 +26,11 @@ import { DirectiveType } from '@shared/models/Directive';
 
 export const cliLogger = guardoniLogger.extend('cli');
 
+export interface GuardoniCommandOpts {
+  publicKey: string;
+  secretKey: string;
+}
+
 export type GuardoniCommandConfig =
   | {
       run: 'register-csv';
@@ -35,6 +40,7 @@ export type GuardoniCommandConfig =
   | {
       run: 'experiment';
       experiment: NonEmptyString;
+      opts?: GuardoniCommandOpts;
     }
   | {
       run: 'auto';
@@ -45,6 +51,7 @@ export type GuardoniCommandConfig =
     }
   | {
       run: 'navigate';
+      opts: GuardoniCommandOpts;
     };
 
 export interface GuardoniCLI {
@@ -147,10 +154,10 @@ export const GetGuardoniCLI: GetGuardoniCLI = (
               return g.registerExperimentFromCSV(command.file, type);
             }
             case 'experiment':
-              return g.runExperiment(command.experiment);
+              return g.runExperiment(command.experiment, command.opts);
             case 'navigate': {
               return pipe(
-                g.runBrowser(),
+                g.runBrowser(command.opts),
                 TE.map(() => ({ type: 'success', values: [], message: '' }))
               );
             }
@@ -209,15 +216,16 @@ const runGuardoni = ({
   platform,
   command,
   extensionDir,
+  'public-key': _publicKey,
+  'secret-key': _secretKey,
   ...guardoniConf
 }: any): Promise<void> => {
   const basePath = guardoniConf.basePath ?? DEFAULT_BASE_PATH;
 
   if (verbose) {
-    D.enable('guardoni:cli*');
+    D.enable('@guardoni*');
 
     cliLogger.debug('Running guardoni', { config, basePath, guardoniConf });
-    // D.enable('guardoni*');
     if (config) {
       // eslint-disable-next-line
       cliLogger.debug(`Configuration loaded from ${config}`, guardoniConf);
@@ -262,28 +270,57 @@ const program = yargs(hideBin(process.argv))
   .command(
     'yt-navigate',
     'Use guardoni browser with loaded yt extension',
-    ({ argv }) =>
-      runGuardoni({
-        ...(argv as any),
+    (yargs) =>
+      yargs
+        .option('publicKey', {
+          type: 'string',
+          desc: 'The publicKey to use to collect evidences',
+          default: undefined,
+        })
+        .option('secretKey', {
+          type: 'string',
+          desc: 'The secretKey to use to sign the evidences',
+          default: undefined,
+        }),
+    ({ publicKey, secretKey, ...argv }) => {
+      void runGuardoni({
+        ...argv,
         platform: 'youtube',
-        command: { run: 'navigate' },
-      })
+        command: { run: 'navigate', opts: { publicKey, secretKey } },
+      });
+    }
   )
   .command(
     'yt-experiment <experiment>',
     'Run guardoni from a given experiment',
     (yargs) =>
-      yargs.positional('experiment', {
-        desc: 'Experiment id',
-        demandOption: 'Provide the experiment id',
-        type: 'string',
-      }),
-    ({ experiment, ...argv }) =>
-      runGuardoni({
+      yargs
+        .positional('experiment', {
+          desc: 'Experiment id',
+          demandOption: 'Provide the experiment id',
+          type: 'string',
+        })
+        .option('publicKey', {
+          type: 'string',
+          desc: 'The publicKey to use to collect evidences',
+          default: undefined,
+        })
+        .option('secretKey', {
+          type: 'string',
+          desc: 'The secretKey to use to sign the evidences',
+          default: undefined,
+        }),
+    ({ experiment, publicKey, secretKey, ...argv }) => {
+      void runGuardoni({
         ...argv,
         platform: 'youtube',
-        command: { run: 'experiment', experiment },
-      })
+        command: {
+          run: 'experiment',
+          experiment,
+          opts: { publicKey, secretKey },
+        },
+      });
+    }
   )
   .command(
     'yt-register <file>',
@@ -295,12 +332,13 @@ const program = yargs(hideBin(process.argv))
         demandOption: 'Provide a valid path to a csv file',
       });
     },
-    ({ file, ...argv }) =>
-      runGuardoni({
+    ({ file, ...argv }) => {
+      void runGuardoni({
         ...argv,
         platform: 'youtube',
         command: { run: 'register-csv', file },
-      })
+      });
+    }
   )
   .command(
     'yt-list',
@@ -308,8 +346,13 @@ const program = yargs(hideBin(process.argv))
     (yargs) => {
       return yargs;
     },
-    (argv) =>
-      runGuardoni({ ...argv, platform: 'youtube', command: { run: 'list' } })
+    (argv) => {
+      void runGuardoni({
+        ...argv,
+        platform: 'youtube',
+        command: { run: 'list' },
+      });
+    }
   )
   .command(
     'yt-auto <index>',
@@ -320,38 +363,71 @@ const program = yargs(hideBin(process.argv))
         choices: ['1', '2'],
         demandOption: 'Run comparison or shadow ban experiment run',
       }),
-    ({ index, ...argv }) =>
-      runGuardoni({
+    ({ index, ...argv }) => {
+      void runGuardoni({
         ...argv,
         platform: 'youtube',
         command: { run: 'auto', index },
-      })
+      });
+    }
   )
   .command(
     'tk-navigate',
     'Use guardoni browser with loaded tk extension',
-    ({ argv }) =>
-      runGuardoni({
-        ...(argv as any),
+    (yargs) =>
+      yargs
+        .option('publicKey', {
+          type: 'string',
+          desc: 'The publicKey to use to collect evidences',
+          default: undefined,
+        })
+        .option('secretKey', {
+          type: 'string',
+          desc: 'The secretKey to use to sign the evidences',
+          default: undefined,
+        }),
+    ({ publicKey, secretKey, ...argv }) => {
+      void runGuardoni({
+        ...argv,
         platform: 'tiktok',
-        command: { run: 'navigate' },
-      })
+        command: {
+          run: 'navigate',
+          opts: { publicKey, secretKey },
+        },
+      });
+    }
   )
   .command(
     'tk-experiment <experiment>',
     'Run guardoni from a given experiment',
     (yargs) =>
-      yargs.positional('experiment', {
-        desc: 'Experiment id',
-        demandOption: 'Provide the experiment id',
-        type: 'string',
-      }),
-    ({ experiment, ...argv }) =>
-      runGuardoni({
+      yargs
+        .positional('experiment', {
+          desc: 'Experiment id',
+          demandOption: 'Provide the experiment id',
+          type: 'string',
+        })
+        .option('publicKey', {
+          type: 'string',
+          desc: 'The publicKey to use to collect evidences',
+          default: undefined,
+        })
+        .option('secretKey', {
+          type: 'string',
+          desc: 'The secretKey to use to sign the evidences',
+          default: undefined,
+        }),
+    ({ experiment, publicKey, secretKey, ...argv }) => {
+      void runGuardoni({
         ...argv,
         platform: 'tiktok',
-        command: { run: 'experiment', experiment },
-      })
+        command: {
+          run: 'experiment',
+          experiment,
+          opts: { publicKey, secretKey },
+        },
+      });
+    }
   )
   .command(
     'tk-register <file>',
@@ -363,12 +439,13 @@ const program = yargs(hideBin(process.argv))
         demandOption: 'Provide a valid path to a csv file',
       });
     },
-    ({ file, ...argv }) =>
-      runGuardoni({
+    ({ file, ...argv }) => {
+      void runGuardoni({
         ...argv,
         platform: 'tiktok',
         command: { run: 'register-csv', file },
-      })
+      });
+    }
   )
   .command(
     'tk-list',
@@ -376,8 +453,13 @@ const program = yargs(hideBin(process.argv))
     (yargs) => {
       return yargs;
     },
-    (argv) =>
-      runGuardoni({ ...argv, platform: 'tiktok', command: { run: 'list' } })
+    (argv) => {
+      void runGuardoni({
+        ...argv,
+        platform: 'tiktok',
+        command: { run: 'list' },
+      });
+    }
   )
   .command(
     'tk-init [projectDirectory]',
@@ -397,7 +479,9 @@ const program = yargs(hideBin(process.argv))
           default: '',
           choices: [],
         }),
-    (args) => Promise.reject(new Error('Not implemented'))
+    (args) => {
+      void Promise.reject(new Error('Not implemented'));
+    }
   )
   .command(
     'tk-run [projectDirectory]',
@@ -408,7 +492,9 @@ const program = yargs(hideBin(process.argv))
         desc: 'Directory containing the initialized experiment to run, current directory if empty',
         type: 'string',
       }),
-    (args) => Promise.reject(new Error('Not implemented'))
+    (args) => {
+      void Promise.reject(new Error('Not implemented'));
+    }
   )
   .command(
     'tk-dump [projectDirectory]',
@@ -419,7 +505,9 @@ const program = yargs(hideBin(process.argv))
         desc: 'Directory containing the experiment from which to dump the meta data',
         type: 'string',
       }),
-    (args) => Promise.reject(new Error('Not implemented'))
+    (args) => {
+      void Promise.reject(new Error('Not implemented'));
+    }
   )
   .option('c', {
     type: 'string',
@@ -450,7 +538,7 @@ const program = yargs(hideBin(process.argv))
     type: 'string',
     desc: 'Socket proxy for puppeteer.',
   })
-  .options('adv-screenshot-dir', {
+  .option('adv-screenshot-dir', {
     type: 'string',
     desc: 'ADV screenshot directory path',
   })

@@ -14,13 +14,20 @@ import * as IOE from 'fp-ts/lib/IOEither';
 import * as TE from 'fp-ts/lib/TaskEither';
 import * as fs from 'fs';
 import path from 'path';
+import { GuardoniCommandOpts } from './cli';
 import { GuardoniContext, Platform } from './types';
 
+/**
+ * Build the url to download the extension with "data collection" opt-in
+ */
 const getExtensionWithOptInURL = (platform: Platform, v: string): string => {
   const platformChunk = platform === 'youtube' ? 'yttrex' : 'tktrex';
   return `https://github.com/tracking-exposed/yttrex/releases/download/v${v}/${platformChunk}-guardoni-extension-${v}.zip`;
 };
 
+/**
+ * Download the extension if not present
+ */
 export const downloadExtension = (
   ctx: GuardoniContext
 ): TE.TaskEither<AppError, void> => {
@@ -131,3 +138,20 @@ export const downloadExtension = (
     })
   );
 };
+
+export const setLocalSettings =
+  (ctx: GuardoniContext) =>
+  (s?: GuardoniCommandOpts): void => {
+    if (!s?.publicKey && !s?.secretKey) {
+      ctx.logger.debug('No publicKey/secretKey pair given...');
+      return;
+    }
+
+    const settingsJsonPath = path.resolve(
+      ctx.platform.extensionDir,
+      'settings.json'
+    );
+    const settings = JSON.stringify(s);
+    ctx.logger.info('Saving settings at %s: %O', settingsJsonPath, settings);
+    fs.writeFileSync(settingsJsonPath, settings);
+  };

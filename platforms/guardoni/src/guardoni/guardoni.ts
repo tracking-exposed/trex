@@ -40,7 +40,7 @@ import {
   saveExperiment,
   validateNonEmptyString,
 } from './experiment';
-import { downloadExtension } from './extension';
+import { downloadExtension, setLocalSettings } from './extension';
 import {
   checkProfile,
   getDefaultProfile,
@@ -58,51 +58,57 @@ import {
   ProgressDetails,
 } from './types';
 import { getChromePath, getPackageVersion } from './utils';
+import { GuardoniCommandOpts } from './cli';
 
-const runNavigate = (ctx: GuardoniContext): TE.TaskEither<AppError, void> => {
-  const home =
-    ctx.platform.name === 'tiktok'
-      ? 'https://www.tiktok.com'
-      : 'https://www.youtube.com';
+const runNavigate =
+  (ctx: GuardoniContext) =>
+  (opts?: GuardoniCommandOpts): TE.TaskEither<AppError, void> => {
+    const home =
+      ctx.platform.name === 'tiktok'
+        ? 'https://www.tiktok.com'
+        : 'https://www.youtube.com';
 
-  return pipe(
-    dispatchBrowser(ctx)({
-      headless: false,
-    }),
-    TE.chain((b) => {
-      return TE.tryCatch(async () => {
-        const [page] = await b.pages();
+    return pipe(
+      TE.right(setLocalSettings(ctx)(opts)),
+      TE.chain(() =>
+        dispatchBrowser(ctx)({
+          headless: false,
+        })
+      ),
+      TE.chain((b) => {
+        return TE.tryCatch(async () => {
+          const [page] = await b.pages();
 
-        await page.goto(home, {
-          waitUntil: 'networkidle0',
-        });
+          await page.goto(home, {
+            waitUntil: 'networkidle0',
+          });
 
-        return b;
-      }, toAppError);
-    }),
-    TE.chain((b) => {
-      return TE.tryCatch(
-        () =>
-          new Promise((resolve, reject) => {
-            ctx.logger.info('Browser is ready at %s', home);
-            b.on('error', (e) => {
-              ctx.logger.error('Error occurred during browsing %O', e);
-              resolve();
-            });
-            b.on('disconnected', () => {
-              ctx.logger.debug('Browser disconnected');
-              resolve();
-            });
-            b.on('close', () => {
-              ctx.logger.info('browser closing...');
-              resolve();
-            });
-          }),
-        toAppError
-      );
-    })
-  );
-};
+          return b;
+        }, toAppError);
+      }),
+      TE.chain((b) => {
+        return TE.tryCatch(
+          () =>
+            new Promise((resolve, reject) => {
+              ctx.logger.info('Browser is ready at %s', home);
+              b.on('error', (e) => {
+                ctx.logger.error('Error occurred during browsing %O', e);
+                resolve();
+              });
+              b.on('disconnected', () => {
+                ctx.logger.debug('Browser disconnected');
+                resolve();
+              });
+              b.on('close', () => {
+                ctx.logger.info('browser closing...');
+                resolve();
+              });
+            }),
+          toAppError
+        );
+      })
+    );
+  };
 
 export const runBrowser =
   (ctx: GuardoniContext) =>
@@ -144,7 +150,10 @@ export const runBrowser =
 
 export const runExperiment =
   (ctx: GuardoniContext) =>
-  (experimentId: string): TE.TaskEither<AppError, GuardoniSuccessOutput> => {
+  (
+    experimentId: string,
+    opts?: GuardoniCommandOpts
+  ): TE.TaskEither<AppError, GuardoniSuccessOutput> => {
     ctx.logger.info(
       'Running experiment %s with config %O',
       experimentId,
@@ -157,6 +166,7 @@ export const runExperiment =
           ctx.profile
         ),
         expId: TE.fromEither(validateNonEmptyString(experimentId)),
+        localSettings: TE.right(setLocalSettings(ctx)(opts)),
       }),
       TE.chain(({ profile, expId }) =>
         pipe(
@@ -354,7 +364,8 @@ export interface Guardoni {
   ) => TE.TaskEither<AppError, GuardoniSuccessOutput>;
   listExperiments: () => TE.TaskEither<AppError, GuardoniSuccessOutput>;
   runExperiment: (
-    experiment: NonEmptyString
+    experiment: NonEmptyString,
+    opts?: GuardoniCommandOpts
   ) => TE.TaskEither<AppError, GuardoniSuccessOutput>;
   runAuto: (value: '1' | '2') => TE.TaskEither<AppError, GuardoniSuccessOutput>;
   runExperimentForPage: (
@@ -362,7 +373,7 @@ export interface Guardoni {
     experiment: NonEmptyString,
     onProgress?: (details: ProgressDetails) => void
   ) => TE.TaskEither<AppError, GuardoniSuccessOutput>;
-  runBrowser: () => TE.TaskEither<AppError, void>;
+  runBrowser: (opts?: GuardoniCommandOpts) => TE.TaskEither<AppError, void>;
 }
 
 interface GuardoniLauncher {
@@ -383,10 +394,10 @@ export interface GuardoniOptions {
   verbose?: boolean;
 }
 
-export type GetGuardoni = ({
-  basePath,
-  logger,
-}: GuardoniOptions) => GuardoniLauncher;
+/**
+ * Get Guardoni instance
+ */
+export type GetGuardoni = (opts: GuardoniOptions) => GuardoniLauncher;
 
 export const GetGuardoni: GetGuardoni = ({
   basePath,
@@ -418,7 +429,7 @@ export const GetGuardoni: GetGuardoni = ({
             registerExperiment: registerExperiment(ctx),
             registerExperimentFromCSV: registerCSV(ctx),
             listExperiments: listExperiments(ctx),
-            runBrowser: () => runNavigate(ctx),
+            runBrowser: runNavigate(ctx),
           };
         })
       );
@@ -437,7 +448,7 @@ export const GetGuardoni: GetGuardoni = ({
             registerExperiment: registerExperiment(ctx),
             registerExperimentFromCSV: registerCSV(ctx),
             listExperiments: listExperiments(ctx),
-            runBrowser: () => runNavigate(ctx),
+            runBrowser: runNavigate(ctx),
           };
         })
       );

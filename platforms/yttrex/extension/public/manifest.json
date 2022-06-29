@@ -39,6 +39,7 @@
 
   "web_accessible_resources": [
     "*.png",
+    "settings.json",
     "experiment/name.json",
     "experiment/*.csv"
   ]
