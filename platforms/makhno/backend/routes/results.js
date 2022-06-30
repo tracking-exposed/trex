@@ -30,11 +30,12 @@ async function getResults(req) {
       options.amount, options.skip);
     await mongoc.close();
 
-    if(!results.length)
+    if(!results && !runs)
       return {
-        json: { success: false, error: "No results found for this test" }
+        json: { success: false, error: "This test do not seem scheduled for a test" }
       }
 
+    debug("%j", runs);
     // else we'll have material to display
     return { json: {
       success: true, 

@@ -78,7 +78,8 @@ function scheduleRun(urlo, minutesOffset, i) {
       twoLetterCountryCode
     });
     return {
-      runAt: moment().add(minutesOffset, 'minutes'),
+      runAt: moment().add(minutesOffset, 'minutes').toISOString(),
+      cc: twoLetterCountryCode,
       ...urlo,
       runId,
       state: 'waiting'
@@ -104,7 +105,7 @@ async function submitURL(req) {
   const urlo = {
     url,
     urlId,
-    savingTime: new Date()
+    savingTime: moment().toISOString()
   };
 
   const retv = {};
