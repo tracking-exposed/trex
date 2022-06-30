@@ -29,8 +29,5 @@ module.exports = {
     },
   },
   setupFilesAfterEnv: ['<rootDir>/jest.setup.js'],
-  collectCoverageFrom: [
-    '<rootDir>/src/**',
-    '!<rootDir>/src/components/buttons/**',
-  ],
+  collectCoverageFrom: ['<rootDir>/src/**', '!<rootDir>/src/components/**'],
 };
