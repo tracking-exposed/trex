@@ -37,5 +37,5 @@
     }
   ],
 
-  "web_accessible_resources": ["interceptor.js", "*.png"]
+  "web_accessible_resources": ["interceptor.js", "*.png", "settings.json"]
 }

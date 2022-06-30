@@ -54,7 +54,7 @@ jobs:
 
       - name: Build guardoni
         working-directory: ./platforms/guardoni
-        run: ./scripts/cli-build.sh
+        run: ./scripts/cli-build.mjs
 
       - name: Test
         run: |
