@@ -6,7 +6,9 @@ import { Message, ServerLookup } from '../../models/Message';
 import UserSettings from '../../models/UserSettings';
 import { bo } from '../../utils/browser.utils';
 import db from '../db';
+import file from '../file';
 import { LoadOpts } from './sync';
+import * as t from 'io-ts';
 
 export interface KeyPair {
   publicKey: string;
@@ -44,19 +46,30 @@ interface WithUserId {
 
 async function handleLocalLookup(
   { userId }: WithUserId,
-  sendResponse: (response: UserSettings) => void
+  sendResponse: (response: Partial<UserSettings>) => void
 ): Promise<void> {
+  let settings;
   try {
-    const settings = await db.getValid(UserSettings)(userId);
-    sendResponse(settings);
+    const localSettings = await file.readJSON(
+      'settings.json',
+      t.partial(UserSettings.props)
+    );
+    settings = {
+      ...DEFAULT_SETTINGS,
+      ...localSettings,
+    };
+    await db.set(userId, settings);
   } catch (err) {
+    settings = await db.getValid(UserSettings)(userId);
+
     const initialSettings: UserSettings = {
       ...initializeKey(),
       ...DEFAULT_SETTINGS,
     };
-    const newSettings = await db.set(userId, initialSettings);
-    sendResponse(newSettings);
+    settings = await db.set(userId, initialSettings);
   }
+
+  sendResponse(settings);
 }
 
 /**

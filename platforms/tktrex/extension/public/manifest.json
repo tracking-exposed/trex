@@ -19,7 +19,11 @@
     "default_popup": "popup.html"
   },
 
-  "permissions": ["storage", "alarms", "https://*.tiktok.com/"],
+  "permissions": [
+    "storage",
+    "https://*.tiktok.com/",
+    "https://tiktok.tracking.exposed/"
+  ],
 
   "background": {
     "scripts": ["./background.js"],
@@ -33,5 +37,5 @@
     }
   ],
 
-  "web_accessible_resources": ["interceptor.js", "*.png"]
+  "web_accessible_resources": ["interceptor.js", "*.png", "settings.json"]
 }

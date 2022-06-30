@@ -1,0 +1,46 @@
+{
+  "extends": "../../tsconfig.json",
+  "compilerOptions": {
+    "allowSyntheticDefaultImports": true,
+    "allowJs": true,
+    "baseUrl": "./src",
+    "esModuleInterop": true,
+    "jsx": "react",
+    "module": "ES2020",
+    "moduleResolution": "node",
+    "noEmit": true,
+    "noImplicitAny": true,
+    "outDir": "./dist",
+    "resolveJsonModule": true,
+    "strict": true,
+    "strictNullChecks": true,
+    "target": "ES2021",
+    "lib": ["ES2021"],
+    "skipLibCheck": true,
+    "paths": {
+      "@shared/*": ["../../../packages/shared/src/*"],
+      "@tktrex/*": ["../../shared/src/*"],
+      "@guardoni/*": ["../../guardoni/src/*"],
+      "@experiment/*": ["./experiment/*"],
+      "@experiment": ["./experiment/index"],
+      "@project/*": ["./project/*"],
+      "@project": ["./project/index"],
+      "@storage/*": ["./storage/*"],
+      "@util/*": ["./util/*"],
+      "@platform/*": ["./platform/*"]
+    },
+    "sourceMap": true
+  },
+  "references": [
+    { "path": "../../guardoni" },
+    { "path": "../../../packages/shared" },
+    { "path": "../shared" }
+  ],
+  "ts-node": {
+    "require": ["tsconfig-paths/register"],
+    "compilerOptions": {
+      "module": "COMMONJS"
+    }
+  },
+  "exclude": ["node_modules", "dist"]
+}
