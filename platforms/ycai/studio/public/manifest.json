@@ -20,7 +20,6 @@
 
   "permissions": [
     "storage",
-    "alarms",
     "https://*.youtube.com/",
     "https://youchoose.ai/",
     "https://yt3.ggpht.com/"
