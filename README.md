@@ -23,11 +23,9 @@ The browser extension for [YouChoose.AI](https://youchoose.ai) and studio dashbo
 
 Sponsored by the European Commission Ledger project in 2021, Develope by the technical team of [YouChoose AI](https://youchoose.ai) a project by Tracking Exposed. It is listed separately as we **consider YouChoose should develop its own governance**, reach out to us if you want to know more.
 
-
-
 ## Packages
 
-### [Taboule]](./packages/taboule/)
+### [Taboule](./packages/taboule/)
 
 A portable data table written in React to display TRex data by pre-configured API.
 

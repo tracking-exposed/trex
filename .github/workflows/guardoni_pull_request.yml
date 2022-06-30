@@ -52,7 +52,8 @@ jobs:
         run: yarn shared build
 
       - name: Build guardoni
-        run: yarn guardoni tsc -b
+        working-directory: ./platforms/guardoni
+        run: ./scripts/cli-build.mjs
 
   pm2_start:
     name: PM2 Start

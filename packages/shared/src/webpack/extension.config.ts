@@ -59,6 +59,20 @@ const getExtensionConfig = <E extends t.Props>(
             return manifestJSON;
           },
         },
+        {
+          from: path.resolve(c.cwd, 'public/settings.json'),
+          transform: (content: Buffer) => {
+            const settings = JSON.parse(content.toString());
+            if (process.env.PUBLIC_KEY) {
+              settings.publicKey = process.env.PUBLIC_KEY;
+            }
+            if (process.env.SECRET_KEY) {
+              settings.secreteKey = process.env.SECRET_KEY;
+            }
+            const settingsJSON = JSON.stringify(settings, null, 2);
+            return settingsJSON;
+          },
+        },
       ],
     })
   );

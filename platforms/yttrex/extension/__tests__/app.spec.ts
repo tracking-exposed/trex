@@ -41,7 +41,10 @@ const backgroundOpts = {
   getHeadersForDataDonation,
 };
 
-const keys = initializeKey();
+const keys = {
+  publicKey: process.env.PUBLIC_KEY,
+  secretKey: process.env.SECRET_KEY
+};
 let supporterId: string, ytURL: string;
 
 chromeListener.mockImplementation((request, sender, sendResponse) => {

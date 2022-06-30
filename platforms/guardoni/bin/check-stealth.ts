@@ -4,8 +4,10 @@ import { dispatchBrowser } from '../src/guardoni/browser';
 import { getDefaultConfig } from '../src/guardoni/config';
 import { guardoniLogger } from '../src/logger';
 
+
 void (async () => {
-  await dispatchBrowser({
+  const ctx = {} as any
+  await dispatchBrowser(ctx)({
     version: '1',
     guardoniConfigFile: 'guardoni.config.json',
     API: {} as any,

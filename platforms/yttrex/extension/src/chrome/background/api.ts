@@ -27,7 +27,7 @@ export const getHeadersForDataDonation = async (req: SyncReq): Promise<any> => {
     decodeFromBase58(keypair.secretKey)
   );
 
-  ytLog.info('Signature %s', signature);
+  // ytLog.info('Signature %s', signature);
 
   const headers = {
     'Content-Type': 'application/json',
