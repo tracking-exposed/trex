@@ -82,6 +82,8 @@ describe('CLI', () => {
         verbose: false,
         profileName: profileName,
         tosAccepted: undefined,
+        publicKey: undefined,
+        secretKey: undefined,
         yt: {
           name: 'youtube',
           backend: process.env.YT_BACKEND as string,
@@ -428,6 +430,8 @@ describe('CLI', () => {
         verbose: false,
         profileName: profileName,
         tosAccepted: undefined,
+        publicKey: undefined,
+        secretKey: undefined,
         yt: {
           name: 'youtube',
           backend: process.env.YT_BACKEND as string,

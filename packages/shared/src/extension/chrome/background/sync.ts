@@ -35,7 +35,13 @@ export const handleAPISyncMessage =
             response: response.right,
           });
         }
-      });
+      })
+      .catch((e) =>
+        sendResponse({
+          type: 'Error',
+          error: e,
+        })
+      );
   };
 
 export const handleSyncMessage =
