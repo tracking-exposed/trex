@@ -29,7 +29,6 @@
     "yargs": "^17.5.1"
   },
   "dependencies": {
-    "@types/mongodb": "^4.0.7",
     "fp-ts": "^2.11.9",
     "io-ts": "^2.2.16",
     "linkedom": "^0.14.4",

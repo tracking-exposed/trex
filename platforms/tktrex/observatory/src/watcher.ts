@@ -1,6 +1,7 @@
 import { join, dirname, basename } from 'path';
 import { mkdir, readFile, writeFile, rename } from 'fs/promises';
-import { MongoClient, Collection } from 'mongodb';
+import crypto from 'crypto';
+import { MongoClient, Collection, Document } from 'mongodb';
 
 import chokidar from 'chokidar';
 
@@ -38,43 +39,33 @@ const spawnWorker = async(collection: Collection): Promise<void> => {
       return Promise.resolve();
     }
 
+    // eslint-disable-next-line no-console
     console.log(`[${nWorkers} workers] parsing: ${item.sourcePath}`);
 
     const mass = await readFile(item.sourcePath, 'utf8');
+    const HTMLHash = crypto.createHash('sha256').update(mass).digest('hex');
+
     const status = parser.parseCurlStatus(mass);
 
     if (status === 'success') {
       const parsed = parser.parseForYouFeed(mass);
-      await mkdir(dirname(item.targetPath), { recursive: true });
-      await rename(item.sourcePath, item.targetPath);
-      const countryCode = basename(dirname(item.sourcePath));
-      const creationTime = parseInt(basename(item.sourcePath));
+      await saveParsed(item, parsed, HTMLHash, collection);
+      console.log("saved!");
 
-      const result = parsed.map((data, videoOrder) => ({
-        ...data,
-        countryCode,
-        creationTime: new Date(creationTime),
-        order: videoOrder + 1,
-      }));
-
-      if (parsed.length > 0) {
-        await writeFile(
-          `${item.targetPath}.parsed.json`,
-          JSON.stringify(result, null, 2),
-        );
-
-        await collection.insertMany(result);
-      }
     } else {
       const countryCode = basename(dirname(item.sourcePath));
       const creationTime = parseInt(basename(item.sourcePath));
+      console.log("Not removing", item.sourcePath);
+      // await rm(item.sourcePath);
+      // fuck was this really removing potentially good evidences?
+      // TODO count the Errors
 
       const error = {
         type: 'Error',
         status,
         countryCode,
         creationTime,
-      }
+      };
 
       await collection.insertOne(error);
     }
@@ -89,6 +80,34 @@ const spawnWorker = async(collection: Collection): Promise<void> => {
   });
 };
 
+// this function need to be redesigned entirely
+const saveParsed = async(item: QueueItem, parsed: any[], HTMLHash: string, collection: Collection<Document>): Promise<void> => {
+
+  await mkdir(dirname(item.targetPath), { recursive: true });
+  await rename(item.sourcePath, item.targetPath);
+  const countryCode = basename(dirname(item.sourcePath));
+  const creationTime = parseInt(basename(item.sourcePath));
+
+  const result = parsed.map((data: any, videoOrder: number) => ({
+    ...data,
+    HTMLHash,
+    countryCode,
+    creationTime: new Date(creationTime),
+    order: videoOrder + 1,
+  }));
+
+  if ((await collection.findOne({ HTMLHash })) === null) {
+    // eslint-disable-next-line no-console
+    console.log(`File with hash ${HTMLHash} already in database.`);
+  } else if (parsed.length > 0) {
+    await writeFile(
+      `${item.targetPath}.parsed.json`,
+      JSON.stringify(result, null, 2),
+    );
+    await collection.insertMany(result);
+  }
+}
+
 const main = async(): Promise<void> => {
   await mkdir(massPath, { recursive: true });
   await mkdir(parsedPath, { recursive: true });
@@ -97,9 +116,10 @@ const main = async(): Promise<void> => {
   const db = dbClient.db('observatory');
   const collection = db.collection('metadata');
 
-  // this console print is helpful in the case someone start this script without
+  // This console print is helpful in the case someone start this script without
   // knowing/remember what the script does. it would remind the main goal.
-  console.log("Waiting for new files in", massPath);
+  // eslint-disable-next-line
+  console.log('Waiting for new files in', massPath);
   chokidar.watch(massPath).on('add', (path, entry) => {
     if (entry?.isFile()) {
       queue.push({
