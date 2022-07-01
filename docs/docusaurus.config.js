@@ -8,7 +8,7 @@ const packageJson = require('../package.json');
 const path = require('path');
 // const { default: theme } = require('./theme');
 
-const GITHUB_REPO = 'https://github.com/tracking-exposed/yttrex';
+const GITHUB_REPO = 'https://github.com/tracking-exposed/trex';
 
 /** @type {import('@docusaurus/types').Config} */
 const config = {
@@ -174,7 +174,7 @@ const config = {
             items: [
               {
                 label: 'Slack',
-                href: 'https://trackingexposed.slack.com/invite/trex-tk',
+                href: 'https://join.slack.com/t/trackingexposed/shared_invite/zt-1c0gso7cx-T1OPAnhwItIOVJAtG9hpYA',
               },
               {
                 label: 'Twitter',
