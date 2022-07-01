@@ -55,7 +55,16 @@ jobs:
         run: yarn guardoni tsc -b
 
       - name: Start PM2
-        run: yarn pm2 start --env test ./platforms/ecosystem.config.js
+        run: |
+          yarn clean
+          yarn pm2 start --env test ./platforms/ecosystem.config.js
+
+      - name: Test
+        run: |
+          yarn yt:ext build:guardoni
+          yarn tk:ext build:guardoni
+          yarn test guardoni --ci
+          yarn pm2 stop all
 
   guardoni_build:
     name: Guardoni build
@@ -71,6 +80,11 @@ jobs:
             command: 'dist:mac'
           - os: windows-latest
             command: 'dist:windows'
+    services:
+      mongo-db:
+        image: mongo:4.2
+        ports:
+          - 27017:27017
     steps:
       - name: 'Use GNU tar instead BSD tar'
         if: matrix.config.os == 'windows-latest'
@@ -80,7 +94,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
         with:
-          ref: ${{ inputs.ref }}
+          fetch: 0
 
       - name: Setup Node.js
         uses: actions/setup-node@v2
@@ -108,6 +122,11 @@ jobs:
       - name: Install dependencies
         run: yarn
 
+      - name: Start PM2
+        run: |
+          yarn pm2 start --env test ./platforms/ecosystem.config.js
+          sleep 5
+
       - name: Build Guardoni for ${{ matrix.config.os }}
         working-directory: ./platforms/guardoni
         run: ./scripts/cli-build.mjs
@@ -116,10 +135,18 @@ jobs:
         working-directory: ./platforms/guardoni
         run: ./scripts/cli-yt-test.mjs
 
+      - name: Stop PM2
+        run: yarn pm2 stop all
+
   pm2_stop:
     name: PM2 Stop
     needs: [guardoni_build]
     runs-on: ubuntu-latest
+    services:
+      mongo-db:
+        image: mongo:4.2
+        ports:
+          - 27017:27017
     steps:
       - name: PM2 stop all
         run: yarn pm2 stop all
