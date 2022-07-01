@@ -14,6 +14,7 @@ const mandatoryHeaders = {
   'x-tktrex-version': 'version',
   'x-tktrex-publickey': 'publickey',
   'x-tktrex-signature': 'signature',
+  'x-tktrex-nonauthcookieid': 'researchTag',
 };
 
 function processHeaders(received, required) {
@@ -112,29 +113,6 @@ async function saveInDB(experinfo, objects, dbcollection) {
   }
 }
 
-/*
-function handleFullSave(body, headers) {
-  // ["html","href","feedId","feedCounter", "reason",
-  //  "videoCounter","rect","clientTime","type","incremental"]
-  const id = utils.hash({
-    x: Math.random() + '+' + body.feedId,
-  });
-  const timelineId = utils.hash({
-    session: body.feedId,
-  });
-  return {
-    id,
-    href: body.href,
-    timelineId,
-    publicKey: headers.publickey,
-    version: headers.version,
-    savingTime: new Date(),
-    html: body.html,
-    geoip: geo(headers['x-forwarded-for']),
-    researchTag: body.researchTag,
-  };
-} */
-
 async function processEvents(req) {
   const headers = processHeaders(_.get(req, 'headers'), mandatoryHeaders);
   if (headers.error) return headerError(headers);
@@ -157,10 +135,9 @@ async function processEvents(req) {
   const fullsaves = [];
   const htmls = _.compact(
     _.map(req.body, function (body, i) {
-      // _.keys(body)
-      // ["html","href","feedId","feedCounter",
-      //  "videoCounter","rect","clientTime","type","incremental"]
-      // 'type' can be ignored as it is always 'video' and doesn't reflect nature
+      // console.log(_.keys(body))
+      // [ 'html', 'href', 'feedId', 'feedCounter', 'videoCounter',
+      // 'rect', 'clientTime', 'type', 'incremental' ]
 
       const id = utils.hash({
         clientRGN: body.feedId
@@ -177,13 +154,8 @@ async function processEvents(req) {
       });
       const timelineWord = utils.pickFoodWord(timelineIdHash);
 
-      /* there was 'reason':"fullsave"
-       https://github.com/tracking-exposed/yttrex/issues/444
-      if (body.reason === 'fullsave') {
-        fullsaves.push(handleFullSave(body, timelineIdHash));
-        return null;
-      } */
-
+      /* to eventually verify integrity of collection we're saving these incremental
+       * numbers that might help to spot if client-side-extension are missing somethng */
       const optionalNumbers = [];
       if (_.isInteger(body.videoCounter))
         optionalNumbers.push(body.videoCounter);
@@ -191,26 +163,29 @@ async function processEvents(req) {
       if (_.isInteger(body.incremental)) optionalNumbers.push(body.incremental);
       if (_.isInteger(body.feedCounter)) optionalNumbers.push(body.feedCounter);
       optionalNumbers.push(_.size(body.html));
+
       const html = {
         id,
         type: body.type,
         rect: body.rect,
         href: body.href,
-        timelineId: timelineWord + '-' + timelineIdHash.substr(0, 10),
+        timelineId: timelineWord + '-' + timelineIdHash.substring(0, 10),
         publicKey: supporter.publicKey,
         savingTime: new Date(),
         html: body.html,
         n: optionalNumbers,
         geoip: geo(req.headers['x-forwarded-for'] || req.socket.remoteAddress),
-        researchTag: req.body.researchTag,
-        experimentId: body.experimentId
+        experimentId: body.experimentId,
       };
+
+      if (headers.researchTag?.length) html.researchTag = headers.researchTag;
+
       return html;
     })
   );
 
   debug(
-    '[+] (p %s) from %s -- %s -- %s',
+    '[+] (p %s) %s <%s> -- %s',
     supporter.p,
     JSON.stringify(_.map(req.body, 'type')),
     JSON.stringify(_.map(req.body, 'href')),

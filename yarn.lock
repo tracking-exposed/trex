@@ -4401,33 +4401,6 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@tktrex/observatory@workspace:platforms/tktrex/observatory":
-  version: 0.0.0-use.local
-  resolution: "@tktrex/observatory@workspace:platforms/tktrex/observatory"
-  dependencies:
-    "@types/jest": ^27.5.1
-    "@types/lodash": ^4.14.182
-    "@types/node": ^16.11.36
-    "@typescript-eslint/eslint-plugin": ^5.27.0
-    "@typescript-eslint/parser": ^5.27.0
-    chokidar: ^3.5.3
-    eslint: ^8.16.0
-    eslint-config-standard-with-typescript: ^21.0.1
-    eslint-plugin-import: ^2.26.0
-    eslint-plugin-node: ^11.1.0
-    eslint-plugin-promise: ^5.2.0
-    eslint-plugin-react: ^7.30.0
-    jest: ^27.5.1
-    linkedom: ^0.14.4
-    lodash: ^4.17.21
-    mongodb: ^4.4.1
-    safer-eval: ^1.3.6
-    ts-jest: ^27.1.5
-    ts-node: ^10.8.0
-    typescript: ^4.7.2
-  languageName: unknown
-  linkType: soft
-
 "@tktrex/shared@workspace:platforms/tktrex/shared":
   version: 0.0.0-use.local
   resolution: "@tktrex/shared@workspace:platforms/tktrex/shared"
@@ -9230,13 +9203,6 @@ __metadata:
   version: 2.1.2
   resolution: "clone@npm:2.1.2"
   checksum: aaf106e9bc025b21333e2f4c12da539b568db4925c0501a1bf4070836c9e848c892fa22c35548ce0d1132b08bbbfa17a00144fe58fccdab6fa900fec4250f67d
-  languageName: node
-  linkType: hard
-
-"clones@npm:^1.2.0":
-  version: 1.2.0
-  resolution: "clones@npm:1.2.0"
-  checksum: 4e849079a8b21257a4f2a8b503fb4fff8b7016ced875b2666da9519bb3faa94a48701b1a5d1194bc14b672cf0fa0f46c2ca4ab3e06bc404ed696dc84fabb4a6e
   languageName: node
   linkType: hard
 
@@ -19553,7 +19519,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"mongodb@npm:^4.3.1, mongodb@npm:^4.4.1":
+"mongodb@npm:^4.3.1":
   version: 4.7.0
   resolution: "mongodb@npm:4.7.0"
   dependencies:
@@ -24425,15 +24391,6 @@ __metadata:
   version: 2.1.2
   resolution: "safer-buffer@npm:2.1.2"
   checksum: cab8f25ae6f1434abee8d80023d7e72b598cf1327164ddab31003c51215526801e40b66c5e65d658a0af1e9d6478cadcb4c745f4bd6751f97d8644786c0978b0
-  languageName: node
-  linkType: hard
-
-"safer-eval@npm:^1.3.6":
-  version: 1.3.6
-  resolution: "safer-eval@npm:1.3.6"
-  dependencies:
-    clones: ^1.2.0
-  checksum: 549294fc0ce54799f3c7d2ff974f6d7488ece31bd7aeed3433dd71a00a30e44983f2f3a64b49de0afdff20b570a604e3bc255aad46753ae09f3231f36b1c6331
   languageName: node
   linkType: hard
 
