@@ -23,4 +23,9 @@ COPY --from=0 "/guardoni/node_modules/@tktrex/extension/build" tktrex
 COPY --from=0 "/guardoni/node_modules/@yttrex/extension/build" yttrex
 COPY --from=0 /guardoni/docker/guardoni/guardoni.config.json .
 
+USER root
+RUN chmod -R 777 /guardoni/yttrex
+RUN chmod -R 777 /guardoni/tktrex
+USER seluser
+
 ENTRYPOINT [ "/guardoni/guardoni-cli" ]
