@@ -3083,6 +3083,34 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@makhno/backend@workspace:platforms/makhno/backend":
+  version: 0.0.0-use.local
+  resolution: "@makhno/backend@workspace:platforms/makhno/backend"
+  dependencies:
+    "@types/express": ^4.17.13
+    "@types/lodash": ^4.14.182
+    "@types/node": ^16.11.36
+    body-parser: ^1.19.1
+    bs58: ^3.1.0
+    cookie: ^0.3.1
+    cors: ^2.8.5
+    debug: ^4.3.4
+    express: ^4.17.2
+    food-words: ^1.1.0
+    jquery: ^3.6.0
+    lodash: ^4.17.21
+    moment: ^2.29.2
+    mongodb: ^4.3.1
+    nacl-signature: ^1.0.0
+    nconf: ^0.8.5
+    node-fetch: ^2.6.7
+    ts-node: ^10.8.0
+    ts-node-dev: ^2.0.0
+    tweetnacl: ^0.14.5
+    typescript: ^4.7.2
+  languageName: unknown
+  linkType: soft
+
 "@malept/cross-spawn-promise@npm:^1.1.0":
   version: 1.1.1
   resolution: "@malept/cross-spawn-promise@npm:1.1.1"
