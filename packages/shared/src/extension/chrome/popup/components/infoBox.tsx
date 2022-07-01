@@ -16,10 +16,9 @@ const lessStandardHref = {
 
 const InfoBox = createReactClass({
   render() {
-    const about = config.WEB_ROOT + '/about';
     const privacy = config.WEB_ROOT + '/privacy';
-    const services = config.WEB_ROOT + '/services';
-    const code = config.WEB_ROOT + '/software';
+    const docs = config.WEB_ROOT + '/docs';
+    const code = 'https://github.com/tracking-exposed/trex';
 
     return (
       <Card style={{ textAlign: 'center' }}>
@@ -31,31 +30,15 @@ const InfoBox = createReactClass({
         >
           <img style={imgstyle} src="/tktrex-logo.png" />
         </a>
-        <CardActions>
-          <Button size="small" color="secondary" href={about} target="_blank">
-            Project
-          </Button>
-          <Button size="small" color="primary" href={privacy} target="_blank">
+        <CardActions style={{ justifyContent: 'center' }}>
+          <Button color="primary" href={privacy} target="_blank">
             Privacy
           </Button>
-          <Button
-            size="small"
-            color="secondary"
-            href="https://tracking.exposed/manifesto"
-            target="_blank"
-          >
-            Manifesto
+          <Button color="secondary" href={docs} target="_blank">
+            Documentation
           </Button>
-          <Button size="small" color="primary" href={code} target="_blank">
-            Software
-          </Button>
-          <Button
-            size="small"
-            color="secondary"
-            href={services}
-            target="_blank"
-          >
-            Services
+          <Button href={code} target="_blank">
+            Code
           </Button>
         </CardActions>
       </Card>

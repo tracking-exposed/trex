@@ -26,6 +26,10 @@ const DEFAULT_SETTINGS = { active: true, ux: false, researchTag: '' };
 export function initializeKey(): KeyPair {
   // use publicKey and secretKey from process.env when available
   if (process.env.PUBLIC_KEY && process.env.SECRET_KEY) {
+    log.info(
+      'Found PUBLIC and SECRET keys in envrionment, returning those and skipping generation %j',
+      process.env
+    );
     return {
       publicKey: process.env.PUBLIC_KEY,
       secretKey: process.env.SECRET_KEY,
@@ -33,11 +37,10 @@ export function initializeKey(): KeyPair {
   }
   const newKeypair = nacl.sign.keyPair();
   const publicKey = bs58.encode(newKeypair.publicKey);
-  log.info('initializing new key pair:', publicKey);
-  return {
-    publicKey,
-    secretKey: bs58.encode(newKeypair.secretKey),
-  };
+  const secretKey = bs58.encode(newKeypair.secretKey);
+  const rv = { publicKey, secretKey };
+  log.info('initializing new key pair:', rv);
+  return rv;
 }
 
 interface WithUserId {
@@ -58,10 +61,18 @@ async function handleLocalLookup(
       ...DEFAULT_SETTINGS,
       ...localSettings,
     };
+    if (!(settings.publicKey?.length && settings.secretKey?.length))
+      throw new Error('Invalid key material found in settings.json');
+    log.info('Loaded configuration from file settings.json: %j', settings);
     await db.set(userId, settings);
   } catch (err) {
-    settings = await db.getValid(UserSettings)(userId);
+    log.info('Error caught while checking settings.json: %s', err);
+  }
 
+  try {
+    settings = await db.getValid(UserSettings)(userId);
+    log.info('Loaded correctly settings from localStorage %j', settings);
+  } catch (err) {
     const initialSettings: UserSettings = {
       ...initializeKey(),
       ...DEFAULT_SETTINGS,
@@ -69,7 +80,7 @@ async function handleLocalLookup(
     settings = await db.set(userId, initialSettings);
   }
 
-  sendResponse(settings);
+  return sendResponse(settings);
 }
 
 /**

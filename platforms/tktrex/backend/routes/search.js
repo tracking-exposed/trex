@@ -27,11 +27,10 @@ export function flattenSearch(memo, metasearch) {
       // @ts-ignore
       order: result.order,
       // @ts-ignore
-      tags: _.map(
-        _.filter(result.linked, function (link) {
-          return link?.link?.type === 'tag';
-        }),
-        'link.hashtag'
+      tags: _.compact(
+        _.map(result.linked, function (link) {
+          return link?.link?.type === 'tag' ? link.desc : null;
+        })
       ).join(', '),
       // @ts-ignore
       metadataId: metasearch.id,
@@ -84,11 +83,15 @@ export function flattenProfile(memo, metaprofile) {
       // @ts-ignore
       publicKey: metaprofile.publicKey,
       // @ts-ignore
-      href: 'https://www.tiktok.com/@' + metaprofile.creatorName + '/video/' + result.video.videoId,
+      href:
+        'https://www.tiktok.com/@' +
+        metaprofile.creatorName +
+        '/video/' +
+        result.video.videoId,
       // @ts-ignore
       /* thumbfile: thumbfile ? thumbfile.replace(/(.*\/)|(.*\\)/, '') : null, */
     };
-    _.unset(readyo, 'authorId')
+    _.unset(readyo, 'authorId');
     readyo.videoId = ' ' + readyo.videoId;
     // @ts-ignore
     memo.push(readyo);

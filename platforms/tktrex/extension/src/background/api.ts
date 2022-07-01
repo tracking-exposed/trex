@@ -15,13 +15,11 @@ export const getHeadersForDataDonation = async(req: SyncReq): Promise<any> => {
   // ytLog.info('Request %O', req);
 
   const { payload } = req;
-  const cookieId = req.userId;
+  const userSettings: any = await db.get('local');
 
-  const keypair: any = await db.get('local');
+  tkLog.info('userSettings %O', userSettings);
 
-  tkLog.info('Keypair %O', keypair);
-
-  if (!keypair) {
+  if (!userSettings) {
     throw new Error('Cannot sign payload, no keypair found!');
   }
 
@@ -29,7 +27,7 @@ export const getHeadersForDataDonation = async(req: SyncReq): Promise<any> => {
 
   const signatureUint = nacl.sign.detached(
     decodeString(JSON.stringify(payload)),
-    decodeFromBase58(keypair.secretKey),
+    decodeFromBase58(userSettings.secretKey),
   );
 
   const signature = encodeToBase58(signatureUint);
@@ -40,8 +38,8 @@ export const getHeadersForDataDonation = async(req: SyncReq): Promise<any> => {
     'Content-Type': 'application/json',
     'X-Tktrex-Version': config.VERSION,
     'X-Tktrex-Build': config.BUILD,
-    'X-Tktrex-NonAuthCookieId': cookieId,
-    'X-Tktrex-PublicKey': keypair.publicKey,
+    'X-Tktrex-NonAuthCookieId': userSettings.researchTag ?? '',
+    'X-Tktrex-PublicKey': userSettings.publicKey,
     'X-Tktrex-Signature': signature,
   };
 
