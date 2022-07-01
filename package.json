@@ -1,6 +1,6 @@
 {
   "version": "2.6.0",
-  "description": "installs all the YCAI dependencies and YCAI",
+  "description": "tracking.exposed main package",
   "license": "AGPL-3.0",
   "engines": {
     "node": ">= 16",
@@ -13,6 +13,7 @@
     "packages/*",
     "platforms/guardoni",
     "platforms/ycai/studio",
+    "platforms/makhno/*",
     "platforms/yttrex/*",
     "platforms/tktrex/docs",
     "platforms/tktrex/extension",
@@ -42,6 +43,7 @@
     "yt:shared": "yarn workspace @yttrex/shared",
     "yt:backend": "yarn workspace @yttrex/backend",
     "yt:ext": "yarn workspace @yttrex/extension",
+    "makhno": "yarn workspace @makhno/backend",
     "ycai": "yarn workspace @trex/ycai",
     "lint-staged": "lint-staged",
     "postinstall": "husky install",

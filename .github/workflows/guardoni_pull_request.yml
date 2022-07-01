@@ -118,6 +118,6 @@ jobs:
         working-directory: ./platforms/guardoni
         run: ./scripts/cli-yt-test.mjs
 
-  pm2_start:
+  pm2_stop:
     name: PM2 Stop
     run: yarn pm2 stop all
