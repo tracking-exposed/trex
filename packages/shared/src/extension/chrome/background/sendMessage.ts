@@ -37,7 +37,9 @@ const ifValid =
       cb({
         type: 'Error',
         error: new Error(
-          `Error during '${m}' on codec ${codec.name} validation`
+          `Error during '${m}' on codec ${codec.name} validation`.concat(
+            PathReporter.report(v).join('\n')
+          )
         ),
       });
     } else {

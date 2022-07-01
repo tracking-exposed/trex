@@ -303,7 +303,6 @@ async function channel3(req) {
     'experimentId',
     'researchTag',
     'execount',
-    'newProfile',
     'profileName',
   ];
   const experimentInfo = _.pick(req.body, fields);

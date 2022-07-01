@@ -12,7 +12,7 @@ import * as fs from 'fs';
 import { chrome } from 'jest-chrome';
 import * as path from 'path';
 import * as app from '../src/app/app';
-import api, { getHeadersForDataDonation } from '../src/chrome/background/api';
+import api, { getHeadersForDataDonation } from '../src/background/api';
 import * as events from '../src/handlers/events';
 import ytHub from '../src/handlers/hub';
 

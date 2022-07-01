@@ -4324,7 +4324,6 @@ __metadata:
   dependencies:
     "@material-ui/core": ^4.12.4
     "@material-ui/icons": ^4.11.3
-    "@types/create-react-class": ^15.6.3
     "@types/debug": ^4.1.7
     "@types/jquery": ^3.5.14
     "@types/lodash": ^4.14.182
@@ -4333,8 +4332,8 @@ __metadata:
     "@types/react-dom": ^17.0.17
     "@typescript-eslint/eslint-plugin": ^5.30.5
     "@typescript-eslint/parser": ^5.30.5
-    create-react-class: ^15.7.0
     debug: ^4.3.4
+    dotenv: ^16.0.1
     eslint: ^8.19.0
     eslint-config-prettier: ^8.5.0
     eslint-config-standard-with-typescript: ^22.0.0
@@ -4600,7 +4599,7 @@ __metadata:
     react-use-clipboard: ^1.0.8
     style-loader: ^3.3.1
     svgdom: ^0.1.10
-    swagger-ui: ^4.4.1
+    swagger-ui: ^4.12.0
     ts-endpoint: ^2.0.0
     ts-jest: ^27.1.5
     ts-loader: ^9.3.1
@@ -4822,15 +4821,6 @@ __metadata:
   version: 2.8.12
   resolution: "@types/cors@npm:2.8.12"
   checksum: 8c45f112c7d1d2d831b4b266f2e6ed33a1887a35dcbfe2a18b28370751fababb7cd045e745ef84a523c33a25932678097bf79afaa367c6cb3fa0daa7a6438257
-  languageName: node
-  linkType: hard
-
-"@types/create-react-class@npm:^15.6.3":
-  version: 15.6.3
-  resolution: "@types/create-react-class@npm:15.6.3"
-  dependencies:
-    "@types/react": "*"
-  checksum: d39a33f6217a00442e5fecf3d94ddd7134bd0b3ff3138be549a15aa79c7d49c8541020936ee81c37656172cf392d3a306c2104275549ac435c955fe8cc0f1711
   languageName: node
   linkType: hard
 
@@ -9947,16 +9937,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"create-react-class@npm:^15.7.0":
-  version: 15.7.0
-  resolution: "create-react-class@npm:15.7.0"
-  dependencies:
-    loose-envify: ^1.3.1
-    object-assign: ^4.1.1
-  checksum: 0c5f43da705fa9f67ec289051dd5780792652d440dfa17cd2c7d8423c1f604609596f895dabf46fda1960ddd93ee96fe1b61ef4d55a94fc4271b07d515486714
-  languageName: node
-  linkType: hard
-
 "create-require@npm:^1.1.0":
   version: 1.1.1
   resolution: "create-require@npm:1.1.1"
@@ -11682,6 +11662,13 @@ __metadata:
   version: 14.3.2
   resolution: "dotenv@npm:14.3.2"
   checksum: 86c06758915d6facc35275f4a7fafc16705b6f3b44befaa8abca91367991efc8ff8db5437d3cc14778231d19fb97610fe82d60f8a53ba723cdb69fe4171439aa
+  languageName: node
+  linkType: hard
+
+"dotenv@npm:^16.0.1":
+  version: 16.0.1
+  resolution: "dotenv@npm:16.0.1"
+  checksum: f459ffce07b977b7f15d8cc4ee69cdff77d4dd8c5dc8c85d2d485ee84655352c2415f9dd09d42b5b5985ced3be186130871b34e2f3e2569ebc72fbc2e8096792
   languageName: node
   linkType: hard
 
@@ -25648,7 +25635,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"swagger-ui@npm:^4.4.1":
+"swagger-ui@npm:^4.12.0":
   version: 4.12.0
   resolution: "swagger-ui@npm:4.12.0"
   dependencies:

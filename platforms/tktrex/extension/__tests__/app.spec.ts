@@ -3,6 +3,7 @@ import { boot } from '@shared/extension/app';
 import { handleServerLookup } from '@shared/extension/chrome/background/account';
 import { load } from '@shared/extension/chrome/background/index';
 import { handleSyncMessage } from '@shared/extension/chrome/background/sync';
+import { sleep } from '@shared/utils/promise.utils';
 import { tiktokDomainRegExp } from '@tktrex/parser/constant';
 import * as fs from 'fs';
 import { chrome } from 'jest-chrome';
@@ -12,7 +13,6 @@ import * as handlers from '../src/app/handlers';
 import api, { getHeadersForDataDonation } from '../src/background/api';
 import tkHub from '../src/handlers/hub';
 import { tkLog } from '../src/logger';
-import { sleep } from '@shared/utils/promise.utils';
 import { HandshakeActiveResponseArb } from '@shared/arbitraries/HandshakeResponse.arb';
 import { fc } from '@shared/test';
 
@@ -32,6 +32,7 @@ const keys = {
   secretKey: process.env.SECRET_KEY,
 };
 
+const tkURL = 'https://tiktok.com/foryou';
 const getConfig = () => ({
   ...keys,
   active: true,
@@ -42,7 +43,6 @@ const getConfig = () => ({
   testTime: new Date().toISOString(),
 });
 
-const tkURL = 'https://tiktok.com/foryou';
 const bootOptions = {
   payload: {
     config: { ...keys, researchTag },

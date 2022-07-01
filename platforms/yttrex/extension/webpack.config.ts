@@ -9,11 +9,6 @@ import packageJSON from './package.json';
 dotenv.config({
   path: path.resolve(__dirname, process.env.DOTENV_CONFIG_PATH ?? '.env'),
 });
-
-const APP_VERSION = packageJSON.version
-  .replace(/-(beta|\d)/, '')
-  .concat(process.env.NODE_ENV === 'development' ? '.99' : '');
-
 // enable data contribution setting when building for "guardoni"
 process.env.DATA_CONTRIBUTION_ENABLED = 'false';
 if (process.env.BUILD_TARGET === 'guardoni') {
@@ -24,14 +19,18 @@ if (process.env.BUILD_TARGET === 'guardoni') {
   process.env.DATA_CONTRIBUTION_ENABLED = 'true';
 }
 
+const APP_VERSION = packageJSON.version
+  .replace(/-(beta|\d)/, '')
+  .concat(process.env.NODE_ENV === 'production' ? '' : '.99');
+
 const { buildENV, ...extensionConfig } = getExtensionConfig(
   process.env.BUILD_TARGET === 'guardoni' ? 'yttrex-guardoni' : 'yttrex',
   {
     cwd: __dirname,
     entry: {
       app: path.resolve(__dirname, 'src/app/index.ts'),
-      popup: path.resolve(__dirname, 'src/chrome/popup/index.js'),
-      background: path.resolve(__dirname, 'src/chrome/background/index.ts'),
+      popup: path.resolve(__dirname, 'src/popup.tsx'),
+      background: path.resolve(__dirname, 'src/background/index.ts'),
     },
     outputDir: path.resolve(__dirname, 'build'),
     distDir: path.resolve(__dirname, 'dist'),

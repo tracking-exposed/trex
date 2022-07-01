@@ -1,25 +1,26 @@
-import React, { useState, useEffect } from 'react';
-
-import moment from 'moment';
-
 import { Card } from '@material-ui/core';
-import { Alert, AlertTitle } from '@material-ui/lab';
 import FormHelperText from '@material-ui/core/FormHelperText';
-
-import InfoBox from './infoBox';
-import Settings from './settings';
-import GetCSV from './getCSV';
+import { Alert, AlertTitle } from '@material-ui/lab';
+import moment from 'moment';
+import React, { useEffect, useState } from 'react';
 import config from '../../../config';
 import log from '../../../logger';
+import { bo } from '../../../utils/browser.utils';
 import { localLookup } from '../../background/sendMessage';
-
-const bo = chrome;
+import DashboardLinks, { DashboardLink } from './DashboardLinks';
+import InfoBox from './infoBox';
+import Settings from './settings';
 
 const styles = {
   width: '400px',
 };
 
-const Popup: React.FC = () => {
+export interface PopupProps {
+  platform: string;
+  logo: string;
+  getLinks: (opts: { publicKey: string }) => DashboardLink[];
+}
+const Popup: React.FC<PopupProps> = ({ platform, getLinks, logo }) => {
   const [status, setStatus] = useState<'loading' | 'error' | 'done'>('loading');
   const [userSettings, setUserSettings] = useState<any>(undefined);
 
@@ -66,12 +67,15 @@ const Popup: React.FC = () => {
   return (
     <div style={styles}>
       <Card>
-        <FormHelperText>TikTok TRex — main switch</FormHelperText>
+        <FormHelperText>{platform} — main switch</FormHelperText>
         <Settings {...userSettings} />
         <FormHelperText>Access to your data</FormHelperText>
-        <GetCSV publicKey={userSettings.publicKey} />
+        <DashboardLinks
+          publicKey={userSettings.publicKey}
+          getLinks={getLinks}
+        />
         <FormHelperText>About</FormHelperText>
-        <InfoBox />
+        <InfoBox logo={logo} />
       </Card>
       <small>
         version {config.VERSION}, released {timeAgo} ago

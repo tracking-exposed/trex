@@ -17,9 +17,7 @@ const tk = {
     cwd: __dirname,
     script: 'yarn parserv:watch',
     watch: false,
-    env_test: {
-      ...testEnv,
-    },
+    env_test: testEnv
   },
 };
 
