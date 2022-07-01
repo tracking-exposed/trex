@@ -57,6 +57,9 @@ describe('Guardoni', () => {
   const defaultConfig = {
     headless: false,
     verbose: false,
+    tosAccepted: undefined,
+    publicKey: undefined,
+    secretKey: undefined,
     profileName: profile,
     evidenceTag: '',
     advScreenshotDir: undefined,
@@ -169,7 +172,6 @@ describe('Guardoni', () => {
           headless: true,
           verbose: true,
           profileName,
-          tosAccepted: undefined,
         },
         'youtube'
       )();

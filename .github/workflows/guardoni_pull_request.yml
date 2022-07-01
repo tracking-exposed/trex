@@ -59,7 +59,6 @@ jobs:
 
   guardoni_build:
     name: Guardoni build
-    needs: [pm2_start]
     runs-on: ${{ matrix.config.os }}
     strategy:
       max-parallel: 1
@@ -110,6 +109,7 @@ jobs:
         run: yarn
 
       - name: Build Guardoni for ${{ matrix.config.os }}
+        working-directory: ./platforms/guardoni
         run: ./scripts/cli-build.mjs
 
       - name: Test YT cli
@@ -119,6 +119,7 @@ jobs:
   pm2_stop:
     name: PM2 Stop
     needs: [guardoni_build]
+    runs-on: ubuntu-latest
     steps:
       - name: PM2 stop all
         run: yarn pm2 stop all
