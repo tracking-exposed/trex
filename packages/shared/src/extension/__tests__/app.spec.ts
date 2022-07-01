@@ -1,21 +1,23 @@
-import axiosMock from '../../test/__mocks__/axios.mock';
-import fetchMock from 'jest-fetch-mock';
-
 process.env.API_ROOT = 'http://localhost:9001/api';
 process.env.VERSION = '99';
 process.env.FLUSH_INTERVAL = '4500';
 process.env.BUILD = new Date().toISOString();
 
+// mocks
+import axiosMock from '../../test/__mocks__/axios.mock';
+import fetchMock from 'jest-fetch-mock';
+import { getChromeMock } from '../__mocks__/chrome.mock';
+
+// imports
 import { HandshakeActiveResponseArb } from '../../arbitraries/HandshakeResponse.arb';
 import { MakeAPIClient } from '../../providers/api.provider';
 import { fc } from '../../test';
 import { boot, BootOpts } from '../app';
 import { Hub } from '../hub';
 import UserSettings from '../models/UserSettings';
-import { getChromeMock } from '../__mocks__/chrome';
 import * as t from 'io-ts';
 import { DocumentedEndpoint } from '../../endpoints';
-import { initializeKey } from '../chrome/background/account';
+import { initializeKey } from '../background/account';
 
 const appHub = new Hub();
 

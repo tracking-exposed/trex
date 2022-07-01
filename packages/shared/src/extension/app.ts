@@ -2,14 +2,14 @@ import { debounce } from '@material-ui/core';
 import _ from 'lodash';
 import { HandshakeResponse } from '../models/HandshakeBody';
 import { clearCache } from '../providers/dataDonation.provider';
-import { FIXED_USER_NAME, initializeKey } from './chrome/background/account';
+import { FIXED_USER_NAME, initializeKey } from './background/account';
 import {
   partialLocalLookup,
   Response,
   serverLookup,
   settingsLookup,
-} from './chrome/background/sendMessage';
-import db from './chrome/db';
+} from './background/sendMessage';
+import db from './db';
 import * as dom from './dom';
 import { registerHandlers } from './handlers/index';
 import { Hub } from './hub';

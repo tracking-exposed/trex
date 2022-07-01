@@ -110,7 +110,6 @@ experimentId:    d659fc7852b7a2878387773231054d534976bb12
 researchTag:     no-tag-25368
 execCount:       3
 profileName:     profile-test-99
-newProfile:      false
 when:
 
 publicKey:       XXX-your-public-key-XXX

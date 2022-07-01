@@ -1,21 +1,21 @@
 // mocks
-import fetchMock from 'jest-fetch-mock';
 import axiosMock from '@shared/test/__mocks__/axios.mock';
-import { getChromeMock } from '@shared/extension/__mocks__/chrome';
+import { getChromeMock } from '@shared/extension/__mocks__/chrome.mock';
 
 // imports
-import { HandshakeActiveResponseArb } from '@shared/arbitraries/HandshakeResponse.arb';
 import { boot, BootOpts } from '@shared/extension/app';
-import { load } from '@shared/extension/chrome/background/index';
-import { fc } from '@shared/test';
+import { load } from '@shared/extension/background/index';
 import { sleep } from '@shared/utils/promise.utils';
 import { tiktokDomainRegExp } from '@tktrex/parser/constant';
+import { HandshakeActiveResponseArb } from '@shared/arbitraries/HandshakeResponse.arb';
 import * as fs from 'fs';
+import fetchMock from 'jest-fetch-mock';
 import * as path from 'path';
 import * as app from '../src/app/app';
 import * as handlers from '../src/app/handlers';
 import api, { getHeadersForDataDonation } from '../src/background/api';
 import tkHub from '../src/handlers/hub';
+import * as fc from 'fast-check';
 
 const videoMatcher = app.tkHandlers.video;
 const searchMatcher = app.tkHandlers.search;
@@ -31,6 +31,7 @@ const keys = {
   secretKey: process.env.SECRET_KEY as any,
 };
 
+const tkURL = 'https://tiktok.com/foryou';
 const getConfig = () => ({
   ...keys,
   active: true,
@@ -42,7 +43,6 @@ const getConfig = () => ({
   testTime: new Date().toISOString(),
 });
 
-const tkURL = 'https://tiktok.com/foryou';
 const bootOptions: BootOpts = {
   payload: {
     config: getConfig(),
