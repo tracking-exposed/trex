@@ -1,19 +1,18 @@
 // mocks
-import fetchMock from 'jest-fetch-mock';
+import { getChromeMock } from '@shared/extension/__mocks__/chrome.mock';
 import axiosMock from '@shared/test/__mocks__/axios.mock';
-import { getChromeMock } from '@shared/extension/__mocks__/chrome';
+import fetchMock from 'jest-fetch-mock';
 
 // imports
 import { HandshakeActiveResponseArb } from '@shared/arbitraries/HandshakeResponse.arb';
-import { boot } from '@shared/extension/app';
-import { initializeKey } from '@shared/extension/chrome/background/account';
-import { load } from '@shared/extension/chrome/background/index';
+import { boot, BootOpts } from '@shared/extension/app';
+import { initializeKey } from '@shared/extension/background/account';
+import { load } from '@shared/extension/background/index';
 import { fc } from '@shared/test';
 import { sleep } from '@shared/utils/promise.utils';
 import { tiktokDomainRegExp } from '@tktrex/parser/constant';
 import * as fs from 'fs';
 import * as path from 'path';
-import { BootOpts } from '@shared/extension/app';
 import * as app from '../src/app/app';
 import * as handlers from '../src/app/handlers';
 import api, { getHeadersForDataDonation } from '../src/background/api';
@@ -67,15 +66,12 @@ const backgroundOpts = {
   getHeadersForDataDonation,
 };
 
-
 const { chrome, clearDB } = getChromeMock({
   getConfig,
   backgroundOpts,
 });
 
-
 describe('TK App - profile ', () => {
-
   jest.setTimeout(20 * 1000);
 
   beforeAll(() => {
@@ -157,9 +153,7 @@ describe('TK App - profile ', () => {
 
       expect(axiosMock.request).toHaveBeenNthCalledWith(2, {
         url: '/v2/events',
-        data: [
-          expect.any(Object),
-        ],
+        data: [expect.any(Object)],
         headers: {
           Accept: 'application/json',
           'Content-Type': 'application/json',

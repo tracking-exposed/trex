@@ -1,5 +1,5 @@
-import { SyncReq } from '@shared/extension/chrome/background/sync';
-import db from '@shared/extension/chrome/db';
+import { SyncReq } from '@shared/extension/background/sync';
+import db from '@shared/extension/db';
 import config from '@shared/extension/config';
 import { MakeAPIClient } from '@shared/providers/api.provider';
 import {
@@ -13,7 +13,7 @@ import { tkLog } from '../logger';
 import * as t from 'io-ts';
 import { DocumentedEndpoint } from '@shared/endpoints';
 
-export const getHeadersForDataDonation = async (req: SyncReq): Promise<any> => {
+export const getHeadersForDataDonation = async(req: SyncReq): Promise<any> => {
   // ytLog.info('Request %O', req);
 
   const { payload } = req;
@@ -52,8 +52,8 @@ export const getHeadersForDataDonation = async (req: SyncReq): Promise<any> => {
 export default MakeAPIClient(
   {
     baseURL: config.API_ROOT,
-    getAuth: async (req) => req,
-    onUnauthorized: async (res) => res,
+    getAuth: async(req) => req,
+    onUnauthorized: async(res) => res,
   },
   {
     ...endpoints,

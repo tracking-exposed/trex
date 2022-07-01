@@ -16,6 +16,8 @@ import { parsers } from '../../parsers';
 import { GetTest, Test } from '../../test/Test';
 
 const version = '9.9.9.9';
+const researchTag = 'test-research-tag';
+
 describe('Events', () => {
   let appTest: Test;
   const [experiment] = fc.sample(GuardoniExperimentArb, 1);
@@ -71,9 +73,9 @@ describe('Events', () => {
       await appTest.app
         .post(`/api/v2/events`)
         .set('x-tktrex-version', version)
-        .set('x-tktrex-publicKey', keys.publicKey)
+        .set('X-tktrex-publicKey', keys.publicKey)
         .set('x-tktrex-signature', signature)
-        .set('X-Tktrex-NonAuthCookieId', researchTag ?? '')
+        .set('x-tktrex-nonauthcookieid', researchTag)
         .send(data)
         .expect(200);
 

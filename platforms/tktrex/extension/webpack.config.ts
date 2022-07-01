@@ -13,7 +13,7 @@ const PRODUCTION = process.env.NODE_ENV === 'production';
 const PATHS = {
   ENTRY: {
     app: path.resolve(__dirname, 'src/app/index.ts'),
-    popup: path.resolve(__dirname, 'src/popup.ts'),
+    popup: path.resolve(__dirname, 'src/popup.tsx'),
     background: path.resolve(__dirname, 'src/background/index.ts'),
     injected: path.resolve(__dirname, 'src/injected.ts'),
     interceptor: path.resolve(__dirname, 'src/interceptor/index.ts'),

@@ -15,7 +15,7 @@ const moduleNameMapper = {
 /** @type {import('ts-jest/dist/types').InitialOptionsTsJest} */
 module.exports = {
   ...jestBaseConfig,
-  displayName: 'backend',
+  displayName: 'tk:backend',
   moduleNameMapper,
   globals: {
     'ts-jest': {
