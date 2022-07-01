@@ -10,7 +10,7 @@ ADD ./ ./
 RUN yarn install
 RUN yarn tk:ext build
 RUN yarn yt:ext build
-RUN yarn guardoni build
+RUN yarn guardoni build:cli
 RUN yarn guardoni pkg
 WORKDIR /guardoni/platforms/guardoni/dist/
 RUN mv $(ls -1 guardoni-cli*-linux) guardoni-cli
