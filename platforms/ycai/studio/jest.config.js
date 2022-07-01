@@ -28,6 +28,9 @@ module.exports = {
       tsconfig: '<rootDir>/tsconfig.json',
     },
   },
+  transformIgnorePatterns: [
+    '/node_modules/(?!(react-syntax-highlighter|swagger-client)/)',
+  ],
   setupFilesAfterEnv: ['<rootDir>/jest.setup.js'],
   collectCoverageFrom: [
     '<rootDir>/src/**',
