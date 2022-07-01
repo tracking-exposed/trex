@@ -66,7 +66,7 @@ async function handleLocalLookup(
     log.info('Loaded configuration from file settings.json: %j', settings);
     await db.set(userId, settings);
   } catch (err) {
-    log.info('Error caught while checkng settings.json: %s', err);
+    log.info('Error caught while checking settings.json: %s', err);
   }
 
   try {

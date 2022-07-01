@@ -8,7 +8,6 @@ import {
   encodeToBase58,
 } from '@shared/utils/decode.utils';
 import * as endpoints from '@tktrex/endpoints';
-import _ from 'lodash';
 import nacl from 'tweetnacl';
 import { tkLog } from '../logger';
 
@@ -16,8 +15,6 @@ export const getHeadersForDataDonation = async(req: SyncReq): Promise<any> => {
   // ytLog.info('Request %O', req);
 
   const { payload } = req;
-  const staticStorageName = req.userId;
-
   const userSettings: any = await db.get('local');
 
   tkLog.info('userSettings %O', userSettings);
@@ -25,11 +22,6 @@ export const getHeadersForDataDonation = async(req: SyncReq): Promise<any> => {
   if (!userSettings) {
     throw new Error('Cannot sign payload, no keypair found!');
   }
-
-  _.map(payload, function(revnt) {
-    if (userSettings.researchTag?.length)
-      revnt.researchTag = userSettings.researchTag;
-  });
 
   tkLog.debug('Signing payload %O', payload);
 
@@ -46,7 +38,7 @@ export const getHeadersForDataDonation = async(req: SyncReq): Promise<any> => {
     'Content-Type': 'application/json',
     'X-Tktrex-Version': config.VERSION,
     'X-Tktrex-Build': config.BUILD,
-    'X-Tktrex-NonAuthCookieId': staticStorageName,
+    'X-Tktrex-NonAuthCookieId': userSettings.researchTag ?? '',
     'X-Tktrex-PublicKey': userSettings.publicKey,
     'X-Tktrex-Signature': signature,
   };
