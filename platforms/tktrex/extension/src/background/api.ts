@@ -8,6 +8,7 @@ import {
   encodeToBase58,
 } from '@shared/utils/decode.utils';
 import * as endpoints from '@tktrex/endpoints';
+import _ from 'lodash';
 import nacl from 'tweetnacl';
 import { tkLog } from '../logger';
 
@@ -15,21 +16,26 @@ export const getHeadersForDataDonation = async(req: SyncReq): Promise<any> => {
   // ytLog.info('Request %O', req);
 
   const { payload } = req;
-  const cookieId = req.userId;
+  const staticStorageName = req.userId;
 
-  const keypair: any = await db.get('local');
+  const userSettings: any = await db.get('local');
 
-  tkLog.info('Keypair %O', keypair);
+  tkLog.info('userSettings %O', userSettings);
 
-  if (!keypair) {
+  if (!userSettings) {
     throw new Error('Cannot sign payload, no keypair found!');
   }
+
+  _.map(payload, function(revnt) {
+    if (userSettings.researchTag?.length)
+      revnt.researchTag = userSettings.researchTag;
+  });
 
   tkLog.debug('Signing payload %O', payload);
 
   const signatureUint = nacl.sign.detached(
     decodeString(JSON.stringify(payload)),
-    decodeFromBase58(keypair.secretKey),
+    decodeFromBase58(userSettings.secretKey),
   );
 
   const signature = encodeToBase58(signatureUint);
@@ -40,8 +46,8 @@ export const getHeadersForDataDonation = async(req: SyncReq): Promise<any> => {
     'Content-Type': 'application/json',
     'X-Tktrex-Version': config.VERSION,
     'X-Tktrex-Build': config.BUILD,
-    'X-Tktrex-NonAuthCookieId': cookieId,
-    'X-Tktrex-PublicKey': keypair.publicKey,
+    'X-Tktrex-NonAuthCookieId': staticStorageName,
+    'X-Tktrex-PublicKey': userSettings.publicKey,
     'X-Tktrex-Signature': signature,
   };
 
