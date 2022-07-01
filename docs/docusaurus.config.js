@@ -15,8 +15,8 @@ const config = {
   title: '@trex',
   tagline:
     'We develop tools to uncover how tracking and profiling have an impact on society',
-  url: 'https://docs.tracking.exposed',
-  baseUrl: '/',
+  url: 'https://tracking.exposed',
+  baseUrl: '/docs/',
   onBrokenLinks: 'throw',
   onBrokenMarkdownLinks: 'warn',
   favicon: 'img/trex128.png',

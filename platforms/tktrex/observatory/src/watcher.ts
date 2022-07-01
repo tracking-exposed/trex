@@ -1,7 +1,7 @@
 import { join, dirname, basename } from 'path';
-import { mkdir, readFile, writeFile, rename, rm } from 'fs/promises';
+import { mkdir, readFile, writeFile, rename } from 'fs/promises';
 import crypto from 'crypto';
-import { MongoClient, Collection } from 'mongodb';
+import { MongoClient, Collection, Document } from 'mongodb';
 
 import chokidar from 'chokidar';
 
@@ -49,33 +49,16 @@ const spawnWorker = async(collection: Collection): Promise<void> => {
 
     if (status === 'success') {
       const parsed = parser.parseForYouFeed(mass);
-      await mkdir(dirname(item.targetPath), { recursive: true });
-      await rename(item.sourcePath, item.targetPath);
-      const countryCode = basename(dirname(item.sourcePath));
-      const creationTime = parseInt(basename(item.sourcePath));
+      await saveParsed(item, parsed, HTMLHash, collection);
+      console.log("saved!");
 
-      const result = parsed.map((data, videoOrder) => ({
-        ...data,
-        HTMLHash,
-        countryCode,
-        creationTime: new Date(creationTime),
-        order: videoOrder + 1,
-      }));
-
-      if ((await collection.findOne({ HTMLHash })) === null) {
-        // eslint-disable-next-line no-console
-        console.log(`File with hash ${HTMLHash} already in database.`);
-      } else if (parsed.length > 0) {
-        await writeFile(
-          `${item.targetPath}.parsed.json`,
-          JSON.stringify(result, null, 2),
-        );
-        await collection.insertMany(result);
-      }
     } else {
       const countryCode = basename(dirname(item.sourcePath));
       const creationTime = parseInt(basename(item.sourcePath));
-      await rm(item.sourcePath);
+      console.log("Not removing", item.sourcePath);
+      // await rm(item.sourcePath);
+      // fuck was this really removing potentially good evidences?
+      // TODO count the Errors
 
       const error = {
         type: 'Error',
@@ -96,6 +79,34 @@ const spawnWorker = async(collection: Collection): Promise<void> => {
     void dispatchWorkers(collection);
   });
 };
+
+// this function need to be redesigned entirely
+const saveParsed = async(item: QueueItem, parsed: any[], HTMLHash: string, collection: Collection<Document>): Promise<void> => {
+
+  await mkdir(dirname(item.targetPath), { recursive: true });
+  await rename(item.sourcePath, item.targetPath);
+  const countryCode = basename(dirname(item.sourcePath));
+  const creationTime = parseInt(basename(item.sourcePath));
+
+  const result = parsed.map((data: any, videoOrder: number) => ({
+    ...data,
+    HTMLHash,
+    countryCode,
+    creationTime: new Date(creationTime),
+    order: videoOrder + 1,
+  }));
+
+  if ((await collection.findOne({ HTMLHash })) === null) {
+    // eslint-disable-next-line no-console
+    console.log(`File with hash ${HTMLHash} already in database.`);
+  } else if (parsed.length > 0) {
+    await writeFile(
+      `${item.targetPath}.parsed.json`,
+      JSON.stringify(result, null, 2),
+    );
+    await collection.insertMany(result);
+  }
+}
 
 const main = async(): Promise<void> => {
   await mkdir(massPath, { recursive: true });
