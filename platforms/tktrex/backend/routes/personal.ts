@@ -5,6 +5,7 @@ import automo from '../lib/automo';
 import CSV from '../lib/CSV';
 import utils from '../lib/utils';
 import { flattenProfile, flattenSearch } from './search';
+// eslint-disable-next-line @typescript-eslint/no-var-requires
 const debug = require('debug')('routes:personal');
 
 const CSV_MAX_SIZE = 9000;
@@ -37,7 +38,7 @@ async function getPersonal(req): Promise<any> {
   const what = req.params.what;
   const allowed = ['summary', 'search', 'foryou', 'following', 'profile'];
 
-  if (allowed.indexOf(what) === -1) {
+  if (!allowed.includes(what)) {
     return {
       json: {
         what,
@@ -135,7 +136,7 @@ async function getPersonalCSV(req): Promise<any> {
   const k = req.params.publicKey;
   const type = req.params.what;
 
-  if (['foryou', 'search', 'following', 'profile'].indexOf(type) === -1)
+  if (!['foryou', 'search', 'following', 'profile'].includes(type))
     return { text: 'Error, nature not supported ' };
 
   const data = await automo.getMetadataByFilter(
