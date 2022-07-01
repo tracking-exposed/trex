@@ -9,7 +9,7 @@ import {
 } from '@shared/utils/decode.utils';
 import * as endpoints from '@yttrex/shared/endpoints';
 import nacl from 'tweetnacl';
-import ytLog from '../../logger';
+import ytLog from '../logger';
 import { UserSettings } from '@shared/extension/models/UserSettings';
 
 export const getHeadersForDataDonation = async (req: SyncReq): Promise<any> => {

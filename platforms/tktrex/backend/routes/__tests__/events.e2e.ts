@@ -30,9 +30,9 @@ describe('Events', () => {
       const response = await appTest.app
         .post(`/api/v2/events`)
         .set('x-tktrex-version', version)
-        .set('X-Tktrex-publicKey', keys.publicKey)
+        .set('X-tktrex-publicKey', keys.publicKey)
         .set('x-tktrex-signature', signature)
-        .set('X-Tktrex-NonAuthCookieId', researchTag)
+        .set('x-tktrex-nonauthcookieid', researchTag)
         .send(data);
 
       expect(response.status).toBe(200);

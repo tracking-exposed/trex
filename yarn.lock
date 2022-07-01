@@ -1643,13 +1643,23 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@babel/runtime-corejs3@npm:^7.11.2, @babel/runtime-corejs3@npm:^7.16.3, @babel/runtime-corejs3@npm:^7.16.8":
+"@babel/runtime-corejs3@npm:^7.11.2, @babel/runtime-corejs3@npm:^7.16.3":
   version: 7.18.6
   resolution: "@babel/runtime-corejs3@npm:7.18.6"
   dependencies:
     core-js-pure: ^3.20.2
     regenerator-runtime: ^0.13.4
   checksum: 55a5315b2e2541aa0dcb6193b72f8f339045d1121ff08ca87b48cbcb89447bc4550a4658e8f149c05305edd75704176ba388d780f7f0461b1b8d956a00fcf123
+  languageName: node
+  linkType: hard
+
+"@babel/runtime-corejs3@npm:^7.18.9":
+  version: 7.19.0
+  resolution: "@babel/runtime-corejs3@npm:7.19.0"
+  dependencies:
+    core-js-pure: ^3.20.2
+    regenerator-runtime: ^0.13.4
+  checksum: 810c983462430b948af83e1e6bcc06ca14dad59a257d7dc453779cdc1fbc7d9a6d75d608591a1eeb90c71c7fce1c2279a87c5bc848c5ac58eef831ecad596a9f
   languageName: node
   linkType: hard
 
@@ -4324,7 +4334,6 @@ __metadata:
   dependencies:
     "@material-ui/core": ^4.12.4
     "@material-ui/icons": ^4.11.3
-    "@types/create-react-class": ^15.6.3
     "@types/debug": ^4.1.7
     "@types/jquery": ^3.5.14
     "@types/lodash": ^4.14.182
@@ -4333,8 +4342,8 @@ __metadata:
     "@types/react-dom": ^17.0.17
     "@typescript-eslint/eslint-plugin": ^5.30.5
     "@typescript-eslint/parser": ^5.30.5
-    create-react-class: ^15.7.0
     debug: ^4.3.4
+    dotenv: ^16.0.1
     eslint: ^8.19.0
     eslint-config-prettier: ^8.5.0
     eslint-config-standard-with-typescript: ^22.0.0
@@ -4825,15 +4834,6 @@ __metadata:
   version: 2.8.12
   resolution: "@types/cors@npm:2.8.12"
   checksum: 8c45f112c7d1d2d831b4b266f2e6ed33a1887a35dcbfe2a18b28370751fababb7cd045e745ef84a523c33a25932678097bf79afaa367c6cb3fa0daa7a6438257
-  languageName: node
-  linkType: hard
-
-"@types/create-react-class@npm:^15.6.3":
-  version: 15.6.3
-  resolution: "@types/create-react-class@npm:15.6.3"
-  dependencies:
-    "@types/react": "*"
-  checksum: d39a33f6217a00442e5fecf3d94ddd7134bd0b3ff3138be549a15aa79c7d49c8541020936ee81c37656172cf392d3a306c2104275549ac435c955fe8cc0f1711
   languageName: node
   linkType: hard
 
@@ -9951,16 +9951,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"create-react-class@npm:^15.7.0":
-  version: 15.7.0
-  resolution: "create-react-class@npm:15.7.0"
-  dependencies:
-    loose-envify: ^1.3.1
-    object-assign: ^4.1.1
-  checksum: 0c5f43da705fa9f67ec289051dd5780792652d440dfa17cd2c7d8423c1f604609596f895dabf46fda1960ddd93ee96fe1b61ef4d55a94fc4271b07d515486714
-  languageName: node
-  linkType: hard
-
 "create-require@npm:^1.1.0":
   version: 1.1.1
   resolution: "create-require@npm:1.1.1"
@@ -11579,10 +11569,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"dompurify@npm:=2.3.3":
-  version: 2.3.3
-  resolution: "dompurify@npm:2.3.3"
-  checksum: 947e3661681bd183aae1cd08f991b14c6aa41fd188f6c801c5e916c2dc4575bbefbaa121ed06dbe0cb0f595545527d588a44b53bfc35d1cbb898c214dc0d7930
+"dompurify@npm:=2.3.10":
+  version: 2.3.10
+  resolution: "dompurify@npm:2.3.10"
+  checksum: ee343876b4c065e82d194818c66af76a6d2290264c7db583ad71761c11781fd626f0245f9f4670175d5707c4b8fcfb89adae80bed0418a9426a47ee7f36b0ffc
   languageName: node
   linkType: hard
 
@@ -11686,6 +11676,13 @@ __metadata:
   version: 14.3.2
   resolution: "dotenv@npm:14.3.2"
   checksum: 86c06758915d6facc35275f4a7fafc16705b6f3b44befaa8abca91367991efc8ff8db5437d3cc14778231d19fb97610fe82d60f8a53ba723cdb69fe4171439aa
+  languageName: node
+  linkType: hard
+
+"dotenv@npm:^16.0.1":
+  version: 16.0.1
+  resolution: "dotenv@npm:16.0.1"
+  checksum: f459ffce07b977b7f15d8cc4ee69cdff77d4dd8c5dc8c85d2d485ee84655352c2415f9dd09d42b5b5985ced3be186130871b34e2f3e2569ebc72fbc2e8096792
   languageName: node
   linkType: hard
 
@@ -22327,15 +22324,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-debounce-input@npm:=3.2.4":
-  version: 3.2.4
-  resolution: "react-debounce-input@npm:3.2.4"
+"react-debounce-input@npm:=3.3.0":
+  version: 3.3.0
+  resolution: "react-debounce-input@npm:3.3.0"
   dependencies:
     lodash.debounce: ^4
-    prop-types: ^15.7.2
+    prop-types: ^15.8.1
   peerDependencies:
-    react: ^15.3.0 || ^16.0.0 || ^17.0.0
-  checksum: 92df1b15db866903b68eb445dcdb15a08aaec9a1e89aa145237b818acecc84f48afc05b6df4f582ef416e2e36732920822c6fcbbbda2750afa6e22f68c5a4880
+    react: ^15.3.0 || 16 || 17 || 18
+  checksum: c391ddc73047df759a68913ab8cb0444d211ab91657d94b3b1660ca434ece4a9ac611a7b8b3e82c89d3b7c3d061d0c99bdf6a426e61802848d1c783acb44b69f
   languageName: node
   linkType: hard
 
@@ -25670,16 +25667,16 @@ __metadata:
   linkType: hard
 
 "swagger-ui@npm:^4.4.1":
-  version: 4.12.0
-  resolution: "swagger-ui@npm:4.12.0"
+  version: 4.14.0
+  resolution: "swagger-ui@npm:4.14.0"
   dependencies:
-    "@babel/runtime-corejs3": ^7.16.8
+    "@babel/runtime-corejs3": ^7.18.9
     "@braintree/sanitize-url": =6.0.0
     base64-js: ^1.5.1
     classnames: ^2.3.1
     css.escape: 1.5.1
     deep-extend: 0.6.0
-    dompurify: =2.3.3
+    dompurify: =2.3.10
     ieee754: ^1.2.1
     immutable: ^3.x.x
     js-file-download: ^0.4.12
@@ -25690,7 +25687,7 @@ __metadata:
     randombytes: ^2.1.0
     react: =17.0.2
     react-copy-to-clipboard: 5.0.4
-    react-debounce-input: =3.2.4
+    react-debounce-input: =3.3.0
     react-dom: =17.0.2
     react-immutable-proptypes: 2.2.0
     react-immutable-pure-component: ^2.2.0
@@ -25708,7 +25705,7 @@ __metadata:
     xml: =1.0.1
     xml-but-prettier: ^1.0.1
     zenscroll: ^4.0.2
-  checksum: 44b0a4323c1f6e66da7f85af6c1e468ef25ddf7a4c820ff1e1c2f0ab878ad4ce815b77805d1894e1f1d361bb3ed4ff7ec2d97c630ed3a38efd8ab3a542236eec
+  checksum: da65de3e319e21d3dd9687040dcc4735e5198eb5006cf7b32395db13b3f2ca3856e5134735ad7ef137a113e0ec1e571bf0b15371bde6293babad61b0a0dea821
   languageName: node
   linkType: hard
 

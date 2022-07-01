@@ -31,6 +31,7 @@ const keys = {
   secretKey: process.env.SECRET_KEY as any,
 };
 
+const tkURL = 'https://tiktok.com/foryou';
 const getConfig = () => ({
   ...keys,
   active: true,

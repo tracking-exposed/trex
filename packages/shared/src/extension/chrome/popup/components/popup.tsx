@@ -1,21 +1,27 @@
-import React, { useEffect, useState } from 'react';
-
-import moment from 'moment';
-
 import { Card } from '@material-ui/core';
 import FormHelperText from '@material-ui/core/FormHelperText';
 import { Alert, AlertTitle } from '@material-ui/lab';
+import moment from 'moment';
+import React, { useEffect, useState } from 'react';
 import config from '../../../config';
 import log from '../../../logger';
 import UserSettings from '../../../models/UserSettings';
 import { configUpdate, localLookup } from '../../background/sendMessage';
-import GetCSV from './getCSV';
+import DashboardLinks, { DashboardLink } from './DashboardLinks';
 import InfoBox from './infoBox';
-import Settings from './settings';
+import Settings, { SettingsProps } from './settings';
 
 const styles = {
   width: '400px',
 };
+
+export interface PopupProps {
+  platform: string;
+  platformURL: string;
+  logo: string;
+  getLinks: (opts: { publicKey: string }) => DashboardLink[];
+  settings: Pick<SettingsProps, 'enabled'>
+}
 
 type PopupState =
   | { status: 'init' }
@@ -32,7 +38,13 @@ type PopupState =
     };
 
 let localLookupInterval: any;
-const Popup: React.FC = () => {
+const Popup: React.FC<PopupProps> = ({
+  platform,
+  platformURL,
+  settings,
+  logo,
+  getLinks,
+}) => {
   const [userSettingsS, setUserSettingsState] = useState<PopupState>({
     status: 'init',
   });
@@ -141,13 +153,17 @@ const Popup: React.FC = () => {
       <Card>
         <FormHelperText>TikTok TRex — main switch</FormHelperText>
         <Settings
+        enabled={settings.enabled}
           settings={userSettingsS.payload}
           onSettingsChange={handleConfigChange}
         />
         <FormHelperText>Access to your data</FormHelperText>
-        <GetCSV publicKey={userSettingsS.payload.publicKey} />
+        <DashboardLinks
+          publicKey={userSettingsS.payload.publicKey}
+          getLinks={getLinks}
+        />
         <FormHelperText>About</FormHelperText>
-        <InfoBox />
+        <InfoBox logo={logo} />
       </Card>
     );
   }, [userSettingsS]);

@@ -11,7 +11,7 @@ import * as fs from 'fs';
 import * as path from 'path';
 import { getChromeMock } from '../../../../packages/shared/src/extension/__mocks__/chrome';
 import * as app from '../src/app/app';
-import api, { getHeadersForDataDonation } from '../src/chrome/background/api';
+import api, { getHeadersForDataDonation } from '../src/background/api';
 import * as events from '../src/handlers/events';
 import ytHub from '../src/handlers/hub';
 
