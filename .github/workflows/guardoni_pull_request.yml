@@ -52,12 +52,10 @@ jobs:
         run: yarn shared build
 
       - name: Build guardoni
-        working-directory: ./platforms/guardoni
-        run: ./scripts/cli-build.mjs
+        run: yarn guardoni tsc -b
 
-  pm2_start:
-    name: PM2 Start
-    run: yarn pm2 start --env test ./platforms/ecosystem.config.js
+      - name: Start PM2
+        run: yarn pm2 start --env test ./platforms/ecosystem.config.js
 
   guardoni_build:
     name: Guardoni build
@@ -112,7 +110,7 @@ jobs:
         run: yarn
 
       - name: Build Guardoni for ${{ matrix.config.os }}
-        run: ./scripts/cli-build.sh
+        run: ./scripts/cli-build.mjs
 
       - name: Test YT cli
         working-directory: ./platforms/guardoni
@@ -120,4 +118,7 @@ jobs:
 
   pm2_stop:
     name: PM2 Stop
-    run: yarn pm2 stop all
+    needs: [guardoni_build]
+    steps:
+      - name: PM2 stop all
+        run: yarn pm2 stop all
