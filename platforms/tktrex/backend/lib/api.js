@@ -41,7 +41,7 @@ const apiList = {
   postDirective: require('../routes/directives').post,
   fetchDirective: require('../routes/directives').get,
   getPublicDirectives: require('../routes/directives').getPublic,
-
+  getPersonalByExperimentId : require('../routes/personal').getPersonalByExperimentId,
   /* and specificly for the email, opt-in, and who wants to be get updated */
   registerEmail2: require('../routes/emails').registerEmail2,
   listEmails: require('../routes/emails').listEmails,

@@ -14,7 +14,7 @@ const config = nconf
   .file({ file: path.resolve(__dirname, '../config/settings.json') })
   .env();
 
-const logger = GetLogger('yttrex').extend('test');
+const logger = GetLogger('tktrex').extend('test');
 
 export interface Test {
   app: supertest.SuperTest<supertest.Test>;

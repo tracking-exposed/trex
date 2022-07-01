@@ -369,7 +369,10 @@ export const GetEvents = ({
             },
           };
 
-          void initGuardoni(basePath, c, platform);
+          void initGuardoni(basePath, c, platform)().then(() => {
+            app.relaunch();
+            app.quit();
+          });
         });
 
         return TE.tryCatch(

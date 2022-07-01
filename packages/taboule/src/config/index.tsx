@@ -107,7 +107,7 @@ export const defaultConfiguration = (
         },
         {
           ...columnDefault,
-          field: 'directives',
+          field: 'links',
           minWidth: 350,
           renderCell: (params) => {
             return (

@@ -7,7 +7,7 @@
 const _ = require('lodash');
 const nconf = require('nconf');
 const debug = require('debug')('lib:automo');
-const debugLite = require('debug')('lib:automo:L');
+// const debugLite = require('debug')('lib:automo:L');
 const moment = require('moment');
 
 const utils = require('../lib/utils');
@@ -85,9 +85,16 @@ async function getPersonalTableData(publicKey, filter, sync) {
     };
 }
 
+async function getSupporterByPublicKey(publicKey) {
+  const mongoc = await mongo3.clientConnect({concurrency: 1});
+    const supporter = await mongo3.readOne(mongoc, nconf.get('schema').supporters, { publicKey });
+    await mongoc.close();
+    return supporter
+}
+
 async function getMetadataByPublicKey(publicKey, options) {
     const mongoc = await mongo3.clientConnect({concurrency: 1});
-    const supporter = await mongo3.readOne(mongoc, nconf.get('schema').supporters, { publicKey });
+    const supporter = await getSupporterByPublicKey(publicKey);
 
     if(!supporter)
         throw new Error("publicKey do not match any user");
@@ -293,11 +300,11 @@ async function getLastHTMLs(filter, skip, limit) {
 
     if(_.size(htmls))
         debug("getLastHTMLs: %j -> %d (overflow %s)%s", filter, _.size(htmls),
-            (_.size(htmls) == HARDCODED_LIMIT), skip ? "skip " + skip : "");
+            (_.size(htmls) === HARDCODED_LIMIT), skip ? "skip " + skip : "");
 
     mongoc.close();
     return {
-        overflow: _.size(htmls) == HARDCODED_LIMIT,
+        overflow: _.size(htmls) === HARDCODED_LIMIT,
         content: htmls
     }
 }
@@ -308,12 +315,24 @@ async function markHTMLsUnprocessable(htmls) {
     const r = await mongo3.updateMany(mongoc, nconf.get('schema').htmls,
         { id: { $in: ids }}, { processed: false });
 
-    if( r.result.n != _.size(ids) ||
-        r.result.nModified != _.size(ids) ||
-        r.result.ok != 1) {
+    if( r.result.n !== _.size(ids) ||
+        r.result.nModified !== _.size(ids) ||
+        r.result.ok !== 1) {
         debug("Odd condition in multiple update! %j", r.result);
     }
     await mongoc.close();
+}
+
+async function createMetadataEntry(mongoc, html, newSection) {
+  const exists = {
+    publicKey: html.publicKey,
+    savingTime: html.savingTime,
+    version: 3,
+    ...newSection,
+    id: html.metadataId,
+  };
+  await mongo3.writeOne(mongoc, nconf.get('schema').metadata, exists);
+  return exists;
 }
 
 async function updateMetadata(html, newsection) {
@@ -357,7 +376,7 @@ async function updateMetadata(html, newsection) {
         if(!current) {
             _.set(memo, key, value);
             updates++;
-        } else if(_.indexOf(careless, key) == -1) {
+        } else if(_.indexOf(careless, key) === -1) {
             /* we don't care of these updates */
         } else if(!_.isEqual(JSON.stringify(current), JSON.stringify(value))) {
             const record = {
@@ -393,17 +412,7 @@ async function updateMetadata(html, newsection) {
     return await markHTMLandClose(mongoc, html, { what: 'duplicated'});
 }
 
-async function createMetadataEntry(mongoc, html, newSection) {
-    const exists = {
-      publicKey: html.publicKey,
-      savingTime: html.savingTime,
-      version: 3,
-      ...newSection,
-      id: html.metadataId,
-    };
-    await mongo3.writeOne(mongoc, nconf.get('schema').metadata, exists);
-    return exists;
-}
+
 
 async function getRandomRecent(minTime, maxAmount) {
     const mongoc = await mongo3.clientConnect({concurrency: 1});
@@ -443,7 +452,7 @@ async function getMixedDataSince(schema, since, maxAmount) {
             maxAmount, 0);
 
         /* if an overflow is spotted, with message is appended */
-        if(_.size(r) == maxAmount)
+        if(_.size(r) === maxAmount)
             retContent.push({
                 template: 'info',
                 message: 'Whoa, too many! capped limit at ' + maxAmount,
@@ -484,14 +493,14 @@ async function getMixedDataSince(schema, since, maxAmount) {
 }
 
 async function getArbitrary(filter, amount, skip) {
-    const mongoc = await mongo3.clientConnect({concurrency: 1});
-    const r = await mongo3.readLimit(mongoc,
-        nconf.get('schema').metadata,
-        filter, {
-            savingTime: -1
-        }, amount, skip);
-    await mongoc.close();
-    return r;
+  const mongoc = await mongo3.clientConnect({concurrency: 1});
+  const r = await mongo3.readLimit(mongoc,
+      nconf.get('schema').metadata,
+      filter, {
+          savingTime: -1
+      }, amount, skip);
+  await mongoc.close();
+  return r;
 }
 
 module.exports = {
@@ -501,6 +510,7 @@ module.exports = {
     getRelatedByWatcher,
     getVideosByPublicKey,
     deleteEntry,
+    getSupporterByPublicKey,
 
     /* used by routes/public */
     getMetadataByFilter,

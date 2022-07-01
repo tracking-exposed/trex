@@ -1,12 +1,15 @@
-const _ = require('lodash');
-const moment = require('moment');
-const debug = require('debug')('routes:personal');
+import _ from 'lodash';
+import moment from 'moment';
+import D from 'debug';
+import automo from '../lib/automo';
+import params from '../lib/params';
+import CSV from '../lib/CSV';
+const debug = D('routes:personal');
 
-const automo = require('../lib/automo');
-const params = require('../lib/params');
-const CSV = require('../lib/CSV');
+const CSV_MAX_SIZE = 9000;
 
-async function getPersonal(req) {
+
+async function getPersonal(req): Promise<any> {
   const DEFMAX = 100;
   const k = req.params.publicKey;
   if (_.size(k) < 16)
@@ -15,11 +18,12 @@ async function getPersonal(req) {
   const { amount, skip } = params.optionParsing(req.params.paging, DEFMAX);
   debug('getPersonal: amount %d skip %d, default max %d', amount, skip, DEFMAX);
 
-  let data = null;
+  let data: any = null;
   try {
     data = await automo.getSummaryByPublicKey(k, { amount, skip });
     const d = moment.duration(
-      moment(data.supporter.lastActivity) - moment(data.supporter.creationTime)
+      (moment(data.supporter.lastActivity) as any) -
+        (moment(data.supporter.creationTime) as any)
     );
     data.supporter.hereSince = d.humanize();
     debug(
@@ -45,7 +49,7 @@ async function getPersonal(req) {
   return { json: data };
 }
 
-async function getPersonalCSV(req) {
+async function getPersonalCSV(req): Promise<any> {
   /* this function might return a CSV containing all the video in the homepages,
    * or all the related video. depends on the parameter */
   const CSV_MAX_SIZE = 1000;
@@ -53,7 +57,7 @@ async function getPersonalCSV(req) {
   const type = req.params.type;
 
   const supportedATM = ['home', 'video', 'search'];
-  if (supportedATM.indexOf(type) === -1)
+  if (!supportedATM.includes(type))
     return { text: 'Error 🤷 Invalid request, supported only ' + supportedATM };
 
   const data = await automo.getMetadataByPublicKey(k, {
@@ -100,7 +104,7 @@ async function getPersonalCSV(req) {
   };
 }
 
-async function getPersonalTimeline(req) {
+async function getPersonalTimeline(req): Promise<any> {
   throw new Error('not used anymore');
   // const DEFMAX = 300;
   // const k =  req.params.publicKey;
@@ -160,12 +164,12 @@ async function getPersonalTimeline(req) {
   // };
 }
 
-async function getPersonalRelated(req) {
+async function getPersonalRelated(req): Promise<any> {
   const METADATAMAXCONSIDERED = 40;
   const k = req.params.publicKey;
   const type = req.params.type;
 
-  if (CSV.allowedTypes.indexOf(type) === -1)
+  if (!CSV.allowedTypes.includes(type))
     return { status: 401, text: 'Invalid type: allowed ' + CSV.allowedTypes };
 
   const { amount, skip } = params.optionParsing(
@@ -195,7 +199,71 @@ async function getPersonalRelated(req) {
   };
 }
 
-async function getEvidences(req) {
+const getPersonalByExperimentId = async (
+  req
+): Promise<{ json: any } | { headers: any; text: string }> => {
+  const experimentId = req.params.experimentId;
+  const publicKey = req.params.publicKey;
+  const format = req.params.format;
+
+  const supporter = await automo.getSupporterByPublicKey(publicKey);
+
+  const opts = { amount: 100, skip: 0 };
+  const htmls = await automo.getLastHTMLs(
+    {
+      publicKey: {
+        $eq: publicKey,
+      },
+      experimentId: {
+        $eq: experimentId,
+      },
+    },
+    opts.skip,
+    opts.amount
+  );
+
+  const htmlIds = htmls.content.map((h) => h.metadataId);
+
+  // debug('Html ids %O', htmlIds);
+
+  const metadata = await automo.getMetadataByFilter(
+    {
+      id: {
+        $in: htmlIds,
+      },
+      publicKey: {
+        $eq: publicKey,
+      },
+    },
+    opts
+  );
+
+  if (format === 'csv') {
+    const csv = CSV.produceCSVv1(metadata);
+
+    debug('getPersonalCSV (%d)', metadata.length, csv.length, CSV_MAX_SIZE);
+
+    const filename =
+      'tk-' + experimentId + '-' + moment().format('YY-MM-DD') + '.csv';
+
+    return {
+      headers: {
+        'Content-Type': 'csv/text',
+        'Content-Disposition': 'attachment; filename=' + filename,
+      },
+      text: csv,
+    };
+  }
+
+  return {
+    json: {
+      supporter,
+      metadata,
+    },
+  };
+};
+
+async function getEvidences(req): Promise<any> {
   /* this function is quite generic and flexible. allow an user to query their
    * own evidences and allow specification of which is the field to be queried.
    * It is used in our interface with 'id' */
@@ -208,7 +276,7 @@ async function getEvidences(req) {
   const targetValue = req.params.value;
 
   // TODO savingTime is not really supported|tested
-  if (allowFields.indexOf(targetKey) === -1)
+  if (!allowFields.includes(targetKey))
     return {
       json: {
         message: `Key ${targetKey} not allowed (${allowFields})`,
@@ -230,7 +298,7 @@ async function getEvidences(req) {
   return { json: matches.metadata };
 }
 
-async function removeEvidence(req) {
+async function removeEvidence(req): Promise<any> {
   const k = req.params.publicKey;
   if (_.size(k) < 26)
     return { json: { message: 'Invalid publicKey', error: true } };
@@ -245,6 +313,7 @@ module.exports = {
   getPersonalCSV,
   getPersonalTimeline,
   getPersonalRelated,
+  getPersonalByExperimentId,
   getEvidences,
   removeEvidence,
 };

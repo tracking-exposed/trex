@@ -43,9 +43,20 @@ process.env.FLUSH_INTERVAL = DEVELOPMENT ? '4500' : '9000';
 process.env.DEVELOPMENT = DEVELOPMENT ? 'development' : 'production';
 
 const outputDir = PRODUCTION ? PATHS.DIST : PATHS.BUILD;
-const manifestVersion = (
-  process.env.MANIFEST_VERSION ?? packageJSON.version
-).replace('-beta', '');
+
+const APP_VERSION = packageJSON.version
+  .replace(/-(beta|\d)/, '')
+  .concat(process.env.NODE_ENV === 'development' ? '.99' : '');
+
+// enable data contribution setting when building for "guardoni"
+process.env.DATA_CONTRIBUTION_ENABLED = 'false';
+if (process.env.BUILD_TARGET === 'guardoni') {
+  // eslint-disable-next-line no-console
+  console.log(
+    'Building extension for guardoni, setting data contribution enabled by default',
+  );
+  process.env.DATA_CONTRIBUTION_ENABLED = 'true';
+}
 
 const { buildENV, ...config } = getExtensionConfig(
   process.env.BUILD_TARGET === 'guardoni' ? 'tktrex-guardoni' : 'tktrex',
@@ -54,7 +65,7 @@ const { buildENV, ...config } = getExtensionConfig(
     env: AppEnv,
     outputDir,
     distDir: PATHS.DIST,
-    manifestVersion,
+    manifestVersion: APP_VERSION,
     transformManifest: (m) => {
       if (NODE_ENV === 'development') {
         m.permissions.push('http://localhost:14000/');

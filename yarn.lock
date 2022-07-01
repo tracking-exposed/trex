@@ -1653,7 +1653,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@babel/runtime@npm:^7.0.0, @babel/runtime@npm:^7.1.2, @babel/runtime@npm:^7.10.2, @babel/runtime@npm:^7.10.3, @babel/runtime@npm:^7.12.1, @babel/runtime@npm:^7.12.13, @babel/runtime@npm:^7.12.5, @babel/runtime@npm:^7.13.10, @babel/runtime@npm:^7.14.5, @babel/runtime@npm:^7.14.8, @babel/runtime@npm:^7.15.4, @babel/runtime@npm:^7.16.3, @babel/runtime@npm:^7.17.2, @babel/runtime@npm:^7.3.1, @babel/runtime@npm:^7.4.4, @babel/runtime@npm:^7.5.5, @babel/runtime@npm:^7.7.2, @babel/runtime@npm:^7.8.3, @babel/runtime@npm:^7.8.4, @babel/runtime@npm:^7.8.7, @babel/runtime@npm:^7.9.2":
+"@babel/runtime@npm:7.0.0":
+  version: 7.0.0
+  resolution: "@babel/runtime@npm:7.0.0"
+  dependencies:
+    regenerator-runtime: ^0.12.0
+  checksum: 7dbeb4bfa5762b80b4137f21009d2b754dd1adba0390d909d53397c510c1e708677302774d69386f936a26fb898f055c32a0c668e2d908d78d36f76d0c3d04dd
+  languageName: node
+  linkType: hard
+
+"@babel/runtime@npm:^7.0.0, @babel/runtime@npm:^7.1.2, @babel/runtime@npm:^7.10.2, @babel/runtime@npm:^7.10.3, @babel/runtime@npm:^7.12.1, @babel/runtime@npm:^7.12.13, @babel/runtime@npm:^7.12.5, @babel/runtime@npm:^7.13.10, @babel/runtime@npm:^7.14.5, @babel/runtime@npm:^7.14.8, @babel/runtime@npm:^7.15.4, @babel/runtime@npm:^7.16.3, @babel/runtime@npm:^7.17.2, @babel/runtime@npm:^7.2.0, @babel/runtime@npm:^7.3.1, @babel/runtime@npm:^7.4.4, @babel/runtime@npm:^7.5.5, @babel/runtime@npm:^7.7.2, @babel/runtime@npm:^7.8.3, @babel/runtime@npm:^7.8.4, @babel/runtime@npm:^7.8.7, @babel/runtime@npm:^7.9.2":
   version: 7.18.6
   resolution: "@babel/runtime@npm:7.18.6"
   dependencies:
@@ -11970,7 +11979,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"electron-builder@npm:^23.1.0":
+"electron-builder@npm:^23.2.0":
   version: 23.2.0
   resolution: "electron-builder@npm:23.2.0"
   dependencies:
@@ -14864,7 +14873,7 @@ __metadata:
     csv-stringify: ^6.0.5
     debug: ^4.3.4
     electron: 16.2.8
-    electron-builder: ^23.1.0
+    electron-builder: ^23.2.0
     electron-debug: ^3.2.0
     electron-log: ^4.4.7
     electron-reloader: ^1.2.3
@@ -14885,6 +14894,7 @@ __metadata:
     leveldown: ^5.6.0
     linkedom: ^0.14.4
     lodash: ^4.17.21
+    material-auto-rotating-carousel: ^3.0.2
     nconf: ^0.11.3
     node-fetch: ^2.6.7
     node-loader: ^2.0.0
@@ -14900,6 +14910,7 @@ __metadata:
     react-dom: ^17.0.2
     react-router: ^5.2.1
     react-router-dom: ^5.3.0
+    react-swipeable-views: ^0.14.0
     rpmbuild: ^0.0.23
     string-replace-loader: ^3.1.0
     style-loader: ^3.3.1
@@ -17913,6 +17924,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"keycode@npm:^2.1.7":
+  version: 2.2.1
+  resolution: "keycode@npm:2.2.1"
+  checksum: 7a5c775b2410a3b6d9c07a415ecb70639187a965be239d2c11c71079cb1ca2f9dede94b86426f3ece475dc8ae3debf2367531bbcafc0af8c82f157d9a4f7e6cb
+  languageName: node
+  linkType: hard
+
 "keyv@npm:^3.0.0":
   version: 3.1.0
   resolution: "keyv@npm:3.1.0"
@@ -18799,6 +18817,36 @@ __metadata:
   dependencies:
     escape-string-regexp: ^4.0.0
   checksum: 8bee1a7ab7609c2c21d9c9254b6785fa708eadf289032b556d57a34e98fcd4c537659a004dafee6ce80ab157099e645c199dc52678dff1e7fb0a6684e0da4dbe
+  languageName: node
+  linkType: hard
+
+"material-auto-rotating-carousel@npm:^3.0.2":
+  version: 3.0.2
+  resolution: "material-auto-rotating-carousel@npm:3.0.2"
+  dependencies:
+    classnames: ^2.2.5
+    material-ui-dots: ^2.0.0
+    prop-types: ^15.5.8
+  peerDependencies:
+    "@material-ui/core": ^3.6.0 || ^4.0.0
+    "@material-ui/icons": ^3.0.0 || ^4.0.0
+    react: ^16.3.0
+    react-dom: ^16.3.0
+    react-swipeable-views: ^0.13.3
+  checksum: 935cc3a2e0ba2e2b7589a842bd35cd3d4f4c019203aa11f49666c8c975b199bbe85dc6e4343780345581debe91b0336c83ee00b3c6f10842dfa79730f19bd10c
+  languageName: node
+  linkType: hard
+
+"material-ui-dots@npm:^2.0.0":
+  version: 2.0.2
+  resolution: "material-ui-dots@npm:2.0.2"
+  dependencies:
+    prop-types: ^15.7.2
+  peerDependencies:
+    "@material-ui/core": ^1.0.0 || ^3.0.0 || ^4.0.0
+    react: ^16.3.0
+    react-dom: ^16.3.0
+  checksum: 79d3c09894e434cdfc97b9c8dbb898c1a68b870d95e15ac1915e6627a4d455beec57a68f596cb297df92d5cd8a64b6f26b420442f407726252aaa13e4f0bd567
   languageName: node
   linkType: hard
 
@@ -22186,7 +22234,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"prop-types@npm:^15.0.0, prop-types@npm:^15.5.10, prop-types@npm:^15.5.8, prop-types@npm:^15.6.1, prop-types@npm:^15.6.2, prop-types@npm:^15.7.2, prop-types@npm:^15.8.1":
+"prop-types@npm:^15.0.0, prop-types@npm:^15.5.10, prop-types@npm:^15.5.4, prop-types@npm:^15.5.8, prop-types@npm:^15.6.0, prop-types@npm:^15.6.1, prop-types@npm:^15.6.2, prop-types@npm:^15.7.2, prop-types@npm:^15.8.1":
   version: 15.8.1
   resolution: "prop-types@npm:15.8.1"
   dependencies:
@@ -22797,6 +22845,19 @@ __metadata:
   languageName: node
   linkType: hard
 
+"react-event-listener@npm:^0.6.0":
+  version: 0.6.6
+  resolution: "react-event-listener@npm:0.6.6"
+  dependencies:
+    "@babel/runtime": ^7.2.0
+    prop-types: ^15.6.0
+    warning: ^4.0.1
+  peerDependencies:
+    react: ^16.3.0
+  checksum: 0287e0ae8cbf0a4c03889ffc2b745f5494b3edea0f4667357d709f5646dd78c7289ce305b6f473ec6ac5789f8a937c86b7e543d0249f0bf787bccdb1eab7ecd0
+  languageName: node
+  linkType: hard
+
 "react-fast-compare@npm:^3.1.1":
   version: 3.2.0
   resolution: "react-fast-compare@npm:3.2.0"
@@ -23039,6 +23100,45 @@ __metadata:
   peerDependencies:
     react: ^16.3.0 || ^17.0.0 || ^18.0.0
   checksum: c5eb1f42b464fb093bca59aaae0f1b2060373a2aaff95275b8781493628cdbbb6acdd6014e7883782c65c361f35a30f28cc515d68a1263ddb39cbbc47110be53
+  languageName: node
+  linkType: hard
+
+"react-swipeable-views-core@npm:^0.14.0":
+  version: 0.14.0
+  resolution: "react-swipeable-views-core@npm:0.14.0"
+  dependencies:
+    "@babel/runtime": 7.0.0
+    warning: ^4.0.1
+  checksum: 7683bcb809b57d502603396d8560677105b5af1f4db3ecad6cef03a548ae45462af78156516f8fe2f32d36b1bbd295ed2aab49f0d967ac077b3bd902697bfb07
+  languageName: node
+  linkType: hard
+
+"react-swipeable-views-utils@npm:^0.14.0":
+  version: 0.14.0
+  resolution: "react-swipeable-views-utils@npm:0.14.0"
+  dependencies:
+    "@babel/runtime": 7.0.0
+    keycode: ^2.1.7
+    prop-types: ^15.6.0
+    react-event-listener: ^0.6.0
+    react-swipeable-views-core: ^0.14.0
+    shallow-equal: ^1.2.1
+  checksum: 560f3f1000254adfe7ba2c82c133dbd26404a3cfa05794e15eb090056c13f3494aa61f34e133d5e2c970a2eb797a0f55fd8a9bb3bbd85c78770c11912a26b9bb
+  languageName: node
+  linkType: hard
+
+"react-swipeable-views@npm:^0.14.0":
+  version: 0.14.0
+  resolution: "react-swipeable-views@npm:0.14.0"
+  dependencies:
+    "@babel/runtime": 7.0.0
+    prop-types: ^15.5.4
+    react-swipeable-views-core: ^0.14.0
+    react-swipeable-views-utils: ^0.14.0
+    warning: ^4.0.1
+  peerDependencies:
+    react: ^15.3.0 || ^16.0.0 || ^17.0.0
+  checksum: 477bcf2d6b88312cd74c069c23aff48983209ce74b8d10c0d6adabf00795735f55a9c12dc3f23e5d7168308959f18c178d486821abec02e8a562295eada3568b
   languageName: node
   linkType: hard
 
@@ -23418,6 +23518,13 @@ __metadata:
   version: 1.4.2
   resolution: "regenerate@npm:1.4.2"
   checksum: 3317a09b2f802da8db09aa276e469b57a6c0dd818347e05b8862959c6193408242f150db5de83c12c3fa99091ad95fb42a6db2c3329bfaa12a0ea4cbbeb30cb0
+  languageName: node
+  linkType: hard
+
+"regenerator-runtime@npm:^0.12.0":
+  version: 0.12.1
+  resolution: "regenerator-runtime@npm:0.12.1"
+  checksum: 348c401336bcebe2be17fd4f24c5b0a1ed75bff3024dc817a69cdc776b48b98c7f6f3b98e1baa4220569440bb9215e1fff3dcb01c8aad3ff2ed3732e30d017bf
   languageName: node
   linkType: hard
 
@@ -24769,6 +24876,13 @@ __metadata:
   dependencies:
     kind-of: ^6.0.2
   checksum: 39b3dd9630a774aba288a680e7d2901f5c0eae7b8387fc5c8ea559918b29b3da144b7bdb990d7ccd9e11be05508ac9e459ce51d01fd65e583282f6ffafcba2e7
+  languageName: node
+  linkType: hard
+
+"shallow-equal@npm:^1.2.1":
+  version: 1.2.1
+  resolution: "shallow-equal@npm:1.2.1"
+  checksum: 4f1645cc516e7754c4438db687e1da439a5f29a7dba2ba90c5f88e5708aeb17bc4355ba45cad805b0e95dc898e37d8bf6d77d854919c7512f89939986cff8cd1
   languageName: node
   linkType: hard
 
@@ -27830,6 +27944,15 @@ __metadata:
   dependencies:
     makeerror: 1.0.12
   checksum: ad7a257ea1e662e57ef2e018f97b3c02a7240ad5093c392186ce0bcf1f1a60bbadd520d073b9beb921ed99f64f065efb63dfc8eec689a80e569f93c1c5d5e16c
+  languageName: node
+  linkType: hard
+
+"warning@npm:^4.0.1":
+  version: 4.0.3
+  resolution: "warning@npm:4.0.3"
+  dependencies:
+    loose-envify: ^1.0.0
+  checksum: 4f2cb6a9575e4faf71ddad9ad1ae7a00d0a75d24521c193fa464f30e6b04027bd97aa5d9546b0e13d3a150ab402eda216d59c1d0f2d6ca60124d96cd40dfa35c
   languageName: node
   linkType: hard
 

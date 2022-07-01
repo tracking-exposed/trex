@@ -2,7 +2,7 @@ import { resolve } from 'path';
 import { createReadStream } from 'fs';
 import { mkdir } from 'fs/promises';
 
-import { Page } from 'puppeteer';
+import { Page } from 'puppeteer-core';
 import unzipper from 'unzipper';
 
 import { generateDirectoryStructure } from '@project/init';

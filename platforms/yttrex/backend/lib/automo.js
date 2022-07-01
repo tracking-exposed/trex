@@ -22,16 +22,23 @@ const moment = require('moment');
 const utils = require('../lib/utils');
 const mongo3 = require('./mongo3');
 
-async function getSummaryByPublicKey(publicKey, options) {
-  /* this function return the basic information necessary to compile the
-       landing personal page */
+async function getSupporterByPublicKey(publicKey) {
   const mongoc = await mongo3.clientConnect({ concurrency: 1 });
-
   const supporter = await mongo3.readOne(
     mongoc,
     nconf.get('schema').supporters,
     { publicKey }
   );
+  await mongoc.close();
+  return supporter;
+}
+
+async function getSummaryByPublicKey(publicKey, options) {
+  /* this function return the basic information necessary to compile the
+       landing personal page */
+  const mongoc = await mongo3.clientConnect({ concurrency: 1 });
+
+  const supporter = await getSupporterByPublicKey(publicKey);
 
   if (!supporter || !supporter.publicKey)
     throw new Error('Authentication failure');
@@ -864,6 +871,7 @@ module.exports = {
   getMetadataByPublicKey,
   getVideosByPublicKey,
   deleteEntry,
+  getSupporterByPublicKey,
 
   /* used by routes/public */
   getMetadataByFilter,

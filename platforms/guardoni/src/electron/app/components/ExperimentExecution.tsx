@@ -15,7 +15,7 @@ interface ExperimentExecutionProps {
   onClose: () => void;
   onRun: (experimentId: string) => void;
   onOpenExperiment: (experimentId: string) => void;
-  onOpenExperimentResults: (experimentId: string) => void;
+  onOpenExperimentResults: (publicKey: string, experimentId: string) => void;
   onOpenResults: (publicKey: string) => void;
 }
 
@@ -134,7 +134,7 @@ const ExperimentExecution: React.FC<ExperimentExecutionProps> = ({
             >
               <LinkIcon />
               <Typography variant="subtitle2">
-                - {experiment.directives.length}
+                - {experiment.links.length}
               </Typography>
             </Box>
           </Box>
@@ -239,7 +239,10 @@ const ExperimentExecution: React.FC<ExperimentExecutionProps> = ({
                     backgroundColor: 'white',
                   }}
                   onClick={() => {
-                    onOpenExperimentResults(phase.payload.values.experimentId);
+                    onOpenExperimentResults(
+                      phase.payload.values.publicKey,
+                      phase.payload.values.experimentId
+                    );
                   }}
                 >
                   Open experiment results page
@@ -291,11 +294,14 @@ const ExperimentExecutionRoute: React.FC<
     );
   }, []);
 
-  const onOpenExperimentResults = React.useCallback((experimentId: string) => {
-    void shell.openExternal(
-      `${config.backend}/v2/experiment/${experimentId}/json`
-    );
-  }, []);
+  const onOpenExperimentResults = React.useCallback(
+    (publicKey: string, experimentId: string) => {
+      void shell.openExternal(
+        `${config.backend}/v2/personal/${publicKey}/experiments/${experimentId}/csv`
+      );
+    },
+    []
+  );
 
   const onOpenResults = React.useCallback((publicKey: string): void => {
     void shell.openExternal(`${config.backend}/v1/personal/${publicKey}`);

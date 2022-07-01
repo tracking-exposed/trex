@@ -11,8 +11,7 @@ on:
       - refactor/**
     paths:
       - "packages/shared/**"
-      - "platforms/**/extension/**"
-      - "platforms/guardoni/**"
+      - "platforms/**"
 
 jobs:
   pull_request:
@@ -54,17 +53,71 @@ jobs:
 
       - name: Build guardoni
         working-directory: ./platforms/guardoni
-        run: ./scripts/cli-build.sh
+        run: ./scripts/cli-build.mjs
 
-      - name: Test
-        run: |
-          yarn pm2 start --env test ./platforms/ecosystem.config.js
-          sleep 10
-          yarn test guardoni --ci
+  pm2_start:
+    name: PM2 Start
+    run: yarn pm2 start --env test ./platforms/ecosystem.config.js
+
+  guardoni_build:
+    name: Guardoni build
+    needs: [pm2_start]
+    runs-on: ${{ matrix.config.os }}
+    strategy:
+      max-parallel: 1
+      matrix:
+        node-version: [16.x]
+        config:
+          - os: ubuntu-latest
+            command: 'dist:linux'
+          - os: macos-latest
+            command: 'dist:mac'
+          - os: windows-latest
+            command: 'dist:windows'
+    steps:
+      - name: 'Use GNU tar instead BSD tar'
+        if: matrix.config.os == 'windows-latest'
+        shell: cmd
+        run: echo C:\Program Files\Git\usr\bin>>"%GITHUB_PATH%"
+
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          ref: ${{ inputs.ref }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'yarn'
+          cache-dependency-path: yarn.lock
+
+      - uses: actions/cache@v2
+        with:
+          key: build-guardoni-${{ github.run_id }}-${{ matrix.config.os }}
+          restore-keys: |
+            build-guardoni-${{ github.run_id }}-macos-latest
+            build-guardoni-${{ github.run_id }}-ubuntu-latest
+            build-workspace-${{ github.run_id }}
+          path: |
+            packages/shared/build
+            packages/taboule/build
+            platforms/yttrex/extension/dist
+            platforms/tktrex/extension/dist
+            platforms/guardoni/build
+            platforms/guardoni/dist
+            platforms/ycai/studio/build
+
+      - name: Install dependencies
+        run: yarn
+
+      - name: Build Guardoni for ${{ matrix.config.os }}
+        run: ./scripts/cli-build.sh
 
       - name: Test YT cli
         working-directory: ./platforms/guardoni
         run: ./scripts/cli-yt-test.mjs
 
-      - name: Stop pm2 ecosystem
-        run: yarn pm2 stop all
+  pm2_start:
+    name: PM2 Stop
+    run: yarn pm2 stop all

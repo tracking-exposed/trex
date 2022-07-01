@@ -15,12 +15,7 @@ import * as handlers from '../src/app/handlers';
 import api, { getHeadersForDataDonation } from '../src/background/api';
 import tkHub from '../src/handlers/hub';
 import { tkLog } from '../src/logger';
-
-const sleep = (ms: number): Promise<void> => {
-  return new Promise((resolve) => {
-    setTimeout(resolve, ms);
-  });
-};
+import {sleep} from '@shared/utils/promise.utils'
 
 const chromeListener = jest.fn();
 

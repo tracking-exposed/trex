@@ -1,10 +1,15 @@
 #!/usr/bin/env node
+/* eslint-disable camelcase */
 
 import { $, os } from 'zx';
-import { normalizePlatform, getGuardoniCliPkgName } from  './utils.mjs';
+import { normalizePlatform, getGuardoniCliPkgName } from './utils.mjs';
+import dotenv from 'dotenv';
+import assert from 'assert';
 
+dotenv.config({ path: '.env.development' });
+
+// eslint-disable-next-line no-void
 void (async function () {
-
   const version = await $`node -p -e "require('./package.json').version"`;
   const platform = normalizePlatform(os.type());
   const cli = `./dist/${getGuardoniCliPkgName(
@@ -16,6 +21,12 @@ void (async function () {
     '-c=guardoni.config.json',
     '--headless',
     '--verbose',
+  ];
+
+  const experimentFlags = [
+    ...flags,
+    `--publicKey=${process.env.PUBLIC_KEY}`,
+    `--secretKey=${process.env.SECRET_KEY}`,
   ];
 
   const yt_home_experiment_register_out =
@@ -30,7 +41,7 @@ void (async function () {
 
   // exec the experiment
   const yt_home_experiment_run_out =
-    await $`${cli} ${flags} yt-experiment ${yt_home_experiment_id} | grep 'publicKey: ' `;
+    await $`${cli} ${experimentFlags} yt-experiment ${yt_home_experiment_id} | grep 'publicKey: ' `;
 
   await $`echo "${yt_home_experiment_run_out}"`;
 
@@ -39,6 +50,8 @@ void (async function () {
     .replace('\n', '');
 
   await $`echo ${yt_home_experiment_public_key}`;
+
+  assert.strictEqual(yt_home_experiment_public_key, process.env.PUBLIC_KEY);
   await $`curl "http://localhost:9000/api/v1/personal/${yt_home_experiment_public_key}"`;
 
   // // register an experiment for videos
@@ -50,14 +63,16 @@ void (async function () {
   await $`echo ${yt_video_experiment_id}`;
 
   // exec the experiment
-  let ytVideoExperimentRunOut =
-    await $`(${cli} ${flags} yt-experiment ${yt_video_experiment_id} | grep 'publicKey: ')`;
+  const ytVideoExperimentRunOut =
+    await $`(${cli} ${experimentFlags} yt-experiment ${yt_video_experiment_id} | grep 'publicKey: ')`;
 
   await $`echo ${ytVideoExperimentRunOut}`;
 
   const ytVideoExperimentPubKey = ytVideoExperimentRunOut.stdout
     .replace('publicKey: \t ', '')
     .replace('\n', '');
+
+  assert.strictEqual(ytVideoExperimentPubKey, process.env.PUBLIC_KEY);
 
   await $`curl "http://localhost:9000/api/v1/personal/${ytVideoExperimentPubKey}"`;
 })();

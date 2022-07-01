@@ -7,7 +7,6 @@ set -ex
 # of the function given to puppeteer's `page.evaluate`
 
 pkg -c ./package.json \
-  --debug \
   --public \
   -C GZip \
   ./bin/guardoni-cli.js

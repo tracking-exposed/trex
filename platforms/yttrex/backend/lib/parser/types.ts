@@ -26,10 +26,13 @@ export interface ParsingChainResults {
 
 export interface ExecuteParams {
   filter?: string[];
+  /** The process exit after `stop` elements analyzed */
   stop: number;
+  /** Process already `processed` datum */
   repeat?: boolean;
   // exit after first run
   singleUse?: boolean | string;
+  // Htmls elements to load per time
   htmlAmount: number;
 }
 
