@@ -1,7 +1,7 @@
 {
-  "name": "tt-observatory",
+  "name": "@tktrex/observatory",
   "version": "2.6.0",
-  "description": "",
+  "description": "An experimental observatory for TikTok",
   "main": "importer.js",
   "scripts": {
     "test": "jest",
@@ -29,7 +29,6 @@
     "typescript": "^4.7.2"
   },
   "dependencies": {
-    "@types/chokidar": "^2.1.3",
     "chokidar": "^3.5.3",
     "linkedom": "^0.14.4",
     "lodash": "^4.17.21",
