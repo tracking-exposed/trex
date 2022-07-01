@@ -67,7 +67,7 @@ const getExtensionConfig = <E extends t.Props>(
               settings.publicKey = process.env.PUBLIC_KEY;
             }
             if (process.env.SECRET_KEY) {
-              settings.secreteKey = process.env.SECRET_KEY;
+              settings.secretKey = process.env.SECRET_KEY;
             }
             const settingsJSON = JSON.stringify(settings, null, 2);
             return settingsJSON;
