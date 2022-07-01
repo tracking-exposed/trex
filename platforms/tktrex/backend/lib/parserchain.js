@@ -31,6 +31,7 @@ function buildMetadata(entry) {
       ...entry.findings.downloader,
       ...entry.findings.search,
     };
+    metadata.query = _.toLower(metadata.query);
   } else if (entry.findings.nature.type === 'profile') {
     metadata = {
       ...entry.findings.nature,
