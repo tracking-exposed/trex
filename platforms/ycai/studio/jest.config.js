@@ -32,8 +32,5 @@ module.exports = {
     '/node_modules/(?!(react-syntax-highlighter|swagger-client)/)',
   ],
   setupFilesAfterEnv: ['<rootDir>/jest.setup.js'],
-  collectCoverageFrom: [
-    '<rootDir>/src/**',
-    '!<rootDir>/src/components/buttons/**',
-  ],
+  collectCoverageFrom: ['<rootDir>/src/**', '!<rootDir>/src/components/**'],
 };

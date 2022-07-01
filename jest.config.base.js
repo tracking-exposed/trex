@@ -35,5 +35,10 @@ module.exports = {
       statements: 60,
     },
   },
-  coveragePathIgnorePatterns: ['node_modules', 'build', 'bin'],
+  coveragePathIgnorePatterns: [
+    'node_modules',
+    'build',
+    'bin',
+    'src/components',
+  ],
 };
