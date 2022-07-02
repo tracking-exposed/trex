@@ -1,18 +1,15 @@
-import axiosMock from '../../__mocks__/axios.mock';
-import { puppeteerMock } from '../../__mocks__/puppeteer.mock';
+import axiosMock from '../__mocks__/axios.mock';
+import { puppeteerMock, pageMock } from '../__mocks__/puppeteer.mock';
 /* eslint-disable import/first */
 import { pipe } from 'fp-ts/lib/function';
 import * as TE from 'fp-ts/lib/TaskEither';
 import * as fs from 'fs';
 import * as path from 'path';
-import { readConfigFromPath } from '../../src/guardoni/config';
-import { GetGuardoni } from '../../src/guardoni/guardoni';
-import {
-  getDefaultProfile,
-  getProfileDataDir,
-} from '../../src/guardoni/profile';
-import { csvStringifyTE } from '../../src/guardoni/utils';
-import { guardoniLogger } from '../../src/logger';
+import { readConfigFromPath } from '../src/guardoni/config';
+import { GetGuardoni } from '../src/guardoni/guardoni';
+import { getDefaultProfile, getProfileDataDir } from '../src/guardoni/profile';
+import { csvStringifyTE } from '../src/guardoni/utils';
+import { guardoniLogger } from '../src/logger';
 
 const directiveLinks = [
   {
@@ -47,21 +44,25 @@ const directiveLinks = [
   },
 ];
 
-const backend = process.env.YT_BACKEND as string;
+const ytBackend = process.env.YT_BACKEND as string;
+const tkBackend = process.env.TK_BACKEND as string;
 
 describe('Guardoni', () => {
-  const basePath = path.resolve(__dirname, '../../');
+  const basePath = path.resolve(__dirname, '../');
   const profile = 'profile-test-99';
   const emptyCSVTestFileName = 'yt-videos-test-empty.csv';
   const csvTestFileName = 'trex-yt-videos.csv';
+  const keys = {
+    publicKey: process.env.PUBLIC_KEY,
+    secretKey: process.env.SECRET_KEY,
+  };
   const defaultConfig = {
     headless: false,
-    verbose: false,
+    verbose: true,
     tosAccepted: undefined,
-    publicKey: undefined,
-    secretKey: undefined,
+    ...keys,
     profileName: profile,
-    evidenceTag: '',
+    evidenceTag: 'test-tag',
     advScreenshotDir: undefined,
     excludeURLTag: undefined,
     loadFor: 3000,
@@ -69,16 +70,16 @@ describe('Guardoni', () => {
     chromePath: '/chrome/path',
     yt: {
       name: 'youtube' as const,
-      backend: process.env.YT_BACKEND as string,
+      backend: ytBackend,
       frontend: process.env.YT_FRONTEND as string,
-      extensionDir: path.resolve(__dirname, '../../../yttrex/extension/build'),
+      extensionDir: path.resolve(basePath, '../yttrex/extension/build'),
       proxy: undefined,
     },
     tk: {
       name: 'tiktok' as const,
-      backend: process.env.TK_BACKEND as string,
+      backend: tkBackend,
       frontend: process.env.TK_FRONTEND as string,
-      extensionDir: path.resolve(__dirname, '../../../tktrex/extension/build'),
+      extensionDir: path.resolve(basePath, '../tktrex/extension/build'),
       proxy: undefined,
     },
   };
@@ -114,7 +115,13 @@ describe('Guardoni', () => {
   });
 
   afterAll(() => {
-    fs.rmdirSync(getProfileDataDir(basePath, profile), { recursive: true });
+    const profileDir = getProfileDataDir(basePath, profile);
+    if (fs.existsSync(profileDir)) {
+      fs.rmSync(profileDir, {
+        recursive: true,
+      });
+    }
+
     fs.rmSync(path.resolve(basePath, 'experiments', csvTestFileName));
   });
 
@@ -138,7 +145,7 @@ describe('Guardoni', () => {
           tk: {
             name: 'tiktok',
             backend: 'http://localhost:14000/api',
-            extensionDir: path.resolve(basePath, '../tktrex/extension/build'),
+            extensionDir: path.join(basePath, '../tktrex/extension/build'),
           },
         },
       });
@@ -162,7 +169,7 @@ describe('Guardoni', () => {
 
     test('succeeds with profile option', async () => {
       const profileName = 'profile-test-0';
-      const g = await GetGuardoni({
+      const result = await GetGuardoni({
         basePath,
         logger: guardoniLogger,
         puppeteer: puppeteerMock,
@@ -176,7 +183,7 @@ describe('Guardoni', () => {
         'youtube'
       )();
 
-      expect(g).toMatchObject({
+      expect(result).toMatchObject({
         right: {
           config: {
             headless: true,
@@ -247,6 +254,23 @@ describe('Guardoni', () => {
         },
       });
 
+      pageMock.waitForSelector.mockImplementation(() =>
+        Promise.resolve(undefined)
+      );
+      pageMock.evaluateHandle.mockImplementation((fn) => {
+        return Promise.resolve({
+          asElement: () => ({
+            press: jest.fn().mockResolvedValue(undefined),
+            evaluate: jest
+              .fn()
+              .mockResolvedValueOnce(1)
+              .mockResolvedValue(0)
+          }),
+        });
+      });
+
+      pageMock.$.mockResolvedValue(null)
+
       const guardoni = GetGuardoni({
         basePath,
         logger: guardoniLogger,
@@ -269,6 +293,11 @@ describe('Guardoni', () => {
       expect(experiment).toMatchObject({
         right: {
           message: 'Experiment completed',
+          values: [
+            {
+              publicKey: keys.publicKey,
+            },
+          ],
         },
       });
     });
