@@ -114,11 +114,11 @@ export const readCSVAndParse =
               TE.mapLeft((e) => {
                 return new AppError(
                   'CSVParseError',
-                  `The given CSV is not compatible with directive "${directiveType}"`,
+                  `The given CSV is not compatible with directive the expected format`,
                   [
                     ...PathReporter.report(E.left(e)),
                     '\n',
-                    'You can find examples on https://youtube.tracking.exposed/guardoni',
+                    'You can find examples on https://docs.tracking.exposed/guardoni/guardoni-intro',
                   ]
                 );
               })
@@ -161,6 +161,7 @@ export const getDirective =
     { type: DirectiveType; data: NonEmptyArray<Directive> }
   > => {
     return pipe(
+      // TODO this should become v2
       ctx.API.v3.Public.GetDirective({
         Params: {
           experimentId,
@@ -169,25 +170,6 @@ export const getDirective =
       TE.map((response) => {
         ctx.logger.warn('Response %O', response);
         const directiveType = ComparisonDirectiveType.value;
-
-        // const data = pipe(
-        //   NEA.fromArray(response),
-        //   NEA.map((d): Directive => {
-        //     // if (CommonDirectiveTK.is(d)) {
-        //     //   const { videoURL, title, ...rest } = d;
-        //     //   const dd: CommonDirective = {
-        //     //     ...rest,
-        //     //     title,
-        //     //     url: videoURL,
-        //     //     watchFor: 'end',
-        //     //     urltag: undefined,
-        //     //     loadFor: undefined,
-        //     //   };
-        //     //   return dd;
-        //     // }
-        //     return d;
-        //   })
-        // ) as NonEmptyArray<Directive>;
 
         ctx.logger.debug(`Data for experiment (%s) %O`, experimentId, response);
 

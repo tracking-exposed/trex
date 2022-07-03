@@ -58,12 +58,15 @@ export const makeApp = async (
     '/api/v2/guardoni/list/:directiveType/:key?',
     iowrapper('getAllExperiments')
   );
-  app.get('/api/v3/directives/public', iowrapper('getPublicDirectives'));
-  app.post('/api/v3/directives/:directiveType', iowrapper('postDirective'));
-  app.get('/api/v3/directives/:experimentId', iowrapper('fetchDirective'));
-  app.post('/api/v2/handshake', iowrapper('experimentChannel3'));
 
+  app.get('/api/v2/directives/public', iowrapper('getPublicDirectives'));
+
+  app.post('/api/v2/directives', iowrapper('postDirective'));
+  app.get('/api/v2/directives/:experimentId', iowrapper('fetchDirective'));
+  app.post('/api/v2/handshake', iowrapper('experimentChannel3'));
+  app.delete('/api/v2/experiment/:testTime', iowrapper('concludeExperiment3'));
   app.get('/api/v2/experiment/:experimentId/json', iowrapper('experimentJSON'));
+  // TODO unify the two API below and the one above
   app.get(
     '/api/v2/experiment/:experimentId/csv/:type',
     iowrapper('experimentCSV')
