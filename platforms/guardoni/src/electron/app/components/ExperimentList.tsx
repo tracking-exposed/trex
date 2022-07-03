@@ -100,7 +100,7 @@ export const ExperimentList: React.FC<ExperimentListProps> = ({
                 variant="body1"
                 style={{ marginLeft: theme.spacing(1) }}
               >
-                {d.tags.join(', ')}
+                {d.directiveType} {d.tags.join(', ')}
               </Typography>
               <Box
                 style={{

@@ -1,4 +1,5 @@
 import { DirectiveHooks } from '@shared/providers/puppeteer/DirectiveHook';
+import { tkLogin } from '@tktrex/shared/methodology/directives/tiktokLogin.directive';
 import * as puppeteer from 'puppeteer-core';
 import { GuardoniProfile } from '../types';
 
@@ -68,7 +69,9 @@ export const GetTKHooks: GetTKHooks = (ctx) => {
       afterWait,
       completed,
     },
-    customs: {},
+    customs: {
+      tiktokLogin: tkLogin
+    },
     DOMAIN_NAME: 'tiktok.com',
   };
 };
