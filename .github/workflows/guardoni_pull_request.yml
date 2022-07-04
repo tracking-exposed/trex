@@ -69,6 +69,9 @@ jobs:
   guardoni_build:
     name: Guardoni build
     runs-on: ${{ matrix.config.os }}
+    # defaults:
+    #   run:
+    #     shell: bash --noprofile --norc -exo pipefail {0}
     strategy:
       max-parallel: 1
       matrix:
@@ -76,16 +79,20 @@ jobs:
         config:
           - os: ubuntu-latest
             command: 'dist:linux'
-          - os: macos-latest
-            command: 'dist:mac'
-          - os: windows-latest
-            command: 'dist:windows'
+          # - os: macos-latest
+          #   command: 'dist:mac'
+          # - os: windows-latest
+          #   command: 'dist:windows'
     services:
       mongo-db:
         image: mongo:4.2
         ports:
           - 27017:27017
     steps:
+      # configure docker when os is macos
+      - uses: docker-practice/actions-setup-docker@master
+        if: ${{ matrix.config.os == 'macos-latest' }}
+
       - name: 'Use GNU tar instead BSD tar'
         if: matrix.config.os == 'windows-latest'
         shell: cmd
@@ -136,17 +143,4 @@ jobs:
         run: ./scripts/cli-yt-test.mjs
 
       - name: Stop PM2
-        run: yarn pm2 stop all
-
-  pm2_stop:
-    name: PM2 Stop
-    needs: [guardoni_build]
-    runs-on: ubuntu-latest
-    services:
-      mongo-db:
-        image: mongo:4.2
-        ports:
-          - 27017:27017
-    steps:
-      - name: PM2 stop all
         run: yarn pm2 stop all
