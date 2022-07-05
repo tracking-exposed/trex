@@ -54,14 +54,24 @@ jobs:
       - name: Build guardoni
         run: yarn guardoni tsc -b
 
-  pm2_start:
-    name: PM2 Start
-    run: yarn pm2 start --env test ./platforms/ecosystem.config.js
+      - name: Start PM2
+        run: |
+          yarn clean
+          yarn pm2 start --env test ./platforms/ecosystem.config.js
+
+      - name: Test
+        run: |
+          yarn yt:ext build:guardoni
+          yarn tk:ext build:guardoni
+          yarn test guardoni --ci
+          yarn pm2 stop all
 
   guardoni_build:
     name: Guardoni build
-    needs: [pm2_start]
     runs-on: ${{ matrix.config.os }}
+    # defaults:
+    #   run:
+    #     shell: bash --noprofile --norc -exo pipefail {0}
     strategy:
       max-parallel: 1
       matrix:
@@ -69,11 +79,20 @@ jobs:
         config:
           - os: ubuntu-latest
             command: 'dist:linux'
-          - os: macos-latest
-            command: 'dist:mac'
-          - os: windows-latest
-            command: 'dist:windows'
+          # - os: macos-latest
+          #   command: 'dist:mac'
+          # - os: windows-latest
+          #   command: 'dist:windows'
+    services:
+      mongo-db:
+        image: mongo:4.2
+        ports:
+          - 27017:27017
     steps:
+      # configure docker when os is macos
+      - uses: docker-practice/actions-setup-docker@master
+        if: ${{ matrix.config.os == 'macos-latest' }}
+
       - name: 'Use GNU tar instead BSD tar'
         if: matrix.config.os == 'windows-latest'
         shell: cmd
@@ -82,7 +101,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
         with:
-          ref: ${{ inputs.ref }}
+          fetch: 0
 
       - name: Setup Node.js
         uses: actions/setup-node@v2
@@ -110,13 +129,18 @@ jobs:
       - name: Install dependencies
         run: yarn
 
+      - name: Start PM2
+        run: |
+          yarn pm2 start --env test ./platforms/ecosystem.config.js
+          sleep 5
+
       - name: Build Guardoni for ${{ matrix.config.os }}
-        run: ./scripts/cli-build.sh
+        working-directory: ./platforms/guardoni
+        run: ./scripts/cli-build.mjs
 
       - name: Test YT cli
         working-directory: ./platforms/guardoni
         run: ./scripts/cli-yt-test.mjs
 
-  pm2_stop:
-    name: PM2 Stop
-    run: yarn pm2 stop all
+      - name: Stop PM2
+        run: yarn pm2 stop all

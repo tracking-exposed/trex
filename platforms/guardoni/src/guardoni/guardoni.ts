@@ -115,7 +115,8 @@ export const runBrowser =
   (
     experiment: ExperimentInfo,
     directiveType: DirectiveType,
-    directives: NonEmptyArray<Directive>
+    directives: NonEmptyArray<Directive>,
+    opts?: GuardoniCommandOpts
   ): TE.TaskEither<AppError, ExperimentInfo & { publicKey: string | null }> => {
     return pipe(
       dispatchBrowser(ctx)({}),
@@ -142,7 +143,7 @@ export const runBrowser =
       TE.chain((publicKey) =>
         pipe(
           concludeExperiment(ctx)(experiment),
-          TE.map((exp) => ({ ...exp, publicKey }))
+          TE.map((exp) => ({ ...exp, publicKey: publicKey ?? opts?.publicKey }))
         )
       )
     );
@@ -174,7 +175,7 @@ export const runExperiment =
           TE.chain(({ type, data }) => {
             return pipe(
               saveExperiment(ctx)(expId, type, profile),
-              TE.chain((exp) => runBrowser(ctx)(exp, type, data))
+              TE.chain((exp) => runBrowser(ctx)(exp, type, data, opts))
             );
           })
         )
@@ -245,7 +246,8 @@ export const guardoniExecution =
 
     return pipe(
       ctx.puppeteer.operateBrowser(page, directives),
-      TE.map((publicKey) => {
+      TE.map((pubKey) => {
+        const publicKey = pubKey ?? ctx.config.publicKey;
         const duration = differenceInSeconds(new Date(), start);
 
         ctx.logger.debug(
@@ -317,6 +319,7 @@ const loadContext = (
               platform === 'youtube'
                 ? GetYTHooks({
                     profile,
+                    logger,
                   })
                 : GetTKHooks({
                     profile,
