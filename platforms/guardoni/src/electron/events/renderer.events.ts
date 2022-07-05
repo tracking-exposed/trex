@@ -1,6 +1,6 @@
 import { AppError, toAppError } from '@shared/errors/AppError';
 import { Logger } from '@shared/logger';
-import { Directive } from '@shared/models/Directive';
+import { Step } from '@shared/models/Step';
 import { AppEnv } from 'AppEnv';
 import { app, BrowserView, dialog, ipcMain, shell } from 'electron';
 import { pipe } from 'fp-ts/lib/function';
@@ -41,7 +41,7 @@ export interface Events {
 
 const pickCSVFile = (
   logger: Logger
-): TE.TaskEither<AppError, { path: string; parsed: Directive[] }> => {
+): TE.TaskEither<AppError, { path: string; parsed: Step[] }> => {
   return pipe(
     TE.tryCatch(
       () =>
@@ -54,7 +54,7 @@ const pickCSVFile = (
     ),
     TE.chain((value) => {
       return pipe(
-        readCSVAndParse(logger)(value.filePaths[0], 'comparison'),
+        readCSVAndParse(logger)(value.filePaths[0]),
         TE.map((parsed) => ({
           path: value.filePaths[0],
           parsed: parsed as any,
@@ -227,7 +227,7 @@ export const GetEvents = ({
               },
               configOverride.platform.name
             ),
-            TE.chain((g) => g.registerExperiment(records, 'comparison')),
+            TE.chain((g) => g.registerExperiment(records)),
             TE.map((e) => {
               logger.info(e.message, e.values);
 

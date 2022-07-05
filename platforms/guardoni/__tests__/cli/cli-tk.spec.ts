@@ -1,10 +1,10 @@
 /* eslint-disable import/first */
 jest.mock('axios');
+import { CommonStepArb } from '@shared/arbitraries/Step.arb';
 import {
-  CommonDirectiveArb,
   GuardoniExperimentArb,
   PostDirectiveSuccessResponseArb,
-} from '@shared/arbitraries/Directive.arb';
+} from '@shared/arbitraries/Experiment.arb';
 import * as tests from '@shared/test';
 import differenceInMilliseconds from 'date-fns/differenceInMilliseconds';
 import * as fs from 'fs';
@@ -37,7 +37,7 @@ describe('CLI', () => {
     fs.statSync(tkExtensionDir, { throwIfNoEntry: true });
 
     const comparisonCSVContent = await csvStringifyTE(
-      tests.fc.sample(CommonDirectiveArb, 5),
+      tests.fc.sample(CommonStepArb, 5),
       { header: true, encoding: 'utf-8' }
     )();
 
@@ -52,7 +52,7 @@ describe('CLI', () => {
     );
 
     const searchCSVContent = await csvStringifyTE(
-      tests.fc.sample(CommonDirectiveArb, 10),
+      tests.fc.sample(CommonStepArb, 10),
       { header: true, encoding: 'utf-8' }
     )();
 
@@ -120,7 +120,6 @@ describe('CLI', () => {
         guardoni.run({
           run: 'register-csv',
           file: path.resolve(__dirname, '../fake-file') as any,
-          type: 'search',
         })()
       ).resolves.toMatchObject({
         _tag: 'Left',
@@ -135,7 +134,6 @@ describe('CLI', () => {
         guardoni.run({
           run: 'register-csv',
           file: path.resolve(basePath, 'experiments/yt-experiment.csv') as any,
-          type: 'search',
         })()
       ).resolves.toMatchObject({
         _tag: 'Left',
@@ -153,7 +151,6 @@ describe('CLI', () => {
 
       const result: any = await guardoni.run({
         run: 'register-csv',
-        type: 'comparison',
         file: path.resolve(basePath, 'experiments/tk-experiment.csv') as any,
       })();
 
@@ -176,7 +173,6 @@ describe('CLI', () => {
 
       const result: any = await guardoni.run({
         run: 'register-csv',
-        type: 'search',
         file: path.resolve(basePath, 'experiments/tk-experiment.csv') as any,
       })();
 
@@ -201,7 +197,6 @@ describe('CLI', () => {
 
       const result: any = await guardoni.run({
         run: 'register-csv',
-        type: 'comparison',
         file: path.resolve(basePath, 'experiments/tk-experiment.csv') as any,
       })();
 
@@ -226,7 +221,6 @@ describe('CLI', () => {
 
       const result: any = await guardoni.run({
         run: 'register-csv',
-        type: 'search',
         file: path.resolve(basePath, 'experiments/tk-experiment.csv') as any,
       })();
 
@@ -302,7 +296,7 @@ describe('CLI', () => {
     test('succeed when experimentId has valid "tk" directive', async () => {
       // return directive
       axiosMock.request.mockResolvedValueOnce({
-        data: tests.fc.sample(CommonDirectiveArb, 2).map((d) => ({
+        data: tests.fc.sample(CommonStepArb, 2).map((d) => ({
           ...d,
           loadFor: 1500,
           watchFor: '1s',
@@ -338,7 +332,7 @@ describe('CLI', () => {
     test('succeed when experimentId has valid "search" directives and `publicKey` and `secretKey` keys', async () => {
       // return directive
       axiosMock.request.mockResolvedValueOnce({
-        data: tests.fc.sample(CommonDirectiveArb, 2).map((d) => ({
+        data: tests.fc.sample(CommonStepArb, 2).map((d) => ({
           ...d,
           loadFor: 1000,
           watchFor: '1s',

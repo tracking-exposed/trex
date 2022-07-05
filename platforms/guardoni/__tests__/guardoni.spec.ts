@@ -178,6 +178,8 @@ describe('Guardoni', () => {
           ...defaultConfig,
           headless: true,
           verbose: true,
+          publicKey: undefined,
+          secretKey: undefined,
           profileName,
         },
         'youtube'
@@ -220,7 +222,6 @@ describe('Guardoni', () => {
                 'experiments',
                 emptyCSVTestFileName
               ) as any,
-              'comparison'
             )
           )
         )
@@ -280,7 +281,6 @@ describe('Guardoni', () => {
           pipe(
             g.registerExperimentFromCSV(
               path.resolve(basePath, 'experiments', csvTestFileName) as any,
-              'comparison'
             ),
             TE.chain((output) => g.runExperiment(output.values[0].experimentId))
           )

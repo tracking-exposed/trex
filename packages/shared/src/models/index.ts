@@ -27,8 +27,10 @@ import {
   GetDirectiveOutput,
   GetPublicDirectivesOutput,
   GetExperimentListOutput,
+  CreateExperimentResponse,
+  CreateExperimentSuccessResponse
 } from './Experiment';
-import * as Directive from './Directive';
+import * as Step from './Step';
 import { Supporter } from './Supporter';
 
 export default {
@@ -50,6 +52,8 @@ export default {
   GetDirectiveOutput,
   GetExperimentListOutput,
   GetPublicDirectivesOutput,
+  CreateExperimentResponse,
+  CreateExperimentSuccessResponse,
   // ycai
   // content creator
   RegisterContentCreatorBody,
@@ -72,5 +76,5 @@ export default {
   CreatorStatContent,
   ChannelRelated,
   GetRelatedChannelsOutput,
-  ...Directive,
+  ...Step
 };

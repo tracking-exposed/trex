@@ -1,11 +1,11 @@
 import * as endpoints from '@yttrex/shared/endpoints';
 import { Logger } from '@shared/logger';
-import { Directive, DirectiveType } from '@shared/models/Directive';
+import { Step } from '@shared/models/Step';
 import { APIClient } from '@shared/providers/api.provider';
 import { PuppeteerProvider } from '@shared/providers/puppeteer/puppeteer.provider';
 import * as t from 'io-ts';
 import { nonEmptyArray } from 'io-ts-types';
-import { DirectiveHooks } from '@shared/providers/puppeteer/DirectiveHook';
+import { StepHooks } from '@shared/providers/puppeteer/StepHooks';
 
 export const Platform = t.union(
   [t.literal('youtube'), t.literal('tiktok')],
@@ -82,7 +82,7 @@ export type GuardoniProfile = t.TypeOf<typeof GuardoniProfile>;
 
 export interface GuardoniContext {
   puppeteer: PuppeteerProvider;
-  hooks: DirectiveHooks<string, any>;
+  hooks: StepHooks<string, any>;
   API: APIClient<typeof endpoints>;
   config: GuardoniConfig;
   platform: PlatformConfig;
@@ -95,28 +95,10 @@ export interface GuardoniContext {
 export interface ExperimentInfo {
   experimentId: string;
   researchTag: string;
-  directiveType: DirectiveType;
   execCount: number;
   profileName: string;
   newProfile: boolean;
   when: Date;
 }
 
-export const CreateDirectiveBody = nonEmptyArray(Directive);
-
-// const directiveKeysMap = pipe(
-//   {
-//     search: SearchDirective,
-//     comparison: ComparisonDirectiveRow,
-//     common: CommonDirective,
-//   },
-//   R.map((type) => nonEmptyArray(type))
-// );
-
-// export const DirectiveKeysMap = t.type(directiveKeysMap, 'DirectiveKeysMap');
-
-// export const DirectiveType = t.union(
-//   [ComparisonDirectiveType, SearchDirectiveType],
-//   'DirectiveType'
-// );
-// export type DirectiveType = t.TypeOf<typeof DirectiveType>;
+export const CreateDirectiveBody = nonEmptyArray(Step);

@@ -1,12 +1,12 @@
 import * as TE from 'fp-ts/lib/TaskEither';
 import type * as puppeteer from 'puppeteer-core';
 import { AppError, toAppError } from '../../../errors/AppError';
-import { ScrollForDirective } from '../../../models/Directive';
+import { ScrollStep } from '../../../models/Step';
 import { DirectiveContext } from './types';
 
 async function autoScroll(
   page: puppeteer.Page,
-  opts: ScrollForDirective
+  opts: ScrollStep
 ): Promise<void> {
   await page.evaluate(function autoScroll(opts) {
     return new Promise((resolve) => {
@@ -33,7 +33,7 @@ export const GetScrollFor =
   (ctx: DirectiveContext) =>
   (
     page: puppeteer.Page,
-    directive: ScrollForDirective
+    directive: ScrollStep
   ): TE.TaskEither<AppError, void> => {
     return TE.tryCatch(
       async () =>

@@ -91,8 +91,7 @@ Output values:
 d659fc7852b7a2878387773231054d534976bb12:
 
 when:    2022-05-27T11:50:02.423Z
-directiveType:   comparison
-links:
+steps:
          title:          Yt Home
          url:    https://www.youtube.com/
          urltag:         youtube home
@@ -115,7 +114,6 @@ Output values:
 
 experimentId:    d659fc7852b7a2878387773231054d534976bb12
 researchTag:     no-tag-25368
-directiveType:   comparison
 execCount:       3
 profileName:     profile-test-99
 newProfile:      false

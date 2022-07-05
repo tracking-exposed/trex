@@ -11,7 +11,6 @@ export const HandshakeBody = t.type(
         execount: t.union([t.number, t.undefined]),
         newProfile: t.union([t.boolean, t.undefined]),
         researchTag: t.union([t.string, t.undefined]),
-        directiveType: t.union([t.string, t.undefined]),
         testTime: t.union([DateFromISOString, t.undefined]),
       },
       'Config'

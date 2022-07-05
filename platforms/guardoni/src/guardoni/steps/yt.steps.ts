@@ -1,6 +1,6 @@
 import { Logger } from '@shared/logger';
-import { OpenURLDirective } from '@shared/models/Directive';
-import { DirectiveHooks } from '@shared/providers/puppeteer/DirectiveHook';
+import { OpenURLStep } from '@shared/models/Step';
+import { StepHooks } from '@shared/providers/puppeteer/StepHooks';
 import { formatDateTime } from '@shared/utils/date.utils';
 import differenceInSeconds from 'date-fns/differenceInSeconds';
 import subSeconds from 'date-fns/subSeconds';
@@ -322,7 +322,7 @@ async function getYTStatus(page: puppeteer.Page): Promise<{
 
 async function interactWithYT(
   page: puppeteer.Page,
-  directive: OpenURLDirective,
+  directive: OpenURLStep,
   wantedState: string
 ): Promise<any> {
   const DEFAULT_MAX_TIME = 1000 * 60 * 10; // 10 minutes
@@ -423,7 +423,7 @@ async function interactWithYT(
   }
 }
 
-type YTHooks = DirectiveHooks<
+type YTHooks = StepHooks<
   'youtube.com',
   {
     interactWithYT: typeof interactWithYT;

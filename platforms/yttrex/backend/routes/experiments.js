@@ -243,7 +243,7 @@ async function list(req) {
   const skip = req.query.skip ? _.parseInt(req.query.skip) : 0;
   const options = { amount, skip };
 
-  const filter = { directiveType: type };
+  const filter = { };
   const mongoc = await mongo3.clientConnect({ concurrency: 1 });
 
   const configured = await mongo3.readLimit(
@@ -330,7 +330,6 @@ async function emergency(req) {
     nconf.get('schema').experiments,
     {
       experimentId,
-      directiveType: 'comparison',
     }
   );
   if (!directive) {

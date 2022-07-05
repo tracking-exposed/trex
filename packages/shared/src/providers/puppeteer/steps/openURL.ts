@@ -2,12 +2,12 @@ import * as TE from 'fp-ts/lib/TaskEither';
 import type * as puppeteer from 'puppeteer-core';
 import { AppError, toAppError } from '../../../errors/AppError';
 import { Logger } from '../../../logger';
-import { OpenURLDirective } from '../../../models/Directive';
-import { DirectiveHooks } from '../DirectiveHook';
+import { OpenURLStep } from '../../../models/Step';
+import { StepHooks } from '../StepHooks';
 
 interface OpenURLContext {
   logger: Logger;
-  hooks: DirectiveHooks<string, any>;
+  hooks: StepHooks<string, any>;
 }
 
 interface OpenURLOptions {
@@ -26,7 +26,7 @@ export const openURL =
   (ctx: OpenURLContext) =>
   (
     page: puppeteer.Page,
-    directive: OpenURLDirective,
+    directive: OpenURLStep,
     opts: OpenURLOptions
   ): TE.TaskEither<AppError, any> => {
     return TE.tryCatch(async () => {

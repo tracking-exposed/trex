@@ -59,7 +59,7 @@ const getConfig = () => ({
   experimentId: '1',
   execount: 1,
   newProfile: false,
-  directiveType: 'comparison',
+  testTime: new Date().toISOString(),
 });
 
 chrome.runtime.sendMessage

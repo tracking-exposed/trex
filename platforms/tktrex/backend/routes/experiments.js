@@ -3,11 +3,9 @@ const moment = require('moment');
 const debug = require('debug')('routes:experiments');
 const nconf = require('nconf');
 
-const CSV = require('../lib/CSV');
 const experlib = require('../lib/experiments');
 const params = require('../lib/params');
 const mongo3 = require('../lib/mongo3');
-const security = require('../lib/security');
 
 async function sharedDataPull(filter) {
   /* this function is invoked by the various API below */
@@ -122,23 +120,13 @@ async function csv(req) {
 }
 
 async function list(req) {
-  /* this function pull from the collection "directives"
-   * and filter by returning only the 'comparison' kind of
-   * experiment. This is imply req.params.type == 'comparison' */
-  const MAX = 400;
-  const type = req.params.directiveType;
+    /* this function pull from the collection "directives"
+     * and filter by returning only the 'comparison' kind of
+     * experiment. This is imply req.params.type == 'comparison' */
+    const MAX = 400;
 
-  if (['comparison', 'chiaroscuro'].indexOf(type) === -1)
-    return { text: 'Directive Type not supported! ' };
-
-  if (type === 'comparison') {
-    /* this kind of directive require password for listing,
-           instead the shadowban at the moment is free access */
-    if (!security.checkPassword(req)) return { status: 403 };
-  }
-
-  const filter = { directiveType: type };
-  const mongoc = await mongo3.clientConnect({ concurrency: 1 });
+    const filter = {  };
+    const mongoc = await mongo3.clientConnect({concurrency: 1});
 
   const configured = await mongo3.readLimit(
     mongoc,
