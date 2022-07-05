@@ -4,7 +4,7 @@ const _ = require('lodash');
 const debug = require('debug')('routes:events');
 const nconf = require('nconf');
 
-const { chiaroScuro, comparison } = require('./directives');
+const { comparison } = require('./directives');
 const automo = require('../lib/automo');
 const utils = require('../lib/utils');
 const security = require('../lib/security');
@@ -97,13 +97,9 @@ function extendIfExperiment(expinfo, listOf) {
            made by the browser outside the directives is causes
            o.belonginn = false; */
     o.experiment = _.omit(expinfo, nothelpf);
-    o.experiment.directiveType = expinfo.directive[0].directiveType;
-    const directives =
-      o.experiment.directiveType === 'comparison'
-        ? _.map(expinfo.directive[0].links, comparison)
-        : _.flatten(_.map(expinfo.directive[0].links, chiaroScuro));
+    const steps = _.map(expinfo.directive[0].links, comparison);
     o.experiment.directiveN = _.reduce(
-      directives,
+      steps,
       function (memo, d, cnt) {
         if (_.isInteger(memo)) return memo;
         return d.url === o.href.replace(/\+/, '%20') ? cnt : memo;
@@ -112,9 +108,9 @@ function extendIfExperiment(expinfo, listOf) {
     );
     o.experiment.directive = _.isNaN(o.experiment.directiveN)
       ? null
-      : _.nth(directives, o.experiment.directiveN);
+      : _.nth(steps, o.experiment.directiveN);
     o.experiment.belonging = !_.isNaN(o.experiment.directiveN);
-    o.experiment.directives = directives;
+    o.experiment.steps = steps;
     return o;
   });
 }

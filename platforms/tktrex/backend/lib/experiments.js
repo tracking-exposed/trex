@@ -24,6 +24,7 @@ async function registerDirective(directives) {
   const experimentId = utils.hash({
     directives,
   });
+
   const mongoc = await mongo3.clientConnect({ concurrency: 1 });
   const exist = await mongo3.readOne(mongoc, nconf.get('schema').experiments, {
     experimentId,
@@ -40,7 +41,7 @@ async function registerDirective(directives) {
       status: 'exist',
       experimentId: exist.experimentId,
       since: exist.when,
-      links: exist.links,
+      steps: exist.links,
     };
   }
 
@@ -48,7 +49,7 @@ async function registerDirective(directives) {
   debug('Registering new experiment %s: %j', experimentId, directives);
   await mongo3.writeOne(mongoc, nconf.get('schema').experiments, {
     when: new Date(),
-    directives,
+    links: directives,
     experimentId,
   });
 
@@ -56,7 +57,7 @@ async function registerDirective(directives) {
   debug(
     'Registered experiment %s with %d directives',
     experimentId,
-    directives.links
+    directives.steps
   );
   return { status: 'created', experimentId };
 }

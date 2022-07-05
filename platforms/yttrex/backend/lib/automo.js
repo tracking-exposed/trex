@@ -848,7 +848,7 @@ async function registerDirective(directives, directiveType) {
   await mongo3.writeOne(mongoc, nconf.get('schema').experiments, {
     when: new Date(),
     directiveType,
-    directives,
+    links: directives,
     experimentId,
   });
   await mongoc.close();

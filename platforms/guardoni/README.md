@@ -5,7 +5,7 @@
     - [CLI commands](#cli-commands)
       - [Register CSV](#register-csv)
       - [Running an experiment by id](#running-an-experiment-by-id)
-      - [List public directives](#list-public-directives)
+      - [List public experiments](#list-public-experiments)
       - [Running a default experiment](#running-a-default-experiment)
   - [Build](#build)
     - [Package](#package)
@@ -95,9 +95,9 @@ With an experiment id you can run guardoni quite easily:
 guardoni-cli experiment 123456
 ```
 
-#### List public directives
+#### List public experiments
 
-With this command you can list the public directives available to run.
+With this command you can list the public experiments available to run.
 
 ```bash
 guardoni-cli list

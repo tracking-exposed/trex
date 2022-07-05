@@ -200,7 +200,7 @@ describe('CLI', () => {
 
   describe('List public experiments', () => {
     test('succeeds with empty list', async () => {
-      // return directives
+      // return steps
       axiosMock.request.mockResolvedValueOnce({
         data: [],
       });
@@ -223,10 +223,10 @@ describe('CLI', () => {
     });
 
     test('succeeds with some results', async () => {
-      const directives = tests.fc.sample(GuardoniExperimentArb, 2);
-      // return directives
+      const steps = tests.fc.sample(GuardoniExperimentArb, 2);
+      // return steps
       axiosMock.request.mockResolvedValueOnce({
-        data: directives,
+        data: steps,
       });
 
       const result: any = await guardoni.run({
@@ -237,7 +237,7 @@ describe('CLI', () => {
         _tag: 'Right',
         right: {
           message: 'Experiments List',
-          values: directives.map((d) => ({ [d.experimentId]: d })),
+          values: steps.map((d) => ({ [d.experimentId]: d })),
         },
       });
     });
@@ -302,7 +302,7 @@ describe('CLI', () => {
       });
     });
 
-    test('succeed when experimentId has valid "yt" directives', async () => {
+    test('succeed when experimentId has valid "yt" steps', async () => {
       // return directive
       axiosMock.request.mockResolvedValueOnce({
         data: tests.fc.sample(CommonStepArb, 2).map((d) => ({

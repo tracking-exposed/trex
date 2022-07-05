@@ -59,7 +59,6 @@ export const apiList = {
   experimentCSV: require('../routes/experiments').csv,
   experimentDOT: require('../routes/experiments').dot,
   experimentJSON: require('../routes/experiments').json,
-  experimentEmergencyCSV: require('../routes/experiments').emergency,
   // used from extension
   experimentChannel3: require('../routes/experiments').channel3,
   // used by guardoni to close it

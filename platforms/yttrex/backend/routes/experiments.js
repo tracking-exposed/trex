@@ -243,7 +243,7 @@ async function list(req) {
   const skip = req.query.skip ? _.parseInt(req.query.skip) : 0;
   const options = { amount, skip };
 
-  const filter = { };
+  const filter = {};
   const mongoc = await mongo3.clientConnect({ concurrency: 1 });
 
   const configured = await mongo3.readLimit(
@@ -307,91 +307,6 @@ async function list(req) {
   };
 }
 
-async function emergency(req) {
-  // this 'emergency' app have been written mainly to address an issue
-  // in experiment tracking. It would be useful for experiment run between
-  // November 2021 and 26 January 2022.
-  // https://github.com/tracking-exposed/yttrex/issues/329
-  // this api returns CSV
-  const MAX = 3000;
-  const mongoc = await mongo3.clientConnect({ concurrency: 1 });
-
-  const type = req.params.type;
-  if (CSV.allowedTypes.indexOf(type) === -1) {
-    debug('Invalid requested data type? %s', type);
-    return { text: 'Error, invalid URL composed' };
-  }
-
-  // first step is: from the experimentId, pass via 'directives' and
-  // retrieve the URLs
-  const experimentId = params.getString(req, 'experimentId', true);
-  const directive = await mongo3.readOne(
-    mongoc,
-    nconf.get('schema').experiments,
-    {
-      experimentId,
-    }
-  );
-  if (!directive) {
-    debug(
-      "Only 'comparison' directives are allowed in emergency — experimentId not found"
-    );
-    return { text: 'experimentId not found!? ' + experimentId };
-  }
-
-  const urls = _.map(directive.links, 'url');
-
-  const metadata = await mongo3.readLimit(
-    mongoc,
-    nconf.get('schema').metadata,
-    {
-      href: { $in: urls },
-      type,
-    },
-    { savingTime: -1 },
-    MAX,
-    0
-  );
-
-  await mongoc.close();
-
-  debug(
-    'Emergency call: found %d available with %d urls (max %d) types: %j',
-    metadata.length,
-    urls.length,
-    MAX,
-    _.countBy(metadata, 'type')
-  );
-
-  const transformed = CSV.unrollNested(metadata, {
-    type,
-    experiment: false,
-    private: false,
-  });
-
-  const textcsv = CSV.produceCSVv1(transformed);
-  debug(
-    'Fetch %d metadata(s), and converted in a %d CSV',
-    _.size(metadata),
-    _.size(textcsv)
-  );
-
-  if (!textcsv.length)
-    return { text: 'Error: an empty CSV have been produced' };
-
-  const filename = `eexperiment-${experimentId.substr(0, 8)}-${type}-${
-    transformed.length
-  }.csv`;
-
-  return {
-    text: textcsv,
-    headers: {
-      'Content-Type': 'csv/text',
-      'Content-Disposition': 'attachment; filename=' + filename,
-    },
-  };
-}
-
 async function channel3(req) {
   // this is invoked as handshake, and might return information
   // helpful for the extension, about the experiment running.
@@ -431,7 +346,6 @@ module.exports = {
   dot,
   json,
   list,
-  emergency,
 
   /* used by the browser extension/guardoni */
   channel3,

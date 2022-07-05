@@ -34,12 +34,11 @@ export const AutoRunTab: React.FC<FromCSVFileTabProps> = ({ onSubmit }) => {
   const [directiveId, setDirectiveId] = React.useState<string | undefined>(
     undefined
   );
-  const [directives, setDirectives] = React.useState<GuardoniExperiment[]>([]);
+  const [steps, setSteps] = React.useState<GuardoniExperiment[]>([]);
 
   React.useEffect(() => {
     ipcRenderer.on(EVENTS.GET_PUBLIC_DIRECTIVES.value, (event, ...args) => {
-      const [directives] = args;
-      setDirectives(directives);
+      setSteps(args[0]);
     });
 
     ipcRenderer.send(EVENTS.GET_PUBLIC_DIRECTIVES.value);
@@ -47,7 +46,7 @@ export const AutoRunTab: React.FC<FromCSVFileTabProps> = ({ onSubmit }) => {
 
   return (
     <Box display={'flex'} flexDirection={'column'}>
-      {directives.map((d, i) => {
+      {steps.map((d, i) => {
         const isSelected = d.experimentId === directiveId;
         return (
           <Box

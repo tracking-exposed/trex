@@ -320,8 +320,8 @@ export const GetEvents = ({
           if (!event.sender.isDestroyed()) {
             void pipe(
               guardoni.API.v3.Public.GetPublicDirectives(),
-              TE.map((directives) =>
-                directives.find((d) => d.experimentId === experimentId)
+              TE.map((steps) =>
+                steps.find((d) => d.experimentId === experimentId)
               ),
               liftEventTask(EVENTS.GET_PUBLIC_DIRECTIVE.value)
             );

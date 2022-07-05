@@ -181,8 +181,8 @@ const ExperimentListRoute: React.FC<
 
   React.useEffect(() => {
     ipcRenderer.on(EVENTS.GET_PUBLIC_DIRECTIVES.value, (event, ...args) => {
-      const [directives] = args;
-      setDirectives(directives);
+      const [steps] = args;
+      setDirectives(steps);
     });
 
     ipcRenderer.send(EVENTS.GET_PUBLIC_DIRECTIVES.value);
