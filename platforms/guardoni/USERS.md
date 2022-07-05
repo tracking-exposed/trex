@@ -8,7 +8,7 @@ This is the general idea, but we are in a position where we can still adjust the
 
 1. As a researcher how do you deal with algo recommendation analysis?
 2. Can you describe me your experience with guardoni-cli?
-3. What was for you the most umcomfortable or frustrating trait while dealing with guardoni-cli?
+3. What was for you the most uncomfortable or frustrating trait while dealing with guardoni-cli?
 4. Have you ever tried other tools from tracking.exposed?
 5. What kind of experiments are you interested in?
 6. What would you like to do with the new guardoni? Could you describe the ideal software?
