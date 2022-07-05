@@ -1,3 +1,4 @@
+import { Logger } from '@shared/logger';
 import { OpenURLDirective } from '@shared/models/Directive';
 import { DirectiveHooks } from '@shared/providers/puppeteer/DirectiveHook';
 import { formatDateTime } from '@shared/utils/date.utils';
@@ -58,7 +59,7 @@ export function getMaybeScreenshotFilename(
   );
 }
 
-async function consoleLogParser(
+export async function consoleLogParser(
   page: puppeteer.Page,
   message: puppeteer.ConsoleMessage
 ): Promise<void> {
@@ -101,61 +102,62 @@ const advSelectors = [
   '.ytd-promoted-sparkles-text-search-renderer',
 ];
 
-async function beforeDirectives(
-  page: puppeteer.Page,
-  profinfo: GuardoniProfile
-): Promise<void> {
-  page.on('console', (event) => {
-    void consoleLogParser(page, event);
-  });
-  page.on('pageerror', (message) => bconsError('Error %s', message));
-  page.on('requestfailed', (request) =>
-    bconsError(`Requestfail: ${request.failure()?.errorText} ${request.url()}`)
-  );
-
-  // await page.setRequestInterception(true);
-  if (nconf.get('3rd') === true) {
-    page.on('request', (e) => manageRequest(profinfo, e));
-    setInterval(print3rdParties, 60 * 1000);
-  }
-
-  if (!nconf.get('screenshots')) return;
-
-  const screenshotsPath = nconf.get('screenshotsPath');
-  if (!screenshotsPath) return;
-
-  /* this is to monitor presence of special selectors that
-   * should trigger screencapture */
-  if (globalConfig.interval) clearInterval(globalConfig.interval);
-
-  globalConfig.screenshotPrefix = path.join(
-    screenshotsPath,
-    `${profinfo.profileName}..${profinfo.execount}`
-  );
-
-  try {
-    fs.mkdirSync(globalConfig.screenshotPrefix);
-  } catch (error) {}
-
-  globalConfig.interval = setInterval(function () {
-    advSelectors.forEach((selector) => {
-      try {
-        /* variables from node need to be passed this way to pptr */
-        void page.evaluate(
-          (selector, SCREENSHOT_MARKER) => {
-            const x = document.querySelector(selector);
-            if (x) {
-              // eslint-disable-next-line no-console
-              console.log(SCREENSHOT_MARKER, selector);
-            }
-          },
-          selector,
-          SCREENSHOT_MARKER
-        );
-      } catch (error) {}
+const beforeDirectives =
+  (ctx: YTHooksContext) =>
+  async (page: puppeteer.Page): Promise<void> => {
+    page.on('console', (event) => {
+      void consoleLogParser(page, event);
     });
-  }, nconf.get('screenshotTime') || 5000);
-}
+    page.on('pageerror', (message) => bconsError('Error %s', message));
+    page.on('requestfailed', (request) =>
+      bconsError(
+        `Requestfail: ${request.failure()?.errorText} ${request.url()}`
+      )
+    );
+
+    // await page.setRequestInterception(true);
+    if (nconf.get('3rd') === true) {
+      page.on('request', (e) => manageRequest(ctx.profile, e));
+      setInterval(print3rdParties, 60 * 1000);
+    }
+
+    if (!nconf.get('screenshots')) return;
+
+    const screenshotsPath = nconf.get('screenshotsPath');
+    if (!screenshotsPath) return;
+
+    /* this is to monitor presence of special selectors that
+     * should trigger screencapture */
+    if (globalConfig.interval) clearInterval(globalConfig.interval);
+
+    globalConfig.screenshotPrefix = path.join(
+      screenshotsPath,
+      `${ctx.profile.profileName}..${ctx.profile.execount}`
+    );
+
+    try {
+      fs.mkdirSync(globalConfig.screenshotPrefix);
+    } catch (error) {}
+
+    globalConfig.interval = setInterval(function () {
+      advSelectors.forEach((selector) => {
+        try {
+          /* variables from node need to be passed this way to pptr */
+          void page.evaluate(
+            (selector, SCREENSHOT_MARKER) => {
+              const x = document.querySelector(selector);
+              if (x) {
+                // eslint-disable-next-line no-console
+                console.log(SCREENSHOT_MARKER, selector);
+              }
+            },
+            selector,
+            SCREENSHOT_MARKER
+          );
+        } catch (error) {}
+      });
+    }, nconf.get('screenshotTime') || 5000);
+  };
 
 /* this is the variable we populate of statistics
  * on third parties, and every minute, it is printed on terminal */
@@ -322,6 +324,7 @@ async function interactWithYT(
     _.isUndefined(directive.watchFor) || directive.watchFor === null
       ? 'end'
       : directive.watchFor;
+
   // here is managed the special condition directive.watchFor == "end"
   if (specialwatch === 'end') {
     // eslint-disable-next-line no-console
@@ -351,6 +354,14 @@ async function interactWithYT(
           newst.name
         );
     }
+  } else if (_.isString(specialwatch) && specialwatch.endsWith('s')) {
+    const ms = parseInt(specialwatch.replace('s', ''), 10) * 1000;
+    debug('Special value format %s (%d ms)', specialwatch, ms);
+
+    await page.waitForTimeout(ms);
+    const newst = await getYTstatus(page);
+    await (newst.player as any).press('Space');
+    await getYTstatus(page);
   } else if (_.isInteger(specialwatch)) {
     // eslint-disable-next-line no-console
     console.log(
@@ -363,9 +374,10 @@ async function interactWithYT(
     await page.waitForTimeout(specialwatch as any);
     debug('Finished special watchining time of:', specialwatch, 'milliseconds');
   } else {
+    const errorMessage = `invalid waitFor value [${directive.watchFor}]`;
     // eslint-disable-next-line no-console
-    console.log('Error: invalid waitFor value [%s]', directive.watchFor);
-    process.exit(1);
+    console.error(errorMessage);
+    throw new Error(errorMessage);
   }
 }
 
@@ -385,6 +397,7 @@ type YTHooks = DirectiveHooks<
 >;
 
 interface YTHooksContext {
+  logger: Logger;
   profile: GuardoniProfile;
 }
 
@@ -392,7 +405,7 @@ export type GetYTHooks = (ctx: YTHooksContext) => YTHooks;
 export const GetYTHooks: GetYTHooks = (ctx) => {
   return {
     openURL: {
-      beforeDirectives: (p) => beforeDirectives(p, ctx.profile),
+      beforeDirectives: (p) => beforeDirectives(ctx)(p),
       beforeLoad,
       beforeWait,
       afterWait,

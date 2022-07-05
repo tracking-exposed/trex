@@ -30,6 +30,8 @@ const randomTag = (): string => 'no-tag-' + _.random(0, 0xffff);
 
 export const getDefaultConfig = (basePath: string): GuardoniConfig => {
   return {
+    publicKey: undefined,
+    secretKey: undefined,
     chromePath: CHROME_PATHS[0],
     headless: true,
     verbose: false,

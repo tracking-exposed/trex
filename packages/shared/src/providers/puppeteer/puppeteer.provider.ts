@@ -97,7 +97,11 @@ export const operateBrowser =
       ),
       TE.chain(() =>
         TE.tryCatch(
-          () => ctx.hooks.openURL.completed(),
+          async () => {
+            const result = await ctx.hooks.openURL.completed();
+            ctx.logger.debug('Completed! %O', result);
+            return result;
+          },
           (e) => new AppError('Completed', (e as any).message, [])
         )
       ),
