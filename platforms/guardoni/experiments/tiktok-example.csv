@@ -1,0 +1,6 @@
+url,urltag,loadFor,watchFor,type,incrementScrollByPX,totalScroll
+https://www.tiktok.com/@astrosamantha,AstroSam profile,,10000,openURL,,
+https://www.tiktok.com/@astrosamantha/video/7105016626243767557,AstroSam video1,,20000,openURL,,
+https://www.tiktok.com/@chiaraferragni,ChiaraFerr profile,,30000,openURL,400,3000
+https://www.tiktok.com/@chiaraferragni/video/7109051864821386501,ChiaraFerr video1,,5000,openURL,,
+https://www.tiktok.com/,homescroll,,,openURL,500,15000
