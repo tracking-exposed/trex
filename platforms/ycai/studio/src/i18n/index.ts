@@ -5,7 +5,7 @@ import en from './en-US';
 
 export default i18n.use(initReactI18next).init({
   resources: {
-    en: en,
+    en,
   },
   fallbackLng: 'en',
   interpolation: {

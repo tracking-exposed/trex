@@ -63,7 +63,7 @@ async function getPersonalCSV(req): Promise<any> {
   const data = await automo.getMetadataByPublicKey(k, {
     amount: CSV_MAX_SIZE,
     skip: 0,
-    type: type,
+    type,
   });
   /* this return of videos or homepage, they generated slightly different CSV formats */
 

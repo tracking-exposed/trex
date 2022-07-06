@@ -31,7 +31,7 @@ export const ADVChannelStatsBox: React.FC = () => {
       </Typography>
       <WithQueries
         queries={{
-          creatorADVStats: creatorADVStats,
+          creatorADVStats,
         }}
         render={QR.fold(LazyFullSizeLoader, ErrorBox, ({ creatorADVStats }) => {
           if (creatorADVStats.length === 0) {

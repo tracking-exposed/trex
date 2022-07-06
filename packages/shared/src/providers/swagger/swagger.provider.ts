@@ -194,7 +194,7 @@ const apiSchemaFromEndpoint = (
   return {
     summary: (e as any).title ?? key,
     description: getDocumentation(e),
-    tags: tags,
+    tags,
     parameters,
     security,
     ...requestBody,
@@ -372,6 +372,6 @@ export const generateDoc = (
         ...modelSchema,
       },
     },
-    paths: paths,
+    paths,
   };
 };

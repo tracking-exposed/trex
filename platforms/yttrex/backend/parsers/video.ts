@@ -243,7 +243,7 @@ function relatedMetadata(e: any, i: number): ParsedInfo | null {
     verified,
     foryou,
     videoId,
-    params: params,
+    params,
     recommendedSource: source,
     recommendedTitle: mined ? mined.title : title || null,
     recommendedLength,
@@ -508,7 +508,7 @@ export function processVideo(
   return {
     title,
     type: 'video',
-    params: params,
+    params,
     videoId,
     login,
     publicationString,
