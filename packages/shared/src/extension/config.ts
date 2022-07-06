@@ -1,6 +1,4 @@
 export interface Config {
-  active: boolean;
-  ux: boolean;
   API_ROOT: string;
   BUILD: string;
   DEVELOPMENT: boolean;
@@ -28,8 +26,6 @@ if (!process.env.BUILD) {
 }
 
 const config: Config = {
-  active: process.env.DATA_CONTRIBUTION_ENABLED === 'true',
-  ux: false,
   BUILD: process.env.BUILD,
   BUILD_DATE: process.env.BUILD_DATE,
   DEVELOPMENT: process.env.NODE_ENV === 'development',

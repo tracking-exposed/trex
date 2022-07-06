@@ -14,7 +14,7 @@ import * as IOE from 'fp-ts/lib/IOEither';
 import * as TE from 'fp-ts/lib/TaskEither';
 import * as fs from 'fs';
 import path from 'path';
-import { GuardoniCommandOpts } from './cli';
+import { UserSettings } from '@shared/extension/models/UserSettings';
 import { GuardoniContext, Platform } from './types';
 
 /**
@@ -141,7 +141,7 @@ export const downloadExtension = (
 
 export const setLocalSettings =
   (ctx: GuardoniContext) =>
-  (s?: GuardoniCommandOpts): void => {
+  (s?: Partial<UserSettings>): void => {
     if (!s?.publicKey && !s?.secretKey) {
       ctx.logger.debug('No publicKey/secretKey pair given...');
       return;

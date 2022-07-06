@@ -18,7 +18,12 @@ export interface KeyPair {
 const FIXED_USER_NAME = 'local';
 
 // defaults of the settings stored in 'config' and controlled by popup
-const DEFAULT_SETTINGS = { active: true, ux: false, researchTag: '' };
+const DEFAULT_SETTINGS = {
+  active: true,
+  ux: false,
+  researchTag: '',
+  experimentId: undefined,
+};
 
 /**
  * Create publicKey and secretKey

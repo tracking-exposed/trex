@@ -158,7 +158,11 @@ export const GetGuardoniCLI: GetGuardoniCLI = (
             case 'navigate': {
               return pipe(
                 g.runBrowser(command.opts),
-                TE.map(() => ({ type: 'success', values: [], message: '' }))
+                TE.map(() => ({
+                  type: 'success',
+                  values: [],
+                  message: 'Navigation completed!',
+                }))
               );
             }
             case 'auto':

@@ -2,13 +2,13 @@ import { debounce } from '@material-ui/core';
 import _ from 'lodash';
 import { clearCache } from '../providers/dataDonation.provider';
 import { localLookup, serverLookup } from './chrome/background/sendMessage';
-import { Config } from './config';
 import * as dom from './dom';
 import { registerHandlers } from './handlers/index';
 import { Hub } from './hub';
 import log from './logger';
 import HubEvent from './models/HubEvent';
 import { ServerLookup } from './models/Message';
+import UserSettings from './models/UserSettings';
 
 // instantiate a proper logger
 const appLog = log.extend('app');
@@ -18,7 +18,8 @@ export interface BaseObserverHandler {
   handle: (
     n: HTMLElement,
     opts: Omit<ObserverHandler, 'handle'>,
-    selectorName: string
+    selectorName: string,
+    s: UserSettings
   ) => void;
 }
 
@@ -58,13 +59,16 @@ interface SetupObserverOpts {
   onLocationChange: (oldLocation: string, newLocation: string) => void;
 }
 
-interface BootOpts {
+export interface BootOpts {
   payload: ServerLookup['payload'];
-  mapLocalConfig: (c: Config, payload: ServerLookup['payload']) => Config;
+  mapLocalConfig: (
+    c: UserSettings,
+    payload: ServerLookup['payload']
+  ) => UserSettings;
   observe: SetupObserverOpts;
   hub: {
     hub: Hub<any>;
-    onRegister: (h: Hub<HubEvent>, config: Config) => void;
+    onRegister: (h: Hub<HubEvent>, config: UserSettings) => void;
   };
   onAuthenticated: (res: any) => void;
 }
@@ -84,20 +88,25 @@ let oldHref: string;
  * setup the mutation observer with
  * given callbacks for selectors
  */
-function setupObserver({
-  handlers,
-  platformMatch,
-  onLocationChange,
-}: SetupObserverOpts): MutationObserver {
+function setupObserver(
+  { handlers, platformMatch, onLocationChange }: SetupObserverOpts,
+  config: UserSettings
+): MutationObserver {
   const handlersList = Object.keys(handlers);
   // register selector and 'selector-with-parents' handlers
   handlersList.forEach((h) => {
     const { handle, ...handler } = handlers[h];
+
     if (
       handler.match.type === 'selector' ||
       handler.match.type === 'selector-with-parents'
     ) {
-      dom.on(handler.match.selector, (node) => handle(node, handler, h));
+      dom.on(handler.match.selector, (node) =>
+        handle(node, handler, h, {
+          ...config,
+          href: window.location.toString(),
+        } as any)
+      );
     }
   });
 
@@ -126,6 +135,7 @@ function setupObserver({
             oldHref = newHref;
           }
 
+          // always call the route handler
           const routeHandlerKey = handlersList.find((h) => {
             const handler = handlers[h];
 
@@ -137,15 +147,20 @@ function setupObserver({
 
           if (routeHandlerKey) {
             appLog.debug('Route handler key %s', routeHandlerKey);
-            const { handle, ...routeHandlerOpts } = handlers[routeHandlerKey];
-            handle(window.document.body, routeHandlerOpts, routeHandlerKey);
+            const { handle, ...routeHandlerOpts } = handlers[
+              routeHandlerKey
+            ] as RouteObserverHandler;
+            handle(window.document.body, routeHandlerOpts, routeHandlerKey, {
+              ...config,
+              href: window.location.toString(),
+            } as any);
           }
         }
       }
-    }, 300)
+    }, 500)
   );
 
-  const config = {
+  const observerConfig = {
     childList: true,
     subtree: true,
   };
@@ -156,7 +171,7 @@ function setupObserver({
   });
 
   if (body) {
-    observer.observe(body, config);
+    observer.observe(body, observerConfig);
   } else {
     appLog.error('setupObserver: body not found');
   }
@@ -169,6 +184,7 @@ function setupObserver({
  */
 
 interface App {
+  config: UserSettings;
   destroy: () => void;
 }
 
@@ -195,6 +211,7 @@ export async function boot(opts: BootOpts): Promise<App> {
       if (!settings.active) {
         appLog.info('extension disabled!');
         return resolve({
+          config: settings,
           destroy: () => {
             opts.hub.hub.clear();
           },
@@ -226,10 +243,11 @@ export async function boot(opts: BootOpts): Promise<App> {
         if (response.type === 'Error') {
           throw response.error;
         }
-        const observer = setupObserver(opts.observe);
+        const observer = setupObserver(opts.observe, config);
         opts.onAuthenticated(response.result);
 
         const context = {
+          config,
           destroy: () => {
             opts.hub.hub.clear();
             observer.disconnect();

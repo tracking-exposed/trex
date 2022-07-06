@@ -1,14 +1,23 @@
 import * as t from 'io-ts';
 
-export const VideoContributionEvent = t.strict(
+const ContributionBaseEvent = t.strict(
   {
-    type: t.union([t.literal('video'), t.literal('NewVideo')]),
-    element: t.string,
-    size: t.number,
-    href: t.string,
     randomUUID: t.string,
     incremental: t.number,
     clientTime: t.string,
+    href: t.string,
+    researchTag: t.union([t.string, t.undefined]),
+    experimentId: t.union([t.string, t.undefined]),
+  },
+  'ContributionBaseEvent'
+);
+
+export const VideoContributionEvent = t.strict(
+  {
+    ...ContributionBaseEvent.type.props,
+    type: t.union([t.literal('video'), t.literal('NewVideo')]),
+    element: t.string,
+    size: t.number,
   },
   'VideoContributionEvent'
 );
@@ -17,16 +26,13 @@ export type VideoContributionEvent = t.TypeOf<typeof VideoContributionEvent>;
 
 export const ADVContributionEvent = t.strict(
   {
+    ...ContributionBaseEvent.type.props,
     type: t.literal('leaf'),
     html: t.string,
     hash: t.number,
     offsetTop: t.number,
     offsetLeft: t.number,
-    href: t.string,
     selectorName: t.string,
-    randomUUID: t.string,
-    incremental: t.number,
-    clientTime: t.string,
   },
   'ADVContributionEvent'
 );

@@ -167,7 +167,9 @@ export const runExperiment =
           ctx.profile
         ),
         expId: TE.fromEither(validateNonEmptyString(experimentId)),
-        localSettings: TE.right(setLocalSettings(ctx)(opts)),
+        localSettings: TE.right(
+          setLocalSettings(ctx)({ ...opts, experimentId })
+        ),
       }),
       TE.chain(({ profile, expId }) =>
         pipe(

@@ -1,8 +1,5 @@
-import { boot } from '@shared/extension/app';
-import {
-  handleServerLookup,
-  initializeKey,
-} from '@shared/extension/chrome/background/account';
+import { boot, BootOpts } from '@shared/extension/app';
+import { handleServerLookup } from '@shared/extension/chrome/background/account';
 import { load } from '@shared/extension/chrome/background/index';
 import { handleSyncMessage } from '@shared/extension/chrome/background/sync';
 import config from '@shared/extension/config';
@@ -43,7 +40,7 @@ const backgroundOpts = {
 
 const keys = {
   publicKey: process.env.PUBLIC_KEY,
-  secretKey: process.env.SECRET_KEY
+  secretKey: process.env.SECRET_KEY,
 };
 let supporterId: string, ytURL: string;
 
@@ -63,7 +60,6 @@ const getConfig = () => ({
   experimentId: '1',
   execount: 1,
   newProfile: false,
-  testTime: new Date().toISOString(),
   directiveType: 'comparison',
 });
 
@@ -98,7 +94,7 @@ chrome.storage.local.set.mockImplementation((obj, cb: any) => {
 
 chrome.runtime.onMessage.addListener(chromeListener);
 
-const bootConfig = () => ({
+const bootConfig = (): BootOpts => ({
   payload: {
     config: keys,
     href: window.location.href,
@@ -157,6 +153,8 @@ describe('YT App', () => {
 
     await sleep(4000);
 
+    appContext.destroy();
+
     // custom events should be registered on booting
     expect(eventsRegisterSpy).toHaveBeenCalled();
 
@@ -169,6 +167,7 @@ describe('YT App', () => {
 
     const { handle: _handle, ..._videoOpts } = videoMatcher;
     expect(handleHomeSpy).toHaveBeenCalledTimes(1);
+    expect(handleVideoSpy).not.toHaveBeenCalled();
 
     // banner match
     // const { handle: _bannerHandle, ...bannerOpts } = leafMatcherBanner;
@@ -182,7 +181,8 @@ describe('YT App', () => {
         i + 1,
         expect.any(HTMLElement),
         channel1Opts,
-        'channel1'
+        'channel1',
+        expect.any(Object)
       );
     });
 
@@ -195,7 +195,8 @@ describe('YT App', () => {
         i + 1,
         expect.any(HTMLElement),
         channel2Opts,
-        'channel2'
+        'channel2',
+        expect.any(Object)
       );
     });
 
@@ -207,7 +208,8 @@ describe('YT App', () => {
         i + 1,
         expect.any(HTMLElement),
         channel3Opts,
-        'channel3'
+        'channel3',
+        expect.any(Object)
       );
     });
 
@@ -219,7 +221,7 @@ describe('YT App', () => {
       });
 
     expect(response.status).toBe(200);
-    expect(response.data.ads.length).toBe(71);
+    expect(response.data.ads.length).toBe(100);
 
     expect(response.data).toMatchObject({
       supporter: {
@@ -231,12 +233,9 @@ describe('YT App', () => {
         home: 1,
       },
     });
-
-    appContext.destroy();
   });
 
   test('Collect evidence from video page', async () => {
-    handleLeafBannerSpy.mockClear();
     const appContext = await boot(bootConfig());
 
     ytURL = 'https://www.youtube.com/watch?v=55ud4_Cdbrc';
@@ -252,6 +251,8 @@ describe('YT App', () => {
 
     await sleep(4000);
 
+    appContext.destroy();
+
     // custom events should be registered on booting
     expect(eventsRegisterSpy).toHaveBeenCalled();
 
@@ -266,7 +267,8 @@ describe('YT App', () => {
     expect(handleVideoSpy).toHaveBeenCalledWith(
       window.document.body,
       videoOpts,
-      'video'
+      'video',
+      { ...appContext.config, href: ytURL }
     );
     expect(handleVideoSpy).toBeCalledTimes(1);
 
@@ -276,44 +278,51 @@ describe('YT App', () => {
       1,
       expect.any(HTMLElement),
       bannerOpts,
-      'banner'
+      'banner',
+      { ...appContext.config, href: ytURL }
     );
     expect(handleLeafBannerSpy).toHaveBeenCalledTimes(2);
 
     // channel3 match
+    const leafChannel1Count = 132;
     const { handle: _channel1Handle, ...channel1Opts } = leafMatcherChannel1;
-    expect(handleLeafChannel1Spy).toHaveBeenCalledTimes(132);
-    Array.from({ length: 132 }).map((n, i) => {
+    expect(handleLeafChannel1Spy).toHaveBeenCalledTimes(leafChannel1Count);
+    Array.from({ length: leafChannel1Count }).map((n, i) => {
       expect(handleLeafChannel1Spy).toHaveBeenNthCalledWith(
         i + 1,
         expect.any(HTMLElement),
         channel1Opts,
-        'channel1'
+        'channel1',
+        { ...appContext.config, href: ytURL }
       );
     });
 
-    // channel2 match
+    // channel2
+    const leafChannel2Count = 204;
     const { handle: _channel2Handle, ...channel2Opts } = leafMatcherChannel2;
-    expect(handleLeafChannel2Spy).toHaveBeenCalledTimes(204);
+    expect(handleLeafChannel2Spy).toHaveBeenCalledTimes(leafChannel2Count);
 
-    Array.from({ length: 204 }).map((n, i) => {
+    Array.from({ length: leafChannel2Count }).map((n, i) => {
       expect(handleLeafChannel2Spy).toHaveBeenNthCalledWith(
         i + 1,
         expect.any(HTMLElement),
         channel2Opts,
-        'channel2'
+        'channel2',
+        { ...appContext.config, href: ytURL }
       );
     });
 
     // channel3 match
+    const leafChannel3Count = 22;
     const { handle: _channel3Handle, ...channel3Opts } = leafMatcherChannel3;
-    expect(handleLeafChannel3Spy).toHaveBeenCalledTimes(22);
-    Array.from({ length: 22 }).map((n, i) => {
+    expect(handleLeafChannel3Spy).toHaveBeenCalledTimes(leafChannel3Count);
+    Array.from({ length: leafChannel3Count }).map((n, i) => {
       expect(handleLeafChannel3Spy).toHaveBeenNthCalledWith(
         i + 1,
         expect.any(HTMLElement),
         channel3Opts,
-        'channel3'
+        'channel3',
+        { ...appContext.config, href: ytURL }
       );
     });
 
@@ -346,7 +355,5 @@ describe('YT App', () => {
         home: 1,
       },
     });
-
-    appContext.destroy();
   });
 });

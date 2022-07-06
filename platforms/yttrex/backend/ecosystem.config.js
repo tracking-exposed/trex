@@ -18,9 +18,7 @@ const yt = {
     cwd: __dirname,
     script: 'yarn leaveserv:watch',
     watch: false,
-    env_test: {
-      ...testEnv,
-    },
+    env_test: testEnv,
   },
   parser: {
     name: 'yt-parser',
@@ -28,9 +26,7 @@ const yt = {
     cwd: __dirname,
     script: 'yarn parserv:watch',
     watch: false,
-    env_test: {
-      ...testEnv,
-    },
+    env_test: testEnv,
   },
 };
 
