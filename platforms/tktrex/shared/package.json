@@ -11,7 +11,7 @@
     "open-doc-api": "ts-node bin/open-doc-api.ts"
   },
   "devDependencies": {
-    "@types/jest": "^27.5.1",
+    "@types/jest": "^27.5.2",
     "@types/node": "^16.11.36",
     "@types/yargs": "^17.0.10",
     "@typescript-eslint/eslint-plugin": "^5.30.5",
