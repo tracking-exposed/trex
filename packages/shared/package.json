@@ -29,7 +29,7 @@
     "ts-endpoint-express": "^2.0.0",
     "ts-io-error": "^2.0.0",
     "typelevel-ts": "^0.4.0",
-    "typescript": "^4.7.2"
+    "typescript": "^4.7.4"
   },
   "devDependencies": {
     "@pmmmwh/react-refresh-webpack-plugin": "^0.5.7",

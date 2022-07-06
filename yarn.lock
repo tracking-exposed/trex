@@ -3104,10 +3104,10 @@ __metadata:
     nacl-signature: ^1.0.0
     nconf: ^0.8.5
     node-fetch: ^2.6.7
-    ts-node: ^10.8.0
+    ts-node: ^10.8.2
     ts-node-dev: ^2.0.0
     tweetnacl: ^0.14.5
-    typescript: ^4.7.2
+    typescript: ^4.7.4
   languageName: unknown
   linkType: soft
 
@@ -4322,10 +4322,10 @@ __metadata:
     nconf: ^0.8.5
     node-fetch: ^2.6.7
     nodemon: ^1.19.4
-    ts-node: ^10.8.0
+    ts-node: ^10.8.2
     ts-node-dev: ^2.0.0
     tweetnacl: ^0.14.5
-    typescript: ^4.7.2
+    typescript: ^4.7.4
   languageName: unknown
   linkType: soft
 
@@ -4342,7 +4342,7 @@ __metadata:
     prism-react-renderer: ^1.2.1
     react: ^17.0.2
     react-dom: ^17.0.2
-    typescript: ^4.7.2
+    typescript: ^4.7.4
   languageName: unknown
   linkType: soft
 
@@ -4379,7 +4379,7 @@ __metadata:
     nacl: ^0.1.3
     react: ^17.0.2
     react-dom: ^17.0.2
-    typescript: ^4.7.2
+    typescript: ^4.7.4
     webpack: ^5.73.0
   languageName: unknown
   linkType: soft
@@ -4406,8 +4406,8 @@ __metadata:
     mongodb: ^4.3.1
     ts-endpoint: ^2.0.0
     ts-jest: ^27.1.5
-    ts-node: ^10.8.0
-    typescript: ^4.7.2
+    ts-node: ^10.8.2
+    typescript: ^4.7.4
     yargs: ^17.5.1
   languageName: unknown
   linkType: soft
@@ -4440,7 +4440,7 @@ __metadata:
     prism-react-renderer: ^1.2.1
     react: ^17.0.2
     react-dom: ^17.0.2
-    typescript: ^4.7.2
+    typescript: ^4.7.4
   languageName: unknown
   linkType: soft
 
@@ -4500,7 +4500,7 @@ __metadata:
     tsconfig-paths-webpack-plugin: ^3.5.2
     type-fest: ^2.11.1
     typelevel-ts: ^0.4.0
-    typescript: ^4.7.2
+    typescript: ^4.7.4
     webpack: ^5.73.0
     webpack-bundle-analyzer: ^4.5.0
     webpack-cli: ^4.10.0
@@ -4549,7 +4549,7 @@ __metadata:
     ts-io-error: ^2.0.0
     ts-loader: ^9.3.1
     typelevel-ts: ^0.4.0
-    typescript: ^4.7.2
+    typescript: ^4.7.4
     webpack: ^5.73.0
     webpack-bundle-analyzer: ^4.5.0
     webpack-cli: ^4.10.0
@@ -4631,10 +4631,10 @@ __metadata:
     ts-endpoint: ^2.0.0
     ts-jest: ^27.1.5
     ts-loader: ^9.3.1
-    ts-node: ^10.8.0
+    ts-node: ^10.8.2
     tweetnacl: ^1.0.3
     tweetnacl-util: ^0.13.5
-    typescript: ^4.7.2
+    typescript: ^4.7.4
     uuid: ^2.0.3
     web-vitals: ^2.1.4
     webpack: ^5.73.0
@@ -6439,11 +6439,11 @@ __metadata:
     ts-endpoint: ^2.0.0
     ts-io-error: ^2.0.0
     ts-jest: ^27.1.5
-    ts-node: ^10.8.0
+    ts-node: ^10.8.2
     ts-node-dev: ^2.0.0
     tsconfig-paths: ^3.14.1
     tweetnacl: ^0.14.5
-    typescript: ^4.7.2
+    typescript: ^4.7.4
   languageName: unknown
   linkType: soft
 
@@ -6460,7 +6460,7 @@ __metadata:
     prism-react-renderer: ^1.2.1
     react: ^17.0.2
     react-dom: ^17.0.2
-    typescript: ^4.7.2
+    typescript: ^4.7.4
   languageName: unknown
   linkType: soft
 
@@ -6502,10 +6502,10 @@ __metadata:
     sass-loader: ^12.6.0
     style-loader: ^3.3.1
     ts-loader: ^9.3.1
-    ts-node: ^10.8.0
+    ts-node: ^10.8.2
     tweetnacl: ^0.14.5
     tweetnacl-util: ^0.13.5
-    typescript: ^4.7.2
+    typescript: ^4.7.4
     uglifyjs-webpack-plugin: ^2.2.0
     uuid: ^2.0.3
     webpack: ^5.73.0
@@ -6541,9 +6541,9 @@ __metadata:
     ts-endpoint: ^2.0.0
     ts-io-error: ^2.0.0
     ts-jest: ^27.1.5
-    ts-node: ^10.8.0
+    ts-node: ^10.8.2
     tsconfig-paths: ^3.14.1
-    typescript: ^4.7.2
+    typescript: ^4.7.4
   languageName: unknown
   linkType: soft
 
@@ -14707,9 +14707,9 @@ __metadata:
     style-loader: ^3.3.1
     ts-jest: ^27.1.5
     ts-loader: ^9.3.1
-    ts-node: ^10.8.0
+    ts-node: ^10.8.2
     tsconfig-paths: ^3.14.1
-    typescript: ^4.7.2
+    typescript: ^4.7.4
     unlazy-loader: ^0.1.3
     unzipper: ^0.10.11
     utf-8-validate: ^5.0.9
@@ -23925,7 +23925,7 @@ __metadata:
     release-it: ^14.14.3
     release-it-yarn-workspaces: ^2.0.1
     ts-jest: ^27.1.5
-    typescript: ^4.7.2
+    typescript: ^4.7.4
     webpack: ^5.73.0
     zx: ^6.2.5
   languageName: unknown
@@ -26392,7 +26392,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"ts-node@npm:^10.4.0, ts-node@npm:^10.8.0, ts-node@npm:^10.8.1":
+"ts-node@npm:^10.4.0, ts-node@npm:^10.8.1":
   version: 10.8.1
   resolution: "ts-node@npm:10.8.1"
   dependencies:
@@ -26427,6 +26427,44 @@ __metadata:
     ts-node-transpile-only: dist/bin-transpile.js
     ts-script: dist/bin-script-deprecated.js
   checksum: 7d1aa7aa3ae1c0459c4922ed0dbfbade442cfe0c25aebaf620cdf1774f112c8d7a9b14934cb6719274917f35b2c503ba87bcaf5e16a0d39ba0f68ce3e7728363
+  languageName: node
+  linkType: hard
+
+"ts-node@npm:^10.8.2":
+  version: 10.8.2
+  resolution: "ts-node@npm:10.8.2"
+  dependencies:
+    "@cspotcode/source-map-support": ^0.8.0
+    "@tsconfig/node10": ^1.0.7
+    "@tsconfig/node12": ^1.0.7
+    "@tsconfig/node14": ^1.0.0
+    "@tsconfig/node16": ^1.0.2
+    acorn: ^8.4.1
+    acorn-walk: ^8.1.1
+    arg: ^4.1.0
+    create-require: ^1.1.0
+    diff: ^4.0.1
+    make-error: ^1.1.1
+    v8-compile-cache-lib: ^3.0.1
+    yn: 3.1.1
+  peerDependencies:
+    "@swc/core": ">=1.2.50"
+    "@swc/wasm": ">=1.2.50"
+    "@types/node": "*"
+    typescript: ">=2.7"
+  peerDependenciesMeta:
+    "@swc/core":
+      optional: true
+    "@swc/wasm":
+      optional: true
+  bin:
+    ts-node: dist/bin.js
+    ts-node-cwd: dist/bin-cwd.js
+    ts-node-esm: dist/bin-esm.js
+    ts-node-script: dist/bin-script.js
+    ts-node-transpile-only: dist/bin-transpile.js
+    ts-script: dist/bin-script-deprecated.js
+  checksum: 1eede939beed9f4db35bcc88d78ef803815b99dcdbed1ecac728d861d74dc694918a7f0f437aa08d026193743a31e7e00e2ee34f875f909b5879981c1808e2a7
   languageName: node
   linkType: hard
 
@@ -26678,7 +26716,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"typescript@npm:^4.4.3, typescript@npm:^4.7.2":
+"typescript@npm:^4.4.3, typescript@npm:^4.7.4":
   version: 4.7.4
   resolution: "typescript@npm:4.7.4"
   bin:
@@ -26688,7 +26726,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"typescript@patch:typescript@^4.4.3#~builtin<compat/typescript>, typescript@patch:typescript@^4.7.2#~builtin<compat/typescript>":
+"typescript@patch:typescript@^4.4.3#~builtin<compat/typescript>, typescript@patch:typescript@^4.7.4#~builtin<compat/typescript>":
   version: 4.7.4
   resolution: "typescript@patch:typescript@npm%3A4.7.4#~builtin<compat/typescript>::version=4.7.4&hash=493e53"
   bin:
