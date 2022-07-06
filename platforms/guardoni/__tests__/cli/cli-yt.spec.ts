@@ -7,6 +7,7 @@ import {
 } from '@shared/arbitraries/Directive.arb';
 import * as tests from '@shared/test';
 import differenceInMilliseconds from 'date-fns/differenceInMilliseconds';
+import { pipe } from 'fp-ts/lib/function';
 import * as fs from 'fs';
 import * as path from 'path';
 import { GetGuardoniCLI, GuardoniCLI } from '../../src/guardoni/cli';
@@ -50,7 +51,6 @@ describe('CLI', () => {
       comparisonCSVContent.right,
       'utf-8'
     );
-
   });
 
   afterAll(() => {
@@ -120,10 +120,7 @@ describe('CLI', () => {
       await expect(
         guardoni.run({
           run: 'register-csv',
-          file: path.resolve(
-            basePath,
-            'experiments/tk-experiment.csv'
-          ) as any,
+          file: path.resolve(basePath, 'experiments/tk-experiment.csv') as any,
           type: 'comparison',
         })()
       ).resolves.toMatchObject({
@@ -144,10 +141,7 @@ describe('CLI', () => {
       const result: any = await guardoni.run({
         run: 'register-csv',
         type: 'comparison',
-        file: path.resolve(
-          basePath,
-          'experiments/yt-experiment.csv'
-        ) as any,
+        file: path.resolve(basePath, 'experiments/yt-experiment.csv') as any,
       })();
 
       expect(result).toMatchObject({
@@ -170,10 +164,7 @@ describe('CLI', () => {
       const result: any = await guardoni.run({
         run: 'register-csv',
         type: 'comparison',
-        file: path.resolve(
-          basePath,
-          'experiments/yt-experiment.csv'
-        ) as any,
+        file: path.resolve(basePath, 'experiments/yt-experiment.csv') as any,
       })();
 
       expect(result).toMatchObject({
@@ -198,10 +189,7 @@ describe('CLI', () => {
       const result: any = await guardoni.run({
         run: 'register-csv',
         type: 'comparison',
-        file: path.resolve(
-          basePath,
-          'experiments/yt-experiment.csv'
-        ) as any,
+        file: path.resolve(basePath, 'experiments/yt-experiment.csv') as any,
       })();
 
       expect(result).toMatchObject({
@@ -330,7 +318,23 @@ describe('CLI', () => {
       const result: any = await guardoni.run({
         run: 'experiment',
         experiment: experimentId as any,
+        opts: { publicKey, secretKey },
       })();
+
+      // check guardoni has written proper settings.json
+      // inside extension folder
+
+      const settingJson = pipe(
+        path.resolve(ytExtensionDir, 'settings.json'),
+        (p) => fs.readFileSync(p, 'utf-8'),
+        JSON.parse
+      );
+
+      expect(settingJson).toMatchObject({
+        publicKey,
+        secretKey,
+        experimentId,
+      });
 
       expect(result).toMatchObject({
         _tag: 'Right',
@@ -340,7 +344,7 @@ describe('CLI', () => {
             {
               profileName,
               evidenceTag,
-              directiveType: 'comparison',
+              experimentId
             },
           ],
         },
@@ -366,7 +370,7 @@ describe('CLI', () => {
       const result: any = await guardoni.run({
         run: 'experiment',
         experiment: experimentId as any,
-        opts: { publicKey, secretKey}
+        opts: { publicKey, secretKey },
       })();
 
       expect(result).toMatchObject({
@@ -378,7 +382,7 @@ describe('CLI', () => {
               publicKey,
               experimentId,
               evidenceTag,
-              profileName
+              profileName,
             },
           ],
         },

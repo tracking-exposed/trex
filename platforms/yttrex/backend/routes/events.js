@@ -154,6 +154,8 @@ async function processEvents2(req) {
   const headers = processHeaders(req.headers, EXPECTED_HDRS);
   if (headers.error) return headerError(headers);
 
+  // toodo: this should be returned as 400/500 error
+
   if (!utils.verifyRequestSignature(req)) {
     debug('Verification fail (signature %s)', headers.signature);
     return {

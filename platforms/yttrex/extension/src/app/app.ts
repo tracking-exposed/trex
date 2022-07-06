@@ -33,6 +33,7 @@ import {
 } from '@shared/extension/app';
 import config from '@shared/extension/config';
 import logger from '@shared/extension/logger';
+import UserSettings from '@shared/extension/models/UserSettings';
 import { sizeCheck } from '@shared/providers/dataDonation.provider';
 import {
   consideredURLs,
@@ -162,7 +163,8 @@ export function onLocationChange(
 export const handleLeaf = (
   node: HTMLElement,
   opts: Omit<ObserverHandler, 'handle'>,
-  selectorName: string
+  selectorName: string,
+  config: UserSettings
 ): void => {
   // command has .selector .parents .preserveInvisible (this might be undefined)
   ytLogger.info('Handle "leaf" type: %s', selectorName);
@@ -256,11 +258,12 @@ export const handleLeaf = (
   }
 };
 
-export function handleRoute(
+export const handleRoute = (
   node: HTMLElement,
   selector: RouteObserverHandler,
-  route: string
-): void {
+  route: string,
+  s: UserSettings
+): void => {
   ytLogger.info(`Handle route ${route}`, selector);
 
   const sendableNode = document.querySelector('ytd-app');
@@ -285,7 +288,7 @@ export function handleRoute(
     },
   });
   updateUI('video.send');
-}
+};
 
 export const watchedPaths = {
   home: {

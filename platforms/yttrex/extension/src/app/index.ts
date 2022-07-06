@@ -17,17 +17,15 @@ bo.runtime.sendMessage({ type: 'chromeConfig' }, (config) => {
         newProfile: settings.isNew,
         href: window.location.href,
         execount: settings.execount ?? 0,
-        testTime: new Date().toISOString(),
       } as any,
       mapLocalConfig: (c, { href, ...p }) => {
         return {
-          experimentId: '',
           evidencetag: '',
           directiveType: 'comparison',
           ...c,
           ...p,
           href,
-        } ;
+        };
       },
       observe: {
         handlers: watchedPaths as any,

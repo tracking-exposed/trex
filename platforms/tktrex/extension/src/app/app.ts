@@ -1,15 +1,15 @@
 import {
   ObserverHandler,
   refreshUUID,
-  SelectorObserverHandler,
   RouteObserverHandler,
+  SelectorObserverHandler,
 } from '@shared/extension/app';
-import config from '@shared/extension/config';
 import log from '@shared/extension/logger';
+import UserSettings from '@shared/extension/models/UserSettings';
 import { sizeCheck } from '@shared/providers/dataDonation.provider';
 import _ from 'lodash';
-import { INTERCEPTED_ITEM_CLASS } from '../interceptor/constants';
 import tkHub from '../handlers/hub';
+import { INTERCEPTED_ITEM_CLASS } from '../interceptor/constants';
 
 const appLog = log.extend('app');
 
@@ -144,6 +144,7 @@ const handleInterceptedData = (): void => {
 
 // experiment in progress;
 const handleSigi = _.debounce((element: Node): void => {
+  // eslint-disable-next-line no-console
   console.log('Sigi', element);
 });
 
@@ -209,68 +210,82 @@ const handleSuggested = _.debounce((elem: Node): void => {
  * that got display in 'following' 'foryou' or 'creator' page */
 let videoCounter = 0;
 
-const handleVideo = _.debounce((node: HTMLElement): void => {
-  /* we should check nature for good, the 'video' handles are triggered also in
-   * other pages, afterall! */
-  if (_.startsWith(window.location.pathname, '/search')) return;
-  if (profileHandler.match.location.test(window.location.pathname)) return;
+const handleVideo = _.debounce(
+  (node: HTMLElement, h: any, b: any, config: UserSettings): void => {
+    /* we should check nature for good, the 'video' handles are triggered also in
+     * other pages, afterall! */
+    if (_.startsWith(window.location.pathname, '/search')) return;
+    if (profileHandler.match.location.test(window.location.pathname)) return;
 
-  /* this function return a node element that has a size
-   * lesser than 10k, and stop when find out the parent
-   * would be more than 10k big. */
-  const videoRoot = _.reduce(
-    _.times(20),
-    (memo: HTMLElement, iteration: number): HTMLElement => {
-      if (memo.parentNode instanceof HTMLElement) {
-        if (memo.parentNode.outerHTML.length > 10000) {
-          appLog.debug(
-            'handleVideo: parentNode > 10000',
-            memo.parentNode.outerHTML.length,
-          );
-          return memo;
+    /* this function return a node element that has a size
+     * lesser than 10k, and stop when find out the parent
+     * would be more than 10k big. */
+    const videoRoot = _.reduce(
+      _.times(20),
+      (memo: HTMLElement, iteration: number): HTMLElement => {
+        if (memo.parentNode instanceof HTMLElement) {
+          if (memo.parentNode.outerHTML.length > 10000) {
+            appLog.debug(
+              'handleVideo: parentNode > 10000',
+              memo.parentNode.outerHTML.length,
+            );
+            return memo;
+          }
+          return memo.parentNode;
         }
-        return memo.parentNode;
-      }
 
-      return memo;
-    },
-    node,
-  );
-
-  if (videoRoot.hasAttribute('trex')) {
-    appLog.info(
-      'element already acquired: skipping',
-      videoRoot.getAttribute('trex'),
+        return memo;
+      },
+      node,
     );
 
-    return;
-  }
+    if (videoRoot.hasAttribute('trex')) {
+      appLog.info(
+        'element already acquired: skipping',
+        videoRoot.getAttribute('trex'),
+      );
 
-  videoCounter++;
+      return;
+    }
 
-  appLog.info('+video', videoRoot, ' acquired, now', videoCounter, 'in total');
+    videoCounter++;
 
-  videoRoot.setAttribute('trex', `${videoCounter}`);
-
-  tkHub.dispatch({
-    type: 'NewVideo',
-    payload: {
-      html: videoRoot.outerHTML,
-      href: window.location.href,
-      feedId,
-      feedCounter,
+    appLog.info(
+      '+video',
+      videoRoot,
+      ' acquired, now',
       videoCounter,
-      rect: videoRoot.getBoundingClientRect(),
-    },
-  });
+      'in total',
+    );
 
-  if (config.ux) {
-    videoRoot.style.border = '1px solid green';
-  }
-}, 300);
+    videoRoot.setAttribute('trex', `${videoCounter}`);
+
+    tkHub.dispatch({
+      type: 'NewVideo',
+      payload: {
+        html: videoRoot.outerHTML,
+        href: window.location.href,
+        feedId,
+        feedCounter,
+        videoCounter,
+        rect: videoRoot.getBoundingClientRect(),
+      },
+    });
+
+    if (config.ux) {
+      videoRoot.style.border = '1px solid green';
+    }
+  },
+  300,
+);
 
 const handleProfile = _.debounce(
-  (node: HTMLElement, route: any, _selectorName: string): void => {
+  (
+    node: HTMLElement,
+    route: any,
+    _selectorName: string,
+    s: UserSettings,
+  ): void => {
     const profileName = window.location.pathname.match(
       route.match.location,
     )?.[1];
@@ -370,7 +385,7 @@ export const tkHandlers: { [key: string]: ObserverHandler } = {
       type: 'selector',
       selector: 'a[href^="/@"]',
     },
-    handle: () => undefined,
+    handle:  () => undefined,
   },
   search: searchHandler,
   apiInterceptor: {

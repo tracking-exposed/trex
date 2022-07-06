@@ -19,6 +19,7 @@ describe('Events', () => {
   describe('Add events', () => {
     test('succeeds when payload is correctly signed', async () => {
       const keys = await foldTEOrThrow(bs58.makeKeypair(''));
+    const researchTag = 'test-tag';
       const data = fc.sample(ContributionEventArb, 5);
 
       const signature = await foldTEOrThrow(
@@ -31,6 +32,7 @@ describe('Events', () => {
         .set('x-tktrex-version', version)
         .set('X-Tktrex-publicKey', keys.publicKey)
         .set('x-tktrex-signature', signature)
+        .set('X-Tktrex-NonAuthCookieId', researchTag)
         .send(data);
 
       expect(response.status).toBe(200);

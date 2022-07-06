@@ -43,6 +43,8 @@ describe('Events', () => {
 
   describe('GetPersonalByExperimentId', () => {
     test('succeeds with one metadata', async () => {
+      const researchTag = 'test-tag';
+
       const keys = await foldTEOrThrow(bs58.makeKeypair(''));
 
       const fixture = pipe(
@@ -60,6 +62,7 @@ describe('Events', () => {
         ...d,
         ...fixture.sources[0],
         experimentId: experiment.experimentId,
+        researchTag,
       }));
 
       // create a signature
@@ -71,8 +74,10 @@ describe('Events', () => {
       await appTest.app
         .post(`/api/v2/events`)
         .set('x-yttrex-version', version)
+        .set('x-yttrex-build', '')
         .set('X-yttrex-publicKey', keys.publicKey)
         .set('x-yttrex-signature', signature)
+        .set('x-yttrex-nonAuthCookieId', 'local')
         .set('accept-language', 'en')
         .send(data)
         .expect(200);
@@ -105,20 +110,20 @@ describe('Events', () => {
 
       // run parser
       await GetParserProvider<HTMLSource>('htmls', {
-          db,
-          parsers: parsers,
-          getContributions: getLastHTMLs({ db }),
-          saveResults: updateMetadataAndMarkHTML({ db }),
-          getEntryDate: (e) => e.html.savingTime,
-          getEntryNatureType: (e) => e.html.nature.type,
+        db,
+        parsers: parsers,
+        getContributions: getLastHTMLs({ db }),
+        saveResults: updateMetadataAndMarkHTML({ db }),
+        getEntryDate: (e) => e.html.savingTime,
+        getEntryNatureType: (e) => e.html.nature.type,
+      })
+        .run({
+          singleUse: true,
+          stop: 1,
+          htmlAmount: 100,
+          backInTime: 10,
         })
-          .run({
-            singleUse: true,
-            stop: 1,
-            htmlAmount: 100,
-            backInTime: 10,
-          })
-          .then((r) => r.payload.metadata);
+        .then((r) => r.payload.metadata);
 
       // wait for the parser to process the html
       await sleep(5 * 1000);
@@ -138,7 +143,7 @@ describe('Events', () => {
             href: 'https://www.youtube.com/',
             publicKey: keys.publicKey,
             clientTime: fixture.sources[0].clientTime,
-            timelineId: null,
+            experimentId: experiment.experimentId,
           },
         ],
       });

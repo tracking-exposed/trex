@@ -6,7 +6,8 @@ export const UserSettings = t.type(
     publicKey: t.string,
     secretKey: t.string,
     ux: t.boolean,
-    researchTag: t.string,
+    researchTag: t.union([t.string, t.undefined]),
+    experimentId: t.union([t.string, t.undefined]),
   },
   'UserSettings'
 );

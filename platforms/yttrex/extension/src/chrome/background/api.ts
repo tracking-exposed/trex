@@ -1,10 +1,13 @@
-import * as endpoints from '@yttrex/shared/endpoints';
 import { SyncReq } from '@shared/extension/chrome/background/sync';
 import db from '@shared/extension/chrome/db';
 import config from '@shared/extension/config';
 import { MakeAPIClient } from '@shared/providers/api.provider';
-import { decodeFromBase58, decodeString } from '@shared/utils/decode.utils';
-import bs58 from 'bs58';
+import {
+  decodeFromBase58,
+  decodeString,
+  encodeToBase58,
+} from '@shared/utils/decode.utils';
+import * as endpoints from '@yttrex/shared/endpoints';
 import nacl from 'tweetnacl';
 import ytLog from '../../logger';
 
@@ -26,8 +29,9 @@ export const getHeadersForDataDonation = async (req: SyncReq): Promise<any> => {
     decodeString(JSON.stringify(payload)),
     decodeFromBase58(keypair.secretKey)
   );
+  const sign = encodeToBase58(signature);
 
-  // ytLog.info('Signature %s', signature);
+  ytLog.info('Signature %O (%s)', signature, sign);
 
   const headers = {
     'Content-Type': 'application/json',
@@ -35,7 +39,7 @@ export const getHeadersForDataDonation = async (req: SyncReq): Promise<any> => {
     'X-YTtrex-Build': config.BUILD,
     'X-YTtrex-NonAuthCookieId': cookieId,
     'X-YTtrex-PublicKey': keypair.publicKey,
-    'X-YTtrex-Signature': bs58.encode(signature),
+    'X-YTtrex-Signature': sign,
   };
 
   return headers;

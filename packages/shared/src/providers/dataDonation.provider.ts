@@ -282,6 +282,8 @@ function manageNodes(
   leavesCache[hash] = 1;
   // as it is the first observation, take infos and send it
   const acquired: ADVContributionEvent = {
+    experimentId: undefined,
+    researchTag: undefined,
     type: 'leaf',
     html,
     hash,
@@ -407,6 +409,8 @@ export const GetDataDonationProvider = (
       if (sendableNode === null || !sizeCheck(sendableNode.outerHTML)) return;
 
       addContribution({
+        researchTag: undefined,
+        experimentId: undefined,
         type: 'video',
         element: sendableNode.outerHTML,
         size: sendableNode.outerHTML.length,
