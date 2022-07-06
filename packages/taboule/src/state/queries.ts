@@ -230,7 +230,7 @@ export const GetTabouleQueries = ({
         TK_API.v2.Public.GetSearchByQuery(input),
         TE.map((content) => ({
           total: content.length,
-          content: content,
+          content,
         }))
       ),
     available

@@ -390,7 +390,7 @@ async function deleteEntry(publicKey, id) {
   const metadata = await mongo3.deleteMany(
     mongoc,
     nconf.get('schema').metadata,
-    { id: id }
+    { id }
   );
   await mongoc.close();
   return { metadata };
@@ -399,7 +399,7 @@ async function deleteEntry(publicKey, id) {
 async function getRelatedByVideoId(videoId, options) {
   const mongoc = await mongo3.clientConnect({ concurrency: 1 });
   const related = await mongo3.aggregate(mongoc, nconf.get('schema').metadata, [
-    { $match: { videoId: videoId } },
+    { $match: { videoId } },
     { $sort: { savingTime: -1 } },
     { $skip: options.skip },
     { $limit: options.amount },

@@ -340,7 +340,7 @@ function actualHomeProcess(D: Document, clientTime: Date): HomeProcess {
     sections.length
   );
   debugSizes(effective);
-  return { selected: effective as any[], sections: sections };
+  return { selected: effective as any[], sections };
   /* sections would be removed before being saved in mongodb */
 }
 

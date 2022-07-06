@@ -310,7 +310,7 @@ const loadContext = (
         })),
         E.map((c) => ({
           puppeteer: GetPuppeteer({
-            logger: logger,
+            logger,
             puppeteer: p,
             config: {
               loadFor: config.loadFor,

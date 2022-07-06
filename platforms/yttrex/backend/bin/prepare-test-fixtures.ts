@@ -78,7 +78,7 @@ async function main(): Promise<void> {
         path.resolve(basePath, `${metadata.id}.json`),
         JSON.stringify({
           htmls,
-          metadata: metadata,
+          metadata,
         })
       );
     });

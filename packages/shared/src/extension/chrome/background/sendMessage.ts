@@ -31,6 +31,7 @@ const ifValid =
         v
       ).join('\n')}`;
       log.error(msg);
+      // eslint-disable-next-line n/no-callback-literal
       cb({
         type: 'Error',
         error: new Error(
@@ -38,6 +39,7 @@ const ifValid =
         ),
       });
     } else {
+      // eslint-disable-next-line n/no-callback-literal
       cb({ type: 'Success', result: v.right });
     }
   };
@@ -61,7 +63,7 @@ export const localLookup = (cb: SendResponse<UserSettings>): void =>
 
 export const serverLookup = (
   payload: ServerLookup['payload'],
-  cb:  SendResponse< HandshakeResponse>
+  cb: SendResponse<HandshakeResponse>
 ): void =>
   sendMessage(
     {
@@ -73,7 +75,7 @@ export const serverLookup = (
 
 export const configUpdate = (
   payload: Partial<UserSettings>,
-  cb: SendResponse< UserSettings>
+  cb: SendResponse<UserSettings>
 ): void =>
   sendMessage(
     {

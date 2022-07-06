@@ -124,8 +124,8 @@ export const YCAITheme = createTheme({
       secondary: black,
     },
     common: {
-      white: white,
-      black: black,
+      white,
+      black,
     },
     background: {
       default: white,
