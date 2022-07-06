@@ -1,0 +1,17 @@
+{
+  "profileName": "dockerized-guardoni",
+  "headless": true,
+  "verbose": false,
+  "loadFor": 3000,
+  "yt": {
+    "name": "youtube",
+    "backend": "https://youtube.tracking.exposed/api",
+    "extensionDir": "/guardoni/yttrex"
+  },
+  "tk": {
+    "name": "tiktok",
+    "backend": "https://tiktok.tracking.exposed/api",
+    "extensionDir": "/guardoni/tktrex"
+  },
+  "chromePath": "/usr/bin/google-chrome"
+}
