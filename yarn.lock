@@ -4357,7 +4357,7 @@ __metadata:
     "@types/jquery": ^3.5.14
     "@types/lodash": ^4.14.182
     "@types/node": ^16.11.36
-    "@types/react": ^17.0.45
+    "@types/react": ^17.0.47
     "@types/react-dom": ^17.0.17
     "@typescript-eslint/eslint-plugin": ^5.30.5
     "@typescript-eslint/parser": ^5.30.5
@@ -4456,7 +4456,7 @@ __metadata:
     "@types/dotenv-webpack": ^7.0.3
     "@types/geoip-lite": ^1.4.1
     "@types/node": ^16.11.36
-    "@types/react": ^17.0.45
+    "@types/react": ^17.0.47
     "@types/react-dom": ^17.0.17
     "@types/webpack-bundle-analyzer": ^4.4.1
     "@typescript-eslint/eslint-plugin": ^5.30.5
@@ -4489,9 +4489,9 @@ __metadata:
     prettier: ^2.6.2
     react: ^17.0.2
     react-dom: ^17.0.2
-    react-i18next: ^11.15.3
+    react-i18next: ^11.18.0
     react-refresh: ^0.12.0
-    react-refresh-typescript: ^2.0.5
+    react-refresh-typescript: ^2.0.7
     sass-loader: ^12.6.0
     style-loader: ^3.3.1
     ts-endpoint: ^2.0.0
@@ -4523,7 +4523,7 @@ __metadata:
     "@mui/x-data-grid": ^5.11.1
     "@types/node": ^16.11.36
     "@types/prettier": ^2.6.3
-    "@types/react": ^17.0.45
+    "@types/react": ^17.0.47
     "@types/react-dom": ^17.0.17
     "@types/webpack-bundle-analyzer": ^4.4.1
     "@typescript-eslint/eslint-plugin": ^5.30.5
@@ -4574,7 +4574,7 @@ __metadata:
     "@types/jest": ^27.5.2
     "@types/lodash": ^4.14.182
     "@types/node": ^16.11.36
-    "@types/react": ^17.0.45
+    "@types/react": ^17.0.47
     "@types/react-dom": ^17.0.17
     "@types/react-test-renderer": ^17.0.2
     "@types/swagger-ui": ^3.52.0
@@ -4607,7 +4607,7 @@ __metadata:
     eslint-plugin-react: ^7.30.1
     fp-ts: ^2.11.9
     husky: ^7.0.4
-    i18next: ^21.6.10
+    i18next: ^21.8.13
     io-ts: ^2.2.16
     io-ts-types: ^0.5.16
     jest: ^27.5.1
@@ -4622,9 +4622,9 @@ __metadata:
     react-dnd: ^14.0.5
     react-dnd-html5-backend: ^14.1.0
     react-dom: ^17.0.2
-    react-i18next: ^11.15.3
+    react-i18next: ^11.18.0
     react-test-renderer: ^17.0.2
-    react-use-clipboard: ^1.0.7
+    react-use-clipboard: ^1.0.8
     style-loader: ^3.3.1
     svgdom: ^0.1.10
     swagger-ui: ^4.4.1
@@ -14648,7 +14648,7 @@ __metadata:
     "@types/lodash": ^4.14.182
     "@types/nconf": ^0.10.2
     "@types/prettier": ^2.6.3
-    "@types/react": ^17.0.45
+    "@types/react": ^17.0.47
     "@types/react-dom": ^17.0.17
     "@types/unzipper": ^0.10.5
     "@types/webpack-node-externals": ^2.5.3
@@ -14699,8 +14699,8 @@ __metadata:
     puppeteer-in-electron: ^3.0.5
     react: ^17.0.2
     react-dom: ^17.0.2
-    react-router: ^5.2.1
-    react-router-dom: ^5.3.0
+    react-router: ^5.3.3
+    react-router-dom: ^5.3.3
     react-swipeable-views: ^0.14.0
     rpmbuild: ^0.0.23
     string-replace-loader: ^3.1.0
@@ -15144,7 +15144,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"html-escaper@npm:^2.0.0, html-escaper@npm:^2.0.2":
+"html-escaper@npm:^2.0.0":
   version: 2.0.2
   resolution: "html-escaper@npm:2.0.2"
   checksum: d2df2da3ad40ca9ee3a39c5cc6475ef67c8f83c234475f24d8e9ce0dc80a2c82df8e1d6fa78ddd1e9022a586ea1bd247a615e80a5cd9273d90111ddda7d9e974
@@ -15439,12 +15439,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"i18next@npm:^21.6.10":
-  version: 21.8.11
-  resolution: "i18next@npm:21.8.11"
+"i18next@npm:^21.8.13":
+  version: 21.8.13
+  resolution: "i18next@npm:21.8.13"
   dependencies:
     "@babel/runtime": ^7.17.2
-  checksum: 94b9de3811456c2720b96d54febb89fe66cef3146044cdba9cc35543f93bf04843ccffb191ff4dbed614e7d4a64f2e29391dd514e054331738f2411c1936d85f
+  checksum: 0cc9a5213326d5c33a25b7fd753cd759a8357574d8e878372eeb84fa4e1b0839d3e840b6193ae6b37317d3af6c385c67799c830bb5f3ca388462b0bcb4464a97
   languageName: node
   linkType: hard
 
@@ -22543,12 +22543,11 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-i18next@npm:^11.15.3":
-  version: 11.17.3
-  resolution: "react-i18next@npm:11.17.3"
+"react-i18next@npm:^11.18.0":
+  version: 11.18.0
+  resolution: "react-i18next@npm:11.18.0"
   dependencies:
     "@babel/runtime": ^7.14.5
-    html-escaper: ^2.0.2
     html-parse-stringify: ^3.0.1
   peerDependencies:
     i18next: ">= 19.0.0"
@@ -22558,7 +22557,7 @@ __metadata:
       optional: true
     react-native:
       optional: true
-  checksum: 6b4959eb6257c7096f70e6dbc1e436ccc19258c0a8202a28fcc812c098c3574f4a0f4ec8f9dd8c7cbdbee1ac055125ec918f99ea1e1655574248f1c1e06c612c
+  checksum: 63bf023c4918f533086a4b9a3a257cc8a30074d8a3943f4a3c613cef7875c53c622a1006f89dc778a9ddfdbca45c39187c4d5315efe71963d3a8327ae66d1279
   languageName: node
   linkType: hard
 
@@ -22680,13 +22679,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-refresh-typescript@npm:^2.0.5":
-  version: 2.0.5
-  resolution: "react-refresh-typescript@npm:2.0.5"
+"react-refresh-typescript@npm:^2.0.7":
+  version: 2.0.7
+  resolution: "react-refresh-typescript@npm:2.0.7"
   peerDependencies:
-    react-refresh: 0.10.x || 0.11.x || 0.12.x || 0.13.x
+    react-refresh: 0.10.x || 0.11.x || 0.12.x || 0.13.x || 0.14.x
     typescript: ^4
-  checksum: 04b1765280a828e9c989c024fff71ce8290d2374c28bd05a063eed741b660b2820b5223694eec2e2aa5a78b3f8200891fbb6bd6ec17bc8a3d4e1a231c7edae35
+  checksum: a95a44f7e72b7b1de001d400c004b3d1adf22ca72cd335efeda13a0a7e154e476cd113105fbbd7413122147ce4f7fff0e4308b0c19ea13947a3665a4314fd629
   languageName: node
   linkType: hard
 
@@ -22709,7 +22708,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-router-dom@npm:^5.2.0, react-router-dom@npm:^5.3.0":
+"react-router-dom@npm:^5.2.0, react-router-dom@npm:^5.3.3":
   version: 5.3.3
   resolution: "react-router-dom@npm:5.3.3"
   dependencies:
@@ -22726,7 +22725,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-router@npm:5.3.3, react-router@npm:^5.2.0, react-router@npm:^5.2.1":
+"react-router@npm:5.3.3, react-router@npm:^5.2.0, react-router@npm:^5.3.3":
   version: 5.3.3
   resolution: "react-router@npm:5.3.3"
   dependencies:
@@ -22863,7 +22862,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-use-clipboard@npm:^1.0.7":
+"react-use-clipboard@npm:^1.0.8":
   version: 1.0.8
   resolution: "react-use-clipboard@npm:1.0.8"
   dependencies:
