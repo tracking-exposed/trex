@@ -18,6 +18,7 @@ export const CHROME_PATHS = [
   'C:\\Program Files (x86)\\Google\\Chrome\\Application\\chrome.exe',
   'C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe',
   '/Applications/Chromium.app/Contents/MacOS/Chromium',
+  '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome',
 ];
 
 // this function check for standard chrome executable path and
