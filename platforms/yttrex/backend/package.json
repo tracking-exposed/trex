@@ -71,7 +71,7 @@
     "eslint-plugin-node": "^11.1.0",
     "eslint-plugin-promise": "^6.0.0",
     "jest": "^27.5.1",
-    "prettier": "^2.6.2",
+    "prettier": "^2.7.1",
     "supertest": "^6.2.4",
     "ts-jest": "^27.1.5",
     "tsconfig-paths": "^3.14.1",
