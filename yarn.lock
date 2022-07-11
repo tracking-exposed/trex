@@ -3091,7 +3091,7 @@ __metadata:
     "@types/lodash": ^4.14.182
     "@types/node": ^16.11.36
     body-parser: ^1.19.1
-    bs58: ^3.1.0
+    bs58: ^4.0.1
     cookie: ^0.3.1
     cors: ^2.8.5
     debug: ^4.3.4
@@ -4308,7 +4308,7 @@ __metadata:
     "@types/lodash": ^4.14.182
     "@types/node": ^16.11.36
     body-parser: ^1.19.1
-    bs58: ^3.1.0
+    bs58: ^4.0.1
     cookie: ^0.3.1
     cors: ^2.8.5
     debug: ^4.3.4
@@ -6408,7 +6408,7 @@ __metadata:
     "@typescript-eslint/parser": ^5.30.5
     abort-controller: ^3.0.0
     body-parser: ^1.19.1
-    bs58: ^3.1.0
+    bs58: ^4.0.1
     chardet: ^1.4.0
     cookie: ^0.3.1
     cors: ^2.8.5
@@ -6474,7 +6474,7 @@ __metadata:
     "@types/mini-css-extract-plugin": ^2.5.1
     "@typescript-eslint/eslint-plugin": ^5.30.5
     autoprefixer: ^6.7.7
-    bs58: ^3.1.0
+    bs58: ^4.0.1
     classnames: ^2.3.1
     copy-webpack-plugin: ^11.0.0
     cross-env: ^2.0.1
@@ -7790,13 +7790,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"base-x@npm:^1.1.0":
-  version: 1.1.0
-  resolution: "base-x@npm:1.1.0"
-  checksum: 54e24c32919442627fe48aaa76338f8ff02187b42eae6e75e829eef3e44e37f43b128a271733322a7c798626ac7f4fb06184db2ef0ce1da7f37c448ef6f76e26
-  languageName: node
-  linkType: hard
-
 "base-x@npm:^3.0.2, base-x@npm:^3.0.6":
   version: 3.0.9
   resolution: "base-x@npm:3.0.9"
@@ -8227,15 +8220,6 @@ __metadata:
   dependencies:
     fast-json-stable-stringify: 2.x
   checksum: d34bdaf68c64bd099ab97c3ea608c9ae7d3f5faa1178b3f3f345acd94e852e608b2d4f9103fb2e503f5e69780e98293df41691b84be909b41cf5045374d54606
-  languageName: node
-  linkType: hard
-
-"bs58@npm:^3.1.0":
-  version: 3.1.0
-  resolution: "bs58@npm:3.1.0"
-  dependencies:
-    base-x: ^1.1.0
-  checksum: 6d757a49958c43bc630f3b327511ce3ee065307c24240aa86189f72df0a4a8245c7ce7e7abad209b637f155006952c7b8f04bb4aa6ee4212a891882424bca82e
   languageName: node
   linkType: hard
 
