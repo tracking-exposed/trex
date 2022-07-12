@@ -32,7 +32,7 @@
     "moment": "^2.29.2",
     "mongodb": "^4.3.1",
     "nacl-signature": "^1.0.0",
-    "nconf": "^0.8.5",
+    "nconf": "^0.11.3",
     "node-fetch": "^2.6.7",
     "nodemon": "^1.19.4",
     "tweetnacl": "^0.14.5"
