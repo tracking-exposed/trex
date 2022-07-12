@@ -163,10 +163,7 @@ export const makeApp = async (
     '/api/v2/handshake',
     async (req, res) => await iowrapper('experimentChannel3', req, res)
   );
-  app.delete(
-    '/api/v3/experiment/:testTime',
-    async (req, res) => await iowrapper('concludeExperiment3', req, res)
-  );
+
   app.get(
     '/api/v2/experiment/:experimentId/json',
     async (req, res) => await iowrapper('experimentJSON', req, res)

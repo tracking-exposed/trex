@@ -6,10 +6,7 @@ import {
   DirectiveType,
   PostDirectiveResponse,
 } from '@shared/models/Directive';
-import {
-  ConcludeGuardoniExperimentOutput,
-  GetPublicDirectivesOutput,
-} from '@shared/models/Experiment';
+import { GetPublicDirectivesOutput } from '@shared/models/Experiment';
 import { HandshakeBody } from '@shared/models/HandshakeBody';
 import {
   GetRecommendationsParams,
@@ -82,21 +79,11 @@ const GetPublicDirectives = Endpoint({
   Output: GetPublicDirectivesOutput,
 });
 
-const ConcludeExperiment = Endpoint({
-  Method: 'DELETE',
-  getPath: ({ testTime }) => `/v3/experiment/${testTime}`,
-  Input: {
-    Params: t.type({ testTime: t.string }),
-  },
-  Output: ConcludeGuardoniExperimentOutput,
-});
-
 export const endpoints = {
   Handshake,
   GetRecommendations,
   VideoRecommendations,
   GetDirective,
   PostDirective,
-  ConcludeExperiment,
   GetPublicDirectives,
 };

@@ -24,7 +24,6 @@ import {
 } from './ContributionEvent';
 import {
   GuardoniExperiment,
-  ConcludeGuardoniExperimentOutput,
   GetDirectiveOutput,
   GetPublicDirectivesOutput,
   GetExperimentListOutput,
@@ -46,7 +45,6 @@ export default {
   // guardoni
   // guardoni experiments (to be moved)
   GuardoniExperiment,
-  ConcludeGuardoniExperimentOutput,
   GetDirectiveOutput,
   GetExperimentListOutput,
   GetPublicDirectivesOutput,
@@ -72,5 +70,5 @@ export default {
   CreatorStatContent,
   ChannelRelated,
   GetRelatedChannelsOutput,
-  ...Directive
+  ...Directive,
 };

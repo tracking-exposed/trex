@@ -62,7 +62,6 @@ const apiList = {
   // used from extension
   experimentChannel3: require('../routes/experiments').channel3,
   // used by guardoni to close it
-  concludeExperiment3: require('../routes/experiments').conclude3,
 
   /* for survey (with emails) */
   recordAnswers: require('../routes/answers').recordAnswers,

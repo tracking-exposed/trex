@@ -261,44 +261,6 @@ describe('CLI', () => {
       });
     });
 
-    test('fails when receive an error during experiment conclusion', async () => {
-      const data = tests.fc.sample(CommonDirectiveArb, 2).map((d) => ({
-        ...d,
-        loadFor: 1000,
-        watchFor: '2s',
-      }));
-
-      // return directive
-      axiosMock.request.mockResolvedValueOnce({
-        data,
-      });
-
-      axiosMock.request.mockResolvedValueOnce({
-        data: {
-          acknowledged: false,
-        },
-      });
-
-      const start = new Date();
-      const result: any = await guardoni.run({
-        run: 'experiment',
-        experiment: experimentId as any,
-      })();
-      const end = new Date();
-
-      expect(result).toMatchObject({
-        _tag: 'Left',
-        left: {
-          message: "Can't conclude the experiment",
-          details: [],
-        },
-      });
-
-      expect(differenceInMilliseconds(end, start)).toBeGreaterThan(
-        (2 + 3) * 2 * 100
-      );
-    });
-
     test('succeed when experimentId has valid "yt" directives', async () => {
       // return directive
       axiosMock.request.mockResolvedValueOnce({
@@ -307,12 +269,6 @@ describe('CLI', () => {
           loadFor: 1000,
           watchFor: '1s',
         })),
-      });
-
-      axiosMock.request.mockResolvedValueOnce({
-        data: {
-          acknowledged: true,
-        },
       });
 
       const result: any = await guardoni.run({
@@ -344,7 +300,7 @@ describe('CLI', () => {
             {
               profileName,
               evidenceTag,
-              experimentId
+              experimentId,
             },
           ],
         },
@@ -359,12 +315,6 @@ describe('CLI', () => {
           loadFor: 1000,
           watchFor: '1s',
         })),
-      });
-
-      axiosMock.request.mockResolvedValueOnce({
-        data: {
-          acknowledged: true,
-        },
       });
 
       const result: any = await guardoni.run({
@@ -401,12 +351,6 @@ describe('CLI', () => {
         })),
       });
 
-      axiosMock.request.mockResolvedValueOnce({
-        data: {
-          acknowledged: true,
-        },
-      });
-
       const result: any = await guardoni.run({ run: 'auto', value: '1' })();
 
       expect(result).toMatchObject({
@@ -430,12 +374,6 @@ describe('CLI', () => {
           ...d,
           watchFor: '1s',
         })),
-      });
-
-      axiosMock.request.mockResolvedValueOnce({
-        data: {
-          acknowledged: true,
-        },
       });
 
       const result: any = await guardoni.run({ run: 'auto', value: '2' })();
