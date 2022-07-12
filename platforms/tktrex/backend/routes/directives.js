@@ -53,7 +53,7 @@ async function getPublic(req) {
   // TODO this API can also be cached with the same logic of statistics
   const publicDirectives = await mongo3.readLimit(
     mongoc,
-    nconf.get('schema').directives,
+    nconf.get('schema').experiments,
     {}, // TODO { visibility: 'public' },
     { when: -1 },
     20,

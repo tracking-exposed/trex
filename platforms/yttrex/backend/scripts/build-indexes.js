@@ -62,10 +62,7 @@ checkret('ytvids videoId', ret);
 ret = db.ytvids.createIndex({ creatorId: -1 });
 checkret('ytvids creatorId', ret);
 
-ret = db.directives.createIndex({ experimentId: -1 }, { unique: true });
-checkret('directives experimentId', ret);
-
-ret = db.experiments.createIndex({ experimentId: -1 });
+ret = db.experiments.createIndex({ experimentId: -1, unique: true });
 checkret('experiments experimentId', ret);
 ret = db.experiments.createIndex({ publicKey: -1 });
 checkret('experiments publicKey', ret);

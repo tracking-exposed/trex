@@ -30,7 +30,7 @@ describe('Events', () => {
     appTest = await GetTest();
     await appTest.mongo3.insertMany(
       appTest.mongo,
-      appTest.config.get('schema').directives,
+      appTest.config.get('schema').experiments,
       [experiment]
     );
   });
