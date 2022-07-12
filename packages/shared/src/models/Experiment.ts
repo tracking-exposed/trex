@@ -18,16 +18,6 @@ export const GetDirectiveOutput = nonEmptyArray(
 );
 export type GetDirectiveOutput = t.TypeOf<typeof GetDirectiveOutput>;
 
-export const ConcludeGuardoniExperimentOutput = t.type(
-  {
-    acknowledged: t.boolean,
-  },
-  'ConcludeGuardoniExperimentOutput'
-);
-export type ConcludeGuardoniExperimentOutput = t.TypeOf<
-  typeof ConcludeGuardoniExperimentOutput
->;
-
 export const GetExperimentListOutput = t.strict(
   {
     content: t.array(GuardoniExperiment),

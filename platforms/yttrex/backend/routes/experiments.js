@@ -410,8 +410,7 @@ async function channel3(req) {
   experimentInfo.testName = req.body.testTime ?? new Date().toISOString();
   experimentInfo.publicKey = _.get(req.body, 'config.publicKey');
 
-  if(!experimentInfo.experimentId)
-    return { json: { ignored: true }};
+  if (!experimentInfo.experimentId) return { json: { ignored: true } };
 
   debug('Experiment info %O', experimentInfo);
 
@@ -427,19 +426,6 @@ async function channel3(req) {
   return { json: retval };
 }
 
-async function conclude3(req) {
-  const testTime = req.params.testTime;
-  debug('Conclude3 received: %s', testTime);
-  if (testTime.length < 10) return { status: 403 };
-
-  const test = moment(testTime);
-  if (!test.isValid) return { status: 403 };
-
-  const retval = await automo.concludeExperiment(testTime);
-  // retval is {"acknowledged":true,"modifiedCount":0,"upsertedId":null,"upsertedCount":0,"matchedCount":0}
-  return { json: retval };
-}
-
 module.exports = {
   /* used by the webapps */
   csv,
@@ -450,5 +436,4 @@ module.exports = {
 
   /* used by the browser extension/guardoni */
   channel3,
-  conclude3,
 };

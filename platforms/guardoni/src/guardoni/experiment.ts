@@ -327,26 +327,3 @@ export const listExperiments =
       )
     );
   };
-
-export const concludeExperiment =
-  (ctx: GuardoniContext) =>
-  (experimentInfo: ExperimentInfo): TE.TaskEither<AppError, ExperimentInfo> => {
-    // this conclude the API sent by extension remoteLookup,
-    // a connection to DELETE /api/v3/experiment/:publicKey
-
-    return pipe(
-      ctx.API.v3.Public.ConcludeExperiment({
-        Params: {
-          testTime: experimentInfo.when.toISOString(),
-        },
-      }),
-      TE.chain((body) => {
-        if (!body.acknowledged) {
-          return TE.left(
-            new AppError('APIError', "Can't conclude the experiment", [])
-          );
-        }
-        return TE.right(experimentInfo);
-      })
-    );
-  };

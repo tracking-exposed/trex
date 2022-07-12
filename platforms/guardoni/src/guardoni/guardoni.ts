@@ -32,7 +32,6 @@ import {
 import { GetTKHooks } from './directives/tk.directives';
 import { GetYTHooks } from './directives/yt.directives';
 import {
-  concludeExperiment,
   getDirective,
   listExperiments,
   registerCSV,
@@ -140,12 +139,10 @@ export const runBrowser =
           page
         )
       ),
-      TE.chain((publicKey) =>
-        pipe(
-          concludeExperiment(ctx)(experiment),
-          TE.map((exp) => ({ ...exp, publicKey: publicKey ?? opts?.publicKey }))
-        )
-      )
+      TE.map((publicKey) => ({
+        ...experiment,
+        publicKey: publicKey ?? opts?.publicKey,
+      }))
     );
   };
 

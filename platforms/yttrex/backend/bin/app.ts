@@ -270,10 +270,7 @@ export const makeApp = async (
   apiRouter.post('/v3/directives/:ignored?', iowrapper('postDirective'));
   apiRouter.get('/v3/directives/:experimentId', iowrapper('fetchDirective'));
   apiRouter.post('/v2/handshake', iowrapper('experimentChannel3'));
-  apiRouter.delete(
-    '/v3/experiment/:testTime',
-    iowrapper('concludeExperiment3')
-  );
+
   apiRouter.get(
     '/v2/experiment/:experimentId/json',
     iowrapper('experimentJSON')
