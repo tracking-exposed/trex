@@ -20,8 +20,6 @@ bo.runtime.sendMessage({ type: 'chromeConfig' }, (config) => {
       } as any,
       mapLocalConfig: (c, { href, ...p }) => {
         return {
-          evidencetag: '',
-          directiveType: 'comparison',
           ...c,
           ...p,
           href,

@@ -399,7 +399,7 @@ async function channel3(req) {
   const fields = [
     'href',
     'experimentId',
-    'evidencetag',
+    'researchTag',
     'execount',
     'newProfile',
     'profileName',
@@ -421,7 +421,7 @@ async function channel3(req) {
 
   debug(
     "Marked experiment as 'active' — %j",
-    _.pick(retval, ['evidencetag', 'execount', 'directiveType'])
+    _.pick(retval, ['researchTag', 'execount', 'directiveType'])
   );
   return { json: retval };
 }

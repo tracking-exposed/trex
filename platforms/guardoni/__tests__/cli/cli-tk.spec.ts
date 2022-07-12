@@ -22,7 +22,7 @@ const publicKey = process.env.PUBLIC_KEY;
 const secretKey = process.env.SECRET_KEY;
 
 describe('CLI', () => {
-  const evidenceTag = 'test-tag';
+  const researchTag = 'test-tag';
   let experimentId: string;
   let guardoni: GuardoniCLI;
 
@@ -103,7 +103,7 @@ describe('CLI', () => {
         proxy: undefined,
       },
       loadFor: 3000,
-      evidenceTag,
+      researchTag,
       advScreenshotDir: undefined,
       excludeURLTag: undefined,
     },
@@ -323,7 +323,7 @@ describe('CLI', () => {
           values: [
             {
               experimentId,
-              evidenceTag,
+              researchTag,
               profileName,
             },
           ],

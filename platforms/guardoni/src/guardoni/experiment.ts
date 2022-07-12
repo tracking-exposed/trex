@@ -276,7 +276,7 @@ export const saveExperiment =
 
     const experimentInfo = {
       experimentId,
-      evidenceTag: ctx.config.evidenceTag,
+      researchTag: ctx.config.researchTag,
       directiveType,
       execCount: profile.execount,
       profileName: profile.profileName,

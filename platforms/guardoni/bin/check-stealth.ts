@@ -4,9 +4,8 @@ import { dispatchBrowser } from '../src/guardoni/browser';
 import { getDefaultConfig } from '../src/guardoni/config';
 import { guardoniLogger } from '../src/logger';
 
-
 void (async () => {
-  const ctx = {} as any
+  const ctx = {} as any;
   await dispatchBrowser(ctx)({
     version: '1',
     guardoniConfigFile: 'guardoni.config.json',
@@ -25,7 +24,7 @@ void (async () => {
       profileName: 'default',
       newProfile: true,
       execount: 0,
-      evidencetag: [],
+      researchTag: [],
     },
   })().then(async (g) => {
     if (g._tag === 'Right') {
