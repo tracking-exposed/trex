@@ -34,7 +34,7 @@ Guardoni is still **alpha** stage, the software is not thoroughly tested by the 
 
 - **[Installation guide](https://docs.tracking.exposed/guardoni/getting-started/installation)**
 
-  Get Scrapy installed on your computer.
+  Get Guardoni installed on your computer.
 
 - **Coming soon:** Guardoni Tutorial <!-- TBD -->
 
