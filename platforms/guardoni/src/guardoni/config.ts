@@ -38,7 +38,7 @@ export const getDefaultConfig = (basePath: string): GuardoniConfig => {
     loadFor: DEFAULT_LOAD_FOR,
     basePath,
     profileName: 'default',
-    evidenceTag: randomTag(),
+    researchTag: randomTag(),
     advScreenshotDir: undefined,
     excludeURLTag: undefined,
     tosAccepted: undefined,
@@ -65,9 +65,9 @@ export const checkConfig =
     basePath: string,
     { yt, tk, ...conf }: Partial<GuardoniConfig>
   ): Partial<Omit<GuardoniConfig, 'basePath'>> & { basePath: string } => {
-    const evidenceTag = conf.evidenceTag ?? randomTag();
+    const researchTag = conf.researchTag ?? randomTag();
 
-    ctx.logger.debug('EvidenceTag %O', evidenceTag);
+    ctx.logger.debug('Research Tag %O', researchTag);
 
     const absoluteBasePath = path.isAbsolute(basePath)
       ? basePath
@@ -87,7 +87,7 @@ export const checkConfig =
 
     return {
       ...conf,
-      evidenceTag,
+      researchTag,
       basePath: absoluteBasePath,
       yt: yt
         ? {

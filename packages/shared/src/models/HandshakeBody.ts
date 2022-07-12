@@ -10,7 +10,7 @@ export const HandshakeBody = t.type(
         experimentId: t.union([t.string, t.undefined]),
         execount: t.union([t.number, t.undefined]),
         newProfile: t.union([t.boolean, t.undefined]),
-        evidencetag: t.union([t.string, t.undefined]),
+        researchTag: t.union([t.string, t.undefined]),
         directiveType: t.union([t.string, t.undefined]),
         testTime: t.union([DateFromISOString, t.undefined]),
       },

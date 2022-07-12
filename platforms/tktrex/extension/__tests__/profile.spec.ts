@@ -1,7 +1,7 @@
 import { boot } from '@shared/extension/app';
 import {
   handleServerLookup,
-  initializeKey
+  initializeKey,
 } from '@shared/extension/chrome/background/account';
 import { load } from '@shared/extension/chrome/background/index';
 import { handleSyncMessage } from '@shared/extension/chrome/background/sync';
@@ -16,8 +16,6 @@ import * as handlers from '../src/app/handlers';
 import api, { getHeadersForDataDonation } from '../src/background/api';
 import tkHub from '../src/handlers/hub';
 import { tkLog } from '../src/logger';
-
-
 
 const chromeListener = jest.fn();
 
@@ -71,7 +69,6 @@ chrome.runtime.sendMessage
         active: true,
         ux: true,
         href: tkURL,
-        evidencetag: 'fake-tag',
         researchTag: 'test-tag',
         execount: 1,
         newProfile: true,
@@ -530,7 +527,7 @@ describe('TK App', () => {
               },
             ],
             type: 'profile',
-          }
+          },
         ],
       });
     });

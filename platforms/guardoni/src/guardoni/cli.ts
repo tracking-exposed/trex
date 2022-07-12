@@ -526,7 +526,7 @@ const program = yargs(hideBin(process.argv))
     desc: 'Run guardoni in headless mode.',
     default: false,
   })
-  .option('evidenceTag', {
+  .option('researchTag', {
     type: 'string',
     desc: 'The evidence related tag.',
   })

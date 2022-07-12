@@ -32,7 +32,7 @@ export const GuardoniConfig = t.strict(
     headless: t.boolean,
     verbose: t.boolean,
     profileName: t.string,
-    evidenceTag: t.string,
+    researchTag: t.string,
     loadFor: t.number,
     advScreenshotDir: t.union([t.string, t.undefined]),
     excludeURLTag: t.union([t.string, t.undefined]),
@@ -72,7 +72,7 @@ export const GuardoniProfile = t.strict(
     profileName: t.string,
     newProfile: t.boolean,
     execount: t.number,
-    evidencetag: t.array(t.string),
+    researchTag: t.array(t.string),
   },
   'Profile'
 );
@@ -92,7 +92,7 @@ export interface GuardoniContext {
 
 export interface ExperimentInfo {
   experimentId: string;
-  evidenceTag: string;
+  researchTag: string;
   directiveType: DirectiveType;
   execCount: number;
   profileName: string;

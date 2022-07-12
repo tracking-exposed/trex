@@ -40,7 +40,7 @@ Options:
       --version             Show version number                        [boolean]
       --headless            Run guardoni in headless mode.
                                                       [boolean] [default: false]
-      --evidenceTag         The evidence related tag.                   [string]
+      --researchTag         The evidence related tag.                   [string]
       --profile             The current user profile                    [string]
       --backend             The API endpoint for server requests        [string]
       --proxy               Socket proxy for puppeteer.                 [string]

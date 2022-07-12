@@ -62,7 +62,7 @@ describe('Guardoni', () => {
     tosAccepted: undefined,
     ...keys,
     profileName: profile,
-    evidenceTag: 'test-tag',
+    researchTag: 'test-tag',
     advScreenshotDir: undefined,
     excludeURLTag: undefined,
     loadFor: 3000,
@@ -261,15 +261,12 @@ describe('Guardoni', () => {
         return Promise.resolve({
           asElement: () => ({
             press: jest.fn().mockResolvedValue(undefined),
-            evaluate: jest
-              .fn()
-              .mockResolvedValueOnce(1)
-              .mockResolvedValue(0)
+            evaluate: jest.fn().mockResolvedValueOnce(1).mockResolvedValue(0),
           }),
         });
       });
 
-      pageMock.$.mockResolvedValue(null)
+      pageMock.$.mockResolvedValue(null);
 
       const guardoni = GetGuardoni({
         basePath,
