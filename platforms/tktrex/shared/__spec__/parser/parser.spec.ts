@@ -5,7 +5,7 @@ import {
   expectToBeIncludedIn,
   normalizeDeepStrings,
 } from '../../src/lib/util';
-import { ForYouVideoMetaData } from '../../src/models/MetaData';
+import { ForYouVideoMetadata } from '../../src/models/Metadata';
 import createServerSideParser from '../../src/parser/serverSideParser';
 import historicData from './fixtures/history.json';
 
@@ -15,7 +15,7 @@ describe('The TikTok parser for the ForYou feed', () => {
   // and exclude the example that we know to be wrong
   const forYouSamples = historicData.filter(
     (sample) =>
-      isRight(ForYouVideoMetaData.decode(sample.metadata)),
+      isRight(ForYouVideoMetadata.decode(sample.metadata)),
   );
 
   const { parseForYouVideo } = createServerSideParser();
@@ -36,7 +36,7 @@ describe('The TikTok parser for the ForYou feed', () => {
     // inside the expected value,
     // now we also check that it validates the schema of the
     // expected value
-    const validation = ForYouVideoMetaData.decode(actual);
+    const validation = ForYouVideoMetadata.decode(actual);
     if (!isRight(validation)) {
       const report = PathReporter.report(validation);
       throw new Error([

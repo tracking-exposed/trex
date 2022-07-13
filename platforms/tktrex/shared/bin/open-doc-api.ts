@@ -18,7 +18,6 @@ swagger.writeOpenDocTo(
     endpoints,
     version: packageJson.version,
     models: {
-      ...apiModels.Common,
       ...apiModels.Events,
       ...apiModels.Personal,
       ...apiModels.Public,
@@ -39,5 +38,5 @@ swagger.writeOpenDocTo(
       },
     ],
   },
-  path.resolve(process.cwd(), './build')
+  path.resolve(process.cwd(), './build'),
 );

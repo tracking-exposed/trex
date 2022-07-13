@@ -3,6 +3,7 @@ const moment = require('moment');
 const debug = require('debug')('routes:experiments');
 const nconf = require('nconf');
 
+const CSV = require('../lib/CSV');
 const experlib = require('../lib/experiments');
 const params = require('../lib/params');
 const mongo3 = require('../lib/mongo3');
@@ -82,38 +83,43 @@ async function json(req) {
   return { json: metadata };
 }
 
-/*
 async function csv(req) {
+  const type = req.params.type;
+  if (CSV.allowedTypes.indexOf(type) === -1) {
+    debug('Invalid requested data type? %s', type);
+    return { text: 'Error, invalid URL composed' };
+  }
 
-    const type = req.params.type;
-    if(CSV.allowedTypes.indexOf(type) === -1) {
-        debug("Invalid requested data type? %s", type);
-        return { text: "Error, invalid URL composed" };
-    }
+  const experimentId = params.getString(req, 'experimentId', true);
+  const metadata = await sharedDataPull({
+    'experiment.experimentId': experimentId,
+    type,
+  });
 
-    const experimentId = params.getString(req, 'experimentId', true);
-    const metadata = await sharedDataPull({
-        'experiment.experimentId': experimentId, type
-    });
+  const transformed = CSV.unrollNested(metadata, {
+    type,
+    experiment: true,
+    private: true,
+  });
 
-    const transformed = CSV.unrollNested(metadata, {
-        type, experiment: true, private: true
-    });
+  const textcsv = CSV.produceCSVv1(transformed);
+  debug(
+    'Fetch %d metadata(s), and converted in a %d CSV',
+    _.size(metadata),
+    _.size(textcsv)
+  );
 
-    const textcsv = CSV.produceCSVv1(transformed);
-    debug("Fetch %d metadata(s), and converted in a %d CSV",
-        _.size(metadata), _.size(textcsv));
-
-    const filename = `${experimentId.substr(0, 8)}-${type}-${transformed.length}.csv`;
-    return {
-        text: textcsv,
-        headers: {
-            "Content-Type": "csv/text",
-            "Content-Disposition": "attachment; filename=" + filename
-        }
-    }
-};
-*/
+  const filename = `${experimentId.substr(0, 8)}-${type}-${
+    transformed.length
+  }.csv`;
+  return {
+    text: textcsv,
+    headers: {
+      'Content-Type': 'csv/text',
+      'Content-Disposition': 'attachment; filename=' + filename,
+    },
+  };
+}
 
 async function list(req) {
   /* this function pull from the collection "directives"
@@ -270,6 +276,7 @@ module.exports = {
   dot,
   json,
   list,
+  csv,
 
   /* used by the browser extension/guardoni */
   channel3,

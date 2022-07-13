@@ -46,7 +46,7 @@ const Metrics = t.type(
 
 type Metrics = t.TypeOf<typeof Metrics>;
 
-export const MetaDataBase = t.type(
+export const MetadataBase = t.type(
   {
     id: t.string,
     savingTime: t.string,
@@ -55,11 +55,11 @@ export const MetaDataBase = t.type(
   'VideoMetaDataBase',
 );
 
-export type MetaDataBase = t.TypeOf<typeof MetaDataBase>;
+export type MetadataBase = t.TypeOf<typeof MetadataBase>;
 
-export const ForYouVideoMetaData = t.intersection(
+export const ForYouVideoMetadata = t.intersection(
   [
-    MetaDataBase,
+    MetadataBase,
     t.type(
       {
         type: t.literal('foryou'),
@@ -83,14 +83,14 @@ export const ForYouVideoMetaData = t.intersection(
       'foryou',
     ),
   ],
-  'ForYouVideoMetaData',
+  'ForYouVideoMetadata',
 );
 
-export type ForYouVideoMetaData = t.TypeOf<typeof ForYouVideoMetaData>;
+export type ForYouVideoMetadata = t.TypeOf<typeof ForYouVideoMetadata>;
 
-export const FollowingVideoMetaData = t.intersection(
+export const FollowingVideoMetadata = t.intersection(
   [
-    MetaDataBase,
+    MetadataBase,
     t.type(
       {
         type: t.literal('following'),
@@ -103,11 +103,11 @@ export const FollowingVideoMetaData = t.intersection(
   'FollowingVideoMetaData',
 );
 
-export type FollowingVideoMetaData = t.TypeOf<typeof FollowingVideoMetaData>;
+export type FollowingVideoMetadata = t.TypeOf<typeof FollowingVideoMetadata>;
 
-export const SearchMetaData = t.intersection(
+export const SearchMetadata = t.intersection(
   [
-    MetaDataBase,
+    MetadataBase,
     t.type(
       {
         type: t.literal('search'),
@@ -124,16 +124,16 @@ export const SearchMetaData = t.intersection(
       'search',
     ),
   ],
-  'SearchVideoMetaData',
+  'SearchVideoMetadata',
 );
 
-export type SearchMetaData = t.TypeOf<typeof SearchMetaData>;
+export type SearchMetadata = t.TypeOf<typeof SearchMetadata>;
 
-export const MetaData = t.union(
-  [ForYouVideoMetaData, FollowingVideoMetaData, SearchMetaData],
+export const Metadata = t.union(
+  [ForYouVideoMetadata, FollowingVideoMetadata, SearchMetadata],
   'VideoMetaData',
 );
 
-export type MetaData = t.TypeOf<typeof MetaData>;
+export type Metadata = t.TypeOf<typeof Metadata>;
 
-export default MetaData;
+export default Metadata;
