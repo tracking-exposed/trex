@@ -5,7 +5,7 @@ const fetchOpengraph = require('fetch-opengraph');
 
 const ycai = require('../lib/ycai');
 const curly = require('../lib/curly');
-const endpoints = require('../lib/endpoint');
+const endpoints = require('@shared/endpoints/helper');
 const { v3 } = require('@yttrex/shared/endpoints');
 const structured = require('../lib/structured');
 

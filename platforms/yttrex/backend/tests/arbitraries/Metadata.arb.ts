@@ -5,6 +5,7 @@ import {
   ParsedInfo,
   VideoMetadata,
 } from '@yttrex/shared/models/Metadata';
+import { subDays } from 'date-fns';
 import { getArbitrary } from 'fast-check-io-ts';
 import * as t from 'io-ts';
 
@@ -51,7 +52,7 @@ export const VideoMetadataArb = getArbitrary(
 ).map((ad) => ({
   ...ad,
   id: fc.sample(fc.uuid(), 1)[0],
-  savingTime: fc.sample(fc.date(), 1)[0],
+  savingTime: subDays(new Date(), fc.sample(fc.nat(), 1)[0]),
   clientTime: fc.sample(fc.date(), 1)[0],
   publicationTime: fc.sample(fc.date(), 1)[0],
   params: fc.sample(fc.dictionary(fc.string(), fc.string()), 1)[0],

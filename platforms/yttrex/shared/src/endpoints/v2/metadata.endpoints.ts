@@ -1,0 +1,24 @@
+import { Format } from '@shared/models/common';
+import * as t from 'io-ts';
+import { NumberFromString } from 'io-ts-types';
+import { Metadata } from '../../models/Metadata';
+import { Endpoint } from 'ts-endpoint';
+
+const ListMetadata = Endpoint({
+  Method: 'GET',
+  getPath: () => `/v2/metadata`,
+  Input: {
+    Query: t.type({
+      experimentId: t.union([t.string, t.undefined]),
+      researchTag: t.union([t.string, t.undefined]),
+      amount: t.union([NumberFromString, t.undefined]),
+      skip: t.union([NumberFromString, t.undefined]),
+      format: t.union([Format, t.undefined]),
+    }),
+  },
+  Output: t.array(Metadata),
+});
+
+export default {
+  ListMetadata,
+};

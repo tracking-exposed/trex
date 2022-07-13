@@ -13,13 +13,16 @@ function loginc(kind: string, fname: string): void {
     : 1;
 }
 
-type RouteHandlerMiddleware = (
-  fname: string
-) => (req: express.Request, res: express.Response) => Promise<void>;
+type RouteHandlerMiddleware<R extends Record<string, express.RequestHandler>> =
+  (
+    fname: keyof R
+  ) => (req: express.Request, res: express.Response) => Promise<void>;
 
-export const routeHandleMiddleware = (
-  apiList: Record<string, express.RequestHandler>
-): RouteHandlerMiddleware => {
+export const routeHandleMiddleware = <
+  R extends Record<string, express.RequestHandler>
+>(
+  apiList: R
+): RouteHandlerMiddleware<R> => {
   setInterval(() => {
     let print = false;
     _.each(_.keys(logAPICount), function (k) {
@@ -34,7 +37,8 @@ export const routeHandleMiddleware = (
     logAPICount.requests = {};
   }, 60 * 1000);
 
-  return (fname) => async (req, res) => {
+  return (fn) => async (req, res) => {
+    const fname = fn as any;
     try {
       loginc('requests', fname);
       const funct = apiList[fname];
