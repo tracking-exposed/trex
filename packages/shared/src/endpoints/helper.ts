@@ -5,24 +5,30 @@ import * as t from 'io-ts';
 import { PathReporter } from 'io-ts/lib/PathReporter';
 import {
   InferEndpointInstanceParams,
-  MinimalEndpointInstance,
-} from '@shared/endpoints';
+  UndefinedOrRuntime,
+} from '../backend/utils/endpoint';
 import { serializedType } from 'ts-io-error/lib/Codec';
+import { MinimalEndpointInstance } from './MinimalEndpoint';
+import { APIError } from '../errors/APIError';
+
+interface DecodeError {
+  type: 'error';
+  result: string[];
+}
+
+interface DecodeRequestSuccess<E extends MinimalEndpointInstance> {
+  type: 'success';
+  result: {
+    params: UndefinedOrRuntime<InferEndpointInstanceParams<E>['params']>;
+    query: UndefinedOrRuntime<InferEndpointInstanceParams<E>['query']>;
+    headers: UndefinedOrRuntime<InferEndpointInstanceParams<E>['query']>;
+    body: UndefinedOrRuntime<InferEndpointInstanceParams<E>['body']>;
+  };
+}
 
 type DecodeRequestResult<E extends MinimalEndpointInstance> =
-  | {
-      type: 'error';
-      result: string[];
-    }
-  | {
-      type: 'success';
-      result: {
-        params: InferEndpointInstanceParams<E>['params'];
-        query: InferEndpointInstanceParams<E>['query'];
-        headers: InferEndpointInstanceParams<E>['query'];
-        body: InferEndpointInstanceParams<E>['body'];
-      };
-    };
+  | DecodeError
+  | DecodeRequestSuccess<E>;
 
 const decodeRequest = <E extends MinimalEndpointInstance>(
   e: E,
@@ -45,15 +51,14 @@ const decodeRequest = <E extends MinimalEndpointInstance>(
   );
 };
 
+interface DecodeResponseSuccess<E extends MinimalEndpointInstance> {
+  type: 'success';
+  result: serializedType<E['Output']>;
+}
+
 type DecodeResponseResult<E extends MinimalEndpointInstance> =
-  | {
-      type: 'error';
-      result: string[];
-    }
-  | {
-      type: 'success';
-      result: serializedType<E['Output']>;
-    };
+  | DecodeError
+  | DecodeResponseSuccess<E>;
 
 const decodeResponse = <E extends MinimalEndpointInstance>(
   e: E,
@@ -71,4 +76,17 @@ const decodeResponse = <E extends MinimalEndpointInstance>(
   );
 };
 
-export { decodeRequest, decodeResponse };
+const decodeOrThrowRequest = <E extends MinimalEndpointInstance>(
+  e: E,
+  r: unknown
+): DecodeRequestSuccess<E>['result'] => {
+  return pipe(decodeRequest(e, r), (r) => {
+    if (r.type === 'error') {
+      throw new APIError(400, 'Bad Request', 'Request decode failed', r.result);
+    }
+
+    return r.result;
+  });
+};
+
+export { decodeRequest, decodeResponse, decodeOrThrowRequest };

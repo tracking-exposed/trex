@@ -16,6 +16,7 @@ import * as t from 'io-ts';
 import { PathReporter } from 'io-ts/lib/PathReporter';
 import { MinimalEndpointInstance, TypeOfEndpointInstance } from '../endpoints';
 import { APIError } from '../errors/APIError';
+import { toValidationError } from '../errors/ValidationError';
 import { trexLogger } from '../logger';
 
 export const apiLogger = trexLogger.extend('API');
@@ -26,15 +27,18 @@ export const toAPIError = (e: unknown): APIError => {
   if (e instanceof Error) {
     if (e.message === 'Network Error') {
       return new APIError(
+        502,
         'Network Error',
         'The API endpoint is not reachable',
         ["Be sure you're connected to internet."]
       );
     }
-    return new APIError('UnknownError', e.message, []);
+    return new APIError(500, 'UnknownError', e.message, []);
   }
 
-  return new APIError('UnknownError', 'An error occurred', [JSON.stringify(e)]);
+  return new APIError(500, 'UnknownError', 'An error occurred', [
+    JSON.stringify(e),
+  ]);
 };
 
 const liftFetch = <B>(
@@ -51,7 +55,7 @@ const liftFetch = <B>(
         E.mapLeft((e): APIError => {
           const details = PathReporter.report(E.left(e));
           apiLogger.error('toAPIError Validation failed %O', details);
-          return new APIError('ValidationError', 'Validation failed', details);
+          return toValidationError('Validation failed', details);
         }),
         TE.fromEither
       );
@@ -125,7 +129,7 @@ export const MakeHTTPClient = (client: AxiosInstance): HTTPClient => {
         TE.mapLeft((e): APIError => {
           const details = PathReporter.report(E.left(e));
           apiLogger.error('MakeHTTPClient Validation failed %O', details);
-          return new APIError('ValidationError', 'Validation failed', details);
+          return toValidationError('Validation failed', details);
         }),
         TE.chain((input) => {
           const url = e.getPath(input.params);

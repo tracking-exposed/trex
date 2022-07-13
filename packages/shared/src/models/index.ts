@@ -1,4 +1,4 @@
-import { StringOrNull } from './common/StringOrNull';
+import { StringOrNull, What, Format } from './common';
 import { AuthResponse } from './Auth';
 import {
   AuthorizedContentCreator,
@@ -34,6 +34,8 @@ import { Supporter } from './Supporter';
 export default {
   // common
   StringOrNull,
+  What,
+  Format,
   // handshake
   HandshakeBody,
   HandshakeResponse,
