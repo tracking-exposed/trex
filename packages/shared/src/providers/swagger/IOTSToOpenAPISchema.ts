@@ -191,6 +191,8 @@ export const getOpenAPISchema = <T extends IOTOpenDocSchema>(codec: T): any => {
         }
       }
 
+      // swaggerLogger.info('Union type %O', nonNullableTypes);
+
       return {
         type: 'object',
         description: type.name,
