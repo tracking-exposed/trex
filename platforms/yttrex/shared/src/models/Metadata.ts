@@ -120,7 +120,10 @@ export type SearchMetadata = t.TypeOf<typeof SearchMetadata>;
 
 export const Metadata = t.union(
   [VideoMetadata, HomeMetadata, SearchMetadata],
-  'MetadataDB'
+  'Metadata'
 );
 
 export type Metadata = t.TypeOf<typeof Metadata>;
+
+export const MetadataList = t.array(Metadata, 'Metadata[]');
+export type MetadataList = t.TypeOf<typeof MetadataList>;

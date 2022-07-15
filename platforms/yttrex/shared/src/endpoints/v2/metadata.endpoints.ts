@@ -1,8 +1,8 @@
 import { Format } from '@shared/models/common';
 import * as t from 'io-ts';
 import { NumberFromString } from 'io-ts-types';
-import { Metadata } from '../../models/Metadata';
 import { Endpoint } from 'ts-endpoint';
+import { MetadataList } from '../../models/Metadata';
 
 const ListMetadata = Endpoint({
   Method: 'GET',
@@ -16,7 +16,7 @@ const ListMetadata = Endpoint({
       format: t.union([Format, t.undefined]),
     }),
   },
-  Output: t.array(Metadata),
+  Output: MetadataList,
 });
 
 export default {

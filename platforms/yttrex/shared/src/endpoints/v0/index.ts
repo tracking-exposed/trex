@@ -1,5 +1,5 @@
-import * as t from 'io-ts';
 import { DocumentedEndpoint } from '@shared/endpoints/DocumentedEndpoint';
+import { HealthResponse } from '../../models/Health';
 
 const GetHealth = DocumentedEndpoint({
   title: 'GET health',
@@ -7,7 +7,7 @@ const GetHealth = DocumentedEndpoint({
   tags: ['health'],
   Method: 'GET',
   getPath: () => `/v0/health`,
-  Output: t.strict({ data: t.literal('OK') }),
+  Output: HealthResponse,
 });
 
 export default {
