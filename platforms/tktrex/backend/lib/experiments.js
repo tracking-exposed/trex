@@ -11,7 +11,7 @@ const mongo3 = require('./mongo3');
 
 async function pickDirective(experimentId) {
   const mongoc = await mongo3.clientConnect({ concurrency: 1 });
-  const rb = await mongo3.readOne(mongoc, nconf.get('schema').directives, {
+  const rb = await mongo3.readOne(mongoc, nconf.get('schema').experiments, {
     experimentId,
   });
   await mongoc.close();
@@ -25,7 +25,7 @@ async function registerDirective(directives) {
     directives,
   });
   const mongoc = await mongo3.clientConnect({ concurrency: 1 });
-  const exist = await mongo3.readOne(mongoc, nconf.get('schema').directives, {
+  const exist = await mongo3.readOne(mongoc, nconf.get('schema').experiments, {
     experimentId,
   });
 
@@ -46,7 +46,7 @@ async function registerDirective(directives) {
 
   /* else, we don't had such data, hence */
   debug('Registering new experiment %s: %j', experimentId, directives);
-  await mongo3.writeOne(mongoc, nconf.get('schema').directives, {
+  await mongo3.writeOne(mongoc, nconf.get('schema').experiments, {
     when: new Date(),
     directives,
     experimentId,

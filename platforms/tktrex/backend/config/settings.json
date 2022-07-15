@@ -5,9 +5,8 @@
     "htmls": "htmls",
     "metadata": "metadata",
     "full": "full",
-    "directives": "directives",
     "emails": "emails2",
-    "experiments": "experiments"
+    "experiments": "experiments2"
   },
 
   "mongoHost": "localhost",

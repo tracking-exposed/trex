@@ -44,7 +44,7 @@
     "moment": "^2.29.2",
     "mongodb": "^4.3.1",
     "nacl-signature": "^1.0.0",
-    "nconf": "^0.8.5",
+    "nconf": "^0.11.3",
     "node-fetch": "^2.6.7",
     "numeral": "^2.0.6",
     "ts-endpoint": "^2.0.0",

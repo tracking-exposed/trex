@@ -187,7 +187,7 @@ async function getPublic(req) {
 
   const publicDirectives = await mongo3.readLimit(
     mongoc,
-    nconf.get('schema').directives,
+    nconf.get('schema').experiments,
     filter,
     { when: -1 },
     20,

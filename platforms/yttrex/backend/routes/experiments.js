@@ -248,7 +248,7 @@ async function list(req) {
 
   const configured = await mongo3.readLimit(
     mongoc,
-    nconf.get('schema').directives,
+    nconf.get('schema').experiments,
     filter,
     { when: -1 },
     options.amount,
@@ -264,7 +264,7 @@ async function list(req) {
 
   const total = await mongo3.count(
     mongoc,
-    nconf.get('schema').directives,
+    nconf.get('schema').experiments,
     filter
   );
 
@@ -327,7 +327,7 @@ async function emergency(req) {
   const experimentId = params.getString(req, 'experimentId', true);
   const directive = await mongo3.readOne(
     mongoc,
-    nconf.get('schema').directives,
+    nconf.get('schema').experiments,
     {
       experimentId,
       directiveType: 'comparison',
