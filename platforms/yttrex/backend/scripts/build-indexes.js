@@ -62,7 +62,8 @@ checkret('ads id', ret);
 
 ret = db.experiments2.createIndex({ experimentId: -1, unique: true });
 checkret('experiments2 experimentId', ret);
-
+ret = db.experiments2.createIndex({ when: -1 });
+checkret('experiments2 when', ret);
 
 
 /* below this the collections are for youchoose */
