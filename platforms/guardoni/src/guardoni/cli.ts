@@ -27,8 +27,16 @@ import { DirectiveType } from '@shared/models/Directive';
 export const cliLogger = guardoniLogger.extend('cli');
 
 export interface GuardoniCommandOpts {
+  headless?: boolean;
   publicKey: string;
   secretKey: string;
+}
+
+export interface GuardoniNavigateOpts extends GuardoniCommandOpts {
+  cookieModal?: {
+    action: 'reject' | 'accept';
+  };
+  exit?: boolean;
 }
 
 export type GuardoniCommandConfig =
@@ -51,7 +59,7 @@ export type GuardoniCommandConfig =
     }
   | {
       run: 'navigate';
-      opts: GuardoniCommandOpts;
+      opts: GuardoniNavigateOpts;
     };
 
 export interface GuardoniCLI {
@@ -157,7 +165,7 @@ export const GetGuardoniCLI: GetGuardoniCLI = (
               return g.runExperiment(command.experiment, command.opts);
             case 'navigate': {
               return pipe(
-                g.runBrowser(command.opts),
+                g.runNavigate(command.opts),
                 TE.map(() => ({
                   type: 'success',
                   values: [],
@@ -227,9 +235,9 @@ const runGuardoni = ({
   const basePath = guardoniConf.basePath ?? DEFAULT_BASE_PATH;
 
   if (verbose) {
-    D.enable('@guardoni*');
+    D.enable('@trex*,guardoni*');
 
-    cliLogger.debug('Running guardoni', { config, basePath, guardoniConf });
+    cliLogger.debug('Running guardoni', { config, basePath, ...guardoniConf });
     if (config) {
       // eslint-disable-next-line
       cliLogger.debug(`Configuration loaded from ${config}`, guardoniConf);
@@ -285,12 +293,22 @@ const program = yargs(hideBin(process.argv))
           type: 'string',
           desc: 'The secretKey to use to sign the evidences',
           default: undefined,
+        })
+        .option('cookie-modal', {
+          type: 'string',
+          choices: ['accept', 'reject'],
+        })
+        .option('exit', {
+          type: 'boolean',
         }),
-    ({ publicKey, secretKey, ...argv }) => {
+    (args) => {
       void runGuardoni({
-        ...argv,
+        ...args,
         platform: 'youtube',
-        command: { run: 'navigate', opts: { publicKey, secretKey } },
+        command: {
+          run: 'navigate',
+          opts: args,
+        },
       });
     }
   )
@@ -314,14 +332,14 @@ const program = yargs(hideBin(process.argv))
           desc: 'The secretKey to use to sign the evidences',
           default: undefined,
         }),
-    ({ experiment, publicKey, secretKey, ...argv }) => {
+    ({ experiment, ...args }) => {
       void runGuardoni({
-        ...argv,
+        ...args,
         platform: 'youtube',
         command: {
           run: 'experiment',
           experiment,
-          opts: { publicKey, secretKey },
+          opts: args,
         },
       });
     }

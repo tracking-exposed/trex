@@ -235,8 +235,9 @@ async function afterWait(page: puppeteer.Page, directive: any): Promise<void> {
     player: undefined,
     name: undefined,
   };
+
   if (directive.url.match(/\/watch\?v=/)) {
-    state = await getYTstatus(page);
+    state = await getYTStatus(page);
     debug('afterWait status found to be: %s', state.name);
     await interactWithYT(page, directive, 'playing');
     // hasPlayer = true;
@@ -252,6 +253,46 @@ async function afterWait(page: puppeteer.Page, directive: any): Promise<void> {
     await page.screenshot({ path: fullpath, fullPage: true });
   }
 }
+
+const cookieModal = async (
+  page: puppeteer.Page,
+  opts: {
+    action: 'reject' | 'accept';
+  }
+): Promise<any> => {
+  if (opts) {
+    debug('Searching for cookie modal...');
+    const hasModal = await page.$('ytd-consent-bump-v2-lightbox');
+
+    if (hasModal) {
+      debug('Modal present, searching for buttons...');
+
+      /**
+       * Modal buttons
+       *
+       * buttons[0] -> Language Selector
+       * buttons[1] -> "Sign In"
+       * buttons[2] -> "More Options"
+       * buttons[2] -> "Reject All"
+       * buttons[3] -> "Accept App"
+       */
+      const buttons = await hasModal.$$('tp-yt-paper-button');
+
+      debug('Cookie modal action %s', opts.action);
+
+      if (opts.action === 'reject') {
+        const rejectButton = buttons[3];
+        await rejectButton.click();
+      } else if (opts.action === 'accept') {
+        const acceptButton = buttons[4];
+        await acceptButton.click();
+      }
+
+      debug('Cookie modal close!');
+    }
+  }
+};
+
 const condition = {
   '-1': 'unstarted',
   0: 'ended',
@@ -261,7 +302,7 @@ const condition = {
   5: 'video cued',
 };
 
-async function getYTstatus(page: puppeteer.Page): Promise<{
+async function getYTStatus(page: puppeteer.Page): Promise<{
   name: string;
   player: puppeteer.JSHandle<any>;
 }> {
@@ -289,10 +330,11 @@ async function interactWithYT(
   const PERIODIC_CHECK_MS = 3000;
 
   // consenso all'inizio
+  // await cookieModal(page);
   // non voglio loggarmi (24 ore)
   // non voglio la prova gratuita (random)
 
-  let state = await getYTstatus(page);
+  let state = await getYTStatus(page);
   if (state.name !== wantedState) {
     debug(
       'State switching necessary (now %s, wanted %s)',
@@ -305,7 +347,7 @@ async function interactWithYT(
   if (state.name === 'unstarted') {
     await (state.player as any).press('Space');
     await page.waitForTimeout(600);
-    state = await getYTstatus(page);
+    state = await getYTStatus(page);
   } else
     debug(
       'DO NOT press [space] please, as the video is in state [%s]',
@@ -332,7 +374,7 @@ async function interactWithYT(
 
     for (const checktime of _.times(DEFAULT_MAX_TIME / PERIODIC_CHECK_MS)) {
       await page.waitForTimeout(PERIODIC_CHECK_MS);
-      const newst = await getYTstatus(page);
+      const newst = await getYTStatus(page);
 
       if (newst.name === 'unstarted') {
         debug(
@@ -359,9 +401,9 @@ async function interactWithYT(
     debug('Special value format %s (%d ms)', specialwatch, ms);
 
     await page.waitForTimeout(ms);
-    const newst = await getYTstatus(page);
+    const newst = await getYTStatus(page);
     await (newst.player as any).press('Space');
-    await getYTstatus(page);
+    await getYTStatus(page);
   } else if (_.isInteger(specialwatch)) {
     // eslint-disable-next-line no-console
     console.log(
@@ -384,15 +426,9 @@ async function interactWithYT(
 type YTHooks = DirectiveHooks<
   'youtube.com',
   {
-    interactWithYT: (
-      page: puppeteer.Page,
-      directive: OpenURLDirective,
-      opts: string
-    ) => Promise<any>;
-    getYTstatus: (
-      page: puppeteer.Page,
-      directive: OpenURLDirective
-    ) => Promise<{ name: string; player: any }>;
+    interactWithYT: typeof interactWithYT;
+    getYTStatus: typeof getYTStatus;
+    cookieModal: typeof cookieModal;
   }
 >;
 
@@ -412,8 +448,9 @@ export const GetYTHooks: GetYTHooks = (ctx) => {
       completed,
     },
     customs: {
-      getYTstatus,
+      getYTStatus,
       interactWithYT,
+      cookieModal,
     },
     DOMAIN_NAME: 'youtube.com' as const,
   };

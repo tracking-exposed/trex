@@ -18,6 +18,7 @@ void (async function () {
   )}`;
   const flags = [
     '--basePath=./',
+    `--executablePath=${process.env.PUPPETEER_EXEC_PATH}`,
     '-c=guardoni.config.json',
     '--headless',
     '--verbose',
@@ -28,6 +29,9 @@ void (async function () {
     `--publicKey=${process.env.PUBLIC_KEY}`,
     `--secretKey=${process.env.SECRET_KEY}`,
   ];
+
+  // reject cookie modal
+  await $`${cli} ${flags} yt-navigate --cookie-modal=reject --exit --headless=false`;
 
   const yt_home_experiment_register_out =
     await $`${cli} ${flags}  yt-register ./experiments/yt-home.csv | grep 'experimentId: '`;
