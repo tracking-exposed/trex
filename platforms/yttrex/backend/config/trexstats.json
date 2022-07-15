@@ -91,7 +91,7 @@
         },
         {
           "name": "experiment",
-          "selector": { "type": "video", "experiment": { "$exists": true } }
+          "selector": { "type": "video", "experimentId": { "$exists": true } }
         }
       ]
     },
@@ -129,7 +129,7 @@
         },
         {
           "name": "experiment",
-          "selector": { "experiment": { "$exists": true }, "type": "search" }
+          "selector": { "experimentId": { "$exists": true }, "type": "search" }
         }
       ]
     },
@@ -145,9 +145,15 @@
         { "name": "home", "selector": { "nature.type": "home" } },
         {
           "name": "experiment",
-          "selector": { "experiment": { "$exists": true } }
+          "selector": { "experimentId": { "$exists": true } }
         }
       ]
+    },
+    {
+      "name": "experiments",
+      "column": "experiments2",
+      "timevar": "when",
+      "variables": [{ "name": "total", "selector": {} }]
     },
     {
       "name": "creators",

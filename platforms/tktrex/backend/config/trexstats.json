@@ -81,5 +81,11 @@
                 "selector": { }
             }
         ]
+    },
+    {
+        "name": "experiments",
+        "column": "experiments2",
+        "timevar": "when",
+        "variables": [{ "name": "total", "selector": {} }]
     }]
 }
