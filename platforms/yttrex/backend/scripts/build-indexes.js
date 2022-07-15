@@ -52,6 +52,20 @@ checkret('errors id', ret);
 ret = db.errors.createIndex({ when: -1 });
 checkret('errors when', ret);
 
+
+ret = db.ads.createIndex({ metadataId: 1 });
+checkret('ads metadataId', ret);
+ret = db.ads.createIndex({ savingTime: -1 });
+checkret('ads savingTime', ret);
+ret = db.ads.createIndex({ id: 1 }, { unique: true });
+checkret('ads id', ret);
+
+ret = db.experiments2.createIndex({ experimentId: -1, unique: true });
+checkret('experiments2 experimentId', ret);
+
+
+
+/* below this the collections are for youchoose */
 ret = db.recommendations.createIndex({ urlId: 1 }, { unique: true });
 checkret('recommendations urlId', ret);
 ret = db.recommendations.createIndex({ when: -1 });
@@ -61,13 +75,6 @@ ret = db.ytvids.createIndex({ videoId: -1 }, { unique: true });
 checkret('ytvids videoId', ret);
 ret = db.ytvids.createIndex({ creatorId: -1 });
 checkret('ytvids creatorId', ret);
-
-ret = db.experiments.createIndex({ experimentId: -1, unique: true });
-checkret('experiments experimentId', ret);
-ret = db.experiments.createIndex({ publicKey: -1 });
-checkret('experiments publicKey', ret);
-ret = db.experiments.createIndex({ testTime: -1 });
-checkret('experiments testTime', ret);
 
 ret = db.tokens.createIndex({ channelId: 1 }, { unique: true });
 checkret('tokens unique channelId', ret);
@@ -84,12 +91,6 @@ checkret('creators channelId', ret);
 ret = db.creators.createIndex({ accessToken: 1 });
 checkret('creators accessToken', ret);
 
-ret = db.ads.createIndex({ metadataId: 1 });
-checkret('ads metadataId', ret);
-ret = db.ads.createIndex({ savingTime: -1 });
-checkret('ads savingTime', ret);
-ret = db.ads.createIndex({ id: 1 }, { unique: true });
-checkret('ads id', ret);
 
 function checkret(info, retval) {
   retval.info = info;
