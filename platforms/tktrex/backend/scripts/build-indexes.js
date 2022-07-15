@@ -9,9 +9,9 @@ ret = db.metadata.createIndex({type: -1}); checkret('metadata type', ret);
 ret = db.supporters.createIndex({ publicKey: 1 }, { unique: true }); checkret('supporters publicKey:', ret);
 
 ret = db.experiments2.createIndex({ experimentId: -1, unique: true });
-checkret('experiments experimentId', ret);
-ret = db.experiments2.createIndex({ publicKey: -1 });
-checkret('experiments publicKey', ret);
+checkret('experiments2 experimentId', ret);
+ret = db.experiments2.createIndex({ when: -1 });
+checkret('experiments2 when', ret);
 
 ret = db.htmls.createIndex({ id: 1 }, { unique: true} ); checkret('htmls id', ret);
 ret = db.htmls.createIndex({ savingTime: -1 }); checkret('htmls savingTime', ret);
