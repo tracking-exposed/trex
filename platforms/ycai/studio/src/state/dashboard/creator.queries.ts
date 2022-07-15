@@ -76,7 +76,7 @@ const throwOnMissingProfile = (
     TE.fromPredicate(
       (s): s is AuthorizedContentCreator =>
         s?.registeredOn !== undefined && s.accessToken !== undefined,
-      () => new APIError('NotFound', 'Missing Content Creator', [])
+      () => new APIError(404, 'NotFound', 'Missing Content Creator', [])
     )
   );
 

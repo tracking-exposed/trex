@@ -37,7 +37,7 @@ const toError = (e: unknown): IOError => {
   };
 };
 
-declare type UndefinedOrRuntime<N> = N extends RecordCodec<any, any>
+export declare type UndefinedOrRuntime<N> = N extends RecordCodec<any, any>
   ? {
       [k in keyof N['props']]: runtimeType<N['props'][k]>;
     }

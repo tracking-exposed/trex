@@ -4,7 +4,7 @@ export const toValidationError = (
   message: string,
   details: string[]
 ): APIError => {
-  return new APIError('ValidationError', message, details);
+  return new APIError(400, 'ValidationError', message, details);
 };
 
 export const isValidationError = (

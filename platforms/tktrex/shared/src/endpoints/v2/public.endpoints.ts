@@ -1,7 +1,9 @@
 import { DocumentedEndpoint } from '@shared/endpoints';
+import { What, Format } from '@shared/models/common';
 import { SearchQuery } from '@shared/models/http/SearchQuery';
 import * as t from 'io-ts';
 import * as apiModel from '../../models';
+import { NumberFromString } from 'io-ts-types/NumberFromString';
 
 export const Handshake = DocumentedEndpoint({
   title: 'Handshake',
@@ -47,8 +49,8 @@ const GetSearchByQuery = DocumentedEndpoint({
   getPath: ({ query, format }) => `/v2/public/query/${query}/${format}`,
   Input: {
     Params: t.type({
-      query: apiModel.Common.What,
-      format: apiModel.Common.Format,
+      query: What,
+      format: Format,
     }),
     Query: SearchQuery,
   },
@@ -67,10 +69,29 @@ const GetQueryList = DocumentedEndpoint({
   tags: ['searches'],
 });
 
+const ListMetadata = DocumentedEndpoint({
+  title: 'Get metadata by research tag',
+  description: '',
+  tags: ['public'],
+  Method: 'GET',
+  getPath: () => '/v2/metadata',
+  Input: {
+    Query: t.type({
+      experimentId: t.union([t.string, t.undefined]),
+      researchTag: t.union([t.string, t.undefined]),
+      amount: t.union([NumberFromString, t.undefined]),
+      skip: t.union([NumberFromString, t.undefined]),
+      format: t.union([Format, t.undefined]),
+    }),
+  },
+  Output: t.array(apiModel.Metadata.Metadata),
+});
+
 export default {
   AddEvents,
   Handshake,
   GetSearches,
   GetSearchByQuery,
   GetQueryList,
+  ListMetadata,
 };

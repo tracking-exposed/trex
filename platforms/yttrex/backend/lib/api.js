@@ -1,4 +1,7 @@
-const apiList = {
+import * as publicRoutes from '../routes/public';
+import * as metadataRoutes from '../routes/metadata';
+
+export const apiList = {
   systemInfo: require('../routes/system').systemInfo,
   processEvents2: require('../routes/events').processEvents2,
   getMirror: require('../routes/events').getMirror,
@@ -7,11 +10,10 @@ const apiList = {
   unitById: require('../routes/htmlunit').unitById,
 
   /* the three currently used/tested for the public */
-  getLast: require('../routes/public').getLast,
-  getLastHome: require('../routes/public').getLastHome,
-  getVideoId: require('../routes/public').getVideoId,
-  getRelated: require('../routes/public').getRelated,
-  getVideoCSV: require('../routes/public').getVideoCSV,
+  ...publicRoutes,
+
+  // metadata
+  ...metadataRoutes,
 
   /* searches routes */
   getQueries: require('../routes/searches').getQueries,
@@ -21,7 +23,6 @@ const apiList = {
   getSearchKeywords: require('../routes/searches').getSearchKeywords,
   getSearchDetails: require('../routes/searches').getSearchDetails,
 
-  getByAuthor: require('../routes/public').getByAuthor,
   getPersonalCSV: require('../routes/personal').getPersonalCSV,
 
   /* return user' last videos */
@@ -81,7 +82,6 @@ const apiList = {
   repullByCreator: require('../routes/youchoose').repullByCreator,
   recommendationById: require('../routes/youchoose').getRecommendationById,
   updateVideoRec: require('../routes/youchoose').updateVideoRec,
-  getCreatorRelated: require('../routes/public').getCreatorRelated,
   getCreatorStats: require('../routes/youchoose').getCreatorStats,
   creatorRegister: require('../routes/youchoose').creatorRegister,
   creatorVerify: require('../routes/youchoose').creatorVerify,
@@ -99,8 +99,4 @@ const apiList = {
   adsPerVideo: require('../routes/ads').perVideo,
   adsPerChannel: require('../routes/ads').perChannel,
   adsUnbound: require('../routes/ads').unbound,
-};
-
-module.exports = {
-  apiList,
 };

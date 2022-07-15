@@ -1,5 +1,6 @@
 import * as t from 'io-ts';
 import * as apiModel from '../../models';
+import { Format, What } from '@shared/models/common';
 import { DocumentedEndpoint } from '@shared/endpoints';
 import { PersonalData } from '../../models/personal';
 
@@ -9,7 +10,7 @@ const GetPersonalJSON = DocumentedEndpoint({
   Input: {
     Params: t.type({
       publicKey: t.string,
-      what: apiModel.Common.What,
+      what: What,
     }),
   },
   Output: apiModel.Personal.PersonalVideoList,
@@ -24,7 +25,7 @@ const GetPersonalCSV = DocumentedEndpoint({
   Input: {
     Params: t.type({
       publicKey: t.string,
-      what: apiModel.Common.What,
+      what: What,
     }),
   },
   Output: t.string,
@@ -44,7 +45,7 @@ const GetPersonalByExperiment = DocumentedEndpoint({
     Params: t.type({
       publicKey: t.string,
       experimentId: t.string,
-      format: apiModel.Common.Format,
+      format: Format,
     }),
   },
   Output: PersonalData,

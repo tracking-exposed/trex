@@ -1,16 +1,6 @@
 import * as t from 'io-ts';
 import { DateFromISOString } from 'io-ts-types/lib/DateFromISOString';
 
-// still a copy from YT to be converted
-export const What = t.union(
-  [t.literal('foryou'), t.literal('following'), t.literal('search')],
-  'What',
-);
-
-export type What = t.TypeOf<typeof What>;
-
-export const Format = t.union([t.literal('csv'), t.literal('json')], 'Format');
-export type Format = t.TypeOf<typeof Format>;
 
 export const PersonalVideoFeed = t.strict(
   {

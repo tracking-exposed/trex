@@ -1,20 +1,20 @@
-const _ = require('lodash');
-const moment = require('moment');
-const debug = require('debug')('routes:public');
-
-const params = require('../lib/params');
-const automo = require('../lib/automo');
-const utils = require('../lib/utils');
-const CSV = require('../lib/CSV');
-const cache = require('../lib/cache');
-const endpoints = require('../lib/endpoint');
-const { v1 } = require('@shared/endpoints');
-const structured = require('../lib/structured');
+import _ from 'lodash';
+import moment from 'moment';
+import D from 'debug';
+import params from '../lib/params';
+import automo from '../lib/automo';
+import utils from '../lib/utils';
+import CSV from '../lib/CSV';
+import cache from '../lib/cache';
+import * as endpoints from '@shared/endpoints/helper';
+import { v1 } from '@yttrex/shared/endpoints';
+import structured from '../lib/structured';
+const debug = D('routes:public');
 
 // This variables is used as cap in every readLimit below
 const PUBLIC_AMOUNT_ELEMS = 100;
 
-async function getLast(req) {
+async function getLast(req: Express.Request): Promise<any> {
   if (cache.stillValid('last')) return { json: cache.repullCache('last') };
 
   // if not initialized or if the cache time is expired: do the query
@@ -38,7 +38,7 @@ async function getLast(req) {
   /* the complex entry has nested metadata */
   const reduction = _.map(last, function (ce) {
     const lst = _.last(_.orderBy(ce.info, 'savingTime')).savingTime;
-    const d = moment.duration(moment(lst) - moment());
+    const d = moment.duration((moment(lst) as any) - (moment() as any));
     const timeago = d.humanize();
     return {
       title: ce.info[0].title,
@@ -59,7 +59,7 @@ async function getLast(req) {
   };
 }
 
-async function getLastHome() {
+async function getLastHome(): Promise<any> {
   const DEFMAX = 100;
 
   const homelist = await automo.getMetadataByFilter(
@@ -92,7 +92,7 @@ async function getLastHome() {
       });
       return memo;
     },
-    []
+    [] as any[]
   );
 
   debug(
@@ -103,7 +103,7 @@ async function getLastHome() {
   return { json: rv };
 }
 
-function ensureRelated(rv) {
+function ensureRelated(rv): any {
   /* for each related it is called and only the basic info used in 'compare'
    * page get returned. return 'null' if content is not complete */
   const demanded = [
@@ -124,7 +124,7 @@ function ensureRelated(rv) {
     : sele;
 }
 
-async function getVideoId(req) {
+async function getVideoId(req): Promise<any> {
   const { amount, skip } = params.optionParsing(
     req.params.paging,
     PUBLIC_AMOUNT_ELEMS
@@ -161,7 +161,7 @@ async function getVideoId(req) {
   return { json: evidences };
 }
 
-async function getRelated(req) {
+async function getRelated(req): Promise<any> {
   const { amount, skip } = params.optionParsing(
     req.params.paging,
     PUBLIC_AMOUNT_ELEMS
@@ -186,7 +186,9 @@ async function getRelated(req) {
         'videoId',
       ]);
     });
-    meta.timeago = moment.duration(meta.savingTime - moment()).humanize();
+    meta.timeago = moment
+      .duration(meta.savingTime - (moment() as any))
+      .humanize();
     return _.omit(meta, ['_id', 'publicKey']);
   });
   debug(
@@ -197,7 +199,7 @@ async function getRelated(req) {
   return { json: evidences };
 }
 
-async function getVideoCSV(req) {
+async function getVideoCSV(req): Promise<any> {
   // /api/v1/videoCSV/:videoId/:amount
   const MAXENTRY = 2800;
   const { amount, skip } = params.optionParsing(req.params.paging, MAXENTRY);
@@ -228,7 +230,7 @@ async function getVideoCSV(req) {
   };
 }
 
-async function getByAuthor(req) {
+async function getByAuthor(req): Promise<any> {
   /* this API do not return the standard format with videos and related inside,
    * but a data format ready for the visualization provided - this has been
    * temporarly suspended: https://github.com/tracking-exposed/youtube.tracking.exposed/issues/18 */
@@ -297,7 +299,7 @@ async function getByAuthor(req) {
   return { json: retval.result };
 }
 
-async function getCreatorRelated(req) {
+async function getCreatorRelated(req): Promise<any> {
   /* this is the route invoked by API
        /api/v3/creator/:channelId/related/:amount?
        and differs from the others because take as an input a
@@ -332,7 +334,7 @@ async function getCreatorRelated(req) {
   }
 }
 
-module.exports = {
+export {
   getLast,
   getLastHome,
   getVideoId,

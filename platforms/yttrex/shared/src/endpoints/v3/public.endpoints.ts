@@ -1,18 +1,18 @@
-import * as t from 'io-ts';
-import { Endpoint } from 'ts-endpoint';
 import {
   CreateDirectiveBody,
   Directive,
   DirectiveType,
-  PostDirectiveResponse,
+  PostDirectiveResponse
 } from '@shared/models/Directive';
 import { GetPublicDirectivesOutput } from '@shared/models/Experiment';
 import { HandshakeBody } from '@shared/models/HandshakeBody';
 import {
   GetRecommendationsParams,
   GetRecommendationsQuery,
-  RecommendationList,
+  RecommendationList
 } from '@shared/models/Recommendation';
+import * as t from 'io-ts';
+import { Endpoint } from 'ts-endpoint';
 
 const Handshake = Endpoint({
   Method: 'POST',

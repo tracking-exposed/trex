@@ -6,91 +6,16 @@ import { GetLogger } from '@shared/logger';
 import bodyParser from 'body-parser';
 import cors from 'cors';
 import express from 'express';
-import _ from 'lodash';
 import { apiList } from '../lib/api';
 import mongo3 from '../lib/mongo3';
 import { DeleteRecommendationRoute } from '../routes/youchoose/deleteRecommendation.route';
+import { routeHandleMiddleware } from '@shared/backend/utils/routeHandlerMiddleware';
 
 const logger = GetLogger('api');
-const logAPICount = { requests: {}, responses: {}, errors: {} };
 
-function loginc(kind: string, fname: string): void {
-  logAPICount[kind][fname] = logAPICount[kind][fname]
-    ? logAPICount[kind][fname]++
-    : 1;
-}
-
-const iowrapper =
-  (fname: string) =>
-  async (req: express.Request, res: express.Response): Promise<void> => {
-    try {
-      loginc('requests', fname);
-      const funct = apiList[fname];
-      const httpresult = await funct(req, res);
-
-      if (httpresult.headers)
-        _.each(httpresult.headers, function (value, key) {
-          logger.debug('Setting header %s: %s', key, value);
-          res.setHeader(key, value);
-        });
-
-      if (!httpresult) {
-        logger.debug("API (%s) didn't return anything!?", fname);
-        loginc('errors', fname);
-        res.send('Fatal error: Invalid output');
-        res.status(501);
-      } else if (httpresult.json?.error) {
-        const statusCode = httpresult.json.status ?? 500;
-        logger.debug('API (%s) failure, returning %d', fname, statusCode);
-        loginc('errors', fname);
-        res.status(statusCode);
-        res.json(httpresult.json);
-      } else if (httpresult.json) {
-        // logger("API (%s) success, returning %d bytes JSON", fname, _.size(JSON.stringify(httpresult.json)));
-        loginc('responses', fname);
-        res.setHeader('Access-Control-Allow-Origin', '*');
-        res.json(httpresult.json);
-      } else if (httpresult.text) {
-        // logger("API (%s) success, returning text (size %d)", fname, _.size(httpresult.text));
-        loginc('responses', fname);
-        res.send(httpresult.text);
-      } else if (httpresult.status) {
-        // logger("Returning empty status %d from API (%s)", httpresult.status, fname);
-        loginc('responses', fname);
-        res.status(httpresult.status);
-      } else {
-        logger.debug(
-          'Undetermined failure in API (%s) →  %j',
-          fname,
-          httpresult
-        );
-        loginc('errors', fname);
-        res.status(502);
-        res.send('Error?');
-      }
-    } catch (error) {
-      res.status(502);
-      res.send('Software error: ' + error.message);
-      loginc('errors', fname);
-      logger.debug('Error in HTTP handler API(%s): %o', fname, error);
-    }
-    res.end();
-  };
+const iowrapper = routeHandleMiddleware(apiList);
 
 /* one log entry per minute about the amount of API absolved */
-setInterval(() => {
-  let print = false;
-  _.each(_.keys(logAPICount), function (k) {
-    if (!_.keys(logAPICount[k]).length)
-      // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
-      delete logAPICount[k];
-    else print = true;
-  });
-  if (print) logger.debug('%j', logAPICount);
-  logAPICount.responses = {};
-  logAPICount.errors = {};
-  logAPICount.requests = {};
-}, 60 * 1000);
 
 export const makeApp = async (
   ctx: MakeAppContext
@@ -280,6 +205,12 @@ export const makeApp = async (
     iowrapper('experimentCSV')
   );
   apiRouter.get('/v2/experiment/:experimentId/dot', iowrapper('experimentDOT'));
+
+  /**
+   * Metadata
+   */
+
+  apiRouter.get('/v2/metadata', iowrapper('listMetadata'));
 
   router.use('/api/', apiRouter);
 

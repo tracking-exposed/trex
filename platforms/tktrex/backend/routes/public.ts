@@ -1,12 +1,9 @@
+import createDebug from 'debug';
 import _ from 'lodash';
 import moment from 'moment';
-import createDebug from 'debug';
-
-import * as params from '../lib/params';
 import automo from '../lib/automo';
-// import utils  from '../lib/utils';
 import CSV from '../lib/CSV';
-// import cache from '../lib/cache';
+import * as params from '../lib/params';
 
 const debug = createDebug('routes:public');
 
@@ -54,7 +51,7 @@ async function getLast(req) {
 };
 */
 
-export function ensureRelated(rv) {
+function ensureRelated(rv): null | any {
   /* for each related it is called and only the basic info used in 'compare'
    * page get returned. return 'null' if content is not complete */
   const demanded = [
@@ -75,7 +72,7 @@ export function ensureRelated(rv) {
     : sele;
 }
 
-export async function getVideoId(req) {
+async function getVideoId(req): Promise<any> {
   const { amount, skip } = params.optionParsing(
     req.params.paging,
     PUBLIC_AMOUNT_ELEMS
@@ -112,7 +109,7 @@ export async function getVideoId(req) {
   return { json: evidences };
 }
 
-export async function getRelated(req) {
+async function getRelated(req): Promise<any> {
   const { amount, skip } = params.optionParsing(
     req.params.paging,
     PUBLIC_AMOUNT_ELEMS
@@ -148,7 +145,7 @@ export async function getRelated(req) {
   return { json: evidences };
 }
 
-export async function getVideoCSV(req) {
+async function getVideoCSV(req): Promise<any> {
   // /api/v1/videoCSV/:videoId/:amount
   const MAXENTRY = 2800;
   const { amount, skip } = params.optionParsing(req.params.paging, MAXENTRY);
@@ -179,14 +176,14 @@ export async function getVideoCSV(req) {
   };
 }
 
-async function getRecent(req) {
+async function getRecent(req): Promise<any> {
   // this still to be determined why was supposed to be implemented: perhaps 'compare' equivalent?
   return { json: { fuffa: true } };
 }
 
 const SEARCH_FIELDS = ['id', 'query', 'publicKey', 'savingTime'];
 /* this is exported because also used in personal */
-export async function getSearches(req) {
+async function getSearches(req): Promise<any> {
   const amount = _.parseInt(req.query.amount) || 50;
   const skip = _.parseInt(req.query.skip) || 0;
   // this support the 'standard' format for Taboule
@@ -208,12 +205,11 @@ export async function getSearches(req) {
   return { json: filtered };
 }
 
-module.exports = {
-  // getLast,
+export {
   getVideoId,
   getRelated,
   getVideoCSV,
-  // getRecent,
+  getRecent,
   SEARCH_FIELDS,
   getSearches,
 };
