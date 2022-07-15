@@ -140,7 +140,9 @@ jobs:
 
       - name: Test YT cli
         working-directory: ./platforms/guardoni
-        run: ./scripts/cli-yt-test.mjs
+        run: |
+          ./scripts/cli-yt-test-home.mjs
+          ./scripts/cli-yt-test-videos.mjs
 
       - name: Stop PM2
         run: yarn pm2 stop all
