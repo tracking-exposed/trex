@@ -14656,6 +14656,7 @@ __metadata:
     webpack-cli: ^4.10.0
     webpack-node-externals: ^3.0.0
     ws: ^8.5.0
+    xvfb: ^0.4.0
     yaml: ^1.10.2
     yargs: ^17.5.1
   bin:
@@ -24592,6 +24593,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"sleep@npm:6.1.0":
+  version: 6.1.0
+  resolution: "sleep@npm:6.1.0"
+  dependencies:
+    nan: ^2.13.2
+    node-gyp: latest
+  checksum: 607465cdcfd630a80effcd44c887b29af7de061c5341ef99af064d6c08154d61bbb865626eb84868939cbcd668e9eb301a0ba320f5c2f5bc3f4b459492c6259e
+  languageName: node
+  linkType: hard
+
 "slice-ansi@npm:^3.0.0":
   version: 3.0.0
   resolution: "slice-ansi@npm:3.0.0"
@@ -28293,6 +28304,18 @@ __metadata:
   version: 4.0.2
   resolution: "xtend@npm:4.0.2"
   checksum: ac5dfa738b21f6e7f0dd6e65e1b3155036d68104e67e5d5d1bde74892e327d7e5636a076f625599dc394330a731861e87343ff184b0047fef1360a7ec0a5a36a
+  languageName: node
+  linkType: hard
+
+"xvfb@npm:^0.4.0":
+  version: 0.4.0
+  resolution: "xvfb@npm:0.4.0"
+  dependencies:
+    sleep: 6.1.0
+  dependenciesMeta:
+    sleep:
+      optional: true
+  checksum: d8c446dd6e31a19067692b7ccd562758c855483b8e77275f95d77da136b5f94a1606b1b3f4e97fe85218f6a3ff8a39af05641c050c5396f4269f5914bd41eb65
   languageName: node
   linkType: hard
 

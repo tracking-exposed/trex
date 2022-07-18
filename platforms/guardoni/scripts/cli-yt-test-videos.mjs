@@ -54,6 +54,9 @@ void (async function () {
 
   assert.strictEqual(ytVideoExperimentPubKey, process.env.PUBLIC_KEY);
 
+  // wait the parser to finish process metadata
+  await $`sleep 5`;
+
   const metadata = await fetch(
     `http://localhost:9000/api/v2/metadata?experimentId=${yt_video_experiment_id}`
   ).then((r) => r.json());
