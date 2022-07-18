@@ -57,11 +57,13 @@ import {
   ProgressDetails,
 } from './types';
 import { getChromePath, getPackageVersion } from './utils';
-import { GuardoniCommandOpts } from './cli';
+import { GuardoniCommandOpts, GuardoniNavigateOpts } from './cli';
 
 const runNavigate =
   (ctx: GuardoniContext) =>
-  (opts?: GuardoniCommandOpts): TE.TaskEither<AppError, void> => {
+  (opts?: GuardoniNavigateOpts): TE.TaskEither<AppError, void> => {
+    ctx.logger.debug('Running navigate with opts %O', opts);
+
     const home =
       ctx.platform.name === 'tiktok'
         ? 'https://www.tiktok.com'
@@ -71,7 +73,7 @@ const runNavigate =
       TE.right(setLocalSettings(ctx)(opts)),
       TE.chain(() =>
         dispatchBrowser(ctx)({
-          headless: false,
+          headless: opts ? opts.headless : true,
         })
       ),
       TE.chain((b) => {
@@ -82,12 +84,18 @@ const runNavigate =
             waitUntil: 'networkidle0',
           });
 
+          await page.waitForTimeout(2000);
+
+          await ctx.hooks.customs.cookieModal(page, {
+            action: 'reject',
+          });
+
           return b;
         }, toAppError);
       }),
       TE.chain((b) => {
         return TE.tryCatch(
-          () =>
+          async () =>
             new Promise((resolve, reject) => {
               ctx.logger.info('Browser is ready at %s', home);
               b.on('error', (e) => {
@@ -102,6 +110,10 @@ const runNavigate =
                 ctx.logger.info('browser closing...');
                 resolve();
               });
+
+              if (opts?.exit) {
+                void b.close().then(resolve).catch(reject);
+              }
             }),
           toAppError
         );
@@ -300,29 +312,32 @@ const loadContext = (
   return pipe(
     checkProfile({ logger })(basePath, cnf),
     TE.chain((p) => readProfile({ logger })(getProfileJsonPath(p))),
-    TE.chain((profile) =>
-      pipe(
+    TE.chain((profile) => {
+      const hooks =
+        platform === 'youtube'
+          ? GetYTHooks({
+              profile,
+              logger,
+            })
+          : GetTKHooks({
+              profile,
+            });
+
+      return pipe(
         getChromePath(),
         E.map((chromePath) => ({
           ...config,
           chromePath,
         })),
         E.map((c) => ({
+          hooks,
           puppeteer: GetPuppeteer({
             logger,
             puppeteer: p,
             config: {
               loadFor: config.loadFor,
             },
-            hooks:
-              platform === 'youtube'
-                ? GetYTHooks({
-                    profile,
-                    logger,
-                  })
-                : GetTKHooks({
-                    profile,
-                  }),
+            hooks,
           }),
           API: MakeAPIClient(
             {
@@ -345,8 +360,8 @@ const loadContext = (
         })),
         E.mapLeft(toAppError),
         TE.fromEither
-      )
-    ),
+      );
+    }),
     TE.chainFirst(downloadExtension)
   );
 };
@@ -375,7 +390,7 @@ export interface Guardoni {
     experiment: NonEmptyString,
     onProgress?: (details: ProgressDetails) => void
   ) => TE.TaskEither<AppError, GuardoniSuccessOutput>;
-  runBrowser: (opts?: GuardoniCommandOpts) => TE.TaskEither<AppError, void>;
+  runNavigate: (opts?: GuardoniCommandOpts) => TE.TaskEither<AppError, void>;
 }
 
 interface GuardoniLauncher {
@@ -431,7 +446,7 @@ export const GetGuardoni: GetGuardoni = ({
             registerExperiment: registerExperiment(ctx),
             registerExperimentFromCSV: registerCSV(ctx),
             listExperiments: listExperiments(ctx),
-            runBrowser: runNavigate(ctx),
+            runNavigate: runNavigate(ctx),
           };
         })
       );
@@ -450,7 +465,7 @@ export const GetGuardoni: GetGuardoni = ({
             registerExperiment: registerExperiment(ctx),
             registerExperimentFromCSV: registerCSV(ctx),
             listExperiments: listExperiments(ctx),
-            runBrowser: runNavigate(ctx),
+            runNavigate: runNavigate(ctx),
           };
         })
       );

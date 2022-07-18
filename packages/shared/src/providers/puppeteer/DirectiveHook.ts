@@ -1,14 +1,12 @@
 import * as puppeteer from 'puppeteer-core';
 import { OpenURLDirective } from '../../models/Directive';
 
+type Hook = (page: puppeteer.Page, directive: any, opts?: any) => Promise<any>;
+
 export interface DirectiveHooks<
   DO extends string,
   CS extends {
-    [key: string]: (
-      page: puppeteer.Page,
-      directive: any,
-      opts?: any
-    ) => Promise<any>;
+    [key: string]: Hook;
   }
 > {
   openURL: {

@@ -5,6 +5,7 @@ import { APIClient } from '@shared/providers/api.provider';
 import { PuppeteerProvider } from '@shared/providers/puppeteer/puppeteer.provider';
 import * as t from 'io-ts';
 import { nonEmptyArray } from 'io-ts-types';
+import { DirectiveHooks } from '@shared/providers/puppeteer/DirectiveHook';
 
 export const Platform = t.union(
   [t.literal('youtube'), t.literal('tiktok')],
@@ -81,6 +82,7 @@ export type GuardoniProfile = t.TypeOf<typeof GuardoniProfile>;
 
 export interface GuardoniContext {
   puppeteer: PuppeteerProvider;
+  hooks: DirectiveHooks<string, any>;
   API: APIClient<typeof endpoints>;
   config: GuardoniConfig;
   platform: PlatformConfig;
