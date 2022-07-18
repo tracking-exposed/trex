@@ -823,7 +823,8 @@ async function pullExperimentInfo(publicKey) {
 
 async function registerDirective(directives) {
   /* this API is called by guardoni when --csv is used,
-       the API is POST localhost:9000/api/v3/directives/comparison */
+       the API is POST localhost:9000/api/v2/directives */
+
   const experimentId = utils.hash({
     directives,
   });

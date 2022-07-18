@@ -14,12 +14,12 @@ import {
 import { GuardoniExperiment } from '@shared/models/Experiment';
 import { SearchQuery } from '@shared/models/http/SearchQuery';
 import { SearchMetadata as TKSearchMetadata } from '@tktrex/shared/models/Metadata';
-import { Metadata } from '@shared/models/Metadata';
 import { MakeAPIClient } from '@shared/providers/api.provider';
 import { available, queryStrict } from 'avenger';
 import { CachedQuery } from 'avenger/lib/Query';
 import { pipe } from 'fp-ts/lib/function';
 import * as TE from 'fp-ts/lib/TaskEither';
+import { Step } from '@shared/models/Step';
 
 export interface SearchRequestInput {
   Params: any;
@@ -35,7 +35,7 @@ type EndpointQuery<C> = CachedQuery<SearchRequestInput, APIError, Results<C>>;
 
 export interface TabouleQueries {
   ccRelatedUsers: EndpointQuery<ChannelRelated>;
-  getExperimentById: EndpointQuery<Metadata>;
+  getExperimentById: EndpointQuery<Step>;
   getExperimentList: EndpointQuery<GuardoniExperiment>;
   personalSearches: EndpointQuery<SearchMetadata>;
   personalAds: EndpointQuery<any>;
@@ -97,12 +97,15 @@ export const GetTabouleQueries = ({
   const getExperimentById = queryStrict<
     SearchRequestInput,
     APIError,
-    Results<Metadata>
+    Results<Step>
   >(
     (input) =>
       pipe(
         YTAPI.v2.Public.GetExperimentById(input),
-        TE.map((content) => ({ total: content.length, content }))
+        TE.map((content) => ({
+          total: content.steps.length,
+          content: content.steps,
+        }))
       ),
     available
   );

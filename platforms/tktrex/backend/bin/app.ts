@@ -71,8 +71,6 @@ export const makeApp = async (
   app.get('/api/v2/experiment/:experimentId/dot', iowrapper('experimentDOT'));
 
   /* subscription email */
-  // Improved from the version initially used in ycai, same payload, different behvior:
-  // apiRouter.post('/v3/registerEmail', iowrapper('registerEmail2'));
   app.post('/api/v1/registerEmail2', iowrapper('registerEmail2'));
   app.get('/api/v1/listEmails/:key', iowrapper('listEmails'));
   /* ============== Documented only the API below ============== */

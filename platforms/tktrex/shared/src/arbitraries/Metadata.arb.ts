@@ -23,7 +23,7 @@ const searchMetadataProps = propsOmitType(SearchMetadata.types[1], [
 ]);
 
 export const SearchMetaDataArb = getArbitrary(
-  t.intersection([t.type(metadataBaseProps), t.type(searchMetadataProps)])
+  t.intersection([t.type(metadataBaseProps), t.type(searchMetadataProps)]),
 ).map((ad) => ({
   ...ad,
   id: fc.sample(fc.uuid(), 1)[0],
@@ -40,7 +40,7 @@ export const SearchMetaDataArb = getArbitrary(
 const forYouMetadataProps = propsOmitType(ForYouVideoMetadata.types[1], []);
 
 export const ForYouVideoMetaDataArb = getArbitrary(
-  t.intersection([t.type(metadataBaseProps), t.type(forYouMetadataProps)])
+  t.intersection([t.type(metadataBaseProps), t.type(forYouMetadataProps)]),
 ).map((ad) => ({
   ...ad,
   id: fc.sample(fc.uuid(), 1)[0],
@@ -54,14 +54,14 @@ export const ForYouVideoMetaDataArb = getArbitrary(
  **/
 const followingVideoMetadataProps = propsOmitType(
   FollowingVideoMetadata.types[1],
-  []
+  [],
 );
 
 export const FollowingVideoMetaDataArb = getArbitrary(
   t.intersection([
     t.type(metadataBaseProps),
     t.type(followingVideoMetadataProps),
-  ])
+  ]),
 ).map((ad) => ({
   ...ad,
   id: fc.sample(fc.uuid(), 1)[0],
@@ -72,5 +72,5 @@ export const FollowingVideoMetaDataArb = getArbitrary(
 export const MetadataArb = fc.oneof(
   SearchMetaDataArb,
   ForYouVideoMetaDataArb,
-  FollowingVideoMetaDataArb
+  FollowingVideoMetaDataArb,
 );
