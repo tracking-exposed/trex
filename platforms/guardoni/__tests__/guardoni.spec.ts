@@ -10,6 +10,7 @@ import { GetGuardoni } from '../src/guardoni/guardoni';
 import { getDefaultProfile, getProfileDataDir } from '../src/guardoni/profile';
 import { csvStringifyTE } from '../src/guardoni/utils';
 import { guardoniLogger } from '../src/logger';
+import { fc } from '@shared/test';
 
 const directiveLinks = [
   {
@@ -217,11 +218,7 @@ describe('Guardoni', () => {
         TE.chain((g) =>
           pipe(
             g.registerExperimentFromCSV(
-              path.resolve(
-                basePath,
-                'experiments',
-                emptyCSVTestFileName
-              ) as any,
+              path.resolve(basePath, 'experiments', emptyCSVTestFileName) as any
             )
           )
         )
@@ -243,7 +240,8 @@ describe('Guardoni', () => {
       axiosMock.request.mockResolvedValueOnce({
         data: {
           status: 'exist',
-          experimentId: '1',
+          experimentId: fc.sample(fc.uuid(), 1)[0],
+          since: new Date().toISOString(),
         },
       });
       axiosMock.request.mockResolvedValueOnce({
@@ -280,7 +278,7 @@ describe('Guardoni', () => {
         TE.chain((g) =>
           pipe(
             g.registerExperimentFromCSV(
-              path.resolve(basePath, 'experiments', csvTestFileName) as any,
+              path.resolve(basePath, 'experiments', csvTestFileName) as any
             ),
             TE.chain((output) => g.runExperiment(output.values[0].experimentId))
           )

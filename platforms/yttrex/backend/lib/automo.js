@@ -818,15 +818,13 @@ async function pullExperimentInfo(publicKey) {
     },
   ]);
   await mongoc.close();
-  if (exp && exp[0]?.directive[0]?.directiveType) return _.first(exp);
-  return null;
+  return _.first(exp) ?? null;
 }
 
-async function registerDirective(directives, directiveType) {
+async function registerDirective(directives) {
   /* this API is called by guardoni when --csv is used,
        the API is POST localhost:9000/api/v3/directives/comparison */
   const experimentId = utils.hash({
-    type: directiveType,
     directives,
   });
   const mongoc = await mongo3.clientConnect({ concurrency: 1 });
@@ -847,12 +845,11 @@ async function registerDirective(directives, directiveType) {
   /* else, we don't had such data, hence */
   await mongo3.writeOne(mongoc, nconf.get('schema').experiments, {
     when: new Date(),
-    directiveType,
     links: directives,
     experimentId,
   });
   await mongoc.close();
-  debug('Registered directive %s|%s', directiveType, experimentId);
+  debug('Registered directive %s', experimentId);
   return { status: 'created', experimentId, since: new Date() };
 }
 

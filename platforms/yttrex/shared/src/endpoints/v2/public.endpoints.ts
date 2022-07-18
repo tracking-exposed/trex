@@ -2,13 +2,16 @@ import * as t from 'io-ts';
 import { Endpoint } from 'ts-endpoint';
 import { AddEventsBody } from '@shared/models/ContributionEvent';
 import { ContributorPublicKeyResponse } from '@shared/models/contributor/ContributorPublicKey';
-import { GetExperimentListOutput } from '@shared/models/Experiment';
+import {
+  GetExperimentListOutput,
+  GuardoniExperiment,
+} from '@shared/models/Experiment';
 import { HandshakeBody, HandshakeResponse } from '@shared/models/HandshakeBody';
 import { PublicKeyParams } from '@shared/models/http/params/PublicKey';
 import { SearchQuery } from '@shared/models/http/SearchQuery';
-import { Metadata } from '@shared/models/Metadata';
 import { ChannelADVStats } from '@shared/models/stats/ChannelADV';
 import { DocumentedEndpoint } from '@shared/endpoints';
+import { YTHeaders } from '../../models/http/YTHeaders';
 
 export const Handshake = Endpoint({
   Method: 'POST',
@@ -87,12 +90,7 @@ const AddEvents = Endpoint({
   Method: 'POST',
   getPath: () => `/v2/events`,
   Input: {
-    Headers: t.type({
-      'X-YTtrex-Version': t.string,
-      'X-YTtrex-Build': t.string,
-      'X-YTtrex-PublicKey': t.string,
-      'X-YTtrex-Signature': t.string,
-    }),
+    Headers: YTHeaders,
     Body: AddEventsBody,
   },
   Output: t.any,
@@ -102,12 +100,7 @@ const AddAPIEvents = Endpoint({
   Method: 'POST',
   getPath: () => `/v2/apiEvents`,
   Input: {
-    Headers: t.type({
-      'X-TrEx-Version': t.string,
-      'X-TrEx-Build': t.string,
-      'X-TrEx-PublicKey': t.string,
-      'X-TrEx-Signature': t.string,
-    }),
+    Headers: YTHeaders,
     Body: AddEventsBody,
   },
   Output: t.any,
@@ -130,13 +123,9 @@ const GetChannelADVStats = Endpoint({
 
 const GetExperimentList = Endpoint({
   Method: 'GET',
-  getPath: ({ type, publicKey }) => `/v2/guardoni/list/${type}/${publicKey}`,
+  getPath: () => `/v2/guardoni/list`,
   Input: {
     Query: SearchQuery,
-    Params: t.type({
-      type: t.union([t.literal('comparison'), t.literal('chiaroscuro')]),
-      ...PublicKeyParams.props,
-    }),
   },
   Output: GetExperimentListOutput,
 });
@@ -150,7 +139,7 @@ const GetExperimentById = Endpoint({
       experimentId: t.string,
     }),
   },
-  Output: t.array(Metadata),
+  Output: GuardoniExperiment,
 });
 
 const DeletePersonalContributionByPublicKey = Endpoint({

@@ -112,36 +112,18 @@ function acquireComparison(parsedCSV) {
 }
 
 async function post(req) {
-  /* const directiveTypes = ['chiaroscuro', 'comparison'];
-  if (directiveTypes.indexOf(directiveType) === -1) {
-    debug(
-      'Invalid directive type (%s), supported %j)',
-      directiveType,
-      directiveTypes
-    );
-    return { json: { error: true, message: 'Invalid directive type' } };
-  } */
-
-  const directiveType = 'comparison';
   const parsedCSV = req.body ?? [];
-
-  /* if (directiveType === "chiaroscuro")
-    links = acquireChiaroscuro(parsedCSV); */
 
   let directives = [];
   directives = acquireComparison(parsedCSV);
 
-  debug(
-    'Registering directive %s (%d urls)',
-    directiveType,
-    _.size(directives)
-  );
+  debug('Registering directive (%d urls)', _.size(directives));
 
   if (_.size(directives) === 0) {
     throw new Error("Can't register csv without 'directives'");
   }
 
-  const feedback = await automo.registerDirective(directives, directiveType);
+  const feedback = await automo.registerDirective(directives);
   // this feedback is printed at terminal when --csv is used
   return { json: feedback };
 }
@@ -169,7 +151,6 @@ async function get(req) {
 }
 
 async function getPublic(req) {
-
   const mongoc = await mongo3.clientConnect({ concurrency: 1 });
 
   const publicDirectives = await mongo3.readLimit(

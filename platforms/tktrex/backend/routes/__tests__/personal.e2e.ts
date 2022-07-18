@@ -1,4 +1,4 @@
-import { GuardoniExperimentArb } from '@shared/arbitraries/Directive.arb';
+import { GuardoniExperimentArb } from '@shared/arbitraries/Experiment.arb';
 import bs58 from '@shared/providers/bs58.provider';
 import { fc } from '@shared/test';
 import { foldTEOrThrow } from '@shared/utils/fp.utils';
@@ -29,7 +29,7 @@ describe('Events', () => {
 
   describe('GetPersonalByExperimentId', () => {
     test('succeeds with one metadata', async () => {
-      const researchTag= "test-tag";
+      const researchTag = 'test-tag';
 
       const keys = await foldTEOrThrow(bs58.makeKeypair(''));
       const data = fc.sample(ContributionEventArb, 1).map((d) => ({
@@ -69,7 +69,7 @@ describe('Events', () => {
         .send(data)
         .expect(200);
 
-        // run parser
+      // run parser
       void actualExecution(false, undefined, undefined, 0);
 
       // wait for the parser to process the html

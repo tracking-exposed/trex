@@ -354,7 +354,6 @@ describe('CLI', () => {
           message: 'Experiment completed',
           values: [
             {
-              directiveType: 'comparison',
               researchTag,
             },
           ],
@@ -377,11 +376,7 @@ describe('CLI', () => {
         _tag: 'Right',
         right: {
           message: 'Experiment completed',
-          values: [
-            {
-              directiveType: 'comparison',
-            },
-          ],
+          values: [{}],
         },
       });
     });

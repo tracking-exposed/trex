@@ -7,7 +7,6 @@ const automo = require('../lib/automo');
 const params = require('../lib/params');
 const CSV = require('../lib/CSV');
 const mongo3 = require('../lib/mongo3');
-const security = require('../lib/security');
 
 async function sharedDataPull(filter) {
   // this function is invoked by the various API below,
@@ -221,18 +220,7 @@ async function list(req) {
      NOT THE RUNNING EXPERIMENTS. THIS FUNCTION MIGHT BE MORE APPROPIATE
      IN routes/directives.js
 
-     * experiments API: "comparison" require password,
-                        "chiaroscuro" doesn't                     */
-  const type = req.params.directiveType;
-
-  if (['comparison', 'chiaroscuro'].indexOf(type) === -1)
-    return { text: 'Directive Type not supported! ' };
-
-  if (type === 'comparison') {
-    /* this kind of directive require password for listing,
-           instead the shadowban at the moment is free access */
-    if (!security.checkPassword(req)) return { status: 403 };
-  }
+     */
 
   /* default query params for Taboule,
        they might be moved in a proper lib function */
@@ -272,7 +260,7 @@ async function list(req) {
 
   const c = _.map(configured, function (r) {
     r.humanizedWhen = moment(r.when).format('YYYY-MM-DD');
-    return _.omit(r, ['_id', 'directiveType']);
+    return _.omit(r, ['_id']);
   });
 
   /*
@@ -317,7 +305,6 @@ async function channel3(req) {
     'execount',
     'newProfile',
     'profileName',
-    'directiveType',
   ];
   const experimentInfo = _.pick(req.body, fields);
 
@@ -335,7 +322,7 @@ async function channel3(req) {
 
   debug(
     "Marked experiment as 'active' — %j",
-    _.pick(retval, ['researchTag', 'execount', 'directiveType'])
+    _.pick(retval, ['researchTag', 'execount'])
   );
   return { json: retval };
 }

@@ -187,10 +187,7 @@ export const makeApp = async (
   apiRouter.get('/v2/search/keywords/:paging?', iowrapper('getSearchKeywords'));
 
   /* experiments API: "comparison" require password, "chiaroscuro" doesn't */
-  apiRouter.get(
-    '/v2/guardoni/list/:directiveType/:key?',
-    iowrapper('getAllExperiments')
-  );
+  apiRouter.get('/v2/guardoni/list', iowrapper('getAllExperiments'));
   apiRouter.get('/v3/directives/public', iowrapper('getPublicDirectives'));
   apiRouter.post('/v3/directives/:ignored?', iowrapper('postDirective'));
   apiRouter.get('/v3/directives/:experimentId', iowrapper('fetchDirective'));

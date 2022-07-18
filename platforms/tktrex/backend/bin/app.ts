@@ -54,10 +54,7 @@ export const makeApp = async (
 
   /* experiments API: at the moment not implemented for tiktok, only copied by yttrex */
 
-  app.get(
-    '/api/v2/guardoni/list/:directiveType/:key?',
-    iowrapper('getAllExperiments')
-  );
+  app.get('/api/v2/guardoni/list', iowrapper('getAllExperiments'));
 
   app.get('/api/v2/directives/public', iowrapper('getPublicDirectives'));
 

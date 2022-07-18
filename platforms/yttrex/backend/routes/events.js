@@ -74,10 +74,9 @@ const EXPECTED_HDRS = {
 function extendIfExperiment(expinfo, listOf) {
   if (!expinfo) return listOf;
   debug(
-    'Linking %d objects to experiment %s (%s)',
+    'Linking %d objects to experiment %s',
     listOf.length,
-    expinfo.experimentId,
-    expinfo.directive[0].directiveType
+    expinfo.experimentId
   );
 
   const nothelpf = ['_id', 'publicKey', 'directive', 'href', 'status'];
