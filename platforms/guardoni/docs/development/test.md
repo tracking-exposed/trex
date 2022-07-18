@@ -22,8 +22,10 @@ For this purpose there are two different scripts located at `platforms/guardoni/
 
 ```bash
 cd ./platforms/guardoni
-# run test for youtube platform
-./scripts/cli-yt-test.sh
+# run test for `platform` "youtube" and `type` "home"
+./scripts/cli-yt-test-home.mjs
+# run test for `platform` "youtube" and `type` "video"
+./scripts/cli-yt-test-videos.mjs
 # run test for titkok platform
 ./scripts/cli-tk-test.sh
 ```

@@ -13,8 +13,8 @@ export const dispatchBrowser =
     const commandLineArg = [
       '--no-sandbox',
       '--disabled-setuid-sandbox',
-      '--load-extension=' + ctx.platform.extensionDir,
       '--disable-extensions-except=' + ctx.platform.extensionDir,
+      '--load-extension=' + ctx.platform.extensionDir,
     ];
 
     if (proxy) {
