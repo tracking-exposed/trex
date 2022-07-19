@@ -145,7 +145,10 @@ async function get(req) {
   } */
 
   // expinfo.directiveType === 'comparison'
-  const directives = _.map(expinfo?.directives ?? [], comparison);
+  const directives = _.map(
+    expinfo?.directives ?? expinfo?.links ?? [],
+    comparison
+  );
   debug('Comparison %s produced %d', experimentId, directives.length);
   return { json: directives };
 }
@@ -155,7 +158,7 @@ async function getPublic(req) {
 
   const publicDirectives = await mongo3.readLimit(
     mongoc,
-    nconf.get('schema').directives,
+    nconf.get('schema').experiments,
     {},
     { when: -1 },
     20,
@@ -175,4 +178,5 @@ module.exports = {
   post,
   get,
   getPublic,
+  timeconv
 };
