@@ -47,7 +47,7 @@ export const launch =
   };
 
 /**
- * automate directive execution for browser page
+ * automate step execution for browser page
  */
 const operateTab =
   (ctx: PuppeteerProviderContext) =>
@@ -121,11 +121,11 @@ export interface PuppeteerProvider {
   launch: (opts: LaunchOptions) => TE.TaskEither<AppError, puppeteer.Browser>;
   operateTab: (
     page: puppeteer.Page,
-    directive: Step
+    step: Step
   ) => TE.TaskEither<AppError, any>;
   operateBrowser: (
     page: puppeteer.Page,
-    directive: Step[]
+    steps: Step[]
   ) => TE.TaskEither<AppError, string>;
 }
 

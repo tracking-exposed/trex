@@ -1,5 +1,5 @@
 import { Logger } from '../../../logger';
 
-export interface DirectiveContext {
+export interface StepContext {
   logger: Logger;
 }

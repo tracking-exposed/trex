@@ -15,9 +15,9 @@ interface OpenURLOptions {
 }
 
 /**
- * Directive with type `openURL`
+ * Step with type `openURL`
  *
- * This is the default directive, which navigates to the given url and
+ * This is the default step, which navigates to the given url and
  * performs some domain specific hooks.
  *
  */
@@ -26,37 +26,37 @@ export const openURL =
   (ctx: OpenURLContext) =>
   (
     page: puppeteer.Page,
-    directive: OpenURLStep,
+    step: OpenURLStep,
     opts: OpenURLOptions
   ): TE.TaskEither<AppError, any> => {
     return TE.tryCatch(async () => {
       try {
-        await ctx.hooks.openURL.beforeLoad(page, directive);
-        // await throwTE(runHooks(ctx)(page, directive, 'beforeLoad'));
+        await ctx.hooks.openURL.beforeLoad(page, step);
+        // await throwTE(runHooks(ctx)(page, step, 'beforeLoad'));
       } catch (error) {
         ctx.logger.debug(
-          'error in beforeLoad %s %s directive %o',
+          'error in beforeLoad %s %s step %o',
           (error as any).message,
           (error as any).stack,
-          directive
+          step
         );
       }
 
       // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
-      const loadFor = directive.loadFor ?? opts.loadFor ?? 6000;
+      const loadFor = step.loadFor ?? opts.loadFor ?? 6000;
 
       ctx.logger.info(
         '— Loading %s (for %d ms) %O',
-        directive?.url,
+        step?.url,
         loadFor,
-        directive
+        step
       );
-      // Remind you can exclude directive with env/--exclude=urltag
+      // Remind you can exclude step with env/--exclude=urltag
 
       // TODO the 'timeout' would allow to repeat this operation with
       // different parameters. https://stackoverflow.com/questions/60051954/puppeteer-timeouterror-navigation-timeout-of-30000-ms-exceeded
       try {
-        await page.goto(directive.url, {
+        await page.goto(step.url, {
           waitUntil: 'networkidle0',
           timeout: 10000,
         });
@@ -64,7 +64,7 @@ export const openURL =
         ctx.logger.error('Error during goto %O (networkidle0)', e);
 
         try {
-          await page.goto(directive.url, {
+          await page.goto(step.url, {
             waitUntil: ['domcontentloaded'],
             timeout: 5000,
           });
@@ -75,7 +75,7 @@ export const openURL =
       }
 
       try {
-        await ctx.hooks.openURL.beforeWait(page, directive);
+        await ctx.hooks.openURL.beforeWait(page, step);
       } catch (error) {
         ctx.logger.error(
           'error in beforeWait %s (%s)',
@@ -85,8 +85,8 @@ export const openURL =
       }
 
       ctx.logger.info(
-        'Directive to URL %s, Loading delay %d (--load optional)',
-        directive.url,
+        'Step to URL %s, Loading delay %d (--load optional)',
+        step.url,
         loadFor
       );
 
@@ -94,7 +94,7 @@ export const openURL =
 
       try {
         // debugger;
-        await ctx.hooks.openURL.afterWait(page, directive);
+        await ctx.hooks.openURL.afterWait(page, step);
       } catch (error) {
         // eslint-disable-next-line no-console
         console.log(
@@ -103,6 +103,6 @@ export const openURL =
           (error as any).stack
         );
       }
-      ctx.logger.info('— Completed %O \n', directive);
+      ctx.logger.info('— Completed %O \n', step);
     }, toAppError);
   };

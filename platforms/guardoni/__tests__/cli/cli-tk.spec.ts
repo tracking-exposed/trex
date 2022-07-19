@@ -293,8 +293,8 @@ describe('CLI', () => {
       });
     });
 
-    test('succeed when experimentId has valid "tk" directive', async () => {
-      // return directive
+    test('succeed when experimentId has valid "tk" steps', async () => {
+
       axiosMock.request.mockResolvedValueOnce({
         data: tests.fc.sample(CommonStepArb, 2).map((d) => ({
           ...d,
@@ -330,7 +330,6 @@ describe('CLI', () => {
     });
 
     test('succeed when experimentId has valid "search" directives and `publicKey` and `secretKey` keys', async () => {
-      // return directive
       axiosMock.request.mockResolvedValueOnce({
         data: tests.fc.sample(CommonStepArb, 2).map((d) => ({
           ...d,

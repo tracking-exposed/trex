@@ -12,7 +12,7 @@ const WatchForArb = fc.oneof(
 );
 
 /**
- * Common directive
+ * Common step
  */
 export const CommonStepArb = getArbitrary(OpenURLStep).map(() => ({
   title: fc.sample(HumanReadableStringArb())[0],

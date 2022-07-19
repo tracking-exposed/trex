@@ -6,7 +6,7 @@ const mongo3 = require('../lib/mongo3');
 async function post(req) {
   const steps = req.body;
 
-  const feedback = await experlib.registerDirective(steps);
+  const feedback = await experlib.registerSteps(steps);
   // this feedback is printed at terminal when --csv is used
   return { json: feedback };
 }
@@ -23,7 +23,7 @@ async function get(req) {
     };
   }
 
-  const steps = expinfo.directives ?? expinfo.links ?? [];
+  const { steps } = expinfo;
 
   if (!steps.length) {
     debug(

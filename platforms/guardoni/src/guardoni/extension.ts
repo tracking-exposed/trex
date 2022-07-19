@@ -3,7 +3,7 @@
  * Guardoni V2
  *
  * TODO:
- * - filter the directive with "exclude url tag"
+ * - filter the step with "exclude url tag"
  *
  */
 import { AppError, toAppError } from '@shared/errors/AppError';

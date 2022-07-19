@@ -123,7 +123,7 @@ async function post(req) {
     throw new Error("Can't register csv without 'directives'");
   }
 
-  const feedback = await automo.registerDirective(directives);
+  const feedback = await automo.registerSteps(directives);
   // this feedback is printed at terminal when --csv is used
   return { json: feedback };
 }
@@ -134,23 +134,9 @@ async function get(req) {
   debug('GET: should return directives for %s', experimentId);
   const expinfo = await automo.pickDirective(experimentId);
 
-  /* if (expinfo.directiveType === 'chiaroscuro') {
-    const directives = _.flatten(
-      _.map(expinfo.links, function (vidblock, counter) {
-        return chiaroScuro(vidblock, counter);
-      })
-    );
-    debug('ChiaroScuro %s produced %d', experimentId, directives.length);
-    return { json: directives };
-  } */
-
-  // expinfo.directiveType === 'comparison'
-  const directives = _.map(
-    expinfo?.directives ?? expinfo?.links ?? [],
-    comparison
-  );
-  debug('Comparison %s produced %d', experimentId, directives.length);
-  return { json: directives };
+  const steps = _.map(expinfo?.steps ?? [], comparison);
+  debug('Comparison %s produced %d', experimentId, steps.length);
+  return { json: steps };
 }
 
 async function getPublic(req) {
@@ -178,5 +164,5 @@ module.exports = {
   post,
   get,
   getPublic,
-  timeconv
+  timeconv,
 };

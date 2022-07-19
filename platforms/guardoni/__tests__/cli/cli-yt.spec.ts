@@ -257,7 +257,6 @@ describe('CLI', () => {
     });
 
     test('succeed when experimentId has valid "yt" directives', async () => {
-      // return directive
       axiosMock.request.mockResolvedValueOnce({
         data: tests.fc.sample(CommonStepArb, 2).map((d) => ({
           ...d,
@@ -303,7 +302,6 @@ describe('CLI', () => {
     });
 
     test('succeed when experimentId has valid "yt" steps', async () => {
-      // return directive
       axiosMock.request.mockResolvedValueOnce({
         data: tests.fc.sample(CommonStepArb, 2).map((d) => ({
           ...d,
@@ -337,7 +335,6 @@ describe('CLI', () => {
 
   describe('auto', () => {
     test('succeeds when value is "1"', async () => {
-      // return directive
       axiosMock.request.mockResolvedValueOnce({
         data: tests.fc.sample(CommonStepArb, 2).map((d) => ({
           ...d,
@@ -362,7 +359,6 @@ describe('CLI', () => {
     });
 
     test('succeeds when value is "2"', async () => {
-      // return directive
       axiosMock.request.mockResolvedValueOnce({
         data: tests.fc.sample(CommonStepArb, 10).map((d) => ({
           ...d,

@@ -2,7 +2,7 @@ import * as TE from 'fp-ts/lib/TaskEither';
 import type * as puppeteer from 'puppeteer-core';
 import { AppError, toAppError } from '../../../errors/AppError';
 import { ScrollStep } from '../../../models/Step';
-import { DirectiveContext } from './types';
+import { StepContext } from './types';
 
 async function autoScroll(
   page: puppeteer.Page,
@@ -23,37 +23,37 @@ async function autoScroll(
 }
 
 /**
- * Directive with type `scroll`
+ * Step with type `scroll`
  *
  * Scroll page with an increment of `incrementScrollBy` until it reaches `totalScroll`
  *
  */
 
 export const GetScrollFor =
-  (ctx: DirectiveContext) =>
+  (ctx: StepContext) =>
   (
     page: puppeteer.Page,
-    directive: ScrollStep
+    step: ScrollStep
   ): TE.TaskEither<AppError, void> => {
     return TE.tryCatch(
       async () =>
         new Promise((resolve, reject) => {
           let i = 0;
-          ctx.logger.debug('Start scrolling: %O', directive);
+          ctx.logger.debug('Start scrolling: %O', step);
           const timer = setInterval(() => {
             ctx.logger.debug('Running for time %d', i);
 
-            void autoScroll(page, directive).then(() => {
+            void autoScroll(page, step).then(() => {
               ctx.logger.debug(
                 'Scrolled by %d',
-                i * directive.incrementScrollByPX
+                i * step.incrementScrollByPX
               );
 
-              if (directive.totalScroll < i * directive.incrementScrollByPX) {
+              if (step.totalScroll < i * step.incrementScrollByPX) {
                 ctx.logger.debug(
                   'Scroll total reached: %d (%d)',
-                  i * directive.incrementScrollByPX,
-                  directive.totalScroll
+                  i * step.incrementScrollByPX,
+                  step.totalScroll
                 );
                 clearInterval(timer);
                 resolve(undefined);
@@ -61,7 +61,7 @@ export const GetScrollFor =
 
               i++;
             });
-          }, directive.interval ?? 300);
+          }, step.interval ?? 300);
         }),
       toAppError
     );

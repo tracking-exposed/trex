@@ -233,7 +233,7 @@ describe('Guardoni', () => {
   });
 
   describe('experiment', () => {
-    test('succeeds when run an experiment from an already existing directive', async () => {
+    test('succeeds when run an experiment already existing', async () => {
       // one minute
       jest.setTimeout(60 * 1000);
 

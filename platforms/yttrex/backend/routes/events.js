@@ -96,7 +96,7 @@ function extendIfExperiment(expinfo, listOf) {
            made by the browser outside the directives is causes
            o.belonginn = false; */
     o.experiment = _.omit(expinfo, nothelpf);
-    const steps = _.map(expinfo.directive[0].links, comparison);
+    const steps = _.map(expinfo.directive[0].steps, comparison);
     o.experiment.directiveN = _.reduce(
       steps,
       function (memo, d, cnt) {

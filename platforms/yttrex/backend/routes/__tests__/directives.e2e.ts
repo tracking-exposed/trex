@@ -48,7 +48,7 @@ describe('Directives API', () => {
 
       expect(dbSteps).toMatchObject([
         {
-          links: convertedSteps,
+          steps: convertedSteps,
         },
       ]);
 
