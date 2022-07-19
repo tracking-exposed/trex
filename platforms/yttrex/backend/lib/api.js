@@ -1,5 +1,6 @@
 import * as publicRoutes from '../routes/public';
 import * as metadataRoutes from '../routes/metadata';
+import * as youchooseRoutes from '../routes/youchoose';
 
 export const apiList = {
   systemInfo: require('../routes/system').systemInfo,
@@ -59,7 +60,6 @@ export const apiList = {
   experimentCSV: require('../routes/experiments').csv,
   experimentDOT: require('../routes/experiments').dot,
   experimentJSON: require('../routes/experiments').json,
-  experimentEmergencyCSV: require('../routes/experiments').emergency,
   // used from extension
   experimentChannel3: require('../routes/experiments').channel3,
   // used by guardoni to close it
@@ -73,20 +73,21 @@ export const apiList = {
   registerEmail: require('../routes/emails').registerEmail,
 
   /* v3 youchoose */
-  youChooseByVideoId: require('../routes/youchoose').byVideoId,
-  youChooseByProfile: require('../routes/youchoose').byProfile,
-  patchRecommendation: require('../routes/youchoose').patchRecommendation,
-  ogpProxy: require('../routes/youchoose').ogpProxy,
-  getVideoByCreator: require('../routes/youchoose').videoByCreator,
-  getOneVideoByCreator: require('../routes/youchoose').oneVideoByCreator,
-  repullByCreator: require('../routes/youchoose').repullByCreator,
-  recommendationById: require('../routes/youchoose').getRecommendationById,
-  updateVideoRec: require('../routes/youchoose').updateVideoRec,
-  getCreatorStats: require('../routes/youchoose').getCreatorStats,
-  creatorRegister: require('../routes/youchoose').creatorRegister,
-  creatorVerify: require('../routes/youchoose').creatorVerify,
-  creatorGet: require('../routes/youchoose').creatorGet,
-  creatorDelete: require('../routes/youchoose').creatorDelete,
+  youChooseByVideoId: youchooseRoutes.byVideoId,
+  youChooseByProfile: youchooseRoutes.byProfile,
+  patchRecommendation: youchooseRoutes.patchRecommendation,
+  ogpProxy: youchooseRoutes.ogpProxy,
+  getVideoByCreator: youchooseRoutes.videoByCreator,
+  getOneVideoByCreator: youchooseRoutes.oneVideoByCreator,
+  repullByCreator: youchooseRoutes.repullByCreator,
+  getCreatorRelated: youchooseRoutes.getCreatorRelated,
+  recommendationById: youchooseRoutes.getRecommendationById,
+  updateVideoRec: youchooseRoutes.updateVideoRec,
+  getCreatorStats: youchooseRoutes.getCreatorStats,
+  creatorRegister: youchooseRoutes.creatorRegister,
+  creatorVerify: youchooseRoutes.creatorVerify,
+  creatorGet: youchooseRoutes.creatorGet,
+  creatorDelete: youchooseRoutes.creatorDelete,
   /* v3 opendata */
   opendataChannel: require('../routes/opendata').opendataChannel,
 

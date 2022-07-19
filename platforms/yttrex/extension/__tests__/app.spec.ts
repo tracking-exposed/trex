@@ -50,6 +50,8 @@ chromeListener.mockImplementation((request, sender, sendResponse) => {
   return true;
 });
 
+const testTime = new Date().toISOString();
+
 const getConfig = () => ({
   ...keys,
   active: true,
@@ -59,7 +61,7 @@ const getConfig = () => ({
   experimentId: '1',
   execount: 1,
   newProfile: false,
-  directiveType: 'comparison',
+  testTime,
 });
 
 chrome.runtime.sendMessage

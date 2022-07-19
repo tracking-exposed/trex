@@ -3,11 +3,10 @@ const moment = require('moment');
 const debug = require('debug')('routes:experiments');
 const nconf = require('nconf');
 
-const CSV = require('../lib/CSV');
 const experlib = require('../lib/experiments');
+const CSV = require('../lib/CSV');
 const params = require('../lib/params');
 const mongo3 = require('../lib/mongo3');
-const security = require('../lib/security');
 
 async function sharedDataPull(filter) {
   /* this function is invoked by the various API below */
@@ -126,18 +125,8 @@ async function list(req) {
    * and filter by returning only the 'comparison' kind of
    * experiment. This is imply req.params.type == 'comparison' */
   const MAX = 400;
-  const type = req.params.directiveType;
 
-  if (['comparison', 'chiaroscuro'].indexOf(type) === -1)
-    return { text: 'Directive Type not supported! ' };
-
-  if (type === 'comparison') {
-    /* this kind of directive require password for listing,
-           instead the shadowban at the moment is free access */
-    if (!security.checkPassword(req)) return { status: 403 };
-  }
-
-  const filter = { directiveType: type };
+  const filter = {};
   const mongoc = await mongo3.clientConnect({ concurrency: 1 });
 
   const configured = await mongo3.readLimit(
@@ -180,7 +169,7 @@ async function list(req) {
      */
   infos.configured = _.map(configured, function (r) {
     r.humanizedWhen = moment(r.when).format('YYYY-MM-DD');
-    return _.omit(r, ['_id', 'directiveType']);
+    return _.omit(r, ['_id']);
   });
 
   infos.active = _.compact(
@@ -217,7 +206,6 @@ async function list(req) {
     'Directives found: configured %d active %d (type %s, max %d)',
     infos.configured.length,
     infos.active.length,
-    type,
     MAX
   );
 
@@ -236,7 +224,6 @@ async function channel3(req) {
     'execount',
     'newProfile',
     'profileName',
-    'directiveType',
   ];
   const experimentInfo = _.pick(req.body, fields);
 
@@ -252,7 +239,7 @@ async function channel3(req) {
 
   debug(
     "Marked experiment as 'active' — %j",
-    _.pick(retval, ['researchTag', 'execount', 'directiveType'])
+    _.pick(retval, ['researchTag', 'execount'])
   );
   return { json: retval };
 }

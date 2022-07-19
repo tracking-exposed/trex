@@ -1,14 +1,10 @@
 import { AppError, toAppError } from '@shared/errors/AppError';
 import { toValidationError } from '@shared/errors/ValidationError';
+import { Step, OpenURLStepType, ScrollStepType } from '@shared/models/Step';
 import {
-  ComparisonDirectiveType,
-  Directive,
-  DirectiveType,
-  OpenURLDirectiveType,
-  PostDirectiveResponse,
-  PostDirectiveSuccessResponse,
-  ScrollForDirectiveType,
-} from '@shared/models/Directive';
+  CreateExperimentResponse,
+  CreateExperimentSuccessResponse,
+} from '@shared/models/Experiment';
 import * as E from 'fp-ts/lib/Either';
 import { pipe } from 'fp-ts/lib/function';
 // import * as NEA from 'fp-ts/lib/NonEmptyArray';
@@ -37,10 +33,7 @@ export const validateNonEmptyString = (
 
 export const readCSVAndParse =
   (logger: GuardoniContext['logger']) =>
-  (
-    filePath: string,
-    directiveType: DirectiveType
-  ): TE.TaskEither<AppError, NonEmptyArray<Directive>> => {
+  (filePath: string): TE.TaskEither<AppError, NonEmptyArray<Step>> => {
     logger.debug('Registering CSV from path %s', filePath);
 
     return pipe(
@@ -66,8 +59,7 @@ export const readCSVAndParse =
               'Read input from file %s (%d bytes) %d records as %s',
               filePath,
               input.length,
-              records.length,
-              directiveType
+              records.length
             );
 
             if (records.length === 0) {
@@ -82,7 +74,7 @@ export const readCSVAndParse =
           }),
           TE.chain(({ records }) =>
             pipe(
-              t.array(Directive).decode(
+              t.array(Step).decode(
                 records.reduce((acc: any[], r: any) => {
                   if (r.incrementScrollByPX && r.totalScroll) {
                     const {
@@ -94,7 +86,7 @@ export const readCSVAndParse =
                     return acc.concat([
                       rest,
                       {
-                        type: ScrollForDirectiveType.value,
+                        type: ScrollStepType.value,
                         incrementScrollByPX: +incrementScrollByPX,
                         totalScroll: +totalScroll,
                         interval: interval ? +r.interval : undefined,
@@ -106,7 +98,7 @@ export const readCSVAndParse =
                     ...r,
                     loadFor: r.loadFor === '' ? undefined : r.loadFor,
                     watchFor: r.watchFor === '' ? undefined : r.watchFor,
-                    type: OpenURLDirectiveType.value,
+                    type: OpenURLStepType.value,
                   });
                 }, [] as any[])
               ),
@@ -114,11 +106,11 @@ export const readCSVAndParse =
               TE.mapLeft((e) => {
                 return new AppError(
                   'CSVParseError',
-                  `The given CSV is not compatible with directive "${directiveType}"`,
+                  `The given CSV is not compatible with directive the expected format`,
                   [
                     ...PathReporter.report(E.left(e)),
                     '\n',
-                    'You can find examples on https://youtube.tracking.exposed/guardoni',
+                    'You can find examples on https://docs.tracking.exposed/guardoni/guardoni-intro',
                   ]
                 );
               })
@@ -126,7 +118,7 @@ export const readCSVAndParse =
           ),
           TE.map((records) => {
             logger.debug('CSV decoded content %O', records);
-            return records as NonEmptyArray<Directive>;
+            return records as NonEmptyArray<Step>;
           })
         )
       )
@@ -135,10 +127,7 @@ export const readCSVAndParse =
 
 export const registerCSV =
   (ctx: GuardoniContext) =>
-  (
-    csvFile: string,
-    directiveType: DirectiveType
-  ): TE.TaskEither<AppError, GuardoniSuccessOutput> => {
+  (csvFile: string): TE.TaskEither<AppError, GuardoniSuccessOutput> => {
     // resolve csv file path from current working direction when is not absolute
     const filePath = path.isAbsolute(csvFile)
       ? csvFile
@@ -147,8 +136,8 @@ export const registerCSV =
     ctx.logger.debug(`Register CSV from %s`, filePath);
 
     return pipe(
-      readCSVAndParse(ctx.logger)(filePath, directiveType),
-      TE.chain((records) => registerExperiment(ctx)(records, directiveType))
+      readCSVAndParse(ctx.logger)(filePath),
+      TE.chain(registerExperiment(ctx))
     );
   };
 
@@ -156,11 +145,9 @@ export const getDirective =
   (ctx: GuardoniContext) =>
   (
     experimentId: NonEmptyString
-  ): TE.TaskEither<
-    AppError,
-    { type: DirectiveType; data: NonEmptyArray<Directive> }
-  > => {
+  ): TE.TaskEither<AppError, NonEmptyArray<Step>> => {
     return pipe(
+      // TODO this should become v2
       ctx.API.v3.Public.GetDirective({
         Params: {
           experimentId,
@@ -168,32 +155,12 @@ export const getDirective =
       }),
       TE.map((response) => {
         ctx.logger.warn('Response %O', response);
-        const directiveType = ComparisonDirectiveType.value;
-
-        // const data = pipe(
-        //   NEA.fromArray(response),
-        //   NEA.map((d): Directive => {
-        //     // if (CommonDirectiveTK.is(d)) {
-        //     //   const { videoURL, title, ...rest } = d;
-        //     //   const dd: CommonDirective = {
-        //     //     ...rest,
-        //     //     title,
-        //     //     url: videoURL,
-        //     //     watchFor: 'end',
-        //     //     urltag: undefined,
-        //     //     loadFor: undefined,
-        //     //   };
-        //     //   return dd;
-        //     // }
-        //     return d;
-        //   })
-        // ) as NonEmptyArray<Directive>;
 
         ctx.logger.debug(`Data for experiment (%s) %O`, experimentId, response);
 
-        const data = response as any[] as NonEmptyArray<Directive>;
+        const data = response as any[] as NonEmptyArray<Step>;
 
-        return { type: directiveType, data };
+        return data;
       })
     );
   };
@@ -201,13 +168,11 @@ export const getDirective =
 export const createExperimentInAPI =
   ({ API, logger }: GuardoniContext) =>
   (
-    directiveType: DirectiveType,
-    parsedCSV: NonEmptyArray<Directive>
-  ): TE.TaskEither<AppError, PostDirectiveSuccessResponse> => {
+    steps: NonEmptyArray<Step>
+  ): TE.TaskEither<AppError, CreateExperimentSuccessResponse> => {
     return pipe(
       API.v3.Public.PostDirective({
-        Params: { directiveType },
-        Body: parsedCSV,
+        Body: steps,
         Headers: {
           'Content-Type': 'application/json; charset=utf-8',
         },
@@ -215,7 +180,7 @@ export const createExperimentInAPI =
       TE.chain((response) => {
         logger.debug('Create experiment response %O', response);
 
-        if (PostDirectiveResponse.types[0].is(response)) {
+        if (CreateExperimentResponse.types[0].is(response)) {
           return TE.left(
             new AppError('PostDirectiveError', response.error.message, [])
           );
@@ -229,17 +194,16 @@ export const createExperimentInAPI =
 export const registerExperiment =
   (ctx: GuardoniContext) =>
   (
-    records: NonEmptyArray<Directive>,
-    directiveType: DirectiveType
+    records: NonEmptyArray<Step>
   ): TE.TaskEither<AppError, GuardoniSuccessOutput> => {
-    ctx.logger.debug('Creating experiment %O', { records, directiveType });
+    ctx.logger.debug('Creating experiment %O', records);
     return pipe(
-      createExperimentInAPI(ctx)(directiveType, records),
+      createExperimentInAPI(ctx)(records),
       TE.map((experiment) => {
         ctx.logger.debug('Experiment received %O', experiment);
         // handle output for existing experiment
         if (
-          PostDirectiveSuccessResponse.is(experiment) &&
+          CreateExperimentSuccessResponse.is(experiment) &&
           experiment.status === 'exist'
         ) {
           return {
@@ -262,7 +226,6 @@ export const saveExperiment =
   (ctx: GuardoniContext) =>
   (
     experimentId: NonEmptyString,
-    directiveType: DirectiveType,
     profile: GuardoniProfile
   ): TE.TaskEither<AppError, ExperimentInfo> => {
     ctx.logger.debug(
@@ -277,7 +240,6 @@ export const saveExperiment =
     const experimentInfo = {
       experimentId,
       researchTag: ctx.config.researchTag,
-      directiveType,
       execCount: profile.execount,
       profileName: profile.profileName,
       newProfile: profile.newProfile,

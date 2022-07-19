@@ -21,7 +21,7 @@ import * as React from 'react';
 import { RouteProps, useHistory } from 'react-router';
 import { PlatformConfig } from '../../../guardoni/types';
 import { EVENTS } from '../../models/events';
-import { OpenURLDirective } from '@shared/models/Directive';
+import { OpenURLStep } from '@shared/models/Step';
 
 const useStyle = makeStyles((theme) => ({
   directiveRow: {
@@ -113,7 +113,7 @@ export const ExperimentList: React.FC<ExperimentListProps> = ({
                 }}
               >
                 <LinkIcon />
-                <Typography variant="subtitle2">- {d.links.length}</Typography>
+                <Typography variant="subtitle2">- {d.steps.length}</Typography>
               </Box>
 
               <Typography
@@ -133,7 +133,7 @@ export const ExperimentList: React.FC<ExperimentListProps> = ({
                 URLs
               </Typography>
               <List className={classes.directiveLinkList}>
-                {d.links.filter(OpenURLDirective.is).map((l) => (
+                {d.steps.filter(OpenURLStep.is).map((l) => (
                   <ListItem
                     className={classes.directiveLinkListItem}
                     key={l.url}
@@ -181,8 +181,8 @@ const ExperimentListRoute: React.FC<
 
   React.useEffect(() => {
     ipcRenderer.on(EVENTS.GET_PUBLIC_DIRECTIVES.value, (event, ...args) => {
-      const [directives] = args;
-      setDirectives(directives);
+      const [steps] = args;
+      setDirectives(steps);
     });
 
     ipcRenderer.send(EVENTS.GET_PUBLIC_DIRECTIVES.value);
@@ -195,7 +195,7 @@ const ExperimentListRoute: React.FC<
   const experimentsWithTags = React.useMemo(
     () =>
       experiments.reduce<GuardoniExperimentWithTags[]>((acc, e) => {
-        const { tags, time } = e.links.filter(OpenURLDirective.is).reduce(
+        const { tags, time } = e.steps.filter(OpenURLStep.is).reduce(
           (accL, l) => {
             const time = t.number.is(l.watchFor)
               ? l.watchFor

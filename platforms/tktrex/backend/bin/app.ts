@@ -54,16 +54,16 @@ export const makeApp = async (
 
   /* experiments API: at the moment not implemented for tiktok, only copied by yttrex */
 
-  app.get(
-    '/api/v2/guardoni/list/:directiveType/:key?',
-    iowrapper('getAllExperiments')
-  );
-  app.get('/api/v3/directives/public', iowrapper('getPublicDirectives'));
-  app.post('/api/v3/directives/:directiveType', iowrapper('postDirective'));
-  app.get('/api/v3/directives/:experimentId', iowrapper('fetchDirective'));
-  app.post('/api/v2/handshake', iowrapper('experimentChannel3'));
+  app.get('/api/v2/guardoni/list', iowrapper('getAllExperiments'));
 
+  app.get('/api/v2/directives/public', iowrapper('getPublicDirectives'));
+
+  app.post('/api/v2/directives', iowrapper('postDirective'));
+  app.get('/api/v2/directives/:experimentId', iowrapper('fetchDirective'));
+  app.post('/api/v2/handshake', iowrapper('experimentChannel3'));
+  app.delete('/api/v2/experiment/:testTime', iowrapper('concludeExperiment3'));
   app.get('/api/v2/experiment/:experimentId/json', iowrapper('experimentJSON'));
+  // TODO unify the two API below and the one above
   app.get(
     '/api/v2/experiment/:experimentId/csv/:type',
     iowrapper('experimentCSV')
@@ -71,8 +71,6 @@ export const makeApp = async (
   app.get('/api/v2/experiment/:experimentId/dot', iowrapper('experimentDOT'));
 
   /* subscription email */
-  // Improved from the version initially used in ycai, same payload, different behvior:
-  // apiRouter.post('/v3/registerEmail', iowrapper('registerEmail2'));
   app.post('/api/v1/registerEmail2', iowrapper('registerEmail2'));
   app.get('/api/v1/listEmails/:key', iowrapper('listEmails'));
   /* ============== Documented only the API below ============== */

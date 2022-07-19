@@ -10,6 +10,7 @@ import { GetGuardoni } from '../src/guardoni/guardoni';
 import { getDefaultProfile, getProfileDataDir } from '../src/guardoni/profile';
 import { csvStringifyTE } from '../src/guardoni/utils';
 import { guardoniLogger } from '../src/logger';
+import { fc } from '@shared/test';
 
 const directiveLinks = [
   {
@@ -178,6 +179,8 @@ describe('Guardoni', () => {
           ...defaultConfig,
           headless: true,
           verbose: true,
+          publicKey: undefined,
+          secretKey: undefined,
           profileName,
         },
         'youtube'
@@ -215,12 +218,7 @@ describe('Guardoni', () => {
         TE.chain((g) =>
           pipe(
             g.registerExperimentFromCSV(
-              path.resolve(
-                basePath,
-                'experiments',
-                emptyCSVTestFileName
-              ) as any,
-              'comparison'
+              path.resolve(basePath, 'experiments', emptyCSVTestFileName) as any
             )
           )
         )
@@ -235,14 +233,15 @@ describe('Guardoni', () => {
   });
 
   describe('experiment', () => {
-    test('succeeds when run an experiment from an already existing directive', async () => {
+    test('succeeds when run an experiment already existing', async () => {
       // one minute
       jest.setTimeout(60 * 1000);
 
       axiosMock.request.mockResolvedValueOnce({
         data: {
           status: 'exist',
-          experimentId: '1',
+          experimentId: fc.sample(fc.uuid(), 1)[0],
+          since: new Date().toISOString(),
         },
       });
       axiosMock.request.mockResolvedValueOnce({
@@ -279,8 +278,7 @@ describe('Guardoni', () => {
         TE.chain((g) =>
           pipe(
             g.registerExperimentFromCSV(
-              path.resolve(basePath, 'experiments', csvTestFileName) as any,
-              'comparison'
+              path.resolve(basePath, 'experiments', csvTestFileName) as any
             ),
             TE.chain((output) => g.runExperiment(output.values[0].experimentId))
           )

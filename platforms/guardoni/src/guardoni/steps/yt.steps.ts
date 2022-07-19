@@ -1,6 +1,6 @@
 import { Logger } from '@shared/logger';
-import { OpenURLDirective } from '@shared/models/Directive';
-import { DirectiveHooks } from '@shared/providers/puppeteer/DirectiveHook';
+import { OpenURLStep } from '@shared/models/Step';
+import { StepHooks } from '@shared/providers/puppeteer/StepHooks';
 import { formatDateTime } from '@shared/utils/date.utils';
 import differenceInSeconds from 'date-fns/differenceInSeconds';
 import subSeconds from 'date-fns/subSeconds';
@@ -213,8 +213,8 @@ function print3rdParties(): void {
   );
 }
 
-async function beforeLoad(page: puppeteer.Page, directive: any): Promise<void> {
-  globalConfig.currentURLlabel = directive.urltag;
+async function beforeLoad(page: puppeteer.Page, step: any): Promise<void> {
+  globalConfig.currentURLlabel = step.urltag;
   return Promise.resolve();
 }
 
@@ -222,12 +222,12 @@ async function completed(): Promise<string> {
   return globalConfig.publicKeySpot as string;
 }
 
-async function beforeWait(page: puppeteer.Page, directive: any): Promise<void> {
+async function beforeWait(page: puppeteer.Page, step: any): Promise<void> {
   // debug("Nothing in beforeWait but might be screencapture or ad checking");
   return Promise.resolve();
 }
 
-async function afterWait(page: puppeteer.Page, directive: any): Promise<void> {
+async function afterWait(page: puppeteer.Page, step: any): Promise<void> {
   // const innerWidth = await page.evaluate(_ => { return window.innerWidth });
   // const innerHeight = await page.evaluate(_ => { return window.innerHeight });
   // let hasPlayer = false;
@@ -236,16 +236,16 @@ async function afterWait(page: puppeteer.Page, directive: any): Promise<void> {
     name: undefined,
   };
 
-  if (directive.url.match(/\/watch\?v=/)) {
+  if (step.url.match(/\/watch\?v=/)) {
     state = await getYTStatus(page);
     debug('afterWait status found to be: %s', state.name);
-    await interactWithYT(page, directive, 'playing');
+    await interactWithYT(page, step, 'playing');
     // hasPlayer = true;
   }
 
-  if (directive.screenshot) {
-    const screendumpf = getScreenshotName(directive.name);
-    const fullpath = path.join(directive.profile, screendumpf);
+  if (step.screenshot) {
+    const screendumpf = getScreenshotName(step.name);
+    const fullpath = path.join(step.profile, screendumpf);
     debug('afterWait: collecting screenshot in %s', fullpath);
 
     // if (hasPlayer) await state.player.screenshot({ path: fullpath });
@@ -322,7 +322,7 @@ async function getYTStatus(page: puppeteer.Page): Promise<{
 
 async function interactWithYT(
   page: puppeteer.Page,
-  directive: OpenURLDirective,
+  step: OpenURLStep,
   wantedState: string
 ): Promise<any> {
   const DEFAULT_MAX_TIME = 1000 * 60 * 10; // 10 minutes
@@ -363,14 +363,14 @@ async function interactWithYT(
 
   debug('Entering watching loop (state %s)', state.name);
   const specialwatch =
-    _.isUndefined(directive.watchFor) || directive.watchFor === null
+    _.isUndefined(step.watchFor) || step.watchFor === null
       ? 'end'
-      : directive.watchFor;
+      : step.watchFor;
 
   // here is managed the special condition directive.watchFor == "end"
   if (specialwatch === 'end') {
     // eslint-disable-next-line no-console
-    console.log(directive.url, 'This video would be watched till the end');
+    console.log(step.url, 'This video would be watched till the end');
 
     for (const checktime of _.times(DEFAULT_MAX_TIME / PERIODIC_CHECK_MS)) {
       await page.waitForTimeout(PERIODIC_CHECK_MS);
@@ -407,7 +407,7 @@ async function interactWithYT(
   } else if (_.isInteger(specialwatch)) {
     // eslint-disable-next-line no-console
     console.log(
-      directive.url,
+      step.url,
       'Watching video for the specified time of:',
       specialwatch,
       'milliseconds'
@@ -416,14 +416,14 @@ async function interactWithYT(
     await page.waitForTimeout(specialwatch as any);
     debug('Finished special watchining time of:', specialwatch, 'milliseconds');
   } else {
-    const errorMessage = `invalid waitFor value [${directive.watchFor}]`;
+    const errorMessage = `invalid waitFor value [${step.watchFor}]`;
     // eslint-disable-next-line no-console
     console.error(errorMessage);
     throw new Error(errorMessage);
   }
 }
 
-type YTHooks = DirectiveHooks<
+type YTHooks = StepHooks<
   'youtube.com',
   {
     interactWithYT: typeof interactWithYT;

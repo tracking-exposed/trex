@@ -1,16 +1,13 @@
 import {
-  CreateDirectiveBody,
-  Directive,
-  DirectiveType,
-  PostDirectiveResponse
-} from '@shared/models/Directive';
-import { GetPublicDirectivesOutput } from '@shared/models/Experiment';
+  CreateExperimentResponse, GetPublicDirectivesOutput
+} from '@shared/models/Experiment';
 import { HandshakeBody } from '@shared/models/HandshakeBody';
 import {
   GetRecommendationsParams,
   GetRecommendationsQuery,
   RecommendationList
 } from '@shared/models/Recommendation';
+import { Step } from '@shared/models/Step';
 import * as t from 'io-ts';
 import { Endpoint } from 'ts-endpoint';
 
@@ -49,17 +46,14 @@ const GetRecommendations = Endpoint({
 
 const PostDirective = Endpoint({
   Method: 'POST',
-  getPath: ({ directiveType }) => `/v3/directives/${directiveType}`,
+  getPath: () => `/v3/directives`,
   Input: {
     Headers: t.type({
       'Content-Type': t.string,
     }),
-    Params: t.type({
-      directiveType: DirectiveType,
-    }),
-    Body: CreateDirectiveBody,
+    Body: t.array(Step),
   },
-  Output: PostDirectiveResponse,
+  Output: CreateExperimentResponse,
 });
 
 const GetDirective = Endpoint({
@@ -70,7 +64,7 @@ const GetDirective = Endpoint({
       experimentId: t.string,
     }),
   },
-  Output: t.array(Directive),
+  Output: t.array(Step),
 });
 
 const GetPublicDirectives = Endpoint({

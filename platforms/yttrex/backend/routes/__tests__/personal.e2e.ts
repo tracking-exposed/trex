@@ -1,4 +1,4 @@
-import { GuardoniExperimentArb } from '@shared/arbitraries/Directive.arb';
+import { GuardoniExperimentArb } from '@shared/arbitraries/Experiment.arb';
 import bs58 from '@shared/providers/bs58.provider';
 import { fc } from '@shared/test';
 import { foldTEOrThrow } from '@shared/utils/fp.utils';

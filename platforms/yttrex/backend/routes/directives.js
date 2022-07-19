@@ -112,36 +112,18 @@ function acquireComparison(parsedCSV) {
 }
 
 async function post(req) {
-  /* const directiveTypes = ['chiaroscuro', 'comparison'];
-  if (directiveTypes.indexOf(directiveType) === -1) {
-    debug(
-      'Invalid directive type (%s), supported %j)',
-      directiveType,
-      directiveTypes
-    );
-    return { json: { error: true, message: 'Invalid directive type' } };
-  } */
-
-  const directiveType = 'comparison';
   const parsedCSV = req.body ?? [];
-
-  /* if (directiveType === "chiaroscuro")
-    links = acquireChiaroscuro(parsedCSV); */
 
   let directives = [];
   directives = acquireComparison(parsedCSV);
 
-  debug(
-    'Registering directive %s (%d urls)',
-    directiveType,
-    _.size(directives)
-  );
+  debug('Registering directive (%d urls)', _.size(directives));
 
   if (_.size(directives) === 0) {
     throw new Error("Can't register csv without 'directives'");
   }
 
-  const feedback = await automo.registerDirective(directives, directiveType);
+  const feedback = await automo.registerSteps(directives);
   // this feedback is printed at terminal when --csv is used
   return { json: feedback };
 }
@@ -152,43 +134,18 @@ async function get(req) {
   debug('GET: should return directives for %s', experimentId);
   const expinfo = await automo.pickDirective(experimentId);
 
-  /* if (expinfo.directiveType === 'chiaroscuro') {
-    const directives = _.flatten(
-      _.map(expinfo.links, function (vidblock, counter) {
-        return chiaroScuro(vidblock, counter);
-      })
-    );
-    debug('ChiaroScuro %s produced %d', experimentId, directives.length);
-    return { json: directives };
-  } */
-
-  // expinfo.directiveType === 'comparison'
-  const directives = _.map(expinfo?.directives ?? [], comparison);
-  debug('Comparison %s produced %d', experimentId, directives.length);
-  return { json: directives };
+  const steps = _.map(expinfo?.steps ?? [], comparison);
+  debug('Comparison %s produced %d', experimentId, steps.length);
+  return { json: steps };
 }
 
 async function getPublic(req) {
-  const blackList = [
-    // 'b3d531eca62b2dc989926e0fe21b54ab988b7f3d',
-    // prod ids
-    'd75f9eaf465d2cd555de65eaf61a770c82d59451',
-    '37384a9b7dff26184cdea226ad5666ca8cbbf456',
-  ];
-
-  const filter = {
-    directiveType: 'comparison',
-    experimentId: {
-      $nin: blackList,
-    },
-  };
-
   const mongoc = await mongo3.clientConnect({ concurrency: 1 });
 
   const publicDirectives = await mongo3.readLimit(
     mongoc,
     nconf.get('schema').experiments,
-    filter,
+    {},
     { when: -1 },
     20,
     0
@@ -207,4 +164,5 @@ module.exports = {
   post,
   get,
   getPublic,
+  timeconv,
 };

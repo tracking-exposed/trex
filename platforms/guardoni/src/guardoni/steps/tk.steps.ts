@@ -1,4 +1,4 @@
-import { DirectiveHooks } from '@shared/providers/puppeteer/DirectiveHook';
+import { StepHooks } from '@shared/providers/puppeteer/StepHooks';
 import * as puppeteer from 'puppeteer-core';
 import { GuardoniProfile } from '../types';
 
@@ -52,7 +52,7 @@ async function afterWait(page: puppeteer.Page, directive: any): Promise<any> {
   return Promise.resolve();
 }
 
-type TKHooks = DirectiveHooks<'tiktok.com', {}>;
+type TKHooks = StepHooks<'tiktok.com', {}>;
 
 interface TKHooksContext {
   profile: GuardoniProfile;

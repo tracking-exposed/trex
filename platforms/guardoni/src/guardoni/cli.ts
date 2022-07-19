@@ -22,7 +22,6 @@ import {
 } from './types';
 import D from 'debug';
 import puppeteer, { PuppeteerExtra } from 'puppeteer-extra';
-import { DirectiveType } from '@shared/models/Directive';
 
 export const cliLogger = guardoniLogger.extend('cli');
 
@@ -43,7 +42,6 @@ export type GuardoniCommandConfig =
   | {
       run: 'register-csv';
       file: NonEmptyString;
-      type?: DirectiveType;
     }
   | {
       run: 'experiment';
@@ -153,13 +151,7 @@ export const GetGuardoniCLI: GetGuardoniCLI = (
             case 'list':
               return g.listExperiments();
             case 'register-csv': {
-              const type = command.type
-                ? command.type
-                : g.platform.name === 'youtube'
-                ? 'comparison'
-                : 'search';
-
-              return g.registerExperimentFromCSV(command.file, type);
+              return g.registerExperimentFromCSV(command.file);
             }
             case 'experiment':
               return g.runExperiment(command.experiment, command.opts);

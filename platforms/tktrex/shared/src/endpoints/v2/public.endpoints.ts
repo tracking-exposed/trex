@@ -21,12 +21,7 @@ const AddEvents = DocumentedEndpoint({
   Method: 'POST',
   getPath: () => '/v2/events',
   Input: {
-    Headers: t.type({
-      'X-Tktrex-Version': t.string,
-      'X-Tktrex-Build': t.string,
-      'X-Tktrex-PublicKey': t.string,
-      'X-Tktrex-Signature': t.string,
-    }),
+    Headers: apiModel.http.Headers.TKHeaders,
     Body: t.array(apiModel.Events.ContributionEvent),
   },
   Output: t.any,

@@ -107,7 +107,7 @@ export const defaultConfiguration = (
         },
         {
           ...columnDefault,
-          field: 'links',
+          field: 'steps',
           minWidth: 350,
           renderCell: (params) => {
             return (

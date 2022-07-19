@@ -1,10 +1,10 @@
 /* eslint-disable import/first */
 jest.mock('axios');
 import {
-  CommonDirectiveArb,
   GuardoniExperimentArb,
   PostDirectiveSuccessResponseArb,
-} from '@shared/arbitraries/Directive.arb';
+} from '@shared/arbitraries/Experiment.arb';
+import { CommonStepArb } from '@shared/arbitraries/Step.arb';
 import * as tests from '@shared/test';
 import differenceInMilliseconds from 'date-fns/differenceInMilliseconds';
 import { pipe } from 'fp-ts/lib/function';
@@ -38,7 +38,7 @@ describe('CLI', () => {
     fs.statSync(tkExtensionDir, { throwIfNoEntry: true });
 
     const comparisonCSVContent = await csvStringifyTE(
-      tests.fc.sample(CommonDirectiveArb, 5),
+      tests.fc.sample(CommonStepArb, 5),
       { header: true, encoding: 'utf-8' }
     )();
 
@@ -106,7 +106,6 @@ describe('CLI', () => {
         guardoni.run({
           run: 'register-csv',
           file: path.resolve(__dirname, '../fake-file') as any,
-          type: 'search',
         })()
       ).resolves.toMatchObject({
         _tag: 'Left',
@@ -121,7 +120,6 @@ describe('CLI', () => {
         guardoni.run({
           run: 'register-csv',
           file: path.resolve(basePath, 'experiments/tk-experiment.csv') as any,
-          type: 'comparison',
         })()
       ).resolves.toMatchObject({
         _tag: 'Left',
@@ -140,7 +138,6 @@ describe('CLI', () => {
 
       const result: any = await guardoni.run({
         run: 'register-csv',
-        type: 'comparison',
         file: path.resolve(basePath, 'experiments/yt-experiment.csv') as any,
       })();
 
@@ -163,7 +160,6 @@ describe('CLI', () => {
 
       const result: any = await guardoni.run({
         run: 'register-csv',
-        type: 'comparison',
         file: path.resolve(basePath, 'experiments/yt-experiment.csv') as any,
       })();
 
@@ -188,7 +184,6 @@ describe('CLI', () => {
 
       const result: any = await guardoni.run({
         run: 'register-csv',
-        type: 'comparison',
         file: path.resolve(basePath, 'experiments/yt-experiment.csv') as any,
       })();
 
@@ -205,7 +200,7 @@ describe('CLI', () => {
 
   describe('List public experiments', () => {
     test('succeeds with empty list', async () => {
-      // return directives
+      // return steps
       axiosMock.request.mockResolvedValueOnce({
         data: [],
       });
@@ -228,10 +223,10 @@ describe('CLI', () => {
     });
 
     test('succeeds with some results', async () => {
-      const directives = tests.fc.sample(GuardoniExperimentArb, 2);
-      // return directives
+      const steps = tests.fc.sample(GuardoniExperimentArb, 2);
+      // return steps
       axiosMock.request.mockResolvedValueOnce({
-        data: directives,
+        data: steps,
       });
 
       const result: any = await guardoni.run({
@@ -242,7 +237,7 @@ describe('CLI', () => {
         _tag: 'Right',
         right: {
           message: 'Experiments List',
-          values: directives.map((d) => ({ [d.experimentId]: d })),
+          values: steps.map((d) => ({ [d.experimentId]: d })),
         },
       });
     });
@@ -262,9 +257,8 @@ describe('CLI', () => {
     });
 
     test('succeed when experimentId has valid "yt" directives', async () => {
-      // return directive
       axiosMock.request.mockResolvedValueOnce({
-        data: tests.fc.sample(CommonDirectiveArb, 2).map((d) => ({
+        data: tests.fc.sample(CommonStepArb, 2).map((d) => ({
           ...d,
           loadFor: 1000,
           watchFor: '1s',
@@ -307,10 +301,9 @@ describe('CLI', () => {
       });
     });
 
-    test('succeed when experimentId has valid "yt" directives', async () => {
-      // return directive
+    test('succeed when experimentId has valid "yt" steps', async () => {
       axiosMock.request.mockResolvedValueOnce({
-        data: tests.fc.sample(CommonDirectiveArb, 2).map((d) => ({
+        data: tests.fc.sample(CommonStepArb, 2).map((d) => ({
           ...d,
           loadFor: 1000,
           watchFor: '1s',
@@ -342,9 +335,8 @@ describe('CLI', () => {
 
   describe('auto', () => {
     test('succeeds when value is "1"', async () => {
-      // return directive
       axiosMock.request.mockResolvedValueOnce({
-        data: tests.fc.sample(CommonDirectiveArb, 2).map((d) => ({
+        data: tests.fc.sample(CommonStepArb, 2).map((d) => ({
           ...d,
           loadFor: 1000,
           watchFor: '1s',
@@ -359,7 +351,6 @@ describe('CLI', () => {
           message: 'Experiment completed',
           values: [
             {
-              directiveType: 'comparison',
               researchTag,
             },
           ],
@@ -368,9 +359,8 @@ describe('CLI', () => {
     });
 
     test('succeeds when value is "2"', async () => {
-      // return directive
       axiosMock.request.mockResolvedValueOnce({
-        data: tests.fc.sample(CommonDirectiveArb, 10).map((d) => ({
+        data: tests.fc.sample(CommonStepArb, 10).map((d) => ({
           ...d,
           watchFor: '1s',
         })),
@@ -382,11 +372,7 @@ describe('CLI', () => {
         _tag: 'Right',
         right: {
           message: 'Experiment completed',
-          values: [
-            {
-              directiveType: 'comparison',
-            },
-          ],
+          values: [{}],
         },
       });
     });

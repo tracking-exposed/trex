@@ -80,7 +80,7 @@ export const makeApp = async (
     iowrapper('getPersonalByExperimentId')
   );
 
-  apiRouter.post('/v3/registerEmail', iowrapper('registerEmail'));
+  apiRouter.post('/v2/registerEmail', iowrapper('registerEmail'));
 
   /* record answers from surveys */
   apiRouter.post('/v1/recordAnswers', iowrapper('recordAnswers'));
@@ -118,43 +118,60 @@ export const makeApp = async (
   apiRouter.get('/v1/mirror/:key', iowrapper('getMirror'));
 
   /* below, youchoose v3 */
-  apiRouter.get(
+  const youchooseRouter = express.Router();
+
+  youchooseRouter.get(
     '/v3/videos/:videoId/recommendations',
     iowrapper('youChooseByVideoId')
   );
-  apiRouter.get('/v3/recommendations/:ids', iowrapper('recommendationById'));
+  youchooseRouter.get(
+    '/v3/recommendations/:ids',
+    iowrapper('recommendationById')
+  );
 
-  apiRouter.post('/v3/creator/updateVideo', iowrapper('updateVideoRec'));
-  apiRouter.post('/v3/creator/ogp', iowrapper('ogpProxy'));
-  apiRouter.post('/v3/creator/videos/repull', iowrapper('repullByCreator'));
-  apiRouter.get('/v3/creator/videos', iowrapper('getVideoByCreator'));
-  apiRouter.get(
+  youchooseRouter.post('/v3/creator/updateVideo', iowrapper('updateVideoRec'));
+  youchooseRouter.post('/v3/creator/ogp', iowrapper('ogpProxy'));
+  youchooseRouter.post(
+    '/v3/creator/videos/repull',
+    iowrapper('repullByCreator')
+  );
+  youchooseRouter.get('/v3/creator/videos', iowrapper('getVideoByCreator'));
+  youchooseRouter.get(
     '/v3/creator/videos/:videoId',
     iowrapper('getOneVideoByCreator')
   );
-  apiRouter.get('/v3/creator/recommendations', iowrapper('youChooseByProfile'));
-  apiRouter.patch(
+  youchooseRouter.get(
+    '/v3/creator/recommendations',
+    iowrapper('youChooseByProfile')
+  );
+  youchooseRouter.patch(
     '/v3/creator/recommendations/:urlId',
     iowrapper('patchRecommendation')
   );
-  apiRouter.get(
+  youchooseRouter.get(
     '/v3/creator/:channelId/related',
     iowrapper('getCreatorRelated')
   );
-  apiRouter.get('/v3/creator/:channelId/stats', iowrapper('getCreatorStats'));
-  apiRouter.delete('/v3/creator/unlink', iowrapper('creatorDelete'));
-  apiRouter.get(
+  youchooseRouter.get(
+    '/v3/creator/:channelId/stats',
+    iowrapper('getCreatorStats')
+  );
+  youchooseRouter.delete('/v3/creator/unlink', iowrapper('creatorDelete'));
+  youchooseRouter.get(
     '/v3/opendata/channels/:details?',
     iowrapper('opendataChannel')
   );
-
-  /* below, the few API endpoints */
-  apiRouter.post(
+  youchooseRouter.post(
     '/v3/creator/:channelId/register',
     iowrapper('creatorRegister')
   );
-  apiRouter.post('/v3/creator/:channelId/verify', iowrapper('creatorVerify'));
-  apiRouter.get('/v3/creator/me', iowrapper('creatorGet'));
+  youchooseRouter.post(
+    '/v3/creator/:channelId/verify',
+    iowrapper('creatorVerify')
+  );
+  youchooseRouter.get('/v3/creator/me', iowrapper('creatorGet'));
+
+  apiRouter.use(youchooseRouter);
 
   /* below, the new API for advertising */
   apiRouter.get('/v2/ad/video/:videoId', iowrapper('adsPerVideo'));
@@ -187,13 +204,10 @@ export const makeApp = async (
   apiRouter.get('/v2/search/keywords/:paging?', iowrapper('getSearchKeywords'));
 
   /* experiments API: "comparison" require password, "chiaroscuro" doesn't */
-  apiRouter.get(
-    '/v2/guardoni/list/:directiveType/:key?',
-    iowrapper('getAllExperiments')
-  );
-  apiRouter.get('/v3/directives/public', iowrapper('getPublicDirectives'));
-  apiRouter.post('/v3/directives/:ignored?', iowrapper('postDirective'));
-  apiRouter.get('/v3/directives/:experimentId', iowrapper('fetchDirective'));
+  apiRouter.get('/v2/guardoni/list', iowrapper('getAllExperiments'));
+  apiRouter.get('/v2/directives/public', iowrapper('getPublicDirectives'));
+  apiRouter.post('/v2/directives/:ignored?', iowrapper('postDirective'));
+  apiRouter.get('/v2/directives/:experimentId', iowrapper('fetchDirective'));
   apiRouter.post('/v2/handshake', iowrapper('experimentChannel3'));
 
   apiRouter.get(

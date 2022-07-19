@@ -5,16 +5,16 @@ import type { PuppeteerExtra } from 'puppeteer-extra';
 import { AppError, toAppError } from '../../errors/AppError';
 import { Logger } from '../../logger';
 import {
-  CustomDirective,
-  CustomDirectiveType,
-  Directive,
-  ScrollForDirective,
-  ScrollForDirectiveType,
-} from '../../models/Directive';
+  CustomStep,
+  CustomStepType,
+  Step,
+  ScrollStep,
+  ScrollStepType,
+} from '../../models/Step';
 // import { throwTE } from '../../utils/task.utils';
-import { DirectiveHooks } from './DirectiveHook';
-import { openURL } from './directives/openURL';
-import { GetScrollFor } from './directives/scroll';
+import { StepHooks } from './StepHooks';
+import { openURL } from './steps/openURL';
+import { GetScrollFor } from './steps/scroll';
 import StealthPlugin from 'puppeteer-extra-plugin-stealth';
 
 export type LaunchOptions = puppeteer.LaunchOptions &
@@ -30,7 +30,7 @@ interface PuppeteerProviderContext {
     loadFor: number;
   };
   puppeteer: PuppeteerExtra;
-  hooks: DirectiveHooks<string, any>;
+  hooks: StepHooks<string, any>;
 }
 
 export const launch =
@@ -47,17 +47,17 @@ export const launch =
   };
 
 /**
- * automate directive execution for browser page
+ * automate step execution for browser page
  */
 const operateTab =
   (ctx: PuppeteerProviderContext) =>
-  (page: puppeteer.Page, h: Directive): TE.TaskEither<AppError, any> => {
-    if (ScrollForDirective.is(h) || CustomDirective.is(h)) {
+  (page: puppeteer.Page, h: Step): TE.TaskEither<AppError, any> => {
+    if (ScrollStep.is(h) || CustomStep.is(h)) {
       switch (h.type) {
-        case ScrollForDirectiveType.value: {
+        case ScrollStepType.value: {
           return GetScrollFor(ctx)(page, h);
         }
-        case CustomDirectiveType.value:
+        case CustomStepType.value:
           return TE.tryCatch(() => {
             ctx.logger.debug('Custom handler %s', h.handler);
             const handler = ctx.hooks.customs?.[h.handler];
@@ -85,7 +85,7 @@ export const operateBrowser =
   (ctx: PuppeteerProviderContext) =>
   (
     page: puppeteer.Page,
-    directives: Directive[]
+    steps: Step[]
   ): TE.TaskEither<AppError, string> => {
     return pipe(
       TE.tryCatch(
@@ -93,7 +93,7 @@ export const operateBrowser =
         (e) => new AppError('BeforeDirectivesError', (e as any).message, [])
       ),
       TE.chain(() =>
-        TE.sequenceSeqArray(directives.map((d) => operateTab(ctx)(page, d)))
+        TE.sequenceSeqArray(steps.map((d) => operateTab(ctx)(page, d)))
       ),
       TE.chain(() =>
         TE.tryCatch(
@@ -121,11 +121,11 @@ export interface PuppeteerProvider {
   launch: (opts: LaunchOptions) => TE.TaskEither<AppError, puppeteer.Browser>;
   operateTab: (
     page: puppeteer.Page,
-    directive: Directive
+    step: Step
   ) => TE.TaskEither<AppError, any>;
   operateBrowser: (
     page: puppeteer.Page,
-    directive: Directive[]
+    steps: Step[]
   ) => TE.TaskEither<AppError, string>;
 }
 
