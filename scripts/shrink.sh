@@ -33,7 +33,10 @@ echo "Removing test files and unnecessary folders"
 rm -rf platforms/*/backend
 
 echo "Creating new version of README for extension reviewer"
-echo -e "### Extension reviewer TODOs\n\nyarn\nyarn tk:ext dist\nls -l platforms/tktrex/extension/dist\nyarn yt:ext dist\nls -l platforms/yttrex/extension/dist\n" > README.md
+echo -e "### Extension reviewer TODOs\n\n    yarn\n    yarn tk:ext dist\n    ls -l platforms/tktrex/extension/dist/*.zip\n    yarn yt:ext dist\n    ls -l platforms/yttrex/extension/dist/*.zip\n    yarn ycai build\n    ls -l platforms/ycai/studio/build/extension/*.zip\n\n" > README.md
+echo "tktrex is tiktok.tracking.exposed extension" >> README.md
+echo "yttrex is youtube.tracking.exposed extension" >> README.md
+echo "ycai is youchoose.ai extension" >> README.md
 
 suffix=`grep version package.json  | sed -es/.*:// | sed -es/[\ \",]/-/g`
 fileout="trex${suffix}.zip"
