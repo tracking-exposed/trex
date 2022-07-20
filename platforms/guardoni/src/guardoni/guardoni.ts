@@ -166,8 +166,8 @@ export const runExperiment =
     return pipe(
       sequenceS(TE.ApplicativePar)({
         profile: updateGuardoniProfile(ctx)(
-          ctx.config.researchTag,
-          ctx.profile
+          ctx.profile,
+          ctx.config.researchTag
         ),
         expId: TE.fromEither(validateNonEmptyString(experimentId)),
         localSettings: TE.right(

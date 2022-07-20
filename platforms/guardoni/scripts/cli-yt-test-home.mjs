@@ -16,6 +16,7 @@ void (async function () {
     version.stdout.replace('\n', ''),
     platform
   )}`;
+
   const flags = [
     '--basePath=./',
     `--executablePath=${process.env.PUPPETEER_EXEC_PATH}`,
@@ -24,10 +25,13 @@ void (async function () {
     '--verbose',
   ];
 
+  const researchTag = 'cli-yt-test-home';
+
   const experimentFlags = [
     ...flags,
     `--publicKey=${process.env.PUBLIC_KEY}`,
     `--secretKey=${process.env.SECRET_KEY}`,
+    `--researchTag=${researchTag}`
   ];
 
   // reject cookie modal
@@ -60,5 +64,6 @@ void (async function () {
   ).then((r) => r.json());
 
   assert.strictEqual(metadata[0].experimentId, yt_home_experiment_id);
+  assert.strictEqual(metadata[0].researchTag, researchTag);
   assert.strictEqual(metadata[0].type, 'home');
 })();

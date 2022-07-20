@@ -89,6 +89,13 @@ export function toMetadata(
     metadata.experimentId = entry.source.html.experimentId;
   }
 
+  if (
+    entry.source.html.researchTag &&
+    entry.source.html.researchTag.length > 0
+  ) {
+    metadata.researchTag = entry.source.html.researchTag;
+  }
+
   if (entry.findings.nature.type === 'search') {
     metadata = {
       ...entry.findings.nature,

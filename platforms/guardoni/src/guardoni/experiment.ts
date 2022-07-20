@@ -227,10 +227,6 @@ export const saveExperiment =
     experimentId: NonEmptyString,
     profile: GuardoniProfile
   ): TE.TaskEither<AppError, ExperimentInfo> => {
-    ctx.logger.debug(
-      'Saving experiment info in extension/experiment.json (would be read by the extension)'
-    );
-
     const experimentJSONFile = path.join(
       ctx.platform.extensionDir,
       'experiment.json'
@@ -245,22 +241,20 @@ export const saveExperiment =
       when: new Date(),
     };
 
+    ctx.logger.debug(
+      'Saving experiment info in %s to be read by the extension %O',
+      experimentJSONFile,
+      experimentInfo
+    );
+
     return pipe(
       liftFromIOE(() =>
-        fs.statSync(experimentJSONFile, { throwIfNoEntry: false })
+        fs.writeFileSync(
+          experimentJSONFile,
+          JSON.stringify(experimentInfo),
+          'utf-8'
+        )
       ),
-      TE.chain((stat) => {
-        if (stat) {
-          return TE.right(undefined);
-        }
-        return liftFromIOE(() =>
-          fs.writeFileSync(
-            experimentJSONFile,
-            JSON.stringify(experimentInfo),
-            'utf-8'
-          )
-        );
-      }),
       TE.map(() => experimentInfo)
     );
   };

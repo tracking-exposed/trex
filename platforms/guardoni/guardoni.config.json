@@ -7,11 +7,13 @@
   "yt": {
     "name": "youtube",
     "backend": "http://localhost:9000/api",
+    "frontend": "http://localhost:13000/",
     "extensionDir": "../yttrex/extension/build"
   },
   "tk": {
     "name": "tiktok",
     "backend": "http://localhost:14000/api",
+    "frontend": "http://localhost:15000/",
     "extensionDir": "../tktrex/extension/build"
   },
   "chromePath": "/usr/bin/google-chrome"

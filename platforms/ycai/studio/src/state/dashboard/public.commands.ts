@@ -7,7 +7,7 @@ import { Settings } from '../../models/Settings';
 import { keypair, settings, settingsRefetch, API } from './public.queries';
 
 export const handshake = command((handshake: HandshakeBody) =>
-  API.v3.Public.Handshake({ Body: handshake })
+  API.v2.Public.Handshake({ Body: handshake })
 );
 
 // todo:

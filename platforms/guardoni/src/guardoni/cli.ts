@@ -27,6 +27,7 @@ export const cliLogger = guardoniLogger.extend('cli');
 
 export interface GuardoniCommandOpts {
   headless?: boolean;
+  researchTag?: string;
   publicKey: string;
   secretKey: string;
 }
@@ -222,19 +223,24 @@ const runGuardoni = ({
   extensionDir,
   'public-key': _publicKey,
   'secret-key': _secretKey,
+  'cookie-modal': _cookiModal,
+  'research-tag': _researchTag,
   ...guardoniConf
 }: any): Promise<void> => {
   const basePath = guardoniConf.basePath ?? DEFAULT_BASE_PATH;
 
   if (verbose) {
     D.enable('@trex*,guardoni*');
-
-    cliLogger.debug('Running guardoni', { config, basePath, ...guardoniConf });
-    if (config) {
-      // eslint-disable-next-line
-      cliLogger.debug(`Configuration loaded from ${config}`, guardoniConf);
-    }
   }
+
+  cliLogger.debug(
+    'Running guardoni from base path %s (%s), %O',
+    basePath,
+    config,
+    guardoniConf
+  );
+
+  cliLogger.debug('Running command %O', command);
 
   return GetGuardoniCLI(
     {

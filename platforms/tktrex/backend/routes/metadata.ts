@@ -19,16 +19,19 @@ const listMetadata = async (req): Promise<any> => {
     },
   } = decodeOrThrowRequest(endpoints.ListMetadata, req);
 
-  const metadata = await automo.getMetadataByFilter(
-    {
-      researchTag,
-      experimentId,
-    },
-    {
-      amount,
-      skip,
-    }
-  );
+  const filter = {} as any;
+  if (experimentId) {
+    filter.experimentId = experimentId;
+  }
+
+  if (researchTag) {
+    filter.researchTag = researchTag;
+  }
+
+  const metadata = await automo.getMetadataByFilter(filter, {
+    amount,
+    skip,
+  });
 
   debug(
     'Returning metadata by researchTag %s, %d evidences',

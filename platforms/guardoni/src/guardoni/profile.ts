@@ -144,8 +144,8 @@ export const readProfile =
 export const updateGuardoniProfile =
   (ctx: GuardoniContext) =>
   (
-    researchTag: string,
-    profile: GuardoniProfile
+    profile: GuardoniProfile,
+    researchTag?: string
   ): TE.TaskEither<AppError, GuardoniProfile> => {
     ctx.logger.debug('Updating guardoni config %s', ctx.guardoniConfigFile);
 
@@ -154,7 +154,9 @@ export const updateGuardoniProfile =
       ...profile,
       newProfile: execCount === 0,
       execount: profile.execount + 1,
-      researchTag: profile.researchTag.concat(researchTag),
+      researchTag: researchTag
+        ? profile.researchTag.concat(researchTag)
+        : profile.researchTag,
     };
 
     ctx.logger.debug('Writing guardoni config %O', updatedProfile);

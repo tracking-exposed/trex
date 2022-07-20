@@ -21,7 +21,7 @@ const FIXED_USER_NAME = 'local';
 const DEFAULT_SETTINGS = {
   active: true,
   ux: false,
-  researchTag: '',
+  researchTag: undefined,
   experimentId: undefined,
 };
 
@@ -52,24 +52,45 @@ interface WithUserId {
   userId: string;
 }
 
+const readOrDefault = async (
+  fn: string,
+  codec: any,
+  defaults: any
+): Promise<any> => {
+  try {
+    const result = await file.readJSON(fn, codec);
+
+    return {
+      ...defaults,
+      ...result,
+    };
+  } catch (err) {
+    log.info('Error caught while checking settings.json: %s', err);
+    return defaults;
+  }
+};
+
 async function handleLocalLookup(
   { userId }: WithUserId,
   sendResponse: (response: Partial<UserSettings>) => void
 ): Promise<void> {
-  let settings;
+  let settings = await readOrDefault(
+    'settings.json',
+    t.partial(UserSettings.props),
+    DEFAULT_SETTINGS
+  );
+
+  const experimentInfo = await readOrDefault('experiment.json', t.any, {
+    researchTag: undefined,
+    experimentId: undefined,
+  });
+
   try {
-    const localSettings = await file.readJSON(
-      'settings.json',
-      t.partial(UserSettings.props)
-    );
-    settings = {
-      ...DEFAULT_SETTINGS,
-      ...localSettings,
-    };
     if (!(settings.publicKey?.length && settings.secretKey?.length))
       throw new Error('Invalid key material found in settings.json');
+
     log.info('Loaded configuration from file settings.json: %j', settings);
-    await db.set(userId, settings);
+    await db.set(userId, { ...settings, ...experimentInfo });
   } catch (err) {
     log.info('Error caught while checking settings.json: %s', err);
   }

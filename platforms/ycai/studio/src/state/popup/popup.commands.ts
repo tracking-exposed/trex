@@ -6,7 +6,7 @@ import { Settings } from '../../models/Settings';
 import { settings, settingsRefetch, keypair, API } from './popup.queries';
 
 export const handshake = command((handshake: HandshakeBody) =>
-  API.v3.Public.Handshake({ Body: handshake })
+  API.v2.Public.Handshake({ Body: handshake })
 );
 
 export const updateSettings = command(
