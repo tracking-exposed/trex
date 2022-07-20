@@ -147,8 +147,7 @@ export const getDirective =
     experimentId: NonEmptyString
   ): TE.TaskEither<AppError, NonEmptyArray<Step>> => {
     return pipe(
-      // TODO this should become v2
-      ctx.API.v3.Public.GetDirective({
+      ctx.API.v2.Experiments.GetDirective({
         Params: {
           experimentId,
         },
@@ -171,7 +170,7 @@ export const createExperimentInAPI =
     steps: NonEmptyArray<Step>
   ): TE.TaskEither<AppError, CreateExperimentSuccessResponse> => {
     return pipe(
-      API.v3.Public.PostDirective({
+      API.v2.Experiments.PostDirective({
         Body: steps,
         Headers: {
           'Content-Type': 'application/json; charset=utf-8',
@@ -270,7 +269,7 @@ export const listExperiments =
   (ctx: GuardoniContext) =>
   (): TE.TaskEither<AppError, GuardoniSuccessOutput> => {
     return pipe(
-      ctx.API.v3.Public.GetPublicDirectives(),
+      ctx.API.v2.Experiments.GetPublicDirectives(),
       TE.map(
         (experiments): GuardoniSuccessOutput => ({
           message: 'Experiments List',
