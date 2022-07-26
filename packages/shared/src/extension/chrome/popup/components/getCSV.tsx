@@ -14,8 +14,9 @@ export interface InfoBoxProps {
 }
 
 export const InfoBox: React.FC<InfoBoxProps> = ({ publicKey }) => {
-  const PersonalSearchCSV = `${config.API_ROOT}/personal/${publicKey}/search/csv`;
-  // const videoCSV = `${config.API_ROOT}/personal/${publicKey}/video/csv`;
+  const PersonalSearchCSV = `${config.API_ROOT}/v2/personal/${publicKey}/search/csv`;
+  const PersonalForYouCSV = `${config.API_ROOT}/v2/personal/${publicKey}/foryou/csv`;
+  const PersonalFollowingSV = `${config.API_ROOT}/v2/personal/${publicKey}/following/csv`;
   const personalLink = `${config.WEB_ROOT}/personal/#${publicKey}`;
 
   return (
@@ -33,8 +34,26 @@ export const InfoBox: React.FC<InfoBoxProps> = ({ publicKey }) => {
         <ListItemIcon>
           <StayCurrentLandscapeIcon />
         </ListItemIcon>
+        <Link href={PersonalForYouCSV} target="_blank">
+          Download &ldquo;For You&rdquo; feed (CSV)
+        </Link>
+      </ListItem>
+
+      <ListItem button>
+        <ListItemIcon>
+          <StayCurrentLandscapeIcon />
+        </ListItemIcon>
+        <Link href={PersonalFollowingSV} target="_blank">
+          Download &ldquo;Following&rdquo; feed (CSV)
+        </Link>
+      </ListItem>
+
+      <ListItem button>
+        <ListItemIcon>
+          <StayCurrentLandscapeIcon />
+        </ListItemIcon>
         <Link href={PersonalSearchCSV} target="_blank">
-          Download Your Searches (CSV)
+          Download Searches results (CSV)
         </Link>
       </ListItem>
     </List>
