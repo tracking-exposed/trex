@@ -210,74 +210,75 @@ const handleSuggested = _.debounce((elem: Node): void => {
  * that got display in 'following' 'foryou' or 'creator' page */
 let videoCounter = 0;
 
-const handleVideo = _.debounce(
-  (node: HTMLElement, h: any, b: any, config: UserSettings): void => {
-    /* we should check nature for good, the 'video' handles are triggered also in
-     * other pages, afterall! */
-    if (_.startsWith(window.location.pathname, '/search')) return;
-    if (profileHandler.match.location.test(window.location.pathname)) return;
+/**
+ * Handle video
+ *
+ * @param node the video matching the selector
+ */
+const handleVideo = (
+  node: HTMLElement,
+  h: any,
+  b: any,
+  config: UserSettings,
+): void => {
+  /* we should check nature for good, the 'video' handles are triggered also in
+   * other pages, afterall! */
+  if (_.startsWith(window.location.pathname, '/search')) return;
+  if (profileHandler.match.location.test(window.location.pathname)) return;
 
-    /* this function return a node element that has a size
-     * lesser than 10k, and stop when find out the parent
-     * would be more than 10k big. */
-    const videoRoot = _.reduce(
-      _.times(20),
-      (memo: HTMLElement, iteration: number): HTMLElement => {
-        if (memo.parentNode instanceof HTMLElement) {
-          if (memo.parentNode.outerHTML.length > 10000) {
-            appLog.debug(
-              'handleVideo: parentNode > 10000',
-              memo.parentNode.outerHTML.length,
-            );
-            return memo;
-          }
-          return memo.parentNode;
+  /* this function return a node element that has a size
+   * lesser than 10k, and stop when find out the parent
+   * would be more than 10k big. */
+  const videoRoot = _.reduce(
+    _.times(20),
+    (memo: HTMLElement, iteration: number): HTMLElement => {
+      if (memo.parentNode instanceof HTMLElement) {
+        if (memo.parentNode.outerHTML.length > 10000) {
+          appLog.debug(
+            'handleVideo: parentNode > 10000',
+            memo.parentNode.outerHTML.length,
+          );
+          return memo;
         }
+        return memo.parentNode;
+      }
 
-        return memo;
-      },
-      node,
-    );
+      return memo;
+    },
+    node,
+  );
 
-    if (videoRoot.hasAttribute('trex')) {
-      appLog.info(
-        'element already acquired: skipping',
-        videoRoot.getAttribute('trex'),
-      );
-
-      return;
-    }
-
-    videoCounter++;
-
+  if (videoRoot.hasAttribute('trex')) {
     appLog.info(
-      '+video',
-      videoRoot,
-      ' acquired, now',
-      videoCounter,
-      'in total',
+      'element already acquired: skipping',
+      videoRoot.getAttribute('trex'),
     );
 
-    videoRoot.setAttribute('trex', `${videoCounter}`);
+    return;
+  }
 
-    tkHub.dispatch({
-      type: 'NewVideo',
-      payload: {
-        html: videoRoot.outerHTML,
-        href: window.location.href,
-        feedId,
-        feedCounter,
-        videoCounter,
-        rect: videoRoot.getBoundingClientRect(),
-      },
-    });
+  videoCounter++;
 
-    if (config.ux) {
-      videoRoot.style.border = '1px solid green';
-    }
-  },
-  300,
-);
+  appLog.info('+video', videoRoot, ' acquired, now', videoCounter, 'in total');
+
+  videoRoot.setAttribute('trex', `${videoCounter}`);
+
+  tkHub.dispatch({
+    type: 'NewVideo',
+    payload: {
+      html: videoRoot.outerHTML,
+      href: window.location.href,
+      feedId,
+      feedCounter,
+      videoCounter,
+      rect: videoRoot.getBoundingClientRect(),
+    },
+  });
+
+  if (config.ux) {
+    videoRoot.style.border = '1px solid green';
+  }
+};
 
 const handleProfile = _.debounce(
   (
@@ -385,7 +386,7 @@ export const tkHandlers: { [key: string]: ObserverHandler } = {
       type: 'selector',
       selector: 'a[href^="/@"]',
     },
-    handle:  () => undefined,
+    handle: () => undefined,
   },
   search: searchHandler,
   apiInterceptor: {
