@@ -42,7 +42,7 @@ const keys = {
   publicKey: process.env.PUBLIC_KEY,
   secretKey: process.env.SECRET_KEY,
 };
-let supporterId: string, ytURL: string;
+let ytURL: string;
 
 chromeListener.mockImplementation((request, sender, sendResponse) => {
   app.ytLogger.info('on listener %O', { request, sender });
