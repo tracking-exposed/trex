@@ -10,15 +10,14 @@ import {
 import * as endpoints from '@yttrex/shared/endpoints';
 import nacl from 'tweetnacl';
 import ytLog from '../../logger';
+import { UserSettings } from '@shared/extension/models/UserSettings';
 
 export const getHeadersForDataDonation = async (req: SyncReq): Promise<any> => {
-  // ytLog.info('Request %O', req);
-
   const { payload } = req;
 
-  const userSettings: any = await db.get('local');
+  const userSettings: UserSettings = (await db.get('local')) as any;
 
-  ytLog.info('Keypair %O', userSettings);
+  ytLog.info('User setting %O', userSettings);
 
   if (!userSettings) {
     throw new Error('Cannot sign payload, no keypair found!');
