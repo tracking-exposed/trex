@@ -12,8 +12,8 @@ import * as fs from 'fs';
 import * as path from 'path';
 import { GetGuardoniCLI, GuardoniCLI } from '../../src/guardoni/cli';
 import { csvStringifyTE } from '../../src/guardoni/utils';
-import axiosMock from '../../__mocks__/axios.mock';
-import { puppeteerMock } from '../../__mocks__/puppeteer.mock';
+import axiosMock from '@shared/test/__mocks__/axios.mock';
+import { puppeteerMock } from '@shared/test/__mocks__/puppeteer.mock';
 
 const basePath = path.resolve(__dirname, '../../');
 const profileName = 'profile-test-99';

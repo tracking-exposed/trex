@@ -1,5 +1,5 @@
-import axiosMock from '../__mocks__/axios.mock';
-import { puppeteerMock, pageMock } from '../__mocks__/puppeteer.mock';
+import axiosMock from '@shared/test/__mocks__/axios.mock';
+import { puppeteerMock, pageMock } from '@shared/test/__mocks__/puppeteer.mock';
 /* eslint-disable import/first */
 import { pipe } from 'fp-ts/lib/function';
 import * as TE from 'fp-ts/lib/TaskEither';
