@@ -2,9 +2,26 @@
 
 This monorepo will eventually include all `packages` needed and `platforms` supported by `Tracking Exposed`:
 
+## Commands
+
+```
+yarn
+yarn test spec
+yarn test e2e
+```
+
+```
+yarn pm2 platforms/ecosystem.config.js
+yarn pm2 status
+```
+
 ## Platforms
 
-### [YTTrEx](./platforms/yttrex)
+### [tktrex](./platforms/tktrex)
+
+The browser extension of [tiktok.tracking.exposed](https://tiktok.tracking.exposed) the tiktok algorithm analysis toolkit for researcher, power user, and algorithm analysts.
+
+### [yttrex](./platforms/yttrex)
 
 The browser extension of [youtube.tracking.exposed](https://youtube.tracking.exposed) the youtube algorithm analysis toolkit for researcher, power user, and algorithm analysts.
 
