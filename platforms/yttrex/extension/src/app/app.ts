@@ -339,7 +339,7 @@ export const watchedPaths = {
     ...leafSelectors.frontad,
     handle: handleLeaf,
   },
-  // video-ad-overlay-slot
+  /* -- this selectors were causing a lot of noise and were not used
   channel1: {
     ...leafSelectors.channel1,
     handle: handleLeaf,
@@ -347,7 +347,7 @@ export const watchedPaths = {
   channel2: {
     ...leafSelectors.channel2,
     handle: handleLeaf,
-  },
+  }, */
   channel3: {
     ...leafSelectors.channel3,
     handle: handleLeaf,

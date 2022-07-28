@@ -68,6 +68,7 @@ const EXPECTED_HDRS = {
   'x-yttrex-version': 'version',
   'x-yttrex-publickey': 'publickey',
   'x-yttrex-signature': 'signature',
+  'x-yttrex-nonauthcookieid': 'researchTag',
   'accept-language': 'language',
 };
 
@@ -121,14 +122,25 @@ async function saveInDB(experinfo, objects, dbcollection) {
   // this function saves leafs and htmls, and extend with exp
   const expanded = extendIfExperiment(experinfo, objects);
 
+  /* selective debug notes based on the kind of collection we're writing on */
+  let debugmarks = objects[0].researchTag
+    ? JSON.stringify(_.countBy(objects, 'researchTag'))
+    : '[untagged]';
+
+  if (objects[0].experimentId)
+    debugmarks += ` experimentId ${objects[0].experimentId}`;
+  else debugmarks += ' !E';
+
   try {
     await automo.write(dbcollection, expanded);
     debug(
-      'Saved %d %s metadataId %j',
+      'Saved %d %s metadataId %j %s',
       objects.length,
       dbcollection,
-      _.uniq(_.map(objects, 'metadataId'))
+      _.uniq(_.map(objects, 'metadataId')),
+      debugmarks
     );
+
     return {
       error: false,
       success: objects.length,
@@ -136,10 +148,11 @@ async function saveInDB(experinfo, objects, dbcollection) {
     };
   } catch (error) {
     debug(
-      'Error in saving %d %s %j',
+      'Error in saving %d %s %j (%s)',
       objects.length,
       dbcollection,
-      error.message
+      error.message,
+      debugmarks
     );
     return { error: true, message: error.message };
   }
@@ -202,9 +215,12 @@ async function processEvents2(req) {
         counters: [body.incremental, i],
         nature,
         geoip: geo(headers['x-forwarded-for'] || req.socket.remoteAddress),
-        researchTag: body.researchTag,
-        experimentId: body.experimentId,
       };
+
+      if (headers.researchTag) html.researchTag = headers.researchTag;
+      if (body.experimentId !== 'DEFAULT_UNSET')
+        html.experimentId = body.experimentId;
+
       return html;
     }
   );
@@ -221,7 +237,8 @@ async function processEvents2(req) {
       contentHash: e.hash,
       i,
     });
-    return {
+
+    const retelem = {
       id,
       metadataId,
       blang,
@@ -230,6 +247,11 @@ async function processEvents2(req) {
       nature,
       savingTime: new Date(),
     };
+    if (headers.researchTag) retelem.researchTag = headers.researchTag;
+    if (retelem.experimentId !== 'DEFAULT_UNSET')
+      retelem.experimentId = e.experimentId;
+
+    return retelem;
   });
 
   /* after having prepared the objects, the functions below would:
