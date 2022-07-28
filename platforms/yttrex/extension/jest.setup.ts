@@ -1,6 +1,7 @@
 import path from 'path';
+import dotenv from 'dotenv';
 
-require('dotenv').config({ path: path.resolve(__dirname, '.env.development') });
+dotenv.config({ path: path.resolve(__dirname, '.env.development') });
 
 process.env.BUILD_DATE = new Date().toISOString();
 process.env.VERSION = '0.1-TEST';

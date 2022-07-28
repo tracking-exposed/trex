@@ -1,16 +1,17 @@
-import { countBy } from 'lodash';
-import config, { Config } from '@shared/extension/config';
-import { getTimeISO8601 } from '@shared/extension/utils/common.utils';
+import config from '@shared/extension/config';
 import { Hub } from '@shared/extension/hub';
+import log from '@shared/extension/logger';
+import { UserSettings } from '@shared/extension/models/UserSettings';
+import { bo } from '@shared/extension/utils/browser.utils';
+import { getTimeISO8601 } from '@shared/extension/utils/common.utils';
+import { countBy } from 'lodash';
 import {
   NewVideoEvent,
-  SuggestedEvent,
-  SearchEvent,
   ProfileEvent,
+  SearchEvent,
+  SuggestedEvent,
   TKHubEvent,
 } from '../models/HubEvent';
-import log from '@shared/extension/logger';
-import { bo } from '@shared/extension/utils/browser.utils';
 
 interface EvidenceMetaData {
   type: 'video' | 'suggested' | 'search' | 'profile';
@@ -106,7 +107,10 @@ function sync(hub: Hub<TKHubEvent>): void {
   }
 }
 
-export function registerTkHandlers(hub: Hub<TKHubEvent>, config: Config): void {
+export function registerTkHandlers(
+  hub: Hub<TKHubEvent>,
+  config: UserSettings,
+): void {
   if (config.active) {
     hub
       .on('NewVideo', handleVideo)

@@ -7,10 +7,10 @@ export const HandshakeBody = t.type(
     config: t.strict(
       {
         publicKey: t.string,
-        experimentId: t.union([t.string, t.undefined]),
         execount: t.union([t.number, t.undefined]),
         newProfile: t.union([t.boolean, t.undefined]),
         researchTag: t.union([t.string, t.undefined]),
+        experimentId: t.union([t.string, t.undefined]),
         testTime: t.union([DateFromISOString, t.undefined]),
       },
       'Config'
@@ -33,6 +33,7 @@ export const HandshakeResponse = t.union(
       testName: StringOrNull,
       publicKey: t.string,
       status: t.literal('active'),
+      since: t.string,
     }),
     t.type({ ignored: t.boolean }),
     t.null,

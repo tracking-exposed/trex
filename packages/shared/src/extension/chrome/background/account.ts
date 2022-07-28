@@ -32,9 +32,10 @@ export function initializeKey(): KeyPair {
   // use publicKey and secretKey from process.env when available
   if (process.env.PUBLIC_KEY && process.env.SECRET_KEY) {
     log.info(
-      'Found PUBLIC and SECRET keys in envrionment, returning those and skipping generation %j',
+      'Found PUBLIC and SECRET keys in environment, returning those and skipping generation %j',
       process.env
     );
+
     return {
       publicKey: process.env.PUBLIC_KEY,
       secretKey: process.env.SECRET_KEY,
@@ -44,7 +45,7 @@ export function initializeKey(): KeyPair {
   const publicKey = bs58.encode(newKeypair.publicKey);
   const secretKey = bs58.encode(newKeypair.secretKey);
   const rv = { publicKey, secretKey };
-  log.info('initializing new key pair:', rv);
+  log.info('initializing new key pair: %O', rv);
   return rv;
 }
 

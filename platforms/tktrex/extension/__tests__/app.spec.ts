@@ -1,12 +1,9 @@
+import axiosMock from '@shared/test/__mocks__/axios.mock';
 import { boot } from '@shared/extension/app';
-import {
-  handleServerLookup,
-  initializeKey,
-} from '@shared/extension/chrome/background/account';
+import { handleServerLookup } from '@shared/extension/chrome/background/account';
 import { load } from '@shared/extension/chrome/background/index';
 import { handleSyncMessage } from '@shared/extension/chrome/background/sync';
 import { tiktokDomainRegExp } from '@tktrex/parser/constant';
-import axios from 'axios';
 import * as fs from 'fs';
 import { chrome } from 'jest-chrome';
 import * as path from 'path';
@@ -16,6 +13,8 @@ import api, { getHeadersForDataDonation } from '../src/background/api';
 import tkHub from '../src/handlers/hub';
 import { tkLog } from '../src/logger';
 import { sleep } from '@shared/utils/promise.utils';
+import { HandshakeActiveResponseArb } from '@shared/arbitraries/HandshakeResponse.arb';
+import { fc } from '@shared/test';
 
 const chromeListener = jest.fn();
 
@@ -27,8 +26,10 @@ const hubDispatchSpy = jest.spyOn(tkHub, 'dispatch');
 const handleVideoSpy = jest.spyOn(videoMatcher, 'handle');
 const handleSearchSpy = jest.spyOn(searchMatcher, 'handle');
 
-let keys = initializeKey();
-let supporterId;
+const keys = {
+  publicKey: process.env.PUBLIC_KEY,
+  secretKey: process.env.SECRET_KEY,
+};
 const tkURL = 'https://tiktok.com/foryou';
 const bootOptions = {
   payload: {
@@ -108,6 +109,7 @@ describe('TK App', () => {
   });
 
   afterEach(() => {
+    axiosMock.request.mockClear();
     eventsRegisterSpy.mockClear();
     tkTrexActionsSpy.mockClear();
     hubDispatchSpy.mockClear();
@@ -119,7 +121,35 @@ describe('TK App', () => {
     test('succeeds with all elements', async () => {
       // jest.useRealTimers();
 
+      const handshakeResponse = fc.sample(HandshakeActiveResponseArb, 1)[0];
+      axiosMock.request.mockResolvedValueOnce({
+        data: handshakeResponse,
+      });
+
       const appContext = await boot(bootOptions);
+
+      await sleep(2000);
+
+      // check handshake response
+      expect(axiosMock.request.mock.calls[0][0]).toMatchObject({
+        url: '/v2/handshake',
+        data: {
+          config: {
+            publicKey: process.env.PUBLIC_KEY,
+            secretKey: process.env.SECRET_KEY,
+            execount: 1,
+            newProfile: true,
+            researchTag: 'test-tag',
+            ux: true,
+          },
+          href: 'http://localhost/',
+        },
+        headers: {
+          Accept: 'application/json',
+        },
+        method: 'POST',
+        responseType: 'json',
+      });
 
       global.jsdom.reconfigure({
         url: tkURL,
@@ -130,13 +160,17 @@ describe('TK App', () => {
         'utf-8'
       );
 
+      axiosMock.request.mockResolvedValueOnce({
+        data: {},
+      });
+
       await sleep(1000);
 
       // custom events should be registered on booting
       expect(eventsRegisterSpy).toHaveBeenCalled();
 
       // yt callback should be called after server response
-      expect(tkTrexActionsSpy).toHaveBeenCalledWith({ ignored: true });
+      expect(tkTrexActionsSpy).toHaveBeenCalledWith(handshakeResponse);
 
       await sleep(12000);
 
@@ -150,41 +184,41 @@ describe('TK App', () => {
       // one for the contribution 'video' event and one for "sync" event
       expect(hubDispatchSpy).toHaveBeenCalledTimes(2);
 
-      const response = await axios
-        .get(
-          `${process.env.API_ROOT}/v1/personal/${keys.publicKey}/foryou/json`
-        )
-        .catch((e) => {
-          console.error(e);
-          return e.response?.data;
-        });
-
-      expect(response.status).toBe(200);
-      expect(response.data).toMatchObject([
-        {
-          author: {
-            link: '/@yuuna_1210',
-            name: '悠那🌹🌕',
-            username: 'yuuna_1210',
+      expect(axiosMock.request.mock.calls).toHaveLength(2);
+      expect(axiosMock.request.mock.calls[1][0]).toMatchObject({
+        url: '/v2/events',
+        data: [
+          {
+            feedCounter: 0,
+            href: tkURL,
+            type: 'video',
+            videoCounter: 1,
           },
-          baretext: '🌹🌕',
-          description: '🌹🌕#おすすめ #コスプレ #制服',
-          hashtags: ['#おすすめ', '#コスプレ', '#制服'],
-          metrics: { commentn: '236', liken: '10K', sharen: '167' },
-          music: {
-            name: 'TJR Eat God See Acid Noslek Milkshake Edit - ДабаДамбиев',
-            url: '/music/TJR-Eat-God-See-Acid-Noslek-Milkshake-Edit-7036689888661506817',
-          },
-          order: 1,
-          type: 'foryou',
+        ],
+        headers: {
+          Accept: 'application/json',
+          'Content-Type': 'application/json',
+          'X-Tktrex-Build': process.env.BUILD_DATE,
+          'X-Tktrex-NonAuthCookieId': '',
+          'X-Tktrex-PublicKey': process.env.PUBLIC_KEY,
+          'X-Tktrex-Version': process.env.VERSION,
         },
-      ]);
+      });
     });
   });
 
   describe('"search" page scraping', () => {
     test('succeeds with all elements', async () => {
+      const handshakeResponse = fc.sample(HandshakeActiveResponseArb, 1)[0];
+      axiosMock.request.mockResolvedValueOnce({
+        data: handshakeResponse,
+      });
+
       const appContext = await boot(bootOptions);
+
+      axiosMock.request.mockResolvedValueOnce({
+        data: {},
+      });
 
       const tkSearchUrl = 'https://www.tiktok.com/search?q=tartariá';
       global.jsdom.reconfigure({
@@ -198,11 +232,32 @@ describe('TK App', () => {
 
       await sleep(1000);
 
+      // check handshake response
+      expect(axiosMock.request.mock.calls[0][0]).toMatchObject({
+        url: '/v2/handshake',
+        data: {
+          config: {
+            publicKey: process.env.PUBLIC_KEY,
+            secretKey: process.env.SECRET_KEY,
+            execount: 1,
+            newProfile: true,
+            researchTag: 'test-tag',
+            ux: true,
+          },
+          href: 'http://localhost/',
+        },
+        headers: {
+          Accept: 'application/json',
+        },
+        method: 'POST',
+        responseType: 'json',
+      });
+
       // custom events should be registered on booting
       expect(eventsRegisterSpy).toHaveBeenCalled();
 
       // yt callback should be called after server response
-      expect(tkTrexActionsSpy).toHaveBeenCalledWith({ ignored: true });
+      expect(tkTrexActionsSpy).toHaveBeenCalledWith(handshakeResponse);
 
       await sleep(12000);
       appContext.destroy();
@@ -214,45 +269,24 @@ describe('TK App', () => {
       expect(handleSearchSpy).toHaveBeenCalledTimes(48);
       expect(hubDispatchSpy).toHaveBeenCalledTimes(2);
 
-      const response = await axios
-        .get(
-          `${process.env.API_ROOT}/v1/personal/${keys.publicKey}/search/json`
-        )
-        .catch((e) => {
-          console.error(e);
-          return e.response?.data;
-        });
-
-      expect(response.status).toBe(200);
-      expect(response.data).toMatchObject({
-        counters: { metadata: 1 },
-        metadata: [
+      expect(axiosMock.request.mock.calls).toHaveLength(2);
+      expect(axiosMock.request.mock.calls[1][0]).toMatchObject({
+        url: '/v2/events',
+        data: [
           {
-            query: 'tartariá',
-            rejected: false,
-            results: 24,
-            sources: [
-              '@trutherwarrior111',
-              '@manifestation1776',
-              '@t.a.r.t.a.r.i.a',
-              '@anonymouslightworker',
-              '@thedoctorregenerated',
-              '@ancientartist333',
-              '@gabyzacara333',
-              '@iamfitzy',
-              '@two_dollar_trey',
-              '@dantok_',
-              '@alphatalkz_98',
-              '@onefoulwow2',
-              '@sometr0ll',
-              '@kiril.romanov',
-              '@lessandro2021',
-              '@goddessmamma',
-              '@caesarthegrape',
-              '@tartaria_reset_secret',
-            ],
+            href: encodeURI(tkSearchUrl),
+            type: 'search',
+            incremental: 1,
           },
         ],
+        headers: {
+          Accept: 'application/json',
+          'Content-Type': 'application/json',
+          'X-Tktrex-Build': process.env.BUILD_DATE,
+          'X-Tktrex-NonAuthCookieId': '',
+          'X-Tktrex-PublicKey': process.env.PUBLIC_KEY,
+          'X-Tktrex-Version': process.env.VERSION,
+        },
       });
     });
   });
