@@ -4,6 +4,13 @@ interface MessageBase {
   type: Message['type'];
 }
 
+export interface SettingsLookup extends MessageBase {
+  type: 'SettingsLookup';
+  payload: {
+    userId: string;
+  };
+}
+
 export interface LocalLookup extends MessageBase {
   type: 'LocalLookup';
   payload: {
@@ -29,6 +36,7 @@ export interface ReloadExtension extends MessageBase {
 }
 
 export type Message =
+  | SettingsLookup
   | LocalLookup
   | ServerLookup
   | ConfigUpdate

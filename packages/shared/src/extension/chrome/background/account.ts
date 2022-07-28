@@ -70,11 +70,14 @@ const readOrDefault = async (
   }
 };
 
-async function handleLocalLookup(
+/**
+ * Load settings from `settings.json`
+ */
+async function handleSettingsLookup(
   { userId }: WithUserId,
   sendResponse: (response: Partial<UserSettings>) => void
 ): Promise<void> {
-  let settings = await readOrDefault(
+  const settingsJson = await readOrDefault(
     'settings.json',
     t.partial(UserSettings.props),
     DEFAULT_SETTINGS
@@ -85,16 +88,29 @@ async function handleLocalLookup(
     experimentId: undefined,
   });
 
+  const settings = { ...settingsJson, ...experimentInfo };
+
   try {
     if (!(settings.publicKey?.length && settings.secretKey?.length))
       throw new Error('Invalid key material found in settings.json');
 
     log.info('Loaded configuration from file settings.json: %j', settings);
-    await db.set(userId, { ...settings, ...experimentInfo });
+    await db.set(userId, settings);
   } catch (err) {
     log.info('Error caught while checking settings.json: %s', err);
   }
 
+  return sendResponse(settings);
+}
+
+/**
+ * Get settings from chrome.storage
+ */
+async function handleLocalLookup(
+  { userId }: WithUserId,
+  sendResponse: (response: Partial<UserSettings>) => void
+): Promise<void> {
+  let settings;
   try {
     settings = await db.getValid(UserSettings)(userId);
     log.info('Loaded correctly settings from localStorage %j', settings);
@@ -147,6 +163,11 @@ async function handleConfigUpdate(
 
 export const load = (opts: LoadOpts): void => {
   bo.runtime.onMessage.addListener((request: Message, sender, sendResponse) => {
+    if (request.type === 'SettingsLookup') {
+      void handleSettingsLookup(request.payload, sendResponse);
+      return true;
+    }
+
     if (request.type === 'LocalLookup') {
       void handleLocalLookup(request.payload, sendResponse);
       return true;

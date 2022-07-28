@@ -50,6 +50,17 @@ const ifValid =
 const sendMessage = (message: Message, cb: (response: unknown) => void): void =>
   bo.runtime.sendMessage(message, cb);
 
+export const settingsLookup = (cb: SendResponse<UserSettings>): void =>
+  sendMessage(
+    {
+      type: 'SettingsLookup',
+      payload: {
+        userId: 'local',
+      },
+    },
+    ifValid(UserSettings)('LocalLookup', cb)
+  );
+
 export const localLookup = (cb: SendResponse<UserSettings>): void =>
   sendMessage(
     {
