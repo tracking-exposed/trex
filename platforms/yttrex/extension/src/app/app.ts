@@ -347,11 +347,11 @@ export const watchedPaths = {
   channel2: {
     ...leafSelectors.channel2,
     handle: handleLeaf,
-  }, */
+  },
   channel3: {
     ...leafSelectors.channel3,
     handle: handleLeaf,
-  },
+  }, */
   searchcard: {
     ...leafSelectors.searchcard,
     handle: handleLeaf,

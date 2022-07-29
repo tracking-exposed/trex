@@ -19,16 +19,16 @@ const chromeListener = jest.fn();
 
 const homeMatcher = app.watchedPaths.home;
 const videoMatcher = app.watchedPaths.video;
-const leafMatcherChannel1 = app.watchedPaths.channel1;
+/* const leafMatcherChannel1 = app.watchedPaths.channel1;
 const leafMatcherChannel2 = app.watchedPaths.channel2;
-const leafMatcherChannel3 = app.watchedPaths.channel3;
+const leafMatcherChannel3 = app.watchedPaths.channel3; */
 const leafMatcherBanner = app.watchedPaths.banner;
 const ytTrexActionsSpy = jest.spyOn(app, 'ytTrexActions');
 const handleHomeSpy = jest.spyOn(homeMatcher, 'handle');
 const handleVideoSpy = jest.spyOn(videoMatcher, 'handle');
-const handleLeafChannel1Spy = jest.spyOn(leafMatcherChannel1, 'handle');
+/* const handleLeafChannel1Spy = jest.spyOn(leafMatcherChannel1, 'handle');
 const handleLeafChannel2Spy = jest.spyOn(leafMatcherChannel2, 'handle');
-const handleLeafChannel3Spy = jest.spyOn(leafMatcherChannel3, 'handle');
+const handleLeafChannel3Spy = jest.spyOn(leafMatcherChannel3, 'handle'); */
 const handleLeafBannerSpy = jest.spyOn(leafMatcherBanner, 'handle');
 const eventsRegisterSpy = jest.spyOn(events, 'register');
 
@@ -134,9 +134,9 @@ describe('YT App', () => {
     handleHomeSpy.mockClear();
     handleVideoSpy.mockClear();
     handleLeafBannerSpy.mockClear();
-    handleLeafChannel1Spy.mockClear();
+    /* handleLeafChannel1Spy.mockClear();
     handleLeafChannel2Spy.mockClear();
-    handleLeafChannel3Spy.mockClear();
+    handleLeafChannel3Spy.mockClear(); */
   });
 
   test('Collect evidence from home page', async () => {
@@ -206,6 +206,8 @@ describe('YT App', () => {
     // const { handle: _bannerHandle, ...bannerOpts } = leafMatcherBanner;
     expect(handleLeafBannerSpy).not.toHaveBeenCalled();
 
+    /*
+ 
     // channel3 match
     const { handle: _channel1Handle, ...channel1Opts } = leafMatcherChannel1;
     const leafChannel1Count = 30;
@@ -273,13 +275,15 @@ describe('YT App', () => {
       },
     });
 
-    expect(axiosMock.request.mock.calls[2][0]).toMatchObject({
+
+    expect(axiosMock.request.mock.calls).toHaveLength(2);
+    expect(axiosMock.request.mock.calls[1][0]).toMatchObject({
       url: '/v2/events',
       method: 'POST',
       data: [
         {
           type: 'video',
-          incremental: 101,
+          incremental: 4,
           href: ytURL,
         },
       ],
@@ -292,6 +296,7 @@ describe('YT App', () => {
         'X-YTtrex-Version': '0.1-TEST',
       },
     });
+    */
   });
 
   test('Collect evidence from video page', async () => {
@@ -372,6 +377,8 @@ describe('YT App', () => {
       { ...appContext.config, href: ytURL }
     );
 
+    /*
+  
     // channel3 match
     const leafChannel1Count = 132;
     const { handle: _channel1Handle, ...channel1Opts } = leafMatcherChannel1;
@@ -414,18 +421,15 @@ describe('YT App', () => {
         { ...appContext.config, href: ytURL }
       );
     });
+    */
 
     expect(axiosMock.request.mock.calls).toHaveLength(3);
 
-    expect(axiosMock.request.mock.calls[1][0].data).toHaveLength(199);
+    expect(axiosMock.request.mock.calls[1][0].data).toHaveLength(1);
     expect(axiosMock.request.mock.calls[1][0]).toMatchObject({
       url: '/v2/events',
       method: 'POST',
-      data: Array.from({
-        length: 199,
-      }).map((n, i) => ({
-        incremental: 102 + i,
-      })),
+      data: [{ type: 'leaf' }],
       headers: {
         Accept: 'application/json',
         'Content-Type': 'application/json',

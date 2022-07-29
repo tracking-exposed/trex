@@ -4,14 +4,15 @@ This monorepo will eventually include all `packages` needed and `platforms` supp
 
 ## Commands
 
-### Basic unit test:
+### unit test execution:
 
 ```
 yarn
 yarn test spec --coverage
 ```
 
-Then check the output in `coverage/lcov-report/index.html`
+1. It executes all the test files you can find with `find platforms/ -name '*.spec.ts`
+2. Check the output in `coverage/lcov-report/index.html`
 
 ### To run end to end test:
 
