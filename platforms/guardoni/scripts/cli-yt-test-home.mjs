@@ -5,6 +5,7 @@ import { $, os, fetch } from 'zx';
 import { normalizePlatform, getGuardoniCliPkgName } from './utils.mjs';
 import dotenv from 'dotenv';
 import assert from 'assert';
+// import Xvfb from 'xvfb';
 
 dotenv.config({ path: '.env.development' });
 
@@ -18,7 +19,6 @@ void (async function () {
   )}`;
   const flags = [
     '--basePath=./',
-    `--executablePath=${process.env.PUPPETEER_EXEC_PATH}`,
     '-c=guardoni.config.json',
     '--headless',
     '--verbose',
@@ -29,6 +29,20 @@ void (async function () {
     `--publicKey=${process.env.PUBLIC_KEY}`,
     `--secretKey=${process.env.SECRET_KEY}`,
   ];
+
+  // start xvfb
+  // const xvfb = new Xvfb({
+  //   silent: true,
+  //   reuse: true,
+  //   xvfb_args: [':95'],
+  // });
+
+  // process.env.DISPLAY = ':95';
+
+  // xvfb.start((err) => {
+  //   // eslint-disable-next-line no-console
+  //   if (err) console.error(err);
+  // });
 
   // reject cookie modal
   await $`${cli} ${flags} yt-navigate --cookie-modal=reject --exit --headless=false`;
@@ -54,6 +68,9 @@ void (async function () {
 
   await $`echo ${yt_home_experiment_public_key}`;
 
+  // wait the parser to finish process metadata
+  await $`sleep 5`;
+
   assert.strictEqual(yt_home_experiment_public_key, process.env.PUBLIC_KEY);
   const metadata = await fetch(
     `http://localhost:9000/api/v2/metadata?experimentId=${yt_home_experiment_id}`
@@ -61,4 +78,6 @@ void (async function () {
 
   assert.strictEqual(metadata[0].experimentId, yt_home_experiment_id);
   assert.strictEqual(metadata[0].type, 'home');
+
+  // xvfb.stop();
 })();

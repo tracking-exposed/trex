@@ -123,23 +123,28 @@ jobs:
             platforms/guardoni/dist
             platforms/ycai/studio/build
 
+      - name: Install Xvfb
+        run: |
+          sudo apt install -y xvfb x11-utils libxkbcommon-x11-0 libxcb-icccm4 libxcb-image0 libxcb-keysyms1 libxcb-randr0 libxcb-render-util0 libxcb-xinerama0 libxcb-xfixes0 xdotool
+
       - name: Install dependencies
         run: yarn
 
       - name: Start PM2
-        run: |
-          yarn pm2 start --env test ./platforms/ecosystem.config.js
-          sleep 5
+        run: yarn pm2 start --env test ./platforms/ecosystem.config.js
 
       - name: Build Guardoni for ${{ matrix.config.os }}
         working-directory: ./platforms/guardoni
         run: ./scripts/cli-build.mjs
 
-      # - name: Test CLI - YT Home
-      #   run: yarn guardoni cli-yt-test-home
+      - name: Test CLI - YT Home
+        working-directory: ./platforms/guardoni
+        env:
+          DISPLAY: ':99.0'
+        run: xvfb-run --auto-servernum  ./scripts/cli-yt-test-home.mjs
 
-      # - name: Test CLI - YT Videos
-      #   run: yarn guardoni cli-yt-test-videos
+      - name: Test CLI - YT Videos
+        run: yarn guardoni cli-yt-test-videos
 
       - name: Stop PM2
         run: yarn pm2 stop all
