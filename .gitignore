@@ -5,6 +5,7 @@
 node_modules
 build
 dist
+diagnostics
 
 # not really maintain ATM
 qa/*.pyc
