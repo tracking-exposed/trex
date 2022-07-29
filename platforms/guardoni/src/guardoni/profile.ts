@@ -25,7 +25,6 @@ export const getDefaultProfile = (
 ): GuardoniProfile => {
   return {
     udd: getProfileDataDir(basePath, profileName),
-    newProfile: true,
     profileName,
     researchTag: [],
     execount: 0,
@@ -149,10 +148,8 @@ export const updateGuardoniProfile =
   ): TE.TaskEither<AppError, GuardoniProfile> => {
     ctx.logger.debug('Updating guardoni config %s', ctx.guardoniConfigFile);
 
-    const execCount = profile.execount + 1;
     const updatedProfile: GuardoniProfile = {
       ...profile,
-      newProfile: execCount === 0,
       execount: profile.execount + 1,
       researchTag: researchTag
         ? profile.researchTag.concat(researchTag)

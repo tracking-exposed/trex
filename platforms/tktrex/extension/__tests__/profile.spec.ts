@@ -72,7 +72,6 @@ chrome.runtime.sendMessage
         href: tkURL,
         researchTag: 'test-tag',
         execount: 1,
-        newProfile: true,
         testTime: new Date().toISOString(),
       });
     } else if (msg.type === 'ServerLookup') {

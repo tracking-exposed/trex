@@ -70,7 +70,6 @@ chrome.runtime.sendMessage
         href: tkURL,
         researchTag: 'test-tag',
         execount: 1,
-        newProfile: true,
         testTime: new Date().toISOString(),
       });
     } else if (msg.type === 'ServerLookup') {
@@ -138,7 +137,6 @@ describe('TK App', () => {
             publicKey: process.env.PUBLIC_KEY,
             secretKey: process.env.SECRET_KEY,
             execount: 1,
-            newProfile: true,
             researchTag: 'test-tag',
             ux: true,
           },
@@ -240,7 +238,6 @@ describe('TK App', () => {
             publicKey: process.env.PUBLIC_KEY,
             secretKey: process.env.SECRET_KEY,
             execount: 1,
-            newProfile: true,
             researchTag: 'test-tag',
             ux: true,
           },

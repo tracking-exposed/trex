@@ -62,7 +62,6 @@ const getConfig = () => ({
   researchTag,
   experimentId: '1',
   execount: 1,
-  newProfile: false,
   testTime,
 });
 
@@ -155,7 +154,6 @@ describe('YT App', () => {
           publicKey: keys.publicKey,
           researchTag,
           execount: 1,
-          newProfile: false,
           testTime: new Date(testTime),
         },
         href: 'http://localhost/',
@@ -310,7 +308,6 @@ describe('YT App', () => {
           publicKey: keys.publicKey,
           researchTag,
           execount: 1,
-          newProfile: false,
           testTime: new Date(testTime),
         },
         href: ytURL,
