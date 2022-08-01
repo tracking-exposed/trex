@@ -26,14 +26,26 @@ const hubDispatchSpy = jest.spyOn(tkHub, 'dispatch');
 const handleVideoSpy = jest.spyOn(videoMatcher, 'handle');
 const handleSearchSpy = jest.spyOn(searchMatcher, 'handle');
 
+const researchTag = 'fake-tag';
 const keys = {
   publicKey: process.env.PUBLIC_KEY,
   secretKey: process.env.SECRET_KEY,
 };
+
+const getConfig = () => ({
+  ...keys,
+  active: true,
+  ux: true,
+  href: tkURL,
+  researchTag,
+  execount: 1,
+  testTime: new Date().toISOString(),
+});
+
 const tkURL = 'https://tiktok.com/foryou';
 const bootOptions = {
   payload: {
-    config: keys,
+    config: { ...keys, researchTag },
     href: window.location.href,
   } as any,
   mapLocalConfig: (c, p) => ({ ...c, ...p }),
@@ -62,16 +74,14 @@ chrome.runtime.sendMessage
   // })
   // mock 'LocalLookup' message handler
   .mockImplementation((msg: any, cb: any) => {
-    if (msg.type === 'LocalLookup') {
-      return cb({
-        ...keys,
-        active: true,
-        ux: true,
-        href: tkURL,
-        researchTag: 'test-tag',
-        execount: 1,
-        testTime: new Date().toISOString(),
-      });
+    // mock 'SettingsLookup' message handler
+    if (msg.type === 'SettingsLookup') {
+      const settings = getConfig();
+      dbMap.local = settings as any;
+      return cb(settings);
+      // mock 'LocalLookup' message handler
+    } else if (msg.type === 'LocalLookup') {
+      return cb(getConfig());
     } else if (msg.type === 'ServerLookup') {
       return handleServerLookup(backgroundOpts)(msg.payload, cb);
     } else if (msg.type === 'sync') {
@@ -83,14 +93,22 @@ chrome.runtime.sendMessage
     });
   });
 
+let dbMap = {
+  local: undefined,
+};
+
 chrome.storage.local.get.mockImplementation((key: any, cb: any) => {
-  tkLog.info('Get Storage key %s from %O', key, keys);
-  return cb({ [key]: keys });
+  app.appLog.info('Get Storage key (%s) %O', key, dbMap);
+  return cb(dbMap);
 });
 
-chrome.storage.local.set.mockImplementation((obj, cb: any) => {
-  tkLog.info('Set Storage key %s', obj);
-  return cb(obj);
+chrome.storage.local.set.mockImplementation((obj: any, cb: any) => {
+  app.appLog.info('Set Storage key %O', obj);
+  dbMap = {
+    ...dbMap,
+    ...obj,
+  };
+  return cb();
 });
 
 chrome.runtime.onMessage.addListener(chromeListener);
@@ -137,7 +155,7 @@ describe('TK App', () => {
             publicKey: process.env.PUBLIC_KEY,
             secretKey: process.env.SECRET_KEY,
             execount: 1,
-            researchTag: 'test-tag',
+            researchTag,
             ux: true,
           },
           href: 'http://localhost/',
@@ -197,7 +215,7 @@ describe('TK App', () => {
           Accept: 'application/json',
           'Content-Type': 'application/json',
           'X-Tktrex-Build': process.env.BUILD_DATE,
-          'X-Tktrex-NonAuthCookieId': '',
+          'X-Tktrex-NonAuthCookieId': researchTag,
           'X-Tktrex-PublicKey': process.env.PUBLIC_KEY,
           'X-Tktrex-Version': process.env.VERSION,
         },
@@ -280,7 +298,7 @@ describe('TK App', () => {
           Accept: 'application/json',
           'Content-Type': 'application/json',
           'X-Tktrex-Build': process.env.BUILD_DATE,
-          'X-Tktrex-NonAuthCookieId': '',
+          'X-Tktrex-NonAuthCookieId': researchTag,
           'X-Tktrex-PublicKey': process.env.PUBLIC_KEY,
           'X-Tktrex-Version': process.env.VERSION,
         },

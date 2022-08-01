@@ -11,7 +11,7 @@ import _ from 'lodash';
 import tkHub from '../handlers/hub';
 import { INTERCEPTED_ITEM_CLASS } from '../interceptor/constants';
 
-const appLog = log.extend('app');
+export const appLog = log.extend('app');
 
 export let feedId = refreshUUID(0);
 export let feedCounter = 0;
