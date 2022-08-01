@@ -140,12 +140,10 @@ async function processEvents(req) {
       // 'rect', 'clientTime', 'type', 'incremental' ]
 
       const id = utils.hash({
-        clientRGN: body.feedId
-          ? body.feedId
-          : body.href + new Date().toISOString(),
+        clientRGN: body.feedId ? body.feedId : body.href,
         serverPRGN: supporter.publicKey,
         type: body.type,
-        impressionNumber: body.videoCounter,
+        impressionNumber: body.type === 'video' ? body.videoCounter : 'fixed',
       });
       const timelineIdHash = utils.hash({
         session: body.feedId
