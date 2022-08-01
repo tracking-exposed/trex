@@ -71,7 +71,7 @@ chrome.runtime.sendMessage.mockImplementation((msg: any, cb: any) => {
   if (msg.type === 'SettingsLookup') {
     const settings = getConfig();
     dbMap.local = settings as any;
-    return cb(settings)
+    return cb(settings);
     // mock 'LocalLookup' message handler
   } else if (msg.type === 'LocalLookup') {
     return cb(getConfig());
@@ -89,7 +89,6 @@ chrome.runtime.sendMessage.mockImplementation((msg: any, cb: any) => {
 let dbMap = {
   local: undefined,
 };
-
 
 chrome.storage.local.get.mockImplementation((key: any, cb: any) => {
   app.ytLogger.info('Get Storage key (%s) %O', key, dbMap);
@@ -442,7 +441,7 @@ describe('YT App', () => {
         'X-YTtrex-Build': process.env.BUILD_DATE,
         'X-YTtrex-NonAuthCookieId': researchTag,
         'X-YTtrex-PublicKey': keys.publicKey,
-        'X-YTtrex-Version': '0.1-TEST',
+        'X-YTtrex-Version': process.env.VERSION,
       },
     });
 
@@ -460,7 +459,7 @@ describe('YT App', () => {
         'X-YTtrex-Build': process.env.BUILD_DATE,
         'X-YTtrex-NonAuthCookieId': researchTag,
         'X-YTtrex-PublicKey': keys.publicKey,
-        'X-YTtrex-Version': '0.1-TEST',
+        'X-YTtrex-Version': process.env.VERSION,
       },
     });
   });

@@ -53,8 +53,8 @@ jobs:
 
       - name: Test platform
         run: |
-          yarn pm2 start platforms/tktrex/backend/ecosystem.config.js  --env test
-          yarn tk:backend test --runInBand --ci
+          yarn pm2 start platforms/tktrex/backend/ecosystem.config.js --env test
+          yarn tk:backend test --runInBand --ci --forceExit
           yarn pm2 stop all
 
       - name: Build

@@ -256,7 +256,7 @@ describe('TK App', () => {
             publicKey: process.env.PUBLIC_KEY,
             secretKey: process.env.SECRET_KEY,
             execount: 1,
-            researchTag: 'test-tag',
+            researchTag,
             ux: true,
           },
           href: 'http://localhost/',
