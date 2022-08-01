@@ -12,13 +12,15 @@ function hashtags(envelop, previous) {
 
   const hashtags = envelop.jsdom.querySelectorAll('a[href^="/tag/"]');
   const results = _.map(hashtags, function (anode) {
-    return anode.textContent;
+    if (anode.textContent.length > 1) return anode.textContent;
   });
 
-  debug('TAGs %j', results);
+  if (results.length) {
+    debug('hashtags %d %j', results.length, results);
+    return { hashtags: results };
+  }
 
-  if (results.length) return { hashtags: results };
-  else return null;
+  return null;
 }
 
 module.exports = hashtags;

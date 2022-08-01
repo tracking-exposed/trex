@@ -1,4 +1,3 @@
-const _ = require('lodash');
 const debug = require('debug')('parsers:stitch');
 
 function stitch(envelop, previous) {
@@ -11,6 +10,9 @@ function stitch(envelop, previous) {
   }
 
   const descblock = envelop.jsdom.querySelector('[data-e2e="video-desc"]');
+  // there is not description in this video
+  if (!descblock) return null;
+
   const stitchel = descblock.querySelector('a[href^="/@"]');
 
   if (stitchel) {

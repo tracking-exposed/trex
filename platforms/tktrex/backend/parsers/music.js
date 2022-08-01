@@ -1,4 +1,3 @@
-const _ = require('lodash');
 const debug = require('debug')('parsers:music');
 
 function music(envelop, previous) {
@@ -13,8 +12,12 @@ function music(envelop, previous) {
   const elem = envelop.jsdom.querySelector('a[href^="/music/"]');
 
   if (!elem) {
-    debug('No music in tiktok!? investigate');
-    debugger;
+    debug(
+      'No music in a tiktok!? investigate: %s %d',
+      envelop.html.id,
+      envelop.html.html.length
+    );
+    // debugger;
     return null;
   }
 
