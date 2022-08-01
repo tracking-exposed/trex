@@ -253,7 +253,7 @@ const actualExecution =
 
         if (singleUse) {
           ctx.log.info('Single execution done!');
-          process.exit(1);
+          break;
         }
         if (computedFrequency !== previousFrequency) {
           ctx.log.debug('Sleeping for %f seconds', computedFrequency);
