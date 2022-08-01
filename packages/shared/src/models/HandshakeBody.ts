@@ -8,7 +8,6 @@ export const HandshakeBody = t.type(
       {
         publicKey: t.string,
         execount: t.union([t.number, t.undefined]),
-        newProfile: t.union([t.boolean, t.undefined]),
         researchTag: t.union([t.string, t.undefined]),
         experimentId: t.union([t.string, t.undefined]),
         testTime: t.union([DateFromISOString, t.undefined]),
@@ -29,7 +28,6 @@ export const HandshakeResponse = t.union(
       _id: t.string,
       href: t.string,
       execount: t.union([t.number, t.undefined]),
-      newProfile: t.union([t.boolean, t.undefined]),
       testName: StringOrNull,
       publicKey: t.string,
       status: t.literal('active'),

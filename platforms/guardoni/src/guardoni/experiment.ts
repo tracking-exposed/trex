@@ -237,7 +237,6 @@ export const saveExperiment =
       researchTag: ctx.config.researchTag,
       execCount: profile.execount,
       profileName: profile.profileName,
-      newProfile: profile.newProfile,
       when: new Date(),
     };
 

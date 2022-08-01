@@ -14,7 +14,6 @@ bo.runtime.sendMessage({ type: 'chromeConfig' }, (config) => {
     const { ui, ...settings } = config;
     void boot({
       payload: {
-        newProfile: settings.isNew,
         href: window.location.href,
         execount: settings.execount ?? 0,
       } as any,
