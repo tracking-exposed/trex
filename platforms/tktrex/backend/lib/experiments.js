@@ -19,7 +19,6 @@ async function pickDirective(experimentId) {
 }
 
 async function registerSteps(steps) {
-  debug('Registering steps requested');
 
   const experimentId = utils.hash({
     steps,
@@ -46,16 +45,17 @@ async function registerSteps(steps) {
   }
 
   /* else, we don't had such data, hence */
-  debug('Registering new experiment %s: %j', experimentId, steps);
+  const creationTime = new Date();
   await mongo3.writeOne(mongoc, nconf.get('schema').experiments, {
-    when: new Date(),
+    when: creationTime,
     steps,
     experimentId,
   });
 
   await mongoc.close();
-  debug('Registered experiment %s with %d directives', experimentId, steps);
-  return { status: 'created', experimentId };
+  debug('Registered experiment %s with %d steps: %j',
+    experimentId, steps.length, steps);
+  return { status: 'created', experimentId, since: creationTime };
 }
 
 async function markExperCompleted(mongoc, filter) {
