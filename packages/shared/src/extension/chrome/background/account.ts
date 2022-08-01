@@ -74,7 +74,7 @@ const readOrDefault = async (
 /**
  * Load settings from `settings.json`
  */
-async function handleSettingsLookup(
+export async function handleSettingsLookup(
   { userId }: WithUserId,
   sendResponse: (response: Partial<UserSettings>) => void
 ): Promise<void> {

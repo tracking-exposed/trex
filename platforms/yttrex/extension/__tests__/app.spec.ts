@@ -3,6 +3,7 @@ import { boot, BootOpts } from '@shared/extension/app';
 import { handleServerLookup } from '@shared/extension/chrome/background/account';
 import { load } from '@shared/extension/chrome/background/index';
 import { handleSyncMessage } from '@shared/extension/chrome/background/sync';
+import db from '@shared/extension/chrome/db';
 import { fc } from '@shared/test';
 import axiosMock from '@shared/test/__mocks__/axios.mock';
 import { sleep } from '@shared/utils/promise.utils';
@@ -65,33 +66,43 @@ const getConfig = () => ({
   testTime,
 });
 
-chrome.runtime.sendMessage
-  // mock 'LocalLookup' message handler
-  .mockImplementation((msg: any, cb: any) => {
+chrome.runtime.sendMessage.mockImplementation((msg: any, cb: any) => {
+  // mock 'SettingsLookup' message handler
+  if (msg.type === 'SettingsLookup') {
+    const settings = getConfig();
+    dbMap.local = settings as any;
+    return cb(settings)
     // mock 'LocalLookup' message handler
-    if (msg.type === 'LocalLookup') {
-      return cb(getConfig());
-      // mock 'ServerLookup' message handler
-    } else if (msg.type === 'ServerLookup') {
-      return handleServerLookup(backgroundOpts)(msg.payload, cb);
-      // mock 'sync' message handler
-    } else if (msg.type === 'sync') {
-      return handleSyncMessage(backgroundOpts)(msg, null, cb);
-    }
-    app.ytLogger.info('unhandled msg %s', msg.type);
-    cb(new Error(`Unhandled msg ${msg} in chrome mock`), null);
-  });
-
-chrome.storage.local.get.mockImplementation((key: any, cb: any) => {
-  app.ytLogger.info('Get Storage key %s', keys);
-  app.ytLogger.info('Callback %O', cb);
-  return cb({ [key]: keys });
+  } else if (msg.type === 'LocalLookup') {
+    return cb(getConfig());
+    // mock 'ServerLookup' message handler
+  } else if (msg.type === 'ServerLookup') {
+    return handleServerLookup(backgroundOpts)(msg.payload, cb);
+    // mock 'sync' message handler
+  } else if (msg.type === 'sync') {
+    return handleSyncMessage(backgroundOpts)(msg, null, cb);
+  }
+  app.ytLogger.info('unhandled msg %s', msg.type);
+  cb(new Error(`Unhandled msg ${msg} in chrome mock`), null);
 });
 
-chrome.storage.local.set.mockImplementation((obj, cb: any) => {
-  app.ytLogger.info('Set Storage key %s', obj);
-  app.ytLogger.info('Callback %O', cb);
-  return cb(obj);
+let dbMap = {
+  local: undefined,
+};
+
+
+chrome.storage.local.get.mockImplementation((key: any, cb: any) => {
+  app.ytLogger.info('Get Storage key (%s) %O', key, dbMap);
+  return cb(dbMap);
+});
+
+chrome.storage.local.set.mockImplementation((obj: any, cb: any) => {
+  app.ytLogger.info('Set Storage key %O', obj);
+  dbMap = {
+    ...dbMap,
+    ...obj,
+  };
+  return cb();
 });
 
 chrome.runtime.onMessage.addListener(chromeListener);
@@ -205,7 +216,6 @@ describe('YT App', () => {
     expect(handleLeafBannerSpy).not.toHaveBeenCalled();
 
     /*
- 
     // channel3 match
     const { handle: _channel1Handle, ...channel1Opts } = leafMatcherChannel1;
     const leafChannel1Count = 30;
@@ -375,7 +385,6 @@ describe('YT App', () => {
     );
 
     /*
-  
     // channel3 match
     const leafChannel1Count = 132;
     const { handle: _channel1Handle, ...channel1Opts } = leafMatcherChannel1;

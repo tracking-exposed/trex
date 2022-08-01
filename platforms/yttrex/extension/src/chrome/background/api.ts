@@ -29,7 +29,7 @@ export const getHeadersForDataDonation = async (req: SyncReq): Promise<any> => {
   );
   const sign = encodeToBase58(signature);
 
-  ytLog.info('Signature %O (%s)', signature, sign);
+  ytLog.info('Signature (%s)', sign);
 
   const headers = {
     'Content-Type': 'application/json',

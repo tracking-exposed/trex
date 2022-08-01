@@ -225,7 +225,7 @@ export async function boot(opts: BootOpts): Promise<App> {
         }
 
         /* these parameters are loaded from localStorage */
-        config = opts.mapLocalConfig(settings as any, opts.payload);
+        config = opts.mapLocalConfig(settings, opts.payload);
 
         // this is needed by guardoni to retrieve the current publicKey
         // eslint-disable-next-line
