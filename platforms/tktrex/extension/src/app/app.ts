@@ -210,6 +210,32 @@ const handleSuggested = _.debounce((elem: Node): void => {
  * that got display in 'following' 'foryou' or 'creator' page */
 let videoCounter = 0;
 
+const goBackInTree = (n: HTMLElement): HTMLElement => {
+  appLog.debug('Checking node %O', n);
+
+  if (n.parentNode instanceof HTMLElement) {
+    appLog.debug('Parent is a valid node! %O', n.parentNode);
+    appLog.debug('previous siblings? %O', n.previousElementSibling);
+
+    if (n.previousElementSibling?.tagName === 'A') {
+      return n.parentNode;
+    }
+
+    if (n.parentNode.outerHTML.length > 10000) {
+      appLog.debug(
+        'goBackInTree: parentNode > 10000',
+        n.parentNode.outerHTML.length,
+      );
+
+      return n;
+    }
+
+    return goBackInTree(n.parentNode);
+  }
+
+  return n;
+};
+
 /**
  * Handle video
  *
@@ -221,6 +247,7 @@ const handleVideo = (
   b: any,
   config: UserSettings,
 ): void => {
+  log.debug('Handle video %O', { node, h, b, config });
   /* we should check nature for good, the 'video' handles are triggered also in
    * other pages, afterall! */
   if (_.startsWith(window.location.pathname, '/search')) return;
@@ -229,24 +256,7 @@ const handleVideo = (
   /* this function return a node element that has a size
    * lesser than 10k, and stop when find out the parent
    * would be more than 10k big. */
-  const videoRoot = _.reduce(
-    _.times(20),
-    (memo: HTMLElement, iteration: number): HTMLElement => {
-      if (memo.parentNode instanceof HTMLElement) {
-        if (memo.parentNode.outerHTML.length > 10000) {
-          appLog.debug(
-            'handleVideo: parentNode > 10000',
-            memo.parentNode.outerHTML.length,
-          );
-          return memo;
-        }
-        return memo.parentNode;
-      }
-
-      return memo;
-    },
-    node,
-  );
+  const videoRoot = goBackInTree(node);
 
   if (videoRoot.hasAttribute('trex')) {
     appLog.info(
@@ -276,7 +286,27 @@ const handleVideo = (
   });
 
   if (config.ux) {
-    videoRoot.style.border = '1px solid green';
+    videoRoot.style.border = '2px solid green';
+  }
+};
+
+const handleVideoPlaceholder = (
+  n: HTMLElement,
+  h: any,
+  b: any,
+  config: UserSettings,
+): void => {
+  if (n.getAttribute('trex') === '1') {
+    appLog.debug('Video placeholder already handled');
+    return;
+  }
+
+  appLog.debug('Handle video placeholder %O', n);
+  const videoRoot = goBackInTree(n);
+  appLog.debug('Video root %O', videoRoot);
+  n.setAttribute('trex', '1');
+  if (config.ux) {
+    videoRoot.style.border = '1px solid orange';
   }
 };
 
@@ -364,6 +394,13 @@ export const tkHandlers: { [key: string]: ObserverHandler } = {
       selector: 'video',
     },
     handle: handleVideo,
+  },
+  videoPlaceholder: {
+    match: {
+      type: 'selector',
+      selector: 'canvas[class*="CanvasVideoCardPlaceholder"]',
+    },
+    handle: handleVideoPlaceholder,
   },
   suggested: {
     match: {
