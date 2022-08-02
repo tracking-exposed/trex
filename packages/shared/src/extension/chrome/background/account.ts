@@ -84,12 +84,25 @@ export async function handleSettingsLookup(
     DEFAULT_SETTINGS
   );
 
-  const experimentInfo = await readOrDefault('experiment.json', t.any, {
-    researchTag: undefined,
-    experimentId: undefined,
-  });
+  const experimentInfo = await readOrDefault('experiment.json', t.any, {});
 
   const settings = { ...settingsJson, ...experimentInfo };
+  // don't override researchTag and experimentId with undefined values
+  if (settings.researchTag === undefined) {
+    delete settings.researchTag;
+  }
+
+  if (settings.experimentId === undefined) {
+    delete settings.experimentId;
+  }
+
+  if (settings.ux === undefined) {
+    delete settings.ux;
+  }
+
+  if (settings.active === undefined) {
+    delete settings.active;
+  }
 
   try {
     if (!(settings.publicKey?.length && settings.secretKey?.length))
