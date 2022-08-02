@@ -48,7 +48,7 @@ const { buildENV, ...config } = getExtensionConfig(
     distDir: PATHS.DIST,
     manifestVersion: APP_VERSION,
     transformManifest: (m) => {
-      if (process.env.NODE_ENV === 'development') {
+      if (!PRODUCTION) {
         m.permissions.push('http://localhost:14000/');
       }
       return m;
