@@ -1,4 +1,5 @@
 const debug = require('debug')('parser:video');
+const _ = require('lodash');
 
 function video(envelop, previous) {
   /* 'foryou' 'video', 'following' have a description */
@@ -16,6 +17,10 @@ function video(envelop, previous) {
     debug('this is a really unexpected bug!');
     return null;
   }
+  _.each(aelem, function(ae, i) {
+    console.log(ae.getAttribute('href'), i, ae.textContent);
+  });
+  debugger;
   const videoLink = aelem[0].getAttribute('href');
   debug('work in progress %s', videoLink);
   return {

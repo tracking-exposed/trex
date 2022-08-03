@@ -56,7 +56,7 @@ export function tkTrexActions(remoteInfo: unknown): void {
  * Happens either manually when clicking on the emergency button,
  * and should happen automatically or through a setInterval
  * when the URL of the page changes.
- 
+
 function fullSave(): void {
   const { href } = window.location;
   pipe(
@@ -99,14 +99,45 @@ export const onLocationChange = (): void => {
   feedCounter++;
   feedId = refreshUUID(feedCounter);
   appLog.info(
-    'new feedId (%s), feed counter (%d) and video counter resetting after reaching (%d) -> %s',
+    'new feedId (%s), feed counter incremented (%d) and video counter (maybe) resetted (before was %d) -> %s',
     feedId,
     feedCounter,
     videoCounter,
     window.location.href,
   );
-  videoCounter = 0;
+
+  /* check if the user is switching video, it should go somewhere else but I'm experimenting */
+  const match = window.location.pathname.match(
+    tkHandlers.nativeVideo.match.location
+  );
+  console.log(match);
+  if(match)
+    nativeVideo();
+  else
+    /* debug in progress, it this case you might not want to reset videoCounter */
+    videoCounter = 0;
 };
+
+/**
+ * handle video when people move with down/uparrow in the feed
+ */
+ const nativeVideo = () : void => {
+
+  const contentNode = document.querySelector('body');
+
+  /* TODO some more meaningful check */
+  tkHub.dispatch({
+    type: 'fullScreenVideo',
+    payload: {
+      html: contentNode.outerHTML,
+      href: window.location.href,
+      feedId,
+      feedCounter,
+      videoCounter,
+    },
+  });
+  appLog.info("Reported fullScreenVideo")
+}
 
 /**
  * handle a new intercepted datum node by dispatching
@@ -303,7 +334,8 @@ const handleVideoPlaceholder = (
 
   appLog.debug('Handle video placeholder %O', n);
   const videoRoot = goBackInTree(n);
-  appLog.debug('Video root %O', videoRoot);
+  appLog.info('Marking as seen placeholder Video (%d) root %O',
+    videoCounter, videoRoot);
   n.setAttribute('trex', '1');
   if (config.ux) {
     videoRoot.style.border = '1px solid orange';
@@ -401,6 +433,13 @@ export const tkHandlers: { [key: string]: ObserverHandler } = {
       selector: 'canvas[class*="CanvasVideoCardPlaceholder"]',
     },
     handle: handleVideoPlaceholder,
+  },
+  nativeVideo: {
+    match: {
+      type: 'route',
+      location: /@(\w+)\/video\/(\d+)/i,
+    },
+    handle: nativeVideo,
   },
   suggested: {
     match: {
