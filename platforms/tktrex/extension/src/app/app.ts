@@ -300,6 +300,7 @@ const handleVideo = (
    * other pages, afterall! */
   if (_.startsWith(window.location.pathname, '/search')) return;
   if (profileHandler.match.location.test(window.location.pathname)) return;
+  if (videoRouteHandler.match.location.test(window.location.pathname)) return;
 
   /* this function return a node element that has a size
    * lesser than 10k, and stop when find out the parent
@@ -435,6 +436,14 @@ export const profileHandler: RouteObserverHandler = {
   handle: handleProfile,
 };
 
+export const videoRouteHandler: RouteObserverHandler = {
+  match: {
+    type: 'route',
+    location: /^\/@([a-zA-Z._0-9]+)\/video\/(\d+)/i,
+  },
+  handle: handleVideoRoute,
+};
+
 /* TO BE DONE as RouteObserveHandler
  */
 /**
@@ -443,19 +452,13 @@ export const profileHandler: RouteObserverHandler = {
  */
 export const tkHandlers: { [key: string]: ObserverHandler } = {
   profile: profileHandler,
+  nativeVideo: videoRouteHandler,
   video: {
     match: {
       type: 'selector',
       selector: 'video',
     },
     handle: handleVideo,
-  },
-  nativeVideo: {
-    match: {
-      type: 'route',
-      location: /^\/@(\w+)\/video\/(\d+)/i,
-    },
-    handle: handleVideoRoute,
   },
   videoPlaceholder: {
     match: {
