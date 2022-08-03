@@ -1,5 +1,17 @@
 import HubEvent, { HubEventBase } from '@shared/extension/models/HubEvent';
 
+/* TODO 
+   TODO 
+   TODO 
+
+ * when something like this is implemented, should be commented 
+ * where are the other part of the code than call these interfaces and where 
+ * you should extend. I just added one of this and I'm struggling to understand 
+ * where I should also update the code 
+ * 
+ * app/app.ts + this + src/handlers.ts (registerTKHandlers) + ??
+ * */
+
 export interface NewVideoEvent extends HubEventBase {
   type: 'NewVideo';
   payload: {
@@ -8,6 +20,17 @@ export interface NewVideoEvent extends HubEventBase {
     href: string;
     html: string;
     rect: DOMRect;
+    videoCounter: number;
+  };
+}
+
+export interface NativeVideoEvent extends HubEventBase {
+  type: 'NativeVideo';
+  payload: {
+    feedCounter: number;
+    feedId: string;
+    href: string;
+    html: string;
     videoCounter: number;
   };
 }
@@ -42,6 +65,7 @@ export interface SuggestedEvent extends HubEventBase {
 export type TKHubEvent =
   | HubEvent
   | NewVideoEvent
+  | NativeVideoEvent
   | SearchEvent
   | ProfileEvent
   | SuggestedEvent;

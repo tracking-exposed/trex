@@ -1,11 +1,12 @@
 import config from '@shared/extension/config';
 import { Hub } from '@shared/extension/hub';
 import log from '@shared/extension/logger';
-import { UserSettings } from '@shared/extension/models/UserSettings';
+import UserSettings from '@shared/extension/models/UserSettings';
 import { bo } from '@shared/extension/utils/browser.utils';
 import { getTimeISO8601 } from '@shared/extension/utils/common.utils';
 import { countBy } from 'lodash';
 import {
+  NativeVideoEvent,
   NewVideoEvent,
   ProfileEvent,
   SearchEvent,
@@ -14,7 +15,7 @@ import {
 } from '../models/HubEvent';
 
 interface EvidenceMetaData {
-  type: 'video' | 'suggested' | 'search' | 'profile';
+  type: 'video' | 'suggested' | 'search' | 'profile' | 'native';
   clientTime: string;
   incremental: number;
 }
@@ -31,6 +32,8 @@ const state = {
   incremental: 0,
   content: [] as Evidence[],
 };
+
+export const hub = new Hub<TKHubEvent>();
 
 export function handleVideo(e: NewVideoEvent): void {
   const videoEvent = {
@@ -49,6 +52,16 @@ export function handleVideo(e: NewVideoEvent): void {
   } else {
     state.content[videoIndex] = videoEvent;
   }
+  state.incremental++;
+}
+
+function handleNative(e: NativeVideoEvent): void {
+  state.content.push({
+    ...e.payload,
+    incremental: state.incremental,
+    clientTime: now(),
+    type: 'native',
+  });
   state.incremental++;
 }
 
@@ -117,7 +130,10 @@ export function registerTkHandlers(
       .on('Suggested', handleSuggested)
       .on('Search', handleSearch)
       .on('Profile', handleProfile)
-      .on('WindowUnload', () => sync(hub));
+      .on('NativeVideo', handleNative)
+      .on('WindowUnload', () => {
+        sync(hub);
+      });
 
     window.setInterval(() => {
       sync(hub);

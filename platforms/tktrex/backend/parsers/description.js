@@ -52,7 +52,7 @@ function description(envelop, previous) {
 
   const spans = envelop.jsdom.querySelectorAll('span');
   const texts = _.map(spans, function (span) {
-    return span.textContent;
+    return span.textContent.length > 0 ? span.textContent : null;
   });
 
   const textElems = envelop.jsdom.querySelector(

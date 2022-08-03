@@ -15,7 +15,7 @@ const parserList = {
   author: require('../parsers/author'),
   search: require('../parsers/search'),
   profile: require('../parsers/profile'),
-  video: require('../parsers/video'),
+  native: require('../parsers/native'),
   downloader: require('../parsers/downloader'),
 };
 
