@@ -1,7 +1,11 @@
 import { debounce } from '@material-ui/core';
 import _ from 'lodash';
 import { clearCache } from '../providers/dataDonation.provider';
-import { localLookup, serverLookup } from './chrome/background/sendMessage';
+import {
+  localLookup,
+  serverLookup,
+  settingsLookup,
+} from './chrome/background/sendMessage';
 import * as dom from './dom';
 import { registerHandlers } from './handlers/index';
 import { Hub } from './hub';
@@ -121,7 +125,7 @@ function setupObserver(
 
       if (window?.document) {
         if (platformMatch.test(window.location.href)) {
-          if (oldHref !== window.location.href) {
+          if (window.location.href !== oldHref) {
             const newHref = window.location.href;
 
             appLog.debug(
@@ -132,28 +136,33 @@ function setupObserver(
 
             onLocationChange(oldHref, newHref);
 
-            oldHref = newHref;
-          }
+            // always call the route handler
+            const routeHandlerKey = handlersList.find((h) => {
+              const handler = handlers[h];
 
-          // always call the route handler
-          const routeHandlerKey = handlersList.find((h) => {
-            const handler = handlers[h];
+              if (handler.match.type === 'route') {
+                appLog.debug(
+                  'Matching route %O',
+                  handler.match,
+                  window.location.pathname
+                );
+                return window.location.pathname.match(handler.match.location);
+              }
+              return false;
+            });
 
-            if (handler.match.type === 'route') {
-              return window.location.pathname.match(handler.match.location);
+            if (routeHandlerKey) {
+              appLog.debug('Route handler key %s', routeHandlerKey);
+              const { handle, ...routeHandlerOpts } = handlers[
+                routeHandlerKey
+              ] as RouteObserverHandler;
+              handle(window.document.body, routeHandlerOpts, routeHandlerKey, {
+                ...config,
+                href: window.location.toString(),
+              } as any);
             }
-            return false;
-          });
 
-          if (routeHandlerKey) {
-            appLog.debug('Route handler key %s', routeHandlerKey);
-            const { handle, ...routeHandlerOpts } = handlers[
-              routeHandlerKey
-            ] as RouteObserverHandler;
-            handle(window.document.body, routeHandlerOpts, routeHandlerKey, {
-              ...config,
-              href: window.location.toString(),
-            } as any);
+            oldHref = newHref;
           }
         }
       }
@@ -167,7 +176,9 @@ function setupObserver(
 
   window.addEventListener('unload', () => {
     appLog.debug('Window unloading, disconnect the observer...');
-    observer.disconnect();
+    if (observer) {
+      observer.disconnect();
+    }
   });
 
   if (body) {
@@ -181,7 +192,7 @@ function setupObserver(
 
 /* Boot the application by giving a callback that
  * will be invoked after the handshake with API server.
- */
+ **/
 
 interface App {
   config: UserSettings;
@@ -198,63 +209,66 @@ export async function boot(opts: BootOpts): Promise<App> {
     // You can learn more in the [`./handlers`](./handlers/index.html) directory.
     registerHandlers(opts.hub.hub);
 
-    // Lookup the current user and decide what to do.
-    localLookup((response) => {
-      if (response.type === 'Error') {
-        throw response.error;
-      }
-
-      const settings = response.result;
-      // `response` contains the user's public key, we save it global for the blinks
-      appLog.info('retrieved locally stored user settings %O', settings);
-
-      if (!settings.active) {
-        appLog.info('extension disabled!');
-        return resolve({
-          config: settings,
-          destroy: () => {
-            opts.hub.hub.clear();
-          },
-        });
-      }
-
-      /* these parameters are loaded from localStorage */
-      config = opts.mapLocalConfig(settings as any, opts.payload);
-
-      // this is needed by guardoni to retrieve the current publicKey
-      // eslint-disable-next-line
-      console.log(JSON.stringify({ response: config }));
-
-      appLog.info('Updated config %O', config);
-
-      // register platform specific event handlers
-      opts.hub.onRegister(opts.hub.hub, config);
-
-      // emergency button should be used when a supported with
-      // UX hack in place didn't see any UX change, so they
-      // can report the problem and we can handle it.
-      // initializeEmergencyButton();
-
-      // because the URL has been for sure reloaded, be sure to also
-      clearCache();
-
-      serverLookup(config, (response) => {
-        appLog.info('Server lookup cb %O', response);
+    // load settings from json file
+    settingsLookup((settings) => {
+      // Lookup the current user and decide what to do.
+      localLookup((response) => {
         if (response.type === 'Error') {
           throw response.error;
         }
-        const observer = setupObserver(opts.observe, config);
-        opts.onAuthenticated(response.result);
 
-        const context = {
-          config,
-          destroy: () => {
-            opts.hub.hub.clear();
-            observer.disconnect();
-          },
-        };
+        const settings = response.result;
+        // `response` contains the user's public key, we save it global for the blinks
+        appLog.info('retrieved locally stored user settings %O', settings);
 
-        resolve(context);
+        if (!settings.active) {
+          appLog.info('extension disabled!');
+          return resolve({
+            config: settings,
+            destroy: () => {
+              opts.hub.hub.clear();
+            },
+          });
+        }
+
+        /* these parameters are loaded from localStorage */
+        config = opts.mapLocalConfig(settings, opts.payload);
+
+        // this is needed by guardoni to retrieve the current publicKey
+        // eslint-disable-next-line
+        console.log(JSON.stringify({ response: config }));
+
+        appLog.info('Updated config %O', config);
+
+        // register platform specific event handlers
+        opts.hub.onRegister(opts.hub.hub, config);
+
+        // emergency button should be used when a supported with
+        // UX hack in place didn't see any UX change, so they
+        // can report the problem and we can handle it.
+        // initializeEmergencyButton();
+
+        // because the URL has been for sure reloaded, be sure to also
+        clearCache();
+
+        serverLookup(config, (response) => {
+          appLog.info('Server lookup cb %O', response);
+          if (response.type === 'Error') {
+            throw response.error;
+          }
+          const observer = setupObserver(opts.observe, config);
+          opts.onAuthenticated(response.result);
+
+          const context = {
+            config,
+            destroy: () => {
+              opts.hub.hub.clear();
+              observer.disconnect();
+            },
+          };
+
+          resolve(context);
+        });
       });
     });
   });

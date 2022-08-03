@@ -15,6 +15,7 @@ const parserList = {
   author: require('../parsers/author'),
   search: require('../parsers/search'),
   profile: require('../parsers/profile'),
+  native: require('../parsers/native'),
   downloader: require('../parsers/downloader'),
 };
 
@@ -48,6 +49,7 @@ function buildMetadata(entry) {
       ...entry.findings.stitch,
       ...entry.findings.author,
       ...entry.findings.downloader,
+      ...entry.findings.video,
     };
 
     metadata.timelineId = entry.source.html.timelineId;

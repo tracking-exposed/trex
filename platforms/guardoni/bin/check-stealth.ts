@@ -22,8 +22,7 @@ void (async () => {
     profile: {
       udd: path.resolve(process.cwd(), 'profiles', 'default'),
       profileName: 'default',
-      newProfile: true,
-      execount: 0,
+      execount: 1,
       researchTag: [],
     },
   })().then(async (g) => {

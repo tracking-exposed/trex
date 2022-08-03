@@ -81,12 +81,18 @@ export function toMetadata(
   metadata.savingTime = new Date(entry.source.html.savingTime);
   metadata.id = entry.source.html.metadataId;
   metadata.publicKey = entry.source.html.publicKey;
-  metadata.timelineId = entry.source.html.timelineId;
   if (
     entry.source.html.experimentId &&
     entry.source.html.experimentId.length > 0
   ) {
     metadata.experimentId = entry.source.html.experimentId;
+  }
+
+  if (
+    entry.source.html.researchTag &&
+    entry.source.html.researchTag.length > 0
+  ) {
+    metadata.researchTag = entry.source.html.researchTag;
   }
 
   if (entry.findings.nature.type === 'search') {

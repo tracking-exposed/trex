@@ -147,8 +147,7 @@ export const getDirective =
     experimentId: NonEmptyString
   ): TE.TaskEither<AppError, NonEmptyArray<Step>> => {
     return pipe(
-      // TODO this should become v2
-      ctx.API.v3.Public.GetDirective({
+      ctx.API.v2.Experiments.GetDirective({
         Params: {
           experimentId,
         },
@@ -171,7 +170,7 @@ export const createExperimentInAPI =
     steps: NonEmptyArray<Step>
   ): TE.TaskEither<AppError, CreateExperimentSuccessResponse> => {
     return pipe(
-      API.v3.Public.PostDirective({
+      API.v2.Experiments.PostDirective({
         Body: steps,
         Headers: {
           'Content-Type': 'application/json; charset=utf-8',
@@ -228,10 +227,6 @@ export const saveExperiment =
     experimentId: NonEmptyString,
     profile: GuardoniProfile
   ): TE.TaskEither<AppError, ExperimentInfo> => {
-    ctx.logger.debug(
-      'Saving experiment info in extension/experiment.json (would be read by the extension)'
-    );
-
     const experimentJSONFile = path.join(
       ctx.platform.extensionDir,
       'experiment.json'
@@ -242,26 +237,23 @@ export const saveExperiment =
       researchTag: ctx.config.researchTag,
       execCount: profile.execount,
       profileName: profile.profileName,
-      newProfile: profile.newProfile,
       when: new Date(),
     };
 
+    ctx.logger.debug(
+      'Saving experiment info in %s to be read by the extension %O',
+      experimentJSONFile,
+      experimentInfo
+    );
+
     return pipe(
       liftFromIOE(() =>
-        fs.statSync(experimentJSONFile, { throwIfNoEntry: false })
+        fs.writeFileSync(
+          experimentJSONFile,
+          JSON.stringify(experimentInfo),
+          'utf-8'
+        )
       ),
-      TE.chain((stat) => {
-        if (stat) {
-          return TE.right(undefined);
-        }
-        return liftFromIOE(() =>
-          fs.writeFileSync(
-            experimentJSONFile,
-            JSON.stringify(experimentInfo),
-            'utf-8'
-          )
-        );
-      }),
       TE.map(() => experimentInfo)
     );
   };
@@ -270,7 +262,7 @@ export const listExperiments =
   (ctx: GuardoniContext) =>
   (): TE.TaskEither<AppError, GuardoniSuccessOutput> => {
     return pipe(
-      ctx.API.v3.Public.GetPublicDirectives(),
+      ctx.API.v2.Experiments.GetPublicDirectives(),
       TE.map(
         (experiments): GuardoniSuccessOutput => ({
           message: 'Experiments List',

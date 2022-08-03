@@ -6,17 +6,24 @@ import {
 } from '@shared/arbitraries/Experiment.arb';
 import { CommonStepArb } from '@shared/arbitraries/Step.arb';
 import * as tests from '@shared/test';
-import differenceInMilliseconds from 'date-fns/differenceInMilliseconds';
 import { pipe } from 'fp-ts/lib/function';
 import * as fs from 'fs';
 import * as path from 'path';
 import { GetGuardoniCLI, GuardoniCLI } from '../../src/guardoni/cli';
 import { csvStringifyTE } from '../../src/guardoni/utils';
-import axiosMock from '../../__mocks__/axios.mock';
-import { puppeteerMock } from '../../__mocks__/puppeteer.mock';
+import axiosMock from '@shared/test/__mocks__/axios.mock';
+import { puppeteerMock } from '@shared/test/__mocks__/puppeteer.mock';
+import {
+  getProfileDataDir,
+  getProfileJsonPath,
+  readProfile,
+} from '../../src/guardoni/profile';
+import { guardoniLogger } from '../../src/logger';
+import { throwTE } from '@shared/utils/task.utils';
 
 const basePath = path.resolve(__dirname, '../../');
 const profileName = 'profile-test-99';
+const profileDir = getProfileDataDir(basePath, profileName);
 const ytExtensionDir = path.resolve(basePath, '../yttrex/extension/build');
 const tkExtensionDir = path.resolve(basePath, '../tktrex/extension/build');
 const publicKey = process.env.PUBLIC_KEY as string;
@@ -54,7 +61,6 @@ describe('CLI', () => {
   });
 
   afterAll(() => {
-    const profileDir = path.resolve(basePath, 'profiles', profileName);
     if (fs.existsSync(profileDir)) {
       fs.rmSync(profileDir, {
         recursive: true,
@@ -243,7 +249,7 @@ describe('CLI', () => {
     });
   });
 
-  describe('experiment', () => {
+  describe('Run experiment', () => {
     test('fails when experiment id is empty', async () => {
       await expect(
         guardoni.run({ run: 'experiment', experiment: '' as any })()
@@ -254,6 +260,15 @@ describe('CLI', () => {
           details: ['Invalid value "" supplied to : NonEmptyString'],
         },
       });
+
+      // check guardoni profile count has been updated
+      const guardoniProfile = await throwTE(
+        readProfile({ logger: guardoniLogger })(
+          path.join(profileDir, 'guardoni.json')
+        )
+      );
+
+      expect(guardoniProfile).toMatchObject({ execount: 0 });
     });
 
     test('succeed when experimentId has valid "yt" directives', async () => {
@@ -270,6 +285,15 @@ describe('CLI', () => {
         experiment: experimentId as any,
         opts: { publicKey, secretKey },
       })();
+
+      // check guardoni profile count has been updated
+      const guardoniProfile = await throwTE(
+        readProfile({ logger: guardoniLogger })(
+          path.join(profileDir, 'guardoni.json')
+        )
+      );
+
+      expect(guardoniProfile).toMatchObject({ profileName, execount: 1 });
 
       // check guardoni has written proper settings.json
       // inside extension folder
@@ -316,6 +340,15 @@ describe('CLI', () => {
         opts: { publicKey, secretKey },
       })();
 
+      // check guardoni profile count has been updated
+      const guardoniProfile = await throwTE(
+        readProfile({ logger: guardoniLogger })(
+          path.join(profileDir, 'guardoni.json')
+        )
+      );
+
+      expect(guardoniProfile).toMatchObject({ execount: 2 });
+
       expect(result).toMatchObject({
         _tag: 'Right',
         right: {
@@ -345,6 +378,15 @@ describe('CLI', () => {
 
       const result: any = await guardoni.run({ run: 'auto', value: '1' })();
 
+      // check guardoni profile count has been updated
+      const guardoniProfile = await throwTE(
+        readProfile({ logger: guardoniLogger })(
+          path.join(profileDir, 'guardoni.json')
+        )
+      );
+
+      expect(guardoniProfile).toMatchObject({ execount: 3 });
+
       expect(result).toMatchObject({
         _tag: 'Right',
         right: {
@@ -367,6 +409,15 @@ describe('CLI', () => {
       });
 
       const result: any = await guardoni.run({ run: 'auto', value: '2' })();
+
+      // check guardoni profile count has been updated
+      const guardoniProfile = await throwTE(
+        readProfile({ logger: guardoniLogger })(
+          path.join(profileDir, 'guardoni.json')
+        )
+      );
+
+      expect(guardoniProfile).toMatchObject({ execount: 4 });
 
       expect(result).toMatchObject({
         _tag: 'Right',

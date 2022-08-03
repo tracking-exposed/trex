@@ -97,7 +97,7 @@ async function saveInDB(experinfo, objects, dbcollection) {
     if (!(error instanceof Error)) {
       debug('Error in saveInDB: %s', error);
       return {
-        error: error,
+        error,
         message: 'error in saveInDB',
         subject: dbcollection,
       };
@@ -140,12 +140,10 @@ async function processEvents(req) {
       // 'rect', 'clientTime', 'type', 'incremental' ]
 
       const id = utils.hash({
-        clientRGN: body.feedId
-          ? body.feedId
-          : body.href + new Date().toISOString(),
+        clientRGN: body.feedId ? body.feedId : body.href,
         serverPRGN: supporter.publicKey,
         type: body.type,
-        impressionNumber: body.videoCounter,
+        impressionNumber: body.type === 'video' ? body.videoCounter : 'fixed',
       });
       const timelineIdHash = utils.hash({
         session: body.feedId
@@ -185,11 +183,12 @@ async function processEvents(req) {
   );
 
   debug(
-    '[+] (p %s) %s <%s> -- %s',
+    '[+] (p %s) %s <%s> -- %s %s',
     supporter.p,
     JSON.stringify(_.map(req.body, 'type')),
     JSON.stringify(_.map(req.body, 'href')),
-    JSON.stringify(_.map(htmls, 'n'))
+    JSON.stringify(_.map(htmls, 'n')),
+    htmls[0]?.researchTag ? _.countBy(htmls, 'researchTag') : '[untagged]'
   );
 
   /* after having prepared the objects, the functions below would:

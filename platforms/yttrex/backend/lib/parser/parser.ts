@@ -152,7 +152,7 @@ export const parseContributions =
       try {
         if (entry) {
           const m = await ctx.saveResults(entry);
-          // parserLog.debug('Metadata built %O', m);
+          // ctx.log.info('Metadata built %O', m);
           newmetas.push(m?.metadata);
         }
       } catch (error) {
@@ -228,18 +228,12 @@ const actualExecution =
           };
         }
 
-        /* ctx.log.debug(
-          'Fetching (%d) contributions with filter %O',
-          htmlAmount,
-          htmlFilter
-        ); */
-
         const envelops = await ctx.getContributions(htmlFilter, 0, htmlAmount);
 
         if (envelops.sources.length)
           ctx.log.debug('Data to process %d', envelops.sources.length);
 
-        let results: ParsingChainResults | undefined;
+        // let results: ParsingChainResults | undefined;
         if (!_.size(envelops.sources)) {
           nodatacounter++;
           if (nodatacounter % 10 === 1) {
@@ -253,44 +247,13 @@ const actualExecution =
           lastExecution = subMinutes(new Date(), BACKINTIMEDEFAULT);
           computedFrequency = FREQUENCY;
         } else {
-          results = await parseContributions(ctx)(envelops);
+          await parseContributions(ctx)(envelops);
+          /* remind self: before the return value (results) was used to build a console.table output */
         }
 
-        // eslint-disable-next-line
-        // const tableOutput = _.map(results ?? [], function (r: ParsingChainResults) {
-        //   if (r) {
-        //     if (r.findings) {
-        //       const findingsOutput = Object.entries(r.findings).reduce(
-        //         (acc, [k, v]) => {
-        //           return {
-        //             ...acc,
-        //             [k]: k === 'nature' ? v?.type : JSON.stringify(v),
-        //           };
-        //         },
-        //         {}
-        //       );
-
-        //       return {
-        //         ...r.log,
-        //         ...findingsOutput,
-        //       };
-        //     } else {
-        //       return {
-        //         ...r.log,
-        //         ...r.failures,
-        //         type: 'error',
-        //       };
-        //     }
-        //   }
-        //   return {};
-        // });
-
-        if (typeof singleUse === 'boolean' && singleUse) {
+        if (singleUse) {
           ctx.log.info('Single execution done!');
-          return {
-            type: 'Success',
-            payload: results,
-          };
+          break;
         }
         if (computedFrequency !== previousFrequency) {
           ctx.log.debug('Sleeping for %f seconds', computedFrequency);
@@ -299,9 +262,6 @@ const actualExecution =
         const sleepTime = computedFrequency * 1000;
         await sleep(sleepTime);
       }
-      ctx.log.info(
-        "Please note what wasn't supposed to never happen, just happen: restart the software ASAP."
-      );
       return { type: 'Success', payload: {} };
     } catch (e) {
       ctx.log.error('Error in filterChecker', e.message, e.stack);

@@ -1,11 +1,13 @@
+import { HandshakeActiveResponseArb } from '@shared/arbitraries/HandshakeResponse.arb';
 import { boot, BootOpts } from '@shared/extension/app';
 import { handleServerLookup } from '@shared/extension/chrome/background/account';
 import { load } from '@shared/extension/chrome/background/index';
 import { handleSyncMessage } from '@shared/extension/chrome/background/sync';
-import config from '@shared/extension/config';
+import db from '@shared/extension/chrome/db';
+import { fc } from '@shared/test';
+import axiosMock from '@shared/test/__mocks__/axios.mock';
 import { sleep } from '@shared/utils/promise.utils';
 import { youtubeDomainRegExp } from '@yttrex/shared/parsers/index';
-import axios from 'axios';
 import * as fs from 'fs';
 import { chrome } from 'jest-chrome';
 import * as path from 'path';
@@ -18,16 +20,16 @@ const chromeListener = jest.fn();
 
 const homeMatcher = app.watchedPaths.home;
 const videoMatcher = app.watchedPaths.video;
-const leafMatcherChannel1 = app.watchedPaths.channel1;
+/* const leafMatcherChannel1 = app.watchedPaths.channel1;
 const leafMatcherChannel2 = app.watchedPaths.channel2;
-const leafMatcherChannel3 = app.watchedPaths.channel3;
+const leafMatcherChannel3 = app.watchedPaths.channel3; */
 const leafMatcherBanner = app.watchedPaths.banner;
 const ytTrexActionsSpy = jest.spyOn(app, 'ytTrexActions');
 const handleHomeSpy = jest.spyOn(homeMatcher, 'handle');
 const handleVideoSpy = jest.spyOn(videoMatcher, 'handle');
-const handleLeafChannel1Spy = jest.spyOn(leafMatcherChannel1, 'handle');
+/* const handleLeafChannel1Spy = jest.spyOn(leafMatcherChannel1, 'handle');
 const handleLeafChannel2Spy = jest.spyOn(leafMatcherChannel2, 'handle');
-const handleLeafChannel3Spy = jest.spyOn(leafMatcherChannel3, 'handle');
+const handleLeafChannel3Spy = jest.spyOn(leafMatcherChannel3, 'handle'); */
 const handleLeafBannerSpy = jest.spyOn(leafMatcherBanner, 'handle');
 const eventsRegisterSpy = jest.spyOn(events, 'register');
 
@@ -42,7 +44,7 @@ const keys = {
   publicKey: process.env.PUBLIC_KEY,
   secretKey: process.env.SECRET_KEY,
 };
-let supporterId: string, ytURL: string;
+let ytURL: string;
 
 chromeListener.mockImplementation((request, sender, sendResponse) => {
   app.ytLogger.info('on listener %O', { request, sender });
@@ -52,45 +54,54 @@ chromeListener.mockImplementation((request, sender, sendResponse) => {
 
 const testTime = new Date().toISOString();
 
+const researchTag = 'fake-tag';
 const getConfig = () => ({
   ...keys,
   active: true,
   ux: true,
   href: (() => ytURL)(),
-  researchTag: 'fake-tag',
+  researchTag,
   experimentId: '1',
   execount: 1,
-  newProfile: false,
   testTime,
 });
 
-chrome.runtime.sendMessage
-  // mock 'LocalLookup' message handler
-  .mockImplementation((msg: any, cb: any) => {
+chrome.runtime.sendMessage.mockImplementation((msg: any, cb: any) => {
+  // mock 'SettingsLookup' message handler
+  if (msg.type === 'SettingsLookup') {
+    const settings = getConfig();
+    dbMap.local = settings as any;
+    return cb(settings);
     // mock 'LocalLookup' message handler
-    if (msg.type === 'LocalLookup') {
-      return cb(getConfig());
-      // mock 'ServerLookup' message handler
-    } else if (msg.type === 'ServerLookup') {
-      return handleServerLookup(backgroundOpts)(msg.payload, cb);
-      // mock 'sync' message handler
-    } else if (msg.type === 'sync') {
-      return handleSyncMessage(backgroundOpts)(msg, null, cb);
-    }
-    app.ytLogger.info('unhandled msg %s', msg.type);
-    cb(new Error(`Unhandled msg ${msg} in chrome mock`), null);
-  });
-
-chrome.storage.local.get.mockImplementation((key: any, cb: any) => {
-  app.ytLogger.info('Get Storage key %s', keys);
-  app.ytLogger.info('Callback %O', cb);
-  return cb({ [key]: keys });
+  } else if (msg.type === 'LocalLookup') {
+    return cb(getConfig());
+    // mock 'ServerLookup' message handler
+  } else if (msg.type === 'ServerLookup') {
+    return handleServerLookup(backgroundOpts)(msg.payload, cb);
+    // mock 'sync' message handler
+  } else if (msg.type === 'sync') {
+    return handleSyncMessage(backgroundOpts)(msg, null, cb);
+  }
+  app.ytLogger.info('unhandled msg %s', msg.type);
+  cb(new Error(`Unhandled msg ${msg} in chrome mock`), null);
 });
 
-chrome.storage.local.set.mockImplementation((obj, cb: any) => {
-  app.ytLogger.info('Set Storage key %s', obj);
-  app.ytLogger.info('Callback %O', cb);
-  return cb(obj);
+let dbMap = {
+  local: undefined,
+};
+
+chrome.storage.local.get.mockImplementation((key: any, cb: any) => {
+  app.ytLogger.info('Get Storage key (%s) %O', key, dbMap);
+  return cb(dbMap);
+});
+
+chrome.storage.local.set.mockImplementation((obj: any, cb: any) => {
+  app.ytLogger.info('Set Storage key %O', obj);
+  dbMap = {
+    ...dbMap,
+    ...obj,
+  };
+  return cb();
 });
 
 chrome.runtime.onMessage.addListener(chromeListener);
@@ -100,9 +111,9 @@ const bootConfig = (): BootOpts => ({
     config: keys,
     href: window.location.href,
   } as any,
-  mapLocalConfig: (c, { href, config }: any): any => ({
-    ...config,
+  mapLocalConfig: (c, { href, ...config }: any): any => ({
     ...c,
+    ...config,
     href,
   }),
   observe: {
@@ -127,19 +138,48 @@ describe('YT App', () => {
   });
 
   afterEach(() => {
+    axiosMock.request.mockClear();
     ytTrexActionsSpy.mockClear();
     handleHomeSpy.mockClear();
     handleVideoSpy.mockClear();
     handleLeafBannerSpy.mockClear();
-    handleLeafChannel1Spy.mockClear();
+    /* handleLeafChannel1Spy.mockClear();
     handleLeafChannel2Spy.mockClear();
-    handleLeafChannel3Spy.mockClear();
+    handleLeafChannel3Spy.mockClear(); */
   });
 
   test('Collect evidence from home page', async () => {
+    const handshakeResponse = fc.sample(HandshakeActiveResponseArb, 1)[0];
+    axiosMock.request.mockResolvedValueOnce({
+      data: handshakeResponse,
+    });
+
     const appContext = await boot(bootConfig());
 
+    // check handshake response
+    expect(axiosMock.request.mock.calls[0][0]).toMatchObject({
+      url: '/v2/handshake',
+      data: {
+        config: {
+          publicKey: keys.publicKey,
+          researchTag,
+          execount: 1,
+          testTime: new Date(testTime),
+        },
+        href: 'http://localhost/',
+      },
+      headers: {
+        Accept: 'application/json',
+      },
+      method: 'POST',
+      responseType: 'json',
+    });
+
     ytURL = 'https://www.youtube.com/';
+
+    axiosMock.request.mockResolvedValue({
+      data: {},
+    });
 
     // navigate to youtube home
     global.jsdom.reconfigure({
@@ -160,7 +200,7 @@ describe('YT App', () => {
     expect(eventsRegisterSpy).toHaveBeenCalled();
 
     // yt callback should be called after server response
-    expect(ytTrexActionsSpy).toHaveBeenCalled();
+    expect(ytTrexActionsSpy).toHaveBeenCalledWith(handshakeResponse);
 
     await sleep(12000);
 
@@ -174,10 +214,12 @@ describe('YT App', () => {
     // const { handle: _bannerHandle, ...bannerOpts } = leafMatcherBanner;
     expect(handleLeafBannerSpy).not.toHaveBeenCalled();
 
+    /*
     // channel3 match
     const { handle: _channel1Handle, ...channel1Opts } = leafMatcherChannel1;
-    expect(handleLeafChannel1Spy).toHaveBeenCalledTimes(30);
-    Array.from({ length: 30 }).map((n, i) => {
+    const leafChannel1Count = 30;
+    expect(handleLeafChannel1Spy).toHaveBeenCalledTimes(leafChannel1Count);
+    Array.from({ length: leafChannel1Count }).map((n, i) => {
       expect(handleLeafChannel1Spy).toHaveBeenNthCalledWith(
         i + 1,
         expect.any(HTMLElement),
@@ -189,9 +231,10 @@ describe('YT App', () => {
 
     // channel2 match
     const { handle: _channel2Handle, ...channel2Opts } = leafMatcherChannel2;
-    expect(handleLeafChannel2Spy).toHaveBeenCalledTimes(67);
+    const leafChannel2Count = 67;
+    expect(handleLeafChannel2Spy).toHaveBeenCalledTimes(leafChannel2Count);
 
-    Array.from({ length: 67 }).map((n, i) => {
+    Array.from({ length: leafChannel2Count }).map((n, i) => {
       expect(handleLeafChannel2Spy).toHaveBeenNthCalledWith(
         i + 1,
         expect.any(HTMLElement),
@@ -203,8 +246,9 @@ describe('YT App', () => {
 
     // channel3 match
     const { handle: _channel3Handle, ...channel3Opts } = leafMatcherChannel3;
-    expect(handleLeafChannel3Spy).toHaveBeenCalledTimes(4);
-    Array.from({ length: 4 }).map((n, i) => {
+    const leafChannel3Count = 4;
+    expect(handleLeafChannel3Spy).toHaveBeenCalledTimes(leafChannel3Count);
+    Array.from({ length: leafChannel3Count }).map((n, i) => {
       expect(handleLeafChannel3Spy).toHaveBeenNthCalledWith(
         i + 1,
         expect.any(HTMLElement),
@@ -214,30 +258,84 @@ describe('YT App', () => {
       );
     });
 
-    const response = await axios
-      .get(`${process.env.API_ROOT}/v1/personal/${keys.publicKey}`)
-      .catch((e) => {
-        console.error(e);
-        return e.response.data;
-      });
+    // 1 - POST /v2/handshake
+    // 2 - POST /v2/events
+    // 2 - POST /v2/events
+    expect(axiosMock.request.mock.calls).toHaveLength(3);
 
-    expect(response.status).toBe(200);
-    expect(response.data.ads.length).toBe(100);
-
-    expect(response.data).toMatchObject({
-      supporter: {
-        publicKey: keys.publicKey,
-        version: config.VERSION,
-        hereSince: 'a few seconds',
-      },
-      stats: {
-        home: 1,
+    expect(axiosMock.request.mock.calls[1][0]).toMatchObject({
+      url: '/v2/events',
+      method: 'POST',
+      data: Array.from({
+        length: leafChannel1Count + leafChannel2Count + leafChannel3Count,
+      }).map((n, i) => ({
+        incremental: i,
+        type: 'leaf',
+      })),
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+        'X-YTtrex-Build': process.env.BUILD_DATE,
+        'X-YTtrex-NonAuthCookieId': researchTag,
+        'X-YTtrex-PublicKey': keys.publicKey,
+        'X-YTtrex-Version': '0.1-TEST',
       },
     });
+
+
+    expect(axiosMock.request.mock.calls).toHaveLength(2);
+    expect(axiosMock.request.mock.calls[1][0]).toMatchObject({
+      url: '/v2/events',
+      method: 'POST',
+      data: [
+        {
+          type: 'video',
+          incremental: 4,
+          href: ytURL,
+        },
+      ],
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+        'X-YTtrex-Build': process.env.BUILD_DATE,
+        'X-YTtrex-NonAuthCookieId': researchTag,
+        'X-YTtrex-PublicKey': keys.publicKey,
+        'X-YTtrex-Version': '0.1-TEST',
+      },
+    });
+    */
   });
 
   test('Collect evidence from video page', async () => {
+    const handshakeResponse = fc.sample(HandshakeActiveResponseArb, 1)[0];
+    axiosMock.request.mockResolvedValueOnce({
+      data: handshakeResponse,
+    });
+
     const appContext = await boot(bootConfig());
+
+    // check handshake response
+    expect(axiosMock.request.mock.calls[0][0]).toMatchObject({
+      url: '/v2/handshake',
+      data: {
+        config: {
+          publicKey: keys.publicKey,
+          researchTag,
+          execount: 1,
+          testTime: new Date(testTime),
+        },
+        href: ytURL,
+      },
+      headers: {
+        Accept: 'application/json',
+      },
+      method: 'POST',
+      responseType: 'json',
+    });
+
+    axiosMock.request.mockResolvedValue({
+      data: {},
+    });
 
     ytURL = 'https://www.youtube.com/watch?v=55ud4_Cdbrc';
 
@@ -258,7 +356,7 @@ describe('YT App', () => {
     expect(eventsRegisterSpy).toHaveBeenCalled();
 
     // yt callback should be called after server response
-    expect(ytTrexActionsSpy).toHaveBeenCalledWith({ ignored: true });
+    expect(ytTrexActionsSpy).toHaveBeenCalledWith(handshakeResponse);
 
     await sleep(12000);
 
@@ -274,7 +372,9 @@ describe('YT App', () => {
     expect(handleVideoSpy).toBeCalledTimes(1);
 
     // banner match
+    const leafBannerCount = 2;
     const { handle: _bannerHandle, ...bannerOpts } = leafMatcherBanner;
+    expect(handleLeafBannerSpy).toHaveBeenCalledTimes(leafBannerCount);
     expect(handleLeafBannerSpy).toHaveBeenNthCalledWith(
       1,
       expect.any(HTMLElement),
@@ -282,8 +382,8 @@ describe('YT App', () => {
       'banner',
       { ...appContext.config, href: ytURL }
     );
-    expect(handleLeafBannerSpy).toHaveBeenCalledTimes(2);
 
+    /*
     // channel3 match
     const leafChannel1Count = 132;
     const { handle: _channel1Handle, ...channel1Opts } = leafMatcherChannel1;
@@ -326,34 +426,40 @@ describe('YT App', () => {
         { ...appContext.config, href: ytURL }
       );
     });
+    */
 
-    const response = await axios
-      .get(`${process.env.API_ROOT}/v1/personal/${keys.publicKey}`)
-      .catch((e) => {
-        console.error(e);
-        return e.response.data;
-      });
+    expect(axiosMock.request.mock.calls).toHaveLength(3);
 
-    expect(response.status).toBe(200);
-    expect(response.data.ads.length).toBe(100);
-    expect(response.data).toMatchObject({
-      supporter: {
-        publicKey: keys.publicKey,
-        version: config.VERSION,
-        hereSince: 'a few seconds',
+    expect(axiosMock.request.mock.calls[1][0].data).toHaveLength(1);
+    expect(axiosMock.request.mock.calls[1][0]).toMatchObject({
+      url: '/v2/events',
+      method: 'POST',
+      data: [{ type: 'leaf' }],
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+        'X-YTtrex-Build': process.env.BUILD_DATE,
+        'X-YTtrex-NonAuthCookieId': researchTag,
+        'X-YTtrex-PublicKey': keys.publicKey,
+        'X-YTtrex-Version': process.env.VERSION,
       },
-      videos: [
+    });
+
+    expect(axiosMock.request.mock.calls[2][0]).toMatchObject({
+      url: '/v2/events',
+      method: 'POST',
+      data: [
         {
-          videoId: '55ud4_Cdbrc',
-          authorName: 'Kerim Akarpat',
-          authorSource: '/channel/UC8Zr1C6gwthR_909q_9E00g',
-          relatedN: 19,
-          relative: 'a few seconds ago',
+          type: 'video',
         },
       ],
-      stats: {
-        video: 1,
-        home: 1,
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+        'X-YTtrex-Build': process.env.BUILD_DATE,
+        'X-YTtrex-NonAuthCookieId': researchTag,
+        'X-YTtrex-PublicKey': keys.publicKey,
+        'X-YTtrex-Version': process.env.VERSION,
       },
     });
   });

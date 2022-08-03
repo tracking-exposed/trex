@@ -21,7 +21,7 @@ const FIXED_USER_NAME = 'local';
 const DEFAULT_SETTINGS = {
   active: true,
   ux: false,
-  researchTag: '',
+  researchTag: undefined,
   experimentId: undefined,
 };
 
@@ -32,9 +32,10 @@ export function initializeKey(): KeyPair {
   // use publicKey and secretKey from process.env when available
   if (process.env.PUBLIC_KEY && process.env.SECRET_KEY) {
     log.info(
-      'Found PUBLIC and SECRET keys in envrionment, returning those and skipping generation %j',
+      'Found PUBLIC and SECRET keys in environment, returning those and skipping generation %j',
       process.env
     );
+
     return {
       publicKey: process.env.PUBLIC_KEY,
       secretKey: process.env.SECRET_KEY,
@@ -44,7 +45,7 @@ export function initializeKey(): KeyPair {
   const publicKey = bs58.encode(newKeypair.publicKey);
   const secretKey = bs58.encode(newKeypair.secretKey);
   const rv = { publicKey, secretKey };
-  log.info('initializing new key pair:', rv);
+  log.info('initializing new key pair: %O', rv);
   return rv;
 }
 
@@ -52,28 +53,65 @@ interface WithUserId {
   userId: string;
 }
 
-async function handleLocalLookup(
+const readOrDefault = async (
+  fn: string,
+  codec: any,
+  defaults: any
+): Promise<any> => {
+  try {
+    const result = await file.readJSON(fn, codec);
+
+    return {
+      ...defaults,
+      ...result,
+    };
+  } catch (err) {
+    log.info('Error caught while checking settings.json: %s', err);
+    return defaults;
+  }
+};
+
+/**
+ * Load settings from `settings.json`
+ */
+export async function handleSettingsLookup(
   { userId }: WithUserId,
   sendResponse: (response: Partial<UserSettings>) => void
 ): Promise<void> {
-  let settings;
+  const settingsJson = await readOrDefault(
+    'settings.json',
+    t.partial(UserSettings.props),
+    DEFAULT_SETTINGS
+  );
+
+  const experimentInfo = await readOrDefault('experiment.json', t.any, {
+    researchTag: undefined,
+    experimentId: undefined,
+  });
+
+  const settings = { ...settingsJson, ...experimentInfo };
+
   try {
-    const localSettings = await file.readJSON(
-      'settings.json',
-      t.partial(UserSettings.props)
-    );
-    settings = {
-      ...DEFAULT_SETTINGS,
-      ...localSettings,
-    };
     if (!(settings.publicKey?.length && settings.secretKey?.length))
       throw new Error('Invalid key material found in settings.json');
+
     log.info('Loaded configuration from file settings.json: %j', settings);
     await db.set(userId, settings);
   } catch (err) {
     log.info('Error caught while checking settings.json: %s', err);
   }
 
+  return sendResponse(settings);
+}
+
+/**
+ * Get settings from chrome.storage
+ */
+async function handleLocalLookup(
+  { userId }: WithUserId,
+  sendResponse: (response: Partial<UserSettings>) => void
+): Promise<void> {
+  let settings;
   try {
     settings = await db.getValid(UserSettings)(userId);
     log.info('Loaded correctly settings from localStorage %j', settings);
@@ -126,6 +164,11 @@ async function handleConfigUpdate(
 
 export const load = (opts: LoadOpts): void => {
   bo.runtime.onMessage.addListener((request: Message, sender, sendResponse) => {
+    if (request.type === 'SettingsLookup') {
+      void handleSettingsLookup(request.payload, sendResponse);
+      return true;
+    }
+
     if (request.type === 'LocalLookup') {
       void handleLocalLookup(request.payload, sendResponse);
       return true;

@@ -151,7 +151,10 @@ export const setLocalSettings =
       ctx.platform.extensionDir,
       'settings.json'
     );
+
     const settings = JSON.stringify(s);
+
     ctx.logger.info('Saving settings at %s: %O', settingsJsonPath, settings);
+
     fs.writeFileSync(settingsJsonPath, settings);
   };

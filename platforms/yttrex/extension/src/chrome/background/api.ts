@@ -10,35 +10,33 @@ import {
 import * as endpoints from '@yttrex/shared/endpoints';
 import nacl from 'tweetnacl';
 import ytLog from '../../logger';
+import { UserSettings } from '@shared/extension/models/UserSettings';
 
 export const getHeadersForDataDonation = async (req: SyncReq): Promise<any> => {
-  // ytLog.info('Request %O', req);
-
   const { payload } = req;
-  const cookieId = req.userId;
 
-  const keypair: any = await db.get('local');
+  const userSettings: UserSettings = (await db.get('local')) as any;
 
-  ytLog.info('Keypair %O', keypair);
+  ytLog.info('User setting %O', userSettings);
 
-  if (!keypair) {
+  if (!userSettings) {
     throw new Error('Cannot sign payload, no keypair found!');
   }
 
   const signature = nacl.sign.detached(
     decodeString(JSON.stringify(payload)),
-    decodeFromBase58(keypair.secretKey)
+    decodeFromBase58(userSettings.secretKey)
   );
   const sign = encodeToBase58(signature);
 
-  ytLog.info('Signature %O (%s)', signature, sign);
+  ytLog.info('Signature (%s)', sign);
 
   const headers = {
     'Content-Type': 'application/json',
     'X-YTtrex-Version': config.VERSION,
     'X-YTtrex-Build': config.BUILD,
-    'X-YTtrex-NonAuthCookieId': cookieId,
-    'X-YTtrex-PublicKey': keypair.publicKey,
+    'X-YTtrex-NonAuthCookieId': userSettings.researchTag ?? '',
+    'X-YTtrex-PublicKey': userSettings.publicKey,
     'X-YTtrex-Signature': sign,
   };
 

@@ -19,7 +19,6 @@ import { pipe } from 'fp-ts/lib/function';
 import { NonEmptyArray } from 'fp-ts/lib/NonEmptyArray';
 import * as TE from 'fp-ts/lib/TaskEither';
 import { NonEmptyString } from 'io-ts-types/lib/NonEmptyString';
-import path from 'path';
 import type puppeteer from 'puppeteer-core';
 import { PuppeteerExtra } from 'puppeteer-extra';
 import { dispatchBrowser } from './browser';
@@ -164,16 +163,19 @@ export const runExperiment =
       ctx.config
     );
     return pipe(
-      sequenceS(TE.ApplicativePar)({
-        profile: updateGuardoniProfile(ctx)(
-          ctx.config.researchTag,
-          ctx.profile
-        ),
-        expId: TE.fromEither(validateNonEmptyString(experimentId)),
-        localSettings: TE.right(
-          setLocalSettings(ctx)({ ...opts, experimentId })
-        ),
-      }),
+      TE.fromEither(validateNonEmptyString(experimentId)),
+      TE.chain((expId) =>
+        sequenceS(TE.ApplicativePar)({
+          profile: updateGuardoniProfile(ctx)(
+            ctx.profile,
+            ctx.config.researchTag
+          ),
+          expId: TE.right(expId),
+          localSettings: TE.right(
+            setLocalSettings(ctx)({ ...opts, experimentId })
+          ),
+        })
+      ),
       TE.chain(({ profile, expId }) =>
         pipe(
           getDirective(ctx)(expId),
@@ -339,7 +341,7 @@ const loadContext = (
           },
           profile,
           logger,
-          guardoniConfigFile: path.join(profile.udd, 'guardoni.json'),
+          guardoniConfigFile: getProfileJsonPath(profile),
           version: getPackageVersion(),
           platform: platformConf,
         })),

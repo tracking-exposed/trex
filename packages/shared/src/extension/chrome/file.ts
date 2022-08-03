@@ -1,7 +1,6 @@
-import { isLeft } from 'fp-ts/lib/Either';
+import * as E from 'fp-ts/lib/Either';
 import * as t from 'io-ts';
 import { PathReporter } from 'io-ts/lib/PathReporter';
-
 import log from '../logger';
 import { bo } from '../utils/browser.utils';
 
@@ -15,7 +14,7 @@ const readJSON = async <C extends t.Any>(
 
   log.debug('Local json %O', json);
   const c = codec.decode(json);
-  if (isLeft(c)) {
+  if (E.isLeft(c)) {
     const report = PathReporter.report(c);
     log.error('Decode failed: %O', report);
     throw new Error(report.join('\n'));

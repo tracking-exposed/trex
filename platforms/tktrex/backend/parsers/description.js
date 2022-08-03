@@ -52,13 +52,15 @@ function description(envelop, previous) {
 
   const spans = envelop.jsdom.querySelectorAll('span');
   const texts = _.map(spans, function (span) {
-    return span.textContent;
+    return span.textContent.length > 0 ? span.textContent : null;
   });
 
-  const fullText = envelop.jsdom.querySelector(
+  const textElems = envelop.jsdom.querySelector(
     '[data-e2e="video-desc"], [data-e2e="search-card-video-caption"]'
-  ).textContent;
+  );
+  if (!textElems) return null;
 
+  const fullText = textElems.textContent;
   debug('bareText: %j fullText [%s]', _.compact(texts), fullText);
   const nohashtagText = texts.join('').trim();
 

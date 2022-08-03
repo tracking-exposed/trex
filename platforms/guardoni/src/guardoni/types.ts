@@ -71,7 +71,6 @@ export const GuardoniProfile = t.strict(
   {
     udd: t.string,
     profileName: t.string,
-    newProfile: t.boolean,
     execount: t.number,
     researchTag: t.array(t.string),
   },
@@ -95,9 +94,7 @@ export interface GuardoniContext {
 export interface ExperimentInfo {
   experimentId: string;
   researchTag: string;
-  execCount: number;
   profileName: string;
-  newProfile: boolean;
   when: Date;
 }
 

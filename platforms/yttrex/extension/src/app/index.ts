@@ -14,17 +14,14 @@ bo.runtime.sendMessage({ type: 'chromeConfig' }, (config) => {
     const { ui, ...settings } = config;
     void boot({
       payload: {
-        newProfile: settings.isNew,
         href: window.location.href,
         execount: settings.execount ?? 0,
       } as any,
-      mapLocalConfig: (c, { href, ...p }) => {
-        return {
-          ...c,
-          ...p,
-          href,
-        };
-      },
+      mapLocalConfig: (c, { href, ...p }) => ({
+        ...c,
+        ...p,
+        href,
+      }),
       observe: {
         handlers: watchedPaths as any,
         platformMatch: youtubeDomainRegExp,

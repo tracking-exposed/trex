@@ -59,14 +59,12 @@ jobs:
       - name: Build backend
         run: yarn yt:backend build
 
+      - name: Test Extension
+        run: yarn yt:ext test --runInBand --ci
+
       - name: Test backend
         run: |
           yarn pm2 start platforms/yttrex/backend/ecosystem.config.js  --env test
           yarn yt:backend test --runInBand --forceExit --ci
-
-      - name: Test Extension
-        run: yarn yt:ext test --runInBand --ci
-
-      - name: Stop PM2 ecosystem
-        run: yarn pm2 stop all
+          yarn pm2 stop all
 
