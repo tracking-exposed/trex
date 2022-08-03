@@ -70,13 +70,16 @@ export function sync(hub: Hub<YTHubEvent>, config: UserSettings): void {
 
 export function register(hub: Hub<YTHubEvent>, config: UserSettings): void {
   if (config.active) {
-    hub.on('NewVideo', handleVideo);
-    hub.on('leaf', handleLeaf);
-    hub.on('WindowUnload', () => sync(hub, config));
-
-    window.setInterval(() => {
+    const syncInterval = window.setInterval(() => {
       // ytLog.debug('Sync at interval %s', INTERVAL);
       sync(hub, config);
     }, INTERVAL);
+
+    hub.on('NewVideo', handleVideo);
+    hub.on('leaf', handleLeaf);
+    hub.on('WindowUnload', () => {
+      clearInterval(syncInterval);
+      sync(hub, config);
+    });
   }
 }

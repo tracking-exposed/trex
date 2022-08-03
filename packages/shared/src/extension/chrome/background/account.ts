@@ -15,7 +15,7 @@ export interface KeyPair {
   secretKey: string;
 }
 
-const FIXED_USER_NAME = 'local';
+export const FIXED_USER_NAME = 'local';
 
 // defaults of the settings stored in 'config' and controlled by popup
 const DEFAULT_SETTINGS = {
@@ -53,11 +53,11 @@ interface WithUserId {
   userId: string;
 }
 
-const readOrDefault = async (
+const readOrDefault = async <T extends t.Mixed>(
   fn: string,
-  codec: any,
+  codec: T,
   defaults: any
-): Promise<any> => {
+): Promise<T['_O']> => {
   try {
     const result = await file.readJSON(fn, codec);
 
@@ -86,30 +86,13 @@ export async function handleSettingsLookup(
 
   const experimentInfo = await readOrDefault('experiment.json', t.any, {});
 
-  const settings = { ...settingsJson, ...experimentInfo };
-  // don't override researchTag and experimentId with undefined values
-  if (settings.researchTag === undefined) {
-    delete settings.researchTag;
-  }
-
-  if (settings.experimentId === undefined) {
-    delete settings.experimentId;
-  }
-
-  if (settings.ux === undefined) {
-    delete settings.ux;
-  }
-
-  if (settings.active === undefined) {
-    delete settings.active;
-  }
+  const settings = { ...DEFAULT_SETTINGS, ...settingsJson, ...experimentInfo };
 
   try {
     if (!(settings.publicKey?.length && settings.secretKey?.length))
       throw new Error('Invalid key material found in settings.json');
 
     log.info('Loaded configuration from file settings.json: %j', settings);
-    await db.set(userId, settings);
   } catch (err) {
     log.info('Error caught while checking settings.json: %s', err);
   }
@@ -120,18 +103,18 @@ export async function handleSettingsLookup(
 /**
  * Get settings from chrome.storage
  */
-async function handleLocalLookup(
+export async function handleLocalLookup(
   { userId }: WithUserId,
   sendResponse: (response: Partial<UserSettings>) => void
 ): Promise<void> {
   let settings;
   try {
-    settings = await db.getValid(UserSettings)(userId);
+    settings = await db.getValid(t.partial(UserSettings.props))(userId);
     log.info('Loaded correctly settings from localStorage %j', settings);
   } catch (err) {
     const initialSettings: UserSettings = {
-      ...initializeKey(),
       ...DEFAULT_SETTINGS,
+      ...initializeKey(),
     };
     settings = await db.set(userId, initialSettings);
   }
@@ -175,7 +158,10 @@ async function handleConfigUpdate(
   sendResponse(settings);
 }
 
-export const load = (opts: LoadOpts): void => {
+export const load = (
+  opts: LoadOpts,
+  onConfigChange: (c: Partial<UserSettings>) => void
+): void => {
   bo.runtime.onMessage.addListener((request: Message, sender, sendResponse) => {
     if (request.type === 'SettingsLookup') {
       void handleSettingsLookup(request.payload, sendResponse);
@@ -193,7 +179,10 @@ export const load = (opts: LoadOpts): void => {
     }
 
     if (request.type === 'ConfigUpdate') {
-      void handleConfigUpdate(request.payload, sendResponse);
+      void handleConfigUpdate(request.payload, (c) => {
+        onConfigChange(c);
+        return sendResponse(c);
+      });
       return true;
     }
   });

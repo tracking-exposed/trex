@@ -125,6 +125,10 @@ export function registerTkHandlers(
   config: UserSettings,
 ): void {
   if (config.active) {
+    const syncInterval = window.setInterval(() => {
+      sync(hub);
+    }, INTERVAL);
+
     hub
       .on('NewVideo', handleVideo)
       .on('Suggested', handleSuggested)
@@ -132,11 +136,8 @@ export function registerTkHandlers(
       .on('Profile', handleProfile)
       .on('NativeVideo', handleNative)
       .on('WindowUnload', () => {
+        clearInterval(syncInterval);
         sync(hub);
       });
-
-    window.setInterval(() => {
-      sync(hub);
-    }, INTERVAL);
   }
 }
