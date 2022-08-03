@@ -96,38 +96,46 @@ function fullSave(): void {
  */
 
 export const onLocationChange = (): void => {
-  feedCounter++;
-  feedId = refreshUUID(feedCounter);
-  appLog.info(
-    'new feedId (%s), feed counter incremented (%d) and video counter (maybe) resetted (before was %d) -> %s',
-    feedId,
-    feedCounter,
-    videoCounter,
-    window.location.href,
-  );
+  /* REMIND-SELF
+     this checks if the user is switching video, otherwise used
+     the piece of code for the onLocationChange.
+     it should be a Route Watcher instead this hack */
+  const match = window.location.pathname.match(/@(\w-._+)\/video\/(\d+)/i);
 
-  /* check if the user is switching video, it should go somewhere else but I'm experimenting */
-  const match = window.location.pathname.match(
-    tkHandlers.nativeVideo.match.location
-  );
-  console.log(match);
-  if(match)
+  if (match?.[0]) {
+    videoCounter++;
+    appLog.info(
+      'feed scrolling to %s as part of feed manual scrolling feedId (%s), feedCounter (%d) videoCounter %d',
+      match[0],
+      feedId,
+      feedCounter,
+      videoCounter,
+    );
     nativeVideo();
-  else
-    /* debug in progress, it this case you might not want to reset videoCounter */
+  } else {
+    feedId = refreshUUID(feedCounter);
+    feedCounter++;
+    appLog.info(
+      'new feedId (%s), feed counter incremented (%d) and video counter resetted (before was %d) -> %s',
+      feedId,
+      feedCounter,
+      videoCounter,
+      window.location.href,
+    );
     videoCounter = 0;
+  }
 };
 
 /**
  * handle video when people move with down/uparrow in the feed
  */
- const nativeVideo = () : void => {
-
+const nativeVideo = (): void => {
   const contentNode = document.querySelector('body');
+  if (!contentNode) return;
 
   /* TODO some more meaningful check */
   tkHub.dispatch({
-    type: 'fullScreenVideo',
+    type: 'NativeVideo',
     payload: {
       html: contentNode.outerHTML,
       href: window.location.href,
@@ -136,8 +144,7 @@ export const onLocationChange = (): void => {
       videoCounter,
     },
   });
-  appLog.info("Reported fullScreenVideo")
-}
+};
 
 /**
  * handle a new intercepted datum node by dispatching
@@ -334,8 +341,11 @@ const handleVideoPlaceholder = (
 
   appLog.debug('Handle video placeholder %O', n);
   const videoRoot = goBackInTree(n);
-  appLog.info('Marking as seen placeholder Video (%d) root %O',
-    videoCounter, videoRoot);
+  appLog.info(
+    'Marking as seen placeholder Video (%d) root %O',
+    videoCounter,
+    videoRoot,
+  );
   n.setAttribute('trex', '1');
   if (config.ux) {
     videoRoot.style.border = '1px solid orange';
@@ -414,6 +424,15 @@ export const profileHandler: RouteObserverHandler = {
   },
   handle: handleProfile,
 };
+
+/* TO BE DONE as RouteObserveHandler 
+  nativeVideo: {
+    match: {
+      type: 'route',
+      location: /@(\w+)\/video\/(\d+)/i,
+    },
+    handle: nativeVideo,
+  }, */
 /**
  * selector with relative handler
  * configuration
@@ -433,13 +452,6 @@ export const tkHandlers: { [key: string]: ObserverHandler } = {
       selector: 'canvas[class*="CanvasVideoCardPlaceholder"]',
     },
     handle: handleVideoPlaceholder,
-  },
-  nativeVideo: {
-    match: {
-      type: 'route',
-      location: /@(\w+)\/video\/(\d+)/i,
-    },
-    handle: nativeVideo,
   },
   suggested: {
     match: {
