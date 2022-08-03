@@ -16,23 +16,6 @@ export const appLog = log.extend('app');
 export let feedId = refreshUUID(0);
 export let feedCounter = 0;
 
-/**
- * Additional UI needed mostly for debugging
-function initializeEmergencyButton(): void {
-  const element = document.createElement('h1');
-  element.onclick = fullSave;
-  element.setAttribute('id', 'full--save');
-  element.setAttribute(
-    'style',
-    'position: fixed; top:50%; left: 1rem; display: flex; font-size: 3em; cursor: pointer; flex-direction: column; z-index: 9999; visibility: visible;',
-  );
-  element.innerText = '💾';
-  document.body.appendChild(element);
-}
-
-ISSUE #444 explain why of this disabled section.
- */
-
 export function tkTrexActions(remoteInfo: unknown): void {
   /* these functions are the main activity made in
      content_script, and tktrexActions is a callback
@@ -51,68 +34,7 @@ export function tkTrexActions(remoteInfo: unknown): void {
   flush();
 }
 
-/**
- * Sends the full HTML of the current page to the server.
- * Happens either manually when clicking on the emergency button,
- * and should happen automatically or through a setInterval
- * when the URL of the page changes.
-
-function fullSave(): void {
-  const { href } = window.location;
-  pipe(
-    getNatureByHref(href),
-    map((nature) => {
-      const urlChanged = href !== lastMeaningfulURL;
-
-      if (urlChanged) {
-        lastMeaningfulURL = window.location.href;
-        // UUID is used server-side
-        // to eliminate potential duplicates
-        feedId = refreshUUID(feedCounter);
-      }
-
-      const body = document.querySelector('body');
-
-      if (!body) {
-        appLog.error('no body found, skipping fullSave');
-        return;
-      }
-
-      appLog.info('sending fullSave!', nature);
-      tkHub.dispatch({
-        type: 'FullSave',
-        payload: {
-          type: nature,
-          element: body.outerHTML,
-          size: body.outerHTML.length,
-          href: window.location.href,
-          reason: 'fullsave',
-          feedId,
-        },
-      });
-    }),
-  );
-}
- */
-
 export const onLocationChange = (): void => {
-  /* REMIND-SELF
-     this checks if the user is switching video, otherwise used
-     the piece of code for the onLocationChange.
-     it should be a Route Watcher instead this hack */
-
-  // console.log('match', match);
-  // if (match?.[0]) {
-  //   videoCounter++;
-  //   appLog.info(
-  //     'feed scrolling to %s as part of feed manual scrolling feedId (%s), feedCounter (%d) videoCounter %d',
-  //     match[0],
-  //     feedId,
-  //     feedCounter,
-  //     videoCounter
-  //   );
-  //   nativeVideo();
-  // } else {
   feedId = refreshUUID(feedCounter);
   feedCounter++;
   appLog.info(
@@ -123,7 +45,6 @@ export const onLocationChange = (): void => {
     window.location.href,
   );
   videoCounter = 0;
-  // }
 };
 
 /**
@@ -295,12 +216,11 @@ const handleVideo = (
   b: any,
   config: UserSettings,
 ): void => {
-  log.debug('Handle video %O', { node, h, b, config });
-  /* we should check nature for good, the 'video' handles are triggered also in
-   * other pages, afterall! */
   if (_.startsWith(window.location.pathname, '/search')) return;
   if (profileHandler.match.location.test(window.location.pathname)) return;
-  if (videoRouteHandler.match.location.test(window.location.pathname)) return;
+  if (nativeRouteHandler.match.location.test(window.location.pathname)) return;
+
+  appLog.debug('handleVideo %O', { node, h, b, config });
 
   /* this function return a node element that has a size
    * lesser than 10k, and stop when find out the parent
@@ -308,7 +228,7 @@ const handleVideo = (
   const videoRoot = goBackInTree(node);
 
   if (videoRoot.hasAttribute('trex')) {
-    appLog.info(
+    appLog.debug(
       'element already acquired: skipping',
       videoRoot.getAttribute('trex'),
     );
@@ -436,7 +356,7 @@ export const profileHandler: RouteObserverHandler = {
   handle: handleProfile,
 };
 
-export const videoRouteHandler: RouteObserverHandler = {
+export const nativeRouteHandler: RouteObserverHandler = {
   match: {
     type: 'route',
     location: /^\/@([a-zA-Z._0-9]+)\/video\/(\d+)/i,
@@ -444,15 +364,13 @@ export const videoRouteHandler: RouteObserverHandler = {
   handle: handleVideoRoute,
 };
 
-/* TO BE DONE as RouteObserveHandler
- */
 /**
  * selector with relative handler
  * configuration
  */
 export const tkHandlers: { [key: string]: ObserverHandler } = {
   profile: profileHandler,
-  nativeVideo: videoRouteHandler,
+  nativeVideo: nativeRouteHandler,
   video: {
     match: {
       type: 'selector',
