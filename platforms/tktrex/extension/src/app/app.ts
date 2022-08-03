@@ -100,50 +100,60 @@ export const onLocationChange = (): void => {
      this checks if the user is switching video, otherwise used
      the piece of code for the onLocationChange.
      it should be a Route Watcher instead this hack */
-  const match = window.location.pathname.match(/@(\w-._+)\/video\/(\d+)/i);
 
-  if (match?.[0]) {
-    videoCounter++;
-    appLog.info(
-      'feed scrolling to %s as part of feed manual scrolling feedId (%s), feedCounter (%d) videoCounter %d',
-      match[0],
-      feedId,
-      feedCounter,
-      videoCounter,
-    );
-    nativeVideo();
-  } else {
-    feedId = refreshUUID(feedCounter);
-    feedCounter++;
-    appLog.info(
-      'new feedId (%s), feed counter incremented (%d) and video counter resetted (before was %d) -> %s',
-      feedId,
-      feedCounter,
-      videoCounter,
-      window.location.href,
-    );
-    videoCounter = 0;
-  }
+  // console.log('match', match);
+  // if (match?.[0]) {
+  //   videoCounter++;
+  //   appLog.info(
+  //     'feed scrolling to %s as part of feed manual scrolling feedId (%s), feedCounter (%d) videoCounter %d',
+  //     match[0],
+  //     feedId,
+  //     feedCounter,
+  //     videoCounter
+  //   );
+  //   nativeVideo();
+  // } else {
+  feedId = refreshUUID(feedCounter);
+  feedCounter++;
+  appLog.info(
+    'new feedId (%s), feed counter incremented (%d) and video counter resetted (before was %d) -> %s',
+    feedId,
+    feedCounter,
+    videoCounter,
+    window.location.href,
+  );
+  videoCounter = 0;
+  // }
 };
 
 /**
  * handle video when people move with down/uparrow in the feed
  */
-const nativeVideo = (): void => {
-  const contentNode = document.querySelector('body');
-  if (!contentNode) return;
+const handleVideoRoute = (
+  dom: HTMLElement,
+  handler: any,
+  routeKey: string,
+  config: UserSettings,
+): void => {
+  appLog.debug('NativeVideo %O', { handler, routeKey, config });
+
+  if (!dom) return;
 
   /* TODO some more meaningful check */
   tkHub.dispatch({
     type: 'NativeVideo',
     payload: {
-      html: contentNode.outerHTML,
+      html: dom.outerHTML,
       href: window.location.href,
       feedId,
       feedCounter,
       videoCounter,
     },
   });
+
+  if (config.ux) {
+    // add proper UI feedback
+  }
 };
 
 /**
@@ -425,14 +435,8 @@ export const profileHandler: RouteObserverHandler = {
   handle: handleProfile,
 };
 
-/* TO BE DONE as RouteObserveHandler 
-  nativeVideo: {
-    match: {
-      type: 'route',
-      location: /@(\w+)\/video\/(\d+)/i,
-    },
-    handle: nativeVideo,
-  }, */
+/* TO BE DONE as RouteObserveHandler
+ */
 /**
  * selector with relative handler
  * configuration
@@ -445,6 +449,13 @@ export const tkHandlers: { [key: string]: ObserverHandler } = {
       selector: 'video',
     },
     handle: handleVideo,
+  },
+  nativeVideo: {
+    match: {
+      type: 'route',
+      location: /^\/@(\w+)\/video\/(\d+)/i,
+    },
+    handle: handleVideoRoute,
   },
   videoPlaceholder: {
     match: {
