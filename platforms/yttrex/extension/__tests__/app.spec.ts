@@ -104,6 +104,22 @@ chrome.storage.local.set.mockImplementation((obj: any, cb: any) => {
   return cb();
 });
 
+// mock connect port for 'ConfigUpdate'
+const portMock = {
+  name: 'ConfigUpdate',
+  onMessage: {
+    addListener: jest.fn(),
+    hasListener: jest.fn(),
+    getRules: jest.fn(),
+    removeRules: jest.fn(),
+  },
+  postMessage: jest.fn(),
+  disconnect: jest.fn(),
+  onDisconnect: jest.fn(),
+};
+
+chrome.runtime.connect.mockReturnValue(portMock as any);
+
 chrome.runtime.onMessage.addListener(chromeListener);
 
 const bootConfig = (): BootOpts => ({
