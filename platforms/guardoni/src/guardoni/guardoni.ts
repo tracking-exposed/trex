@@ -72,7 +72,7 @@ const runNavigate =
       TE.right(setLocalSettings(ctx)(opts)),
       TE.chain(() =>
         dispatchBrowser(ctx)({
-          headless: opts ? opts.headless : true,
+          headless: opts?.headless !== undefined ? opts.headless : true,
         })
       ),
       TE.chain((b) => {
@@ -85,9 +85,11 @@ const runNavigate =
 
           await page.waitForTimeout(2000);
 
-          await ctx.hooks.customs.cookieModal(page, {
-            action: 'reject',
-          });
+          if (ctx.hooks.customs.cookieModal) {
+            await ctx.hooks.customs.cookieModal(page, {
+              action: 'reject',
+            });
+          }
 
           return b;
         }, toAppError);
@@ -243,6 +245,7 @@ export const guardoniExecution =
 
     ctx.logger.debug('Experiment data %O', steps);
     ctx.logger.debug('Config %O', ctx.config);
+    ctx.logger.debug('Platform %O', ctx.platform);
 
     return pipe(
       ctx.puppeteer.operateBrowser(page, steps),
@@ -277,7 +280,6 @@ const loadContext = (
   const config = checkConfig({ logger })(basePath, {
     ...defaultConfig,
     ...cnf,
-
     yt: {
       ...defaultConfig.yt,
       ...cnf.yt,
@@ -287,14 +289,14 @@ const loadContext = (
       ...cnf.tk,
     },
   }) as GuardoniConfig;
-  const profile = getDefaultProfile(basePath, cnf.profileName);
+  logger.debug('Config %O', config);
 
+  const profile = getDefaultProfile(basePath, cnf.profileName);
   logger.debug('profile %O', profile);
 
-  const platformConf = getPlatformConfig(platform, {
-    basePath,
-    ...(config as any),
-  });
+  const platformConf = getPlatformConfig(platform, config);
+
+  logger.debug('Platform config %O', platformConf);
 
   return pipe(
     checkProfile({ logger })(basePath, cnf),

@@ -214,15 +214,16 @@ export const getPlatformConfig = (
 
   // ensure frontend always exists
   const frontend =
-    platformConf.frontend ?? platformConfigKey === 'tk'
-      ? DEFAULT_TK_FRONTEND
-      : DEFAULT_YT_FRONTEND;
+    platformConf.frontend ??
+    (platformConfigKey === 'tk' ? DEFAULT_TK_FRONTEND : DEFAULT_YT_FRONTEND);
 
-  return {
+  const pConfig = {
     ...platformConf,
     extensionDir,
     frontend,
   };
+
+  return pConfig;
 };
 
 export const setConfig = (
