@@ -15,7 +15,7 @@ import axiosMock from '@shared/test/__mocks__/axios.mock';
 import { puppeteerMock } from '@shared/test/__mocks__/puppeteer.mock';
 
 const basePath = path.resolve(__dirname, '../../');
-const profileName = 'profile-test-99';
+const profileName = 'profile-tk-test-99';
 const ytExtensionDir = path.resolve(basePath, '../yttrex/extension/build');
 const tkExtensionDir = path.resolve(basePath, '../tktrex/extension/build');
 const publicKey = process.env.PUBLIC_KEY;

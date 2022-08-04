@@ -180,13 +180,14 @@ const handleSuggested = _.debounce((elem: Node): void => {
 let videoCounter = 0;
 
 const goBackInTree = (n: HTMLElement): HTMLElement => {
-  appLog.debug('Checking node %O', n);
+  // appLog.debug('Checking node %O', n);
 
   if (n.parentNode instanceof HTMLElement) {
-    appLog.debug('Parent is a valid node! %O', n.parentNode);
-    appLog.debug('previous siblings? %O', n.previousElementSibling);
+    // appLog.debug('Parent is a valid node! %O', n.parentNode);
+    // appLog.debug('previous siblings? %O', n.previousElementSibling);
 
     if (n.previousElementSibling?.tagName === 'A') {
+      appLog.debug('Found node with previous sibling = A');
       return n.parentNode;
     }
 
@@ -226,6 +227,12 @@ const handleVideo = (
    * lesser than 10k, and stop when find out the parent
    * would be more than 10k big. */
   const videoRoot = goBackInTree(node);
+
+  if (config.ux) {
+    videoRoot.style.border = '2px solid green';
+  } else {
+    videoRoot.style.border = '';
+  }
 
   if (videoRoot.hasAttribute('trex')) {
     appLog.debug(
@@ -278,8 +285,11 @@ const handleVideoPlaceholder = (
     videoRoot,
   );
   n.setAttribute('trex', '1');
+
   if (config.ux) {
-    videoRoot.style.border = '1px solid orange';
+    n.style.border = '1px solid orange';
+  } else {
+    n.style.border = '';
   }
 };
 

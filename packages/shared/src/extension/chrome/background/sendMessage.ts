@@ -17,7 +17,9 @@ interface SuccessResponse<T> {
   result: T;
 }
 
-export type SendResponse<T> = (r: ErrorResponse | SuccessResponse<T>) => void;
+export type Response<T> = ErrorResponse | SuccessResponse<T>;
+
+export type SendResponse<T> = (r: Response<T>) => void;
 
 const ifValid =
   <C extends t.Any>(codec: C) =>
@@ -58,7 +60,20 @@ export const settingsLookup = (cb: SendResponse<UserSettings>): void =>
         userId: 'local',
       },
     },
-    ifValid(UserSettings)('LocalLookup', cb)
+    ifValid(UserSettings)('SettingsLookup', cb)
+  );
+
+export const partialLocalLookup = (
+  cb: SendResponse<Partial<UserSettings>>
+): void =>
+  sendMessage(
+    {
+      type: 'LocalLookup',
+      payload: {
+        userId: 'local',
+      },
+    },
+    ifValid(t.partial(UserSettings.props))('LocalLookup', cb)
   );
 
 export const localLookup = (cb: SendResponse<UserSettings>): void =>

@@ -22,7 +22,7 @@ import { guardoniLogger } from '../../src/logger';
 import { throwTE } from '@shared/utils/task.utils';
 
 const basePath = path.resolve(__dirname, '../../');
-const profileName = 'profile-test-99';
+const profileName = 'profile-yt-test-99';
 const profileDir = getProfileDataDir(basePath, profileName);
 const ytExtensionDir = path.resolve(basePath, '../yttrex/extension/build');
 const tkExtensionDir = path.resolve(basePath, '../tktrex/extension/build');

@@ -1,4 +1,4 @@
-import axiosMock from '@shared/test/__mocks__/axios.mock';
+import { HandshakeActiveResponseArb } from '@shared/arbitraries/HandshakeResponse.arb';
 import { boot } from '@shared/extension/app';
 import {
   handleServerLookup,
@@ -6,6 +6,8 @@ import {
 } from '@shared/extension/chrome/background/account';
 import { load } from '@shared/extension/chrome/background/index';
 import { handleSyncMessage } from '@shared/extension/chrome/background/sync';
+import { fc } from '@shared/test';
+import axiosMock from '@shared/test/__mocks__/axios.mock';
 import { sleep } from '@shared/utils/promise.utils';
 import { tiktokDomainRegExp } from '@tktrex/parser/constant';
 import * as fs from 'fs';
@@ -16,8 +18,6 @@ import * as handlers from '../src/app/handlers';
 import api, { getHeadersForDataDonation } from '../src/background/api';
 import tkHub from '../src/handlers/hub';
 import { tkLog } from '../src/logger';
-import { HandshakeActiveResponseArb } from '@shared/arbitraries/HandshakeResponse.arb';
-import { fc } from '@shared/test';
 
 const chromeListener = jest.fn();
 
@@ -57,6 +57,21 @@ chromeListener.mockImplementation((request, sender, sendResponse) => {
   return true;
 });
 
+const researchTag = 'test-tag';
+let dbMap = {
+  local: undefined,
+};
+
+const getConfig = () => ({
+  ...keys,
+  active: true,
+  ux: true,
+  href: tkURL,
+  researchTag,
+  execount: 1,
+  testTime: new Date().toISOString(),
+});
+
 chrome.runtime.sendMessage
   // mock first 'chromeConfig' message handler
   // .mockImplementationOnce((msg, cb: any) => {
@@ -64,16 +79,13 @@ chrome.runtime.sendMessage
   // })
   // mock 'LocalLookup' message handler
   .mockImplementation((msg: any, cb: any) => {
-    if (msg.type === 'LocalLookup') {
-      return cb({
-        ...keys,
-        active: true,
-        ux: true,
-        href: tkURL,
-        researchTag: 'test-tag',
-        execount: 1,
-        testTime: new Date().toISOString(),
-      });
+    if (msg.type === 'SettingsLookup') {
+      const settings = getConfig();
+      dbMap.local = settings as any;
+      return cb(settings);
+      // mock 'LocalLookup' message handler
+    } else if (msg.type === 'LocalLookup') {
+      return cb(getConfig());
     } else if (msg.type === 'ServerLookup') {
       return handleServerLookup(backgroundOpts)(msg.payload, cb);
     } else if (msg.type === 'sync') {
@@ -95,6 +107,21 @@ chrome.storage.local.set.mockImplementation((obj, cb: any) => {
   return cb(obj);
 });
 
+// mock connect port for 'ConfigUpdate'
+const portMock = {
+  name: 'ConfigUpdate',
+  onMessage: {
+    addListener: jest.fn(),
+    hasListener: jest.fn(),
+    getRules: jest.fn(),
+    removeRules: jest.fn(),
+  },
+  postMessage: jest.fn(),
+  disconnect: jest.fn(),
+  onDisconnect: jest.fn(),
+};
+
+chrome.runtime.connect.mockReturnValue(portMock as any);
 chrome.runtime.onMessage.addListener(chromeListener);
 
 const backgroundOpts = {
