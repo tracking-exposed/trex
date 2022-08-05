@@ -1,6 +1,6 @@
-import { APIClient } from '../../../providers/api.provider';
-import log from '../../logger';
-import { bo } from '../../utils/browser.utils';
+import { APIClient } from '../../providers/api.provider';
+import log from '../logger';
+import { bo } from '../utils/browser.utils';
 
 export interface SyncReq {
   userId: string;

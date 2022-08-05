@@ -1,9 +1,8 @@
 import { HandshakeActiveResponseArb } from '@shared/arbitraries/HandshakeResponse.arb';
 import { boot, BootOpts } from '@shared/extension/app';
-import { handleServerLookup } from '@shared/extension/chrome/background/account';
-import { load } from '@shared/extension/chrome/background/index';
-import { handleSyncMessage } from '@shared/extension/chrome/background/sync';
-import db from '@shared/extension/chrome/db';
+import { handleServerLookup } from '@shared/extension/background/account';
+import { load } from '@shared/extension/background/index';
+import { handleSyncMessage } from '@shared/extension/background/sync';
 import { fc } from '@shared/test';
 import axiosMock from '@shared/test/__mocks__/axios.mock';
 import { sleep } from '@shared/utils/promise.utils';

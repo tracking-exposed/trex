@@ -3,13 +3,13 @@ import FormHelperText from '@material-ui/core/FormHelperText';
 import { Alert, AlertTitle } from '@material-ui/lab';
 import moment from 'moment';
 import React, { useEffect, useState } from 'react';
-import config from '../../../config';
-import log from '../../../logger';
-import { bo } from '../../../utils/browser.utils';
+import config from '../../config';
+import log from '../../logger';
+import { bo } from '../../utils/browser.utils';
 import { localLookup } from '../../background/sendMessage';
 import DashboardLinks, { DashboardLink } from './DashboardLinks';
-import InfoBox from './infoBox';
-import Settings from './settings';
+import InfoBox from './InfoBox';
+import Settings from './Settings';
 
 const styles = {
   width: '400px',

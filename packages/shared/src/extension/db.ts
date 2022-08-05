@@ -1,12 +1,10 @@
 import * as t from 'io-ts';
 import { PathReporter } from 'io-ts/lib/PathReporter';
 import { isLeft } from 'fp-ts/lib/Either';
-
 import $ from 'jquery';
-
-import { isEmpty } from '../utils/common.utils';
-import log from '../logger';
-import { bo } from '../utils/browser.utils';
+import { isEmpty } from './utils/common.utils';
+import log from './logger';
+import { bo } from './utils/browser.utils';
 
 const storage = bo.storage.local;
 

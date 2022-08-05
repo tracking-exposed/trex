@@ -1,10 +1,10 @@
 import bs58 from 'bs58';
-import { HandshakeResponse } from '../../../models/HandshakeBody';
+import { HandshakeResponse } from '../../models/HandshakeBody';
 import nacl from 'tweetnacl';
-import log from '../../logger';
-import { Message, ServerLookup } from '../../models/Message';
-import UserSettings from '../../models/UserSettings';
-import { bo } from '../../utils/browser.utils';
+import log from '../logger';
+import { Message, ServerLookup } from '../models/Message';
+import UserSettings from '../models/UserSettings';
+import { bo } from '../utils/browser.utils';
 import db from '../db';
 import file from '../file';
 import { LoadOpts } from './sync';

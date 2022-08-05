@@ -16,7 +16,7 @@ import { Label as LabelIcon } from '@material-ui/icons';
 import TimelineIcon from '@material-ui/icons/Timeline';
 import LocalHospitalRounded from '@material-ui/icons/LocalHospitalRounded';
 
-import UserSettings from '../../../models/UserSettings';
+import UserSettings from '../../models/UserSettings';
 import { configUpdate } from '../../background/sendMessage';
 
 interface SettingsState extends Partial<UserSettings> {

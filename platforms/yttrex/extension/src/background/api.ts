@@ -1,5 +1,5 @@
-import { SyncReq } from '@shared/extension/chrome/background/sync';
-import db from '@shared/extension/chrome/db';
+import { SyncReq } from '@shared/extension/background/sync';
+import db from '@shared/extension/db';
 import config from '@shared/extension/config';
 import { MakeAPIClient } from '@shared/providers/api.provider';
 import {

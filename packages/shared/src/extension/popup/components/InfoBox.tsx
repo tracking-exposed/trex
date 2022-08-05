@@ -1,5 +1,5 @@
 import React from 'react';
-import config from '../../../config';
+import config from '../../config';
 import { Card } from '@material-ui/core';
 import CardActions from '@material-ui/core/CardActions';
 import Button from '@material-ui/core/Button';
@@ -32,9 +32,6 @@ const InfoBox: React.FC<{ logo: string }> = ({ logo }) => {
       <CardActions>
         <Button size="small" color="secondary" href={about} target="_blank">
           Project
-        </Button>
-        <Button size="small" color="primary" href={privacy} target="_blank">
-          Privacy
         </Button>
         <Button
           size="small"

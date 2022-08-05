@@ -1,4 +1,4 @@
-import { main } from '@shared/extension/chrome/popup';
+import { renderPopup } from '@shared/extension/popup';
 import config from '@shared/extension/config';
 import * as React from 'react';
 import {
@@ -8,11 +8,10 @@ import {
   SearchOutlined,
 } from '@material-ui/icons';
 
-main({
+renderPopup({
   platform: 'YouTube',
   logo: '/yttrex-logo.png',
   getLinks: ({ publicKey }) => {
-
     const homecsv = `${config.API_ROOT}/v2/personal/${publicKey}/home/csv`;
     const videocsv = `${config.API_ROOT}/v2/personal/${publicKey}/video/csv`;
     const searchescsv = `${config.API_ROOT}/v2/personal/${publicKey}/searches/csv`;

@@ -1,8 +1,8 @@
 import axiosMock from '@shared/test/__mocks__/axios.mock';
 import { boot } from '@shared/extension/app';
-import { handleServerLookup } from '@shared/extension/chrome/background/account';
-import { load } from '@shared/extension/chrome/background/index';
-import { handleSyncMessage } from '@shared/extension/chrome/background/sync';
+import { handleServerLookup } from '@shared/extension/background/account';
+import { load } from '@shared/extension/background/index';
+import { handleSyncMessage } from '@shared/extension/background/sync';
 import { sleep } from '@shared/utils/promise.utils';
 import { tiktokDomainRegExp } from '@tktrex/parser/constant';
 import * as fs from 'fs';

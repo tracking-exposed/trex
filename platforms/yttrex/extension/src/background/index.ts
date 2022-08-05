@@ -1,4 +1,4 @@
-import { load } from '@shared/extension/chrome/background/index';
+import { load } from '@shared/extension/background/index';
 import api, { getHeadersForDataDonation } from './api';
 import './chromeConfig';
 
