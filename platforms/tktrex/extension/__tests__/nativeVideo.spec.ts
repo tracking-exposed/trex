@@ -1,13 +1,13 @@
 // mocks
 import fetchMock from 'jest-fetch-mock';
 import axiosMock from '@shared/test/__mocks__/axios.mock';
-import { getChromeMock } from '@shared/extension/__mocks__/chrome';
+import { getChromeMock } from '@shared/extension/__mocks__/chrome.mock';
 
 // imports
 import { HandshakeActiveResponseArb } from '@shared/arbitraries/HandshakeResponse.arb';
 import { boot } from '@shared/extension/app';
-import { initializeKey } from '@shared/extension/chrome/background/account';
-import { load } from '@shared/extension/chrome/background/index';
+import { initializeKey } from '@shared/extension/background/account';
+import { load } from '@shared/extension/background/index';
 import { fc } from '@shared/test';
 import { sleep } from '@shared/utils/promise.utils';
 import { tiktokDomainRegExp } from '@tktrex/parser/constant';

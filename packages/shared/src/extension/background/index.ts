@@ -1,7 +1,7 @@
-import { Message } from '../../models/Message';
-import UserSettings from '../../models/UserSettings';
-import logger from '../../logger';
-import { bo } from '../../utils/browser.utils';
+import logger from '../logger';
+import { Message } from '../models/Message';
+import UserSettings from '../models/UserSettings';
+import { bo } from '../utils/browser.utils';
 import * as account from './account';
 import * as reloadExtension from './reloadExtension';
 import * as sync from './sync';

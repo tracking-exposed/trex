@@ -1,13 +1,13 @@
 import bs58 from 'bs58';
-import { HandshakeResponse } from '../../../models/HandshakeBody';
+import * as t from 'io-ts';
 import nacl from 'tweetnacl';
-import log from '../../logger';
-import { LocalLookup, ServerLookup } from '../../models/Message';
-import UserSettings from '../../models/UserSettings';
+import { HandshakeResponse } from '../../models/HandshakeBody';
 import db from '../db';
 import file from '../file';
+import log from '../logger';
+import { ServerLookup, LocalLookup } from '../models/Message';
+import UserSettings from '../models/UserSettings';
 import { LoadOpts } from './sync';
-import * as t from 'io-ts';
 
 export interface KeyPair {
   publicKey: string;

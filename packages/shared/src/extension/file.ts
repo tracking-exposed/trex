@@ -1,8 +1,8 @@
 import * as E from 'fp-ts/lib/Either';
 import * as t from 'io-ts';
 import { PathReporter } from 'io-ts/lib/PathReporter';
-import log from '../logger';
-import { bo } from '../utils/browser.utils';
+import log from './logger';
+import { bo } from './utils/browser.utils';
 
 const readJSON = async <C extends t.Any>(
   fileURL: string,

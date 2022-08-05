@@ -2,11 +2,11 @@
 import { isLeft } from 'fp-ts/lib/Either';
 import * as t from 'io-ts';
 import { PathReporter } from 'io-ts/lib/PathReporter';
-import { HandshakeResponse } from '../../../models/HandshakeBody';
-import log from '../../logger';
-import { Message, ServerLookup } from '../../models/Message';
-import { UserSettings } from '../../models/UserSettings';
-import { bo } from '../../utils/browser.utils';
+import { HandshakeResponse } from '../../models/HandshakeBody';
+import log from '../logger';
+import { Message, ServerLookup } from '../models/Message';
+import { UserSettings } from '../models/UserSettings';
+import { bo } from '../utils/browser.utils';
 
 interface ErrorResponse {
   type: 'Error';

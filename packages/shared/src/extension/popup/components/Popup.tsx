@@ -1,15 +1,15 @@
 import { Card } from '@material-ui/core';
 import FormHelperText from '@material-ui/core/FormHelperText';
 import { Alert, AlertTitle } from '@material-ui/lab';
-import moment from 'moment';
-import React, { useEffect, useState } from 'react';
-import config from '../../../config';
-import log from '../../../logger';
-import UserSettings from '../../../models/UserSettings';
-import { configUpdate, localLookup } from '../../background/sendMessage';
+import { localLookup, configUpdate } from '../../background/sendMessage';
+import config from '../../config';
+import log from '../../logger';
 import DashboardLinks, { DashboardLink } from './DashboardLinks';
-import InfoBox from './infoBox';
-import Settings, { SettingsProps } from './settings';
+import InfoBox from './InfoBox';
+import Settings, { SettingsProps} from './Settings';
+import UserSettings from '../../models/UserSettings';
+import * as React from 'react'
+import moment from 'moment'
 
 const styles = {
   width: '400px',
@@ -45,7 +45,7 @@ const Popup: React.FC<PopupProps> = ({
   logo,
   getLinks,
 }) => {
-  const [userSettingsS, setUserSettingsState] = useState<PopupState>({
+  const [userSettingsS, setUserSettingsState] = React.useState<PopupState>({
     status: 'init',
   });
 
@@ -90,7 +90,7 @@ const Popup: React.FC<PopupProps> = ({
     });
   }, []);
 
-  useEffect(() => {
+  React.useEffect(() => {
     if (userSettingsS.status === 'init') {
       handleLocalLookup();
     }

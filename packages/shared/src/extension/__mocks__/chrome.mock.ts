@@ -1,7 +1,7 @@
 import { chrome } from 'jest-chrome';
 import { GetLogger } from '../../logger';
-import { MessageHandler } from '../chrome/background';
-import * as sync from '../chrome/background/sync';
+import { MessageHandler } from '../background';
+import * as sync from '../background/sync';
 
 const logger = GetLogger('chrome-mock');
 

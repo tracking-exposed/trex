@@ -1,4 +1,4 @@
-import db from '@shared/extension/chrome/db';
+import db from '@shared/extension/db';
 import { bo } from '@shared/extension/utils/browser.utils';
 
 bo.runtime.onMessage.addListener((request, sender, sendResponse) => {

@@ -1,7 +1,8 @@
-import { APIClient } from '../../../providers/api.provider';
-import log from '../../logger';
-import { bo } from '../../utils/browser.utils';
-import { MinimalEndpointInstance } from '../../../endpoints';
+import { MinimalEndpointInstance } from '../../endpoints/MinimalEndpoint';
+import { APIClient } from '../../providers/api.provider';
+import log from '../logger';
+import { bo } from '../utils/browser.utils';
+
 export interface SyncReq {
   userId: string;
   payload: any;

@@ -1,4 +1,4 @@
-import { main } from '@shared/extension/chrome/popup';
+import { renderPopup } from '@shared/extension/popup';
 import config from '@shared/extension/config';
 import {
   StayCurrentLandscape as StayCurrentLandscapeIcon,
@@ -7,7 +7,7 @@ import {
 } from '@material-ui/icons';
 import * as React from 'react';
 
-main({
+renderPopup({
   platform: 'TikTok',
   platformURL: 'https://tiktok.com',
   logo: '/tktrex-logo.png',

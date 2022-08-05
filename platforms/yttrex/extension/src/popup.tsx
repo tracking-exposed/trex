@@ -1,4 +1,4 @@
-import { main } from '@shared/extension/chrome/popup';
+import { renderPopup } from '@shared/extension/popup';
 import config from '@shared/extension/config';
 import * as React from 'react';
 import {
@@ -8,7 +8,7 @@ import {
   SearchOutlined,
 } from '@material-ui/icons';
 
-main({
+renderPopup({
   platform: 'YouTube',
   platformURL: 'https://youtube.com',
   logo: '/yttrex-logo.png',
