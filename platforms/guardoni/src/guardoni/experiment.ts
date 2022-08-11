@@ -1,3 +1,4 @@
+import _ from 'lodash';
 import { AppError, toAppError } from '@shared/errors/AppError';
 import { toValidationError } from '@shared/errors/ValidationError';
 import { Step, OpenURLStepType, ScrollStepType } from '@shared/models/Step';
@@ -258,6 +259,24 @@ export const saveExperiment =
     );
   };
 
+const formatExperimentList = (experiments: any[]): any[] => {
+  /* this function take as input the received experiment and removed all
+   * keys with value 'undefined' so the output plotter doesn't report them */
+
+  const r = experiments.map((e, index) => {
+    const optimizedSteps = e.steps.map((step: any, stepOrder: number) => {
+      return [JSON.stringify(_.omitBy(step, _.isNil)).replace(/[}{]/g, '')];
+    });
+    return {
+      order: index + 1,
+      id: e.experimentId,
+      since: e.when,
+      steps: optimizedSteps,
+    };
+  });
+  return r;
+};
+
 export const listExperiments =
   (ctx: GuardoniContext) =>
   (): TE.TaskEither<AppError, GuardoniSuccessOutput> => {
@@ -265,13 +284,11 @@ export const listExperiments =
       ctx.API.v2.Experiments.GetPublicDirectives(),
       TE.map(
         (experiments): GuardoniSuccessOutput => ({
-          message: 'Experiments List',
+          message: 'Public Experiments Available',
           type: 'success',
           values:
             experiments.length > 0
-              ? experiments.map((e) => ({
-                  [e.experimentId]: e,
-                }))
+              ? formatExperimentList(experiments)
               : [
                   {
                     experiments: [],

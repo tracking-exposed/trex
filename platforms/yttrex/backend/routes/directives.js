@@ -2,80 +2,8 @@ const _ = require('lodash');
 const debug = require('debug')('routes:directives');
 
 const automo = require('../lib/automo');
-const utils = require('../lib/utils');
 const mongo3 = require('../lib/mongo3');
 const nconf = require('nconf');
-
-function reproducibleTypo(title) {
-  const trimmedT = title.replace(/.$/, '').replace(/^./, '');
-  return trimmedT; /*
-  const stats = _.countBy(_.flatten(_.chunk(trimmedT)));
-  let selection = null;
-  _.each(_.reverse(stats), function(amount, letter) {
-    if(!selection && amount === 1)
-      selection = letter;
-  });
-  if(!selection)
-    selection = _.last(stats).letter;
-
-  injection = ' з ';
-  const chunks = trimmedT.split(selection);
-  return chunks.join(injection); */
-}
-
-function chiaroScuro(videoinfo, counter) {
-  // this produces three conversion of the video under test
-  // and it guarantee the conversion is reproducible
-
-  const { videoId } = utils.getNatureFromURL(videoinfo.videoURL);
-  if (!videoId) {
-    const m =
-      'Invalid URL in shadowban experiment ' +
-      videoinfo.videoURL +
-      ' (expected a video URL)';
-    throw new Error(m);
-  }
-
-  return _.times(3, function (mutation) {
-    let sq = null;
-    let mutationStr = '';
-    if (mutation === 0) {
-      mutationStr = 'trimming';
-      sq = encodeURIComponent(reproducibleTypo(videoinfo.title));
-    } else if (mutation === 1) {
-      mutationStr = 'exact-title';
-      sq = encodeURIComponent(videoinfo.title);
-    } else if (mutation === 2) {
-      mutationStr = 'videoId';
-      sq = videoId;
-    }
-
-    const squri = `https://www.youtube.com/results?search_query=${sq}`;
-
-    return {
-      url: squri,
-      loadFor: 15000,
-      name: `${mutationStr}-video-${counter}`,
-      targetVideoId: videoId,
-    };
-  });
-}
-
-/*
-function acquireChiaroscuro(parsedCSV) {
-  if (
-    _.filter(parsedCSV, function (validityCheck) {
-      return (
-        !_.startsWith(validityCheck.videoURL, 'http') ||
-        !validityCheck.videoURL.match(/watch/) ||
-        validityCheck.title.length < 5
-      );
-    }).length
-  )
-    throw new Error('Invalid parsedCSV content');
-
-  return parsedCSV;
-} */
 
 function timeconv(maybestr, defaultMs) {
   if (_.isInteger(maybestr) && maybestr > 100) {
@@ -153,13 +81,13 @@ async function getPublic(req) {
 
   await mongoc.close();
 
+  debug('getPublic experiments returns %d', publicDirectives.length);
   return {
     json: publicDirectives,
   };
 }
 
 module.exports = {
-  chiaroScuro,
   comparison,
   post,
   get,

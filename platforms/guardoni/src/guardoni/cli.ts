@@ -87,12 +87,23 @@ const foldOutput = (values: GuardoniSuccessOutput['values']): string[] => {
             return foldOutput([v]).map((o) => `\t ${o}`);
           });
 
+          // NOTE: same consideration as below, this output
+          // function should be tested based on what we need to see
+          // otherwise a debug(%O) is enough for the guardoni-cli
           return [`${key}:\t`, ...A.flatten(valuesChunk)];
         }
 
         if (typeof value === 'object') {
           // console.log('value is object');
 
+          // NOTE: I think this might be worthy of a chat.
+          // instead of calling a recursive function, is domain knowledge in the
+          // producer of this data, to decide how to format and handle results.
+
+          // QUESTION: how many different input can exists for this function?
+          // is it really necessary to make a generic output printer with a recursive function?
+
+          // PROBABLY: console.table would do a nicer output
           return [`${key}: \n\t`, ...foldOutput([value])];
         }
 
