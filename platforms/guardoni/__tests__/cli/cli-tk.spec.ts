@@ -13,6 +13,7 @@ import { GetGuardoniCLI, GuardoniCLI } from '../../src/guardoni/cli';
 import { csvStringifyTE } from '../../src/guardoni/utils';
 import axiosMock from '@shared/test/__mocks__/axios.mock';
 import { puppeteerMock } from '@shared/test/__mocks__/puppeteer.mock';
+import { formatExperimentList } from '../../src/guardoni/experiment';
 
 const basePath = path.resolve(__dirname, '../../');
 const profileName = 'profile-tk-test-99';
@@ -249,7 +250,7 @@ describe('CLI', () => {
       expect(result).toMatchObject({
         _tag: 'Right',
         right: {
-          message: 'Experiments List',
+          message: 'Public Experiments Available',
           values: [
             {
               experiments: [],
@@ -273,8 +274,8 @@ describe('CLI', () => {
       expect(result).toMatchObject({
         _tag: 'Right',
         right: {
-          message: 'Experiments List',
-          values: steps.map((d) => ({ [d.experimentId]: d })),
+          message: 'Public Experiments Available',
+          values: formatExperimentList(steps),
         },
       });
     });

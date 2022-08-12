@@ -83,21 +83,15 @@ since:
 
 # output
 
-List succeeded: Experiments List
+List succeeded: Public Experiments Available
 
-
-Output values:
-
-d659fc7852b7a2878387773231054d534976bb12:
-
-when:    2022-05-27T11:50:02.423Z
+when:           2022-05-27T11:50:02.423Z
+experimentId:   d659fc7852b7a2878387773231054d534976bb12
 steps:
          title:          Yt Home
          url:    https://www.youtube.com/
          urltag:         youtube home
          watchFor:       42000
-experimentId:    d659fc7852b7a2878387773231054d534976bb12
-
 ```
 
 ### Running an experiment

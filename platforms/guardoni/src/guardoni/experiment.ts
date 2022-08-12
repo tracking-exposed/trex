@@ -259,7 +259,7 @@ export const saveExperiment =
     );
   };
 
-const formatExperimentList = (experiments: any[]): any[] => {
+export const formatExperimentList = (experiments: any[]): any[] => {
   /* this function take as input the received experiment and removed all
    * keys with value 'undefined' so the output plotter doesn't report them */
 

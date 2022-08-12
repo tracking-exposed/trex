@@ -20,6 +20,7 @@ import {
 } from '../../src/guardoni/profile';
 import { guardoniLogger } from '../../src/logger';
 import { throwTE } from '@shared/utils/task.utils';
+import { formatExperimentList } from '../../src/guardoni/experiment';
 
 const basePath = path.resolve(__dirname, '../../');
 const profileName = 'profile-yt-test-99';
@@ -218,7 +219,7 @@ describe('CLI', () => {
       expect(result).toMatchObject({
         _tag: 'Right',
         right: {
-          message: 'Experiments List',
+          message: 'Public Experiments Available',
           values: [
             {
               experiments: [],
@@ -242,8 +243,8 @@ describe('CLI', () => {
       expect(result).toMatchObject({
         _tag: 'Right',
         right: {
-          message: 'Experiments List',
-          values: steps.map((d) => ({ [d.experimentId]: d })),
+          message: 'Public Experiments Available',
+          values: formatExperimentList(steps),
         },
       });
     });
