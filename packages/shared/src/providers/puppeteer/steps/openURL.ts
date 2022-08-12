@@ -45,12 +45,7 @@ export const openURL =
       // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
       const loadFor = step.loadFor ?? opts.loadFor ?? 6000;
 
-      ctx.logger.info(
-        '— Loading %s (for %d ms) %O',
-        step?.url,
-        loadFor,
-        step
-      );
+      ctx.logger.info('— Loading %s (for %d ms)', step?.url, loadFor);
       // Remind you can exclude step with env/--exclude=urltag
 
       // TODO the 'timeout' would allow to repeat this operation with
@@ -90,7 +85,9 @@ export const openURL =
         loadFor
       );
 
-      await page.waitForTimeout(typeof loadFor === 'string' ? parseInt(loadFor) : loadFor);
+      await page.waitForTimeout(
+        typeof loadFor === 'string' ? parseInt(loadFor) : loadFor
+      );
 
       try {
         // debugger;

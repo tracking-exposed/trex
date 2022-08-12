@@ -283,7 +283,10 @@ export const GetEvents = ({
                       'Profile loaded from %s',
                       app.getPath('userData')
                     );
-                    logger.info('Run experiment with config %O', g.config);
+                    logger.info(
+                      'Starting automated navigation with config: %s',
+                      JSON.stringify(g.config, undefined, 2)
+                    );
                     return g.runExperimentForPage(
                       page,
                       experimentId,
