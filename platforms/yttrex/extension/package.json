@@ -1,6 +1,6 @@
 {
   "name": "@yttrex/extension",
-  "version": "2.6.1",
+  "version": "2.6.2",
   "private": true,
   "description": "yttrex is the extension + backend for youtube algorithm analysis. This is part of the https://tracking.exposed umbrella project",
   "homepage": "https://youtube.tracking.exposed",

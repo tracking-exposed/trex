@@ -1,3 +1,5 @@
+### [2.6.2](https://github.com/tracking-exposed/trex/compare/v2.6.1...v2.6.2) (2022-08-12)
+
 ### [2.6.1](https://github.com/tracking-exposed/trex/compare/v2.6.0...v2.6.1) (2022-07-06)
 
 - csv parsing with new directives compatibility ([b835b7e](https://github.com/tracking-exposed/trex/commit/b835b7e163691d4b1a8ee194b6a8e25fb41c65f0))
