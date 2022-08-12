@@ -25,9 +25,8 @@ export const getDefaultProfile = (
 ): GuardoniProfile => {
   return {
     udd: getProfileDataDir(basePath, profileName),
-    newProfile: true,
     profileName,
-    evidencetag: [],
+    researchTag: [],
     execount: 0,
   };
 };
@@ -69,7 +68,7 @@ export const checkProfile =
     const profileName =
       conf.profileName ??
       lastProfile ??
-      conf.evidenceTag ??
+      conf.researchTag ??
       `guardoni-${format(new Date(), 'yyyy-MM-dd')}`;
 
     const profileDir = getProfileDataDir(basePath, profileName);
@@ -106,11 +105,11 @@ export const checkProfile =
  */
 export const readProfile =
   (ctx: { logger: GuardoniContext['logger'] }) =>
-  (profilePath: string): TE.TaskEither<AppError, GuardoniProfile> => {
-    ctx.logger.debug('Reading profile from %s', profilePath);
+  (profileFilePath: string): TE.TaskEither<AppError, GuardoniProfile> => {
+    ctx.logger.debug('Reading profile from %s', profileFilePath);
 
     return pipe(
-      liftFromIOE(() => fs.readFileSync(profilePath, 'utf-8')),
+      liftFromIOE(() => fs.readFileSync(profileFilePath, 'utf-8')),
       TE.chain((data) =>
         pipe(
           Json.parse(data),
@@ -144,17 +143,17 @@ export const readProfile =
 export const updateGuardoniProfile =
   (ctx: GuardoniContext) =>
   (
-    evidenceTag: string,
-    profile: GuardoniProfile
+    profile: GuardoniProfile,
+    researchTag?: string
   ): TE.TaskEither<AppError, GuardoniProfile> => {
     ctx.logger.debug('Updating guardoni config %s', ctx.guardoniConfigFile);
 
-    const execCount = profile.execount + 1;
     const updatedProfile: GuardoniProfile = {
       ...profile,
-      newProfile: execCount === 0,
       execount: profile.execount + 1,
-      evidencetag: profile.evidencetag.concat(evidenceTag),
+      researchTag: researchTag
+        ? profile.researchTag.concat(researchTag)
+        : profile.researchTag,
     };
 
     ctx.logger.debug('Writing guardoni config %O', updatedProfile);

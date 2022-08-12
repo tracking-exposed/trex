@@ -180,7 +180,7 @@ export function checkUpDebug(r): void {
 }
 
 function relatedMetadata(e: any, i: number): ParsedInfo | null {
-  videoLog.debug('event %O at index %d', e.tagName, i);
+  // videoLog.debug('tagName %O at index %d', e.tagName, i);
   // here we find metadata inside the preview snippet on the right column
   let foryou, mined;
   const title = e.querySelector('#video-title').textContent;
@@ -243,7 +243,7 @@ function relatedMetadata(e: any, i: number): ParsedInfo | null {
     verified,
     foryou,
     videoId,
-    params: params,
+    params,
     recommendedSource: source,
     recommendedTitle: mined ? mined.title : title || null,
     recommendedLength,
@@ -508,7 +508,7 @@ export function processVideo(
   return {
     title,
     type: 'video',
-    params: params,
+    params,
     videoId,
     login,
     publicationString,

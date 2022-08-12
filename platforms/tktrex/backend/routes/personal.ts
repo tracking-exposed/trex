@@ -240,30 +240,16 @@ const getPersonalByExperimentId = async (
   const supporter = await automo.getSupporterByPublicKey(publicKey);
 
   const opts = { amount: 100, skip: 0 };
-  const htmls = await automo.getLastHTMLs(
+
+  // debug('Html ids %O', htmlIds);
+
+  const metadata = await automo.getMetadataByFilter(
     {
       publicKey: {
         $eq: publicKey,
       },
       experimentId: {
         $eq: experimentId,
-      },
-    },
-    opts.skip,
-    opts.amount
-  );
-
-  const htmlIds = htmls.content.map((h) => h.id);
-
-  // debug('Html ids %O', htmlIds);
-
-  const metadata = await automo.getMetadataByFilter(
-    {
-      id: {
-        $in: htmlIds,
-      },
-      publicKey: {
-        $eq: publicKey,
       },
     },
     opts

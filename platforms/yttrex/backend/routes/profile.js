@@ -73,7 +73,7 @@ async function createAndOrJoinTag(req) {
     });
 
     const ret = {json: {}};
-    const exists = await mongo3.readOne(mongoc, nconf.get('schema').groups, { id: id });
+    const exists = await mongo3.readOne(mongoc, nconf.get('schema').groups, { id });
     if(_.get(exists, 'id')) {
         ret.json.group = Object(exists);
         ret.created = false;

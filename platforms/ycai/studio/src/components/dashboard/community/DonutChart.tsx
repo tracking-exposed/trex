@@ -43,7 +43,7 @@ export const DonutChart = <D extends Data>({
     const chartOpts: c3.ChartConfiguration = {
       bindto: `#${donutChardId}`,
       data: {
-        columns: columns,
+        columns,
         type: 'donut',
         colors,
       },

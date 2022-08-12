@@ -5,7 +5,8 @@ const fetchOpengraph = require('fetch-opengraph');
 
 const ycai = require('../lib/ycai');
 const curly = require('../lib/curly');
-const endpoints = require('../lib/endpoint');
+const automo = require('../lib/automo');
+const endpoints = require('@shared/endpoints/helper');
 const { v3 } = require('@yttrex/shared/endpoints');
 const structured = require('../lib/structured');
 
@@ -505,6 +506,41 @@ async function getCreatorStats(req) {
   return { json: retval.result };
 }
 
+async function getCreatorRelated(req) {
+  /* this is the route invoked by API
+       /api/v3/creator/:channelId/related/:amount?
+       and differs from the others because take as an input a
+       channel and return as output aggregation by channel */
+
+  const amount = req.query.amount ? _.parseInt(req.query.amount) : 10;
+  const skip = req.query.skip ? _.parseInt(req.query.skip) : 0;
+  try {
+    /* pagination not supported, only enlarging the max amount of evidences */
+    debug('getCreatorRelated %s amount %d', req.params.channelId, amount);
+    const authorStruct = await automo.getMetadataFromAuthorChannelId(
+      req.params.channelId,
+      { amount, skip }
+    );
+    return {
+      json: {
+        ...authorStruct,
+        content: authorStruct.content.map(({ _id, ...c }) => ({
+          ...c,
+          id: _id,
+        })),
+      },
+    };
+  } catch (e) {
+    debug('getCreatorRelated error: %s, %s', e.message, e.stack);
+    return {
+      json: {
+        error: true,
+        message: e.message,
+      },
+    };
+  }
+}
+
 module.exports = {
   byVideoId,
   byProfile,
@@ -520,4 +556,5 @@ module.exports = {
   creatorGet,
   creatorDelete,
   getCreatorStats,
+  getCreatorRelated,
 };

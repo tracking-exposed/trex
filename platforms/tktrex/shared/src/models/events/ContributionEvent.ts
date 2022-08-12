@@ -13,6 +13,7 @@ export const ContributionEvent = t.strict(
       t.literal('search'),
       t.literal('video'),
       t.literal('profile'),
+      t.literal('native'),
     ]),
     incremental: t.number,
   },

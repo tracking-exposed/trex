@@ -7,7 +7,7 @@ import {
   makeStyles,
   Typography,
 } from '@material-ui/core';
-import { OpenURLDirective } from '@shared/models/Directive';
+import { OpenURLStep } from '@shared/models/Step';
 import { GuardoniExperiment } from '@shared/models/Experiment';
 import { formatDate } from '@shared/utils/date.utils';
 import { ipcRenderer } from 'electron';
@@ -34,12 +34,11 @@ export const AutoRunTab: React.FC<FromCSVFileTabProps> = ({ onSubmit }) => {
   const [directiveId, setDirectiveId] = React.useState<string | undefined>(
     undefined
   );
-  const [directives, setDirectives] = React.useState<GuardoniExperiment[]>([]);
+  const [steps, setSteps] = React.useState<GuardoniExperiment[]>([]);
 
   React.useEffect(() => {
     ipcRenderer.on(EVENTS.GET_PUBLIC_DIRECTIVES.value, (event, ...args) => {
-      const [directives] = args;
-      setDirectives(directives);
+      setSteps(args[0]);
     });
 
     ipcRenderer.send(EVENTS.GET_PUBLIC_DIRECTIVES.value);
@@ -47,7 +46,7 @@ export const AutoRunTab: React.FC<FromCSVFileTabProps> = ({ onSubmit }) => {
 
   return (
     <Box display={'flex'} flexDirection={'column'}>
-      {directives.map((d, i) => {
+      {steps.map((d, i) => {
         const isSelected = d.experimentId === directiveId;
         return (
           <Box
@@ -63,10 +62,10 @@ export const AutoRunTab: React.FC<FromCSVFileTabProps> = ({ onSubmit }) => {
             </Typography>
             <Box>
               <List className={classes.directiveLinkList}>
-                {d.links.map((l, i) => (
+                {d.steps.map((l, i) => (
                   <ListItem key={i}>
                     <Typography variant="subtitle1" color="primary">
-                      {OpenURLDirective.is(l)
+                      {OpenURLStep.is(l)
                         ? `${l.urltag} ({l.watchFor ?? 'end'})`
                         : l.type}
                       :

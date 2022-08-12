@@ -4,16 +4,16 @@ const experlib = require('../lib/experiments');
 const mongo3 = require('../lib/mongo3');
 
 async function post(req) {
-  const directives = req.body;
+  const steps = req.body;
 
-  const feedback = await experlib.registerDirective(directives);
+  const feedback = await experlib.registerSteps(steps);
   // this feedback is printed at terminal when --csv is used
   return { json: feedback };
 }
 
 async function get(req) {
   const experimentId = req.params.experimentId;
-  debug('requested links for directive %s', experimentId);
+  debug('requested steps for experiment %s', experimentId);
   const expinfo = await experlib.pickDirective(experimentId);
 
   if (!expinfo) {
@@ -23,9 +23,9 @@ async function get(req) {
     };
   }
 
-  const links = expinfo.directives ?? expinfo.links ?? [];
+  const { steps } = expinfo;
 
-  if (!links.length) {
+  if (!steps.length) {
     debug(
       `Experiment ${experimentId} invalid format? has zero links to navigate on`
     );
@@ -38,7 +38,7 @@ async function get(req) {
     };
   }
 
-  return { json: links };
+  return { json: steps };
 }
 
 async function getPublic(req) {
@@ -53,7 +53,7 @@ async function getPublic(req) {
   // TODO this API can also be cached with the same logic of statistics
   const publicDirectives = await mongo3.readLimit(
     mongoc,
-    nconf.get('schema').directives,
+    nconf.get('schema').experiments,
     {}, // TODO { visibility: 'public' },
     { when: -1 },
     20,

@@ -184,7 +184,7 @@ function unrollNested(metadata, options) {
         }
         if (options.experiment) {
           shared.experimentId = evidence.experiment.experimentId;
-          shared.evidencetag = evidence.experiment.evidencetag;
+          shared.researchTag = evidence.experiment.researchTag;
           shared.execount = evidence.experiment.execount;
           // note, this is only present in experiment as sharedDataPull
           // in routes/experiment perform an aggregate, but we

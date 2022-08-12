@@ -11,21 +11,21 @@ const mongo3 = require('./mongo3');
 
 async function pickDirective(experimentId) {
   const mongoc = await mongo3.clientConnect({ concurrency: 1 });
-  const rb = await mongo3.readOne(mongoc, nconf.get('schema').directives, {
+  const rb = await mongo3.readOne(mongoc, nconf.get('schema').experiments, {
     experimentId,
   });
   await mongoc.close();
   return rb;
 }
 
-async function registerDirective(directives) {
-  debug('Registering directive requested');
+async function registerSteps(steps) {
 
   const experimentId = utils.hash({
-    directives,
+    steps,
   });
+
   const mongoc = await mongo3.clientConnect({ concurrency: 1 });
-  const exist = await mongo3.readOne(mongoc, nconf.get('schema').directives, {
+  const exist = await mongo3.readOne(mongoc, nconf.get('schema').experiments, {
     experimentId,
   });
 
@@ -40,25 +40,22 @@ async function registerDirective(directives) {
       status: 'exist',
       experimentId: exist.experimentId,
       since: exist.when,
-      links: exist.links,
+      steps: exist.steps,
     };
   }
 
   /* else, we don't had such data, hence */
-  debug('Registering new experiment %s: %j', experimentId, directives);
-  await mongo3.writeOne(mongoc, nconf.get('schema').directives, {
-    when: new Date(),
-    directives,
+  const creationTime = new Date();
+  await mongo3.writeOne(mongoc, nconf.get('schema').experiments, {
+    when: creationTime,
+    steps,
     experimentId,
   });
 
   await mongoc.close();
-  debug(
-    'Registered experiment %s with %d directives',
-    experimentId,
-    directives.links
-  );
-  return { status: 'created', experimentId };
+  debug('Registered experiment %s with %d steps: %j',
+    experimentId, steps.length, steps);
+  return { status: 'created', experimentId, since: creationTime };
 }
 
 async function markExperCompleted(mongoc, filter) {
@@ -110,7 +107,7 @@ async function saveExperiment(expobj) {
 }
 module.exports = {
   pickDirective,
-  registerDirective,
+  registerSteps,
   concludeExperiment,
   saveExperiment,
 };

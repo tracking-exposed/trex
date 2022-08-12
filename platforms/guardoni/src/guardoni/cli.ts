@@ -22,20 +22,27 @@ import {
 } from './types';
 import D from 'debug';
 import puppeteer, { PuppeteerExtra } from 'puppeteer-extra';
-import { DirectiveType } from '@shared/models/Directive';
 
 export const cliLogger = guardoniLogger.extend('cli');
 
 export interface GuardoniCommandOpts {
+  headless?: boolean;
+  researchTag?: string;
   publicKey: string;
   secretKey: string;
+}
+
+export interface GuardoniNavigateOpts extends GuardoniCommandOpts {
+  cookieModal?: {
+    action: 'reject' | 'accept';
+  };
+  exit?: boolean;
 }
 
 export type GuardoniCommandConfig =
   | {
       run: 'register-csv';
       file: NonEmptyString;
-      type?: DirectiveType;
     }
   | {
       run: 'experiment';
@@ -51,7 +58,7 @@ export type GuardoniCommandConfig =
     }
   | {
       run: 'navigate';
-      opts: GuardoniCommandOpts;
+      opts: GuardoniNavigateOpts;
     };
 
 export interface GuardoniCLI {
@@ -80,12 +87,23 @@ const foldOutput = (values: GuardoniSuccessOutput['values']): string[] => {
             return foldOutput([v]).map((o) => `\t ${o}`);
           });
 
+          // NOTE: same consideration as below, this output
+          // function should be tested based on what we need to see
+          // otherwise a debug(%O) is enough for the guardoni-cli
           return [`${key}:\t`, ...A.flatten(valuesChunk)];
         }
 
         if (typeof value === 'object') {
           // console.log('value is object');
 
+          // NOTE: I think this might be worthy of a chat.
+          // instead of calling a recursive function, is domain knowledge in the
+          // producer of this data, to decide how to format and handle results.
+
+          // QUESTION: how many different input can exists for this function?
+          // is it really necessary to make a generic output printer with a recursive function?
+
+          // PROBABLY: console.table would do a nicer output
           return [`${key}: \n\t`, ...foldOutput([value])];
         }
 
@@ -145,20 +163,18 @@ export const GetGuardoniCLI: GetGuardoniCLI = (
             case 'list':
               return g.listExperiments();
             case 'register-csv': {
-              const type = command.type
-                ? command.type
-                : g.platform.name === 'youtube'
-                ? 'comparison'
-                : 'search';
-
-              return g.registerExperimentFromCSV(command.file, type);
+              return g.registerExperimentFromCSV(command.file);
             }
             case 'experiment':
               return g.runExperiment(command.experiment, command.opts);
             case 'navigate': {
               return pipe(
-                g.runBrowser(command.opts),
-                TE.map(() => ({ type: 'success', values: [], message: '' }))
+                g.runNavigate({ ...config, ...command.opts }),
+                TE.map(() => ({
+                  type: 'success',
+                  values: [],
+                  message: 'Navigation completed!',
+                }))
               );
             }
             case 'auto':
@@ -218,19 +234,24 @@ const runGuardoni = ({
   extensionDir,
   'public-key': _publicKey,
   'secret-key': _secretKey,
+  'cookie-modal': _cookiModal,
+  'research-tag': _researchTag,
   ...guardoniConf
 }: any): Promise<void> => {
   const basePath = guardoniConf.basePath ?? DEFAULT_BASE_PATH;
 
   if (verbose) {
-    D.enable('@guardoni*');
-
-    cliLogger.debug('Running guardoni', { config, basePath, guardoniConf });
-    if (config) {
-      // eslint-disable-next-line
-      cliLogger.debug(`Configuration loaded from ${config}`, guardoniConf);
-    }
+    D.enable('@trex*,guardoni*');
   }
+
+  cliLogger.debug(
+    'Running guardoni from base path %s (%s), %O',
+    basePath,
+    config,
+    guardoniConf
+  );
+
+  cliLogger.debug('Running command %O', command);
 
   return GetGuardoniCLI(
     {
@@ -281,12 +302,22 @@ const program = yargs(hideBin(process.argv))
           type: 'string',
           desc: 'The secretKey to use to sign the evidences',
           default: undefined,
+        })
+        .option('cookie-modal', {
+          type: 'string',
+          choices: ['accept', 'reject'],
+        })
+        .option('exit', {
+          type: 'boolean',
         }),
-    ({ publicKey, secretKey, ...argv }) => {
+    (args) => {
       void runGuardoni({
-        ...argv,
+        ...args,
         platform: 'youtube',
-        command: { run: 'navigate', opts: { publicKey, secretKey } },
+        command: {
+          run: 'navigate',
+          opts: args,
+        },
       });
     }
   )
@@ -310,14 +341,14 @@ const program = yargs(hideBin(process.argv))
           desc: 'The secretKey to use to sign the evidences',
           default: undefined,
         }),
-    ({ experiment, publicKey, secretKey, ...argv }) => {
+    ({ experiment, ...args }) => {
       void runGuardoni({
-        ...argv,
+        ...args,
         platform: 'youtube',
         command: {
           run: 'experiment',
           experiment,
-          opts: { publicKey, secretKey },
+          opts: args,
         },
       });
     }
@@ -522,7 +553,7 @@ const program = yargs(hideBin(process.argv))
     desc: 'Run guardoni in headless mode.',
     default: false,
   })
-  .option('evidenceTag', {
+  .option('researchTag', {
     type: 'string',
     desc: 'The evidence related tag.',
   })

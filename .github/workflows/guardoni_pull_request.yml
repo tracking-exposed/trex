@@ -10,8 +10,8 @@ on:
       - fix/**
       - refactor/**
     paths:
-      - "packages/shared/**"
-      - "platforms/**"
+      - 'packages/shared/**'
+      - 'platforms/**'
 
 jobs:
   pull_request:
@@ -34,7 +34,7 @@ jobs:
         uses: actions/setup-node@v2
         with:
           node-version: ${{ matrix.node-version }}
-          cache: "yarn"
+          cache: 'yarn'
           cache-dependency-path: yarn.lock
 
       - name: Install modules
@@ -59,19 +59,21 @@ jobs:
           yarn clean
           yarn pm2 start --env test ./platforms/ecosystem.config.js
 
-      - name: Test
+      - name: Build extensions
+        env:
+          DOTENV_CONFIG_PATH: .env.development
         run: |
           yarn yt:ext build:guardoni
           yarn tk:ext build:guardoni
+
+      - name: Test Guardoni
+        run: |
           yarn test guardoni --ci
           yarn pm2 stop all
 
   guardoni_build:
     name: Guardoni build
     runs-on: ${{ matrix.config.os }}
-    # defaults:
-    #   run:
-    #     shell: bash --noprofile --norc -exo pipefail {0}
     strategy:
       max-parallel: 1
       matrix:
@@ -101,7 +103,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
         with:
-          fetch: 0
+          fetch-depth: 0
 
       - name: Setup Node.js
         uses: actions/setup-node@v2
@@ -138,9 +140,11 @@ jobs:
         working-directory: ./platforms/guardoni
         run: ./scripts/cli-build.mjs
 
-      - name: Test YT cli
-        working-directory: ./platforms/guardoni
-        run: ./scripts/cli-yt-test.mjs
+      # - name: Test CLI - YT Home
+      #   run: yarn guardoni cli-yt-test-home
+
+      # - name: Test CLI - YT Videos
+      #   run: yarn guardoni cli-yt-test-videos
 
       - name: Stop PM2
         run: yarn pm2 stop all

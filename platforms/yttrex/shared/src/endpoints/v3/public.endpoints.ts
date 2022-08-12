@@ -1,30 +1,10 @@
-import * as t from 'io-ts';
-import { Endpoint } from 'ts-endpoint';
-import {
-  CreateDirectiveBody,
-  Directive,
-  DirectiveType,
-  PostDirectiveResponse,
-} from '@shared/models/Directive';
-import {
-  ConcludeGuardoniExperimentOutput,
-  GetPublicDirectivesOutput,
-} from '@shared/models/Experiment';
-import { HandshakeBody } from '@shared/models/HandshakeBody';
 import {
   GetRecommendationsParams,
   GetRecommendationsQuery,
-  RecommendationList,
+  RecommendationList
 } from '@shared/models/Recommendation';
-
-const Handshake = Endpoint({
-  Method: 'POST',
-  getPath: () => `/v3/handshake`,
-  Input: {
-    Body: HandshakeBody,
-  },
-  Output: t.any,
-});
+import * as t from 'io-ts';
+import { Endpoint } from 'ts-endpoint';
 
 const VideoRecommendations = Endpoint({
   Method: 'GET',
@@ -50,53 +30,7 @@ const GetRecommendations = Endpoint({
   Output: RecommendationList,
 });
 
-const PostDirective = Endpoint({
-  Method: 'POST',
-  getPath: ({ directiveType }) => `/v3/directives/${directiveType}`,
-  Input: {
-    Headers: t.type({
-      'Content-Type': t.string,
-    }),
-    Params: t.type({
-      directiveType: DirectiveType,
-    }),
-    Body: CreateDirectiveBody,
-  },
-  Output: PostDirectiveResponse,
-});
-
-const GetDirective = Endpoint({
-  Method: 'GET',
-  getPath: ({ experimentId }) => `/v3/directives/${experimentId}`,
-  Input: {
-    Params: t.type({
-      experimentId: t.string,
-    }),
-  },
-  Output: t.array(Directive),
-});
-
-const GetPublicDirectives = Endpoint({
-  Method: 'GET',
-  getPath: () => `/v3/directives/public`,
-  Output: GetPublicDirectivesOutput,
-});
-
-const ConcludeExperiment = Endpoint({
-  Method: 'DELETE',
-  getPath: ({ testTime }) => `/v3/experiment/${testTime}`,
-  Input: {
-    Params: t.type({ testTime: t.string }),
-  },
-  Output: ConcludeGuardoniExperimentOutput,
-});
-
 export const endpoints = {
-  Handshake,
   GetRecommendations,
   VideoRecommendations,
-  GetDirective,
-  PostDirective,
-  ConcludeExperiment,
-  GetPublicDirectives,
 };

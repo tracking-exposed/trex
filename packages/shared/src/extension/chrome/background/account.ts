@@ -15,10 +15,15 @@ export interface KeyPair {
   secretKey: string;
 }
 
-const FIXED_USER_NAME = 'local';
+export const FIXED_USER_NAME = 'local';
 
 // defaults of the settings stored in 'config' and controlled by popup
-const DEFAULT_SETTINGS = { active: true, ux: false, researchTag: '' };
+const DEFAULT_SETTINGS = {
+  active: true,
+  ux: false,
+  researchTag: undefined,
+  experimentId: undefined,
+};
 
 /**
  * Create publicKey and secretKey
@@ -27,9 +32,10 @@ export function initializeKey(): KeyPair {
   // use publicKey and secretKey from process.env when available
   if (process.env.PUBLIC_KEY && process.env.SECRET_KEY) {
     log.info(
-      'Found PUBLIC and SECRET keys in envrionment, returning those and skipping generation %j',
+      'Found PUBLIC and SECRET keys in environment, returning those and skipping generation %j',
       process.env
     );
+
     return {
       publicKey: process.env.PUBLIC_KEY,
       secretKey: process.env.SECRET_KEY,
@@ -39,7 +45,7 @@ export function initializeKey(): KeyPair {
   const publicKey = bs58.encode(newKeypair.publicKey);
   const secretKey = bs58.encode(newKeypair.secretKey);
   const rv = { publicKey, secretKey };
-  log.info('initializing new key pair:', rv);
+  log.info('initializing new key pair: %O', rv);
   return rv;
 }
 
@@ -47,35 +53,68 @@ interface WithUserId {
   userId: string;
 }
 
-async function handleLocalLookup(
+const readOrDefault = async <T extends t.Mixed>(
+  fn: string,
+  codec: T,
+  defaults: any
+): Promise<T['_O']> => {
+  try {
+    const result = await file.readJSON(fn, codec);
+
+    return {
+      ...defaults,
+      ...result,
+    };
+  } catch (err) {
+    log.info('Error caught while checking settings.json: %s', err);
+    return defaults;
+  }
+};
+
+/**
+ * Load settings from `settings.json`
+ */
+export async function handleSettingsLookup(
+  { userId }: WithUserId,
+  sendResponse: (response: Partial<UserSettings>) => void
+): Promise<void> {
+  const settingsJson = await readOrDefault(
+    'settings.json',
+    t.partial(UserSettings.props),
+    DEFAULT_SETTINGS
+  );
+
+  const experimentInfo = await readOrDefault('experiment.json', t.any, {});
+
+  const settings = { ...DEFAULT_SETTINGS, ...settingsJson, ...experimentInfo };
+
+  try {
+    if (!(settings.publicKey?.length && settings.secretKey?.length))
+      throw new Error('Invalid key material found in settings.json');
+
+    log.info('Loaded configuration from file settings.json: %j', settings);
+  } catch (err) {
+    log.info('Error caught while checking settings.json: %s', err);
+  }
+
+  return sendResponse(settings);
+}
+
+/**
+ * Get settings from chrome.storage
+ */
+export async function handleLocalLookup(
   { userId }: WithUserId,
   sendResponse: (response: Partial<UserSettings>) => void
 ): Promise<void> {
   let settings;
   try {
-    const localSettings = await file.readJSON(
-      'settings.json',
-      t.partial(UserSettings.props)
-    );
-    settings = {
-      ...DEFAULT_SETTINGS,
-      ...localSettings,
-    };
-    if (!(settings.publicKey?.length && settings.secretKey?.length))
-      throw new Error('Invalid key material found in settings.json');
-    log.info('Loaded configuration from file settings.json: %j', settings);
-    await db.set(userId, settings);
-  } catch (err) {
-    log.info('Error caught while checking settings.json: %s', err);
-  }
-
-  try {
-    settings = await db.getValid(UserSettings)(userId);
+    settings = await db.getValid(t.partial(UserSettings.props))(userId);
     log.info('Loaded correctly settings from localStorage %j', settings);
   } catch (err) {
     const initialSettings: UserSettings = {
-      ...initializeKey(),
       ...DEFAULT_SETTINGS,
+      ...initializeKey(),
     };
     settings = await db.set(userId, initialSettings);
   }
@@ -119,8 +158,16 @@ async function handleConfigUpdate(
   sendResponse(settings);
 }
 
-export const load = (opts: LoadOpts): void => {
+export const load = (
+  opts: LoadOpts,
+  onConfigChange: (c: Partial<UserSettings>) => void
+): void => {
   bo.runtime.onMessage.addListener((request: Message, sender, sendResponse) => {
+    if (request.type === 'SettingsLookup') {
+      void handleSettingsLookup(request.payload, sendResponse);
+      return true;
+    }
+
     if (request.type === 'LocalLookup') {
       void handleLocalLookup(request.payload, sendResponse);
       return true;
@@ -132,7 +179,10 @@ export const load = (opts: LoadOpts): void => {
     }
 
     if (request.type === 'ConfigUpdate') {
-      void handleConfigUpdate(request.payload, sendResponse);
+      void handleConfigUpdate(request.payload, (c) => {
+        onConfigChange(c);
+        return sendResponse(c);
+      });
       return true;
     }
   });

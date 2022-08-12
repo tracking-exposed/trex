@@ -3,7 +3,7 @@
 import { keys, record } from 'fp-ts/lib/Record';
 import * as t from 'io-ts';
 import * as NEA from 'io-ts-types/lib/nonEmptyArray';
-import { Directive } from '../../models/Directive';
+import { Step } from '../../models/Step';
 import { swaggerLogger } from './utils';
 
 interface AnyType extends t.Type<any, any, any> {
@@ -191,6 +191,8 @@ export const getOpenAPISchema = <T extends IOTOpenDocSchema>(codec: T): any => {
         }
       }
 
+      // swaggerLogger.info('Union type %O', nonNullableTypes);
+
       return {
         type: 'object',
         description: type.name,
@@ -240,7 +242,7 @@ export const getOpenAPISchema = <T extends IOTOpenDocSchema>(codec: T): any => {
       if (codec.name === 'GetDirectiveOutput') {
         return {
           type: 'array',
-          items: Directive.types.map((tt: any) => ({
+          items: Step.types.map((tt: any) => ({
             $ref: `#/components/schemas/${tt.name}`,
           })),
           required: true,

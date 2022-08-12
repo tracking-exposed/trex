@@ -28,6 +28,7 @@ export const GetTest = async (): Promise<Test> => {
   config.set('mongoHost', '0.0.0.0');
   config.set('key', 'test-key');
   config.set('storage', '_test_htmls');
+  config.set('mongoDb', 'yttrex-test');
 
   const mongo = await mongo3.clientConnect({ concurrency: 1 });
 

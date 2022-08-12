@@ -3,7 +3,6 @@ title: Usage
 sidebar_position: 2
 ---
 
-
 ```bash
 
 guardoni-cli <command>
@@ -33,7 +32,7 @@ Options:
                                       [string] [default: "guardoni.config.json"]
       --headless            Run guardoni in headless mode.
                                                       [boolean] [default: false]
-      --evidenceTag         The evidence related tag.                   [string]
+      --researchTag         The evidence related tag.                   [string]
       --profile             The current user profile                    [string]
       --backend             The API endpoint for server requests        [string]
       --proxy               Socket proxy for puppeteer.                 [string]
@@ -84,22 +83,15 @@ since:
 
 # output
 
-List succeeded: Experiments List
+List succeeded: Public Experiments Available
 
-
-Output values:
-
-d659fc7852b7a2878387773231054d534976bb12: 
-
-when:    2022-05-27T11:50:02.423Z
-directiveType:   comparison
-links:
+when:           2022-05-27T11:50:02.423Z
+experimentId:   d659fc7852b7a2878387773231054d534976bb12
+steps:
          title:          Yt Home
          url:    https://www.youtube.com/
          urltag:         youtube home
          watchFor:       42000
-experimentId:    d659fc7852b7a2878387773231054d534976bb12
-
 ```
 
 ### Running an experiment
@@ -115,8 +107,7 @@ Experiment succeeded: Experiment completed
 Output values:
 
 experimentId:    d659fc7852b7a2878387773231054d534976bb12
-evidenceTag:     no-tag-25368
-directiveType:   comparison
+researchTag:     no-tag-25368
 execCount:       3
 profileName:     profile-test-99
 newProfile:      false

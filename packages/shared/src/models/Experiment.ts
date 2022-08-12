@@ -1,12 +1,12 @@
 import * as t from 'io-ts';
-import { nonEmptyArray } from 'io-ts-types';
-import { Directive } from './Directive';
+import { DateFromISOString, nonEmptyArray } from 'io-ts-types';
+import { Step } from './Step';
 
 export const GuardoniExperiment = t.strict(
   {
     experimentId: t.string,
     when: t.string,
-    links: t.array(Directive),
+    steps: t.array(Step),
   },
   'GuardoniExperiment'
 );
@@ -17,16 +17,6 @@ export const GetDirectiveOutput = nonEmptyArray(
   'GetDirectiveOutput'
 );
 export type GetDirectiveOutput = t.TypeOf<typeof GetDirectiveOutput>;
-
-export const ConcludeGuardoniExperimentOutput = t.type(
-  {
-    acknowledged: t.boolean,
-  },
-  'ConcludeGuardoniExperimentOutput'
-);
-export type ConcludeGuardoniExperimentOutput = t.TypeOf<
-  typeof ConcludeGuardoniExperimentOutput
->;
 
 export const GetExperimentListOutput = t.strict(
   {
@@ -44,3 +34,25 @@ export const GetPublicDirectivesOutput = t.array(
 export type GetPublicDirectivesOutput = t.TypeOf<
   typeof GetPublicDirectivesOutput
 >;
+
+
+export const CreateExperimentSuccessResponse = t.strict(
+  {
+    status: t.union([t.literal('exist'), t.literal('created')]),
+    experimentId: t.string,
+    since: DateFromISOString,
+  },
+  'CreateExperimentSuccessResponse'
+);
+
+export type CreateExperimentSuccessResponse = t.TypeOf<
+  typeof CreateExperimentSuccessResponse
+>;
+
+export const CreateExperimentResponse = t.union(
+  [
+    t.type({ error: t.type({ message: t.string }) }),
+    CreateExperimentSuccessResponse,
+  ],
+  'CreateExperimentResponse'
+);

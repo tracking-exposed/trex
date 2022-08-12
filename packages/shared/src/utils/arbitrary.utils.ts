@@ -16,3 +16,17 @@ export const propsOmit = <P extends t.Props, PP extends Array<keyof P>>(
       )
     ) as any
   );
+
+export const propsOmitType = <P extends t.Props, PP extends Array<keyof P>>(
+  codec: t.TypeC<P>,
+  props: PP
+): Omit<P, PP[number]> =>
+  pipe(
+    codec.props,
+    R.filterMapWithIndex((k, p) =>
+      pipe(
+        p,
+        O.fromPredicate(() => !props.includes(k))
+      )
+    ) as any
+  );

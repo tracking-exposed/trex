@@ -18,6 +18,8 @@ export const HTML = t.strict(
     processed: t.boolean,
     timelineId: t.union([t.string, t.undefined]),
     n: t.union([t.array(t.any), t.undefined]),
+    researchTag: t.union([t.string, t.undefined]),
+    experimentId: t.union([t.string, t.undefined]),
   },
   'HTML'
 );

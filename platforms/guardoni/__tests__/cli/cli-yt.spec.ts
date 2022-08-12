@@ -1,28 +1,37 @@
 /* eslint-disable import/first */
 jest.mock('axios');
 import {
-  CommonDirectiveArb,
   GuardoniExperimentArb,
   PostDirectiveSuccessResponseArb,
-} from '@shared/arbitraries/Directive.arb';
+} from '@shared/arbitraries/Experiment.arb';
+import { CommonStepArb } from '@shared/arbitraries/Step.arb';
 import * as tests from '@shared/test';
-import differenceInMilliseconds from 'date-fns/differenceInMilliseconds';
+import { pipe } from 'fp-ts/lib/function';
 import * as fs from 'fs';
 import * as path from 'path';
 import { GetGuardoniCLI, GuardoniCLI } from '../../src/guardoni/cli';
 import { csvStringifyTE } from '../../src/guardoni/utils';
-import axiosMock from '../../__mocks__/axios.mock';
-import { puppeteerMock } from '../../__mocks__/puppeteer.mock';
+import axiosMock from '@shared/test/__mocks__/axios.mock';
+import { puppeteerMock } from '@shared/test/__mocks__/puppeteer.mock';
+import {
+  getProfileDataDir,
+  getProfileJsonPath,
+  readProfile,
+} from '../../src/guardoni/profile';
+import { guardoniLogger } from '../../src/logger';
+import { throwTE } from '@shared/utils/task.utils';
+import { formatExperimentList } from '../../src/guardoni/experiment';
 
 const basePath = path.resolve(__dirname, '../../');
-const profileName = 'profile-test-99';
+const profileName = 'profile-yt-test-99';
+const profileDir = getProfileDataDir(basePath, profileName);
 const ytExtensionDir = path.resolve(basePath, '../yttrex/extension/build');
 const tkExtensionDir = path.resolve(basePath, '../tktrex/extension/build');
 const publicKey = process.env.PUBLIC_KEY as string;
 const secretKey = process.env.SECRET_KEY as string;
 
 describe('CLI', () => {
-  const evidenceTag = 'test-tag';
+  const researchTag = 'test-tag';
   let experimentId: string;
   let guardoni: GuardoniCLI;
 
@@ -37,7 +46,7 @@ describe('CLI', () => {
     fs.statSync(tkExtensionDir, { throwIfNoEntry: true });
 
     const comparisonCSVContent = await csvStringifyTE(
-      tests.fc.sample(CommonDirectiveArb, 5),
+      tests.fc.sample(CommonStepArb, 5),
       { header: true, encoding: 'utf-8' }
     )();
 
@@ -50,11 +59,9 @@ describe('CLI', () => {
       comparisonCSVContent.right,
       'utf-8'
     );
-
   });
 
   afterAll(() => {
-    const profileDir = path.resolve(basePath, 'profiles', profileName);
     if (fs.existsSync(profileDir)) {
       fs.rmSync(profileDir, {
         recursive: true,
@@ -89,7 +96,7 @@ describe('CLI', () => {
         proxy: undefined,
       },
       loadFor: 3000,
-      evidenceTag,
+      researchTag: researchTag,
       advScreenshotDir: undefined,
       excludeURLTag: undefined,
     },
@@ -106,7 +113,6 @@ describe('CLI', () => {
         guardoni.run({
           run: 'register-csv',
           file: path.resolve(__dirname, '../fake-file') as any,
-          type: 'search',
         })()
       ).resolves.toMatchObject({
         _tag: 'Left',
@@ -120,11 +126,7 @@ describe('CLI', () => {
       await expect(
         guardoni.run({
           run: 'register-csv',
-          file: path.resolve(
-            basePath,
-            'experiments/tk-experiment.csv'
-          ) as any,
-          type: 'comparison',
+          file: path.resolve(basePath, 'experiments/tk-experiment.csv') as any,
         })()
       ).resolves.toMatchObject({
         _tag: 'Left',
@@ -143,11 +145,7 @@ describe('CLI', () => {
 
       const result: any = await guardoni.run({
         run: 'register-csv',
-        type: 'comparison',
-        file: path.resolve(
-          basePath,
-          'experiments/yt-experiment.csv'
-        ) as any,
+        file: path.resolve(basePath, 'experiments/yt-experiment.csv') as any,
       })();
 
       expect(result).toMatchObject({
@@ -169,11 +167,7 @@ describe('CLI', () => {
 
       const result: any = await guardoni.run({
         run: 'register-csv',
-        type: 'comparison',
-        file: path.resolve(
-          basePath,
-          'experiments/yt-experiment.csv'
-        ) as any,
+        file: path.resolve(basePath, 'experiments/yt-experiment.csv') as any,
       })();
 
       expect(result).toMatchObject({
@@ -197,11 +191,7 @@ describe('CLI', () => {
 
       const result: any = await guardoni.run({
         run: 'register-csv',
-        type: 'comparison',
-        file: path.resolve(
-          basePath,
-          'experiments/yt-experiment.csv'
-        ) as any,
+        file: path.resolve(basePath, 'experiments/yt-experiment.csv') as any,
       })();
 
       expect(result).toMatchObject({
@@ -217,7 +207,7 @@ describe('CLI', () => {
 
   describe('List public experiments', () => {
     test('succeeds with empty list', async () => {
-      // return directives
+      // return steps
       axiosMock.request.mockResolvedValueOnce({
         data: [],
       });
@@ -229,7 +219,7 @@ describe('CLI', () => {
       expect(result).toMatchObject({
         _tag: 'Right',
         right: {
-          message: 'Experiments List',
+          message: 'Public Experiments Available',
           values: [
             {
               experiments: [],
@@ -240,10 +230,10 @@ describe('CLI', () => {
     });
 
     test('succeeds with some results', async () => {
-      const directives = tests.fc.sample(GuardoniExperimentArb, 2);
-      // return directives
+      const steps = tests.fc.sample(GuardoniExperimentArb, 2);
+      // return steps
       axiosMock.request.mockResolvedValueOnce({
-        data: directives,
+        data: steps,
       });
 
       const result: any = await guardoni.run({
@@ -253,14 +243,14 @@ describe('CLI', () => {
       expect(result).toMatchObject({
         _tag: 'Right',
         right: {
-          message: 'Experiments List',
-          values: directives.map((d) => ({ [d.experimentId]: d })),
+          message: 'Public Experiments Available',
+          values: formatExperimentList(steps),
         },
       });
     });
   });
 
-  describe('experiment', () => {
+  describe('Run experiment', () => {
     test('fails when experiment id is empty', async () => {
       await expect(
         guardoni.run({ run: 'experiment', experiment: '' as any })()
@@ -271,66 +261,55 @@ describe('CLI', () => {
           details: ['Invalid value "" supplied to : NonEmptyString'],
         },
       });
-    });
 
-    test('fails when receive an error during experiment conclusion', async () => {
-      const data = tests.fc.sample(CommonDirectiveArb, 2).map((d) => ({
-        ...d,
-        loadFor: 1000,
-        watchFor: '2s',
-      }));
-
-      // return directive
-      axiosMock.request.mockResolvedValueOnce({
-        data,
-      });
-
-      axiosMock.request.mockResolvedValueOnce({
-        data: {
-          acknowledged: false,
-        },
-      });
-
-      const start = new Date();
-      const result: any = await guardoni.run({
-        run: 'experiment',
-        experiment: experimentId as any,
-      })();
-      const end = new Date();
-
-      expect(result).toMatchObject({
-        _tag: 'Left',
-        left: {
-          message: "Can't conclude the experiment",
-          details: [],
-        },
-      });
-
-      expect(differenceInMilliseconds(end, start)).toBeGreaterThan(
-        (2 + 3) * 2 * 100
+      // check guardoni profile count has been updated
+      const guardoniProfile = await throwTE(
+        readProfile({ logger: guardoniLogger })(
+          path.join(profileDir, 'guardoni.json')
+        )
       );
+
+      expect(guardoniProfile).toMatchObject({ execount: 0 });
     });
 
     test('succeed when experimentId has valid "yt" directives', async () => {
-      // return directive
       axiosMock.request.mockResolvedValueOnce({
-        data: tests.fc.sample(CommonDirectiveArb, 2).map((d) => ({
+        data: tests.fc.sample(CommonStepArb, 2).map((d) => ({
           ...d,
           loadFor: 1000,
           watchFor: '1s',
         })),
       });
 
-      axiosMock.request.mockResolvedValueOnce({
-        data: {
-          acknowledged: true,
-        },
-      });
-
       const result: any = await guardoni.run({
         run: 'experiment',
         experiment: experimentId as any,
+        opts: { publicKey, secretKey },
       })();
+
+      // check guardoni profile count has been updated
+      const guardoniProfile = await throwTE(
+        readProfile({ logger: guardoniLogger })(
+          path.join(profileDir, 'guardoni.json')
+        )
+      );
+
+      expect(guardoniProfile).toMatchObject({ profileName, execount: 1 });
+
+      // check guardoni has written proper settings.json
+      // inside extension folder
+
+      const settingJson = pipe(
+        path.resolve(ytExtensionDir, 'settings.json'),
+        (p) => fs.readFileSync(p, 'utf-8'),
+        JSON.parse
+      );
+
+      expect(settingJson).toMatchObject({
+        publicKey,
+        secretKey,
+        experimentId,
+      });
 
       expect(result).toMatchObject({
         _tag: 'Right',
@@ -339,35 +318,37 @@ describe('CLI', () => {
           values: [
             {
               profileName,
-              evidenceTag,
-              directiveType: 'comparison',
+              researchTag,
+              experimentId,
             },
           ],
         },
       });
     });
 
-    test('succeed when experimentId has valid "yt" directives', async () => {
-      // return directive
+    test('succeed when experimentId has valid "yt" steps', async () => {
       axiosMock.request.mockResolvedValueOnce({
-        data: tests.fc.sample(CommonDirectiveArb, 2).map((d) => ({
+        data: tests.fc.sample(CommonStepArb, 2).map((d) => ({
           ...d,
           loadFor: 1000,
           watchFor: '1s',
         })),
       });
 
-      axiosMock.request.mockResolvedValueOnce({
-        data: {
-          acknowledged: true,
-        },
-      });
-
       const result: any = await guardoni.run({
         run: 'experiment',
         experiment: experimentId as any,
-        opts: { publicKey, secretKey}
+        opts: { publicKey, secretKey },
       })();
+
+      // check guardoni profile count has been updated
+      const guardoniProfile = await throwTE(
+        readProfile({ logger: guardoniLogger })(
+          path.join(profileDir, 'guardoni.json')
+        )
+      );
+
+      expect(guardoniProfile).toMatchObject({ execount: 2 });
 
       expect(result).toMatchObject({
         _tag: 'Right',
@@ -377,8 +358,8 @@ describe('CLI', () => {
             {
               publicKey,
               experimentId,
-              evidenceTag,
-              profileName
+              researchTag,
+              profileName,
             },
           ],
         },
@@ -388,22 +369,24 @@ describe('CLI', () => {
 
   describe('auto', () => {
     test('succeeds when value is "1"', async () => {
-      // return directive
       axiosMock.request.mockResolvedValueOnce({
-        data: tests.fc.sample(CommonDirectiveArb, 2).map((d) => ({
+        data: tests.fc.sample(CommonStepArb, 2).map((d) => ({
           ...d,
           loadFor: 1000,
           watchFor: '1s',
         })),
       });
 
-      axiosMock.request.mockResolvedValueOnce({
-        data: {
-          acknowledged: true,
-        },
-      });
-
       const result: any = await guardoni.run({ run: 'auto', value: '1' })();
+
+      // check guardoni profile count has been updated
+      const guardoniProfile = await throwTE(
+        readProfile({ logger: guardoniLogger })(
+          path.join(profileDir, 'guardoni.json')
+        )
+      );
+
+      expect(guardoniProfile).toMatchObject({ execount: 3 });
 
       expect(result).toMatchObject({
         _tag: 'Right',
@@ -411,8 +394,7 @@ describe('CLI', () => {
           message: 'Experiment completed',
           values: [
             {
-              directiveType: 'comparison',
-              evidenceTag: evidenceTag,
+              researchTag,
             },
           ],
         },
@@ -420,31 +402,29 @@ describe('CLI', () => {
     });
 
     test('succeeds when value is "2"', async () => {
-      // return directive
       axiosMock.request.mockResolvedValueOnce({
-        data: tests.fc.sample(CommonDirectiveArb, 10).map((d) => ({
+        data: tests.fc.sample(CommonStepArb, 10).map((d) => ({
           ...d,
           watchFor: '1s',
         })),
       });
 
-      axiosMock.request.mockResolvedValueOnce({
-        data: {
-          acknowledged: true,
-        },
-      });
-
       const result: any = await guardoni.run({ run: 'auto', value: '2' })();
+
+      // check guardoni profile count has been updated
+      const guardoniProfile = await throwTE(
+        readProfile({ logger: guardoniLogger })(
+          path.join(profileDir, 'guardoni.json')
+        )
+      );
+
+      expect(guardoniProfile).toMatchObject({ execount: 4 });
 
       expect(result).toMatchObject({
         _tag: 'Right',
         right: {
           message: 'Experiment completed',
-          values: [
-            {
-              directiveType: 'comparison',
-            },
-          ],
+          values: [{}],
         },
       });
     });

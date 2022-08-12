@@ -1,4 +1,4 @@
-import { StringOrNull } from './common/StringOrNull';
+import { StringOrNull, What, Format } from './common';
 import { AuthResponse } from './Auth';
 import {
   AuthorizedContentCreator,
@@ -24,17 +24,20 @@ import {
 } from './ContributionEvent';
 import {
   GuardoniExperiment,
-  ConcludeGuardoniExperimentOutput,
   GetDirectiveOutput,
   GetPublicDirectivesOutput,
   GetExperimentListOutput,
+  CreateExperimentResponse,
+  CreateExperimentSuccessResponse
 } from './Experiment';
-import * as Directive from './Directive';
+import * as Step from './Step';
 import { Supporter } from './Supporter';
 
 export default {
   // common
   StringOrNull,
+  What,
+  Format,
   // handshake
   HandshakeBody,
   HandshakeResponse,
@@ -46,10 +49,11 @@ export default {
   // guardoni
   // guardoni experiments (to be moved)
   GuardoniExperiment,
-  ConcludeGuardoniExperimentOutput,
   GetDirectiveOutput,
   GetExperimentListOutput,
   GetPublicDirectivesOutput,
+  CreateExperimentResponse,
+  CreateExperimentSuccessResponse,
   // ycai
   // content creator
   RegisterContentCreatorBody,
@@ -72,5 +76,5 @@ export default {
   CreatorStatContent,
   ChannelRelated,
   GetRelatedChannelsOutput,
-  ...Directive
+  ...Step
 };

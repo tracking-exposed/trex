@@ -15,7 +15,7 @@ export interface LoadOpts {
 
 export const handleAPISyncMessage =
   ({ api, getHeadersForDataDonation }: LoadOpts) =>
-  (request: any, sender: any, sendResponse: any): void => {
+  (request: any, sender: any, sendResponse: any): boolean => {
     void getHeadersForDataDonation(request)
       .then((headers) =>
         (api as any).v2.Public.AddAPIEvents({
@@ -42,11 +42,12 @@ export const handleAPISyncMessage =
           error: e,
         })
       );
+    return true;
   };
 
 export const handleSyncMessage =
   ({ api, getHeadersForDataDonation }: LoadOpts) =>
-  (request: any, sender: any, sendResponse: any): void => {
+  (request: any, sender: any, sendResponse: any): boolean => {
     // log.debug('Sync request %O', request.payload);
     void getHeadersForDataDonation(request)
       .then((headers) => {
@@ -69,6 +70,7 @@ export const handleSyncMessage =
           });
         }
       });
+    return true;
   };
 
 export const load = ({ api, getHeadersForDataDonation }: LoadOpts): void => {

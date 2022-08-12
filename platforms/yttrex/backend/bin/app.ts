@@ -6,91 +6,16 @@ import { GetLogger } from '@shared/logger';
 import bodyParser from 'body-parser';
 import cors from 'cors';
 import express from 'express';
-import _ from 'lodash';
 import { apiList } from '../lib/api';
 import mongo3 from '../lib/mongo3';
 import { DeleteRecommendationRoute } from '../routes/youchoose/deleteRecommendation.route';
+import { routeHandleMiddleware } from '@shared/backend/utils/routeHandlerMiddleware';
 
 const logger = GetLogger('api');
-const logAPICount = { requests: {}, responses: {}, errors: {} };
 
-function loginc(kind: string, fname: string): void {
-  logAPICount[kind][fname] = logAPICount[kind][fname]
-    ? logAPICount[kind][fname]++
-    : 1;
-}
-
-const iowrapper =
-  (fname: string) =>
-  async (req: express.Request, res: express.Response): Promise<void> => {
-    try {
-      loginc('requests', fname);
-      const funct = apiList[fname];
-      const httpresult = await funct(req, res);
-
-      if (httpresult.headers)
-        _.each(httpresult.headers, function (value, key) {
-          logger.debug('Setting header %s: %s', key, value);
-          res.setHeader(key, value);
-        });
-
-      if (!httpresult) {
-        logger.debug("API (%s) didn't return anything!?", fname);
-        loginc('errors', fname);
-        res.send('Fatal error: Invalid output');
-        res.status(501);
-      } else if (httpresult.json?.error) {
-        const statusCode = httpresult.json.status ?? 500;
-        logger.debug('API (%s) failure, returning %d', fname, statusCode);
-        loginc('errors', fname);
-        res.status(statusCode);
-        res.json(httpresult.json);
-      } else if (httpresult.json) {
-        // logger("API (%s) success, returning %d bytes JSON", fname, _.size(JSON.stringify(httpresult.json)));
-        loginc('responses', fname);
-        res.setHeader('Access-Control-Allow-Origin', '*');
-        res.json(httpresult.json);
-      } else if (httpresult.text) {
-        // logger("API (%s) success, returning text (size %d)", fname, _.size(httpresult.text));
-        loginc('responses', fname);
-        res.send(httpresult.text);
-      } else if (httpresult.status) {
-        // logger("Returning empty status %d from API (%s)", httpresult.status, fname);
-        loginc('responses', fname);
-        res.status(httpresult.status);
-      } else {
-        logger.debug(
-          'Undetermined failure in API (%s) →  %j',
-          fname,
-          httpresult
-        );
-        loginc('errors', fname);
-        res.status(502);
-        res.send('Error?');
-      }
-    } catch (error) {
-      res.status(502);
-      res.send('Software error: ' + error.message);
-      loginc('errors', fname);
-      logger.debug('Error in HTTP handler API(%s): %o', fname, error);
-    }
-    res.end();
-  };
+const iowrapper = routeHandleMiddleware(apiList);
 
 /* one log entry per minute about the amount of API absolved */
-setInterval(() => {
-  let print = false;
-  _.each(_.keys(logAPICount), function (k) {
-    if (!_.keys(logAPICount[k]).length)
-      // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
-      delete logAPICount[k];
-    else print = true;
-  });
-  if (print) logger.debug('%j', logAPICount);
-  logAPICount.responses = {};
-  logAPICount.errors = {};
-  logAPICount.requests = {};
-}, 60 * 1000);
 
 export const makeApp = async (
   ctx: MakeAppContext
@@ -155,7 +80,7 @@ export const makeApp = async (
     iowrapper('getPersonalByExperimentId')
   );
 
-  apiRouter.post('/v3/registerEmail', iowrapper('registerEmail'));
+  apiRouter.post('/v2/registerEmail', iowrapper('registerEmail'));
 
   /* record answers from surveys */
   apiRouter.post('/v1/recordAnswers', iowrapper('recordAnswers'));
@@ -193,43 +118,60 @@ export const makeApp = async (
   apiRouter.get('/v1/mirror/:key', iowrapper('getMirror'));
 
   /* below, youchoose v3 */
-  apiRouter.get(
+  const youchooseRouter = express.Router();
+
+  youchooseRouter.get(
     '/v3/videos/:videoId/recommendations',
     iowrapper('youChooseByVideoId')
   );
-  apiRouter.get('/v3/recommendations/:ids', iowrapper('recommendationById'));
+  youchooseRouter.get(
+    '/v3/recommendations/:ids',
+    iowrapper('recommendationById')
+  );
 
-  apiRouter.post('/v3/creator/updateVideo', iowrapper('updateVideoRec'));
-  apiRouter.post('/v3/creator/ogp', iowrapper('ogpProxy'));
-  apiRouter.post('/v3/creator/videos/repull', iowrapper('repullByCreator'));
-  apiRouter.get('/v3/creator/videos', iowrapper('getVideoByCreator'));
-  apiRouter.get(
+  youchooseRouter.post('/v3/creator/updateVideo', iowrapper('updateVideoRec'));
+  youchooseRouter.post('/v3/creator/ogp', iowrapper('ogpProxy'));
+  youchooseRouter.post(
+    '/v3/creator/videos/repull',
+    iowrapper('repullByCreator')
+  );
+  youchooseRouter.get('/v3/creator/videos', iowrapper('getVideoByCreator'));
+  youchooseRouter.get(
     '/v3/creator/videos/:videoId',
     iowrapper('getOneVideoByCreator')
   );
-  apiRouter.get('/v3/creator/recommendations', iowrapper('youChooseByProfile'));
-  apiRouter.patch(
+  youchooseRouter.get(
+    '/v3/creator/recommendations',
+    iowrapper('youChooseByProfile')
+  );
+  youchooseRouter.patch(
     '/v3/creator/recommendations/:urlId',
     iowrapper('patchRecommendation')
   );
-  apiRouter.get(
+  youchooseRouter.get(
     '/v3/creator/:channelId/related',
     iowrapper('getCreatorRelated')
   );
-  apiRouter.get('/v3/creator/:channelId/stats', iowrapper('getCreatorStats'));
-  apiRouter.delete('/v3/creator/unlink', iowrapper('creatorDelete'));
-  apiRouter.get(
+  youchooseRouter.get(
+    '/v3/creator/:channelId/stats',
+    iowrapper('getCreatorStats')
+  );
+  youchooseRouter.delete('/v3/creator/unlink', iowrapper('creatorDelete'));
+  youchooseRouter.get(
     '/v3/opendata/channels/:details?',
     iowrapper('opendataChannel')
   );
-
-  /* below, the few API endpoints */
-  apiRouter.post(
+  youchooseRouter.post(
     '/v3/creator/:channelId/register',
     iowrapper('creatorRegister')
   );
-  apiRouter.post('/v3/creator/:channelId/verify', iowrapper('creatorVerify'));
-  apiRouter.get('/v3/creator/me', iowrapper('creatorGet'));
+  youchooseRouter.post(
+    '/v3/creator/:channelId/verify',
+    iowrapper('creatorVerify')
+  );
+  youchooseRouter.get('/v3/creator/me', iowrapper('creatorGet'));
+
+  apiRouter.use(youchooseRouter);
 
   /* below, the new API for advertising */
   apiRouter.get('/v2/ad/video/:videoId', iowrapper('adsPerVideo'));
@@ -262,18 +204,12 @@ export const makeApp = async (
   apiRouter.get('/v2/search/keywords/:paging?', iowrapper('getSearchKeywords'));
 
   /* experiments API: "comparison" require password, "chiaroscuro" doesn't */
-  apiRouter.get(
-    '/v2/guardoni/list/:directiveType/:key?',
-    iowrapper('getAllExperiments')
-  );
-  apiRouter.get('/v3/directives/public', iowrapper('getPublicDirectives'));
-  apiRouter.post('/v3/directives/:ignored?', iowrapper('postDirective'));
-  apiRouter.get('/v3/directives/:experimentId', iowrapper('fetchDirective'));
+  apiRouter.get('/v2/guardoni/list', iowrapper('getAllExperiments'));
+  apiRouter.get('/v2/directives/public', iowrapper('getPublicDirectives'));
+  apiRouter.post('/v2/directives/:ignored?', iowrapper('postDirective'));
+  apiRouter.get('/v2/directives/:experimentId', iowrapper('fetchDirective'));
   apiRouter.post('/v2/handshake', iowrapper('experimentChannel3'));
-  apiRouter.delete(
-    '/v3/experiment/:testTime',
-    iowrapper('concludeExperiment3')
-  );
+
   apiRouter.get(
     '/v2/experiment/:experimentId/json',
     iowrapper('experimentJSON')
@@ -283,6 +219,12 @@ export const makeApp = async (
     iowrapper('experimentCSV')
   );
   apiRouter.get('/v2/experiment/:experimentId/dot', iowrapper('experimentDOT'));
+
+  /**
+   * Metadata
+   */
+
+  apiRouter.get('/v2/metadata', iowrapper('listMetadata'));
 
   router.use('/api/', apiRouter);
 

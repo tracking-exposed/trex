@@ -4,7 +4,7 @@ import {
   FormControlLabel,
   FormHelperText,
 } from '@material-ui/core';
-import { Directive } from '@shared/models/Directive';
+import { Step } from '@shared/models/Step';
 import { ipcRenderer } from 'electron';
 import * as React from 'react';
 import { GuardoniConfig } from '../../guardoni/types';
@@ -17,7 +17,7 @@ interface FromCSVFileTabProps {
 
 interface CSVFile {
   path: string;
-  parsed: Directive[];
+  parsed: Step[];
 }
 
 export const FromCSVFileTab: React.FC<FromCSVFileTabProps> = ({

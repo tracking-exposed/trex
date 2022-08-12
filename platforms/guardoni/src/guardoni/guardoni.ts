@@ -8,7 +8,7 @@
  */
 import * as Endpoints from '@yttrex/shared/endpoints';
 import { AppError, toAppError } from '@shared/errors/AppError';
-import { Directive, DirectiveType } from '@shared/models/Directive';
+import { Step } from '@shared/models/Step';
 import { APIClient, MakeAPIClient } from '@shared/providers/api.provider';
 import { GetPuppeteer } from '@shared/providers/puppeteer/puppeteer.provider';
 import { differenceInSeconds } from 'date-fns';
@@ -19,7 +19,6 @@ import { pipe } from 'fp-ts/lib/function';
 import { NonEmptyArray } from 'fp-ts/lib/NonEmptyArray';
 import * as TE from 'fp-ts/lib/TaskEither';
 import { NonEmptyString } from 'io-ts-types/lib/NonEmptyString';
-import path from 'path';
 import type puppeteer from 'puppeteer-core';
 import { PuppeteerExtra } from 'puppeteer-extra';
 import { dispatchBrowser } from './browser';
@@ -29,10 +28,9 @@ import {
   getDefaultConfig,
   getPlatformConfig,
 } from './config';
-import { GetTKHooks } from './directives/tk.directives';
-import { GetYTHooks } from './directives/yt.directives';
+import { GetTKHooks } from './steps/tk.steps';
+import { GetYTHooks } from './steps/yt.steps';
 import {
-  concludeExperiment,
   getDirective,
   listExperiments,
   registerCSV,
@@ -58,11 +56,13 @@ import {
   ProgressDetails,
 } from './types';
 import { getChromePath, getPackageVersion } from './utils';
-import { GuardoniCommandOpts } from './cli';
+import { GuardoniCommandOpts, GuardoniNavigateOpts } from './cli';
 
 const runNavigate =
   (ctx: GuardoniContext) =>
-  (opts?: GuardoniCommandOpts): TE.TaskEither<AppError, void> => {
+  (opts?: GuardoniNavigateOpts): TE.TaskEither<AppError, void> => {
+    ctx.logger.debug('Running navigate with opts %O', opts);
+
     const home =
       ctx.platform.name === 'tiktok'
         ? 'https://www.tiktok.com'
@@ -72,7 +72,7 @@ const runNavigate =
       TE.right(setLocalSettings(ctx)(opts)),
       TE.chain(() =>
         dispatchBrowser(ctx)({
-          headless: false,
+          headless: opts?.headless !== undefined ? opts.headless : true,
         })
       ),
       TE.chain((b) => {
@@ -83,12 +83,20 @@ const runNavigate =
             waitUntil: 'networkidle0',
           });
 
+          await page.waitForTimeout(2000);
+
+          if (ctx.hooks.customs.cookieModal) {
+            await ctx.hooks.customs.cookieModal(page, {
+              action: 'reject',
+            });
+          }
+
           return b;
         }, toAppError);
       }),
       TE.chain((b) => {
         return TE.tryCatch(
-          () =>
+          async () =>
             new Promise((resolve, reject) => {
               ctx.logger.info('Browser is ready at %s', home);
               b.on('error', (e) => {
@@ -103,6 +111,10 @@ const runNavigate =
                 ctx.logger.info('browser closing...');
                 resolve();
               });
+
+              if (opts?.exit) {
+                void b.close().then(resolve).catch(reject);
+              }
             }),
           toAppError
         );
@@ -114,8 +126,7 @@ export const runBrowser =
   (ctx: GuardoniContext) =>
   (
     experiment: ExperimentInfo,
-    directiveType: DirectiveType,
-    directives: NonEmptyArray<Directive>,
+    steps: NonEmptyArray<Step>,
     opts?: GuardoniCommandOpts
   ): TE.TaskEither<AppError, ExperimentInfo & { publicKey: string | null }> => {
     return pipe(
@@ -133,19 +144,12 @@ export const runBrowser =
         }, toAppError);
       }),
       TE.chain((page) =>
-        guardoniExecution(ctx)(
-          experiment.experimentId,
-          directiveType,
-          directives,
-          page
-        )
+        guardoniExecution(ctx)(experiment.experimentId, steps, page)
       ),
-      TE.chain((publicKey) =>
-        pipe(
-          concludeExperiment(ctx)(experiment),
-          TE.map((exp) => ({ ...exp, publicKey: publicKey ?? opts?.publicKey }))
-        )
-      )
+      TE.map((publicKey) => ({
+        ...experiment,
+        publicKey: publicKey ?? opts?.publicKey,
+      }))
     );
   };
 
@@ -161,21 +165,26 @@ export const runExperiment =
       ctx.config
     );
     return pipe(
-      sequenceS(TE.ApplicativePar)({
-        profile: updateGuardoniProfile(ctx)(
-          ctx.config.evidenceTag,
-          ctx.profile
-        ),
-        expId: TE.fromEither(validateNonEmptyString(experimentId)),
-        localSettings: TE.right(setLocalSettings(ctx)(opts)),
-      }),
+      TE.fromEither(validateNonEmptyString(experimentId)),
+      TE.chain((expId) =>
+        sequenceS(TE.ApplicativePar)({
+          profile: updateGuardoniProfile(ctx)(
+            ctx.profile,
+            ctx.config.researchTag
+          ),
+          expId: TE.right(expId),
+          localSettings: TE.right(
+            setLocalSettings(ctx)({ ...opts, experimentId })
+          ),
+        })
+      ),
       TE.chain(({ profile, expId }) =>
         pipe(
           getDirective(ctx)(expId),
-          TE.chain(({ type, data }) => {
+          TE.chain((data) => {
             return pipe(
-              saveExperiment(ctx)(expId, type, profile),
-              TE.chain((exp) => runBrowser(ctx)(exp, type, data, opts))
+              saveExperiment(ctx)(expId, profile),
+              TE.chain((exp) => runBrowser(ctx)(exp, data, opts))
             );
           })
         )
@@ -197,9 +206,7 @@ export const runExperimentForPage =
   ): TE.TaskEither<AppError, GuardoniSuccessOutput> =>
     pipe(
       getDirective(ctx)(experimentId),
-      TE.chain(({ type, data }) =>
-        guardoniExecution(ctx)(experimentId, type, data, page)
-      ),
+      TE.chain((data) => guardoniExecution(ctx)(experimentId, data, page)),
       TE.map((publicKey) => ({
         type: 'success',
         message: 'Experiment completed',
@@ -229,23 +236,19 @@ export const guardoniExecution =
   (ctx: GuardoniContext) =>
   (
     experiment: string,
-    directiveType: DirectiveType,
-    directives: NonEmptyArray<Directive>,
+    steps: NonEmptyArray<Step>,
     page: puppeteer.Page
   ): TE.TaskEither<AppError, string> => {
     const start = new Date();
 
-    ctx.logger.debug(
-      `Running experiment %s for directive %s`,
-      experiment,
-      directiveType
-    );
+    ctx.logger.debug(`Running experiment %s for directive %s`, experiment);
 
-    ctx.logger.debug('Experiment data %O', directives);
+    ctx.logger.debug('Experiment data %O', steps);
     ctx.logger.debug('Config %O', ctx.config);
+    ctx.logger.debug('Platform %O', ctx.platform);
 
     return pipe(
-      ctx.puppeteer.operateBrowser(page, directives),
+      ctx.puppeteer.operateBrowser(page, steps),
       TE.map((pubKey) => {
         const publicKey = pubKey ?? ctx.config.publicKey;
         const duration = differenceInSeconds(new Date(), start);
@@ -253,12 +256,10 @@ export const guardoniExecution =
         ctx.logger.debug(
           `Operations completed in %ds: check results at `,
           duration,
-          `${ctx.platform.backend}/${
-            directiveType === 'search' ? 'shadowban' : 'experiments'
-          }/render/#${experiment}`
+          `${ctx.platform.frontend}/experiments/render/#${experiment}`
         );
         ctx.logger.debug(
-          `Personal log at ${ctx.platform.backend}/personal/#${publicKey}`
+          `Personal log at ${ctx.platform.frontend}/personal/#${publicKey}`
         );
 
         return publicKey;
@@ -279,7 +280,6 @@ const loadContext = (
   const config = checkConfig({ logger })(basePath, {
     ...defaultConfig,
     ...cnf,
-
     yt: {
       ...defaultConfig.yt,
       ...cnf.yt,
@@ -289,41 +289,44 @@ const loadContext = (
       ...cnf.tk,
     },
   }) as GuardoniConfig;
-  const profile = getDefaultProfile(basePath, cnf.profileName);
+  logger.debug('Config %O', config);
 
+  const profile = getDefaultProfile(basePath, cnf.profileName);
   logger.debug('profile %O', profile);
 
-  const platformConf = getPlatformConfig(platform, {
-    basePath,
-    ...(config as any),
-  });
+  const platformConf = getPlatformConfig(platform, config);
+
+  logger.debug('Platform config %O', platformConf);
 
   return pipe(
     checkProfile({ logger })(basePath, cnf),
     TE.chain((p) => readProfile({ logger })(getProfileJsonPath(p))),
-    TE.chain((profile) =>
-      pipe(
+    TE.chain((profile) => {
+      const hooks =
+        platform === 'youtube'
+          ? GetYTHooks({
+              profile,
+              logger,
+            })
+          : GetTKHooks({
+              profile,
+            });
+
+      return pipe(
         getChromePath(),
         E.map((chromePath) => ({
           ...config,
           chromePath,
         })),
         E.map((c) => ({
+          hooks,
           puppeteer: GetPuppeteer({
-            logger: logger,
+            logger,
             puppeteer: p,
             config: {
               loadFor: config.loadFor,
             },
-            hooks:
-              platform === 'youtube'
-                ? GetYTHooks({
-                    profile,
-                    logger,
-                  })
-                : GetTKHooks({
-                    profile,
-                  }),
+            hooks,
           }),
           API: MakeAPIClient(
             {
@@ -340,14 +343,14 @@ const loadContext = (
           },
           profile,
           logger,
-          guardoniConfigFile: path.join(profile.udd, 'guardoni.json'),
+          guardoniConfigFile: getProfileJsonPath(profile),
           version: getPackageVersion(),
           platform: platformConf,
         })),
         E.mapLeft(toAppError),
         TE.fromEither
-      )
-    ),
+      );
+    }),
     TE.chainFirst(downloadExtension)
   );
 };
@@ -358,12 +361,10 @@ export interface Guardoni {
   API: APIClient<typeof Endpoints>;
   // register an experiment from the given csv file
   registerExperimentFromCSV: (
-    file: NonEmptyString,
-    directiveType: DirectiveType
+    file: NonEmptyString
   ) => TE.TaskEither<AppError, GuardoniSuccessOutput>;
   registerExperiment: (
-    records: NonEmptyArray<Directive>,
-    directiveType: DirectiveType
+    records: NonEmptyArray<Step>
   ) => TE.TaskEither<AppError, GuardoniSuccessOutput>;
   listExperiments: () => TE.TaskEither<AppError, GuardoniSuccessOutput>;
   runExperiment: (
@@ -376,7 +377,7 @@ export interface Guardoni {
     experiment: NonEmptyString,
     onProgress?: (details: ProgressDetails) => void
   ) => TE.TaskEither<AppError, GuardoniSuccessOutput>;
-  runBrowser: (opts?: GuardoniCommandOpts) => TE.TaskEither<AppError, void>;
+  runNavigate: (opts?: GuardoniCommandOpts) => TE.TaskEither<AppError, void>;
 }
 
 interface GuardoniLauncher {
@@ -432,7 +433,7 @@ export const GetGuardoni: GetGuardoni = ({
             registerExperiment: registerExperiment(ctx),
             registerExperimentFromCSV: registerCSV(ctx),
             listExperiments: listExperiments(ctx),
-            runBrowser: runNavigate(ctx),
+            runNavigate: runNavigate(ctx),
           };
         })
       );
@@ -451,7 +452,7 @@ export const GetGuardoni: GetGuardoni = ({
             registerExperiment: registerExperiment(ctx),
             registerExperimentFromCSV: registerCSV(ctx),
             listExperiments: listExperiments(ctx),
-            runBrowser: runNavigate(ctx),
+            runNavigate: runNavigate(ctx),
           };
         })
       );

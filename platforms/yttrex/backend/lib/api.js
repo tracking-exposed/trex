@@ -1,4 +1,8 @@
-const apiList = {
+import * as publicRoutes from '../routes/public';
+import * as metadataRoutes from '../routes/metadata';
+import * as youchooseRoutes from '../routes/youchoose';
+
+export const apiList = {
   systemInfo: require('../routes/system').systemInfo,
   processEvents2: require('../routes/events').processEvents2,
   getMirror: require('../routes/events').getMirror,
@@ -7,11 +11,10 @@ const apiList = {
   unitById: require('../routes/htmlunit').unitById,
 
   /* the three currently used/tested for the public */
-  getLast: require('../routes/public').getLast,
-  getLastHome: require('../routes/public').getLastHome,
-  getVideoId: require('../routes/public').getVideoId,
-  getRelated: require('../routes/public').getRelated,
-  getVideoCSV: require('../routes/public').getVideoCSV,
+  ...publicRoutes,
+
+  // metadata
+  ...metadataRoutes,
 
   /* searches routes */
   getQueries: require('../routes/searches').getQueries,
@@ -21,7 +24,6 @@ const apiList = {
   getSearchKeywords: require('../routes/searches').getSearchKeywords,
   getSearchDetails: require('../routes/searches').getSearchDetails,
 
-  getByAuthor: require('../routes/public').getByAuthor,
   getPersonalCSV: require('../routes/personal').getPersonalCSV,
 
   /* return user' last videos */
@@ -58,11 +60,9 @@ const apiList = {
   experimentCSV: require('../routes/experiments').csv,
   experimentDOT: require('../routes/experiments').dot,
   experimentJSON: require('../routes/experiments').json,
-  experimentEmergencyCSV: require('../routes/experiments').emergency,
   // used from extension
   experimentChannel3: require('../routes/experiments').channel3,
   // used by guardoni to close it
-  concludeExperiment3: require('../routes/experiments').conclude3,
 
   /* for survey (with emails) */
   recordAnswers: require('../routes/answers').recordAnswers,
@@ -73,21 +73,21 @@ const apiList = {
   registerEmail: require('../routes/emails').registerEmail,
 
   /* v3 youchoose */
-  youChooseByVideoId: require('../routes/youchoose').byVideoId,
-  youChooseByProfile: require('../routes/youchoose').byProfile,
-  patchRecommendation: require('../routes/youchoose').patchRecommendation,
-  ogpProxy: require('../routes/youchoose').ogpProxy,
-  getVideoByCreator: require('../routes/youchoose').videoByCreator,
-  getOneVideoByCreator: require('../routes/youchoose').oneVideoByCreator,
-  repullByCreator: require('../routes/youchoose').repullByCreator,
-  recommendationById: require('../routes/youchoose').getRecommendationById,
-  updateVideoRec: require('../routes/youchoose').updateVideoRec,
-  getCreatorRelated: require('../routes/public').getCreatorRelated,
-  getCreatorStats: require('../routes/youchoose').getCreatorStats,
-  creatorRegister: require('../routes/youchoose').creatorRegister,
-  creatorVerify: require('../routes/youchoose').creatorVerify,
-  creatorGet: require('../routes/youchoose').creatorGet,
-  creatorDelete: require('../routes/youchoose').creatorDelete,
+  youChooseByVideoId: youchooseRoutes.byVideoId,
+  youChooseByProfile: youchooseRoutes.byProfile,
+  patchRecommendation: youchooseRoutes.patchRecommendation,
+  ogpProxy: youchooseRoutes.ogpProxy,
+  getVideoByCreator: youchooseRoutes.videoByCreator,
+  getOneVideoByCreator: youchooseRoutes.oneVideoByCreator,
+  repullByCreator: youchooseRoutes.repullByCreator,
+  getCreatorRelated: youchooseRoutes.getCreatorRelated,
+  recommendationById: youchooseRoutes.getRecommendationById,
+  updateVideoRec: youchooseRoutes.updateVideoRec,
+  getCreatorStats: youchooseRoutes.getCreatorStats,
+  creatorRegister: youchooseRoutes.creatorRegister,
+  creatorVerify: youchooseRoutes.creatorVerify,
+  creatorGet: youchooseRoutes.creatorGet,
+  creatorDelete: youchooseRoutes.creatorDelete,
   /* v3 opendata */
   opendataChannel: require('../routes/opendata').opendataChannel,
 
@@ -100,8 +100,4 @@ const apiList = {
   adsPerVideo: require('../routes/ads').perVideo,
   adsPerChannel: require('../routes/ads').perChannel,
   adsUnbound: require('../routes/ads').unbound,
-};
-
-module.exports = {
-  apiList,
 };

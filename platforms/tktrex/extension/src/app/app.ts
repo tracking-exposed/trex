@@ -1,37 +1,20 @@
 import {
   ObserverHandler,
   refreshUUID,
-  SelectorObserverHandler,
   RouteObserverHandler,
+  SelectorObserverHandler,
 } from '@shared/extension/app';
-import config from '@shared/extension/config';
 import log from '@shared/extension/logger';
+import UserSettings from '@shared/extension/models/UserSettings';
 import { sizeCheck } from '@shared/providers/dataDonation.provider';
 import _ from 'lodash';
-import { INTERCEPTED_ITEM_CLASS } from '../interceptor/constants';
 import tkHub from '../handlers/hub';
+import { INTERCEPTED_ITEM_CLASS } from '../interceptor/constants';
 
-const appLog = log.extend('app');
+export const appLog = log.extend('app');
 
 export let feedId = refreshUUID(0);
 export let feedCounter = 0;
-
-/**
- * Additional UI needed mostly for debugging
-function initializeEmergencyButton(): void {
-  const element = document.createElement('h1');
-  element.onclick = fullSave;
-  element.setAttribute('id', 'full--save');
-  element.setAttribute(
-    'style',
-    'position: fixed; top:50%; left: 1rem; display: flex; font-size: 3em; cursor: pointer; flex-direction: column; z-index: 9999; visibility: visible;',
-  );
-  element.innerText = '💾';
-  document.body.appendChild(element);
-}
-
-ISSUE #444 explain why of this disabled section.
- */
 
 export function tkTrexActions(remoteInfo: unknown): void {
   /* these functions are the main activity made in
@@ -51,61 +34,47 @@ export function tkTrexActions(remoteInfo: unknown): void {
   flush();
 }
 
-/**
- * Sends the full HTML of the current page to the server.
- * Happens either manually when clicking on the emergency button,
- * and should happen automatically or through a setInterval
- * when the URL of the page changes.
- 
-function fullSave(): void {
-  const { href } = window.location;
-  pipe(
-    getNatureByHref(href),
-    map((nature) => {
-      const urlChanged = href !== lastMeaningfulURL;
-
-      if (urlChanged) {
-        lastMeaningfulURL = window.location.href;
-        // UUID is used server-side
-        // to eliminate potential duplicates
-        feedId = refreshUUID(feedCounter);
-      }
-
-      const body = document.querySelector('body');
-
-      if (!body) {
-        appLog.error('no body found, skipping fullSave');
-        return;
-      }
-
-      appLog.info('sending fullSave!', nature);
-      tkHub.dispatch({
-        type: 'FullSave',
-        payload: {
-          type: nature,
-          element: body.outerHTML,
-          size: body.outerHTML.length,
-          href: window.location.href,
-          reason: 'fullsave',
-          feedId,
-        },
-      });
-    }),
-  );
-}
- */
-
 export const onLocationChange = (): void => {
-  feedCounter++;
   feedId = refreshUUID(feedCounter);
+  feedCounter++;
   appLog.info(
-    'new feedId (%s), feed counter (%d) and video counter resetting after reaching (%d) -> %s',
+    'new feedId (%s), feed counter incremented (%d) and video counter resetted (before was %d) -> %s',
     feedId,
     feedCounter,
     videoCounter,
     window.location.href,
   );
   videoCounter = 0;
+};
+
+/**
+ * handle video when people move with down/uparrow in the feed
+ */
+const handleVideoRoute = (
+  dom: HTMLElement,
+  handler: any,
+  routeKey: string,
+  config: UserSettings,
+): void => {
+  appLog.debug('NativeVideo %O', { handler, routeKey, config });
+
+  if (!dom) return;
+
+  /* TODO some more meaningful check */
+  tkHub.dispatch({
+    type: 'NativeVideo',
+    payload: {
+      html: dom.outerHTML,
+      href: window.location.href,
+      feedId,
+      feedCounter,
+      videoCounter,
+    },
+  });
+
+  if (config.ux) {
+    // add proper UI feedback
+  }
 };
 
 /**
@@ -144,6 +113,7 @@ const handleInterceptedData = (): void => {
 
 // experiment in progress;
 const handleSigi = _.debounce((element: Node): void => {
+  // eslint-disable-next-line no-console
   console.log('Sigi', element);
 });
 
@@ -209,36 +179,63 @@ const handleSuggested = _.debounce((elem: Node): void => {
  * that got display in 'following' 'foryou' or 'creator' page */
 let videoCounter = 0;
 
-const handleVideo = _.debounce((node: HTMLElement): void => {
-  /* we should check nature for good, the 'video' handles are triggered also in
-   * other pages, afterall! */
+const goBackInTree = (n: HTMLElement): HTMLElement => {
+  // appLog.debug('Checking node %O', n);
+
+  if (n.parentNode instanceof HTMLElement) {
+    // appLog.debug('Parent is a valid node! %O', n.parentNode);
+    // appLog.debug('previous siblings? %O', n.previousElementSibling);
+
+    if (n.previousElementSibling?.tagName === 'A') {
+      appLog.debug('Found node with previous sibling = A');
+      return n.parentNode;
+    }
+
+    if (n.parentNode.outerHTML.length > 10000) {
+      appLog.debug(
+        'goBackInTree: parentNode > 10000',
+        n.parentNode.outerHTML.length,
+      );
+
+      return n;
+    }
+
+    return goBackInTree(n.parentNode);
+  }
+
+  return n;
+};
+
+/**
+ * Handle video
+ *
+ * @param node the video matching the selector
+ */
+const handleVideo = (
+  node: HTMLElement,
+  h: any,
+  b: any,
+  config: UserSettings,
+): void => {
   if (_.startsWith(window.location.pathname, '/search')) return;
   if (profileHandler.match.location.test(window.location.pathname)) return;
+  if (nativeRouteHandler.match.location.test(window.location.pathname)) return;
+
+  appLog.debug('handleVideo %O', { node, h, b, config });
 
   /* this function return a node element that has a size
    * lesser than 10k, and stop when find out the parent
    * would be more than 10k big. */
-  const videoRoot = _.reduce(
-    _.times(20),
-    (memo: HTMLElement, iteration: number): HTMLElement => {
-      if (memo.parentNode instanceof HTMLElement) {
-        if (memo.parentNode.outerHTML.length > 10000) {
-          appLog.debug(
-            'handleVideo: parentNode > 10000',
-            memo.parentNode.outerHTML.length,
-          );
-          return memo;
-        }
-        return memo.parentNode;
-      }
+  const videoRoot = goBackInTree(node);
 
-      return memo;
-    },
-    node,
-  );
+  if (config.ux) {
+    videoRoot.style.border = '2px solid green';
+  } else {
+    videoRoot.style.border = '';
+  }
 
   if (videoRoot.hasAttribute('trex')) {
-    appLog.info(
+    appLog.debug(
       'element already acquired: skipping',
       videoRoot.getAttribute('trex'),
     );
@@ -265,12 +262,44 @@ const handleVideo = _.debounce((node: HTMLElement): void => {
   });
 
   if (config.ux) {
-    videoRoot.style.border = '1px solid green';
+    videoRoot.style.border = '2px solid green';
   }
-}, 300);
+};
+
+const handleVideoPlaceholder = (
+  n: HTMLElement,
+  h: any,
+  b: any,
+  config: UserSettings,
+): void => {
+  if (n.getAttribute('trex') === '1') {
+    appLog.debug('Video placeholder already handled');
+    return;
+  }
+
+  appLog.debug('Handle video placeholder %O', n);
+  const videoRoot = goBackInTree(n);
+  appLog.info(
+    'Marking as seen placeholder Video (%d) root %O',
+    videoCounter,
+    videoRoot,
+  );
+  n.setAttribute('trex', '1');
+
+  if (config.ux) {
+    n.style.border = '1px solid orange';
+  } else {
+    n.style.border = '';
+  }
+};
 
 const handleProfile = _.debounce(
-  (node: HTMLElement, route: any, _selectorName: string): void => {
+  (
+    node: HTMLElement,
+    route: any,
+    _selectorName: string,
+    s: UserSettings,
+  ): void => {
     const profileName = window.location.pathname.match(
       route.match.location,
     )?.[1];
@@ -336,18 +365,35 @@ export const profileHandler: RouteObserverHandler = {
   },
   handle: handleProfile,
 };
+
+export const nativeRouteHandler: RouteObserverHandler = {
+  match: {
+    type: 'route',
+    location: /^\/@([a-zA-Z._0-9]+)\/video\/(\d+)/i,
+  },
+  handle: handleVideoRoute,
+};
+
 /**
  * selector with relative handler
  * configuration
  */
 export const tkHandlers: { [key: string]: ObserverHandler } = {
   profile: profileHandler,
+  nativeVideo: nativeRouteHandler,
   video: {
     match: {
       type: 'selector',
       selector: 'video',
     },
     handle: handleVideo,
+  },
+  videoPlaceholder: {
+    match: {
+      type: 'selector',
+      selector: 'canvas[class*="CanvasVideoCardPlaceholder"]',
+    },
+    handle: handleVideoPlaceholder,
   },
   suggested: {
     match: {

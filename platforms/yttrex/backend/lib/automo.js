@@ -390,7 +390,7 @@ async function deleteEntry(publicKey, id) {
   const metadata = await mongo3.deleteMany(
     mongoc,
     nconf.get('schema').metadata,
-    { id: id }
+    { id }
   );
   await mongoc.close();
   return { metadata };
@@ -399,7 +399,7 @@ async function deleteEntry(publicKey, id) {
 async function getRelatedByVideoId(videoId, options) {
   const mongoc = await mongo3.clientConnect({ concurrency: 1 });
   const related = await mongo3.aggregate(mongoc, nconf.get('schema').metadata, [
-    { $match: { videoId: videoId } },
+    { $match: { videoId } },
     { $sort: { savingTime: -1 } },
     { $skip: options.skip },
     { $limit: options.amount },
@@ -771,7 +771,7 @@ async function markExperCompleted(mongoc, filter) {
 
 async function concludeExperiment(testTime) {
   /* this function is called by guardoni v.1.8 when the
-   * access on a directive URL have been completed */
+   * access on a step URL have been completed */
   const mongoc = await mongo3.clientConnect({ concurrency: 1 });
   const r = await markExperCompleted(mongoc, { testTime });
   await mongoc.close();
@@ -818,24 +818,23 @@ async function pullExperimentInfo(publicKey) {
     },
   ]);
   await mongoc.close();
-  if (exp && exp[0]?.directive[0]?.directiveType) return _.first(exp);
-  return null;
+  return _.first(exp) ?? null;
 }
 
-async function registerDirective(directives, directiveType) {
+async function registerSteps(steps) {
   /* this API is called by guardoni when --csv is used,
-       the API is POST localhost:9000/api/v3/directives/comparison */
+       the API is POST localhost:9000/api/v2/directives */
+
   const experimentId = utils.hash({
-    type: directiveType,
-    directives,
+    steps,
   });
   const mongoc = await mongo3.clientConnect({ concurrency: 1 });
-  const exist = await mongo3.readOne(mongoc, nconf.get('schema').directives, {
+  const exist = await mongo3.readOne(mongoc, nconf.get('schema').experiments, {
     experimentId,
   });
 
   if (exist && exist.experimentId) {
-    debug('Directive (experimentId %s) already found in the DB!', experimentId);
+    debug('Experiment (experimentId %s) already found in the DB!', experimentId);
     await mongoc.close();
     return {
       status: 'exist',
@@ -845,20 +844,19 @@ async function registerDirective(directives, directiveType) {
   }
 
   /* else, we don't had such data, hence */
-  await mongo3.writeOne(mongoc, nconf.get('schema').directives, {
+  await mongo3.writeOne(mongoc, nconf.get('schema').experiments, {
     when: new Date(),
-    directiveType,
-    directives,
+    steps,
     experimentId,
   });
   await mongoc.close();
-  debug('Registered directive %s|%s', directiveType, experimentId);
+  debug('Registered directive %s', experimentId);
   return { status: 'created', experimentId, since: new Date() };
 }
 
 async function pickDirective(experimentId) {
   const mongoc = await mongo3.clientConnect({ concurrency: 1 });
-  const rb = await mongo3.readOne(mongoc, nconf.get('schema').directives, {
+  const rb = await mongo3.readOne(mongoc, nconf.get('schema').experiments, {
     experimentId,
   });
   await mongoc.close();
@@ -912,6 +910,6 @@ module.exports = {
   concludeExperiment,
 
   /* chiaroscuro */
-  registerDirective,
+  registerSteps,
   pickDirective,
 };

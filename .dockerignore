@@ -1,6 +1,8 @@
 __mocks__
 .husky
 **/build
-**/docker
+**/docker/electron-builder
 **/coverage
 **/node_modules
+docker
+!docker/guardoni/guardoni.config.json

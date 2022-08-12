@@ -11,7 +11,7 @@ import {
   TikTokPSearchMetadata,
   // SummaryMetadata,
 } from '@shared/models/contributor/ContributorPersonalSummary';
-import { SearchMetaData as TikTokSearchMetadata } from '@tktrex/shared/models/MetaData';
+import { SearchMetadata as TikTokSearchMetadata } from '@tktrex/shared/models/Metadata';
 import { Metadata } from '@shared/models/Metadata';
 import { GuardoniExperiment } from '@shared/models/Experiment';
 import * as React from 'react';
@@ -107,7 +107,7 @@ export const defaultConfiguration = (
         },
         {
           ...columnDefault,
-          field: 'links',
+          field: 'steps',
           minWidth: 350,
           renderCell: (params) => {
             return (

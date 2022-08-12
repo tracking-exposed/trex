@@ -1,10 +1,11 @@
 import * as endpoints from '@yttrex/shared/endpoints';
 import { Logger } from '@shared/logger';
-import { Directive, DirectiveType } from '@shared/models/Directive';
+import { Step } from '@shared/models/Step';
 import { APIClient } from '@shared/providers/api.provider';
 import { PuppeteerProvider } from '@shared/providers/puppeteer/puppeteer.provider';
 import * as t from 'io-ts';
 import { nonEmptyArray } from 'io-ts-types';
+import { StepHooks } from '@shared/providers/puppeteer/StepHooks';
 
 export const Platform = t.union(
   [t.literal('youtube'), t.literal('tiktok')],
@@ -32,7 +33,7 @@ export const GuardoniConfig = t.strict(
     headless: t.boolean,
     verbose: t.boolean,
     profileName: t.string,
-    evidenceTag: t.string,
+    researchTag: t.string,
     loadFor: t.number,
     advScreenshotDir: t.union([t.string, t.undefined]),
     excludeURLTag: t.union([t.string, t.undefined]),
@@ -70,9 +71,8 @@ export const GuardoniProfile = t.strict(
   {
     udd: t.string,
     profileName: t.string,
-    newProfile: t.boolean,
     execount: t.number,
-    evidencetag: t.array(t.string),
+    researchTag: t.array(t.string),
   },
   'Profile'
 );
@@ -81,6 +81,7 @@ export type GuardoniProfile = t.TypeOf<typeof GuardoniProfile>;
 
 export interface GuardoniContext {
   puppeteer: PuppeteerProvider;
+  hooks: StepHooks<string, any>;
   API: APIClient<typeof endpoints>;
   config: GuardoniConfig;
   platform: PlatformConfig;
@@ -92,29 +93,9 @@ export interface GuardoniContext {
 
 export interface ExperimentInfo {
   experimentId: string;
-  evidenceTag: string;
-  directiveType: DirectiveType;
-  execCount: number;
+  researchTag: string;
   profileName: string;
-  newProfile: boolean;
   when: Date;
 }
 
-export const CreateDirectiveBody = nonEmptyArray(Directive);
-
-// const directiveKeysMap = pipe(
-//   {
-//     search: SearchDirective,
-//     comparison: ComparisonDirectiveRow,
-//     common: CommonDirective,
-//   },
-//   R.map((type) => nonEmptyArray(type))
-// );
-
-// export const DirectiveKeysMap = t.type(directiveKeysMap, 'DirectiveKeysMap');
-
-// export const DirectiveType = t.union(
-//   [ComparisonDirectiveType, SearchDirectiveType],
-//   'DirectiveType'
-// );
-// export type DirectiveType = t.TypeOf<typeof DirectiveType>;
+export const CreateDirectiveBody = nonEmptyArray(Step);

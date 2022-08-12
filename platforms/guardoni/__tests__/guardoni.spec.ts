@@ -1,5 +1,5 @@
-import axiosMock from '../__mocks__/axios.mock';
-import { puppeteerMock, pageMock } from '../__mocks__/puppeteer.mock';
+import axiosMock from '@shared/test/__mocks__/axios.mock';
+import { puppeteerMock, pageMock } from '@shared/test/__mocks__/puppeteer.mock';
 /* eslint-disable import/first */
 import { pipe } from 'fp-ts/lib/function';
 import * as TE from 'fp-ts/lib/TaskEither';
@@ -10,6 +10,7 @@ import { GetGuardoni } from '../src/guardoni/guardoni';
 import { getDefaultProfile, getProfileDataDir } from '../src/guardoni/profile';
 import { csvStringifyTE } from '../src/guardoni/utils';
 import { guardoniLogger } from '../src/logger';
+import { fc } from '@shared/test';
 
 const directiveLinks = [
   {
@@ -62,7 +63,7 @@ describe('Guardoni', () => {
     tosAccepted: undefined,
     ...keys,
     profileName: profile,
-    evidenceTag: 'test-tag',
+    researchTag: 'test-tag',
     advScreenshotDir: undefined,
     excludeURLTag: undefined,
     loadFor: 3000,
@@ -178,6 +179,8 @@ describe('Guardoni', () => {
           ...defaultConfig,
           headless: true,
           verbose: true,
+          publicKey: undefined,
+          secretKey: undefined,
           profileName,
         },
         'youtube'
@@ -215,12 +218,7 @@ describe('Guardoni', () => {
         TE.chain((g) =>
           pipe(
             g.registerExperimentFromCSV(
-              path.resolve(
-                basePath,
-                'experiments',
-                emptyCSVTestFileName
-              ) as any,
-              'comparison'
+              path.resolve(basePath, 'experiments', emptyCSVTestFileName) as any
             )
           )
         )
@@ -235,14 +233,15 @@ describe('Guardoni', () => {
   });
 
   describe('experiment', () => {
-    test('succeeds when run an experiment from an already existing directive', async () => {
+    test('succeeds when run an experiment already existing', async () => {
       // one minute
       jest.setTimeout(60 * 1000);
 
       axiosMock.request.mockResolvedValueOnce({
         data: {
           status: 'exist',
-          experimentId: '1',
+          experimentId: fc.sample(fc.uuid(), 1)[0],
+          since: new Date().toISOString(),
         },
       });
       axiosMock.request.mockResolvedValueOnce({
@@ -261,15 +260,12 @@ describe('Guardoni', () => {
         return Promise.resolve({
           asElement: () => ({
             press: jest.fn().mockResolvedValue(undefined),
-            evaluate: jest
-              .fn()
-              .mockResolvedValueOnce(1)
-              .mockResolvedValue(0)
+            evaluate: jest.fn().mockResolvedValueOnce(1).mockResolvedValue(0),
           }),
         });
       });
 
-      pageMock.$.mockResolvedValue(null)
+      pageMock.$.mockResolvedValue(null);
 
       const guardoni = GetGuardoni({
         basePath,
@@ -282,8 +278,7 @@ describe('Guardoni', () => {
         TE.chain((g) =>
           pipe(
             g.registerExperimentFromCSV(
-              path.resolve(basePath, 'experiments', csvTestFileName) as any,
-              'comparison'
+              path.resolve(basePath, 'experiments', csvTestFileName) as any
             ),
             TE.chain((output) => g.runExperiment(output.values[0].experimentId))
           )

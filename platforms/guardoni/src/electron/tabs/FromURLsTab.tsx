@@ -9,7 +9,7 @@ import { ipcRenderer } from 'electron';
 import * as React from 'react';
 import { EVENTS } from '../models/events';
 import { GuardoniConfig } from '../../guardoni/types';
-import { OpenURLDirective } from '@shared/models/Directive';
+import { OpenURLStep } from '@shared/models/Step';
 
 interface FromCSVFileTabProps {
   config: GuardoniConfig;
@@ -21,7 +21,7 @@ interface URLState {
   newTitle: string | undefined;
   newURLTag: string | undefined;
   newWatchFor: string | number | undefined;
-  urls: OpenURLDirective[];
+  urls: OpenURLStep[];
 }
 
 export const FromURLsTab: React.FC<FromCSVFileTabProps> = ({
