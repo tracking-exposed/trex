@@ -9,22 +9,31 @@ const automo = require('../lib/automo');
 const utils = require('../lib/utils');
 const security = require('../lib/security');
 
-function processHeaders(received, required) {
-  const ret = {};
-  const errs = _.compact(
-    _.map(required, function (destkey, headerName) {
-      const r = _.get(received, headerName);
-      if (_.isUndefined(r)) return headerName;
+function processHeaders(received, headerList) {
+  const headers = {};
+  const errors = [];
+    const missing = [];
 
-      _.set(ret, destkey, r);
-      return null;
-    })
-  );
-  if (_.size(errs)) {
-    debug('Error in processHeaders, missing: %j', errs);
-    return { errors: errs };
+  _.each(headerList, function (headInfo, headerName) {
+    /* headInfo is { name: <String>, mandatory: <Bool> } */
+    const h = _.get(received, headerName, undefined);
+    if (!h && headInfo.mandatory === true)
+      errors.push(`missing header [${headerName}, we use as ${headInfo.name}]`);
+    else if (h.length) _.set(headers, headInfo.name, h);
+    else {
+      missing.push(
+        `missing optional header [${headerName}], setting null [${headInfo.name}]`
+      );
+      _.set(headers, headInfo.name, null);
+    }
+  });
+
+  if (errors.length) {
+    debug('Error in processHeaders, missing: %j', errors);
+    return { errors };
   }
-  return ret;
+
+  return headers;
 }
 
 let last = null;
@@ -53,23 +62,31 @@ function appendLast(req) {
   last.push(_.pick(req, ['headers', 'body']));
 }
 
-function headerError(headers) {
-  debug('Error detected: %s', headers.error);
-  return {
-    json: {
-      status: 'error',
-      info: headers.error,
-    },
-  };
-}
-
-const EXPECTED_HDRS = {
-  'content-length': 'length',
-  'x-yttrex-version': 'version',
-  'x-yttrex-publickey': 'publickey',
-  'x-yttrex-signature': 'signature',
-  'x-yttrex-nonauthcookieid': 'researchTag',
-  'accept-language': 'language',
+const EXPECTED_HEADERS = {
+  'content-length': {
+    name: 'length',
+    mandatory: true,
+  },
+  'x-yttrex-version': {
+    name: 'version',
+    mandatory: true,
+  },
+  'x-yttrex-publickey': {
+    name: 'publickey',
+    mandatory: true,
+  },
+  'x-yttrex-signature': {
+    name: 'signature',
+    mandatory: true,
+  },
+  'x-yttrex-nonauthcookieid': {
+    name: 'researchTag',
+    mandatory: false,
+  },
+  'accept-language': {
+    name: 'language',
+    mandatory: false,
+  },
 };
 
 function extendIfExperiment(expinfo, listOf) {
@@ -159,13 +176,30 @@ async function saveInDB(experinfo, objects, dbcollection) {
 }
 
 async function processEvents2(req) {
-  const headers = processHeaders(req.headers, EXPECTED_HDRS);
-  if (headers.error) return headerError(headers);
+  /* this function process the received payload,
+   * and produce the object to be saved into mongodb */
 
-  // toodo: this should be returned as 400/500 error
+  const headers = processHeaders(req.headers, EXPECTED_HEADERS);
+  if (headers.error?.length) {
+    debug(
+      'processHeaders error detected: %j from headers %j',
+      headers.error,
+      req.headers
+    );
+    return {
+      json: {
+        status: 'error',
+        info: headers.error,
+      },
+    };
+  }
 
   if (!utils.verifyRequestSignature(req)) {
-    debug('Verification fail (signature %s)', headers.signature);
+    debug(
+      'Verification fail (signature %s) version %s',
+      headers.signature,
+      headers.version
+    );
     return {
       json: {
         status: 'error',
@@ -274,6 +308,5 @@ async function processEvents2(req) {
 module.exports = {
   processEvents2,
   getMirror,
-  EXPECTED_HDRS,
   processHeaders,
 };
