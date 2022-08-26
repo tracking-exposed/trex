@@ -62,7 +62,7 @@ class Popup extends React.Component {
                   target="_blank"
                   rel="noreferrer"
                 >
-                  yutube.com
+                  youtube.com
                 </a>
                 .
               </strong>
