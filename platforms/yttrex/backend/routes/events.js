@@ -12,7 +12,7 @@ const security = require('../lib/security');
 function processHeaders(received, headerList) {
   const headers = {};
   const errors = [];
-    const missing = [];
+  const missing = [];
 
   _.each(headerList, function (headInfo, headerName) {
     /* headInfo is { name: <String>, mandatory: <Bool> } */
@@ -218,7 +218,10 @@ async function processEvents2(req) {
   // experinfo is an aggregation from collection 'experiments' and
   // collection 'directives'
 
-  const blang = headers.language.replace(/;.*/, '').replace(/,.*/, '');
+  const blang = headers.language
+    ? headers.language.replace(/;.*/, '').replace(/,.*/, '')
+    : null;
+
   // debug("CHECK: %s <%s>", blang, headers.language );
   const htmls = _.map(
     _.reject(_.reject(req.body, { type: 'leaf' }), { type: 'info' }),
