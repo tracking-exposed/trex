@@ -1,16 +1,17 @@
 import { Supporter } from '@shared/models/Supporter';
 import {
+  BuildMetadataFn,
   GetContributionsFn,
   ParserProviderContextDB,
-  PipelineInput,
 } from '@shared/providers/parser.provider';
-import { Metadata } from '@tktrex/shared/models/Metadata';
+import { TKMetadata } from '@tktrex/shared/models/Metadata';
 import { isValid } from 'date-fns';
 import D from 'debug';
 import * as t from 'io-ts';
 import { JSDOM } from 'jsdom';
 import _ from 'lodash';
 import nconf from 'nconf';
+import { TKParsers } from 'parsers';
 import { HTML } from '../models/HTML';
 
 const debug = D('lib:parserchain');
@@ -25,14 +26,18 @@ export const HTMLSource = t.type(
 );
 export type HTMLSource = t.TypeOf<typeof HTMLSource>;
 
-export function buildMetadata(
-  entry: PipelineInput<HTMLSource>
-): Metadata | null {
+export const buildMetadata: BuildMetadataFn<
+  HTMLSource,
+  TKMetadata,
+  TKParsers
+> = (entry) => {
   // this contains the original .source (html, impression, timeline), the .findings and .failures
   // the metadata is aggregated by unit and not unrolled in any way
   if (!entry?.findings?.nature) return null;
 
-  let metadata: any = {};
+  let metadata: any = {
+    clientTime: entry.source.html.clientTime,
+  };
 
   if (entry.findings.nature.type === 'search') {
     metadata = {
@@ -57,7 +62,7 @@ export function buildMetadata(
       ...entry.findings.stitch,
       ...entry.findings.author,
       ...entry.findings.downloader,
-      ...entry.findings.video,
+      ...entry.findings.native,
     };
 
     metadata.timelineId = entry.source.html.timelineId;
@@ -68,6 +73,9 @@ export function buildMetadata(
   metadata.savingTime = isValid(entry.source.html.savingTime)
     ? entry.source.html.savingTime.toISOString()
     : entry.source.html.savingTime;
+  metadata.clientTime = isValid(entry.source.html.clientTime)
+    ? entry.source.html.clientTime.toISOString()
+    : entry.source.html.clientTime;
   metadata.id = entry.source.html.id;
   metadata.publicKey = entry.source.html.publicKey;
 
@@ -80,7 +88,7 @@ export function buildMetadata(
     metadata.experimentId = entry.source.html.experimentId;
 
   return metadata;
-}
+};
 
 export const getLastHTMLs =
   (db: ParserProviderContextDB): GetContributionsFn<HTMLSource> =>
@@ -125,9 +133,9 @@ export const updateMetadataAndMarkHTML =
   (db: ParserProviderContextDB) =>
   async (
     source: HTMLSource,
-    metadata: Metadata
+    metadata: TKMetadata
   ): Promise<{
-    metadata: Metadata;
+    metadata: TKMetadata;
     source: HTMLSource;
     count: { metadata: number; htmls: number };
   }> => {
@@ -147,6 +155,6 @@ export const updateMetadataAndMarkHTML =
     return {
       metadata,
       source,
-      count: { metadata: r.modifiedCount, htmls: u.modifiedCount },
+      count: { metadata: r.upsertedCount, htmls: u.modifiedCount },
     };
   };

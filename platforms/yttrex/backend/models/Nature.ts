@@ -1,15 +1,22 @@
 import * as t from 'io-ts';
 
+export const ChannelType = t.literal('channel');
+export type ChannelType = t.TypeOf<typeof ChannelType>;
+export const HashtagType = t.literal('hashtag');
+export const SearchType = t.literal('search');
+export const VideoType = t.literal('video');
+export const HomeType = t.literal('home');
+
 export const HomeN = t.strict(
   {
-    type: t.literal('home'),
+    type: HomeType,
   },
   'HomeNature'
 );
 
 export const SearchN = t.strict(
   {
-    type: t.literal('search'),
+    type: SearchType,
     query: t.string,
   },
   'SearchNature'
@@ -17,7 +24,7 @@ export const SearchN = t.strict(
 
 export const VideoN = t.strict(
   {
-    type: t.literal('video'),
+    type: VideoType,
     videoId: t.string,
   },
   'VideoNature'

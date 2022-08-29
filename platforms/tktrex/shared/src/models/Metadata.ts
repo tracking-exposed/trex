@@ -1,12 +1,12 @@
 import * as t from 'io-ts';
-import { FollowingN, ForYouN, SearchN } from './Nature';
+import { FollowingN, ForYouN, SearchN, NativeVideoN } from './Nature';
 
 const Music = t.type(
   {
     url: t.string,
     name: t.string,
   },
-  'Music',
+  'Music'
 );
 
 type Music = t.TypeOf<typeof Music>;
@@ -16,7 +16,7 @@ const Author = t.type(
     link: t.string,
     username: t.string,
   },
-  'Author',
+  'Author'
 );
 
 type Author = t.TypeOf<typeof Author>;
@@ -28,10 +28,10 @@ const AuthorWithName = t.intersection(
       {
         name: t.string,
       },
-      'name',
+      'name'
     ),
   ],
-  'AuthorWithName',
+  'AuthorWithName'
 );
 
 type AuthorWithName = t.TypeOf<typeof AuthorWithName>;
@@ -42,7 +42,7 @@ const Metrics = t.type(
     commentn: t.string,
     sharen: t.string,
   },
-  'Metrics',
+  'Metrics'
 );
 
 type Metrics = t.TypeOf<typeof Metrics>;
@@ -50,10 +50,11 @@ type Metrics = t.TypeOf<typeof Metrics>;
 export const MetadataBase = t.type(
   {
     id: t.string,
+    clientTime: t.string,
     savingTime: t.string,
     publicKey: t.string,
   },
-  'VideoMetaDataBase',
+  'MetadataBase'
 );
 
 export type MetadataBase = t.TypeOf<typeof MetadataBase>;
@@ -62,6 +63,7 @@ export const ForYouVideoMetadata = t.intersection(
   [
     MetadataBase,
     ForYouN,
+    t.type({ nature: ForYouN }),
     t.type(
       {
         // baretext is the smallest part of the description,
@@ -80,10 +82,10 @@ export const ForYouVideoMetadata = t.intersection(
         hashtags: t.array(t.string),
         metrics: Metrics,
       },
-      'foryou',
+      'foryou'
     ),
   ],
-  'ForYouVideoMetadata',
+  'ForYouVideoMetadata'
 );
 
 export type ForYouVideoMetadata = t.TypeOf<typeof ForYouVideoMetadata>;
@@ -92,15 +94,16 @@ export const FollowingVideoMetadata = t.intersection(
   [
     MetadataBase,
     FollowingN,
+    t.type({ nature: FollowingN }),
     t.type(
       {
         author: AuthorWithName,
         music: Music,
       },
-      'following',
+      'following'
     ),
   ],
-  'FollowingVideoMetaData',
+  'FollowingVideoMetaData'
 );
 
 export type FollowingVideoMetadata = t.TypeOf<typeof FollowingVideoMetadata>;
@@ -109,6 +112,7 @@ export const SearchMetadata = t.intersection(
   [
     MetadataBase,
     SearchN,
+    t.type({ nature: SearchN }),
     t.type(
       {
         results: t.array(t.any),
@@ -118,20 +122,38 @@ export const SearchMetadata = t.intersection(
             downloaded: t.boolean,
             filename: t.string,
             reason: t.number,
-          }),
+          })
         ),
       },
-      'search',
+      'search'
     ),
   ],
-  'SearchVideoMetadata',
+  'SearchVideoMetadata'
 );
 
 export type SearchMetadata = t.TypeOf<typeof SearchMetadata>;
 
-export const Metadata = t.union(
-  [ForYouVideoMetadata, FollowingVideoMetadata, SearchMetadata],
-  'VideoMetaData',
+export const NativeMetadata = t.intersection(
+  [
+    MetadataBase,
+    NativeVideoN,
+    t.type({ nature: NativeVideoN }),
+    t.type({
+      description: t.string,
+      music: t.union([Music, t.undefined]),
+      author: t.union([Author, t.undefined]),
+      metrics: Metrics,
+      hashtags: t.array(t.string),
+    }),
+  ],
+  'NativeMetadata'
 );
 
-export type Metadata = t.TypeOf<typeof Metadata>;
+export type NativeMetadata = t.TypeOf<typeof NativeMetadata>;
+
+export const TKMetadata = t.union(
+  [ForYouVideoMetadata, FollowingVideoMetadata, SearchMetadata, NativeMetadata],
+  'TKMetadata'
+);
+
+export type TKMetadata = t.TypeOf<typeof TKMetadata>;

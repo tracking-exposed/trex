@@ -2,6 +2,6 @@ import http from './http';
 import * as Events from './events/ContributionEvent';
 import * as Personal from './personal';
 import * as Public from './public';
-import * as Metadata from './Metadata';
+import * as TKMetadata from './Metadata';
 
-export { Events, Personal, Public, Metadata, http };
+export { Events, Personal, Public, TKMetadata, http };

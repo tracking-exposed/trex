@@ -51,7 +51,7 @@ async function getLast(req) {
 };
 */
 
-function ensureRelated(rv): null | any {
+function ensureRelated(rv: any): null | any {
   /* for each related it is called and only the basic info used in 'compare'
    * page get returned. return 'null' if content is not complete */
   const demanded = [
@@ -72,7 +72,7 @@ function ensureRelated(rv): null | any {
     : sele;
 }
 
-async function getVideoId(req): Promise<any> {
+async function getVideoId(req: any): Promise<any> {
   const { amount, skip } = params.optionParsing(
     req.params.paging,
     PUBLIC_AMOUNT_ELEMS
@@ -109,7 +109,7 @@ async function getVideoId(req): Promise<any> {
   return { json: evidences };
 }
 
-async function getRelated(req): Promise<any> {
+async function getRelated(req: any): Promise<any> {
   const { amount, skip } = params.optionParsing(
     req.params.paging,
     PUBLIC_AMOUNT_ELEMS
@@ -145,7 +145,7 @@ async function getRelated(req): Promise<any> {
   return { json: evidences };
 }
 
-async function getVideoCSV(req): Promise<any> {
+async function getVideoCSV(req: any): Promise<any> {
   // /api/v1/videoCSV/:videoId/:amount
   const MAXENTRY = 2800;
   const { amount, skip } = params.optionParsing(req.params.paging, MAXENTRY);
@@ -176,14 +176,14 @@ async function getVideoCSV(req): Promise<any> {
   };
 }
 
-async function getRecent(req): Promise<any> {
+async function getRecent(req: any): Promise<any> {
   // this still to be determined why was supposed to be implemented: perhaps 'compare' equivalent?
   return { json: { fuffa: true } };
 }
 
 const SEARCH_FIELDS = ['id', 'query', 'publicKey', 'savingTime'];
 /* this is exported because also used in personal */
-async function getSearches(req): Promise<any> {
+async function getSearches(req: any): Promise<any> {
   const amount = _.parseInt(req.query.amount) || 50;
   const skip = _.parseInt(req.query.skip) || 0;
   // this support the 'standard' format for Taboule

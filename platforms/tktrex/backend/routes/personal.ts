@@ -10,7 +10,7 @@ const debug = require('debug')('routes:personal');
 
 const CSV_MAX_SIZE = 9000;
 
-function pickFeedFields(metae): any {
+function pickFeedFields(metae: any): any {
   return {
     authorName: metae.author?.name,
     authorUser: metae.author?.username,
@@ -28,7 +28,7 @@ function pickFeedFields(metae): any {
   };
 }
 
-async function getPersonal(req): Promise<any> {
+async function getPersonal(req: any): Promise<any> {
   // personal API format is
   // /api/v1/personal/:publicKey/:what/:format
   const k = req.params.publicKey;
@@ -131,7 +131,7 @@ async function getPersonal(req): Promise<any> {
   }
 }
 
-async function getPersonalCSV(req): Promise<any> {
+async function getPersonalCSV(req: any): Promise<any> {
   const CSV_MAX_SIZE = 9000;
   const k = req.params.publicKey;
   const type = req.params.what;
@@ -231,7 +231,7 @@ async function removeEvidence(req) {
 */
 
 const getPersonalByExperimentId = async (
-  req
+  req: any
 ): Promise<{ json: PersonalData } | { headers: any; text: string }> => {
   const experimentId = req.params.experimentId;
   const publicKey = req.params.publicKey;

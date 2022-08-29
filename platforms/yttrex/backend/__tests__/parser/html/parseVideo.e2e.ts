@@ -59,7 +59,7 @@ describe('Parser: Video', () => {
   jest.setTimeout(20 * 1000);
 
   const historyData = readHistoryResults(
-    path.resolve(__dirname, '../../fixtures/home'),
+    path.resolve(__dirname, '../../fixtures/video'),
     publicKey
   );
 

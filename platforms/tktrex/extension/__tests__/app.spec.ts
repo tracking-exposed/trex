@@ -71,7 +71,6 @@ const backgroundOpts = {
 };
 
 const { chrome, clearDB } = getChromeMock({
-  getConfig,
   backgroundOpts,
 });
 
