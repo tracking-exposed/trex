@@ -24,7 +24,7 @@ const Popup: React.FC = () => {
   const [userSettings, setUserSettings] = useState<any>(undefined);
 
   useEffect(() => {
-    localLookup((response) => {
+    localLookup(true, (response) => {
       if (response.type === 'Error') {
         setStatus('error');
         log.error('could not get user settings', bo.runtime.lastError);
