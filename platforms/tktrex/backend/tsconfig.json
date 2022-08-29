@@ -5,18 +5,15 @@
     "rootDir": "./",
     "baseUrl": "./",
     "esModuleInterop": true,
-    "jsx": "react",
-    "module": "esnext",
-    "moduleResolution": "node",
-    "noImplicitAny": false,
     "noEmit": true,
     "resolveJsonModule": true,
+    "moduleResolution": "node",
     "strict": true,
     "skipLibCheck": true,
     "target": "es2015",
     "paths": {
-      "@shared/*": ["../../../packages/shared/src/*"],
-      "@tktrex/shared/*": ["../shared/src/*"]
+      "@tktrex/shared/*": ["../shared/src/*"],
+      "@shared/*": ["../../../packages/shared/src/*"]
     }
   },
   "references": [
@@ -28,10 +25,7 @@
     }
   ],
   "ts-node": {
-    "require": ["tsconfig-paths/register"],
-    "compilerOptions": {
-      "module": "CommonJS"
-    }
+    "require": ["tsconfig-paths/register"]
   },
   "include": ["**/*.ts", "**/*.js", "**/*.json"],
   "exclude": ["node_modules", "build", "jest.config.js"]

@@ -23,3 +23,5 @@ export const parsers = {
   native,
   downloader,
 };
+
+export type TKParsers = typeof parsers;

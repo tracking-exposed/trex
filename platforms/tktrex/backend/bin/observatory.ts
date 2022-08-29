@@ -28,7 +28,7 @@ if (!nconf.get('interface') || !nconf.get('port'))
     "check your config/settings.json, config of 'interface' and 'post' missing"
   );
 
-async function iowrapper(funct, req, res): Promise<void> {
+async function iowrapper(funct: any, req: any, res: any): Promise<void> {
   try {
     const httpresult = await funct(req, res);
 

@@ -9,7 +9,7 @@ const debug = createDebug('routes:public');
 // This variables is used as cap in every readLimit below
 const PUBLIC_AMOUNT_ELEMS = 100;
 
-const listMetadata = async (req): Promise<any> => {
+const listMetadata = async (req: any): Promise<any> => {
   const {
     query: {
       researchTag,

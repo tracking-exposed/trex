@@ -30,7 +30,7 @@ export const GetTest = async (): Promise<Test> => {
   config.set('storage', '_test_htmls');
   config.set('mongoDb', 'yttrex-test');
 
-  const mongo = await mongo3.clientConnect({});
+  const mongo = await mongo3.clientConnect();
 
   if (!mongo) {
     throw new Error('mongo3.clientConnect failed');
