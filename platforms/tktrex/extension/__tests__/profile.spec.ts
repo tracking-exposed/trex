@@ -1,25 +1,19 @@
 import { HandshakeActiveResponseArb } from '@shared/arbitraries/HandshakeResponse.arb';
 import { boot } from '@shared/extension/app';
-import {
-  handleServerLookup,
-  initializeKey,
-} from '@shared/extension/chrome/background/account';
+import { initializeKey } from '@shared/extension/chrome/background/account';
 import { load } from '@shared/extension/chrome/background/index';
-import { handleSyncMessage } from '@shared/extension/chrome/background/sync';
 import { fc } from '@shared/test';
 import axiosMock from '@shared/test/__mocks__/axios.mock';
 import { sleep } from '@shared/utils/promise.utils';
 import { tiktokDomainRegExp } from '@tktrex/parser/constant';
 import * as fs from 'fs';
-import { chrome } from 'jest-chrome';
 import * as path from 'path';
+import { BootOpts } from '@shared/extension/app';
 import * as app from '../src/app/app';
 import * as handlers from '../src/app/handlers';
 import api, { getHeadersForDataDonation } from '../src/background/api';
 import tkHub from '../src/handlers/hub';
-import { tkLog } from '../src/logger';
-
-const chromeListener = jest.fn();
+import { getChromeMock } from '@shared/extension/__mocks__/chrome';
 
 const profileMatcher = app.tkHandlers.profile;
 const videoMatcher = app.tkHandlers.video;
@@ -33,7 +27,7 @@ const handleSearchSpy = jest.spyOn(searchMatcher, 'handle');
 
 let keys = initializeKey();
 const tkURL = 'https://tiktok.com/foryou';
-const bootOptions = {
+const bootOptions: BootOpts = {
   payload: {
     config: keys,
     href: window.location.href,
@@ -51,16 +45,7 @@ const bootOptions = {
   onAuthenticated: app.tkTrexActions,
 };
 
-chromeListener.mockImplementation((request, sender, sendResponse) => {
-  tkLog.info('on listener %O', { request, sender });
-  sendResponse({ type: 'Success', response: null });
-  return true;
-});
-
 const researchTag = 'test-tag';
-let dbMap = {
-  local: undefined,
-};
 
 const getConfig = () => ({
   ...keys,
@@ -72,62 +57,15 @@ const getConfig = () => ({
   testTime: new Date().toISOString(),
 });
 
-chrome.runtime.sendMessage
-  // mock first 'chromeConfig' message handler
-  // .mockImplementationOnce((msg, cb: any) => {
-  //   return cb({ ux: true, active: true });
-  // })
-  // mock 'LocalLookup' message handler
-  .mockImplementation((msg: any, cb: any) => {
-    if (msg.type === 'SettingsLookup') {
-      const settings = getConfig();
-      dbMap.local = settings as any;
-      return cb(settings);
-      // mock 'LocalLookup' message handler
-    } else if (msg.type === 'LocalLookup') {
-      return cb(getConfig());
-    } else if (msg.type === 'ServerLookup') {
-      return handleServerLookup(backgroundOpts)(msg.payload, cb);
-    } else if (msg.type === 'sync') {
-      return handleSyncMessage(backgroundOpts)(msg, null, cb);
-    }
-    return cb({
-      type: 'Error',
-      error: new Error(`Message type ${msg.type} not handled`),
-    });
-  });
-
-chrome.storage.local.get.mockImplementation((key: any, cb: any) => {
-  tkLog.info('Get Storage key %s from %O', key, keys);
-  return cb({ [key]: keys });
-});
-
-chrome.storage.local.set.mockImplementation((obj, cb: any) => {
-  tkLog.info('Set Storage key %s', obj);
-  return cb(obj);
-});
-
-// mock connect port for 'ConfigUpdate'
-const portMock = {
-  name: 'ConfigUpdate',
-  onMessage: {
-    addListener: jest.fn(),
-    hasListener: jest.fn(),
-    getRules: jest.fn(),
-    removeRules: jest.fn(),
-  },
-  postMessage: jest.fn(),
-  disconnect: jest.fn(),
-  onDisconnect: jest.fn(),
-};
-
-chrome.runtime.connect.mockReturnValue(portMock as any);
-chrome.runtime.onMessage.addListener(chromeListener);
-
 const backgroundOpts = {
   api: api.API,
   getHeadersForDataDonation,
 };
+
+const chrome = getChromeMock({
+  getConfig,
+  backgroundOpts,
+});
 
 describe('TK App', () => {
   jest.setTimeout(20 * 1000);
