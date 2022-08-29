@@ -11,6 +11,7 @@ import { youtubeDomainRegExp } from '@yttrex/shared/parsers/index';
 import * as fs from 'fs';
 import { chrome } from 'jest-chrome';
 import * as path from 'path';
+import { getChromeMock } from '../../../../packages/shared/src/extension/__mocks__/chrome';
 import * as app from '../src/app/app';
 import api, { getHeadersForDataDonation } from '../src/chrome/background/api';
 import * as events from '../src/handlers/events';
@@ -41,8 +42,8 @@ const backgroundOpts = {
 };
 
 const keys = {
-  publicKey: process.env.PUBLIC_KEY,
-  secretKey: process.env.SECRET_KEY,
+  publicKey: process.env.PUBLIC_KEY as any,
+  secretKey: process.env.SECRET_KEY as any,
 };
 let ytURL: string;
 
@@ -66,61 +67,7 @@ const getConfig = () => ({
   testTime,
 });
 
-chrome.runtime.sendMessage.mockImplementation((msg: any, cb: any) => {
-  // mock 'SettingsLookup' message handler
-  if (msg.type === 'SettingsLookup') {
-    const settings = getConfig();
-    dbMap.local = settings as any;
-    return cb(settings);
-    // mock 'LocalLookup' message handler
-  } else if (msg.type === 'LocalLookup') {
-    return cb(getConfig());
-    // mock 'ServerLookup' message handler
-  } else if (msg.type === 'ServerLookup') {
-    return handleServerLookup(backgroundOpts)(msg.payload, cb);
-    // mock 'sync' message handler
-  } else if (msg.type === 'sync') {
-    return handleSyncMessage(backgroundOpts)(msg, null, cb);
-  }
-  app.ytLogger.info('unhandled msg %s', msg.type);
-  cb(new Error(`Unhandled msg ${msg} in chrome mock`), null);
-});
-
-let dbMap = {
-  local: undefined,
-};
-
-chrome.storage.local.get.mockImplementation((key: any, cb: any) => {
-  app.ytLogger.info('Get Storage key (%s) %O', key, dbMap);
-  return cb(dbMap);
-});
-
-chrome.storage.local.set.mockImplementation((obj: any, cb: any) => {
-  app.ytLogger.info('Set Storage key %O', obj);
-  dbMap = {
-    ...dbMap,
-    ...obj,
-  };
-  return cb();
-});
-
-// mock connect port for 'ConfigUpdate'
-const portMock = {
-  name: 'ConfigUpdate',
-  onMessage: {
-    addListener: jest.fn(),
-    hasListener: jest.fn(),
-    getRules: jest.fn(),
-    removeRules: jest.fn(),
-  },
-  postMessage: jest.fn(),
-  disconnect: jest.fn(),
-  onDisconnect: jest.fn(),
-};
-
-chrome.runtime.connect.mockReturnValue(portMock as any);
-
-chrome.runtime.onMessage.addListener(chromeListener);
+const { chrome } = getChromeMock({ getConfig, backgroundOpts });
 
 const bootConfig = (): BootOpts => ({
   payload: {
