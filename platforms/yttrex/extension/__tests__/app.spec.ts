@@ -1,23 +1,19 @@
+import fetchMock from 'jest-fetch-mock';
+
 import { HandshakeActiveResponseArb } from '@shared/arbitraries/HandshakeResponse.arb';
 import { boot, BootOpts } from '@shared/extension/app';
-import { handleServerLookup } from '@shared/extension/chrome/background/account';
 import { load } from '@shared/extension/chrome/background/index';
-import { handleSyncMessage } from '@shared/extension/chrome/background/sync';
-import db from '@shared/extension/chrome/db';
 import { fc } from '@shared/test';
 import axiosMock from '@shared/test/__mocks__/axios.mock';
 import { sleep } from '@shared/utils/promise.utils';
 import { youtubeDomainRegExp } from '@yttrex/shared/parsers/index';
 import * as fs from 'fs';
-import { chrome } from 'jest-chrome';
 import * as path from 'path';
 import { getChromeMock } from '../../../../packages/shared/src/extension/__mocks__/chrome';
 import * as app from '../src/app/app';
 import api, { getHeadersForDataDonation } from '../src/chrome/background/api';
 import * as events from '../src/handlers/events';
 import ytHub from '../src/handlers/hub';
-
-const chromeListener = jest.fn();
 
 const homeMatcher = app.watchedPaths.home;
 const videoMatcher = app.watchedPaths.video;
@@ -46,13 +42,6 @@ const keys = {
   secretKey: process.env.SECRET_KEY as any,
 };
 let ytURL: string;
-
-chromeListener.mockImplementation((request, sender, sendResponse) => {
-  app.ytLogger.info('on listener %O', { request, sender });
-  sendResponse({ type: 'Success', response: null });
-  return true;
-});
-
 const testTime = new Date().toISOString();
 
 const researchTag = 'fake-tag';
@@ -67,7 +56,7 @@ const getConfig = () => ({
   testTime,
 });
 
-const { chrome } = getChromeMock({ getConfig, backgroundOpts });
+const { chrome } = getChromeMock({ backgroundOpts });
 
 const bootConfig = (): BootOpts => ({
   payload: {
@@ -97,7 +86,12 @@ describe('YT App', () => {
   jest.setTimeout(60 * 1000);
 
   beforeAll(async () => {
+    fetchMock.enableMocks();
     load(backgroundOpts);
+  });
+
+  afterAll(() => {
+    fetchMock.disableMocks();
   });
 
   afterEach(() => {
@@ -116,6 +110,11 @@ describe('YT App', () => {
     axiosMock.request.mockResolvedValueOnce({
       data: handshakeResponse,
     });
+
+    chrome.runtime.getURL.mockReturnValueOnce('file://settings.json');
+    fetchMock.mockResponseOnce(JSON.stringify(getConfig()));
+    chrome.runtime.getURL.mockReturnValueOnce('file://experiment.json');
+    fetchMock.mockResponseOnce(JSON.stringify({}));
 
     const appContext = await boot(bootConfig());
 
@@ -274,6 +273,11 @@ describe('YT App', () => {
     axiosMock.request.mockResolvedValueOnce({
       data: handshakeResponse,
     });
+
+    chrome.runtime.getURL.mockReturnValueOnce('file://settings.json');
+    fetchMock.mockResponseOnce(JSON.stringify(getConfig()));
+    chrome.runtime.getURL.mockReturnValueOnce('file://experiment.json');
+    fetchMock.mockResponseOnce(JSON.stringify({}));
 
     const appContext = await boot(bootConfig());
 

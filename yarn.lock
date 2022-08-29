@@ -4346,6 +4346,7 @@ __metadata:
     io-ts: ^2.2.16
     jest: ^27.5.1
     jest-environment-jsdom-global: ^3.1.2
+    jest-fetch-mock: ^3.0.3
     jquery: ^3.6.0
     lodash: ^4.17.21
     moment: ^2.29.4
@@ -4438,6 +4439,7 @@ __metadata:
     axios: ^0.24.0
     canvas: ^2.9.1
     copy-webpack-plugin: ^11.0.0
+    cross-fetch: ^3.1.5
     debug: ^4.3.4
     dotenv-webpack: ^7.1.0
     eslint: ^8.19.0
@@ -4456,6 +4458,7 @@ __metadata:
     io-ts: ^2.2.16
     io-ts-types: ^0.5.16
     jest: ^27.5.1
+    jest-fetch-mock: ^3.0.3
     mini-css-extract-plugin: ^2.6.1
     node-loader: ^2.0.0
     node-sass: ^7.0.1
@@ -6467,6 +6470,7 @@ __metadata:
     jest-chrome: ^0.7.2
     jest-cli: ^27.5.1
     jest-environment-jsdom-global: ^3.1.2
+    jest-fetch-mock: ^3.0.3
     jquery: ^3.6.0
     lodash: ^4.17.21
     mini-css-extract-plugin: ^2.6.1
@@ -9983,7 +9987,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"cross-fetch@npm:3.1.5, cross-fetch@npm:^3.1.5":
+"cross-fetch@npm:3.1.5, cross-fetch@npm:^3.0.4, cross-fetch@npm:^3.1.5":
   version: 3.1.5
   resolution: "cross-fetch@npm:3.1.5"
   dependencies:
@@ -16828,6 +16832,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"jest-fetch-mock@npm:^3.0.3":
+  version: 3.0.3
+  resolution: "jest-fetch-mock@npm:3.0.3"
+  dependencies:
+    cross-fetch: ^3.0.4
+    promise-polyfill: ^8.1.3
+  checksum: fb052f7e0ef1c8192a9c15efdd1b18d281ab68fc6b1648b30bff8880fe24418bdf12190ea79b1996932dc15417c3c01f5b2d77ef7104a7e7943e7cbe8d61071d
+  languageName: node
+  linkType: hard
+
 "jest-get-type@npm:^27.5.1":
   version: 27.5.1
   resolution: "jest-get-type@npm:27.5.1"
@@ -21745,6 +21759,13 @@ __metadata:
   version: 1.0.1
   resolution: "promise-inflight@npm:1.0.1"
   checksum: 22749483091d2c594261517f4f80e05226d4d5ecc1fc917e1886929da56e22b5718b7f2a75f3807e7a7d471bc3be2907fe92e6e8f373ddf5c64bae35b5af3981
+  languageName: node
+  linkType: hard
+
+"promise-polyfill@npm:^8.1.3":
+  version: 8.2.3
+  resolution: "promise-polyfill@npm:8.2.3"
+  checksum: f320278bab8b8ce32f0e2f377d75aabe35c90a79f92b3e001db084d635da1fb8740ba8a26b5c1c2b4cdca5a4c988f9b6b3eb30f0b151d0362d3d9c1675024a8f
   languageName: node
   linkType: hard
 

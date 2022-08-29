@@ -29,16 +29,15 @@
 import {
   ObserverHandler,
   refreshUUID,
-  RouteObserverHandler,
+  RouteObserverHandler
 } from '@shared/extension/app';
-import config from '@shared/extension/config';
 import logger from '@shared/extension/logger';
 import UserSettings from '@shared/extension/models/UserSettings';
 import { sizeCheck } from '@shared/providers/dataDonation.provider';
 import {
   consideredURLs,
   leafSelectors,
-  routeSelectors,
+  routeSelectors
 } from '@yttrex/shared/parsers/index';
 import _ from 'lodash';
 import { initializeBlinks, updateUI } from '../blink';

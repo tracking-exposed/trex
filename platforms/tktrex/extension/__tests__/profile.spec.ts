@@ -1,9 +1,14 @@
+// mocks
+import fetchMock from 'jest-fetch-mock';
+import axiosMock from '@shared/test/__mocks__/axios.mock';
+import { getChromeMock } from '@shared/extension/__mocks__/chrome';
+
+// imports
 import { HandshakeActiveResponseArb } from '@shared/arbitraries/HandshakeResponse.arb';
 import { boot } from '@shared/extension/app';
 import { initializeKey } from '@shared/extension/chrome/background/account';
 import { load } from '@shared/extension/chrome/background/index';
 import { fc } from '@shared/test';
-import axiosMock from '@shared/test/__mocks__/axios.mock';
 import { sleep } from '@shared/utils/promise.utils';
 import { tiktokDomainRegExp } from '@tktrex/parser/constant';
 import * as fs from 'fs';
@@ -13,7 +18,6 @@ import * as app from '../src/app/app';
 import * as handlers from '../src/app/handlers';
 import api, { getHeadersForDataDonation } from '../src/background/api';
 import tkHub from '../src/handlers/hub';
-import { getChromeMock } from '@shared/extension/__mocks__/chrome';
 
 const profileMatcher = app.tkHandlers.profile;
 const videoMatcher = app.tkHandlers.video;
@@ -26,17 +30,18 @@ const handleVideoSpy = jest.spyOn(videoMatcher, 'handle');
 const handleSearchSpy = jest.spyOn(searchMatcher, 'handle');
 
 let keys = initializeKey();
-const tkURL = 'https://tiktok.com/foryou';
+const firstURL = window.location.href;
+let tkURL = 'https://tiktok.com/foryou';
 const bootOptions: BootOpts = {
   payload: {
     config: keys,
-    href: window.location.href,
+    href: firstURL,
   } as any,
   mapLocalConfig: (c, p) => ({ ...c, ...p }),
   observe: {
     handlers: app.tkHandlers,
     platformMatch: tiktokDomainRegExp,
-    onLocationChange: () => {},
+    onLocationChange: app.onLocationChange,
   },
   hub: {
     hub: tkHub,
@@ -51,7 +56,7 @@ const getConfig = () => ({
   ...keys,
   active: true,
   ux: true,
-  href: tkURL,
+  href: (() => tkURL)(),
   researchTag,
   execount: 1,
   testTime: new Date().toISOString(),
@@ -62,7 +67,7 @@ const backgroundOpts = {
   getHeadersForDataDonation,
 };
 
-const chrome = getChromeMock({
+const { chrome, clearDB } = getChromeMock({
   getConfig,
   backgroundOpts,
 });
@@ -72,6 +77,11 @@ describe('TK App', () => {
 
   beforeAll(() => {
     load(backgroundOpts);
+    fetchMock.enableMocks();
+  });
+
+  afterAll(() => {
+    fetchMock.disableMocks();
   });
 
   afterEach(() => {
@@ -80,10 +90,16 @@ describe('TK App', () => {
     hubDispatchSpy.mockClear();
     handleProfileSpy.mockClear();
     handleSearchSpy.mockClear();
+    clearDB();
   });
 
   describe('"profile" page scraping', () => {
     test('succeeds with all elements', async () => {
+      chrome.runtime.getURL.mockReturnValueOnce('file://settings.json');
+      fetchMock.mockResponseOnce(JSON.stringify(getConfig()));
+      chrome.runtime.getURL.mockReturnValueOnce('file://experiment.json');
+      fetchMock.mockResponseOnce(JSON.stringify({}));
+
       // mock handshake response
       const handshakeResponse = fc.sample(HandshakeActiveResponseArb, 1)[0];
       axiosMock.request.mockResolvedValueOnce({
@@ -121,28 +137,37 @@ describe('TK App', () => {
       // video handler should be invoked as the url includes `watch`
       expect(handleProfileSpy).toHaveBeenCalledTimes(1);
       expect(handleVideoSpy).toHaveBeenCalledTimes(1);
+      // one for the contribution 'profile' event and one for 'sync' event
       expect(hubDispatchSpy).toHaveBeenCalledTimes(2);
 
-      expect(axiosMock.request.mock.calls[1][0]).toMatchObject({
+      const { href, ...config } = appContext.config;
+      expect(axiosMock.request).toHaveBeenNthCalledWith(1, {
+        url: '/v2/handshake',
+        data: { config: config, href: firstURL },
+        headers: {
+          Accept: 'application/json',
+        },
+        params: undefined,
+        method: 'POST',
+        responseType: 'json',
+      });
+
+      expect(axiosMock.request).toHaveBeenNthCalledWith(2, {
         url: '/v2/events',
         data: [
-          {
-            type: 'profile',
-            incremental: 0,
-            videoCounter: 0,
-            rect: undefined,
-            href: tkProfileUrl,
-          },
+          expect.any(Object),
         ],
         headers: {
           Accept: 'application/json',
           'Content-Type': 'application/json',
           'X-Tktrex-Build': process.env.BUILD_DATE,
-          'X-Tktrex-NonAuthCookieId': '',
+          'X-Tktrex-NonAuthCookieId': researchTag,
           'X-Tktrex-PublicKey': process.env.PUBLIC_KEY,
+          'X-Tktrex-Signature': expect.any(String),
           'X-Tktrex-Version': process.env.VERSION,
         },
         method: 'POST',
+        params: undefined,
         responseType: 'json',
       });
     });

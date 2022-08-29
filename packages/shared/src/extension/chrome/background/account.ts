@@ -2,9 +2,8 @@ import bs58 from 'bs58';
 import { HandshakeResponse } from '../../../models/HandshakeBody';
 import nacl from 'tweetnacl';
 import log from '../../logger';
-import { Message, ServerLookup } from '../../models/Message';
+import { LocalLookup, ServerLookup } from '../../models/Message';
 import UserSettings from '../../models/UserSettings';
-import { bo } from '../../utils/browser.utils';
 import db from '../db';
 import file from '../file';
 import { LoadOpts } from './sync';
@@ -21,8 +20,6 @@ export const FIXED_USER_NAME = 'local';
 const DEFAULT_SETTINGS = {
   active: true,
   ux: false,
-  researchTag: undefined,
-  experimentId: undefined,
 };
 
 /**
@@ -84,27 +81,27 @@ export async function handleSettingsLookup(
     DEFAULT_SETTINGS
   );
 
+  log.info('Loaded configuration from file settings.json: %j', settingsJson);
+
   const experimentInfo = await readOrDefault('experiment.json', t.any, {});
 
+  log.info(
+    'Loaded experiment info from file experiment.json: %j',
+    settingsJson
+  );
+
   const settings = { ...DEFAULT_SETTINGS, ...settingsJson, ...experimentInfo };
-
-  try {
-    if (!(settings.publicKey?.length && settings.secretKey?.length))
-      throw new Error('Invalid key material found in settings.json');
-
-    log.info('Loaded configuration from file settings.json: %j', settings);
-  } catch (err) {
-    log.info('Error caught while checking settings.json: %s', err);
-  }
 
   return sendResponse(settings);
 }
 
 /**
  * Get settings from chrome.storage
+ *
+ * Then `publicKey` and `secretKey` creation is defined by the variable `initKeys`.
  */
 export async function handleLocalLookup(
-  { userId }: WithUserId,
+  { userId }: LocalLookup['payload'],
   sendResponse: (response: Partial<UserSettings>) => void
 ): Promise<void> {
   let settings;
@@ -112,9 +109,10 @@ export async function handleLocalLookup(
     settings = await db.getValid(t.partial(UserSettings.props))(userId);
     log.info('Loaded correctly settings from localStorage %j', settings);
   } catch (err) {
-    const initialSettings: UserSettings = {
+    log.info('Settings in db is not well formed %O', err);
+
+    const initialSettings: Partial<UserSettings> = {
       ...DEFAULT_SETTINGS,
-      ...initializeKey(),
     };
     settings = await db.set(userId, initialSettings);
   }
@@ -126,7 +124,6 @@ export async function handleLocalLookup(
  * handleServerLookup will be used to fetch settings from the server
  * after the default settings have been obtained from the local storage
  *
- * TODO: implement
  */
 export const handleServerLookup =
   (opts: LoadOpts) =>
@@ -135,9 +132,9 @@ export const handleServerLookup =
     sendResponse: (response: HandshakeResponse) => void
   ): Promise<void> => {
     log.info('handshake body %O', config);
-    void (opts.api as any).v2.Public.Handshake({
-      Body: { config: config as any, href },
-    })().then((response: any) => {
+    void opts.api.v2.Public.Handshake({
+      Body: { config, href },
+    } as any)().then((response: any) => {
       log.info('handshake response %O', response);
       if (response._tag === 'Right') {
         sendResponse(response.right);
@@ -148,7 +145,7 @@ export const handleServerLookup =
     });
   };
 
-async function handleConfigUpdate(
+export async function handleConfigUpdate(
   payload: Partial<UserSettings>,
   sendResponse: (response: Partial<UserSettings>) => void
 ): Promise<void> {
@@ -157,33 +154,3 @@ async function handleConfigUpdate(
   log.info('completed ConfigUpdate, user settings now', settings);
   sendResponse(settings);
 }
-
-export const load = (
-  opts: LoadOpts,
-  onConfigChange: (c: Partial<UserSettings>) => void
-): void => {
-  bo.runtime.onMessage.addListener((request: Message, sender, sendResponse) => {
-    if (request.type === 'SettingsLookup') {
-      void handleSettingsLookup(request.payload, sendResponse);
-      return true;
-    }
-
-    if (request.type === 'LocalLookup') {
-      void handleLocalLookup(request.payload, sendResponse);
-      return true;
-    }
-
-    if (request.type === 'ServerLookup') {
-      void handleServerLookup(opts)(request.payload, sendResponse);
-      return true;
-    }
-
-    if (request.type === 'ConfigUpdate') {
-      void handleConfigUpdate(request.payload, (c) => {
-        onConfigChange(c);
-        return sendResponse(c);
-      });
-      return true;
-    }
-  });
-};
