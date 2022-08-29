@@ -17,7 +17,7 @@ const metadataBaseProps = propsOmitType(MetadataBase, ['id', 'savingTime']);
  *
  **/
 
-const searchMetadataProps = propsOmitType(SearchMetadata.types[2], [
+const searchMetadataProps = propsOmitType(SearchMetadata.types[3], [
   'results',
   'thumbnails',
 ]);

@@ -1,13 +1,11 @@
-import { Logger } from '../../logger';
 import * as E from 'fp-ts/lib/Either';
 import * as fs from 'fs';
 import * as t from 'io-ts';
-import { failure } from 'io-ts/lib/PathReporter';
+import { PathReporter } from 'io-ts/lib/PathReporter';
 import * as path from 'path';
+import { Logger } from '../../logger';
 import {
-  ParserFn,
-  parseContributions,
-  ParserProviderContext,
+  parseContributions, ParserFn, ParserProviderContext
 } from '../../providers/parser.provider';
 
 /**
@@ -54,7 +52,7 @@ export const runParserTest =
     ...opts
   }: {
     log: Logger;
-    parsers: Record<string, ParserFn<t.TypeOf<S>, t.TypeOf<M>>>;
+    parsers: PP;
     sourceSchema: string;
     metadataSchema: string;
     expectMetadata: (
@@ -122,7 +120,7 @@ export const runParserTest =
 
     if (decodeResult._tag === 'Left') {
       // eslint-disable-next-line
-      throw new Error(failure(decodeResult.left).join('\n'));
+      throw new Error(PathReporter.report(decodeResult).join('\n'));
     }
 
     expect(E.isRight(decodeResult)).toBe(true);

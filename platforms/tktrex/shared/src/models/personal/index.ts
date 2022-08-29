@@ -1,6 +1,6 @@
 import * as t from 'io-ts';
 import { DateFromISOString } from 'io-ts-types/lib/DateFromISOString';
-import { Metadata } from '../Metadata';
+import { TKMetadata } from '../Metadata';
 import { Supporter } from '@shared/models/Supporter';
 
 export const PersonalVideoFeed = t.strict(
@@ -30,7 +30,7 @@ export type PersonalVideoList = t.TypeOf<typeof PersonalVideoList>;
 export const PersonalData = t.strict(
   {
     supporter: Supporter,
-    metadata: t.array(Metadata),
+    metadata: t.array(TKMetadata),
   },
   'PersonalData',
 );

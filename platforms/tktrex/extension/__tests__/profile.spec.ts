@@ -67,12 +67,15 @@ const backgroundOpts = {
   getHeadersForDataDonation,
 };
 
+
 const { chrome, clearDB } = getChromeMock({
   getConfig,
   backgroundOpts,
 });
 
-describe('TK App', () => {
+
+describe('TK App - profile ', () => {
+
   jest.setTimeout(20 * 1000);
 
   beforeAll(() => {

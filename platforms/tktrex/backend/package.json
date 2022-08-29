@@ -11,8 +11,8 @@
     "tto:start": "DEBUG=\"*,-express:*,-body-parser:*,-send\" ts-node bin/observatory",
     "watch": "key=fuffa DEBUG=\"*,-express:*,-body-parser:*,-send\" ts-node-dev -r tsconfig-paths/register --respawn --transpile-only bin/server",
     "start": "DEBUG=\"*,-body-parser:*,-express:*,-lib:cache,-send\" ts-node bin/server",
-    "parserv": "DEBUG=\"*\" ts-node bin/parserv3",
-    "parserv:watch": "DEBUG=\"*\" ts-node-dev bin/parserv3"
+    "parserv": "DEBUG=\"*\" ts-node bin/parser",
+    "parserv:watch": "DEBUG=\"*\" ts-node-dev -r tsconfig-paths/register bin/parser"
   },
   "author": "https://github.com/tracking-exposed/tktrex/graphs/contributors",
   "repository": {

@@ -79,7 +79,7 @@ const ListMetadata = DocumentedEndpoint({
       format: t.union([Format, t.undefined]),
     }),
   },
-  Output: t.array(apiModel.Metadata.Metadata),
+  Output: t.array(apiModel.TKMetadata.TKMetadata),
 });
 
 export default {
