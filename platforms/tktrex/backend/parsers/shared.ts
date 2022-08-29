@@ -1,50 +1,80 @@
-const _ = require('lodash');
-const debug = require('debug')('parsers:shared');
-const nconf = require('nconf');
-const fetch = require('node-fetch');
-const fs = require('fs');
-const path = require('path');
+import {
+  FollowingN,
+  ForYouN,
+  HashtagsN,
+  Nature,
+  ProfileN,
+  SearchN,
+  VideoN
+} from '@tktrex/shared/models/Nature';
+import D from 'debug';
+import _ from 'lodash';
+import nconf from 'nconf';
+import fetch from 'node-fetch';
+import fs from 'fs';
+import path from 'path';
 
-function getNatureByHref(href) {
+const debug = D('parsers:shared');
+
+export function getNatureByHref(href: string): Nature | null {
   /* this piece of code is duplicated in extension/src/app.js */
   try {
     const urlO = new URL(href);
     const chunks = urlO.pathname.split('/');
-    const retval = {};
+    let retval: Nature = {
+      nature: { type: undefined },
+      type: undefined,
+    } as any;
 
-    if (urlO.pathname === '/foryou') {
-      retval.type = 'foryou';
-    } else if (urlO.pathname === '/') {
-      retval.type = 'foryou';
+    if (urlO.pathname === '/' || urlO.pathname === '/foryou') {
+      const foryouNature: ForYouN = {
+        type: 'foryou',
+      };
+      retval = foryouNature;
     } else if (urlO.pathname === '/following') {
-      retval.type = 'following';
+      const followingNature: FollowingN = {
+        type: 'following',
+      };
+      retval = followingNature;
     } else if (chunks[2] === 'video' && chunks.length >= 3) {
-      retval.type = 'video';
-      retval.videoId = chunks[3];
-      retval.authorId = chunks[1];
+      const videoNature: VideoN = {
+        type: 'video',
+        videoId: chunks[3],
+        authorId: chunks[1],
+      };
+      retval = videoNature;
     } else if (_.startsWith(urlO.pathname, '/@') && chunks.length === 2) {
-      retval.type = 'profile';
-      retval.creatorName = chunks[1].substring(1);
+      const profileNature: ProfileN = {
+        type: 'profile',
+        creatorName: chunks[1].substring(1),
+      };
+      retval = profileNature;
     } else if (urlO.pathname === '/search') {
-      retval.type = 'search';
-      retval.query = urlO.searchParams.get('q');
+      const searchNature: SearchN = {
+        type: 'search',
+        query: urlO.searchParams.get('q'),
+      };
+      retval = searchNature;
       // retval.timestamp = urlO.searchParams.get('t');
     } else if (urlO.pathname.startsWith('/tag')) {
-      retval.type = 'tag';
-      retval.hashtag = chunks[2];
+      const hashtagsN: HashtagsN = {
+        type: 'tag',
+        hashtag: chunks[2],
+      };
+      retval = hashtagsN;
     } else {
       debug('Unmanaged condition from URL: %o', urlO);
       return null;
     }
     // debug("getNatureByHref attributed %o", retval);
     return retval;
-  } catch (error) {
+  } catch (error: any) {
     debug('Error in getNatureByHref: %s', error.message);
     return null;
   }
 }
 
-function getUUID(url, type) {
+export function getUUID(url: string, type: any): any {
   const ui = new URL(url);
   const fullpath = ui.pathname;
   const fname = path.basename(fullpath);
@@ -60,7 +90,7 @@ function getUUID(url, type) {
   if (!fs.existsSync(destdir)) {
     try {
       fs.mkdirSync(destdir, { recursive: true });
-    } catch (error) {
+    } catch (error: any) {
       debug('!? %s: %s', destdir, error.message);
     }
     debug("%s wasn't existing and have been created", destdir);
@@ -68,7 +98,7 @@ function getUUID(url, type) {
   return path.join(destdir, fullname);
 }
 
-async function download(filename, url) {
+export async function download(filename: string, url: string): Promise<any> {
   /* this is a blocking operation and it would also download
    * videos up to three minutes! */
   debug('Connecting to download (%s)', filename);
@@ -90,9 +120,3 @@ async function download(filename, url) {
     filename: path.relative(process.cwd(), filename),
   };
 }
-
-module.exports = {
-  getNatureByHref,
-  getUUID,
-  download,
-};

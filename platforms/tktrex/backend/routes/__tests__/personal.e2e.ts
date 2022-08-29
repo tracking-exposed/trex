@@ -5,14 +5,14 @@ import { fc } from '@shared/test';
 import { foldTEOrThrow } from '@shared/utils/fp.utils';
 import { sleep } from '@shared/utils/promise.utils';
 import { ContributionEventArb } from '@tktrex/shared/arbitraries/ContributionEvent.arb';
-import { Metadata } from '@tktrex/shared/models/Metadata';
+import { TKMetadata } from '@tktrex/shared/models/Metadata';
 import {
   buildMetadata,
   getLastHTMLs,
   HTMLSource,
   updateMetadataAndMarkHTML,
 } from '../../lib/parser';
-import * as parsers from '../../parsers';
+import { parsers } from '../../parsers';
 import { GetTest, Test } from '../../test/Test';
 
 const version = '9.9.9.9';
@@ -88,10 +88,10 @@ describe('Events', () => {
 
       await GetParserProvider('html', {
         db,
-        parsers: parsers.parsers,
+        parsers: parsers,
         codecs: {
           contribution: HTMLSource,
-          metadata: Metadata,
+          metadata: TKMetadata,
         },
         getEntryId: (e) => e.html.id,
         getContributions: getLastHTMLs(db),
