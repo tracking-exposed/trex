@@ -2,7 +2,7 @@ import { debounce } from '@material-ui/core';
 import _ from 'lodash';
 import { HandshakeResponse } from '../models/HandshakeBody';
 import { clearCache } from '../providers/dataDonation.provider';
-import { FIXED_USER_NAME } from './chrome/background/account';
+import { FIXED_USER_NAME, initializeKey } from './chrome/background/account';
 import {
   partialLocalLookup,
   Response,
@@ -212,7 +212,7 @@ let config: any;
  * to promises for better code flow.
  */
 
-const jsonSettingsP = (): Promise<Response<UserSettings>> =>
+const jsonSettingsP = (): Promise<Response<Partial<UserSettings>>> =>
   new Promise((resolve) => settingsLookup(resolve));
 
 const partialLocalLookupP = (): Promise<Response<Partial<UserSettings>>> =>
@@ -243,16 +243,30 @@ export async function boot(opts: BootOpts): Promise<App> {
   }
 
   // `response` contains the user's public key, we save it global for the blinks
-  appLog.info('retrieved locally stored user settings %O', jsonSettings);
+  appLog.info(
+    'retrieved settings from json file (settings.json) %O',
+    jsonSettings
+  );
 
-  // Lookup the current user
+  // Lookup the current user and initialize keys only when not defined in json settings
   const localSettings = await partialLocalLookupP();
+
   if (localSettings.type === 'Error') {
     throw localSettings.error;
   }
 
   // merge settings taken from json with ones stored in db, giving the precedence to the latter
-  const settings = { ...jsonSettings.result, ...localSettings.result };
+  const settings: UserSettings = {
+    ...jsonSettings.result,
+    ...localSettings.result,
+  } as any;
+
+  if (!settings.publicKey || !settings.secretKey) {
+    const keys = initializeKey();
+    appLog.info('Settings misses key pair, creating new one: %O', keys);
+    settings.publicKey = keys.publicKey;
+    settings.secretKey = keys.secretKey;
+  }
 
   // save settings in db, so they're properly retrieved on the next bootstrap
   await db.set(FIXED_USER_NAME, settings);
@@ -312,15 +326,17 @@ export async function boot(opts: BootOpts): Promise<App> {
     reload: (c) => {
       appLog.debug('Reloading app with config %O', c);
       observer.disconnect();
-      opts.hub.hub.dispatch('Sync');
+      opts.hub.hub.dispatch({
+        type: 'WindowUnload',
+      });
       opts.hub.hub.clear();
       opts.hub.onRegister(opts.hub.hub, c);
       observer = undefined as any;
       observer = setupObserver(opts.observe, c);
     },
     destroy: () => {
-      opts.hub.hub.clear();
       observer.disconnect();
+      opts.hub.hub.clear();
     },
   };
 

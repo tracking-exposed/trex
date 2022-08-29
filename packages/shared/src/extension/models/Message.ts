@@ -35,9 +35,19 @@ export interface ReloadExtension extends MessageBase {
   type: 'ReloadExtension';
 }
 
+export interface Sync extends MessageBase {
+  type: 'sync';
+}
+
+export interface APISync extends MessageBase {
+  type: 'apiSync'
+}
+
 export type Message =
   | SettingsLookup
   | LocalLookup
   | ServerLookup
   | ConfigUpdate
-  | ReloadExtension;
+  | ReloadExtension
+  | Sync
+  | APISync

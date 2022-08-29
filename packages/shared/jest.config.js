@@ -24,6 +24,6 @@ module.exports = {
   testTimeout: 10000,
   setupFilesAfterEnv: ['<rootDir>/jest.setup.ts'],
   coverageProvider: 'v8',
-  collectCoverageFrom: ['<rootDir>/src/*'],
+  collectCoverageFrom: ['<rootDir>/src/**'],
   coveragePathIgnorePatterns: ['node_modules', 'build'],
 };

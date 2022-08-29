@@ -303,6 +303,7 @@ const handleProfile = _.debounce(
     const profileName = window.location.pathname.match(
       route.match.location,
     )?.[1];
+
     if (!profileName) {
       appLog.info('Error in getting profile name %s', window.location.pathname);
       return;

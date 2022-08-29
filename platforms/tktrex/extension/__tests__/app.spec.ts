@@ -1,9 +1,13 @@
+// mocks
+import fetchMock from 'jest-fetch-mock';
+import axiosMock from '@shared/test/__mocks__/axios.mock';
+import { getChromeMock } from '@shared/extension/__mocks__/chrome';
+
+// imports
 import { HandshakeActiveResponseArb } from '@shared/arbitraries/HandshakeResponse.arb';
 import { boot, BootOpts } from '@shared/extension/app';
 import { load } from '@shared/extension/chrome/background/index';
-import { getChromeMock } from '@shared/extension/__mocks__/chrome';
 import { fc } from '@shared/test';
-import axiosMock from '@shared/test/__mocks__/axios.mock';
 import { sleep } from '@shared/utils/promise.utils';
 import { tiktokDomainRegExp } from '@tktrex/parser/constant';
 import * as fs from 'fs';
@@ -14,7 +18,7 @@ import api, { getHeadersForDataDonation } from '../src/background/api';
 import tkHub from '../src/handlers/hub';
 
 const videoMatcher = app.tkHandlers.video;
-const searchMatcher = app.searchHandler;
+const searchMatcher = app.tkHandlers.search;
 const eventsRegisterSpy = jest.spyOn(handlers, 'registerTkHandlers');
 const tkTrexActionsSpy = jest.spyOn(app, 'tkTrexActions');
 const hubDispatchSpy = jest.spyOn(tkHub, 'dispatch');
@@ -41,10 +45,14 @@ const getConfig = () => ({
 const tkURL = 'https://tiktok.com/foryou';
 const bootOptions: BootOpts = {
   payload: {
-    config: { ...keys, researchTag },
+    config: getConfig(),
     href: window.location.href,
   } as any,
-  mapLocalConfig: (c, p) => ({ ...c, ...p }),
+  mapLocalConfig: (c, { href, config }) => ({
+    ...c,
+    ...config,
+    href,
+  }),
   observe: {
     handlers: app.tkHandlers,
     platformMatch: tiktokDomainRegExp,
@@ -62,7 +70,7 @@ const backgroundOpts = {
   getHeadersForDataDonation,
 };
 
-const chrome = getChromeMock({
+const { chrome, clearDB } = getChromeMock({
   getConfig,
   backgroundOpts,
 });
@@ -71,6 +79,7 @@ describe('TK App', () => {
   jest.setTimeout(20 * 1000);
 
   beforeAll(() => {
+    fetchMock.enableMocks();
     load(backgroundOpts);
   });
 
@@ -81,6 +90,11 @@ describe('TK App', () => {
     hubDispatchSpy.mockClear();
     handleVideoSpy.mockClear();
     handleSearchSpy.mockClear();
+    clearDB();
+  });
+
+  afterAll(() => {
+    fetchMock.disableMocks();
   });
 
   describe('"foryou" page scraping', () => {
@@ -91,6 +105,11 @@ describe('TK App', () => {
       axiosMock.request.mockResolvedValueOnce({
         data: handshakeResponse,
       });
+
+      chrome.runtime.getURL.mockReturnValueOnce('file://settings.json');
+      fetchMock.mockResponseOnce(JSON.stringify(getConfig()));
+      chrome.runtime.getURL.mockReturnValueOnce('file://experiment.json');
+      fetchMock.mockResponseOnce(JSON.stringify({}));
 
       const appContext = await boot(bootOptions);
 
@@ -178,6 +197,10 @@ describe('TK App', () => {
       axiosMock.request.mockResolvedValueOnce({
         data: handshakeResponse,
       });
+      chrome.runtime.getURL.mockReturnValueOnce('file://settings.json');
+      fetchMock.mockResponseOnce(JSON.stringify(getConfig()));
+      chrome.runtime.getURL.mockReturnValueOnce('file://experiment.json');
+      fetchMock.mockResponseOnce(JSON.stringify({}));
 
       const appContext = await boot(bootOptions);
 

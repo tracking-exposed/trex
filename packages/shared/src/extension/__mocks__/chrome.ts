@@ -1,13 +1,7 @@
 import { chrome } from 'jest-chrome';
 import { GetLogger } from '../../logger';
-import {
-  handleLocalLookup,
-  handleServerLookup,
-  handleSettingsLookup,
-} from '../chrome/background/account';
+import { MessageHandler } from '../chrome/background';
 import * as sync from '../chrome/background/sync';
-import { handleSyncMessage } from '../chrome/background/sync';
-import UserSettings from '../models/UserSettings';
 
 const logger = GetLogger('chrome-mock');
 
@@ -15,15 +9,14 @@ interface ChromeMock {
   chrome: typeof chrome;
   portMock: chrome.runtime.Port;
   chromeListener: jest.Mock;
+  clearDB: () => void;
 }
 
 interface GetChromeMockOpts {
-  getConfig: () => UserSettings;
   backgroundOpts: sync.LoadOpts;
 }
 
 export const getChromeMock = ({
-  getConfig,
   backgroundOpts,
 }: GetChromeMockOpts): ChromeMock => {
   const chromeListener = jest.fn();
@@ -34,33 +27,11 @@ export const getChromeMock = ({
     return true;
   });
 
-  chrome.runtime.sendMessage
-    // mock first 'chromeConfig' message handler
-    // .mockImplementationOnce((msg, cb: any) => {
-    //   return cb({ ux: true, active: true });
-    // })
-    // mock 'LocalLookup' message handler
-    .mockImplementation((msg: any, cb: any) => {
-      // mock 'SettingsLookup' message handler
-      if (msg.type === 'SettingsLookup') {
-        const settings = getConfig();
-        dbMap.local = settings as any;
-        return handleSettingsLookup({ userId: 'local' }, cb);
-        // mock 'LocalLookup' message handler
-      } else if (msg.type === 'LocalLookup') {
-        return handleLocalLookup({ userId: 'local' }, cb);
-      } else if (msg.type === 'ServerLookup') {
-        return handleServerLookup(backgroundOpts)(msg.payload, cb);
-      } else if (msg.type === 'sync') {
-        return handleSyncMessage(backgroundOpts)(msg, null, cb);
-      }
-
-      // eslint-disable-next-line n/no-callback-literal
-      return cb({
-        type: 'Error',
-        error: new Error(`Message type ${msg.type} not handled`),
-      });
-    });
+  // mock sendMessage with our implementation
+  chrome.runtime.sendMessage.mockImplementation(async (msg: any, cb: any) => {
+    MessageHandler(backgroundOpts, () => {})(msg, {}, cb);
+    return true;
+  });
 
   let dbMap = {
     local: undefined,
@@ -95,5 +66,12 @@ export const getChromeMock = ({
 
   chrome.runtime.connect.mockReturnValue(portMock as any);
 
-  return { chrome, portMock: portMock as any, chromeListener };
+  return {
+    chrome,
+    portMock: portMock as any,
+    chromeListener,
+    clearDB: () => {
+      dbMap = { local: undefined };
+    },
+  };
 };

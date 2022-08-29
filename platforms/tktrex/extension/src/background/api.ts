@@ -10,8 +10,10 @@ import {
 import * as endpoints from '@tktrex/endpoints';
 import nacl from 'tweetnacl';
 import { tkLog } from '../logger';
+import * as t from 'io-ts';
+import { DocumentedEndpoint } from '@shared/endpoints';
 
-export const getHeadersForDataDonation = async(req: SyncReq): Promise<any> => {
+export const getHeadersForDataDonation = async (req: SyncReq): Promise<any> => {
   // ytLog.info('Request %O', req);
 
   const { payload } = req;
@@ -50,8 +52,30 @@ export const getHeadersForDataDonation = async(req: SyncReq): Promise<any> => {
 export default MakeAPIClient(
   {
     baseURL: config.API_ROOT,
-    getAuth: async(req) => req,
-    onUnauthorized: async(res) => res,
+    getAuth: async (req) => req,
+    onUnauthorized: async (res) => res,
   },
-  endpoints,
+  {
+    ...endpoints,
+    v2: {
+      ...endpoints.v2,
+      Public: {
+        ...endpoints.v2.Public,
+        AddAPIEvents: DocumentedEndpoint({
+          title: 'Create API Events endpoint stub',
+          description: '',
+          tags: [],
+          Method: 'POST',
+          getPath: () => '/not-implemented',
+          Input: {
+            Params: undefined,
+            Headers: undefined,
+            Query: undefined,
+            Body: t.any,
+          },
+          Output: t.unknown,
+        }),
+      },
+    },
+  },
 );

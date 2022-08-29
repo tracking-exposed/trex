@@ -52,7 +52,7 @@ const ifValid =
 const sendMessage = (message: Message, cb: (response: unknown) => void): void =>
   bo.runtime.sendMessage(message, cb);
 
-export const settingsLookup = (cb: SendResponse<UserSettings>): void =>
+export const settingsLookup = (cb: SendResponse<Partial<UserSettings>>): void =>
   sendMessage(
     {
       type: 'SettingsLookup',
@@ -60,7 +60,7 @@ export const settingsLookup = (cb: SendResponse<UserSettings>): void =>
         userId: 'local',
       },
     },
-    ifValid(UserSettings)('SettingsLookup', cb)
+    ifValid(t.partial(UserSettings.props))('SettingsLookup', cb)
   );
 
 export const partialLocalLookup = (
@@ -76,7 +76,10 @@ export const partialLocalLookup = (
     ifValid(t.partial(UserSettings.props))('LocalLookup', cb)
   );
 
-export const localLookup = (cb: SendResponse<UserSettings>): void =>
+export const localLookup = (
+  initKeys: boolean,
+  cb: SendResponse<UserSettings>
+): void =>
   sendMessage(
     {
       type: 'LocalLookup',
