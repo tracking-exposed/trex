@@ -17,7 +17,7 @@ const metadataBaseProps = propsOmitType(MetadataBase, ['id', 'savingTime']);
  *
  **/
 
-const searchMetadataProps = propsOmitType(SearchMetadata.types[1], [
+const searchMetadataProps = propsOmitType(SearchMetadata.types[2], [
   'results',
   'thumbnails',
 ]);
@@ -37,7 +37,7 @@ export const SearchMetaDataArb = getArbitrary(
  * ForYouMetadata arbitrary
  *
  **/
-const forYouMetadataProps = propsOmitType(ForYouVideoMetadata.types[1], []);
+const forYouMetadataProps = propsOmitType(ForYouVideoMetadata.types[2], []);
 
 export const ForYouVideoMetaDataArb = getArbitrary(
   t.intersection([t.type(metadataBaseProps), t.type(forYouMetadataProps)]),

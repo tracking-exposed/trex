@@ -4,7 +4,7 @@ import nconf from 'nconf';
 import dbUtils from '../lib/dbutils';
 import security from '../lib/security';
 import { makeApp, appLogger } from './app';
-import mongo3 from '../lib/mongo3';
+import * as mongo3 from '@shared/providers/mongo.provider';
 
 const cfgFile = 'config/settings.json';
 nconf.argv().env().file({ file: cfgFile });
@@ -27,7 +27,7 @@ async function initialSanityChecks(): Promise<void> {
 async function start(): Promise<void> {
   const mongo = await mongo3.clientConnect();
 
-  const app = await makeApp({ config: nconf.get(), mongo });
+  const app = await makeApp({ config: nconf.get(), mongo: mongo as any });
   const server = new Server(app);
   /* everything starts here, welcome */
   server.listen(nconf.get('port'), nconf.get('interface'));

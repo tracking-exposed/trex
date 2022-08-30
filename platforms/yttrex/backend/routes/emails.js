@@ -1,7 +1,7 @@
 const nconf = require('nconf');
 const debug = require('debug')('routes:emails');
 
-const mongo3 = require('../lib/mongo3');
+const mongo3 = require('@shared/providers/mongo.provider');
 
 function validateEmail(email) {
   const re = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
@@ -18,7 +18,7 @@ async function registerEmail(req) {
     return { status: 403 };
   }
 
-  const mongoc = await mongo3.clientConnect({ concurrency: 1 });
+  const mongoc = await mongo3.clientConnect();
   const emailAlreadyExists = await mongo3.count(mongoc, collection, { email });
 
   if (emailAlreadyExists === 1) {

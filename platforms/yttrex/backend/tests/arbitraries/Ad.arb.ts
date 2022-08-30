@@ -1,7 +1,7 @@
 import { fc } from '@shared/test';
 import { propsOmit } from '@shared/utils/arbitrary.utils';
 import { getArbitrary } from 'fast-check-io-ts';
-import { Ad } from '../../models/Ad';
+import { Ad } from '@yttrex/shared/models/Ad';
 import * as t from 'io-ts';
 
 /**

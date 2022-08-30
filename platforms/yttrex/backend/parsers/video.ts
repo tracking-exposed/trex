@@ -10,49 +10,9 @@ import { ParsedInfo, VideoMetadata } from '@yttrex/shared/models/Metadata';
 import * as longlabel from './longlabel';
 import * as shared from './shared';
 import uxlang from './uxlang';
+import { ParserFn } from '@shared/providers/parser.provider';
 
 const videoLog = trexLogger.extend('video');
-
-// export const VideoResult = t.strict(
-//   {
-//     index: t.number,
-//     textTitle: t.string,
-//     error: t.union([t.any, t.undefined]),
-//     verified: t.boolean,
-//     videoId: t.string,
-//     parameter: t.union([t.string, t.null]),
-//     sectionName: t.union([t.string, t.null]),
-//     recommendedSource: t.union([t.string, t.null]),
-//     recommendedHref: t.union([t.string, t.null]),
-//     recommendedTitle: t.union([t.string, t.null]),
-//     recommendedLength: t.number,
-//     recommendedDisplayL: t.union([t.string, t.null]),
-//     recommendedLengthText: t.union([t.string, t.null]),
-//     recommendedPubTime: t.union([date, t.null]),
-//     /* ^^^^  is deleted in makeAbsolutePublicationTime, when clientTime is available,
-//      * this field produces -> recommendedPubtime and ptPrecison */
-//     recommendedRelativeSeconds: t.union([t.number, t.null]),
-//     recommendedViews: t.union([t.number, t.null]),
-//     isLive: t.boolean,
-//     label: t.union([t.string, t.null]),
-//     elems: t.number,
-//     // additional props
-//     href: t.union([t.string, t.undefined]),
-//     source: t.union([t.string, t.undefined]),
-//     authorName: t.union([t.string, t.undefined]),
-//     authorSource: t.union([t.string, t.undefined]),
-//     authorHref: t.union([t.string, t.null]),
-//     thumbnailHref: t.union([t.string, t.null]),
-//     link: t.union([t.string, t.undefined]),
-//     displayTime: t.union([t.string, t.null]),
-//     expandedTime: t.union([t.string, t.null]),
-//     liveBadge: t.union([t.boolean, t.null]),
-//     aria: t.union([t.string, t.null]),
-//   },
-//   'VideoResult'
-// );
-
-// export type VideoResult = t.TypeOf<typeof VideoResult>;
 
 export const VideoProcessResult = t.strict(
   {
@@ -300,8 +260,8 @@ export function makeAbsolutePublicationTime(
   );
 }
 
-export function parseSingleTry(D, memo, spec): any {
-  const elems = D.querySelectorAll(spec.selector);
+export function parseSingleTry(D: Document, memo: any, spec: any): any {
+  const elems = D?.querySelectorAll(spec.selector) ?? [];
 
   if (!_.size(elems)) {
     // debuge("zero element selected: %s fail", spec.name);
@@ -508,6 +468,7 @@ export function processVideo(
   return {
     title,
     type: 'video',
+    nature: { type: 'video' },
     params,
     videoId,
     login,
@@ -519,9 +480,9 @@ export function processVideo(
     viewInfo,
     likeInfo,
   } as any;
-}
+};
 
-export function process(envelop: HTMLSource): VideoMetadata | null {
+const parseVideo: ParserFn<HTMLSource, VideoMetadata> = async (envelop) => {
   let extracted: VideoMetadata;
 
   try {
@@ -557,6 +518,6 @@ export function process(envelop: HTMLSource): VideoMetadata | null {
   if (_.size(le))
     videoLog.debug('likes error %s', JSON.stringify(re, undefined));
   return extracted;
-}
+};
 
-export default process;
+export default parseVideo;

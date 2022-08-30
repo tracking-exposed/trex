@@ -1,20 +1,22 @@
-const debug = require('debug')('parser:shared');
-const debuge = require('debug')('parser:shared:error');
-const URL = require('url');
+import D from 'debug';
+import URL from 'url';
+
+const debug = D('parser:shared');
+const debuge = D('parser:shared:error');
 
 /* shared functions used from video and home */
 
-export function getThumbNailHref(e) {
+export const getThumbNailHref = (e: Element): string | null => {
   // e is an 'element' from .querySelectorAll('ytd-compact-video-renderer')
-  let thumbnailHref = null;
+  let thumbnailHref: string | null = null;
   try {
     const refe = e.querySelector('.ytd-thumbnail-overlay-time-status-renderer');
     if (!refe) return null;
 
     const thumbnailSrc = refe
       .closest('a')
-      .querySelector('img')
-      .getAttribute('src');
+      ?.querySelector('img')
+      ?.getAttribute('src');
     if (!thumbnailSrc) return null;
 
     // eslint-disable-next-line node/no-deprecated-api, n/no-deprecated-api
@@ -24,9 +26,9 @@ export function getThumbNailHref(e) {
     debuge('thumbnail mining error: %s', e.message);
   }
   return thumbnailHref;
-}
+};
 
-export function logged(D) {
+export function logged(D: Document): boolean | null {
   const avatarN = D.querySelectorAll('button#avatar-btn');
   const loginN = D.querySelectorAll(
     '[href^="https://accounts.google.com/ServiceLogin"]'
@@ -42,7 +44,7 @@ export function logged(D) {
   return null;
 }
 
-export function fixHumanizedTime(inputstr) {
+export function fixHumanizedTime(inputstr: string): string {
   // this function fix the time 0:10, 10:10,  in HH:MM:SS
   if (inputstr.length === 4) return '0:0' + inputstr;
   if (inputstr.length === 5) return '0:' + inputstr;

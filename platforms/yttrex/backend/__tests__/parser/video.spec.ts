@@ -58,7 +58,7 @@ describe('Parser: Video', () => {
       expect(
         receivedVideos.map(({ publicationTime, ...r }) => ({
           ...r,
-          publicationTime: publicationTime.toISOString(),
+          publicationTime: publicationTime?.toISOString(),
         }))
       ).toMatchObject(
         videos.map(({ recommendedPubTime, ...v }) => ({

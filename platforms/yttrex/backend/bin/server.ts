@@ -5,7 +5,7 @@ import nconf from 'nconf';
 import dbutils from '../lib/dbutils';
 import security from '../lib/security';
 import { makeApp } from './app';
-import mongo3 from '../lib/mongo3';
+import * as mongo3 from '@shared/providers/mongo.provider';
 
 const d = debug('yttrex');
 

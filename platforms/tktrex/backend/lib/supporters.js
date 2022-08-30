@@ -3,13 +3,13 @@ const _ = require('lodash');
 const nconf = require('nconf');
 const debug = require('debug')('lib:supporters');
 
-const mongo3 = require('./mongo3');
+const mongo3 = require('@shared/providers/mongo.provider');
 const params = require('./params');
 
 async function update(publicKey, updated) {
   // this function is used by routes/tags.js and might be 
   // used every time we should update the supporter profile
-    const mongoc = await mongo3.clientConnect({concurrency: 1});
+    const mongoc = await mongo3.clientConnect();
 
     const exists = await mongo3.readOne(mongoc, nconf.get('schema').supporters, { publicKey });
     if(!exists)
@@ -32,7 +32,7 @@ async function update(publicKey, updated) {
 };
 
 async function get(publicKey) {
-    const mongoc = await mongo3.clientConnect({concurrency: 1});
+    const mongoc = await mongo3.clientConnect();
     let supporter = await mongo3.readOne(mongoc, nconf.get('schema').supporters, { publicKey });
     if(!supporter)
         throw new Error("publicKey do not match any user");
@@ -42,7 +42,7 @@ async function get(publicKey) {
 }
 
 async function remove(publicKey) {
-    const mongoc = await mongo3.clientConnect({concurrency: 1});
+    const mongoc = await mongo3.clientConnect();
     let dunno = await mongo3.deleteMany(mongoc, nconf.get('schema').supporters, { publicKey });
     await mongoc.close();
     return dunno;

@@ -8,13 +8,12 @@ const _ = require('lodash');
 const debug = require('debug')('ytvids-filler');
 const nconf = require('nconf');
 
-const mongo3 = require('../lib/mongo3');
-const moment = require('moment');
+const mongo3 = require('@shared/providers/mongo.provider');
 
 nconf.argv().env().file({ file: 'config/settings.json' });
 
 async function doFiller(creator) {
-    const mongoc = await mongo3.clientConnect({concurrency: 1});
+    const mongoc = await mongo3.clientConnect();
 
     const random = _.random(0, 13000);
     const metad = await mongo3

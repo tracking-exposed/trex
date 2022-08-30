@@ -7,10 +7,10 @@ const debug = require('debug')('lib:experiments');
 // const moment = require('moment');
 
 const utils = require('./utils');
-const mongo3 = require('./mongo3');
+const mongo3 = require('@shared/providers/mongo.provider');
 
 async function pickDirective(experimentId) {
-  const mongoc = await mongo3.clientConnect({ concurrency: 1 });
+  const mongoc = await mongo3.clientConnect({});
   const rb = await mongo3.readOne(mongoc, nconf.get('schema').experiments, {
     experimentId,
   });
@@ -24,7 +24,7 @@ async function registerSteps(steps) {
     steps,
   });
 
-  const mongoc = await mongo3.clientConnect({ concurrency: 1 });
+  const mongoc = await mongo3.clientConnect();
   const exist = await mongo3.readOne(mongoc, nconf.get('schema').experiments, {
     experimentId,
   });
@@ -77,7 +77,7 @@ async function markExperCompleted(mongoc, filter) {
 async function concludeExperiment(testTime) {
   /* this function is called by guardoni v.1.8 when the
    * access on a directive URL have been completed */
-  const mongoc = await mongo3.clientConnect({ concurrency: 1 });
+  const mongoc = await mongo3.clientConnect();
   const r = await markExperCompleted(mongoc, { testTime });
   await mongoc.close();
   return r;
@@ -89,7 +89,7 @@ async function saveExperiment(expobj) {
        routes/experiment.js function channel3 */
   if (expobj.experimentId === 'DEFAULT_UNSET') return null;
 
-  const mongoc = await mongo3.clientConnect({ concurrency: 1 });
+  const mongoc = await mongo3.clientConnect();
   /* a given public Key can have only one experiment per time */
   const filter = {
     publicKey: expobj.publicKey,

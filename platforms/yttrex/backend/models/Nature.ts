@@ -31,4 +31,5 @@ export const ChannelN = t.strict(
   'ChannelN'
 );
 
-export const Nature = t.union([SearchN, VideoN, ChannelN], 'Nature');
+export const Nature = t.union([SearchN, VideoN, ChannelN, HomeN], 'Nature');
+export type Nature = t.TypeOf<typeof Nature>;

@@ -6,7 +6,7 @@ const nconf = require('nconf');
 const automo = require('../lib/automo');
 const params = require('../lib/params');
 const CSV = require('../lib/CSV');
-const mongo3 = require('../lib/mongo3');
+const mongo3 = require('@shared/providers/mongo.provider');
 
 async function sharedDataPull(filter) {
   // this function is invoked by the various API below,
@@ -232,7 +232,7 @@ async function list(req) {
   const options = { amount, skip };
 
   const filter = {};
-  const mongoc = await mongo3.clientConnect({ concurrency: 1 });
+  const mongoc = await mongo3.clientConnect();
 
   const configured = await mongo3.readLimit(
     mongoc,

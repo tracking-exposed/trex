@@ -2,7 +2,7 @@ const _ = require('lodash');
 const debug = require('debug')('routes:directives');
 
 const automo = require('../lib/automo');
-const mongo3 = require('../lib/mongo3');
+const mongo3 = require('@shared/providers/mongo.provider');
 const nconf = require('nconf');
 
 function timeconv(maybestr, defaultMs) {
@@ -68,7 +68,7 @@ async function get(req) {
 }
 
 async function getPublic(req) {
-  const mongoc = await mongo3.clientConnect({ concurrency: 1 });
+  const mongoc = await mongo3.clientConnect();
 
   const publicDirectives = await mongo3.readLimit(
     mongoc,

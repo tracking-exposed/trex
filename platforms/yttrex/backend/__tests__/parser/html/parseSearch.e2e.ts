@@ -4,13 +4,19 @@ import { JSDOM } from 'jsdom';
 import nacl from 'tweetnacl';
 import {
   getLastHTMLs,
+  HTMLSource,
+  toMetadata,
   updateMetadataAndMarkHTML,
 } from '../../../lib/parser/html';
 import { SearchMetadata } from '@yttrex/shared/models/Metadata';
 import { sanitizeHTML } from '@shared/utils/html.utils';
-import process from '../../../parsers/searches';
+import { processSearch } from '../../../parsers/searches';
 import { GetTest, Test } from '../../../tests/Test';
-import { readHistoryResults, runParserTest } from './utils';
+import {
+  readHistoryResults,
+  runParserTest,
+} from '@shared/test/utils/parser.utils';
+import path from 'path';
 
 describe('Parser: Search', () => {
   let appTest: Test;
@@ -52,7 +58,10 @@ describe('Parser: Search', () => {
 
   jest.setTimeout(20 * 1000);
 
-  const historyData = readHistoryResults('search', publicKey);
+  const historyData = readHistoryResults(
+    path.resolve(__dirname, '../../fixtures/search'),
+    publicKey
+  );
 
   /**
    * TODO:
@@ -76,29 +85,29 @@ describe('Parser: Search', () => {
     'Should correctly parse video contributions',
     async ({ sources: _sources, metadata }) => {
       const sources = _sources.map((h: any) => ({
-        ...h,
-        clientTime: parseISO(h.clientTime ?? new Date()),
-        savingTime: subMinutes(new Date(), 1),
-        processed: null,
+        html: {
+          ...h,
+          clientTime: parseISO(h.clientTime ?? new Date()),
+          savingTime: subMinutes(new Date(), 1),
+          processed: null,
+        },
+        jsdom: new JSDOM(sanitizeHTML(h.html)).window.document,
+        supporter: undefined,
       }));
 
       await runParserTest({
         log: appTest.logger,
-        parsers: { search: process },
-        codec: SearchMetadata,
-        mapSource: (h: any) => ({
-          html: h,
-          jsdom: new JSDOM(sanitizeHTML(h.html)).window.document,
-          supporter: undefined,
-          findings: {},
-        }),
+        parsers: { nature: processSearch },
+        codecs: { contribution: HTMLSource, metadata: SearchMetadata },
         sourceSchema: appTest.config.get('schema').htmls,
         metadataSchema: appTest.config.get('schema').metadata,
         db,
+        getEntryId: (e) => e.html.id,
         getEntryDate: (e) => e.html.savingTime,
         getEntryNatureType: (e) => e.html.nature.type,
-        getContributions: getLastHTMLs({ db }),
-        saveResults: updateMetadataAndMarkHTML({ db }),
+        getContributions: getLastHTMLs(db),
+        buildMetadata: toMetadata as any,
+        saveResults: updateMetadataAndMarkHTML(db) as any,
         expectSources: (sources) => {
           sources.forEach((r: any) => {
             expect(r.processed).toBe(true);

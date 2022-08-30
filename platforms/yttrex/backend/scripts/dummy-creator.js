@@ -4,7 +4,7 @@ const debug = require('debug')('dummy-creator');
 const moment = require('moment');
 const nconf = require('nconf');
 
-const mongo3 = require('../lib/mongo3');
+const mongo3 = require('@shared/providers/mongo.provider');
 const utils = require('../lib/utils');
 
 var cfgFile = "config/settings.json";
@@ -23,7 +23,7 @@ async function updatePublicProfile() {
 
     const randomSkip = 0 // _.random(0, 20);
     const picks = _.random(1, 10) + 20;
-    const mongoc = await mongo3.clientConnect({concurrency: 1});
+    const mongoc = await mongo3.clientConnect();
     const exists = await mongo3.readOne(mongoc,
         nconf.get('schema').supporters, { publicKey: dummyPublicKey });
 

@@ -4,7 +4,7 @@ import nconf from 'nconf';
 import debug from 'debug';
 import * as path from 'path';
 import { MongoClient } from 'mongodb';
-import mongo3 from '../lib/mongo3';
+import * as mongo3 from '@shared/providers/mongo.provider';
 import { GetLogger, Logger } from '@shared/logger';
 
 debug.enable(process.env.DEBUG ?? '');
@@ -29,7 +29,7 @@ export const GetTest = async (): Promise<Test> => {
   config.set('key', 'test-key');
   config.set('storage', '_test_htmls');
 
-  const mongo = await mongo3.clientConnect({ concurrency: 1 });
+  const mongo = await mongo3.clientConnect({});
 
   if (!mongo) {
     throw new Error('mongo3.clientConnect failed');
