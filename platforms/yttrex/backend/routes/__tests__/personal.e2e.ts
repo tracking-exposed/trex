@@ -1,23 +1,27 @@
 import { GuardoniExperimentArb } from '@shared/arbitraries/Experiment.arb';
 import bs58 from '@shared/providers/bs58.provider';
+import { GetParserProvider } from '@shared/providers/parser.provider';
 import { fc } from '@shared/test';
 import { foldTEOrThrow } from '@shared/utils/fp.utils';
 import { sleep } from '@shared/utils/promise.utils';
 import { ContributionEventArb } from '@yttrex/shared/arbitraries/ContributionEvent.arb';
+import { Ad } from '@yttrex/shared/models/Ad';
+import { Metadata } from '@yttrex/shared/models/Metadata';
 import { pipe } from 'fp-ts/lib/function';
 import * as fs from 'fs';
 import * as path from 'path';
 import {
   getLastHTMLs,
   HTMLSource,
+  toMetadata as toHTMLMetadata,
   updateMetadataAndMarkHTML,
 } from '../../lib/parser/html';
 import {
   getLastLeaves,
+  LeafSource,
+  toMetadata as toAdMetadata,
   updateAdvertisingAndMetadata,
 } from '../../lib/parser/leaf';
-import { GetParserProvider } from '../../lib/parser/parser';
-import { Leaf } from '../../models/Leaf';
 import { leafParsers, parsers } from '../../parsers';
 import { GetTest, Test } from '../../tests/Test';
 
@@ -36,6 +40,11 @@ describe('Events', () => {
   });
 
   afterAll(async () => {
+    await appTest.mongo3.deleteMany(
+      appTest.mongo,
+      appTest.config.get('schema').experiments,
+      { experimentId: experiment.experimentId }
+    );
     await appTest.mongo.close();
   });
 
@@ -88,18 +97,19 @@ describe('Events', () => {
         write: appTest.mongo,
       };
 
-      await GetParserProvider<Leaf>('leaves', {
+      await GetParserProvider('leaves', {
         db,
         parsers: leafParsers,
-        getContributions: getLastLeaves({ db }),
-        getEntryDate: (e) => e.savingTime,
-        getEntryNatureType: (e) => e.nature.type,
-        saveResults: async (r) => {
-          if (r) {
-            await updateAdvertisingAndMetadata({ db })(r as any);
-          }
-          return null;
+        codecs: {
+          contribution: LeafSource,
+          metadata: Ad,
         },
+        getEntryId: (e) => e.html.id,
+        getContributions: getLastLeaves(db),
+        getEntryDate: (e) => e.html.savingTime,
+        buildMetadata: toAdMetadata,
+        getEntryNatureType: (e) => e.html.nature.type,
+        saveResults: updateAdvertisingAndMetadata(db),
       }).run({
         singleUse: true,
         stop: 1,
@@ -109,21 +119,25 @@ describe('Events', () => {
       });
 
       // run parser
-      await GetParserProvider<HTMLSource>('htmls', {
+      await GetParserProvider('htmls', {
         db,
         parsers: parsers,
-        getContributions: getLastHTMLs({ db }),
-        saveResults: updateMetadataAndMarkHTML({ db }),
+        codecs: {
+          contribution: HTMLSource,
+          metadata: Metadata,
+        },
+        getEntryId: (e) => e.html.id,
+        buildMetadata: toHTMLMetadata,
+        getContributions: getLastHTMLs(db),
+        saveResults: updateMetadataAndMarkHTML(db),
         getEntryDate: (e) => e.html.savingTime,
         getEntryNatureType: (e) => e.html.nature.type,
-      })
-        .run({
-          singleUse: true,
-          stop: 1,
-          htmlAmount: 100,
-          backInTime: 10,
-        })
-        .then((r) => r.payload.metadata);
+      }).run({
+        singleUse: true,
+        stop: 1,
+        htmlAmount: 100,
+        backInTime: 10,
+      });
 
       // wait for the parser to process the html
       await sleep(5 * 1000);
@@ -144,6 +158,7 @@ describe('Events', () => {
             publicKey: keys.publicKey,
             clientTime: fixture.sources[0].clientTime,
             experimentId: experiment.experimentId,
+            type: 'home',
           },
         ],
       });

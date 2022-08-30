@@ -5,7 +5,7 @@ const debug = require('debug')('routes:answers');
 
 const csv = require('../lib/CSV');
 const utils = require('../lib/utils');
-const mongo3 = require('../lib/mongo3');
+const mongo3 = require('@shared/providers/mongo.provider');
 const security = require('../lib/security');
 
 const allowqnames = ['watchers', 'youtubers'];
@@ -24,7 +24,7 @@ async function recordAnswers(req) {
     if(allowqnames.indexOf(qName) === -1)
         throw new Error("Invalid Questionnaire requested")
 
-    const mongoc = await mongo3.clientConnect({concurrency: 1});
+    const mongoc = await mongo3.clientConnect();
     const answer = await mongo3.readOne(mongoc, nconf.get('schema').answers, {
         sessionId,
         qName,
@@ -77,7 +77,7 @@ async function retrieveAnswers(req) {
     if(!security.checkPassword(req))
         return {json: { error: true, message: "Invalid key" }};
 
-    const mongoc = await mongo3.clientConnect({concurrency: 1});
+    const mongoc = await mongo3.clientConnect();
     const answers = await mongo3.read(mongoc, nconf.get('schema').answers, {}, { lastUpdate: 1});
     await mongoc.close();
 
@@ -91,7 +91,7 @@ async function retrieveMails(req) {
     if(!security.checkPassword(req))
         return {json: { error: true, message: "Invalid key" }};
 
-    const mongoc = await mongo3.clientConnect({concurrency: 1});
+    const mongoc = await mongo3.clientConnect();
     const emails = await mongo3.read(mongoc, nconf.get('schema').emails, {}, { registeredAt: 1 });
     await mongoc.close();
 
@@ -129,7 +129,7 @@ async function retrieveAnswersCSV(req) {
     if(allowqnames.indexOf(qName) === -1)
         throw new Error("Invalid Questionnaire requested")
     
-    const mongoc = await mongo3.clientConnect({concurrency: 1});
+    const mongoc = await mongo3.clientConnect();
     const answers = await mongo3.read(mongoc, nconf.get('schema').answers, { qName }, { lastUpdate: 1});
     await mongoc.close();
 

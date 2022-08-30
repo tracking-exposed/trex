@@ -2,7 +2,7 @@
 const debug = require('debug')('emergency-script:1:registerChannel');
 const nconf = require('nconf');
 
-const mongo3 = require("../lib/mongo3");
+const mongo3 = require('@shared/providers/mongo.provider');
 const ycai = require("../lib/ycai");
 
 nconf.argv().env().file('config/settings.json');
@@ -14,7 +14,7 @@ const force = !!nconf.get('force');
 
 // https://github.com/tracking-exposed/YCAI/issues/64
 async function registerChannel(channelId, avatar, username, force) {
-    const mongoc = await mongo3.clientConnect({ concurrency: 1 });
+    const mongoc = await mongo3.clientConnect();
     const creator = await mongo3
         .readOne(mongoc, nconf.get("schema").creators, { channelId });
     await mongoc.close();

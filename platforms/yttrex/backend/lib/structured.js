@@ -8,7 +8,7 @@
 const _ = require('lodash');
 const nconf = require('nconf');
 
-const mongo3 = require('./mongo3');
+const mongo3 = require('@shared/providers/mongo.provider');
 
 let mongoc = null;
 async function getMongoc() {

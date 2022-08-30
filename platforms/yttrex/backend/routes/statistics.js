@@ -3,7 +3,7 @@ const moment = require('moment');
 const debug = require('debug')('routes:statistics');
 const nconf = require('nconf');
 
-const mongo3 = require('../lib/mongo3');
+const mongo3 = require('@shared/providers/mongo.provider');
 const cache = require('../lib/cache');
 
 async function statistics(req) {
@@ -69,7 +69,7 @@ async function statistics(req) {
   if (_.startsWith(unit, 'day')) _.set(filter, 'day', { $gt: refDate });
   else _.set(filter, 'hour', { $gt: refDate });
 
-  const mongoc = await mongo3.clientConnect({ concurrency: 1 });
+  const mongoc = await mongo3.clientConnect();
   const fullc = await mongo3.read(mongoc, nconf.get('schema').stats, filter);
   const content = _.map(fullc, function (e) {
     /* this is helpful to avoid lines to the bottom, and just

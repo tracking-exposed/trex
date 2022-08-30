@@ -6,11 +6,17 @@ import { JSDOM } from 'jsdom';
 import nacl from 'tweetnacl';
 import {
   getLastHTMLs,
+  HTMLSource,
+  toMetadata,
   updateMetadataAndMarkHTML,
 } from '../../../lib/parser/html';
-import process from '../../../parsers/video';
+import { processVideo } from '../../../parsers/video';
 import { GetTest, Test } from '../../../tests/Test';
-import { readHistoryResults, runParserTest } from './utils';
+import {
+  readHistoryResults,
+  runParserTest,
+} from '@shared/test/utils/parser.utils';
+import path from 'path';
 
 describe('Parser: Video', () => {
   let appTest: Test;
@@ -51,7 +57,10 @@ describe('Parser: Video', () => {
   jest.useRealTimers();
   jest.setTimeout(20 * 1000);
 
-  const historyData = readHistoryResults('video', publicKey);
+  const historyData = readHistoryResults(
+    path.resolve(__dirname, '../../fixtures/home'),
+    publicKey
+  );
 
   /**
    * TODO:
@@ -76,10 +85,14 @@ describe('Parser: Video', () => {
     'Should correctly parse video contributions',
     async ({ sources: _sources, metadata }) => {
       const sources = _sources.map((h: any) => ({
-        ...h,
-        clientTime: parseISO(h.clientTime ?? new Date().toISOString()),
-        savingTime: addMinutes(new Date(), 1),
-        processed: null,
+        html: {
+          ...h,
+          clientTime: parseISO(h.clientTime ?? new Date().toISOString()),
+          savingTime: addMinutes(new Date(), 1),
+          processed: null,
+        },
+        jsdom: new JSDOM(sanitizeHTML(h.html)).window.document,
+        supporter: undefined,
       }));
 
       await runParserTest({
@@ -87,25 +100,14 @@ describe('Parser: Video', () => {
         db,
         sourceSchema: appTest.config.get('schema').htmls,
         metadataSchema: appTest.config.get('schema').metadata,
-        mapSource: (h: any) => {
-          // console.log('sanitized html', sanitizedHTML);
-          const sourceDOM = new JSDOM(sanitizeHTML(h.html));
-
-          // console.log('source dom text content', sourceDOM.window.document);
-
-          return {
-            html: h,
-            jsdom: sourceDOM.window.document,
-            supporter: undefined,
-            findings: {},
-          };
-        },
-        parsers: { video: process },
-        codec: VideoMetadata,
+        parsers: { nature: processVideo },
+        codecs: { contribution: HTMLSource, metadata: VideoMetadata },
+        getEntryId: (e) => e.html.id,
         getEntryDate: (e) => e.html.savingTime,
         getEntryNatureType: (e) => e.html.nature.type,
-        getContributions: getLastHTMLs({ db }),
-        saveResults: updateMetadataAndMarkHTML({ db }),
+        getContributions: getLastHTMLs(db),
+        buildMetadata: toMetadata as any,
+        saveResults: updateMetadataAndMarkHTML(db) as any,
         expectSources: (s) => {
           s.forEach((r: any) => {
             expect(r.processed).toBe(true);
@@ -132,7 +134,7 @@ describe('Parser: Video', () => {
 
           expect({
             ...receivedMetadata,
-            publicationTime: receivedMetadata.publicationTime.toISOString(),
+            publicationTime: receivedMetadata?.publicationTime?.toISOString(),
           }).toMatchObject({
             ...expectedMetadata,
           });

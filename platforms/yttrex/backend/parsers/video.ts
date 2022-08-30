@@ -508,6 +508,7 @@ export function processVideo(
   return {
     title,
     type: 'video',
+    nature: { type: 'video' },
     params,
     videoId,
     login,

@@ -8,8 +8,7 @@ const path = require('path');
 const csv = require('../lib/CSV');
 const utils = require('../lib/utils');
 const wetest = require('../lib/wetest');
-const mongo3 = require('../lib/mongo3');
-const moment = require('moment');
+const mongo3 = require('@shared/providers/mongo.provider');
 
 const VERSION = 8; // every time a bug is fixed or a new feature get add, this increment for internal tracking 
 
@@ -289,7 +288,7 @@ async function produceInternalCheckup(tf) {
      * 100% means when every matching HTML has an existing metadata corrisponding in the metadata collection */
     const filter = _.extend(tf, { href: { "$in": _.map(testVideos, 'href')} });
     try {
-        const mongoc = await mongo3.clientConnect({concurrency: 1});
+        const mongoc = await mongo3.clientConnect();
         const l = await mongo3.aggregate(mongoc, nconf.get('schema').htmls, [{
              "$match": filter
         }, { "$project":

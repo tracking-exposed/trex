@@ -4,7 +4,7 @@ const debug = require('debug')('bin:picker');
 const fetch = require('node-fetch');
 const nconf = require('nconf');
 
-const mongo3 = require('../lib/mongo3');
+const mongo3 = require('@shared/providers/mongo.provider');
 
 nconf.argv().env().file({ file: 'config/settings.json' });
 
@@ -28,7 +28,7 @@ async function main(metadataId) {
     }
     debug("%d htmls object match the metadataId", _.size(htmls));
 
-    const mongoc = await mongo3.clientConnect({concurrency: 1});
+    const mongoc = await mongo3.clientConnect();
     for (const html of htmls) {
         _.unset(html, 'processed');
         _.unset(html, '_id');

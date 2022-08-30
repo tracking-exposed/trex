@@ -2,7 +2,7 @@ const _ = require('lodash');
 const debug = require('debug')('routes:profile');
 const nconf = require('nconf');
 
-const mongo3 = require('../lib/mongo3');
+const mongo3 = require('@shared/providers/mongo.provider');
 const utils = require('../lib/utils');
 const supporters = require('../lib/supporters');
 
@@ -38,7 +38,7 @@ async function updateProfile(req) {
         password
     });
 
-    const mongoc = await mongo3.clientConnect({concurrency: 1});
+    const mongoc = await mongo3.clientConnect();
     const exists = await mongo3.readOne(mongoc, nconf.get('schema').groups, { id });
 
     debug("updateProfile (tag): %j new %s", exists, tag)
@@ -63,7 +63,7 @@ async function createAndOrJoinTag(req) {
     if(_.size(tag) < 1)
         return { json: { error: true, message: `Group name (tag parameter) shoulbe be a string with more than 1 char` }};
 
-    const mongoc = await mongo3.clientConnect({concurrency: 1});
+    const mongoc = await mongo3.clientConnect();
 
     /* creation of the group. the ID can't be addressed directly, the API must receive groupName+password to find it */
     const id = utils.hash({
@@ -117,7 +117,7 @@ async function createTag(req) {
     if(_.size(password) < PASSWORD_MIN && accessibility === 'private')
         return { json: { error: true, message: `Password should be more than ${PASSWORD_MIN} bytes` }};
 
-    const mongoc = await mongo3.clientConnect({concurrency: 1});
+    const mongoc = await mongo3.clientConnect();
     const exists = await mongo3.readOne(mongoc, nconf.get('schema').groups, { name: tag });
 
     if(_.get(exists, 'id'))

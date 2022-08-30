@@ -11,7 +11,7 @@ export const MakeHealthRoute: Route = (r, { db, logger }) => {
 
     return pipe(
       // connect to db
-      TE.tryCatch(() => db.clientConnect({ concurrency: 1 }), toBackendError),
+      TE.tryCatch(() => db.clientConnect(), toBackendError),
       // count docs in a collection
       TE.chain((c) =>
         TE.tryCatch(() => db.count(c, 'ytvids', {}), toBackendError)

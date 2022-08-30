@@ -7,7 +7,7 @@ const fs = require('fs');
 
 const csv = require('../lib/CSV');
 const utils = require('../lib/utils');
-const mongo3 = require('../lib/mongo3');
+const mongo3 = require('@shared/providers/mongo.provider');
 
 nconf.argv().env().file({ file: 'config/settings.json' });
 
@@ -42,7 +42,7 @@ const timefilter = {
 };
 
 async function pickFromDB(filter, sorting) {
-    const mongoc = await mongo3.clientConnect({concurrency: 1});
+    const mongoc = await mongo3.clientConnect();
     const rv = await mongo3.read(mongoc, nconf.get('schema').metadata, filter, sorting);
     await mongoc.close();
     debug("Completed DB access to fetch: %j: %d objects retrived", filter, _.size(rv));

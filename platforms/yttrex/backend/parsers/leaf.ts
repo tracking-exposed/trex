@@ -1,10 +1,11 @@
+import { ParserFn } from '@shared/providers/parser.provider';
+import { Ad } from '@yttrex/shared/models/Ad';
+import { Leaf } from '@yttrex/shared/models/Leaf';
 import { leafSelectors } from '@yttrex/shared/parsers/index';
 import D from 'debug';
-import { JSDOM } from 'jsdom';
+import { LeafSource } from 'lib/parser/leaf';
 import _ from 'lodash';
 import moment from 'moment';
-import { Ad } from '../models/Ad';
-import { Leaf } from '../models/Leaf';
 
 const leafLogger = D('leaf');
 const leafLogD = leafLogger.extend('debug');
@@ -16,7 +17,7 @@ interface BaseAd {
   adseconds: number;
 }
 
-function mineAd(D: Document, e): BaseAd {
+function mineAd(D: Document, e: Leaf): BaseAd {
   const sponsoredSite = D.querySelector('.ytp-ad-button-text')
     ?.textContent as any;
   const remaining = D.querySelector('.ytp-ad-duration-remaining')
@@ -30,7 +31,7 @@ function mineAd(D: Document, e): BaseAd {
   };
 }
 
-function mineOverlay(D: Document, e): Pick<BaseAd, 'sponsoredSite'> {
+function mineOverlay(D: Document, e: Leaf): Pick<BaseAd, 'sponsoredSite'> {
   const buttons = D.querySelectorAll('.ytp-ad-button-link');
   const sponsoredSite = _.reduce(
     buttons,
@@ -43,7 +44,7 @@ function mineOverlay(D: Document, e): Pick<BaseAd, 'sponsoredSite'> {
   return { sponsoredSite };
 }
 
-function mineTRP(D: Document, e: any): Partial<BaseAd> | null {
+function mineTRP(D: Document, e: Leaf): Partial<BaseAd> | null {
   const header = D.querySelector('#header');
   const domain = D.querySelector('#domain');
   if (!header && !domain) return null;
@@ -56,7 +57,7 @@ function mineTRP(D: Document, e: any): Partial<BaseAd> | null {
   return retval;
 }
 
-function mineAdBadge(D: Document, e): Partial<BaseAd> | null {
+function mineAdBadge(D: Document, e: Leaf): Partial<BaseAd> | null {
   const h3 = D.querySelector('h3');
   const wt = D.querySelector('#website-text');
   // one of the two conditions
@@ -76,7 +77,7 @@ function mineAdBadge(D: Document, e): Partial<BaseAd> | null {
   else return null;
 }
 
-function mineChannel(D: Document, e: any): any {
+function mineChannel(D: Document, e: LeafSource): any {
   const a = D.querySelector('a');
   const channelLink = a?.getAttribute('href');
   const ct = D.querySelector('#text');
@@ -99,9 +100,9 @@ function mineChannel(D: Document, e: any): any {
   }
 }
 
-function mineBanner(D: Document, e: any): any {
+function mineBanner(D: Document, e: Leaf): any {
   /* exclude the 'Ads in 2' label, among others */
-  if (e.acquired[0].html.length < 350) return null;
+  if (e.html.length < 350) return null;
 
   const imgs = D.querySelectorAll('img');
   if (imgs.length === 0) {
@@ -109,12 +110,12 @@ function mineBanner(D: Document, e: any): any {
       error: true,
       reason: 1,
       images: imgs.length,
-      wouldebug: e.acquired[0].html.length > 6000,
-      htmlsize: e.acquired[0].html.length,
+      wouldebug: e.html.length > 6000,
+      htmlsize: e.html.length,
       texts: D.querySelector('div')?.textContent,
     };
     leafLogE('mineBanner error: %O', errorretval);
-    if (e.acquired[0].html.length > 6000) {
+    if (e.html.length > 6000) {
       leafLogD('DEBUG HERE!');
     }
     return errorretval;
@@ -125,12 +126,12 @@ function mineBanner(D: Document, e: any): any {
     const errorretval = {
       error: true,
       reason: 2,
-      wouldebug: e.acquired[0].html.length > 2000,
-      htmlsize: e.acquired[0].html.length,
+      wouldebug: e.html.length > 2000,
+      htmlsize: e.html.length,
       texts: D.querySelector('div')?.textContent,
     };
     leafLogE('mineBanner error: %O', errorretval);
-    if (e.acquired[0].html.length > 2000) {
+    if (e.html.length > 2000) {
       leafLogD('DEBUG HERE!');
     }
     return errorretval;
@@ -184,50 +185,50 @@ export const allowedSelectors = Object.keys(leafSelectors).filter(
 //   'searchAds',
 // ];
 
-export function processLeaf(e: Leaf): Ad | null {
-  leafLogD('Process leaf %O', e);
-
+export const processLeaf: ParserFn<LeafSource, Ad> = async (e) => {
   // e is the 'element', it comes from the DB, and we'll look the
   // e.html mostly. different e.selecotrName causes different sub-functions
-  if (!allowedSelectors.includes(e.selectorName)) {
+  if (!allowedSelectors.includes(e.html.selectorName)) {
     leafLogD(
       'Invalid/Unexpected selector %s received: %s, (keys \n %O)',
-      e.selectorName,
-      e.metadataId,
+      e.html.selectorName,
+      e.html.metadataId,
       allowedSelectors
     );
     return null;
   }
 
+  // leafLogD('Process leaf %O', e);
+
   let mined: any = null;
   try {
-    const D = new JSDOM(e.html).window.document;
+    const D = e.jsdom;
     // eslint-disable-next-line no-console
     // console.log(e.nature, e.selectorName);
 
-    leafLogD('selector %s', e.selectorName);
+    leafLogD('selector %s', e.html.selectorName);
 
-    if (e.selectorName === 'ad') mined = mineAd(D, e);
-    else if (e.selectorName === 'banner') mined = mineBanner(D, e);
-    else if (e.selectorName === 'overlay') mined = mineOverlay(D, e);
-    else if (e.selectorName === 'toprightpict') mined = mineTRP(D, e);
+    if (e.html.selectorName === 'ad') mined = mineAd(D, e.html);
+    else if (e.html.selectorName === 'banner') mined = mineBanner(D, e.html);
+    else if (e.html.selectorName === 'overlay') mined = mineOverlay(D, e.html);
+    else if (e.html.selectorName === 'toprightpict') mined = mineTRP(D, e.html);
     /* channel is temporarly disabled */ else if (
-      e.selectorName === 'channel' ||
-      e.selectorName === 'channel1' ||
-      e.selectorName === 'channel2' ||
-      e.selectorName === 'channel3'
+      e.html.selectorName === 'channel' ||
+      e.html.selectorName === 'channel1' ||
+      e.html.selectorName === 'channel2' ||
+      e.html.selectorName === 'channel3'
     )
       mined = mineChannel(D, e);
-    else if (e.selectorName === 'adbadge') mined = mineAdBadge(D, e);
-    else leafLogger('Selector not handled %s', e.selectorName);
+    else if (e.html.selectorName === 'adbadge') mined = mineAdBadge(D, e.html);
+    else leafLogger('Selector not handled %s', e.html.selectorName);
 
     // eslint-disable-next-line no-console
     leafLogD('Mined %O', mined);
   } catch (error) {
     leafLogger(
       'Error in content mining (%s %s): %s',
-      e.selectorName,
-      e.metadataId,
+      e.html.selectorName,
+      e.html.metadataId,
       error.message
     );
     return null;
@@ -235,7 +236,7 @@ export function processLeaf(e: Leaf): Ad | null {
 
   if (_.isNull(mined)) return null;
 
-  const { nature, ...retval } = _.pick(e, [
+  const { nature, ...retval } = _.pick(e.html, [
     'nature',
     'selectorName',
     'channelName',
@@ -255,13 +256,13 @@ export function processLeaf(e: Leaf): Ad | null {
       -- experiment support, if there is an object with that 
       name saved from the input (routes/events) make a copy.
       Remind: the experiments are ephemerals (18 hours TTL)      */
-  if (e.experiment) (retval as any).experiment = e.experiment;
+  if (e.html.experiment) (retval as any).experiment = e.html.experiment;
 
   const result = {
     ...nature,
     ...retval,
     ...mined,
   };
-  leafLogD('leaf result %O', result);
+  // leafLogD('leaf result %O', result);
   return result;
-}
+};

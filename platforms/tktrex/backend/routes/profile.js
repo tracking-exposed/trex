@@ -1,9 +1,8 @@
 const _ = require('lodash');
-const moment = require('moment');
 const debug = require('debug')('routes:profile');
 const nconf = require('nconf');
 
-const mongo3 = require('../lib/mongo3');
+const mongo3 = require('@shared/providers/mongo.provider');
 const utils = require('../lib/utils');
 const supporters = require('../lib/supporters');
 
@@ -39,7 +38,7 @@ async function updateProfile(req) {
         password
     });
 
-    const mongoc = await mongo3.clientConnect({concurrency: 1});
+    const mongoc = await mongo3.clientConnect();
     const exists = await mongo3.readOne(mongoc, nconf.get('schema').groups, { id });
 
     debug("updateProfile (tag): %j new %s", exists, tag)
@@ -73,7 +72,7 @@ async function createTag(req) {
     if(_.size(password) < PASSWORD_MIN && accessibility == 'private')
         return { json: { error: true, message: `Password should be more than ${PASSWORD_MIN} bytes` }};
 
-    const mongoc = await mongo3.clientConnect({concurrency: 1});
+    const mongoc = await mongo3.clientConnect();
     const exists = await mongo3.readOne(mongoc, nconf.get('schema').groups, { name: tag });
 
     if(_.get(exists, 'id'))
