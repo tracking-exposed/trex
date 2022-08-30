@@ -2,8 +2,8 @@
   "extends": "../../../tsconfig.json",
   "compilerOptions": {
     "allowJs": true,
-    "baseUrl": ".",
-    "composite": true,
+    "rootDir": "./",
+    "baseUrl": "./",
     "esModuleInterop": true,
     "jsx": "react",
     "module": "esnext",
@@ -14,7 +14,6 @@
     "strict": true,
     "skipLibCheck": true,
     "target": "es2015",
-    "tsBuildInfoFile": "build/tsconfig.tsbuildinfo",
     "paths": {
       "@shared/*": ["../../../packages/shared/src/*"],
       "@tktrex/shared/*": ["../shared/src/*"]

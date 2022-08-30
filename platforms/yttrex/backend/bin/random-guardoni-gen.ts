@@ -5,7 +5,7 @@
 import * as _ from 'lodash';
 import D from 'debug';
 import nconf from 'nconf';
-import mongo3 from '../lib/mongo3';
+import * as mongo3 from '@shared/providers/mongo.provider';
 import { produceCSVv1 } from 'lib/CSV';
 import { writeFileSync } from 'fs';
 

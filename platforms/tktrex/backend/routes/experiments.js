@@ -6,12 +6,12 @@ const nconf = require('nconf');
 const experlib = require('../lib/experiments');
 const CSV = require('../lib/CSV');
 const params = require('../lib/params');
-const mongo3 = require('../lib/mongo3');
+const mongo3 = require('@shared/providers/mongo.provider');
 
 async function sharedDataPull(filter) {
   /* this function is invoked by the various API below */
   const MAX = 3000;
-  const mongoc = await mongo3.clientConnect({ concurrency: 1 });
+  const mongoc = await mongo3.clientConnect();
   const metadata = await mongo3.readLimit(
     mongoc,
     nconf.get('schema').metadata,
@@ -127,7 +127,7 @@ async function list(req) {
   const MAX = 400;
 
   const filter = {};
-  const mongoc = await mongo3.clientConnect({ concurrency: 1 });
+  const mongoc = await mongo3.clientConnect();
 
   const configured = await mongo3.readLimit(
     mongoc,

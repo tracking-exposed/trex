@@ -3,7 +3,7 @@ const debug = require('debug')('lib:parserchain');
 const nconf = require('nconf');
 const JSDOM = require('jsdom').JSDOM;
 
-const mongo3 = require('./mongo3');
+const mongo3 = require('@shared/providers/mongo.provider');
 
 const parserList = {
   nature: require('../parsers/nature'),

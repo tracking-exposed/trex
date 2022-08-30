@@ -4,7 +4,7 @@ const nconf = require('nconf');
 const debug = require('debug')('lib:ycai');
 
 const utils = require('../lib/utils');
-const mongo3 = require('./mongo3');
+const mongo3 = require('@shared/providers/mongo.provider');
 
 function ensureRecommendationsDefault(recc) {
   const DEFAULT_IMAGE_URL = null;
@@ -45,7 +45,7 @@ async function fetchRecommendations(videoId, kind) {
   }
 
   const RECOMMENDATION_MAX = 20;
-  const mongoc = await mongo3.clientConnect({ concurrency: 1 });
+  const mongoc = await mongo3.clientConnect();
   const videoInfo = await mongo3.readOne(
     mongoc,
     nconf.get('schema').ytvids,
@@ -86,7 +86,7 @@ async function fetchChannelRecommendations(
   limit = 20,
   random = true
 ) {
-  const mongoc = await mongo3.clientConnect({ concurrency: 1 });
+  const mongoc = await mongo3.clientConnect();
 
   const aggregate = [
     {
@@ -119,7 +119,7 @@ async function fetchChannelRecommendations(
 
 async function fetchRecommendationsByProfile(token) {
   const INTERFACE_MAX = 100;
-  const mongoc = await mongo3.clientConnect({ concurrency: 1 });
+  const mongoc = await mongo3.clientConnect();
   const creator = await mongo3.readOne(mongoc, nconf.get('schema').creators, {
     accessToken: token,
   });
@@ -189,7 +189,7 @@ async function saveRecommendationOGP(ogblob, creator) {
   keep.when = new Date();
   keep.urlId = utils.hash({ url: keep.url, channelId: creator.channelId });
 
-  const mongoc = await mongo3.clientConnect({ concurrency: 1 });
+  const mongoc = await mongo3.clientConnect();
   await mongo3.writeOne(mongoc, nconf.get('schema').recommendations, keep);
   await mongoc.close();
 
@@ -199,7 +199,7 @@ async function saveRecommendationOGP(ogblob, creator) {
 
 async function getRecommendationByURL(url, creator) {
   const urlId = utils.hash({ url, channelId: creator.channelId });
-  const mongoc = await mongo3.clientConnect({ concurrency: 1 });
+  const mongoc = await mongo3.clientConnect();
   const res = await mongo3.readOne(
     mongoc,
     nconf.get('schema').recommendations,
@@ -210,7 +210,7 @@ async function getRecommendationByURL(url, creator) {
 }
 
 async function getVideoFromYTprofiles(creator, limit) {
-  const mongoc = await mongo3.clientConnect({ concurrency: 1 });
+  const mongoc = await mongo3.clientConnect();
   const res = await mongo3.readLimit(
     mongoc,
     nconf.get('schema').ytvids,
@@ -224,7 +224,7 @@ async function getVideoFromYTprofiles(creator, limit) {
 }
 
 async function getOneVideoFromYTprofile(creator, videoId) {
-  const mongoc = await mongo3.clientConnect({ concurrency: 1 });
+  const mongoc = await mongo3.clientConnect();
   const cName = nconf.get('schema').ytvids;
 
   const selector = {
@@ -236,7 +236,7 @@ async function getOneVideoFromYTprofile(creator, videoId) {
 }
 
 async function recommendationById(ids, limit) {
-  const mongoc = await mongo3.clientConnect({ concurrency: 1 });
+  const mongoc = await mongo3.clientConnect();
   const res = await mongo3.readLimit(
     mongoc,
     nconf.get('schema').recommendations,
@@ -252,7 +252,7 @@ async function recommendationById(ids, limit) {
 }
 
 async function updateRecommendations(videoId, recommendations) {
-  const mongoc = await mongo3.clientConnect({ concurrency: 1 });
+  const mongoc = await mongo3.clientConnect();
   const one = await mongo3.readOne(mongoc, nconf.get('schema').ytvids, {
     videoId,
   });
@@ -273,7 +273,7 @@ async function updateRecommendations(videoId, recommendations) {
 }
 
 async function patchRecommendation(creator, urlId, partialRecommendation) {
-  const mongoc = await mongo3.clientConnect({ concurrency: 1 });
+  const mongoc = await mongo3.clientConnect();
 
   // check that the recommendation is associated with the creator's channelId
   const rec = await mongo3.readOne(
@@ -306,7 +306,7 @@ async function generateToken(channelId, expireISOdate) {
    * a secure accessToken that can be used also if the verification
    * process gets interrupted */
   const verificationToken = utils.hash({ channelId, r: Math.random() });
-  const mongoc = await mongo3.clientConnect({ concurrency: 1 });
+  const mongoc = await mongo3.clientConnect();
   const p = await mongo3.readOne(mongoc, nconf.get('schema').tokens, {
     channelId,
   });
@@ -331,7 +331,7 @@ async function generateToken(channelId, expireISOdate) {
 }
 
 async function getToken(filter) {
-  const mongoc = await mongo3.clientConnect({ concurrency: 1 });
+  const mongoc = await mongo3.clientConnect();
   if (!filter.type) throw new Error('Filter need to contain .type');
   const r = await mongo3.readOne(mongoc, nconf.get('schema').tokens, filter);
   await mongoc.close();
@@ -349,7 +349,7 @@ async function confirmCreator(tokeno, creatorInfo) {
   // this function create 'creator' entry and means the
   // user is now VERIFIED. Therefore has full access to
   // YCAI recommendation control.
-  const mongoc = await mongo3.clientConnect({ concurrency: 1 });
+  const mongoc = await mongo3.clientConnect();
 
   await mongo3.deleteMany(mongoc, nconf.get('schema').tokens, {
     channelId: tokeno.channelId,
@@ -394,7 +394,7 @@ async function registerVideos(videol, channelId) {
     };
   });
   debug('Adding %d videos to recorded YCAI available videos', objl.length);
-  const mongoc = await mongo3.clientConnect({ concurrency: 1 });
+  const mongoc = await mongo3.clientConnect();
   for (const ytv of objl) {
     try {
       await mongo3.writeOne(mongoc, nconf.get('schema').ytvids, ytv);
@@ -416,7 +416,7 @@ async function getCreatorByToken(token) {
   // fully authenticated, or not. the filter
   // works on creators and tokens, considering the
   // token are going to expire automatically.
-  const mongoc = await mongo3.clientConnect({ concurrency: 1 });
+  const mongoc = await mongo3.clientConnect();
   const creator = await mongo3.readOne(mongoc, nconf.get('schema').creators, {
     accessToken: token,
   });
@@ -442,7 +442,7 @@ async function getRecentChannels(max, countoo) {
    * eventually watch it with 'Guardoni' and populate stats,
      countrecs (true|undefined) causes a count of  */
 
-  const mongoc = await mongo3.clientConnect({ concurrency: 1 });
+  const mongoc = await mongo3.clientConnect();
   const creators = await mongo3.readLimit(
     mongoc,
     nconf.get('schema').creators,
@@ -478,7 +478,7 @@ async function getRecentChannels(max, countoo) {
 async function deleteMaterial(creator, targets) {
   /* this function is invoked to delete specific material belonging
    * to a content creator */
-  const mongoc = await mongo3.clientConnect({ concurrency: 1 });
+  const mongoc = await mongo3.clientConnect();
   const results = {};
 
   if (targets.indexOf('recommendations') !== -1) {

@@ -5,7 +5,7 @@ import * as fs from 'fs';
 import { JSDOM } from 'jsdom';
 import nconf from 'nconf';
 import * as path from 'path';
-import mongo3 from '../lib/mongo3';
+import mongo3 from '../../../../packages/shared/src/providers/mongo.provider';
 import { sanitizeHTML } from '../../../../packages/shared/src/utils/html.utils';
 
 const cfgFile = 'config/settings.json';
@@ -30,7 +30,7 @@ async function main(): Promise<void> {
 
   const aaa = [] as object[];
   for (const nature of ['home', 'video', 'search']) {
-    const htmlobs = await mongo3.aggregate(mongoc, nconf.get('schema').htmls, [
+    const htmlobs = await mongo3.aggregate(mongoc as any, nconf.get('schema').htmls, [
       { $match: { 'nature.type': nature } },
       { $sort: { savingTime: -1 } },
       { $limit: maxAmount },

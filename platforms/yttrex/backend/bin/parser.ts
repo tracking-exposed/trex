@@ -3,14 +3,16 @@
 import fs from 'fs';
 import _ from 'lodash';
 import nconf from 'nconf';
-import mongo3 from '../lib/mongo3';
+import * as mongo3 from '@shared/providers/mongo.provider';
 import {
   getLastHTMLs,
-  HTMLSource,
   updateMetadataAndMarkHTML,
+  toMetadata,
+  HTMLSource,
 } from '../lib/parser/html';
-import { GetParserProvider } from '../lib/parser/parser';
+import { GetParserProvider } from '@shared/providers/parser.provider';
 import { parsers } from '../parsers';
+import { Metadata } from '@yttrex/shared/models/Metadata';
 
 nconf.argv().env().file({ file: 'config/settings.json' });
 
@@ -53,7 +55,7 @@ const run = async (): Promise<void> => {
      * re-analyze HTMLs based on --minutesago <number> option.
      * */
 
-    const mongoR = await mongo3.clientConnect({ concurrency: 1 });
+    const mongoR = await mongo3.clientConnect({});
     const mongoW = await mongo3.clientConnect();
 
     if (!mongoR || !mongoW) {
@@ -67,13 +69,19 @@ const run = async (): Promise<void> => {
     };
 
     /* call the async infinite loop function */
-    void GetParserProvider<HTMLSource>('htmls', {
+    void GetParserProvider('htmls', {
       db,
       parsers,
-      getContributions: getLastHTMLs({ db }),
-      saveResults: updateMetadataAndMarkHTML({ db }),
+      codecs: {
+        contribution: HTMLSource,
+        metadata: Metadata,
+      },
+      getContributions: getLastHTMLs(db),
+      getEntryId: (e) => e.html.id,
       getEntryDate: (e) => e.html.savingTime,
       getEntryNatureType: (e) => e.html.nature.type,
+      buildMetadata: toMetadata,
+      saveResults: updateMetadataAndMarkHTML(db),
     }).run({
       singleUse: typeof id === 'string' ? id : false,
       filter,

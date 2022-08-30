@@ -5,7 +5,7 @@ import nconf from 'nconf';
 import utils from '../lib/utils';
 import automo from '../lib/automo';
 import CSV from '../lib/CSV';
-import mongo from '../lib/mongo3';
+import * as mongo from '@shared/providers/mongo.provider';
 import { SEARCH_FIELDS } from './public';
 
 import D from 'debug';
@@ -165,7 +165,7 @@ export async function getQueryList(req) {
   // TODO support the queries that returned only errors?
 
   const lastWeek = moment().subtract(3, 'week').startOf('day').toISOString();
-  const mongoc = await mongo.clientConnect({ concurrency: 1 });
+  const mongoc = await mongo.clientConnect();
   const toomanyqueries = await mongo.aggregate(
     mongoc,
     nconf.get('schema').metadata,

@@ -2,7 +2,7 @@ const nconf = require('nconf');
 const debug = require('debug')('routes:emails');
 const _ = require('lodash');
 
-const mongo3 = require('../lib/mongo3');
+const mongo3 = require('@shared/providers/mongo.provider');
 const utils = require('../lib/utils');
 const security = require('../lib/security');
 
@@ -29,7 +29,7 @@ async function registerEmail2(req) {
 
   const subid = utils.hash({ email, reason });
 
-  const mongoc = await mongo3.clientConnect({ concurrency: 1 });
+  const mongoc = await mongo3.clientConnect();
   const emailAlreadyExists = await mongo3.count(mongoc, collection, { subid });
 
   if (emailAlreadyExists === 1) {
@@ -52,7 +52,7 @@ async function registerEmail2(req) {
 async function listEmails(req) {
   if (!security.checkPassword(req)) return { status: 403 };
 
-  const mongoc = await mongo3.clientConnect({ concurrency: 1 });
+  const mongoc = await mongo3.clientConnect();
   const mails = await mongo3.read(mongoc, nconf.get('schema').emails);
 
   debug(

@@ -1,10 +1,18 @@
 import { GuardoniExperimentArb } from '@shared/arbitraries/Experiment.arb';
 import bs58 from '@shared/providers/bs58.provider';
+import { GetParserProvider } from '@shared/providers/parser.provider';
 import { fc } from '@shared/test';
 import { foldTEOrThrow } from '@shared/utils/fp.utils';
 import { sleep } from '@shared/utils/promise.utils';
 import { ContributionEventArb } from '@tktrex/shared/arbitraries/ContributionEvent.arb';
-import { actualExecution } from '../../lib/parser';
+import { Metadata } from '@tktrex/shared/models/Metadata';
+import {
+  buildMetadata,
+  getLastHTMLs,
+  HTMLSource,
+  updateMetadataAndMarkHTML,
+} from '../../lib/parser';
+import * as parsers from '../../parsers';
 import { GetTest, Test } from '../../test/Test';
 
 const version = '9.9.9.9';
@@ -69,11 +77,35 @@ describe('Events', () => {
         .send(data)
         .expect(200);
 
-      // run parser
-      void actualExecution(false, undefined, undefined, 0);
-
       // wait for the parser to process the html
       await sleep(5 * 1000);
+
+      const db = {
+        api: appTest.mongo3,
+        read: appTest.mongo,
+        write: appTest.mongo,
+      };
+
+      await GetParserProvider('html', {
+        db,
+        parsers: parsers as any,
+        codecs: {
+          contribution: HTMLSource,
+          metadata: Metadata,
+        },
+        getEntryId: (e) => e.html.id,
+        getContributions: getLastHTMLs(db),
+        getEntryDate: (e) => e.html.savingTime,
+        getEntryNatureType: (e) => e.html.type,
+        buildMetadata: buildMetadata,
+        saveResults: updateMetadataAndMarkHTML(db),
+      }).run({
+        singleUse: true,
+        stop: 1,
+        repeat: false,
+        backInTime: 10,
+        htmlAmount: 10,
+      });
 
       // check data has been produced
       const response = await appTest.app.get(
@@ -85,7 +117,7 @@ describe('Events', () => {
         supporter: {
           publicKey: keys.publicKey,
         },
-        metadata: [{}],
+        metadata: [],
       });
 
       await appTest.mongo3.deleteMany(

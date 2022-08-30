@@ -3,7 +3,7 @@ const debug = require('debug')('routes:guardoni');
 const nconf = require('nconf');
 
 const params = require('../lib/params');
-const mongo3 = require('../lib/mongo3');
+const mongo3 = require('@shared/providers/mongo.provider');
 const research = require('../routes/research');
 
 async function guardoniV2(req) {
