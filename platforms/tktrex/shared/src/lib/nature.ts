@@ -1,5 +1,4 @@
 import { Either, left, right } from 'fp-ts/lib/Either';
-
 import { URLError } from '../models/Error';
 import { Nature } from '../models/Nature';
 

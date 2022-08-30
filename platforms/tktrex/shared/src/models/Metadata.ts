@@ -1,4 +1,5 @@
 import * as t from 'io-ts';
+import { FollowingN, ForYouN, SearchN } from './Nature';
 
 const Music = t.type(
   {
@@ -60,10 +61,9 @@ export type MetadataBase = t.TypeOf<typeof MetadataBase>;
 export const ForYouVideoMetadata = t.intersection(
   [
     MetadataBase,
+    ForYouN,
     t.type(
       {
-        type: t.literal('foryou'),
-
         // baretext is the smallest part of the description,
         // not including the tags
         baretext: t.string,
@@ -91,9 +91,9 @@ export type ForYouVideoMetadata = t.TypeOf<typeof ForYouVideoMetadata>;
 export const FollowingVideoMetadata = t.intersection(
   [
     MetadataBase,
+    FollowingN,
     t.type(
       {
-        type: t.literal('following'),
         author: AuthorWithName,
         music: Music,
       },
@@ -108,9 +108,9 @@ export type FollowingVideoMetadata = t.TypeOf<typeof FollowingVideoMetadata>;
 export const SearchMetadata = t.intersection(
   [
     MetadataBase,
+    SearchN,
     t.type(
       {
-        type: t.literal('search'),
         results: t.array(t.any),
         query: t.string,
         thumbnails: t.array(
@@ -135,5 +135,3 @@ export const Metadata = t.union(
 );
 
 export type Metadata = t.TypeOf<typeof Metadata>;
-
-export default Metadata;

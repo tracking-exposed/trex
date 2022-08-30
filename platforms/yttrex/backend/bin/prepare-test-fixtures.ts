@@ -4,7 +4,7 @@ import D from 'debug';
 import * as fs from 'fs';
 import nconf from 'nconf';
 import * as path from 'path';
-import mongo3 from '../lib/mongo3';
+import * as mongo3 from '@shared/providers/mongo.provider';
 
 const cfgFile = 'config/settings.json';
 
@@ -26,7 +26,7 @@ async function main(): Promise<void> {
 
   const fixturesP = ['home', 'video', 'search'].map(async (n) => {
     const metadataWithHTMLS = await mongo3.aggregate(
-      mongoc,
+      mongoc as any,
       nconf.get('schema').metadata,
       [
         // { $match: { 'nature.type': n } },

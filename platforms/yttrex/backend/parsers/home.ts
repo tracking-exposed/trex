@@ -1,8 +1,9 @@
 import { trexLogger } from '@shared/logger';
+import { ParserFn } from '@shared/providers/parser.provider';
+import { HomeMetadata, ParsedInfo } from '@yttrex/shared/models/Metadata';
 import _ from 'lodash';
 import moment from 'moment';
 import { HTMLSource } from '../lib/parser/html';
-import { HomeMetadata, ParsedInfo } from '@yttrex/shared/models/Metadata';
 import * as longlabel from './longlabel';
 import * as shared from './shared';
 import uxlang from './uxlang';
@@ -268,12 +269,15 @@ function debugSizes(selected): void {
 }
 /* ********* end of 'size' related code ********* */
 
-interface HomeProcess {
+interface SelectedAndSections {
   selected: HomeMetadata['selected'];
   sections: HomeMetadata['sections'];
 }
 
-function actualHomeProcess(D: Document, clientTime: Date): HomeProcess {
+function getSelectedAndSections(
+  D: Document,
+  clientTime: Date
+): SelectedAndSections {
   /* selection findings */
   const sectionsWithTitle = _.compact(
     _.map(D.querySelectorAll('#title'), function (e) {
@@ -355,8 +359,11 @@ function guessUXLanguage(D: Document): string | null {
   return uxlang.findLanguage('video', localizedStrings);
 }
 
-export function process(envelop: HTMLSource): Omit<HomeMetadata, 'id'> | null {
-  const retval: Omit<HomeMetadata, 'id'> = {
+export const processHome: ParserFn<HTMLSource, HomeMetadata> = async (
+  envelop
+) => {
+  const retval: HomeMetadata = {
+    id: '',
     type: 'home',
     clientTime: envelop.html.clientTime,
     selected: [],
@@ -369,7 +376,7 @@ export function process(envelop: HTMLSource): Omit<HomeMetadata, 'id'> | null {
   };
 
   try {
-    const { selected, sections } = actualHomeProcess(
+    const { selected, sections } = getSelectedAndSections(
       envelop.jsdom,
       envelop.html.clientTime
     );
@@ -405,6 +412,6 @@ export function process(envelop: HTMLSource): Omit<HomeMetadata, 'id'> | null {
   }
 
   return retval;
-}
+};
 
-export default process;
+export default processHome;

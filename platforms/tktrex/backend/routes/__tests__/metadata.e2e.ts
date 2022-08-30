@@ -5,7 +5,6 @@ jest.mock('fetch-opengraph');
 // import test utils
 import { fc } from '@shared/test';
 import { MetadataArb } from '@tktrex/shared/arbitraries/Metadata.arb';
-import moment from 'moment';
 import { GetTest, Test } from '../../test/Test';
 
 describe('Metadata API', () => {

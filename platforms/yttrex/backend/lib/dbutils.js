@@ -3,12 +3,12 @@ const debug = require('debug')('lib:dbutils');
 const moment = require('moment');
 const nconf = require('nconf');
 
-const mongo3 = require('./mongo3');
+const mongo3 = require('@shared/providers/mongo.provider');
 // const utils = require('./utils');
 
 async function checkMongoWorks(beFatal) {
     try {
-        const mongoc = await mongo3.clientConnect({concurrency: 1});
+        const mongoc = await mongo3.clientConnect();
         const results = await mongo3.listCollections(mongoc);
         await mongoc.close();
         return results;
@@ -27,7 +27,7 @@ async function checkMongoWorks(beFatal) {
 
 async function getLimitedDistinct(cName, field, maxAmount, filter) {
     try {
-        const mongoc = await mongo3.clientConnect({concurrency: 1});
+        const mongoc = await mongo3.clientConnect();
         const results = await mongo3.distinct(mongoc, cName, field, filter);
         await mongoc.close();
         return results;
@@ -40,7 +40,7 @@ async function getLimitedDistinct(cName, field, maxAmount, filter) {
 async function getCampaignQuery(campaignColumn, queriesColumn, campaignName, optionalFilter) {
     const MAXAMOUNT = 20000; // maximum amount of search queries looked (hardcoded limit)
     try {
-        const mongoc = await mongo3.clientConnect({concurrency: 1});
+        const mongoc = await mongo3.clientConnect();
         const r = await mongo3.read(mongoc, campaignColumn, { name: campaignName });
         if(!r || !_.size(r) || !r[0]._id ) {
             await mongoc.close();
@@ -90,7 +90,7 @@ async function getCampaignQuery(campaignColumn, queriesColumn, campaignName, opt
 }
 
 async function writeCampaigns(cName, listof, kname) {
-    const mongoc = await mongo3.clientConnect({concurrency: 1});
+    const mongoc = await mongo3.clientConnect();
     const retval = [];
     for (const o of listof) {
         let r; const filter = _.pick(o, [kname]);
@@ -120,7 +120,7 @@ async function writeCampaigns(cName, listof, kname) {
 -- KILL OR USE
 async function getAggregatedByTerm(cName, campaign, term) {
     try {
-        const mongoc = await mongo3.clientConnect({concurrency: 1});
+        const mongoc = await mongo3.clientConnect();
         const results = await mongo3.aggregate(mongoc, cName, [
             { $match: filter },
             { $sort: { "savingTime": -1 } },
@@ -158,7 +158,7 @@ async function getAggregatedByTerm(cName, campaign, term) {
 async function getLimitedCollection(cName, filter, maxAmount, reportOverflow) {
     // note: sorting only tested for cName === search
     try {
-        const mongoc = await mongo3.clientConnect({concurrency: 1});
+        const mongoc = await mongo3.clientConnect();
         const results = await mongo3.readLimit(mongoc, cName, filter, {savingTime: -1}, maxAmount, 0);
         if(reportOverflow && _.size(results) === maxAmount) {
             // a db access only for debug sake!
@@ -178,7 +178,7 @@ async function compareSearches(cName, idlist) {
     let mongoc; const structured = {}; const info = {};
     const maxAmount = 200;
     try {
-        mongoc = await mongo3.clientConnect({concurrency: 1});
+        mongoc = await mongo3.clientConnect();
         for (const mid of idlist) {
             const r = await mongo3.readLimit(mongoc, cName, { metadataId: mid }, {}, maxAmount, 0);
             structured[mid] = _.map(r, function(searchResult) {

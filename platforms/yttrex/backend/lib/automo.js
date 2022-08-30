@@ -20,10 +20,10 @@ const moment = require('moment');
 // const chardet = require('chardet')
 
 const utils = require('../lib/utils');
-const mongo3 = require('./mongo3');
+const mongo3 = require('@shared/providers/mongo.provider');
 
 async function getSupporterByPublicKey(publicKey) {
-  const mongoc = await mongo3.clientConnect({ concurrency: 1 });
+  const mongoc = await mongo3.clientConnect();
   const supporter = await mongo3.readOne(
     mongoc,
     nconf.get('schema').supporters,
@@ -36,7 +36,7 @@ async function getSupporterByPublicKey(publicKey) {
 async function getSummaryByPublicKey(publicKey, options) {
   /* this function return the basic information necessary to compile the
        landing personal page */
-  const mongoc = await mongo3.clientConnect({ concurrency: 1 });
+  const mongoc = await mongo3.clientConnect();
 
   const supporter = await getSupporterByPublicKey(publicKey);
 
@@ -138,7 +138,7 @@ async function getSummaryByPublicKey(publicKey, options) {
 }
 
 async function getMetadataByPublicKey(publicKey, options) {
-  const mongoc = await mongo3.clientConnect({ concurrency: 1 });
+  const mongoc = await mongo3.clientConnect();
   const supporter = await mongo3.readOne(
     mongoc,
     nconf.get('schema').supporters,
@@ -181,7 +181,7 @@ async function getMetadataByPublicKey(publicKey, options) {
 }
 
 async function getMetadataByFilter(filter, options) {
-  const mongoc = await mongo3.clientConnect({ concurrency: 1 });
+  const mongoc = await mongo3.clientConnect();
   const metadata = await mongo3.readLimit(
     mongoc,
     nconf.get('schema').metadata,
@@ -196,7 +196,7 @@ async function getMetadataByFilter(filter, options) {
 }
 
 async function getMetadataFromAuthor(filter, options) {
-  const mongoc = await mongo3.clientConnect({ concurrency: 1 });
+  const mongoc = await mongo3.clientConnect();
 
   const sourceVideo = await mongo3.readOne(
     mongoc,
@@ -232,7 +232,7 @@ async function getMetadataFromAuthor(filter, options) {
 }
 
 async function getMetadataFromAuthorChannelId(channelId, options) {
-  const mongoc = await mongo3.clientConnect({ concurrency: 1 });
+  const mongoc = await mongo3.clientConnect();
   const filter = {
     authorSource: { $in: [`/channel/${channelId}`, `/c/${channelId}`] },
     authorName: { $ne: null },
@@ -332,7 +332,7 @@ async function getMetadataFromAuthorChannelId(channelId, options) {
 
 async function getVideosByPublicKey(publicKey, filter, htmlToo) {
   // refactor: this was a double purpose API but actually has only one pourpose. htmlToo should never be true here
-  const mongoc = await mongo3.clientConnect({ concurrency: 1 });
+  const mongoc = await mongo3.clientConnect();
 
   const supporter = await mongo3.readOne(
     mongoc,
@@ -367,7 +367,7 @@ async function getVideosByPublicKey(publicKey, filter, htmlToo) {
 }
 
 async function getHTMLVideosByMetadataId(metadataId) {
-  const mongoc = await mongo3.clientConnect({ concurrency: 1 });
+  const mongoc = await mongo3.clientConnect();
   const htmls = await mongo3.read(
     mongoc,
     nconf.get('schema').htmls,
@@ -379,7 +379,7 @@ async function getHTMLVideosByMetadataId(metadataId) {
 }
 
 async function deleteEntry(publicKey, id) {
-  const mongoc = await mongo3.clientConnect({ concurrency: 1 });
+  const mongoc = await mongo3.clientConnect();
   const supporter = await mongo3.readOne(
     mongoc,
     nconf.get('schema').supporters,
@@ -397,7 +397,7 @@ async function deleteEntry(publicKey, id) {
 }
 
 async function getRelatedByVideoId(videoId, options) {
-  const mongoc = await mongo3.clientConnect({ concurrency: 1 });
+  const mongoc = await mongo3.clientConnect();
   const related = await mongo3.aggregate(mongoc, nconf.get('schema').metadata, [
     { $match: { videoId } },
     { $sort: { savingTime: -1 } },
@@ -440,7 +440,7 @@ async function getRelatedByVideoId(videoId, options) {
 }
 
 async function write(where, what) {
-  const mongoc = await mongo3.clientConnect({ concurrency: 1 });
+  const mongoc = await mongo3.clientConnect();
   let retv;
   try {
     await mongo3.insertMany(mongoc, where, what);
@@ -454,7 +454,7 @@ async function write(where, what) {
 }
 
 async function tofu(publicKey, version) {
-  const mongoc = await mongo3.clientConnect({ concurrency: 1 });
+  const mongoc = await mongo3.clientConnect();
 
   let supporter = await mongo3.readOne(mongoc, nconf.get('schema').supporters, {
     publicKey,
@@ -485,7 +485,7 @@ async function tofu(publicKey, version) {
 }
 
 async function getLastLeaves(filter, skip, amount) {
-  const mongoc = await mongo3.clientConnect({ concurrency: 1 });
+  const mongoc = await mongo3.clientConnect();
   const labels = await mongo3.readLimit(
     mongoc,
     nconf.get('schema').leaves,
@@ -503,7 +503,7 @@ async function getLastLeaves(filter, skip, amount) {
 }
 
 async function upsertSearchResults(listof, cName) {
-  const mongoc = await mongo3.clientConnect({ concurrency: 1 });
+  const mongoc = await mongo3.clientConnect();
   let written = 0;
   for (const entry of listof) {
     await mongo3.upsertOne(mongoc, cName, { id: entry.id }, entry);
@@ -515,7 +515,7 @@ async function upsertSearchResults(listof, cName) {
 }
 
 async function updateAdvertisingAndMetadata(adlist) {
-  const mongoc = await mongo3.clientConnect({ concurrency: 1 });
+  const mongoc = await mongo3.clientConnect();
   let written = 0;
   for (const entry of adlist) {
     await mongo3.upsertOne(
@@ -532,7 +532,7 @@ async function updateAdvertisingAndMetadata(adlist) {
 }
 
 async function getLastHTMLs(filter, skip, amount) {
-  const mongoc = await mongo3.clientConnect({ concurrency: 1 });
+  const mongoc = await mongo3.clientConnect();
   const defskip = skip || 0;
   const htmls = await mongo3.readLimit(
     mongoc,
@@ -551,7 +551,7 @@ async function getLastHTMLs(filter, skip, amount) {
 }
 
 async function markHTMLsUnprocessable(htmls) {
-  const mongoc = await mongo3.clientConnect({ concurrency: 1 });
+  const mongoc = await mongo3.clientConnect();
   const ids = _.map(htmls, 'id');
   const r = await mongo3.updateMany(
     mongoc,
@@ -587,7 +587,7 @@ async function updateMetadata(html, newsection, repeat) {
 
   /* we should look at the same metadataId in the metadata collection,
        and update new information if missing */
-  const mongoc = await mongo3.clientConnect({ concurrency: 1 });
+  const mongoc = await mongo3.clientConnect();
 
   if (!html.metadataId) {
     debug('metadataId is not an ID!');
@@ -667,7 +667,7 @@ async function updateMetadata(html, newsection, repeat) {
 async function getMixedDataSince(schema, since, maxAmount) {
   // This is used in admin/monitor with password protected access
 
-  const mongoc = await mongo3.clientConnect({ concurrency: 1 });
+  const mongoc = await mongo3.clientConnect();
   const retContent = [];
 
   for (const cinfo of schema) {
@@ -729,7 +729,7 @@ async function getMixedDataSince(schema, since, maxAmount) {
 }
 
 async function flexibleRemove(collection, filter) {
-  const mongoc = await mongo3.clientConnect({ concurrency: 1 });
+  const mongoc = await mongo3.clientConnect();
   const count = await mongo3.count(mongoc, collection, filter);
   if (count === 1) {
     const result = await mongo3.deleteMany(mongoc, collection, filter);
@@ -743,7 +743,7 @@ async function flexibleRemove(collection, filter) {
 }
 
 async function getTransformedMetadata(chain) {
-  const mongoc = await mongo3.clientConnect({ concurrency: 1 });
+  const mongoc = await mongo3.clientConnect();
   const result = await mongo3.aggregate(
     mongoc,
     nconf.get('schema').metadata,
@@ -772,7 +772,7 @@ async function markExperCompleted(mongoc, filter) {
 async function concludeExperiment(testTime) {
   /* this function is called by guardoni v.1.8 when the
    * access on a step URL have been completed */
-  const mongoc = await mongo3.clientConnect({ concurrency: 1 });
+  const mongoc = await mongo3.clientConnect();
   const r = await markExperCompleted(mongoc, { testTime });
   await mongoc.close();
   return r;
@@ -784,7 +784,7 @@ async function saveExperiment(expobj) {
        routes/experiment.js function channel3 */
   if (expobj.experimentId === 'DEFAULT_UNSET') return null;
 
-  const mongoc = await mongo3.clientConnect({ concurrency: 1 });
+  const mongoc = await mongo3.clientConnect();
   /* a given public Key can have only one experiment per time */
   const filter = {
     publicKey: expobj.publicKey,
@@ -805,7 +805,7 @@ async function pullExperimentInfo(publicKey) {
   // because only one experiment per publicKey might
   // exist in a due time, we can be quite sure on the results
   // here
-  const mongoc = await mongo3.clientConnect({ concurrency: 1 });
+  const mongoc = await mongo3.clientConnect();
   const exp = await mongo3.aggregate(mongoc, nconf.get('schema').experiments, [
     { $match: { publicKey, status: 'active' } },
     {
@@ -828,7 +828,7 @@ async function registerSteps(steps) {
   const experimentId = utils.hash({
     steps,
   });
-  const mongoc = await mongo3.clientConnect({ concurrency: 1 });
+  const mongoc = await mongo3.clientConnect();
   const exist = await mongo3.readOne(mongoc, nconf.get('schema').experiments, {
     experimentId,
   });
@@ -855,7 +855,7 @@ async function registerSteps(steps) {
 }
 
 async function pickDirective(experimentId) {
-  const mongoc = await mongo3.clientConnect({ concurrency: 1 });
+  const mongoc = await mongo3.clientConnect();
   const rb = await mongo3.readOne(mongoc, nconf.get('schema').experiments, {
     experimentId,
   });

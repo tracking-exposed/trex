@@ -2,11 +2,11 @@ const _ = require('lodash');
 const debug = require('debug')('lib:dbutils');
 const nconf = require('nconf');
 
-const mongo3 = require('./mongo3');
+const mongo3 = require('@shared/providers/mongo.provider');
 
 async function checkMongoWorks(beFatal) {
     try {
-        const mongoc = await mongo3.clientConnect({concurrency: 1});
+        const mongoc = await mongo3.clientConnect({});
         const results = await mongo3.listCollections(mongoc);
         debug("collection list: %j", _.map(results, 'name') );
         await mongoc.close();

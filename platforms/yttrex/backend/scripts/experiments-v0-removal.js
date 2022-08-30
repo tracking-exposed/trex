@@ -3,7 +3,7 @@ const _ = require('lodash');
 const debug = require('debug')('');
 const nconf = require('nconf');
 
-const mongo = require('../lib/mongo3');
+const mongo = require('@shared/providers/mongo.provider');
 
 nconf.argv().env().file({ file: "config/settings.json" });
 

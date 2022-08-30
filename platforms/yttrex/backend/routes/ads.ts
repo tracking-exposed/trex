@@ -1,15 +1,14 @@
-import _ from "lodash";
-import debug from "debug";
-import nconf from "nconf";
+import _ from 'lodash';
+import debug from 'debug';
+import nconf from 'nconf';
+import params from '../lib/params';
+import * as mongo3 from '@shared/providers/mongo.provider';
+import { Ad } from '@yttrex/shared/models/Ad';
 
-import params from "../lib/params";
-import mongo3 from "../lib/mongo3";
-import { Ad } from "../models/Ad";
-
-const d = debug("routes:ads");
+const d = debug('routes:ads');
 
 type AggregationCountResult = Array<
-  Pick<Ad, "sponsoredName" | "sponsoredSite"> & { count: number }
+  Pick<Ad, 'sponsoredName' | 'sponsoredSite'> & { count: number }
 >;
 
 function aggregationCount(collection): AggregationCountResult {
@@ -17,8 +16,8 @@ function aggregationCount(collection): AggregationCountResult {
    * the sponsoredName */
   const protorv = _.groupBy(collection, function (e) {
     return _.toLower(
-      _.endsWith(e.sponsoredSite, "/")
-        ? e.sponsoredSite.replace(/\/$/, "")
+      _.endsWith(e.sponsoredSite, '/')
+        ? e.sponsoredSite.replace(/\/$/, '')
         : e.sponsoredSite
     );
   });
@@ -42,23 +41,27 @@ async function advertisingViaMetadata(filter): Promise<any> {
   /* the logic is otherway around compared to the function
    * 'unbound'. We initially pick from metadata and then lookup to
    * ad. this impact the filtering/map function below */
-  const mongoc = await mongo3.clientConnect({ concurrency: 1 });
-  const r = await mongo3.aggregate(mongoc, nconf.get("schema").metadata, [
-    { $sort: { savingTime: -1 } },
-    { $match: filter },
-    { $limit: 1000 },
-    {
-      $lookup: {
-        from: "ads",
-        foreignField: "metadataId",
-        localField: "id",
-        as: "ad",
+  const mongoc = await mongo3.clientConnect();
+  const r = await mongo3.aggregate(
+    mongoc as any,
+    nconf.get('schema').metadata,
+    [
+      { $sort: { savingTime: -1 } },
+      { $match: filter },
+      { $limit: 1000 },
+      {
+        $lookup: {
+          from: 'ads',
+          foreignField: 'metadataId',
+          localField: 'id',
+          as: 'ad',
+        },
       },
-    },
-  ]);
+    ]
+  );
 
   d(
-    "looking for metadata by Channel (%j) found %d matches, hardcoded 400 max",
+    'looking for metadata by Channel (%j) found %d matches, hardcoded 400 max',
     filter,
     r.length
   );
@@ -72,13 +75,13 @@ async function advertisingViaMetadata(filter): Promise<any> {
       _.map(r, function (metaret) {
         return _.map(metaret.ad, function (ad) {
           return {
-            ..._.pick(ad, ["sponsoredName", "sponsoredSite", "selectorName"]),
+            ..._.pick(ad, ['sponsoredName', 'sponsoredSite', 'selectorName']),
             ..._.pick(metaret, [
-              "href",
-              "authorName",
-              "authorSource",
-              "title",
-              "savingTime",
+              'href',
+              'authorName',
+              'authorSource',
+              'title',
+              'savingTime',
             ]),
           };
         });
@@ -88,17 +91,17 @@ async function advertisingViaMetadata(filter): Promise<any> {
 }
 
 async function perVideo(req): Promise<{ json: AggregationCountResult }> {
-  const videoId = params.getVideoId(req, "videoId");
+  const videoId = params.getVideoId(req, 'videoId');
   const filter = { videoId };
   const adlist = await advertisingViaMetadata(filter);
-  d("ads by Video (%o), selected results %d", filter, adlist.length);
+  d('ads by Video (%o), selected results %d', filter, adlist.length);
   return { json: aggregationCount(adlist) };
 }
 
 async function perChannel(req): Promise<{
   json: AggregationCountResult | { error: true; message: string };
 }> {
-  const channelId = params.getString(req, "channelId");
+  const channelId = params.getString(req, 'channelId');
   const startDate = req.query.since;
   const endDate = req.query.till;
 
@@ -107,7 +110,7 @@ async function perChannel(req): Promise<{
       $gte: new Date(startDate),
       $lte: new Date(endDate),
     },
-    authorSource: { $in: ["/channel/" + channelId, "/c/" + channelId] },
+    authorSource: { $in: ['/channel/' + channelId, '/c/' + channelId] },
   };
   try {
     if (_.isNaN(filter.savingTime.$gte.valueOf()))
@@ -117,36 +120,36 @@ async function perChannel(req): Promise<{
   } catch (error) {
     /* The error appears as Date("Invalid Date") and
            .valueOf returns NaN */
-    d("Error in date format: %s", error.message);
+    d('Error in date format: %s', error.message);
     return {
       json: {
         error: true,
-        message: "Error in date format, expected YYYY-MM-DD: " + error.message,
+        message: 'Error in date format, expected YYYY-MM-DD: ' + error.message,
       },
     };
   }
   const adlist = await advertisingViaMetadata(filter);
 
-  d("ads by Channel (%o), selected results %d", filter, adlist.length);
+  d('ads by Channel (%o), selected results %d', filter, adlist.length);
   return { json: aggregationCount(adlist) };
 }
 
 async function unbound(req): Promise<{ json: AggregationCountResult }> {
-  const max = params.getInt(req, "amount", 400);
-  const mongoc = await mongo3.clientConnect({ concurrency: 1 });
-  const r = await mongo3.aggregate(mongoc, nconf.get("schema").ads, [
+  const max = params.getInt(req, 'amount', 400);
+  const mongoc = await mongo3.clientConnect();
+  const r = await mongo3.aggregate(mongoc as any, nconf.get('schema').ads, [
     { $sort: { savingTime: -1 } },
     { $limit: max },
     {
       $lookup: {
-        from: "metadata",
-        foreignField: "id",
-        localField: "metadataId",
-        as: "metadata",
+        from: 'metadata',
+        foreignField: 'id',
+        localField: 'metadataId',
+        as: 'metadata',
       },
     },
   ]);
-  d("unbound with max %d returns %d", max, r.length);
+  d('unbound with max %d returns %d', max, r.length);
   await (mongoc as any).close();
 
   /* this is the opposite logic of the function above, because
@@ -154,13 +157,13 @@ async function unbound(req): Promise<{ json: AggregationCountResult }> {
   const x = _.compact(
     _.map(r, function (adret: any) {
       const rv: any = _.pick(adret, [
-        "href",
-        "selectorName",
-        "sponsoredName",
-        "sponsoredSite",
-        "savingTime",
+        'href',
+        'selectorName',
+        'sponsoredName',
+        'sponsoredSite',
+        'savingTime',
       ]);
-      if (adret.metadata?.length && adret.metadata[0].type === "video") {
+      if (adret.metadata?.length && adret.metadata[0].type === 'video') {
         rv.authorName = adret.metadata[0].authorName;
         rv.authorSource = adret.metadata[0].authorSource;
         rv.videoTitle = adret.metadata[0].title;

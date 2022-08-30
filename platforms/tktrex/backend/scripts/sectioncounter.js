@@ -2,7 +2,7 @@
 const _ = require('lodash');
 const debug = require('debug')('routes:research');
 const nconf = require('nconf');
-const mongo3 = require('../lib/mongo3');
+const mongo3 = require('@shared/providers/mongo.provider');
 const fs = require('fs');
 
 nconf.env().argv().file({file: 'config/settings.json'});
@@ -21,7 +21,7 @@ async function produceHomeStats(filename) {
         }},
         { "$unwind": "$names" } 
     ];
-    const mongoc = await mongo3.clientConnect({concurrency: 10});
+    const mongoc = await mongo3.clientConnect();
     debug("Sending pipeline to mongodb...");
     const c = await mongo3.aggregate(mongoc, nconf.get('schema').metadata, pipeline);
     debug("From DB retrieved %d objs", _.size(c));
@@ -71,7 +71,7 @@ async function consistencyViews(filename) {
         { "$match": filter },
         { "$project": { "sections": true, "savingTime": true }}
     ];
-    const mongoc = await mongo3.clientConnect({concurrency: 10});
+    const mongoc = await mongo3.clientConnect();
     debug("Sending pipeline to mongodb...");
     const c = await mongo3.aggregate(mongoc, nconf.get('schema').metadata, pipeline);
     debug("From DB retrieved %d objs", _.size(c));
@@ -109,7 +109,7 @@ async function produceHomeSummary(filename) {
         { "$match": filter },
         { "$project": { "publicKey": true, "sections": true, "savingTime": true }}
     ];
-    const mongoc = await mongo3.clientConnect({concurrency: 10});
+    const mongoc = await mongo3.clientConnect();
     debug("Sending pipeline to mongodb...");
     const c = await mongo3.aggregate(mongoc, nconf.get('schema').metadata, pipeline);
     debug("From DB retrieved %d objs", _.size(c));

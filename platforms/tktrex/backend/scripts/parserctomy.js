@@ -40,7 +40,7 @@ debug("%d shifts ahead", _.size(slots));
 var start = moment();
 
 return Promise
-    .map(slots, cleanABlock, { concurrency: 1} )
+    .map(slots, cleanABlock, {})
     .tap(function(completed) {
         debug("operation complete after %s, %d html updated", moment.duration( moment() - start).humanize(), total );
     });

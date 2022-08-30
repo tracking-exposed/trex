@@ -4,13 +4,15 @@ import fs from 'fs';
 import {
   getLastLeaves,
   updateAdvertisingAndMetadata,
+  LeafSource,
+  toMetadata,
 } from '../lib/parser/leaf';
 import _ from 'lodash';
 import nconf from 'nconf';
-import mongo3 from '../lib/mongo3';
-import { GetParserProvider } from '../lib/parser/parser';
-import { Leaf } from '../models/Leaf';
+import * as mongo3 from '@shared/providers/mongo.provider';
+import { GetParserProvider } from '@shared/providers/parser.provider';
 import { leafParsers } from '../parsers';
+import { Ad } from '@yttrex/shared/models/Ad';
 
 nconf.argv().env().file({ file: 'config/settings.json' });
 
@@ -49,7 +51,7 @@ const run = async (): Promise<void> => {
      * re-analyze HTMLs based on --minutesago <number> option.
      * */
 
-    const mongoR = await mongo3.clientConnect({ concurrency: 1 });
+    const mongoR = await mongo3.clientConnect();
     const mongoW = await mongo3.clientConnect();
 
     if (!mongoR || !mongoW) {
@@ -63,18 +65,19 @@ const run = async (): Promise<void> => {
     };
 
     /* call the async infinite loop function */
-    void GetParserProvider<Leaf>('leaves', {
+    void GetParserProvider('leaves', {
       db,
       parsers: leafParsers,
-      getContributions: getLastLeaves({ db }),
-      getEntryDate: (e) => e.savingTime,
-      getEntryNatureType: (e) => e.nature.type,
-      saveResults: async (r) => {
-        if (r) {
-          await updateAdvertisingAndMetadata({ db })(r as any);
-        }
-        return null;
+      codecs: {
+        contribution: LeafSource,
+        metadata: Ad,
       },
+      getEntryId: (e) => e.html.id,
+      getContributions: getLastLeaves(db),
+      getEntryDate: (e) => e.html.savingTime,
+      getEntryNatureType: (e) => e.html.nature.type,
+      buildMetadata: toMetadata,
+      saveResults: updateAdvertisingAndMetadata(db),
     }).run({
       singleUse: typeof id === 'string' ? id : false,
       filter,

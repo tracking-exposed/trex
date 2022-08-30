@@ -1,7 +1,7 @@
 const debug = require('debug')('routes:directives');
 const nconf = require('nconf');
 const experlib = require('../lib/experiments');
-const mongo3 = require('../lib/mongo3');
+const mongo3 = require('@shared/providers/mongo.provider');
 
 async function post(req) {
   const steps = req.body;
@@ -46,7 +46,7 @@ async function getPublic(req) {
   // which is not a problem of this API, but a registration default
   // plus an admin-only API to switch visibility.
 
-  const mongoc = await mongo3.clientConnect({ concurrency: 1 });
+  const mongoc = await mongo3.clientConnect();
   // TODO we've to implement paging in this API because it affect
   // Guardoni-UX and, at the moment, we forcefully cap to 20 the max results
 

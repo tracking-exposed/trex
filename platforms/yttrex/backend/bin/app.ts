@@ -7,7 +7,7 @@ import bodyParser from 'body-parser';
 import cors from 'cors';
 import express from 'express';
 import { apiList } from '../lib/api';
-import mongo3 from '../lib/mongo3';
+import * as mongo3 from '@shared/providers/mongo.provider';
 import { DeleteRecommendationRoute } from '../routes/youchoose/deleteRecommendation.route';
 import { routeHandleMiddleware } from '@shared/backend/utils/routeHandlerMiddleware';
 

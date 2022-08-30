@@ -8,14 +8,14 @@ const fs = require('fs');
 
 const csv = require('../lib/CSV');
 const utils = require('../lib/utils');
-const mongo3 = require('../lib/mongo3');
+const mongo3 = require('@shared/providers/mongo.provider');
 
 nconf.argv().env().file({ file: 'config/settings.json' });
 
 async function findPlausibleContributor(urlList, filter) {
     /* this function do a distinct of all the publicKey which contributed
      * to the necessary URL, and return a list of potential contributors */
-    const mongoc = await mongo3.clientConnect({concurrency: 1});
+    const mongoc = await mongo3.clientConnect();
 
     let partialf = _.partial(_.intersection);
     let metadataIds = [];
@@ -38,7 +38,7 @@ async function findPlausibleContributor(urlList, filter) {
 
 async function extractContributions(keys, urlSeq, filter) {
 
-    const mongoc = await mongo3.clientConnect({concurrency: 1});
+    const mongoc = await mongo3.clientConnect();
     const treasure = [];
     for (key of keys) {
         filter.publicKey = key;

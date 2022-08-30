@@ -1,16 +1,22 @@
-import { HomeMetadata } from '@yttrex/shared/models/Metadata';
+import {
+  readHistoryResults,
+  runParserTest,
+} from '@shared/test/utils/parser.utils';
 import { sanitizeHTML } from '@shared/utils/html.utils';
+import { HomeMetadata } from '@yttrex/shared/models/Metadata';
 import base58 from 'bs58';
 import { parseISO, subMinutes } from 'date-fns';
 import { JSDOM } from 'jsdom';
+import path from 'path';
 import nacl from 'tweetnacl';
 import {
   getLastHTMLs,
+  HTMLSource,
+  toMetadata,
   updateMetadataAndMarkHTML,
 } from '../../../lib/parser/html';
-import process from '../../../parsers/home';
+import processHome from '../../../parsers/home';
 import { GetTest, Test } from '../../../tests/Test';
-import { readHistoryResults, runParserTest } from './utils';
 
 describe('Parserv', () => {
   let appTest: Test;
@@ -51,37 +57,41 @@ describe('Parserv', () => {
     );
   });
 
-  const history = readHistoryResults('home', publicKey).filter(
-    (v, i) => ![5, 9].includes(i)
-  );
+  const history = readHistoryResults(
+    path.resolve(__dirname, '../../fixtures/home'),
+    publicKey
+  ).filter((v, i) => ![5, 9].includes(i));
 
-  test.each(history)(
+  test.each([history[0]])(
     'Should correctly parse home contributions',
     async ({ sources: _sources, metadata }) => {
       const sources = _sources.map((h: any) => ({
-        ...h,
-        clientTime: parseISO(h.clientTime ?? new Date()),
-        savingTime: subMinutes(new Date(), 1),
-        processed: null,
+        html: {
+          ...h,
+          clientTime: parseISO(h.clientTime ?? new Date()),
+          savingTime: subMinutes(new Date(), 1),
+          processed: null,
+        },
+        supporter: {},
+        jsdom: new JSDOM(sanitizeHTML(h.html)).window.document,
       }));
 
-      await runParserTest({
+      const result = await runParserTest({
         log: appTest.logger,
         sourceSchema: appTest.config.get('schema').htmls,
         metadataSchema: appTest.config.get('schema').metadata,
-        parsers: { home: process },
-        mapSource: (h: any) => ({
-          html: h,
-          jsdom: new JSDOM(sanitizeHTML(h.html)).window.document,
-          supporter: undefined,
-          findings: {},
-        }),
+        parsers: { nature: processHome },
         db,
+        codecs: {
+          contribution: HTMLSource,
+          metadata: HomeMetadata.type,
+        },
+        getEntryId: (e) => e.html.id,
         getEntryDate: (e) => e.html.savingTime,
         getEntryNatureType: (e) => e.html.nature.type,
-        getContributions: getLastHTMLs({ db }),
-        saveResults: updateMetadataAndMarkHTML({ db }),
-        codec: HomeMetadata,
+        getContributions: getLastHTMLs(db),
+        buildMetadata: toMetadata as any,
+        saveResults: updateMetadataAndMarkHTML(db) as any,
         expectSources: (sources) => {
           sources.forEach((r: any) => {
             expect(r.processed).toBe(true);

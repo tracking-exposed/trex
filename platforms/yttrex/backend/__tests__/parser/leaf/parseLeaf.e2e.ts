@@ -1,14 +1,22 @@
 import base58 from 'bs58';
 import nacl from 'tweetnacl';
-import { Ad } from '../../../models/Ad';
+import { Ad } from '@yttrex/shared/models/Ad';
+import { sanitizeHTML } from '@shared/utils/html.utils';
 import { processLeaf } from '../../../parsers/leaf';
 import {
   getLastLeaves,
+  LeafSource,
+  toMetadata,
   updateAdvertisingAndMetadata,
 } from '../../../lib/parser/leaf';
 import { GetTest, Test } from '../../../tests/Test';
-import { readHistoryResults, runParserTest } from '../html/utils';
+import {
+  readHistoryResults,
+  runParserTest,
+} from '@shared/test/utils/parser.utils';
 import { parseISO, subMinutes } from 'date-fns';
+import path from 'path';
+import { JSDOM } from 'jsdom';
 
 describe('Leaves parser', () => {
   let appTest: Test;
@@ -25,57 +33,49 @@ describe('Leaves parser', () => {
     };
   });
 
-  afterEach(async () => {
-    await appTest.mongo3.deleteMany(
-      appTest.mongo,
-      appTest.config.get('schema').leaves,
-      {
-        publicKey: {
-          $eq: publicKey,
-        },
-      }
-    );
-    await appTest.mongo3.deleteMany(
-      appTest.mongo,
-      appTest.config.get('schema').ads,
-      {
-        publicKey: {
-          $eq: publicKey,
-        },
-      }
-    );
-  });
-
   describe('Leaves', () => {
     jest.setTimeout(20 * 1000);
 
-    const history = readHistoryResults('leaves/home', publicKey);
+    const history = readHistoryResults(
+      path.resolve(__dirname, '../../fixtures/leaves/home'),
+      publicKey
+    );
 
     test.each(history)(
       'Should correctly parse leaf contribution',
       async ({ sources: _sources, metadata }) => {
         const sources = _sources.map((s) => ({
-          ...s,
-          clientTime: parseISO(s.clientTime ?? new Date().toISOString()),
-          savingTime: subMinutes(new Date(), 2),
+          html: {
+            ...s,
+            clientTime: parseISO(s.clientTime ?? new Date().toISOString()),
+            savingTime: subMinutes(new Date(), 2),
+          },
+          jsdom: new JSDOM(sanitizeHTML(s.html)).window.document,
+          supporter: undefined,
+          findings: {},
         }));
 
         await runParserTest({
           log: appTest.logger,
           sourceSchema: appTest.config.get('schema').leaves,
           metadataSchema: appTest.config.get('schema').ads,
-          parsers: { home: processLeaf },
-          codec: Ad,
+          parsers: { nature: processLeaf },
+          codecs: { contribution: LeafSource, metadata: Ad },
           db,
-          mapSource: (h) => h,
-          getEntryDate: (e) => e.savingTime,
-          getEntryNatureType: (e) => e.nature?.type,
-          getContributions: getLastLeaves({ db }),
-          saveResults: updateAdvertisingAndMetadata({ db }),
+          getEntryId: (e) => e.html.id,
+          buildMetadata: toMetadata,
+          getEntryDate: (e) => e.html.savingTime,
+          getEntryNatureType: (e) =>
+            e.html.nature?.type ?? (e.html as any).type,
+          getContributions: getLastLeaves(db),
+          saveResults: updateAdvertisingAndMetadata(db),
           expectSources: (sources) => {
-            sources.forEach((s) => {
-              expect((s as any).processed).toBe(true);
-            });
+            sources
+              // source with channel1 will be ignored
+              .filter((s) => s.html.selectorName !== 'channel1')
+              .forEach((s) => {
+                expect((s as any).processed).toBe(true);
+              });
           },
           expectMetadata: (receivedMetadata, expectedMetadata) => {
             const {
@@ -110,6 +110,26 @@ describe('Leaves parser', () => {
             }).toMatchObject(expectedM);
           },
         })({ sources, metadata });
+
+        await appTest.mongo3.deleteMany(
+          appTest.mongo,
+          appTest.config.get('schema').leaves,
+          {
+            publicKey: {
+              $eq: publicKey,
+            },
+          }
+        );
+
+        await appTest.mongo3.deleteMany(
+          appTest.mongo,
+          appTest.config.get('schema').ads,
+          {
+            publicKey: {
+              $eq: publicKey,
+            },
+          }
+        );
       }
     );
   });

@@ -1,7 +1,5 @@
-import { string } from "fp-ts";
 import fs from "fs";
 import moment from "moment";
-import nconf from "nconf";
 import path from "path";
 // import events from '../events';
 // const tags = require('../tags');
@@ -13,6 +11,7 @@ import { GetTest, Test } from "../../tests/Test";
 describe.skip("Testing the video submission", function () {
   const dummyKey = "ABCDEF789012345678901234567890";
   const dummyVideoId = "MOCKUPID";
+
   const mockUpVideoCapture = {
     href: `https://www.youtube.com/watch?v=${dummyVideoId}`,
     clientTime: new Date().toISOString(),
@@ -31,7 +30,7 @@ describe.skip("Testing the video submission", function () {
 
   it("delete if exists the dummy supporter", async function () {
     const result = await supporters.remove(dummyKey);
-    expect(result.result.ok).toBe(1);
+    expect(result.deletedCount).toBe(1);
   });
 
   it("creates the dummy directory", function () {

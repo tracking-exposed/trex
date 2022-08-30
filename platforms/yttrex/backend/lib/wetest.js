@@ -4,7 +4,7 @@ const debug = require('debug')('lib:wetest');
 const nconf = require('nconf');
 
 const utils = require('../lib/utils');
-const mongo3 = require('../lib/mongo3');
+const mongo3 = require('@shared/providers/mongo.provider');
 const moment = require('moment');
 
 nconf.argv().env().file({ file: 'config/settings.json' });
@@ -19,7 +19,7 @@ function startTime(t) {
 
 async function pickFromDB(filter, sorting, special) {
     try {
-        const mongoc = await mongo3.clientConnect({concurrency: 1});
+        const mongoc = await mongo3.clientConnect();
         let rv = [];
 
         if(special) {
