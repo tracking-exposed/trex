@@ -1,7 +1,7 @@
 const _ = require('lodash');
 const debug = require('debug')('parsers:numbers');
 
-function metrics(envelop, previous) {
+async function metrics(envelop, previous) {
   /* 2.4.x 'foryou' and 'following' are considered only */
   const availin = ['foryou', 'following'];
 

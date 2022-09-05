@@ -29,7 +29,7 @@ function getFullProfileMetadata(renod, order) {
 /* this is returning a bunch of native information,
  * perhaps might be splitted in appropriate files.
  * videoId, error messages, comment disabled, etc */
-function profile(envelop, previous) {
+async function profile(envelop, previous) {
 
   if (previous.nature.type !== 'profile') return false;
 

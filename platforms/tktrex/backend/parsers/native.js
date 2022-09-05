@@ -1,7 +1,7 @@
 const debug = require('debug')('parser:native');
 // const _ = require('lodash');
 
-function video(envelop, previous) {
+async function video(envelop, previous) {
   if (envelop.html.type !== 'native') {
     return null;
   }
