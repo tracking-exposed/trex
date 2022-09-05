@@ -1,12 +1,12 @@
 {
   "manifest_version": 2,
 
-  "name": "triktroktrex",
+  "name": "tiktroktrex",
 
   "short_name": "tktrex",
   "description": "A tool for academic researchers. Part of the tracking.exposed project, is meant to analyze the algorithm of a popular video portal.",
   "version": "__THIS_IS_IGNORED__PACKAGE.JSON_VERSION_IS_USED_AT_BUILD_TIME__",
-  "author": "The team of Tracking Exposed",
+  "author": "The Tracking Exposed team",
 
   "icons": {
     "16": "tktrex16.png",
