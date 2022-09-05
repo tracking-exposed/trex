@@ -1,7 +1,7 @@
 const _ = require('lodash');
 const debug = require('debug')('parsers:author');
 
-function author(envelop, previous) {
+async function author(envelop, previous) {
   /* 2.4.x author description works only in the following cases */
   const availin = ['foryou', 'following', 'search'];
 

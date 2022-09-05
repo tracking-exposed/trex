@@ -1,6 +1,6 @@
 const debug = require('debug')('parsers:music');
 
-function music(envelop, previous) {
+async function music(envelop, previous) {
   /* 'foryou' 'following' and 'video' shares same pattern */
   const availin = ['foryou', 'following', 'video'];
 

@@ -35,7 +35,7 @@ function videoDescriptionGuess(envelop) {
   return retval;
 }
 
-function description(envelop, previous) {
+async function description(envelop, previous) {
   /* the 'video' have a different structure and should be better
    * handled this diversity of possibility */
   if (previous.nature && previous.nature.type === 'video') {
