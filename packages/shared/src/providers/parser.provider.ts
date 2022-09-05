@@ -8,23 +8,48 @@ import { MongoClient } from 'mongodb';
 import * as mongo3 from './mongo.provider';
 import * as t from 'io-ts';
 
+/**
+ * The parser function
+ *
+ * @typeParam S - The source
+ * @typeParam M - The metadata
+ */
 export type ParserFn<S, M> = (entry: S, findings?: any) => Promise<M | null>;
 
+/**
+ * The return structure for sources fetched by parser
+ *
+ * @typeParam T - Contribution
+ */
 export interface LastContributions<T> {
   errors: number;
   overflow: boolean;
   sources: T[];
 }
 
-export interface PipelineInput<T, PP extends Record<string, ParserFn<T, any>>> {
+/**
+ * The input given to the pipeline
+ *
+ * @typeParam S - The source
+ * @typeParam M - The metadata
+ * @typeParam PP - The parser functions map
+ */
+export interface PipelineInput<S, PP extends Record<string, ParserFn<S, any>>> {
   failures: Record<string, any>;
-  source: T;
+  source: S;
   log: Record<string, any>;
   findings: {
     [K in keyof PP]: Awaited<ReturnType<PP[K]>>;
   };
 }
 
+/**
+ * The output returned by the pipeline
+ *
+ * @typeParam S - The source
+ * @typeParam M - The metadata
+ * @typeParam PP - The parser functions map
+ */
 export interface PipelineOutput<
   S,
   M,
@@ -33,6 +58,10 @@ export interface PipelineOutput<
   metadata: M;
 }
 
+/**
+ * The execution parameters
+ *
+ */
 export interface ExecuteParams {
   /**
    * Contribution ids to select
@@ -50,6 +79,15 @@ export interface ExecuteParams {
   htmlAmount: number;
 }
 
+/**
+ * The output of the execution
+ *
+ * @typeParam S - The source
+ * @typeParam M - The metadata
+ * @typeParam PP - The parsers map
+ *
+ * @return An object where `type` can be `Success` or `Error` and the payload contains the real result
+ */
 export type ExecutionOutput<
   S,
   M,
@@ -64,6 +102,11 @@ export type ExecutionOutput<
       payload: any;
     };
 
+/**
+ * The options given to parser
+ *
+ *
+ */
 export interface ParserProviderOpts extends ExecuteParams {
   /**
    * minutes to look back
@@ -71,10 +114,30 @@ export interface ParserProviderOpts extends ExecuteParams {
   backInTime: number;
 }
 
-export interface ParserProvider {
-  run: (opts: ParserProviderOpts) => Promise<any>;
+/**
+ * The parser provider interface
+ *
+ */
+export interface ParserProvider<
+  S,
+  M,
+  PP extends Record<string, ParserFn<S, any>>
+> {
+  /**
+   * Execute the parser with the given options {@link ParserProviderOpts}
+   *
+   * @return a Promise with the {@link ExecutionOutput}
+   */
+  run: (opts: ParserProviderOpts) => Promise<ExecutionOutput<S, M, PP>>;
 }
 
+/**
+ * The DB context given to {@link GetParserProvider}
+ *
+ * @param api - our mongo client interface {@link mongo3}
+ * @param read - a mongo client instance used to read sources
+ * @param write - a mongo client instance used to write results (sources and metadata)
+ */
 export interface ParserProviderContextDB {
   api: typeof mongo3;
   read: MongoClient;
@@ -83,6 +146,8 @@ export interface ParserProviderContextDB {
 
 /**
  * Get contributions function
+ *
+ * @typeParam S - Source
  */
 export type GetContributionsFn<S> = (
   filter: any,
@@ -99,6 +164,13 @@ export type BuildMetadataFn<
   PP extends Record<string, ParserFn<S, any>>
 > = (e: PipelineInput<S, PP>) => M | null;
 
+/**
+ * Parser provider context
+ *
+ * @typeParam S - The source io-ts codec
+ * @typeParams M - The metadata io-ts codec
+ * @typeParam PP - The parsers map
+ */
 export interface ParserProviderContext<
   S extends t.Mixed,
   M extends t.Mixed,
@@ -143,6 +215,13 @@ export interface ParserProviderContext<
   }>;
 }
 
+/**
+ * The context given to parser
+ *
+ * @typeParam S - The io-ts codec for source
+ * @typeParam M - The io-ts codec for metadata
+ * @typeParam PP - The parser functions map
+ */
 interface ParserContext<
   S extends t.Mixed,
   M extends t.Mixed,
@@ -459,6 +538,14 @@ export const executionLoop =
     }
   };
 
+/**
+ * Convert the pipeline output to an object compatible with `console.table`
+ *
+ * @param getEntryId - A function that retrieves entry id
+ * @param p - An array of outputs from pipeline {@link PipelineOutput}
+ *
+ * @returns An object with `log`, `metadata` and `findings` keys
+ */
 export const payloadToTableOutput = <
   S extends t.Mixed,
   M extends t.Mixed,
@@ -486,6 +573,12 @@ export const payloadToTableOutput = <
 let lastExecution: Date;
 let computedFrequency = 10;
 
+/**
+ *
+ * @param name
+ * @param ctx - The parser context {@link ParserProviderContext}
+ * @returns
+ */
 export const GetParserProvider = <
   S extends t.Mixed,
   M extends t.Mixed,
@@ -493,7 +586,7 @@ export const GetParserProvider = <
 >(
   name: string,
   ctx: ParserProviderContext<S, M, PP>
-): ParserProvider => {
+): ParserProvider<t.TypeOf<S>, t.TypeOf<M>, PP> => {
   const log = trexLogger.extend(name);
   return {
     run: async ({
