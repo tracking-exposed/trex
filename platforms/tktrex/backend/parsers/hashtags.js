@@ -1,7 +1,7 @@
 const _ = require('lodash');
 const debug = require('debug')('parsers:hashtags');
 
-function hashtags(envelop, previous) {
+async function hashtags(envelop, previous) {
   /* only feed 'foryou' and 'following' have a description */
   const availin = ['foryou', 'following'];
 

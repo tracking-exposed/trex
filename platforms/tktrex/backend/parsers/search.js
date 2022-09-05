@@ -59,7 +59,7 @@ function getFullSearchMetadata(renod, order) {
 /* this is returning a bunch of native information,
  * perhaps might be splitted in appropriate files.
  * videoId, error messages, comment disabled, etc */
-function search(envelop, previous) {
+async function search(envelop, previous) {
   if (previous.nature.type !== 'search') return false;
 
   /* this piece of code return a list of videos, because

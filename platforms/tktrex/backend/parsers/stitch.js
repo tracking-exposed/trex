@@ -1,6 +1,6 @@
 const debug = require('debug')('parsers:stitch');
 
-function stitch(envelop, previous) {
+async function stitch(envelop, previous) {
   /* 2.4.x only feed 'foryou' and 'following' are considered */
   const availin = ['foryou', 'following'];
 
