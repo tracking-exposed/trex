@@ -5,7 +5,7 @@ import {
   Nature,
   ProfileN,
   SearchN,
-  VideoN
+  VideoN,
 } from '@tktrex/shared/models/Nature';
 import D from 'debug';
 import _ from 'lodash';
@@ -113,7 +113,7 @@ export async function download(filename: string, url: string): Promise<any> {
   }
   const data = await x.buffer();
   fs.writeFileSync(filename, data);
-  // debug('Written file %s!', filename);
+  debug('Successfully downloaded %s and written file %s', url, filename);
   return {
     downloaded: true,
     reason: 200,
