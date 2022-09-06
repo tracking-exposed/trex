@@ -74,7 +74,11 @@ const Popup: React.FC = () => {
       return (
         <Card style={styles}>
           <Alert severity={'info'}>
-            Access to the <a href="https://tiktok.com/">TikTok platform</a>
+            Access to{' '}
+            <a target="_blank" href="https://tiktok.com/" rel="noreferrer">
+              TikTok
+            </a>
+            .
           </Alert>
         </Card>
       );
