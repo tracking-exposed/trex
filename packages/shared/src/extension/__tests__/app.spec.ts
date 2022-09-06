@@ -163,6 +163,7 @@ describe('App', () => {
     expect(app.config.publicKey.length).toBeGreaterThanOrEqual(43);
     expect(app.config.secretKey.length).toBeGreaterThanOrEqual(86);
     expect(onRegisterMock).toHaveBeenCalledWith(appHub, expectedConfig);
+    app.destroy();
   });
 
   test('Succeeds when settings.json is present', async () => {
@@ -190,5 +191,6 @@ describe('App', () => {
 
     expect(app.config).toMatchObject(expectedConfig);
     expect(onRegisterMock).toHaveBeenCalledWith(appHub, expectedConfig);
+    app.destroy();
   });
 });
