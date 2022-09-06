@@ -22,17 +22,16 @@ import { configUpdate } from '../../background/sendMessage';
 interface SettingsState extends Partial<UserSettings> {
   ux: boolean;
   active: boolean;
-  researchTag: string;
 }
 
 export const Settings: React.FC<SettingsState> = ({
   ux,
   active,
-  researchTag,
+  researchTag: _researchTag,
 }) => {
   const [uxOn, setUX] = useState(ux);
   const [activeOn, setActive] = useState(active);
-  const [tag, setTag] = useState(researchTag);
+  const [researchTag, setResearchTag] = useState(_researchTag);
 
   const toggleActivation = (
     event: React.ChangeEvent<HTMLInputElement>
@@ -49,7 +48,7 @@ export const Settings: React.FC<SettingsState> = ({
   const doSetResearchTag = (
     event: React.ChangeEvent<HTMLInputElement>
   ): void => {
-    setTag(event.target.value);
+    setResearchTag(event.target.value);
     configUpdate({ researchTag: event.target.value }, () => null);
   };
 
@@ -67,7 +66,7 @@ export const Settings: React.FC<SettingsState> = ({
         </ListItemIcon>
         <InputLabel>Tag your Research</InputLabel>
         <Input
-          value={tag}
+          value={researchTag ?? ''}
           style={{ marginLeft: 8 }}
           onChange={doSetResearchTag}
         />
