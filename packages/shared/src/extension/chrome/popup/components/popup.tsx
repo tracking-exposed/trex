@@ -1,37 +1,51 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 
 import moment from 'moment';
 
 import { Card } from '@material-ui/core';
-import { Alert, AlertTitle } from '@material-ui/lab';
 import FormHelperText from '@material-ui/core/FormHelperText';
-
-import InfoBox from './infoBox';
-import Settings from './settings';
-import GetCSV from './getCSV';
+import { Alert, AlertTitle } from '@material-ui/lab';
 import config from '../../../config';
 import log from '../../../logger';
+import UserSettings from '../../../models/UserSettings';
 import { localLookup } from '../../background/sendMessage';
-
-const bo = chrome;
+import GetCSV from './getCSV';
+import InfoBox from './infoBox';
+import Settings from './settings';
 
 const styles = {
   width: '400px',
 };
 
+type PopupState =
+  | {
+      status: 'loading';
+    }
+  | {
+      status: 'error';
+      error: Error;
+    }
+  | {
+      status: 'done';
+      payload: UserSettings;
+    };
+
 const Popup: React.FC = () => {
-  const [status, setStatus] = useState<'loading' | 'error' | 'done'>('loading');
-  const [userSettings, setUserSettings] = useState<any>(undefined);
+  const [userSettingsS, setUserSettingsState] = useState<PopupState>({
+    status: 'loading',
+  });
 
   useEffect(() => {
     localLookup(true, (response) => {
       if (response.type === 'Error') {
-        setStatus('error');
-        log.error('could not get user settings', bo.runtime.lastError);
+        setUserSettingsState({
+          status: 'error',
+          error: response.error,
+        });
+        log.error('could not get user settings %O', response.error);
         return;
       }
-      setUserSettings(response.result);
-      setStatus('done');
+      setUserSettingsState({ status: 'done', payload: response.result });
     });
   }, []);
 
@@ -41,7 +55,7 @@ const Popup: React.FC = () => {
 
   const timeAgo = moment.duration(deltaMs).humanize();
 
-  if (status === 'loading') {
+  if (userSettingsS.status === 'loading') {
     return (
       <Card style={styles}>
         <Alert severity="info">
@@ -52,12 +66,27 @@ const Popup: React.FC = () => {
     );
   }
 
-  if (status === 'error') {
+  if (userSettingsS.status === 'error') {
+    if (
+      userSettingsS.error.message ===
+      "Error during 'LocalLookup' on codec UserSettings validation"
+    ) {
+      return (
+        <Card style={styles}>
+          <Alert severity={'info'}>
+            Access to the <a href="https://tiktok.com/">TikTok platform</a>
+          </Alert>
+        </Card>
+      );
+    }
     return (
       <Card style={styles}>
-        <Alert severity="error">
+        <Alert severity={'error'}>
           <AlertTitle>Error</AlertTitle>
           Something went wrong, sorry.
+          <p>
+            {userSettingsS.error.name}: {userSettingsS.error.message}
+          </p>
         </Alert>
       </Card>
     );
@@ -67,9 +96,9 @@ const Popup: React.FC = () => {
     <div style={styles}>
       <Card>
         <FormHelperText>TikTok TRex — main switch</FormHelperText>
-        <Settings {...userSettings} />
+        <Settings {...userSettingsS.payload} />
         <FormHelperText>Access to your data</FormHelperText>
-        <GetCSV publicKey={userSettings.publicKey} />
+        <GetCSV publicKey={userSettingsS.payload.publicKey} />
         <FormHelperText>About</FormHelperText>
         <InfoBox />
       </Card>
