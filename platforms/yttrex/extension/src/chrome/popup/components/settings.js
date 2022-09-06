@@ -26,6 +26,7 @@ class Settings extends React.Component {
       active: props.active,
       ux: props.ux,
       researchTag: props.researchTag,
+      experimentId: props.experimentId,
     };
   }
 
@@ -55,8 +56,12 @@ class Settings extends React.Component {
     }
 
     const doSetResearchTag = (event) => {
-      const tag = { researchTag: event.target.value };
-      this.setState(tag);
+      this.setState({ ...this.state, researchTag: event.target.value });
+      saveUpdate(tag);
+    };
+
+    const doSetExperimentId = (event) => {
+      this.setState({ ...this.state, experimentId: event.target.value });
       saveUpdate(tag);
     };
 
@@ -83,6 +88,25 @@ class Settings extends React.Component {
             onChange={doSetResearchTag}
           />
         </ListItem>
+        {this.state.experimentId ? (
+          <ListItem
+            style={{
+              display: 'flex',
+              flexDirection: 'row',
+              alignItems: 'center',
+            }}
+          >
+            <ListItemIcon>
+              <LabelIcon />
+            </ListItemIcon>
+            <InputLabel>Experiment Id</InputLabel>
+            <Input
+              value={this.state.experimentId}
+              style={{ marginLeft: 8 }}
+              onChange={doSetExperimentId}
+            />
+          </ListItem>
+        ) : null}
         <ListItem>
           <ListItemIcon>
             <TimelineIcon />
