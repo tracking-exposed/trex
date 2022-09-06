@@ -199,7 +199,7 @@ function setupObserver(
  * will be invoked after the handshake with API server.
  **/
 
-interface App {
+export interface App {
   config: UserSettings;
   reload: (c: UserSettings) => void;
   destroy: () => void;
@@ -223,7 +223,22 @@ const serverHandshakeP = (
 ): Promise<Response<HandshakeResponse>> =>
   new Promise((resolve) => serverLookup(p, resolve));
 
+let loading = false;
+let app: App | undefined;
 export async function boot(opts: BootOpts): Promise<App> {
+  if (app) {
+    appLog.debug('App already booted!');
+    return app;
+  }
+  if (loading) {
+    appLog.debug('boot in progress...');
+    return Promise.resolve({
+      config: {} as any,
+      reload: () => {},
+      destroy: () => {},
+    });
+  }
+  loading = true;
   appLog.info('booting with config', opts.payload);
 
   // connect to a port to listen for `config` changes dispatched from background
@@ -273,14 +288,15 @@ export async function boot(opts: BootOpts): Promise<App> {
 
   if (!settings.active) {
     appLog.info('extension disabled!');
-    const context = {
+    app = {
       config: settings,
       reload: () => {},
       destroy: () => {
         opts.hub.hub.clear();
       },
     };
-    return context;
+    loading = false;
+    return app;
   }
 
   // merge the json and db settings with per-extension defined payload
@@ -321,7 +337,7 @@ export async function boot(opts: BootOpts): Promise<App> {
   opts.onAuthenticated(handshakeResponse.result);
 
   // define the app context to return
-  const context: App = {
+  app = {
     config,
     reload: (c) => {
       appLog.debug('Reloading app with config %O', c);
@@ -337,6 +353,7 @@ export async function boot(opts: BootOpts): Promise<App> {
     destroy: () => {
       observer.disconnect();
       opts.hub.hub.clear();
+      app = undefined;
     },
   };
 
@@ -344,9 +361,11 @@ export async function boot(opts: BootOpts): Promise<App> {
   configUpdatePort.onMessage.addListener(function (message, sender) {
     appLog.debug('Received message on "ConfigUpdate" port %O', message);
     if (message.type === 'Reload') {
-      context.reload(message.payload);
+      app?.reload(message.payload);
     }
   });
 
-  return context;
+  loading = false;
+
+  return app;
 }
