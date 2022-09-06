@@ -1,5 +1,6 @@
 import { ParserFn } from '@shared/providers/parser.provider';
 import D from 'debug';
+import _ from 'lodash';
 import { HTMLSource } from '../lib/parser';
 import parseAuthor from './author';
 import parseDescription from './description';
@@ -13,10 +14,14 @@ const parseNativeVideo: ParserFn<HTMLSource, any> = async (
   envelop,
   findings
 ) => {
-  debug('processing native video entry %O', envelop);
+  debug(
+    'processing native video entry %O %O',
+    _.omit(envelop, ['html.html', 'jsdom']),
+    findings
+  );
 
   if (envelop.html.type !== 'native') {
-    debug('entry is not "native": %O', envelop);
+    debug('entry is not "native" (%s)', envelop.html.type);
     return null;
   }
 
