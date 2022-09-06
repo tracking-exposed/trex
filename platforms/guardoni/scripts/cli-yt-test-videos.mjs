@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 /* eslint-disable camelcase */
 
-import { $, os, fetch } from 'zx';
+import { $, os, fetch, path, fs } from 'zx';
 import { normalizePlatform, getGuardoniCliPkgName } from './utils.mjs';
 import dotenv from 'dotenv';
 import assert from 'assert';
@@ -12,6 +12,10 @@ dotenv.config({ path: '.env.development' });
 void (async function () {
   const version = await $`node -p -e "require('./package.json').version"`;
   const platform = normalizePlatform(os.type());
+  const profile = 'profile-test-99';
+
+  fs.removeSync(path.resolve(process.cwd(), 'profiles', profile));
+
   const cli = `./dist/${getGuardoniCliPkgName(
     version.stdout.replace('\n', ''),
     platform
@@ -24,10 +28,12 @@ void (async function () {
     '--verbose',
   ];
 
+  const researchTag = 'cli-yt-test-videos';
   const experimentFlags = [
     ...flags,
     `--publicKey=${process.env.PUBLIC_KEY}`,
     `--secretKey=${process.env.SECRET_KEY}`,
+    `--researchTag=${researchTag}`
   ];
 
   // reject cookie modal
