@@ -1,13 +1,27 @@
 #!/usr/bin/env node
 /* eslint-disable camelcase */
 
-import { $, fs, path } from 'zx';
+import { $, fs, path, fetch } from 'zx';
 import dotenv from 'dotenv';
 import assert from 'assert';
 
 dotenv.config({ path: '.env.development' });
 
 const version = await $`node -p -e "require('./package.json').version"`;
+
+try {
+  const response = await fetch('http://localhost:14000/api/v0/health');
+  const isRunning = await response.text();
+  if(isRunning !== 'OK') {
+    throw new Error();
+  }
+  console.log('\x1b[33mbackend running!\x1b[0m');
+} catch (e) {
+  console.log("backend not running? run:");
+  console.log('\x1b[33m$ yarn pm2 start platforms/ecosystem.config.js \x1b[0m');
+  process.exit(1);
+}
+
 
 const profile = 'profile-test-99';
 
