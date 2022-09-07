@@ -13,14 +13,14 @@ function videoDescriptionGuess(envelop) {
   });
   let retval = null;
   if (uno) {
-    debug("first condition happened in this 'video'");
+    debug('format kind (1): %s', uno.textContent);
     retval = { description: uno.textContent };
   } else if (due) {
-    debug("second condition happened in this 'video'");
+    debug('format kind (2): %s', due.textContent);
     retval = { description: due.textContent };
   } else if (tre && treTopSize.length) {
     debug(
-      "third condition happened in this 'video', picking the first of %j",
+      'format kind (3), picking the first of %j',
       _.compact(
         _.map(treTopSize, function (o) {
           return o.getAttribute('alt');
@@ -29,7 +29,7 @@ function videoDescriptionGuess(envelop) {
     );
     retval = { description: treTopSize[0].getAttribute('alt') };
   } else {
-    debug("Failure condition in this 'video'!");
+    debug('All the extraction approaches failed');
     return null;
   }
   return retval;
