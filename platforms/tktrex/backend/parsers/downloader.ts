@@ -1,11 +1,12 @@
 import { ParserFn } from '@shared/providers/parser.provider';
+import _ from 'lodash';
 import D from 'debug';
 import { HTMLSource } from '../lib/parser';
 import { getUUID, download } from './shared';
 import fs from 'fs';
 import path from 'path';
 
-const debug = D('parser:native');
+const debug = D('parser:downloader');
 
 // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
 async function processLink({ link, linkType }: { link: any; linkType: any }) {
@@ -75,12 +76,21 @@ const downloader: ParserFn<HTMLSource, any> = async (envelop, findings) => {
   const retval = [];
   for (const img of imageNodes) {
     const url = img.getAttribute('src');
+    const alt = img.getAttribute('alt');
+
     const info = await processLink({ link: url, linkType: 'thumbnail' });
+    info.url = url;
+    if (alt?.length) info.alt = alt;
+
     retval.push(info);
   }
 
-  debug('processing native video entry %O %O', envelop, findings);
-  return retval;
+  debug(
+    'reported as downloaded %d links (%O)',
+    retval.length,
+    _.countBy(retval, 'reason')
+  );
+  return { downloader: retval };
 };
 
 /*
