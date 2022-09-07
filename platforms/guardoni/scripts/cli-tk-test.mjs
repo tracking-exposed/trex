@@ -1,13 +1,16 @@
 #!/usr/bin/env node
 /* eslint-disable camelcase */
 
-import { $ } from 'zx';
+import { $, fs, path } from 'zx';
 import dotenv from 'dotenv';
 import assert from 'assert';
 
 dotenv.config({ path: '.env.development' });
 
 const version = await $`node -p -e "require('./package.json').version"`;
+
+const profile = 'profile-test-99';
+
 const cliFlags = [
   '--verbose',
   '--headless=false',
@@ -25,13 +28,19 @@ const cli = `./dist/guardoni-cli-${version.stdout.replace('\n', '')}-linux`;
 
 // eslint-disable-next-line no-void
 void (async function () {
+
+  fs.removeSync(path.resolve(process.cwd(), 'profiles', profile));
+
   // register an experiment for search
   const tk_search_experiment_register_out =
     await $`(${cli} ${cliFlags} tk-register ./experiments/tk-search.csv | grep 'experimentId: ')`;
   const tk_search_experiment_id =
     tk_search_experiment_register_out.stdout.replace('experimentId: \t ', '');
 
-  // # echo $tk_search_experiment_id
+  await $`echo ${tk_search_experiment_id}`
+
+  // reject cookie modal
+  await $`${cli} ${cliFlags} tk-navigate --cookie-modal=reject --headless=false`
 
   // # exec the experiment
   const tk_search_experiment_run_out =
