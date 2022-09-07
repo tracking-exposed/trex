@@ -30,12 +30,13 @@ type PopupState =
       payload: UserSettings;
     };
 
+let localLookupInterval: any;
 const Popup: React.FC = () => {
   const [userSettingsS, setUserSettingsState] = useState<PopupState>({
     status: 'loading',
   });
 
-  useEffect(() => {
+  const handleLocalLookup = React.useCallback(() => {
     localLookup(true, (response) => {
       if (response.type === 'Error') {
         setUserSettingsState({
@@ -45,9 +46,26 @@ const Popup: React.FC = () => {
         log.error('could not get user settings %O', response.error);
         return;
       }
+      localLookupInterval = undefined;
       setUserSettingsState({ status: 'done', payload: response.result });
     });
   }, []);
+
+  useEffect(() => {
+    handleLocalLookup();
+  }, []);
+
+  useEffect(() => {
+    if (userSettingsS.status === 'error') {
+      if (!localLookupInterval) {
+        localLookupInterval = setInterval(() => {
+          handleLocalLookup();
+        }, 2000);
+      }
+    } else if (userSettingsS.status === 'done') {
+      localLookupInterval?.clear();
+    }
+  }, [userSettingsS.status]);
 
   const deltaMs = config.BUILD_DATE
     ? Date.now() - new Date(config.BUILD_DATE).getTime()
