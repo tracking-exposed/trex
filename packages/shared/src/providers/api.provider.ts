@@ -49,7 +49,6 @@ const liftFetch = <B>(
     TE.tryCatch(lp, toAPIError),
     TE.map((d) => d.data),
     TE.chain((content) => {
-      apiLogger.debug('Content received %O', content);
       return pipe(
         decode(content),
         E.mapLeft((e): APIError => {

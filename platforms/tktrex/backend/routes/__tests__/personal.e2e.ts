@@ -127,12 +127,12 @@ describe('Events', () => {
             baretext: '🌹🌕',
             description: '🌹🌕#おすすめ #コスプレ #制服',
             experimentId: experiment.experimentId,
-            hashtags: ['#おすすめ', '#コスプレ', '#制服'],
-            metrics: {
-              commentn: '236',
-              liken: '10K',
-              sharen: '167',
-            },
+            // hashtags: ['#おすすめ', '#コスプレ', '#制服'],
+            // metrics: {
+            //   commentn: '236',
+            //   liken: '10K',
+            //   sharen: '167',
+            // },
           },
         ],
       });
