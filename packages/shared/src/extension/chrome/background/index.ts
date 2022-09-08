@@ -37,6 +37,11 @@ export const MessageHandler =
       return true;
     }
 
+    if (request.type === 'ReloadExtension') {
+      void reloadExtension.load();
+      return true;
+    }
+
     if (request.type === 'sync') {
       void sync.handleSyncMessage(opts)(request, sender, sendResponse);
       return true;
@@ -46,7 +51,7 @@ export const MessageHandler =
 // bind the scoped message listener
 export const load = (opts: sync.LoadOpts): void => {
   logger.debug(`Bind background events %O`, opts);
-  reloadExtension.load();
+
 
   bo.runtime.onConnect.addListener((port) => {
     logger.debug('Port connected: %O', port);
@@ -54,7 +59,8 @@ export const load = (opts: sync.LoadOpts): void => {
     const handleMessage = MessageHandler(opts, (c) => {
       logger.debug('Config updated %O', c);
       if (port.name === 'ConfigUpdate') {
-        port.postMessage({ type: 'Reload', payload: c });
+        logger.debug('Should reload the app config');
+        port.postMessage({ type: 'ReloadApp', payload: c });
         return true;
       }
     });

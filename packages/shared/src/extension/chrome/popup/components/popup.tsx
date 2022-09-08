@@ -34,10 +34,10 @@ type PopupState =
 let localLookupInterval: any;
 const Popup: React.FC = () => {
   const [userSettingsS, setUserSettingsState] = useState<PopupState>({
-    status: 'loading',
+    status: 'init',
   });
 
-  const handleLocalLookup = React.useCallback(() => {
+  const handleLocalLookup = (): void => {
     localLookup(true, (response) => {
       if (response.type === 'Error') {
         setUserSettingsState({
@@ -45,6 +45,11 @@ const Popup: React.FC = () => {
           error: response.error,
         });
         log.error('could not get user settings %O', response.error);
+
+        // localLookupInterval = setTimeout(() => {
+        //   log.info('Refetching settings...');
+        //   handleLocalLookup();
+        // }, 2000);
         return;
       }
 
@@ -55,9 +60,9 @@ const Popup: React.FC = () => {
 
       setUserSettingsState({ status: 'done', payload: response.result });
     });
-  }, []);
+  };
 
-  const handleConfigChange = React.useCallback((s: UserSettings) => {
+  const handleConfigChange = React.useCallback((s: UserSettings): void => {
     configUpdate(s, (r) => {
       if (r.type === 'Error') {
         setUserSettingsState({
@@ -74,21 +79,10 @@ const Popup: React.FC = () => {
   }, []);
 
   useEffect(() => {
-    handleLocalLookup();
-  }, []);
-
-  const startUserSettingsListener = (): void => {
-    if (!localLookupInterval) {
-      localLookupInterval = setInterval(() => {
-        if (
-          userSettingsS.status === 'error' ||
-          userSettingsS.status === 'init'
-        ) {
-          handleLocalLookup();
-        }
-      }, 2000);
+    if (userSettingsS.status === 'init') {
+      handleLocalLookup();
     }
-  };
+  }, []);
 
   const deltaMs = config.BUILD_DATE
     ? Date.now() - new Date(config.BUILD_DATE).getTime()
@@ -121,7 +115,7 @@ const Popup: React.FC = () => {
                 target="_blank"
                 href="https://tiktok.com/"
                 rel="noreferrer"
-                onClick={() => startUserSettingsListener()}
+                // onClick={() => startUserSettingsListener()}
               >
                 TikTok
               </a>
