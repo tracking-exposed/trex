@@ -8,7 +8,7 @@ import { Alert, AlertTitle } from '@material-ui/lab';
 import config from '../../../config';
 import log from '../../../logger';
 import UserSettings from '../../../models/UserSettings';
-import { localLookup } from '../../background/sendMessage';
+import { configUpdate, localLookup } from '../../background/sendMessage';
 import GetCSV from './getCSV';
 import InfoBox from './infoBox';
 import Settings from './settings';
@@ -18,6 +18,7 @@ const styles = {
 };
 
 type PopupState =
+  | { status: 'init' }
   | {
       status: 'loading';
     }
@@ -33,10 +34,10 @@ type PopupState =
 let localLookupInterval: any;
 const Popup: React.FC = () => {
   const [userSettingsS, setUserSettingsState] = useState<PopupState>({
-    status: 'loading',
+    status: 'init',
   });
 
-  const handleLocalLookup = React.useCallback(() => {
+  const handleLocalLookup = (): void => {
     localLookup(true, (response) => {
       if (response.type === 'Error') {
         setUserSettingsState({
@@ -44,28 +45,44 @@ const Popup: React.FC = () => {
           error: response.error,
         });
         log.error('could not get user settings %O', response.error);
+
+        // localLookupInterval = setTimeout(() => {
+        //   log.info('Refetching settings...');
+        //   handleLocalLookup();
+        // }, 2000);
         return;
       }
-      localLookupInterval = undefined;
+
+      if (localLookupInterval) {
+        localLookupInterval.clear();
+        localLookupInterval = undefined;
+      }
+
       setUserSettingsState({ status: 'done', payload: response.result });
+    });
+  };
+
+  const handleConfigChange = React.useCallback((s: UserSettings): void => {
+    configUpdate(s, (r) => {
+      if (r.type === 'Error') {
+        setUserSettingsState({
+          status: 'error',
+          error: r.error,
+        });
+      } else {
+        setUserSettingsState({
+          status: 'done',
+          payload: r.result,
+        });
+      }
     });
   }, []);
 
   useEffect(() => {
-    handleLocalLookup();
-  }, []);
-
-  useEffect(() => {
-    if (userSettingsS.status === 'error') {
-      if (!localLookupInterval) {
-        localLookupInterval = setInterval(() => {
-          handleLocalLookup();
-        }, 2000);
-      }
-    } else if (userSettingsS.status === 'done') {
-      localLookupInterval?.clear();
+    if (userSettingsS.status === 'init') {
+      handleLocalLookup();
     }
-  }, [userSettingsS.status]);
+  }, []);
 
   const deltaMs = config.BUILD_DATE
     ? Date.now() - new Date(config.BUILD_DATE).getTime()
@@ -73,57 +90,71 @@ const Popup: React.FC = () => {
 
   const timeAgo = moment.duration(deltaMs).humanize();
 
-  if (userSettingsS.status === 'loading') {
-    return (
-      <Card style={styles}>
-        <Alert severity="info">
-          <AlertTitle>Loading</AlertTitle>
-          Loading user settings
-        </Alert>
-      </Card>
-    );
-  }
-
-  if (userSettingsS.status === 'error') {
-    if (
-      userSettingsS.error.message ===
-      "Error during 'LocalLookup' on codec UserSettings validation"
-    ) {
+  const content = React.useMemo(() => {
+    if (userSettingsS.status === 'loading' || userSettingsS.status === 'init') {
       return (
         <Card style={styles}>
-          <Alert severity={'info'}>
-            Access to{' '}
-            <a target="_blank" href="https://tiktok.com/" rel="noreferrer">
-              TikTok
-            </a>
-            .
+          <Alert severity="info">
+            <AlertTitle>Loading</AlertTitle>
+            Loading user settings
           </Alert>
         </Card>
       );
     }
-    return (
-      <Card style={styles}>
-        <Alert severity={'error'}>
-          <AlertTitle>Error</AlertTitle>
-          Something went wrong, sorry.
-          <p>
-            {userSettingsS.error.name}: {userSettingsS.error.message}
-          </p>
-        </Alert>
-      </Card>
-    );
-  }
 
-  return (
-    <div style={styles}>
+    if (userSettingsS.status === 'error') {
+      if (
+        userSettingsS.error.message ===
+        "Error during 'LocalLookup' on codec UserSettings validation"
+      ) {
+        return (
+          <Card style={styles}>
+            <Alert severity={'info'}>
+              Access to{' '}
+              <a
+                target="_blank"
+                href="https://tiktok.com/"
+                rel="noreferrer"
+                // onClick={() => startUserSettingsListener()}
+              >
+                TikTok
+              </a>
+              .
+            </Alert>
+          </Card>
+        );
+      }
+      return (
+        <Card style={styles}>
+          <Alert severity={'error'}>
+            <AlertTitle>Error</AlertTitle>
+            Something went wrong, sorry.
+            <p>
+              {userSettingsS.error.name}: {userSettingsS.error.message}
+            </p>
+          </Alert>
+        </Card>
+      );
+    }
+
+    return (
       <Card>
         <FormHelperText>TikTok TRex — main switch</FormHelperText>
-        <Settings {...userSettingsS.payload} />
+        <Settings
+          settings={userSettingsS.payload}
+          onSettingsChange={handleConfigChange}
+        />
         <FormHelperText>Access to your data</FormHelperText>
         <GetCSV publicKey={userSettingsS.payload.publicKey} />
         <FormHelperText>About</FormHelperText>
         <InfoBox />
       </Card>
+    );
+  }, [userSettingsS]);
+
+  return (
+    <div style={styles}>
+      {content}
       <small>
         version {config.VERSION}, released {timeAgo} ago
       </small>

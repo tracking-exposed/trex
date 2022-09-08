@@ -360,9 +360,11 @@ export async function boot(opts: BootOpts): Promise<App> {
   // listen on "ConfigUpdate" port for messages
   configUpdatePort.onMessage.addListener(function (message, sender) {
     appLog.debug('Received message on "ConfigUpdate" port %O', message);
-    if (message.type === 'Reload') {
+    if (message.type === 'ReloadApp') {
       app?.reload(message.payload);
+      return true;
     }
+    return false;
   });
 
   loading = false;

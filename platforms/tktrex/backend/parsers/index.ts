@@ -15,7 +15,7 @@ export const parsers = {
   description,
   music,
   hashtags,
-  numbers,
+  metrics: numbers,
   stitch,
   author,
   search,

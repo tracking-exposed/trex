@@ -33,19 +33,12 @@ export function watch(
   // intended).
 
   // debugger;
-  const mutationObserver = new MutationObserver((mutations) =>
+  const mutationObserver = new MutationObserver((mutations) => {
     // Each `mutation` in the `mutations` array contains an...
-    mutations.forEach((mutation) => {
-      // ...array of added nodes. We need to iterate all of the nodes.
-      mutation.addedNodes.forEach(
-        (node) =>
-          // We analyze each `node`, if it is an `HTMLElement` then it implements the `querySelectorAll` interface, that we use to match our `selector`.
-          // For each HTMLElement matching the selector, we finally trigger `callback` with the matching HTMLElement.
-          node instanceof HTMLElement &&
-          node.querySelectorAll(selector).forEach(htmlElement(callback))
-      );
-    })
-  );
+    // mutations.forEach((mutation) => {
+    window.document.querySelectorAll(selector).forEach(htmlElement(callback));
+    // });
+  });
 
   // We want this function to trigger `callback` on HTMLElements that are already in
   // the DOM. Note that this function works asynchronously, and we expect to

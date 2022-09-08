@@ -1,55 +1,58 @@
-import React, { useState } from 'react';
+import React from 'react';
 
 import {
   Input,
   InputLabel,
-  Switch,
   List,
   ListItem,
   ListItemIcon,
-  ListItemText,
   ListItemSecondaryAction,
+  ListItemText,
+  Switch,
 } from '@material-ui/core';
-
 import { Label as LabelIcon } from '@material-ui/icons';
-
-import TimelineIcon from '@material-ui/icons/Timeline';
 import LocalHospitalRounded from '@material-ui/icons/LocalHospitalRounded';
-
+import TimelineIcon from '@material-ui/icons/Timeline';
 import UserSettings from '../../../models/UserSettings';
-import { configUpdate } from '../../background/sendMessage';
 
-interface SettingsState extends Partial<UserSettings> {
-  ux: boolean;
-  active: boolean;
+interface SettingsProps {
+  settings: UserSettings;
+  onSettingsChange: (s: UserSettings) => void;
 }
 
-export const Settings: React.FC<SettingsState> = ({
-  ux,
-  active,
-  researchTag: _researchTag,
+export const Settings: React.FC<SettingsProps> = ({
+  settings: { ux, active, researchTag, ...settings },
+  onSettingsChange,
 }) => {
-  const [uxOn, setUX] = useState(ux);
-  const [activeOn, setActive] = useState(active);
-  const [researchTag, setResearchTag] = useState(_researchTag);
-
   const toggleActivation = (
     event: React.ChangeEvent<HTMLInputElement>
   ): any => {
-    setActive(event.target.checked);
-    configUpdate({ active: event.target.checked }, () => null);
+    onSettingsChange({
+      ...settings,
+      researchTag,
+      ux,
+      active: event.target.checked,
+    });
   };
 
   const toggleUX = (event: React.ChangeEvent<HTMLInputElement>): any => {
-    setUX(event.target.checked);
-    configUpdate({ ux: event.target.checked }, () => null);
+    onSettingsChange({
+      ...settings,
+      researchTag,
+      active,
+      ux: event.target.checked,
+    });
   };
 
   const doSetResearchTag = (
     event: React.ChangeEvent<HTMLInputElement>
   ): void => {
-    setResearchTag(event.target.value);
-    configUpdate({ researchTag: event.target.value }, () => null);
+    onSettingsChange({
+      ...settings,
+      active,
+      ux,
+      researchTag: event.target.value,
+    });
   };
 
   return (
@@ -80,7 +83,7 @@ export const Settings: React.FC<SettingsState> = ({
           <Switch
             edge="end"
             onChange={(x) => toggleActivation(x)}
-            checked={activeOn}
+            checked={active}
             inputProps={{ 'aria-labelledby': 'tktrex-main-switch' }}
           />
         </ListItemSecondaryAction>
@@ -94,7 +97,7 @@ export const Settings: React.FC<SettingsState> = ({
           <Switch
             edge="end"
             onChange={toggleUX}
-            checked={uxOn}
+            checked={ux}
             inputProps={{ 'aria-labelledby': 'tktrex-ux-switch' }}
           />
         </ListItemSecondaryAction>
