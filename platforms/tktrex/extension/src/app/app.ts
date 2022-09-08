@@ -234,7 +234,7 @@ const handleVideo = (
     videoRoot.style.border = '';
   }
 
-  if (videoRoot.hasAttribute('trex')) {
+  if (videoRoot.hasAttribute('trex-video')) {
     appLog.debug(
       'element already acquired: skipping',
       videoRoot.getAttribute('trex'),
@@ -247,7 +247,7 @@ const handleVideo = (
 
   appLog.info('+video', videoRoot, ' acquired, now', videoCounter, 'in total');
 
-  videoRoot.setAttribute('trex', `${videoCounter}`);
+  videoRoot.setAttribute('trex-video', `${videoCounter}`);
 
   tkHub.dispatch({
     type: 'NewVideo',
@@ -272,7 +272,7 @@ const handleVideoPlaceholder = (
   b: any,
   config: UserSettings,
 ): void => {
-  if (n.getAttribute('trex') === '1') {
+  if (n.getAttribute('trex-placeholder') === '1') {
     appLog.debug('Video placeholder already handled');
     return;
   }
@@ -284,7 +284,7 @@ const handleVideoPlaceholder = (
     videoCounter,
     videoRoot,
   );
-  n.setAttribute('trex', '1');
+  n.setAttribute('trex-placeholder', '1');
 
   if (config.ux) {
     n.style.border = '1px solid orange';
