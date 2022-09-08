@@ -138,7 +138,7 @@ export const processSearch: ParserFn<
   if (!videos.length) {
     debuge(
       "Search result of %s doesn't seem having any video!",
-      (envelop.html?.nature )?.query
+      envelop.html.html
     );
     return null;
   }
@@ -165,7 +165,7 @@ export const processSearch: ParserFn<
   const correction = envelop.jsdom.querySelector('yt-search-query-correction');
 
   const retval: SearchMetadata = {
-    ...(envelop.html.nature ),
+    ...envelop.html.nature,
     href: envelop.html.href,
     clientTime: envelop.html.clientTime,
     blang: envelop.html.blang,
