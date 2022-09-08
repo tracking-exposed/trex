@@ -151,10 +151,14 @@ async function saveInDB(experinfo, objects, dbcollection) {
   try {
     await automo.write(dbcollection, expanded);
     debug(
-      'Saved %d %s metadataId %j %s',
+      'Saved %d %s metadataId %j %O %O %s',
       objects.length,
       dbcollection,
       _.uniq(_.map(objects, 'metadataId')),
+      _.countBy(objects, 'nature.type'),
+      _.map(objects, function (o) {
+        return o.html.length;
+      }),
       debugmarks
     );
 

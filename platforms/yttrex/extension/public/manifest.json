@@ -1,12 +1,12 @@
 {
   "manifest_version": 2,
 
-  "name": "ytTREX",
+  "name": "youtube.tracking.exposed",
 
   "short_name": "ytTREX",
   "description": "A tool for academic researchers. Part of the tracking.exposed project, is meant to analyze the algorithm of a popular video portal.",
-  "version": "1.8.8",
-  "author": "The team of Tracking Exposed",
+  "version": "__REPLACED_BY_BUILD_SCRIPT__",
+  "author": "the Tracking Exposed team",
 
   "icons": {
     "16": "yttrex16.png",

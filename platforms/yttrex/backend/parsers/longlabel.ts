@@ -596,6 +596,13 @@ export function getPublicationTime(timeinfo: string): moment.Duration {
   return duration;
 }
 
+function stripUselessPortions(inputLongLabel): string {
+  // this function might help to remove everything youtube add once a while
+  if (_.endsWith(inputLongLabel, ' - play Short'))
+    return inputLongLabel.replace(/ - play Short/, '');
+  return inputLongLabel;
+}
+
 export function parser(
   l: string,
   source: any,
@@ -608,11 +615,14 @@ export function parser(
   isLive: boolean;
 } {
   /* logic:
-        1) find which language is the locale, by pattern matching 'sostantivo' and 'separator'
-            - found? proceeed
-            - not found? throw an exception, as part of the exception the last word
-        2) get the view, and the label updated string. 'viewcount' return an integer. if is a livestream, it's different */
+    0) remove " - play Short" at the end of present
+    1) find which language is the locale, by pattern matching 'sostantivo' and 'separator'
+      - found? proceeed
+      - not found? throw an exception, as part of the exception the last word
+    2) get the view, and the label updated string. 'viewcount' return an integer. if is a livestream, it's different */
   if (!_.size(source)) throw new Error('No source');
+
+  l = stripUselessPortions(l);
 
   sanityCheck(l);
   // this works for latin words
