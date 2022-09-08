@@ -44,13 +44,16 @@ function dissectVideoAndParents(video, i: number): any {
 
   const linkedInfo = {
     videoId: urlo.searchParams.get('v'),
-    offset: {},
   };
 
   if (href.length !== 20) {
     const tParam = urlo.searchParams.get('t');
-    if (tParam?.length) linkedInfo.offset = tParam;
-    else debuge('this params is not a time offset? %s', href);
+    const playList = urlo.searchParams.get('pp');
+    if (tParam?.length) _.set(linkedInfo, 'offset', tParam);
+    else if (playList?.length) _.set(linkedInfo, 'playlist', playList);
+    else if (_.startsWith(href, '/shorts/'))
+      debuge('shorts not supported yet! %s', href);
+    else debuge('parameter not understood %s', href);
   }
 
   const authorInfo = _.reduce(
@@ -135,7 +138,7 @@ export const processSearch: ParserFn<
   if (!videos.length) {
     debuge(
       "Search result of %s doesn't seem having any video!",
-      (envelop.html?.nature as any)?.query
+      (envelop.html?.nature )?.query
     );
     return null;
   }
@@ -162,7 +165,7 @@ export const processSearch: ParserFn<
   const correction = envelop.jsdom.querySelector('yt-search-query-correction');
 
   const retval: SearchMetadata = {
-    ...(envelop.html.nature as any),
+    ...(envelop.html.nature ),
     href: envelop.html.href,
     clientTime: envelop.html.clientTime,
     blang: envelop.html.blang,
