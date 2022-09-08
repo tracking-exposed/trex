@@ -1,9 +1,6 @@
-const _ = require('lodash');
-const debug = require('debug')('parsers:numbers');
-
 async function metrics(envelop, previous) {
   /* 2.4.x 'foryou' and 'following' are considered only */
-  const availin = ['foryou', 'following'];
+  const availin = ['foryou', 'following', 'video'];
 
   if (previous.nature && availin.indexOf(previous.nature.type) === -1) {
     // debug('No numbers in previous.nature %o', previous.nature);
@@ -20,11 +17,9 @@ async function metrics(envelop, previous) {
   const sharen = sharee.textContent;
 
   return {
-    metrics: {
-      liken,
-      commentn,
-      sharen,
-    },
+    liken,
+    commentn,
+    sharen,
   };
 }
 

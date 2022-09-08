@@ -1,6 +1,6 @@
 import {
   readHistoryResults,
-  runParserTest
+  runParserTest,
 } from '@shared/test/utils/parser.utils';
 import { sanitizeHTML } from '@shared/utils/html.utils';
 import { TKMetadata } from '@tktrex/shared/models';
@@ -13,10 +13,10 @@ import {
   buildMetadata,
   getLastHTMLs,
   HTMLSource,
-  updateMetadataAndMarkHTML
+  updateMetadataAndMarkHTML,
 } from '../../lib/parser';
+import { parsers } from '../../parsers';
 import { GetTest, Test } from '../../test/Test';
-import native from '../native';
 
 describe('Parser: "native"', () => {
   let appTest: Test;
@@ -63,14 +63,14 @@ describe('Parser: "native"', () => {
             savingTime: subMinutes(new Date(), 2),
           },
           jsdom: new JSDOM(sanitizeHTML(s.html)).window.document,
-          supporter: undefined,
+          supporter: { version: process.env.VERSION },
         }));
 
         await runParserTest({
           log: appTest.logger,
           sourceSchema: appTest.config.get('schema').htmls,
           metadataSchema: appTest.config.get('schema').metadata,
-          parsers: { nature: native } as any,
+          parsers: parsers,
           db,
           codecs: {
             contribution: HTMLSource,

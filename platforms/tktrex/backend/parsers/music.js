@@ -24,10 +24,8 @@ async function music(envelop, previous) {
   const name = elem.textContent;
 
   return {
-    music: {
-      url,
-      name,
-    },
+    url,
+    name,
   };
 }
 

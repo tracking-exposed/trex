@@ -137,14 +137,17 @@ export const NativeMetadata = t.intersection(
   [
     MetadataBase,
     NativeVideoN,
-    t.type({ nature: NativeVideoN }),
-    t.type({
-      description: t.string,
-      music: t.union([Music, t.undefined]),
-      author: t.union([Author, t.undefined]),
-      metrics: Metrics,
-      hashtags: t.array(t.string),
-    }),
+    t.type({ nature: NativeVideoN }, 'NativeMetadataType'),
+    t.type(
+      {
+        description: t.string,
+        music: t.union([Music, t.undefined, t.null]),
+        author: t.union([Author, t.undefined, t.null]),
+        metrics: t.union([Metrics, t.undefined, t.null]),
+        hashtags: t.union([t.array(t.string), t.null]),
+      },
+      'NativeMetadataProps',
+    ),
   ],
   'NativeMetadata',
 );
