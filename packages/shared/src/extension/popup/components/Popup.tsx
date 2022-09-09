@@ -158,8 +158,6 @@ const Popup: React.FC<PopupProps> = ({
           publicKey={userSettingsS.payload.publicKey}
           getLinks={getLinks}
         />
-        <FormHelperText>About</FormHelperText>
-        <InfoBox logo={logo} />
       </Card>
     );
   }, [userSettingsS]);
@@ -167,6 +165,7 @@ const Popup: React.FC<PopupProps> = ({
   return (
     <div style={styles}>
       {content}
+      <InfoBox logo={logo} />
       <small>
         version {config.VERSION}, released {timeAgo} ago
       </small>
