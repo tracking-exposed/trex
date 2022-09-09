@@ -8,26 +8,20 @@ const parseNativeVideo: ParserFn<HTMLSource, any> = async (
   envelop,
   findings
 ) => {
-  if (envelop.html.type !== 'native') {
-    debug('entry is not "native" (%s)', envelop.html.type);
+  if (findings.nature.type !== 'native') {
+    debug('entry is not "native" (%s)', findings.nature.type);
     return null;
   }
   debug('processing native video entry: %s %O', envelop.html.href, findings);
 
-  const music = findings.music;
-  const author = findings.author;
-  const metrics = findings.metrics;
-  const hashtags = findings.hashtags;
-  const description = findings.description.description;
-  const baretext = findings.description.baretext;
+  const { music, author, metrics, hashtags, description } = findings;
 
   return {
     nature: { type: 'native' },
     type: 'native',
     music,
     author,
-    description,
-    baretext,
+    ...description,
     metrics,
     hashtags,
   };

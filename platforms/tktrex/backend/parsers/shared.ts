@@ -2,6 +2,7 @@ import {
   FollowingN,
   ForYouN,
   HashtagsN,
+  NativeVideoN,
   Nature,
   ProfileN,
   SearchN,
@@ -37,8 +38,8 @@ export function getNatureByHref(href: string): Nature | null {
       };
       retval = followingNature;
     } else if (chunks[2] === 'video' && chunks.length >= 3) {
-      const videoNature: VideoN = {
-        type: 'video',
+      const videoNature: NativeVideoN = {
+        type: 'native',
         videoId: chunks[3],
         authorId: chunks[1],
       };
