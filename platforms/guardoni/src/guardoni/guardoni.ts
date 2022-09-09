@@ -10,7 +10,10 @@ import * as Endpoints from '@yttrex/shared/endpoints';
 import { AppError, toAppError } from '@shared/errors/AppError';
 import { Step } from '@shared/models/Step';
 import { APIClient, MakeAPIClient } from '@shared/providers/api.provider';
-import { GetPuppeteer } from '@shared/providers/puppeteer/puppeteer.provider';
+import {
+  GetPuppeteer,
+  OperateResult,
+} from '@shared/providers/puppeteer/puppeteer.provider';
 import { differenceInSeconds } from 'date-fns';
 import debug from 'debug';
 import { sequenceS } from 'fp-ts/lib/Apply';
@@ -86,6 +89,8 @@ const runNavigate =
 
           await page.goto(home, {
             waitUntil: 'networkidle0',
+            // disable timeout
+            timeout: 0,
           });
 
           await page.waitForTimeout(2000);
@@ -152,9 +157,10 @@ export const runBrowser =
       TE.chain((page) =>
         guardoniExecution(ctx)(experiment.experimentId, steps, page)
       ),
-      TE.map((publicKey) => ({
+      TE.map((output) => ({
         ...experiment,
-        publicKey: publicKey ?? opts?.publicKey,
+        ...output,
+        publicKey: output.publicKey ?? opts?.publicKey,
       }))
     );
   };
@@ -246,7 +252,7 @@ export const guardoniExecution =
     experiment: string,
     steps: NonEmptyArray<Step>,
     page: puppeteer.Page
-  ): TE.TaskEither<AppError, string> => {
+  ): TE.TaskEither<AppError, OperateResult> => {
     const start = new Date();
 
     ctx.logger.debug(`Running experiment %s for directive %s`, experiment);
@@ -257,8 +263,8 @@ export const guardoniExecution =
 
     return pipe(
       ctx.puppeteer.operateBrowser(page, steps),
-      TE.map((pubKey) => {
-        const publicKey = pubKey ?? ctx.config.publicKey;
+      TE.map((output) => {
+        const publicKey = output.publicKey ?? ctx.config.publicKey;
         const duration = differenceInSeconds(new Date(), start);
 
         ctx.logger.debug(
@@ -270,7 +276,7 @@ export const guardoniExecution =
           `Personal log at ${ctx.platform.frontend}/personal/#${publicKey}`
         );
 
-        return publicKey;
+        return { ...output, publicKey };
       })
     );
   };

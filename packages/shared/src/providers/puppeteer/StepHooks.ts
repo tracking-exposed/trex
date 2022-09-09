@@ -1,5 +1,5 @@
 import * as puppeteer from 'puppeteer-core';
-import { OpenURLStep } from '../../models/Step';
+import { Step } from '../../models/Step';
 
 type Hook = (page: puppeteer.Page, step: any, opts?: any) => Promise<any>;
 export interface StepHooks<
@@ -10,19 +10,10 @@ export interface StepHooks<
 > {
   openURL: {
     beforeDirectives: (page: puppeteer.Page) => Promise<void>;
-    beforeLoad: (
-      page: puppeteer.Page,
-      step: OpenURLStep
-    ) => Promise<void>;
-    beforeWait: (
-      page: puppeteer.Page,
-      step: OpenURLStep
-    ) => Promise<void>;
-    afterWait: (
-      page: puppeteer.Page,
-      step: OpenURLStep
-    ) => Promise<void>;
-    completed: () => Promise<string>;
+    beforeLoad: (page: puppeteer.Page, step: Step) => Promise<void>;
+    beforeWait: (page: puppeteer.Page, step: Step) => Promise<void>;
+    afterWait: (page: puppeteer.Page, step: Step) => Promise<void>;
+    completed: (page: puppeteer.Page, s: Step) => Promise<string>;
   };
   customs?: CS;
   DOMAIN_NAME: DO;

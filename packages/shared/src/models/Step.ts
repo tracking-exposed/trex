@@ -14,6 +14,23 @@ export const ScrollStep = t.strict(
 );
 export type ScrollStep = t.TypeOf<typeof ScrollStep>;
 
+export const KeyPressType = t.literal('keypress');
+export const KeypressStep = t.strict(
+  {
+    type: KeyPressType,
+    key: t.string,
+    times: t.union([t.number, t.undefined]),
+    delay: t.union([t.number, t.undefined]),
+    text: t.union([t.string, t.undefined]),
+  },
+  'KeypressStep'
+);
+// this is an hack to avoid a compile error due to
+// key [string] not being compatible with [puppeteer.KeyInput]
+export type KeypressStep = Omit<t.TypeOf<typeof KeypressStep>, 'key'> & {
+  key: puppeteer.KeyInput;
+};
+
 export const CustomStepType = t.literal('custom');
 export type CustomStepType = t.TypeOf<typeof CustomStepType>;
 
@@ -36,8 +53,9 @@ export const OpenURLStep = t.strict(
     title: t.union([t.string, t.undefined]),
     url: t.string,
     urltag: t.union([t.string, t.undefined]),
-    watchFor: t.union([ t.number, t.string, t.undefined]),
+    watchFor: t.union([t.number, t.string, t.undefined]),
     loadFor: t.union([t.number, t.string, t.undefined]),
+    onCompleted: t.union([t.string, t.undefined]),
   },
 
   'OpenURLStep'
@@ -46,7 +64,7 @@ export const OpenURLStep = t.strict(
 export type OpenURLStep = t.TypeOf<typeof OpenURLStep>;
 
 export const Step = t.union(
-  [ScrollStep, CustomStep, OpenURLStep],
+  [ScrollStep, CustomStep, KeypressHook, OpenURLStep],
   'OpenURL'
 );
 export type Step = t.TypeOf<typeof Step>;

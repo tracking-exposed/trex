@@ -159,6 +159,7 @@ export const FromURLsTab: React.FC<FromCSVFileTabProps> = ({
                   urltag: newURLTag,
                   watchFor: newWatchFor,
                   loadFor: undefined,
+                  onCompleted: undefined,
                 }),
               });
             }
