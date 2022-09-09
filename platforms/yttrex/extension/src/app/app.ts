@@ -29,7 +29,7 @@
 import {
   ObserverHandler,
   refreshUUID,
-  RouteObserverHandler
+  RouteObserverHandler,
 } from '@shared/extension/app';
 import logger from '@shared/extension/logger';
 import UserSettings from '@shared/extension/models/UserSettings';
@@ -37,7 +37,7 @@ import { sizeCheck } from '@shared/providers/dataDonation.provider';
 import {
   consideredURLs,
   leafSelectors,
-  routeSelectors
+  routeSelectors,
 } from '@yttrex/shared/parsers/index';
 import _ from 'lodash';
 import { initializeBlinks, updateUI } from '../blink';
@@ -165,6 +165,9 @@ export const handleLeaf = (
   selectorName: string,
   config: UserSettings
 ): void => {
+  if (node.getAttribute('yttrex') === '1') {
+    return;
+  }
   // command has .selector .parents .preserveInvisible (this might be undefined)
   ytLogger.info('Handle "leaf" type: %s', selectorName);
   // ytLogger.debug('node %o with %o', node, opts);
