@@ -5,17 +5,17 @@ import type { PuppeteerExtra } from 'puppeteer-extra';
 import { AppError, toAppError } from '../../errors/AppError';
 import { Logger } from '../../logger';
 import {
-  CustomStep,
   CustomStepType,
   Step,
-  ScrollStep,
   ScrollStepType,
+  KeyPressType,
 } from '../../models/Step';
 // import { throwTE } from '../../utils/task.utils';
 import { StepHooks } from './StepHooks';
 import { openURL } from './steps/openURL';
 import { GetScrollFor } from './steps/scroll';
 import StealthPlugin from 'puppeteer-extra-plugin-stealth';
+import { GetKeypressStep } from './steps/keyPress';
 
 export type LaunchOptions = puppeteer.LaunchOptions &
   puppeteer.BrowserLaunchArgumentOptions &
@@ -52,59 +52,53 @@ export const launch =
 const operateTab =
   (ctx: PuppeteerProviderContext) =>
   (page: puppeteer.Page, h: Step): TE.TaskEither<AppError, any> => {
-    if (ScrollStep.is(h) || CustomStep.is(h)) {
-      switch (h.type) {
-        case ScrollStepType.value: {
-          return GetScrollFor(ctx)(page, h);
-        }
-        case CustomStepType.value:
-          return TE.tryCatch(() => {
-            ctx.logger.debug('Custom handler %s', h.handler);
-            const handler = ctx.hooks.customs?.[h.handler];
-            if (handler) {
-              ctx.logger.debug('Handler found');
-              try {
-                return handler(page, h);
-              } catch (e) {
-                ctx.logger.error(`Error in custom handler %s`, h.handler);
-              }
-            }
-            return Promise.resolve(undefined);
-          }, toAppError);
-        default:
-          return TE.right(undefined);
+    switch (h.type) {
+      case ScrollStepType.value: {
+        return GetScrollFor(ctx)(page, h);
       }
+      case KeyPressType.value: {
+        return GetKeypressStep(ctx)(page, h as any);
+      }
+      case CustomStepType.value:
+        return TE.tryCatch(() => {
+          ctx.logger.debug('Custom handler %s', h.handler);
+          const handler = ctx.hooks.customs?.[h.handler];
+          if (handler) {
+            ctx.logger.debug('Handler found');
+            try {
+              return handler(page, h);
+            } catch (e) {
+              ctx.logger.error(`Error in custom handler %s`, h.handler);
+            }
+          }
+          return Promise.resolve(undefined);
+        }, toAppError);
+      default:
+        return openURL(ctx)(page, h, {
+          loadFor: ctx.config.loadFor,
+        });
     }
-
-    return openURL(ctx)(page, h, {
-      loadFor: ctx.config.loadFor,
-    });
   };
+
+export interface OperateResult {
+  publicKey: string;
+}
 
 export const operateBrowser =
   (ctx: PuppeteerProviderContext) =>
   (
     page: puppeteer.Page,
     steps: Step[]
-  ): TE.TaskEither<AppError, string> => {
+  ): TE.TaskEither<AppError, OperateResult> => {
     return pipe(
       TE.tryCatch(
         () => ctx.hooks.openURL.beforeDirectives(page),
         (e) => new AppError('BeforeDirectivesError', (e as any).message, [])
       ),
       TE.chain(() =>
-        TE.sequenceSeqArray(steps.map((d) => operateTab(ctx)(page, d)))
+        TE.sequenceSeqArray(steps.map((step) => operateTab(ctx)(page, step)))
       ),
-      TE.chain(() =>
-        TE.tryCatch(
-          async () => {
-            const result = await ctx.hooks.openURL.completed();
-            ctx.logger.debug('Completed! %O', result);
-            return result;
-          },
-          (e) => new AppError('Completed', (e as any).message, [])
-        )
-      ),
+      TE.map((results) => results.reduce((acc, o) => ({ ...acc, o }), {})),
       TE.chainFirst(() =>
         TE.tryCatch(async () => {
           if (ctx.config.loadFor < 20000) {
@@ -126,7 +120,7 @@ export interface PuppeteerProvider {
   operateBrowser: (
     page: puppeteer.Page,
     steps: Step[]
-  ) => TE.TaskEither<AppError, string>;
+  ) => TE.TaskEither<AppError, OperateResult>;
 }
 
 export type GetPuppeteer = (ctx: PuppeteerProviderContext) => PuppeteerProvider;

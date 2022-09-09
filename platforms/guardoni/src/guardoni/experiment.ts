@@ -1,14 +1,20 @@
-import _ from 'lodash';
 import { AppError, toAppError } from '@shared/errors/AppError';
 import { toValidationError } from '@shared/errors/ValidationError';
-import { Step, OpenURLStepType, ScrollStepType } from '@shared/models/Step';
 import {
   CreateExperimentResponse,
   CreateExperimentSuccessResponse,
 } from '@shared/models/Experiment';
+import {
+  KeyPressType,
+  OpenURLStepType,
+  ScrollStepType,
+  Step,
+} from '@shared/models/Step';
 import * as E from 'fp-ts/lib/Either';
 import { pipe } from 'fp-ts/lib/function';
+import _ from 'lodash';
 // import * as NEA from 'fp-ts/lib/NonEmptyArray';
+import { parseKeypressCommand } from '@shared/providers/puppeteer/steps/keyPress';
 import { NonEmptyArray } from 'fp-ts/lib/NonEmptyArray';
 import * as TE from 'fp-ts/lib/TaskEither';
 import * as fs from 'fs';
@@ -75,34 +81,52 @@ export const readCSVAndParse =
           }),
           TE.chain(({ records }) =>
             pipe(
-              t.array(Step).decode(
-                records.reduce((acc: any[], r: any) => {
-                  if (r.incrementScrollByPX && r.totalScroll) {
-                    const {
-                      incrementScrollByPX,
-                      totalScroll,
-                      interval,
-                      ...rest
-                    } = r;
-                    return acc.concat([
-                      rest,
-                      {
-                        type: ScrollStepType.value,
-                        incrementScrollByPX: +incrementScrollByPX,
-                        totalScroll: +totalScroll,
-                        interval: interval ? +r.interval : undefined,
-                      },
-                    ]);
-                  }
+              records.reduce((acc: any[], r: any) => {
+                const queue = [];
+                if (r.incrementScrollByPX && r.totalScroll) {
+                  const { incrementScrollByPX, totalScroll, interval } = r;
+                  const scrollStep = {
+                    type: ScrollStepType.value,
+                    incrementScrollByPX: +incrementScrollByPX,
+                    totalScroll: +totalScroll,
+                    interval: interval ? +r.interval : undefined,
+                  };
 
-                  return acc.concat({
+                  queue.push(scrollStep);
+                }
+
+                if (r.onCompleted?.startsWith('keypress-')) {
+                  pipe(
+                    parseKeypressCommand(r.onCompleted),
+                    E.fold(
+                      (e) => {
+                        logger.warn(e.name, e.message);
+                      },
+                      (opts) => {
+                        const keypressStep = {
+                          type: KeyPressType.value,
+                          ...opts,
+                        };
+                        queue.push(keypressStep);
+                      }
+                    )
+                  );
+                }
+
+                return acc
+                  .concat({
                     ...r,
                     loadFor: r.loadFor === '' ? undefined : r.loadFor,
                     watchFor: r.watchFor === '' ? undefined : r.watchFor,
                     type: OpenURLStepType.value,
-                  });
-                }, [] as any[])
-              ),
+                  })
+                  .concat(queue);
+              }, [] as any[]),
+              (ss) => {
+                logger.debug('Steps %O', ss);
+                return ss;
+              },
+              t.array(Step).decode,
               TE.fromEither,
               TE.mapLeft((e) => {
                 return new AppError(

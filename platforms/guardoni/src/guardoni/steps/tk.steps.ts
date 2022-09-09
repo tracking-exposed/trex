@@ -1,3 +1,4 @@
+import { Step } from '@shared/models/Step';
 import { StepHooks } from '@shared/providers/puppeteer/StepHooks';
 import * as puppeteer from 'puppeteer-core';
 import { GuardoniProfile } from '../types';
@@ -39,7 +40,7 @@ async function beforeLoad(page: puppeteer.Page, directive: any): Promise<any> {
   return Promise.resolve();
 }
 
-async function completed(): Promise<string> {
+async function completed(page: puppeteer.Page, step: Step): Promise<string> {
   return globalConfig.publicKeySpot as string;
 }
 
