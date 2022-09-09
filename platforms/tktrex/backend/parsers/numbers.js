@@ -1,6 +1,6 @@
 async function metrics(envelop, previous) {
   /* 2.4.x 'foryou' and 'following' are considered only */
-  const availin = ['foryou', 'following', 'video'];
+  const availin = ['foryou', 'following', 'video', 'native'];
 
   if (previous.nature && availin.indexOf(previous.nature.type) === -1) {
     // debug('No numbers in previous.nature %o', previous.nature);

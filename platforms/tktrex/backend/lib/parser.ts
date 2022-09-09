@@ -39,34 +39,83 @@ export const buildMetadata: BuildMetadataFn<
     clientTime: entry.source.html.clientTime,
   };
 
-  if (entry.findings.nature.type === 'search') {
-    metadata = {
-      ...entry.findings.nature,
-      ...entry.findings.downloader,
-      ...entry.findings.search,
-    };
-    metadata.query = _.toLower(metadata.query);
-  } else if (entry.findings.nature.type === 'profile') {
-    metadata = {
-      ...entry.findings.nature,
-      // ...entry.findings.downloader,
-      ...entry.findings.profile,
-    };
-  } else {
-    metadata = {
-      ...entry.findings.nature,
-      ...entry.findings.description,
-      ...entry.findings.music,
-      ...entry.findings.hashtags,
-      ...entry.findings.numbers,
-      ...entry.findings.stitch,
-      ...entry.findings.author,
-      ...entry.findings.downloader,
-      ...entry.findings.native,
-    };
+  switch (entry.findings.nature.type) {
+    case 'foryou': {
+      const { nature, author, description, hashtags, metrics, music, downloader } = entry.findings;
+      metadata = {
+        ...metadata,
+        ...nature,
+        nature,
+        ...description,
+        author,
+        metrics,
+        music,
+        hashtags,
+        ...downloader,
+      };
+      break;
+    }
+    case 'search': {
+      const { nature, downloader, search } = entry.findings;
+      metadata = {
+        ...metadata,
+        ...nature,
+        nature,
+        ...downloader,
+        ...search,
+      };
+      metadata.query = _.toLower(metadata.query);
+      metadata.nature.query = metadata.query;
+      break;
+    }
+    case 'profile': {
+      const { nature, profile, downloader } = entry.findings;
+      metadata = {
+        ...metadata,
+        nature,
+        ...nature,
+        ...downloader,
+        ...profile,
+      };
+      break;
+    }
+    case 'video':
+    case 'native': {
+      const {
+        nature,
+        description,
+        music,
+        hashtags,
+        metrics,
+        stitch,
+        author,
+        downloader,
+        native,
+      } = entry.findings;
+      metadata = {
+        ...nature,
+        nature,
+        ...description,
+        music,
+        hashtags,
+        metrics,
+        stitch,
+        author,
+        downloader,
+        native,
+      };
 
-    metadata.timelineId = entry.source.html.timelineId;
-    metadata.order = entry.source.html.n?.[0];
+      metadata.timelineId = entry.source.html.timelineId;
+      metadata.order = entry.source.html.n?.[0];
+      break;
+    }
+    default: {
+      metadata = {
+        ...metadata,
+        ...entry.findings,
+        ...entry.findings.nature,
+      };
+    }
   }
 
   /* fixed fields */
@@ -155,6 +204,6 @@ export const updateMetadataAndMarkHTML =
     return {
       metadata,
       source,
-      count: { metadata: r.upsertedCount, htmls: u.modifiedCount },
+      count: { metadata: r.modifiedCount, htmls: u.modifiedCount },
     };
   };

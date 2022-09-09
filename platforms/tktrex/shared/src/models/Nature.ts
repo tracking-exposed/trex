@@ -56,6 +56,8 @@ export type SearchN = t.TypeOf<typeof SearchN>;
 export const NativeVideoN = t.strict(
   {
     type: NativeType,
+    videoId: t.string,
+    authorId: t.string
   },
   'VideoNature',
 );

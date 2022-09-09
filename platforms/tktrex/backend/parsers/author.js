@@ -33,7 +33,7 @@ async function author(envelop, previous) {
       author.name = nameElt.textContent.trim();
     }
 
-    return { author };
+    return author;
   }
   /* else we fail to find it */
 }

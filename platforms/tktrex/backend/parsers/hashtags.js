@@ -3,7 +3,7 @@ const debug = require('debug')('parsers:hashtags');
 
 async function hashtags(envelop, previous) {
   /* only feed 'foryou' and 'following' have a description */
-  const availin = ['foryou', 'following', 'video'];
+  const availin = ['foryou', 'following', 'video', 'native'];
 
   if (previous.nature && availin.indexOf(previous.nature.type) === -1) {
     // debug('No hashtags for previous.nature %o', previous.nature);

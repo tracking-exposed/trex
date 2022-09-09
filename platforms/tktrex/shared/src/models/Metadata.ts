@@ -140,7 +140,7 @@ export const NativeMetadata = t.intersection(
     t.type({ nature: NativeVideoN }, 'NativeMetadataType'),
     t.type(
       {
-        description: t.string,
+        description: t.union([t.string, t.undefined]),
         music: t.union([Music, t.undefined, t.null]),
         author: t.union([Author, t.undefined, t.null]),
         metrics: t.union([Metrics, t.undefined, t.null]),
