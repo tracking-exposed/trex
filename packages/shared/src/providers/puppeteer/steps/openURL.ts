@@ -1,3 +1,4 @@
+import { pipe } from 'fp-ts/lib/function';
 import * as TE from 'fp-ts/lib/TaskEither';
 import type * as puppeteer from 'puppeteer-core';
 import { AppError, toAppError } from '../../../errors/AppError';
@@ -28,7 +29,7 @@ export const openURL =
     page: puppeteer.Page,
     step: OpenURLStep,
     opts: OpenURLOptions
-  ): TE.TaskEither<AppError, any> => {
+  ): TE.TaskEither<AppError, string> => {
     return TE.tryCatch(async () => {
       try {
         await ctx.hooks.openURL.beforeLoad(page, step);
@@ -53,7 +54,7 @@ export const openURL =
       try {
         await page.goto(step.url, {
           waitUntil: 'networkidle0',
-          timeout: 10000,
+          timeout: 20000,
         });
       } catch (e) {
         ctx.logger.error('Error during goto %O (networkidle0)', e);
@@ -61,7 +62,7 @@ export const openURL =
         try {
           await page.goto(step.url, {
             waitUntil: ['domcontentloaded'],
-            timeout: 5000,
+            timeout: 10000,
           });
         } catch (e) {
           ctx.logger.error('Error during goto %O (docontentloaded)', e);
@@ -101,5 +102,21 @@ export const openURL =
         );
       }
       ctx.logger.info('— Completed %O \n', step);
+      // run the "onCompleted" hook for `openURL` step;
+      return pipe(
+        TE.tryCatch(
+          async () => {
+            const result = await ctx.hooks.openURL.completed(page, step);
+            ctx.logger.debug('Completed! %O', result);
+            return result;
+          },
+          (e) => new AppError('Completed', (e as any).message, [])
+        )
+      )().then((r) => {
+        if (r._tag === 'Left') {
+          return Promise.reject(r.left);
+        }
+        return r.right;
+      });
     }, toAppError);
   };
