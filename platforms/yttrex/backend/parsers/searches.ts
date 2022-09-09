@@ -1,10 +1,9 @@
+import { ParserFn } from '@shared/providers/parser.provider';
 import { formatDistanceToNow, subSeconds } from 'date-fns';
 import D from 'debug';
 import _ from 'lodash';
 import { HTMLSource } from '../lib/parser/html';
-import { SearchMetadata } from '@yttrex/shared/models/Metadata';
 import * as longlabel from './longlabel';
-import { ParserFn } from '@shared/providers/parser.provider';
 
 const debuge = D('parser:searches:error');
 const debugn = D('parser:searches:note');
@@ -124,10 +123,9 @@ function unpackCorrection(corelem): string[] {
   return _.compact(_.flatten(_.map(corelem.children, unpackCorrection)));
 }
 
-export const processSearch: ParserFn<
-  HTMLSource,
-  SearchMetadata | null
-> = async (envelop) => {
+export const processSearch: ParserFn<HTMLSource, any | null> = async (
+  envelop
+) => {
   /* this function process a page like:
     https://www.youtube.com/results?search_query=fingerprinting
        and the logic here is: look for any video, and then move above 
@@ -164,16 +162,15 @@ export const processSearch: ParserFn<
   }
   const correction = envelop.jsdom.querySelector('yt-search-query-correction');
 
-  const retval: SearchMetadata = {
+  const retval = {
     ...envelop.html.nature,
     href: envelop.html.href,
     clientTime: envelop.html.clientTime,
     blang: envelop.html.blang,
     results,
-    correction: [],
+    /* this is the only optional field, and might have two or four elements in the list */
+    correction: correction ? unpackCorrection(correction) : [],
   };
-  /* this is the only optional field, and might have two or four elements in the list */
-  if (correction) retval.correction = unpackCorrection(correction);
 
   return retval;
 };
