@@ -6,10 +6,10 @@ import config from '../../config';
 import log from '../../logger';
 import DashboardLinks, { DashboardLink } from './DashboardLinks';
 import InfoBox from './InfoBox';
-import Settings, { SettingsProps} from './Settings';
+import Settings, { SettingsProps } from './Settings';
 import UserSettings from '../../models/UserSettings';
-import * as React from 'react'
-import moment from 'moment'
+import * as React from 'react';
+import moment from 'moment';
 
 const styles = {
   width: '400px',
@@ -20,7 +20,7 @@ export interface PopupProps {
   platformURL: string;
   logo: string;
   getLinks: (opts: { publicKey: string }) => DashboardLink[];
-  settings: Pick<SettingsProps, 'enabled'>
+  settings: Pick<SettingsProps, 'enabled'>;
 }
 
 type PopupState =
@@ -116,20 +116,16 @@ const Popup: React.FC<PopupProps> = ({
 
     if (userSettingsS.status === 'error') {
       if (
-        userSettingsS.error.message ===
-        "Error during 'LocalLookup' on codec UserSettings validation"
+        userSettingsS.error.message.includes(
+          "Error during 'LocalLookup' on codec UserSettings validation"
+        )
       ) {
         return (
           <Card style={styles}>
             <Alert severity={'info'}>
               Access to{' '}
-              <a
-                target="_blank"
-                href="https://tiktok.com/"
-                rel="noreferrer"
-                // onClick={() => startUserSettingsListener()}
-              >
-                TikTok
+              <a target="_blank" href={platformURL} rel="noreferrer">
+                {platform}
               </a>
               .
             </Alert>
@@ -151,9 +147,9 @@ const Popup: React.FC<PopupProps> = ({
 
     return (
       <Card>
-        <FormHelperText>TikTok TRex — main switch</FormHelperText>
+        <FormHelperText>{platform} TRex — main switch</FormHelperText>
         <Settings
-        enabled={settings.enabled}
+          enabled={settings.enabled}
           settings={userSettingsS.payload}
           onSettingsChange={handleConfigChange}
         />

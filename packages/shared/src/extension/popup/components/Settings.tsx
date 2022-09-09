@@ -13,7 +13,7 @@ import {
 import { Label as LabelIcon } from '@material-ui/icons';
 import LocalHospitalRounded from '@material-ui/icons/LocalHospitalRounded';
 import TimelineIcon from '@material-ui/icons/Timeline';
-import UserSettings  from '../../models/UserSettings';
+import UserSettings from '../../models/UserSettings';
 
 export interface SettingsProps {
   settings: UserSettings;
