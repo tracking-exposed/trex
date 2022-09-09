@@ -17,7 +17,7 @@ async function autoScroll(
 
         clearInterval(timer);
         resolve(undefined);
-      }, opts.interval || 100);
+      }, opts.interval || 2000);
     });
   }, opts as any);
 }
@@ -31,10 +31,7 @@ async function autoScroll(
 
 export const GetScrollFor =
   (ctx: StepContext) =>
-  (
-    page: puppeteer.Page,
-    step: ScrollStep
-  ): TE.TaskEither<AppError, void> => {
+  (page: puppeteer.Page, step: ScrollStep): TE.TaskEither<AppError, void> => {
     return TE.tryCatch(
       async () =>
         new Promise((resolve, reject) => {
@@ -44,10 +41,7 @@ export const GetScrollFor =
             ctx.logger.debug('Running for time %d', i);
 
             void autoScroll(page, step).then(() => {
-              ctx.logger.debug(
-                'Scrolled by %d',
-                i * step.incrementScrollByPX
-              );
+              ctx.logger.debug('Scrolled by %d', i * step.incrementScrollByPX);
 
               if (step.totalScroll < i * step.incrementScrollByPX) {
                 ctx.logger.debug(
@@ -60,8 +54,8 @@ export const GetScrollFor =
               }
 
               i++;
-            });
-          }, step.interval ?? 300);
+            }).catch(reject);
+          }, step.interval ?? 2000);
         }),
       toAppError
     );
