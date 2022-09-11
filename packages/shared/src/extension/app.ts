@@ -140,6 +140,7 @@ function setupObserver(
             );
 
             onLocationChange(oldHref, newHref);
+            oldHref = newHref;
 
             // always call the route handler
             const routeHandlerKey = handlersList.find((h) => {
@@ -166,8 +167,6 @@ function setupObserver(
                 href: window.location.toString(),
               } as any);
             }
-
-            oldHref = newHref;
           }
         }
       }

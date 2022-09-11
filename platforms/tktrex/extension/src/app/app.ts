@@ -34,7 +34,26 @@ export function tkTrexActions(remoteInfo: unknown): void {
   flush();
 }
 
-export const onLocationChange = (): void => {
+export const onLocationChange = (oldHref: string, newHref: string): void => {
+  /* in tiktok we should not refresh this if there is a sequence of
+   * native video, because this might means the user is scrolling one
+   * by one, so, if both the location are native videos, return , so
+   * the timeline and the video counter keep incrmeenting. But this
+   * function should be called anyway, so in this way the extension can
+   * keep behaving like a new URL has happened, which is the case */
+  appLog.info('------------------ check here ----------------');
+  appLog.info(oldHref, nativeRouteHandler.match.location);
+  appLog.info(newHref);
+  appLog.info('--- oldref need to be valorized ---');
+
+  if (
+    oldHref.match(nativeRouteHandler.match.location) &&
+    newHref.match(nativeRouteHandler.match.location)
+  ) {
+    appLog.info('Native video in sequence, suppressed refresh.');
+    return;
+  }
+
   feedId = refreshUUID(feedCounter);
   feedCounter++;
   appLog.info(
@@ -273,7 +292,8 @@ const handleVideoPlaceholder = (
   config: UserSettings,
 ): void => {
   if (n.getAttribute('trex-placeholder') === '1') {
-    appLog.debug('Video placeholder already handled');
+    // appLog.debug('Video placeholder already handled');
+    // commented because way too much verbose
     return;
   }
 
