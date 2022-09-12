@@ -143,8 +143,9 @@ describe('TK App - "Native Video" ', () => {
       data: [
         {
           type: 'video',
-          incremental: 0,
+          incremental: 1,
           videoCounter: 1,
+          feedCounter: 1,
           rect: {
             bottom: 0,
             right: 0,
@@ -195,8 +196,8 @@ describe('TK App - "Native Video" ', () => {
       data: [
         {
           type: 'native',
-          incremental: 1,
-          videoCounter: 1,
+          incremental: 2,
+          videoCounter: 2,
           html: expect.any(String),
           href: tkFirstVideoURL,
         },
@@ -241,8 +242,8 @@ describe('TK App - "Native Video" ', () => {
       data: [
         {
           type: 'native',
-          incremental: 2,
-          videoCounter: 1,
+          incremental: 3,
+          videoCounter: 3,
           html: expect.any(String),
           href: tkSecondVideoURL,
         },

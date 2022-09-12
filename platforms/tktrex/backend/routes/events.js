@@ -143,7 +143,10 @@ async function processEvents(req) {
         clientRGN: body.feedId ? body.feedId : body.href,
         serverPRGN: supporter.publicKey,
         type: body.type,
-        impressionNumber: body.type === 'video' ? body.videoCounter : 'fixed',
+        impressionNumber:
+          body.type === 'video' || body.type === 'native'
+            ? body.videoCounter
+            : 'fixed',
       });
       const timelineIdHash = utils.hash({
         session: body.feedId

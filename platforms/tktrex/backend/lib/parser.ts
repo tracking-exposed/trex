@@ -41,7 +41,15 @@ export const buildMetadata: BuildMetadataFn<
 
   switch (entry.findings.nature.type) {
     case 'foryou': {
-      const { nature, author, description, hashtags, metrics, music, downloader } = entry.findings;
+      const {
+        nature,
+        author,
+        description,
+        hashtags,
+        metrics,
+        music,
+        downloader,
+      } = entry.findings;
       metadata = {
         ...metadata,
         ...nature,
@@ -102,11 +110,8 @@ export const buildMetadata: BuildMetadataFn<
         stitch,
         author,
         downloader,
-        native,
+        ...native,
       };
-
-      metadata.timelineId = entry.source.html.timelineId;
-      metadata.order = entry.source.html.n?.[0];
       break;
     }
     default: {
@@ -127,6 +132,8 @@ export const buildMetadata: BuildMetadataFn<
     : entry.source.html.clientTime;
   metadata.id = entry.source.html.id;
   metadata.publicKey = entry.source.html.publicKey;
+  metadata.timelineId = entry.source.html.timelineId;
+  metadata.order = entry.source.html.n?.[0];
 
   /* optional fields */
   if (entry.source.html.geoip?.length === 2)

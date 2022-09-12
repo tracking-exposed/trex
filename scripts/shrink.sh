@@ -3,10 +3,9 @@
 # This script is necessary to produce the .zip files to submit to mozilla store
 # Otherwise the repo is too big
 
-x=`grep tracking.exposed package.json  | wc -l`
+x=`grep tracking.exposed package.json | grep description | wc -l`
 if [ $x -ne 1 ]; then
-   echo "this script should be executed from the trex directory only"
-   echo "as scripts/shrink.sh"
+   echo "this script should be executed from the trex directory only, in this way: scripts/shrink.sh"
 fi
 
 echo "This script is going to execute some rm -rf so please do it only from"
@@ -38,7 +37,7 @@ echo "tktrex is tiktok.tracking.exposed extension" >> README.md
 echo "yttrex is youtube.tracking.exposed extension" >> README.md
 echo "ycai is youchoose.ai extension" >> README.md
 
-suffix=`grep version package.json  | sed -es/.*:// | sed -es/[\ \",]/-/g`
+suffix=`grep version package.json  | sed -es/.*:// | sed -es/[\ \",]//g`
 fileout="trex${suffix}.zip"
 echo "zipping in $fileout"
 zip $fileout -r ./*

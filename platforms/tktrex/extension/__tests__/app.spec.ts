@@ -172,7 +172,7 @@ describe('TK App', () => {
         url: '/v2/events',
         data: [
           {
-            feedCounter: 0,
+            feedCounter: 1,
             href: tkURL,
             type: 'video',
             videoCounter: 1,
@@ -262,7 +262,7 @@ describe('TK App', () => {
           {
             href: encodeURI(tkSearchUrl),
             type: 'search',
-            incremental: 1,
+            incremental: 2,
           },
         ],
         headers: {

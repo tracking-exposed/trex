@@ -29,11 +29,11 @@ yarn pm2 start platforms/ecosystem.config.js
 yarn pm2 status
 ```
 
-### To build the extensions:
+### (also for  extension reviewer) how to build the extensions:
 
-- tiktok: `yarn tk:ext dist`
-- youtube: `yarn yt:ext dist`
-- youchoose: `yarn ycai dist`
+- tiktok: `yarn; yarn tk:ext dist; ls platforms/tktrex/extension/dist/*.zip`
+- youtube: `yarn; yarn yt:ext dist; ls platforms/yttrex/extension/dist/*.zip`
+- youchoose: `yarn; yarn ycai dist; ls platforms/ycai/studio/build/extension/*.zip`
 
 ### To assist debug
 
