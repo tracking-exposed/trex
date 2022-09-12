@@ -5,6 +5,7 @@ export const ContributionEvent = t.strict(
     html: t.string,
     href: t.string,
     feedId: t.union([t.string, t.undefined]),
+    incremental: t.number,
     feedCounter: t.union([t.number, t.undefined]),
     videoCounter: t.union([t.number, t.undefined]),
     rect: t.any,
@@ -15,7 +16,6 @@ export const ContributionEvent = t.strict(
       t.literal('profile'),
       t.literal('native'),
     ]),
-    incremental: t.number,
   },
   'ContributionEvent',
 );

@@ -29,7 +29,7 @@ const INTERVAL = config.FLUSH_INTERVAL;
 const now = (): string => getTimeISO8601();
 
 const state = {
-  incremental: 0,
+  incremental: 1,
   content: [] as Evidence[],
 };
 
@@ -49,10 +49,10 @@ export function handleVideo(e: NewVideoEvent): void {
 
   if (videoIndex < 0) {
     state.content.push(videoEvent);
+    state.incremental++;
   } else {
     state.content[videoIndex] = videoEvent;
   }
-  state.incremental++;
 }
 
 function handleNative(e: NativeVideoEvent): void {
