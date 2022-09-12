@@ -36,7 +36,14 @@ async function getPersonal(req: any): Promise<any> {
   const amount = _.parseInt(req.query.amount) || 50;
   const skip = _.parseInt(req.query.skip) || 0;
   const what = req.params.what;
-  const allowed = ['summary', 'search', 'foryou', 'following', 'profile'];
+  const allowed = [
+    'summary',
+    'search',
+    'foryou',
+    'following',
+    'profile',
+    'native',
+  ];
 
   if (!allowed.includes(what)) {
     return {
@@ -119,6 +126,16 @@ async function getPersonal(req: any): Promise<any> {
         _.unset(e, 'publicKey');
         return e;
       });
+    } else if (what === 'native') {
+      const data = await automo.getPersonalTableData(
+        k,
+        { type: 'native' },
+        { amount, skip }
+      );
+      retval = {
+        counters: { metadata: data.counters?.metadata },
+        metadata: data.metadata,
+      };
     } else {
       throw new Error('Invalid and unsupported request type');
     }
@@ -136,7 +153,7 @@ async function getPersonalCSV(req: any): Promise<any> {
   const k = req.params.publicKey;
   const type = req.params.what;
 
-  if (!['foryou', 'search', 'following', 'profile'].includes(type))
+  if (!['foryou', 'search', 'following', 'profile', 'native'].includes(type))
     return { text: 'Error, nature not supported ' };
 
   const data = await automo.getMetadataByFilter(
