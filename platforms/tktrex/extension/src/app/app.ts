@@ -276,9 +276,6 @@ const handleVideo = (
     },
   });
 
-  if (config.ux) {
-    videoRoot.style.border = '2px solid green';
-  }
 };
 
 const handleVideoPlaceholder = (

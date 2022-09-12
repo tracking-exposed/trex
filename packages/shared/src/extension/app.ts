@@ -1,4 +1,3 @@
-import { debounce } from '@material-ui/core';
 import _ from 'lodash';
 import { HandshakeResponse } from '../models/HandshakeBody';
 import { clearCache } from '../providers/dataDonation.provider';
@@ -125,52 +124,61 @@ function setupObserver(
   const body = window.document.querySelector('body');
 
   const observer = new MutationObserver(
-    debounce((mutations) => {
-      // appLog.debug('mutation (%s) %O', mutation.type, mutation.target);
+    _.debounce(
+      (mutations) => {
+        // appLog.debug('mutation (%s) %O', mutation.type, mutation.target);
 
-      if (window?.document) {
-        if (platformMatch.test(window.location.href)) {
-          if (window.location.href !== oldHref) {
-            const newHref = window.location.href;
+        if (window?.document) {
+          if (platformMatch.test(window.location.href)) {
+            if (window.location.href !== oldHref) {
+              const newHref = window.location.href;
 
-            appLog.debug(
-              `%s changed to %s, calling onLocationChange`,
-              oldHref,
-              newHref
-            );
+              appLog.debug(
+                `%s changed to %s, calling onLocationChange`,
+                oldHref,
+                newHref
+              );
 
-            onLocationChange(oldHref, newHref);
-            oldHref = newHref;
+              onLocationChange(oldHref, newHref);
+              oldHref = newHref;
 
-            // always call the route handler
-            const routeHandlerKey = handlersList.find((h) => {
-              const handler = handlers[h];
+              // always call the route handler
+              const routeHandlerKey = handlersList.find((h) => {
+                const handler = handlers[h];
 
-              if (handler.match.type === 'route') {
-                appLog.debug(
-                  'Matching route %O',
-                  handler.match,
-                  window.location.pathname
+                if (handler.match.type === 'route') {
+                  appLog.debug(
+                    'Matching route %O',
+                    handler.match,
+                    window.location.pathname
+                  );
+                  return window.location.pathname.match(handler.match.location);
+                }
+                return false;
+              });
+
+              if (routeHandlerKey) {
+                appLog.debug('Route handler key %s', routeHandlerKey);
+                const { handle, ...routeHandlerOpts } = handlers[
+                  routeHandlerKey
+                ] as RouteObserverHandler;
+                handle(
+                  window.document.body,
+                  routeHandlerOpts,
+                  routeHandlerKey,
+                  {
+                    ...config,
+                    href: window.location.toString(),
+                  } as any
                 );
-                return window.location.pathname.match(handler.match.location);
               }
-              return false;
-            });
-
-            if (routeHandlerKey) {
-              appLog.debug('Route handler key %s', routeHandlerKey);
-              const { handle, ...routeHandlerOpts } = handlers[
-                routeHandlerKey
-              ] as RouteObserverHandler;
-              handle(window.document.body, routeHandlerOpts, routeHandlerKey, {
-                ...config,
-                href: window.location.toString(),
-              } as any);
             }
           }
         }
-      }
-    }, 500)
+      },
+      500,
+      { trailing: true }
+    )
   );
 
   const observerConfig = {
