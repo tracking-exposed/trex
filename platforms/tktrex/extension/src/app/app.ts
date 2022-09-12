@@ -34,17 +34,24 @@ export function tkTrexActions(remoteInfo: unknown): void {
   flush();
 }
 
-export const onLocationChange = (): void => {
+export const onLocationChange = (oldHref: string, newHref: string): void => {
+  /* in tiktok we should not refresh this if there is a sequence of
+   * native video, because this might means the user is scrolling one
+   * by one, so, if both the location are native videos, return , so
+   * the timeline and the video counter keep incrementing. But this
+   * function should be called anyway, so in this way the extension can
+   * keep behaving like a new URL has happened, which is the case */
+
+  if (
+    oldHref?.match(nativeRouteHandler.match.location) &&
+    newHref.match(nativeRouteHandler.match.location)
+  ) {
+    appLog.info('Native video in sequence, suppressed refresh.');
+    return;
+  }
+
   feedId = refreshUUID(feedCounter);
-  feedCounter++;
-  appLog.info(
-    'new feedId (%s), feed counter incremented (%d) and video counter resetted (before was %d) -> %s',
-    feedId,
-    feedCounter,
-    videoCounter,
-    window.location.href,
-  );
-  videoCounter = 0;
+  appLog.info('new feedId (%s) for url %s', feedId, window.location.href);
 };
 
 /**
@@ -56,9 +63,12 @@ const handleVideoRoute = (
   routeKey: string,
   config: UserSettings,
 ): void => {
-  appLog.debug('NativeVideo %O', { handler, routeKey, config });
-
   if (!dom) return;
+
+  feedCounter++;
+  videoCounter++;
+
+  appLog.debug('+native acquired, total %d', videoCounter);
 
   /* TODO some more meaningful check */
   tkHub.dispatch({
@@ -118,8 +128,9 @@ const handleSigi = _.debounce((element: Node): void => {
 });
 
 const handleSearch = _.debounce((element: Node): void => {
-  appLog.info('Handle search for path %O', window.location.search);
   if (!_.startsWith(window.location.pathname, '/search')) return;
+
+  appLog.info('Handle search for path %O', window.location.search);
 
   // This double check it is due because the Search might
   // return an error and in both of the cases they should be
@@ -228,26 +239,27 @@ const handleVideo = (
    * would be more than 10k big. */
   const videoRoot = goBackInTree(node);
 
-  if (config.ux) {
-    videoRoot.style.border = '2px solid green';
-  } else {
-    videoRoot.style.border = '';
-  }
-
   if (videoRoot.hasAttribute('trex-video')) {
     appLog.debug(
       'element already acquired: skipping',
-      videoRoot.getAttribute('trex'),
+      videoRoot.getAttribute('trex-video'),
     );
 
     return;
   }
 
+  feedCounter++;
   videoCounter++;
 
   appLog.info('+video', videoRoot, ' acquired, now', videoCounter, 'in total');
 
   videoRoot.setAttribute('trex-video', `${videoCounter}`);
+
+  if (config.ux) {
+    videoRoot.style.border = '2px solid green';
+  } else {
+    videoRoot.style.border = '';
+  }
 
   tkHub.dispatch({
     type: 'NewVideo',
@@ -261,9 +273,6 @@ const handleVideo = (
     },
   });
 
-  if (config.ux) {
-    videoRoot.style.border = '2px solid green';
-  }
 };
 
 const handleVideoPlaceholder = (
@@ -273,7 +282,8 @@ const handleVideoPlaceholder = (
   config: UserSettings,
 ): void => {
   if (n.getAttribute('trex-placeholder') === '1') {
-    appLog.debug('Video placeholder already handled');
+    // appLog.debug('Video placeholder already handled');
+    // commented because way too much verbose
     return;
   }
 

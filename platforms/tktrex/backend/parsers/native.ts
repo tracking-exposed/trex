@@ -14,11 +14,11 @@ const parseNativeVideo: ParserFn<HTMLSource, any> = async (
   }
   debug('processing native video entry: %s %O', envelop.html.href, findings);
 
-  const { music, author, metrics, hashtags, description } = findings;
+  const { nature, music, author, metrics, hashtags, description } = findings;
 
   return {
-    nature: { type: 'native' },
-    type: 'native',
+    nature,
+    ...nature,
     music,
     author,
     ...description,

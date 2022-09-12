@@ -36,7 +36,7 @@ export function watch(
   const mutationObserver = new MutationObserver((mutations) => {
     // Each `mutation` in the `mutations` array contains an...
     // mutations.forEach((mutation) => {
-    window.document.querySelectorAll(selector).forEach(htmlElement(callback));
+    window.document?.querySelectorAll(selector).forEach(htmlElement(callback));
     // });
   });
 

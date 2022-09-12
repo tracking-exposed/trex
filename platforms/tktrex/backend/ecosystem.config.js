@@ -15,7 +15,7 @@ const tk = {
     name: 'tk-parser',
     namespace: 'tk-trex',
     cwd: __dirname,
-    script: 'yarn parserv:watch',
+    script: 'yarn parserv:watch --minutesago 10',
     watch: false,
     env_test: {
       ...testEnv,
