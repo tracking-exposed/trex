@@ -19,7 +19,6 @@ async function pickDirective(experimentId) {
 }
 
 async function registerSteps(steps) {
-
   const experimentId = utils.hash({
     steps,
   });
@@ -53,8 +52,12 @@ async function registerSteps(steps) {
   });
 
   await mongoc.close();
-  debug('Registered experiment %s with %d steps: %j',
-    experimentId, steps.length, steps);
+  debug(
+    'Registered experiment %s with %d steps: %j',
+    experimentId,
+    steps.length,
+    steps
+  );
   return { status: 'created', experimentId, since: creationTime };
 }
 
@@ -87,7 +90,8 @@ async function saveExperiment(expobj) {
   /* this is used by guardoni v.1.8 as handshake connection,
        the expobj constains a variety of fields, check
        routes/experiment.js function channel3 */
-  if (expobj.experimentId === 'DEFAULT_UNSET') return null;
+  if (expobj.experimentId === 'DEFAULT_UNSET' || !expobj.experimentId)
+    return null;
 
   const mongoc = await mongo3.clientConnect();
   /* a given public Key can have only one experiment per time */
