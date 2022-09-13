@@ -11,7 +11,7 @@ import { SEARCH_FIELDS } from './public';
 import D from 'debug';
 const debug = D('routes:search');
 
-export function flattenSearch(memo, metasearch) {
+function flattenSearch(memo, metasearch) {
   // function invoked to depack and flatten metadata {type: search}
   // to produce CSV.
 
@@ -56,7 +56,7 @@ export function flattenSearch(memo, metasearch) {
   return memo;
 }
 
-export function flattenProfile(memo, metaprofile) {
+function flattenProfile(memo, metaprofile) {
   // function invoked to depack and flatten metadata {type: search}
   // to produce CSV.
 
@@ -99,7 +99,25 @@ export function flattenProfile(memo, metaprofile) {
   return memo;
 }
 
-export async function getSearchByQuery(req) {
+function flattenNative({
+  nature,
+  music,
+  author,
+  metrics,
+  hashtags,
+  downloader,
+  ...datum
+}) {
+  return {
+    ...datum,
+    music_url: music.url,
+    music_title: music.title,
+    ...metrics,
+    hashtags: hashtags.join(' '),
+  };
+}
+
+async function getSearchByQuery(req) {
   // /api/v2/query/<param>/<json|csv>
 
   const amount = 200;
@@ -226,4 +244,5 @@ module.exports = {
   getQueryList,
   flattenSearch,
   flattenProfile,
+  flattenNative,
 };
