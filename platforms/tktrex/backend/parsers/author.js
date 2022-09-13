@@ -1,9 +1,6 @@
-const _ = require('lodash');
-const debug = require('debug')('parsers:author');
-
 async function author(envelop, previous) {
   /* 2.4.x author description works only in the following cases */
-  const availin = ['foryou', 'following', 'search'];
+  const availin = ['foryou', 'following', 'search', 'native', 'video'];
 
   if (previous.nature && availin.indexOf(previous.nature.type) === -1) {
     // debug('No hashtag for previous.nature %o', previous.nature);
