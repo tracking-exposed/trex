@@ -99,6 +99,8 @@ export const onLocationChange = (oldHref: string, newHref: string): void => {
   }
 
   feedId = refreshUUID(feedCounter);
+  videoCounter = 0;
+  feedCounter = 0;
   appLog.info('new feedId (%s) for url %s', feedId, window.location.href);
 };
 
