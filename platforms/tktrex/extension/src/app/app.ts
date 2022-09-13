@@ -34,6 +34,50 @@ export function tkTrexActions(remoteInfo: unknown): void {
   flush();
 }
 
+const feedIdNeedsRefresh = (oldHref: string, newHref: string): boolean => {
+  const newPathname = new URL(newHref).pathname;
+  // at the first call of this function oldHref is undefined,
+  // so we check if the newHref is "/"
+  if (!oldHref) {
+    if (newPathname === '/') {
+      return false;
+    }
+    return true;
+  }
+
+  const oldPathname = new URL(oldHref).pathname;
+
+  const isOldHrefForYou =
+    oldPathname.match(forYouRouteHandler.match.location) ?? oldPathname === '/';
+  const isNewHrefForYou =
+    newPathname.match(forYouRouteHandler.match.location) ?? newPathname === '/';
+
+  // prevent feedId refresh when navigate from '/' to '/foryou' and viceversa
+  if (isOldHrefForYou) {
+    if (isNewHrefForYou) {
+      return false;
+    }
+  }
+
+  const isOldHrefNative = oldPathname.match(nativeRouteHandler.match.location);
+  const isNewHrefNative = newPathname.match(nativeRouteHandler.match.location);
+  appLog.debug('New href match native? %b', isOldHrefNative);
+  if (isNewHrefNative) {
+    appLog.debug('Old href match native? %b', isOldHrefNative);
+    if (isOldHrefNative) {
+      return false;
+    }
+
+    appLog.debug('Old href match foryou? %b', isOldHrefNative);
+
+    if (isOldHrefForYou) {
+      return false;
+    }
+  }
+
+  return true;
+};
+
 export const onLocationChange = (oldHref: string, newHref: string): void => {
   /* in tiktok we should not refresh this if there is a sequence of
    * native video, because this might means the user is scrolling one
@@ -42,10 +86,14 @@ export const onLocationChange = (oldHref: string, newHref: string): void => {
    * function should be called anyway, so in this way the extension can
    * keep behaving like a new URL has happened, which is the case */
 
-  if (
-    oldHref?.match(nativeRouteHandler.match.location) &&
-    newHref.match(nativeRouteHandler.match.location)
-  ) {
+  const refreshFeedId = feedIdNeedsRefresh(oldHref, newHref);
+  appLog.debug(
+    'Check feedId needs refresh %s => %s?',
+    oldHref,
+    newHref,
+    refreshFeedId,
+  );
+  if (!refreshFeedId) {
     appLog.info('Native video in sequence, suppressed refresh.');
     return;
   }
@@ -272,7 +320,6 @@ const handleVideo = (
       rect: videoRoot.getBoundingClientRect(),
     },
   });
-
 };
 
 const handleVideoPlaceholder = (
@@ -383,6 +430,14 @@ export const nativeRouteHandler: RouteObserverHandler = {
     location: /^\/@([a-zA-Z._0-9]+)\/video\/(\d+)/i,
   },
   handle: handleVideoRoute,
+};
+
+export const forYouRouteHandler: RouteObserverHandler = {
+  match: {
+    type: 'route',
+    location: /^\/foryou/i,
+  },
+  handle: () => {},
 };
 
 /**
