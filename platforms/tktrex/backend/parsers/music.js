@@ -2,7 +2,7 @@ const debug = require('debug')('parsers:music');
 
 async function music(envelop, previous) {
   /* 'foryou' 'following' and 'video' shares same pattern */
-  const availin = ['foryou', 'following', 'video'];
+  const availin = ['foryou', 'following', 'video', 'native'];
 
   if (previous.nature && availin.indexOf(previous.nature.type) === -1) {
     // debug("No music for previous.nature %o", previous.nature);
