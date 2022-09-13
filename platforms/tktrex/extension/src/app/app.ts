@@ -36,10 +36,12 @@ export function tkTrexActions(remoteInfo: unknown): void {
 
 const feedIdNeedsRefresh = (oldHref: string, newHref: string): boolean => {
   const newPathname = new URL(newHref).pathname;
+  const isNewHrefForYou =
+    newPathname.match(forYouRouteHandler.match.location) ?? newPathname === '/';
   // at the first call of this function oldHref is undefined,
   // so we check if the newHref is "/"
   if (!oldHref) {
-    if (newPathname === '/') {
+    if (newPathname === '/' || isNewHrefForYou) {
       return false;
     }
     return true;
@@ -49,8 +51,6 @@ const feedIdNeedsRefresh = (oldHref: string, newHref: string): boolean => {
 
   const isOldHrefForYou =
     oldPathname.match(forYouRouteHandler.match.location) ?? oldPathname === '/';
-  const isNewHrefForYou =
-    newPathname.match(forYouRouteHandler.match.location) ?? newPathname === '/';
 
   // prevent feedId refresh when navigate from '/' to '/foryou' and viceversa
   if (isOldHrefForYou) {

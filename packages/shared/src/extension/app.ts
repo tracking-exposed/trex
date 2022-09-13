@@ -141,37 +141,32 @@ function setupObserver(
 
               onLocationChange(oldHref, newHref);
               oldHref = newHref;
+            }
 
-              // always call the route handler
-              const routeHandlerKey = handlersList.find((h) => {
-                const handler = handlers[h];
+            // always call the route handler
+            const routeHandlerKey = handlersList.find((h) => {
+              const handler = handlers[h];
 
-                if (handler.match.type === 'route') {
-                  appLog.debug(
-                    'Matching route %O',
-                    handler.match,
-                    window.location.pathname
-                  );
-                  return window.location.pathname.match(handler.match.location);
-                }
-                return false;
-              });
-
-              if (routeHandlerKey) {
-                appLog.debug('Route handler key %s', routeHandlerKey);
-                const { handle, ...routeHandlerOpts } = handlers[
-                  routeHandlerKey
-                ] as RouteObserverHandler;
-                handle(
-                  window.document.body,
-                  routeHandlerOpts,
-                  routeHandlerKey,
-                  {
-                    ...config,
-                    href: window.location.toString(),
-                  } as any
+              if (handler.match.type === 'route') {
+                appLog.debug(
+                  'Matching route %O',
+                  handler.match,
+                  window.location.pathname
                 );
+                return window.location.pathname.match(handler.match.location);
               }
+              return false;
+            });
+
+            if (routeHandlerKey) {
+              appLog.debug('Route handler key %s', routeHandlerKey);
+              const { handle, ...routeHandlerOpts } = handlers[
+                routeHandlerKey
+              ] as RouteObserverHandler;
+              handle(window.document.body, routeHandlerOpts, routeHandlerKey, {
+                ...config,
+                href: window.location.toString(),
+              } as any);
             }
           }
         }
