@@ -185,8 +185,6 @@ export const handleLeaf = (
     //   style
     // );
     node.style.border = style.border;
-    node.setAttribute(selectorName, 'true');
-    node.setAttribute('yttrex', '1');
   }
 
   if (opts.match.type === 'selector-with-parents') {
@@ -236,6 +234,9 @@ export const handleLeaf = (
     // helpful only at development time:
     // const extra = extractor.mineExtraMetadata(selectorName, acquired);
     // console.table(extra);
+
+    node.setAttribute(selectorName, 'true');
+    node.setAttribute('yttrex', '1');
 
     hub.dispatch({
       type: 'leaf',
@@ -358,10 +359,10 @@ export const watchedPaths = {
     ...leafSelectors.searchcard,
     handle: handleLeaf,
   },
-  channellink: {
-    ...leafSelectors.channellink,
-    handle: handleLeaf,
-  },
+  // channellink: {
+  //   ...leafSelectors.channellink,
+  //   handle: handleLeaf,
+  // },
   searchAds: {
     ...leafSelectors.searchAds,
     handle: handleLeaf,
