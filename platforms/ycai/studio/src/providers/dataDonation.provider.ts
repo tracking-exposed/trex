@@ -62,7 +62,7 @@ const watchedPaths = {
     parents: 1,
   },
   searchcard: { selector: '.ytd-search-refinement-card-renderer' },
-  channellink: { selector: '.channel-link' },
+  // channellink: { selector: '.channel-link' },
   searchAds: {
     selector: '.ytd-promoted-sparkles-text-search-renderer',
     parents: 2,
