@@ -1,5 +1,7 @@
 const debug = require('debug')('parsers:music');
 
+const musicSelector = 'a[href^="/music/"]';
+
 async function music(envelop, previous) {
   /* 'foryou' 'following' and 'video' shares same pattern */
   const availin = ['foryou', 'following', 'video', 'native'];
@@ -9,7 +11,14 @@ async function music(envelop, previous) {
     return null;
   }
 
-  const elem = envelop.jsdom.querySelector('a[href^="/music/"]');
+  let elem;
+  if (previous.nature.type === 'native') {
+    elem = envelop.jsdom.querySelector(
+      `div[class*="DivBrowserModeContainer"] ${musicSelector}`
+    );
+  } else {
+    elem = envelop.jsdom.querySelector(musicSelector);
+  }
 
   if (!elem) {
     debug(

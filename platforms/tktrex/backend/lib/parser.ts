@@ -109,7 +109,7 @@ export const buildMetadata: BuildMetadataFn<
         metrics,
         stitch,
         author,
-        downloader,
+        ...downloader,
         ...native,
       };
       break;

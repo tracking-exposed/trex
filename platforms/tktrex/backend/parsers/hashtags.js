@@ -10,7 +10,14 @@ async function hashtags(envelop, previous) {
     return null;
   }
 
-  const hashtags = envelop.jsdom.querySelectorAll('a[href^="/tag/"]');
+  let hashtags;
+  if (previous.nature.type === 'native') {
+    hashtags = envelop.jsdom.querySelectorAll(
+      'div[class*="DivBrowserModeContainer"] a[href^="/tag/"]'
+    );
+  } else {
+    hashtags = envelop.jsdom.querySelectorAll('a[href^="/tag/"]');
+  }
   const results = _.map(hashtags, function (anode) {
     if (anode.textContent.length > 1) return anode.textContent;
   });

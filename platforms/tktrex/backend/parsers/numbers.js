@@ -7,10 +7,20 @@ async function metrics(envelop, previous) {
     return null;
   }
 
-  const likee = envelop.jsdom.querySelector('[data-e2e="like-count"]');
-  const liken = likee.textContent;
+  let likee, commente;
+  if (previous.nature.type === 'native') {
+    likee = envelop.jsdom.querySelector(
+      'div[class*="DivBrowserModeContainer"] [data-e2e*="like-count"]'
+    );
+    commente = envelop.jsdom.querySelector(
+      'div[class*="DivBrowserModeContainer"] [data-e2e*="comment-count"]'
+    );
+  } else {
+    likee = envelop.jsdom.querySelector('[data-e2e="like-count"]');
+    commente = envelop.jsdom.querySelector('[data-e2e="comment-count"]');
+  }
 
-  const commente = envelop.jsdom.querySelector('[data-e2e="comment-count"]');
+  const liken = likee.textContent;
   const commentn = commente.textContent;
 
   const sharee = envelop.jsdom.querySelector('[data-e2e="share-count"]');
