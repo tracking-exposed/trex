@@ -1,13 +1,14 @@
 import { geo } from '@shared/utils/ip.utils';
-
-const _ = require('lodash');
-
-const debug = require('debug')('routes:events');
-const nconf = require('nconf');
+import { parseISO } from 'date-fns';
+import _ from 'lodash';
+import nconf from 'nconf';
+import D from 'debug';
 
 const automo = require('../lib/automo');
 const utils = require('../lib/utils');
 const security = require('../lib/security');
+
+const debug = D('routes:events');
 
 const mandatoryHeaders = {
   'content-length': 'length',
@@ -172,6 +173,7 @@ async function processEvents(req) {
         href: body.href,
         timelineId: timelineWord + '-' + timelineIdHash.substring(0, 10),
         publicKey: supporter.publicKey,
+        clientTime: parseISO(body.clientTime),
         savingTime: new Date(),
         html: body.html,
         n: optionalNumbers,

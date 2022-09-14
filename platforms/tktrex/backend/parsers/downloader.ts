@@ -55,7 +55,10 @@ async function downloadVideoSelected(searchFinding) {
 }
 */
 
-const downloader: ParserFn<HTMLSource, any> = async (envelop, findings) => {
+const downloader: ParserFn<HTMLSource, { downloader: any[] }> = async (
+  envelop,
+  findings
+) => {
   if (envelop.supporter.version !== '2.6.2.99') {
     // TODO we should load a JSON with some more complex filtering mechanism
     debug('Only development version .99 is now considered for download!');

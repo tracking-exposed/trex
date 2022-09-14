@@ -4,7 +4,7 @@ import moment from 'moment';
 import automo from '../lib/automo';
 import CSV from '../lib/CSV';
 import utils from '../lib/utils';
-import { flattenProfile, flattenSearch } from './search';
+import { flattenNative, flattenProfile, flattenSearch } from './search';
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const debug = require('debug')('routes:personal');
 
@@ -183,7 +183,9 @@ async function getPersonalCSV(req: any): Promise<any> {
   if (type === 'search') unrolledData = _.reduce(data, flattenSearch, []);
   else if (type === 'profile')
     unrolledData = _.reduce(data, flattenProfile, []);
-  else unrolledData = _.map(data, pickFeedFields);
+  else if (type === 'native') {
+    unrolledData = data.map(flattenNative);
+  } else unrolledData = _.map(data, pickFeedFields);
 
   if (!unrolledData.length) {
     debug(

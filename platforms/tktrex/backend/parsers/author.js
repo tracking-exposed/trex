@@ -13,10 +13,17 @@ async function author(envelop, previous) {
     debug("IMAGE: %s", i.getAttribute('src'));
   }) */
 
-  const usernameElt = envelop.jsdom.querySelector(
-    '[data-e2e="video-author-uniqueid"], [data-e2e="search-card-user-unique-id"]'
-  );
-  const nameElt = envelop.jsdom.querySelector('a > h4');
+  let usernameElt, nameElt;
+  if (previous.nature.type === 'native') {
+    usernameElt = envelop.jsdom.querySelector(
+      'div[class*="DivBrowserModeContainer"] [data-e2e="browse-username"]'
+    );
+  } else {
+    usernameElt = envelop.jsdom.querySelector(
+      '[data-e2e="video-author-uniqueid"], [data-e2e="search-card-user-unique-id"]'
+    );
+    nameElt = envelop.jsdom.querySelector('a > h4');
+  }
 
   if (usernameElt) {
     const username = usernameElt.textContent.trim();
@@ -33,6 +40,7 @@ async function author(envelop, previous) {
     return author;
   }
   /* else we fail to find it */
+  return null;
 }
 
 module.exports = author;
