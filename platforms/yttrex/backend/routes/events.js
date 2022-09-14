@@ -19,7 +19,7 @@ function processHeaders(received, headerList) {
     const h = _.get(received, headerName, undefined);
     if (!h && headInfo.mandatory === true)
       errors.push(`missing header [${headerName}, we use as ${headInfo.name}]`);
-    else if (h.length) _.set(headers, headInfo.name, h);
+    else if (h && h.length) _.set(headers, headInfo.name, h);
     else {
       missing.push(
         `missing optional header [${headerName}], setting null [${headInfo.name}]`
@@ -183,6 +183,11 @@ async function processEvents2(req) {
   /* this function process the received payload,
    * and produce the object to be saved into mongodb */
 
+  // appendLast enable the mirror functionality, it is
+  // before any validation so we can test also submissions
+  // failing the next steps
+  appendLast(req);
+
   const headers = processHeaders(req.headers, EXPECTED_HEADERS);
   if (headers.error?.length) {
     debug(
@@ -213,9 +218,6 @@ async function processEvents2(req) {
   }
 
   const supporter = await automo.tofu(headers.publickey, headers.version);
-
-  // this is necessary for the mirror functionality
-  appendLast(req);
 
   // this information would be merged in htmls and leafs if exist
   const experinfo = await automo.pullExperimentInfo(supporter.publicKey);
