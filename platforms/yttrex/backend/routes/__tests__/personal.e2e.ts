@@ -1,10 +1,12 @@
 import { GuardoniExperimentArb } from '@shared/arbitraries/Experiment.arb';
 import bs58 from '@shared/providers/bs58.provider';
-import { GetParserProvider } from '@shared/providers/parser.provider';
+import {
+  GetParserProvider,
+  ParserProviderContextDB,
+} from '@shared/providers/parser.provider';
 import { fc } from '@shared/test';
 import { foldTEOrThrow } from '@shared/utils/fp.utils';
 import { sleep } from '@shared/utils/promise.utils';
-import { ContributionEventArb } from '@yttrex/shared/arbitraries/ContributionEvent.arb';
 import { Ad } from '@yttrex/shared/models/Ad';
 import { Metadata } from '@yttrex/shared/models/Metadata';
 import { pipe } from 'fp-ts/lib/function';
@@ -24,10 +26,11 @@ import {
 } from '../../lib/parser/leaf';
 import { leafParsers, parsers } from '../../parsers';
 import { GetTest, Test } from '../../tests/Test';
+const pkgJSON = require('../../package.json');
 
-const version = '9.9.9.9';
+const version = pkgJSON.version;
 describe('Events', () => {
-  let appTest: Test;
+  let appTest: Test, db: ParserProviderContextDB;
   const [experiment] = fc.sample(GuardoniExperimentArb, 1);
 
   beforeAll(async () => {
@@ -37,6 +40,12 @@ describe('Events', () => {
       appTest.config.get('schema').experiments,
       [experiment]
     );
+
+    db = {
+      api: appTest.mongo3,
+      read: appTest.mongo,
+      write: appTest.mongo,
+    };
   });
 
   afterAll(async () => {
@@ -53,7 +62,7 @@ describe('Events', () => {
   describe('GetPersonalByExperimentId', () => {
     test('succeeds with one metadata', async () => {
       const researchTag = 'test-tag';
-
+      const clientTime = new Date().toISOString();
       const keys = await foldTEOrThrow(bs58.makeKeypair(''));
 
       const fixture = pipe(
@@ -67,12 +76,19 @@ describe('Events', () => {
         JSON.parse
       );
 
-      const data = fc.sample(ContributionEventArb, 1).map((d) => ({
-        ...d,
-        ...fixture.sources[0],
-        experimentId: experiment.experimentId,
-        researchTag,
-      }));
+      const [{ savingTime, processed, html, ...source }] = fixture.sources;
+
+      const data = [
+        {
+          ...source,
+          type: 'home',
+          element: html,
+          publicKey: keys.publicKey,
+          clientTime,
+          experimentId: experiment.experimentId,
+          researchTag,
+        },
+      ];
 
       // create a signature
       const signature = await foldTEOrThrow(
@@ -90,12 +106,6 @@ describe('Events', () => {
         .set('accept-language', 'en')
         .send(data)
         .expect(200);
-
-      const db = {
-        api: appTest.mongo3,
-        read: appTest.mongo,
-        write: appTest.mongo,
-      };
 
       await GetParserProvider('leaves', {
         db,
@@ -115,7 +125,7 @@ describe('Events', () => {
         stop: 1,
         repeat: false,
         backInTime: 10,
-        htmlAmount: 10,
+        htmlAmount: 1,
       });
 
       // run parser
@@ -135,7 +145,7 @@ describe('Events', () => {
       }).run({
         singleUse: true,
         stop: 1,
-        htmlAmount: 100,
+        htmlAmount: 1,
         backInTime: 10,
       });
 
@@ -156,7 +166,7 @@ describe('Events', () => {
           {
             href: 'https://www.youtube.com/',
             publicKey: keys.publicKey,
-            clientTime: fixture.sources[0].clientTime,
+            clientTime,
             experimentId: experiment.experimentId,
             type: 'home',
           },
