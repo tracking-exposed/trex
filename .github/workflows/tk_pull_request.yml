@@ -48,6 +48,12 @@ jobs:
       - name: Build shared
         run: yarn shared build
 
+      - name: Build Backend
+        run: yarn tk:backend build
+
+      - name: Build
+        run: yarn tk:ext build
+
       - name: Spec tests
         run: yarn tk:ext test --runInBand --ci
 
@@ -56,6 +62,3 @@ jobs:
           yarn pm2 start platforms/tktrex/backend/ecosystem.config.js --env test
           yarn tk:backend test --runInBand --ci --forceExit
           yarn pm2 stop all
-
-      - name: Build
-        run: yarn tk:ext build
