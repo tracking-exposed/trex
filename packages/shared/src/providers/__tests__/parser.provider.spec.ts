@@ -5,6 +5,7 @@ import { date } from 'io-ts-types';
 import { GetLogger } from '../../logger';
 import { v4 as uuid } from 'uuid';
 import {
+  markOutputField,
   GetParserProvider,
   ParserProviderContext,
   payloadToTableOutput,
@@ -123,7 +124,7 @@ describe('Parser Provider', () => {
 
     expect(output).toMatchObject({
       [source.id]: {
-        findings: JSON.stringify(findings),
+        findings: markOutputField(findings),
         metadata: metadata.id,
       },
     });

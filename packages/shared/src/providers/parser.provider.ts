@@ -538,6 +538,17 @@ export const executionLoop =
     }
   };
 
+export const markOutputField = <R extends Record<string, any>>(
+  obj: R
+): Record<string, string> => {
+  return Object.entries(obj).reduce((acc, [key, value]) => {
+    return {
+      ...acc,
+      [key]: `${value !== null && value !== undefined ? 'OK' : '!E'}`,
+    };
+  }, {});
+};
+
 /**
  * Convert the pipeline output to an object compatible with `console.table`
  *
@@ -559,7 +570,7 @@ export const payloadToTableOutput = <
       ...acc,
       [getEntryId(source)]: {
         log: JSON.stringify(log),
-        findings: JSON.stringify(findings),
+        findings: markOutputField(findings),
         metadata: metadata?.id ?? null,
         failures: JSON.stringify(
           Object.entries(failures).map(([key, value]) => ({
@@ -633,9 +644,17 @@ export const GetParserProvider = <
         htmlAmount,
       });
 
-      const tableOutput = payloadToTableOutput(ctx.getEntryId, output.payload);
-      // eslint-disable-next-line
-      console.table(tableOutput);
+      if (output.type === 'Success') {
+        const tableOutput = payloadToTableOutput(
+          ctx.getEntryId,
+          output.payload
+        );
+        // eslint-disable-next-line
+        console.table(tableOutput);
+      } else {
+        // eslint-disable-next-line no-console
+        console.error(output.payload);
+      }
 
       return output;
     },
