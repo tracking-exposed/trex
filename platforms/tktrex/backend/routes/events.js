@@ -115,6 +115,11 @@ async function saveInDB(experinfo, objects, dbcollection) {
 }
 
 async function processEvents(req) {
+  // appendLast enable the mirror functionality, it is
+  // before any validation so we can test also submissions
+  // failing the next steps
+  appendLast(req);
+
   const headers = processHeaders(_.get(req, 'headers'), mandatoryHeaders);
   if (headers.error) return headerError(headers);
 
@@ -129,9 +134,6 @@ async function processEvents(req) {
   }
 
   const supporter = await automo.tofu(headers.publickey, headers.version);
-
-  // this is necessary for the mirror functionality
-  appendLast(req);
 
   const fullsaves = [];
   const htmls = _.compact(
