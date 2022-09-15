@@ -311,7 +311,10 @@ const pipeline =
   >(
     ctx: ParserContext<T, M, PP>
   ) =>
-  async (e: T, parsers: PP): Promise<PipelineInput<T, PP>> => {
+  async (
+    e: t.TypeOf<T>,
+    parsers: PP
+  ): Promise<PipelineInput<t.TypeOf<T>, PP>> => {
     let results: PipelineInput<T, PP> = {
       failures: {},
       source: e,
@@ -401,7 +404,7 @@ export const parseContributions =
 
     const results: Array<PipelineOutput<t.TypeOf<T>, t.TypeOf<M>, PP>> = [];
 
-    ctx.log.debug('Sources %O', envelops.sources);
+    ctx.log.debug('Sources %O', envelops.sources.map(ctx.getEntryId));
 
     for (const entry of envelops.sources) {
       ctx.log.debug('Parsing entry %O', ctx.getEntryId(entry));
@@ -513,7 +516,10 @@ export const executionLoop =
         } else {
           ctx.log.debug('Data to process %d', envelops.sources.length);
           const currentResult = await parseContributions(ctx)(envelops);
-          ctx.log.debug('Processed envelops %O', currentResult);
+          ctx.log.debug(
+            'Processed sources %O',
+            currentResult.map((r) => ctx.getEntryId(r.source))
+          );
           results.push(...currentResult);
         }
 

@@ -2,7 +2,7 @@ import base58 from 'bs58';
 import nacl from 'tweetnacl';
 import { Ad } from '@yttrex/shared/models/Ad';
 import { sanitizeHTML } from '@shared/utils/html.utils';
-import { processLeaf } from '../../../parsers/leaf';
+import { leafParsers } from '../../../parsers';
 import {
   getLastLeaves,
   LeafSource,
@@ -11,7 +11,8 @@ import {
 } from '../../../lib/parser/leaf';
 import { GetTest, Test } from '../../../tests/Test';
 import {
-  readHistoryResults,
+  readFixtureJSON,
+  readFixtureJSONPaths,
   runParserTest,
 } from '@shared/test/utils/parser.utils';
 import { parseISO, subMinutes } from 'date-fns';
@@ -36,22 +37,26 @@ describe('Leaves parser', () => {
   describe('Leaves', () => {
     jest.setTimeout(20 * 1000);
 
-    const history = readHistoryResults(
+    const history = readFixtureJSONPaths(
       path.resolve(__dirname, '../../fixtures/leaves/home'),
       publicKey
     );
 
     test.each(history)(
       'Should correctly parse leaf contribution',
-      async ({ sources: _sources, metadata }) => {
+      async (fixturePath) => {
+        const { sources: _sources, metadata } = readFixtureJSON(fixturePath);
         const sources = _sources.map((s) => ({
           html: {
             ...s,
+            publicKey,
             clientTime: parseISO(s.clientTime ?? new Date().toISOString()),
             savingTime: subMinutes(new Date(), 2),
           },
           jsdom: new JSDOM(sanitizeHTML(s.html)).window.document,
-          supporter: undefined,
+          supporter: {
+            publicKey,
+          },
           findings: {},
         }));
 
@@ -59,7 +64,7 @@ describe('Leaves parser', () => {
           log: appTest.logger,
           sourceSchema: appTest.config.get('schema').leaves,
           metadataSchema: appTest.config.get('schema').ads,
-          parsers: { nature: processLeaf },
+          parsers: leafParsers,
           codecs: { contribution: LeafSource, metadata: Ad },
           db,
           getEntryId: (e) => e.html.id,
@@ -81,6 +86,7 @@ describe('Leaves parser', () => {
             const {
               _id: received_Id,
               id: receivedId,
+              publicKey: receivedPublicKey,
               // sections: sectionsR,
               // clientTime: clientTimeR,
               savingTime: savingTimeR,
@@ -100,6 +106,7 @@ describe('Leaves parser', () => {
               clientTime: clientTimeExp,
               savingTime: savingTimeExp,
               type: typeExp,
+              publicKey: expectedPublicKey,
               // login: loginExp,
               // blang: blangExp,
               ...expectedM

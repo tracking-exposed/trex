@@ -2,38 +2,52 @@ import * as E from 'fp-ts/lib/Either';
 import * as fs from 'fs';
 import * as t from 'io-ts';
 import { PathReporter } from 'io-ts/lib/PathReporter';
-import * as path from 'path';
+import path from 'path';
 import { Logger } from '../../logger';
 import {
-  parseContributions, ParserFn, ParserProviderContext
+  parseContributions,
+  ParserFn,
+  ParserProviderContext,
 } from '../../providers/parser.provider';
 
 /**
- * Read the parsed metadata history from '../fixtures/${nature}'
+ * Read fixtures file from path
+ *
+ * @param fixtureDir
+ * @returns string
  */
-export const readHistoryResults = (
-  fixtureDir: string,
-  publicKey: string
-): any[] => {
+export const readFixtureJSONPaths = (fixtureDir: string): any[] => {
   return fs
     .readdirSync(fixtureDir, 'utf-8')
     .filter((file) => file.includes('.json'))
-    .map((file) => {
-      const filePath = path.resolve(fixtureDir, file);
-      // eslint-disable-next-line
-      console.log('reading content from ', filePath);
-      const content = fs.readFileSync(filePath, 'utf-8');
-      const contentJSON = JSON.parse(content);
-      return contentJSON;
-    })
-    .map((mt) => ({
-      ...mt,
-      sources: mt.sources.map((h: any) => ({
-        ...h,
-        publicKey,
-      })),
-      metadata: { ...mt.metadata, publicKey },
-    }));
+    .map((fp) => path.resolve(fixtureDir, fp));
+};
+
+/**
+ * Read the parsed metadata history from '../fixtures/${nature}'
+ *
+ * @param fixtureFilePath
+ * @param publicKey Supporter public key
+ */
+export const readFixtureJSON = (
+  fixtureFilePath: string,
+  publicKey: string
+): { sources: any[]; metadata: any } => {
+  // eslint-disable-next-line
+  console.log(
+    'reading content from ',
+    path.relative(process.cwd(), fixtureFilePath)
+  );
+  const content = fs.readFileSync(fixtureFilePath, 'utf-8');
+  const mt = JSON.parse(content);
+  return {
+    ...mt,
+    sources: mt.sources.map((h: any) => ({
+      ...h,
+      publicKey,
+    })),
+    metadata: { ...mt.metadata, publicKey },
+  };
 };
 
 // type MetadataResult<T, S> = T & { sources: S[]; _id: string };
@@ -62,7 +76,7 @@ export const runParserTest =
     expectSources: (s: Array<t.TypeOf<S>>) => void;
   } & ParserProviderContext<S, M, PP>) =>
   async ({ sources, metadata }: any) => {
-    opts.log.debug('Sources %d', sources.length);
+    // opts.log.debug('Sources %d', sources.length);
 
     // insert the sources in the db
     await opts.db.api.insertMany(
