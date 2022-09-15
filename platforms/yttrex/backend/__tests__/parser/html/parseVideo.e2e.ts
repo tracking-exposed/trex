@@ -10,10 +10,11 @@ import {
   toMetadata,
   updateMetadataAndMarkHTML,
 } from '../../../lib/parser/html';
-import parseVideo  from '../../../parsers/video';
+import parseVideo from '../../../parsers/video';
 import { GetTest, Test } from '../../../tests/Test';
 import {
-  readHistoryResults,
+  readFixtureJSON,
+  readFixtureJSONPaths,
   runParserTest,
 } from '@shared/test/utils/parser.utils';
 import path from 'path';
@@ -58,9 +59,8 @@ describe('Parser: Video', () => {
   jest.useRealTimers();
   jest.setTimeout(20 * 1000);
 
-  const historyData = readHistoryResults(
-    path.resolve(__dirname, '../../fixtures/video'),
-    publicKey
+  const historyData = readFixtureJSONPaths(
+    path.resolve(__dirname, '../../fixtures/video')
   );
 
   /**
@@ -82,77 +82,79 @@ describe('Parser: Video', () => {
     // historyData[6]
     // historyData[7]
     historyData[8],
-  ])(
-    'Should correctly parse video contributions',
-    async ({ sources: _sources, metadata }) => {
-      const sources = _sources.map((h: any) => ({
-        html: {
-          ...h,
-          clientTime: parseISO(h.clientTime ?? new Date().toISOString()),
-          savingTime: addMinutes(new Date(), 1),
-          processed: null,
-        },
-        jsdom: new JSDOM(sanitizeHTML(h.html)).window.document,
-        supporter: undefined,
-      }));
+  ])('Should correctly parse video contributions', async (fixturePath) => {
+    const { sources: _sources, metadata } = readFixtureJSON(
+      fixturePath,
+      publicKey
+    );
 
-      await runParserTest({
-        log: appTest.logger,
-        db,
-        sourceSchema: appTest.config.get('schema').htmls,
-        metadataSchema: appTest.config.get('schema').metadata,
-        parsers: { nature: parseVideo },
-        codecs: { contribution: HTMLSource, metadata: VideoMetadata },
-        getEntryId: (e) => e.html.id,
-        getEntryDate: (e) => e.html.savingTime,
-        getEntryNatureType: (e) => e.html.nature.type ?? e.type,
-        getContributions: getLastHTMLs(db),
-        buildMetadata: toMetadata as any,
-        saveResults: updateMetadataAndMarkHTML(db),
-        expectSources: (s) => {
-          s.forEach((r: any) => {
-            expect(r.processed).toBe(true);
-          });
-        },
-        expectMetadata: (receivedM: any, expectedM: any) => {
-          const {
-            related: receivedRelated,
-            // login: receivedLogin,
-            likeInfo,
-            ...receivedMetadata
-          } = receivedM;
+    const sources = _sources.map((h: any) => ({
+      html: {
+        ...h,
+        clientTime: parseISO(h.clientTime ?? new Date().toISOString()),
+        savingTime: addMinutes(new Date(), 1),
+        processed: null,
+      },
+      jsdom: new JSDOM(sanitizeHTML(h.html)).window.document,
+      supporter: undefined,
+    }));
 
-          const {
-            savingTime: _savingTime,
-            clientTime: _clientTime,
-            _id,
-            id,
-            // login: expectedLogin,
-            related: expectedRelated,
-            likeInfo: expectedLikeInfo,
-            ...expectedMetadata
-          } = expectedM;
+    await runParserTest({
+      log: appTest.logger,
+      db,
+      sourceSchema: appTest.config.get('schema').htmls,
+      metadataSchema: appTest.config.get('schema').metadata,
+      parsers: { nature: parseVideo },
+      codecs: { contribution: HTMLSource, metadata: VideoMetadata },
+      getEntryId: (e) => e.html.id,
+      getEntryDate: (e) => e.html.savingTime,
+      getEntryNatureType: (e) => e.html.nature.type ?? e.type,
+      getContributions: getLastHTMLs(db),
+      buildMetadata: toMetadata as any,
+      saveResults: updateMetadataAndMarkHTML(db),
+      expectSources: (s) => {
+        s.forEach((r: any) => {
+          expect(r.processed).toBe(true);
+        });
+      },
+      expectMetadata: (receivedM: any, expectedM: any) => {
+        const {
+          related: receivedRelated,
+          // login: receivedLogin,
+          likeInfo,
+          ...receivedMetadata
+        } = receivedM;
 
-          expect({
-            ...receivedMetadata,
-            publicationTime: receivedMetadata?.publicationTime?.toISOString(),
-          }).toMatchObject({
-            ...expectedMetadata,
-          });
+        const {
+          savingTime: _savingTime,
+          clientTime: _clientTime,
+          _id,
+          id,
+          // login: expectedLogin,
+          related: expectedRelated,
+          likeInfo: expectedLikeInfo,
+          ...expectedMetadata
+        } = expectedM;
 
-          // check metadata related
-          expect(
-            receivedRelated.map(
-              ({ recommendedPubTime, publicationTime, ...rr }: any) => ({
-                ...rr,
-                foryou: rr.foryou ?? null,
-              })
-            )
-          ).toMatchObject(
-            expectedRelated.map(({ publicationTime, ...rr }: any) => rr)
-          );
-        },
-      })({ metadata, sources });
-    }
-  );
+        expect({
+          ...receivedMetadata,
+          publicationTime: receivedMetadata?.publicationTime?.toISOString(),
+        }).toMatchObject({
+          ...expectedMetadata,
+        });
+
+        // check metadata related
+        expect(
+          receivedRelated.map(
+            ({ recommendedPubTime, publicationTime, ...rr }: any) => ({
+              ...rr,
+              foryou: rr.foryou ?? null,
+            })
+          )
+        ).toMatchObject(
+          expectedRelated.map(({ publicationTime, ...rr }: any) => rr)
+        );
+      },
+    })({ metadata, sources });
+  });
 });

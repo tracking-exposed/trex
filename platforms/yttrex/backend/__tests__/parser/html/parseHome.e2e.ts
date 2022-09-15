@@ -1,5 +1,6 @@
 import {
-  readHistoryResults,
+  readFixtureJSON,
+  readFixtureJSONPaths,
   runParserTest,
 } from '@shared/test/utils/parser.utils';
 import { sanitizeHTML } from '@shared/utils/html.utils';
@@ -18,7 +19,7 @@ import {
 import processHome from '../../../parsers/home';
 import { GetTest, Test } from '../../../tests/Test';
 
-describe('Parserv', () => {
+describe('Parser: home', () => {
   let appTest: Test;
   const newKeypair = nacl.sign.keyPair();
   const publicKey = base58.encode(newKeypair.publicKey);
@@ -57,14 +58,18 @@ describe('Parserv', () => {
     );
   });
 
-  const history = readHistoryResults(
-    path.resolve(__dirname, '../../fixtures/home'),
-    publicKey
-  ).filter((v, i) => ![5, 9].includes(i));
+  const history = readFixtureJSONPaths(
+    path.resolve(__dirname, '../../fixtures/home')
+  )
+  // .filter((v, i) => ![5, 9].includes(i));
 
   test.each([history[0]])(
     'Should correctly parse home contributions',
-    async ({ sources: _sources, metadata }) => {
+    async (filePath) => {
+      const { sources: _sources, metadata } = readFixtureJSON(
+        filePath,
+        publicKey
+      );
       const sources = _sources.map((h: any) => ({
         html: {
           ...h,
@@ -76,7 +81,7 @@ describe('Parserv', () => {
         jsdom: new JSDOM(sanitizeHTML(h.html)).window.document,
       }));
 
-      const result = await runParserTest({
+      await runParserTest({
         log: appTest.logger,
         sourceSchema: appTest.config.get('schema').htmls,
         metadataSchema: appTest.config.get('schema').metadata,
