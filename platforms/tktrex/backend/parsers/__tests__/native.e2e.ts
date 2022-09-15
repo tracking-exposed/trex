@@ -1,5 +1,6 @@
 import {
-  readHistoryResults,
+  readFixtureJSON,
+  readFixtureJSONPaths,
   runParserTest,
 } from '@shared/test/utils/parser.utils';
 import { sanitizeHTML } from '@shared/utils/html.utils';
@@ -48,14 +49,17 @@ describe('Parser: "native"', () => {
   describe('Native', () => {
     jest.setTimeout(20 * 1000);
 
-    const history = readHistoryResults(
-      path.resolve(__dirname, 'fixtures/native'),
-      publicKey
+    const history = readFixtureJSONPaths(
+      path.resolve(__dirname, 'fixtures/native')
     );
 
     test.each(history)(
       'Should correctly parse "native" contribution',
-      async ({ sources: _sources, metadata }) => {
+      async (fixturePath) => {
+        const { sources: _sources, metadata } = readFixtureJSON(
+          fixturePath,
+          publicKey
+        );
         const sources = _sources.map((s: any) => ({
           html: {
             ...s,
