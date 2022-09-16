@@ -4,8 +4,8 @@ const testEnv = {
 
 const yt = {
   backend: {
-    name: 'yt-backend',
-    namespace: 'yt-trex',
+    name: 'server:watch',
+    namespace: 'yt:backend',
     cwd: __dirname,
     script: 'yarn watch',
     watch: false,
@@ -13,16 +13,16 @@ const yt = {
   },
 
   leavesParser: {
-    name: 'yt-leaves-parser',
-    namespace: 'yt-trex',
+    name: 'leaveserv:watch',
+    namespace: 'yt:backend',
     cwd: __dirname,
     script: 'yarn leaveserv:watch',
     watch: false,
     env_test: testEnv,
   },
   parser: {
-    name: 'yt-parser',
-    namespace: 'yt-trex',
+    name: 'parserv:watch',
+    namespace: 'yt:backend',
     cwd: __dirname,
     script: 'yarn parserv:watch',
     watch: false,

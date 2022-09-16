@@ -4,16 +4,16 @@ const testEnv = {
 
 const tk = {
   backend: {
-    name: 'tk-backend',
-    namespace: 'tk-trex',
+    name: 'server:watch',
+    namespace: 'tk:backend',
     cwd: __dirname,
     script: 'yarn watch',
     watch: false,
     env_test: testEnv,
   },
   parser: {
-    name: 'tk-parser',
-    namespace: 'tk-trex',
+    name: 'parserv:watch',
+    namespace: 'tk:backend',
     cwd: __dirname,
     script: 'yarn parserv:watch --minutesago 10',
     watch: false,
