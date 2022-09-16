@@ -49,11 +49,21 @@ export const downloadExtension = (
         const httpPerms = m.permissions.filter((p: string) =>
           p.startsWith('http')
         );
-        ctx.logger.info(
-          `Manifest found, no need to download the extension: %s (%O)`,
-          m.version,
-          httpPerms
-        );
+
+        if (m.version === ctx.version) {
+          ctx.logger.info(
+            `Manifest found, no need to download the extension: %s (%O)`,
+            m.version,
+            httpPerms
+          );
+        } else {
+          ctx.logger.warn(
+            'WARNING: Manifest found, but extension version mismatch: %s (guardoni %s)',
+            m.version,
+            ctx.version
+          );
+        }
+
         return undefined;
       }
 

@@ -422,7 +422,7 @@ export const GetGuardoni: GetGuardoni = ({
 }) => {
   const loggerSpaces = verbose
     ? ['guardoni*', '@trex*', process.env.DEBUG]
-    : ['guardoni:info', 'guardoni:error', process.env.DEBUG];
+    : ['guardoni:info', 'guardoni:warn', 'guardoni:error', process.env.DEBUG];
 
   debug.enable(loggerSpaces.join(','));
 
