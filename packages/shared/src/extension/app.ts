@@ -1,4 +1,5 @@
 import _ from 'lodash';
+import { ParserConfiguration, ParserFn } from '../providers/parser.provider';
 import { HandshakeResponse } from '../models/HandshakeBody';
 import { clearCache } from '../providers/dataDonation.provider';
 import { FIXED_USER_NAME, initializeKey } from './background/account';
@@ -16,6 +17,7 @@ import log from './logger';
 import HubEvent from './models/HubEvent';
 import { ServerLookup } from './models/Message';
 import UserSettings from './models/UserSettings';
+import { renderUI, RenderUIProps } from './ui';
 import { bo } from './utils/browser.utils';
 
 // instantiate a proper logger
@@ -67,7 +69,12 @@ interface SetupObserverOpts {
   onLocationChange: (oldLocation: string, newLocation: string) => void;
 }
 
-export interface BootOpts {
+export interface BootOpts<
+  S = any,
+  M = any,
+  C extends ParserConfiguration = ParserConfiguration,
+  PP extends Record<string, ParserFn<S, any, C>> = any
+> {
   payload: ServerLookup['payload'];
   mapLocalConfig: (
     c: UserSettings,
@@ -79,6 +86,7 @@ export interface BootOpts {
     onRegister: (h: Hub<HubEvent>, config: UserSettings) => void;
   };
   onAuthenticated: (res: any) => void;
+  ui?: Omit<RenderUIProps<S, M, C, PP>, 'hub'>;
 }
 
 /**
@@ -232,7 +240,12 @@ const serverHandshakeP = (
 
 let loading = false;
 let app: App | undefined;
-export async function boot(opts: BootOpts): Promise<App> {
+export async function boot<
+  S = any,
+  M = any,
+  C extends ParserConfiguration = ParserConfiguration,
+  PP extends Record<string, ParserFn<S, any, C>> = any
+>(opts: BootOpts<S, M, C, PP>): Promise<App> {
   if (app) {
     appLog.debug('App already booted!');
     return app;
@@ -337,12 +350,12 @@ export async function boot(opts: BootOpts): Promise<App> {
   // register platform specific event handlers
   opts.hub.onRegister(opts.hub.hub, config);
 
-  // emergency button should be used when a supported with
-  // UX hack in place didn't see any UX change, so they
-  // can report the problem and we can handle it.
-  // initializeEmergencyButton();
+  // render shared ui if configuration is given
+  if (opts.ui) {
+    renderUI({ hub: opts.hub.hub, ...opts.ui });
+  }
 
-  // because the URL has been for sure reloaded, be sure to also
+  // because the URL has been for sure reloaded, be sure to also clear cache
   clearCache();
 
   // send the configuration to the server to register the extension
