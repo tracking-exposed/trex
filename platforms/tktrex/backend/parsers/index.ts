@@ -2,7 +2,7 @@ import nature from './nature';
 import description from './description';
 import music from './music';
 import hashtags from './hashtags';
-import numbers from './numbers';
+import metrics from './metrics';
 import stitch from './stitch';
 import author from './author';
 import search from './search';
@@ -15,7 +15,7 @@ export const parsers = {
   description,
   music,
   hashtags,
-  metrics: numbers,
+  metrics,
   stitch,
   author,
   search,
