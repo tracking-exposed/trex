@@ -39,6 +39,10 @@ export interface GuardoniNavigateOpts extends GuardoniCommandOpts {
   exit?: boolean;
 }
 
+export interface GuardoniCleanOpts {
+  platform: Platform;
+}
+
 export type GuardoniCommandConfig =
   | {
       run: 'register-csv';
@@ -59,6 +63,9 @@ export type GuardoniCommandConfig =
   | {
       run: 'navigate';
       opts: GuardoniNavigateOpts;
+    }
+  | {
+      run: 'clean';
     };
 
 export interface GuardoniCLI {
@@ -177,6 +184,16 @@ export const GetGuardoniCLI: GetGuardoniCLI = (
                 }))
               );
             }
+            case 'clean':
+              return pipe(
+                g.cleanExtension(),
+                TE.map(() => ({
+                  type: 'success',
+                  values: [],
+                  message: 'Extension dir cleaned',
+                }))
+              );
+
             case 'auto':
             default:
               return g.runAuto(command.value);
@@ -403,6 +420,18 @@ const program = yargs(hideBin(process.argv))
     }
   )
   .command(
+    'yt-clean',
+    'Clean YT extension',
+    (yargs) => yargs,
+    (argv) => {
+      void runGuardoni({
+        ...argv,
+        platform: 'youtube',
+        command: { run: 'clean' },
+      });
+    }
+  )
+  .command(
     'tk-navigate',
     'Use guardoni browser with loaded tk extension',
     (yargs) =>
@@ -470,7 +499,7 @@ const program = yargs(hideBin(process.argv))
         demandOption: 'Provide a valid path to a csv file',
       });
     },
-    ({ file, ...argv }) => {
+    ({ file, $0, _, ...argv }) => {
       void runGuardoni({
         ...argv,
         platform: 'tiktok',
@@ -481,14 +510,24 @@ const program = yargs(hideBin(process.argv))
   .command(
     'tk-list',
     'List available experiments',
-    (yargs) => {
-      return yargs;
-    },
+    (yargs) => yargs,
     (argv) => {
       void runGuardoni({
         ...argv,
         platform: 'tiktok',
         command: { run: 'list' },
+      });
+    }
+  )
+  .command(
+    'tk-clean',
+    'Clean TK extension',
+    (yargs) => yargs,
+    (argv) => {
+      void runGuardoni({
+        ...argv,
+        platform: 'tiktok',
+        command: { run: 'clean' },
       });
     }
   )

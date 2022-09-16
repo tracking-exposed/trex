@@ -7,6 +7,7 @@
  *
  */
 import { AppError, toAppError } from '@shared/errors/AppError';
+import { UserSettings } from '@shared/extension/models/UserSettings';
 import axios from 'axios';
 import extractZip from 'extract-zip';
 import { pipe } from 'fp-ts/lib/function';
@@ -14,7 +15,7 @@ import * as IOE from 'fp-ts/lib/IOEither';
 import * as TE from 'fp-ts/lib/TaskEither';
 import * as fs from 'fs';
 import path from 'path';
-import { UserSettings } from '@shared/extension/models/UserSettings';
+import { getExperimentJSONPath } from './experiment';
 import { GuardoniContext, Platform } from './types';
 
 /**
@@ -87,7 +88,7 @@ export const downloadExtension = (
       );
 
       ctx.logger.debug(
-        'Extension exists at path %s? %d',
+        'Extension exists at path %s? %s',
         downloadDetails.extensionZipFilePath,
         extensionExists
       );
@@ -139,6 +140,49 @@ export const downloadExtension = (
   );
 };
 
+/**
+ * Clean extension directory
+ *
+ * @param ctx
+ * @returns
+ */
+
+export const cleanExtension =
+  (ctx: GuardoniContext) => (): TE.TaskEither<AppError, void> => {
+    const extensionDir = ctx.platform.extensionDir;
+    ctx.logger.info('Cleaning extension dir %s', extensionDir);
+
+    return pipe(
+      IOE.tryCatch(() => {
+        const experimentJSON = getExperimentJSONPath(ctx);
+        ctx.logger.debug('Checking %s exists', experimentJSON);
+        if (fs.existsSync(experimentJSON)) {
+          ctx.logger.info(
+            '\nREMOVING %s:\n %O\n',
+            experimentJSON,
+            JSON.parse(fs.readFileSync(experimentJSON, 'utf-8'))
+          );
+        }
+
+        const settingsJSON = getSettingsJSONPath(ctx);
+        ctx.logger.debug('Checking %s exists', settingsJSON);
+        if (fs.existsSync(settingsJSON)) {
+          ctx.logger.info(
+            '\nREMOVING settings.json:\n %O \n',
+            JSON.parse(fs.readFileSync(settingsJSON, 'utf-8'))
+          );
+        }
+
+        fs.rmSync(extensionDir, { recursive: true });
+        fs.mkdirSync(extensionDir);
+      }, toAppError),
+      TE.fromIOEither
+    );
+  };
+
+const getSettingsJSONPath = (ctx: GuardoniContext): string =>
+  path.resolve(ctx.platform.extensionDir, 'settings.json');
+
 export const setLocalSettings =
   (ctx: GuardoniContext) =>
   (s?: Partial<UserSettings>): void => {
@@ -147,10 +191,7 @@ export const setLocalSettings =
       return;
     }
 
-    const settingsJsonPath = path.resolve(
-      ctx.platform.extensionDir,
-      'settings.json'
-    );
+    const settingsJsonPath = getSettingsJSONPath(ctx);
 
     const settings = JSON.stringify(s);
 
