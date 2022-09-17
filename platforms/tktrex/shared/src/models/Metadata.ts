@@ -36,16 +36,16 @@ const AuthorWithName = t.intersection(
 
 type AuthorWithName = t.TypeOf<typeof AuthorWithName>;
 
-const Metrics = t.type(
+export const Metrics = t.type(
   {
-    liken: t.string,
-    commentn: t.string,
-    sharen: t.string,
+    liken: t.union([t.string, t.null]),
+    commentn: t.union([t.string, t.null]),
+    sharen: t.union([t.string, t.null]),
   },
   'Metrics',
 );
 
-type Metrics = t.TypeOf<typeof Metrics>;
+export type Metrics = t.TypeOf<typeof Metrics>;
 
 export const MetadataBase = t.type(
   {

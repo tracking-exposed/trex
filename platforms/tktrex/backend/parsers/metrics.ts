@@ -1,13 +1,17 @@
-async function metrics(envelop, previous) {
+import { ParserFn } from '@shared/providers/parser.provider';
+import { HTMLSource } from '../lib/parser';
+import { Metrics } from '@tktrex/shared/models/Metadata';
+
+const metrics: ParserFn<HTMLSource, Metrics> = async (envelop, previous) => {
   /* 2.4.x 'foryou' and 'following' are considered only */
   const availin = ['foryou', 'following', 'video', 'native'];
 
-  if (previous.nature && availin.indexOf(previous.nature.type) === -1) {
+  if (previous.nature && !availin.includes(previous.nature.type)) {
     // debug('No numbers in previous.nature %o', previous.nature);
     return null;
   }
 
-  let likee, commente;
+  let likee: HTMLElement | null, commente: HTMLElement | null;
   if (previous.nature.type === 'native') {
     likee = envelop.jsdom.querySelector(
       'div[class*="DivBrowserModeContainer"] [data-e2e*="like-count"]'
@@ -20,17 +24,17 @@ async function metrics(envelop, previous) {
     commente = envelop.jsdom.querySelector('[data-e2e="comment-count"]');
   }
 
-  const liken = likee.textContent;
-  const commentn = commente.textContent;
-
   const sharee = envelop.jsdom.querySelector('[data-e2e="share-count"]');
-  const sharen = sharee.textContent;
+
+  const liken = likee?.textContent ?? null;
+  const commentn = commente?.textContent ?? null;
+  const sharen = sharee?.textContent ?? null;
 
   return {
     liken,
     commentn,
     sharen,
   };
-}
+};
 
-module.exports = metrics;
+export default metrics;
