@@ -38,7 +38,11 @@ import {
   saveExperiment,
   validateNonEmptyString,
 } from './experiment';
-import { downloadExtension, setLocalSettings } from './extension';
+import {
+  downloadExtension,
+  setLocalSettings,
+  cleanExtension,
+} from './extension';
 import {
   checkProfile,
   getDefaultProfile,
@@ -69,7 +73,8 @@ const runNavigate =
         : 'https://www.youtube.com';
 
     return pipe(
-      TE.right(setLocalSettings(ctx)(opts)),
+      downloadExtension(ctx),
+      TE.map(() => setLocalSettings(ctx)(opts)),
       TE.chain(() =>
         dispatchBrowser(ctx)({
           headless: opts?.headless !== undefined ? opts.headless : true,
@@ -130,7 +135,8 @@ export const runBrowser =
     opts?: GuardoniCommandOpts
   ): TE.TaskEither<AppError, ExperimentInfo & { publicKey: string | null }> => {
     return pipe(
-      dispatchBrowser(ctx)({}),
+      downloadExtension(ctx),
+      TE.chain(() => dispatchBrowser(ctx)({})),
       TE.chain((browser) => {
         return TE.tryCatch(async () => {
           const [page, ...otherPages] = await browser.pages();
@@ -166,6 +172,7 @@ export const runExperiment =
     );
     return pipe(
       TE.fromEither(validateNonEmptyString(experimentId)),
+      TE.chainFirst(() => downloadExtension(ctx)),
       TE.chain((expId) =>
         sequenceS(TE.ApplicativePar)({
           profile: updateGuardoniProfile(ctx)(
@@ -206,6 +213,7 @@ export const runExperimentForPage =
   ): TE.TaskEither<AppError, GuardoniSuccessOutput> =>
     pipe(
       getDirective(ctx)(experimentId),
+      TE.chainFirst(() => downloadExtension(ctx)),
       TE.chain((data) => guardoniExecution(ctx)(experimentId, data, page)),
       TE.map((publicKey) => ({
         type: 'success',
@@ -350,8 +358,7 @@ const loadContext = (
         E.mapLeft(toAppError),
         TE.fromEither
       );
-    }),
-    TE.chainFirst(downloadExtension)
+    })
   );
 };
 
@@ -378,6 +385,10 @@ export interface Guardoni {
     onProgress?: (details: ProgressDetails) => void
   ) => TE.TaskEither<AppError, GuardoniSuccessOutput>;
   runNavigate: (opts?: GuardoniCommandOpts) => TE.TaskEither<AppError, void>;
+  /**
+   * Clean the extension directory
+   */
+  cleanExtension: () => TE.TaskEither<AppError, void>;
 }
 
 interface GuardoniLauncher {
@@ -411,7 +422,7 @@ export const GetGuardoni: GetGuardoni = ({
 }) => {
   const loggerSpaces = verbose
     ? ['guardoni*', '@trex*', process.env.DEBUG]
-    : ['guardoni:info', 'guardoni:error', process.env.DEBUG];
+    : ['guardoni:info', 'guardoni:warn', 'guardoni:error', process.env.DEBUG];
 
   debug.enable(loggerSpaces.join(','));
 
@@ -434,6 +445,7 @@ export const GetGuardoni: GetGuardoni = ({
             registerExperimentFromCSV: registerCSV(ctx),
             listExperiments: listExperiments(ctx),
             runNavigate: runNavigate(ctx),
+            cleanExtension: cleanExtension(ctx),
           };
         })
       );
@@ -446,13 +458,14 @@ export const GetGuardoni: GetGuardoni = ({
             config: ctx.config,
             platform: ctx.platform,
             API: ctx.API,
-            runAuto: runAuto(ctx),
-            runExperiment: runExperiment(ctx),
-            runExperimentForPage: runExperimentForPage(ctx),
             registerExperiment: registerExperiment(ctx),
             registerExperimentFromCSV: registerCSV(ctx),
             listExperiments: listExperiments(ctx),
             runNavigate: runNavigate(ctx),
+            runAuto: runAuto(ctx),
+            runExperiment: runExperiment(ctx),
+            runExperimentForPage: runExperimentForPage(ctx),
+            cleanExtension: cleanExtension(ctx),
           };
         })
       );

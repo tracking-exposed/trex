@@ -222,16 +222,16 @@ export const registerExperiment =
     );
   };
 
+export const getExperimentJSONPath = (ctx: GuardoniContext): string =>
+  path.join(ctx.platform.extensionDir, 'experiment.json');
+
 export const saveExperiment =
   (ctx: GuardoniContext) =>
   (
     experimentId: NonEmptyString,
     profile: GuardoniProfile
   ): TE.TaskEither<AppError, ExperimentInfo> => {
-    const experimentJSONFile = path.join(
-      ctx.platform.extensionDir,
-      'experiment.json'
-    );
+    const experimentJSONPath = getExperimentJSONPath(ctx);
 
     const experimentInfo = {
       experimentId,
@@ -243,14 +243,14 @@ export const saveExperiment =
 
     ctx.logger.debug(
       'Saving experiment info in %s to be read by the extension %O',
-      experimentJSONFile,
+      experimentJSONPath,
       experimentInfo
     );
 
     return pipe(
       liftFromIOE(() =>
         fs.writeFileSync(
-          experimentJSONFile,
+          experimentJSONPath,
           JSON.stringify(experimentInfo),
           'utf-8'
         )

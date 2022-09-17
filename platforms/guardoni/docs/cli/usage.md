@@ -115,3 +115,18 @@ when:
 publicKey:       XXX-your-public-key-XXX
 
 ```
+
+### Clean the extension dir
+
+```bash
+guardoni-cli yt-clean
+
+# output
+
+guardoni:info Using profile default +0ms
+guardoni:info Cleaning extension dir /home/ascariandrea/.guardoni/extension/yt +11ms
+
+
+Clean succeeded: Extension dir cleaned
+
+```
