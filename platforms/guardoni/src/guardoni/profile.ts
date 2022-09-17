@@ -95,7 +95,7 @@ export const checkProfile =
 
     const profile = JSON.parse(fs.readFileSync(profileFile, 'utf-8'));
 
-    ctx.logger.debug('Returning profile %s', profileName);
+    ctx.logger.info('Using profile %s', profileName);
 
     return TE.right(profile);
   };
