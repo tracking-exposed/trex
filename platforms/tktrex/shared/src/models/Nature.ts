@@ -57,7 +57,7 @@ export const NativeVideoN = t.strict(
   {
     type: NativeType,
     videoId: t.string,
-    authorId: t.string
+    authorId: t.string,
   },
   'VideoNature',
 );
