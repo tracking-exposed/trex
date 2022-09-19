@@ -363,6 +363,7 @@ const loadContext = (
 };
 
 export interface Guardoni {
+  version: string;
   config: GuardoniConfig;
   platform: PlatformConfig;
   API: APIClient<typeof Endpoints>;
@@ -435,6 +436,7 @@ export const GetGuardoni: GetGuardoni = ({
         ),
         TE.map((ctx) => {
           return {
+            version: ctx.version,
             config: ctx.config,
             platform: ctx.platform,
             API: ctx.API,
@@ -455,6 +457,7 @@ export const GetGuardoni: GetGuardoni = ({
         loadContext(puppeteer, basePath, conf, platform, logger),
         TE.map((ctx) => {
           return {
+            version: ctx.version,
             config: ctx.config,
             platform: ctx.platform,
             API: ctx.API,

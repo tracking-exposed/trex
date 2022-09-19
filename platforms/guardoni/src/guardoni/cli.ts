@@ -22,6 +22,7 @@ import {
 } from './types';
 import D from 'debug';
 import puppeteer, { PuppeteerExtra } from 'puppeteer-extra';
+import { checkUpdate } from './update-notifier';
 
 export const cliLogger = guardoniLogger.extend('cli');
 
@@ -160,6 +161,7 @@ export const GetGuardoniCLI: GetGuardoniCLI = (
         puppeteer: p,
         verbose: config.verbose,
       }).run(config, platform),
+      TE.chainFirst((g) => checkUpdate(g.version, g.config.basePath)),
       TE.chain((g) => {
         return TE.fromIO<
           TE.TaskEither<AppError, GuardoniSuccessOutput>,

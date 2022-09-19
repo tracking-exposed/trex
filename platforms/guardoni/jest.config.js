@@ -8,6 +8,8 @@ const tsPaths = pathsToModuleNameMapper(tsConfig.compilerOptions.paths, {
 
 const moduleNameMapper = {
   ...tsPaths,
+  'boxen': "<rootDir>/__mocks__/boxen.mock.ts",
+  'chalk': "<rootDir>/__mocks__/chalk.mock.ts"
 };
 
 /** @type {import('ts-jest/dist/types').InitialOptionsTsJest} */
