@@ -13,14 +13,11 @@ import { GetGuardoniCLI, GuardoniCLI } from '../../src/guardoni/cli';
 import { csvStringifyTE } from '../../src/guardoni/utils';
 import axiosMock from '@shared/test/__mocks__/axios.mock';
 import { puppeteerMock } from '@shared/test/__mocks__/puppeteer.mock';
-import {
-  getProfileDataDir,
-  getProfileJsonPath,
-  readProfile,
-} from '../../src/guardoni/profile';
+import { getProfileDataDir, readProfile } from '../../src/guardoni/profile';
 import { guardoniLogger } from '../../src/logger';
 import { throwTE } from '@shared/utils/task.utils';
 import { formatExperimentList } from '../../src/guardoni/experiment';
+import { LATEST_RELEASE_URL } from '../../src/guardoni/update-notifier';
 
 const basePath = path.resolve(__dirname, '../../');
 const profileName = 'profile-yt-test-99';
@@ -70,6 +67,19 @@ describe('CLI', () => {
 
     fs.rmSync(path.resolve(basePath, 'experiments/yt-experiment.csv'));
   });
+
+  axiosMock.get.mockImplementationOnce(() =>
+    Promise.resolve({
+      request: {
+        res: {
+          responseUrl: LATEST_RELEASE_URL.replace(
+            'latest',
+            `v${process.env.VERSION}`
+          ),
+        },
+      },
+    })
+  );
 
   guardoni = GetGuardoniCLI(
     {

@@ -14,6 +14,7 @@ import { csvStringifyTE } from '../../src/guardoni/utils';
 import axiosMock from '@shared/test/__mocks__/axios.mock';
 import { puppeteerMock } from '@shared/test/__mocks__/puppeteer.mock';
 import { formatExperimentList } from '../../src/guardoni/experiment';
+import { LATEST_RELEASE_URL } from '../../src/guardoni/update-notifier';
 
 const basePath = path.resolve(__dirname, '../../');
 const profileName = 'profile-tk-test-99';
@@ -21,6 +22,19 @@ const ytExtensionDir = path.resolve(basePath, '../yttrex/extension/build');
 const tkExtensionDir = path.resolve(basePath, '../tktrex/extension/build');
 const publicKey = process.env.PUBLIC_KEY;
 const secretKey = process.env.SECRET_KEY;
+
+axiosMock.get.mockImplementationOnce(() =>
+  Promise.resolve({
+    request: {
+      res: {
+        responseUrl: LATEST_RELEASE_URL.replace(
+          'latest',
+          `v${process.env.VERSION}`
+        ),
+      },
+    },
+  })
+);
 
 describe('CLI', () => {
   const researchTag = 'test-tag';
