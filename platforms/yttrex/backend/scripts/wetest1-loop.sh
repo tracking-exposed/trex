@@ -19,6 +19,6 @@ for x in `seq 0 $NUMBEROF`; do
 	logfile="./we1.parserLog.txt";
 
 	echo "script looping on $x/$NUMBEROF, --minutesago $minutesago, logging on $logfile";
-	DEBUG=@trex:parserv,*:*:error node bin/parserv2.js --minutesago $minutesago --filter "$1" --skip $i --stop 10 2>&1 | tee $logfile
+	DEBUG=@trex:parser,*:*:error ts-node bin/parser.ts --minutesago $minutesago --filter "$1" --skip $i --stop 10 2>&1 | tee $logfile
 done
 echo "completed configured loop"

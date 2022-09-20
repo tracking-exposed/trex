@@ -7,7 +7,7 @@ import { makeApp, appLogger } from './app';
 import * as mongo3 from '@shared/providers/mongo.provider';
 
 const cfgFile = 'config/settings.json';
-nconf.argv().env().file({ file: cfgFile });
+nconf.argv().file({ file: cfgFile }).env();
 
 // eslint-disable-next-line
 console.log('ઉ nconf loaded, using ', cfgFile);
