@@ -62,8 +62,6 @@ zip $fileout -r ./* \
   -x "platforms/tktrex/observatory/**" \
   -x "platforms/tktrex/ua-observatory/**" \
   -x "platforms/tktrex/tt-automate/**" \
-  -x "platforms/*/docs/**" \
   -x "platforms/*/backend/**" \
-  -x "platforms/ycai/**"
 
 echo "done!"
