@@ -53,19 +53,19 @@ export const openURL =
       // different parameters. https://stackoverflow.com/questions/60051954/puppeteer-timeouterror-navigation-timeout-of-30000-ms-exceeded
       try {
         await page.goto(step.url, {
-          waitUntil: 'networkidle0',
+          waitUntil: 'domcontentloaded',
           timeout: 20000,
         });
       } catch (e) {
-        ctx.logger.error('Error during goto %O (networkidle0)', e);
+        ctx.logger.error('Error during goto %O (domcontentloaded)', e);
 
         try {
+          ctx.logger.debug('Try to reach %s without timeout', step.url);
           await page.goto(step.url, {
-            waitUntil: ['domcontentloaded'],
-            timeout: 10000,
+            timeout: 0,
           });
         } catch (e) {
-          ctx.logger.error('Error during goto %O (docontentloaded)', e);
+          ctx.logger.error('Error during goto %O', e);
           throw e;
         }
       }
