@@ -1,25 +1,21 @@
-const testEnv = {
-  mongoDb: 'tktrex-test',
-};
-
 const tk = {
   backend: {
-    name: 'server:watch',
+    name: 'server',
     namespace: 'tk:backend',
     cwd: __dirname,
-    script: 'yarn watch',
-    watch: false,
-    env_test: testEnv,
+    script: 'yarn start',
+    watch: true,
+    env: {
+      ...process.env,
+      key: process.env.KEY,
+    },
   },
   parser: {
-    name: 'parserv:watch',
+    name: 'tk:parserv',
     namespace: 'tk:backend',
     cwd: __dirname,
-    script: 'yarn parserv:watch --minutesago 10',
-    watch: false,
-    env_test: {
-      ...testEnv,
-    },
+    script: 'yarn parserv',
+    watch: true,
   },
 };
 

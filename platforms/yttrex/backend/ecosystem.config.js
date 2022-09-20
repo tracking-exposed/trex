@@ -1,32 +1,28 @@
-const testEnv = {
-  mongoDb: 'yttrex-test',
-};
-
 const yt = {
   backend: {
-    name: 'server:watch',
+    name: 'yt:server',
     namespace: 'yt:backend',
     cwd: __dirname,
-    script: 'yarn watch',
-    watch: false,
-    env_test: testEnv,
+    script: 'yarn start',
+    watch: true,
+    env: {
+      ...process.env,
+      key: process.env.KEY,
+    },
   },
-
   leavesParser: {
-    name: 'leaveserv:watch',
+    name: 'yt:leaveserv',
     namespace: 'yt:backend',
     cwd: __dirname,
-    script: 'yarn leaveserv:watch',
-    watch: false,
-    env_test: testEnv,
+    script: 'yarn leaveserv',
+    watch: true,
   },
   parser: {
-    name: 'parserv:watch',
+    name: 'yt:parserv',
     namespace: 'yt:backend',
     cwd: __dirname,
-    script: 'yarn parserv:watch',
-    watch: false,
-    env_test: testEnv,
+    script: 'yarn parserv',
+    watch: true,
   },
 };
 
