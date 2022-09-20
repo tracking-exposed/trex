@@ -5,6 +5,7 @@ import {
   CreateExperimentSuccessResponse,
 } from '@shared/models/Experiment';
 import {
+  ClickType,
   KeyPressType,
   OpenURLStepType,
   ScrollStepType,
@@ -14,6 +15,7 @@ import * as E from 'fp-ts/lib/Either';
 import { pipe } from 'fp-ts/lib/function';
 import _ from 'lodash';
 // import * as NEA from 'fp-ts/lib/NonEmptyArray';
+import { parseClickCommand } from '@shared/providers/puppeteer/steps/click';
 import { parseKeypressCommand } from '@shared/providers/puppeteer/steps/keyPress';
 import { NonEmptyArray } from 'fp-ts/lib/NonEmptyArray';
 import * as TE from 'fp-ts/lib/TaskEither';
@@ -95,22 +97,60 @@ export const readCSVAndParse =
                   queue.push(scrollStep);
                 }
 
-                if (r.onCompleted?.startsWith('keypress-')) {
-                  pipe(
-                    parseKeypressCommand(r.onCompleted),
-                    E.fold(
-                      (e) => {
-                        logger.warn(e.name, e.message);
-                      },
-                      (opts) => {
-                        const keypressStep = {
-                          type: KeyPressType.value,
-                          ...opts,
-                        };
-                        queue.push(keypressStep);
+                if (r.onCompleted) {
+                  const commands = r.onCompleted.split(' - ');
+                  const onCompletedSteps = commands.reduce(
+                    (acc: any[], c: string) => {
+                      if (c.startsWith('keypress')) {
+                        pipe(
+                          parseKeypressCommand(c),
+                          E.fold(
+                            (e) => {
+                              logger.warn(e.name, e.message);
+                            },
+                            (opts) => {
+                              logger.debug(
+                                'Keypress command %s parsed %O',
+                                c,
+                                opts
+                              );
+                              const keypressStep = {
+                                type: KeyPressType.value,
+                                ...opts,
+                              };
+                              acc.push(keypressStep);
+                            }
+                          )
+                        );
                       }
-                    )
+                      if (c.startsWith('click')) {
+                        pipe(
+                          parseClickCommand(c),
+                          E.fold(
+                            (e) => {
+                              logger.warn(e.name, e.message);
+                            },
+                            (opts) => {
+                              logger.debug(
+                                'Click command %s parsed %O',
+                                c,
+                                opts
+                              );
+                              const clickStep = {
+                                type: ClickType.value,
+                                ...opts,
+                              };
+                              acc.push(clickStep);
+                            }
+                          )
+                        );
+                      }
+                      return acc;
+                    },
+                    []
                   );
+
+                  queue.push(...onCompletedSteps);
                 }
 
                 return acc
