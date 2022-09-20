@@ -10,6 +10,7 @@ import {
   OpenURLStepType,
   ScrollStepType,
   Step,
+  TypeType,
 } from '@shared/models/Step';
 import * as E from 'fp-ts/lib/Either';
 import { pipe } from 'fp-ts/lib/function';
@@ -17,6 +18,7 @@ import _ from 'lodash';
 // import * as NEA from 'fp-ts/lib/NonEmptyArray';
 import { parseClickCommand } from '@shared/providers/puppeteer/steps/click';
 import { parseKeypressCommand } from '@shared/providers/puppeteer/steps/keyPress';
+import { parseTypeCommand } from '@shared/providers/puppeteer/steps/type';
 import { NonEmptyArray } from 'fp-ts/lib/NonEmptyArray';
 import * as TE from 'fp-ts/lib/TaskEither';
 import * as fs from 'fs';
@@ -141,6 +143,29 @@ export const readCSVAndParse =
                                 ...opts,
                               };
                               acc.push(clickStep);
+                            }
+                          )
+                        );
+                      }
+
+                      if (c.startsWith('type')) {
+                        pipe(
+                          parseTypeCommand(c),
+                          E.fold(
+                            (e) => {
+                              logger.warn(e.name, e.message);
+                            },
+                            (opts) => {
+                              logger.debug(
+                                'Type command %s parsed %O',
+                                c,
+                                opts
+                              );
+                              const typeStep = {
+                                type: TypeType.value,
+                                ...opts,
+                              };
+                              acc.push(typeStep);
                             }
                           )
                         );

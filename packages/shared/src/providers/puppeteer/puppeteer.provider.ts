@@ -10,6 +10,7 @@ import {
   ScrollStepType,
   KeyPressType,
   ClickType,
+  TypeType,
 } from '../../models/Step';
 // import { throwTE } from '../../utils/task.utils';
 import { StepHooks } from './StepHooks';
@@ -18,6 +19,7 @@ import { GetScrollFor } from './steps/scroll';
 import StealthPlugin from 'puppeteer-extra-plugin-stealth';
 import { GetKeypressStep } from './steps/keyPress';
 import { GetClickStep } from './steps/click';
+import { GetTypeStep } from './steps/type';
 
 export type LaunchOptions = puppeteer.LaunchOptions &
   puppeteer.BrowserLaunchArgumentOptions &
@@ -63,6 +65,9 @@ const operateTab =
       }
       case ClickType.value: {
         return GetClickStep(ctx)(page, h);
+      }
+      case TypeType.value: {
+        return GetTypeStep(ctx)(page, h);
       }
       case CustomStepType.value:
         return TE.tryCatch(() => {

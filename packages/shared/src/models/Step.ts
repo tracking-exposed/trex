@@ -43,6 +43,19 @@ export const ClickStep = t.strict(
 
 export type ClickStep = t.TypeOf<typeof ClickStep>;
 
+export const TypeType = t.literal('type');
+export const TypeStep = t.strict(
+  {
+    type: TypeType,
+    selector: t.string,
+    text: t.string,
+    delay: t.union([t.number, t.undefined]),
+  },
+  'TypeStep'
+);
+
+export type TypeStep = t.TypeOf<typeof TypeStep>;
+
 export const CustomStepType = t.literal('custom');
 export type CustomStepType = t.TypeOf<typeof CustomStepType>;
 
@@ -81,6 +94,7 @@ export const Step = t.union(
     CustomStep,
     KeypressStep,
     ClickStep,
+    TypeStep,
     // since `openURL` step is the default and the `type` can be `undefined`
     // the `OpenURLStep` codec needs to be the last value of the union
     OpenURLStep,
