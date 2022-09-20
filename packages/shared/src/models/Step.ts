@@ -31,6 +31,18 @@ export type KeypressStep = Omit<t.TypeOf<typeof KeypressStep>, 'key'> & {
   key: puppeteer.KeyInput;
 };
 
+export const ClickType = t.literal('click');
+export const ClickStep = t.strict(
+  {
+    type: ClickType,
+    selector: t.string,
+    delay: t.union([t.number, t.undefined]),
+  },
+  'ClickStep'
+);
+
+export type ClickStep = t.TypeOf<typeof ClickStep>;
+
 export const CustomStepType = t.literal('custom');
 export type CustomStepType = t.TypeOf<typeof CustomStepType>;
 
@@ -64,7 +76,15 @@ export const OpenURLStep = t.strict(
 export type OpenURLStep = t.TypeOf<typeof OpenURLStep>;
 
 export const Step = t.union(
-  [ScrollStep, CustomStep, KeypressHook, OpenURLStep],
+  [
+    ScrollStep,
+    CustomStep,
+    KeypressStep,
+    ClickStep,
+    // since `openURL` step is the default and the `type` can be `undefined`
+    // the `OpenURLStep` codec needs to be the last value of the union
+    OpenURLStep,
+  ],
   'OpenURL'
 );
 export type Step = t.TypeOf<typeof Step>;
