@@ -1,6 +1,7 @@
 import { pipe } from 'fp-ts/lib/function';
 import * as TE from 'fp-ts/lib/TaskEither';
 import type * as puppeteer from 'puppeteer-core';
+import { sleep } from '../../../utils/promise.utils';
 import { AppError, toAppError } from '../../../errors/AppError';
 import { ScrollStep } from '../../../models/Step';
 import { StepContext } from './types';
@@ -34,37 +35,35 @@ export const GetScrollFor =
   (ctx: StepContext) =>
   (page: puppeteer.Page, step: ScrollStep): TE.TaskEither<AppError, void> => {
     return pipe(
-      TE.tryCatch(
-        async () =>
-          new Promise((resolve, reject) => {
-            let i = 0;
-            ctx.logger.debug('Start scrolling: %O', step);
-            const timer = setInterval(() => {
-              ctx.logger.debug('Running for time %d', i);
+      TE.tryCatch(async () => {
+        ctx.logger.debug('Start scrolling: %O', step);
 
-              void autoScroll(page, step)
-                .then(() => {
-                  ctx.logger.debug(
-                    'Scrolled by %d',
-                    i * step.incrementScrollByPX
-                  );
+        const stepsCount = Math.ceil(
+          step.totalScroll / step.incrementScrollByPX
+        );
 
-                  if (step.totalScroll < i * step.incrementScrollByPX) {
-                    ctx.logger.debug(
-                      'Scroll total reached: %d (%d)',
-                      i * step.incrementScrollByPX,
-                      step.totalScroll
-                    );
-                    clearInterval(timer);
-                    resolve(undefined);
-                  }
+        ctx.logger.debug('Steps count %d', stepsCount);
 
-                  i++;
-                })
-                .catch(reject);
-            }, step.interval ?? 2000);
-          }),
-        toAppError
-      )
+        for (let i = 0; i <= stepsCount; i++) {
+          if (step.totalScroll < i * step.incrementScrollByPX) {
+            ctx.logger.debug(
+              'Scroll total reached: %d (%d)',
+              i * step.incrementScrollByPX,
+              step.totalScroll
+            );
+
+            return undefined;
+          }
+
+          await sleep(step.interval ?? 2000);
+
+          await autoScroll(page, step).then(() => {
+            ctx.logger.debug(
+              'Scrolled by %d',
+              step.incrementScrollByPX + i * step.incrementScrollByPX
+            );
+          });
+        }
+      }, toAppError)
     );
   };
