@@ -4494,7 +4494,6 @@ __metadata:
     webpack: ^5.73.0
     webpack-bundle-analyzer: ^4.5.0
     webpack-cli: ^4.10.0
-    zenroom: ^2.2.3
   languageName: unknown
   linkType: soft
 
@@ -4632,7 +4631,6 @@ __metadata:
     webpack-bundle-analyzer: ^4.5.0
     webpack-cli: ^4.10.0
     webpack-dev-server: ^4.9.3
-    zenroom: ^2.2.3
   languageName: unknown
   linkType: soft
 
@@ -28552,13 +28550,6 @@ __metadata:
   version: 0.1.0
   resolution: "yocto-queue@npm:0.1.0"
   checksum: f77b3d8d00310def622123df93d4ee654fc6a0096182af8bd60679ddcdfb3474c56c6c7190817c84a2785648cdee9d721c0154eb45698c62176c322fb46fc700
-  languageName: node
-  linkType: hard
-
-"zenroom@npm:^2.2.3":
-  version: 2.2.3
-  resolution: "zenroom@npm:2.2.3"
-  checksum: b252efbbfa5eceb80dce8c99cb81b665ebf7ac1d8e9c6f4612c9a495ab1c3d3dcad1bcd4f8c5ff17a6ea20e334e6a70d0e2a5dbb6ef30360c49f1f8c21846ad9
   languageName: node
   linkType: hard
 
