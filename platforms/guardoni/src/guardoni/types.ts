@@ -4,7 +4,7 @@ import { Step } from '@shared/models/Step';
 import { APIClient } from '@shared/providers/api.provider';
 import { PuppeteerProvider } from '@shared/providers/puppeteer/puppeteer.provider';
 import * as t from 'io-ts';
-import { nonEmptyArray } from 'io-ts-types';
+import { nonEmptyArray } from 'io-ts-types/lib/nonEmptyArray';
 import { StepHooks } from '@shared/providers/puppeteer/StepHooks';
 
 export const Platform = t.union(

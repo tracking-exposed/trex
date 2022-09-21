@@ -5,7 +5,7 @@ import { AppEnv } from 'AppEnv';
 import { app, BrowserView, dialog, ipcMain, shell } from 'electron';
 import { pipe } from 'fp-ts/lib/function';
 import * as TE from 'fp-ts/lib/TaskEither';
-import { NonEmptyString } from 'io-ts-types';
+import { NonEmptyString } from 'io-ts-types/lib/NonEmptyString';
 import * as path from 'path';
 import type Puppeteer from 'puppeteer-core';
 import puppeteer from 'puppeteer-extra';

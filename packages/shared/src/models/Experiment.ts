@@ -1,5 +1,6 @@
 import * as t from 'io-ts';
-import { DateFromISOString, nonEmptyArray } from 'io-ts-types';
+import { nonEmptyArray } from 'io-ts-types/lib/nonEmptyArray';
+import { DateFromISOString } from 'io-ts-types/lib/DateFromISOString';
 import { Step } from './Step';
 
 export const GuardoniExperiment = t.strict(
@@ -34,7 +35,6 @@ export const GetPublicDirectivesOutput = t.array(
 export type GetPublicDirectivesOutput = t.TypeOf<
   typeof GetPublicDirectivesOutput
 >;
-
 
 export const CreateExperimentSuccessResponse = t.strict(
   {
