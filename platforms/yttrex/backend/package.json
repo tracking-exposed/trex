@@ -1,6 +1,6 @@
 {
   "name": "@yttrex/backend",
-  "version": "2.6.3",
+  "version": "2.6.4",
   "description": "youtube.tracking.exposed - backend data collector",
   "private": true,
   "scripts": {

@@ -1,3 +1,22 @@
+### [2.6.4](https://github.com/tracking-exposed/trex/compare/v2.6.3...v2.6.4) (2022-09-21)
+
+- **guardoni:** added update notifier to cli ([#658](https://github.com/tracking-exposed/trex/issues/658)) ([8b77561](https://github.com/tracking-exposed/trex/commit/8b775619e29dcb0e73d4d46f7d03f0fc43069c9c))
+- **guardoni:** delete extension cache ([#657](https://github.com/tracking-exposed/trex/issues/657)) ([f76dde2](https://github.com/tracking-exposed/trex/commit/f76dde2c23d75d3cde8077ca11c4d44de4bdd0e6))
+- master workflow formatting ([ad7c743](https://github.com/tracking-exposed/trex/commit/ad7c743922e3d9f4376bf4c6a9b135328ce4507b))
+- minor bugs spotted in production [skip ci] ([533701b](https://github.com/tracking-exposed/trex/commit/533701b494883ba073e0f38508955f093df3aa46))
+- remove 'release' step from master workflow ([#661](https://github.com/tracking-exposed/trex/issues/661)) ([f0abebc](https://github.com/tracking-exposed/trex/commit/f0abebc04a22a8ff01b7fef2fa7903e1f6b2c1f3))
+- **shared:** check scroll total has not been reached before calling next scroll ([c996045](https://github.com/tracking-exposed/trex/commit/c9960451f081a95358d68873cc244fbc618b7638))
+- **shared:** defined puppeteer hook for click ([3233ace](https://github.com/tracking-exposed/trex/commit/3233ace45bba2fac967e23b7d2ea132dc1ecaf54))
+- **shared:** defined puppeteer hook for keypress ([de13d03](https://github.com/tracking-exposed/trex/commit/de13d0335903c827b6b227b7a933370b615930c1))
+- **shared:** prevent parser payload is passed to console.table when is of type "Error" ([d7a0ae1](https://github.com/tracking-exposed/trex/commit/d7a0ae1345db88f9a0dd6d82e8837593eea0e8fc))
+- **shared:** wait for 'domcontentload' as first try when puppeteer open an url ([e96aaa8](https://github.com/tracking-exposed/trex/commit/e96aaa8c9167fc2cd36a19394f5b5f09f8b0d607))
+- **tktrex:** add build step for tk backend ([a68fed1](https://github.com/tracking-exposed/trex/commit/a68fed1225ae026f861b77e2586c76bcb8fcafbb))
+- **tktrex:** converted old mirror script in await/async [#650](https://github.com/tracking-exposed/trex/issues/650) ([75f50d3](https://github.com/tracking-exposed/trex/commit/75f50d34eea38043ca63a7bc749a68914019e292))
+- **tktrex:** error due to a possibly undefined metric element ([#660](https://github.com/tracking-exposed/trex/issues/660)) ([7c535fc](https://github.com/tracking-exposed/trex/commit/7c535fc1aecf2db0ce6cfce7c92da78043f3238c))
+- use actions/cache@v3 ([b3dd309](https://github.com/tracking-exposed/trex/commit/b3dd3095e731fd0d6ae0c5a96799a07eda186984))
+- **workspace:** align pm2 and commitlint naming to yarn workspace [#659](https://github.com/tracking-exposed/trex/issues/659) ([5b9e7c2](https://github.com/tracking-exposed/trex/commit/5b9e7c2f8bda677e237ae6138fb769bfd761b335))
+- **workspace:** shrink into zip script ([#667](https://github.com/tracking-exposed/trex/issues/667)) ([d91dd79](https://github.com/tracking-exposed/trex/commit/d91dd79255ea2c7f1ce0316982b3b905249f14e2))
+
 ### [2.6.3](https://github.com/tracking-exposed/trex/compare/v2.6.2...v2.6.3) (2022-09-14)
 
 - defined a shared mock for chrome ([4ea0107](https://github.com/tracking-exposed/trex/commit/4ea0107787f87e2cf31a6244921dd752bfaaac9e))
