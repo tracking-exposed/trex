@@ -29,7 +29,7 @@ yarn pm2 start platforms/ecosystem.config.js
 yarn pm2 status
 ```
 
-### (also for  extension reviewer) how to build the extensions:
+### (also for extension reviewer) how to build the extensions:
 
 - tiktok: `yarn; yarn tk:ext dist; ls platforms/tktrex/extension/dist/*.zip`
 - youtube: `yarn; yarn yt:ext dist; ls platforms/yttrex/extension/dist/*.zip`

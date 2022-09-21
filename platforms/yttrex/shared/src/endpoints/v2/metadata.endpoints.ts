@@ -1,6 +1,6 @@
 import { Format } from '@shared/models/common';
 import * as t from 'io-ts';
-import { NumberFromString } from 'io-ts-types';
+import { NumberFromString } from 'io-ts-types/lib/NumberFromString';
 import { Endpoint } from 'ts-endpoint';
 import { MetadataList } from '../../models/Metadata';
 
