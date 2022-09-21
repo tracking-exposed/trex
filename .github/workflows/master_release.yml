@@ -12,7 +12,6 @@ jobs:
 
   build:
     name: Build
-    needs: [release]
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -33,7 +32,9 @@ jobs:
           path: |
             packages/shared/build
             packages/taboule/build
+            platforms/yttrex/extension/build
             platforms/yttrex/extension/dist
+            platforms/tktrex/extension/build
             platforms/tktrex/extension/dist
             platforms/guardoni/build
             platforms/guardoni/dist
@@ -100,10 +101,10 @@ jobs:
           path: |
             packages/shared/build
             packages/taboule/build
-            platforms/guardoni/build
-            platforms/guardoni/dist
             platforms/yttrex/extension/dist
             platforms/tktrex/extension/dist
+            platforms/guardoni/build
+            platforms/guardoni/dist
             platforms/ycai/studio/build
 
       - name: Install dependencies
@@ -114,8 +115,9 @@ jobs:
           DOTENV_CONFIG_PATH: .env
         run: yarn guardoni ${{ matrix.config.command }}
 
-release:
+  release:
     name: Release
+    needs: guardoni_build
     runs-on: ubuntu-latest
     strategy:
       matrix:
