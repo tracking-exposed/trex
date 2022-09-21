@@ -13,6 +13,7 @@ import {
 import { GetParserProvider } from '@shared/providers/parser.provider';
 import { parsers } from '../parsers';
 import { Metadata } from '@yttrex/shared/models/Metadata';
+import { parserConfig } from '../parsers/config';
 
 nconf.argv().env().file({ file: 'config/settings.json' });
 
@@ -82,6 +83,7 @@ const run = async (): Promise<void> => {
       getEntryNatureType: (e) => e.html.nature.type,
       buildMetadata: toMetadata,
       saveResults: updateMetadataAndMarkHTML(db),
+      config: parserConfig,
     }).run({
       singleUse: typeof id === 'string' ? id : false,
       filter,

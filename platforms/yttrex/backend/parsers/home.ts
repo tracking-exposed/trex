@@ -4,6 +4,7 @@ import { HomeMetadata, ParsedInfo } from '@yttrex/shared/models/Metadata';
 import _ from 'lodash';
 import moment from 'moment';
 import { HTMLSource } from '../lib/parser/html';
+import { YTParserConfig } from './config';
 import * as longlabel from './longlabel';
 import * as shared from './shared';
 import uxlang from './uxlang';
@@ -359,9 +360,11 @@ function guessUXLanguage(D: Document): string | null {
   return uxlang.findLanguage('video', localizedStrings);
 }
 
-export const processHome: ParserFn<HTMLSource, HomeMetadata> = async (
-  envelop
-) => {
+export const processHome: ParserFn<
+  HTMLSource,
+  HomeMetadata,
+  YTParserConfig
+> = async (envelop) => {
   const retval: HomeMetadata = {
     id: '',
     type: 'home',

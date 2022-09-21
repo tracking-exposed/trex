@@ -11,6 +11,7 @@ import { Ad } from '@yttrex/shared/models/Ad';
 import { Metadata } from '@yttrex/shared/models/Metadata';
 import { pipe } from 'fp-ts/lib/function';
 import * as fs from 'fs';
+import { parserConfig } from '../../parsers/config';
 import * as path from 'path';
 import {
   getLastHTMLs,
@@ -120,6 +121,7 @@ describe('Events', () => {
         buildMetadata: toAdMetadata,
         getEntryNatureType: (e) => e.html.nature.type,
         saveResults: updateAdvertisingAndMetadata(db),
+        config: parserConfig,
       }).run({
         singleUse: true,
         stop: 1,
@@ -142,6 +144,7 @@ describe('Events', () => {
         saveResults: updateMetadataAndMarkHTML(db),
         getEntryDate: (e) => e.html.savingTime,
         getEntryNatureType: (e) => e.html.nature.type,
+        config: parserConfig,
       }).run({
         singleUse: true,
         stop: 1,

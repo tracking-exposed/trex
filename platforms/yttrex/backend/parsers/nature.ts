@@ -1,14 +1,13 @@
 import { ParserFn } from '@shared/providers/parser.provider';
 import { HTMLSource } from '../lib/parser/html';
 import { Nature } from '../models/Nature';
+import { YTParserConfig } from './config';
 import processHome from './home';
 import { processSearch } from './searches';
 import parseVideo from './video';
 
 const processNature =
-  (
-    type: Nature['type']
-  ): ParserFn<HTMLSource, any> =>
+  (type: Nature['type']): ParserFn<HTMLSource, any, YTParserConfig> =>
   (e, findings, ctx) => {
     switch (type) {
       case 'video':
@@ -27,7 +26,7 @@ const processNature =
  *
  *
  */
-export const nature: ParserFn<HTMLSource, Nature> = async (
+export const nature: ParserFn<HTMLSource, Nature, YTParserConfig> = async (
   e,
   findings,
   ctx

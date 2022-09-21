@@ -13,6 +13,7 @@ import * as mongo3 from '@shared/providers/mongo.provider';
 import { GetParserProvider } from '@shared/providers/parser.provider';
 import { leafParsers } from '../parsers';
 import { Ad } from '@yttrex/shared/models/Ad';
+import { parserConfig } from '../parsers/config';
 
 nconf.argv().env().file({ file: 'config/settings.json' });
 
@@ -78,6 +79,7 @@ const run = async (): Promise<void> => {
       getEntryNatureType: (e) => e.html.nature.type,
       buildMetadata: toMetadata,
       saveResults: updateAdvertisingAndMetadata(db),
+      config: parserConfig,
     }).run({
       singleUse: typeof id === 'string' ? id : false,
       filter,
