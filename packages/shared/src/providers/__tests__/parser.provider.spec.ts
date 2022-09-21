@@ -36,6 +36,8 @@ const Contribution = t.type(
   'Contribution'
 );
 
+type Contribution = t.TypeOf<typeof Contribution>;
+
 const { savingTime, ...ContributionTypeProps } = Contribution.props;
 
 const ContributionArb = getArbitrary(t.type({ ...ContributionTypeProps })).map(
@@ -55,6 +57,8 @@ const Metadata = t.type({
   savingTime: date,
 });
 
+type Metadata = t.TypeOf<typeof Metadata>;
+
 const { savingTime: _savingTime, ...metadataProps } = Metadata.props;
 const MetadataArb = getArbitrary(t.type({ ...metadataProps })).map((c) => {
   return {
@@ -64,11 +68,7 @@ const MetadataArb = getArbitrary(t.type({ ...metadataProps })).map((c) => {
 });
 
 describe('Parser Provider', () => {
-  const providerCtx: ParserProviderContext<
-    typeof Contribution,
-    typeof Metadata,
-    any
-  > = {
+  const providerCtx: ParserProviderContext<Contribution, Metadata, any, any> = {
     db: db as any,
     parsers: {
       home: homeParser,
@@ -87,6 +87,9 @@ describe('Parser Provider', () => {
     },
     buildMetadata,
     saveResults: saveResults,
+    config: {
+      downloads: '/download/here',
+    },
   };
 
   afterEach(() => {
@@ -108,6 +111,7 @@ describe('Parser Provider', () => {
     const output = payloadToTableOutput<
       typeof Contribution,
       typeof Metadata,
+      any,
       { [key: string]: any }
     >(
       (s) => s.id,
@@ -214,7 +218,11 @@ describe('Parser Provider', () => {
       backInTime: 0,
     });
 
-    expect(homeParser).toHaveBeenCalledWith(sources[0], {});
+    expect(homeParser).toHaveBeenCalledWith(
+      sources[0],
+      {},
+      { downloads: '/download/here' }
+    );
 
     expect(saveResults).toHaveBeenCalledWith(sources[0], metadata);
 
