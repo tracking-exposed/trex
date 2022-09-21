@@ -26,7 +26,7 @@ jobs:
           cache: 'yarn'
           cache-dependency-path: yarn.lock
 
-      - uses: actions/cache@v2
+      - uses: actions/cache@v3
         with:
           key: build-workspace-${{ github.run_id }}
           path: |
@@ -91,7 +91,8 @@ jobs:
           cache: 'yarn'
           cache-dependency-path: yarn.lock
 
-      - uses: actions/cache@v2
+      - uses: actions/cache@v3
+        id: guardoni-cache
         with:
           key: build-guardoni-${{ github.run_id }}-${{ matrix.config.os }}
           restore-keys: |
@@ -109,6 +110,14 @@ jobs:
 
       - name: Install dependencies
         run: yarn
+
+      - name: Build Guardoni
+        if: steps.guardoni-cache.outputs.cache-hit != 'true'
+        env:
+          NODE_ENV: production
+        run: |
+          yarn guardoni build:cli
+          yarn guardoni build:app
 
       - name: Build Guardoni for ${{ matrix.config.os }}
         env:

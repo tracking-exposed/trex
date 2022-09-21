@@ -24,7 +24,7 @@ jobs:
           cache: 'yarn'
           cache-dependency-path: yarn.lock
 
-      - uses: actions/cache@v2
+      - uses: actions/cache@v3
         with:
           key: build-workspace-${{ github.run_id }}
           path: |
@@ -87,7 +87,7 @@ jobs:
           cache: 'yarn'
           cache-dependency-path: yarn.lock
 
-      - uses: actions/cache@v2
+      - uses: actions/cache@v3
         with:
           key: build-guardoni-${{ github.run_id }}-${{ matrix.config.os }}
           restore-keys: |
@@ -121,7 +121,7 @@ jobs:
         with:
           ref: ${{ inputs.ref }}
 
-      - uses: actions/cache@v2
+      - uses: actions/cache@v3
         with:
           key: build-${{ github.run_id }}
           restore-keys: |
