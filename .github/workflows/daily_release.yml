@@ -42,6 +42,11 @@ jobs:
           DEBUG: "@trex*,@YCAI*"
         run: yarn ycai build
 
+      - name: Shrink to zip
+        run: |
+          ./scripts/shrink.sh
+          ./scripts/install-from-shrinkzip.sh ./build/trex.zip ../trex-shrink-test
+
       - name: Release Version
         run: yarn release-it --no-github.release --release-version
 
