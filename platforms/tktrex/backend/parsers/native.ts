@@ -1,10 +1,11 @@
 import { ParserFn } from '@shared/providers/parser.provider';
 import D from 'debug';
 import { HTMLSource } from '../lib/parser';
+import { TKParserConfig } from './config';
 
 const debug = D('parser:native');
 
-const parseNativeVideo: ParserFn<HTMLSource, any> = async (
+const parseNativeVideo: ParserFn<HTMLSource, any, TKParserConfig> = async (
   envelop,
   findings
 ) => {

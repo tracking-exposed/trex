@@ -5,16 +5,26 @@ import { HTMLSource } from '../lib/parser';
 import { getUUID, download } from './shared';
 import fs from 'fs';
 import path from 'path';
+import { TKParserConfig } from './config';
 
 const debug = D('parser:downloader');
 
 // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
-async function processLink({ link, linkType }: { link: any; linkType: any }) {
+async function processLink({
+  link,
+  linkType,
+  config,
+}: {
+  link: any;
+  linkType: any;
+  config: TKParserConfig;
+}) {
   // link is either an mp4 or a jpeg,
   // linkType is 'video' or 'thumbnail'
-  const fuuid = getUUID(link, linkType);
-
-  if (!fs.existsSync(fuuid)) return await download(fuuid, link);
+  const fuuid = getUUID(link, linkType, config.downloads ?? '');
+  if (config.downloads) {
+    if (!fs.existsSync(fuuid)) return await download(fuuid, link);
+  }
 
   return {
     downloaded: true,
@@ -55,10 +65,11 @@ async function downloadVideoSelected(searchFinding) {
 }
 */
 
-const downloader: ParserFn<HTMLSource, { downloader: any[] }> = async (
-  envelop,
-  findings
-) => {
+const downloader: ParserFn<
+  HTMLSource,
+  { downloader: any[] },
+  TKParserConfig
+> = async (envelop, findings, config) => {
   if (envelop.supporter.version !== '2.6.2.99') {
     // TODO we should load a JSON with some more complex filtering mechanism
     debug('Only development version .99 is now considered for download!');
@@ -81,7 +92,11 @@ const downloader: ParserFn<HTMLSource, { downloader: any[] }> = async (
     const url = img.getAttribute('src');
     const alt = img.getAttribute('alt');
 
-    const info = await processLink({ link: url, linkType: 'thumbnail' });
+    const info = await processLink({
+      link: url,
+      linkType: 'thumbnail',
+      config,
+    });
     info.url = url;
     if (alt?.length) info.alt = alt;
 

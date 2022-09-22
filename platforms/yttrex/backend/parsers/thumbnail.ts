@@ -2,10 +2,10 @@ import { ParserFn } from '@shared/providers/parser.provider';
 import fs from 'fs';
 import { HTMLSource } from 'lib/parser/html';
 import _ from 'lodash';
-import nconf from 'nconf';
 import fetch from 'node-fetch';
 import path from 'path';
 import D from 'debug';
+import { YTParserConfig } from './config';
 
 const debug = D('parsers:thumbnail');
 /* if(!nconf.get('thumbnails')) {
@@ -73,10 +73,12 @@ async function downloadFromVideoId(videoIds: string[]): Promise<any[]> {
   return retval;
 }
 
-const conditionalDownload: ParserFn<HTMLSource, any> = async ({
-  html: entry,
-}) => {
-  if (nconf.get('NO_DOWNLOAD')) {
+const conditionalDownload: ParserFn<HTMLSource, any, YTParserConfig> = async (
+  { html: entry },
+  prev,
+  config
+) => {
+  if (config.downloads) {
     debug('Thumbnail disabled by nconf variable!');
     return null;
   }

@@ -10,9 +10,10 @@ import {
   buildMetadata,
   getLastHTMLs,
   HTMLSource,
-  updateMetadataAndMarkHTML
+  updateMetadataAndMarkHTML,
 } from '../lib/parser';
 import { parsers } from '../parsers';
+import { tkParserConfig } from '../parsers/config';
 
 nconf.argv().env().file({ file: 'config/settings.json' });
 
@@ -73,7 +74,7 @@ const run = async (): Promise<void> => {
       db,
       codecs: {
         contribution: HTMLSource,
-        metadata: TKMetadata
+        metadata: TKMetadata,
       },
       parsers,
       getContributions: getLastHTMLs(db),
@@ -82,6 +83,7 @@ const run = async (): Promise<void> => {
       buildMetadata,
       getEntryDate: (e) => e.html.savingTime,
       getEntryNatureType: (e) => e.html.type,
+      config: tkParserConfig,
     }).run({
       singleUse: typeof id === 'string' ? id : false,
       filter,

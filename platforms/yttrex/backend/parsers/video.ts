@@ -11,6 +11,7 @@ import * as longlabel from './longlabel';
 import * as shared from './shared';
 import uxlang from './uxlang';
 import { ParserFn } from '@shared/providers/parser.provider';
+import { YTParserConfig } from './config';
 
 const videoLog = trexLogger.extend('video');
 
@@ -480,9 +481,11 @@ export function processVideo(
     viewInfo,
     likeInfo,
   } as any;
-};
+}
 
-const parseVideo: ParserFn<HTMLSource, VideoMetadata> = async (envelop) => {
+const parseVideo: ParserFn<HTMLSource, VideoMetadata, YTParserConfig> = async (
+  envelop
+) => {
   let extracted: VideoMetadata;
 
   try {

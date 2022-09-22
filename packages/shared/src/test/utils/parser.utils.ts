@@ -56,7 +56,8 @@ export const runParserTest =
   <
     S extends t.Mixed,
     M extends t.Mixed,
-    PP extends Record<string, ParserFn<t.TypeOf<S>, any>>
+    C,
+    PP extends Record<string, ParserFn<t.TypeOf<S>, any, C>>
   >({
     codecs,
     expectMetadata,
@@ -74,7 +75,7 @@ export const runParserTest =
       expected: Array<t.TypeOf<M> & { _id: string }>
     ) => void;
     expectSources: (s: Array<t.TypeOf<S>>) => void;
-  } & ParserProviderContext<S, M, PP>) =>
+  } & ParserProviderContext<t.TypeOf<S>, t.TypeOf<M>, C, PP>) =>
   async ({ sources, metadata }: any) => {
     // opts.log.debug('Sources %d', sources.length);
 
@@ -85,7 +86,7 @@ export const runParserTest =
       sources.map((s: any) => s.html)
     );
 
-    const result = await parseContributions<S, M, PP>({ codecs, ...opts })({
+    const result = await parseContributions<S, M, C, PP>({ codecs, ...opts })({
       overflow: false,
       errors: 0,
       sources,

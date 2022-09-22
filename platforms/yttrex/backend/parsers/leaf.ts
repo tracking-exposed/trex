@@ -6,6 +6,7 @@ import D from 'debug';
 import { LeafSource } from 'lib/parser/leaf';
 import _ from 'lodash';
 import moment from 'moment';
+import { YTParserConfig } from './config';
 
 const leafLogger = D('leaf');
 const leafLogD = leafLogger.extend('debug');
@@ -185,7 +186,9 @@ export const allowedSelectors = Object.keys(leafSelectors).filter(
 //   'searchAds',
 // ];
 
-export const processLeaf: ParserFn<LeafSource, Ad> = async (e) => {
+export const processLeaf: ParserFn<LeafSource, Ad, YTParserConfig> = async (
+  e
+) => {
   // e is the 'element', it comes from the DB, and we'll look the
   // e.html mostly. different e.selecotrName causes different sub-functions
   if (!allowedSelectors.includes(e.html.selectorName)) {
