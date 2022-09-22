@@ -16,12 +16,16 @@ import * as path from 'path';
 import {
   getLastHTMLs,
   HTMLSource,
+  addDom,
+  getMetadata,
   toMetadata as toHTMLMetadata,
   updateMetadataAndMarkHTML,
 } from '../../lib/parser/html';
 import {
   getLastLeaves,
   LeafSource,
+  addDom as addDomToLeaf,
+  getMetadata as getAdMetadata,
   toMetadata as toAdMetadata,
   updateAdvertisingAndMetadata,
 } from '../../lib/parser/leaf';
@@ -58,7 +62,7 @@ describe('Events', () => {
     await appTest.mongo.close();
   });
 
-  jest.setTimeout(20 * 1000);
+  jest.setTimeout(30 * 1000);
 
   describe('GetPersonalByExperimentId', () => {
     test('succeeds with one metadata', async () => {
@@ -77,7 +81,7 @@ describe('Events', () => {
         JSON.parse
       );
 
-      const [{ savingTime, processed, html, ...source }] = fixture.sources;
+      const [{ savingTime, processed, html, id, ...source }] = fixture.sources;
 
       const data = [
         {
@@ -108,6 +112,17 @@ describe('Events', () => {
         .send(data)
         .expect(200);
 
+      const { id: sourceId } = await db.api.readOne(
+        db.read,
+        appTest.config.get('schema').htmls,
+        {
+          publicKey: {
+            $eq: keys.publicKey,
+          },
+        },
+        {}
+      );
+
       await GetParserProvider('leaves', {
         db,
         parsers: leafParsers,
@@ -115,11 +130,13 @@ describe('Events', () => {
           contribution: LeafSource,
           metadata: Ad,
         },
+        addDom: addDomToLeaf,
         getEntryId: (e) => e.html.id,
-        getContributions: getLastLeaves(db),
         getEntryDate: (e) => e.html.savingTime,
-        buildMetadata: toAdMetadata,
         getEntryNatureType: (e) => e.html.nature.type,
+        getContributions: getLastLeaves(db),
+        getMetadata: getAdMetadata(db),
+        buildMetadata: toAdMetadata,
         saveResults: updateAdvertisingAndMetadata(db),
         config: parserConfig,
       }).run({
@@ -138,6 +155,8 @@ describe('Events', () => {
           contribution: HTMLSource,
           metadata: Metadata,
         },
+        addDom: addDom,
+        getMetadata: getMetadata(db),
         getEntryId: (e) => e.html.id,
         buildMetadata: toHTMLMetadata,
         getContributions: getLastHTMLs(db),
@@ -146,14 +165,14 @@ describe('Events', () => {
         getEntryNatureType: (e) => e.html.nature.type,
         config: parserConfig,
       }).run({
-        singleUse: true,
+        singleUse: sourceId,
         stop: 1,
         htmlAmount: 1,
         backInTime: 10,
       });
 
       // wait for the parser to process the html
-      await sleep(5 * 1000);
+      await sleep(10 * 1000);
 
       // check data has been produced
       const response = await appTest.app.get(

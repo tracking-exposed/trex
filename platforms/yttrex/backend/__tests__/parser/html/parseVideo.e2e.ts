@@ -5,7 +5,9 @@ import { addMinutes, parseISO } from 'date-fns';
 import { JSDOM } from 'jsdom';
 import nacl from 'tweetnacl';
 import {
+  addDom,
   getLastHTMLs,
+  getMetadata,
   HTMLSource,
   toMetadata,
   updateMetadataAndMarkHTML,
@@ -106,10 +108,12 @@ describe('Parser: Video', () => {
       metadataSchema: appTest.config.get('schema').metadata,
       parsers: { nature: parseVideo },
       codecs: { contribution: HTMLSource, metadata: VideoMetadata },
+      addDom,
       getEntryId: (e) => e.html.id,
       getEntryDate: (e) => e.html.savingTime,
       getEntryNatureType: (e) => e.html.nature.type ?? e.type,
       getContributions: getLastHTMLs(db),
+      getMetadata: getMetadata(db),
       buildMetadata: toMetadata as any,
       saveResults: updateMetadataAndMarkHTML(db),
       expectSources: (s) => {

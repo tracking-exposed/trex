@@ -1,5 +1,7 @@
 import {
   BuildMetadataFn,
+  ContributionAndDOMFn,
+  GetMetadataFn,
   LastContributions,
   ParserProviderContextDB,
 } from '@shared/providers/parser.provider';
@@ -10,7 +12,7 @@ import * as t from 'io-ts';
 import { JSDOM } from 'jsdom';
 import _ from 'lodash';
 import nconf from 'nconf';
-import { LeafParsers } from 'parsers';
+import { LeafParsers } from '../../parsers';
 import { Supporter } from '../../models/Supporter';
 
 export const LeafSource = t.type(
@@ -23,6 +25,27 @@ export const LeafSource = t.type(
 );
 
 export type LeafSource = t.TypeOf<typeof LeafSource>;
+
+export const getSourceSchema = (): string => nconf.get('schema').leaves;
+export const getMetadataSchema = (): string => nconf.get('schema').ads;
+
+export const getMetadata =
+  (db: ParserProviderContextDB): GetMetadataFn<LeafSource, Ad> =>
+  (e) => {
+    return db.api.readOne(
+      db.read,
+      getMetadataSchema(),
+      {
+        id: e.html.metadataId,
+      },
+      {}
+    );
+  };
+
+export const addDom: ContributionAndDOMFn<LeafSource> = (e) => ({
+  ...e,
+  jsdom: new JSDOM(sanitizeHTML(e.html.html)).window.document,
+});
 
 /*
  * A function to retrieve htmls by filter and amount

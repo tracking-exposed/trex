@@ -362,11 +362,10 @@ function guessUXLanguage(D: Document): string | null {
 
 export const processHome: ParserFn<
   HTMLSource,
-  HomeMetadata,
+  Omit<HomeMetadata, 'id'>,
   YTParserConfig
 > = async (envelop) => {
-  const retval: HomeMetadata = {
-    id: '',
+  const retval: Omit<HomeMetadata, 'id'> = {
     type: 'home',
     clientTime: envelop.html.clientTime,
     selected: [],
