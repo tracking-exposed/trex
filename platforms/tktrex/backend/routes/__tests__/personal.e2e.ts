@@ -11,8 +11,10 @@ import { sleep } from '@shared/utils/promise.utils';
 import { ContributionEventArb } from '@tktrex/shared/arbitraries/ContributionEvent.arb';
 import { TKMetadata } from '@tktrex/shared/models/Metadata';
 import {
+  addDom,
   buildMetadata,
   getLastHTMLs,
+  getMetadata,
   HTMLSource,
   updateMetadataAndMarkHTML,
 } from '../../lib/parser';
@@ -52,6 +54,8 @@ describe('/v2/personal', () => {
         contribution: HTMLSource,
         metadata: TKMetadata,
       },
+      getMetadata: getMetadata(db),
+      addDom,
       getEntryId: (e) => e.html.id,
       getContributions: getLastHTMLs(db),
       getEntryDate: (e) => e.html.savingTime,

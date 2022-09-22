@@ -6,6 +6,8 @@ import {
   updateAdvertisingAndMetadata,
   LeafSource,
   toMetadata,
+  addDom,
+  getMetadata,
 } from '../lib/parser/leaf';
 import _ from 'lodash';
 import nconf from 'nconf';
@@ -73,6 +75,8 @@ const run = async (): Promise<void> => {
         contribution: LeafSource,
         metadata: Ad,
       },
+      addDom,
+      getMetadata: getMetadata(db),
       getEntryId: (e) => e.html.id,
       getContributions: getLastLeaves(db),
       getEntryDate: (e) => e.html.savingTime,

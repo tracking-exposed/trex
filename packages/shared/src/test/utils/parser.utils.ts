@@ -6,8 +6,10 @@ import path from 'path';
 import { Logger } from '../../logger';
 import {
   parseContributions,
+  ParserConfiguration,
   ParserFn,
   ParserProviderContext,
+  printResultOutput,
 } from '../../providers/parser.provider';
 
 /**
@@ -16,11 +18,32 @@ import {
  * @param fixtureDir
  * @returns string
  */
-export const readFixtureJSONPaths = (fixtureDir: string): any[] => {
-  return fs
+export const readFixtureJSONPaths = (
+  fixtureDir: string,
+  opts?: {
+    exclude: string[];
+    only: string[];
+  }
+): any[] => {
+  const paths = fs
     .readdirSync(fixtureDir, 'utf-8')
     .filter((file) => file.includes('.json'))
     .map((fp) => path.resolve(fixtureDir, fp));
+
+  const filteredPaths = opts?.exclude
+    ? paths.filter((p) => !opts.exclude.some((id) => p.includes(id)))
+    : opts?.only
+    ? paths.filter((p) => opts.only.find((id) => p.includes(id)))
+    : paths;
+
+  // eslint-disable-next-line
+  console.log(
+    'Fixtures from %d (total %d) files',
+    filteredPaths.length,
+    paths.length
+  );
+
+  return filteredPaths;
 };
 
 /**
@@ -28,16 +51,12 @@ export const readFixtureJSONPaths = (fixtureDir: string): any[] => {
  *
  * @param fixtureFilePath
  * @param publicKey Supporter public key
+ *
  */
 export const readFixtureJSON = (
   fixtureFilePath: string,
   publicKey: string
 ): { sources: any[]; metadata: any } => {
-  // eslint-disable-next-line
-  console.log(
-    'reading content from ',
-    path.relative(process.cwd(), fixtureFilePath)
-  );
   const content = fs.readFileSync(fixtureFilePath, 'utf-8');
   const mt = JSON.parse(content);
   return {
@@ -56,7 +75,7 @@ export const runParserTest =
   <
     S extends t.Mixed,
     M extends t.Mixed,
-    C,
+    C extends ParserConfiguration,
     PP extends Record<string, ParserFn<t.TypeOf<S>, any, C>>
   >({
     codecs,
@@ -66,13 +85,14 @@ export const runParserTest =
     metadataSchema,
     ...opts
   }: {
+    name: string;
     log: Logger;
     parsers: PP;
     sourceSchema: string;
     metadataSchema: string;
     expectMetadata: (
-      received: Array<t.TypeOf<M> & { _id: string }>,
-      expected: Array<t.TypeOf<M> & { _id: string }>
+      received: t.TypeOf<M> & { _id: string },
+      expected: t.TypeOf<M> & { _id: string }
     ) => void;
     expectSources: (s: Array<t.TypeOf<S>>) => void;
   } & ParserProviderContext<t.TypeOf<S>, t.TypeOf<M>, C, PP>) =>
@@ -86,13 +106,15 @@ export const runParserTest =
       sources.map((s: any) => s.html)
     );
 
-    const result = await parseContributions<S, M, C, PP>({ codecs, ...opts })({
-      overflow: false,
-      errors: 0,
-      sources,
-    });
+    const result = await parseContributions({
+      codecs,
+      ...opts,
+    })({ sources, errors: 0, overflow: false });
 
-    opts.log.debug('Result length %d', result.length);
+    printResultOutput(opts.getEntryId, {
+      type: 'Success',
+      payload: result,
+    });
 
     // check data in db has changed
     const updatedSources = await opts.db.api.aggregate(

@@ -3,7 +3,9 @@ import { parseISO, subMinutes } from 'date-fns';
 import { JSDOM } from 'jsdom';
 import nacl from 'tweetnacl';
 import {
+  addDom,
   getLastHTMLs,
+  getMetadata,
   HTMLSource,
   toMetadata,
   updateMetadataAndMarkHTML,
@@ -74,84 +76,84 @@ describe('Parser: Search', () => {
    * historyData[10] has an issue time formatting for `publication`
    */
 
-  test.each([
-    historyData[0],
-    historyData[2],
-    historyData[5],
-    historyData[11],
-  ])('Should correctly parse video contributions', async (fixturePath) => {
-    const { sources: _sources, metadata } = readFixtureJSON(
-      fixturePath,
-      publicKey
-    );
-    const sources = _sources.map((h: any) => ({
-      html: {
-        ...h,
-        clientTime: parseISO(h.clientTime ?? new Date()),
-        savingTime: subMinutes(new Date(), 1),
-        processed: null,
-      },
-      jsdom: new JSDOM(sanitizeHTML(h.html)).window.document,
-      supporter: undefined,
-    }));
+  test.each([historyData[0], historyData[2], historyData[5], historyData[11]])(
+    'Should correctly parse video contributions',
+    async (fixturePath) => {
+      const { sources: _sources, metadata } = readFixtureJSON(
+        fixturePath,
+        publicKey
+      );
+      const sources = _sources.map((h: any) => ({
+        html: {
+          ...h,
+          clientTime: parseISO(h.clientTime ?? new Date()),
+          savingTime: subMinutes(new Date(), 1),
+          processed: null,
+        },
+        jsdom: new JSDOM(sanitizeHTML(h.html)).window.document,
+        supporter: undefined,
+      }));
 
-    await runParserTest({
-      log: appTest.logger,
-      parsers: { nature: processSearch },
-      codecs: { contribution: HTMLSource, metadata: SearchMetadata },
-      sourceSchema: appTest.config.get('schema').htmls,
-      metadataSchema: appTest.config.get('schema').metadata,
-      db,
-      getEntryId: (e) => e.html.id,
-      getEntryDate: (e) => e.html.savingTime,
-      getEntryNatureType: (e) => e.html.nature.type,
-      getContributions: getLastHTMLs(db),
-      buildMetadata: toMetadata as any,
-      saveResults: updateMetadataAndMarkHTML(db) as any,
-      expectSources: (sources) => {
-        sources.forEach((r: any) => {
-          expect(r.processed).toBe(true);
-        });
-      },
+      await runParserTest({
+        log: appTest.logger,
+        parsers: { nature: processSearch },
+        codecs: { contribution: HTMLSource, metadata: SearchMetadata },
+        sourceSchema: appTest.config.get('schema').htmls,
+        metadataSchema: appTest.config.get('schema').metadata,
+        db,
+        addDom,
+        getEntryId: (e) => e.html.id,
+        getEntryDate: (e) => e.html.savingTime,
+        getEntryNatureType: (e) => e.html.nature.type,
+        getContributions: getLastHTMLs(db),
+        getMetadata: getMetadata(db),
+        buildMetadata: toMetadata as any,
+        saveResults: updateMetadataAndMarkHTML(db) as any,
+        expectSources: (sources) => {
+          sources.forEach((r: any) => {
+            expect(r.processed).toBe(true);
+          });
+        },
 
-      expectMetadata: (metadata, updatedMetadata) => {
-        const {
-          savingTime: _savingTime,
-          clientTime: _clientTimeM,
-          _id,
-          id,
-          results: _receivedResults,
-          ...receivedMetadata
-        } = metadata;
+        expectMetadata: (metadata, updatedMetadata) => {
+          const {
+            savingTime: _savingTime,
+            clientTime: _clientTimeM,
+            _id,
+            id,
+            results: _receivedResults,
+            ...receivedMetadata
+          } = metadata;
 
-        const {
-          htmls: _htmls,
-          clientTime: _clientTimeNewM,
-          results: _expectedResults,
-          savingTime: _expectedSavingTime,
-          id: _expectedId,
-          _id: _expected_Id,
-          ...expectedMetadata
-        } = updatedMetadata as any;
+          const {
+            htmls: _htmls,
+            clientTime: _clientTimeNewM,
+            results: _expectedResults,
+            savingTime: _expectedSavingTime,
+            id: _expectedId,
+            _id: _expected_Id,
+            ...expectedMetadata
+          } = updatedMetadata as any;
 
-        expect({
-          ...receivedMetadata,
-        }).toMatchObject({
-          ...expectedMetadata,
-        });
+          expect({
+            ...receivedMetadata,
+          }).toMatchObject({
+            ...expectedMetadata,
+          });
 
-        expect(
-          _receivedResults.map(({ secondsAgo, ...r }: any) => ({
-            ...r,
-            published: r.published
-              .replace(/\d{1}\s(year)$/gi, 'a year')
-              .replace(/\d{1}\s(month)$/gi, 'a month')
-              .replace(/\d{1}\s(day)$/gi, 'a day')
-              .replace(/\d{1}\s(hour)$/gi, 'an hour')
-              .replace(/\d{1}\s(minute)$/gi, 'a minute'),
-          }))
-        ).toMatchObject(_expectedResults.map(({ secondsAgo, ...r }) => r));
-      },
-    })({ sources, metadata });
-  });
+          expect(
+            _receivedResults.map(({ secondsAgo, ...r }: any) => ({
+              ...r,
+              published: r.published
+                .replace(/\d{1}\s(year)$/gi, 'a year')
+                .replace(/\d{1}\s(month)$/gi, 'a month')
+                .replace(/\d{1}\s(day)$/gi, 'a day')
+                .replace(/\d{1}\s(hour)$/gi, 'an hour')
+                .replace(/\d{1}\s(minute)$/gi, 'a minute'),
+            }))
+          ).toMatchObject(_expectedResults.map(({ secondsAgo, ...r }) => r));
+        },
+      })({ sources, metadata });
+    }
+  );
 });

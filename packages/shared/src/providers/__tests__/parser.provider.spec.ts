@@ -5,10 +5,10 @@ import { date } from 'io-ts-types';
 import { GetLogger } from '../../logger';
 import { v4 as uuid } from 'uuid';
 import {
-  markOutputField,
+  getSuccessfulOutput,
   GetParserProvider,
   ParserProviderContext,
-  payloadToTableOutput,
+  printResultOutput,
   wrapDissector,
 } from '../parser.provider';
 
@@ -22,6 +22,7 @@ const db = {
 
 const homeParser = jest.fn();
 const getContributions = jest.fn();
+const getMetadata = jest.fn();
 const buildMetadata = jest.fn();
 const saveResults = jest.fn();
 
@@ -85,10 +86,17 @@ describe('Parser Provider', () => {
     getEntryDate(e) {
       return e.savingTime;
     },
+    getMetadata,
     buildMetadata,
     saveResults: saveResults,
     config: {
       downloads: '/download/here',
+    },
+    addDom(e) {
+      return {
+        ...e,
+        jsdom: {} as any,
+      };
     },
   };
 
@@ -102,34 +110,34 @@ describe('Parser Provider', () => {
   test('printOutput: succeeds with valid values in table', async () => {
     const source = fc.sample(ContributionArb, 1)[0];
     const metadata = fc.sample(MetadataArb, 1)[0];
-    const findings = {
-      home: {
-        type: 'home',
-      },
-    };
     const log = { home: 1 };
-    const output = payloadToTableOutput<
-      typeof Contribution,
-      typeof Metadata,
+    const output = getSuccessfulOutput<
+      Contribution,
+      Metadata,
       any,
       { [key: string]: any }
     >(
       (s) => s.id,
       [
         {
-          source,
-          findings,
+          source: { ...source, jsdom: {} },
+          findings: {},
           failures: {},
           log,
           metadata,
+          count: {
+            metadata: 1,
+            source: 1,
+          },
         },
       ]
     );
 
     expect(output).toMatchObject({
       [source.id]: {
-        findings: markOutputField(findings),
+        log: JSON.stringify(log),
         metadata: metadata.id,
+        failures: '[]',
       },
     });
   });
@@ -151,12 +159,11 @@ describe('Parser Provider', () => {
 
     const dissectorName = 'home';
 
-    const result = await wrapDissector({ ...providerCtx, log: logger })(
-      dissectorFn,
-      dissectorName,
-      source,
-      envelop
-    );
+    const result = await wrapDissector({
+      ...providerCtx,
+      name: 'test-parser',
+      log: logger,
+    })(dissectorFn, dissectorName, source, envelop);
 
     expect(result).toMatchObject({
       failures: {
@@ -200,7 +207,7 @@ describe('Parser Provider', () => {
       id: uuid(),
       ...homeFindings,
     };
-
+    getMetadata.mockResolvedValueOnce(null);
     buildMetadata.mockReturnValue(metadata);
     saveResults.mockResolvedValueOnce({
       metadata,
@@ -219,12 +226,15 @@ describe('Parser Provider', () => {
     });
 
     expect(homeParser).toHaveBeenCalledWith(
-      sources[0],
+      { ...sources[0], jsdom: {} },
       {},
       { downloads: '/download/here' }
     );
 
-    expect(saveResults).toHaveBeenCalledWith(sources[0], metadata);
+    expect(saveResults).toHaveBeenCalledWith(
+      { ...sources[0], jsdom: {} },
+      metadata
+    );
 
     expect(result).toMatchObject({
       type: 'Success',
@@ -260,6 +270,7 @@ describe('Parser Provider', () => {
       ...homeFindings,
     };
 
+    getMetadata.mockResolvedValueOnce(null);
     buildMetadata.mockReturnValue(metadata);
 
     saveResults.mockImplementation((s, m) =>
