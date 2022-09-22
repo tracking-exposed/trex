@@ -1,8 +1,7 @@
 import { processLeaf } from './leaf';
-import { nature } from './nature';
+import nature from './nature';
 import searches from './searches';
 import thumbnail from './thumbnail';
-// import uxlang from './uxlang';
 
 /**
  * export all parsers as dictionary

@@ -1,3 +1,5 @@
+import { GetTest, Test } from '../../tests/Test';
+
 import { GuardoniExperimentArb } from '@shared/arbitraries/Experiment.arb';
 import bs58 from '@shared/providers/bs58.provider';
 import {
@@ -11,26 +13,29 @@ import { Ad } from '@yttrex/shared/models/Ad';
 import { Metadata } from '@yttrex/shared/models/Metadata';
 import { pipe } from 'fp-ts/lib/function';
 import * as fs from 'fs';
-import { parserConfig } from '../../parsers/config';
+import { parserConfig } from '@yttrex/shared/parser/config';
 import * as path from 'path';
 import {
+  addDom as addDOMToHTML,
   getLastHTMLs,
-  HTMLSource,
-  addDom,
-  getMetadata,
+  getMetadata as getHTMLMetadata,
   toMetadata as toHTMLMetadata,
   updateMetadataAndMarkHTML,
 } from '../../lib/parser/html';
 import {
-  getLastLeaves,
-  LeafSource,
   addDom as addDomToLeaf,
+  getLastLeaves,
   getMetadata as getAdMetadata,
   toMetadata as toAdMetadata,
   updateAdvertisingAndMetadata,
 } from '../../lib/parser/leaf';
-import { leafParsers, parsers } from '../../parsers';
-import { GetTest, Test } from '../../tests/Test';
+import {
+  leafParsers,
+  parsers,
+  LeafSource,
+  HTMLSource,
+} from '@yttrex/shared/parser';
+
 const pkgJSON = require('../../package.json');
 
 const version = pkgJSON.version;
@@ -74,7 +79,7 @@ describe('Events', () => {
         fs.readFileSync(
           path.resolve(
             __dirname,
-            '../../__tests__/fixtures/home/53e13320d4e8c525fd00ce54e12fbadcbc54f8b0.json'
+            '../../__tests__/fixtures/htmls/home/53e13320d4e8c525fd00ce54e12fbadcbc54f8b0.json'
           ),
           'utf-8'
         ),
@@ -90,6 +95,7 @@ describe('Events', () => {
           element: html,
           publicKey: keys.publicKey,
           clientTime,
+          savingTime: clientTime,
           experimentId: experiment.experimentId,
           researchTag,
         },
@@ -155,9 +161,9 @@ describe('Events', () => {
           contribution: HTMLSource,
           metadata: Metadata,
         },
-        addDom: addDom,
-        getMetadata: getMetadata(db),
+        addDom: addDOMToHTML,
         getEntryId: (e) => e.html.id,
+        getMetadata: getHTMLMetadata(db),
         buildMetadata: toHTMLMetadata,
         getContributions: getLastHTMLs(db),
         saveResults: updateMetadataAndMarkHTML(db),
@@ -198,6 +204,12 @@ describe('Events', () => {
       await appTest.mongo3.deleteMany(
         appTest.mongo,
         appTest.config.get('schema').htmls,
+        { publicKey: keys.publicKey }
+      );
+
+      await appTest.mongo3.deleteMany(
+        appTest.mongo,
+        appTest.config.get('schema').metadata,
         { publicKey: keys.publicKey }
       );
     });

@@ -33,12 +33,10 @@ module.exports = {
   collectCoverageFrom: [
     '<rootDir>/bin/**',
     '<rootDir>/lib/**',
-    '<rootDir>/parsers/**',
+    '<rootDir>/models/**',
     '<rootDir>/routes/**',
   ],
-  coveragePathIgnorePatterns: [
-    '<rootDir>/__tests__'
-  ],
+  coveragePathIgnorePatterns: ['<rootDir>/__tests__'],
   coverageThreshold: {
     global: {
       branches: 30,

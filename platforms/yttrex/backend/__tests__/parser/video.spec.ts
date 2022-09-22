@@ -1,5 +1,5 @@
 import moment from 'moment';
-import { makeAbsolutePublicationTime } from '../../parsers/video';
+import { makeAbsolutePublicationTime } from '@yttrex/shared/parser/parsers/video';
 
 describe('Parser: Video', () => {
   // let appTest: Test;

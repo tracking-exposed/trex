@@ -1,10 +1,10 @@
 import { trexLogger } from '@shared/logger';
 import { ParserFn } from '@shared/providers/parser.provider';
-import { HomeMetadata, ParsedInfo } from '@yttrex/shared/models/Metadata';
+import { HomeMetadata, ParsedInfo } from '../../models/Metadata';
 import _ from 'lodash';
 import moment from 'moment';
-import { HTMLSource } from '../lib/parser/html';
-import { YTParserConfig } from './config';
+import { HTMLSource } from '../source';
+import { YTParserConfig } from '../config';
 import * as longlabel from './longlabel';
 import * as shared from './shared';
 import uxlang from './uxlang';

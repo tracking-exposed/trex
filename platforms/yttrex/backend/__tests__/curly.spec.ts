@@ -1,6 +1,5 @@
 import fetchMock from 'jest-fetch-mock';
 import { recentVideoFetch } from '../lib/curly';
-
 import initialData from './fixtures/ytInitialData.json';
 
 describe('The recentVideoFetch function', () => {

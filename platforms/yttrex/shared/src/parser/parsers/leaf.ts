@@ -1,12 +1,12 @@
 import { ParserFn } from '@shared/providers/parser.provider';
-import { Ad } from '@yttrex/shared/models/Ad';
-import { Leaf } from '@yttrex/shared/models/Leaf';
-import { leafSelectors } from '@yttrex/shared/parsers/index';
+import { Ad } from '../../models/Ad';
+import { Leaf } from '../../models/Leaf';
+import { leafSelectors } from '../selectors';
 import D from 'debug';
-import { LeafSource } from 'lib/parser/leaf';
+import { LeafSource } from '../source';
 import _ from 'lodash';
 import moment from 'moment';
-import { YTParserConfig } from './config';
+import { YTParserConfig } from '../config';
 
 const leafLogger = D('leaf');
 const leafLogD = leafLogger.extend('debug');
@@ -24,7 +24,7 @@ function mineAd(D: Document, e: Leaf): BaseAd {
   const remaining = D.querySelector('.ytp-ad-duration-remaining')
     ?.textContent as any;
   const fixed = remaining.length > 6 ? remaining : '00:' + remaining;
-  const adseconds = moment.duration(fixed).asSeconds();
+  const adseconds = moment.duration(fixed)?.asSeconds();
   return {
     sponsoredName: 'TODO',
     sponsoredSite,
@@ -187,7 +187,8 @@ export const allowedSelectors = Object.keys(leafSelectors).filter(
 // ];
 
 export const processLeaf: ParserFn<LeafSource, Ad, YTParserConfig> = async (
-  e
+  e,
+  prev
 ) => {
   // e is the 'element', it comes from the DB, and we'll look the
   // e.html mostly. different e.selecotrName causes different sub-functions
@@ -262,7 +263,9 @@ export const processLeaf: ParserFn<LeafSource, Ad, YTParserConfig> = async (
   if (e.html.experiment) (retval as any).experiment = e.html.experiment;
 
   const result = {
+    ...prev,
     ...nature,
+    nature,
     ...retval,
     ...mined,
   };

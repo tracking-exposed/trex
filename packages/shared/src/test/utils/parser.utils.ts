@@ -19,8 +19,8 @@ import {
 export const readFixtureJSONPaths = (
   fixtureDir: string,
   opts?: {
-    exclude: string[];
-    only: string[];
+    exclude?: string[];
+    only?: string[];
   }
 ): any[] => {
   const paths = fs
@@ -29,9 +29,9 @@ export const readFixtureJSONPaths = (
     .map((fp) => path.resolve(fixtureDir, fp));
 
   const filteredPaths = opts?.exclude
-    ? paths.filter((p) => !opts.exclude.some((id) => p.includes(id)))
+    ? paths.filter((p) => !(opts.exclude ?? []).some((id) => p.includes(id)))
     : opts?.only
-    ? paths.filter((p) => opts.only.find((id) => p.includes(id)))
+    ? paths.filter((p) => (opts.only ?? []).find((id) => p.includes(id)))
     : paths;
 
   // eslint-disable-next-line

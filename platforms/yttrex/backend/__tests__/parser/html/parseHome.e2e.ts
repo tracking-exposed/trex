@@ -3,22 +3,23 @@ import {
   readFixtureJSONPaths,
   runParserTest,
 } from '@shared/test/utils/parser.utils';
-import { sanitizeHTML } from '@shared/utils/html.utils';
 import { HomeMetadata } from '@yttrex/shared/models/Metadata';
 import base58 from 'bs58';
 import { parseISO, subMinutes } from 'date-fns';
-import { JSDOM } from 'jsdom';
+import { v4 as uuid } from 'uuid';
 import path from 'path';
 import nacl from 'tweetnacl';
+import { HTMLSource } from '@yttrex/shared/parser';
 import {
   addDom,
   getLastHTMLs,
   getMetadata,
-  HTMLSource,
+  getMetadataSchema,
+  getSourceSchema,
   toMetadata,
   updateMetadataAndMarkHTML,
 } from '../../../lib/parser/html';
-import processHome from '../../../parsers/home';
+import processHome from '@yttrex/shared/parser/parsers/home';
 import { GetTest, Test } from '../../../tests/Test';
 
 describe('Parser: home', () => {
@@ -60,13 +61,16 @@ describe('Parser: home', () => {
     );
   });
 
+  // const failingIds = [];
+
   const history = readFixtureJSONPaths(
-    path.resolve(__dirname, '../../fixtures/home')
-  )
+    path.resolve(__dirname, '../../fixtures/htmls/home')
+    // { only: failingIds }
+  );
   // .filter((v, i) => ![5, 9].includes(i));
 
-  test.each([history[0]])(
-    'Should correctly parse home contributions',
+  test.each(history)(
+    'Should correctly parse home contributions %s',
     async (filePath) => {
       const { sources: _sources, metadata } = readFixtureJSON(
         filePath,
@@ -74,6 +78,7 @@ describe('Parser: home', () => {
       );
       const sources = _sources.map((h: any) => ({
         html: {
+          id: uuid(),
           ...h,
           clientTime: parseISO(h.clientTime ?? new Date()),
           savingTime: subMinutes(new Date(), 1),
@@ -83,9 +88,8 @@ describe('Parser: home', () => {
       }));
 
       await runParserTest({
+        name: 'yt-home',
         log: appTest.logger,
-        sourceSchema: appTest.config.get('schema').htmls,
-        metadataSchema: appTest.config.get('schema').metadata,
         parsers: { nature: processHome },
         db,
         codecs: {
@@ -93,6 +97,8 @@ describe('Parser: home', () => {
           metadata: HomeMetadata.type,
         },
         addDom,
+        sourceSchema: getSourceSchema(),
+        metadataSchema: getMetadataSchema(),
         getEntryId: (e) => e.html.id,
         getEntryDate: (e) => e.html.savingTime,
         getEntryNatureType: (e) => e.html.nature.type,
@@ -100,6 +106,7 @@ describe('Parser: home', () => {
         getMetadata: getMetadata(db),
         buildMetadata: toMetadata as any,
         saveResults: updateMetadataAndMarkHTML(db) as any,
+        config: {},
         expectSources: (sources) => {
           sources.forEach((r: any) => {
             expect(r.processed).toBe(true);

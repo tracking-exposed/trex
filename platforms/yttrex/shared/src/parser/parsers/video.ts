@@ -1,26 +1,27 @@
 import { trexLogger } from '@shared/logger';
+import { ParserFn } from '@shared/providers/parser.provider';
+import { sanitizeTextContent } from '@shared/utils/html.utils';
 import { parseISO } from 'date-fns';
 import * as t from 'io-ts';
 import { date } from 'io-ts-types/lib/date';
 import _ from 'lodash';
 import moment from 'moment';
-import { HTMLSource } from '../lib/parser/html';
-import utils from '../lib/utils'; // this because parseLikes is an utils to be used also with version of the DB without the converted like. but should be a parsing related-only library once the issue with DB version is solved
-import { ParsedInfo, VideoMetadata } from '@yttrex/shared/models/Metadata';
+import { ParsedInfo, VideoMetadata } from '../../models/Metadata';
+import { YTParserConfig } from '../config';
+import { HTMLSource } from '../source';
+import * as likesParser from './likes'; // this because parseLikes is an utils to be used also with version of the DB without the converted like. but should be a parsing related-only library once the issue with DB version is solved
 import * as longlabel from './longlabel';
 import * as shared from './shared';
 import uxlang from './uxlang';
-import { ParserFn } from '@shared/providers/parser.provider';
-import { YTParserConfig } from './config';
 
 const videoLog = trexLogger.extend('video');
 
 export const VideoProcessResult = t.strict(
   {
-    title: t.string,
     type: t.literal('video'),
-    params: t.any,
     videoId: t.string,
+    params: t.any,
+    title: t.string,
     login: t.union([t.boolean, t.null]),
     publicationString: t.string,
     publicationTime: date,
@@ -36,33 +37,45 @@ export type VideoProcessResult = t.TypeOf<typeof VideoProcessResult>;
 
 const stats = { skipped: 0, error: 0, suberror: 0, success: 0 };
 
-interface Views {
-  viewStr: string | undefined;
-  viewNumber: number;
+interface ViewInfo {
+  viewStr: string | null;
+  viewNumber: number | null;
 }
 
-function parseViews(D: Document): Views {
+const parseViewNumber = (html: string): number | undefined => {
+  const viewNumStr = html.replace(/[.,]/g, '').replace(/[\s]+/g, '');
+  const viewNumber = parseInt(viewNumStr, 10);
+
+  videoLog.debug('Parse view number %s => %s', html, viewNumber);
+  return isNaN(viewNumber) ? undefined : viewNumber;
+};
+
+function parseViews(D: Document): ViewInfo {
   const node = _.first(D.getElementsByClassName('view-count'));
-  const viewStr = node?.innerHTML;
+  const viewStr = node?.innerHTML ? sanitizeTextContent(node?.innerHTML) : null;
   const tmp = _.first(viewStr?.split(' '));
-  const viewNumber = _.parseInt(tmp?.replace(/[.,]/g, '') ?? '');
-  const views = { viewStr, viewNumber };
+
+  const views: ViewInfo = { viewStr, viewNumber: null };
+  if (tmp) {
+    views.viewNumber = parseViewNumber(tmp) ?? 0;
+  }
+
   videoLog.debug('Views: %O', views);
   return views;
 }
 
-interface Likes {
-  likes: string;
-  dislikes: string;
-}
-
-function parseLikes(D: Document): Likes {
+function parseLikes(D: Document): likesParser.Likes {
   const nodes = D.querySelectorAll(
     '.ytd-toggle-button-renderer > yt-formatted-string'
   );
   const likes = nodes[0].getAttribute('aria-label');
   const dislikes = nodes[1].getAttribute('aria-label');
-  const likeInfo = { likes: likes ?? '', dislikes: dislikes ?? '' };
+  const likeInfo = {
+    likes,
+    dislikes,
+    watchedLikes: null,
+    watchedDislikes: null,
+  };
   videoLog.debug('Like info: %O', likeInfo);
   return likeInfo;
 }
@@ -183,19 +196,22 @@ function relatedMetadata(e: any, i: number): ParsedInfo | null {
     if (mined.title !== title) {
       videoLog.debug('Interesting anomaly: %s != %s', mined.title, title);
     }
+    // videoLog.debug('Mined %O', mined);
   } catch (e) {
     videoLog.error('longlabel parser error: %s', e.message);
   }
 
   /* estimate live also by missing metadata but presence of certain few */
   const estimatedLive = (function () {
-    if (mined?.isLive) return true;
+    if (mined?.isLive !== undefined) {
+      return mined.isLive;
+    }
     return !!(!displayTime && !expandedTime && !recommendedLength);
   })();
 
   const recommendedRelativeSeconds = estimatedLive
     ? null
-    : mined
+    : mined.timeago
     ? mined.timeago.asSeconds()
     : null;
 
@@ -303,14 +319,19 @@ export function mineAuthorInfo(D: Document): AuthorInfo | null {
   const as = D.querySelector(
     'a.ytd-video-owner-renderer'
   )?.parentNode?.querySelectorAll('a');
-  if (_.size(as) === 1 || _.size(as) === 0) return null;
 
-  const authorName = D.querySelector(
+  if (_.size(as) === 1 || _.size(as) === 0) {
+    return null;
+  }
+
+  const authorNodes = D.querySelector(
     'a.ytd-video-owner-renderer'
-  )?.parentNode?.querySelectorAll('a')[1].textContent;
-  const authorSource = D.querySelector('a.ytd-video-owner-renderer')
-    ?.parentNode?.querySelectorAll('a')[0]
-    ?.getAttribute('href');
+  )?.parentNode?.querySelectorAll('a');
+
+  const authorNameNode = authorNodes?.[1];
+  const authorName = authorNameNode?.textContent;
+  const authorSourceNode = authorNodes?.[0];
+  const authorSource = authorSourceNode?.getAttribute('href');
   const forKids = !!D.querySelector('a[href="https://www.youtubekids.com/"]');
 
   if (
@@ -333,7 +354,7 @@ export function mineAuthorInfo(D: Document): AuthorInfo | null {
   };
 }
 
-export function simpleTitlePicker(D: Document): string | null {
+export function simpleTitlePicker(D: Document, blang: string): string | null {
   const title = _.reduce(
     D.querySelectorAll('h1'),
     function (memo, ne) {
@@ -352,7 +373,7 @@ export function simpleTitlePicker(D: Document): string | null {
     D.querySelector('#video-title')?.getAttribute('aria-label');
 
   if (videoLabel) {
-    const titleFromAriaLabel = longlabel.parser(videoLabel, '', false);
+    const titleFromAriaLabel = longlabel.parser(videoLabel, blang, false);
     videoLog.debug('Title from aria label %s', titleFromAriaLabel);
     return titleFromAriaLabel.title ?? null;
   }
@@ -385,7 +406,7 @@ export function processVideo(
     },
   ]);
 
-  if (!title) title = simpleTitlePicker(D);
+  if (!title) title = simpleTitlePicker(D, blang);
 
   if (!title) {
     throw new Error('unable to get video title');
@@ -431,19 +452,22 @@ export function processVideo(
   related = makeAbsolutePublicationTime(_.compact(related), clientTime);
 
   /* non mandatory info */
-  let viewInfo;
-  let likeInfo: {
-    watchedLikes: number | null;
-    watchedDislikes: number | null;
-  } = {
+  let viewInfo: ViewInfo = {
+    viewStr: null,
+    viewNumber: null,
+  };
+  let likeInfo: likesParser.Likes = {
+    dislikes: null,
+    likes: null,
     watchedLikes: null,
     watchedDislikes: null,
   };
   try {
     viewInfo = parseViews(D);
-    const likes = parseLikes(D);
-    const numeredInteractions = utils.parseLikes(likes);
+    likeInfo = parseLikes(D);
+    const numeredInteractions = likesParser.parseLikes(likeInfo);
     likeInfo = {
+      ...likeInfo,
       watchedLikes: numeredInteractions.watchedLikes,
       watchedDislikes: numeredInteractions.watchedDislikes,
     };
@@ -487,6 +511,10 @@ const parseVideo: ParserFn<HTMLSource, VideoMetadata, YTParserConfig> = async (
   envelop
 ) => {
   let extracted: VideoMetadata;
+
+  if (envelop.html.nature.type !== 'video') {
+    return null;
+  }
 
   try {
     extracted = processVideo(

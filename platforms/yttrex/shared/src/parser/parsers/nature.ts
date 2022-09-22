@@ -1,10 +1,13 @@
 import { ParserFn } from '@shared/providers/parser.provider';
-import { HTMLSource } from '../lib/parser/html';
-import { Nature } from '../models/Nature';
-import { YTParserConfig } from './config';
+import { HTMLSource } from '../source';
+import { Nature } from '../../models/Nature';
+import { YTParserConfig } from '../config';
 import processHome from './home';
 import { processSearch } from './searches';
 import parseVideo from './video';
+import { trexLogger } from '@shared/logger';
+
+const natureLogger = trexLogger.extend('parser:nature');
 
 const processNature =
   (type: Nature['type']): ParserFn<HTMLSource, any, YTParserConfig> =>
@@ -26,12 +29,13 @@ const processNature =
  *
  *
  */
-export const nature: ParserFn<HTMLSource, Nature, YTParserConfig> = async (
+const nature: ParserFn<HTMLSource, Nature, YTParserConfig> = async (
   e,
   findings,
   ctx
 ) => {
   const type = e.html.nature.type ?? (e.html as any).type;
+  natureLogger.debug('Type received %s', type);
   const nature = await processNature(type)(e, findings, ctx);
   if (!nature) {
     throw new Error('No nature found for this entry.');
@@ -42,3 +46,5 @@ export const nature: ParserFn<HTMLSource, Nature, YTParserConfig> = async (
     ...nature,
   };
 };
+
+export default nature;

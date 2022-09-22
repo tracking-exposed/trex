@@ -1,11 +1,11 @@
 import { ParserFn } from '@shared/providers/parser.provider';
 import fs from 'fs';
-import { HTMLSource } from 'lib/parser/html';
+import { HTMLSource } from '../source';
 import _ from 'lodash';
 import fetch from 'node-fetch';
 import path from 'path';
 import D from 'debug';
-import { YTParserConfig } from './config';
+import { YTParserConfig } from '../config';
 
 const debug = D('parsers:thumbnail');
 /* if(!nconf.get('thumbnails')) {

@@ -1,21 +1,21 @@
 #!/usr/bin/env ts-node
 
-import fs from 'fs';
-import {
-  getLastLeaves,
-  updateAdvertisingAndMetadata,
-  LeafSource,
-  toMetadata,
-  addDom,
-  getMetadata,
-} from '../lib/parser/leaf';
-import _ from 'lodash';
-import nconf from 'nconf';
 import * as mongo3 from '@shared/providers/mongo.provider';
 import { GetParserProvider } from '@shared/providers/parser.provider';
-import { leafParsers } from '../parsers';
 import { Ad } from '@yttrex/shared/models/Ad';
-import { parserConfig } from '../parsers/config';
+import { LeafSource } from '@yttrex/shared/parser';
+import { parserConfig, YTParserConfig } from '@yttrex/shared/parser/config';
+import { LeafParsers, leafParsers } from '@yttrex/shared/parser/parsers';
+import fs from 'fs';
+import _ from 'lodash';
+import nconf from 'nconf';
+import {
+  addDom,
+  getLastLeaves,
+  getMetadata,
+  toMetadata,
+  updateAdvertisingAndMetadata,
+} from '../lib/parser/leaf';
 
 nconf.argv().env().file({ file: 'config/settings.json' });
 
@@ -68,7 +68,12 @@ const run = async (): Promise<void> => {
     };
 
     /* call the async infinite loop function */
-    void GetParserProvider('leaves', {
+    void GetParserProvider<
+      typeof LeafSource,
+      typeof Ad,
+      YTParserConfig,
+      LeafParsers
+    >('leaves', {
       db,
       parsers: leafParsers,
       codecs: {
@@ -76,9 +81,9 @@ const run = async (): Promise<void> => {
         metadata: Ad,
       },
       addDom,
-      getMetadata: getMetadata(db),
       getEntryId: (e) => e.html.id,
       getContributions: getLastLeaves(db),
+      getMetadata: getMetadata(db),
       getEntryDate: (e) => e.html.savingTime,
       getEntryNatureType: (e) => e.html.nature.type,
       buildMetadata: toMetadata,

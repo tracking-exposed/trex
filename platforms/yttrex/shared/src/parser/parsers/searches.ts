@@ -2,8 +2,8 @@ import { ParserFn } from '@shared/providers/parser.provider';
 import { formatDistanceToNow, subSeconds } from 'date-fns';
 import D from 'debug';
 import _ from 'lodash';
-import { HTMLSource } from '../lib/parser/html';
-import { YTParserConfig } from './config';
+import { YTParserConfig } from '../config';
+import { HTMLSource } from '../source';
 import * as longlabel from './longlabel';
 
 const debuge = D('parser:searches:error');
@@ -51,9 +51,10 @@ function dissectVideoAndParents(video, i: number): any {
     const playList = urlo.searchParams.get('pp');
     if (tParam?.length) _.set(linkedInfo, 'offset', tParam);
     else if (playList?.length) _.set(linkedInfo, 'playlist', playList);
-    else if (_.startsWith(href, '/shorts/'))
+    else if (_.startsWith(href, '/shorts/')) {
       debuge('shorts not supported yet! %s', href);
-    else debuge('parameter not understood %s', href);
+      return undefined;
+    } else debuge('parameter not understood %s', href);
   }
 
   const authorInfo = _.reduce(
@@ -136,6 +137,7 @@ export const processSearch: ParserFn<
        or not. By using ytd-video-renderer the order is attributed */
 
   const videos = envelop.jsdom.querySelectorAll('ytd-video-renderer');
+
   if (!videos.length) {
     debuge(
       "Search result of %s doesn't seem having any video!",
