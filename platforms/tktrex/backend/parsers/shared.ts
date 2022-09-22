@@ -6,13 +6,11 @@ import {
   Nature,
   ProfileN,
   SearchN,
-  VideoN,
 } from '@tktrex/shared/models/Nature';
 import D from 'debug';
-import _ from 'lodash';
-import nconf from 'nconf';
-import fetch from 'node-fetch';
 import fs from 'fs';
+import _ from 'lodash';
+import fetch from 'node-fetch';
 import path from 'path';
 
 const debug = D('parsers:shared');
@@ -75,19 +73,19 @@ export function getNatureByHref(href: string): Nature | null {
   }
 }
 
-export function getUUID(url: string, type: any): any {
+export function getUUID(url: string, type: any, dir: string): any {
   const ui = new URL(url);
   const fullpath = ui.pathname;
   const fname = path.basename(fullpath);
   const fullname = type === 'video' ? `${fname}.mp4` : `${fname}.jpeg`;
   const cwd = process.cwd();
-  if (!nconf.get('downloads')) {
-    /* eslint-disable no-console */
-    console.log("WRONG CONFIGURATION SETTINGS!! missing 'downloads' from", cwd);
-    process.exit(1);
-  }
+  // if (!nconf.get('downloads')) {
+  //   /* eslint-disable no-console */
+  //   console.log("WRONG CONFIGURATION SETTINGS!! missing 'downloads' from", cwd);
+  //   process.exit(1);
+  // }
   const initials = fname.substr(0, 2);
-  const destdir = path.join(cwd, nconf.get('downloads'), type, initials);
+  const destdir = path.join(cwd, dir, type, initials);
   if (!fs.existsSync(destdir)) {
     try {
       fs.mkdirSync(destdir, { recursive: true });

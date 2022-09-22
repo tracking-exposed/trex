@@ -3,6 +3,7 @@ import { formatDistanceToNow, subSeconds } from 'date-fns';
 import D from 'debug';
 import _ from 'lodash';
 import { HTMLSource } from '../lib/parser/html';
+import { YTParserConfig } from './config';
 import * as longlabel from './longlabel';
 
 const debuge = D('parser:searches:error');
@@ -123,9 +124,11 @@ function unpackCorrection(corelem): string[] {
   return _.compact(_.flatten(_.map(corelem.children, unpackCorrection)));
 }
 
-export const processSearch: ParserFn<HTMLSource, any | null> = async (
-  envelop
-) => {
+export const processSearch: ParserFn<
+  HTMLSource,
+  any | null,
+  YTParserConfig
+> = async (envelop) => {
   /* this function process a page like:
     https://www.youtube.com/results?search_query=fingerprinting
        and the logic here is: look for any video, and then move above 

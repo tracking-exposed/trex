@@ -86,6 +86,7 @@ describe('Parser: "native"', () => {
           getEntryNatureType: (e) => e.html.type,
           getContributions: getLastHTMLs(db),
           saveResults: updateMetadataAndMarkHTML(db),
+          config: {},
           expectSources: (receivedSources) => {
             receivedSources.forEach((s) => {
               expect((s as any).processed).toBe(true);

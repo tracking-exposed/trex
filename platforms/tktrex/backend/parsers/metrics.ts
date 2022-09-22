@@ -1,8 +1,12 @@
 import { ParserFn } from '@shared/providers/parser.provider';
 import { HTMLSource } from '../lib/parser';
 import { Metrics } from '@tktrex/shared/models/Metadata';
+import { TKParserConfig } from './config';
 
-const metrics: ParserFn<HTMLSource, Metrics> = async (envelop, previous) => {
+const metrics: ParserFn<HTMLSource, Metrics, TKParserConfig> = async (
+  envelop,
+  previous
+) => {
   /* 2.4.x 'foryou' and 'following' are considered only */
   const availin = ['foryou', 'following', 'video', 'native'];
 

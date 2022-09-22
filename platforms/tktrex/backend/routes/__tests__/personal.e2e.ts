@@ -26,35 +26,40 @@ let keys: Keypair;
 describe('/v2/personal', () => {
   let appTest: Test;
   const [experiment] = fc.sample(GuardoniExperimentArb, 1);
-  let parserProvider: ParserProvider<HTMLSource, TKMetadata, typeof parsers> =
-    beforeAll(async () => {
-      appTest = await GetTest();
-      await appTest.mongo3.insertMany(
-        appTest.mongo,
-        appTest.config.get('schema').experiments,
-        [experiment]
-      );
-      keys = await foldTEOrThrow(bs58.makeKeypair(''));
-      const db = {
-        write: appTest.mongo,
-        read: appTest.mongo,
-        api: appTest.mongo3,
-      };
-      parserProvider = GetParserProvider('html', {
-        db,
-        parsers: parsers,
-        codecs: {
-          contribution: HTMLSource,
-          metadata: TKMetadata,
-        },
-        getEntryId: (e) => e.html.id,
-        getContributions: getLastHTMLs(db),
-        getEntryDate: (e) => e.html.savingTime,
-        getEntryNatureType: (e) => e.html.type,
-        buildMetadata: buildMetadata,
-        saveResults: updateMetadataAndMarkHTML(db),
-      });
+  let parserProvider: ParserProvider<
+    HTMLSource,
+    TKMetadata,
+    any,
+    typeof parsers
+  > = beforeAll(async () => {
+    appTest = await GetTest();
+    await appTest.mongo3.insertMany(
+      appTest.mongo,
+      appTest.config.get('schema').experiments,
+      [experiment]
+    );
+    keys = await foldTEOrThrow(bs58.makeKeypair(''));
+    const db = {
+      write: appTest.mongo,
+      read: appTest.mongo,
+      api: appTest.mongo3,
+    };
+    parserProvider = GetParserProvider('html', {
+      db,
+      config: {},
+      parsers: parsers,
+      codecs: {
+        contribution: HTMLSource,
+        metadata: TKMetadata,
+      },
+      getEntryId: (e) => e.html.id,
+      getContributions: getLastHTMLs(db),
+      getEntryDate: (e) => e.html.savingTime,
+      getEntryNatureType: (e) => e.html.type,
+      buildMetadata: buildMetadata,
+      saveResults: updateMetadataAndMarkHTML(db),
     });
+  });
 
   afterAll(async () => {
     await appTest.mongo.close();

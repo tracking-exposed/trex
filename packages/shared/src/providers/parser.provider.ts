@@ -1,20 +1,33 @@
-import { Logger, trexLogger } from '../logger';
-import { sleep } from '../utils/promise.utils';
 import { formatDistance } from 'date-fns';
 import differenceInMinutes from 'date-fns/differenceInMinutes';
 import subMinutes from 'date-fns/subMinutes';
+import * as t from 'io-ts';
 import _ from 'lodash';
 import { MongoClient } from 'mongodb';
+import { Logger, trexLogger } from '../logger';
+import { sleep } from '../utils/promise.utils';
 import * as mongo3 from './mongo.provider';
-import * as t from 'io-ts';
+
+/**
+ * The parser configuration
+ */
 
 /**
  * The parser function
  *
  * @typeParam S - The source
  * @typeParam M - The metadata
+ * @typeParam C - The configuration
  */
-export type ParserFn<S, M> = (entry: S, findings?: any) => Promise<M | null>;
+export type ParserFn<S, M, C> = (
+  entry: ContributionWithDOM<S>,
+  findings: any,
+  config: C
+) => Promise<M | null>;
+
+export type ContributionWithDOM<S> = S & { jsdom: any };
+
+export type ContributionAndDOMFn<S> = (s: S) => ContributionWithDOM<S>;
 
 /**
  * The return structure for sources fetched by parser
@@ -34,7 +47,10 @@ export interface LastContributions<T> {
  * @typeParam M - The metadata
  * @typeParam PP - The parser functions map
  */
-export interface PipelineInput<S, PP extends Record<string, ParserFn<S, any>>> {
+export interface PipelineInput<
+  S,
+  PP extends Record<string, ParserFn<S, any, any>>
+> {
   failures: Record<string, any>;
   source: S;
   log: Record<string, any>;
@@ -53,7 +69,7 @@ export interface PipelineInput<S, PP extends Record<string, ParserFn<S, any>>> {
 export interface PipelineOutput<
   S,
   M,
-  PP extends Record<string, ParserFn<S, any>>
+  PP extends Record<string, ParserFn<S, any, any>>
 > extends PipelineInput<S, PP> {
   metadata: M;
 }
@@ -91,7 +107,7 @@ export interface ExecuteParams {
 export type ExecutionOutput<
   S,
   M,
-  PP extends Record<string, ParserFn<S, any>>
+  PP extends Record<string, ParserFn<S, any, any>>
 > =
   | {
       type: 'Success';
@@ -121,8 +137,10 @@ export interface ParserProviderOpts extends ExecuteParams {
 export interface ParserProvider<
   S,
   M,
-  PP extends Record<string, ParserFn<S, any>>
+  C,
+  PP extends Record<string, ParserFn<S, any, C>>
 > {
+  ctx: ParserContext<S, M, C, PP>;
   /**
    * Execute the parser with the given options {@link ParserProviderOpts}
    *
@@ -144,6 +162,11 @@ export interface ParserProviderContextDB {
   write: MongoClient;
 }
 
+export interface CollectionOpts {
+  contribution: string;
+  metadata: string;
+}
+
 /**
  * Get contributions function
  *
@@ -161,8 +184,17 @@ export type GetContributionsFn<S> = (
 export type BuildMetadataFn<
   S,
   M,
-  PP extends Record<string, ParserFn<S, any>>
+  PP extends Record<string, ParserFn<S, any, any>>
 > = (e: PipelineInput<S, PP>) => M | null;
+
+export type SaveResults<S, M> = (
+  source: ContributionWithDOM<S>,
+  metadata: M
+) => Promise<{
+  count: { [key: string]: number };
+  metadata: M;
+  source: S;
+}>;
 
 /**
  * Parser provider context
@@ -172,47 +204,46 @@ export type BuildMetadataFn<
  * @typeParam PP - The parsers map
  */
 export interface ParserProviderContext<
-  S extends t.Mixed,
-  M extends t.Mixed,
-  PP extends Record<string, ParserFn<t.TypeOf<S>, any>>
+  S,
+  M,
+  C,
+  PP extends Record<string, ParserFn<S, any, C>>
 > {
   db: ParserProviderContextDB;
   codecs: {
-    contribution: S;
-    metadata: M;
+    contribution: t.Type<S>;
+    metadata: t.Type<M>;
   };
+  /**
+   * Parsers map
+   */
   parsers: PP;
   /**
    * Get contributions to be processed
    */
-  getContributions: GetContributionsFn<t.TypeOf<S>>;
+  getContributions: GetContributionsFn<ContributionWithDOM<S>>;
   /**
    * Get entry ID
    */
-  getEntryId: (e: t.TypeOf<S>) => string;
+  getEntryId: (e: ContributionWithDOM<S>) => string;
   /**
    * Get entry nature type
    */
-  getEntryNatureType: (e: t.TypeOf<S>) => string;
+  getEntryNatureType: (e: ContributionWithDOM<S>) => string;
   /**
    * Return the entry date
    */
-  getEntryDate: (e: t.TypeOf<S>) => Date;
+  getEntryDate: (e: ContributionWithDOM<S>) => Date;
+
   /**
    * create metadata from parsed information
    */
-  buildMetadata: BuildMetadataFn<t.TypeOf<S>, t.TypeOf<M>, PP>;
+  buildMetadata: BuildMetadataFn<S, M, PP>;
   /**
    * Callback to save both source and metadata
    */
-  saveResults: (
-    source: t.TypeOf<S>,
-    metadata: t.TypeOf<M>
-  ) => Promise<{
-    metadata: t.TypeOf<M>;
-    source: t.TypeOf<S>;
-    count: { [key: string]: number };
-  }>;
+  saveResults: SaveResults<S, M>;
+  config: C;
 }
 
 /**
@@ -222,11 +253,12 @@ export interface ParserProviderContext<
  * @typeParam M - The io-ts codec for metadata
  * @typeParam PP - The parser functions map
  */
-interface ParserContext<
-  S extends t.Mixed,
-  M extends t.Mixed,
-  PP extends Record<string, ParserFn<t.TypeOf<S>, any>>
-> extends ParserProviderContext<S, M, PP> {
+export interface ParserContext<
+  S,
+  M,
+  C,
+  PP extends Record<string, ParserFn<S, any, any>>
+> extends ParserProviderContext<S, M, C, PP> {
   log: Logger;
 }
 
@@ -249,12 +281,13 @@ export const wrapDissector =
   <
     T extends t.Mixed,
     M extends t.Mixed,
-    PP extends Record<string, ParserFn<t.TypeOf<T>, any>>
+    C,
+    PP extends Record<string, ParserFn<t.TypeOf<T>, any, C>>
   >(
-    ctx: ParserContext<T, M, PP>
+    ctx: ParserContext<t.TypeOf<T>, t.TypeOf<M>, C, PP>
   ) =>
   async (
-    dissectorF: ParserFn<t.TypeOf<T>, any>,
+    dissectorF: ParserFn<t.TypeOf<T>, any, C>,
     dissectorName: string,
     source: t.TypeOf<T>,
     results: PipelineInput<t.TypeOf<T>, PP>
@@ -264,7 +297,7 @@ export const wrapDissector =
       // this function pointer point to all the functions in parsers/*
 
       // as argument they take function(source ({.jsdom, .html}, previous {...}))
-      const retval = await dissectorF(source, results.findings);
+      const retval = await dissectorF(source, results.findings, ctx.config);
 
       if (!retval) {
         return {
@@ -303,19 +336,20 @@ export const wrapDissector =
     }
   };
 
-const pipeline =
+export const parsePipeline =
   <
     T extends t.Mixed,
     M extends t.Mixed,
-    PP extends Record<string, ParserFn<t.TypeOf<T>, any>>
+    C,
+    PP extends Record<string, ParserFn<t.TypeOf<T>, any, C>>
   >(
-    ctx: ParserContext<T, M, PP>
+    ctx: ParserContext<t.TypeOf<T>, t.TypeOf<M>, C, PP>
   ) =>
   async (
-    e: t.TypeOf<T>,
+    e: ContributionWithDOM<t.TypeOf<T>>,
     parsers: PP
   ): Promise<PipelineInput<t.TypeOf<T>, PP>> => {
-    let results: PipelineInput<T, PP> = {
+    let results: PipelineInput<t.TypeOf<T>, PP> = {
       failures: {},
       source: e,
       log: {},
@@ -357,13 +391,16 @@ export const parseContributions =
   <
     T extends t.Mixed,
     M extends t.Mixed,
-    PP extends Record<string, ParserFn<t.TypeOf<T>, any>>
+    C,
+    PP extends Record<string, ParserFn<t.TypeOf<T>, any, C>>
   >(
-    ctx: ParserContext<T, M, PP>
+    ctx: ParserContext<T, M, C, PP>
   ) =>
   async (
-    envelops: LastContributions<t.TypeOf<T>>
-  ): Promise<Array<PipelineOutput<t.Type<T>, t.TypeOf<M>, PP>>> => {
+    envelops: LastContributions<ContributionWithDOM<t.TypeOf<T>>>
+  ): Promise<
+    Array<PipelineOutput<ContributionWithDOM<t.Type<T>>, t.TypeOf<M>, PP>>
+  > => {
     const last = _.last(envelops.sources);
     // ctx.log.debug('Last source %O', last);
     lastExecution = last ? ctx.getEntryDate(last) : new Date();
@@ -374,6 +411,7 @@ export const parseContributions =
     else {
       const last = _.last(envelops.sources);
       const first = _.first(envelops.sources);
+
       ctx.log.info(
         'first html %s (on %d) <last +minutes %d> next filter set to %s',
         first ? ctx.getEntryDate(first) : undefined,
@@ -400,7 +438,7 @@ export const parseContributions =
     stats.current = new Date();
     stats.currentamount = _.size(envelops.sources);
 
-    const pipe = pipeline<T, M, PP>(ctx);
+    const pipe = parsePipeline<T, M, C, PP>(ctx);
 
     const results: Array<PipelineOutput<t.TypeOf<T>, t.TypeOf<M>, PP>> = [];
 
@@ -435,9 +473,10 @@ export const executionLoop =
   <
     T extends t.Mixed,
     M extends t.Mixed,
-    PP extends Record<string, ParserFn<t.TypeOf<T>, any>>
+    C,
+    PP extends Record<string, ParserFn<t.TypeOf<T>, any, C>>
   >(
-    ctx: ParserContext<T, M, PP>
+    ctx: ParserContext<t.TypeOf<T>, t.TypeOf<M>, C, PP>
   ) =>
   async ({
     repeat,
@@ -499,6 +538,7 @@ export const executionLoop =
           htmlFilter,
           htmlAmount
         );
+
         const envelops = await ctx.getContributions(htmlFilter, 0, htmlAmount);
 
         if (!_.size(envelops.sources)) {
@@ -566,9 +606,15 @@ export const markOutputField = <R extends Record<string, any>>(
 export const payloadToTableOutput = <
   S extends t.Mixed,
   M extends t.Mixed,
-  PP extends Record<string, ParserFn<t.TypeOf<S>, any>>
+  C,
+  PP extends Record<string, ParserFn<t.TypeOf<S>, any, C>>
 >(
-  getEntryId: ParserProviderContext<S, M, PP>['getEntryId'],
+  getEntryId: ParserProviderContext<
+    t.TypeOf<S>,
+    t.TypeOf<M>,
+    C,
+    PP
+  >['getEntryId'],
   p: Array<PipelineOutput<t.TypeOf<S>, t.TypeOf<M>, PP>>
 ): any => {
   return p.reduce<any>((acc, { source, findings, metadata, failures, log }) => {
@@ -599,13 +645,18 @@ let computedFrequency = 10;
 export const GetParserProvider = <
   S extends t.Mixed,
   M extends t.Mixed,
-  PP extends Record<string, ParserFn<t.TypeOf<S>, any>>
+  C,
+  PP extends Record<string, ParserFn<t.TypeOf<S>, any, C>>
 >(
   name: string,
-  ctx: ParserProviderContext<S, M, PP>
-): ParserProvider<t.TypeOf<S>, t.TypeOf<M>, PP> => {
+  ctx: ParserProviderContext<t.TypeOf<S>, t.TypeOf<M>, C, PP>
+): ParserProvider<t.TypeOf<S>, t.TypeOf<M>, C, PP> => {
   const log = trexLogger.extend(name);
   return {
+    ctx: {
+      ...ctx,
+      log,
+    },
     run: async ({
       singleUse,
       repeat: _repeat,
@@ -661,6 +712,8 @@ export const GetParserProvider = <
         // eslint-disable-next-line no-console
         console.error(output.payload);
       }
+
+      log.info('Parser closed.');
 
       return output;
     },
