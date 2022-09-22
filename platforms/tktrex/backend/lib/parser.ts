@@ -1,9 +1,12 @@
 import { Supporter } from '@shared/models/Supporter';
 import {
   BuildMetadataFn,
+  ContributionAndDOMFn,
   GetContributionsFn,
+  GetMetadataFn,
   ParserProviderContextDB,
 } from '@shared/providers/parser.provider';
+import { sanitizeHTML } from '@shared/utils/html.utils';
 import { TKMetadata } from '@tktrex/shared/models/Metadata';
 import { isValid } from 'date-fns';
 import D from 'debug';
@@ -11,10 +14,33 @@ import * as t from 'io-ts';
 import { JSDOM } from 'jsdom';
 import _ from 'lodash';
 import nconf from 'nconf';
-import { TKParsers } from 'parsers';
+import { TKParsers } from '../parsers';
+import { TKParserConfig } from '../parsers/config';
 import { HTML } from '../models/HTML';
 
 const debug = D('lib:parserchain');
+
+/**
+ * Get metadata collection
+ *
+ * @returns metadata collection name
+ */
+export const getMetadataSchema = () => nconf.get('schema').metadata;
+/**
+ * Get source collection
+ *
+ * @returns source collection name
+ */
+export const getSourceSchema = () => nconf.get('schema').htmls;
+
+export const parserConfig: TKParserConfig = {
+  downloads: nconf.get('downloads'),
+};
+
+export const addDom: ContributionAndDOMFn<HTMLSource> = (e) => ({
+  ...e,
+  jsdom: new JSDOM(sanitizeHTML(e.html.html)).window.document,
+});
 
 export const HTMLSource = t.type(
   {
@@ -183,6 +209,17 @@ export const getLastHTMLs =
       sources: _.compact(formatted) as any,
       errors,
     };
+  };
+
+export const getMetadata =
+  (ctx: ParserProviderContextDB): GetMetadataFn<HTMLSource, Metadata> =>
+  (e) => {
+    return ctx.api.readOne(
+      ctx.read,
+      getMetadataSchema(),
+      { id: e.html.metadataId },
+      {}
+    );
   };
 
 export const updateMetadataAndMarkHTML =

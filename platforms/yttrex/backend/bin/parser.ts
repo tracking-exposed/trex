@@ -9,6 +9,8 @@ import {
   updateMetadataAndMarkHTML,
   toMetadata,
   HTMLSource,
+  addDom,
+  getMetadata,
 } from '../lib/parser/html';
 import { GetParserProvider } from '@shared/providers/parser.provider';
 import { parsers } from '../parsers';
@@ -77,6 +79,8 @@ const run = async (): Promise<void> => {
         contribution: HTMLSource,
         metadata: Metadata,
       },
+      addDom,
+      getMetadata: getMetadata(db),
       getContributions: getLastHTMLs(db),
       getEntryId: (e) => e.html.id,
       getEntryDate: (e) => e.html.savingTime,

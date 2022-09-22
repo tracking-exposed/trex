@@ -6,9 +6,12 @@ import { TKMetadata } from '@tktrex/shared/models/Metadata';
 import fs from 'fs';
 import _ from 'lodash';
 import nconf from 'nconf';
+import path from 'path';
 import {
+  addDom,
   buildMetadata,
   getLastHTMLs,
+  getMetadata,
   HTMLSource,
   updateMetadataAndMarkHTML,
 } from '../lib/parser';
@@ -77,13 +80,20 @@ const run = async (): Promise<void> => {
         metadata: TKMetadata,
       },
       parsers,
+      getMetadata: getMetadata(db),
+      addDom,
       getContributions: getLastHTMLs(db),
       saveResults: updateMetadataAndMarkHTML(db),
       getEntryId: (e) => e.html.id,
       buildMetadata,
       getEntryDate: (e) => e.html.savingTime,
       getEntryNatureType: (e) => e.html.type,
-      config: tkParserConfig,
+      config: {
+        ...tkParserConfig,
+        errorReporter: {
+          basePath: path.resolve(process.cwd(), './parsers/__tests__/fixtures'),
+        },
+      },
     }).run({
       singleUse: typeof id === 'string' ? id : false,
       filter,

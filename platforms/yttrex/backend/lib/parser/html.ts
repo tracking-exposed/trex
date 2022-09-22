@@ -1,6 +1,8 @@
 import {
   BuildMetadataFn,
+  ContributionAndDOMFn,
   GetContributionsFn,
+  GetMetadataFn,
   ParserProviderContextDB,
 } from '@shared/providers/parser.provider';
 import { sanitizeHTML } from '@shared/utils/html.utils';
@@ -24,6 +26,25 @@ export const HTMLSource = t.type(
 );
 
 export type HTMLSource = t.TypeOf<typeof HTMLSource>;
+
+export const getSourceSchema = (): string => nconf.get('schema').htmls;
+export const getMetadataSchema = (): string => nconf.get('schema').metadata;
+
+export const addDom: ContributionAndDOMFn<HTMLSource> = (e) => ({
+  ...e,
+  jsdom: new JSDOM(sanitizeHTML(e.html.html)).window.document,
+});
+
+export const getMetadata =
+  (ctx: ParserProviderContextDB): GetMetadataFn<HTMLSource, Metadata> =>
+  (e) => {
+    return ctx.api.readOne(
+      ctx.read,
+      getMetadataSchema(),
+      { id: e.html.metadataId },
+      {}
+    );
+  };
 
 export const getLastHTMLs =
   (db: ParserProviderContextDB): GetContributionsFn<HTMLSource> =>

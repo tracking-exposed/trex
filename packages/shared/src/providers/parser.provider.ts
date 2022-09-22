@@ -1,9 +1,11 @@
 import { formatDistance } from 'date-fns';
 import differenceInMinutes from 'date-fns/differenceInMinutes';
 import subMinutes from 'date-fns/subMinutes';
+import fs from 'fs';
 import * as t from 'io-ts';
 import _ from 'lodash';
 import { MongoClient } from 'mongodb';
+import path from 'path';
 import { Logger, trexLogger } from '../logger';
 import { sleep } from '../utils/promise.utils';
 import * as mongo3 from './mongo.provider';
@@ -11,6 +13,11 @@ import * as mongo3 from './mongo.provider';
 /**
  * The parser configuration
  */
+export interface ParserConfiguration {
+  errorReporter?: {
+    basePath: string;
+  };
+}
 
 /**
  * The parser function
@@ -72,6 +79,7 @@ export interface PipelineOutput<
   PP extends Record<string, ParserFn<S, any, any>>
 > extends PipelineInput<S, PP> {
   metadata: M;
+  count: { [key: string]: number };
 }
 
 /**
@@ -137,7 +145,7 @@ export interface ParserProviderOpts extends ExecuteParams {
 export interface ParserProvider<
   S,
   M,
-  C,
+  C extends ParserConfiguration,
   PP extends Record<string, ParserFn<S, any, C>>
 > {
   ctx: ParserContext<S, M, C, PP>;
@@ -179,13 +187,23 @@ export type GetContributionsFn<S> = (
 ) => Promise<LastContributions<S>>;
 
 /**
+ * Get metadata function
+ *
+ * @typeParam S - Source
+ */
+export type GetMetadataFn<S, M> = (e: S) => Promise<M | null>;
+
+/**
  * Build metadata function
+ *
+ * @param e The payload produced by the pipeline
+ * @param metadata - The metadata already present in the DB, if any
  */
 export type BuildMetadataFn<
   S,
   M,
   PP extends Record<string, ParserFn<S, any, any>>
-> = (e: PipelineInput<S, PP>) => M | null;
+> = (e: PipelineInput<S, PP>, metadata: M | null) => M | null;
 
 export type SaveResults<S, M> = (
   source: ContributionWithDOM<S>,
@@ -206,7 +224,7 @@ export type SaveResults<S, M> = (
 export interface ParserProviderContext<
   S,
   M,
-  C,
+  C extends ParserConfiguration,
   PP extends Record<string, ParserFn<S, any, C>>
 > {
   db: ParserProviderContextDB;
@@ -221,7 +239,11 @@ export interface ParserProviderContext<
   /**
    * Get contributions to be processed
    */
-  getContributions: GetContributionsFn<ContributionWithDOM<S>>;
+  getContributions: GetContributionsFn<S>;
+  /**
+   * Add DOM to entry
+   */
+  addDom: (e: S) => ContributionWithDOM<S>;
   /**
    * Get entry ID
    */
@@ -234,7 +256,10 @@ export interface ParserProviderContext<
    * Return the entry date
    */
   getEntryDate: (e: ContributionWithDOM<S>) => Date;
-
+  /**
+   * Get entry ID
+   */
+  getMetadata: GetMetadataFn<S, M>;
   /**
    * create metadata from parsed information
    */
@@ -256,13 +281,16 @@ export interface ParserProviderContext<
 export interface ParserContext<
   S,
   M,
-  C,
+  C extends ParserConfiguration,
   PP extends Record<string, ParserFn<S, any, any>>
 > extends ParserProviderContext<S, M, C, PP> {
   log: Logger;
+  name: string;
 }
 
+// the loop frequency in second
 const FREQUENCY = 4;
+
 const AMOUNT_DEFAULT = 20;
 // By default the pipeline will start from "1 minute ago"
 const BACKINTIMEDEFAULT = 1;
@@ -281,7 +309,7 @@ export const wrapDissector =
   <
     T extends t.Mixed,
     M extends t.Mixed,
-    C,
+    C extends ParserConfiguration,
     PP extends Record<string, ParserFn<t.TypeOf<T>, any, C>>
   >(
     ctx: ParserContext<t.TypeOf<T>, t.TypeOf<M>, C, PP>
@@ -340,7 +368,7 @@ export const parsePipeline =
   <
     T extends t.Mixed,
     M extends t.Mixed,
-    C,
+    C extends ParserConfiguration,
     PP extends Record<string, ParserFn<t.TypeOf<T>, any, C>>
   >(
     ctx: ParserContext<t.TypeOf<T>, t.TypeOf<M>, C, PP>
@@ -391,10 +419,10 @@ export const parseContributions =
   <
     T extends t.Mixed,
     M extends t.Mixed,
-    C,
+    C extends ParserConfiguration,
     PP extends Record<string, ParserFn<t.TypeOf<T>, any, C>>
   >(
-    ctx: ParserContext<T, M, C, PP>
+    ctx: ParserContext<t.TypeOf<T>, t.TypeOf<M>, C, PP>
   ) =>
   async (
     envelops: LastContributions<ContributionWithDOM<t.TypeOf<T>>>
@@ -444,22 +472,50 @@ export const parseContributions =
 
     ctx.log.debug('Sources %O', envelops.sources.map(ctx.getEntryId));
 
-    for (const entry of envelops.sources) {
-      ctx.log.debug('Parsing entry %O', ctx.getEntryId(entry));
+    for (const source of envelops.sources) {
+      const entry = ctx.addDom(source);
+      const entryId = ctx.getEntryId(entry);
+
+      ctx.log.debug('Parsing entry %s', entryId);
 
       const result = await pipe(entry, ctx.parsers);
 
-      // ctx.log.debug('Parsed %O', result);
-      const metadata = ctx.buildMetadata(result);
-      // ctx.log.debug('Metadata %O', metadata);
+      ctx.log.debug('Parsed %O', result);
+      const oldMetadata = await ctx.getMetadata(entry);
+      const metadata = ctx.buildMetadata(result, oldMetadata);
+      ctx.log.debug('Metadata %O', metadata);
 
       if (metadata) {
         const m = await ctx.saveResults(result.source, metadata);
-        // ctx.log.debug('Saved results %O', m);
 
         results.push({ ...result, ...m });
       } else {
-        results.push({ ...result, metadata: null });
+        if (ctx.config.errorReporter) {
+          const entryNature = ctx.getEntryNatureType(entry) ?? 'failed';
+          const fixturePath = path.resolve(
+            ctx.config.errorReporter?.basePath,
+            ctx.name,
+            entryNature,
+            `${entryId}.json`
+          );
+          ctx.log.debug(
+            'Saving problematic contribution as fixture in %s',
+            fixturePath
+          );
+          fs.writeFileSync(
+            fixturePath,
+            JSON.stringify({
+              sources: [entry.html],
+              metadata: {},
+            })
+          );
+        }
+
+        results.push({
+          ...result,
+          metadata: null,
+          count: { metadata: 0, source: 0 },
+        });
       }
     }
 
@@ -473,7 +529,7 @@ export const executionLoop =
   <
     T extends t.Mixed,
     M extends t.Mixed,
-    C,
+    C extends ParserConfiguration,
     PP extends Record<string, ParserFn<t.TypeOf<T>, any, C>>
   >(
     ctx: ParserContext<t.TypeOf<T>, t.TypeOf<M>, C, PP>
@@ -523,14 +579,12 @@ export const executionLoop =
 
         if (stop && stop <= processedCounter) {
           ctx.log.debug(
-            'Reached configured limit of %d ( processed: %d)',
+            'Reached configured limit of %d (processed: %d)',
             stop,
             processedCounter
           );
-          return {
-            type: 'Success',
-            payload: results,
-          };
+
+          break;
         }
 
         ctx.log.debug(
@@ -568,15 +622,16 @@ export const executionLoop =
           break;
         }
         if (computedFrequency !== previousFrequency) {
-          ctx.log.debug('Sleeping for %f seconds', computedFrequency);
           previousFrequency = computedFrequency;
         }
         const sleepTime = computedFrequency * 1000;
+        ctx.log.debug('Sleep for %dms', sleepTime);
         await sleep(sleepTime);
       }
       return { type: 'Success', payload: results };
     } catch (e: any) {
       ctx.log.error('Error in filterChecker', e.message, e.stack);
+
       return {
         type: 'Error',
         payload: e,
@@ -595,6 +650,33 @@ export const markOutputField = <R extends Record<string, any>>(
   }, {});
 };
 
+export const getSuccessfulOutput = <
+  S,
+  M,
+  C extends ParserConfiguration,
+  PP extends Record<string, ParserFn<S, any, any>>
+>(
+  getEntryId: ParserProviderContext<S, M, C, PP>['getEntryId'],
+  output: Array<PipelineOutput<ContributionWithDOM<S>, M, PP>>
+): any => {
+  return output.reduce((acc, { source, metadata, failures, log, count }) => {
+    return {
+      ...acc,
+      [getEntryId(source)]: {
+        log: JSON.stringify(log),
+        // findings: markOutputField(findings),
+        metadata: (metadata as any)?.id ?? null,
+        failures: JSON.stringify(
+          Object.entries(failures).map(([key, value]) => ({
+            [key]: value.message,
+          }))
+        ),
+        count: JSON.stringify(count),
+      },
+    };
+  }, {});
+};
+
 /**
  * Convert the pipeline output to an object compatible with `console.table`
  *
@@ -603,10 +685,10 @@ export const markOutputField = <R extends Record<string, any>>(
  *
  * @returns An object with `log`, `metadata` and `findings` keys
  */
-export const payloadToTableOutput = <
+export const printResultOutput = <
   S extends t.Mixed,
   M extends t.Mixed,
-  C,
+  C extends ParserConfiguration,
   PP extends Record<string, ParserFn<t.TypeOf<S>, any, C>>
 >(
   getEntryId: ParserProviderContext<
@@ -615,23 +697,16 @@ export const payloadToTableOutput = <
     C,
     PP
   >['getEntryId'],
-  p: Array<PipelineOutput<t.TypeOf<S>, t.TypeOf<M>, PP>>
+  output: ExecutionOutput<t.TypeOf<S>, t.TypeOf<M>, PP>
 ): any => {
-  return p.reduce<any>((acc, { source, findings, metadata, failures, log }) => {
-    return {
-      ...acc,
-      [getEntryId(source)]: {
-        log: JSON.stringify(log),
-        findings: markOutputField(findings),
-        metadata: metadata?.id ?? null,
-        failures: JSON.stringify(
-          Object.entries(failures).map(([key, value]) => ({
-            [key]: value.message,
-          }))
-        ),
-      },
-    };
-  }, {});
+  if (output.type === 'Success') {
+    const tableOutput = getSuccessfulOutput(getEntryId, output.payload);
+    // eslint-disable-next-line
+    console.table(tableOutput);
+  } else {
+    // eslint-disable-next-line no-console
+    console.error(output.payload);
+  }
 };
 let lastExecution: Date;
 let computedFrequency = 10;
@@ -645,18 +720,21 @@ let computedFrequency = 10;
 export const GetParserProvider = <
   S extends t.Mixed,
   M extends t.Mixed,
-  C,
+  C extends ParserConfiguration,
   PP extends Record<string, ParserFn<t.TypeOf<S>, any, C>>
 >(
   name: string,
   ctx: ParserProviderContext<t.TypeOf<S>, t.TypeOf<M>, C, PP>
 ): ParserProvider<t.TypeOf<S>, t.TypeOf<M>, C, PP> => {
   const log = trexLogger.extend(name);
+
   return {
     ctx: {
       ...ctx,
+      name,
       log,
     },
+
     run: async ({
       singleUse,
       repeat: _repeat,
@@ -692,6 +770,7 @@ export const GetParserProvider = <
 
       const output = await executionLoop({
         ...ctx,
+        name,
         log,
       })({
         filter,
@@ -701,19 +780,7 @@ export const GetParserProvider = <
         htmlAmount,
       });
 
-      if (output.type === 'Success') {
-        const tableOutput = payloadToTableOutput(
-          ctx.getEntryId,
-          output.payload
-        );
-        // eslint-disable-next-line
-        console.table(tableOutput);
-      } else {
-        // eslint-disable-next-line no-console
-        console.error(output.payload);
-      }
-
-      log.info('Parser closed.');
+      printResultOutput(ctx.getEntryId, output);
 
       return output;
     },

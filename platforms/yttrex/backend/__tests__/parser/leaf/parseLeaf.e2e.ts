@@ -7,6 +7,10 @@ import {
   getLastLeaves,
   LeafSource,
   toMetadata,
+  addDom,
+  getMetadata,
+  getMetadataSchema,
+  getSourceSchema,
   updateAdvertisingAndMetadata,
 } from '../../../lib/parser/leaf';
 import { GetTest, Test } from '../../../tests/Test';
@@ -53,7 +57,6 @@ describe('Leaves parser', () => {
             clientTime: parseISO(s.clientTime ?? new Date().toISOString()),
             savingTime: subMinutes(new Date(), 2),
           },
-          jsdom: new JSDOM(sanitizeHTML(s.html)).window.document,
           supporter: {
             publicKey,
           },
@@ -62,17 +65,19 @@ describe('Leaves parser', () => {
 
         await runParserTest({
           log: appTest.logger,
-          sourceSchema: appTest.config.get('schema').leaves,
-          metadataSchema: appTest.config.get('schema').ads,
+          sourceSchema: getSourceSchema(),
+          metadataSchema: getMetadataSchema(),
           parsers: leafParsers,
           codecs: { contribution: LeafSource, metadata: Ad },
           db,
+          addDom,
           getEntryId: (e) => e.html.id,
           buildMetadata: toMetadata,
           getEntryDate: (e) => e.html.savingTime,
           getEntryNatureType: (e) =>
             e.html.nature?.type ?? (e.html as any).type,
           getContributions: getLastLeaves(db),
+          getMetadata: getMetadata(db),
           saveResults: updateAdvertisingAndMetadata(db),
           expectSources: (sources) => {
             sources
