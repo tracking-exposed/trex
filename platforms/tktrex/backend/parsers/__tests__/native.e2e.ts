@@ -11,8 +11,10 @@ import { JSDOM } from 'jsdom';
 import path from 'path';
 import nacl from 'tweetnacl';
 import {
+  addDom,
   buildMetadata,
   getLastHTMLs,
+  getMetadata,
   HTMLSource,
   updateMetadataAndMarkHTML,
 } from '../../lib/parser';
@@ -71,6 +73,7 @@ describe('Parser: "native"', () => {
         }));
 
         await runParserTest({
+          name: 'tk-native',
           log: appTest.logger,
           sourceSchema: appTest.config.get('schema').htmls,
           metadataSchema: appTest.config.get('schema').metadata,
@@ -80,6 +83,8 @@ describe('Parser: "native"', () => {
             contribution: HTMLSource,
             metadata: TKMetadata.TKMetadata,
           },
+          addDom,
+          getMetadata: getMetadata(db),
           getEntryId: (e) => e.html.id,
           buildMetadata: buildMetadata,
           getEntryDate: (e) => e.html.savingTime,

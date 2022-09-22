@@ -11,7 +11,9 @@ import { JSDOM } from 'jsdom';
 import path from 'path';
 import nacl from 'tweetnacl';
 import {
+  addDom,
   getLastHTMLs,
+  getMetadata,
   HTMLSource,
   toMetadata,
   updateMetadataAndMarkHTML,
@@ -78,7 +80,6 @@ describe('Parser: home', () => {
           processed: null,
         },
         supporter: {},
-        jsdom: new JSDOM(sanitizeHTML(h.html)).window.document,
       }));
 
       await runParserTest({
@@ -91,10 +92,12 @@ describe('Parser: home', () => {
           contribution: HTMLSource,
           metadata: HomeMetadata.type,
         },
+        addDom,
         getEntryId: (e) => e.html.id,
         getEntryDate: (e) => e.html.savingTime,
         getEntryNatureType: (e) => e.html.nature.type,
         getContributions: getLastHTMLs(db),
+        getMetadata: getMetadata(db),
         buildMetadata: toMetadata as any,
         saveResults: updateMetadataAndMarkHTML(db) as any,
         expectSources: (sources) => {
