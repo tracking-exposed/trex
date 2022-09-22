@@ -21,9 +21,9 @@ mkdir -p build;
 #    exit;
 # fi
 
-# this is the biggest cache
-echo "Removing .yarn/cache"
-# rm -rf .yarn/cache
+suffix=$('grep version package.json  | sed -es/.*:// | sed -es/[\ \",]//g')
+fileout="build/trex${suffix}.zip"
+echo "zipping in $fileout"
 
 # this should not be present anyways
 echo "Removing node_modules"
@@ -34,17 +34,25 @@ echo "Removing test files and unnecessary folders"
 # rm -rf platforms/*/backend
 
 echo "Creating new version of README for extension reviewer"
-echo -e "### Extension reviewer TODOs\n\n    yarn\n    yarn tk:ext dist\n    ls -l platforms/tktrex/extension/dist/*.zip\n    yarn yt:ext dist\n    ls -l platforms/yttrex/extension/dist/*.zip\n    yarn ycai build\n    ls -l platforms/ycai/studio/build/extension/*.zip\n\n" > README.md
-echo "tktrex is tiktok.tracking.exposed extension" >> README.md
-echo "yttrex is youtube.tracking.exposed extension" >> README.md
-echo "ycai is youchoose.ai extension" >> README.md
+echo -e "## Extension reviewer TODOs\n\n" > TODO.md
+echo -e 'Place the `trex.zip` in a folder an unzip it \n' >> TODO.md
+echo -e "### Requirements\n" >> TODO.md
+echo -e '- yarn `v3`\n - node `16` \n' >>  TODO.md
+echo -e "#### Installation \n" >> TODO.md
+echo -e 'Install dependencies\n' >> TODO.md
+echo -e '```bash\nyarn\n```\n' >> TODO.md
+echo -e "tktrex is tiktok.tracking.exposed extension\n" >> TODO.md
+echo -e '```bash\nyarn tk:ext dist\nls -l platforms/tktrex/extension/dist/*.zip\n```\n' >> TODO.md
+echo -e "yttrex is youtube.tracking.exposed extension\n" >> TODO.md
+echo -e '```bash\nyarn yt:ext dist\nls -l platforms/yttrex/extension/dist/*.zip\n```\n' >> TODO.md
+echo -e "ycai is youchoose.ai extension\n" >> TODO.md
+echo -e '```bash\nyarn ycai build\nls -l platforms/ycai/studio/build/extension/*.zip\n```\n' >> TODO.md
 
-suffix=$('grep version package.json  | sed -es/.*:// | sed -es/[\ \",]//g')
-fileout="build/trex${suffix}.zip"
-echo "zipping in $fileout"
+mv README.md .README.md
+mv TODO.md README.md
 
 zip $fileout -r ./* \
-  .npmrc .nvmrc .yarn .yarnrc.yml  \
+  .npmrc .nvmrc .yarn .yarnrc.yml \
   -x "yarn.lock" \
   -x ".yarn/unplugged/**" \
   -x ".yarn/cache/**" \
@@ -56,12 +64,19 @@ zip $fileout -r ./* \
   -x "**/__tests__/**" \
   -x "docs/**" -x "**/docs/**" \
   -x "coverage/**" -x "**/coverage/**" \
+  -x "downloads/**" -x "**/downloads/**" \
+  -x "logs/**" -x "**/logs/**" \
   -x "docker/**" \
   -x "build/**" -x "**/build/**" \
+  -x "scripts/**" -x "**/scripts/**" \
+  -x "packages/taboule/**" \
   -x "platforms/guardoni/**" \
-  -x "platforms/tktrex/observatory/**" \
-  -x "platforms/tktrex/ua-observatory/**" \
-  -x "platforms/tktrex/tt-automate/**" \
   -x "platforms/*/backend/**" \
+  -x "platforms/*/backend/**" \
+
+zip $fileout scripts/install-from-shrinkzip.sh
+
+rm README.md
+mv .README.md README.md
 
 echo "done!"
