@@ -1,16 +1,10 @@
-import {
-  pipe,
-} from 'fp-ts/lib/function';
+import { pipe } from 'fp-ts/lib/function';
 
-import {
-  chain, map,
-} from 'fp-ts/lib/Either';
+import { chain, map } from 'fp-ts/lib/Either';
 
-import { normalizeString } from '../lib/util';
+import { normalizeString } from './lib/util';
 
-import {
-  TikTokParserBrowserInterface,
-} from './TikTokParserInterface';
+import { TikTokParserBrowserInterface } from './TikTokParserInterface';
 
 import {
   combineParsers,
@@ -25,29 +19,33 @@ import {
 
 const description = parseEltText('[data-e2e="video-desc"]');
 
-const baretext = liftParser((node) => pipe(
-  node,
-  findElt('[data-e2e="video-desc"]'),
-  chain(findAllElts('span')),
-  map(
-    (elts) =>
-      elts.map(
-        (elt) => normalizeString(elt.textContent),
-      ).filter(Boolean).join(' '),
+const baretext = liftParser((node) =>
+  pipe(
+    node,
+    findElt('[data-e2e="video-desc"]'),
+    chain(findAllElts('span')),
+    map((elts) =>
+      elts
+        .map((elt) => normalizeString(elt.textContent))
+        .filter(Boolean)
+        .join(' '),
+    ),
   ),
-));
+);
 
-const hashtags = liftParser((node) => pipe(
-  node,
-  findElt('[data-e2e="video-desc"]'),
-  chain(findAllElts('strong')),
-  map(
-    (elts) =>
-      elts.map(
-        (elt) => normalizeString(elt.textContent),
-      ).filter(Boolean).filter((str) => str.startsWith('#')),
+const hashtags = liftParser((node) =>
+  pipe(
+    node,
+    findElt('[data-e2e="video-desc"]'),
+    chain(findAllElts('strong')),
+    map((elts) =>
+      elts
+        .map((elt) => normalizeString(elt.textContent))
+        .filter(Boolean)
+        .filter((str) => str.startsWith('#')),
+    ),
   ),
-));
+);
 
 const metrics = combineParsers({
   liken: parseEltText('[data-e2e="like-count"]'),
@@ -60,9 +58,7 @@ const username = parseEltText('[data-e2e="video-author-uniqueid"]');
 
 const baseAuthor = {
   username,
-  link: mapValue(
-    (parsedName) => `/@${parsedName}`,
-  )(username),
+  link: mapValue((parsedName) => `/@${parsedName}`)(username),
 };
 
 const authorWithoutName = combineParsers(baseAuthor);

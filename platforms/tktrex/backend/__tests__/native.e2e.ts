@@ -3,23 +3,25 @@ import {
   readFixtureJSONPaths,
   runParserTest,
 } from '@shared/test/utils/parser.utils';
-import { sanitizeHTML } from '@shared/utils/html.utils';
+import { v4 as uuid } from 'uuid';
 import { TKMetadata } from '@tktrex/shared/models';
+import { parsers } from '@tktrex/shared/parser';
 import base58 from 'bs58';
 import { parseISO, subMinutes } from 'date-fns';
-import { JSDOM } from 'jsdom';
 import path from 'path';
 import nacl from 'tweetnacl';
+import { GetTest, Test } from '../test/Test';
 import {
   addDom,
   buildMetadata,
   getLastHTMLs,
   getMetadata,
-  HTMLSource,
+  getMetadataSchema,
+  getSourceSchema,
+  parserConfig,
   updateMetadataAndMarkHTML,
-} from '../../lib/parser';
-import { parsers } from '../../parsers';
-import { GetTest, Test } from '../../test/Test';
+} from '../lib/parser';
+import { HTMLSource } from '@tktrex/shared/parser/source';
 
 describe('Parser: "native"', () => {
   let appTest: Test;
@@ -29,6 +31,7 @@ describe('Parser: "native"', () => {
   let db: any;
   beforeAll(async () => {
     appTest = await GetTest();
+
     db = {
       api: appTest.mongo3,
       read: appTest.mongo,
@@ -56,7 +59,7 @@ describe('Parser: "native"', () => {
     );
 
     test.each(history)(
-      'Should correctly parse "native" contribution',
+      'Should correctly parse "native" contribution from path %s',
       async (fixturePath) => {
         const { sources: _sources, metadata } = readFixtureJSON(
           fixturePath,
@@ -65,18 +68,16 @@ describe('Parser: "native"', () => {
         const sources = _sources.map((s: any) => ({
           html: {
             ...s,
+            id: uuid(),
             clientTime: parseISO(s.clientTime ?? new Date().toISOString()),
             savingTime: subMinutes(new Date(), 2),
           },
-          jsdom: new JSDOM(sanitizeHTML(s.html)).window.document,
           supporter: { version: process.env.VERSION },
         }));
 
         await runParserTest({
-          name: 'tk-native',
+          name: 'native-parser',
           log: appTest.logger,
-          sourceSchema: appTest.config.get('schema').htmls,
-          metadataSchema: appTest.config.get('schema').metadata,
           parsers: parsers,
           db,
           codecs: {
@@ -84,14 +85,16 @@ describe('Parser: "native"', () => {
             metadata: TKMetadata.TKMetadata,
           },
           addDom,
-          getMetadata: getMetadata(db),
+          sourceSchema: getSourceSchema(),
+          metadataSchema: getMetadataSchema(),
           getEntryId: (e) => e.html.id,
-          buildMetadata: buildMetadata,
           getEntryDate: (e) => e.html.savingTime,
           getEntryNatureType: (e) => e.html.type,
           getContributions: getLastHTMLs(db),
+          getMetadata: getMetadata(db),
           saveResults: updateMetadataAndMarkHTML(db),
-          config: {},
+          buildMetadata: buildMetadata,
+          config: parserConfig,
           expectSources: (receivedSources) => {
             receivedSources.forEach((s) => {
               expect((s as any).processed).toBe(true);

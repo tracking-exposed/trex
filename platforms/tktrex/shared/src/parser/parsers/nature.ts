@@ -1,12 +1,17 @@
+import { ParserFn } from '@shared/providers/parser.provider';
+import { throwEitherError } from '@shared/utils/fp.utils';
+import { Nature } from '../../models/Nature';
+import { TKParserConfig } from '../config';
+import { HTMLSource } from '../source';
 import { Either, left, right } from 'fp-ts/lib/Either';
-import { URLError } from '../models/Error';
-import { Nature } from '../models/Nature';
+import { URLError } from '../v2/models/Error';
 
+const HOSTNAMES = ['www.tiktok.com', 'tiktok.com'];
 export const getNatureByHref = (href: string): Either<URLError, Nature> => {
   const url = new URL(href);
   const chunks = url.pathname.split('/');
 
-  if (url.hostname !== 'www.tiktok.com') {
+  if (!HOSTNAMES.includes(url.hostname)) {
     return left(new URLError('URL is not from tiktok', url));
   }
 
@@ -20,7 +25,7 @@ export const getNatureByHref = (href: string): Either<URLError, Nature> => {
     return right({ type: 'following' });
   } else if (chunks[2] === 'video' && chunks.length >= 3) {
     return right({
-      type: 'video',
+      type: 'native',
       authorId: chunks[1],
       videoId: chunks[3],
     });
@@ -47,3 +52,14 @@ export const getNatureByHref = (href: string): Either<URLError, Nature> => {
 
   return left(new URLError('unexpected condition from URL', url));
 };
+
+const nature: ParserFn<HTMLSource, Nature, TKParserConfig> = async(
+  envelop,
+  previous,
+) => {
+  /* this parser is meant to analye the URL
+   * and understand which kind of nature has this html */
+  return throwEitherError(getNatureByHref(envelop.html.href));
+};
+
+export default nature;

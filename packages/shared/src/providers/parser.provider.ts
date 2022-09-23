@@ -32,7 +32,7 @@ export type ParserFn<S, M, C> = (
   config: C
 ) => Promise<M | null>;
 
-export type ContributionWithDOM<S> = S & { jsdom: any };
+export type ContributionWithDOM<S> = S & { jsdom: Document };
 
 export type ContributionAndDOMFn<S> = (s: S) => ContributionWithDOM<S>;
 

@@ -10,7 +10,7 @@ import { initializeKey } from '@shared/extension/background/account';
 import { load } from '@shared/extension/background/index';
 import { fc } from '@shared/test';
 import { sleep } from '@shared/utils/promise.utils';
-import { tiktokDomainRegExp } from '@tktrex/parser/constant';
+import { tiktokDomainRegExp } from '@tktrex/parser/v2/constant';
 import * as fs from 'fs';
 import * as path from 'path';
 import * as app from '../src/app/app';

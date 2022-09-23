@@ -31,5 +31,5 @@
     "require": ["tsconfig-paths/register"]
   },
   "include": ["**/*.ts", "**/*.js", "**/*.json"],
-  "exclude": ["node_modules", "build"]
+  "exclude": ["node_modules", "build", "jest.config.js", "jest.setup.js"]
 }
