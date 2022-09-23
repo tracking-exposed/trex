@@ -1,23 +1,21 @@
 {
   "sources": [
     {
-      "_id": "623c90af520cbbda43a748bf",
       "id": "81bdef1c7f003928ce8b2c54d802464dd7b0ac16",
       "metadataId": "53e13320d4e8c525fd00ce54e12fbadcbc54f8b0",
       "blang": "en-US",
-      "publicKey": "Atiduh48zn3yq15zdPEL7tDzLLxrG1N3ZFEEjThmNqom",
       "html": "<yt-formatted-string id=\"text\" title=\"\" class=\"style-scope ytd-channel-name complex-string\" ellipsis-truncate=\"\" has-link-only_=\"\"><a class=\"yt-simple-endpoint style-scope yt-formatted-string\" spellcheck=\"false\" href=\"/c/ATRestoration\" dir=\"auto\">AT Restoration</a></yt-formatted-string>",
       "offsetTop": 1770,
       "offsetLeft": 751,
       "href": "https://www.youtube.com/",
       "selectorName": "channel2",
-      "nature": { "type": "home" },
+      "nature": {
+        "type": "home"
+      },
       "savingTime": "2022-03-24T15:39:27.221Z"
     }
   ],
   "metadata": {
-    "_id": "623c90c46f24e124654d6b84",
-    "publicKey": "Atiduh48zn3yq15zdPEL7tDzLLxrG1N3ZFEEjThmNqom",
     "savingTime": "2022-03-24T15:39:27.219Z",
     "clientTime": "2022-03-24T16:09:17.000Z",
     "href": "https://www.youtube.com/",
@@ -644,38 +642,134 @@
       }
     ],
     "sections": [
-      { "i": 0, "offset": 131295 },
-      { "i": 1, "offset": 139183 },
-      { "i": 2, "offset": 148135 },
-      { "i": 3, "offset": 156051 },
-      { "i": 4, "offset": 165131 },
-      { "i": 5, "offset": 174028 },
-      { "i": 6, "offset": 182051 },
-      { "i": 7, "offset": 191023 },
-      { "i": 8, "offset": 203714 },
-      { "i": 9, "offset": 212771 },
-      { "i": 10, "offset": 221768 },
-      { "i": 11, "offset": 230935 },
-      { "i": 12, "offset": 240038 },
-      { "i": 13, "offset": 249190 },
-      { "i": 14, "offset": 257025 },
-      { "i": 15, "offset": 264872 },
-      { "i": 16, "offset": 272734 },
-      { "i": 17, "offset": 280531 },
-      { "i": 18, "offset": 288310 },
-      { "i": 19, "offset": 297181 },
-      { "i": 20, "offset": 307662 },
-      { "i": 21, "offset": 316608 },
-      { "i": 22, "offset": 325586 },
-      { "i": 23, "offset": 334750 },
-      { "i": 24, "offset": 343948 },
-      { "i": 25, "offset": 353101 },
-      { "i": 26, "offset": 362022 },
-      { "i": 27, "offset": 370956 },
-      { "i": 28, "offset": 379207 },
-      { "i": 29, "offset": 386852 },
-      { "i": 30, "offset": 394695 },
-      { "i": 31, "offset": 403571 }
+      {
+        "i": 0,
+        "offset": 131295
+      },
+      {
+        "i": 1,
+        "offset": 139183
+      },
+      {
+        "i": 2,
+        "offset": 148135
+      },
+      {
+        "i": 3,
+        "offset": 156051
+      },
+      {
+        "i": 4,
+        "offset": 165131
+      },
+      {
+        "i": 5,
+        "offset": 174028
+      },
+      {
+        "i": 6,
+        "offset": 182051
+      },
+      {
+        "i": 7,
+        "offset": 191023
+      },
+      {
+        "i": 8,
+        "offset": 203714
+      },
+      {
+        "i": 9,
+        "offset": 212771
+      },
+      {
+        "i": 10,
+        "offset": 221768
+      },
+      {
+        "i": 11,
+        "offset": 230935
+      },
+      {
+        "i": 12,
+        "offset": 240038
+      },
+      {
+        "i": 13,
+        "offset": 249190
+      },
+      {
+        "i": 14,
+        "offset": 257025
+      },
+      {
+        "i": 15,
+        "offset": 264872
+      },
+      {
+        "i": 16,
+        "offset": 272734
+      },
+      {
+        "i": 17,
+        "offset": 280531
+      },
+      {
+        "i": 18,
+        "offset": 288310
+      },
+      {
+        "i": 19,
+        "offset": 297181
+      },
+      {
+        "i": 20,
+        "offset": 307662
+      },
+      {
+        "i": 21,
+        "offset": 316608
+      },
+      {
+        "i": 22,
+        "offset": 325586
+      },
+      {
+        "i": 23,
+        "offset": 334750
+      },
+      {
+        "i": 24,
+        "offset": 343948
+      },
+      {
+        "i": 25,
+        "offset": 353101
+      },
+      {
+        "i": 26,
+        "offset": 362022
+      },
+      {
+        "i": 27,
+        "offset": 370956
+      },
+      {
+        "i": 28,
+        "offset": 379207
+      },
+      {
+        "i": 29,
+        "offset": 386852
+      },
+      {
+        "i": 30,
+        "offset": 394695
+      },
+      {
+        "i": 31,
+        "offset": 403571
+      }
     ],
     "type": "home",
     "blang": "en",
