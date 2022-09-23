@@ -3,22 +3,22 @@ import { Keypair } from '@shared/models/extension/Keypair';
 import bs58 from '@shared/providers/bs58.provider';
 import {
   GetParserProvider,
-  ParserProvider,
+  ParserProvider
 } from '@shared/providers/parser.provider';
 import { fc } from '@shared/test';
 import { foldTEOrThrow } from '@shared/utils/fp.utils';
 import { sleep } from '@shared/utils/promise.utils';
 import { ContributionEventArb } from '@tktrex/shared/arbitraries/ContributionEvent.arb';
 import { TKMetadata } from '@tktrex/shared/models/Metadata';
+import { parsers } from '@tktrex/shared/parser';
+import { HTMLSource } from '@tktrex/shared/parser/source';
 import {
   addDom,
   buildMetadata,
   getLastHTMLs,
   getMetadata,
-  HTMLSource,
-  updateMetadataAndMarkHTML,
+  updateMetadataAndMarkHTML
 } from '../../lib/parser';
-import { parsers } from '../../parsers';
 import { GetTest, Test } from '../../test/Test';
 
 const version = '9.9.9.9';
@@ -54,10 +54,10 @@ describe('/v2/personal', () => {
         contribution: HTMLSource,
         metadata: TKMetadata,
       },
-      getMetadata: getMetadata(db),
       addDom,
       getEntryId: (e) => e.html.id,
       getContributions: getLastHTMLs(db),
+      getMetadata: getMetadata(db),
       getEntryDate: (e) => e.html.savingTime,
       getEntryNatureType: (e) => e.html.type,
       buildMetadata: buildMetadata,

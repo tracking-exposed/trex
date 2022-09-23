@@ -1,5 +1,5 @@
 import { HTML as BaseHTML } from '@shared/models/HTML';
-import { Nature } from '@tktrex/shared/models/Nature';
+import { Nature } from '../Nature';
 import * as t from 'io-ts';
 
 export const HTML = t.intersection(
@@ -11,7 +11,7 @@ export const HTML = t.intersection(
       geoip: t.union([t.string, t.undefined], 'GeoIP'),
     }),
   ],
-  'HTML'
+  'HTML',
 );
 
 export type HTML = t.TypeOf<typeof HTML>;

@@ -36,7 +36,6 @@ const Contribution = t.type(
   },
   'Contribution'
 );
-
 type Contribution = t.TypeOf<typeof Contribution>;
 
 const { savingTime, ...ContributionTypeProps } = Contribution.props;
@@ -120,7 +119,7 @@ describe('Parser Provider', () => {
       (s) => s.id,
       [
         {
-          source: { ...source, jsdom: {} },
+          source: { ...source, jsdom: {} as any },
           findings: {},
           failures: {},
           log,
@@ -273,10 +272,10 @@ describe('Parser Provider', () => {
     getMetadata.mockResolvedValueOnce(null);
     buildMetadata.mockReturnValue(metadata);
 
-    saveResults.mockImplementation((s, m) =>
+    saveResults.mockImplementation((contribution, metadata) =>
       Promise.resolve({
-        metadata: m,
-        source: s,
+        metadata: metadata,
+        source: contribution,
         count: {
           home: 1,
         },

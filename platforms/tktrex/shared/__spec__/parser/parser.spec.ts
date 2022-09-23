@@ -4,19 +4,28 @@ import { PathReporter } from 'io-ts/lib/PathReporter';
 import {
   expectToBeIncludedIn,
   normalizeDeepStrings,
-} from '../../src/lib/util';
+} from '../../src/parser/v2/lib/util';
 import { ForYouVideoMetadata } from '../../src/models/Metadata';
-import createServerSideParser from '../../src/parser/serverSideParser';
+import createServerSideParser from '../../src/parser/v2/serverSideParser';
 import historicData from './fixtures/history.json';
+import { v4 as uuid } from 'uuid';
+// import { trexLogger } from '@shared/logger';
 
 describe('The TikTok parser for the ForYou feed', () => {
   // first, filter the test samples that match the schema for
   // "foryou" videos so that we have complete data for our tests,
   // and exclude the example that we know to be wrong
-  const forYouSamples = historicData.filter(
-    (sample) =>
-      isRight(ForYouVideoMetadata.decode(sample.metadata)),
-  );
+  const forYouSamples = historicData.filter((sample) => {
+    const decodeResult = ForYouVideoMetadata.decode({
+      ...sample.metadata,
+      nature: { type: sample.metadata.type },
+    });
+    // trexLogger.debug(
+    //   'for you sample decode: %O',
+    //   PathReporter.report(decodeResult)
+    // );
+    return isRight(decodeResult);
+  });
 
   const { parseForYouVideo } = createServerSideParser();
 
@@ -36,13 +45,19 @@ describe('The TikTok parser for the ForYou feed', () => {
     // inside the expected value,
     // now we also check that it validates the schema of the
     // expected value
-    const validation = ForYouVideoMetadata.decode(actual);
+    const validation = ForYouVideoMetadata.decode({
+      id: uuid(),
+      savingTime: new Date().toISOString(),
+      publicKey: 'fake-publicKey',
+      nature: { type: 'foryou' },
+      ...(actual as any),
+    });
+
     if (!isRight(validation)) {
       const report = PathReporter.report(validation);
-      throw new Error([
-        'expected valid ForYouVideoMetaData:',
-        ...report,
-      ].join('\n'));
+      throw new Error(
+        ['expected valid ForYouVideoMetaData:', ...report].join('\n')
+      );
     }
   });
 });
