@@ -9,11 +9,6 @@ import { GetLogger, Logger } from '@shared/logger';
 
 debug.enable(process.env.DEBUG ?? '');
 
-const config = nconf
-  .argv()
-  .file({ file: path.resolve(__dirname, '../config/settings.json') })
-  .env();
-
 const logger = GetLogger('tktrex').extend('test');
 
 export interface Test {
@@ -25,9 +20,15 @@ export interface Test {
 }
 
 export const GetTest = async (): Promise<Test> => {
+  const config = nconf
+    .argv()
+    .file({ file: path.resolve(__dirname, '../config/settings.json') })
+    .env();
+
   config.set('mongoHost', '0.0.0.0');
   config.set('key', 'test-key');
   config.set('storage', '_test_htmls');
+  config.set('mongoDb', 'tktrex-test');
 
   const mongo = await mongo3.clientConnect({});
 

@@ -7,9 +7,7 @@ import { Logger } from '../../logger';
 import {
   parseContributions,
   ParserConfiguration,
-  ParserFn,
-  ParserProviderContext,
-  printResultOutput,
+  ParserFn, ParserProviderContext, printResultOutput
 } from '../../providers/parser.provider';
 
 /**

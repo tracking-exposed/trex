@@ -1,4 +1,4 @@
-import { normalizeDeepStrings } from '../src/lib/util';
+import { normalizeDeepStrings } from '../src/parser/v2/lib/util';
 
 describe('The util library', () => {
   describe('The normalize function', () => {

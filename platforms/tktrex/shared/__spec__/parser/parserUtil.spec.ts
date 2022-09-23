@@ -5,18 +5,18 @@ import {
 import {
   expectToBeEitherLeft,
   expectToBeEitherRight,
-} from '../../src/lib/util';
+} from '../../src/parser/v2/lib/util';
 
 import {
   combineParsers,
   findElt,
   findEltText,
   parseEltText,
-} from '../../src/parser/parserUtil';
+} from '../../src/parser/v2/parserUtil';
 
 import {
   ServerDOM,
-} from '../../src/parser/ServerDOM';
+} from '../../src/parser/v2/ServerDOM';
 
 describe('The parser util library', () => {
   const { parseHTML } = ServerDOM;
