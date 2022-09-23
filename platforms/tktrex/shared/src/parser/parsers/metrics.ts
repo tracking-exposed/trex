@@ -1,11 +1,11 @@
 import { ParserFn } from '@shared/providers/parser.provider';
-import { HTMLSource } from '../lib/parser';
-import { Metrics } from '@tktrex/shared/models/Metadata';
-import { TKParserConfig } from './config';
+import { HTMLSource } from '../source';
+import { Metrics } from '../../models/Metadata';
+import { TKParserConfig } from '../config';
 
-const metrics: ParserFn<HTMLSource, Metrics, TKParserConfig> = async (
+const metrics: ParserFn<HTMLSource, Metrics, TKParserConfig> = async(
   envelop,
-  previous
+  previous,
 ) => {
   /* 2.4.x 'foryou' and 'following' are considered only */
   const availin = ['foryou', 'following', 'video', 'native'];
@@ -18,10 +18,10 @@ const metrics: ParserFn<HTMLSource, Metrics, TKParserConfig> = async (
   let likee: HTMLElement | null, commente: HTMLElement | null;
   if (previous.nature.type === 'native') {
     likee = envelop.jsdom.querySelector(
-      'div[class*="DivBrowserModeContainer"] [data-e2e*="like-count"]'
+      'div[class*="DivBrowserModeContainer"] [data-e2e*="like-count"]',
     );
     commente = envelop.jsdom.querySelector(
-      'div[class*="DivBrowserModeContainer"] [data-e2e*="comment-count"]'
+      'div[class*="DivBrowserModeContainer"] [data-e2e*="comment-count"]',
     );
   } else {
     likee = envelop.jsdom.querySelector('[data-e2e="like-count"]');

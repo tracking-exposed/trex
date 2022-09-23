@@ -1,11 +1,11 @@
 import { ParserFn } from '@shared/providers/parser.provider';
 import _ from 'lodash';
 import D from 'debug';
-import { HTMLSource } from '../lib/parser';
+import { HTMLSource } from '../source';
 import { getUUID, download } from './shared';
 import fs from 'fs';
 import path from 'path';
-import { TKParserConfig } from './config';
+import { TKParserConfig } from '../config';
 
 const debug = D('parser:downloader');
 
@@ -21,7 +21,7 @@ async function processLink({
 }) {
   // link is either an mp4 or a jpeg,
   // linkType is 'video' or 'thumbnail'
-  const fuuid = getUUID(link, linkType, config.downloads ?? '');
+  const fuuid = getUUID(link, linkType, config.downloads);
   if (config.downloads) {
     if (!fs.existsSync(fuuid)) return await download(fuuid, link);
   }
@@ -69,7 +69,7 @@ const downloader: ParserFn<
   HTMLSource,
   { downloader: any[] },
   TKParserConfig
-> = async (envelop, findings, config) => {
+> = async(envelop, findings, config) => {
   if (envelop.supporter.version !== '2.6.2.99') {
     // TODO we should load a JSON with some more complex filtering mechanism
     debug('Only development version .99 is now considered for download!');
@@ -92,7 +92,7 @@ const downloader: ParserFn<
     const url = img.getAttribute('src');
     const alt = img.getAttribute('alt');
 
-    const info = await processLink({
+    const info: any = await processLink({
       link: url,
       linkType: 'thumbnail',
       config,
@@ -106,7 +106,7 @@ const downloader: ParserFn<
   debug(
     'reported as downloaded %d links (%O)',
     retval.length,
-    _.countBy(retval, 'reason')
+    _.countBy(retval, 'reason'),
   );
   return { downloader: retval };
 };

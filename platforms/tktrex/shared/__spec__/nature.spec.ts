@@ -1,6 +1,6 @@
 import { Either, left, right } from 'fp-ts/lib/Either';
-import { getNatureByHref } from '../src/lib/nature';
-import { URLError } from '../src/models/Error';
+import { getNatureByHref } from '../src/parser/parsers/nature';
+import { URLError } from '../src/parser/v2/models/Error';
 import { Nature } from '../src/models/Nature';
 
 describe('The tiktok "Nature" utilities', () => {

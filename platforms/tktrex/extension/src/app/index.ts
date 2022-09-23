@@ -1,5 +1,5 @@
 import { boot } from '@shared/extension/app';
-import { tiktokDomainRegExp } from '@tktrex/parser/constant';
+import { tiktokDomainRegExp } from '@tktrex/parser/v2/constant';
 import { registerTkHandlers } from './handlers';
 import { feedId, onLocationChange, tkHandlers, tkTrexActions } from './app';
 import tkHub from '../handlers/hub';
