@@ -6,7 +6,7 @@ import { getChromeMock } from '@shared/extension/__mocks__/chrome.mock';
 import { boot, BootOpts } from '@shared/extension/app';
 import { load } from '@shared/extension/background/index';
 import { sleep } from '@shared/utils/promise.utils';
-import { tiktokDomainRegExp } from '@tktrex/parser/constant';
+import { tiktokDomainRegExp } from '@tktrex/parser/v2/constant';
 import { HandshakeActiveResponseArb } from '@shared/arbitraries/HandshakeResponse.arb';
 import * as fs from 'fs';
 import fetchMock from 'jest-fetch-mock';

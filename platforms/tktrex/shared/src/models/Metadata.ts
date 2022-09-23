@@ -50,7 +50,6 @@ export type Metrics = t.TypeOf<typeof Metrics>;
 export const MetadataBase = t.type(
   {
     id: t.string,
-    clientTime: t.string,
     savingTime: t.string,
     publicKey: t.string,
   },

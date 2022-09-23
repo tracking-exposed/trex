@@ -9,8 +9,8 @@ import {
 
 import {
   normalizeString,
-} from '../lib/util';
-import { ParseError } from '../models/Error';
+} from './lib/util';
+import { ParseError } from './models/Error';
 
 type SearchableNode = Document | Element;
 

@@ -3,6 +3,8 @@
 import * as mongo3 from '@shared/providers/mongo.provider';
 import { GetParserProvider } from '@shared/providers/parser.provider';
 import { TKMetadata } from '@tktrex/shared/models/Metadata';
+import { parsers } from '@tktrex/shared/parser';
+import { HTMLSource } from '@tktrex/shared/parser/source';
 import fs from 'fs';
 import _ from 'lodash';
 import nconf from 'nconf';
@@ -11,12 +13,10 @@ import {
   addDom,
   buildMetadata,
   getLastHTMLs,
-  getMetadata,
-  HTMLSource,
   updateMetadataAndMarkHTML,
+  getMetadata,
+  parserConfig,
 } from '../lib/parser';
-import { parsers } from '../parsers';
-import { tkParserConfig } from '../parsers/config';
 
 nconf.argv().env().file({ file: 'config/settings.json' });
 
@@ -80,8 +80,8 @@ const run = async (): Promise<void> => {
         metadata: TKMetadata,
       },
       parsers,
-      getMetadata: getMetadata(db),
       addDom,
+      getMetadata: getMetadata(db),
       getContributions: getLastHTMLs(db),
       saveResults: updateMetadataAndMarkHTML(db),
       getEntryId: (e) => e.html.id,
@@ -89,9 +89,9 @@ const run = async (): Promise<void> => {
       getEntryDate: (e) => e.html.savingTime,
       getEntryNatureType: (e) => e.html.type,
       config: {
-        ...tkParserConfig,
+        ...parserConfig,
         errorReporter: {
-          basePath: path.resolve(process.cwd(), './parsers/__tests__/fixtures'),
+          basePath: path.resolve(process.cwd(), 'parsers/__tests__/fixtures'),
         },
       },
     }).run({

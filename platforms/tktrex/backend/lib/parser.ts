@@ -1,22 +1,21 @@
-import { Supporter } from '@shared/models/Supporter';
 import {
   BuildMetadataFn,
   ContributionAndDOMFn,
   GetContributionsFn,
   GetMetadataFn,
   ParserProviderContextDB,
+  SaveResults,
 } from '@shared/providers/parser.provider';
 import { sanitizeHTML } from '@shared/utils/html.utils';
 import { TKMetadata } from '@tktrex/shared/models/Metadata';
+import { TKParsers } from '@tktrex/shared/parser';
+import { TKParserConfig } from '@tktrex/shared/parser/config';
+import { HTMLSource } from '@tktrex/shared/parser/source';
 import { isValid } from 'date-fns';
 import D from 'debug';
-import * as t from 'io-ts';
-import { JSDOM } from 'jsdom';
 import _ from 'lodash';
 import nconf from 'nconf';
-import { TKParsers } from '../parsers';
-import { TKParserConfig } from '../parsers/config';
-import { HTML } from '../models/HTML';
+import { JSDOM } from 'jsdom';
 
 const debug = D('lib:parserchain');
 
@@ -41,16 +40,6 @@ export const addDom: ContributionAndDOMFn<HTMLSource> = (e) => ({
   ...e,
   jsdom: new JSDOM(sanitizeHTML(e.html.html)).window.document,
 });
-
-export const HTMLSource = t.type(
-  {
-    html: HTML,
-    jsdom: t.any,
-    supporter: Supporter,
-  },
-  'HTMLSource'
-);
-export type HTMLSource = t.TypeOf<typeof HTMLSource>;
 
 export const buildMetadata: BuildMetadataFn<
   HTMLSource,
@@ -175,7 +164,7 @@ export const buildMetadata: BuildMetadataFn<
 export const getLastHTMLs =
   (db: ParserProviderContextDB): GetContributionsFn<HTMLSource> =>
   async (filter, skip, amount) => {
-    const htmls = await db.api.aggregate(db.read, nconf.get('schema').htmls, [
+    const htmls = await db.api.aggregate(db.read, getSourceSchema(), [
       { $match: filter },
       { $sort: { savingTime: 1 } },
       { $skip: skip },
@@ -195,7 +184,6 @@ export const getLastHTMLs =
       try {
         return {
           supporter: _.first(h.supporter),
-          jsdom: new JSDOM(h.html.replace(/\n +/g, '')).window.document,
           html: _.omit(h, ['supporter']),
         };
       } catch (error: any) {
@@ -223,24 +211,17 @@ export const getMetadata =
   };
 
 export const updateMetadataAndMarkHTML =
-  (db: ParserProviderContextDB) =>
-  async (
-    source: HTMLSource,
-    metadata: TKMetadata
-  ): Promise<{
-    metadata: TKMetadata;
-    source: HTMLSource;
-    count: { metadata: number; htmls: number };
-  }> => {
+  (db: ParserProviderContextDB): SaveResults<HTMLSource, TKMetadata> =>
+  async (source, metadata) => {
     const r = await db.api.upsertOne(
       db.write,
-      nconf.get('schema').metadata,
+      getMetadataSchema(),
       { id: source.html.id },
       metadata
     );
     const u = await db.api.updateOne(
       db.write,
-      nconf.get('schema').htmls,
+      getSourceSchema(),
       { id: metadata.id },
       { processed: true }
     );
