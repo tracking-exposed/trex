@@ -4,28 +4,21 @@ import {
   GetContributionsFn,
   GetMetadataFn,
   ParserProviderContextDB,
+  SaveResults,
 } from '@shared/providers/parser.provider';
 import { sanitizeHTML } from '@shared/utils/html.utils';
 import { Metadata } from '@yttrex/shared/models/Metadata';
+import { Supporter } from '@yttrex/shared/models/Supporter';
+import { HTMLSource, Parsers } from '@yttrex/shared/parser';
 import { isValid } from 'date-fns';
-import * as t from 'io-ts';
 import { JSDOM } from 'jsdom';
 import _ from 'lodash';
 import nconf from 'nconf';
 import { HTML } from '../../models/HTML';
-import { Supporter } from '../../models/Supporter';
-import { Parsers } from '../../parsers';
+// import { trexLogger } from '@shared/logger';
 
-export const HTMLSource = t.type(
-  {
-    html: HTML,
-    supporter: Supporter,
-    jsdom: t.any,
-  },
-  'HTMLSource'
-);
+// const parserLog = trexLogger.extend('parser:html');
 
-export type HTMLSource = t.TypeOf<typeof HTMLSource>;
 
 export const getSourceSchema = (): string => nconf.get('schema').htmls;
 export const getMetadataSchema = (): string => nconf.get('schema').metadata;
@@ -35,17 +28,6 @@ export const addDom: ContributionAndDOMFn<HTMLSource> = (e) => ({
   jsdom: new JSDOM(sanitizeHTML(e.html.html)).window.document,
 });
 
-export const getMetadata =
-  (ctx: ParserProviderContextDB): GetMetadataFn<HTMLSource, Metadata> =>
-  (e) => {
-    return ctx.api.readOne(
-      ctx.read,
-      getMetadataSchema(),
-      { id: e.html.metadataId },
-      {}
-    );
-  };
-
 export const getLastHTMLs =
   (db: ParserProviderContextDB): GetContributionsFn<HTMLSource> =>
   async (filter, skip, amount) => {
@@ -53,7 +35,7 @@ export const getLastHTMLs =
       HTML & {
         supporter: Supporter[];
       }
-    > = await db.api.aggregate(db.read, nconf.get('schema').htmls, [
+    > = await db.api.aggregate(db.read, getSourceSchema(), [
       { $match: filter },
       { $sort: { savingTime: 1 } },
       { $limit: amount },
@@ -73,7 +55,6 @@ export const getLastHTMLs =
       try {
         return {
           supporter: _.first(supporter),
-          jsdom: new JSDOM(sanitizeHTML(h.html)).window.document,
           html: h,
         };
       } catch (error) {
@@ -95,8 +76,20 @@ export const getLastHTMLs =
     };
   };
 
+export const getMetadata =
+  (ctx: ParserProviderContextDB): GetMetadataFn<HTMLSource, Metadata> =>
+  (e) => {
+    return ctx.api.readOne(
+      ctx.read,
+      getMetadataSchema(),
+      { id: e.html.metadataId },
+      {}
+    );
+  };
+
 export const toMetadata: BuildMetadataFn<HTMLSource, Metadata, Parsers> = (
-  entry
+  entry,
+  oldMetadata
 ) => {
   // this contains the original .source (html, impression, timeline), the .findings and .failures
   // the metadata is aggregated by unit and not unrolled in any way
@@ -111,6 +104,7 @@ export const toMetadata: BuildMetadataFn<HTMLSource, Metadata, Parsers> = (
     : new Date(entry.source.html.clientTime);
   metadata.id = entry.source.html.metadataId;
   metadata.publicKey = entry.source.html.publicKey;
+
   if (
     entry.source.html.experimentId &&
     entry.source.html.experimentId.length > 0
@@ -134,6 +128,34 @@ export const toMetadata: BuildMetadataFn<HTMLSource, Metadata, Parsers> = (
 
     return metadata;
   }
+  if (entry.findings.nature.type === 'video') {
+    const videoNature: any = entry.findings.nature;
+    const related = videoNature.related
+    .reduce((acc: any[], m) => {
+      const index = acc.findIndex(
+        (r) =>
+          r.videoId === m.videoId || (r.params?.v && r.params.v === m.videoId)
+      );
+      if (index > -1) {
+        acc[index] = {
+          ...acc[index],
+          ...m,
+          index: acc[index].index,
+        };
+        return acc;
+      }
+
+      return acc.concat(m);
+    }, (oldMetadata as any)?.related ?? []);
+
+    metadata = {
+      href: entry.source.html.href,
+      ...entry.findings.nature,
+      ...metadata,
+      related,
+    };
+    return metadata;
+  }
 
   /* else ... */
   metadata = {
@@ -151,18 +173,11 @@ export const toMetadata: BuildMetadataFn<HTMLSource, Metadata, Parsers> = (
 };
 
 export const updateMetadataAndMarkHTML =
-  (db: ParserProviderContextDB) =>
-  async (
-    source: HTMLSource,
-    metadata: Metadata
-  ): Promise<{
-    metadata: Metadata;
-    source: HTMLSource;
-    count: { metadata: number; htmls: number };
-  }> => {
+  (db: ParserProviderContextDB): SaveResults<HTMLSource, Metadata> =>
+  async (source, metadata) => {
     const r = await db.api.upsertOne(
       db.write,
-      nconf.get('schema').metadata,
+      getMetadataSchema(),
       { id: metadata.id },
       metadata
     );
@@ -171,7 +186,7 @@ export const updateMetadataAndMarkHTML =
 
     const u = await db.api.updateOne(
       db.write,
-      nconf.get('schema').htmls,
+      getSourceSchema(),
       { id: source.html.id },
       { processed: true }
     );
@@ -179,6 +194,6 @@ export const updateMetadataAndMarkHTML =
     return {
       metadata,
       source,
-      count: { metadata: r.modifiedCount, htmls: u.modifiedCount },
+      count: { metadata: r.upsertedCount, source: u.modifiedCount },
     };
   };

@@ -1,23 +1,21 @@
 {
   "sources": [
     {
-      "_id": "623c8ebd520cbbda43a7453b",
       "id": "63e48c7f9ea21586d3cfce5da0a5f8575012d57f",
       "metadataId": "fb55a30a7582864a3b8f8b3ea4d017151024c0cc",
       "blang": "it-IT",
-      "publicKey": "DjKZiP8MwBfuxmSShV27KCdwN2RVUP4s6xJFa7fng65C",
       "html": "<div id=\"details\" class=\"style-scope ytd-rich-grid-media\"><a id=\"avatar-link\" class=\"yt-simple-endpoint style-scope ytd-rich-grid-media\" tabindex=\"-1\" title=\"Deep Light\" href=\"/c/DeepLight94\"><yt-img-shadow id=\"avatar\" width=\"48\" class=\"style-scope ytd-rich-grid-media no-transition empty\" style=\"background-color: transparent;\"><!--css-build:shady--><img id=\"img\" class=\"style-scope yt-img-shadow\" alt=\"\" width=\"48\"></yt-img-shadow></a><div id=\"meta\" class=\"style-scope ytd-rich-grid-media\"><h3 class=\"style-scope ytd-rich-grid-media\"><ytd-badge-supported-renderer class=\"title-badge style-scope ytd-rich-grid-media\" disable-upgrade=\"\" hidden=\"\"></ytd-badge-supported-renderer><a id=\"video-title-link\" class=\"yt-simple-endpoint style-scope ytd-rich-grid-media\" aria-label=\"​Ed Sheeran, Dua Lipa, Kygo, Avicii, Martin Garrix, The Chainsmokers Style - Feeling Me by Deep Light 4,208,165 views\" title=\"​Ed Sheeran, Dua Lipa, Kygo, Avicii, Martin Garrix, The Chainsmokers Style - Feeling Me\" href=\"/watch?v=ZhDNtEe0kGM\"><yt-formatted-string id=\"video-title\" class=\"style-scope ytd-rich-grid-media\" aria-label=\"​Ed Sheeran, Dua Lipa, Kygo, Avicii, Martin Garrix, The Chainsmokers Style - Feeling Me by Deep Light 4,208,165 views\">​Ed Sheeran, Dua Lipa, Kygo, Avicii, Martin Garrix, The Chainsmokers Style - Feeling Me</yt-formatted-string></a></h3><ytd-video-meta-block class=\"grid style-scope ytd-rich-grid-media byline-separated\" rich-meta=\"\"><!--css-build:shady-->\n<div id=\"metadata\" class=\"style-scope ytd-video-meta-block\">\n  <div id=\"byline-container\" class=\"style-scope ytd-video-meta-block\">\n    <ytd-channel-name id=\"channel-name\" class=\"style-scope ytd-video-meta-block\"><!--css-build:shady--><div id=\"container\" class=\"style-scope ytd-channel-name\">\n  <div id=\"text-container\" class=\"style-scope ytd-channel-name\">\n    <yt-formatted-string id=\"text\" title=\"\" class=\"style-scope ytd-channel-name complex-string\" ellipsis-truncate=\"\" has-link-only_=\"\"><a class=\"yt-simple-endpoint style-scope yt-formatted-string\" spellcheck=\"false\" href=\"/c/DeepLight94\" dir=\"auto\">Deep Light</a></yt-formatted-string>\n  </div>\n  <tp-yt-paper-tooltip fit-to-visible-bounds=\"\" class=\"style-scope ytd-channel-name\" role=\"tooltip\" tabindex=\"-1\"><!--css-build:shady--><div id=\"tooltip\" class=\"hidden style-scope tp-yt-paper-tooltip\">\n  \n    Deep Light\n  \n</div>\n</tp-yt-paper-tooltip>\n</div>\n<ytd-badge-supported-renderer class=\"style-scope ytd-channel-name\" disable-upgrade=\"\" hidden=\"\">\n</ytd-badge-supported-renderer>\n</ytd-channel-name>\n    <div id=\"separator\" class=\"style-scope ytd-video-meta-block\">•</div>\n  </div>\n  <div id=\"metadata-line\" class=\"style-scope ytd-video-meta-block\">\n    \n      <span class=\"style-scope ytd-video-meta-block\">6.5K watching</span>\n    <dom-repeat strip-whitespace=\"\" class=\"style-scope ytd-video-meta-block\"><template is=\"dom-repeat\"></template></dom-repeat>\n  </div>\n</div>\n<div id=\"additional-metadata-line\" class=\"style-scope ytd-video-meta-block\">\n  <dom-repeat class=\"style-scope ytd-video-meta-block\"><template is=\"dom-repeat\"></template></dom-repeat>\n</div>\n\n</ytd-video-meta-block><ytd-badge-supported-renderer class=\"video-badge style-scope ytd-rich-grid-media\" system-icons=\"\"><!--css-build:shady-->\n  <div class=\"badge badge-style-type-live-now style-scope ytd-badge-supported-renderer\">\n    <yt-icon class=\"style-scope ytd-badge-supported-renderer\" disable-upgrade=\"\" hidden=\"\">\n    </yt-icon>\n    <span class=\"style-scope ytd-badge-supported-renderer\">LIVE NOW</span>\n  </div>\n<dom-repeat id=\"repeat\" as=\"badge\" class=\"style-scope ytd-badge-supported-renderer\"><template is=\"dom-repeat\"></template></dom-repeat>\n</ytd-badge-supported-renderer><ytd-badge-supported-renderer class=\"title-badge style-scope ytd-rich-grid-media\" disable-upgrade=\"\" hidden=\"\"></ytd-badge-supported-renderer><div id=\"buttons\" class=\"style-scope ytd-rich-grid-media\"></div></div><div id=\"menu\" class=\"style-scope ytd-rich-grid-media\"></div></div>",
       "offsetTop": 1716,
       "offsetLeft": 264,
       "href": "https://www.youtube.com/",
       "selectorName": "channel2",
-      "nature": { "type": "home" },
+      "nature": {
+        "type": "home"
+      },
       "savingTime": "2022-03-24T15:31:09.443Z"
     }
   ],
   "metadata": {
-    "_id": "623c8ec46f24e124654d6b65",
-    "publicKey": "DjKZiP8MwBfuxmSShV27KCdwN2RVUP4s6xJFa7fng65C",
     "savingTime": "2022-03-24T15:31:09.428Z",
     "clientTime": "2022-03-24T16:01:08.000Z",
     "href": "https://www.youtube.com/",
@@ -287,30 +285,102 @@
       }
     ],
     "sections": [
-      { "i": 0, "offset": 124801 },
-      { "i": 1, "offset": 134419 },
-      { "i": 2, "offset": 142465 },
-      { "i": 3, "offset": 152178 },
-      { "i": 4, "offset": 161422 },
-      { "i": 5, "offset": 170249 },
-      { "i": 6, "offset": 178111 },
-      { "i": 7, "offset": 186212 },
-      { "i": 8, "offset": 194510 },
-      { "i": 9, "offset": 203388 },
-      { "i": 10, "offset": 211259 },
-      { "i": 11, "offset": 219984 },
-      { "i": 12, "offset": 227911 },
-      { "i": 13, "offset": 236535 },
-      { "i": 14, "offset": 245400 },
-      { "i": 15, "offset": 253776 },
-      { "i": 16, "offset": 261965 },
-      { "i": 17, "offset": 269595 },
-      { "i": 18, "offset": 277116 },
-      { "i": 19, "offset": 284914 },
-      { "i": 20, "offset": 293065 },
-      { "i": 21, "offset": 300918 },
-      { "i": 22, "offset": 309774 },
-      { "i": 23, "offset": 318613 }
+      {
+        "i": 0,
+        "offset": 124801
+      },
+      {
+        "i": 1,
+        "offset": 134419
+      },
+      {
+        "i": 2,
+        "offset": 142465
+      },
+      {
+        "i": 3,
+        "offset": 152178
+      },
+      {
+        "i": 4,
+        "offset": 161422
+      },
+      {
+        "i": 5,
+        "offset": 170249
+      },
+      {
+        "i": 6,
+        "offset": 178111
+      },
+      {
+        "i": 7,
+        "offset": 186212
+      },
+      {
+        "i": 8,
+        "offset": 194510
+      },
+      {
+        "i": 9,
+        "offset": 203388
+      },
+      {
+        "i": 10,
+        "offset": 211259
+      },
+      {
+        "i": 11,
+        "offset": 219984
+      },
+      {
+        "i": 12,
+        "offset": 227911
+      },
+      {
+        "i": 13,
+        "offset": 236535
+      },
+      {
+        "i": 14,
+        "offset": 245400
+      },
+      {
+        "i": 15,
+        "offset": 253776
+      },
+      {
+        "i": 16,
+        "offset": 261965
+      },
+      {
+        "i": 17,
+        "offset": 269595
+      },
+      {
+        "i": 18,
+        "offset": 277116
+      },
+      {
+        "i": 19,
+        "offset": 284914
+      },
+      {
+        "i": 20,
+        "offset": 293065
+      },
+      {
+        "i": 21,
+        "offset": 300918
+      },
+      {
+        "i": 22,
+        "offset": 309774
+      },
+      {
+        "i": 23,
+        "offset": 318613
+      }
     ],
     "type": "home",
     "blang": "en",

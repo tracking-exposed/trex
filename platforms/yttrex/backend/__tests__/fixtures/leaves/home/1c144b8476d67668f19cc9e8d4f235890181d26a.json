@@ -1,23 +1,21 @@
 {
   "sources": [
     {
-      "_id": "623c8f6b520cbbda43a746f6",
       "id": "31509d8ea87115751d9af7bfa2e2f8d304e01dd3",
       "metadataId": "1c144b8476d67668f19cc9e8d4f235890181d26a",
       "blang": "en-US",
-      "publicKey": "39kM5AyUrGXZaJPseoyKuNT2968Ee5SY6fbWxWcG1ivC",
       "html": "<yt-formatted-string id=\"text\" title=\"\" class=\"style-scope ytd-channel-name complex-string\" ellipsis-truncate=\"\" has-link-only_=\"\"><a class=\"yt-simple-endpoint style-scope yt-formatted-string\" spellcheck=\"false\" href=\"/c/CARTONIMORTI\" dir=\"auto\">CARTONI MORTI</a></yt-formatted-string>",
       "offsetTop": 5545,
       "offsetLeft": 312,
       "href": "https://www.youtube.com/",
       "selectorName": "channel2",
-      "nature": { "type": "home" },
+      "nature": {
+        "type": "home"
+      },
       "savingTime": "2022-03-24T15:34:03.710Z"
     }
   ],
   "metadata": {
-    "_id": "623c8f936f24e124654d6b6f",
-    "publicKey": "39kM5AyUrGXZaJPseoyKuNT2968Ee5SY6fbWxWcG1ivC",
     "savingTime": "2022-03-24T15:34:03.670Z",
     "clientTime": "2022-03-24T16:04:31.000Z",
     "href": "https://www.youtube.com/",
@@ -1342,78 +1340,294 @@
       }
     ],
     "sections": [
-      { "i": 0, "offset": 112993 },
-      { "i": 1, "offset": 121915 },
-      { "i": 2, "offset": 128687 },
-      { "i": 3, "offset": 136683 },
-      { "i": 4, "offset": 145685 },
-      { "i": 5, "offset": 152458 },
-      { "i": 6, "offset": 161392 },
-      { "i": 7, "offset": 170552 },
-      { "i": 8, "offset": 178596 },
-      { "i": 9, "offset": 187484 },
-      { "i": 10, "offset": 196329 },
-      { "i": 11, "offset": 204237 },
-      { "i": 12, "offset": 213381 },
-      { "i": 13, "offset": 222346 },
-      { "i": 14, "offset": 231167 },
-      { "i": 15, "offset": 239094 },
-      { "i": 16, "offset": 247217 },
-      { "i": 17, "offset": 256085 },
-      { "i": 18, "offset": 264985 },
-      { "i": 19, "offset": 274025 },
-      { "i": 20, "offset": 282131 },
-      { "i": 21, "offset": 291030 },
-      { "i": 22, "offset": 299931 },
-      { "i": 23, "offset": 308016 },
-      { "i": 24, "offset": 317116 },
-      { "i": 25, "offset": 325154 },
-      { "i": 26, "offset": 334113 },
-      { "i": 27, "offset": 342078 },
-      { "i": 28, "offset": 350209 },
-      { "i": 29, "offset": 359121 },
-      { "i": 30, "offset": 368145 },
-      { "i": 31, "offset": 375962 },
-      { "i": 32, "offset": 385108 },
-      { "i": 33, "offset": 393966 },
-      { "i": 34, "offset": 402948 },
-      { "i": 35, "offset": 410940 },
-      { "i": 36, "offset": 420048 },
-      { "i": 37, "offset": 427940 },
-      { "i": 38, "offset": 435888 },
-      { "i": 39, "offset": 443868 },
-      { "i": 40, "offset": 452045 },
-      { "i": 41, "offset": 460973 },
-      { "i": 42, "offset": 468970 },
-      { "i": 43, "offset": 478091 },
-      { "i": 44, "offset": 486237 },
-      { "i": 45, "offset": 495394 },
-      { "i": 46, "offset": 504605 },
-      { "i": 47, "offset": 513612 },
-      { "i": 48, "offset": 522838 },
-      { "i": 49, "offset": 530372 },
-      { "i": 50, "offset": 537118 },
-      { "i": 51, "offset": 544505 },
-      { "i": 52, "offset": 551935 },
-      { "i": 53, "offset": 559329 },
-      { "i": 54, "offset": 566551 },
-      { "i": 55, "offset": 573069 },
-      { "i": 56, "offset": 580625 },
-      { "i": 57, "offset": 587239 },
-      { "i": 58, "offset": 593874 },
-      { "i": 59, "offset": 601220 },
-      { "i": 60, "offset": 608040 },
-      { "i": 61, "offset": 615381 },
-      { "i": 62, "offset": 622559 },
-      { "i": 63, "offset": 629085 },
-      { "i": 64, "offset": 636523 },
-      { "i": 65, "offset": 643619 },
-      { "i": 66, "offset": 650651 },
-      { "i": 67, "offset": 657888 },
-      { "i": 68, "offset": 665278 },
-      { "i": 69, "offset": 672283 },
-      { "i": 70, "offset": 679299 },
-      { "i": 71, "offset": 685570 }
+      {
+        "i": 0,
+        "offset": 112993
+      },
+      {
+        "i": 1,
+        "offset": 121915
+      },
+      {
+        "i": 2,
+        "offset": 128687
+      },
+      {
+        "i": 3,
+        "offset": 136683
+      },
+      {
+        "i": 4,
+        "offset": 145685
+      },
+      {
+        "i": 5,
+        "offset": 152458
+      },
+      {
+        "i": 6,
+        "offset": 161392
+      },
+      {
+        "i": 7,
+        "offset": 170552
+      },
+      {
+        "i": 8,
+        "offset": 178596
+      },
+      {
+        "i": 9,
+        "offset": 187484
+      },
+      {
+        "i": 10,
+        "offset": 196329
+      },
+      {
+        "i": 11,
+        "offset": 204237
+      },
+      {
+        "i": 12,
+        "offset": 213381
+      },
+      {
+        "i": 13,
+        "offset": 222346
+      },
+      {
+        "i": 14,
+        "offset": 231167
+      },
+      {
+        "i": 15,
+        "offset": 239094
+      },
+      {
+        "i": 16,
+        "offset": 247217
+      },
+      {
+        "i": 17,
+        "offset": 256085
+      },
+      {
+        "i": 18,
+        "offset": 264985
+      },
+      {
+        "i": 19,
+        "offset": 274025
+      },
+      {
+        "i": 20,
+        "offset": 282131
+      },
+      {
+        "i": 21,
+        "offset": 291030
+      },
+      {
+        "i": 22,
+        "offset": 299931
+      },
+      {
+        "i": 23,
+        "offset": 308016
+      },
+      {
+        "i": 24,
+        "offset": 317116
+      },
+      {
+        "i": 25,
+        "offset": 325154
+      },
+      {
+        "i": 26,
+        "offset": 334113
+      },
+      {
+        "i": 27,
+        "offset": 342078
+      },
+      {
+        "i": 28,
+        "offset": 350209
+      },
+      {
+        "i": 29,
+        "offset": 359121
+      },
+      {
+        "i": 30,
+        "offset": 368145
+      },
+      {
+        "i": 31,
+        "offset": 375962
+      },
+      {
+        "i": 32,
+        "offset": 385108
+      },
+      {
+        "i": 33,
+        "offset": 393966
+      },
+      {
+        "i": 34,
+        "offset": 402948
+      },
+      {
+        "i": 35,
+        "offset": 410940
+      },
+      {
+        "i": 36,
+        "offset": 420048
+      },
+      {
+        "i": 37,
+        "offset": 427940
+      },
+      {
+        "i": 38,
+        "offset": 435888
+      },
+      {
+        "i": 39,
+        "offset": 443868
+      },
+      {
+        "i": 40,
+        "offset": 452045
+      },
+      {
+        "i": 41,
+        "offset": 460973
+      },
+      {
+        "i": 42,
+        "offset": 468970
+      },
+      {
+        "i": 43,
+        "offset": 478091
+      },
+      {
+        "i": 44,
+        "offset": 486237
+      },
+      {
+        "i": 45,
+        "offset": 495394
+      },
+      {
+        "i": 46,
+        "offset": 504605
+      },
+      {
+        "i": 47,
+        "offset": 513612
+      },
+      {
+        "i": 48,
+        "offset": 522838
+      },
+      {
+        "i": 49,
+        "offset": 530372
+      },
+      {
+        "i": 50,
+        "offset": 537118
+      },
+      {
+        "i": 51,
+        "offset": 544505
+      },
+      {
+        "i": 52,
+        "offset": 551935
+      },
+      {
+        "i": 53,
+        "offset": 559329
+      },
+      {
+        "i": 54,
+        "offset": 566551
+      },
+      {
+        "i": 55,
+        "offset": 573069
+      },
+      {
+        "i": 56,
+        "offset": 580625
+      },
+      {
+        "i": 57,
+        "offset": 587239
+      },
+      {
+        "i": 58,
+        "offset": 593874
+      },
+      {
+        "i": 59,
+        "offset": 601220
+      },
+      {
+        "i": 60,
+        "offset": 608040
+      },
+      {
+        "i": 61,
+        "offset": 615381
+      },
+      {
+        "i": 62,
+        "offset": 622559
+      },
+      {
+        "i": 63,
+        "offset": 629085
+      },
+      {
+        "i": 64,
+        "offset": 636523
+      },
+      {
+        "i": 65,
+        "offset": 643619
+      },
+      {
+        "i": 66,
+        "offset": 650651
+      },
+      {
+        "i": 67,
+        "offset": 657888
+      },
+      {
+        "i": 68,
+        "offset": 665278
+      },
+      {
+        "i": 69,
+        "offset": 672283
+      },
+      {
+        "i": 70,
+        "offset": 679299
+      },
+      {
+        "i": 71,
+        "offset": 685570
+      }
     ],
     "type": "home",
     "blang": "en",

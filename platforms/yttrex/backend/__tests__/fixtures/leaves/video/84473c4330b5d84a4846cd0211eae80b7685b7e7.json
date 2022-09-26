@@ -1,1 +1,1251 @@
-{"sources":[{"_id":"623c94f7520cbbda43a74bb2","id":"5b66afa500c493662d67dd3225d07c467591c2e1","metadataId":"84473c4330b5d84a4846cd0211eae80b7685b7e7","blang":"en-US","publicKey":"C5kqVoJo7dP8DgVcChYnsuhk3hXexrQnBdmSgYvxR5F3","html":"<ytd-toggle-button-renderer id=\"like-button\" icon-size=\"16\" class=\"style-scope ytd-comment-action-buttons-renderer style-text size-default\" use-keyboard-focused=\"\" system-icons=\"\" button-renderer=\"true\" is-icon-button=\"\" has-no-text=\"\"><a class=\"yt-simple-endpoint style-scope ytd-toggle-button-renderer\" tabindex=\"-1\" href=\"/create_channel?upsell=comment\"><yt-icon-button id=\"button\" class=\"style-scope ytd-toggle-button-renderer style-text size-default\"><!--css-build:shady--><button id=\"button\" class=\"style-scope yt-icon-button\" aria-label=\"11&nbsp;autres personnes aiment ce commentaire\" aria-pressed=\"false\"><yt-icon class=\"style-scope ytd-toggle-button-renderer\"><!--css-build:shady--></yt-icon></button><yt-interaction id=\"interaction\" class=\"circular style-scope yt-icon-button\"><!--css-build:shady--><div class=\"stroke style-scope yt-interaction\"></div><div class=\"fill style-scope yt-interaction\"></div></yt-interaction></yt-icon-button></a></ytd-toggle-button-renderer>","offsetTop":3215,"offsetLeft":149,"href":"https://www.youtube.com/watch?v=ZhMw53Ud2tY","selectorName":"channel2","nature":{"type":"video","videoId":"ZhMw53Ud2tY"},"savingTime":"2022-03-24T15:57:43.069Z"},{"_id":"623c94f7520cbbda43a74bb3","id":"def52c705d30b9d46b0fbe995ec999b354738791","metadataId":"84473c4330b5d84a4846cd0211eae80b7685b7e7","blang":"en-US","publicKey":"C5kqVoJo7dP8DgVcChYnsuhk3hXexrQnBdmSgYvxR5F3","html":"<div id=\"author-thumbnail\" class=\"style-scope ytd-comment-renderer\">\n    <a class=\"yt-simple-endpoint style-scope ytd-comment-renderer\" href=\"/channel/UCx6oZjdxi4PQZB-ZCEc9tcQ\">\n      <yt-img-shadow fit=\"\" height=\"40\" width=\"40\" class=\"style-scope ytd-comment-renderer no-transition empty\" style=\"background-color: transparent;\"><!--css-build:shady--><img id=\"img\" class=\"style-scope yt-img-shadow\" alt=\"\" width=\"40\" height=\"40\"></yt-img-shadow>\n    </a>\n  </div>","offsetTop":3264,"offsetLeft":101,"href":"https://www.youtube.com/watch?v=ZhMw53Ud2tY","selectorName":"channel1","nature":{"type":"video","videoId":"ZhMw53Ud2tY"},"savingTime":"2022-03-24T15:57:43.069Z"},{"_id":"623c94f7520cbbda43a74bb4","id":"419114b905c5f98c35ba94f74fbadcee976e2a42","metadataId":"84473c4330b5d84a4846cd0211eae80b7685b7e7","blang":"en-US","publicKey":"C5kqVoJo7dP8DgVcChYnsuhk3hXexrQnBdmSgYvxR5F3","html":"<h3 class=\"style-scope ytd-comment-renderer\">\n          <a id=\"author-text\" class=\"yt-simple-endpoint style-scope ytd-comment-renderer\" href=\"/channel/UCx6oZjdxi4PQZB-ZCEc9tcQ\">\n            <span class=\"style-scope ytd-comment-renderer\">\n              Learn Programming\n            </span>\n          </a>\n        </h3>","offsetTop":3264,"offsetLeft":157,"href":"https://www.youtube.com/watch?v=ZhMw53Ud2tY","selectorName":"channel1","nature":{"type":"video","videoId":"ZhMw53Ud2tY"},"savingTime":"2022-03-24T15:57:43.069Z"},{"_id":"623c94f7520cbbda43a74bb5","id":"5064620bd74d9cd1acd5b8bc5ae78a163069c475","metadataId":"84473c4330b5d84a4846cd0211eae80b7685b7e7","blang":"en-US","publicKey":"C5kqVoJo7dP8DgVcChYnsuhk3hXexrQnBdmSgYvxR5F3","html":"<div id=\"author-thumbnail\" class=\"style-scope ytd-comment-renderer\">\n    <a class=\"yt-simple-endpoint style-scope ytd-comment-renderer\" href=\"/channel/UCtyHY6SdKghyV7f2BrTGNoQ\">\n      <yt-img-shadow fit=\"\" height=\"40\" width=\"40\" class=\"style-scope ytd-comment-renderer no-transition empty\" style=\"background-color: transparent;\"><!--css-build:shady--><img id=\"img\" class=\"style-scope yt-img-shadow\" alt=\"\" width=\"40\" height=\"40\"></yt-img-shadow>\n    </a>\n  </div>","offsetTop":3452,"offsetLeft":101,"href":"https://www.youtube.com/watch?v=ZhMw53Ud2tY","selectorName":"channel1","nature":{"type":"video","videoId":"ZhMw53Ud2tY"},"savingTime":"2022-03-24T15:57:43.069Z"},{"_id":"623c94f7520cbbda43a74bb6","id":"d3b4601f255539638235e92065104948845036bc","metadataId":"84473c4330b5d84a4846cd0211eae80b7685b7e7","blang":"en-US","publicKey":"C5kqVoJo7dP8DgVcChYnsuhk3hXexrQnBdmSgYvxR5F3","html":"<h3 class=\"style-scope ytd-comment-renderer\">\n          <a id=\"author-text\" class=\"yt-simple-endpoint style-scope ytd-comment-renderer\" href=\"/channel/UCtyHY6SdKghyV7f2BrTGNoQ\">\n            <span class=\"style-scope ytd-comment-renderer\">\n              SF Engineering\n            </span>\n          </a>\n        </h3>","offsetTop":3452,"offsetLeft":157,"href":"https://www.youtube.com/watch?v=ZhMw53Ud2tY","selectorName":"channel1","nature":{"type":"video","videoId":"ZhMw53Ud2tY"},"savingTime":"2022-03-24T15:57:43.069Z"},{"_id":"623c94f7520cbbda43a74bb7","id":"9b0c70ff8dba044cf27123ebea05a130818a9a66","metadataId":"84473c4330b5d84a4846cd0211eae80b7685b7e7","blang":"en-US","publicKey":"C5kqVoJo7dP8DgVcChYnsuhk3hXexrQnBdmSgYvxR5F3","html":"<div id=\"author-thumbnail\" class=\"style-scope ytd-comment-renderer\">\n    <a class=\"yt-simple-endpoint style-scope ytd-comment-renderer\" href=\"/channel/UCeOIu345iC-58SIJfXCyIJQ\">\n      <yt-img-shadow fit=\"\" height=\"40\" width=\"40\" class=\"style-scope ytd-comment-renderer no-transition empty\" style=\"background-color: transparent;\"><!--css-build:shady--><img id=\"img\" class=\"style-scope yt-img-shadow\" alt=\"\" width=\"40\" height=\"40\"></yt-img-shadow>\n    </a>\n  </div>","offsetTop":3568,"offsetLeft":101,"href":"https://www.youtube.com/watch?v=ZhMw53Ud2tY","selectorName":"channel1","nature":{"type":"video","videoId":"ZhMw53Ud2tY"},"savingTime":"2022-03-24T15:57:43.069Z"},{"_id":"623c94f7520cbbda43a74bb8","id":"fd26bcaa529005db123c1e40a21ac41b770e9a2e","metadataId":"84473c4330b5d84a4846cd0211eae80b7685b7e7","blang":"en-US","publicKey":"C5kqVoJo7dP8DgVcChYnsuhk3hXexrQnBdmSgYvxR5F3","html":"<h3 class=\"style-scope ytd-comment-renderer\">\n          <a id=\"author-text\" class=\"yt-simple-endpoint style-scope ytd-comment-renderer\" href=\"/channel/UCeOIu345iC-58SIJfXCyIJQ\">\n            <span class=\"style-scope ytd-comment-renderer\">\n              Kpop Empire\n            </span>\n          </a>\n        </h3>","offsetTop":3568,"offsetLeft":157,"href":"https://www.youtube.com/watch?v=ZhMw53Ud2tY","selectorName":"channel1","nature":{"type":"video","videoId":"ZhMw53Ud2tY"},"savingTime":"2022-03-24T15:57:43.069Z"},{"_id":"623c94f7520cbbda43a74bad","id":"e8369d043c32d2d97c113adb8a86618293040085","metadataId":"84473c4330b5d84a4846cd0211eae80b7685b7e7","blang":"en-US","publicKey":"C5kqVoJo7dP8DgVcChYnsuhk3hXexrQnBdmSgYvxR5F3","html":"<div id=\"author-thumbnail\" class=\"style-scope ytd-comment-renderer\">\n    <a class=\"yt-simple-endpoint style-scope ytd-comment-renderer\" href=\"/channel/UCVfNa63JMro6qDJO5AmMKUw\">\n      <yt-img-shadow fit=\"\" height=\"40\" width=\"40\" class=\"style-scope ytd-comment-renderer no-transition empty\" style=\"background-color: transparent;\"><!--css-build:shady--><img id=\"img\" class=\"style-scope yt-img-shadow\" alt=\"\" width=\"40\" height=\"40\"></yt-img-shadow>\n    </a>\n  </div>","offsetTop":2920,"offsetLeft":101,"href":"https://www.youtube.com/watch?v=ZhMw53Ud2tY","selectorName":"channel1","nature":{"type":"video","videoId":"ZhMw53Ud2tY"},"savingTime":"2022-03-24T15:57:43.063Z"},{"_id":"623c94f7520cbbda43a74bae","id":"cb825b8ed700064071ff6085b8aabcadb965557d","metadataId":"84473c4330b5d84a4846cd0211eae80b7685b7e7","blang":"en-US","publicKey":"C5kqVoJo7dP8DgVcChYnsuhk3hXexrQnBdmSgYvxR5F3","html":"<h3 class=\"style-scope ytd-comment-renderer\">\n          <a id=\"author-text\" class=\"yt-simple-endpoint style-scope ytd-comment-renderer\" href=\"/channel/UCVfNa63JMro6qDJO5AmMKUw\">\n            <span class=\"style-scope ytd-comment-renderer\">\n              Jarrod\n            </span>\n          </a>\n        </h3>","offsetTop":2920,"offsetLeft":157,"href":"https://www.youtube.com/watch?v=ZhMw53Ud2tY","selectorName":"channel1","nature":{"type":"video","videoId":"ZhMw53Ud2tY"},"savingTime":"2022-03-24T15:57:43.063Z"},{"_id":"623c94f7520cbbda43a74baf","id":"ee092135f2817a1f3b561ccca8990c9ddb595038","metadataId":"84473c4330b5d84a4846cd0211eae80b7685b7e7","blang":"en-US","publicKey":"C5kqVoJo7dP8DgVcChYnsuhk3hXexrQnBdmSgYvxR5F3","html":"<ytd-toggle-button-renderer id=\"like-button\" icon-size=\"16\" class=\"style-scope ytd-comment-action-buttons-renderer style-text size-default\" use-keyboard-focused=\"\" system-icons=\"\" button-renderer=\"true\" is-icon-button=\"\" has-no-text=\"\"><a class=\"yt-simple-endpoint style-scope ytd-toggle-button-renderer\" tabindex=\"-1\" href=\"/create_channel?upsell=comment\"><yt-icon-button id=\"button\" class=\"style-scope ytd-toggle-button-renderer style-text size-default\"><!--css-build:shady--><button id=\"button\" class=\"style-scope yt-icon-button\" aria-label=\"157&nbsp;autres personnes aiment ce commentaire\" aria-pressed=\"false\"><yt-icon class=\"style-scope ytd-toggle-button-renderer\"><!--css-build:shady--></yt-icon></button><yt-interaction id=\"interaction\" class=\"circular style-scope yt-icon-button\"><!--css-build:shady--><div class=\"stroke style-scope yt-interaction\"></div><div class=\"fill style-scope yt-interaction\"></div></yt-interaction></yt-icon-button></a></ytd-toggle-button-renderer>","offsetTop":3027,"offsetLeft":149,"href":"https://www.youtube.com/watch?v=ZhMw53Ud2tY","selectorName":"channel2","nature":{"type":"video","videoId":"ZhMw53Ud2tY"},"savingTime":"2022-03-24T15:57:43.063Z"},{"_id":"623c94f7520cbbda43a74bb0","id":"480e5f9b68954136d2214fd12adcd54ef37048bf","metadataId":"84473c4330b5d84a4846cd0211eae80b7685b7e7","blang":"en-US","publicKey":"C5kqVoJo7dP8DgVcChYnsuhk3hXexrQnBdmSgYvxR5F3","html":"<div id=\"author-thumbnail\" class=\"style-scope ytd-comment-renderer\">\n    <a class=\"yt-simple-endpoint style-scope ytd-comment-renderer\" href=\"/channel/UCmQqhvP10w0mboTfwlRwNTA\">\n      <yt-img-shadow fit=\"\" height=\"40\" width=\"40\" class=\"style-scope ytd-comment-renderer no-transition empty\" style=\"background-color: transparent;\"><!--css-build:shady--><img id=\"img\" class=\"style-scope yt-img-shadow\" alt=\"\" width=\"40\" height=\"40\"></yt-img-shadow>\n    </a>\n  </div>","offsetTop":3108,"offsetLeft":101,"href":"https://www.youtube.com/watch?v=ZhMw53Ud2tY","selectorName":"channel1","nature":{"type":"video","videoId":"ZhMw53Ud2tY"},"savingTime":"2022-03-24T15:57:43.063Z"},{"_id":"623c94f7520cbbda43a74bb1","id":"d34ef06ec92c518e1c6386efda9f62e8d17bbe9e","metadataId":"84473c4330b5d84a4846cd0211eae80b7685b7e7","blang":"en-US","publicKey":"C5kqVoJo7dP8DgVcChYnsuhk3hXexrQnBdmSgYvxR5F3","html":"<h3 class=\"style-scope ytd-comment-renderer\">\n          <a id=\"author-text\" class=\"yt-simple-endpoint style-scope ytd-comment-renderer\" href=\"/channel/UCmQqhvP10w0mboTfwlRwNTA\">\n            <span class=\"style-scope ytd-comment-renderer\">\n              Joshua Pettus\n            </span>\n          </a>\n        </h3>","offsetTop":3108,"offsetLeft":157,"href":"https://www.youtube.com/watch?v=ZhMw53Ud2tY","selectorName":"channel1","nature":{"type":"video","videoId":"ZhMw53Ud2tY"},"savingTime":"2022-03-24T15:57:43.063Z"},{"_id":"623c94e1520cbbda43a74b9f","id":"ce6ac61b8081291507f17003b3ea81be21b6b792","metadataId":"84473c4330b5d84a4846cd0211eae80b7685b7e7","blang":"en-US","publicKey":"C5kqVoJo7dP8DgVcChYnsuhk3hXexrQnBdmSgYvxR5F3","html":"<div id=\"author-thumbnail\" class=\"style-scope ytd-comment-renderer\">\n    <a class=\"yt-simple-endpoint style-scope ytd-comment-renderer\" href=\"/channel/UCEqvl-EcgGBbf0OjSNgjLKA\">\n      <yt-img-shadow fit=\"\" height=\"40\" width=\"40\" class=\"style-scope ytd-comment-renderer no-transition empty\" style=\"background-color: transparent;\"><!--css-build:shady--><img id=\"img\" class=\"style-scope yt-img-shadow\" alt=\"\" width=\"40\" height=\"40\"></yt-img-shadow>\n    </a>\n  </div>","offsetTop":2824,"offsetLeft":101,"href":"https://www.youtube.com/watch?v=ZhMw53Ud2tY","selectorName":"channel1","nature":{"type":"video","videoId":"ZhMw53Ud2tY"},"savingTime":"2022-03-24T15:57:21.920Z"},{"_id":"623c94e1520cbbda43a74ba0","id":"2f0292f956b4b662df4cd542af01a2c263359a33","metadataId":"84473c4330b5d84a4846cd0211eae80b7685b7e7","blang":"en-US","publicKey":"C5kqVoJo7dP8DgVcChYnsuhk3hXexrQnBdmSgYvxR5F3","html":"<h3 class=\"style-scope ytd-comment-renderer\">\n          <a id=\"author-text\" class=\"yt-simple-endpoint style-scope ytd-comment-renderer\" href=\"/channel/UCEqvl-EcgGBbf0OjSNgjLKA\">\n            <span class=\"style-scope ytd-comment-renderer\">\n              Krzysztof Szulborski\n            </span>\n          </a>\n        </h3>","offsetTop":2824,"offsetLeft":157,"href":"https://www.youtube.com/watch?v=ZhMw53Ud2tY","selectorName":"channel1","nature":{"type":"video","videoId":"ZhMw53Ud2tY"},"savingTime":"2022-03-24T15:57:21.920Z"},{"_id":"623c94e1520cbbda43a74b97","id":"a41483f788eae63da5cd8f0e75e653580ccda97a","metadataId":"84473c4330b5d84a4846cd0211eae80b7685b7e7","blang":"en-US","publicKey":"C5kqVoJo7dP8DgVcChYnsuhk3hXexrQnBdmSgYvxR5F3","html":"<div id=\"author-thumbnail\" class=\"style-scope ytd-comment-renderer\">\n    <a class=\"yt-simple-endpoint style-scope ytd-comment-renderer\" href=\"/channel/UCidiTxpvXk_Q5alyIK0pnEQ\">\n      <yt-img-shadow fit=\"\" height=\"40\" width=\"40\" class=\"style-scope ytd-comment-renderer no-transition empty\" style=\"background-color: transparent;\"><!--css-build:shady--><img id=\"img\" class=\"style-scope yt-img-shadow\" alt=\"\" width=\"40\" height=\"40\"></yt-img-shadow>\n    </a>\n  </div>","offsetTop":2476,"offsetLeft":101,"href":"https://www.youtube.com/watch?v=ZhMw53Ud2tY","selectorName":"channel1","nature":{"type":"video","videoId":"ZhMw53Ud2tY"},"savingTime":"2022-03-24T15:57:21.919Z"},{"_id":"623c94e1520cbbda43a74b98","id":"1136c2b90c585511587df4cc5b2c2d34ed0a88e3","metadataId":"84473c4330b5d84a4846cd0211eae80b7685b7e7","blang":"en-US","publicKey":"C5kqVoJo7dP8DgVcChYnsuhk3hXexrQnBdmSgYvxR5F3","html":"<h3 class=\"style-scope ytd-comment-renderer\">\n          <a id=\"author-text\" class=\"yt-simple-endpoint style-scope ytd-comment-renderer\" href=\"/channel/UCidiTxpvXk_Q5alyIK0pnEQ\">\n            <span class=\"style-scope ytd-comment-renderer\">\n              Debdut Biswas\n            </span>\n          </a>\n        </h3>","offsetTop":2476,"offsetLeft":157,"href":"https://www.youtube.com/watch?v=ZhMw53Ud2tY","selectorName":"channel1","nature":{"type":"video","videoId":"ZhMw53Ud2tY"},"savingTime":"2022-03-24T15:57:21.919Z"},{"_id":"623c94e1520cbbda43a74b99","id":"8d2813a4bd8b891108f983a776dfa0c7e5271274","metadataId":"84473c4330b5d84a4846cd0211eae80b7685b7e7","blang":"en-US","publicKey":"C5kqVoJo7dP8DgVcChYnsuhk3hXexrQnBdmSgYvxR5F3","html":"<ytd-toggle-button-renderer id=\"like-button\" icon-size=\"16\" class=\"style-scope ytd-comment-action-buttons-renderer style-text size-default\" use-keyboard-focused=\"\" system-icons=\"\" button-renderer=\"true\" is-icon-button=\"\" has-no-text=\"\"><a class=\"yt-simple-endpoint style-scope ytd-toggle-button-renderer\" tabindex=\"-1\" href=\"/create_channel?upsell=comment\"><yt-icon-button id=\"button\" class=\"style-scope ytd-toggle-button-renderer style-text size-default\"><!--css-build:shady--><button id=\"button\" class=\"style-scope yt-icon-button\" aria-label=\"3&nbsp;autres personnes aiment ce commentaire\" aria-pressed=\"false\"><yt-icon class=\"style-scope ytd-toggle-button-renderer\"><!--css-build:shady--></yt-icon></button><yt-interaction id=\"interaction\" class=\"circular style-scope yt-icon-button\"><!--css-build:shady--><div class=\"stroke style-scope yt-interaction\"></div><div class=\"fill style-scope yt-interaction\"></div></yt-interaction></yt-icon-button></a></ytd-toggle-button-renderer>","offsetTop":2583,"offsetLeft":149,"href":"https://www.youtube.com/watch?v=ZhMw53Ud2tY","selectorName":"channel2","nature":{"type":"video","videoId":"ZhMw53Ud2tY"},"savingTime":"2022-03-24T15:57:21.919Z"},{"_id":"623c94e1520cbbda43a74b9a","id":"e74b2f1936207cf2be86df2c56ad1f1563db236a","metadataId":"84473c4330b5d84a4846cd0211eae80b7685b7e7","blang":"en-US","publicKey":"C5kqVoJo7dP8DgVcChYnsuhk3hXexrQnBdmSgYvxR5F3","html":"<div id=\"author-thumbnail\" class=\"style-scope ytd-comment-renderer\">\n    <a class=\"yt-simple-endpoint style-scope ytd-comment-renderer\" href=\"/channel/UC-SaOmc_t0maaN17VrNY3ag\">\n      <yt-img-shadow fit=\"\" height=\"40\" width=\"40\" class=\"style-scope ytd-comment-renderer no-transition empty\" style=\"background-color: transparent;\"><!--css-build:shady--><img id=\"img\" class=\"style-scope yt-img-shadow\" alt=\"\" width=\"40\" height=\"40\"></yt-img-shadow>\n    </a>\n  </div>","offsetTop":2632,"offsetLeft":101,"href":"https://www.youtube.com/watch?v=ZhMw53Ud2tY","selectorName":"channel1","nature":{"type":"video","videoId":"ZhMw53Ud2tY"},"savingTime":"2022-03-24T15:57:21.919Z"},{"_id":"623c94e1520cbbda43a74b9b","id":"5928e09da003506b3d4354ea12af9653896da740","metadataId":"84473c4330b5d84a4846cd0211eae80b7685b7e7","blang":"en-US","publicKey":"C5kqVoJo7dP8DgVcChYnsuhk3hXexrQnBdmSgYvxR5F3","html":"<h3 class=\"style-scope ytd-comment-renderer\">\n          <a id=\"author-text\" class=\"yt-simple-endpoint style-scope ytd-comment-renderer\" href=\"/channel/UC-SaOmc_t0maaN17VrNY3ag\">\n            <span class=\"style-scope ytd-comment-renderer\">\n              LordOfHack\n            </span>\n          </a>\n        </h3>","offsetTop":2632,"offsetLeft":157,"href":"https://www.youtube.com/watch?v=ZhMw53Ud2tY","selectorName":"channel1","nature":{"type":"video","videoId":"ZhMw53Ud2tY"},"savingTime":"2022-03-24T15:57:21.919Z"},{"_id":"623c94e1520cbbda43a74b9c","id":"b55e2e3784f0750232672a8981bffb97008cdbcf","metadataId":"84473c4330b5d84a4846cd0211eae80b7685b7e7","blang":"en-US","publicKey":"C5kqVoJo7dP8DgVcChYnsuhk3hXexrQnBdmSgYvxR5F3","html":"<div id=\"author-thumbnail\" class=\"style-scope ytd-comment-renderer\">\n    <a class=\"yt-simple-endpoint style-scope ytd-comment-renderer\" href=\"/channel/UCzSh6msPwO788bFODZbpdWQ\">\n      <yt-img-shadow fit=\"\" height=\"40\" width=\"40\" class=\"style-scope ytd-comment-renderer no-transition empty\" style=\"background-color: transparent;\"><!--css-build:shady--><img id=\"img\" class=\"style-scope yt-img-shadow\" alt=\"\" width=\"40\" height=\"40\"></yt-img-shadow>\n    </a>\n  </div>","offsetTop":2728,"offsetLeft":101,"href":"https://www.youtube.com/watch?v=ZhMw53Ud2tY","selectorName":"channel1","nature":{"type":"video","videoId":"ZhMw53Ud2tY"},"savingTime":"2022-03-24T15:57:21.919Z"},{"_id":"623c94e1520cbbda43a74b9d","id":"47aea1b36f0047b7989826478a368f17f65932a5","metadataId":"84473c4330b5d84a4846cd0211eae80b7685b7e7","blang":"en-US","publicKey":"C5kqVoJo7dP8DgVcChYnsuhk3hXexrQnBdmSgYvxR5F3","html":"<h3 class=\"style-scope ytd-comment-renderer\">\n          <a id=\"author-text\" class=\"yt-simple-endpoint style-scope ytd-comment-renderer\" href=\"/channel/UCzSh6msPwO788bFODZbpdWQ\">\n            <span class=\"style-scope ytd-comment-renderer\">\n              Levy Roth\n            </span>\n          </a>\n        </h3>","offsetTop":2728,"offsetLeft":157,"href":"https://www.youtube.com/watch?v=ZhMw53Ud2tY","selectorName":"channel1","nature":{"type":"video","videoId":"ZhMw53Ud2tY"},"savingTime":"2022-03-24T15:57:21.919Z"},{"_id":"623c94e1520cbbda43a74b9e","id":"db5b5d1da64c56a23724bac04e3618b1afa19643","metadataId":"84473c4330b5d84a4846cd0211eae80b7685b7e7","blang":"en-US","publicKey":"C5kqVoJo7dP8DgVcChYnsuhk3hXexrQnBdmSgYvxR5F3","html":"<ytd-toggle-button-renderer id=\"like-button\" icon-size=\"16\" class=\"style-scope ytd-comment-action-buttons-renderer style-text size-default\" use-keyboard-focused=\"\" system-icons=\"\" button-renderer=\"true\" is-icon-button=\"\" has-no-text=\"\"><a class=\"yt-simple-endpoint style-scope ytd-toggle-button-renderer\" tabindex=\"-1\" href=\"/create_channel?upsell=comment\"><yt-icon-button id=\"button\" class=\"style-scope ytd-toggle-button-renderer style-text size-default\"><!--css-build:shady--><button id=\"button\" class=\"style-scope yt-icon-button\" aria-label=\"0&nbsp;autre personne aime ce commentaire\" aria-pressed=\"false\"><yt-icon class=\"style-scope ytd-toggle-button-renderer\"><!--css-build:shady--></yt-icon></button><yt-interaction id=\"interaction\" class=\"circular style-scope yt-icon-button\"><!--css-build:shady--><div class=\"stroke style-scope yt-interaction\"></div><div class=\"fill style-scope yt-interaction\"></div></yt-interaction></yt-icon-button></a></ytd-toggle-button-renderer>","offsetTop":2775,"offsetLeft":149,"href":"https://www.youtube.com/watch?v=ZhMw53Ud2tY","selectorName":"channel2","nature":{"type":"video","videoId":"ZhMw53Ud2tY"},"savingTime":"2022-03-24T15:57:21.919Z"},{"_id":"623c94e1520cbbda43a74b8c","id":"b08ff1ed257e95992e9fbe9a6f0e457afb405b0d","metadataId":"84473c4330b5d84a4846cd0211eae80b7685b7e7","blang":"en-US","publicKey":"C5kqVoJo7dP8DgVcChYnsuhk3hXexrQnBdmSgYvxR5F3","html":"<div id=\"author-thumbnail\" class=\"style-scope ytd-comment-renderer\">\n    <a class=\"yt-simple-endpoint style-scope ytd-comment-renderer\" href=\"/channel/UC71dKwYGaiWXQ3MkVi_Clwg\">\n      <yt-img-shadow fit=\"\" height=\"40\" width=\"40\" class=\"style-scope ytd-comment-renderer no-transition empty\" style=\"background-color: transparent;\"><!--css-build:shady--><img id=\"img\" class=\"style-scope yt-img-shadow\" alt=\"\" width=\"40\" height=\"40\"></yt-img-shadow>\n    </a>\n  </div>","offsetTop":1876,"offsetLeft":101,"href":"https://www.youtube.com/watch?v=ZhMw53Ud2tY","selectorName":"channel1","nature":{"type":"video","videoId":"ZhMw53Ud2tY"},"savingTime":"2022-03-24T15:57:21.918Z"},{"_id":"623c94e1520cbbda43a74b8d","id":"8a05771626b39cce48996678bdefc556d0eba044","metadataId":"84473c4330b5d84a4846cd0211eae80b7685b7e7","blang":"en-US","publicKey":"C5kqVoJo7dP8DgVcChYnsuhk3hXexrQnBdmSgYvxR5F3","html":"<h3 class=\"style-scope ytd-comment-renderer\">\n          <a id=\"author-text\" class=\"yt-simple-endpoint style-scope ytd-comment-renderer\" href=\"/channel/UC71dKwYGaiWXQ3MkVi_Clwg\">\n            <span class=\"style-scope ytd-comment-renderer\">\n              Stephen T Satchell\n            </span>\n          </a>\n        </h3>","offsetTop":1876,"offsetLeft":157,"href":"https://www.youtube.com/watch?v=ZhMw53Ud2tY","selectorName":"channel1","nature":{"type":"video","videoId":"ZhMw53Ud2tY"},"savingTime":"2022-03-24T15:57:21.918Z"},{"_id":"623c94e1520cbbda43a74b8e","id":"7b6e1003e3acc109c829135fd9fa83bcc8b65a06","metadataId":"84473c4330b5d84a4846cd0211eae80b7685b7e7","blang":"en-US","publicKey":"C5kqVoJo7dP8DgVcChYnsuhk3hXexrQnBdmSgYvxR5F3","html":"<div id=\"author-thumbnail\" class=\"style-scope ytd-comment-renderer\">\n    <a class=\"yt-simple-endpoint style-scope ytd-comment-renderer\" href=\"/channel/UCJAaMHLEDTSf22i2BxNN5fw\">\n      <yt-img-shadow fit=\"\" height=\"40\" width=\"40\" class=\"style-scope ytd-comment-renderer no-transition empty\" style=\"background-color: transparent;\"><!--css-build:shady--><img id=\"img\" class=\"style-scope yt-img-shadow\" alt=\"\" width=\"40\" height=\"40\"></yt-img-shadow>\n    </a>\n  </div>","offsetTop":2012,"offsetLeft":101,"href":"https://www.youtube.com/watch?v=ZhMw53Ud2tY","selectorName":"channel1","nature":{"type":"video","videoId":"ZhMw53Ud2tY"},"savingTime":"2022-03-24T15:57:21.918Z"},{"_id":"623c94e1520cbbda43a74b8f","id":"b84ec6c09030d78358e8242725c553017319bcae","metadataId":"84473c4330b5d84a4846cd0211eae80b7685b7e7","blang":"en-US","publicKey":"C5kqVoJo7dP8DgVcChYnsuhk3hXexrQnBdmSgYvxR5F3","html":"<h3 class=\"style-scope ytd-comment-renderer\">\n          <a id=\"author-text\" class=\"yt-simple-endpoint style-scope ytd-comment-renderer\" href=\"/channel/UCJAaMHLEDTSf22i2BxNN5fw\">\n            <span class=\"style-scope ytd-comment-renderer\">\n              Edgar Ardon\n            </span>\n          </a>\n        </h3>","offsetTop":2012,"offsetLeft":157,"href":"https://www.youtube.com/watch?v=ZhMw53Ud2tY","selectorName":"channel1","nature":{"type":"video","videoId":"ZhMw53Ud2tY"},"savingTime":"2022-03-24T15:57:21.918Z"},{"_id":"623c94e1520cbbda43a74b90","id":"5d471ad32023ff502784426f4d449bf5294d5c0a","metadataId":"84473c4330b5d84a4846cd0211eae80b7685b7e7","blang":"en-US","publicKey":"C5kqVoJo7dP8DgVcChYnsuhk3hXexrQnBdmSgYvxR5F3","html":"<ytd-toggle-button-renderer id=\"like-button\" icon-size=\"16\" class=\"style-scope ytd-comment-action-buttons-renderer style-text size-default\" use-keyboard-focused=\"\" system-icons=\"\" button-renderer=\"true\" is-icon-button=\"\" has-no-text=\"\"><a class=\"yt-simple-endpoint style-scope ytd-toggle-button-renderer\" tabindex=\"-1\" href=\"/create_channel?upsell=comment\"><yt-icon-button id=\"button\" class=\"style-scope ytd-toggle-button-renderer style-text size-default\"><!--css-build:shady--><button id=\"button\" class=\"style-scope yt-icon-button\" aria-label=\"2&nbsp;autres personnes aiment ce commentaire\" aria-pressed=\"false\"><yt-icon class=\"style-scope ytd-toggle-button-renderer\"><!--css-build:shady--></yt-icon></button><yt-interaction id=\"interaction\" class=\"circular style-scope yt-icon-button\"><!--css-build:shady--><div class=\"stroke style-scope yt-interaction\"></div><div class=\"fill style-scope yt-interaction\"></div></yt-interaction></yt-icon-button></a></ytd-toggle-button-renderer>","offsetTop":2059,"offsetLeft":149,"href":"https://www.youtube.com/watch?v=ZhMw53Ud2tY","selectorName":"channel2","nature":{"type":"video","videoId":"ZhMw53Ud2tY"},"savingTime":"2022-03-24T15:57:21.918Z"},{"_id":"623c94e1520cbbda43a74b91","id":"197f7411fc31fac0195e7c22a59afef4347f38bd","metadataId":"84473c4330b5d84a4846cd0211eae80b7685b7e7","blang":"en-US","publicKey":"C5kqVoJo7dP8DgVcChYnsuhk3hXexrQnBdmSgYvxR5F3","html":"<div id=\"author-thumbnail\" class=\"style-scope ytd-comment-renderer\">\n    <a class=\"yt-simple-endpoint style-scope ytd-comment-renderer\" href=\"/channel/UCoUTKAGZjOYSAIZyHkWwbAw\">\n      <yt-img-shadow fit=\"\" height=\"40\" width=\"40\" class=\"style-scope ytd-comment-renderer no-transition empty\" style=\"background-color: transparent;\"><!--css-build:shady--><img id=\"img\" class=\"style-scope yt-img-shadow\" alt=\"\" width=\"40\" height=\"40\"></yt-img-shadow>\n    </a>\n  </div>","offsetTop":2108,"offsetLeft":101,"href":"https://www.youtube.com/watch?v=ZhMw53Ud2tY","selectorName":"channel1","nature":{"type":"video","videoId":"ZhMw53Ud2tY"},"savingTime":"2022-03-24T15:57:21.918Z"},{"_id":"623c94e1520cbbda43a74b92","id":"68a9eda6b50b9a2e7dd5be55537419054ccf3c1a","metadataId":"84473c4330b5d84a4846cd0211eae80b7685b7e7","blang":"en-US","publicKey":"C5kqVoJo7dP8DgVcChYnsuhk3hXexrQnBdmSgYvxR5F3","html":"<h3 class=\"style-scope ytd-comment-renderer\">\n          <a id=\"author-text\" class=\"yt-simple-endpoint style-scope ytd-comment-renderer\" href=\"/channel/UCoUTKAGZjOYSAIZyHkWwbAw\">\n            <span class=\"style-scope ytd-comment-renderer\">\n              William Heffernan\n            </span>\n          </a>\n        </h3>","offsetTop":2108,"offsetLeft":157,"href":"https://www.youtube.com/watch?v=ZhMw53Ud2tY","selectorName":"channel1","nature":{"type":"video","videoId":"ZhMw53Ud2tY"},"savingTime":"2022-03-24T15:57:21.918Z"},{"_id":"623c94e1520cbbda43a74b93","id":"ee05967c81949602f0f6d0d3909df6e8c009992f","metadataId":"84473c4330b5d84a4846cd0211eae80b7685b7e7","blang":"en-US","publicKey":"C5kqVoJo7dP8DgVcChYnsuhk3hXexrQnBdmSgYvxR5F3","html":"<div id=\"author-thumbnail\" class=\"style-scope ytd-comment-renderer\">\n    <a class=\"yt-simple-endpoint style-scope ytd-comment-renderer\" href=\"/channel/UCaiDTGRzQo1zBYQdgEY_41w\">\n      <yt-img-shadow fit=\"\" height=\"40\" width=\"40\" class=\"style-scope ytd-comment-renderer no-transition empty\" style=\"background-color: transparent;\"><!--css-build:shady--><img id=\"img\" class=\"style-scope yt-img-shadow\" alt=\"\" width=\"40\" height=\"40\"></yt-img-shadow>\n    </a>\n  </div>","offsetTop":2264,"offsetLeft":101,"href":"https://www.youtube.com/watch?v=ZhMw53Ud2tY","selectorName":"channel1","nature":{"type":"video","videoId":"ZhMw53Ud2tY"},"savingTime":"2022-03-24T15:57:21.918Z"},{"_id":"623c94e1520cbbda43a74b94","id":"6d6fae177029f720b7bd985919122dfbab33e0a3","metadataId":"84473c4330b5d84a4846cd0211eae80b7685b7e7","blang":"en-US","publicKey":"C5kqVoJo7dP8DgVcChYnsuhk3hXexrQnBdmSgYvxR5F3","html":"<h3 class=\"style-scope ytd-comment-renderer\">\n          <a id=\"author-text\" class=\"yt-simple-endpoint style-scope ytd-comment-renderer\" href=\"/channel/UCaiDTGRzQo1zBYQdgEY_41w\">\n            <span class=\"style-scope ytd-comment-renderer\">\n              Max Kueng\n            </span>\n          </a>\n        </h3>","offsetTop":2264,"offsetLeft":157,"href":"https://www.youtube.com/watch?v=ZhMw53Ud2tY","selectorName":"channel1","nature":{"type":"video","videoId":"ZhMw53Ud2tY"},"savingTime":"2022-03-24T15:57:21.918Z"},{"_id":"623c94e1520cbbda43a74b95","id":"684d27a3554c56e34a6dffa8ffced2295ccdc85a","metadataId":"84473c4330b5d84a4846cd0211eae80b7685b7e7","blang":"en-US","publicKey":"C5kqVoJo7dP8DgVcChYnsuhk3hXexrQnBdmSgYvxR5F3","html":"<div id=\"author-thumbnail\" class=\"style-scope ytd-comment-renderer\">\n    <a class=\"yt-simple-endpoint style-scope ytd-comment-renderer\" href=\"/channel/UCIc9AAfaumUXUnxL3yGNY9w\">\n      <yt-img-shadow fit=\"\" height=\"40\" width=\"40\" class=\"style-scope ytd-comment-renderer no-transition empty\" style=\"background-color: transparent;\"><!--css-build:shady--><img id=\"img\" class=\"style-scope yt-img-shadow\" alt=\"\" width=\"40\" height=\"40\"></yt-img-shadow>\n    </a>\n  </div>","offsetTop":2380,"offsetLeft":101,"href":"https://www.youtube.com/watch?v=ZhMw53Ud2tY","selectorName":"channel1","nature":{"type":"video","videoId":"ZhMw53Ud2tY"},"savingTime":"2022-03-24T15:57:21.918Z"},{"_id":"623c94e1520cbbda43a74b96","id":"263fb4d7e6ef5e176327d1c24c2a30fffb1ba59d","metadataId":"84473c4330b5d84a4846cd0211eae80b7685b7e7","blang":"en-US","publicKey":"C5kqVoJo7dP8DgVcChYnsuhk3hXexrQnBdmSgYvxR5F3","html":"<h3 class=\"style-scope ytd-comment-renderer\">\n          <a id=\"author-text\" class=\"yt-simple-endpoint style-scope ytd-comment-renderer\" href=\"/channel/UCIc9AAfaumUXUnxL3yGNY9w\">\n            <span class=\"style-scope ytd-comment-renderer\">\n              ZapsterZatoo\n            </span>\n          </a>\n        </h3>","offsetTop":2380,"offsetLeft":157,"href":"https://www.youtube.com/watch?v=ZhMw53Ud2tY","selectorName":"channel1","nature":{"type":"video","videoId":"ZhMw53Ud2tY"},"savingTime":"2022-03-24T15:57:21.918Z"},{"_id":"623c94cb520cbbda43a74b78","id":"08f7918cef8d9c395a49e2aff467df3a15e9bc1c","metadataId":"84473c4330b5d84a4846cd0211eae80b7685b7e7","blang":"en-US","publicKey":"C5kqVoJo7dP8DgVcChYnsuhk3hXexrQnBdmSgYvxR5F3","html":"<h3 class=\"style-scope ytd-comment-renderer\">\n          <a id=\"author-text\" class=\"yt-simple-endpoint style-scope ytd-comment-renderer\" href=\"/channel/UCfnsx8O1-VfRwEtSw3pMS9Q\">\n            <span class=\"style-scope ytd-comment-renderer\">\n              Charlie Peepers\n            </span>\n          </a>\n        </h3>","offsetTop":1780,"offsetLeft":157,"href":"https://www.youtube.com/watch?v=ZhMw53Ud2tY","selectorName":"channel1","nature":{"type":"video","videoId":"ZhMw53Ud2tY"},"savingTime":"2022-03-24T15:56:59.858Z"},{"_id":"623c94cb520cbbda43a74b79","id":"aa2dd7db09bf43ab5834448e901faa8e9cbd2a33","metadataId":"84473c4330b5d84a4846cd0211eae80b7685b7e7","blang":"en-US","publicKey":"C5kqVoJo7dP8DgVcChYnsuhk3hXexrQnBdmSgYvxR5F3","html":"<ytd-toggle-button-renderer id=\"like-button\" icon-size=\"16\" class=\"style-scope ytd-comment-action-buttons-renderer style-text size-default\" use-keyboard-focused=\"\" system-icons=\"\" button-renderer=\"true\" is-icon-button=\"\" has-no-text=\"\"><a class=\"yt-simple-endpoint style-scope ytd-toggle-button-renderer\" tabindex=\"-1\" href=\"/create_channel?upsell=comment\"><yt-icon-button id=\"button\" class=\"style-scope ytd-toggle-button-renderer style-text size-default\"><!--css-build:shady--><button id=\"button\" class=\"style-scope yt-icon-button\" aria-label=\"4&nbsp;autres personnes aiment ce commentaire\" aria-pressed=\"false\"><yt-icon class=\"style-scope ytd-toggle-button-renderer\"><!--css-build:shady--></yt-icon></button><yt-interaction id=\"interaction\" class=\"circular style-scope yt-icon-button\"><!--css-build:shady--><div class=\"stroke style-scope yt-interaction\"></div><div class=\"fill style-scope yt-interaction\"></div></yt-interaction></yt-icon-button></a></ytd-toggle-button-renderer>","offsetTop":1827,"offsetLeft":149,"href":"https://www.youtube.com/watch?v=ZhMw53Ud2tY","selectorName":"channel2","nature":{"type":"video","videoId":"ZhMw53Ud2tY"},"savingTime":"2022-03-24T15:56:59.858Z"},{"_id":"623c94cb520cbbda43a74b70","id":"b665efc62608fc6910c2205f62360cdd79cf5ec0","metadataId":"84473c4330b5d84a4846cd0211eae80b7685b7e7","blang":"en-US","publicKey":"C5kqVoJo7dP8DgVcChYnsuhk3hXexrQnBdmSgYvxR5F3","html":"<ytd-toggle-button-renderer id=\"like-button\" icon-size=\"16\" class=\"style-scope ytd-comment-action-buttons-renderer style-text size-default\" use-keyboard-focused=\"\" system-icons=\"\" button-renderer=\"true\" is-icon-button=\"\" has-no-text=\"\"><a class=\"yt-simple-endpoint style-scope ytd-toggle-button-renderer\" tabindex=\"-1\" href=\"/create_channel?upsell=comment\"><yt-icon-button id=\"button\" class=\"style-scope ytd-toggle-button-renderer style-text size-default\"><!--css-build:shady--><button id=\"button\" class=\"style-scope yt-icon-button\" aria-label=\"50&nbsp;autres personnes aiment ce commentaire\" aria-pressed=\"false\"><yt-icon class=\"style-scope ytd-toggle-button-renderer\"><!--css-build:shady--></yt-icon></button><yt-interaction id=\"interaction\" class=\"circular style-scope yt-icon-button\"><!--css-build:shady--><div class=\"stroke style-scope yt-interaction\"></div><div class=\"fill style-scope yt-interaction\"></div></yt-interaction></yt-icon-button></a></ytd-toggle-button-renderer>","offsetTop":1487,"offsetLeft":149,"href":"https://www.youtube.com/watch?v=ZhMw53Ud2tY","selectorName":"channel2","nature":{"type":"video","videoId":"ZhMw53Ud2tY"},"savingTime":"2022-03-24T15:56:59.857Z"},{"_id":"623c94cb520cbbda43a74b71","id":"31b65070b1b285c73953510f2307137822a7c61e","metadataId":"84473c4330b5d84a4846cd0211eae80b7685b7e7","blang":"en-US","publicKey":"C5kqVoJo7dP8DgVcChYnsuhk3hXexrQnBdmSgYvxR5F3","html":"<div id=\"author-thumbnail\" class=\"style-scope ytd-comment-renderer\">\n    <a class=\"yt-simple-endpoint style-scope ytd-comment-renderer\" href=\"/channel/UCr-ySVDaPdSh07eDfqf5L8w\">\n      <yt-img-shadow fit=\"\" height=\"40\" width=\"40\" class=\"style-scope ytd-comment-renderer no-transition empty\" style=\"background-color: transparent;\"><!--css-build:shady--><img id=\"img\" class=\"style-scope yt-img-shadow\" alt=\"\" width=\"40\" height=\"40\"></yt-img-shadow>\n    </a>\n  </div>","offsetTop":1568,"offsetLeft":101,"href":"https://www.youtube.com/watch?v=ZhMw53Ud2tY","selectorName":"channel1","nature":{"type":"video","videoId":"ZhMw53Ud2tY"},"savingTime":"2022-03-24T15:56:59.857Z"},{"_id":"623c94cb520cbbda43a74b72","id":"152f9ef35e9e55ae6c654b85ec7dc80e5497fe65","metadataId":"84473c4330b5d84a4846cd0211eae80b7685b7e7","blang":"en-US","publicKey":"C5kqVoJo7dP8DgVcChYnsuhk3hXexrQnBdmSgYvxR5F3","html":"<h3 class=\"style-scope ytd-comment-renderer\">\n          <a id=\"author-text\" class=\"yt-simple-endpoint style-scope ytd-comment-renderer\" href=\"/channel/UCr-ySVDaPdSh07eDfqf5L8w\">\n            <span class=\"style-scope ytd-comment-renderer\">\n              John Cullen\n            </span>\n          </a>\n        </h3>","offsetTop":1568,"offsetLeft":157,"href":"https://www.youtube.com/watch?v=ZhMw53Ud2tY","selectorName":"channel1","nature":{"type":"video","videoId":"ZhMw53Ud2tY"},"savingTime":"2022-03-24T15:56:59.857Z"},{"_id":"623c94cb520cbbda43a74b73","id":"ee2a64593c097d67e299bde2dc4ae038a92789bc","metadataId":"84473c4330b5d84a4846cd0211eae80b7685b7e7","blang":"en-US","publicKey":"C5kqVoJo7dP8DgVcChYnsuhk3hXexrQnBdmSgYvxR5F3","html":"<ytd-toggle-button-renderer id=\"like-button\" icon-size=\"16\" class=\"style-scope ytd-comment-action-buttons-renderer style-text size-default\" use-keyboard-focused=\"\" system-icons=\"\" button-renderer=\"true\" is-icon-button=\"\" has-no-text=\"\"><a class=\"yt-simple-endpoint style-scope ytd-toggle-button-renderer\" tabindex=\"-1\" href=\"/create_channel?upsell=comment\"><yt-icon-button id=\"button\" class=\"style-scope ytd-toggle-button-renderer style-text size-default\"><!--css-build:shady--><button id=\"button\" class=\"style-scope yt-icon-button\" aria-label=\"32&nbsp;autres personnes aiment ce commentaire\" aria-pressed=\"false\"><yt-icon class=\"style-scope ytd-toggle-button-renderer\"><!--css-build:shady--></yt-icon></button><yt-interaction id=\"interaction\" class=\"circular style-scope yt-icon-button\"><!--css-build:shady--><div class=\"stroke style-scope yt-interaction\"></div><div class=\"fill style-scope yt-interaction\"></div></yt-interaction></yt-icon-button></a></ytd-toggle-button-renderer>","offsetTop":1615,"offsetLeft":149,"href":"https://www.youtube.com/watch?v=ZhMw53Ud2tY","selectorName":"channel2","nature":{"type":"video","videoId":"ZhMw53Ud2tY"},"savingTime":"2022-03-24T15:56:59.857Z"},{"_id":"623c94cb520cbbda43a74b74","id":"ac94d6a0091cd1a04e3b2266e28b7c7bfaa7490d","metadataId":"84473c4330b5d84a4846cd0211eae80b7685b7e7","blang":"en-US","publicKey":"C5kqVoJo7dP8DgVcChYnsuhk3hXexrQnBdmSgYvxR5F3","html":"<div id=\"author-thumbnail\" class=\"style-scope ytd-comment-renderer\">\n    <a class=\"yt-simple-endpoint style-scope ytd-comment-renderer\" href=\"/channel/UCYkTYx54pE0VF4XaZ-iAB1w\">\n      <yt-img-shadow fit=\"\" height=\"40\" width=\"40\" class=\"style-scope ytd-comment-renderer no-transition empty\" style=\"background-color: transparent;\"><!--css-build:shady--><img id=\"img\" class=\"style-scope yt-img-shadow\" alt=\"\" width=\"40\" height=\"40\"></yt-img-shadow>\n    </a>\n  </div>","offsetTop":1664,"offsetLeft":101,"href":"https://www.youtube.com/watch?v=ZhMw53Ud2tY","selectorName":"channel1","nature":{"type":"video","videoId":"ZhMw53Ud2tY"},"savingTime":"2022-03-24T15:56:59.857Z"},{"_id":"623c94cb520cbbda43a74b75","id":"f63f144a274b13570abb73f50d96c24b0e59c834","metadataId":"84473c4330b5d84a4846cd0211eae80b7685b7e7","blang":"en-US","publicKey":"C5kqVoJo7dP8DgVcChYnsuhk3hXexrQnBdmSgYvxR5F3","html":"<h3 class=\"style-scope ytd-comment-renderer\">\n          <a id=\"author-text\" class=\"yt-simple-endpoint style-scope ytd-comment-renderer\" href=\"/channel/UCYkTYx54pE0VF4XaZ-iAB1w\">\n            <span class=\"style-scope ytd-comment-renderer\">\n              T H\n            </span>\n          </a>\n        </h3>","offsetTop":1664,"offsetLeft":157,"href":"https://www.youtube.com/watch?v=ZhMw53Ud2tY","selectorName":"channel1","nature":{"type":"video","videoId":"ZhMw53Ud2tY"},"savingTime":"2022-03-24T15:56:59.857Z"},{"_id":"623c94cb520cbbda43a74b76","id":"d33eb5b640f41e4df4654b8c641fe4e798c014d9","metadataId":"84473c4330b5d84a4846cd0211eae80b7685b7e7","blang":"en-US","publicKey":"C5kqVoJo7dP8DgVcChYnsuhk3hXexrQnBdmSgYvxR5F3","html":"<ytd-toggle-button-renderer id=\"like-button\" icon-size=\"16\" class=\"style-scope ytd-comment-action-buttons-renderer style-text size-default\" use-keyboard-focused=\"\" system-icons=\"\" button-renderer=\"true\" is-icon-button=\"\" has-no-text=\"\"><a class=\"yt-simple-endpoint style-scope ytd-toggle-button-renderer\" tabindex=\"-1\" href=\"/create_channel?upsell=comment\"><yt-icon-button id=\"button\" class=\"style-scope ytd-toggle-button-renderer style-text size-default\"><!--css-build:shady--><button id=\"button\" class=\"style-scope yt-icon-button\" aria-label=\"14&nbsp;autres personnes aiment ce commentaire\" aria-pressed=\"false\"><yt-icon class=\"style-scope ytd-toggle-button-renderer\"><!--css-build:shady--></yt-icon></button><yt-interaction id=\"interaction\" class=\"circular style-scope yt-icon-button\"><!--css-build:shady--><div class=\"stroke style-scope yt-interaction\"></div><div class=\"fill style-scope yt-interaction\"></div></yt-interaction></yt-icon-button></a></ytd-toggle-button-renderer>","offsetTop":1731,"offsetLeft":149,"href":"https://www.youtube.com/watch?v=ZhMw53Ud2tY","selectorName":"channel2","nature":{"type":"video","videoId":"ZhMw53Ud2tY"},"savingTime":"2022-03-24T15:56:59.857Z"},{"_id":"623c94cb520cbbda43a74b77","id":"9de75ef28f59bb5a077c2055da24df5495d6940e","metadataId":"84473c4330b5d84a4846cd0211eae80b7685b7e7","blang":"en-US","publicKey":"C5kqVoJo7dP8DgVcChYnsuhk3hXexrQnBdmSgYvxR5F3","html":"<div id=\"author-thumbnail\" class=\"style-scope ytd-comment-renderer\">\n    <a class=\"yt-simple-endpoint style-scope ytd-comment-renderer\" href=\"/channel/UCfnsx8O1-VfRwEtSw3pMS9Q\">\n      <yt-img-shadow fit=\"\" height=\"40\" width=\"40\" class=\"style-scope ytd-comment-renderer no-transition empty\" style=\"background-color: transparent;\"><!--css-build:shady--><img id=\"img\" class=\"style-scope yt-img-shadow\" alt=\"\" width=\"40\" height=\"40\"></yt-img-shadow>\n    </a>\n  </div>","offsetTop":1780,"offsetLeft":101,"href":"https://www.youtube.com/watch?v=ZhMw53Ud2tY","selectorName":"channel1","nature":{"type":"video","videoId":"ZhMw53Ud2tY"},"savingTime":"2022-03-24T15:56:59.857Z"},{"_id":"623c94cb520cbbda43a74b68","id":"6ba797b1d2c0bdf55ddeac0b2eab74074cce0269","metadataId":"84473c4330b5d84a4846cd0211eae80b7685b7e7","blang":"en-US","publicKey":"C5kqVoJo7dP8DgVcChYnsuhk3hXexrQnBdmSgYvxR5F3","html":"<div id=\"author-thumbnail\" class=\"style-scope ytd-comment-renderer\">\n    <a class=\"yt-simple-endpoint style-scope ytd-comment-renderer\" href=\"/channel/UC_Fh8kvtkVPkeihBs42jGcA\">\n      <yt-img-shadow fit=\"\" height=\"40\" width=\"40\" class=\"style-scope ytd-comment-renderer no-transition empty\" style=\"background-color: transparent;\"><!--css-build:shady--><img id=\"img\" class=\"style-scope yt-img-shadow\" alt=\"\" width=\"40\" height=\"40\"></yt-img-shadow>\n    </a>\n  </div>","offsetTop":1282,"offsetLeft":101,"href":"https://www.youtube.com/watch?v=ZhMw53Ud2tY","selectorName":"channel1","nature":{"type":"video","videoId":"ZhMw53Ud2tY"},"savingTime":"2022-03-24T15:56:59.856Z"},{"_id":"623c94cb520cbbda43a74b69","id":"41c8a636bd67bd2704872f9028b0c2af043f3099","metadataId":"84473c4330b5d84a4846cd0211eae80b7685b7e7","blang":"en-US","publicKey":"C5kqVoJo7dP8DgVcChYnsuhk3hXexrQnBdmSgYvxR5F3","html":"<ytd-author-comment-badge-renderer class=\"style-scope ytd-comment-renderer\" standardize-icon-size=\"\" style=\"--ytd-author-comment-badge-icon-background-color: transparent; --ytd-author-comment-badge-background-color: transparent; --ytd-author-comment-badge-name-color: var(--yt-spec-text-primary);\"><!--css-build:shady--><a id=\"name\" class=\"yt-simple-endpoint style-scope ytd-author-comment-badge-renderer\" href=\"/channel/UC_Fh8kvtkVPkeihBs42jGcA\">\n  <ytd-channel-name id=\"channel-name\" class=\"style-scope ytd-author-comment-badge-renderer\"><!--css-build:shady--><div id=\"container\" class=\"style-scope ytd-channel-name\">\n  <div id=\"text-container\" class=\"style-scope ytd-channel-name\">\n    <yt-formatted-string id=\"text\" title=\"\" class=\"style-scope ytd-channel-name\" ellipsis-truncate=\"\" aria-label=\"Coding in Flow, utilisateur validé\">Coding in Flow</yt-formatted-string>\n  </div>\n  <tp-yt-paper-tooltip fit-to-visible-bounds=\"\" class=\"style-scope ytd-channel-name\" role=\"tooltip\" tabindex=\"-1\"><!--css-build:shady--><div id=\"tooltip\" class=\"hidden style-scope tp-yt-paper-tooltip\">\n  \n    Coding in Flow\n  \n</div>\n</tp-yt-paper-tooltip>\n</div>\n<ytd-badge-supported-renderer class=\"style-scope ytd-channel-name\" disable-upgrade=\"\" hidden=\"\">\n</ytd-badge-supported-renderer>\n</ytd-channel-name>\n</a>\n<yt-icon id=\"icon\" size=\"12\" class=\"style-scope ytd-author-comment-badge-renderer\"><!--css-build:shady--></yt-icon>\n</ytd-author-comment-badge-renderer>","offsetTop":1283,"offsetLeft":157,"href":"https://www.youtube.com/watch?v=ZhMw53Ud2tY","selectorName":"channel1","nature":{"type":"video","videoId":"ZhMw53Ud2tY"},"savingTime":"2022-03-24T15:56:59.856Z"},{"_id":"623c94cb520cbbda43a74b6a","id":"277186048594e6722d881be68a66b9e46489603f","metadataId":"84473c4330b5d84a4846cd0211eae80b7685b7e7","blang":"en-US","publicKey":"C5kqVoJo7dP8DgVcChYnsuhk3hXexrQnBdmSgYvxR5F3","html":"<ytd-toggle-button-renderer id=\"like-button\" icon-size=\"16\" class=\"style-scope ytd-comment-action-buttons-renderer style-text size-default\" use-keyboard-focused=\"\" system-icons=\"\" button-renderer=\"true\" is-icon-button=\"\" has-no-text=\"\"><a class=\"yt-simple-endpoint style-scope ytd-toggle-button-renderer\" tabindex=\"-1\" href=\"/create_channel?upsell=comment\"><yt-icon-button id=\"button\" class=\"style-scope ytd-toggle-button-renderer style-text size-default\"><!--css-build:shady--><button id=\"button\" class=\"style-scope yt-icon-button\" aria-label=\"420&nbsp;autres personnes aiment ce commentaire\" aria-pressed=\"false\"><yt-icon class=\"style-scope ytd-toggle-button-renderer\"><!--css-build:shady--></yt-icon></button><yt-interaction id=\"interaction\" class=\"circular style-scope yt-icon-button\"><!--css-build:shady--><div class=\"stroke style-scope yt-interaction\"></div><div class=\"fill style-scope yt-interaction\"></div></yt-interaction></yt-icon-button></a></ytd-toggle-button-renderer>","offsetTop":1201,"offsetLeft":149,"href":"https://www.youtube.com/watch?v=ZhMw53Ud2tY","selectorName":"channel2","nature":{"type":"video","videoId":"ZhMw53Ud2tY"},"savingTime":"2022-03-24T15:56:59.856Z"},{"_id":"623c94cb520cbbda43a74b6b","id":"b450d44b065376357f1629bc95cabc78eef95ccb","metadataId":"84473c4330b5d84a4846cd0211eae80b7685b7e7","blang":"en-US","publicKey":"C5kqVoJo7dP8DgVcChYnsuhk3hXexrQnBdmSgYvxR5F3","html":"<ytd-toggle-button-renderer id=\"dislike-button\" icon-size=\"16\" class=\"style-scope ytd-comment-action-buttons-renderer style-text size-default\" use-keyboard-focused=\"\" system-icons=\"\" button-renderer=\"true\" is-icon-button=\"\" has-no-text=\"\"><a class=\"yt-simple-endpoint style-scope ytd-toggle-button-renderer\" tabindex=\"-1\" href=\"/create_channel?upsell=comment\"><yt-icon-button id=\"button\" class=\"style-scope ytd-toggle-button-renderer style-text size-default\"><!--css-build:shady--><button id=\"button\" class=\"style-scope yt-icon-button\" aria-label=\"Je n'aime pas ce commentaire\" aria-pressed=\"false\"><yt-icon class=\"style-scope ytd-toggle-button-renderer\"><!--css-build:shady--></yt-icon></button><yt-interaction id=\"interaction\" class=\"circular style-scope yt-icon-button\"><!--css-build:shady--><div class=\"stroke style-scope yt-interaction\"></div><div class=\"fill style-scope yt-interaction\"></div></yt-interaction></yt-icon-button></a></ytd-toggle-button-renderer>","offsetTop":1201,"offsetLeft":209,"href":"https://www.youtube.com/watch?v=ZhMw53Ud2tY","selectorName":"channel2","nature":{"type":"video","videoId":"ZhMw53Ud2tY"},"savingTime":"2022-03-24T15:56:59.856Z"},{"_id":"623c94cb520cbbda43a74b6c","id":"a0aff9a4ead85dfd148b1c5bfcf40fba88e6da24","metadataId":"84473c4330b5d84a4846cd0211eae80b7685b7e7","blang":"en-US","publicKey":"C5kqVoJo7dP8DgVcChYnsuhk3hXexrQnBdmSgYvxR5F3","html":"<ytd-button-renderer class=\"style-scope ytd-comment-action-buttons-renderer style-text size-default\" use-keyboard-focused=\"\" button-renderer=\"true\" is-paper-button=\"\"><a class=\"yt-simple-endpoint style-scope ytd-button-renderer\" tabindex=\"-1\" href=\"/create_channel?upsell=comment_reply\"><tp-yt-paper-button id=\"button\" class=\"style-scope ytd-button-renderer style-text size-default\" role=\"button\" tabindex=\"0\" animated=\"\" elevation=\"0\" aria-disabled=\"false\" aria-label=\"Répondre\"><!--css-build:shady--><yt-formatted-string id=\"text\" class=\"style-scope ytd-button-renderer style-text size-default\">Répondre</yt-formatted-string></tp-yt-paper-button></a></ytd-button-renderer>","offsetTop":1200,"offsetLeft":241,"href":"https://www.youtube.com/watch?v=ZhMw53Ud2tY","selectorName":"channel2","nature":{"type":"video","videoId":"ZhMw53Ud2tY"},"savingTime":"2022-03-24T15:56:59.856Z"},{"_id":"623c94cb520cbbda43a74b6d","id":"cf43d9d5cc55d11fd7307a5710107eab95dbe285","metadataId":"84473c4330b5d84a4846cd0211eae80b7685b7e7","blang":"en-US","publicKey":"C5kqVoJo7dP8DgVcChYnsuhk3hXexrQnBdmSgYvxR5F3","html":"<ytd-toggle-button-renderer id=\"like-button\" icon-size=\"16\" class=\"style-scope ytd-comment-action-buttons-renderer style-text size-default\" use-keyboard-focused=\"\" system-icons=\"\" button-renderer=\"true\" is-icon-button=\"\" has-no-text=\"\"><a class=\"yt-simple-endpoint style-scope ytd-toggle-button-renderer\" tabindex=\"-1\" href=\"/create_channel?upsell=comment\"><yt-icon-button id=\"button\" class=\"style-scope ytd-toggle-button-renderer style-text size-default\"><!--css-build:shady--><button id=\"button\" class=\"style-scope yt-icon-button\" aria-label=\"1&nbsp;autre personne aime ce commentaire\" aria-pressed=\"false\"><yt-icon class=\"style-scope ytd-toggle-button-renderer\"><!--css-build:shady--></yt-icon></button><yt-interaction id=\"interaction\" class=\"circular style-scope yt-icon-button\"><!--css-build:shady--><div class=\"stroke style-scope yt-interaction\"></div><div class=\"fill style-scope yt-interaction\"></div></yt-interaction></yt-icon-button></a></ytd-toggle-button-renderer>","offsetTop":1331,"offsetLeft":149,"href":"https://www.youtube.com/watch?v=ZhMw53Ud2tY","selectorName":"channel2","nature":{"type":"video","videoId":"ZhMw53Ud2tY"},"savingTime":"2022-03-24T15:56:59.856Z"},{"_id":"623c94cb520cbbda43a74b6e","id":"ef2ca6f13738373d9293edb7e4931a7d566f963f","metadataId":"84473c4330b5d84a4846cd0211eae80b7685b7e7","blang":"en-US","publicKey":"C5kqVoJo7dP8DgVcChYnsuhk3hXexrQnBdmSgYvxR5F3","html":"<div id=\"author-thumbnail\" class=\"style-scope ytd-comment-renderer\">\n    <a class=\"yt-simple-endpoint style-scope ytd-comment-renderer\" href=\"/channel/UCsv1SL8ivldEkaYCioh24bg\">\n      <yt-img-shadow fit=\"\" height=\"40\" width=\"40\" class=\"style-scope ytd-comment-renderer no-transition empty\" style=\"background-color: transparent;\"><!--css-build:shady--><img id=\"img\" class=\"style-scope yt-img-shadow\" alt=\"\" width=\"40\" height=\"40\"></yt-img-shadow>\n    </a>\n  </div>","offsetTop":1380,"offsetLeft":101,"href":"https://www.youtube.com/watch?v=ZhMw53Ud2tY","selectorName":"channel1","nature":{"type":"video","videoId":"ZhMw53Ud2tY"},"savingTime":"2022-03-24T15:56:59.856Z"},{"_id":"623c94cb520cbbda43a74b6f","id":"70c51278c6c638931caadf12956c2490f710d215","metadataId":"84473c4330b5d84a4846cd0211eae80b7685b7e7","blang":"en-US","publicKey":"C5kqVoJo7dP8DgVcChYnsuhk3hXexrQnBdmSgYvxR5F3","html":"<h3 class=\"style-scope ytd-comment-renderer\">\n          <a id=\"author-text\" class=\"yt-simple-endpoint style-scope ytd-comment-renderer\" href=\"/channel/UCsv1SL8ivldEkaYCioh24bg\">\n            <span class=\"style-scope ytd-comment-renderer\">\n              fm\n            </span>\n          </a>\n        </h3>","offsetTop":1380,"offsetLeft":157,"href":"https://www.youtube.com/watch?v=ZhMw53Ud2tY","selectorName":"channel1","nature":{"type":"video","videoId":"ZhMw53Ud2tY"},"savingTime":"2022-03-24T15:56:59.856Z"},{"_id":"623c94cb520cbbda43a74b66","id":"55019890e1f53444634eb7d1aeb3491061467997","metadataId":"84473c4330b5d84a4846cd0211eae80b7685b7e7","blang":"en-US","publicKey":"C5kqVoJo7dP8DgVcChYnsuhk3hXexrQnBdmSgYvxR5F3","html":"<div id=\"author-thumbnail\" class=\"style-scope ytd-comment-renderer\">\n    <a class=\"yt-simple-endpoint style-scope ytd-comment-renderer\" href=\"/channel/UCTI9iozTDyz9Gs--KDg912Q\">\n      <yt-img-shadow fit=\"\" height=\"40\" width=\"40\" class=\"style-scope ytd-comment-renderer no-transition empty\" style=\"background-color: transparent;\"><!--css-build:shady--><img id=\"img\" class=\"style-scope yt-img-shadow\" alt=\"\" width=\"40\" height=\"40\"></yt-img-shadow>\n    </a>\n  </div>","offsetTop":1134,"offsetLeft":101,"href":"https://www.youtube.com/watch?v=ZhMw53Ud2tY","selectorName":"channel1","nature":{"type":"video","videoId":"ZhMw53Ud2tY"},"savingTime":"2022-03-24T15:56:59.855Z"},{"_id":"623c94cb520cbbda43a74b67","id":"cc840d0949d198458abd690fac49afe8560e79a6","metadataId":"84473c4330b5d84a4846cd0211eae80b7685b7e7","blang":"en-US","publicKey":"C5kqVoJo7dP8DgVcChYnsuhk3hXexrQnBdmSgYvxR5F3","html":"<h3 class=\"style-scope ytd-comment-renderer\">\n          <a id=\"author-text\" class=\"yt-simple-endpoint style-scope ytd-comment-renderer\" href=\"/channel/UCTI9iozTDyz9Gs--KDg912Q\">\n            <span class=\"style-scope ytd-comment-renderer\">\n              k3ym0\n            </span>\n          </a>\n        </h3>","offsetTop":1134,"offsetLeft":157,"href":"https://www.youtube.com/watch?v=ZhMw53Ud2tY","selectorName":"channel1","nature":{"type":"video","videoId":"ZhMw53Ud2tY"},"savingTime":"2022-03-24T15:56:59.855Z"},{"_id":"623c945b520cbbda43a74b25","id":"b2c54c5f2f3d2c042ea6aeb07b91f0536a26bb0f","metadataId":"84473c4330b5d84a4846cd0211eae80b7685b7e7","blang":"en-US","publicKey":"C5kqVoJo7dP8DgVcChYnsuhk3hXexrQnBdmSgYvxR5F3","html":"<ytd-video-owner-renderer watch-metadata-refresh=\"\" class=\"style-scope ytd-watch-metadata\"><!--css-build:shady--><a class=\"yt-simple-endpoint style-scope ytd-video-owner-renderer\" tabindex=\"-1\" href=\"/channel/UC9x0AN7BWHpCDHSm9NiJFJQ\"><yt-img-shadow id=\"avatar\" class=\"style-scope ytd-video-owner-renderer no-transition empty\" style=\"background-color: transparent;\"><!--css-build:shady--><img id=\"img\" class=\"style-scope yt-img-shadow\" alt=\"\" width=\"36\"></yt-img-shadow></a><div id=\"upload-info\" class=\"style-scope ytd-video-owner-renderer\"><ytd-channel-name id=\"channel-name\" class=\"style-scope ytd-video-owner-renderer\"><!--css-build:shady--><div id=\"container\" class=\"style-scope ytd-channel-name\">\n  <div id=\"text-container\" class=\"style-scope ytd-channel-name\">\n    <yt-formatted-string id=\"text\" title=\"\" class=\"style-scope ytd-channel-name complex-string\" ellipsis-truncate=\"\" has-link-only_=\"\"><a class=\"yt-simple-endpoint style-scope yt-formatted-string\" spellcheck=\"false\" href=\"/channel/UC9x0AN7BWHpCDHSm9NiJFJQ\" dir=\"auto\">NetworkChuck</a></yt-formatted-string>\n  </div>\n  <tp-yt-paper-tooltip fit-to-visible-bounds=\"\" class=\"style-scope ytd-channel-name\" role=\"tooltip\" tabindex=\"-1\"><!--css-build:shady--><div id=\"tooltip\" class=\"hidden style-scope tp-yt-paper-tooltip\">\n  \n    NetworkChuck\n  \n</div>\n</tp-yt-paper-tooltip>\n</div>\n<ytd-badge-supported-renderer class=\"style-scope ytd-channel-name\" system-icons=\"\"><!--css-build:shady-->\n  <div class=\"badge badge-style-type-verified style-scope ytd-badge-supported-renderer\" aria-label=\"Validé\">\n    <yt-icon class=\"style-scope ytd-badge-supported-renderer\"><!--css-build:shady--></yt-icon>\n    <span class=\"style-scope ytd-badge-supported-renderer\"></span>\n  </div>\n<dom-repeat id=\"repeat\" as=\"badge\" class=\"style-scope ytd-badge-supported-renderer\"><template is=\"dom-repeat\"></template></dom-repeat>\n</ytd-badge-supported-renderer>\n</ytd-channel-name><yt-formatted-string id=\"owner-sub-count\" class=\"style-scope ytd-video-owner-renderer\" aria-label=\"2 millions d’abonnés\">2&nbsp;M d’abonnés</yt-formatted-string></div><div id=\"purchase-button\" class=\"style-scope ytd-video-owner-renderer\" hidden=\"\"></div><div id=\"sponsor-button\" class=\"style-scope ytd-video-owner-renderer\"><ytd-button-renderer class=\"style-scope ytd-video-owner-renderer style-suggestive size-default\" use-keyboard-focused=\"\" button-renderer=\"true\" is-paper-button=\"\"><a class=\"yt-simple-endpoint style-scope ytd-button-renderer\" tabindex=\"-1\"><tp-yt-paper-button id=\"button\" class=\"style-scope ytd-button-renderer style-suggestive size-default\" role=\"button\" tabindex=\"0\" animated=\"\" elevation=\"0\" aria-disabled=\"false\" aria-label=\"Rejoignez cette chaîne\"><!--css-build:shady--><yt-formatted-string id=\"text\" class=\"style-scope ytd-button-renderer style-suggestive size-default\">Rejoindre</yt-formatted-string></tp-yt-paper-button></a></ytd-button-renderer></div><div id=\"analytics-button\" class=\"style-scope ytd-video-owner-renderer\"></div></ytd-video-owner-renderer>","offsetTop":863,"offsetLeft":37,"href":"https://www.youtube.com/watch?v=ZhMw53Ud2tY","selectorName":"channel1","nature":{"type":"video","videoId":"ZhMw53Ud2tY"},"savingTime":"2022-03-24T15:55:07.605Z"},{"_id":"623c945b520cbbda43a74b26","id":"5c48df16679c4006f7938a634da7241ced26b16f","metadataId":"84473c4330b5d84a4846cd0211eae80b7685b7e7","blang":"en-US","publicKey":"C5kqVoJo7dP8DgVcChYnsuhk3hXexrQnBdmSgYvxR5F3","html":"<yt-formatted-string id=\"text\" title=\"\" class=\"style-scope ytd-channel-name complex-string\" ellipsis-truncate=\"\" has-link-only_=\"\"><a class=\"yt-simple-endpoint style-scope yt-formatted-string\" spellcheck=\"false\" href=\"/channel/UC9x0AN7BWHpCDHSm9NiJFJQ\" dir=\"auto\">NetworkChuck</a></yt-formatted-string>","offsetTop":864,"offsetLeft":85,"href":"https://www.youtube.com/watch?v=ZhMw53Ud2tY","selectorName":"channel1","nature":{"type":"video","videoId":"ZhMw53Ud2tY"},"savingTime":"2022-03-24T15:55:07.605Z"}],"metadata":{"_id":"623c94626f24e124654d6b90","publicKey":"C5kqVoJo7dP8DgVcChYnsuhk3hXexrQnBdmSgYvxR5F3","savingTime":"2022-03-24T15:55:07.605Z","clientTime":"2022-03-24T16:25:24.000Z","href":"https://www.youtube.com/watch?v=ZhMw53Ud2tY","title":"5 Steps to Secure Linux (protect from hackers)","type":"video","params":{"v":"ZhMw53Ud2tY"},"videoId":"ZhMw53Ud2tY","login":true,"publicationString":"18 mars 2021","publicationTime":"2021-03-18T00:00:00.000Z","blang":"en-US","forKids":false,"authorName":"NetworkChuck","authorSource":"/channel/UC9x0AN7BWHpCDHSm9NiJFJQ","related":[{"index":1,"verified":true,"foryou":null,"videoId":"gwUz3E9AW0w","params":{"v":"gwUz3E9AW0w"},"recommendedSource":"NetworkChuck","recommendedTitle":"you need a website RIGHT NOW!! (create a website for FREE)","recommendedLength":1002,"recommendedDisplayL":"16:42","recommendedLengthText":"16 minutes et 42 secondes","recommendedRelativeSeconds":28944000,"recommendedViews":647837,"recommendedThumbnail":"https://i.ytimg.com/vi/gwUz3E9AW0w/hqdefault.jpg","isLive":false,"label":"you need a website RIGHT NOW!! (create a website for FREE) de NetworkChuck il y a 11 mois 16 minutes 647 837 vues","publicationTime":"2021-04-24T15:27:18.000Z","timePrecision":"estimated"},{"index":2,"verified":true,"foryou":null,"videoId":"fKuqYQdqRIs","params":{"v":"fKuqYQdqRIs"},"recommendedSource":"LiveOverflow","recommendedTitle":"How To Protect Your Linux Server From Hackers!","recommendedLength":1238,"recommendedDisplayL":"20:38","recommendedLengthText":"20 minutes et 38 secondes","recommendedRelativeSeconds":28944000,"recommendedViews":195654,"recommendedThumbnail":"https://i.ytimg.com/vi/fKuqYQdqRIs/hqdefault.jpg","isLive":false,"label":"How To Protect Your Linux Server From Hackers! de LiveOverflow il y a 11 mois 20 minutes 195 654 vues","publicationTime":"2021-04-24T15:27:18.000Z","timePrecision":"estimated"},{"index":3,"verified":false,"foryou":null,"videoId":"FDQVOFG_97Q","params":{"v":"FDQVOFG_97Q"},"recommendedSource":"NVIDIA Developer","recommendedTitle":"NVIDIA GDC 2022 Announcements: Technology To Enhance Virtual Worlds","recommendedLength":229,"recommendedDisplayL":"3:49","recommendedLengthText":"3 minutes et 49 secondes","recommendedRelativeSeconds":180,"recommendedViews":22582,"recommendedThumbnail":"https://i.ytimg.com/vi/FDQVOFG_97Q/hqdefault.jpg","isLive":false,"label":"NVIDIA GDC 2022 Announcements: Technology To Enhance Virtual Worlds de NVIDIA Developer 3 minutes et 49 secondes 22 582 vues","publicationTime":"2022-03-24T16:24:18.000Z","timePrecision":"estimated"},{"index":4,"verified":false,"foryou":null,"videoId":"1H68zNGvit0","params":{"v":"1H68zNGvit0"},"recommendedSource":"Save Data","recommendedTitle":"Why the Shadow Temple's Music in Ocarina of Time is so Uncomfortable","recommendedLength":721,"recommendedDisplayL":"12:01","recommendedLengthText":"12 minutes et 1 seconde","recommendedRelativeSeconds":31536000,"recommendedViews":929278,"recommendedThumbnail":"https://i.ytimg.com/vi/1H68zNGvit0/hqdefault.jpg","isLive":false,"label":"Why the Shadow Temple's Music in Ocarina of Time is so Uncomfortable de Save Data il y a 1 an 12 minutes et 1 seconde 929 278 vues","publicationTime":"2021-03-24T16:27:18.000Z","timePrecision":"estimated"},{"index":5,"verified":true,"foryou":null,"videoId":"LlbTSfc4biw","params":{"v":"LlbTSfc4biw"},"recommendedSource":"NetworkChuck","recommendedTitle":"you need to learn Load Balancing RIGHT NOW!! (and put one in your home network!)","recommendedLength":2562,"recommendedDisplayL":"42:42","recommendedLengthText":"42 minutes et 42 secondes","recommendedRelativeSeconds":23673600,"recommendedViews":562439,"recommendedThumbnail":"https://i.ytimg.com/vi/LlbTSfc4biw/hqdefault.jpg","isLive":false,"label":"you need to learn Load Balancing RIGHT NOW!! (and put one in your home network!) de NetworkChuck il y a 9 mois 42 minutes 562 439 vues","publicationTime":"2021-06-24T15:27:18.000Z","timePrecision":"estimated"},{"index":6,"verified":true,"foryou":null,"videoId":"X9fSMGkjtug","params":{"v":"X9fSMGkjtug"},"recommendedSource":"NetworkChuck","recommendedTitle":"i built a Raspberry Pi SUPER COMPUTER!! // ft. Kubernetes (k3s cluster w/ Rancher)","recommendedLength":3822,"recommendedDisplayL":"1:03:42","recommendedLengthText":"1 heure, 3 minutes et 42 secondes","recommendedRelativeSeconds":20995200,"recommendedViews":1000762,"recommendedThumbnail":"https://i.ytimg.com/vi/X9fSMGkjtug/hqdefault.jpg","isLive":false,"label":"i built a Raspberry Pi SUPER COMPUTER!! // ft. Kubernetes (k3s cluster w/ Rancher) de NetworkChuck il y a 8 mois 1 heure et 3 minutes 1 000 762 vues","publicationTime":"2021-07-24T15:27:18.000Z","timePrecision":"estimated"},{"index":7,"verified":true,"foryou":null,"videoId":"4t4kBkMsDbQ","params":{"v":"4t4kBkMsDbQ"},"recommendedSource":"NetworkChuck","recommendedTitle":"Nmap Tutorial to find Network Vulnerabilities","recommendedLength":1029,"recommendedDisplayL":"17:09","recommendedLengthText":"17 minutes et 9 secondes","recommendedRelativeSeconds":31536000,"recommendedViews":1422888,"recommendedThumbnail":"https://i.ytimg.com/vi/4t4kBkMsDbQ/hqdefault.jpg","isLive":false,"label":"Nmap Tutorial to find Network Vulnerabilities de NetworkChuck il y a 1 an 17 minutes 1 422 888 vues","publicationTime":"2021-03-24T16:27:18.000Z","timePrecision":"estimated"},{"index":8,"verified":true,"foryou":null,"videoId":"-rSqbgI7oZM","params":{"v":"-rSqbgI7oZM"},"recommendedSource":"NetworkChuck","recommendedTitle":"how Hackers SNiFF (capture) network traffic // MiTM attack","recommendedLength":1147,"recommendedDisplayL":"19:07","recommendedLengthText":"19 minutes et 7 secondes","recommendedRelativeSeconds":31536000,"recommendedViews":936005,"recommendedThumbnail":"https://i.ytimg.com/vi/-rSqbgI7oZM/hqdefault.jpg","isLive":false,"label":"how Hackers SNiFF (capture) network traffic // MiTM attack de NetworkChuck il y a 1 an 19 minutes 936 005 vues","publicationTime":"2021-03-24T16:27:18.000Z","timePrecision":"estimated"},{"index":9,"verified":true,"foryou":null,"videoId":"cChGFpElMEM","params":{"v":"cChGFpElMEM"},"recommendedSource":"NetworkChuck","recommendedTitle":"Using BAD Linux commands (DO NOT USE) on a VM and Cisco Router","recommendedLength":1336,"recommendedDisplayL":"22:16","recommendedLengthText":"22 minutes et 16 secondes","recommendedRelativeSeconds":63072000,"recommendedViews":380769,"recommendedThumbnail":"https://i.ytimg.com/vi/cChGFpElMEM/hqdefault.jpg","isLive":false,"label":"Using BAD Linux commands (DO NOT USE) on a VM and Cisco Router de NetworkChuck il y a 2 ans 22 minutes 380 769 vues","publicationTime":"2020-03-24T16:27:18.000Z","timePrecision":"estimated"},{"index":10,"verified":true,"foryou":null,"videoId":"lUzSsX4T4WQ","params":{"v":"lUzSsX4T4WQ"},"recommendedSource":"NetworkChuck","recommendedTitle":"your home router SUCKS!! (use pfSense instead)","recommendedLength":2731,"recommendedDisplayL":"45:31","recommendedLengthText":"45 minutes et 31 secondes","recommendedRelativeSeconds":15811200,"recommendedViews":1873929,"recommendedThumbnail":"https://i.ytimg.com/vi/lUzSsX4T4WQ/hqdefault.jpg","isLive":false,"label":"your home router SUCKS!! (use pfSense instead) de NetworkChuck il y a 6 mois 45 minutes 1 873 929 vues","publicationTime":"2021-09-24T15:27:18.000Z","timePrecision":"estimated"},{"index":11,"verified":true,"foryou":null,"videoId":"A3G-3hp88mo","params":{"v":"A3G-3hp88mo"},"recommendedSource":"NetworkChuck","recommendedTitle":"the Linux File System explained in 1,233 seconds // Linux for Hackers // EP 2","recommendedLength":1233,"recommendedDisplayL":"20:33","recommendedLengthText":"20 minutes et 33 secondes","recommendedRelativeSeconds":28944000,"recommendedViews":866505,"recommendedThumbnail":"https://i.ytimg.com/vi/A3G-3hp88mo/hqdefault.jpg","isLive":false,"label":"the Linux File System explained in 1,233 seconds // Linux for Hackers // EP 2 de NetworkChuck il y a 11 mois 20 minutes 866 505 vues","publicationTime":"2021-04-24T15:27:18.000Z","timePrecision":"estimated"},{"index":12,"verified":true,"foryou":null,"videoId":"0W4JZIWtjLQ","params":{"v":"0W4JZIWtjLQ"},"recommendedSource":"NetworkChuck","recommendedTitle":"you NEED to learn Port Security…….RIGHT NOW!! // FREE CCNA // EP 14","recommendedLength":1403,"recommendedDisplayL":"23:23","recommendedLengthText":"23 minutes et 23 secondes","recommendedRelativeSeconds":18403200,"recommendedViews":325542,"recommendedThumbnail":"https://i.ytimg.com/vi/0W4JZIWtjLQ/hqdefault.jpg","isLive":false,"label":"you NEED to learn Port Security…….RIGHT NOW!! // FREE CCNA // EP 14 de NetworkChuck il y a 7 mois 23 minutes 325 542 vues","publicationTime":"2021-08-24T15:27:18.000Z","timePrecision":"estimated"},{"index":13,"verified":true,"foryou":null,"videoId":"gMU5bngGQ1E","params":{"v":"gMU5bngGQ1E"},"recommendedSource":"NetworkChuck","recommendedTitle":"HELPDESK - how to get started in IT (your first job)","recommendedLength":6616,"recommendedDisplayL":"1:50:16","recommendedLengthText":"1 heure, 50 minutes et 16 secondes","recommendedRelativeSeconds":31536000,"recommendedViews":447098,"recommendedThumbnail":"https://i.ytimg.com/vi/gMU5bngGQ1E/hqdefault.jpg","isLive":false,"label":"HELPDESK - how to get started in IT (your first job) de NetworkChuck Diffusé il y a 1 an 1 heure et 50 minutes 447 098 vues","publicationTime":"2021-03-24T16:27:18.000Z","timePrecision":"estimated"},{"index":14,"verified":true,"foryou":null,"videoId":"vX3krP6JmOY","params":{"v":"vX3krP6JmOY"},"recommendedSource":"NetworkChuck","recommendedTitle":"apt, dpkg, git, Python PiP (Linux Package Management) // Linux for Hackers // EP 5","recommendedLength":1565,"recommendedDisplayL":"26:05","recommendedLengthText":"26 minutes et 5 secondes","recommendedRelativeSeconds":23673600,"recommendedViews":375239,"isLive":false,"label":"apt, dpkg, git, Python PiP (Linux Package Management) // Linux for Hackers // EP 5 de NetworkChuck il y a 9 mois 26 minutes 375 239 vues","publicationTime":"2021-06-24T15:27:18.000Z","timePrecision":"estimated"},{"index":15,"verified":true,"foryou":null,"videoId":"y8h5qY3zwic","params":{"v":"y8h5qY3zwic"},"recommendedSource":"NetworkChuck","recommendedTitle":"forcing my kids to make Ethernet cables // FREE CCNA // EP 11","recommendedLength":2617,"recommendedDisplayL":"43:37","recommendedLengthText":"43 minutes et 37 secondes","recommendedRelativeSeconds":31536000,"recommendedViews":349114,"isLive":false,"label":"forcing my kids to make Ethernet cables // FREE CCNA // EP 11 de NetworkChuck il y a 1 an 43 minutes 349 114 vues","publicationTime":"2021-03-24T16:27:18.000Z","timePrecision":"estimated"},{"index":16,"verified":true,"foryou":null,"videoId":"2zQvwq_b7FI","params":{"v":"2zQvwq_b7FI"},"recommendedSource":"Liam Triforce","recommendedTitle":"The Bittersweet Comfort of Majora's Mask","recommendedLength":3170,"recommendedDisplayL":"52:50","recommendedLengthText":"52 minutes et 50 secondes","recommendedRelativeSeconds":31536000,"recommendedViews":320234,"isLive":false,"label":"The Bittersweet Comfort of Majora's Mask de Liam Triforce il y a 1 an 52 minutes 320 234 vues","publicationTime":"2021-03-24T16:27:18.000Z","timePrecision":"estimated"},{"index":17,"verified":true,"foryou":null,"videoId":"wIn3L24lksI","params":{"v":"wIn3L24lksI"},"recommendedSource":"NetworkChuck","recommendedTitle":"learn to HACK (the best way) // ft. John Hammond","recommendedLength":8871,"recommendedDisplayL":"2:27:51","recommendedLengthText":"2 heures, 27 minutes et 51 secondes","recommendedRelativeSeconds":31536000,"recommendedViews":658967,"isLive":false,"label":"learn to HACK (the best way) // ft. John Hammond de NetworkChuck Diffusé il y a 1 an 2 heures et 27 minutes 658 967 vues","publicationTime":"2021-03-24T16:27:18.000Z","timePrecision":"estimated"},{"index":18,"verified":true,"foryou":null,"videoId":"qsA8zREbt6g","params":{"v":"qsA8zREbt6g"},"recommendedSource":"NetworkChuck","recommendedTitle":"learning hacking? DON'T make this mistake!! (hide yourself with Kali Linux and ProxyChains)","recommendedLength":769,"recommendedDisplayL":"12:49","recommendedLengthText":"12 minutes et 49 secondes","recommendedRelativeSeconds":31536000,"recommendedViews":1817943,"isLive":false,"label":"learning hacking? DON'T make this mistake!! (hide yourself with Kali Linux and ProxyChains) de NetworkChuck il y a 1 an 12 minutes et 49 secondes 1 817 943 vues","publicationTime":"2021-03-24T16:27:18.000Z","timePrecision":"estimated"},{"index":19,"verified":true,"foryou":null,"videoId":"wX75Z-4MEoM","params":{"v":"wX75Z-4MEoM"},"recommendedSource":"NetworkChuck","recommendedTitle":"you need to learn Virtual Machines RIGHT NOW!! (Kali Linux VM, Ubuntu, Windows)","recommendedLength":1661,"recommendedDisplayL":"27:41","recommendedLengthText":"27 minutes et 41 secondes","recommendedRelativeSeconds":31536000,"recommendedViews":3913193,"isLive":false,"label":"you need to learn Virtual Machines RIGHT NOW!! (Kali Linux VM, Ubuntu, Windows) de NetworkChuck il y a 1 an 27 minutes 3 913 193 vues","publicationTime":"2021-03-24T16:27:18.000Z","timePrecision":"estimated"}],"viewInfo":{"viewStr":"374 834&nbsp;vues","viewNumber":374},"likeInfo":{"likes":"20 808 clics sur \"J'aime\"","dislikes":null},"id":"84473c4330b5d84a4846cd0211eae80b7685b7e7"}}
+{
+  "sources": [
+    {
+      "id": "5b66afa500c493662d67dd3225d07c467591c2e1",
+      "metadataId": "84473c4330b5d84a4846cd0211eae80b7685b7e7",
+      "blang": "en-US",
+      "html": "<ytd-toggle-button-renderer id=\"like-button\" icon-size=\"16\" class=\"style-scope ytd-comment-action-buttons-renderer style-text size-default\" use-keyboard-focused=\"\" system-icons=\"\" button-renderer=\"true\" is-icon-button=\"\" has-no-text=\"\"><a class=\"yt-simple-endpoint style-scope ytd-toggle-button-renderer\" tabindex=\"-1\" href=\"/create_channel?upsell=comment\"><yt-icon-button id=\"button\" class=\"style-scope ytd-toggle-button-renderer style-text size-default\"><!--css-build:shady--><button id=\"button\" class=\"style-scope yt-icon-button\" aria-label=\"11&nbsp;autres personnes aiment ce commentaire\" aria-pressed=\"false\"><yt-icon class=\"style-scope ytd-toggle-button-renderer\"><!--css-build:shady--></yt-icon></button><yt-interaction id=\"interaction\" class=\"circular style-scope yt-icon-button\"><!--css-build:shady--><div class=\"stroke style-scope yt-interaction\"></div><div class=\"fill style-scope yt-interaction\"></div></yt-interaction></yt-icon-button></a></ytd-toggle-button-renderer>",
+      "offsetTop": 3215,
+      "offsetLeft": 149,
+      "href": "https://www.youtube.com/watch?v=ZhMw53Ud2tY",
+      "selectorName": "channel2",
+      "nature": {
+        "type": "video",
+        "videoId": "ZhMw53Ud2tY"
+      },
+      "savingTime": "2022-03-24T15:57:43.069Z"
+    },
+    {
+      "id": "def52c705d30b9d46b0fbe995ec999b354738791",
+      "metadataId": "84473c4330b5d84a4846cd0211eae80b7685b7e7",
+      "blang": "en-US",
+      "html": "<div id=\"author-thumbnail\" class=\"style-scope ytd-comment-renderer\">\n    <a class=\"yt-simple-endpoint style-scope ytd-comment-renderer\" href=\"/channel/UCx6oZjdxi4PQZB-ZCEc9tcQ\">\n      <yt-img-shadow fit=\"\" height=\"40\" width=\"40\" class=\"style-scope ytd-comment-renderer no-transition empty\" style=\"background-color: transparent;\"><!--css-build:shady--><img id=\"img\" class=\"style-scope yt-img-shadow\" alt=\"\" width=\"40\" height=\"40\"></yt-img-shadow>\n    </a>\n  </div>",
+      "offsetTop": 3264,
+      "offsetLeft": 101,
+      "href": "https://www.youtube.com/watch?v=ZhMw53Ud2tY",
+      "selectorName": "channel1",
+      "nature": {
+        "type": "video",
+        "videoId": "ZhMw53Ud2tY"
+      },
+      "savingTime": "2022-03-24T15:57:43.069Z"
+    },
+    {
+      "id": "419114b905c5f98c35ba94f74fbadcee976e2a42",
+      "metadataId": "84473c4330b5d84a4846cd0211eae80b7685b7e7",
+      "blang": "en-US",
+      "html": "<h3 class=\"style-scope ytd-comment-renderer\">\n          <a id=\"author-text\" class=\"yt-simple-endpoint style-scope ytd-comment-renderer\" href=\"/channel/UCx6oZjdxi4PQZB-ZCEc9tcQ\">\n            <span class=\"style-scope ytd-comment-renderer\">\n              Learn Programming\n            </span>\n          </a>\n        </h3>",
+      "offsetTop": 3264,
+      "offsetLeft": 157,
+      "href": "https://www.youtube.com/watch?v=ZhMw53Ud2tY",
+      "selectorName": "channel1",
+      "nature": {
+        "type": "video",
+        "videoId": "ZhMw53Ud2tY"
+      },
+      "savingTime": "2022-03-24T15:57:43.069Z"
+    },
+    {
+      "id": "5064620bd74d9cd1acd5b8bc5ae78a163069c475",
+      "metadataId": "84473c4330b5d84a4846cd0211eae80b7685b7e7",
+      "blang": "en-US",
+      "html": "<div id=\"author-thumbnail\" class=\"style-scope ytd-comment-renderer\">\n    <a class=\"yt-simple-endpoint style-scope ytd-comment-renderer\" href=\"/channel/UCtyHY6SdKghyV7f2BrTGNoQ\">\n      <yt-img-shadow fit=\"\" height=\"40\" width=\"40\" class=\"style-scope ytd-comment-renderer no-transition empty\" style=\"background-color: transparent;\"><!--css-build:shady--><img id=\"img\" class=\"style-scope yt-img-shadow\" alt=\"\" width=\"40\" height=\"40\"></yt-img-shadow>\n    </a>\n  </div>",
+      "offsetTop": 3452,
+      "offsetLeft": 101,
+      "href": "https://www.youtube.com/watch?v=ZhMw53Ud2tY",
+      "selectorName": "channel1",
+      "nature": {
+        "type": "video",
+        "videoId": "ZhMw53Ud2tY"
+      },
+      "savingTime": "2022-03-24T15:57:43.069Z"
+    },
+    {
+      "id": "d3b4601f255539638235e92065104948845036bc",
+      "metadataId": "84473c4330b5d84a4846cd0211eae80b7685b7e7",
+      "blang": "en-US",
+      "html": "<h3 class=\"style-scope ytd-comment-renderer\">\n          <a id=\"author-text\" class=\"yt-simple-endpoint style-scope ytd-comment-renderer\" href=\"/channel/UCtyHY6SdKghyV7f2BrTGNoQ\">\n            <span class=\"style-scope ytd-comment-renderer\">\n              SF Engineering\n            </span>\n          </a>\n        </h3>",
+      "offsetTop": 3452,
+      "offsetLeft": 157,
+      "href": "https://www.youtube.com/watch?v=ZhMw53Ud2tY",
+      "selectorName": "channel1",
+      "nature": {
+        "type": "video",
+        "videoId": "ZhMw53Ud2tY"
+      },
+      "savingTime": "2022-03-24T15:57:43.069Z"
+    },
+    {
+      "id": "9b0c70ff8dba044cf27123ebea05a130818a9a66",
+      "metadataId": "84473c4330b5d84a4846cd0211eae80b7685b7e7",
+      "blang": "en-US",
+      "html": "<div id=\"author-thumbnail\" class=\"style-scope ytd-comment-renderer\">\n    <a class=\"yt-simple-endpoint style-scope ytd-comment-renderer\" href=\"/channel/UCeOIu345iC-58SIJfXCyIJQ\">\n      <yt-img-shadow fit=\"\" height=\"40\" width=\"40\" class=\"style-scope ytd-comment-renderer no-transition empty\" style=\"background-color: transparent;\"><!--css-build:shady--><img id=\"img\" class=\"style-scope yt-img-shadow\" alt=\"\" width=\"40\" height=\"40\"></yt-img-shadow>\n    </a>\n  </div>",
+      "offsetTop": 3568,
+      "offsetLeft": 101,
+      "href": "https://www.youtube.com/watch?v=ZhMw53Ud2tY",
+      "selectorName": "channel1",
+      "nature": {
+        "type": "video",
+        "videoId": "ZhMw53Ud2tY"
+      },
+      "savingTime": "2022-03-24T15:57:43.069Z"
+    },
+    {
+      "id": "fd26bcaa529005db123c1e40a21ac41b770e9a2e",
+      "metadataId": "84473c4330b5d84a4846cd0211eae80b7685b7e7",
+      "blang": "en-US",
+      "html": "<h3 class=\"style-scope ytd-comment-renderer\">\n          <a id=\"author-text\" class=\"yt-simple-endpoint style-scope ytd-comment-renderer\" href=\"/channel/UCeOIu345iC-58SIJfXCyIJQ\">\n            <span class=\"style-scope ytd-comment-renderer\">\n              Kpop Empire\n            </span>\n          </a>\n        </h3>",
+      "offsetTop": 3568,
+      "offsetLeft": 157,
+      "href": "https://www.youtube.com/watch?v=ZhMw53Ud2tY",
+      "selectorName": "channel1",
+      "nature": {
+        "type": "video",
+        "videoId": "ZhMw53Ud2tY"
+      },
+      "savingTime": "2022-03-24T15:57:43.069Z"
+    },
+    {
+      "id": "e8369d043c32d2d97c113adb8a86618293040085",
+      "metadataId": "84473c4330b5d84a4846cd0211eae80b7685b7e7",
+      "blang": "en-US",
+      "html": "<div id=\"author-thumbnail\" class=\"style-scope ytd-comment-renderer\">\n    <a class=\"yt-simple-endpoint style-scope ytd-comment-renderer\" href=\"/channel/UCVfNa63JMro6qDJO5AmMKUw\">\n      <yt-img-shadow fit=\"\" height=\"40\" width=\"40\" class=\"style-scope ytd-comment-renderer no-transition empty\" style=\"background-color: transparent;\"><!--css-build:shady--><img id=\"img\" class=\"style-scope yt-img-shadow\" alt=\"\" width=\"40\" height=\"40\"></yt-img-shadow>\n    </a>\n  </div>",
+      "offsetTop": 2920,
+      "offsetLeft": 101,
+      "href": "https://www.youtube.com/watch?v=ZhMw53Ud2tY",
+      "selectorName": "channel1",
+      "nature": {
+        "type": "video",
+        "videoId": "ZhMw53Ud2tY"
+      },
+      "savingTime": "2022-03-24T15:57:43.063Z"
+    },
+    {
+      "id": "cb825b8ed700064071ff6085b8aabcadb965557d",
+      "metadataId": "84473c4330b5d84a4846cd0211eae80b7685b7e7",
+      "blang": "en-US",
+      "html": "<h3 class=\"style-scope ytd-comment-renderer\">\n          <a id=\"author-text\" class=\"yt-simple-endpoint style-scope ytd-comment-renderer\" href=\"/channel/UCVfNa63JMro6qDJO5AmMKUw\">\n            <span class=\"style-scope ytd-comment-renderer\">\n              Jarrod\n            </span>\n          </a>\n        </h3>",
+      "offsetTop": 2920,
+      "offsetLeft": 157,
+      "href": "https://www.youtube.com/watch?v=ZhMw53Ud2tY",
+      "selectorName": "channel1",
+      "nature": {
+        "type": "video",
+        "videoId": "ZhMw53Ud2tY"
+      },
+      "savingTime": "2022-03-24T15:57:43.063Z"
+    },
+    {
+      "id": "ee092135f2817a1f3b561ccca8990c9ddb595038",
+      "metadataId": "84473c4330b5d84a4846cd0211eae80b7685b7e7",
+      "blang": "en-US",
+      "html": "<ytd-toggle-button-renderer id=\"like-button\" icon-size=\"16\" class=\"style-scope ytd-comment-action-buttons-renderer style-text size-default\" use-keyboard-focused=\"\" system-icons=\"\" button-renderer=\"true\" is-icon-button=\"\" has-no-text=\"\"><a class=\"yt-simple-endpoint style-scope ytd-toggle-button-renderer\" tabindex=\"-1\" href=\"/create_channel?upsell=comment\"><yt-icon-button id=\"button\" class=\"style-scope ytd-toggle-button-renderer style-text size-default\"><!--css-build:shady--><button id=\"button\" class=\"style-scope yt-icon-button\" aria-label=\"157&nbsp;autres personnes aiment ce commentaire\" aria-pressed=\"false\"><yt-icon class=\"style-scope ytd-toggle-button-renderer\"><!--css-build:shady--></yt-icon></button><yt-interaction id=\"interaction\" class=\"circular style-scope yt-icon-button\"><!--css-build:shady--><div class=\"stroke style-scope yt-interaction\"></div><div class=\"fill style-scope yt-interaction\"></div></yt-interaction></yt-icon-button></a></ytd-toggle-button-renderer>",
+      "offsetTop": 3027,
+      "offsetLeft": 149,
+      "href": "https://www.youtube.com/watch?v=ZhMw53Ud2tY",
+      "selectorName": "channel2",
+      "nature": {
+        "type": "video",
+        "videoId": "ZhMw53Ud2tY"
+      },
+      "savingTime": "2022-03-24T15:57:43.063Z"
+    },
+    {
+      "id": "480e5f9b68954136d2214fd12adcd54ef37048bf",
+      "metadataId": "84473c4330b5d84a4846cd0211eae80b7685b7e7",
+      "blang": "en-US",
+      "html": "<div id=\"author-thumbnail\" class=\"style-scope ytd-comment-renderer\">\n    <a class=\"yt-simple-endpoint style-scope ytd-comment-renderer\" href=\"/channel/UCmQqhvP10w0mboTfwlRwNTA\">\n      <yt-img-shadow fit=\"\" height=\"40\" width=\"40\" class=\"style-scope ytd-comment-renderer no-transition empty\" style=\"background-color: transparent;\"><!--css-build:shady--><img id=\"img\" class=\"style-scope yt-img-shadow\" alt=\"\" width=\"40\" height=\"40\"></yt-img-shadow>\n    </a>\n  </div>",
+      "offsetTop": 3108,
+      "offsetLeft": 101,
+      "href": "https://www.youtube.com/watch?v=ZhMw53Ud2tY",
+      "selectorName": "channel1",
+      "nature": {
+        "type": "video",
+        "videoId": "ZhMw53Ud2tY"
+      },
+      "savingTime": "2022-03-24T15:57:43.063Z"
+    },
+    {
+      "id": "d34ef06ec92c518e1c6386efda9f62e8d17bbe9e",
+      "metadataId": "84473c4330b5d84a4846cd0211eae80b7685b7e7",
+      "blang": "en-US",
+      "html": "<h3 class=\"style-scope ytd-comment-renderer\">\n          <a id=\"author-text\" class=\"yt-simple-endpoint style-scope ytd-comment-renderer\" href=\"/channel/UCmQqhvP10w0mboTfwlRwNTA\">\n            <span class=\"style-scope ytd-comment-renderer\">\n              Joshua Pettus\n            </span>\n          </a>\n        </h3>",
+      "offsetTop": 3108,
+      "offsetLeft": 157,
+      "href": "https://www.youtube.com/watch?v=ZhMw53Ud2tY",
+      "selectorName": "channel1",
+      "nature": {
+        "type": "video",
+        "videoId": "ZhMw53Ud2tY"
+      },
+      "savingTime": "2022-03-24T15:57:43.063Z"
+    },
+    {
+      "id": "ce6ac61b8081291507f17003b3ea81be21b6b792",
+      "metadataId": "84473c4330b5d84a4846cd0211eae80b7685b7e7",
+      "blang": "en-US",
+      "html": "<div id=\"author-thumbnail\" class=\"style-scope ytd-comment-renderer\">\n    <a class=\"yt-simple-endpoint style-scope ytd-comment-renderer\" href=\"/channel/UCEqvl-EcgGBbf0OjSNgjLKA\">\n      <yt-img-shadow fit=\"\" height=\"40\" width=\"40\" class=\"style-scope ytd-comment-renderer no-transition empty\" style=\"background-color: transparent;\"><!--css-build:shady--><img id=\"img\" class=\"style-scope yt-img-shadow\" alt=\"\" width=\"40\" height=\"40\"></yt-img-shadow>\n    </a>\n  </div>",
+      "offsetTop": 2824,
+      "offsetLeft": 101,
+      "href": "https://www.youtube.com/watch?v=ZhMw53Ud2tY",
+      "selectorName": "channel1",
+      "nature": {
+        "type": "video",
+        "videoId": "ZhMw53Ud2tY"
+      },
+      "savingTime": "2022-03-24T15:57:21.920Z"
+    },
+    {
+      "id": "2f0292f956b4b662df4cd542af01a2c263359a33",
+      "metadataId": "84473c4330b5d84a4846cd0211eae80b7685b7e7",
+      "blang": "en-US",
+      "html": "<h3 class=\"style-scope ytd-comment-renderer\">\n          <a id=\"author-text\" class=\"yt-simple-endpoint style-scope ytd-comment-renderer\" href=\"/channel/UCEqvl-EcgGBbf0OjSNgjLKA\">\n            <span class=\"style-scope ytd-comment-renderer\">\n              Krzysztof Szulborski\n            </span>\n          </a>\n        </h3>",
+      "offsetTop": 2824,
+      "offsetLeft": 157,
+      "href": "https://www.youtube.com/watch?v=ZhMw53Ud2tY",
+      "selectorName": "channel1",
+      "nature": {
+        "type": "video",
+        "videoId": "ZhMw53Ud2tY"
+      },
+      "savingTime": "2022-03-24T15:57:21.920Z"
+    },
+    {
+      "id": "a41483f788eae63da5cd8f0e75e653580ccda97a",
+      "metadataId": "84473c4330b5d84a4846cd0211eae80b7685b7e7",
+      "blang": "en-US",
+      "html": "<div id=\"author-thumbnail\" class=\"style-scope ytd-comment-renderer\">\n    <a class=\"yt-simple-endpoint style-scope ytd-comment-renderer\" href=\"/channel/UCidiTxpvXk_Q5alyIK0pnEQ\">\n      <yt-img-shadow fit=\"\" height=\"40\" width=\"40\" class=\"style-scope ytd-comment-renderer no-transition empty\" style=\"background-color: transparent;\"><!--css-build:shady--><img id=\"img\" class=\"style-scope yt-img-shadow\" alt=\"\" width=\"40\" height=\"40\"></yt-img-shadow>\n    </a>\n  </div>",
+      "offsetTop": 2476,
+      "offsetLeft": 101,
+      "href": "https://www.youtube.com/watch?v=ZhMw53Ud2tY",
+      "selectorName": "channel1",
+      "nature": {
+        "type": "video",
+        "videoId": "ZhMw53Ud2tY"
+      },
+      "savingTime": "2022-03-24T15:57:21.919Z"
+    },
+    {
+      "id": "1136c2b90c585511587df4cc5b2c2d34ed0a88e3",
+      "metadataId": "84473c4330b5d84a4846cd0211eae80b7685b7e7",
+      "blang": "en-US",
+      "html": "<h3 class=\"style-scope ytd-comment-renderer\">\n          <a id=\"author-text\" class=\"yt-simple-endpoint style-scope ytd-comment-renderer\" href=\"/channel/UCidiTxpvXk_Q5alyIK0pnEQ\">\n            <span class=\"style-scope ytd-comment-renderer\">\n              Debdut Biswas\n            </span>\n          </a>\n        </h3>",
+      "offsetTop": 2476,
+      "offsetLeft": 157,
+      "href": "https://www.youtube.com/watch?v=ZhMw53Ud2tY",
+      "selectorName": "channel1",
+      "nature": {
+        "type": "video",
+        "videoId": "ZhMw53Ud2tY"
+      },
+      "savingTime": "2022-03-24T15:57:21.919Z"
+    },
+    {
+      "id": "8d2813a4bd8b891108f983a776dfa0c7e5271274",
+      "metadataId": "84473c4330b5d84a4846cd0211eae80b7685b7e7",
+      "blang": "en-US",
+      "html": "<ytd-toggle-button-renderer id=\"like-button\" icon-size=\"16\" class=\"style-scope ytd-comment-action-buttons-renderer style-text size-default\" use-keyboard-focused=\"\" system-icons=\"\" button-renderer=\"true\" is-icon-button=\"\" has-no-text=\"\"><a class=\"yt-simple-endpoint style-scope ytd-toggle-button-renderer\" tabindex=\"-1\" href=\"/create_channel?upsell=comment\"><yt-icon-button id=\"button\" class=\"style-scope ytd-toggle-button-renderer style-text size-default\"><!--css-build:shady--><button id=\"button\" class=\"style-scope yt-icon-button\" aria-label=\"3&nbsp;autres personnes aiment ce commentaire\" aria-pressed=\"false\"><yt-icon class=\"style-scope ytd-toggle-button-renderer\"><!--css-build:shady--></yt-icon></button><yt-interaction id=\"interaction\" class=\"circular style-scope yt-icon-button\"><!--css-build:shady--><div class=\"stroke style-scope yt-interaction\"></div><div class=\"fill style-scope yt-interaction\"></div></yt-interaction></yt-icon-button></a></ytd-toggle-button-renderer>",
+      "offsetTop": 2583,
+      "offsetLeft": 149,
+      "href": "https://www.youtube.com/watch?v=ZhMw53Ud2tY",
+      "selectorName": "channel2",
+      "nature": {
+        "type": "video",
+        "videoId": "ZhMw53Ud2tY"
+      },
+      "savingTime": "2022-03-24T15:57:21.919Z"
+    },
+    {
+      "id": "e74b2f1936207cf2be86df2c56ad1f1563db236a",
+      "metadataId": "84473c4330b5d84a4846cd0211eae80b7685b7e7",
+      "blang": "en-US",
+      "html": "<div id=\"author-thumbnail\" class=\"style-scope ytd-comment-renderer\">\n    <a class=\"yt-simple-endpoint style-scope ytd-comment-renderer\" href=\"/channel/UC-SaOmc_t0maaN17VrNY3ag\">\n      <yt-img-shadow fit=\"\" height=\"40\" width=\"40\" class=\"style-scope ytd-comment-renderer no-transition empty\" style=\"background-color: transparent;\"><!--css-build:shady--><img id=\"img\" class=\"style-scope yt-img-shadow\" alt=\"\" width=\"40\" height=\"40\"></yt-img-shadow>\n    </a>\n  </div>",
+      "offsetTop": 2632,
+      "offsetLeft": 101,
+      "href": "https://www.youtube.com/watch?v=ZhMw53Ud2tY",
+      "selectorName": "channel1",
+      "nature": {
+        "type": "video",
+        "videoId": "ZhMw53Ud2tY"
+      },
+      "savingTime": "2022-03-24T15:57:21.919Z"
+    },
+    {
+      "id": "5928e09da003506b3d4354ea12af9653896da740",
+      "metadataId": "84473c4330b5d84a4846cd0211eae80b7685b7e7",
+      "blang": "en-US",
+      "html": "<h3 class=\"style-scope ytd-comment-renderer\">\n          <a id=\"author-text\" class=\"yt-simple-endpoint style-scope ytd-comment-renderer\" href=\"/channel/UC-SaOmc_t0maaN17VrNY3ag\">\n            <span class=\"style-scope ytd-comment-renderer\">\n              LordOfHack\n            </span>\n          </a>\n        </h3>",
+      "offsetTop": 2632,
+      "offsetLeft": 157,
+      "href": "https://www.youtube.com/watch?v=ZhMw53Ud2tY",
+      "selectorName": "channel1",
+      "nature": {
+        "type": "video",
+        "videoId": "ZhMw53Ud2tY"
+      },
+      "savingTime": "2022-03-24T15:57:21.919Z"
+    },
+    {
+      "id": "b55e2e3784f0750232672a8981bffb97008cdbcf",
+      "metadataId": "84473c4330b5d84a4846cd0211eae80b7685b7e7",
+      "blang": "en-US",
+      "html": "<div id=\"author-thumbnail\" class=\"style-scope ytd-comment-renderer\">\n    <a class=\"yt-simple-endpoint style-scope ytd-comment-renderer\" href=\"/channel/UCzSh6msPwO788bFODZbpdWQ\">\n      <yt-img-shadow fit=\"\" height=\"40\" width=\"40\" class=\"style-scope ytd-comment-renderer no-transition empty\" style=\"background-color: transparent;\"><!--css-build:shady--><img id=\"img\" class=\"style-scope yt-img-shadow\" alt=\"\" width=\"40\" height=\"40\"></yt-img-shadow>\n    </a>\n  </div>",
+      "offsetTop": 2728,
+      "offsetLeft": 101,
+      "href": "https://www.youtube.com/watch?v=ZhMw53Ud2tY",
+      "selectorName": "channel1",
+      "nature": {
+        "type": "video",
+        "videoId": "ZhMw53Ud2tY"
+      },
+      "savingTime": "2022-03-24T15:57:21.919Z"
+    },
+    {
+      "id": "47aea1b36f0047b7989826478a368f17f65932a5",
+      "metadataId": "84473c4330b5d84a4846cd0211eae80b7685b7e7",
+      "blang": "en-US",
+      "html": "<h3 class=\"style-scope ytd-comment-renderer\">\n          <a id=\"author-text\" class=\"yt-simple-endpoint style-scope ytd-comment-renderer\" href=\"/channel/UCzSh6msPwO788bFODZbpdWQ\">\n            <span class=\"style-scope ytd-comment-renderer\">\n              Levy Roth\n            </span>\n          </a>\n        </h3>",
+      "offsetTop": 2728,
+      "offsetLeft": 157,
+      "href": "https://www.youtube.com/watch?v=ZhMw53Ud2tY",
+      "selectorName": "channel1",
+      "nature": {
+        "type": "video",
+        "videoId": "ZhMw53Ud2tY"
+      },
+      "savingTime": "2022-03-24T15:57:21.919Z"
+    },
+    {
+      "id": "db5b5d1da64c56a23724bac04e3618b1afa19643",
+      "metadataId": "84473c4330b5d84a4846cd0211eae80b7685b7e7",
+      "blang": "en-US",
+      "html": "<ytd-toggle-button-renderer id=\"like-button\" icon-size=\"16\" class=\"style-scope ytd-comment-action-buttons-renderer style-text size-default\" use-keyboard-focused=\"\" system-icons=\"\" button-renderer=\"true\" is-icon-button=\"\" has-no-text=\"\"><a class=\"yt-simple-endpoint style-scope ytd-toggle-button-renderer\" tabindex=\"-1\" href=\"/create_channel?upsell=comment\"><yt-icon-button id=\"button\" class=\"style-scope ytd-toggle-button-renderer style-text size-default\"><!--css-build:shady--><button id=\"button\" class=\"style-scope yt-icon-button\" aria-label=\"0&nbsp;autre personne aime ce commentaire\" aria-pressed=\"false\"><yt-icon class=\"style-scope ytd-toggle-button-renderer\"><!--css-build:shady--></yt-icon></button><yt-interaction id=\"interaction\" class=\"circular style-scope yt-icon-button\"><!--css-build:shady--><div class=\"stroke style-scope yt-interaction\"></div><div class=\"fill style-scope yt-interaction\"></div></yt-interaction></yt-icon-button></a></ytd-toggle-button-renderer>",
+      "offsetTop": 2775,
+      "offsetLeft": 149,
+      "href": "https://www.youtube.com/watch?v=ZhMw53Ud2tY",
+      "selectorName": "channel2",
+      "nature": {
+        "type": "video",
+        "videoId": "ZhMw53Ud2tY"
+      },
+      "savingTime": "2022-03-24T15:57:21.919Z"
+    },
+    {
+      "id": "b08ff1ed257e95992e9fbe9a6f0e457afb405b0d",
+      "metadataId": "84473c4330b5d84a4846cd0211eae80b7685b7e7",
+      "blang": "en-US",
+      "html": "<div id=\"author-thumbnail\" class=\"style-scope ytd-comment-renderer\">\n    <a class=\"yt-simple-endpoint style-scope ytd-comment-renderer\" href=\"/channel/UC71dKwYGaiWXQ3MkVi_Clwg\">\n      <yt-img-shadow fit=\"\" height=\"40\" width=\"40\" class=\"style-scope ytd-comment-renderer no-transition empty\" style=\"background-color: transparent;\"><!--css-build:shady--><img id=\"img\" class=\"style-scope yt-img-shadow\" alt=\"\" width=\"40\" height=\"40\"></yt-img-shadow>\n    </a>\n  </div>",
+      "offsetTop": 1876,
+      "offsetLeft": 101,
+      "href": "https://www.youtube.com/watch?v=ZhMw53Ud2tY",
+      "selectorName": "channel1",
+      "nature": {
+        "type": "video",
+        "videoId": "ZhMw53Ud2tY"
+      },
+      "savingTime": "2022-03-24T15:57:21.918Z"
+    },
+    {
+      "id": "8a05771626b39cce48996678bdefc556d0eba044",
+      "metadataId": "84473c4330b5d84a4846cd0211eae80b7685b7e7",
+      "blang": "en-US",
+      "html": "<h3 class=\"style-scope ytd-comment-renderer\">\n          <a id=\"author-text\" class=\"yt-simple-endpoint style-scope ytd-comment-renderer\" href=\"/channel/UC71dKwYGaiWXQ3MkVi_Clwg\">\n            <span class=\"style-scope ytd-comment-renderer\">\n              Stephen T Satchell\n            </span>\n          </a>\n        </h3>",
+      "offsetTop": 1876,
+      "offsetLeft": 157,
+      "href": "https://www.youtube.com/watch?v=ZhMw53Ud2tY",
+      "selectorName": "channel1",
+      "nature": {
+        "type": "video",
+        "videoId": "ZhMw53Ud2tY"
+      },
+      "savingTime": "2022-03-24T15:57:21.918Z"
+    },
+    {
+      "id": "7b6e1003e3acc109c829135fd9fa83bcc8b65a06",
+      "metadataId": "84473c4330b5d84a4846cd0211eae80b7685b7e7",
+      "blang": "en-US",
+      "html": "<div id=\"author-thumbnail\" class=\"style-scope ytd-comment-renderer\">\n    <a class=\"yt-simple-endpoint style-scope ytd-comment-renderer\" href=\"/channel/UCJAaMHLEDTSf22i2BxNN5fw\">\n      <yt-img-shadow fit=\"\" height=\"40\" width=\"40\" class=\"style-scope ytd-comment-renderer no-transition empty\" style=\"background-color: transparent;\"><!--css-build:shady--><img id=\"img\" class=\"style-scope yt-img-shadow\" alt=\"\" width=\"40\" height=\"40\"></yt-img-shadow>\n    </a>\n  </div>",
+      "offsetTop": 2012,
+      "offsetLeft": 101,
+      "href": "https://www.youtube.com/watch?v=ZhMw53Ud2tY",
+      "selectorName": "channel1",
+      "nature": {
+        "type": "video",
+        "videoId": "ZhMw53Ud2tY"
+      },
+      "savingTime": "2022-03-24T15:57:21.918Z"
+    },
+    {
+      "id": "b84ec6c09030d78358e8242725c553017319bcae",
+      "metadataId": "84473c4330b5d84a4846cd0211eae80b7685b7e7",
+      "blang": "en-US",
+      "html": "<h3 class=\"style-scope ytd-comment-renderer\">\n          <a id=\"author-text\" class=\"yt-simple-endpoint style-scope ytd-comment-renderer\" href=\"/channel/UCJAaMHLEDTSf22i2BxNN5fw\">\n            <span class=\"style-scope ytd-comment-renderer\">\n              Edgar Ardon\n            </span>\n          </a>\n        </h3>",
+      "offsetTop": 2012,
+      "offsetLeft": 157,
+      "href": "https://www.youtube.com/watch?v=ZhMw53Ud2tY",
+      "selectorName": "channel1",
+      "nature": {
+        "type": "video",
+        "videoId": "ZhMw53Ud2tY"
+      },
+      "savingTime": "2022-03-24T15:57:21.918Z"
+    },
+    {
+      "id": "5d471ad32023ff502784426f4d449bf5294d5c0a",
+      "metadataId": "84473c4330b5d84a4846cd0211eae80b7685b7e7",
+      "blang": "en-US",
+      "html": "<ytd-toggle-button-renderer id=\"like-button\" icon-size=\"16\" class=\"style-scope ytd-comment-action-buttons-renderer style-text size-default\" use-keyboard-focused=\"\" system-icons=\"\" button-renderer=\"true\" is-icon-button=\"\" has-no-text=\"\"><a class=\"yt-simple-endpoint style-scope ytd-toggle-button-renderer\" tabindex=\"-1\" href=\"/create_channel?upsell=comment\"><yt-icon-button id=\"button\" class=\"style-scope ytd-toggle-button-renderer style-text size-default\"><!--css-build:shady--><button id=\"button\" class=\"style-scope yt-icon-button\" aria-label=\"2&nbsp;autres personnes aiment ce commentaire\" aria-pressed=\"false\"><yt-icon class=\"style-scope ytd-toggle-button-renderer\"><!--css-build:shady--></yt-icon></button><yt-interaction id=\"interaction\" class=\"circular style-scope yt-icon-button\"><!--css-build:shady--><div class=\"stroke style-scope yt-interaction\"></div><div class=\"fill style-scope yt-interaction\"></div></yt-interaction></yt-icon-button></a></ytd-toggle-button-renderer>",
+      "offsetTop": 2059,
+      "offsetLeft": 149,
+      "href": "https://www.youtube.com/watch?v=ZhMw53Ud2tY",
+      "selectorName": "channel2",
+      "nature": {
+        "type": "video",
+        "videoId": "ZhMw53Ud2tY"
+      },
+      "savingTime": "2022-03-24T15:57:21.918Z"
+    },
+    {
+      "id": "197f7411fc31fac0195e7c22a59afef4347f38bd",
+      "metadataId": "84473c4330b5d84a4846cd0211eae80b7685b7e7",
+      "blang": "en-US",
+      "html": "<div id=\"author-thumbnail\" class=\"style-scope ytd-comment-renderer\">\n    <a class=\"yt-simple-endpoint style-scope ytd-comment-renderer\" href=\"/channel/UCoUTKAGZjOYSAIZyHkWwbAw\">\n      <yt-img-shadow fit=\"\" height=\"40\" width=\"40\" class=\"style-scope ytd-comment-renderer no-transition empty\" style=\"background-color: transparent;\"><!--css-build:shady--><img id=\"img\" class=\"style-scope yt-img-shadow\" alt=\"\" width=\"40\" height=\"40\"></yt-img-shadow>\n    </a>\n  </div>",
+      "offsetTop": 2108,
+      "offsetLeft": 101,
+      "href": "https://www.youtube.com/watch?v=ZhMw53Ud2tY",
+      "selectorName": "channel1",
+      "nature": {
+        "type": "video",
+        "videoId": "ZhMw53Ud2tY"
+      },
+      "savingTime": "2022-03-24T15:57:21.918Z"
+    },
+    {
+      "id": "68a9eda6b50b9a2e7dd5be55537419054ccf3c1a",
+      "metadataId": "84473c4330b5d84a4846cd0211eae80b7685b7e7",
+      "blang": "en-US",
+      "html": "<h3 class=\"style-scope ytd-comment-renderer\">\n          <a id=\"author-text\" class=\"yt-simple-endpoint style-scope ytd-comment-renderer\" href=\"/channel/UCoUTKAGZjOYSAIZyHkWwbAw\">\n            <span class=\"style-scope ytd-comment-renderer\">\n              William Heffernan\n            </span>\n          </a>\n        </h3>",
+      "offsetTop": 2108,
+      "offsetLeft": 157,
+      "href": "https://www.youtube.com/watch?v=ZhMw53Ud2tY",
+      "selectorName": "channel1",
+      "nature": {
+        "type": "video",
+        "videoId": "ZhMw53Ud2tY"
+      },
+      "savingTime": "2022-03-24T15:57:21.918Z"
+    },
+    {
+      "id": "ee05967c81949602f0f6d0d3909df6e8c009992f",
+      "metadataId": "84473c4330b5d84a4846cd0211eae80b7685b7e7",
+      "blang": "en-US",
+      "html": "<div id=\"author-thumbnail\" class=\"style-scope ytd-comment-renderer\">\n    <a class=\"yt-simple-endpoint style-scope ytd-comment-renderer\" href=\"/channel/UCaiDTGRzQo1zBYQdgEY_41w\">\n      <yt-img-shadow fit=\"\" height=\"40\" width=\"40\" class=\"style-scope ytd-comment-renderer no-transition empty\" style=\"background-color: transparent;\"><!--css-build:shady--><img id=\"img\" class=\"style-scope yt-img-shadow\" alt=\"\" width=\"40\" height=\"40\"></yt-img-shadow>\n    </a>\n  </div>",
+      "offsetTop": 2264,
+      "offsetLeft": 101,
+      "href": "https://www.youtube.com/watch?v=ZhMw53Ud2tY",
+      "selectorName": "channel1",
+      "nature": {
+        "type": "video",
+        "videoId": "ZhMw53Ud2tY"
+      },
+      "savingTime": "2022-03-24T15:57:21.918Z"
+    },
+    {
+      "id": "6d6fae177029f720b7bd985919122dfbab33e0a3",
+      "metadataId": "84473c4330b5d84a4846cd0211eae80b7685b7e7",
+      "blang": "en-US",
+      "html": "<h3 class=\"style-scope ytd-comment-renderer\">\n          <a id=\"author-text\" class=\"yt-simple-endpoint style-scope ytd-comment-renderer\" href=\"/channel/UCaiDTGRzQo1zBYQdgEY_41w\">\n            <span class=\"style-scope ytd-comment-renderer\">\n              Max Kueng\n            </span>\n          </a>\n        </h3>",
+      "offsetTop": 2264,
+      "offsetLeft": 157,
+      "href": "https://www.youtube.com/watch?v=ZhMw53Ud2tY",
+      "selectorName": "channel1",
+      "nature": {
+        "type": "video",
+        "videoId": "ZhMw53Ud2tY"
+      },
+      "savingTime": "2022-03-24T15:57:21.918Z"
+    },
+    {
+      "id": "684d27a3554c56e34a6dffa8ffced2295ccdc85a",
+      "metadataId": "84473c4330b5d84a4846cd0211eae80b7685b7e7",
+      "blang": "en-US",
+      "html": "<div id=\"author-thumbnail\" class=\"style-scope ytd-comment-renderer\">\n    <a class=\"yt-simple-endpoint style-scope ytd-comment-renderer\" href=\"/channel/UCIc9AAfaumUXUnxL3yGNY9w\">\n      <yt-img-shadow fit=\"\" height=\"40\" width=\"40\" class=\"style-scope ytd-comment-renderer no-transition empty\" style=\"background-color: transparent;\"><!--css-build:shady--><img id=\"img\" class=\"style-scope yt-img-shadow\" alt=\"\" width=\"40\" height=\"40\"></yt-img-shadow>\n    </a>\n  </div>",
+      "offsetTop": 2380,
+      "offsetLeft": 101,
+      "href": "https://www.youtube.com/watch?v=ZhMw53Ud2tY",
+      "selectorName": "channel1",
+      "nature": {
+        "type": "video",
+        "videoId": "ZhMw53Ud2tY"
+      },
+      "savingTime": "2022-03-24T15:57:21.918Z"
+    },
+    {
+      "id": "263fb4d7e6ef5e176327d1c24c2a30fffb1ba59d",
+      "metadataId": "84473c4330b5d84a4846cd0211eae80b7685b7e7",
+      "blang": "en-US",
+      "html": "<h3 class=\"style-scope ytd-comment-renderer\">\n          <a id=\"author-text\" class=\"yt-simple-endpoint style-scope ytd-comment-renderer\" href=\"/channel/UCIc9AAfaumUXUnxL3yGNY9w\">\n            <span class=\"style-scope ytd-comment-renderer\">\n              ZapsterZatoo\n            </span>\n          </a>\n        </h3>",
+      "offsetTop": 2380,
+      "offsetLeft": 157,
+      "href": "https://www.youtube.com/watch?v=ZhMw53Ud2tY",
+      "selectorName": "channel1",
+      "nature": {
+        "type": "video",
+        "videoId": "ZhMw53Ud2tY"
+      },
+      "savingTime": "2022-03-24T15:57:21.918Z"
+    },
+    {
+      "id": "08f7918cef8d9c395a49e2aff467df3a15e9bc1c",
+      "metadataId": "84473c4330b5d84a4846cd0211eae80b7685b7e7",
+      "blang": "en-US",
+      "html": "<h3 class=\"style-scope ytd-comment-renderer\">\n          <a id=\"author-text\" class=\"yt-simple-endpoint style-scope ytd-comment-renderer\" href=\"/channel/UCfnsx8O1-VfRwEtSw3pMS9Q\">\n            <span class=\"style-scope ytd-comment-renderer\">\n              Charlie Peepers\n            </span>\n          </a>\n        </h3>",
+      "offsetTop": 1780,
+      "offsetLeft": 157,
+      "href": "https://www.youtube.com/watch?v=ZhMw53Ud2tY",
+      "selectorName": "channel1",
+      "nature": {
+        "type": "video",
+        "videoId": "ZhMw53Ud2tY"
+      },
+      "savingTime": "2022-03-24T15:56:59.858Z"
+    },
+    {
+      "id": "aa2dd7db09bf43ab5834448e901faa8e9cbd2a33",
+      "metadataId": "84473c4330b5d84a4846cd0211eae80b7685b7e7",
+      "blang": "en-US",
+      "html": "<ytd-toggle-button-renderer id=\"like-button\" icon-size=\"16\" class=\"style-scope ytd-comment-action-buttons-renderer style-text size-default\" use-keyboard-focused=\"\" system-icons=\"\" button-renderer=\"true\" is-icon-button=\"\" has-no-text=\"\"><a class=\"yt-simple-endpoint style-scope ytd-toggle-button-renderer\" tabindex=\"-1\" href=\"/create_channel?upsell=comment\"><yt-icon-button id=\"button\" class=\"style-scope ytd-toggle-button-renderer style-text size-default\"><!--css-build:shady--><button id=\"button\" class=\"style-scope yt-icon-button\" aria-label=\"4&nbsp;autres personnes aiment ce commentaire\" aria-pressed=\"false\"><yt-icon class=\"style-scope ytd-toggle-button-renderer\"><!--css-build:shady--></yt-icon></button><yt-interaction id=\"interaction\" class=\"circular style-scope yt-icon-button\"><!--css-build:shady--><div class=\"stroke style-scope yt-interaction\"></div><div class=\"fill style-scope yt-interaction\"></div></yt-interaction></yt-icon-button></a></ytd-toggle-button-renderer>",
+      "offsetTop": 1827,
+      "offsetLeft": 149,
+      "href": "https://www.youtube.com/watch?v=ZhMw53Ud2tY",
+      "selectorName": "channel2",
+      "nature": {
+        "type": "video",
+        "videoId": "ZhMw53Ud2tY"
+      },
+      "savingTime": "2022-03-24T15:56:59.858Z"
+    },
+    {
+      "id": "b665efc62608fc6910c2205f62360cdd79cf5ec0",
+      "metadataId": "84473c4330b5d84a4846cd0211eae80b7685b7e7",
+      "blang": "en-US",
+      "html": "<ytd-toggle-button-renderer id=\"like-button\" icon-size=\"16\" class=\"style-scope ytd-comment-action-buttons-renderer style-text size-default\" use-keyboard-focused=\"\" system-icons=\"\" button-renderer=\"true\" is-icon-button=\"\" has-no-text=\"\"><a class=\"yt-simple-endpoint style-scope ytd-toggle-button-renderer\" tabindex=\"-1\" href=\"/create_channel?upsell=comment\"><yt-icon-button id=\"button\" class=\"style-scope ytd-toggle-button-renderer style-text size-default\"><!--css-build:shady--><button id=\"button\" class=\"style-scope yt-icon-button\" aria-label=\"50&nbsp;autres personnes aiment ce commentaire\" aria-pressed=\"false\"><yt-icon class=\"style-scope ytd-toggle-button-renderer\"><!--css-build:shady--></yt-icon></button><yt-interaction id=\"interaction\" class=\"circular style-scope yt-icon-button\"><!--css-build:shady--><div class=\"stroke style-scope yt-interaction\"></div><div class=\"fill style-scope yt-interaction\"></div></yt-interaction></yt-icon-button></a></ytd-toggle-button-renderer>",
+      "offsetTop": 1487,
+      "offsetLeft": 149,
+      "href": "https://www.youtube.com/watch?v=ZhMw53Ud2tY",
+      "selectorName": "channel2",
+      "nature": {
+        "type": "video",
+        "videoId": "ZhMw53Ud2tY"
+      },
+      "savingTime": "2022-03-24T15:56:59.857Z"
+    },
+    {
+      "id": "31b65070b1b285c73953510f2307137822a7c61e",
+      "metadataId": "84473c4330b5d84a4846cd0211eae80b7685b7e7",
+      "blang": "en-US",
+      "html": "<div id=\"author-thumbnail\" class=\"style-scope ytd-comment-renderer\">\n    <a class=\"yt-simple-endpoint style-scope ytd-comment-renderer\" href=\"/channel/UCr-ySVDaPdSh07eDfqf5L8w\">\n      <yt-img-shadow fit=\"\" height=\"40\" width=\"40\" class=\"style-scope ytd-comment-renderer no-transition empty\" style=\"background-color: transparent;\"><!--css-build:shady--><img id=\"img\" class=\"style-scope yt-img-shadow\" alt=\"\" width=\"40\" height=\"40\"></yt-img-shadow>\n    </a>\n  </div>",
+      "offsetTop": 1568,
+      "offsetLeft": 101,
+      "href": "https://www.youtube.com/watch?v=ZhMw53Ud2tY",
+      "selectorName": "channel1",
+      "nature": {
+        "type": "video",
+        "videoId": "ZhMw53Ud2tY"
+      },
+      "savingTime": "2022-03-24T15:56:59.857Z"
+    },
+    {
+      "id": "152f9ef35e9e55ae6c654b85ec7dc80e5497fe65",
+      "metadataId": "84473c4330b5d84a4846cd0211eae80b7685b7e7",
+      "blang": "en-US",
+      "html": "<h3 class=\"style-scope ytd-comment-renderer\">\n          <a id=\"author-text\" class=\"yt-simple-endpoint style-scope ytd-comment-renderer\" href=\"/channel/UCr-ySVDaPdSh07eDfqf5L8w\">\n            <span class=\"style-scope ytd-comment-renderer\">\n              John Cullen\n            </span>\n          </a>\n        </h3>",
+      "offsetTop": 1568,
+      "offsetLeft": 157,
+      "href": "https://www.youtube.com/watch?v=ZhMw53Ud2tY",
+      "selectorName": "channel1",
+      "nature": {
+        "type": "video",
+        "videoId": "ZhMw53Ud2tY"
+      },
+      "savingTime": "2022-03-24T15:56:59.857Z"
+    },
+    {
+      "id": "ee2a64593c097d67e299bde2dc4ae038a92789bc",
+      "metadataId": "84473c4330b5d84a4846cd0211eae80b7685b7e7",
+      "blang": "en-US",
+      "html": "<ytd-toggle-button-renderer id=\"like-button\" icon-size=\"16\" class=\"style-scope ytd-comment-action-buttons-renderer style-text size-default\" use-keyboard-focused=\"\" system-icons=\"\" button-renderer=\"true\" is-icon-button=\"\" has-no-text=\"\"><a class=\"yt-simple-endpoint style-scope ytd-toggle-button-renderer\" tabindex=\"-1\" href=\"/create_channel?upsell=comment\"><yt-icon-button id=\"button\" class=\"style-scope ytd-toggle-button-renderer style-text size-default\"><!--css-build:shady--><button id=\"button\" class=\"style-scope yt-icon-button\" aria-label=\"32&nbsp;autres personnes aiment ce commentaire\" aria-pressed=\"false\"><yt-icon class=\"style-scope ytd-toggle-button-renderer\"><!--css-build:shady--></yt-icon></button><yt-interaction id=\"interaction\" class=\"circular style-scope yt-icon-button\"><!--css-build:shady--><div class=\"stroke style-scope yt-interaction\"></div><div class=\"fill style-scope yt-interaction\"></div></yt-interaction></yt-icon-button></a></ytd-toggle-button-renderer>",
+      "offsetTop": 1615,
+      "offsetLeft": 149,
+      "href": "https://www.youtube.com/watch?v=ZhMw53Ud2tY",
+      "selectorName": "channel2",
+      "nature": {
+        "type": "video",
+        "videoId": "ZhMw53Ud2tY"
+      },
+      "savingTime": "2022-03-24T15:56:59.857Z"
+    },
+    {
+      "id": "ac94d6a0091cd1a04e3b2266e28b7c7bfaa7490d",
+      "metadataId": "84473c4330b5d84a4846cd0211eae80b7685b7e7",
+      "blang": "en-US",
+      "html": "<div id=\"author-thumbnail\" class=\"style-scope ytd-comment-renderer\">\n    <a class=\"yt-simple-endpoint style-scope ytd-comment-renderer\" href=\"/channel/UCYkTYx54pE0VF4XaZ-iAB1w\">\n      <yt-img-shadow fit=\"\" height=\"40\" width=\"40\" class=\"style-scope ytd-comment-renderer no-transition empty\" style=\"background-color: transparent;\"><!--css-build:shady--><img id=\"img\" class=\"style-scope yt-img-shadow\" alt=\"\" width=\"40\" height=\"40\"></yt-img-shadow>\n    </a>\n  </div>",
+      "offsetTop": 1664,
+      "offsetLeft": 101,
+      "href": "https://www.youtube.com/watch?v=ZhMw53Ud2tY",
+      "selectorName": "channel1",
+      "nature": {
+        "type": "video",
+        "videoId": "ZhMw53Ud2tY"
+      },
+      "savingTime": "2022-03-24T15:56:59.857Z"
+    },
+    {
+      "id": "f63f144a274b13570abb73f50d96c24b0e59c834",
+      "metadataId": "84473c4330b5d84a4846cd0211eae80b7685b7e7",
+      "blang": "en-US",
+      "html": "<h3 class=\"style-scope ytd-comment-renderer\">\n          <a id=\"author-text\" class=\"yt-simple-endpoint style-scope ytd-comment-renderer\" href=\"/channel/UCYkTYx54pE0VF4XaZ-iAB1w\">\n            <span class=\"style-scope ytd-comment-renderer\">\n              T H\n            </span>\n          </a>\n        </h3>",
+      "offsetTop": 1664,
+      "offsetLeft": 157,
+      "href": "https://www.youtube.com/watch?v=ZhMw53Ud2tY",
+      "selectorName": "channel1",
+      "nature": {
+        "type": "video",
+        "videoId": "ZhMw53Ud2tY"
+      },
+      "savingTime": "2022-03-24T15:56:59.857Z"
+    },
+    {
+      "id": "d33eb5b640f41e4df4654b8c641fe4e798c014d9",
+      "metadataId": "84473c4330b5d84a4846cd0211eae80b7685b7e7",
+      "blang": "en-US",
+      "html": "<ytd-toggle-button-renderer id=\"like-button\" icon-size=\"16\" class=\"style-scope ytd-comment-action-buttons-renderer style-text size-default\" use-keyboard-focused=\"\" system-icons=\"\" button-renderer=\"true\" is-icon-button=\"\" has-no-text=\"\"><a class=\"yt-simple-endpoint style-scope ytd-toggle-button-renderer\" tabindex=\"-1\" href=\"/create_channel?upsell=comment\"><yt-icon-button id=\"button\" class=\"style-scope ytd-toggle-button-renderer style-text size-default\"><!--css-build:shady--><button id=\"button\" class=\"style-scope yt-icon-button\" aria-label=\"14&nbsp;autres personnes aiment ce commentaire\" aria-pressed=\"false\"><yt-icon class=\"style-scope ytd-toggle-button-renderer\"><!--css-build:shady--></yt-icon></button><yt-interaction id=\"interaction\" class=\"circular style-scope yt-icon-button\"><!--css-build:shady--><div class=\"stroke style-scope yt-interaction\"></div><div class=\"fill style-scope yt-interaction\"></div></yt-interaction></yt-icon-button></a></ytd-toggle-button-renderer>",
+      "offsetTop": 1731,
+      "offsetLeft": 149,
+      "href": "https://www.youtube.com/watch?v=ZhMw53Ud2tY",
+      "selectorName": "channel2",
+      "nature": {
+        "type": "video",
+        "videoId": "ZhMw53Ud2tY"
+      },
+      "savingTime": "2022-03-24T15:56:59.857Z"
+    },
+    {
+      "id": "9de75ef28f59bb5a077c2055da24df5495d6940e",
+      "metadataId": "84473c4330b5d84a4846cd0211eae80b7685b7e7",
+      "blang": "en-US",
+      "html": "<div id=\"author-thumbnail\" class=\"style-scope ytd-comment-renderer\">\n    <a class=\"yt-simple-endpoint style-scope ytd-comment-renderer\" href=\"/channel/UCfnsx8O1-VfRwEtSw3pMS9Q\">\n      <yt-img-shadow fit=\"\" height=\"40\" width=\"40\" class=\"style-scope ytd-comment-renderer no-transition empty\" style=\"background-color: transparent;\"><!--css-build:shady--><img id=\"img\" class=\"style-scope yt-img-shadow\" alt=\"\" width=\"40\" height=\"40\"></yt-img-shadow>\n    </a>\n  </div>",
+      "offsetTop": 1780,
+      "offsetLeft": 101,
+      "href": "https://www.youtube.com/watch?v=ZhMw53Ud2tY",
+      "selectorName": "channel1",
+      "nature": {
+        "type": "video",
+        "videoId": "ZhMw53Ud2tY"
+      },
+      "savingTime": "2022-03-24T15:56:59.857Z"
+    },
+    {
+      "id": "6ba797b1d2c0bdf55ddeac0b2eab74074cce0269",
+      "metadataId": "84473c4330b5d84a4846cd0211eae80b7685b7e7",
+      "blang": "en-US",
+      "html": "<div id=\"author-thumbnail\" class=\"style-scope ytd-comment-renderer\">\n    <a class=\"yt-simple-endpoint style-scope ytd-comment-renderer\" href=\"/channel/UC_Fh8kvtkVPkeihBs42jGcA\">\n      <yt-img-shadow fit=\"\" height=\"40\" width=\"40\" class=\"style-scope ytd-comment-renderer no-transition empty\" style=\"background-color: transparent;\"><!--css-build:shady--><img id=\"img\" class=\"style-scope yt-img-shadow\" alt=\"\" width=\"40\" height=\"40\"></yt-img-shadow>\n    </a>\n  </div>",
+      "offsetTop": 1282,
+      "offsetLeft": 101,
+      "href": "https://www.youtube.com/watch?v=ZhMw53Ud2tY",
+      "selectorName": "channel1",
+      "nature": {
+        "type": "video",
+        "videoId": "ZhMw53Ud2tY"
+      },
+      "savingTime": "2022-03-24T15:56:59.856Z"
+    },
+    {
+      "id": "41c8a636bd67bd2704872f9028b0c2af043f3099",
+      "metadataId": "84473c4330b5d84a4846cd0211eae80b7685b7e7",
+      "blang": "en-US",
+      "html": "<ytd-author-comment-badge-renderer class=\"style-scope ytd-comment-renderer\" standardize-icon-size=\"\" style=\"--ytd-author-comment-badge-icon-background-color: transparent; --ytd-author-comment-badge-background-color: transparent; --ytd-author-comment-badge-name-color: var(--yt-spec-text-primary);\"><!--css-build:shady--><a id=\"name\" class=\"yt-simple-endpoint style-scope ytd-author-comment-badge-renderer\" href=\"/channel/UC_Fh8kvtkVPkeihBs42jGcA\">\n  <ytd-channel-name id=\"channel-name\" class=\"style-scope ytd-author-comment-badge-renderer\"><!--css-build:shady--><div id=\"container\" class=\"style-scope ytd-channel-name\">\n  <div id=\"text-container\" class=\"style-scope ytd-channel-name\">\n    <yt-formatted-string id=\"text\" title=\"\" class=\"style-scope ytd-channel-name\" ellipsis-truncate=\"\" aria-label=\"Coding in Flow, utilisateur validé\">Coding in Flow</yt-formatted-string>\n  </div>\n  <tp-yt-paper-tooltip fit-to-visible-bounds=\"\" class=\"style-scope ytd-channel-name\" role=\"tooltip\" tabindex=\"-1\"><!--css-build:shady--><div id=\"tooltip\" class=\"hidden style-scope tp-yt-paper-tooltip\">\n  \n    Coding in Flow\n  \n</div>\n</tp-yt-paper-tooltip>\n</div>\n<ytd-badge-supported-renderer class=\"style-scope ytd-channel-name\" disable-upgrade=\"\" hidden=\"\">\n</ytd-badge-supported-renderer>\n</ytd-channel-name>\n</a>\n<yt-icon id=\"icon\" size=\"12\" class=\"style-scope ytd-author-comment-badge-renderer\"><!--css-build:shady--></yt-icon>\n</ytd-author-comment-badge-renderer>",
+      "offsetTop": 1283,
+      "offsetLeft": 157,
+      "href": "https://www.youtube.com/watch?v=ZhMw53Ud2tY",
+      "selectorName": "channel1",
+      "nature": {
+        "type": "video",
+        "videoId": "ZhMw53Ud2tY"
+      },
+      "savingTime": "2022-03-24T15:56:59.856Z"
+    },
+    {
+      "id": "277186048594e6722d881be68a66b9e46489603f",
+      "metadataId": "84473c4330b5d84a4846cd0211eae80b7685b7e7",
+      "blang": "en-US",
+      "html": "<ytd-toggle-button-renderer id=\"like-button\" icon-size=\"16\" class=\"style-scope ytd-comment-action-buttons-renderer style-text size-default\" use-keyboard-focused=\"\" system-icons=\"\" button-renderer=\"true\" is-icon-button=\"\" has-no-text=\"\"><a class=\"yt-simple-endpoint style-scope ytd-toggle-button-renderer\" tabindex=\"-1\" href=\"/create_channel?upsell=comment\"><yt-icon-button id=\"button\" class=\"style-scope ytd-toggle-button-renderer style-text size-default\"><!--css-build:shady--><button id=\"button\" class=\"style-scope yt-icon-button\" aria-label=\"420&nbsp;autres personnes aiment ce commentaire\" aria-pressed=\"false\"><yt-icon class=\"style-scope ytd-toggle-button-renderer\"><!--css-build:shady--></yt-icon></button><yt-interaction id=\"interaction\" class=\"circular style-scope yt-icon-button\"><!--css-build:shady--><div class=\"stroke style-scope yt-interaction\"></div><div class=\"fill style-scope yt-interaction\"></div></yt-interaction></yt-icon-button></a></ytd-toggle-button-renderer>",
+      "offsetTop": 1201,
+      "offsetLeft": 149,
+      "href": "https://www.youtube.com/watch?v=ZhMw53Ud2tY",
+      "selectorName": "channel2",
+      "nature": {
+        "type": "video",
+        "videoId": "ZhMw53Ud2tY"
+      },
+      "savingTime": "2022-03-24T15:56:59.856Z"
+    },
+    {
+      "id": "b450d44b065376357f1629bc95cabc78eef95ccb",
+      "metadataId": "84473c4330b5d84a4846cd0211eae80b7685b7e7",
+      "blang": "en-US",
+      "html": "<ytd-toggle-button-renderer id=\"dislike-button\" icon-size=\"16\" class=\"style-scope ytd-comment-action-buttons-renderer style-text size-default\" use-keyboard-focused=\"\" system-icons=\"\" button-renderer=\"true\" is-icon-button=\"\" has-no-text=\"\"><a class=\"yt-simple-endpoint style-scope ytd-toggle-button-renderer\" tabindex=\"-1\" href=\"/create_channel?upsell=comment\"><yt-icon-button id=\"button\" class=\"style-scope ytd-toggle-button-renderer style-text size-default\"><!--css-build:shady--><button id=\"button\" class=\"style-scope yt-icon-button\" aria-label=\"Je n'aime pas ce commentaire\" aria-pressed=\"false\"><yt-icon class=\"style-scope ytd-toggle-button-renderer\"><!--css-build:shady--></yt-icon></button><yt-interaction id=\"interaction\" class=\"circular style-scope yt-icon-button\"><!--css-build:shady--><div class=\"stroke style-scope yt-interaction\"></div><div class=\"fill style-scope yt-interaction\"></div></yt-interaction></yt-icon-button></a></ytd-toggle-button-renderer>",
+      "offsetTop": 1201,
+      "offsetLeft": 209,
+      "href": "https://www.youtube.com/watch?v=ZhMw53Ud2tY",
+      "selectorName": "channel2",
+      "nature": {
+        "type": "video",
+        "videoId": "ZhMw53Ud2tY"
+      },
+      "savingTime": "2022-03-24T15:56:59.856Z"
+    },
+    {
+      "id": "a0aff9a4ead85dfd148b1c5bfcf40fba88e6da24",
+      "metadataId": "84473c4330b5d84a4846cd0211eae80b7685b7e7",
+      "blang": "en-US",
+      "html": "<ytd-button-renderer class=\"style-scope ytd-comment-action-buttons-renderer style-text size-default\" use-keyboard-focused=\"\" button-renderer=\"true\" is-paper-button=\"\"><a class=\"yt-simple-endpoint style-scope ytd-button-renderer\" tabindex=\"-1\" href=\"/create_channel?upsell=comment_reply\"><tp-yt-paper-button id=\"button\" class=\"style-scope ytd-button-renderer style-text size-default\" role=\"button\" tabindex=\"0\" animated=\"\" elevation=\"0\" aria-disabled=\"false\" aria-label=\"Répondre\"><!--css-build:shady--><yt-formatted-string id=\"text\" class=\"style-scope ytd-button-renderer style-text size-default\">Répondre</yt-formatted-string></tp-yt-paper-button></a></ytd-button-renderer>",
+      "offsetTop": 1200,
+      "offsetLeft": 241,
+      "href": "https://www.youtube.com/watch?v=ZhMw53Ud2tY",
+      "selectorName": "channel2",
+      "nature": {
+        "type": "video",
+        "videoId": "ZhMw53Ud2tY"
+      },
+      "savingTime": "2022-03-24T15:56:59.856Z"
+    },
+    {
+      "id": "cf43d9d5cc55d11fd7307a5710107eab95dbe285",
+      "metadataId": "84473c4330b5d84a4846cd0211eae80b7685b7e7",
+      "blang": "en-US",
+      "html": "<ytd-toggle-button-renderer id=\"like-button\" icon-size=\"16\" class=\"style-scope ytd-comment-action-buttons-renderer style-text size-default\" use-keyboard-focused=\"\" system-icons=\"\" button-renderer=\"true\" is-icon-button=\"\" has-no-text=\"\"><a class=\"yt-simple-endpoint style-scope ytd-toggle-button-renderer\" tabindex=\"-1\" href=\"/create_channel?upsell=comment\"><yt-icon-button id=\"button\" class=\"style-scope ytd-toggle-button-renderer style-text size-default\"><!--css-build:shady--><button id=\"button\" class=\"style-scope yt-icon-button\" aria-label=\"1&nbsp;autre personne aime ce commentaire\" aria-pressed=\"false\"><yt-icon class=\"style-scope ytd-toggle-button-renderer\"><!--css-build:shady--></yt-icon></button><yt-interaction id=\"interaction\" class=\"circular style-scope yt-icon-button\"><!--css-build:shady--><div class=\"stroke style-scope yt-interaction\"></div><div class=\"fill style-scope yt-interaction\"></div></yt-interaction></yt-icon-button></a></ytd-toggle-button-renderer>",
+      "offsetTop": 1331,
+      "offsetLeft": 149,
+      "href": "https://www.youtube.com/watch?v=ZhMw53Ud2tY",
+      "selectorName": "channel2",
+      "nature": {
+        "type": "video",
+        "videoId": "ZhMw53Ud2tY"
+      },
+      "savingTime": "2022-03-24T15:56:59.856Z"
+    },
+    {
+      "id": "ef2ca6f13738373d9293edb7e4931a7d566f963f",
+      "metadataId": "84473c4330b5d84a4846cd0211eae80b7685b7e7",
+      "blang": "en-US",
+      "html": "<div id=\"author-thumbnail\" class=\"style-scope ytd-comment-renderer\">\n    <a class=\"yt-simple-endpoint style-scope ytd-comment-renderer\" href=\"/channel/UCsv1SL8ivldEkaYCioh24bg\">\n      <yt-img-shadow fit=\"\" height=\"40\" width=\"40\" class=\"style-scope ytd-comment-renderer no-transition empty\" style=\"background-color: transparent;\"><!--css-build:shady--><img id=\"img\" class=\"style-scope yt-img-shadow\" alt=\"\" width=\"40\" height=\"40\"></yt-img-shadow>\n    </a>\n  </div>",
+      "offsetTop": 1380,
+      "offsetLeft": 101,
+      "href": "https://www.youtube.com/watch?v=ZhMw53Ud2tY",
+      "selectorName": "channel1",
+      "nature": {
+        "type": "video",
+        "videoId": "ZhMw53Ud2tY"
+      },
+      "savingTime": "2022-03-24T15:56:59.856Z"
+    },
+    {
+      "id": "70c51278c6c638931caadf12956c2490f710d215",
+      "metadataId": "84473c4330b5d84a4846cd0211eae80b7685b7e7",
+      "blang": "en-US",
+      "html": "<h3 class=\"style-scope ytd-comment-renderer\">\n          <a id=\"author-text\" class=\"yt-simple-endpoint style-scope ytd-comment-renderer\" href=\"/channel/UCsv1SL8ivldEkaYCioh24bg\">\n            <span class=\"style-scope ytd-comment-renderer\">\n              fm\n            </span>\n          </a>\n        </h3>",
+      "offsetTop": 1380,
+      "offsetLeft": 157,
+      "href": "https://www.youtube.com/watch?v=ZhMw53Ud2tY",
+      "selectorName": "channel1",
+      "nature": {
+        "type": "video",
+        "videoId": "ZhMw53Ud2tY"
+      },
+      "savingTime": "2022-03-24T15:56:59.856Z"
+    },
+    {
+      "id": "55019890e1f53444634eb7d1aeb3491061467997",
+      "metadataId": "84473c4330b5d84a4846cd0211eae80b7685b7e7",
+      "blang": "en-US",
+      "html": "<div id=\"author-thumbnail\" class=\"style-scope ytd-comment-renderer\">\n    <a class=\"yt-simple-endpoint style-scope ytd-comment-renderer\" href=\"/channel/UCTI9iozTDyz9Gs--KDg912Q\">\n      <yt-img-shadow fit=\"\" height=\"40\" width=\"40\" class=\"style-scope ytd-comment-renderer no-transition empty\" style=\"background-color: transparent;\"><!--css-build:shady--><img id=\"img\" class=\"style-scope yt-img-shadow\" alt=\"\" width=\"40\" height=\"40\"></yt-img-shadow>\n    </a>\n  </div>",
+      "offsetTop": 1134,
+      "offsetLeft": 101,
+      "href": "https://www.youtube.com/watch?v=ZhMw53Ud2tY",
+      "selectorName": "channel1",
+      "nature": {
+        "type": "video",
+        "videoId": "ZhMw53Ud2tY"
+      },
+      "savingTime": "2022-03-24T15:56:59.855Z"
+    },
+    {
+      "id": "cc840d0949d198458abd690fac49afe8560e79a6",
+      "metadataId": "84473c4330b5d84a4846cd0211eae80b7685b7e7",
+      "blang": "en-US",
+      "html": "<h3 class=\"style-scope ytd-comment-renderer\">\n          <a id=\"author-text\" class=\"yt-simple-endpoint style-scope ytd-comment-renderer\" href=\"/channel/UCTI9iozTDyz9Gs--KDg912Q\">\n            <span class=\"style-scope ytd-comment-renderer\">\n              k3ym0\n            </span>\n          </a>\n        </h3>",
+      "offsetTop": 1134,
+      "offsetLeft": 157,
+      "href": "https://www.youtube.com/watch?v=ZhMw53Ud2tY",
+      "selectorName": "channel1",
+      "nature": {
+        "type": "video",
+        "videoId": "ZhMw53Ud2tY"
+      },
+      "savingTime": "2022-03-24T15:56:59.855Z"
+    },
+    {
+      "id": "b2c54c5f2f3d2c042ea6aeb07b91f0536a26bb0f",
+      "metadataId": "84473c4330b5d84a4846cd0211eae80b7685b7e7",
+      "blang": "en-US",
+      "html": "<ytd-video-owner-renderer watch-metadata-refresh=\"\" class=\"style-scope ytd-watch-metadata\"><!--css-build:shady--><a class=\"yt-simple-endpoint style-scope ytd-video-owner-renderer\" tabindex=\"-1\" href=\"/channel/UC9x0AN7BWHpCDHSm9NiJFJQ\"><yt-img-shadow id=\"avatar\" class=\"style-scope ytd-video-owner-renderer no-transition empty\" style=\"background-color: transparent;\"><!--css-build:shady--><img id=\"img\" class=\"style-scope yt-img-shadow\" alt=\"\" width=\"36\"></yt-img-shadow></a><div id=\"upload-info\" class=\"style-scope ytd-video-owner-renderer\"><ytd-channel-name id=\"channel-name\" class=\"style-scope ytd-video-owner-renderer\"><!--css-build:shady--><div id=\"container\" class=\"style-scope ytd-channel-name\">\n  <div id=\"text-container\" class=\"style-scope ytd-channel-name\">\n    <yt-formatted-string id=\"text\" title=\"\" class=\"style-scope ytd-channel-name complex-string\" ellipsis-truncate=\"\" has-link-only_=\"\"><a class=\"yt-simple-endpoint style-scope yt-formatted-string\" spellcheck=\"false\" href=\"/channel/UC9x0AN7BWHpCDHSm9NiJFJQ\" dir=\"auto\">NetworkChuck</a></yt-formatted-string>\n  </div>\n  <tp-yt-paper-tooltip fit-to-visible-bounds=\"\" class=\"style-scope ytd-channel-name\" role=\"tooltip\" tabindex=\"-1\"><!--css-build:shady--><div id=\"tooltip\" class=\"hidden style-scope tp-yt-paper-tooltip\">\n  \n    NetworkChuck\n  \n</div>\n</tp-yt-paper-tooltip>\n</div>\n<ytd-badge-supported-renderer class=\"style-scope ytd-channel-name\" system-icons=\"\"><!--css-build:shady-->\n  <div class=\"badge badge-style-type-verified style-scope ytd-badge-supported-renderer\" aria-label=\"Validé\">\n    <yt-icon class=\"style-scope ytd-badge-supported-renderer\"><!--css-build:shady--></yt-icon>\n    <span class=\"style-scope ytd-badge-supported-renderer\"></span>\n  </div>\n<dom-repeat id=\"repeat\" as=\"badge\" class=\"style-scope ytd-badge-supported-renderer\"><template is=\"dom-repeat\"></template></dom-repeat>\n</ytd-badge-supported-renderer>\n</ytd-channel-name><yt-formatted-string id=\"owner-sub-count\" class=\"style-scope ytd-video-owner-renderer\" aria-label=\"2 millions d’abonnés\">2&nbsp;M d’abonnés</yt-formatted-string></div><div id=\"purchase-button\" class=\"style-scope ytd-video-owner-renderer\" hidden=\"\"></div><div id=\"sponsor-button\" class=\"style-scope ytd-video-owner-renderer\"><ytd-button-renderer class=\"style-scope ytd-video-owner-renderer style-suggestive size-default\" use-keyboard-focused=\"\" button-renderer=\"true\" is-paper-button=\"\"><a class=\"yt-simple-endpoint style-scope ytd-button-renderer\" tabindex=\"-1\"><tp-yt-paper-button id=\"button\" class=\"style-scope ytd-button-renderer style-suggestive size-default\" role=\"button\" tabindex=\"0\" animated=\"\" elevation=\"0\" aria-disabled=\"false\" aria-label=\"Rejoignez cette chaîne\"><!--css-build:shady--><yt-formatted-string id=\"text\" class=\"style-scope ytd-button-renderer style-suggestive size-default\">Rejoindre</yt-formatted-string></tp-yt-paper-button></a></ytd-button-renderer></div><div id=\"analytics-button\" class=\"style-scope ytd-video-owner-renderer\"></div></ytd-video-owner-renderer>",
+      "offsetTop": 863,
+      "offsetLeft": 37,
+      "href": "https://www.youtube.com/watch?v=ZhMw53Ud2tY",
+      "selectorName": "channel1",
+      "nature": {
+        "type": "video",
+        "videoId": "ZhMw53Ud2tY"
+      },
+      "savingTime": "2022-03-24T15:55:07.605Z"
+    },
+    {
+      "id": "5c48df16679c4006f7938a634da7241ced26b16f",
+      "metadataId": "84473c4330b5d84a4846cd0211eae80b7685b7e7",
+      "blang": "en-US",
+      "html": "<yt-formatted-string id=\"text\" title=\"\" class=\"style-scope ytd-channel-name complex-string\" ellipsis-truncate=\"\" has-link-only_=\"\"><a class=\"yt-simple-endpoint style-scope yt-formatted-string\" spellcheck=\"false\" href=\"/channel/UC9x0AN7BWHpCDHSm9NiJFJQ\" dir=\"auto\">NetworkChuck</a></yt-formatted-string>",
+      "offsetTop": 864,
+      "offsetLeft": 85,
+      "href": "https://www.youtube.com/watch?v=ZhMw53Ud2tY",
+      "selectorName": "channel1",
+      "nature": {
+        "type": "video",
+        "videoId": "ZhMw53Ud2tY"
+      },
+      "savingTime": "2022-03-24T15:55:07.605Z"
+    }
+  ],
+  "metadata": {
+    "savingTime": "2022-03-24T15:55:07.605Z",
+    "clientTime": "2022-03-24T16:25:24.000Z",
+    "href": "https://www.youtube.com/watch?v=ZhMw53Ud2tY",
+    "title": "5 Steps to Secure Linux (protect from hackers)",
+    "type": "video",
+    "params": {
+      "v": "ZhMw53Ud2tY"
+    },
+    "videoId": "ZhMw53Ud2tY",
+    "login": true,
+    "publicationString": "18 mars 2021",
+    "publicationTime": "2021-03-18T00:00:00.000Z",
+    "blang": "en-US",
+    "forKids": false,
+    "authorName": "NetworkChuck",
+    "authorSource": "/channel/UC9x0AN7BWHpCDHSm9NiJFJQ",
+    "related": [
+      {
+        "index": 1,
+        "verified": true,
+        "foryou": null,
+        "videoId": "gwUz3E9AW0w",
+        "params": {
+          "v": "gwUz3E9AW0w"
+        },
+        "recommendedSource": "NetworkChuck",
+        "recommendedTitle": "you need a website RIGHT NOW!! (create a website for FREE)",
+        "recommendedLength": 1002,
+        "recommendedDisplayL": "16:42",
+        "recommendedLengthText": "16 minutes et 42 secondes",
+        "recommendedRelativeSeconds": 28944000,
+        "recommendedViews": 647837,
+        "recommendedThumbnail": "https://i.ytimg.com/vi/gwUz3E9AW0w/hqdefault.jpg",
+        "isLive": false,
+        "label": "you need a website RIGHT NOW!! (create a website for FREE) de NetworkChuck il y a 11 mois 16 minutes 647 837 vues",
+        "publicationTime": "2021-04-24T15:27:18.000Z",
+        "timePrecision": "estimated"
+      },
+      {
+        "index": 2,
+        "verified": true,
+        "foryou": null,
+        "videoId": "fKuqYQdqRIs",
+        "params": {
+          "v": "fKuqYQdqRIs"
+        },
+        "recommendedSource": "LiveOverflow",
+        "recommendedTitle": "How To Protect Your Linux Server From Hackers!",
+        "recommendedLength": 1238,
+        "recommendedDisplayL": "20:38",
+        "recommendedLengthText": "20 minutes et 38 secondes",
+        "recommendedRelativeSeconds": 28944000,
+        "recommendedViews": 195654,
+        "recommendedThumbnail": "https://i.ytimg.com/vi/fKuqYQdqRIs/hqdefault.jpg",
+        "isLive": false,
+        "label": "How To Protect Your Linux Server From Hackers! de LiveOverflow il y a 11 mois 20 minutes 195 654 vues",
+        "publicationTime": "2021-04-24T15:27:18.000Z",
+        "timePrecision": "estimated"
+      },
+      {
+        "index": 3,
+        "verified": false,
+        "foryou": null,
+        "videoId": "FDQVOFG_97Q",
+        "params": {
+          "v": "FDQVOFG_97Q"
+        },
+        "recommendedSource": "NVIDIA Developer",
+        "recommendedTitle": "NVIDIA GDC 2022 Announcements: Technology To Enhance Virtual Worlds",
+        "recommendedLength": 229,
+        "recommendedDisplayL": "3:49",
+        "recommendedLengthText": "3 minutes et 49 secondes",
+        "recommendedRelativeSeconds": 180,
+        "recommendedViews": 22582,
+        "recommendedThumbnail": "https://i.ytimg.com/vi/FDQVOFG_97Q/hqdefault.jpg",
+        "isLive": false,
+        "label": "NVIDIA GDC 2022 Announcements: Technology To Enhance Virtual Worlds de NVIDIA Developer 3 minutes et 49 secondes 22 582 vues",
+        "publicationTime": "2022-03-24T16:24:18.000Z",
+        "timePrecision": "estimated"
+      },
+      {
+        "index": 4,
+        "verified": false,
+        "foryou": null,
+        "videoId": "1H68zNGvit0",
+        "params": {
+          "v": "1H68zNGvit0"
+        },
+        "recommendedSource": "Save Data",
+        "recommendedTitle": "Why the Shadow Temple's Music in Ocarina of Time is so Uncomfortable",
+        "recommendedLength": 721,
+        "recommendedDisplayL": "12:01",
+        "recommendedLengthText": "12 minutes et 1 seconde",
+        "recommendedRelativeSeconds": 31536000,
+        "recommendedViews": 929278,
+        "recommendedThumbnail": "https://i.ytimg.com/vi/1H68zNGvit0/hqdefault.jpg",
+        "isLive": false,
+        "label": "Why the Shadow Temple's Music in Ocarina of Time is so Uncomfortable de Save Data il y a 1 an 12 minutes et 1 seconde 929 278 vues",
+        "publicationTime": "2021-03-24T16:27:18.000Z",
+        "timePrecision": "estimated"
+      },
+      {
+        "index": 5,
+        "verified": true,
+        "foryou": null,
+        "videoId": "LlbTSfc4biw",
+        "params": {
+          "v": "LlbTSfc4biw"
+        },
+        "recommendedSource": "NetworkChuck",
+        "recommendedTitle": "you need to learn Load Balancing RIGHT NOW!! (and put one in your home network!)",
+        "recommendedLength": 2562,
+        "recommendedDisplayL": "42:42",
+        "recommendedLengthText": "42 minutes et 42 secondes",
+        "recommendedRelativeSeconds": 23673600,
+        "recommendedViews": 562439,
+        "recommendedThumbnail": "https://i.ytimg.com/vi/LlbTSfc4biw/hqdefault.jpg",
+        "isLive": false,
+        "label": "you need to learn Load Balancing RIGHT NOW!! (and put one in your home network!) de NetworkChuck il y a 9 mois 42 minutes 562 439 vues",
+        "publicationTime": "2021-06-24T15:27:18.000Z",
+        "timePrecision": "estimated"
+      },
+      {
+        "index": 6,
+        "verified": true,
+        "foryou": null,
+        "videoId": "X9fSMGkjtug",
+        "params": {
+          "v": "X9fSMGkjtug"
+        },
+        "recommendedSource": "NetworkChuck",
+        "recommendedTitle": "i built a Raspberry Pi SUPER COMPUTER!! // ft. Kubernetes (k3s cluster w/ Rancher)",
+        "recommendedLength": 3822,
+        "recommendedDisplayL": "1:03:42",
+        "recommendedLengthText": "1 heure, 3 minutes et 42 secondes",
+        "recommendedRelativeSeconds": 20995200,
+        "recommendedViews": 1000762,
+        "recommendedThumbnail": "https://i.ytimg.com/vi/X9fSMGkjtug/hqdefault.jpg",
+        "isLive": false,
+        "label": "i built a Raspberry Pi SUPER COMPUTER!! // ft. Kubernetes (k3s cluster w/ Rancher) de NetworkChuck il y a 8 mois 1 heure et 3 minutes 1 000 762 vues",
+        "publicationTime": "2021-07-24T15:27:18.000Z",
+        "timePrecision": "estimated"
+      },
+      {
+        "index": 7,
+        "verified": true,
+        "foryou": null,
+        "videoId": "4t4kBkMsDbQ",
+        "params": {
+          "v": "4t4kBkMsDbQ"
+        },
+        "recommendedSource": "NetworkChuck",
+        "recommendedTitle": "Nmap Tutorial to find Network Vulnerabilities",
+        "recommendedLength": 1029,
+        "recommendedDisplayL": "17:09",
+        "recommendedLengthText": "17 minutes et 9 secondes",
+        "recommendedRelativeSeconds": 31536000,
+        "recommendedViews": 1422888,
+        "recommendedThumbnail": "https://i.ytimg.com/vi/4t4kBkMsDbQ/hqdefault.jpg",
+        "isLive": false,
+        "label": "Nmap Tutorial to find Network Vulnerabilities de NetworkChuck il y a 1 an 17 minutes 1 422 888 vues",
+        "publicationTime": "2021-03-24T16:27:18.000Z",
+        "timePrecision": "estimated"
+      },
+      {
+        "index": 8,
+        "verified": true,
+        "foryou": null,
+        "videoId": "-rSqbgI7oZM",
+        "params": {
+          "v": "-rSqbgI7oZM"
+        },
+        "recommendedSource": "NetworkChuck",
+        "recommendedTitle": "how Hackers SNiFF (capture) network traffic // MiTM attack",
+        "recommendedLength": 1147,
+        "recommendedDisplayL": "19:07",
+        "recommendedLengthText": "19 minutes et 7 secondes",
+        "recommendedRelativeSeconds": 31536000,
+        "recommendedViews": 936005,
+        "recommendedThumbnail": "https://i.ytimg.com/vi/-rSqbgI7oZM/hqdefault.jpg",
+        "isLive": false,
+        "label": "how Hackers SNiFF (capture) network traffic // MiTM attack de NetworkChuck il y a 1 an 19 minutes 936 005 vues",
+        "publicationTime": "2021-03-24T16:27:18.000Z",
+        "timePrecision": "estimated"
+      },
+      {
+        "index": 9,
+        "verified": true,
+        "foryou": null,
+        "videoId": "cChGFpElMEM",
+        "params": {
+          "v": "cChGFpElMEM"
+        },
+        "recommendedSource": "NetworkChuck",
+        "recommendedTitle": "Using BAD Linux commands (DO NOT USE) on a VM and Cisco Router",
+        "recommendedLength": 1336,
+        "recommendedDisplayL": "22:16",
+        "recommendedLengthText": "22 minutes et 16 secondes",
+        "recommendedRelativeSeconds": 63072000,
+        "recommendedViews": 380769,
+        "recommendedThumbnail": "https://i.ytimg.com/vi/cChGFpElMEM/hqdefault.jpg",
+        "isLive": false,
+        "label": "Using BAD Linux commands (DO NOT USE) on a VM and Cisco Router de NetworkChuck il y a 2 ans 22 minutes 380 769 vues",
+        "publicationTime": "2020-03-24T16:27:18.000Z",
+        "timePrecision": "estimated"
+      },
+      {
+        "index": 10,
+        "verified": true,
+        "foryou": null,
+        "videoId": "lUzSsX4T4WQ",
+        "params": {
+          "v": "lUzSsX4T4WQ"
+        },
+        "recommendedSource": "NetworkChuck",
+        "recommendedTitle": "your home router SUCKS!! (use pfSense instead)",
+        "recommendedLength": 2731,
+        "recommendedDisplayL": "45:31",
+        "recommendedLengthText": "45 minutes et 31 secondes",
+        "recommendedRelativeSeconds": 15811200,
+        "recommendedViews": 1873929,
+        "recommendedThumbnail": "https://i.ytimg.com/vi/lUzSsX4T4WQ/hqdefault.jpg",
+        "isLive": false,
+        "label": "your home router SUCKS!! (use pfSense instead) de NetworkChuck il y a 6 mois 45 minutes 1 873 929 vues",
+        "publicationTime": "2021-09-24T15:27:18.000Z",
+        "timePrecision": "estimated"
+      },
+      {
+        "index": 11,
+        "verified": true,
+        "foryou": null,
+        "videoId": "A3G-3hp88mo",
+        "params": {
+          "v": "A3G-3hp88mo"
+        },
+        "recommendedSource": "NetworkChuck",
+        "recommendedTitle": "the Linux File System explained in 1,233 seconds // Linux for Hackers // EP 2",
+        "recommendedLength": 1233,
+        "recommendedDisplayL": "20:33",
+        "recommendedLengthText": "20 minutes et 33 secondes",
+        "recommendedRelativeSeconds": 28944000,
+        "recommendedViews": 866505,
+        "recommendedThumbnail": "https://i.ytimg.com/vi/A3G-3hp88mo/hqdefault.jpg",
+        "isLive": false,
+        "label": "the Linux File System explained in 1,233 seconds // Linux for Hackers // EP 2 de NetworkChuck il y a 11 mois 20 minutes 866 505 vues",
+        "publicationTime": "2021-04-24T15:27:18.000Z",
+        "timePrecision": "estimated"
+      },
+      {
+        "index": 12,
+        "verified": true,
+        "foryou": null,
+        "videoId": "0W4JZIWtjLQ",
+        "params": {
+          "v": "0W4JZIWtjLQ"
+        },
+        "recommendedSource": "NetworkChuck",
+        "recommendedTitle": "you NEED to learn Port Security…….RIGHT NOW!! // FREE CCNA // EP 14",
+        "recommendedLength": 1403,
+        "recommendedDisplayL": "23:23",
+        "recommendedLengthText": "23 minutes et 23 secondes",
+        "recommendedRelativeSeconds": 18403200,
+        "recommendedViews": 325542,
+        "recommendedThumbnail": "https://i.ytimg.com/vi/0W4JZIWtjLQ/hqdefault.jpg",
+        "isLive": false,
+        "label": "you NEED to learn Port Security…….RIGHT NOW!! // FREE CCNA // EP 14 de NetworkChuck il y a 7 mois 23 minutes 325 542 vues",
+        "publicationTime": "2021-08-24T15:27:18.000Z",
+        "timePrecision": "estimated"
+      },
+      {
+        "index": 13,
+        "verified": true,
+        "foryou": null,
+        "videoId": "gMU5bngGQ1E",
+        "params": {
+          "v": "gMU5bngGQ1E"
+        },
+        "recommendedSource": "NetworkChuck",
+        "recommendedTitle": "HELPDESK - how to get started in IT (your first job)",
+        "recommendedLength": 6616,
+        "recommendedDisplayL": "1:50:16",
+        "recommendedLengthText": "1 heure, 50 minutes et 16 secondes",
+        "recommendedRelativeSeconds": 31536000,
+        "recommendedViews": 447098,
+        "recommendedThumbnail": "https://i.ytimg.com/vi/gMU5bngGQ1E/hqdefault.jpg",
+        "isLive": false,
+        "label": "HELPDESK - how to get started in IT (your first job) de NetworkChuck Diffusé il y a 1 an 1 heure et 50 minutes 447 098 vues",
+        "publicationTime": "2021-03-24T16:27:18.000Z",
+        "timePrecision": "estimated"
+      },
+      {
+        "index": 14,
+        "verified": true,
+        "foryou": null,
+        "videoId": "vX3krP6JmOY",
+        "params": {
+          "v": "vX3krP6JmOY"
+        },
+        "recommendedSource": "NetworkChuck",
+        "recommendedTitle": "apt, dpkg, git, Python PiP (Linux Package Management) // Linux for Hackers // EP 5",
+        "recommendedLength": 1565,
+        "recommendedDisplayL": "26:05",
+        "recommendedLengthText": "26 minutes et 5 secondes",
+        "recommendedRelativeSeconds": 23673600,
+        "recommendedViews": 375239,
+        "isLive": false,
+        "label": "apt, dpkg, git, Python PiP (Linux Package Management) // Linux for Hackers // EP 5 de NetworkChuck il y a 9 mois 26 minutes 375 239 vues",
+        "publicationTime": "2021-06-24T15:27:18.000Z",
+        "timePrecision": "estimated"
+      },
+      {
+        "index": 15,
+        "verified": true,
+        "foryou": null,
+        "videoId": "y8h5qY3zwic",
+        "params": {
+          "v": "y8h5qY3zwic"
+        },
+        "recommendedSource": "NetworkChuck",
+        "recommendedTitle": "forcing my kids to make Ethernet cables // FREE CCNA // EP 11",
+        "recommendedLength": 2617,
+        "recommendedDisplayL": "43:37",
+        "recommendedLengthText": "43 minutes et 37 secondes",
+        "recommendedRelativeSeconds": 31536000,
+        "recommendedViews": 349114,
+        "isLive": false,
+        "label": "forcing my kids to make Ethernet cables // FREE CCNA // EP 11 de NetworkChuck il y a 1 an 43 minutes 349 114 vues",
+        "publicationTime": "2021-03-24T16:27:18.000Z",
+        "timePrecision": "estimated"
+      },
+      {
+        "index": 16,
+        "verified": true,
+        "foryou": null,
+        "videoId": "2zQvwq_b7FI",
+        "params": {
+          "v": "2zQvwq_b7FI"
+        },
+        "recommendedSource": "Liam Triforce",
+        "recommendedTitle": "The Bittersweet Comfort of Majora's Mask",
+        "recommendedLength": 3170,
+        "recommendedDisplayL": "52:50",
+        "recommendedLengthText": "52 minutes et 50 secondes",
+        "recommendedRelativeSeconds": 31536000,
+        "recommendedViews": 320234,
+        "isLive": false,
+        "label": "The Bittersweet Comfort of Majora's Mask de Liam Triforce il y a 1 an 52 minutes 320 234 vues",
+        "publicationTime": "2021-03-24T16:27:18.000Z",
+        "timePrecision": "estimated"
+      },
+      {
+        "index": 17,
+        "verified": true,
+        "foryou": null,
+        "videoId": "wIn3L24lksI",
+        "params": {
+          "v": "wIn3L24lksI"
+        },
+        "recommendedSource": "NetworkChuck",
+        "recommendedTitle": "learn to HACK (the best way) // ft. John Hammond",
+        "recommendedLength": 8871,
+        "recommendedDisplayL": "2:27:51",
+        "recommendedLengthText": "2 heures, 27 minutes et 51 secondes",
+        "recommendedRelativeSeconds": 31536000,
+        "recommendedViews": 658967,
+        "isLive": false,
+        "label": "learn to HACK (the best way) // ft. John Hammond de NetworkChuck Diffusé il y a 1 an 2 heures et 27 minutes 658 967 vues",
+        "publicationTime": "2021-03-24T16:27:18.000Z",
+        "timePrecision": "estimated"
+      },
+      {
+        "index": 18,
+        "verified": true,
+        "foryou": null,
+        "videoId": "qsA8zREbt6g",
+        "params": {
+          "v": "qsA8zREbt6g"
+        },
+        "recommendedSource": "NetworkChuck",
+        "recommendedTitle": "learning hacking? DON'T make this mistake!! (hide yourself with Kali Linux and ProxyChains)",
+        "recommendedLength": 769,
+        "recommendedDisplayL": "12:49",
+        "recommendedLengthText": "12 minutes et 49 secondes",
+        "recommendedRelativeSeconds": 31536000,
+        "recommendedViews": 1817943,
+        "isLive": false,
+        "label": "learning hacking? DON'T make this mistake!! (hide yourself with Kali Linux and ProxyChains) de NetworkChuck il y a 1 an 12 minutes et 49 secondes 1 817 943 vues",
+        "publicationTime": "2021-03-24T16:27:18.000Z",
+        "timePrecision": "estimated"
+      },
+      {
+        "index": 19,
+        "verified": true,
+        "foryou": null,
+        "videoId": "wX75Z-4MEoM",
+        "params": {
+          "v": "wX75Z-4MEoM"
+        },
+        "recommendedSource": "NetworkChuck",
+        "recommendedTitle": "you need to learn Virtual Machines RIGHT NOW!! (Kali Linux VM, Ubuntu, Windows)",
+        "recommendedLength": 1661,
+        "recommendedDisplayL": "27:41",
+        "recommendedLengthText": "27 minutes et 41 secondes",
+        "recommendedRelativeSeconds": 31536000,
+        "recommendedViews": 3913193,
+        "isLive": false,
+        "label": "you need to learn Virtual Machines RIGHT NOW!! (Kali Linux VM, Ubuntu, Windows) de NetworkChuck il y a 1 an 27 minutes 3 913 193 vues",
+        "publicationTime": "2021-03-24T16:27:18.000Z",
+        "timePrecision": "estimated"
+      }
+    ],
+    "viewInfo": {
+      "viewStr": "374 834&nbsp;vues",
+      "viewNumber": 374
+    },
+    "likeInfo": {
+      "likes": "20 808 clics sur \"J'aime\"",
+      "dislikes": null
+    },
+    "id": "84473c4330b5d84a4846cd0211eae80b7685b7e7"
+  }
+}

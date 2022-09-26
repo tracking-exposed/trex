@@ -1,23 +1,21 @@
 {
   "sources": [
     {
-      "_id": "623c8767520cbbda43a73faf",
       "id": "18db2b12314a40c673979e78172802409a55492c",
       "metadataId": "ba24e4250767b05d819adaaf7cdac8f41a2d9765",
       "blang": "fr-FR",
-      "publicKey": "9BHdG1Jjydk1gwjs6cucy8kJWhyHn5zot7jvN59vXFu1",
       "html": "<ytd-guide-entry-renderer class=\"style-scope ytd-guide-section-renderer\" line-end-style=\"dot\"><!--css-build:shady--><a id=\"endpoint\" class=\"yt-simple-endpoint style-scope ytd-guide-entry-renderer\" tabindex=\"-1\" role=\"tablist\" title=\"SQUEEZIE\" href=\"/c/aMOODIEsqueezie\" style=\"border: none;\">\n  <tp-yt-paper-item class=\"style-scope ytd-guide-entry-renderer\" role=\"tab\" tabindex=\"0\" aria-disabled=\"false\" aria-selected=\"false\" aria-label=\"SQUEEZIE. Nouveau contenu disponible.\"><!--css-build:shady-->\n    <yt-icon class=\"guide-icon style-scope ytd-guide-entry-renderer\" disable-upgrade=\"{&quot;thumbnails&quot;:[{&quot;url&quot;:&quot;https://yt3.ggpht.com/ytc/AKedOLSMd4kKZW2QYnPxrajm2LLjDuzQTBKXYfxgL614UQ=s88-c-k-c0x00ffffff-no-rj&quot;}]}\" hidden=\"\">\n    </yt-icon>\n    <yt-img-shadow height=\"24\" width=\"24\" class=\"style-scope ytd-guide-entry-renderer no-transition empty\" style=\"background-color: transparent;\"><!--css-build:shady--><img id=\"img\" class=\"style-scope yt-img-shadow\" height=\"24\" width=\"24\" alt=\"\"></yt-img-shadow>\n    <yt-formatted-string class=\"title style-scope ytd-guide-entry-renderer\">SQUEEZIE</yt-formatted-string>\n    <span class=\"guide-entry-count style-scope ytd-guide-entry-renderer\">\n      \n    </span>\n    <yt-icon class=\"guide-entry-badge style-scope ytd-guide-entry-renderer\" disable-upgrade=\"\">\n    </yt-icon>\n    <div id=\"newness-dot\" class=\"style-scope ytd-guide-entry-renderer\"></div>\n  \n</tp-yt-paper-item>\n</a>\n<yt-interaction class=\"style-scope ytd-guide-entry-renderer\"><!--css-build:shady--><div class=\"stroke style-scope yt-interaction\"></div><div class=\"fill style-scope yt-interaction\"></div></yt-interaction>\n</ytd-guide-entry-renderer>",
       "offsetTop": 747,
       "offsetLeft": 0,
       "href": "https://www.youtube.com/",
       "selectorName": "channel2",
-      "nature": { "type": "home" },
+      "nature": {
+        "type": "home"
+      },
       "savingTime": "2022-03-24T14:59:51.531Z"
     }
   ],
   "metadata": {
-    "_id": "623c87766f24e124654d6b3e",
-    "publicKey": "9BHdG1Jjydk1gwjs6cucy8kJWhyHn5zot7jvN59vXFu1",
     "savingTime": "2022-03-24T14:59:51.522Z",
     "clientTime": "2022-03-24T15:30:07.000Z",
     "href": "https://www.youtube.com/",
@@ -250,30 +248,102 @@
       }
     ],
     "sections": [
-      { "i": 0, "offset": 354671 },
-      { "i": 1, "offset": 364138 },
-      { "i": 2, "offset": 370592 },
-      { "i": 3, "offset": 377706 },
-      { "i": 4, "offset": 384234 },
-      { "i": 5, "offset": 391416 },
-      { "i": 6, "offset": 397368 },
-      { "i": 7, "offset": 402505 },
-      { "i": 8, "offset": 408669 },
-      { "i": 9, "offset": 413744 },
-      { "i": 10, "offset": 419713 },
-      { "i": 11, "offset": 425550 },
-      { "i": 12, "offset": 435404 },
-      { "i": 13, "offset": 441586 },
-      { "i": 14, "offset": 447993 },
-      { "i": 15, "offset": 454356 },
-      { "i": 16, "offset": 460731 },
-      { "i": 17, "offset": 466754 },
-      { "i": 18, "offset": 472815 },
-      { "i": 19, "offset": 478876 },
-      { "i": 20, "offset": 485157 },
-      { "i": 21, "offset": 491394 },
-      { "i": 22, "offset": 497592 },
-      { "i": 23, "offset": 503674 }
+      {
+        "i": 0,
+        "offset": 354671
+      },
+      {
+        "i": 1,
+        "offset": 364138
+      },
+      {
+        "i": 2,
+        "offset": 370592
+      },
+      {
+        "i": 3,
+        "offset": 377706
+      },
+      {
+        "i": 4,
+        "offset": 384234
+      },
+      {
+        "i": 5,
+        "offset": 391416
+      },
+      {
+        "i": 6,
+        "offset": 397368
+      },
+      {
+        "i": 7,
+        "offset": 402505
+      },
+      {
+        "i": 8,
+        "offset": 408669
+      },
+      {
+        "i": 9,
+        "offset": 413744
+      },
+      {
+        "i": 10,
+        "offset": 419713
+      },
+      {
+        "i": 11,
+        "offset": 425550
+      },
+      {
+        "i": 12,
+        "offset": 435404
+      },
+      {
+        "i": 13,
+        "offset": 441586
+      },
+      {
+        "i": 14,
+        "offset": 447993
+      },
+      {
+        "i": 15,
+        "offset": 454356
+      },
+      {
+        "i": 16,
+        "offset": 460731
+      },
+      {
+        "i": 17,
+        "offset": 466754
+      },
+      {
+        "i": 18,
+        "offset": 472815
+      },
+      {
+        "i": 19,
+        "offset": 478876
+      },
+      {
+        "i": 20,
+        "offset": 485157
+      },
+      {
+        "i": 21,
+        "offset": 491394
+      },
+      {
+        "i": 22,
+        "offset": 497592
+      },
+      {
+        "i": 23,
+        "offset": 503674
+      }
     ],
     "type": "home",
     "blang": "fr",

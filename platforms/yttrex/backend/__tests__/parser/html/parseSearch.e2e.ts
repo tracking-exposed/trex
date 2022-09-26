@@ -1,18 +1,17 @@
 import base58 from 'bs58';
 import { parseISO, subMinutes } from 'date-fns';
-import { JSDOM } from 'jsdom';
 import nacl from 'tweetnacl';
 import {
   addDom,
   getLastHTMLs,
   getMetadata,
-  HTMLSource,
+  getMetadataSchema,
+  getSourceSchema,
   toMetadata,
   updateMetadataAndMarkHTML,
 } from '../../../lib/parser/html';
 import { SearchMetadata } from '@yttrex/shared/models/Metadata';
-import { sanitizeHTML } from '@shared/utils/html.utils';
-import { processSearch } from '../../../parsers/searches';
+import { HTMLSource, parsers } from '@yttrex/shared/parser';
 import { GetTest, Test } from '../../../tests/Test';
 import {
   readFixtureJSON,
@@ -20,6 +19,7 @@ import {
   runParserTest,
 } from '@shared/test/utils/parser.utils';
 import path from 'path';
+import { v4 as uuid } from 'uuid';
 
 describe('Parser: Search', () => {
   let appTest: Test;
@@ -61,23 +61,23 @@ describe('Parser: Search', () => {
 
   jest.setTimeout(20 * 1000);
 
+  const failingIds = [
+    '0f73cadacd9c953d9029cf69fc32246580551bca',
+    '4d7a3ad714a990974e4ea3ab153841857dd1f56b',
+    '412b3d3fe77038fd71fd40f8186195b30cdcbcc4',
+    'ee8f9b19fbd9c5bcc7b58ec6e19ceade03e1d6e5',
+  ];
+
   const historyData = readFixtureJSONPaths(
-    path.resolve(__dirname, '../../fixtures/search')
+    path.resolve(__dirname, '../../fixtures/htmls/search'),
+    {
+      exclude: failingIds,
+      // only: failingIds
+    }
   );
 
-  /**
-   * TODO:
-   *
-   * historyData[1] has an issue time formatting for `publication`
-   * historyData[3] has an issue time formatting for `publication`
-   * historyData[7] has an issue time formatting for `publication`
-   * historyData[8] has an issue time formatting for `publication`
-   * historyData[9] has an issue with `related` property
-   * historyData[10] has an issue time formatting for `publication`
-   */
-
-  test.each([historyData[0], historyData[2], historyData[5], historyData[11]])(
-    'Should correctly parse video contributions',
+  test.each(historyData)(
+    'Should correctly parse video contributions %s',
     async (fixturePath) => {
       const { sources: _sources, metadata } = readFixtureJSON(
         fixturePath,
@@ -86,22 +86,23 @@ describe('Parser: Search', () => {
       const sources = _sources.map((h: any) => ({
         html: {
           ...h,
+          id: uuid(),
           clientTime: parseISO(h.clientTime ?? new Date()),
           savingTime: subMinutes(new Date(), 1),
           processed: null,
         },
-        jsdom: new JSDOM(sanitizeHTML(h.html)).window.document,
         supporter: undefined,
       }));
 
       await runParserTest({
+        name: 'search-parser',
         log: appTest.logger,
-        parsers: { nature: processSearch },
+        parsers: parsers,
         codecs: { contribution: HTMLSource, metadata: SearchMetadata },
-        sourceSchema: appTest.config.get('schema').htmls,
-        metadataSchema: appTest.config.get('schema').metadata,
+        sourceSchema: getSourceSchema(),
+        metadataSchema: getMetadataSchema(),
+        addDom: addDom,
         db,
-        addDom,
         getEntryId: (e) => e.html.id,
         getEntryDate: (e) => e.html.savingTime,
         getEntryNatureType: (e) => e.html.nature.type,
@@ -109,6 +110,7 @@ describe('Parser: Search', () => {
         getMetadata: getMetadata(db),
         buildMetadata: toMetadata as any,
         saveResults: updateMetadataAndMarkHTML(db) as any,
+        config: {},
         expectSources: (sources) => {
           sources.forEach((r: any) => {
             expect(r.processed).toBe(true);
@@ -145,11 +147,13 @@ describe('Parser: Search', () => {
             _receivedResults.map(({ secondsAgo, ...r }: any) => ({
               ...r,
               published: r.published
-                .replace(/\d{1}\s(year)$/gi, 'a year')
-                .replace(/\d{1}\s(month)$/gi, 'a month')
-                .replace(/\d{1}\s(day)$/gi, 'a day')
-                .replace(/\d{1}\s(hour)$/gi, 'an hour')
-                .replace(/\d{1}\s(minute)$/gi, 'a minute'),
+                ? r.published
+                    .replace(/\d{1}\s(year)$/gi, 'a year')
+                    .replace(/\d{1}\s(month)$/gi, 'a month')
+                    .replace(/\d{1}\s(day)$/gi, 'a day')
+                    .replace(/\d{1}\s(hour)$/gi, 'an hour')
+                    .replace(/\d{1}\s(minute)$/gi, 'a minute')
+                : r.published,
             }))
           ).toMatchObject(_expectedResults.map(({ secondsAgo, ...r }) => r));
         },

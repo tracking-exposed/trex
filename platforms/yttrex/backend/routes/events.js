@@ -261,7 +261,10 @@ async function processEvents2(req) {
       };
 
       if (headers.researchTag) html.researchTag = headers.researchTag;
-      if (body.experimentId !== 'DEFAULT_UNSET')
+      if (
+        body.experimentId !== undefined &&
+        body.experimentId !== 'DEFAULT_UNSET'
+      )
         html.experimentId = body.experimentId;
 
       return html;

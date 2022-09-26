@@ -1,7 +1,10 @@
 import _ from 'lodash';
 import moment, { duration } from 'moment';
 import nconf from 'nconf';
-import { getPublicationTime, parser } from '../../parsers/longlabel';
+import {
+  getPublicationTime,
+  parser,
+} from '@yttrex/shared/parser/parsers/longlabel';
 const labelList = require('../fixtures/label-with-source-list');
 import { Test, GetTest } from '../../tests/Test';
 import { debug } from 'console';
