@@ -5,7 +5,7 @@ import * as fs from 'fs';
 import moment from 'moment';
 import nconf from 'nconf';
 import * as path from 'path';
-import * as longlabel from '../parsers/longlabel';
+import * as longlabel from '@yttrex/shared/parser/parsers/longlabel';
 
 const cfgFile = 'config/settings.json';
 

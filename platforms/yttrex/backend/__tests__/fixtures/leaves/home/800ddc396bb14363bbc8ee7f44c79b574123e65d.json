@@ -1,23 +1,21 @@
 {
   "sources": [
     {
-      "_id": "623c95dc520cbbda43a74cbb",
       "id": "7c34999e0e48af1d0470ba7f480f50ee7078b669",
       "metadataId": "800ddc396bb14363bbc8ee7f44c79b574123e65d",
       "blang": "es-MX",
-      "publicKey": "22ZDQKS6M1YGPRdQo7tChtp6KG7eVGCZBUL7oCQ47AEq",
       "html": "<yt-formatted-string id=\"text\" title=\"\" class=\"style-scope ytd-channel-name complex-string\" ellipsis-truncate=\"\" has-link-only_=\"\"><a class=\"yt-simple-endpoint style-scope yt-formatted-string\" spellcheck=\"false\" href=\"/c/AlphaLeaders\" dir=\"auto\">Alpha Leaders</a></yt-formatted-string>",
       "offsetTop": 1214,
       "offsetLeft": 851,
       "href": "https://www.youtube.com/",
       "selectorName": "channel2",
-      "nature": { "type": "home" },
+      "nature": {
+        "type": "home"
+      },
       "savingTime": "2022-03-24T16:01:32.816Z"
     }
   ],
   "metadata": {
-    "_id": "623c95e56f24e124654d6b94",
-    "publicKey": "22ZDQKS6M1YGPRdQo7tChtp6KG7eVGCZBUL7oCQ47AEq",
     "savingTime": "2022-03-24T16:01:32.813Z",
     "clientTime": "2022-03-24T16:31:35.000Z",
     "href": "https://www.youtube.com/",
@@ -421,30 +419,102 @@
       }
     ],
     "sections": [
-      { "i": 0, "offset": 182305 },
-      { "i": 1, "offset": 191311 },
-      { "i": 2, "offset": 200505 },
-      { "i": 3, "offset": 209441 },
-      { "i": 4, "offset": 220727 },
-      { "i": 5, "offset": 230320 },
-      { "i": 6, "offset": 239325 },
-      { "i": 7, "offset": 247511 },
-      { "i": 8, "offset": 255867 },
-      { "i": 9, "offset": 264835 },
-      { "i": 10, "offset": 273887 },
-      { "i": 11, "offset": 282871 },
-      { "i": 12, "offset": 291118 },
-      { "i": 13, "offset": 299839 },
-      { "i": 14, "offset": 308659 },
-      { "i": 15, "offset": 316375 },
-      { "i": 16, "offset": 324096 },
-      { "i": 17, "offset": 332820 },
-      { "i": 18, "offset": 340474 },
-      { "i": 19, "offset": 349497 },
-      { "i": 20, "offset": 357375 },
-      { "i": 21, "offset": 366102 },
-      { "i": 22, "offset": 374192 },
-      { "i": 23, "offset": 382885 }
+      {
+        "i": 0,
+        "offset": 182305
+      },
+      {
+        "i": 1,
+        "offset": 191311
+      },
+      {
+        "i": 2,
+        "offset": 200505
+      },
+      {
+        "i": 3,
+        "offset": 209441
+      },
+      {
+        "i": 4,
+        "offset": 220727
+      },
+      {
+        "i": 5,
+        "offset": 230320
+      },
+      {
+        "i": 6,
+        "offset": 239325
+      },
+      {
+        "i": 7,
+        "offset": 247511
+      },
+      {
+        "i": 8,
+        "offset": 255867
+      },
+      {
+        "i": 9,
+        "offset": 264835
+      },
+      {
+        "i": 10,
+        "offset": 273887
+      },
+      {
+        "i": 11,
+        "offset": 282871
+      },
+      {
+        "i": 12,
+        "offset": 291118
+      },
+      {
+        "i": 13,
+        "offset": 299839
+      },
+      {
+        "i": 14,
+        "offset": 308659
+      },
+      {
+        "i": 15,
+        "offset": 316375
+      },
+      {
+        "i": 16,
+        "offset": 324096
+      },
+      {
+        "i": 17,
+        "offset": 332820
+      },
+      {
+        "i": 18,
+        "offset": 340474
+      },
+      {
+        "i": 19,
+        "offset": 349497
+      },
+      {
+        "i": 20,
+        "offset": 357375
+      },
+      {
+        "i": 21,
+        "offset": 366102
+      },
+      {
+        "i": 22,
+        "offset": 374192
+      },
+      {
+        "i": 23,
+        "offset": 382885
+      }
     ],
     "type": "home",
     "blang": null,

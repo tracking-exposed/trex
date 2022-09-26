@@ -1,27 +1,24 @@
-import base58 from 'bs58';
-import nacl from 'tweetnacl';
-import { Ad } from '@yttrex/shared/models/Ad';
-import { sanitizeHTML } from '@shared/utils/html.utils';
-import { leafParsers } from '../../../parsers';
-import {
-  getLastLeaves,
-  LeafSource,
-  toMetadata,
-  addDom,
-  getMetadata,
-  getMetadataSchema,
-  getSourceSchema,
-  updateAdvertisingAndMetadata,
-} from '../../../lib/parser/leaf';
-import { GetTest, Test } from '../../../tests/Test';
 import {
   readFixtureJSON,
   readFixtureJSONPaths,
   runParserTest,
 } from '@shared/test/utils/parser.utils';
+import { Ad } from '@yttrex/shared/models/Ad';
+import { leafParsers, LeafSource } from '@yttrex/shared/parser';
+import base58 from 'bs58';
 import { parseISO, subMinutes } from 'date-fns';
 import path from 'path';
-import { JSDOM } from 'jsdom';
+import nacl from 'tweetnacl';
+import {
+  addDom,
+  getLastLeaves,
+  getMetadata,
+  getMetadataSchema,
+  getSourceSchema,
+  toMetadata,
+  updateAdvertisingAndMetadata,
+} from '../../../lib/parser/leaf';
+import { GetTest, Test } from '../../../tests/Test';
 
 describe('Leaves parser', () => {
   let appTest: Test;
@@ -41,15 +38,17 @@ describe('Leaves parser', () => {
   describe('Leaves', () => {
     jest.setTimeout(20 * 1000);
 
-    const history = readFixtureJSONPaths(
-      path.resolve(__dirname, '../../fixtures/leaves/home'),
-      publicKey
+    const homeHistory = readFixtureJSONPaths(
+      path.resolve(__dirname, '../../fixtures/leaves/home')
     );
 
-    test.each(history)(
-      'Should correctly parse leaf contribution',
+    test.each(homeHistory)(
+      'Should correctly parse leaf contribution %s',
       async (fixturePath) => {
-        const { sources: _sources, metadata } = readFixtureJSON(fixturePath);
+        const { sources: _sources, metadata } = readFixtureJSON(
+          fixturePath,
+          publicKey
+        );
         const sources = _sources.map((s) => ({
           html: {
             ...s,
@@ -64,6 +63,7 @@ describe('Leaves parser', () => {
         }));
 
         await runParserTest({
+          name: 'yt-leaves',
           log: appTest.logger,
           sourceSchema: getSourceSchema(),
           metadataSchema: getMetadataSchema(),
@@ -72,13 +72,14 @@ describe('Leaves parser', () => {
           db,
           addDom,
           getEntryId: (e) => e.html.id,
-          buildMetadata: toMetadata,
           getEntryDate: (e) => e.html.savingTime,
           getEntryNatureType: (e) =>
             e.html.nature?.type ?? (e.html as any).type,
           getContributions: getLastLeaves(db),
           getMetadata: getMetadata(db),
+          buildMetadata: toMetadata,
           saveResults: updateAdvertisingAndMetadata(db),
+          config: {},
           expectSources: (sources) => {
             sources
               // source with channel1 will be ignored

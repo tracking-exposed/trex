@@ -4,27 +4,15 @@ import {
   GetMetadataFn,
   LastContributions,
   ParserProviderContextDB,
+  SaveResults
 } from '@shared/providers/parser.provider';
 import { sanitizeHTML } from '@shared/utils/html.utils';
 import { Ad } from '@yttrex/shared/models/Ad';
-import { Leaf } from '@yttrex/shared/models/Leaf';
-import * as t from 'io-ts';
+import { LeafParsers } from '@yttrex/shared/parser/parsers';
+import { LeafSource } from '@yttrex/shared/parser/source';
 import { JSDOM } from 'jsdom';
 import _ from 'lodash';
 import nconf from 'nconf';
-import { LeafParsers } from '../../parsers';
-import { Supporter } from '../../models/Supporter';
-
-export const LeafSource = t.type(
-  {
-    html: Leaf,
-    jsdom: t.any,
-    supporter: Supporter,
-  },
-  'LeafSource'
-);
-
-export type LeafSource = t.TypeOf<typeof LeafSource>;
 
 export const getSourceSchema = (): string => nconf.get('schema').leaves;
 export const getMetadataSchema = (): string => nconf.get('schema').ads;
@@ -57,7 +45,7 @@ export const getLastLeaves =
     skip: number,
     amount: number
   ): Promise<LastContributions<LeafSource>> => {
-    const leaves = await db.api.aggregate(db.read, nconf.get('schema').leaves, [
+    const leaves = await db.api.aggregate(db.read, getSourceSchema(), [
       { $match: filter },
       { $sort: { savingTime: 1 } },
       { $limit: amount },
@@ -126,10 +114,10 @@ export const toMetadata: BuildMetadataFn<LeafSource, Ad, LeafParsers> = (
 };
 
 export const updateAdvertisingAndMetadata =
-  (db: ParserProviderContextDB) =>
+  (db: ParserProviderContextDB): SaveResults<LeafSource, Ad> =>
   async (
-    source: LeafSource,
-    metadata: Ad
+    source,
+    metadata
   ): Promise<{
     metadata: Ad;
     source: LeafSource;
@@ -137,15 +125,15 @@ export const updateAdvertisingAndMetadata =
   }> => {
     const result = await db.api.upsertOne(
       db.write,
-      nconf.get('schema').ads,
-      { id: source.html.id },
+      getMetadataSchema(),
+      { id: metadata.id },
       metadata
     );
 
     // mark all related leaves as "processed"
     const leafResult = await db.api.updateOne(
       db.write,
-      nconf.get('schema').leaves,
+      getSourceSchema(),
       { id: source.html.id },
       { processed: true }
     );
