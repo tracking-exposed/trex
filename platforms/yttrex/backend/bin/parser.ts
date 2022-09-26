@@ -1,21 +1,22 @@
 #!/usr/bin/env ts-node
 
+import * as mongo3 from '@shared/providers/mongo.provider';
 import fs from 'fs';
 import _ from 'lodash';
 import nconf from 'nconf';
-import * as mongo3 from '@shared/providers/mongo.provider';
 import {
   getLastHTMLs,
-  updateMetadataAndMarkHTML,
   toMetadata,
-  HTMLSource,
+  updateMetadataAndMarkHTML,
   addDom,
   getMetadata,
 } from '../lib/parser/html';
+import { parserConfig } from '@yttrex/shared/parser/config';
 import { GetParserProvider } from '@shared/providers/parser.provider';
-import { parsers } from '../parsers';
+import { HTMLSource } from '@yttrex/shared/parser/source';
 import { Metadata } from '@yttrex/shared/models/Metadata';
-import { parserConfig } from '../parsers/config';
+import { parsers } from '@yttrex/shared/parser/parsers';
+import path from 'path';
 
 nconf.argv().env().file({ file: 'config/settings.json' });
 
@@ -74,28 +75,39 @@ const run = async (): Promise<void> => {
     /* call the async infinite loop function */
     void GetParserProvider('htmls', {
       db,
-      parsers,
       codecs: {
         contribution: HTMLSource,
         metadata: Metadata,
       },
-      addDom,
+      parsers,
       getMetadata: getMetadata(db),
       getContributions: getLastHTMLs(db),
+      addDom,
       getEntryId: (e) => e.html.id,
       getEntryDate: (e) => e.html.savingTime,
       getEntryNatureType: (e) => e.html.nature.type,
       buildMetadata: toMetadata,
       saveResults: updateMetadataAndMarkHTML(db),
-      config: parserConfig,
-    }).run({
-      singleUse: typeof id === 'string' ? id : false,
-      filter,
-      stop,
-      repeat,
-      backInTime,
-      htmlAmount,
-    });
+      config: {
+        ...parserConfig,
+        errorReporter: {
+          basePath: path.resolve(process.cwd(), './__tests__/fixtures'),
+        },
+      },
+    })
+      .run({
+        singleUse: typeof id === 'string' ? id : false,
+        filter,
+        stop,
+        repeat,
+        backInTime,
+        htmlAmount,
+      })
+      .then(() => {
+        // eslint-disable-next-line
+        console.log('Parser closed.');
+        process.exit(0);
+      });
   } catch (e) {
     // eslint-disable-next-line
     console.log('Error in wrapperLoop', e.message);

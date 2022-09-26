@@ -9,7 +9,7 @@ import { load } from '@shared/extension/background/index';
 import { fc } from '@shared/test';
 import axiosMock from '@shared/test/__mocks__/axios.mock';
 import { sleep } from '@shared/utils/promise.utils';
-import { youtubeDomainRegExp } from '@yttrex/shared/parsers/index';
+import { youtubeDomainRegExp } from '@yttrex/shared/parser/selectors';
 import * as fs from 'fs';
 import * as path from 'path';
 import * as app from '../src/app/app';

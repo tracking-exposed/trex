@@ -23,7 +23,7 @@ const yt = {
     name: 'yt:parserv:watch',
     namespace: 'yt:backend',
     cwd: __dirname,
-    script: 'yarn parserv:watch',
+    script: 'yarn parserv:watch --minutesago 60',
     watch: false,
     env_test: testEnv,
   },

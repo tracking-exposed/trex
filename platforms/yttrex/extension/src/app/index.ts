@@ -3,7 +3,7 @@
 
 import { boot } from '@shared/extension/app';
 import { bo } from '@shared/extension/utils/browser.utils';
-import { youtubeDomainRegExp } from '@yttrex/shared/parsers/index';
+import { youtubeDomainRegExp } from '@yttrex/shared/parser/selectors';
 import * as hubHandlers from '../handlers/events';
 import ytHub from '../handlers/hub';
 import { onLocationChange, watchedPaths, ytLogger, ytTrexActions } from './app';

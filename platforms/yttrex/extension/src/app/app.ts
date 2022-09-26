@@ -38,7 +38,7 @@ import {
   consideredURLs,
   leafSelectors,
   routeSelectors,
-} from '@yttrex/shared/parsers/index';
+} from '@yttrex/shared/parser/selectors';
 import _ from 'lodash';
 import { initializeBlinks, updateUI } from '../blink';
 import hub from '../handlers/hub';
@@ -169,7 +169,7 @@ export const handleLeaf = (
     return;
   }
   // command has .selector .parents .preserveInvisible (this might be undefined)
-  ytLogger.info('Handle "leaf" type: %s', selectorName);
+  ytLogger.debug('Handle "leaf" type: %s', selectorName);
   // ytLogger.debug('node %o with %o', node, opts);
   const offsetTop = getOffsetTop(node);
   const offsetLeft = getOffsetLeft(node);
