@@ -31,7 +31,7 @@ export const nature: ParserFn<HTMLSource, Nature, YTParserConfig> = async (
   findings,
   ctx
 ) => {
-  const type = e.html.nature.type ?? (e.html as any).type;
+  const type = e.html.nature.type ?? e.html.type;
   const nature = await processNature(type)(e, findings, ctx);
   if (!nature) {
     throw new Error('No nature found for this entry.');

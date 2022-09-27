@@ -107,7 +107,7 @@
     "electron": "16.2.8",
     "electron-builder": "^23.3.0",
     "electron-reloader": "^1.2.3",
-    "eslint": "^8.19.0",
+    "eslint": "^8.24.0",
     "eslint-config-prettier": "^8.5.0",
     "eslint-config-standard-with-typescript": "^22.0.0",
     "eslint-plugin-import": "^2.26.0",

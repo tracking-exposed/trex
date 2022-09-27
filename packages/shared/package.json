@@ -51,7 +51,7 @@
     "@typescript-eslint/parser": "^5.30.5",
     "copy-webpack-plugin": "^11.0.0",
     "dotenv-webpack": "^7.1.0",
-    "eslint": "^8.19.0",
+    "eslint": "^8.24.0",
     "eslint-config-prettier": "^8.5.0",
     "eslint-config-standard-with-typescript": "^22.0.0",
     "eslint-plugin-import": "^2.26.0",
