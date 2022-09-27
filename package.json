@@ -3,7 +3,7 @@
   "description": "tracking.exposed main package",
   "license": "AGPL-3.0",
   "engines": {
-    "node": ">= 16",
+    "node": ">= 16.14",
     "npm": "use yarn!",
     "yarn": ">= 3"
   },
@@ -20,7 +20,7 @@
     "platforms/tktrex/shared",
     "platforms/storybook"
   ],
-  "packageManager": "yarn@3.1.1",
+  "packageManager": "yarn@3.2.3",
   "scripts": {
     "commit": "commit",
     "clean": "yarn workspaces foreach -v run clean",
