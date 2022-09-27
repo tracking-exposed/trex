@@ -17,7 +17,8 @@
     "platforms/tktrex/docs",
     "platforms/tktrex/extension",
     "platforms/tktrex/backend",
-    "platforms/tktrex/shared"
+    "platforms/tktrex/shared",
+    "platforms/storybook"
   ],
   "packageManager": "yarn@3.1.1",
   "scripts": {
@@ -44,7 +45,8 @@
     "postinstall": "husky install",
     "release-it-after-bump": "scripts/release-it-after-bump.sh",
     "tsc-diagnostics": "scripts/tsc-diagnostics.sh",
-    "pm2": "pm2"
+    "pm2": "pm2",
+    "storybook": "yarn workspace storybook"
   },
   "devDependencies": {
     "@apidevtools/swagger-cli": "^4.0.4",
