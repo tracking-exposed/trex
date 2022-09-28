@@ -2,12 +2,15 @@ import React from 'react';
 import { ComponentStory, ComponentMeta } from '@storybook/react';
 import Popup from '@shared/extension/popup/components/Popup';
 
+// eslint-disable-next-line @typescript-eslint/no-var-requires
 const ytLogo = require('../../../yttrex/extension/public/yttrex-logo.png');
 
-export default {
+const Meta: ComponentMeta<typeof Popup> = {
   title: 'Example/Popup',
   component: Popup,
-} as ComponentMeta<typeof Popup>;
+};
+
+export default Meta;
 
 const Template: ComponentStory<typeof Popup> = (args) => <Popup {...args} />;
 

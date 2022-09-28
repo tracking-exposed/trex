@@ -6788,7 +6788,14 @@ __metadata:
     "@testing-library/react": ^13.4.0
     "@testing-library/user-event": ^13.5.0
     "@types/react": ^17.0.50
+    "@typescript-eslint/eslint-plugin": ^5.27.0
+    "@typescript-eslint/parser": ^5.27.0
     babel-plugin-named-exports-order: ^0.0.2
+    eslint: ^8.19.0
+    eslint-config-standard-with-typescript: ^22.0.0
+    eslint-plugin-import: ^2.26.0
+    eslint-plugin-promise: ^6.0.0
+    eslint-plugin-react: ^7.30.1
     prop-types: ^15.8.1
     react: ^17.0.2
     react-dom: ^17.0.2
@@ -8338,7 +8345,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@typescript-eslint/eslint-plugin@npm:^5.38.1":
+"@typescript-eslint/eslint-plugin@npm:^5.27.0, @typescript-eslint/eslint-plugin@npm:^5.38.1":
   version: 5.38.1
   resolution: "@typescript-eslint/eslint-plugin@npm:5.38.1"
   dependencies:
@@ -8377,7 +8384,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@typescript-eslint/parser@npm:^5.38.1":
+"@typescript-eslint/parser@npm:^5.27.0, @typescript-eslint/parser@npm:^5.38.1":
   version: 5.38.1
   resolution: "@typescript-eslint/parser@npm:5.38.1"
   dependencies:
@@ -15602,6 +15609,23 @@ __metadata:
   languageName: node
   linkType: hard
 
+"eslint-config-standard-with-typescript@npm:^22.0.0":
+  version: 22.0.0
+  resolution: "eslint-config-standard-with-typescript@npm:22.0.0"
+  dependencies:
+    "@typescript-eslint/parser": ^5.0.0
+    eslint-config-standard: 17.0.0
+  peerDependencies:
+    "@typescript-eslint/eslint-plugin": ^5.0.0
+    eslint: ^8.0.1
+    eslint-plugin-import: ^2.25.2
+    eslint-plugin-n: ^15.0.0
+    eslint-plugin-promise: ^6.0.0
+    typescript: "*"
+  checksum: 4ed15e7383f8e4d657b5ba1fec52753024c3740decf98a737fe49467f913215f674d74515d40c0b692807f5b3ec519ec5b6a6e36ed39ea96f175e703c809dfa0
+  languageName: node
+  linkType: hard
+
 "eslint-config-standard-with-typescript@npm:^23.0.0":
   version: 23.0.0
   resolution: "eslint-config-standard-with-typescript@npm:23.0.0"
@@ -15732,7 +15756,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"eslint-plugin-promise@npm:^6.0.1":
+"eslint-plugin-promise@npm:^6.0.0, eslint-plugin-promise@npm:^6.0.1":
   version: 6.0.1
   resolution: "eslint-plugin-promise@npm:6.0.1"
   peerDependencies:
@@ -15741,7 +15765,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"eslint-plugin-react@npm:^7.31.8":
+"eslint-plugin-react@npm:^7.30.1, eslint-plugin-react@npm:^7.31.8":
   version: 7.31.8
   resolution: "eslint-plugin-react@npm:7.31.8"
   dependencies:
@@ -15836,7 +15860,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"eslint@npm:^8.24.0":
+"eslint@npm:^8.19.0, eslint@npm:^8.24.0":
   version: 8.24.0
   resolution: "eslint@npm:8.24.0"
   dependencies:

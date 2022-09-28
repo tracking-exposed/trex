@@ -3,10 +3,12 @@ import { ComponentStory, ComponentMeta } from '@storybook/react';
 
 import { Tooltip } from './../components/Tooltip';
 
-export default {
+const Meta: ComponentMeta<typeof Tooltip> = {
   title: 'Example/Tooltip',
   component: Tooltip,
-} as ComponentMeta<typeof Tooltip>;
+};
+
+export default Meta;
 
 const Template: ComponentStory<typeof Tooltip> = (args) => (
   <Tooltip {...args} />

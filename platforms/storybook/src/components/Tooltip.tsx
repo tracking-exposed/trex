@@ -11,7 +11,9 @@ const styles = {
   width: '400px',
 };
 
-export const Tooltip = ({ tooltipText = 'tooltip' }: TooltipProps) => (
+export const Tooltip: React.FC<TooltipProps> = ({
+  tooltipText = 'tooltip',
+}) => (
   <div style={styles}>
     <Card>
       <FormHelperText>{tooltipText}</FormHelperText>
