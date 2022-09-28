@@ -1,5 +1,6 @@
 const path = require('path');
 const TSConfigPathsWebpackPlugin = require('tsconfig-paths-webpack-plugin');
+const version = require('../package.json').version;
 
 module.exports = {
   stories: ['../src/**/*.stories.mdx', '../src/**/*.stories.@(js|jsx|ts|tsx)'],
@@ -50,17 +51,15 @@ module.exports = {
     // console.log("config", config);
 
     return config;
-
-    return config;
   },
   env: (config) => ({
     ...config,
     BUILD: 'BUILD env variable',
-    BUILD_DATE: 'BUILD_DATE env variable',
+    BUILD_DATE: new Date().toISOString(),
     DEVELOPMENT: true,
-    FLUSH_INTERVAL: 1,
+    FLUSH_INTERVAL: 9000,
     API_ROOT: 'API_ROOT env variable',
-    VERSION: 'VERSION env variable',
+    VERSION: version,
     WEB_ROOT: 'WEB_ROOT env variable',
   }),
 };
