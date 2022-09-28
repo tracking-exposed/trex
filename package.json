@@ -41,12 +41,12 @@
     "yt:backend": "yarn workspace @yttrex/backend",
     "yt:ext": "yarn workspace @yttrex/extension",
     "ycai": "yarn workspace @trex/ycai",
+    "storybook": "yarn workspace @trex/storybook",
     "lint-staged": "lint-staged",
     "postinstall": "husky install",
     "release-it-after-bump": "scripts/release-it-after-bump.sh",
     "tsc-diagnostics": "scripts/tsc-diagnostics.sh",
-    "pm2": "pm2",
-    "storybook": "yarn workspace storybook"
+    "pm2": "pm2"
   },
   "devDependencies": {
     "@apidevtools/swagger-cli": "^4.0.4",

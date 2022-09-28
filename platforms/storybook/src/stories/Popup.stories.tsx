@@ -1,7 +1,6 @@
 import React from 'react';
 import { ComponentStory, ComponentMeta } from '@storybook/react';
-
-import Popup from './../../../../packages/shared/src/extension/popup/components/Popup';
+import Popup from '@shared/extension/popup/components/Popup';
 
 export default {
   title: 'Example/Popup',
