@@ -10,3 +10,4 @@ export default {
 const Template: ComponentStory<typeof Popup> = (args) => <Popup {...args} />;
 
 export const Basic = Template.bind({});
+Basic.args = {};
