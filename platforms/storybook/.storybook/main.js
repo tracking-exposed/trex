@@ -53,4 +53,14 @@ module.exports = {
 
     return config;
   },
+  env: (config) => ({
+    ...config,
+    BUILD: 'BUILD env variable',
+    BUILD_DATE: 'BUILD_DATE env variable',
+    DEVELOPMENT: true,
+    FLUSH_INTERVAL: 1,
+    API_ROOT: 'API_ROOT env variable',
+    VERSION: 'VERSION env variable',
+    WEB_ROOT: 'WEB_ROOT env variable',
+  }),
 };
