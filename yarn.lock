@@ -4359,11 +4359,11 @@ __metadata:
     dotenv: ^16.0.1
     eslint: ^8.24.0
     eslint-config-prettier: ^8.5.0
-    eslint-config-standard-with-typescript: ^22.0.0
+    eslint-config-standard-with-typescript: ^23.0.0
     eslint-plugin-import: ^2.26.0
     eslint-plugin-node: ^11.1.0
-    eslint-plugin-promise: ^6.0.0
-    eslint-plugin-react: ^7.30.1
+    eslint-plugin-promise: ^6.0.1
+    eslint-plugin-react: ^7.31.8
     fp-ts: ^2.11.9
     io-ts: ^2.2.16
     jest: ^27.5.1
@@ -4390,11 +4390,11 @@ __metadata:
     "@typescript-eslint/eslint-plugin": ^5.30.5
     "@typescript-eslint/parser": ^5.30.5
     eslint: ^8.24.0
-    eslint-config-standard-with-typescript: ^22.0.0
+    eslint-config-standard-with-typescript: ^23.0.0
     eslint-plugin-import: ^2.26.0
     eslint-plugin-node: ^11.1.0
-    eslint-plugin-promise: ^6.0.0
-    eslint-plugin-react: ^7.30.1
+    eslint-plugin-promise: ^6.0.1
+    eslint-plugin-react: ^7.31.8
     fp-ts: ^2.11.9
     io-ts: ^2.2.16
     jest: ^27.5.1
@@ -4468,11 +4468,11 @@ __metadata:
     dotenv-webpack: ^7.1.0
     eslint: ^8.24.0
     eslint-config-prettier: ^8.5.0
-    eslint-config-standard-with-typescript: ^22.0.0
+    eslint-config-standard-with-typescript: ^23.0.0
     eslint-plugin-import: ^2.26.0
     eslint-plugin-node: ^11.1.0
-    eslint-plugin-promise: ^6.0.0
-    eslint-plugin-react: ^7.30.1
+    eslint-plugin-promise: ^6.0.1
+    eslint-plugin-react: ^7.31.8
     fast-check: ^2.25.0
     fast-check-io-ts: ^0.5.0
     filemanager-webpack-plugin: ^7.0.0
@@ -4538,11 +4538,11 @@ __metadata:
     debug: ^4.3.4
     eslint: ^8.24.0
     eslint-config-prettier: ^8.5.0
-    eslint-config-standard-with-typescript: ^22.0.0
+    eslint-config-standard-with-typescript: ^23.0.0
     eslint-plugin-import: ^2.26.0
     eslint-plugin-node: ^11.1.0
-    eslint-plugin-promise: ^6.0.0
-    eslint-plugin-react: ^7.30.1
+    eslint-plugin-promise: ^6.0.1
+    eslint-plugin-react: ^7.31.8
     fp-ts: ^2.11.9
     io-ts: ^2.2.16
     io-ts-types: ^0.5.16
@@ -4604,11 +4604,11 @@ __metadata:
     dotenv: ^14.3.2
     eslint: ^8.24.0
     eslint-config-prettier: ^8.5.0
-    eslint-config-standard-with-typescript: ^22.0.0
+    eslint-config-standard-with-typescript: ^23.0.0
     eslint-plugin-import: ^2.26.0
     eslint-plugin-node: ^11.1.0
-    eslint-plugin-promise: ^6.0.0
-    eslint-plugin-react: ^7.30.1
+    eslint-plugin-promise: ^6.0.1
+    eslint-plugin-react: ^7.31.8
     fp-ts: ^2.11.9
     husky: ^7.0.4
     i18next: ^21.8.13
@@ -6410,10 +6410,10 @@ __metadata:
     debug: ^4.3.4
     eslint: ^8.24.0
     eslint-config-prettier: ^8.5.0
-    eslint-config-standard-with-typescript: ^22.0.0
+    eslint-config-standard-with-typescript: ^23.0.0
     eslint-plugin-import: ^2.26.0
     eslint-plugin-node: ^11.1.0
-    eslint-plugin-promise: ^6.0.0
+    eslint-plugin-promise: ^6.0.1
     express: ^4.17.2
     fetch-opengraph: ^1.0.35
     food-words: ^1.1.0
@@ -6475,10 +6475,10 @@ __metadata:
     css-loader: ^6.7.1
     dotenv: ^14.3.2
     eslint: ^8.24.0
-    eslint-config-standard-with-typescript: ^22.0.0
+    eslint-config-standard-with-typescript: ^23.0.0
     eslint-plugin-import: ^2.26.0
-    eslint-plugin-promise: ^6.0.0
-    eslint-plugin-react: ^7.30.1
+    eslint-plugin-promise: ^6.0.1
+    eslint-plugin-react: ^7.31.8
     fp-ts: ^2.11.9
     glob: ^7.2.0
     html2canvas: ^1.4.1
@@ -6523,10 +6523,10 @@ __metadata:
     debug: ^4.3.4
     eslint: ^8.24.0
     eslint-config-prettier: ^8.5.0
-    eslint-config-standard-with-typescript: ^22.0.0
+    eslint-config-standard-with-typescript: ^23.0.0
     eslint-plugin-import: ^2.26.0
     eslint-plugin-node: ^11.1.0
-    eslint-plugin-promise: ^6.0.0
+    eslint-plugin-promise: ^6.0.1
     express: ^4.17.2
     fp-ts: ^2.11.9
     io-ts: ^2.2.16
@@ -12403,9 +12403,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"eslint-config-standard-with-typescript@npm:^22.0.0":
-  version: 22.0.0
-  resolution: "eslint-config-standard-with-typescript@npm:22.0.0"
+"eslint-config-standard-with-typescript@npm:^23.0.0":
+  version: 23.0.0
+  resolution: "eslint-config-standard-with-typescript@npm:23.0.0"
   dependencies:
     "@typescript-eslint/parser": ^5.0.0
     eslint-config-standard: 17.0.0
@@ -12416,7 +12416,7 @@ __metadata:
     eslint-plugin-n: ^15.0.0
     eslint-plugin-promise: ^6.0.0
     typescript: "*"
-  checksum: 4ed15e7383f8e4d657b5ba1fec52753024c3740decf98a737fe49467f913215f674d74515d40c0b692807f5b3ec519ec5b6a6e36ed39ea96f175e703c809dfa0
+  checksum: a6bc6758e3e203721cfa38a6e5e1437b38016aa72bf2e2855581fa65c0cf96531a3433a3625703a3740c10e9d654c08a8d8b6cc6688b3e8b48259a9390a2fcd7
   languageName: node
   linkType: hard
 
@@ -12499,21 +12499,21 @@ __metadata:
   languageName: node
   linkType: hard
 
-"eslint-plugin-n@npm:^15.2.4":
-  version: 15.2.4
-  resolution: "eslint-plugin-n@npm:15.2.4"
+"eslint-plugin-n@npm:^15.3.0":
+  version: 15.3.0
+  resolution: "eslint-plugin-n@npm:15.3.0"
   dependencies:
     builtins: ^5.0.1
     eslint-plugin-es: ^4.1.0
     eslint-utils: ^3.0.0
     ignore: ^5.1.1
-    is-core-module: ^2.9.0
+    is-core-module: ^2.10.0
     minimatch: ^3.1.2
-    resolve: ^1.10.1
+    resolve: ^1.22.1
     semver: ^7.3.7
   peerDependencies:
     eslint: ">=7.0.0"
-  checksum: dd651651ab76120e45707ee968d846e3ffffb42d1035792fdef6d3b0dcfddf3673bc6a09cb2fac8c5f1d081f14f2a67fc52295d5ed1d2edfb5beead93284eaac
+  checksum: a5a4c778804a0d343ca904c917b8e583b4df28aaad593ea6d41893befac45d4f92ab38d895aac018ac757583697d38e99397d4deda783ec8ff650bb2041d23c8
   languageName: node
   linkType: hard
 
@@ -12533,18 +12533,18 @@ __metadata:
   languageName: node
   linkType: hard
 
-"eslint-plugin-promise@npm:^6.0.0":
-  version: 6.0.0
-  resolution: "eslint-plugin-promise@npm:6.0.0"
+"eslint-plugin-promise@npm:^6.0.1":
+  version: 6.0.1
+  resolution: "eslint-plugin-promise@npm:6.0.1"
   peerDependencies:
     eslint: ^7.0.0 || ^8.0.0
-  checksum: 7e761507c51267b77e4ad710e7c8938aa4f8f69b975886034e57497a1816e9527eda364e25aac03d1b4e0df2e738ba98e49ad075d028824fcfea533a1419751c
+  checksum: c1bb3c2e591787e97133dcaf764f908420a3a1959a3132e199db8f14d70dfa79fc9caf991ca60a4b60ae5f1f9823bc96c2e52304828a4278ef2f3964fe121de9
   languageName: node
   linkType: hard
 
-"eslint-plugin-react@npm:^7.30.1":
-  version: 7.30.1
-  resolution: "eslint-plugin-react@npm:7.30.1"
+"eslint-plugin-react@npm:^7.31.8":
+  version: 7.31.8
+  resolution: "eslint-plugin-react@npm:7.31.8"
   dependencies:
     array-includes: ^3.1.5
     array.prototype.flatmap: ^1.3.0
@@ -12562,7 +12562,7 @@ __metadata:
     string.prototype.matchall: ^4.0.7
   peerDependencies:
     eslint: ^3 || ^4 || ^5 || ^6 || ^7 || ^8
-  checksum: 553fb9ece6beb7c14cf6f84670c786c8ac978c2918421994dcc4edd2385302022e5d5ac4a39fafdb35954e29cecddefed61758040c3c530cafcf651f674a9d51
+  checksum: 0683e2a624a4df6f08264a3f6bc614a81e8f961c83173bdf2d8d3523f84ed5d234cddc976dbc6815913e007c5984df742ba61be0c0592b27c3daabe0f68165a3
   languageName: node
   linkType: hard
 
@@ -14689,10 +14689,10 @@ __metadata:
     electron-unhandled: ^4.0.1
     eslint: ^8.24.0
     eslint-config-prettier: ^8.5.0
-    eslint-config-standard-with-typescript: ^22.0.0
+    eslint-config-standard-with-typescript: ^23.0.0
     eslint-plugin-import: ^2.26.0
     eslint-plugin-node: ^11.1.0
-    eslint-plugin-promise: ^6.0.0
+    eslint-plugin-promise: ^6.0.1
     extract-zip: ^2.0.1
     fp-ts: ^2.11.9
     io-ts: ^2.2.16
@@ -15986,6 +15986,15 @@ __metadata:
   dependencies:
     has: ^1.0.3
   checksum: b27034318b4b462f1c8f1dfb1b32baecd651d891a4e2d1922135daeff4141dfced2b82b07aef83ef54275c4a3526aa38da859223664d0868ca24182badb784ce
+  languageName: node
+  linkType: hard
+
+"is-core-module@npm:^2.10.0":
+  version: 2.10.0
+  resolution: "is-core-module@npm:2.10.0"
+  dependencies:
+    has: ^1.0.3
+  checksum: 0f3f77811f430af3256fa7bbc806f9639534b140f8ee69476f632c3e1eb4e28a38be0b9d1b8ecf596179c841b53576129279df95e7051d694dac4ceb6f967593
   languageName: node
   linkType: hard
 
@@ -23721,7 +23730,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"resolve@npm:^1.0.0, resolve@npm:^1.1.6, resolve@npm:^1.10.0, resolve@npm:^1.10.1, resolve@npm:^1.12.0, resolve@npm:^1.14.2, resolve@npm:^1.17.0, resolve@npm:^1.20.0, resolve@npm:^1.22.0, resolve@npm:^1.3.2, resolve@npm:^1.9.0":
+"resolve@npm:^1.0.0, resolve@npm:^1.1.6, resolve@npm:^1.10.0, resolve@npm:^1.10.1, resolve@npm:^1.12.0, resolve@npm:^1.14.2, resolve@npm:^1.17.0, resolve@npm:^1.20.0, resolve@npm:^1.22.0, resolve@npm:^1.22.1, resolve@npm:^1.3.2, resolve@npm:^1.9.0":
   version: 1.22.1
   resolution: "resolve@npm:1.22.1"
   dependencies:
@@ -23747,7 +23756,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"resolve@patch:resolve@^1.0.0#~builtin<compat/resolve>, resolve@patch:resolve@^1.1.6#~builtin<compat/resolve>, resolve@patch:resolve@^1.10.0#~builtin<compat/resolve>, resolve@patch:resolve@^1.10.1#~builtin<compat/resolve>, resolve@patch:resolve@^1.12.0#~builtin<compat/resolve>, resolve@patch:resolve@^1.14.2#~builtin<compat/resolve>, resolve@patch:resolve@^1.17.0#~builtin<compat/resolve>, resolve@patch:resolve@^1.20.0#~builtin<compat/resolve>, resolve@patch:resolve@^1.22.0#~builtin<compat/resolve>, resolve@patch:resolve@^1.3.2#~builtin<compat/resolve>, resolve@patch:resolve@^1.9.0#~builtin<compat/resolve>":
+"resolve@patch:resolve@^1.0.0#~builtin<compat/resolve>, resolve@patch:resolve@^1.1.6#~builtin<compat/resolve>, resolve@patch:resolve@^1.10.0#~builtin<compat/resolve>, resolve@patch:resolve@^1.10.1#~builtin<compat/resolve>, resolve@patch:resolve@^1.12.0#~builtin<compat/resolve>, resolve@patch:resolve@^1.14.2#~builtin<compat/resolve>, resolve@patch:resolve@^1.17.0#~builtin<compat/resolve>, resolve@patch:resolve@^1.20.0#~builtin<compat/resolve>, resolve@patch:resolve@^1.22.0#~builtin<compat/resolve>, resolve@patch:resolve@^1.22.1#~builtin<compat/resolve>, resolve@patch:resolve@^1.3.2#~builtin<compat/resolve>, resolve@patch:resolve@^1.9.0#~builtin<compat/resolve>":
   version: 1.22.1
   resolution: "resolve@patch:resolve@npm%3A1.22.1#~builtin<compat/resolve>::version=1.22.1&hash=07638b"
   dependencies:
@@ -23919,7 +23928,7 @@ __metadata:
     "@types/node": ^16.11.36
     "@types/prettier": ^2.6.3
     eslint: ^8.24.0
-    eslint-plugin-n: ^15.2.4
+    eslint-plugin-n: ^15.3.0
     husky: ^7.0.4
     jest: ^27.5.1
     lint-staged: ^12.3.3
