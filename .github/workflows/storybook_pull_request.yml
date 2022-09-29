@@ -1,0 +1,43 @@
+name: Storybook - Pull Request
+
+on:
+  pull_request:
+    branches:
+      - daily
+      - beta
+      - feat/**
+      - fix/**
+      - refactor/**
+    paths:
+      - "shared/**"
+      - "platforms/storybook/**"
+
+jobs:
+  pull_request:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [16.x]
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v2
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: "yarn"
+          cache-dependency-path: yarn.lock
+
+      - name: Install modules
+
+        run: yarn
+
+      - name: Lint code
+        run: yarn storybook lint
+
+      - name: Type Check
+        run: yarn storybook tsc -b
+
+      - name: Build
+        run: yarn storybook build

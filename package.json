@@ -17,7 +17,8 @@
     "platforms/tktrex/docs",
     "platforms/tktrex/extension",
     "platforms/tktrex/backend",
-    "platforms/tktrex/shared"
+    "platforms/tktrex/shared",
+    "platforms/storybook"
   ],
   "packageManager": "yarn@3.1.1",
   "scripts": {
@@ -40,6 +41,7 @@
     "yt:backend": "yarn workspace @yttrex/backend",
     "yt:ext": "yarn workspace @yttrex/extension",
     "ycai": "yarn workspace @trex/ycai",
+    "storybook": "yarn workspace @trex/storybook",
     "lint-staged": "lint-staged",
     "postinstall": "husky install",
     "release-it-after-bump": "scripts/release-it-after-bump.sh",
