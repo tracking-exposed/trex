@@ -4,7 +4,7 @@
   "name": "tiktok.tracking.exposed",
 
   "short_name": "tktrex",
-  "description": "the Tiktok Observatory addon! A tool for algorithm analysts of the popular entertainment app. Read the docs at https://docs.tracking.exposed",
+  "description": "the Tiktok Observatory addon. A tool for algorithm analysts; Read the docs at https://docs.tracking.exposed",
   "version": "__THIS_IS_IGNORED__PACKAGE.JSON_VERSION_IS_USED_AT_BUILD_TIME__",
   "author": "The Tracking Exposed team",
 
