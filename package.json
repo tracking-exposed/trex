@@ -80,13 +80,6 @@
     ]
   },
   "resolutions": {
-    "@docusaurus/core": "2.0.0-beta.14",
-    "@docusaurus/preset-classic": "2.0.0-beta.14",
-    "@docusaurus/mdx-loader": "2.0.0-beta.14",
-    "@docusaurus/plugin-content-docs": "2.0.0-beta.14",
-    "@docusaurus/types": "2.0.0-beta.14",
-    "@docusaurus/utils-validation": "2.0.0-beta.14",
-    "@docusaurus/utils": "2.0.0-beta.14",
     "@types/node": ">=16",
     "@types/react": "^17"
   },
