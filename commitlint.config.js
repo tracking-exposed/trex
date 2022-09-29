@@ -13,6 +13,7 @@ module.exports = {
         'taboule',
         'docs',
         'guardoni',
+        'storybook',
         'tk:shared',
         'tk:backend',
         'tk:ext',

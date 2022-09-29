@@ -93,7 +93,7 @@
     "@types/lodash": "^4.14.182",
     "@types/nconf": "^0.10.2",
     "@types/prettier": "^2.6.3",
-    "@types/react": "^17.0.47",
+    "@types/react": "^17.0.50",
     "@types/react-dom": "^17.0.17",
     "@types/unzipper": "^0.10.5",
     "@types/webpack-node-externals": "^2.5.3",
