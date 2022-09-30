@@ -164,6 +164,10 @@ async function processEvents(req) {
        * trust the input from client */
       const nature = getNatureByHref(body.href);
       // console.log('[D] Nature', nature, 'Keys', _.keys(body));
+      if (!nature) {
+        debug('No nature found for %s', body.href);
+        return null;
+      }
 
       /* based on the 'body.type' we might have fields that are updated
        * (like search, profile, where the user can scroll and report larger evidences)
