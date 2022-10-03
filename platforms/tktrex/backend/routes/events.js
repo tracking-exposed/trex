@@ -7,6 +7,7 @@ import D from 'debug';
 const automo = require('../lib/automo');
 const utils = require('../lib/utils');
 const security = require('../lib/security');
+const { getNatureByHref } = require('../parsers/shared');
 
 const debug = D('routes:events');
 
@@ -138,25 +139,50 @@ async function processEvents(req) {
   const fullsaves = [];
   const htmls = _.compact(
     _.map(req.body, function (body, i) {
-      // console.log(_.keys(body))
-      // [ 'html', 'href', 'feedId', 'feedCounter', 'videoCounter',
-      // 'rect', 'clientTime', 'type', 'incremental' ]
-
-      const id = utils.hash({
-        clientRGN: body.feedId ? body.feedId : body.href,
+      /* the timelineId identify the session, it comes from the
+       * feedId because it need to trust client side */
+      const timelineFields = {
+        session: body.feedId,
         serverPRGN: supporter.publicKey,
-        type: body.type,
-        impressionNumber:
-          body.type === 'video' || body.type === 'native'
-            ? body.videoCounter
-            : 'fixed',
-      });
-      const timelineIdHash = utils.hash({
-        session: body.feedId
-          ? body.feedId
-          : body.href + new Date().toISOString(),
-      });
+        version: headers.version,
+      };
+      const timelineIdHash = utils.hash(timelineFields);
       const timelineWord = utils.pickFoodWord(timelineIdHash);
+
+      /* the `id` is computed by hashing specific fields. the `id` is not
+       * meant to be unique, but instead, every evidence should have a different
+       * ID. if a data is sent twice, we should see the duplication because the
+       * ID generated is the same, and this prevents duplication */
+      const idFields = {
+        timelineIdHash,
+        /* the timeline guarantee uniqueness by user, version, feedId */
+        counters: `v(${body.videoCounter})f(${body.feedCounter})i(${body.incremental})`,
+        /* the counters guarantee an increment at each evidence sent by extension */
+      };
+
+      /* this check should be done here because we shouldn't
+       * trust the input from client */
+      const nature = getNatureByHref(body.href);
+      // console.log('[D] Nature', nature, 'Keys', _.keys(body));
+      if (!nature) {
+        debug('No nature found for %s', body.href);
+        return null;
+      }
+
+      /* based on the 'body.type' we might have fields that are updated
+       * (like search, profile, where the user can scroll and report larger evidences)
+       * or video block in 'following' or 'foryou', with a fixed url */
+      if (nature.type === 'foryou' || nature.type === 'following') {
+        idFields.type = nature.type;
+      } else if (nature.type === 'native') {
+        idFields.n = `${nature.videoId}_${nature.authorId}`;
+      } else {
+        debug(`with Nature ${nature.type} using URL as seed`);
+        idFields.seed = body.href;
+        idFields.n = JSON.stringify(nature);
+      }
+
+      const id = utils.hash(idFields);
 
       /* to eventually verify integrity of collection we're saving these incremental
        * numbers that might help to spot if client-side-extension are missing somethng */

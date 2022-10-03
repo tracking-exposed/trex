@@ -19,8 +19,11 @@ describe('Events', () => {
   describe('Add events', () => {
     test('succeeds when payload is correctly signed', async () => {
       const keys = await foldTEOrThrow(bs58.makeKeypair(''));
-    const researchTag = 'test-tag';
-      const data = fc.sample(ContributionEventArb, 5);
+      const researchTag = 'test-tag';
+      const data = fc.sample(ContributionEventArb, 5).map((c) => ({
+        ...c,
+        href: 'https://www.tiktok.com/@username',
+      }));
 
       const signature = await foldTEOrThrow(
         bs58.makeSignature(JSON.stringify(data), keys.secretKey)
