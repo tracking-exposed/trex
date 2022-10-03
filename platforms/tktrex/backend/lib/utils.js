@@ -1,5 +1,6 @@
 const _ = require('lodash');
 const debug = require('debug')('lib:utils');
+const hashdebug = require('debug')('lib:utils:hash');
 const crypto = require('crypto');
 const nacl = require('tweetnacl');
 const foodWords = require('food-words');
@@ -18,7 +19,7 @@ function hash(obj, fields) {
   const sha1sum = crypto.createHash('sha1');
   sha1sum.update(plaincnt);
   const retval = sha1sum.digest('hex');
-  // debug('(note) hashing of %s\n%s', plaincnt, retval);
+  hashdebug('%s produced by hashing %s', retval, plaincnt);
   return retval;
 }
 
@@ -37,7 +38,6 @@ function verifyRequestSignature(req) {
   //   WARNING!!!
   //   This works good when the client sending the data is in JavaScript
   //   as well, since key order is given by the insertion order.
-
 
   if (req.headers['content-type'] === 'application/json')
     message = JSON.stringify(req.body);
@@ -67,22 +67,28 @@ function string2Food(piistr) {
   const size = _.size(foodWords);
   const ret = _.map(inputs, function (pseudornumber) {
     /* considering the calculus above would produce a
-           number that might be < foodWords.length and with decimals,
-           it is multiply by 1000 to be sure would be bigger than
-           variable 'size' */
+       number that might be < foodWords.length and with decimals,
+       it is multiply by 1000 to be sure would be bigger than
+       variable 'size' */
     return _.nth(foodWords, _.round(pseudornumber * 1000) % size);
   });
   return _.join(ret, '-');
 }
 
 function pickFoodWord(rginput) {
-  const seed = hash({ rginput }).replace(/[a-f]/gi, '');
+  const sha1sum = crypto.createHash('sha1');
+  sha1sum.update(`food ${rginput}`);
+  const mixedseed = sha1sum.digest('hex');
+  const seed = mixedseed.replace(/[a-f]/gi, '');
 
+  /* even if statistically implausible, ensure
+   * there is a number from the hexdump.replaced made above */
   const rnum =
     seed.length > 5
-      ? _.parseInt(seed.substr(0, 5))
+      ? _.parseInt(seed.substring(0, 5))
       : _.parseInt(seed) + rginput.length;
 
+  /* and then just play with a % module */
   const wordpos = rnum % foodWords.length;
   /* debug("pickFoodWord number %d, module %d, word [%s]",
         rnum, wordpos, _.nth(foodWords, wordpos)); */
