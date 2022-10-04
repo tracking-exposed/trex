@@ -1,22 +1,18 @@
 import { formatDistance } from 'date-fns';
 import differenceInMinutes from 'date-fns/differenceInMinutes';
 import subMinutes from 'date-fns/subMinutes';
-import fs from 'fs';
 import * as t from 'io-ts';
 import _ from 'lodash';
 import { MongoClient } from 'mongodb';
-import path from 'path';
 import { Logger, trexLogger } from '../logger';
 import { sleep } from '../utils/promise.utils';
-import * as mongo3 from './mongo.provider';
+import type * as mongo3 from './mongo.provider';
 
 /**
  * The parser configuration
  */
 export interface ParserConfiguration {
-  errorReporter?: {
-    basePath: string;
-  };
+  errorReporter?: (e: unknown) => void;
 }
 
 /**
@@ -103,6 +99,20 @@ export interface ExecuteParams {
   htmlAmount: number;
 }
 
+interface ExecutionOutputSuccess<
+  S,
+  M,
+  PP extends Record<string, ParserFn<S, any, any>>
+> {
+  type: 'Success';
+  payload: Array<PipelineOutput<S, M, PP>>;
+}
+
+interface ExecutionOutputError {
+  type: 'Error';
+  payload: any;
+}
+
 /**
  * The output of the execution
  *
@@ -116,15 +126,7 @@ export type ExecutionOutput<
   S,
   M,
   PP extends Record<string, ParserFn<S, any, any>>
-> =
-  | {
-      type: 'Success';
-      payload: Array<PipelineOutput<S, M, PP>>;
-    }
-  | {
-      type: 'Error';
-      payload: any;
-    };
+> = ExecutionOutputSuccess<S, M, PP> | ExecutionOutputError;
 
 /**
  * The options given to parser
@@ -491,24 +493,7 @@ export const parseContributions =
         results.push({ ...result, ...m });
       } else {
         if (ctx.config.errorReporter) {
-          const entryNature = ctx.getEntryNatureType(entry) ?? 'failed';
-          const fixturePath = path.resolve(
-            ctx.config.errorReporter?.basePath,
-            ctx.name,
-            entryNature,
-            `${entryId}.json`
-          );
-          ctx.log.debug(
-            'Saving problematic contribution as fixture in %s',
-            fixturePath
-          );
-          fs.writeFileSync(
-            fixturePath,
-            JSON.stringify({
-              sources: [entry.html],
-              metadata: {},
-            })
-          );
+          ctx.config.errorReporter(entry);
         }
 
         results.push({
@@ -549,6 +534,7 @@ export const executionLoop =
       htmlAmount,
     });
 
+    processedCounter = 0;
     try {
       const results: any = [];
       // pretty lamest, but I need an infinite loop on an async function -> IDFC!
@@ -609,12 +595,17 @@ export const executionLoop =
           computedFrequency = FREQUENCY;
         } else {
           ctx.log.debug('Data to process %d', envelops.sources.length);
+          lastExecution = new Date();
           const currentResult = await parseContributions(ctx)(envelops);
           ctx.log.debug(
             'Processed sources %O',
             currentResult.map((r) => ctx.getEntryId(r.source))
           );
           results.push(...currentResult);
+          printResultOutput(ctx.getEntryId, {
+            type: 'Success',
+            payload: currentResult,
+          });
         }
 
         if (singleUse) {
@@ -627,15 +618,20 @@ export const executionLoop =
         const sleepTime = computedFrequency * 1000;
         ctx.log.debug('Sleep for %dms', sleepTime);
         await sleep(sleepTime);
+        processedCounter++;
       }
+
       return { type: 'Success', payload: results };
     } catch (e: any) {
       ctx.log.error('Error in filterChecker', e.message, e.stack);
 
-      return {
+      const result: ExecutionOutputError = {
         type: 'Error',
         payload: e,
       };
+      printResultOutput(ctx.getEntryId, result);
+
+      return result;
     }
   };
 
@@ -765,22 +761,19 @@ export const GetParserProvider = <
 
       lastExecution = subMinutes(new Date(), backInTime);
 
-      // reset processed counter each time the parser is run
-      processedCounter = 0;
-
-      const output = await executionLoop({
+      const loop = executionLoop({
         ...ctx,
         name,
         log,
-      })({
+      });
+
+      const output = await loop({
         filter,
         repeat,
         stop,
         singleUse,
         htmlAmount,
       });
-
-      printResultOutput(ctx.getEntryId, output);
 
       return output;
     },

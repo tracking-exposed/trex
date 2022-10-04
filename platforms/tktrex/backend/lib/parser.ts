@@ -24,13 +24,13 @@ const debug = D('lib:parserchain');
  *
  * @returns metadata collection name
  */
-export const getMetadataSchema = () => nconf.get('schema').metadata;
+export const getMetadataSchema = (): string => nconf.get('schema').metadata;
 /**
  * Get source collection
  *
  * @returns source collection name
  */
-export const getSourceSchema = () => nconf.get('schema').htmls;
+export const getSourceSchema = (): string => nconf.get('schema').htmls;
 
 export const parserConfig: TKParserConfig = {
   downloads: nconf.get('downloads'),
@@ -216,7 +216,7 @@ export const updateMetadataAndMarkHTML =
     const r = await db.api.upsertOne(
       db.write,
       getMetadataSchema(),
-      { id: source.html.id },
+      { id: metadata.id },
       metadata
     );
     const u = await db.api.updateOne(
@@ -229,6 +229,6 @@ export const updateMetadataAndMarkHTML =
     return {
       metadata,
       source,
-      count: { metadata: r.modifiedCount, htmls: u.modifiedCount },
+      count: { metadata: r.upsertedCount, htmls: u.modifiedCount },
     };
   };

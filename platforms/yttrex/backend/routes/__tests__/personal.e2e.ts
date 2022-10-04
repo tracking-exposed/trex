@@ -19,9 +19,9 @@ import {
   addDom as addDOMToHTML,
   getLastHTMLs,
   getMetadata as getHTMLMetadata,
-  toMetadata as toHTMLMetadata,
   updateMetadataAndMarkHTML,
 } from '../../lib/parser/html';
+import { toMetadata as toHTMLMetadata } from '@yttrex/shared/parser/metadata';
 import {
   addDom as addDomToLeaf,
   getLastLeaves,

@@ -19,9 +19,9 @@ import {
   getMetadata,
   getMetadataSchema,
   getSourceSchema,
-  toMetadata,
   updateMetadataAndMarkHTML,
 } from '../../../lib/parser/html';
+import { toMetadata } from '@yttrex/shared/parser/metadata';
 
 describe('Parser: Video', () => {
   let appTest: Test;
