@@ -6,12 +6,13 @@ import {
 } from '@shared/extension/app';
 import log from '@shared/extension/logger';
 import UserSettings from '@shared/extension/models/UserSettings';
-import { sizeCheck } from '@shared/providers/dataDonation.provider';
+import { HTMLSize } from '@shared/extension/utils/HTMLSize.utils';
 import _ from 'lodash';
 import tkHub from '../handlers/hub';
 import { INTERCEPTED_ITEM_CLASS } from '../interceptor/constants';
 
 export const appLog = log.extend('app');
+const searchSize = HTMLSize();
 
 export let feedId = refreshUUID(0);
 export let feedCounter = 0;
@@ -205,7 +206,7 @@ const handleSearch = _.debounce((element: Node): void => {
   const contentHTML = contentNode ? contentNode.innerHTML : null;
   if (!contentNode || !contentHTML) return;
 
-  const hasNewElements = sizeCheck(contentNode.innerHTML);
+  const hasNewElements = searchSize.check(contentNode.innerHTML);
   if (!hasNewElements) return;
 
   tkHub.dispatch({
