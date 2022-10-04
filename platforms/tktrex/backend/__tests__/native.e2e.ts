@@ -11,9 +11,9 @@ import { parseISO, subMinutes } from 'date-fns';
 import path from 'path';
 import nacl from 'tweetnacl';
 import { GetTest, Test } from '../test/Test';
+import { toMetadata } from '@tktrex/shared/parser/metadata';
 import {
   addDom,
-  buildMetadata,
   getLastHTMLs,
   getMetadata,
   getMetadataSchema,
@@ -93,7 +93,7 @@ describe('Parser: "native"', () => {
           getContributions: getLastHTMLs(db),
           getMetadata: getMetadata(db),
           saveResults: updateMetadataAndMarkHTML(db),
-          buildMetadata: buildMetadata,
+          buildMetadata: toMetadata,
           config: parserConfig,
           expectSources: (receivedSources) => {
             receivedSources.forEach((s) => {
@@ -113,7 +113,6 @@ describe('Parser: "native"', () => {
               id: _receivedId,
               clientTime: clientTimeExp,
               savingTime: savingTimeExp,
-              type: typeExp,
               ...expectedM
             } = expectedMetadata as any;
 

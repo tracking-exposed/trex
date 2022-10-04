@@ -14,6 +14,7 @@ export const toMetadata: BuildMetadataFn<HTMLSource, TKMetadata, TKParsers> = (
 
   let metadata: any = {
     clientTime: entry.source.html.clientTime,
+    thumbnails: [],
   };
 
   switch (entry.findings.nature.type) {
