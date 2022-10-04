@@ -6533,6 +6533,7 @@ __metadata:
     fast-check: ^2.25.0
     fast-check-io-ts: ^0.5.0
     filemanager-webpack-plugin: ^7.0.0
+    food-words: ^1.1.0
     fp-ts: ^2.11.9
     geoip-lite: ^1.4.4
     html-webpack-plugin: ^5.5.0
