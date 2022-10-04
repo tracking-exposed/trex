@@ -10,7 +10,7 @@ const debug = require('debug')('lib:automo');
 // const debugLite = require('debug')('lib:automo:L');
 const moment = require('moment');
 
-const utils = require('../lib/utils');
+const utils = require('@shared/utils/food.utils');
 const mongo3 = require('@shared/providers/mongo.provider');
 
 

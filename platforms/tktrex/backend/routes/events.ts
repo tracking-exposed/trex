@@ -1,13 +1,22 @@
+import { Supporter } from '@shared/models/Supporter';
 import { geo } from '@shared/utils/ip.utils';
+import {
+  getTimelineId,
+  getHTMLId,
+  getMetadataId,
+} from '@tktrex/shared/helpers/uniqueId';
 import { parseISO } from 'date-fns';
+import D from 'debug';
+import * as express from 'express';
 import _ from 'lodash';
 import nconf from 'nconf';
-import D from 'debug';
+import automo from '../lib/automo';
+import utils from '../lib/utils';
+import security from '../lib/security';
+import { throwEitherError } from '@shared/utils/fp.utils';
 import { getNatureByHref } from '@tktrex/shared/parser/parsers/nature';
-
-const automo = require('../lib/automo');
-const utils = require('../lib/utils');
-const security = require('../lib/security');
+import { HTML } from '@tktrex/shared/models/http/HTML';
+import { getMetadata } from 'lib/parser';
 
 const debug = D('routes:events');
 
@@ -19,7 +28,12 @@ const mandatoryHeaders = {
   'x-tktrex-nonauthcookieid': 'researchTag',
 };
 
-function processHeaders(received, required) {
+type TKHeaders = { [K in keyof typeof mandatoryHeaders]: string };
+
+function processHeaders(
+  received: Partial<TKHeaders>,
+  required: TKHeaders
+): TKHeaders | { errors: string[] } {
   const ret = {};
   const errs = _.compact(
     _.map(required, function (destkey, headerName) {
@@ -34,11 +48,11 @@ function processHeaders(received, required) {
     debug('Error in processHeaders, missing: %j', errs);
     return { errors: errs };
   }
-  return ret;
+  return ret as TKHeaders;
 }
 
-let last = null;
-function getMirror(req) {
+let last: any = null;
+function getMirror(req: express.Request) {
   if (!security.checkPassword(req)) return security.authError;
 
   if (last) {
@@ -53,7 +67,7 @@ function getMirror(req) {
 
   return { json: { content: null } };
 }
-function appendLast(req) {
+function appendLast(req: express.Request) {
   /* this is used by getMirror, to mirror what the server is getting
    * used by developers with password */
   const MAX_STORED_CONTENT = 15;
@@ -63,7 +77,7 @@ function appendLast(req) {
   last.push(_.pick(req, ['headers', 'body']));
 }
 
-function headerError(headers) {
+function headerError(headers: express.Request['headers']) {
   debug('Error detected: %s', headers.error);
   return {
     json: {
@@ -73,7 +87,17 @@ function headerError(headers) {
   };
 }
 
-async function saveInDB(experinfo, objects, dbcollection) {
+type SaveInDBResult =
+  | { error: false; success: number; subject: string }
+  | { error: null; message: string; subject: string }
+  | { error: unknown; message: string; subject: string }
+  | { error: true; message: string; subject: string };
+
+async function saveInDB(
+  experinfo: any,
+  objects: any[],
+  dbcollection: string
+): Promise<SaveInDBResult> {
   if (!objects.length)
     return { error: null, message: 'no data', subject: dbcollection };
 
@@ -111,18 +135,26 @@ async function saveInDB(experinfo, objects, dbcollection) {
       dbcollection,
       error.message
     );
-    return { error: true, message: error.message };
+    return { error: true, message: error.message, subject: dbcollection };
   }
 }
 
-async function processEvents(req) {
+async function processEvents(req: express.Request): Promise<{
+  json:
+    | {
+        supporter: Supporter;
+        full: SaveInDBResult;
+        htmls: SaveInDBResult;
+      }
+    | { status: string; info: any };
+}> {
   // appendLast enable the mirror functionality, it is
   // before any validation so we can test also submissions
   // failing the next steps
   appendLast(req);
 
-  const headers = processHeaders(_.get(req, 'headers'), mandatoryHeaders);
-  if (headers.error) return headerError(headers);
+  const headers: any = processHeaders(_.get(req, 'headers'), mandatoryHeaders);
+  if (headers.errors) return headerError(headers);
 
   if (!utils.verifyRequestSignature(req)) {
     debug('Verification fail (signature %s)', headers.signature);
@@ -136,53 +168,34 @@ async function processEvents(req) {
 
   const supporter = await automo.tofu(headers.publickey, headers.version);
 
-  const fullsaves = [];
+  const fullsaves: any[] = [];
   const htmls = _.compact(
     _.map(req.body, function (body, i) {
       /* the timelineId identify the session, it comes from the
        * feedId because it need to trust client side */
-      const timelineFields = {
-        session: body.feedId,
-        serverPRGN: supporter.publicKey,
+      const timelineId = getTimelineId({
+        feedId: body.feedId,
+        publicKey: supporter.publicKey,
         version: headers.version,
-      };
-      const timelineIdHash = utils.hash(timelineFields);
-      const timelineWord = utils.pickFoodWord(timelineIdHash);
-
-      /* the `id` is computed by hashing specific fields. the `id` is not
-       * meant to be unique, but instead, every evidence should have a different
-       * ID. if a data is sent twice, we should see the duplication because the
-       * ID generated is the same, and this prevents duplication */
-      const idFields = {
-        timelineIdHash,
-        /* the timeline guarantee uniqueness by user, version, feedId */
-        counters: `v(${body.videoCounter})f(${body.feedCounter})i(${body.incremental})`,
-        /* the counters guarantee an increment at each evidence sent by extension */
-      };
+      });
 
       /* this check should be done here because we shouldn't
        * trust the input from client */
-      const nature = getNatureByHref(body.href);
-      // console.log('[D] Nature', nature, 'Keys', _.keys(body));
-      if (!nature) {
-        debug('No nature found for %s', body.href);
-        return null;
-      }
+      const nature = throwEitherError(getNatureByHref(body.href));
 
-      /* based on the 'body.type' we might have fields that are updated
-       * (like search, profile, where the user can scroll and report larger evidences)
-       * or video block in 'following' or 'foryou', with a fixed url */
-      if (nature.type === 'foryou' || nature.type === 'following') {
-        idFields.type = nature.type;
-      } else if (nature.type === 'native') {
-        idFields.n = `${nature.videoId}_${nature.authorId}`;
-      } else {
-        debug(`with Nature ${nature.type} using URL as seed`);
-        idFields.seed = body.href;
-        idFields.n = JSON.stringify(nature);
-      }
+      const htmlId = getHTMLId.hash({
+        ...timelineId,
+        feedCounter: body.feedCounter,
+        videoCounter: body.videoCounter,
+        incremental: body.incremental,
+        href: body.href,
+        nature,
+      });
 
-      const id = utils.hash(idFields);
+      const metadataId = getMetadataId.hash({
+        htmlId,
+        clientTime: body.clientTime,
+      });
 
       /* to eventually verify integrity of collection we're saving these incremental
        * numbers that might help to spot if client-side-extension are missing somethng */
@@ -194,20 +207,31 @@ async function processEvents(req) {
       if (_.isInteger(body.feedCounter)) optionalNumbers.push(body.feedCounter);
       optionalNumbers.push(_.size(body.html));
 
-      const html = {
-        id,
+      const geoAddress =
+        req.headers['x-forwarded-for'] ?? req.socket.remoteAddress;
+      const geoip =
+        geoAddress !== undefined
+          ? geo(geoAddress as any) ?? undefined
+          : undefined;
+
+      const html: HTML = {
+        id: htmlId as any,
+        metadataId: metadataId,
+        blang: '',
+        nature,
         type: body.type,
         rect: body.rect,
         href: body.href,
-        timelineId: timelineWord + '-' + timelineIdHash.substring(0, 10),
+        timelineId: timelineId.word,
         publicKey: supporter.publicKey,
         clientTime: parseISO(body.clientTime),
         savingTime: new Date(),
         html: body.html,
         n: optionalNumbers,
-        geoip: geo(req.headers['x-forwarded-for'] || req.socket.remoteAddress),
-        experimentId: body.experimentId,
+        geoip,
       };
+
+      if (body.experimentId?.length) html.experimentId = body.experimentId;
 
       if (headers.researchTag?.length) html.researchTag = headers.researchTag;
 
@@ -242,14 +266,16 @@ async function processEvents(req) {
   };
 }
 
-async function handshake(req) {
+async function handshake(
+  req: express.Request
+): Promise<{ json: { ignored: boolean } }> {
   // debug('Not implemented protocol (yet) [handshake API %j]', req.body);
   return {
     json: { ignored: true },
   };
 }
 
-async function processAPIEvents(req) {
+async function processAPIEvents(req: express.Request): Promise<any> {
   for (const data of req.body) {
     const { request, response, url, id } = data.payload;
 
@@ -275,7 +301,7 @@ async function processAPIEvents(req) {
   };
 }
 
-module.exports = {
+export {
   processEvents,
   processAPIEvents,
   getMirror,

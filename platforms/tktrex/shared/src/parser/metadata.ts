@@ -115,7 +115,7 @@ export const toMetadata: BuildMetadataFn<HTMLSource, TKMetadata, TKParsers> = (
   metadata.order = entry.source.html.n?.[0];
 
   /* optional fields */
-  if (entry.source.html.geoip?.length === 2)
+  if (entry.source.html.geoip)
     metadata.geoip = entry.source.html.geoip;
   if (entry.source.html.researchTag?.length)
     metadata.researchTag = entry.source.html.researchTag;

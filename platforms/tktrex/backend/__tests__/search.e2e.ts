@@ -111,25 +111,25 @@ describe('Parser: "search"', () => {
               savingTime: savingTimeR,
               results: resultsR,
               ...receivedM
-            } = receivedMetadata;
+            } = receivedMetadata as any;
 
             const {
-              _id: _received_Id,
-              id: _receivedId,
+              _id: __idExp,
+              id: _idExp,
               clientTime: clientTimeExp,
               savingTime: savingTimeExp,
               results: resultsExp,
               ...expectedM
-            } = expectedMetadata;
+            } = expectedMetadata as any;
 
             expect(receivedM).toMatchObject(expectedM);
             expect(
-              resultsR.map((r) => ({
+              resultsR.map((r: any) => ({
                 ...r,
                 publishingDate: parseISO(r.publishingDate),
               }))
             ).toMatchObject(
-              resultsExp.map((r) => ({
+              resultsExp.map((r: any) => ({
                 ...r,
                 publishingDate: expect.any(Date),
               }))

@@ -51,7 +51,6 @@ export const MetadataBase = t.type(
   {
     _id: t.unknown,
     id: t.string,
-    clientTime: t.string,
     savingTime: t.string,
     publicKey: t.string,
     timelineId: t.string,

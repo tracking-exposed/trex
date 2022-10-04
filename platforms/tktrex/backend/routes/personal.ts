@@ -3,7 +3,7 @@ import _ from 'lodash';
 import moment from 'moment';
 import automo from '../lib/automo';
 import CSV from '../lib/CSV';
-import utils from '../lib/utils';
+import * as foodUtils from '@shared/utils/food.utils';
 import { flattenNative, flattenProfile, flattenSearch } from './search';
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const debug = require('debug')('routes:personal');
@@ -122,7 +122,7 @@ async function getPersonal(req: any): Promise<any> {
         { amount, skip }
       );
       retval = _.map(retval, function (e) {
-        e.pseudo = utils.string2Food(e.publicKey);
+        e.pseudo = foodUtils.string2Food(e.publicKey);
         _.unset(e, 'publicKey');
         return e;
       });
@@ -198,7 +198,7 @@ async function getPersonalCSV(req: any): Promise<any> {
      sanitization & enhancement:
     1) we add here the pseudonym
     2) if a string appears in a metric, it is 0 -- this is a parser bug */
-  const pseudo = utils.string2Food(unrolledData[0].publicKey);
+  const pseudo = foodUtils.string2Food(unrolledData[0].publicKey);
   const ready = _.map(unrolledData, function (e) {
     e.pseudo = pseudo;
     if (_.isString(e.sharen)) e.sharen = 0;
