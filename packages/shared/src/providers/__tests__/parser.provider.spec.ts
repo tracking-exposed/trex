@@ -8,7 +8,6 @@ import {
   getSuccessfulOutput,
   GetParserProvider,
   ParserProviderContext,
-  printResultOutput,
   wrapDissector,
 } from '../parser.provider';
 
