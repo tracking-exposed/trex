@@ -37,17 +37,21 @@ describe('Metadata API', () => {
       const experimentId = fc.sample(fc.uuid(), 1)[0];
       const amount = 10;
 
-      const metadataWithExperimentId = fc.sample(MetadataArb, 100).map((m) => ({
-        ...m,
-        savingTime: new Date(),
-        experimentId,
-      }));
+      const metadataWithExperimentId = fc
+        .sample(MetadataArb, 100)
+        .map(({ _id, ...m }) => ({
+          ...m,
+          savingTime: new Date(),
+          experimentId,
+        }));
 
-      const metadataWithResearchTag = fc.sample(MetadataArb, 100).map((m) => ({
-        ...m,
-        savingTime: new Date(),
-        researchTag,
-      }));
+      const metadataWithResearchTag = fc
+        .sample(MetadataArb, 100)
+        .map(({ _id, ...m }) => ({
+          ...m,
+          savingTime: new Date(),
+          researchTag,
+        }));
 
       await test.mongo3.insertMany(
         test.mongo,
@@ -58,7 +62,7 @@ describe('Metadata API', () => {
       const expectedMetadata = metadataWithResearchTag
         .sort((a, b) => b.savingTime.getTime() - a.savingTime.getTime())
         .slice(0, amount)
-        .map((m) => {
+        .map(({ _id, ...m }) => {
           return {
             ...m,
             clientTime: m.clientTime.toISOString(),
@@ -95,17 +99,21 @@ describe('Metadata API', () => {
       const experimentId = fc.sample(fc.uuid(), 1)[0];
       const amount = 10;
 
-      const metadataWithExperimentId = fc.sample(MetadataArb, 100).map((m) => ({
-        ...m,
-        savingTime: new Date(),
-        experimentId,
-      }));
+      const metadataWithExperimentId = fc
+        .sample(MetadataArb, 100)
+        .map(({ _id, ...m }) => ({
+          ...m,
+          savingTime: new Date(),
+          experimentId,
+        }));
 
-      const metadataWithResearchTag = fc.sample(MetadataArb, 100).map((m) => ({
-        ...m,
-        savingTime: new Date(),
-        researchTag,
-      }));
+      const metadataWithResearchTag = fc
+        .sample(MetadataArb, 100)
+        .map(({ _id, ...m }) => ({
+          ...m,
+          savingTime: new Date(),
+          researchTag,
+        }));
 
       await test.mongo3.insertMany(
         test.mongo,

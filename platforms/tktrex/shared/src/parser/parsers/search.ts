@@ -7,10 +7,10 @@ import D from 'debug';
 import { getNatureByHref } from './nature';
 const debug = D('parser:search');
 
-function getFullSearchMetadata(renod: HTMLElement, order: any): any {
+function getFullSearchMetadata(renod: ParentNode, order: any): any {
   const vlink = renod.querySelector('a[href^="https://www.tiktok.com/@"]');
   const vhref = vlink?.getAttribute('href');
-  const vidnat = getNatureByHref(vhref as any);
+  const vidnat = throwEitherError(getNatureByHref(vhref as any));
 
   const fdesc = renod.querySelector('[data-e2e="search-card-video-caption"]');
   const textdesc = fdesc?.textContent;
@@ -77,7 +77,7 @@ const search: ParserFn<HTMLSource, any, TKParserConfig> = async(
        the search selector is not per video, but per 'body' */
   const descs = envelop.jsdom.querySelectorAll('[data-e2e="search-card-desc"]');
   const results = _.map(descs, function(elem, i) {
-    return getFullSearchMetadata(elem?.parentNode as any, i + 1);
+    return elem?.parentNode ? getFullSearchMetadata(elem.parentNode , i + 1): null;
   });
 
   const retval: any = {};

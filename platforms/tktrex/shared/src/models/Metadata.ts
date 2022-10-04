@@ -49,7 +49,9 @@ export type Metrics = t.TypeOf<typeof Metrics>;
 
 export const MetadataBase = t.type(
   {
+    _id: t.unknown,
     id: t.string,
+    clientTime: t.string,
     savingTime: t.string,
     publicKey: t.string,
   },
@@ -107,6 +109,17 @@ export const FollowingVideoMetadata = t.intersection(
 
 export type FollowingVideoMetadata = t.TypeOf<typeof FollowingVideoMetadata>;
 
+const SearchMetadataResult = t.type(
+  {
+    order: t.number,
+    video: t.any,
+    textdesc: t.string,
+    linked: t.array(t.any),
+    thumbnail: t.string,
+    publishingDate: t.string,
+  },
+  'SearchMetadataResult',
+);
 export const SearchMetadata = t.intersection(
   [
     MetadataBase,
@@ -114,8 +127,7 @@ export const SearchMetadata = t.intersection(
     t.type({ nature: SearchN }),
     t.type(
       {
-        results: t.array(t.any),
-        query: t.string,
+        results: t.array(SearchMetadataResult),
         thumbnails: t.array(
           t.type({
             downloaded: t.boolean,
