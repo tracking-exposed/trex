@@ -268,6 +268,11 @@ const localizedFirstButton = [
     first: 'Suchen',
     iso2: 'de',
   },
+  {
+    type: 'video',
+    first: 'Salta link di navigazione',
+    iso2: 'it',
+  },
 ];
 
 function findLanguage(type, chunks) {

@@ -8,6 +8,7 @@ import {
 } from '@shared/test/utils/parser.utils';
 import { VideoMetadata } from '@yttrex/shared/models/Metadata';
 import { HTMLSource, parsers } from '@yttrex/shared/parser';
+import { toMetadata } from '@yttrex/shared/parser/metadata';
 import base58 from 'bs58';
 import { addMinutes, parseISO } from 'date-fns';
 import path from 'path';
@@ -21,7 +22,6 @@ import {
   getSourceSchema,
   updateMetadataAndMarkHTML,
 } from '../../../lib/parser/html';
-import { toMetadata } from '@yttrex/shared/parser/metadata';
 
 describe('Parser: Video', () => {
   let appTest: Test;

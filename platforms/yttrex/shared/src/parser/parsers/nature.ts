@@ -6,8 +6,52 @@ import processHome from './home';
 import { processSearch } from './searches';
 import parseVideo from './video';
 import { trexLogger } from '@shared/logger';
+import * as _ from 'lodash';
 
 const natureLogger = trexLogger.extend('parser:nature');
+
+export function getNatureFromURL(href: string): Nature | null {
+  // this function MUST support the different URLs
+  // format specify in ../../extension/src/consideredURLs.js
+  const uq = new URL(href);
+  if (uq.pathname === '/results') {
+    const searchTerms = uq.searchParams.get('search_query');
+    return {
+      type: 'search',
+      query: searchTerms as any,
+    };
+  } else if (uq.pathname === '/watch') {
+    const videoId = uq.searchParams.get('v') as any;
+    return {
+      type: 'video',
+      videoId,
+    };
+  } else if (uq.pathname === '/') {
+    return {
+      type: 'home',
+    };
+  } else if (_.startsWith(uq.pathname, '/hashtag')) {
+    const hashtag = uq.pathname.split('/').pop() as any;
+    return {
+      type: 'hashtag',
+      hashtag,
+    };
+  } else if (
+    _.startsWith(uq.pathname, '/channel') ||
+    _.startsWith(uq.pathname, '/user') ||
+    _.startsWith(uq.pathname, '/c')
+  ) {
+    const authorSource = uq.pathname.split('/').pop() as any;
+    return {
+      type: 'channel',
+      authorSource,
+    };
+  } else {
+    natureLogger.debug('Unknow condition: %s', uq.href);
+
+    return null;
+  }
+}
 
 const processNature =
   (type: Nature['type']): ParserFn<HTMLSource, any, YTParserConfig> =>
