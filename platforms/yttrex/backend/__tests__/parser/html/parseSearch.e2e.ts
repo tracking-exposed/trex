@@ -7,11 +7,11 @@ import {
   getMetadata,
   getMetadataSchema,
   getSourceSchema,
-  toMetadata,
   updateMetadataAndMarkHTML,
 } from '../../../lib/parser/html';
 import { SearchMetadata } from '@yttrex/shared/models/Metadata';
 import { HTMLSource, parsers } from '@yttrex/shared/parser';
+import { toMetadata } from '@yttrex/shared/parser/metadata';
 import { GetTest, Test } from '../../../tests/Test';
 import {
   readFixtureJSON,

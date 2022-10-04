@@ -3,11 +3,11 @@ import { parseISO } from 'date-fns';
 import _ from 'lodash';
 import nconf from 'nconf';
 import D from 'debug';
+import { getNatureByHref } from '@tktrex/shared/parser/parsers/nature';
 
 const automo = require('../lib/automo');
 const utils = require('../lib/utils');
 const security = require('../lib/security');
-const { getNatureByHref } = require('../parsers/shared');
 
 const debug = D('routes:events');
 

@@ -16,10 +16,10 @@ import {
   getMetadata,
   getMetadataSchema,
   getSourceSchema,
-  toMetadata,
   updateMetadataAndMarkHTML,
 } from '../../../lib/parser/html';
 import processHome from '@yttrex/shared/parser/parsers/home';
+import { toMetadata } from '@yttrex/shared/parser/metadata';
 import { GetTest, Test } from '../../../tests/Test';
 
 describe('Parser: home', () => {
