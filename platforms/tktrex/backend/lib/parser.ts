@@ -8,7 +8,7 @@ import {
 } from '@shared/providers/parser.provider';
 import { sanitizeHTML } from '@shared/utils/html.utils';
 import { TKMetadata } from '@tktrex/shared/models/Metadata';
-import { TKParsers } from '@tktrex/shared/parser';
+import { TKParsers } from '@tktrex/shared/parser/parsers';
 import { TKParserConfig } from '@tktrex/shared/parser/config';
 import { HTMLSource } from '@tktrex/shared/parser/source';
 import { isValid } from 'date-fns';

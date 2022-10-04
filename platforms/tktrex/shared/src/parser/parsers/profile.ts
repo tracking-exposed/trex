@@ -3,12 +3,11 @@ import { ParserFn } from '@shared/providers/parser.provider';
 import _ from 'lodash';
 import { TKParserConfig } from '../config';
 import { HTMLSource } from '../source';
-import {getNatureByHref} from './nature'
+import { getNatureByHref } from './nature';
 
 const debug = trexLogger.extend('parser:profile');
 
-
-function getFullProfileMetadata(renod: HTMLElement, order: any): any {
+function getFullProfileMetadata(renod: ParentNode, order: any): any {
   const vlink = renod.querySelector('a[href^="https://www.tiktok.com/@"]');
   const vhref = vlink?.getAttribute('href');
   const vidnat = getNatureByHref(vhref as any);
@@ -33,7 +32,10 @@ function getFullProfileMetadata(renod: HTMLElement, order: any): any {
 /* this is returning a bunch of native information,
  * perhaps might be splitted in appropriate files.
  * videoId, error messages, comment disabled, etc */
-const profile: ParserFn<HTMLSource, any, TKParserConfig> = async(envelop, previous) => {
+const profile: ParserFn<HTMLSource, any, TKParserConfig> = async(
+  envelop,
+  previous,
+) => {
   if (previous.nature.type !== 'profile') return false;
 
   /* this piece of code return a list of videos, because
@@ -41,7 +43,9 @@ const profile: ParserFn<HTMLSource, any, TKParserConfig> = async(envelop, previo
   const descs = envelop.jsdom.querySelectorAll('[data-e2e="user-post-item"]');
   const results = _.compact(
     _.map(descs, function(elem, i) {
-      return getFullProfileMetadata(elem?.parentNode as any, i + 1);
+      return elem?.parentNode
+        ? getFullProfileMetadata(elem.parentNode, i + 1)
+        : null;
     }),
   );
 
@@ -67,6 +71,6 @@ const profile: ParserFn<HTMLSource, any, TKParserConfig> = async(envelop, previo
   }
 
   return retval;
-}
+};
 
 export default profile;

@@ -5,7 +5,7 @@ import {
 } from '@shared/test/utils/parser.utils';
 import { v4 as uuid } from 'uuid';
 import { TKMetadata } from '@tktrex/shared/models';
-import { parsers } from '@tktrex/shared/parser';
+import { parsers } from '@tktrex/shared/parser/parsers';
 import base58 from 'bs58';
 import { parseISO, subMinutes } from 'date-fns';
 import path from 'path';
