@@ -3,7 +3,7 @@
 import * as mongo3 from '@shared/providers/mongo.provider';
 import { GetParserProvider } from '@shared/providers/parser.provider';
 import { TKMetadata } from '@tktrex/shared/models/Metadata';
-import { parsers } from '@tktrex/shared/parser';
+import { parsers } from '@tktrex/shared/parser/parsers';
 import { HTMLSource } from '@tktrex/shared/parser/source';
 import fs from 'fs';
 import _ from 'lodash';
@@ -13,9 +13,9 @@ import {
   addDom,
   buildMetadata,
   getLastHTMLs,
-  updateMetadataAndMarkHTML,
   getMetadata,
   parserConfig,
+  updateMetadataAndMarkHTML,
 } from '../lib/parser';
 
 nconf.argv().env().file({ file: 'config/settings.json' });
@@ -90,8 +90,21 @@ const run = async (): Promise<void> => {
       getEntryNatureType: (e) => e.html.type,
       config: {
         ...parserConfig,
-        errorReporter: {
-          basePath: path.resolve(process.cwd(), 'parsers/__tests__/fixtures'),
+        errorReporter: (e: any) => {
+          const entryNature = e.html.nature.type ?? 'failed';
+          const fixturePath = path.resolve(
+            path.resolve(process.cwd(), 'parsers/__tests__/fixtures'),
+            entryNature,
+            `${e.html.id}.json`
+          );
+
+          fs.writeFileSync(
+            fixturePath,
+            JSON.stringify({
+              sources: [e.html],
+              metadata: {},
+            })
+          );
         },
       },
     }).run({

@@ -6,7 +6,6 @@ import _ from 'lodash';
 import nconf from 'nconf';
 import {
   getLastHTMLs,
-  toMetadata,
   updateMetadataAndMarkHTML,
   addDom,
   getMetadata,
@@ -14,6 +13,7 @@ import {
 import { parserConfig } from '@yttrex/shared/parser/config';
 import { GetParserProvider } from '@shared/providers/parser.provider';
 import { HTMLSource } from '@yttrex/shared/parser/source';
+import { toMetadata } from '@yttrex/shared/parser/metadata';
 import { Metadata } from '@yttrex/shared/models/Metadata';
 import { parsers } from '@yttrex/shared/parser/parsers';
 import path from 'path';
@@ -90,8 +90,21 @@ const run = async (): Promise<void> => {
       saveResults: updateMetadataAndMarkHTML(db),
       config: {
         ...parserConfig,
-        errorReporter: {
-          basePath: path.resolve(process.cwd(), './__tests__/fixtures'),
+        errorReporter: (e: HTMLSource) => {
+          const entryNature = e.html.nature.type ?? 'failed';
+          const fixturePath = path.resolve(
+            path.resolve(process.cwd(), '__tests__/fixtures/htmls'),
+            entryNature,
+            `${e.html.id}.json`
+          );
+
+          fs.writeFileSync(
+            fixturePath,
+            JSON.stringify({
+              sources: [e.html],
+              metadata: {},
+            })
+          );
         },
       },
     })

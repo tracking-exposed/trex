@@ -9,6 +9,7 @@ import { LeafParsers, leafParsers } from '@yttrex/shared/parser/parsers';
 import fs from 'fs';
 import _ from 'lodash';
 import nconf from 'nconf';
+import path from 'path';
 import {
   addDom,
   getLastLeaves,
@@ -88,7 +89,25 @@ const run = async (): Promise<void> => {
       getEntryNatureType: (e) => e.html.nature.type,
       buildMetadata: toMetadata,
       saveResults: updateAdvertisingAndMetadata(db),
-      config: parserConfig,
+      config: {
+        ...parserConfig,
+        errorReporter: (e: LeafSource) => {
+          const entryNature = e.html.nature.type ?? 'failed';
+          const fixturePath = path.resolve(
+            path.resolve(process.cwd(), '__tests__/fixtures/htmls'),
+            entryNature,
+            `${e.html.id}.json`
+          );
+
+          fs.writeFileSync(
+            fixturePath,
+            JSON.stringify({
+              sources: [e.html],
+              metadata: {},
+            })
+          );
+        },
+      },
     }).run({
       singleUse: typeof id === 'string' ? id : false,
       filter,

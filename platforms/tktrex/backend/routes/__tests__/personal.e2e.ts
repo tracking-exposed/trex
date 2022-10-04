@@ -3,21 +3,21 @@ import { Keypair } from '@shared/models/extension/Keypair';
 import bs58 from '@shared/providers/bs58.provider';
 import {
   GetParserProvider,
-  ParserProvider
+  ParserProvider,
 } from '@shared/providers/parser.provider';
 import { fc } from '@shared/test';
 import { foldTEOrThrow } from '@shared/utils/fp.utils';
 import { sleep } from '@shared/utils/promise.utils';
 import { ContributionEventArb } from '@tktrex/shared/arbitraries/ContributionEvent.arb';
 import { TKMetadata } from '@tktrex/shared/models/Metadata';
-import { parsers } from '@tktrex/shared/parser';
+import { parsers } from '@tktrex/shared/parser/parsers';
 import { HTMLSource } from '@tktrex/shared/parser/source';
 import {
   addDom,
   buildMetadata,
   getLastHTMLs,
   getMetadata,
-  updateMetadataAndMarkHTML
+  updateMetadataAndMarkHTML,
 } from '../../lib/parser';
 import { GetTest, Test } from '../../test/Test';
 
