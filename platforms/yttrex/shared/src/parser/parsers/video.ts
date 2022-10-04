@@ -68,8 +68,8 @@ function parseLikes(D: Document): likesParser.Likes {
   const nodes = D.querySelectorAll(
     '.ytd-toggle-button-renderer > yt-formatted-string'
   );
-  const likes = nodes[0].getAttribute('aria-label');
-  const dislikes = nodes[1].getAttribute('aria-label');
+  const likes = nodes[0]?.getAttribute('aria-label');
+  const dislikes = nodes[1]?.getAttribute('aria-label');
   const likeInfo = {
     likes,
     dislikes,
@@ -303,7 +303,7 @@ export function parseSingleTry(D: Document, memo: any, spec: any): any {
   }
 }
 
-function manyTries(D: Document, opportunities): any {
+function manyTries(D: Document, opportunities: any[]): string | null {
   const r = _.reduce(opportunities, _.partial(parseSingleTry, D), null);
   videoLog.debug('manyTries: %j: %s', _.map(opportunities, 'name'), r);
   return r;
@@ -381,15 +381,10 @@ export function simpleTitlePicker(D: Document, blang: string): string | null {
   return null;
 }
 
-export function processVideo(
-  D: Document,
-  blang: string,
-  clientTime: Date,
-  urlinfo?: URL
-): VideoMetadata {
+export const getVideoTitle = (D: Document): string | null => {
   /* this method to extract title was a nice experiment
    * and/but should be refactored and upgraded */
-  let title = manyTries(D, [
+  return manyTries(D, [
     {
       name: 'title h1',
       selector: 'h1 > yt-formatted-string',
@@ -405,6 +400,15 @@ export function processVideo(
       func: 'textContent',
     },
   ]);
+};
+
+export function processVideo(
+  D: Document,
+  blang: string,
+  clientTime: Date,
+  urlinfo?: URL
+): VideoMetadata {
+  let title = getVideoTitle(D);
 
   if (!title) title = simpleTitlePicker(D, blang);
 

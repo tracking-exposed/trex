@@ -35,7 +35,10 @@ import logger from '@shared/extension/logger';
 import UserSettings from '@shared/extension/models/UserSettings';
 import { sizeCheck } from '@shared/providers/dataDonation.provider';
 import { hasVideosInBody } from '@yttrex/shared/parser/parsers/searches';
-import { mineAuthorInfo } from '@yttrex/shared/parser/parsers/video';
+import {
+  getVideoTitle,
+  mineAuthorInfo,
+} from '@yttrex/shared/parser/parsers/video';
 import {
   consideredURLs,
   leafSelectors,
@@ -310,16 +313,19 @@ export const handleRoute = (
     return;
   }
 
-  hub.dispatch({
-    type: 'NewVideo',
-    payload: {
-      type: urlkind,
-      element: sendableNode.outerHTML,
-      size: sendableNode.outerHTML.length,
-      href: window.location.href,
-      randomUUID: feedId,
-    },
-  });
+  // check is a valid "video" nature
+  if (getVideoTitle(document) && mineAuthorInfo(document)) {
+    hub.dispatch({
+      type: 'NewVideo',
+      payload: {
+        type: urlkind,
+        element: sendableNode.outerHTML,
+        size: sendableNode.outerHTML.length,
+        href: window.location.href,
+        randomUUID: feedId,
+      },
+    });
+  }
 
   updateUI('video.send');
 };
