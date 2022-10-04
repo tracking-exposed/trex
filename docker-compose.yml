@@ -26,12 +26,21 @@ services:
     restart: unless-stopped
 
 
-  mongo-indexes:
+  mongo-yt-indexes:
     image: mongo:4.2
-    container_name: mongo-indexes
+    container_name: mongo-yt-indexes
     volumes:
-      - ./backend/scripts:/scripts
+      - ./platforms/yttrex/backend/scripts:/scripts
     command: mongo mongodb:27017/yttrex /scripts/build-indexes.js
+    depends_on:
+      - mongodb
+
+  mongo-tk-indexes:
+    image: mongo:4.2
+    container_name: mongo-tk-indexes
+    volumes:
+      - ./platforms/tktrex/backend/scripts:/scripts
+    command: mongo mongodb:27017/tktrex /scripts/build-indexes.js
     depends_on:
       - mongodb
 
@@ -44,34 +53,20 @@ services:
     depends_on:
       - mongodb-test
 
-  api:
-    image: yttrex_base
-    container_name: api
-    ports:
-      - "9000:9000"
-    environment:
-      DEBUG: "*,-body-parser*,-express*,-follow-redirects"
-      key: my-dev-key
-      mongoHost: mongodb
-      mongodb: yttrex
+  mongo-yt-test-indexes:
+    image: mongo:4.2
+    container_name: mongo-yt-test-indexes
     volumes:
-      - ./shared:/app/shared
-      - ./backend:/app/backend/
+      - ./platforms/yttrex/backend/scripts:/scripts
+    command: mongo mongodb:27017/yttrex-test /scripts/build-indexes.js
     depends_on:
       - mongodb
-    working_dir: /app/backend
-    command: yarn run watch
 
-  ycai:
-    image: yttrex_base
-    environment:
-      - NODE_ENV=development
+  mongo-tk-test-indexes:
+    image: mongo:4.2
+    container_name: mongo-tk-test-indexes
     volumes:
-      - ./tsconfig.json:/app/tsconfig.json
-      - ./shared:/app/shared
-      - ./YCAI:/app/YCAI
-      - ./YCAI/build:/app/YCAI/build
-    working_dir: /app/YCAI
+      - ./platforms/tktrex/backend/scripts:/scripts
+    command: mongo mongodb:27017/tktrex-test /scripts/build-indexes.js
     depends_on:
-      - api
-    command: sh -c "chmod -R 777 /app/YCAI/build && yarn run watch"
+      - mongodb
