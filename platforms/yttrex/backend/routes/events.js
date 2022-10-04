@@ -1,4 +1,5 @@
 import { geo } from '@shared/utils/ip.utils';
+import { getNatureFromURL } from '@yttrex/shared/parser/parsers/nature';
 
 const _ = require('lodash');
 const debug = require('debug')('routes:events');
@@ -235,7 +236,7 @@ async function processEvents2(req) {
      * get rid of these filters, the issue was the presence of 'info' entry
      * fail in extracting a size and more likely a collision was happening */
     function (body, i) {
-      const nature = utils.getNatureFromURL(body.href);
+      const nature = getNatureFromURL(body.href);
       const metadataId = utils.hash({
         publicKey: headers.publickey,
         randomUUID: body.randomUUID,
@@ -272,7 +273,7 @@ async function processEvents2(req) {
   );
 
   const leaves = _.map(_.filter(req.body, { type: 'leaf' }), function (e, i) {
-    const nature = utils.getNatureFromURL(e.href);
+    const nature = getNatureFromURL(e.href);
     const metadataId = utils.hash({
       publicKey: headers.publickey,
       randomUUID: e.randomUUID,

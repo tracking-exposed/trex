@@ -33,9 +33,12 @@ import {
 } from '@shared/extension/app';
 import logger from '@shared/extension/logger';
 import UserSettings from '@shared/extension/models/UserSettings';
-import { sizeCheck } from '@shared/providers/dataDonation.provider';
+import { HTMLSize } from '@shared/extension/utils/HTMLSize.utils';
 import { hasVideosInBody } from '@yttrex/shared/parser/parsers/searches';
-import { mineAuthorInfo } from '@yttrex/shared/parser/parsers/video';
+import {
+  getVideoTitle,
+  mineAuthorInfo,
+} from '@yttrex/shared/parser/parsers/video';
 import {
   consideredURLs,
   leafSelectors,
@@ -44,6 +47,10 @@ import {
 import _ from 'lodash';
 import { initializeBlinks, updateUI } from '../blink';
 import hub from '../handlers/hub';
+
+const searchSize = HTMLSize();
+const homeSize = HTMLSize();
+const videoSize = HTMLSize();
 
 export const ytLogger = logger.extend('yt');
 
@@ -158,6 +165,9 @@ export function onLocationChange(
       leavesCounter
     );
     leavesCounter = 0;
+    homeSize.reset();
+    videoSize.reset();
+    searchSize.reset();
   }
 }
 
@@ -264,7 +274,7 @@ export const handleLeaf = (
 };
 
 /**
- * Route handler
+ * Route handler for index route (home)
  *
  * It receives the entire dom when changes and the route matched
  *
@@ -276,7 +286,7 @@ export const handleLeaf = (
  * @param s
  * @returns
  */
-export const handleRoute = (
+export const handleHomeRoute = (
   node: HTMLElement,
   handler: RouteObserverHandler,
   route: string,
@@ -290,23 +300,8 @@ export const handleRoute = (
     return;
   }
 
-  if (!sizeCheck(sendableNode.outerHTML)) {
+  if (!homeSize.check(sendableNode.outerHTML)) {
     ytLogger.debug('Page did not change much, returning...');
-    return;
-  }
-
-  // check is a valid "search" nature
-  if (hasVideosInBody(document)) {
-    hub.dispatch({
-      type: 'NewVideo',
-      payload: {
-        type: urlkind,
-        element: sendableNode.outerHTML,
-        size: sendableNode.outerHTML.length,
-        href: window.location.href,
-        randomUUID: feedId,
-      },
-    });
     return;
   }
 
@@ -324,18 +319,117 @@ export const handleRoute = (
   updateUI('video.send');
 };
 
+/**
+ * Route handler for /results?search_query=xxxx
+ *
+ * It receives the entire dom when changes and the route matched
+ *
+ * TODO: split this handler in specific route handlers
+ *
+ * @param node
+ * @param handler
+ * @param route
+ * @param s
+ * @returns
+ */
+export const handleSearchRoute = (
+  node: HTMLElement,
+  handler: RouteObserverHandler,
+  route: string,
+  s: UserSettings
+): void => {
+  ytLogger.info(`Handle route ${route}`, handler);
+
+  const sendableNode = document.querySelector('ytd-app');
+  if (!sendableNode) {
+    ytLogger.debug('html element with tag `ytd-app` not found, returning...');
+    return;
+  }
+
+  // check is a valid "search" nature
+  if (hasVideosInBody(document)) {
+    if (!searchSize.check(sendableNode.outerHTML)) {
+      ytLogger.debug('Page did not change much, returning...');
+      return;
+    }
+
+    hub.dispatch({
+      type: 'NewVideo',
+      payload: {
+        type: urlkind,
+        element: sendableNode.outerHTML,
+        size: sendableNode.outerHTML.length,
+        href: window.location.href,
+        randomUUID: feedId,
+      },
+    });
+
+    updateUI('video.send');
+    return;
+  }
+};
+
+/**
+ * Route handler for /watch?v=xxx
+ *
+ * It receives the entire dom when changes and the route matched
+ *
+ * TODO: split this handler in specific route handlers
+ *
+ * @param node
+ * @param handler
+ * @param route
+ * @param s
+ * @returns
+ */
+export const handleWatchRoute = (
+  node: HTMLElement,
+  handler: RouteObserverHandler,
+  route: string,
+  s: UserSettings
+): void => {
+  ytLogger.info(`Handle route ${route}`, handler);
+
+  const sendableNode = document.querySelector('ytd-app');
+  if (!sendableNode) {
+    ytLogger.debug('html element with tag `ytd-app` not found, returning...');
+    return;
+  }
+
+  // check is a valid "video" nature
+  if (getVideoTitle(document) && mineAuthorInfo(document)) {
+    if (!videoSize.check(sendableNode.outerHTML)) {
+      ytLogger.debug('Page did not change much, returning...');
+      return;
+    }
+
+    hub.dispatch({
+      type: 'NewVideo',
+      payload: {
+        type: urlkind,
+        element: sendableNode.outerHTML,
+        size: sendableNode.outerHTML.length,
+        href: window.location.href,
+        randomUUID: feedId,
+      },
+    });
+
+    updateUI('video.send');
+  }
+};
+
 export const watchedPaths = {
   home: {
     ...routeSelectors.home,
-    handle: handleRoute,
+    handle: handleHomeRoute,
   },
   video: {
     ...routeSelectors.video,
-    handle: handleRoute,
+    handle: handleWatchRoute,
   },
   search: {
     ...routeSelectors.search,
-    handle: handleRoute,
+    handle: handleSearchRoute,
   },
   banner: {
     ...leafSelectors.banner,
