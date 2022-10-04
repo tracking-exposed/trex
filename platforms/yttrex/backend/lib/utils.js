@@ -5,7 +5,6 @@ const bs58 = require('bs58');
 const nacl = require('tweetnacl');
 const nconf = require('nconf');
 const foodWords = require('food-words');
-const url = require('url');
 
 function hash(obj, fields) {
   if (_.isUndefined(fields)) fields = _.keys(obj);
@@ -172,50 +171,6 @@ function judgeIncrement(key, current, value) {
   debug('Unexpected kind? %s %j %j', key, current, value);
 }
 
-function getNatureFromURL(href) {
-  // this function MUST support the different URLs
-  // format specify in ../../extension/src/consideredURLs.js
-  const uq = new url.URL(href);
-  if (uq.pathname === '/results') {
-    const searchTerms = uq.searchParams.get('search_query');
-    return {
-      type: 'search',
-      query: searchTerms,
-    };
-  } else if (uq.pathname === '/watch') {
-    const videoId = uq.searchParams.get('v');
-    return {
-      type: 'video',
-      videoId,
-    };
-  } else if (uq.pathname === '/') {
-    return {
-      type: 'home',
-    };
-  } else if (_.startsWith(uq.pathname, '/hashtag')) {
-    const hashtag = uq.pathname.split('/').pop();
-    return {
-      type: 'hashtag',
-      hashtag,
-    };
-  } else if (
-    _.startsWith(uq.pathname, '/channel') ||
-    _.startsWith(uq.pathname, '/user') ||
-    _.startsWith(uq.pathname, '/c')
-  ) {
-    const authorSource = uq.pathname.split('/').pop();
-    return {
-      type: 'channel',
-      authorSource,
-    };
-  } else {
-    debug('Unknow condition: %s', uq.href);
-    return {
-      type: 'unknown',
-    };
-  }
-}
-
 module.exports = {
   hash,
   activeUserCount,
@@ -229,5 +184,4 @@ module.exports = {
   parseIntNconf,
   prettify,
   judgeIncrement,
-  getNatureFromURL,
 };
