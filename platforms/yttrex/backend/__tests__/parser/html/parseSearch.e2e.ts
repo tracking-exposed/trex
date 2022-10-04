@@ -61,18 +61,12 @@ describe('Parser: Search', () => {
 
   jest.setTimeout(20 * 1000);
 
-  const failingIds = [
-    '0f73cadacd9c953d9029cf69fc32246580551bca',
-    '4d7a3ad714a990974e4ea3ab153841857dd1f56b',
-    '412b3d3fe77038fd71fd40f8186195b30cdcbcc4',
-    'ee8f9b19fbd9c5bcc7b58ec6e19ceade03e1d6e5',
-  ];
+  const failingIds = ['4d7a3ad714a990974e4ea3ab153841857dd1f56b'];
 
   const historyData = readFixtureJSONPaths(
     path.resolve(__dirname, '../../fixtures/htmls/search'),
     {
       exclude: failingIds,
-      // only: failingIds
     }
   );
 
@@ -143,19 +137,9 @@ describe('Parser: Search', () => {
             ...expectedMetadata,
           });
 
-          expect(
-            _receivedResults.map(({ secondsAgo, ...r }: any) => ({
-              ...r,
-              published: r.published
-                ? r.published
-                    .replace(/\d{1}\s(year)$/gi, 'a year')
-                    .replace(/\d{1}\s(month)$/gi, 'a month')
-                    .replace(/\d{1}\s(day)$/gi, 'a day')
-                    .replace(/\d{1}\s(hour)$/gi, 'an hour')
-                    .replace(/\d{1}\s(minute)$/gi, 'a minute')
-                : r.published,
-            }))
-          ).toMatchObject(_expectedResults.map(({ secondsAgo, ...r }) => r));
+          expect(_receivedResults).toMatchObject(
+            _expectedResults.map(({ secondsAgo, ...r }) => r)
+          );
         },
       })({ sources, metadata });
     }
