@@ -25,14 +25,6 @@ export const FollowingN = t.type(
 
 export type FollowingN = t.TypeOf<typeof FollowingN>;
 
-export const CreatorN = t.type(
-  {
-    type: CreatorType,
-  },
-  'CreatorN',
-);
-export type CreatorN = t.TypeOf<typeof CreatorN>;
-
 export const VideoN = t.type(
   {
     type: VideoType,
@@ -65,7 +57,7 @@ export type NativeVideoN = t.TypeOf<typeof NativeVideoN>;
 
 export const ProfileN = t.type(
   {
-    type: t.literal('profile'),
+    type: t.literal('creator'),
     creatorName: t.string,
   },
   'ProfileN',
@@ -83,16 +75,7 @@ export const HashtagsN = t.type(
 export type HashtagsN = t.TypeOf<typeof HashtagsN>;
 
 export const Nature = t.union(
-  [
-    ForYouN,
-    FollowingN,
-    CreatorN,
-    VideoN,
-    SearchN,
-    ProfileN,
-    HashtagsN,
-    NativeVideoN,
-  ],
+  [ForYouN, FollowingN, VideoN, SearchN, ProfileN, HashtagsN, NativeVideoN],
   'Nature',
 );
 

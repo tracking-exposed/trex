@@ -62,7 +62,7 @@ describe('Metadata API', () => {
       const expectedMetadata = metadataWithResearchTag
         .sort((a, b) => b.savingTime.getTime() - a.savingTime.getTime())
         .slice(0, amount)
-        .map(({ _id, ...m }) => {
+        .map((m) => {
           return {
             ...m,
             clientTime: m.clientTime.toISOString(),

@@ -12,9 +12,9 @@ import { ContributionEventArb } from '@tktrex/shared/arbitraries/ContributionEve
 import { TKMetadata } from '@tktrex/shared/models/Metadata';
 import { parsers } from '@tktrex/shared/parser/parsers';
 import { HTMLSource } from '@tktrex/shared/parser/source';
+import { toMetadata } from '@tktrex/shared/parser/metadata';
 import {
   addDom,
-  buildMetadata,
   getLastHTMLs,
   getMetadata,
   updateMetadataAndMarkHTML,
@@ -60,7 +60,7 @@ describe('/v2/personal', () => {
       getMetadata: getMetadata(db),
       getEntryDate: (e) => e.html.savingTime,
       getEntryNatureType: (e) => e.html.type,
-      buildMetadata: buildMetadata,
+      buildMetadata: toMetadata,
       saveResults: updateMetadataAndMarkHTML(db),
     });
   });

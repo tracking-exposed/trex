@@ -1,5 +1,5 @@
 import * as t from 'io-ts';
-import { FollowingN, ForYouN, SearchN, NativeVideoN } from './Nature';
+import { FollowingN, ForYouN, SearchN, NativeVideoN, ProfileN } from './Nature';
 
 const Music = t.type(
   {
@@ -54,6 +54,7 @@ export const MetadataBase = t.type(
     clientTime: t.string,
     savingTime: t.string,
     publicKey: t.string,
+    timelineId: t.string,
   },
   'MetadataBase',
 );
@@ -165,8 +166,26 @@ export const NativeMetadata = t.intersection(
 
 export type NativeMetadata = t.TypeOf<typeof NativeMetadata>;
 
+export const ProfileMetadata = t.intersection(
+  [
+    MetadataBase,
+    ProfileN,
+    t.type({
+      videos: t.array(t.any),
+    }),
+  ],
+  'ProfileMetadata',
+);
+export type ProfileMetadata = t.TypeOf<typeof ProfileMetadata>;
+
 export const TKMetadata = t.union(
-  [ForYouVideoMetadata, FollowingVideoMetadata, SearchMetadata, NativeMetadata],
+  [
+    ForYouVideoMetadata,
+    FollowingVideoMetadata,
+    SearchMetadata,
+    NativeMetadata,
+    ProfileMetadata,
+  ],
   'TKMetadata',
 );
 
