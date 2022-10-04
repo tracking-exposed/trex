@@ -34,6 +34,8 @@ import {
 import logger from '@shared/extension/logger';
 import UserSettings from '@shared/extension/models/UserSettings';
 import { sizeCheck } from '@shared/providers/dataDonation.provider';
+import { hasVideosInBody } from '@yttrex/shared/parser/parsers/searches';
+import { mineAuthorInfo } from '@yttrex/shared/parser/parsers/video';
 import {
   consideredURLs,
   leafSelectors,
@@ -261,13 +263,26 @@ export const handleLeaf = (
   }
 };
 
+/**
+ * Route handler
+ *
+ * It receives the entire dom when changes and the route matched
+ *
+ * TODO: split this handler in specific route handlers
+ *
+ * @param node
+ * @param handler
+ * @param route
+ * @param s
+ * @returns
+ */
 export const handleRoute = (
   node: HTMLElement,
-  selector: RouteObserverHandler,
+  handler: RouteObserverHandler,
   route: string,
   s: UserSettings
 ): void => {
-  ytLogger.info(`Handle route ${route}`, selector);
+  ytLogger.info(`Handle route ${route}`, handler);
 
   const sendableNode = document.querySelector('ytd-app');
   if (!sendableNode) {
@@ -277,6 +292,21 @@ export const handleRoute = (
 
   if (!sizeCheck(sendableNode.outerHTML)) {
     ytLogger.debug('Page did not change much, returning...');
+    return;
+  }
+
+  // check is a valid "search" nature
+  if (hasVideosInBody(document)) {
+    hub.dispatch({
+      type: 'NewVideo',
+      payload: {
+        type: urlkind,
+        element: sendableNode.outerHTML,
+        size: sendableNode.outerHTML.length,
+        href: window.location.href,
+        randomUUID: feedId,
+      },
+    });
     return;
   }
 
@@ -290,6 +320,7 @@ export const handleRoute = (
       randomUUID: feedId,
     },
   });
+
   updateUI('video.send');
 };
 
