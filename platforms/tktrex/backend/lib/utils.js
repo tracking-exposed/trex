@@ -1,27 +1,11 @@
 const _ = require('lodash');
 const debug = require('debug')('lib:utils');
-const hashdebug = require('debug')('lib:utils:hash');
-const crypto = require('crypto');
 const nacl = require('tweetnacl');
-const foodWords = require('food-words');
 const {
   decodeFromBase58,
   decodeString,
   encodeToBase58,
 } = require('@shared/utils/decode.utils');
-
-function hash(obj, fields) {
-  if (_.isUndefined(fields)) fields = _.keys(obj);
-  const plaincnt = fields.reduce(function (memo, fname) {
-    memo += fname + '∴' + JSON.stringify(_.get(obj, fname, '…miss!')) + ',';
-    return memo;
-  }, '');
-  const sha1sum = crypto.createHash('sha1');
-  sha1sum.update(plaincnt);
-  const retval = sha1sum.digest('hex');
-  hashdebug('%s produced by hashing %s', retval, plaincnt);
-  return retval;
-}
 
 function verifyRequestSignature(req) {
   // Warning: this is a duplication, also in events the
@@ -50,51 +34,6 @@ function verifyRequestSignature(req) {
   );
 }
 
-function string2Food(piistr) {
-  const numberOf = 3;
-  const inputs = _.times(numberOf, function (i) {
-    return _.reduce(
-      i + piistr,
-      function (memo, acharacter) {
-        /* charCodeAt never return 0 as number */
-        const x = memo * acharacter.charCodeAt(0);
-        memo += x / 23;
-        return memo;
-      },
-      1
-    );
-  });
-  const size = _.size(foodWords);
-  const ret = _.map(inputs, function (pseudornumber) {
-    /* considering the calculus above would produce a
-       number that might be < foodWords.length and with decimals,
-       it is multiply by 1000 to be sure would be bigger than
-       variable 'size' */
-    return _.nth(foodWords, _.round(pseudornumber * 1000) % size);
-  });
-  return _.join(ret, '-');
-}
-
-function pickFoodWord(rginput) {
-  const sha1sum = crypto.createHash('sha1');
-  sha1sum.update(`food ${rginput}`);
-  const mixedseed = sha1sum.digest('hex');
-  const seed = mixedseed.replace(/[a-f]/gi, '');
-
-  /* even if statistically implausible, ensure
-   * there is a number from the hexdump.replaced made above */
-  const rnum =
-    seed.length > 5
-      ? _.parseInt(seed.substring(0, 5))
-      : _.parseInt(seed) + rginput.length;
-
-  /* and then just play with a % module */
-  const wordpos = rnum % foodWords.length;
-  /* debug("pickFoodWord number %d, module %d, word [%s]",
-        rnum, wordpos, _.nth(foodWords, wordpos)); */
-  return _.nth(foodWords, wordpos);
-}
-
 function getInt(req, what, def) {
   const rv = _.parseInt(_.get(req.params, what));
   if (_.isNaN(rv)) {
@@ -117,13 +56,10 @@ function getString(req, what) {
 }
 
 module.exports = {
-  hash,
   stringToArray: decodeString,
   encodeToBase58,
   decodeFromBase58,
   verifyRequestSignature,
-  string2Food,
-  pickFoodWord,
   getInt,
   getString,
 };

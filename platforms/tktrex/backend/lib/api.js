@@ -1,11 +1,12 @@
 import * as publicRoutes from '../routes/public';
 import * as metadataRoutes from '../routes/metadata';
+import * as eventsRoutes from '../routes/events';
 
 const apiList = {
-  processEvents: require('../routes/events').processEvents,
-  processAPIEvents: require('../routes/events').processAPIEvents,
-  getMirror: require('../routes/events').getMirror,
-  handshake: require('../routes/events').handshake,
+  processEvents: eventsRoutes.processEvents,
+  processAPIEvents: eventsRoutes.processAPIEvents,
+  getMirror: eventsRoutes.getMirror,
+  handshake: eventsRoutes.handshake,
 
   /* for revision */
   unitById: require('../routes/htmlunit').unitById,
