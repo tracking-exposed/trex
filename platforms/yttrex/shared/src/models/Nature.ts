@@ -31,5 +31,16 @@ export const ChannelN = t.strict(
   'ChannelN'
 );
 
-export const Nature = t.union([HomeN, SearchN, VideoN, ChannelN], 'Nature');
+export const HashtagN = t.strict(
+  {
+    type: t.literal('hashtag'),
+    hashtag: t.string,
+  },
+  'HashtagNature'
+);
+
+export const Nature = t.union(
+  [HomeN, SearchN, VideoN, ChannelN, HashtagN],
+  'Nature'
+);
 export type Nature = t.TypeOf<typeof Nature>;
