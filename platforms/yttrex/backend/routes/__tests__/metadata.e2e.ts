@@ -7,12 +7,12 @@ jest.mock('fetch-opengraph');
 import { fc } from '@shared/test';
 import moment from 'moment';
 import _ from 'lodash';
-import { v4 as uuid } from 'uuid';
 import {
   ParsedInfoArb,
   VideoMetadataArb,
 } from '../../tests/arbitraries/Metadata.arb';
 import { GetTest, Test } from '../../tests/Test';
+import * as utils from '../../lib/utils';
 
 describe('Metadata API', () => {
   let test: Test;
@@ -64,9 +64,11 @@ describe('Metadata API', () => {
         )
         .sort((a, b) => b.savingTime.getTime() - a.savingTime.getTime())
         .slice(0, amount)
-        .map((m) => {
+        .map(({ publicKey, _id, ...m }: any) => {
           return {
             ...m,
+            id: m.id.substring(0, 20),
+            supporter: utils.string2Food(publicKey),
             clientTime: m.clientTime.toISOString(),
             publicationTime: m.publicationTime.toISOString(),
             savingTime: m.savingTime.toISOString(),
@@ -110,11 +112,13 @@ describe('Metadata API', () => {
       const experimentId = fc.sample(fc.uuid(), 1)[0];
       const amount = 10;
 
-      const metadata = fc.sample(VideoMetadataArb, 100).map((m) => ({
-        ...m,
-        savingTime: new Date(),
-        experimentId,
-      }));
+      const metadata = fc
+        .sample(VideoMetadataArb, 100)
+        .map((m) => ({
+          ...m,
+          savingTime: new Date(),
+          experimentId,
+        }));
 
       await test.mongo3.insertMany(
         test.mongo,
@@ -130,9 +134,11 @@ describe('Metadata API', () => {
         )
         .sort((a, b) => b.savingTime.getTime() - a.savingTime.getTime())
         .slice(0, amount)
-        .map((m) => {
+        .map(({ publicKey, _id, ...m }: any) => {
           return {
             ...m,
+            id: m.id.substring(0, 20),
+            supporter: utils.string2Food(publicKey),
             clientTime: m.clientTime.toISOString(),
             publicationTime: m.publicationTime.toISOString(),
             savingTime: m.savingTime.toISOString(),
