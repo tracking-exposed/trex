@@ -1,5 +1,4 @@
-version: "3"
-
+version: '3'
 
 # to restore a dump from folder
 # docker-compose exec -T mongo mongorestore /dump
@@ -13,7 +12,7 @@ services:
   mongodb:
     image: mongo:4.2
     ports:
-      - "27017:27017"
+      - '27017:27017'
     volumes:
       - ./backend/dump:/dump/
     restart: unless-stopped
@@ -22,9 +21,8 @@ services:
   mongodb-test:
     image: mongo:4.2
     ports:
-      - "27019:27017"
+      - '27019:27017'
     restart: unless-stopped
-
 
   mongo-yt-indexes:
     image: mongo:4.2
@@ -70,3 +68,9 @@ services:
     command: mongo mongodb:27017/tktrex-test /scripts/build-indexes.js
     depends_on:
       - mongodb
+
+  build-from-zip:
+    build:
+      dockerfile: from-zip.Dockerfile
+      context: .
+    container_name: build-from-zip
