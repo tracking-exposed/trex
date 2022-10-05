@@ -14,6 +14,8 @@ const PUBLIC_AMOUNT_ELEMS = 100;
 const listMetadata = async (req: Express.Request): Promise<any> => {
   const {
     query: {
+      publicKey,
+      nature,
       experimentId,
       researchTag,
       amount = PUBLIC_AMOUNT_ELEMS,
@@ -22,7 +24,13 @@ const listMetadata = async (req: Express.Request): Promise<any> => {
     },
   } = endpoints.decodeOrThrowRequest(v2.Metadata.ListMetadata, req);
 
-  const filter = {} as any;
+  const filter = {
+    publicKey,
+  } as any;
+  if (nature) {
+    filter.type = nature;
+  }
+
   if (experimentId) {
     filter.experimentId = experimentId;
   }
