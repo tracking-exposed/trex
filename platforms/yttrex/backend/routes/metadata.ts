@@ -5,6 +5,7 @@ import _ from 'lodash';
 import automo from '../lib/automo';
 import moment from 'moment';
 import CSV from '../lib/CSV';
+import * as utils from '../lib/utils';
 
 const debug = D('routes:metadata');
 
@@ -24,9 +25,10 @@ const listMetadata = async (req: Express.Request): Promise<any> => {
     },
   } = endpoints.decodeOrThrowRequest(v2.Metadata.ListMetadata, req);
 
-  const filter = {
-    publicKey,
-  } as any;
+  const filter = {} as any;
+  if (publicKey) {
+    filter.publicKey = publicKey;
+  }
   if (nature) {
     filter.type = nature;
   }
@@ -39,10 +41,18 @@ const listMetadata = async (req: Express.Request): Promise<any> => {
     filter.researchTag = researchTag;
   }
 
-  const metadata = await automo.getMetadataByFilter(filter, {
-    amount,
-    skip,
-  });
+  const metadata = await automo
+    .getMetadataByFilter(filter, {
+      amount,
+      skip,
+    })
+    .then((mm) =>
+      mm.map(({ publicKey, _id, id, ...m }) => ({
+        ...m,
+        id: id.substring(0, 20),
+        supporter: utils.string2Food(publicKey)
+      }))
+    );
 
   debug(
     'Returning metadata by experimentId %s, %d evidences',

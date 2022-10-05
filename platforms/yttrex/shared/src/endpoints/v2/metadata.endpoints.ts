@@ -10,7 +10,7 @@ const ListMetadata = Endpoint({
   getPath: () => `/v2/metadata`,
   Input: {
     Query: t.type({
-      publicKey: t.string,
+      publicKey: t.union([t.string, t.undefined]),
       nature: t.union([NatureType, t.undefined]),
       experimentId: t.union([t.string, t.undefined]),
       researchTag: t.union([t.string, t.undefined]),
