@@ -1,26 +1,31 @@
 # Tracking Exposed toolkit
 
+![](https://github.com/tracking-exposed/trex/actions/workflows/master_release.yml/badge.svg)
+![](https://img.shields.io/github/v/release/tracking-exposed/trex)
+
 This monorepo will eventually include all `packages` needed and `platforms` supported by `Tracking Exposed`:
 
-## Commands
+## Requirements
 
-### unit test execution:
+- `node >=16`
+- `yarn >=3.2.3`
+- [node-canvas](https://github.com/Automattic/node-canvas) deps depending on your OS
 
-```
-yarn
-yarn test spec --coverage
-```
+## Monorepo structure
 
-1. It executes all the test files you can find with `find platforms/ -name '*.spec.ts`
-2. Check the output in `coverage/lcov-report/index.html`
+- packages
+  - [shared](./packages/shared/README.md)
+  - [taboule](./packages/taboule/README.md)
+- platforms
+  - Youtube
+    - [yt:shared](./platforms/yttrex/shared/README.md)
+    - [yt:ext](./platforms/yttrex/extension/README.md)
+    - [yt:backend](./platforms/yttrex/backend/README.md)
+  - TikTok
+    - [tk:shared](./platforms/tktrex/shared/README.md)
+    - [tk:ext](./platforms/tktrex/extension/README.md)
+    - [tk:backend](./platforms/tktrex/backend/README.md)
 
-### To run end to end test:
-
-```
-yarn pm2 start platforms/ecosystem.config.js --env test
-yarn test e2e
-yarn pm2 stop all
-```
 
 ### To start the services in production:
 
@@ -73,6 +78,46 @@ As you can see in [Tracking Exposed](https://tracking.exposed) website a few oth
 ### [Taboule](./packages/taboule/)
 
 A portable data table written in React to display TRex data by pre-configured API.
+
+## Tests
+
+Tests are powered by `jest` and can be run all at once
+
+```bash
+yarn test
+```
+
+or by specific workspace
+
+```bash
+yarn yt:ext test
+```
+
+### Run spec tests
+
+To execute all the `spec` (unit testing) test files in the repo run:
+
+```bash
+yarn test spec --coverage
+```
+
+### Run end-to-end tests
+
+```bash
+yarn pm2 start platforms/ecosystem.dev.config.js --env test
+yarn test e2e
+yarn pm2 stop all
+```
+
+### Coverage output
+
+To produce a _coverage_ report run
+
+```bash
+yarn test --coverage
+```
+
+and the output will be produced at `coverage/lcov-report/index.html`
 
 ## License
 
