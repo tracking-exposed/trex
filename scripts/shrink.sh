@@ -23,10 +23,14 @@ mkdir -p build;
 
 suffix=$('grep version package.json  | sed -es/.*:// | sed -es/[\ \",]//g')
 fileout="build/trex${suffix}.zip"
+
+echo "Removing $fileout"
+rm "$fileout"
+
 echo "zipping in $fileout"
 
 # this should not be present anyways
-echo "Removing node_modules"
+
 # rm -rf node_modules
 
 # this contains a lot of test files
@@ -69,7 +73,7 @@ zip $fileout -r ./* \
   -x "docker/**" \
   -x "build/**" -x "**/build/**" \
   -x "scripts/**" -x "**/scripts/**" \
-  -x "packages/taboule/**" \
+  -x "platforms/storybook/**" \
   -x "platforms/guardoni/**" \
   -x "platforms/*/backend/**" \
   -x "platforms/*/backend/**" \
