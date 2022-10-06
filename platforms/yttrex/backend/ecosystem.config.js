@@ -1,3 +1,7 @@
+const commonENV = {
+  DEBUG_COLORS: true,
+};
+
 const yt = {
   backend: {
     name: 'yt:server',
@@ -6,6 +10,7 @@ const yt = {
     script: 'yarn start',
     watch: true,
     env: {
+      ...commonENV,
       ...process.env,
       key: process.env.KEY,
     },
@@ -16,6 +21,9 @@ const yt = {
     cwd: __dirname,
     script: 'yarn leaveserv',
     watch: true,
+    env: {
+      ...commonENV,
+    },
   },
   parser: {
     name: 'yt:parserv',
@@ -23,10 +31,14 @@ const yt = {
     cwd: __dirname,
     script: 'yarn parserv',
     watch: true,
+    env: {
+      ...commonENV,
+    },
   },
 };
 
 module.exports = {
+  commonENV,
   yt,
   apps: [
     // yt ecosystem

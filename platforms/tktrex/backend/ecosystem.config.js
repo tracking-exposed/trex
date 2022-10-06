@@ -1,3 +1,7 @@
+const commonENV = {
+  DEBUG_COLORS: true,
+};
+
 const tk = {
   backend: {
     name: 'server',
@@ -6,6 +10,7 @@ const tk = {
     script: 'yarn start',
     watch: true,
     env: {
+      ...commonENV,
       ...process.env,
       key: process.env.KEY,
     },
@@ -16,10 +21,14 @@ const tk = {
     cwd: __dirname,
     script: 'yarn parserv',
     watch: true,
+    env: {
+      ...commonENV,
+    },
   },
 };
 
 module.exports = {
+  commonENV,
   tk,
   apps: [
     // tk ecosystem
