@@ -1,5 +1,5 @@
 import * as t from 'io-ts';
-import { FollowingN, ForYouN, SearchN, NativeVideoN } from './Nature';
+import { FollowingN, ForYouN, SearchN, NativeVideoN, ProfileN } from './Nature';
 
 const Music = t.type(
   {
@@ -49,9 +49,12 @@ export type Metrics = t.TypeOf<typeof Metrics>;
 
 export const MetadataBase = t.type(
   {
+    _id: t.unknown,
     id: t.string,
+    clientTime: t.string,
     savingTime: t.string,
     publicKey: t.string,
+    timelineId: t.string,
   },
   'MetadataBase',
 );
@@ -107,6 +110,17 @@ export const FollowingVideoMetadata = t.intersection(
 
 export type FollowingVideoMetadata = t.TypeOf<typeof FollowingVideoMetadata>;
 
+const SearchMetadataResult = t.type(
+  {
+    order: t.number,
+    video: t.any,
+    textdesc: t.string,
+    linked: t.array(t.any),
+    thumbnail: t.string,
+    publishingDate: t.string,
+  },
+  'SearchMetadataResult',
+);
 export const SearchMetadata = t.intersection(
   [
     MetadataBase,
@@ -114,8 +128,7 @@ export const SearchMetadata = t.intersection(
     t.type({ nature: SearchN }),
     t.type(
       {
-        results: t.array(t.any),
-        query: t.string,
+        results: t.array(SearchMetadataResult),
         thumbnails: t.array(
           t.type({
             downloaded: t.boolean,
@@ -153,8 +166,26 @@ export const NativeMetadata = t.intersection(
 
 export type NativeMetadata = t.TypeOf<typeof NativeMetadata>;
 
+export const ProfileMetadata = t.intersection(
+  [
+    MetadataBase,
+    ProfileN,
+    t.type({
+      videos: t.array(t.any),
+    }),
+  ],
+  'ProfileMetadata',
+);
+export type ProfileMetadata = t.TypeOf<typeof ProfileMetadata>;
+
 export const TKMetadata = t.union(
-  [ForYouVideoMetadata, FollowingVideoMetadata, SearchMetadata, NativeMetadata],
+  [
+    ForYouVideoMetadata,
+    FollowingVideoMetadata,
+    SearchMetadata,
+    NativeMetadata,
+    ProfileMetadata,
+  ],
   'TKMetadata',
 );
 

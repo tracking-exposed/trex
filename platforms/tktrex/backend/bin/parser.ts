@@ -11,12 +11,12 @@ import nconf from 'nconf';
 import path from 'path';
 import {
   addDom,
-  buildMetadata,
   getLastHTMLs,
   getMetadata,
   parserConfig,
   updateMetadataAndMarkHTML,
 } from '../lib/parser';
+import { toMetadata } from '@tktrex/shared/parser/metadata';
 
 nconf.argv().env().file({ file: 'config/settings.json' });
 
@@ -85,7 +85,7 @@ const run = async (): Promise<void> => {
       getContributions: getLastHTMLs(db),
       saveResults: updateMetadataAndMarkHTML(db),
       getEntryId: (e) => e.html.id,
-      buildMetadata,
+      buildMetadata: toMetadata,
       getEntryDate: (e) => e.html.savingTime,
       getEntryNatureType: (e) => e.html.type,
       config: {

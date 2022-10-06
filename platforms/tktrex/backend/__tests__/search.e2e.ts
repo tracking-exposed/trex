@@ -3,15 +3,15 @@ import {
   readFixtureJSONPaths,
   runParserTest,
 } from '@shared/test/utils/parser.utils';
-import { v4 as uuid } from 'uuid';
 import { TKMetadata } from '@tktrex/shared/models';
+import { toMetadata } from '@tktrex/shared/parser/metadata';
 import { parsers } from '@tktrex/shared/parser/parsers';
+import { HTMLSource } from '@tktrex/shared/parser/source';
 import base58 from 'bs58';
 import { parseISO, subMinutes } from 'date-fns';
 import path from 'path';
 import nacl from 'tweetnacl';
-import { GetTest, Test } from '../test/Test';
-import { toMetadata } from '@tktrex/shared/parser/metadata';
+import { v4 as uuid } from 'uuid';
 import {
   addDom,
   getLastHTMLs,
@@ -21,9 +21,9 @@ import {
   parserConfig,
   updateMetadataAndMarkHTML,
 } from '../lib/parser';
-import { HTMLSource } from '@tktrex/shared/parser/source';
+import { GetTest, Test } from '../test/Test';
 
-describe('Parser: "native"', () => {
+describe('Parser: "search"', () => {
   let appTest: Test;
   const newKeypair = nacl.sign.keyPair();
   const publicKey = base58.encode(newKeypair.publicKey);
@@ -51,15 +51,15 @@ describe('Parser: "native"', () => {
     );
   });
 
-  describe('Native', () => {
+  describe('Nature Search', () => {
     jest.setTimeout(20 * 1000);
 
     const history = readFixtureJSONPaths(
-      path.resolve(__dirname, 'fixtures/native')
+      path.resolve(__dirname, 'fixtures/search')
     );
 
     test.each(history)(
-      'Should correctly parse "native" contribution from path %s',
+      'Should correctly parse "search" contribution from path %s',
       async (fixturePath) => {
         const { sources: _sources, metadata } = readFixtureJSON(
           fixturePath,
@@ -100,23 +100,40 @@ describe('Parser: "native"', () => {
               expect((s as any).processed).toBe(true);
             });
           },
-          expectMetadata: (receivedMetadata, expectedMetadata) => {
+          expectMetadata: (
+            receivedMetadata: TKMetadata.SearchMetadata,
+            expectedMetadata: TKMetadata.SearchMetadata
+          ) => {
             const {
               _id: received_Id,
               id: receivedId,
+              clientTime: clientTimeR,
               savingTime: savingTimeR,
+              results: resultsR,
               ...receivedM
-            } = receivedMetadata as any;
+            } = receivedMetadata;
 
             const {
               _id: _received_Id,
               id: _receivedId,
               clientTime: clientTimeExp,
               savingTime: savingTimeExp,
+              results: resultsExp,
               ...expectedM
-            } = expectedMetadata as any;
+            } = expectedMetadata;
 
             expect(receivedM).toMatchObject(expectedM);
+            expect(
+              resultsR.map((r) => ({
+                ...r,
+                publishingDate: parseISO(r.publishingDate),
+              }))
+            ).toMatchObject(
+              resultsExp.map((r) => ({
+                ...r,
+                publishingDate: expect.any(Date),
+              }))
+            );
           },
         })({ sources, metadata });
       }
