@@ -96,9 +96,19 @@ const runNavigate =
           await page.waitForTimeout(2000);
 
           if (ctx.hooks.customs.cookieModal) {
-            await ctx.hooks.customs.cookieModal(page, {
-              action: 'reject',
-            });
+            await ctx.hooks.customs
+              .cookieModal(page, {
+                action: 'reject',
+              })
+              .then(
+                () => ctx.logger.info('Cookie modal rejected'),
+                (e: any) => {
+                  ctx.logger.error(
+                    'Error during cookie modal rejection: \n %O',
+                    e
+                  );
+                }
+              );
           }
 
           return b;
