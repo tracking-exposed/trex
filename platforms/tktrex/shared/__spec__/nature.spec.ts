@@ -17,7 +17,7 @@ describe('The tiktok "Nature" utilities', () => {
           'throws an "URLError" if the page is not from "tiktok.com"',
         href: 'https://example.com',
         expected: left(
-          new URLError('URL is not from tiktok', new URL('https://example.com'))
+          new URLError('URL is not from tiktok', new URL('https://example.com')),
         ),
       },
       {
@@ -39,7 +39,7 @@ describe('The tiktok "Nature" utilities', () => {
         description: 'recognizes a video page',
         href: 'https://www.tiktok.com/@lilou.grmmspam/video/7039026679003499782?is_copy_url=1&is_from_webapp=v1',
         expected: right({
-          type: 'video',
+          type: 'native',
           authorId: '@lilou.grmmspam',
           videoId: '7039026679003499782',
         }),

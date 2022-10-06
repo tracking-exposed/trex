@@ -19,6 +19,7 @@ describe('The TikTok parser for the ForYou feed', () => {
     const decodeResult = ForYouVideoMetadata.decode({
       ...sample.metadata,
       nature: { type: sample.metadata.type },
+      timelineId: `bread-${uuid()}`,
     });
     // trexLogger.debug(
     //   'for you sample decode: %O',
@@ -50,13 +51,14 @@ describe('The TikTok parser for the ForYou feed', () => {
       savingTime: new Date().toISOString(),
       publicKey: 'fake-publicKey',
       nature: { type: 'foryou' },
+      timelineId: `bread-${uuid()}`,
       ...(actual as any),
     });
 
     if (!isRight(validation)) {
       const report = PathReporter.report(validation);
       throw new Error(
-        ['expected valid ForYouVideoMetaData:', ...report].join('\n')
+        ['expected valid ForYouVideoMetaData:', ...report].join('\n'),
       );
     }
   });

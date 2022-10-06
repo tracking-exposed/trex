@@ -11,7 +11,6 @@ import { parseISO, subMinutes } from 'date-fns';
 import path from 'path';
 import nacl from 'tweetnacl';
 import { GetTest, Test } from '../test/Test';
-import { toMetadata } from '@tktrex/shared/parser/metadata';
 import {
   addDom,
   getLastHTMLs,
@@ -22,8 +21,9 @@ import {
   updateMetadataAndMarkHTML,
 } from '../lib/parser';
 import { HTMLSource } from '@tktrex/shared/parser/source';
+import { toMetadata } from '@tktrex/shared/parser/metadata';
 
-describe('Parser: "native"', () => {
+describe('Parser: "profile"', () => {
   let appTest: Test;
   const newKeypair = nacl.sign.keyPair();
   const publicKey = base58.encode(newKeypair.publicKey);
@@ -51,15 +51,15 @@ describe('Parser: "native"', () => {
     );
   });
 
-  describe('Native', () => {
+  describe('Nature Profile', () => {
     jest.setTimeout(20 * 1000);
 
     const history = readFixtureJSONPaths(
-      path.resolve(__dirname, 'fixtures/native')
+      path.resolve(__dirname, 'fixtures/profile')
     );
 
     test.each(history)(
-      'Should correctly parse "native" contribution from path %s',
+      'Should correctly parse "profile" contribution from path %s',
       async (fixturePath) => {
         const { sources: _sources, metadata } = readFixtureJSON(
           fixturePath,

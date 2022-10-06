@@ -14,6 +14,7 @@ export const toMetadata: BuildMetadataFn<HTMLSource, TKMetadata, TKParsers> = (
 
   let metadata: any = {
     clientTime: entry.source.html.clientTime,
+    thumbnails: [],
   };
 
   switch (entry.findings.nature.type) {
@@ -53,9 +54,10 @@ export const toMetadata: BuildMetadataFn<HTMLSource, TKMetadata, TKParsers> = (
     metadata.nature.query = metadata.query;
     break;
   }
-  case 'profile': {
+  case 'creator': {
     const { nature, profile, downloader } = entry.findings;
     metadata = {
+      videos: [],
       ...metadata,
       nature,
       ...nature,
