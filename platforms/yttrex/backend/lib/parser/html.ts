@@ -90,7 +90,7 @@ export const updateMetadataAndMarkHTML =
     const r = await db.api.upsertOne(
       db.write,
       getMetadataSchema(),
-      { id: metadata.id },
+      { id: source.html.metadataId },
       metadata
     );
 
