@@ -60,7 +60,7 @@ const run = async (): Promise<void> => {
      * */
 
     const mongoR = await mongo3.clientConnect({ maxConnecting: 1 });
-    const mongoW = await mongo3.clientConnect();
+    const mongoW = await mongo3.clientConnect({ maxConnecting: 1 });
 
     if (!mongoR || !mongoW) {
       throw new Error('Failed to connect to mongo!');
