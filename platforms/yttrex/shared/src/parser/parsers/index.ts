@@ -1,6 +1,5 @@
 import { processLeaf } from './leaf';
 import nature from './nature';
-import searches from './searches';
 import thumbnail from './thumbnail';
 
 /**
@@ -9,7 +8,6 @@ import thumbnail from './thumbnail';
 
 export const parsers = {
   nature,
-  search: searches,
   thumbnail,
 };
 
