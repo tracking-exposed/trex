@@ -1,4 +1,11 @@
+const { commonENV } = require('./ecosystem.config');
+
+const env = {
+  ...commonENV,
+};
+
 const testEnv = {
+  ...commonENV,
   mongoDb: 'yttrex-test',
 };
 
@@ -9,6 +16,7 @@ const yt = {
     cwd: __dirname,
     script: 'yarn watch',
     watch: false,
+    env,
     env_test: testEnv,
   },
   leavesParserWatch: {
@@ -17,6 +25,7 @@ const yt = {
     cwd: __dirname,
     script: 'yarn leaveserv:watch',
     watch: false,
+    env,
     env_test: testEnv,
   },
   parserWatch: {
@@ -25,6 +34,7 @@ const yt = {
     cwd: __dirname,
     script: 'yarn parserv:watch --minutesago 60',
     watch: false,
+    env,
     env_test: testEnv,
   },
 };
