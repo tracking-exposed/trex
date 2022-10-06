@@ -176,11 +176,11 @@ function dissectSelectedVideo(
 
   if (errorLog.length > 0) {
     homeLog.error(
-      'Video order %d got %d errors [elemSize %d]: %j',
+      'Video order %d got %d errors [elemSize %d]: %s',
       i,
       errorLog.length,
       e.outerHTML.length,
-      errorLog
+      errorLog.join('\n')
     );
   }
 
