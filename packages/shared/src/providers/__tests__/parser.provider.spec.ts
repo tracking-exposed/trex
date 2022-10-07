@@ -236,12 +236,7 @@ describe('Parser Provider', () => {
 
     expect(result).toMatchObject({
       type: 'Success',
-      payload: [
-        {
-          source: sources[0],
-          metadata: metadata,
-        },
-      ],
+      payload: [],
     });
   });
 
@@ -291,10 +286,7 @@ describe('Parser Provider', () => {
 
     expect(result).toMatchObject({
       type: 'Success',
-      payload: sources.map((s) => ({
-        source: s,
-        metadata: metadata,
-      })),
+      payload: [],
     });
   });
 });
