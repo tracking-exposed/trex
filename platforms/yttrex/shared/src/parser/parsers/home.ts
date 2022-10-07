@@ -1,10 +1,10 @@
 import { trexLogger } from '@shared/logger';
 import { ParserFn } from '@shared/providers/parser.provider';
-import { HomeMetadata, ParsedInfo } from '../../models/Metadata';
 import _ from 'lodash';
 import moment from 'moment';
-import { HTMLSource } from '../source';
+import { HomeMetadata, ParsedInfo } from '../../models/Metadata';
 import { YTParserConfig } from '../config';
+import { HTMLSource } from '../source';
 import * as longlabel from './longlabel';
 import * as shared from './shared';
 import uxlang from './uxlang';
@@ -277,7 +277,8 @@ interface SelectedAndSections {
 
 function getSelectedAndSections(
   D: Document,
-  clientTime: Date
+  clientTime: Date,
+  config: YTParserConfig
 ): SelectedAndSections {
   /* selection findings */
   const sectionsWithTitle = _.compact(
@@ -325,6 +326,7 @@ function getSelectedAndSections(
       }
       throw new Error('No video Info');
     } catch (error) {
+      config.errorReporter?.(error);
       homeLog.debug('Error during video dissect %O', error);
       const f = e.querySelector('#video-title-link');
       const s = f ? f.getAttribute('aria-label') : null;
@@ -364,7 +366,7 @@ export const processHome: ParserFn<
   HTMLSource,
   Omit<HomeMetadata, 'id'>,
   YTParserConfig
-> = async (envelop) => {
+> = async (envelop, findings, config) => {
   const retval: Omit<HomeMetadata, 'id'> = {
     type: 'home',
     clientTime: envelop.html.clientTime,
@@ -380,11 +382,18 @@ export const processHome: ParserFn<
   try {
     const { selected, sections } = getSelectedAndSections(
       envelop.jsdom,
-      envelop.html.clientTime
+      envelop.html.clientTime,
+      {
+        ...config,
+        errorReporter: () => {
+          config.errorReporter?.(envelop);
+        },
+      }
     );
     retval.selected = selected;
     retval.sections = sections;
   } catch (e) {
+    config.errorReporter?.(envelop);
     homeLog.error('Error in processing %s: %s', envelop.html.href, e.message);
     return null;
   }
