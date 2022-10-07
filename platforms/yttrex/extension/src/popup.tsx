@@ -14,9 +14,9 @@ renderPopup({
   logo: '/yttrex-logo.png',
   settings: {
     enabled: {
-      researchTag: false,
-      experimentId: false,
-    }
+      researchTag: true,
+      experimentId: config.DEVELOPMENT,
+    },
   },
   getLinks: ({ publicKey }) => {
     const homecsv = `${config.API_ROOT}/v2/personal/${publicKey}/home/csv`;

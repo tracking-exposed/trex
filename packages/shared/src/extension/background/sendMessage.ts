@@ -51,7 +51,7 @@ const ifValid =
 // this method doesn't do much, but it forces me
 // to send messages to the background using
 // the correct message type
-const sendMessage = (message: Message, cb: (response: unknown) => void): void =>
+const sendMessage = <T>(message: Message, cb: (response: T) => void): void =>
   bo.runtime.sendMessage(message, cb);
 
 export const settingsLookup = (cb: SendResponse<Partial<UserSettings>>): void =>
