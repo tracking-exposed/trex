@@ -23,11 +23,11 @@ import * as actions from './actions';
 import * as inputs from './inputs';
 import * as params from './params';
 
-interface TabouleColumnProps<K> extends Omit<GridColTypeDef, 'field'> {
+export interface TabouleColumnProps<K> extends Omit<GridColTypeDef, 'field'> {
   field: K | 'actions';
 }
 
-interface TabouleQueryConfiguration<P extends Record<string, any>>
+export interface TabouleQueryConfiguration<P extends Record<string, any>>
   extends Omit<DataGridProps, 'columns' | 'rows'> {
   columns: Array<TabouleColumnProps<keyof P>>;
   inputs?: (params: any, setParams: React.Dispatch<any>) => JSX.Element;
