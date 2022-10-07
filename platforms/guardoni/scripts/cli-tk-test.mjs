@@ -60,7 +60,8 @@ void (async function () {
 
   const tk_search_experiment_public_key = tk_search_experiment_run_out.stdout
     .replace('publicKey: \t', '')
-    .replace('\n', '');
+    .replace('\n', '')
+    .trim();
 
   await $`echo ${tk_search_experiment_public_key}`;
 

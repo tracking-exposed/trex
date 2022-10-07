@@ -10,7 +10,7 @@ import { pipe } from 'fp-ts/lib/function';
 import * as fs from 'fs';
 import * as path from 'path';
 import { GetGuardoniCLI, GuardoniCLI } from '../../src/guardoni/cli';
-import { csvStringifyTE } from '../../src/guardoni/utils';
+import { csvStringifyTE } from '@shared/utils/csv.utils';
 import axiosMock from '@shared/test/__mocks__/axios.mock';
 import { puppeteerMock } from '@shared/test/__mocks__/puppeteer.mock';
 import { getProfileDataDir, readProfile } from '../../src/guardoni/profile';

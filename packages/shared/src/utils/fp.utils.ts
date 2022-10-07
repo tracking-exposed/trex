@@ -10,7 +10,11 @@ export const foldTEOrThrow = <E, A>(te: TE.TaskEither<E, A>): Promise<A> => {
   return pipe(
     te,
     TE.fold(
-      (e) => () => Promise.reject(e),
+      (e) => () => {
+        // eslint-disable-next-line
+        console.error(e);
+       return Promise.reject(e)
+      },
       (a) => () => Promise.resolve(a)
     )
   )();

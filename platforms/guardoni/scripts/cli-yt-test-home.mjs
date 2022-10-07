@@ -25,7 +25,7 @@ void (async function () {
     '--basePath=./',
     `--executablePath=${process.env.PUPPETEER_EXEC_PATH}`,
     '-c=guardoni.config.json',
-    '--headless',
+    '--headless=false',
     '--verbose',
   ];
 
@@ -35,11 +35,11 @@ void (async function () {
     ...flags,
     `--publicKey=${process.env.PUBLIC_KEY}`,
     `--secretKey=${process.env.SECRET_KEY}`,
-    `--researchTag=${researchTag}`
+    `--researchTag=${researchTag}`,
   ];
 
   // reject cookie modal
-  await $`${cli} ${flags} yt-navigate --cookie-modal=reject --exit --headless=false`;
+  await $`${cli} ${flags} yt-navigate --cookie-modal=reject --exit`;
 
   const yt_home_experiment_register_out =
     await $`${cli} ${flags}  yt-register ./experiments/yt-home.csv | grep 'experimentId: '`;
@@ -64,7 +64,7 @@ void (async function () {
 
   assert.strictEqual(yt_home_experiment_public_key, process.env.PUBLIC_KEY);
   const metadata = await fetch(
-    `http://localhost:9000/api/v2/metadata?experimentId=${yt_home_experiment_id}`
+    `http://localhost:9000/api/v2/metadata?publicKey=${yt_home_experiment_public_key}&experimentId=${yt_home_experiment_id}`
   ).then((r) => r.json());
 
   assert.strictEqual(metadata[0].experimentId, yt_home_experiment_id);

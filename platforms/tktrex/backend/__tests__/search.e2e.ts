@@ -56,7 +56,7 @@ describe('Parser: "search"', () => {
     jest.setTimeout(20 * 1000);
 
     const history = readFixtureJSONPaths(
-      path.resolve(__dirname, 'fixtures/search')
+      path.resolve(__dirname, 'fixtures/htmls/search')
     );
 
     axiosMock.get.mockImplementation((url, config) => {

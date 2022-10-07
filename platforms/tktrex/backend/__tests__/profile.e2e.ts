@@ -57,7 +57,7 @@ describe('Parser: "profile"', () => {
     jest.setTimeout(20 * 1000);
 
     const history = readFixtureJSONPaths(
-      path.resolve(__dirname, 'fixtures/profile')
+      path.resolve(__dirname, 'fixtures/htmls/profile')
     );
 
     axiosMock.get.mockImplementation((url, config) => {
