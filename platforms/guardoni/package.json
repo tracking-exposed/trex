@@ -23,8 +23,9 @@
     "prepack": "yarn build",
     "check-stealth": "ts-node ./bin/check-stealth.ts",
     "tdd": "jest --watch --verbose",
-    "cli-yt-test-videos": "node ./scripts/cli-yt-test-videos.mjs",
-    "cli-yt-test-home": "node ./scripts/cli-yt-test-home.mjs"
+    "cli-yt-test-videos": "ts-node ./scripts/cli-yt-test-videos.mjs",
+    "cli-yt-test-home": "ts-node ./scripts/cli-yt-test-home-fixures.mjs",
+    "cli-yt-test-from-fixtures": "ts-node ./scripts/cli-yt-test-home-fixures.mjs"
   },
   "bin": {
     "cli": "./bin/guardoni-cli.js"

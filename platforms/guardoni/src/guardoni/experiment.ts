@@ -17,6 +17,7 @@ import _ from 'lodash';
 // import * as NEA from 'fp-ts/lib/NonEmptyArray';
 import { parseClickCommand } from '@shared/providers/puppeteer/steps/click';
 import { parseKeypressCommand } from '@shared/providers/puppeteer/steps/keyPress';
+import { csvParseTE } from '@shared/utils/csv.utils';
 import { NonEmptyArray } from 'fp-ts/lib/NonEmptyArray';
 import * as TE from 'fp-ts/lib/TaskEither';
 import * as fs from 'fs';
@@ -28,9 +29,9 @@ import {
   ExperimentInfo,
   GuardoniContext,
   GuardoniProfile,
-  GuardoniSuccessOutput,
+  GuardoniSuccessOutput
 } from './types';
-import { csvParseTE, liftFromIOE } from './utils';
+import { liftFromIOE } from './utils';
 
 export const validateNonEmptyString = (
   s: string

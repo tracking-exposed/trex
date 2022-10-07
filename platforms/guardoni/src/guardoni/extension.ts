@@ -196,16 +196,14 @@ const getSettingsJSONPath = (ctx: GuardoniContext): string =>
 export const setLocalSettings =
   (ctx: GuardoniContext) =>
   (s?: Partial<UserSettings>): void => {
-    if (!s?.publicKey && !s?.secretKey) {
-      ctx.logger.debug('No publicKey/secretKey pair given...');
+    const keys = Object.keys(s ?? {});
+    const settingsJsonPath = getSettingsJSONPath(ctx);
+    if (keys.length === 0) {
+      ctx.logger.debug('No values for %s given...', settingsJsonPath);
       return;
     }
 
-    const settingsJsonPath = getSettingsJSONPath(ctx);
-
+    ctx.logger.info('Saving settings at %s: %O', settingsJsonPath, s);
     const settings = JSON.stringify(s);
-
-    ctx.logger.info('Saving settings at %s: %O', settingsJsonPath, settings);
-
     fs.writeFileSync(settingsJsonPath, settings);
   };

@@ -56,7 +56,7 @@ describe('Parser: "native"', () => {
     jest.setTimeout(20 * 1000);
 
     const history = readFixtureJSONPaths(
-      path.resolve(__dirname, 'fixtures/native')
+      path.resolve(__dirname, 'fixtures/htmls/native')
     );
 
     axiosMock.get.mockImplementation((url, config) => {
