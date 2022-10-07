@@ -396,7 +396,13 @@ export const parsePipeline =
       ctx.log.debug('Using parsers %O', Object.keys(parsers));
 
       for (const [parserKey, parserFn] of Object.entries(parsers)) {
-        results = await dissectorWrapper(parserFn, parserKey, e, results);
+        const currentResults = await dissectorWrapper(
+          parserFn,
+          parserKey,
+          e,
+          results
+        );
+        results = currentResults;
       }
 
       return results;
@@ -601,7 +607,7 @@ export const executionLoop =
             'Processed sources %O',
             currentResult.map((r) => ctx.getEntryId(r.source))
           );
-          results.push(...currentResult);
+
           printResultOutput(ctx.getEntryId, {
             type: 'Success',
             payload: currentResult,
