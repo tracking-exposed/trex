@@ -67,7 +67,7 @@ export const ContributorPersonalStats = t.strict(
     homes: t.array(HomeMetadata),
     searches: t.array(SearchMetadata),
     ads: t.array(t.any),
-    stats: t.strict(
+    stats: t.partial(
       {
         home: t.number,
         video: t.number,

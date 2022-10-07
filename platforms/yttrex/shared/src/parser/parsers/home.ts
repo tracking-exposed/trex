@@ -367,15 +367,16 @@ export const processHome: ParserFn<
 > = async (envelop) => {
   const retval: Omit<HomeMetadata, 'id'> = {
     type: 'home',
-    clientTime: envelop.html.clientTime,
+    // eslint-disable-next-line
+    clientTime: envelop.html.clientTime as any,
     selected: [],
     sections: [],
     blang: null,
     login: false,
     publicKey: envelop.html.publicKey,
     href: envelop.html.href,
-    savingTime: new Date(),
-  };
+    savingTime: new Date() as any,
+  } as any;
 
   try {
     const { selected, sections } = getSelectedAndSections(

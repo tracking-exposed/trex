@@ -1,5 +1,5 @@
 import * as t from 'io-ts';
-import { date } from 'io-ts-types/lib/date';
+import { DateFromISOString } from 'io-ts-types/lib/DateFromISOString';
 import { HomeType, SearchType, VideoType } from './Ad';
 
 export const ParsedInfo = t.intersection(
@@ -28,7 +28,7 @@ export const ParsedInfo = t.intersection(
         // moment duration as string
         recommendedPubTime: t.union([t.any, t.null]),
         // recommendedRelativeSeconds: t.union([t.number, t.null]),
-        publicationTime: t.union([date, t.null]),
+        publicationTime: t.union([DateFromISOString, t.null]),
       },
       'Partial'
     ),
@@ -41,9 +41,9 @@ export type ParsedInfo = t.TypeOf<typeof ParsedInfo>;
 const MetadataBase = t.strict(
   {
     id: t.string,
-    publicKey: t.string,
-    savingTime: date,
-    clientTime: t.union([date, t.undefined]),
+    supporter: t.string,
+    savingTime: t.string,
+    clientTime: t.union([t.string, t.undefined]),
     href: t.string,
     blang: t.union([t.string, t.null]),
   },
@@ -61,7 +61,7 @@ export const VideoMetadata = t.strict(
     authorSource: t.string,
     title: t.string,
     publicationString: t.string,
-    publicationTime: t.union([date, t.null]),
+    publicationTime: t.union([DateFromISOString, t.null]),
     likeInfo: t.strict(
       {
         watchedLikes: t.union([t.number, t.null]),

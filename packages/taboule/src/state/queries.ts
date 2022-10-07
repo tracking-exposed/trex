@@ -20,10 +20,16 @@ import { CachedQuery } from 'avenger/lib/Query';
 import { pipe } from 'fp-ts/lib/function';
 import * as TE from 'fp-ts/lib/TaskEither';
 import { Step } from '@shared/models/Step';
+import { ListMetadataQuery } from '@yttrex/shared/endpoints/v2/metadata.endpoints';
 
 export interface SearchRequestInput {
   Params: any;
   Query: SearchQuery;
+}
+
+export interface ListMetadataRequestInput {
+  Params: any;
+  Query: ListMetadataQuery;
 }
 
 export interface Results<T> {
@@ -138,10 +144,25 @@ export const GetTabouleQueries = ({
   >(
     (input) =>
       pipe(
-        YTAPI.v1.Public.GetPersonalStatsByPublicKey(input),
+        YTAPI.v2.Metadata.ListMetadata({
+          Query: {
+            ...input.Query,
+            amount: '20' as any,
+            skip: '0' as any,
+            experimentId: undefined,
+            researchTag: undefined,
+            format: 'json',
+            nature: 'home',
+            publicKey: 'H7AsuUszehN4qKTj2GYYwNNzkJVqUQBRo2wgKevzeUwx',
+          },
+        }),
+        TE.map((content) => {
+          const x = content.filter((c) => c.type === 'home');
+          return x as any[] as HomeMetadata[];
+        }),
         TE.map((content) => ({
-          total: content.stats.home,
-          content: content.homes,
+          total: content.length,
+          content,
         }))
       ),
     available
@@ -168,7 +189,7 @@ export const GetTabouleQueries = ({
       pipe(
         YTAPI.v1.Public.GetPersonalStatsByPublicKey(input),
         TE.map((content) => ({
-          total: content.stats.video,
+          total: content.stats.video ?? 0,
           content: content.videos,
         }))
       ),
@@ -184,7 +205,7 @@ export const GetTabouleQueries = ({
       pipe(
         YTAPI.v1.Public.GetPersonalStatsByPublicKey(input),
         TE.map((content) => ({
-          total: content.stats.search,
+          total: content.stats.search ?? 0,
           content: content.searches,
         }))
       ),
