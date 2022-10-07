@@ -8,7 +8,7 @@ import * as path from 'path';
 import { readConfigFromPath } from '../src/guardoni/config';
 import { GetGuardoni } from '../src/guardoni/guardoni';
 import { getDefaultProfile, getProfileDataDir } from '../src/guardoni/profile';
-import { csvStringifyTE } from '../src/guardoni/utils';
+import { csvStringifyTE } from '@shared/utils/csv.utils';
 import { guardoniLogger } from '../src/logger';
 import { fc } from '@shared/test';
 

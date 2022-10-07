@@ -22,4 +22,5 @@ yarn tk:ext build
 
 # build guardoni
 yarn guardoni build:cli
-# yarn guardoni pkg
+yarn guardoni build:app
+yarn guardoni pkg

@@ -1,6 +1,4 @@
 import { AppError, toAppError } from '@shared/errors/AppError';
-import csvParse from 'csv-parse';
-import * as csvStringify from 'csv-stringify';
 import * as E from 'fp-ts/lib/Either';
 import { pipe } from 'fp-ts/lib/function';
 import * as IOE from 'fp-ts/lib/IOEither';
@@ -70,49 +68,7 @@ export const toGuardoniSuccessOutput = (
   };
 };
 
-export const csvParseTE = (
-  content: Buffer,
-  options: csvParse.Options
-): TE.TaskEither<
-  AppError,
-  {
-    records: any;
-    info: csvParse.Info;
-  }
-> =>
-  TE.tryCatch(
-    () =>
-      new Promise((resolve, reject) => {
-        csvParse(content, options, (error, records, info) => {
-          if (error) {
-            guardoniLogger.error('CSV Parse error: %O', error);
-            return reject(error);
-          }
-          guardoniLogger.debug('CSV Parse results: %O', records);
-          return resolve({ records, info });
-        });
-      }),
-    toAppError
-  );
 
-export const csvStringifyTE = (
-  records: any[],
-  options: csvStringify.Options
-): TE.TaskEither<AppError, string> =>
-  TE.tryCatch(
-    () =>
-      new Promise((resolve, reject) => {
-        csvStringify.stringify(records, options, (error, info) => {
-          if (error) {
-            guardoniLogger.error('CSV Stringify error: %O', error);
-            return reject(error);
-          }
-          guardoniLogger.debug('CSV Stringify results: %O', records);
-          return resolve(info);
-        });
-      }),
-    toAppError
-  );
 
 export const liftFromIOE = <T>(lazyF: () => T): TE.TaskEither<AppError, T> => {
   return pipe(IOE.tryCatch(lazyF, toAppError), TE.fromIOEither);
