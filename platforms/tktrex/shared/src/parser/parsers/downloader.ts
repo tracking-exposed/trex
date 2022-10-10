@@ -14,20 +14,27 @@ const debug = D('parser:downloader');
 export async function processLink(
   link: string,
   linkType: string,
-  config: TKParserConfig,
+  config: TKParserConfig
 ): Promise<MediaFile> {
   // link is either an mp4 or a jpeg,
   // linkType is 'video' or 'thumbnail'
-  const fuuid = getUUID(link, linkType, config.downloads);
-  if (config.downloads) {
-    if (!fs.existsSync(fuuid)) return await download(fuuid, link);
-  }
 
+  const fuuid = getUUID(link, linkType, config.downloads);
+
+  if (config.downloads && fuuid) {
+    if (!fs.existsSync(fuuid)) return await download(fuuid, link);
+
+    return {
+      downloaded: true,
+      filename: path.relative(process.cwd(), fuuid),
+      reason: 0,
+      // a cached file has reason 0
+    };
+  }
   return {
-    downloaded: true,
-    filename: path.relative(process.cwd(), fuuid),
-    reason: 0,
-    // a cached file has reason 0
+    downloaded: false,
+    filename: undefined,
+    reason: 500,
   };
 }
 

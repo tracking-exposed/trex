@@ -1,11 +1,13 @@
+import axiosMock from '@shared/test/__mocks__/axios.mock';
 import {
   readFixtureJSON,
   readFixtureJSONPaths,
   runParserTest,
 } from '@shared/test/utils/parser.utils';
 import { TKMetadata } from '@tktrex/shared/models';
+import { TKParserConfig } from '@tktrex/shared/parser/config';
 import { toMetadata } from '@tktrex/shared/parser/metadata';
-import { parsers } from '@tktrex/shared/parser/parsers';
+import { parsers, TKParsers } from '@tktrex/shared/parser/parsers';
 import { HTMLSource } from '@tktrex/shared/parser/source';
 import base58 from 'bs58';
 import { parseISO, subMinutes } from 'date-fns';
@@ -18,7 +20,6 @@ import {
   getMetadata,
   getMetadataSchema,
   getSourceSchema,
-  parserConfig,
   updateMetadataAndMarkHTML,
 } from '../lib/parser';
 import { GetTest, Test } from '../test/Test';
@@ -58,6 +59,10 @@ describe('Parser: "search"', () => {
       path.resolve(__dirname, 'fixtures/search')
     );
 
+    axiosMock.get.mockImplementation((url, config) => {
+      return Promise.resolve({ status: 500, data: '' });
+    });
+
     test.each(history)(
       'Should correctly parse "search" contribution from path %s',
       async (fixturePath) => {
@@ -75,7 +80,7 @@ describe('Parser: "search"', () => {
           supporter: { version: process.env.VERSION },
         }));
 
-        await runParserTest({
+        await runParserTest<TKParserConfig, TKParsers>({
           name: 'native-parser',
           log: appTest.logger,
           parsers: parsers,
@@ -94,7 +99,12 @@ describe('Parser: "search"', () => {
           getMetadata: getMetadata(db),
           saveResults: updateMetadataAndMarkHTML(db),
           buildMetadata: toMetadata,
-          config: parserConfig,
+          config: {
+            downloads: path.resolve(
+              process.cwd(),
+              appTest.config.get('downloads')
+            ),
+          },
           expectSources: (receivedSources) => {
             receivedSources.forEach((s) => {
               expect((s as any).processed).toBe(true);
@@ -126,12 +136,14 @@ describe('Parser: "search"', () => {
             expect(
               resultsR.map((r: any) => ({
                 ...r,
-                publishingDate: parseISO(r.publishingDate),
+                publishingDate: r.publishingDate
+                  ? parseISO(r.publishingDate)
+                  : undefined,
               }))
             ).toMatchObject(
               resultsExp.map((r: any) => ({
                 ...r,
-                publishingDate: expect.any(Date),
+                publishingDate: r.publishingDate ? expect.any(Date) : undefined,
               }))
             );
           },

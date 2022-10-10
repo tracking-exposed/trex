@@ -8,8 +8,8 @@ const debug = D('parsers:shared');
 export function getUUID(
   url: string,
   type: any,
-  downloads: string | undefined,
-): any {
+  downloads: string | undefined
+): string | null {
   const ui = new URL(url);
   const fullpath = ui.pathname;
   const fname = path.basename(fullpath);
@@ -18,7 +18,7 @@ export function getUUID(
   if (!downloads) {
     /* eslint-disable no-console */
     console.log('WRONG CONFIGURATION SETTINGS!! missing \'downloads\' from', cwd);
-    process.exit(1);
+    return null;
   }
   const initials = fname.substr(0, 2);
   const destdir = path.join(cwd, downloads, type, initials);
@@ -27,6 +27,7 @@ export function getUUID(
       fs.mkdirSync(destdir, { recursive: true });
     } catch (error: any) {
       debug('!? %s: %s', destdir, error.message);
+      return null;
     }
     debug('%s wasn\'t existing and have been created', destdir);
   }
@@ -35,7 +36,7 @@ export function getUUID(
 
 export async function download(
   filename: string,
-  url: string,
+  url: string
 ): Promise<{
   downloaded: boolean;
   reason: number;
