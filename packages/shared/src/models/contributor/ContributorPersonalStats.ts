@@ -6,6 +6,7 @@ export const HomeMetadata = t.strict(
     id: t.string,
     savingTime: t.string,
     selected: t.array(StringOrNull, 'Selected'),
+    login: t.boolean,
   },
   'HomeMetadata'
 );

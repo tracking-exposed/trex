@@ -1,5 +1,10 @@
 import { Box, Typography } from '@material-ui/core';
-import { DataGrid, DataGridProps, GridColTypeDef } from '@mui/x-data-grid';
+import {
+  DataGrid,
+  DataGridProps,
+  GridColTypeDef,
+  GridEventListener,
+} from '@mui/x-data-grid';
 import { APIError } from '@shared/errors/APIError';
 import { toValidationError } from '@shared/errors/ValidationError';
 import { GetLogger } from '@shared/logger';
@@ -16,6 +21,8 @@ import { TabouleDataProvider } from '../state';
 import { Results, SearchRequestInput, TabouleQueries } from '../state/queries';
 import { TabouleQueryKey } from '../state/types';
 import { ErrorOverlay } from './ErrorOverlay';
+import ExpandView from './expand-view/ExpandView';
+import { selectedRecommendation } from './../state/types';
 
 debug.enable(process.env.DEBUG ?? '');
 
@@ -139,6 +146,54 @@ export const Taboule = <Q extends keyof TabouleQueries>({
   log.debug(`Rendering with props %O`, dataGridProps);
   log.debug(`Query %s (%O) with params %O`, queryKey, query, params);
 
+  enum ExpandableActionType {
+    SHOW_MODAL = 'SHOW_MODAL',
+    CLOSE_MODAL = 'CLOSE_MODAL',
+  }
+  interface ExpandableAction {
+    type: ExpandableActionType;
+    payload: selectedRecommendation[];
+  }
+  interface ExpandableState {
+    isVisible: boolean;
+    data: selectedRecommendation[];
+  }
+
+  const initialState = { isVisible: false, data: [] };
+  const infoReducerFn = (
+    state: ExpandableState,
+    action: ExpandableAction
+  ): ExpandableState => {
+    const { type, payload } = action;
+    if (type === 'SHOW_MODAL') {
+      return { isVisible: true, data: payload };
+    }
+    if (type === 'CLOSE_MODAL') {
+      return initialState;
+    }
+    return state;
+  };
+  const [infoState, dispatchInfoState] = React.useReducer(
+    infoReducerFn,
+    initialState
+  );
+
+  const handleEvent: GridEventListener<'rowClick'> = (
+    params // GridRowParams
+  ) => {
+    dispatchInfoState({
+      type: ExpandableActionType.SHOW_MODAL,
+      payload: params.row.selected,
+    });
+  };
+
+  const handleHideModal = (): void => {
+    dispatchInfoState({
+      type: ExpandableActionType.CLOSE_MODAL,
+      payload: initialState.data,
+    });
+  };
+
   return (
     <Box height={height}>
       {paramsInputs}
@@ -169,11 +224,13 @@ export const Taboule = <Q extends keyof TabouleQueries>({
                 rows={query.content}
                 onPageSizeChange={handlePageSizeChange}
                 onPageChange={handlePageChange}
+                onRowClick={handleEvent}
               />
             );
           }
         )}
       />
+      <ExpandView {...infoState} handleHideModal={handleHideModal} />
     </Box>
   );
 };

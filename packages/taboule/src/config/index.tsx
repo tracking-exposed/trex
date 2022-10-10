@@ -270,6 +270,11 @@ export const defaultConfiguration = (
         },
         {
           ...columnDefault,
+          field: 'login',
+          minWidth: 100,
+        },
+        {
+          ...columnDefault,
           field: 'actions',
           renderCell: actions.personalMetadataActions(commands, params),
         },

@@ -16,3 +16,24 @@ export const TabouleQueryKey = t.union(
   'TabouleQueryKey'
 );
 export type TabouleQueryKey = t.TypeOf<typeof TabouleQueryKey>;
+
+export interface selectedRecommendation {
+  elems: number;
+  index: number;
+  isLive: boolean;
+  label: string;
+  publicationTime: Date;
+  recommendedDisplayL: string;
+  recommendedHref: string;
+  recommendedLength: number;
+  recommendedLengthText: string;
+  recommendedRelativeSeconds: number;
+  recommendedSource: string;
+  recommendedTitle: string;
+  recommendedViews: number;
+  sectionName: string;
+  thumbnailHref: string | undefined;
+  timePrecision: string;
+  verified: boolean;
+  videoId: string;
+}
