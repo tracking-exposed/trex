@@ -5,6 +5,8 @@ import { HTMLSource } from '../source';
 import _ from 'lodash';
 import D from 'debug';
 import { getNatureByHref } from './nature';
+import { processLink } from './downloader';
+import * as videoResult from './videoResult';
 const debug = D('parser:search');
 
 function getFullSearchMetadata(renod: ParentNode, order: any): any {
@@ -30,17 +32,7 @@ function getFullSearchMetadata(renod: ParentNode, order: any): any {
   const img = renod.querySelector('img[alt]');
   const thumbnail = img?.getAttribute('src');
 
-  const publishingDate = _.reduce<any, string | null>(
-    img?.parentNode?.parentNode?.childNodes ?? [],
-    function(memo, n) {
-      if (!memo && n.textContent.trim().match(/(\d{4})-(\d{1,2})-(\d{1,2})/))
-        memo = n.textContent;
-      if (!memo && n.textContent.trim().match(/(\d{1,2})-(\d{1,2})/))
-        memo = new Date().getFullYear() + '-' + n.textContent;
-      return memo;
-    },
-    null,
-  );
+  const publishingDate = videoResult.publishingDate(img);
 
   /* investigation why sometime the publishingDate is null,
      seems sometime tiktok returns M-DD format ? */
@@ -70,6 +62,7 @@ function getFullSearchMetadata(renod: ParentNode, order: any): any {
 const search: ParserFn<HTMLSource, any, TKParserConfig> = async(
   envelop,
   previous,
+  config,
 ) => {
 
   if (previous.nature.type !== 'search') {
@@ -83,10 +76,17 @@ const search: ParserFn<HTMLSource, any, TKParserConfig> = async(
        the search selector is not per video, but per 'body' */
   const descs = envelop.jsdom.querySelectorAll('[data-e2e="search-card-desc"]');
   const results = _.map(descs, function(elem, i) {
-    return elem?.parentNode ? getFullSearchMetadata(elem.parentNode , i + 1): null;
+    return elem?.parentNode
+      ? getFullSearchMetadata(elem.parentNode, i + 1)
+      : null;
   });
 
-  const retval: any = {};
+  const retval: any = { thumbnails: [] };
+  // this nesting would be inherit in metadata
+  for (const result of results) {
+    const fildata = await processLink(result.thumbnail, 'thumbnail', config);
+    retval.thumbnails.push(fildata);
+  }
 
   if (results.length) {
     retval.amount = results.length;

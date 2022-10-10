@@ -5,7 +5,11 @@ import path from 'path';
 
 const debug = D('parsers:shared');
 
-export function getUUID(url: string, type: any, downloads: string | undefined): any {
+export function getUUID(
+  url: string,
+  type: any,
+  downloads: string | undefined,
+): any {
   const ui = new URL(url);
   const fullpath = ui.pathname;
   const fname = path.basename(fullpath);
@@ -39,7 +43,7 @@ export async function download(
 }> {
   /* this is a blocking operation and it would also download
    * videos up to three minutes! */
-  debug('Connecting to download (%s)', filename);
+  debug('Connecting %s to download (%s)', url, filename);
   const x = await axios.get(url, { responseType: 'arraybuffer' });
   if (x.status !== 200) {
     debug('Unexpected HTTP status %d', x.status);

@@ -27,7 +27,7 @@ export const toMetadata: BuildMetadataFn<HTMLSource, TKMetadata, TKParsers> = (
       hashtags,
       metrics,
       music,
-      downloader,
+      foryou
     } = entry.findings;
     metadata = {
       ...metadata,
@@ -38,17 +38,16 @@ export const toMetadata: BuildMetadataFn<HTMLSource, TKMetadata, TKParsers> = (
       metrics,
       music,
       hashtags,
-      ...downloader,
+      ...foryou
     };
     break;
   }
   case 'search': {
-    const { nature, downloader, search } = entry.findings;
+    const { nature, search } = entry.findings;
     metadata = {
       ...metadata,
       ...nature,
       nature,
-      ...downloader,
       ...search,
     };
     metadata.query = _.toLower(metadata.query);
@@ -56,13 +55,12 @@ export const toMetadata: BuildMetadataFn<HTMLSource, TKMetadata, TKParsers> = (
     break;
   }
   case 'creator': {
-    const { nature, profile, downloader } = entry.findings;
+    const { nature, profile } = entry.findings;
     metadata = {
       results: [],
       ...metadata,
       nature,
       ...nature,
-      ...downloader,
       ...profile,
     };
     break;
@@ -77,7 +75,6 @@ export const toMetadata: BuildMetadataFn<HTMLSource, TKMetadata, TKParsers> = (
       metrics,
       stitch,
       author,
-      downloader,
       native,
     } = entry.findings;
     metadata = {
@@ -90,7 +87,6 @@ export const toMetadata: BuildMetadataFn<HTMLSource, TKMetadata, TKParsers> = (
       metrics,
       stitch,
       author,
-      ...downloader,
       ...native,
     };
     break;
