@@ -25,7 +25,11 @@ const ExpandView = (props: Props): JSX.Element => {
           <img
             className="expand-view__list__item__img"
             height="120px"
-            src={recommendation.thumbnailHref ?? ytThumbnail}
+            src={
+              recommendation.thumbnailHref ??
+              recommendation.recommendedThumbnail ??
+              ytThumbnail
+            }
           />
 
           <div className="expand-view__list__item__text">

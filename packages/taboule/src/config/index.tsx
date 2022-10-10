@@ -1,4 +1,4 @@
-import { Box, Typography } from '@material-ui/core';
+import { Box } from '@material-ui/core';
 import { DataGridProps, GridColTypeDef } from '@mui/x-data-grid';
 import { ChannelRelated } from '@shared/models/ChannelRelated';
 import {
@@ -143,7 +143,7 @@ export const defaultConfiguration = (
         {
           ...columnDefault,
           field: 'id',
-          minWidth: 100,
+          minWidth: 200,
         },
         {
           ...columnDefault,
@@ -153,17 +153,6 @@ export const defaultConfiguration = (
         {
           ...columnDefault,
           field: 'query',
-          minWidth: 350,
-          renderCell: (params) => {
-            return (
-              <Typography variant="h6">{params.formattedValue}</Typography>
-            );
-          },
-        },
-        {
-          ...columnDefault,
-          field: 'results',
-          minWidth: 150,
         },
         {
           ...columnDefault,
@@ -224,7 +213,7 @@ export const defaultConfiguration = (
       columns: [
         {
           ...columnDefault,
-          field: 'relative',
+          field: 'title',
         },
         {
           ...columnDefault,
@@ -233,6 +222,11 @@ export const defaultConfiguration = (
         {
           ...columnDefault,
           field: 'authorSource',
+        },
+        {
+          ...columnDefault,
+          field: 'savingTime',
+          renderCell: cells.distanceFromNowCell,
         },
         {
           ...columnDefault,

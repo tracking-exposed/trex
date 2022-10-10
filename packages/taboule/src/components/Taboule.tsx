@@ -189,7 +189,7 @@ export const Taboule = <Q extends keyof TabouleQueries>({
   ) => {
     dispatchInfoState({
       type: ExpandableActionType.SHOW_MODAL,
-      payload: params.row.selected,
+      payload: params.row.selected ?? params.row.related,
     });
   };
 

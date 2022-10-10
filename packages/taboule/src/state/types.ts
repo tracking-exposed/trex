@@ -30,6 +30,7 @@ export interface selectedRecommendation {
   recommendedRelativeSeconds: number;
   recommendedSource: string;
   recommendedTitle: string;
+  recommendedThumbnail: string;
   recommendedViews: number;
   sectionName: string;
   thumbnailHref: string | undefined;
