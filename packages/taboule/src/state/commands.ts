@@ -11,7 +11,7 @@ const downloadFile = (filename: string, content: string): void => {
     'href',
     'data:text/plain;charset=utf-8, ' + encodeURIComponent(content)
   );
-  aElement.setAttribute('download', `${filename}.txt`);
+  aElement.setAttribute('download', `${filename}.csv`);
 
   // Above code is equivalent to
   // <a href="path of file" download="file name">
