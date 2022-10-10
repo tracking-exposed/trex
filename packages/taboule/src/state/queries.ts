@@ -187,10 +187,25 @@ export const GetTabouleQueries = ({
   >(
     (input) =>
       pipe(
-        YTAPI.v1.Public.GetPersonalStatsByPublicKey(input),
+        YTAPI.v2.Metadata.ListMetadata({
+          Query: {
+            ...input.Query,
+            amount: '20' as any,
+            skip: '0' as any,
+            experimentId: undefined,
+            researchTag: undefined,
+            format: 'json',
+            nature: 'video',
+            publicKey: 'H7AsuUszehN4qKTj2GYYwNNzkJVqUQBRo2wgKevzeUwx',
+          },
+        }),
+        TE.map((content) => {
+          const x = content.filter((c) => c.type === 'video');
+          return x as any[] as VideoMetadata[];
+        }),
         TE.map((content) => ({
-          total: content.stats.video ?? 0,
-          content: content.videos,
+          total: content.length,
+          content,
         }))
       ),
     available
@@ -203,10 +218,25 @@ export const GetTabouleQueries = ({
   >(
     (input) =>
       pipe(
-        YTAPI.v1.Public.GetPersonalStatsByPublicKey(input),
+        YTAPI.v2.Metadata.ListMetadata({
+          Query: {
+            ...input.Query,
+            amount: '20' as any,
+            skip: '0' as any,
+            experimentId: undefined,
+            researchTag: undefined,
+            format: 'json',
+            nature: 'search',
+            publicKey: 'H7AsuUszehN4qKTj2GYYwNNzkJVqUQBRo2wgKevzeUwx',
+          },
+        }),
+        TE.map((content) => {
+          const x = content.filter((c) => c.type === 'search');
+          return x as any[] as SearchMetadata[];
+        }),
         TE.map((content) => ({
-          total: content.stats.search ?? 0,
-          content: content.searches,
+          total: content.length ?? 0,
+          content,
         }))
       ),
     available

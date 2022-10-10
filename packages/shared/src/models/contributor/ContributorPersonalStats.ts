@@ -1,7 +1,7 @@
 import * as t from 'io-ts';
 import { StringOrNull } from '../common/StringOrNull';
 
-export const HomeMetadata = t.strict(
+export const HomeMetadata = t.partial(
   {
     id: t.string,
     savingTime: t.string,
@@ -12,7 +12,7 @@ export const HomeMetadata = t.strict(
 );
 export type HomeMetadata = t.TypeOf<typeof HomeMetadata>;
 
-export const VideoMetadata = t.strict(
+export const VideoMetadata = t.partial(
   {
     id: t.string,
     videoId: t.string,
@@ -28,7 +28,7 @@ export const VideoMetadata = t.strict(
 );
 export type VideoMetadata = t.TypeOf<typeof VideoMetadata>;
 
-export const SearchMetadata = t.strict(
+export const SearchMetadata = t.partial(
   {
     id: t.string,
     savingTime: t.string,
