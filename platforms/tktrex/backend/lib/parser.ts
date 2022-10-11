@@ -6,7 +6,7 @@ import {
   SaveResults,
 } from '@shared/providers/parser.provider';
 import { sanitizeHTML } from '@shared/utils/html.utils';
-import { TKMetadata } from '@tktrex/shared/models/Metadata';
+import { TKMetadata } from '@tktrex/shared/models/metadata';
 import { TKParserConfig } from '@tktrex/shared/parser/config';
 import { HTMLSource } from '@tktrex/shared/parser/source';
 import D from 'debug';

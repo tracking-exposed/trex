@@ -82,7 +82,7 @@ describe('Parser: "profile"', () => {
           db,
           codecs: {
             contribution: HTMLSource,
-            metadata: TKMetadata.TKMetadata,
+            metadata: TKMetadata.ProfileMetadata,
           },
           addDom,
           sourceSchema: getSourceSchema(),

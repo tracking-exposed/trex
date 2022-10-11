@@ -1,5 +1,5 @@
 import { BuildMetadataFn } from '@shared/providers/parser.provider';
-import { TKMetadata } from '../models/Metadata';
+import { TKMetadata } from '../models/metadata';
 import { TKParsers } from './parsers';
 import { HTMLSource } from './source';
 import { isValid } from 'date-fns';
@@ -14,6 +14,7 @@ export const toMetadata: BuildMetadataFn<HTMLSource, TKMetadata, TKParsers> = (
 
   let metadata: any = {
     clientTime: entry.source.html.clientTime,
+    href: entry.source.html.href,
     thumbnails: [],
   };
 
@@ -57,7 +58,7 @@ export const toMetadata: BuildMetadataFn<HTMLSource, TKMetadata, TKParsers> = (
   case 'creator': {
     const { nature, profile, downloader } = entry.findings;
     metadata = {
-      videos: [],
+      results: [],
       ...metadata,
       nature,
       ...nature,
@@ -80,6 +81,7 @@ export const toMetadata: BuildMetadataFn<HTMLSource, TKMetadata, TKParsers> = (
       native,
     } = entry.findings;
     metadata = {
+      ...metadata,
       ...nature,
       nature,
       ...description,

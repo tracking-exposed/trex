@@ -1,5 +1,6 @@
 import { trexLogger } from '@shared/logger';
 import { ParserFn } from '@shared/providers/parser.provider';
+import { throwEitherError } from '@shared/utils/fp.utils';
 import _ from 'lodash';
 import { TKParserConfig } from '../config';
 import { HTMLSource } from '../source';
@@ -10,7 +11,7 @@ const debug = trexLogger.extend('parser:profile');
 function getFullProfileMetadata(renod: ParentNode, order: any): any {
   const vlink = renod.querySelector('a[href^="https://www.tiktok.com/@"]');
   const vhref = vlink?.getAttribute('href');
-  const vidnat = getNatureByHref(vhref as any);
+  const vidnat = throwEitherError( getNatureByHref(vhref as any));
 
   const titleel = renod.querySelector('a[title]');
   if (!titleel) return null;
@@ -36,7 +37,7 @@ const profile: ParserFn<HTMLSource, any, TKParserConfig> = async(
   envelop,
   previous,
 ) => {
-  if (previous.nature.type !== 'profile') return false;
+  if (previous.nature.type !== 'profile') return null;
 
   /* this piece of code return a list of videos, because
        the search selector is not per video, but per 'body' */

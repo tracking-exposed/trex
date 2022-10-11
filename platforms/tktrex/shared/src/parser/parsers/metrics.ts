@@ -1,6 +1,6 @@
 import { ParserFn } from '@shared/providers/parser.provider';
 import { HTMLSource } from '../source';
-import { Metrics } from '../../models/Metadata';
+import { Metrics } from '../../models/metadata/Metrics';
 import { TKParserConfig } from '../config';
 
 const metrics: ParserFn<HTMLSource, Metrics, TKParserConfig> = async(

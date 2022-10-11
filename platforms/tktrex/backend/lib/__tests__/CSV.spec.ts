@@ -3,7 +3,6 @@ import {
   NativeMetadataArb,
   SearchMetaDataArb,
 } from '@tktrex/shared/arbitraries/Metadata.arb';
-import { NativeMetadata } from '@tktrex/shared/models/Metadata';
 import CSV from '../CSV';
 
 describe('lib/CSV.ts', () => {
