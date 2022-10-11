@@ -1,13 +1,13 @@
 import React from 'react';
 import './ExpandView.css';
 import { getYTVideoURLById } from '@shared/utils/yt.utils';
-import { selectedRecommendation } from './../../state/types';
+import { ParsedInfo } from '@yttrex/shared/src/models/Metadata';
 import CloseIcon from '@mui/icons-material/Close';
 import ytThumbnail from './../../assets/ytthumb.png';
 
 interface Props {
   isVisible: boolean;
-  data: selectedRecommendation[];
+  data: ParsedInfo[];
   handleHideModal: () => void;
 }
 
@@ -42,13 +42,12 @@ const ExpandView = (props: Props): JSX.Element => {
                 recommendation.videoId}
             </div>
             <div className="expand-view__list__item__text">
-              {recommendation.recommendedViews ||
-                (recommendation.views && (
-                  <div className="expand-view__list__item__text__views">
-                    {recommendation.recommendedViews ?? recommendation.views}{' '}
-                    views
-                  </div>
-                ))}
+              {(recommendation.recommendedViews ?? recommendation.views) && (
+                <div className="expand-view__list__item__text__views">
+                  {recommendation.recommendedViews ?? recommendation.views}{' '}
+                  views
+                </div>
+              )}
             </div>
           </div>
         </a>

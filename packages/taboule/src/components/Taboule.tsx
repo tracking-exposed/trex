@@ -22,7 +22,7 @@ import { Results, SearchRequestInput, TabouleQueries } from '../state/queries';
 import { TabouleQueryKey } from '../state/types';
 import { ErrorOverlay } from './ErrorOverlay';
 import ExpandView from './expand-view/ExpandView';
-import { selectedRecommendation } from './../state/types';
+import { ParsedInfo } from '@yttrex/shared/src/models/Metadata';
 
 debug.enable(process.env.DEBUG ?? '');
 
@@ -152,11 +152,11 @@ export const Taboule = <Q extends keyof TabouleQueries>({
   }
   interface ExpandableAction {
     type: ExpandableActionType;
-    payload: selectedRecommendation[];
+    payload: ParsedInfo[];
   }
   interface ExpandableState {
     isVisible: boolean;
-    data: selectedRecommendation[];
+    data: ParsedInfo[];
   }
 
   const initialState = { isVisible: false, data: [] };
