@@ -22,35 +22,25 @@ export function flattenSearch(memo, metasearch) {
         : null;
     const readyo = {
       ...result.video,
-      // @ts-ignore
       publishingDate: result.publishingDate,
-      // @ts-ignore
       order: result.order,
-      // @ts-ignore
       tags: _.compact(
         _.map(result.linked, function (link) {
           return link?.link?.type === 'tag' ? link.desc : null;
         })
       ).join(', '),
-      // @ts-ignore
       metadataId: metasearch.id,
-      // @ts-ignore
       savingTime: moment(metasearch.savingTime).format('YYYY-MM-DD HH:mm'),
-      // @ts-ignore
       timeago: moment
         .duration(moment(metasearch.savingTime) - moment())
         .humanize(true),
-      // @ts-ignore
-      publicKey: metasearch.publicKey,
-      // @ts-ignore
       query: metasearch.query,
-      // @ts-ignore
       textdesc: result.textdesc,
-      // @ts-ignore
       thumbfile: thumbfile ? thumbfile.replace(/(.*\/)|(.*\\)/, '') : null,
+      researchTag: metasearch.researchTag,
+      experimentId: metasearch.experimentId,
     };
     readyo.videoId = '' + readyo.videoId;
-    // @ts-ignore
     memo.push(readyo);
   });
   return memo;
