@@ -16,7 +16,6 @@ import security from '../lib/security';
 import { throwEitherError } from '@shared/utils/fp.utils';
 import { getNatureByHref } from '@tktrex/shared/parser/parsers/nature';
 import { HTML } from '@tktrex/shared/models/http/HTML';
-import { getMetadata } from 'lib/parser';
 
 const debug = D('routes:events');
 

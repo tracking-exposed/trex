@@ -1,17 +1,30 @@
-const debug = require('debug')('routes:directives');
-const nconf = require('nconf');
-const experlib = require('../lib/experiments');
-const mongo3 = require('@shared/providers/mongo.provider');
+import D from 'debug';
+import nconf from 'nconf';
+import * as experlib from '../lib/experiments';
+import * as mongo3 from '@shared/providers/mongo.provider';
+import * as express from 'express';
 
-async function post(req) {
+const debug = D('routes:directives');
+
+async function post(req: express.Request): Promise<any> {
   const steps = req.body;
+
+  if (!Array.isArray(steps)) {
+    return {
+      json: {
+        error: true,
+        status: 400,
+        message: "Can't register an experiment with no steps",
+      },
+    };
+  }
 
   const feedback = await experlib.registerSteps(steps);
   // this feedback is printed at terminal when --csv is used
   return { json: feedback };
 }
 
-async function get(req) {
+async function get(req: express.Request): Promise<any> {
   const experimentId = req.params.experimentId;
   debug('requested steps for experiment %s', experimentId);
   const expinfo = await experlib.pickDirective(experimentId);
@@ -41,12 +54,12 @@ async function get(req) {
   return { json: steps };
 }
 
-async function getPublic(req) {
+async function getPublic(req: express.Request): Promise<any> {
   // everything would be public until we don't implement the visibility logic,
   // which is not a problem of this API, but a registration default
   // plus an admin-only API to switch visibility.
 
-  const mongoc = await mongo3.clientConnect();
+  const mongoc: any = await mongo3.clientConnect();
   // TODO we've to implement paging in this API because it affect
   // Guardoni-UX and, at the moment, we forcefully cap to 20 the max results
 
@@ -67,8 +80,4 @@ async function getPublic(req) {
   };
 }
 
-module.exports = {
-  post,
-  get,
-  getPublic,
-};
+export { post, get, getPublic };
