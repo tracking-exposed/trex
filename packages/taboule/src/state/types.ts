@@ -2,13 +2,13 @@ import * as t from 'io-ts';
 
 export const TabouleQueryKey = t.union(
   [
-    t.literal('ccRelatedUsers'),
-    t.literal('getExperimentById'),
-    t.literal('getExperimentList'),
-    t.literal('personalSearches'),
-    t.literal('personalVideos'),
-    t.literal('personalHomes'),
-    t.literal('personalAds'),
+    t.literal('YCAIccRelatedUsers'),
+    t.literal('youtubeGetExperimentById'),
+    t.literal('youtubeGetExperimentList'),
+    t.literal('youtubePersonalSearches'),
+    t.literal('youtubePersonalVideos'),
+    t.literal('youtubePersonalHomes'),
+    t.literal('youtubePersonalAds'),
     t.literal('tikTokPersonalHTMLSummary'),
     t.literal('tikTokPersonalSearch'),
     t.literal('tikTokSearches'),

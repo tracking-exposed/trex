@@ -55,7 +55,7 @@ export const GetTabouleCommands = (
         },
       }),
     {
-      personalSearches: queries.personalSearches,
+      youtubePersonalSearches: queries.youtubePersonalSearches,
     }
   );
 
