@@ -3,17 +3,17 @@ import { TabouleQueryKey } from '../state/types';
 type TabouleDefaultParams = { [K in TabouleQueryKey]: any };
 
 export const defaultParams: TabouleDefaultParams = {
-  ccRelatedUsers: {},
-  getExperimentById: {},
-  getExperimentList: {
+  YCAIccRelatedUsers: {},
+  youtubeGetExperimentById: {},
+  youtubeGetExperimentList: {
     type: 'comparison',
     key: 'fuffa',
     // this is the default as per 'yarn backend watch'
   },
-  personalHomes: {},
-  personalSearches: {},
-  personalVideos: {},
-  personalAds: {},
+  youtubePersonalHomes: {},
+  youtubePersonalSearches: {},
+  youtubePersonalVideos: {},
+  youtubePersonalAds: {},
   tikTokPersonalHTMLSummary: {},
   tikTokPersonalSearch: {},
   tikTokSearches: {},

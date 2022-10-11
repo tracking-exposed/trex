@@ -35,13 +35,13 @@ export interface TabouleQueryConfiguration<P extends Record<string, any>>
 }
 
 interface TabouleConfiguration {
-  ccRelatedUsers: TabouleQueryConfiguration<ChannelRelated>;
-  getExperimentById: TabouleQueryConfiguration<Metadata>;
-  getExperimentList: TabouleQueryConfiguration<GuardoniExperiment>;
-  personalAds: TabouleQueryConfiguration<{}>;
-  personalHomes: TabouleQueryConfiguration<HomeMetadata>;
-  personalSearches: TabouleQueryConfiguration<SearchMetadata>;
-  personalVideos: TabouleQueryConfiguration<VideoMetadata>;
+  YCAIccRelatedUsers: TabouleQueryConfiguration<ChannelRelated>;
+  youtubeGetExperimentById: TabouleQueryConfiguration<Metadata>;
+  youtubeGetExperimentList: TabouleQueryConfiguration<GuardoniExperiment>;
+  youtubePersonalAds: TabouleQueryConfiguration<{}>;
+  youtubePersonalHomes: TabouleQueryConfiguration<HomeMetadata>;
+  youtubePersonalSearches: TabouleQueryConfiguration<SearchMetadata>;
+  youtubePersonalVideos: TabouleQueryConfiguration<VideoMetadata>;
   tikTokPersonalHTMLSummary: TabouleQueryConfiguration<SummaryHTMLMetadata>;
   tikTokPersonalSearch: TabouleQueryConfiguration<TikTokPSearchMetadata>;
   tikTokSearches: TabouleQueryConfiguration<TikTokSearchMetadata>;
@@ -56,7 +56,7 @@ export const defaultConfiguration = (
   params: any
 ): TabouleConfiguration => {
   return {
-    ccRelatedUsers: {
+    YCAIccRelatedUsers: {
       getRowId: (d) => d.id ?? d.recommendedSource ?? d.percentage,
       inputs: inputs.channelIdInput,
       columns: [
@@ -79,7 +79,7 @@ export const defaultConfiguration = (
         },
       ],
     },
-    getExperimentById: {
+    youtubeGetExperimentById: {
       inputs: inputs.experimentIdInput,
       columns: [
         {
@@ -91,7 +91,7 @@ export const defaultConfiguration = (
         },
       ],
     },
-    getExperimentList: {
+    youtubeGetExperimentList: {
       columns: [
         {
           ...columnDefault,
@@ -121,7 +121,7 @@ export const defaultConfiguration = (
         },
       ],
     },
-    personalSearches: {
+    youtubePersonalSearches: {
       inputs: inputs.publicKeyInput,
       actions: () => {
         return (
@@ -192,7 +192,7 @@ export const defaultConfiguration = (
         },
       ],
     },
-    personalVideos: {
+    youtubePersonalVideos: {
       inputs: inputs.publicKeyInput,
       actions: () => {
         return (
@@ -235,11 +235,11 @@ export const defaultConfiguration = (
         },
       ],
     },
-    personalAds: {
+    youtubePersonalAds: {
       inputs: inputs.publicKeyInput,
       columns: [],
     },
-    personalHomes: {
+    youtubePersonalHomes: {
       inputs: inputs.publicKeyInput,
       columns: [
         {

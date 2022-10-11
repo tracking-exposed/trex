@@ -152,7 +152,7 @@ export const oneCreatorVideo = compose(
   }, available)
 );
 
-export const ccRelatedUsers = compose(
+export const YCAIccRelatedUsers = compose(
   product({
     profile: requiredLocalProfile,
     params: param<{ amount: number; skip: number }>(),

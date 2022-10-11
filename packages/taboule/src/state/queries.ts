@@ -40,13 +40,13 @@ export interface Results<T> {
 type EndpointQuery<C> = CachedQuery<SearchRequestInput, APIError, Results<C>>;
 
 export interface TabouleQueries {
-  ccRelatedUsers: EndpointQuery<ChannelRelated>;
-  getExperimentById: EndpointQuery<Step>;
-  getExperimentList: EndpointQuery<GuardoniExperiment>;
-  personalSearches: EndpointQuery<SearchMetadata>;
-  personalAds: EndpointQuery<any>;
-  personalHomes: EndpointQuery<HomeMetadata>;
-  personalVideos: EndpointQuery<VideoMetadata>;
+  YCAIccRelatedUsers: EndpointQuery<ChannelRelated>;
+  youtubeGetExperimentById: EndpointQuery<Step>;
+  youtubeGetExperimentList: EndpointQuery<GuardoniExperiment>;
+  youtubePersonalSearches: EndpointQuery<SearchMetadata>;
+  youtubePersonalAds: EndpointQuery<any>;
+  youtubePersonalHomes: EndpointQuery<HomeMetadata>;
+  youtubePersonalVideos: EndpointQuery<VideoMetadata>;
   // tik tok
   tikTokPersonalHTMLSummary: EndpointQuery<SummaryHTMLMetadata>;
   tikTokPersonalSearch: EndpointQuery<TikTokPSearchMetadata>;
@@ -79,7 +79,7 @@ export const GetTabouleQueries = ({
     tkEndpoints
   );
 
-  const ccRelatedUsers = queryStrict<
+  const YCAIccRelatedUsers = queryStrict<
     SearchRequestInput,
     APIError,
     Results<ChannelRelated>
@@ -100,7 +100,7 @@ export const GetTabouleQueries = ({
     available
   );
 
-  const getExperimentById = queryStrict<
+  const youtubeGetExperimentById = queryStrict<
     SearchRequestInput,
     APIError,
     Results<Step>
@@ -116,7 +116,7 @@ export const GetTabouleQueries = ({
     available
   );
 
-  const getExperimentList = queryStrict<
+  const youtubeGetExperimentList = queryStrict<
     SearchRequestInput,
     APIError,
     Results<GuardoniExperiment>
@@ -137,7 +137,7 @@ export const GetTabouleQueries = ({
     available
   );
 
-  const personalHomes = queryStrict<
+  const youtubePersonalHomes = queryStrict<
     SearchRequestInput,
     APIError,
     Results<HomeMetadata>
@@ -168,7 +168,11 @@ export const GetTabouleQueries = ({
     available
   );
 
-  const personalAds = queryStrict<SearchRequestInput, APIError, Results<any>>(
+  const youtubePersonalAds = queryStrict<
+    SearchRequestInput,
+    APIError,
+    Results<any>
+  >(
     (input) =>
       pipe(
         YTAPI.v1.Public.GetPersonalStatsByPublicKey(input),
@@ -180,7 +184,7 @@ export const GetTabouleQueries = ({
     available
   );
 
-  const personalVideos = queryStrict<
+  const youtubePersonalVideos = queryStrict<
     SearchRequestInput,
     APIError,
     Results<VideoMetadata>
@@ -211,7 +215,7 @@ export const GetTabouleQueries = ({
     available
   );
 
-  const personalSearches = queryStrict<
+  const youtubePersonalSearches = queryStrict<
     SearchRequestInput,
     APIError,
     Results<SearchMetadata>
@@ -291,13 +295,13 @@ export const GetTabouleQueries = ({
   );
 
   return {
-    ccRelatedUsers,
-    getExperimentById,
-    getExperimentList,
-    personalHomes,
-    personalAds,
-    personalVideos,
-    personalSearches,
+    YCAIccRelatedUsers,
+    youtubeGetExperimentById,
+    youtubeGetExperimentList,
+    youtubePersonalHomes,
+    youtubePersonalAds,
+    youtubePersonalVideos,
+    youtubePersonalSearches,
     tikTokPersonalHTMLSummary,
     tikTokPersonalSearch,
     tikTokSearches,
