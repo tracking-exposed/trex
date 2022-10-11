@@ -3,7 +3,7 @@ import './ExpandView.css';
 import { getYTVideoURLById } from '@shared/utils/yt.utils';
 import { ParsedInfo } from '@yttrex/shared/src/models/Metadata';
 import CloseIcon from '@mui/icons-material/Close';
-import ytThumbnail from 'assets/ytthumb.png';
+import ytThumbnail from './../../assets/ytthumb.png';
 
 interface Props {
   isVisible: boolean;
