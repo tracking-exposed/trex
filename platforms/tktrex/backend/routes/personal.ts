@@ -4,29 +4,10 @@ import moment from 'moment';
 import automo from '../lib/automo';
 import CSV from '../lib/CSV';
 import * as foodUtils from '@shared/utils/food.utils';
-import { flattenNative, flattenProfile, flattenSearch } from './search';
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const debug = require('debug')('routes:personal');
 
 const CSV_MAX_SIZE = 9000;
-
-function pickFeedFields(metae: any): any {
-  return {
-    authorName: metae.author?.name,
-    authorUser: metae.author?.username,
-    savingTime: metae.savingTime,
-    order: metae.order,
-    refreshId: metae.timelineId,
-    description: metae.description,
-    tags: metae.hashtags?.join(', ') || '',
-    ...metae.metrics,
-    musicURL: metae?.music?.url || null,
-    musicTitle: metae?.music?.name || null,
-    hasStitch: !!_.get(metae, 'stitch', false),
-    publicKey: metae.publicKey,
-    id: metae.id,
-  };
-}
 
 async function getPersonal(req: any): Promise<any> {
   // personal API format is
@@ -176,16 +157,10 @@ async function getPersonalCSV(req: any): Promise<any> {
     CSV_MAX_SIZE
   );
 
-  /* remind: search and profile have a different logic than
-     foryou and following.
-     this is why is a reduce instead of map */
-  let unrolledData: any[] = [];
-  if (type === 'search') unrolledData = _.reduce(data, flattenSearch, []);
-  else if (type === 'profile')
-    unrolledData = _.reduce(data, flattenProfile, []);
-  else if (type === 'native') {
-    unrolledData = data.map(flattenNative);
-  } else unrolledData = _.map(data, pickFeedFields);
+  const unrolledData = CSV.unrollNested(data, {
+    type,
+    experiment: true,
+  });
 
   if (!unrolledData.length) {
     debug(
@@ -300,7 +275,6 @@ const getPersonalByExperimentId = async (
 };
 
 export {
-  pickFeedFields,
   getPersonal,
   getPersonalCSV,
   getPersonalByExperimentId,

@@ -122,7 +122,7 @@ async function readOne(
   mongoc: MongoClient,
   cName: string,
   selector: any,
-  sorter: any
+  sorter?: any
 ): Promise<any> {
   const l = await read(mongoc, cName, selector, sorter);
   if (_.size(l) > 1)

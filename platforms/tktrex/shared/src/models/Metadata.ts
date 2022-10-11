@@ -1,12 +1,19 @@
 import * as t from 'io-ts';
-import { FollowingN, ForYouN, SearchN, NativeVideoN, ProfileN } from './Nature';
+import {
+  FollowingN,
+  ForYouN,
+  SearchN,
+  NativeVideoN,
+  ProfileN,
+  Nature,
+} from './Nature';
 
 const Music = t.type(
   {
     url: t.string,
     name: t.string,
   },
-  'Music',
+  'Music'
 );
 
 type Music = t.TypeOf<typeof Music>;
@@ -16,7 +23,7 @@ const Author = t.type(
     link: t.string,
     username: t.string,
   },
-  'Author',
+  'Author'
 );
 
 type Author = t.TypeOf<typeof Author>;
@@ -28,10 +35,10 @@ const AuthorWithName = t.intersection(
       {
         name: t.string,
       },
-      'name',
+      'name'
     ),
   ],
-  'AuthorWithName',
+  'AuthorWithName'
 );
 
 type AuthorWithName = t.TypeOf<typeof AuthorWithName>;
@@ -42,7 +49,7 @@ export const Metrics = t.type(
     commentn: t.union([t.string, t.null]),
     sharen: t.union([t.string, t.null]),
   },
-  'Metrics',
+  'Metrics'
 );
 
 export type Metrics = t.TypeOf<typeof Metrics>;
@@ -51,11 +58,25 @@ export const MetadataBase = t.type(
   {
     _id: t.unknown,
     id: t.string,
-    savingTime: t.string,
+    /**
+     * The href where the evidence has been collected
+     */
+    href: t.string,
+    /**
+     * The supporter publicKey
+     *
+     * TODO: it may be replaced by the supporter id
+     */
     publicKey: t.string,
     timelineId: t.string,
+    researchTag: t.union([t.string, t.undefined]),
+    experimentId: t.union([t.string, t.undefined]),
+    /**
+     * DB saving time
+     */
+    savingTime: t.string,
   },
-  'MetadataBase',
+  'MetadataBase'
 );
 
 export type MetadataBase = t.TypeOf<typeof MetadataBase>;
@@ -83,10 +104,10 @@ export const ForYouVideoMetadata = t.intersection(
         hashtags: t.array(t.string),
         metrics: Metrics,
       },
-      'foryou',
+      'foryou'
     ),
   ],
-  'ForYouVideoMetadata',
+  'ForYouVideoMetadata'
 );
 
 export type ForYouVideoMetadata = t.TypeOf<typeof ForYouVideoMetadata>;
@@ -101,24 +122,30 @@ export const FollowingVideoMetadata = t.intersection(
         author: AuthorWithName,
         music: Music,
       },
-      'following',
+      'following'
     ),
   ],
-  'FollowingVideoMetaData',
+  'FollowingVideoMetaData'
 );
 
 export type FollowingVideoMetadata = t.TypeOf<typeof FollowingVideoMetadata>;
 
-const SearchMetadataResult = t.type(
+export const ResultLinked = t.type(
+  { link: Nature, desc: t.string },
+  'ResultLinked'
+);
+export type ResultLinked = t.TypeOf<typeof ResultLinked>;
+
+export const SearchMetadataResult = t.type(
   {
     order: t.number,
-    video: t.any,
+    video: NativeVideoN,
     textdesc: t.string,
-    linked: t.array(t.any),
+    linked: t.array(ResultLinked),
     thumbnail: t.string,
     publishingDate: t.string,
   },
-  'SearchMetadataResult',
+  'SearchMetadataResult'
 );
 export const SearchMetadata = t.intersection(
   [
@@ -127,19 +154,20 @@ export const SearchMetadata = t.intersection(
     t.type({ nature: SearchN }),
     t.type(
       {
+        hashtags: t.array(t.string),
         results: t.array(SearchMetadataResult),
         thumbnails: t.array(
           t.type({
             downloaded: t.boolean,
             filename: t.string,
             reason: t.number,
-          }),
+          })
         ),
       },
-      'search',
+      'search'
     ),
   ],
-  'SearchVideoMetadata',
+  'SearchVideoMetadata'
 );
 
 export type SearchMetadata = t.TypeOf<typeof SearchMetadata>;
@@ -157,10 +185,10 @@ export const NativeMetadata = t.intersection(
         metrics: t.union([Metrics, t.undefined, t.null]),
         hashtags: t.union([t.array(t.string), t.null]),
       },
-      'NativeMetadataProps',
+      'NativeMetadataProps'
     ),
   ],
-  'NativeMetadata',
+  'NativeMetadata'
 );
 
 export type NativeMetadata = t.TypeOf<typeof NativeMetadata>;
@@ -169,11 +197,12 @@ export const ProfileMetadata = t.intersection(
   [
     MetadataBase,
     ProfileN,
+    t.type({ nature: ProfileN }),
     t.type({
       videos: t.array(t.any),
     }),
   ],
-  'ProfileMetadata',
+  'ProfileMetadata'
 );
 export type ProfileMetadata = t.TypeOf<typeof ProfileMetadata>;
 
@@ -185,7 +214,7 @@ export const TKMetadata = t.union(
     NativeMetadata,
     ProfileMetadata,
   ],
-  'TKMetadata',
+  'TKMetadata'
 );
 
 export type TKMetadata = t.TypeOf<typeof TKMetadata>;
