@@ -78,12 +78,12 @@ export const getHTMLId = encodeUtils.GetEncodeUtils(
     timelineId,
     /* the counters guarantee an increment at each evidence sent by extension */
     counters: `v(${videoCounter})f(${feedCounter})i(${incremental})`,
-  })
+  }),
 );
 
 export const getMetadataId = encodeUtils.GetEncodeUtils(
   (m: { htmlId: string; clientTime: string }) => ({
     id: m.htmlId,
     clientTime: m.clientTime,
-  })
+  }),
 );

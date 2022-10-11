@@ -82,7 +82,7 @@ describe('Parser: "search"', () => {
           db,
           codecs: {
             contribution: HTMLSource,
-            metadata: TKMetadata.TKMetadata,
+            metadata: TKMetadata.SearchMetadata,
           },
           addDom,
           sourceSchema: getSourceSchema(),

@@ -1,6 +1,6 @@
 import * as t from 'io-ts';
 import { DateFromISOString } from 'io-ts-types/lib/DateFromISOString';
-import { TKMetadata } from '../Metadata';
+import { TKMetadata } from '../metadata';
 import { Supporter } from '@shared/models/Supporter';
 
 export const PersonalVideoFeed = t.strict(

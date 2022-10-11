@@ -21,11 +21,11 @@ export const HTML = t.intersection(
           }),
           t.undefined,
         ],
-        'GeoIP'
+        'GeoIP',
       ),
     }),
   ],
-  'HTML'
+  'HTML',
 );
 
 export type HTML = t.TypeOf<typeof HTML>;

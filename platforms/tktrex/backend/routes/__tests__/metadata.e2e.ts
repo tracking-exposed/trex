@@ -4,9 +4,24 @@ jest.mock('fetch-opengraph');
 
 // import test utils
 import { fc } from '@shared/test';
-import { MetadataArb } from '@tktrex/shared/arbitraries/Metadata.arb';
+import { NativeMetadataArb } from '@tktrex/shared/arbitraries/Metadata.arb';
 import { GetTest, Test } from '../../test/Test';
 
+const toNativeMetadata = (m: any): any => {
+  return {
+    ...m,
+    author: m.author ? { ...m.author, name: m.author.name ?? null } : null,
+    music: m.music ?? null,
+    metrics: m.metrics ?? null,
+    description: m.description ?? null,
+    researchTag: m.researchTag ?? null,
+    clientTime:
+      typeof m.clientTime === 'string'
+        ? m.clientTime
+        : (m.clientTime as any).toISOString(),
+    savingTime: (m.savingTime as any).toISOString(),
+  };
+};
 describe('Metadata API', () => {
   let test: Test;
 
@@ -38,7 +53,7 @@ describe('Metadata API', () => {
       const amount = 10;
 
       const metadataWithExperimentId = fc
-        .sample(MetadataArb, 100)
+        .sample(NativeMetadataArb, 100)
         .map(({ _id, ...m }) => ({
           ...m,
           savingTime: new Date(),
@@ -46,9 +61,10 @@ describe('Metadata API', () => {
         }));
 
       const metadataWithResearchTag = fc
-        .sample(MetadataArb, 100)
+        .sample(NativeMetadataArb, 100)
         .map(({ _id, ...m }) => ({
           ...m,
+          experimentId: null,
           savingTime: new Date(),
           researchTag,
         }));
@@ -62,13 +78,7 @@ describe('Metadata API', () => {
       const expectedMetadata = metadataWithResearchTag
         .sort((a, b) => b.savingTime.getTime() - a.savingTime.getTime())
         .slice(0, amount)
-        .map((m) => {
-          return {
-            ...m,
-            clientTime: m.clientTime.toISOString(),
-            savingTime: m.savingTime.toISOString(),
-          };
-        });
+        .map(toNativeMetadata);
 
       const { body } = await test.app
         .get(`/api/v2/metadata`)
@@ -100,7 +110,7 @@ describe('Metadata API', () => {
       const amount = 10;
 
       const metadataWithExperimentId = fc
-        .sample(MetadataArb, 100)
+        .sample(NativeMetadataArb, 100)
         .map(({ _id, ...m }) => ({
           ...m,
           savingTime: new Date(),
@@ -108,7 +118,7 @@ describe('Metadata API', () => {
         }));
 
       const metadataWithResearchTag = fc
-        .sample(MetadataArb, 100)
+        .sample(NativeMetadataArb, 100)
         .map(({ _id, ...m }) => ({
           ...m,
           savingTime: new Date(),
@@ -124,13 +134,7 @@ describe('Metadata API', () => {
       const expectedMetadata = metadataWithExperimentId
         .sort((a, b) => b.savingTime.getTime() - a.savingTime.getTime())
         .slice(0, amount)
-        .map((m) => {
-          return {
-            ...m,
-            clientTime: m.clientTime.toISOString(),
-            savingTime: m.savingTime.toISOString(),
-          };
-        });
+        .map(toNativeMetadata);
 
       const { body } = await test.app
         .get(`/api/v2/metadata`)

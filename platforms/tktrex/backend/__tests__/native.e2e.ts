@@ -82,7 +82,7 @@ describe('Parser: "native"', () => {
           db,
           codecs: {
             contribution: HTMLSource,
-            metadata: TKMetadata.TKMetadata,
+            metadata: TKMetadata.NativeMetadata,
           },
           addDom,
           sourceSchema: getSourceSchema(),

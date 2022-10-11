@@ -71,7 +71,13 @@ const search: ParserFn<HTMLSource, any, TKParserConfig> = async(
   envelop,
   previous,
 ) => {
-  if (previous.nature.type !== 'search') return false;
+
+  if (previous.nature.type !== 'search') {
+    return false;
+  }
+
+  debug('Parsing entry %O', previous);
+
 
   /* this piece of code return a list of videos, because
        the search selector is not per video, but per 'body' */
