@@ -6,10 +6,12 @@ const makeTextInput =
   // eslint-disable-next-line react/display-name
   (params: any, setParams: React.Dispatch<any>): JSX.Element => {
     return (
-      <Box margin={2}>
+      <Box>
         <FormControlLabel
           style={{
             alignItems: 'flex-start',
+            marginLeft: 0,
+            width: '100%',
           }}
           labelPlacement="top"
           label={label}
@@ -19,6 +21,9 @@ const makeTextInput =
               name={key}
               value={params[key] ?? ''}
               onChange={(e) => setParams({ ...params, [key]: e.target.value })}
+              style={{
+                width: '30%',
+              }}
             />
           }
         />
@@ -31,7 +36,7 @@ export const channelIdInput = makeTextInput({
   key: 'channelId',
 });
 export const publicKeyInput = makeTextInput({
-  label: 'Public Key',
+  label: 'Public Key:',
   key: 'publicKey',
 });
 export const experimentIdInput = makeTextInput({

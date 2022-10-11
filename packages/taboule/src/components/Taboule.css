@@ -1,0 +1,19 @@
+.taboule__reload{
+  position: absolute;
+  right: 0;
+  background-color:transparent;
+  font-size: 16px;
+  border: 1px solid #f44336;
+  border-radius: 3px;
+  padding: 5px 10px;
+  color: #f44336;
+  transition: all .2s;
+  bottom: 0px;
+}
+
+.taboule__reload:hover{
+  cursor: pointer;
+  background-color:#f44336;
+  color: white;
+  border: 1px solid white;
+}

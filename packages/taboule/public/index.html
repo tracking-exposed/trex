@@ -7,10 +7,6 @@
       #taboule-query-value {
         margin: 0 20px 30px 0;
       }
-      #taboule-reload {
-        margin-left: 20px;
-        cursor: pointer;
-      }
     </style>
   </head>
   <body>
@@ -45,7 +41,6 @@
           <label>Show Params Inputs</label>
           <input type="checkbox" checked="true" />
         </div>
-        <button id="taboule-reload">Reload Taboule</button>
       </div>
       <div id="main"></div>
     </div>
@@ -61,7 +56,6 @@
     const showInputCheckbox = document.querySelector(
       '#taboule-show-inputs input'
     );
-    const tabouleReload = document.querySelector('#taboule-reload');
 
     const runTaboule = (query, showInput = false) => {
       window.Taboule({
@@ -76,12 +70,6 @@
       });
     };
 
-    tabouleReload.addEventListener('click', (e) => {
-      runTaboule(
-        querySelect.value,
-        showInputCheckbox.getAttribute('checked') === 'true'
-      );
-    });
     querySelect.addEventListener('change', (e) => {
       runTaboule(
         e.target.value,

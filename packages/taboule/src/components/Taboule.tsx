@@ -23,6 +23,7 @@ import { TabouleQueryKey } from '../state/types';
 import { ErrorOverlay } from './ErrorOverlay';
 import ExpandView from './expand-view/ExpandView';
 import { ParsedInfo } from '@yttrex/shared/src/models/Metadata';
+import './Taboule.css';
 
 debug.enable(process.env.DEBUG ?? '');
 
@@ -194,9 +195,26 @@ export const Taboule = <Q extends keyof TabouleQueries>({
     });
   };
 
+  const [, forceUpdate] = React.useReducer((x) => x + 1, 0);
+
+  const handleReload = (): void => {
+    forceUpdate();
+  };
+
   return (
     <Box height={height}>
-      {paramsInputs}
+      <div
+        style={{
+          position: 'relative',
+          marginBottom: '30px',
+        }}
+      >
+        {paramsInputs}
+        <button onClick={handleReload} className="taboule__reload">
+          reload
+        </button>
+      </div>
+
       <WithQueries
         queries={{ query }}
         params={{
