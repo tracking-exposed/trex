@@ -111,6 +111,9 @@ export const SearchMetadata = t.strict(
       t.strict({
         position: t.number,
         title: t.string,
+        videoId: t.string,
+        href: t.string,
+        views: t.number,
       })
     ),
   },

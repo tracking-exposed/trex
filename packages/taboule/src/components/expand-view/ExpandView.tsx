@@ -15,7 +15,10 @@ const ExpandView = (props: Props): JSX.Element => {
   const { isVisible, data, handleHideModal } = props;
   const recommendedList = data.map((recommendation) => {
     return (
-      <li key={recommendation.index} className="expand-view__list__item">
+      <li
+        key={recommendation.index ?? recommendation.videoId}
+        className="expand-view__list__item"
+      >
         <a
           className="expand-view__list__item__link"
           target="_blank"
@@ -34,14 +37,18 @@ const ExpandView = (props: Props): JSX.Element => {
 
           <div className="expand-view__list__item__text">
             <div className="expand-view__list__item__text__title">
-              {recommendation.recommendedTitle ?? recommendation.videoId}
+              {recommendation.recommendedTitle ??
+                recommendation.title ??
+                recommendation.videoId}
             </div>
             <div className="expand-view__list__item__text">
-              {recommendation.recommendedViews && (
-                <div className="expand-view__list__item__text__views">
-                  {recommendation.recommendedViews} views
-                </div>
-              )}
+              {recommendation.recommendedViews ||
+                (recommendation.views && (
+                  <div className="expand-view__list__item__text__views">
+                    {recommendation.recommendedViews ?? recommendation.views}{' '}
+                    views
+                  </div>
+                ))}
             </div>
           </div>
         </a>
