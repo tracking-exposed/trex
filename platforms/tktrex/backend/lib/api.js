@@ -1,6 +1,8 @@
 import * as publicRoutes from '../routes/public';
 import * as metadataRoutes from '../routes/metadata';
 import * as eventsRoutes from '../routes/events';
+import * as experimentsRoutes from '../routes/experiments';
+import * as directivesRoutes from '../routes/directives';
 
 const apiList = {
   processEvents: eventsRoutes.processEvents,
@@ -38,16 +40,16 @@ const apiList = {
   // experiment related APIs -- implemented but not really
   // integrated with guardoni: don't rely on them, they are a
   // simple copy, paritally TypeScripted review, from yt
-  getAllExperiments: require('../routes/experiments').list,
-  // experimentCSV:       require('../routes/experiments').csv,
-  experimentDOT: require('../routes/experiments').dot,
-  experimentJSON: require('../routes/experiments').json,
-  experimentCSV: require('../routes/experiments').csv,
-  experimentChannel3: require('../routes/experiments').channel3,
-  concludeExperiment3: require('../routes/experiments').conclude3,
-  postDirective: require('../routes/directives').post,
-  fetchDirective: require('../routes/directives').get,
-  getPublicDirectives: require('../routes/directives').getPublic,
+  getAllExperiments: experimentsRoutes.list,
+  // experimentCSV:       experiementsRoutes.csv,
+  experimentDOT: experimentsRoutes.dot,
+  experimentJSON: experimentsRoutes.json,
+  experimentCSV: experimentsRoutes.csv,
+  experimentChannel3: experimentsRoutes.channel3,
+  concludeExperiment3: experimentsRoutes.conclude3,
+  postDirective: directivesRoutes.post,
+  fetchDirective: directivesRoutes.get,
+  getPublicDirectives: directivesRoutes.getPublic,
   getPersonalByExperimentId:
     require('../routes/personal').getPersonalByExperimentId,
   /* and specificly for the email, opt-in, and who wants to be get updated */

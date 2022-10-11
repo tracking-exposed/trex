@@ -2,15 +2,18 @@
  * this library is a mixture between some experiment shared
  * functions used to play with experiment, directives, etc
  */
-const nconf = require('nconf');
-const debug = require('debug')('lib:experiments');
-// const moment = require('moment');
+import nconf from 'nconf';
+import D from 'debug'
+import * as utils from '@shared/utils/encode.utils';
+import * as mongo3 from '@shared/providers/mongo.provider';
+import { GuardoniExperiment } from '@shared/models/Experiment';
+import { MongoClient } from 'mongodb';
+import { Step } from '@shared/models/Step';
 
-const utils = require('./utils');
-const mongo3 = require('@shared/providers/mongo.provider');
+const debug = D('lib:experiments');
 
-async function pickDirective(experimentId) {
-  const mongoc = await mongo3.clientConnect({});
+async function pickDirective(experimentId: string) {
+  const mongoc: any = await mongo3.clientConnect({});
   const rb = await mongo3.readOne(mongoc, nconf.get('schema').experiments, {
     experimentId,
   });
@@ -18,12 +21,12 @@ async function pickDirective(experimentId) {
   return rb;
 }
 
-async function registerSteps(steps) {
+async function registerSteps(steps: Step[]) {
   const experimentId = utils.hash({
     steps,
   });
 
-  const mongoc = await mongo3.clientConnect();
+  const mongoc: any = await mongo3.clientConnect();
   const exist = await mongo3.readOne(mongoc, nconf.get('schema').experiments, {
     experimentId,
   });
@@ -61,7 +64,7 @@ async function registerSteps(steps) {
   return { status: 'created', experimentId, since: creationTime };
 }
 
-async function markExperCompleted(mongoc, filter) {
+async function markExperCompleted(mongoc: MongoClient, filter: any) {
   /* this is called in two different condition:
      1) when a new experiment gets registered and the previously
         opened by the same publicKey should be closed
@@ -77,23 +80,23 @@ async function markExperCompleted(mongoc, filter) {
   );
 }
 
-async function concludeExperiment(testTime) {
+async function concludeExperiment(testTime: string) {
   /* this function is called by guardoni v.1.8 when the
    * access on a directive URL have been completed */
-  const mongoc = await mongo3.clientConnect();
+  const mongoc : any = await mongo3.clientConnect();
   const r = await markExperCompleted(mongoc, { testTime });
   await mongoc.close();
   return r;
 }
 
-async function saveExperiment(expobj) {
+async function saveExperiment(expobj: GuardoniExperiment) {
   /* this is used by guardoni v.1.8 as handshake connection,
        the expobj constains a variety of fields, check
        routes/experiment.js function channel3 */
   if (expobj.experimentId === 'DEFAULT_UNSET' || !expobj.experimentId)
     return null;
 
-  const mongoc = await mongo3.clientConnect();
+  const mongoc: any = await mongo3.clientConnect();
   /* a given public Key can have only one experiment per time */
   const filter = {
     publicKey: expobj.publicKey,
@@ -109,7 +112,8 @@ async function saveExperiment(expobj) {
   await mongoc.close();
   return expobj;
 }
-module.exports = {
+
+export {
   pickDirective,
   registerSteps,
   concludeExperiment,
