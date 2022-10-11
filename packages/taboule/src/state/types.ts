@@ -35,6 +35,8 @@ export interface selectedRecommendation {
   sectionName: string;
   thumbnailHref: string | undefined;
   timePrecision: string;
+  title: string;
   verified: boolean;
   videoId: string;
+  views: number;
 }
