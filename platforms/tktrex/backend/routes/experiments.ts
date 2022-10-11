@@ -1,17 +1,19 @@
-const _ = require('lodash');
-const moment = require('moment');
-const debug = require('debug')('routes:experiments');
-const nconf = require('nconf');
+import _ from 'lodash';
+import moment from 'moment';
+import D from 'debug';
+import nconf from 'nconf';
+import * as experlib from '../lib/experiments';
+import CSV from '../lib/CSV';
+import * as params from '../lib/params';
+import * as mongo3 from '@shared/providers/mongo.provider';
+import * as express from 'express';
 
-const experlib = require('../lib/experiments');
-const CSV = require('../lib/CSV');
-const params = require('../lib/params');
-const mongo3 = require('@shared/providers/mongo.provider');
+const debug = D('routes:experiments');
 
-async function sharedDataPull(filter) {
+async function sharedDataPull(filter: any): Promise<any> {
   /* this function is invoked by the various API below */
   const MAX = 3000;
-  const mongoc = await mongo3.clientConnect();
+  const mongoc: any = await mongo3.clientConnect();
   const metadata = await mongo3.readLimit(
     mongoc,
     nconf.get('schema').metadata,
@@ -55,7 +57,7 @@ async function sharedDataPull(filter) {
 //     return dot;
 // }
 
-async function dot(req) {
+async function dot(req: express.Request): Promise<any> {
   throw new Error("Remind this can't work because metadata has many type");
 
   // const experiment = params.getString(req, 'experimentId', true);
@@ -74,7 +76,7 @@ async function dot(req) {
   // return { json: dotchain };
 }
 
-async function json(req) {
+async function json(req: express.Request): Promise<any> {
   const experimentId = params.getString(req, 'experimentId');
   const metadata = await sharedDataPull({
     'experiment.experimentId': experimentId,
@@ -82,14 +84,14 @@ async function json(req) {
   return { json: metadata };
 }
 
-async function csv(req) {
-  const type = req.params.type;
-  if (CSV.allowedTypes.indexOf(type) === -1) {
+async function csv(req: express.Request): Promise<any> {
+  const type: any = req.params.type;
+  if (!CSV.allowedTypes.includes(type)) {
     debug('Invalid requested data type? %s', type);
     return { text: 'Error, invalid URL composed' };
   }
 
-  const experimentId = params.getString(req, 'experimentId', true);
+  const experimentId = params.getString(req, 'experimentId');
   const metadata = await sharedDataPull({
     'experiment.experimentId': experimentId,
     type,
@@ -120,14 +122,14 @@ async function csv(req) {
   };
 }
 
-async function list(req) {
+async function list(req: express.Request): Promise<any> {
   /* this function pull from the collection "directives"
    * and filter by returning only the 'comparison' kind of
    * experiment. This is imply req.params.type == 'comparison' */
   const MAX = 400;
 
   const filter = {};
-  const mongoc = await mongo3.clientConnect();
+  const mongoc: any = await mongo3.clientConnect();
 
   const configured = await mongo3.readLimit(
     mongoc,
@@ -161,7 +163,7 @@ async function list(req) {
 
   await mongoc.close();
 
-  const infos = {};
+  const infos: any = {};
   /* this is the return value, it would contain:
          .configured  (the directive list)
          .active      (eventually non-completed experiments)
@@ -192,7 +194,7 @@ async function list(req) {
       }),
       'experimentId'
     ),
-    function (memo, listOf, experimentId) {
+    function (memo: any, listOf, experimentId) {
       memo[experimentId] = {
         contributions: _.countBy(listOf, 'researchTag'),
         profiles: _.countBy(listOf, 'publicKey'),
@@ -214,9 +216,10 @@ async function list(req) {
   };
 }
 
-async function channel3(req) {
+async function channel3(req: express.Request): Promise<any> {
   // this is invoked as handshake, and might return information
   // helpful for the extension, about the experiment running.
+
   const fields = [
     'href',
     'experimentId',
@@ -231,7 +234,7 @@ async function channel3(req) {
 
   debug('Experiment info %O', experimentInfo);
 
-  const retval = await experlib.saveExperiment(experimentInfo);
+  const retval = await experlib.saveExperiment(experimentInfo as any);
   /* this is the default answer, as normally there is not an
    * experiment running */
   if (_.isNull(retval)) return { json: { experimentId: false } };
@@ -243,7 +246,7 @@ async function channel3(req) {
   return { json: retval };
 }
 
-async function conclude3(req) {
+async function conclude3(req: express.Request): Promise<any> {
   const testTime = req.params.testTime;
   debug('Conclude3 received: %s', testTime);
   if (testTime.length < 10) return { status: 403 };
@@ -256,7 +259,7 @@ async function conclude3(req) {
   return { json: retval };
 }
 
-module.exports = {
+export {
   /* used by the webapps */
   // csv, -- before supporting this the CSV format should be redefined for tiktok
   dot,

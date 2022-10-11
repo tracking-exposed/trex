@@ -11,7 +11,7 @@ import {
   TikTokPSearchMetadata,
   // SummaryMetadata,
 } from '@shared/models/contributor/ContributorPersonalSummary';
-import { SearchMetadata as TikTokSearchMetadata } from '@tktrex/shared/models/Metadata';
+import { SearchMetadata as TikTokSearchMetadata } from '@tktrex/shared/models/metadata';
 import { Metadata } from '@shared/models/Metadata';
 import { GuardoniExperiment } from '@shared/models/Experiment';
 import * as React from 'react';

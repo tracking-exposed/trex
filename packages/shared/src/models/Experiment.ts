@@ -8,6 +8,8 @@ export const GuardoniExperiment = t.strict(
     experimentId: t.string,
     when: t.string,
     steps: t.array(Step),
+    publicKey: t.union([t.string, t.undefined]),
+    status: t.union([t.literal('active'), t.undefined]),
   },
   'GuardoniExperiment'
 );

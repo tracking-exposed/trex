@@ -13,7 +13,7 @@ import {
 } from '@shared/models/contributor/ContributorPersonalSummary';
 import { GuardoniExperiment } from '@shared/models/Experiment';
 import { SearchQuery } from '@shared/models/http/SearchQuery';
-import { SearchMetadata as TKSearchMetadata } from '@tktrex/shared/models/Metadata';
+import { SearchMetadata as TKSearchMetadata } from '@tktrex/shared/models/metadata';
 import { MakeAPIClient } from '@shared/providers/api.provider';
 import { available, queryStrict } from 'avenger';
 import { CachedQuery } from 'avenger/lib/Query';
