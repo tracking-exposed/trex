@@ -5,7 +5,7 @@ import {
   expectToBeIncludedIn,
   normalizeDeepStrings,
 } from '../../src/parser/v2/lib/util';
-import { ForYouVideoMetadata } from '../../src/models/Metadata';
+import { ForYouVideoMetadata } from '../../src/models/metadata/ForYouMetadata';
 import createServerSideParser from '../../src/parser/v2/serverSideParser';
 import historicData from './fixtures/history.json';
 import { v4 as uuid } from 'uuid';

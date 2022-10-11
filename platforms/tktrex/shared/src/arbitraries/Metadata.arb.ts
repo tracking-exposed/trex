@@ -6,7 +6,7 @@ import {
   MetadataBase,
   SearchMetadataResult,
   NativeMetadata,
-} from '../models/Metadata';
+} from '../models/metadata';
 import { propsOmitType } from '@shared/utils/arbitrary.utils';
 import { fc } from '@shared/test';
 import { subDays } from 'date-fns';
@@ -25,7 +25,7 @@ export const NativeMetadataArb: fc.Arbitrary<NativeMetadata> = getArbitrary(
     ...metadataBaseProps,
     ...NativeMetadata.types[1].type.props,
     ...nativeMetadataProps,
-  })
+  }),
 ).map(({ videoId, authorId, ...n }) => {
   return {
     ...n,
@@ -48,12 +48,12 @@ const searchMetadataResultProps = propsOmitType(SearchMetadataResult, [
 export const SearchMetadataResultArb = getArbitrary(
   t.strict({
     ...searchMetadataResultProps,
-  })
+  }),
 ).map((s) => ({
   ...s,
   publishingDate: fc.sample(
     fc.date().map((d) => d.toISOString()),
-    1
+    1,
   )[0],
 }));
 
@@ -71,7 +71,7 @@ export const SearchMetaDataArb = (opts: {
   results: number;
 }): fc.Arbitrary<SearchMetadata> =>
   getArbitrary(
-    t.intersection([t.type(metadataBaseProps), t.type(searchMetadataProps)])
+    t.intersection([t.type(metadataBaseProps), t.type(searchMetadataProps)]),
   ).map((ad) => {
     const nature = {
       type: 'search' as const,
@@ -84,9 +84,9 @@ export const SearchMetaDataArb = (opts: {
       id: fc.sample(fc.uuid(), 1)[0],
       savingTime: subDays(
         new Date(),
-        fc.sample(fc.oneof(fc.constant(5), fc.constant(10)), 1)[0]
+        fc.sample(fc.oneof(fc.constant(5), fc.constant(10)), 1)[0],
       ).toISOString(),
-      clientTime: fc.sample(fc.date(), 1)[0],
+      clientTime: fc.sample(fc.date(), 1)[0].toISOString(),
       results: fc.sample(SearchMetadataResultArb, opts.results),
       thumbnails: [],
     };
@@ -99,7 +99,7 @@ export const SearchMetaDataArb = (opts: {
 const forYouMetadataProps = propsOmitType(ForYouVideoMetadata.types[2], []);
 
 export const ForYouVideoMetaDataArb = getArbitrary(
-  t.intersection([t.type(metadataBaseProps), t.type(forYouMetadataProps)])
+  t.intersection([t.type(metadataBaseProps), t.type(forYouMetadataProps)]),
 ).map((ad) => ({
   ...ad,
   id: fc.sample(fc.uuid(), 1)[0],
@@ -113,14 +113,14 @@ export const ForYouVideoMetaDataArb = getArbitrary(
  **/
 const followingVideoMetadataProps = propsOmitType(
   FollowingVideoMetadata.types[1],
-  []
+  [],
 );
 
 export const FollowingVideoMetaDataArb = getArbitrary(
   t.intersection([
     t.type(metadataBaseProps),
     t.type(followingVideoMetadataProps),
-  ])
+  ]),
 ).map((ad) => ({
   ...ad,
   id: fc.sample(fc.uuid(), 1)[0],
@@ -132,5 +132,5 @@ export const MetadataArb = fc.oneof(
   SearchMetaDataArb({ results: 10 }),
   ForYouVideoMetaDataArb,
   FollowingVideoMetaDataArb,
-  NativeMetadataArb
+  NativeMetadataArb,
 );

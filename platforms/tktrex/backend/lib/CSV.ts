@@ -4,13 +4,13 @@ import {
   ProfileMetadata,
   SearchMetadata,
   TKMetadata,
-} from '@tktrex/shared/models/Metadata';
+} from '@tktrex/shared/models/metadata';
 import { Nature } from '@tktrex/shared/models/Nature';
 import * as A from 'fp-ts/lib/Array';
 import { pipe } from 'fp-ts/lib/function';
 import * as O from 'fp-ts/lib/Option';
 import { formatDistance, parseISO } from 'date-fns';
-import _ from 'lodash';
+import _, { StringNullableChain } from 'lodash';
 import D from 'debug';
 import moment from 'moment';
 
@@ -62,22 +62,26 @@ function produceCSVv1(entries: any[]) {
   return produced.csv;
 }
 
-interface FlattenSearch {}
+// function invoked to depack and flatten metadata {type: search}
+// to produce CSV.
+interface FlattenSearch {
+  query: string;
+  videoId: string;
+  textdesc: string;
+  thumbfile: string;
+  metadataId: string;
+  timeago: string;
+  tags: string;
+}
 
-export function flattenSearch(
-  metasearch: SearchMetadata,
-  shared: any
-): FlattenSearch[] {
-  // function invoked to depack and flatten metadata {type: search}
-  // to produce CSV.
-
-  return (metasearch.results || []).reduce((acc, result, order) => {
+export function flattenSearch(m: SearchMetadata, shared: any): FlattenSearch[] {
+  return (m.results || []).reduce<FlattenSearch[]>((acc, result, order) => {
     const thumbfile =
-      metasearch.thumbnails && metasearch.thumbnails.length
-        ? metasearch.thumbnails[order]?.filename
+      m.thumbnails && m.thumbnails.length
+        ? m.thumbnails[order]?.filename
         : null;
 
-    const readyo = {
+    const readyo: FlattenSearch = {
       ...result.video,
       videoId: '' + result.video.videoId,
       publishingDate: result.publishingDate,
@@ -87,17 +91,17 @@ export function flattenSearch(
           return link?.link?.type === 'tag' ? link.desc : null;
         })
       ).join(', '),
-      metadataId: metasearch.id,
-      savingTime: moment(metasearch.savingTime).format('YYYY-MM-DD HH:mm'),
-      timeago: formatDistance(parseISO(metasearch.savingTime), new Date()),
-      query: metasearch.query,
+      metadataId: m.id.substring(0, 10),
+      savingTime: moment(m.savingTime).format('YYYY-MM-DD HH:mm'),
+      timeago: formatDistance(parseISO(m.savingTime), new Date()),
+      query: m.query,
       textdesc: result.textdesc,
       thumbfile: thumbfile ? thumbfile.replace(/(.*\/)|(.*\\)/, '') : null,
       ...shared,
     };
     acc.push(readyo);
     return acc;
-  }, [] as any[]);
+  }, []);
 }
 
 interface FlattenProfile {
@@ -106,6 +110,9 @@ interface FlattenProfile {
   videoId: string;
   title: string;
   order: number;
+  metadataId: string;
+  savingTime: string;
+  href: string;
 }
 
 export function flattenProfile(
@@ -115,7 +122,7 @@ export function flattenProfile(
   // function invoked to depack and flatten metadata {type: search}
   // to produce CSV.
 
-  _.each(metaprofile.videos || [], function (result, order) {
+  _.each(metaprofile.results || [], function (result, order) {
     /* TODO 
     const thumbfile =
       metaprofile.thumbnails && metaprofile.thumbnails.length
@@ -129,7 +136,6 @@ export function flattenProfile(
       order: order + 1,
       metadataId: metaprofile.id,
       savingTime: moment(metaprofile.savingTime).format('YYYY-MM-DD HH:mm'),
-      publicKey: metaprofile.publicKey,
       href:
         'https://www.tiktok.com/@' +
         metaprofile.creatorName +

@@ -9,7 +9,7 @@ import { fc } from '@shared/test';
 import { foldTEOrThrow } from '@shared/utils/fp.utils';
 import { sleep } from '@shared/utils/promise.utils';
 import { ContributionEventArb } from '@tktrex/shared/arbitraries/ContributionEvent.arb';
-import { TKMetadata } from '@tktrex/shared/models/Metadata';
+import { TKMetadata } from '@tktrex/shared/models/metadata';
 import { parsers } from '@tktrex/shared/parser/parsers';
 import { HTMLSource } from '@tktrex/shared/parser/source';
 import { toMetadata } from '@tktrex/shared/parser/metadata';
