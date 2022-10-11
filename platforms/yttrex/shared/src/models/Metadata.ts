@@ -29,6 +29,10 @@ export const ParsedInfo = t.intersection(
         recommendedPubTime: t.union([t.any, t.null]),
         // recommendedRelativeSeconds: t.union([t.number, t.null]),
         publicationTime: t.union([DateFromISOString, t.null]),
+        recommendedThumbnail: t.string,
+        recommendedViews: t.number,
+        title: t.string,
+        views: t.number,
       },
       'Partial'
     ),
