@@ -1,8 +1,0 @@
-{
-  "name": "ua-observatory",
-  "packageManager": "yarn@3.1.1",
-  "devDependencies": {
-    "linkedom": "^0.14.9",
-    "ts-node": "^10.8.0"
-  }
-}
