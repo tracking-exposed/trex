@@ -9,7 +9,7 @@ import {
   getSourceSchema,
   updateMetadataAndMarkHTML,
 } from '../../../lib/parser/html';
-import { SearchMetadata } from '@yttrex/shared/models/Metadata';
+import { SearchMetadataDB } from '../../../models/metadata/SearchMetadata';
 import { HTMLSource, parsers } from '@yttrex/shared/parser';
 import { toMetadata } from '@yttrex/shared/parser/metadata';
 import { GetTest, Test } from '../../../tests/Test';
@@ -67,6 +67,7 @@ describe('Parser: Search', () => {
     path.resolve(__dirname, '../../fixtures/htmls/search'),
     {
       exclude: failingIds,
+      // only: failingIds,
     }
   );
 
@@ -92,7 +93,7 @@ describe('Parser: Search', () => {
         name: 'search-parser',
         log: appTest.logger,
         parsers: parsers,
-        codecs: { contribution: HTMLSource, metadata: SearchMetadata },
+        codecs: { contribution: HTMLSource, metadata: SearchMetadataDB },
         sourceSchema: getSourceSchema(),
         metadataSchema: getMetadataSchema(),
         addDom: addDom,

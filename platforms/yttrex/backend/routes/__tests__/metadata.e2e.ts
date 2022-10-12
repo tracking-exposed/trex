@@ -14,6 +14,26 @@ import {
 import { GetTest, Test } from '../../tests/Test';
 import * as utils from '../../lib/utils';
 
+const toRelated = (r: any): any => {
+  return {
+    ...r,
+    parameter: r.parameter ?? null,
+    elems: r.elems ?? null,
+    thumbnailHref: r.thumbnailHref ?? null,
+    views: r.views ?? null,
+    title: r.title ?? null,
+    recommendedViews: r.recommendedViews ?? null,
+    recommendedThumbnail: r.recommendedThumbnail ?? null,
+    recommendedTitle: r.recommendedTitle ?? null,
+    recommendedLength: r.recommendedLength ?? null,
+    recommendedSource: r.recommendedSource ?? null,
+    recommendedDisplayL: r.recommendedDisplayL ?? null,
+    publicationTime: r.publicationTime.toISOString(),
+    recommendedPubTime: r.recommendedPubTime
+      ? r.recommendedPubTime.toISOString()
+      : null,
+  };
+};
 describe('Metadata API', () => {
   let test: Test;
 
@@ -72,17 +92,7 @@ describe('Metadata API', () => {
             clientTime: m.clientTime.toISOString(),
             publicationTime: m.publicationTime.toISOString(),
             savingTime: m.savingTime.toISOString(),
-            related: m.related.map((r) => {
-              return {
-                ...r,
-                elems: r.elems ?? null,
-                thumbnailHref: r.thumbnailHref ?? null,
-                publicationTime: r.publicationTime.toISOString(),
-                recommendedPubTime: r.recommendedPubTime
-                  ? r.recommendedPubTime.toISOString()
-                  : null,
-              };
-            }),
+            related: m.related.map(toRelated),
           };
         });
 
@@ -112,13 +122,11 @@ describe('Metadata API', () => {
       const experimentId = fc.sample(fc.uuid(), 1)[0];
       const amount = 10;
 
-      const metadata = fc
-        .sample(VideoMetadataArb, 100)
-        .map((m) => ({
-          ...m,
-          savingTime: new Date(),
-          experimentId,
-        }));
+      const metadata = fc.sample(VideoMetadataArb, 100).map((m) => ({
+        ...m,
+        savingTime: new Date(),
+        experimentId,
+      }));
 
       await test.mongo3.insertMany(
         test.mongo,
@@ -142,17 +150,7 @@ describe('Metadata API', () => {
             clientTime: m.clientTime.toISOString(),
             publicationTime: m.publicationTime.toISOString(),
             savingTime: m.savingTime.toISOString(),
-            related: m.related.map((r) => {
-              return {
-                ...r,
-                elems: r.elems ?? null,
-                thumbnailHref: r.thumbnailHref ?? null,
-                publicationTime: r.publicationTime.toISOString(),
-                recommendedPubTime: r.recommendedPubTime
-                  ? r.recommendedPubTime.toISOString()
-                  : null,
-              };
-            }),
+            related: m.related.map(toRelated),
           };
         });
 

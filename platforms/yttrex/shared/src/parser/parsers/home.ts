@@ -12,14 +12,20 @@ import * as videoparser from './video';
 
 const homeLog = trexLogger.extend('home');
 
+type SelectedVideo = Omit<ParsedInfo, 'timePrecision' | 'thumbnailHref'> & {
+  sectionName?: string;
+  recommendedLengthText?: string;
+  recommendedRelativeSeconds?: string;
+};
+
 function dissectSelectedVideo(
   ee: Element,
   i: number,
   sections: any[],
   offset: number | undefined,
   clientTime: Date
-): Omit<ParsedInfo, 'timePrecision' | 'thumbnailHref'> | null {
-  const infos = {
+): SelectedVideo | null {
+  const infos: any = {
     link: undefined,
     videoId: undefined,
     source: undefined,
@@ -116,8 +122,8 @@ function dissectSelectedVideo(
       ? e.querySelector('a').getAttribute('href')
       : null;
     infos.videoId = link?.replace(/.*v=/, '');
-    infos.parameter = (infos.videoId as any)?.match(/&.*/)
-      ? (infos.videoId as any).replace(/.*&/, '&')
+    infos.parameter = infos.videoId?.match(/&.*/)
+      ? infos.videoId.replace(/.*&/, '&')
       : null;
 
     infos.liveBadge = !!e.querySelector('.badge-style-type-live-now');
@@ -132,7 +138,7 @@ function dissectSelectedVideo(
       .getAttribute('aria-label');
 
     videoTileLinkParsed = infos.aria
-      ? longlabel.parser(infos.aria, infos.authorName as any, infos.liveBadge)
+      ? longlabel.parser(infos.aria, infos.authorName, infos.liveBadge)
       : null;
 
     homeLog.debug('Video title parsed %O', {
@@ -164,7 +170,7 @@ function dissectSelectedVideo(
         return _.gt(o, offset);
       })
     );
-    section = _.get(sections, sectionNumber, { title: null }).title;
+    section = _.get(sections, sectionNumber, { title: undefined }).title;
   } catch (e) {
     errorLog.push(
       'Section calculation fail: ' +
@@ -194,27 +200,33 @@ function dissectSelectedVideo(
 
   // homeLog.debug('relative seconds %O', videoTileLinkParsed);
 
-  const s = {
+  const s: SelectedVideo = {
     index: i + 1,
     verified: infos.verified,
-    videoId: infos.videoId as any,
-    parameter: infos.parameter ? infos.parameter : null,
-    sectionName: section,
+    videoId: infos.videoId,
+    parameter: infos?.parameter ?? null,
+    params: infos.parameter ? infos.parameter : undefined,
+    sectionName: section ?? undefined,
     recommendedSource: infos.authorName ? infos.authorName : null,
-    recommendedHref: infos.authorHref ? infos.authorHref : null,
+    recommendedHref: infos.authorHref,
     recommendedTitle: videoTileLinkParsed ? videoTileLinkParsed.title : null,
+    title: videoTileLinkParsed?.title ?? undefined,
     recommendedLength: infos.recommendedLength,
-    recommendedDisplayL: infos.displayTime ? infos.displayTime : null,
+    recommendedDisplayL: infos.displayTime ? infos.displayTime : undefined,
     recommendedLengthText: infos.expandedTime ? infos.expandedTime : null,
     recommendedPubTime: videoTileLinkParsed?.timeago
       ? videoTileLinkParsed.timeago
       : null,
-    /* ^^^^  is deleted in makeAbsolutePublicationTime, when clientTime is available,
-     * this field produces -> recommendedPubtime and ptPrecison */
+    /**  ^^^^  is deleted in makeAbsolutePublicationTime, when clientTime is available,
+     * this field produces -> recommendedPubtime and ptPrecison
+     */
     recommendedRelativeSeconds: videoTileLinkParsed?.timeago
       ? videoTileLinkParsed.timeago.asSeconds()
       : null,
-    recommendedViews: videoTileLinkParsed ? videoTileLinkParsed.views : null,
+    recommendedViews: videoTileLinkParsed?.views,
+    views: videoTileLinkParsed?.views,
+    recommendedThumbnail: undefined,
+    publicationTime: videoTileLinkParsed?.timeago,
     isLive: !!infos.liveBadge,
     label: infos.aria ? infos.aria : null,
     elems: _.size(e.outerHTML),
@@ -364,20 +376,21 @@ function guessUXLanguage(D: Document): string | null {
 
 export const processHome: ParserFn<
   HTMLSource,
-  Omit<HomeMetadata, 'id'>,
+  Omit<HomeMetadata, 'id' | 'supporter'>,
   YTParserConfig
 > = async (envelop, findings, config) => {
-  const retval: Omit<HomeMetadata, 'id'> = {
-    type: 'home',
-    clientTime: envelop.html.clientTime,
-    selected: [],
-    sections: [],
-    blang: null,
-    login: false,
-    publicKey: envelop.html.publicKey,
-    href: envelop.html.href,
-    savingTime: new Date(),
-  };
+  const retval: Omit<HomeMetadata, 'id' | 'supporter'> & { publicKey: string } =
+    {
+      type: 'home',
+      clientTime: envelop.html.clientTime,
+      selected: [],
+      sections: [],
+      blang: null,
+      login: false,
+      publicKey: envelop.html.publicKey,
+      href: envelop.html.href,
+      savingTime: new Date(),
+    };
 
   try {
     const { selected, sections } = getSelectedAndSections(
