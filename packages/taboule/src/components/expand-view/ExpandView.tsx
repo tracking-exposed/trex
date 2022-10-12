@@ -13,6 +13,7 @@ interface Props {
 
 const ExpandView = (props: Props): JSX.Element => {
   const { isVisible, data, handleHideModal } = props;
+  console.log('data', data);
   const recommendedList = data.map((recommendation) => {
     return (
       <li

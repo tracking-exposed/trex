@@ -18,11 +18,11 @@
     "skipDefaultLibCheck": true,
     "typeRoots": ["node_modules/@types", "./typings"],
     "baseUrl": "./src",
-    "rootDir": "./src",
     "moduleResolution": "node",
     "isolatedModules": true,
     "paths": {
-      "@shared/*": ["../../../packages/shared/src/*"]
+      "@shared/*": ["../../../packages/shared/src/*"],
+      "@taboule/*": ["../../../packages/taboule/src/*"]
     }
   },
   "references": [
