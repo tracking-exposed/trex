@@ -133,9 +133,8 @@ describe('Parser Provider', () => {
 
     expect(output).toMatchObject({
       [source.id]: {
-        log: JSON.stringify(log),
-        metadata: metadata.id,
         failures: '[]',
+        nature: { type: metadata.type },
       },
     });
   });

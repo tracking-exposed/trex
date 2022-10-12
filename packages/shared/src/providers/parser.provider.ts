@@ -662,12 +662,15 @@ export const getSuccessfulOutput = <
   output: Array<PipelineOutput<ContributionWithDOM<S>, M, PP>>
 ): any => {
   return output.reduce((acc, { source, metadata, failures, log, count }) => {
+    console.log(JSON.stringify(metadata, null, 2));
     return {
       ...acc,
-      [getEntryId(source)]: {
-        log: JSON.stringify(log),
+      [getEntryId(source).substr(0, 6)]: {
+        ...log,
+        // log: JSON.stringify(log),
         // findings: markOutputField(findings),
-        metadata: (metadata as any)?.id ?? null,
+        // metadata: (metadata as any)?.id ?? null,
+        ...metadata,
         failures: JSON.stringify(
           Object.entries(failures).map(([key, value]) => ({
             [key]: value.message,
@@ -756,14 +759,25 @@ export const GetParserProvider = <
         log.error('--stop %d imply --amount %d', stop, htmlAmount);
       }
 
-      const repeat =
-        typeof _repeat === 'undefined'
-          ? typeof singleUse === 'undefined' ||
-            !!filter ||
-            backInTime !== BACKINTIMEDEFAULT
-          : _repeat;
+      let repeat;
+      if (typeof _repeat === 'undefined') {
+        const undefinedSingleUse = typeof singleUse === 'undefined';
+        const filterExists = !!filter;
+        const backInTimeExists = backInTime !== BACKINTIMEDEFAULT;
 
-      if (repeat !== _repeat) log.error('--repeat it is implicit!');
+        repeat = undefinedSingleUse || filterExists || backInTimeExists;
+        log.debug(
+          'Repeat? %O => %o',
+          {
+            singleUse: undefinedSingleUse,
+            filter: filterExists,
+            backInTime: backInTimeExists,
+          },
+          repeat
+        );
+      } else {
+        repeat = _repeat;
+      }
 
       lastExecution = subMinutes(new Date(), backInTime);
 
