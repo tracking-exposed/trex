@@ -14,9 +14,9 @@ import { parserConfig } from '@yttrex/shared/parser/config';
 import { GetParserProvider } from '@shared/providers/parser.provider';
 import { HTMLSource } from '@yttrex/shared/parser/source';
 import { toMetadata } from '@yttrex/shared/parser/metadata';
-import { Metadata } from '@yttrex/shared/models/Metadata';
 import { parsers } from '@yttrex/shared/parser/parsers';
 import path from 'path';
+import { MetadataDB } from '../models/metadata';
 
 nconf.argv().env().file({ file: 'config/settings.json' });
 
@@ -77,7 +77,7 @@ const run = async (): Promise<void> => {
       db,
       codecs: {
         contribution: HTMLSource,
-        metadata: Metadata,
+        metadata: MetadataDB,
       },
       parsers,
       getMetadata: getMetadata(db),
