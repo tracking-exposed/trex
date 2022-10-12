@@ -6,7 +6,7 @@ import {
   readFixtureJSONPaths,
   runParserTest,
 } from '@shared/test/utils/parser.utils';
-import { VideoMetadata } from '@yttrex/shared/models/Metadata';
+import { VideoMetadataDB } from '../../../models/metadata/VideoMetadata';
 import { HTMLSource, parsers } from '@yttrex/shared/parser';
 import { toMetadata } from '@yttrex/shared/parser/metadata';
 import base58 from 'bs58';
@@ -139,7 +139,10 @@ describe('Parser: Video', () => {
         metadataSchema: getMetadataSchema(),
         parsers,
         addDom,
-        codecs: { contribution: HTMLSource, metadata: VideoMetadata },
+        codecs: {
+          contribution: HTMLSource,
+          metadata: VideoMetadataDB,
+        },
         getEntryId: (e) => e.html.id,
         getEntryDate: (e) => e.html.savingTime,
         getEntryNatureType: (e) => e.html.nature.type ?? e.type,

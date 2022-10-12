@@ -11,8 +11,7 @@ import * as t from 'io-ts';
 
 export const ParsedInfoArb = getArbitrary(
   t.strict({
-    ...ParsedInfo.types[0].type.props,
-    ...ParsedInfo.types[1].props,
+    ...ParsedInfo.type.props,
     recommendedPubTime: t.unknown,
     publicationTime: t.unknown,
     params: t.unknown,

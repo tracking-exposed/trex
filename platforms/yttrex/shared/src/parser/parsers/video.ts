@@ -221,6 +221,7 @@ function relatedMetadata(e: any, i: number): ParsedInfo | null {
     foryou,
     videoId,
     params,
+    recommendedHref: '',
     recommendedSource: source,
     recommendedTitle: mined ? mined.title : title || null,
     recommendedLength,
@@ -241,7 +242,7 @@ function relatedMetadata(e: any, i: number): ParsedInfo | null {
 
 export interface VideoResultAbsolutePubTime
   extends Omit<ParsedInfo, 'recommendedPubTime'> {
-  publicationTime: Date | null;
+  publicationTime: Date | undefined;
   timePrecision: string;
 }
 
@@ -259,7 +260,7 @@ export function makeAbsolutePublicationTime(
       if (!clientTime || !recommendedPubTime) {
         return {
           ...r,
-          publicationTime: null,
+          publicationTime: undefined,
           timePrecision: 'error',
         };
       } else {

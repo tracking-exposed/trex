@@ -33,7 +33,7 @@ describe('Parser: Video', () => {
       expect(receivedVideos).toMatchObject(
         videos.map(({ recommendedPubTime, ...v }) => ({
           ...v,
-          publicationTime: null,
+          publicationTime: undefined,
           timePrecision: 'error',
         }))
       );
