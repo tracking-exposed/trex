@@ -77,7 +77,7 @@ export const getLastHTMLs =
   };
 
 export const getMetadata =
-  (ctx: ParserProviderContextDB): GetMetadataFn<HTMLSource, Metadata> =>
+  (ctx: ParserProviderContextDB): GetMetadataFn<HTMLSource, TKMetadata> =>
   (e) => {
     return ctx.api.readOne(
       ctx.read,

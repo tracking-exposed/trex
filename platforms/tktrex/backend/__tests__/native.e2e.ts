@@ -1,3 +1,4 @@
+import axiosMock from '@shared/test/__mocks__/axios.mock';
 import {
   readFixtureJSON,
   readFixtureJSONPaths,
@@ -5,7 +6,7 @@ import {
 } from '@shared/test/utils/parser.utils';
 import { v4 as uuid } from 'uuid';
 import { TKMetadata } from '@tktrex/shared/models';
-import { parsers } from '@tktrex/shared/parser/parsers';
+import { parsers, TKParsers } from '@tktrex/shared/parser/parsers';
 import base58 from 'bs58';
 import { parseISO, subMinutes } from 'date-fns';
 import path from 'path';
@@ -18,10 +19,10 @@ import {
   getMetadata,
   getMetadataSchema,
   getSourceSchema,
-  parserConfig,
   updateMetadataAndMarkHTML,
 } from '../lib/parser';
 import { HTMLSource } from '@tktrex/shared/parser/source';
+import { TKParserConfig } from '@tktrex/shared/parser/config';
 
 describe('Parser: "native"', () => {
   let appTest: Test;
@@ -58,6 +59,10 @@ describe('Parser: "native"', () => {
       path.resolve(__dirname, 'fixtures/native')
     );
 
+    axiosMock.get.mockImplementation((url, config) => {
+      return Promise.resolve({ status: 500, data: '' });
+    });
+
     test.each(history)(
       'Should correctly parse "native" contribution from path %s',
       async (fixturePath) => {
@@ -75,7 +80,11 @@ describe('Parser: "native"', () => {
           supporter: { version: process.env.VERSION },
         }));
 
-        await runParserTest({
+        axiosMock.get.mockImplementation((url, config) => {
+          return Promise.resolve({ status: 500, data: '' });
+        });
+
+        await runParserTest<TKParserConfig, TKParsers>({
           name: 'native-parser',
           log: appTest.logger,
           parsers: parsers,
@@ -94,13 +103,20 @@ describe('Parser: "native"', () => {
           getMetadata: getMetadata(db),
           saveResults: updateMetadataAndMarkHTML(db),
           buildMetadata: toMetadata,
-          config: parserConfig,
+          config: {
+            downloads: path.resolve(
+              process.cwd(),
+              appTest.config.get('downloads')
+            ),
+          },
           expectSources: (receivedSources) => {
             receivedSources.forEach((s) => {
               expect((s as any).processed).toBe(true);
             });
           },
           expectMetadata: (receivedMetadata, expectedMetadata) => {
+            expect(axiosMock.get).toHaveBeenCalledTimes(1);
+
             const {
               _id: received_Id,
               id: receivedId,
@@ -116,6 +132,11 @@ describe('Parser: "native"', () => {
               ...expectedM
             } = expectedMetadata as any;
 
+            expect(receivedM.thumbnail).toMatchObject({
+              reason: 500,
+              filename: expect.any(String),
+              downloaded: false,
+            });
             expect(receivedM).toMatchObject(expectedM);
           },
         })({ sources, metadata });

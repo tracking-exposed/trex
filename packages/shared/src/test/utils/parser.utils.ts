@@ -7,7 +7,9 @@ import { Logger } from '../../logger';
 import {
   parseContributions,
   ParserConfiguration,
-  ParserFn, ParserProviderContext, printResultOutput
+  ParserFn,
+  ParserProviderContext,
+  printResultOutput,
 } from '../../providers/parser.provider';
 
 /**
@@ -71,10 +73,10 @@ export const readFixtureJSON = (
 
 export const runParserTest =
   <
-    S extends t.Mixed,
-    M extends t.Mixed,
     C extends ParserConfiguration,
-    PP extends Record<string, ParserFn<t.TypeOf<S>, any, C>>
+    PP extends Record<string, ParserFn<t.TypeOf<S>, any, C>>,
+    S extends t.Mixed = t.Any,
+    M extends t.Mixed = t.Any
   >({
     codecs,
     expectMetadata,

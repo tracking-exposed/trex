@@ -23,7 +23,7 @@ const tk = {
     name: 'tk:parserv:watch',
     namespace: 'tk:backend',
     cwd: __dirname,
-    script: 'yarn parserv:watch --minutesago 10',
+    script: 'yarn parserv:watch --minutesago 60',
     watch: false,
     env,
     env_test: testEnv,

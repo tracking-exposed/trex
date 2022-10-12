@@ -5,7 +5,11 @@ import path from 'path';
 
 const debug = D('parsers:shared');
 
-export function getUUID(url: string, type: any, downloads: string | undefined): any {
+export function getUUID(
+  url: string,
+  type: any,
+  downloads: string | undefined
+): string | null {
   const ui = new URL(url);
   const fullpath = ui.pathname;
   const fname = path.basename(fullpath);
@@ -14,7 +18,7 @@ export function getUUID(url: string, type: any, downloads: string | undefined): 
   if (!downloads) {
     /* eslint-disable no-console */
     console.log('WRONG CONFIGURATION SETTINGS!! missing \'downloads\' from', cwd);
-    process.exit(1);
+    return null;
   }
   const initials = fname.substr(0, 2);
   const destdir = path.join(cwd, downloads, type, initials);
@@ -23,6 +27,7 @@ export function getUUID(url: string, type: any, downloads: string | undefined): 
       fs.mkdirSync(destdir, { recursive: true });
     } catch (error: any) {
       debug('!? %s: %s', destdir, error.message);
+      return null;
     }
     debug('%s wasn\'t existing and have been created', destdir);
   }
@@ -31,7 +36,7 @@ export function getUUID(url: string, type: any, downloads: string | undefined): 
 
 export async function download(
   filename: string,
-  url: string,
+  url: string
 ): Promise<{
   downloaded: boolean;
   reason: number;
@@ -39,7 +44,7 @@ export async function download(
 }> {
   /* this is a blocking operation and it would also download
    * videos up to three minutes! */
-  debug('Connecting to download (%s)', filename);
+  debug('Connecting %s to download (%s)', url, filename);
   const x = await axios.get(url, { responseType: 'arraybuffer' });
   if (x.status !== 200) {
     debug('Unexpected HTTP status %d', x.status);

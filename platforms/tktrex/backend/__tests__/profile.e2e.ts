@@ -1,3 +1,4 @@
+import axiosMock from '@shared/test/__mocks__/axios.mock';
 import {
   readFixtureJSON,
   readFixtureJSONPaths,
@@ -5,7 +6,7 @@ import {
 } from '@shared/test/utils/parser.utils';
 import { v4 as uuid } from 'uuid';
 import { TKMetadata } from '@tktrex/shared/models';
-import { parsers } from '@tktrex/shared/parser/parsers';
+import { parsers, TKParsers } from '@tktrex/shared/parser/parsers';
 import base58 from 'bs58';
 import { parseISO, subMinutes } from 'date-fns';
 import path from 'path';
@@ -17,11 +18,12 @@ import {
   getMetadata,
   getMetadataSchema,
   getSourceSchema,
-  parserConfig,
   updateMetadataAndMarkHTML,
 } from '../lib/parser';
 import { HTMLSource } from '@tktrex/shared/parser/source';
 import { toMetadata } from '@tktrex/shared/parser/metadata';
+import { TKParserConfig } from '@tktrex/shared/parser/config';
+
 
 describe('Parser: "profile"', () => {
   let appTest: Test;
@@ -58,6 +60,10 @@ describe('Parser: "profile"', () => {
       path.resolve(__dirname, 'fixtures/profile')
     );
 
+    axiosMock.get.mockImplementation((url, config) => {
+      return Promise.resolve({ status: 500, data: '' });
+    });
+
     test.each(history)(
       'Should correctly parse "profile" contribution from path %s',
       async (fixturePath) => {
@@ -75,7 +81,7 @@ describe('Parser: "profile"', () => {
           supporter: { version: process.env.VERSION },
         }));
 
-        await runParserTest({
+        await runParserTest<TKParserConfig, TKParsers>({
           name: 'native-parser',
           log: appTest.logger,
           parsers: parsers,
@@ -94,7 +100,9 @@ describe('Parser: "profile"', () => {
           getMetadata: getMetadata(db),
           saveResults: updateMetadataAndMarkHTML(db),
           buildMetadata: toMetadata,
-          config: parserConfig,
+          config: {
+            downloads: appTest.config.get('downloads'),
+          },
           expectSources: (receivedSources) => {
             receivedSources.forEach((s) => {
               expect((s as any).processed).toBe(true);
