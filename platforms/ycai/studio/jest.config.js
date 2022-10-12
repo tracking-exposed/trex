@@ -8,7 +8,7 @@ const tsPaths = pathsToModuleNameMapper(tsConfig.compilerOptions.paths, {
 
 const moduleNameMapper = {
   ...tsPaths,
-  '\\.(svg|ttf)$': '<rootDir>/../../../__mocks__/fileMock.js',
+  '\\.(svg|ttf|png)$': '<rootDir>/../../../__mocks__/fileMock.js',
   '\\.(css)$': '<rootDir>/../../../__mocks__/styleMock.js',
 };
 
