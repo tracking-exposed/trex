@@ -14,6 +14,7 @@ export const ParsedInfo = t.strict(
     isLive: t.boolean,
     verified: t.union([t.boolean, t.null]),
     // foryou: t.union([t.string, t.undefined, t.null]),
+    parameter: t.union([t.string, t.undefined]),
     params: t.union([t.record(t.string, t.string), t.undefined]),
     title: t.union([t.string, t.undefined]),
     recommendedHref: t.string,
@@ -36,7 +37,7 @@ export type ParsedInfo = t.TypeOf<typeof ParsedInfo>;
 const MetadataBase = t.strict(
   {
     id: t.string,
-    publicKey: t.string,
+    supporter: t.string,
     savingTime: date,
     clientTime: t.union([date, t.undefined]),
     href: t.string,

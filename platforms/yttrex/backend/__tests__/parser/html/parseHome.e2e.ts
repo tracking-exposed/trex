@@ -3,7 +3,7 @@ import {
   readFixtureJSONPaths,
   runParserTest,
 } from '@shared/test/utils/parser.utils';
-import { HomeMetadata } from '@yttrex/shared/models/Metadata';
+import { HomeMetadataDB } from '../../../models/metadata/HomeMetadata';
 import base58 from 'bs58';
 import { parseISO, subMinutes } from 'date-fns';
 import { v4 as uuid } from 'uuid';
@@ -94,7 +94,7 @@ describe('Parser: home', () => {
         db,
         codecs: {
           contribution: HTMLSource,
-          metadata: HomeMetadata.type,
+          metadata: HomeMetadataDB,
         },
         addDom,
         sourceSchema: getSourceSchema(),
