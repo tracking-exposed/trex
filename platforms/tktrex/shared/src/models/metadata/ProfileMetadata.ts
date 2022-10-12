@@ -6,11 +6,16 @@ export const ProfileResult = t.type(
   {
     order: t.number,
     video: NativeVideoN,
-    views: t.string,
-    title: t.string,
+    views: t.union([t.string, t.undefined]),
+    textdesc: t.union([t.string, t.undefined]),
+    thumbnail: t.union([t.string, t.undefined]),
+    publishingDate: t.union([t.string, t.undefined]),
+    title: t.union([t.string, t.undefined]),
   },
-  'SearchMetadataResult',
+  'SearchMetadataResult'
 );
+
+export type ProfileResult = t.TypeOf<typeof ProfileResult>;
 
 export const ProfileMetadata = t.intersection(
   [
@@ -21,6 +26,6 @@ export const ProfileMetadata = t.intersection(
       results: t.array(ProfileResult),
     }),
   ],
-  'ProfileMetadata',
+  'ProfileMetadata'
 );
 export type ProfileMetadata = t.TypeOf<typeof ProfileMetadata>;

@@ -8,7 +8,7 @@ import author from './author';
 import search from './search';
 import profile from './profile';
 import native from './native';
-import downloader from './downloader';
+import foryou from './foryou';
 
 export const parsers = {
   nature,
@@ -18,10 +18,11 @@ export const parsers = {
   metrics,
   stitch,
   author,
+  // metadata
+  foryou,
   search,
   profile,
   native,
-  downloader,
 };
 
 export type TKParsers = typeof parsers;

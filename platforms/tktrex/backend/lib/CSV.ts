@@ -10,7 +10,7 @@ import * as A from 'fp-ts/lib/Array';
 import { pipe } from 'fp-ts/lib/function';
 import * as O from 'fp-ts/lib/Option';
 import { formatDistance, parseISO } from 'date-fns';
-import _, { StringNullableChain } from 'lodash';
+import _ from 'lodash';
 import D from 'debug';
 import moment from 'moment';
 
@@ -106,9 +106,9 @@ export function flattenSearch(m: SearchMetadata, shared: any): FlattenSearch[] {
 
 interface FlattenProfile {
   profileName: string;
-  views: string;
+  views?: string;
   videoId: string;
-  title: string;
+  title?: string;
   order: number;
   metadataId: string;
   savingTime: string;

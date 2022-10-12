@@ -1,3 +1,5 @@
+import axiosMock from '@shared/test/__mocks__/axios.mock';
+
 import { GuardoniExperimentArb } from '@shared/arbitraries/Experiment.arb';
 import { Keypair } from '@shared/models/extension/Keypair';
 import bs58 from '@shared/providers/bs58.provider';
@@ -20,6 +22,8 @@ import {
   updateMetadataAndMarkHTML,
 } from '../../lib/parser';
 import { GetTest, Test } from '../../test/Test';
+import { TKParserConfig } from '@tktrex/shared/parser/config';
+
 
 const version = '9.9.9.9';
 const researchTag = 'test-research-tag';
@@ -31,7 +35,7 @@ describe('/v2/personal', () => {
   let parserProvider: ParserProvider<
     HTMLSource,
     TKMetadata,
-    any,
+    TKParserConfig,
     typeof parsers
   > = beforeAll(async () => {
     appTest = await GetTest();
@@ -46,13 +50,25 @@ describe('/v2/personal', () => {
       read: appTest.mongo,
       api: appTest.mongo3,
     };
-    parserProvider = GetParserProvider('html', {
+
+    axiosMock.get.mockImplementation((url, config) => {
+      return Promise.resolve({ status: 500, data: '' });
+    });
+
+    parserProvider = GetParserProvider<
+      typeof HTMLSource,
+      typeof TKMetadata,
+      TKParserConfig,
+      typeof parsers
+    >('html', {
       db,
-      config: {},
+      config: {
+        downloads: appTest.config.get('downloads'),
+      },
       parsers: parsers,
       codecs: {
-        contribution: HTMLSource,
-        metadata: TKMetadata,
+        contribution: HTMLSource as any,
+        metadata: TKMetadata as any,
       },
       addDom,
       getEntryId: (e) => e.html.id,
