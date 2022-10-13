@@ -35,7 +35,7 @@ const start = async (): Promise<void> => {
   });
   const server = new http.Server(app as any);
   server.listen(nconf.get('port'), nconf.get('interface'), () => {
-    d(` Listening on http://${nconf.get('interface')}:${nconf.get('port')}`);
+    d(`Listening on http://${nconf.get('interface')}:${nconf.get('port')}/api/v0/info`);
   });
 
   // eslint-disable-next-line @typescript-eslint/no-misused-promises
