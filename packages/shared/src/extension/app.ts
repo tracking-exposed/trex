@@ -251,6 +251,16 @@ export async function boot(opts: BootOpts): Promise<App> {
   // connect to a port to listen for `config` changes dispatched from background
   const configUpdatePort = bo.runtime.connect({ name: 'ConfigUpdate' });
 
+  // listen on "ConfigUpdate" port for messages
+  configUpdatePort.onMessage.addListener(function (message, sender) {
+    appLog.debug('Received message on "ConfigUpdate" port %O', message);
+    if (message.type === 'ReloadApp') {
+      app?.reload(message.payload);
+      return true;
+    }
+    return false;
+  });
+
   // Register all common event handlers.
   // An event handler is a piece of code responsible for a specific task.
   // You can learn more in the [`./handlers`](./handlers/index.html) directory.
@@ -297,8 +307,14 @@ export async function boot(opts: BootOpts): Promise<App> {
     appLog.info('extension disabled!');
     app = {
       config: settings,
-      reload: () => {},
+      reload: (c) => {
+        appLog.debug('inactive section needs reload', c);
+        app = undefined;
+        loading = false;
+        void boot(opts);
+      },
       destroy: () => {
+        configUpdatePort.disconnect();
         opts.hub.hub.clear();
       },
     };
@@ -363,16 +379,6 @@ export async function boot(opts: BootOpts): Promise<App> {
       app = undefined;
     },
   };
-
-  // listen on "ConfigUpdate" port for messages
-  configUpdatePort.onMessage.addListener(function (message, sender) {
-    appLog.debug('Received message on "ConfigUpdate" port %O', message);
-    if (message.type === 'ReloadApp') {
-      app?.reload(message.payload);
-      return true;
-    }
-    return false;
-  });
 
   loading = false;
 

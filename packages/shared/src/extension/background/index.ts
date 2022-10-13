@@ -48,23 +48,24 @@ export const MessageHandler =
     }
   };
 
+const ports: Record<string, chrome.runtime.Port> = {};
 // bind the scoped message listener
 export const load = (opts: sync.LoadOpts): void => {
   logger.debug(`Bind background events %O`, opts);
 
-
   bo.runtime.onConnect.addListener((port) => {
-    logger.debug('Port connected: %O', port);
-
-    const handleMessage = MessageHandler(opts, (c) => {
-      logger.debug('Config updated %O', c);
-      if (port.name === 'ConfigUpdate') {
-        logger.debug('Should reload the app config');
-        port.postMessage({ type: 'ReloadApp', payload: c });
-        return true;
-      }
-    });
-
-    bo.runtime.onMessage.addListener(handleMessage);
+    logger.debug('Port connected %O', port);
+    ports[port.name] = port;
   });
+
+  const handleMessage = MessageHandler(opts, (c) => {
+    logger.debug('Config updated %O, reloading the app', c);
+
+    const configUpdatePort = ports.ConfigUpdate;
+    if (configUpdatePort) {
+      configUpdatePort.postMessage({ type: 'ReloadApp', payload: c });
+    }
+  });
+
+  bo.runtime.onMessage.addListener(handleMessage);
 };
