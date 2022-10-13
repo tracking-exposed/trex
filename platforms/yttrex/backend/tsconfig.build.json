@@ -1,0 +1,35 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "allowJs": true,
+    "strict": false,
+    "rootDir": "./",
+    "baseUrl": "./",
+    "noEmit": true,
+    "resolveJsonModule": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "paths": {
+      "@shared/*": ["../../../packages/shared/src/*"],
+      "@yttrex/shared/*": ["../shared/src/*"]
+    }
+  },
+  "include": ["./bin", "./lib", "./models", "./parsers", "./routes", "./utils"],
+  "exclude": ["**/__tests__", "**/__mocks__"],
+  "watchOptions": {
+    "watchFile": "useFsEvents",
+    "watchDirectory": "useFsEvents",
+    "synchronousWatchDirectory": true
+  },
+  "ts-node": {
+    "require": ["tsconfig-paths/register"]
+  },
+  "references": [
+    {
+      "path": "../../../packages/shared"
+    },
+    {
+      "path": "../shared"
+    }
+  ]
+}
