@@ -22,7 +22,9 @@
     "isolatedModules": true,
     "paths": {
       "@shared/*": ["../../../packages/shared/src/*"],
-      "@taboule/*": ["../../../packages/taboule/src/*"]
+      "@taboule/*": ["../../../packages/taboule/src/*"],
+      "@yttrex/shared/*": ["../../yttrex/shared/src/*"],
+      "@tktrex/shared/*": ["../../tktrex/shared/src/*"]
     }
   },
   "references": [

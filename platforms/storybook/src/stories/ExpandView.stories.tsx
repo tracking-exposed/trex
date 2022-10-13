@@ -1,6 +1,7 @@
-import { ComponentStory, ComponentMeta } from '@storybook/react';
+import { ComponentMeta, ComponentStory } from '@storybook/react';
 import ExpandView from '@taboule/components/expand-view/ExpandView';
-import { mockedExpandableData } from '../mocks/index';
+import { ParsedInfoArb } from '@yttrex/shared/arbitraries/Metadata.arb';
+import * as fc from 'fast-check';
 
 const Meta: ComponentMeta<typeof ExpandView> = {
   title: 'Example/ExpandView',
@@ -17,5 +18,9 @@ const Template: ComponentStory<typeof ExpandView> = (args) => {
 export const Basic = Template.bind({});
 Basic.args = {
   isVisible: true,
-  data: mockedExpandableData,
+  data: fc.sample(ParsedInfoArb, 4).map((r, i) => ({
+    ...r,
+    order: i,
+    thumbnailHref: `http://placekitten.com/600/${i}00`,
+  })),
 };
