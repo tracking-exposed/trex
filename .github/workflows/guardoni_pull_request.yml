@@ -1,6 +1,10 @@
 name: Guardoni - Pull Request
 
 on:
+  push:
+    branches:
+      - daily
+
   pull_request:
     branches:
       - master
