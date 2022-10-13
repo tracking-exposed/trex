@@ -6910,7 +6910,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/geoip-lite@npm:^1.4.1":
+"@types/geoip-lite@npm:^1, @types/geoip-lite@npm:^1.4.1":
   version: 1.4.1
   resolution: "@types/geoip-lite@npm:1.4.1"
   checksum: fe6807d61d3f6b6abcd28641b35a0b4bcca02440ba9613e31765b3a874616cfd537e415ed8405126fd6a03eca27727f168b28d22bec1e82b197c1266423a66c9
@@ -7144,6 +7144,13 @@ __metadata:
   version: 1.2.2
   resolution: "@types/minimist@npm:1.2.2"
   checksum: b8da83c66eb4aac0440e64674b19564d9d86c80ae273144db9681e5eeff66f238ade9515f5006ffbfa955ceff8b89ad2bd8ec577d7caee74ba101431fb07045d
+  languageName: node
+  linkType: hard
+
+"@types/module-alias@npm:^2":
+  version: 2.0.1
+  resolution: "@types/module-alias@npm:2.0.1"
+  checksum: c6d6d30605833b03465c39760df42616fd24e4f532a29bb77954220885feb21eb2d84dd38eed68b0c18997e6930fdc5914d2dc6fd7cc5d110a42068d2204e11e
   languageName: node
   linkType: hard
 
@@ -8330,8 +8337,10 @@ __metadata:
   dependencies:
     "@types/body-parser": ^1.19.2
     "@types/cors": ^2.8.12
+    "@types/geoip-lite": ^1
     "@types/jest": ^27.5.2
     "@types/jsdom": ^16.2.14
+    "@types/module-alias": ^2
     "@types/nconf": ^0.10.2
     "@types/node": ^16.11.68
     "@types/supertest": ^2.0.12
@@ -8356,10 +8365,12 @@ __metadata:
     fetch-opengraph: ^1.0.35
     food-words: ^1.1.0
     fp-ts: ^2.11.9
+    geoip-lite: ^1.4.6
     io-ts: ^2.2.16
     io-ts-types: ^0.5.16
     jest: ^27.5.1
     jsdom: ^16.7.0
+    module-alias: ^2.2.2
     moment: ^2.29.4
     mongodb: ^4.3.1
     nacl-signature: ^1.0.0
@@ -8369,6 +8380,7 @@ __metadata:
     prettier: ^2.7.1
     supertest: ^6.2.4
     ts-endpoint: ^2.0.0
+    ts-endpoint-express: ^2.0.0
     ts-io-error: ^2.0.0
     ts-jest: ^27.1.5
     ts-node: ^10.9.1
@@ -22168,6 +22180,13 @@ __metadata:
   version: 1.0.1
   resolution: "modify-values@npm:1.0.1"
   checksum: 8296610c608bc97b03c2cf889c6cdf4517e32fa2d836440096374c2209f6b7b3e256c209493a0b32584b9cb32d528e99d0dd19dcd9a14d2d915a312d391cc7e9
+  languageName: node
+  linkType: hard
+
+"module-alias@npm:^2.2.2":
+  version: 2.2.2
+  resolution: "module-alias@npm:2.2.2"
+  checksum: 4b5543f834b484033e5bd184096ca8276b9195e32e88883ee6ea8d3a4789d97c470d26f5fa7271bd7a26588bf67e4d27dbdb594ee327aef1c9619d855dc78342
   languageName: node
   linkType: hard
 
