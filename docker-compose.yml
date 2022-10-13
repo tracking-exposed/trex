@@ -17,13 +17,6 @@ services:
       - ./backend/dump:/dump/
     restart: unless-stopped
 
-  # provide a test for testing purposo on a specific port
-  mongodb-test:
-    image: mongo:4.2
-    ports:
-      - '27019:27017'
-    restart: unless-stopped
-
   mongo-yt-indexes:
     image: mongo:4.2
     container_name: mongo-yt-indexes
@@ -41,15 +34,6 @@ services:
     command: mongo mongodb:27017/tktrex /scripts/build-indexes.js
     depends_on:
       - mongodb
-
-  mongo-test-indexes:
-    image: mongo:4.2
-    container_name: mongo-test-indexes
-    volumes:
-      - ./backend/scripts:/scripts
-    command: mongo mongodb-test:27017/test /scripts/build-indexes.js
-    depends_on:
-      - mongodb-test
 
   mongo-yt-test-indexes:
     image: mongo:4.2
@@ -74,3 +58,17 @@ services:
       dockerfile: from-zip.Dockerfile
       context: .
     container_name: build-from-zip
+
+  yt-backend:
+    build:
+      dockerfile: Dockerfile.ytbackend
+      context: .
+    container_name: yt-backend
+    ports:
+      - "9000:9000"
+    environment:
+      - DEBUG=*
+      - mongoHost=mongodb
+    depends_on:
+      - mongodb
+      - mongo-yt-indexes

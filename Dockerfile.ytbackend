@@ -1,4 +1,4 @@
-FROM node:16-slim as build
+FROM node:16.14-slim as build
 
 WORKDIR /app
 
@@ -12,8 +12,8 @@ COPY tsconfig.json .
 COPY packages/shared ./packages/shared
 #COPY packages/@trex/taboule ./packages/@trex/taboule
 
-COPY platforms/yttrex/backend ./platforms/yttrex/backend
 COPY platforms/yttrex/shared ./platforms/yttrex/shared
+COPY platforms/yttrex/backend ./platforms/yttrex/backend
 #COPY platforms/tktrex/backend ./platforms/tktrex/backend
 
 RUN yarn install
@@ -21,27 +21,27 @@ RUN yarn install
 RUN yarn yt:backend build
 
 
-FROM node:16-slim as production
+FROM node:16.14-slim as production
 
 WORKDIR /app
 
 COPY package.json /app/package.json
 COPY .yarnrc.yml /app/.yarnrc.yml
-COPY .yarn /app/.yarn
-#COPY platforms/yttrex/backend/package.json /app/platforms/yttrex/backend/package.json
+COPY tsconfig.json /app/tsconfig.json
 
 # yarn cache
 COPY --from=build /app/.yarn /app/.yarn
 
 # packages
-COPY --from=build /app/packages/shared/lib /app/packages/shared/lib
+COPY --from=build /app/packages/shared /app/packages/shared
 
-# API service
-COPY --from=build /app/platforms/yttrex/backend/package.json /app/platforms/yttrex/backend/package.json
-COPY --from=build /app/platforms/yttrex/backend/build /app/platforms/yttrex/backend/build
+# YT API backend
+COPY --from=build /app/platforms/yttrex/shared /app/platforms/yttrex/shared
+COPY --from=build /app/platforms/yttrex/backend /app/platforms/yttrex/backend
 
 RUN yarn install
 
 ENV key=fuffa
+ENV DEBUG=@trex*
 
 CMD ["yarn", "yt:backend", "start"]
