@@ -1,6 +1,9 @@
 name: YTTrEx - Pull Request
 
 on:
+  push:
+    branches:
+      - daily
   pull_request:
     branches:
       - daily
