@@ -221,7 +221,7 @@ async function processEvents(req: express.Request): Promise<{
         type: body.type,
         rect: body.rect,
         href: body.href,
-        timelineId: timelineId.word,
+        timelineId: timelineId.id,
         publicKey: supporter.publicKey,
         clientTime: parseISO(body.clientTime),
         savingTime: new Date(),
