@@ -6,7 +6,7 @@
     "strict": false,
     "outDir": "./build",
     "baseUrl": "./src",
-    "rootDir": "./",
+    "rootDir": "./src",
     "noEmit": false,
     "esModuleInterop": true,
     "skipLibCheck": true,
@@ -16,7 +16,7 @@
       "@shared/*": ["../../../../packages/shared/src/*"]
     }
   },
-  "include": ["./bin", "./src"],
+  "include": ["./src"],
   "exclude": ["./tests", "jest.config.js"],
   "watchOptions": {
     "watchFile": "useFsEvents",

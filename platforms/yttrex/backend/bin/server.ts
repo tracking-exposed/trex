@@ -1,8 +1,14 @@
 #!/usr/bin/env node
+
+/* eslint-disable import/first */
+
+import moduleAlias from 'module-alias';
+moduleAlias({ base: process.cwd() });
+
 import * as http from 'http';
 import debug from 'debug';
 import nconf from 'nconf';
-import dbutils from '../lib/dbutils';
+import * as dbutils from '../lib/dbutils';
 import security from '../lib/security';
 import { makeApp } from './app';
 import * as mongo3 from '@shared/providers/mongo.provider';
@@ -35,7 +41,11 @@ const start = async (): Promise<void> => {
   });
   const server = new http.Server(app as any);
   server.listen(nconf.get('port'), nconf.get('interface'), () => {
-    d(`Listening on http://${nconf.get('interface')}:${nconf.get('port')}/api/v0/info`);
+    d(
+      `Listening on http://${nconf.get('interface')}:${nconf.get(
+        'port'
+      )}/api/v0/info`
+    );
   });
 
   // eslint-disable-next-line @typescript-eslint/no-misused-promises

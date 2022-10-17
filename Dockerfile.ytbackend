@@ -10,16 +10,13 @@ COPY .yarnrc.yml .
 COPY tsconfig.json .
 
 COPY packages/shared ./packages/shared
-#COPY packages/@trex/taboule ./packages/@trex/taboule
 
 COPY platforms/yttrex/shared ./platforms/yttrex/shared
 COPY platforms/yttrex/backend ./platforms/yttrex/backend
-#COPY platforms/tktrex/backend ./platforms/tktrex/backend
 
 RUN yarn install
 
 RUN yarn yt:backend build
-
 
 FROM node:16.14-slim as production
 
@@ -33,15 +30,19 @@ COPY tsconfig.json /app/tsconfig.json
 COPY --from=build /app/.yarn /app/.yarn
 
 # packages
-COPY --from=build /app/packages/shared /app/packages/shared
+COPY --from=build /app/packages/shared/build /app/packages/shared/build
 
 # YT API backend
-COPY --from=build /app/platforms/yttrex/shared /app/platforms/yttrex/shared
-COPY --from=build /app/platforms/yttrex/backend /app/platforms/yttrex/backend
+COPY --from=build /app/platforms/yttrex/shared/build /app/platforms/yttrex/shared/build
+COPY --from=build /app/platforms/yttrex/backend/package.json /app/platforms/yttrex/backend/package.json
+COPY --from=build /app/platforms/yttrex/backend/config /app/platforms/yttrex/backend/config
+COPY --from=build /app/platforms/yttrex/backend/build /app/platforms/yttrex/backend/build
 
-RUN yarn install
+WORKDIR /app/platforms/yttrex/backend
+
+RUN yarn workspaces focus --production
 
 ENV key=fuffa
 ENV DEBUG=@trex*
 
-CMD ["yarn", "yt:backend", "start"]
+CMD ["yarn", "start"]
