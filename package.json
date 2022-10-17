@@ -84,6 +84,6 @@
     "@types/react": "^17"
   },
   "dependencies": {
-    "pm2": "^5.2.0"
+    "pm2": "^5.2.2"
   }
 }
