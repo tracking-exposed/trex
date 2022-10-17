@@ -662,7 +662,6 @@ export const getSuccessfulOutput = <
   output: Array<PipelineOutput<ContributionWithDOM<S>, M, PP>>
 ): any => {
   return output.reduce((acc, { source, metadata, failures, log, count }) => {
-    console.log(JSON.stringify(metadata, null, 2));
     return {
       ...acc,
       [getEntryId(source).substr(0, 6)]: {
