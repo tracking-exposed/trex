@@ -42,7 +42,7 @@ export const GetTest = async (): Promise<Test> => {
     app: supertest(app),
     logger,
     config,
-    mongo: mongo as any,
+    mongo,
     mongo3,
   };
 };
