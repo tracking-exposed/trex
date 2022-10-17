@@ -5,10 +5,9 @@ import {
   GridColTypeDef,
   GridEventListener,
 } from '@mui/x-data-grid';
-import { APIError } from '@shared/errors/APIError';
 import { toValidationError } from '@shared/errors/ValidationError';
 import { GetLogger } from '@shared/logger';
-import { ObservableQuery } from 'avenger/lib/Query';
+import { ParsedInfo } from '@yttrex/shared/src/models/metadata/Metadata';
 import * as QR from 'avenger/lib/QueryResult';
 import { WithQueries } from 'avenger/lib/react';
 import debug from 'debug';
@@ -18,11 +17,14 @@ import * as t from 'io-ts';
 import * as React from 'react';
 import * as config from '../config';
 import { TabouleDataProvider } from '../state';
-import { Results, SearchRequestInput, TabouleQueries } from '../state/queries';
+import {
+  EndpointQuery,
+  SearchRequestInput,
+  TabouleQueries,
+} from '../state/queries';
 import { TabouleQueryKey } from '../state/types';
 import { ErrorOverlay } from './ErrorOverlay';
 import ExpandView from './expand-view/ExpandView';
-import { ParsedInfo } from '@yttrex/shared/src/models/Metadata';
 import './Taboule.css';
 
 debug.enable(process.env.DEBUG ?? '');
@@ -89,11 +91,9 @@ export const Taboule = <Q extends keyof TabouleQueries>({
     () => TabouleDataProvider(baseURL),
     [baseURL]
   );
-  const query: ObservableQuery<
-    SearchRequestInput,
-    APIError,
-    Results<any>
-  > = tabouleQueries.queries[queryKey];
+  const query: EndpointQuery<SearchRequestInput, any> = tabouleQueries.queries[
+    queryKey
+  ] as any;
 
   const { inputs, ...queryConfig } = React.useMemo(
     () =>
