@@ -50,9 +50,9 @@
   },
   "devDependencies": {
     "@apidevtools/swagger-cli": "^4.0.4",
-    "@commitlint/cli": "^16.3.0",
-    "@commitlint/config-conventional": "^16.2.4",
-    "@commitlint/prompt-cli": "^16.3.0",
+    "@commitlint/cli": "^17.1.2",
+    "@commitlint/config-conventional": "^17.1.0",
+    "@commitlint/prompt-cli": "^17.1.2",
     "@release-it-plugins/workspaces": "^3.2.0",
     "@release-it/bumper": "^4.0.0",
     "@release-it/conventional-changelog": "^5.1.1",
