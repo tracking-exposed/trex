@@ -6123,8 +6123,8 @@ __metadata:
     node-sass: ^7.0.1
     prettier: ^2.7.1
     puppeteer-core: ^13.7.0
-    puppeteer-extra: ^3.2.3
-    puppeteer-extra-plugin-stealth: ^2.9.0
+    puppeteer-extra: ^3.3.4
+    puppeteer-extra-plugin-stealth: ^2.11.1
     react: ^17.0.2
     react-dom: ^17.0.2
     react-i18next: ^11.18.0
@@ -7251,15 +7251,6 @@ __metadata:
   dependencies:
     "@types/puppeteer": ^1
   checksum: 9bcb824212660f98797da6327f4123615aedccb441889aff4bc846268e59e978bb5dfdd3a209bcbf81b02af7a86af1109883540f61aa5bef3b6a946577472b08
-  languageName: node
-  linkType: hard
-
-"@types/puppeteer@npm:*":
-  version: 5.4.6
-  resolution: "@types/puppeteer@npm:5.4.6"
-  dependencies:
-    "@types/node": "*"
-  checksum: b969230812e95fcc5eee83151731e51b287cc934169f552034d8eea58ce9b5beb4ba09b9ce05b75d9510241a85d244f28e8b0a0a4b9f7dffcad8c37a39288260
   languageName: node
   linkType: hard
 
@@ -17337,8 +17328,8 @@ __metadata:
     prettier: ^2.7.1
     puppeteer: ^13.7.0
     puppeteer-core: ^13.7.0
-    puppeteer-extra: ^3.2.3
-    puppeteer-extra-plugin-stealth: ^2.9.0
+    puppeteer-extra: ^3.3.4
+    puppeteer-extra-plugin-stealth: ^2.11.1
     puppeteer-in-electron: ^3.0.5
     react: ^17.0.2
     react-dom: ^17.0.2
@@ -25514,64 +25505,103 @@ __metadata:
   languageName: node
   linkType: hard
 
-"puppeteer-extra-plugin-stealth@npm:^2.9.0":
-  version: 2.10.1
-  resolution: "puppeteer-extra-plugin-stealth@npm:2.10.1"
+"puppeteer-extra-plugin-stealth@npm:^2.11.1":
+  version: 2.11.1
+  resolution: "puppeteer-extra-plugin-stealth@npm:2.11.1"
   dependencies:
     debug: ^4.1.1
-    puppeteer-extra-plugin: ^3.2.0
-    puppeteer-extra-plugin-user-preferences: ^2.3.1
-  checksum: b8870006db5e0d0c26765a656d7a38534367a1340971fae3fe8b26116d4b7f2a67f20eb17ea9206c5240800b89db58dd6965a827e910fcb6e45c4b29b7cb385a
+    puppeteer-extra-plugin: ^3.2.2
+    puppeteer-extra-plugin-user-preferences: ^2.4.0
+  peerDependencies:
+    playwright-extra: "*"
+    puppeteer-extra: "*"
+  peerDependenciesMeta:
+    playwright-extra:
+      optional: true
+    puppeteer-extra:
+      optional: true
+  checksum: 8d5c3c8f650113dd35e9dd8c93617528921b6d5b0331e60006324db4080c56268b0f1a3d7af036cf6741fbdd4587f5d4400545e7d225242a0cce698cd3e51295
   languageName: node
   linkType: hard
 
-"puppeteer-extra-plugin-user-data-dir@npm:^2.3.1":
-  version: 2.3.1
-  resolution: "puppeteer-extra-plugin-user-data-dir@npm:2.3.1"
+"puppeteer-extra-plugin-user-data-dir@npm:^2.4.0":
+  version: 2.4.0
+  resolution: "puppeteer-extra-plugin-user-data-dir@npm:2.4.0"
   dependencies:
     debug: ^4.1.1
     fs-extra: ^10.0.0
-    puppeteer-extra-plugin: ^3.2.0
-  checksum: 1da77d82c08e5d5e4c4fba3619bda25b93194e34d554741627a6dfdc629f09adbcaf62a9b593c3efe3d08fe2a8919403b45051a21c2449d982177894fe92316e
+    puppeteer-extra-plugin: ^3.2.2
+    rimraf: ^3.0.2
+  peerDependencies:
+    playwright-extra: "*"
+    puppeteer-extra: "*"
+  peerDependenciesMeta:
+    playwright-extra:
+      optional: true
+    puppeteer-extra:
+      optional: true
+  checksum: ba414fcf75768b85f8785815bb1bef948615225c3b663e01bf7b72dc7c425987e2db402f564c48dbae8af77a19179bcca9ada8e51f947b5850d2b4e9f52e5696
   languageName: node
   linkType: hard
 
-"puppeteer-extra-plugin-user-preferences@npm:^2.3.1":
-  version: 2.3.1
-  resolution: "puppeteer-extra-plugin-user-preferences@npm:2.3.1"
+"puppeteer-extra-plugin-user-preferences@npm:^2.4.0":
+  version: 2.4.0
+  resolution: "puppeteer-extra-plugin-user-preferences@npm:2.4.0"
   dependencies:
     debug: ^4.1.1
     deepmerge: ^4.2.2
-    puppeteer-extra-plugin: ^3.2.0
-    puppeteer-extra-plugin-user-data-dir: ^2.3.1
-  checksum: 4842a1dbccd9bde10a121ab7536a0bb9bae5427c3f92654da6412e6650f15d87ff89fbf16ea25273ad5affb8584d3c7e035187dcbff5fcfb4e0b0fd79d8547b5
+    puppeteer-extra-plugin: ^3.2.2
+    puppeteer-extra-plugin-user-data-dir: ^2.4.0
+  peerDependencies:
+    playwright-extra: "*"
+    puppeteer-extra: "*"
+  peerDependenciesMeta:
+    playwright-extra:
+      optional: true
+    puppeteer-extra:
+      optional: true
+  checksum: f8c2359b1ddce3d7b8f543b2a8708688e74da5b7d705f79d2599d485d0fc88b4465303348a7e6977bc1705817f4d40f2db3b1b532776cc602a700487f3d80ba3
   languageName: node
   linkType: hard
 
-"puppeteer-extra-plugin@npm:^3.2.0":
-  version: 3.2.0
-  resolution: "puppeteer-extra-plugin@npm:3.2.0"
+"puppeteer-extra-plugin@npm:^3.2.2":
+  version: 3.2.2
+  resolution: "puppeteer-extra-plugin@npm:3.2.2"
   dependencies:
     "@types/debug": ^4.1.0
     debug: ^4.1.1
     merge-deep: ^3.0.1
   peerDependencies:
+    playwright-extra: "*"
     puppeteer-extra: "*"
-  checksum: 4d94ff911a7256d92f2a2df33718d42ccbc00094265e2fcd03b4d8beba9021224ad48dd43034a63fba7b7a097a3dbfedd97f5474651c9b191e18ae10fa04d710
+  peerDependenciesMeta:
+    playwright-extra:
+      optional: true
+    puppeteer-extra:
+      optional: true
+  checksum: 9ace2300d9c0089e7dbef6ea46bca8e0cb3ea8dcaec621c093569fdad000da4947854970d5d22edd175b3631480fdd899e4de6f1b0e9050f7e6a07eebbe8d538
   languageName: node
   linkType: hard
 
-"puppeteer-extra@npm:^3.2.3":
-  version: 3.3.0
-  resolution: "puppeteer-extra@npm:3.3.0"
+"puppeteer-extra@npm:^3.3.4":
+  version: 3.3.4
+  resolution: "puppeteer-extra@npm:3.3.4"
   dependencies:
     "@types/debug": ^4.1.0
-    "@types/puppeteer": "*"
     debug: ^4.1.1
     deepmerge: ^4.2.2
   peerDependencies:
+    "@types/puppeteer": "*"
     puppeteer: "*"
-  checksum: 840ac225267436ef4517aa6e14f90aec87f52fc30db58a62b0d38f55777cab3b20e136b7cf7e51a8237ff9d3663717287820aef1e2b25ce2297092aa85bc7288
+    puppeteer-core: "*"
+  peerDependenciesMeta:
+    "@types/puppeteer":
+      optional: true
+    puppeteer:
+      optional: true
+    puppeteer-core:
+      optional: true
+  checksum: dfbeceba086606c5f74305b207b78b0a7248b6667385210d6462af1fa01b6fe50c631449c3a343005ed712aa37e44f10539abc29429cac86baa76351d0c3d10b
   languageName: node
   linkType: hard
 
