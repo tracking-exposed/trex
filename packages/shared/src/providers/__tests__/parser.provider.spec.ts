@@ -109,6 +109,7 @@ describe('Parser Provider', () => {
     const source = fc.sample(ContributionArb, 1)[0];
     const metadata = fc.sample(MetadataArb, 1)[0];
     const log = { home: 1 };
+
     const output = getSuccessfulOutput<
       Contribution,
       Metadata,
@@ -132,9 +133,11 @@ describe('Parser Provider', () => {
     );
 
     expect(output).toMatchObject({
-      [source.id]: {
+      [source.id.substring(0, 6)]: {
+        ...metadata,
         failures: '[]',
         nature: { type: metadata.type },
+        count: JSON.stringify({ metadata: 1, source: 1 }),
       },
     });
   });
