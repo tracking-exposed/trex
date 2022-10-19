@@ -6300,7 +6300,7 @@ __metadata:
     react-use-clipboard: ^1.0.8
     style-loader: ^3.3.1
     svgdom: ^0.1.10
-    swagger-ui: ^4.4.1
+    swagger-ui: ^4.14.3
     ts-endpoint: ^2.0.0
     ts-jest: ^27.1.5
     ts-loader: ^9.4.1
@@ -29341,9 +29341,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"swagger-ui@npm:^4.4.1":
-  version: 4.14.0
-  resolution: "swagger-ui@npm:4.14.0"
+"swagger-ui@npm:^4.14.3":
+  version: 4.14.3
+  resolution: "swagger-ui@npm:4.14.3"
   dependencies:
     "@babel/runtime-corejs3": ^7.18.9
     "@braintree/sanitize-url": =6.0.0
@@ -29380,7 +29380,7 @@ __metadata:
     xml: =1.0.1
     xml-but-prettier: ^1.0.1
     zenscroll: ^4.0.2
-  checksum: da65de3e319e21d3dd9687040dcc4735e5198eb5006cf7b32395db13b3f2ca3856e5134735ad7ef137a113e0ec1e571bf0b15371bde6293babad61b0a0dea821
+  checksum: 90cc62cad8512f6fc389fe37febc7ffc0c5d5d8ac301ca390a6689e26aee27a37aacf36066e30cc126fd408b60acf324b1022a0eb7bdf0ed5831bb9c0bca36de
   languageName: node
   linkType: hard
 
