@@ -91,6 +91,7 @@
     "@pmmmwh/react-refresh-webpack-plugin": "^0.5.7",
     "@types/lodash": "^4.14.186",
     "@types/nconf": "^0.10.2",
+    "@types/node": "^16.11.68",
     "@types/prettier": "^2.6.3",
     "@types/react": "^17.0.50",
     "@types/react-dom": "^17.0.17",
