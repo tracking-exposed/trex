@@ -5933,7 +5933,7 @@ __metadata:
     "@types/eslint": ^8
     "@types/express": ^4.17.13
     "@types/lodash": ^4.14.186
-    "@types/node": ^16.11.36
+    "@types/node": ^16.11.68
     "@typescript-eslint/eslint-plugin": ^5.40.0
     "@typescript-eslint/parser": ^5.40.0
     body-parser: ^1.19.1
@@ -5985,7 +5985,7 @@ __metadata:
     "@types/debug": ^4.1.7
     "@types/jquery": ^3.5.14
     "@types/lodash": ^4.14.186
-    "@types/node": ^16.11.36
+    "@types/node": ^16.11.68
     "@types/react": ^17.0.50
     "@types/react-dom": ^17.0.17
     "@typescript-eslint/eslint-plugin": ^5.40.0
@@ -6019,7 +6019,7 @@ __metadata:
   resolution: "@tktrex/shared@workspace:platforms/tktrex/shared"
   dependencies:
     "@types/jest": ^27.5.2
-    "@types/node": ^16.11.36
+    "@types/node": ^16.11.68
     "@types/yargs": ^17.0.10
     "@typescript-eslint/eslint-plugin": ^5.40.0
     "@typescript-eslint/parser": ^5.40.0
@@ -6090,7 +6090,7 @@ __metadata:
     "@types/jquery": ^3.5.14
     "@types/lodash": ^4.14.186
     "@types/nconf": ^0.10.2
-    "@types/node": ^16.11.36
+    "@types/node": ^16.11.68
     "@types/react": ^17.0.50
     "@types/react-dom": ^17.0.17
     "@types/webpack-bundle-analyzer": ^4.4.1
@@ -6199,7 +6199,7 @@ __metadata:
     "@mui/material": ^5.8.0
     "@mui/styled-engine": ^5.8.0
     "@mui/x-data-grid": ^5.11.1
-    "@types/node": ^16.11.36
+    "@types/node": ^16.11.68
     "@types/prettier": ^2.6.3
     "@types/react": ^17.0.50
     "@types/react-dom": ^17.0.17
@@ -6252,7 +6252,7 @@ __metadata:
     "@types/debug": ^4.1.7
     "@types/jest": ^27.5.2
     "@types/lodash": ^4.14.186
-    "@types/node": ^16.11.36
+    "@types/node": ^16.11.68
     "@types/react": ^17.0.50
     "@types/react-dom": ^17.0.17
     "@types/react-test-renderer": ^17.0.2
@@ -8333,7 +8333,7 @@ __metadata:
     "@types/jest": ^27.5.2
     "@types/jsdom": ^16.2.14
     "@types/nconf": ^0.10.2
-    "@types/node": ^16.11.36
+    "@types/node": ^16.11.68
     "@types/supertest": ^2.0.12
     "@types/uuid": ^8.3.4
     "@typescript-eslint/eslint-plugin": ^5.40.0
@@ -8452,7 +8452,7 @@ __metadata:
   resolution: "@yttrex/shared@workspace:platforms/yttrex/shared"
   dependencies:
     "@types/jest": ^27.5.2
-    "@types/node": ^16.11.36
+    "@types/node": ^16.11.68
     "@types/uuid": ^8.3.4
     "@typescript-eslint/eslint-plugin": ^5.40.0
     "@typescript-eslint/parser": ^5.40.0
@@ -17276,6 +17276,7 @@ __metadata:
     "@pmmmwh/react-refresh-webpack-plugin": ^0.5.7
     "@types/lodash": ^4.14.186
     "@types/nconf": ^0.10.2
+    "@types/node": ^16.11.68
     "@types/prettier": ^2.6.3
     "@types/react": ^17.0.50
     "@types/react-dom": ^17.0.17
@@ -27353,7 +27354,7 @@ __metadata:
     "@release-it-plugins/workspaces": ^3.2.0
     "@release-it/bumper": ^4.0.0
     "@release-it/conventional-changelog": ^5.1.1
-    "@types/node": ^16.11.36
+    "@types/node": ^16.11.68
     "@types/prettier": ^2.6.3
     eslint: ^8.25.0
     eslint-plugin-n: ^15.3.0
