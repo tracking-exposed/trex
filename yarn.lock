@@ -6115,7 +6115,7 @@ __metadata:
     filemanager-webpack-plugin: ^7.0.0
     food-words: ^1.1.0
     fp-ts: ^2.11.9
-    geoip-lite: ^1.4.4
+    geoip-lite: ^1.4.6
     html-webpack-plugin: ^5.5.0
     io-ts: ^2.2.16
     io-ts-types: ^0.5.16
@@ -16620,9 +16620,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"geoip-lite@npm:^1.4.4":
-  version: 1.4.5
-  resolution: "geoip-lite@npm:1.4.5"
+"geoip-lite@npm:^1.4.6":
+  version: 1.4.6
+  resolution: "geoip-lite@npm:1.4.6"
   dependencies:
     async: 2.1 - 2.6.4
     chalk: 4.1 - 4.1.2
@@ -16631,7 +16631,7 @@ __metadata:
     lazy: 1.0.11
     rimraf: 2.5.2 - 2.7.1
     yauzl: 2.9.2 - 2.10.0
-  checksum: b67aa3dbce92bcd24edc0d86714e7b99dc0ff3f0faeb5a869afe3a5224dd7083d1167d67bd3f4f9f3071e411125eae6330126415509b0111af98fa782d6b5d96
+  checksum: 7933c563ee6ae5ee0dd90ff9d74c421c27bbbd83d8944ae35b53f7420b4ca048c1cd147b1411f41fca7818ff5485ddf610ca2dfeb933b2fe446b11a03c75eb0d
   languageName: node
   linkType: hard
 
