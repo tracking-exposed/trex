@@ -5875,7 +5875,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@testing-library/jest-dom@npm:^5.16.4, @testing-library/jest-dom@npm:^5.16.5":
+"@testing-library/jest-dom@npm:^5.16.5":
   version: 5.16.5
   resolution: "@testing-library/jest-dom@npm:5.16.5"
   dependencies:
@@ -5892,7 +5892,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@testing-library/react@npm:^13.3.0, @testing-library/react@npm:^13.4.0":
+"@testing-library/react@npm:^13.4.0":
   version: 13.4.0
   resolution: "@testing-library/react@npm:13.4.0"
   dependencies:
@@ -5906,7 +5906,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@testing-library/user-event@npm:^13.2.1, @testing-library/user-event@npm:^13.5.0":
+"@testing-library/user-event@npm:^13.2.1":
   version: 13.5.0
   resolution: "@testing-library/user-event@npm:13.5.0"
   dependencies:
@@ -5917,12 +5917,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@testing-library/user-event@npm:^14.2.1":
-  version: 14.2.1
-  resolution: "@testing-library/user-event@npm:14.2.1"
+"@testing-library/user-event@npm:^14.4.3":
+  version: 14.4.3
+  resolution: "@testing-library/user-event@npm:14.4.3"
   peerDependencies:
     "@testing-library/dom": ">=7.21.4"
-  checksum: 661d61a52a3ec954fe21d799f8203f0eaa7c43ea4f2c1b5916f3bb34a3609a8d7ac3dfaff5247c4511aed7ce122883c297bf59e9ffe086e375f42c98596802b9
+  checksum: 852c48ea6db1c9471b18276617c84fec4320771e466cd58339a732ca3fd73ad35e5a43ae14f51af51a8d0a150dcf60fcaab049ef367871207bea8f92c4b8195e
   languageName: node
   linkType: hard
 
@@ -6161,7 +6161,7 @@ __metadata:
     "@storybook/theming": ^6.5.12
     "@testing-library/jest-dom": ^5.16.5
     "@testing-library/react": ^13.4.0
-    "@testing-library/user-event": ^13.5.0
+    "@testing-library/user-event": ^14.4.3
     "@types/react": ^17.0.50
     "@typescript-eslint/eslint-plugin": ^5.40.0
     "@typescript-eslint/parser": ^5.40.0
@@ -6237,9 +6237,9 @@ __metadata:
     "@material-ui/core": ^4.12.4
     "@material-ui/icons": ^4.11.3
     "@material-ui/lab": ^4.0.0-alpha.61
-    "@testing-library/jest-dom": ^5.16.4
-    "@testing-library/react": ^13.3.0
-    "@testing-library/user-event": ^14.2.1
+    "@testing-library/jest-dom": ^5.16.5
+    "@testing-library/react": ^13.4.0
+    "@testing-library/user-event": ^14.4.3
     "@types/bs58": ^4.0.1
     "@types/c3": ^0.7.8
     "@types/chrome": ^0.0.188
