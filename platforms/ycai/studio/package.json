@@ -71,7 +71,7 @@
     "@material-ui/icons": "^4.11.3",
     "@material-ui/lab": "^4.0.0-alpha.61",
     "@types/c3": "^0.7.8",
-    "@types/lodash": "^4.14.182",
+    "@types/lodash": "^4.14.186",
     "@vx/group": "0.0.199",
     "@vx/hierarchy": "0.0.199",
     "@vx/mock-data": "0.0.199",
