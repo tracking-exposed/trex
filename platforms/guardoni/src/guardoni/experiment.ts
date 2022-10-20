@@ -29,7 +29,7 @@ import {
   ExperimentInfo,
   GuardoniContext,
   GuardoniProfile,
-  GuardoniSuccessOutput
+  GuardoniSuccessOutput,
 } from './types';
 import { liftFromIOE } from './utils';
 
@@ -84,7 +84,7 @@ export const readCSVAndParse =
           }),
           TE.chain(({ records }) =>
             pipe(
-              records.reduce((acc: any[], r: any) => {
+              records.reduce((acc: any[], { onCompleted, ...r }: any) => {
                 const queue = [];
                 if (r.incrementScrollByPX && r.totalScroll) {
                   const { incrementScrollByPX, totalScroll, interval } = r;
@@ -98,60 +98,69 @@ export const readCSVAndParse =
                   queue.push(scrollStep);
                 }
 
-                if (r.onCompleted) {
-                  const commands = r.onCompleted.split(' - ');
-                  const onCompletedSteps = commands.reduce(
-                    (acc: any[], c: string) => {
-                      if (c.startsWith('keypress')) {
-                        pipe(
-                          parseKeypressCommand(c),
-                          E.fold(
-                            (e) => {
-                              logger.warn(e.name, e.message);
-                            },
-                            (opts) => {
-                              logger.debug(
-                                'Keypress command %s parsed %O',
-                                c,
-                                opts
-                              );
-                              const keypressStep = {
-                                type: KeyPressType.value,
-                                ...opts,
-                              };
-                              acc.push(keypressStep);
-                            }
-                          )
-                        );
-                      }
-                      if (c.startsWith('click')) {
-                        pipe(
-                          parseClickCommand(c),
-                          E.fold(
-                            (e) => {
-                              logger.warn(e.name, e.message);
-                            },
-                            (opts) => {
-                              logger.debug(
-                                'Click command %s parsed %O',
-                                c,
-                                opts
-                              );
-                              const clickStep = {
-                                type: ClickType.value,
-                                ...opts,
-                              };
-                              acc.push(clickStep);
-                            }
-                          )
-                        );
-                      }
-                      return acc;
-                    },
-                    []
-                  );
+                if (onCompleted) {
+                  if (
+                    onCompleted.indexOf(' - ') ||
+                    onCompleted.indexOf(' – ')
+                  ) {
+                    const commands = onCompleted.indexOf(' - ')
+                      ? onCompleted.split(' - ')
+                      : onCompleted.split(' – ');
+                    logger.debug('Parsing commands %O', commands);
+                    const onCompletedSteps = commands.reduce(
+                      (acc: any[], c: string) => {
+                        logger.debug('Parsing command "%s"', c);
+                        if (c.startsWith('keypress')) {
+                          pipe(
+                            parseKeypressCommand(c.trim()),
+                            E.fold(
+                              (e) => {
+                                logger.warn(e.name, e.message);
+                              },
+                              (opts) => {
+                                logger.debug(
+                                  'Keypress command %s parsed %O',
+                                  c,
+                                  opts
+                                );
+                                const keypressStep = {
+                                  type: KeyPressType.value,
+                                  ...opts,
+                                };
+                                acc.push(keypressStep);
+                              }
+                            )
+                          );
+                        }
+                        if (c.startsWith('click')) {
+                          pipe(
+                            parseClickCommand(c.trim()),
+                            E.fold(
+                              (e) => {
+                                logger.warn(e.name, e.message);
+                              },
+                              (opts) => {
+                                logger.debug(
+                                  'Click command %s parsed %O',
+                                  c,
+                                  opts
+                                );
+                                const clickStep = {
+                                  type: ClickType.value,
+                                  ...opts,
+                                };
+                                acc.push(clickStep);
+                              }
+                            )
+                          );
+                        }
+                        return acc;
+                      },
+                      []
+                    );
 
-                  queue.push(...onCompletedSteps);
+                    queue.push(...onCompletedSteps);
+                  }
                 }
 
                 return acc
