@@ -29,7 +29,7 @@ import {
   ExperimentInfo,
   GuardoniContext,
   GuardoniProfile,
-  GuardoniSuccessOutput
+  GuardoniSuccessOutput,
 } from './types';
 import { liftFromIOE } from './utils';
 
@@ -287,8 +287,9 @@ export const registerExperiment =
     );
   };
 
-export const getExperimentJSONPath = (ctx: GuardoniContext): string =>
-  path.join(ctx.platform.extensionDir, 'experiment.json');
+export const getExperimentJSONPath = (
+  platform: GuardoniContext['platform']
+): string => path.join(platform.extensionDir, 'experiment.json');
 
 export const saveExperiment =
   (ctx: GuardoniContext) =>
@@ -296,7 +297,7 @@ export const saveExperiment =
     experimentId: NonEmptyString,
     profile: GuardoniProfile
   ): TE.TaskEither<AppError, ExperimentInfo> => {
-    const experimentJSONPath = getExperimentJSONPath(ctx);
+    const experimentJSONPath = getExperimentJSONPath(ctx.platform);
 
     const experimentInfo = {
       experimentId,

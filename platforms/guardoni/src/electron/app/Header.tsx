@@ -25,6 +25,7 @@ import botttsSprites from '@dicebear/avatars-bottts-sprites';
 import Avatars from '@dicebear/avatars';
 import { useHistory } from 'react-router';
 import AddProfileModal from './modals/AddProfileModal';
+import ConfirmationModal from './modals/ConfirmationModal';
 
 const botAvatars = new Avatars(botttsSprites, { r: 50, base64: true });
 
@@ -75,6 +76,8 @@ export const Header: React.FC<HeaderProps> = ({
   const [popoverOpen, setPopoverOpen] = React.useState(false);
   const [addProfileDialogOpen, setAddProfileDialogOpen] = React.useState(false);
   const [advancedSettingDialogOpen, setAdvancedSettingDialogOpen] =
+    React.useState(false);
+  const [confirmationModalOpen, setConfirmationModalOpen] =
     React.useState(false);
 
   const avatar = React.useMemo(
@@ -259,6 +262,9 @@ export const Header: React.FC<HeaderProps> = ({
         onCancel={() => {
           setAdvancedSettingDialogOpen(false);
         }}
+        onCleanFiles={() => {
+          setConfirmationModalOpen(true);
+        }}
       />
       <AddProfileModal
         open={addProfileDialogOpen}
@@ -267,6 +273,14 @@ export const Header: React.FC<HeaderProps> = ({
         onCancel={() => {
           setAddProfileDialogOpen(false);
         }}
+      />
+      <ConfirmationModal
+        open={confirmationModalOpen}
+        onCancel={() => {
+          setConfirmationModalOpen(false);
+        }}
+        onConfigChange={onConfigChange}
+        config={config}
       />
     </AppBar>
   );

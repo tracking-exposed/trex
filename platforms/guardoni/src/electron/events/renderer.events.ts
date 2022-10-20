@@ -16,7 +16,10 @@ import {
   getPlatformConfig,
   setConfig,
 } from '../../guardoni/config';
-import { readCSVAndParse } from '../../guardoni/experiment';
+import {
+  readCSVAndParse,
+  getExperimentJSONPath,
+} from '../../guardoni/experiment';
 import { GetGuardoni, Guardoni } from '../../guardoni/guardoni';
 import { getExistingProfiles, getProfileDataDir } from '../../guardoni/profile';
 import { GuardoniConfig, Platform, PlatformConfig } from '../../guardoni/types';
@@ -24,6 +27,8 @@ import { guardoniLogger } from '../../logger';
 import { EVENTS } from '../models/events';
 import store from '../store';
 import { getEventsLogger } from './event.logger';
+import { getSettingsJSONPath } from '../../guardoni/extension';
+import * as fs from 'fs';
 
 const guardoniEventsLogger = guardoniLogger.extend('events');
 
@@ -346,6 +351,36 @@ export const GetEvents = ({
           );
         });
 
+        ipcMain.on(EVENTS.CLEAN_EXTENSION_FOLDER_EVENT.value, (event, arg) => {
+          void pipe(
+            guardoni.cleanExtension(),
+            liftEventTask(EVENTS.CLEAN_EXTENSION_FOLDER_EVENT.value)
+          );
+        });
+
+        // ...
+        ipcMain.on(EVENTS.GET_EXTENSION_JSON_DATA.value, (event, arg) => {
+          const experimentJSON = getExperimentJSONPath(guardoni.platform);
+          const result = { experiment: undefined, settings: undefined };
+
+          if (fs.existsSync(experimentJSON)) {
+            result.experiment = JSON.parse(
+              fs.readFileSync(experimentJSON, 'utf-8')
+            );
+          }
+
+          const settingsJSON = getSettingsJSONPath(guardoni.platform);
+          if (fs.existsSync(settingsJSON)) {
+            result.settings = JSON.parse(
+              fs.readFileSync(settingsJSON, 'utf-8')
+            );
+          }
+
+          void pipe(
+            TE.right(result),
+            liftEventTask(EVENTS.GET_EXTENSION_JSON_DATA.value)
+          );
+        });
         /**
          * When the platform changes the guardoni instance needs to be
          * relaunched with new configuration
