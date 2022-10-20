@@ -84,6 +84,14 @@ export const Header: React.FC<HeaderProps> = ({
     () => botAvatars.create(config.profileName),
     [config.profileName]
   );
+  const [anchorEl, setAnchorEl] = React.useState<HTMLButtonElement | null>(
+    null
+  );
+
+  const handleClick = (event: React.MouseEvent<HTMLButtonElement>): void => {
+    setPopoverOpen(true);
+    setAnchorEl(event.currentTarget);
+  };
 
   return (
     <AppBar
@@ -140,20 +148,25 @@ export const Header: React.FC<HeaderProps> = ({
           </div>
         </Box>
         <Box>
-          <Avatar
-            src={avatar}
-            aria-describedby={popoverId}
-            onClick={() => setPopoverOpen(true)}
-            style={{
-              border: 'solid black 2px',
-              backgroundColor: 'transparent',
-              color: 'black',
-            }}
-          />
+          <button
+            onClick={handleClick}
+            style={{ background: 'none', border: 'none' }}
+          >
+            <Avatar
+              src={avatar}
+              aria-describedby={popoverId}
+              style={{
+                border: 'solid black 2px',
+                backgroundColor: 'transparent',
+                color: 'black',
+              }}
+            />
+          </button>
           <Popover
             elevation={0}
             id={popoverId}
             open={popoverOpen}
+            anchorEl={anchorEl}
             style={{
               top: 70,
             }}

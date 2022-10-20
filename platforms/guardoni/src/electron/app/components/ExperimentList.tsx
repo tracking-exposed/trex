@@ -136,7 +136,7 @@ export const ExperimentList: React.FC<ExperimentListProps> = ({
                 {d.steps.filter(OpenURLStep.is).map((l) => (
                   <ListItem
                     className={classes.directiveLinkListItem}
-                    key={l.url}
+                    key={l.urltag}
                   >
                     <Typography variant="h6" color="primary">
                       {l.urltag} ({l.watchFor ?? 'end'}):
