@@ -9,7 +9,7 @@ import { KeypressStep } from '../../../models/Step';
 import { sleep } from '../../../utils/promise.utils';
 import { StepContext } from './types';
 
-export const KEYPRESS_COMMAND_REGEXP = /keypress\((\w+);(\d+);(\d+)\)/g;
+export const KEYPRESS_COMMAND_REGEXP = /keypress\((\w+);(\d+);(\d+)\)/;
 
 export const parseKeypressCommand = (
   cmd: string
