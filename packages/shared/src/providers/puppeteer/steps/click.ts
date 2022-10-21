@@ -13,18 +13,19 @@ import { StepContext } from './types';
  */
 export const CLICK_COMMAND_REGEXP =
   // eslint-disable-next-line no-useless-escape
-  /click\(([#|\.]?[\w|:|\s|\.|\-]+);(\d+)\)/gm;
+  /click\(([#|\.]?[\w|:|\s|\.|\-]+);(\d+)\)/;
 
 export const parseClickCommand = (
   cmd: string
 ): E.Either<AppError, { selector: string; delay: number }> => {
   const match = CLICK_COMMAND_REGEXP.exec(cmd);
-  // console.log(match);
+  // console.log('click match?', { cmd, match });
   if (match?.[1] && match[2]) {
     const selector: any = match[1];
     const delay = parseInt(match[2], 10);
     return E.right({ selector, delay });
   }
+
   return E.left(
     new AppError('ClickStepError', `Cannot parse command: ${cmd}`, [])
   );
