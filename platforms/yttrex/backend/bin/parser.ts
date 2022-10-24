@@ -1,4 +1,8 @@
 #!/usr/bin/env ts-node
+/* eslint-disable import/first */
+
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+require('module-alias')({ base: process.cwd() });
 
 import * as mongo3 from '@shared/providers/mongo.provider';
 import fs from 'fs';
