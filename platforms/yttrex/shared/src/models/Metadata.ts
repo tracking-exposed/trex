@@ -1,5 +1,5 @@
 import * as t from 'io-ts';
-import { DateFromISOString } from 'io-ts-types';
+import { DateFromISOString } from 'io-ts-types/lib/DateFromISOString';
 import { date } from 'io-ts-types/lib/date';
 import { HomeType, SearchType, VideoType } from './Ad';
 

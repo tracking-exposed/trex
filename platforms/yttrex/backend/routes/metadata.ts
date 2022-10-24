@@ -6,13 +6,14 @@ import automo from '../lib/automo';
 import moment from 'moment';
 import CSV from '../lib/CSV';
 import * as utils from '../lib/utils';
+import * as express from 'express';
 
 const debug = D('routes:metadata');
 
 // This variables is used as cap in every readLimit below
 const PUBLIC_AMOUNT_ELEMS = 100;
 
-const listMetadata = async (req: Express.Request): Promise<any> => {
+const listMetadata = async (req: express.Request): Promise<any> => {
   const {
     query: {
       publicKey,

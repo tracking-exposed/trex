@@ -9,12 +9,14 @@ import cache from '../lib/cache';
 import * as endpoints from '@shared/endpoints/helper';
 import { v1 } from '@yttrex/shared/endpoints';
 import structured from '../lib/structured';
+import * as express from 'express';
+
 const debug = D('routes:public');
 
 // This variables is used as cap in every readLimit below
 const PUBLIC_AMOUNT_ELEMS = 100;
 
-async function getLast(req: Express.Request): Promise<any> {
+async function getLast(req: express.Request): Promise<any> {
   if (cache.stillValid('last')) return { json: cache.repullCache('last') };
 
   // if not initialized or if the cache time is expired: do the query
@@ -161,7 +163,7 @@ async function getVideoId(req): Promise<any> {
   return { json: evidences };
 }
 
-async function getRelated(req): Promise<any> {
+async function getRelated(req: express.Request): Promise<any> {
   const { amount, skip } = params.optionParsing(
     req.params.paging,
     PUBLIC_AMOUNT_ELEMS
@@ -199,7 +201,7 @@ async function getRelated(req): Promise<any> {
   return { json: evidences };
 }
 
-async function getVideoCSV(req): Promise<any> {
+async function getVideoCSV(req: express.Request): Promise<any> {
   // /api/v1/videoCSV/:videoId/:amount
   const MAXENTRY = 2800;
   const { amount, skip } = params.optionParsing(req.params.paging, MAXENTRY);

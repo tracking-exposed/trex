@@ -5,19 +5,19 @@
   "private": true,
   "scripts": {
     "clean": "rm -rf ./build",
-    "build": "tsc -b",
+    "build": "tsc -b tsconfig.build.json",
     "watch": "key=fuffa DEBUG=\"*,-express:*,-body-parser:*,-follow-redirects\" ts-node-dev -r tsconfig-paths/register --respawn --transpile-only bin/server",
-    "old_start_old": "log=$(bash -c 'git log -30 --stat --oneline --decorate --graph') DEBUG=\"*,-body-parser:*,-express:*,-lib:*,-follow-redirects\" ts-node -r tsconfig-paths/register bin/server",
-    "start": "DEBUG=\"*,-body-parser:*,-express:*,-lib:*,-follow-redirects\" ts-node bin/server",
-    "parserv": "DEBUG=\"*,-@trex:htmls:debug,-pubtimeAPI\" ts-node bin/parser.ts",
-    "parserv:watch": "DEBUG=\"*,-@trex:htmls:debug\" ts-node-dev -r tsconfig-paths/register --respawn --transpile-only bin/parser.ts",
-    "leaveserv": "DEBUG=\"*\" ts-node bin/leaves-parser.ts",
+    "start": "DEBUG=\"*,-body-parser:*,-express:*,-lib:*,-follow-redirects\" node build/bin/server",
+    "parserv": "DEBUG=\"*,-@trex:htmls:debug,-pubtimeAPI\" node build/bin/parser",
+    "parserv:watch": "DEBUG=\"*,-@trex:htmls:debug\" ts-node-dev -r tsconfig-paths/register --respawn --transpile-only bin/parser",
+    "leaveserv": "DEBUG=\"*\" node build/bin/leaves-parser.js",
     "leaveserv:watch": "DEBUG=\"*\" ts-node-dev -r tsconfig-paths/register --respawn --transpile-only bin/leaves-parser.ts",
     "test": "jest",
     "campaigns": "node bin/campaignUpdater.js --dest https://youtube.tracking.exposed",
     "type-check": "tsc",
     "lint": "eslint ./bin ./lib ./models ./routes",
-    "open-doc-api": "ts-node bin/open-doc-api.ts"
+    "open-doc-api": "ts-node bin/open-doc-api.ts",
+    "old_start_old": "log=$(bash -c 'git log -30 --stat --oneline --decorate --graph') DEBUG=\"*,-body-parser:*,-express:*,-lib:*,-follow-redirects\" ts-node -r tsconfig-paths/register bin/server"
   },
   "author": "Claudio Agosti <claudio@tracking.exposed> and https://github.com/tracking-exposed/yttrex/graphs/contributors",
   "license": "AGPL-3.0",
@@ -38,9 +38,11 @@
     "fetch-opengraph": "^1.0.35",
     "food-words": "^1.1.0",
     "fp-ts": "^2.11.9",
+    "geoip-lite": "^1.4.6",
     "io-ts": "^2.2.16",
     "io-ts-types": "^0.5.16",
     "jsdom": "^16.7.0",
+    "module-alias": "^2.2.2",
     "moment": "^2.29.4",
     "mongodb": "^4.3.1",
     "nacl-signature": "^1.0.0",
@@ -48,6 +50,7 @@
     "node-fetch": "^2.6.7",
     "numeral": "^2.0.6",
     "ts-endpoint": "^2.0.0",
+    "ts-endpoint-express": "^2.0.0",
     "ts-io-error": "^2.0.0",
     "ts-node": "^10.9.1",
     "ts-node-dev": "^2.0.0",
@@ -56,8 +59,10 @@
   "devDependencies": {
     "@types/body-parser": "^1.19.2",
     "@types/cors": "^2.8.12",
+    "@types/geoip-lite": "^1",
     "@types/jest": "^27.5.2",
     "@types/jsdom": "^16.2.14",
+    "@types/module-alias": "^2",
     "@types/nconf": "^0.10.2",
     "@types/node": "^16.11.68",
     "@types/supertest": "^2.0.12",
@@ -74,7 +79,13 @@
     "prettier": "^2.7.1",
     "supertest": "^6.2.4",
     "ts-jest": "^27.1.5",
+    "ts-node": "^10.9.1",
+    "ts-node-dev": "^2.0.0",
     "tsconfig-paths": "^4.1.0",
     "typescript": "^4.8.4"
+  },
+  "_moduleAliases": {
+    "@shared": "../../../packages/shared/build",
+    "@yttrex/shared": "../shared/build"
   }
 }
