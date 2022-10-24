@@ -123,7 +123,7 @@ export function flattenProfile(
   // to produce CSV.
 
   _.each(metaprofile.results || [], function (result, order) {
-    /* TODO 
+    /* TODO
     const thumbfile =
       metaprofile.thumbnails && metaprofile.thumbnails.length
         ? metaprofile.thumbnails[order]?.filename

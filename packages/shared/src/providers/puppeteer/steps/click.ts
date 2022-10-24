@@ -15,6 +15,9 @@ export const CLICK_COMMAND_REGEXP =
   // eslint-disable-next-line no-useless-escape
   /click\(([#|\.]?[\w|:|\s|\.|\-]+);(\d+)\)/;
 
+export const toClickCommand = (selector: string, delay?: number): string =>
+  `click(${selector};${delay ?? 0})`;
+  
 export const parseClickCommand = (
   cmd: string
 ): E.Either<AppError, { selector: string; delay: number }> => {

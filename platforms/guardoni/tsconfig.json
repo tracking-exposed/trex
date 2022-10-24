@@ -27,7 +27,7 @@
       "@tktrex/shared/*": ["../../tktrex/shared/src/*"]
     }
   },
-  "include": ["./src", "__mocks__", "__tests__", "./typings"],
+  "include": ["./src", "__mocks__", "__tests__", "./test", "./typings"],
   "exclude": ["node_modules", "build", "dist"],
   "watchOptions": {
     "watchFile": "useFsEvents",

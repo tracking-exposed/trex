@@ -3,10 +3,10 @@ import csvParse from 'csv-parse';
 import * as csvStringify from 'csv-stringify';
 import * as TE from 'fp-ts/lib/TaskEither';
 import { GetLogger } from '../logger';
-const csvLogger = GetLogger('csv')
+const csvLogger = GetLogger('csv');
 
 export const csvParseTE = (
-  content: Buffer,
+  content: string,
   options: csvParse.Options
 ): TE.TaskEither<
   AppError,
