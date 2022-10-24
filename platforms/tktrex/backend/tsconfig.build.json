@@ -1,17 +1,18 @@
 {
-  "extends": "../../../tsconfig.json",
+  "extends": "./tsconfig.json",
   "compilerOptions": {
     "allowJs": true,
+    "noEmit": false,
+    "outDir": "./build",
     "rootDir": "./",
     "baseUrl": "./",
     "esModuleInterop": true,
-    "noEmit": true,
     "resolveJsonModule": true,
-    "strict": true,
+    "strict": false,
     "skipLibCheck": true,
     "paths": {
-      "@tktrex/shared/*": ["../shared/src/*"],
-      "@shared/*": ["../../../packages/shared/src/*"]
+      "@shared/*": ["../../../packages/shared/src/*"],
+      "@tktrex/shared/*": ["../shared/src/*"]
     }
   },
   "references": [
@@ -25,15 +26,6 @@
   "ts-node": {
     "require": ["tsconfig-paths/register"]
   },
-  "include": [
-    "./bin",
-    "./lib",
-    "./models",
-    "./routes",
-    "./test",
-    "**/__tests__",
-    "jest.config.js",
-    "jest.setup.js"
-  ],
-  "exclude": ["node_modules", "build"]
+  "include": ["./bin", "./lib", "./models", "./routes"],
+  "exclude": ["node_modules", "build", "jest.config.js", "**/__tests__"]
 }

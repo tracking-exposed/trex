@@ -63,7 +63,7 @@ const downloader: ParserFn<
   }
 
   const retval = [];
-  for (const img of imageNodes) {
+  for (const img of Array.from(imageNodes)) {
     const url = img.getAttribute('src');
     if (url) {
       const alt = img.getAttribute('alt');
