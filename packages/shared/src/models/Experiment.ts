@@ -43,6 +43,7 @@ export const CreateExperimentSuccessResponse = t.strict(
     status: t.union([t.literal('exist'), t.literal('created')]),
     experimentId: t.string,
     since: DateFromISOString,
+    steps: t.array(Step),
   },
   'CreateExperimentSuccessResponse'
 );
@@ -58,3 +59,6 @@ export const CreateExperimentResponse = t.union(
   ],
   'CreateExperimentResponse'
 );
+export type CreateExperimentResponse = t.TypeOf<
+  typeof CreateExperimentResponse
+>;

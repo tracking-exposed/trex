@@ -31,9 +31,7 @@
     "./models",
     "./routes",
     "./test",
-    "**/__tests__",
-    "jest.config.js",
-    "jest.setup.js"
+    "**/__tests__"
   ],
   "exclude": ["node_modules", "build"]
 }

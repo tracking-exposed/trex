@@ -4,7 +4,7 @@
   "packageManager": "yarn@3.1.1",
   "description": "tiktok.tracking.exposed → backend data collector, to investigate personalization algorithms",
   "scripts": {
-    "lint": "eslint ./",
+    "lint": "eslint ./bin ./lib ./models ./test",
     "test": "jest",
     "coc": "DEBUG=* ts-node bin/count-o-clock.js",
     "tto:watch": "key=fuffa DEBUG=\"*,-express:*,-body-parser:*,-send\" ts-node-dev -r tsconfig-paths/register --respawn --transpile-only bin/observatory",
