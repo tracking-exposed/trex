@@ -5,67 +5,82 @@ import {
   PostDirectiveSuccessResponseArb,
 } from '@shared/arbitraries/Experiment.arb';
 import { CommonStepArb } from '@shared/arbitraries/Step.arb';
-import * as tests from '@shared/test';
-import { pipe } from 'fp-ts/lib/function';
-import * as fs from 'fs';
-import * as path from 'path';
-import { GetGuardoniCLI, GuardoniCLI } from '../../src/guardoni/cli';
-import { csvStringifyTE } from '@shared/utils/csv.utils';
 import axiosMock from '@shared/test/__mocks__/axios.mock';
 import { puppeteerMock } from '@shared/test/__mocks__/puppeteer.mock';
-import { getProfileDataDir, readProfile } from '../../src/guardoni/profile';
-import { guardoniLogger } from '../../src/logger';
 import { throwTE } from '@shared/utils/task.utils';
+import { pipe } from 'fp-ts/lib/function';
+import * as fs from 'fs';
+import { NonEmptyString } from 'io-ts-types/lib/NonEmptyString';
+import * as path from 'path';
+import { GetGuardoniCLI, GuardoniCLI } from '../../src/guardoni/cli';
 import { formatExperimentList } from '../../src/guardoni/experiment';
+import { getProfileDataDir, readProfile } from '../../src/guardoni/profile';
 import { LATEST_RELEASE_URL } from '../../src/guardoni/update-notifier';
-
-const basePath = path.resolve(__dirname, '../../');
-const profileName = 'profile-yt-test-99';
-const profileDir = getProfileDataDir(basePath, profileName);
-const ytExtensionDir = path.resolve(basePath, '../yttrex/extension/build');
-const tkExtensionDir = path.resolve(basePath, '../tktrex/extension/build');
-const publicKey = process.env.PUBLIC_KEY as string;
-const secretKey = process.env.SECRET_KEY as string;
+import { guardoniLogger } from '../../src/logger';
+import { GetTests, Tests } from '../../test';
+import { TestCSV, writeExperimentCSV } from '../../test/writeExperimentCSV';
 
 describe('CLI', () => {
   const researchTag = 'test-tag';
   let experimentId: string;
   let guardoni: GuardoniCLI;
+  let tests: Tests;
+  let csv: TestCSV;
 
   jest.setTimeout(60 * 1000);
 
   beforeAll(async () => {
-    fs.mkdirSync(path.resolve(basePath, 'experiments'), {
-      recursive: true,
-    });
+    tests = GetTests('yt-test');
 
-    fs.statSync(ytExtensionDir, { throwIfNoEntry: true });
-    fs.statSync(tkExtensionDir, { throwIfNoEntry: true });
+    csv = await writeExperimentCSV(
+      tests.basePath,
+      tests.fc.sample(CommonStepArb, 5).map((s) => ({
+        ...s,
+        type: 'openURL',
+        loadFor: undefined,
+        onCompleted: undefined,
+      })),
+      'yt-experiment.csv'
+    );
 
-    const comparisonCSVContent = await csvStringifyTE(
-      tests.fc.sample(CommonStepArb, 5),
-      { header: true, encoding: 'utf-8' }
-    )();
-
-    if (comparisonCSVContent._tag === 'Left') {
-      throw comparisonCSVContent.left as any;
-    }
-
-    fs.writeFileSync(
-      path.resolve(basePath, 'experiments/yt-experiment.csv'),
-      comparisonCSVContent.right,
-      'utf-8'
+    guardoni = GetGuardoniCLI(
+      {
+        chromePath: '/usr/bin/chrome',
+        basePath: tests.basePath,
+        headless: false,
+        verbose: false,
+        profileName: tests.profileName,
+        tosAccepted: undefined,
+        publicKey: undefined,
+        secretKey: undefined,
+        yt: {
+          name: 'youtube',
+          backend: process.env.YT_BACKEND as string,
+          frontend: undefined,
+          extensionDir: tests.ytExtensionDir,
+          proxy: undefined,
+        },
+        tk: {
+          name: 'tiktok',
+          backend: process.env.TK_BACKEND as string,
+          frontend: undefined,
+          extensionDir: tests.tkExtensionDir,
+          proxy: undefined,
+        },
+        loadFor: 3000,
+        researchTag: researchTag,
+        advScreenshotDir: undefined,
+        excludeURLTag: undefined,
+      },
+      tests.basePath,
+      puppeteerMock,
+      'youtube'
     );
   });
 
   afterAll(() => {
-    if (fs.existsSync(profileDir)) {
-      fs.rmSync(profileDir, {
-        recursive: true,
-      });
-    }
-
-    fs.rmSync(path.resolve(basePath, 'experiments/yt-experiment.csv'));
+    tests.afterAll();
+    csv.remove();
   });
 
   axiosMock.get.mockImplementationOnce(() =>
@@ -81,40 +96,6 @@ describe('CLI', () => {
     })
   );
 
-  guardoni = GetGuardoniCLI(
-    {
-      chromePath: '/usr/bin/chrome',
-      basePath,
-      headless: false,
-      verbose: false,
-      profileName: profileName,
-      tosAccepted: undefined,
-      publicKey: undefined,
-      secretKey: undefined,
-      yt: {
-        name: 'youtube',
-        backend: process.env.YT_BACKEND as string,
-        frontend: undefined,
-        extensionDir: ytExtensionDir,
-        proxy: undefined,
-      },
-      tk: {
-        name: 'tiktok',
-        backend: process.env.TK_BACKEND as string,
-        frontend: undefined,
-        extensionDir: tkExtensionDir,
-        proxy: undefined,
-      },
-      loadFor: 3000,
-      researchTag: researchTag,
-      advScreenshotDir: undefined,
-      excludeURLTag: undefined,
-    },
-    basePath,
-    puppeteerMock,
-    'youtube'
-  );
-
   describe('Register an experiment from a CSV', () => {
     test('fails when the file path is wrong', async () => {
       // mocks
@@ -127,23 +108,7 @@ describe('CLI', () => {
       ).resolves.toMatchObject({
         _tag: 'Left',
         left: {
-          message: `Failed to read csv file ${basePath}/__tests__/fake-file`,
-        },
-      });
-    });
-
-    test.skip('fails when csv file is incompatible with type "comparison"', async () => {
-      await expect(
-        guardoni.run({
-          run: 'register-csv',
-          file: path.resolve(basePath, 'experiments/tk-experiment.csv') as any,
-        })()
-      ).resolves.toMatchObject({
-        _tag: 'Left',
-        left: {
-          name: 'CSVParseError',
-          message:
-            'The given CSV is not compatible with directive "comparison"',
+          message: `Failed to read csv file ${tests.basePath}/__tests__/fake-file`,
         },
       });
     });
@@ -155,7 +120,7 @@ describe('CLI', () => {
 
       const result: any = await guardoni.run({
         run: 'register-csv',
-        file: path.resolve(basePath, 'experiments/yt-experiment.csv') as any,
+        file: csv.output,
       })();
 
       expect(result).toMatchObject({
@@ -166,7 +131,7 @@ describe('CLI', () => {
       });
     });
 
-    test('succeeds with new experiment with type "comparison" and proper csv file', async () => {
+    test('succeeds when csv is correctly formatted', async () => {
       // return experiment
       axiosMock.request.mockResolvedValueOnce({
         data: {
@@ -177,37 +142,13 @@ describe('CLI', () => {
 
       const result: any = await guardoni.run({
         run: 'register-csv',
-        file: path.resolve(basePath, 'experiments/yt-experiment.csv') as any,
+        file: csv.output as NonEmptyString,
       })();
 
       expect(result).toMatchObject({
         _tag: 'Right',
         right: {
           message: 'Experiment created successfully',
-        },
-      });
-
-      experimentId = result.right.values[0].experimentId;
-    });
-
-    test('success with type comparison and proper csv file', async () => {
-      // return experiment
-      axiosMock.request.mockResolvedValueOnce({
-        data: {
-          ...tests.fc.sample(PostDirectiveSuccessResponseArb, 1)[0],
-          status: 'exist',
-        },
-      });
-
-      const result: any = await guardoni.run({
-        run: 'register-csv',
-        file: path.resolve(basePath, 'experiments/yt-experiment.csv') as any,
-      })();
-
-      expect(result).toMatchObject({
-        _tag: 'Right',
-        right: {
-          message: 'Experiment already available',
         },
       });
 
@@ -275,7 +216,7 @@ describe('CLI', () => {
       // check guardoni profile count has been updated
       const guardoniProfile = await throwTE(
         readProfile({ logger: guardoniLogger })(
-          path.join(profileDir, 'guardoni.json')
+          path.join(tests.profileDir, 'guardoni.json')
         )
       );
 
@@ -294,30 +235,33 @@ describe('CLI', () => {
       const result: any = await guardoni.run({
         run: 'experiment',
         experiment: experimentId as any,
-        opts: { publicKey, secretKey },
+        opts: { publicKey: tests.publicKey, secretKey: tests.secretKey },
       })();
 
       // check guardoni profile count has been updated
       const guardoniProfile = await throwTE(
         readProfile({ logger: guardoniLogger })(
-          path.join(profileDir, 'guardoni.json')
+          path.join(tests.profileDir, 'guardoni.json')
         )
       );
 
-      expect(guardoniProfile).toMatchObject({ profileName, execount: 1 });
+      expect(guardoniProfile).toMatchObject({
+        profileName: tests.profileName,
+        execount: 1,
+      });
 
       // check guardoni has written proper settings.json
       // inside extension folder
 
       const settingJson = pipe(
-        path.resolve(ytExtensionDir, 'settings.json'),
+        path.resolve(tests.ytExtensionDir, 'settings.json'),
         (p) => fs.readFileSync(p, 'utf-8'),
         JSON.parse
       );
 
       expect(settingJson).toMatchObject({
-        publicKey,
-        secretKey,
+        publicKey: tests.publicKey,
+        secretKey: tests.secretKey,
         experimentId,
       });
 
@@ -327,7 +271,7 @@ describe('CLI', () => {
           message: 'Experiment completed',
           values: [
             {
-              profileName,
+              profileName: tests.profileName,
               researchTag,
               experimentId,
             },
@@ -348,13 +292,13 @@ describe('CLI', () => {
       const result: any = await guardoni.run({
         run: 'experiment',
         experiment: experimentId as any,
-        opts: { publicKey, secretKey },
+        opts: { publicKey: tests.publicKey, secretKey: tests.secretKey },
       })();
 
       // check guardoni profile count has been updated
       const guardoniProfile = await throwTE(
         readProfile({ logger: guardoniLogger })(
-          path.join(profileDir, 'guardoni.json')
+          path.join(tests.profileDir, 'guardoni.json')
         )
       );
 
@@ -366,10 +310,10 @@ describe('CLI', () => {
           message: 'Experiment completed',
           values: [
             {
-              publicKey,
+              publicKey: tests.publicKey,
               experimentId,
               researchTag,
-              profileName,
+              profileName: tests.profileName,
             },
           ],
         },
@@ -392,7 +336,7 @@ describe('CLI', () => {
       // check guardoni profile count has been updated
       const guardoniProfile = await throwTE(
         readProfile({ logger: guardoniLogger })(
-          path.join(profileDir, 'guardoni.json')
+          path.join(tests.profileDir, 'guardoni.json')
         )
       );
 
@@ -424,7 +368,7 @@ describe('CLI', () => {
       // check guardoni profile count has been updated
       const guardoniProfile = await throwTE(
         readProfile({ logger: guardoniLogger })(
-          path.join(profileDir, 'guardoni.json')
+          path.join(tests.profileDir, 'guardoni.json')
         )
       );
 
