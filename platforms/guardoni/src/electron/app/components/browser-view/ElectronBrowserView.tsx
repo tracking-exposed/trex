@@ -77,7 +77,7 @@ export default class ElectronBrowserView extends Component<ElectronBrowserViewPr
 
     // Add event listener alias to keep compatability
     (this.view as any).addEventListener = this.view.webContents.on;
-    void this.view.webContents.loadURL(this.props.src ?? '');
+    if (this.props.src) void this.view.webContents.loadURL(this.props.src);
     this.setDevTools(this.props.devtools ?? false);
 
     if (this.props.onDidAttach) {
