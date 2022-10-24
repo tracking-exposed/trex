@@ -1,0 +1,4 @@
+url,urltag,loadFor,watchFor,type,incrementScrollByPX,totalScroll,onCompleted
+https://www.tiktok.com/@nala_cat/,nala,,,openURL,,,click(video;0) - keypress(ArrowDown;10;30000)
+https://www.tiktok.com/@indooroutdoorkat/,indoor,,,openURL,,,click(video;0) – keypress(ArrowDown;10;30000)
+https://www.tiktok.com/@mimi_starr/,mimi,,,openURL,,,click(video;0)–keypress(ArrowDown;10;30000)

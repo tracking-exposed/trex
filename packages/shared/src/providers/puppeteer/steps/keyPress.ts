@@ -11,6 +11,12 @@ import { StepContext } from './types';
 
 export const KEYPRESS_COMMAND_REGEXP = /keypress\((\w+);(\d+);(\d+)\)/;
 
+export const toKeypressCommand = (
+  key: string,
+  count: number,
+  interval: number
+): string => `keypress(${key};${count};${interval})`;
+
 export const parseKeypressCommand = (
   cmd: string
 ): E.Either<AppError, { key: puppeteer.KeyInput; times: number }> => {
