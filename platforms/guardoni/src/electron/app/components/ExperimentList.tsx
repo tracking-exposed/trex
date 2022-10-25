@@ -22,6 +22,7 @@ import { RouteProps, useHistory } from 'react-router';
 import { PlatformConfig } from '../../../guardoni/types';
 import { EVENTS } from '../../models/events';
 import { OpenURLStep } from '@shared/models/Step';
+import { v4 as uuid } from 'uuid';
 
 const useStyle = makeStyles((theme) => ({
   directiveRow: {
@@ -133,17 +134,19 @@ export const ExperimentList: React.FC<ExperimentListProps> = ({
                 URLs
               </Typography>
               <List className={classes.directiveLinkList}>
-                {d.steps.filter(OpenURLStep.is).map((l) => (
-                  <ListItem
-                    className={classes.directiveLinkListItem}
-                    key={l.urltag}
-                  >
-                    <Typography variant="h6" color="primary">
-                      {l.urltag} ({l.watchFor ?? 'end'}):
-                    </Typography>{' '}
-                    <Typography variant="body2">{l.url}</Typography>
-                  </ListItem>
-                ))}
+                {d.steps.filter(OpenURLStep.is).map((l) => {
+                  return (
+                    <ListItem
+                      className={classes.directiveLinkListItem}
+                      key={uuid()}
+                    >
+                      <Typography variant="h6" color="primary">
+                        {l.urltag} ({l.watchFor ?? 'end'}):
+                      </Typography>{' '}
+                      <Typography variant="body2">{l.url}</Typography>
+                    </ListItem>
+                  );
+                })}
               </List>
               <Box className={classes.detailsActions}>
                 <Box style={{ marginRight: 30 }}>
