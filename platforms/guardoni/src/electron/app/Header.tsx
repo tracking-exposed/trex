@@ -20,7 +20,7 @@ import { GuardoniConfig, PlatformConfig, Platform } from '../../guardoni/types';
 import TKLogo from './icons/TKLogo';
 import YTLogo from './icons/YTLogo';
 import AdvancedSettingModal from './modals/AdvancedSettingModal';
-import cx from 'classnames';
+import clsx from 'clsx';
 import botttsSprites from '@dicebear/avatars-bottts-sprites';
 import Avatars from '@dicebear/avatars';
 import { useHistory } from 'react-router';
@@ -120,7 +120,7 @@ export const Header: React.FC<HeaderProps> = ({
         </Box>
         <Box className={classes.platformLogoBox}>
           <div
-            className={cx(classes.platformLogo, {
+            className={clsx(classes.platformLogo, {
               [classes.platformLogoSelected]: platform.name === 'youtube',
             })}
             onClick={() => onPlatformChange('youtube')}
@@ -128,7 +128,7 @@ export const Header: React.FC<HeaderProps> = ({
             <YTLogo />
           </div>
           <div
-            className={cx(classes.platformLogo, {
+            className={clsx(classes.platformLogo, {
               [classes.platformLogoSelected]: platform.name === 'tiktok',
             })}
             onClick={() => onPlatformChange('tiktok')}
