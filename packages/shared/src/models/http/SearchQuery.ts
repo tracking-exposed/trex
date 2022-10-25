@@ -7,6 +7,8 @@ export const SearchQuery = t.partial(
     skip: t.number,
     date: DateFromISOString,
     endDate: DateFromISOString,
+    experimentId: t.string,
+    researchTag: t.string,
   },
   'SearchQuery'
 );

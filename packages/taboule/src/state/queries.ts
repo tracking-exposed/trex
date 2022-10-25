@@ -1,5 +1,3 @@
-import * as endpoints from '@yttrex/shared/endpoints';
-import * as tkEndpoints from '@tktrex/shared/endpoints';
 import { APIError } from '@shared/errors/APIError';
 import { ChannelRelated } from '@shared/models/ChannelRelated';
 import {
@@ -13,16 +11,24 @@ import {
 } from '@shared/models/contributor/ContributorPersonalSummary';
 import { GuardoniExperiment } from '@shared/models/Experiment';
 import { SearchQuery } from '@shared/models/http/SearchQuery';
-import { SearchMetadata as TKSearchMetadata } from '@tktrex/shared/models/metadata';
+import { Step } from '@shared/models/Step';
 import { MakeAPIClient } from '@shared/providers/api.provider';
-import { available, queryStrict } from 'avenger';
+import * as tkEndpoints from '@tktrex/shared/endpoints';
+import { GetSearchByQueryInputParams } from '@tktrex/shared/models/http/Search';
+import { SearchMetadata as TKSearchMetadata } from '@tktrex/shared/models/metadata';
+import * as endpoints from '@yttrex/shared/endpoints';
+import { ListMetadataQuery } from '@yttrex/shared/endpoints/v2/metadata.endpoints';
+import { available, queryStrict, refetch } from 'avenger';
 import { CachedQuery } from 'avenger/lib/Query';
 import { pipe } from 'fp-ts/lib/function';
 import * as TE from 'fp-ts/lib/TaskEither';
-import { Step } from '@shared/models/Step';
-import { ListMetadataQuery } from '@yttrex/shared/endpoints/v2/metadata.endpoints';
 
 export interface SearchRequestInput {
+  Params: undefined;
+  Query: SearchQuery & { publicKey: string };
+}
+
+export interface RequestInputWithPublicKeyParam {
   Params: { publicKey: string };
   Query: SearchQuery;
 }
@@ -44,19 +50,28 @@ export type EndpointQuery<Q extends {}, C> = CachedQuery<
 >;
 
 export interface TabouleQueries {
-  YCAIccRelatedUsers: EndpointQuery<any, ChannelRelated>;
-  youtubeGetExperimentById: EndpointQuery<any, Step>;
+  YCAIccRelatedUsers: EndpointQuery<
+    Omit<SearchRequestInput, 'Params'> & { Params: { channelId: string } },
+    ChannelRelated
+  >;
+  youtubeGetExperimentById: EndpointQuery<
+    SearchRequestInput & { Params: { experimentId: string } },
+    Step
+  >;
   youtubeGetExperimentList: EndpointQuery<
     SearchRequestInput,
     GuardoniExperiment
   >;
   youtubePersonalSearches: EndpointQuery<SearchRequestInput, SearchMetadata>;
-  youtubePersonalAds: EndpointQuery<SearchRequestInput, any>;
+  youtubePersonalAds: EndpointQuery<RequestInputWithPublicKeyParam, any>;
   youtubePersonalHomes: EndpointQuery<SearchRequestInput, HomeMetadata>;
   youtubePersonalVideos: EndpointQuery<SearchRequestInput, VideoMetadata>;
   // tik tok
   tikTokPersonalHTMLSummary: EndpointQuery<any, SummaryHTMLMetadata>;
-  tikTokPersonalSearch: EndpointQuery<any, TikTokPSearchMetadata>;
+  tikTokPersonalSearch: EndpointQuery<
+    RequestInputWithPublicKeyParam,
+    TikTokPSearchMetadata
+  >;
   tikTokSearches: EndpointQuery<any, TKSearchMetadata>;
 }
 
@@ -87,7 +102,7 @@ export const GetTabouleQueries = ({
   );
 
   const YCAIccRelatedUsers = queryStrict<
-    SearchRequestInput,
+    Omit<SearchRequestInput, 'Params'> & { Params: { channelId: string } },
     APIError,
     Results<ChannelRelated>
   >(
@@ -108,7 +123,7 @@ export const GetTabouleQueries = ({
   );
 
   const youtubeGetExperimentById = queryStrict<
-    SearchRequestInput,
+    SearchRequestInput & { Params: { experimentId: string } },
     APIError,
     Results<Step>
   >(
@@ -153,29 +168,23 @@ export const GetTabouleQueries = ({
       pipe(
         YTAPI.v2.Metadata.ListMetadata({
           Query: {
-            ...input.Query,
-            amount: '20' as any,
-            skip: '0' as any,
-            experimentId: undefined,
-            researchTag: undefined,
+            ...(input.Query as any),
+            amount: (input.Query.amount + '') as any,
+            skip: (input.Query.skip + '') as any,
             format: 'json',
             nature: 'home',
           },
         }),
-        TE.map((content) => {
-          const x = content.filter((c) => c.type === 'home');
-          return x as any[] as HomeMetadata[];
-        }),
         TE.map((content) => ({
-          total: content.length,
-          content,
+          total: content.totals.home,
+          content: content.data as any[] as HomeMetadata[],
         }))
       ),
     available
   );
 
   const youtubePersonalAds = queryStrict<
-    SearchRequestInput,
+    RequestInputWithPublicKeyParam,
     APIError,
     Results<any>
   >(
@@ -199,26 +208,19 @@ export const GetTabouleQueries = ({
       pipe(
         YTAPI.v2.Metadata.ListMetadata({
           Query: {
-            ...input.Params,
-            ...input.Query,
-            amount: '20' as any,
-            skip: '0' as any,
-            experimentId: undefined,
-            researchTag: undefined,
+            ...(input.Query as any),
+            amount: (input.Query.amount + '') as any,
+            skip: (input.Query.skip + '') as any,
             format: 'json',
             nature: 'video',
           },
         }),
-        TE.map((content) => {
-          const x = content.filter((c) => c.type === 'video');
-          return x as any[] as VideoMetadata[];
-        }),
         TE.map((content) => ({
-          total: content.length,
-          content,
+          total: content.totals.video,
+          content: content.data as any[] as VideoMetadata[],
         }))
       ),
-    available
+    refetch
   );
 
   const youtubePersonalSearches = queryStrict<
@@ -230,31 +232,23 @@ export const GetTabouleQueries = ({
       pipe(
         YTAPI.v2.Metadata.ListMetadata({
           Query: {
-            ...input.Query,
-            amount: '20' as any,
-            skip: '0' as any,
-            experimentId: undefined,
-            researchTag: undefined,
+            ...(input.Query as any),
+            amount: (input.Query.amount + '') as any,
+            skip: (input.Query.skip + '') as any,
             format: 'json',
             nature: 'search',
           },
         }),
-        TE.map((content) => {
-          const x = content.filter(
-            (c) => c.type === 'search'
-          ) as any[] as SearchMetadata[];
-          return x;
-        }),
         TE.map((content) => ({
-          total: content.length ?? 0,
-          content,
+          total: content.totals.search,
+          content: content.data as any[] as SearchMetadata[],
         }))
       ),
-    available
+    refetch
   );
 
   const tikTokPersonalHTMLSummary = queryStrict<
-    SearchRequestInput,
+    RequestInputWithPublicKeyParam,
     APIError,
     Results<SummaryHTMLMetadata>
   >(
@@ -266,11 +260,11 @@ export const GetTabouleQueries = ({
           content: content.htmls,
         }))
       ),
-    available
+    refetch
   );
 
   const tikTokPersonalSearch = queryStrict<
-    SearchRequestInput & { Params: { publicKey: string } },
+    RequestInputWithPublicKeyParam,
     APIError,
     Results<TikTokPSearchMetadata>
   >(
@@ -291,7 +285,7 @@ export const GetTabouleQueries = ({
   );
 
   const tikTokSearches = queryStrict<
-    SearchRequestInput,
+    { Params: GetSearchByQueryInputParams; Query: SearchQuery },
     APIError,
     Results<TKSearchMetadata>
   >(

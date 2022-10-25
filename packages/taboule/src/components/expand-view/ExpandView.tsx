@@ -24,7 +24,11 @@ const ExpandView = (props: Props): JSX.Element => {
           className="expand-view__list__item__link"
           target="_blank"
           rel="noreferrer"
-          href={getYTVideoURLById(recommendation.videoId)}
+          href={
+            recommendation.videoId
+              ? getYTVideoURLById(recommendation.videoId)
+              : ''
+          }
         >
           <img
             className="expand-view__list__item__img"

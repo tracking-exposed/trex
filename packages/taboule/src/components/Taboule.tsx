@@ -1,9 +1,10 @@
-import { Box, Typography } from '@material-ui/core';
+import { Box, Divider, Typography } from '@material-ui/core';
 import {
   DataGrid,
   DataGridProps,
   GridColTypeDef,
   GridEventListener,
+  GridFooter,
 } from '@mui/x-data-grid';
 import { toValidationError } from '@shared/errors/ValidationError';
 import { GetLogger } from '@shared/logger';
@@ -112,7 +113,7 @@ export const Taboule = <Q extends keyof TabouleQueries>({
     setPageSize(pageSize);
   }, []);
 
-  const handlePageChange = React.useCallback((page: number) => {
+  const handlePageChange = React.useCallback((page: number, details: any) => {
     setPage(page);
   }, []);
 
@@ -123,13 +124,23 @@ export const Taboule = <Q extends keyof TabouleQueries>({
     ...queryConfig,
     rows: [],
     rowsPerPageOptions: [25, 50, 100],
+    initialState: {
+      pagination: {
+        page: 0,
+      },
+    },
     pageSize,
     paginationMode: 'server',
+    pagination: true,
     components: {
       ErrorOverlay,
-      Footer: () => {
+      Footer: (props) => {
         return (
-          <Box margin={2}>
+          <Box display={'flex'} flexDirection="column" margin={2}>
+            <Box>
+              <GridFooter />
+            </Box>
+            <Divider style={{ marginBottom: 10 }} />
             <Typography>Taboule - v{process.env.VERSION}</Typography>
           </Box>
         );
@@ -201,6 +212,9 @@ export const Taboule = <Q extends keyof TabouleQueries>({
     forceUpdate();
   };
 
+  const amount = pageSize;
+  const skip = page * pageSize;
+
   return (
     <Box height={height}>
       <div
@@ -221,8 +235,9 @@ export const Taboule = <Q extends keyof TabouleQueries>({
           query: {
             Params: params,
             Query: {
-              amount: pageSize,
-              skip: page * pageSize,
+              publicKey: params.publicKey,
+              amount,
+              skip,
             },
           },
         }}

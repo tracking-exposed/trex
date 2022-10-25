@@ -376,7 +376,14 @@ function guessUXLanguage(D: Document): string | null {
 
 export const processHome: ParserFn<
   HTMLSource,
+<<<<<<< HEAD
   Omit<HomeMetadata, 'id' | 'supporter' | 'researchTag' | 'experimentId'>,
+=======
+  Omit<
+    HomeMetadata,
+    'id' | 'supporter' | 'metadataId' | 'researchTag' | 'experimentId'
+  >,
+>>>>>>> 9f5bf629 (fix(taboule): yt paginated results with GET /v2/metadata)
   YTParserConfig
 > = async (envelop, findings, config) => {
   const retval: Omit<

@@ -2,10 +2,10 @@ import { Box } from '@material-ui/core';
 import { DataGridProps, GridColTypeDef } from '@mui/x-data-grid';
 import { ChannelRelated } from '@shared/models/ChannelRelated';
 import {
-  HomeMetadata,
-  SearchMetadata,
-  VideoMetadata,
-} from '@shared/models/contributor/ContributorPersonalStats';
+  VideoMetadata as YTVideoMetadata,
+  HomeMetadata as YTHomeMetadata,
+  SearchMetadata as YTSearchMetadata,
+} from '@yttrex/shared/models/Metadata';
 import {
   SummaryHTMLMetadata,
   TikTokPSearchMetadata,
@@ -39,9 +39,9 @@ interface TabouleConfiguration {
   youtubeGetExperimentById: TabouleQueryConfiguration<Metadata>;
   youtubeGetExperimentList: TabouleQueryConfiguration<GuardoniExperiment>;
   youtubePersonalAds: TabouleQueryConfiguration<{}>;
-  youtubePersonalHomes: TabouleQueryConfiguration<HomeMetadata>;
-  youtubePersonalSearches: TabouleQueryConfiguration<SearchMetadata>;
-  youtubePersonalVideos: TabouleQueryConfiguration<VideoMetadata>;
+  youtubePersonalHomes: TabouleQueryConfiguration<YTHomeMetadata>;
+  youtubePersonalSearches: TabouleQueryConfiguration<YTSearchMetadata>;
+  youtubePersonalVideos: TabouleQueryConfiguration<YTVideoMetadata>;
   tikTokPersonalHTMLSummary: TabouleQueryConfiguration<SummaryHTMLMetadata>;
   tikTokPersonalSearch: TabouleQueryConfiguration<TikTokPSearchMetadata>;
   tikTokSearches: TabouleQueryConfiguration<TikTokSearchMetadata>;
@@ -156,6 +156,12 @@ export const defaultConfiguration = (
         },
         {
           ...columnDefault,
+          field: 'experimentId',
+          headerName: 'experimentId',
+          minWidth: 400,
+        },
+        {
+          ...columnDefault,
           field: 'actions',
           renderCell: (cellParams) => {
             return (
@@ -227,6 +233,12 @@ export const defaultConfiguration = (
           ...columnDefault,
           field: 'savingTime',
           renderCell: cells.distanceFromNowCell,
+        },
+        {
+          ...columnDefault,
+          field: 'experimentId',
+          headerName: 'experimentId',
+          minWidth: 400,
         },
         {
           ...columnDefault,
