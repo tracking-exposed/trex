@@ -4,7 +4,7 @@ const params = require('./params');
 const debug = require('debug')('lib:debug');
 
 function checkPassword(req) {
-    var key = params.getString(req, 'key');
+    const key = params.getString(req, 'key');
     if( key !== nconf.get('key') ) {
         debug("Authentication failure, password mismatch");
         return false;

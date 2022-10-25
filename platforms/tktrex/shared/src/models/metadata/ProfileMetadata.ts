@@ -12,7 +12,7 @@ export const ProfileResult = t.type(
     publishingDate: t.union([t.string, t.undefined]),
     title: t.union([t.string, t.undefined]),
   },
-  'SearchMetadataResult'
+  'SearchMetadataResult',
 );
 
 export type ProfileResult = t.TypeOf<typeof ProfileResult>;
@@ -26,6 +26,6 @@ export const ProfileMetadata = t.intersection(
       results: t.array(ProfileResult),
     }),
   ],
-  'ProfileMetadata'
+  'ProfileMetadata',
 );
 export type ProfileMetadata = t.TypeOf<typeof ProfileMetadata>;

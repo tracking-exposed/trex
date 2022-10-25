@@ -6,7 +6,7 @@ export const MediaFile = t.type(
     filename: t.union([t.string, t.undefined]),
     downloaded: t.boolean,
   },
-  'MediaFile'
+  'MediaFile',
 );
 
 export type MediaFile = t.TypeOf<typeof MediaFile>;
