@@ -20,21 +20,15 @@ export function sizeCheck(prev: number, curr: number): boolean {
   const percentile = 100 / curr;
   const percentage = _.round(100 - percentile * prev, 2);
 
-  logger.info(
-    'HTML size (%d) difference since last observed size +%d %',
-    curr,
-    prev
-  );
-
   if (percentage < 5) {
     logger.debug(
-      `Skipping update as ${percentage}% of the page is already sent (size ${curr}, lastObservedSize ${prev}) ${window.location.pathname}`
+      `Skipping update as ${percentage}% of the page is already sent (curr ${curr}, prev ${prev}) ${window.location.pathname}`
     );
     return false;
   }
 
   logger.info(
-    `Valid update as a new %d% of the page have been received (size %d, lastObservedSize %d) %s`,
+    `Valid update as a new %d% of the page have been received (curr %d, prev %d) %s`,
     percentage,
     curr,
     prev,
@@ -54,7 +48,7 @@ export const HTMLSize = (): HTMLSize => {
     check: (html) => {
       // this function look at the LENGTH of the proposed element.
       // this is used in video because the full html body page would be too big.
-      const s = _.size(html);
+      const s = html.length;
       if (!sizeCheck(lastSize, s)) {
         return false;
       }

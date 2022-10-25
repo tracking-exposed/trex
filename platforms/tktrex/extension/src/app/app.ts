@@ -62,6 +62,7 @@ const feedIdNeedsRefresh = (oldHref: string, newHref: string): boolean => {
 
   const isOldHrefNative = oldPathname.match(nativeRouteHandler.match.location);
   const isNewHrefNative = newPathname.match(nativeRouteHandler.match.location);
+
   appLog.debug('New href match native? %b', isOldHrefNative);
   if (isNewHrefNative) {
     appLog.debug('Old href match native? %b', isOldHrefNative);
@@ -94,6 +95,7 @@ export const onLocationChange = (oldHref: string, newHref: string): void => {
     newHref,
     refreshFeedId,
   );
+
   if (!refreshFeedId) {
     appLog.info('Native video in sequence, suppressed refresh.');
     return;
@@ -203,10 +205,10 @@ const handleSearch = _.debounce((element: Node): void => {
   }
 
   const contentNode = document.querySelector('body');
-  const contentHTML = contentNode ? contentNode.innerHTML : null;
-  if (!contentNode || !contentHTML) return;
+  const contentHTML = contentNode?.innerHTML;
+  if (!contentHTML) return;
 
-  const hasNewElements = searchSize.check(contentNode.innerHTML);
+  const hasNewElements = searchSize.check(contentHTML);
   if (!hasNewElements) return;
 
   tkHub.dispatch({
