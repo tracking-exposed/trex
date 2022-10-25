@@ -287,10 +287,10 @@ export async function boot(opts: BootOpts): Promise<App> {
     throw localSettings.error;
   }
 
-  // merge settings taken from json with ones stored in db, giving the precedence to the latter
+  // merge settings taken from db with ones defined in settings.json, giving the precedence to the latter
   const settings: UserSettings = {
-    ...jsonSettings.result,
     ...localSettings.result,
+    ...jsonSettings.result,
   } as any;
 
   if (!settings.publicKey || !settings.secretKey) {
