@@ -55,8 +55,8 @@ jobs:
       - name: Build shared
         run: yarn shared build
 
-      - name: Build guardoni
-        run: yarn guardoni tsc -b
+      - name: Build guardoni TS
+        run: yarn guardoni build:ts
 
       - name: Start PM2
         run: |

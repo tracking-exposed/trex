@@ -16,10 +16,7 @@ import {
   getPlatformConfig,
   setConfig,
 } from '../../guardoni/config';
-import {
-  readCSVAndParse,
-  getExperimentJSONPath,
-} from '../../guardoni/experiment';
+import { parseExperimentCSV, readCSV } from '../../guardoni/experiment';
 import { GetGuardoni, Guardoni } from '../../guardoni/guardoni';
 import { getExistingProfiles, getProfileDataDir } from '../../guardoni/profile';
 import { GuardoniConfig, Platform, PlatformConfig } from '../../guardoni/types';
@@ -59,10 +56,11 @@ const pickCSVFile = (
     ),
     TE.chain((value) => {
       return pipe(
-        readCSVAndParse(logger)(value.filePaths[0]),
+        readCSV(logger)(value.filePaths[0]),
+        TE.chain(parseExperimentCSV(logger)),
         TE.map((parsed) => ({
           path: value.filePaths[0],
-          parsed: parsed as any,
+          parsed,
         }))
       );
     })

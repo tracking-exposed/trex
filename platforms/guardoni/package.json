@@ -8,6 +8,7 @@
     "lint": "eslint ./src",
     "format": "prettier -w ./src",
     "test": "jest",
+    "build:ts": "tsc -b",
     "build:cli": "webpack -c webpack.cli.config.ts",
     "build:app": "webpack -c webpack.app.config.ts",
     "watch:cli": "NODE_ENV=development webpack watch -c webpack.cli.config.ts",

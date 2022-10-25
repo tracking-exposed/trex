@@ -6,6 +6,10 @@ describe('The recentVideoFetch function', () => {
   beforeAll(() => {
     fetchMock.enableMocks();
   });
+  afterAll(() => {
+    fetchMock.disableMocks();
+  });
+
   it('retrieves the videos from tracking-exposed', async () => {
     fetchMock.mockResponseOnce(`
       <script>

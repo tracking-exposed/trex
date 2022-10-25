@@ -1,4 +1,8 @@
 #!/usr/bin/env ts-node
+/* eslint-disable import/first */
+
+import moduleAlias from 'module-alias';
+moduleAlias({ base: process.cwd() });
 
 import * as mongo3 from '@shared/providers/mongo.provider';
 import { GetParserProvider } from '@shared/providers/parser.provider';

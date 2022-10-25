@@ -4,6 +4,6 @@ __mocks__
 **/coverage
 **/node_modules
 node_modules
-.yarn
 docker
 !docker/guardoni/guardoni.config.json
+#.yarn/cache

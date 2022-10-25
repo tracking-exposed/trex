@@ -1,23 +1,22 @@
 {
-  "extends": "../../../tsconfig.json",
+  "extends": "./tsconfig.json",
   "compilerOptions": {
-    "composite": true,
     "allowJs": true,
     "strict": false,
+    "rootDir": "./",
+    "baseUrl": "./",
     "outDir": "./build",
-    "baseUrl": "./src",
-    "rootDir": "./src",
     "noEmit": false,
+    "resolveJsonModule": true,
     "esModuleInterop": true,
     "skipLibCheck": true,
-    "isolatedModules": true,
-    "tsBuildInfoFile": "build/.tsbuildinfo",
     "paths": {
-      "@shared/*": ["../../../../packages/shared/src/*"]
+      "@shared/*": ["../../../packages/shared/src/*"],
+      "@yttrex/shared/*": ["../shared/src/*"]
     }
   },
-  "include": ["./src"],
-  "exclude": ["./tests", "jest.config.js"],
+  "include": ["./bin", "./lib", "./models", "./parsers", "./routes", "./utils"],
+  "exclude": ["**/__tests__", "**/__mocks__"],
   "watchOptions": {
     "watchFile": "useFsEvents",
     "watchDirectory": "useFsEvents",
@@ -29,6 +28,9 @@
   "references": [
     {
       "path": "../../../packages/shared"
+    },
+    {
+      "path": "../shared"
     }
   ]
 }
