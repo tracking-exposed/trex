@@ -16,7 +16,11 @@ import {
   getPlatformConfig,
   setConfig,
 } from '../../guardoni/config';
-import { parseExperimentCSV, readCSV } from '../../guardoni/experiment';
+import {
+  getExperimentJSONPath,
+  parseExperimentCSV,
+  readCSV,
+} from '../../guardoni/experiment';
 import { GetGuardoni, Guardoni } from '../../guardoni/guardoni';
 import { getExistingProfiles, getProfileDataDir } from '../../guardoni/profile';
 import { GuardoniConfig, Platform, PlatformConfig } from '../../guardoni/types';
