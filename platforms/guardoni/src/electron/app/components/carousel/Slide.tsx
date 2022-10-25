@@ -1,7 +1,7 @@
 import React from 'react';
 import { Typography, Box, makeStyles } from '@material-ui/core';
 import blue from '@material-ui/core/colors/blue';
-import classNames from 'classnames';
+import clsx from 'clsx';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -131,21 +131,21 @@ const Slide: React.FC<SlideProps> = ({ children, ...props }) => {
 
   return (
     <div
-      className={classNames(classes.root, {
+      className={clsx(classes.root, {
         [classes.rootMobile]: mobile,
         [classes.rootMobileLandscape]: mobileLandscape,
       })}
       {...other}
     >
       <div
-        className={classNames(classes.mediaBackground, {
+        className={clsx(classes.mediaBackground, {
           [classes.mediaBackgroundMobile]: mobile,
           [classes.mediaBackgroundMobileLandscape]: mobileLandscape,
         })}
         style={mediaBackgroundStyle}
       >
         <div
-          className={classNames(classes.media, {
+          className={clsx(classes.media, {
             [classes.mediaMobile]: mobile,
             [classes.mediaMobileLandscape]: mobileLandscape,
           })}
@@ -154,7 +154,7 @@ const Slide: React.FC<SlideProps> = ({ children, ...props }) => {
         </div>
       </div>
       <div
-        className={classNames(classes.text, {
+        className={clsx(classes.text, {
           [classes.textMobile]: mobile,
           [classes.textMobileLandscape]: mobileLandscape,
         })}
