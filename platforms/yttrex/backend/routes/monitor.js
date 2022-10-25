@@ -1,8 +1,8 @@
+import automo from '../lib/automo';
+
 const _ = require('lodash');
 const moment = require('moment');
 const debug = require('debug')('routes:monitor');
-
-const automo = require('../lib/automo');
 const security = require('../lib/security');
 const nconf = require('nconf');
 

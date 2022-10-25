@@ -1,3 +1,5 @@
+import automo from '../lib/automo';
+
 const _ = require('lodash');
 const moment = require('moment');
 const debug = require('debug')('routes:youchoose');
@@ -5,7 +7,6 @@ const fetchOpengraph = require('fetch-opengraph');
 
 const ycai = require('../lib/ycai');
 const curly = require('../lib/curly');
-const automo = require('../lib/automo');
 const endpoints = require('@shared/endpoints/helper');
 const { v3 } = require('@yttrex/shared/endpoints');
 const structured = require('../lib/structured');
@@ -541,7 +542,7 @@ async function getCreatorRelated(req) {
   }
 }
 
-module.exports = {
+export {
   byVideoId,
   byProfile,
   patchRecommendation,

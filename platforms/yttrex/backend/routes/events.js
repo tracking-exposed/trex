@@ -1,12 +1,12 @@
 import { geo } from '@shared/utils/ip.utils';
 import { getNatureFromURL } from '@yttrex/shared/parser/parsers/nature';
+import automo from '../lib/automo';
 
 const _ = require('lodash');
 const debug = require('debug')('routes:events');
 const nconf = require('nconf');
 
 const { comparison } = require('./directives');
-const automo = require('../lib/automo');
 const utils = require('../lib/utils');
 const security = require('../lib/security');
 

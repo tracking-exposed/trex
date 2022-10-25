@@ -7,6 +7,7 @@ const searchMetadataProps = propsOmit(SearchMetadata, ['supporter']);
 export const SearchMetadataDB = t.strict(
   {
     ...searchMetadataProps,
+    _id: t.any,
     publicKey: t.string,
     savingTime: date,
     clientTime: date,
