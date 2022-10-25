@@ -48,6 +48,20 @@ module.exports = {
         configFile: sharedTSConfig,
       })
     );
+
+    const tabouleTSConfig = path.resolve(
+      process.cwd(),
+      '../../packages/taboule/tsconfig.json'
+    );
+
+    // console.log({ sharedTSConfig });
+
+    config.resolve.plugins.push(
+      new TSConfigPathsWebpackPlugin({
+        configFile: tabouleTSConfig,
+      })
+    );
+
     config.resolve.plugins.push(new TSConfigPathsWebpackPlugin());
 
     // console.log("config", config.module.rules);
