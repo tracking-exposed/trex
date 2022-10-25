@@ -103,28 +103,40 @@ void (async function () {
   const yt_home_experiment_register_out =
     await $`${cli} ${flags} ${p}-register ${experimentFile}`;
 
-  const yt_home_experiment_id = yt_home_experiment_register_out.stdout
+  const experiment_id = yt_home_experiment_register_out.stdout
     .split('\n')
     .find((s) => s.startsWith('experimentId:'))
     .replace('experimentId: \t', '')
     .trim();
 
   const yt_home_experiment_run_out =
-    await $`${cli} ${experimentFlags} ${p}-experiment ${yt_home_experiment_id} | grep 'publicKey: ' `;
+    await $`${cli} ${experimentFlags} ${p}-experiment ${experiment_id} | grep 'publicKey: ' `;
 
-  const yt_home_experiment_public_key = yt_home_experiment_run_out.stdout
+  const supporter_public_key = yt_home_experiment_run_out.stdout
     .replace('publicKey: \t ', '')
     .replace('\n', '');
 
-  assert.strictEqual(yt_home_experiment_public_key, process.env.PUBLIC_KEY);
+  assert.strictEqual(supporter_public_key, process.env.PUBLIC_KEY);
 
   const backend = p === 'tk' ? process.env.TK_BACKEND : process.env.YT_BACKEND;
-  const personalURL = `${backend}/v2/personal/${yt_home_experiment_public_key}/${nature}/json`;
-  await $`echo ${personalURL}`;
+  const personalURL = `${backend}/v2/personal/${supporter_public_key}/${nature}/json`;
+  const metadataURL = `${backend}/v2/metadata?publicKey=${supporter_public_key}&experimentId=${experiment_id}&nature=${nature}`;
 
-  // const metadata = await fetch(
-  //   `http://localhost:9000/api/v2/metadata?publicKey=${yt_home_experiment_public_key}&experimentId=${yt_home_experiment_id}&nature=home`
-  // ).then((r) => r.json());
+  await $`echo ${personalURL}`;
+  await $`echo ${metadataURL}`;
+  const metadata = await fetch(metadataURL).then((r) => r.json());
+
+  assert.strictEqual(metadata.length, sources.length);
+  assert.strictEqual(
+    metadata.map((m) => ({
+      experimentId: m.experimentId,
+      type: m.type,
+    })),
+    Array.from({ length: sources.length }).map(() => ({
+      experimentId: experiment_id,
+      type: nature,
+    }))
+  );
 
   fs.removeSync(experimentFile);
 })();

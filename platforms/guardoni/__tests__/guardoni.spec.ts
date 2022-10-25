@@ -11,6 +11,7 @@ import { getDefaultProfile, getProfileDataDir } from '../src/guardoni/profile';
 import { csvStringifyTE } from '@shared/utils/csv.utils';
 import { guardoniLogger } from '../src/logger';
 import { fc } from '@shared/test';
+import { throwTE } from '@shared/utils/task.utils';
 
 const directiveLinks = [
   {
@@ -53,6 +54,7 @@ describe('Guardoni', () => {
   const profile = 'profile-test-99';
   const emptyCSVTestFileName = 'yt-videos-test-empty.csv';
   const csvTestFileName = 'trex-yt-videos.csv';
+  const csvTestPath = path.resolve(basePath, 'experiments', csvTestFileName);
   const keys = {
     publicKey: process.env.PUBLIC_KEY,
     secretKey: process.env.SECRET_KEY,
@@ -86,19 +88,15 @@ describe('Guardoni', () => {
   };
 
   beforeAll(async () => {
-    const csvContent = await csvStringifyTE(directiveLinks, {
-      header: true,
-      encoding: 'utf-8',
-    })();
-
-    if (csvContent._tag === 'Left') {
-      throw csvContent.left as any;
-    }
-    fs.writeFileSync(
-      path.resolve(basePath, 'experiments', csvTestFileName),
-      csvContent.right,
-      'utf-8'
+    const csvContent = await pipe(
+      csvStringifyTE(directiveLinks, {
+        header: true,
+        encoding: 'utf-8',
+      }),
+      throwTE
     );
+
+    fs.writeFileSync(csvTestPath, csvContent, 'utf-8');
 
     const profileUDD = getProfileDataDir(basePath, profile);
     const profileExists = fs.existsSync(profileUDD);
@@ -123,7 +121,7 @@ describe('Guardoni', () => {
       });
     }
 
-    fs.rmSync(path.resolve(basePath, 'experiments', csvTestFileName));
+    fs.rmSync(csvTestPath);
   });
 
   describe('config', () => {
@@ -278,9 +276,7 @@ describe('Guardoni', () => {
         guardoni,
         TE.chain((g) =>
           pipe(
-            g.registerExperimentFromCSV(
-              path.resolve(basePath, 'experiments', csvTestFileName) as any
-            ),
+            g.registerExperimentFromCSV(csvTestPath as any),
             TE.chain((output) => g.runExperiment(output.values[0].experimentId))
           )
         )

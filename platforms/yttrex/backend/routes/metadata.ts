@@ -45,6 +45,8 @@ const listMetadata = async (
     filter.researchTag = researchTag;
   }
 
+  debug('Filtering metadata with %O (%d, %d)', filter, amount, skip);
+
   const metadata = await automo
     .getMetadataByFilter(filter, {
       amount,
@@ -57,8 +59,8 @@ const listMetadata = async (
           ({
             ...m,
             id: id.substring(0, 20),
-            savingTime: m.savingTime.toISOString() as any,
-            clientTime: m.clientTime.toISOString() as any,
+            savingTime: m.savingTime.toISOString(),
+            clientTime: m.clientTime.toISOString(),
             supporter: utils.string2Food(publicKey),
           } as any)
       ),

@@ -77,10 +77,17 @@ const runNavigate =
 
     return pipe(
       downloadExtension(ctx),
-      TE.map(() => setLocalSettings(ctx)(opts)),
+      TE.map(() =>
+        setLocalSettings(ctx)({
+          publicKey: opts?.publicKey,
+          secretKey: opts?.secretKey,
+          researchTag: opts?.researchTag,
+          experimentId: opts?.experimentId,
+        })
+      ),
       TE.chain(() =>
         dispatchBrowser(ctx)({
-          headless: opts?.headless !== undefined ? opts.headless : true,
+          headless: false,
         })
       ),
       TE.chain((b) => {
@@ -197,7 +204,7 @@ export const runExperiment =
           ),
           expId: TE.right(expId),
           localSettings: TE.right(
-            setLocalSettings(ctx)({ ...opts, experimentId })
+            setLocalSettings(ctx)({ ...opts, experimentId, active: true })
           ),
         })
       ),
@@ -207,7 +214,18 @@ export const runExperiment =
           TE.chain((data) => {
             return pipe(
               saveExperiment(ctx)(expId, profile),
-              TE.chain((exp) => runBrowser(ctx)(exp, data, opts))
+              TE.chain((exp) => runBrowser(ctx)(exp, data, opts)),
+              TE.chainFirst(() =>
+                TE.right(
+                  setLocalSettings(ctx)({
+                    active: true,
+                    publicKey: undefined,
+                    secretKey: undefined,
+                    experimentId: undefined,
+                    researchTag: undefined,
+                  })
+                )
+              )
             );
           })
         )

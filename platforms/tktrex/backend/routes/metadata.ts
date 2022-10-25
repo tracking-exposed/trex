@@ -28,6 +28,8 @@ const listMetadata = async (req: any): Promise<any> => {
     filter.researchTag = researchTag;
   }
 
+  debug('Filtering metadata with %O (%d, %d)', filter, amount, skip);
+
   const metadata = await automo.getMetadataByFilter(filter, {
     amount,
     skip,
