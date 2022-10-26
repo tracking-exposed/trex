@@ -11,10 +11,15 @@
   justify-content: space-between;
 }
 .confirmationModal__dialog__accordion__typography__json-container{
-  white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  border-radius: 3px;
+  color: #f29766;
+  background: #202124;
+  border: 1px solid #f29766;
+  padding: 10px;
   padding-right: 40px;
+  width: 85%;
 }
 .confirmationModal__dialog__accordion__typography__copy{
     background: none;
@@ -24,6 +29,7 @@
     font-weight: 500;
     cursor: pointer;
     min-width: 65px;
+    width: 15%;
 }
 .confirmationModal__dialog__accordion__typography__copy.-copied{
   color: green;

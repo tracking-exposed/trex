@@ -24,8 +24,8 @@ const ConfirmationModal: React.FC<{
   React.useEffect(() => {
     // update state when guardoni config has been received
     ipcRenderer.on(EVENTS.GET_EXTENSION_JSON_DATA.value, (event, result) => {
-      setExperimentJSON(JSON.stringify(result.experiment));
-      setSettingsJSON(JSON.stringify(result.settings));
+      setExperimentJSON(JSON.stringify(result.experiment, undefined, 4));
+      setSettingsJSON(JSON.stringify(result.settings, undefined, 4));
     });
 
     ipcRenderer.send(EVENTS.GET_EXTENSION_JSON_DATA.value);
@@ -74,7 +74,10 @@ const ConfirmationModal: React.FC<{
               <Typography>Experiment JSON</Typography>
             </AccordionSummary>
             <AccordionDetails>
-              <Typography className="confirmationModal__dialog__accordion__typography">
+              <Typography
+                className="confirmationModal__dialog__accordion__typography"
+                component={'div'}
+              >
                 <pre className="confirmationModal__dialog__accordion__typography__json-container">
                   <code>{experimentJSON}</code>
                 </pre>
@@ -104,7 +107,10 @@ const ConfirmationModal: React.FC<{
               <Typography>Settings JSON</Typography>
             </AccordionSummary>
             <AccordionDetails>
-              <Typography className="confirmationModal__dialog__accordion__typography">
+              <Typography
+                className="confirmationModal__dialog__accordion__typography"
+                component={'div'}
+              >
                 <pre className="confirmationModal__dialog__accordion__typography__json-container">
                   <code>{settingsJSON}</code>
                 </pre>
