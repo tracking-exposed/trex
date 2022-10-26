@@ -5,6 +5,15 @@ import { NatureType } from '../../models/Nature';
 import { Endpoint } from 'ts-endpoint';
 import { MetadataList } from '../../models/Metadata';
 
+export const ListMetadataResponse = t.strict(
+  {
+    data: MetadataList,
+    totals: t.record(NatureType, t.number),
+  },
+  'ListMetadataResponse'
+);
+export type ListMetadataResponse = t.TypeOf<typeof ListMetadataResponse>;
+
 const ListMetadata = Endpoint({
   Method: 'GET',
   getPath: () => `/v2/metadata`,
@@ -19,7 +28,7 @@ const ListMetadata = Endpoint({
       format: t.union([Format, t.undefined]),
     }),
   },
-  Output: MetadataList,
+  Output: ListMetadataResponse,
 });
 
 export default {

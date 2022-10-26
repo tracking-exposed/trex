@@ -13,27 +13,39 @@
  * In the long term the refactor would lead also to unite the parser in one package and manage domain (.com's) and
  * project (config/settings.json) as variables.
  */
-const _ = require('lodash');
-const nconf = require('nconf');
-const debug = require('debug')('lib:automo');
-const moment = require('moment');
-// const chardet = require('chardet')
+import { CreatorStats } from '@shared/models/CreatorStats';
+import { GetDirectiveOutput } from '@shared/models/Experiment';
+import { Step } from '@shared/models/Step';
+import * as mongo3 from '@shared/providers/mongo.provider';
+import { ParsedInfo, VideoMetadata } from '@yttrex/shared/models/Metadata';
+import { NatureType } from '@yttrex/shared/models/Nature';
+import { Supporter } from '@yttrex/shared/models/Supporter';
+import { differenceInSeconds, formatDistance } from 'date-fns';
+import D from 'debug';
+import _ from 'lodash';
+import { Experiment } from 'models/Experiment';
+import { HTML } from 'models/HTML';
+import { MetadataDB } from 'models/metadata';
+import moment from 'moment';
+import { DeleteResult, Filter, MongoClient } from 'mongodb';
+import nconf from 'nconf';
+import utils from '../lib/utils';
+import { SearchMetadataDB } from '../models/metadata/SearchMetadata';
 
-const utils = require('../lib/utils');
-const mongo3 = require('@shared/providers/mongo.provider');
+const debug = D('lib:automo');
 
-async function getSupporterByPublicKey(publicKey) {
+async function getSupporterByPublicKey(publicKey): Promise<Supporter> {
   const mongoc = await mongo3.clientConnect();
   const supporter = await mongo3.readOne(
     mongoc,
     nconf.get('schema').supporters,
     { publicKey }
   );
-  await mongoc.close();
+  await mongoc?.close();
   return supporter;
 }
 
-async function getSummaryByPublicKey(publicKey, options) {
+async function getSummaryByPublicKey(publicKey, options): Promise<any> {
   /* this function return the basic information necessary to compile the
        landing personal page */
   const mongoc = await mongo3.clientConnect();
@@ -65,7 +77,7 @@ async function getSummaryByPublicKey(publicKey, options) {
     options.skip
   );
 
-  await mongoc.close();
+  await mongoc?.close();
 
   debug(
     'Retrieved in getSummaryByPublicKey: metadata %d, total %d and ads %d (amount %d skip %d)',
@@ -109,9 +121,7 @@ async function getSummaryByPublicKey(publicKey, options) {
         memo.videos.push({
           ..._.pick(entry, videof),
           relatedN: entry.related.length,
-          relative:
-            moment.duration(moment(entry.savingTime) - moment()).humanize() +
-            ' ago',
+          relative: formatDistance(entry.savingTime, new Date()),
         });
       } else if (entry.type === 'search') {
         memo.searches.push({
@@ -122,9 +132,9 @@ async function getSummaryByPublicKey(publicKey, options) {
       return memo;
     },
     {
-      homes: [],
-      videos: [],
-      searches: [],
+      homes: [] as any[],
+      videos: [] as any[],
+      searches: [] as any[],
     }
   );
 
@@ -137,7 +147,10 @@ async function getSummaryByPublicKey(publicKey, options) {
   };
 }
 
-async function getMetadataByPublicKey(publicKey, options) {
+async function getMetadataByPublicKey(
+  publicKey,
+  options
+): Promise<{ supporter: Supporter; metadata: SearchMetadataDB[] }> {
   const mongoc = await mongo3.clientConnect();
   const supporter = await mongo3.readOne(
     mongoc,
@@ -167,7 +180,7 @@ async function getMetadataByPublicKey(publicKey, options) {
     options.skip
   );
 
-  await mongoc.close();
+  await mongoc?.close();
 
   debug(
     'Retrieved in getMetadataByPublicKey: %d metadata (filter %j)',
@@ -180,8 +193,39 @@ async function getMetadataByPublicKey(publicKey, options) {
   };
 }
 
-async function getMetadataByFilter(filter, options) {
+async function getMetadataByFilter(
+  filter: Filter<MetadataDB>,
+  options: { amount: number; skip: number }
+): Promise<{
+  data: MetadataDB[];
+  totals: { [K in NatureType]: number };
+}> {
   const mongoc = await mongo3.clientConnect();
+
+  const totalVideo = await mongo3.count(mongoc, nconf.get('schema').metadata, {
+    ...filter,
+    type: 'video',
+  });
+
+  const totalSearch = await mongo3.count(mongoc, nconf.get('schema').metadata, {
+    ...filter,
+    type: 'search',
+  });
+
+  const totalHome = await mongo3.count(mongoc, nconf.get('schema').metadata, {
+    ...filter,
+    type: 'home',
+  });
+
+  const totalHashtag = await mongo3.count(
+    mongoc,
+    nconf.get('schema').metadata,
+    {
+      ...filter,
+      type: 'hashtag',
+    }
+  );
+
   const metadata = await mongo3.readLimit(
     mongoc,
     nconf.get('schema').metadata,
@@ -191,11 +235,20 @@ async function getMetadataByFilter(filter, options) {
     options.skip
   );
 
-  await mongoc.close();
-  return metadata;
+  await mongoc?.close();
+  return {
+    totals: {
+      video: totalVideo,
+      search: totalSearch,
+      home: totalHome,
+      hashtag: totalHashtag,
+      channel: 0,
+    },
+    data: metadata,
+  };
 }
 
-async function getMetadataFromAuthor(filter, options) {
+async function getMetadataFromAuthor(filter, options): Promise<CreatorStats> {
   const mongoc = await mongo3.clientConnect();
 
   const sourceVideo = await mongo3.readOne(
@@ -220,7 +273,7 @@ async function getMetadataFromAuthor(filter, options) {
     authorSource: sourceVideo.authorSource,
   });
 
-  await mongoc.close();
+  await mongoc?.close();
   return {
     content: videos,
     overflow: _.size(videos) === options.amount,
@@ -228,10 +281,14 @@ async function getMetadataFromAuthor(filter, options) {
     pagination: options,
     authorName: sourceVideo.authorName,
     authorSource: sourceVideo.authorSource,
+    stripped: undefined,
   };
 }
 
-async function getMetadataFromAuthorChannelId(channelId, options) {
+async function getMetadataFromAuthorChannelId(
+  channelId,
+  options
+): Promise<any> {
   const mongoc = await mongo3.clientConnect();
   const filter = {
     authorSource: { $in: [`/channel/${channelId}`, `/c/${channelId}`] },
@@ -330,7 +387,11 @@ async function getMetadataFromAuthorChannelId(channelId, options) {
   return result;
 }
 
-async function getVideosByPublicKey(publicKey, filter, htmlToo) {
+async function getVideosByPublicKey(
+  publicKey,
+  filter,
+  htmlToo
+): Promise<{ metadata: VideoMetadata[]; html: HTML[] }> {
   // refactor: this was a double purpose API but actually has only one pourpose. htmlToo should never be true here
   const mongoc = await mongo3.clientConnect();
 
@@ -349,7 +410,7 @@ async function getVideosByPublicKey(publicKey, filter, htmlToo) {
     selector,
     { savingTime: -1 }
   );
-  const ret = { metadata };
+  const ret = { html: [] as any[], metadata };
 
   if (htmlToo) {
     const htmlfilter = { metadataId: { $in: _.map(metadata, 'id') } };
@@ -366,7 +427,7 @@ async function getVideosByPublicKey(publicKey, filter, htmlToo) {
   return ret;
 }
 
-async function getHTMLVideosByMetadataId(metadataId) {
+async function getHTMLVideosByMetadataId(metadataId): Promise<ParsedInfo[]> {
   const mongoc = await mongo3.clientConnect();
   const htmls = await mongo3.read(
     mongoc,
@@ -378,7 +439,7 @@ async function getHTMLVideosByMetadataId(metadataId) {
   return htmls;
 }
 
-async function deleteEntry(publicKey, id) {
+async function deleteEntry(publicKey, id): Promise<{ metadata: DeleteResult }> {
   const mongoc = await mongo3.clientConnect();
   const supporter = await mongo3.readOne(
     mongoc,
@@ -396,7 +457,7 @@ async function deleteEntry(publicKey, id) {
   return { metadata };
 }
 
-async function getRelatedByVideoId(videoId, options) {
+async function getRelatedByVideoId(videoId, options): Promise<any> {
   const mongoc = await mongo3.clientConnect();
   const related = await mongo3.aggregate(mongoc, nconf.get('schema').metadata, [
     { $match: { videoId } },
@@ -439,7 +500,7 @@ async function getRelatedByVideoId(videoId, options) {
   });
 }
 
-async function write(where, what) {
+async function write(where, what): Promise<any> {
   const mongoc = await mongo3.clientConnect();
   let retv;
   try {
@@ -453,7 +514,7 @@ async function write(where, what) {
   return retv;
 }
 
-async function tofu(publicKey, version) {
+async function tofu(publicKey, version): Promise<any> {
   const mongoc = await mongo3.clientConnect();
 
   let supporter = await mongo3.readOne(mongoc, nconf.get('schema').supporters, {
@@ -484,7 +545,7 @@ async function tofu(publicKey, version) {
   return supporter;
 }
 
-async function getLastLeaves(filter, skip, amount) {
+async function getLastLeaves(filter, skip, amount): Promise<any> {
   const mongoc = await mongo3.clientConnect();
   const labels = await mongo3.readLimit(
     mongoc,
@@ -502,7 +563,7 @@ async function getLastLeaves(filter, skip, amount) {
   };
 }
 
-async function upsertSearchResults(listof, cName) {
+async function upsertSearchResults(listof, cName): Promise<any> {
   const mongoc = await mongo3.clientConnect();
   let written = 0;
   for (const entry of listof) {
@@ -514,7 +575,7 @@ async function upsertSearchResults(listof, cName) {
   return written;
 }
 
-async function updateAdvertisingAndMetadata(adlist) {
+async function updateAdvertisingAndMetadata(adlist): Promise<any> {
   const mongoc = await mongo3.clientConnect();
   let written = 0;
   for (const entry of adlist) {
@@ -531,7 +592,7 @@ async function updateAdvertisingAndMetadata(adlist) {
   return written;
 }
 
-async function getLastHTMLs(filter, skip, amount) {
+async function getLastHTMLs(filter, skip, amount): Promise<any> {
   const mongoc = await mongo3.clientConnect();
   const defskip = skip || 0;
   const htmls = await mongo3.readLimit(
@@ -550,7 +611,7 @@ async function getLastHTMLs(filter, skip, amount) {
   };
 }
 
-async function markHTMLsUnprocessable(htmls) {
+async function markHTMLsUnprocessable(htmls): Promise<any> {
   const mongoc = await mongo3.clientConnect();
   const ids = _.map(htmls, 'id');
   const r = await mongo3.updateMany(
@@ -565,16 +626,29 @@ async function markHTMLsUnprocessable(htmls) {
   return r;
 }
 
-async function createMetadataEntry(mongoc, html, newsection) {
-  let exists = _.pick(html, ['publicKey', 'savingTime', 'clientTime', 'href']);
+async function createMetadataEntry(mongoc, html, newsection): Promise<any> {
+  let exists: any = _.pick(html, [
+    'publicKey',
+    'savingTime',
+    'clientTime',
+    'href',
+  ]);
   exists = _.extend(exists, newsection);
   exists.id = html.metadataId;
   await mongo3.writeOne(mongoc, nconf.get('schema').metadata, exists);
   return exists;
 }
 
-async function updateMetadata(html, newsection, repeat) {
-  async function markHTMLandClose(mongoc, html, retval) {
+async function updateMetadata(
+  html: HTML,
+  newsection: any,
+  repeat: boolean
+): Promise<void> {
+  async function markHTMLandClose(
+    mongoc: MongoClient,
+    html: HTML,
+    retval: any
+  ): Promise<void> {
     await mongo3.updateOne(
       mongoc,
       nconf.get('schema').htmls,
@@ -611,8 +685,8 @@ async function updateMetadata(html, newsection, repeat) {
 
   let updates = 0;
   let forceu = repeat;
-  const newkeys = [];
-  const updatedkeys = [];
+  const newkeys: string[] = [];
+  const updatedkeys: string[] = [];
   /* we don't care if these fields change value, they'll not be 'update' */
   const careless = ['clientTime', 'savingTime'];
   const up = _.reduce(
@@ -664,17 +738,17 @@ async function updateMetadata(html, newsection, repeat) {
   return await markHTMLandClose(mongoc, html, { what: 'duplicated' });
 }
 
-async function getMixedDataSince(schema, since, maxAmount) {
+async function getMixedDataSince(schema, since, maxAmount): Promise<any> {
   // This is used in admin/monitor with password protected access
 
   const mongoc = await mongo3.clientConnect();
-  const retContent = [];
+  const retContent: any[] = [];
 
   for (const cinfo of schema) {
-    const columnName = _.first(cinfo);
-    const fields = _.nth(cinfo, 1);
-    const timevar = _.last(cinfo);
-    const filter = _.set({}, timevar, { $gt: since });
+    const columnName: any = _.first(cinfo);
+    const fields: any = _.nth(cinfo, 1);
+    const timevar: any = _.last(cinfo);
+    const filter: any = _.set({}, timevar, { $gt: since });
 
     /* it prefer the last samples, that's wgy the sort -1 */
     const r = await mongo3.readLimit(
@@ -704,12 +778,9 @@ async function getMixedDataSince(schema, since, maxAmount) {
      * used to pick the most recent 200 is renamed as 'timevar'. This allow
      * us to sort properly the sequence of events happen server side */
     _.each(r, function (o) {
-      const good = _.pick(o, fields);
+      const good: any = _.pick(o, fields);
       good.template = columnName;
-      good.relative = _.round(
-        moment.duration(moment() - moment(o[timevar])).asSeconds(),
-        1
-      );
+      good.relative = differenceInSeconds(o[timevar], new Date());
 
       good.timevar = new Date(o[timevar]);
       good.printable = moment(good.timevar).format('HH:mm:ss');
@@ -728,13 +799,13 @@ async function getMixedDataSince(schema, since, maxAmount) {
   return retContent;
 }
 
-async function flexibleRemove(collection, filter) {
+async function flexibleRemove(collection, filter): Promise<boolean> {
   const mongoc = await mongo3.clientConnect();
   const count = await mongo3.count(mongoc, collection, filter);
   if (count === 1) {
     const result = await mongo3.deleteMany(mongoc, collection, filter);
-    debug('flexibleRemove result: %j', result.result);
-    return !!result.result.ok;
+    debug('flexibleRemove result: %j', result.deletedCount);
+    return !!result.deletedCount;
   } else {
     debug('flexibleRemove refuse to delete as matches are %d', count);
   }
@@ -742,7 +813,7 @@ async function flexibleRemove(collection, filter) {
   return false;
 }
 
-async function getTransformedMetadata(chain) {
+async function getTransformedMetadata(chain): Promise<any> {
   const mongoc = await mongo3.clientConnect();
   const result = await mongo3.aggregate(
     mongoc,
@@ -753,7 +824,7 @@ async function getTransformedMetadata(chain) {
   return result;
 }
 
-async function markExperCompleted(mongoc, filter) {
+async function markExperCompleted(mongoc, filter): Promise<any> {
   /* this is called in two different condition:
      1) when a new experiment gets registered and the previously 
         opened by the same publicKey should be closed
@@ -769,7 +840,7 @@ async function markExperCompleted(mongoc, filter) {
   );
 }
 
-async function concludeExperiment(testTime) {
+async function concludeExperiment(testTime: Date): Promise<any> {
   /* this function is called by guardoni v.1.8 when the
    * access on a step URL have been completed */
   const mongoc = await mongo3.clientConnect();
@@ -778,7 +849,10 @@ async function concludeExperiment(testTime) {
   return r;
 }
 
-async function saveExperiment(expobj) {
+async function saveExperiment(
+  publicKey: string,
+  expobj: Experiment
+): Promise<Experiment | null> {
   /* this is used by guardoni v.1.8 as handshake connection,
        the expobj constains a variety of fields, check
        routes/experiment.js function channel3 */
@@ -787,7 +861,7 @@ async function saveExperiment(expobj) {
   const mongoc = await mongo3.clientConnect();
   /* a given public Key can have only one experiment per time */
   const filter = {
-    publicKey: expobj.publicKey,
+    publicKey,
     status: 'active',
   };
 
@@ -801,7 +875,7 @@ async function saveExperiment(expobj) {
   return expobj;
 }
 
-async function pullExperimentInfo(publicKey) {
+async function pullExperimentInfo(publicKey: string): Promise<Experiment> {
   // because only one experiment per publicKey might
   // exist in a due time, we can be quite sure on the results
   // here
@@ -821,7 +895,7 @@ async function pullExperimentInfo(publicKey) {
   return _.first(exp) ?? null;
 }
 
-async function registerSteps(steps) {
+async function registerSteps(steps: Step[]): Promise<any> {
   /* this API is called by guardoni when --csv is used,
        the API is POST localhost:9000/api/v2/directives */
 
@@ -833,8 +907,11 @@ async function registerSteps(steps) {
     experimentId,
   });
 
-  if (exist && exist.experimentId) {
-    debug('Experiment (experimentId %s) already found in the DB!', experimentId);
+  if (exist?.experimentId) {
+    debug(
+      'Experiment (experimentId %s) already found in the DB!',
+      experimentId
+    );
     await mongoc.close();
     return {
       status: 'exist',
@@ -854,7 +931,9 @@ async function registerSteps(steps) {
   return { status: 'created', experimentId, since: new Date() };
 }
 
-async function pickDirective(experimentId) {
+async function pickDirective(
+  experimentId: string
+): Promise<GetDirectiveOutput['0']> {
   const mongoc = await mongo3.clientConnect();
   const rb = await mongo3.readOne(mongoc, nconf.get('schema').experiments, {
     experimentId,
@@ -863,7 +942,7 @@ async function pickDirective(experimentId) {
   return rb;
 }
 
-module.exports = {
+export default {
   /* used by routes/personal */
   getSummaryByPublicKey,
   getMetadataByPublicKey,

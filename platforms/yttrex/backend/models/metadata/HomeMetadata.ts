@@ -6,6 +6,7 @@ const { supporter, ...homeMetadataProps } = HomeMetadata.type.props;
 export const HomeMetadataDB = t.type(
   {
     ...homeMetadataProps,
+    _id: t.any,
     publicKey: t.string,
     savingTime: date,
     clientTime: date,

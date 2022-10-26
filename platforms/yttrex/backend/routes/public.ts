@@ -10,6 +10,10 @@ import * as endpoints from '@shared/endpoints/helper';
 import { v1 } from '@yttrex/shared/endpoints';
 import structured from '../lib/structured';
 import * as express from 'express';
+import { VideoMetadataDB } from '../models/metadata/VideoMetadata';
+import { formatDistance } from 'date-fns';
+import { VideoMetadata } from '@yttrex/shared/models/Metadata';
+import { HomeMetadataDB } from '../models/metadata/HomeMetadata';
 
 const debug = D('routes:public');
 
@@ -76,12 +80,12 @@ async function getLastHome(): Promise<any> {
   );
 
   const rv = _.reduce(
-    homelist,
+    homelist.data as HomeMetadataDB[],
     function (memo, e) {
       const accessId = utils.hash({ who: e.publicKey, when: e.savingTime });
       _.each(e.selected, function (vinfo) {
         const selected = {
-          accessId: accessId.substr(0, 10),
+          accessId: accessId.substring(0, 10),
           metadataId: e.id,
           order: vinfo.index,
           source: vinfo.recommendedSource,
@@ -147,7 +151,7 @@ async function getVideoId(req): Promise<any> {
    * old content parsed with different format */
 
   const evidences = _.compact(
-    _.map(entries, function (meta) {
+    _.map(entries.data as VideoMetadataDB[], function (meta) {
       meta.related = _.reverse(_.compact(_.map(meta.related, ensureRelated)));
       if (!_.size(meta.related)) return null;
       _.unset(meta, '_id');
@@ -174,25 +178,37 @@ async function getRelated(req: express.Request): Promise<any> {
     amount,
     skip
   );
+
   const entries = await automo.getMetadataByFilter(
     { 'related.videoId': req.params.videoId },
     { amount, skip }
   );
-  const evidences = _.map(entries, function (meta) {
-    meta.related = _.map(meta.related, function (e) {
-      return _.pick(e, [
-        'recommendedTitle',
-        'recommendedSource',
-        'index',
-        'foryou',
-        'videoId',
-      ]);
-    });
-    meta.timeago = moment
-      .duration(meta.savingTime - (moment() as any))
-      .humanize();
-    return _.omit(meta, ['_id', 'publicKey']);
-  });
+
+  const evidences = _.map(
+    entries.data as VideoMetadataDB[],
+    function ({ _id, publicKey, ...meta }): VideoMetadata {
+      meta.related = _.map(
+        meta.related,
+        function ({
+          recommendedTitle,
+          recommendedSource,
+          index,
+          videoId,
+          publicationTime,
+        }) {
+          return {
+            index,
+            videoId,
+            recommendedTitle,
+            recommendedSource,
+            publicationTime: publicationTime ?? undefined,
+          };
+        }
+      ) as any;
+      (meta as any).timeago = formatDistance(meta.savingTime, new Date());
+      return { ...meta, supporter: utils.string2Food(publicKey) } as any;
+    }
+  );
   debug(
     'getRelated: returning %d matches about %s',
     _.size(evidences),
