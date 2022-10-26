@@ -105,7 +105,7 @@
     "ts-endpoint": "^2.0.0",
     "tweetnacl": "^1.0.3",
     "tweetnacl-util": "^0.13.5",
-    "uuid": "^2.0.3",
+    "uuid": "^9.0.0",
     "web-vitals": "^2.1.4"
   },
   "browserslist": {
