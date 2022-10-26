@@ -82,8 +82,7 @@ export const getHTMLId = encodeUtils.GetEncodeUtils(
 );
 
 export const getMetadataId = encodeUtils.GetEncodeUtils(
-  (m: { htmlId: string; clientTime: string }) => ({
-    id: m.htmlId,
-    clientTime: m.clientTime,
+  (m: Omit<GetUniqueIdOpts, 'incremental'>) => ({
+    ...m,
   }),
 );
