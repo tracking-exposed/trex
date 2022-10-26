@@ -164,7 +164,7 @@ export const cleanExtension =
 
     return pipe(
       IOE.tryCatch(() => {
-        const experimentJSON = getExperimentJSONPath(ctx);
+        const experimentJSON = getExperimentJSONPath(ctx.platform);
         ctx.logger.debug('Checking %s exists', experimentJSON);
         if (fs.existsSync(experimentJSON)) {
           ctx.logger.info(
@@ -174,7 +174,7 @@ export const cleanExtension =
           );
         }
 
-        const settingsJSON = getSettingsJSONPath(ctx);
+        const settingsJSON = getSettingsJSONPath(ctx.platform);
         ctx.logger.debug('Checking %s exists', settingsJSON);
         if (fs.existsSync(settingsJSON)) {
           ctx.logger.info(
@@ -190,14 +190,15 @@ export const cleanExtension =
     );
   };
 
-const getSettingsJSONPath = (ctx: GuardoniContext): string =>
-  path.resolve(ctx.platform.extensionDir, 'settings.json');
+export const getSettingsJSONPath = (
+  platform: GuardoniContext['platform']
+): string => path.resolve(platform.extensionDir, 'settings.json');
 
 export const setLocalSettings =
   (ctx: GuardoniContext) =>
   (s?: Partial<UserSettings>): void => {
     const keys = Object.keys(s ?? {});
-    const settingsJsonPath = getSettingsJSONPath(ctx);
+    const settingsJsonPath = getSettingsJSONPath(ctx.platform);
     if (keys.length === 0) {
       ctx.logger.debug('No values for %s given...', settingsJsonPath);
       return;

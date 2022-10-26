@@ -14,6 +14,8 @@ const GUARDONI_ERROR_EVENT = t.literal('guardoniError');
 const GUARDONI_OUTPUT_EVENT = t.literal('guardoniOutput');
 const GLOBAL_ERROR_EVENT = t.literal('globalError');
 const CHANGE_PLATFORM_EVENT = t.literal('changePlatform');
+const CLEAN_EXTENSION_FOLDER_EVENT = t.literal('cleanExtensionFolder');
+const GET_EXTENSION_JSON_DATA = t.literal('getExtensionJsonData');
 
 export const EVENTS = {
   PICK_CSV_FILE_EVENT,
@@ -30,6 +32,8 @@ export const EVENTS = {
   GUARDONI_OUTPUT_EVENT,
   GLOBAL_ERROR_EVENT,
   CHANGE_PLATFORM_EVENT,
+  CLEAN_EXTENSION_FOLDER_EVENT,
+  GET_EXTENSION_JSON_DATA,
 };
 
 export const EVENT = t.union(
@@ -47,6 +51,8 @@ export const EVENT = t.union(
     GUARDONI_OUTPUT_EVENT,
     GLOBAL_ERROR_EVENT,
     CHANGE_PLATFORM_EVENT,
+    CLEAN_EXTENSION_FOLDER_EVENT,
+    GET_EXTENSION_JSON_DATA,
   ],
   'EVENTS'
 );
