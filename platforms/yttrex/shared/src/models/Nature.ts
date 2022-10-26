@@ -1,6 +1,7 @@
 import * as t from 'io-ts';
 
-const HomeNatureType = t.literal('home');
+export const HomeNatureType = t.literal('home');
+export type HomeNatureType = t.TypeOf<typeof HomeNatureType>;
 
 export const HomeN = t.strict(
   {
@@ -8,8 +9,10 @@ export const HomeN = t.strict(
   },
   'HomeNature'
 );
+export type HomeN = t.TypeOf<typeof HomeNatureType>;
 
 export const SearchNatureType = t.literal('search');
+export type SearchNatureType = t.TypeOf<typeof SearchNatureType>;
 
 export const SearchN = t.strict(
   {
@@ -39,6 +42,7 @@ export const ChannelN = t.strict(
 );
 
 export const HashtagNatureType = t.literal('hashtag');
+export type HashtagNatureType = t.TypeOf<typeof HashtagNatureType>;
 export const HashtagN = t.strict(
   {
     type: HashtagNatureType,

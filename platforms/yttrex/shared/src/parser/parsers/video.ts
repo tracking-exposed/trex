@@ -6,7 +6,7 @@ import * as t from 'io-ts';
 import { date } from 'io-ts-types/lib/date';
 import _ from 'lodash';
 import moment from 'moment';
-import { ParsedInfo, VideoMetadata } from '../../models/Metadata';
+import { ParsedInfo, VideoMetadata } from '../../models/metadata/Metadata';
 import { YTParserConfig } from '../config';
 import { HTMLSource } from '../source';
 import * as likesParser from './likes'; // this because parseLikes is an utils to be used also with version of the DB without the converted like. but should be a parsing related-only library once the issue with DB version is solved

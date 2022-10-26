@@ -4,7 +4,7 @@ import {
   HomeMetadata,
   ParsedInfo,
   VideoMetadata,
-} from '@yttrex/shared/models/Metadata';
+} from '@yttrex/shared/models/metadata/Metadata';
 import { subDays } from 'date-fns';
 import { getArbitrary } from 'fast-check-io-ts';
 import * as t from 'io-ts';

@@ -17,19 +17,22 @@ import { CreatorStats } from '@shared/models/CreatorStats';
 import { GetDirectiveOutput } from '@shared/models/Experiment';
 import { Step } from '@shared/models/Step';
 import * as mongo3 from '@shared/providers/mongo.provider';
-import { ParsedInfo, VideoMetadata } from '@yttrex/shared/models/Metadata';
+import {
+  ParsedInfo,
+  VideoMetadata,
+} from '@yttrex/shared/models/metadata/Metadata';
 import { NatureType } from '@yttrex/shared/models/Nature';
 import { Supporter } from '@yttrex/shared/models/Supporter';
 import { differenceInSeconds, formatDistance } from 'date-fns';
 import D from 'debug';
 import _ from 'lodash';
-import { Experiment } from 'models/Experiment';
-import { HTML } from 'models/HTML';
-import { MetadataDB } from 'models/metadata';
 import moment from 'moment';
 import { DeleteResult, Filter, MongoClient } from 'mongodb';
 import nconf from 'nconf';
 import utils from '../lib/utils';
+import { Experiment } from '../models/Experiment';
+import { HTML } from '../models/HTML';
+import { MetadataDB } from '../models/metadata';
 import { SearchMetadataDB } from '../models/metadata/SearchMetadata';
 
 const debug = D('lib:automo');
@@ -217,14 +220,14 @@ async function getMetadataByFilter(
     type: 'home',
   });
 
-  const totalHashtag = await mongo3.count(
-    mongoc,
-    nconf.get('schema').metadata,
-    {
-      ...filter,
-      type: 'hashtag',
-    }
-  );
+  // const totalHashtag = await mongo3.count(
+  //   mongoc,
+  //   nconf.get('schema').metadata,
+  //   {
+  //     ...filter,
+  //     type: 'hashtag',
+  //   }
+  // );
 
   const metadata = await mongo3.readLimit(
     mongoc,
@@ -241,7 +244,7 @@ async function getMetadataByFilter(
       video: totalVideo,
       search: totalSearch,
       home: totalHome,
-      hashtag: totalHashtag,
+      hashtag: 0,
       channel: 0,
     },
     data: metadata,

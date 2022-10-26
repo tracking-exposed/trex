@@ -3,7 +3,7 @@ import * as t from 'io-ts';
 import { NumberFromString } from 'io-ts-types/lib/NumberFromString';
 import { NatureType } from '../../models/Nature';
 import { Endpoint } from 'ts-endpoint';
-import { MetadataList } from '../../models/Metadata';
+import { MetadataList } from '../../models/metadata/Metadata';
 
 export const ListMetadataResponse = t.strict(
   {

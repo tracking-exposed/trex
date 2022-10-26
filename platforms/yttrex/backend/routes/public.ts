@@ -1,19 +1,19 @@
-import _ from 'lodash';
-import moment from 'moment';
-import D from 'debug';
-import params from '../lib/params';
-import automo from '../lib/automo';
-import utils from '../lib/utils';
-import CSV from '../lib/CSV';
-import cache from '../lib/cache';
 import * as endpoints from '@shared/endpoints/helper';
 import { v1 } from '@yttrex/shared/endpoints';
-import structured from '../lib/structured';
-import * as express from 'express';
-import { VideoMetadataDB } from '../models/metadata/VideoMetadata';
+import { VideoMetadata } from '@yttrex/shared/models/metadata/Metadata';
 import { formatDistance } from 'date-fns';
-import { VideoMetadata } from '@yttrex/shared/models/Metadata';
+import D from 'debug';
+import * as express from 'express';
+import _ from 'lodash';
+import moment from 'moment';
+import automo from '../lib/automo';
+import cache from '../lib/cache';
+import CSV from '../lib/CSV';
+import params from '../lib/params';
+import structured from '../lib/structured';
+import utils from '../lib/utils';
 import { HomeMetadataDB } from '../models/metadata/HomeMetadata';
+import { VideoMetadataDB } from '../models/metadata/VideoMetadata';
 
 const debug = D('routes:public');
 
