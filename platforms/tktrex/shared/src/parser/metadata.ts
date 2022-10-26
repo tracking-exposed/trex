@@ -2,7 +2,6 @@ import { BuildMetadataFn } from '@shared/providers/parser.provider';
 import { TKMetadata } from '../models/metadata';
 import { TKParsers } from './parsers';
 import { HTMLSource } from './source';
-import { isValid } from 'date-fns';
 import _ from 'lodash';
 
 export const toMetadata: BuildMetadataFn<HTMLSource, TKMetadata, TKParsers> = (
@@ -20,15 +19,8 @@ export const toMetadata: BuildMetadataFn<HTMLSource, TKMetadata, TKParsers> = (
 
   switch (entry.findings.nature.type) {
   case 'foryou': {
-    const {
-      nature,
-      author,
-      description,
-      hashtags,
-      metrics,
-      music,
-      foryou
-    } = entry.findings;
+    const { nature, author, description, hashtags, metrics, music, foryou } =
+        entry.findings;
     metadata = {
       ...metadata,
       ...nature,
@@ -38,7 +30,7 @@ export const toMetadata: BuildMetadataFn<HTMLSource, TKMetadata, TKParsers> = (
       metrics,
       music,
       hashtags,
-      ...foryou
+      ...foryou,
     };
     break;
   }
@@ -101,20 +93,15 @@ export const toMetadata: BuildMetadataFn<HTMLSource, TKMetadata, TKParsers> = (
   }
 
   /* fixed fields */
-  metadata.savingTime = isValid(entry.source.html.savingTime)
-    ? entry.source.html.savingTime.toISOString()
-    : entry.source.html.savingTime;
-  metadata.clientTime = isValid(entry.source.html.clientTime)
-    ? entry.source.html.clientTime.toISOString()
-    : entry.source.html.clientTime;
+  metadata.savingTime = entry.source.html.savingTime;
+  metadata.clientTime = entry.source.html.clientTime;
   metadata.id = entry.source.html.id;
   metadata.publicKey = entry.source.html.publicKey;
   metadata.timelineId = entry.source.html.timelineId;
   metadata.order = entry.source.html.n?.[0];
 
   /* optional fields */
-  if (entry.source.html.geoip)
-    metadata.geoip = entry.source.html.geoip;
+  if (entry.source.html.geoip) metadata.geoip = entry.source.html.geoip;
   if (entry.source.html.researchTag?.length)
     metadata.researchTag = entry.source.html.researchTag;
   if (entry.source.html.experimentId?.length)

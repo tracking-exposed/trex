@@ -1,10 +1,10 @@
 import _ from 'lodash';
 import createDebug from 'debug';
 
-var debug = createDebug('lib:params');
+const debug = createDebug('lib:params');
 
 export function getInt(req, what, def) {
-    var rv = _.parseInt(_.get(req.params, what));
+    let rv = _.parseInt(_.get(req.params, what));
     if(_.isNaN(rv)) {
         if(!_.isUndefined(def))
             rv  = def;
@@ -17,7 +17,7 @@ export function getInt(req, what, def) {
 }
 
 export function getString(req, what) {
-    var rv = _.get(req.params, what);
+    const rv = _.get(req.params, what);
     if(_.isUndefined(rv)) {
         debug("getString: Missing parameter [%s] in %j", what, req.params);
         return "";
@@ -26,7 +26,7 @@ export function getString(req, what) {
 }
 
 export function optionParsing(amountString, max) {
-    const maxObjs = max ? max : 2000;
+    const maxObjs = max || 2000;
 
     try {
         const amount = _.parseInt(_.first(amountString.split('-')) ?? maxObjs);

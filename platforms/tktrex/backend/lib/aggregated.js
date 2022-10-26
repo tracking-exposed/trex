@@ -30,7 +30,7 @@ function dayData(reference) {
         dayOnext,
         dayId,
         reference: dayOnly,
-        m: m,
+        m,
     };
 }
 
@@ -62,7 +62,7 @@ function hourData(reference) {
         hourOnext,
         hourId,
         reference: hourOnly,
-        m: m,
+        m,
     };
 }
 

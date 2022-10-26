@@ -202,7 +202,7 @@ async function deleteEntry(publicKey, id) {
         publicKey: supporter.publicKey
     });
     const metadata = await mongo3.deleteMany(mongoc, nconf.get('schema').metadata, {
-        id: id,
+        id,
         publicKey: supporter.publicKey
     });
     await mongoc.close();
@@ -213,7 +213,7 @@ async function getRelatedByVideoId(videoId, options) {
     const mongoc = await mongo3.clientConnect({});
     const related = await mongo3
         .aggregate(mongoc, nconf.get('schema').metadata, [
-            { $match: { videoId: videoId } },
+            { $match: { videoId } },
             { $sort: { savingTime: -1 }},
             { $skip: options.skip },
             { $limit : options.amount },
@@ -266,7 +266,7 @@ async function tofu(publicKey, version) {
     let supporter = await mongo3.readOne(mongoc,
         nconf.get('schema').supporters, { publicKey });
 
-    if( !! _.get(supporter, '_id') ) {
+    if( _.get(supporter, '_id') ) {
         supporter.lastActivity = new Date();
         supporter.version = version;
         await mongo3.updateOne(mongoc,
@@ -295,8 +295,8 @@ async function getLastHTMLs(filter, skip, limit) {
     const htmls = await mongo3.readLimit(mongoc,
         nconf.get('schema').htmls, filter,
         { savingTime: 1},
-        limit ? limit : HARDCODED_LIMIT,
-        skip ? skip : 0);
+        limit || HARDCODED_LIMIT,
+        skip || 0);
 
     if(_.size(htmls))
         debug("getLastHTMLs: %j -> %d (overflow %s)%s", filter, _.size(htmls),
@@ -372,7 +372,7 @@ async function updateMetadata(html, newsection) {
         if(!value || !_.size(value))
             return memo;
 
-        let current = _.get(memo, key);
+        const current = _.get(memo, key);
         if(!current) {
             _.set(memo, key, value);
             updates++;
@@ -406,7 +406,7 @@ async function updateMetadata(html, newsection) {
     if(forceu || updates ) {
         debug("Update from incremental %d to %d", exists.incremental, up.incremental);
         debug("test %j --- %j", _.keys(exists), _.keys(up));
-        let r = await mongo3.updateOne(mongoc, nconf.get('schema').metadata, { id: html.metadataId }, up );
+        const r = await mongo3.updateOne(mongoc, nconf.get('schema').metadata, { id: html.metadataId }, up );
         return await markHTMLandClose(mongoc, html, { what: 'updated'});
     }
     return await markHTMLandClose(mongoc, html, { what: 'duplicated'});
@@ -423,7 +423,7 @@ async function getRandomRecent(minTime, maxAmount) {
 
     const validExamples = [];
     for (const supporter of supporters) {
-        let i = await mongo3.count(mongoc, nconf.get('schema').metadata, {
+        const i = await mongo3.count(mongoc, nconf.get('schema').metadata, {
             publicKey: supporter.publicKey,
             type: 'video'
         });
@@ -440,11 +440,11 @@ async function getMixedDataSince(schema, since, maxAmount) {
     const mongoc = await mongo3.clientConnect({});
     const retContent = [];
 
-    for (let cinfo of schema) {
-        let columnName = _.first(cinfo);
-        let fields = _.nth(cinfo, 1);
-        let timevar = _.last(cinfo);
-        let filter = _.set({}, timevar, { $gt: since});
+    for (const cinfo of schema) {
+        const columnName = _.first(cinfo);
+        const fields = _.nth(cinfo, 1);
+        const timevar = _.last(cinfo);
+        const filter = _.set({}, timevar, { $gt: since});
 
         /* it prefer the last samples, that's wgy the sort -1 */
         const r = await mongo3.readLimit(mongoc,
@@ -469,14 +469,14 @@ async function getMixedDataSince(schema, since, maxAmount) {
          * used to pick the most recent 200 is renamed as 'timevar'. This allow
          * us to sort properly the sequence of events happen server side */
         _.each(r, function(o) {
-            let good = _.pick(o, fields)
+            const good = _.pick(o, fields)
             good.template = columnName;
             good.relative = _.round(
                 moment.duration(+moment() - +moment(o[timevar]) ).asSeconds()
             , 1);
 
-            good['timevar'] = new Date(o[timevar]);
-            good.printable = moment(good['timevar']).format('HH:mm:ss');
+            good.timevar = new Date(o[timevar]);
+            good.printable = moment(good.timevar).format('HH:mm:ss');
             _.unset(good, timevar);
 
             /* supporters, or who know in the future, might have not an 'id'.
