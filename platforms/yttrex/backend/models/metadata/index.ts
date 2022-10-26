@@ -7,3 +7,5 @@ export const MetadataDB = t.union(
   [SearchMetadataDB, VideoMetadataDB, HomeMetadataDB],
   'MetadataDB'
 );
+
+export type MetadataDB = t.TypeOf<typeof MetadataDB>;

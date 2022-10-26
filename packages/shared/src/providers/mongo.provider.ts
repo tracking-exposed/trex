@@ -8,6 +8,7 @@ import {
   DeleteResult,
   MongoClientOptions,
   UpdateResult,
+  Filter,
 } from 'mongodb';
 import nconf from 'nconf';
 
@@ -39,7 +40,7 @@ function mongoUri(forced?: { uri: string }): string {
 
 async function clientConnect(
   config?: MongoClientOptions
-): Promise<MongoClient | undefined> {
+): Promise<MongoClient> {
   try {
     const client = new MongoClient(mongoUri(), config);
     return await client.connect();
@@ -49,6 +50,7 @@ async function clientConnect(
       mongoUri(),
       error.message
     );
+    throw error;
   }
 }
 
@@ -165,9 +167,10 @@ async function readLimit(
 async function count(
   mongoc: MongoClient,
   cName: string,
-  selector: any
-): Promise<void> {
-  return mongoc.db().collection(cName).countDocuments(selector);
+  selector: Filter<any>
+): Promise<number> {
+  const n = await mongoc.db().collection(cName).countDocuments(selector);
+  return n;
 }
 
 async function createIndex(

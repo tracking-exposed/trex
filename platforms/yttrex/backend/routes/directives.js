@@ -1,7 +1,7 @@
+import automo from '../lib/automo';
 const _ = require('lodash');
 const debug = require('debug')('routes:directives');
 
-const automo = require('../lib/automo');
 const mongo3 = require('@shared/providers/mongo.provider');
 const nconf = require('nconf');
 
@@ -87,7 +87,7 @@ async function getPublic(req) {
   };
 }
 
-module.exports = {
+export {
   comparison,
   post,
   get,
