@@ -1,4 +1,5 @@
 import * as t from 'io-ts';
+import { date } from 'io-ts-types/lib/date';
 
 export const MetadataBase = t.type(
   {
@@ -20,8 +21,8 @@ export const MetadataBase = t.type(
     /**
      * DB saving time
      */
-    clientTime: t.string,
-    savingTime: t.string,
+    clientTime: date,
+    savingTime: date,
   },
   'MetadataBase',
 );

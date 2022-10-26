@@ -14,7 +14,7 @@ const debug = D('parser:downloader');
 export async function processLink(
   link: string,
   linkType: string,
-  config: TKParserConfig
+  config: TKParserConfig,
 ): Promise<MediaFile> {
   // link is either an mp4 or a jpeg,
   // linkType is 'video' or 'thumbnail'
@@ -42,7 +42,7 @@ const downloader: ParserFn<
   HTMLSource,
   { downloader: any[] },
   TKParserConfig
-> = async (envelop, findings, config) => {
+> = async(envelop, findings, config) => {
   // if (envelop.supporter.version !== '2.6.2.99') {
   //   // TODO we should load a JSON with some more complex filtering mechanism
   //   debug('Only development version .99 is now considered for download!');

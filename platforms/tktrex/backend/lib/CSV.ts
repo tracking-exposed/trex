@@ -93,7 +93,7 @@ export function flattenSearch(m: SearchMetadata, shared: any): FlattenSearch[] {
       ).join(', '),
       metadataId: m.id.substring(0, 10),
       savingTime: moment(m.savingTime).format('YYYY-MM-DD HH:mm'),
-      timeago: formatDistance(parseISO(m.savingTime), new Date()),
+      timeago: formatDistance(m.savingTime, new Date()),
       query: m.query,
       textdesc: result.textdesc,
       thumbfile: thumbfile ? thumbfile.replace(/(.*\/)|(.*\\)/, '') : null,
@@ -145,7 +145,6 @@ export function flattenProfile(
     };
     _.unset(readyo, 'authorId');
     readyo.videoId = ' ' + readyo.videoId;
-    // @ts-ignore
     memo.push(readyo);
   });
   return memo;

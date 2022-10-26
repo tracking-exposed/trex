@@ -12,7 +12,11 @@ import { fc } from '@shared/test';
 import { subDays } from 'date-fns';
 import * as t from 'io-ts';
 
-const metadataBaseProps = propsOmitType(MetadataBase, ['id', 'savingTime']);
+const metadataBaseProps = propsOmitType(MetadataBase, [
+  'id',
+  'clientTime',
+  'savingTime',
+]);
 
 /**
  * Native metadata arbitrary
@@ -33,7 +37,8 @@ export const NativeMetadataArb: fc.Arbitrary<NativeMetadata> = getArbitrary(
     authorId,
     id: fc.sample(fc.uuid(), 1)[0],
     nature: { type: 'native', videoId, authorId },
-    savingTime: fc.sample(fc.date(), 1)[0].toISOString(),
+    clientTime: fc.sample(fc.date(), 1)[0],
+    savingTime: fc.sample(fc.date(), 1)[0],
   };
 });
 
@@ -85,8 +90,8 @@ export const SearchMetaDataArb = (opts: {
       savingTime: subDays(
         new Date(),
         fc.sample(fc.oneof(fc.constant(5), fc.constant(10)), 1)[0],
-      ).toISOString(),
-      clientTime: fc.sample(fc.date(), 1)[0].toISOString(),
+      ),
+      clientTime: fc.sample(fc.date(), 1)[0],
       results: fc.sample(SearchMetadataResultArb, opts.results),
       thumbnails: [],
     };
