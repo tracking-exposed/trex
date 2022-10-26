@@ -5,15 +5,19 @@ import {
   VideoMetadata as YTVideoMetadata,
   HomeMetadata as YTHomeMetadata,
   SearchMetadata as YTSearchMetadata,
-} from '@yttrex/shared/models/Metadata';
+  Metadata as YTMetadata,
+} from '@yttrex/shared/models/metadata/Metadata';
 import {
   SummaryHTMLMetadata,
-  TikTokPSearchMetadata,
   // SummaryMetadata,
 } from '@shared/models/contributor/ContributorPersonalSummary';
-import { SearchMetadata as TikTokSearchMetadata } from '@tktrex/shared/models/metadata';
-import { Metadata } from '@yttrex/shared/models/metadata/Metadata';
 import { GuardoniExperiment } from '@shared/models/Experiment';
+import {
+  ForYouMetadata as TKForYouMetadata,
+  NativeMetadata as TikTokNativeMetadata,
+  ProfileMetadata as TKProfileMetadata,
+  SearchMetadata as TikTokSearchMetadata,
+} from '@tktrex/shared/models/metadata';
 import * as React from 'react';
 import CSVDownloadButton from '../components/buttons/CSVDownloadButton';
 import DeleteButton from '../components/buttons/DeleteButton';
@@ -36,15 +40,17 @@ export interface TabouleQueryConfiguration<P extends Record<string, any>>
 
 interface TabouleConfiguration {
   YCAIccRelatedUsers: TabouleQueryConfiguration<ChannelRelated>;
-  youtubeGetExperimentById: TabouleQueryConfiguration<Metadata>;
+  youtubeGetExperimentById: TabouleQueryConfiguration<YTMetadata>;
   youtubeGetExperimentList: TabouleQueryConfiguration<GuardoniExperiment>;
   youtubePersonalAds: TabouleQueryConfiguration<{}>;
   youtubePersonalHomes: TabouleQueryConfiguration<YTHomeMetadata>;
   youtubePersonalSearches: TabouleQueryConfiguration<YTSearchMetadata>;
   youtubePersonalVideos: TabouleQueryConfiguration<YTVideoMetadata>;
   tikTokPersonalHTMLSummary: TabouleQueryConfiguration<SummaryHTMLMetadata>;
-  tikTokPersonalSearch: TabouleQueryConfiguration<TikTokPSearchMetadata>;
-  tikTokSearches: TabouleQueryConfiguration<TikTokSearchMetadata>;
+  tikTokPersonalSearch: TabouleQueryConfiguration<TikTokSearchMetadata>;
+  tikTokPersonalNative: TabouleQueryConfiguration<TikTokNativeMetadata>;
+  tikTokPersonalProfile: TabouleQueryConfiguration<TKProfileMetadata>;
+  tikTokPersonalForYou: TabouleQueryConfiguration<TKForYouMetadata>;
 }
 
 const columnDefault: Partial<GridColTypeDef> = {
@@ -286,7 +292,7 @@ export const defaultConfiguration = (
         },
       ],
     },
-    tikTokPersonalHTMLSummary: {
+    tikTokPersonalNative: {
       inputs: inputs.publicKeyInput,
       columns: [
         {
@@ -295,17 +301,141 @@ export const defaultConfiguration = (
         },
         {
           ...columnDefault,
-          field: 'timelineId',
+          field: 'authorId',
         },
         {
           ...columnDefault,
-          field: 'href',
+          field: 'videoId',
+          renderCell: (params) => {
+            return <a href="">{params.row.videoId}</a>;
+          },
+        },
+        {
+          ...columnDefault,
+          field: 'hashtags',
+          renderCell: (params) => {
+            const hashtags = params.row.hashtags ?? [];
+            return <span>{hashtags.join(',')}</span>;
+          },
+        },
+      ],
+    },
+
+    tikTokPersonalForYou: {
+      inputs: inputs.publicKeyInput,
+      actions: () => {
+        return (
+          <Box textAlign={'right'}>
+            <CSVDownloadButton
+              onClick={() => {
+                void commands.downloadAsCSV({
+                  Params: {
+                    publicKey: params.publicKey,
+                    type: 'search',
+                  },
+                })();
+              }}
+            />
+          </Box>
+        );
+      },
+      columns: [
+        {
+          ...columnDefault,
+          field: 'id',
+          width: 40,
+          renderCell: (params) => {
+            const longId = params.formattedValue;
+            const shortId = (longId as string).substr(0, 7);
+            return (
+              <a href={`/details/#${encodeURI(longId as string)}`}>{shortId}</a>
+            );
+          },
+        },
+        {
+          ...columnDefault,
+          field: 'author',
+          renderCell: (params) => {
+            if (params.value) {
+              return (
+                <a
+                  href={`/search/#${encodeURI(
+                    params.formattedValue.username as string
+                  )}`}
+                >
+                  {params.formattedValue.username}
+                </a>
+              );
+            }
+            return '-';
+          },
         },
         {
           ...columnDefault,
           field: 'savingTime',
+          headerName: 'when',
           renderCell: cells.distanceFromNowCell,
         },
+      ],
+    },
+    tikTokPersonalProfile: {
+      inputs: inputs.publicKeyInput,
+      actions: () => {
+        return (
+          <Box textAlign={'right'}>
+            <CSVDownloadButton
+              onClick={() => {
+                void commands.downloadAsCSV({
+                  Params: {
+                    publicKey: params.publicKey,
+                    type: 'search',
+                  },
+                })();
+              }}
+            />
+          </Box>
+        );
+      },
+      columns: [
+        {
+          ...columnDefault,
+          field: 'id',
+          width: 40,
+          renderCell: (params) => {
+            const longId = params.formattedValue;
+            const shortId = (longId as string).substr(0, 7);
+            return (
+              <a href={`/details/#${encodeURI(longId as string)}`}>{shortId}</a>
+            );
+          },
+        },
+        {
+          ...columnDefault,
+          field: 'savingTime',
+          headerName: 'when',
+          renderCell: cells.distanceFromNowCell,
+        },
+        // {
+        //   ...columnDefault,
+        //   field: 'rejected',
+        //   headerName: 'was answered?',
+        //   width: 40,
+        //   renderCell: (params) => {
+        //     return <span>{params.formattedValue === true ? '🚫' : '✔️'}</span>;
+        //   },
+        // },
+        {
+          ...columnDefault,
+          field: 'results',
+          renderCell: (params) => {
+            return <span>{params.row.results.length}</span>;
+          },
+          width: 40,
+        },
+        // {
+        //   ...columnDefault,
+        //   field: 'sources',
+        // },
       ],
     },
     tikTokPersonalSearch: {
@@ -360,28 +490,16 @@ export const defaultConfiguration = (
         },
         {
           ...columnDefault,
-          field: 'rejected',
-          headerName: 'was answered?',
-          width: 40,
-          renderCell: (params) => {
-            return <span>{params.formattedValue === true ? '🚫' : '✔️'}</span>;
-          },
-        },
-        {
-          ...columnDefault,
           field: 'results',
+          renderCell: (params) => {
+            return <span>{params.row.results.length}</span>;
+          },
           width: 40,
-        },
-        {
-          ...columnDefault,
-          field: 'sources',
         },
       ],
     },
-    tikTokSearches: {
-      /* this taboule hasn't the CSV allowed nor supported, because
-       * it got only a portion of all the searches = the many that
-       * have been searched from two users + do not return any rejection */
+    tikTokPersonalHTMLSummary: {
+      inputs: inputs.publicKeyInput,
       columns: [
         {
           ...columnDefault,
@@ -389,22 +507,12 @@ export const defaultConfiguration = (
         },
         {
           ...columnDefault,
-          field: 'query',
-          renderCell: (params) => {
-            return (
-              <a
-                href={`/search/#${encodeURI(params.formattedValue as string)}`}
-              >
-                {params.formattedValue}
-              </a>
-            );
-          },
+          field: 'timelineId',
         },
-        // {
-        //   ...columnDefault,
-        //   field: 'thumbnails',
-        //   renderCell: cells.avatarCell,
-        // },
+        {
+          ...columnDefault,
+          field: 'href',
+        },
         {
           ...columnDefault,
           field: 'savingTime',
@@ -412,6 +520,40 @@ export const defaultConfiguration = (
         },
       ],
     },
+    // tikTokSearches: {
+    //   /* this taboule hasn't the CSV allowed nor supported, because
+    //    * it got only a portion of all the searches = the many that
+    //    * have been searched from two users + do not return any rejection */
+    //   columns: [
+    //     {
+    //       ...columnDefault,
+    //       field: 'id',
+    //     },
+    //     {
+    //       ...columnDefault,
+    //       field: 'query',
+    //       renderCell: (params) => {
+    //         return (
+    //           <a
+    //             href={`/search/#${encodeURI(params.formattedValue as string)}`}
+    //           >
+    //             {params.formattedValue}
+    //           </a>
+    //         );
+    //       },
+    //     },
+    //     // {
+    //     //   ...columnDefault,
+    //     //   field: 'thumbnails',
+    //     //   renderCell: cells.avatarCell,
+    //     // },
+    //     {
+    //       ...columnDefault,
+    //       field: 'savingTime',
+    //       renderCell: cells.distanceFromNowCell,
+    //     },
+    //   ],
+    // },
   };
 };
 

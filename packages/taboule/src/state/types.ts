@@ -11,6 +11,7 @@ export const TabouleQueryKey = t.union(
     t.literal('youtubePersonalAds'),
     t.literal('tikTokPersonalHTMLSummary'),
     t.literal('tikTokPersonalSearch'),
+    t.literal('tikTokPersonalNative'),
     t.literal('tikTokSearches'),
   ],
   'TabouleQueryKey'
