@@ -6313,7 +6313,7 @@ __metadata:
     tweetnacl: ^1.0.3
     tweetnacl-util: ^0.13.5
     typescript: ^4.8.4
-    uuid: ^2.0.3
+    uuid: ^9.0.0
     web-vitals: ^2.1.4
     webpack: ^5.74.0
     webpack-bundle-analyzer: ^4.6.1
@@ -8433,7 +8433,7 @@ __metadata:
     tweetnacl-util: ^0.13.5
     typescript: ^4.8.4
     uglifyjs-webpack-plugin: ^2.2.0
-    uuid: ^2.0.3
+    uuid: ^9.0.0
     webpack: ^5.74.0
     webpack-combine-loaders: ^2.0.4
     webpack-dev-server: ^4.11.1
@@ -31174,10 +31174,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"uuid@npm:^2.0.3":
-  version: 2.0.3
-  resolution: "uuid@npm:2.0.3"
-  checksum: 44adb0e235a683005fda9a869ddf2e88decbea082ea6b938e6f21b83147fda494fdc25ed8eba56196c4d5794ffc1c3efa4e3fef3e6205be2ee4084497f434e0f
+"uuid@npm:^9.0.0":
+  version: 9.0.0
+  resolution: "uuid@npm:9.0.0"
+  bin:
+    uuid: dist/bin/uuid
+  checksum: 8dd2c83c43ddc7e1c71e36b60aea40030a6505139af6bee0f382ebcd1a56f6cd3028f7f06ffb07f8cf6ced320b76aea275284b224b002b289f89fe89c389b028
   languageName: node
   linkType: hard
 
