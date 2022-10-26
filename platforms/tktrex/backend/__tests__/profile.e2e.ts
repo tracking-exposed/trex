@@ -23,7 +23,7 @@ import {
 import { HTMLSource } from '@tktrex/shared/parser/source';
 import { toMetadata } from '@tktrex/shared/parser/metadata';
 import { TKParserConfig } from '@tktrex/shared/parser/config';
-
+import { string2Food } from '@shared/utils/food.utils';
 
 describe('Parser: "profile"', () => {
   let appTest: Test;
@@ -99,7 +99,10 @@ describe('Parser: "profile"', () => {
           getContributions: getLastHTMLs(db),
           getMetadata: getMetadata(db),
           saveResults: updateMetadataAndMarkHTML(db),
-          buildMetadata: toMetadata,
+          buildMetadata: (e, m) => ({
+            ...toMetadata(e, m),
+            supporter: string2Food(e.source.html.publicKey),
+          }),
           config: {
             downloads: appTest.config.get('downloads'),
           },

@@ -9,6 +9,7 @@ export const HTML = t.intersection(
       metadataId: t.string,
       blang: t.string,
       href: t.string,
+      selector: t.union([t.string, t.undefined]),
       publicKey: t.string,
       clientTime: date,
       savingTime: date,

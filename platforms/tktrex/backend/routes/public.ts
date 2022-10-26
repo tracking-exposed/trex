@@ -1,7 +1,7 @@
 import createDebug from 'debug';
 import _ from 'lodash';
 import moment from 'moment';
-import automo from '../lib/automo';
+import * as automo from '../lib/automo';
 import CSV from '../lib/CSV';
 import * as params from '../lib/params';
 

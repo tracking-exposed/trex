@@ -1,6 +1,7 @@
 import D from 'debug';
 import _ from 'lodash';
 import {
+  Document,
   MongoClient,
   AggregateOptions,
   CollectionInfo,
@@ -9,6 +10,7 @@ import {
   MongoClientOptions,
   UpdateResult,
   Filter,
+  WithId,
 } from 'mongodb';
 import nconf from 'nconf';
 
@@ -144,19 +146,19 @@ async function deleteMany(
   return mongoc.db().collection(cName).deleteMany(selector);
 }
 
-async function readLimit(
+async function readLimit<T extends Document = any>(
   mongoc: MongoClient,
   cName: string,
-  selector: any,
+  selector: Filter<T>,
   sorter: any,
   limitN: number,
   past: number
-): Promise<any[]> {
+): Promise<Array<WithId<T>>> {
   if (!limitN)
     throw new Error('Not specified the amount of documents expected');
   return mongoc
     .db()
-    .collection(cName)
+    .collection<T>(cName)
     .find(selector)
     .sort(sorter)
     .skip(past || 0)
@@ -164,10 +166,10 @@ async function readLimit(
     .toArray();
 }
 
-async function count(
+async function count<T = any>(
   mongoc: MongoClient,
   cName: string,
-  selector: Filter<any>
+  selector: Filter<T>
 ): Promise<number> {
   const n = await mongoc.db().collection(cName).countDocuments(selector);
   return n;

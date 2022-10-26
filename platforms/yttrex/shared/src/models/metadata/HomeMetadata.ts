@@ -1,6 +1,5 @@
 import * as t from 'io-ts';
-import { date } from 'io-ts-types/lib/date';
-import { HomeN, HomeNatureType } from '../Nature';
+import { HomeN } from '../Nature';
 import { MetadataBase } from './MetadataBase';
 import { ParsedInfo } from './VideoResult';
 

@@ -5,29 +5,29 @@ import { Keypair } from '@shared/models/extension/Keypair';
 import bs58 from '@shared/providers/bs58.provider';
 import {
   GetParserProvider,
-  ParserProvider,
+  ParserProvider
 } from '@shared/providers/parser.provider';
 import { fc } from '@shared/test';
+import {
+  readFixtureJSON,
+  readFixtureJSONPaths
+} from '@shared/test/utils/parser.utils';
 import { foldTEOrThrow } from '@shared/utils/fp.utils';
 import { sleep } from '@shared/utils/promise.utils';
 import { ContributionEventArb } from '@tktrex/shared/arbitraries/ContributionEvent.arb';
 import { TKMetadata } from '@tktrex/shared/models/metadata';
+import { TKParserConfig } from '@tktrex/shared/parser/config';
+import { toMetadata } from '@tktrex/shared/parser/metadata';
 import { parsers } from '@tktrex/shared/parser/parsers';
 import { HTMLSource } from '@tktrex/shared/parser/source';
-import { toMetadata } from '@tktrex/shared/parser/metadata';
+import path from 'path';
 import {
   addDom,
   getLastHTMLs,
   getMetadata,
-  updateMetadataAndMarkHTML,
+  updateMetadataAndMarkHTML
 } from '../../lib/parser';
 import { GetTest, Test } from '../../test/Test';
-import { TKParserConfig } from '@tktrex/shared/parser/config';
-import {
-  readFixtureJSON,
-  readFixtureJSONPaths,
-} from '@shared/test/utils/parser.utils';
-import path from 'path';
 
 const version = '9.9.9.9';
 const researchTag = 'test-research-tag';
@@ -92,10 +92,11 @@ describe('/v2/personal', () => {
   jest.setTimeout(20 * 1000);
 
   describe('GetPersonalByExperimentId', () => {
-    test('succeeds with one metadata', async () => {
+    test('succeeds with one "foryou" metadata', async () => {
       const data = fc.sample(ContributionEventArb, 1).map((d) => ({
         ...d,
-        type: 'video',
+        type: 'foryou',
+        publicKey: keys.publicKey,
         rect: {
           x: 0,
           y: 0,
@@ -156,6 +157,7 @@ describe('/v2/personal', () => {
         },
         metadata: [
           {
+            type: 'foryou',
             author: {
               link: '/@yuuna_1210',
               name: '悠那🌹🌕',
@@ -180,6 +182,13 @@ describe('/v2/personal', () => {
         appTest.config.get('schema').htmls,
         { publicKey: keys.publicKey }
       );
+      await appTest.mongo3.deleteMany(
+        appTest.mongo,
+        appTest.config.get('schema').metadata,
+        {
+          experimentId: experiment.experimentId,
+        }
+      );
     });
   });
 
@@ -195,17 +204,19 @@ describe('/v2/personal', () => {
 
       const native = fixtures.sources[0];
 
-      const data = [{
-        ...native,
-        href: `https://tiktok.com/${authorId}/video/${videoId}`,
-        clientTime: '2022-05-30T13:59:41.603Z',
-        feedCounter: 1,
-        feedId: 'native-feed-id',
-        videoCounter: 1,
-        geoip: null,
-        experimentId: experiment.experimentId,
-        publicKey: keys.publicKey,
-      }];
+      const data = [
+        {
+          ...native,
+          href: `https://tiktok.com/${authorId}/video/${videoId}`,
+          clientTime: '2022-05-30T13:59:41.603Z',
+          feedCounter: 1,
+          feedId: 'native-feed-id',
+          videoCounter: 1,
+          geoip: null,
+          experimentId: experiment.experimentId,
+          publicKey: keys.publicKey,
+        },
+      ];
 
       // create a signature
       const signature = await foldTEOrThrow(
@@ -230,7 +241,7 @@ describe('/v2/personal', () => {
         backInTime: 2,
       });
 
-      await sleep(6 * 1000)
+      await sleep(6 * 1000);
 
       // check data has been produced
       const response = await appTest.app.get(
@@ -249,9 +260,24 @@ describe('/v2/personal', () => {
             videoId,
             nature: { type: 'native', authorId, videoId },
             order: 1,
+            experimentId: experiment.experimentId,
           },
         ],
       });
+
+      await appTest.mongo3.deleteMany(
+        appTest.mongo,
+        appTest.config.get('schema').metadata,
+        {
+          experimentId: experiment.experimentId,
+        }
+      );
+
+      await appTest.mongo3.deleteMany(
+        appTest.mongo,
+        appTest.config.get('schema').htmls,
+        { publicKey: keys.publicKey }
+      );
     });
   });
 });
