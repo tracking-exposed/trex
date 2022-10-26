@@ -25,6 +25,7 @@ import botttsSprites from '@dicebear/avatars-bottts-sprites';
 import Avatars from '@dicebear/avatars';
 import { useHistory } from 'react-router';
 import AddProfileModal from './modals/AddProfileModal';
+import ConfirmationModal from './modals/ConfirmationModal';
 
 const botAvatars = new Avatars(botttsSprites, { r: 50, base64: true });
 
@@ -76,11 +77,21 @@ export const Header: React.FC<HeaderProps> = ({
   const [addProfileDialogOpen, setAddProfileDialogOpen] = React.useState(false);
   const [advancedSettingDialogOpen, setAdvancedSettingDialogOpen] =
     React.useState(false);
+  const [confirmationModalOpen, setConfirmationModalOpen] =
+    React.useState(false);
 
   const avatar = React.useMemo(
     () => botAvatars.create(config.profileName),
     [config.profileName]
   );
+  const [anchorEl, setAnchorEl] = React.useState<HTMLButtonElement | null>(
+    null
+  );
+
+  const handleClick = (event: React.MouseEvent<HTMLButtonElement>): void => {
+    setPopoverOpen(true);
+    setAnchorEl(event.currentTarget);
+  };
 
   return (
     <AppBar
@@ -137,20 +148,25 @@ export const Header: React.FC<HeaderProps> = ({
           </div>
         </Box>
         <Box>
-          <Avatar
-            src={avatar}
-            aria-describedby={popoverId}
-            onClick={() => setPopoverOpen(true)}
-            style={{
-              border: 'solid black 2px',
-              backgroundColor: 'transparent',
-              color: 'black',
-            }}
-          />
+          <button
+            onClick={handleClick}
+            style={{ background: 'none', border: 'none' }}
+          >
+            <Avatar
+              src={avatar}
+              aria-describedby={popoverId}
+              style={{
+                border: 'solid black 2px',
+                backgroundColor: 'transparent',
+                color: 'black',
+              }}
+            />
+          </button>
           <Popover
             elevation={0}
             id={popoverId}
             open={popoverOpen}
+            anchorEl={anchorEl}
             style={{
               top: 70,
             }}
@@ -259,6 +275,9 @@ export const Header: React.FC<HeaderProps> = ({
         onCancel={() => {
           setAdvancedSettingDialogOpen(false);
         }}
+        onCleanFiles={() => {
+          setConfirmationModalOpen(true);
+        }}
       />
       <AddProfileModal
         open={addProfileDialogOpen}
@@ -267,6 +286,14 @@ export const Header: React.FC<HeaderProps> = ({
         onCancel={() => {
           setAddProfileDialogOpen(false);
         }}
+      />
+      <ConfirmationModal
+        open={confirmationModalOpen}
+        onCancel={() => {
+          setConfirmationModalOpen(false);
+        }}
+        onConfigChange={onConfigChange}
+        config={config}
       />
     </AppBar>
   );

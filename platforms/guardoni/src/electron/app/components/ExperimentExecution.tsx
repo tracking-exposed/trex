@@ -89,6 +89,10 @@ const ExperimentExecution: React.FC<ExperimentExecutionProps> = ({
         },
       });
     });
+
+    return () => {
+      ipcRenderer.removeAllListeners(EVENTS.GUARDONI_OUTPUT_EVENT.value);
+    };
   });
 
   return (
@@ -316,6 +320,10 @@ const ExperimentExecutionRoute: React.FC<
       EVENTS.GET_PUBLIC_DIRECTIVE.value,
       match.params.experimentId
     );
+
+    return () => {
+      ipcRenderer.removeAllListeners(EVENTS.GET_PUBLIC_DIRECTIVE.value);
+    };
   }, []);
 
   if (!experiment) {

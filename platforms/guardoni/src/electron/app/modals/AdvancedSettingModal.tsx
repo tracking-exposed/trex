@@ -35,6 +35,14 @@ const useStyles = makeStyles((theme) => ({
     margin: 0,
     marginBottom: theme.spacing(4),
   },
+  extensionContainer: {
+    display: 'flex',
+    justifyContent: 'space-between',
+  },
+  cleanButton: {
+    marginRight: '8px',
+    '&:hover': { backgroundColor: 'transparent' },
+  },
 }));
 
 const AdvancedSettingModal: React.FC<{
@@ -43,12 +51,14 @@ const AdvancedSettingModal: React.FC<{
   platform: PlatformConfig;
   onConfigChange: (c: GuardoniConfig) => void;
   onCancel: () => void;
+  onCleanFiles: () => void;
 }> = ({
   open,
   config: _config,
   platform: _platform,
   onConfigChange,
   onCancel,
+  onCleanFiles,
 }) => {
   const classes = useStyles();
 
@@ -106,7 +116,6 @@ const AdvancedSettingModal: React.FC<{
             <FormHelperText>
               The base path used to compute all the others
             </FormHelperText>
-
             <FormControlLabel
               label="Extension"
               className={classes.formControl}
@@ -129,7 +138,16 @@ const AdvancedSettingModal: React.FC<{
                 />
               }
             />
-            <FormHelperText>The unpacked extension dir</FormHelperText>
+            <div className={classes.extensionContainer}>
+              <FormHelperText>The unpacked extension dir</FormHelperText>
+              <Button
+                className={classes.cleanButton}
+                color="secondary"
+                onClick={() => onCleanFiles()}
+              >
+                Clean Files
+              </Button>
+            </div>
             <FormControlLabel
               label="Chrome Path"
               className={classes.formControl}

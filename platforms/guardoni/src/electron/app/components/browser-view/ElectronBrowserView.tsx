@@ -6,7 +6,6 @@
  * @repo https://github.com/vantezzen/react-electron-browser-view
  */
 import React, { Component } from 'react';
-import ReactDOM from 'react-dom';
 import _ from 'lodash';
 import * as remote from '@electron/remote';
 import {
@@ -41,6 +40,12 @@ export default class ElectronBrowserView extends Component<ElectronBrowserViewPr
   view: BrowserView | null = null;
   track = false;
   c: HTMLDivElement | null = null;
+  container: any;
+
+  constructor(props: ElectronBrowserViewProps) {
+    super(props);
+    this.container = React.createRef();
+  }
 
   componentDidMount(): void {
     const options = {
@@ -72,7 +77,7 @@ export default class ElectronBrowserView extends Component<ElectronBrowserViewPr
 
     // Add event listener alias to keep compatability
     (this.view as any).addEventListener = this.view.webContents.on;
-    void this.view.webContents.loadURL(this.props.src ?? '');
+    if (this.props.src) void this.view.webContents.loadURL(this.props.src);
     this.setDevTools(this.props.devtools ?? false);
 
     if (this.props.onDidAttach) {
@@ -114,7 +119,7 @@ export default class ElectronBrowserView extends Component<ElectronBrowserViewPr
     });
 
     // Get our container Element from the page
-    const container = ReactDOM.findDOMNode(this.c);
+    const container = this.container.current;
     elementResizeEvents.forEach((event) => {
       container?.addEventListener(event, () => this.updateViewBounds());
     });
@@ -177,7 +182,7 @@ export default class ElectronBrowserView extends Component<ElectronBrowserViewPr
     // We can only update our view if there is a container element
     if (this.c) {
       // Get our container Element from the page
-      const container = ReactDOM.findDOMNode(this.c) as Element | null;
+      const container = this.container.current as Element | null;
 
       if (container) {
         const rect = container.getBoundingClientRect();
@@ -205,9 +210,7 @@ export default class ElectronBrowserView extends Component<ElectronBrowserViewPr
   render(): JSX.Element {
     return (
       <div
-        ref={(c) => {
-          this.c = c;
-        }}
+        ref={this.container}
         className={this.props.className ?? ''}
         style={Object.assign(
           {},
