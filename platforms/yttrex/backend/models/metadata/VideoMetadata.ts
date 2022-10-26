@@ -6,6 +6,7 @@ const { supporter, ...videoMetadataProps } = VideoMetadata.type.props;
 export const VideoMetadataDB = t.type(
   {
     ...videoMetadataProps,
+    _id: t.any,
     publicKey: t.string,
     savingTime: date,
     clientTime: date,

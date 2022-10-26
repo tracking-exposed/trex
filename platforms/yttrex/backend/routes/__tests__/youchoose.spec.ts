@@ -3,7 +3,7 @@ jest.mock('../../lib/curly');
 jest.mock('../../lib/ycai');
 
 import { GetTest, Test } from '../../tests/Test';
-import youchoose from '../youchoose';
+import * as youchoose from '../youchoose';
 import * as curly from '../../lib/curly';
 import * as ycai from '../../lib/ycai';
 
@@ -44,7 +44,7 @@ describe('Testing the token request', () => {
     ycaiMock.generateToken.mockResolvedValueOnce(
       'test-token-long-40-chars-for-real-if-had'
     );
-    const { json } = await youchoose.creatorRegister(registerRequest);
+    const { json }: any = await youchoose.creatorRegister(registerRequest);
 
     expect(typeof json.verificationToken).toEqual('string');
     expect(json.verificationToken?.length).toBe(40);

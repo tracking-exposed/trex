@@ -1,3 +1,4 @@
+import automo from '../lib/automo';
 const _ = require('lodash');
 const moment = require('moment');
 const debug = require('debug')('routes:searches');
@@ -5,7 +6,6 @@ const qustr = require('querystring');
 
 const CSV = require('../lib/CSV');
 const params = require('../lib/params');
-const automo = require('../lib/automo');
 
 /* this file have been heavily refactored
  * because between 1.4.x and 1.8.x the search

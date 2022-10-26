@@ -7,13 +7,16 @@ import moment from 'moment';
 import CSV from '../lib/CSV';
 import * as utils from '../lib/utils';
 import * as express from 'express';
+import { ListMetadataResponse } from '@yttrex/shared/endpoints/v2/metadata.endpoints';
 
 const debug = D('routes:metadata');
 
 // This variables is used as cap in every readLimit below
 const PUBLIC_AMOUNT_ELEMS = 100;
 
-const listMetadata = async (req: express.Request): Promise<any> => {
+const listMetadata = async (
+  req: express.Request
+): Promise<{ json: ListMetadataResponse } | { headers: any; text: string }> => {
   const {
     query: {
       publicKey,
@@ -47,13 +50,19 @@ const listMetadata = async (req: express.Request): Promise<any> => {
       amount,
       skip,
     })
-    .then((mm) =>
-      mm.map(({ publicKey, _id, id, ...m }) => ({
-        ...m,
-        id: id.substring(0, 20),
-        supporter: utils.string2Food(publicKey)
-      }))
-    );
+    .then(({ data, totals }) => ({
+      totals,
+      data: data.map(
+        ({ publicKey, _id, id, ...m }) =>
+          ({
+            ...m,
+            id: id.substring(0, 20),
+            savingTime: m.savingTime.toISOString() as any,
+            clientTime: m.clientTime.toISOString() as any,
+            supporter: utils.string2Food(publicKey),
+          } as any)
+      ),
+    }));
 
   debug(
     'Returning metadata by experimentId %s, %d evidences',

@@ -8,7 +8,7 @@ const debug = D('parsers:shared');
 export function getUUID(
   url: string,
   type: any,
-  downloads: string | undefined
+  downloads: string | undefined,
 ): string | null {
   const ui = new URL(url);
   const fullpath = ui.pathname;
@@ -36,7 +36,7 @@ export function getUUID(
 
 export async function download(
   filename: string,
-  url: string
+  url: string,
 ): Promise<{
   downloaded: boolean;
   reason: number;

@@ -10,10 +10,10 @@ const debug = D('parser:search');
 /* this is returning a bunch of native information,
  * perhaps might be splitted in appropriate files.
  * videoId, error messages, comment disabled, etc */
-const forYou: ParserFn<HTMLSource, any, TKParserConfig> = async (
+const forYou: ParserFn<HTMLSource, any, TKParserConfig> = async(
   envelop,
   previous,
-  config
+  config,
 ) => {
   if (previous.nature.type !== 'foryou') return null;
 

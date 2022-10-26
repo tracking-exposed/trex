@@ -1,9 +1,9 @@
+import automo from '../lib/automo';
+
 const _ = require('lodash');
 const moment = require('moment');
 const debug = require('debug')('routes:experiments');
 const nconf = require('nconf');
-
-const automo = require('../lib/automo');
 const params = require('../lib/params');
 const CSV = require('../lib/CSV');
 const mongo3 = require('@shared/providers/mongo.provider');

@@ -7,10 +7,7 @@ jest.mock('fetch-opengraph');
 import { fc } from '@shared/test';
 import moment from 'moment';
 import _ from 'lodash';
-import {
-  ParsedInfoArb,
-  VideoMetadataArb,
-} from '../../tests/arbitraries/Metadata.arb';
+import { VideoMetadataArb } from '../../tests/arbitraries/Metadata.arb';
 import { GetTest, Test } from '../../tests/Test';
 import * as utils from '../../lib/utils';
 
@@ -62,9 +59,10 @@ describe('Metadata API', () => {
     });
 
     it('succeeds with metadata when filtering by "researchTag"', async () => {
+      const total = 100;
       const amount = 10;
 
-      const metadata = fc.sample(VideoMetadataArb, 100).map((m) => ({
+      const metadata = fc.sample(VideoMetadataArb, total).map((m) => ({
         ...m,
         savingTime: new Date(),
         researchTag,
@@ -104,8 +102,8 @@ describe('Metadata API', () => {
         })
         .expect(200);
 
-      expect(body.length).toBe(expectedMetadata.length);
-      expect(body).toMatchObject(expectedMetadata);
+      expect(body.data.length).toBe(expectedMetadata.length);
+      expect(body.data).toMatchObject(expectedMetadata);
 
       await test.mongo3.deleteMany(
         test.mongo,
@@ -119,10 +117,11 @@ describe('Metadata API', () => {
     });
 
     it('succeeds with metadata', async () => {
+      const total = 100;
       const experimentId = fc.sample(fc.uuid(), 1)[0];
       const amount = 10;
 
-      const metadata = fc.sample(VideoMetadataArb, 100).map((m) => ({
+      const metadata = fc.sample(VideoMetadataArb, total).map((m) => ({
         ...m,
         savingTime: new Date(),
         experimentId,
@@ -162,8 +161,10 @@ describe('Metadata API', () => {
         })
         .expect(200);
 
-      expect(body.length).toBe(expectedMetadata.length);
-      expect(body).toMatchObject(expectedMetadata);
+      expect(body.data).toMatchObject(expectedMetadata);
+      expect(body.totals).toMatchObject({
+        video: total,
+      });
 
       await test.mongo3.deleteMany(
         test.mongo,

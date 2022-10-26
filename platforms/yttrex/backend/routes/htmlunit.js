@@ -1,7 +1,7 @@
+import automo from '../lib/automo';
+
 const _ = require('lodash');
 const debug = require('debug')('routes:htmlunit');
-
-const automo = require('../lib/automo');
 
 async function unitById(req) {
     const mId = req.params.metadataId;

@@ -13,12 +13,12 @@ const debug = trexLogger.extend('parser:profile');
 
 function getFullProfileMetadata(
   renod: ParentNode,
-  order: any
+  order: any,
 ): ProfileResult | null {
   const vlink = renod.querySelector('a[href^="https://www.tiktok.com/@"]');
   const vhref = vlink?.getAttribute('href');
   const vidnat = throwEitherError(
-    getNatureByHref(vhref as any)
+    getNatureByHref(vhref as any),
   ) as NativeVideoN;
 
   const titleel = renod.querySelector('a[title]');
@@ -43,9 +43,9 @@ function getFullProfileMetadata(
 /* this is returning a bunch of native information,
  * perhaps might be splitted in appropriate files.
  * videoId, error messages, comment disabled, etc */
-const profile: ParserFn<HTMLSource, any, TKParserConfig> = async (
+const profile: ParserFn<HTMLSource, any, TKParserConfig> = async(
   envelop,
-  previous
+  previous,
 ) => {
   if (previous.nature.type !== 'profile') return null;
 
@@ -53,11 +53,11 @@ const profile: ParserFn<HTMLSource, any, TKParserConfig> = async (
        the search selector is not per video, but per 'body' */
   const descs = envelop.jsdom.querySelectorAll('[data-e2e="user-post-item"]');
   const results = _.compact(
-    _.map(descs, function (elem, i) {
+    _.map(descs, function(elem, i) {
       return elem?.parentNode
         ? getFullProfileMetadata(elem.parentNode, i + 1)
         : null;
-    })
+    }),
   );
 
   const retval: any = {};
@@ -70,7 +70,7 @@ const profile: ParserFn<HTMLSource, any, TKParserConfig> = async (
     const errmsg = 'No results found';
     const h2 = envelop.jsdom.querySelectorAll('h2');
     // there are various 'h2' but only one can be an error
-    _.each(h2, function (h) {
+    _.each(h2, function(h) {
       if (errmsg === h.textContent) {
         retval.error = errmsg;
         retval.message = h.parentNode?.querySelector('p')?.textContent;

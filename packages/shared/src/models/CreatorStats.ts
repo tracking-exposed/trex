@@ -23,7 +23,8 @@ export const CreatorStats = t.strict(
     authorSource: t.string,
     overflow: t.boolean,
     total: t.number,
-    stripped: t.number,
+    pagination: t.any,
+    stripped: t.union([t.number, t.undefined]),
     content: t.array(CreatorStatContent),
   },
   'CreatorStats'

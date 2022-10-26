@@ -8,7 +8,6 @@ const debug = D('routes:personal');
 
 const CSV_MAX_SIZE = 9000;
 
-
 async function getPersonal(req): Promise<any> {
   const DEFMAX = 100;
   const k = req.params.publicKey;
@@ -226,7 +225,7 @@ const getPersonalByExperimentId = async (
 
   // debug('Html ids %O', htmlIds);
 
-  const metadata = await automo.getMetadataByFilter(
+  const { data: metadata } = await automo.getMetadataByFilter(
     {
       id: {
         $in: htmlIds,
