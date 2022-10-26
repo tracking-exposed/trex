@@ -12,6 +12,7 @@ export const toMetadata: BuildMetadataFn<HTMLSource, TKMetadata, TKParsers> = (
   if (!entry?.findings?.nature) return null;
 
   let metadata: any = {
+    id: entry.source.html.metadataId,
     clientTime: entry.source.html.clientTime,
     href: entry.source.html.href,
     thumbnails: [],
@@ -95,7 +96,6 @@ export const toMetadata: BuildMetadataFn<HTMLSource, TKMetadata, TKParsers> = (
   /* fixed fields */
   metadata.savingTime = entry.source.html.savingTime;
   metadata.clientTime = entry.source.html.clientTime;
-  metadata.id = entry.source.html.id;
   metadata.publicKey = entry.source.html.publicKey;
   metadata.timelineId = entry.source.html.timelineId;
   metadata.order = entry.source.html.n?.[0];

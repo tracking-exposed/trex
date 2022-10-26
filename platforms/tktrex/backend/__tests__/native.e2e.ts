@@ -1,7 +1,7 @@
 import {
   readFixtureJSON,
   readFixtureJSONPaths,
-  runParserTest
+  runParserTest,
 } from '@shared/test/utils/parser.utils';
 import axiosMock from '@shared/test/__mocks__/axios.mock';
 import { string2Food } from '@shared/utils/food.utils';
@@ -21,7 +21,7 @@ import {
   getMetadata,
   getMetadataSchema,
   getSourceSchema,
-  updateMetadataAndMarkHTML
+  updateMetadataAndMarkHTML,
 } from '../lib/parser';
 import { GetTest, Test } from '../test/Test';
 
@@ -75,6 +75,7 @@ describe('Parser: "native"', () => {
           html: {
             ...s,
             id: uuid(),
+            metadataId: uuid(),
             clientTime: parseISO(s.clientTime ?? new Date().toISOString()),
             savingTime: subMinutes(new Date(), 2),
           },

@@ -194,8 +194,11 @@ async function processEvents(req: express.Request): Promise<{
       });
 
       const metadataId = getMetadataId.hash({
-        htmlId,
-        clientTime: body.clientTime,
+        ...timelineId,
+        feedCounter: body.feedCounter,
+        videoCounter: body.videoCounter,
+        href: body.href,
+        nature,
       });
 
       /* to eventually verify integrity of collection we're saving these incremental

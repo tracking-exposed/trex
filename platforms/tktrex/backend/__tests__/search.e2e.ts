@@ -75,6 +75,7 @@ describe('Parser: "search"', () => {
           html: {
             ...s,
             id: uuid(),
+            metadataId: uuid(),
             clientTime: parseISO(s.clientTime ?? new Date().toISOString()),
             savingTime: subMinutes(new Date(), 2),
           },
