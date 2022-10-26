@@ -1,7 +1,6 @@
 import * as t from 'io-ts';
 import { PathReporter } from 'io-ts/lib/PathReporter';
 import { isLeft } from 'fp-ts/lib/Either';
-import $ from 'jquery';
 import { isEmpty } from './utils/common.utils';
 import log from './logger';
 import { bo } from './utils/browser.utils';
@@ -81,14 +80,14 @@ export const update = async <T>(
   updater: T | ((x: unknown) => T)
 ): Promise<T> => {
   log.info(`updating "${key}" in storage`);
-  const oldValue = await getP(key);
+  const oldValue = (await getP(key)) as {};
 
   if (updater instanceof Function) {
     const newValue = updater(oldValue);
     return setP(key, newValue);
   }
 
-  return setP(key, $.extend(true, oldValue, updater));
+  return setP(key, { ...oldValue, ...updater });
 };
 
 export const remove = (key: string): Promise<unknown> => {

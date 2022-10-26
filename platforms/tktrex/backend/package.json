@@ -29,7 +29,6 @@
     "debug": "^4.3.4",
     "express": "^4.17.2",
     "food-words": "^1.1.0",
-    "jquery": "^3.6.1",
     "lodash": "^4.17.21",
     "moment": "^2.29.4",
     "mongodb": "^4.3.1",
