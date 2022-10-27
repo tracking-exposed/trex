@@ -242,6 +242,7 @@ describe('Guardoni', () => {
           status: 'exist',
           experimentId: fc.sample(fc.uuid(), 1)[0],
           since: new Date().toISOString(),
+          steps: []
         },
       });
       axiosMock.request.mockResolvedValueOnce({

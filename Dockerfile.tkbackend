@@ -1,0 +1,48 @@
+FROM node:16.14-slim as build
+
+WORKDIR /app
+
+COPY .yarn/ .yarn/
+
+COPY package.json .
+COPY yarn.lock .
+COPY .yarnrc.yml .
+COPY tsconfig.json .
+
+COPY packages/shared ./packages/shared
+
+COPY platforms/tktrex/shared ./platforms/tktrex/shared
+COPY platforms/tktrex/backend ./platforms/tktrex/backend
+
+RUN yarn install
+
+RUN yarn tk:backend build
+
+FROM node:16.14-slim as production
+
+WORKDIR /app
+
+COPY package.json /app/package.json
+COPY .yarnrc.yml /app/.yarnrc.yml
+COPY tsconfig.json /app/tsconfig.json
+
+# yarn cache
+COPY --from=build /app/.yarn /app/.yarn
+
+# packages
+COPY --from=build /app/packages/shared/build /app/packages/shared/build
+
+# YT API backend
+COPY --from=build /app/platforms/tktrex/shared/build /app/platforms/tktrex/shared/build
+COPY --from=build /app/platforms/tktrex/backend/package.json /app/platforms/tktrex/backend/package.json
+COPY --from=build /app/platforms/tktrex/backend/config /app/platforms/tktrex/backend/config
+COPY --from=build /app/platforms/tktrex/backend/build /app/platforms/tktrex/backend/build
+
+WORKDIR /app/platforms/tktrex/backend
+
+RUN yarn workspaces focus --production
+
+ENV key=fuffa
+ENV DEBUG=@trex*
+
+CMD ["yarn", "start"]

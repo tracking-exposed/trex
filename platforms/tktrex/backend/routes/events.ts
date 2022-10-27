@@ -51,7 +51,7 @@ function processHeaders(
 }
 
 let last: any = null;
-function getMirror(req: express.Request) {
+function getMirror(req: express.Request): any {
   if (!security.checkPassword(req)) return security.authError;
 
   if (last) {
@@ -66,7 +66,7 @@ function getMirror(req: express.Request) {
 
   return { json: { content: null } };
 }
-function appendLast(req: express.Request) {
+function appendLast(req: express.Request): void {
   /* this is used by getMirror, to mirror what the server is getting
    * used by developers with password */
   const MAX_STORED_CONTENT = 15;
@@ -76,7 +76,7 @@ function appendLast(req: express.Request) {
   last.push(_.pick(req, ['headers', 'body']));
 }
 
-function headerError(headers: express.Request['headers']) {
+function headerError(headers: express.Request['headers']): any {
   debug('Error detected: %s', headers.error);
   return {
     json: {
@@ -198,7 +198,7 @@ async function processEvents(req: express.Request): Promise<{
 
       /* to eventually verify integrity of collection we're saving these incremental
        * numbers that might help to spot if client-side-extension are missing somethng */
-      const optionalNumbers = [];
+      const optionalNumbers: any[] = [];
       if (_.isInteger(body.videoCounter))
         optionalNumbers.push(body.videoCounter);
       if (_.isInteger(i)) optionalNumbers.push(i);
@@ -215,7 +215,7 @@ async function processEvents(req: express.Request): Promise<{
 
       const html: HTML = {
         id: htmlId as any,
-        metadataId: metadataId,
+        metadataId,
         blang: '',
         nature,
         type: body.type,
