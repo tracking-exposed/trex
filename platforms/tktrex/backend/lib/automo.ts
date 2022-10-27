@@ -4,16 +4,48 @@
  *
  * The module mongo3.js MUST be used only in special cases where concurrency wants to be controlled
  */
-const _ = require('lodash');
-const nconf = require('nconf');
-const debug = require('debug')('lib:automo');
-// const debugLite = require('debug')('lib:automo:L');
-const moment = require('moment');
+import { Supporter } from '@shared/models/Supporter';
+import * as mongo3 from '@shared/providers/mongo.provider';
+import * as utils from '@shared/utils/food.utils';
+import {
+  ForYouType,
+  NativeType,
+  ProfileType,
+  SearchType,
+} from '@tktrex/shared/models/Nature';
+import D from 'debug';
+import { UUID } from 'io-ts-types/lib/UUID';
+import _ from 'lodash';
+import moment from 'moment';
+import { DeleteResult, Filter, MongoClient, WithId } from 'mongodb';
+import nconf from 'nconf';
+import { HTML } from '../models/HTML';
+import { TKMetadataDB } from '../models/metadata';
 
-const utils = require('@shared/utils/food.utils');
-const mongo3 = require('@shared/providers/mongo.provider');
+const debug = D('lib:automo');
 
-async function getPersonalTableData(publicKey, filter, sync) {
+interface Options {
+  skip: number;
+  amount: number;
+}
+
+async function getPersonalTableData(
+  publicKey: string,
+  filter: Filter<any>,
+  sync: any
+): Promise<
+  | { json: { message: string; error: boolean } }
+  | {
+      counters: {
+        metadata: number;
+        full: number;
+        htmlavail: number;
+      };
+      htmls: any[];
+      metadata: any[];
+      supporter: Supporter;
+    }
+> {
   /* this function wraps all the 'personal' page 
        connection. It return a structure compatible with Taboule
        and accept filter+sync information. It also validate
@@ -36,20 +68,32 @@ async function getPersonalTableData(publicKey, filter, sync) {
   if (!supporter || !supporter.publicKey)
     throw new Error('Authentication failure');
 
-  const total = await mongo3.count(mongoc, nconf.get('schema').metadata, {
-    publicKey: supporter.publicKey,
-    ...filter,
-  });
+  const total = await mongo3.count<TKMetadataDB>(
+    mongoc,
+    nconf.get('schema').metadata,
+    {
+      publicKey: supporter.publicKey,
+      ...filter,
+    }
+  );
 
-  const full = await mongo3.count(mongoc, nconf.get('schema').full, {
-    publicKey: supporter.publicKey,
-  });
+  const full = await mongo3.count<TKMetadataDB>(
+    mongoc,
+    nconf.get('schema').full,
+    {
+      publicKey: supporter.publicKey,
+    }
+  );
 
-  const htmlavail = await mongo3.count(mongoc, nconf.get('schema').htmls, {
-    publicKey: supporter.publicKey,
-  });
+  const htmlavail = await mongo3.count<TKMetadataDB>(
+    mongoc,
+    nconf.get('schema').htmls,
+    {
+      publicKey: supporter.publicKey,
+    }
+  );
 
-  const htmls = []; /* await mongo3.readLimit(mongoc,
+  const htmls: any[] = []; /* await mongo3.readLimit(mongoc,
         nconf.get('schema').htmls, {
             publicKey: supporter.publicKey,
         }, { savingTime: -1 }, 10, 0); */
@@ -94,7 +138,7 @@ async function getPersonalTableData(publicKey, filter, sync) {
   };
 }
 
-async function getSupporterByPublicKey(publicKey) {
+async function getSupporterByPublicKey(publicKey: string): Promise<Supporter> {
   const mongoc = await mongo3.clientConnect({});
   const supporter = await mongo3.readOne(
     mongoc,
@@ -105,13 +149,16 @@ async function getSupporterByPublicKey(publicKey) {
   return supporter;
 }
 
-async function getMetadataByPublicKey(publicKey, options) {
+async function getMetadataByPublicKey(
+  publicKey: string,
+  options: Options
+): Promise<{ supporter: Supporter; metadata: TKMetadataDB[] }> {
   const mongoc = await mongo3.clientConnect({});
   const supporter = await getSupporterByPublicKey(publicKey);
 
   if (!supporter) throw new Error('publicKey do not match any user');
 
-  const metadata = await mongo3.readLimit(
+  const metadata = await mongo3.readLimit<TKMetadataDB>(
     mongoc,
     nconf.get('schema').metadata,
     { publicKey: supporter.publicKey },
@@ -124,8 +171,36 @@ async function getMetadataByPublicKey(publicKey, options) {
   return { supporter, metadata };
 }
 
-async function getMetadataByFilter(filter, options) {
+async function getMetadataByFilter(
+  filter: Filter<TKMetadataDB>,
+  options: Options
+): Promise<{ totals: any; data: TKMetadataDB[] }> {
   const mongoc = await mongo3.clientConnect({});
+
+  const totalNative = await mongo3.count(mongoc, nconf.get('schema').metadata, {
+    ...filter,
+    type: NativeType.value,
+  });
+
+  const totalSearch = await mongo3.count(mongoc, nconf.get('schema').metadata, {
+    ...filter,
+    type: SearchType.value,
+  });
+
+  const totalForYou = await mongo3.count(mongoc, nconf.get('schema').metadata, {
+    ...filter,
+    type: ForYouType.value,
+  });
+
+  const totalProfile = await mongo3.count(
+    mongoc,
+    nconf.get('schema').metadata,
+    {
+      ...filter,
+      type: ProfileType.value,
+    }
+  );
+
   const metadata = await mongo3.readLimit(
     mongoc,
     nconf.get('schema').metadata,
@@ -136,10 +211,21 @@ async function getMetadataByFilter(filter, options) {
   );
 
   await mongoc.close();
-  return metadata;
+  return {
+    data: metadata,
+    totals: {
+      foryou: totalForYou,
+      native: totalNative,
+      search: totalSearch,
+      profile: totalProfile,
+    },
+  };
 }
 
-async function getMetadataFromAuthor(filter, options) {
+async function getMetadataFromAuthor(
+  filter: Filter<any>,
+  options: Options
+): Promise<any> {
   const mongoc = await mongo3.clientConnect({});
 
   const sourceVideo = await mongo3.readOne(
@@ -174,7 +260,10 @@ async function getMetadataFromAuthor(filter, options) {
   };
 }
 
-async function getRelatedByWatcher(publicKey, options) {
+async function getRelatedByWatcher(
+  publicKey: string,
+  options: Filter<any>
+): Promise<any> {
   const mongoc = await mongo3.clientConnect({});
 
   const supporter = await mongo3.readOne(
@@ -203,7 +292,10 @@ async function getRelatedByWatcher(publicKey, options) {
   return related;
 }
 
-async function getVideosByPublicKey(publicKey, filter) {
+async function getVideosByPublicKey(
+  publicKey: string,
+  filter: Filter<any>
+): Promise<any> {
   const mongoc = await mongo3.clientConnect({});
 
   const supporter = await mongo3.readOne(
@@ -226,7 +318,7 @@ async function getVideosByPublicKey(publicKey, filter) {
   return matches;
 }
 
-async function getFirstVideos(when, options) {
+async function getFirstVideos(when: Date, options: Options): Promise<any[]> {
   // expected when to be a moment(), TODO assert when.isValid()
   // function used from routes/rsync
   const mongoc = await mongo3.clientConnect({});
@@ -242,7 +334,10 @@ async function getFirstVideos(when, options) {
   return selected;
 }
 
-async function deleteEntry(publicKey, id) {
+async function deleteEntry(
+  publicKey: string,
+  id: UUID
+): Promise<{ htmls: DeleteResult; metadata: DeleteResult }> {
   const mongoc = await mongo3.clientConnect({});
   const supporter = await mongo3.readOne(
     mongoc,
@@ -267,7 +362,10 @@ async function deleteEntry(publicKey, id) {
   return { htmls, metadata };
 }
 
-async function getRelatedByVideoId(videoId, options) {
+async function getRelatedByVideoId(
+  videoId: string,
+  options: Options
+): Promise<any[]> {
   const mongoc = await mongo3.clientConnect({});
   const related = await mongo3.aggregate(mongoc, nconf.get('schema').metadata, [
     { $match: { videoId } },
@@ -303,7 +401,7 @@ async function getRelatedByVideoId(videoId, options) {
   });
 }
 
-async function write(where, what) {
+async function write(where: any, what: any): Promise<any> {
   const mongoc = await mongo3.clientConnect({});
   try {
     await mongo3.insertMany(mongoc, where, what);
@@ -317,7 +415,7 @@ async function write(where, what) {
   }
 }
 
-async function tofu(publicKey, version) {
+async function tofu(publicKey: string, version: string): Promise<Supporter> {
   const mongoc = await mongo3.clientConnect({});
 
   let supporter = await mongo3.readOne(mongoc, nconf.get('schema').supporters, {
@@ -348,7 +446,11 @@ async function tofu(publicKey, version) {
   return supporter;
 }
 
-async function getLastHTMLs(filter, skip, limit) {
+async function getLastHTMLs(
+  filter: Filter<HTML>,
+  skip: number,
+  limit: number
+): Promise<{ overflow: boolean; content: HTML[] }> {
   const HARDCODED_LIMIT = 20;
   const mongoc = await mongo3.clientConnect({});
 
@@ -377,7 +479,7 @@ async function getLastHTMLs(filter, skip, limit) {
   };
 }
 
-async function markHTMLsUnprocessable(htmls) {
+async function markHTMLsUnprocessable(htmls: HTML[]): Promise<void> {
   const mongoc = await mongo3.clientConnect({});
   const ids = _.map(htmls, 'id');
   const r = await mongo3.updateMany(
@@ -397,8 +499,12 @@ async function markHTMLsUnprocessable(htmls) {
   await mongoc.close();
 }
 
-async function createMetadataEntry(mongoc, html, newSection) {
-  const exists = {
+async function createMetadataEntry(
+  mongoc: MongoClient,
+  html: HTML,
+  newSection: Partial<TKMetadataDB>
+): Promise<TKMetadataDB> {
+  const exists: any = {
     publicKey: html.publicKey,
     savingTime: html.savingTime,
     version: 3,
@@ -409,8 +515,15 @@ async function createMetadataEntry(mongoc, html, newSection) {
   return exists;
 }
 
-async function updateMetadata(html, newsection) {
-  async function markHTMLandClose(mongoc, html, retval) {
+async function updateMetadata(
+  html: HTML,
+  newsection: any
+): Promise<{ what: 'created' | 'duplicated' | 'not an ID' | 'updated' }> {
+  async function markHTMLandClose<T>(
+    mongoc: MongoClient,
+    html: HTML,
+    retval: T
+  ): Promise<T> {
     await mongo3.updateOne(
       mongoc,
       nconf.get('schema').htmls,
@@ -511,10 +624,13 @@ async function updateMetadata(html, newsection) {
   return await markHTMLandClose(mongoc, html, { what: 'duplicated' });
 }
 
-async function getRandomRecent(minTime, maxAmount) {
+async function getRandomRecent(
+  minTime: Date,
+  maxAmount: number
+): Promise<Array<WithId<Supporter>>> {
   const mongoc = await mongo3.clientConnect({});
 
-  const supporters = await mongo3.readLimit(
+  const supporters = await mongo3.readLimit<Supporter>(
     mongoc,
     nconf.get('schema').supporters,
     {
@@ -525,7 +641,7 @@ async function getRandomRecent(minTime, maxAmount) {
     0
   );
 
-  const validExamples = [];
+  const validExamples: any[] = [];
   for (const supporter of supporters) {
     const i = await mongo3.count(mongoc, nconf.get('schema').metadata, {
       publicKey: supporter.publicKey,
@@ -538,14 +654,26 @@ async function getRandomRecent(minTime, maxAmount) {
   return validExamples;
 }
 
-async function getMixedDataSince(schema, since, maxAmount) {
+async function getMixedDataSince(
+  schema: string,
+  since: Date,
+  maxAmount: number
+): Promise<
+  Array<{
+    template: string;
+    message: string;
+    subject: string;
+    id: string;
+    timevar: Date;
+  }>
+> {
   const mongoc = await mongo3.clientConnect({});
-  const retContent = [];
+  const retContent: any[] = [];
 
   for (const cinfo of schema) {
-    const columnName = _.first(cinfo);
-    const fields = _.nth(cinfo, 1);
-    const timevar = _.last(cinfo);
+    const columnName: any = _.first(cinfo);
+    const fields: any = _.nth(cinfo, 1);
+    const timevar: any = _.last(cinfo);
     const filter = _.set({}, timevar, { $gt: since });
 
     /* it prefer the last samples, that's wgy the sort -1 */
@@ -600,9 +728,13 @@ async function getMixedDataSince(schema, since, maxAmount) {
   return retContent;
 }
 
-async function getArbitrary(filter, amount, skip) {
+async function getArbitrary(
+  filter: Filter<any>,
+  amount: number,
+  skip: number
+): Promise<Array<WithId<TKMetadataDB>>> {
   const mongoc = await mongo3.clientConnect({});
-  const r = await mongo3.readLimit(
+  const r = await mongo3.readLimit<TKMetadataDB>(
     mongoc,
     nconf.get('schema').metadata,
     filter,
@@ -616,8 +748,7 @@ async function getArbitrary(filter, amount, skip) {
   return r;
 }
 
-module.exports = {
-  /* used by routes/personal */
+export {
   getPersonalTableData,
   getMetadataByPublicKey,
   getRelatedByWatcher,

@@ -8,9 +8,9 @@ import { SearchMetadata, SearchMetadataResult } from './SearchMetadata';
 
 export const TKMetadata = t.union(
   [
+    SearchMetadata,
     ForYouVideoMetadata,
     FollowingVideoMetadata,
-    SearchMetadata,
     NativeMetadata,
     ProfileMetadata,
   ],

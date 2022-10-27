@@ -1,10 +1,5 @@
-import * as utils from '@shared/utils/food.utils';
-import {
-  NativeMetadata,
-  ProfileMetadata,
-  SearchMetadata,
-  TKMetadata,
-} from '@tktrex/shared/models/metadata';
+import { TKMetadata } from '@tktrex/shared/models';
+import { NativeMetadata, ProfileMetadata, SearchMetadata } from '@tktrex/shared/models/metadata';
 import { Nature } from '@tktrex/shared/models/Nature';
 import { formatDistance } from 'date-fns';
 import D from 'debug';
@@ -74,7 +69,10 @@ interface FlattenSearch {
   tags: string;
 }
 
-export function flattenSearch(m: SearchMetadata, shared: any): FlattenSearch[] {
+export function flattenSearch(
+  m: SearchMetadata,
+  shared: any
+): FlattenSearch[] {
   return (m.results || []).reduce<FlattenSearch[]>((acc, result, order) => {
     const thumbfile = m.thumbnails?.length
       ? m.thumbnails[order]?.filename
@@ -157,14 +155,12 @@ interface FlattenNative {
 
 export function flattenNative(
   {
-    _id,
     id,
     nature: { videoId, authorId },
     music,
     author,
     metrics,
     hashtags,
-    publicKey,
     ...datum
   }: NativeMetadata,
   shared: any
@@ -203,7 +199,7 @@ function pickFeedFields(metae: any): any {
 /**
  * */
 function unrollNested(
-  metadata: TKMetadata[],
+  metadata: TKMetadata.TKMetadata[],
   options: { type: Nature['type']; private?: boolean; experiment?: boolean }
 ): any[] {
   return pipe(
@@ -214,7 +210,7 @@ function unrollNested(
       if (m.type !== options.type) return O.none;
 
       const shared: any = {
-        pseudo: utils.string2Food(m.publicKey),
+        pseudo: m.supporter,
         metadataId: m.id.substring(0, 8),
         savingTime: m.savingTime,
       };

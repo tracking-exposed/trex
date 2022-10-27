@@ -28,10 +28,9 @@ describe('lib/CSV.ts', () => {
     test('should return flatten searches without "researchTag" nor "experimentId"', () => {
       const resultsCount = 10;
       const searchCount = 2;
-      const searches = fc.sample(
-        SearchMetaDataArb({ results: resultsCount }),
-        searchCount
-      );
+      const searches = fc
+        .sample(SearchMetaDataArb({ results: resultsCount }), searchCount)
+        .map((s) => ({ ...s, publicKey: '' }));
 
       const results = CSV.unrollNested(searches, { type: 'search' });
       expect(results).toHaveLength(resultsCount * searchCount);
@@ -53,7 +52,7 @@ describe('lib/CSV.ts', () => {
       const experimentId = 'experiment-id';
       const searches = fc
         .sample(SearchMetaDataArb({ results: resultsCount }), searchCount)
-        .map((s) => ({ ...s, researchTag, experimentId }));
+        .map((s) => ({ ...s, publicKey: '', researchTag, experimentId }));
 
       const results = CSV.unrollNested(searches, {
         type: 'search',
@@ -82,7 +81,10 @@ describe('lib/CSV.ts', () => {
     test('should return flatten native without "researchTag" nor "experimentId"', () => {
       const resultsCount = 1;
       const metadataCount = 2;
-      const searches = fc.sample(NativeMetadataArb, metadataCount);
+      const searches = fc.sample(NativeMetadataArb, metadataCount).map((s) => ({
+        ...s,
+        publicKey: '',
+      }));
 
       const results = CSV.unrollNested(searches, { type: 'native' });
       expect(results).toHaveLength(resultsCount * metadataCount);
@@ -104,7 +106,7 @@ describe('lib/CSV.ts', () => {
       const experimentId = 'experiment-id';
       const searches = fc
         .sample(NativeMetadataArb, metadataCount)
-        .map((s) => ({ ...s, researchTag, experimentId }));
+        .map((s) => ({ ...s, publicKey: '', researchTag, experimentId }));
 
       const results = CSV.unrollNested(searches, {
         type: 'native',
