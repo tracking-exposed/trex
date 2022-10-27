@@ -8,11 +8,25 @@ export const SearchType = t.literal('search');
 export const NativeType = t.literal('native');
 export const ProfileType = t.literal('profile');
 
+export const NatureType = t.union(
+  [
+    ForYouType,
+    FollowingType,
+    CreatorType,
+    VideoType,
+    SearchType,
+    NativeType,
+    ProfileType,
+  ],
+  'NatureType'
+);
+export type NatureType = t.TypeOf<typeof NatureType>;
+
 export const ForYouN = t.strict(
   {
     type: ForYouType,
   },
-  'ForYouN',
+  'ForYouN'
 );
 export type ForYouN = t.TypeOf<typeof ForYouN>;
 
@@ -20,7 +34,7 @@ export const FollowingN = t.type(
   {
     type: FollowingType,
   },
-  'FollowingN',
+  'FollowingN'
 );
 
 export type FollowingN = t.TypeOf<typeof FollowingN>;
@@ -31,7 +45,7 @@ export const VideoN = t.type(
     videoId: t.string,
     authorId: t.string,
   },
-  'VideoN',
+  'VideoN'
 );
 
 export type VideoN = t.TypeOf<typeof VideoN>;
@@ -41,7 +55,7 @@ export const SearchN = t.strict(
     type: SearchType,
     query: t.union([t.string, t.null]),
   },
-  'SearchNature',
+  'SearchNature'
 );
 export type SearchN = t.TypeOf<typeof SearchN>;
 
@@ -51,7 +65,7 @@ export const NativeVideoN = t.strict(
     videoId: t.string,
     authorId: t.string,
   },
-  'VideoNature',
+  'VideoNature'
 );
 export type NativeVideoN = t.TypeOf<typeof NativeVideoN>;
 
@@ -60,7 +74,7 @@ export const ProfileN = t.type(
     type: t.union([t.literal('creator'), t.literal('profile')]),
     creatorName: t.string,
   },
-  'ProfileN',
+  'ProfileN'
 );
 
 export type ProfileN = t.TypeOf<typeof ProfileN>;
@@ -70,13 +84,13 @@ export const HashtagsN = t.type(
     type: t.literal('tag'),
     hashtag: t.string,
   },
-  'HashtagN',
+  'HashtagN'
 );
 export type HashtagsN = t.TypeOf<typeof HashtagsN>;
 
 export const Nature = t.union(
   [ForYouN, FollowingN, VideoN, SearchN, ProfileN, HashtagsN, NativeVideoN],
-  'Nature',
+  'Nature'
 );
 
 export type Nature = t.TypeOf<typeof Nature>;

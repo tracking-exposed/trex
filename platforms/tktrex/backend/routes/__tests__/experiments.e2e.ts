@@ -40,6 +40,12 @@ describe('Experiments API', () => {
       expect(body).toMatchObject({
         status: 'created',
       });
+
+      await test.mongo3.deleteMany(
+        test.mongo,
+        test.config.get('schema').experiments,
+        { experimentId: body.experimentId }
+      );
     });
   });
 });

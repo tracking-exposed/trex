@@ -1,7 +1,7 @@
 import { PersonalData } from '@tktrex/shared/models/personal';
 import _ from 'lodash';
 import moment from 'moment';
-import automo from '../lib/automo';
+import * as automo from '../lib/automo';
 import CSV from '../lib/CSV';
 import * as foodUtils from '@shared/utils/food.utils';
 // eslint-disable-next-line @typescript-eslint/no-var-requires
@@ -59,11 +59,16 @@ async function getPersonal(req: any): Promise<any> {
        * note, this data should match
        * packages/shared/src/models/contributor/ContributorPersonalSummary.ts
        */
-      const avail = await automo.getPersonalTableData(
+      const avail: any = await automo.getPersonalTableData(
         k,
         { type: 'search' },
         { amount, skip }
       );
+
+      if (avail.json?.error) {
+        return { json: avail.json };
+      }
+
       const metadata = _.map(avail.metadata, function (o) {
         const smf: any = _.pick(o, ['id', 'query', 'savingTime']);
         smf.rejected = !!o.message?.length;
@@ -87,11 +92,14 @@ async function getPersonal(req: any): Promise<any> {
        * note, this data should match
        * packages/shared/src/models/contributor/ContributorPersonalSummary.ts
        */
-      const avail = await automo.getPersonalTableData(
+      const avail: any = await automo.getPersonalTableData(
         k,
         { type: 'profile' },
         { amount, skip }
       );
+      if (avail.json?.error) {
+        return avail.json;
+      }
 
       retval = {
         counters: { metadata: avail.counters?.metadata },
@@ -108,11 +116,15 @@ async function getPersonal(req: any): Promise<any> {
         return e;
       });
     } else if (what === 'native') {
-      const data = await automo.getPersonalTableData(
+      const data: any = await automo.getPersonalTableData(
         k,
         { type: 'native' },
         { amount, skip }
       );
+
+      if (data.json?.error) {
+        return data.json;
+      }
       retval = {
         counters: { metadata: data.counters?.metadata },
         metadata: data.metadata,
@@ -137,10 +149,18 @@ async function getPersonalCSV(req: any): Promise<any> {
   if (!['foryou', 'search', 'following', 'profile', 'native'].includes(type))
     return { text: 'Error, nature not supported ' };
 
-  const data = await automo.getMetadataByFilter(
-    { publicKey: k, type },
-    { amount: CSV_MAX_SIZE, skip: 0 }
-  );
+  const { data } = await automo
+    .getMetadataByFilter(
+      { publicKey: k, type },
+      { amount: CSV_MAX_SIZE, skip: 0 }
+    )
+    .then(({ totals, data }) => ({
+      totals,
+      data: data.map(({ _id, publicKey, ...m }) => ({
+        ...m,
+        supporter: foodUtils.string2Food(publicKey),
+      })),
+    }));
 
   if (!data.length) {
     debug("getPersonalCSV didn't found DB entry matching %o", {
@@ -237,17 +257,25 @@ const getPersonalByExperimentId = async (
 
   // debug('Html ids %O', htmlIds);
 
-  const metadata = await automo.getMetadataByFilter(
-    {
-      publicKey: {
-        $eq: publicKey,
+  const { data: metadata } = await automo
+    .getMetadataByFilter(
+      {
+        publicKey: {
+          $eq: publicKey,
+        },
+        experimentId: {
+          $eq: experimentId,
+        },
       },
-      experimentId: {
-        $eq: experimentId,
-      },
-    },
-    opts
-  );
+      opts
+    )
+    .then(({ totals, data }) => ({
+      totals,
+      data: data.map(({ publicKey, ...m }) => ({
+        ...m,
+        supporter: foodUtils.string2Food(publicKey),
+      })),
+    }));
 
   if (format === 'csv') {
     const csv = CSV.produceCSVv1(metadata);
@@ -274,8 +302,4 @@ const getPersonalByExperimentId = async (
   };
 };
 
-export {
-  getPersonal,
-  getPersonalCSV,
-  getPersonalByExperimentId,
-};
+export { getPersonal, getPersonalCSV, getPersonalByExperimentId };

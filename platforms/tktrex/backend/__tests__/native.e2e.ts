@@ -1,28 +1,29 @@
-import axiosMock from '@shared/test/__mocks__/axios.mock';
 import {
   readFixtureJSON,
   readFixtureJSONPaths,
-  runParserTest,
+  runParserTest
 } from '@shared/test/utils/parser.utils';
-import { v4 as uuid } from 'uuid';
+import axiosMock from '@shared/test/__mocks__/axios.mock';
+import { string2Food } from '@shared/utils/food.utils';
 import { TKMetadata } from '@tktrex/shared/models';
+import { TKParserConfig } from '@tktrex/shared/parser/config';
+import { toMetadata } from '@tktrex/shared/parser/metadata';
 import { parsers, TKParsers } from '@tktrex/shared/parser/parsers';
+import { HTMLSource } from '@tktrex/shared/parser/source';
 import base58 from 'bs58';
 import { parseISO, subMinutes } from 'date-fns';
 import path from 'path';
 import nacl from 'tweetnacl';
-import { GetTest, Test } from '../test/Test';
-import { toMetadata } from '@tktrex/shared/parser/metadata';
+import { v4 as uuid } from 'uuid';
 import {
   addDom,
   getLastHTMLs,
   getMetadata,
   getMetadataSchema,
   getSourceSchema,
-  updateMetadataAndMarkHTML,
+  updateMetadataAndMarkHTML
 } from '../lib/parser';
-import { HTMLSource } from '@tktrex/shared/parser/source';
-import { TKParserConfig } from '@tktrex/shared/parser/config';
+import { GetTest, Test } from '../test/Test';
 
 describe('Parser: "native"', () => {
   let appTest: Test;
@@ -102,7 +103,10 @@ describe('Parser: "native"', () => {
           getContributions: getLastHTMLs(db),
           getMetadata: getMetadata(db),
           saveResults: updateMetadataAndMarkHTML(db),
-          buildMetadata: toMetadata,
+          buildMetadata: (e, m) => ({
+            ...toMetadata(e, m),
+            supporter: string2Food(e.source.html.publicKey),
+          }),
           config: {
             downloads: path.resolve(
               process.cwd(),

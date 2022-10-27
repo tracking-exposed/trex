@@ -4,17 +4,20 @@ jest.mock('fetch-opengraph');
 
 // import test utils
 import { fc } from '@shared/test';
+import { string2Food } from '@shared/utils/food.utils';
 import { NativeMetadataArb } from '@tktrex/shared/arbitraries/Metadata.arb';
 import { GetTest, Test } from '../../test/Test';
 
-const toNativeMetadata = (m: any): any => {
+const toNativeMetadata = ({ _id, publicKey, ...m }: any): any => {
   return {
     ...m,
+    id: m.id.substring(0, 10),
     author: m.author ? { ...m.author, name: m.author.name ?? null } : null,
     music: m.music ?? null,
     metrics: m.metrics ?? null,
     description: m.description ?? null,
     researchTag: m.researchTag ?? null,
+    supporter: string2Food(m.publicKey),
     clientTime:
       typeof m.clientTime === 'string'
         ? m.clientTime
@@ -54,15 +57,16 @@ describe('Metadata API', () => {
 
       const metadataWithExperimentId = fc
         .sample(NativeMetadataArb, 100)
-        .map(({ _id, ...m }) => ({
+        .map(({ ...m }) => ({
           ...m,
           savingTime: new Date(),
+          researchTag: undefined,
           experimentId,
         }));
 
       const metadataWithResearchTag = fc
         .sample(NativeMetadataArb, 100)
-        .map(({ _id, ...m }) => ({
+        .map(({ ...m }) => ({
           ...m,
           experimentId: null,
           savingTime: new Date(),
@@ -88,8 +92,12 @@ describe('Metadata API', () => {
         })
         .expect(200);
 
-      expect(body.length).toBe(amount);
-      expect(body).toMatchObject(expectedMetadata);
+      expect(body).toMatchObject({
+        data: expectedMetadata,
+        totals: {
+          native: metadataWithResearchTag.length,
+        },
+      });
 
       await test.mongo3.deleteMany(
         test.mongo,
@@ -111,7 +119,7 @@ describe('Metadata API', () => {
 
       const metadataWithExperimentId = fc
         .sample(NativeMetadataArb, 100)
-        .map(({ _id, ...m }) => ({
+        .map(({ ...m }) => ({
           ...m,
           savingTime: new Date(),
           experimentId,
@@ -119,7 +127,7 @@ describe('Metadata API', () => {
 
       const metadataWithResearchTag = fc
         .sample(NativeMetadataArb, 100)
-        .map(({ _id, ...m }) => ({
+        .map(({ ...m }) => ({
           ...m,
           savingTime: new Date(),
           researchTag,
@@ -144,8 +152,12 @@ describe('Metadata API', () => {
         })
         .expect(200);
 
-      expect(body.length).toBe(amount);
-      expect(body).toMatchObject(expectedMetadata);
+      expect(body.data.length).toBe(amount);
+
+      expect(body).toMatchObject({
+        data: expectedMetadata,
+        totals: { native: metadataWithExperimentId.length },
+      });
 
       await test.mongo3.deleteMany(
         test.mongo,
