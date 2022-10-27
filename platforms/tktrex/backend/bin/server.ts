@@ -1,4 +1,9 @@
 #!/usr/bin/env node
+
+import moduleAlias from 'module-alias';
+moduleAlias({ base: process.cwd() });
+
+/* eslint-disable import/first */
 import { Server } from 'http';
 import nconf from 'nconf';
 import dbUtils from '../lib/dbutils';
@@ -22,19 +27,23 @@ async function initialSanityChecks(): Promise<void> {
   security.checkKeyIsSet();
   await dbUtils.checkMongoWorks(true /* if true means that failure is fatal */);
   appLogger('tiktok.tracking.exposed backend is operative!');
+  appLogger('');
 }
 
 async function start(): Promise<void> {
   const mongo = await mongo3.clientConnect();
 
+  const port = nconf.get('port');
+  const host = nconf.get('interface');
+  const url = `http://${host}:${port}`;
   const app = await makeApp({ config: nconf.get(), mongo: mongo as any });
   const server = new Server(app);
   /* everything starts here, welcome */
-  server.listen(nconf.get('port'), nconf.get('interface'));
+  server.listen(port, host);
   // eslint-disable-next-line
-  console.log(
-    ' Listening on http://' + nconf.get('interface') + ':' + nconf.get('port')
-  );
+  console.log(`Listening on ${url}`);
+  // eslint-disable-next-line
+  console.log(`Check server status at ${url}/api/v0/health`);
 
   initialSanityChecks();
 }

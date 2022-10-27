@@ -65,10 +65,24 @@ services:
       context: .
     container_name: yt-backend
     ports:
-      - "9000:9000"
+      - '9000:9000'
     environment:
       - DEBUG=*
       - mongoHost=mongodb
     depends_on:
       - mongodb
       - mongo-yt-indexes
+
+  tk-backend:
+    build:
+      dockerfile: Dockerfile.tkbackend
+      context: .
+    container_name: tk-backend
+    ports:
+      - '14000:14000'
+    environment:
+      - DEBUG=*
+      - mongoHost=mongodb
+    depends_on:
+      - mongodb
+      - mongo-tk-indexes

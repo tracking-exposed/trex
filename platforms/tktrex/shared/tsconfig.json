@@ -3,18 +3,19 @@
   "compilerOptions": {
     "allowJs": true,
     "noEmit": false,
+    "rootDir": "./src",
     "baseUrl": "./src",
     "composite": true,
     "esModuleInterop": true,
     "jsx": "react",
-    "module": "esnext",
     "moduleResolution": "node",
     "noImplicitAny": true,
     "outDir": "./build",
+    "tsBuildInfoFile": "./build/.tsbuildinfo",
     "resolveJsonModule": true,
     "strict": true,
     "skipLibCheck": true,
-    "target": "es2015",
+    "target": "ES5",
     "paths": {
       "@shared/*": ["../../../../packages/shared/src/*"]
     }
@@ -30,6 +31,6 @@
     },
     "require": ["tsconfig-paths/register"]
   },
-  "include": ["**/*.ts", "**/*.js", "**/*.json"],
+  "include": ["./src"],
   "exclude": ["node_modules", "build", "jest.config.js", "jest.setup.js"]
 }

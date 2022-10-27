@@ -6,17 +6,17 @@ import {
   TKMetadata,
 } from '@tktrex/shared/models/metadata';
 import { Nature } from '@tktrex/shared/models/Nature';
+import { formatDistance } from 'date-fns';
+import D from 'debug';
 import * as A from 'fp-ts/lib/Array';
 import { pipe } from 'fp-ts/lib/function';
 import * as O from 'fp-ts/lib/Option';
-import { formatDistance, parseISO } from 'date-fns';
 import _ from 'lodash';
-import D from 'debug';
 import moment from 'moment';
 
 const debug = D('lib:CSV');
 
-function produceCSVv1(entries: any[]) {
+function produceCSVv1(entries: any[]): string {
   const keys = _.keys(entries[0]);
 
   const produced = _.reduce(
@@ -76,10 +76,9 @@ interface FlattenSearch {
 
 export function flattenSearch(m: SearchMetadata, shared: any): FlattenSearch[] {
   return (m.results || []).reduce<FlattenSearch[]>((acc, result, order) => {
-    const thumbfile =
-      m.thumbnails && m.thumbnails.length
-        ? m.thumbnails[order]?.filename
-        : null;
+    const thumbfile = m.thumbnails?.length
+      ? m.thumbnails[order]?.filename
+      : null;
 
     const readyo: FlattenSearch = {
       ...result.video,
@@ -206,7 +205,7 @@ function pickFeedFields(metae: any): any {
 function unrollNested(
   metadata: TKMetadata[],
   options: { type: Nature['type']; private?: boolean; experiment?: boolean }
-) {
+): any[] {
   return pipe(
     metadata,
     A.map((m): O.Option<any[]> => {

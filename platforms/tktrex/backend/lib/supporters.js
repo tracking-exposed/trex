@@ -1,55 +1,71 @@
 /* supporter library contains DB ops related to the supporter */
-const _ = require('lodash');
 const nconf = require('nconf');
-const debug = require('debug')('lib:supporters');
 
 const mongo3 = require('@shared/providers/mongo.provider');
-const params = require('./params');
 
 async function update(publicKey, updated) {
-  // this function is used by routes/tags.js and might be 
+  // this function is used by routes/tags.js and might be
   // used every time we should update the supporter profile
-    const mongoc = await mongo3.clientConnect();
+  const mongoc = await mongo3.clientConnect();
 
-    const exists = await mongo3.readOne(mongoc, nconf.get('schema').supporters, { publicKey });
-    if(!exists)
-        throw new Error("publicKey do not match any user - this function is only meant to update existing profiles");
+  const exists = await mongo3.readOne(mongoc, nconf.get('schema').supporters, {
+    publicKey,
+  });
+  if (!exists)
+    throw new Error(
+      'publicKey do not match any user - this function is only meant to update existing profiles'
+    );
 
-    if(updated.publicKey != publicKey)
-        throw new Error("publicKey can't be updated");
+  if (updated.publicKey !== publicKey)
+    throw new Error("publicKey can't be updated");
 
-    updated.lastActivity = new Date();
-    const r = await mongo3.updateOne(mongoc, nconf.get('schema').supporters, { publicKey }, updated);
+  updated.lastActivity = new Date();
+  const r = await mongo3.updateOne(
+    mongoc,
+    nconf.get('schema').supporters,
+    { publicKey },
+    updated
+  );
 
-    if(!(r.result && r.result.ok)) {
-        console.log(JSON.stringify(r, undefined, 1));
-        throw new Error("Failure in supporter update");
-    }
+  if (!(r.result && r.result.ok)) {
+    // eslint-disable-next-line no-console
+    console.log(JSON.stringify(r, undefined, 1));
+    throw new Error('Failure in supporter update');
+  }
 
-    const retval = await mongo3.readOne(mongoc, nconf.get('schema').supporters, { publicKey });
-    await mongoc.close();
-    return retval;
-};
+  const retval = await mongo3.readOne(mongoc, nconf.get('schema').supporters, {
+    publicKey,
+  });
+  await mongoc.close();
+  return retval;
+}
 
 async function get(publicKey) {
-    const mongoc = await mongo3.clientConnect();
-    const supporter = await mongo3.readOne(mongoc, nconf.get('schema').supporters, { publicKey });
-    if(!supporter)
-        throw new Error("publicKey do not match any user");
+  const mongoc = await mongo3.clientConnect();
+  const supporter = await mongo3.readOne(
+    mongoc,
+    nconf.get('schema').supporters,
+    { publicKey }
+  );
+  if (!supporter) throw new Error('publicKey do not match any user');
 
-    await mongoc.close();
-    return supporter;
+  await mongoc.close();
+  return supporter;
 }
 
 async function remove(publicKey) {
-    const mongoc = await mongo3.clientConnect();
-    const dunno = await mongo3.deleteMany(mongoc, nconf.get('schema').supporters, { publicKey });
-    await mongoc.close();
-    return dunno;
+  const mongoc = await mongo3.clientConnect();
+  const dunno = await mongo3.deleteMany(
+    mongoc,
+    nconf.get('schema').supporters,
+    { publicKey }
+  );
+  await mongoc.close();
+  return dunno;
 }
 
 module.exports = {
-    get,
-    remove,
-    update
+  get,
+  remove,
+  update,
 };

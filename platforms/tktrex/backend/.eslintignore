@@ -1,7 +1,5 @@
 build
-lib
 parsers
-routes
 scripts
 __tests__
 jest.config.js

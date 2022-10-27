@@ -5930,9 +5930,12 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@tktrex/backend@workspace:platforms/tktrex/backend"
   dependencies:
+    "@types/cors": ^2.8.12
     "@types/eslint": ^8
     "@types/express": ^4.17.13
+    "@types/geoip-lite": ^1.4.1
     "@types/lodash": ^4.14.186
+    "@types/module-alias": ^2
     "@types/node": ^16.11.68
     "@typescript-eslint/eslint-plugin": ^5.40.0
     "@typescript-eslint/parser": ^5.40.0
@@ -5940,17 +5943,24 @@ __metadata:
     bs58: ^4.0.1
     cookie: ^0.3.1
     cors: ^2.8.5
+    date-fns: ^2.28.0
     debug: ^4.3.4
     eslint: ^8.25.0
     express: ^4.17.2
     food-words: ^1.1.0
+    fp-ts: ^2.11.9
+    geoip-lite: ^1.4.6
+    io-ts: ^2.2.16
+    io-ts-types: ^0.5.19
     lodash: ^4.17.21
+    module-alias: ^2.2.2
     moment: ^2.29.4
     mongodb: ^4.3.1
     nacl-signature: ^1.0.0
     nconf: ^0.11.3
     node-fetch: ^2.6.7
     nodemon: ^1.19.4
+    ts-endpoint: ^2.0.0
     ts-node: ^10.9.1
     ts-node-dev: ^2.0.0
     tweetnacl: ^0.14.5
@@ -6090,6 +6100,7 @@ __metadata:
     "@types/node": ^16.11.68
     "@types/react": ^17.0.50
     "@types/react-dom": ^17.0.17
+    "@types/uuid": ^8.3.4
     "@types/webpack-bundle-analyzer": ^4.4.1
     "@typescript-eslint/eslint-plugin": ^5.40.0
     "@typescript-eslint/parser": ^5.40.0
@@ -6099,6 +6110,7 @@ __metadata:
     cross-fetch: ^3.1.5
     csv-parse: ^4.16.3
     csv-stringify: ^6.0.5
+    date-fns: ^2.28.0
     debug: ^4.3.4
     dotenv: ^16.0.3
     dotenv-webpack: ^8.0.1
@@ -18474,6 +18486,18 @@ __metadata:
     monocle-ts: ^2.0.0
     newtype-ts: ^0.3.2
   checksum: 39b5c5639d7351264c8ee26f30fa71f7feb42225472fe8f3e489e5a50f1a2009b8e982dcdbfc977c69261f3fbd71cda6edcd7c2a7f96145cb1ba2879f65a1e77
+  languageName: node
+  linkType: hard
+
+"io-ts-types@npm:^0.5.19":
+  version: 0.5.19
+  resolution: "io-ts-types@npm:0.5.19"
+  peerDependencies:
+    fp-ts: ^2.0.0
+    io-ts: ^2.0.0
+    monocle-ts: ^2.0.0
+    newtype-ts: ^0.3.2
+  checksum: 4cf8688b9fd3878bebc332f9cdf612e72ce45bcc8ab4a534d413a4f80564458482bc1c86eed997ca566e65ac85790d3c7a8ccb511f8c17108cd647e070db7790
   languageName: node
   linkType: hard
 
