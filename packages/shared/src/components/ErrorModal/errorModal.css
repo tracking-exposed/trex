@@ -1,0 +1,65 @@
+.ErrorModal{
+  width: 100%;
+  max-width: 500px;
+  overflow: hidden;
+  border: 2px solid red;
+  border-radius: 3px;
+  position: relative;
+  justify-content: space-between;
+  display: flex;
+  flex-direction: column;
+  padding-top: 15px;
+  color: #464646;
+}
+
+.ErrorModal__container__name{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  padding: 10px;
+  font-size: 24px;
+}
+
+.ErrorModal__container__details{
+  max-height: 100px;
+  overflow: scroll;
+  overflow-x: hidden;
+  border: 1px solid red;
+  margin: 10px;
+  padding: 5px;
+  word-wrap: break-word;
+  padding: 10px;
+}
+
+.ErrorModal__container__message{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  padding: 10px;
+}
+
+.ErrorModal__container__name svg{
+  color: red;
+  font-size: 40px;
+  margin-bottom: 10px;
+}
+
+.ErrorModal__close{
+  height: 60px;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: red;
+}
+
+.ErrorModal__close button{
+  background: transparent;
+  border: none;
+  color: white;
+  font-size: 20px;
+  height: 100%;
+  width: 100%;
+}
