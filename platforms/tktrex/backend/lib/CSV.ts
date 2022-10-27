@@ -245,7 +245,7 @@ function unrollNested(
       )
         return O.some(flattenProfile(m, []));
 
-      return O.some(pickFeedFields(m));
+      return O.some([pickFeedFields(m)]);
     }),
     A.compact,
     A.flatten
