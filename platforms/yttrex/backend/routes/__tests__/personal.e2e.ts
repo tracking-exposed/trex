@@ -10,7 +10,7 @@ import { fc } from '@shared/test';
 import { foldTEOrThrow } from '@shared/utils/fp.utils';
 import { sleep } from '@shared/utils/promise.utils';
 import { Ad } from '@yttrex/shared/models/Ad';
-import { Metadata } from '@yttrex/shared/models/Metadata';
+import { Metadata } from '@yttrex/shared/models/metadata/Metadata';
 import { pipe } from 'fp-ts/lib/function';
 import * as fs from 'fs';
 import { parserConfig } from '@yttrex/shared/parser/config';
