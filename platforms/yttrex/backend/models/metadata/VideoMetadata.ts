@@ -1,4 +1,4 @@
-import { ParsedInfo, VideoMetadata } from '@yttrex/shared/models/Metadata';
+import { ParsedInfo, VideoMetadata } from '@yttrex/shared/models/metadata/Metadata';
 import * as t from 'io-ts';
 import { date } from 'io-ts-types/lib/date';
 

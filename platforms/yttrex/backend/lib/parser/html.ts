@@ -6,7 +6,7 @@ import {
   SaveResults,
 } from '@shared/providers/parser.provider';
 import { sanitizeHTML } from '@shared/utils/html.utils';
-import { Metadata } from '@yttrex/shared/models/Metadata';
+import { Metadata } from '@yttrex/shared/models/metadata/Metadata';
 import { Supporter } from '@yttrex/shared/models/Supporter';
 import { HTMLSource } from '@yttrex/shared/parser';
 import { JSDOM } from 'jsdom';
