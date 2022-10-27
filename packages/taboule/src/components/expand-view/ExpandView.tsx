@@ -1,7 +1,7 @@
 import React from 'react';
 import './ExpandView.css';
 import { getYTVideoURLById } from '@shared/utils/yt.utils';
-import { ParsedInfo } from '@yttrex/shared/models/Metadata';
+import { ParsedInfo } from '@yttrex/shared/models/metadata/Metadata';
 import CloseIcon from '@mui/icons-material/Close';
 import ytThumbnail from './../../assets/ytthumb.png';
 

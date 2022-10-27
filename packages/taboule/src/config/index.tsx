@@ -13,10 +13,7 @@ import {
 } from '@shared/models/contributor/ContributorPersonalSummary';
 import { GuardoniExperiment } from '@shared/models/Experiment';
 import {
-  ForYouMetadata as TKForYouMetadata,
-  NativeMetadata as TikTokNativeMetadata,
-  ProfileMetadata as TKProfileMetadata,
-  SearchMetadata as TikTokSearchMetadata,
+  ForYouMetadata as TKForYouMetadata, NativeMetadata as TikTokNativeMetadata, ProfileMetadata as TKProfileMetadata, SearchMetadata as TikTokSearchMetadata
 } from '@tktrex/shared/models/metadata';
 import * as React from 'react';
 import CSVDownloadButton from '../components/buttons/CSVDownloadButton';
@@ -356,18 +353,13 @@ export const defaultConfiguration = (
           ...columnDefault,
           field: 'author',
           renderCell: (params) => {
-            if (params.value) {
-              return (
-                <a
-                  href={`/search/#${encodeURI(
-                    params.formattedValue.username as string
-                  )}`}
-                >
-                  {params.formattedValue.username}
-                </a>
-              );
-            }
-            return '-';
+            return (
+              <a
+                href={`/search/#${encodeURI(params.formattedValue as string)}`}
+              >
+                {params.formattedValue}
+              </a>
+            );
           },
         },
         {

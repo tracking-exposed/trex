@@ -8,7 +8,7 @@ import {
 } from '@mui/x-data-grid';
 import { toValidationError } from '@shared/errors/ValidationError';
 import { GetLogger } from '@shared/logger';
-import { ParsedInfo } from '@yttrex/shared/src/models/metadata/Metadata';
+import { ParsedInfo } from '@yttrex/shared/models/metadata/Metadata';
 import * as QR from 'avenger/lib/QueryResult';
 import { WithQueries } from 'avenger/lib/react';
 import debug from 'debug';

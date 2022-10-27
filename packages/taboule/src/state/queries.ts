@@ -3,7 +3,7 @@ import { ChannelRelated } from '@shared/models/ChannelRelated';
 import {
   HomeMetadata,
   SearchMetadata,
-  VideoMetadata,
+  VideoMetadata
 } from '@shared/models/contributor/ContributorPersonalStats';
 import { SummaryHTMLMetadata } from '@shared/models/contributor/ContributorPersonalSummary';
 import { GuardoniExperiment } from '@shared/models/Experiment';
@@ -12,16 +12,13 @@ import { Step } from '@shared/models/Step';
 import { MakeAPIClient } from '@shared/providers/api.provider';
 import * as tkEndpoints from '@tktrex/shared/endpoints';
 import {
-  ForYouMetadata as TKForYouMetadata,
-  NativeMetadata as TKNativeMetadata,
-  ProfileMetadata as TKProfileMetadata,
-  SearchMetadata as TKSearchMetadata,
+  ForYouMetadata as TKForYouMetadata, NativeMetadata as TKNativeMetadata, ProfileMetadata as TKProfileMetadata, SearchMetadata as TKSearchMetadata
 } from '@tktrex/shared/models/metadata';
 import {
   ForYouType,
   NativeType,
   ProfileType,
-  SearchType,
+  SearchType
 } from '@tktrex/shared/models/Nature';
 import * as endpoints from '@yttrex/shared/endpoints';
 import { ListMetadataQuery } from '@yttrex/shared/endpoints/v2/metadata.endpoints';
@@ -341,7 +338,7 @@ export const GetTabouleQueries = ({
           },
         }),
         TE.map((content) => ({
-          total: content.totals.profile,
+          total: content.totals.native,
           content: content.data as any[] as TKProfileMetadata[],
         }))
       ),
@@ -362,7 +359,7 @@ export const GetTabouleQueries = ({
           },
         }),
         TE.map((content) => ({
-          total: content.totals.foryou,
+          total: content.totals.native,
           content: content.data as any[] as TKForYouMetadata[],
         }))
       ),

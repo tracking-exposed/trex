@@ -4,6 +4,7 @@
   "private": true,
   "scripts": {
     "start": "start-storybook -p 6006",
+    "dev": "DOTENV_CONFIG_PATH=.env.development start-storybook -p 6006",
     "build": "build-storybook -o build",
     "lint": "eslint ./src"
   },
