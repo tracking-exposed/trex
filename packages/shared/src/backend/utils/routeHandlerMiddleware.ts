@@ -1,6 +1,6 @@
 import express from 'express';
 import _ from 'lodash';
-import { APIError } from '../../errors/APIError';
+import { isAPIError } from '../../errors/APIError';
 import { GetLogger } from '../../logger';
 
 const logger = GetLogger('route-handler');
@@ -93,10 +93,7 @@ export const routeHandleMiddleware = <
     } catch (error) {
       logger.error('Route handler (%s) error: %O', fname, error);
 
-      // todo: this should be 500
-      res.status(502);
-
-      if (error instanceof APIError) {
+      if (isAPIError(error)) {
         logger.error(
           'APIError - %s: (%s) %s %s',
           error.name,
@@ -105,20 +102,19 @@ export const routeHandleMiddleware = <
         );
         res.status(error.status);
         res.send({
-          name: error.type,
+          name: error.name,
           message: error.message,
           details: error.details,
         });
       } else if (error instanceof Error) {
         logger.error('Error - %s: %s', error.name, error.message);
-
-        res.send('Software error: ' + error.message);
         logger.error(
           'Error in HTTP handler API(%s): %s %s',
           fname,
           error.message,
           error.stack
         );
+        res.status(500).send('Software error: ' + error.message);
       } else {
         res.status(502);
         res.send('Software error: ' + (error as any).message);

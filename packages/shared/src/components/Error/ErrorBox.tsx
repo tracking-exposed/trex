@@ -7,14 +7,16 @@ import { isAPIError } from '../../errors/APIError';
 export const ErrorBox = (e: unknown): React.ReactElement<any, string> => {
   // eslint-disable-next-line
   console.log('Displaying error', e);
+  const errorName = isAPIError(e) ? e.name : 'Error';
+  const message = isAPIError(e) ? e.message : 'Unknown Error';
   return (
     <Card>
       <Alert severity="error">
-        <AlertTitle>{e instanceof Error ? e.name : 'Error'}</AlertTitle>
-        <p>{e instanceof Error ? e.message : 'Unknown error'}</p>
-        {isAPIError(e) ? (
+        <AlertTitle>{errorName}</AlertTitle>
+        <p>{message}</p>
+        {isAPIError(e) && e.details.kind === 'DecodingError' ? (
           <ul>
-            {(e.details ?? []).map((d) => (
+            {(e.details.errors ?? []).map((d: any) => (
               <li key={d}>{d}</li>
             ))}
           </ul>
