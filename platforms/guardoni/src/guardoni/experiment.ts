@@ -177,10 +177,10 @@ export const readCSV =
       TE.chain(() => liftFromIOE(() => fs.readFileSync(filePath))),
       TE.map((b) => b.toString('utf-8')),
       TE.mapLeft((e) => {
-        return toAppError({
+        return {
           ...e,
           message: `Failed to read csv file ${filePath}`,
-        });
+        };
       })
     );
   };
@@ -243,7 +243,7 @@ export const createExperimentInAPI =
         logger.debug('Create experiment response %O', response);
 
         if (CreateExperimentResponse.types[0].is(response)) {
-          return TE.left(toAppError(response.error));
+          return TE.left(toAppError(new Error(response.error.message)));
         }
 
         return TE.right(response);

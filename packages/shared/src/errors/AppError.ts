@@ -1,20 +1,16 @@
 import { IOError } from 'ts-io-error';
-import { APIError } from './APIError';
+import { isAPIError } from './APIError';
 
 export class AppError extends IOError {
   name = 'AppError';
 }
 
 export const toAppError = (e: unknown): AppError => {
-  if (e instanceof APIError) {
+
+  if (isAPIError(e)) {
     return {
       ...e,
       name: 'AppError',
-      details: {
-        kind: 'ClientError',
-        meta: {},
-        status: '',
-      },
     };
   }
 

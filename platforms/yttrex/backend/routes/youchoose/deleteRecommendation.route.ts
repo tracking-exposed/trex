@@ -1,7 +1,7 @@
 import {
   NotFoundError,
-  toBackendError,
-} from '@shared/backend/errors/BackendError';
+  toAPIError,
+} from '@shared/errors/APIError';
 import { Route } from '@shared/backend/types';
 import { authenticationMiddleware } from '@shared/backend/utils/authenticationMiddleware';
 import { AddEndpoint } from '@shared/backend/utils/endpoint';
@@ -21,7 +21,7 @@ export const DeleteRecommendationRoute: Route = (r, { db, logger }) => {
         // connect to db
         TE.tryCatch(
           () => ycai.getCreatorByToken(headers['x-authorization']),
-          toBackendError
+          toAPIError
         ),
         TE.chain((user) =>
           pipe(
@@ -33,7 +33,7 @@ export const DeleteRecommendationRoute: Route = (r, { db, logger }) => {
                   { urlId, channelId: user.channelId },
                   {}
                 ),
-              toBackendError
+              toAPIError
             ),
             TE.filterOrElse(
               (r) => r !== undefined,
@@ -46,7 +46,7 @@ export const DeleteRecommendationRoute: Route = (r, { db, logger }) => {
                     urlId,
                     channelId: user.channelId,
                   }),
-                toBackendError
+                toAPIError
               )
             )
           )

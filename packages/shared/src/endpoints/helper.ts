@@ -82,7 +82,10 @@ const decodeOrThrowRequest = <E extends MinimalEndpointInstance>(
 ): DecodeRequestSuccess<E>['result'] => {
   return pipe(decodeRequest(e, r), (r) => {
     if (r.type === 'error') {
-      throw new APIError(400, 'Bad Request', 'Request decode failed', r.result);
+      throw new APIError('Bad Request', {
+        kind: 'DecodingError',
+        errors: r.result,
+      });
     }
 
     return r.result;

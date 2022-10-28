@@ -17,13 +17,13 @@ import {
   DEFAULT_TK_FRONTEND,
   DEFAULT_YT_BACKEND,
   DEFAULT_YT_EXTENSION_DIR,
-  DEFAULT_YT_FRONTEND
+  DEFAULT_YT_FRONTEND,
 } from './constants';
 import {
   GuardoniConfig,
   GuardoniContext,
   Platform,
-  PlatformConfig
+  PlatformConfig,
 } from './types';
 import { CHROME_PATHS, getChromePath } from './utils';
 
@@ -189,13 +189,13 @@ export const readConfigFromPath =
           },
         };
       }),
-      // TE.mapLeft(toAppError),
       TE.chainEitherK((json) =>
         pipe(
           GuardoniConfig.decode(json),
           E.mapLeft((err) =>
             toValidationError("Can't decode guardoni config", err)
-          )
+          ),
+          E.mapLeft(toAppError)
         )
       )
     );
