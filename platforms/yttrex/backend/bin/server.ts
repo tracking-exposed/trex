@@ -39,13 +39,13 @@ const start = async (): Promise<void> => {
     config: nconf.get(),
     mongo,
   });
+  const port = nconf.get('port');
+  const host = nconf.get('interface');
+  const url = `http://${host}:${port}`;
   const server = new http.Server(app as any);
-  server.listen(nconf.get('port'), nconf.get('interface'), () => {
-    d(
-      `Listening on http://${nconf.get('interface')}:${nconf.get(
-        'port'
-      )}/api/v0/info`
-    );
+  server.listen(port, host, () => {
+    d(`Listening on ${url}`);
+    d(`Check server status at %s/api/v0/health`, url);
   });
 
   // eslint-disable-next-line @typescript-eslint/no-misused-promises
