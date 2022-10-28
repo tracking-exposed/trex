@@ -8,7 +8,7 @@
   justify-content: space-between;
   display: flex;
   flex-direction: column;
-  padding-top: 15px;
+  padding-top: 10px;
   color: #464646;
 }
 
@@ -48,7 +48,7 @@
 }
 
 .ErrorModal__container__details__btn{
-  margin-left: 10px;
+  margin-left: 20px;
   background: none;
   border: none;
   padding: 0;
@@ -91,6 +91,7 @@
   align-items: center;
   justify-content: center;
   background: #de605f;
+  margin-top: 20px;
 }
 
 .ErrorModal__close:hover{
