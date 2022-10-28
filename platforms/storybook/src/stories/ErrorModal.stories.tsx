@@ -5,6 +5,7 @@ import ErrorModal from '@shared/components/ErrorModal';
 const Meta: ComponentMeta<typeof ErrorModal> = {
   title: 'Example/ErrorModal',
   component: ErrorModal,
+  argTypes: { onClick: { action: 'modal dismissed' } },
 };
 
 export default Meta;
