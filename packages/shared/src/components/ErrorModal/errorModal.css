@@ -2,7 +2,7 @@
   width: 100%;
   max-width: 500px;
   overflow: hidden;
-  border: 2px solid red;
+  border: 2px solid #de605f;
   border-radius: 3px;
   position: relative;
   justify-content: space-between;
@@ -21,27 +21,64 @@
   font-size: 24px;
 }
 
-.ErrorModal__container__details{
-  max-height: 100px;
-  overflow: scroll;
+.ErrorModal__container__details__box.-showBox{
+  max-height: 120px;
+}
+
+.ErrorModal__container__details__box{
+  max-height: 0px;
+  transition: max-height .3s ease-in;
+  margin-bottom: 10px;
+  overflow: hidden;
+}
+.ErrorModal__container__details__box__detail{
   overflow-x: hidden;
-  border: 1px solid red;
   margin: 10px;
-  padding: 5px;
   word-wrap: break-word;
+  padding: 0 10px;
+  border: 0;
+  border: 1px solid #de605f;
+  border-radius: 3px;
+  height: 100px;
+  overflow: scroll;
+  background: #260101;
+  color: #de605f;
   padding: 10px;
 }
 
+.ErrorModal__container__details__btn{
+  margin-left: 10px;
+  background: none;
+  border: none;
+  padding: 0;
+  color: #de605f;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+}
+
+.ErrorModal__container__details__btn svg{
+  font-size: 12px;
+  margin-left: 1px;
+}
+
+.ErrorModal__container__details__btn__icon{
+  transform: rotate(0);
+  transition: transform .1s linear !important;
+}
+.ErrorModal__container__details__btn__icon.-showBox{
+  transform: rotate(90deg);
+}
 .ErrorModal__container__message{
   display: flex;
   align-items: center;
   justify-content: center;
   flex-direction: column;
-  padding: 10px;
+  padding: 0px 0px 15px;
 }
 
 .ErrorModal__container__name svg{
-  color: red;
+  color: #de605f;
   font-size: 40px;
   margin-bottom: 10px;
 }
@@ -52,7 +89,11 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: red;
+  background: #de605f;
+}
+
+.ErrorModal__close:hover{
+  background: #cf5756;
 }
 
 .ErrorModal__close button{
@@ -62,4 +103,5 @@
   font-size: 20px;
   height: 100%;
   width: 100%;
+  cursor: pointer;
 }
