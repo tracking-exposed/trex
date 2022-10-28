@@ -23,6 +23,7 @@
 
 .ErrorModal__container__details__box.-showBox{
   max-height: 120px;
+  padding-bottom: 20px;
 }
 
 .ErrorModal__container__details__box{
