@@ -1,6 +1,7 @@
 import React from 'react';
 import ReportProblemRoundedIcon from '@mui/icons-material/ReportProblemRounded';
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
+import clsx from 'clsx';
 import './errorModal.css';
 
 interface Props {
@@ -35,15 +36,15 @@ const ErrorModal = (props: Props): JSX.Element => {
           >
             Details
             <ArrowForwardIosIcon
-              className={`ErrorModal__container__details__btn__icon ${
-                detailsShown ? '-showBox' : ''
-              }`}
+              className={clsx('ErrorModal__container__details__btn__icon', {
+                '-showBox': detailsShown,
+              })}
             />
           </button>
           <div
-            className={`ErrorModal__container__details__box ${
-              detailsShown ? '-showBox' : ''
-            }`}
+            className={clsx('ErrorModal__container__details__box', {
+              '-showBox': detailsShown,
+            })}
           >
             <div className="ErrorModal__container__details__box__detail">
               {details}
