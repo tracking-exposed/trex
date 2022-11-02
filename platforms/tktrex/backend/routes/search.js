@@ -1,9 +1,8 @@
 import _ from 'lodash';
 import moment from 'moment';
 import nconf from 'nconf';
-
 import utils from '../lib/utils';
-import automo from '../lib/automo';
+import * as automo from '../lib/automo';
 import CSV from '../lib/CSV';
 import * as mongo from '@shared/providers/mongo.provider';
 import { SEARCH_FIELDS } from './public';

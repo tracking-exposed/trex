@@ -26,8 +26,7 @@ async function initialSanityChecks(): Promise<void> {
   /* security checks = is the password set and is not the default? (more checks might come) */
   security.checkKeyIsSet();
   await dbUtils.checkMongoWorks(true /* if true means that failure is fatal */);
-  appLogger('tiktok.tracking.exposed backend is operative!');
-  appLogger('');
+  appLogger.info('tiktok.tracking.exposed backend is operative!');
 }
 
 async function start(): Promise<void> {

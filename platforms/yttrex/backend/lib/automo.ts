@@ -13,23 +13,24 @@
  * In the long term the refactor would lead also to unite the parser in one package and manage domain (.com's) and
  * project (config/settings.json) as variables.
  */
-import { CreatorStats } from '@shared/models/CreatorStats';
+import { CreatorStatContent, CreatorStats } from '@shared/models/CreatorStats';
 import { GetDirectiveOutput } from '@shared/models/Experiment';
 import { Step } from '@shared/models/Step';
 import * as mongo3 from '@shared/providers/mongo.provider';
-import { ParsedInfo, VideoMetadata } from '@yttrex/shared/models/Metadata';
+import { ParsedInfo, VideoMetadata } from '@yttrex/shared/models/metadata/Metadata';
 import { NatureType } from '@yttrex/shared/models/Nature';
 import { Supporter } from '@yttrex/shared/models/Supporter';
 import { differenceInSeconds, formatDistance } from 'date-fns';
 import D from 'debug';
 import _ from 'lodash';
-import { Experiment } from 'models/Experiment';
-import { HTML } from 'models/HTML';
-import { MetadataDB } from 'models/metadata';
+import { Ad } from 'models/Ad';
 import moment from 'moment';
 import { DeleteResult, Filter, MongoClient } from 'mongodb';
 import nconf from 'nconf';
 import utils from '../lib/utils';
+import { Experiment } from '../models/Experiment';
+import { HTML } from '../models/HTML';
+import { MetadataDB } from '../models/metadata';
 import { SearchMetadataDB } from '../models/metadata/SearchMetadata';
 
 const debug = D('lib:automo');
@@ -55,7 +56,7 @@ async function getSummaryByPublicKey(publicKey, options): Promise<any> {
   if (!supporter || !supporter.publicKey)
     throw new Error('Authentication failure');
 
-  const metadata = await mongo3.readLimit(
+  const metadata = await mongo3.readLimit<MetadataDB>(
     mongoc,
     nconf.get('schema').metadata,
     { publicKey: supporter.publicKey },
@@ -68,7 +69,7 @@ async function getSummaryByPublicKey(publicKey, options): Promise<any> {
     publicKey: supporter.publicKey,
   });
 
-  const ads = await mongo3.readLimit(
+  const ads = await mongo3.readLimit<Ad>(
     mongoc,
     nconf.get('schema').ads,
     { publicKey: supporter.publicKey },
@@ -171,7 +172,7 @@ async function getMetadataByPublicKey(
   if (options.timefilter)
     _.set(filter, 'savingTime.$gte', new Date(options.timefilter));
 
-  const metadata = await mongo3.readLimit(
+  const metadata = await mongo3.readLimit<SearchMetadataDB>(
     mongoc,
     nconf.get('schema').metadata,
     filter,
@@ -217,14 +218,14 @@ async function getMetadataByFilter(
     type: 'home',
   });
 
-  const totalHashtag = await mongo3.count(
-    mongoc,
-    nconf.get('schema').metadata,
-    {
-      ...filter,
-      type: 'hashtag',
-    }
-  );
+  // const totalHashtag = await mongo3.count(
+  //   mongoc,
+  //   nconf.get('schema').metadata,
+  //   {
+  //     ...filter,
+  //     type: 'hashtag',
+  //   }
+  // );
 
   const metadata = await mongo3.readLimit(
     mongoc,
@@ -241,7 +242,7 @@ async function getMetadataByFilter(
       video: totalVideo,
       search: totalSearch,
       home: totalHome,
-      hashtag: totalHashtag,
+      hashtag: 0,
       channel: 0,
     },
     data: metadata,
@@ -260,7 +261,7 @@ async function getMetadataFromAuthor(filter, options): Promise<CreatorStats> {
   if (!sourceVideo || !sourceVideo.id)
     throw new Error('Video not found, invalid videoId');
 
-  const videos = await mongo3.readLimit(
+  const videos = await mongo3.readLimit<CreatorStatContent>(
     mongoc,
     nconf.get('schema').metadata,
     { authorSource: sourceVideo.authorSource },

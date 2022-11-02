@@ -23,6 +23,7 @@ import {
   updateMetadataAndMarkHTML,
 } from '../lib/parser';
 import { GetTest, Test } from '../test/Test';
+import { string2Food } from '@shared/utils/food.utils';
 
 describe('Parser: "search"', () => {
   let appTest: Test;
@@ -74,6 +75,7 @@ describe('Parser: "search"', () => {
           html: {
             ...s,
             id: uuid(),
+            metadataId: uuid(),
             clientTime: parseISO(s.clientTime ?? new Date().toISOString()),
             savingTime: subMinutes(new Date(), 2),
           },
@@ -98,7 +100,10 @@ describe('Parser: "search"', () => {
           getContributions: getLastHTMLs(db),
           getMetadata: getMetadata(db),
           saveResults: updateMetadataAndMarkHTML(db),
-          buildMetadata: toMetadata,
+          buildMetadata: (e, m) => ({
+            ...toMetadata(e, m),
+            supporter: string2Food(e.source.html.publicKey),
+          }),
           config: {
             downloads: path.resolve(
               process.cwd(),

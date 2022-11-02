@@ -10,7 +10,7 @@ import D from 'debug';
 import * as express from 'express';
 import _ from 'lodash';
 import nconf from 'nconf';
-import automo from '../lib/automo';
+import * as automo from '../lib/automo';
 import utils from '../lib/utils';
 import security from '../lib/security';
 import { throwEitherError } from '@shared/utils/fp.utils';
@@ -76,7 +76,9 @@ function appendLast(req: express.Request): void {
   last.push(_.pick(req, ['headers', 'body']));
 }
 
-function headerError(headers: express.Request['headers']): any {
+function headerError(headers: express.Request['headers']): {
+  json: { status: 'error'; info: any };
+} {
   debug('Error detected: %s', headers.error);
   return {
     json: {
@@ -192,8 +194,11 @@ async function processEvents(req: express.Request): Promise<{
       });
 
       const metadataId = getMetadataId.hash({
-        htmlId,
-        clientTime: body.clientTime,
+        ...timelineId,
+        feedCounter: body.feedCounter,
+        videoCounter: body.videoCounter,
+        href: body.href,
+        nature,
       });
 
       /* to eventually verify integrity of collection we're saving these incremental
@@ -228,6 +233,7 @@ async function processEvents(req: express.Request): Promise<{
         html: body.html,
         n: optionalNumbers,
         geoip,
+        selector: body.selector,
       };
 
       if (body.experimentId?.length) html.experimentId = body.experimentId;

@@ -45,7 +45,6 @@ export const makeApp = async (
    * all the trex backends, and should return info on system health, echo OK
    * if the system is OK, and the git log of the code running */
   apiRouter.get('/v0/info', iowrapper('systemInfo'));
-
   apiRouter.get('/v1/last', iowrapper('getLast'));
   apiRouter.get('/v1/home', iowrapper('getLastHome'));
   apiRouter.get('/v1/videoId/:videoId', iowrapper('getVideoId'));

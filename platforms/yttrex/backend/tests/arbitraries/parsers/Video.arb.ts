@@ -1,5 +1,5 @@
 import { propsOmit } from '@shared/utils/arbitrary.utils';
-import { ParsedInfo } from '@yttrex/shared/models/Metadata';
+import { ParsedInfo } from '@yttrex/shared/models/metadata/Metadata';
 import { getArbitrary } from 'fast-check-io-ts';
 import * as t from 'io-ts';
 

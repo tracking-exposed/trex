@@ -1,12 +1,13 @@
+import * as mongo3 from '@shared/providers/mongo.provider';
+import D from 'debug';
+import * as express from 'express';
 import _ from 'lodash';
 import moment from 'moment';
-import D from 'debug';
 import nconf from 'nconf';
-import * as experlib from '../lib/experiments';
 import CSV from '../lib/CSV';
+import * as experlib from '../lib/experiments';
 import * as params from '../lib/params';
-import * as mongo3 from '@shared/providers/mongo.provider';
-import * as express from 'express';
+import { TKMetadataDB } from '../models/metadata';
 
 const debug = D('routes:experiments');
 
@@ -150,7 +151,7 @@ async function list(req: express.Request): Promise<any> {
   );
 
   const expIdList = _.map(configured, 'experimentId');
-  const lastweek = await mongo3.readLimit(
+  const lastweek = await mongo3.readLimit<TKMetadataDB>(
     mongoc,
     nconf.get('schema').metadata,
     {
@@ -188,8 +189,8 @@ async function list(req: express.Request): Promise<any> {
       _.map(lastweek, function (e) {
         return {
           publicKey: e.publicKey.substr(0, 8),
-          researchTag: e.experiment.researchTag,
-          experimentId: e.experiment.experimentId,
+          researchTag: e.researchTag,
+          experimentId: e.experimentId,
         };
       }),
       'experimentId'
@@ -260,8 +261,6 @@ async function conclude3(req: express.Request): Promise<any> {
 }
 
 export {
-  /* used by the webapps */
-  // csv, -- before supporting this the CSV format should be redefined for tiktok
   dot,
   json,
   list,
@@ -271,3 +270,4 @@ export {
   channel3,
   conclude3,
 };
+
