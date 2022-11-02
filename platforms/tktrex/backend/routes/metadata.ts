@@ -33,11 +33,9 @@ const listMetadata = async (
   if (experimentId) {
     filter.experimentId = experimentId;
   }
-
   if (researchTag) {
     filter.researchTag = researchTag;
   }
-
   if (nature) {
     filter['nature.type'] = nature;
   }
@@ -58,7 +56,7 @@ const listMetadata = async (
       })),
     }));
 
-  debug('fetched %d evidences', _.size(metadata));
+  debug('Fetched %d evidences of %d', _.size(metadata.data), metadata.totals);
 
   return { json: metadata };
 };
