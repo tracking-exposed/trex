@@ -29,6 +29,7 @@ export const cliLogger = guardoniLogger.extend('cli');
 export interface GuardoniCommandOpts {
   headless?: boolean;
   researchTag?: string;
+  experimentId?: NonEmptyString;
   publicKey: string;
   secretKey: string;
 }
@@ -178,7 +179,7 @@ export const GetGuardoniCLI: GetGuardoniCLI = (
               return g.runExperiment(command.experiment, command.opts);
             case 'navigate': {
               return pipe(
-                g.runNavigate({ ...config, ...command.opts }),
+                g.runNavigate(command.opts),
                 TE.map(() => ({
                   type: 'success',
                   values: [],
@@ -255,6 +256,7 @@ const runGuardoni = ({
   'secret-key': _secretKey,
   'cookie-modal': _cookiModal,
   'research-tag': _researchTag,
+  'experiment-id': _experimentId,
   ...guardoniConf
 }: any): Promise<void> => {
   const basePath = guardoniConf.basePath ?? DEFAULT_BASE_PATH;
@@ -264,7 +266,7 @@ const runGuardoni = ({
   }
 
   cliLogger.debug(
-    'Running guardoni from base path %s (%s), %O',
+    'Running guardoni from base path %s%s: %O',
     basePath,
     config,
     guardoniConf
@@ -322,6 +324,11 @@ const program = yargs(hideBin(process.argv))
           desc: 'The secretKey to use to sign the evidences',
           default: undefined,
         })
+        .option('experimentId', {
+          type: 'string',
+          desc: 'Setup the browser for the given experiment',
+          default: undefined,
+        })
         .option('cookie-modal', {
           type: 'string',
           choices: ['accept', 'reject'],
@@ -329,13 +336,14 @@ const program = yargs(hideBin(process.argv))
         .option('exit', {
           type: 'boolean',
         }),
-    (args) => {
+    ({ publicKey, secretKey, experimentId, researchTag, ...args }) => {
       void runGuardoni({
         ...args,
+        headless: false,
         platform: 'youtube',
         command: {
           run: 'navigate',
-          opts: args,
+          opts: { publicKey, secretKey, experimentId, researchTag },
         },
       });
     }

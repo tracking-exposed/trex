@@ -260,9 +260,7 @@ describe('CLI', () => {
       );
 
       expect(settingJson).toMatchObject({
-        publicKey: tests.publicKey,
-        secretKey: tests.secretKey,
-        experimentId,
+        active: true,
       });
 
       expect(result).toMatchObject({
