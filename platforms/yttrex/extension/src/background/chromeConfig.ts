@@ -3,7 +3,7 @@ import { bo } from '@shared/extension/utils/browser.utils';
 
 bo.runtime.onMessage.addListener((request, sender, sendResponse) => {
   if (request.type === 'chromeConfig') {
-    void db.get('/settings').then((_settings: any) => {
+    void db.get('settings').then((_settings: any) => {
       const settings = _settings
         ? {
             ..._settings,

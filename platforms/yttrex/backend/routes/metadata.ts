@@ -36,14 +36,14 @@ const listMetadata = async (
   if (nature) {
     filter.type = nature;
   }
-
   if (experimentId) {
     filter.experimentId = experimentId;
   }
-
   if (researchTag) {
     filter.researchTag = researchTag;
   }
+
+  debug('Filtering metadata with %O (%d, %d)', filter, amount, skip);
 
   const metadata = await automo
     .getMetadataByFilter(filter, {
@@ -65,13 +65,13 @@ const listMetadata = async (
     }));
 
   debug(
-    'Returning metadata by experimentId %s, %d evidences',
-    experimentId,
-    _.size(metadata)
+    'Returning %d evidences of %d available',
+    _.size(metadata.data),
+    metadata.totals
   );
 
   if (format === 'csv') {
-    const csv = CSV.produceCSVv1(metadata);
+    const csv = CSV.produceCSVv1(metadata.data);
     let filename = `metadata`;
     filename += experimentId ? `-experiment-${experimentId}` : '';
     filename += researchTag ? `-research_tag-${researchTag}` : '';
