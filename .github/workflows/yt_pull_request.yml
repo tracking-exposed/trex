@@ -15,6 +15,9 @@ on:
       - "shared/**"
       - "platforms/yttrex/**"
 
+env:
+  YT_IMAGE_NAME: yt-backend
+
 jobs:
   pull_request:
     runs-on: ubuntu-latest
@@ -70,4 +73,11 @@ jobs:
           yarn pm2 start platforms/yttrex/backend/ecosystem.config.js  --env test
           yarn yt:backend test --runInBand --forceExit --ci
           yarn pm2 stop all
+
+      - name: Log in to registry
+        # This is where you will update the personal access token to GITHUB_TOKEN
+        run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u $ --password-stdin
+
+      - name: Build TK Backend image
+        run: docker build . --file Dockerfile.ytbackend --tag $YT_IMAGE_NAME --label "runnumber=${GITHUB_RUN_ID}"
 
