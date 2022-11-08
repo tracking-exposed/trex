@@ -1,5 +1,6 @@
 import * as remote from '@electron/remote/main';
 import { AppError, toAppError } from '@shared/errors/AppError';
+import { toValidationError } from '@shared/errors/ValidationError';
 import debug from 'debug';
 import * as dotenv from 'dotenv';
 import { app, BrowserWindow } from 'electron';
@@ -9,13 +10,12 @@ import { sequenceS } from 'fp-ts/lib/Apply';
 import * as E from 'fp-ts/lib/Either';
 import { pipe } from 'fp-ts/lib/function';
 import * as TE from 'fp-ts/lib/TaskEither';
-import { getProfileDataDir } from '../guardoni/profile';
-import { failure } from 'io-ts/lib/PathReporter';
 import os from 'os';
 import * as path from 'path';
 import pie from 'puppeteer-in-electron';
 import { AppEnv } from '../AppEnv';
 import { DEFAULT_BASE_PATH } from '../guardoni/constants';
+import { getProfileDataDir } from '../guardoni/profile';
 import { getPackageVersion } from '../guardoni/utils';
 import { GetEvents } from './events/renderer.events';
 import store from './store';
@@ -85,7 +85,7 @@ export const run = async (): Promise<void> => {
   return pipe(
     AppEnv.decode({ VERSION: getPackageVersion(), ...process.env }),
     E.mapLeft((e) => {
-      return new AppError('EnvError', 'process.env is malformed', failure(e));
+      return toValidationError('process.env is malformed', e);
     }),
     TE.fromEither,
     TE.map((env) => {

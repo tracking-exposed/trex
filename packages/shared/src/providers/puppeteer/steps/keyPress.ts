@@ -28,9 +28,7 @@ export const parseKeypressCommand = (
     const delay = parseInt(match[3], 10);
     return E.right({ key, times, delay });
   }
-  return E.left(
-    new AppError('KeypressStepError', `Cannot parse command: ${cmd}`, [])
-  );
+  return E.left(toAppError(new Error(`Cannot parse command: ${cmd}`)));
 };
 /**
  * Step with type `scroll`

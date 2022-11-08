@@ -22,8 +22,8 @@ import { NonEmptyArray } from 'fp-ts/lib/NonEmptyArray';
 import * as TE from 'fp-ts/lib/TaskEither';
 import * as fs from 'fs';
 import * as t from 'io-ts';
+import { nonEmptyArray } from 'io-ts-types/lib/nonEmptyArray';
 import { NonEmptyString } from 'io-ts-types/lib/NonEmptyString';
-import { failure, PathReporter } from 'io-ts/lib/PathReporter';
 import path from 'path';
 import {
   ExperimentInfo,
@@ -32,14 +32,13 @@ import {
   GuardoniSuccessOutput,
 } from './types';
 import { liftFromIOE } from './utils';
-import { nonEmptyArray } from 'io-ts-types/lib/nonEmptyArray';
 
 export const validateNonEmptyString = (
   s: string
 ): E.Either<AppError, NonEmptyString> =>
   pipe(
     NonEmptyString.decode(s),
-    E.mapLeft((e) => toValidationError('Empty experiment id', failure(e)))
+    E.mapLeft((e) => toValidationError('Empty experiment id', e))
   );
 
 const validHookDelimiters = ['–', '-'];
@@ -49,6 +48,7 @@ export const parseExperimentCSV =
   (body: string): TE.TaskEither<AppError, NonEmptyArray<Step>> => {
     return pipe(
       csvParseTE(body, { columns: true, skip_empty_lines: true }),
+      TE.mapLeft((e) => ({ ...e, name: 'APIError' as const })),
       TE.chain(({ records, info }) => {
         logger.debug('Entries %O', records);
         return TE.right({ records, info });
@@ -57,10 +57,9 @@ export const parseExperimentCSV =
         pipe(
           nonEmptyArray(t.any).decode(records),
           E.mapLeft((e) => {
-            return new AppError(
-              'CSV Validation Error',
+            return toValidationError(
               "Can't create an experiment with no links",
-              PathReporter.report(E.left(e))
+              e
             );
           }),
           TE.fromEither
@@ -84,9 +83,7 @@ export const parseExperimentCSV =
 
             if (typeof onCompleted === 'string') {
               if (validHookDelimiters.some((d) => onCompleted.includes(d))) {
-                const commands = onCompleted
-                  .split(/-|–/)
-                  .map((c) => c.trim());
+                const commands = onCompleted.split(/-|–/).map((c) => c.trim());
 
                 logger.debug('Parsing commands %O', commands);
 
@@ -152,17 +149,12 @@ export const parseExperimentCSV =
               .concat(queue);
           }, []),
           nonEmptyArray(Step).decode,
-          E.mapLeft((e) => {
-            return new AppError(
-              'CSVParseError',
-              `The given CSV is not compatible with directive the expected format`,
-              [
-                ...PathReporter.report(E.left(e)),
-                '\n',
-                'You can find examples on https://docs.tracking.exposed/guardoni/guardoni-intro',
-              ]
-            );
-          }),
+          E.mapLeft((e) =>
+            toValidationError(
+              `The given CSV is not compatible with directive the expected format\nYou can find examples on https://docs.tracking.exposed/guardoni/guardoni-intro`,
+              e
+            )
+          ),
           TE.fromEither
         )
       )
@@ -221,6 +213,7 @@ export const getDirective =
           experimentId,
         },
       }),
+      TE.mapLeft(toAppError),
       TE.map((response) => {
         ctx.logger.warn('Response %O', response);
 
@@ -245,13 +238,12 @@ export const createExperimentInAPI =
           'Content-Type': 'application/json; charset=utf-8',
         },
       }),
+      TE.mapLeft(toAppError),
       TE.chain((response) => {
         logger.debug('Create experiment response %O', response);
 
         if (CreateExperimentResponse.types[0].is(response)) {
-          return TE.left(
-            new AppError('PostDirectiveError', response.error.message, [])
-          );
+          return TE.left(toAppError(response.error));
         }
 
         return TE.right(response);
@@ -351,6 +343,7 @@ export const listExperiments =
   (): TE.TaskEither<AppError, GuardoniSuccessOutput> => {
     return pipe(
       ctx.API.v2.Experiments.GetPublicDirectives(),
+      TE.mapLeft(toAppError),
       TE.map(
         (experiments): GuardoniSuccessOutput => ({
           message: 'Public Experiments Available',
