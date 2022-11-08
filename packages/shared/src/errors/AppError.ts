@@ -1,25 +1,36 @@
-import { APIError } from './APIError';
+import { IOError } from 'ts-io-error';
+import { isAPIError } from './APIError';
 
-export class AppError {
-  constructor(
-    public readonly name: string,
-    public readonly message: string,
-    public readonly details: string[]
-  ) {}
+export class AppError extends IOError {
+  name = 'AppError';
 }
 
 export const toAppError = (e: unknown): AppError => {
-  if (e instanceof APIError) {
-    return e;
+
+  if (isAPIError(e)) {
+    return {
+      ...e,
+      name: 'AppError',
+    };
   }
 
   if (e instanceof Error) {
-    return new AppError(e.name, e.message, []);
+    return {
+      name: 'AppError',
+      message: e.message,
+      status: 500,
+      details: { kind: 'ClientError', meta: [], status: 'client error' },
+    };
   }
 
-  return new AppError(
-    (e as any).name ?? `Unknown Error`,
-    (e as any).message ?? 'Something bad happened',
-    []
-  );
+  return {
+    name: 'AppError',
+    message: (e as any).name ?? `Unknown Error`,
+    status: 500,
+    details: {
+      kind: 'ClientError',
+      meta: [],
+      status: (e as any).message ?? 'Something bad happened',
+    },
+  };
 };

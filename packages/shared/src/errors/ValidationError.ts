@@ -1,14 +1,26 @@
+import * as t from 'io-ts';
+import { failure } from 'io-ts/lib/PathReporter';
 import { APIError, isAPIError } from './APIError';
 
 export const toValidationError = (
   message: string,
-  details: string[]
+  errors: t.ValidationError[]
 ): APIError => {
-  return new APIError(400, 'ValidationError', message, details);
+  const failures = failure(errors);
+  // console.log(failure(errors));
+  return {
+    name: 'APIError',
+    message,
+    status: 400,
+    details: {
+      kind: 'DecodingError',
+      errors: failures,
+    },
+  };
 };
 
 export const isValidationError = (
   e: unknown
 ): e is APIError & { type: 'ValidationError' } => {
-  return isAPIError(e) && e.type === 'ValidationError';
+  return isAPIError(e) && e.details.kind === 'DecodingError';
 };

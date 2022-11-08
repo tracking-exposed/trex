@@ -90,7 +90,7 @@ describe("The ADS API", () => {
           since: "2020-01-01",
           till: "2021-01-01",
         })
-        .expect(502);
+        .expect(500);
 
       expect(body).toEqual({});
     });

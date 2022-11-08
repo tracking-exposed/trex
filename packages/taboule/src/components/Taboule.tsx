@@ -1,7 +1,7 @@
 import { Box, Typography } from '@material-ui/core';
 import { DataGrid, DataGridProps, GridColTypeDef } from '@mui/x-data-grid';
 import { APIError } from '@shared/errors/APIError';
-import { AppError } from '@shared/errors/AppError';
+import { toValidationError } from '@shared/errors/ValidationError';
 import { GetLogger } from '@shared/logger';
 import { ObservableQuery } from 'avenger/lib/Query';
 import * as QR from 'avenger/lib/QueryResult';
@@ -10,7 +10,6 @@ import debug from 'debug';
 import * as E from 'fp-ts/lib/Either';
 import { pipe } from 'fp-ts/lib/function';
 import * as t from 'io-ts';
-import { PathReporter } from 'io-ts/lib/PathReporter';
 import * as React from 'react';
 import * as config from '../config';
 import { TabouleDataProvider } from '../state';
@@ -51,12 +50,7 @@ export const Taboule = <Q extends keyof TabouleQueries>({
   const propsValidation = validateProps(props);
 
   if (propsValidation._tag === 'Left') {
-    // eslint-disable-next-line @typescript-eslint/no-throw-literal
-    throw new AppError(
-      'TabouleError',
-      'Taboule props are invalid',
-      PathReporter.report(propsValidation)
-    );
+    throw toValidationError('Taboule props are invalid', propsValidation.left);
   }
 
   const {

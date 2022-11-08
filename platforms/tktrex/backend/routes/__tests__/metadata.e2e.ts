@@ -46,7 +46,8 @@ describe('Metadata API', () => {
         .expect(400);
 
       expect(body).toMatchObject({
-        name: 'Bad Request',
+        name: 'APIError',
+        message: 'Request validation failed.'
       });
     });
 

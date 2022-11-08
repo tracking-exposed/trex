@@ -14,7 +14,7 @@ export const ListMetadataOutput = t.strict(
     }),
     data: t.array(apiModel.TKMetadata.TKMetadata),
   },
-  'ListMetadataOutput'
+  'ListMetadataOutput',
 );
 
 export const ListMetadataResponse = t.strict(
@@ -22,7 +22,7 @@ export const ListMetadataResponse = t.strict(
     data: t.array(apiModel.TKMetadata.TKMetadata),
     totals: t.record(apiModel.Nature.NatureType, t.number),
   },
-  'ListMetadataResponse'
+  'ListMetadataResponse',
 );
 export type ListMetadataResponse = t.TypeOf<typeof ListMetadataResponse>;
 
@@ -36,7 +36,7 @@ export const ListMetadataQuery = t.type(
     skip: t.union([NumberFromString, t.number, t.undefined]),
     format: t.union([Format, t.undefined]),
   },
-  'ListMetadataQuery'
+  'ListMetadataQuery',
 );
 
 export type ListMetadataQuery = t.TypeOf<typeof ListMetadataQuery>;

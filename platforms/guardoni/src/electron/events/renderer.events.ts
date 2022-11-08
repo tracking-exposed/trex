@@ -319,6 +319,7 @@ export const GetEvents = ({
           if (!event.sender.isDestroyed()) {
             void pipe(
               guardoni.API.v2.Experiments.GetPublicDirectives(),
+              TE.mapLeft(toAppError),
               liftEventTask(EVENTS.GET_PUBLIC_DIRECTIVES.value)
             );
           }
@@ -330,6 +331,7 @@ export const GetEvents = ({
           if (!event.sender.isDestroyed()) {
             void pipe(
               guardoni.API.v2.Experiments.GetPublicDirectives(),
+              TE.mapLeft(toAppError),
               TE.map((steps) =>
                 steps.find((d) => d.experimentId === experimentId)
               ),
