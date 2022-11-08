@@ -5,19 +5,19 @@ import type { PuppeteerExtra } from 'puppeteer-extra';
 import { AppError, toAppError } from '../../errors/AppError';
 import { Logger } from '../../logger';
 import {
-  CustomStepType,
-  Step,
-  ScrollStepType,
-  KeyPressType,
   ClickType,
+  CustomStepType,
+  KeyPressType,
+  ScrollStepType,
+  Step,
 } from '../../models/Step';
 // import { throwTE } from '../../utils/task.utils';
+import StealthPlugin from 'puppeteer-extra-plugin-stealth';
 import { StepHooks } from './StepHooks';
+import { GetClickStep } from './steps/click';
+import { GetKeypressStep } from './steps/keyPress';
 import { openURL } from './steps/openURL';
 import { GetScrollFor } from './steps/scroll';
-import StealthPlugin from 'puppeteer-extra-plugin-stealth';
-import { GetKeypressStep } from './steps/keyPress';
-import { GetClickStep } from './steps/click';
 
 export type LaunchOptions = puppeteer.LaunchOptions &
   puppeteer.BrowserLaunchArgumentOptions &
@@ -98,7 +98,7 @@ export const operateBrowser =
     return pipe(
       TE.tryCatch(
         () => ctx.hooks.openURL.beforeDirectives(page),
-        (e) => new AppError('BeforeDirectivesError', (e as any).message, [])
+        (e) => toAppError(e)
       ),
       TE.chain(() =>
         TE.sequenceSeqArray(steps.map((step) => operateTab(ctx)(page, step)))

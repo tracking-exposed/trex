@@ -1,4 +1,5 @@
 import { AppError, toAppError } from '@shared/errors/AppError';
+import { toValidationError } from '@shared/errors/ValidationError';
 import * as E from 'fp-ts/lib/Either';
 import { pipe } from 'fp-ts/lib/function';
 import * as IOE from 'fp-ts/lib/IOEither';
@@ -16,13 +17,13 @@ import {
   DEFAULT_TK_FRONTEND,
   DEFAULT_YT_BACKEND,
   DEFAULT_YT_EXTENSION_DIR,
-  DEFAULT_YT_FRONTEND,
+  DEFAULT_YT_FRONTEND
 } from './constants';
 import {
   GuardoniConfig,
   GuardoniContext,
-  PlatformConfig,
   Platform,
+  PlatformConfig
 } from './types';
 import { CHROME_PATHS, getChromePath } from './utils';
 
@@ -143,11 +144,16 @@ export const readConfigFromPath =
         return fs.readFileSync(configFilePath, 'utf-8');
       }, toAppError),
       TE.fromIOEither,
-      TE.chainEitherK((content) => Json.parse(content)),
+      TE.chainEitherK((content) =>
+        pipe(
+          Json.parse(content),
+          E.mapLeft((e) => toAppError(e))
+        )
+      ),
       TE.map((json) => json as any)
     );
 
-    const defaultConfigT = TE.right<unknown, GuardoniConfig>(
+    const defaultConfigT = TE.right<AppError, GuardoniConfig>(
       getDefaultConfig(basePath)
     );
 
@@ -183,17 +189,12 @@ export const readConfigFromPath =
           },
         };
       }),
-      TE.mapLeft(toAppError),
+      // TE.mapLeft(toAppError),
       TE.chainEitherK((json) =>
         pipe(
           GuardoniConfig.decode(json),
-          E.mapLeft(
-            (err) =>
-              new AppError(
-                'DecodeConfigError',
-                "Can't decode guardoni config",
-                failure(err)
-              )
+          E.mapLeft((err) =>
+            toValidationError("Can't decode guardoni config", err)
           )
         )
       )

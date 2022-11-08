@@ -5,7 +5,7 @@ import { TKParsers } from './parsers';
 import { HTMLSource } from './source';
 
 export const toMetadata: BuildMetadataFn<HTMLSource, TKMetadata, TKParsers> = (
-  entry
+  entry,
 ) => {
   // this contains the original .source (html, impression, timeline), the .findings and .failures
   // the metadata is aggregated by unit and not unrolled in any way
@@ -19,78 +19,78 @@ export const toMetadata: BuildMetadataFn<HTMLSource, TKMetadata, TKParsers> = (
   };
 
   switch (entry.findings.nature.type) {
-    case 'foryou': {
-      const { nature, author, description, hashtags, metrics, music, foryou } =
+  case 'foryou': {
+    const { nature, author, description, hashtags, metrics, music, foryou } =
         entry.findings;
-      metadata = {
-        ...metadata,
-        ...nature,
-        nature,
-        ...description,
-        author,
-        metrics,
-        music,
-        hashtags,
-        ...foryou,
-      };
-      break;
-    }
-    case 'search': {
-      const { nature, search } = entry.findings;
-      metadata = {
-        ...metadata,
-        ...nature,
-        nature,
-        ...search,
-      };
-      metadata.query = _.toLower(metadata.query);
-      metadata.nature.query = metadata.query;
-      break;
-    }
-    case 'creator': {
-      const { nature, profile } = entry.findings;
-      metadata = {
-        results: [],
-        ...metadata,
-        nature,
-        ...nature,
-        ...profile,
-      };
-      break;
-    }
-    case 'video':
-    case 'native': {
-      const {
-        nature,
-        description,
-        music,
-        hashtags,
-        metrics,
-        stitch,
-        author,
-        native,
-      } = entry.findings;
-      metadata = {
-        ...metadata,
-        ...nature,
-        nature,
-        ...description,
-        music,
-        hashtags,
-        metrics,
-        stitch,
-        author,
-        ...native,
-      };
-      break;
-    }
-    default: {
-      metadata = {
-        ...metadata,
-        ...entry.findings,
-        ...entry.findings.nature,
-      };
-    }
+    metadata = {
+      ...metadata,
+      ...nature,
+      nature,
+      ...description,
+      author,
+      metrics,
+      music,
+      hashtags,
+      ...foryou,
+    };
+    break;
+  }
+  case 'search': {
+    const { nature, search } = entry.findings;
+    metadata = {
+      ...metadata,
+      ...nature,
+      nature,
+      ...search,
+    };
+    metadata.query = _.toLower(metadata.query);
+    metadata.nature.query = metadata.query;
+    break;
+  }
+  case 'creator': {
+    const { nature, profile } = entry.findings;
+    metadata = {
+      results: [],
+      ...metadata,
+      nature,
+      ...nature,
+      ...profile,
+    };
+    break;
+  }
+  case 'video':
+  case 'native': {
+    const {
+      nature,
+      description,
+      music,
+      hashtags,
+      metrics,
+      stitch,
+      author,
+      native,
+    } = entry.findings;
+    metadata = {
+      ...metadata,
+      ...nature,
+      nature,
+      ...description,
+      music,
+      hashtags,
+      metrics,
+      stitch,
+      author,
+      ...native,
+    };
+    break;
+  }
+  default: {
+    metadata = {
+      ...metadata,
+      ...entry.findings,
+      ...entry.findings.nature,
+    };
+  }
   }
 
   /* fixed fields */

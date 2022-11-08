@@ -39,7 +39,10 @@ export const toGuardoniErrorOutput = (o: unknown): GuardoniErrorOutput => {
     return {
       type: 'error',
       message: o.message,
-      details: o.details,
+      details:
+        o.details.kind === 'DecodingError'
+          ? (o.details.errors as string[])
+          : [],
     };
   }
 
@@ -67,8 +70,6 @@ export const toGuardoniSuccessOutput = (
     values,
   };
 };
-
-
 
 export const liftFromIOE = <T>(lazyF: () => T): TE.TaskEither<AppError, T> => {
   return pipe(IOE.tryCatch(lazyF, toAppError), TE.fromIOEither);
