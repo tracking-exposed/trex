@@ -17,7 +17,10 @@ import { CreatorStatContent, CreatorStats } from '@shared/models/CreatorStats';
 import { GetDirectiveOutput } from '@shared/models/Experiment';
 import { Step } from '@shared/models/Step';
 import * as mongo3 from '@shared/providers/mongo.provider';
-import { ParsedInfo, VideoMetadata } from '@yttrex/shared/models/metadata/Metadata';
+import {
+  ParsedInfo,
+  VideoMetadata,
+} from '@yttrex/shared/models/metadata/Metadata';
 import { NatureType } from '@yttrex/shared/models/Nature';
 import { Supporter } from '@yttrex/shared/models/Supporter';
 import { differenceInSeconds, formatDistance } from 'date-fns';
@@ -918,6 +921,7 @@ async function registerSteps(steps: Step[]): Promise<any> {
       status: 'exist',
       experimentId: exist.experimentId,
       since: exist.when,
+      steps: [],
     };
   }
 
@@ -929,7 +933,7 @@ async function registerSteps(steps: Step[]): Promise<any> {
   });
   await mongoc.close();
   debug('Registered directive %s', experimentId);
-  return { status: 'created', experimentId, since: new Date() };
+  return { status: 'created', experimentId, since: new Date(), steps };
 }
 
 async function pickDirective(
