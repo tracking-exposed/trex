@@ -1,6 +1,6 @@
 {
   "name": "@yttrex/shared",
-  "version": "2.6.5",
+  "version": "2.7.0",
   "description": "youtube.tracking.exposed - shared",
   "private": true,
   "scripts": {

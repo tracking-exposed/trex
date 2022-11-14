@@ -1,7 +1,7 @@
 {
   "name": "@trex/shared",
   "description": "Shared types definitions needed by @trex services",
-  "version": "2.6.5",
+  "version": "2.7.0",
   "scripts": {
     "clean": "rm -rf ./build",
     "tsc": "tsc",

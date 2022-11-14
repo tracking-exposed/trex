@@ -1,3 +1,51 @@
+## [2.7.0](https://github.com/tracking-exposed/trex/compare/v2.6.5...v2.7.0) (2022-11-14)
+
+### Features
+
+- **guardoni:** clean extension folder ([#755](https://github.com/tracking-exposed/trex/issues/755)) ([5f40e93](https://github.com/tracking-exposed/trex/commit/5f40e93fb31c45b48fd8237962ffb6a1636e732a))
+- **tk:backend:** added 'totals' info to GET /v2/metadata ([#763](https://github.com/tracking-exposed/trex/issues/763)) ([07c6894](https://github.com/tracking-exposed/trex/commit/07c6894192ac4c372d54f070f05e46dffda2c446))
+- **yt:backend:** added 'totals' info to GET /v2/metadata ([#759](https://github.com/tracking-exposed/trex/issues/759)) ([918cff3](https://github.com/tracking-exposed/trex/commit/918cff30bf5f749ce9164bf414cf7b200062824a))
+
+- **guardoni:** updrade react-router@^5.3.4 and react-router-dom@^5.3.4 ([#743](https://github.com/tracking-exposed/trex/issues/743)) ([cc86264](https://github.com/tracking-exposed/trex/commit/cc86264ec53d69b8bd1d22438b0c648ae8799335))
+- **shared:** clean jquery deps ([#762](https://github.com/tracking-exposed/trex/issues/762)) ([3cdb2cb](https://github.com/tracking-exposed/trex/commit/3cdb2cb01dd35bf41cae8dba6c889d16a3237d88))
+- **tk:backend:** defined docker image ([#750](https://github.com/tracking-exposed/trex/issues/750)) ([e67161b](https://github.com/tracking-exposed/trex/commit/e67161bb95285cb10bca94628b99af1efe9c2d35))
+- **workspace:** remove 'classnames' in favor of 'clsx' ([#761](https://github.com/tracking-exposed/trex/issues/761)) ([09df286](https://github.com/tracking-exposed/trex/commit/09df286c25960551e0cadec82be908d9241ce2f4))
+- **workspace:** upgrade @commitlint/cli@^17.1.2, @commitlint/config-conventional@^17.1.0 and @commitlint/prompt-cli@^17.1.2 ([a962fb1](https://github.com/tracking-exposed/trex/commit/a962fb1cce3b4f2a2152e4876028a5dc8b0f6022))
+- **workspace:** upgrade @testing-library/jest-dom@^5.16.5, @testing-library/react@^13.4.0, @testing-library/user-event@^14.4.3 ([1c61b74](https://github.com/tracking-exposed/trex/commit/1c61b7412f006e71b1dae0040b9a3a2b0f425833))
+- **workspace:** upgrade @types/node@^16.11.68 ([c3f9501](https://github.com/tracking-exposed/trex/commit/c3f950150c76529926aa575195072d8a4fe252cf))
+- **workspace:** upgrade dotenv@^16.0.1 and dotenv-webpack@^8.0.1 ([e39f3ed](https://github.com/tracking-exposed/trex/commit/e39f3ed2b15178a20928c0e37fe6135d4d7cf6d3))
+- **workspace:** upgrade eslint@^8.25.0 ([d04a4d9](https://github.com/tracking-exposed/trex/commit/d04a4d9ec1e3d932c437811476b17cdeeb89fa1a))
+- **workspace:** upgrade geoip-lite@^1.4.6 ([d69613d](https://github.com/tracking-exposed/trex/commit/d69613db682ce24468c15788d14e21fb1960837e))
+- **workspace:** upgrade jquery@^3.6.1 ([7d88988](https://github.com/tracking-exposed/trex/commit/7d8898828d5a8351d3bf27817ec98a6eeb95d52f))
+- **workspace:** upgrade pm2@^5.2.2 ([e136bb8](https://github.com/tracking-exposed/trex/commit/e136bb85267de782a79245816bf028446a72a930))
+- **workspace:** upgrade puppeteer-extra@^3.3.4 and puppeteer-extra-plugin-stealth@^2.11.1 ([73eac68](https://github.com/tracking-exposed/trex/commit/73eac68b55b276f7820c5fb35ce99deea8b53539))
+- **workspace:** upgrade release-it@^15 ([b6283f6](https://github.com/tracking-exposed/trex/commit/b6283f696ad61a93d18c8deabdc0fae78990b011))
+- **workspace:** upgrade swagger-ui@^4.14.3 ([d69b697](https://github.com/tracking-exposed/trex/commit/d69b697cc8751d75a26230be5091e1b94feff3e8))
+- **workspace:** upgrade ts-node@^10.9.1 and ts-loader@^9.3.1 ([1f60707](https://github.com/tracking-exposed/trex/commit/1f60707b4a9f24a0eadf6bfd60c7ea3e678d747b))
+- **workspace:** upgrade typescript@^4.8.4 ([6a06789](https://github.com/tracking-exposed/trex/commit/6a067891be2e0dc6ad676050cc87e711f3991da0))
+- **workspace:** upgrade uuid@^9.0.0 ([#731](https://github.com/tracking-exposed/trex/issues/731)) ([e72cfde](https://github.com/tracking-exposed/trex/commit/e72cfde63aaedfbf7622b8b34ba1ff347a250348))
+- **workspace:** upgrade vm2 from 3.9.9 to 3.9.11 ([#725](https://github.com/tracking-exposed/trex/issues/725)) ([a801be4](https://github.com/tracking-exposed/trex/commit/a801be4cf7e04548bbcb2536f3eceefab4053a0b))
+- **workspace:** upgrade yargs@^17.6.0 ([7af558a](https://github.com/tracking-exposed/trex/commit/7af558ac36aa6b8041db664a1862843b9b07fe96))
+- **workspace:** yarn dedupe ([b858405](https://github.com/tracking-exposed/trex/commit/b8584050b0e99cd45dfdc1deaa285357d4363706))
+- **yt:backend:** defined docker image ([#722](https://github.com/tracking-exposed/trex/issues/722)) ([6540021](https://github.com/tracking-exposed/trex/commit/6540021563e4f227c29edac907005aeab8409dc0))
+- **yt:ext:** remove unused 'cross-env' dependency ([cdd48f0](https://github.com/tracking-exposed/trex/commit/cdd48f01f3944facd254e9fd17e57799c2d8d741))
+
+### Fixes
+
+- **guardoni:** expect '–' char as valid delimiter for `onCompleted` column ([#749](https://github.com/tracking-exposed/trex/issues/749)) ([e2abdb1](https://github.com/tracking-exposed/trex/commit/e2abdb1d6eee94ba797a2f8ef3a32b75d99e5adf))
+- **guardoni:** remove 'g' modifier from hook regexps to correctly parse sequential entries ([#746](https://github.com/tracking-exposed/trex/issues/746)) ([da22634](https://github.com/tracking-exposed/trex/commit/da226346bc07fd9f284e61c8cd7d7a73a94ad3ae))
+- **guardoni:** set experiment in settings.json correctly ([#758](https://github.com/tracking-exposed/trex/issues/758)) ([8ebd5a4](https://github.com/tracking-exposed/trex/commit/8ebd5a440ccc1d1236f6099ae164f3d67ea10e52))
+- **shared:** parser provider entry id for output ([254aae8](https://github.com/tracking-exposed/trex/commit/254aae8b583b13b9b9598d81560438c4ba559e72))
+- **shared:** prevent NaN error in htmlsize utils check ([24db575](https://github.com/tracking-exposed/trex/commit/24db57541bba979962fbdf5582435a3a71dbdb1a))
+- **shared:** removed console.log from parser get successful output function ([c96d469](https://github.com/tracking-exposed/trex/commit/c96d469e2e1485827d1734a0163be1387edf019d))
+- **tk:backend:** CSV generation for foryou and following ([#769](https://github.com/tracking-exposed/trex/issues/769)) ([cc8b074](https://github.com/tracking-exposed/trex/commit/cc8b074d97b42ca607c76a9b1165ec9d57b5f3cb))
+- **tk:ext:** make tiktok description text shorter ([#757](https://github.com/tracking-exposed/trex/issues/757)) ([bca0e94](https://github.com/tracking-exposed/trex/commit/bca0e94759407a718b1f6550977bcb60b2a0d15f))
+- **tk:shared:** exclude source 'interval' when computing metadata id ([f76e336](https://github.com/tracking-exposed/trex/commit/f76e336ab52cce51ee04f71d89bbfeeccd296f56))
+- **tk:shared:** use Date for metadata 'savingTime' and 'clientTime' fields ([#760](https://github.com/tracking-exposed/trex/issues/760)) ([79f3c13](https://github.com/tracking-exposed/trex/commit/79f3c132d09c7761ac32cf86776ab717da43daa0))
+- **yt:backend:** defined /v0/health endpoint ([#766](https://github.com/tracking-exposed/trex/issues/766)) ([042e4bc](https://github.com/tracking-exposed/trex/commit/042e4bc7a0790c2ab7c16f73c59aa548ed472ae0))
+- **yt:backend:** return 'steps' when creating experiment ([e16796c](https://github.com/tracking-exposed/trex/commit/e16796c16c943f9a94b5c8225f7174fbe5042424))
+- **yt:shared:** metadata models splitted in proper files ([#767](https://github.com/tracking-exposed/trex/issues/767)) ([ae45a2d](https://github.com/tracking-exposed/trex/commit/ae45a2dc440775e6d74854553f08b9bfcd10a322))
+
 ### [2.6.5](https://github.com/tracking-exposed/trex/compare/v2.6.4...v2.6.5) (2022-10-17)
 
 - **docs:** upgrade [@docusaururs](https://github.com/docusaururs)@2.1.0 ([#694](https://github.com/tracking-exposed/trex/issues/694)) ([f68a7a5](https://github.com/tracking-exposed/trex/commit/f68a7a5987a63fe5cbe13852070adffb2055e566))
