@@ -3,8 +3,9 @@ import ReportProblemRoundedIcon from '@mui/icons-material/ReportProblemRounded';
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 import clsx from 'clsx';
 import './errorModal.css';
+import { Box, Button, Typography } from '@material-ui/core';
 
-interface Props {
+export interface ErrorModalProps {
   name: string;
   message: string;
   details: string[];
@@ -22,15 +23,17 @@ const ErrorModal = (props: Props): JSX.Element => {
   };
 
   return (
-    <div className="ErrorModal">
+    <Box className="ErrorModal">
       <div className="ErrorModal__container">
         <div className="ErrorModal__container__name">
           <ReportProblemRoundedIcon />
-          <div>{name}</div>
+          <Typography variant="h5">{name}</Typography>
         </div>
-        <div className="ErrorModal__container__message">{message}</div>
+        <Typography className="ErrorModal__container__message">
+          {message}
+        </Typography>
         <div className="ErrorModal__container__details">
-          <button
+          <Button
             className="ErrorModal__container__details__btn"
             onClick={handleDetailsClick}
           >
@@ -40,22 +43,26 @@ const ErrorModal = (props: Props): JSX.Element => {
                 '-showBox': detailsShown,
               })}
             />
-          </button>
+          </Button>
           <div
             className={clsx('ErrorModal__container__details__box', {
               '-showBox': detailsShown,
             })}
           >
-            <div className="ErrorModal__container__details__box__detail">
-              {details}
-            </div>
+            <ul className="ErrorModal__container__details__box__detail">
+              {details.map((d) => (
+                <li key={d}>
+                  <Typography>{d}</Typography>
+                </li>
+              ))}
+            </ul>
           </div>
         </div>
         <div className="ErrorModal__close">
           <button onClick={handleDismiss}>Dismiss</button>
         </div>
       </div>
-    </div>
+    </Box>
   );
 };
 
