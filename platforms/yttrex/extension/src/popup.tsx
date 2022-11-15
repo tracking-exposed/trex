@@ -15,7 +15,7 @@ renderPopup({
   settings: {
     enabled: {
       researchTag: true,
-      experimentId: config.DEVELOPMENT,
+      experimentId: true,
     },
   },
   getLinks: ({ publicKey }) => {
