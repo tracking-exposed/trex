@@ -6,6 +6,9 @@ on:
       ref:
         description: 'The commit to checkout (on master)'
         required: true
+env:
+  YT_IMAGE_NAME: yt-backend
+  TK_IMAGE_NAME: tk-backend
 
 jobs:
   build:
@@ -53,6 +56,44 @@ jobs:
           yarn guardoni pkg
           yarn guardoni build:app
           yarn ycai build
+
+  docker_backends:
+    steps:
+      - name: Log in to registry
+        # This is where you will update the personal access token to GITHUB_TOKEN
+        run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u $ --password-stdin
+
+      - name: Build & Push TK Backend image
+        run: |
+          VERSION=${{ steps.version.outputs.version }}
+          TK_IMAGE_ID=ghcr.io/${{ github.repository_owner }}/$TK_IMAGE_NAME
+          echo $IMAGE_ID
+          docker build . --file Dockerfile.tkbackend --tag $TK_IMAGE_NAME --label "runnumber=${GITHUB_RUN_ID}"
+
+          # Strip "v" prefix from tag name
+          [[ "${{ github.ref }}" == "refs/tags/"* ]] && VERSION=$(echo $VERSION | sed -e 's/^v//')
+          # Use Docker `latest` tag convention
+          [ "$VERSION" == "master" ] && VERSION=latest
+          echo IMAGE_ID=$IMAGE_ID
+          echo VERSION=$VERSION
+          docker tag $TK_IMAGE_NAME $TK_IMAGE_ID:$VERSION
+          docker push $TK_IMAGE_ID:$VERSION
+
+      - name: Build & Push YT Backend image
+        run: |
+          VERSION=${{ steps.version.outputs.version }}
+          YT_IMAGE_ID=ghcr.io/${{ github.repository_owner }}/$YT_IMAGE_NAME
+          echo $IMAGE_ID
+          docker build . --file Dockerfile.ytbackend --tag $YT_IMAGE_NAME --label "runnumber=${GITHUB_RUN_ID}"
+
+          # Strip "v" prefix from tag name
+          [[ "${{ github.ref }}" == "refs/tags/"* ]] && VERSION=$(echo $VERSION | sed -e 's/^v//')
+          # Use Docker `latest` tag convention
+          [ "$VERSION" == "master" ] && VERSION=latest
+          echo IMAGE_ID=$IMAGE_ID
+          echo VERSION=$VERSION
+          docker tag $YT_IMAGE_NAME $YT_IMAGE_ID:$VERSION
+          docker push $YT_IMAGE_ID:$VERSION
 
   guardoni_build:
     name: Guardoni build
