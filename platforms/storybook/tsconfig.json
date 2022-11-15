@@ -22,14 +22,20 @@
     "moduleResolution": "node",
     "isolatedModules": true,
     "paths": {
-      "@shared/*": [
-        "../../../packages/shared/src/*"
-      ]
+      "@shared/*": ["../../../packages/shared/src/*"],
+      "@yttrex/shared/*": ["../../yttrex/shared/src/*"],
+      "@tktrex/shared/*": ["../../tktrex/shared/src/*"]
     }
   },
   "references": [
     {
       "path": "../../packages/shared"
+    },
+    {
+      "path": "../yttrex/shared"
+    },
+    {
+      "path": "../tktrex/shared"
     }
   ],
   "include": ["./src"],

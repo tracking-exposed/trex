@@ -29,7 +29,7 @@
       "path": "../../../packages/shared"
     }
   ],
-  "include": ["./"],
+  "include": ["./src"],
   "exclude": [
     "./jest.config.js",
     "./jest.setup.ts",

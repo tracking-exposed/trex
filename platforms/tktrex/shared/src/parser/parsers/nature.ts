@@ -4,15 +4,14 @@ import { Nature } from '../../models/Nature';
 import { TKParserConfig } from '../config';
 import { HTMLSource } from '../source';
 import { Either, left, right } from 'fp-ts/lib/Either';
-import { URLError } from '../v2/models/Error';
 
 const HOSTNAMES = ['www.tiktok.com', 'tiktok.com'];
-export const getNatureByHref = (href: string): Either<URLError, Nature> => {
+export const getNatureByHref = (href: string): Either<Error, Nature> => {
   const url = new URL(href);
   const chunks = url.pathname.split('/');
 
   if (!HOSTNAMES.includes(url.hostname)) {
-    return left(new URLError('URL is not from tiktok', url));
+    return left(new Error(`URL is not from tiktok: ${url}`));
   }
 
   if (
@@ -50,7 +49,7 @@ export const getNatureByHref = (href: string): Either<URLError, Nature> => {
     });
   }
 
-  return left(new URLError('unexpected condition from URL', url));
+  return left(new Error(`Unexpected condition from URL:  ${url}`));
 };
 
 const nature: ParserFn<HTMLSource, Nature, TKParserConfig> = async(

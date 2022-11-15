@@ -8,6 +8,7 @@
     "baseUrl": "./src",
     "rootDir": "./src",
     "noEmit": false,
+    "jsx": "react",
     "esModuleInterop": true,
     "skipLibCheck": true,
     "isolatedModules": true,

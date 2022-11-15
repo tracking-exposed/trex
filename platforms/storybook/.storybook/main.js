@@ -54,6 +54,7 @@ module.exports = {
   },
   env: (config) => ({
     ...config,
+    DEBUG: '*',
     BUILD: 'BUILD env variable',
     BUILD_DATE: new Date().toISOString(),
     DEVELOPMENT: true,
