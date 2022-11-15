@@ -1,4 +1,4 @@
-import { Card, CardContent, Typography } from '@material-ui/core';
+import { Card } from '@material-ui/core';
 import { Alert, AlertTitle } from '@material-ui/lab';
 import * as React from 'react';
 import { isAPIError } from '../../errors/APIError';
@@ -10,25 +10,20 @@ export const ErrorBox = (e: unknown): React.ReactElement<any, string> => {
   const errorName = isAPIError(e) ? e.name : 'Error';
   const message = isAPIError(e) ? e.message : 'Unknown Error';
   return (
-    <Card>
-      <Alert severity="error">
+    <Card style={{ height: '100%' }}>
+      <Alert severity="error" style={{ height: '50%' }}>
         <AlertTitle>{errorName}</AlertTitle>
         <p>{message}</p>
         {isAPIError(e) && e.details?.kind === 'DecodingError' ? (
-          <ul>
-            {(e.details.errors ?? []).map((d: any) => (
-              <li key={d}>{d}</li>
-            ))}
-          </ul>
+          <div style={{ overflow: 'auto', height: '100%' }}>
+            <ul>
+              {((e.details.errors as any[]) ?? []).map((d: any) => (
+                <li key={d}>{d}</li>
+              ))}
+            </ul>
+          </div>
         ) : null}
       </Alert>
-
-      <CardContent>
-        <Typography variant="h6">Debug</Typography>
-        <pre style={{ backgroundColor: 'white' }}>
-          <code>{JSON.stringify(e, null, 2)}</code>
-        </pre>
-      </CardContent>
     </Card>
   );
 };
