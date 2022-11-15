@@ -22,7 +22,7 @@
 }
 
 .ErrorModal__container__details__box.-showBox{
-  max-height: 120px;
+  max-height: 300px;
   padding-bottom: 20px;
 }
 
@@ -36,15 +36,14 @@
   overflow-x: hidden;
   margin: 10px;
   word-wrap: break-word;
-  padding: 0 10px;
+  padding: 20px;
   border: 0;
   border: 1px solid #de605f;
   border-radius: 3px;
-  height: 100px;
+  height: 240px;
   overflow: scroll;
-  background: #260101;
   color: #de605f;
-  padding: 10px;
+  background: #260101;
 }
 
 .ErrorModal__container__details__btn{
