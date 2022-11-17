@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Avatar } from '@material-ui/core';
+import { Avatar } from '@mui/material';
 import { GridCellParams } from '@mui/x-data-grid';
 import { formatDistanceToNow } from 'date-fns';
 

@@ -1,4 +1,4 @@
-import { IconButton, Tooltip } from '@material-ui/core';
+import { IconButton, Tooltip } from '@mui/material';
 import * as React from 'react';
 import CSVIcon from '@material-ui/icons/CloudDownloadOutlined';
 

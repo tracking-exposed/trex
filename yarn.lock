@@ -2679,12 +2679,21 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@babel/runtime@npm:^7.0.0, @babel/runtime@npm:^7.1.2, @babel/runtime@npm:^7.10.2, @babel/runtime@npm:^7.10.3, @babel/runtime@npm:^7.11.2, @babel/runtime@npm:^7.12.13, @babel/runtime@npm:^7.12.5, @babel/runtime@npm:^7.13.10, @babel/runtime@npm:^7.14.5, @babel/runtime@npm:^7.14.8, @babel/runtime@npm:^7.15.4, @babel/runtime@npm:^7.17.2, @babel/runtime@npm:^7.17.8, @babel/runtime@npm:^7.18.6, @babel/runtime@npm:^7.2.0, @babel/runtime@npm:^7.3.1, @babel/runtime@npm:^7.4.4, @babel/runtime@npm:^7.5.0, @babel/runtime@npm:^7.5.5, @babel/runtime@npm:^7.7.2, @babel/runtime@npm:^7.7.6, @babel/runtime@npm:^7.8.3, @babel/runtime@npm:^7.8.4, @babel/runtime@npm:^7.8.7, @babel/runtime@npm:^7.9.2":
+"@babel/runtime@npm:^7.0.0, @babel/runtime@npm:^7.1.2, @babel/runtime@npm:^7.10.2, @babel/runtime@npm:^7.10.3, @babel/runtime@npm:^7.11.2, @babel/runtime@npm:^7.12.13, @babel/runtime@npm:^7.12.5, @babel/runtime@npm:^7.13.10, @babel/runtime@npm:^7.14.5, @babel/runtime@npm:^7.15.4, @babel/runtime@npm:^7.17.2, @babel/runtime@npm:^7.17.8, @babel/runtime@npm:^7.18.6, @babel/runtime@npm:^7.2.0, @babel/runtime@npm:^7.3.1, @babel/runtime@npm:^7.4.4, @babel/runtime@npm:^7.5.0, @babel/runtime@npm:^7.5.5, @babel/runtime@npm:^7.7.2, @babel/runtime@npm:^7.7.6, @babel/runtime@npm:^7.8.3, @babel/runtime@npm:^7.8.4, @babel/runtime@npm:^7.8.7, @babel/runtime@npm:^7.9.2":
   version: 7.19.0
   resolution: "@babel/runtime@npm:7.19.0"
   dependencies:
     regenerator-runtime: ^0.13.4
   checksum: fa69c351bb05e1db3ceb9a02fdcf620c234180af68cdda02152d3561015f6d55277265d3109815992f96d910f3db709458cae4f8df1c3def66f32e0867d82294
+  languageName: node
+  linkType: hard
+
+"@babel/runtime@npm:^7.18.9, @babel/runtime@npm:^7.20.1":
+  version: 7.20.1
+  resolution: "@babel/runtime@npm:7.20.1"
+  dependencies:
+    regenerator-runtime: ^0.13.10
+  checksum: 00567a333d3357925742a6f5e39394dcc0af6e6029103fe188158bf7ae8b0b3ee3c6c0f68fccc217f0a6cfa455f6be252298baf56b3f5ff37b34313b170cd9f6
   languageName: node
   linkType: hard
 
@@ -4807,36 +4816,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@material-ui/utils@npm:^5.0.0-alpha.14":
-  version: 5.0.0-beta.5
-  resolution: "@material-ui/utils@npm:5.0.0-beta.5"
-  dependencies:
-    "@babel/runtime": ^7.14.8
-    "@types/prop-types": ^15.7.4
-    "@types/react-is": ^16.7.1 || ^17.0.0
-    prop-types: ^15.7.2
-    react-is: ^17.0.2
-  peerDependencies:
-    react: ^17.0.2
-  checksum: 397d318861fb315ff9814e1878fdd0259f3c6cb6396b0500b5c0e13b6eeeb3a88c2ee03b9a731b57f75b29469a7bfe412010e75b7bd251a941bb7f078abfbaae
-  languageName: node
-  linkType: hard
-
-"@material-ui/x-license@npm:^4.0.0-alpha.37":
-  version: 4.0.0-alpha.37
-  resolution: "@material-ui/x-license@npm:4.0.0-alpha.37"
-  dependencies:
-    "@material-ui/utils": ^5.0.0-alpha.14
-    esm: ^3.2.25
-    yargs: ^17.0.1
-  peerDependencies:
-    react: ^17.0.0
-  bin:
-    licensegen: bin/license-gen-script.js
-  checksum: 71861879e4411c60bef9ed965b2d9341e7055b6a2eff65e407013a90d3bfcf541c78d604f32781272cb0449fd9d4567bf97fdb27b0d91ff625ed3d33cf5955d8
-  languageName: node
-  linkType: hard
-
 "@mdx-js/mdx@npm:^1.6.22":
   version: 1.6.22
   resolution: "@mdx-js/mdx@npm:1.6.22"
@@ -5063,7 +5042,22 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@mui/utils@npm:^5.4.1, @mui/utils@npm:^5.8.6":
+"@mui/utils@npm:^5.10.3":
+  version: 5.10.14
+  resolution: "@mui/utils@npm:5.10.14"
+  dependencies:
+    "@babel/runtime": ^7.20.1
+    "@types/prop-types": ^15.7.5
+    "@types/react-is": ^16.7.1 || ^17.0.0
+    prop-types: ^15.8.1
+    react-is: ^18.2.0
+  peerDependencies:
+    react: ^17.0.0 || ^18.0.0
+  checksum: 8b30b0a2d2d70672c38543566ba36fdf531b9c5ad6daf89f4b6ae84da0862ad4e7822d5465e016dfc719e12221a9d0942b884a0d05ea89349308bee81d58574f
+  languageName: node
+  linkType: hard
+
+"@mui/utils@npm:^5.8.6":
   version: 5.8.6
   resolution: "@mui/utils@npm:5.8.6"
   dependencies:
@@ -5078,13 +5072,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@mui/x-data-grid@npm:^5.11.1":
-  version: 5.12.3
-  resolution: "@mui/x-data-grid@npm:5.12.3"
+"@mui/x-data-grid@npm:^5.17.11":
+  version: 5.17.11
+  resolution: "@mui/x-data-grid@npm:5.17.11"
   dependencies:
-    "@babel/runtime": ^7.17.2
-    "@mui/utils": ^5.4.1
-    clsx: ^1.1.1
+    "@babel/runtime": ^7.18.9
+    "@mui/utils": ^5.10.3
+    clsx: ^1.2.1
     prop-types: ^15.8.1
     reselect: ^4.1.6
   peerDependencies:
@@ -5092,7 +5086,7 @@ __metadata:
     "@mui/system": ^5.4.1
     react: ^17.0.2 || ^18.0.0
     react-dom: ^17.0.2 || ^18.0.0
-  checksum: afe320b06aaf70fa8935f7e16f99a664e949d1f9d131d5dbee26fcb2ecc6f1c754cec8445fec7a53925ca9f1242949c70b7786b3f5c79128dac9993ae7aaa9b9
+  checksum: ea64d67e6b3d07b54261d89b42f5e6bc275744c646213c249c1d6791770aa50b182f2b76fc2db983845e3f3a2ce31ef6fac89adffad8e6cb4c4f4e1c33e82d4e
   languageName: node
   linkType: hard
 
@@ -5787,7 +5781,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@storybook/addon-controls@npm:6.5.13":
+"@storybook/addon-controls@npm:6.5.13, @storybook/addon-controls@npm:^6.5.13":
   version: 6.5.13
   resolution: "@storybook/addon-controls@npm:6.5.13"
   dependencies:
@@ -7503,7 +7497,9 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@trex/storybook@workspace:platforms/storybook"
   dependencies:
+    "@react-theming/storybook-addon": ^1.1.7
     "@storybook/addon-actions": ^6.5.13
+    "@storybook/addon-controls": ^6.5.13
     "@storybook/addon-essentials": ^6.5.13
     "@storybook/addon-interactions": ^6.5.13
     "@storybook/addon-links": ^6.5.13
@@ -7539,14 +7535,10 @@ __metadata:
   dependencies:
     "@emotion/react": ^11.9.0
     "@emotion/styled": ^11.8.1
-    "@material-ui/core": ^4.12.4
-    "@material-ui/icons": ^4.11.3
-    "@material-ui/styles": ^4.11.5
-    "@material-ui/x-license": ^4.0.0-alpha.37
     "@mui/icons-material": ^5.8.0
     "@mui/material": ^5.8.0
     "@mui/styled-engine": ^5.8.0
-    "@mui/x-data-grid": ^5.11.1
+    "@mui/x-data-grid": ^5.17.11
     "@types/node": ^16.11.68
     "@types/prettier": ^2.6.3
     "@types/react": ^17.0.50
@@ -8583,7 +8575,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/prop-types@npm:*, @types/prop-types@npm:^15.7.4, @types/prop-types@npm:^15.7.5":
+"@types/prop-types@npm:*, @types/prop-types@npm:^15.7.5":
   version: 15.7.5
   resolution: "@types/prop-types@npm:15.7.5"
   checksum: 5b43b8b15415e1f298243165f1d44390403bb2bd42e662bca3b5b5633fdd39c938e91b7fce3a9483699db0f7a715d08cef220c121f723a634972fdf596aec980
@@ -16455,13 +16447,6 @@ __metadata:
   bin:
     eslint: bin/eslint.js
   checksum: 7acf2693b522b573657b53d2245b5522d3a131e4224b1cbf01e2c3579632fdbf62599284f68bc483e6e4eba23ae3643c9544744e0214a86e727cc361cedcd0fa
-  languageName: node
-  linkType: hard
-
-"esm@npm:^3.2.25":
-  version: 3.2.25
-  resolution: "esm@npm:3.2.25"
-  checksum: 978aabe2de83541c105605a6d60a26ed8e627ef6bb0a7605fe15a95bbdea6b8348bd045255cb22219c054dd09a81a94823df00843d9e97f42419c92015ce3a64
   languageName: node
   linkType: hard
 
@@ -27243,7 +27228,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-is@npm:^16.12.0 || ^17.0.0 || ^18.0.0, react-is@npm:^18.0.0":
+"react-is@npm:^16.12.0 || ^17.0.0 || ^18.0.0, react-is@npm:^18.0.0, react-is@npm:^18.2.0":
   version: 18.2.0
   resolution: "react-is@npm:18.2.0"
   checksum: e72d0ba81b5922759e4aff17e0252bd29988f9642ed817f56b25a3e217e13eea8a7f2322af99a06edb779da12d5d636e9fda473d620df9a3da0df2a74141d53e
@@ -27874,6 +27859,13 @@ __metadata:
   version: 0.12.1
   resolution: "regenerator-runtime@npm:0.12.1"
   checksum: 348c401336bcebe2be17fd4f24c5b0a1ed75bff3024dc817a69cdc776b48b98c7f6f3b98e1baa4220569440bb9215e1fff3dcb01c8aad3ff2ed3732e30d017bf
+  languageName: node
+  linkType: hard
+
+"regenerator-runtime@npm:^0.13.10":
+  version: 0.13.11
+  resolution: "regenerator-runtime@npm:0.13.11"
+  checksum: 27481628d22a1c4e3ff551096a683b424242a216fee44685467307f14d58020af1e19660bf2e26064de946bad7eff28950eae9f8209d55723e2d9351e632bbb4
   languageName: node
   linkType: hard
 

@@ -1,5 +1,5 @@
-import { IconButton, Tooltip } from '@material-ui/core';
-import DeleteIcon from '@material-ui/icons/DeleteOutline';
+import { IconButton, Tooltip } from '@mui/material';
+import DeleteIcon from '@mui/icons-material/DeleteOutline';
 import * as React from 'react';
 
 const DeleteButton: React.FC<{ id: string; onClick: (id: string) => void }> = (

@@ -1,28 +1,31 @@
-.expand-view{
-  position: absolute;
+.expand-view {
+  position: fixed;
   right: -600px;
   height: 100%;
   top: 0;
   width: 30vw;
   background-color: white;
-  box-shadow: -4px 0px 22px -10px rgba(0,0,0,0.75);
+  box-shadow: -4px 0px 22px -10px rgba(0, 0, 0, 0.75);
   transition: all 0.4s linear;
-  overflow: scroll;
   font-family: Roboto;
+  display: flex;
 }
 
-.expand-view__list{
+.expand-view__list {
+  display: flex;
+  flex-direction: column;
   list-style: none;
   margin-top: 60px;
   padding-left: 25px;
   padding-right: 25px;
+  overflow: scroll;
 }
 
-.expand-view.visible{
+.expand-view.visible {
   right: 0;
 }
 
-.expand-view__close{
+.expand-view__close {
   position: absolute;
   top: 15px;
   left: 15px;
@@ -31,12 +34,12 @@
   cursor: pointer;
 }
 
-.expand-view__list__item{
+.expand-view__list__item {
   margin-bottom: 30px;
   position: relative;
 }
 
-.expand-view__list__item:after{
+.expand-view__list__item:after {
   height: 1px;
   width: 100%;
   background-color: black;
@@ -44,16 +47,16 @@
   content: '';
   display: block;
   bottom: -15px;
-  opacity: .1;
+  opacity: 0.1;
 }
 
-.expand-view__list__item__link{
+.expand-view__list__item__link {
   display: flex;
   color: rgba(0, 0, 0, 0.87);
   text-decoration: none;
 }
 
-.expand-view__list__item__img{
+.expand-view__list__item__img {
   height: 120px;
   width: 160px;
   object-fit: cover;
@@ -62,8 +65,8 @@
   border: 1px solid gainsboro;
 }
 
-.expand-view__list__item__text__views{
-  opacity: .8;
+.expand-view__list__item__text__views {
+  opacity: 0.8;
   margin-top: 5px;
   color: #f44336;
 }

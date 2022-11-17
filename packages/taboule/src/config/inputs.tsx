@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Box, FormControlLabel, Input } from '@material-ui/core';
+import { Box, FormControlLabel, Input } from '@mui/material';
 
 const makeTextInput =
   ({ label, key }: { label: string; key: string }) =>

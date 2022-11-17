@@ -1,4 +1,4 @@
-import { Box } from '@material-ui/core';
+import { Box } from '@mui/material';
 import { ErrorBox } from '@shared/components/Error/ErrorBox';
 import * as React from 'react';
 

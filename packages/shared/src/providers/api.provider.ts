@@ -18,6 +18,7 @@ import { MinimalEndpointInstance, TypeOfEndpointInstance } from '../endpoints';
 import { APIError, fromAxiosError, isAPIError } from '../errors/APIError';
 import { toValidationError } from '../errors/ValidationError';
 import { trexLogger } from '../logger';
+import qs from 'qs';
 
 export const apiLogger = trexLogger.extend('API');
 
@@ -155,6 +156,10 @@ export const MakeHTTPClient = (client: AxiosInstance): HTTPClient => {
                 method: e.Method,
                 url,
                 params: input.query,
+                paramsSerializer(params) {
+                  const q = qs.stringify(params);
+                  return q;
+                },
                 data: input.body,
                 responseType: 'json',
                 headers: {

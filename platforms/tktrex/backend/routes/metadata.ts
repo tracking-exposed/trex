@@ -69,6 +69,15 @@ const listMetadata = async (req: any): Promise<ListMetadataResponse> => {
         }
         break;
       }
+      case 'foryou': {
+        const { description } = queryFilter;
+        if (description) {
+          filter.description = {
+            $regex: new RegExp(description, 'i'),
+          };
+        }
+        break;
+      }
       case 'native': {
         const { description } = queryFilter;
 

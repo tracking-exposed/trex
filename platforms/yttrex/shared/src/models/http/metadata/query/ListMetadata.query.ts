@@ -26,7 +26,7 @@ export const ListHomeMetadataQuery = t.type(
     nature: Nature.HomeNatureType,
     login: t.union([BooleanFromString, t.undefined], 'login?'),
   },
-  'ListSearchMetadataQuery'
+  'ListHomeMetadataQuery'
 );
 
 export const ListMetadataQuery = t.partial(

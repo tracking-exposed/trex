@@ -2,33 +2,34 @@ import { createTheme, ThemeProvider } from '@material-ui/core';
 import { ErrorBoundary } from '@shared/components/Error/ErrorBoundary';
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
-import { Taboule, TabouleProps } from './components/Taboule';
+import { TabouleIndex, TabouleIndexProps } from './components';
 import { TabouleQueries } from './state/queries';
 
 interface DataTableProps<Q extends keyof TabouleQueries>
-  extends TabouleProps<Q> {
+  extends TabouleIndexProps<Q> {
   node: HTMLDivElement;
 }
 
-let lastQuery: undefined | string;
+let lastQueries: string[] = [];
 
 const appendTo = <Q extends keyof TabouleQueries>({
   node,
+  queries,
   ...props
 }: DataTableProps<Q>): void => {
   const theme = createTheme();
 
-  if (lastQuery && lastQuery !== props.query) {
+  if (queries?.some((q) => lastQueries.includes(q.value))) {
     ReactDOM.unmountComponentAtNode(node);
   }
 
-  lastQuery = props.query;
+  lastQueries = queries?.map((q) => q.value) ?? [];
 
   ReactDOM.render(
     <React.StrictMode>
       <ThemeProvider theme={theme}>
         <ErrorBoundary>
-          <Taboule {...props} />
+          <TabouleIndex {...props} queries={queries} />
         </ErrorBoundary>
       </ThemeProvider>
     </React.StrictMode>,

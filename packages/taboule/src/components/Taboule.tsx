@@ -1,10 +1,13 @@
-import { Box, Divider, Typography } from '@material-ui/core';
+import { Box, Divider, Typography } from '@mui/material';
 import {
   DataGrid,
   DataGridProps,
   GridColTypeDef,
   GridEventListener,
+  GridFilterModel,
   GridFooter,
+  GridLinkOperator,
+  GridToolbarQuickFilter,
 } from '@mui/x-data-grid';
 import { toValidationError } from '@shared/errors/ValidationError';
 import { GetLogger } from '@shared/logger';
@@ -24,6 +27,7 @@ import {
   TabouleQueries,
 } from '../state/queries';
 import { TabouleQueryKey } from '../state/types';
+import RefreshButton from './buttons/RefreshButton';
 import { ErrorOverlay } from './ErrorOverlay';
 import ExpandView from './expand-view/ExpandView';
 import './Taboule.css';
@@ -87,6 +91,10 @@ export const Taboule = <Q extends keyof TabouleQueries>({
 
   const [page, setPage] = React.useState(0);
   const [pageSize, setPageSize] = React.useState(props.pageSize ?? 25);
+  const [filterModel, setFilterModel] = React.useState<GridFilterModel>({
+    items: [],
+    quickFilterLogicOperator: GridLinkOperator.Or,
+  });
 
   const tabouleQueries = React.useMemo(
     () => TabouleDataProvider(baseURL),
@@ -96,7 +104,7 @@ export const Taboule = <Q extends keyof TabouleQueries>({
     queryKey
   ] as any;
 
-  const { inputs, ...queryConfig } = React.useMemo(
+  const { inputs, filters, ...queryConfig } = React.useMemo(
     () =>
       config.defaultConfiguration(tabouleQueries.commands, params)[queryKey],
     [queryKey, params]
@@ -122,6 +130,12 @@ export const Taboule = <Q extends keyof TabouleQueries>({
     page,
     filterMode: 'server',
     ...queryConfig,
+    onFilterModelChange(model, details) {
+      console.log('filter changed', { model, details, params });
+      setFilterModel(model);
+    },
+
+    filterModel,
     rows: [],
     rowsPerPageOptions: [25, 50, 100],
     initialState: {
@@ -132,6 +146,14 @@ export const Taboule = <Q extends keyof TabouleQueries>({
     pageSize,
     paginationMode: 'server',
     pagination: true,
+    componentsProps: {
+      toolbar: {
+        showQuickFilter: true,
+        quickFilterProps: {
+          debounceMs: 500,
+        },
+      },
+    },
     components: {
       ErrorOverlay,
       Footer: (props) => {
@@ -148,7 +170,38 @@ export const Taboule = <Q extends keyof TabouleQueries>({
       ...(config.actions !== undefined
         ? {
             Toolbar: (props) => {
-              return <Box margin={2}>{queryConfig.actions?.()}</Box>;
+              return (
+                <Box
+                  style={{
+                    display: 'flex',
+                    alignContent: 'center',
+                  }}
+                >
+                  <Box
+                    margin={2}
+                    style={{
+                      display: 'flex',
+                      flexGrow: 1,
+                      alignItems: 'center',
+                    }}
+                  >
+                    <GridToolbarQuickFilter {...props.quickFilterProps} />
+                  </Box>
+
+                  <Box
+                    margin={2}
+                    style={{
+                      display: 'flex',
+                      flexDirection: 'row',
+                      justifyContent: 'flex-end',
+                      alignItems: 'center',
+                    }}
+                  >
+                    <RefreshButton onClick={handleReload} />
+                    {queryConfig.actions?.()}
+                  </Box>
+                </Box>
+              );
             },
           }
         : {}),
@@ -215,6 +268,20 @@ export const Taboule = <Q extends keyof TabouleQueries>({
   const amount = pageSize;
   const skip = page * pageSize;
 
+  const queryFilters = React.useMemo(() => {
+    const currentFilter = filterModel.items.reduce(
+      (acc, v) => ({ ...acc, [v.columnField]: v.value }),
+      {}
+    );
+
+    return {
+      ...filters,
+      ...currentFilter,
+    };
+  }, [filterModel]);
+
+  console.log('query filters', queryFilters);
+
   return (
     <Box height={height}>
       <div
@@ -224,9 +291,6 @@ export const Taboule = <Q extends keyof TabouleQueries>({
         }}
       >
         {paramsInputs}
-        <button onClick={handleReload} className="taboule__reload">
-          reload
-        </button>
       </div>
 
       <WithQueries
@@ -238,6 +302,7 @@ export const Taboule = <Q extends keyof TabouleQueries>({
               publicKey: params.publicKey,
               amount,
               skip,
+              filter: queryFilters,
             },
           },
         }}

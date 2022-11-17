@@ -3,25 +3,26 @@ import { ChannelRelated } from '@shared/models/ChannelRelated';
 import {
   HomeMetadata,
   SearchMetadata,
-  VideoMetadata
+  VideoMetadata,
 } from '@shared/models/contributor/ContributorPersonalStats';
-import { SummaryHTMLMetadata } from '@shared/models/contributor/ContributorPersonalSummary';
 import { GuardoniExperiment } from '@shared/models/Experiment';
 import { SearchQuery } from '@shared/models/http/SearchQuery';
-import { Step } from '@shared/models/Step';
 import { MakeAPIClient } from '@shared/providers/api.provider';
 import * as tkEndpoints from '@tktrex/shared/endpoints';
 import {
-  ForYouMetadata as TKForYouMetadata, NativeMetadata as TKNativeMetadata, ProfileMetadata as TKProfileMetadata, SearchMetadata as TKSearchMetadata
+  ForYouMetadata as TKForYouMetadata,
+  NativeMetadata as TKNativeMetadata,
+  ProfileMetadata as TKProfileMetadata,
+  SearchMetadata as TKSearchMetadata,
 } from '@tktrex/shared/models/metadata';
 import {
   ForYouType,
   NativeType,
   ProfileType,
-  SearchType
+  SearchType,
 } from '@tktrex/shared/models/Nature';
 import * as endpoints from '@yttrex/shared/endpoints';
-import { ListMetadataQuery } from '@yttrex/shared/endpoints/v2/metadata.endpoints';
+import { ListMetadataQuery } from '@yttrex/shared/models/http/metadata/query/ListMetadata.query';
 import { available, queryStrict, refetch } from 'avenger';
 import { CachedQuery } from 'avenger/lib/Query';
 import { pipe } from 'fp-ts/lib/function';
@@ -58,10 +59,10 @@ export interface TabouleQueries {
     Omit<SearchRequestInput, 'Params'> & { Params: { channelId: string } },
     ChannelRelated
   >;
-  youtubeGetExperimentById: EndpointQuery<
-    SearchRequestInput & { Params: { experimentId: string } },
-    Step
-  >;
+  // youtubeGetExperimentById: EndpointQuery<
+  //   SearchRequestInput & { Params: { experimentId: string } },
+  //   Step
+  // >;
   youtubeGetExperimentList: EndpointQuery<
     SearchRequestInput,
     GuardoniExperiment
@@ -74,7 +75,7 @@ export interface TabouleQueries {
   youtubePersonalHomes: EndpointQuery<ListMetadataRequestInput, HomeMetadata>;
   youtubePersonalVideos: EndpointQuery<ListMetadataRequestInput, VideoMetadata>;
   // tik tok
-  tikTokPersonalHTMLSummary: EndpointQuery<any, SummaryHTMLMetadata>;
+  // tikTokPersonalHTMLSummary: EndpointQuery<any, SummaryHTMLMetadata>;
   tikTokPersonalSearch: EndpointQuery<
     ListMetadataRequestInput,
     TKSearchMetadata
@@ -141,21 +142,21 @@ export const GetTabouleQueries = ({
     available
   );
 
-  const youtubeGetExperimentById = queryStrict<
-    SearchRequestInput & { Params: { experimentId: string } },
-    APIError,
-    Results<Step>
-  >(
-    (input) =>
-      pipe(
-        YTAPI.v2.Public.GetExperimentById(input),
-        TE.map((content) => ({
-          total: content.steps.length,
-          content: content.steps,
-        }))
-      ),
-    available
-  );
+  // const youtubeGetExperimentById = queryStrict<
+  //   SearchRequestInput & { Params: { experimentId: string } },
+  //   APIError,
+  //   Results<Step>
+  // >(
+  //   (input) =>
+  //     pipe(
+  //       YTAPI.v2.Public.GetExperimentById(input),
+  //       TE.map((content) => ({
+  //         total: content.steps.length,
+  //         content: content.steps,
+  //       }))
+  //     ),
+  //   available
+  // );
 
   const youtubeGetExperimentList = queryStrict<
     SearchRequestInput,
@@ -183,15 +184,15 @@ export const GetTabouleQueries = ({
     APIError,
     Results<HomeMetadata>
   >(
-    (input) =>
+    ({ Query: { amount, skip, filter, ...query } }) =>
       pipe(
         YTAPI.v2.Metadata.ListMetadata({
           Query: {
-            ...input.Query,
-            amount: (input.Query.amount + '') as any,
-            skip: (input.Query.skip + '') as any,
+            ...query,
+            amount: (amount + '') as any,
+            skip: (skip + '') as any,
             format: 'json',
-            nature: 'home',
+            filter,
           },
         }),
         TE.map((content) => ({
@@ -231,7 +232,11 @@ export const GetTabouleQueries = ({
             amount: (input.Query.amount + '') as any,
             skip: (input.Query.skip + '') as any,
             format: 'json',
-            nature: 'video',
+            filter: {
+              nature: 'video',
+              title: undefined,
+              authorName: undefined,
+            },
           },
         }),
         TE.map((content) => ({
@@ -255,7 +260,10 @@ export const GetTabouleQueries = ({
             amount: (input.Query.amount + '') as any,
             skip: (input.Query.skip + '') as any,
             format: 'json',
-            nature: 'search',
+            filter: {
+              nature: 'search',
+              query: undefined,
+            },
           },
         }),
         TE.map((content) => ({
@@ -266,33 +274,39 @@ export const GetTabouleQueries = ({
     refetch
   );
 
-  const tikTokPersonalHTMLSummary = queryStrict<
-    RequestInputWithPublicKeyParam,
-    APIError,
-    Results<SummaryHTMLMetadata>
-  >(
-    (input) =>
-      pipe(
-        YTAPI.v1.Public.GetPersonalSummaryByPublicKey(input),
-        TE.map((content) => ({
-          total: content.htmls.length,
-          content: content.htmls,
-        }))
-      ),
-    refetch
-  );
+  // const tikTokPersonalHTMLSummary = queryStrict<
+  //   RequestInputWithPublicKeyParam,
+  //   APIError,
+  //   Results<SummaryHTMLMetadata>
+  // >(
+  //   (input) =>
+  //     pipe(
+  //       YTAPI.v1.Public.GetPersonalSummaryByPublicKey(input),
+  //       TE.map((content) => ({
+  //         total: content.htmls.length,
+  //         content: content.htmls,
+  //       }))
+  //     ),
+  //   refetch
+  // );
 
   const tikTokPersonalSearch = queryStrict<
     ListMetadataRequestInput,
     APIError,
     Results<TKSearchMetadata>
   >(
-    (input) =>
+    ({ Query: { amount, skip, filter, ...query } }) =>
       pipe(
         TK_API.v2.Metadata.ListMetadata({
           Query: {
-            ...input.Query,
-            nature: SearchType.value,
+            ...query,
+            amount,
+            skip,
+            filter: {
+              query: undefined,
+              ...filter,
+              nature: SearchType.value,
+            },
           },
         }),
         TE.map((content) => ({
@@ -308,12 +322,18 @@ export const GetTabouleQueries = ({
     APIError,
     Results<TKNativeMetadata>
   >(
-    (input) =>
+    ({ Query: { amount, skip, filter, ...query } }) =>
       pipe(
         TK_API.v2.Metadata.ListMetadata({
           Query: {
-            ...input.Query,
-            nature: NativeType.value,
+            ...query,
+            amount,
+            skip,
+            filter: {
+              description: undefined,
+              ...filter,
+              nature: NativeType.value,
+            },
           },
         }),
         TE.map((content) => ({
@@ -329,12 +349,15 @@ export const GetTabouleQueries = ({
     APIError,
     Results<TKProfileMetadata>
   >(
-    (input) =>
+    ({ Query: { filter, ...query } }) =>
       pipe(
         TK_API.v2.Metadata.ListMetadata({
           Query: {
-            ...input.Query,
-            nature: ProfileType.value,
+            ...query,
+            filter: {
+              ...filter,
+              nature: ProfileType.value,
+            },
           },
         }),
         TE.map((content) => ({
@@ -350,12 +373,16 @@ export const GetTabouleQueries = ({
     APIError,
     Results<TKForYouMetadata>
   >(
-    (input) =>
+    ({ Query: { filter, ...query } }) =>
       pipe(
         TK_API.v2.Metadata.ListMetadata({
           Query: {
-            ...input.Query,
-            nature: ForYouType.value,
+            ...query,
+            filter: {
+              description: undefined,
+              ...filter,
+              nature: ForYouType.value,
+            },
           },
         }),
         TE.map((content) => ({
@@ -368,13 +395,13 @@ export const GetTabouleQueries = ({
 
   return {
     YCAIccRelatedUsers,
-    youtubeGetExperimentById,
+    // youtubeGetExperimentById,
     youtubeGetExperimentList,
     youtubePersonalHomes,
     youtubePersonalAds,
     youtubePersonalVideos,
     youtubePersonalSearches,
-    tikTokPersonalHTMLSummary,
+    // tikTokPersonalHTMLSummary,
     tikTokPersonalSearch,
     tikTokPersonalNative,
     tikTokPersonalProfile,

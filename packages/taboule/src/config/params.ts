@@ -5,11 +5,7 @@ type TabouleDefaultParams = { [K in TabouleQueryKey]: any };
 export const defaultParams: TabouleDefaultParams = {
   YCAIccRelatedUsers: {},
   youtubeGetExperimentById: {},
-  youtubeGetExperimentList: {
-    type: 'comparison',
-    key: 'fuffa',
-    // this is the default as per 'yarn backend watch'
-  },
+  youtubeGetExperimentList: {},
   youtubePersonalHomes: {},
   youtubePersonalSearches: {},
   youtubePersonalVideos: {},
