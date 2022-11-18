@@ -1,23 +1,17 @@
-import { ThemeProvider, createTheme } from '@mui/material';
-import * as React from 'react';
+import { ThemeProvider } from '@material-ui/core';
+import { createTheme } from '@material-ui/core/styles';
+import { addDecorator } from '@storybook/react';
+import { withThemes } from '@react-theming/storybook-addon';
 
-const theme = createTheme({});
-
-export const parameters = {
-  actions: { argTypesRegex: '^on[A-Z].*' },
-  controls: {
-    matchers: {
-      color: /(background|color)$/i,
-      date: /Date$/,
-    },
+const theme = createTheme({
+  typography: {
+    fontFamily: 'Trex-Regular',
   },
+});
+
+const providerFn = ({ theme, children }) => {
+  return <ThemeProvider theme={theme}>{children}</ThemeProvider>;
 };
 
-const withThemeProvider = (Story, context) => {
-  return (
-    <ThemeProvider theme={theme}>
-      <Story {...context} />
-    </ThemeProvider>
-  );
-};
-export const decorators = [withThemeProvider];
+// pass ThemeProvider and array of your themes to decorator
+addDecorator(withThemes(null, [theme], { providerFn }));
