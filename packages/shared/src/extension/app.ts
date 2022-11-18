@@ -255,6 +255,8 @@ export async function boot(opts: BootOpts): Promise<App> {
   configUpdatePort.onMessage.addListener(function (message, sender) {
     appLog.debug('Received message on "ConfigUpdate" port %O', message);
     if (message.type === 'ReloadApp') {
+      if (message.payload)
+        localStorage.setItem('config', JSON.stringify(message.payload));
       app?.reload(message.payload);
       return true;
     }
@@ -287,11 +289,17 @@ export async function boot(opts: BootOpts): Promise<App> {
     throw localSettings.error;
   }
 
+  // get the previous config from your localstorage
+  const localStorageSettings = localStorage.getItem('config')
+    ? JSON.parse(localStorage.getItem('config') ?? '')
+    : {};
+
   // merge settings taken from db with ones defined in settings.json, giving the precedence to the latter
   const settings: UserSettings = {
     ...localSettings.result,
     ...jsonSettings.result,
-  } as any;
+    ...localStorageSettings,
+  };
 
   if (!settings.publicKey || !settings.secretKey) {
     const keys = initializeKey();
