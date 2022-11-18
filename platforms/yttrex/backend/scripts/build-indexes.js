@@ -16,8 +16,8 @@ ret = db.metadata.createIndex({ savingTime: -1 });
 checkret('metadata savingTime', ret);
 ret = db.metadata.createIndex({ href: -1 });
 checkret('metadata href', ret);
-ret = db.metadata.createIndex({ 'experiment.experimentId': 1 });
-checkret('metadata experiment.experimentId', ret);
+ret = db.metadata.createIndex({ 'experimentId': 1 });
+checkret('metadata experimentId', ret);
 
 ret = db.supporters.createIndex({ publicKey: 1 }, { unique: true });
 checkret('supporters publicKey:', ret);
