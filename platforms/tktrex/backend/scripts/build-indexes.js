@@ -19,6 +19,8 @@ ret = db.metadata.createIndex({ savingTime: -1 });
 checkret('metadata savingTime', ret);
 ret = db.metadata.createIndex({ type: -1 });
 checkret('metadata type', ret);
+ret = db.metadata.createIndex({ experimentId: 1 });
+checkret('metadata experimentId', ret);
 
 ret = db.supporters.createIndex({ publicKey: 1 }, { unique: true });
 checkret('supporters publicKey:', ret);
@@ -38,3 +40,6 @@ ret = db.htmls.createIndex({ metadataId: -1 });
 checkret('htmls metadataId', ret);
 ret = db.htmls.createIndex({ processed: 1 });
 checkret('htmls processed', ret);
+
+ret = db.emails.createIndex({ email: 1, reason: 1 }, { unique: true });
+checkret('emails composed email+reason');
