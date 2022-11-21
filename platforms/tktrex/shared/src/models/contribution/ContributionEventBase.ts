@@ -1,6 +1,4 @@
 import * as t from 'io-ts';
-import { DateFromISOString } from 'io-ts-types/DateFromISOString';
-import { date } from 'io-ts-types/date';
 
 export const ContributionEventBase = t.strict(
   {
@@ -9,7 +7,7 @@ export const ContributionEventBase = t.strict(
     feedId: t.string,
     feedCounter: t.union([t.number, t.undefined]),
     videoCounter: t.union([t.number, t.undefined]),
-    clientTime: t.union([DateFromISOString, date]),
+    clientTime: t.string,
     experimentId: t.union([t.string, t.undefined]),
   },
   'ContributionEventBase',

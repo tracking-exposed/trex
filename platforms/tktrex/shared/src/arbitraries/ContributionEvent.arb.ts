@@ -16,7 +16,7 @@ export const SigiStateContributionEventArb: fc.Arbitrary<SigiStateContributionEv
     videoCounter: fc.sample(fc.nat(), 1)[0],
     feedCounter: fc.sample(fc.nat(), 1)[0],
     incremental: fc.sample(fc.nat(), 1)[0],
-    clientTime: new Date(),
+    clientTime: new Date().toISOString(),
     state: JSON.stringify(fc.sample(fc.jsonValue(), 1)[0]),
   }));
 
@@ -25,7 +25,7 @@ export const APIRequestEventArb: fc.Arbitrary<APIRequestContributionEvent> =
     t.type({ ...propsOmit(APIRequestContributionEvent, ['clientTime']) }),
   ).map((e) => ({
     ...e,
-    clientTime: new Date(),
+    clientTime: new Date().toISOString(),
     videoCounter: fc.sample(fc.nat(), 1)[0],
     feedCounter: fc.sample(fc.nat(), 1)[0],
     incremental: fc.sample(fc.nat(), 1)[0],
@@ -37,7 +37,7 @@ export const ContributionEventArb: fc.Arbitrary<HTMLContributionEvent> =
     t.strict(propsOmit(HTMLContributionEvent, ['clientTime', 'rect'])),
   ).map((e) => ({
     ...e,
-    clientTime: new Date(),
+    clientTime: new Date().toISOString(),
     videoCounter: fc.sample(fc.nat(), 1)[0],
     feedCounter: fc.sample(fc.nat(), 1)[0],
     incremental: fc.sample(fc.nat(), 1)[0],

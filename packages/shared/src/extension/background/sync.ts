@@ -14,7 +14,6 @@ export interface LoadOpts {
     v2: {
       Public: {
         Handshake: MinimalEndpointInstance;
-        AddAPIEvents: MinimalEndpointInstance;
         AddEvents: MinimalEndpointInstance;
       };
     };
@@ -22,37 +21,37 @@ export interface LoadOpts {
   getHeadersForDataDonation: (req: SyncReq) => Promise<any>;
 }
 
-export const handleAPISyncMessage =
-  ({ api, getHeadersForDataDonation }: LoadOpts) =>
-  (request: any, sender: any, sendResponse: any): boolean => {
-    void getHeadersForDataDonation(request)
-      .then((headers) =>
-        api.v2.Public.AddAPIEvents({
-          Headers: headers,
-          Body: request.payload,
-        } as any)()
-      )
-      .then((response) => {
-        if (response._tag === 'Left') {
-          sendResponse({
-            type: 'Error',
-            error: response.left,
-          });
-        } else {
-          sendResponse({
-            type: 'Success',
-            response: response.right,
-          });
-        }
-      })
-      .catch((e) =>
-        sendResponse({
-          type: 'Error',
-          error: e,
-        })
-      );
-    return true;
-  };
+// export const handleAPISyncMessage =
+//   ({ api, getHeadersForDataDonation }: LoadOpts) =>
+//   (request: any, sender: any, sendResponse: any): boolean => {
+//     void getHeadersForDataDonation(request)
+//       .then((headers) =>
+//         api.v2.Public.AddAPIEvents({
+//           Headers: headers,
+//           Body: request.payload,
+//         } as any)()
+//       )
+//       .then((response) => {
+//         if (response._tag === 'Left') {
+//           sendResponse({
+//             type: 'Error',
+//             error: response.left,
+//           });
+//         } else {
+//           sendResponse({
+//             type: 'Success',
+//             response: response.right,
+//           });
+//         }
+//       })
+//       .catch((e) =>
+//         sendResponse({
+//           type: 'Error',
+//           error: e,
+//         })
+//       );
+//     return true;
+//   };
 
 export const handleSyncMessage =
   ({ api, getHeadersForDataDonation }: LoadOpts) =>
@@ -90,10 +89,10 @@ export const handleSyncMessage =
 export const load = (opts: LoadOpts): void => {
   bo.runtime.onMessage.addListener((request, sender, sendResponse) => {
     log.info('Sync event received %O', request);
-    if (request.type === 'apiSync') {
-      handleAPISyncMessage(opts)(request, sender, sendResponse);
-      return true;
-    }
+    // if (request.type === 'apiSync') {
+    //   handleAPISyncMessage(opts)(request, sender, sendResponse);
+    //   return true;
+    // }
 
     if (request.type === 'sync') {
       handleSyncMessage(opts)(request, sender, sendResponse);

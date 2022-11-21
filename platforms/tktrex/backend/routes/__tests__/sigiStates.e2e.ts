@@ -45,7 +45,7 @@ describe('Sigi States Route', () => {
         total: data.length,
         data: data.map((d) => ({
           supporter: string2Food(keys.publicKey),
-          clientTime: d.clientTime.toISOString(),
+          clientTime: d.clientTime,
         })),
       });
 

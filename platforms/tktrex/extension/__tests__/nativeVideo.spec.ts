@@ -14,9 +14,8 @@ import { tiktokDomainRegExp } from '@tktrex/parser/v2/constant';
 import * as fs from 'fs';
 import * as path from 'path';
 import * as app from '../src/app/app';
-import * as handlers from '../src/app/handlers';
 import api, { getHeadersForDataDonation } from '../src/background/api';
-import tkHub from '../src/handlers/hub';
+import tkHub, * as thHubHandlers from '../src/app/hub';
 import { tkLog } from '../src/logger';
 
 const chromeListener = jest.fn();
@@ -25,7 +24,7 @@ const profileMatcher = app.tkHandlers.profile;
 const videoMatcher = app.tkHandlers.video;
 const nativeVideoMatcher = app.tkHandlers.nativeVideo;
 const searchMatcher = app.searchHandler;
-const eventsRegisterSpy = jest.spyOn(handlers, 'registerTkHandlers');
+const eventsRegisterSpy = jest.spyOn(thHubHandlers, 'registerTkHandlers');
 const tkTrexActionsSpy = jest.spyOn(app, 'tkTrexActions');
 const hubDispatchSpy = jest.spyOn(tkHub, 'dispatch');
 const handleProfileSpy = jest.spyOn(profileMatcher, 'handle');
@@ -48,7 +47,7 @@ const bootOptions = {
   },
   hub: {
     hub: tkHub,
-    onRegister: handlers.registerTkHandlers,
+    onRegister: thHubHandlers.registerTkHandlers,
   },
   onAuthenticated: app.tkTrexActions,
 };
@@ -187,16 +186,21 @@ describe('TK App - "Native Video" ', () => {
     await sleep(6000);
 
     expect(handleProfileSpy).not.toHaveBeenCalled();
-    expect(handleVideoSpy).toHaveBeenCalledTimes(2);
+    expect(handleVideoSpy).toHaveBeenCalledTimes(3);
     expect(handleNativeVideo).toHaveBeenCalledTimes(1);
-    expect(hubDispatchSpy).toHaveBeenCalledTimes(4);
+    expect(hubDispatchSpy).toHaveBeenCalledTimes(5);
 
     expect(axiosMock.request.mock.calls[2][0]).toMatchObject({
       url: '/v2/events',
       data: [
         {
-          type: 'native',
+          type: 'sigiState',
+          state: expect.any(String),
           incremental: 2,
+        },
+        {
+          type: 'native',
+          incremental: 3,
           videoCounter: 2,
           html: expect.any(String),
           href: tkFirstVideoURL,
@@ -233,16 +237,16 @@ describe('TK App - "Native Video" ', () => {
     await sleep(6000);
 
     expect(handleProfileSpy).not.toHaveBeenCalled();
-    expect(handleVideoSpy).toHaveBeenCalledTimes(3);
+    expect(handleVideoSpy).toHaveBeenCalledTimes(4);
     expect(handleNativeVideo).toHaveBeenCalledTimes(2);
-    expect(hubDispatchSpy).toHaveBeenCalledTimes(6);
+    expect(hubDispatchSpy).toHaveBeenCalledTimes(7);
 
     expect(axiosMock.request.mock.calls[3][0]).toMatchObject({
       url: '/v2/events',
       data: [
         {
           type: 'native',
-          incremental: 3,
+          incremental: 4,
           videoCounter: 3,
           html: expect.any(String),
           href: tkSecondVideoURL,
