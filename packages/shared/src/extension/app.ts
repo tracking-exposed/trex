@@ -289,17 +289,11 @@ export async function boot(opts: BootOpts): Promise<App> {
     throw localSettings.error;
   }
 
-  // get the previous config from your localstorage
-  const localStorageSettings = localStorage.getItem('config')
-    ? JSON.parse(localStorage.getItem('config') ?? '')
-    : {};
-
   // merge settings taken from db with ones defined in settings.json, giving the precedence to the latter
   const settings: UserSettings = {
-    ...localSettings.result,
     ...jsonSettings.result,
-    ...localStorageSettings,
-  };
+    ...localSettings.result,
+  } as any;
 
   if (!settings.publicKey || !settings.secretKey) {
     const keys = initializeKey();
