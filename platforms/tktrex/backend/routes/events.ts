@@ -1,13 +1,20 @@
+import { decodeOrThrowRequest } from '@shared/endpoints/helper';
 import { AppError, toAppError } from '@shared/errors/AppError';
 import { toValidationError } from '@shared/errors/ValidationError';
 import { Supporter } from '@shared/models/Supporter';
-import { filterByCodec, throwEitherError } from '@shared/utils/fp.utils';
-import { geo } from '@shared/utils/ip.utils';
+import * as mongo from '@shared/providers/mongo.provider';
 import {
-  getAPIRequestId,
+  filterByCodec,
+  throwEitherError,
+  validateArrayByCodec,
+} from '@shared/utils/fp.utils';
+import { geo } from '@shared/utils/ip.utils';
+import * as endpoints from '@tktrex/shared/endpoints/v2';
+import {
   getHTMLId,
   getMetadataId,
   getTimelineId,
+  getAPIRequestId,
 } from '@tktrex/shared/helpers/uniqueId';
 import { APIRequestContributionEvent } from '@tktrex/shared/models/apiRequest/APIRequestContributionEvent';
 import { HTML } from '@tktrex/shared/models/http/HTML';
@@ -22,7 +29,9 @@ import { pipe } from 'fp-ts/lib/function';
 import { IncomingHttpHeaders } from 'http';
 import _ from 'lodash';
 import nconf from 'nconf';
+import { toAPIRequest } from '../io/apiRequest.io';
 import * as automo from '../lib/automo';
+import { GetEventsEntity } from '../lib/entities/events.entity';
 import security from '../lib/security';
 import utils from '../lib/utils';
 
@@ -391,6 +400,55 @@ async function processAPIEvents(req: express.Request): Promise<{
   };
 }
 
+async function getAPIEvents(req: Express.Request): Promise<{ json: any }> {
+  const { query } = decodeOrThrowRequest(
+    endpoints.default.Public.GETAPIEvents,
+    req
+  );
+
+  debug('List api requests with query %O', query);
+  const { amount, skip, sort, experimentId, publicKey, researchTag } = query;
+
+  const filter: any = {};
+  const mongoc = await mongo.clientConnect({});
+
+  if (publicKey) {
+    filter.publicKey = {
+      $eq: publicKey,
+    };
+  }
+
+  if (experimentId) {
+    filter.experimentId = {
+      $eq: experimentId,
+    };
+  }
+
+  if (researchTag) {
+    filter.researchTag = {
+      $eq: researchTag,
+    };
+  }
+
+  // const supporter = await automo.tofu(query.publicKey, )
+
+  const eventEntity = GetEventsEntity(mongoc);
+  const { total, data } = await eventEntity.listAndCount({
+    amount: amount ?? 20,
+    skip: skip ?? 0,
+    filter,
+    sort,
+  });
+
+  const validData = validateArrayByCodec(data, toAPIRequest);
+
+  await mongoc.close();
+
+  return {
+    json: { total, data: validData },
+  };
+}
+
 export {
   processEvents,
   processAPIEvents,
@@ -398,4 +456,5 @@ export {
   mandatoryHeaders,
   processHeaders,
   handshake,
+  getAPIEvents,
 };
