@@ -104,6 +104,8 @@ export const makeApp = async (
   apiRouter.get('/v2/public/queries/list', iowrapper('getQueryList'));
   apiRouter.get('/v2/metadata', iowrapper('listMetadata'));
 
+  apiRouter.get('/v2/apiEvents', iowrapper('getAPIEvents'));
+
   /* --------------- end of documented APIs -------------------- */
 
   /* quick experiment to return static images: nginx might do a better job */
