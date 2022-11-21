@@ -1,38 +1,57 @@
+import { AppError, toAppError } from '@shared/errors/AppError';
+import { toValidationError } from '@shared/errors/ValidationError';
 import { Supporter } from '@shared/models/Supporter';
+import { filterByCodec, throwEitherError } from '@shared/utils/fp.utils';
 import { geo } from '@shared/utils/ip.utils';
 import {
-  getTimelineId,
+  getAPIRequestId,
   getHTMLId,
   getMetadataId,
+  getTimelineId,
 } from '@tktrex/shared/helpers/uniqueId';
+import { APIRequestContributionEvent } from '@tktrex/shared/models/apiRequest/APIRequestContributionEvent';
+import { HTML } from '@tktrex/shared/models/http/HTML';
+import { TKHeadersLC } from '@tktrex/shared/models/http/TKHeaders';
+import { getNatureByHref } from '@tktrex/shared/parser/parsers/nature';
 import { parseISO } from 'date-fns';
 import D from 'debug';
 import * as express from 'express';
+import * as A from 'fp-ts/Array';
+import * as E from 'fp-ts/lib/Either';
+import { pipe } from 'fp-ts/lib/function';
+import { IncomingHttpHeaders } from 'http';
 import _ from 'lodash';
 import nconf from 'nconf';
 import * as automo from '../lib/automo';
-import utils from '../lib/utils';
 import security from '../lib/security';
-import { throwEitherError } from '@shared/utils/fp.utils';
-import { getNatureByHref } from '@tktrex/shared/parser/parsers/nature';
-import { HTML } from '@tktrex/shared/models/http/HTML';
+import utils from '../lib/utils';
 
 const debug = D('routes:events');
 
 const mandatoryHeaders = {
-  'content-length': 'length',
-  'x-tktrex-version': 'version',
-  'x-tktrex-publickey': 'publickey',
-  'x-tktrex-signature': 'signature',
-  'x-tktrex-nonauthcookieid': 'researchTag',
+  'content-length': 'length' as const,
+  'x-tktrex-version': 'version' as const,
+  'x-tktrex-publickey': 'publicKey' as const,
+  'x-tktrex-signature': 'signature' as const,
+  'x-tktrex-nonauthcookieid': 'researchTag' as const,
 };
 
-type TKHeaders = { [K in keyof typeof mandatoryHeaders]: string };
+type MandatoryHeadersKeys = keyof typeof mandatoryHeaders;
+
+type MandatoryHeadersValues = typeof mandatoryHeaders[MandatoryHeadersKeys];
+
+type TKHeaders = {
+  [K in MandatoryHeadersValues]: string;
+};
+
+type ProcessHeadersResult =
+  | { type: 'success'; headers: TKHeaders }
+  | { type: 'error'; errors: string[] };
 
 function processHeaders(
-  received: Partial<TKHeaders>,
-  required: TKHeaders
-): TKHeaders | { errors: string[] } {
+  received: IncomingHttpHeaders,
+  required: typeof mandatoryHeaders
+): ProcessHeadersResult {
   const ret = {};
   const errs = _.compact(
     _.map(required, function (destkey, headerName) {
@@ -45,9 +64,40 @@ function processHeaders(
   );
   if (_.size(errs)) {
     debug('Error in processHeaders, missing: %j', errs);
-    return { errors: errs };
+    return { type: 'error', errors: errs };
   }
-  return ret as TKHeaders;
+  return { type: 'success', headers: ret as TKHeaders };
+}
+
+/**
+ * Decode headers from incoming request.
+ *
+ * @param received Incoming HTTP Headers
+ * @returns Either AppError (`E.left`) or TKHeaders (`E.right`)
+ */
+function decodeHeaders(
+  received: IncomingHttpHeaders
+): E.Either<AppError, TKHeaders> {
+  return pipe(
+    TKHeadersLC.decode(received),
+    E.map((r) => {
+      return pipe(
+        Object.entries(r),
+        A.reduce({} as any as TKHeaders, (acc, [key, e]) => ({
+          ...acc,
+          [(mandatoryHeaders as any)[key]]: e,
+        })),
+        (headers) => {
+          debug('Parsed headers %O', headers);
+          return headers;
+        }
+      );
+    }),
+    E.mapLeft((e) => {
+      debug('Error in processHeaders, missing: %j', e);
+      return toAppError(toValidationError('Error in processHeaders', e));
+    })
+  );
 }
 
 let last: any = null;
@@ -74,18 +124,6 @@ function appendLast(req: express.Request): void {
   if (_.size(last) > MAX_STORED_CONTENT) last = _.tail(last);
 
   last.push(_.pick(req, ['headers', 'body']));
-}
-
-function headerError(headers: express.Request['headers']): {
-  json: { status: 'error'; info: any };
-} {
-  debug('Error detected: %s', headers.error);
-  return {
-    json: {
-      status: 'error',
-      info: headers.error,
-    },
-  };
 }
 
 type SaveInDBResult =
@@ -154,8 +192,8 @@ async function processEvents(req: express.Request): Promise<{
   // failing the next steps
   appendLast(req);
 
-  const headers: any = processHeaders(_.get(req, 'headers'), mandatoryHeaders);
-  if (headers.errors) return headerError(headers);
+  // decode the headers - it throws when fails
+  const headers = throwEitherError(decodeHeaders(_.get(req, 'headers')));
 
   if (!utils.verifyRequestSignature(req)) {
     debug('Verification fail (signature %s)', headers.signature);
@@ -167,7 +205,7 @@ async function processEvents(req: express.Request): Promise<{
     };
   }
 
-  const supporter = await automo.tofu(headers.publickey, headers.version);
+  const supporter = await automo.tofu(headers.publicKey, headers.version);
 
   const fullsaves: any[] = [];
   const htmls = _.compact(
@@ -280,29 +318,76 @@ async function handshake(
   };
 }
 
-async function processAPIEvents(req: express.Request): Promise<any> {
-  for (const data of req.body) {
-    const { request, response, url, id } = data.payload;
+async function processAPIEvents(req: express.Request): Promise<{
+  json:
+    | {
+        supporter: Supporter;
+        apiRequests: SaveInDBResult;
+      }
+    | { status: string; info: any };
+}> {
+  const headers = throwEitherError(decodeHeaders(_.get(req, 'headers')));
 
-    debug('received api events %s for %s', id, url);
-
-    // request has always body: [{events:[]}]
-    const events = _.get(request.body[0], 'events');
-    // debug('request.events %s', JSON.stringify(events, null, 3));
-    // and each event has 'event' (name) and 'params' JSON String
-    const converted = _.map(events, function (o) {
-      return _.set({}, o.event, JSON.parse(o.params));
-    });
-    debug('request.events %s', JSON.stringify(converted, null, 1));
-    // converted is just simpler to read when plotted
-
-    // response is kind of useless anytime?
-    if (response.headers['content-length'] > 7)
-      debug('UNUSUAL response %O', response);
+  if (!utils.verifyRequestSignature(req)) {
+    debug('Verification fail (signature %s)', headers.signature);
+    return {
+      json: {
+        status: 'error',
+        info: 'Signature does not match request body',
+      },
+    };
   }
 
+  // fetch the supporter by the given publicKey
+  const supporter = await automo.tofu(headers.publicKey, headers.version);
+
+  // we take only APIRequestEvent from payload
+  const validEvents = filterByCodec(
+    req.body,
+    APIRequestContributionEvent.decode
+  );
+
+  const events = validEvents.map(({ payload, ...e }) => {
+    /* the timelineId identify the session, it comes from the
+     * feedId because it need to trust client side */
+    const timelineId = getTimelineId({
+      feedId: e.feedId,
+      publicKey: supporter.publicKey,
+      version: headers.version,
+    });
+
+    const id = getAPIRequestId.hash({
+      ...timelineId,
+      feedCounter: e.feedCounter,
+      videoCounter: e.videoCounter,
+      incremental: e.incremental,
+      href: e.href,
+    });
+
+    return {
+      ...e,
+      id,
+      payload,
+      savingTime: new Date(),
+      researchTag: headers.researchTag,
+      publicKey: headers.publicKey,
+    };
+  });
+
+  const apiRequests = await saveInDB(
+    {},
+    events,
+    nconf.get('schema').apiRequests
+  );
+
+  debug('API requests %O', apiRequests);
+
   return {
-    json: true,
+    json: {
+      status: 'Complete',
+      supporter,
+      apiRequests,
+    },
   };
 }
 

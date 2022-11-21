@@ -21,7 +21,20 @@ const AddEvents = DocumentedEndpoint({
   getPath: () => '/v2/events',
   Input: {
     Headers: apiModel.http.Headers.TKHeaders,
-    Body: t.array(apiModel.Events.ContributionEvent),
+    Body: t.array(apiModel.Events.HTMLContributionEvent),
+  },
+  Output: t.any,
+  title: 'Add contribution events',
+  description: '',
+  tags: ['events'],
+});
+
+const AddAPIEvents = DocumentedEndpoint({
+  Method: 'POST',
+  getPath: () => '/v2/apiEvents',
+  Input: {
+    Headers: apiModel.http.Headers.TKHeaders,
+    Body: t.array(apiModel.APIRequest.APIRequestContributionEvent),
   },
   Output: t.any,
   title: 'Add contribution events',
@@ -62,6 +75,7 @@ const GetQueryList = DocumentedEndpoint({
 
 export default {
   AddEvents,
+  AddAPIEvents,
   Handshake,
   GetSearches,
   GetSearchByQuery,

@@ -157,6 +157,7 @@ describe('TK App - profile ', () => {
         headers: {
           Accept: 'application/json',
           'Content-Type': 'application/json',
+          'Content-Length': expect.any(Number),
           'X-Tktrex-Build': process.env.BUILD_DATE,
           'X-Tktrex-NonAuthCookieId': researchTag,
           'X-Tktrex-PublicKey': process.env.PUBLIC_KEY,

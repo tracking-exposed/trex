@@ -5,7 +5,7 @@ import { ContributionEventArb } from '@tktrex/shared/arbitraries/ContributionEve
 import { GetTest, Test } from '../../test/Test';
 
 const version = '9.9.9.9';
-describe('Events', () => {
+describe('Events Route', () => {
   let appTest: Test;
 
   beforeAll(async () => {
@@ -32,6 +32,7 @@ describe('Events', () => {
       // check events
       const response = await appTest.app
         .post(`/api/v2/events`)
+        .set('x-tktrex-build', new Date().toISOString())
         .set('x-tktrex-version', version)
         .set('X-tktrex-publicKey', keys.publicKey)
         .set('x-tktrex-signature', signature)
