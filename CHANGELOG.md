@@ -1,3 +1,12 @@
+## [2.7.1](https://github.com/tracking-exposed/trex/compare/v2.7.0...v2.7.1) (2022-11-16)
+
+- **deps:** bump loader-utils from 1.4.0 to 1.4.1 ([d24ec82](https://github.com/tracking-exposed/trex/commit/d24ec82a2e69a451695d10681bd65f337a5f0d28))
+
+### Fixes
+
+- **workspace:** cloc script grouping by file and by lang ([0f69b8d](https://github.com/tracking-exposed/trex/commit/0f69b8d4782fbd57c29ae29c3b99c13c7fae23d5))
+- **yt:ext:** enabled experimentId UI in popup ([05a0c43](https://github.com/tracking-exposed/trex/commit/05a0c4351790ce8984d53c5556de90eda7a08830))
+
 ## [2.7.0](https://github.com/tracking-exposed/trex/compare/v2.6.5...v2.7.0) (2022-11-14)
 
 ### Features

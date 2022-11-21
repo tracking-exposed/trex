@@ -12,7 +12,7 @@ export interface ErrorModalProps {
   onClick: (action: string) => void;
 }
 
-const ErrorModal = (props: Props): JSX.Element => {
+const ErrorModal = (props: ErrorModalProps): JSX.Element => {
   const { name, message, details, onClick } = props;
   const [detailsShown, setDetailsShown] = React.useState(false);
   const handleDetailsClick = (): void => {
