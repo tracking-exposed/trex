@@ -1,6 +1,9 @@
 import { pipe } from 'fp-ts/lib/function';
 import * as TE from 'fp-ts/lib/TaskEither';
 import * as E from 'fp-ts/lib/Either';
+import * as t from 'io-ts';
+import * as A from 'fp-ts/lib/Array';
+import * as O from 'fp-ts/lib/Option';
 
 /**
  * An utility method to transform TaskEither to Promise
@@ -13,7 +16,7 @@ export const foldTEOrThrow = <E, A>(te: TE.TaskEither<E, A>): Promise<A> => {
       (e) => () => {
         // eslint-disable-next-line
         console.error(e);
-       return Promise.reject(e)
+        return Promise.reject(e);
       },
       (a) => () => Promise.resolve(a)
     )
@@ -37,5 +40,28 @@ export const throwEitherError = <E, A>(e: E.Either<E, A>): A => {
       },
       (a) => a
     )
+  );
+};
+
+/**
+ * Filter an array by the given codec and return only valid elements
+ *
+ * @param arr
+ * @param decode
+ * @returns
+ */
+export const filterByCodec = <T, A>(arr: T[], decode: t.Decode<T, A>): A[] => {
+  return pipe(
+    arr,
+    A.map((a) =>
+      pipe(
+        decode(a),
+        E.fold(
+          (e) => O.none,
+          (v) => O.some(v)
+        )
+      )
+    ),
+    A.compact
   );
 };
