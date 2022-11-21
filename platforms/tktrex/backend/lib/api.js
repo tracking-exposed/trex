@@ -9,6 +9,7 @@ const apiList = {
   processAPIEvents: eventsRoutes.processAPIEvents,
   getMirror: eventsRoutes.getMirror,
   handshake: eventsRoutes.handshake,
+  getAPIEvents: eventsRoutes.getAPIEvents,
 
   /* for revision */
   unitById: require('../routes/htmlunit').unitById,

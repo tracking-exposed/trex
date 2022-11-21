@@ -4,6 +4,7 @@ import * as E from 'fp-ts/lib/Either';
 import * as t from 'io-ts';
 import * as A from 'fp-ts/lib/Array';
 import * as O from 'fp-ts/lib/Option';
+import { AppError } from '../errors/AppError';
 
 /**
  * An utility method to transform TaskEither to Promise
@@ -63,5 +64,19 @@ export const filterByCodec = <T, A>(arr: T[], decode: t.Decode<T, A>): A[] => {
       )
     ),
     A.compact
+  );
+};
+
+export const validateArrayByCodec = <T, A>(
+  arr: T[],
+  mapFn: (o: T) => E.Either<AppError, A>
+): A[] => {
+  return pipe(
+    // map each element of the array with the given fn to obtain the result
+    arr.map(mapFn),
+    // check all results are valid `Either` (Right)
+    A.sequence(E.Applicative),
+    // throw an error when `Eithen` is `Left`
+    throwEitherError
   );
 };
