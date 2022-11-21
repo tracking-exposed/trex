@@ -1,20 +1,22 @@
 import React from 'react';
 import ReportProblemRoundedIcon from '@mui/icons-material/ReportProblemRounded';
-import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 import clsx from 'clsx';
 import './errorModal.css';
-import { Box, Button, Typography } from '@material-ui/core';
+import { Box, Typography } from '@material-ui/core';
+import CloseIcon from '@mui/icons-material/Close';
 
 export interface ErrorModalProps {
   name: string;
   message: string;
   details: string[];
+  position?: string[];
   onClick: (action: string) => void;
 }
 
 const ErrorModal = (props: ErrorModalProps): JSX.Element => {
-  const { name, message, details, onClick } = props;
+  const { name, message, details, position, onClick } = props;
   const [detailsShown, setDetailsShown] = React.useState(false);
+
   const handleDetailsClick = (): void => {
     setDetailsShown((prev) => !prev);
   };
@@ -23,27 +25,18 @@ const ErrorModal = (props: ErrorModalProps): JSX.Element => {
   };
 
   return (
-    <Box className="ErrorModal">
+    <Box className={`ErrorModal ${position}`}>
       <div className="ErrorModal__container">
-        <div className="ErrorModal__container__name">
+        <div
+          className="ErrorModal__container__content"
+          onClick={handleDetailsClick}
+        >
           <ReportProblemRoundedIcon />
-          <Typography variant="h5">{name}</Typography>
+          <Typography className="ErrorModal__container__content__message">
+            {name}: {message}
+          </Typography>
         </div>
-        <Typography className="ErrorModal__container__message">
-          {message}
-        </Typography>
         <div className="ErrorModal__container__details">
-          <Button
-            className="ErrorModal__container__details__btn"
-            onClick={handleDetailsClick}
-          >
-            Details
-            <ArrowForwardIosIcon
-              className={clsx('ErrorModal__container__details__btn__icon', {
-                '-showBox': detailsShown,
-              })}
-            />
-          </Button>
           <div
             className={clsx('ErrorModal__container__details__box', {
               '-showBox': detailsShown,
@@ -58,9 +51,9 @@ const ErrorModal = (props: ErrorModalProps): JSX.Element => {
             </ul>
           </div>
         </div>
-        <div className="ErrorModal__close">
-          <button onClick={handleDismiss}>Dismiss</button>
-        </div>
+        <button className="ErrorModal__close" onClick={handleDismiss}>
+          <CloseIcon />
+        </button>
       </div>
     </Box>
   );

@@ -8,7 +8,13 @@ import * as E from 'fp-ts/lib/Either';
 const meta: Meta<ErrorModalProps> = {
   title: 'Example/ErrorModal',
   component: ErrorModal,
-  argTypes: { onClick: { action: 'modal dismissed' } },
+  argTypes: {
+    onClick: { action: 'modal dismissed' },
+    position: {
+      control: { type: 'select' },
+      options: ['TOP_LEFT', 'TOP_RIGHT', 'BOTTOM_LEFT', 'BOTTOM_RIGHT'],
+    },
+  },
 };
 
 export default meta;
