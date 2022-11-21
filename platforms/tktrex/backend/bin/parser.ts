@@ -1,5 +1,9 @@
 #!/usr/bin/env ts-node
 
+import moduleAlias from 'module-alias';
+moduleAlias({ base: process.cwd() });
+
+/* eslint-disable import/first */
 import * as mongo3 from '@shared/providers/mongo.provider';
 import { GetParserProvider } from '@shared/providers/parser.provider';
 import { TKMetadata } from '@tktrex/shared/models/metadata';
