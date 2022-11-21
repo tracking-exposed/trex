@@ -38,3 +38,10 @@ ret = db.htmls.createIndex({ metadataId: -1 });
 checkret('htmls metadataId', ret);
 ret = db.htmls.createIndex({ processed: 1 });
 checkret('htmls processed', ret);
+
+ret = db.apiRequests.createIndex({ id: 1 }, { unique: true });
+checkret('apiRequests.id', ret);
+ret = db.apiRequests.createIndex({ experimentId: 1 });
+checkret('apiRequests.experimentId', ret);
+ret = db.apiRequests.createIndex({ publicKey: 1 });
+checkret('apiRequests.publicKey', ret);

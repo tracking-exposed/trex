@@ -1,6 +1,6 @@
 import * as t from 'io-ts';
 
-export const ContributionEvent = t.strict(
+export const HTMLContributionEvent = t.strict(
   {
     html: t.string,
     href: t.string,
@@ -17,7 +17,10 @@ export const ContributionEvent = t.strict(
       t.literal('native'),
     ]),
   },
-  'ContributionEvent',
+  'HTMLContributionEvent',
 );
+export type HTMLContributionEvent = t.TypeOf<typeof HTMLContributionEvent>;
 
+// TODO: this is just an old alias, remove it when possible
+export const ContributionEvent = HTMLContributionEvent;
 export type ContributionEvent = t.TypeOf<typeof ContributionEvent>;

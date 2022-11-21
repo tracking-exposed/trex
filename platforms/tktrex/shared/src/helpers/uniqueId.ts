@@ -86,3 +86,23 @@ export const getMetadataId = encodeUtils.GetEncodeUtils(
     ...m,
   }),
 );
+
+export const getAPIRequestId = encodeUtils.GetEncodeUtils(
+  ({
+    href,
+    id: timelineId,
+    videoCounter,
+    feedCounter,
+    incremental,
+  }: Omit<GetUniqueIdOpts, 'nature'>) => ({
+    href,
+    /* based on the 'body.type' we might have fields that are updated
+     * (like search, profile, where the user can scroll and report larger evidences)
+     * or video block in 'following' or 'foryou', with a fixed url */
+    nature: { type: 'api' },
+    /* the timeline guarantee uniqueness by user, version, feedId */
+    timelineId,
+    /* the counters guarantee an increment at each evidence sent by extension */
+    counters: `v(${videoCounter})f(${feedCounter})i(${incremental})`,
+  }),
+);
