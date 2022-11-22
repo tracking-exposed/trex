@@ -28,6 +28,7 @@
   "include": [
     "./bin",
     "./lib",
+    "./io",
     "./models",
     "./routes",
     "./test",

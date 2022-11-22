@@ -1,6 +1,6 @@
 import * as t from 'io-ts';
 import { NativeVideoN, Nature, SearchN } from '../Nature';
-import { MetadataBase } from './MetadataBase';
+import { TKMetadataBase } from './MetadataBase';
 
 export const ResultLinked = t.type(
   { link: Nature, desc: t.string },
@@ -21,7 +21,7 @@ export const SearchMetadataResult = t.type(
 );
 export const SearchMetadata = t.intersection(
   [
-    MetadataBase,
+    TKMetadataBase,
     SearchN,
     t.type({ nature: SearchN }),
     t.type(

@@ -26,7 +26,7 @@ import { Supporter } from '@yttrex/shared/models/Supporter';
 import { differenceInSeconds, formatDistance } from 'date-fns';
 import D from 'debug';
 import _ from 'lodash';
-import { Ad } from 'models/Ad';
+import { Ad } from '../models/Ad';
 import moment from 'moment';
 import { DeleteResult, Filter, MongoClient } from 'mongodb';
 import nconf from 'nconf';

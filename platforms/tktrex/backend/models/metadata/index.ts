@@ -1,18 +1,29 @@
 import * as t from 'io-ts';
 import { FollowingVideoMetadataDB } from './FollowingMetadata';
-import { ForYouVideoMetadataDB } from './ForYouMetadata';
+import { ForYouMetadataDB } from './ForYouMetadata';
+import { HashtagMetadataDB } from './HashtagMetadata';
 import { NativeMetadataDB } from './NativeMetadata';
 import { ProfileMetadataDB } from './ProfileMetadata';
 import { SearchMetadataDB } from './SearchMetadata';
 
 export const TKMetadataDB = t.union(
   [
+    FollowingVideoMetadataDB,
     NativeMetadataDB,
     SearchMetadataDB,
-    ForYouVideoMetadataDB,
-    FollowingVideoMetadataDB,
+    ForYouMetadataDB,
     ProfileMetadataDB,
+    HashtagMetadataDB,
   ],
   'MetadataDB'
 );
 export type TKMetadataDB = t.TypeOf<typeof TKMetadataDB>;
+
+export {
+  ProfileMetadataDB,
+  NativeMetadataDB,
+  SearchMetadataDB,
+  FollowingVideoMetadataDB,
+  ForYouMetadataDB,
+  HashtagMetadataDB,
+};
