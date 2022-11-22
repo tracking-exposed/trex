@@ -1,13 +1,14 @@
 import * as endpoints from '@shared/endpoints/helper';
 import { v2 } from '@yttrex/shared/endpoints';
+import { ListMetadataResponse } from '@yttrex/shared/models/http/metadata/output/ListMetadata.output';
+import { ListMetadataQuery } from '@yttrex/shared/models/http/metadata/query/ListMetadata.query';
 import D from 'debug';
+import * as express from 'express';
 import _ from 'lodash';
-import automo from '../lib/automo';
 import moment from 'moment';
+import automo from '../lib/automo';
 import CSV from '../lib/CSV';
 import * as utils from '../lib/utils';
-import * as express from 'express';
-import { ListMetadataResponse } from '@yttrex/shared/endpoints/v2/metadata.endpoints';
 
 const debug = D('routes:metadata');
 
@@ -17,25 +18,66 @@ const PUBLIC_AMOUNT_ELEMS = 100;
 const listMetadata = async (
   req: express.Request
 ): Promise<{ json: ListMetadataResponse } | { headers: any; text: string }> => {
+  const { query } = endpoints.decodeOrThrowRequest(
+    v2.Metadata.ListMetadata,
+    req
+  ) as any as { query: ListMetadataQuery };
+
+  debug('Build metadata filter from query %O', query);
+
   const {
-    query: {
-      publicKey,
-      nature,
-      experimentId,
-      researchTag,
-      amount = PUBLIC_AMOUNT_ELEMS,
-      skip = 0,
-      format,
-    },
-  } = endpoints.decodeOrThrowRequest(v2.Metadata.ListMetadata, req);
+    publicKey,
+    experimentId,
+    researchTag,
+    amount = PUBLIC_AMOUNT_ELEMS,
+    skip = 0,
+    format,
+    filter: queryFilter,
+  } = query;
 
   const filter = {} as any;
   if (publicKey) {
     filter.publicKey = publicKey;
   }
-  if (nature) {
-    filter.type = nature;
+
+  if (queryFilter?.nature) {
+    filter.type = queryFilter.nature;
+    switch (queryFilter.nature) {
+      case 'search': {
+        const { query: searchQ } = queryFilter;
+        if (searchQ) {
+          filter.query = {
+            $regex: new RegExp(searchQ, 'i'),
+          };
+        }
+        break;
+      }
+      case 'video': {
+        const { authorName, title } = queryFilter;
+        if (title) {
+          filter.title = {
+            $regex: new RegExp(title, 'i'),
+          };
+        }
+        if (authorName) {
+          filter.authorName = {
+            $regex: new RegExp(authorName, 'i'),
+          };
+        }
+        break;
+      }
+      case 'home': {
+        const { login } = queryFilter;
+
+        if (typeof login !== 'undefined') {
+          filter.login = {
+            $eq: login,
+          };
+        }
+      }
+    }
   }
+
   if (experimentId) {
     filter.experimentId = experimentId;
   }
@@ -57,6 +99,8 @@ const listMetadata = async (
           ({
             ...m,
             id: id.substring(0, 20),
+            researchTag: m.researchTag ?? undefined,
+            experimentId: m.experimentId ?? undefined,
             savingTime: m.savingTime.toISOString(),
             clientTime: m.clientTime.toISOString(),
             supporter: utils.string2Food(publicKey),
@@ -65,7 +109,7 @@ const listMetadata = async (
     }));
 
   debug(
-    'Returning %d evidences of %d available',
+    'Returning %d evidences of %j available',
     _.size(metadata.data),
     metadata.totals
   );

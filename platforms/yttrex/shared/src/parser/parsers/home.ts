@@ -376,21 +376,25 @@ function guessUXLanguage(D: Document): string | null {
 
 export const processHome: ParserFn<
   HTMLSource,
-  Omit<HomeMetadata, 'id' | 'supporter'>,
+  Omit<HomeMetadata, 'id' | 'supporter' | 'researchTag' | 'experimentId'>,
   YTParserConfig
 > = async (envelop, findings, config) => {
-  const retval: Omit<HomeMetadata, 'id' | 'supporter'> & { publicKey: string } =
-    {
-      type: 'home',
-      clientTime: envelop.html.clientTime,
-      selected: [],
-      sections: [],
-      blang: null,
-      login: false,
-      publicKey: envelop.html.publicKey,
-      href: envelop.html.href,
-      savingTime: new Date(),
-    };
+  const retval: Omit<
+    HomeMetadata,
+    'id' | 'supporter' | 'researchTag' | 'experimentId'
+  > & {
+    publicKey: string;
+  } = {
+    type: 'home',
+    clientTime: envelop.html.clientTime,
+    selected: [],
+    sections: [],
+    blang: null,
+    login: false,
+    publicKey: envelop.html.publicKey,
+    href: envelop.html.href,
+    savingTime: new Date() as any,
+  };
 
   try {
     const { selected, sections } = getSelectedAndSections(
