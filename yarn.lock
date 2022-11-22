@@ -6403,11 +6403,13 @@ __metadata:
     "@types/eslint": ^8
     "@types/express": ^4.17.13
     "@types/geoip-lite": ^1.4.1
+    "@types/jsdom": ^16
     "@types/lodash": ^4.14.186
     "@types/module-alias": ^2
     "@types/node": ^16.11.68
     "@typescript-eslint/eslint-plugin": ^5.40.0
     "@typescript-eslint/parser": ^5.40.0
+    axios: ^0.24.0
     body-parser: ^1.19.1
     bs58: ^4.0.1
     cookie: ^0.3.1
@@ -6421,6 +6423,7 @@ __metadata:
     geoip-lite: ^1.4.6
     io-ts: ^2.2.16
     io-ts-types: ^0.5.19
+    jsdom: ^16.7.0
     lodash: ^4.17.21
     module-alias: ^2.2.2
     moment: ^2.29.4
@@ -7538,6 +7541,17 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/jsdom@npm:^16":
+  version: 16.2.15
+  resolution: "@types/jsdom@npm:16.2.15"
+  dependencies:
+    "@types/node": "*"
+    "@types/parse5": ^6.0.3
+    "@types/tough-cookie": "*"
+  checksum: e038335321bef42ebf220aaf597e186e2eec8de6107ce7a70de1c046a84c1fbb42d454e195a20383a6870b18c7ef6fa6b73812a626f88a4a2ef1f711d2e2e13c
+  languageName: node
+  linkType: hard
+
 "@types/jsdom@npm:^16.2.14":
   version: 16.2.14
   resolution: "@types/jsdom@npm:16.2.14"
@@ -7677,7 +7691,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/parse5@npm:*":
+"@types/parse5@npm:*, @types/parse5@npm:^6.0.3":
   version: 6.0.3
   resolution: "@types/parse5@npm:6.0.3"
   checksum: ddb59ee4144af5dfcc508a8dcf32f37879d11e12559561e65788756b95b33e6f03ea027d88e1f5408f9b7bfb656bf630ace31a2169edf44151daaf8dd58df1b7
