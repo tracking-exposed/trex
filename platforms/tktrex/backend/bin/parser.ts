@@ -1,9 +1,12 @@
 #!/usr/bin/env ts-node
+/* eslint-disable import/first */
 
 import moduleAlias from 'module-alias';
 moduleAlias({ base: process.cwd() });
 
-/* eslint-disable import/first */
+import nconf from 'nconf';
+nconf.argv().env().file({ file: 'config/settings.json' });
+
 import * as mongo3 from '@shared/providers/mongo.provider';
 import { GetParserProvider } from '@shared/providers/parser.provider';
 import { TKMetadata } from '@tktrex/shared/models/metadata';
@@ -11,7 +14,7 @@ import { parsers } from '@tktrex/shared/parser/parsers';
 import { HTMLSource } from '@tktrex/shared/parser/source';
 import fs from 'fs';
 import _ from 'lodash';
-import nconf from 'nconf';
+
 import path from 'path';
 import {
   addDom,
@@ -21,8 +24,6 @@ import {
   updateMetadataAndMarkHTML,
 } from '../lib/parser';
 import { toMetadata } from '@tktrex/shared/parser/metadata';
-
-nconf.argv().env().file({ file: 'config/settings.json' });
 
 const AMOUNT_DEFAULT = 20;
 const BACKINTIMEDEFAULT = 1;
