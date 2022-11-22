@@ -24,7 +24,7 @@ export const MetadataBase = t.type(
     clientTime: t.union([date, DateFromISOString]),
     savingTime: t.union([date, DateFromISOString]),
   },
-  'MetadataBase'
+  'MetadataBase',
 );
 
 export type MetadataBase = t.TypeOf<typeof MetadataBase>;

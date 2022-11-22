@@ -74,7 +74,7 @@ void (async function () {
   const sources = fixtures.reduce(
     (acc, f, i) =>
       acc.concat(
-        f.sources.map((s, ii) => ({
+        [f.sources[0]].map((s, ii) => ({
           title: f.metadata.title,
           url: s.href,
           urltag: `${p}-test-${nature}-${i}-${ii}`,

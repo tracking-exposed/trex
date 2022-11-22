@@ -104,14 +104,11 @@ export const openURL =
       ctx.logger.info('— Completed %O \n', step);
       // run the "onCompleted" hook for `openURL` step;
       return pipe(
-        TE.tryCatch(
-          async () => {
-            const result = await ctx.hooks.openURL.completed(page, step);
-            ctx.logger.debug('Completed! %O', result);
-            return result;
-          },
-          (e) => new AppError('Completed', (e as any).message, [])
-        )
+        TE.tryCatch(async () => {
+          const result = await ctx.hooks.openURL.completed(page, step);
+          ctx.logger.debug('Completed! %O', result);
+          return result;
+        }, toAppError)
       )().then((r) => {
         if (r._tag === 'Left') {
           return Promise.reject(r.left);

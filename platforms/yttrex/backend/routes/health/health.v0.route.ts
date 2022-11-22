@@ -1,4 +1,4 @@
-import { toBackendError } from '@shared/backend/errors/BackendError';
+import { toAPIError } from '@shared/errors/APIError';
 import { Route } from '@shared/backend/types';
 import { AddEndpoint } from '@shared/backend/utils/endpoint';
 import * as Endpoints from '@yttrex/shared/endpoints';
@@ -11,10 +11,10 @@ export const MakeHealthRoute: Route = (r, { db, logger }) => {
 
     return pipe(
       // connect to db
-      TE.tryCatch(() => db.clientConnect({}), toBackendError),
+      TE.tryCatch(() => db.clientConnect({}), toAPIError),
       // count docs in a collection
       TE.chain((c) =>
-        TE.tryCatch(() => db.count(c, 'ytvids', {}), toBackendError)
+        TE.tryCatch(() => db.count(c, 'ytvids', {}), toAPIError)
       ),
       // comment this out to see this fails
       // TE.chain((c) =>

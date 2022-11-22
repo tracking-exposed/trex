@@ -1,4 +1,4 @@
-import { AppError } from '@shared/errors/AppError';
+import { AppError, toAppError } from '@shared/errors/AppError';
 import { LaunchOptions } from '@shared/providers/puppeteer/puppeteer.provider';
 import * as TE from 'fp-ts/lib/TaskEither';
 import type * as puppeteer from 'puppeteer-core';
@@ -20,11 +20,7 @@ export const dispatchBrowser =
     if (proxy) {
       if (!proxy.startsWith('socks5://')) {
         return TE.left(
-          new AppError(
-            'ProxyError',
-            'Error, --proxy must start with socks5://',
-            []
-          )
+          toAppError(new Error('Error, --proxy must start with socks5://'))
         );
       }
       commandLineArg.push('--proxy-server=' + proxy);

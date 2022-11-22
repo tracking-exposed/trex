@@ -1,11 +1,10 @@
-import { AppError } from '@shared/errors/AppError';
+import { AppError, toAppError } from '@shared/errors/AppError';
 import { format } from 'date-fns';
 import * as E from 'fp-ts/lib/Either';
 import { pipe } from 'fp-ts/lib/function';
+import * as Json from 'fp-ts/lib/Json';
 import * as TE from 'fp-ts/lib/TaskEither';
 import * as fs from 'fs';
-import * as Json from 'fp-ts/lib/Json';
-import { failure } from 'io-ts/lib/PathReporter';
 import * as path from 'path';
 import { GuardoniConfig, GuardoniContext, GuardoniProfile } from './types';
 import { liftFromIOE } from './utils';
@@ -113,25 +112,11 @@ export const readProfile =
       TE.chain((data) =>
         pipe(
           Json.parse(data),
-          E.mapLeft(
-            (e) =>
-              new AppError(
-                'ReadProfileError',
-                "Can't decode the content of the profile",
-                [JSON.stringify(e)]
-              )
-          ),
+          E.mapLeft((e) => toAppError(e)),
           E.chain((d) =>
             pipe(
               GuardoniProfile.decode(d),
-              E.mapLeft(
-                (e) =>
-                  new AppError(
-                    'DecodeProfileError',
-                    "Can't decode guardoni profile",
-                    failure(e)
-                  )
-              )
+              E.mapLeft(toAppError)
             )
           ),
           TE.fromEither
