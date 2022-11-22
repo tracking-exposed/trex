@@ -195,6 +195,79 @@ describe('Metadata API', () => {
       );
     });
 
+    it('succeeds with "video" metadata when filtering for "authorName"', async () => {
+      const total = 100;
+      const amount = 10;
+      const authorName = 'trex';
+
+      const videoMetadata = fc
+        .sample(VideoMetadataArb, total / 2)
+        .map((m, i) => ({
+          ...m,
+          authorName: i % 2 === 0 ? authorName : m.authorName,
+          savingTime: new Date(),
+        }));
+
+      const homeMetadata = fc.sample(HomeMetadataArb, total / 2).map((m) => ({
+        ...m,
+        savingTime: new Date(),
+      }));
+
+      const metadata = [...videoMetadata, ...homeMetadata];
+
+      await test.mongo3.insertMany(
+        test.mongo,
+        test.config.get('schema').metadata,
+        metadata
+      );
+
+      const expectedMetadata = videoMetadata
+        .filter(
+          (a, i) =>
+            a.savingTime.getTime() >
+              new Date(moment().startOf('day').toISOString()).getTime() &&
+            i % 2 === 0
+        )
+        .sort((a, b) => b.savingTime.getTime() - a.savingTime.getTime())
+        .slice(0, amount)
+        .map(({ publicKey, _id, experimentId, researchTag, ...m }: any) => {
+          return {
+            ...m,
+            id: m.id.substring(0, 20),
+            blang: m.blang ?? null,
+            supporter: utils.string2Food(publicKey),
+            clientTime: m.clientTime.toISOString(),
+            publicationTime: m.publicationTime.toISOString(),
+            savingTime: m.savingTime.toISOString(),
+            related: m.related.map(toRelated),
+          };
+        });
+
+      const { body } = await test.app
+        .get(`/api/v2/metadata`)
+        .query({
+          filter: {
+            nature: 'video',
+            authorName,
+          },
+          amount,
+        })
+        .expect(200);
+
+      expect(body.data.length).toBe(expectedMetadata.length);
+      expect(body.data).toMatchObject(expectedMetadata);
+
+      await test.mongo3.deleteMany(
+        test.mongo,
+        test.config.get('schema').metadata,
+        {
+          id: {
+            $in: metadata.map((m) => m.id),
+          },
+        }
+      );
+    });
+
     it('succeeds with metadata', async () => {
       const total = 100;
       const experimentId = fc.sample(fc.uuid(), 1)[0];
