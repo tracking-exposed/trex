@@ -71,9 +71,10 @@ jobs:
           yarn tk:ext build:guardoni
 
       - name: Test Guardoni
-        run: |
-          yarn test guardoni --ci
-          yarn pm2 stop all
+        run: yarn test guardoni --ci
+
+      - name: Stop PM2
+        run: yarn pm2 stop all
 
   guardoni_build:
     name: Guardoni build
@@ -135,7 +136,7 @@ jobs:
       - name: Install dependencies
         run: yarn
 
-      - name: Start PM2
+      - name: Start pm2
         run: |
           yarn pm2 start --env test ./platforms/ecosystem.config.js
           sleep 5
