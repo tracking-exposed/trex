@@ -84,6 +84,7 @@
     "@types/react": "^17"
   },
   "dependencies": {
+    "@react-theming/storybook-addon": "^1.1.7",
     "pm2": "^5.2.2"
   }
 }
