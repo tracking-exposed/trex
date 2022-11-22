@@ -95,7 +95,8 @@ export const routeHandleMiddleware = <
 
       if (isAPIError(error)) {
         logger.error(
-          'APIError - %s: (%s) %s %s',
+          'APIError - %d %s: (%s) %s %s',
+          error.status,
           error.name,
           error.message,
           error.stack

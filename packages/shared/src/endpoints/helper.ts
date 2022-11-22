@@ -10,6 +10,7 @@ import {
 import { serializedType } from 'ts-io-error/lib/Codec';
 import { MinimalEndpointInstance } from './MinimalEndpoint';
 import { APIError } from '../errors/APIError';
+import { toValidationError } from '../errors/ValidationError';
 
 interface DecodeError {
   type: 'error';
@@ -27,7 +28,7 @@ interface DecodeRequestSuccess<E extends MinimalEndpointInstance> {
 }
 
 type DecodeRequestResult<E extends MinimalEndpointInstance> =
-  | DecodeError
+  | { type: 'error'; error: APIError }
   | DecodeRequestSuccess<E>;
 
 const decodeRequest = <E extends MinimalEndpointInstance>(
@@ -44,7 +45,7 @@ const decodeRequest = <E extends MinimalEndpointInstance>(
     E.fold(
       (e): DecodeRequestResult<E> => ({
         type: 'error',
-        result: PathReporter.report(E.left(e)),
+        error: toValidationError('Request validation failed.', e),
       }),
       (result): DecodeRequestResult<E> => ({ type: 'success', result })
     )
@@ -86,6 +87,7 @@ const decodeOrThrowRequest = <E extends MinimalEndpointInstance>(
         kind: 'DecodingError',
         errors: r.result,
       });
+
     }
 
     return r.result;

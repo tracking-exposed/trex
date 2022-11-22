@@ -67,7 +67,8 @@ const toMessageHandlerError = (
       response: {
         name: e.name,
         message: e.message,
-        details: (e.details as any).errors ?? [],
+        details:
+          e.details.kind === 'DecodingError' ? (e.details.errors as any[]) : [],
       },
     };
   }
