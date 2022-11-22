@@ -7,8 +7,6 @@
     "lint": "eslint ./bin ./lib ./models ./test",
     "test": "jest",
     "coc": "DEBUG=* ts-node bin/count-o-clock.js",
-    "tto:watch": "key=fuffa DEBUG=\"*,-express:*,-body-parser:*,-send\" ts-node-dev -r tsconfig-paths/register --respawn --transpile-only bin/observatory",
-    "tto:start": "DEBUG=\"*,-express:*,-body-parser:*,-send\" node build/bin/observatory",
     "watch": "key=fuffa DEBUG=\"*,-express:*,-body-parser:*,-send\" ts-node-dev -r tsconfig-paths/register --respawn --transpile-only bin/server",
     "start": "DEBUG=\"*,-body-parser:*,-express:*,-lib:cache,-send\" node build/bin/server",
     "parserv:watch": "DEBUG=\"*\" ts-node-dev -r tsconfig-paths/register bin/parser",

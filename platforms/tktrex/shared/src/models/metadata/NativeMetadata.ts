@@ -1,18 +1,18 @@
 import * as t from 'io-ts';
 import { NativeVideoN } from '../Nature';
 import { Author } from './Author';
-import { MetadataBase } from './MetadataBase';
+import { TKMetadataBase } from './MetadataBase';
 import { Metrics } from './Metrics';
 import { Music } from './Music';
 
 export const NativeMetadata = t.intersection(
   [
-    MetadataBase,
+    TKMetadataBase,
     NativeVideoN,
     t.type({ nature: NativeVideoN }, 'NativeMetadataType'),
     t.type(
       {
-        description: t.union([t.string, t.undefined]),
+        description: t.union([t.string, t.undefined, t.null]),
         music: t.union([Music, t.undefined, t.null]),
         author: t.union([Author, t.undefined, t.null]),
         metrics: t.union([Metrics, t.undefined, t.null]),

@@ -16,6 +16,7 @@ export const toMetadata: BuildMetadataFn<HTMLSource, TKMetadata, TKParsers> = (
     clientTime: entry.source.html.clientTime,
     href: entry.source.html.href,
     thumbnails: [],
+    blang: entry.source.html.blang ?? null
   };
 
   switch (entry.findings.nature.type) {

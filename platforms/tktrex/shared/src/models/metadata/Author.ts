@@ -4,7 +4,7 @@ export const Author = t.type(
   {
     link: t.string,
     username: t.string,
-    name: t.union([t.string, t.undefined]),
+    name: t.union([t.string, t.undefined, t.null]),
   },
   'Author',
 );

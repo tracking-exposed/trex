@@ -7,6 +7,7 @@ export const VideoType = t.literal('video');
 export const SearchType = t.literal('search');
 export const NativeType = t.literal('native');
 export const ProfileType = t.literal('profile');
+export const HashtagType = t.literal('tag');
 
 export const NatureType = t.union(
   [
@@ -17,6 +18,7 @@ export const NatureType = t.union(
     SearchType,
     NativeType,
     ProfileType,
+    HashtagType,
   ],
   'NatureType',
 );
@@ -71,7 +73,7 @@ export type NativeVideoN = t.TypeOf<typeof NativeVideoN>;
 
 export const ProfileN = t.type(
   {
-    type: t.union([t.literal('creator'), t.literal('profile')]),
+    type: t.union([CreatorType, ProfileType]),
     creatorName: t.string,
   },
   'ProfileN',
@@ -81,7 +83,7 @@ export type ProfileN = t.TypeOf<typeof ProfileN>;
 
 export const HashtagsN = t.type(
   {
-    type: t.literal('tag'),
+    type: HashtagType,
     hashtag: t.string,
   },
   'HashtagN',
