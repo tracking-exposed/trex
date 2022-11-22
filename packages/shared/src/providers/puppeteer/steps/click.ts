@@ -17,7 +17,7 @@ export const CLICK_COMMAND_REGEXP =
 
 export const toClickCommand = (selector: string, delay?: number): string =>
   `click(${selector};${delay ?? 0})`;
-  
+
 export const parseClickCommand = (
   cmd: string
 ): E.Either<AppError, { selector: string; delay: number }> => {
@@ -29,9 +29,7 @@ export const parseClickCommand = (
     return E.right({ selector, delay });
   }
 
-  return E.left(
-    new AppError('ClickStepError', `Cannot parse command: ${cmd}`, [])
-  );
+  return E.left(toAppError(new Error(`Cannot parse command: ${cmd}`)));
 };
 /**
  * Click step

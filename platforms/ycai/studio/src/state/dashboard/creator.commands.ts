@@ -1,5 +1,5 @@
 import * as sharedConst from '@shared/constants';
-import { AppError } from '@shared/errors/AppError';
+import { AppError, toAppError } from '@shared/errors/AppError';
 import { AuthResponse } from '@shared/models/Auth';
 import { ContentCreator } from '@shared/models/ContentCreator';
 import { PartialRecommendation } from '@shared/models/Recommendation';
@@ -50,7 +50,7 @@ export const verifyChannel = command(
   {
     localProfile,
     auth,
-    requiredLocalProfile
+    requiredLocalProfile,
   }
 );
 
@@ -59,11 +59,14 @@ export const pullContentCreatorVideos = command(
     pipe(
       requiredLocalProfile.run(),
       TE.chain((p) =>
-        AuthAPI.v3.Creator.PullCreatorVideos({
-          Headers: {
-            'x-authorization': p.accessToken,
-          },
-        })
+        pipe(
+          AuthAPI.v3.Creator.PullCreatorVideos({
+            Headers: {
+              'x-authorization': p.accessToken,
+            },
+          }),
+          TE.mapLeft(toAppError)
+        )
       )
     ),
   {
@@ -76,12 +79,15 @@ export const addRecommendation = command(
     pipe(
       profile.run(),
       TE.chain((p) =>
-        AuthAPI.v3.Creator.CreateRecommendation({
-          Headers: {
-            'x-authorization': p.accessToken,
-          },
-          Body: { url },
-        })
+        pipe(
+          AuthAPI.v3.Creator.CreateRecommendation({
+            Headers: {
+              'x-authorization': p.accessToken,
+            },
+            Body: { url },
+          }),
+          TE.mapLeft(toAppError)
+        )
       )
     ),
   {
@@ -94,15 +100,18 @@ export const updateRecommendationsForVideo = command(
     return pipe(
       requiredLocalProfile.run(),
       TE.chain((p) =>
-        AuthAPI.v3.Creator.UpdateVideo({
-          Headers: {
-            'x-authorization': p.accessToken,
-          },
-          Body: {
-            videoId,
-            recommendations,
-          },
-        })
+        pipe(
+          AuthAPI.v3.Creator.UpdateVideo({
+            Headers: {
+              'x-authorization': p.accessToken,
+            },
+            Body: {
+              videoId,
+              recommendations,
+            },
+          }),
+          TE.mapLeft(toAppError)
+        )
       )
     );
   },
@@ -123,20 +132,23 @@ export const addRecommendationForVideo = command(
     pipe(
       profile.run(),
       TE.chain((p) =>
-        sequenceS(TE.ApplicativePar)({
-          video: AuthAPI.v3.Creator.OneCreatorVideo({
-            Headers: {
-              'x-authorization': p.accessToken,
-            },
-            Params: { videoId },
+        pipe(
+          sequenceS(TE.ApplicativePar)({
+            video: AuthAPI.v3.Creator.OneCreatorVideo({
+              Headers: {
+                'x-authorization': p.accessToken,
+              },
+              Params: { videoId },
+            }),
+            recommendation: AuthAPI.v3.Creator.CreateRecommendation({
+              Headers: {
+                'x-authorization': p.accessToken,
+              },
+              Body: { url: recommendationURL },
+            }),
           }),
-          recommendation: AuthAPI.v3.Creator.CreateRecommendation({
-            Headers: {
-              'x-authorization': p.accessToken,
-            },
-            Body: { url: recommendationURL },
-          }),
-        })
+          TE.mapLeft(toAppError)
+        )
       ),
       TE.chain(({ video, recommendation }) => {
         if (
@@ -167,13 +179,16 @@ export const patchRecommendation = command(
     pipe(
       profile.run(),
       TE.chain((p) => {
-        return AuthAPI.v3.Creator.PatchRecommendation({
-          Headers: {
-            'x-authorization': p.accessToken,
-          },
-          Params: { urlId },
-          Body: data,
-        });
+        return pipe(
+          AuthAPI.v3.Creator.PatchRecommendation({
+            Headers: {
+              'x-authorization': p.accessToken,
+            },
+            Params: { urlId },
+            Body: data,
+          }),
+          TE.mapLeft(toAppError)
+        );
       })
     )
 );
@@ -183,12 +198,15 @@ export const deleteRecommendation = command(
     pipe(
       profile.run(),
       TE.chain((p) => {
-        return AuthAPI.v3.Creator.DeleteRecommendation({
-          Headers: {
-            'x-authorization': p.accessToken,
-          },
-          Params: { urlId },
-        });
+        return pipe(
+          AuthAPI.v3.Creator.DeleteRecommendation({
+            Headers: {
+              'x-authorization': p.accessToken,
+            },
+            Params: { urlId },
+          }),
+          TE.mapLeft(toAppError)
+        );
       })
     ),
   {

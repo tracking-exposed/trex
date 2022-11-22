@@ -11,7 +11,7 @@ import {
 import { formatISO, subMonths } from 'date-fns';
 import { pipe } from 'fp-ts/lib/function';
 import * as TE from 'fp-ts/lib/TaskEither';
-import { AppError } from '@shared/errors/AppError';
+import { AppError, toAppError } from '@shared/errors/AppError';
 import { getItem, setItem } from '@shared/providers/localStorage.provider';
 import { APIError } from '@shared/errors/APIError';
 import { GetRelatedChannelsOutput } from '@shared/models/ChannelRelated';
@@ -70,13 +70,18 @@ type AuthorizedContentCreator = Omit<ContentCreator, 'accessToken'> & {
 
 const throwOnMissingProfile = (
   profile?: ContentCreator | null
-): TE.TaskEither<APIError, AuthorizedContentCreator> =>
+): TE.TaskEither<AppError, AuthorizedContentCreator> =>
   pipe(
     profile,
     TE.fromPredicate(
       (s): s is AuthorizedContentCreator =>
         s?.registeredOn !== undefined && s.accessToken !== undefined,
-      () => new APIError(404, 'NotFound', 'Missing Content Creator', [])
+      () =>
+        new AppError('Missing Content Creator', {
+          kind: 'ServerError',
+          meta: '',
+          status: '',
+        })
     )
   );
 
@@ -94,7 +99,7 @@ export const accountLinkCompleted = queryStrict(
 
 export const localProfile = queryStrict(
   () =>
-    TE.fromIO<AuthorizedContentCreator | null, APIError>(
+    TE.fromIO<AuthorizedContentCreator | null, AppError>(
       getItem(sharedConst.CONTENT_CREATOR)
     ),
   available
@@ -110,9 +115,11 @@ export const profile = compose(
   queryStrict(
     ({ profile }) =>
       pipe(
-        API.v3.Creator.GetCreator({
-          Headers: { 'x-authorization': profile.accessToken },
-        }),
+        TE.mapLeft(toAppError)(
+          API.v3.Creator.GetCreator({
+            Headers: { 'x-authorization': profile.accessToken },
+          })
+        ),
         TE.chain(throwOnMissingProfile)
       ),
     available

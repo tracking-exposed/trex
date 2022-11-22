@@ -15,7 +15,7 @@ import * as TE from 'fp-ts/lib/TaskEither';
 import * as t from 'io-ts';
 import { PathReporter } from 'io-ts/lib/PathReporter';
 import { MinimalEndpointInstance, TypeOfEndpointInstance } from '../endpoints';
-import { APIError } from '../errors/APIError';
+import { APIError, fromAxiosError, isAPIError } from '../errors/APIError';
 import { toValidationError } from '../errors/ValidationError';
 import { trexLogger } from '../logger';
 
@@ -24,21 +24,37 @@ export const apiLogger = trexLogger.extend('API');
 export const toAPIError = (e: unknown): APIError => {
   // eslint-disable-next-line
   apiLogger.error('An error occurred %O', e);
-  if (e instanceof Error) {
-    if (e.message === 'Network Error') {
-      return new APIError(
-        502,
-        'Network Error',
-        'The API endpoint is not reachable',
-        ["Be sure you're connected to internet."]
-      );
-    }
-    return new APIError(500, 'UnknownError', e.message, []);
+  if (isAPIError(e)) {
+    return e;
   }
 
-  return new APIError(500, 'UnknownError', 'An error occurred', [
-    JSON.stringify(e),
-  ]);
+  if (axios.isAxiosError(e)) {
+    return fromAxiosError(e);
+  }
+
+  if (e instanceof Error) {
+    if (e.message === 'Network Error') {
+      return new APIError('Network Error', {
+        kind: 'NetworkError',
+        status: '500',
+        meta: [
+          'The API endpoint is not reachable',
+          "Be sure you're connected to internet.",
+        ],
+      });
+    }
+    return new APIError(e.message, {
+      kind: 'ClientError',
+      meta: e.stack,
+      status: '500',
+    });
+  }
+
+  return new APIError('An error occurred', {
+    kind: 'ClientError',
+    meta: JSON.stringify(e),
+    status: '500',
+  });
 };
 
 const liftFetch = <B>(
@@ -51,11 +67,8 @@ const liftFetch = <B>(
     TE.chain((content) => {
       return pipe(
         decode(content),
-        E.mapLeft((e): APIError => {
-          const details = PathReporter.report(E.left(e));
-          apiLogger.error('toAPIError Validation failed %O', details);
-          return toValidationError('Validation failed', details);
-        }),
+        E.mapLeft((e) => toValidationError('Validation failed', e)),
+        E.mapLeft(toAPIError),
         TE.fromEither
       );
     })
@@ -128,7 +141,7 @@ export const MakeHTTPClient = (client: AxiosInstance): HTTPClient => {
         TE.mapLeft((e): APIError => {
           const details = PathReporter.report(E.left(e));
           apiLogger.error('MakeHTTPClient Validation failed %O', details);
-          return toValidationError('Validation failed', details);
+          return pipe(toValidationError('Validation failed', e), toAPIError);
         }),
         TE.chain((input) => {
           const url = e.getPath(input.params);

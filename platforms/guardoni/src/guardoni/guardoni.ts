@@ -6,14 +6,14 @@
  * - filter the directive with "exclude url tag"
  *
  */
-import * as Endpoints from '@yttrex/shared/endpoints';
 import { AppError, toAppError } from '@shared/errors/AppError';
 import { Step } from '@shared/models/Step';
 import { APIClient, MakeAPIClient } from '@shared/providers/api.provider';
 import {
   GetPuppeteer,
-  OperateResult,
+  OperateResult
 } from '@shared/providers/puppeteer/puppeteer.provider';
+import * as Endpoints from '@yttrex/shared/endpoints';
 import { differenceInSeconds } from 'date-fns';
 import debug from 'debug';
 import { sequenceS } from 'fp-ts/lib/Apply';
@@ -25,34 +25,34 @@ import { NonEmptyString } from 'io-ts-types/lib/NonEmptyString';
 import type puppeteer from 'puppeteer-core';
 import { PuppeteerExtra } from 'puppeteer-extra';
 import { dispatchBrowser } from './browser';
+import { GuardoniCommandOpts, GuardoniNavigateOpts } from './cli';
 import {
   checkConfig,
   getConfig,
   getDefaultConfig,
-  getPlatformConfig,
+  getPlatformConfig
 } from './config';
-import { GetTKHooks } from './steps/tk.steps';
-import { GetYTHooks } from './steps/yt.steps';
 import {
   getDirective,
   listExperiments,
   registerCSV,
   registerExperiment,
   saveExperiment,
-  validateNonEmptyString,
+  validateNonEmptyString
 } from './experiment';
 import {
-  downloadExtension,
-  setLocalSettings,
-  cleanExtension,
+  cleanExtension, downloadExtension,
+  setLocalSettings
 } from './extension';
 import {
   checkProfile,
   getDefaultProfile,
   getProfileJsonPath,
   readProfile,
-  updateGuardoniProfile,
+  updateGuardoniProfile
 } from './profile';
+import { GetTKHooks } from './steps/tk.steps';
+import { GetYTHooks } from './steps/yt.steps';
 import {
   ExperimentInfo,
   GuardoniConfig,
@@ -60,10 +60,9 @@ import {
   GuardoniSuccessOutput,
   Platform,
   PlatformConfig,
-  ProgressDetails,
+  ProgressDetails
 } from './types';
 import { getChromePath, getPackageVersion } from './utils';
-import { GuardoniCommandOpts, GuardoniNavigateOpts } from './cli';
 
 const runNavigate =
   (ctx: GuardoniContext) =>

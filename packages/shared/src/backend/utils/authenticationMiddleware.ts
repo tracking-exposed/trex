@@ -1,4 +1,4 @@
-import { NotAuthorizedError } from '../errors/BackendError';
+import { NotAuthorizedError } from '../../errors/APIError';
 import * as express from 'express';
 import * as E from 'fp-ts/lib/Either';
 import { pipe } from 'fp-ts/lib/function';

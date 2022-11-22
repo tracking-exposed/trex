@@ -220,7 +220,10 @@ export const GetGuardoniCLI: GetGuardoniCLI = (
             printOutput(command, {
               type: 'error',
               message: e.message,
-              details: e.details,
+              details:
+                e.details.kind === 'DecodingError'
+                  ? (e.details.errors as string[])
+                  : [e.details.status],
             })
           );
           return Promise.reject(e);

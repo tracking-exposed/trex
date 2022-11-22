@@ -209,7 +209,9 @@ describe('CLI', () => {
         _tag: 'Left',
         left: {
           message: 'Empty experiment id',
-          details: ['Invalid value "" supplied to : NonEmptyString'],
+          details: {
+            errors: ['Invalid value "" supplied to : NonEmptyString'],
+          },
         },
       });
 

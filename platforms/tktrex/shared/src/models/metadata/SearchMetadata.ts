@@ -4,7 +4,7 @@ import { MetadataBase } from './MetadataBase';
 
 export const ResultLinked = t.type(
   { link: Nature, desc: t.string },
-  'ResultLinked'
+  'ResultLinked',
 );
 export type ResultLinked = t.TypeOf<typeof ResultLinked>;
 
@@ -17,7 +17,7 @@ export const SearchMetadataResult = t.type(
     thumbnail: t.string,
     publishingDate: t.union([t.string, t.null]),
   },
-  'SearchMetadataResult'
+  'SearchMetadataResult',
 );
 export const SearchMetadata = t.intersection(
   [
@@ -32,13 +32,13 @@ export const SearchMetadata = t.intersection(
             downloaded: t.boolean,
             filename: t.union([t.string, t.null]),
             reason: t.number,
-          })
+          }),
         ),
       },
-      'search'
+      'search',
     ),
   ],
-  'SearchVideoMetadata'
+  'SearchVideoMetadata',
 );
 
 export type SearchMetadata = t.TypeOf<typeof SearchMetadata>;
