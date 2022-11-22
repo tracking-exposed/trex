@@ -5,12 +5,12 @@ import { Keypair } from '@shared/models/extension/Keypair';
 import bs58 from '@shared/providers/bs58.provider';
 import {
   GetParserProvider,
-  ParserProvider
+  ParserProvider,
 } from '@shared/providers/parser.provider';
 import { fc } from '@shared/test';
 import {
   readFixtureJSON,
-  readFixtureJSONPaths
+  readFixtureJSONPaths,
 } from '@shared/test/utils/parser.utils';
 import { foldTEOrThrow } from '@shared/utils/fp.utils';
 import { sleep } from '@shared/utils/promise.utils';
@@ -25,7 +25,7 @@ import {
   addDom,
   getLastHTMLs,
   getMetadata,
-  updateMetadataAndMarkHTML
+  updateMetadataAndMarkHTML,
 } from '../../lib/parser';
 import { GetTest, Test } from '../../test/Test';
 
@@ -41,7 +41,9 @@ describe('/v2/personal', () => {
     TKMetadata,
     TKParserConfig,
     typeof parsers
-  > = beforeAll(async () => {
+  >;
+
+  beforeAll(async () => {
     appTest = await GetTest();
     await appTest.mongo3.insertMany(
       appTest.mongo,
@@ -269,7 +271,7 @@ describe('/v2/personal', () => {
         appTest.mongo,
         appTest.config.get('schema').metadata,
         {
-          experimentId: experiment.experimentId,
+          publicKey: keys.publicKey,
         }
       );
 

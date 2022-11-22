@@ -1,9 +1,9 @@
 import { getArbitrary } from 'fast-check-io-ts';
 import {
   SearchMetadata,
-  ForYouVideoMetadata,
+  ForYouMetadata,
   FollowingVideoMetadata,
-  MetadataBase,
+  TKMetadataBase,
   SearchMetadataResult,
   NativeMetadata,
 } from '../models/metadata';
@@ -12,7 +12,7 @@ import { fc } from '@shared/test';
 import { subDays } from 'date-fns';
 import * as t from 'io-ts';
 
-const metadataBaseProps = propsOmitType(MetadataBase, [
+const metadataBaseProps = propsOmitType(TKMetadataBase, [
   'id',
   'clientTime',
   'savingTime',
@@ -101,7 +101,7 @@ export const SearchMetaDataArb = (opts: {
  * ForYouMetadata arbitrary
  *
  **/
-const forYouMetadataProps = propsOmitType(ForYouVideoMetadata.types[2], []);
+const forYouMetadataProps = propsOmitType(ForYouMetadata.types[2], []);
 
 export const ForYouVideoMetaDataArb = getArbitrary(
   t.intersection([t.type(metadataBaseProps), t.type(forYouMetadataProps)]),

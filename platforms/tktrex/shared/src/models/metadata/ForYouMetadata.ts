@@ -1,27 +1,27 @@
 import * as t from 'io-ts';
 import { ForYouN } from '../Nature';
 import { Author } from './Author';
-import { MetadataBase } from './MetadataBase';
+import { TKMetadataBase } from './MetadataBase';
 import { Metrics } from './Metrics';
 import { Music } from './Music';
 
-export const ForYouVideoMetadata = t.intersection(
+export const ForYouMetadata = t.intersection(
   [
-    MetadataBase,
+    TKMetadataBase,
     ForYouN,
     t.type({ nature: ForYouN }),
     t.type(
       {
         // baretext is the smallest part of the description,
         // not including the tags
-        baretext: t.string,
+        baretext: t.union([t.string, t.undefined]),
 
         // description is the whole text written below the video,
         // including the tags
-        description: t.string,
+        description: t.union([t.string, t.undefined]),
 
-        author: Author,
-        music: Music,
+        author: t.union([Author, t.undefined]),
+        music: t.union([Music, t.undefined]),
         // the hashtags, with their leading #
         // note: they do not seem to be cleaned at the moment,
         // some have trailing whitespace
@@ -31,7 +31,7 @@ export const ForYouVideoMetadata = t.intersection(
       'foryou',
     ),
   ],
-  'ForYouVideoMetadata',
+  'ForYouMetadata',
 );
 
-export type ForYouVideoMetadata = t.TypeOf<typeof ForYouVideoMetadata>;
+export type ForYouMetadata = t.TypeOf<typeof ForYouMetadata>;

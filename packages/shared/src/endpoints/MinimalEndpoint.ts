@@ -22,10 +22,10 @@ export interface TypeOfEndpointInstance<E extends MinimalEndpointInstance> {
     ? // eslint-disable-next-line @typescript-eslint/no-invalid-void-type
       void
     : {
-        [k in keyof NonNullable<E['Input']>]: NonNullable<
+        [K in keyof NonNullable<E['Input']>]: NonNullable<
           E['Input']
-        >[k] extends Codec<any, any, any>
-          ? runtimeType<NonNullable<E['Input']>[k]>
+        >[K] extends Codec<any, any, any>
+          ? runtimeType<NonNullable<E['Input']>[K]>
           : never;
       };
 }

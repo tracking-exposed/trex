@@ -1,6 +1,6 @@
 import * as t from 'io-ts';
 import { NativeVideoN, ProfileN } from '../Nature';
-import { MetadataBase } from './MetadataBase';
+import { TKMetadataBase } from './MetadataBase';
 
 export const ProfileResult = t.type(
   {
@@ -19,7 +19,7 @@ export type ProfileResult = t.TypeOf<typeof ProfileResult>;
 
 export const ProfileMetadata = t.intersection(
   [
-    MetadataBase,
+    TKMetadataBase,
     ProfileN,
     t.type({ nature: ProfileN }),
     t.type({

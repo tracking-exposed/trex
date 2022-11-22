@@ -1,16 +1,16 @@
-import { ForYouVideoMetadata } from '@tktrex/shared/models/metadata/ForYouMetadata';
+import { ForYouMetadata } from '@tktrex/shared/models/metadata/ForYouMetadata';
 import * as t from 'io-ts';
 
-const { supporter, ...metadataBaseProps } = ForYouVideoMetadata.types[0].props;
-export const ForYouVideoMetadataDB = t.strict(
+const { supporter, ...metadataBaseProps } = ForYouMetadata.types[0].props;
+export const ForYouMetadataDB = t.strict(
   {
     ...metadataBaseProps,
-    ...ForYouVideoMetadata.types[1].type.props,
-    ...ForYouVideoMetadata.types[2].props,
-    ...ForYouVideoMetadata.types[3].props,
+    ...ForYouMetadata.types[1].type.props,
+    ...ForYouMetadata.types[2].props,
+    ...ForYouMetadata.types[3].props,
     _id: t.any,
     publicKey: t.string,
   },
-  'ForYouVideoMetadataDB'
+  'ForYouMetadataDB'
 );
-export type ForYouVideoMetadataDB = t.TypeOf<typeof ForYouVideoMetadataDB>;
+export type ForYouMetadataDB = t.TypeOf<typeof ForYouMetadataDB>;

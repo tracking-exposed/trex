@@ -1,8 +1,8 @@
 import { DocumentedEndpoint } from '@shared/endpoints';
-import { Format, What } from '@shared/models/common';
 import { SearchQuery } from '@shared/models/http/SearchQuery';
 import * as t from 'io-ts';
 import * as apiModel from '../../models';
+import { GetSearchByQueryInputParams } from '../../models/http/Search';
 
 export const Handshake = DocumentedEndpoint({
   title: 'Handshake',
@@ -42,10 +42,7 @@ const GetSearchByQuery = DocumentedEndpoint({
   Method: 'GET',
   getPath: ({ query, format }) => `/v2/public/query/${query}/${format}`,
   Input: {
-    Params: t.type({
-      query: What,
-      format: Format,
-    }),
+    Params: GetSearchByQueryInputParams,
     Query: SearchQuery,
   },
   Output: apiModel.Public.GetSearchByQueryOutput,

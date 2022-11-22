@@ -1,18 +1,20 @@
 import * as t from 'io-ts';
 import { FollowingN } from '../Nature';
 import { Author } from './Author';
-import { MetadataBase } from './MetadataBase';
+import { TKMetadataBase } from './MetadataBase';
+import { Metrics } from './Metrics';
 import { Music } from './Music';
 
 export const FollowingVideoMetadata = t.intersection(
   [
-    MetadataBase,
+    TKMetadataBase,
     FollowingN,
     t.type({ nature: FollowingN }),
     t.type(
       {
-        author: Author,
-        music: Music,
+        author: t.union([Author, t.undefined]),
+        music: t.union([Music, t.undefined]),
+        metrics: t.union([Metrics, t.undefined]),
       },
       'following',
     ),
