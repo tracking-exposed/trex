@@ -9,7 +9,6 @@ permissions:
   contents: write
 
 jobs:
-
   build:
     name: Build
     runs-on: ubuntu-latest
