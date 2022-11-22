@@ -1,12 +1,12 @@
 import * as t from 'io-ts';
 import { date } from 'io-ts-types/lib/date';
 import { VideoN } from '../Nature';
-import { MetadataBase } from './MetadataBase';
+import { YTMetadataBase } from './MetadataBase';
 import { ParsedInfo } from './VideoResult';
 
 export const VideoMetadata = t.strict(
   {
-    ...MetadataBase.type.props,
+    ...YTMetadataBase.type.props,
     ...VideoN.type.props,
     params: t.record(t.string, t.string),
     login: t.union([t.boolean, t.null]),

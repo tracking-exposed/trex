@@ -1,10 +1,10 @@
 import * as t from 'io-ts';
 import { SearchN } from '../Nature';
-import { MetadataBase } from './MetadataBase';
+import { YTMetadataBase } from './MetadataBase';
 
 export const SearchMetadata = t.strict(
   {
-    ...MetadataBase.type.props,
+    ...YTMetadataBase.type.props,
     ...SearchN.type.props,
     correction: t.union([t.array(t.string), t.undefined]),
     results: t.array(
