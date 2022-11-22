@@ -1,11 +1,11 @@
 import * as t from 'io-ts';
 import { HashtagType } from '../Ad';
 import { HashtagNatureType } from '../Nature';
-import { MetadataBase } from './MetadataBase';
+import { YTMetadataBase } from './MetadataBase';
 
 export const HashtagMetadata = t.strict(
   {
-    ...MetadataBase.type.props,
+    ...YTMetadataBase.type.props,
     type: HashtagType,
     nature: HashtagNatureType,
   },

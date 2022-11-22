@@ -12,7 +12,7 @@ import {
   // SummaryMetadata,
 } from '@shared/models/contributor/ContributorPersonalSummary';
 import { SearchMetadata as TikTokSearchMetadata } from '@tktrex/shared/models/metadata';
-import { Metadata } from '@shared/models/Metadata';
+import { Metadata } from '@yttrex/shared/models/metadata/Metadata';
 import { GuardoniExperiment } from '@shared/models/Experiment';
 import * as React from 'react';
 import CSVDownloadButton from '../components/buttons/CSVDownloadButton';

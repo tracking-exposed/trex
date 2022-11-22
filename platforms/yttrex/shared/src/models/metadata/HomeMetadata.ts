@@ -1,11 +1,11 @@
 import * as t from 'io-ts';
 import { HomeN } from '../Nature';
-import { MetadataBase } from './MetadataBase';
+import { YTMetadataBase } from './MetadataBase';
 import { ParsedInfo } from './VideoResult';
 
 export const HomeMetadata = t.strict(
   {
-    ...MetadataBase.type.props,
+    ...YTMetadataBase.type.props,
     ...HomeN.type.props,
     selected: t.array(ParsedInfo),
     sections: t.array(

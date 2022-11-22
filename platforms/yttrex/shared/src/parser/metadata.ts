@@ -38,6 +38,7 @@ export const toMetadata: BuildMetadataFn<HTMLSource, Metadata, Parsers> = (
   if (entry.findings.nature.type === 'search') {
     metadata = {
       ...entry.findings.nature,
+      nature: entry.findings.nature,
       ...metadata,
     };
 
@@ -66,15 +67,16 @@ export const toMetadata: BuildMetadataFn<HTMLSource, Metadata, Parsers> = (
     metadata = {
       href: entry.source.html.href,
       ...entry.findings.nature,
+      nature: entry.findings.nature,
       ...metadata,
       related,
     };
     return metadata;
   }
 
-  /* else ... */
   metadata = {
     ...entry.findings.nature,
+    nature: entry.findings.nature,
     href: entry.source.html.href,
     ...metadata,
   };

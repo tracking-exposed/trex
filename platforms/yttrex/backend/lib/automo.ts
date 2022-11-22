@@ -921,7 +921,7 @@ async function registerSteps(steps: Step[]): Promise<any> {
       status: 'exist',
       experimentId: exist.experimentId,
       since: exist.when,
-      steps: [],
+      steps: exist.steps,
     };
   }
 
