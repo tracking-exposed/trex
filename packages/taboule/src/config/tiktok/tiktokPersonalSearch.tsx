@@ -1,10 +1,15 @@
 import { Box } from '@mui/material';
 import { SearchMetadata } from '@tktrex/shared/models/metadata';
 import { SearchType } from '@tktrex/shared/models/Nature';
+import { SearchNatureType } from '@yttrex/shared/models/Nature';
 import * as React from 'react';
 import CSVDownloadButton from '../../components/buttons/CSVDownloadButton';
 import { GetTabouleQueryConf } from '../config.type';
-import { columnDefault, fieldsDefaultHead, fieldsDefaultTail } from '../defaults';
+import {
+  columnDefault,
+  fieldsDefaultHead,
+  fieldsDefaultTail,
+} from '../defaults';
 import * as inputs from '../inputs';
 
 export const tikTokPersonalSearch: GetTabouleQueryConf<SearchMetadata> = (
@@ -15,15 +20,18 @@ export const tikTokPersonalSearch: GetTabouleQueryConf<SearchMetadata> = (
     nature: SearchType.value,
   },
   inputs: inputs.publicKeyInput,
-  actions: () => {
+  actions: (filter) => {
     return (
       <Box textAlign={'right'}>
         <CSVDownloadButton
           onClick={() => {
-            void commands.downloadAsCSV({
-              Params: {
-                publicKey: params.publicKey,
-                type: 'search',
+            void commands.tkDownloadAsCSV({
+              Query: {
+                ...params,
+                filter: {
+                  ...filter,
+                  type: SearchNatureType.value,
+                },
               },
             })();
           }}
@@ -52,6 +60,6 @@ export const tikTokPersonalSearch: GetTabouleQueryConf<SearchMetadata> = (
       },
       width: 40,
     },
-    ...fieldsDefaultTail
+    ...fieldsDefaultTail,
   ],
 });

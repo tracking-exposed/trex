@@ -34,15 +34,18 @@ export const youtubePersonalVideos: GetTabouleQueryConf<YTVideoMetadata> = (
       </ExpandView>
     );
   },
-  actions: () => {
+  actions: (filter) => {
     return (
       <Box textAlign={'right'}>
         <CSVDownloadButton
           onClick={() => {
-            void commands.downloadAsCSV({
-              Params: {
-                publicKey: params.publicKey,
-                type: 'video',
+            void commands.ytDownloadAsCSV({
+              Query: {
+                ...params,
+                filter: {
+                  ...filter,
+                  type: VideoNatureType.value,
+                },
               },
             })();
           }}

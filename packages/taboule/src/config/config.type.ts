@@ -12,7 +12,7 @@ export interface TabouleQueryConfiguration<P extends Record<string, any>>
   inputs?: (params: any, setParams: React.Dispatch<any>) => JSX.Element;
   filters?: Record<string, string>;
   expanded?: (r: Omit<ExpandViewProps, 'data'> & { row: P }) => JSX.Element;
-  actions?: () => JSX.Element;
+  actions?: (filters: any) => JSX.Element;
 }
 
 export type GetTabouleQueryConf<P extends Record<string, any>> = (

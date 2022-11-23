@@ -217,7 +217,7 @@ export const Taboule = <Q extends keyof TabouleQueries>({
                     }}
                   >
                     <RefreshButton onClick={handleReload} />
-                    {queryConfig.actions?.()}
+                    {queryConfig.actions?.({ ...params, filter: filters })}
                   </Box>
                 </Box>
               );

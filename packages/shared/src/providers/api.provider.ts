@@ -148,26 +148,29 @@ export const MakeHTTPClient = (client: AxiosInstance): HTTPClient => {
           const url = e.getPath(input.params);
           apiLogger.debug('%s %s %O', e.Method, url, input);
           return pipe(
-            liftFetch<TypeOfEndpointInstance<E>['Output']>(() => {
-              return client.request<
-                TypeOfEndpointInstance<E>['Input'],
-                AxiosResponse<TypeOfEndpointInstance<E>['Output']>
-              >({
-                method: e.Method,
-                url,
-                params: input.query,
-                paramsSerializer(params) {
-                  const q = qs.stringify(params);
-                  return q;
-                },
-                data: input.body,
-                responseType: 'json',
-                headers: {
-                  Accept: 'application/json',
-                  ...input.headers,
-                },
-              });
-            }, e.Output.decode),
+            liftFetch<TypeOfEndpointInstance<E>['Output']>(
+              () => {
+                return client.request<
+                  TypeOfEndpointInstance<E>['Input'],
+                  AxiosResponse<TypeOfEndpointInstance<E>['Output']>
+                >({
+                  method: e.Method,
+                  url,
+                  params: input.query,
+                  paramsSerializer(params) {
+                    const q = qs.stringify(params);
+                    return q;
+                  },
+                  data: input.body,
+                  responseType: 'json',
+                  headers: {
+                    Accept: 'application/json',
+                    ...input.headers,
+                  },
+                });
+              },
+              b.ValidateOutput === false ? t.unknown.decode : e.Output.decode
+            ),
             TE.map((output) => {
               // apiLogger.debug('%s %s output: %O', e.Method, url, output);
               return output;
@@ -181,16 +184,18 @@ export const MakeHTTPClient = (client: AxiosInstance): HTTPClient => {
   return { apiFromEndpoint, request, get, post, put };
 };
 
-export type TERequest<E extends MinimalEndpointInstance> =
-  TypeOfEndpointInstance<E>['Input'] extends never
-    ? (
-        input?: TypeOfEndpointInstance<E>['Input'],
-        ia?: any
-      ) => TE.TaskEither<APIError, TypeOfEndpointInstance<E>['Output']>
-    : (
-        input: TypeOfEndpointInstance<E>['Input'],
-        ia?: any
-      ) => TE.TaskEither<APIError, TypeOfEndpointInstance<E>['Output']>;
+export type TERequest<
+  E extends MinimalEndpointInstance,
+  O = TypeOfEndpointInstance<E>['Output']
+> = TypeOfEndpointInstance<E>['Input'] extends never
+  ? (
+      input?: TypeOfEndpointInstance<E>['Input'],
+      ia?: any
+    ) => TE.TaskEither<APIError, O>
+  : (
+      input: TypeOfEndpointInstance<E>['Input'],
+      ia?: any
+    ) => TE.TaskEither<APIError, O>;
 
 export interface ResourceEndpointsRecord {
   [apiKey: string]: MinimalEndpointInstance;

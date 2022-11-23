@@ -26,15 +26,19 @@ export const youtubePersonalSearches: GetTabouleQueryConf<SearchMetadata> = (
       {inputs.experimentIdInput(params, setParams)}
     </div>
   ),
-  actions: () => {
+  actions: (filter) => {
     return (
       <Box textAlign={'right'}>
         <CSVDownloadButton
           onClick={() => {
-            void commands.downloadAsCSV({
-              Params: {
+            void commands.ytDownloadAsCSV({
+              Query: {
                 publicKey: params.publicKey,
-                type: 'search',
+                experimentId: params.experimentId,
+                filter: {
+                  ...filter,
+                  nature: 'search',
+                },
               },
             })();
           }}

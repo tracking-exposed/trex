@@ -5,7 +5,11 @@ import * as React from 'react';
 import CSVDownloadButton from '../../components/buttons/CSVDownloadButton';
 import * as cells from '../../components/gridCells';
 import { GetTabouleQueryConf } from '../config.type';
-import { columnDefault, fieldsDefaultHead, fieldsDefaultTail } from '../defaults';
+import {
+  columnDefault,
+  fieldsDefaultHead,
+  fieldsDefaultTail,
+} from '../defaults';
 import * as inputs from '../inputs';
 
 export const tikTokPersonalProfile: GetTabouleQueryConf<ProfileMetadata> = (
@@ -13,18 +17,21 @@ export const tikTokPersonalProfile: GetTabouleQueryConf<ProfileMetadata> = (
   params
 ) => ({
   filters: {
-    nature: ProfileType.value
+    nature: ProfileType.value,
   },
   inputs: inputs.publicKeyInput,
-  actions: () => {
+  actions: (filters) => {
     return (
       <Box textAlign={'right'}>
         <CSVDownloadButton
           onClick={() => {
-            void commands.downloadAsCSV({
-              Params: {
-                publicKey: params.publicKey,
-                type: 'search',
+            void commands.tkDownloadAsCSV({
+              Query: {
+                ...params,
+                type: {
+                  ...filters,
+                  type: ProfileType.value,
+                },
               },
             })();
           }}
@@ -57,6 +64,6 @@ export const tikTokPersonalProfile: GetTabouleQueryConf<ProfileMetadata> = (
       },
       width: 40,
     },
-    ...fieldsDefaultTail
+    ...fieldsDefaultTail,
   ],
 });

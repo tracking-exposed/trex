@@ -22,15 +22,18 @@ export const tikTokPersonalForYou: GetTabouleQueryConf<ForYouMetadata> = (
     nature: ForYouType.value,
   },
   inputs: inputs.publicKeyInput,
-  actions: () => {
+  actions: (filter) => {
     return (
       <Box textAlign={'right'}>
         <CSVDownloadButton
           onClick={() => {
-            void commands.downloadAsCSV({
-              Params: {
-                publicKey: params.publicKey,
-                type: 'search',
+            void commands.tkDownloadAsCSV({
+              Query: {
+                ...params,
+                filter: {
+                  ...filter,
+                  type: ForYouType.value,
+                },
               },
             })();
           }}

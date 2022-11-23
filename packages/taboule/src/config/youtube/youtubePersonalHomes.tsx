@@ -1,8 +1,10 @@
+import { Box } from '@mui/material';
 import { HomeMetadata } from '@yttrex/shared/models/metadata/HomeMetadata';
 import { HomeNatureType } from '@yttrex/shared/models/Nature';
+import CSVDownloadButton from '../../components/buttons/CSVDownloadButton';
+import * as React from 'react';
 import ExpandView from '../../components/expand-view/ExpandView';
 import { ParsedInfoList } from '../../components/list/ParsedInfoList';
-import * as React from 'react';
 import { TabouleCommands } from '../../state/commands';
 import { TabouleQueryConfiguration } from '../config.type';
 import {
@@ -13,7 +15,7 @@ import {
 import * as inputs from '../inputs';
 
 export const youtubePersonalHomes = (
-  commmands: TabouleCommands,
+  commands: TabouleCommands,
   params: any
 ): TabouleQueryConfiguration<HomeMetadata> => ({
   inputs: (params, setParams) => (
@@ -22,6 +24,27 @@ export const youtubePersonalHomes = (
       {inputs.experimentIdInput(params, setParams)}
     </div>
   ),
+  actions: ({ filter, ...params }) => {
+    return (
+      <Box textAlign={'right'}>
+        <CSVDownloadButton
+          onClick={() => {
+            void commands.ytDownloadAsCSV({
+              Query: {
+                ...params,
+                amount: 1000,
+                format: 'csv',
+                filter: {
+                  ...filter,
+                  nature: HomeNatureType.value,
+                },
+              },
+            })();
+          }}
+        />
+      </Box>
+    );
+  },
   filters: {
     nature: HomeNatureType.value,
   },
