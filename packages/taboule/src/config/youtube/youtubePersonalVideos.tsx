@@ -11,6 +11,8 @@ import {
 import * as inputs from '../inputs';
 import { getApplyFilterFnIncluded } from '../filters';
 import { VideoNatureType } from '@yttrex/shared/models/Nature';
+import ExpandView from '../../components/expand-view/ExpandView';
+import { ParsedInfoList } from '../../components/list/ParsedInfoList';
 
 export const youtubePersonalVideos: GetTabouleQueryConf<YTVideoMetadata> = (
   commands,
@@ -25,6 +27,13 @@ export const youtubePersonalVideos: GetTabouleQueryConf<YTVideoMetadata> = (
       {inputs.experimentIdInput(params, setParams)}
     </div>
   ),
+  expanded({ row, ...props }) {
+    return (
+      <ExpandView {...props}>
+        <ParsedInfoList data={row.related} />
+      </ExpandView>
+    );
+  },
   actions: () => {
     return (
       <Box textAlign={'right'}>
@@ -46,12 +55,14 @@ export const youtubePersonalVideos: GetTabouleQueryConf<YTVideoMetadata> = (
     {
       ...columnDefault,
       field: 'title',
+      filterable: true,
       getApplyQuickFilterFn: getApplyFilterFnIncluded,
     },
     {
       ...columnDefault,
       headerName: 'author',
       field: 'authorName',
+      filterable: true,
       renderCell: (params) => {
         const authorSource = params.row.authorSource;
 
@@ -69,6 +80,7 @@ export const youtubePersonalVideos: GetTabouleQueryConf<YTVideoMetadata> = (
     {
       ...columnDefault,
       field: 'viewInfo',
+      headerName: 'Views',
       renderCell: (p) => {
         return p.value.viewNumber;
       },

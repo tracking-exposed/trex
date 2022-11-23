@@ -1,7 +1,9 @@
 import { HomeMetadata } from '@yttrex/shared/models/metadata/HomeMetadata';
 import { HomeNatureType } from '@yttrex/shared/models/Nature';
+import ExpandView from '../../components/expand-view/ExpandView';
+import { ParsedInfoList } from '../../components/list/ParsedInfoList';
 import * as React from 'react';
-import { TabouleCommands } from 'state/commands';
+import { TabouleCommands } from '../../state/commands';
 import { TabouleQueryConfiguration } from '../config.type';
 import {
   columnDefault,
@@ -22,6 +24,13 @@ export const youtubePersonalHomes = (
   ),
   filters: {
     nature: HomeNatureType.value,
+  },
+  expanded: ({ row, ...props }) => {
+    return (
+      <ExpandView {...props}>
+        <ParsedInfoList data={row.selected} />
+      </ExpandView>
+    );
   },
   columns: [
     ...fieldsDefaultHead,

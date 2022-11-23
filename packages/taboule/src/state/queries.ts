@@ -224,18 +224,17 @@ export const GetTabouleQueries = ({
     APIError,
     Results<VideoMetadata>
   >(
-    (input) =>
+    ({ Query: { filter, ...query } }) =>
       pipe(
         YTAPI.v2.Metadata.ListMetadata({
           Query: {
-            ...input.Query,
-            amount: (input.Query.amount + '') as any,
-            skip: (input.Query.skip + '') as any,
+            ...query,
             format: 'json',
             filter: {
-              nature: 'video',
               title: undefined,
               authorName: undefined,
+              ...filter,
+              nature: 'video',
             },
           },
         }),
@@ -252,17 +251,16 @@ export const GetTabouleQueries = ({
     APIError,
     Results<SearchMetadata>
   >(
-    (input) =>
+    ({ Query: { filter, ...query } }) =>
       pipe(
         YTAPI.v2.Metadata.ListMetadata({
           Query: {
-            ...input.Query,
-            amount: (input.Query.amount + '') as any,
-            skip: (input.Query.skip + '') as any,
+            ...query,
             format: 'json',
             filter: {
-              nature: 'search',
               query: undefined,
+              ...filter,
+              nature: 'search',
             },
           },
         }),
@@ -273,22 +271,6 @@ export const GetTabouleQueries = ({
       ),
     refetch
   );
-
-  // const tikTokPersonalHTMLSummary = queryStrict<
-  //   RequestInputWithPublicKeyParam,
-  //   APIError,
-  //   Results<SummaryHTMLMetadata>
-  // >(
-  //   (input) =>
-  //     pipe(
-  //       YTAPI.v1.Public.GetPersonalSummaryByPublicKey(input),
-  //       TE.map((content) => ({
-  //         total: content.htmls.length,
-  //         content: content.htmls,
-  //       }))
-  //     ),
-  //   refetch
-  // );
 
   const tikTokPersonalSearch = queryStrict<
     ListMetadataRequestInput,

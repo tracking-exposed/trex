@@ -1,6 +1,7 @@
 import { Box } from '@mui/material';
 import { SearchMetadata } from '@yttrex/shared/models/metadata/Metadata';
 import { SearchNatureType } from '@yttrex/shared/models/Nature';
+import ExpandView from '../../components/expand-view/ExpandView';
 import * as React from 'react';
 import CSVDownloadButton from '../../components/buttons/CSVDownloadButton';
 import { GetTabouleQueryConf } from '../config.type';
@@ -17,7 +18,7 @@ export const youtubePersonalSearches: GetTabouleQueryConf<SearchMetadata> = (
   params
 ) => ({
   filters: {
-    nature: SearchNatureType.value
+    nature: SearchNatureType.value,
   },
   inputs: (params, setParams) => (
     <div>
@@ -39,6 +40,17 @@ export const youtubePersonalSearches: GetTabouleQueryConf<SearchMetadata> = (
           }}
         />
       </Box>
+    );
+  },
+  expanded: ({ row, ...props }) => {
+    return (
+      <ExpandView {...props}>
+        <ul>
+          {row.results.map((r) => (
+            <li key={r.title}>{r.title}</li>
+          ))}
+        </ul>
+      </ExpandView>
     );
   },
   columns: [

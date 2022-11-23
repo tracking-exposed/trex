@@ -11,7 +11,8 @@ import {
 } from '@mui/x-data-grid';
 import { toValidationError } from '@shared/errors/ValidationError';
 import { GetLogger } from '@shared/logger';
-import { ParsedInfo } from '@yttrex/shared/models/metadata/Metadata';
+import { TKMetadata } from '@tktrex/shared/models';
+import { Metadata } from '@yttrex/shared/models/metadata/Metadata';
 import * as QR from 'avenger/lib/QueryResult';
 import { WithQueries } from 'avenger/lib/react';
 import debug from 'debug';
@@ -29,7 +30,6 @@ import {
 import { TabouleQueryKey } from '../state/types';
 import RefreshButton from './buttons/RefreshButton';
 import { ErrorOverlay } from './ErrorOverlay';
-import ExpandView from './expand-view/ExpandView';
 import './Taboule.css';
 
 debug.enable(process.env.DEBUG ?? '');
@@ -57,6 +57,26 @@ export interface TabouleProps<Q extends keyof TabouleQueries>
   columns?: GridColTypeDef[];
   height?: number | string;
 }
+
+enum ExpandableActionType {
+  SHOW_MODAL = 'SHOW_MODAL',
+  CLOSE_MODAL = 'CLOSE_MODAL',
+}
+interface ExpandableAction {
+  type: ExpandableActionType;
+  payload: TKMetadata.TKMetadata | Metadata;
+}
+
+interface InvisibleExpandableState {
+  isVisible: false;
+  row: undefined;
+}
+type ExpandableState =
+  | {
+      isVisible: true;
+      row: TKMetadata.TKMetadata | Metadata;
+    }
+  | InvisibleExpandableState;
 
 export const Taboule = <Q extends keyof TabouleQueries>({
   height = 600,
@@ -104,7 +124,7 @@ export const Taboule = <Q extends keyof TabouleQueries>({
     queryKey
   ] as any;
 
-  const { inputs, filters, ...queryConfig } = React.useMemo(
+  const { inputs, filters, expanded, ...queryConfig } = React.useMemo(
     () =>
       config.defaultConfiguration(tabouleQueries.commands, params)[queryKey],
     [queryKey, params]
@@ -131,7 +151,6 @@ export const Taboule = <Q extends keyof TabouleQueries>({
     filterMode: 'server',
     ...queryConfig,
     onFilterModelChange(model, details) {
-      console.log('filter changed', { model, details, params });
       setFilterModel(model);
     },
 
@@ -211,27 +230,17 @@ export const Taboule = <Q extends keyof TabouleQueries>({
   log.debug(`Rendering with props %O`, dataGridProps);
   log.debug(`Query %s (%O) with params %O`, queryKey, query, params);
 
-  enum ExpandableActionType {
-    SHOW_MODAL = 'SHOW_MODAL',
-    CLOSE_MODAL = 'CLOSE_MODAL',
-  }
-  interface ExpandableAction {
-    type: ExpandableActionType;
-    payload: ParsedInfo[];
-  }
-  interface ExpandableState {
-    isVisible: boolean;
-    data: ParsedInfo[];
-  }
-
-  const initialState = { isVisible: false, data: [] };
+  const initialState: InvisibleExpandableState = {
+    isVisible: false,
+    row: undefined,
+  };
   const infoReducerFn = (
     state: ExpandableState,
     action: ExpandableAction
   ): ExpandableState => {
     const { type, payload } = action;
     if (type === 'SHOW_MODAL') {
-      return { isVisible: true, data: payload };
+      return { isVisible: true, row: payload };
     }
     if (type === 'CLOSE_MODAL') {
       return initialState;
@@ -248,14 +257,14 @@ export const Taboule = <Q extends keyof TabouleQueries>({
   ) => {
     dispatchInfoState({
       type: ExpandableActionType.SHOW_MODAL,
-      payload: params.row.selected ?? params.row.related ?? params.row.results,
+      payload: params.row,
     });
   };
 
   const handleHideModal = (): void => {
     dispatchInfoState({
       type: ExpandableActionType.CLOSE_MODAL,
-      payload: initialState.data,
+      payload: initialState.row as any,
     });
   };
 
@@ -279,8 +288,6 @@ export const Taboule = <Q extends keyof TabouleQueries>({
       ...currentFilter,
     };
   }, [filterModel]);
-
-  console.log('query filters', queryFilters);
 
   return (
     <Box height={height}>
@@ -328,7 +335,9 @@ export const Taboule = <Q extends keyof TabouleQueries>({
           }
         )}
       />
-      <ExpandView {...infoState} handleHideModal={handleHideModal} />
+      {infoState.row && expanded
+        ? expanded({ ...(infoState as any), onClose: handleHideModal })
+        : null}
     </Box>
   );
 };

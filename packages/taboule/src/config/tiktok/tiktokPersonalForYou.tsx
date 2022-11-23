@@ -39,7 +39,7 @@ export const tikTokPersonalForYou: GetTabouleQueryConf<ForYouMetadata> = (
     );
   },
   columns: [
-    fieldsDefaultHead,
+    ...fieldsDefaultHead,
     {
       ...columnDefault,
       field: 'author',
