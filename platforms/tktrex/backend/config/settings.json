@@ -6,7 +6,7 @@
     "metadata": "metadata",
     "full": "full",
     "emails": "emails",
-    "experiments": "experiments2"
+    "experiments": "experiments"
   },
 
   "mongoHost": "localhost",

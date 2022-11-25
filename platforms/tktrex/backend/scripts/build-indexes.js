@@ -25,10 +25,10 @@ checkret('metadata experimentId', ret);
 ret = db.supporters.createIndex({ publicKey: 1 }, { unique: true });
 checkret('supporters publicKey:', ret);
 
-ret = db.experiments2.createIndex({ experimentId: -1 }, { unique: true });
-checkret('experiments2 experimentId', ret);
-ret = db.experiments2.createIndex({ when: -1 });
-checkret('experiments2 when', ret);
+ret = db.experiments.createIndex({ experimentId: -1 }, { unique: true });
+checkret('experiments experimentId', ret);
+ret = db.experiments.createIndex({ when: -1 });
+checkret('experiments when', ret);
 
 ret = db.htmls.createIndex({ id: 1 }, { unique: true });
 checkret('htmls id', ret);
@@ -42,4 +42,4 @@ ret = db.htmls.createIndex({ processed: 1 });
 checkret('htmls processed', ret);
 
 ret = db.emails.createIndex({ email: 1, reason: 1 }, { unique: true });
-checkret('emails composed email+reason');
+checkret('emails composed Index: email+reason');
