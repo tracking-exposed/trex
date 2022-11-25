@@ -1,8 +1,10 @@
 import { AppError } from '@shared/errors/AppError';
+import D from 'debug';
 import * as A from 'fp-ts/lib/Array';
 import { pipe } from 'fp-ts/lib/function';
 import * as TE from 'fp-ts/lib/TaskEither';
 import { NonEmptyString } from 'io-ts-types/lib/NonEmptyString';
+import puppeteer, { PuppeteerExtra } from 'puppeteer-extra';
 import yargs from 'yargs';
 import { hideBin } from 'yargs/helpers';
 import { guardoniLogger } from '../logger';
@@ -13,6 +15,7 @@ import {
   DEFAULT_YT_BACKEND,
   DEFAULT_YT_EXTENSION_DIR,
 } from './constants';
+import { DownloadExperimentOpts } from './experiment';
 import { GetGuardoni } from './guardoni';
 import {
   GuardoniConfig,
@@ -20,8 +23,6 @@ import {
   GuardoniSuccessOutput,
   Platform,
 } from './types';
-import D from 'debug';
-import puppeteer, { PuppeteerExtra } from 'puppeteer-extra';
 import { checkUpdate } from './update-notifier';
 
 export const cliLogger = guardoniLogger.extend('cli');
@@ -56,8 +57,10 @@ export type GuardoniCommandConfig =
       opts?: GuardoniCommandOpts;
     }
   | {
-      run: 'auto';
-      value: '1' | '2';
+      run: 'download';
+      experiment: NonEmptyString;
+      out: string;
+      opts: DownloadExperimentOpts;
     }
   | {
       run: 'list';
@@ -197,9 +200,13 @@ export const GetGuardoniCLI: GetGuardoniCLI = (
                 }))
               );
 
-            case 'auto':
+            case 'download':
             default:
-              return g.runAuto(command.value);
+              return g.downloadExperiment(
+                command.experiment,
+                command.out,
+                command.opts
+              );
           }
         });
       }),
@@ -221,7 +228,7 @@ export const GetGuardoniCLI: GetGuardoniCLI = (
               type: 'error',
               message: e.message,
               details:
-                e.details.kind === 'DecodingError'
+                e.details?.kind === 'DecodingError'
                   ? (e.details.errors as string[])
                   : [e.details.status],
             })
@@ -416,23 +423,6 @@ const program = yargs(hideBin(process.argv))
     }
   )
   .command(
-    'yt-auto <index>',
-    'YT automatic mode',
-    (yargs) =>
-      yargs.positional('index', {
-        type: 'string',
-        choices: ['1', '2'],
-        demandOption: 'Run comparison or shadow ban experiment run',
-      }),
-    ({ index, ...argv }) => {
-      void runGuardoni({
-        ...argv,
-        platform: 'youtube',
-        command: { run: 'auto', index },
-      });
-    }
-  )
-  .command(
     'yt-clean',
     'Clean YT extension',
     (yargs) => yargs,
@@ -529,6 +519,36 @@ const program = yargs(hideBin(process.argv))
         ...argv,
         platform: 'tiktok',
         command: { run: 'list' },
+      });
+    }
+  )
+  .command(
+    'tk-download [experimentId] [out]',
+    'Download all the data collected in an experiment',
+    (y) =>
+      y
+        .positional('experimentId', {
+          description: 'The experiment id',
+        })
+        .positional('out', {
+          description: 'The folder where to store the output files',
+        })
+        .option('metadata', {
+          description: 'Custom filename for metadata file',
+        })
+        .option('api-requests', {
+          description: 'Custom filename for API Request file',
+        }),
+    ({ experimentId, out, metadata, apiRequests, ...argv }) => {
+      void runGuardoni({
+        ...argv,
+        platform: 'tiktok',
+        command: {
+          run: 'download',
+          experimentId,
+          out,
+          opts: { metadata, apiRequests },
+        },
       });
     }
   )

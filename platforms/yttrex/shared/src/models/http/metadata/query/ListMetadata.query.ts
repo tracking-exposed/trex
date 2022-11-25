@@ -29,7 +29,7 @@ export const ListHomeMetadataQuery = t.type(
   'ListSearchMetadataQuery'
 );
 
-export const ListMetadataQuery = t.type(
+export const ListMetadataQuery = t.partial(
   {
     publicKey: t.union([t.string, t.undefined], 'publicKey?'),
     experimentId: t.union([t.string, t.undefined], 'experimentId?'),

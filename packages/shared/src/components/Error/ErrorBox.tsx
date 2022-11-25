@@ -14,7 +14,7 @@ export const ErrorBox = (e: unknown): React.ReactElement<any, string> => {
       <Alert severity="error">
         <AlertTitle>{errorName}</AlertTitle>
         <p>{message}</p>
-        {isAPIError(e) && e.details.kind === 'DecodingError' ? (
+        {isAPIError(e) && e.details?.kind === 'DecodingError' ? (
           <ul>
             {(e.details.errors ?? []).map((d: any) => (
               <li key={d}>{d}</li>

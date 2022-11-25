@@ -31,7 +31,7 @@ const AddEvents = DocumentedEndpoint({
 
 const GETAPIEvents = DocumentedEndpoint({
   Method: 'GET',
-  getPath: () => '/v2/apiEvents',
+  getPath: () => '/v2/apiRequests',
   Input: {
     Query: apiModel.http.Query.ListAPIRequestQuery,
   },

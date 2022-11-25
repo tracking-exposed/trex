@@ -8,6 +8,7 @@ import { Supporter } from '@shared/models/Supporter';
 import * as mongo3 from '@shared/providers/mongo.provider';
 import * as utils from '@shared/utils/food.utils';
 import {
+  FollowingType,
   ForYouType,
   NativeType,
   ProfileType,
@@ -201,6 +202,15 @@ async function getMetadataByFilter(
     }
   );
 
+  const totalFollowing = await mongo3.count(
+    mongoc,
+    nconf.get('schema').metadata,
+    {
+      ...filter,
+      type: FollowingType.value,
+    }
+  );
+
   const metadata = await mongo3.readLimit(
     mongoc,
     nconf.get('schema').metadata,
@@ -218,6 +228,7 @@ async function getMetadataByFilter(
       native: totalNative,
       search: totalSearch,
       profile: totalProfile,
+      following: totalFollowing,
     },
   };
 }
