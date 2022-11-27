@@ -1,4 +1,4 @@
-import { APIRequestContributionEvent } from '@tktrex/shared/models/apiRequest/APIRequestContributionEvent';
+import { APIRequestContributionEvent } from '@tktrex/shared/models/contribution/APIRequestContributionEvent';
 import * as t from 'io-ts';
 import { date } from 'io-ts-types/lib/date';
 

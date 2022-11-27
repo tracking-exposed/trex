@@ -1,5 +1,5 @@
 import * as t from 'io-ts';
-import { APIRequestContributionEvent } from './APIRequestContributionEvent';
+import { APIRequestContributionEvent } from '../contribution/APIRequestContributionEvent';
 
 export const APIRequest = t.strict(
   {

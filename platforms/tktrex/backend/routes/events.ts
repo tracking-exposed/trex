@@ -1,37 +1,31 @@
-import { decodeOrThrowRequest } from '@shared/endpoints/helper';
 import { AppError, toAppError } from '@shared/errors/AppError';
 import { toValidationError } from '@shared/errors/ValidationError';
 import { Supporter } from '@shared/models/Supporter';
-import * as mongo from '@shared/providers/mongo.provider';
-import {
-  filterByCodec,
-  throwEitherError,
-  validateArrayByCodec,
-} from '@shared/utils/fp.utils';
+import { filterByCodec, throwEitherError } from '@shared/utils/fp.utils';
 import { geo } from '@shared/utils/ip.utils';
-import * as endpoints from '@tktrex/shared/endpoints/v2';
 import {
+  getAPIRequestId,
   getHTMLId,
   getMetadataId,
+  getSigiStateId,
   getTimelineId,
-  getAPIRequestId,
 } from '@tktrex/shared/helpers/uniqueId';
-import { APIRequestContributionEvent } from '@tktrex/shared/models/apiRequest/APIRequestContributionEvent';
+import { APIRequestType } from '@tktrex/shared/models/apiRequest';
+import { ContributionEvent } from '@tktrex/shared/models/contribution';
 import { HTML } from '@tktrex/shared/models/http/HTML';
 import { TKHeadersLC } from '@tktrex/shared/models/http/TKHeaders';
+import { SigiStateType } from '@tktrex/shared/models/sigiState/SigiState';
 import { getNatureByHref } from '@tktrex/shared/parser/parsers/nature';
-import { parseISO } from 'date-fns';
 import D from 'debug';
 import * as express from 'express';
 import * as A from 'fp-ts/Array';
 import * as E from 'fp-ts/lib/Either';
 import { pipe } from 'fp-ts/lib/function';
 import { IncomingHttpHeaders } from 'http';
+import { PathReporter } from 'io-ts/lib/PathReporter';
 import _ from 'lodash';
 import nconf from 'nconf';
-import { toAPIRequest } from '../io/apiRequest.io';
 import * as automo from '../lib/automo';
-import { GetEventsEntity } from '../lib/entities/events.entity';
 import security from '../lib/security';
 import utils from '../lib/utils';
 
@@ -193,6 +187,8 @@ async function processEvents(req: express.Request): Promise<{
         supporter: Supporter;
         full: SaveInDBResult;
         htmls: SaveInDBResult;
+        sigiStates: SaveInDBResult;
+        apiRequests: SaveInDBResult;
       }
     | { status: string; info: any };
 }> {
@@ -217,79 +213,157 @@ async function processEvents(req: express.Request): Promise<{
   const supporter = await automo.tofu(headers.publicKey, headers.version);
 
   const fullsaves: any[] = [];
-  const htmls = _.compact(
-    _.map(req.body, function (body, i) {
-      /* the timelineId identify the session, it comes from the
-       * feedId because it need to trust client side */
-      const timelineId = getTimelineId({
-        feedId: body.feedId,
-        publicKey: supporter.publicKey,
-        version: headers.version,
-      });
 
-      /* this check should be done here because we shouldn't
-       * trust the input from client */
-      const nature = throwEitherError(getNatureByHref(body.href));
+  const events = filterByCodec(req.body, ContributionEvent.decode, (e, c) => {
+    debug('Failed to parse %O', c);
+    debug('Errors %O', PathReporter.report(E.left(e)));
+  });
 
-      const htmlId = getHTMLId.hash({
+  const init = {
+    htmls: [] as any[],
+    apiRequests: [] as any[],
+    sigiStates: [] as any[],
+  };
+
+  const { htmls, apiRequests, sigiStates } = events.reduce((acc, body, i) => {
+    const event: any = {
+      href: body.href,
+      clientTime: body.clientTime,
+      researchTag: headers.researchTag,
+      publicKey: headers.publicKey,
+      savingTime: new Date(),
+    };
+
+    if (body.experimentId?.length) event.experimentId = body.experimentId;
+
+    if (headers.researchTag?.length) event.researchTag = headers.researchTag;
+
+    /* the timelineId identify the session, it comes from the
+     * feedId because it need to trust client side */
+    const timelineId = getTimelineId({
+      feedId: body.feedId,
+      publicKey: supporter.publicKey,
+      version: headers.version,
+    });
+
+    if (APIRequestType.is(body.type)) {
+      const {
+        feedCounter,
+        videoCounter,
+        incremental,
+        type,
+        feedId,
+        payload,
+      }: any = body;
+      const id = getAPIRequestId.hash({
         ...timelineId,
-        feedCounter: body.feedCounter,
-        videoCounter: body.videoCounter,
-        incremental: body.incremental,
+        feedCounter,
+        videoCounter,
+        incremental,
         href: body.href,
-        nature,
       });
 
-      const metadataId = getMetadataId.hash({
-        ...timelineId,
-        feedCounter: body.feedCounter,
-        videoCounter: body.videoCounter,
-        href: body.href,
-        nature,
-      });
-
-      /* to eventually verify integrity of collection we're saving these incremental
-       * numbers that might help to spot if client-side-extension are missing somethng */
-      const optionalNumbers: any[] = [];
-      if (_.isInteger(body.videoCounter))
-        optionalNumbers.push(body.videoCounter);
-      if (_.isInteger(i)) optionalNumbers.push(i);
-      if (_.isInteger(body.incremental)) optionalNumbers.push(body.incremental);
-      if (_.isInteger(body.feedCounter)) optionalNumbers.push(body.feedCounter);
-      optionalNumbers.push(_.size(body.html));
-
-      const geoAddress =
-        req.headers['x-forwarded-for'] ?? req.socket.remoteAddress;
-      const geoip =
-        geoAddress !== undefined
-          ? geo(geoAddress as any) ?? undefined
-          : undefined;
-
-      const html: HTML = {
-        id: htmlId as any,
-        metadataId,
-        blang: '',
-        nature,
-        type: body.type,
-        rect: body.rect,
-        href: body.href,
-        timelineId: timelineId.id,
-        publicKey: supporter.publicKey,
-        clientTime: parseISO(body.clientTime),
-        savingTime: new Date(),
-        html: body.html,
-        n: optionalNumbers,
-        geoip,
-        selector: body.selector,
+      const apiEvent = {
+        ...event,
+        incremental,
+        payload,
+        feedId,
+        type,
+        id,
       };
 
-      if (body.experimentId?.length) html.experimentId = body.experimentId;
+      return {
+        ...acc,
+        apiRequests: acc.apiRequests.concat(apiEvent),
+      };
+    }
 
-      if (headers.researchTag?.length) html.researchTag = headers.researchTag;
+    if (SigiStateType.is(body.type)) {
+      const { state, type }: any = body;
+      const id = getSigiStateId.hash({
+        timelineId: timelineId.id,
+        incremental: body.incremental,
+        href: body.href,
+      });
 
-      return html;
-    })
-  );
+      const sigiStateEvent = {
+        ...event,
+        type,
+        state,
+        id,
+      };
+
+      return {
+        ...acc,
+        sigiStates: acc.sigiStates.concat(sigiStateEvent),
+      };
+    }
+
+    /* this check should be done here because we shouldn't
+     * trust the input from client */
+    const nature = throwEitherError(getNatureByHref(body.href));
+
+    const {
+      feedCounter,
+      videoCounter,
+      selector,
+      rect,
+      html: bodyHTML,
+    }: any = body;
+    const htmlId = getHTMLId.hash({
+      ...timelineId,
+      feedCounter,
+      videoCounter,
+      incremental: body.incremental,
+      href: body.href,
+      nature,
+    });
+
+    const metadataId = getMetadataId.hash({
+      ...timelineId,
+      feedCounter,
+      videoCounter,
+      href: body.href,
+      nature,
+    });
+
+    /* to eventually verify integrity of collection we're saving these incremental
+     * numbers that might help to spot if client-side-extension are missing somethng */
+    const optionalNumbers: any[] = [];
+    if (_.isInteger(body.videoCounter)) optionalNumbers.push(body.videoCounter);
+    if (_.isInteger(i)) optionalNumbers.push(i);
+    if (_.isInteger(body.incremental)) optionalNumbers.push(body.incremental);
+    if (_.isInteger(body.feedCounter)) optionalNumbers.push(body.feedCounter);
+    optionalNumbers.push(_.size(bodyHTML));
+
+    const geoAddress =
+      req.headers['x-forwarded-for'] ?? req.socket.remoteAddress;
+    const geoip =
+      geoAddress !== undefined
+        ? geo(geoAddress as any) ?? undefined
+        : undefined;
+
+    if (selector) event.selector = selector;
+
+    const html: HTML = {
+      ...event,
+      id: htmlId as any,
+      metadataId,
+      blang: '',
+      nature,
+      type: body.type,
+      rect,
+      href: body.href,
+      timelineId: timelineId.id,
+      publicKey: supporter.publicKey,
+      savingTime: new Date(),
+      html: bodyHTML,
+      n: optionalNumbers,
+      geoip,
+    };
+
+    return { ...acc, htmls: acc.htmls.concat(html) };
+  }, init);
 
   debug(
     '[+] (p %s) %s <%s> -- %s %s',
@@ -305,6 +379,16 @@ async function processEvents(req: express.Request): Promise<{
       2) save it in the DB and return information on the saved objects */
   const experinfo = {}; // TODO
   const htmlrv = await saveInDB(experinfo, htmls, nconf.get('schema').htmls);
+  const apiRequestrv = await saveInDB(
+    experinfo,
+    apiRequests,
+    nconf.get('schema').apiRequests
+  );
+  const sigiStaterv = await saveInDB(
+    experinfo,
+    sigiStates,
+    nconf.get('schema').sigiStates
+  );
   const fullrv = await saveInDB(experinfo, fullsaves, nconf.get('schema').full);
 
   /* this is what returns to the web-extension */
@@ -314,6 +398,8 @@ async function processEvents(req: express.Request): Promise<{
       supporter,
       full: fullrv,
       htmls: htmlrv,
+      apiRequests: apiRequestrv,
+      sigiStates: sigiStaterv,
     },
   };
 }
@@ -327,134 +413,10 @@ async function handshake(
   };
 }
 
-async function processAPIEvents(req: express.Request): Promise<{
-  json:
-    | {
-        supporter: Supporter;
-        apiRequests: SaveInDBResult;
-      }
-    | { status: string; info: any };
-}> {
-  const headers = throwEitherError(decodeHeaders(_.get(req, 'headers')));
-
-  if (!utils.verifyRequestSignature(req)) {
-    debug('Verification fail (signature %s)', headers.signature);
-    return {
-      json: {
-        status: 'error',
-        info: 'Signature does not match request body',
-      },
-    };
-  }
-
-  // fetch the supporter by the given publicKey
-  const supporter = await automo.tofu(headers.publicKey, headers.version);
-
-  // we take only APIRequestEvent from payload
-  const validEvents = filterByCodec(
-    req.body,
-    APIRequestContributionEvent.decode
-  );
-
-  const events = validEvents.map(({ payload, ...e }) => {
-    /* the timelineId identify the session, it comes from the
-     * feedId because it need to trust client side */
-    const timelineId = getTimelineId({
-      feedId: e.feedId,
-      publicKey: supporter.publicKey,
-      version: headers.version,
-    });
-
-    const id = getAPIRequestId.hash({
-      ...timelineId,
-      feedCounter: e.feedCounter,
-      videoCounter: e.videoCounter,
-      incremental: e.incremental,
-      href: e.href,
-    });
-
-    return {
-      ...e,
-      id,
-      payload,
-      savingTime: new Date(),
-      researchTag: headers.researchTag,
-      publicKey: headers.publicKey,
-    };
-  });
-
-  const apiRequests = await saveInDB(
-    {},
-    events,
-    nconf.get('schema').apiRequests
-  );
-
-  debug('API requests %O', apiRequests);
-
-  return {
-    json: {
-      status: 'Complete',
-      supporter,
-      apiRequests,
-    },
-  };
-}
-
-async function getAPIEvents(req: Express.Request): Promise<{ json: any }> {
-  const { query } = decodeOrThrowRequest(
-    endpoints.default.Public.GETAPIEvents,
-    req
-  );
-
-  debug('List api requests with query %O', query);
-  const { amount, skip, sort, experimentId, publicKey, researchTag } = query;
-
-  const filter: any = {};
-  const mongoc = await mongo.clientConnect({});
-
-  if (publicKey) {
-    filter.publicKey = {
-      $eq: publicKey,
-    };
-  }
-
-  if (experimentId) {
-    filter.experimentId = {
-      $eq: experimentId,
-    };
-  }
-
-  if (researchTag) {
-    filter.researchTag = {
-      $eq: researchTag,
-    };
-  }
-
-  // const supporter = await automo.tofu(query.publicKey, )
-
-  const eventEntity = GetEventsEntity(mongoc);
-  const { total, data } = await eventEntity.listAndCount({
-    amount: amount ?? 20,
-    skip: skip ?? 0,
-    filter,
-    sort,
-  });
-
-  const validData = validateArrayByCodec(data, toAPIRequest);
-
-  await mongoc.close();
-
-  return {
-    json: { total, data: validData },
-  };
-}
-
 export {
   processEvents,
-  processAPIEvents,
   getMirror,
   mandatoryHeaders,
   processHeaders,
   handshake,
-  getAPIEvents,
 };

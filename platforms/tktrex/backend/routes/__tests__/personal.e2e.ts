@@ -215,6 +215,7 @@ describe('/v2/personal', () => {
           feedCounter: 1,
           feedId: 'native-feed-id',
           videoCounter: 1,
+          incremental: 1,
           geoip: null,
           experimentId: experiment.experimentId,
           publicKey: keys.publicKey,

@@ -1,6 +1,5 @@
 import { DocumentedEndpoint } from '@shared/endpoints';
-import { ListMetadataOutput } from '../../models/http/metadata/output/ListMetadata.output';
-import { ListMetadataQuery } from '../../models/http/metadata/query/ListMetadata.query';
+import http from '../../models/http';
 
 const ListMetadata = DocumentedEndpoint({
   title: 'List metadata by given filters',
@@ -9,9 +8,9 @@ const ListMetadata = DocumentedEndpoint({
   Method: 'GET',
   getPath: () => '/v2/metadata',
   Input: {
-    Query: ListMetadataQuery,
+    Query: http.Query.ListMetadataQuery,
   },
-  Output: ListMetadataOutput,
+  Output: http.Output.ListMetadataOutput,
 });
 
 export default {
