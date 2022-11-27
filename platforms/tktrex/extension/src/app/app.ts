@@ -216,6 +216,7 @@ const handleSearch = _.debounce((element: Node): void => {
     payload: {
       html: contentHTML,
       href: window.location.href,
+      feedId,
     },
   });
 }, 300);

@@ -202,6 +202,32 @@ async function aggregate(
   return mongoc.db().collection(cName).aggregate(pipeline, explain).toArray();
 }
 
+interface ListAndCountArgs {
+  filter: any;
+  sort: any;
+  skip: number;
+  amount: number;
+}
+
+async function listAndCount(
+  mongoc: MongoClient,
+  cName: string,
+  args: ListAndCountArgs
+): Promise<{ total: number; data: any[] }> {
+  const data = await readLimit(
+    mongoc,
+    cName,
+    {
+      ...args.filter,
+    },
+    args.sort,
+    args.amount,
+    args.skip
+  );
+  const total = await count(mongoc, cName, args.filter);
+  return { total, data };
+}
+
 export {
   clientConnect,
   mongoUri,
@@ -219,4 +245,5 @@ export {
   createIndex,
   distinct,
   aggregate,
+  listAndCount,
 };

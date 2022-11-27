@@ -1,2 +1,2 @@
 export * from './APIRequest';
-export * from './APIRequestContributionEvent';
+export * from '../contribution/APIRequestContributionEvent';

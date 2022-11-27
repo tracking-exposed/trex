@@ -7,7 +7,8 @@
     "full": "full",
     "emails": "emails",
     "experiments": "experiments",
-    "apiRequests": "apiRequests"
+    "apiRequests": "apiRequests",
+    "sigiStates": "sigiStates"
   },
 
   "mongoHost": "localhost",
