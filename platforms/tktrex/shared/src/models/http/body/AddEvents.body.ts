@@ -1,9 +1,5 @@
 import * as t from 'io-ts';
-import { APIRequestContributionEvent } from '../../apiRequest';
-import { HTMLContributionEvent } from '../../contribution/ContributionEvent';
+import { ContributionEvent } from '../../contribution';
 
-export const AddEventsBody = t.array(
-  t.union([APIRequestContributionEvent, HTMLContributionEvent]),
-  'AddEventsBody',
-);
+export const AddEventsBody = t.array(ContributionEvent, 'AddEventsBody');
 export type AddEventsBody = t.TypeOf<typeof AddEventsBody>;

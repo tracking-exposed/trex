@@ -8,5 +8,5 @@ export default {
   Headers: { TKHeaders },
   Query: { ...Query, Search },
   Body,
-  Output,
+  Output: { ...Output },
 };

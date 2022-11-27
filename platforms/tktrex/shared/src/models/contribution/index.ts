@@ -1,5 +1,5 @@
 import * as t from 'io-ts';
-import { HTMLContributionEvent } from './ContributionEvent';
+import { HTMLContributionEvent } from './HTMLContributionEvent';
 import { APIRequestContributionEvent } from './APIRequestContributionEvent';
 import { SigiStateContributionEvent } from './SigiStateContributionEvent';
 

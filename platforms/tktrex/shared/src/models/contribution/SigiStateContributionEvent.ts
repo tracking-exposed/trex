@@ -1,16 +1,12 @@
 import * as t from 'io-ts';
+import { SigiStateType } from '../sigiState/SigiState';
+import { ContributionEventBase } from './ContributionEventBase';
 
 export const SigiStateContributionEvent = t.strict(
   {
+    ...ContributionEventBase.type.props,
     state: t.any,
-    href: t.string,
-    feedId: t.string,
-    incremental: t.number,
-    feedCounter: t.union([t.number, t.undefined]),
-    videoCounter: t.union([t.number, t.undefined]),
-    clientTime: t.string,
-    type: t.literal('sigiState'),
-    experimentId: t.union([t.string, t.undefined]),
+    type: SigiStateType,
   },
   'SigiStateContributionEvent',
 );
