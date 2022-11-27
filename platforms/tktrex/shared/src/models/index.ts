@@ -1,5 +1,5 @@
 import http from './http';
-import * as Events from './events/ContributionEvent';
+import * as Events from './contribution/ContributionEvent';
 import * as APIRequest from './apiRequest/index';
 import * as Personal from './personal';
 import * as Public from './public';

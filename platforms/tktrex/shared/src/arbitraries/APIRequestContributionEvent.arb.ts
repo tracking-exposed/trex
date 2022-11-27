@@ -2,7 +2,7 @@ import { fc } from '@shared/test';
 import { propsOmit } from '@shared/utils/arbitrary.utils';
 import { getArbitrary } from 'fast-check-io-ts';
 import * as t from 'io-ts';
-import { APIRequestContributionEvent } from '../models/apiRequest/APIRequestContributionEvent';
+import { APIRequestContributionEvent } from '../models/contribution/APIRequestContributionEvent';
 
 export const APIRequestEventArb: fc.Arbitrary<APIRequestContributionEvent> =
   getArbitrary(

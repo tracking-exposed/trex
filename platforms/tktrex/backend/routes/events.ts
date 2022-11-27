@@ -16,7 +16,7 @@ import {
   getTimelineId,
   getAPIRequestId,
 } from '@tktrex/shared/helpers/uniqueId';
-import { APIRequestContributionEvent } from '@tktrex/shared/models/apiRequest/APIRequestContributionEvent';
+import { ContributionEvent } from '@tktrex/shared/models/contribution';
 import { HTML } from '@tktrex/shared/models/http/HTML';
 import { TKHeadersLC } from '@tktrex/shared/models/http/TKHeaders';
 import { getNatureByHref } from '@tktrex/shared/parser/parsers/nature';
@@ -193,6 +193,8 @@ async function processEvents(req: express.Request): Promise<{
         supporter: Supporter;
         full: SaveInDBResult;
         htmls: SaveInDBResult;
+        sigiStates: SaveInDBResult;
+        apiRequests: SaveInDBResult;
       }
     | { status: string; info: any };
 }> {
@@ -217,79 +219,111 @@ async function processEvents(req: express.Request): Promise<{
   const supporter = await automo.tofu(headers.publicKey, headers.version);
 
   const fullsaves: any[] = [];
-  const htmls = _.compact(
-    _.map(req.body, function (body, i) {
-      /* the timelineId identify the session, it comes from the
-       * feedId because it need to trust client side */
-      const timelineId = getTimelineId({
-        feedId: body.feedId,
-        publicKey: supporter.publicKey,
-        version: headers.version,
-      });
 
-      /* this check should be done here because we shouldn't
-       * trust the input from client */
-      const nature = throwEitherError(getNatureByHref(body.href));
+  const events = filterByCodec(req.body, ContributionEvent.decode);
 
-      const htmlId = getHTMLId.hash({
+  const init = {
+    htmls: [] as any[],
+    apiRequests: [] as any[],
+    sigiStates: [] as any[],
+  };
+
+  const { htmls, apiRequests, sigiStates } = events.reduce((acc, body, i) => {
+    const event: any = {};
+
+    if (body.experimentId?.length) event.experimentId = body.experimentId;
+
+    if (headers.researchTag?.length) event.researchTag = headers.researchTag;
+
+    /* the timelineId identify the session, it comes from the
+     * feedId because it need to trust client side */
+    const timelineId = getTimelineId({
+      feedId: body.feedId,
+      publicKey: supporter.publicKey,
+      version: headers.version,
+    });
+
+    if (body.type === 'api') {
+      const id = getAPIRequestId.hash({
         ...timelineId,
         feedCounter: body.feedCounter,
         videoCounter: body.videoCounter,
         incremental: body.incremental,
         href: body.href,
-        nature,
       });
 
-      const metadataId = getMetadataId.hash({
-        ...timelineId,
-        feedCounter: body.feedCounter,
-        videoCounter: body.videoCounter,
-        href: body.href,
-        nature,
-      });
-
-      /* to eventually verify integrity of collection we're saving these incremental
-       * numbers that might help to spot if client-side-extension are missing somethng */
-      const optionalNumbers: any[] = [];
-      if (_.isInteger(body.videoCounter))
-        optionalNumbers.push(body.videoCounter);
-      if (_.isInteger(i)) optionalNumbers.push(i);
-      if (_.isInteger(body.incremental)) optionalNumbers.push(body.incremental);
-      if (_.isInteger(body.feedCounter)) optionalNumbers.push(body.feedCounter);
-      optionalNumbers.push(_.size(body.html));
-
-      const geoAddress =
-        req.headers['x-forwarded-for'] ?? req.socket.remoteAddress;
-      const geoip =
-        geoAddress !== undefined
-          ? geo(geoAddress as any) ?? undefined
-          : undefined;
-
-      const html: HTML = {
-        id: htmlId as any,
-        metadataId,
-        blang: '',
-        nature,
-        type: body.type,
-        rect: body.rect,
-        href: body.href,
-        timelineId: timelineId.id,
-        publicKey: supporter.publicKey,
-        clientTime: parseISO(body.clientTime),
+      const apiEvent = {
+        ...body,
+        id,
         savingTime: new Date(),
-        html: body.html,
-        n: optionalNumbers,
-        geoip,
-        selector: body.selector,
+        researchTag: headers.researchTag,
+        publicKey: headers.publicKey,
       };
 
-      if (body.experimentId?.length) html.experimentId = body.experimentId;
+      return {
+        ...acc,
+        apiRequests: acc.apiRequests.concat(apiEvent),
+      };
+    }
 
-      if (headers.researchTag?.length) html.researchTag = headers.researchTag;
+    /* this check should be done here because we shouldn't
+     * trust the input from client */
+    const nature = throwEitherError(getNatureByHref(body.href));
 
-      return html;
-    })
-  );
+    const htmlId = getHTMLId.hash({
+      ...timelineId,
+      feedCounter: body.feedCounter,
+      videoCounter: body.videoCounter,
+      incremental: body.incremental,
+      href: body.href,
+      nature,
+    });
+
+    const metadataId = getMetadataId.hash({
+      ...timelineId,
+      feedCounter: body.feedCounter,
+      videoCounter: body.videoCounter,
+      href: body.href,
+      nature,
+    });
+
+    /* to eventually verify integrity of collection we're saving these incremental
+     * numbers that might help to spot if client-side-extension are missing somethng */
+    const optionalNumbers: any[] = [];
+    if (_.isInteger(body.videoCounter)) optionalNumbers.push(body.videoCounter);
+    if (_.isInteger(i)) optionalNumbers.push(i);
+    if (_.isInteger(body.incremental)) optionalNumbers.push(body.incremental);
+    if (_.isInteger(body.feedCounter)) optionalNumbers.push(body.feedCounter);
+    optionalNumbers.push(_.size(body.html));
+
+    const geoAddress =
+      req.headers['x-forwarded-for'] ?? req.socket.remoteAddress;
+    const geoip =
+      geoAddress !== undefined
+        ? geo(geoAddress as any) ?? undefined
+        : undefined;
+
+    const html: HTML = {
+      ...event,
+      id: htmlId as any,
+      metadataId,
+      blang: '',
+      nature,
+      type: body.type,
+      rect: body.rect,
+      href: body.href,
+      timelineId: timelineId.id,
+      publicKey: supporter.publicKey,
+      clientTime: parseISO(body.clientTime),
+      savingTime: new Date(),
+      html: body.html,
+      n: optionalNumbers,
+      geoip,
+      selector: body.selector,
+    };
+
+    return { ...acc, htmls: acc.htmls.concat(html) };
+  }, init);
 
   debug(
     '[+] (p %s) %s <%s> -- %s %s',
@@ -305,6 +339,16 @@ async function processEvents(req: express.Request): Promise<{
       2) save it in the DB and return information on the saved objects */
   const experinfo = {}; // TODO
   const htmlrv = await saveInDB(experinfo, htmls, nconf.get('schema').htmls);
+  const apiRequestrv = await saveInDB(
+    experinfo,
+    apiRequests,
+    nconf.get('schema').apiRequests
+  );
+  const sigiStaterv = await saveInDB(
+    experinfo,
+    sigiStates,
+    nconf.get('schema').sigiStates
+  );
   const fullrv = await saveInDB(experinfo, fullsaves, nconf.get('schema').full);
 
   /* this is what returns to the web-extension */
@@ -314,6 +358,8 @@ async function processEvents(req: express.Request): Promise<{
       supporter,
       full: fullrv,
       htmls: htmlrv,
+      apiRequests: apiRequestrv,
+      sigiStates: sigiStaterv,
     },
   };
 }
@@ -324,79 +370,6 @@ async function handshake(
   // debug('Not implemented protocol (yet) [handshake API %j]', req.body);
   return {
     json: { ignored: true },
-  };
-}
-
-async function processAPIEvents(req: express.Request): Promise<{
-  json:
-    | {
-        supporter: Supporter;
-        apiRequests: SaveInDBResult;
-      }
-    | { status: string; info: any };
-}> {
-  const headers = throwEitherError(decodeHeaders(_.get(req, 'headers')));
-
-  if (!utils.verifyRequestSignature(req)) {
-    debug('Verification fail (signature %s)', headers.signature);
-    return {
-      json: {
-        status: 'error',
-        info: 'Signature does not match request body',
-      },
-    };
-  }
-
-  // fetch the supporter by the given publicKey
-  const supporter = await automo.tofu(headers.publicKey, headers.version);
-
-  // we take only APIRequestEvent from payload
-  const validEvents = filterByCodec(
-    req.body,
-    APIRequestContributionEvent.decode
-  );
-
-  const events = validEvents.map(({ payload, ...e }) => {
-    /* the timelineId identify the session, it comes from the
-     * feedId because it need to trust client side */
-    const timelineId = getTimelineId({
-      feedId: e.feedId,
-      publicKey: supporter.publicKey,
-      version: headers.version,
-    });
-
-    const id = getAPIRequestId.hash({
-      ...timelineId,
-      feedCounter: e.feedCounter,
-      videoCounter: e.videoCounter,
-      incremental: e.incremental,
-      href: e.href,
-    });
-
-    return {
-      ...e,
-      id,
-      payload,
-      savingTime: new Date(),
-      researchTag: headers.researchTag,
-      publicKey: headers.publicKey,
-    };
-  });
-
-  const apiRequests = await saveInDB(
-    {},
-    events,
-    nconf.get('schema').apiRequests
-  );
-
-  debug('API requests %O', apiRequests);
-
-  return {
-    json: {
-      status: 'Complete',
-      supporter,
-      apiRequests,
-    },
   };
 }
 
@@ -451,7 +424,6 @@ async function getAPIEvents(req: Express.Request): Promise<{ json: any }> {
 
 export {
   processEvents,
-  processAPIEvents,
   getMirror,
   mandatoryHeaders,
   processHeaders,

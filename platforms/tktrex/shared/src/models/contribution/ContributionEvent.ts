@@ -4,7 +4,7 @@ export const HTMLContributionEvent = t.strict(
   {
     html: t.string,
     href: t.string,
-    feedId: t.union([t.string, t.undefined]),
+    feedId: t.string,
     incremental: t.number,
     feedCounter: t.union([t.number, t.undefined]),
     videoCounter: t.union([t.number, t.undefined]),
@@ -16,11 +16,8 @@ export const HTMLContributionEvent = t.strict(
       t.literal('profile'),
       t.literal('native'),
     ]),
+    experimentId: t.union([t.string, t.undefined]),
   },
   'HTMLContributionEvent',
 );
 export type HTMLContributionEvent = t.TypeOf<typeof HTMLContributionEvent>;
-
-// TODO: this is just an old alias, remove it when possible
-export const ContributionEvent = HTMLContributionEvent;
-export type ContributionEvent = t.TypeOf<typeof ContributionEvent>;

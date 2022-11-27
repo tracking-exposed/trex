@@ -6,7 +6,6 @@ import * as directivesRoutes from '../routes/directives';
 
 const apiList = {
   processEvents: eventsRoutes.processEvents,
-  processAPIEvents: eventsRoutes.processAPIEvents,
   getMirror: eventsRoutes.getMirror,
   handshake: eventsRoutes.handshake,
   getAPIEvents: eventsRoutes.getAPIEvents,
