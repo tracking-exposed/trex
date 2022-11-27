@@ -7,6 +7,7 @@ export type SigiStateType = t.TypeOf<typeof SigiStateType>;
 export const SigiState = t.type(
   {
     ...MetadataBase.props,
+    state: t.string,
     type: SigiStateType,
   },
   'SigiState',

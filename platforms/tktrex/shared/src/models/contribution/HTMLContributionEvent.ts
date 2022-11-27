@@ -11,6 +11,8 @@ export const HTMLContributionEvent = t.strict(
       t.literal('video'),
       t.literal('profile'),
       t.literal('native'),
+      t.literal('foryou'),
+      t.undefined,
     ]),
   },
   'HTMLContributionEvent',

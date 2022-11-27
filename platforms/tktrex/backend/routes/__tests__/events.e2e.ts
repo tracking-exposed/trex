@@ -1,10 +1,12 @@
 import { Keypair } from '@shared/models/extension/Keypair';
 import bs58 from '@shared/providers/bs58.provider';
 import { fc } from '@shared/test';
-import { string2Food } from '@shared/utils/food.utils';
 import { foldTEOrThrow } from '@shared/utils/fp.utils';
-import { APIRequestEventArb } from '@tktrex/shared/arbitraries/APIRequestContributionEvent.arb';
-import { ContributionEventArb } from '@tktrex/shared/arbitraries/ContributionEvent.arb';
+import {
+  ContributionEventArb,
+  APIRequestEventArb,
+  SigiStateContributionEventArb,
+} from '@tktrex/shared/arbitraries/ContributionEvent.arb';
 import * as superagent from 'superagent';
 import { GetTest, Test } from '../../test/Test';
 
@@ -92,6 +94,7 @@ describe('Events Route', () => {
         },
         htmls: { error: false, success: data.length, subject: 'htmls' },
         apiRequests: { error: null, subject: 'apiRequests' },
+        sigiStates: { error: null, subject: 'sigiStates' },
       });
 
       await appTest.mongo3.deleteMany(
@@ -169,66 +172,35 @@ describe('Events Route', () => {
     });
   });
 
-  describe('GET /v2/apiEvents: List api events', () => {
-    test('Get all events sent', async () => {
+  describe('Add "sigiState" event', () => {
+    test('success when payload contains only "sigiState" contribution events', async () => {
       const keys = await foldTEOrThrow(bs58.makeKeypair(''));
-      const { data } = await postEvents(
+      const { response, data } = await postEvents(
         keys,
-        APIRequestEventArb,
+        SigiStateContributionEventArb,
         10,
         (c, i) => ({
           ...c,
+          type: i % 2 == 0 ? c.type : ('invalid' as any),
           href: 'https://www.tiktok.com/@username',
         })
       );
 
-      const response = await appTest.app
-        .get(`/api/v2/apiEvents`)
-        .query({ publicKey: keys.publicKey });
-
       expect(response.status).toBe(200);
       expect(response.body).toMatchObject({
-        total: data.length,
-        data: data.map((d) => ({
-          supporter: string2Food(keys.publicKey),
-        })),
-      });
-
-      await appTest.mongo3.deleteMany(
-        appTest.mongo,
-        appTest.config.get('schema').apiRequests,
-        { publicKey: keys.publicKey }
-      );
-    });
-
-    test('Get events by experimentId', async () => {
-      const experimentId = fc.sample(fc.uuid(), 1)[0];
-      const keys = await foldTEOrThrow(bs58.makeKeypair(''));
-      const { data } = await postEvents(
-        keys,
-        APIRequestEventArb,
-        10,
-        (c, i) => ({
-          ...c,
-          experimentId: i % 2 ? experimentId : undefined,
-          href: 'https://www.tiktok.com/@username',
-        })
-      );
-
-      const response = await appTest.app
-        .get(`/api/v2/apiEvents`)
-        .query({ publicKey: keys.publicKey, experimentId });
-
-      expect(response.status).toBe(200);
-
-      expect(response.body).toMatchObject({
-        total: data.length / 2,
-        data: data
-          .filter((d, i) => i % 2 == 0)
-          .map((d) => ({
-            supporter: string2Food(keys.publicKey),
-            experimentId,
-          })),
+        supporter: {
+          version,
+          publicKey: keys.publicKey,
+        },
+        apiRequests: {
+          error: null,
+          subject: 'apiRequests',
+        },
+        sigiStates: {
+          error: false,
+          success: data.length / 2,
+          subject: 'sigiStates',
+        },
       });
 
       await appTest.mongo3.deleteMany(

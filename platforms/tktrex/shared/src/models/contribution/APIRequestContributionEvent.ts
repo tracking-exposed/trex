@@ -1,11 +1,14 @@
 import * as t from 'io-ts';
 import { ContributionEventBase } from './ContributionEventBase';
 
+export const APIRequestType = t.literal('api');
+export type APIRequestType = t.TypeOf<typeof APIRequestType>;
+
 export const APIRequestContributionEvent = t.strict(
   {
     ...ContributionEventBase.type.props,
-    type: t.literal('api'),
-    payload: t.unknown,
+    type: APIRequestType,
+    payload: t.string,
   },
   'APIRequestContributionEvent',
 );

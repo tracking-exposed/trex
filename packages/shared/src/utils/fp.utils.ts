@@ -51,14 +51,25 @@ export const throwEitherError = <E, A>(e: E.Either<E, A>): A => {
  * @param decode
  * @returns
  */
-export const filterByCodec = <T, A>(arr: T[], decode: t.Decode<T, A>): A[] => {
+export const filterByCodec = <T, A>(
+  arr: T[],
+  decode: t.Decode<T, A>,
+  reporter?: (e: t.ValidationError[], a: T) => void
+): A[] => {
   return pipe(
     arr,
     A.map((a) =>
       pipe(
         decode(a),
         E.fold(
-          (e) => O.none,
+          (e) => {
+            // call the reporter with the failed entry
+            // and the occurred error
+            if (reporter) {
+              reporter(e, a);
+            }
+            return O.none;
+          },
           (v) => O.some(v)
         )
       )

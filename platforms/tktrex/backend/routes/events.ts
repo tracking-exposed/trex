@@ -1,37 +1,31 @@
-import { decodeOrThrowRequest } from '@shared/endpoints/helper';
 import { AppError, toAppError } from '@shared/errors/AppError';
 import { toValidationError } from '@shared/errors/ValidationError';
 import { Supporter } from '@shared/models/Supporter';
-import * as mongo from '@shared/providers/mongo.provider';
-import {
-  filterByCodec,
-  throwEitherError,
-  validateArrayByCodec,
-} from '@shared/utils/fp.utils';
+import { filterByCodec, throwEitherError } from '@shared/utils/fp.utils';
 import { geo } from '@shared/utils/ip.utils';
-import * as endpoints from '@tktrex/shared/endpoints/v2';
 import {
+  getAPIRequestId,
   getHTMLId,
   getMetadataId,
+  getSigiStateId,
   getTimelineId,
-  getAPIRequestId,
 } from '@tktrex/shared/helpers/uniqueId';
+import { APIRequestType } from '@tktrex/shared/models/apiRequest';
 import { ContributionEvent } from '@tktrex/shared/models/contribution';
 import { HTML } from '@tktrex/shared/models/http/HTML';
 import { TKHeadersLC } from '@tktrex/shared/models/http/TKHeaders';
+import { SigiStateType } from '@tktrex/shared/models/sigiState/SigiState';
 import { getNatureByHref } from '@tktrex/shared/parser/parsers/nature';
-import { parseISO } from 'date-fns';
 import D from 'debug';
 import * as express from 'express';
 import * as A from 'fp-ts/Array';
 import * as E from 'fp-ts/lib/Either';
 import { pipe } from 'fp-ts/lib/function';
 import { IncomingHttpHeaders } from 'http';
+import { PathReporter } from 'io-ts/lib/PathReporter';
 import _ from 'lodash';
 import nconf from 'nconf';
-import { toAPIRequest } from '../io/apiRequest.io';
 import * as automo from '../lib/automo';
-import { GetEventsEntity } from '../lib/entities/events.entity';
 import security from '../lib/security';
 import utils from '../lib/utils';
 
@@ -220,7 +214,10 @@ async function processEvents(req: express.Request): Promise<{
 
   const fullsaves: any[] = [];
 
-  const events = filterByCodec(req.body, ContributionEvent.decode);
+  const events = filterByCodec(req.body, ContributionEvent.decode, (e, c) => {
+    debug('Failed to parse %O', c);
+    debug('Errors %O', PathReporter.report(E.left(e)));
+  });
 
   const init = {
     htmls: [] as any[],
@@ -229,7 +226,13 @@ async function processEvents(req: express.Request): Promise<{
   };
 
   const { htmls, apiRequests, sigiStates } = events.reduce((acc, body, i) => {
-    const event: any = {};
+    const event: any = {
+      href: body.href,
+      clientTime: body.clientTime,
+      researchTag: headers.researchTag,
+      publicKey: headers.publicKey,
+      savingTime: new Date(),
+    };
 
     if (body.experimentId?.length) event.experimentId = body.experimentId;
 
@@ -243,21 +246,30 @@ async function processEvents(req: express.Request): Promise<{
       version: headers.version,
     });
 
-    if (body.type === 'api') {
+    if (APIRequestType.is(body.type)) {
+      const {
+        feedCounter,
+        videoCounter,
+        incremental,
+        type,
+        feedId,
+        payload,
+      }: any = body;
       const id = getAPIRequestId.hash({
         ...timelineId,
-        feedCounter: body.feedCounter,
-        videoCounter: body.videoCounter,
-        incremental: body.incremental,
+        feedCounter,
+        videoCounter,
+        incremental,
         href: body.href,
       });
 
       const apiEvent = {
-        ...body,
+        ...event,
+        incremental,
+        payload,
+        feedId,
+        type,
         id,
-        savingTime: new Date(),
-        researchTag: headers.researchTag,
-        publicKey: headers.publicKey,
       };
 
       return {
@@ -266,14 +278,42 @@ async function processEvents(req: express.Request): Promise<{
       };
     }
 
+    if (SigiStateType.is(body.type)) {
+      const { state, type }: any = body;
+      const id = getSigiStateId.hash({
+        timelineId: timelineId.id,
+        incremental: body.incremental,
+        href: body.href,
+      });
+
+      const sigiStateEvent = {
+        ...event,
+        type,
+        state,
+        id,
+      };
+
+      return {
+        ...acc,
+        sigiStates: acc.sigiStates.concat(sigiStateEvent),
+      };
+    }
+
     /* this check should be done here because we shouldn't
      * trust the input from client */
     const nature = throwEitherError(getNatureByHref(body.href));
 
+    const {
+      feedCounter,
+      videoCounter,
+      selector,
+      rect,
+      html: bodyHTML,
+    }: any = body;
     const htmlId = getHTMLId.hash({
       ...timelineId,
-      feedCounter: body.feedCounter,
-      videoCounter: body.videoCounter,
+      feedCounter,
+      videoCounter,
       incremental: body.incremental,
       href: body.href,
       nature,
@@ -281,8 +321,8 @@ async function processEvents(req: express.Request): Promise<{
 
     const metadataId = getMetadataId.hash({
       ...timelineId,
-      feedCounter: body.feedCounter,
-      videoCounter: body.videoCounter,
+      feedCounter,
+      videoCounter,
       href: body.href,
       nature,
     });
@@ -294,7 +334,7 @@ async function processEvents(req: express.Request): Promise<{
     if (_.isInteger(i)) optionalNumbers.push(i);
     if (_.isInteger(body.incremental)) optionalNumbers.push(body.incremental);
     if (_.isInteger(body.feedCounter)) optionalNumbers.push(body.feedCounter);
-    optionalNumbers.push(_.size(body.html));
+    optionalNumbers.push(_.size(bodyHTML));
 
     const geoAddress =
       req.headers['x-forwarded-for'] ?? req.socket.remoteAddress;
@@ -303,6 +343,8 @@ async function processEvents(req: express.Request): Promise<{
         ? geo(geoAddress as any) ?? undefined
         : undefined;
 
+    if (selector) event.selector = selector;
+
     const html: HTML = {
       ...event,
       id: htmlId as any,
@@ -310,16 +352,14 @@ async function processEvents(req: express.Request): Promise<{
       blang: '',
       nature,
       type: body.type,
-      rect: body.rect,
+      rect,
       href: body.href,
       timelineId: timelineId.id,
       publicKey: supporter.publicKey,
-      clientTime: parseISO(body.clientTime),
       savingTime: new Date(),
-      html: body.html,
+      html: bodyHTML,
       n: optionalNumbers,
       geoip,
-      selector: body.selector,
     };
 
     return { ...acc, htmls: acc.htmls.concat(html) };
@@ -373,60 +413,10 @@ async function handshake(
   };
 }
 
-async function getAPIEvents(req: Express.Request): Promise<{ json: any }> {
-  const { query } = decodeOrThrowRequest(
-    endpoints.default.Public.GETAPIEvents,
-    req
-  );
-
-  debug('List api requests with query %O', query);
-  const { amount, skip, sort, experimentId, publicKey, researchTag } = query;
-
-  const filter: any = {};
-  const mongoc = await mongo.clientConnect({});
-
-  if (publicKey) {
-    filter.publicKey = {
-      $eq: publicKey,
-    };
-  }
-
-  if (experimentId) {
-    filter.experimentId = {
-      $eq: experimentId,
-    };
-  }
-
-  if (researchTag) {
-    filter.researchTag = {
-      $eq: researchTag,
-    };
-  }
-
-  // const supporter = await automo.tofu(query.publicKey, )
-
-  const eventEntity = GetEventsEntity(mongoc);
-  const { total, data } = await eventEntity.listAndCount({
-    amount: amount ?? 20,
-    skip: skip ?? 0,
-    filter,
-    sort,
-  });
-
-  const validData = validateArrayByCodec(data, toAPIRequest);
-
-  await mongoc.close();
-
-  return {
-    json: { total, data: validData },
-  };
-}
-
 export {
   processEvents,
   getMirror,
   mandatoryHeaders,
   processHeaders,
   handshake,
-  getAPIEvents,
 };

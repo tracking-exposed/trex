@@ -16,8 +16,8 @@ export const SigiStateContributionEventArb: fc.Arbitrary<SigiStateContributionEv
     videoCounter: fc.sample(fc.nat(), 1)[0],
     feedCounter: fc.sample(fc.nat(), 1)[0],
     incremental: fc.sample(fc.nat(), 1)[0],
-    clientTime: new Date().toISOString(),
-    state: fc.sample(fc.jsonValue(), 1)[0],
+    clientTime: new Date(),
+    state: JSON.stringify(fc.sample(fc.jsonValue(), 1)[0]),
   }));
 
 export const APIRequestEventArb: fc.Arbitrary<APIRequestContributionEvent> =
@@ -29,25 +29,26 @@ export const APIRequestEventArb: fc.Arbitrary<APIRequestContributionEvent> =
     videoCounter: fc.sample(fc.nat(), 1)[0],
     feedCounter: fc.sample(fc.nat(), 1)[0],
     incremental: fc.sample(fc.nat(), 1)[0],
-    payload: fc.sample(fc.jsonValue(), 1)[0],
+    payload: JSON.stringify(fc.sample(fc.jsonValue(), 1)[0]),
   }));
 
-export const ContributionEventArb = getArbitrary(
-  t.strict(propsOmit(HTMLContributionEvent, ['clientTime', 'rect'])),
-).map((e) => ({
-  ...e,
-  clientTime: new Date().toISOString(),
-  videoCounter: fc.sample(fc.nat(), 1)[0],
-  feedCounter: fc.sample(fc.nat(), 1)[0],
-  incremental: fc.sample(fc.nat(), 1)[0],
-  rect: {
-    x: 0,
-    y: 0,
-    bottom: 0,
-    height: 0,
-    left: 0,
-    right: 0,
-    top: 0,
-    width: 0,
-  },
-}));
+export const ContributionEventArb: fc.Arbitrary<HTMLContributionEvent> =
+  getArbitrary(
+    t.strict(propsOmit(HTMLContributionEvent, ['clientTime', 'rect'])),
+  ).map((e) => ({
+    ...e,
+    clientTime: new Date(),
+    videoCounter: fc.sample(fc.nat(), 1)[0],
+    feedCounter: fc.sample(fc.nat(), 1)[0],
+    incremental: fc.sample(fc.nat(), 1)[0],
+    rect: {
+      x: 0,
+      y: 0,
+      bottom: 0,
+      height: 0,
+      left: 0,
+      right: 0,
+      top: 0,
+      width: 0,
+    },
+  }));

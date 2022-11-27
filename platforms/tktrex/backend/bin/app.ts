@@ -115,7 +115,8 @@ export const makeApp = async (
   apiRouter.get('/v2/public/queries/list', iowrapper('getQueryList'));
   apiRouter.get('/v2/metadata', iowrapper('listMetadata'));
 
-  apiRouter.get('/v2/apiEvents', iowrapper('getAPIEvents'));
+  apiRouter.get('/v2/apiRequests', iowrapper('getAPIRequests'));
+  apiRouter.get('/v2/sigiStates', iowrapper('getSigiStates'));
 
   /* --------------- end of documented APIs -------------------- */
 

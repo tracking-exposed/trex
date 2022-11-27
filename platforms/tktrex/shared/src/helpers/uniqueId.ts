@@ -106,3 +106,22 @@ export const getAPIRequestId = encodeUtils.GetEncodeUtils(
     counters: `v(${videoCounter})f(${feedCounter})i(${incremental})`,
   }),
 );
+
+export interface GetSigiStateId {
+  href: string;
+  timelineId: string;
+  incremental: number;
+}
+export const getSigiStateId = encodeUtils.GetEncodeUtils(
+  ({ href, timelineId, incremental }: GetSigiStateId) => ({
+    /* based on the 'body.type' we might have fields that are updated
+     * (like search, profile, where the user can scroll and report larger evidences)
+     * or video block in 'following' or 'foryou', with a fixed url */
+    nature: { type: 'api' },
+    href,
+    /* the timeline guarantee uniqueness by user, version, feedId */
+    timelineId,
+    /* the payload to be sure to not store duplicated data */
+    incremental,
+  }),
+);

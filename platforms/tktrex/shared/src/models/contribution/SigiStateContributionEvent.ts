@@ -5,7 +5,7 @@ import { ContributionEventBase } from './ContributionEventBase';
 export const SigiStateContributionEvent = t.strict(
   {
     ...ContributionEventBase.type.props,
-    state: t.any,
+    state: t.string,
     type: SigiStateType,
   },
   'SigiStateContributionEvent',
