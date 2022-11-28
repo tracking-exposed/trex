@@ -54,10 +54,14 @@ services:
       - mongodb
 
   build-from-zip:
+    image: node:16-slim
     build:
       dockerfile: from-zip.Dockerfile
       context: .
+      target: unzip
     container_name: build-from-zip
+    stdin_open: true # docker run -i
+    tty: true # docker run -t
 
   yt-backend:
     build:
