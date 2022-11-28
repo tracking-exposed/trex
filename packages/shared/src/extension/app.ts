@@ -9,7 +9,7 @@ import {
   settingsLookup,
 } from './background/sendMessage';
 import {
-  getFilter,
+  // getFilter,
   WebRequestHandler,
 } from './background/webRequest/filterRequest';
 import db from './db';
@@ -166,11 +166,11 @@ function setupObserver(
             // always trigger handlers with `observe` equals to `true`
             handlers.observableSelectors.forEach(
               ([h, { handle, ...handler }]) => {
-                appLog.debug('Handler for mutation %s', h);
+                // appLog.debug('Handler for mutation %s', h);
                 mutations.forEach((r) => {
-                  appLog.debug('Mutation target %s', (r.target as Element).id);
+                  // appLog.debug('Mutation target %s', (r.target as Element).id);
                   if (`#${(r.target as any).id}` === handler.match.selector) {
-                    appLog.debug('Target match %O', (r.target as any).id);
+                    // appLog.debug('Target match %O', (r.target as any).id);
                     handle(r.target as any, handler, h, config);
                   }
                 });
@@ -383,19 +383,20 @@ export async function boot(opts: BootOpts): Promise<App> {
   // clear cache too
   clearCache();
 
-  if (opts.webRequest && bo.webRequest) {
-    bo.webRequest.onBeforeRequest.addListener(
-      (d) => {
-        Object.entries(opts.webRequest?.handlers ?? []).forEach(
-          ([key, handler]) => {
-            getFilter(d, handler);
-          }
-        );
-      },
-      { urls: ['https://*/*'], types: ['main_frame', 'xmlhttprequest'] },
-      ['blocking']
-    );
-  }
+  // if (opts.webRequest && bo.webRequest) {
+  //   bo.webRequest.onBeforeRequest.addListener(
+  //     (d) => {
+  //       Object.entries(opts.webRequest?.handlers ?? []).forEach(
+  //         ([key, handler]) => {
+  //           getFilter(d, handler);
+  //         }
+  //       );
+  //     },
+  //     { urls: ['https://*/*'], types: ['main_frame', 'xmlhttprequest'] },
+  //     ['blocking']
+  //   );
+  // }
+
   // send the configuration to the server to register the extension
   const handshakeResponse = await serverHandshakeP(config);
 

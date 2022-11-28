@@ -32,7 +32,7 @@ const state: HubState = {
   content: [],
 };
 
-function sync(hub: Hub<TKHubEvent>): void {
+function sync(hub: Hub<TKHubEvent>, config: UserSettings): void {
   if (state.content.length) {
     log.info(
       `data sync — ${state.content.length} items (total since beginning: ${state.incremental})`,
@@ -43,7 +43,12 @@ function sync(hub: Hub<TKHubEvent>): void {
     bo.runtime.sendMessage(
       {
         type: 'sync',
-        payload: state.content,
+        // ensure all the events sent to the backend
+        // have `experimentId`
+        payload: state.content.map((c) => ({
+          ...c,
+          experimentId: config.experimentId,
+        })),
         userId: 'local',
       },
       (response) => {
@@ -64,7 +69,7 @@ export function registerTkHandlers(
 ): void {
   if (config.active) {
     const syncInterval = window.setInterval(() => {
-      sync(hub);
+      sync(hub, config);
     }, INTERVAL);
 
     hub
@@ -77,7 +82,7 @@ export function registerTkHandlers(
       .on<SigiStateEvent>('SigiState', (e) => handleSigiState(e, state))
       .on('WindowUnload', () => {
         clearInterval(syncInterval);
-        sync(hub);
+        sync(hub, config);
       });
   }
 }

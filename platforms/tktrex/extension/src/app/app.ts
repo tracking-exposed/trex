@@ -560,7 +560,6 @@ export const tkHandlers: { [key: string]: ObserverHandler } = {
   sigiExperiment: {
     match: {
       type: 'selector',
-      observe: true,
       selector: '#SIGI_STATE',
     },
     handle: handleSigi,

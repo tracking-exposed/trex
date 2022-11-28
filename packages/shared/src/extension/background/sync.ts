@@ -89,10 +89,6 @@ export const handleSyncMessage =
 export const load = (opts: LoadOpts): void => {
   bo.runtime.onMessage.addListener((request, sender, sendResponse) => {
     log.info('Sync event received %O', request);
-    // if (request.type === 'apiSync') {
-    //   handleAPISyncMessage(opts)(request, sender, sendResponse);
-    //   return true;
-    // }
 
     if (request.type === 'sync') {
       handleSyncMessage(opts)(request, sender, sendResponse);
