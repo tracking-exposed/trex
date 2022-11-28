@@ -451,6 +451,7 @@ function flush(): void {
 export const searchHandler: SelectorObserverHandler = {
   match: {
     type: 'selector',
+    observe: true,
     selector: '[data-e2e="search-card-desc"]',
   },
   handle: handleSearch,
@@ -460,6 +461,7 @@ export const errorHandler: SelectorObserverHandler = {
   match: {
     type: 'selector',
     selector: 'h2',
+    observe: true,
   },
   handle: handleSearch,
 };
@@ -499,6 +501,7 @@ export const tkHandlers: { [key: string]: ObserverHandler } = {
     match: {
       type: 'selector',
       selector: 'video',
+      observe: true,
     },
     handle: handleVideo,
   },
@@ -506,6 +509,7 @@ export const tkHandlers: { [key: string]: ObserverHandler } = {
     match: {
       type: 'selector',
       selector: 'canvas[class*="CanvasVideoCardPlaceholder"]',
+      observe: true,
     },
     handle: handleVideoPlaceholder,
   },
@@ -513,6 +517,7 @@ export const tkHandlers: { [key: string]: ObserverHandler } = {
     match: {
       type: 'selector',
       selector: 'div[class$="DivUserContainer"]',
+      observe: true,
     },
     handle: handleSuggested,
   },
@@ -520,6 +525,7 @@ export const tkHandlers: { [key: string]: ObserverHandler } = {
     match: {
       type: 'selector',
       selector: 'h1',
+      observe: true,
     },
     handle: () => undefined,
   },
@@ -529,6 +535,7 @@ export const tkHandlers: { [key: string]: ObserverHandler } = {
     match: {
       type: 'selector',
       selector: 'a[href^="/@"]',
+      observe: true,
     },
     handle: () => undefined,
   },
@@ -536,14 +543,15 @@ export const tkHandlers: { [key: string]: ObserverHandler } = {
   apiInterceptor: {
     match: {
       type: 'selector',
-      selector: `#${INTERCEPTOR_CONTAINER_ID}`,
       observe: true,
+      selector: `#${INTERCEPTOR_CONTAINER_ID}`,
     },
     handle: handleInterceptedData,
   },
   sigiExperiment: {
     match: {
       type: 'selector',
+      observe: true,
       selector: '#SIGI_STATE',
     },
     handle: handleSigi,
