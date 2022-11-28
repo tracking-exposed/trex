@@ -1,7 +1,16 @@
+/* eslint-disable */
+
+function checkret(info, retval) {
+  retval.info = info;
+  printjson(retval);
+}
+
 ret = db.metadata.createIndex({ id: 1 }, { unique: true });
 checkret('metadata id', ret);
 ret = db.metadata.createIndex({ videoId: 1 });
 checkret('metadata videoId', ret);
+ret = db.metadata.createIndex({ 'nature.type': 1 });
+checkret('metadata nature.type', ret);
 ret = db.metadata.createIndex({ type: 1 });
 checkret('metadata type', ret);
 ret = db.metadata.createIndex({ 'related.videoId': 1 });
@@ -16,8 +25,8 @@ ret = db.metadata.createIndex({ savingTime: -1 });
 checkret('metadata savingTime', ret);
 ret = db.metadata.createIndex({ href: -1 });
 checkret('metadata href', ret);
-ret = db.metadata.createIndex({ 'experiment.experimentId': 1 });
-checkret('metadata experiment.experimentId', ret);
+ret = db.metadata.createIndex({ experimentId: 1 });
+checkret('metadata experimentId', ret);
 
 ret = db.supporters.createIndex({ publicKey: 1 }, { unique: true });
 checkret('supporters publicKey:', ret);
@@ -52,7 +61,6 @@ checkret('errors id', ret);
 ret = db.errors.createIndex({ when: -1 });
 checkret('errors when', ret);
 
-
 ret = db.ads.createIndex({ metadataId: 1 });
 checkret('ads metadataId', ret);
 ret = db.ads.createIndex({ savingTime: -1 });
@@ -64,7 +72,6 @@ ret = db.experiments2.createIndex({ experimentId: -1, unique: true });
 checkret('experiments2 experimentId', ret);
 ret = db.experiments2.createIndex({ when: -1 });
 checkret('experiments2 when', ret);
-
 
 /* below this the collections are for youchoose */
 ret = db.recommendations.createIndex({ urlId: 1 }, { unique: true });
@@ -91,9 +98,3 @@ ret = db.creators.createIndex({ channelId: 1 }, { unique: true });
 checkret('creators channelId', ret);
 ret = db.creators.createIndex({ accessToken: 1 });
 checkret('creators accessToken', ret);
-
-
-function checkret(info, retval) {
-  retval.info = info;
-  printjson(retval);
-}

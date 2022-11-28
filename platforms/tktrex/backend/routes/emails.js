@@ -3,50 +3,28 @@ const debug = require('debug')('routes:emails');
 const _ = require('lodash');
 
 const mongo3 = require('@shared/providers/mongo.provider');
-const utils = require('../lib/utils');
 const security = require('../lib/security');
 
+/*
 function validateEmail(email) {
   const re =
     /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
   return re.test(email);
 }
+*/
 
 async function registerEmail2(req) {
-  const email = req.body.email;
-  const reason = req.body.reason;
-  const collection = nconf.get('schema').emails;
-
-  if (!validateEmail(email)) {
-    debug('Rejected email address %s as invalid', email);
-    return { status: 403 };
-  }
-  const reasons = ['subscribe-to-ukraine', 'press--list'];
-  if (reasons.indexOf(reason) === -1) {
-    debug('Invalid reason %s not found in %j', reason, reasons);
-    return { status: 403 };
-  }
-
-  const subid = utils.hash({ email, reason });
-
-  const mongoc = await mongo3.clientConnect();
-  const emailAlreadyExists = await mongo3.count(mongoc, collection, { subid });
-
-  if (emailAlreadyExists === 1) {
-    debug('Address %s already present', email);
-    await mongoc.close();
-    return { status: 201 };
-  }
-
-  await mongo3.writeOne(mongoc, collection, {
-    subid,
-    email,
-    registeredAt: new Date(),
-    reason,
-  });
-  debug('Registed a new subscriber %s', email);
-  await mongoc.close();
-  return { status: 200 };
+  /* emails are not currently used, and the code used in yttrex it is simpler than the one in tk.
+   * the piece of code should be merged in `shared` and ported in TS.
+   * Eventually, registering email should be done only after having understood which kind of
+   * newsletter provier we might use in the future. At the moment is not defined yet
+   *
+   * Previous reasons were:
+   *
+   * const reasons = ['subscribe-to-ukraine', 'press--list']
+   *
+   */
+  throw new Error('Discontinued -- read the comment!');
 }
 
 async function listEmails(req) {
@@ -66,6 +44,6 @@ async function listEmails(req) {
 }
 
 module.exports = {
-  registerEmail2,
+  registerEmail: registerEmail2,
   listEmails,
 };
