@@ -2,7 +2,7 @@
 
 /* eslint-disable camelcase */
 
-import { $, os, fetch, fs, path } from 'zx';
+import { $, os, fs, path } from 'zx';
 import { normalizePlatform, getGuardoniCliPkgName } from './utils.mjs';
 import dotenv from 'dotenv';
 import assert from 'assert';
@@ -42,7 +42,7 @@ void (async function () {
   )}`;
 
   const flags = [
-    '--basePath=./',
+    `--basePath=${process.cwd()}`,
     `--executablePath=${process.env.PUPPETEER_EXEC_PATH}`,
     '-c=guardoni.config.json',
     '--headless=false',
@@ -124,19 +124,23 @@ void (async function () {
 
   await $`echo ${personalURL}`;
   await $`echo ${metadataURL}`;
-  const metadata = await fetch(metadataURL).then((r) => r.json());
 
-  assert.strictEqual(metadata.length, sources.length);
-  assert.strictEqual(
-    metadata.map((m) => ({
-      experimentId: m.experimentId,
-      type: m.type,
-    })),
-    Array.from({ length: sources.length }).map(() => ({
-      experimentId: experiment_id,
-      type: nature,
-    }))
-  );
+
+  await $`${cli} ${flags} ${p}-download ${experiment_id} ./experiments/downloads`;
+
+  // const metadata = await fetch(metadataURL).then((r) => r.json());
+
+  // assert.strictEqual(metadata.length, sources.length);
+  // assert.strictEqual(
+  //   metadata.map((m) => ({
+  //     experimentId: m.experimentId,
+  //     type: m.type,
+  //   })),
+  //   Array.from({ length: sources.length }).map(() => ({
+  //     experimentId: experiment_id,
+  //     type: nature,
+  //   }))
+  // );
 
   fs.removeSync(experimentFile);
 })();

@@ -1,4 +1,5 @@
 import * as endpoints from '@yttrex/shared/endpoints';
+import * as tkEndpoints from '@tktrex/shared/endpoints';
 import { Logger } from '@shared/logger';
 import { Step } from '@shared/models/Step';
 import { APIClient } from '@shared/providers/api.provider';
@@ -83,6 +84,7 @@ export interface GuardoniContext {
   puppeteer: PuppeteerProvider;
   hooks: StepHooks<string, any>;
   API: APIClient<typeof endpoints>;
+  TKAPI: APIClient<typeof tkEndpoints>;
   config: GuardoniConfig;
   platform: PlatformConfig;
   profile: GuardoniProfile;
