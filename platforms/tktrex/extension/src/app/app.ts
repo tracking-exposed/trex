@@ -540,6 +540,11 @@ export const tkHandlers: { [key: string]: ObserverHandler } = {
     handle: () => undefined,
   },
   search: searchHandler,
+  /**
+   * Handle the intercepted API requests sent to tiktok.com.
+   *
+   * It uses the {@link TrExXMLHttpPRequest} to intercept requests.
+   */
   apiInterceptor: {
     match: {
       type: 'selector',
@@ -548,6 +553,10 @@ export const tkHandlers: { [key: string]: ObserverHandler } = {
     },
     handle: handleInterceptedData,
   },
+  /**
+   * Handle the SIGI_STATE returned in the html body
+   * on first render
+   */
   sigiExperiment: {
     match: {
       type: 'selector',

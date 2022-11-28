@@ -109,6 +109,8 @@ function setupObserver(
   { handlers: _handlers, platformMatch, onLocationChange }: SetupObserverOpts,
   config: UserSettings
 ): MutationObserver {
+  // group handlers by type and `ObserverHandler.observe?`
+  // to subscribe them to proper DOM and location changes
   const handlers = Object.entries(_handlers).reduce<{
     selectors: Array<
       [string, SelectorObserverHandler | SelectorWithParentsObserverHandler]
@@ -161,7 +163,7 @@ function setupObserver(
 
         if (window?.document) {
           if (platformMatch.test(window.location.href)) {
-
+            // always trigger handlers with `observe` equals to `true`
             handlers.observableSelectors.forEach(
               ([h, { handle, ...handler }]) => {
                 appLog.debug('Handler for mutation %s', h);
@@ -188,11 +190,12 @@ function setupObserver(
               oldHref = newHref;
             }
 
-            // always call the route handler
+            // look for handler for the current path
             const routeHandler = handlers.routes.find(([h, handler]) => {
               return window.location.pathname.match(handler.match.location);
             });
 
+            // invoke the route handler, if any
             if (routeHandler?.[0]) {
               const { handle, ...routeHandlerOpts } = routeHandler[1];
               appLog.debug(
