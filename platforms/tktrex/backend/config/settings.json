@@ -6,7 +6,9 @@
     "metadata": "metadata",
     "full": "full",
     "emails": "emails",
-    "experiments": "experiments"
+    "experiments": "experiments",
+    "apiRequests": "apiRequests",
+    "sigiStates": "sigiStates"
   },
 
   "mongoHost": "localhost",

@@ -1,38 +1,61 @@
+import { AppError, toAppError } from '@shared/errors/AppError';
+import { toValidationError } from '@shared/errors/ValidationError';
 import { Supporter } from '@shared/models/Supporter';
+import { filterByCodec, throwEitherError } from '@shared/utils/fp.utils';
 import { geo } from '@shared/utils/ip.utils';
 import {
-  getTimelineId,
+  getAPIRequestId,
   getHTMLId,
   getMetadataId,
+  getSigiStateId,
+  getTimelineId,
 } from '@tktrex/shared/helpers/uniqueId';
+import { APIRequestType } from '@tktrex/shared/models/apiRequest';
+import { ContributionEvent } from '@tktrex/shared/models/contribution';
+import { HTML } from '@tktrex/shared/models/http/HTML';
+import { TKHeadersLC } from '@tktrex/shared/models/http/TKHeaders';
+import { SigiStateType } from '@tktrex/shared/models/sigiState/SigiState';
+import { getNatureByHref } from '@tktrex/shared/parser/parsers/nature';
 import { parseISO } from 'date-fns';
 import D from 'debug';
 import * as express from 'express';
+import * as A from 'fp-ts/Array';
+import * as E from 'fp-ts/lib/Either';
+import { pipe } from 'fp-ts/lib/function';
+import { IncomingHttpHeaders } from 'http';
+import { PathReporter } from 'io-ts/lib/PathReporter';
 import _ from 'lodash';
 import nconf from 'nconf';
 import * as automo from '../lib/automo';
-import utils from '../lib/utils';
 import security from '../lib/security';
-import { throwEitherError } from '@shared/utils/fp.utils';
-import { getNatureByHref } from '@tktrex/shared/parser/parsers/nature';
-import { HTML } from '@tktrex/shared/models/http/HTML';
+import utils from '../lib/utils';
 
 const debug = D('routes:events');
 
 const mandatoryHeaders = {
-  'content-length': 'length',
-  'x-tktrex-version': 'version',
-  'x-tktrex-publickey': 'publickey',
-  'x-tktrex-signature': 'signature',
-  'x-tktrex-nonauthcookieid': 'researchTag',
+  'content-length': 'length' as const,
+  'x-tktrex-version': 'version' as const,
+  'x-tktrex-publickey': 'publicKey' as const,
+  'x-tktrex-signature': 'signature' as const,
+  'x-tktrex-nonauthcookieid': 'researchTag' as const,
 };
 
-type TKHeaders = { [K in keyof typeof mandatoryHeaders]: string };
+type MandatoryHeadersKeys = keyof typeof mandatoryHeaders;
+
+type MandatoryHeadersValues = typeof mandatoryHeaders[MandatoryHeadersKeys];
+
+type TKHeaders = {
+  [K in MandatoryHeadersValues]: string;
+};
+
+type ProcessHeadersResult =
+  | { type: 'success'; headers: TKHeaders }
+  | { type: 'error'; errors: string[] };
 
 function processHeaders(
-  received: Partial<TKHeaders>,
-  required: TKHeaders
-): TKHeaders | { errors: string[] } {
+  received: IncomingHttpHeaders,
+  required: typeof mandatoryHeaders
+): ProcessHeadersResult {
   const ret = {};
   const errs = _.compact(
     _.map(required, function (destkey, headerName) {
@@ -45,9 +68,40 @@ function processHeaders(
   );
   if (_.size(errs)) {
     debug('Error in processHeaders, missing: %j', errs);
-    return { errors: errs };
+    return { type: 'error', errors: errs };
   }
-  return ret as TKHeaders;
+  return { type: 'success', headers: ret as TKHeaders };
+}
+
+/**
+ * Decode headers from incoming request.
+ *
+ * @param received Incoming HTTP Headers
+ * @returns Either AppError (`E.left`) or TKHeaders (`E.right`)
+ */
+function decodeHeaders(
+  received: IncomingHttpHeaders
+): E.Either<AppError, TKHeaders> {
+  return pipe(
+    TKHeadersLC.decode(received),
+    E.map((r) => {
+      return pipe(
+        Object.entries(r),
+        A.reduce({} as any as TKHeaders, (acc, [key, e]) => ({
+          ...acc,
+          [(mandatoryHeaders as any)[key]]: e,
+        })),
+        (headers) => {
+          debug('Parsed headers %O', headers);
+          return headers;
+        }
+      );
+    }),
+    E.mapLeft((e) => {
+      debug('Error in processHeaders, missing: %j', e);
+      return toAppError(toValidationError('Error in processHeaders', e));
+    })
+  );
 }
 
 let last: any = null;
@@ -74,18 +128,6 @@ function appendLast(req: express.Request): void {
   if (_.size(last) > MAX_STORED_CONTENT) last = _.tail(last);
 
   last.push(_.pick(req, ['headers', 'body']));
-}
-
-function headerError(headers: express.Request['headers']): {
-  json: { status: 'error'; info: any };
-} {
-  debug('Error detected: %s', headers.error);
-  return {
-    json: {
-      status: 'error',
-      info: headers.error,
-    },
-  };
 }
 
 type SaveInDBResult =
@@ -146,6 +188,8 @@ async function processEvents(req: express.Request): Promise<{
         supporter: Supporter;
         full: SaveInDBResult;
         htmls: SaveInDBResult;
+        sigiStates: SaveInDBResult;
+        apiRequests: SaveInDBResult;
       }
     | { status: string; info: any };
 }> {
@@ -154,8 +198,11 @@ async function processEvents(req: express.Request): Promise<{
   // failing the next steps
   appendLast(req);
 
-  const headers: any = processHeaders(_.get(req, 'headers'), mandatoryHeaders);
-  if (headers.errors) return headerError(headers);
+  // decode the headers - it throws when fails
+  const headers = throwEitherError(decodeHeaders(_.get(req, 'headers')));
+
+  // console.log(req.body);
+  // console.log(JSON.stringify(req.body));
 
   if (!utils.verifyRequestSignature(req)) {
     debug('Verification fail (signature %s)', headers.signature);
@@ -167,82 +214,160 @@ async function processEvents(req: express.Request): Promise<{
     };
   }
 
-  const supporter = await automo.tofu(headers.publickey, headers.version);
+  const supporter = await automo.tofu(headers.publicKey, headers.version);
 
   const fullsaves: any[] = [];
-  const htmls = _.compact(
-    _.map(req.body, function (body, i) {
-      /* the timelineId identify the session, it comes from the
-       * feedId because it need to trust client side */
-      const timelineId = getTimelineId({
-        feedId: body.feedId,
-        publicKey: supporter.publicKey,
-        version: headers.version,
-      });
 
-      /* this check should be done here because we shouldn't
-       * trust the input from client */
-      const nature = throwEitherError(getNatureByHref(body.href));
+  const events = filterByCodec(req.body, ContributionEvent.decode, (e, c) => {
+    debug('Failed to parse %O', c);
+    debug('Errors %O', PathReporter.report(E.left(e)));
+  });
 
-      const htmlId = getHTMLId.hash({
+  const init = {
+    htmls: [] as any[],
+    apiRequests: [] as any[],
+    sigiStates: [] as any[],
+  };
+
+  const { htmls, apiRequests, sigiStates } = events.reduce((acc, body, i) => {
+    const event: any = {
+      href: body.href,
+      clientTime: parseISO(body.clientTime),
+      researchTag: headers.researchTag,
+      publicKey: headers.publicKey,
+      savingTime: new Date(),
+    };
+
+    if (body.experimentId?.length) event.experimentId = body.experimentId;
+
+    if (headers.researchTag?.length) event.researchTag = headers.researchTag;
+
+    /* the timelineId identify the session, it comes from the
+     * feedId because it need to trust client side */
+    const timelineId = getTimelineId({
+      feedId: body.feedId,
+      publicKey: supporter.publicKey,
+      version: headers.version,
+    });
+
+    if (APIRequestType.is(body.type)) {
+      const {
+        feedCounter,
+        videoCounter,
+        incremental,
+        type,
+        feedId,
+        payload,
+      }: any = body;
+      const id = getAPIRequestId.hash({
         ...timelineId,
-        feedCounter: body.feedCounter,
-        videoCounter: body.videoCounter,
-        incremental: body.incremental,
+        feedCounter,
+        videoCounter,
+        incremental,
         href: body.href,
-        nature,
       });
 
-      const metadataId = getMetadataId.hash({
-        ...timelineId,
-        feedCounter: body.feedCounter,
-        videoCounter: body.videoCounter,
-        href: body.href,
-        nature,
-      });
-
-      /* to eventually verify integrity of collection we're saving these incremental
-       * numbers that might help to spot if client-side-extension are missing somethng */
-      const optionalNumbers: any[] = [];
-      if (_.isInteger(body.videoCounter))
-        optionalNumbers.push(body.videoCounter);
-      if (_.isInteger(i)) optionalNumbers.push(i);
-      if (_.isInteger(body.incremental)) optionalNumbers.push(body.incremental);
-      if (_.isInteger(body.feedCounter)) optionalNumbers.push(body.feedCounter);
-      optionalNumbers.push(_.size(body.html));
-
-      const geoAddress =
-        req.headers['x-forwarded-for'] ?? req.socket.remoteAddress;
-      const geoip =
-        geoAddress !== undefined
-          ? geo(geoAddress as any) ?? undefined
-          : undefined;
-
-      const html: HTML = {
-        id: htmlId as any,
-        metadataId,
-        blang: '',
-        nature,
-        type: body.type,
-        rect: body.rect,
-        href: body.href,
-        timelineId: timelineId.id,
-        publicKey: supporter.publicKey,
-        clientTime: parseISO(body.clientTime),
-        savingTime: new Date(),
-        html: body.html,
-        n: optionalNumbers,
-        geoip,
-        selector: body.selector,
+      const apiEvent = {
+        ...event,
+        incremental,
+        payload,
+        feedId,
+        type,
+        id,
       };
 
-      if (body.experimentId?.length) html.experimentId = body.experimentId;
+      return {
+        ...acc,
+        apiRequests: acc.apiRequests.concat(apiEvent),
+      };
+    }
 
-      if (headers.researchTag?.length) html.researchTag = headers.researchTag;
+    if (SigiStateType.is(body.type)) {
+      const { state, type }: any = body;
+      const id = getSigiStateId.hash({
+        timelineId: timelineId.id,
+        incremental: body.incremental,
+        href: body.href,
+      });
 
-      return html;
-    })
-  );
+      const sigiStateEvent = {
+        ...event,
+        type,
+        state,
+        id,
+      };
+
+      return {
+        ...acc,
+        sigiStates: acc.sigiStates.concat(sigiStateEvent),
+      };
+    }
+
+    /* this check should be done here because we shouldn't
+     * trust the input from client */
+    const nature = throwEitherError(getNatureByHref(body.href));
+
+    const {
+      feedCounter,
+      videoCounter,
+      selector,
+      rect,
+      html: bodyHTML,
+    }: any = body;
+    const htmlId = getHTMLId.hash({
+      ...timelineId,
+      feedCounter,
+      videoCounter,
+      incremental: body.incremental,
+      href: body.href,
+      nature,
+    });
+
+    const metadataId = getMetadataId.hash({
+      ...timelineId,
+      feedCounter,
+      videoCounter,
+      href: body.href,
+      nature,
+    });
+
+    /* to eventually verify integrity of collection we're saving these incremental
+     * numbers that might help to spot if client-side-extension are missing somethng */
+    const optionalNumbers: any[] = [];
+    if (_.isInteger(body.videoCounter)) optionalNumbers.push(body.videoCounter);
+    if (_.isInteger(i)) optionalNumbers.push(i);
+    if (_.isInteger(body.incremental)) optionalNumbers.push(body.incremental);
+    if (_.isInteger(body.feedCounter)) optionalNumbers.push(body.feedCounter);
+    optionalNumbers.push(_.size(bodyHTML));
+
+    const geoAddress =
+      req.headers['x-forwarded-for'] ?? req.socket.remoteAddress;
+    const geoip =
+      geoAddress !== undefined
+        ? geo(geoAddress as any) ?? undefined
+        : undefined;
+
+    if (selector) event.selector = selector;
+
+    const html: HTML = {
+      ...event,
+      id: htmlId as any,
+      metadataId,
+      blang: '',
+      nature,
+      type: body.type,
+      rect,
+      href: body.href,
+      timelineId: timelineId.id,
+      publicKey: supporter.publicKey,
+      savingTime: new Date(),
+      html: bodyHTML,
+      n: optionalNumbers,
+      geoip,
+    };
+
+    return { ...acc, htmls: acc.htmls.concat(html) };
+  }, init);
 
   debug(
     '[+] (p %s) %s <%s> -- %s %s',
@@ -258,6 +383,16 @@ async function processEvents(req: express.Request): Promise<{
       2) save it in the DB and return information on the saved objects */
   const experinfo = {}; // TODO
   const htmlrv = await saveInDB(experinfo, htmls, nconf.get('schema').htmls);
+  const apiRequestrv = await saveInDB(
+    experinfo,
+    apiRequests,
+    nconf.get('schema').apiRequests
+  );
+  const sigiStaterv = await saveInDB(
+    experinfo,
+    sigiStates,
+    nconf.get('schema').sigiStates
+  );
   const fullrv = await saveInDB(experinfo, fullsaves, nconf.get('schema').full);
 
   /* this is what returns to the web-extension */
@@ -267,6 +402,8 @@ async function processEvents(req: express.Request): Promise<{
       supporter,
       full: fullrv,
       htmls: htmlrv,
+      apiRequests: apiRequestrv,
+      sigiStates: sigiStaterv,
     },
   };
 }
@@ -280,35 +417,8 @@ async function handshake(
   };
 }
 
-async function processAPIEvents(req: express.Request): Promise<any> {
-  for (const data of req.body) {
-    const { request, response, url, id } = data.payload;
-
-    debug('received api events %s for %s', id, url);
-
-    // request has always body: [{events:[]}]
-    const events = _.get(request.body[0], 'events');
-    // debug('request.events %s', JSON.stringify(events, null, 3));
-    // and each event has 'event' (name) and 'params' JSON String
-    const converted = _.map(events, function (o) {
-      return _.set({}, o.event, JSON.parse(o.params));
-    });
-    debug('request.events %s', JSON.stringify(converted, null, 1));
-    // converted is just simpler to read when plotted
-
-    // response is kind of useless anytime?
-    if (response.headers['content-length'] > 7)
-      debug('UNUSUAL response %O', response);
-  }
-
-  return {
-    json: true,
-  };
-}
-
 export {
   processEvents,
-  processAPIEvents,
   getMirror,
   mandatoryHeaders,
   processHeaders,

@@ -1,7 +1,7 @@
 import { Format } from '@shared/models/common';
 import * as t from 'io-ts';
 import { NumberFromString } from 'io-ts-types/NumberFromString';
-import * as Nature from '../../../Nature';
+import * as Nature from '../../Nature';
 
 /**
  * The codec for the Query `filter` for GET /v2/metadata endpoint
@@ -76,7 +76,7 @@ export const ListHashtagMetadataQuery = t.type(
 /**
  * The codec for the Query used for GET /v2/metadata endpoint
  */
-export const ListMetadataQuery = t.type(
+export const ListMetadataQuery = t.partial(
   {
     publicKey: t.union([t.string, t.undefined]),
     experimentId: t.union([t.string, t.undefined]),

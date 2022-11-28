@@ -27,8 +27,9 @@ export const getHeadersForDataDonation = async(req: SyncReq): Promise<any> => {
 
   tkLog.debug('Signing payload %O', payload);
 
+  const data = JSON.stringify(payload);
   const signatureUint = nacl.sign.detached(
-    decodeString(JSON.stringify(payload)),
+    decodeString(data),
     decodeFromBase58(userSettings.secretKey),
   );
 
@@ -38,6 +39,7 @@ export const getHeadersForDataDonation = async(req: SyncReq): Promise<any> => {
 
   const headers = {
     'Content-Type': 'application/json',
+    'Content-Length': data.length,
     'X-Tktrex-Version': config.VERSION,
     'X-Tktrex-Build': config.BUILD,
     'X-Tktrex-NonAuthCookieId': userSettings.researchTag ?? '',

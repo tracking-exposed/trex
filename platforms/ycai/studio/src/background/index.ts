@@ -7,7 +7,7 @@ import {
   catchRuntimeLastError,
   MessageType,
   tabsQuery,
-  toBrowserError
+  toBrowserError,
 } from '@shared/providers/browser.provider';
 import { fromStaticPath } from '@shared/utils/endpoint.utils';
 import * as Endpoints from '@yttrex/shared/endpoints';
@@ -68,7 +68,9 @@ const toMessageHandlerError = (
         name: e.name,
         message: e.message,
         details:
-          e.details.kind === 'DecodingError' ? (e.details.errors as any[]) : [],
+          e.details?.kind === 'DecodingError'
+            ? (e.details.errors as any[])
+            : [],
       },
     };
   }

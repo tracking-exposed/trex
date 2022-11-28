@@ -12,9 +12,8 @@ import * as fs from 'fs';
 import fetchMock from 'jest-fetch-mock';
 import * as path from 'path';
 import * as app from '../src/app/app';
-import * as handlers from '../src/app/handlers';
 import api, { getHeadersForDataDonation } from '../src/background/api';
-import tkHub from '../src/handlers/hub';
+import tkHub, * as handlers from '../src/app/hub';
 import * as fc from 'fast-check';
 
 const videoMatcher = app.tkHandlers.video;
@@ -173,17 +172,21 @@ describe('TK App', () => {
         data: [
           {
             feedCounter: 1,
+            feedId: expect.any(String),
             href: tkURL,
             type: 'video',
             videoCounter: 1,
+            incremental: 1,
           },
         ],
         headers: {
           Accept: 'application/json',
           'Content-Type': 'application/json',
+          'Content-Length': expect.any(Number),
           'X-Tktrex-Build': process.env.BUILD_DATE,
           'X-Tktrex-NonAuthCookieId': researchTag,
           'X-Tktrex-PublicKey': process.env.PUBLIC_KEY,
+          'X-Tktrex-Signature': expect.any(String),
           'X-Tktrex-Version': process.env.VERSION,
         },
       });
@@ -251,7 +254,7 @@ describe('TK App', () => {
       // video handler should be invoked as the url includes `watch`
 
       const { handle: _handle, ...videoOpts } = videoMatcher;
-      expect(handleVideoSpy).toHaveBeenCalledTimes(2);
+      expect(handleVideoSpy).toHaveBeenCalledTimes(3);
       expect(handleSearchSpy).toHaveBeenCalledTimes(48);
       expect(hubDispatchSpy).toHaveBeenCalledTimes(2);
 
@@ -268,9 +271,11 @@ describe('TK App', () => {
         headers: {
           Accept: 'application/json',
           'Content-Type': 'application/json',
+          'Content-Length': expect.any(Number),
           'X-Tktrex-Build': process.env.BUILD_DATE,
           'X-Tktrex-NonAuthCookieId': researchTag,
           'X-Tktrex-PublicKey': process.env.PUBLIC_KEY,
+          'X-Tktrex-Signature': expect.any(String),
           'X-Tktrex-Version': process.env.VERSION,
         },
       });

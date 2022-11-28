@@ -1,5 +1,5 @@
 import * as t from 'io-ts';
-import * as TKMetadata from '../../../metadata';
+import * as TKMetadata from '../../metadata';
 
 /**
  * The codec for the the Output of GET /v2/metadata endpoint

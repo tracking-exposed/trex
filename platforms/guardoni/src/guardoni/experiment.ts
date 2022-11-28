@@ -14,7 +14,6 @@ import {
 import * as E from 'fp-ts/lib/Either';
 import { pipe } from 'fp-ts/lib/function';
 import _ from 'lodash';
-// import * as NEA from 'fp-ts/lib/NonEmptyArray';
 import { parseClickCommand } from '@shared/providers/puppeteer/steps/click';
 import { parseKeypressCommand } from '@shared/providers/puppeteer/steps/keyPress';
 import { csvParseTE } from '@shared/utils/csv.utils';
@@ -32,6 +31,8 @@ import {
   GuardoniSuccessOutput,
 } from './types';
 import { liftFromIOE } from './utils';
+import { sequenceS } from 'fp-ts/lib/Apply';
+import { Logger } from '@shared/logger';
 
 export const validateNonEmptyString = (
   s: string
@@ -358,5 +359,205 @@ export const listExperiments =
                 ],
         })
       )
+    );
+  };
+
+export const walkPaginatedRequest =
+  (logger: Logger) =>
+  <A, D>(
+    apiReqFn: (i: any) => TE.TaskEither<AppError, A>,
+    getTotal: (r: A) => number,
+    getData: (r: A) => D[],
+    skip: number,
+    amount: number
+  ): TE.TaskEither<AppError, D[]> => {
+    const result: D[] = [];
+
+    const loop = (
+      skip: number,
+      amount: number,
+      result: D[]
+    ): TE.TaskEither<AppError, D[]> => {
+      logger.debug('Walking paginated requests: %d => %d', skip, amount);
+
+      return pipe(
+        apiReqFn({ skip, amount }),
+        TE.chain((r) => {
+          // logger.debug('Response: %o', r);
+          const total = getTotal(r);
+          logger.debug('Total %d', total);
+          const data = getData(r);
+          logger.debug('Data size %d', data.length);
+
+          if (amount < total) {
+            return loop(skip + amount, amount + amount, result.concat(data));
+          }
+          logger.debug('All elements collected, returning... %d', data.length);
+          return TE.right(result.concat(data));
+        })
+      );
+    };
+
+    return loop(skip, amount, result);
+  };
+
+export interface DownloadExperimentOpts {
+  metadata?: string;
+  sigiState?: string;
+  apiRequests?: string;
+}
+
+export const downloadExperiment =
+  (ctx: GuardoniContext) =>
+  (
+    experimentId: NonEmptyString,
+    out: string,
+    opts: DownloadExperimentOpts
+  ): TE.TaskEither<AppError, GuardoniSuccessOutput> => {
+    const tkDownloads = sequenceS(TE.ApplicativePar)({
+      metadata: walkPaginatedRequest(ctx.logger)(
+        (q) =>
+          ctx.TKAPI.v2.Metadata.ListMetadata({
+            Query: { ...q, experimentId },
+          }),
+        (r) =>
+          r.totals.native +
+          r.totals.foryou +
+          r.totals.following +
+          r.totals.profile +
+          r.totals.search,
+        (r) => r.data,
+        0,
+        50
+      ),
+      apiRequests: walkPaginatedRequest(ctx.logger)(
+        (q) =>
+          ctx.TKAPI.v2.Public.GETAPIEvents({
+            Query: { ...q, experimentId },
+          }),
+        (r) => r.total,
+        (r) => r.data,
+        0,
+        50
+      ),
+      sigiStates: walkPaginatedRequest(ctx.logger)(
+        (q) =>
+          ctx.TKAPI.v2.SigiState.ListSIGIState({
+            Query: {
+              ...q,
+              experimentId,
+              publicKey: undefined,
+              researchTag: undefined,
+            },
+          }),
+        (r) => r.total,
+        (r) => r.data,
+        0,
+        20
+      ),
+    });
+
+    const ytDownloads = sequenceS(TE.ApplicativePar)({
+      metadata: walkPaginatedRequest(ctx.logger)(
+        (q) =>
+          ctx.API.v2.Metadata.ListMetadata({
+            Query: {
+              ...q,
+              experimentId,
+              publicKey: undefined,
+              researchTag: undefined,
+            },
+          }),
+        (r) =>
+          r.totals.video +
+          r.totals.home +
+          r.totals.channel +
+          r.totals.hashtag +
+          r.totals.search,
+        (r) => r.data,
+        0,
+        20
+      ),
+      apiRequests: TE.right([] as any[]),
+      sigiStates: TE.right([] as any[]),
+    });
+
+    const downloadTasks: TE.TaskEither<
+      AppError,
+      { metadata: any; apiRequests: any; sigiStates: any }
+    > = ctx.platform.name === 'tiktok' ? tkDownloads : ytDownloads;
+
+    return pipe(
+      downloadTasks,
+      TE.chainFirst(() => {
+        return TE.tryCatch(
+          async () =>
+            fs.mkdirSync(path.resolve(ctx.config.basePath, out), {
+              recursive: true,
+            }),
+          toAppError
+        );
+      }),
+      TE.chain(({ metadata, apiRequests, sigiStates }) => {
+        const metadataPath = path.resolve(
+          ctx.config.basePath,
+          out,
+          opts.metadata ?? 'metadata.json'
+        );
+
+        const apiRequestsPath = path.resolve(
+          ctx.config.basePath,
+          out,
+          opts.apiRequests ?? 'apiRequests.json'
+        );
+
+        const sigiStatesPath = path.resolve(
+          ctx.config.basePath,
+          out,
+          opts.sigiState ?? 'sigiStates.json'
+        );
+
+        return sequenceS(TE.ApplicativePar)({
+          metadata: TE.tryCatch(async () => {
+            fs.writeFileSync(metadataPath, JSON.stringify(metadata), 'utf-8');
+
+            return metadataPath;
+          }, toAppError),
+          apiRequests: apiRequests
+            ? TE.tryCatch(async () => {
+                fs.writeFileSync(
+                  apiRequestsPath,
+                  JSON.stringify(apiRequests),
+                  'utf-8'
+                );
+                return apiRequestsPath;
+              }, toAppError)
+            : TE.right(undefined),
+          sigiStates: sigiStates
+            ? TE.tryCatch(async () => {
+                fs.writeFileSync(
+                  sigiStatesPath,
+                  JSON.stringify(sigiStates),
+                  'utf-8'
+                );
+                return sigiStatesPath;
+              }, toAppError)
+            : TE.right(undefined),
+        });
+      }),
+      TE.map(({ metadata, apiRequests, sigiStates }) => {
+        const values: any[] = [{ 'Metadata saved at': metadata }];
+        if (apiRequests) {
+          values.push({ 'API Requests saved at': apiRequests });
+        }
+        if (sigiStates) {
+          values.push({ 'SIGI States saved at': sigiStates });
+        }
+        return {
+          type: 'success',
+          message: 'Experiment data downloaded.',
+          values,
+        };
+      })
     );
   };

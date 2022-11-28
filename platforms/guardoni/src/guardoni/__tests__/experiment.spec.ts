@@ -1,11 +1,14 @@
-import { parseExperimentCSV } from '../experiment';
 import { CommonStepArb } from '@shared/arbitraries/Step.arb';
-import { throwTE } from '@shared/utils/task.utils';
-import { GetTests, Tests } from '../../../test/index';
-import { csvStringifyTE } from '@shared/utils/csv.utils';
-import { pipe } from 'fp-ts/lib/function';
-import { toKeypressCommand } from '@shared/providers/puppeteer/steps/keyPress';
+import { toAppError } from '@shared/errors/AppError';
 import { toClickCommand } from '@shared/providers/puppeteer/steps/click';
+import { toKeypressCommand } from '@shared/providers/puppeteer/steps/keyPress';
+import { fc } from '@shared/test';
+import { csvStringifyTE } from '@shared/utils/csv.utils';
+import { throwTE } from '@shared/utils/task.utils';
+import { pipe } from 'fp-ts/lib/function';
+import * as TE from 'fp-ts/TaskEither';
+import { GetTests, Tests } from '../../../test/index';
+import { parseExperimentCSV, walkPaginatedRequest } from '../experiment';
 
 describe('experiment.ts', () => {
   let tests: Tests;
@@ -120,6 +123,79 @@ describe('experiment.ts', () => {
           delay: 0,
         },
       ]);
+    });
+  });
+
+  describe('walkPaginatedRequest', () => {
+    test('succeeds after 2 loop', async () => {
+      const firstPage = fc.sample(fc.anything(), 10);
+      const secondPage = fc.sample(fc.anything(), 10);
+      const paginatedRequest = jest
+        .fn()
+        .mockResolvedValueOnce({
+          data: firstPage,
+          total: 20,
+        })
+        .mockResolvedValueOnce({
+          data: secondPage,
+          total: 20,
+        });
+      const data = [...firstPage, ...secondPage];
+
+      const result = await throwTE(
+        walkPaginatedRequest(tests.logger)(
+          () =>
+            TE.tryCatch(
+              () => paginatedRequest() as any as Promise<any>,
+              toAppError
+            ),
+          (r) => r.total,
+          (r) => r.data,
+          0,
+          10
+        )
+      );
+
+      expect(result.length).toBe(20);
+      expect(result).toMatchObject(data);
+    });
+
+    test('succeeds after 3 loop', async () => {
+      const firstPage = fc.sample(fc.anything(), 10);
+      const secondPage = fc.sample(fc.anything(), 10);
+      const thirdPage = fc.sample(fc.anything(), 5);
+      const paginatedRequest = jest
+        .fn()
+        .mockResolvedValueOnce({
+          data: firstPage,
+          total: 25,
+        })
+        .mockResolvedValueOnce({
+          data: secondPage,
+          total: 25,
+        })
+        .mockResolvedValueOnce({
+          data: thirdPage,
+          total: 25,
+        });
+      const data = [...firstPage, ...secondPage, ...thirdPage];
+
+      const result = await throwTE(
+        walkPaginatedRequest(tests.logger)(
+          () =>
+            TE.tryCatch(
+              () => paginatedRequest() as any as Promise<any>,
+              toAppError
+            ),
+          (r) => r.total,
+          (r) => r.data,
+          0,
+          10
+        )
+      );
+
+      expect(result.length).toBe(25);
+      expect(result).toMatchObject(data);
     });
   });
 });

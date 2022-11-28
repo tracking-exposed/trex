@@ -11,9 +11,10 @@ import { Step } from '@shared/models/Step';
 import { APIClient, MakeAPIClient } from '@shared/providers/api.provider';
 import {
   GetPuppeteer,
-  OperateResult
+  OperateResult,
 } from '@shared/providers/puppeteer/puppeteer.provider';
 import * as Endpoints from '@yttrex/shared/endpoints';
+import * as TKEndpoints from '@tktrex/shared/endpoints';
 import { differenceInSeconds } from 'date-fns';
 import debug from 'debug';
 import { sequenceS } from 'fp-ts/lib/Apply';
@@ -30,26 +31,29 @@ import {
   checkConfig,
   getConfig,
   getDefaultConfig,
-  getPlatformConfig
+  getPlatformConfig,
 } from './config';
 import {
+  downloadExperiment,
+  DownloadExperimentOpts,
   getDirective,
   listExperiments,
   registerCSV,
   registerExperiment,
   saveExperiment,
-  validateNonEmptyString
+  validateNonEmptyString,
 } from './experiment';
 import {
-  cleanExtension, downloadExtension,
-  setLocalSettings
+  cleanExtension,
+  downloadExtension,
+  setLocalSettings,
 } from './extension';
 import {
   checkProfile,
   getDefaultProfile,
   getProfileJsonPath,
   readProfile,
-  updateGuardoniProfile
+  updateGuardoniProfile,
 } from './profile';
 import { GetTKHooks } from './steps/tk.steps';
 import { GetYTHooks } from './steps/yt.steps';
@@ -60,7 +64,7 @@ import {
   GuardoniSuccessOutput,
   Platform,
   PlatformConfig,
-  ProgressDetails
+  ProgressDetails,
 } from './types';
 import { getChromePath, getPackageVersion } from './utils';
 
@@ -260,19 +264,6 @@ export const runExperimentForPage =
       }))
     );
 
-export const runAuto =
-  (ctx: GuardoniContext) =>
-  (value: '1' | '2'): TE.TaskEither<AppError, GuardoniSuccessOutput> => {
-    const experimentId: NonEmptyString =
-      value === '2'
-        ? ('d75f9eaf465d2cd555de65eaf61a770c82d59451' as any)
-        : ('37384a9b7dff26184cdea226ad5666ca8cbbf456' as any);
-
-    ctx.logger.debug('Run in auto mode with experiment %s', experimentId);
-
-    return runExperiment(ctx)(experimentId);
-  };
-
 export const guardoniExecution =
   (ctx: GuardoniContext) =>
   (
@@ -377,6 +368,14 @@ const loadContext = (
             },
             Endpoints
           ).API,
+          TKAPI: MakeAPIClient(
+            {
+              baseURL: platformConf.backend,
+              getAuth: async (req) => req,
+              onUnauthorized: async (res) => res,
+            },
+            TKEndpoints
+          ).API,
           config: {
             ...c,
             basePath,
@@ -412,7 +411,11 @@ export interface Guardoni {
     experiment: NonEmptyString,
     opts?: GuardoniCommandOpts
   ) => TE.TaskEither<AppError, GuardoniSuccessOutput>;
-  runAuto: (value: '1' | '2') => TE.TaskEither<AppError, GuardoniSuccessOutput>;
+  downloadExperiment: (
+    experimentId: NonEmptyString,
+    out: string,
+    opts: DownloadExperimentOpts
+  ) => TE.TaskEither<AppError, GuardoniSuccessOutput>;
   runExperimentForPage: (
     page: puppeteer.Page,
     experiment: NonEmptyString,
@@ -473,12 +476,12 @@ export const GetGuardoni: GetGuardoni = ({
             config: ctx.config,
             platform: ctx.platform,
             API: ctx.API,
-            runAuto: runAuto(ctx),
             runExperiment: runExperiment(ctx),
             runExperimentForPage: runExperimentForPage(ctx),
             registerExperiment: registerExperiment(ctx),
             registerExperimentFromCSV: registerCSV(ctx),
             listExperiments: listExperiments(ctx),
+            downloadExperiment: downloadExperiment(ctx),
             runNavigate: runNavigate(ctx),
             cleanExtension: cleanExtension(ctx),
           };
@@ -494,11 +497,11 @@ export const GetGuardoni: GetGuardoni = ({
             config: ctx.config,
             platform: ctx.platform,
             API: ctx.API,
+            runNavigate: runNavigate(ctx),
             registerExperiment: registerExperiment(ctx),
             registerExperimentFromCSV: registerCSV(ctx),
             listExperiments: listExperiments(ctx),
-            runNavigate: runNavigate(ctx),
-            runAuto: runAuto(ctx),
+            downloadExperiment: downloadExperiment(ctx),
             runExperiment: runExperiment(ctx),
             runExperimentForPage: runExperimentForPage(ctx),
             cleanExtension: cleanExtension(ctx),
