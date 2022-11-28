@@ -11,7 +11,8 @@
     "start": "DEBUG=\"*,-body-parser:*,-express:*,-lib:cache,-send\" node build/bin/server",
     "parserv:watch": "DEBUG=\"*\" ts-node-dev -r tsconfig-paths/register bin/parser",
     "parserv": "DEBUG=\"*,-@trex:htmls:debug\" node build/bin/parser",
-    "build": "tsc -b tsconfig.build.json"
+    "build": "tsc -b tsconfig.build.json",
+    "clean-test-db": "DEBUG=\"tk:*\" ts-node ./scripts/clean-test-db.ts"
   },
   "author": "https://github.com/tracking-exposed/tktrex/graphs/contributors",
   "repository": {

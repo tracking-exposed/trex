@@ -1,0 +1,23 @@
+#!/bin/sh
+. "$(dirname "$0")/_/husky.sh"
+
+
+yarn build
+docker-compose up -d mongodb
+# start mongo db for tk and clean data from test db
+docker-compose up -d mongo-tk-test-indexes
+yarn tk:backend clean-test-db
+
+# start mongo db for yt and clean data from test db
+docker-compose up -d mongo-yt-test-indexes
+yarn yt:backend clean-test-db
+
+# start backends and parsers with 'test' environment with pm2
+yarn pm2 restart -a --env test platforms/ecosystem.dev.config.js
+yarn pm2 save
+
+# run tests one after the other to be sure the data doesn't overlap and make some of them fail
+yarn test --ci --runInBand --bail --forceExit
+
+# restart backends and parsers with 'development' environment
+yarn pm2 restart -a --env development platforms/ecosystem.dev.config.js
